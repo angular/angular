@@ -19,7 +19,7 @@ export const NUMBER_VALUE_ACCESSOR: any = {
 /**
  * @description
  * The `ControlValueAccessor` for writing a number value and listening to number input changes.
- * The value accessor is used by the `FormControlDirective`, `FormControlName`, and  `NgModel`
+ * The value accessor is used by the `FormControlDirective`, `FormControlName`, and `NgModel`
  * directives.
  *
  * @usageNotes
@@ -48,15 +48,15 @@ export const NUMBER_VALUE_ACCESSOR: any = {
 })
 export class NumberValueAccessor implements ControlValueAccessor {
   /**
-   * @description
    * The registered callback function called when a change or input event occurs on the input
    * element.
+   * @nodoc
    */
   onChange = (_: any) => {};
 
   /**
-   * @description
    * The registered callback function called when a blur event occurs on the input element.
+   * @nodoc
    */
   onTouched = () => {};
 
@@ -64,8 +64,7 @@ export class NumberValueAccessor implements ControlValueAccessor {
 
   /**
    * Sets the "value" property on the input element.
-   *
-   * @param value The checked value
+   * @nodoc
    */
   writeValue(value: number): void {
     // The value needs to be normalized for IE9, otherwise it is set to 'null' when null
@@ -74,10 +73,8 @@ export class NumberValueAccessor implements ControlValueAccessor {
   }
 
   /**
-   * @description
    * Registers a function called when the control value changes.
-   *
-   * @param fn The callback function
+   * @nodoc
    */
   registerOnChange(fn: (_: number|null) => void): void {
     this.onChange = (value) => {
@@ -86,10 +83,8 @@ export class NumberValueAccessor implements ControlValueAccessor {
   }
 
   /**
-   * @description
    * Registers a function called when the control is touched.
-   *
-   * @param fn The callback function
+   * @nodoc
    */
   registerOnTouched(fn: () => void): void {
     this.onTouched = fn;
@@ -97,8 +92,7 @@ export class NumberValueAccessor implements ControlValueAccessor {
 
   /**
    * Sets the "disabled" property on the input element.
-   *
-   * @param isDisabled The disabled value
+   * @nodoc
    */
   setDisabledState(isDisabled: boolean): void {
     this._renderer.setProperty(this._elementRef.nativeElement, 'disabled', isDisabled);

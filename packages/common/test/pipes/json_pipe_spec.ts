@@ -8,7 +8,7 @@
 
 import {CommonModule, JsonPipe} from '@angular/common';
 import {Component} from '@angular/core';
-import {async, TestBed} from '@angular/core/testing';
+import {TestBed, waitForAsync} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
 {
@@ -64,7 +64,7 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
         TestBed.configureTestingModule({declarations: [TestComp], imports: [CommonModule]});
       });
 
-      it('should work with mutable objects', async(() => {
+      it('should work with mutable objects', waitForAsync(() => {
            const fixture = TestBed.createComponent(TestComp);
            const mutable: number[] = [1];
            fixture.componentInstance.data = mutable;

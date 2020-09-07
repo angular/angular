@@ -172,13 +172,13 @@ describe(
                  * Source HTML:
                  *
                  * ```
-                 * <div i18n>translatable element <b>>with placeholders</b> {{ interpolation}}</div>
+                 * <div i18n>translatable element <b>with placeholders</b> {{ interpolation}}</div>
                  * ```
                  */
                 const XLIFF = [
                   `<xliff version="2.0" xmlns="urn:oasis:names:tc:xliff:document:2.0" srcLang="en" trgLang="fr">`,
                   `  <file original="ng.template" id="ngi18n">`,
-                  `    <unit id="5057824347511785081">`,
+                  `    <unit id="6949438802869886378">`,
                   `      <notes>`,
                   `        <note category="location">file.ts:3</note>`,
                   `      </notes>`,
@@ -193,10 +193,56 @@ describe(
                 const result = doParse('/some/file.xlf', XLIFF);
                 expect(
                     result.translations[ɵcomputeMsgId(
-                        'translatable element {$START_BOLD_TEXT}with placeholders{$LOSE_BOLD_TEXT} {$INTERPOLATION}')])
+                        'translatable element {$START_BOLD_TEXT}with placeholders{$CLOSE_BOLD_TEXT} {$INTERPOLATION}')])
                     .toEqual(ɵmakeParsedTranslation(
                         ['', ' tnemele elbatalsnart ', 'sredlohecalp htiw', ''],
                         ['INTERPOLATION', 'START_BOLD_TEXT', 'CLOSE_BOLD_TEXT']));
+              });
+
+              it('should extract nested placeholder containers (i.e. nested HTML elements)', () => {
+                /**
+                 * Source HTML:
+                 *
+                 * ```
+                 * <div i18n>
+                 *   translatable <span>element <b>with placeholders</b></span> {{ interpolation}}
+                 * </div>
+                 * ```
+                 */
+                const XLIFF = [
+                  `<xliff version="2.0" xmlns="urn:oasis:names:tc:xliff:document:2.0" srcLang="en" trgLang="fr">`,
+                  `  <file original="ng.template" id="ngi18n">`,
+                  `    <unit id="9051630253697141670">`,
+                  `      <notes>`,
+                  `        <note category="location">file.ts:3</note>`,
+                  `      </notes>`,
+                  `      <segment>`,
+                  `        <source>translatable <pc id="0" equivStart="START_TAG_SPAN" equivEnd="CLOSE_TAG_SPAN" type="other"` +
+                      ` dispStart="&lt;span&gt;" dispEnd="&lt;/span&gt;">element <pc id="1" equivStart="START_BOLD_TEXT" equivEnd=` +
+                      `"CLOSE_BOLD_TEXT" type="fmt" dispStart="&lt;b&gt;" dispEnd="&lt;/b&gt;">with placeholders</pc></pc>` +
+                      ` <ph id="2" equiv="INTERPOLATION" disp="{{ interpolation}}"/></source>`,
+                  `        <target><pc id="0" equivStart="START_TAG_SPAN" equivEnd="CLOSE_TAG_SPAN" type="fmt" dispStart="&lt;` +
+                      `span&gt;" dispEnd="&lt;/span&gt;"><ph id="2" equiv="INTERPOLATION" disp="{{ interpolation}}"/> tnemele</pc>` +
+                      ` elbatalsnart <pc id="1" equivStart="START_BOLD_TEXT" equivEnd="CLOSE_BOLD_TEXT" type="fmt" dispStart=` +
+                      `"&lt;b&gt;" dispEnd="&lt;/b&gt;">sredlohecalp htiw</pc></target>`,
+                  `      </segment>`,
+                  `    </unit>`,
+                  `  </file>`,
+                  `</xliff>`,
+                ].join('\n');
+                const result = doParse('/some/file.xlf', XLIFF);
+                expect(
+                    result.translations[ɵcomputeMsgId(
+                        'translatable {$START_TAG_SPAN}element {$START_BOLD_TEXT}with placeholders' +
+                        '{$CLOSE_BOLD_TEXT}{$CLOSE_TAG_SPAN} {$INTERPOLATION}')])
+                    .toEqual(ɵmakeParsedTranslation(
+                        ['', '', ' tnemele', ' elbatalsnart ', 'sredlohecalp htiw', ''], [
+                          'START_TAG_SPAN',
+                          'INTERPOLATION',
+                          'CLOSE_TAG_SPAN',
+                          'START_BOLD_TEXT',
+                          'CLOSE_BOLD_TEXT',
+                        ]));
               });
 
               it('should extract translations with simple ICU expressions', () => {
@@ -604,13 +650,14 @@ describe(
                   ].join('\n');
 
                   expectToFail('/some/file.xlf', XLIFF, /Invalid element found in message/, [
-                    `Invalid element found in message. ("`,
-                    `      <segment>`,
+                    `Error: Invalid element found in message.`,
+                    `At /some/file.xlf@6:16:`,
+                    `...`,
                     `        <source/>`,
                     `        <target>[ERROR ->]<b>msg should contain only ph and pc tags</b></target>`,
                     `      </segment>`,
-                    `    </unit>`,
-                    `"): /some/file.xlf@6:16`,
+                    `...`,
+                    ``,
                   ].join('\n'));
                 });
 
@@ -631,13 +678,14 @@ describe(
                      ].join('\n');
 
                      expectToFail('/some/file.xlf', XLIFF, /Missing required "equiv" attribute/, [
-                       `Missing required "equiv" attribute: ("`,
-                       `      <segment>`,
+                       `Error: Missing required "equiv" attribute:`,
+                       `At /some/file.xlf@6:16:`,
+                       `...`,
                        `        <source/>`,
                        `        <target>[ERROR ->]<ph/></target>`,
                        `      </segment>`,
-                       `    </unit>`,
-                       `"): /some/file.xlf@6:16`,
+                       `...`,
+                       ``,
                      ].join('\n'));
                    });
               });

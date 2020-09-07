@@ -136,15 +136,6 @@ build:remote --remote_executor=remotebuildexecution.googleapis.com
 # retry mechanism and we do not want to retry unnecessarily if Karma already tried multiple times.
 test:saucelabs --flaky_test_attempts=1
 
-###############################
-# NodeJS rules settings
-# These settings are required for rules_nodejs
-###############################
-
-# Turn on managed directories feature in Bazel
-# This allows us to avoid installing a second copy of node_modules
-common --experimental_allow_incremental_repository_updates
-
 ####################################################
 # User bazel configuration
 # NOTE: This needs to be the *last* entry in the config.

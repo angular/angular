@@ -1,75 +1,73 @@
-'use strict'; // necessary for es6 output in node
-
 import { browser, element, by } from 'protractor';
 
-describe('Upgrade Tests', function () {
+describe('Upgrade Tests', () => {
 
-  beforeAll(function () {
+  beforeAll(() => {
     // Set protractor to hybrid mode.
     browser.rootEl = 'body';
     browser.ng12Hybrid = true;
   });
 
-  describe('AngularJS Auto-bootstrap', function() {
+  describe('AngularJS Auto-bootstrap', () => {
 
-    beforeAll(function () {
+    beforeAll(() => {
       browser.get('/index-ng-app.html');
     });
 
-    it('bootstraps as expected', function () {
+    it('bootstraps as expected', () => {
       expect(element(by.css('#message')).getText()).toEqual('Hello world');
     });
 
   });
 
-  describe('AngularJS JavaScript Bootstrap', function() {
+  describe('AngularJS JavaScript Bootstrap', () => {
 
-    beforeAll(function () {
+    beforeAll(() => {
       browser.get('/index-bootstrap.html');
     });
 
-    it('bootstraps as expected', function () {
+    it('bootstraps as expected', () => {
       expect(element(by.css('#message')).getText()).toEqual('Hello world');
     });
 
   });
 
-  describe('AngularJS-Angular Hybrid Bootstrap', function() {
+  describe('AngularJS-Angular Hybrid Bootstrap', () => {
 
-    beforeAll(function () {
+    beforeAll(() => {
       browser.get('/index-ajs-a-hybrid-bootstrap.html');
     });
 
-    it('bootstraps as expected', function () {
+    it('bootstraps as expected', () => {
       expect(element(by.css('#message')).getText()).toEqual('Hello world');
     });
 
   });
 
-  describe('Upgraded static component', function() {
+  describe('Upgraded static component', () => {
 
-    beforeAll(function () {
+    beforeAll(() => {
       browser.get('/index-upgrade-static.html');
     });
 
-    it('renders', function () {
+    it('renders', () => {
       expect(element(by.css('h2')).getText()).toEqual('Windstorm details!');
     });
 
   });
 
 
-  describe('Upgraded component with IO', function() {
+  describe('Upgraded component with IO', () => {
 
-    beforeAll(function () {
+    beforeAll(() => {
       browser.get('/index-upgrade-io.html');
     });
 
-    it('has inputs', function () {
+    it('has inputs', () => {
       expect(element(by.css('h2')).getText()).toEqual('Windstorm details!');
     });
 
-    it('has outputs', function () {
+    it('has outputs', () => {
       element(by.buttonText('Delete')).click();
       expect(element(by.css('h2')).getText()).toEqual('Ex-Windstorm details!');
     });
@@ -77,86 +75,86 @@ describe('Upgrade Tests', function () {
   });
 
 
-  describe('Downgraded static component', function() {
+  describe('Downgraded static component', () => {
 
-    beforeAll(function () {
+    beforeAll(() => {
       browser.get('/index-downgrade-static.html');
     });
 
-    it('renders', function () {
+    it('renders', () => {
       expect(element(by.css('h2')).getText()).toEqual('Windstorm details!');
     });
 
   });
 
-  describe('Downgraded component with IO', function() {
+  describe('Downgraded component with IO', () => {
 
-    beforeAll(function () {
+    beforeAll(() => {
       browser.get('/index-downgrade-io.html');
     });
 
-    it('has inputs', function () {
+    it('has inputs', () => {
       expect(element.all(by.css('h2')).first().getText()).toEqual('Windstorm details!');
     });
 
-    it('has outputs', function () {
+    it('has outputs', () => {
       element.all(by.buttonText('Delete')).first().click();
       expect(element.all(by.css('h2')).first().getText()).toEqual('Ex-Windstorm details!');
     });
 
-    it('supports ng-repeat', function () {
+    it('supports ng-repeat', () => {
       expect(element.all(by.css('hero-detail')).count()).toBe(3);
     });
 
   });
 
 
-  describe('Downgraded component with content projection', function() {
+  describe('Downgraded component with content projection', () => {
 
-    beforeAll(function () {
+    beforeAll(() => {
       browser.get('/index-ajs-to-a-projection.html');
     });
 
-    it('can be transcluded into', function () {
+    it('can be transcluded into', () => {
       expect(element(by.css('hero-detail')).getText()).toContain('Specific powers of controlling winds');
     });
 
   });
 
 
-  describe('Upgraded component with transclusion', function() {
+  describe('Upgraded component with transclusion', () => {
 
-    beforeAll(function () {
+    beforeAll(() => {
       browser.get('/index-a-to-ajs-transclusion.html');
     });
 
-    it('can be projected into', function () {
+    it('can be projected into', () => {
       expect(element(by.css('hero-detail')).getText()).toContain('Specific powers of controlling winds');
     });
 
   });
 
 
-  describe('Upgrading AngularJS Providers', function() {
+  describe('Upgrading AngularJS Providers', () => {
 
-    beforeAll(function () {
+    beforeAll(() => {
       browser.get('/index-ajs-to-a-providers.html');
     });
 
-    it('works', function () {
+    it('works', () => {
       expect(element(by.css('h2')).getText()).toBe('1: Windstorm');
     });
 
   });
 
 
-  describe('Downgrading Angular Providers', function() {
+  describe('Downgrading Angular Providers', () => {
 
-    beforeAll(function () {
+    beforeAll(() => {
       browser.get('/index-a-to-ajs-providers.html');
     });
 
-    it('works', function () {
+    it('works', () => {
       expect(element(by.css('h2')).getText()).toBe('1: Windstorm');
     });
 

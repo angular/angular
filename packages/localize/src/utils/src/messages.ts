@@ -48,6 +48,7 @@ export interface SourceLocation {
   start: {line: number, column: number};
   end: {line: number, column: number};
   file: AbsoluteFsPath;
+  text?: string;
 }
 
 /**
@@ -59,10 +60,6 @@ export interface MessageMetadata {
    */
   text: string;
   /**
-   * A unique identifier for this message.
-   */
-  id?: MessageId;
-  /**
    * Legacy message ids, if provided.
    *
    * In legacy message formats the message id can only be computed directly from the original
@@ -73,6 +70,12 @@ export interface MessageMetadata {
    * of translation if the translations are encoded using the legacy message id.
    */
   legacyIds?: string[];
+  /**
+   * The id of the `message` if a custom one was specified explicitly.
+   *
+   * This id overrides any computed or legacy ids.
+   */
+  customId?: string;
   /**
    * The meaning of the `message`, used to distinguish identical `messageString`s.
    */
@@ -110,8 +113,6 @@ export interface MessageMetadata {
 export interface ParsedMessage extends MessageMetadata {
   /**
    * The key used to look up the appropriate translation target.
-   *
-   * In `ParsedMessage` this is a required field, whereas it is optional in `MessageMetadata`.
    */
   id: MessageId;
   /**
@@ -119,9 +120,17 @@ export interface ParsedMessage extends MessageMetadata {
    */
   substitutions: Record<string, any>;
   /**
+   * An optional mapping of placeholder names to source locations
+   */
+  substitutionLocations?: Record<string, SourceLocation|undefined>;
+  /**
    * The static parts of the message.
    */
   messageParts: string[];
+  /**
+   * An optional mapping of message parts to source locations
+   */
+  messagePartLocations?: (SourceLocation|undefined)[];
   /**
    * The names of the placeholders that will be replaced with substitutions.
    */
@@ -129,14 +138,17 @@ export interface ParsedMessage extends MessageMetadata {
 }
 
 /**
- * Parse a `$localize` tagged string into a structure that can be used for translation.
+ * Parse a `$localize` tagged string into a structure that can be used for translation or
+ * extraction.
  *
  * See `ParsedMessage` for an example.
  */
 export function parseMessage(
-    messageParts: TemplateStringsArray, expressions?: readonly any[],
-    location?: SourceLocation): ParsedMessage {
+    messageParts: TemplateStringsArray, expressions?: readonly any[], location?: SourceLocation,
+    messagePartLocations?: (SourceLocation|undefined)[],
+    expressionLocations: (SourceLocation|undefined)[] = []): ParsedMessage {
   const substitutions: {[placeholderName: string]: any} = {};
+  const substitutionLocations: {[placeholderName: string]: SourceLocation|undefined} = {};
   const metadata = parseMetadata(messageParts[0], messageParts.raw[0]);
   const cleanedMessageParts: string[] = [metadata.text];
   const placeholderNames: string[] = [];
@@ -147,20 +159,24 @@ export function parseMessage(
     messageString += `{$${placeholderName}}${messagePart}`;
     if (expressions !== undefined) {
       substitutions[placeholderName] = expressions[i - 1];
+      substitutionLocations[placeholderName] = expressionLocations[i - 1];
     }
     placeholderNames.push(placeholderName);
     cleanedMessageParts.push(messagePart);
   }
-  const messageId = metadata.id || computeMsgId(messageString, metadata.meaning || '');
+  const messageId = metadata.customId || computeMsgId(messageString, metadata.meaning || '');
   const legacyIds = metadata.legacyIds ? metadata.legacyIds.filter(id => id !== messageId) : [];
   return {
     id: messageId,
     legacyIds,
     substitutions,
+    substitutionLocations,
     text: messageString,
+    customId: metadata.customId,
     meaning: metadata.meaning || '',
     description: metadata.description || '',
     messageParts: cleanedMessageParts,
+    messagePartLocations,
     placeholderNames,
     location,
   };
@@ -198,7 +214,7 @@ export function parseMetadata(cooked: string, raw: string): MessageMetadata {
     return {text: messageString};
   } else {
     const [meaningDescAndId, ...legacyIds] = block.split(LEGACY_ID_INDICATOR);
-    const [meaningAndDesc, id] = meaningDescAndId.split(ID_SEPARATOR, 2);
+    const [meaningAndDesc, customId] = meaningDescAndId.split(ID_SEPARATOR, 2);
     let [meaning, description]: (string|undefined)[] = meaningAndDesc.split(MEANING_SEPARATOR, 2);
     if (description === undefined) {
       description = meaning;
@@ -207,7 +223,7 @@ export function parseMetadata(cooked: string, raw: string): MessageMetadata {
     if (description === '') {
       description = undefined;
     }
-    return {text: messageString, meaning, description, id, legacyIds};
+    return {text: messageString, meaning, description, customId, legacyIds};
   }
 }
 

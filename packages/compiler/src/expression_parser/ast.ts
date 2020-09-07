@@ -227,6 +227,52 @@ export class Binary extends AST {
   }
 }
 
+/**
+ * For backwards compatibility reasons, `Unary` inherits from `Binary` and mimics the binary AST
+ * node that was originally used. This inheritance relation can be deleted in some future major,
+ * after consumers have been given a chance to fully support Unary.
+ */
+export class Unary extends Binary {
+  // Redeclare the properties that are inherited from `Binary` as `never`, as consumers should not
+  // depend on these fields when operating on `Unary`.
+  left: never;
+  right: never;
+  operation: never;
+
+  /**
+   * Creates a unary minus expression "-x", represented as `Binary` using "0 - x".
+   */
+  static createMinus(span: ParseSpan, sourceSpan: AbsoluteSourceSpan, expr: AST): Unary {
+    return new Unary(
+        span, sourceSpan, '-', expr, '-', new LiteralPrimitive(span, sourceSpan, 0), expr);
+  }
+
+  /**
+   * Creates a unary plus expression "+x", represented as `Binary` using "x - 0".
+   */
+  static createPlus(span: ParseSpan, sourceSpan: AbsoluteSourceSpan, expr: AST): Unary {
+    return new Unary(
+        span, sourceSpan, '+', expr, '-', expr, new LiteralPrimitive(span, sourceSpan, 0));
+  }
+
+  /**
+   * During the deprecation period this constructor is private, to avoid consumers from creating
+   * a `Unary` with the fallback properties for `Binary`.
+   */
+  private constructor(
+      span: ParseSpan, sourceSpan: AbsoluteSourceSpan, public operator: string, public expr: AST,
+      binaryOp: string, binaryLeft: AST, binaryRight: AST) {
+    super(span, sourceSpan, binaryOp, binaryLeft, binaryRight);
+  }
+
+  visit(visitor: AstVisitor, context: any = null): any {
+    if (visitor.visitUnary !== undefined) {
+      return visitor.visitUnary(this, context);
+    }
+    return visitor.visitBinary(this, context);
+  }
+}
+
 export class PrefixNot extends AST {
   constructor(span: ParseSpan, sourceSpan: AbsoluteSourceSpan, public expression: AST) {
     super(span, sourceSpan);
@@ -361,6 +407,11 @@ export interface TemplateBindingIdentifier {
 }
 
 export interface AstVisitor {
+  /**
+   * The `visitUnary` method is declared as optional for backwards compatibility. In an upcoming
+   * major release, this method will be made required.
+   */
+  visitUnary?(ast: Unary, context: any): any;
   visitBinary(ast: Binary, context: any): any;
   visitChain(ast: Chain, context: any): any;
   visitConditional(ast: Conditional, context: any): any;
@@ -397,6 +448,9 @@ export class RecursiveAstVisitor implements AstVisitor {
     // Classes that extend RecursiveAstVisitor should override this function
     // to selectively visit the specified node.
     ast.visit(this, context);
+  }
+  visitUnary(ast: Unary, context: any): any {
+    this.visit(ast.expr, context);
   }
   visitBinary(ast: Binary, context: any): any {
     this.visit(ast.left, context);
@@ -525,6 +579,17 @@ export class AstTransformer implements AstVisitor {
 
   visitLiteralMap(ast: LiteralMap, context: any): AST {
     return new LiteralMap(ast.span, ast.sourceSpan, ast.keys, this.visitAll(ast.values));
+  }
+
+  visitUnary(ast: Unary, context: any): AST {
+    switch (ast.operator) {
+      case '+':
+        return Unary.createPlus(ast.span, ast.sourceSpan, ast.expr.visit(this));
+      case '-':
+        return Unary.createMinus(ast.span, ast.sourceSpan, ast.expr.visit(this));
+      default:
+        throw new Error(`Unknown unary operator ${ast.operator}`);
+    }
   }
 
   visitBinary(ast: Binary, context: any): AST {
@@ -661,6 +726,21 @@ export class AstMemoryEfficientTransformer implements AstVisitor {
     const values = this.visitAll(ast.values);
     if (values !== ast.values) {
       return new LiteralMap(ast.span, ast.sourceSpan, ast.keys, values);
+    }
+    return ast;
+  }
+
+  visitUnary(ast: Unary, context: any): AST {
+    const expr = ast.expr.visit(this);
+    if (expr !== ast.expr) {
+      switch (ast.operator) {
+        case '+':
+          return Unary.createPlus(ast.span, ast.sourceSpan, expr);
+        case '-':
+          return Unary.createMinus(ast.span, ast.sourceSpan, expr);
+        default:
+          throw new Error(`Unknown unary operator ${ast.operator}`);
+      }
     }
     return ast;
   }

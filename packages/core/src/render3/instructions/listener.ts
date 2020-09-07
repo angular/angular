@@ -7,7 +7,7 @@
  */
 
 
-import {assertDataInRange} from '../../util/assert';
+import {assertIndexInRange} from '../../util/assert';
 import {isObservable} from '../../util/lang';
 import {EMPTY_OBJ} from '../empty';
 import {PropertyAliasValue, TNode, TNodeFlags, TNodeType} from '../interfaces/node';
@@ -204,7 +204,7 @@ function listenerInternal(
     if (propsLength) {
       for (let i = 0; i < propsLength; i += 2) {
         const index = props[i] as number;
-        ngDevMode && assertDataInRange(lView, index);
+        ngDevMode && assertIndexInRange(lView, index);
         const minifiedName = props[i + 1];
         const directiveInstance = lView[index];
         const output = directiveInstance[minifiedName];

@@ -115,7 +115,7 @@ type ZoneSubscriberContext = {
       _zoneUnsubscribe: {value: null, writable: true, configurable: true},
       _unsubscribe: {
         get: function(this: Subscription) {
-          if ((this as any)._zoneUnsubscribe) {
+          if ((this as any)._zoneUnsubscribe || (this as any)._zoneUnsubscribeCleared) {
             return (this as any)._zoneUnsubscribe;
           }
           const proto = Object.getPrototypeOf(this);
@@ -125,7 +125,13 @@ type ZoneSubscriberContext = {
           (this as any)._zone = Zone.current;
           if (!unsubscribe) {
             (this as any)._zoneUnsubscribe = unsubscribe;
+            // In some operator such as `retryWhen`, the _unsubscribe
+            // method will be set to null, so we need to set another flag
+            // to tell that we should return null instead of finding
+            // in the prototype chain.
+            (this as any)._zoneUnsubscribeCleared = true;
           } else {
+            (this as any)._zoneUnsubscribeCleared = false;
             (this as any)._zoneUnsubscribe = function() {
               if (this._zone && this._zone !== Zone.current) {
                 return this._zone.run(unsubscribe, this, arguments);

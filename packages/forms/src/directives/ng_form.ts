@@ -137,10 +137,7 @@ export class NgForm extends ControlContainer implements Form, AfterViewInit {
         new FormGroup({}, composeValidators(validators), composeAsyncValidators(asyncValidators));
   }
 
-  /**
-   * @description
-   * Lifecycle method called after the view is initialized. For internal use only.
-   */
+  /** @nodoc */
   ngAfterViewInit() {
     this._setUpdateStrategy();
   }

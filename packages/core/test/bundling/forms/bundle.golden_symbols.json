@@ -222,15 +222,6 @@
     "name": "FormControlName"
   },
   {
-    "name": "FormErrorExamples_formControlName"
-  },
-  {
-    "name": "FormErrorExamples_formGroupName"
-  },
-  {
-    "name": "FormErrorExamples_ngModelGroup"
-  },
-  {
     "name": "FormGroup"
   },
   {
@@ -498,9 +489,6 @@
     "name": "RangeValueAccessor"
   },
   {
-    "name": "ReactiveErrors"
-  },
-  {
     "name": "ReactiveFormsComponent"
   },
   {
@@ -609,9 +597,6 @@
     "name": "TRANSITION_ID"
   },
   {
-    "name": "TemplateDrivenErrors"
-  },
-  {
     "name": "TemplateFormsComponent"
   },
   {
@@ -702,12 +687,6 @@
     "name": "_keyMap"
   },
   {
-    "name": "_mergeErrors"
-  },
-  {
-    "name": "_noControlError"
-  },
-  {
     "name": "_randomChar"
   },
   {
@@ -718,9 +697,6 @@
   },
   {
     "name": "_testabilityGetter"
-  },
-  {
-    "name": "_throwError"
   },
   {
     "name": "addComponentLogic"
@@ -913,6 +889,9 @@
   },
   {
     "name": "executeTemplate"
+  },
+  {
+    "name": "executeValidators"
   },
   {
     "name": "executeViewQueryFn"
@@ -1347,6 +1326,9 @@
     "name": "mergeAll"
   },
   {
+    "name": "mergeErrors"
+  },
+  {
     "name": "mergeHostAttribute"
   },
   {
@@ -1401,10 +1383,7 @@
     "name": "noop"
   },
   {
-    "name": "normalizeAsyncValidator"
-  },
-  {
-    "name": "normalizeValidator"
+    "name": "normalizeValidators"
   },
   {
     "name": "observable"
@@ -1627,9 +1606,6 @@
   },
   {
     "name": "u"
-  },
-  {
-    "name": "unimplemented"
   },
   {
     "name": "unwrapRNode"

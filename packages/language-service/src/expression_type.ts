@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, AstVisitor, ASTWithName, Binary, BindingPipe, Chain, Conditional, FunctionCall, ImplicitReceiver, Interpolation, KeyedRead, KeyedWrite, LiteralArray, LiteralMap, LiteralPrimitive, MethodCall, NonNullAssert, PrefixNot, PropertyRead, PropertyWrite, Quote, SafeMethodCall, SafePropertyRead} from '@angular/compiler';
+import {AST, AstVisitor, ASTWithName, Binary, BindingPipe, Chain, Conditional, FunctionCall, ImplicitReceiver, Interpolation, KeyedRead, KeyedWrite, LiteralArray, LiteralMap, LiteralPrimitive, MethodCall, NonNullAssert, PrefixNot, PropertyRead, PropertyWrite, Quote, SafeMethodCall, SafePropertyRead, Unary} from '@angular/compiler';
 
 import {createDiagnostic, Diagnostic} from './diagnostic_messages';
 import {BuiltinType, Signature, Symbol, SymbolQuery, SymbolTable} from './symbols';
@@ -36,6 +36,23 @@ export class AstType implements AstVisitor {
           createDiagnostic(refinedSpan(ast), Diagnostic.callable_expression_expected_method_call));
     }
     return this.diagnostics;
+  }
+
+  visitUnary(ast: Unary): Symbol {
+    // Visit the child to produce diagnostics.
+    ast.expr.visit(this);
+
+    // The unary plus and minus operator are always of type number.
+    // https://github.com/Microsoft/TypeScript/blob/v1.8.10/doc/spec.md#4.18
+    switch (ast.operator) {
+      case '-':
+      case '+':
+        return this.query.getBuiltinType(BuiltinType.Number);
+    }
+
+    this.diagnostics.push(
+        createDiagnostic(refinedSpan(ast), Diagnostic.unrecognized_operator, ast.operator));
+    return this.anyType;
   }
 
   visitBinary(ast: Binary): Symbol {

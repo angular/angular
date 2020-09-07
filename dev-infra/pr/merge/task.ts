@@ -9,7 +9,7 @@
 import {promptConfirm} from '../../utils/console';
 import {GitClient, GitCommandError} from '../../utils/git';
 
-import {MergeConfigWithRemote} from './config';
+import {MergeConfig, MergeConfigWithRemote} from './config';
 import {PullRequestFailure} from './failures';
 import {getCaretakerNotePromptMessage} from './messages';
 import {isPullRequest, loadAndValidatePullRequest,} from './pull-request';
@@ -40,12 +40,7 @@ export interface MergeResult {
  * labels that have been resolved through the merge script configuration.
  */
 export class PullRequestMergeTask {
-  /** Git client that can be used to execute Git commands. */
-  git = new GitClient(this._githubToken, {github: this.config.remote});
-
-  constructor(
-      public projectRoot: string, public config: MergeConfigWithRemote,
-      private _githubToken: string) {}
+  constructor(public config: MergeConfigWithRemote, public git: GitClient) {}
 
   /**
    * Merges the given pull request and pushes it upstream.

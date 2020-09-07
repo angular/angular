@@ -51,6 +51,14 @@ export declare class ActivationStart {
     toString(): string;
 }
 
+export declare abstract class BaseRouteReuseStrategy implements RouteReuseStrategy {
+    retrieve(route: ActivatedRouteSnapshot): DetachedRouteHandle | null;
+    shouldAttach(route: ActivatedRouteSnapshot): boolean;
+    shouldDetach(route: ActivatedRouteSnapshot): boolean;
+    shouldReuseRoute(future: ActivatedRouteSnapshot, curr: ActivatedRouteSnapshot): boolean;
+    store(route: ActivatedRouteSnapshot, detachedTree: DetachedRouteHandle): void;
+}
+
 export declare interface CanActivate {
     canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree;
 }
@@ -370,7 +378,7 @@ export declare class RouterEvent {
     url: string);
 }
 
-export declare class RouterLink {
+export declare class RouterLink implements OnChanges {
     fragment: string;
     preserveFragment: boolean;
     /** @deprecated */ set preserveQueryParams(value: boolean);
@@ -386,6 +394,7 @@ export declare class RouterLink {
     };
     get urlTree(): UrlTree;
     constructor(router: Router, route: ActivatedRoute, tabIndex: string, renderer: Renderer2, el: ElementRef);
+    ngOnChanges(changes: SimpleChanges): void;
     onClick(): boolean;
 }
 
@@ -421,7 +430,7 @@ export declare class RouterLinkWithHref implements OnChanges, OnDestroy {
     target: string;
     get urlTree(): UrlTree;
     constructor(router: Router, route: ActivatedRoute, locationStrategy: LocationStrategy);
-    ngOnChanges(changes: {}): any;
+    ngOnChanges(changes: SimpleChanges): any;
     ngOnDestroy(): any;
     onClick(button: number, ctrlKey: boolean, metaKey: boolean, shiftKey: boolean): boolean;
 }

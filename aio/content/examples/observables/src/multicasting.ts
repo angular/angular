@@ -8,18 +8,18 @@ function sequenceSubscriber(observer) {
   let timeoutId;
 
   // 배열을 순회하면서 배열의 항목을 1초마다 하나씩 발행합니다.
-  function doSequence(arr, idx) {
+  function doInSequence(arr, idx) {
     timeoutId = setTimeout(() => {
       observer.next(arr[idx]);
       if (idx === arr.length - 1) {
         observer.complete();
       } else {
-        doSequence(arr, ++idx);
+        doInSequence(arr, ++idx);
       }
     }, 1000);
   }
 
-  doSequence(seq, 0);
+  doInSequence(seq, 0);
 
   // 구독이 해지되면 타이머를 중지합니다.
   return {unsubscribe() {

@@ -7,13 +7,19 @@
  */
 
 import chalk from 'chalk';
-import {prompt} from 'inquirer';
+import {writeFileSync} from 'fs-extra';
+import {createPromptModule, ListChoiceOptions, prompt} from 'inquirer';
+import * as inquirerAutocomplete from 'inquirer-autocomplete-prompt';
+import {join} from 'path';
+import {Arguments} from 'yargs';
 
+import {getRepoBaseDir} from './config';
 
 /** Reexport of chalk colors for convenient access. */
 export const red: typeof chalk = chalk.red;
 export const green: typeof chalk = chalk.green;
 export const yellow: typeof chalk = chalk.yellow;
+export const bold: typeof chalk = chalk.bold;
 
 /** Prompts the user with a confirmation question and a specified message. */
 export async function promptConfirm(message: string, defaultValue = false): Promise<boolean> {
@@ -24,6 +30,52 @@ export async function promptConfirm(message: string, defaultValue = false): Prom
            default: defaultValue,
          }))
       .result;
+}
+
+/** Prompts the user to select an option from a filterable autocomplete list. */
+export async function promptAutocomplete(
+    message: string, choices: (string|ListChoiceOptions)[]): Promise<string>;
+/**
+ * Prompts the user to select an option from a filterable autocomplete list, with an option to
+ * choose no value.
+ */
+export async function promptAutocomplete(
+    message: string, choices: (string|ListChoiceOptions)[],
+    noChoiceText?: string): Promise<string|false>;
+export async function promptAutocomplete(
+    message: string, choices: (string|ListChoiceOptions)[],
+    noChoiceText?: string): Promise<string|false> {
+  // Creates a local prompt module with an autocomplete prompt type.
+  const prompt = createPromptModule({}).registerPrompt('autocomplete', inquirerAutocomplete);
+  if (noChoiceText) {
+    choices = [noChoiceText, ...choices];
+  }
+  // `prompt` must be cast as `any` as the autocomplete typings are not available.
+  const result = (await (prompt as any)({
+                   type: 'autocomplete',
+                   name: 'result',
+                   message,
+                   source: (_: any, input: string) => {
+                     if (!input) {
+                       return Promise.resolve(choices);
+                     }
+                     return Promise.resolve(choices.filter(choice => {
+                       if (typeof choice === 'string') {
+                         return choice.includes(input);
+                       }
+                       return choice.name!.includes(input);
+                     }));
+                   }
+                 })).result;
+  if (result === noChoiceText) {
+    return false;
+  }
+  return result;
+}
+
+/** Prompts the user for one line of input. */
+export async function promptInput(message: string): Promise<string> {
+  return (await prompt<{result: string}>({type: 'input', name: 'result', message})).result;
 }
 
 /**
@@ -93,6 +145,7 @@ function runConsoleCommand(loadCommand: () => Function, logLevel: LOG_LEVELS, ..
   if (getLogLevel() >= logLevel) {
     loadCommand()(...text);
   }
+  printToLogFile(logLevel, ...text);
 }
 
 /**
@@ -107,4 +160,57 @@ function getLogLevel() {
     return DEFAULT_LOG_LEVEL;
   }
   return logLevel;
+}
+
+/** All text to write to the log file. */
+let LOGGED_TEXT = '';
+/** Whether file logging as been enabled. */
+let FILE_LOGGING_ENABLED = false;
+/**
+ * The number of columns used in the prepended log level information on each line of the logging
+ * output file.
+ */
+const LOG_LEVEL_COLUMNS = 7;
+
+/**
+ * Enable writing the logged outputs to the log file on process exit, sets initial lines from the
+ * command execution, containing information about the timing and command parameters.
+ *
+ * This is expected to be called only once during a command run, and should be called by the
+ * middleware of yargs to enable the file logging before the rest of the command parsing and
+ * response is executed.
+ */
+export function captureLogOutputForCommand(argv: Arguments) {
+  if (FILE_LOGGING_ENABLED) {
+    throw Error('`captureLogOutputForCommand` cannot be called multiple times');
+  }
+  /** The date time used for timestamping when the command was invoked. */
+  const now = new Date();
+  /** Header line to separate command runs in log files. */
+  const headerLine = Array(100).fill('#').join('');
+  LOGGED_TEXT += `${headerLine}\nCommand: ${argv.$0} ${argv._.join(' ')}\nRan at: ${now}\n`;
+
+  // On process exit, write the logged output to the appropriate log files
+  process.on('exit', (code: number) => {
+    LOGGED_TEXT += `Command ran in ${new Date().getTime() - now.getTime()}ms`;
+    /** Path to the log file location. */
+    const logFilePath = join(getRepoBaseDir(), '.ng-dev.log');
+
+    writeFileSync(logFilePath, LOGGED_TEXT);
+
+    // For failure codes greater than 1, the new logged lines should be written to a specific log
+    // file for the command run failure.
+    if (code > 1) {
+      writeFileSync(join(getRepoBaseDir(), `.ng-dev.err-${now.getTime()}.log`), LOGGED_TEXT);
+    }
+  });
+
+  // Mark file logging as enabled to prevent the function from executing multiple times.
+  FILE_LOGGING_ENABLED = true;
+}
+
+/** Write the provided text to the log file, prepending each line with the log level.  */
+function printToLogFile(logLevel: LOG_LEVELS, ...text: string[]) {
+  const logLevelText = `${LOG_LEVELS[logLevel]}:`.padEnd(LOG_LEVEL_COLUMNS);
+  LOGGED_TEXT += text.join(' ').split('\n').map(l => `${logLevelText} ${l}\n`).join('');
 }

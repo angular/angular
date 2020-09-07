@@ -10,7 +10,7 @@ import {Expression, ExternalExpr, FunctionExpr, Identifiers, InvokeFunctionExpr,
 import * as ts from 'typescript';
 
 import {DefaultImportRecorder} from '../../imports';
-import {CtorParameter, Decorator, ReflectionHost} from '../../reflection';
+import {CtorParameter, Decorator, ReflectionHost, TypeValueReferenceKind} from '../../reflection';
 
 import {valueReferenceToExpression, wrapFunctionExpressionsInParens} from './util';
 
@@ -28,7 +28,7 @@ export function generateSetClassMetadataCall(
   if (!reflection.isClass(clazz)) {
     return null;
   }
-  const id = ts.updateIdentifier(reflection.getAdjacentNameOfClass(clazz));
+  const id = reflection.getAdjacentNameOfClass(clazz);
 
   // Reflect over the class decorators. If none are present, or those that are aren't from
   // Angular, then return null. Otherwise, turn them into metadata.
@@ -70,8 +70,8 @@ export function generateSetClassMetadataCall(
         `Duplicate decorated properties found on class '${clazz.name.text}': ` +
         duplicateDecoratedMemberNames.join(', '));
   }
-  const decoratedMembers =
-      classMembers.map(member => classMemberToMetadata(member.name, member.decorators!, isCore));
+  const decoratedMembers = classMembers.map(
+      member => classMemberToMetadata(member.nameNode ?? member.name, member.decorators!, isCore));
   if (decoratedMembers.length > 0) {
     metaPropDecorators = ts.createObjectLiteral(decoratedMembers);
   }
@@ -105,7 +105,7 @@ function ctorParameterToMetadata(
     isCore: boolean): Expression {
   // Parameters sometimes have a type that can be referenced. If so, then use it, otherwise
   // its type is undefined.
-  const type = param.typeValueReference !== null ?
+  const type = param.typeValueReference.kind !== TypeValueReferenceKind.UNAVAILABLE ?
       valueReferenceToExpression(param.typeValueReference, defaultImportRecorder) :
       new LiteralExpr(undefined);
 
@@ -127,7 +127,7 @@ function ctorParameterToMetadata(
  * Convert a reflected class member to metadata.
  */
 function classMemberToMetadata(
-    name: string, decorators: Decorator[], isCore: boolean): ts.PropertyAssignment {
+    name: ts.PropertyName|string, decorators: Decorator[], isCore: boolean): ts.PropertyAssignment {
   const ngDecorators = decorators.filter(dec => isAngularDecorator(dec, isCore))
                            .map((decorator: Decorator) => decoratorToMetadata(decorator));
   const decoratorMeta = ts.createArrayLiteral(ngDecorators);

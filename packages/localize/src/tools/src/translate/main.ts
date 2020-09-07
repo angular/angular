@@ -30,18 +30,21 @@ if (require.main === module) {
             required: true,
             describe:
                 'The root path of the files to translate, either absolute or relative to the current working directory. E.g. `dist/en`.',
+            type: 'string',
           })
           .option('s', {
             alias: 'source',
             required: true,
             describe:
                 'A glob pattern indicating what files to translate, relative to the `root` path. E.g. `bundles/**/*`.',
+            type: 'string',
           })
 
           .option('l', {
             alias: 'source-locale',
             describe:
                 'The source locale of the application. If this is provided then a copy of the application will be created with no translation but just the `$localize` calls stripped out.',
+            type: 'string',
           })
 
           .option('t', {
@@ -54,6 +57,7 @@ if (require.main === module) {
                 'If you want to merge multiple translation files for each locale, then provide the list of files in an array.\n' +
                 'Note that the arrays must be in double quotes if you include any whitespace within the array.\n' +
                 'E.g. `-t "[src/locale/messages.en.xlf, src/locale/messages-2.en.xlf]" [src/locale/messages.fr.xlf,src/locale/messages-2.fr.xlf]`',
+            type: 'string',
           })
 
           .option('target-locales', {
@@ -61,6 +65,7 @@ if (require.main === module) {
             describe:
                 'A list of target locales for the translation files, which will override any target locale parsed from the translation file.\n' +
                 'E.g. "-t en fr de".',
+            type: 'string',
           })
 
           .option('o', {
@@ -68,7 +73,8 @@ if (require.main === module) {
             required: true,
             describe: 'A output path pattern to where the translated files will be written.\n' +
                 'The path must be either absolute or relative to the current working directory.\n' +
-                'The marker `{{LOCALE}}` will be replaced with the target locale. E.g. `dist/{{LOCALE}}`.'
+                'The marker `{{LOCALE}}` will be replaced with the target locale. E.g. `dist/{{LOCALE}}`.',
+            type: 'string',
           })
 
           .option('m', {
@@ -76,6 +82,7 @@ if (require.main === module) {
             describe: 'How to handle missing translations.',
             choices: ['error', 'warning', 'ignore'],
             default: 'warning',
+            type: 'string',
           })
 
           .option('d', {
@@ -83,6 +90,7 @@ if (require.main === module) {
             describe: 'How to handle duplicate translations.',
             choices: ['error', 'warning', 'ignore'],
             default: 'warning',
+            type: 'string',
           })
 
           .strict()
@@ -92,14 +100,14 @@ if (require.main === module) {
   const fs = new NodeJSFileSystem();
   setFileSystem(fs);
 
-  const sourceRootPath = options['r'];
-  const sourceFilePaths = glob.sync(options['s'], {cwd: sourceRootPath, nodir: true});
-  const translationFilePaths: (string|string[])[] = convertArraysFromArgs(options['t']);
-  const outputPathFn = getOutputPathFn(fs.resolve(options['o']));
+  const sourceRootPath = options.r;
+  const sourceFilePaths = glob.sync(options.s, {cwd: sourceRootPath, nodir: true});
+  const translationFilePaths: (string|string[])[] = convertArraysFromArgs(options.t);
+  const outputPathFn = getOutputPathFn(fs.resolve(options.o));
   const diagnostics = new Diagnostics();
-  const missingTranslation: DiagnosticHandlingStrategy = options['m'];
-  const duplicateTranslation: DiagnosticHandlingStrategy = options['d'];
-  const sourceLocale: string|undefined = options['l'];
+  const missingTranslation = options.m as DiagnosticHandlingStrategy;
+  const duplicateTranslation = options.d as DiagnosticHandlingStrategy;
+  const sourceLocale: string|undefined = options.l;
   const translationFileLocales: string[] = options['target-locales'] || [];
 
   translateFiles({

@@ -8,10 +8,11 @@
 
 import * as ts from 'typescript';
 
+import {absoluteFrom, getSourceFileOrError} from '../../file_system';
 import {runInEachFileSystem, TestFile} from '../../file_system/testing';
-import {TypeCheckingConfig} from '../src/api';
+import {OptimizeFor, TypeCheckingConfig} from '../api';
 
-import {ngForDeclaration, ngForDts, TestDeclaration, typecheck} from './test_utils';
+import {ngForDeclaration, ngForDts, setup, TestDeclaration} from './test_utils';
 
 runInEachFileSystem(() => {
   describe('template diagnostics', () => {
@@ -35,7 +36,7 @@ runInEachFileSystem(() => {
           }]);
 
       expect(messages).toEqual(
-          [`synthetic.html(1, 10): Type 'string' is not assignable to type 'number'.`]);
+          [`TestComponent.html(1, 10): Type 'string' is not assignable to type 'number'.`]);
     });
 
     it('infers type of template variables', () => {
@@ -49,7 +50,7 @@ runInEachFileSystem(() => {
           [ngForDeclaration()], [ngForDts()]);
 
       expect(messages).toEqual([
-        `synthetic.html(1, 62): Argument of type 'number' is not assignable to parameter of type 'string'.`,
+        `TestComponent.html(1, 62): Argument of type 'number' is not assignable to parameter of type 'string'.`,
       ]);
     });
 
@@ -83,7 +84,7 @@ runInEachFileSystem(() => {
           }]);
 
       expect(messages).toEqual([
-        `synthetic.html(1, 24): Argument of type 'HTMLDivElement' is not assignable to parameter of type 'string'.`,
+        `TestComponent.html(1, 24): Argument of type 'HTMLDivElement' is not assignable to parameter of type 'string'.`,
       ]);
     });
 
@@ -104,7 +105,7 @@ runInEachFileSystem(() => {
           }]);
 
       expect(messages).toEqual([
-        `synthetic.html(1, 31): Argument of type 'Dir' is not assignable to parameter of type 'string'.`,
+        `TestComponent.html(1, 31): Argument of type 'Dir' is not assignable to parameter of type 'string'.`,
       ]);
     });
 
@@ -115,7 +116,7 @@ runInEachFileSystem(() => {
       }`);
 
       expect(messages).toEqual([
-        `synthetic.html(1, 30): Argument of type 'TemplateRef<any>' is not assignable to parameter of type 'string'.`,
+        `TestComponent.html(1, 30): Argument of type 'TemplateRef<any>' is not assignable to parameter of type 'string'.`,
       ]);
     });
 
@@ -130,7 +131,7 @@ runInEachFileSystem(() => {
           [ngForDeclaration()], [ngForDts()]);
 
       expect(messages).toEqual([
-        `synthetic.html(1, 47): Property 'namme' does not exist on type '{ name: string; }'. Did you mean 'name'?`,
+        `TestComponent.html(1, 47): Property 'namme' does not exist on type '{ name: string; }'. Did you mean 'name'?`,
       ]);
     });
 
@@ -151,8 +152,8 @@ runInEachFileSystem(() => {
       }`);
 
       expect(messages).toEqual([
-        `synthetic.html(1, 29): Property 'heihgt' does not exist on type 'TestComponent'. Did you mean 'height'?`,
-        `synthetic.html(1, 6): Can't bind to 'srcc' since it isn't a known property of 'img'.`,
+        `TestComponent.html(1, 29): Property 'heihgt' does not exist on type 'TestComponent'. Did you mean 'height'?`,
+        `TestComponent.html(1, 6): Can't bind to 'srcc' since it isn't a known property of 'img'.`,
       ]);
     });
 
@@ -171,7 +172,7 @@ runInEachFileSystem(() => {
           }]);
 
       expect(messages).toEqual([
-        `synthetic.html(1, 10): Type '"drak"' is not assignable to type '"dark" | "light"'.`,
+        `TestComponent.html(1, 10): Type '"drak"' is not assignable to type '"dark" | "light"'.`,
       ]);
     });
 
@@ -190,7 +191,7 @@ runInEachFileSystem(() => {
           [{type: 'pipe', name: 'Pipe', pipeName: 'pipe'}]);
 
       expect(messages).toEqual([
-        `synthetic.html(1, 28): Argument of type 'number' is not assignable to parameter of type 'string'.`,
+        `TestComponent.html(1, 28): Argument of type 'number' is not assignable to parameter of type 'string'.`,
       ]);
     });
 
@@ -204,8 +205,8 @@ runInEachFileSystem(() => {
          }`);
 
       expect(messages).toEqual([
-        `synthetic.html(1, 4): Property 'personn' does not exist on type 'TestComponent'. Did you mean 'person'?`,
-        `synthetic.html(1, 24): Property 'personn' does not exist on type 'TestComponent'. Did you mean 'person'?`,
+        `TestComponent.html(1, 4): Property 'personn' does not exist on type 'TestComponent'. Did you mean 'person'?`,
+        `TestComponent.html(1, 24): Property 'personn' does not exist on type 'TestComponent'. Did you mean 'person'?`,
       ]);
     });
 
@@ -226,11 +227,12 @@ runInEachFileSystem(() => {
             name: 'GuardDir',
             selector: '[guard]',
             inputs: {'guard': 'guard'},
-            ngTemplateGuards: [{inputName: 'guard', type: 'binding'}]
+            ngTemplateGuards: [{inputName: 'guard', type: 'binding'}],
+            undeclaredInputFields: ['guard'],
           }]);
 
       expect(messages).toEqual([
-        `synthetic.html(1, 14): Property 'personn' does not exist on type 'TestComponent'. Did you mean 'person'?`,
+        `TestComponent.html(1, 14): Property 'personn' does not exist on type 'TestComponent'. Did you mean 'person'?`,
       ]);
     });
 
@@ -244,6 +246,17 @@ runInEachFileSystem(() => {
       }`);
 
       expect(messages).toEqual([]);
+    });
+
+    it('should treat unary operators as literal types', () => {
+      const messages = diagnose(`{{ test(-1) + test(+1) + test(-2) }}`, `
+      class TestComponent {
+        test(value: -1 | 1): number { return value; }
+      }`);
+
+      expect(messages).toEqual([
+        `TestComponent.html(1, 31): Argument of type '-2' is not assignable to parameter of type '1 | -1'.`,
+      ]);
     });
 
     describe('outputs', () => {
@@ -260,7 +273,7 @@ runInEachFileSystem(() => {
             [{type: 'directive', name: 'Dir', selector: '[dir]', outputs: {'out': 'event'}}]);
 
         expect(messages).toEqual([
-          `synthetic.html(1, 31): Argument of type 'number' is not assignable to parameter of type 'string'.`,
+          `TestComponent.html(1, 31): Argument of type 'number' is not assignable to parameter of type 'string'.`,
         ]);
       });
 
@@ -271,7 +284,7 @@ runInEachFileSystem(() => {
           }`);
 
         expect(messages).toEqual([
-          `synthetic.html(1, 41): Argument of type 'AnimationEvent' is not assignable to parameter of type 'string'.`,
+          `TestComponent.html(1, 41): Argument of type 'AnimationEvent' is not assignable to parameter of type 'string'.`,
         ]);
       });
 
@@ -283,7 +296,7 @@ runInEachFileSystem(() => {
           }`);
 
         expect(messages).toEqual([
-          `synthetic.html(1, 27): Argument of type 'MouseEvent' is not assignable to parameter of type 'string'.`,
+          `TestComponent.html(1, 27): Argument of type 'MouseEvent' is not assignable to parameter of type 'string'.`,
         ]);
       });
 
@@ -329,7 +342,7 @@ runInEachFileSystem(() => {
           };
         }`);
 
-        expect(messages).toEqual([`synthetic.html(1, 41): Object is possibly 'undefined'.`]);
+        expect(messages).toEqual([`TestComponent.html(1, 41): Object is possibly 'undefined'.`]);
       });
 
       it('does not produce diagnostic for checked property access', () => {
@@ -362,8 +375,8 @@ class TestComponent {
 }`);
 
       expect(messages).toEqual([
-        `synthetic.html(3, 15): Property 'srcc' does not exist on type 'TestComponent'. Did you mean 'src'?`,
-        `synthetic.html(4, 18): Property 'heihgt' does not exist on type 'TestComponent'. Did you mean 'height'?`,
+        `TestComponent.html(3, 15): Property 'srcc' does not exist on type 'TestComponent'. Did you mean 'src'?`,
+        `TestComponent.html(4, 18): Property 'heihgt' does not exist on type 'TestComponent'. Did you mean 'height'?`,
       ]);
     });
   });
@@ -378,7 +391,7 @@ class TestComponent {
         }`);
 
       expect(messages).toEqual([
-        `synthetic.html(1, 11): Property 'getNName' does not exist on type '{ getName(): string; }'. Did you mean 'getName'?`
+        `TestComponent.html(1, 11): Property 'getNName' does not exist on type '{ getName(): string; }'. Did you mean 'getName'?`
       ]);
     });
 
@@ -390,7 +403,7 @@ class TestComponent {
           };
         }`);
 
-      expect(messages).toEqual([`synthetic.html(1, 19): Expected 0 arguments, but got 1.`]);
+      expect(messages).toEqual([`TestComponent.html(1, 19): Expected 0 arguments, but got 1.`]);
     });
   });
 
@@ -404,7 +417,7 @@ class TestComponent {
         }`);
 
       expect(messages).toEqual([
-        `synthetic.html(1, 12): Property 'getNName' does not exist on type '{ getName(): string; }'. Did you mean 'getName'?`
+        `TestComponent.html(1, 12): Property 'getNName' does not exist on type '{ getName(): string; }'. Did you mean 'getName'?`
       ]);
     });
 
@@ -416,7 +429,7 @@ class TestComponent {
           };
         }`);
 
-      expect(messages).toEqual([`synthetic.html(1, 20): Expected 0 arguments, but got 1.`]);
+      expect(messages).toEqual([`TestComponent.html(1, 20): Expected 0 arguments, but got 1.`]);
     });
   });
 
@@ -430,7 +443,7 @@ class TestComponent {
         }`);
 
       expect(messages).toEqual([
-        `synthetic.html(1, 22): Property 'nname' does not exist on type '{ name: string; }'. Did you mean 'name'?`
+        `TestComponent.html(1, 22): Property 'nname' does not exist on type '{ name: string; }'. Did you mean 'name'?`
       ]);
     });
 
@@ -443,7 +456,7 @@ class TestComponent {
         }`);
 
       expect(messages).toEqual(
-          [`synthetic.html(1, 15): Type '2' is not assignable to type 'string'.`]);
+          [`TestComponent.html(1, 15): Type 'number' is not assignable to type 'string'.`]);
     });
   });
 });
@@ -452,7 +465,26 @@ function diagnose(
     template: string, source: string, declarations?: TestDeclaration[],
     additionalSources: TestFile[] = [], config?: Partial<TypeCheckingConfig>,
     options?: ts.CompilerOptions): string[] {
-  const diagnostics = typecheck(template, source, declarations, additionalSources, config, options);
+  const sfPath = absoluteFrom('/main.ts');
+  const {program, templateTypeChecker} = setup(
+      [
+        {
+          fileName: sfPath,
+          templates: {
+            'TestComponent': template,
+          },
+          source,
+          declarations,
+        },
+        ...additionalSources.map(testFile => ({
+                                   fileName: testFile.name,
+                                   source: testFile.contents,
+                                   templates: {},
+                                 })),
+      ],
+      {config, options});
+  const sf = getSourceFileOrError(program, sfPath);
+  const diagnostics = templateTypeChecker.getDiagnosticsForFile(sf, OptimizeFor.WholeProgram);
   return diagnostics.map(diag => {
     const text =
         typeof diag.messageText === 'string' ? diag.messageText : diag.messageText.messageText;

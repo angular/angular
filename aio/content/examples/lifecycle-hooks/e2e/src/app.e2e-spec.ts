@@ -1,5 +1,3 @@
-'use strict'; // necessary for es6 output in node
-
 import { browser, element, ElementFinder, by } from 'protractor';
 
 describe('Lifecycle hooks', () => {
@@ -15,11 +13,11 @@ describe('Lifecycle hooks', () => {
   });
 
   it('should support peek-a-boo', async () => {
-    let pabComp = element(by.css('peek-a-boo-parent peek-a-boo'));
+    const pabComp = element(by.css('peek-a-boo-parent peek-a-boo'));
     expect(pabComp.isPresent()).toBe(false, 'should not be able to find the "peek-a-boo" component');
 
-    let pabButton = element.all(by.css('peek-a-boo-parent button')).get(0);
-    let updateHeroButton = element.all(by.css('peek-a-boo-parent button')).get(1);
+    const pabButton = element.all(by.css('peek-a-boo-parent button')).get(0);
+    const updateHeroButton = element.all(by.css('peek-a-boo-parent button')).get(1);
     expect(pabButton.getText()).toContain('Create Peek');
 
     await pabButton.click();
@@ -37,12 +35,12 @@ describe('Lifecycle hooks', () => {
   });
 
   it('should support OnChanges hook', () => {
-    let onChangesViewEle = element.all(by.css('on-changes div')).get(0);
-    let inputEles = element.all(by.css('on-changes-parent input'));
-    let heroNameInputEle = inputEles.get(1);
-    let powerInputEle = inputEles.get(0);
-    let titleEle = onChangesViewEle.element(by.css('p'));
-    let changeLogEles = onChangesViewEle.all(by.css('div'));
+    const onChangesViewEle = element.all(by.css('on-changes div')).get(0);
+    const inputEles = element.all(by.css('on-changes-parent input'));
+    const heroNameInputEle = inputEles.get(1);
+    const powerInputEle = inputEles.get(0);
+    const titleEle = onChangesViewEle.element(by.css('p'));
+    const changeLogEles = onChangesViewEle.all(by.css('div'));
 
     expect(titleEle.getText()).toContain('Windstorm can sing');
     expect(changeLogEles.count()).toEqual(2, 'should start with 2 messages');
@@ -56,12 +54,12 @@ describe('Lifecycle hooks', () => {
   });
 
   it('should support DoCheck hook', async () => {
-    let doCheckViewEle = element.all(by.css('do-check div')).get(0);
-    let inputEles = element.all(by.css('do-check-parent input'));
-    let heroNameInputEle = inputEles.get(1);
-    let powerInputEle = inputEles.get(0);
-    let titleEle = doCheckViewEle.element(by.css('p'));
-    let changeLogEles = doCheckViewEle.all(by.css('div'));
+    const doCheckViewEle = element.all(by.css('do-check div')).get(0);
+    const inputEles = element.all(by.css('do-check-parent input'));
+    const heroNameInputEle = inputEles.get(1);
+    const powerInputEle = inputEles.get(0);
+    const titleEle = doCheckViewEle.element(by.css('p'));
+    const changeLogEles = doCheckViewEle.all(by.css('div'));
     let logCount: number;
 
     expect(titleEle.getText()).toContain('Windstorm can sing');
@@ -84,11 +82,11 @@ describe('Lifecycle hooks', () => {
   });
 
   it('should support AfterView hooks', async () => {
-    let parentEle = element(by.tagName('after-view-parent'));
-    let buttonEle = parentEle.element(by.tagName('button')); // Reset
-    let commentEle = parentEle.element(by.className('comment'));
-    let logEles = parentEle.all(by.css('h4 ~ div'));
-    let childViewInputEle = parentEle.element(by.css('app-child-view input'));
+    const parentEle = element(by.tagName('after-view-parent'));
+    const buttonEle = parentEle.element(by.tagName('button')); // Reset
+    const commentEle = parentEle.element(by.className('comment'));
+    const logEles = parentEle.all(by.css('h4 ~ div'));
+    const childViewInputEle = parentEle.element(by.css('app-child-view input'));
     let logCount: number;
 
     expect(childViewInputEle.getAttribute('value')).toContain('Magneta');
@@ -101,7 +99,7 @@ describe('Lifecycle hooks', () => {
     expect(commentEle.isPresent()).toBe(true, 'should have comment because >10 chars');
     expect(commentEle.getText()).toContain('long name');
 
-    let count = await logEles.count();
+    const count = await logEles.count();
     expect(logCount + 7).toBeGreaterThan(count - 3, '7 additional log messages should have been added');
     expect(logCount + 7).toBeLessThan(count + 3, '7 additional log messages should have been added');
 
@@ -111,18 +109,18 @@ describe('Lifecycle hooks', () => {
   });
 
   it('should support AfterContent hooks', async () => {
-    let parentEle = element(by.tagName('after-content-parent'));
-    let buttonEle = parentEle.element(by.tagName('button')); // Reset
-    let commentEle = parentEle.element(by.className('comment'));
-    let logEles = parentEle.all(by.css('h4 ~ div'));
-    let childViewInputEle = parentEle.element(by.css('app-child input'));
+    const parentEle = element(by.tagName('after-content-parent'));
+    const buttonEle = parentEle.element(by.tagName('button')); // Reset
+    const commentEle = parentEle.element(by.className('comment'));
+    const logEles = parentEle.all(by.css('h4 ~ div'));
+    const childViewInputEle = parentEle.element(by.css('app-child input'));
     let logCount = await logEles.count();
 
     expect(childViewInputEle.getAttribute('value')).toContain('Magneta');
     expect(commentEle.isPresent()).toBe(false, 'comment should not be in DOM');
 
     await sendKeys(childViewInputEle, '-test-');
-    let count = await logEles.count();
+    const count = await logEles.count();
     expect(childViewInputEle.getAttribute('value')).toContain('-test-');
     expect(commentEle.isPresent()).toBe(true, 'should have comment because >10 chars');
     expect(commentEle.getText()).toContain('long name');
@@ -134,11 +132,11 @@ describe('Lifecycle hooks', () => {
   });
 
   it('should support spy\'s OnInit & OnDestroy hooks', async () => {
-    let inputEle = element(by.css('spy-parent input'));
-    let addHeroButtonEle = element(by.cssContainingText('spy-parent button', 'Add Hero'));
-    let resetHeroesButtonEle = element(by.cssContainingText('spy-parent button', 'Reset Heroes'));
-    let heroEles = element.all(by.css('spy-parent div[mySpy'));
-    let logEles = element.all(by.css('spy-parent h4 ~ div'));
+    const inputEle = element(by.css('spy-parent input'));
+    const addHeroButtonEle = element(by.cssContainingText('spy-parent button', 'Add Hero'));
+    const resetHeroesButtonEle = element(by.cssContainingText('spy-parent button', 'Reset Heroes'));
+    const heroEles = element.all(by.css('spy-parent div[appSpy'));
+    const logEles = element.all(by.css('spy-parent h4 ~ div'));
 
     expect(heroEles.count()).toBe(2, 'should have two heroes displayed');
     expect(logEles.count()).toBe(2, 'should have two log entries');
@@ -155,10 +153,10 @@ describe('Lifecycle hooks', () => {
   });
 
   it('should support "spy counter"', async () => {
-    let updateCounterButtonEle = element(by.cssContainingText('counter-parent button', 'Update'));
-    let resetCounterButtonEle = element(by.cssContainingText('counter-parent button', 'Reset'));
-    let textEle = element(by.css('counter-parent app-counter > div'));
-    let logEles = element.all(by.css('counter-parent h4 ~ div'));
+    const updateCounterButtonEle = element(by.cssContainingText('counter-parent button', 'Update'));
+    const resetCounterButtonEle = element(by.cssContainingText('counter-parent button', 'Reset'));
+    const textEle = element(by.css('counter-parent app-counter > div'));
+    const logEles = element.all(by.css('counter-parent h4 ~ div'));
 
     expect(textEle.getText()).toContain('Counter = 0');
     expect(logEles.count()).toBe(2, 'should start with two log entries');

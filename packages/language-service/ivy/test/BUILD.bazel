@@ -5,6 +5,7 @@ ts_library(
     testonly = True,
     srcs = glob(["*.ts"]),
     deps = [
+        "//packages/compiler",
         "//packages/language-service/ivy",
         "@npm//typescript",
     ],
@@ -25,7 +26,6 @@ jasmine_node_test(
     ],
     tags = [
         "ivy-only",
-        "manual",  # do not run this on CI since compiler APIs are not yet stable
     ],
     deps = [
         ":test_lib",

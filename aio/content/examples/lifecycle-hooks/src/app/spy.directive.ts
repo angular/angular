@@ -7,8 +7,8 @@ let nextId = 1;
 
 // #docregion spy-directive
 // 엘리먼트에 스파이 디렉티브를 자유롭게 적용합니다.
-// 사용방법: <div mySpy>...</div>
-@Directive({selector: '[mySpy]'})
+// 사용방법: <div appSpy>...</div>
+@Directive({selector: '[appSpy]'})
 export class SpyDirective implements OnInit, OnDestroy {
 
   constructor(private logger: LoggerService) { }

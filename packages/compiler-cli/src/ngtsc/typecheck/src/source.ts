@@ -7,8 +7,11 @@
  */
 
 import {AbsoluteSourceSpan, ParseLocation, ParseSourceFile, ParseSourceSpan} from '@angular/compiler';
+import * as ts from 'typescript';
 
-import {TemplateId, TemplateSourceMapping} from './api';
+import {TemplateId, TemplateSourceMapping} from '../api';
+import {getTemplateId} from '../diagnostics';
+
 import {TemplateSourceResolver} from './diagnostics';
 import {computeLineStartsMap, getLineAndCharacterFromPosition} from './line_mappings';
 
@@ -47,7 +50,6 @@ export class TemplateSource {
  * Implements `TemplateSourceResolver` to resolve the source of a template based on these IDs.
  */
 export class TemplateSourceManager implements TemplateSourceResolver {
-  private nextTemplateId: number = 1;
   /**
    * This map keeps track of all template sources that have been type-checked by the id that is
    * attached to a TCB's function declaration as leading trivia. This enables translation of
@@ -55,8 +57,13 @@ export class TemplateSourceManager implements TemplateSourceResolver {
    */
   private templateSources = new Map<TemplateId, TemplateSource>();
 
-  captureSource(mapping: TemplateSourceMapping, file: ParseSourceFile): TemplateId {
-    const id = `tcb${this.nextTemplateId++}` as TemplateId;
+  getTemplateId(node: ts.ClassDeclaration): TemplateId {
+    return getTemplateId(node);
+  }
+
+  captureSource(node: ts.ClassDeclaration, mapping: TemplateSourceMapping, file: ParseSourceFile):
+      TemplateId {
+    const id = getTemplateId(node);
     this.templateSources.set(id, new TemplateSource(mapping, file));
     return id;
   }

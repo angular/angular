@@ -64,12 +64,14 @@ export class TypeScriptReflectionHost implements ReflectionHost {
       // optional tokes that don't have providers.
       if (typeNode && ts.isUnionTypeNode(typeNode)) {
         let childTypeNodes = typeNode.types.filter(
-            childTypeNode => childTypeNode.kind !== ts.SyntaxKind.NullKeyword);
+            // TODO(alan-agius4): remove `childTypeNode.kind !== ts.SyntaxKind.NullKeyword` when
+            // TS 3.9 support is dropped. In TS 4.0 NullKeyword is a child of LiteralType.
+            childTypeNode => childTypeNode.kind !== ts.SyntaxKind.NullKeyword &&
+                !(ts.isLiteralTypeNode(childTypeNode) &&
+                  childTypeNode.literal.kind === ts.SyntaxKind.NullKeyword));
 
         if (childTypeNodes.length === 1) {
           typeNode = childTypeNodes[0];
-        } else {
-          typeNode = null;
         }
       }
 
@@ -363,7 +365,7 @@ export class TypeScriptReflectionHost implements ReflectionHost {
     let kind: ClassMemberKind|null = null;
     let value: ts.Expression|null = null;
     let name: string|null = null;
-    let nameNode: ts.Identifier|null = null;
+    let nameNode: ts.Identifier|ts.StringLiteral|null = null;
 
     if (ts.isPropertyDeclaration(node)) {
       kind = ClassMemberKind.Property;
@@ -383,6 +385,9 @@ export class TypeScriptReflectionHost implements ReflectionHost {
     if (ts.isConstructorDeclaration(node)) {
       name = 'constructor';
     } else if (ts.isIdentifier(node.name)) {
+      name = node.name.text;
+      nameNode = node.name;
+    } else if (ts.isStringLiteral(node.name)) {
       name = node.name.text;
       nameNode = node.name;
     } else {

@@ -7,7 +7,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 import { Observable } from 'rxjs';
 
-import { HeroService }  from '../hero.service';
+import { HeroService } from '../hero.service';
 import { Hero } from '../hero';
 
 @Component({
@@ -37,7 +37,7 @@ export class HeroDetailComponent implements OnInit {
 
   // #docregion gotoHeroes
   gotoHeroes(hero: Hero) {
-    let heroId = hero ? hero.id : null;
+    const heroId = hero ? hero.id : null;
     // HeroList 컴포넌트에서 히어로를 선택하기 위해 히어로의 id를 전달합니다.
     // 'foo' 프로퍼티는 사용하지 않는 프로퍼티입니다.
     this.router.navigate(['/heroes', { id: heroId, foo: 'foo' }]);

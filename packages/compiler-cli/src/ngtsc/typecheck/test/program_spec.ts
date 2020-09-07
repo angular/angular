@@ -12,16 +12,23 @@ import {absoluteFrom, AbsoluteFsPath, getSourceFileOrError} from '../../file_sys
 import {runInEachFileSystem} from '../../file_system/testing';
 import {sfExtensionData, ShimReferenceTagger} from '../../shims';
 import {expectCompleteReuse, makeProgram} from '../../testing';
-import {UpdateMode} from '../src/api';
+import {OptimizeFor, UpdateMode} from '../api';
 import {ReusedProgramStrategy} from '../src/augmented_program';
 
-import {createProgramWithNoTemplates} from './test_utils';
+import {setup} from './test_utils';
 
 runInEachFileSystem(() => {
   describe('template type-checking program', () => {
     it('should not be created if no components need to be checked', () => {
-      const {program, templateTypeChecker, programStrategy} = createProgramWithNoTemplates();
-      templateTypeChecker.refresh();
+      const fileName = absoluteFrom('/main.ts');
+      const {program, templateTypeChecker, programStrategy} = setup([{
+        fileName,
+        templates: {},
+        source: `export class NotACmp {}`,
+      }]);
+      const sf = getSourceFileOrError(program, fileName);
+
+      templateTypeChecker.getDiagnosticsForFile(sf, OptimizeFor.WholeProgram);
       // expect() here would create a really long error message, so this is checked manually.
       if (programStrategy.getProgram() !== program) {
         fail('Template type-checking created a new ts.Program even though it had no changes.');

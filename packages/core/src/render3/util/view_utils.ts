@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {assertDataInRange, assertDefined, assertDomNode, assertGreaterThan, assertLessThan} from '../../util/assert';
+import {assertDefined, assertDomNode, assertGreaterThan, assertIndexInRange, assertLessThan} from '../../util/assert';
 import {assertTNodeForLView} from '../assert';
 import {LContainer, TYPE} from '../interfaces/container';
 import {LContext, MONKEY_PATCH_KEY_NAME} from '../interfaces/context';
@@ -91,7 +91,7 @@ export function getNativeByIndex(index: number, lView: LView): RNode {
  */
 export function getNativeByTNode(tNode: TNode, lView: LView): RNode {
   ngDevMode && assertTNodeForLView(tNode, lView);
-  ngDevMode && assertDataInRange(lView, tNode.index);
+  ngDevMode && assertIndexInRange(lView, tNode.index);
   const node: RNode = unwrapRNode(lView[tNode.index]);
   ngDevMode && !isProceduralRenderer(lView[RENDERER]) && assertDomNode(node);
   return node;
@@ -125,13 +125,13 @@ export function getTNode(tView: TView, index: number): TNode {
 
 /** Retrieves a value from any `LView` or `TData`. */
 export function load<T>(view: LView|TData, index: number): T {
-  ngDevMode && assertDataInRange(view, index + HEADER_OFFSET);
+  ngDevMode && assertIndexInRange(view, index + HEADER_OFFSET);
   return view[index + HEADER_OFFSET];
 }
 
 export function getComponentLViewByIndex(nodeIndex: number, hostView: LView): LView {
   // Could be an LView or an LContainer. If LContainer, unwrap to find LView.
-  ngDevMode && assertDataInRange(hostView, nodeIndex);
+  ngDevMode && assertIndexInRange(hostView, nodeIndex);
   const slotValue = hostView[nodeIndex];
   const lView = isLView(slotValue) ? slotValue : slotValue[HOST];
   return lView;

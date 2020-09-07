@@ -1,9 +1,9 @@
 // #docregion
-import { Component, Input, OnInit }  from '@angular/core';
-import { FormGroup }                 from '@angular/forms';
+import { Component, Input, OnInit } from '@angular/core';
+import { FormGroup } from '@angular/forms';
 
-import { QuestionBase }              from './question-base';
-import { QuestionControlService }    from './question-control.service';
+import { QuestionBase } from './question-base';
+import { QuestionControlService } from './question-control.service';
 
 @Component({
   selector: 'app-dynamic-form',

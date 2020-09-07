@@ -7,7 +7,8 @@
  */
 import {error} from '../utils/console';
 
-import {getCommitMessageConfig} from './config';
+import {COMMIT_TYPES, getCommitMessageConfig, ScopeRequirement} from './config';
+import {parseCommitMessage} from './parse';
 
 /** Options for commit message validation. */
 export interface ValidateCommitMessageOptions {
@@ -15,52 +16,8 @@ export interface ValidateCommitMessageOptions {
   nonFixupCommitHeaders?: string[];
 }
 
-const FIXUP_PREFIX_RE = /^fixup! /i;
-const GITHUB_LINKING_RE = /((closed?s?)|(fix(es)?(ed)?)|(resolved?s?))\s\#(\d+)/ig;
-const SQUASH_PREFIX_RE = /^squash! /i;
-const REVERT_PREFIX_RE = /^revert:? /i;
-const TYPE_SCOPE_RE = /^(\w+)(?:\(([^)]+)\))?\:\s(.+)$/;
-const COMMIT_HEADER_RE = /^(.*)/i;
-const COMMIT_BODY_RE = /^.*\n\n([\s\S]*)$/;
+/** Regex matching a URL for an entire commit body line. */
 const COMMIT_BODY_URL_LINE_RE = /^https?:\/\/.*$/;
-
-/** Parse a full commit message into its composite parts. */
-export function parseCommitMessage(commitMsg: string) {
-  let header = '';
-  let body = '';
-  let bodyWithoutLinking = '';
-  let type = '';
-  let scope = '';
-  let subject = '';
-
-  if (COMMIT_HEADER_RE.test(commitMsg)) {
-    header = COMMIT_HEADER_RE.exec(commitMsg)![1]
-                 .replace(FIXUP_PREFIX_RE, '')
-                 .replace(SQUASH_PREFIX_RE, '');
-  }
-  if (COMMIT_BODY_RE.test(commitMsg)) {
-    body = COMMIT_BODY_RE.exec(commitMsg)![1];
-    bodyWithoutLinking = body.replace(GITHUB_LINKING_RE, '');
-  }
-
-  if (TYPE_SCOPE_RE.test(header)) {
-    const parsedCommitHeader = TYPE_SCOPE_RE.exec(header)!;
-    type = parsedCommitHeader[1];
-    scope = parsedCommitHeader[2];
-    subject = parsedCommitHeader[3];
-  }
-  return {
-    header,
-    body,
-    bodyWithoutLinking,
-    type,
-    scope,
-    subject,
-    isFixup: FIXUP_PREFIX_RE.test(commitMsg),
-    isSquash: SQUASH_PREFIX_RE.test(commitMsg),
-    isRevert: REVERT_PREFIX_RE.test(commitMsg),
-  };
-}
 
 /** Validate a commit message against using the local repo's config. */
 export function validateCommitMessage(
@@ -129,8 +86,26 @@ export function validateCommitMessage(
     return false;
   }
 
-  if (!config.types.includes(commit.type)) {
-    printError(`'${commit.type}' is not an allowed type.\n => TYPES: ${config.types.join(', ')}`);
+
+
+  if (COMMIT_TYPES[commit.type] === undefined) {
+    printError(`'${commit.type}' is not an allowed type.\n => TYPES: ${
+        Object.keys(COMMIT_TYPES).join(', ')}`);
+    return false;
+  }
+
+  /** The scope requirement level for the provided type of the commit message. */
+  const scopeRequirementForType = COMMIT_TYPES[commit.type].scope;
+
+  if (scopeRequirementForType === ScopeRequirement.Forbidden && commit.scope) {
+    printError(`Scopes are forbidden for commits with type '${commit.type}', but a scope of '${
+        commit.scope}' was provided.`);
+    return false;
+  }
+
+  if (scopeRequirementForType === ScopeRequirement.Required && !commit.scope) {
+    printError(
+        `Scopes are required for commits with type '${commit.type}', but no scope was provided.`);
     return false;
   }
 

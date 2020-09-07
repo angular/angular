@@ -208,7 +208,7 @@ about the event and gives that data to the parent.
 The child's template has two controls. The first is an HTML `<input>` with a
 [template reference variable](guide/template-reference-variables) , `#newItem`,
 where the user types in an item name. Whatever the user types
-into the `<input>` gets stored in the `#newItem` variable.
+into the `<input>` gets stored in the `value` property of the `#newItem` variable.
 
 <code-example path="inputs-outputs/src/app/item-output/item-output.component.html" region="child-output" header="src/app/item-output/item-output.component.html"></code-example>
 
@@ -218,7 +218,7 @@ an event binding because the part to the left of the equal
 sign is in parentheses, `(click)`.
 
 The `(click)` event is bound to the `addNewItem()` method in the child component class which
-takes as its argument whatever the value of `#newItem` is.
+takes as its argument whatever the value of `#newItem.value` property is.
 
 Now the child component has an `@Output()`
 for sending data to the parent and a method for raising an event.

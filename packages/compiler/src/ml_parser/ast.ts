@@ -64,7 +64,7 @@ export class Attribute extends NodeWithI18n {
 export class Element extends NodeWithI18n {
   constructor(
       public name: string, public attrs: Attribute[], public children: Node[],
-      sourceSpan: ParseSourceSpan, public startSourceSpan: ParseSourceSpan|null = null,
+      sourceSpan: ParseSourceSpan, public startSourceSpan: ParseSourceSpan,
       public endSourceSpan: ParseSourceSpan|null = null, i18n?: I18nMeta) {
     super(sourceSpan, i18n);
   }

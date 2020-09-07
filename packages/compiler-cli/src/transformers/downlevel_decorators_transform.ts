@@ -140,10 +140,16 @@ function createCtorParametersClassPropertyType(): ts.TypeNode {
             undefined),
       ])),
       undefined));
-  return ts.createFunctionTypeNode(
-      undefined, [],
-      ts.createArrayTypeNode(
-          ts.createUnionTypeNode([ts.createTypeLiteralNode(typeElements), ts.createNull()])));
+
+  // TODO(alan-agius4): Remove when we no longer support TS 3.9
+  const nullLiteral = ts.createNull() as any;
+  const nullType = ts.versionMajorMinor.charAt(0) === '4' ?
+      ts.createLiteralTypeNode(nullLiteral as any) :
+      nullLiteral;
+  return ts.createFunctionTypeNode(undefined, [], ts.createArrayTypeNode(ts.createUnionTypeNode([
+    ts.createTypeLiteralNode(typeElements),
+    nullType,
+  ])));
 }
 
 /**
@@ -287,8 +293,13 @@ function typeReferenceToExpression(
       // Ignore any generic types, just return the base type.
       return entityNameToExpression(typeRef.typeName);
     case ts.SyntaxKind.UnionType:
+      // TODO(alan-agius4): remove `t.kind !== ts.SyntaxKind.NullKeyword` when
+      // TS 3.9 support is dropped. In TS 4.0 NullKeyword is a child of LiteralType.
       const childTypeNodes =
-          (node as ts.UnionTypeNode).types.filter(t => t.kind !== ts.SyntaxKind.NullKeyword);
+          (node as ts.UnionTypeNode)
+              .types.filter(
+                  t => t.kind !== ts.SyntaxKind.NullKeyword &&
+                      !(ts.isLiteralTypeNode(t) && t.literal.kind === ts.SyntaxKind.NullKeyword));
       return childTypeNodes.length === 1 ?
           typeReferenceToExpression(entityNameToExpression, childTypeNodes[0]) :
           undefined;
@@ -298,15 +309,20 @@ function typeReferenceToExpression(
 }
 
 /**
- * Returns true if the given symbol refers to a value (as distinct from a type).
+ * Checks whether a given symbol refers to a value that exists at runtime (as distinct from a type).
  *
  * Expands aliases, which is important for the case where
  *   import * as x from 'some-module';
  * and x is now a value (the module object).
  */
-function symbolIsValue(tc: ts.TypeChecker, sym: ts.Symbol): boolean {
-  if (sym.flags & ts.SymbolFlags.Alias) sym = tc.getAliasedSymbol(sym);
-  return (sym.flags & ts.SymbolFlags.Value) !== 0;
+function symbolIsRuntimeValue(typeChecker: ts.TypeChecker, symbol: ts.Symbol): boolean {
+  if (symbol.flags & ts.SymbolFlags.Alias) {
+    symbol = typeChecker.getAliasedSymbol(symbol);
+  }
+
+  // Note that const enums are a special case, because
+  // while they have a value, they don't exist at runtime.
+  return (symbol.flags & ts.SymbolFlags.Value & ts.SymbolFlags.ConstEnumExcludes) !== 0;
 }
 
 /** ParameterDecorationInfo describes the information for a single constructor parameter. */
@@ -351,7 +367,7 @@ export function getDownlevelDecoratorsTransform(
       const symbol = typeChecker.getSymbolAtLocation(name);
       // Check if the entity name references a symbol that is an actual value. If it is not, it
       // cannot be referenced by an expression, so return undefined.
-      if (!symbol || !symbolIsValue(typeChecker, symbol) || !symbol.declarations ||
+      if (!symbol || !symbolIsRuntimeValue(typeChecker, symbol) || !symbol.declarations ||
           symbol.declarations.length === 0) {
         return undefined;
       }
@@ -429,7 +445,7 @@ export function getDownlevelDecoratorsTransform(
 
       const name = (element.name as ts.Identifier).text;
       const mutable = ts.getMutableClone(element);
-      mutable.decorators = decoratorsToKeep.length ?
+      (mutable as any).decorators = decoratorsToKeep.length ?
           ts.setTextRange(ts.createNodeArray(decoratorsToKeep), mutable.decorators) :
           undefined;
       return [name, mutable, toLower];
@@ -546,8 +562,6 @@ export function getDownlevelDecoratorsTransform(
         }
       }
 
-      const newClassDeclaration = ts.getMutableClone(classDecl);
-
       if (decoratorsToLower.length) {
         newMembers.push(createDecoratorClassProperty(decoratorsToLower));
       }
@@ -562,12 +576,13 @@ export function getDownlevelDecoratorsTransform(
       if (decoratedProperties.size) {
         newMembers.push(createPropDecoratorsClassProperty(diagnostics, decoratedProperties));
       }
-      newClassDeclaration.members = ts.setTextRange(
-          ts.createNodeArray(newMembers, newClassDeclaration.members.hasTrailingComma),
-          classDecl.members);
-      newClassDeclaration.decorators =
-          decoratorsToKeep.length ? ts.createNodeArray(decoratorsToKeep) : undefined;
-      return newClassDeclaration;
+
+      const members = ts.setTextRange(
+          ts.createNodeArray(newMembers, classDecl.members.hasTrailingComma), classDecl.members);
+
+      return ts.updateClassDeclaration(
+          classDecl, decoratorsToKeep.length ? decoratorsToKeep : undefined, classDecl.modifiers,
+          classDecl.name, classDecl.typeParameters, classDecl.heritageClauses, members);
     }
 
     /**

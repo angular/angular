@@ -2,7 +2,7 @@ export declare function createCustomElement<P>(component: Type<any>, config: NgE
 
 export declare abstract class NgElement extends HTMLElement {
     protected ngElementEventsSubscription: Subscription | null;
-    protected ngElementStrategy: NgElementStrategy;
+    protected abstract ngElementStrategy: NgElementStrategy;
     abstract attributeChangedCallback(attrName: string, oldValue: string | null, newValue: string, namespace?: string): void;
     abstract connectedCallback(): void;
     abstract disconnectedCallback(): void;

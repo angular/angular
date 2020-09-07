@@ -18,7 +18,7 @@ Every application has at least one Angular module, the _root_ module,
 which must be present for bootstrapping the application on launch.
 By convention and by default, this NgModule is named `AppModule`.
 
-When you use the [Angular CLI](cli) command `ng new` to generate an app, the default `AppModule` is as follows.
+When you use the [Angular CLI](cli) command `ng new` to generate an app, the default `AppModule` looks like the following:
 
 ```typescript
 /* JavaScript imports */
@@ -150,8 +150,6 @@ An example of what goes into a declarations array follows:
 A declarable can only belong to one module, so only declare it in
 one `@NgModule`. When you need it elsewhere,
 import the module that has the declarable you need in it.
-
-**Only `@NgModule` references** go in the `imports` array.
 -->
 `declarations` 배열에는 이 모듈에 어떤 컴포넌트가 포함되는지 지정합니다.
 그래서 모듈에 새로운 컴포넌트를 추가할 때마다 `declarations` 배열에도 추가해야 합니다.
@@ -175,8 +173,6 @@ import the module that has the declarable you need in it.
 ```
 
 이렇게 등록된 구성요소는 한 모듈에만 포함되며, 다른 모듈에서 이 구성요소를 사용하려면 구성요소가 등록된 모듈을 로드해야 합니다.
-
-그리고 Angular 모듈을 로드하는 `imports` 배열에는 **`@NgModule`만** 등록할 수 있습니다.
 
 
 <!--
@@ -256,7 +252,7 @@ The module's `imports` array appears exclusively in the `@NgModule` metadata obj
 It tells Angular about other NgModules that this particular module needs to function properly.
 
 This list of modules are those that export components, directives, or pipes
-that the component templates in this module reference. In this case, the component is
+that component templates in this module reference. In this case, the component is
 `AppComponent`, which references components, directives, or pipes in `BrowserModule`,
 `FormsModule`, or  `HttpClientModule`.
 A component template can reference another component, directive,

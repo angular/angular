@@ -12,7 +12,7 @@ import {Reference} from '../../imports';
 import {ClassDeclaration, ClassMember, ClassMemberKind, isNamedClassDeclaration, ReflectionHost, reflectTypeEntityToDeclaration} from '../../reflection';
 import {nodeDebugInfo} from '../../util/src/typescript';
 
-import {DirectiveMeta, MetadataReader, NgModuleMeta, PipeMeta, TemplateGuardMeta} from './api';
+import {DirectiveMeta, DirectiveTypeCheckMeta, MetadataReader, NgModuleMeta, PipeMeta, TemplateGuardMeta} from './api';
 
 export function extractReferencesFromType(
     checker: ts.TypeChecker, def: ts.TypeNode, ngModuleImportedFrom: string|null,
@@ -20,22 +20,26 @@ export function extractReferencesFromType(
   if (!ts.isTupleTypeNode(def)) {
     return [];
   }
-  return def.elementTypes.map(element => {
-    if (!ts.isTypeQueryNode(element)) {
-      throw new Error(`Expected TypeQueryNode: ${nodeDebugInfo(element)}`);
-    }
-    const type = element.exprName;
-    const {node, from} = reflectTypeEntityToDeclaration(type, checker);
-    if (!isNamedClassDeclaration(node)) {
-      throw new Error(`Expected named ClassDeclaration: ${nodeDebugInfo(node)}`);
-    }
-    const specifier = (from !== null && !from.startsWith('.') ? from : ngModuleImportedFrom);
-    if (specifier !== null) {
-      return new Reference(node, {specifier, resolutionContext});
-    } else {
-      return new Reference(node);
-    }
-  });
+
+  // TODO(alan-agius4): remove `def.elementTypes` and casts when TS 3.9 support is dropped and G3 is
+  // using TS 4.0.
+  return (((def as any).elements || (def as any).elementTypes) as ts.NodeArray<ts.TypeNode>)
+      .map(element => {
+        if (!ts.isTypeQueryNode(element)) {
+          throw new Error(`Expected TypeQueryNode: ${nodeDebugInfo(element)}`);
+        }
+        const type = element.exprName;
+        const {node, from} = reflectTypeEntityToDeclaration(type, checker);
+        if (!isNamedClassDeclaration(node)) {
+          throw new Error(`Expected named ClassDeclaration: ${nodeDebugInfo(node)}`);
+        }
+        const specifier = (from !== null && !from.startsWith('.') ? from : ngModuleImportedFrom);
+        if (specifier !== null) {
+          return new Reference(node, {specifier, resolutionContext});
+        } else {
+          return new Reference(node);
+        }
+      });
 }
 
 export function readStringType(type: ts.TypeNode): string|null {
@@ -69,22 +73,28 @@ export function readStringArrayType(type: ts.TypeNode): string[] {
     return [];
   }
   const res: string[] = [];
-  type.elementTypes.forEach(el => {
-    if (!ts.isLiteralTypeNode(el) || !ts.isStringLiteral(el.literal)) {
-      return;
-    }
-    res.push(el.literal.text);
-  });
+  // TODO(alan-agius4): remove `def.elementTypes` and casts when TS 3.9 support is dropped and G3 is
+  // using TS 4.0.
+  (((type as any).elements || (type as any).elementTypes) as ts.NodeArray<ts.TypeNode>)
+      .forEach(el => {
+        if (!ts.isLiteralTypeNode(el) || !ts.isStringLiteral(el.literal)) {
+          return;
+        }
+        res.push(el.literal.text);
+      });
   return res;
 }
 
-
-export function extractDirectiveGuards(node: ClassDeclaration, reflector: ReflectionHost): {
-  ngTemplateGuards: TemplateGuardMeta[],
-  hasNgTemplateContextGuard: boolean,
-  coercedInputFields: Set<string>,
-} {
-  const staticMembers = reflector.getMembersOfClass(node).filter(member => member.isStatic);
+/**
+ * Inspects the class' members and extracts the metadata that is used when type-checking templates
+ * that use the directive. This metadata does not contain information from a base class, if any,
+ * making this metadata invariant to changes of inherited classes.
+ */
+export function extractDirectiveTypeCheckMeta(
+    node: ClassDeclaration, inputs: {[fieldName: string]: string|[string, string]},
+    reflector: ReflectionHost): DirectiveTypeCheckMeta {
+  const members = reflector.getMembersOfClass(node);
+  const staticMembers = members.filter(member => member.isStatic);
   const ngTemplateGuards = staticMembers.map(extractTemplateGuard)
                                .filter((guard): guard is TemplateGuardMeta => guard !== null);
   const hasNgTemplateContextGuard = staticMembers.some(
@@ -93,7 +103,47 @@ export function extractDirectiveGuards(node: ClassDeclaration, reflector: Reflec
   const coercedInputFields =
       new Set(staticMembers.map(extractCoercedInput)
                   .filter((inputName): inputName is string => inputName !== null));
-  return {hasNgTemplateContextGuard, ngTemplateGuards, coercedInputFields};
+
+  const restrictedInputFields = new Set<string>();
+  const stringLiteralInputFields = new Set<string>();
+  const undeclaredInputFields = new Set<string>();
+
+  for (const fieldName of Object.keys(inputs)) {
+    const field = members.find(member => member.name === fieldName);
+    if (field === undefined || field.node === null) {
+      undeclaredInputFields.add(fieldName);
+      continue;
+    }
+    if (isRestricted(field.node)) {
+      restrictedInputFields.add(fieldName);
+    }
+    if (field.nameNode !== null && ts.isStringLiteral(field.nameNode)) {
+      stringLiteralInputFields.add(fieldName);
+    }
+  }
+
+  const arity = reflector.getGenericArityOfClass(node);
+
+  return {
+    hasNgTemplateContextGuard,
+    ngTemplateGuards,
+    coercedInputFields,
+    restrictedInputFields,
+    stringLiteralInputFields,
+    undeclaredInputFields,
+    isGeneric: arity !== null && arity > 0,
+  };
+}
+
+function isRestricted(node: ts.Node): boolean {
+  if (node.modifiers === undefined) {
+    return false;
+  }
+
+  return node.modifiers.some(
+      modifier => modifier.kind === ts.SyntaxKind.PrivateKeyword ||
+          modifier.kind === ts.SyntaxKind.ProtectedKeyword ||
+          modifier.kind === ts.SyntaxKind.ReadonlyKeyword);
 }
 
 function extractTemplateGuard(member: ClassMember): TemplateGuardMeta|null {

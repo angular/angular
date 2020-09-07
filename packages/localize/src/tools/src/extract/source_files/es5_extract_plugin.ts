@@ -18,10 +18,12 @@ export function makeEs5ExtractPlugin(
       CallExpression(callPath: NodePath<CallExpression>) {
         const calleePath = callPath.get('callee');
         if (isNamedIdentifier(calleePath, localizeName) && isGlobalIdentifier(calleePath)) {
-          const messageParts = unwrapMessagePartsFromLocalizeCall(callPath);
-          const expressions = unwrapSubstitutionsFromLocalizeCall(callPath.node);
-          const location = getLocation(callPath);
-          const message = ɵparseMessage(messageParts, expressions, location);
+          const [messageParts, messagePartLocations] = unwrapMessagePartsFromLocalizeCall(callPath);
+          const [expressions, expressionLocations] = unwrapSubstitutionsFromLocalizeCall(callPath);
+          const [messagePartsArg, expressionsArg] = callPath.get('arguments');
+          const location = getLocation(messagePartsArg, expressionsArg);
+          const message = ɵparseMessage(
+              messageParts, expressions, location, messagePartLocations, expressionLocations);
           messages.push(message);
         }
       }

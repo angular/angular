@@ -87,31 +87,34 @@ Specifies the file that serves as the index page to satisfy navigation requests.
 *Assets* are resources that are part of the app version that update along with the app. They can include resources loaded from the page's origin as well as third-party resources loaded from CDNs and other external URLs. As not all such external URLs may be known at build time, URL patterns can be matched.
 
 This field contains an array of asset groups, each of which defines a set of asset resources and the policy by which they are cached.
--->
-*애셋(Assets)*은 앱 버전을 구성하는 리소스 파일을 의미하며, 앱이 업데이트될 때 함께 업데이트됩니다. 이 때 애셋은 페이지에 포함된 리소스이거나 CDN 등에서 다운받은 서드파티 리소스일 수 있습니다. 하지만 빌드 시점에 외부 리소스의 모든 URL을 정확히 지정할 수는 없기 때문에 패턴으로 URL을 매칭하는 방법을 사용하기도 합니다.
-
-이 섹션에는 애셋 그룹을 배열 형태로 정의합니다. 이 때 애셋을 구성하는 파일을 모두 지정할 수 있으며, 애셋 그룹에 적용되는 캐싱 정책도 지정할 수 있습니다.
 
 ```json
 {
-  "assetGroups": [{
-    ...
-  }, {
-    ...
-  }]
+  "assetGroups": [
+    {
+      ...
+    },
+    {
+      ...
+    }
+  ]
 }
 ```
 
-<!--
+<div class="alert is-helpful">
+
+When the ServiceWorker handles a request, it checks asset groups in the order in which they appear in `ngsw-config.json`.
+The first asset group that matches the requested resource handles the request.
+
+It is recommended that you put the more specific asset groups higher in the list.
+For example, an asset group that matches `/foo.js` should appear before one that matches `*.js`.
+
+</div>
+
 Each asset group specifies both a group of resources and a policy that governs them. This policy determines when the resources are fetched and what happens when changes are detected.
 
 Asset groups follow the Typescript interface shown here:
--->
-각각의 애셋 그룹에는 그룹을 구성하는 리소스 파일들과 이 애셋 그룹에 적용될 정책을 함께 지정합니다. 리소스를 언제 다운받을 것인지, 새로운 버전을 발견하면 어떻게 할 것인지에 대한 정책도 이 때 적용합니다.
 
-애셋 그룹은 TypeScript 인터페이스로 다음과 같이 정의되어 있습니다:
-
-<!--
 ```typescript
 interface AssetGroup {
   name: string;
@@ -119,20 +122,6 @@ interface AssetGroup {
   updateMode?: 'prefetch' | 'lazy';
   resources: {
     files?: string[];
-    urls?: string[];
-  };
-}
-```
--->
-```typescript
-interface AssetGroup {
-  name: string;
-  installMode?: 'prefetch' | 'lazy';
-  updateMode?: 'prefetch' | 'lazy';
-  resources: {
-    files?: string[];
-    /** @deprecated v6 버전 부터는 `versionedFiles` 옵션과 `files` 옵션의 동작이 같습니다. `files`를 사용하세요. */
-    versionedFiles?: string[];
     urls?: string[];
   };
   cacheQueryOptions?: {
@@ -140,6 +129,57 @@ interface AssetGroup {
   };
 }
 ```
+-->
+*애셋(Assets)*은 앱 버전을 구성하는 리소스 파일을 의미하며, 앱이 업데이트될 때 함께 업데이트됩니다.
+이 때 애셋은 페이지에 포함된 리소스이거나 CDN 등에서 다운받은 서드파티 리소스일 수 있습니다.
+하지만 빌드 시점에 외부 리소스의 모든 URL을 정확히 지정할 수는 없기 때문에 패턴으로 URL을 매칭하는 방법을 사용하기도 합니다.
+
+이 섹션에는 애셋 그룹을 배열 형태로 정의합니다.
+이 때 애셋을 구성하는 파일을 모두 지정할 수 있으며, 애셋 그룹에 적용되는 캐싱 정책도 지정할 수 있습니다.
+
+```json
+{
+  "assetGroups": [
+    {
+      ...
+    },
+    {
+      ...
+    }
+  ]
+}
+```
+
+<div class="alert is-helpful">
+
+When the ServiceWorker handles a request, it checks asset groups in the order in which they appear in `ngsw-config.json`.
+The first asset group that matches the requested resource handles the request.
+
+It is recommended that you put the more specific asset groups higher in the list.
+For example, an asset group that matches `/foo.js` should appear before one that matches `*.js`.
+
+</div>
+
+각각의 애셋 그룹에는 그룹을 구성하는 리소스 파일들과 이 애셋 그룹에 적용될 정책을 함께 지정합니다.
+리소스를 언제 다운받을 것인지, 새로운 버전을 발견하면 어떻게 할 것인지에 대한 정책도 이 때 적용합니다.
+
+애셋 그룹은 TypeScript 인터페이스로 다음과 같이 정의되어 있습니다:
+
+```typescript
+interface AssetGroup {
+  name: string;
+  installMode?: 'prefetch' | 'lazy';
+  updateMode?: 'prefetch' | 'lazy';
+  resources: {
+    files?: string[];
+    urls?: string[];
+  };
+  cacheQueryOptions?: {
+    ignoreSearch?: boolean;
+  };
+}
+```
+
 
 ### `name`
 
@@ -214,11 +254,32 @@ These options are used to modify the matching behavior of requests. They are pas
 <!--
 Unlike asset resources, data requests are not versioned along with the app. They're cached according to manually-configured policies that are more useful for situations such as API requests and other data dependencies.
 
-Data groups follow this Typescript interface:
--->
-애셋 리소스와는 다르게 API로 보내는 데이터 요청은 앱 버전으로 관리되지 않습니다. 그래서 이런 요청은 자주 사용하는 API나 데이터 의존성 관계에 맞게 수동으로 캐싱하는 정책을 구성해야 합니다.
+This field contains an array of data groups, each of which defines a set of data resources and the policy by which they are cached.
 
-데이터 그룹은 TypeScript 인터페이스로 다음과 같이 정의되어 있습니다:
+```json
+{
+  "dataGroups": [
+    {
+      ...
+    },
+    {
+      ...
+    }
+  ]
+}
+```
+
+<div class="alert is-helpful">
+
+When the ServiceWorker handles a request, it checks data groups in the order in which they appear in `ngsw-config.json`.
+The first data group that matches the requested resource handles the request.
+
+It is recommended that you put the more specific data groups higher in the list.
+For example, a data group that matches `/api/foo.json` should appear before one that matches `/api/*.json`.
+
+</div>
+
+Data groups follow this Typescript interface:
 
 ```typescript
 export interface DataGroup {
@@ -236,6 +297,54 @@ export interface DataGroup {
   };
 }
 ```
+-->
+애셋 리소스와는 다르게 API로 보내는 데이터 요청은 앱 버전으로 관리되지 않습니다.
+그래서 이런 요청은 자주 사용하는 API나 데이터 의존성 관계에 맞게 수동으로 캐싱하는 정책을 구성해야 합니다.
+
+This field contains an array of data groups, each of which defines a set of data resources and the policy by which they are cached.
+
+```json
+{
+  "dataGroups": [
+    {
+      ...
+    },
+    {
+      ...
+    }
+  ]
+}
+```
+
+<div class="alert is-helpful">
+
+When the ServiceWorker handles a request, it checks data groups in the order in which they appear in `ngsw-config.json`.
+The first data group that matches the requested resource handles the request.
+
+It is recommended that you put the more specific data groups higher in the list.
+For example, a data group that matches `/api/foo.json` should appear before one that matches `/api/*.json`.
+
+</div>
+
+Data groups follow this Typescript interface:
+
+```typescript
+export interface DataGroup {
+  name: string;
+  urls: string[];
+  version?: number;
+  cacheConfig: {
+    maxSize: number;
+    maxAge: string;
+    timeout?: string;
+    strategy?: 'freshness' | 'performance';
+  };
+  cacheQueryOptions?: {
+    ignoreSearch?: boolean;
+  };
+}
+```
+
 
 ### `name`
 <!--

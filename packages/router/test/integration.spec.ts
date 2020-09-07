@@ -159,6 +159,59 @@ describe('Integration', () => {
          expect(navigation.extras.state).toEqual({foo: 'bar'});
        })));
 
+    it('should set history.state when navigation with browser back and forward',
+       fakeAsync(inject([Router, Location], (router: Router, location: SpyLocation) => {
+         router.resetConfig([
+           {path: '', component: SimpleCmp},
+           {path: 'simple', component: SimpleCmp},
+         ]);
+
+         const fixture = createRoot(router, RootCmp);
+         let navigation: Navigation = null!;
+         router.events.subscribe(e => {
+           if (e instanceof NavigationStart) {
+             navigation = <Navigation>router.getCurrentNavigation()!;
+           }
+         });
+
+         const state = {foo: 'bar'};
+         router.navigateByUrl('/simple', {state});
+         tick();
+         location.back();
+         tick();
+         location.forward();
+         tick();
+
+         expect(navigation.extras.state).toBeDefined();
+         expect(navigation.extras.state).toEqual(state);
+       })));
+
+    it('should not error if state is not {[key: string]: any}',
+       fakeAsync(inject([Router, Location], (router: Router, location: SpyLocation) => {
+         router.resetConfig([
+           {path: '', component: SimpleCmp},
+           {path: 'simple', component: SimpleCmp},
+         ]);
+
+         const fixture = createRoot(router, RootCmp);
+         let navigation: Navigation = null!;
+         router.events.subscribe(e => {
+           if (e instanceof NavigationStart) {
+             navigation = <Navigation>router.getCurrentNavigation()!;
+           }
+         });
+
+         location.replaceState('', '', 42);
+         router.navigateByUrl('/simple');
+         tick();
+         location.back();
+         advance(fixture);
+
+         // Angular does not support restoring state to the primitive.
+         expect(navigation.extras.state).toEqual(undefined);
+         expect(location.getState()).toEqual({navigationId: 3});
+       })));
+
     it('should not pollute browser history when replaceUrl is set to true',
        fakeAsync(inject([Router, Location], (router: Router, location: SpyLocation) => {
          router.resetConfig([
@@ -4291,7 +4344,7 @@ describe('Integration', () => {
        })));
   });
 
-  describe('routerActiveLink', () => {
+  describe('routerLinkActive', () => {
     it('should set the class when the link is active (a tag)',
        fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
          const fixture = createRoot(router, RootCmp);
@@ -4440,6 +4493,29 @@ describe('Integration', () => {
          advance(fixture);
          advance(fixture);
          expect(paragraph.textContent).toEqual('false');
+       }));
+
+    it('should not trigger change detection when active state has not changed', fakeAsync(() => {
+         @Component({
+           template: `<div id="link" routerLinkActive="active" [routerLink]="link"></div>`,
+         })
+         class LinkComponent {
+           link = 'notactive';
+         }
+
+         @Component({template: ''})
+         class SimpleComponent {
+         }
+
+         TestBed.configureTestingModule({
+           imports: [RouterTestingModule.withRoutes([{path: '', component: SimpleComponent}])],
+           declarations: [LinkComponent, SimpleComponent]
+         });
+
+         const fixture = createRoot(TestBed.inject(Router), LinkComponent);
+         fixture.componentInstance.link = 'stillnotactive';
+         fixture.detectChanges(false /** checkNoChanges */);
+         expect(TestBed.inject(NgZone).hasPendingMicrotasks).toBe(false);
        }));
   });
 

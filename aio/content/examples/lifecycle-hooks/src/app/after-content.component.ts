@@ -2,7 +2,7 @@
 // #docregion
 import { AfterContentChecked, AfterContentInit, Component, ContentChild } from '@angular/core';
 
-import { LoggerService }  from './logger.service';
+import { LoggerService } from './logger.service';
 
 //////////////////
 @Component({
@@ -67,8 +67,8 @@ export class AfterContentComponent implements AfterContentChecked, AfterContentI
   }
 
   private logIt(method: string) {
-    let child = this.contentChild;
-    let message = `${method}: ${child ? child.hero : 'no'} child content`;
+    const child = this.contentChild;
+    const message = `${method}: ${child ? child.hero : 'no'} child content`;
     this.logger.log(message);
   }
 // #docregion hooks

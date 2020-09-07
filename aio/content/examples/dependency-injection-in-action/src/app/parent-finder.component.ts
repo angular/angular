@@ -1,5 +1,4 @@
-/* tslint:disable:no-unused-variable component-selector-name one-line check-open-brace */
-/* tslint:disable:*/
+// tslint:disable: component-selector space-before-function-paren
 // #docplaster
 // #docregion
 import { Component, forwardRef, Optional, SkipSelf } from '@angular/core';
@@ -20,8 +19,7 @@ const DifferentParent = Parent;
 // 두번째 인자가 생략되면 `parentType`은 `Parent`로 지정됩니다.
 // #docregion provide-the-parent
 export function provideParent
-// #enddocregion provide-parent, provide-the-parent
-// #docregion provide-parent
+// #enddocregion provide-the-parent
   (component: any, parentType?: any) {
     return { provide: parentType || Parent, useExisting: forwardRef(() => component) };
   }

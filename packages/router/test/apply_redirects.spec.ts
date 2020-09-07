@@ -9,6 +9,7 @@
 import {NgModuleRef} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {Observable, of} from 'rxjs';
+import {delay} from 'rxjs/operators';
 
 import {applyRedirects} from '../src/apply_redirects';
 import {LoadedRouterConfig, Route, Routes} from '../src/config';
@@ -433,6 +434,25 @@ describe('applyRedirects', () => {
           .forEach(r => {
             expect((config[0] as any)._loadedConfig).toBe(loadedConfig);
           });
+    });
+
+    it('should not load the configuration of a wildcard route if there is a match', () => {
+      const loadedConfig = new LoadedRouterConfig([{path: '', component: ComponentB}], testModule);
+
+      const loader = jasmine.createSpyObj('loader', ['load']);
+      loader.load.and.returnValue(of(loadedConfig).pipe(delay(0)));
+
+      const config: Routes = [
+        {path: '', loadChildren: 'matchChildren'},
+        {path: '**', loadChildren: 'children'},
+      ];
+
+      applyRedirects(testModule.injector, <any>loader, serializer, tree(''), config).forEach(r => {
+        expect(loader.load.calls.count()).toEqual(1);
+        expect(loader.load.calls.first().args).not.toContain(jasmine.objectContaining({
+          loadChildren: 'children'
+        }));
+      });
     });
 
     it('should load the configuration after a local redirect from a wildcard route', () => {

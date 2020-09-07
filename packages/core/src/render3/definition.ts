@@ -18,7 +18,7 @@ import {stringify} from '../util/stringify';
 import {EMPTY_ARRAY, EMPTY_OBJ} from './empty';
 import {NG_COMP_DEF, NG_DIR_DEF, NG_FACTORY_DEF, NG_LOC_ID_DEF, NG_MOD_DEF, NG_PIPE_DEF} from './fields';
 import {ComponentDef, ComponentDefFeature, ComponentTemplate, ComponentType, ContentQueriesFunction, DirectiveDef, DirectiveDefFeature, DirectiveTypesOrFactory, FactoryFn, HostBindingsFunction, PipeDef, PipeType, PipeTypesOrFactory, ViewQueriesFunction} from './interfaces/definition';
-import {AttributeMarker, TAttributes, TConstants} from './interfaces/node';
+import {AttributeMarker, TAttributes, TConstantsOrFactory} from './interfaces/node';
 import {CssSelectorList, SelectorFlags} from './interfaces/projection';
 import {NgModuleType} from './ng_module_ref';
 
@@ -220,7 +220,7 @@ export function ɵɵdefineComponent<T>(componentDefinition: {
    * Constants for the nodes in the component's view.
    * Includes attribute arrays, local definition arrays etc.
    */
-  consts?: TConstants;
+  consts?: TConstantsOrFactory;
 
   /**
    * An array of `ngContent[selector]` values that were found in the template.

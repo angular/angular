@@ -12,8 +12,10 @@
 // If a category becomes empty (e.g. BS and required), then the corresponding job must be commented
 // out in the CI configuration.
 var CIconfiguration = {
-  'Chrome': {unitTest: {target: 'SL', required: true}, e2e: {target: null, required: true}},
-  'Firefox': {unitTest: {target: 'SL', required: true}, e2e: {target: null, required: true}},
+  // Chrome and Firefox run as part of the Bazel browser tests, so we do not run them as
+  // part of the legacy Saucelabs tests.
+  'Chrome': {unitTest: {target: null, required: false}, e2e: {target: null, required: true}},
+  'Firefox': {unitTest: {target: null, required: false}, e2e: {target: null, required: true}},
   // Set ESR as a not required browser as it fails for Ivy acceptance tests.
   'FirefoxESR': {unitTest: {target: 'SL', required: false}, e2e: {target: null, required: true}},
   // Disabled because using the "beta" channel of Chrome can cause non-deterministic CI results.

@@ -10,8 +10,12 @@
       "$default": {
         "$source": "projectName"
       }
+    },
+    "useAtRuntime": {
+      "type": "boolean",
+      "description": "If set then `@angular/localize` is included in the `dependencies` section of `package.json`, rather than `devDependencies`, which is the default.",
+      "default": false
     }
   },
-  "required": [
-  ]
+  "required": []
 }

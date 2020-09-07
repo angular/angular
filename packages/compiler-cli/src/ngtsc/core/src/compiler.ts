@@ -13,7 +13,7 @@ import {ComponentDecoratorHandler, DirectiveDecoratorHandler, InjectableDecorato
 import {CycleAnalyzer, ImportGraph} from '../../cycles';
 import {ErrorCode, ngErrorCode} from '../../diagnostics';
 import {checkForPrivateExports, ReferenceGraph} from '../../entry_point';
-import {getSourceFileOrError, LogicalFileSystem} from '../../file_system';
+import {LogicalFileSystem} from '../../file_system';
 import {AbsoluteModuleStrategy, AliasingHost, AliasStrategy, DefaultImportTracker, ImportRewriter, LocalIdentifierStrategy, LogicalProjectStrategy, ModuleResolver, NoopImportRewriter, PrivateExportAliasingHost, R3SymbolsImportRewriter, Reference, ReferenceEmitStrategy, ReferenceEmitter, RelativePathStrategy, UnifiedModulesAliasingHost, UnifiedModulesStrategy} from '../../imports';
 import {IncrementalBuildStrategy, IncrementalDriver} from '../../incremental';
 import {generateAnalysis, IndexedComponent, IndexingContext} from '../../indexer';
@@ -28,7 +28,9 @@ import {ComponentScopeReader, LocalModuleScopeRegistry, MetadataDtsModuleScopeRe
 import {generatedFactoryTransform} from '../../shims';
 import {ivySwitchTransform} from '../../switch';
 import {aliasTransformFactory, declarationTransformFactory, DecoratorHandler, DtsTransformRegistry, ivyTransformFactory, TraitCompiler} from '../../transform';
-import {isTemplateDiagnostic, TemplateTypeChecker, TypeCheckContext, TypeCheckingConfig, TypeCheckingProgramStrategy} from '../../typecheck';
+import {TemplateTypeCheckerImpl} from '../../typecheck';
+import {OptimizeFor, TemplateTypeChecker, TypeCheckingConfig, TypeCheckingProgramStrategy} from '../../typecheck/api';
+import {isTemplateDiagnostic} from '../../typecheck/diagnostics';
 import {getSourceFileOrNull, isDtsPath, resolveModuleName} from '../../util/src/typescript';
 import {LazyRoute, NgCompilerAdapter, NgCompilerOptions} from '../api';
 
@@ -207,6 +209,10 @@ export class NgCompiler {
    */
   getNextProgram(): ts.Program {
     return this.nextProgram;
+  }
+
+  getTemplateTypeChecker(): TemplateTypeChecker {
+    return this.ensureAnalyzed().templateTypeChecker;
   }
 
   /**
@@ -410,6 +416,7 @@ export class NgCompiler {
         checkQueries: false,
         checkTemplateBodies: true,
         checkTypeOfInputBindings: strictTemplates,
+        honorAccessModifiersForInputBindings: false,
         strictNullInputBindings: strictTemplates,
         checkTypeOfAttributes: strictTemplates,
         // Even in full template type-checking mode, DOM binding checks are not quite ready yet.
@@ -437,6 +444,7 @@ export class NgCompiler {
         checkTemplateBodies: false,
         checkTypeOfInputBindings: false,
         strictNullInputBindings: false,
+        honorAccessModifiersForInputBindings: false,
         checkTypeOfAttributes: false,
         checkTypeOfDomBindings: false,
         checkTypeOfOutputEvents: false,
@@ -456,6 +464,10 @@ export class NgCompiler {
     if (this.options.strictInputTypes !== undefined) {
       typeCheckingConfig.checkTypeOfInputBindings = this.options.strictInputTypes;
       typeCheckingConfig.applyTemplateContextGuards = this.options.strictInputTypes;
+    }
+    if (this.options.strictInputAccessModifiers !== undefined) {
+      typeCheckingConfig.honorAccessModifiersForInputBindings =
+          this.options.strictInputAccessModifiers;
     }
     if (this.options.strictNullInputTypes !== undefined) {
       typeCheckingConfig.strictNullInputBindings = this.options.strictNullInputTypes;
@@ -494,12 +506,6 @@ export class NgCompiler {
 
     const compilation = this.ensureAnalyzed();
 
-    // Execute the typeCheck phase of each decorator in the program.
-    const prepSpan = this.perfRecorder.start('typeCheckPrep');
-    const results = compilation.templateTypeChecker.refresh();
-    this.incrementalDriver.recordSuccessfulTypeCheck(results.perFileData);
-    this.perfRecorder.stop(prepSpan);
-
     // Get the diagnostics.
     const typeCheckSpan = this.perfRecorder.start('typeCheckDiagnostics');
     const diagnostics: ts.Diagnostic[] = [];
@@ -508,7 +514,8 @@ export class NgCompiler {
         continue;
       }
 
-      diagnostics.push(...compilation.templateTypeChecker.getDiagnosticsForFile(sf));
+      diagnostics.push(
+          ...compilation.templateTypeChecker.getDiagnosticsForFile(sf, OptimizeFor.WholeProgram));
     }
 
     const program = this.typeCheckingProgramStrategy.getProgram();
@@ -734,7 +741,7 @@ export class NgCompiler {
         handlers, reflector, this.perfRecorder, this.incrementalDriver,
         this.options.compileNonExportedClasses !== false, dtsTransforms);
 
-    const templateTypeChecker = new TemplateTypeChecker(
+    const templateTypeChecker = new TemplateTypeCheckerImpl(
         this.tsProgram, this.typeCheckingProgramStrategy, traitCompiler,
         this.getTypeCheckingConfig(), refEmitter, reflector, this.adapter, this.incrementalDriver);
 

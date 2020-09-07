@@ -124,6 +124,20 @@ If you need to, you can do additional setup when your package is installed, such
 필요하다면 라이브러리 패키지를 설치한 이후에 어떤 파일을 생성한다던지, 환경설정 파일을 수정한다던지, 라이브러리 초기화 작업을 실행할 수 있습니다.
 
 
+### Define dependency type
+
+Use the `save` option of `ng-add` to configure if the library should be added to the `dependencies`, the `devDepedencies`, or not saved at all in the project's `package.json` configuration file.
+
+<code-example header="projects/my-lib/package.json (ng-add Reference)" path="schematics-for-libraries/projects/my-lib/package.json" region="ng-add">
+</code-example>
+
+Possible values are:
+
+  * `false` - Don't add the package to package.json
+  * `true` - Add the package to the dependencies
+  * `"dependencies"` - Add the package to the dependencies
+  * `"devDependencies"` - Add the package to the devDependencies
+
 <!--
 ## Building your schematics
 -->

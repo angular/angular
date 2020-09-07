@@ -11,7 +11,7 @@ import {Compiler, Injectable, Injector, isDevMode, NgModuleFactoryLoader, NgModu
 import {BehaviorSubject, EMPTY, Observable, of, Subject, SubscriptionLike} from 'rxjs';
 import {catchError, filter, finalize, map, switchMap, tap} from 'rxjs/operators';
 
-import {QueryParamsHandling, Route, Routes, standardizeConfig, validateConfig} from './config';
+import {QueryParamsHandling, Route, Routes} from './config';
 import {createRouterState} from './create_router_state';
 import {createUrlTree} from './create_url_tree';
 import {Event, GuardsCheckEnd, GuardsCheckStart, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, NavigationTrigger, ResolveEnd, ResolveStart, RouteConfigLoadEnd, RouteConfigLoadStart, RoutesRecognized} from './events';
@@ -28,9 +28,9 @@ import {ActivatedRoute, createEmptyState, RouterState, RouterStateSnapshot} from
 import {isNavigationCancelingError, navigationCancelingError, Params} from './shared';
 import {DefaultUrlHandlingStrategy, UrlHandlingStrategy} from './url_handling_strategy';
 import {containsTree, createEmptyUrlTree, UrlSerializer, UrlTree} from './url_tree';
+import {standardizeConfig, validateConfig} from './utils/config';
 import {Checks, getAllRouteGuards} from './utils/preactivation';
 import {isUrlTree} from './utils/type_guards';
-
 
 
 /**
@@ -919,7 +919,15 @@ export class Router {
           // hybrid apps.
           setTimeout(() => {
             const {source, state, urlTree} = currentChange;
-            this.scheduleNavigation(urlTree, source, state, {replaceUrl: true});
+            const extras: NavigationExtras = {replaceUrl: true};
+            if (state) {
+              const stateCopy = {...state} as Partial<RestoredState>;
+              delete stateCopy.navigationId;
+              if (Object.keys(stateCopy).length !== 0) {
+                extras.state = stateCopy;
+              }
+            }
+            this.scheduleNavigation(urlTree, source, state, extras);
           }, 0);
         }
         this.lastLocationChangeInfo = currentChange;
@@ -1001,7 +1009,7 @@ export class Router {
     this.lastSuccessfulId = -1;
   }
 
-  /** @docsNotRequired */
+  /** @nodoc */
   ngOnDestroy(): void {
     this.dispose();
   }

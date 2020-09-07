@@ -19,6 +19,13 @@ Here, a `<button>` further down the template refers to the `phone` variable.
 
 <code-example path="template-reference-variables/src/app/app.component.html" region="ref-phone" header="src/app/app.component.html"></code-example>
 
+Angular assigns each template reference variable a value based on where you declare the variable:
+
+* If you declare the variable on a component, the variable refers to the component instance.
+* If you declare the variable on a standard HTML tag, the variable refers to the element.
+* If you declare the variable on an `<ng-template>` element, the variable refers to a `TemplateRef` instance, which represents the template.
+* If the variable specifies a name on the right-hand side, such as `#var="ngModel"`, the variable refers to the directive or component on the element with a matching `exportAs` name.
+
 <h3 class="no-toc">How a reference variable gets its value</h3>
 
 In most cases, Angular sets the reference variable's value to the element on which it is declared.
@@ -30,9 +37,9 @@ by HTML.
 
 <code-example path="template-reference-variables/src/app/app.component.html" region="ngForm" header="src/app/hero-form.component.html"></code-example>
 
-The reference value of itemForm, without the ngForm attribute value, would be
+The reference value of `itemForm`, without the `ngForm` attribute value, would be
 the [HTMLFormElement](https://developer.mozilla.org/en-US/docs/Web/API/HTMLFormElement).
-There is, however, a difference between a Component and a Directive in that a `Component`
+There is, however, a difference between a `Component` and a `Directive` in that a `Component`
 will be referenced without specifying the attribute value, and a `Directive` will not
 change the implicit reference (that is, the element).
 

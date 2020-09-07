@@ -53,7 +53,10 @@ INTEGRATION_TESTS = {
     },
     "dynamic-compiler": {"tags": ["no-ivy-aot"]},
     "hello_world__closure": {
-        "commands": "payload_size_tracking",
+        # TODO: Re-enable the payload_size_tracking command:
+        #   We should define ngDevMode to false in Closure, but --define only works in the global scope.
+        #   With ngDevMode not being set to false, this size tracking test provides little value but a lot of
+        #   headache to continue updating the size.
         "tags": ["no-ivy-aot"],
     },
     "hello_world__systemjs_umd": {
@@ -79,6 +82,12 @@ INTEGRATION_TESTS = {
     "typings_test_ts39": {
         # Special case for `typings_test_ts39` test as we want to pin
         # `typescript` at version 3.9.x for that test and not link to the
+        # root @npm//typescript package.
+        "pinned_npm_packages": ["typescript"],
+    },
+    "typings_test_ts40": {
+        # Special case for `typings_test_ts40` test as we want to pin
+        # `typescript` at version 4.0.x for that test and not link to the
         # root @npm//typescript package.
         "pinned_npm_packages": ["typescript"],
     },

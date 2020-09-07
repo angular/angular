@@ -11,10 +11,7 @@ import {spawnSync, SpawnSyncOptions, SpawnSyncReturns} from 'child_process';
 
 import {getConfig, getRepoBaseDir, NgDevConfig} from '../config';
 import {info, yellow} from '../console';
-import {_GithubClient} from './_github';
-
-// Re-export GithubApiRequestError
-export {GithubApiRequestError} from './_github';
+import {GithubClient} from './github';
 
 /** Github response type extended to include the `x-oauth-scopes` headers presence. */
 type RateLimitResponseWithOAuthScopeHeader = Octokit.Response<Octokit.RateLimitGetResponse>&{
@@ -37,7 +34,7 @@ export class GitCommandError extends Error {
 /**
  * Common client for performing Git interactions.
  *
- * Takes in two optional arguements:
+ * Takes in two optional arguments:
  *   _githubToken: the token used for authentifation in github interactions, by default empty
  *     allowing readonly actions.
  *   _config: The dev-infra configuration containing GitClientConfig information, by default
@@ -54,10 +51,8 @@ export class GitClient {
       `https://${this._githubToken}@github.com/${this.remoteConfig.owner}/${
           this.remoteConfig.name}.git`;
   /** Instance of the authenticated Github octokit API. */
-  github = new _GithubClient(this._githubToken);
+  github = new GithubClient(this._githubToken);
 
-  /** The file path of project's root directory. */
-  private _projectRoot = getRepoBaseDir();
   /** The OAuth scopes available for the provided Github token. */
   private _oauthScopes: Promise<string[]>|null = null;
   /**
@@ -67,7 +62,8 @@ export class GitClient {
   private _githubTokenRegex: RegExp|null = null;
 
   constructor(
-      private _githubToken?: string, private _config: Pick<NgDevConfig, 'github'> = getConfig()) {
+      private _githubToken?: string, private _config: Pick<NgDevConfig, 'github'> = getConfig(),
+      private _projectRoot = getRepoBaseDir()) {
     // If a token has been specified (and is not empty), pass it to the Octokit API and
     // also create a regular expression that can be used for sanitizing Git command output
     // so that it does not print the token accidentally.
@@ -90,10 +86,10 @@ export class GitClient {
   /**
    * Spawns a given Git command process. Does not throw if the command fails. Additionally,
    * if there is any stderr output, the output will be printed. This makes it easier to
-   * debug failed commands.
+   * info failed commands.
    */
   runGraceful(args: string[], options: SpawnSyncOptions = {}): SpawnSyncReturns<string> {
-    // To improve the debugging experience in case something fails, we print all executed
+    // To improve the infoging experience in case something fails, we print all executed
     // Git commands. Note that we do not want to print the token if is contained in the
     // command. It's common to share errors with others if the tool failed.
     info('Executing: git', this.omitGithubTokenFromMessage(args.join(' ')));
@@ -152,6 +148,25 @@ export class GitClient {
       return value;
     }
     return value.replace(this._githubTokenRegex, '<TOKEN>');
+  }
+
+  /**
+   * Checks out a requested branch or revision, optionally cleaning the state of the repository
+   * before attempting the checking. Returns a boolean indicating whether the branch or revision
+   * was cleanly checked out.
+   */
+  checkout(branchOrRevision: string, cleanState: boolean): boolean {
+    if (cleanState) {
+      // Abort any outstanding ams.
+      this.runGraceful(['am', '--abort'], {stdio: 'ignore'});
+      // Abort any outstanding cherry-picks.
+      this.runGraceful(['cherry-pick', '--abort'], {stdio: 'ignore'});
+      // Abort any outstanding rebases.
+      this.runGraceful(['rebase', '--abort'], {stdio: 'ignore'});
+      // Clear any changes in the current repo.
+      this.runGraceful(['reset', '--hard'], {stdio: 'ignore'});
+    }
+    return this.runGraceful(['checkout', branchOrRevision], {stdio: 'ignore'}).status === 0;
   }
 
   /**

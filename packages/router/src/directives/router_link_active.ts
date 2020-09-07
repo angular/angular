@@ -7,7 +7,8 @@
  */
 
 import {AfterContentInit, ChangeDetectorRef, ContentChildren, Directive, ElementRef, Input, OnChanges, OnDestroy, Optional, QueryList, Renderer2, SimpleChanges} from '@angular/core';
-import {Subscription} from 'rxjs';
+import {from, of, Subscription} from 'rxjs';
+import {mergeAll} from 'rxjs/operators';
 
 import {Event, NavigationEnd} from '../events';
 import {Router} from '../router';
@@ -19,44 +20,49 @@ import {RouterLink, RouterLinkWithHref} from './router_link';
  *
  * @description
  *
- * Lets you add a CSS class to an element when the link's route becomes active.
+ * Tracks whether the linked route of an element is currently active, and allows you
+ * to specify one or more CSS classes to add to the element when the linked route
+ * is active.
  *
- * This directive lets you add a CSS class to an element when the link's route
- * becomes active.
- *
- * Consider the following example:
+ * Use this directive to create a visual distinction for elements associated with an active route.
+ * For example, the following code highlights the word "Bob" when the the router
+ * activates the associated route:
  *
  * ```
  * <a routerLink="/user/bob" routerLinkActive="active-link">Bob</a>
  * ```
  *
- * When the url is either '/user' or '/user/bob', the active-link class will
- * be added to the `a` tag. If the url changes, the class will be removed.
+ * Whenever the URL is either '/user' or '/user/bob', the "active-link" class is
+ * added to the anchor tag. If the URL changes, the class is removed.
  *
- * You can set more than one class, as follows:
+ * You can set more than one class using a space-separated string or an array.
+ * For example:
  *
  * ```
  * <a routerLink="/user/bob" routerLinkActive="class1 class2">Bob</a>
  * <a routerLink="/user/bob" [routerLinkActive]="['class1', 'class2']">Bob</a>
  * ```
  *
- * You can configure RouterLinkActive by passing `exact: true`. This will add the classes
- * only when the url matches the link exactly.
+ * To add the classes only when the URL matches the link exactly, add the option `exact: true`:
  *
  * ```
  * <a routerLink="/user/bob" routerLinkActive="active-link" [routerLinkActiveOptions]="{exact:
  * true}">Bob</a>
  * ```
  *
- * You can assign the RouterLinkActive instance to a template variable and directly check
- * the `isActive` status.
+ * To directly check the `isActive` status of the link, assign the `RouterLinkActive`
+ * instance to a template variable.
+ * For example, the following checks the status without assigning any CSS classes:
+ *
  * ```
  * <a routerLink="/user/bob" routerLinkActive #rla="routerLinkActive">
  *   Bob {{ rla.isActive ? '(already open)' : ''}}
  * </a>
  * ```
  *
- * Finally, you can apply the RouterLinkActive directive to an ancestor of a RouterLink.
+ * You can apply the `RouterLinkActive` directive to an ancestor of linked elements.
+ * For example, the following sets the active-link class on the `<div>`  parent tag
+ * when the URL is either '/user/jim' or '/user/bob'.
  *
  * ```
  * <div routerLinkActive="active-link" [routerLinkActiveOptions]="{exact: true}">
@@ -64,9 +70,6 @@ import {RouterLink, RouterLinkWithHref} from './router_link';
  *   <a routerLink="/user/bob">Bob</a>
  * </div>
  * ```
- *
- * This will set the active-link class on the div tag if the url is either '/user/jim' or
- * '/user/bob'.
  *
  * @ngModule RouterModule
  *
@@ -77,14 +80,13 @@ import {RouterLink, RouterLinkWithHref} from './router_link';
   exportAs: 'routerLinkActive',
 })
 export class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit {
-  // TODO(issue/24571): remove '!'.
   @ContentChildren(RouterLink, {descendants: true}) links!: QueryList<RouterLink>;
-  // TODO(issue/24571): remove '!'.
   @ContentChildren(RouterLinkWithHref, {descendants: true})
   linksWithHrefs!: QueryList<RouterLinkWithHref>;
 
   private classes: string[] = [];
-  private subscription: Subscription;
+  private routerEventsSubscription: Subscription;
+  private linkInputChangesSubscription?: Subscription;
   public readonly isActive: boolean = false;
 
   @Input() routerLinkActiveOptions: {exact: boolean} = {exact: false};
@@ -93,18 +95,35 @@ export class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit 
       private router: Router, private element: ElementRef, private renderer: Renderer2,
       private readonly cdr: ChangeDetectorRef, @Optional() private link?: RouterLink,
       @Optional() private linkWithHref?: RouterLinkWithHref) {
-    this.subscription = router.events.subscribe((s: Event) => {
+    this.routerEventsSubscription = router.events.subscribe((s: Event) => {
       if (s instanceof NavigationEnd) {
         this.update();
       }
     });
   }
 
-
+  /** @nodoc */
   ngAfterContentInit(): void {
-    this.links.changes.subscribe(_ => this.update());
-    this.linksWithHrefs.changes.subscribe(_ => this.update());
-    this.update();
+    // `of(null)` is used to force subscribe body to execute once immediately (like `startWith`).
+    from([this.links.changes, this.linksWithHrefs.changes, of(null)])
+        .pipe(mergeAll())
+        .subscribe(_ => {
+          this.update();
+          this.subscribeToEachLinkOnChanges();
+        });
+  }
+
+  private subscribeToEachLinkOnChanges() {
+    this.linkInputChangesSubscription?.unsubscribe();
+    const allLinkChanges =
+        [...this.links.toArray(), ...this.linksWithHrefs.toArray(), this.link, this.linkWithHref]
+            .filter((link): link is RouterLink|RouterLinkWithHref => !!link)
+            .map(link => link.onChanges);
+    this.linkInputChangesSubscription = from(allLinkChanges).pipe(mergeAll()).subscribe(link => {
+      if (this.isActive !== this.isLinkActive(this.router)(link)) {
+        this.update();
+      }
+    });
   }
 
   @Input()
@@ -113,11 +132,14 @@ export class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit 
     this.classes = classes.filter(c => !!c);
   }
 
+  /** @nodoc */
   ngOnChanges(changes: SimpleChanges): void {
     this.update();
   }
+  /** @nodoc */
   ngOnDestroy(): void {
-    this.subscription.unsubscribe();
+    this.routerEventsSubscription.unsubscribe();
+    this.linkInputChangesSubscription?.unsubscribe();
   }
 
   private update(): void {

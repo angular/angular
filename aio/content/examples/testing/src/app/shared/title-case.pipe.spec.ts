@@ -5,7 +5,7 @@ import { TitleCasePipe } from './title-case.pipe';
 // #docregion excerpt, mini-excerpt
 describe('TitleCasePipe', () => {
   // 파이프는 순수 함수이며 스테이트도 없습니다. 따라서 BeforeEach는 필요 없습니다.
-  let pipe = new TitleCasePipe();
+  const pipe = new TitleCasePipe();
 
   it('transforms "abc" to "Abc"', () => {
     expect(pipe.transform('abc')).toBe('Abc');

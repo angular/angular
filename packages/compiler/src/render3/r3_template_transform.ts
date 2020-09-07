@@ -62,12 +62,6 @@ export function htmlAstToRender3Ast(
 
   // Errors might originate in either the binding parser or the html to ivy transformer
   const allErrors = bindingParser.errors.concat(transformer.errors);
-  const errors: ParseError[] = allErrors.filter(e => e.level === ParseErrorLevel.ERROR);
-
-  if (errors.length > 0) {
-    const errorString = errors.join('\n');
-    throw syntaxError(`Template parse errors:\n${errorString}`, errors);
-  }
 
   return {
     nodes: ivyNodes,

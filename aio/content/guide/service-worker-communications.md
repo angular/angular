@@ -53,15 +53,18 @@ The `SwUpdate` service supports four separate operations:
 
 <!--
 The two update events, `available` and `activated`, are `Observable` properties of `SwUpdate`:
+
+<code-example path="service-worker-getting-started/src/app/log-update.service.ts" header="log-update.service.ts" region="sw-update"></code-example>
+
+
+You can use these events to notify the user of a pending update or to refresh their pages when the code they are running is out of date.
 -->
 업데이트와 관련된 이벤트 중 `available` 이벤트와 `activated` 이벤트는 `SwUpdate`의 프로퍼티로 제공되며, 모두 `Observable` 타입입니다:
 
 <code-example path="service-worker-getting-started/src/app/log-update.service.ts" header="log-update.service.ts" region="sw-update"></code-example>
 
-<!--
-You can use these events to notify the user of a pending update or to refresh their pages when the code they are running is out of date.
--->
 이 이벤트들을 활용하면 사용자가 현재 최신 버전의 앱을 사용하지 않고 있으며, 최신 버전으로 업데이트할 수 있고, 새로운 버전을 실행하려면 페이지를 새로고침해야 한다는 알림을 제공할 수 있습니다.
+
 
 <!--
 ### Checking for updates
@@ -123,6 +126,15 @@ Alternatively, you might want to define a different {@link SwRegistrationOptions
 
 <!--
 If the current tab needs to be updated to the latest app version immediately, it can ask to do so with the `activateUpdate()` method:
+
+<code-example path="service-worker-getting-started/src/app/prompt-update.service.ts" header="prompt-update.service.ts" region="sw-activate"></code-example>
+
+<div class="alert is-important">
+
+Calling `activateUpdate()` without reloading the page could break lazy-loading in a currently running app, especially if the lazy-loaded chunks use filenames with hashes, which change every version.
+Therefore, it is recommended to reload the page once the promise returned by `activateUpdate()` is resolved.
+
+</div>
 -->
 현재 탭에서 실행하고 있는 앱을 최신 버전으로 즉시 전환하려면 `activateUpdate()` 메소드를 실행하면 됩니다:
 
@@ -134,6 +146,33 @@ Calling `activateUpdate()` without reloading the page could break lazy-loading i
 Therefore, it is recommended to reload the page once the promise returned by `activateUpdate()` is resolved.
 
 </div>
+
+
+### Handling an unrecoverable state
+
+In some cases, the version of the app used by the service worker to serve a client might be in a broken state that cannot be recovered from without a full page reload.
+
+For example, imagine the following scenario:
+- A user opens the app for the first time and the service worker caches the latest version of the app.
+  Let's assume the app's cached assets include `index.html`, `main.<main-hash-1>.js` and `lazy-chunk.<lazy-hash-1>.js`.
+- The user closes the app and does not open it for a while.
+- After some time, a new version of the app is deployed to the server.
+  This newer version includes the files `index.html`, `main.<main-hash-2>.js` and `lazy-chunk.<lazy-hash-2>.js` (note that the hashes are different now, because the content of the files has changed).
+  The old version is no longer available on the server.
+- In the meantime, the user's browser decides to evict `lazy-chunk.<lazy-hash-1>.js` from its cache.
+  Browsers may decide to evict specific (or all) resources from a cache in order to reclaim disk space.
+- The user opens the app again.
+  The service worker serves the latest version known to it at this point, namely the old version (`index.html` and `main.<main-hash-1>.js`).
+- At some later point, the app requests the lazy bundle, `lazy-chunk.<lazy-hash-1>.js`.
+- The service worker is unable to find the asset in the cache (remember that the browser evicted it).
+  Nor is it able to retrieve it from the server (since the server now only has `lazy-chunk.<lazy-hash-2>.js` from the newer version).
+
+In the above scenario, the service worker is not able to serve an asset that would normally be cached.
+That particular app version is broken and there is no way to fix the state of the client without reloading the page.
+In such cases, the service worker notifies the client by sending an `UnrecoverableStateEvent` event.
+You can subscribe to `SwUpdate#unrecoverable` to be notified and handle these errors.
+
+<code-example path="service-worker-getting-started/src/app/handle-unrecoverable-state.service.ts" header="handle-unrecoverable-state.service.ts" region="sw-unrecoverable-state"></code-example>
 
 
 <!--

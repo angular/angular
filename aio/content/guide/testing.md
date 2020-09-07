@@ -18,10 +18,6 @@ Before writing tests for your Angular app, you should have a basic understanding
 
 <hr>
 
-<!--
-## Setup
--->
-## 환경 설정
 The testing documentation offers tips and techniques for unit and integration testing Angular applications through a sample application created with the [Angular CLI](cli).
 This sample application is much like the one in the [_Tour of Heroes_ tutorial](tutorial).
 
@@ -42,6 +38,41 @@ The Angular CLI downloads and installs everything you need to test an Angular ap
 
 The project you create with the CLI is immediately ready to test.
 Just run the [`ng test`](cli/test) CLI command:
+
+<code-example language="sh" class="code-shell">
+  ng test
+</code-example>
+
+The `ng test` command builds the app in _watch mode_,
+and launches the [Karma test runner](https://karma-runner.github.io).
+
+The console output looks a bit like this:
+
+<code-example language="sh" class="code-shell">
+10% building modules 1/1 modules 0 active
+...INFO [karma]: Karma v1.7.1 server started at http://0.0.0.0:9876/
+...INFO [launcher]: Launching browser Chrome ...
+...INFO [launcher]: Starting browser Chrome
+...INFO [Chrome ...]: Connected on socket ...
+Chrome ...: Executed 3 of 3 SUCCESS (0.135 secs / 0.205 secs)
+</code-example>
+
+The last line of the log is the most important.
+It shows that Karma ran three tests that all passed.
+
+A Chrome browser also opens and displays the test output in the "Jasmine HTML Reporter" like this.
+
+<div class="lightbox">
+  <img src='generated/images/guide/testing/initial-jasmine-html-reporter.png' alt="Jasmine HTML Reporter in the browser">
+</div>
+
+Most people find this browser output easier to read than the console log.
+You can click on a test row to re-run just that test or click on a description to re-run the tests in the selected test group ("test suite").
+
+Meanwhile, the `ng test` command is watching for changes.
+
+To see this in action, make a small change to `app.component.ts` and save.
+The tests run again, the browser refreshes, and the new test results appear.
 -->
 Angular 애플리케이션은 [Jasmine 테스트 프레임워크](https://jasmine.github.io/)로 테스트하는데, 애플리케이션을 테스트할 때 필요한 환경은 Angular CLI가 프로젝트를 생성하면서 모두 준비하기 때문에 바로 테스트할 수 있는 상태입니다.
 프로젝트 최상위 폴더에서 [`ng test`](cli/test) 명령을 실행해 보세요:
@@ -50,12 +81,6 @@ Angular 애플리케이션은 [Jasmine 테스트 프레임워크](https://jasmin
   ng test
 </code-example>
 
-<!--
-The `ng test` command builds the app in _watch mode_,
-and launches the [Karma test runner](https://karma-runner.github.io).
-
-The console output looks a bit like this:
--->
 `ng test` 명령을 실행하면 애플리케이션을 _워치 모드(watch mode)_ 로 빌드하고 [Karma 테스트 러너](https://karma-runner.github.io)를 실행합니다.
 
 콘솔은 다음과 같이 출력될 것입니다:
@@ -69,36 +94,16 @@ The console output looks a bit like this:
 Chrome ...: Executed 3 of 3 SUCCESS (0.135 secs / 0.205 secs)
 </code-example>
 
-<!--
-The last line of the log is the most important.
-It shows that Karma ran three tests that all passed.
-
-A Chrome browser also opens and displays the test output in the "Jasmine HTML Reporter" like this.
--->
 이 로그에서 마지막 줄이 가장 중요합니다.
 마지막 줄을 보면 Karma가 3개의 테스트를 실행했고, 실행한 테스트는 모두 통과했다는 것을 확인할 수 있습니다.
 
 테스트 실행 결과는 Chrome 브라우저에서도 확인할 수 있습니다.
 브라우저에서는 "Jasmine HTML Reporter"를 사용해서 다음과 같이 표시됩니다.
 
-<!--
-<div class="lightbox">
-  <img src='generated/images/guide/testing/initial-jasmine-html-reporter.png' alt="Jasmine HTML Reporter in the browser">
-</div>
--->
 <div class="lightbox">
   <img src='generated/images/guide/testing/initial-jasmine-html-reporter.png' alt="브라우저에서 Jasmine HTML Reporter 확인하기">
 </div>
 
-<!--
-Most people find this browser output easier to read than the console log.
-You can click on a test row to re-run just that test or click on a description to re-run the tests in the selected test group ("test suite").
-
-Meanwhile, the `ng test` command is watching for changes.
-
-To see this in action, make a small change to `app.component.ts` and save.
-The tests run again, the browser refreshes, and the new test results appear.
--->
 테스트 결과는 콘솔 로그로 확인하는 것보다 브라우저에서 확인하는 것이 더 편합니다.
 브라우저에서는 특정 테스트 스펙을 클릭해서 해당 스펙만 다시 실행해볼 수 있고, 테스트 그룹(test suite)을 클릭해서 그룹 단위로 다시 실행할 수도 있습니다.
 
@@ -106,6 +111,7 @@ The tests run again, the browser refreshes, and the new test results appear.
 
 `app.component.ts` 파일의 내용을 수정하고 저장해 보세요.
 그러면 테스트가 다시 실행되면서 브라우저도 갱신되고, 새로운 결과 화면이 표시될 것입니다.
+
 
 <!--
 ## Configuration
@@ -115,7 +121,7 @@ The tests run again, the browser refreshes, and the new test results appear.
 <!--
 The CLI takes care of Jasmine and Karma configuration for you.
 
-You can fine-tune many options by editing the `karma.conf.js` and
+You can fine-tune many options by editing the `karma.conf.js` in the root folder of the project and
 the `test.ts` files in the `src/` folder.
 
 The `karma.conf.js` file is a partial Karma configuration file.
@@ -124,7 +130,7 @@ The CLI constructs the full runtime configuration in memory, based on applicatio
 Search the web for more details about Jasmine and Karma configuration.
 -->
 Angular CLI로 프로젝트를 생성하면 Jasmine과 Karma를 실행할 수 있는 환경 설정이 자동으로 구성됩니다.
-이후에 이 설정을 튜닝하고 싶으면 `karma.conf.js` 파일과 `src/test.ts` 파일을 수정하면 됩니다.
+이후에 이 설정을 튜닝하고 싶으면 프로젝트 최상위 폴더에 있는 `karma.conf.js` 파일과 `src/test.ts` 파일을 수정하면 됩니다.
 
 `karma.conf.js` 파일은 Karma가 실행되는 환경설정 중 일부를 구성합니다.
 Karma의 전체 설정값은 테스트를 실행하는 시점에 `angular.json` 파일과 `karma.conf.js`를 분석해서 Angular CLI가 구성합니다.
@@ -154,6 +160,17 @@ Jasmine과 Karma 말고도 다른 라이브러리나 테스트 러너를 사용�
 Look inside the `src/app` folder.
 
 The CLI generated a test file for the `AppComponent` named `app.component.spec.ts`.
+
+<div class="alert is-important">
+
+The test file extension **must be `.spec.ts`** so that tooling can identify it as a file with tests (AKA, a _spec_ file).
+
+</div>
+
+The `app.component.ts` and `app.component.spec.ts` files are siblings in the same folder.
+The root file names (`app.component`) are the same for both files.
+
+Adopt these two conventions in your own projects for _every kind_ of test file.
 -->
 `src/app` 폴더를 봅시다.
 
@@ -161,22 +178,14 @@ Angular CLI로 프로젝트를 생성하면 `AppComponent`를 테스트 하는 �
 
 <div class="alert is-important">
 
-<!--
-The test file extension **must be `.spec.ts`** so that tooling can identify it as a file with tests (AKA, a _spec_ file).
--->
 IDE와 같은 툴에서 스펙 파일을 구분하려면 테스트 파일의 확장자를 **반드시 `.spec.ts`**로 지정해야 합니다.
 
 </div>
 
-<!--
-The `app.component.ts` and `app.component.spec.ts` files are siblings in the same folder.
-The root file names (`app.component`) are the same for both files.
-
-Adopt these two conventions in your own projects for _every kind_ of test file.
--->
 두 파일을 보면 `app.component.ts` 파일과 `app.component.spec.ts` 파일은 같은 폴더에 이웃한 파일이며, 두 파일의 컴포넌트 이름 부분(`app.component`)이 같다는 것을 확인할 수 있습니다.
 
 이 룰은 프로젝트 안에 있는 _모든_ 테스트 파일에 적용하는 것이 좋습니다.
+
 
 {@a q-spec-file-location}
 
@@ -243,6 +252,36 @@ Angular 공식 레파지토리에 코드를 반영할 때도 Circle CI 테스트
 Step 1: Create a folder called `.circleci` at the project root.
 
 Step 2: In the new folder, create a file called `config.yml` with the following content:
+
+```
+version: 2
+jobs:
+  build:
+    working_directory: ~/my-project
+    docker:
+      - image: circleci/node:10-browsers
+    steps:
+      - checkout
+      - restore_cache:
+          key: my-project-{{ .Branch }}-{{ checksum "package-lock.json" }}
+      - run: npm install
+      - save_cache:
+          key: my-project-{{ .Branch }}-{{ checksum "package-lock.json" }}
+          paths:
+            - "node_modules"
+      - run: npm run test -- --no-watch --no-progress --browsers=ChromeHeadlessCI
+      - run: npm run e2e -- --protractor-config=e2e/protractor-ci.conf.js
+```
+
+This configuration caches `node_modules/` and uses [`npm run`](https://docs.npmjs.com/cli/run-script) to run CLI commands, because `@angular/cli` is not installed globally.
+The double dash (`--`) is needed to pass arguments into the `npm` script.
+
+Step 3: Commit your changes and push them to your repository.
+
+Step 4: [Sign up for Circle CI](https://circleci.com/docs/2.0/first-steps/) and [add your project](https://circleci.com/add-projects).
+Your project should start building.
+
+* Learn more about Circle CI from [Circle CI documentation](https://circleci.com/docs/2.0/).
 -->
 1단계: 프로젝트 최상위 폴더에 `.circleci` 폴더를 생성합니다.
 
@@ -268,17 +307,6 @@ jobs:
       - run: npm run e2e -- --protractor-config=e2e/protractor-ci.conf.js
 ```
 
-<!--
-This configuration caches `node_modules/` and uses [`npm run`](https://docs.npmjs.com/cli/run-script) to run CLI commands, because `@angular/cli` is not installed globally.
-The double dash (`--`) is needed to pass arguments into the `npm` script.
-
-Step 3: Commit your changes and push them to your repository.
-
-Step 4: [Sign up for Circle CI](https://circleci.com/docs/2.0/first-steps/) and [add your project](https://circleci.com/add-projects).
-Your project should start building.
-
-* Learn more about Circle CI from [Circle CI documentation](https://circleci.com/docs/2.0/).
--->
 이 환경설정 파일의 내용은 `node_modules/` 폴더의 내용을 캐싱하고 [`npm run`](https://docs.npmjs.com/cli/run-script)으로 Angular CLI 명령을 실행하는 것입니다.
 `@angular/cli`는 전역 범위에 필요하기 때문에 `npm install` 명령을 실행해서 설치했습니다.
 그리고 `npm` 스크립트에 옵션을 지정하려면 대시 2개(`--`)를 함께 사용해야 합니다.
@@ -289,6 +317,7 @@ Your project should start building.
 
 * 더 자세한 내용은 [Circle CI 문서](https://circleci.com/docs/2.0/)를 참고하세요.
 
+
 <!--
 ### Configure project for Travis CI
 -->
@@ -296,6 +325,42 @@ Your project should start building.
 
 <!--
 Step 1: Create a file called `.travis.yml` at the project root, with the following content:
+
+```
+dist: trusty
+sudo: false
+
+language: node_js
+node_js:
+  - "10"
+
+addons:
+  apt:
+    sources:
+      - google-chrome
+    packages:
+      - google-chrome-stable
+
+cache:
+  directories:
+     - ./node_modules
+
+install:
+  - npm install
+
+script:
+  - npm run test -- --no-watch --no-progress --browsers=ChromeHeadlessCI
+  - npm run e2e -- --protractor-config=e2e/protractor-ci.conf.js
+```
+
+This does the same things as the CircleCI configuration, except that Travis doesn't come with Chrome, so use Chromium instead.
+
+Step 2: Commit your changes and push them to your repository.
+
+Step 3: [Sign up for Travis CI](https://travis-ci.org/auth) and [add your project](https://travis-ci.org/profile).
+You'll need to push a new commit to trigger a build.
+
+* Learn more about Travis CI testing from [Travis CI documentation](https://docs.travis-ci.com/).
 -->
 1단계: 프로젝트 최상위 폴더에 `.travis.yml` 파일을 생성하고 내용을 다음과 같이 작성합니다:
 
@@ -326,16 +391,6 @@ script:
   - npm run e2e -- --protractor-config=e2e/protractor-ci.conf.js
 ```
 
-<!--
-This does the same things as the Circle CI configuration, except that Travis doesn't come with Chrome, so we use Chromium instead.
-
-Step 2: Commit your changes and push them to your repository.
-
-Step 3: [Sign up for Travis CI](https://travis-ci.org/auth) and [add your project](https://travis-ci.org/profile).
-You'll need to push a new commit to trigger a build.
-
-* Learn more about Travis CI testing from [Travis CI documentation](https://docs.travis-ci.com/).
--->
 이 환경설정 파일의 내용은 Circle CI에서 설정했던 내용과 같지만, Travis에는 Chrome이 설치되어있지 않기 때문에 Chromium을 추가로 설치했습니다.
 
 2단계: 변경사항을 커밋하고 레파지토리에 푸시합니다.
@@ -345,12 +400,12 @@ You'll need to push a new commit to trigger a build.
 
 * 더 자세한 내용은 [Travis CI 문서](https://docs.travis-ci.com/)를 참고하세요.
 
+
 <!--
 ### Configure CLI for CI testing in Chrome
 -->
 ### CI 환경에서 Chrome으로 테스트하기
 
-<!--
 When the CLI commands `ng test` and `ng e2e` are generally running the CI tests in your environment, you might still need to adjust your configuration to run the Chrome browser tests.
 
 There are configuration files for both the [Karma JavaScript test runner](https://karma-runner.github.io/latest/config/configuration-file.html)

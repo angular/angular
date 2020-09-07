@@ -11,8 +11,8 @@ import {AbsoluteFsPath, join} from '../../file_system';
 import {NoopImportRewriter, Reference, ReferenceEmitter} from '../../imports';
 import {ClassDeclaration, ReflectionHost} from '../../reflection';
 import {ImportManager} from '../../translator';
+import {TypeCheckBlockMetadata, TypeCheckingConfig} from '../api';
 
-import {TypeCheckBlockMetadata, TypeCheckingConfig} from './api';
 import {DomSchemaChecker} from './dom';
 import {Environment} from './environment';
 import {OutOfBandDiagnosticRecorder} from './oob';

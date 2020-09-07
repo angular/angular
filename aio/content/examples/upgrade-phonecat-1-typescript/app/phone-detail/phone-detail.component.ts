@@ -1,3 +1,4 @@
+/* tslint:disable: member-ordering */
 // #docregion
 class PhoneDetailController {
   phone: any;
@@ -5,7 +6,7 @@ class PhoneDetailController {
 
   static $inject = ['$routeParams', 'Phone'];
   constructor($routeParams: angular.route.IRouteParamsService, Phone: any) {
-    let phoneId = $routeParams['phoneId'];
+    const phoneId = $routeParams.phoneId;
     this.phone = Phone.get({phoneId}, (phone: any) => {
       this.setImage(phone.images[0]);
     });

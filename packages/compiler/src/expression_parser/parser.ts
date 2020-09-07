@@ -10,7 +10,7 @@ import * as chars from '../chars';
 import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from '../ml_parser/interpolation_config';
 import {escapeRegExp} from '../util';
 
-import {AbsoluteSourceSpan, AST, AstVisitor, ASTWithSource, Binary, BindingPipe, Chain, Conditional, EmptyExpr, ExpressionBinding, FunctionCall, ImplicitReceiver, Interpolation, KeyedRead, KeyedWrite, LiteralArray, LiteralMap, LiteralMapKey, LiteralPrimitive, MethodCall, NonNullAssert, ParserError, ParseSpan, PrefixNot, PropertyRead, PropertyWrite, Quote, RecursiveAstVisitor, SafeMethodCall, SafePropertyRead, TemplateBinding, TemplateBindingIdentifier, VariableBinding} from './ast';
+import {AbsoluteSourceSpan, AST, AstVisitor, ASTWithSource, Binary, BindingPipe, Chain, Conditional, EmptyExpr, ExpressionBinding, FunctionCall, ImplicitReceiver, Interpolation, KeyedRead, KeyedWrite, LiteralArray, LiteralMap, LiteralMapKey, LiteralPrimitive, MethodCall, NonNullAssert, ParserError, ParseSpan, PrefixNot, PropertyRead, PropertyWrite, Quote, RecursiveAstVisitor, SafeMethodCall, SafePropertyRead, TemplateBinding, TemplateBindingIdentifier, Unary, VariableBinding} from './ast';
 import {EOF, isIdentifier, isQuote, Lexer, Token, TokenType} from './lexer';
 
 export class SplitInterpolation {
@@ -591,22 +591,16 @@ export class _ParseAST {
     if (this.next.type == TokenType.Operator) {
       const start = this.inputIndex;
       const operator = this.next.strValue;
-      const literalSpan = new ParseSpan(start, start);
-      const literalSourceSpan = literalSpan.toAbsolute(this.absoluteOffset);
       let result: AST;
       switch (operator) {
         case '+':
           this.advance();
           result = this.parsePrefix();
-          return new Binary(
-              this.span(start), this.sourceSpan(start), '-', result,
-              new LiteralPrimitive(literalSpan, literalSourceSpan, 0));
+          return Unary.createPlus(this.span(start), this.sourceSpan(start), result);
         case '-':
           this.advance();
           result = this.parsePrefix();
-          return new Binary(
-              this.span(start), this.sourceSpan(start), operator,
-              new LiteralPrimitive(literalSpan, literalSourceSpan, 0), result);
+          return Unary.createMinus(this.span(start), this.sourceSpan(start), result);
         case '!':
           this.advance();
           result = this.parsePrefix();
@@ -1058,6 +1052,8 @@ class SimpleExpressionChecker implements AstVisitor {
   visitLiteralMap(ast: LiteralMap, context: any) {
     this.visitAll(ast.values, context);
   }
+
+  visitUnary(ast: Unary, context: any) {}
 
   visitBinary(ast: Binary, context: any) {}
 

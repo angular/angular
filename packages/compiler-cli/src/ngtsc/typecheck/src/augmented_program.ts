@@ -8,11 +8,12 @@
 
 import * as ts from 'typescript';
 
-import {AbsoluteFsPath} from '../../file_system';
+import {absoluteFromSourceFile, AbsoluteFsPath} from '../../file_system';
 import {retagAllTsFiles, untagAllTsFiles} from '../../shims';
+import {TypeCheckingProgramStrategy, UpdateMode} from '../api';
 
-import {TypeCheckingProgramStrategy, UpdateMode} from './api';
 import {TypeCheckProgramHost} from './host';
+import {TypeCheckShimGenerator} from './shim';
 
 /**
  * Implements a template type-checking program using `ts.createProgram` and TypeScript's program
@@ -32,6 +33,8 @@ export class ReusedProgramStrategy implements TypeCheckingProgramStrategy {
   constructor(
       private originalProgram: ts.Program, private originalHost: ts.CompilerHost,
       private options: ts.CompilerOptions, private shimExtensionPrefixes: string[]) {}
+
+  readonly supportsInlineOperations = true;
 
   getProgram(): ts.Program {
     return this.program;
@@ -77,5 +80,9 @@ export class ReusedProgramStrategy implements TypeCheckingProgramStrategy {
     // may still be used for emit and needs to not contain tags.
     untagAllTsFiles(this.program);
     untagAllTsFiles(oldProgram);
+  }
+
+  shimPathForComponent(node: ts.ClassDeclaration): AbsoluteFsPath {
+    return TypeCheckShimGenerator.shimFor(absoluteFromSourceFile(node.getSourceFile()));
   }
 }

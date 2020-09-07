@@ -12,7 +12,7 @@ import {CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA, SchemaMetadata} from '../../me
 import {ViewEncapsulation} from '../../metadata/view';
 import {validateAgainstEventAttributes, validateAgainstEventProperties} from '../../sanitization/sanitization';
 import {Sanitizer} from '../../sanitization/sanitizer';
-import {assertDataInRange, assertDefined, assertDomNode, assertEqual, assertGreaterThan, assertLessThan, assertNotEqual, assertNotSame, assertSame} from '../../util/assert';
+import {assertDefined, assertDomNode, assertEqual, assertGreaterThan, assertIndexInRange, assertLessThan, assertNotEqual, assertNotSame, assertSame} from '../../util/assert';
 import {createNamedArrayType} from '../../util/named_array_type';
 import {initNgDevMode} from '../../util/ng_dev_mode';
 import {normalizeDebugBindingName, normalizeDebugBindingValue} from '../../util/ng_reflect';
@@ -26,7 +26,7 @@ import {executeCheckHooks, executeInitAndCheckHooks, incrementInitPhaseFlags} fr
 import {CONTAINER_HEADER_OFFSET, HAS_TRANSPLANTED_VIEWS, LContainer, MOVED_VIEWS} from '../interfaces/container';
 import {ComponentDef, ComponentTemplate, DirectiveDef, DirectiveDefListOrFactory, PipeDefListOrFactory, RenderFlags, ViewQueriesFunction} from '../interfaces/definition';
 import {INJECTOR_BLOOM_PARENT_SIZE, NodeInjectorFactory} from '../interfaces/injector';
-import {AttributeMarker, InitialInputData, InitialInputs, LocalRefExtractor, PropertyAliases, PropertyAliasValue, TAttributes, TConstants, TContainerNode, TDirectiveHostNode, TElementContainerNode, TElementNode, TIcuContainerNode, TNode, TNodeFlags, TNodeProviderIndexes, TNodeType, TProjectionNode, TViewNode} from '../interfaces/node';
+import {AttributeMarker, InitialInputData, InitialInputs, LocalRefExtractor, PropertyAliases, PropertyAliasValue, TAttributes, TConstantsOrFactory, TContainerNode, TDirectiveHostNode, TElementContainerNode, TElementNode, TIcuContainerNode, TNode, TNodeFlags, TNodeProviderIndexes, TNodeType, TProjectionNode, TViewNode} from '../interfaces/node';
 import {isProceduralRenderer, RComment, RElement, Renderer3, RendererFactory3, RNode, RText} from '../interfaces/renderer';
 import {SanitizerFn} from '../interfaces/sanitization';
 import {isComponentDef, isComponentHost, isContentQueryHost, isLContainer, isRootView} from '../interfaces/type_checks';
@@ -650,7 +650,7 @@ export function createTView(
     type: TViewType, viewIndex: number, templateFn: ComponentTemplate<any>|null, decls: number,
     vars: number, directives: DirectiveDefListOrFactory|null, pipes: PipeDefListOrFactory|null,
     viewQuery: ViewQueriesFunction<any>|null, schemas: SchemaMetadata[]|null,
-    consts: TConstants|null): TView {
+    constsOrFactory: TConstantsOrFactory|null): TView {
   ngDevMode && ngDevMode.tView++;
   const bindingStartIndex = HEADER_OFFSET + decls;
   // This length does not yet contain host bindings from child directives because at this point,
@@ -658,42 +658,45 @@ export function createTView(
   // that has a host binding, we will update the blueprint with that def's hostVars count.
   const initialViewLength = bindingStartIndex + vars;
   const blueprint = createViewBlueprint(bindingStartIndex, initialViewLength);
-  return blueprint[TVIEW as any] = ngDevMode ?
+  const consts = typeof constsOrFactory === 'function' ? constsOrFactory() : constsOrFactory;
+  const tView = blueprint[TVIEW as any] = ngDevMode ?
       new TViewConstructor(
-             type,
-             viewIndex,   // id: number,
-             blueprint,   // blueprint: LView,
-             templateFn,  // template: ComponentTemplate<{}>|null,
-             null,        // queries: TQueries|null
-             viewQuery,   // viewQuery: ViewQueriesFunction<{}>|null,
-             null!,       // node: TViewNode|TElementNode|null,
-             cloneToTViewData(blueprint).fill(null, bindingStartIndex),  // data: TData,
-             bindingStartIndex,  // bindingStartIndex: number,
-             initialViewLength,  // expandoStartIndex: number,
-             null,               // expandoInstructions: ExpandoInstructions|null,
-             true,               // firstCreatePass: boolean,
-             true,               // firstUpdatePass: boolean,
-             false,              // staticViewQueries: boolean,
-             false,              // staticContentQueries: boolean,
-             null,               // preOrderHooks: HookData|null,
-             null,               // preOrderCheckHooks: HookData|null,
-             null,               // contentHooks: HookData|null,
-             null,               // contentCheckHooks: HookData|null,
-             null,               // viewHooks: HookData|null,
-             null,               // viewCheckHooks: HookData|null,
-             null,               // destroyHooks: DestroyHookData|null,
-             null,               // cleanup: any[]|null,
-             null,               // contentQueries: number[]|null,
-             null,               // components: number[]|null,
-             typeof directives === 'function' ?
-                 directives() :
-                 directives,  // directiveRegistry: DirectiveDefList|null,
-             typeof pipes === 'function' ? pipes() : pipes,  // pipeRegistry: PipeDefList|null,
-             null,                                           // firstChild: TNode|null,
-             schemas,                                        // schemas: SchemaMetadata[]|null,
-             consts,                                         // consts: TConstants|null
-             false                                           // incompleteFirstPass: boolean
-             ) :
+          type,
+          viewIndex,   // id: number,
+          blueprint,   // blueprint: LView,
+          templateFn,  // template: ComponentTemplate<{}>|null,
+          null,        // queries: TQueries|null
+          viewQuery,   // viewQuery: ViewQueriesFunction<{}>|null,
+          null!,       // node: TViewNode|TElementNode|null,
+          cloneToTViewData(blueprint).fill(null, bindingStartIndex),  // data: TData,
+          bindingStartIndex,                                          // bindingStartIndex: number,
+          initialViewLength,                                          // expandoStartIndex: number,
+          null,   // expandoInstructions: ExpandoInstructions|null,
+          true,   // firstCreatePass: boolean,
+          true,   // firstUpdatePass: boolean,
+          false,  // staticViewQueries: boolean,
+          false,  // staticContentQueries: boolean,
+          null,   // preOrderHooks: HookData|null,
+          null,   // preOrderCheckHooks: HookData|null,
+          null,   // contentHooks: HookData|null,
+          null,   // contentCheckHooks: HookData|null,
+          null,   // viewHooks: HookData|null,
+          null,   // viewCheckHooks: HookData|null,
+          null,   // destroyHooks: DestroyHookData|null,
+          null,   // cleanup: any[]|null,
+          null,   // contentQueries: number[]|null,
+          null,   // components: number[]|null,
+          typeof directives === 'function' ?
+              directives() :
+              directives,  // directiveRegistry: DirectiveDefList|null,
+          typeof pipes === 'function' ? pipes() : pipes,  // pipeRegistry: PipeDefList|null,
+          null,                                           // firstChild: TNode|null,
+          schemas,                                        // schemas: SchemaMetadata[]|null,
+          consts,                                         // consts: TConstants|null
+          false,                                          // incompleteFirstPass: boolean
+          decls,                                          // ngDevMode only: decls
+          vars,                                           // ngDevMode only: vars
+          ) :
       {
         type: type,
         id: viewIndex,
@@ -727,6 +730,13 @@ export function createTView(
         consts: consts,
         incompleteFirstPass: false
       };
+  if (ngDevMode) {
+    // For performance reasons it is important that the tView retains the same shape during runtime.
+    // (To make sure that all of the code is monomorphic.) For this reason we seal the object to
+    // prevent class transitions.
+    Object.seal(tView);
+  }
+  return tView;
 }
 
 function createViewBlueprint(bindingStartIndex: number, initialViewLength: number): LView {
@@ -816,71 +826,79 @@ export function createTNode(
     tagName: string|null, attrs: TAttributes|null): TNode {
   ngDevMode && ngDevMode.tNode++;
   let injectorIndex = tParent ? tParent.injectorIndex : -1;
-  return ngDevMode ? new TNodeDebug(
-                         tView,          // tView_: TView
-                         type,           // type: TNodeType
-                         adjustedIndex,  // index: number
-                         injectorIndex,  // injectorIndex: number
-                         -1,             // directiveStart: number
-                         -1,             // directiveEnd: number
-                         -1,             // directiveStylingLast: number
-                         null,           // propertyBindings: number[]|null
-                         0,              // flags: TNodeFlags
-                         0,              // providerIndexes: TNodeProviderIndexes
-                         tagName,        // tagName: string|null
-                         attrs,  // attrs: (string|AttributeMarker|(string|SelectorFlags)[])[]|null
-                         null,   // mergedAttrs
-                         null,   // localNames: (string|number)[]|null
-                         undefined,  // initialInputs: (string[]|null)[]|null|undefined
-                         null,       // inputs: PropertyAliases|null
-                         null,       // outputs: PropertyAliases|null
-                         null,       // tViews: ITView|ITView[]|null
-                         null,       // next: ITNode|null
-                         null,       // projectionNext: ITNode|null
-                         null,       // child: ITNode|null
-                         tParent,    // parent: TElementNode|TContainerNode|null
-                         null,       // projection: number|(ITNode|RNode[])[]|null
-                         null,       // styles: string|null
-                         null,       // stylesWithoutHost: string|null
-                         undefined,  // residualStyles: string|null
-                         null,       // classes: string|null
-                         null,       // classesWithoutHost: string|null
-                         undefined,  // residualClasses: string|null
-                         0 as any,   // classBindings: TStylingRange;
-                         0 as any,   // styleBindings: TStylingRange;
-                         ) :
-                     {
-                       type: type,
-                       index: adjustedIndex,
-                       injectorIndex: injectorIndex,
-                       directiveStart: -1,
-                       directiveEnd: -1,
-                       directiveStylingLast: -1,
-                       propertyBindings: null,
-                       flags: 0,
-                       providerIndexes: 0,
-                       tagName: tagName,
-                       attrs: attrs,
-                       mergedAttrs: null,
-                       localNames: null,
-                       initialInputs: undefined,
-                       inputs: null,
-                       outputs: null,
-                       tViews: null,
-                       next: null,
-                       projectionNext: null,
-                       child: null,
-                       parent: tParent,
-                       projection: null,
-                       styles: null,
-                       stylesWithoutHost: null,
-                       residualStyles: undefined,
-                       classes: null,
-                       classesWithoutHost: null,
-                       residualClasses: undefined,
-                       classBindings: 0 as any,
-                       styleBindings: 0 as any,
-                     };
+  const tNode = ngDevMode ?
+      new TNodeDebug(
+          tView,          // tView_: TView
+          type,           // type: TNodeType
+          adjustedIndex,  // index: number
+          injectorIndex,  // injectorIndex: number
+          -1,             // directiveStart: number
+          -1,             // directiveEnd: number
+          -1,             // directiveStylingLast: number
+          null,           // propertyBindings: number[]|null
+          0,              // flags: TNodeFlags
+          0,              // providerIndexes: TNodeProviderIndexes
+          tagName,        // tagName: string|null
+          attrs,          // attrs: (string|AttributeMarker|(string|SelectorFlags)[])[]|null
+          null,           // mergedAttrs
+          null,           // localNames: (string|number)[]|null
+          undefined,      // initialInputs: (string[]|null)[]|null|undefined
+          null,           // inputs: PropertyAliases|null
+          null,           // outputs: PropertyAliases|null
+          null,           // tViews: ITView|ITView[]|null
+          null,           // next: ITNode|null
+          null,           // projectionNext: ITNode|null
+          null,           // child: ITNode|null
+          tParent,        // parent: TElementNode|TContainerNode|null
+          null,           // projection: number|(ITNode|RNode[])[]|null
+          null,           // styles: string|null
+          null,           // stylesWithoutHost: string|null
+          undefined,      // residualStyles: string|null
+          null,           // classes: string|null
+          null,           // classesWithoutHost: string|null
+          undefined,      // residualClasses: string|null
+          0 as any,       // classBindings: TStylingRange;
+          0 as any,       // styleBindings: TStylingRange;
+          ) :
+      {
+        type: type,
+        index: adjustedIndex,
+        injectorIndex: injectorIndex,
+        directiveStart: -1,
+        directiveEnd: -1,
+        directiveStylingLast: -1,
+        propertyBindings: null,
+        flags: 0,
+        providerIndexes: 0,
+        tagName: tagName,
+        attrs: attrs,
+        mergedAttrs: null,
+        localNames: null,
+        initialInputs: undefined,
+        inputs: null,
+        outputs: null,
+        tViews: null,
+        next: null,
+        projectionNext: null,
+        child: null,
+        parent: tParent,
+        projection: null,
+        styles: null,
+        stylesWithoutHost: null,
+        residualStyles: undefined,
+        classes: null,
+        classesWithoutHost: null,
+        residualClasses: undefined,
+        classBindings: 0 as any,
+        styleBindings: 0 as any,
+      };
+  if (ngDevMode) {
+    // For performance reasons it is important that the tNode retains the same shape during runtime.
+    // (To make sure that all of the code is monomorphic.) For this reason we seal the object to
+    // prevent class transitions.
+    Object.seal(tNode);
+  }
+  return tNode;
 }
 
 
@@ -2031,7 +2049,7 @@ export function setInputsForProperty(
     const index = inputs[i++] as number;
     const privateName = inputs[i++] as string;
     const instance = lView[index];
-    ngDevMode && assertDataInRange(lView, index);
+    ngDevMode && assertIndexInRange(lView, index);
     const def = tView.data[index] as DirectiveDef<any>;
     if (def.setInput !== null) {
       def.setInput!(instance, value, publicName, privateName);
@@ -2046,7 +2064,7 @@ export function setInputsForProperty(
  */
 export function textBindingInternal(lView: LView, index: number, value: string): void {
   ngDevMode && assertNotSame(value, NO_CHANGE as any, 'value should not be NO_CHANGE');
-  ngDevMode && assertDataInRange(lView, index + HEADER_OFFSET);
+  ngDevMode && assertIndexInRange(lView, index + HEADER_OFFSET);
   const element = getNativeByIndex(index, lView) as any as RText;
   ngDevMode && assertDefined(element, 'native element should exist');
   ngDevMode && ngDevMode.rendererSetText++;

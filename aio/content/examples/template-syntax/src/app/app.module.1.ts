@@ -1,6 +1,6 @@
 // #docregion
 import { NgModule } from '@angular/core';
-import { BrowserModule }  from '@angular/platform-browser';
+import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms'; // <--- JavaScript import from Angular
 
 /* 기타 심볼 로드 */

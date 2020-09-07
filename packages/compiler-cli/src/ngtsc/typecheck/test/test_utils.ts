@@ -9,20 +9,22 @@
 import {CssSelector, ParseSourceFile, ParseSourceSpan, parseTemplate, R3TargetBinder, SchemaMetadata, SelectorMatcher, TmplAstElement, TmplAstReference, Type} from '@angular/compiler';
 import * as ts from 'typescript';
 
-import {absoluteFrom, AbsoluteFsPath, LogicalFileSystem} from '../../file_system';
+import {absoluteFrom, AbsoluteFsPath, getSourceFileOrError, LogicalFileSystem} from '../../file_system';
 import {TestFile} from '../../file_system/testing';
 import {AbsoluteModuleStrategy, LocalIdentifierStrategy, LogicalProjectStrategy, ModuleResolver, Reference, ReferenceEmitter} from '../../imports';
 import {NOOP_INCREMENTAL_BUILD} from '../../incremental';
 import {ClassDeclaration, isNamedClassDeclaration, TypeScriptReflectionHost} from '../../reflection';
 import {makeProgram} from '../../testing';
 import {getRootDirs} from '../../util/src/typescript';
-import {TemplateId, TemplateSourceMapping, TypeCheckableDirectiveMeta, TypeCheckBlockMetadata, TypeCheckingConfig, UpdateMode} from '../src/api';
+import {ProgramTypeCheckAdapter, TemplateTypeChecker, TypeCheckContext} from '../api';
+import {TemplateId, TemplateSourceMapping, TypeCheckableDirectiveMeta, TypeCheckBlockMetadata, TypeCheckingConfig, UpdateMode} from '../api/api';
+import {TemplateDiagnostic} from '../diagnostics';
 import {ReusedProgramStrategy} from '../src/augmented_program';
-import {ProgramTypeCheckAdapter, TemplateTypeChecker} from '../src/checker';
-import {TypeCheckContext} from '../src/context';
+import {TemplateTypeCheckerImpl} from '../src/checker';
 import {DomSchemaChecker} from '../src/dom';
 import {Environment} from '../src/environment';
 import {OutOfBandDiagnosticRecorder} from '../src/oob';
+import {TypeCheckShimGenerator} from '../src/shim';
 import {generateTypeCheckBlock} from '../src/type_check_block';
 
 export function typescriptLibDts(): TestFile {
@@ -118,8 +120,9 @@ export function ngForDeclaration(): TestDeclaration {
     file: absoluteFrom('/ngfor.d.ts'),
     selector: '[ngForOf]',
     name: 'NgForOf',
-    inputs: {ngForOf: 'ngForOf'},
+    inputs: {ngForOf: 'ngForOf', ngForTrackBy: 'ngForTrackBy', ngForTemplate: 'ngForTemplate'},
     hasNgTemplateContextGuard: true,
+    isGeneric: true,
   };
 }
 
@@ -154,6 +157,7 @@ export const ALL_ENABLED_CONFIG: TypeCheckingConfig = {
   checkQueries: false,
   checkTemplateBodies: true,
   checkTypeOfInputBindings: true,
+  honorAccessModifiersForInputBindings: true,
   strictNullInputBindings: true,
   checkTypeOfAttributes: true,
   // Feature is still in development.
@@ -173,11 +177,13 @@ export const ALL_ENABLED_CONFIG: TypeCheckingConfig = {
 // Remove 'ref' from TypeCheckableDirectiveMeta and add a 'selector' instead.
 export type TestDirective = Partial<Pick<
     TypeCheckableDirectiveMeta,
-    Exclude<keyof TypeCheckableDirectiveMeta, 'ref'|'coercedInputFields'>>>&{
-  selector: string,
-  name: string,
-  file?: AbsoluteFsPath, type: 'directive',
-  coercedInputFields?: string[],
+    Exclude<
+        keyof TypeCheckableDirectiveMeta,
+        'ref'|'coercedInputFields'|'restrictedInputFields'|'stringLiteralInputFields'|
+        'undeclaredInputFields'>>>&{
+  selector: string, name: string, file?: AbsoluteFsPath, type: 'directive',
+      coercedInputFields?: string[], restrictedInputFields?: string[],
+      stringLiteralInputFields?: string[], undeclaredInputFields?: string[], isGeneric?: boolean;
 };
 export type TestPipe = {
   name: string,
@@ -208,6 +214,7 @@ export function tcb(
     applyTemplateContextGuards: true,
     checkQueries: false,
     checkTypeOfInputBindings: true,
+    honorAccessModifiersForInputBindings: false,
     strictNullInputBindings: true,
     checkTypeOfAttributes: true,
     checkTypeOfDomBindings: false,
@@ -235,32 +242,89 @@ export function tcb(
   return res.replace(/\s+/g, ' ');
 }
 
-export interface TemplateTestEnvironment {
-  sf: ts.SourceFile;
-  program: ts.Program;
-  templateTypeChecker: TemplateTypeChecker;
-  programStrategy: ReusedProgramStrategy;
+/**
+ * A file in the test program, along with any template information for components within the file.
+ */
+export interface TypeCheckingTarget {
+  /**
+   * Path to the file in the virtual test filesystem.
+   */
+  fileName: AbsoluteFsPath;
+
+  /**
+   * Raw source code for the file.
+   *
+   * If this is omitted, source code for the file will be generated based on any expected component
+   * classes.
+   */
+  source?: string;
+
+  /**
+   * A map of component class names to string templates for that component.
+   */
+  templates: {[className: string]: string};
+
+  /**
+   * Any declarations (e.g. directives) which should be considered as part of the scope for the
+   * components in this file.
+   */
+  declarations?: TestDeclaration[];
 }
 
-function setupTemplateTypeChecking(
-    source: string, additionalSources: {name: AbsoluteFsPath; contents: string}[],
-    config: Partial<TypeCheckingConfig>, opts: ts.CompilerOptions,
-    makeTypeCheckAdapterFn: (program: ts.Program, sf: ts.SourceFile) =>
-        ProgramTypeCheckAdapter): TemplateTestEnvironment {
-  const typeCheckFilePath = absoluteFrom('/main.ngtypecheck.ts');
+/**
+ * Create a testing environment for template type-checking which contains a number of given test
+ * targets.
+ *
+ * A full Angular environment is not necessary to exercise the template type-checking system.
+ * Components only need to be classes which exist, with templates specified in the target
+ * configuration. In many cases, it's not even necessary to include source code for test files, as
+ * that can be auto-generated based on the provided target configuration.
+ */
+export function setup(targets: TypeCheckingTarget[], overrides: {
+  config?: Partial<TypeCheckingConfig>,
+  options?: ts.CompilerOptions,
+  inlining?: boolean,
+} = {}): {
+  templateTypeChecker: TemplateTypeChecker,
+  program: ts.Program,
+  programStrategy: ReusedProgramStrategy,
+} {
   const files = [
     typescriptLibDts(),
     angularCoreDts(),
     angularAnimationsDts(),
-    // Add the typecheck file to the program, as the typecheck program is created with the
-    // assumption that the typecheck file was already a root file in the original program.
-    {name: typeCheckFilePath, contents: 'export const TYPECHECK = true;'},
-    {name: absoluteFrom('/main.ts'), contents: source},
-    ...additionalSources,
   ];
-  const {program, host, options} =
-      makeProgram(files, {strictNullChecks: true, noImplicitAny: true, ...opts}, undefined, false);
-  const sf = program.getSourceFile(absoluteFrom('/main.ts'))!;
+
+  for (const target of targets) {
+    let contents: string;
+    if (target.source !== undefined) {
+      contents = target.source;
+    } else {
+      contents = `// generated from templates\n\nexport const MODULE = true;\n\n`;
+      for (const className of Object.keys(target.templates)) {
+        contents += `export class ${className} {}\n`;
+      }
+    }
+
+    files.push({
+      name: target.fileName,
+      contents,
+    });
+
+    if (!target.fileName.endsWith('.d.ts')) {
+      files.push({
+        name: TypeCheckShimGenerator.shimFor(target.fileName),
+        contents: 'export const MODULE = true;',
+      });
+    }
+  }
+
+  const opts = overrides.options ?? {};
+  const config = overrides.config ?? {};
+
+  const {program, host, options} = makeProgram(
+      files, {strictNullChecks: true, noImplicitAny: true, ...opts}, /* host */ undefined,
+      /* checkForErrors */ false);
   const checker = program.getTypeChecker();
   const logicalFs = new LogicalFileSystem(getRootDirs(host, options), host);
   const reflectionHost = new TypeScriptReflectionHost(checker);
@@ -274,22 +338,18 @@ function setupTemplateTypeChecking(
   ]);
   const fullConfig = {...ALL_ENABLED_CONFIG, ...config};
 
-  const checkAdapter = makeTypeCheckAdapterFn(program, sf);
-  const programStrategy = new ReusedProgramStrategy(program, host, options, []);
-  const templateTypeChecker = new TemplateTypeChecker(
-      program, programStrategy, checkAdapter, fullConfig, emitter, reflectionHost, host,
-      NOOP_INCREMENTAL_BUILD);
+  const checkAdapter = createTypeCheckAdapter((sf, ctx) => {
+    for (const target of targets) {
+      if (getSourceFileOrError(program, target.fileName) !== sf) {
+        continue;
+      }
 
-  return {program, sf, templateTypeChecker, programStrategy};
-}
+      const declarations = target.declarations ?? [];
 
-export function typecheck(
-    template: string, source: string, declarations: TestDeclaration[] = [],
-    additionalSources: {name: AbsoluteFsPath; contents: string}[] = [],
-    config: Partial<TypeCheckingConfig> = {}, opts: ts.CompilerOptions = {}): ts.Diagnostic[] {
-  const {sf, templateTypeChecker} =
-      setupTemplateTypeChecking(source, additionalSources, config, opts, (program, sf) => {
-        const templateUrl = 'synthetic.html';
+      for (const className of Object.keys(target.templates)) {
+        const classDecl = getClass(sf, className);
+        const template = target.templates[className];
+        const templateUrl = `${className}.html`;
         const templateFile = new ParseSourceFile(template, templateUrl);
         const {nodes, errors} = parseTemplate(template, templateUrl);
         if (errors !== undefined) {
@@ -307,42 +367,40 @@ export function typecheck(
           return getClass(declFile, decl.name);
         });
         const binder = new R3TargetBinder(matcher);
-        const boundTarget = binder.bind({template: nodes});
-        const clazz = new Reference(getClass(sf, 'TestComponent'));
+        const classRef = new Reference(classDecl);
 
         const sourceMapping: TemplateSourceMapping = {
           type: 'external',
           template,
           templateUrl,
-          componentClass: clazz.node,
+          componentClass: classRef.node,
           // Use the class's name for error mappings.
-          node: clazz.node.name,
+          node: classRef.node.name,
         };
 
-        return createTypeCheckAdapter((ctx: TypeCheckContext) => {
-          ctx.addTemplate(clazz, boundTarget, pipes, [], sourceMapping, templateFile);
-        });
-      });
-
-  templateTypeChecker.refresh();
-  return templateTypeChecker.getDiagnosticsForFile(sf);
-}
-
-export function createProgramWithNoTemplates(): TemplateTestEnvironment {
-  return setupTemplateTypeChecking(
-      'export const NOT_A_COMPONENT = true;', [], {}, {}, () => createTypeCheckAdapter(() => {}));
-}
-
-function createTypeCheckAdapter(fn: (ctx: TypeCheckContext) => void): ProgramTypeCheckAdapter {
-  let called = false;
-  return {
-    typeCheck: (sf: ts.SourceFile, ctx: TypeCheckContext) => {
-      if (!called) {
-        fn(ctx);
+        ctx.addTemplate(classRef, binder, nodes, pipes, [], sourceMapping, templateFile);
       }
-      called = true;
-    },
+    }
+  });
+
+  const programStrategy = new ReusedProgramStrategy(program, host, options, ['ngtypecheck']);
+  if (overrides.inlining !== undefined) {
+    (programStrategy as any).supportsInlineOperations = overrides.inlining;
+  }
+
+  const templateTypeChecker = new TemplateTypeCheckerImpl(
+      program, programStrategy, checkAdapter, fullConfig, emitter, reflectionHost, host,
+      NOOP_INCREMENTAL_BUILD);
+  return {
+    templateTypeChecker,
+    program,
+    programStrategy,
   };
+}
+
+function createTypeCheckAdapter(fn: (sf: ts.SourceFile, ctx: TypeCheckContext) => void):
+    ProgramTypeCheckAdapter {
+  return {typeCheck: fn};
 }
 
 function prepareDeclarations(
@@ -364,6 +422,10 @@ function prepareDeclarations(
       isComponent: decl.isComponent || false,
       ngTemplateGuards: decl.ngTemplateGuards || [],
       coercedInputFields: new Set<string>(decl.coercedInputFields || []),
+      restrictedInputFields: new Set<string>(decl.restrictedInputFields || []),
+      stringLiteralInputFields: new Set<string>(decl.stringLiteralInputFields || []),
+      undeclaredInputFields: new Set<string>(decl.undeclaredInputFields || []),
+      isGeneric: decl.isGeneric ?? false,
       outputs: decl.outputs || {},
       queries: decl.queries || [],
     };
@@ -386,7 +448,7 @@ export function getClass(sf: ts.SourceFile, name: string): ClassDeclaration<ts.C
       return stmt;
     }
   }
-  throw new Error(`Class ${name} not found in file`);
+  throw new Error(`Class ${name} not found in file: ${sf.fileName}: ${sf.text}`);
 }
 
 class FakeEnvironment /* implements Environment */ {
@@ -435,7 +497,7 @@ class FakeEnvironment /* implements Environment */ {
 }
 
 export class NoopSchemaChecker implements DomSchemaChecker {
-  get diagnostics(): ReadonlyArray<ts.Diagnostic> {
+  get diagnostics(): ReadonlyArray<TemplateDiagnostic> {
     return [];
   }
 
@@ -446,11 +508,13 @@ export class NoopSchemaChecker implements DomSchemaChecker {
 }
 
 export class NoopOobRecorder implements OutOfBandDiagnosticRecorder {
-  get diagnostics(): ReadonlyArray<ts.Diagnostic> {
+  get diagnostics(): ReadonlyArray<TemplateDiagnostic> {
     return [];
   }
   missingReferenceTarget(): void {}
   missingPipe(): void {}
   illegalAssignmentToTemplateVar(): void {}
   duplicateTemplateVar(): void {}
+  requiresInlineTcb(): void {}
+  requiresInlineTypeConstructors(): void {}
 }

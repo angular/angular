@@ -138,6 +138,16 @@ function _unknownEntityErrorMsg(entitySrc: string): string {
   return `Unknown entity "${entitySrc}" - use the "&#<decimal>;" or  "&#x<hex>;" syntax`;
 }
 
+function _unparsableEntityErrorMsg(type: CharacterReferenceType, entityStr: string): string {
+  return `Unable to parse entity "${entityStr}" - ${
+      type} character reference entities must end with ";"`;
+}
+
+enum CharacterReferenceType {
+  HEX = 'hexadecimal',
+  DEC = 'decimal',
+}
+
 class _ControlFlowError {
   constructor(public error: TokenError) {}
 }
@@ -400,8 +410,13 @@ class _Tokenizer {
       const codeStart = this._cursor.clone();
       this._attemptCharCodeUntilFn(isDigitEntityEnd);
       if (this._cursor.peek() != chars.$SEMICOLON) {
+        // Advance cursor to include the peeked character in the string provided to the error
+        // message.
+        this._cursor.advance();
+        const entityType = isHex ? CharacterReferenceType.HEX : CharacterReferenceType.DEC;
         throw this._createError(
-            _unexpectedCharacterErrorMsg(this._cursor.peek()), this._cursor.getSpan());
+            _unparsableEntityErrorMsg(entityType, this._cursor.getChars(start)),
+            this._cursor.getSpan());
       }
       const strNum = this._cursor.getChars(codeStart);
       this._cursor.advance();
@@ -627,13 +642,11 @@ class _Tokenizer {
     this._beginToken(TokenType.RAW_TEXT);
     const condition = this._readUntil(chars.$COMMA);
     const normalizedCondition = this._processCarriageReturns(condition);
-    if (this._escapedString || this._i18nNormalizeLineEndingsInICUs) {
-      // Either the template is inline or,
-      // we explicitly want to normalize line endings for this text.
+    if (this._i18nNormalizeLineEndingsInICUs) {
+      // We explicitly want to normalize line endings for this text.
       this._endToken([normalizedCondition]);
     } else {
-      // The expression is in an external template and, for backward compatibility,
-      // we are not normalizing line endings.
+      // We are not normalizing line endings.
       const conditionToken = this._endToken([condition]);
       if (normalizedCondition !== condition) {
         this.nonNormalizedIcuExpressions.push(conditionToken);

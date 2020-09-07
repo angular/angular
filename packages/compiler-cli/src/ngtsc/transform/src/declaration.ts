@@ -239,32 +239,48 @@ export class ReturnTypeTransform implements DtsTransform {
   }
 
   transformClassElement(element: ts.ClassElement, imports: ImportManager): ts.ClassElement {
-    if (!ts.isMethodSignature(element)) {
-      return element;
+    // // TODO(alan-agius4): Remove when we no longer support TS 3.9
+    // TS <= 3.9
+    if (ts.isMethodSignature(element)) {
+      const original = ts.getOriginalNode(element) as ts.MethodDeclaration;
+      if (!this.typeReplacements.has(original)) {
+        return element;
+      }
+      const returnType = this.typeReplacements.get(original)!;
+      const tsReturnType = translateType(returnType, imports);
+      const methodSignature = ts.updateMethodSignature(
+          /* node */ element,
+          /* typeParameters */ element.typeParameters,
+          /* parameters */ element.parameters,
+          /* type */ tsReturnType,
+          /* name */ element.name,
+          /* questionToken */ element.questionToken);
+
+      // Copy over any modifiers, these cannot be set during the `ts.updateMethodSignature` call.
+      (methodSignature.modifiers as ts.ModifiersArray | undefined) = element.modifiers;
+
+      // A bug in the TypeScript declaration causes `ts.MethodSignature` not to be assignable to
+      // `ts.ClassElement`. Since `element` was a `ts.MethodSignature` already, transforming it into
+      // this type is actually correct.
+      return methodSignature as unknown as ts.ClassElement;
     }
 
-    const original = ts.getOriginalNode(element) as ts.MethodDeclaration;
-    if (!this.typeReplacements.has(original)) {
-      return element;
+    // TS 4.0 +
+    if (ts.isMethodDeclaration(element)) {
+      const original = ts.getOriginalNode(element, ts.isMethodDeclaration);
+      if (!this.typeReplacements.has(original)) {
+        return element;
+      }
+      const returnType = this.typeReplacements.get(original)!;
+      const tsReturnType = translateType(returnType, imports);
+
+      return ts.updateMethod(
+          element, element.decorators, element.modifiers, element.asteriskToken, element.name,
+          element.questionToken, element.typeParameters, element.parameters, tsReturnType,
+          element.body);
     }
-    const returnType = this.typeReplacements.get(original)!;
-    const tsReturnType = translateType(returnType, imports);
 
-    const methodSignature = ts.updateMethodSignature(
-        /* node */ element,
-        /* typeParameters */ element.typeParameters,
-        /* parameters */ element.parameters,
-        /* type */ tsReturnType,
-        /* name */ element.name,
-        /* questionToken */ element.questionToken);
-
-    // Copy over any modifiers, these cannot be set during the `ts.updateMethodSignature` call.
-    methodSignature.modifiers = element.modifiers;
-
-    // A bug in the TypeScript declaration causes `ts.MethodSignature` not to be assignable to
-    // `ts.ClassElement`. Since `element` was a `ts.MethodSignature` already, transforming it into
-    // this type is actually correct.
-    return methodSignature as unknown as ts.ClassElement;
+    return element;
   }
 
   transformFunctionDeclaration(element: ts.FunctionDeclaration, imports: ImportManager):

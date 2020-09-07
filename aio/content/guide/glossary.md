@@ -867,7 +867,7 @@ To learn more, see [Introduction to Services and Dependency Injection](guide/arc
 
 ## structural directives
 
-A category of [directive](#directive) that is responsible for shaping HTML layout by modifying the DOM&mdashthat is, adding, removing, or manipulating elements and their children.
+A category of [directive](#directive) that is responsible for shaping HTML layout by modifying the DOM&mdash;that is, adding, removing, or manipulating elements and their children.
 
 To learn more, see [Structural Directives](guide/structural-directives).
 
@@ -938,6 +938,19 @@ The alternative is a reactive form. For an introduction and comparison of both f
 A TypeScript-like syntax that Angular evaluates within a [data binding](#data-binding).
 
 Read about how to write template expressions in the [template expressions](guide/interpolation#template-expressions) section of the [Interpolation](guide/interpolation) guide.
+
+{@a template-reference-variable}
+
+## template reference variable
+
+A variable defined in a template that references an instance associated with an element, such as a directive instance, component instance, template as in `TemplateRef`, or DOM element.
+After declaring a template reference variable on an element in a template,
+you can access values from that variable elsewhere within the same template.
+The following example defines a template reference variable named `#phone`.
+
+<code-example path="template-reference-variables/src/app/app.component.html" region="ref-var" header="src/app/app.component.html"></code-example>
+
+For more information, see the [Template reference variable](guide/template-reference-variables) guide.
 
 {@a token}
 

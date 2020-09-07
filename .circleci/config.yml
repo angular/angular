@@ -32,8 +32,8 @@ var_4_win: &cache_key_win_fallback v7-angular-win-node-12-{{ checksum ".bazelver
 
 # Cache key for the `components-repo-unit-tests` job. **Note** when updating the SHA in the
 # cache keys also update the SHA for the "COMPONENTS_REPO_COMMIT" environment variable.
-var_5: &components_repo_unit_tests_cache_key v7-angular-components-f428c00465dfcf8a020237f22532480eedbd2cb6
-var_6: &components_repo_unit_tests_cache_key_fallback v7-angular-components-
+var_5: &components_repo_unit_tests_cache_key v9-angular-components-09e68db8ed5b1253f2fe38ff954ef0df019fc25a
+var_6: &components_repo_unit_tests_cache_key_fallback v9-angular-components-
 
 # Workspace initially persisted by the `setup` job, and then enhanced by `build-npm-packages` and
 # `build-ivy-npm-packages`.
@@ -656,6 +656,18 @@ jobs:
       - run: yarn tsc -p packages
       - run: yarn tsc -p modules
       - run: yarn bazel build //packages/zone.js:npm_package
+      # Build test fixtures for a test that rely on Bazel-generated fixtures. Note that disabling
+      # specific tests which are reliant on such generated fixtures is not an option as SystemJS
+      # in the Saucelabs legacy job always fetches referenced files, even if the imports would be
+      # guarded by an check to skip in the Saucelabs legacy job. We should be good running such
+      # test in all supported browsers on Saucelabs anyway until this job can be removed.
+      - run:
+          name: Preparing Bazel-generated fixtures required in legacy tests
+          command: |
+            yarn bazel build //packages/core/test:downleveled_es5_fixture
+            # Needed for the ES5 downlevel reflector test in `packages/core/test/reflection`.
+            cp dist/bin/packages/core/test/reflection/es5_downleveled_inheritance_fixture.js \
+              dist/all/@angular/core/test/reflection/es5_downleveled_inheritance_fixture.js
       - run:
           # Waiting on ready ensures that we don't run tests too early without Saucelabs not being ready.
           name: Waiting for Saucelabs tunnel to connect

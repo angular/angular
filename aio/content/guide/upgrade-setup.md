@@ -1,7 +1,7 @@
 <!--
 # Setup for upgrading from AngularJS
 -->
-# 로컬 개발환경 설정하기
+# AngularJS에서 업그레이드하기
 
 <!--
 Question: Can we remove this file and instead direct readers to https://github.com/angular/quickstart/blob/master/README.md
@@ -119,25 +119,32 @@ and unzip it into your project folder. Then perform the remaining steps with the
 <!--
 You can quickly delete the _non-essential_ files that concern testing and QuickStart repository maintenance
 (***including all git-related artifacts*** such as the `.git` folder and `.gitignore`!).
+
+
+<div class="alert is-important">
+
+
+
+Do this only in the beginning to avoid accidentally deleting your own tests and git setup!
+
+
+</div>
+
+
+
+Open a terminal window in the project folder and enter the following commands for your environment:
 -->
 저장소를 복제했다면 테스트와 관련되거나 QuickStart 저장소에 관련된 _불필요한_ 파일들을 지우는 것이 좋습니다.
 (`.git` 폴더나 `.gitignore`와 같이 ***git과 관련된 파일들도*** 지우는 것이 좋습니다!)
 
 <div class="alert is-important">
 
-
-<!--
-Do this only in the beginning to avoid accidentally deleting your own tests and git setup!
--->
 이 과정은 테스트 스펙을 직접 작성하거나 git 저장소를 직접 설정할 때만 수행하세요.
 
 </div>
 
-
-<!--
-Open a terminal window in the project folder and enter the following commands for your environment:
--->
 프로젝트 폴더에서 터미널을 열고 다음 명령을 실행하세요:
+
 
 ### OS/X (bash)
 
@@ -394,26 +401,28 @@ Windows에서 이 제한을 해제하려면 레지스트리를 수정해야 합�
 
 
 <!--
-## Appendix: Test using `fakeAsync()/async()`
+## Appendix: Test using `fakeAsync()/waitForAsync()`
 -->
-## 부록: `fakeAsync()/async()` 활용하기
+## 부록: `fakeAsync()/waitForAsync()` 활용하기
 
 <!--
-If you use the `fakeAsync()/async()` helper function to run unit tests (for details, read the [Testing guide](guide/testing-components-scenarios#fake-async)), you need to import `zone.js/dist/zone-testing` in your test setup file.
+If you use the `fakeAsync()/waitForAsync()` helper function to run unit tests (for details, read the [Testing guide](guide/testing-components-scenarios#fake-async)), you need to import `zone.js/dist/zone-testing` in your test setup file.
+
+<div class="alert is-important">
+If you create project with `Angular/CLI`, it is already imported in `src/test.ts`.
+</div>
+
+And in the earlier versions of `Angular`, the following files were imported or added in your html file:
 -->
-유닛 테스트를 실행할 때 `fakeAsync()/async()` 헬퍼 함수를 사용한다면, 테스트 환경 설정을 위해 `zone.js/dist/zone-testing` 패키지들을 로드해야 합니다.
+유닛 테스트를 실행할 때 `fakeAsync()/waitForAsync()` 헬퍼 함수를 사용한다면, 테스트 환경 설정을 위해 `zone.js/dist/zone-testing` 패키지들을 로드해야 합니다.
 자세한 내용은 [테스트](guide/testing-components-scenarios#fake-async) 문서를 참고하세요.
 
 <div class="alert is-important">
-<!--
-If you create project with `Angular/CLI`, it is already imported in `src/test.ts`.
--->
+
 Angular CLI로 프로젝트를 생성했다면 이 내용은 이미 `src/test.ts` 파일에 구성되어 있습니다.
+
 </div>
 
-<!--
-And in the earlier versions of `Angular`, the following files were imported or added in your html file:
--->
 이전에는 HTML 파일에서 이 파일들을 직접 로드하기도 했습니다:
 
 ```

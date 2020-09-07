@@ -72,7 +72,7 @@ describe('HttpClient testing', () => {
 
     // Make an HTTP GET request with specific header
     httpClient.get<Data>(testUrl, {
-        headers: new HttpHeaders({'Authorization': 'my-auth-token'})
+        headers: new HttpHeaders({Authorization: 'my-auth-token'})
       })
       .subscribe(data =>
         expect(data).toEqual(testData)
@@ -82,14 +82,14 @@ describe('HttpClient testing', () => {
     // #docregion predicate
     // Expect one request with an authorization header
     const req = httpTestingController.expectOne(
-      req => req.headers.has('Authorization')
+      request => request.headers.has('Authorization')
     );
     // #enddocregion predicate
     req.flush(testData);
   });
 
   it('can test multiple requests', () => {
-    let testData: Data[] = [
+    const testData: Data[] = [
       { name: 'bob' }, { name: 'carol' },
       { name: 'ted' }, { name: 'alice' }
     ];

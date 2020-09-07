@@ -19,7 +19,7 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {onlyInIvy} from '@angular/private/testing';
 
 import {NoopNgZone} from '../src/zone/ng_zone';
-import {async, ComponentFixtureNoNgZone, inject, TestBed, withModule} from '../testing';
+import {ComponentFixtureNoNgZone, inject, TestBed, waitForAsync, withModule} from '../testing';
 
 @Component({selector: 'bootstrap-app', template: 'hello'})
 class SomeComponent {
@@ -79,62 +79,66 @@ class SomeComponent {
     }
 
     it('should bootstrap a component from a child module',
-       async(inject([ApplicationRef, Compiler], (app: ApplicationRef, compiler: Compiler) => {
-         @Component({
-           selector: 'bootstrap-app',
-           template: '',
-         })
-         class SomeComponent {
-         }
+       waitForAsync(
+           inject([ApplicationRef, Compiler], (app: ApplicationRef, compiler: Compiler) => {
+             @Component({
+               selector: 'bootstrap-app',
+               template: '',
+             })
+             class SomeComponent {
+             }
 
-         const helloToken = new InjectionToken<string>('hello');
+             const helloToken = new InjectionToken<string>('hello');
 
-         @NgModule({
-           providers: [{provide: helloToken, useValue: 'component'}],
-           declarations: [SomeComponent],
-           entryComponents: [SomeComponent],
-         })
-         class SomeModule {
-         }
+             @NgModule({
+               providers: [{provide: helloToken, useValue: 'component'}],
+               declarations: [SomeComponent],
+               entryComponents: [SomeComponent],
+             })
+             class SomeModule {
+             }
 
-         createRootEl();
-         const modFactory = compiler.compileModuleSync(SomeModule);
-         const module = modFactory.create(TestBed);
-         const cmpFactory = module.componentFactoryResolver.resolveComponentFactory(SomeComponent)!;
-         const component = app.bootstrap(cmpFactory);
+             createRootEl();
+             const modFactory = compiler.compileModuleSync(SomeModule);
+             const module = modFactory.create(TestBed);
+             const cmpFactory =
+                 module.componentFactoryResolver.resolveComponentFactory(SomeComponent)!;
+             const component = app.bootstrap(cmpFactory);
 
-         // The component should see the child module providers
-         expect(component.injector.get(helloToken)).toEqual('component');
-       })));
+             // The component should see the child module providers
+             expect(component.injector.get(helloToken)).toEqual('component');
+           })));
 
     it('should bootstrap a component with a custom selector',
-       async(inject([ApplicationRef, Compiler], (app: ApplicationRef, compiler: Compiler) => {
-         @Component({
-           selector: 'bootstrap-app',
-           template: '',
-         })
-         class SomeComponent {
-         }
+       waitForAsync(
+           inject([ApplicationRef, Compiler], (app: ApplicationRef, compiler: Compiler) => {
+             @Component({
+               selector: 'bootstrap-app',
+               template: '',
+             })
+             class SomeComponent {
+             }
 
-         const helloToken = new InjectionToken<string>('hello');
+             const helloToken = new InjectionToken<string>('hello');
 
-         @NgModule({
-           providers: [{provide: helloToken, useValue: 'component'}],
-           declarations: [SomeComponent],
-           entryComponents: [SomeComponent],
-         })
-         class SomeModule {
-         }
+             @NgModule({
+               providers: [{provide: helloToken, useValue: 'component'}],
+               declarations: [SomeComponent],
+               entryComponents: [SomeComponent],
+             })
+             class SomeModule {
+             }
 
-         createRootEl('custom-selector');
-         const modFactory = compiler.compileModuleSync(SomeModule);
-         const module = modFactory.create(TestBed);
-         const cmpFactory = module.componentFactoryResolver.resolveComponentFactory(SomeComponent)!;
-         const component = app.bootstrap(cmpFactory, 'custom-selector');
+             createRootEl('custom-selector');
+             const modFactory = compiler.compileModuleSync(SomeModule);
+             const module = modFactory.create(TestBed);
+             const cmpFactory =
+                 module.componentFactoryResolver.resolveComponentFactory(SomeComponent)!;
+             const component = app.bootstrap(cmpFactory, 'custom-selector');
 
-         // The component should see the child module providers
-         expect(component.injector.get(helloToken)).toEqual('component');
-       })));
+             // The component should see the child module providers
+             expect(component.injector.get(helloToken)).toEqual('component');
+           })));
 
     describe('ApplicationRef', () => {
       beforeEach(() => {
@@ -216,7 +220,7 @@ class SomeComponent {
         defaultPlatform = _platform;
       }));
 
-      it('should wait for asynchronous app initializers', async(() => {
+      it('should wait for asynchronous app initializers', waitForAsync(() => {
            let resolve: (result: any) => void;
            const promise: Promise<any> = new Promise((res) => {
              resolve = res;
@@ -235,7 +239,8 @@ class SomeComponent {
                });
          }));
 
-      it('should rethrow sync errors even if the exceptionHandler is not rethrowing', async(() => {
+      it('should rethrow sync errors even if the exceptionHandler is not rethrowing',
+         waitForAsync(() => {
            defaultPlatform
                .bootstrapModule(createModule([{
                  provide: APP_INITIALIZER,
@@ -253,7 +258,7 @@ class SomeComponent {
          }));
 
       it('should rethrow promise errors even if the exceptionHandler is not rethrowing',
-         async(() => {
+         waitForAsync(() => {
            defaultPlatform
                .bootstrapModule(createModule([
                  {provide: APP_INITIALIZER, useValue: () => Promise.reject('Test'), multi: true}
@@ -264,7 +269,7 @@ class SomeComponent {
                });
          }));
 
-      it('should throw useful error when ApplicationRef is not configured', async(() => {
+      it('should throw useful error when ApplicationRef is not configured', waitForAsync(() => {
            @NgModule()
            class EmptyModule {
            }
@@ -277,7 +282,7 @@ class SomeComponent {
          }));
 
       it('should call the `ngDoBootstrap` method with `ApplicationRef` on the main module',
-         async(() => {
+         waitForAsync(() => {
            const ngDoBootstrap = jasmine.createSpy('ngDoBootstrap');
            defaultPlatform.bootstrapModule(createModule({ngDoBootstrap: ngDoBootstrap}))
                .then((moduleRef) => {
@@ -286,7 +291,7 @@ class SomeComponent {
                });
          }));
 
-      it('should auto bootstrap components listed in @NgModule.bootstrap', async(() => {
+      it('should auto bootstrap components listed in @NgModule.bootstrap', waitForAsync(() => {
            defaultPlatform.bootstrapModule(createModule({bootstrap: [SomeComponent]}))
                .then((moduleRef) => {
                  const appRef: ApplicationRef = moduleRef.injector.get(ApplicationRef);
@@ -295,7 +300,7 @@ class SomeComponent {
          }));
 
       it('should error if neither `ngDoBootstrap` nor @NgModule.bootstrap was specified',
-         async(() => {
+         waitForAsync(() => {
            defaultPlatform.bootstrapModule(createModule({ngDoBootstrap: false}))
                .then(() => expect(false).toBe(true), (e) => {
                  const expectedErrMsg =
@@ -305,12 +310,12 @@ class SomeComponent {
                });
          }));
 
-      it('should add bootstrapped module into platform modules list', async(() => {
+      it('should add bootstrapped module into platform modules list', waitForAsync(() => {
            defaultPlatform.bootstrapModule(createModule({bootstrap: [SomeComponent]}))
                .then(module => expect((<any>defaultPlatform)._modules).toContain(module));
          }));
 
-      it('should bootstrap with NoopNgZone', async(() => {
+      it('should bootstrap with NoopNgZone', waitForAsync(() => {
            defaultPlatform
                .bootstrapModule(createModule({bootstrap: [SomeComponent]}), {ngZone: 'noop'})
                .then((module) => {
@@ -376,7 +381,7 @@ class SomeComponent {
         createRootEl();
         defaultPlatform = _platform;
       }));
-      it('should wait for asynchronous app initializers', async(() => {
+      it('should wait for asynchronous app initializers', waitForAsync(() => {
            let resolve: (result: any) => void;
            const promise: Promise<any> = new Promise((res) => {
              resolve = res;
@@ -396,7 +401,8 @@ class SomeComponent {
            });
          }));
 
-      it('should rethrow sync errors even if the exceptionHandler is not rethrowing', async(() => {
+      it('should rethrow sync errors even if the exceptionHandler is not rethrowing',
+         waitForAsync(() => {
            const compilerFactory: CompilerFactory =
                defaultPlatform.injector.get(CompilerFactory, null)!;
            const moduleFactory = compilerFactory.createCompiler().compileModuleSync(createModule([{
@@ -413,7 +419,7 @@ class SomeComponent {
          }));
 
       it('should rethrow promise errors even if the exceptionHandler is not rethrowing',
-         async(() => {
+         waitForAsync(() => {
            const compilerFactory: CompilerFactory =
                defaultPlatform.injector.get(CompilerFactory, null)!;
            const moduleFactory = compilerFactory.createCompiler().compileModuleSync(createModule(
@@ -623,25 +629,25 @@ class SomeComponent {
       });
     }
 
-    it('isStable should fire on synchronous component loading', async(() => {
+    it('isStable should fire on synchronous component loading', waitForAsync(() => {
          expectStableTexts(SyncComp, ['1']);
        }));
 
-    it('isStable should fire after a microtask on init is completed', async(() => {
+    it('isStable should fire after a microtask on init is completed', waitForAsync(() => {
          expectStableTexts(MicroTaskComp, ['11']);
        }));
 
-    it('isStable should fire after a macrotask on init is completed', async(() => {
+    it('isStable should fire after a macrotask on init is completed', waitForAsync(() => {
          expectStableTexts(MacroTaskComp, ['11']);
        }));
 
     it('isStable should fire only after chain of micro and macrotasks on init are completed',
-       async(() => {
+       waitForAsync(() => {
          expectStableTexts(MicroMacroTaskComp, ['111']);
        }));
 
     it('isStable should fire only after chain of macro and microtasks on init are completed',
-       async(() => {
+       waitForAsync(() => {
          expectStableTexts(MacroMicroTaskComp, ['111']);
        }));
 
@@ -665,7 +671,7 @@ class SomeComponent {
         });
       }
 
-      it('should be fired after app becomes unstable', async(() => {
+      it('should be fired after app becomes unstable', waitForAsync(() => {
            const fixture = TestBed.createComponent(ClickComp);
            const appRef: ApplicationRef = TestBed.inject(ApplicationRef);
            const zone: NgZone = TestBed.inject(NgZone);

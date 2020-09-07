@@ -159,10 +159,10 @@ It also generates an initial test file for the component, `banner-external.compo
 <div class="alert is-helpful">
 
 Because `compileComponents` is asynchronous, it uses
-the [`async`](api/core/testing/async) utility
+the [`waitForAsync`](api/core/testing/waitForAsync) utility
 function imported from `@angular/core/testing`.
 
-Please refer to the [async](guide/testing-components-scenarios#async) section for more details.
+Please refer to the [waitForAsync](guide/testing-components-scenarios#waitForAsync) section for more details.
 
 </div>
 
@@ -375,6 +375,5 @@ Some noteworthy observations:
 When you're filtering by CSS selector and only testing properties of a browser's _native element_, the `By.css` approach may be overkill.
 
 It's often easier and more clear to filter with a standard `HTMLElement` method
-such as `querySelector()` or `querySelectorAll()`,
-as you'll see in the next set of tests.
+such as `querySelector()` or `querySelectorAll()`.
 

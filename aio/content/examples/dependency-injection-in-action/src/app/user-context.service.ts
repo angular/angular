@@ -1,9 +1,9 @@
 // #docplaster
 // #docregion
-import { Injectable }    from '@angular/core';
+import { Injectable } from '@angular/core';
 
 import { LoggerService } from './logger.service';
-import { UserService }   from './user.service';
+import { UserService } from './user.service';
 
 // #docregion injectables, injectable
 @Injectable({
@@ -24,7 +24,7 @@ export class UserContextService {
   // #enddocregion ctor, injectables
 
   loadUser(userId: number) {
-    let user = this.userService.getUserById(userId);
+    const user = this.userService.getUserById(userId);
     this.name = user.name;
     this.role = user.role;
 

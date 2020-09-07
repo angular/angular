@@ -30,20 +30,19 @@ export function tsCircularDependenciesBuilder(localYargs: yargs.Argv) {
           {type: 'string', demandOption: true, description: 'Path to the configuration file.'})
       .option('warnings', {type: 'boolean', description: 'Prints all warnings.'})
       .command(
-          'check', 'Checks if the circular dependencies have changed.', {},
-          (argv: yargs.Arguments) => {
+          'check', 'Checks if the circular dependencies have changed.', args => args,
+          argv => {
             const {config: configArg, warnings} = argv;
             const configPath = isAbsolute(configArg) ? configArg : resolve(configArg);
             const config = loadTestConfig(configPath);
-            process.exit(main(false, config, warnings));
+            process.exit(main(false, config, !!warnings));
           })
-      .command(
-          'approve', 'Approves the current circular dependencies.', {}, (argv: yargs.Arguments) => {
-            const {config: configArg, warnings} = argv;
-            const configPath = isAbsolute(configArg) ? configArg : resolve(configArg);
-            const config = loadTestConfig(configPath);
-            process.exit(main(true, config, warnings));
-          });
+      .command('approve', 'Approves the current circular dependencies.', args => args, argv => {
+        const {config: configArg, warnings} = argv;
+        const configPath = isAbsolute(configArg) ? configArg : resolve(configArg);
+        const config = loadTestConfig(configPath);
+        process.exit(main(true, config, !!warnings));
+      });
 }
 
 /**

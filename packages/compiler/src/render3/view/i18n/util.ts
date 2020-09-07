@@ -12,10 +12,14 @@ import * as o from '../../../output/output_ast';
 import * as t from '../../r3_ast';
 
 /* Closure variables holding messages must be named `MSG_[A-Z0-9]+` */
-const CLOSURE_TRANSLATION_PREFIX = 'MSG_';
+const CLOSURE_TRANSLATION_VAR_PREFIX = 'MSG_';
 
-/* Prefix for non-`goog.getMsg` i18n-related vars */
-export const TRANSLATION_PREFIX = 'I18N_';
+/**
+ * Prefix for non-`goog.getMsg` i18n-related vars.
+ * Note: the prefix uses lowercase characters intentionally due to a Closure behavior that
+ * considers variables like `I18N_0` as constants and throws an error when their value changes.
+ */
+export const TRANSLATION_VAR_PREFIX = 'i18n_';
 
 /** Name of the i18n attributes **/
 export const I18N_ATTR = 'i18n';
@@ -166,7 +170,7 @@ export function formatI18nPlaceholderName(name: string, useCamelCase: boolean = 
  * @returns Complete translation const prefix
  */
 export function getTranslationConstPrefix(extra: string): string {
-  return `${CLOSURE_TRANSLATION_PREFIX}${extra}`.toUpperCase();
+  return `${CLOSURE_TRANSLATION_VAR_PREFIX}${extra}`.toUpperCase();
 }
 
 /**

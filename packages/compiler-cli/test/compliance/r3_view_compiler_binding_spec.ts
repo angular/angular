@@ -180,6 +180,44 @@ describe('compiler compliance: bindings', () => {
          expectEmit(result.source, template, 'Incorrect template');
        });
 
+    it('should emit temporary evaluation within the binding expression for in-order execution',
+       () => {
+         // https://github.com/angular/angular/issues/37194
+         // Verifies that temporary expressions used for expressions with potential side-effects in
+         // the LHS of a safe navigation access are emitted within the binding expression itself, to
+         // ensure that these temporaries are evaluated during the evaluation of the binding. This
+         // is important for when the LHS contains a pipe, as pipe evaluation depends on the current
+         // binding index.
+         const files = {
+           app: {
+             'example.ts': `
+            import {Component} from '@angular/core';
+
+            @Component({
+              template: '<button [title]="myTitle" [id]="(auth()?.identity() | async)?.id" [tabindex]="1"></button>'
+            })
+            export class MyComponent {
+              myTitle = 'hello';
+              auth?: () => { identity(): any; };
+            }`
+           }
+         };
+
+         const result = compile(files, angularFiles);
+         const template = `
+          …
+          template: function MyComponent_Template(rf, ctx) {
+            …
+            if (rf & 2) {
+              var $tmp0$ = null;
+              $r3$.ɵɵproperty("title", ctx.myTitle)("id", ($tmp0$ = $r3$.ɵɵpipeBind1(1, 3, ($tmp0$ = ctx.auth()) == null ? null : $tmp0$.identity())) == null ? null : $tmp0$.id)("tabindex", 1);
+            }
+          }
+        `;
+
+         expectEmit(result.source, template, 'Incorrect template');
+       });
+
     it('should chain multiple property bindings into a single instruction', () => {
       const files = {
         app: {
@@ -674,6 +712,46 @@ describe('compiler compliance: bindings', () => {
           hostBindings: function HostBindingDir_HostBindings(rf, ctx) {
             if (rf & 2) {
               $r3$.ɵɵhostProperty("id", ctx.dirId);
+            }
+          }
+        });
+      `;
+
+      const result = compile(files, angularFiles);
+      const source = result.source;
+
+      expectEmit(source, HostBindingDirDeclaration, 'Invalid host binding code');
+    });
+
+    it('should support host bindings with temporary expressions', () => {
+      const files = {
+        app: {
+          'spec.ts': `
+            import {Directive, NgModule} from '@angular/core';
+
+            @Directive({
+              selector: '[hostBindingDir]',
+              host: {'[id]': 'getData()?.id'}
+            })
+            export class HostBindingDir {
+              getData?: () => { id: number };
+            }
+
+            @NgModule({declarations: [HostBindingDir]})
+            export class MyModule {}
+          `
+        }
+      };
+
+      const HostBindingDirDeclaration = `
+      HostBindingDir.ɵdir = $r3$.ɵɵdefineDirective({
+        type: HostBindingDir,
+        selectors: [["", "hostBindingDir", ""]],
+          hostVars: 1,
+          hostBindings: function HostBindingDir_HostBindings(rf, ctx) {
+            if (rf & 2) {
+              var $tmp0$ = null;
+              $r3$.ɵɵhostProperty("id", ($tmp0$ = ctx.getData()) == null ? null : $tmp0$.id);
             }
           }
         });

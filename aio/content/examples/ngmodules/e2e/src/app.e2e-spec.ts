@@ -1,8 +1,6 @@
-'use strict'; // necessary for es6 output in node
-
 import { browser, element, by } from 'protractor';
 
-describe('NgModule-example', function () {
+describe('NgModule-example', () => {
 
   // helpers
   const lightgray = 'rgba(239, 238, 237, 1)';
@@ -57,13 +55,13 @@ describe('NgModule-example', function () {
 
   // tests
   function appTitleTests(color: string, name?: string) {
-    return function() {
-      it('should have a gray header', function() {
+    return () => {
+      it('should have a gray header', () => {
         const commons = getCommonsSectionStruct();
         expect(commons.title.getCssValue('backgroundColor')).toBe(color);
       });
 
-      it('should welcome us', function () {
+      it('should welcome us', () => {
         const commons = getCommonsSectionStruct();
         expect(commons.subtitle.getText()).toBe('Welcome, ' + (name ||  'Miss Marple'));
       });
@@ -71,39 +69,39 @@ describe('NgModule-example', function () {
   }
 
   function contactTests(color: string, name?: string) {
-    return function() {
-      it('shows the contact\'s owner', function() {
+    return () => {
+      it('shows the contact\'s owner', () => {
         const contacts = getContactSectionStruct();
         expect(contacts.header.getText()).toBe((name ||  'Miss Marple') + '\'s Contacts');
       });
 
-      it('can cycle between contacts', function () {
+      it('can cycle between contacts', () => {
         const contacts = getContactSectionStruct();
         const nextButton = contacts.nextContactButton;
         expect(contacts.contactNameHeader.getText()).toBe('Awesome Yasha');
         expect(contacts.contactNameHeader.getCssValue('backgroundColor')).toBe(color);
-        nextButton.click().then(function () {
+        nextButton.click().then(() => {
           expect(contacts.contactNameHeader.getText()).toBe('Awesome Iulia');
           return nextButton.click();
-        }).then(function () {
+        }).then(() => {
           expect(contacts.contactNameHeader.getText()).toBe('Awesome Karina');
         });
       });
 
-      it('can create a new contact', function () {
+      it('can create a new contact', () => {
         const contacts = getContactSectionStruct();
         const newContactButton = contacts.newContactButton;
         const nextButton = contacts.nextContactButton;
         const input = contacts.input;
         const saveButton = contacts.saveButton;
 
-        newContactButton.click().then(function () {
+        newContactButton.click().then(() => {
           input.click();
-          nextButton.click()
+          nextButton.click();
           expect(contacts.validationError.getText()).toBe('Name is required.');
           input.click();
           contacts.input.sendKeys('Watson');
-          saveButton.click()
+          saveButton.click();
           expect(contacts.contactNameHeader.getText()).toBe('Awesome Watson');
 
         });
@@ -111,8 +109,8 @@ describe('NgModule-example', function () {
     };
   }
 
-  describe('index.html', function () {
-    beforeEach(function () {
+  describe('index.html', () => {
+    beforeEach(() => {
       browser.get('');
     });
 
@@ -120,36 +118,36 @@ describe('NgModule-example', function () {
 
     describe('contact', contactTests(lightgray, 'Miss Marple'));
 
-    describe('item center', function () {
-      beforeEach(function () {
+    describe('item center', () => {
+      beforeEach(() => {
         getCommonsSectionStruct().itemButton.click();
       });
 
-      it('shows a list of items', function () {
+      it('shows a list of items', () => {
         const item = getItemSectionStruct();
         expect(item.title.getText()).toBe('Items List');
         expect(item.items.count()).toBe(4);
         expect(item.items.get(0).getText()).toBe('1 - Sticky notes');
       });
 
-      it('can navigate to one item details', function () {
+      it('can navigate to one item details', () => {
         const item = getItemSectionStruct();
-        item.items.get(0).click().then(function() {
+        item.items.get(0).click().then(() => {
           expect(item.itemId.getText()).toBe('Item id: 1');
           return item.listLink.click();
-        }).then(function () {
+        }).then(() => {
           // We are back to the list
           expect(item.items.count()).toBe(4);
         });
       });
     });
 
-    describe('customers', function () {
-      beforeEach(function () {
+    describe('customers', () => {
+      beforeEach(() => {
         getCommonsSectionStruct().customersButton.click();
       });
 
-      it('shows a list of customers', function() {
+      it('shows a list of customers', () => {
         const customers = getCustomersSectionStruct();
         expect(customers.header.getText()).toBe('Customers of Miss Marple times 2');
         expect(customers.title.getText()).toBe('Customer List');
@@ -157,13 +155,13 @@ describe('NgModule-example', function () {
         expect(customers.items.get(0).getText()).toBe('11 - Julian');
       });
 
-      it('can navigate and edit one customer details', function () {
+      it('can navigate and edit one customer details', () => {
         const customers = getCustomersSectionStruct();
-        customers.items.get(0).click().then(function () {
+        customers.items.get(0).click().then(() => {
           expect(customers.itemId.getText()).toBe('Id: 11');
           customers.itemInput.sendKeys(' try');
           return customers.listLink.click();
-        }).then(function () {
+        }).then(() => {
           // We are back to the list
           expect(customers.items.count()).toBe(6);
           expect(customers.items.get(0).getText()).toBe('11 - Julian try');

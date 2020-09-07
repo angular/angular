@@ -9,7 +9,7 @@
 import {ɵgetDOM as getDOM} from '@angular/common';
 import {Component, Directive} from '@angular/core';
 import {ElementRef} from '@angular/core/src/linker/element_ref';
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
 import {hasClass} from '@angular/platform-browser/testing/src/browser_util';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
@@ -21,7 +21,7 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
       });
     });
 
-    it('should not interpolate children', async(() => {
+    it('should not interpolate children', waitForAsync(() => {
          const template = '<div>{{text}}<span ngNonBindable>{{text}}</span></div>';
          const fixture = createTestComponent(template);
 
@@ -29,7 +29,7 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
          expect(fixture.nativeElement).toHaveText('foo{{text}}');
        }));
 
-    it('should ignore directives on child nodes', async(() => {
+    it('should ignore directives on child nodes', waitForAsync(() => {
          const template = '<div ngNonBindable><span id=child test-dec>{{text}}</span></div>';
          const fixture = createTestComponent(template);
          fixture.detectChanges();
@@ -40,7 +40,7 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
          expect(hasClass(span, 'compiled')).toBeFalsy();
        }));
 
-    it('should trigger directives on the same node', async(() => {
+    it('should trigger directives on the same node', waitForAsync(() => {
          const template = '<div><span id=child ngNonBindable test-dec>{{text}}</span></div>';
          const fixture = createTestComponent(template);
          fixture.detectChanges();

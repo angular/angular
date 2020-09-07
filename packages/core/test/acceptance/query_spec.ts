@@ -1631,6 +1631,179 @@ describe('query logic', () => {
       expect(groups[2]).toBeUndefined();
     });
   });
+
+  describe('querying for string token providers', () => {
+    @Directive({
+      selector: '[text-token]',
+      providers: [{provide: 'Token', useExisting: TextTokenDirective}],
+    })
+    class TextTokenDirective {
+    }
+
+    it('should match string injection token in a ViewChild query', () => {
+      @Component({template: '<div text-token></div>'})
+      class App {
+        @ViewChild('Token') token: any;
+      }
+
+      TestBed.configureTestingModule({declarations: [App, TextTokenDirective]});
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+      expect(fixture.componentInstance.token).toBeAnInstanceOf(TextTokenDirective);
+    });
+
+    it('should give precedence to local reference if both a reference and a string injection token provider match a ViewChild query',
+       () => {
+         @Component({template: '<div text-token #Token></div>'})
+         class App {
+           @ViewChild('Token') token: any;
+         }
+
+         TestBed.configureTestingModule({declarations: [App, TextTokenDirective]});
+         const fixture = TestBed.createComponent(App);
+         fixture.detectChanges();
+         expect(fixture.componentInstance.token).toBeAnInstanceOf(ElementRef);
+       });
+
+    it('should match string injection token in a ViewChildren query', () => {
+      @Component({template: '<div text-token></div>'})
+      class App {
+        @ViewChildren('Token') tokens!: QueryList<any>;
+      }
+
+      TestBed.configureTestingModule({declarations: [App, TextTokenDirective]});
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      const tokens = fixture.componentInstance.tokens;
+      expect(tokens.length).toBe(1);
+      expect(tokens.first).toBeAnInstanceOf(TextTokenDirective);
+    });
+
+    it('should match both string injection token and local reference inside a ViewChildren query',
+       () => {
+         @Component({template: '<div text-token #Token></div>'})
+         class App {
+           @ViewChildren('Token') tokens!: QueryList<any>;
+         }
+
+         TestBed.configureTestingModule({declarations: [App, TextTokenDirective]});
+         const fixture = TestBed.createComponent(App);
+         fixture.detectChanges();
+
+         expect(fixture.componentInstance.tokens.toArray()).toEqual([
+           jasmine.any(ElementRef), jasmine.any(TextTokenDirective)
+         ]);
+       });
+
+    it('should match string injection token in a ContentChild query', () => {
+      @Component({selector: 'has-query', template: '<ng-content></ng-content>'})
+      class HasQuery {
+        @ContentChild('Token') token: any;
+      }
+
+      @Component({template: '<has-query><div text-token></div></has-query>'})
+      class App {
+        @ViewChild(HasQuery) queryComp!: HasQuery;
+      }
+
+      TestBed.configureTestingModule({declarations: [App, HasQuery, TextTokenDirective]});
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.queryComp.token).toBeAnInstanceOf(TextTokenDirective);
+    });
+
+    it('should give precedence to local reference if both a reference and a string injection token provider match a ContentChild query',
+       () => {
+         @Component({selector: 'has-query', template: '<ng-content></ng-content>'})
+         class HasQuery {
+           @ContentChild('Token') token: any;
+         }
+
+         @Component({template: '<has-query><div text-token #Token></div></has-query>'})
+         class App {
+           @ViewChild(HasQuery) queryComp!: HasQuery;
+         }
+
+         TestBed.configureTestingModule({declarations: [App, HasQuery, TextTokenDirective]});
+         const fixture = TestBed.createComponent(App);
+         fixture.detectChanges();
+
+         expect(fixture.componentInstance.queryComp.token).toBeAnInstanceOf(ElementRef);
+       });
+
+    it('should match string injection token in a ContentChildren query', () => {
+      @Component({selector: 'has-query', template: '<ng-content></ng-content>'})
+      class HasQuery {
+        @ContentChildren('Token') tokens!: QueryList<any>;
+      }
+
+      @Component({template: '<has-query><div text-token></div></has-query>'})
+      class App {
+        @ViewChild(HasQuery) queryComp!: HasQuery;
+      }
+
+      TestBed.configureTestingModule({declarations: [App, HasQuery, TextTokenDirective]});
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      const tokens = fixture.componentInstance.queryComp.tokens;
+      expect(tokens.length).toBe(1);
+      expect(tokens.first).toBeAnInstanceOf(TextTokenDirective);
+    });
+
+    it('should match both string injection token and local reference inside a ContentChildren query',
+       () => {
+         @Component({selector: 'has-query', template: '<ng-content></ng-content>'})
+         class HasQuery {
+           @ContentChildren('Token') tokens!: QueryList<any>;
+         }
+
+         @Component({template: '<has-query><div text-token #Token></div></has-query>'})
+         class App {
+           @ViewChild(HasQuery) queryComp!: HasQuery;
+         }
+
+         TestBed.configureTestingModule({declarations: [App, HasQuery, TextTokenDirective]});
+         const fixture = TestBed.createComponent(App);
+         fixture.detectChanges();
+
+         expect(fixture.componentInstance.queryComp.tokens.toArray()).toEqual([
+           jasmine.any(ElementRef), jasmine.any(TextTokenDirective)
+         ]);
+       });
+
+    it('should match string token specified through the `read` option of a view query', () => {
+      @Component({template: '<div text-token #Token></div>'})
+      class App {
+        @ViewChild('Token', {read: 'Token'}) token: any;
+      }
+
+      TestBed.configureTestingModule({declarations: [App, TextTokenDirective]});
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+      expect(fixture.componentInstance.token).toBeAnInstanceOf(TextTokenDirective);
+    });
+
+    it('should match string token specified through the `read` option of a content query', () => {
+      @Component({selector: 'has-query', template: '<ng-content></ng-content>'})
+      class HasQuery {
+        @ContentChild('Token', {read: 'Token'}) token: any;
+      }
+
+      @Component({template: '<has-query><div text-token #Token></div></has-query>'})
+      class App {
+        @ViewChild(HasQuery) queryComp!: HasQuery;
+      }
+
+      TestBed.configureTestingModule({declarations: [App, HasQuery, TextTokenDirective]});
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.queryComp.token).toBeAnInstanceOf(TextTokenDirective);
+    });
+  });
 });
 
 function initWithTemplate(compType: Type<any>, template: string) {

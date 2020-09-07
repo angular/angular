@@ -235,7 +235,9 @@ export class StaticReflector implements CompileReflector {
         const prop = (<any[]>propData)
                          .find(a => a['__symbolic'] == 'property' || a['__symbolic'] == 'method');
         const decorators: any[] = [];
-        if (propMetadata![propName]) {
+        // hasOwnProperty() is used here to make sure we do not look up methods
+        // on `Object.prototype`.
+        if (propMetadata?.hasOwnProperty(propName)) {
           decorators.push(...propMetadata![propName]);
         }
         propMetadata![propName] = decorators;

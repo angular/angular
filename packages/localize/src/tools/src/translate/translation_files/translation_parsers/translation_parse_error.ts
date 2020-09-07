@@ -14,17 +14,15 @@ export class TranslationParseError extends Error {
   constructor(
       public span: ParseSourceSpan, public msg: string,
       public level: ParseErrorLevel = ParseErrorLevel.ERROR) {
-    super(msg);
+    super(contextualMessage(span, msg, level));
   }
+}
 
-  contextualMessage(): string {
-    const ctx = this.span.start.getContext(100, 3);
-    return ctx ? `${this.msg} ("${ctx.before}[${ParseErrorLevel[this.level]} ->]${ctx.after}")` :
-                 this.msg;
+function contextualMessage(span: ParseSourceSpan, msg: string, level: ParseErrorLevel): string {
+  const ctx = span.start.getContext(100, 2);
+  msg += `\nAt ${span.start}${span.details ? `, ${span.details}` : ''}:\n`;
+  if (ctx) {
+    msg += `...${ctx.before}[${ParseErrorLevel[level]} ->]${ctx.after}...\n`;
   }
-
-  toString(): string {
-    const details = this.span.details ? `, ${this.span.details}` : '';
-    return `${this.contextualMessage()}: ${this.span.start}${details}`;
-  }
+  return msg;
 }

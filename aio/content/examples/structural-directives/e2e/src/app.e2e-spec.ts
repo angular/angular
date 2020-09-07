@@ -1,29 +1,27 @@
-'use strict'; // necessary for es6 output in node
-
 import { browser, element, by } from 'protractor';
 
-describe('Structural Directives', function () {
+describe('Structural Directives', () => {
 
-  beforeAll(function () {
+  beforeAll(() => {
     browser.get('');
   });
 
-  it('first div should show hero name with *ngIf', function () {
+  it('first div should show hero name with *ngIf', () => {
     const allDivs = element.all(by.tagName('div'));
     expect(allDivs.get(0).getText()).toEqual('Dr Nice');
   });
 
-  it('first li should show hero name with *ngFor', function () {
+  it('first li should show hero name with *ngFor', () => {
     const allLis = element.all(by.tagName('li'));
     expect(allLis.get(0).getText()).toEqual('Dr Nice');
   });
 
-  it('ngSwitch have two <happy-hero> instances', function () {
+  it('ngSwitch have two <happy-hero> instances', () => {
     const happyHeroEls = element.all(by.tagName('app-happy-hero'));
     expect(happyHeroEls.count()).toEqual(2);
   });
 
-  it('should toggle *ngIf="hero" with a button', function () {
+  it('should toggle *ngIf="hero" with a button', () => {
     const toggleHeroButton = element.all(by.cssContainingText('button', 'Toggle hero')).get(0);
     const paragraph = element.all(by.cssContainingText('p', 'I turned the corner'));
     expect(paragraph.get(0).getText()).toContain('I waved');
@@ -32,12 +30,12 @@ describe('Structural Directives', function () {
     });
   });
 
-  it('should have only one "Hip!" (the other is erased)', function () {
+  it('should have only one "Hip!" (the other is erased)', () => {
     const paragraph = element.all(by.cssContainingText('p', 'Hip!'));
     expect(paragraph.count()).toEqual(1);
   });
 
-  it('appUnless should show 3 paragraph (A)s and (B)s at the start', function () {
+  it('appUnless should show 3 paragraph (A)s and (B)s at the start', () => {
     const paragraph = element.all(by.css('p.unless'));
     expect(paragraph.count()).toEqual(3);
     for (let i = 0; i < 3; i++) {
@@ -45,7 +43,7 @@ describe('Structural Directives', function () {
     }
   });
 
-  it('appUnless should show 1 paragraph (B) after toggling condition', function () {
+  it('appUnless should show 1 paragraph (B) after toggling condition', () => {
     const toggleConditionButton = element.all(by.cssContainingText('button', 'Toggle condition')).get(0);
     const paragraph = element.all(by.css('p.unless'));
 

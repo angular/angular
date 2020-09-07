@@ -5,17 +5,15 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {Element, ParseErrorLevel, visitAll} from '@angular/compiler';
-import {ɵParsedTranslation} from '@angular/localize';
+import {Element, ParseError, ParseErrorLevel, visitAll} from '@angular/compiler';
 import {extname} from 'path';
 
 import {Diagnostics} from '../../../diagnostics';
 import {BaseVisitor} from '../base_visitor';
-import {MessageSerializer} from '../message_serialization/message_serializer';
-import {TargetMessageRenderer} from '../message_serialization/target_message_renderer';
 
+import {serializeTranslationMessage} from './serialize_translation_message';
 import {ParseAnalysis, ParsedTranslationBundle, TranslationParser} from './translation_parser';
-import {addParseDiagnostic, addParseError, canParseXml, getAttribute, parseInnerRange, XmlTranslationParserHint} from './translation_utils';
+import {addErrorsToBundle, addParseDiagnostic, addParseError, canParseXml, getAttribute, XmlTranslationParserHint} from './translation_utils';
 
 
 /**
@@ -103,20 +101,17 @@ class XtbVisitor extends BaseVisitor {
           return;
         }
 
-        try {
-          bundle.translations[id] = serializeTargetMessage(element);
-        } catch (error) {
-          if (typeof error === 'string') {
-            bundle.diagnostics.warn(
-                `Could not parse message with id "${
-                    id}" - perhaps it has an unrecognised ICU format?\n` +
-                error);
-          } else if (error.span && error.msg && error.level) {
-            addParseDiagnostic(bundle.diagnostics, error.span, error.msg, error.level);
-          } else {
-            throw error;
-          }
+        const {translation, parseErrors, serializeErrors} = serializeTranslationMessage(
+            element, {inlineElements: [], placeholder: {elementName: 'ph', nameAttribute: 'name'}});
+        if (parseErrors.length) {
+          // We only want to warn (not error) if there were problems parsing the translation for
+          // XTB formatted files. See https://github.com/angular/angular/issues/14046.
+          bundle.diagnostics.warn(computeParseWarning(id, parseErrors));
+        } else if (translation !== null) {
+          // Only store the translation if there were no parse errors
+          bundle.translations[id] = translation;
         }
+        addErrorsToBundle(bundle, serializeErrors);
         break;
 
       default:
@@ -127,9 +122,8 @@ class XtbVisitor extends BaseVisitor {
   }
 }
 
-function serializeTargetMessage(source: Element): ɵParsedTranslation {
-  const serializer = new MessageSerializer(
-      new TargetMessageRenderer(),
-      {inlineElements: [], placeholder: {elementName: 'ph', nameAttribute: 'name'}});
-  return serializer.serialize(parseInnerRange(source));
+function computeParseWarning(id: string, errors: ParseError[]): string {
+  const msg = errors.map(e => e.toString()).join('\n');
+  return `Could not parse message with id "${id}" - perhaps it has an unrecognised ICU format?\n` +
+      msg;
 }

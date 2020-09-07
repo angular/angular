@@ -54,8 +54,8 @@ export const formControlBinding: any = {
 
 export class FormControlDirective extends NgControl implements OnChanges {
   /**
-   * @description
    * Internal reference to the view model value.
+   * @nodoc
    */
   viewModel: any;
 
@@ -68,11 +68,13 @@ export class FormControlDirective extends NgControl implements OnChanges {
 
   /**
    * @description
-   * Triggers a warning that this input should not be used with reactive forms.
+   * Triggers a warning in dev mode that this input should not be used with reactive forms.
    */
   @Input('disabled')
   set isDisabled(isDisabled: boolean) {
-    ReactiveErrors.disabledAttrWarning();
+    if (typeof ngDevMode === 'undefined' || ngDevMode) {
+      ReactiveErrors.disabledAttrWarning();
+    }
   }
 
   // TODO(kara): remove next 4 properties once deprecation period is over
@@ -114,13 +116,7 @@ export class FormControlDirective extends NgControl implements OnChanges {
     this.valueAccessor = selectValueAccessor(this, valueAccessors);
   }
 
-  /**
-   * @description
-   * A lifecycle method called when the directive's inputs change. For internal use
-   * only.
-   *
-   * @param changes A object of key/value pairs for the set of changed inputs.
-   */
+  /** @nodoc */
   ngOnChanges(changes: SimpleChanges): void {
     if (this._isControlChanged(changes)) {
       setUpControl(this.form, this);

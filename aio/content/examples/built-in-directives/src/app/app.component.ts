@@ -30,6 +30,14 @@ export class AppComponent implements OnInit {
   itemsWithTrackByCountReset = 0;
   itemIdIncrement = 1;
 
+  // #docregion setClasses
+  currentClasses: {};
+  // #enddocregion setClasses
+
+  // #docregion setStyles
+  currentStyles: {};
+  // #enddocregion setStyles
+
   ngOnInit() {
     this.resetItems();
     this.setCurrentClasses();
@@ -41,20 +49,18 @@ export class AppComponent implements OnInit {
     this.currentItem.name = name.toUpperCase();
   }
 
-// #docregion setClasses
-  currentClasses: {};
+  // #docregion setClasses
   setCurrentClasses() {
     // CSS 클래스는 컴포넌트 프로퍼티 값에 따라 추가되거나 제거됩니다.
     this.currentClasses =  {
-      'saveable': this.canSave,
-      'modified': !this.isUnchanged,
-      'special':  this.isSpecial
+      saveable: this.canSave,
+      modified: !this.isUnchanged,
+      special:  this.isSpecial
     };
   }
   // #enddocregion setClasses
 
   // #docregion setStyles
-  currentStyles: {};
   setCurrentStyles() {
     // CSS 스타일은 컴포넌트 프로퍼티 값에 따라 지정됩니다.
     this.currentStyles = {
@@ -70,11 +76,7 @@ export class AppComponent implements OnInit {
   }
 
   giveNullCustomerValue() {
-    !(this.nullCustomer = null) ? (this.nullCustomer = 'Kelly') : (this.nullCustomer = null);
-  }
-
-  resetNullItem() {
-    this.nullCustomer = null;
+    this.nullCustomer = 'Kelly';
   }
 
   resetItems() {
@@ -84,7 +86,7 @@ export class AppComponent implements OnInit {
   }
 
   resetList() {
-    this.resetItems()
+    this.resetItems();
     this.itemsWithTrackByCountReset = 0;
     this.itemsNoTrackByCount = ++this.itemsNoTrackByCount;
   }
@@ -107,7 +109,7 @@ export class AppComponent implements OnInit {
   trackByItems(index: number, item: Item): number { return item.id; }
 // #enddocregion trackByItems
 
-  trackById(index: number, item: any): number { return item['id']; }
+  trackById(index: number, item: any): number { return item.id; }
 
 }
 

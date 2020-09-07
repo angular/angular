@@ -1,4 +1,3 @@
-
 /**
  * @license
  * Copyright Google LLC All Rights Reserved.
@@ -7,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import * as ts from 'typescript';
-import {CtorParameter} from '../../../src/ngtsc/reflection';
+import {CtorParameter, TypeValueReferenceKind} from '../../../src/ngtsc/reflection';
 
 /**
  * Check that a given list of `CtorParameter`s has `typeValueReference`s of specific `ts.Identifier`
@@ -18,19 +17,21 @@ export function expectTypeValueReferencesForParameters(
   parameters!.forEach((param, idx) => {
     const expected = expectedParams[idx];
     if (expected !== null) {
-      if (param.typeValueReference === null) {
+      if (param.typeValueReference.kind === TypeValueReferenceKind.UNAVAILABLE) {
         fail(`Incorrect typeValueReference generated, expected ${expected}`);
-      } else if (param.typeValueReference.local && fromModule !== null) {
+      } else if (
+          param.typeValueReference.kind === TypeValueReferenceKind.LOCAL && fromModule !== null) {
         fail(`Incorrect typeValueReference generated, expected non-local`);
-      } else if (!param.typeValueReference.local && fromModule === null) {
+      } else if (
+          param.typeValueReference.kind !== TypeValueReferenceKind.LOCAL && fromModule === null) {
         fail(`Incorrect typeValueReference generated, expected local`);
-      } else if (param.typeValueReference.local) {
+      } else if (param.typeValueReference.kind === TypeValueReferenceKind.LOCAL) {
         if (!ts.isIdentifier(param.typeValueReference.expression)) {
-          fail(`Incorrect typeValueReference generated, expected identifer`);
+          fail(`Incorrect typeValueReference generated, expected identifier`);
         } else {
           expect(param.typeValueReference.expression.text).toEqual(expected);
         }
-      } else if (param.typeValueReference !== null) {
+      } else if (param.typeValueReference.kind === TypeValueReferenceKind.IMPORTED) {
         expect(param.typeValueReference.moduleName).toBe(fromModule!);
         expect(param.typeValueReference.importedName).toBe(expected);
       }

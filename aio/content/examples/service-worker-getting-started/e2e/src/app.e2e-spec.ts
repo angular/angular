@@ -15,7 +15,7 @@ describe('sw-example App', () => {
   });
 
   it('should display the Angular logo', () => {
-    let logo = element(by.css('img'));
+    const logo = element(by.css('img'));
     page.navigateTo();
     expect(logo.isPresent()).toBe(true);
   });
@@ -25,7 +25,7 @@ describe('sw-example App', () => {
     expect(listHeader.getText()).toEqual('Here are some links to help you start:');
   });
 
-  it('should show a list of links', function () {
+  it('should show a list of links', () => {
       element.all(by.css('ul > li > h2 > a')).then((items) => {
         expect(items.length).toBe(4);
         expect(items[0].getText()).toBe('Angular Service Worker Intro');

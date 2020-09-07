@@ -19,9 +19,10 @@ export function parseCommandLineOptions(args: string[]): NgccOptions {
             alias: 'source',
             describe:
                 'A path (relative to the working directory) of the `node_modules` folder to process.',
-            default: './node_modules'
+            default: './node_modules',
+            type: 'string',
           })
-          .option('f', {alias: 'formats', hidden: true, array: true})
+          .option('f', {alias: 'formats', hidden: true, array: true, type: 'string'})
           .option('p', {
             alias: 'properties',
             array: true,
@@ -29,7 +30,8 @@ export function parseCommandLineOptions(args: string[]): NgccOptions {
                 'An array of names of properties in package.json to compile (e.g. `module` or `main`)\n' +
                 'Each of these properties should hold the path to a bundle-format.\n' +
                 'If provided, only the specified properties are considered for processing.\n' +
-                'If not provided, all the supported format properties (e.g. fesm2015, fesm5, es2015, esm2015, esm5, main, module) in the package.json are considered.'
+                'If not provided, all the supported format properties (e.g. fesm2015, fesm5, es2015, esm2015, esm5, main, module) in the package.json are considered.',
+            type: 'string',
           })
           .option('t', {
             alias: 'target',
@@ -37,6 +39,7 @@ export function parseCommandLineOptions(args: string[]): NgccOptions {
                 'A relative path (from the `source` path) to a single entry-point to process (plus its dependencies).\n' +
                 'If this property is provided then `error-on-failed-entry-point` is forced to true.\n' +
                 'This option overrides the `--use-program-dependencies` option.',
+            type: 'string',
           })
           .option('use-program-dependencies', {
             type: 'boolean',
@@ -47,7 +50,7 @@ export function parseCommandLineOptions(args: string[]): NgccOptions {
           .option('first-only', {
             describe:
                 'If specified then only the first matching package.json property will be compiled.',
-            type: 'boolean'
+            type: 'boolean',
           })
           .option('create-ivy-entry-points', {
             describe:
@@ -78,6 +81,7 @@ export function parseCommandLineOptions(args: string[]): NgccOptions {
             alias: 'loglevel',
             describe: 'The lowest severity logging message that should be output.',
             choices: ['debug', 'info', 'warn', 'error'],
+            type: 'string',
           })
           .option('invalidate-entry-point-manifest', {
             describe:
@@ -105,7 +109,7 @@ export function parseCommandLineOptions(args: string[]): NgccOptions {
           .help()
           .parse(args);
 
-  if (options['f'] && options['f'].length) {
+  if (options.f?.length) {
     console.error(
         'The formats option (-f/--formats) has been removed. Consider the properties option (-p/--properties) instead.');
     process.exit(1);
@@ -113,12 +117,12 @@ export function parseCommandLineOptions(args: string[]): NgccOptions {
 
   setFileSystem(new NodeJSFileSystem());
 
-  const baseSourcePath = resolve(options['s'] || './node_modules');
-  const propertiesToConsider: string[] = options['p'];
-  const targetEntryPointPath = options['t'] ? options['t'] : undefined;
+  const baseSourcePath = resolve(options.s || './node_modules');
+  const propertiesToConsider = options.p;
+  const targetEntryPointPath = options.t;
   const compileAllFormats = !options['first-only'];
   const createNewEntryPointFormats = options['create-ivy-entry-points'];
-  const logLevel = options['l'] as keyof typeof LogLevel | undefined;
+  const logLevel = options.l as keyof typeof LogLevel | undefined;
   const enableI18nLegacyMessageIdFormat = options['legacy-message-ids'];
   const invalidateEntryPointManifest = options['invalidate-entry-point-manifest'];
   const errorOnFailedEntryPoint = options['error-on-failed-entry-point'];
@@ -126,7 +130,7 @@ export function parseCommandLineOptions(args: string[]): NgccOptions {
   // yargs is not so great at mixed string+boolean types, so we have to test tsconfig against a
   // string "false" to capture the `tsconfig=false` option.
   // And we have to convert the option to a string to handle `no-tsconfig`, which will be `false`.
-  const tsConfigPath = `${options['tsconfig']}` === 'false' ? null : options['tsconfig'];
+  const tsConfigPath = `${options.tsconfig}` === 'false' ? null : options.tsconfig;
 
   const logger = logLevel && new ConsoleLogger(LogLevel[logLevel]);
 
@@ -138,7 +142,7 @@ export function parseCommandLineOptions(args: string[]): NgccOptions {
     createNewEntryPointFormats,
     logger,
     enableI18nLegacyMessageIdFormat,
-    async: options['async'],
+    async: options.async,
     invalidateEntryPointManifest,
     errorOnFailedEntryPoint,
     tsConfigPath,

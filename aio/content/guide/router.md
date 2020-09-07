@@ -2,10 +2,9 @@
 
 In a single-page app, you change what the user sees by showing or hiding portions of the display that correspond to particular components, rather than going out to the server to get a new page.
 As users perform application tasks, they need to move between the different [views](guide/glossary#view "Definition of view") that you have defined.
-To implement this kind of navigation within the single page of your app, you use the Angular **`Router`**.
 
-To handle the navigation from one [view](guide/glossary#view) to the next, you use the Angular _router_.
-The router enables navigation by interpreting a browser URL as an instruction to change the view.
+To handle the navigation from one [view](guide/glossary#view) to the next, you use the Angular **`Router`**.
+The **`Router`** enables navigation by interpreting a browser URL as an instruction to change the view.
 
 To explore a sample app featuring the router's primary features, see the <live-example></live-example>.
 
@@ -335,22 +334,22 @@ Inject `ActivatedRoute` and `Router` in the constructor of the component class s
 
 <code-example header="Component 2 (excerpt)">
 
-  item$: Observable<Item>;
+  hero$: Observable<Hero>;
 
   constructor(
     private route: ActivatedRoute,
     private router: Router  ) {}
 
   ngOnInit() {
-    let id = this.route.snapshot.paramMap.get('id');
-    this.hero$ = this.service.getHero(id);
+    const heroId = this.route.snapshot.paramMap.get('id');
+    this.hero$ = this.service.getHero(heroId);
   }
 
-  gotoItems(item: Item) {
-    let heroId = item ? hero.id : null;
-    // Pass along the item id if available
+  gotoItems(hero: Hero) {
+    const heroId = hero ? hero.id : null;
+    // Pass along the hero id if available
     // so that the HeroList component can select that item.
-    this.router.navigate(['/heroes', { id: itemId }]);
+    this.router.navigate(['/heroes', { id: heroId }]);
   }
 
 </code-example>
@@ -541,6 +540,15 @@ set the `href` value in `index.html` as shown here.
 
 ### HTML5 URLs and the  `<base href>`
 
+The guidelines that follow will refer to different parts of a URL. This diagram outlines what those parts refer to:
+
+```
+foo://example.com:8042/over/there?name=ferret#nose
+\_/   \______________/\_________/ \_________/ \__/
+ |           |            |            |        |
+scheme    authority      path        query   fragment
+```
+
 While the router uses the <a href="https://developer.mozilla.org/en-US/docs/Web/API/History_API#Adding_and_modifying_history_entries" title="Browser history push-state">HTML5 pushState</a> style by default, you must configure that strategy with a `<base href>`.
 
 The preferred way to configure the strategy is to add a <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base" title="base href">&lt;base href&gt; element</a> tag in the `<head>` of the `index.html`.
@@ -554,8 +562,16 @@ Some developers may not be able to add the `<base>` element, perhaps because the
 
 Those developers may still use HTML5 URLs by taking the following two steps:
 
-1. Provide the router with an appropriate [APP_BASE_HREF][] value.
-1. Use root URLs for all web resources: CSS, images, scripts, and template HTML files.
+1. Provide the router with an appropriate `APP_BASE_HREF` value.
+1. Use root URLs (URLs with an `authority`) for all web resources: CSS, images, scripts, and template HTML files.
+
+* The `<base href>` `path` should end with a "/", as browsers ignore characters in the `path` that follow the right-most "/".
+* If the `<base href>` includes a `query` part, the `query` is only used if the `path` of a link in the page is empty and has no `query`.
+This means that a `query` in the `<base href>` is only included when using `HashLocationStrategy`.
+* If a link in the page is a root URL (has an `authority`), the `<base href>` is not used. In this way, an `APP_BASE_HREF` with an authority will cause all links created by Angular to ignore the `<base href>` value.
+* A fragment in the `<base href>` is _never_ persisted.
+
+For more complete information on how `<base href>` is used to construct target URIs, see the [RFC](https://tools.ietf.org/html/rfc3986#section-5.2.2) section on transforming references.
 
 {@a hashlocationstrategy}
 

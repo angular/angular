@@ -65,7 +65,6 @@ export const controlNameBinding: any = {
 export class FormControlName extends NgControl implements OnChanges, OnDestroy {
   private _added = false;
   /**
-   * @description
    * Internal reference to the view model value.
    * @internal
    */
@@ -92,11 +91,13 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
 
   /**
    * @description
-   * Triggers a warning that this input should not be used with reactive forms.
+   * Triggers a warning in dev mode that this input should not be used with reactive forms.
    */
   @Input('disabled')
   set isDisabled(isDisabled: boolean) {
-    ReactiveErrors.disabledAttrWarning();
+    if (typeof ngDevMode === 'undefined' || ngDevMode) {
+      ReactiveErrors.disabledAttrWarning();
+    }
   }
 
   // TODO(kara): remove next 4 properties once deprecation period is over
@@ -140,12 +141,7 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
     this.valueAccessor = selectValueAccessor(this, valueAccessors);
   }
 
-  /**
-   * @description
-   * A lifecycle method called when the directive's inputs change. For internal use only.
-   *
-   * @param changes A object of key/value pairs for the set of changed inputs.
-   */
+  /** @nodoc */
   ngOnChanges(changes: SimpleChanges) {
     if (!this._added) this._setUpControl();
     if (isPropertyUpdated(changes, this.viewModel)) {
@@ -155,10 +151,7 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
     }
   }
 
-  /**
-   * @description
-   * Lifecycle method called before the directive's instance is destroyed. For internal use only.
-   */
+  /** @nodoc */
   ngOnDestroy(): void {
     if (this.formDirective) {
       this.formDirective.removeControl(this);
@@ -212,13 +205,16 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
   }
 
   private _checkParentType(): void {
-    if (!(this._parent instanceof FormGroupName) &&
-        this._parent instanceof AbstractFormGroupDirective) {
-      ReactiveErrors.ngModelGroupException();
-    } else if (
-        !(this._parent instanceof FormGroupName) && !(this._parent instanceof FormGroupDirective) &&
-        !(this._parent instanceof FormArrayName)) {
-      ReactiveErrors.controlParentException();
+    if (typeof ngDevMode === 'undefined' || ngDevMode) {
+      if (!(this._parent instanceof FormGroupName) &&
+          this._parent instanceof AbstractFormGroupDirective) {
+        ReactiveErrors.ngModelGroupException();
+      } else if (
+          !(this._parent instanceof FormGroupName) &&
+          !(this._parent instanceof FormGroupDirective) &&
+          !(this._parent instanceof FormArrayName)) {
+        ReactiveErrors.controlParentException();
+      }
     }
   }
 

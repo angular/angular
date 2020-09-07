@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {assertDataInRange, assertDefined, assertEqual} from '../../util/assert';
+import {assertDefined, assertEqual, assertIndexInRange} from '../../util/assert';
 import {assertFirstCreatePass, assertHasParent} from '../assert';
 import {attachPatchData} from '../context_discovery';
 import {registerPostOrderHooks} from '../hooks';
@@ -79,7 +79,7 @@ export function ɵɵelementStart(
           getBindingIndex(), tView.bindingStartIndex,
           'elements should be created before any bindings');
   ngDevMode && ngDevMode.rendererCreateElement++;
-  ngDevMode && assertDataInRange(lView, adjustedIndex);
+  ngDevMode && assertIndexInRange(lView, adjustedIndex);
 
   const renderer = lView[RENDERER];
   const native = lView[adjustedIndex] = elementCreate(name, renderer, getNamespace());

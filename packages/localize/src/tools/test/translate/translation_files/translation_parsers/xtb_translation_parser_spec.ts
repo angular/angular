@@ -140,6 +140,38 @@ describe('XtbTranslationParser', () => {
                 ɵmakeParsedTranslation(['', 'rab', ''], ['START_PARAGRAPH', 'CLOSE_PARAGRAPH']));
       });
 
+      it('should extract nested placeholder containers (i.e. nested HTML elements)', () => {
+        /**
+         * Source HTML:
+         *
+         * ```
+         * <div i18n>
+         *   translatable <span>element <b>with placeholders</b></span> {{ interpolation}}
+         * </div>
+         * ```
+         */
+        const XLIFF = [
+          `<?xml version="1.0" encoding="UTF-8"?>`,
+          `<translationbundle>`,
+          `  <translation id="9051630253697141670">` +
+              `<ph name="START_TAG_SPAN"/><ph name="INTERPOLATION"/> tnemele<ph name="CLOSE_TAG_SPAN"/> elbatalsnart <ph name="START_BOLD_TEXT"/>sredlohecalp htiw<ph name="CLOSE_BOLD_TEXT"/>` +
+              `</translation>`,
+          `</translationbundle>`,
+        ].join('\n');
+        const result = doParse('/some/file.xtb', XLIFF);
+        expect(result.translations[ɵcomputeMsgId(
+                   'translatable {$START_TAG_SPAN}element {$START_BOLD_TEXT}with placeholders' +
+                   '{$CLOSE_BOLD_TEXT}{$CLOSE_TAG_SPAN} {$INTERPOLATION}')])
+            .toEqual(ɵmakeParsedTranslation(
+                ['', '', ' tnemele', ' elbatalsnart ', 'sredlohecalp htiw', ''], [
+                  'START_TAG_SPAN',
+                  'INTERPOLATION',
+                  'CLOSE_TAG_SPAN',
+                  'START_BOLD_TEXT',
+                  'CLOSE_BOLD_TEXT',
+                ]));
+      });
+
       it('should extract translations with simple ICU expressions', () => {
         const XTB = [
           `<?xml version="1.0" encoding="UTF-8" ?>`,
@@ -280,10 +312,14 @@ describe('XtbTranslationParser', () => {
         expect(result.translations['invalid']).toBeUndefined();
         expect(result.diagnostics.messages).toContain({
           type: 'warning',
-          message:
-              `Could not parse message with id "invalid" - perhaps it has an unrecognised ICU format?\n` +
-              `Error: Unexpected character "EOF" (Do you have an unescaped "{" in your template? Use "{{ '{' }}") to escape it.)\n` +
-              `Error: Invalid ICU message. Missing '}'.`
+          message: [
+            `Could not parse message with id "invalid" - perhaps it has an unrecognised ICU format?`,
+            `Unexpected character "EOF" (Do you have an unescaped "{" in your template? Use "{{ '{' }}") to escape it.) ("id">{REGION_COUNT_1, plural, =0 {unused plural form} =1 {1 region} other {{REGION_COUNT_2} regions}}[ERROR ->]</translation>`,
+            `</translationbundle>"): /some/file.xtb@2:124`,
+            `Invalid ICU message. Missing '}'. ("n>`,
+            `  <translation id="invalid">{REGION_COUNT_1, plural, =0 {unused plural form} =1 {1 region} other [ERROR ->]{{REGION_COUNT_2} regions}}</translation>`,
+            `</translationbundle>"): /some/file.xtb@2:97`,
+          ].join('\n')
         });
       });
 
@@ -339,11 +375,14 @@ describe('XtbTranslationParser', () => {
           ].join('\n');
 
           expectToFail('/some/file.xtb', XTB, /Invalid element found in message/, [
-            `Invalid element found in message. ("<translationbundle>`,
+            `Error: Invalid element found in message.`,
+            `At /some/file.xtb@2:4:`,
+            `...`,
             `  <translation id="deadbeef">`,
             `    [ERROR ->]<source/>`,
             `  </translation>`,
-            `</translationbundle>"): /some/file.xtb@2:4`,
+            `...`,
+            ``,
           ].join('\n'));
         });
 
@@ -355,9 +394,12 @@ describe('XtbTranslationParser', () => {
           ].join('\n');
 
           expectToFail('/some/file.xtb', XTB, /required "name" attribute/gi, [
-            `Missing required "name" attribute: ("<translationbundle>`,
+            `Error: Missing required "name" attribute:`,
+            `At /some/file.xtb@1:29:`,
+            `...<translationbundle>`,
             `  <translation id="deadbeef">[ERROR ->]<ph/></translation>`,
-            `</translationbundle>"): /some/file.xtb@1:29`,
+            `</translationbundle>...`,
+            ``,
           ].join('\n'));
         });
       });

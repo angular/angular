@@ -67,7 +67,7 @@ export function buildLocalizeReplacement(
  * @param call The AST node of the call to process.
  */
 export function unwrapMessagePartsFromLocalizeCall(call: NodePath<t.CallExpression>):
-    TemplateStringsArray {
+    [TemplateStringsArray, (ɵSourceLocation | undefined)[]] {
   let cooked = call.get('arguments')[0];
 
   if (cooked === undefined) {
@@ -137,34 +137,44 @@ export function unwrapMessagePartsFromLocalizeCall(call: NodePath<t.CallExpressi
     raw = arg2 !== undefined ? arg2 : cooked;
   }
 
-  const cookedStrings = unwrapStringLiteralArray(cooked.node);
-  const rawStrings = unwrapStringLiteralArray(raw.node);
-  return ɵmakeTemplateObject(cookedStrings, rawStrings);
+  const [cookedStrings] = unwrapStringLiteralArray(cooked);
+  const [rawStrings, rawLocations] = unwrapStringLiteralArray(raw);
+  return [ɵmakeTemplateObject(cookedStrings, rawStrings), rawLocations];
 }
 
 
-export function unwrapSubstitutionsFromLocalizeCall(call: t.CallExpression): t.Expression[] {
-  const expressions = call.arguments.splice(1);
+export function unwrapSubstitutionsFromLocalizeCall(call: NodePath<t.CallExpression>):
+    [t.Expression[], (ɵSourceLocation | undefined)[]] {
+  const expressions = call.get('arguments').splice(1);
   if (!isArrayOfExpressions(expressions)) {
-    const badExpression = expressions.find(expression => !t.isExpression(expression))!;
+    const badExpression = expressions.find(expression => !expression.isExpression())!;
     throw new BabelParseError(
-        badExpression,
+        badExpression.node,
         'Invalid substitutions for `$localize` (expected all substitution arguments to be expressions).');
   }
-  return expressions;
+  return [
+    expressions.map(path => path.node), expressions.map(expression => getLocation(expression))
+  ];
 }
 
-export function unwrapMessagePartsFromTemplateLiteral(elements: t.TemplateElement[]):
-    TemplateStringsArray {
+export function unwrapMessagePartsFromTemplateLiteral(elements: NodePath<t.TemplateElement>[]):
+    [TemplateStringsArray, (ɵSourceLocation | undefined)[]] {
   const cooked = elements.map(q => {
-    if (q.value.cooked === undefined) {
+    if (q.node.value.cooked === undefined) {
       throw new BabelParseError(
-          q, `Unexpected undefined message part in "${elements.map(q => q.value.cooked)}"`);
+          q.node,
+          `Unexpected undefined message part in "${elements.map(q => q.node.value.cooked)}"`);
     }
-    return q.value.cooked;
+    return q.node.value.cooked;
   });
-  const raw = elements.map(q => q.value.raw);
-  return ɵmakeTemplateObject(cooked, raw);
+  const raw = elements.map(q => q.node.value.raw);
+  const locations = elements.map(q => getLocation(q));
+  return [ɵmakeTemplateObject(cooked, raw), locations];
+}
+
+export function unwrapExpressionsFromTemplateLiteral(quasi: NodePath<t.TemplateLiteral>):
+    [t.Expression[], (ɵSourceLocation | undefined)[]] {
+  return [quasi.node.expressions, quasi.get('expressions').map(e => getLocation(e))];
 }
 
 /**
@@ -186,12 +196,14 @@ export function wrapInParensIfNecessary(expression: t.Expression): t.Expression 
  * Extract the string values from an `array` of string literals.
  * @param array The array to unwrap.
  */
-export function unwrapStringLiteralArray(array: t.Expression): string[] {
-  if (!isStringLiteralArray(array)) {
+export function unwrapStringLiteralArray(array: NodePath<t.Expression>):
+    [string[], (ɵSourceLocation | undefined)[]] {
+  if (!isStringLiteralArray(array.node)) {
     throw new BabelParseError(
-        array, 'Unexpected messageParts for `$localize` (expected an array of strings).');
+        array.node, 'Unexpected messageParts for `$localize` (expected an array of strings).');
   }
-  return array.elements.map((str: t.StringLiteral) => str.value);
+  const elements = array.get('elements') as NodePath<t.StringLiteral>[];
+  return [elements.map(str => str.node.value), elements.map(str => getLocation(str))];
 }
 
 /**
@@ -295,8 +307,8 @@ export function isStringLiteralArray(node: t.Node): node is t.Expression&
  * Are all the given `nodes` expressions?
  * @param nodes The nodes to test.
  */
-export function isArrayOfExpressions(nodes: t.Node[]): nodes is t.Expression[] {
-  return nodes.every(element => t.isExpression(element));
+export function isArrayOfExpressions(paths: NodePath<t.Node>[]): paths is NodePath<t.Expression>[] {
+  return paths.every(element => element.isExpression());
 }
 
 /** Options that affect how the `makeEsXXXTranslatePlugin()` functions work. */
@@ -361,7 +373,8 @@ export function getLocation(startPath: NodePath, endPath?: NodePath): ɵSourceLo
   return {
     start: getLineAndColumn(startLocation.start),
     end: getLineAndColumn(endLocation.end),
-    file
+    file,
+    text: getText(startPath),
   };
 }
 
@@ -375,11 +388,18 @@ export function serializeLocationPosition(location: ɵSourceLocation): string {
 function getFileFromPath(path: NodePath|undefined): AbsoluteFsPath|null {
   const opts = path?.hub.file.opts;
   return opts?.filename ?
-      resolve(opts.generatorOpts.sourceRoot, relative(opts.cwd, opts.filename)) :
+      resolve(opts.generatorOpts.sourceRoot ?? opts.cwd, relative(opts.cwd, opts.filename)) :
       null;
 }
 
 function getLineAndColumn(loc: {line: number, column: number}): {line: number, column: number} {
   // Note we want 0-based line numbers but Babel returns 1-based.
   return {line: loc.line - 1, column: loc.column};
+}
+
+function getText(path: NodePath): string|undefined {
+  if (path.node.start === null || path.node.end === null) {
+    return undefined;
+  }
+  return path.hub.file.code.substring(path.node.start, path.node.end);
 }

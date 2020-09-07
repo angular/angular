@@ -11,7 +11,7 @@
 import {Type} from '../core';
 import {Injector} from '../di/injector';
 import {Sanitizer} from '../sanitization/sanitizer';
-import {assertDataInRange} from '../util/assert';
+import {assertIndexInRange} from '../util/assert';
 
 import {assertComponentType} from './assert';
 import {getComponentDef} from './definition';
@@ -172,7 +172,7 @@ export function createRootComponentView(
     rNode: RElement|null, def: ComponentDef<any>, rootView: LView,
     rendererFactory: RendererFactory3, hostRenderer: Renderer3, sanitizer?: Sanitizer|null): LView {
   const tView = rootView[TVIEW];
-  ngDevMode && assertDataInRange(rootView, 0 + HEADER_OFFSET);
+  ngDevMode && assertIndexInRange(rootView, 0 + HEADER_OFFSET);
   rootView[0 + HEADER_OFFSET] = rNode;
   const tNode: TElementNode = getOrCreateTNode(tView, null, 0, TNodeType.Element, null, null);
   const mergedAttrs = tNode.mergedAttrs = def.hostAttrs;
