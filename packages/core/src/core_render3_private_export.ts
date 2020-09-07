@@ -201,7 +201,6 @@ export {
   ɵɵresolveWindow,
   ɵɵrestoreView,
 
-  ɵɵselect,
   ɵɵsetComponentScope,
   ɵɵsetNgModuleScope,
   ɵɵstaticContentQuery,
