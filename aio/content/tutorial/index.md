@@ -23,17 +23,17 @@ Encontrarás referencias y expansiones de este dominio de aplicación en muchos 
 
 Al final de este tutorial, podrás hacer lo siguiente:
 
-* Utilizar las [directivas](guide/glossary#directive "Directives definition") Angular integradas para mostrar y ocultar elementos y mostrar listas de datos de héroes.
-* Crear [componentes](guide/glossary#component "Components definition") Angular para mostrar los detalles del héroe y mostrar una lista de héroes.
-* Usar el [enlace de datos](guide/glossary#data-binding "Data binding definition")(data binding) unidireccional para datos de solo lectura.
+* Utilizar las [directivas](guide/glossary#directive "Definición de directivas") Angular integradas para mostrar y ocultar elementos y mostrar listas de datos de héroes.
+* Crear [componentes](guide/glossary#component "Definición de componentes") Angular para mostrar los detalles del héroe y mostrar una lista de héroes.
+* Usar el [enlace de datos](guide/glossary#data-binding "Definición de enlace de datos")(data binding) unidireccional para datos de solo lectura.
 * Agregar campos editables para actualizar un modelo con enlace de datos bidireccional.
 * Enlazar métodos de componentes a eventos de usuario, como pulsaciones de teclas y clics.
 * Permitir a los usuarios seleccionar un héroe de una lista maestra y editar ese héroe en la vista de detalles.
-* Dar formato a datos con [tuberías](guide/glossary#pipe "Pipe definition")(pipes)
-* Crear un [servicio](guide/glossary#service "Service definition") compartido para reunir a los héroes.
-* Utilizar [enrutamiento](guide/glossary#router "Router definition")(routing) para navegar entre diferentes vistas y sus componentes.
+* Dar formato a datos con [pipes](guide/glossary#pipe "Definición de Pipe ")
+* Crear un [servicio](guide/glossary#service "Definición de Servicio") compartido para reunir a los héroes.
+* Utilizar [enrutamiento](guide/glossary#router "Definición de Enrutamiento ")(routing) para navegar entre diferentes vistas y sus componentes.
 
-Aprenderás suficiente Angular para comenzar y ganará la confianza de que
+Aprenderás suficiente Angular para comenzar y ganarás la confianza de que
 Angular puede hacer lo que tú necesites que haga.
 
 <div class="callout is-helpful">
@@ -51,7 +51,7 @@ Aquí hay una idea visual de a dónde conduce este tutorial, comenzando con una 
   <img src='generated/images/guide/toh/heroes-dashboard-1.png' alt="Salida del panel de héroes">
 </div>
 
-Puedes hacer clic en los dos enlaces que se encuentran sobre el tablero ("Tablero"(Dashboard) y "Héroes")
+Puedes hacer clic en los dos enlaces que se encuentran sobre el dashboard ("Dashboard" y "Héroes")
 para navegar entre esta vista de Panel y una vista de Héroes.
 
 Si haces clic en el héroe del panel "Magneta", el enrutador abre una vista de "Detalles del héroe"
