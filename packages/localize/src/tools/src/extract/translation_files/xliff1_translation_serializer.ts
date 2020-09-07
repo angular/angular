@@ -8,6 +8,7 @@
 import {AbsoluteFsPath, relative} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {ɵParsedMessage, ɵSourceLocation} from '@angular/localize';
 
+import {FormatOptions, validateOptions} from './format_options';
 import {extractIcuPlaceholders} from './icu_parsing';
 import {TranslationSerializer} from './translation_serializer';
 import {XmlFile} from './xml_file';
@@ -25,8 +26,10 @@ const LEGACY_XLIFF_MESSAGE_LENGTH = 40;
  */
 export class Xliff1TranslationSerializer implements TranslationSerializer {
   constructor(
-      private sourceLocale: string, private basePath: AbsoluteFsPath,
-      private useLegacyIds: boolean) {}
+      private sourceLocale: string, private basePath: AbsoluteFsPath, private useLegacyIds: boolean,
+      private formatOptions: FormatOptions) {
+    validateOptions('Xliff1TranslationSerializer', [['xml:space', ['preserve']]], formatOptions);
+  }
 
   serialize(messages: ɵParsedMessage[]): string {
     const ids = new Set<string>();
@@ -43,6 +46,7 @@ export class Xliff1TranslationSerializer implements TranslationSerializer {
       'source-language': this.sourceLocale,
       'datatype': 'plaintext',
       'original': 'ng2.template',
+      ...this.formatOptions,
     });
     xml.startTag('body');
     for (const message of messages) {
