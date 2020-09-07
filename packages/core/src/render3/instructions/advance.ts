@@ -39,16 +39,6 @@ export function ɵɵadvance(delta: number): void {
   selectIndexInternal(getTView(), getLView(), getSelectedIndex() + delta, getCheckNoChangesMode());
 }
 
-/**
- * Selects an element for later binding instructions.
- * @deprecated No longer being generated, but still used in unit tests.
- * @codeGenApi
- */
-export function ɵɵselect(index: number): void {
-  // TODO(misko): Remove this function as it is no longer being used.
-  selectIndexInternal(getTView(), getLView(), index, getCheckNoChangesMode());
-}
-
 export function selectIndexInternal(
     tView: TView, lView: LView, index: number, checkNoChangesMode: boolean) {
   ngDevMode && assertGreaterThan(index, -1, 'Invalid index');
