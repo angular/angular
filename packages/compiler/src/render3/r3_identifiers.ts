@@ -29,7 +29,6 @@ export class Identifiers {
 
   static elementEnd: o.ExternalReference = {name: 'ɵɵelementEnd', moduleName: CORE};
 
-  static select: o.ExternalReference = {name: 'ɵɵselect', moduleName: CORE};
   static advance: o.ExternalReference = {name: 'ɵɵadvance', moduleName: CORE};
 
   static syntheticHostProperty:

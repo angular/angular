@@ -10,7 +10,7 @@ import {NgForOfContext} from '@angular/common';
 import {getSortedClassName} from '@angular/core/testing/src/styling';
 
 import {ɵɵdefineComponent} from '../../src/render3/definition';
-import {RenderFlags, ɵɵattribute, ɵɵclassMap, ɵɵelement, ɵɵelementEnd, ɵɵelementStart, ɵɵproperty, ɵɵselect, ɵɵstyleMap, ɵɵstyleProp, ɵɵtemplate, ɵɵtext, ɵɵtextInterpolate1} from '../../src/render3/index';
+import {RenderFlags, ɵɵadvance, ɵɵattribute, ɵɵclassMap, ɵɵelement, ɵɵelementEnd, ɵɵelementStart, ɵɵproperty, ɵɵstyleMap, ɵɵstyleProp, ɵɵtemplate, ɵɵtext, ɵɵtextInterpolate1} from '../../src/render3/index';
 import {AttributeMarker} from '../../src/render3/interfaces/node';
 import {bypassSanitizationTrustHtml, bypassSanitizationTrustResourceUrl, bypassSanitizationTrustScript, bypassSanitizationTrustStyle, bypassSanitizationTrustUrl, getSanitizationBypassType, SafeValue, unwrapSafeValue} from '../../src/sanitization/bypass';
 import {ɵɵsanitizeHtml, ɵɵsanitizeResourceUrl, ɵɵsanitizeScript, ɵɵsanitizeStyle, ɵɵsanitizeUrl} from '../../src/sanitization/sanitization';
@@ -33,18 +33,18 @@ describe('instructions', () => {
     ɵɵelement(0, 'script');
   }
 
-  describe('ɵɵselect', () => {
+  describe('ɵɵadvance', () => {
     it('should error in DevMode if index is out of range', () => {
       // Only one constant added, meaning only index `0` is valid.
       const t = new TemplateFixture(createDiv, () => {}, 1, 0);
       expect(() => {
         t.update(() => {
-          ɵɵselect(-1);
+          ɵɵadvance(-1);
         });
       }).toThrow();
       expect(() => {
         t.update(() => {
-          ɵɵselect(1);
+          ɵɵadvance(1);
         });
       }).toThrow();
     });
@@ -225,7 +225,7 @@ describe('instructions', () => {
         }
         if (rf & RenderFlags.Update) {
           const row_r2 = ctx0.$implicit;
-          ɵɵselect(1);
+          ɵɵadvance(1);
           ɵɵproperty('ngForOf', row_r2);
         }
       }
@@ -239,7 +239,7 @@ describe('instructions', () => {
         }
         if (rf & RenderFlags.Update) {
           const col_r3 = ctx1.$implicit;
-          ɵɵselect(1);
+          ɵɵadvance(1);
           ɵɵtextInterpolate1('', col_r3, '');
         }
       }

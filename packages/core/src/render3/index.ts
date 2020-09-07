@@ -88,8 +88,6 @@ export {
 
   ɵɵreference,
 
-  // TODO: remove `select` once we've refactored all of the tests not to use it.
-  ɵɵselect,
   ɵɵstyleMap,
   ɵɵstyleMapInterpolate1,
   ɵɵstyleMapInterpolate2,
