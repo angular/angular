@@ -60,7 +60,7 @@ The above will create following layout:
 | Index | `LView`         | `TView.data`
 | ----: | -----------         | ------------
 | `HEADER`
-| `CONSTS`
+| `DECLS`
 | 10    | `<div>`             | `{type: Element, index: 10, parent: null}`
 | 11    | `#text(Hello )`     | `{type: Element, index: 11, parent: tView.data[10]}`
 | 12    | `<b>`               | `{type: Element, index: 12, parent: tView.data[10]}`
@@ -113,7 +113,7 @@ The above will create following layout:
 | Index | `LView`         | `TView.data`
 | ----: | -----------         | ------------
 | `HEADER`
-| `CONSTS`
+| `DECLS`
 | 10    | `<div>`             | `{type: Element, index: 10, parent: null}`
 | 11    | `#text()`           | `{type: Element, index: 11, parent: tView.data[10]}`
 | `VARS`
@@ -186,7 +186,7 @@ The above will create the following layout:
 | Index | `LView`         | `TView.data`
 | ----: | -----------         | ------------
 | `HEADER`
-| `CONSTS`
+| `DECLS`
 | 10    | `[<child>, ...]`    | `{type: Element, index: 10, parent: null}`
 | `VARS`
 | `EXPANDO`
@@ -325,7 +325,7 @@ The above will create the following layout:
 | Index | `LView`                                  | `TView.data`
 | ----: | ------------                                 | -------------
 | `HEADER`
-| `CONSTS`
+| `DECLS`
 | 10    | `[<child>, ...]`                             | `{type: Element, index: 10, parent: null, expandoIndex: 11, directivesIndex: 19, providersIndex: 20, viewProvidersIndex: 22, expandoEnd: 23}`
 | `VARS`
 | `EXPANDO`
