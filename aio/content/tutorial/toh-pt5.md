@@ -318,7 +318,7 @@ fix the dashboard hero links to navigate via the _parameterized_ dashboard route
   header="src/app/dashboard/dashboard.component.html (hero links)">
 </code-example>
 
-You're using Angular [interpolation binding](guide/template-syntax#interpolation) within the `*ngFor` repeater
+You're using Angular [interpolation binding](guide/interpolation) within the `*ngFor` repeater
 to insert the current iteration's `hero.id` into each
 [`routerLink`](#routerlink).
 

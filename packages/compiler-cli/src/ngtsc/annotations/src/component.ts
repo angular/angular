@@ -10,18 +10,19 @@ import {compileComponentFromMetadata, ConstantPool, CssSelector, DEFAULT_INTERPO
 import * as ts from 'typescript';
 
 import {CycleAnalyzer} from '../../cycles';
-import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
+import {ErrorCode, FatalDiagnosticError, ngErrorCode} from '../../diagnostics';
 import {absoluteFrom, relative} from '../../file_system';
 import {DefaultImportRecorder, ModuleResolver, Reference, ReferenceEmitter} from '../../imports';
 import {DependencyTracker} from '../../incremental/api';
 import {IndexingContext} from '../../indexer';
-import {DirectiveMeta, extractDirectiveGuards, InjectableClassRegistry, MetadataReader, MetadataRegistry} from '../../metadata';
+import {DirectiveMeta, DirectiveTypeCheckMeta, extractDirectiveTypeCheckMeta, InjectableClassRegistry, MetadataReader, MetadataRegistry} from '../../metadata';
 import {flattenInheritedDirectiveMetadata} from '../../metadata/src/inheritance';
 import {EnumValue, PartialEvaluator} from '../../partial_evaluator';
 import {ClassDeclaration, Decorator, ReflectionHost, reflectObjectLiteral} from '../../reflection';
 import {ComponentScopeReader, LocalModuleScopeRegistry} from '../../scope';
 import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerFlags, HandlerPrecedence, ResolveResult} from '../../transform';
-import {TemplateSourceMapping, TypeCheckContext} from '../../typecheck';
+import {TemplateSourceMapping, TypeCheckContext} from '../../typecheck/api';
+import {getTemplateId, makeTemplateDiagnostic} from '../../typecheck/diagnostics';
 import {tsSourceMapBug29300Fixed} from '../../util/src/ts_source_map_bug_29300';
 import {SubsetOfKeys} from '../../util/src/typescript';
 
@@ -51,7 +52,7 @@ export interface ComponentAnalysisData {
    */
   meta: Omit<R3ComponentMetadata, ComponentMetadataResolvedFields>;
   baseClass: Reference<ClassDeclaration>|'dynamic'|null;
-  guards: ReturnType<typeof extractDirectiveGuards>;
+  typeCheckMeta: DirectiveTypeCheckMeta;
   template: ParsedTemplateWithSource;
   metadataStmt: Statement|null;
 
@@ -254,9 +255,26 @@ export class ComponentDecoratorHandler implements
       }
     }
 
+    let diagnostics: ts.Diagnostic[]|undefined = undefined;
+
     if (template.errors !== undefined) {
-      throw new Error(
-          `Errors parsing template: ${template.errors.map(e => e.toString()).join(', ')}`);
+      // If there are any template parsing errors, convert them to `ts.Diagnostic`s for display.
+      const id = getTemplateId(node);
+      diagnostics = template.errors.map(error => {
+        const span = error.span;
+
+        if (span.start.offset === span.end.offset) {
+          // Template errors can contain zero-length spans, if the error occurs at a single point.
+          // However, TypeScript does not handle displaying a zero-length diagnostic very well, so
+          // increase the ending offset by 1 for such errors, to ensure the position is shown in the
+          // diagnostic.
+          span.end.offset++;
+        }
+
+        return makeTemplateDiagnostic(
+            id, template.sourceMapping, span, ts.DiagnosticCategory.Error,
+            ngErrorCode(ErrorCode.TEMPLATE_PARSE_ERROR), error.msg);
+      });
     }
 
     // Figure out the set of styles. The ordering here is important: external resources (styleUrls)
@@ -327,7 +345,7 @@ export class ComponentDecoratorHandler implements
           i18nUseExternalIds: this.i18nUseExternalIds,
           relativeContextFilePath,
         },
-        guards: extractDirectiveGuards(node, this.reflector),
+        typeCheckMeta: extractDirectiveTypeCheckMeta(node, metadata.inputs, this.reflector),
         metadataStmt: generateSetClassMetadataCall(
             node, this.reflector, this.defaultImportRecorder, this.isCore,
             this.annotateForClosureCompiler),
@@ -335,6 +353,7 @@ export class ComponentDecoratorHandler implements
         providersRequiringFactory,
         viewProvidersRequiringFactory,
       },
+      diagnostics,
     };
     if (changeDetection !== null) {
       output.analysis!.meta.changeDetection = changeDetection;
@@ -356,7 +375,7 @@ export class ComponentDecoratorHandler implements
       queries: analysis.meta.queries.map(query => query.propertyName),
       isComponent: true,
       baseClass: analysis.baseClass,
-      ...analysis.guards,
+      ...analysis.typeCheckMeta,
     });
 
     this.injectableRegistry.registerInjectable(node);
@@ -426,10 +445,10 @@ export class ComponentDecoratorHandler implements
       schemas = scope.schemas;
     }
 
-    const bound = new R3TargetBinder(matcher).bind({template: meta.template.diagNodes});
+    const binder = new R3TargetBinder(matcher);
     ctx.addTemplate(
-        new Reference(node), bound, pipes, schemas, meta.template.sourceMapping,
-        meta.template.file);
+        new Reference(node), binder, meta.template.diagNodes, pipes, schemas,
+        meta.template.sourceMapping, meta.template.file);
   }
 
   resolve(node: ClassDeclaration, analysis: Readonly<ComponentAnalysisData>):
@@ -771,6 +790,9 @@ export class ComponentDecoratorHandler implements
       interpolation = InterpolationConfig.fromArray(value as [string, string]);
     }
 
+    // We always normalize line endings if the template has been escaped (i.e. is inline).
+    const i18nNormalizeLineEndingsInICUs = escapedString || this.i18nNormalizeLineEndingsInICUs;
+
     const {errors, nodes: emitNodes, styleUrls, styles, ngContentSelectors} =
         parseTemplate(templateStr, templateUrl, {
           preserveWhitespaces,
@@ -778,7 +800,7 @@ export class ComponentDecoratorHandler implements
           range: templateRange,
           escapedString,
           enableI18nLegacyMessageIdFormat: this.enableI18nLegacyMessageIdFormat,
-          i18nNormalizeLineEndingsInICUs: this.i18nNormalizeLineEndingsInICUs,
+          i18nNormalizeLineEndingsInICUs,
         });
 
     // Unfortunately, the primary parse of the template above may not contain accurate source map
@@ -800,7 +822,7 @@ export class ComponentDecoratorHandler implements
       range: templateRange,
       escapedString,
       enableI18nLegacyMessageIdFormat: this.enableI18nLegacyMessageIdFormat,
-      i18nNormalizeLineEndingsInICUs: this.i18nNormalizeLineEndingsInICUs,
+      i18nNormalizeLineEndingsInICUs,
       leadingTriviaChars: [],
     });
 

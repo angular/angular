@@ -1,8 +1,8 @@
 {
-  "name": "angular-examples",
-  "version": "1.0.0",
-  "private": true,
-  "description": "Example package.json, only contains needed scripts for examples. See _examples/package.json for master package.json.",
+  "name": "angular.io-example",
+  "version": "0.0.0",
+  "description": "Example project from an angular.io guide.",
+  "license": "MIT",
   "scripts": {
     "build": "tsc -p src/",
     "build:watch": "tsc -p src/ -w",
@@ -25,26 +25,25 @@
     "serve:aot": "lite-server -c bs-config.aot.json",
     "copy-dist-files": "node ./copy-dist-files.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "MIT",
+  "private": true,
   "dependencies": {
-    "@angular/animations": "~9.0.3",
-    "@angular/common": "~9.0.3",
-    "@angular/compiler": "~9.0.3",
-    "@angular/core": "~9.0.3",
-    "@angular/forms": "~9.0.3",
-    "@angular/platform-browser": "~9.0.3",
-    "@angular/platform-browser-dynamic": "~9.0.3",
-    "@angular/router": "~9.0.3",
-    "@angular/upgrade": "~9.0.3",
+    "@angular/animations": "~9.1.4",
+    "@angular/common": "~9.1.4",
+    "@angular/compiler": "~9.1.4",
+    "@angular/core": "~9.1.4",
+    "@angular/forms": "~9.1.4",
+    "@angular/platform-browser": "~9.1.4",
+    "@angular/platform-browser-dynamic": "~9.1.4",
+    "@angular/router": "~9.1.4",
+    "@angular/upgrade": "~9.1.4",
     "core-js": "^2.5.4",
     "rxjs": "~6.5.4",
     "tslib": "^1.10.0",
     "zone.js": "~0.10.3"
   },
   "devDependencies": {
-    "@angular/compiler-cli": "~9.0.3",
+    "@angular/compiler-cli": "~9.1.4",
+    "@angular/language-service": "~9.1.4",
     "@types/angular": "1.6.47",
     "@types/angular-animate": "1.5.10",
     "@types/angular-mocks": "1.6.0",
@@ -68,6 +67,5 @@
     "rollup-plugin-terser": "^5.3.0",
     "tslint": "~5.18.0",
     "typescript": "~3.7.5"
-  },
-  "repository": {}
+  }
 }

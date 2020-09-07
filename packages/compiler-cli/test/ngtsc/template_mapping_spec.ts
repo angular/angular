@@ -342,7 +342,7 @@ runInEachFileSystem((os) => {
           expect(mappings).toContain(
               {source: '<h3>', generated: 'i0.ɵɵelementStart(0, "h3")', sourceUrl: '../test.ts'});
           expect(mappings).toContain({
-            source: '<ng-content select="title">',
+            source: '<ng-content select="title"></ng-content>',
             generated: 'i0.ɵɵprojection(1)',
             sourceUrl: '../test.ts'
           });
@@ -351,7 +351,7 @@ runInEachFileSystem((os) => {
           expect(mappings).toContain(
               {source: '<div>', generated: 'i0.ɵɵelementStart(2, "div")', sourceUrl: '../test.ts'});
           expect(mappings).toContain({
-            source: '<ng-content>',
+            source: '<ng-content></ng-content>',
             generated: 'i0.ɵɵprojection(3, 1)',
             sourceUrl: '../test.ts'
           });

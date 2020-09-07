@@ -10,7 +10,7 @@ import {SchemaMetadata, ViewEncapsulation} from '../../core';
 import {ProcessProvidersFunction} from '../../di/interface/provider';
 import {Type} from '../../interface/type';
 
-import {TAttributes, TConstants} from './node';
+import {TAttributes, TConstantsOrFactory} from './node';
 import {CssSelectorList} from './projection';
 import {TView} from './view';
 
@@ -250,16 +250,6 @@ export interface DirectiveDef<T> {
    */
   readonly factory: FactoryFn<T>|null;
 
-  /* The following are lifecycle hooks for this component */
-  readonly onChanges: (() => void)|null;
-  readonly onInit: (() => void)|null;
-  readonly doCheck: (() => void)|null;
-  readonly afterContentInit: (() => void)|null;
-  readonly afterContentChecked: (() => void)|null;
-  readonly afterViewInit: (() => void)|null;
-  readonly afterViewChecked: (() => void)|null;
-  readonly onDestroy: (() => void)|null;
-
   /**
    * The features applied to this directive
    */
@@ -309,7 +299,7 @@ export interface ComponentDef<T> extends DirectiveDef<T> {
   readonly template: ComponentTemplate<T>;
 
   /** Constants associated with the component's view. */
-  readonly consts: TConstants|null;
+  readonly consts: TConstantsOrFactory|null;
 
   /**
    * An array of `ngContent[selector]` values that were found in the template.

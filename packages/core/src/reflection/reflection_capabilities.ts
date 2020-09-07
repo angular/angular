@@ -17,14 +17,45 @@ import {GetterFn, MethodFn, SetterFn} from './types';
 
 
 
-/**
- * Attention: These regex has to hold even if the code is minified!
+/*
+ * #########################
+ * Attention: These Regular expressions have to hold even if the code is minified!
+ * ##########################
  */
-export const DELEGATE_CTOR = /^function\s+\S+\(\)\s*{[\s\S]+\.apply\(this,\s*arguments\)/;
-export const INHERITED_CLASS = /^class\s+[A-Za-z\d$_]*\s*extends\s+[^{]+{/;
-export const INHERITED_CLASS_WITH_CTOR =
+
+/**
+ * Regular expression that detects pass-through constructors for ES5 output. This Regex
+ * intends to capture the common delegation pattern emitted by TypeScript and Babel. Also
+ * it intends to capture the pattern where existing constructors have been downleveled from
+ * ES2015 to ES5 using TypeScript w/ downlevel iteration. e.g.
+ *
+ * ```
+ *   function MyClass() {
+ *     var _this = _super.apply(this, arguments) || this;
+ * ```
+ *
+ * ```
+ *   function MyClass() {
+ *     var _this = _super.apply(this, __spread(arguments)) || this;
+ * ```
+ *
+ * More details can be found in: https://github.com/angular/angular/issues/38453.
+ */
+export const ES5_DELEGATE_CTOR =
+    /^function\s+\S+\(\)\s*{[\s\S]+\.apply\(this,\s*(arguments|[^()]+\(arguments\))\)/;
+/** Regular expression that detects ES2015 classes which extend from other classes. */
+export const ES2015_INHERITED_CLASS = /^class\s+[A-Za-z\d$_]*\s*extends\s+[^{]+{/;
+/**
+ * Regular expression that detects ES2015 classes which extend from other classes and
+ * have an explicit constructor defined.
+ */
+export const ES2015_INHERITED_CLASS_WITH_CTOR =
     /^class\s+[A-Za-z\d$_]*\s*extends\s+[^{]+{[\s\S]*constructor\s*\(/;
-export const INHERITED_CLASS_WITH_DELEGATE_CTOR =
+/**
+ * Regular expression that detects ES2015 classes which extend from other classes
+ * and inherit a constructor.
+ */
+export const ES2015_INHERITED_CLASS_WITH_DELEGATE_CTOR =
     /^class\s+[A-Za-z\d$_]*\s*extends\s+[^{]+{[\s\S]*constructor\s*\(\)\s*{\s*super\(\.\.\.arguments\)/;
 
 /**
@@ -36,8 +67,9 @@ export const INHERITED_CLASS_WITH_DELEGATE_CTOR =
  * an initialized instance property.
  */
 export function isDelegateCtor(typeStr: string): boolean {
-  return DELEGATE_CTOR.test(typeStr) || INHERITED_CLASS_WITH_DELEGATE_CTOR.test(typeStr) ||
-      (INHERITED_CLASS.test(typeStr) && !INHERITED_CLASS_WITH_CTOR.test(typeStr));
+  return ES5_DELEGATE_CTOR.test(typeStr) ||
+      ES2015_INHERITED_CLASS_WITH_DELEGATE_CTOR.test(typeStr) ||
+      (ES2015_INHERITED_CLASS.test(typeStr) && !ES2015_INHERITED_CLASS_WITH_CTOR.test(typeStr));
 }
 
 export class ReflectionCapabilities implements PlatformReflectionCapabilities {

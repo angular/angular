@@ -17,7 +17,7 @@ import {TemplateRef} from '@angular/core/src/linker/template_ref';
 import {ViewContainerRef} from '@angular/core/src/linker/view_container_ref';
 import {EmbeddedViewRef} from '@angular/core/src/linker/view_ref';
 import {Attribute, Component, ContentChildren, Directive, HostBinding, HostListener, Input, Output, Pipe} from '@angular/core/src/metadata';
-import {async, fakeAsync, getTestBed, TestBed, tick} from '@angular/core/testing';
+import {fakeAsync, getTestBed, TestBed, tick, waitForAsync} from '@angular/core/testing';
 import {createMouseEvent, dispatchEvent, el, isCommentNode} from '@angular/platform-browser/testing/src/browser_util';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {modifiedInIvy, obsoleteInIvy, onlyInIvy} from '@angular/private/testing';
@@ -757,7 +757,7 @@ function declareTests(config?: {useJit: boolean}) {
         expect(childComponent.myHost).toBeAnInstanceOf(SomeDirective);
       });
 
-      it('should support events via EventEmitter on regular elements', async(() => {
+      it('should support events via EventEmitter on regular elements', waitForAsync(() => {
            TestBed.configureTestingModule(
                {declarations: [MyComp, DirectiveEmittingEvent, DirectiveListeningEvent]});
            const template = '<div emitter listener></div>';
@@ -787,7 +787,7 @@ function declareTests(config?: {useJit: boolean}) {
            emitter.fireEvent('fired !');
          }));
 
-      it('should support events via EventEmitter on template elements', async(() => {
+      it('should support events via EventEmitter on template elements', waitForAsync(() => {
            const fixture =
                TestBed
                    .configureTestingModule(
@@ -819,7 +819,7 @@ function declareTests(config?: {useJit: boolean}) {
            emitter.fireEvent('fired !');
          }));
 
-      it('should support [()] syntax', async(() => {
+      it('should support [()] syntax', waitForAsync(() => {
            TestBed.configureTestingModule({declarations: [MyComp, DirectiveWithTwoWayBinding]});
            const template = '<div [(control)]="ctxProp" two-way></div>';
            TestBed.overrideComponent(MyComp, {set: {template}});
@@ -1072,7 +1072,7 @@ function declareTests(config?: {useJit: boolean}) {
         });
 
         describe('.createComponent', () => {
-          it('should allow to create a component at any bound location', async(() => {
+          it('should allow to create a component at any bound location', waitForAsync(() => {
                const fixture = TestBed.configureTestingModule({schemas: [NO_ERRORS_SCHEMA]})
                                    .createComponent(MyComp);
                const tc = fixture.debugElement.children[0].children[0];
@@ -1083,7 +1083,7 @@ function declareTests(config?: {useJit: boolean}) {
                    .toHaveText('dynamic greet');
              }));
 
-          it('should allow to create multiple components at a location', async(() => {
+          it('should allow to create multiple components at a location', waitForAsync(() => {
                const fixture = TestBed.configureTestingModule({schemas: [NO_ERRORS_SCHEMA]})
                                    .createComponent(MyComp);
                const tc = fixture.debugElement.children[0].children[0];
@@ -1219,7 +1219,7 @@ function declareTests(config?: {useJit: boolean}) {
         });
 
         describe('.insert', () => {
-          it('should throw with destroyed views', async(() => {
+          it('should throw with destroyed views', waitForAsync(() => {
                const fixture = TestBed.configureTestingModule({schemas: [NO_ERRORS_SCHEMA]})
                                    .createComponent(MyComp);
                const tc = fixture.debugElement.children[0].children[0];
@@ -1235,7 +1235,7 @@ function declareTests(config?: {useJit: boolean}) {
         });
 
         describe('.move', () => {
-          it('should throw with destroyed views', async(() => {
+          it('should throw with destroyed views', waitForAsync(() => {
                const fixture = TestBed.configureTestingModule({schemas: [NO_ERRORS_SCHEMA]})
                                    .createComponent(MyComp);
                const tc = fixture.debugElement.children[0].children[0];
@@ -2001,7 +2001,7 @@ function declareTests(config?: {useJit: boolean}) {
     });
 
     describe('whitespaces in templates', () => {
-      it('should not remove whitespaces by default', async(() => {
+      it('should not remove whitespaces by default', waitForAsync(() => {
            @Component({
              selector: 'comp',
              template: '<span>foo</span>  <span>bar</span>',
@@ -2015,7 +2015,8 @@ function declareTests(config?: {useJit: boolean}) {
            expect(f.nativeElement.childNodes.length).toBe(2);
          }));
 
-      it('should not remove whitespaces when explicitly requested not to do so', async(() => {
+      it('should not remove whitespaces when explicitly requested not to do so',
+         waitForAsync(() => {
            @Component({
              selector: 'comp',
              template: '<span>foo</span>  <span>bar</span>',
@@ -2030,7 +2031,7 @@ function declareTests(config?: {useJit: boolean}) {
            expect(f.nativeElement.childNodes.length).toBe(3);
          }));
 
-      it('should remove whitespaces when explicitly requested to do so', async(() => {
+      it('should remove whitespaces when explicitly requested to do so', waitForAsync(() => {
            @Component({
              selector: 'comp',
              template: '<span>foo</span>  <span>bar</span>',

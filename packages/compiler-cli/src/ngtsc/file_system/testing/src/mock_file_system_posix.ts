@@ -25,8 +25,8 @@ export class MockFileSystemPosix extends MockFileSystem {
     return this.normalize(p.posix.join(basePath, ...paths)) as T;
   }
 
-  relative<T extends PathString>(from: T, to: T): PathSegment {
-    return this.normalize(p.posix.relative(from, to)) as PathSegment;
+  relative<T extends PathString>(from: T, to: T): PathSegment|AbsoluteFsPath {
+    return this.normalize(p.posix.relative(from, to)) as PathSegment | AbsoluteFsPath;
   }
 
   basename(filePath: string, extension?: string): PathSegment {

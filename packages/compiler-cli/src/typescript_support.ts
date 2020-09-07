@@ -19,7 +19,7 @@ const MIN_TS_VERSION = '3.9.2';
  * ∀ supported typescript version v, v < MAX_TS_VERSION
  * MAX_TS_VERSION is not considered as a supported TypeScript version
  */
-const MAX_TS_VERSION = '4.0.0';
+const MAX_TS_VERSION = '4.1.0';
 
 /**
  * The currently used version of TypeScript, which can be adjusted for testing purposes using

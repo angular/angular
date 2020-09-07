@@ -11,10 +11,8 @@ import {resolve} from 'path';
 import {getRepoBaseDir} from '../utils/config';
 import {debug, info} from '../utils/console';
 import {allFiles} from '../utils/repo-files';
-
-import {PullApproveGroup} from './group';
 import {logGroup, logHeader} from './logging';
-import {parsePullApproveYaml} from './parse-yaml';
+import {getGroupsFromYaml} from './parse-yaml';
 
 export function verify() {
   /** Full path to PullApprove config file */
@@ -23,12 +21,8 @@ export function verify() {
   const REPO_FILES = allFiles();
   /** The pull approve config file. */
   const pullApproveYamlRaw = readFileSync(PULL_APPROVE_YAML_PATH, 'utf8');
-  /** JSON representation of the pullapprove yaml file. */
-  const pullApprove = parsePullApproveYaml(pullApproveYamlRaw);
   /** All of the groups defined in the pullapprove yaml. */
-  const groups = Object.entries(pullApprove.groups).map(([groupName, group]) => {
-    return new PullApproveGroup(groupName, group);
-  });
+  const groups = getGroupsFromYaml(pullApproveYamlRaw);
   /**
    * PullApprove groups without conditions. These are skipped in the verification
    * as those would always be active and cause zero unmatched files.
@@ -90,11 +84,16 @@ export function verify() {
   info.groupEnd();
   const matchedGroups = resultsByGroup.filter(group => !group.unmatchedCount);
   info.group(`Matched conditions by Group (${matchedGroups.length} groups)`);
-  matchedGroups.forEach(group => logGroup(group, true, debug));
+  matchedGroups.forEach(group => logGroup(group, 'matchedConditions', debug));
   info.groupEnd();
   const unmatchedGroups = resultsByGroup.filter(group => group.unmatchedCount);
   info.group(`Unmatched conditions by Group (${unmatchedGroups.length} groups)`);
-  unmatchedGroups.forEach(group => logGroup(group, false));
+  unmatchedGroups.forEach(group => logGroup(group, 'unmatchedConditions'));
+  info.groupEnd();
+  const unverifiableConditionsInGroups =
+      resultsByGroup.filter(group => group.unverifiableConditions.length > 0);
+  info.group(`Unverifiable conditions by Group (${unverifiableConditionsInGroups.length} groups)`);
+  unverifiableConditionsInGroups.forEach(group => logGroup(group, 'unverifiableConditions'));
   info.groupEnd();
 
   // Provide correct exit code based on verification success.

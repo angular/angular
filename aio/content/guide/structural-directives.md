@@ -39,14 +39,14 @@ No brackets. No parentheses. Just `*ngIf` set to a string.
 
 You'll learn in this guide that the [asterisk (*) is a convenience notation](guide/structural-directives#asterisk)
 and the string is a [_microsyntax_](guide/structural-directives#microsyntax) rather than the usual
-[template expression](guide/template-syntax#template-expressions).
+[template expression](guide/interpolation#template-expressions).
 Angular desugars this notation into a marked-up `<ng-template>` that surrounds the
-host element and its descendents.
+host element and its descendants.
 Each structural directive does something different with that template.
 
-Three of the common, built-in structural directives&mdash;[NgIf](guide/template-syntax#ngIf),
-[NgFor](guide/template-syntax#ngFor), and [NgSwitch...](guide/template-syntax#ngSwitch)&mdash;are
-described in the [_Template Syntax_](guide/template-syntax) guide and seen in samples throughout the Angular documentation.
+Three of the common, built-in structural directives&mdash;[NgIf](guide/built-in-directives#ngIf),
+[NgFor](guide/built-in-directives#ngFor), and [NgSwitch...](guide/built-in-directives#ngSwitch)&mdash;are
+described in the [Built-in directives](guide/built-in-directives) guide and seen in samples throughout the Angular documentation.
 Here's an example of them in a template:
 
 
@@ -96,7 +96,7 @@ Technically it's a directive with a template.
 
 An [*attribute* directive](guide/attribute-directives) changes the appearance or behavior
 of an element, component, or another directive.
-For example, the built-in [`NgStyle`](guide/template-syntax#ngStyle) directive
+For example, the built-in [`NgStyle`](guide/built-in-directives#ngStyle) directive
 changes several element styles at the same time.
 
 You can apply many _attribute_ directives to one host element.
@@ -440,7 +440,7 @@ There are several such variables in this example: `hero`, `i`, and `odd`.
 All are preceded by the keyword `let`.
 
 A _template input variable_ is **_not_** the same as a
-[template _reference_ variable](guide/template-syntax#ref-vars),
+[template _reference_ variable](guide/template-reference-variables),
 neither _semantically_ nor _syntactically_.
 
 You declare a template _input_ variable using the `let` keyword (`let hero`).
@@ -786,7 +786,7 @@ That means the directive needs an `appUnless` property, decorated with `@Input`
 
 
 
-Read about `@Input` in the [_Template Syntax_](guide/template-syntax#inputs-outputs) guide.
+Read about `@Input` in the [`@Input()` and `@Output()` properties](guide/inputs-outputs) guide.
 
 
 </div>
@@ -879,12 +879,14 @@ export type LoadingState<T> = Loaded<T> | Loading;
 export class IfLoadedDirective<T> {
     @Input('ifLoaded') set state(state: LoadingState<T>) {}
     static ngTemplateGuard_state<T>(dir: IfLoadedDirective<T>, expr: LoadingState<T>): expr is Loaded<T> { return true; };
+}
+
 export interface Person {
   name: string;
 }
 
 @Component({
-  template: `<div *ifLoaded="state">{{ state.data }}</div>`,
+  template: `&lt;div *ifLoaded="state">{{ state.data }}&lt;/div>`,
 })
 export class AppComponent {
   state: LoadingState<Person>;

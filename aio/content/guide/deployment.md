@@ -320,7 +320,7 @@ You can dramatically reduce launch time by only loading the application modules 
 absolutely must be present when the app starts.
 
 Configure the Angular Router to defer loading of all other modules (and their associated code), either by
-[waiting until the app has launched](guide/router#preloading  "Preloading")
+[waiting until the app has launched](guide/router-tutorial-toh#preloading  "Preloading")
 or by [_lazy loading_](guide/router#lazy-loading "Lazy loading")
 them on demand.
 
@@ -328,7 +328,7 @@ them on demand.
 
 <header>Don't eagerly import something from a lazy-loaded module</header>
 
-If you mean to lazy-load a module, be careful not import it
+If you mean to lazy-load a module, be careful not to import it
 in a file that's eagerly loaded when the app starts (such as the root `AppModule`).
 If you do that, the module will be loaded immediately.
 

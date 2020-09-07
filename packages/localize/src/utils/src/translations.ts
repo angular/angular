@@ -113,7 +113,7 @@ export function parseTranslation(messageString: TargetMessage): ParsedTranslatio
 export function makeParsedTranslation(
     messageParts: string[], placeholderNames: string[] = []): ParsedTranslation {
   let messageString = messageParts[0];
-  for (let i = 0; i < placeholderNames.length - 1; i++) {
+  for (let i = 0; i < placeholderNames.length; i++) {
     messageString += `{$${placeholderNames[i]}}${messageParts[i + 1]}`;
   }
   return {

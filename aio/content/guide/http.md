@@ -273,11 +273,11 @@ In the following example, the `searchHeroes()` method uses a JSONP request to qu
 searchHeroes(term: string): Observable {
   term = term.trim();
 
-  let heroesURL = `${this.heroesURL}?${term}`;
+  const heroesURL = `${this.heroesURL}?${term}`;
   return this.http.jsonp(heroesUrl, 'callback').pipe(
       catchError(this.handleError('searchHeroes', [])) // then handle the error
     );
-};
+}
 ```
 
 This request passes the `heroesURL` as the first parameter and the callback function name as the second parameter.

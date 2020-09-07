@@ -7,7 +7,7 @@
  */
 
 import {AssertNotNull, BinaryOperator, BinaryOperatorExpr, BuiltinMethod, BuiltinVar, CastExpr, ClassStmt, CommaExpr, CommentStmt, ConditionalExpr, DeclareFunctionStmt, DeclareVarStmt, ExpressionStatement, ExpressionVisitor, ExternalExpr, ExternalReference, FunctionExpr, IfStmt, InstantiateExpr, InvokeFunctionExpr, InvokeMethodExpr, JSDocCommentStmt, LiteralArrayExpr, LiteralExpr, LiteralMapExpr, NotExpr, ParseSourceFile, ParseSourceSpan, PartialModule, ReadKeyExpr, ReadPropExpr, ReadVarExpr, ReturnStatement, Statement, StatementVisitor, StmtModifier, ThrowStmt, TryCatchStmt, TypeofExpr, WrappedNodeExpr, WriteKeyExpr, WritePropExpr, WriteVarExpr} from '@angular/compiler';
-import {LocalizedString} from '@angular/compiler/src/output/output_ast';
+import {LocalizedString, UnaryOperator, UnaryOperatorExpr} from '@angular/compiler/src/output/output_ast';
 import * as ts from 'typescript';
 
 import {error} from './util';
@@ -620,6 +620,23 @@ export class NodeEmitterVisitor implements StatementVisitor, ExpressionVisitor {
                     /* decorators */ undefined, /* modifiers */ undefined,
                     /* dotDotDotToken */ undefined, p.name)),
             /* type */ undefined, this._visitStatements(expr.statements)));
+  }
+
+  visitUnaryOperatorExpr(expr: UnaryOperatorExpr):
+      RecordedNode<ts.UnaryExpression|ts.ParenthesizedExpression> {
+    let unaryOperator: ts.BinaryOperator;
+    switch (expr.operator) {
+      case UnaryOperator.Minus:
+        unaryOperator = ts.SyntaxKind.MinusToken;
+        break;
+      case UnaryOperator.Plus:
+        unaryOperator = ts.SyntaxKind.PlusToken;
+        break;
+      default:
+        throw new Error(`Unknown operator: ${expr.operator}`);
+    }
+    const binary = ts.createPrefix(unaryOperator, expr.expr.visitExpression(this, null));
+    return this.record(expr, expr.parens ? ts.createParen(binary) : binary);
   }
 
   visitBinaryOperatorExpr(expr: BinaryOperatorExpr):

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {ɵcomputeMsgId, ɵmakeParsedTranslation} from '@angular/localize';
-import {ParsedTranslationBundle} from '../../../../src/translate/translation_files/translation_parsers/translation_parser';
+import {ParseAnalysis, ParsedTranslationBundle} from '../../../../src/translate/translation_files/translation_parsers/translation_parser';
 import {XtbTranslationParser} from '../../../../src/translate/translation_files/translation_parsers/xtb_translation_parser';
 
 describe('XtbTranslationParser', () => {
@@ -22,6 +22,50 @@ describe('XtbTranslationParser', () => {
          expect(parser.canParse('/some/file.xmb', '')).toBe(false);
          expect(parser.canParse('/some/file.xtb', '')).toBe(false);
        });
+  });
+
+  describe('analyze()', () => {
+    it('should return a success object if the file extension is `.xtb` or `.xmb` and it contains the `<translationbundle>` tag',
+       () => {
+         const parser = new XtbTranslationParser();
+         expect(parser.analyze('/some/file.xtb', '<translationbundle>'))
+             .toEqual(jasmine.objectContaining({canParse: true, hint: jasmine.any(Object)}));
+         expect(parser.analyze('/some/file.xmb', '<translationbundle>'))
+             .toEqual(jasmine.objectContaining({canParse: true, hint: jasmine.any(Object)}));
+         expect(parser.analyze('/some/file.xtb', '<translationbundle lang="en">'))
+             .toEqual(jasmine.objectContaining({canParse: true, hint: jasmine.any(Object)}));
+         expect(parser.analyze('/some/file.xmb', '<translationbundle lang="en">'))
+             .toEqual(jasmine.objectContaining({canParse: true, hint: jasmine.any(Object)}));
+       });
+
+    it('should return a failure object if the file is not valid XTB', () => {
+      const parser = new XtbTranslationParser();
+      expect(parser.analyze('/some/file.json', '<translationbundle>'))
+          .toEqual(jasmine.objectContaining({canParse: false}));
+      expect(parser.analyze('/some/file.xmb', '')).toEqual(jasmine.objectContaining({
+        canParse: false
+      }));
+      expect(parser.analyze('/some/file.xtb', '')).toEqual(jasmine.objectContaining({
+        canParse: false
+      }));
+    });
+
+    it('should return a diagnostics object when the file is not a valid format', () => {
+      let results: ParseAnalysis<any>;
+      const parser = new XtbTranslationParser();
+
+      results = parser.analyze('/some/file.xtb', '<moo>');
+      expect(results.diagnostics.messages).toEqual([
+        {type: 'warning', message: 'The XML file does not contain a <translationbundle> root node.'}
+      ]);
+
+      results = parser.analyze('/some/file.xtb', '<translationbundle></translation>');
+      expect(results.diagnostics.messages).toEqual([{
+        type: 'error',
+        message:
+            'Unexpected closing tag "translation". It may happen when the tag has already been closed by another tag. For more info see https://www.w3.org/TR/html5/syntax.html#closing-elements-that-have-implied-end-tags ("<translationbundle>[ERROR ->]</translation>"): /some/file.xtb@0:19'
+      }]);
+    });
   });
 
   for (const withHint of [true, false]) {
@@ -94,6 +138,38 @@ describe('XtbTranslationParser', () => {
         expect(result.translations['8877975308926375834'])
             .toEqual(
                 ɵmakeParsedTranslation(['', 'rab', ''], ['START_PARAGRAPH', 'CLOSE_PARAGRAPH']));
+      });
+
+      it('should extract nested placeholder containers (i.e. nested HTML elements)', () => {
+        /**
+         * Source HTML:
+         *
+         * ```
+         * <div i18n>
+         *   translatable <span>element <b>with placeholders</b></span> {{ interpolation}}
+         * </div>
+         * ```
+         */
+        const XLIFF = [
+          `<?xml version="1.0" encoding="UTF-8"?>`,
+          `<translationbundle>`,
+          `  <translation id="9051630253697141670">` +
+              `<ph name="START_TAG_SPAN"/><ph name="INTERPOLATION"/> tnemele<ph name="CLOSE_TAG_SPAN"/> elbatalsnart <ph name="START_BOLD_TEXT"/>sredlohecalp htiw<ph name="CLOSE_BOLD_TEXT"/>` +
+              `</translation>`,
+          `</translationbundle>`,
+        ].join('\n');
+        const result = doParse('/some/file.xtb', XLIFF);
+        expect(result.translations[ɵcomputeMsgId(
+                   'translatable {$START_TAG_SPAN}element {$START_BOLD_TEXT}with placeholders' +
+                   '{$CLOSE_BOLD_TEXT}{$CLOSE_TAG_SPAN} {$INTERPOLATION}')])
+            .toEqual(ɵmakeParsedTranslation(
+                ['', '', ' tnemele', ' elbatalsnart ', 'sredlohecalp htiw', ''], [
+                  'START_TAG_SPAN',
+                  'INTERPOLATION',
+                  'CLOSE_TAG_SPAN',
+                  'START_BOLD_TEXT',
+                  'CLOSE_BOLD_TEXT',
+                ]));
       });
 
       it('should extract translations with simple ICU expressions', () => {
@@ -236,10 +312,14 @@ describe('XtbTranslationParser', () => {
         expect(result.translations['invalid']).toBeUndefined();
         expect(result.diagnostics.messages).toContain({
           type: 'warning',
-          message:
-              `Could not parse message with id "invalid" - perhaps it has an unrecognised ICU format?\n` +
-              `Error: Unexpected character "EOF" (Do you have an unescaped "{" in your template? Use "{{ '{' }}") to escape it.)\n` +
-              `Error: Invalid ICU message. Missing '}'.`
+          message: [
+            `Could not parse message with id "invalid" - perhaps it has an unrecognised ICU format?`,
+            `Unexpected character "EOF" (Do you have an unescaped "{" in your template? Use "{{ '{' }}") to escape it.) ("id">{REGION_COUNT_1, plural, =0 {unused plural form} =1 {1 region} other {{REGION_COUNT_2} regions}}[ERROR ->]</translation>`,
+            `</translationbundle>"): /some/file.xtb@2:124`,
+            `Invalid ICU message. Missing '}'. ("n>`,
+            `  <translation id="invalid">{REGION_COUNT_1, plural, =0 {unused plural form} =1 {1 region} other [ERROR ->]{{REGION_COUNT_2} regions}}</translation>`,
+            `</translationbundle>"): /some/file.xtb@2:97`,
+          ].join('\n')
         });
       });
 
@@ -261,7 +341,7 @@ describe('XtbTranslationParser', () => {
           ].join('\n');
 
           expectToFail('/some/file.xtb', XTB, /Missing required "id" attribute/, [
-            `Missing required "id" attribute on <trans-unit> element. ("<translationbundle>`,
+            `Missing required "id" attribute on <translation> element. ("<translationbundle>`,
             `  [ERROR ->]<translation></translation>`,
             `</translationbundle>"): /some/file.xtb@1:2`,
           ].join('\n'));
@@ -295,11 +375,14 @@ describe('XtbTranslationParser', () => {
           ].join('\n');
 
           expectToFail('/some/file.xtb', XTB, /Invalid element found in message/, [
-            `Invalid element found in message. ("<translationbundle>`,
+            `Error: Invalid element found in message.`,
+            `At /some/file.xtb@2:4:`,
+            `...`,
             `  <translation id="deadbeef">`,
             `    [ERROR ->]<source/>`,
             `  </translation>`,
-            `</translationbundle>"): /some/file.xtb@2:4`,
+            `...`,
+            ``,
           ].join('\n'));
         });
 
@@ -311,9 +394,12 @@ describe('XtbTranslationParser', () => {
           ].join('\n');
 
           expectToFail('/some/file.xtb', XTB, /required "name" attribute/gi, [
-            `Missing required "name" attribute: ("<translationbundle>`,
+            `Error: Missing required "name" attribute:`,
+            `At /some/file.xtb@1:29:`,
+            `...<translationbundle>`,
             `  <translation id="deadbeef">[ERROR ->]<ph/></translation>`,
-            `</translationbundle>"): /some/file.xtb@1:29`,
+            `</translationbundle>...`,
+            ``,
           ].join('\n'));
         });
       });

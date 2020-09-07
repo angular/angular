@@ -62,8 +62,8 @@ export class Symbols {
                 // even if the `SourceFile` was not type checked (which looks for `SourceFile`
                 // in the parent chain). This doesn't damage the node as the binder unconditionally
                 // sets the parent.
-                externalReference.expression.parent = externalReference;
-                externalReference.parent = this.sourceFile as any;
+                (externalReference.expression.parent as ts.Node) = externalReference;
+                (externalReference.parent as ts.Node) = this.sourceFile;
               }
               const from = stripQuotes(externalReference.expression.getText());
               symbols.set(
@@ -83,8 +83,8 @@ export class Symbols {
           }
           if (!importDecl.moduleSpecifier.parent) {
             // See note above in the `ImportEqualDeclaration` case.
-            importDecl.moduleSpecifier.parent = importDecl;
-            importDecl.parent = this.sourceFile;
+            (importDecl.moduleSpecifier.parent as ts.Node) = importDecl;
+            (importDecl.parent as ts.Node) = this.sourceFile;
           }
           const from = stripQuotes(importDecl.moduleSpecifier.getText());
           if (importDecl.importClause.name) {

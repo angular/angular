@@ -1,5 +1,3 @@
-'use strict'; // necessary for es6 output in node
-
 import { browser, element, by, ElementFinder } from 'protractor';
 import { promise } from 'selenium-webdriver';
 
@@ -26,12 +24,12 @@ class Hero {
     // Get hero id and name from the given detail element.
     static async fromDetail(detail: ElementFinder): Promise<Hero> {
         // Get hero id from the first <div>
-        let _id = await detail.all(by.css('div')).first().getText();
+        const id = await detail.all(by.css('div')).first().getText();
         // Get name from the h2
-        let _name = await detail.element(by.css('h2')).getText();
+        const name = await detail.element(by.css('h2')).getText();
         return {
-            id: +_id.substr(_id.indexOf(' ') + 1),
-            name: _name.substr(0, _name.lastIndexOf(' '))
+            id: +id.substr(id.indexOf(' ') + 1),
+            name: name.substr(0, name.lastIndexOf(' '))
         };
     }
 }
@@ -57,33 +55,33 @@ function initialPageTests() {
   });
 
   it('has the right number of heroes', () => {
-    let page = getPageElts();
+    const page = getPageElts();
     expect(page.heroes.count()).toEqual(10);
   });
 
-  it('has no selected hero and no hero details', function () {
-    let page = getPageElts();
+  it('has no selected hero and no hero details', () => {
+    const page = getPageElts();
     expect(page.selected.isPresent()).toBeFalsy('selected hero');
     expect(page.heroDetail.isPresent()).toBeFalsy('no hero detail');
   });
 }
 
 function selectHeroTests() {
-  it(`selects ${targetHero.name} from hero list`, function () {
-    let hero = element(by.cssContainingText('li span.badge', targetHero.id.toString()));
+  it(`selects ${targetHero.name} from hero list`, () => {
+    const hero = element(by.cssContainingText('li span.badge', targetHero.id.toString()));
     hero.click();
     // Nothing specific to expect other than lack of exceptions.
   });
 
-  it(`has selected ${targetHero.name}`, function () {
-    let page = getPageElts();
-    let expectedText = `${targetHero.id} ${targetHero.name}`;
+  it(`has selected ${targetHero.name}`, () => {
+    const page = getPageElts();
+    const expectedText = `${targetHero.id} ${targetHero.name}`;
     expect(page.selected.getText()).toBe(expectedText);
   });
 
   it('shows selected hero details', async () => {
-    let page = getPageElts();
-    let hero = await Hero.fromDetail(page.heroDetail);
+    const page = getPageElts();
+    const hero = await Hero.fromDetail(page.heroDetail);
     expect(hero.id).toEqual(targetHero.id);
     expect(hero.name).toEqual(targetHero.name.toUpperCase());
   });
@@ -96,17 +94,17 @@ function updateHeroTests() {
   });
 
   it(`shows updated hero name in details`, async () => {
-    let page = getPageElts();
-    let hero = await Hero.fromDetail(page.heroDetail);
-    let newName = targetHero.name + nameSuffix;
+    const page = getPageElts();
+    const hero = await Hero.fromDetail(page.heroDetail);
+    const newName = targetHero.name + nameSuffix;
     expect(hero.id).toEqual(targetHero.id);
     expect(hero.name).toEqual(newName.toUpperCase());
   });
 
   it(`shows updated hero name in list`, async () => {
-    let page = getPageElts();
-    let hero = Hero.fromString(await page.selected.getText());
-    let newName = targetHero.name + nameSuffix;
+    const page = getPageElts();
+    const hero = Hero.fromString(await page.selected.getText());
+    const newName = targetHero.name + nameSuffix;
     expect(hero.id).toEqual(targetHero.id);
     expect(hero.name).toEqual(newName);
   });
@@ -114,15 +112,15 @@ function updateHeroTests() {
 }
 
 function addToHeroName(text: string): promise.Promise<void> {
-  let input = element(by.css('input'));
+  const input = element(by.css('input'));
   return input.sendKeys(text);
 }
 
 function expectHeading(hLevel: number, expectedText: string): void {
-    let hTag = `h${hLevel}`;
-    let hText = element(by.css(hTag)).getText();
+    const hTag = `h${hLevel}`;
+    const hText = element(by.css(hTag)).getText();
     expect(hText).toEqual(expectedText, hTag);
-};
+}
 
 function getPageElts() {
   return {

@@ -11,8 +11,8 @@ import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
 import {DefaultImportRecorder, Reference} from '../../imports';
-import {InjectableClassRegistry, MetadataReader, MetadataRegistry} from '../../metadata';
-import {extractDirectiveGuards} from '../../metadata/src/util';
+import {DirectiveTypeCheckMeta, InjectableClassRegistry, MetadataReader, MetadataRegistry} from '../../metadata';
+import {extractDirectiveTypeCheckMeta} from '../../metadata/src/util';
 import {DynamicValue, EnumValue, PartialEvaluator} from '../../partial_evaluator';
 import {ClassDeclaration, ClassMember, ClassMemberKind, Decorator, filterToMembersWithDecorator, ReflectionHost, reflectObjectLiteral} from '../../reflection';
 import {LocalModuleScopeRegistry} from '../../scope';
@@ -35,7 +35,7 @@ const LIFECYCLE_HOOKS = new Set([
 
 export interface DirectiveHandlerData {
   baseClass: Reference<ClassDeclaration>|'dynamic'|null;
-  guards: ReturnType<typeof extractDirectiveGuards>;
+  typeCheckMeta: DirectiveTypeCheckMeta;
   meta: R3DirectiveMetadata;
   metadataStmt: Statement|null;
   providersRequiringFactory: Set<Reference<ClassDeclaration>>|null;
@@ -102,7 +102,7 @@ export class DirectiveDecoratorHandler implements
             node, this.reflector, this.defaultImportRecorder, this.isCore,
             this.annotateForClosureCompiler),
         baseClass: readBaseClass(node, this.reflector, this.evaluator),
-        guards: extractDirectiveGuards(node, this.reflector),
+        typeCheckMeta: extractDirectiveTypeCheckMeta(node, analysis.inputs, this.reflector),
         providersRequiringFactory
       }
     };
@@ -122,7 +122,7 @@ export class DirectiveDecoratorHandler implements
       queries: analysis.meta.queries.map(query => query.propertyName),
       isComponent: false,
       baseClass: analysis.baseClass,
-      ...analysis.guards,
+      ...analysis.typeCheckMeta,
     });
 
     this.injectableRegistry.registerInjectable(node);

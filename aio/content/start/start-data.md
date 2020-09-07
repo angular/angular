@@ -40,7 +40,7 @@ A later part of this tutorial, [Use forms for user input](start/start-forms "Try
 
         <code-example header="src/app/cart.service.ts" path="getting-started/src/app/cart.service.1.ts"></code-example>
 
-    <div class="alert is-helpful>
+    <div class="alert is-helpful">
 
     The StackBlitz generator might provide the cart service in `app.module.ts` by default. That differs from the example, which uses a bundle-optimization technique, an  `@Injectable()` decorator with the `{ providedIn: 'root' }` statement.
     For more information about services, see [Introduction to Services and Dependency Injection](guide/architecture-services "Concepts > Intro to Services and DI").
@@ -236,7 +236,7 @@ For more information about services, see [Introduction to Services and Dependenc
 <!-- Accessing data with the HTTP client -->
 
 Servers often return data in the form of a stream.
-Streams are useful because they make it easy to transform the returned data and  make modifications to the way you request that data.
+Streams are useful because they make it easy to transform the returned data and make modifications to the way you request that data.
 The Angular HTTP client, `HttpClient`, is a built-in way to fetch data from external APIs and provide them to your app as a stream.
 
 This section shows you how to use the HTTP client to retrieve shipping prices from an external file.

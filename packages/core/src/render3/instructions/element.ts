@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {assertDataInRange, assertDefined, assertEqual} from '../../util/assert';
+import {assertDefined, assertEqual, assertIndexInRange} from '../../util/assert';
 import {assertFirstCreatePass, assertHasParent} from '../assert';
 import {attachPatchData} from '../context_discovery';
 import {registerPostOrderHooks} from '../hooks';
@@ -37,7 +37,7 @@ function elementStartFirstCreatePass(
 
   const hasDirectives =
       resolveDirectives(tView, lView, tNode, getConstant<string[]>(tViewConsts, localRefsIndex));
-  ngDevMode && logUnknownElementError(tView, lView, native, tNode, hasDirectives);
+  ngDevMode && logUnknownElementError(tView, native, tNode, hasDirectives);
 
   if (tNode.attrs !== null) {
     computeStaticStyling(tNode, tNode.attrs, false);
@@ -79,7 +79,7 @@ export function ɵɵelementStart(
           getBindingIndex(), tView.bindingStartIndex,
           'elements should be created before any bindings');
   ngDevMode && ngDevMode.rendererCreateElement++;
-  ngDevMode && assertDataInRange(lView, adjustedIndex);
+  ngDevMode && assertIndexInRange(lView, adjustedIndex);
 
   const renderer = lView[RENDERER];
   const native = lView[adjustedIndex] = elementCreate(name, renderer, getNamespace());
@@ -178,7 +178,7 @@ export function ɵɵelement(
 }
 
 function logUnknownElementError(
-    tView: TView, lView: LView, element: RElement, tNode: TNode, hasDirectives: boolean): void {
+    tView: TView, element: RElement, tNode: TNode, hasDirectives: boolean): void {
   const schemas = tView.schemas;
 
   // If `schemas` is set to `null`, that's an indication that this Component was compiled in AOT
@@ -202,7 +202,7 @@ function logUnknownElementError(
         (typeof customElements !== 'undefined' && tagName.indexOf('-') > -1 &&
          !customElements.get(tagName));
 
-    if (isUnknown && !matchingSchemas(tView, lView, tagName)) {
+    if (isUnknown && !matchingSchemas(tView, tagName)) {
       let message = `'${tagName}' is not a known element:\n`;
       message += `1. If '${
           tagName}' is an Angular component, then verify that it is part of this module.\n`;

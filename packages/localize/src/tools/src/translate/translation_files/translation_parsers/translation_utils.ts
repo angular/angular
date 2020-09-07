@@ -5,9 +5,12 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {Element, LexerRange, Node, ParseError, ParseErrorLevel, ParseSourceSpan, XmlParser} from '@angular/compiler';
+import {Element, LexerRange, Node, ParseError, ParseErrorLevel, ParseSourceSpan, ParseTreeResult, XmlParser} from '@angular/compiler';
+
 import {Diagnostics} from '../../../diagnostics';
+
 import {TranslationParseError} from './translation_parse_error';
+import {ParseAnalysis, ParsedTranslationBundle} from './translation_parser';
 
 export function getAttrOrThrow(element: Element, attrName: string): string {
   const attrValue = getAttribute(element, attrName);
@@ -29,17 +32,15 @@ export function getAttribute(element: Element, attrName: string): string|undefin
  * This would be equivalent to parsing the `innerHTML` string of an HTML document.
  *
  * @param element The element whose inner range we want to parse.
- * @returns a collection of XML `Node` objects that were parsed from the element's contents.
+ * @returns a collection of XML `Node` objects and any errors that were parsed from the element's
+ *     contents.
  */
-export function parseInnerRange(element: Element): Node[] {
+export function parseInnerRange(element: Element): ParseTreeResult {
   const xmlParser = new XmlParser();
   const xml = xmlParser.parse(
       element.sourceSpan.start.file.content, element.sourceSpan.start.file.url,
       {tokenizeExpansionForms: true, range: getInnerRange(element)});
-  if (xml.errors.length) {
-    throw xml.errors.map(e => new TranslationParseError(e.span, e.msg).toString()).join('\n');
-  }
-  return xml.rootNodes;
+  return xml;
 }
 
 /**
@@ -47,7 +48,7 @@ export function parseInnerRange(element: Element): Node[] {
  * @param element The element whose inner range we want to compute.
  */
 function getInnerRange(element: Element): LexerRange {
-  const start = element.startSourceSpan!.end;
+  const start = element.startSourceSpan.end;
   const end = element.endSourceSpan!.start;
   return {
     startPos: start.offset,
@@ -81,25 +82,33 @@ export interface XmlTranslationParserHint {
  */
 export function canParseXml(
     filePath: string, contents: string, rootNodeName: string,
-    attributes: Record<string, string>): XmlTranslationParserHint|false {
+    attributes: Record<string, string>): ParseAnalysis<XmlTranslationParserHint> {
+  const diagnostics = new Diagnostics();
   const xmlParser = new XmlParser();
   const xml = xmlParser.parse(contents, filePath);
 
   if (xml.rootNodes.length === 0 ||
       xml.errors.some(error => error.level === ParseErrorLevel.ERROR)) {
-    return false;
+    xml.errors.forEach(e => addParseError(diagnostics, e));
+    return {canParse: false, diagnostics};
   }
 
   const rootElements = xml.rootNodes.filter(isNamedElement(rootNodeName));
   const rootElement = rootElements[0];
   if (rootElement === undefined) {
-    return false;
+    diagnostics.warn(`The XML file does not contain a <${rootNodeName}> root node.`);
+    return {canParse: false, diagnostics};
   }
 
   for (const attrKey of Object.keys(attributes)) {
     const attr = rootElement.attrs.find(attr => attr.name === attrKey);
     if (attr === undefined || attr.value !== attributes[attrKey]) {
-      return false;
+      addParseDiagnostic(
+          diagnostics, rootElement.sourceSpan,
+          `The <${rootNodeName}> node does not have the required attribute: ${attrKey}="${
+              attributes[attrKey]}".`,
+          ParseErrorLevel.WARNING);
+      return {canParse: false, diagnostics};
     }
   }
 
@@ -110,7 +119,7 @@ export function canParseXml(
         ParseErrorLevel.WARNING));
   }
 
-  return {element: rootElement, errors: xml.errors};
+  return {canParse: true, diagnostics, hint: {element: rootElement, errors: xml.errors}};
 }
 
 /**
@@ -144,5 +153,14 @@ export function addParseError(diagnostics: Diagnostics, parseError: ParseError):
     diagnostics.error(parseError.toString());
   } else {
     diagnostics.warn(parseError.toString());
+  }
+}
+
+/**
+ * Add the provided `errors` to the `bundle` diagnostics.
+ */
+export function addErrorsToBundle(bundle: ParsedTranslationBundle, errors: ParseError[]): void {
+  for (const error of errors) {
+    addParseError(bundle.diagnostics, error);
   }
 }

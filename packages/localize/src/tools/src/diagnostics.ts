@@ -35,8 +35,8 @@ export class Diagnostics {
     this.messages.push(...other.messages);
   }
   formatDiagnostics(message: string): string {
-    const errors = this.messages!.filter(d => d.type === 'error').map(d => ' - ' + d.message);
-    const warnings = this.messages!.filter(d => d.type === 'warning').map(d => ' - ' + d.message);
+    const errors = this.messages.filter(d => d.type === 'error').map(d => ' - ' + d.message);
+    const warnings = this.messages.filter(d => d.type === 'warning').map(d => ' - ' + d.message);
     if (errors.length) {
       message += '\nERRORS:\n' + errors.join('\n');
     }

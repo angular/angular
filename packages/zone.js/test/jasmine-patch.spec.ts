@@ -77,4 +77,14 @@ ifEnvSupports(supportJasmineSpec, () => {
       expect(log).toEqual(['resolved']);
     });
   });
+
+  describe('jasmine.createSpyObj', () => {
+    it('createSpyObj with properties should be able to be retrieved from the spy', () => {
+      const spy = jasmine.createSpyObj('obj', ['someFunction'], {prop1: 'foo'});
+      expect(spy.prop1).toEqual('foo');
+      const desc: any = Object.getOwnPropertyDescriptor(spy, 'prop1');
+      expect(desc.enumerable).toBe(true);
+      expect(desc.configurable).toBe(true);
+    });
+  });
 })();

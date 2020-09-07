@@ -83,25 +83,26 @@ abstract class HTMLCollection {
 })
 export class SelectMultipleControlValueAccessor implements ControlValueAccessor {
   /**
-   * @description
-   * The current value
+   * The current value.
+   * @nodoc
    */
   value: any;
 
   /** @internal */
   _optionMap: Map<string, ɵNgSelectMultipleOption> = new Map<string, ɵNgSelectMultipleOption>();
+
   /** @internal */
   _idCounter: number = 0;
 
   /**
-   * @description
    * The registered callback function called when a change event occurs on the input element.
+   * @nodoc
    */
   onChange = (_: any) => {};
 
   /**
-   * @description
    * The registered callback function called when a blur event occurs on the input element.
+   * @nodoc
    */
   onTouched = () => {};
 
@@ -112,7 +113,7 @@ export class SelectMultipleControlValueAccessor implements ControlValueAccessor 
    */
   @Input()
   set compareWith(fn: (o1: any, o2: any) => boolean) {
-    if (typeof fn !== 'function') {
+    if (typeof fn !== 'function' && (typeof ngDevMode === 'undefined' || ngDevMode)) {
       throw new Error(`compareWith must be a function, but received ${JSON.stringify(fn)}`);
     }
     this._compareWith = fn;
@@ -123,11 +124,8 @@ export class SelectMultipleControlValueAccessor implements ControlValueAccessor 
   constructor(private _renderer: Renderer2, private _elementRef: ElementRef) {}
 
   /**
-   * @description
-   * Sets the "value" property on one or of more
-   * of the select's options.
-   *
-   * @param value The value
+   * Sets the "value" property on one or of more of the select's options.
+   * @nodoc
    */
   writeValue(value: any): void {
     this.value = value;
@@ -147,11 +145,9 @@ export class SelectMultipleControlValueAccessor implements ControlValueAccessor 
   }
 
   /**
-   * @description
    * Registers a function called when the control value changes
    * and writes an array of the selected options.
-   *
-   * @param fn The callback function
+   * @nodoc
    */
   registerOnChange(fn: (value: any) => any): void {
     this.onChange = (_: any) => {
@@ -181,10 +177,8 @@ export class SelectMultipleControlValueAccessor implements ControlValueAccessor 
   }
 
   /**
-   * @description
    * Registers a function called when the control is touched.
-   *
-   * @param fn The callback function
+   * @nodoc
    */
   registerOnTouched(fn: () => any): void {
     this.onTouched = fn;
@@ -192,8 +186,7 @@ export class SelectMultipleControlValueAccessor implements ControlValueAccessor 
 
   /**
    * Sets the "disabled" property on the select input element.
-   *
-   * @param isDisabled The disabled value
+   * @nodoc
    */
   setDisabledState(isDisabled: boolean): void {
     this._renderer.setProperty(this._elementRef.nativeElement, 'disabled', isDisabled);
@@ -285,10 +278,7 @@ export class ɵNgSelectMultipleOption implements OnDestroy {
     this._renderer.setProperty(this._element.nativeElement, 'selected', selected);
   }
 
-  /**
-   * @description
-   * Lifecycle method called before the directive's instance is destroyed. For internal use only.
-   */
+  /** @nodoc */
   ngOnDestroy(): void {
     if (this._select) {
       this._select._optionMap.delete(this.id);

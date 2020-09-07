@@ -113,12 +113,6 @@ export interface IterableChangeRecord<V> {
 }
 
 /**
- * @deprecated v4.0.0 - Use IterableChangeRecord instead.
- * @publicApi
- */
-export interface CollectionChangeRecord<V> extends IterableChangeRecord<V> {}
-
-/**
  * An optional function passed into the `NgForOf` directive that defines how to track
  * changes for items in an iterable.
  * The function takes the iteration index and item ID.

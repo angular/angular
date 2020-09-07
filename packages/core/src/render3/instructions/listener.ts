@@ -7,7 +7,7 @@
  */
 
 
-import {assertDataInRange} from '../../util/assert';
+import {assertIndexInRange} from '../../util/assert';
 import {isObservable} from '../../util/lang';
 import {EMPTY_OBJ} from '../empty';
 import {PropertyAliasValue, TNode, TNodeFlags, TNodeType} from '../interfaces/node';
@@ -68,9 +68,9 @@ export function ɵɵlistener(
  *
  * @codeGenApi
  */
-export function ɵɵcomponentHostSyntheticListener(
+export function ɵɵsyntheticHostListener(
     eventName: string, listenerFn: (e?: any) => any, useCapture = false,
-    eventTargetResolver?: GlobalTargetResolver): typeof ɵɵcomponentHostSyntheticListener {
+    eventTargetResolver?: GlobalTargetResolver): typeof ɵɵsyntheticHostListener {
   const tNode = getPreviousOrParentTNode();
   const lView = getLView();
   const tView = getTView();
@@ -78,7 +78,7 @@ export function ɵɵcomponentHostSyntheticListener(
   const renderer = loadComponentRenderer(currentDef, tNode, lView);
   listenerInternal(
       tView, lView, renderer, tNode, eventName, listenerFn, useCapture, eventTargetResolver);
-  return ɵɵcomponentHostSyntheticListener;
+  return ɵɵsyntheticHostListener;
 }
 
 /**
@@ -204,7 +204,7 @@ function listenerInternal(
     if (propsLength) {
       for (let i = 0; i < propsLength; i += 2) {
         const index = props[i] as number;
-        ngDevMode && assertDataInRange(lView, index);
+        ngDevMode && assertIndexInRange(lView, index);
         const minifiedName = props[i + 1];
         const directiveInstance = lView[index];
         const output = directiveInstance[minifiedName];

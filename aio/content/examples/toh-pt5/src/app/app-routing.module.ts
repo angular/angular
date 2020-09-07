@@ -1,15 +1,15 @@
 // #docplaster
 // #docregion , v1
-import { NgModule }             from '@angular/core';
+import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
 // #enddocregion v1
 // #docregion import-dashboard
-import { DashboardComponent }   from './dashboard/dashboard.component';
+import { DashboardComponent } from './dashboard/dashboard.component';
 // #enddocregion import-dashboard
-import { HeroesComponent }      from './heroes/heroes.component';
+import { HeroesComponent } from './heroes/heroes.component';
 // #docregion import-herodetail
-import { HeroDetailComponent }  from './hero-detail/hero-detail.component';
+import { HeroDetailComponent } from './hero-detail/hero-detail.component';
 // #enddocregion import-herodetail
 // #docregion heroes-route
 

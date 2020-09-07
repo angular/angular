@@ -88,7 +88,7 @@ export class BrowserViewportScroller implements ViewportScroller {
    * @returns The position in screen coordinates.
    */
   getScrollPosition(): [number, number] {
-    if (this.supportScrollRestoration()) {
+    if (this.supportsScrolling()) {
       return [this.window.scrollX, this.window.scrollY];
     } else {
       return [0, 0];
@@ -100,7 +100,7 @@ export class BrowserViewportScroller implements ViewportScroller {
    * @param position The new position in screen coordinates.
    */
   scrollToPosition(position: [number, number]): void {
-    if (this.supportScrollRestoration()) {
+    if (this.supportsScrolling()) {
       this.window.scrollTo(position[0], position[1]);
     }
   }
@@ -110,27 +110,11 @@ export class BrowserViewportScroller implements ViewportScroller {
    * @param anchor The ID of the anchor element.
    */
   scrollToAnchor(anchor: string): void {
-    if (this.supportScrollRestoration()) {
-      // Escape anything passed to `querySelector` as it can throw errors and stop the application
-      // from working if invalid values are passed.
-      if (this.window.CSS && this.window.CSS.escape) {
-        anchor = this.window.CSS.escape(anchor);
-      } else {
-        anchor = anchor.replace(/(\"|\'\ |:|\.|\[|\]|,|=)/g, '\\$1');
-      }
-      try {
-        const elSelectedById = this.document.querySelector(`#${anchor}`);
-        if (elSelectedById) {
-          this.scrollToElement(elSelectedById);
-          return;
-        }
-        const elSelectedByName = this.document.querySelector(`[name='${anchor}']`);
-        if (elSelectedByName) {
-          this.scrollToElement(elSelectedByName);
-          return;
-        }
-      } catch (e) {
-        this.errorHandler.handleError(e);
+    if (this.supportsScrolling()) {
+      const elSelected =
+          this.document.getElementById(anchor) || this.document.getElementsByName(anchor)[0];
+      if (elSelected) {
+        this.scrollToElement(elSelected);
       }
     }
   }
@@ -165,13 +149,33 @@ export class BrowserViewportScroller implements ViewportScroller {
    */
   private supportScrollRestoration(): boolean {
     try {
-      return !!this.window && !!this.window.scrollTo;
+      if (!this.window || !this.window.scrollTo) {
+        return false;
+      }
+      // The `scrollRestoration` property could be on the `history` instance or its prototype.
+      const scrollRestorationDescriptor = getScrollRestorationProperty(this.window.history) ||
+          getScrollRestorationProperty(Object.getPrototypeOf(this.window.history));
+      // We can write to the `scrollRestoration` property if it is a writable data field or it has a
+      // setter function.
+      return !!scrollRestorationDescriptor &&
+          !!(scrollRestorationDescriptor.writable || scrollRestorationDescriptor.set);
+    } catch {
+      return false;
+    }
+  }
+
+  private supportsScrolling(): boolean {
+    try {
+      return !!this.window.scrollTo;
     } catch {
       return false;
     }
   }
 }
 
+function getScrollRestorationProperty(obj: any): PropertyDescriptor|undefined {
+  return Object.getOwnPropertyDescriptor(obj, 'scrollRestoration');
+}
 
 /**
  * Provides an empty implementation of the viewport scroller. This will

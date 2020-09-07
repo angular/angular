@@ -18,32 +18,7 @@ that are important to Angular developers, including details about the following 
 ## Configuration files
 
 A given Angular workspace contains several TypeScript configuration files.
-At the root level, there are two main TypeScript configuration files: a `tsconfig.json` file and a `tsconfig.base.json` file.
-
-The `tsconfig.json` file is a ["Solution Style"](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-9.html#support-for-solution-style-tsconfigjson-files) TypeScript configuration file.
-Code editors and TypeScript’s language server use this file to improve development experience.
-Compilers do not use this file.
-
-The `tsconfig.json` file contains a list of paths to the other TypeScript configuration files used in the workspace.
-
-<code-example lang="json" header="tsconfig.json" linenums="false">
-{
- "files": [],
- "references": [
-   {
-     "path": "./tsconfig.app.json"
-   },
-   {
-     "path": "./tsconfig.spec.json"
-   },
-   {
-     "path": "./projects/my-lib/tsconfig.lib.json"
-   }
- ]
-}
-</code-example>
-
-The `tsconfig.base.json` file specifies the base TypeScript and Angular compiler options that all projects in the workspace inherit.
+At the root `tsconfig.json` file specifies the base TypeScript and Angular compiler options that all projects in the workspace inherit.
 
 The TypeScript and Angular have a wide range of options which can be used to configure type-checking features and generated output.
 For more information, see the [Configuration inheritance with extends](https://www.typescriptlang.org/docs/handbook/tsconfig-json.html#configuration-inheritance-with-extends) section of the TypeScript documentation.
@@ -55,9 +30,9 @@ For details about configuration inheritance, see the [Configuration inheritance 
 
 </div>
 
-The initial `tsconfig.base.json` for an Angular workspace typically looks like the following example.
+The initial `tsconfig.json` for an Angular workspace typically looks like the following example.
 
-<code-example lang="json" header="tsconfig.base.json" linenums="false">
+<code-example lang="json" header="tsconfig.json" linenums="false">
 {
   "compileOnSave": false,
   "compilerOptions": {

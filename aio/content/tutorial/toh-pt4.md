@@ -369,7 +369,7 @@ This template binds directly to the component's `messageService`.
 * An `*ngFor` presents the list of messages in repeated `<div>` elements.
 
 
-* An Angular [event binding](guide/template-syntax#event-binding) binds the button's click event
+* An Angular [event binding](guide/event-binding) binds the button's click event
 to `MessageService.clear()`.
 
 The messages will look better when you add the private CSS styles to `messages.component.css`
@@ -385,7 +385,6 @@ next section on [Routing](tutorial/toh-pt5).
 path="toh-pt4/src/app/heroes/heroes.component.ts">
 </code-example>
 
-The browser refreshes and the page displays the list of heroes.
 Refresh the browser to see the list of heroes, and scroll to the bottom to see the
 messages from the HeroService. Each time you click a hero, a new message appears to record
 the selection. Use the "clear" button to clear the message history.

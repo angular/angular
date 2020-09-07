@@ -111,7 +111,7 @@ export class KeyEventsPlugin extends EventManagerPlugin {
     });
   }
 
-  static parseEventName(eventName: string): {[key: string]: string}|null {
+  static parseEventName(eventName: string): {fullKey: string, domEventName: string}|null {
     const parts: string[] = eventName.toLowerCase().split('.');
 
     const domEventName = parts.shift();
@@ -136,7 +136,10 @@ export class KeyEventsPlugin extends EventManagerPlugin {
       return null;
     }
 
-    const result: {[k: string]: string} = {};
+    // NOTE: Please don't rewrite this as so, as it will break JSCompiler property renaming.
+    //       The code must remain in the `result['domEventName']` form.
+    // return {domEventName, fullKey};
+    const result: {fullKey: string, domEventName: string} = {} as any;
     result['domEventName'] = domEventName;
     result['fullKey'] = fullKey;
     return result;

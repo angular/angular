@@ -36,7 +36,7 @@ import {I18nContext} from './i18n/context';
 import {createGoogleGetMsgStatements} from './i18n/get_msg_utils';
 import {createLocalizeStatements} from './i18n/localize_utils';
 import {I18nMetaVisitor} from './i18n/meta';
-import {assembleBoundTextPlaceholders, assembleI18nBoundString, declareI18nVariable, getTranslationConstPrefix, hasI18nMeta, I18N_ICU_MAPPING_PREFIX, i18nFormatPlaceholderNames, icuFromI18nMessage, isI18nRootNode, isSingleI18nIcu, placeholdersToParams, TRANSLATION_PREFIX, wrapI18nPlaceholder} from './i18n/util';
+import {assembleBoundTextPlaceholders, assembleI18nBoundString, declareI18nVariable, getTranslationConstPrefix, hasI18nMeta, I18N_ICU_MAPPING_PREFIX, i18nFormatPlaceholderNames, icuFromI18nMessage, isI18nRootNode, isSingleI18nIcu, placeholdersToParams, TRANSLATION_VAR_PREFIX, wrapI18nPlaceholder} from './i18n/util';
 import {StylingBuilder, StylingInstruction} from './styling_builder';
 import {asLiteral, chainedInstruction, CONTEXT_NAME, getAttrsForDirectiveMatching, getInterpolationArgsLength, IMPLICIT_REFERENCE, invalid, NON_BINDABLE_ATTR, REFERENCE_PREFIX, RENDER_FLAGS, trimTrailingNulls, unsupported} from './util';
 
@@ -101,6 +101,18 @@ export function prepareEventListenerParameters(
         o.importExpr(GLOBAL_TARGET_RESOLVERS.get(target)!));
   }
   return params;
+}
+
+// Collects information needed to generate `consts` field of the ComponentDef.
+// When a constant requires some pre-processing, the `prepareStatements` section
+// contains corresponding statements.
+export interface ComponentDefConsts {
+  prepareStatements: o.Statement[];
+  constExpressions: o.Expression[];
+}
+
+function createComponentDefConsts(): ComponentDefConsts {
+  return {prepareStatements: [], constExpressions: []};
 }
 
 export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver {
@@ -171,7 +183,8 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       private directiveMatcher: SelectorMatcher|null, private directives: Set<o.Expression>,
       private pipeTypeByName: Map<string, o.Expression>, private pipes: Set<o.Expression>,
       private _namespace: o.ExternalReference, relativeContextFilePath: string,
-      private i18nUseExternalIds: boolean, private _constants: o.Expression[] = []) {
+      private i18nUseExternalIds: boolean,
+      private _constants: ComponentDefConsts = createComponentDefConsts()) {
     this._bindingScope = parentBindingScope.nestedScope(level);
 
     // Turn the relative context file path into an identifier by replacing non-alphanumeric
@@ -307,12 +320,12 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
   private i18nTranslate(
       message: i18n.Message, params: {[name: string]: o.Expression} = {}, ref?: o.ReadVarExpr,
       transformFn?: (raw: o.ReadVarExpr) => o.Expression): o.ReadVarExpr {
-    const _ref = ref || o.variable(this.constantPool.uniqueName(TRANSLATION_PREFIX));
+    const _ref = ref || this.i18nGenerateMainBlockVar();
     // Closure Compiler requires const names to start with `MSG_` but disallows any other const to
     // start with `MSG_`. We define a variable starting with `MSG_` just for the `goog.getMsg` call
     const closureVar = this.i18nGenerateClosureVar(message.id);
     const statements = getTranslationDeclStmts(message, _ref, closureVar, params, transformFn);
-    this.constantPool.statements.push(...statements);
+    this._constants.prepareStatements.push(...statements);
     return _ref;
   }
 
@@ -364,6 +377,12 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     return bound;
   }
 
+  // Generates top level vars for i18n blocks (i.e. `i18n_N`).
+  private i18nGenerateMainBlockVar(): o.ReadVarExpr {
+    return o.variable(this.constantPool.uniqueName(TRANSLATION_VAR_PREFIX));
+  }
+
+  // Generates vars with Closure-specific names for i18n blocks (i.e. `MSG_XXX`).
   private i18nGenerateClosureVar(messageId: string): o.ReadVarExpr {
     let name: string;
     const suffix = this.fileBasedI18nSuffix.toUpperCase();
@@ -426,16 +445,13 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
   private i18nStart(span: ParseSourceSpan|null = null, meta: i18n.I18nMeta, selfClosing?: boolean):
       void {
     const index = this.allocateDataSlot();
-    if (this.i18nContext) {
-      this.i18n = this.i18nContext.forkChildContext(index, this.templateIndex!, meta);
-    } else {
-      const ref = o.variable(this.constantPool.uniqueName(TRANSLATION_PREFIX));
-      this.i18n = new I18nContext(index, ref, 0, this.templateIndex, meta);
-    }
+    this.i18n = this.i18nContext ?
+        this.i18nContext.forkChildContext(index, this.templateIndex!, meta) :
+        new I18nContext(index, this.i18nGenerateMainBlockVar(), 0, this.templateIndex, meta);
 
     // generate i18nStart instruction
     const {id, ref} = this.i18n;
-    const params: o.Expression[] = [o.literal(index), ref];
+    const params: o.Expression[] = [o.literal(index), this.addToConsts(ref)];
     if (id > 0) {
       // do not push 3rd argument (sub-block id)
       // into i18nStart call for top level i18n context
@@ -507,8 +523,8 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     }
     if (i18nAttrArgs.length > 0) {
       const index: o.Expression = o.literal(this.allocateDataSlot());
-      const args = this.constantPool.getConstLiteral(o.literalArr(i18nAttrArgs), true);
-      this.creationInstruction(sourceSpan, R3.i18nAttributes, [index, args]);
+      const constIndex = this.addToConsts(o.literalArr(i18nAttrArgs));
+      this.creationInstruction(sourceSpan, R3.i18nAttributes, [index, constIndex]);
       if (hasBindings) {
         this.updateInstruction(sourceSpan, R3.i18nApply, [index]);
       }
@@ -528,7 +544,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
   private addNamespaceInstruction(nsInstruction: o.ExternalReference, element: t.Element) {
     this._namespace = nsInstruction;
-    this.creationInstruction(element.sourceSpan, nsInstruction);
+    this.creationInstruction(element.startSourceSpan, nsInstruction);
   }
 
   /**
@@ -655,15 +671,16 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
           trimTrailingNulls(parameters));
     } else {
       this.creationInstruction(
-          element.sourceSpan, isNgContainer ? R3.elementContainerStart : R3.elementStart,
+          element.startSourceSpan, isNgContainer ? R3.elementContainerStart : R3.elementStart,
           trimTrailingNulls(parameters));
 
       if (isNonBindableMode) {
-        this.creationInstruction(element.sourceSpan, R3.disableBindings);
+        this.creationInstruction(element.startSourceSpan, R3.disableBindings);
       }
 
       if (i18nAttrs.length > 0) {
-        this.i18nAttributesInstruction(elementIndex, i18nAttrs, element.sourceSpan);
+        this.i18nAttributesInstruction(
+            elementIndex, i18nAttrs, element.startSourceSpan ?? element.sourceSpan);
       }
 
       // Generate Listeners (outputs)
@@ -679,7 +696,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       // Note: it's important to keep i18n/i18nStart instructions after i18nAttributes and
       // listeners, to make sure i18nAttributes instruction targets current element at runtime.
       if (isI18nRootElement) {
-        this.i18nStart(element.sourceSpan, element.i18n!, createSelfClosingI18nInstruction);
+        this.i18nStart(element.startSourceSpan, element.i18n!, createSelfClosingI18nInstruction);
       }
     }
 
@@ -811,7 +828,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
     if (!createSelfClosingInstruction) {
       // Finish element construction mode.
-      const span = element.endSourceSpan || element.sourceSpan;
+      const span = element.endSourceSpan ?? element.sourceSpan;
       if (isI18nRootElement) {
         this.i18nEnd(span, createSelfClosingI18nInstruction);
       }
@@ -903,7 +920,8 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       // elements, in case of inline templates, corresponding instructions will be generated in the
       // nested template function.
       if (i18nAttrs.length > 0) {
-        this.i18nAttributesInstruction(templateIndex, i18nAttrs, template.sourceSpan);
+        this.i18nAttributesInstruction(
+            templateIndex, i18nAttrs, template.startSourceSpan ?? template.sourceSpan);
       }
 
       // Add the input bindings
@@ -1028,7 +1046,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     return this._pureFunctionSlots;
   }
 
-  getConsts() {
+  getConsts(): ComponentDefConsts {
     return this._constants;
   }
 
@@ -1213,7 +1231,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
   private convertPropertyBinding(value: AST): o.Expression {
     const convertedPropertyBinding = convertPropertyBinding(
-        this, this.getImplicitReceiverExpr(), value, this.bindingContext(), BindingForm.TrySimple,
+        this, this.getImplicitReceiverExpr(), value, this.bindingContext(), BindingForm.Expression,
         () => error('Unexpected interpolation'));
     const valExpr = convertedPropertyBinding.currValExpr;
     this._tempVariables.push(...convertedPropertyBinding.stmts);
@@ -1352,14 +1370,16 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       return o.TYPED_NULL_EXPR;
     }
 
+    const consts = this._constants.constExpressions;
+
     // Try to reuse a literal that's already in the array, if possible.
-    for (let i = 0; i < this._constants.length; i++) {
-      if (this._constants[i].isEquivalent(expression)) {
+    for (let i = 0; i < consts.length; i++) {
+      if (consts[i].isEquivalent(expression)) {
         return o.literal(i);
       }
     }
 
-    return o.literal(this._constants.push(expression) - 1);
+    return o.literal(consts.push(expression) - 1);
   }
 
   private addAttrsToConsts(attrs: o.Expression[]): o.LiteralExpr {

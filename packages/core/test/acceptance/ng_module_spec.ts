@@ -287,6 +287,70 @@ describe('NgModule', () => {
               }).toThrowError(/'custom' is not a known element/);
             });
 
+    onlyInIvy('unknown element check logs an error message rather than throwing')
+        .it('should report unknown property bindings on ng-content', () => {
+          @Component({template: `<ng-content *unknownProp="123"></ng-content>`})
+          class App {
+          }
+
+          TestBed.configureTestingModule({declarations: [App]});
+          const spy = spyOn(console, 'error');
+          const fixture = TestBed.createComponent(App);
+          fixture.detectChanges();
+
+          expect(spy.calls.mostRecent()?.args[0])
+              .toMatch(
+                  /Can't bind to 'unknownProp' since it isn't a known property of 'ng-content'/);
+        });
+
+    modifiedInIvy('unknown element error thrown instead of warning')
+        .it('should throw for unknown property bindings on ng-content', () => {
+          @Component({template: `<ng-content *unknownProp="123"></ng-content>`})
+          class App {
+          }
+
+          TestBed.configureTestingModule({declarations: [App]});
+
+          expect(() => {
+            const fixture = TestBed.createComponent(App);
+            fixture.detectChanges();
+          })
+              .toThrowError(
+                  /Can't bind to 'unknownProp' since it isn't a known property of 'ng-content'/);
+        });
+
+    onlyInIvy('unknown element check logs an error message rather than throwing')
+        .it('should report unknown property bindings on ng-container', () => {
+          @Component({template: `<ng-container [unknown-prop]="123"></ng-container>`})
+          class App {
+          }
+
+          TestBed.configureTestingModule({declarations: [App]});
+          const spy = spyOn(console, 'error');
+          const fixture = TestBed.createComponent(App);
+          fixture.detectChanges();
+
+          expect(spy.calls.mostRecent()?.args[0])
+              .toMatch(
+                  /Can't bind to 'unknown-prop' since it isn't a known property of 'ng-container'/);
+        });
+
+    modifiedInIvy('unknown element error thrown instead of warning')
+        .it('should throw for unknown property bindings on ng-container', () => {
+          @Component({template: `<ng-container [unknown-prop]="123"></ng-container>`})
+          class App {
+          }
+
+          TestBed.configureTestingModule({declarations: [App]});
+
+          expect(() => {
+            const fixture = TestBed.createComponent(App);
+            fixture.detectChanges();
+          })
+              .toThrowError(
+                  /Can't bind to 'unknown-prop' since it isn't a known property of 'ng-container'/);
+        });
+
     onlyInIvy('test relies on Ivy-specific AOT format').describe('AOT-compiled components', () => {
       function createComponent(
           template: (rf: any) => void, vars: number, consts?: (number|string)[][]) {

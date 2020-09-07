@@ -73,15 +73,14 @@ merge:
       - "packages/zone.js/scripts/**"
 
   # comment that will be added to a PR when there is a conflict, leave empty or set to false to disable
-  mergeConflictComment: "Hi @{{PRAuthor}}! This PR has merge conflicts due to recent upstream merges.
-\nPlease help to unblock it by resolving these conflicts. Thanks!"
+  mergeConflictComment: "Hi @{{PRAuthor}}! This PR has merge conflicts due to recent upstream merges.\nPlease help to unblock it by resolving these conflicts. Thanks!"
 
   # label to monitor
-  mergeLabel: "PR action: merge"
+  mergeLabel: "action: merge"
 
   # adding any of these labels will also add the merge label
   mergeLinkedLabels:
-    - "PR action: merge-assistance"
+    - "action: merge-assistance"
 
   # list of checks that will determine if the merge label can be added
   checks:
@@ -94,17 +93,17 @@ merge:
 
     # whether the PR shouldn't have a conflict with the base branch
     noConflict: true
-    # list of labels that a PR needs to have, checked with a regexp (e.g. "PR target:" will work for the label "PR target: master")
+    # list of labels that a PR needs to have, checked with a regexp (e.g. "target:" will work for the label "target: master")
     requiredLabels:
-      - "PR target: *"
+      - "target: *"
       - "cla: yes"
 
     # list of labels that a PR shouldn't have, checked after the required labels with a regexp
     forbiddenLabels:
-      - "PR target: TBD"
-      - "PR action: cleanup"
-      - "PR action: review"
-      - "PR state: blocked"
+      - "target: TBD"
+      - "action: cleanup"
+      - "action: review"
+      - "state: blocked"
       - "cla: no"
 
     # list of PR statuses that need to be successful
@@ -121,12 +120,7 @@ merge:
   # the comment that will be added when the merge label is added despite failing checks, leave empty or set to false to disable
   # {{MERGE_LABEL}} will be replaced by the value of the mergeLabel option
   # {{PLACEHOLDER}} will be replaced by the list of failing checks
-  mergeRemovedComment: "I see that you just added the `{{MERGE_LABEL}}` label, but the following checks are still failing:
-\n{{PLACEHOLDER}}
-\n
-\n**If you want your PR to be merged, it has to pass all the CI checks.**
-\n
-\nIf you can't get the PR to a green state due to flakes or broken master, please try rebasing to master and/or restarting the CI job. If that fails and you believe that the issue is not due to your change, please contact the caretaker and ask for help."
+  mergeRemovedComment: "I see that you just added the `{{MERGE_LABEL}}` label, but the following checks are still failing:\n{{PLACEHOLDER}}\n\n**If you want your PR to be merged, it has to pass all the CI checks.**\n\nIf you can't get the PR to a green state due to flakes or broken master, please try rebasing to master and/or restarting the CI job. If that fails and you believe that the issue is not due to your change, please contact the caretaker and ask for help."
 
 # options for the triage plugin
 triage:
@@ -154,6 +148,12 @@ triage:
     -
       - "type: RFC / Discussion / question"
       - "comp: *"
+    -
+      - "type: confusing"
+      - "comp: *"
+    -
+      - "type: use-case"
+      - "comp: *"
 
 # options for the triage PR plugin
 triagePR:
@@ -180,4 +180,4 @@ rerunCircleCI:
   # set to true to disable
   disabled: false
   # the label which when added triggers a rerun of the default CircleCI workflow
-  triggerRerunLabel: "PR action: rerun CI at HEAD"
+  triggerRerunLabel: "action: rerun CI at HEAD"

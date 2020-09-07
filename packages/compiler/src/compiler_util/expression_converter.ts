@@ -154,6 +154,11 @@ export enum BindingForm {
   // Try to generate a simple binding (no temporaries or statements)
   // otherwise generate a general binding
   TrySimple,
+
+  // Inlines assignment of temporaries into the generated expression. The result may still
+  // have statements attached for declarations of temporary variables.
+  // This is the only relevant form for Ivy, the other forms are only used in ViewEngine.
+  Expression,
 }
 
 /**
@@ -168,7 +173,6 @@ export function convertPropertyBinding(
   if (!localResolver) {
     localResolver = new DefaultLocalResolver();
   }
-  const currValExpr = createCurrValueExpr(bindingId);
   const visitor =
       new _AstToIrVisitor(localResolver, implicitReceiver, bindingId, interpolationFunction);
   const outputExpr: o.Expression = expressionWithoutBuiltins.visit(visitor, _Mode.Expression);
@@ -180,8 +184,11 @@ export function convertPropertyBinding(
 
   if (visitor.temporaryCount === 0 && form == BindingForm.TrySimple) {
     return new ConvertPropertyBindingResult([], outputExpr);
+  } else if (form === BindingForm.Expression) {
+    return new ConvertPropertyBindingResult(stmts, outputExpr);
   }
 
+  const currValExpr = createCurrValueExpr(bindingId);
   stmts.push(currValExpr.set(outputExpr).toDeclStmt(o.DYNAMIC_TYPE, [o.StmtModifier.Final]));
   return new ConvertPropertyBindingResult(stmts, currValExpr);
 }
@@ -322,6 +329,26 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
       private _localResolver: LocalResolver, private _implicitReceiver: o.Expression,
       private bindingId: string, private interpolationFunction: InterpolationFunction|undefined,
       private baseSourceSpan?: ParseSourceSpan, private implicitReceiverAccesses?: Set<string>) {}
+
+  visitUnary(ast: cdAst.Unary, mode: _Mode): any {
+    let op: o.UnaryOperator;
+    switch (ast.operator) {
+      case '+':
+        op = o.UnaryOperator.Plus;
+        break;
+      case '-':
+        op = o.UnaryOperator.Minus;
+        break;
+      default:
+        throw new Error(`Unsupported operator ${ast.operator}`);
+    }
+
+    return convertToStatementIfNeeded(
+        mode,
+        new o.UnaryOperatorExpr(
+            op, this._visit(ast.expr, _Mode.Expression), undefined,
+            this.convertSourceSpan(ast.span)));
+  }
 
   visitBinary(ast: cdAst.Binary, mode: _Mode): any {
     let op: o.BinaryOperator;
@@ -703,6 +730,9 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
       return (this._nodeMap.get(ast) || ast).visit(visitor);
     };
     return ast.visit({
+      visitUnary(ast: cdAst.Unary) {
+        return null;
+      },
       visitBinary(ast: cdAst.Binary) {
         return null;
       },
@@ -777,6 +807,9 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
       return ast.some(ast => visit(visitor, ast));
     };
     return ast.visit({
+      visitUnary(ast: cdAst.Unary): boolean {
+        return visit(this, ast.expr);
+      },
       visitBinary(ast: cdAst.Binary): boolean {
         return visit(this, ast.left) || visit(this, ast.right);
       },

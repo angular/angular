@@ -3,7 +3,9 @@
     "files":[
       "!**/*.d.ts",
       "!**/*.js",
-      "!**/*.[0-9].*"
+      "!**/*.[0-9].*",
+      "!doc-files/**/*",	
+      "**/*.xlf"
     ],
     "file": "src/app/app.component.ts", 
     "tags": ["Angular", "i18n", "internationalization"]

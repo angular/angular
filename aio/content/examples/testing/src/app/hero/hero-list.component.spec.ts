@@ -1,19 +1,18 @@
-import { async, ComponentFixture, fakeAsync, TestBed, tick
+import { ComponentFixture, fakeAsync, TestBed, tick, waitForAsync
 } from '@angular/core/testing';
 
-import { By }           from '@angular/platform-browser';
+import { By } from '@angular/platform-browser';
 import { DebugElement } from '@angular/core';
 
-import { Router }       from '@angular/router';
+import { Router } from '@angular/router';
 
 import { addMatchers, newEvent } from '../../testing';
-
+import { HeroService } from '../model/hero.service';
 import { getTestHeroes, TestHeroService } from '../model/testing/test-hero.service';
 
-import { HeroModule }         from './hero.module';
-import { HeroListComponent }  from './hero-list.component';
+import { HeroModule } from './hero.module';
+import { HeroListComponent } from './hero-list.component';
 import { HighlightDirective } from '../shared/highlight.directive';
-import { HeroService }        from '../model/hero.service';
 
 const HEROES = getTestHeroes();
 
@@ -24,20 +23,20 @@ let page: Page;
 /////// Tests //////
 
 describe('HeroListComponent', () => {
-
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     addMatchers();
     const routerSpy = jasmine.createSpyObj('Router', ['navigate']);
 
-    TestBed.configureTestingModule({
-      imports: [HeroModule],
-      providers: [
-        { provide: HeroService, useClass: TestHeroService },
-        { provide: Router,      useValue: routerSpy}
-      ]
-    })
-    .compileComponents()
-    .then(createComponent);
+    TestBed
+        .configureTestingModule({
+          imports: [HeroModule],
+          providers: [
+            {provide: HeroService, useClass: TestHeroService},
+            {provide: Router, useValue: routerSpy}
+          ]
+        })
+        .compileComponents()
+        .then(createComponent);
   }));
 
   it('should display heroes', () => {
@@ -52,36 +51,35 @@ describe('HeroListComponent', () => {
   });
 
   it('should select hero on click', fakeAsync(() => {
-    const expectedHero = HEROES[1];
-    const li = page.heroRows[1];
-    li.dispatchEvent(newEvent('click'));
-    tick();
-    // `.toEqual` because selectedHero is clone of expectedHero; see FakeHeroService
-    expect(comp.selectedHero).toEqual(expectedHero);
-  }));
+       const expectedHero = HEROES[1];
+       const li = page.heroRows[1];
+       li.dispatchEvent(newEvent('click'));
+       tick();
+       // `.toEqual` because selectedHero is clone of expectedHero; see FakeHeroService
+       expect(comp.selectedHero).toEqual(expectedHero);
+     }));
 
   it('should navigate to selected hero detail on click', fakeAsync(() => {
-    const expectedHero = HEROES[1];
-    const li = page.heroRows[1];
-    li.dispatchEvent(newEvent('click'));
-    tick();
+       const expectedHero = HEROES[1];
+       const li = page.heroRows[1];
+       li.dispatchEvent(newEvent('click'));
+       tick();
 
-    // should have navigated
-    expect(page.navSpy.calls.any()).toBe(true, 'navigate called');
+       // should have navigated
+       expect(page.navSpy.calls.any()).toBe(true, 'navigate called');
 
-    // composed hero detail will be URL like 'heroes/42'
-    // expect link array with the route path and hero id
-    // first argument to router.navigate is link array
-    const navArgs = page.navSpy.calls.first().args[0];
-    expect(navArgs[0]).toContain('heroes', 'nav to heroes detail URL');
-    expect(navArgs[1]).toBe(expectedHero.id, 'expected hero.id');
-
-  }));
+       // composed hero detail will be URL like 'heroes/42'
+       // expect link array with the route path and hero id
+       // first argument to router.navigate is link array
+       const navArgs = page.navSpy.calls.first().args[0];
+       expect(navArgs[0]).toContain('heroes', 'nav to heroes detail URL');
+       expect(navArgs[1]).toBe(expectedHero.id, 'expected hero.id');
+     }));
 
   it('should find `HighlightDirective` with `By.directive', () => {
     // #docregion by
     // Can find DebugElement either by css selector or by directive
-    const h2        = fixture.debugElement.query(By.css('h2'));
+    const h2 = fixture.debugElement.query(By.css('h2'));
     const directive = fixture.debugElement.query(By.directive(HighlightDirective));
     // #enddocregion by
     expect(h2).toBe(directive);
@@ -139,5 +137,5 @@ class Page {
     // Get the component's injected router navigation spy
     const routerSpy = fixture.debugElement.injector.get(Router);
     this.navSpy = routerSpy.navigate as jasmine.Spy;
-  };
+  }
 }

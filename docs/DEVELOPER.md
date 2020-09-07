@@ -80,8 +80,10 @@ Bazel is used as the primary tool for building and testing Angular. Building and
 incremental with Bazel, and it's possible to only run tests for an individual package instead
 of for all packages. Read more about this in the [BAZEL.md](./BAZEL.md) document.
 
-You should execute all test suites before submitting a PR to GitHub:
-- `yarn bazel test packages/...`
+You should execute all test suites before submitting a PR to GitHub. Note that not all tests
+support both Ivy and View Engine, so they need to be run separately:
+- `yarn test-ivy-aot //packages/...`
+- `yarn test-non-ivy //packages/...`
 
 **Note**: The first test run will be much slower than future runs. This is because future runs will
 benefit from Bazel's capability to do incremental builds.
@@ -152,9 +154,7 @@ available as a long-term distribution mechanism, but they are guaranteed to be a
 time of the build.
 
 You can access the artifacts for a specific CI run by going to the workflow page, clicking on the
-`publish_packages_as_artifacts` job and then switching to the "Artifacts" tab.
-(If you happen to know the build number of the job, the URL will be something like:
-`https://circleci.com/gh/angular/angular/<build-number>#artifacts`)
+`publish_packages_as_artifacts` job and then switching to the "ARTIFACTS" tab.
 
 #### Archives for each Package
 On the "Artifacts" tab, there is a list of links to compressed archives for Angular packages. The

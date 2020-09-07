@@ -9,8 +9,9 @@
 import * as ts from 'typescript';
 
 import {ClassDeclaration, ReflectionHost} from '../../reflection';
+import {TypeCtorMetadata} from '../api';
 
-import {TypeCtorMetadata} from './api';
+import {tsCreateTypeQueryForCoercedInput} from './ts_util';
 import {TypeParameterEmitter} from './type_parameter_emitter';
 
 export function generateTypeCtorDeclarationFn(
@@ -150,9 +151,7 @@ function constructTypeCtorParameter(
           /* modifiers */ undefined,
           /* name */ key,
           /* questionToken */ undefined,
-          /* type */
-          ts.createTypeQueryNode(
-              ts.createQualifiedName(rawType.typeName, `ngAcceptInputType_${key}`)),
+          /* type */ tsCreateTypeQueryForCoercedInput(rawType.typeName, key),
           /* initializer */ undefined));
     }
   }
@@ -166,8 +165,8 @@ function constructTypeCtorParameter(
   if (coercedKeys.length > 0) {
     const coercedLiteral = ts.createTypeLiteralNode(coercedKeys);
 
-    initType =
-        initType !== null ? ts.createUnionTypeNode([initType, coercedLiteral]) : coercedLiteral;
+    initType = initType !== null ? ts.createIntersectionTypeNode([initType, coercedLiteral]) :
+                                   coercedLiteral;
   }
 
   if (initType === null) {

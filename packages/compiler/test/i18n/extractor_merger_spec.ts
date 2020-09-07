@@ -322,19 +322,28 @@ import {serializeNodes as serializeHtmlNodes} from '../ml_parser/util/util';
       describe('elements', () => {
         it('should report nested translatable elements', () => {
           expect(extractErrors(`<p i18n><b i18n></b></p>`)).toEqual([
-            ['Could not mark an element as translatable inside a translatable section', '<b i18n>'],
+            [
+              'Could not mark an element as translatable inside a translatable section',
+              '<b i18n></b>'
+            ],
           ]);
         });
 
         it('should report translatable elements in implicit elements', () => {
           expect(extractErrors(`<p><b i18n></b></p>`, ['p'])).toEqual([
-            ['Could not mark an element as translatable inside a translatable section', '<b i18n>'],
+            [
+              'Could not mark an element as translatable inside a translatable section',
+              '<b i18n></b>'
+            ],
           ]);
         });
 
         it('should report translatable elements in translatable blocks', () => {
           expect(extractErrors(`<!-- i18n --><b i18n></b><!-- /i18n -->`)).toEqual([
-            ['Could not mark an element as translatable inside a translatable section', '<b i18n>'],
+            [
+              'Could not mark an element as translatable inside a translatable section',
+              '<b i18n></b>'
+            ],
           ]);
         });
       });
@@ -370,7 +379,7 @@ import {serializeNodes as serializeHtmlNodes} from '../ml_parser/util/util';
         it('should report when start and end of a block are not at the same level', () => {
           expect(extractErrors(`<!-- i18n --><p><!-- /i18n --></p>`)).toEqual([
             ['I18N blocks should not cross element boundaries', '<!--'],
-            ['Unclosed block', '<p>'],
+            ['Unclosed block', '<p><!-- /i18n --></p>'],
           ]);
 
           expect(extractErrors(`<p><!-- i18n --></p><!-- /i18n -->`)).toEqual([

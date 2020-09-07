@@ -106,14 +106,15 @@ There can also be false positives when the typings of an Angular library are eit
 
 In case of a false positive like these, there are a few options:
 
-* Use the [`$any()` type-cast function](guide/template-syntax#any-type-cast-function) in certain contexts to opt out of type-checking for a part of the expression.
-* You can disable strict checks entirely by setting `strictTemplates: false` in the application's TypeScript configuration file.
+* Use the [`$any()` type-cast function](guide/template-expression-operators#any-type-cast-function) in certain contexts to opt out of type-checking for a part of the expression.
+* You can disable strict checks entirely by setting `strictTemplates: false` in the application's TypeScript configuration file, `tsconfig.json`.
 * You can disable certain type-checking operations individually, while maintaining strictness in other aspects, by setting a _strictness flag_ to `false`.
 * If you want to use `strictTemplates` and `strictNullChecks` together, you can opt out of strict null type checking specifically for input bindings via `strictNullInputTypes`.
 
 |Strictness flag|Effect|
 |-|-|
 |`strictInputTypes`|Whether the assignability of a binding expression to the `@Input()` field is checked. Also affects the inference of directive generic types. |
+|`strictInputAccessModifiers`|Whether access modifiers such as `private`/`protected`/`readonly` are honored when assigning a binding expression to an `@Input()`. If disabled, the access modifiers of the `@Input` are ignored; only the type is checked.|
 |`strictNullInputTypes`|Whether `strictNullChecks` is honored when checking `@Input()` bindings (per `strictInputTypes`). Turning this off can be useful when using a library that was not built with `strictNullChecks` in mind.|
 |`strictAttributeTypes`|Whether to check `@Input()` bindings that are made using text attributes (for example, `<mat-tab label="Step 1">` vs `<mat-tab [label]="'Step 1'">`).
 |`strictSafeNavigationTypes`|Whether the return type of safe navigation operations (for example, `user?.name`) will be correctly inferred based on the type of `user`). If disabled, `user?.name` will be of type `any`.
@@ -286,7 +287,7 @@ Care should be taken that if an `ngAcceptInputType_` override is present for a g
 
 ## Disabling type checking using `$any()`
 
-Disable checking of a binding expression by surrounding the expression in a call to the [`$any()` cast pseudo-function](guide/template-syntax).
+Disable checking of a binding expression by surrounding the expression in a call to the [`$any()` cast pseudo-function](guide/template-expression-operators).
 The compiler treats it as a cast to the `any` type just like in TypeScript when a `<any>` or `as any` cast is used.
 
 In the following example, casting `person` to the `any` type suppresses the error `Property address does not exist`.

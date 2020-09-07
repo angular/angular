@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {ɵcomputeMsgId, ɵmakeParsedTranslation} from '@angular/localize';
-import {ParsedTranslationBundle} from '../../../../src/translate/translation_files/translation_parsers/translation_parser';
+import {ParseAnalysis, ParsedTranslationBundle} from '../../../../src/translate/translation_files/translation_parsers/translation_parser';
 import {Xliff1TranslationParser} from '../../../../src/translate/translation_files/translation_parsers/xliff1_translation_parser';
 
 describe('Xliff1TranslationParser', () => {
@@ -29,6 +29,60 @@ describe('Xliff1TranslationParser', () => {
          expect(parser.canParse('/some/file.xlf', '')).toBe(false);
          expect(parser.canParse('/some/file.json', '')).toBe(false);
        });
+  });
+
+  describe('analyze()', () => {
+    it('should return a success object if the file contains an <xliff> element with version="1.2" attribute',
+       () => {
+         const parser = new Xliff1TranslationParser();
+         expect(parser.analyze('/some/file.xlf', '<xliff version="1.2">'))
+             .toEqual(jasmine.objectContaining({canParse: true, hint: jasmine.any(Object)}));
+         expect(parser.analyze('/some/file.json', '<xliff version="1.2">'))
+             .toEqual(jasmine.objectContaining({canParse: true, hint: jasmine.any(Object)}));
+         expect(parser.analyze('/some/file.xliff', '<xliff version="1.2">'))
+             .toEqual(jasmine.objectContaining({canParse: true, hint: jasmine.any(Object)}));
+         expect(parser.analyze('/some/file.json', '<xliff version="1.2">'))
+             .toEqual(jasmine.objectContaining({canParse: true, hint: jasmine.any(Object)}));
+       });
+
+    it('should return a failure object if the file cannot be parsed as XLIFF 1.2', () => {
+      const parser = new Xliff1TranslationParser();
+      expect(parser.analyze('/some/file.xlf', '<xliff>')).toEqual(jasmine.objectContaining({
+        canParse: false
+      }));
+      expect(parser.analyze('/some/file.xlf', '<xliff version="2.0">'))
+          .toEqual(jasmine.objectContaining({canParse: false}));
+      expect(parser.analyze('/some/file.xlf', '')).toEqual(jasmine.objectContaining({
+        canParse: false
+      }));
+      expect(parser.analyze('/some/file.json', '')).toEqual(jasmine.objectContaining({
+        canParse: false
+      }));
+    });
+
+    it('should return a diagnostics object when the file is not a valid format', () => {
+      let result: ParseAnalysis<any>;
+      const parser = new Xliff1TranslationParser();
+
+      result = parser.analyze('/some/file.xlf', '<moo>');
+      expect(result.diagnostics.messages).toEqual([
+        {type: 'warning', message: 'The XML file does not contain a <xliff> root node.'}
+      ]);
+
+      result = parser.analyze('/some/file.xlf', '<xliff version="2.0">');
+      expect(result.diagnostics.messages).toEqual([{
+        type: 'warning',
+        message:
+            'The <xliff> node does not have the required attribute: version="1.2". ("[WARNING ->]<xliff version="2.0">"): /some/file.xlf@0:0'
+      }]);
+
+      result = parser.analyze('/some/file.xlf', '<xliff version="1.2"></file>');
+      expect(result.diagnostics.messages).toEqual([{
+        type: 'error',
+        message:
+            'Unexpected closing tag "file". It may happen when the tag has already been closed by another tag. For more info see https://www.w3.org/TR/html5/syntax.html#closing-elements-that-have-implied-end-tags ("<xliff version="1.2">[ERROR ->]</file>"): /some/file.xlf@0:21'
+      }]);
+    });
   });
 
   for (const withHint of [true, false]) {
@@ -156,6 +210,46 @@ describe('Xliff1TranslationParser', () => {
             .toEqual(ɵmakeParsedTranslation(
                 ['', ' tnemele elbatalsnart ', 'sredlohecalp htiw', ''],
                 ['INTERPOLATION', 'START_BOLD_TEXT', 'CLOSE_BOLD_TEXT']));
+      });
+
+      it('should extract nested placeholder containers (i.e. nested HTML elements)', () => {
+        /**
+         * Source HTML:
+         *
+         * ```
+         * <div i18n>
+         *   translatable <span>element <b>with placeholders</b></span> {{ interpolation}}
+         * </div>
+         * ```
+         */
+        const XLIFF = [
+          `<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">`,
+          `  <file source-language="en" target-language="fr" datatype="plaintext" original="ng2.template">`,
+          `    <body>`,
+          `      <trans-unit id="9051630253697141670" datatype="html">`,
+          `        <source>translatable <x id="START_TAG_SPAN"/>element <x id="START_BOLD_TEXT"/>with placeholders<x id="CLOSE_BOLD_TEXT"/><x id="CLOSE_TAG_SPAN"/> <x id="INTERPOLATION"/></source>`,
+          `        <target><x id="START_TAG_SPAN"/><x id="INTERPOLATION"/> tnemele<x id="CLOSE_TAG_SPAN"/> elbatalsnart <x id="START_BOLD_TEXT"/>sredlohecalp htiw<x id="CLOSE_BOLD_TEXT"/></target>`,
+          `        <context-group purpose="location">`,
+          `          <context context-type="sourcefile">file.ts</context>`,
+          `          <context context-type="linenumber">3</context>`,
+          `        </context-group>`,
+          `      </trans-unit>`,
+          `    </body>`,
+          `  </file>`,
+          `</xliff>`,
+        ].join('\n');
+        const result = doParse('/some/file.xlf', XLIFF);
+        expect(result.translations[ɵcomputeMsgId(
+                   'translatable {$START_TAG_SPAN}element {$START_BOLD_TEXT}with placeholders' +
+                   '{$CLOSE_BOLD_TEXT}{$CLOSE_TAG_SPAN} {$INTERPOLATION}')])
+            .toEqual(ɵmakeParsedTranslation(
+                ['', '', ' tnemele', ' elbatalsnart ', 'sredlohecalp htiw', ''], [
+                  'START_TAG_SPAN',
+                  'INTERPOLATION',
+                  'CLOSE_TAG_SPAN',
+                  'START_BOLD_TEXT',
+                  'CLOSE_BOLD_TEXT',
+                ]));
       });
 
       it('should extract translations with placeholders containing hyphens', () => {
@@ -527,7 +621,7 @@ describe('Xliff1TranslationParser', () => {
       });
 
       describe('[structure errors]', () => {
-        it('should throw when a trans-unit has no translation', () => {
+        it('should fail when a trans-unit has no translation', () => {
           const XLIFF = [
             `<?xml version="1.0" encoding="UTF-8" ?>`,
             `<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">`,
@@ -552,7 +646,7 @@ describe('Xliff1TranslationParser', () => {
         });
 
 
-        it('should throw when a trans-unit has no id attribute', () => {
+        it('should fail when a trans-unit has no id attribute', () => {
           const XLIFF = [
             `<?xml version="1.0" encoding="UTF-8" ?>`,
             `<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">`,
@@ -577,7 +671,7 @@ describe('Xliff1TranslationParser', () => {
           ].join('\n'));
         });
 
-        it('should throw on duplicate trans-unit id', () => {
+        it('should fail on duplicate trans-unit id', () => {
           const XLIFF = [
             `<?xml version="1.0" encoding="UTF-8" ?>`,
             `<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">`,
@@ -609,7 +703,7 @@ describe('Xliff1TranslationParser', () => {
       });
 
       describe('[message errors]', () => {
-        it('should throw on unknown message tags', () => {
+        it('should fail on unknown message tags', () => {
           const XLIFF = [
             `<?xml version="1.0" encoding="UTF-8" ?>`,
             `<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">`,
@@ -625,17 +719,18 @@ describe('Xliff1TranslationParser', () => {
           ].join('\n');
 
           expectToFail('/some/file.xlf', XLIFF, /Invalid element found in message/, [
-            `Invalid element found in message. ("`,
-            `      <trans-unit id="deadbeef" datatype="html">`,
+            `Error: Invalid element found in message.`,
+            `At /some/file.xlf@6:16:`,
+            `...`,
             `        <source/>`,
             `        <target>[ERROR ->]<b>msg should contain only ph tags</b></target>`,
             `      </trans-unit>`,
-            `    </body>`,
-            `"): /some/file.xlf@6:16`,
+            `...`,
+            ``,
           ].join('\n'));
         });
 
-        it('should throw when a placeholder misses an id attribute', () => {
+        it('should fail when a placeholder misses an id attribute', () => {
           const XLIFF = [
             `<?xml version="1.0" encoding="UTF-8" ?>`,
             `<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">`,
@@ -651,13 +746,14 @@ describe('Xliff1TranslationParser', () => {
           ].join('\n');
 
           expectToFail('/some/file.xlf', XLIFF, /required "id" attribute/gi, [
-            `Missing required "id" attribute: ("`,
-            `      <trans-unit id="deadbeef" datatype="html">`,
+            `Error: Missing required "id" attribute:`,
+            `At /some/file.xlf@6:16:`,
+            `...`,
             `        <source/>`,
             `        <target>[ERROR ->]<x/></target>`,
             `      </trans-unit>`,
-            `    </body>`,
-            `"): /some/file.xlf@6:16`,
+            `...`,
+            ``,
           ].join('\n'));
         });
       });

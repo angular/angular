@@ -15,6 +15,7 @@ import {sha1} from '../src/sha1';
 import {MockCacheStorage} from './cache';
 import {MockHeaders, MockRequest, MockResponse} from './fetch';
 import {MockServerState, MockServerStateBuilder} from './mock';
+import {normalizeUrl, parseUrl} from './utils';
 
 const EMPTY_SERVER_STATE = new MockServerStateBuilder().build();
 
@@ -32,10 +33,11 @@ export class MockClient {
 }
 
 export class SwTestHarnessBuilder {
+  private origin = parseUrl(this.scopeUrl).origin;
   private server = EMPTY_SERVER_STATE;
   private caches = new MockCacheStorage(this.origin);
 
-  constructor(private origin = 'http://localhost/') {}
+  constructor(private scopeUrl = 'http://localhost/') {}
 
   withCacheState(cache: string): SwTestHarnessBuilder {
     this.caches = new MockCacheStorage(this.origin, cache);
@@ -48,7 +50,7 @@ export class SwTestHarnessBuilder {
   }
 
   build(): SwTestHarness {
-    return new SwTestHarness(this.server, this.caches, this.origin);
+    return new SwTestHarness(this.server, this.caches, this.scopeUrl);
   }
 }
 
@@ -81,8 +83,7 @@ export class MockClients implements Clients {
   async claim(): Promise<any> {}
 }
 
-export class SwTestHarness implements ServiceWorkerGlobalScope, Adapter, Context {
-  readonly cacheNamePrefix: string;
+export class SwTestHarness extends Adapter implements ServiceWorkerGlobalScope, Context {
   readonly clients = new MockClients();
   private eventHandlers = new Map<string, Function>();
   private skippedWaiting = true;
@@ -98,7 +99,7 @@ export class SwTestHarness implements ServiceWorkerGlobalScope, Adapter, Context
         this.selfMessageQueue.push(msg);
       },
     },
-    scope: this.origin,
+    scope: this.scopeUrl,
     showNotification:
         (title: string, options: Object) => {
           this.notifications.push({title, options});
@@ -125,7 +126,11 @@ export class SwTestHarness implements ServiceWorkerGlobalScope, Adapter, Context
     return url && (typeof url.parse === 'function') && (typeof url.resolve === 'function');
   }
 
-  time: number;
+  get time() {
+    return this.mockTime;
+  }
+
+  private mockTime = Date.now();
 
   private timers: {
     at: number,
@@ -134,11 +139,11 @@ export class SwTestHarness implements ServiceWorkerGlobalScope, Adapter, Context
     fired: boolean,
   }[] = [];
 
+  parseUrl = parseUrl;
+
   constructor(
-      private server: MockServerState, readonly caches: MockCacheStorage, private origin: string) {
-    const baseHref = this.parseUrl(origin).path;
-    this.cacheNamePrefix = 'ngsw:' + baseHref;
-    this.time = Date.now();
+      private server: MockServerState, readonly caches: MockCacheStorage, scopeUrl: string) {
+    super(scopeUrl);
   }
 
   async resolveSelfMessages(): Promise<void> {
@@ -170,21 +175,17 @@ export class SwTestHarness implements ServiceWorkerGlobalScope, Adapter, Context
     }
     return skippedWaiting;
   }
+
   updateServerState(server?: MockServerState): void {
     this.server = server || EMPTY_SERVER_STATE;
   }
 
-  fetch(req: string|Request): Promise<Response> {
+  fetch(req: RequestInfo): Promise<Response> {
     if (typeof req === 'string') {
-      if (req.startsWith(this.origin)) {
-        req = '/' + req.substr(this.origin.length);
-      }
-      return this.server.fetch(new MockRequest(req));
+      return this.server.fetch(new MockRequest(normalizeUrl(req, this.scopeUrl)));
     } else {
       const mockReq = req.clone() as MockRequest;
-      if (mockReq.url.startsWith(this.origin)) {
-        mockReq.url = '/' + mockReq.url.substr(this.origin.length);
-      }
+      mockReq.url = normalizeUrl(mockReq.url, this.scopeUrl);
       return this.server.fetch(mockReq);
     }
   }
@@ -198,7 +199,7 @@ export class SwTestHarness implements ServiceWorkerGlobalScope, Adapter, Context
   }
 
   newRequest(url: string, init: Object = {}): Request {
-    return new MockRequest(url, init);
+    return new MockRequest(normalizeUrl(url, this.scopeUrl), init);
   }
 
   newResponse(body: string, init: Object = {}): Response {
@@ -210,18 +211,6 @@ export class SwTestHarness implements ServiceWorkerGlobalScope, Adapter, Context
       mock.set(name, headers[name]);
       return mock;
     }, new MockHeaders());
-  }
-
-  parseUrl(url: string, relativeTo?: string): {origin: string, path: string, search: string} {
-    const parsedUrl: URL = (typeof URL === 'function') ?
-        (!relativeTo ? new URL(url) : new URL(url, relativeTo)) :
-        require('url').parse(require('url').resolve(relativeTo || '', url));
-
-    return {
-      origin: parsedUrl.origin || `${parsedUrl.protocol}//${parsedUrl.host}`,
-      path: parsedUrl.pathname,
-      search: parsedUrl.search || '',
-    };
   }
 
   async skipWaiting(): Promise<void> {
@@ -281,7 +270,7 @@ export class SwTestHarness implements ServiceWorkerGlobalScope, Adapter, Context
   timeout(ms: number): Promise<void> {
     const promise = new Promise<void>(resolve => {
       this.timers.push({
-        at: this.time + ms,
+        at: this.mockTime + ms,
         duration: ms,
         fn: resolve,
         fired: false,
@@ -296,9 +285,9 @@ export class SwTestHarness implements ServiceWorkerGlobalScope, Adapter, Context
   }
 
   advance(by: number): void {
-    this.time += by;
+    this.mockTime += by;
     this.timers.filter(timer => !timer.fired)
-        .filter(timer => timer.at <= this.time)
+        .filter(timer => timer.at <= this.mockTime)
         .forEach(timer => {
           timer.fired = true;
           timer.fn();
@@ -407,6 +396,7 @@ class MockPushEvent extends MockExtendableEvent {
     json: () => this._data,
   };
 }
+
 class MockNotificationEvent extends MockExtendableEvent {
   constructor(private _notification: any, readonly action?: string) {
     super();
@@ -415,6 +405,5 @@ class MockNotificationEvent extends MockExtendableEvent {
 }
 
 class MockInstallEvent extends MockExtendableEvent {}
-
 
 class MockActivateEvent extends MockExtendableEvent {}

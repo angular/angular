@@ -245,7 +245,10 @@ def karma_web_test_suite(name, **kwargs):
         runtime_deps = runtime_deps,
         bootstrap = bootstrap,
         deps = deps,
-        browsers = ["//dev-infra/browsers:chromium"],
+        browsers = [
+            "//dev-infra/browsers/chromium:chromium",
+            "//dev-infra/browsers/firefox:firefox",
+        ],
         data = data,
         tags = tags,
         **kwargs
@@ -282,7 +285,7 @@ def protractor_web_test_suite(**kwargs):
     """Default values for protractor_web_test_suite"""
 
     _protractor_web_test_suite(
-        browsers = ["//dev-infra/browsers:chromium"],
+        browsers = ["//dev-infra/browsers/chromium:chromium"],
         **kwargs
     )
 

@@ -27,7 +27,7 @@ describe('providers App', () => {
   });
 
 
-  it('shows a list of customers', function() {
+  it('shows a list of customers', () => {
     const list = getListSectionStruct();
     expect(list.items.count()).toBe(10);
     expect(list.items.get(0).getText()).toBe('1 Maria');

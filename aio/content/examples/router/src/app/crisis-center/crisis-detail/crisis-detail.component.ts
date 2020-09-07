@@ -4,8 +4,8 @@ import { Component, OnInit, HostBinding } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable } from 'rxjs';
 
-import { Crisis }         from '../crisis';
-import { DialogService }  from '../../dialog.service';
+import { Crisis } from '../crisis';
+import { DialogService } from '../../dialog.service';
 
 @Component({
   selector: 'app-crisis-detail',
@@ -56,7 +56,7 @@ export class CrisisDetailComponent implements OnInit {
   // #enddocregion canDeactivate
 
   gotoCrises() {
-    let crisisId = this.crisis ? this.crisis.id : null;
+    const crisisId = this.crisis ? this.crisis.id : null;
     // Pass along the crisis id if available
     // so that the CrisisListComponent can select that crisis.
     // Add a totally useless `foo` parameter for kicks.

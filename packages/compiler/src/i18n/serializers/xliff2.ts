@@ -246,9 +246,9 @@ class Xliff2Parser implements ml.Visitor {
         break;
 
       case _TARGET_TAG:
-        const innerTextStart = element.startSourceSpan!.end.offset;
+        const innerTextStart = element.startSourceSpan.end.offset;
         const innerTextEnd = element.endSourceSpan!.start.offset;
-        const content = element.startSourceSpan!.start.file.content;
+        const content = element.startSourceSpan.start.file.content;
         const innerText = content.slice(innerTextStart, innerTextEnd);
         this._unitMlString = innerText;
         break;

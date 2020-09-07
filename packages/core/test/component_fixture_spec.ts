@@ -7,7 +7,7 @@
  */
 
 import {Component, Injectable, Input} from '@angular/core';
-import {async, ComponentFixtureAutoDetect, ComponentFixtureNoNgZone, TestBed, withModule} from '@angular/core/testing';
+import {ComponentFixtureAutoDetect, ComponentFixtureNoNgZone, TestBed, waitForAsync, withModule} from '@angular/core/testing';
 import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
@@ -100,7 +100,7 @@ class NestedAsyncTimeoutComp {
 
 {
   describe('ComponentFixture', () => {
-    beforeEach(async(() => {
+    beforeEach(waitForAsync(() => {
       TestBed.configureTestingModule({
         declarations: [
           AutoDetectComp, AsyncComp, AsyncTimeoutComp, NestedAsyncTimeoutComp, AsyncChangeComp,
@@ -134,7 +134,7 @@ class NestedAsyncTimeoutComp {
        }));
 
     it('should signal through whenStable when the fixture is stable (autoDetectChanges)',
-       async(() => {
+       waitForAsync(() => {
          const componentFixture = TestBed.createComponent(AsyncComp);
          componentFixture.autoDetectChanges();
          expect(componentFixture.nativeElement).toHaveText('1');
@@ -153,7 +153,7 @@ class NestedAsyncTimeoutComp {
        }));
 
     it('should signal through isStable when the fixture is stable (no autoDetectChanges)',
-       async(() => {
+       waitForAsync(() => {
          const componentFixture = TestBed.createComponent(AsyncComp);
 
          componentFixture.detectChanges();
@@ -174,7 +174,7 @@ class NestedAsyncTimeoutComp {
 
     it('should wait for macroTask(setTimeout) while checking for whenStable ' +
            '(autoDetectChanges)',
-       async(() => {
+       waitForAsync(() => {
          const componentFixture = TestBed.createComponent(AsyncTimeoutComp);
          componentFixture.autoDetectChanges();
          expect(componentFixture.nativeElement).toHaveText('1');
@@ -194,7 +194,7 @@ class NestedAsyncTimeoutComp {
 
     it('should wait for macroTask(setTimeout) while checking for whenStable ' +
            '(no autoDetectChanges)',
-       async(() => {
+       waitForAsync(() => {
          const componentFixture = TestBed.createComponent(AsyncTimeoutComp);
          componentFixture.detectChanges();
          expect(componentFixture.nativeElement).toHaveText('1');
@@ -215,7 +215,7 @@ class NestedAsyncTimeoutComp {
 
     it('should wait for nested macroTasks(setTimeout) while checking for whenStable ' +
            '(autoDetectChanges)',
-       async(() => {
+       waitForAsync(() => {
          const componentFixture = TestBed.createComponent(NestedAsyncTimeoutComp);
 
          componentFixture.autoDetectChanges();
@@ -236,7 +236,7 @@ class NestedAsyncTimeoutComp {
 
     it('should wait for nested macroTasks(setTimeout) while checking for whenStable ' +
            '(no autoDetectChanges)',
-       async(() => {
+       waitForAsync(() => {
          const componentFixture = TestBed.createComponent(NestedAsyncTimeoutComp);
          componentFixture.detectChanges();
          expect(componentFixture.nativeElement).toHaveText('1');
@@ -255,7 +255,8 @@ class NestedAsyncTimeoutComp {
          });
        }));
 
-    it('should stabilize after async task in change detection (autoDetectChanges)', async(() => {
+    it('should stabilize after async task in change detection (autoDetectChanges)',
+       waitForAsync(() => {
          const componentFixture = TestBed.createComponent(AsyncChangeComp);
 
          componentFixture.autoDetectChanges();
@@ -271,7 +272,8 @@ class NestedAsyncTimeoutComp {
          });
        }));
 
-    it('should stabilize after async task in change detection(no autoDetectChanges)', async(() => {
+    it('should stabilize after async task in change detection(no autoDetectChanges)',
+       waitForAsync(() => {
          const componentFixture = TestBed.createComponent(AsyncChangeComp);
          componentFixture.detectChanges();
          componentFixture.whenStable().then((_) => {
@@ -306,7 +308,7 @@ class NestedAsyncTimeoutComp {
         }).toThrowError(/Cannot call autoDetectChanges when ComponentFixtureNoNgZone is set/);
       });
 
-      it('should instantiate a component with valid DOM', async(() => {
+      it('should instantiate a component with valid DOM', waitForAsync(() => {
            const componentFixture = TestBed.createComponent(SimpleComp);
 
            expect(componentFixture.ngZone).toBeNull();
@@ -314,7 +316,7 @@ class NestedAsyncTimeoutComp {
            expect(componentFixture.nativeElement).toHaveText('Original Simple');
          }));
 
-      it('should allow changing members of the component', async(() => {
+      it('should allow changing members of the component', waitForAsync(() => {
            const componentFixture = TestBed.createComponent(MyIfComp);
 
            componentFixture.detectChanges();

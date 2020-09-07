@@ -1,7 +1,7 @@
 # Transforming Data Using Pipes
 
-Use [pipes](guide/glossary#pipe "Definition of a pipe") to transform and format strings, currency amounts, dates, and other display data.
-Pipes are simple functions you can use in [template expressions](/guide/glossary#template-expression "Definition of template expression") to accept an input value and return a transformed value.
+Use [pipes](guide/glossary#pipe "Definition of a pipe") to transform strings, currency amounts, dates, and other data for display.
+Pipes are simple functions you can use in [template expressions](/guide/glossary#template-expression "Definition of template expression") to accept an input value and return a transformed value. Pipes are useful because you can use them throughout your application, while only declaring each pipe once.
 For example, you would use a pipe to show a date as **April 15, 1988** rather than the raw string format.
 
 <div class="alert is-helpful">
@@ -58,12 +58,12 @@ The tabs in the example show the following:
 </code-tabs>
 
 The component's `birthday` value flows through the
-[pipe operator](guide/template-syntax#pipe) ( | ) to the [`date`](api/common/DatePipe)
+[pipe operator](guide/template-expression-operators#pipe) ( | ) to the [`date`](api/common/DatePipe)
 function.
 
 {@a parameterizing-a-pipe}
 
-## Formatting data with parameters and chained pipes
+## Transforming data with parameters and chained pipes
 
 Use optional parameters to fine-tune a pipe's output.
 For example, you can use the [`CurrencyPipe`](api/common/CurrencyPipe "API reference") with a country code such as EUR as a parameter.
@@ -374,7 +374,7 @@ As shown in the code below, only the pipe in the template changes.
 
 [Observables](/guide/glossary#observable "Definition of observable") let you pass messages between parts of your application.
 Observables are recommended for event handling, asynchronous programming, and handling multiple values.
-Observables can deliver single or multiple values of any type, either synchronously (as a function delivers a value to its caller) or asynchronously on a schedule. 
+Observables can deliver single or multiple values of any type, either synchronously (as a function delivers a value to its caller) or asynchronously on a schedule.
 
 <div class="alert is-helpful">
 

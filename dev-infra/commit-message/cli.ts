@@ -9,13 +9,56 @@ import * as yargs from 'yargs';
 
 import {info} from '../utils/console';
 
+import {restoreCommitMessage} from './restore-commit-message';
 import {validateFile} from './validate-file';
 import {validateCommitRange} from './validate-range';
+import {runWizard} from './wizard';
 
 /** Build the parser for the commit-message commands. */
 export function buildCommitMessageParser(localYargs: yargs.Argv) {
   return localYargs.help()
       .strict()
+      .command(
+          'restore-commit-message-draft', false,
+          args => {
+            return args.option('file-env-variable', {
+              type: 'string',
+              array: true,
+              conflicts: ['file'],
+              required: true,
+              description:
+                  'The key for the environment variable which holds the arguments for the\n' +
+                  'prepare-commit-msg hook as described here:\n' +
+                  'https://git-scm.com/docs/githooks#_prepare_commit_msg',
+              coerce: arg => {
+                const [file, source] = (process.env[arg] || '').split(' ');
+                if (!file) {
+                  throw new Error(`Provided environment variable "${arg}" was not found.`);
+                }
+                return [file, source];
+              },
+            });
+          },
+          args => {
+            restoreCommitMessage(args['file-env-variable'][0], args['file-env-variable'][1] as any);
+          })
+      .command(
+          'wizard <filePath> [source] [commitSha]', '', ((args: any) => {
+            return args
+                .positional(
+                    'filePath',
+                    {description: 'The file path to write the generated commit message into'})
+                .positional('source', {
+                  choices: ['message', 'template', 'merge', 'squash', 'commit'],
+                  description: 'The source of the commit message as described here: ' +
+                      'https://git-scm.com/docs/githooks#_prepare_commit_msg'
+                })
+                .positional(
+                    'commitSha', {description: 'The commit sha if source is set to `commit`'});
+          }),
+          async (args: any) => {
+            await runWizard(args);
+          })
       .command(
           'pre-commit-validate', 'Validate the most recent commit message', {
             'file': {
@@ -38,7 +81,7 @@ export function buildCommitMessageParser(localYargs: yargs.Argv) {
             }
           },
           args => {
-            const file = args.file || args.fileEnvVariable || '.git/COMMIT_EDITMSG';
+            const file = args.file || args['file-env-variable'] || '.git/COMMIT_EDITMSG';
             validateFile(file);
           })
       .command(

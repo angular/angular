@@ -22,9 +22,10 @@ import {ClassProvider, ConstructorProvider, ExistingProvider, FactoryProvider, S
  * `InjectorDef`, `NgModule`, or a special scope (e.g. `'root'`). A value of `null` indicates
  * that the injectable does not belong to any scope.
  *
- * NOTE: This is a private type and should not be exported
- *
- * @publicApi
+ * @codeGenApi
+ * @publicApi The ViewEngine compiler emits code with this type for injectables. This code is
+ *   deployed to npm, and should be treated as public api.
+
  */
 export interface ɵɵInjectableDef<T> {
   /**
@@ -65,7 +66,7 @@ export interface ɵɵInjectableDef<T> {
  *
  * NOTE: This is a private type and should not be exported
  *
- * @publicApi
+ * @codeGenApi
  */
 export interface ɵɵInjectorDef<T> {
   factory: () => T;
@@ -137,6 +138,7 @@ export interface InjectorTypeWithProviders<T> {
  *   The factory can call `inject` to access the `Injector` and request injection of dependencies.
  *
  * @codeGenApi
+ * @publicApi This instruction has been emitted by ViewEngine for some time and is deployed to npm.
  */
 export function ɵɵdefineInjectable<T>(opts: {
   token: unknown,
@@ -175,7 +177,7 @@ export const defineInjectable = ɵɵdefineInjectable;
  *   whose providers will also be added to the injector. Locally provided types will override
  *   providers from imports.
  *
- * @publicApi
+ * @codeGenApi
  */
 export function ɵɵdefineInjector(options: {factory: () => any, providers?: any[], imports?: any[]}):
     never {

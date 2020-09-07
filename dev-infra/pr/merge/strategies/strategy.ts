@@ -69,7 +69,8 @@ export abstract class MergeStrategy {
    * @returns A list of branches for which the revisions could not be cherry-picked into.
    */
   protected cherryPickIntoTargetBranches(revisionRange: string, targetBranches: string[], options: {
-    dryRun?: boolean
+    dryRun?: boolean,
+    linkToOriginalCommits?: boolean,
   } = {}) {
     const cherryPickArgs = [revisionRange];
     const failedBranches: string[] = [];
@@ -80,6 +81,14 @@ export abstract class MergeStrategy {
       // applied directly in the working tree. This allow us to easily discard the changes
       // for dry-run purposes.
       cherryPickArgs.push('--no-commit');
+    }
+
+    if (options.linkToOriginalCommits) {
+      // We add `-x` when cherry-picking as that will allow us to easily jump to original
+      // commits for cherry-picked commits. With that flag set, Git will automatically append
+      // the original SHA/revision to the commit message. e.g. `(cherry picked from commit <..>)`.
+      // https://git-scm.com/docs/git-cherry-pick#Documentation/git-cherry-pick.txt--x.
+      cherryPickArgs.push('-x');
     }
 
     // Cherry-pick the refspec into all determined target branches.

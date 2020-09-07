@@ -79,7 +79,7 @@ export class NgTscPlugin implements TscPlugin {
   }
 
   wrapHost(
-      host: ts.CompilerHost&UnifiedModulesHost, inputFiles: readonly string[],
+      host: ts.CompilerHost&Partial<UnifiedModulesHost>, inputFiles: readonly string[],
       options: ts.CompilerOptions): PluginCompilerHost {
     // TODO(alxhub): Eventually the `wrapHost()` API will accept the old `ts.Program` (if one is
     // available). When it does, its `ts.SourceFile`s need to be re-tagged to enable proper

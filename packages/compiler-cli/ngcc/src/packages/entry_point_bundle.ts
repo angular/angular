@@ -50,7 +50,7 @@ export function makeEntryPointBundle(
   const rootDir = entryPoint.packagePath;
   const options: ts
       .CompilerOptions = {allowJs: true, maxNodeModuleJsDepth: Infinity, rootDir, ...pathMappings};
-  const srcHost = new NgccSourcesCompilerHost(fs, options, entryPoint.path);
+  const srcHost = new NgccSourcesCompilerHost(fs, options, entryPoint.packagePath);
   const dtsHost = new NgtscCompilerHost(fs, options);
 
   // Create the bundle programs, as necessary.
@@ -63,7 +63,7 @@ export function makeEntryPointBundle(
       [];
   const dts = transformDts ? makeBundleProgram(
                                  fs, isCore, entryPoint.packagePath, typingsPath, 'r3_symbols.d.ts',
-                                 options, dtsHost, additionalDtsFiles) :
+                                 {...options, allowJs: false}, dtsHost, additionalDtsFiles) :
                              null;
   const isFlatCore = isCore && src.r3SymbolsFile === null;
 

@@ -350,17 +350,6 @@ export function detachView(lContainer: LContainer, removeIndex: number): LView|u
 }
 
 /**
- * Removes a view from a container, i.e. detaches it and then destroys the underlying LView.
- *
- * @param lContainer The container from which to remove a view
- * @param removeIndex The index of the view to remove
- */
-export function removeView(lContainer: LContainer, removeIndex: number) {
-  const detachedView = detachView(lContainer, removeIndex);
-  detachedView && destroyLView(detachedView[TVIEW], detachedView);
-}
-
-/**
  * A standalone function which destroys an LView,
  * conducting clean up (e.g. removing listeners, calling onDestroys).
  *

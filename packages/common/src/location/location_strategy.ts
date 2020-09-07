@@ -81,16 +81,20 @@ export const APP_BASE_HREF = new InjectionToken<string>('appBaseHref');
  * browser's URL.
  *
  * If you're using `PathLocationStrategy`, you must provide a {@link APP_BASE_HREF}
- * or add a base element to the document. This URL prefix that will be preserved
- * when generating and recognizing URLs.
+ * or add a `<base href>` element to the document.
  *
- * For instance, if you provide an `APP_BASE_HREF` of `'/my/app'` and call
+ * For instance, if you provide an `APP_BASE_HREF` of `'/my/app/'` and call
+ * `location.go('/foo')`, the browser's URL will become
+ * `example.com/my/app/foo`. To ensure all relative URIs resolve correctly,
+ * the `<base href>` and/or `APP_BASE_HREF` should end with a `/`.
+ *
+ * Similarly, if you add `<base href='/my/app/'/>` to the document and call
  * `location.go('/foo')`, the browser's URL will become
  * `example.com/my/app/foo`.
  *
- * Similarly, if you add `<base href='/my/app'/>` to the document and call
- * `location.go('/foo')`, the browser's URL will become
- * `example.com/my/app/foo`.
+ * Note that when using `PathLocationStrategy`, neither the query nor
+ * the fragment in the `<base href>` will be preserved, as outlined
+ * by the [RFC](https://tools.ietf.org/html/rfc3986#section-5.2.2).
  *
  * @usageNotes
  *

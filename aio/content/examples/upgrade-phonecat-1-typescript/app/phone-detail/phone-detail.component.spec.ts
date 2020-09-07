@@ -1,3 +1,4 @@
+// tslint:disable: variable-name
 // #docregion
 describe('phoneDetail', () => {
 
@@ -8,7 +9,7 @@ describe('phoneDetail', () => {
   describe('PhoneDetailController', () => {
     let $httpBackend: angular.IHttpBackendService;
     let ctrl: any;
-    let xyzPhoneData = {
+    const xyzPhoneData = {
       name: 'phone xyz',
       images: ['image/url1.png', 'image/url2.png']
     };
@@ -19,7 +20,7 @@ describe('phoneDetail', () => {
       $httpBackend = _$httpBackend_;
       $httpBackend.expectGET('phones/xyz.json').respond(xyzPhoneData);
 
-      $routeParams['phoneId'] = 'xyz';
+      $routeParams.phoneId = 'xyz';
 
       ctrl = $componentController('phoneDetail');
     }));

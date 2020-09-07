@@ -1,6 +1,6 @@
 // #docplaster
 // #docregion
-import { Injectable }       from '@angular/core';
+import { Injectable } from '@angular/core';
 import {
   CanActivate, Router,
   ActivatedRouteSnapshot,
@@ -8,8 +8,8 @@ import {
   CanActivateChild,
   NavigationExtras,
   UrlTree
-}                           from '@angular/router';
-import { AuthService }      from './auth.service';
+} from '@angular/router';
+import { AuthService } from './auth.service';
 
 @Injectable({
   providedIn: 'root',
@@ -18,7 +18,7 @@ export class AuthGuard implements CanActivate, CanActivateChild {
   constructor(private authService: AuthService, private router: Router) {}
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): true|UrlTree {
-    let url: string = state.url;
+    const url: string = state.url;
 
     return this.checkLogin(url);
   }
@@ -34,12 +34,12 @@ export class AuthGuard implements CanActivate, CanActivateChild {
     this.authService.redirectUrl = url;
 
     // Create a dummy session id
-    let sessionId = 123456789;
+    const sessionId = 123456789;
 
     // Set our navigation extras object
     // that contains our global query params and fragment
-    let navigationExtras: NavigationExtras = {
-      queryParams: { 'session_id': sessionId },
+    const navigationExtras: NavigationExtras = {
+      queryParams: { session_id: sessionId },
       fragment: 'anchor'
     };
 

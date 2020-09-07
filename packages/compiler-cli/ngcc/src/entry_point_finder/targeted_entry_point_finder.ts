@@ -228,11 +228,13 @@ export class TargetedEntryPointFinder extends TracingEntryPointFinder {
   /**
    * Split the given `path` into path segments using an FS independent algorithm.
    */
-  private splitPath(path: PathSegment) {
+  private splitPath(path: PathSegment|AbsoluteFsPath) {
     const segments = [];
-    while (path !== '.') {
+    let container = this.fs.dirname(path);
+    while (path !== container) {
       segments.unshift(this.fs.basename(path));
-      path = this.fs.dirname(path);
+      path = container;
+      container = this.fs.dirname(container);
     }
     return segments;
   }

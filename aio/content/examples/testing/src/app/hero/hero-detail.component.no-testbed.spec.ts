@@ -1,12 +1,11 @@
 import { asyncData, ActivatedRouteStub } from '../../testing';
 
 import { HeroDetailComponent } from './hero-detail.component';
-import { Hero }                from '../model/hero';
+import { Hero } from '../model/hero';
 
 //////////  Tests  ////////////////////
 
 describe('HeroDetailComponent - no TestBed', () => {
-  let activatedRoute: ActivatedRouteStub;
   let comp: HeroDetailComponent;
   let expectedHero: Hero;
   let hds: any;
@@ -21,12 +20,11 @@ describe('HeroDetailComponent - no TestBed', () => {
     hds.getHero.and.returnValue(asyncData(expectedHero));
     hds.saveHero.and.returnValue(asyncData(expectedHero));
 
-    comp = new HeroDetailComponent(hds, <any> activatedRoute, router);
+    comp = new HeroDetailComponent(hds, activatedRoute as any, router);
     comp.ngOnInit();
 
     // OnInit calls HDS.getHero; wait for it to get the fake hero
     hds.getHero.calls.first().returnValue.subscribe(done);
-
   });
 
   it('should expose the hero retrieved from the service', () => {

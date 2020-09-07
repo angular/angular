@@ -90,6 +90,19 @@ runInEachFileSystem(() => {
     `);
       expect(res).toBe('');
     });
+
+    it('should preserve quotes around class member names', () => {
+      const res = compileAndPrint(`
+        import {Component, Input} from '@angular/core';
+
+        @Component('metadata') class Target {
+          @Input() 'has-dashes-in-name' = 123;
+          @Input() noDashesInName = 456;
+        }
+      `);
+      expect(res).toContain(
+          `{ 'has-dashes-in-name': [{ type: Input }], noDashesInName: [{ type: Input }] })`);
+    });
   });
 
   function compileAndPrint(contents: string): string {

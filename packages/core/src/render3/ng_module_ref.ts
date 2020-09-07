@@ -20,7 +20,7 @@ import {stringify} from '../util/stringify';
 
 import {ComponentFactoryResolver} from './component_ref';
 import {getNgLocaleIdDef, getNgModuleDef} from './definition';
-import {setLocaleId} from './i18n';
+import {setLocaleId} from './i18n/i18n_locale_id';
 import {maybeUnwrapFn} from './util/misc_utils';
 
 export interface NgModuleType<T = any> extends Type<T> {

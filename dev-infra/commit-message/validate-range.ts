@@ -8,7 +8,8 @@
 import {info} from '../utils/console';
 import {exec} from '../utils/shelljs';
 
-import {parseCommitMessage, validateCommitMessage, ValidateCommitMessageOptions} from './validate';
+import {parseCommitMessage} from './parse';
+import {validateCommitMessage, ValidateCommitMessageOptions} from './validate';
 
 // Whether the provided commit is a fixup commit.
 const isNonFixup = (m: string) => !parseCommitMessage(m).isFixup;

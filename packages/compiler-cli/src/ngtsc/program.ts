@@ -28,7 +28,7 @@ import {ReusedProgramStrategy} from './typecheck';
  * command-line main() function or the Angular CLI.
  */
 export class NgtscProgram implements api.Program {
-  private compiler: NgCompiler;
+  readonly compiler: NgCompiler;
 
   /**
    * The primary TypeScript program, which is used for analysis and emit.

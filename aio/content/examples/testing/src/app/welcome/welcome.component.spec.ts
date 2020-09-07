@@ -1,14 +1,14 @@
 // #docplaster
 import { ComponentFixture, inject, TestBed } from '@angular/core/testing';
 
-import { UserService }      from '../model/user.service';
+import { UserService } from '../model/user.service';
 import { WelcomeComponent } from './welcome.component';
 
 // #docregion mock-user-service
 class MockUserService {
   isLoggedIn = true;
   user = { name: 'Test User'};
-};
+}
 // #enddocregion mock-user-service
 
 describe('WelcomeComponent (class only)', () => {

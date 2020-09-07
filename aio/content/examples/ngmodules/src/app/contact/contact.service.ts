@@ -1,7 +1,7 @@
 import { Injectable, OnDestroy } from '@angular/core';
 
 import { Observable, of } from 'rxjs';
-import { delay }      from 'rxjs/operators';
+import { delay } from 'rxjs/operators';
 
 export class Contact {
   constructor(public id: number, public name: string) { }

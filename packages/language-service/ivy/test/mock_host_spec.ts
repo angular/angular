@@ -8,7 +8,7 @@
 
 import * as ts from 'typescript/lib/tsserverlibrary';
 
-import {APP_MAIN, setup, TEST_SRCDIR} from './mock_host';
+import {APP_COMPONENT, APP_MAIN, setup, TEST_SRCDIR} from './mock_host';
 
 describe('mock host', () => {
   const {project, service, tsLS} = setup();
@@ -58,13 +58,93 @@ describe('mock host', () => {
     expect(getText(scriptInfo)).toBe('const x: string = 0');
   });
 
-  it('can find the cursor', () => {
-    const content = service.overwrite(APP_MAIN, `const fo¦o = 'hello world';`);
-    // content returned by overwrite() is the original content with cursor
-    expect(content).toBe(`const fo¦o = 'hello world';`);
-    const scriptInfo = service.getScriptInfo(APP_MAIN);
-    // script info content should not contain cursor
-    expect(getText(scriptInfo)).toBe(`const foo = 'hello world';`);
+  describe('overwrite()', () => {
+    it('will return the cursor position', () => {
+      const {position} = service.overwrite(APP_MAIN, `const fo¦o = 'hello world';`);
+      expect(position).toBe(8);
+    });
+
+    it('will remove the cursor in overwritten text', () => {
+      const {text} = service.overwrite(APP_MAIN, `const fo¦o = 'hello world';`);
+      expect(text).toBe(`const foo = 'hello world';`);
+    });
+
+    it('will update script info without cursor', () => {
+      const {text} = service.overwrite(APP_MAIN, `const fo¦o = 'hello world';`);
+      const scriptInfo = service.getScriptInfo(APP_MAIN);
+      const snapshot = getText(scriptInfo);
+      expect(snapshot).toBe(`const foo = 'hello world';`);
+      expect(snapshot).toBe(text);
+    });
+
+    it('will throw if there is more than one cursor', () => {
+      expect(() => service.overwrite(APP_MAIN, `const f¦oo = 'hello wo¦rld';`))
+          .toThrowError(/matches more than one occurrence in text/);
+    });
+
+    it('will return -1 if cursor is not present', () => {
+      const {position} = service.overwrite(APP_MAIN, `const foo = 'hello world';`);
+      expect(position).toBe(-1);
+    });
+  });
+
+  describe('overwriteInlineTemplate()', () => {
+    it('will return the cursor position', () => {
+      const {position, text} = service.overwriteInlineTemplate(APP_COMPONENT, `{{ fo¦o }}`);
+      // The position returned should be relative to the start of the source
+      // file, not the start of the template.
+      expect(position).not.toBe(5);
+      expect(text.substring(position, position + 4)).toBe('o }}');
+    });
+
+    it('will remove the cursor in overwritten text', () => {
+      const {text} = service.overwriteInlineTemplate(APP_COMPONENT, `{{ fo¦o }}`);
+      expect(text).toContain(`{{ foo }}`);
+    });
+
+    it('will return the entire content of the source file', () => {
+      const {text} = service.overwriteInlineTemplate(APP_COMPONENT, `{{ foo }}`);
+      expect(text).toContain(`@Component`);
+    });
+
+    it('will update script info without cursor', () => {
+      service.overwriteInlineTemplate(APP_COMPONENT, `{{ fo¦o }}`);
+      const scriptInfo = service.getScriptInfo(APP_COMPONENT);
+      expect(getText(scriptInfo)).toContain(`{{ foo }}`);
+    });
+
+    it('will throw if there is no template in file', () => {
+      expect(() => service.overwriteInlineTemplate(APP_MAIN, `{{ foo }}`))
+          .toThrowError(/does not contain a component with template/);
+    });
+
+    it('will throw if there is more than one cursor', () => {
+      expect(() => service.overwriteInlineTemplate(APP_COMPONENT, `{{ f¦o¦o }}`))
+          .toThrowError(/matches more than one occurrence in text/);
+    });
+
+    it('will return -1 if cursor is not present', () => {
+      const {position} = service.overwriteInlineTemplate(APP_COMPONENT, `{{ foo }}`);
+      expect(position).toBe(-1);
+    });
+
+    it('will throw if there is more than one component with template', () => {
+      service.overwrite(APP_COMPONENT, `
+        import {Component} from '@angular/core';
+
+        @Component({
+          template: \`<h1></h1>\`,
+        })
+        export class ComponentA {}
+
+        @Component({
+          template: \`<h2></h2>\`,
+        })
+        export class ComponentB {}
+      `);
+      expect(() => service.overwriteInlineTemplate(APP_COMPONENT, `<p></p>`))
+          .toThrowError(/matches more than one occurrence in text/);
+    });
   });
 });
 

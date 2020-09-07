@@ -10,7 +10,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 // #enddocregion import-router
 
-import { HeroService }  from '../hero.service';
+import { HeroService } from '../hero.service';
 import { Hero } from '../hero';
 
 @Component({

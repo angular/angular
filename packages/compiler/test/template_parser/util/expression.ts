@@ -30,6 +30,10 @@ class ExpressionSourceHumanizer extends e.RecursiveAstVisitor implements t.Templ
     this.recordAst(ast);
     this.visitAll([ast.ast], null);
   }
+  visitUnary(ast: e.Unary) {
+    this.recordAst(ast);
+    super.visitUnary(ast, null);
+  }
   visitBinary(ast: e.Binary) {
     this.recordAst(ast);
     super.visitBinary(ast, null);

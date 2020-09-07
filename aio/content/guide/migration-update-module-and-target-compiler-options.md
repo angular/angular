@@ -9,7 +9,7 @@ This process helps ensure that intentional changes to the options are kept in pl
 
 TypeScript Configuration File(s) | Changed Property | Existing Value | New Value
 ------------- | ------------- | ------------- | ------------- | -------------
-`<workspace base>/tsconfig.base.json` | `"module"` | `"esnext"` | `"es2020"`
+`<workspace base>/tsconfig.json` | `"module"` | `"esnext"` | `"es2020"`
 Used in `browser` builder options (`ng build` for applications) | `"module"` | `"esnext"` | `"es2020"`
 Used in `ng-packgr` builder options (`ng build` for libraries) | `"module"` | `"esnext"` | `"es2020"`
 Used in `karma` builder options (`ng test` for applications) | `"module"` | `"esnext"` | `"es2020"`

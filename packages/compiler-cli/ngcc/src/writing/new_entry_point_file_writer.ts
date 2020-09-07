@@ -6,7 +6,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {absoluteFromSourceFile, AbsoluteFsPath, dirname, FileSystem, join, relative} from '../../../src/ngtsc/file_system';
+import {absoluteFromSourceFile, AbsoluteFsPath, dirname, FileSystem, isLocalRelativePath, join, relative, resolve} from '../../../src/ngtsc/file_system';
 import {Logger} from '../../../src/ngtsc/logging';
 import {isDtsPath} from '../../../src/ngtsc/util/src/typescript';
 import {EntryPoint, EntryPointJsonProperty} from '../packages/entry_point';
@@ -70,9 +70,9 @@ export class NewEntryPointFileWriter extends InPlaceFileWriter {
       bundle: EntryPointBundle, packagePath: AbsoluteFsPath, ngccFolder: AbsoluteFsPath) {
     bundle.src.program.getSourceFiles().forEach(sourceFile => {
       const relativePath = relative(packagePath, absoluteFromSourceFile(sourceFile));
-      const isOutsidePackage = relativePath.startsWith('..');
-      if (!sourceFile.isDeclarationFile && !isOutsidePackage) {
-        const newFilePath = join(ngccFolder, relativePath);
+      const isInsidePackage = isLocalRelativePath(relativePath);
+      if (!sourceFile.isDeclarationFile && isInsidePackage) {
+        const newFilePath = resolve(ngccFolder, relativePath);
         this.fs.ensureDir(dirname(newFilePath));
         this.fs.copyFile(absoluteFromSourceFile(sourceFile), newFilePath);
       }
@@ -86,7 +86,7 @@ export class NewEntryPointFileWriter extends InPlaceFileWriter {
       super.writeFileAndBackup(file);
     } else {
       const relativePath = relative(packagePath, file.path);
-      const newFilePath = join(ngccFolder, relativePath);
+      const newFilePath = resolve(ngccFolder, relativePath);
       this.fs.ensureDir(dirname(newFilePath));
       this.fs.writeFile(newFilePath, file.contents);
     }
@@ -98,7 +98,7 @@ export class NewEntryPointFileWriter extends InPlaceFileWriter {
       super.revertFileAndBackup(filePath);
     } else if (this.fs.exists(filePath)) {
       const relativePath = relative(packagePath, filePath);
-      const newFilePath = join(packagePath, NGCC_DIRECTORY, relativePath);
+      const newFilePath = resolve(packagePath, NGCC_DIRECTORY, relativePath);
       this.fs.removeFile(newFilePath);
     }
   }
@@ -117,8 +117,9 @@ export class NewEntryPointFileWriter extends InPlaceFileWriter {
     // All format properties point to the same format-path.
     const oldFormatProp = formatProperties[0]!;
     const oldFormatPath = packageJson[oldFormatProp]!;
-    const oldAbsFormatPath = join(entryPoint.path, oldFormatPath);
-    const newAbsFormatPath = join(ngccFolder, relative(entryPoint.packagePath, oldAbsFormatPath));
+    const oldAbsFormatPath = resolve(entryPoint.path, oldFormatPath);
+    const newAbsFormatPath =
+        resolve(ngccFolder, relative(entryPoint.packagePath, oldAbsFormatPath));
     const newFormatPath = relative(entryPoint.path, newAbsFormatPath);
 
     // Update all properties in `package.json` (both in memory and on disk).

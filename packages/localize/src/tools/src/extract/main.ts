@@ -11,6 +11,10 @@ import {ConsoleLogger, Logger, LogLevel} from '@angular/compiler-cli/src/ngtsc/l
 import {ɵParsedMessage} from '@angular/localize';
 import * as glob from 'glob';
 import * as yargs from 'yargs';
+
+import {DiagnosticHandlingStrategy, Diagnostics} from '../diagnostics';
+
+import {checkDuplicateMessages} from './duplicates';
 import {MessageExtractor} from './extraction';
 import {TranslationSerializer} from './translation_files/translation_serializer';
 import {SimpleJsonTranslationSerializer} from './translation_files/json_translation_serializer';
@@ -26,12 +30,14 @@ if (require.main === module) {
             alias: 'locale',
             describe: 'The locale of the source being processed',
             default: 'en',
+            type: 'string',
           })
           .option('r', {
             alias: 'root',
             default: '.',
             describe: 'The root path for other paths provided in these options.\n' +
-                'This should either be absolute or relative to the current working directory.'
+                'This should either be absolute or relative to the current working directory.',
+            type: 'string',
           })
           .option('s', {
             alias: 'source',
@@ -39,34 +45,45 @@ if (require.main === module) {
             describe:
                 'A glob pattern indicating what files to search for translations, e.g. `./dist/**/*.js`.\n' +
                 'This should be relative to the root path.',
+            type: 'string',
           })
           .option('f', {
             alias: 'format',
             required: true,
             choices: ['xmb', 'xlf', 'xlif', 'xliff', 'xlf2', 'xlif2', 'xliff2', 'json'],
             describe: 'The format of the translation file.',
+            type: 'string',
           })
           .option('o', {
             alias: 'outputPath',
             required: true,
             describe:
-                'A path to where the translation file will be written. This should be relative to the root path.'
+                'A path to where the translation file will be written. This should be relative to the root path.',
+            type: 'string',
           })
           .option('loglevel', {
             describe: 'The lowest severity logging message that should be output.',
             choices: ['debug', 'info', 'warn', 'error'],
+            type: 'string',
           })
           .option('useSourceMaps', {
             type: 'boolean',
             default: true,
             describe:
-                'Whether to generate source information in the output files by following source-map mappings found in the source files'
+                'Whether to generate source information in the output files by following source-map mappings found in the source files',
           })
           .option('useLegacyIds', {
             type: 'boolean',
             default: true,
             describe:
-                'Whether to use the legacy id format for messages that were extracted from Angular templates.'
+                'Whether to use the legacy id format for messages that were extracted from Angular templates.',
+          })
+          .option('d', {
+            alias: 'duplicateMessageHandling',
+            describe: 'How to handle messages with the same id but different text.',
+            choices: ['error', 'warning', 'ignore'],
+            default: 'warning',
+            type: 'string',
           })
           .strict()
           .help()
@@ -75,21 +92,23 @@ if (require.main === module) {
   const fs = new NodeJSFileSystem();
   setFileSystem(fs);
 
-  const rootPath = options['root'];
-  const sourceFilePaths = glob.sync(options['source'], {cwd: rootPath, nodir: true});
-  const logLevel = options['loglevel'] as (keyof typeof LogLevel) | undefined;
+  const rootPath = options.r;
+  const sourceFilePaths = glob.sync(options.s, {cwd: rootPath, nodir: true});
+  const logLevel = options.loglevel as (keyof typeof LogLevel) | undefined;
   const logger = new ConsoleLogger(logLevel ? LogLevel[logLevel] : LogLevel.warn);
+  const duplicateMessageHandling = options.d as DiagnosticHandlingStrategy;
 
 
   extractTranslations({
     rootPath,
     sourceFilePaths,
-    sourceLocale: options['locale'],
-    format: options['format'],
-    outputPath: options['outputPath'],
+    sourceLocale: options.l,
+    format: options.f,
+    outputPath: options.o,
     logger,
-    useSourceMaps: options['useSourceMaps'],
-    useLegacyIds: options['useLegacyIds'],
+    useSourceMaps: options.useSourceMaps,
+    useLegacyIds: options.useLegacyIds,
+    duplicateMessageHandling,
   });
 }
 
@@ -129,6 +148,10 @@ export interface ExtractTranslationsOptions {
    * Whether to use the legacy id format for messages that were extracted from Angular templates
    */
   useLegacyIds: boolean;
+  /**
+   * How to handle messages with the same id but not the same text.
+   */
+  duplicateMessageHandling: DiagnosticHandlingStrategy;
 }
 
 export function extractTranslations({
@@ -139,15 +162,21 @@ export function extractTranslations({
   outputPath: output,
   logger,
   useSourceMaps,
-  useLegacyIds
+  useLegacyIds,
+  duplicateMessageHandling,
 }: ExtractTranslationsOptions) {
   const fs = getFileSystem();
-  const extractor =
-      new MessageExtractor(fs, logger, {basePath: fs.resolve(rootPath), useSourceMaps});
+  const basePath = fs.resolve(rootPath);
+  const extractor = new MessageExtractor(fs, logger, {basePath, useSourceMaps});
 
   const messages: ɵParsedMessage[] = [];
   for (const file of sourceFilePaths) {
     messages.push(...extractor.extractMessages(file));
+  }
+
+  const diagnostics = checkDuplicateMessages(fs, messages, duplicateMessageHandling, basePath);
+  if (diagnostics.hasErrors) {
+    throw new Error(diagnostics.formatDiagnostics('Failed to extract messages'));
   }
 
   const outputPath = fs.resolve(rootPath, output);
@@ -155,6 +184,10 @@ export function extractTranslations({
   const translationFile = serializer.serialize(messages);
   fs.ensureDir(fs.dirname(outputPath));
   fs.writeFile(outputPath, translationFile);
+
+  if (diagnostics.messages.length) {
+    logger.warn(diagnostics.formatDiagnostics('Messages extracted with warnings'));
+  }
 }
 
 export function getSerializer(

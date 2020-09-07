@@ -1,4 +1,4 @@
-import { ApplicationRef, ReflectiveInjector } from '@angular/core';
+import { ApplicationRef, Injector } from '@angular/core';
 import { discardPeriodicTasks, fakeAsync, tick } from '@angular/core/testing';
 import { SwUpdate } from '@angular/service-worker';
 import { Subject } from 'rxjs';
@@ -8,7 +8,7 @@ import { SwUpdatesService } from './sw-updates.service';
 
 
 describe('SwUpdatesService', () => {
-  let injector: ReflectiveInjector;
+  let injector: Injector;
   let appRef: MockApplicationRef;
   let service: SwUpdatesService;
   let swu: MockSwUpdate;
@@ -21,16 +21,16 @@ describe('SwUpdatesService', () => {
   //   run `setup()`/`tearDown()` in `beforeEach()`/`afterEach()` blocks. We use the `run()` helper
   //   to call them inside each test's zone.
   const setup = (isSwUpdateEnabled: boolean) => {
-    injector = ReflectiveInjector.resolveAndCreate([
-      { provide: ApplicationRef, useClass: MockApplicationRef },
-      { provide: Logger, useClass: MockLogger },
-      { provide: SwUpdate, useFactory: () => new MockSwUpdate(isSwUpdateEnabled) },
-      SwUpdatesService
-    ]);
+    injector = Injector.create({providers: [
+      { provide: ApplicationRef, useClass: MockApplicationRef, deps: [] },
+      { provide: Logger, useClass: MockLogger, deps: [] },
+      { provide: SwUpdate, useFactory: () => new MockSwUpdate(isSwUpdateEnabled), deps: [] },
+      { provide: SwUpdatesService, deps: [ApplicationRef, Logger, SwUpdate] }
+    ]});
 
-    appRef = injector.get(ApplicationRef);
+    appRef = injector.get(ApplicationRef) as unknown as MockApplicationRef;
     service = injector.get(SwUpdatesService);
-    swu = injector.get(SwUpdate);
+    swu = injector.get(SwUpdate) as unknown as MockSwUpdate;
     checkInterval = (service as any).checkInterval;
   };
   const tearDown = () => service.ngOnDestroy();

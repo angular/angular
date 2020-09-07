@@ -40,12 +40,7 @@ if (browserDetection.supportsCustomElements) {
             strategyFactory = new TestStrategyFactory();
             strategy = strategyFactory.testStrategy;
 
-            const {selector, ElementCtor} = createTestCustomElement();
-            NgElementCtor = ElementCtor;
-
-            // The `@webcomponents/custom-elements/src/native-shim.js` polyfill allows us to create
-            // new instances of the NgElement which extends HTMLElement, as long as we define it.
-            customElements.define(selector, NgElementCtor);
+            NgElementCtor = createAndRegisterTestCustomElement(strategyFactory);
           })
           .then(done, done.fail);
     });
@@ -117,6 +112,47 @@ if (browserDetection.supportsCustomElements) {
       expect(eventValue).toEqual(null);
     });
 
+    it('should listen to output events during initialization', () => {
+      const events: string[] = [];
+
+      const element = new NgElementCtor(injector);
+      element.addEventListener('strategy-event', evt => events.push((evt as CustomEvent).detail));
+      element.connectedCallback();
+
+      expect(events).toEqual(['connect']);
+    });
+
+    it('should not break if `NgElementStrategy#events` is not available before calling `NgElementStrategy#connect()`',
+       () => {
+         class TestStrategyWithLateEvents extends TestStrategy {
+           events: Subject<NgElementStrategyEvent> = undefined!;
+
+           connect(element: HTMLElement): void {
+             this.connectedElement = element;
+             this.events = new Subject<NgElementStrategyEvent>();
+             this.events.next({name: 'strategy-event', value: 'connect'});
+           }
+         }
+
+         const strategyWithLateEvents = new TestStrategyWithLateEvents();
+         const capturedEvents: string[] = [];
+
+         const NgElementCtorWithLateEventsStrategy =
+             createAndRegisterTestCustomElement({create: () => strategyWithLateEvents});
+
+         const element = new NgElementCtorWithLateEventsStrategy(injector);
+         element.addEventListener(
+             'strategy-event', evt => capturedEvents.push((evt as CustomEvent).detail));
+         element.connectedCallback();
+
+         // The "connect" event (emitted during initialization) was missed, but things didn't break.
+         expect(capturedEvents).toEqual([]);
+
+         // Subsequent events are still captured.
+         strategyWithLateEvents.events.next({name: 'strategy-event', value: 'after-connect'});
+         expect(capturedEvents).toEqual(['after-connect']);
+       });
+
     it('should properly set getters/setters on the element', () => {
       const element = new NgElementCtor(injector);
       element.fooFoo = 'foo-foo-value';
@@ -144,7 +180,7 @@ if (browserDetection.supportsCustomElements) {
 
     it('should capture properties set before upgrading the element', () => {
       // Create a regular element and set properties on it.
-      const {selector, ElementCtor} = createTestCustomElement();
+      const {selector, ElementCtor} = createTestCustomElement(strategyFactory);
       const element = Object.assign(document.createElement(selector), {
         fooFoo: 'foo-prop-value',
         barBar: 'bar-prop-value',
@@ -165,7 +201,7 @@ if (browserDetection.supportsCustomElements) {
     it('should capture properties set after upgrading the element but before inserting it into the DOM',
        () => {
          // Create a regular element and set properties on it.
-         const {selector, ElementCtor} = createTestCustomElement();
+         const {selector, ElementCtor} = createTestCustomElement(strategyFactory);
          const element = Object.assign(document.createElement(selector), {
            fooFoo: 'foo-prop-value',
            barBar: 'bar-prop-value',
@@ -193,7 +229,7 @@ if (browserDetection.supportsCustomElements) {
     it('should allow overwriting properties with attributes after upgrading the element but before inserting it into the DOM',
        () => {
          // Create a regular element and set properties on it.
-         const {selector, ElementCtor} = createTestCustomElement();
+         const {selector, ElementCtor} = createTestCustomElement(strategyFactory);
          const element = Object.assign(document.createElement(selector), {
            fooFoo: 'foo-prop-value',
            barBar: 'bar-prop-value',
@@ -219,7 +255,17 @@ if (browserDetection.supportsCustomElements) {
        });
 
     // Helpers
-    function createTestCustomElement() {
+    function createAndRegisterTestCustomElement(strategyFactory: NgElementStrategyFactory) {
+      const {selector, ElementCtor} = createTestCustomElement(strategyFactory);
+
+      // The `@webcomponents/custom-elements/src/native-shim.js` polyfill allows us to create
+      // new instances of the NgElement which extends HTMLElement, as long as we define it.
+      customElements.define(selector, ElementCtor);
+
+      return ElementCtor;
+    }
+
+    function createTestCustomElement(strategyFactory: NgElementStrategyFactory) {
       return {
         selector: `test-element-${++selectorUid}`,
         ElementCtor: createCustomElement<WithFooBar>(TestComponent, {injector, strategyFactory}),
@@ -255,6 +301,7 @@ if (browserDetection.supportsCustomElements) {
       events = new Subject<NgElementStrategyEvent>();
 
       connect(element: HTMLElement): void {
+        this.events.next({name: 'strategy-event', value: 'connect'});
         this.connectedElement = element;
       }
 

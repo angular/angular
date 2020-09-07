@@ -192,7 +192,7 @@ describe('downlevel decorator transform', () => {
   it('should downlevel Angular-decorated class member', () => {
     const {output} = transform(`
       import {Input} from '@angular/core';
-      
+
       export class MyDir {
         @Input() disabled: boolean = false;
       }
@@ -231,7 +231,7 @@ describe('downlevel decorator transform', () => {
     const {output} = transform(`
       import {Input} from '@angular/core';
       import {MyOtherClass} from './other-file';
-      
+
       export class MyDir {
         @Input() trigger: HTMLElement;
         @Input() fromOtherFile: MyOtherClass;
@@ -255,7 +255,7 @@ describe('downlevel decorator transform', () => {
         `
       import {Directive} from '@angular/core';
       import {MyOtherClass} from './other-file';
-      
+
       @Directive()
       export class MyDir {
         constructor(other: MyOtherClass) {}
@@ -281,7 +281,7 @@ describe('downlevel decorator transform', () => {
         `
       import {Directive} from '@angular/core';
       import {MyOtherClass} from './other-file';
-      
+
       @Directive()
       export class MyDir {
         constructor(other: MyOtherClass) {}
@@ -307,7 +307,7 @@ describe('downlevel decorator transform', () => {
     const {output} = transform(`
       import {Directive} from '@angular/core';
       import * as externalFile from './other-file';
-      
+
       @Directive()
       export class MyDir {
         constructor(other: externalFile.MyOtherClass) {}
@@ -329,11 +329,11 @@ describe('downlevel decorator transform', () => {
   it('should properly serialize constructor parameter with local qualified name type', () => {
     const {output} = transform(`
       import {Directive} from '@angular/core';
-      
+
       namespace other {
         export class OtherClass {}
       };
-      
+
       @Directive()
       export class MyDir {
         constructor(other: other.OtherClass) {}
@@ -355,7 +355,7 @@ describe('downlevel decorator transform', () => {
   it('should properly downlevel constructor parameter decorators', () => {
     const {output} = transform(`
       import {Inject, Directive, DOCUMENT} from '@angular/core';
-      
+
       @Directive()
       export class MyDir {
         constructor(@Inject(DOCUMENT) document: Document) {}
@@ -376,7 +376,7 @@ describe('downlevel decorator transform', () => {
   it('should properly downlevel constructor parameters with union type', () => {
     const {output} = transform(`
       import {Optional, Directive, NgZone} from '@angular/core';
-      
+
       @Directive()
       export class MyDir {
         constructor(@Optional() ngZone: NgZone|null) {}
@@ -546,18 +546,20 @@ describe('downlevel decorator transform', () => {
       export default interface {
         hello: false;
       }
+      export const enum KeyCodes {A, B}
     `);
     const {output} = transform(`
       import {Directive, Inject} from '@angular/core';
       import * as angular from './external';
-      import {IOverlay} from './external';
+      import {IOverlay, KeyCodes} from './external';
       import TypeFromDefaultImport from './external';
 
       @Directive()
       export class MyDir {
         constructor(@Inject('$state') param: angular.IState,
                     @Inject('$overlay') other: IOverlay,
-                    @Inject('$default') default: TypeFromDefaultImport) {}
+                    @Inject('$default') default: TypeFromDefaultImport,
+                    @Inject('$keyCodes') keyCodes: KeyCodes) {}
       }
     `);
 
@@ -570,7 +572,8 @@ describe('downlevel decorator transform', () => {
       MyDir.ctorParameters = () => [
         { type: undefined, decorators: [{ type: core_1.Inject, args: ['$state',] }] },
         { type: undefined, decorators: [{ type: core_1.Inject, args: ['$overlay',] }] },
-        { type: undefined, decorators: [{ type: core_1.Inject, args: ['$default',] }] }
+        { type: undefined, decorators: [{ type: core_1.Inject, args: ['$default',] }] },
+        { type: undefined, decorators: [{ type: core_1.Inject, args: ['$keyCodes',] }] }
       ];
     `);
   });
@@ -581,7 +584,7 @@ describe('downlevel decorator transform', () => {
         const visitNode = (node: ts.Node): ts.Node => {
           if (ts.isClassDeclaration(node) || ts.isClassElement(node)) {
             const cloned = ts.getMutableClone(node);
-            cloned.decorators = undefined;
+            (cloned.decorators as undefined) = undefined;
             return cloned;
           }
           return ts.visitEachChild(node, visitNode, context);
@@ -593,7 +596,7 @@ describe('downlevel decorator transform', () => {
     const {output} = transform(
         `
       import {Directive} from '@angular/core';
-      
+
       export class MyInjectedClass {}
 
       @Directive()
@@ -609,13 +612,36 @@ describe('downlevel decorator transform', () => {
     expect(output).not.toContain('tslib');
   });
 
+  it('should capture a non-const enum used as a constructor type', () => {
+    const {output} = transform(`
+      import {Component} from '@angular/core';
+
+      export enum Values {A, B};
+
+      @Component({template: 'hello'})
+      export class MyComp {
+        constructor(v: Values) {}
+      }
+    `);
+
+    expect(diagnostics.length).toBe(0);
+    expect(output).toContain(dedent`
+      MyComp.decorators = [
+        { type: core_1.Component, args: [{ template: 'hello' },] }
+      ];
+      MyComp.ctorParameters = () => [
+        { type: Values }
+      ];`);
+    expect(output).not.toContain('tslib');
+  });
+
   describe('class decorators skipped', () => {
     beforeEach(() => skipClassDecorators = true);
 
     it('should not downlevel Angular class decorators', () => {
       const {output} = transform(`
         import {Injectable} from '@angular/core';
-  
+
         @Injectable()
         export class MyService {}
       `);
@@ -632,10 +658,10 @@ describe('downlevel decorator transform', () => {
     it('should downlevel constructor parameters', () => {
       const {output} = transform(`
         import {Injectable} from '@angular/core';
- 
+
         @Injectable()
         export class InjectClass {}
- 
+
         @Injectable()
         export class MyService {
           constructor(dep: InjectClass) {}
@@ -658,10 +684,10 @@ describe('downlevel decorator transform', () => {
     it('should downlevel constructor parameter decorators', () => {
       const {output} = transform(`
         import {Injectable, Inject} from '@angular/core';
- 
+
         @Injectable()
         export class InjectClass {}
- 
+
         @Injectable()
         export class MyService {
           constructor(@Inject('test') dep: InjectClass) {}
@@ -684,7 +710,7 @@ describe('downlevel decorator transform', () => {
     it('should downlevel class member Angular decorators', () => {
       const {output} = transform(`
         import {Injectable, Input} from '@angular/core';
- 
+
         export class MyService {
           @Input() disabled: boolean;
         }

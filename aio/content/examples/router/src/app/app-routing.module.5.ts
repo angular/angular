@@ -1,14 +1,14 @@
 // #docplaster
 // #docregion
-import { NgModule }     from '@angular/core';
+import { NgModule } from '@angular/core';
 // #docregion import-router
 import { RouterModule, Routes } from '@angular/router';
 // #enddocregion import-router
 
 import { ComposeMessageComponent } from './compose-message/compose-message.component';
-import { PageNotFoundComponent }   from './page-not-found/page-not-found.component';
+import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 
-import { AuthGuard }               from './auth/auth.guard';
+import { AuthGuard } from './auth/auth.guard';
 
 
 const appRoutes: Routes = [

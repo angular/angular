@@ -10,6 +10,10 @@ import {tcb, TestDeclaration} from './test_utils';
 
 describe('type check blocks diagnostics', () => {
   describe('parse spans', () => {
+    it('should annotate unary ops', () => {
+      expect(tcbWithSpans('{{ -a }}')).toContain('(-((ctx).a /*4,5*/) /*4,5*/) /*3,5*/');
+    });
+
     it('should annotate binary ops', () => {
       expect(tcbWithSpans('{{ a + b }}'))
           .toContain('(((ctx).a /*3,4*/) /*3,4*/) + (((ctx).b /*7,8*/) /*7,8*/) /*3,8*/');
@@ -158,7 +162,7 @@ describe('type check blocks diagnostics', () => {
         }];
         const TEMPLATE = `<my-cmp #a></my-cmp>{{ a || a }}`;
         expect(tcbWithSpans(TEMPLATE, DIRECTIVES))
-            .toContain('((_t2 /*23,24*/) || (_t2 /*28,29*/) /*23,29*/);');
+            .toContain('((_t1 /*23,24*/) || (_t1 /*28,29*/) /*23,29*/);');
       });
     });
   });

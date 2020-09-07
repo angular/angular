@@ -83,7 +83,7 @@ export function isRooted(path: string): boolean {
 /**
  * Static access to `relative`.
  */
-export function relative<T extends PathString>(from: T, to: T): PathSegment {
+export function relative<T extends PathString>(from: T, to: T): PathSegment|AbsoluteFsPath {
   return fs.relative(from, to);
 }
 
@@ -92,4 +92,24 @@ export function relative<T extends PathString>(from: T, to: T): PathSegment {
  */
 export function basename(filePath: PathString, extension?: string): PathSegment {
   return fs.basename(filePath, extension) as PathSegment;
+}
+
+/**
+ * Returns true if the given path is locally relative.
+ *
+ * This is used to work out if the given path is relative (i.e. not absolute) but also is not
+ * escaping the current directory.
+ */
+export function isLocalRelativePath(relativePath: string): boolean {
+  return !isRooted(relativePath) && !relativePath.startsWith('..');
+}
+
+/**
+ * Converts a path to a form suitable for use as a relative module import specifier.
+ *
+ * In other words it adds the `./` to the path if it is locally relative.
+ */
+export function toRelativeImport(relativePath: PathSegment|AbsoluteFsPath): PathSegment|
+    AbsoluteFsPath {
+  return isLocalRelativePath(relativePath) ? `./${relativePath}` as PathSegment : relativePath;
 }

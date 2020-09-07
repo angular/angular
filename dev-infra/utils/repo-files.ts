@@ -27,6 +27,18 @@ export function allChangedFilesSince(sha = 'HEAD') {
   return Array.from(new Set([...diffFiles, ...untrackedFiles]));
 }
 
+/**
+ * A list of all staged files which have been modified.
+ *
+ * Only added, created and modified files are listed as others (deleted, renamed, etc) aren't
+ * changed or available as content to act upon.
+ */
+export function allStagedFiles() {
+  return gitOutputAsArray(`git diff --staged --name-only --diff-filter=ACM`);
+}
+
+
+
 export function allFiles() {
   return gitOutputAsArray(`git ls-files`);
 }

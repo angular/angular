@@ -8,6 +8,7 @@
 import {AbsoluteFsPath, relative} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {ɵParsedMessage, ɵSourceLocation} from '@angular/localize';
 
+import {extractIcuPlaceholders} from './icu_parsing';
 import {TranslationSerializer} from './translation_serializer';
 import {XmlFile} from './xml_file';
 
@@ -31,7 +32,18 @@ export class Xliff1TranslationSerializer implements TranslationSerializer {
     const ids = new Set<string>();
     const xml = new XmlFile();
     xml.startTag('xliff', {'version': '1.2', 'xmlns': 'urn:oasis:names:tc:xliff:document:1.2'});
-    xml.startTag('file', {'source-language': this.sourceLocale, 'datatype': 'plaintext'});
+    // NOTE: the `original` property is set to the legacy `ng2.template` value for backward
+    // compatibility.
+    // We could compute the file from the `message.location` property, but there could
+    // be multiple values for this in the collection of `messages`. In that case we would probably
+    // need to change the serializer to output a new `<file>` element for each collection of
+    // messages that come from a particular original file, and the translation file parsers may not
+    // be able to cope with this.
+    xml.startTag('file', {
+      'source-language': this.sourceLocale,
+      'datatype': 'plaintext',
+      'original': 'ng2.template',
+    });
     xml.startTag('body');
     for (const message of messages) {
       const id = this.getMessageId(message);
@@ -63,11 +75,31 @@ export class Xliff1TranslationSerializer implements TranslationSerializer {
   }
 
   private serializeMessage(xml: XmlFile, message: ɵParsedMessage): void {
-    xml.text(message.messageParts[0]);
-    for (let i = 1; i < message.messageParts.length; i++) {
-      xml.startTag('x', {id: message.placeholderNames[i - 1]}, {selfClosing: true});
-      xml.text(message.messageParts[i]);
+    const length = message.messageParts.length - 1;
+    for (let i = 0; i < length; i++) {
+      this.serializeTextPart(xml, message.messageParts[i]);
+      const location = message.substitutionLocations?.[message.placeholderNames[i]];
+      this.serializePlaceholder(xml, message.placeholderNames[i], location?.text);
     }
+    this.serializeTextPart(xml, message.messageParts[length]);
+  }
+
+  private serializeTextPart(xml: XmlFile, text: string): void {
+    const pieces = extractIcuPlaceholders(text);
+    const length = pieces.length - 1;
+    for (let i = 0; i < length; i += 2) {
+      xml.text(pieces[i]);
+      this.serializePlaceholder(xml, pieces[i + 1], undefined);
+    }
+    xml.text(pieces[length]);
+  }
+
+  private serializePlaceholder(xml: XmlFile, id: string, text: string|undefined): void {
+    const attrs: Record<string, string> = {id};
+    if (text !== undefined) {
+      attrs['equiv-text'] = text;
+    }
+    xml.startTag('x', attrs, {selfClosing: true});
   }
 
   private serializeNote(xml: XmlFile, name: string, value: string): void {
@@ -95,6 +127,8 @@ export class Xliff1TranslationSerializer implements TranslationSerializer {
   /**
    * Get the id for the given `message`.
    *
+   * If there was a custom id provided, use that.
+   *
    * If we have requested legacy message ids, then try to return the appropriate id
    * from the list of legacy ids that were extracted.
    *
@@ -104,7 +138,8 @@ export class Xliff1TranslationSerializer implements TranslationSerializer {
    * https://csrc.nist.gov/csrc/media/publications/fips/180/4/final/documents/fips180-4-draft-aug2014.pdf
    */
   private getMessageId(message: ɵParsedMessage): string {
-    return this.useLegacyIds && message.legacyIds !== undefined &&
+    return message.customId ||
+        this.useLegacyIds && message.legacyIds !== undefined &&
         message.legacyIds.find(id => id.length === LEGACY_XLIFF_MESSAGE_LENGTH) ||
         message.id;
   }

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Generator} from '../src/generator';
+import {Generator, processNavigationUrls} from '../src/generator';
 import {AssetGroup} from '../src/in';
 import {MockFilesystem} from '../testing/mock';
 
@@ -253,6 +253,58 @@ describe('Generator', () => {
         '/index.html': 'a54d88e06612d820bc3be72877c74f257b561b19',
         '/main.js': '41347a66676cdc0516934c76d9d13010df420f2c',
       },
+    });
+  });
+
+  describe('processNavigationUrls()', () => {
+    const customNavigationUrls = [
+      'https://host/positive/external/**',
+      '!https://host/negative/external/**',
+      '/positive/absolute/**',
+      '!/negative/absolute/**',
+      'positive/relative/**',
+      '!negative/relative/**',
+    ];
+
+    it('uses the default `navigationUrls` if not provided', () => {
+      expect(processNavigationUrls('/')).toEqual([
+        {positive: true, regex: '^\\/.*$'},
+        {positive: false, regex: '^\\/(?:.+\\/)?[^/]*\\.[^/]*$'},
+        {positive: false, regex: '^\\/(?:.+\\/)?[^/]*__[^/]*$'},
+        {positive: false, regex: '^\\/(?:.+\\/)?[^/]*__[^/]*\\/.*$'},
+      ]);
+    });
+
+    it('prepends `baseHref` to relative URL patterns only', () => {
+      expect(processNavigationUrls('/base/href/', customNavigationUrls)).toEqual([
+        {positive: true, regex: '^https:\\/\\/host\\/positive\\/external\\/.*$'},
+        {positive: false, regex: '^https:\\/\\/host\\/negative\\/external\\/.*$'},
+        {positive: true, regex: '^\\/positive\\/absolute\\/.*$'},
+        {positive: false, regex: '^\\/negative\\/absolute\\/.*$'},
+        {positive: true, regex: '^\\/base\\/href\\/positive\\/relative\\/.*$'},
+        {positive: false, regex: '^\\/base\\/href\\/negative\\/relative\\/.*$'},
+      ]);
+    });
+
+    it('strips a leading single `.` from a relative `baseHref`', () => {
+      expect(processNavigationUrls('./relative/base/href/', customNavigationUrls)).toEqual([
+        {positive: true, regex: '^https:\\/\\/host\\/positive\\/external\\/.*$'},
+        {positive: false, regex: '^https:\\/\\/host\\/negative\\/external\\/.*$'},
+        {positive: true, regex: '^\\/positive\\/absolute\\/.*$'},
+        {positive: false, regex: '^\\/negative\\/absolute\\/.*$'},
+        {positive: true, regex: '^\\/relative\\/base\\/href\\/positive\\/relative\\/.*$'},
+        {positive: false, regex: '^\\/relative\\/base\\/href\\/negative\\/relative\\/.*$'},
+      ]);
+
+      // We can't correctly handle double dots in `baseHref`, so leave them as literal matches.
+      expect(processNavigationUrls('../double/dots/', customNavigationUrls)).toEqual([
+        {positive: true, regex: '^https:\\/\\/host\\/positive\\/external\\/.*$'},
+        {positive: false, regex: '^https:\\/\\/host\\/negative\\/external\\/.*$'},
+        {positive: true, regex: '^\\/positive\\/absolute\\/.*$'},
+        {positive: false, regex: '^\\/negative\\/absolute\\/.*$'},
+        {positive: true, regex: '^\\.\\.\\/double\\/dots\\/positive\\/relative\\/.*$'},
+        {positive: false, regex: '^\\.\\.\\/double\\/dots\\/negative\\/relative\\/.*$'},
+      ]);
     });
   });
 });

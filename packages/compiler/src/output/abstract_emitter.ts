@@ -420,6 +420,25 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
   abstract visitFunctionExpr(ast: o.FunctionExpr, ctx: EmitterVisitorContext): any;
   abstract visitDeclareFunctionStmt(stmt: o.DeclareFunctionStmt, context: any): any;
 
+  visitUnaryOperatorExpr(ast: o.UnaryOperatorExpr, ctx: EmitterVisitorContext): any {
+    let opStr: string;
+    switch (ast.operator) {
+      case o.UnaryOperator.Plus:
+        opStr = '+';
+        break;
+      case o.UnaryOperator.Minus:
+        opStr = '-';
+        break;
+      default:
+        throw new Error(`Unknown operator ${ast.operator}`);
+    }
+    if (ast.parens) ctx.print(ast, `(`);
+    ctx.print(ast, opStr);
+    ast.expr.visitExpression(this, ctx);
+    if (ast.parens) ctx.print(ast, `)`);
+    return null;
+  }
+
   visitBinaryOperatorExpr(ast: o.BinaryOperatorExpr, ctx: EmitterVisitorContext): any {
     let opStr: string;
     switch (ast.operator) {

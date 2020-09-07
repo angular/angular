@@ -2304,6 +2304,18 @@ describe('di', () => {
   });
 
   it('should not be able to inject ViewRef', () => {
+    // If the current browser does not support `__proto__` natively, this test will never
+    // result in an error as the `__NG_ELEMENT_ID__` from `ChangeDetectorRef` is directly
+    // assigned to the `ViewRef` instance, due to TypeScript, and `setPrototypeOf` polyfills
+    // not being able to simulate the prototype chain. This means that Angular's DI system
+    // considers `ViewRef` as injectable due to it having a `__NG_ELEMENT_ID__` directly
+    // assigned. We skip this test in such cases. This is currently the case in IE9 and
+    // IE10 as those don't support `__proto__`. Related TypeScript issue:
+    // https://github.com/microsoft/TypeScript/issues/1601#issuecomment-94892833.
+    if (!('__proto__' in {})) {
+      return;
+    }
+
     @Component({template: ''})
     class App {
       constructor(_viewRef: ViewRef) {}

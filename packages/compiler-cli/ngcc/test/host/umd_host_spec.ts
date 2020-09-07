@@ -11,7 +11,7 @@ import * as ts from 'typescript';
 import {absoluteFrom, getFileSystem, getSourceFileOrError} from '../../../src/ngtsc/file_system';
 import {runInEachFileSystem, TestFile} from '../../../src/ngtsc/file_system/testing';
 import {MockLogger} from '../../../src/ngtsc/logging/testing';
-import {ClassMemberKind, ConcreteDeclaration, CtorParameter, DownleveledEnum, Import, InlineDeclaration, isNamedClassDeclaration, isNamedFunctionDeclaration, isNamedVariableDeclaration, KnownDeclaration, TypeScriptReflectionHost} from '../../../src/ngtsc/reflection';
+import {ClassMemberKind, ConcreteDeclaration, CtorParameter, DownleveledEnum, Import, InlineDeclaration, isNamedClassDeclaration, isNamedFunctionDeclaration, isNamedVariableDeclaration, KnownDeclaration, TypeScriptReflectionHost, TypeValueReferenceKind} from '../../../src/ngtsc/reflection';
 import {getDeclaration} from '../../../src/ngtsc/testing';
 import {loadFakeCore, loadTestFiles} from '../../../test/helpers';
 import {DelegatingReflectionHost} from '../../src/host/delegating_host';
@@ -1564,6 +1564,231 @@ runInEachFileSystem(() => {
           expect(decorators[0].args).toEqual([]);
         });
       });
+
+      function getConstructorParameters(
+          constructor: string, mode: 'inlined'|'inlined_with_suffix'|'imported' = 'imported') {
+        let fileHeaderWithUmd = '';
+
+        switch (mode) {
+          case 'imported':
+            fileHeaderWithUmd = `
+              (function (global, factory) {
+                typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('tslib'))) :
+                typeof define === 'function' && define.amd ? define('test', ['exports', 'tslib'], factory) :
+                    (factory(global.test, global.tslib));
+                }(this, (function (exports, tslib) { 'use strict';
+            `;
+            break;
+          case 'inlined':
+            fileHeaderWithUmd = `
+              (function (global, factory) {
+                typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports)) :
+                typeof define === 'function' && define.amd ? define('test', ['exports'], factory) :
+                    (factory(global.test));
+                }(this, (function (exports) { 'use strict';
+
+                  var __spread = (this && this.__spread) || function (...args) { /* ... */ }
+            `;
+            break;
+          case 'inlined_with_suffix':
+            fileHeaderWithUmd = `            
+              (function (global, factory) {
+                typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports)) :
+                typeof define === 'function' && define.amd ? define('test', ['exports'], factory) :
+                    (factory(global.test));
+                }(this, (function (exports) { 'use strict';
+
+                  var __spread$1 = (this && this.__spread$1) || function (...args) { /* ... */ }
+              `;
+            break;
+        }
+
+        const file = {
+          name: _('/synthesized_constructors.js'),
+          contents: `
+            ${fileHeaderWithUmd}
+                var TestClass = /** @class */ (function (_super) {
+                  __extends(TestClass, _super);
+                  ${constructor}
+                  return TestClass;
+                }(null));
+
+                exports.TestClass = TestClass;
+              })));
+          `,
+        };
+
+        loadTestFiles([file]);
+        const bundle = makeTestBundleProgram(file.name);
+        const host = createHost(bundle, new UmdReflectionHost(new MockLogger(), false, bundle));
+        const classNode =
+            getDeclaration(bundle.program, file.name, 'TestClass', isNamedVariableDeclaration);
+        return host.getConstructorParameters(classNode);
+      }
+
+      describe('TS -> ES5: synthesized constructors', () => {
+        it('recognizes _this assignment from super call', () => {
+          const parameters = getConstructorParameters(`
+            function TestClass() {
+              var _this = _super !== null && _super.apply(this, arguments) || this;
+              _this.synthesizedProperty = null;
+              return _this;
+            }
+          `);
+
+          expect(parameters).toBeNull();
+        });
+
+        it('recognizes super call as return statement', () => {
+          const parameters = getConstructorParameters(`
+            function TestClass() {
+              return _super !== null && _super.apply(this, arguments) || this;
+            }
+          `);
+
+          expect(parameters).toBeNull();
+        });
+
+        it('handles the case where a unique name was generated for _super or _this', () => {
+          const parameters = getConstructorParameters(`
+            function TestClass() {
+              var _this_1 = _super_1 !== null && _super_1.apply(this, arguments) || this;
+              _this_1._this = null;
+              _this_1._super = null;
+              return _this_1;
+            }
+          `);
+
+          expect(parameters).toBeNull();
+        });
+
+        it('does not consider constructors with parameters as synthesized', () => {
+          const parameters = getConstructorParameters(`
+            function TestClass(arg) {
+              return _super !== null && _super.apply(this, arguments) || this;
+            }
+          `);
+
+          expect(parameters!.length).toBe(1);
+        });
+
+        it('does not consider manual super calls as synthesized', () => {
+          const parameters = getConstructorParameters(`
+            function TestClass() {
+              return _super.call(this) || this;
+            }
+          `);
+
+          expect(parameters!.length).toBe(0);
+        });
+
+        it('does not consider empty constructors as synthesized', () => {
+          const parameters = getConstructorParameters(`function TestClass() {}`);
+          expect(parameters!.length).toBe(0);
+        });
+      });
+
+      // See: https://github.com/angular/angular/issues/38453.
+      describe('ES2015 -> ES5: synthesized constructors through TSC downleveling', () => {
+        it('recognizes delegate super call using inline spread helper', () => {
+          const parameters = getConstructorParameters(
+              `
+            function TestClass() {
+              return _super.apply(this, __spread(arguments)) || this;
+            }`,
+              'inlined');
+
+          expect(parameters).toBeNull();
+        });
+
+        it('recognizes delegate super call using inline spread helper with suffix', () => {
+          const parameters = getConstructorParameters(
+              `
+            function TestClass() {
+              return _super.apply(this, __spread$1(arguments)) || this;
+            }`,
+              'inlined_with_suffix');
+
+          expect(parameters).toBeNull();
+        });
+
+        it('recognizes delegate super call using imported spread helper', () => {
+          const parameters = getConstructorParameters(
+              `
+            function TestClass() {
+              return _super.apply(this, tslib_1.__spread(arguments)) || this;
+            }`,
+              'imported');
+
+          expect(parameters).toBeNull();
+        });
+
+        describe('with class member assignment', () => {
+          it('recognizes delegate super call using inline spread helper', () => {
+            const parameters = getConstructorParameters(
+                `
+              function TestClass() {
+                var _this = _super.apply(this, __spread(arguments)) || this;
+                _this.synthesizedProperty = null;
+                return _this;
+              }`,
+                'inlined');
+
+            expect(parameters).toBeNull();
+          });
+
+          it('recognizes delegate super call using inline spread helper with suffix', () => {
+            const parameters = getConstructorParameters(
+                `
+              function TestClass() {
+                var _this = _super.apply(this, __spread$1(arguments)) || this;
+                _this.synthesizedProperty = null;
+                return _this;
+              }`,
+                'inlined_with_suffix');
+
+            expect(parameters).toBeNull();
+          });
+
+          it('recognizes delegate super call using imported spread helper', () => {
+            const parameters = getConstructorParameters(
+                `
+              function TestClass() {
+                var _this = _super.apply(this, tslib_1.__spread(arguments)) || this;
+                _this.synthesizedProperty = null;
+                return _this;
+              }`,
+                'imported');
+
+            expect(parameters).toBeNull();
+          });
+        });
+
+        it('handles the case where a unique name was generated for _super or _this', () => {
+          const parameters = getConstructorParameters(
+              `
+            function TestClass() {
+              var _this_1 = _super_1.apply(this, __spread(arguments)) || this;
+              _this_1._this = null;
+              _this_1._super = null;
+              return _this_1;
+            }`,
+              'inlined');
+
+          expect(parameters).toBeNull();
+        });
+
+        it('does not consider constructors with parameters as synthesized', () => {
+          const parameters = getConstructorParameters(
+              `
+            function TestClass(arg) {
+              return _super.apply(this, __spread(arguments)) || this;
+            }`,
+              'inlined');
+
+          expect(parameters!.length).toBe(1);
+        });
+      });
     });
 
     describe('getDefinitionOfFunction()', () => {
@@ -1709,7 +1934,7 @@ runInEachFileSystem(() => {
             bundle.program, SOME_DIRECTIVE_FILE.name, 'SomeDirective', isNamedVariableDeclaration);
         const ctrDecorators = host.getConstructorParameters(classNode)!;
         const identifierOfViewContainerRef = (ctrDecorators[0].typeValueReference! as {
-                                               local: true,
+                                               kind: TypeValueReferenceKind.LOCAL,
                                                expression: ts.Identifier,
                                                defaultImportStatement: null,
                                              }).expression;

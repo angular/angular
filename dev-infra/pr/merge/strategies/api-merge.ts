@@ -9,7 +9,7 @@
 import {PullsListCommitsResponse, PullsMergeParams} from '@octokit/rest';
 import {prompt} from 'inquirer';
 
-import {parseCommitMessage} from '../../../commit-message/validate';
+import {parseCommitMessage} from '../../../commit-message/parse';
 import {GitClient} from '../../../utils/git';
 import {GithubApiMergeMethod} from '../config';
 import {PullRequestFailure} from '../failures';
@@ -135,7 +135,13 @@ export class GithubApiMergeStrategy extends MergeStrategy {
 
     // Cherry pick the merged commits into the remaining target branches.
     const failedBranches = await this.cherryPickIntoTargetBranches(
-        `${targetSha}~${targetCommitsCount}..${targetSha}`, cherryPickTargetBranches);
+        `${targetSha}~${targetCommitsCount}..${targetSha}`, cherryPickTargetBranches, {
+          // Commits that have been created by the Github API do not necessarily contain
+          // a reference to the source pull request (unless the squash strategy is used).
+          // To ensure that original commits can be found when a commit is viewed in a
+          // target branch, we add a link to the original commits when cherry-picking.
+          linkToOriginalCommits: true,
+        });
 
     // We already checked whether the PR can be cherry-picked into the target branches,
     // but in case the cherry-pick somehow fails, we still handle the conflicts here. The

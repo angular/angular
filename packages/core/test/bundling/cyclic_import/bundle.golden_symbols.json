@@ -36,6 +36,12 @@
     "name": "NO_CHANGE"
   },
   {
+    "name": "NodeInjectorFactory"
+  },
+  {
+    "name": "SimpleChange"
+  },
+  {
     "name": "TriggerComponent"
   },
   {
@@ -201,6 +207,9 @@
     "name": "getPreviousOrParentTNode"
   },
   {
+    "name": "getSimpleChangesStore"
+  },
+  {
     "name": "getTView"
   },
   {
@@ -282,6 +291,9 @@
     "name": "nextNgElementId"
   },
   {
+    "name": "ngOnChangesSetInput"
+  },
+  {
     "name": "noSideEffects"
   },
   {
@@ -292,6 +304,9 @@
   },
   {
     "name": "refreshView"
+  },
+  {
+    "name": "rememberChangeHistoryAndInvokeOnChangesHook"
   },
   {
     "name": "renderComponent"

@@ -7,7 +7,7 @@
  */
 import * as ts from 'typescript';
 
-import {AbsoluteFsPath} from '../../../src/ngtsc/file_system';
+import {absoluteFromSourceFile, AbsoluteFsPath} from '../../../src/ngtsc/file_system';
 import {MetadataReader} from '../../../src/ngtsc/metadata';
 import {PartialEvaluator} from '../../../src/ngtsc/partial_evaluator';
 import {ClassDeclaration, Decorator} from '../../../src/ngtsc/reflection';
@@ -44,7 +44,7 @@ export class DefaultMigrationHost implements MigrationHost {
   }
 
   isInScope(clazz: ClassDeclaration): boolean {
-    return isWithinPackage(this.entryPointPath, clazz.getSourceFile());
+    return isWithinPackage(this.entryPointPath, absoluteFromSourceFile(clazz.getSourceFile()));
   }
 }
 

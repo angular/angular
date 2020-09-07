@@ -1,4 +1,4 @@
-import { Injector, ReflectiveInjector } from '@angular/core';
+import { Injector } from '@angular/core';
 import { fakeAsync, tick } from '@angular/core/testing';
 import { DOCUMENT } from '@angular/common';
 
@@ -151,11 +151,11 @@ describe('ScrollSpyService', () => {
   let scrollSpyService: ScrollSpyService;
 
   beforeEach(() => {
-    injector = ReflectiveInjector.resolveAndCreate([
+    injector = Injector.create({providers: [
       { provide: DOCUMENT, useValue: { body: {} } },
       { provide: ScrollService, useValue: { topOffset: 50 } },
-      ScrollSpyService
-    ]);
+      { provide: ScrollSpyService, deps: [DOCUMENT, ScrollService] }
+    ]});
 
     scrollSpyService = injector.get(ScrollSpyService);
   });

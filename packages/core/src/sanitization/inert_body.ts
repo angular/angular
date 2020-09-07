@@ -32,8 +32,9 @@ class DOMParserHelper implements InertBodyHelper {
   getInertBodyElement(html: string): HTMLElement|null {
     // We add these extra elements to ensure that the rest of the content is parsed as expected
     // e.g. leading whitespace is maintained and tags like `<meta>` do not get hoisted to the
-    // `<head>` tag.
-    html = '<body><remove></remove>' + html + '</body>';
+    // `<head>` tag. Note that the `<body>` tag is closed implicitly to prevent unclosed tags
+    // in `html` from consuming the otherwise explicit `</body>` tag.
+    html = '<body><remove></remove>' + html;
     try {
       const body = new (window as any).DOMParser().parseFromString(html, 'text/html').body as
           HTMLBodyElement;

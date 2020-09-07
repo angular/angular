@@ -13,7 +13,7 @@ import {AssetGroupConfig, DataGroupConfig, Manifest} from '../src/manifest';
 import {sha1} from '../src/sha1';
 import {clearAllCaches, MockCache} from '../testing/cache';
 import {MockRequest, MockResponse} from '../testing/fetch';
-import {MockFileSystemBuilder, MockServerStateBuilder, tmpHashTableForFs} from '../testing/mock';
+import {MockFileSystem, MockFileSystemBuilder, MockServerState, MockServerStateBuilder, tmpHashTableForFs} from '../testing/mock';
 import {SwTestHarness, SwTestHarnessBuilder} from '../testing/scope';
 
 (function() {
@@ -352,7 +352,7 @@ describe('Driver', () => {
     await scope.resolveSelfMessages();
     scope.autoAdvanceTime = false;
 
-    server.assertSawRequestFor('ngsw.json');
+    server.assertSawRequestFor('/ngsw.json');
     server.assertSawRequestFor('/foo.txt');
     server.assertSawRequestFor('/bar.txt');
     server.assertSawRequestFor('/redirected.txt');
@@ -364,7 +364,7 @@ describe('Driver', () => {
   it('initializes prefetched content correctly, after a request kicks it off', async () => {
     expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
     await driver.initialized;
-    server.assertSawRequestFor('ngsw.json');
+    server.assertSawRequestFor('/ngsw.json');
     server.assertSawRequestFor('/foo.txt');
     server.assertSawRequestFor('/bar.txt');
     server.assertSawRequestFor('/redirected.txt');
@@ -381,7 +381,7 @@ describe('Driver', () => {
     // Making a request initializes the driver (fetches assets).
     expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
     expect(driver['latestHash']).toEqual(jasmine.any(String));
-    server.assertSawRequestFor('ngsw.json');
+    server.assertSawRequestFor('/ngsw.json');
     server.assertSawRequestFor('/foo.txt');
     server.assertSawRequestFor('/bar.txt');
     server.assertSawRequestFor('/redirected.txt');
@@ -400,7 +400,7 @@ describe('Driver', () => {
     // Pushing a message initializes the driver (fetches assets).
     await scope.handleMessage({action: 'foo'}, 'someClient');
     expect(driver['latestHash']).toEqual(jasmine.any(String));
-    server.assertSawRequestFor('ngsw.json');
+    server.assertSawRequestFor('/ngsw.json');
     server.assertSawRequestFor('/foo.txt');
     server.assertSawRequestFor('/bar.txt');
     server.assertSawRequestFor('/redirected.txt');
@@ -466,7 +466,7 @@ describe('Driver', () => {
 
     scope.updateServerState(serverUpdate);
     expect(await driver.checkForUpdate()).toEqual(true);
-    serverUpdate.assertSawRequestFor('ngsw.json');
+    serverUpdate.assertSawRequestFor('/ngsw.json');
     serverUpdate.assertSawRequestFor('/foo.txt');
     serverUpdate.assertSawRequestFor('/redirected.txt');
     serverUpdate.assertNoOtherRequests();
@@ -562,7 +562,7 @@ describe('Driver', () => {
     scope.advance(12000);
     await driver.idle.empty;
 
-    serverUpdate.assertSawRequestFor('ngsw.json');
+    serverUpdate.assertSawRequestFor('/ngsw.json');
     serverUpdate.assertSawRequestFor('/foo.txt');
     serverUpdate.assertSawRequestFor('/redirected.txt');
     serverUpdate.assertNoOtherRequests();
@@ -578,7 +578,7 @@ describe('Driver', () => {
     scope.advance(12000);
     await driver.idle.empty;
 
-    server.assertSawRequestFor('ngsw.json');
+    server.assertSawRequestFor('/ngsw.json');
   });
 
   it('does not make concurrent checks for updates on navigation', async () => {
@@ -593,7 +593,7 @@ describe('Driver', () => {
     scope.advance(12000);
     await driver.idle.empty;
 
-    server.assertSawRequestFor('ngsw.json');
+    server.assertSawRequestFor('/ngsw.json');
     server.assertNoOtherRequests();
   });
 
@@ -791,70 +791,75 @@ describe('Driver', () => {
   });
 
   it('should bypass serviceworker on ngsw-bypass parameter', async () => {
-    await makeRequest(scope, '/foo.txt', undefined, {headers: {'ngsw-bypass': 'true'}});
-    server.assertNoRequestFor('/foo.txt');
+    // NOTE:
+    // Requests that bypass the SW are not handled at all in the mock implementation of `scope`,
+    // therefore no requests reach the server.
 
-    await makeRequest(scope, '/foo.txt', undefined, {headers: {'ngsw-bypass': 'anything'}});
-    server.assertNoRequestFor('/foo.txt');
+    await makeRequest(scope, '/some/url', undefined, {headers: {'ngsw-bypass': 'true'}});
+    server.assertNoRequestFor('/some/url');
 
-    await makeRequest(scope, '/foo.txt', undefined, {headers: {'ngsw-bypass': null!}});
-    server.assertNoRequestFor('/foo.txt');
+    await makeRequest(scope, '/some/url', undefined, {headers: {'ngsw-bypass': 'anything'}});
+    server.assertNoRequestFor('/some/url');
 
-    await makeRequest(scope, '/foo.txt', undefined, {headers: {'NGSW-bypass': 'upperCASE'}});
-    server.assertNoRequestFor('/foo.txt');
+    await makeRequest(scope, '/some/url', undefined, {headers: {'ngsw-bypass': null!}});
+    server.assertNoRequestFor('/some/url');
 
-    await makeRequest(scope, '/foo.txt', undefined, {headers: {'ngsw-bypasss': 'anything'}});
-    server.assertSawRequestFor('/foo.txt');
+    await makeRequest(scope, '/some/url', undefined, {headers: {'NGSW-bypass': 'upperCASE'}});
+    server.assertNoRequestFor('/some/url');
 
-    server.clearRequests();
-
-    await makeRequest(scope, '/bar.txt?ngsw-bypass=true');
-    server.assertNoRequestFor('/bar.txt');
-
-    await makeRequest(scope, '/bar.txt?ngsw-bypasss=true');
-    server.assertSawRequestFor('/bar.txt');
+    await makeRequest(scope, '/some/url', undefined, {headers: {'ngsw-bypasss': 'anything'}});
+    server.assertSawRequestFor('/some/url');
 
     server.clearRequests();
 
-    await makeRequest(scope, '/bar.txt?ngsw-bypaSS=something');
-    server.assertNoRequestFor('/bar.txt');
+    await makeRequest(scope, '/some/url?ngsw-bypass=true');
+    server.assertNoRequestFor('/some/url');
 
-    await makeRequest(scope, '/bar.txt?testparam=test&ngsw-byPASS=anything');
-    server.assertNoRequestFor('/bar.txt');
-
-    await makeRequest(scope, '/bar.txt?testparam=test&angsw-byPASS=anything');
-    server.assertSawRequestFor('/bar.txt');
+    await makeRequest(scope, '/some/url?ngsw-bypasss=true');
+    server.assertSawRequestFor('/some/url');
 
     server.clearRequests();
 
-    await makeRequest(scope, '/bar&ngsw-bypass=true.txt?testparam=test&angsw-byPASS=anything');
-    server.assertSawRequestFor('/bar&ngsw-bypass=true.txt');
+    await makeRequest(scope, '/some/url?ngsw-bypaSS=something');
+    server.assertNoRequestFor('/some/url');
+
+    await makeRequest(scope, '/some/url?testparam=test&ngsw-byPASS=anything');
+    server.assertNoRequestFor('/some/url');
+
+    await makeRequest(scope, '/some/url?testparam=test&angsw-byPASS=anything');
+    server.assertSawRequestFor('/some/url');
 
     server.clearRequests();
 
-    await makeRequest(scope, '/bar&ngsw-bypass=true.txt');
-    server.assertSawRequestFor('/bar&ngsw-bypass=true.txt');
+    await makeRequest(scope, '/some/url&ngsw-bypass=true.txt?testparam=test&angsw-byPASS=anything');
+    server.assertSawRequestFor('/some/url&ngsw-bypass=true.txt');
+
+    server.clearRequests();
+
+    await makeRequest(scope, '/some/url&ngsw-bypass=true.txt');
+    server.assertSawRequestFor('/some/url&ngsw-bypass=true.txt');
 
     server.clearRequests();
 
     await makeRequest(
-        scope, '/bar&ngsw-bypass=true.txt?testparam=test&ngSW-BYPASS=SOMETHING&testparam2=test');
-    server.assertNoRequestFor('/bar&ngsw-bypass=true.txt');
+        scope,
+        '/some/url&ngsw-bypass=true.txt?testparam=test&ngSW-BYPASS=SOMETHING&testparam2=test');
+    server.assertNoRequestFor('/some/url&ngsw-bypass=true.txt');
 
-    await makeRequest(scope, '/bar?testparam=test&ngsw-bypass');
-    server.assertNoRequestFor('/bar');
+    await makeRequest(scope, '/some/url?testparam=test&ngsw-bypass');
+    server.assertNoRequestFor('/some/url');
 
-    await makeRequest(scope, '/bar?testparam=test&ngsw-bypass&testparam2');
-    server.assertNoRequestFor('/bar');
+    await makeRequest(scope, '/some/url?testparam=test&ngsw-bypass&testparam2');
+    server.assertNoRequestFor('/some/url');
 
-    await makeRequest(scope, '/bar?ngsw-bypass&testparam2');
-    server.assertNoRequestFor('/bar');
+    await makeRequest(scope, '/some/url?ngsw-bypass&testparam2');
+    server.assertNoRequestFor('/some/url');
 
-    await makeRequest(scope, '/bar?ngsw-bypass=&foo=ngsw-bypass');
-    server.assertNoRequestFor('/bar');
+    await makeRequest(scope, '/some/url?ngsw-bypass=&foo=ngsw-bypass');
+    server.assertNoRequestFor('/some/url');
 
-    await makeRequest(scope, '/bar?ngsw-byapass&testparam2');
-    server.assertSawRequestFor('/bar');
+    await makeRequest(scope, '/some/url?ngsw-byapass&testparam2');
+    server.assertSawRequestFor('/some/url');
   });
 
   it('unregisters when manifest 404s', async () => {
@@ -893,23 +898,93 @@ describe('Driver', () => {
        expect(await scope.caches.keys()).not.toEqual([]);
      });
 
+  describe('serving ngsw/state', () => {
+    it('should show debug info (when in NORMAL state)', async () => {
+      expect(await makeRequest(scope, '/ngsw/state'))
+          .toMatch(/^NGSW Debug Info:\n\nDriver state: NORMAL/);
+    });
+
+    it('should show debug info (when in EXISTING_CLIENTS_ONLY state)', async () => {
+      driver.state = DriverReadyState.EXISTING_CLIENTS_ONLY;
+      expect(await makeRequest(scope, '/ngsw/state'))
+          .toMatch(/^NGSW Debug Info:\n\nDriver state: EXISTING_CLIENTS_ONLY/);
+    });
+
+    it('should show debug info (when in SAFE_MODE state)', async () => {
+      driver.state = DriverReadyState.SAFE_MODE;
+      expect(await makeRequest(scope, '/ngsw/state'))
+          .toMatch(/^NGSW Debug Info:\n\nDriver state: SAFE_MODE/);
+    });
+
+    it('should show debug info when the scope is not root', async () => {
+      const newScope =
+          new SwTestHarnessBuilder('http://localhost/foo/bar/').withServerState(server).build();
+      new Driver(newScope, newScope, new CacheDatabase(newScope, newScope));
+
+      expect(await makeRequest(newScope, '/foo/bar/ngsw/state'))
+          .toMatch(/^NGSW Debug Info:\n\nDriver state: NORMAL/);
+    });
+  });
+
   describe('cache naming', () => {
+    let uid: number;
+
     // Helpers
-    const cacheKeysFor = (baseHref: string) =>
+    const cacheKeysFor = (baseHref: string, manifestHash: string) =>
         [`ngsw:${baseHref}:db:control`,
-         `ngsw:${baseHref}:${manifestHash}:assets:assets:cache`,
-         `ngsw:${baseHref}:db:ngsw:${baseHref}:${manifestHash}:assets:assets:meta`,
-         `ngsw:${baseHref}:${manifestHash}:assets:other:cache`,
-         `ngsw:${baseHref}:db:ngsw:${baseHref}:${manifestHash}:assets:other:meta`,
-         `ngsw:${baseHref}:${manifestHash}:assets:lazy_prefetch:cache`,
-         `ngsw:${baseHref}:db:ngsw:${baseHref}:${manifestHash}:assets:lazy_prefetch:meta`,
+         `ngsw:${baseHref}:${manifestHash}:assets:eager:cache`,
+         `ngsw:${baseHref}:db:ngsw:${baseHref}:${manifestHash}:assets:eager:meta`,
+         `ngsw:${baseHref}:${manifestHash}:assets:lazy:cache`,
+         `ngsw:${baseHref}:db:ngsw:${baseHref}:${manifestHash}:assets:lazy:meta`,
          `ngsw:${baseHref}:42:data:dynamic:api:cache`,
          `ngsw:${baseHref}:db:ngsw:${baseHref}:42:data:dynamic:api:lru`,
          `ngsw:${baseHref}:db:ngsw:${baseHref}:42:data:dynamic:api:age`,
-         `ngsw:${baseHref}:43:data:dynamic:api-static:cache`,
-         `ngsw:${baseHref}:db:ngsw:${baseHref}:43:data:dynamic:api-static:lru`,
-         `ngsw:${baseHref}:db:ngsw:${baseHref}:43:data:dynamic:api-static:age`,
     ];
+
+    const createManifestWithBaseHref = (baseHref: string, distDir: MockFileSystem): Manifest => ({
+      configVersion: 1,
+      timestamp: 1234567890123,
+      index: `${baseHref}foo.txt`,
+      assetGroups: [
+        {
+          name: 'eager',
+          installMode: 'prefetch',
+          updateMode: 'prefetch',
+          urls: [
+            `${baseHref}foo.txt`,
+            `${baseHref}bar.txt`,
+          ],
+          patterns: [],
+          cacheQueryOptions: {ignoreVary: true},
+        },
+        {
+          name: 'lazy',
+          installMode: 'lazy',
+          updateMode: 'lazy',
+          urls: [
+            `${baseHref}baz.txt`,
+            `${baseHref}qux.txt`,
+          ],
+          patterns: [],
+          cacheQueryOptions: {ignoreVary: true},
+        },
+      ],
+      dataGroups: [
+        {
+          name: 'api',
+          version: 42,
+          maxAge: 3600000,
+          maxSize: 100,
+          strategy: 'freshness',
+          patterns: [
+            '/api/.*',
+          ],
+          cacheQueryOptions: {ignoreVary: true},
+        },
+      ],
+      navigationUrls: processNavigationUrls(baseHref),
+      hashTable: tmpHashTableForFs(distDir, {}, baseHref),
+    });
 
     const getClientAssignments = async (sw: SwTestHarness, baseHref: string) => {
       const cache = await sw.caches.open(`ngsw:${baseHref}:db:control`) as unknown as MockCache;
@@ -917,92 +992,107 @@ describe('Driver', () => {
       return JSON.parse(dehydrated['/assignments'].body!);
     };
 
-    const initializeSwFor =
-        async (baseHref: string, initialCacheState = '{}', serverState = server) => {
+    const initializeSwFor = async (baseHref: string, initialCacheState = '{}') => {
+      const newDistDir = dist.extend().addFile('/foo.txt', `this is foo v${++uid}`).build();
+      const newManifest = createManifestWithBaseHref(baseHref, newDistDir);
+      const newManifestHash = sha1(JSON.stringify(newManifest));
+
+      const serverState = new MockServerStateBuilder()
+                              .withRootDirectory(baseHref)
+                              .withStaticFiles(newDistDir)
+                              .withManifest(newManifest)
+                              .build();
+
       const newScope = new SwTestHarnessBuilder(`http://localhost${baseHref}`)
                            .withCacheState(initialCacheState)
                            .withServerState(serverState)
                            .build();
       const newDriver = new Driver(newScope, newScope, new CacheDatabase(newScope, newScope));
 
-      await makeRequest(newScope, '/foo.txt', baseHref.replace(/\//g, '_'));
+      await makeRequest(newScope, newManifest.index, baseHref.replace(/\//g, '_'));
       await newDriver.initialized;
 
-      return newScope;
+      return [newScope, newManifestHash] as [SwTestHarness, string];
     };
 
-    it('includes the SW scope in all cache names', async () => {
-      // Default SW with scope `/`.
-      await makeRequest(scope, '/foo.txt');
-      await driver.initialized;
-      const cacheNames = await scope.caches.keys();
+    beforeEach(() => {
+      uid = 0;
+    });
 
-      expect(cacheNames).toEqual(cacheKeysFor('/'));
+    it('includes the SW scope in all cache names', async () => {
+      // SW with scope `/`.
+      const [rootScope, rootManifestHash] = await initializeSwFor('/');
+      const cacheNames = await rootScope.caches.keys();
+
+      expect(cacheNames).toEqual(cacheKeysFor('/', rootManifestHash));
       expect(cacheNames.every(name => name.includes('/'))).toBe(true);
 
       // SW with scope `/foo/`.
-      const fooScope = await initializeSwFor('/foo/');
+      const [fooScope, fooManifestHash] = await initializeSwFor('/foo/');
       const fooCacheNames = await fooScope.caches.keys();
 
-      expect(fooCacheNames).toEqual(cacheKeysFor('/foo/'));
+      expect(fooCacheNames).toEqual(cacheKeysFor('/foo/', fooManifestHash));
       expect(fooCacheNames.every(name => name.includes('/foo/'))).toBe(true);
     });
 
     it('does not affect caches from other scopes', async () => {
       // Create SW with scope `/foo/`.
-      const fooScope = await initializeSwFor('/foo/');
+      const [fooScope, fooManifestHash] = await initializeSwFor('/foo/');
       const fooAssignments = await getClientAssignments(fooScope, '/foo/');
 
-      expect(fooAssignments).toEqual({_foo_: manifestHash});
+      expect(fooAssignments).toEqual({_foo_: fooManifestHash});
 
       // Add new SW with different scope.
-      const barScope = await initializeSwFor('/bar/', await fooScope.caches.dehydrate());
+      const [barScope, barManifestHash] =
+          await initializeSwFor('/bar/', await fooScope.caches.dehydrate());
       const barCacheNames = await barScope.caches.keys();
       const barAssignments = await getClientAssignments(barScope, '/bar/');
 
-      expect(barAssignments).toEqual({_bar_: manifestHash});
+      expect(barAssignments).toEqual({_bar_: barManifestHash});
       expect(barCacheNames).toEqual([
-        ...cacheKeysFor('/foo/'),
-        ...cacheKeysFor('/bar/'),
+        ...cacheKeysFor('/foo/', fooManifestHash),
+        ...cacheKeysFor('/bar/', barManifestHash),
       ]);
 
       // The caches for `/foo/` should be intact.
       const fooAssignments2 = await getClientAssignments(barScope, '/foo/');
-      expect(fooAssignments2).toEqual({_foo_: manifestHash});
+      expect(fooAssignments2).toEqual({_foo_: fooManifestHash});
     });
 
     it('updates existing caches for same scope', async () => {
       // Create SW with scope `/foo/`.
-      const fooScope = await initializeSwFor('/foo/');
-      await makeRequest(fooScope, '/foo.txt', '_bar_');
+      const [fooScope, fooManifestHash] = await initializeSwFor('/foo/');
+      await makeRequest(fooScope, '/foo/foo.txt', '_bar_');
       const fooAssignments = await getClientAssignments(fooScope, '/foo/');
 
       expect(fooAssignments).toEqual({
-        _foo_: manifestHash,
-        _bar_: manifestHash,
+        _foo_: fooManifestHash,
+        _bar_: fooManifestHash,
       });
 
-      expect(await makeRequest(fooScope, '/baz.txt', '_foo_')).toBe('this is baz');
-      expect(await makeRequest(fooScope, '/baz.txt', '_bar_')).toBe('this is baz');
+      expect(await makeRequest(fooScope, '/foo/baz.txt', '_foo_')).toBe('this is baz');
+      expect(await makeRequest(fooScope, '/foo/baz.txt', '_bar_')).toBe('this is baz');
 
       // Add new SW with same scope.
-      const fooScope2 =
-          await initializeSwFor('/foo/', await fooScope.caches.dehydrate(), serverUpdate);
+      const [fooScope2, fooManifestHash2] =
+          await initializeSwFor('/foo/', await fooScope.caches.dehydrate());
+
+      // Update client `_foo_` but not client `_bar_`.
       await fooScope2.handleMessage({action: 'CHECK_FOR_UPDATES'}, '_foo_');
       await fooScope2.handleMessage({action: 'ACTIVATE_UPDATE'}, '_foo_');
       const fooAssignments2 = await getClientAssignments(fooScope2, '/foo/');
 
       expect(fooAssignments2).toEqual({
-        _foo_: manifestUpdateHash,
-        _bar_: manifestHash,
+        _foo_: fooManifestHash2,
+        _bar_: fooManifestHash,
       });
 
       // Everything should still work as expected.
-      expect(await makeRequest(fooScope2, '/foo.txt', '_foo_')).toBe('this is foo v2');
-      expect(await makeRequest(fooScope2, '/foo.txt', '_bar_')).toBe('this is foo');
+      expect(await makeRequest(fooScope2, '/foo/foo.txt', '_foo_')).toBe('this is foo v2');
+      expect(await makeRequest(fooScope2, '/foo/foo.txt', '_bar_')).toBe('this is foo v1');
 
-      expect(await makeRequest(fooScope2, '/baz.txt', '_foo_')).toBe('this is baz v2');
-      expect(await makeRequest(fooScope2, '/baz.txt', '_bar_')).toBe('this is baz');
+      expect(await makeRequest(fooScope2, '/foo/baz.txt', '_foo_')).toBe('this is baz');
+      expect(await makeRequest(fooScope2, '/foo/baz.txt', '_bar_')).toBe('this is baz');
     });
   });
 
@@ -1126,7 +1216,7 @@ describe('Driver', () => {
       server.assertNoOtherRequests();
     });
 
-    it('redirects to index on a request to the origin URL request', async () => {
+    it('redirects to index on a request to the scope URL', async () => {
       expect(await navRequest('http://localhost/')).toEqual('this is foo');
       server.assertNoOtherRequests();
     });
@@ -1212,6 +1302,162 @@ describe('Driver', () => {
         expect(await navRequest('http://localhost/ignored/file1'))
             .toBe('this is not handled by the SW');
         serverUpdate.assertSawRequestFor('/ignored/file1');
+      });
+    });
+  });
+
+  describe('with relative base href', () => {
+    const createManifestWithRelativeBaseHref = (distDir: MockFileSystem): Manifest => ({
+      configVersion: 1,
+      timestamp: 1234567890123,
+      index: './index.html',
+      assetGroups: [
+        {
+          name: 'eager',
+          installMode: 'prefetch',
+          updateMode: 'prefetch',
+          urls: [
+            './index.html',
+            './main.js',
+            './styles.css',
+          ],
+          patterns: [
+            '/unhashed/.*',
+          ],
+          cacheQueryOptions: {ignoreVary: true},
+        },
+        {
+          name: 'lazy',
+          installMode: 'lazy',
+          updateMode: 'prefetch',
+          urls: [
+            './changed/chunk-1.js',
+            './changed/chunk-2.js',
+            './unchanged/chunk-3.js',
+            './unchanged/chunk-4.js',
+          ],
+          patterns: [
+            '/lazy/unhashed/.*',
+          ],
+          cacheQueryOptions: {ignoreVary: true},
+        }
+      ],
+      navigationUrls: processNavigationUrls('./'),
+      hashTable: tmpHashTableForFs(distDir, {}, './'),
+    });
+
+    const createServerWithBaseHref = (distDir: MockFileSystem): MockServerState =>
+        new MockServerStateBuilder()
+            .withRootDirectory('/base/href')
+            .withStaticFiles(distDir)
+            .withManifest(createManifestWithRelativeBaseHref(distDir))
+            .build();
+
+    const initialDistDir = new MockFileSystemBuilder()
+                               .addFile('/index.html', 'This is index.html')
+                               .addFile('/main.js', 'This is main.js')
+                               .addFile('/styles.css', 'This is styles.css')
+                               .addFile('/changed/chunk-1.js', 'This is chunk-1.js')
+                               .addFile('/changed/chunk-2.js', 'This is chunk-2.js')
+                               .addFile('/unchanged/chunk-3.js', 'This is chunk-3.js')
+                               .addFile('/unchanged/chunk-4.js', 'This is chunk-4.js')
+                               .build();
+
+    const serverWithBaseHref = createServerWithBaseHref(initialDistDir);
+
+    beforeEach(() => {
+      serverWithBaseHref.reset();
+
+      scope = new SwTestHarnessBuilder('http://localhost/base/href/')
+                  .withServerState(serverWithBaseHref)
+                  .build();
+      driver = new Driver(scope, scope, new CacheDatabase(scope, scope));
+    });
+
+    it('initializes prefetched content correctly, after a request kicks it off', async () => {
+      expect(await makeRequest(scope, '/base/href/index.html')).toBe('This is index.html');
+      await driver.initialized;
+      serverWithBaseHref.assertSawRequestFor('/base/href/ngsw.json');
+      serverWithBaseHref.assertSawRequestFor('/base/href/index.html');
+      serverWithBaseHref.assertSawRequestFor('/base/href/main.js');
+      serverWithBaseHref.assertSawRequestFor('/base/href/styles.css');
+      serverWithBaseHref.assertNoOtherRequests();
+
+      expect(await makeRequest(scope, '/base/href/main.js')).toBe('This is main.js');
+      expect(await makeRequest(scope, '/base/href/styles.css')).toBe('This is styles.css');
+      serverWithBaseHref.assertNoOtherRequests();
+    });
+
+    it('prefetches updates to lazy cache when set', async () => {
+      // Helper
+      const request = (url: string) => makeRequest(scope, url);
+
+      expect(await request('/base/href/index.html')).toBe('This is index.html');
+      await driver.initialized;
+
+      // Fetch some files from the `lazy` asset group.
+      expect(await request('/base/href/changed/chunk-1.js')).toBe('This is chunk-1.js');
+      expect(await request('/base/href/unchanged/chunk-3.js')).toBe('This is chunk-3.js');
+
+      // Install update.
+      const updatedDistDir = initialDistDir.extend()
+                                 .addFile('/changed/chunk-1.js', 'This is chunk-1.js v2')
+                                 .addFile('/changed/chunk-2.js', 'This is chunk-2.js v2')
+                                 .build();
+      const updatedServer = createServerWithBaseHref(updatedDistDir);
+
+      scope.updateServerState(updatedServer);
+      expect(await driver.checkForUpdate()).toBe(true);
+
+      // Previously requested and changed: Fetch from network.
+      updatedServer.assertSawRequestFor('/base/href/changed/chunk-1.js');
+      // Never requested and changed: Don't fetch.
+      updatedServer.assertNoRequestFor('/base/href/changed/chunk-2.js');
+      // Previously requested and unchanged: Fetch from cache.
+      updatedServer.assertNoRequestFor('/base/href/unchanged/chunk-3.js');
+      // Never requested and unchanged: Don't fetch.
+      updatedServer.assertNoRequestFor('/base/href/unchanged/chunk-4.js');
+
+      updatedServer.clearRequests();
+
+      // Update client.
+      await driver.updateClient(await scope.clients.get('default'));
+
+      // Already cached.
+      expect(await request('/base/href/changed/chunk-1.js')).toBe('This is chunk-1.js v2');
+      updatedServer.assertNoOtherRequests();
+
+      // Not cached: Fetch from network.
+      expect(await request('/base/href/changed/chunk-2.js')).toBe('This is chunk-2.js v2');
+      updatedServer.assertSawRequestFor('/base/href/changed/chunk-2.js');
+
+      // Already cached (copied from old cache).
+      expect(await request('/base/href/unchanged/chunk-3.js')).toBe('This is chunk-3.js');
+      updatedServer.assertNoOtherRequests();
+
+      // Not cached: Fetch from network.
+      expect(await request('/base/href/unchanged/chunk-4.js')).toBe('This is chunk-4.js');
+      updatedServer.assertSawRequestFor('/base/href/unchanged/chunk-4.js');
+
+      updatedServer.assertNoOtherRequests();
+    });
+
+    describe('routing', () => {
+      beforeEach(async () => {
+        expect(await makeRequest(scope, '/base/href/index.html')).toBe('This is index.html');
+        await driver.initialized;
+        serverWithBaseHref.clearRequests();
+      });
+
+      it('redirects to index on a route-like request', async () => {
+        expect(await makeNavigationRequest(scope, '/base/href/baz')).toBe('This is index.html');
+        serverWithBaseHref.assertNoOtherRequests();
+      });
+
+      it('redirects to index on a request to the scope URL', async () => {
+        expect(await makeNavigationRequest(scope, 'http://localhost/base/href/'))
+            .toBe('This is index.html');
+        serverWithBaseHref.assertNoOtherRequests();
       });
     });
   });
@@ -1492,6 +1738,169 @@ describe('Driver', () => {
       expect(requestUrls2).toContain(httpsRequestUrl);
     });
 
+    describe('unrecoverable state', () => {
+      const generateMockServerState = (fileSystem: MockFileSystem) => {
+        const manifest: Manifest = {
+          configVersion: 1,
+          timestamp: 1234567890123,
+          index: '/index.html',
+          assetGroups: [{
+            name: 'assets',
+            installMode: 'prefetch',
+            updateMode: 'prefetch',
+            urls: fileSystem.list(),
+            patterns: [],
+            cacheQueryOptions: {ignoreVary: true},
+          }],
+          dataGroups: [],
+          navigationUrls: processNavigationUrls(''),
+          hashTable: tmpHashTableForFs(fileSystem),
+        };
+
+        return {
+          serverState: new MockServerStateBuilder()
+                           .withManifest(manifest)
+                           .withStaticFiles(fileSystem)
+                           .build(),
+          manifest,
+        };
+      };
+
+      it('notifies affected clients', async () => {
+        const {serverState: serverState1} = generateMockServerState(
+            new MockFileSystemBuilder()
+                .addFile('/index.html', '<script src="foo.hash.js"></script>')
+                .addFile('/foo.hash.js', 'console.log("FOO");')
+                .build());
+
+        const {serverState: serverState2, manifest: manifest2} = generateMockServerState(
+            new MockFileSystemBuilder()
+                .addFile('/index.html', '<script src="bar.hash.js"></script>')
+                .addFile('/bar.hash.js', 'console.log("BAR");')
+                .build());
+
+        const {serverState: serverState3} = generateMockServerState(
+            new MockFileSystemBuilder()
+                .addFile('/index.html', '<script src="baz.hash.js"></script>')
+                .addFile('/baz.hash.js', 'console.log("BAZ");')
+                .build());
+
+        // Create initial server state and initialize the SW.
+        scope = new SwTestHarnessBuilder().withServerState(serverState1).build();
+        driver = new Driver(scope, scope, new CacheDatabase(scope, scope));
+
+        // Verify that all three clients are able to make the request.
+        expect(await makeRequest(scope, '/foo.hash.js', 'client1')).toBe('console.log("FOO");');
+        expect(await makeRequest(scope, '/foo.hash.js', 'client2')).toBe('console.log("FOO");');
+        expect(await makeRequest(scope, '/foo.hash.js', 'client3')).toBe('console.log("FOO");');
+
+        await driver.initialized;
+        serverState1.clearRequests();
+
+        // Verify that the `foo.hash.js` file is cached.
+        expect(await makeRequest(scope, '/foo.hash.js')).toBe('console.log("FOO");');
+        serverState1.assertNoRequestFor('/foo.hash.js');
+
+        // Update the ServiceWorker to the second version.
+        scope.updateServerState(serverState2);
+        expect(await driver.checkForUpdate()).toEqual(true);
+
+        // Update the first two clients to the latest version, keep `client3` as is.
+        const [client1, client2] =
+            await Promise.all([scope.clients.get('client1'), scope.clients.get('client2')]);
+
+        await Promise.all([driver.updateClient(client1), driver.updateClient(client2)]);
+
+        // Update the ServiceWorker to the latest version
+        scope.updateServerState(serverState3);
+        expect(await driver.checkForUpdate()).toEqual(true);
+
+        // Remove `bar.hash.js` from the cache to emulate the browser evicting files from the cache.
+        await removeAssetFromCache(scope, manifest2, '/bar.hash.js');
+
+        // Get all clients and verify their messages
+        const mockClient1 = scope.clients.getMock('client1')!;
+        const mockClient2 = scope.clients.getMock('client2')!;
+        const mockClient3 = scope.clients.getMock('client3')!;
+
+        // Try to retrieve `bar.hash.js`, which is neither in the cache nor on the server.
+        // This should put the SW in an unrecoverable state and notify clients.
+        expect(await makeRequest(scope, '/bar.hash.js', 'client1')).toBeNull();
+        serverState2.assertSawRequestFor('/bar.hash.js');
+        const unrecoverableMessage = {
+          type: 'UNRECOVERABLE_STATE',
+          reason:
+              'Failed to retrieve hashed resource from the server. (AssetGroup: assets | URL: /bar.hash.js)'
+        };
+
+        expect(mockClient1.messages).toContain(unrecoverableMessage);
+        expect(mockClient2.messages).toContain(unrecoverableMessage);
+        expect(mockClient3.messages).not.toContain(unrecoverableMessage);
+
+        // Because `client1` failed, `client1` and `client2` have been moved to the latest version.
+        // Verify that by retrieving `baz.hash.js`.
+        expect(await makeRequest(scope, '/baz.hash.js', 'client1')).toBe('console.log("BAZ");');
+        serverState2.assertNoRequestFor('/baz.hash.js');
+        expect(await makeRequest(scope, '/baz.hash.js', 'client2')).toBe('console.log("BAZ");');
+        serverState2.assertNoRequestFor('/baz.hash.js');
+
+        // Ensure that `client3` remains on the first version and can request `foo.hash.js`.
+        expect(await makeRequest(scope, '/foo.hash.js', 'client3')).toBe('console.log("FOO");');
+        serverState2.assertNoRequestFor('/foo.hash.js');
+      });
+
+      it('enters degraded mode', async () => {
+        const originalFiles = new MockFileSystemBuilder()
+                                  .addFile('/index.html', '<script src="foo.hash.js"></script>')
+                                  .addFile('/foo.hash.js', 'console.log("FOO");')
+                                  .build();
+
+        const updatedFiles = new MockFileSystemBuilder()
+                                 .addFile('/index.html', '<script src="bar.hash.js"></script>')
+                                 .addFile('/bar.hash.js', 'console.log("BAR");')
+                                 .build();
+
+        const {serverState: originalServer, manifest} = generateMockServerState(originalFiles);
+        const {serverState: updatedServer} = generateMockServerState(updatedFiles);
+
+        // Create initial server state and initialize the SW.
+        scope = new SwTestHarnessBuilder().withServerState(originalServer).build();
+        driver = new Driver(scope, scope, new CacheDatabase(scope, scope));
+
+        expect(await makeRequest(scope, '/foo.hash.js')).toBe('console.log("FOO");');
+        await driver.initialized;
+        originalServer.clearRequests();
+
+        // Verify that the `foo.hash.js` file is cached.
+        expect(await makeRequest(scope, '/foo.hash.js')).toBe('console.log("FOO");');
+        originalServer.assertNoRequestFor('/foo.hash.js');
+
+        // Update the server state to emulate deploying a new version (where `foo.hash.js` does not
+        // exist any more). Keep the cache though.
+        scope = new SwTestHarnessBuilder()
+                    .withCacheState(scope.caches.dehydrate())
+                    .withServerState(updatedServer)
+                    .build();
+        driver = new Driver(scope, scope, new CacheDatabase(scope, scope));
+
+        // The SW is still able to serve `foo.hash.js` from the cache.
+        expect(await makeRequest(scope, '/foo.hash.js')).toBe('console.log("FOO");');
+        updatedServer.assertNoRequestFor('/foo.hash.js');
+
+        // Remove `foo.hash.js` from the cache to emulate the browser evicting files from the cache.
+        await removeAssetFromCache(scope, manifest, '/foo.hash.js');
+
+        // Try to retrieve `foo.hash.js`, which is neither in the cache nor on the server.
+        // This should put the SW in an unrecoverable state and notify clients.
+        expect(await makeRequest(scope, '/foo.hash.js')).toBeNull();
+        updatedServer.assertSawRequestFor('/foo.hash.js');
+
+        // This should also enter the `SW` into degraded mode, because the broken version was the
+        // latest one.
+        expect(driver.state).toEqual(DriverReadyState.EXISTING_CLIENTS_ONLY);
+      });
+    });
+
     describe('backwards compatibility with v5', () => {
       beforeEach(() => {
         const serverV5 = new MockServerStateBuilder()
@@ -1515,6 +1924,16 @@ describe('Driver', () => {
   });
 });
 })();
+
+async function removeAssetFromCache(
+    scope: SwTestHarness, appVersionManifest: Manifest, assetPath: string) {
+  const assetGroupName =
+      appVersionManifest.assetGroups?.find(group => group.urls.includes(assetPath))?.name;
+  const cacheName = `${scope.cacheNamePrefix}:${sha1(JSON.stringify(appVersionManifest))}:assets:${
+      assetGroupName}:cache`;
+  const cache = await scope.caches.open(cacheName);
+  return cache.delete(assetPath);
+}
 
 async function makeRequest(
     scope: SwTestHarness, url: string, clientId: string|null = 'default',

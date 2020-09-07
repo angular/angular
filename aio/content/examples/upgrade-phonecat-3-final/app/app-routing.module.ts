@@ -4,7 +4,7 @@ import { Routes, RouterModule } from '@angular/router';
 import { APP_BASE_HREF, HashLocationStrategy, LocationStrategy } from '@angular/common';
 
 import { PhoneDetailComponent } from './phone-detail/phone-detail.component';
-import { PhoneListComponent }   from './phone-list/phone-list.component';
+import { PhoneListComponent } from './phone-list/phone-list.component';
 
 const routes: Routes = [
   { path: '', redirectTo: 'phones', pathMatch: 'full' },

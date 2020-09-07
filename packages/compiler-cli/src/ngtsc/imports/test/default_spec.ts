@@ -69,7 +69,7 @@ runInEachFileSystem(() => {
             module: ts.ModuleKind.CommonJS,
           });
       const fooClause = getDeclaration(program, _('/test.ts'), 'Foo', ts.isImportClause);
-      const fooId = ts.updateIdentifier(fooClause.name!);
+      const fooId = fooClause.name!;
       const fooDecl = fooClause.parent;
 
       const tracker = new DefaultImportTracker();

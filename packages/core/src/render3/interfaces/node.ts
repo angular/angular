@@ -7,12 +7,9 @@
  */
 import {KeyValueArray} from '../../util/array_utils';
 import {TStylingRange} from '../interfaces/styling';
-
-import {DirectiveDef} from './definition';
 import {CssSelector} from './projection';
 import {RNode} from './renderer';
 import {LView, TView} from './view';
-
 
 
 /**
@@ -44,6 +41,20 @@ export const enum TNodeType {
    */
   IcuContainer = 5,
 }
+
+/**
+ * Converts `TNodeType` into human readable text.
+ * Make sure this matches with `TNodeType`
+ */
+export const TNodeTypeAsString = [
+  'Container',         // 0
+  'Projection',        // 1
+  'View',              // 2
+  'Element',           // 3
+  'ElementContainer',  // 4
+  'IcuContainer'       // 5
+] as const;
+
 
 /**
  * Corresponds to the TNode.flags property.
@@ -87,16 +98,17 @@ export const enum TNodeFlags {
  * Corresponds to the TNode.providerIndexes property.
  */
 export const enum TNodeProviderIndexes {
-  /** The index of the first provider on this node is encoded on the least significant bits */
-  ProvidersStartIndexMask = 0b00000000000000001111111111111111,
+  /** The index of the first provider on this node is encoded on the least significant bits. */
+  ProvidersStartIndexMask = 0b00000000000011111111111111111111,
 
   /**
-     The count of view providers from the component on this node is encoded on the 16 most
-     significant bits
+   * The count of view providers from the component on this node is
+   * encoded on the 20 most significant bits.
    */
-  CptViewProvidersCountShift = 16,
-  CptViewProvidersCountShifter = 0b00000000000000010000000000000000,
+  CptViewProvidersCountShift = 20,
+  CptViewProvidersCountShifter = 0b00000000000100000000000000000000,
 }
+
 /**
  * A set of marker values to be used in the attributes arrays. These markers indicate that some
  * items are not regular attributes and the processing should be adapted accordingly.
@@ -243,8 +255,23 @@ export type TAttributes = (string|AttributeMarker|CssSelector)[];
  * Constants that are associated with a view. Includes:
  * - Attribute arrays.
  * - Local definition arrays.
+ * - Translated messages (i18n).
  */
 export type TConstants = (TAttributes|string)[];
+
+/**
+ * Factory function that returns an array of consts. Consts can be represented as a function in case
+ * any additional statements are required to define consts in the list. An example is i18n where
+ * additional i18n calls are generated, which should be executed when consts are requested for the
+ * first time.
+ */
+export type TConstantsFactory = () => TConstants;
+
+/**
+ * TConstants type that describes how the `consts` field is generated on ComponentDef: it can be
+ * either an array or a factory function that returns that array.
+ */
+export type TConstantsOrFactory = TConstants|TConstantsFactory;
 
 /**
  * Binding data (flyweight) for a particular node that is shared between all templates
@@ -697,11 +724,6 @@ export interface TIcuContainerNode extends TNode {
   parent: TElementNode|TElementContainerNode|null;
   tViews: null;
   projection: null;
-  /**
-   * Indicates the current active case for an ICU expression.
-   * It is null when there is no active case.
-   */
-  activeCaseIndex: number|null;
 }
 
 /** Static data for a view  */

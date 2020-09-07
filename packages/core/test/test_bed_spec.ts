@@ -1126,6 +1126,63 @@ describe('TestBed', () => {
              expect(SomePipe.hasOwnProperty('ɵpipe')).toBeTruthy();
            });
 
+        it('should cleanup scopes (configured via `TestBed.configureTestingModule`) between tests',
+           () => {
+             @Component({
+               selector: 'child',
+               template: 'Child comp',
+             })
+             class ChildCmp {
+             }
+
+             @Component({
+               selector: 'root',
+               template: '<child></child>',
+             })
+             class RootCmp {
+             }
+
+             // Case #1: `RootCmp` and `ChildCmp` are both included in the `declarations` field of
+             // the testing module, so `ChildCmp` is in the scope of `RootCmp`.
+             TestBed.configureTestingModule({
+               declarations: [RootCmp, ChildCmp],
+             });
+
+             let fixture = TestBed.createComponent(RootCmp);
+             fixture.detectChanges();
+
+             let childCmpInstance = fixture.debugElement.query(By.directive(ChildCmp));
+             expect(childCmpInstance.componentInstance).toBeAnInstanceOf(ChildCmp);
+             expect(fixture.nativeElement.textContent).toBe('Child comp');
+
+             TestBed.resetTestingModule();
+
+             // Case #2: the `TestBed.configureTestingModule` was not invoked, thus the `ChildCmp`
+             // should not be available in the `RootCmp` scope and no child content should be
+             // rendered.
+             fixture = TestBed.createComponent(RootCmp);
+             fixture.detectChanges();
+
+             childCmpInstance = fixture.debugElement.query(By.directive(ChildCmp));
+             expect(childCmpInstance).toBeNull();
+             expect(fixture.nativeElement.textContent).toBe('');
+
+             TestBed.resetTestingModule();
+
+             // Case #3: `ChildCmp` is included in the `declarations` field, but `RootCmp` is not,
+             // so `ChildCmp` is NOT in the scope of `RootCmp` component.
+             TestBed.configureTestingModule({
+               declarations: [ChildCmp],
+             });
+
+             fixture = TestBed.createComponent(RootCmp);
+             fixture.detectChanges();
+
+             childCmpInstance = fixture.debugElement.query(By.directive(ChildCmp));
+             expect(childCmpInstance).toBeNull();
+             expect(fixture.nativeElement.textContent).toBe('');
+           });
+
         it('should clean up overridden providers for modules that are imported more than once',
            () => {
              @Injectable()
