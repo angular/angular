@@ -17,7 +17,7 @@ Los módulos, componentes y servicios son clases que usan *decoradores*. Estos d
 
 * Los metadatos para una clase servicio proporcionan la información que Angular necesita para que esté disponible para los componentes a través de la *Inyección de Dependencia (ID)*.
 
-Los componentes de una aplicación suelen definir muchas vistas, ordenadas jerárquicamente. Angular proporciona el servicio `Router` para ayudarlo a definir rutas de navegación entre vistas. El enrutador proporciona capacidades de navegación sofisticadas en el navegador.
+Los componentes de una aplicación suelen definir muchas vistas, ordenadas jerárquicamente. Angular proporciona el servicio `Router` para ayudarte a definir rutas de navegación entre vistas. El enrutador proporciona capacidades de navegación sofisticadas en el navegador.
 
 <div class="alert is-helpful">
 
