@@ -168,11 +168,6 @@
               "tooltip": "Pipes transform displayed values within a template."
             },
             {
-              "url": "guide/binding-syntax",
-              "title": "Binding syntax",
-              "tooltip": "Introductory guide to coordinating app values."
-            },
-            {
               "url": "guide/property-binding",
               "title": "Property binding",
               "tooltip": "Introductory guide to setting element or input properties."
@@ -731,6 +726,11 @@
                   "url": "guide/architecture-next-steps",
                   "title": "Next Steps",
                   "tooltip": "Beyond the basics."
+                },
+                {
+                  "url": "guide/binding-syntax",
+                  "title": "Binding syntax",
+                  "tooltip": "Introductory guide to coordinating app values."
                 },
                 {
                   "url": "guide/event-binding-concepts",
