@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import * as yargs from 'yargs';
+import {getUserConfig} from '../utils/config';
 
 import {info} from '../utils/console';
 
@@ -78,11 +79,17 @@ export function buildCommitMessageParser(localYargs: yargs.Argv) {
                 }
                 return file;
               },
+            },
+            'error': {
+              type: 'boolean',
+              description:
+                  'Whether invalid commit messages should be treated as failures rather than a warning',
+              default: !!getUserConfig().commitMessage?.errorOnInvalidMessage || !!process.env['CI']
             }
           },
           args => {
             const file = args.file || args['file-env-variable'] || '.git/COMMIT_EDITMSG';
-            validateFile(file);
+            validateFile(file, args.error);
           })
       .command(
           'validate-range', 'Validate a range of commit messages', {
