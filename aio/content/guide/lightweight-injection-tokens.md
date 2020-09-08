@@ -141,7 +141,7 @@ Because the token is now an abstract class, and the injectable component impleme
 The implementation of the method (with all of its code overhead) resides in the injectable component that can be tree-shaken.
 This allows the parent to communicate with the child (if it is present) in a type-safe manner.
 
-For example, the `LibCardComponent` now queries`LibHeaderToken` rather than `LibHeaderComponent`.
+For example, the `LibCardComponent` now queries `LibHeaderToken` rather than `LibHeaderComponent`.
 The following example shows how the pattern allows `LibCardComponent` to communicate with the `LibHeaderComponent` without actually referring to `LibHeaderComponent`.
 
 ```
