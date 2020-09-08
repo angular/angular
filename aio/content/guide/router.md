@@ -29,11 +29,10 @@ The following command uses the Angular CLI to generate a basic Angular app with 
 The app name in the following example is `routing-app`.
 
 <code-example language="none" class="code-shell">
-  ng new routing-app --routing
+  ng new routing-app --routing --style=CSS 
 </code-example>
 
-When generating a new app, the CLI prompts you to select CSS or a CSS preprocessor.
-For this example, accept the default of `CSS`.
+For this example, we have set the default style preprocessor to `CSS`.
 
 ### Adding components for routing
 
