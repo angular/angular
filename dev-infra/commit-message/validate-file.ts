@@ -27,7 +27,6 @@ export function validateFile(filePath: string) {
   error(`${red('✘')}  Invalid commit message`);
   printValidationErrors(errors);
   error('Aborting commit attempt due to invalid commit message.');
-  error('Commit message aborted as failure rather than warning due to local configuration');
 
   // On all invalid commit messages, the commit message should be saved as a draft to be
   // restored on the next commit attempt.

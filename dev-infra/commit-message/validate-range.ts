@@ -55,7 +55,9 @@ export function validateCommitRange(range: string) {
           commits.slice(0, i).filter(isNonFixup).map(extractCommitHeader)
     };
     const {valid, errors: localErrors, commit} = validateCommitMessage(m, options);
-    errors.push([commit.header, localErrors]);
+    if (localErrors.length) {
+      errors.push([commit.header, localErrors]);
+    }
     return valid;
   });
 

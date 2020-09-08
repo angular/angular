@@ -27,7 +27,7 @@ export function validateCommitMessage(
   const errors: string[] = [];
 
   /** Perform the validation checks against the parsed commit. */
-  function runValidation() {
+  function validateCommitAndCollectErrors() {
     // TODO(josephperrott): Remove early return calls when commit message errors are found
 
     ////////////////////////////////////
@@ -77,8 +77,6 @@ export function validateCommitMessage(
       errors.push(`The commit message header does not match the expected format.`);
       return false;
     }
-
-
 
     if (COMMIT_TYPES[commit.type] === undefined) {
       errors.push(`'${commit.type}' is not an allowed type.\n => TYPES: ${
@@ -139,7 +137,7 @@ export function validateCommitMessage(
     return true;
   }
 
-  return {valid: runValidation(), errors, commit};
+  return {valid: validateCommitAndCollectErrors(), errors, commit};
 }
 
 
