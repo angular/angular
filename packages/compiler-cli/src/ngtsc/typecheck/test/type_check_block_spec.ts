@@ -734,7 +734,7 @@ describe('type check blocks', () => {
     });
 
     describe('config.checkTemplateBodies', () => {
-      const TEMPLATE = `<ng-template>{{a}}</ng-template>`;
+      const TEMPLATE = `<ng-template #ref>{{a}}</ng-template>{{ref}}`;
 
       it('should descend into template bodies when enabled', () => {
         const block = tcb(TEMPLATE, DIRECTIVES);
@@ -744,6 +744,17 @@ describe('type check blocks', () => {
         const DISABLED_CONFIG: TypeCheckingConfig = {...BASE_CONFIG, checkTemplateBodies: false};
         const block = tcb(TEMPLATE, DIRECTIVES, DISABLED_CONFIG);
         expect(block).not.toContain('((ctx).a)');
+      });
+
+      it('generates a references var when enabled', () => {
+        const block = tcb(TEMPLATE, DIRECTIVES);
+        expect(block).toContain('var _t2 = (_t1 as any as core.TemplateRef<any>);');
+      });
+
+      it('generates a reference var when disabled', () => {
+        const DISABLED_CONFIG: TypeCheckingConfig = {...BASE_CONFIG, checkTemplateBodies: false};
+        const block = tcb(TEMPLATE, DIRECTIVES, DISABLED_CONFIG);
+        expect(block).toContain('var _t2 = (_t1 as any as core.TemplateRef<any>);');
       });
     });
 

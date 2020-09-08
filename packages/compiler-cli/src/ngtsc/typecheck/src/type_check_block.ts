@@ -1282,9 +1282,9 @@ class Scope {
       // Template children are rendered in a child scope.
       this.appendDirectivesAndInputsOfNode(node);
       this.appendOutputsOfNode(node);
+      const ctxIndex = this.opQueue.push(new TcbTemplateContextOp(this.tcb, this)) - 1;
+      this.templateCtxOpMap.set(node, ctxIndex);
       if (this.tcb.env.config.checkTemplateBodies) {
-        const ctxIndex = this.opQueue.push(new TcbTemplateContextOp(this.tcb, this)) - 1;
-        this.templateCtxOpMap.set(node, ctxIndex);
         this.opQueue.push(new TcbTemplateBodyOp(this.tcb, this, node));
       }
       this.checkAndAppendReferencesOfNode(node);
