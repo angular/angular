@@ -92,7 +92,7 @@ Para los datos o la lógica que no están asociados con una vista específica y 
 
 <div class="alert is-helpful">
 
-  Para más información, visita [Introducción a los servicios e ID](guide/architecture-services).
+  Para más información, visita [Introducción a los servicios e inyección de dependencia](guide/architecture-services).
 
 </div>
 
