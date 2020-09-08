@@ -102,7 +102,7 @@ The following table provides the status for Angular versions under support.
 Version | Status | Released     | Active Ends  | LTS Ends
 ------- | ------ | ------------ | ------------ | ------------
 ^10.0.0 | Active | Jun 24, 2020 | Dec 24, 2020 | Dec 24, 2021
-^9.0.0  | Active | Feb 06, 2020 | Aug 06, 2020 | Aug 06, 2021
+^9.0.0  | LTS    | Feb 06, 2020 | Aug 06, 2020 | Aug 06, 2021
 ^8.0.0  | LTS    | May 28, 2019 | Nov 28, 2019 | Nov 28, 2020
 
 Angular versions ^4.0.0, ^5.0.0, ^6.0.0 and ^7.0.0 are no longer under support.
