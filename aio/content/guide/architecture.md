@@ -38,7 +38,7 @@ Cada aplicación en Angular tiene un *módulo raíz*, convencionalmente nombrado
 
 Como en los módulos de JavaScript, los NgModules pueden importar la funcionalidad de otros, y permiten que su propia funcionalidad sea exportada y utilizada por otros NgModules. Por ejemplo, para utilizar el servicio de enrutamiento en su aplicación, importa el NgModule `Router`.
 
-Organizar su código en distintos módulos funcionales ayuda a gestionar el desarrollo de aplicaciones complejas, y en el diseño para su reutilización. Además, esta técnica te permite aprovechar la *carga diferida*&mdash;es decir, cargar módulos bajo demanda&mdash;para minimizar la cantidad de código que debe cargarse al inicio.
+Organizar tu código en distintos módulos funcionales ayuda a gestionar el desarrollo de aplicaciones complejas, y en el diseño para su reutilización. Además, esta técnica te permite aprovechar la *carga diferida*&mdash;es decir, cargar módulos bajo demanda&mdash;para minimizar la cantidad de código que debe cargarse al inicio.
 
 <div class="alert is-helpful">
 
