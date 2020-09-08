@@ -77,7 +77,7 @@ Angular proporciona pipes predefinidas para transformaciones comunes, y también
 
 <div class="alert is-helpful">
 
-  Para más información sobre estos conseptos, visita [Introducción a los componentes](guide/architecture-components).
+  Para más información sobre estos conceptos, visita [Introducción a los componentes](guide/architecture-components).
 
 </div>
 
