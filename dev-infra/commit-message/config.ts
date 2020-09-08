@@ -49,7 +49,7 @@ export const COMMIT_TYPES: {[key: string]: CommitType} = {
   build: {
     name: 'build',
     description: 'Changes to local repository build system and tooling',
-    scope: ScopeRequirement.Forbidden,
+    scope: ScopeRequirement.Optional,
   },
   ci: {
     name: 'ci',
