@@ -27,6 +27,7 @@ import {
 } from '@angular/core';
 import {MatLine, ThemePalette} from '@angular/material-experimental/mdc-core';
 import {MatListBase, MatListItemBase} from './list-base';
+import {LIST_OPTION, ListOption, MatListOptionCheckboxPosition} from './list-option-types';
 
 /**
  * Injection token that can be used to reference instances of an `SelectionList`. It serves
@@ -73,9 +74,10 @@ let uniqueId = 0;
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [
     {provide: MatListItemBase, useExisting: MatListOption},
+    {provide: LIST_OPTION, useExisting: MatListOption},
   ]
 })
-export class MatListOption extends MatListItemBase implements OnInit, OnDestroy {
+export class MatListOption extends MatListItemBase implements ListOption, OnInit, OnDestroy {
   /**
    * This is set to true after the first OnChanges cycle so we don't
    * clear the value of `selected` in the first cycle.
@@ -83,6 +85,7 @@ export class MatListOption extends MatListItemBase implements OnInit, OnDestroy 
   private _inputsInitialized = false;
 
   @ViewChild('text') _itemText: ElementRef<HTMLElement>;
+
   @ContentChildren(MatLine, {read: ElementRef, descendants: true}) lines:
     QueryList<ElementRef<Element>>;
 
@@ -90,7 +93,7 @@ export class MatListOption extends MatListItemBase implements OnInit, OnDestroy 
   _optionTextId: string = `mat-mdc-list-option-text-${uniqueId++}`;
 
   /** Whether the label should appear before or after the checkbox. Defaults to 'after' */
-  @Input() checkboxPosition: 'before' | 'after' = 'after';
+  @Input() checkboxPosition: MatListOptionCheckboxPosition = 'after';
 
   /** Theme color of the list option. This sets the color of the checkbox. */
   @Input()
@@ -181,17 +184,23 @@ export class MatListOption extends MatListItemBase implements OnInit, OnDestroy 
     this._hostElement.focus();
   }
 
-  _isReversed(): boolean {
-    return this.checkboxPosition === 'after';
+  /** Whether the checkbox should be shown at the given position. */
+  _shouldShowCheckboxAt(position: MatListOptionCheckboxPosition): boolean {
+    return this._selectionList.multiple && this._getCheckboxPosition() === position;
   }
 
-  /** Whether the list-option has a checkbox. */
-  _hasCheckbox() {
-    return this._selectionList.multiple;
+  /** Whether icons and avatars should be shown at the given position. */
+  _shouldShowIconsAndAvatarsAt(position: 'before'|'after'): boolean {
+    return this._getCheckboxPosition() !== position && this._hasIconOrAvatar();
   }
 
   _handleBlur() {
     this._selectionList._onTouched();
+  }
+
+  /** Gets the current position of the checkbox. */
+  _getCheckboxPosition() {
+    return this.checkboxPosition || 'after';
   }
 
   /**

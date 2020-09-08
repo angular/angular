@@ -1,6 +1,7 @@
 <!--
-  Save icons and the pseudo checkbox so that they can be re-used in the
-  template without duplication.
+  Save icons and the pseudo checkbox so that they can be re-used in the template without
+  duplication. Also content can only be injected once so we need to extract icons/avatars
+  into a template since we use it in multiple places.
 -->
 <ng-template #icons>
   <ng-content select="[mat-list-avatar],[matListAvatar],[mat-list-icon],[matListIcon]">
@@ -29,24 +30,29 @@
   </div>
 </ng-template>
 
-<!-- Prefix -->
-<span class="mdc-list-item__graphic"
-      *ngIf="!_isReversed() && (_hasIconOrAvatar() || _hasCheckbox())">
-  <ng-container [ngTemplateOutlet]="_hasCheckbox() ? checkbox : icons">
-  </ng-container>
+<!-- Container for the checkbox at start. -->
+<span class="mdc-list-item__graphic mat-mdc-list-option-checkbox-before"
+      *ngIf="_shouldShowCheckboxAt('before')">
+  <ng-template [ngTemplateOutlet]="checkbox"></ng-template>
 </span>
+<!-- Conditionally renders icons/avatars before the list item text. -->
+<ng-template [ngIf]="_shouldShowIconsAndAvatarsAt('before')">
+  <ng-template [ngTemplateOutlet]="icons"></ng-template>
+</ng-template>
 
 <!-- Text -->
 <span class="mdc-list-item__text" #text [id]="_optionTextId">
   <ng-content></ng-content>
 </span>
 
-<!-- Suffix -->
-<span class="mdc-list-item__meta"
-      *ngIf="_isReversed() && (_hasCheckbox() || _hasIconOrAvatar())">
-  <ng-container [ngTemplateOutlet]="_hasCheckbox() ? checkbox : icons">
-  </ng-container>
+<!-- Container for the checkbox at the end. -->
+<span class="mdc-list-item__meta" *ngIf="_shouldShowCheckboxAt('after')">
+  <ng-template [ngTemplateOutlet]="checkbox"></ng-template>
 </span>
+<!-- Conditionally renders icons/avatars after the list item text. -->
+<ng-template [ngIf]="_shouldShowIconsAndAvatarsAt('after')">
+  <ng-template [ngTemplateOutlet]="icons"></ng-template>
+</ng-template>
 
 <!-- Divider -->
 <ng-content select="mat-divider"></ng-content>

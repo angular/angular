@@ -50,16 +50,22 @@
   $size: 40px;
   $margin-value: 72px - $mdc-list-side-padding - $size;
 
-  margin-left: 0;
-  margin-right: $margin-value;
   width: $size;
   height: $size;
   border-radius: 50%;
 
-  // `.mdc-list-item` added for extra specificity to override MDC's built in styles.
-  [dir='rtl'] .mdc-list-item & {
-    margin-left: $margin-value;
-    margin-right: 0;
+  // If the avatar is displayed in the graphic section of a list-item (i.e. at the start),
+  // we override the default "graphic" horizontal spacing that is designed for icons, to
+  // work for actual avatar images. The avatar by default is used within the `graphic` section,
+  // but could be also outside in case of a selection-list option with a checkbox at start.
+  &.mdc-list-item__graphic {
+    margin-left: 0;
+    margin-right: $margin-value;
+
+    [dir='rtl'] & {
+      margin-left: $margin-value;
+      margin-right: 0;
+    }
   }
 }
 

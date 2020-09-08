@@ -13,7 +13,8 @@ import {
   ContentChildren,
   ElementRef,
   NgZone,
-  QueryList, ViewChild,
+  QueryList,
+  ViewChild,
   ViewEncapsulation
 } from '@angular/core';
 import {MatLine} from '@angular/material-experimental/mdc-core';

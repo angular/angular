@@ -201,4 +201,31 @@
       </mat-list-option>
     </mat-selection-list>
   </div>
+
+  <div>
+    <h2>Icon alignment in selection list</h2>
+
+    <mat-selection-list>
+      <mat-list-option value="bananas" [checkboxPosition]="checkboxPosition">
+        <mat-icon matListIcon>info</mat-icon>
+        Bananas
+      </mat-list-option>
+      <mat-list-option value="oranges" [checkboxPosition]="checkboxPosition">
+        <mat-icon matListIcon #ok>info</mat-icon>
+        Oranges
+      </mat-list-option>
+      <mat-list-option value="cake" [checkboxPosition]="checkboxPosition">
+        <mat-icon matListIcon>info</mat-icon>
+        Cake
+      </mat-list-option>
+      <mat-list-option value="fries" [checkboxPosition]="checkboxPosition">
+        <mat-icon matListIcon>info</mat-icon>
+        Fries
+      </mat-list-option>
+    </mat-selection-list>
+
+    <button mat-raised-button (click)="toggleCheckboxPosition()">
+      Toggle checkbox position
+    </button>
+  </div>
 </div>

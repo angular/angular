@@ -27,6 +27,8 @@ export class ListDemo {
     {name: 'Bobby', headline: 'UX designer'}
   ];
 
+  checkboxPosition: 'before'|'after' = 'before';
+
   messages: {from: string, subject: string, message: string, image: string}[] = [
     {
       from: 'Nancy',
@@ -68,6 +70,10 @@ export class ListDemo {
   onSelectedOptionsChange(values: string[]) {
     this.selectedOptions = values;
     this.modelChangeEventCount++;
+  }
+
+  toggleCheckboxPosition() {
+    this.checkboxPosition = this.checkboxPosition === 'before' ? 'after' : 'before';
   }
 
   favoriteOptions: string[] = [];

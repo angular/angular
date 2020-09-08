@@ -25,9 +25,9 @@ import {
   RippleTarget,
   setLines,
 } from '@angular/material-experimental/mdc-core';
-import {MatListAvatarCssMatStyler, MatListIconCssMatStyler} from './list-styling';
 import {Subscription} from 'rxjs';
 import {startWith} from 'rxjs/operators';
+import {MatListAvatarCssMatStyler, MatListIconCssMatStyler} from './list-styling';
 
 function toggleClass(el: Element, className: string, on: boolean) {
   if (on) {
@@ -117,7 +117,7 @@ export abstract class MatListItemBase implements AfterContentInit, OnDestroy, Ri
 
   /** Whether the list item has icons or avatars. */
   _hasIconOrAvatar() {
-    return this._avatars.length || this._icons.length;
+    return !!(this._avatars.length || this._icons.length);
   }
 
   private _initInteractiveListItem() {

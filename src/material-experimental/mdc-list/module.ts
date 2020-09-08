@@ -15,18 +15,16 @@ import {
 } from '@angular/material-experimental/mdc-core';
 import {MatDividerModule} from '@angular/material/divider';
 import {MatActionList} from './action-list';
-import {
-  MatList,
-  MatListItem,
-} from './list';
-import {MatNavList} from './nav-list';
-import {MatSelectionList} from './selection-list';
+import {MatList, MatListItem} from './list';
 import {MatListOption} from './list-option';
 import {
   MatListAvatarCssMatStyler,
+  MatListGraphicAlignmentStyler,
   MatListIconCssMatStyler,
-  MatListSubheaderCssMatStyler,
+  MatListSubheaderCssMatStyler
 } from './list-styling';
+import {MatNavList} from './nav-list';
+import {MatSelectionList} from './selection-list';
 
 @NgModule({
   imports: [
@@ -45,6 +43,7 @@ import {
     MatListAvatarCssMatStyler,
     MatListIconCssMatStyler,
     MatListSubheaderCssMatStyler,
+    MatListGraphicAlignmentStyler,
     MatDividerModule,
     MatLineModule,
   ],
@@ -58,6 +57,7 @@ import {
     MatListAvatarCssMatStyler,
     MatListIconCssMatStyler,
     MatListSubheaderCssMatStyler,
+    MatListGraphicAlignmentStyler,
   ]
 })
 export class MatListModule {}

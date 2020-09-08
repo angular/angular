@@ -7,6 +7,7 @@
  */
 
 import {Component} from '@angular/core';
+import {MatListOptionCheckboxPosition} from '@angular/material-experimental/mdc-list';
 
 
 @Component({
@@ -20,6 +21,8 @@ export class MdcListDemo {
     'Salt',
     'Paprika'
   ];
+
+  checkboxPosition: MatListOptionCheckboxPosition = 'before';
 
   contacts: {name: string, headline: string}[] = [
     {name: 'Nancy', headline: 'Software engineer'},
@@ -68,6 +71,10 @@ export class MdcListDemo {
   onSelectedOptionsChange(values: string[]) {
     this.selectedOptions = values;
     this.modelChangeEventCount++;
+  }
+
+  toggleCheckboxPosition() {
+    this.checkboxPosition = this.checkboxPosition === 'before' ? 'after' : 'before';
   }
 
   favoriteOptions: string[] = [];
