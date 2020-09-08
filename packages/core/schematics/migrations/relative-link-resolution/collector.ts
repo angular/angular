@@ -21,32 +21,65 @@ export class RelativeLinkResolutionCollector {
   constructor(private readonly typeChecker: ts.TypeChecker) {}
 
   visitNode(node: ts.Node) {
-    if (isRouterModuleForRoot(this.typeChecker, node)) {
-      if (node.arguments.length === 1) {
-        // only has routes. need to add {initialNavigation: 'legacy'}
-        this.forRootCalls.push(node);
-        return;
+    let forRootCall: ts.CallExpression|null = null;
+    let literal: ts.ObjectLiteralExpression|null = null;
+    if (isRouterModuleForRoot(this.typeChecker, node) && node.arguments.length > 0) {
+      if (node.arguments.length === 1 || ts.isObjectLiteralExpression(node.arguments[1])) {
+        forRootCall = node;
+      } else if (ts.isIdentifier(node.arguments[1])) {
+        literal = this.getLiteralNeedingMigrationFromIdentifier(node.arguments[1] as ts.Identifier);
       }
-      const arg = node.arguments[1];
-      if (ts.isObjectLiteralExpression(arg)) {
-        this.forRootCalls.push(node);
-        return;
-      }
-    } else if (ts.isVariableDeclaration(node) && node.initializer !== undefined) {
-      // declaration could be `x: NavigationExtras = {}` or `x = {} as NavigationExtras`
-      if (ts.isAsExpression(node.initializer) &&
-          ts.isObjectLiteralExpression(node.initializer.expression) &&
-          isNavigationExtras(this.typeChecker, node.initializer.type)) {
-        this.navigationExtrasLiterals.push(node.initializer.expression);
-        return;
-      } else if (
-          node.type !== undefined && ts.isObjectLiteralExpression(node.initializer) &&
-          isNavigationExtras(this.typeChecker, node.type)) {
-        this.navigationExtrasLiterals.push(node.initializer);
-        return;
-      }
+    } else if (ts.isVariableDeclaration(node)) {
+      literal = this.getLiteralNeedingMigration(node);
     }
 
-    ts.forEachChild(node, n => this.visitNode(n));
+    if (literal !== null) {
+      this.navigationExtrasLiterals.push(literal);
+    } else if (forRootCall !== null) {
+      this.forRootCalls.push(forRootCall);
+    } else {
+      // no match found, continue iteration
+      ts.forEachChild(node, n => this.visitNode(n));
+    }
+  }
+
+  private getLiteralNeedingMigrationFromIdentifier(id: ts.Identifier): ts.ObjectLiteralExpression
+      |null {
+    const symbolForIdentifier = this.typeChecker.getSymbolAtLocation(id);
+    if (symbolForIdentifier === undefined) {
+      return null;
+    }
+
+    if (symbolForIdentifier.declarations.length === 0) {
+      return null;
+    }
+
+    const declarationNode = symbolForIdentifier.declarations[0];
+    if (!ts.isVariableDeclaration(declarationNode) || declarationNode.initializer === undefined ||
+        !ts.isObjectLiteralExpression(declarationNode.initializer)) {
+      return null;
+    }
+
+    return declarationNode.initializer;
+  }
+
+  private getLiteralNeedingMigration(node: ts.VariableDeclaration): ts.ObjectLiteralExpression
+      |null {
+    if (node.initializer === undefined) {
+      return null;
+    }
+
+    // declaration could be `x: NavigationExtras = {}` or `x = {} as NavigationExtras`
+    if (ts.isAsExpression(node.initializer) &&
+        ts.isObjectLiteralExpression(node.initializer.expression) &&
+        isNavigationExtras(this.typeChecker, node.initializer.type)) {
+      return node.initializer.expression;
+    } else if (
+        node.type !== undefined && ts.isObjectLiteralExpression(node.initializer) &&
+        isNavigationExtras(this.typeChecker, node.type)) {
+      return node.initializer;
+    }
+
+    return null;
   }
 }

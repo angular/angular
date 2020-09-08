@@ -60,7 +60,8 @@ describe('initial navigation migration', () => {
       `);
 
     await runMigration();
-    expect(tree.readContent('/index.ts')).toContain(`relativeLinkResolution: "legacy"`);
+    expect(tree.readContent('/index.ts'))
+        .toContain(`RouterModule.forRoot([], { relativeLinkResolution: "legacy" })`);
   });
 
   it('should migrate options without relativeLinkResolution', async () => {
@@ -77,8 +78,8 @@ describe('initial navigation migration', () => {
       `);
 
     await runMigration();
-    expect(tree.readContent('/index.ts')).toContain(`relativeLinkResolution: "legacy"`);
-    expect(tree.readContent('/index.ts')).toContain(`useHash: true`);
+    expect(tree.readContent('/index.ts'))
+        .toContain(`RouterModule.forRoot([], { useHash: true, relativeLinkResolution: "legacy" })`);
   });
 
   it('should not migrate options containing relativeLinkResolution', async () => {
@@ -95,7 +96,8 @@ describe('initial navigation migration', () => {
       `);
 
     await runMigration();
-    expect(tree.readContent('/index.ts')).toContain(`relativeLinkResolution: 'corrected'`);
+    expect(tree.readContent('/index.ts'))
+        .toContain(`RouterModule.forRoot([], {relativeLinkResolution: 'corrected'})`);
   });
 
   it('should migrate when options is a variable with AsExpression', async () => {
@@ -105,8 +107,9 @@ describe('initial navigation migration', () => {
       `);
 
     await runMigration();
-    expect(tree.readContent('/index.ts')).toContain(`relativeLinkResolution: "legacy"`);
-    expect(tree.readContent('/index.ts')).toContain(`useHash: true`);
+    expect(tree.readContent('/index.ts'))
+        .toContain(
+            `const options = { useHash: true, relativeLinkResolution: "legacy" } as NavigationExtras;`);
   });
 
   it('should migrate when options is a variable', async () => {
@@ -116,8 +119,31 @@ describe('initial navigation migration', () => {
       `);
 
     await runMigration();
-    expect(tree.readContent('/index.ts')).toContain(`relativeLinkResolution: "legacy"`);
-    expect(tree.readContent('/index.ts')).toContain(`useHash: true`);
+    expect(tree.readContent('/index.ts'))
+        .toContain(
+            `const options: NavigationExtras = { useHash: true, relativeLinkResolution: "legacy" };`);
+  });
+
+  it('should migrate when options is a variable with no type', async () => {
+    writeFile('/index.ts', `
+        import { NgModule } from '@angular/core';
+        import { NavigationExtras, RouterModule } from '@angular/router';
+
+        const options = {useHash: true};
+
+        @NgModule({
+          imports: [
+            RouterModule.forRoot([], options),
+          ]
+        })
+        export class AppModule {
+        }
+      `);
+
+    await runMigration();
+    expect(tree.readContent('/index.ts'))
+        .toContain(`const options = { useHash: true, relativeLinkResolution: "legacy" };`);
+    expect(tree.readContent('/index.ts')).toContain(`RouterModule.forRoot([], options)`);
   });
 
   it('should migrate when aliased options is a variable', async () => {
@@ -127,8 +153,9 @@ describe('initial navigation migration', () => {
       `);
 
     await runMigration();
-    expect(tree.readContent('/index.ts')).toContain(`relativeLinkResolution: "legacy"`);
-    expect(tree.readContent('/index.ts')).toContain(`useHash: true`);
+    expect(tree.readContent('/index.ts'))
+        .toContain(
+            `const options: RouterNavigationExtras = { useHash: true, relativeLinkResolution: "legacy" };`);
   });
 
   it('should migrate aliased RouterModule.forRoot', async () => {
@@ -145,7 +172,8 @@ describe('initial navigation migration', () => {
       `);
 
     await runMigration();
-    expect(tree.readContent('/index.ts')).toContain(`relativeLinkResolution: "legacy"`);
+    expect(tree.readContent('/index.ts'))
+        .toContain(`AngularRouterModule.forRoot([], { relativeLinkResolution: "legacy" }),`);
   });
 
   function writeFile(filePath: string, contents: string) {

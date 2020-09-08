@@ -53,7 +53,7 @@ export class RelativeLinkResolutionTransform {
     }
     const legacyExpression =
         ts.createPropertyAssignment(RELATIVE_LINK_RESOLUTION, ts.createStringLiteral('legacy'));
-    return ts.updateObjectLiteral(literal, literal.properties.concat(legacyExpression));
+    return ts.updateObjectLiteral(literal, [...literal.properties, legacyExpression]);
   }
 
   private _maybeUpdateLiteral(literal: ts.ObjectLiteralExpression) {
