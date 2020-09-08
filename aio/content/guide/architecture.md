@@ -98,7 +98,7 @@ Para los datos o la lógica que no están asociados con una vista específica y 
 
 ### Enrutamiento
 
-El NgModule `Router` de Angular proporciona un servicio que le permite definir una ruta de navegación entre los diferentes estados de la aplicación y ver sus jerarquías. Se basa en las convenciones frecuentes de navegación del navegador:
+El NgModule `Router` de Angular proporciona un servicio que te permite definir una ruta de navegación entre los diferentes estados de la aplicación y ver sus jerarquías. Se basa en las convenciones frecuentes de navegación del navegador:
 
 * Ingresa una URL en la barra de direcciones para que el navegador vaya a la página correspondiente.
 
