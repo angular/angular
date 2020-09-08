@@ -1077,8 +1077,8 @@ export class Router {
       queryParamsHandling,
       preserveFragment
     } = navigationExtras;
-    if (typeof ngDevMode === 'undefined' ||
-        ngDevMode && preserveQueryParams && <any>console && <any>console.warn) {
+    if ((typeof ngDevMode === 'undefined' || ngDevMode) && preserveQueryParams && <any>console &&
+        <any>console.warn) {
       console.warn('preserveQueryParams is deprecated, use queryParamsHandling instead.');
     }
     const a = relativeTo || this.routerState.root;
