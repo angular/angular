@@ -34,7 +34,7 @@ export async function runWizard(
   }
 
   if (args.source !== undefined) {
-    info(`Skipping commit message wizard due because the commit was created via '${
+    info(`Skipping commit message wizard because the commit was created via '${
         args.source}' source`);
     process.exitCode = 0;
     return;
