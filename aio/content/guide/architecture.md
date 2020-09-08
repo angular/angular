@@ -86,7 +86,7 @@ Angular proporciona pipes predefinidas para transformaciones comunes, y también
 
 ## Servicios e inyección de dependencia
 
-Para los datos o la lógica que no están asociados con una vista específica y que desea compartir entre componentes, crea una clase *servicio*. Una definición de clase servicio está inmediatamente precedida por el decorador `@Injectable()`. El decorador proporciona los metadatos que permiten **inyectar** otros proveedores como dependencias en su clase.
+Para los datos o la lógica que no están asociados con una vista específica y que deseas compartir entre componentes, crea una clase *servicio*. Una definición de clase servicio está inmediatamente precedida por el decorador `@Injectable()`. El decorador proporciona los metadatos que permiten **inyectar** otros proveedores como dependencias en su clase.
 
  *Inyección de Dependecia* (ID) le permite mantener sus clases componente ligeras y eficientes. No obtienen datos del servidor, validan la entrada del usuario o inician sesión directamente en la consola; tales tareas son delegadas a los servicios.
 
