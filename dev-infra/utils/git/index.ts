@@ -33,16 +33,16 @@ export class GitCommandError extends Error {
 }
 
 /**
- * Common client for performing Git interactions.
+ * Common client for performing Git interactions with a given remote.
  *
  * Takes in two optional arguments:
- *   _githubToken: the token used for authentifation in github interactions, by default empty
+ *   `githubToken`: the token used for authentication in Github interactions, by default empty
  *     allowing readonly actions.
- *   _config: The dev-infra configuration containing GitClientConfig information, by default
- *     loads the config from the default location.
+ *   `config`: The dev-infra configuration containing information about the remote. By default
+ *     the dev-infra configuration is loaded with its Github configuration.
  **/
 export class GitClient {
-  /** Short-hand for accessing the remote configuration. */
+  /** Short-hand for accessing the default remote configuration. */
   remoteConfig = this._config.github;
   /** Octokit request parameters object for targeting the configured remote. */
   remoteParams = {owner: this.remoteConfig.owner, repo: this.remoteConfig.name};
@@ -91,6 +91,8 @@ export class GitClient {
     // commands unless the `stdio` is explicitly to `ignore` (which is equivalent to silent).
     // Note that we do not want to print the token if is contained in the command. It's common
     // to share errors with others if the tool failed, and we do not want to leak tokens.
+    // TODO: Add support for configuring this on a per-client basis. Some tools do not want
+    // to print the Git command messages to the console at all (e.g. to maintain clean output).
     const printFn = options.stdio !== 'ignore' ? info : debug;
     printFn('Executing: git', this.omitGithubTokenFromMessage(args.join(' ')));
 
