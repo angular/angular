@@ -7,7 +7,7 @@
  */
 
 import {Injector, NgModuleRef} from '@angular/core';
-import {defer, EmptyError, from, Observable, Observer, of} from 'rxjs';
+import {EmptyError, from, Observable, Observer, of} from 'rxjs';
 import {catchError, combineAll, concatMap, first, map, mergeMap, tap} from 'rxjs/operators';
 
 import {LoadedRouterConfig, Route, Routes} from './config';
@@ -274,12 +274,11 @@ class ApplyRedirects {
       segments: UrlSegment[]): Observable<UrlSegmentGroup> {
     if (route.path === '**') {
       if (route.loadChildren) {
-        return defer(
-            () => this.configLoader.load(ngModule.injector, route)
-                      .pipe(map((cfg: LoadedRouterConfig) => {
-                        route._loadedConfig = cfg;
-                        return new UrlSegmentGroup(segments, {});
-                      })));
+        return this.configLoader.load(ngModule.injector, route)
+            .pipe(map((cfg: LoadedRouterConfig) => {
+              route._loadedConfig = cfg;
+              return new UrlSegmentGroup(segments, {});
+            }));
       }
 
       return of(new UrlSegmentGroup(segments, {}));
