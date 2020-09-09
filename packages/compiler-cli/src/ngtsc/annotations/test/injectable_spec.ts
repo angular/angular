@@ -22,7 +22,7 @@ runInEachFileSystem(() => {
            const {handler, TestClass, ɵprov, analysis} =
                setupHandler(/* errorOnDuplicateProv */ true);
            try {
-             handler.compile(TestClass, analysis);
+             handler.compileFull(TestClass, analysis);
              return fail('Compilation should have failed');
            } catch (err) {
              if (!(err instanceof FatalDiagnosticError)) {
@@ -39,7 +39,7 @@ runInEachFileSystem(() => {
          () => {
            const {handler, TestClass, ɵprov, analysis} =
                setupHandler(/* errorOnDuplicateProv */ false);
-           const res = handler.compile(TestClass, analysis);
+           const res = handler.compileFull(TestClass, analysis);
            expect(res).not.toContain(jasmine.objectContaining({name: 'ɵprov'}));
          });
     });

@@ -309,7 +309,7 @@ class TestHandler implements DecoratorHandler<unknown, unknown, unknown> {
     return {};
   }
 
-  compile(node: ClassDeclaration): CompileResult|CompileResult[] {
+  compileFull(node: ClassDeclaration): CompileResult|CompileResult[] {
     this.log.push(this.name + ':compile:' + node.name.text);
     return [];
   }
