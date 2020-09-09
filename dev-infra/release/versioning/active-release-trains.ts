@@ -7,52 +7,28 @@
  */
 
 import * as semver from 'semver';
-import {GithubClient, GithubRepo} from '../../../utils/git/github';
 
-/** Type describing a Github repository with corresponding API client. */
-export interface GithubRepoWithApi extends GithubRepo {
-  /** API client that can access the repository. */
-  api: GithubClient;
-}
+import {ReleaseTrain} from './release-trains';
+import {getBranchesForMajorVersions, getVersionOfBranch, GithubRepoWithApi, VersionBranch} from './version-branches';
 
-/** Type describing a version-branch. */
-export interface VersionBranch {
-  /** Name of the branch in Git. e.g. `10.0.x`. */
-  name: string;
-  /**
-   * Parsed SemVer version for the version-branch. Version branches technically do
-   * not follow the SemVer format, but we can have representative SemVer versions
-   * that can be used for comparisons, sorting and other checks.
-   */
-  parsed: semver.SemVer;
-}
-
-/** Type describing a release-train. */
-export interface ReleaseTrain {
-  /** Name of the branch for this release-train. */
-  branchName: string;
-  /** Current latest version for this release train. */
-  version: semver.SemVer;
+/** Interface describing determined active release trains for a project. */
+export interface ActiveReleaseTrains {
+  /** Release-train currently in the "release-candidate" or "feature-freeze" phase. */
+  releaseCandidate: ReleaseTrain|null;
+  /** Release-train currently in the "latest" phase. */
+  latest: ReleaseTrain;
+  /** Release-train in the `next` phase */
+  next: ReleaseTrain;
 }
 
 /** Branch name for the `next` branch. */
 export const nextBranchName = 'master';
 
-/** Regular expression that matches version-branches for a release-train. */
-const releaseTrainBranchNameRegex = /(\d+)\.(\d+)\.x/;
-
-/**
- * Fetches the active release train and its branches for the specified major version. i.e.
- * the latest active release-train branch name is resolved and an optional version-branch for
- * a currently active feature-freeze/release-candidate release-train.
- */
-export async function fetchActiveReleaseTrainBranches(
-    repo: GithubRepoWithApi, nextVersion: semver.SemVer): Promise<{
-  /** Release-train currently in active release-candidate/feature-freeze phase. */
-  releaseCandidate: ReleaseTrain | null,
-  /** Latest non-prerelease release train (i.e. for the patch branch). */
-  latest: ReleaseTrain
-}> {
+/** Fetches the active release trains for the configured project. */
+export async function fetchActiveReleaseTrains(repo: GithubRepoWithApi):
+    Promise<ActiveReleaseTrains> {
+  const nextVersion = await getVersionOfBranch(repo, nextBranchName);
+  const next = new ReleaseTrain(nextBranchName, nextVersion);
   const majorVersionsToConsider: number[] = [];
   let expectedReleaseCandidateMajor: number;
 
@@ -93,65 +69,7 @@ export async function fetchActiveReleaseTrainBranches(
         `have been considered: [${branches.map(b => b.name).join(', ')}]`);
   }
 
-  return {releaseCandidate, latest};
-}
-
-/** Gets the version of a given branch by reading the `package.json` upstream. */
-export async function getVersionOfBranch(
-    repo: GithubRepoWithApi, branchName: string): Promise<semver.SemVer> {
-  const {data} = await repo.api.repos.getContents(
-      {owner: repo.owner, repo: repo.name, path: '/package.json', ref: branchName});
-  const {version} = JSON.parse(Buffer.from(data.content, 'base64').toString());
-  const parsedVersion = semver.parse(version);
-  if (parsedVersion === null) {
-    throw Error(`Invalid version detected in following branch: ${branchName}.`);
-  }
-  return parsedVersion;
-}
-
-/** Whether the given branch corresponds to a release-train branch. */
-export function isReleaseTrainBranch(branchName: string): boolean {
-  return releaseTrainBranchNameRegex.test(branchName);
-}
-
-/**
- * Converts a given version-branch into a SemVer version that can be used with SemVer
- * utilities. e.g. to determine semantic order, extract major digit, compare.
- *
- * For example `10.0.x` will become `10.0.0` in SemVer. The patch digit is not
- * relevant but needed for parsing. SemVer does not allow `x` as patch digit.
- */
-export function getVersionForReleaseTrainBranch(branchName: string): semver.SemVer|null {
-  // Convert a given version-branch into a SemVer version that can be used
-  // with the SemVer utilities. i.e. to determine semantic order.
-  return semver.parse(branchName.replace(releaseTrainBranchNameRegex, '$1.$2.0'));
-}
-
-/**
- * Gets the version branches for the specified major versions in descending
- * order. i.e. latest version branches first.
- */
-export async function getBranchesForMajorVersions(
-    repo: GithubRepoWithApi, majorVersions: number[]): Promise<VersionBranch[]> {
-  const {data: branchData} =
-      await repo.api.repos.listBranches({owner: repo.owner, repo: repo.name, protected: true});
-  const branches: VersionBranch[] = [];
-
-  for (const {name} of branchData) {
-    if (!isReleaseTrainBranch(name)) {
-      continue;
-    }
-    // Convert the version-branch into a SemVer version that can be used with the
-    // SemVer utilities. e.g. to determine semantic order, compare versions.
-    const parsed = getVersionForReleaseTrainBranch(name);
-    // Collect all version-branches that match the specified major versions.
-    if (parsed !== null && majorVersions.includes(parsed.major)) {
-      branches.push({name, parsed});
-    }
-  }
-
-  // Sort captured version-branches in descending order.
-  return branches.sort((a, b) => semver.rcompare(a.parsed, b.parsed));
+  return {releaseCandidate, latest, next};
 }
 
 /** Finds the currently active release trains from the specified version branches. */
@@ -196,7 +114,7 @@ export async function findActiveReleaseTrainsFromVersionBranches(
     }
 
     const version = await getVersionOfBranch(repo, name);
-    const releaseTrain: ReleaseTrain = {branchName: name, version};
+    const releaseTrain = new ReleaseTrain(name, version);
     const isPrerelease = version.prerelease[0] === 'rc' || version.prerelease[0] === 'next';
 
     if (isPrerelease) {
