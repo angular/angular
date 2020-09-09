@@ -13,7 +13,7 @@ import * as ts from 'typescript';
 
 import {absoluteFrom, getFileSystem} from '../../../src/ngtsc/file_system';
 import {runInEachFileSystem, TestFile} from '../../../src/ngtsc/file_system/testing';
-import {NOOP_DEFAULT_IMPORT_RECORDER, Reexport} from '../../../src/ngtsc/imports';
+import {Reexport} from '../../../src/ngtsc/imports';
 import {MockLogger} from '../../../src/ngtsc/logging/testing';
 import {Import, ImportManager, translateStatement} from '../../../src/ngtsc/translator';
 import {loadTestFiles} from '../../../test/helpers';
@@ -65,8 +65,8 @@ class TestRenderingFormatter implements RenderingFormatter {
   }
   printStatement(stmt: Statement, sourceFile: ts.SourceFile, importManager: ImportManager): string {
     const node = translateStatement(
-        stmt, importManager, NOOP_DEFAULT_IMPORT_RECORDER,
-        this.isEs5 ? ts.ScriptTarget.ES5 : ts.ScriptTarget.ES2015);
+        stmt, importManager,
+        {downlevelLocalizedStrings: this.isEs5, downlevelVariableDeclarations: this.isEs5});
     const code = this.printer.printNode(ts.EmitHint.Unspecified, node, sourceFile);
 
     return `// TRANSPILED\n${code}`;

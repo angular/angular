@@ -5,37 +5,26 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {ImportRewriter, NoopImportRewriter} from '../../imports/src/core';
+import * as ts from 'typescript';
+import {ImportRewriter, NoopImportRewriter} from '../../imports';
+import {Import, ImportGenerator, NamedImport} from './api/import_generator';
 
-/**
- * Information about an import that has been added to a module.
- */
-export interface Import {
-  /** The name of the module that has been imported. */
-  specifier: string;
-  /** The alias of the imported module. */
-  qualifier: string;
-}
-
-/**
- * The symbol name and import namespace of an imported symbol,
- * which has been registered through the ImportManager.
- */
-export interface NamedImport {
-  /** The import namespace containing this imported symbol. */
-  moduleImport: string|null;
-  /** The (possibly rewritten) name of the imported symbol. */
-  symbol: string;
-}
-
-export class ImportManager {
-  private specifierToIdentifier = new Map<string, string>();
+export class ImportManager implements ImportGenerator<ts.Identifier> {
+  private specifierToIdentifier = new Map<string, ts.Identifier>();
   private nextIndex = 0;
 
   constructor(protected rewriter: ImportRewriter = new NoopImportRewriter(), private prefix = 'i') {
   }
 
-  generateNamedImport(moduleName: string, originalSymbol: string): NamedImport {
+  generateNamespaceImport(moduleName: string): ts.Identifier {
+    if (!this.specifierToIdentifier.has(moduleName)) {
+      this.specifierToIdentifier.set(
+          moduleName, ts.createIdentifier(`${this.prefix}${this.nextIndex++}`));
+    }
+    return this.specifierToIdentifier.get(moduleName)!;
+  }
+
+  generateNamedImport(moduleName: string, originalSymbol: string): NamedImport<ts.Identifier> {
     // First, rewrite the symbol name.
     const symbol = this.rewriter.rewriteSymbol(originalSymbol, moduleName);
 
@@ -46,12 +35,8 @@ export class ImportManager {
       return {moduleImport: null, symbol};
     }
 
-    // If not, this symbol will be imported. Allocate a prefix for the imported module if needed.
-
-    if (!this.specifierToIdentifier.has(moduleName)) {
-      this.specifierToIdentifier.set(moduleName, `${this.prefix}${this.nextIndex++}`);
-    }
-    const moduleImport = this.specifierToIdentifier.get(moduleName)!;
+    // If not, this symbol will be imported using a generated namespace import.
+    const moduleImport = this.generateNamespaceImport(moduleName);
 
     return {moduleImport, symbol};
   }
@@ -60,7 +45,7 @@ export class ImportManager {
     const imports: {specifier: string, qualifier: string}[] = [];
     this.specifierToIdentifier.forEach((qualifier, specifier) => {
       specifier = this.rewriter.rewriteSpecifier(specifier, contextPath);
-      imports.push({specifier, qualifier});
+      imports.push({specifier, qualifier: qualifier.text});
     });
     return imports;
   }
