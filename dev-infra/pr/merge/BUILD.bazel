@@ -11,6 +11,8 @@ ts_library(
     visibility = ["//dev-infra:__subpackages__"],
     deps = [
         "//dev-infra/commit-message",
+        "//dev-infra/release/config",
+        "//dev-infra/release/versioning",
         "//dev-infra/utils",
         "@npm//@octokit/rest",
         "@npm//@types/inquirer",
@@ -28,6 +30,8 @@ ts_library(
     srcs = glob(["**/*.spec.ts"]),
     deps = [
         ":merge",
+        "//dev-infra/release/config",
+        "//dev-infra/release/versioning",
         "//dev-infra/utils",
         "@npm//@types/jasmine",
         "@npm//@types/node",
