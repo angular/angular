@@ -236,7 +236,6 @@ export class DefaultIterableDiffer<V> implements IterableDiffer<V>, IterableChan
   _reset() {
     if (this.isDirty) {
       let record: IterableChangeRecord_<V>|null;
-      let nextRecord: IterableChangeRecord_<V>|null;
 
       for (record = this._previousItHead = this._itHead; record !== null; record = record._next) {
         record._nextPrevious = record._next;
@@ -247,9 +246,8 @@ export class DefaultIterableDiffer<V> implements IterableDiffer<V>, IterableChan
       }
       this._additionsHead = this._additionsTail = null;
 
-      for (record = this._movesHead; record !== null; record = nextRecord) {
+      for (record = this._movesHead; record !== null; record = record._nextMoved) {
         record.previousIndex = record.currentIndex;
-        nextRecord = record._nextMoved;
       }
       this._movesHead = this._movesTail = null;
       this._removalsHead = this._removalsTail = null;
