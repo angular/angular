@@ -91,7 +91,7 @@ export class UmdRenderingFormatter extends Esm5RenderingFormatter {
       const namedImport = entryPointBasePath !== basePath ?
           importManager.generateNamedImport(relativePath, e.identifier) :
           {symbol: e.identifier, moduleImport: null};
-      const importNamespace = namedImport.moduleImport ? `${namedImport.moduleImport}.` : '';
+      const importNamespace = namedImport.moduleImport ? `${namedImport.moduleImport.text}.` : '';
       const exportStr = `\nexports.${e.identifier} = ${importNamespace}${namedImport.symbol};`;
       output.appendRight(insertionPoint, exportStr);
     });
@@ -111,7 +111,7 @@ export class UmdRenderingFormatter extends Esm5RenderingFormatter {
         lastStatement ? lastStatement.getEnd() : factoryFunction.body.getEnd() - 1;
     for (const e of exports) {
       const namedImport = importManager.generateNamedImport(e.fromModule, e.symbolName);
-      const importNamespace = namedImport.moduleImport ? `${namedImport.moduleImport}.` : '';
+      const importNamespace = namedImport.moduleImport ? `${namedImport.moduleImport.text}.` : '';
       const exportStr = `\nexports.${e.asAlias} = ${importNamespace}${namedImport.symbol};`;
       output.appendRight(insertionPoint, exportStr);
     }
