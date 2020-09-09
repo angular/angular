@@ -371,7 +371,7 @@ export class NgModuleDecoratorHandler implements
     }
   }
 
-  compile(
+  compileFull(
       node: ClassDeclaration, analysis: Readonly<NgModuleAnalysis>,
       resolution: Readonly<NgModuleResolution>): CompileResult[] {
     //  Merge the injector imports (which are 'exports' that were later found to be NgModules)
