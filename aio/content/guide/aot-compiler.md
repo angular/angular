@@ -62,7 +62,7 @@ In the following example, the `@Component()` metadata object and the class const
 @Component({
   selector: 'app-typical',
   template: '<div>A typical component for {{data.name}}</div>'
-)}
+})
 export class TypicalComponent {
   @Input() data: TypicalData;
   constructor(private someService: SomeService) { ... }
