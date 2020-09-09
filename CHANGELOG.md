@@ -1,3 +1,21 @@
+<a name="11.0.0-next.1"></a>
+# 11.0.0-next.1 (2020-09-09)
+
+
+### Bug Fixes
+
+* **compiler-cli:** compute source-mappings for localized strings ([#38645](https://github.com/angular/angular/issues/38645)) ([7e0b3fd](https://github.com/angular/angular/commit/7e0b3fd)), closes [#38588](https://github.com/angular/angular/issues/38588)
+* **core:** remove CollectionChangeRecord symbol ([#38668](https://github.com/angular/angular/issues/38668)) ([fdea180](https://github.com/angular/angular/commit/fdea180))
+* **router:** support lazy loading for empty path named outlets ([#38379](https://github.com/angular/angular/issues/38379)) ([926ffcd](https://github.com/angular/angular/commit/926ffcd)), closes [#12842](https://github.com/angular/angular/issues/12842)
+
+
+### BREAKING CHANGES
+
+* **core:** CollectionChangeRecord has been removed, use IterableChangeRecord
+instead
+
+
+
 <a name="10.1.1"></a>
 ## 10.1.1 (2020-09-09)
 
