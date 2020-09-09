@@ -26,7 +26,6 @@
 
 <p align="center">
   <a href="https://circleci.com/gh/angular/workflows/angular/tree/master" alt="CI Status"><img src="https://circleci.com/gh/angular/angular/tree/master.svg?style=shield"></a>
-  <a href="https://www.browserstack.com/automate/public-build/LzF3RzBVVGt6VWE2S0hHaC9uYllOZz09LS1BVjNTclBKV0x4eVRlcjA4QVY1M0N3PT0=--eb4ce8c8dc2c1c5b2b5352d473ee12a73ac20e06" alt="Browser Stack"><img src="https://www.browserstack.com/automate/badge.svg?badge_key=LzF3RzBVVGt6VWE2S0hHaC9uYllOZz09LS1BVjNTclBKV0x4eVRlcjA4QVY1M0N3PT0=--eb4ce8c8dc2c1c5b2b5352d473ee12a73ac20e06"></a>
   <a href="https://www.npmjs.com/@angular/core" alt="Download"><img src="https://badge.fury.io/js/%40angular%2Fcore.svg"></a>
   <a href="https://gitter.im/angular/angular?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge" alt="Gitter Conversation"><img src="https://badges.gitter.im/Join%20Chat.svg"></a>
 </p>
