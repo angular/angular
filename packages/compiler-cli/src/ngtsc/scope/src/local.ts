@@ -26,7 +26,6 @@ export interface LocalNgModuleData {
 }
 
 export interface LocalModuleScope extends ExportScope {
-  ngModule: ClassDeclaration;
   compilation: ScopeData;
   reexports: Reexport[]|null;
   schemas: SchemaMetadata[];
@@ -434,8 +433,7 @@ export class LocalModuleScopeRegistry implements MetadataRegistry, ComponentScop
     }
 
     // Finally, produce the `LocalModuleScope` with both the compilation and export scopes.
-    const scope: LocalModuleScope = {
-      ngModule: ngModule.ref.node,
+    const scope = {
       compilation: {
         directives: Array.from(compilationDirectives.values()),
         pipes: Array.from(compilationPipes.values()),

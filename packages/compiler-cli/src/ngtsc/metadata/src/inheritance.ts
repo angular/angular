@@ -26,9 +26,6 @@ export function flattenInheritedDirectiveMetadata(
   if (topMeta === null) {
     throw new Error(`Metadata not found for directive: ${dir.debugName}`);
   }
-  if (topMeta.baseClass === null) {
-    return topMeta;
-  }
 
   const coercedInputFields = new Set<ClassPropertyName>();
   const undeclaredInputFields = new Set<ClassPropertyName>();
