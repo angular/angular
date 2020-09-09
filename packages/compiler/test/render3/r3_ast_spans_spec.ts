@@ -174,7 +174,7 @@ describe('R3 AST source spans', () => {
     it('is correct for * directives', () => {
       expectFromHtml('<div *ngIf></div>').toEqual([
         ['Template', '0:17', '0:11', '11:17'],
-        ['TextAttribute', '5:10', '<empty>'],
+        ['TextAttribute', '6:10', '<empty>'],  // ngIf
         ['Element', '0:17', '0:11', '11:17'],
       ]);
     });
@@ -237,9 +237,9 @@ describe('R3 AST source spans', () => {
       // </ng-template>
       expectFromHtml('<div *ngFor="let item of items"></div>').toEqual([
         ['Template', '0:38', '0:32', '32:38'],
-        ['TextAttribute', '5:31', '<empty>'],
-        ['BoundAttribute', '5:31', '25:30'],  // *ngFor="let item of items" -> items
-        ['Variable', '13:22', '<empty>'],     // let item
+        ['TextAttribute', '6:11', '<empty>'],  // ngFor
+        ['BoundAttribute', '5:31', '25:30'],   // *ngFor="let item of items" -> items
+        ['Variable', '13:22', '<empty>'],      // let item
         ['Element', '0:38', '0:32', '32:38'],
       ]);
 
@@ -260,8 +260,8 @@ describe('R3 AST source spans', () => {
     it('is correct for variables via let ...', () => {
       expectFromHtml('<div *ngIf="let a=b"></div>').toEqual([
         ['Template', '0:27', '0:21', '21:27'],
-        ['TextAttribute', '5:20', '<empty>'],
-        ['Variable', '12:19', '18:19'],  // let a=b -> b
+        ['TextAttribute', '6:10', '<empty>'],  // ngIf
+        ['Variable', '12:19', '18:19'],        // let a=b -> b
         ['Element', '0:27', '0:21', '21:27'],
       ]);
     });
