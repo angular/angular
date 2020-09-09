@@ -7,8 +7,8 @@
  */
 
 import {Injector, NgModuleRef} from '@angular/core';
-import {defer, EmptyError, Observable, Observer, of} from 'rxjs';
-import {catchError, concatAll, first, map, mergeMap, tap} from 'rxjs/operators';
+import {EmptyError, Observable, Observer, of} from 'rxjs';
+import {catchError, concatMap, first, map, mergeMap, tap} from 'rxjs/operators';
 
 import {LoadedRouterConfig, Route, Routes} from './config';
 import {CanLoadFn} from './interfaces';
@@ -149,7 +149,7 @@ class ApplyRedirects {
       segments: UrlSegment[], outlet: string,
       allowRedirects: boolean): Observable<UrlSegmentGroup> {
     return of(...routes).pipe(
-        map((r: any) => {
+        concatMap((r: any) => {
           const expanded$ = this.expandSegmentAgainstRoute(
               ngModule, segmentGroup, routes, r, segments, outlet, allowRedirects);
           return expanded$.pipe(catchError((e: any) => {
@@ -161,7 +161,7 @@ class ApplyRedirects {
             throw e;
           }));
         }),
-        concatAll(), first((s: any) => !!s), catchError((e: any, _: any) => {
+        first((s: any) => !!s), catchError((e: any, _: any) => {
           if (e instanceof EmptyError || e.name === 'EmptyError') {
             if (this.noLeftoversInUrl(segmentGroup, segments, outlet)) {
               return of(new UrlSegmentGroup([], {}));
@@ -247,12 +247,11 @@ class ApplyRedirects {
       segments: UrlSegment[]): Observable<UrlSegmentGroup> {
     if (route.path === '**') {
       if (route.loadChildren) {
-        return defer(
-            () => this.configLoader.load(ngModule.injector, route)
-                      .pipe(map((cfg: LoadedRouterConfig) => {
-                        route._loadedConfig = cfg;
-                        return new UrlSegmentGroup(segments, {});
-                      })));
+        return this.configLoader.load(ngModule.injector, route)
+            .pipe(map((cfg: LoadedRouterConfig) => {
+              route._loadedConfig = cfg;
+              return new UrlSegmentGroup(segments, {});
+            }));
       }
 
       return of(new UrlSegmentGroup(segments, {}));
