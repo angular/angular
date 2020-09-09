@@ -1,6 +1,6 @@
 # Triage Process and GitHub Labels for Angular
 
-This document describes how the Angular team uses labels and milestones to triage issues on github.
+This document describes how the Angular team uses labels and milestones to triage issues on GitHub.
 The basic idea of the process is that caretaker only assigns a component (`comp: *`) label.
 The owner of the component is then responsible for the secondary / component-level triage.
 
@@ -150,7 +150,7 @@ In addition, PRs can have the following states:
   * _**Who adds it:** Any team member._
   * _**Who removes it:** Any team member._
 
-When a PR is ready for review, a review should be requested using the Reviewers interface in Github.
+When a PR is ready for review, a review should be requested using the Reviewers interface in GitHub.
 
 
 ## PR Target
@@ -160,7 +160,7 @@ In our git workflow, we merge changes either to the `master` branch, the active 
 The decision about the target must be done by the PR author and/or reviewer.
 This decision is then honored when the PR is being merged by the caretaker.
 
-To communicate the target we use the following labels:
+To communicate the target we use GitHub labels and only one target label may be applied to a PR.
 
 Targeting an active release train:
 
@@ -176,9 +176,9 @@ Special Cases:
 
 Notes:
   - To land a change only in a patch/RC branch, without landing it in any other active release-train branch (such
-  as `master`), the patch/RC branch can be targeted in the Github UI with the appropriate
+  as `master`), the patch/RC branch can be targeted in the GitHub UI with the appropriate
   `target: patch`/`target: rc` label.
-  - `target: lts` PRs must target the specific LTS branch they would need to merge into in the Github UI, in
+  - `target: lts` PRs must target the specific LTS branch they would need to merge into in the GitHub UI, in
   cases which a change is desired in multiple LTS branches, individual PRs for each LTS branch must be created
 
 
