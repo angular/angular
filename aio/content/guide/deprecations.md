@@ -43,7 +43,6 @@ v9 - v12
 | `@angular/core`               | [`RenderComponentType`](#core)                                                | <!--v7--> v11 |
 | `@angular/core`               | [`WrappedValue`](#core)                                                       | <!--v10--> v12 |
 | `@angular/forms`              | [`ngModel` with reactive forms](#ngmodel-reactive)                            | <!--v6--> v11 |
-| `@angular/router`             | [`preserveQueryParams`](#router)                                              | <!--v7--> v11 |
 | `@angular/upgrade`            | [`@angular/upgrade`](#upgrade)                                                | <!--v8--> v11 |
 | `@angular/upgrade`            | [`getAngularLib`](#upgrade-static)                                            | <!--v8--> v11 |
 | `@angular/upgrade`            | [`setAngularLib`](#upgrade-static)                                            | <!--v8--> v11 |
@@ -113,12 +112,6 @@ Tip: In the [API reference section](api) of this doc site, deprecated APIs are i
 | --- | ----------- | --------------------- | ----- |
 | [`ngModel` with reactive forms](#ngmodel-reactive) | [`FormControlDirective`](api/forms/FormControlDirective) | v6 | none |
 
-{@a router}
-### @angular/router
-
-| API | Replacement | Deprecation announced | Notes |
-| --- | ----------- | --------------------- | ----- |
-| [`preserveQueryParams`](api/router/UrlCreationOptions#preserveQueryParams) | [`queryParamsHandling`](api/router/UrlCreationOptions#queryParamsHandling) | v4 | none |
 
 {@a upgrade}
 ### @angular/upgrade

@@ -206,17 +206,6 @@ export class RouterLink implements OnChanges {
     }
   }
 
-  /**
-   * @deprecated As of Angular v4.0 use `queryParamsHandling` instead.
-   */
-  @Input()
-  set preserveQueryParams(value: boolean) {
-    if ((typeof ngDevMode === 'undefined' || ngDevMode) && <any>console && <any>console.warn) {
-      console.warn('preserveQueryParams is deprecated!, use queryParamsHandling instead.');
-    }
-    this.preserve = value;
-  }
-
   /** @nodoc */
   @HostListener('click')
   onClick(): boolean {
@@ -234,7 +223,6 @@ export class RouterLink implements OnChanges {
       relativeTo: this.route,
       queryParams: this.queryParams,
       fragment: this.fragment,
-      preserveQueryParams: attrBoolValue(this.preserve),
       queryParamsHandling: this.queryParamsHandling,
       preserveFragment: attrBoolValue(this.preserveFragment),
     });
@@ -346,17 +334,6 @@ export class RouterLinkWithHref implements OnChanges, OnDestroy {
     }
   }
 
-  /**
-   * @deprecated As of Angular v4.0 use `queryParamsHandling` instead.
-   */
-  @Input()
-  set preserveQueryParams(value: boolean) {
-    if ((typeof ngDevMode === 'undefined' || ngDevMode) && <any>console && <any>console.warn) {
-      console.warn('preserveQueryParams is deprecated, use queryParamsHandling instead.');
-    }
-    this.preserve = value;
-  }
-
   /** @nodoc */
   ngOnChanges(changes: SimpleChanges): any {
     this.updateTargetUrlAndHref();
@@ -399,7 +376,6 @@ export class RouterLinkWithHref implements OnChanges, OnDestroy {
       relativeTo: this.route,
       queryParams: this.queryParams,
       fragment: this.fragment,
-      preserveQueryParams: attrBoolValue(this.preserve),
       queryParamsHandling: this.queryParamsHandling,
       preserveFragment: attrBoolValue(this.preserveFragment),
     });

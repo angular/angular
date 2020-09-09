@@ -341,7 +341,7 @@ export declare class Router {
     urlHandlingStrategy: UrlHandlingStrategy;
     urlUpdateStrategy: 'deferred' | 'eager';
     constructor(rootComponentType: Type<any> | null, urlSerializer: UrlSerializer, rootContexts: ChildrenOutletContexts, location: Location, injector: Injector, loader: NgModuleFactoryLoader, compiler: Compiler, config: Routes);
-    createUrlTree(commands: any[], navigationExtras?: UrlCreationOptions): UrlTree;
+    createUrlTree(commands: any[], navigationExtras?: NavigationExtras): UrlTree;
     dispose(): void;
     getCurrentNavigation(): Navigation | null;
     initialNavigation(): void;
@@ -378,7 +378,6 @@ export declare class RouterEvent {
 export declare class RouterLink implements OnChanges {
     fragment?: string;
     preserveFragment: boolean;
-    /** @deprecated */ set preserveQueryParams(value: boolean);
     queryParams?: Params | null;
     queryParamsHandling?: QueryParamsHandling | null;
     replaceUrl: boolean;
@@ -411,7 +410,6 @@ export declare class RouterLinkWithHref implements OnChanges, OnDestroy {
     fragment?: string;
     href: string;
     preserveFragment: boolean;
-    /** @deprecated */ set preserveQueryParams(value: boolean);
     queryParams?: Params | null;
     queryParamsHandling?: QueryParamsHandling | null;
     replaceUrl: boolean;
@@ -498,7 +496,6 @@ export declare class Scroll {
 export declare interface UrlCreationOptions {
     fragment?: string;
     preserveFragment?: boolean;
-    /** @deprecated */ preserveQueryParams?: boolean;
     queryParams?: Params | null;
     queryParamsHandling?: QueryParamsHandling | null;
     relativeTo?: ActivatedRoute | null;
