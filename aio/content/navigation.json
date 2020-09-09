@@ -102,11 +102,6 @@
           "tooltip": "Building dynamic views with data binding",
           "children": [
             {
-              "url": "guide/displaying-data",
-              "title": "Data binding",
-              "tooltip": "Property binding helps show app data in the UI."
-            },
-            {
               "url": "guide/user-input",
               "title": "User Input",
               "tooltip": "User input triggers DOM events. Angular listens to those events with event bindings that funnel updated values back into your app's components and models."
@@ -543,27 +538,6 @@
       "tooltip": "End-to-end tutorials for learning Angular concepts and patterns.",
       "children": [
         {
-          "title": "Routing",
-          "tooltip": "End-to-end tutorials for learning about Angular's router.",
-          "children": [
-            {
-              "url": "guide/router-tutorial",
-              "title": "Using Angular Routes in a Single-page Application",
-              "tooltip": "A tutorial that covers many patterns associated with Angular routing."
-            },
-            {
-              "url": "guide/router-tutorial-toh",
-              "title": "Router tutorial: tour of heroes",
-              "tooltip": "Explore how to use Angular's router. Based on the Tour of Heroes example."
-            }
-          ]
-        },
-        {
-          "url": "guide/forms",
-          "title": "Building a Template-driven Form",
-          "tooltip": "Create a template-driven form using directives and Angular template syntax."
-        },
-        {
           "title": "Tutorial: Tour of Heroes",
           "tooltip": "The Tour of Heroes app is used as a reference point in many Angular examples.",
           "children": [
@@ -608,6 +582,32 @@
               "tooltip": "Part 6: Use HTTP to retrieve and save hero data."
             }
           ]
+        },
+        {
+          "title": "Routing",
+          "tooltip": "End-to-end tutorials for learning about Angular's router.",
+          "children": [
+            {
+              "url": "guide/router-tutorial",
+              "title": "Using Angular Routes in a Single-page Application",
+              "tooltip": "A tutorial that covers many patterns associated with Angular routing."
+            },
+            {
+              "url": "guide/router-tutorial-toh",
+              "title": "Router tutorial: tour of heroes",
+              "tooltip": "Explore how to use Angular's router. Based on the Tour of Heroes example."
+            }
+          ]
+        },
+        {
+          "url": "guide/forms",
+          "title": "Building a Template-driven Form",
+          "tooltip": "Create a template-driven form using directives and Angular template syntax."
+        },
+        {
+          "url": "guide/displaying-data",
+          "title": "Data binding",
+          "tooltip": "Property binding helps show app data in the UI."
         },
         {
           "url": "guide/web-worker",
