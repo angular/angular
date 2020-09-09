@@ -4090,7 +4090,7 @@ describe('Integration', () => {
         return of(delayMs).pipe(delay(delayMs), mapTo(true));
       }
 
-      @NgModule()
+      @NgModule({imports: [RouterModule.forChild([{path: '', component: BlankCmp}])]})
       class LoadedModule {
       }
 
@@ -4120,6 +4120,15 @@ describe('Integration', () => {
               }
             },
             {
+              provide: 'returnFalseAndNavigate',
+              useFactory: (router: Router) => () => {
+                log.push('returnFalseAndNavigate');
+                router.navigateByUrl('/redirected');
+                return false;
+              },
+              deps: [Router]
+            },
+            {
               provide: 'returnUrlTree',
               useFactory: (router: Router) => () => {
                 return delayObservable(15).pipe(
@@ -4132,7 +4141,23 @@ describe('Integration', () => {
         });
       });
 
-      it('should wait for higher priority guards to be resolved',
+      it('should only execute canLoad guards of routes being activated', fakeAsync(() => {
+           const router = TestBed.inject(Router);
+
+           router.resetConfig([
+             {path: 'lazy', canLoad: ['guard1'], loadChildren: () => of(LoadedModule)},
+             {path: 'redirected', component: SimpleCmp},
+             // canLoad should not run for this route because 'lazy' activates first
+             {path: '', canLoad: ['returnFalseAndNavigate'], loadChildren: () => of(LoadedModule)},
+           ]);
+
+           router.navigateByUrl('/lazy');
+           tick(5);
+           expect(log.length).toEqual(1);
+           expect(log).toEqual(['guard1']);
+         }));
+
+      it('should execute canLoad guards',
          fakeAsync(inject(
              [Router, NgModuleFactoryLoader],
              (router: Router, loader: SpyNgModuleFactoryLoader) => {
