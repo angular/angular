@@ -7,6 +7,12 @@ body,
     background-color: $white;
 }
 
+aio-shell main,
+.center-layout {
+  max-width: 50em;
+  margin: 0 auto;
+}
+
 .github-links + .content h1 {
   max-width: 90%;
 }

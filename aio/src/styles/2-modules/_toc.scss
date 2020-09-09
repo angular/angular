@@ -128,7 +128,8 @@
       a {
         color: lighten($darkgray, 10);
         overflow: visible;
-        @include font-size(12);
+        @include font-size(14);
+        @include line-height(28);
         display: table-cell;
       }
 
@@ -147,7 +148,7 @@
             content: '';
             border-radius: 50%;
             left: -3px;
-            top: 12px;
+            top: 14px;
             background: $blue;
             position: absolute;
             width: 6px;
