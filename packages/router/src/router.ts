@@ -105,14 +105,6 @@ export interface UrlCreationOptions {
   fragment?: string;
 
   /**
-   * **DEPRECATED**: Use `queryParamsHandling: "preserve"` instead to preserve
-   * query parameters for the next navigation.
-   *
-   * @deprecated since v4
-   */
-  preserveQueryParams?: boolean;
-
-  /**
    * How to handle query parameters in the router link for the next navigation.
    * One of:
    * * `preserve` : Preserve current parameters.
@@ -1104,35 +1096,21 @@ export class Router {
    * router.createUrlTree(['../../team/44/user/22'], {relativeTo: route});
    * ```
    */
-  createUrlTree(commands: any[], navigationExtras: UrlCreationOptions = {}): UrlTree {
-    const {
-      relativeTo,
-      queryParams,
-      fragment,
-      preserveQueryParams,
-      queryParamsHandling,
-      preserveFragment
-    } = navigationExtras;
-    if ((typeof ngDevMode === 'undefined' || ngDevMode) && preserveQueryParams && <any>console &&
-        <any>console.warn) {
-      console.warn('preserveQueryParams is deprecated, use queryParamsHandling instead.');
-    }
+  createUrlTree(commands: any[], navigationExtras: NavigationExtras = {}): UrlTree {
+    const {relativeTo, queryParams, fragment, queryParamsHandling, preserveFragment} =
+        navigationExtras;
     const a = relativeTo || this.routerState.root;
     const f = preserveFragment ? this.currentUrlTree.fragment : fragment;
     let q: Params|null = null;
-    if (queryParamsHandling) {
-      switch (queryParamsHandling) {
-        case 'merge':
-          q = {...this.currentUrlTree.queryParams, ...queryParams};
-          break;
-        case 'preserve':
-          q = this.currentUrlTree.queryParams;
-          break;
-        default:
-          q = queryParams || null;
-      }
-    } else {
-      q = preserveQueryParams ? this.currentUrlTree.queryParams : queryParams || null;
+    switch (queryParamsHandling) {
+      case 'merge':
+        q = {...this.currentUrlTree.queryParams, ...queryParams};
+        break;
+      case 'preserve':
+        q = this.currentUrlTree.queryParams;
+        break;
+      default:
+        q = queryParams || null;
     }
     if (q !== null) {
       q = this.removeEmptyProps(q);
