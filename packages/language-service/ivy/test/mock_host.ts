@@ -45,14 +45,7 @@ export const host: ts.server.ServerHost = {
   ...ts.sys,
   readFile(absPath: string, encoding?: string): string |
       undefined {
-        const content = ts.sys.readFile(absPath, encoding);
-        if (content === undefined) {
-          return undefined;
-        }
-        if (absPath === APP_COMPONENT || absPath === PARSING_CASES || absPath === TEST_TEMPLATE) {
-          return removeReferenceMarkers(removeLocationMarkers(content));
-        }
-        return content;
+        return ts.sys.readFile(absPath, encoding);
       },
   watchFile(path: string, callback: ts.FileWatcherCallback): ts.FileWatcher {
     return NOOP_FILE_WATCHER;
@@ -205,15 +198,4 @@ function replaceOnce(searchText: string, regex: RegExp, replaceText: string): Ov
     return replaceText;
   });
   return {position, text};
-}
-
-const REF_MARKER = /«(((\w|\-)+)|([^ᐱ]*ᐱ(\w+)ᐱ.[^»]*))»/g;
-const LOC_MARKER = /\~\{(\w+(-\w+)*)\}/g;
-
-function removeReferenceMarkers(value: string): string {
-  return value.replace(REF_MARKER, '');
-}
-
-function removeLocationMarkers(value: string): string {
-  return value.replace(LOC_MARKER, '');
 }
