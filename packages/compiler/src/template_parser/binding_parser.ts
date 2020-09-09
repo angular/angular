@@ -157,10 +157,12 @@ export class BindingParser {
         this._parsePropertyAst(
             key, binding.value, sourceSpan, valueSpan, targetMatchableAttrs, targetProps);
       } else {
-        targetMatchableAttrs.push([key, '']);
+        targetMatchableAttrs.push([key, '' /* value */]);
+        // Since this is a literal attribute with no RHS, source span should be
+        // just the key span.
         this.parseLiteralAttr(
-            key, null, sourceSpan, absoluteValueOffset, undefined, targetMatchableAttrs,
-            targetProps);
+            key, null /* value */, keySpan, absoluteValueOffset, undefined /* valueSpan */,
+            targetMatchableAttrs, targetProps);
       }
     }
   }

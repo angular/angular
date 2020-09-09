@@ -487,8 +487,9 @@ describe('findNodeAtPosition for microsyntax expression', () => {
     // <ng-template ngFor let-item [ngForOf]="items">
     expect(errors).toBe(null);
     const node = findNodeAtPosition(nodes, position);
-    // TODO: this is currently wrong because it should point to ngFor text
-    // attribute instead of ngForOf bound attribute
+    expect(isTemplateNode(node!)).toBeTrue();
+    expect(node).toBeInstanceOf(t.TextAttribute);
+    expect((node as t.TextAttribute).name).toBe('ngFor');
   });
 
   it('should locate not let keyword', () => {
