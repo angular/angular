@@ -8,6 +8,7 @@
 import * as yargs from 'yargs';
 
 import {ReleaseBuildCommandModule} from './build/cli';
+import {ReleaseSetDistTagCommand} from './set-dist-tag/cli';
 import {buildEnvStamp} from './stamping/env-stamp';
 
 /** Build the parser for the release commands. */
@@ -16,6 +17,7 @@ export function buildReleaseParser(localYargs: yargs.Argv) {
       .strict()
       .demandCommand()
       .command(ReleaseBuildCommandModule)
+      .command(ReleaseSetDistTagCommand)
       .command(
           'build-env-stamp', 'Build the environment stamping information', {},
           () => buildEnvStamp());
