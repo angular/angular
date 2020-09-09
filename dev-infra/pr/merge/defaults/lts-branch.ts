@@ -6,46 +6,25 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import fetch from 'node-fetch';
 import * as semver from 'semver';
 
+import {ReleaseConfig} from '../../../release/config/index';
+import {computeLtsEndDateOfMajor, fetchProjectNpmPackageInfo, getLtsNpmDistTagOfMajor, getVersionOfBranch, GithubRepoWithApi} from '../../../release/versioning';
 import {promptConfirm, red, warn, yellow} from '../../../utils/console';
 import {InvalidTargetBranchError} from '../target-label';
-
-import {getVersionOfBranch, GithubRepoWithApi} from './branches';
-
-/**
- * Number of months a major version in Angular is actively supported. See:
- * https://angular.io/guide/releases#support-policy-and-schedule.
- */
-export const majorActiveSupportDuration = 6;
-
-/**
- * Number of months a major version has active long-term support. See:
- * https://angular.io/guide/releases#support-policy-and-schedule.
- */
-export const majorActiveTermSupportDuration = 12;
-
-/** Regular expression that matches LTS NPM dist tags. */
-export const ltsNpmDistTagRegex = /^v(\d+)-lts$/;
 
 /**
  * Asserts that the given branch corresponds to an active LTS version-branch that can receive
  * backport fixes. Throws an error if LTS expired or an invalid branch is selected.
  *
- * @param repo Github repository for which the given branch exists.
- * @param representativeNpmPackage NPM package representing the given repository. Angular
- *   repositories usually contain multiple packages in a monorepo scheme, but packages commonly
- *   are released with the same versions. This means that a single package can be used for querying
- *   NPM about previously published versions (e.g. to determine active LTS versions). The package
- *   name is used to check if the given branch is containing an active LTS version.
+ * @param repo Repository containing the given branch. Used for Github API queries.
+ * @param releaseConfig Configuration for releases. Used to query NPM about past publishes.
  * @param branchName Branch that is checked to be an active LTS version-branch.
  * */
 export async function assertActiveLtsBranch(
-    repo: GithubRepoWithApi, representativeNpmPackage: string, branchName: string) {
+    repo: GithubRepoWithApi, releaseConfig: ReleaseConfig, branchName: string) {
   const version = await getVersionOfBranch(repo, branchName);
-  const {'dist-tags': distTags, time} =
-      await (await fetch(`https://registry.npmjs.org/${representativeNpmPackage}`)).json();
+  const {'dist-tags': distTags, time} = await fetchProjectNpmPackageInfo(releaseConfig);
 
   // LTS versions should be tagged in NPM in the following format: `v{major}-lts`.
   const ltsNpmTag = getLtsNpmDistTagOfMajor(version.major);
@@ -86,22 +65,4 @@ export async function assertActiveLtsBranch(
         `Long-term supported ended for v${version.major} on ${ltsEndDateText}. ` +
         `Pull request cannot be merged into the ${branchName} branch.`);
   }
-}
-
-/**
- * Computes the date when long-term support ends for a major released at the
- * specified date.
- */
-export function computeLtsEndDateOfMajor(majorReleaseDate: Date): Date {
-  return new Date(
-      majorReleaseDate.getFullYear(),
-      majorReleaseDate.getMonth() + majorActiveSupportDuration + majorActiveTermSupportDuration,
-      majorReleaseDate.getDate(), majorReleaseDate.getHours(), majorReleaseDate.getMinutes(),
-      majorReleaseDate.getSeconds(), majorReleaseDate.getMilliseconds());
-}
-
-/** Gets the long-term support NPM dist tag for a given major version. */
-export function getLtsNpmDistTagOfMajor(major: number): string {
-  // LTS versions should be tagged in NPM in the following format: `v{major}-lts`.
-  return `v${major}-lts`;
 }
