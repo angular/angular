@@ -48,7 +48,7 @@ runInEachFileSystem(() => {
           'analyze',
           'register',
           'resolve',
-          'compile',
+          'compileFull',
         ]);
         // Only detect the Component and Directive decorators
         handler.detect.and.callFake(
@@ -95,7 +95,7 @@ runInEachFileSystem(() => {
         });
         // The "test" compilation result is just the name of the decorator being compiled
         // (suffixed with `(compiled)`)
-        (handler.compile as any).and.callFake((decl: ts.Declaration, analysis: any) => {
+        (handler.compileFull as any).and.callFake((decl: ts.Declaration, analysis: any) => {
           logs.push(`compile: ${(decl as any).name.text}@${analysis.decoratorName} (resolved: ${
               analysis.resolved})`);
           return `@${analysis.decoratorName} (compiled)`;
@@ -414,7 +414,7 @@ runInEachFileSystem(() => {
           expect(testHandler.analyze).toHaveBeenCalled();
           expect(testHandler.register).not.toHaveBeenCalled();
           expect(testHandler.resolve).not.toHaveBeenCalled();
-          expect(testHandler.compile).not.toHaveBeenCalled();
+          expect(testHandler.compileFull).not.toHaveBeenCalled();
         });
 
         it('should report resolve diagnostics to the `diagnosticHandler` callback', () => {
@@ -436,7 +436,7 @@ runInEachFileSystem(() => {
           expect(testHandler.analyze).toHaveBeenCalled();
           expect(testHandler.register).toHaveBeenCalled();
           expect(testHandler.resolve).toHaveBeenCalled();
-          expect(testHandler.compile).not.toHaveBeenCalled();
+          expect(testHandler.compileFull).not.toHaveBeenCalled();
         });
       });
 
@@ -452,7 +452,7 @@ runInEachFileSystem(() => {
             analyze(): AnalysisOutput<unknown> {
               throw new Error('analyze should not have been called');
             }
-            compile(): CompileResult {
+            compileFull(): CompileResult {
               throw new Error('compile should not have been called');
             }
           }

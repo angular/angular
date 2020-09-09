@@ -209,7 +209,7 @@ class DetectDecoratorHandler implements DecoratorHandler<unknown, unknown, unkno
     return {};
   }
 
-  compile(node: ClassDeclaration): CompileResult|CompileResult[] {
+  compileFull(node: ClassDeclaration): CompileResult|CompileResult[] {
     return [];
   }
 }
@@ -227,7 +227,7 @@ class DiagnosticProducingHandler implements DecoratorHandler<unknown, unknown, u
     return {diagnostics: [makeDiagnostic(9999, node, 'test diagnostic')]};
   }
 
-  compile(node: ClassDeclaration): CompileResult|CompileResult[] {
+  compileFull(node: ClassDeclaration): CompileResult|CompileResult[] {
     return [];
   }
 }
