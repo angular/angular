@@ -53,7 +53,7 @@ RxJS provides many operators, but only a handful are used frequently. For a list
 
 | Area | Operators |
 | :------------| :----------|
-| Creation |  `from`,`fromEvent`, `of` |
+| Creation |  `from`, `fromEvent`, `of` |
 | Combination | `combineLatest`, `concat`, `merge`, `startWith` , `withLatestFrom`, `zip` |
 | Filtering | `debounceTime`, `distinctUntilChanged`, `filter`, `take`, `takeUntil` |
 | Transformation | `bufferTime`, `concatMap`, `map`, `mergeMap`, `scan`, `switchMap` |
