@@ -8,7 +8,7 @@
 
 // Imports
 import * as validateConfig from './config';
-import {validateCommitMessage} from './validate';
+import {validateCommitMessage, ValidateCommitMessageResult} from './validate';
 
 type CommitMessageConfig = validateConfig.CommitMessageConfig;
 
@@ -31,8 +31,9 @@ const SCOPES = config.commitMessage.scopes.join(', ');
 const INVALID = false;
 const VALID = true;
 
-function expectValidationResult(predicate: any, valid: boolean, errors: string[] = []) {
-  expect(predicate).toEqual(jasmine.objectContaining({valid, errors}));
+function expectValidationResult(
+    validationResult: ValidateCommitMessageResult, valid: boolean, errors: string[] = []) {
+  expect(validationResult).toEqual(jasmine.objectContaining({valid, errors}));
 }
 
 // TODO(josephperrott): Clean up tests to test script rather than for

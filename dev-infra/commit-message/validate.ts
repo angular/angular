@@ -8,7 +8,7 @@
 import {error} from '../utils/console';
 
 import {COMMIT_TYPES, getCommitMessageConfig, ScopeRequirement} from './config';
-import {parseCommitMessage} from './parse';
+import {parseCommitMessage, ParsedCommitMessage} from './parse';
 
 /** Options for commit message validation. */
 export interface ValidateCommitMessageOptions {
@@ -16,12 +16,19 @@ export interface ValidateCommitMessageOptions {
   nonFixupCommitHeaders?: string[];
 }
 
+/** The result of a commit message validation check. */
+export interface ValidateCommitMessageResult {
+  valid: boolean;
+  errors: string[];
+  commit: ParsedCommitMessage;
+}
+
 /** Regex matching a URL for an entire commit body line. */
 const COMMIT_BODY_URL_LINE_RE = /^https?:\/\/.*$/;
 
 /** Validate a commit message against using the local repo's config. */
 export function validateCommitMessage(
-    commitMsg: string, options: ValidateCommitMessageOptions = {}) {
+    commitMsg: string, options: ValidateCommitMessageOptions = {}): ValidateCommitMessageResult {
   const config = getCommitMessageConfig().commitMessage;
   const commit = parseCommitMessage(commitMsg);
   const errors: string[] = [];

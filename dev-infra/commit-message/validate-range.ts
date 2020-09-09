@@ -32,7 +32,7 @@ export function validateCommitRange(range: string) {
    * A list of tuples containing a commit header string and the list of error messages for the
    * commit.
    */
-  const errors: [string, string[]][] = [];
+  const errors: [commitHeader: string, errors: string[]][] = [];
 
   // Retrieve the commits in the provided range.
   const result = exec(`git log --reverse --format=${gitLogFormat} ${range}`);
