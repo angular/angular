@@ -43,6 +43,10 @@ export class TestMainComponent implements OnDestroy {
   specialKey = '';
   relativeX = 0;
   relativeY = 0;
+  singleSelect: string;
+  singleSelectChangeEventCount = 0;
+  multiSelect: string[] = [];
+  multiSelectChangeEventCount = 0;
   _shadowDomSupported = _supportsShadowDom();
 
   @ViewChild('clickTestElement') clickTestElement: ElementRef<HTMLElement>;

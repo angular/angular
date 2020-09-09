@@ -31,6 +31,7 @@ export declare class UnitTestElement implements TestElement {
     isFocused(): Promise<boolean>;
     matchesSelector(selector: string): Promise<boolean>;
     mouseAway(): Promise<void>;
+    selectOptions(...optionIndexes: number[]): Promise<void>;
     sendKeys(...keys: (string | TestKey)[]): Promise<void>;
     sendKeys(modifiers: ModifierKeys, ...keys: (string | TestKey)[]): Promise<void>;
     setInputValue(value: string): Promise<void>;

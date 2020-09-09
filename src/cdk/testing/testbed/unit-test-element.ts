@@ -17,6 +17,7 @@ import {
 } from '@angular/cdk/testing';
 import {
   clearElement,
+  dispatchFakeEvent,
   dispatchMouseEvent,
   dispatchPointerEvent,
   isTextInput,
@@ -157,6 +158,30 @@ export class UnitTestElement implements TestElement {
   async setInputValue(value: string): Promise<void> {
     (this.element as any).value = value;
     await this._stabilize();
+  }
+
+  async selectOptions(...optionIndexes: number[]): Promise<void> {
+    let hasChanged = false;
+    const options = this.element.querySelectorAll('option');
+    const indexes = new Set(optionIndexes); // Convert to a set to remove duplicates.
+
+    for (let i = 0; i < options.length; i++) {
+      const option = options[i];
+      const wasSelected = option.selected;
+
+      // We have to go through `option.selected`, because `HTMLSelectElement.value` doesn't
+      // allow for multiple options to be selected, even in `multiple` mode.
+      option.selected = indexes.has(i);
+
+      if (option.selected !== wasSelected) {
+        hasChanged = true;
+        dispatchFakeEvent(this.element, 'change');
+      }
+    }
+
+    if (hasChanged) {
+      await this._stabilize();
+    }
   }
 
   async matchesSelector(selector: string): Promise<boolean> {

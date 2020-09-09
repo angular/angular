@@ -406,6 +406,32 @@ export function crossEnvironmentSpecs(
       expect(await input.getProperty('value')).toBe('hello');
     });
 
+    it('should be able to set the value of a select in single selection mode', async () => {
+      const [select, value, changeEventCounter] = await Promise.all([
+        harness.singleSelect(),
+        harness.singleSelectValue(),
+        harness.singleSelectChangeEventCounter()
+      ]);
+
+      // @breaking-change 12.0.0 Remove non-null assertion once `setSelectValue` is required.
+      await select.selectOptions!(2);
+      expect(await value.text()).toBe('Select: three');
+      expect(await changeEventCounter.text()).toBe('Change events: 1');
+    });
+
+    it('should be able to set the value of a select in multi-selection mode', async () => {
+      const [select, value, changeEventCounter] = await Promise.all([
+        harness.multiSelect(),
+        harness.multiSelectValue(),
+        harness.multiSelectChangeEventCounter()
+      ]);
+
+      // @breaking-change 12.0.0 Remove non-null assertion once `setSelectValue` is required.
+      await select.selectOptions!(0, 2);
+      expect(await value.text()).toBe('Multi-select: one,three');
+      expect(await changeEventCounter.text()).toBe('Change events: 2');
+    });
+
     it('should check if selector matches', async () => {
       const button = await harness.button();
       expect(await button.matchesSelector('button:not(.fake-class)')).toBe(true);

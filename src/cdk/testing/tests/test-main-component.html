@@ -17,6 +17,31 @@
   <span class="special-key">{{specialKey}}</span>
   <div id="value">Input: {{input}}</div>
   <textarea id="memo" aria-label="memo">{{memo}}</textarea>
+  <select
+    id="single-select"
+    aria-label="single select"
+    [(ngModel)]="singleSelect"
+    (change)="singleSelectChangeEventCount = singleSelectChangeEventCount + 1">
+    <option value="one">One</option>
+    <option value="two">Two</option>
+    <option value="three">Three</option>
+  </select>
+  <div id="single-select-value">Select: {{singleSelect}}</div>
+  <div id="single-select-change-counter">Change events: {{singleSelectChangeEventCount}}</div>
+
+  <select
+    multiple
+    id="multi-select"
+    aria-label="multi select"
+    [(ngModel)]="multiSelect"
+    (change)="multiSelectChangeEventCount = multiSelectChangeEventCount + 1">
+    <option value="one">One</option>
+    <option value="two">Two</option>
+    <option value="three">Three</option>
+  </select>
+  <div id="multi-select-value">Multi-select: {{multiSelect}}</div>
+  <div id="multi-select-change-counter">Change events: {{multiSelectChangeEventCount}}</div>
+
 </div>
 <div class="subcomponents">
   <test-sub class="test-special" title="test tools" [items]="testTools"></test-sub>

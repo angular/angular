@@ -14,7 +14,7 @@ import {
   TestKey,
   TextOptions
 } from '@angular/cdk/testing';
-import {browser, ElementFinder, Key} from 'protractor';
+import {browser, by, ElementFinder, Key} from 'protractor';
 
 /** Maps the `TestKey` constants to Protractor's `Key` constants. */
 const keyMap = {
@@ -165,6 +165,27 @@ export class ProtractorElement implements TestElement {
 
   async setInputValue(value: string): Promise<void> {
     return browser.executeScript(`arguments[0].value = arguments[1]`, this.element, value);
+  }
+
+  async selectOptions(...optionIndexes: number[]): Promise<void> {
+    const options = await this.element.all(by.css('option'));
+    const indexes = new Set(optionIndexes); // Convert to a set to remove duplicates.
+
+    if (options.length && indexes.size) {
+      // Reset the value so all the selected states are cleared. We can
+      // reuse the input-specific method since the logic is the same.
+      await this.setInputValue('');
+
+      for (let i = 0; i < options.length; i++) {
+        if (indexes.has(i)) {
+          // We have to hold the control key while clicking on options so that multiple can be
+          // selected in multi-selection mode. The key doesn't do anything for single selection.
+          await browser.actions().keyDown(Key.CONTROL).perform();
+          await options[i].click();
+          await browser.actions().keyUp(Key.CONTROL).perform();
+        }
+      }
+    }
   }
 
   async matchesSelector(selector: string): Promise<boolean> {
