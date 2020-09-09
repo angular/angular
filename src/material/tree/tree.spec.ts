@@ -75,6 +75,23 @@ describe('MatTree', () => {
         expect(ariaLevels).toEqual(['1', '1', '1', '2']);
       });
 
+      it('with the right aria-expanded attrs', () => {
+        // add a child to the first node
+        let data = underlyingDataSource.data;
+        underlyingDataSource.addChild(data[2]);
+        fixture.detectChanges();
+        expect(getNodes(treeElement).every(node => {
+          return node.getAttribute('aria-expanded') === 'false';
+        })).toBe(true);
+
+        component.treeControl.expandAll();
+        fixture.detectChanges();
+
+        expect(getNodes(treeElement).every(node => {
+          return node.getAttribute('aria-expanded') === 'true';
+        })).toBe(true);
+      });
+
       it('with the right data', () => {
         expect(underlyingDataSource.data.length).toBe(3);
 
@@ -349,6 +366,20 @@ describe('MatTree', () => {
           [_, _, `topping_6 - cheese_6 + base_6`],
           [`topping_3 - cheese_3 + base_3`]);
       });
+
+      it('with correct aria-level on nodes', () => {
+        expect(getNodes(treeElement).every(node => {
+          return node.getAttribute('aria-level') === '1';
+        })).toBe(true);
+
+        let data = underlyingDataSource.data;
+        const child = underlyingDataSource.addChild(data[1]);
+        underlyingDataSource.addChild(child);
+        fixture.detectChanges();
+
+        const ariaLevels = getNodes(treeElement).map(n => n.getAttribute('aria-level'));
+        expect(ariaLevels).toEqual(['1', '1', '2', '3', '1']);
+      });
     });
 
     describe('with when node', () => {
@@ -388,6 +419,24 @@ describe('MatTree', () => {
         treeElement = fixture.nativeElement.querySelector('mat-tree');
 
         fixture.detectChanges();
+      });
+
+      it('with the right aria-expanded attrs', () => {
+        expect(getNodes(treeElement).every(node => {
+          return node.getAttribute('aria-expanded') === 'false';
+        })).toBe(true);
+
+        component.toggleRecursively = false;
+        let data = underlyingDataSource.data;
+        const child = underlyingDataSource.addChild(data[1]);
+        underlyingDataSource.addChild(child);
+        fixture.detectChanges();
+
+        (getNodes(treeElement)[1] as HTMLElement).click();
+        fixture.detectChanges();
+
+        const ariaExpanded = getNodes(treeElement).map(n => n.getAttribute('aria-expanded'));
+        expect(ariaExpanded).toEqual(['false', 'true', 'false', 'false']);
       });
 
       it('should expand/collapse the node', () => {

@@ -9,10 +9,12 @@ import {
   AfterContentInit,
   ContentChildren,
   Directive,
+  DoCheck,
   ElementRef,
   IterableDiffer,
   IterableDiffers,
   OnDestroy,
+  OnInit,
   QueryList,
 } from '@angular/core';
 import {isObservable} from 'rxjs';
@@ -31,17 +33,15 @@ import {getTreeControlFunctionsMissingError} from './tree-errors';
 @Directive({
   selector: 'cdk-nested-tree-node',
   exportAs: 'cdkNestedTreeNode',
-  host: {
-    '[attr.aria-expanded]': 'isExpanded',
-    '[attr.role]': 'role',
-    'class': 'cdk-tree-node cdk-nested-tree-node',
-  },
+  inputs: ['role', 'disabled', 'tabIndex'],
   providers: [
     {provide: CdkTreeNode, useExisting: CdkNestedTreeNode},
     {provide: CDK_TREE_NODE_OUTLET_NODE, useExisting: CdkNestedTreeNode}
   ]
 })
-export class CdkNestedTreeNode<T> extends CdkTreeNode<T> implements AfterContentInit, OnDestroy {
+export class CdkNestedTreeNode<T> extends CdkTreeNode<T> implements AfterContentInit, DoCheck,
+  OnDestroy,
+  OnInit {
   /** Differ used to find the changes in the data provided by the data source. */
   private _dataDiffer: IterableDiffer<T>;
 
@@ -60,6 +60,11 @@ export class CdkNestedTreeNode<T> extends CdkTreeNode<T> implements AfterContent
               protected _tree: CdkTree<T>,
               protected _differs: IterableDiffers) {
     super(_elementRef, _tree);
+    // The classes are directly added here instead of in the host property because classes on
+    // the host property are not inherited with View Engine. It is not set as a @HostBinding because
+    // it is not set by the time it's children nodes try to read the class from it.
+    // TODO: move to host after View Engine deprecation
+    this._elementRef.nativeElement.classList.add('cdk-nested-tree-node');
   }
 
   ngAfterContentInit() {
@@ -76,6 +81,16 @@ export class CdkNestedTreeNode<T> extends CdkTreeNode<T> implements AfterContent
     }
     this.nodeOutlet.changes.pipe(takeUntil(this._destroyed))
         .subscribe(() => this.updateChildrenNodes());
+  }
+
+  // This is a workaround for https://github.com/angular/angular/issues/23091
+  // In aot mode, the lifecycle hooks from parent class are not called.
+  ngOnInit() {
+    super.ngOnInit();
+  }
+
+  ngDoCheck() {
+    super.ngDoCheck();
   }
 
   ngOnDestroy() {

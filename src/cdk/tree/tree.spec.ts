@@ -129,6 +129,23 @@ describe('CdkTree', () => {
         expect(ariaLevels).toEqual(['2', '3', '2', '2']);
       });
 
+      it('with the right aria-expanded attrs', () => {
+        // add a child to the first node
+        let data = dataSource.data;
+        dataSource.addChild(data[2]);
+        fixture.detectChanges();
+        expect(getNodes(treeElement).every(node => {
+          return node.getAttribute('aria-expanded') === 'false';
+        })).toBe(true);
+
+        component.treeControl.expandAll();
+        fixture.detectChanges();
+
+        expect(getNodes(treeElement).every(node => {
+          return node.getAttribute('aria-expanded') === 'true';
+        })).toBe(true);
+      });
+
       it('with the right data', () => {
         expect(dataSource.data.length).toBe(3);
 
@@ -595,6 +612,21 @@ describe('CdkTree', () => {
             [_, _, `topping_6 - cheese_6 + base_6`],
             [`topping_3 - cheese_3 + base_3`]);
       });
+
+      it('with correct aria-level on nodes', () => {
+        expect(getNodes(treeElement).every(node => {
+          return node.getAttribute('aria-level') === '1';
+        })).toBe(true);
+
+        let data = dataSource.data;
+        const child = dataSource.addChild(data[1], false);
+        dataSource.addChild(child, false);
+        fixture.detectChanges();
+
+        const nodes = getNodes(treeElement);
+        const levels = nodes.map(n => n.getAttribute('aria-level'));
+        expect(levels).toEqual(['1', '1', '2', '3', '1']);
+      });
     });
 
     describe('with static children', () => {
@@ -674,6 +706,24 @@ describe('CdkTree', () => {
         dataSource = component.dataSource as FakeDataSource;
         tree = component.tree;
         treeElement = fixture.nativeElement.querySelector('cdk-tree');
+      });
+
+      it('with the right aria-expanded attrs', () => {
+        expect(getNodes(treeElement).every(node => {
+          return node.getAttribute('aria-expanded') === 'false';
+        })).toBe(true);
+
+        component.toggleRecursively = false;
+        let data = dataSource.data;
+        const child = dataSource.addChild(data[1], false);
+        dataSource.addChild(child, false);
+        fixture.detectChanges();
+
+        (getNodes(treeElement)[1] as HTMLElement).click();
+        fixture.detectChanges();
+
+        const ariaExpanded = getNodes(treeElement).map(n => n.getAttribute('aria-expanded'));
+        expect(ariaExpanded).toEqual(['false', 'true', 'false', 'false']);
       });
 
       it('should expand/collapse the node multiple times', () => {

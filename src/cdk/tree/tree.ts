@@ -14,6 +14,7 @@ import {
   Component,
   ContentChildren,
   Directive,
+  DoCheck,
   ElementRef,
   Input,
   IterableChangeRecord,
@@ -46,6 +47,7 @@ import {
   getTreeMultipleDefaultNodeDefsError,
   getTreeNoValidDataSourceError
 } from './tree-errors';
+import {coerceNumberProperty} from '@angular/cdk/coercion';
 
 /**
  * CDK tree component that connects with a data source to retrieve data of type `T` and renders
@@ -300,14 +302,21 @@ export class CdkTree<T> implements AfterContentChecked, CollectionViewer, OnDest
 @Directive({
   selector: 'cdk-tree-node',
   exportAs: 'cdkTreeNode',
-  host: {
-    '[attr.aria-expanded]': 'isExpanded',
-    '[attr.aria-level]': 'level + 1',
-    '[attr.role]': 'role',
-    'class': 'cdk-tree-node',
-  },
 })
-export class CdkTreeNode<T> implements FocusableOption, OnDestroy {
+export class CdkTreeNode<T> implements DoCheck, FocusableOption, OnDestroy, OnInit {
+  /**
+   * The role of the tree node.
+   * @deprecated The correct role is 'treeitem', 'group' should not be used. This input will be
+   *   removed in a future version.
+   * @breaking-change 12.0.0 Remove this input
+   */
+  @Input() get role(): 'treeitem'|'group' { return 'treeitem'; }
+
+  set role(_role: 'treeitem'|'group') {
+    // TODO: move to host after View Engine deprecation
+    this._elementRef.nativeElement.setAttribute('role', _role);
+  }
+
   /**
    * The most recently created `CdkTreeNode`. We save it in static variable so we can retrieve it
    * in `CdkTree` and set the data to it.
@@ -319,6 +328,8 @@ export class CdkTreeNode<T> implements FocusableOption, OnDestroy {
 
   /** Emits when the node's data has changed. */
   _dataChanges = new Subject<void>();
+
+  private _parentNodeAriaLevel: number;
 
   /** The tree node's data. */
   get data(): T { return this._data; }
@@ -335,19 +346,45 @@ export class CdkTreeNode<T> implements FocusableOption, OnDestroy {
     return this._tree.treeControl.isExpanded(this._data);
   }
 
-  get level(): number {
-    return this._tree.treeControl.getLevel ? this._tree.treeControl.getLevel(this._data) : 0;
+  private _setExpanded(_expanded: boolean) {
+    this._isAriaExpanded = _expanded;
+    this._elementRef.nativeElement.setAttribute('aria-expanded', `${_expanded}`);
   }
 
-  /**
-   * The role of the node should always be 'treeitem'.
-   */
-  // TODO: mark as deprecated
-  @Input() role: 'treeitem' | 'group' = 'treeitem';
+  protected _isAriaExpanded: boolean;
+
+  get level(): number {
+   // If the treeControl has a getLevel method, use it to get the level. Otherwise read the
+   // aria-level off the parent node and use it as the level for this node (note aria-level is
+   // 1-indexed, while this property is 0-indexed, so we don't need to increment).
+   return this._tree.treeControl.getLevel ?
+     this._tree.treeControl.getLevel(this._data) : this._parentNodeAriaLevel;
+   }
 
   constructor(protected _elementRef: ElementRef<HTMLElement>,
               protected _tree: CdkTree<T>) {
     CdkTreeNode.mostRecentTreeNode = this as CdkTreeNode<T>;
+    // The classes are directly added here instead of in the host property because classes on
+    // the host property are not inherited with View Engine. It is not set as a @HostBinding because
+    // it is not set by the time it's children nodes try to read the class from it.
+    // TODO: move to host after View Engine deprecation
+    this._elementRef.nativeElement.classList.add('cdk-tree-node');
+    this.role = 'treeitem';
+  }
+
+  ngOnInit(): void {
+    this._parentNodeAriaLevel = getParentNodeAriaLevel(this._elementRef.nativeElement);
+    this._elementRef.nativeElement.setAttribute('aria-level', `${this.level + 1}`);
+  }
+
+  ngDoCheck() {
+    // aria-expanded is be set here because the expanded state is stored in the tree control and
+    // the node isn't aware when the state is changed.
+    // It is not set using a @HostBinding because they sometimes get lost with Mixin based classes.
+    // TODO: move to host after View Engine deprecation
+    if (this.isExpanded != this._isAriaExpanded) {
+      this._setExpanded(this.isExpanded);
+    }
   }
 
   ngOnDestroy() {
@@ -375,4 +412,28 @@ export class CdkTreeNode<T> implements FocusableOption, OnDestroy {
     }
     this.role = 'treeitem';
   }
+}
+
+function getParentNodeAriaLevel(nodeElement: HTMLElement): number {
+  let parent = nodeElement.parentElement;
+  while (parent && !isNodeElement(parent)) {
+    parent = parent.parentElement;
+  }
+  if (!parent) {
+    if (typeof ngDevMode === 'undefined' || ngDevMode) {
+      throw Error('Incorrect tree structure containing detached node.');
+    } else {
+      return -1;
+    }
+  } else if (parent.classList.contains('cdk-nested-tree-node')) {
+    return coerceNumberProperty(parent.getAttribute('aria-level')!);
+  } else {
+    // The ancestor element is the cdk-tree itself
+    return 0;
+  }
+}
+
+function isNodeElement(element: HTMLElement) {
+  const classList = element.classList;
+  return !!(classList?.contains('cdk-nested-tree-node') || classList?.contains('cdk-tree'));
 }
