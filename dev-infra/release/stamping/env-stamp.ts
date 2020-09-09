@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {exec as _exec} from '../utils/shelljs';
+import {exec as _exec} from '../../utils/shelljs';
 
 /**
  * Log the environment variables expected by bazel for stamping.
