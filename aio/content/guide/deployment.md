@@ -387,7 +387,7 @@ List the generated bundles in the `dist/` folder.
 
 <code-example language="none" class="code-shell">
 
-  ls dist/*.bundle.js
+  ls dist/workspace-name/*.bundle.js
 
 </code-example>
 
