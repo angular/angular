@@ -300,6 +300,7 @@ function detachMovedView(declarationContainer: LContainer, lView: LView) {
   // would be cleared and the counter decremented), we need to decrement the view counter here
   // instead.
   if (lView[FLAGS] & LViewFlags.RefreshTransplantedView) {
+    lView[FLAGS] &= ~LViewFlags.RefreshTransplantedView;
     updateTransplantedViewCount(insertionLContainer, -1);
   }
 
