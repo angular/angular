@@ -56,35 +56,35 @@
       "tooltip": "Set up your environment and learn basic concepts",
       "children": [
         {
-            "title": "Try it",
-            "tooltip": "Examine and work with a ready-made sample app, with no setup.",
-            "children": [
-              {
-                "url": "start",
-                "title": "A Sample App",
-                "tooltip": "Take a look at Angular's component model, template syntax, and component communication."
-              },
-              {
-                "url": "start/start-routing",
-                "title": "In-app Navigation",
-                "tooltip": "Navigate among different page views using the browser's URL."
-              },
-              {
-                "url": "start/start-data",
-                "title": "Manage Data",
-                "tooltip": "Use services and access external data via HTTP."
-              },
-              {
-                "url": "start/start-forms",
-                "title": "Forms for User Input",
-                "tooltip": "Learn about fetching and managing data from users with forms."
-              },
-              {
-                "url": "start/start-deployment",
-                "title": "Deployment",
-                "tooltip": "Move to local development, or deploy your application to Firebase or your own server."
-              }
-            ]
+          "title": "Try it",
+          "tooltip": "Examine and work with a ready-made sample app, with no setup.",
+          "children": [
+            {
+              "url": "start",
+              "title": "A Sample App",
+              "tooltip": "Take a look at Angular's component model, template syntax, and component communication."
+            },
+            {
+              "url": "start/start-routing",
+              "title": "In-app Navigation",
+              "tooltip": "Navigate among different page views using the browser's URL."
+            },
+            {
+              "url": "start/start-data",
+              "title": "Manage Data",
+              "tooltip": "Use services and access external data via HTTP."
+            },
+            {
+              "url": "start/start-forms",
+              "title": "Forms for User Input",
+              "tooltip": "Learn about fetching and managing data from users with forms."
+            },
+            {
+              "url": "start/start-deployment",
+              "title": "Deployment",
+              "tooltip": "Move to local development, or deploy your application to Firebase or your own server."
+            }
+          ]
         },
         {
           "url": "guide/setup-local",
@@ -509,6 +509,11 @@
               "tooltip": "Building and serving Angular apps."
             }
           ]
+        },
+        {
+          "url": "guide/lightweight-injection-tokens",
+          "title": "Lightweight Injection Tokens for Libraries",
+          "tooltip": "Optimize client app size by designing library services with lightweight injection tokens."
         }
       ]
     },
@@ -547,14 +552,9 @@
               "tooltip": "A tutorial that covers many patterns associated with Angular routing."
             },
             {
-              "url": "guide/creating-libraries",
-              "title": "Creating Libraries",
-              "tooltip": "Extend Angular by creating, publishing, and using your own libraries."
-            },
-            {
-              "url": "guide/lightweight-injection-tokens",
-              "title": "Lightweight Injection Tokens for Libraries",
-              "tooltip": "Optimize client app size by designing library services with lightweight injection tokens."
+              "url": "guide/router-tutorial-toh",
+              "title": "Router tutorial: tour of heroes",
+              "tooltip": "Explore how to use Angular's router. Based on the Tour of Heroes example."
             }
           ]
         },
