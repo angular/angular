@@ -151,7 +151,7 @@ export class DirectiveDecoratorHandler implements
     return {diagnostics: diagnostics.length > 0 ? diagnostics : undefined};
   }
 
-  compile(
+  compileFull(
       node: ClassDeclaration, analysis: Readonly<DirectiveHandlerData>,
       resolution: Readonly<unknown>, pool: ConstantPool): CompileResult[] {
     const meta = analysis.meta;

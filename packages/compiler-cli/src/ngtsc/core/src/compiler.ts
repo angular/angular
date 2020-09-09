@@ -27,7 +27,7 @@ import {entryPointKeyFor, NgModuleRouteAnalyzer} from '../../routing';
 import {ComponentScopeReader, LocalModuleScopeRegistry, MetadataDtsModuleScopeResolver} from '../../scope';
 import {generatedFactoryTransform} from '../../shims';
 import {ivySwitchTransform} from '../../switch';
-import {aliasTransformFactory, declarationTransformFactory, DecoratorHandler, DtsTransformRegistry, ivyTransformFactory, TraitCompiler} from '../../transform';
+import {aliasTransformFactory, CompilationMode, declarationTransformFactory, DecoratorHandler, DtsTransformRegistry, ivyTransformFactory, TraitCompiler} from '../../transform';
 import {TemplateTypeCheckerImpl} from '../../typecheck';
 import {OptimizeFor, TemplateTypeChecker, TypeCheckingConfig, TypeCheckingProgramStrategy} from '../../typecheck/api';
 import {isTemplateDiagnostic} from '../../typecheck/diagnostics';
@@ -761,9 +761,11 @@ export class NgCompiler {
           this.closureCompilerEnabled, injectableRegistry, this.options.i18nInLocale),
     ];
 
+    const compilationMode =
+        this.options.compilationMode === 'partial' ? CompilationMode.PARTIAL : CompilationMode.FULL;
     const traitCompiler = new TraitCompiler(
         handlers, reflector, this.perfRecorder, this.incrementalDriver,
-        this.options.compileNonExportedClasses !== false, dtsTransforms);
+        this.options.compileNonExportedClasses !== false, compilationMode, dtsTransforms);
 
     const templateTypeChecker = new TemplateTypeCheckerImpl(
         this.tsProgram, this.typeCheckingProgramStrategy, traitCompiler,

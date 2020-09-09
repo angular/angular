@@ -585,7 +585,7 @@ export class ComponentDecoratorHandler implements
     return {data};
   }
 
-  compile(
+  compileFull(
       node: ClassDeclaration, analysis: Readonly<ComponentAnalysisData>,
       resolution: Readonly<ComponentResolutionData>, pool: ConstantPool): CompileResult[] {
     const meta: R3ComponentMetadata = {...analysis.meta, ...resolution};

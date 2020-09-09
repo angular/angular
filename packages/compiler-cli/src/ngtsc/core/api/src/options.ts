@@ -49,6 +49,22 @@ export interface TestOnlyOptions {
 }
 
 /**
+ * Options that specify compilation target.
+ */
+export interface TargetOptions {
+  /**
+   * Specifies the compilation mode to use. The following modes are available:
+   * - 'full': generates fully AOT compiled code using Ivy instructions.
+   * - 'partial': generates code in a stable, but intermediate form suitable to be published to NPM.
+   *
+   * To become public once the linker is ready.
+   *
+   * @internal
+   */
+  compilationMode?: 'full'|'partial';
+}
+
+/**
  * A merged interface of all of the various Angular compiler options, as well as the standard
  * `ts.CompilerOptions`.
  *
@@ -56,4 +72,5 @@ export interface TestOnlyOptions {
  */
 export interface NgCompilerOptions extends ts.CompilerOptions, LegacyNgcOptions, BazelAndG3Options,
                                            NgcCompatibilityOptions, StrictTemplateOptions,
-                                           TestOnlyOptions, I18nOptions, MiscOptions {}
+                                           TestOnlyOptions, I18nOptions, TargetOptions,
+                                           MiscOptions {}
