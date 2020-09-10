@@ -9,7 +9,7 @@ import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {MatInputHarness} from './input-harness';
 
 /** Shared tests to run on both the original and MDC-based input's. */
-export function runHarnessTests(
+export function runInputHarnessTests(
     inputModule: typeof MatInputModule, inputHarness: typeof MatInputHarness) {
   let fixture: ComponentFixture<InputHarnessTest>;
   let loader: HarnessLoader;

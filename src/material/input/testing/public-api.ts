@@ -8,3 +8,6 @@
 
 export * from './input-harness';
 export * from './input-harness-filters';
+export * from './native-select-harness';
+export * from './native-select-harness-filters';
+export * from './native-option-harness';
