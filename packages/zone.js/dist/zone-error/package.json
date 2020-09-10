@@ -1,7 +1,0 @@
-{
-  "name": "zone.js/zone-error",
-  "main": "../../bundles/zone-error.umd.js",
-  "fesm2015": "../../fesm2015/zone-error.js",
-  "es2015": "../../fesm2015/zone-error.js",
-  "module": "../../fesm2015/zone-error.js"
-}

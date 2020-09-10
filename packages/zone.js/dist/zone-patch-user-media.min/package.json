@@ -1,7 +1,0 @@
-{
-  "name": "zone.js/zone-patch-user-media.min",
-  "main": "../../bundles/zone-patch-user-media.umd.min.js",
-  "fesm2015": "../../fesm2015/zone-patch-user-media.min.js",
-  "es2015": "../../fesm2015/zone-patch-user-media.min.js",
-  "module": "../../fesm2015/zone-patch-user-media.min.js"
-}
