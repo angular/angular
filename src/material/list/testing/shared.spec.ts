@@ -13,7 +13,11 @@ import {MatActionListHarness, MatActionListItemHarness} from './action-list-harn
 import {MatListHarness, MatListItemHarness} from './list-harness';
 import {MatListHarnessBase} from './list-harness-base';
 import {BaseListItemHarnessFilters} from './list-harness-filters';
-import {MatListItemHarnessBase, MatSubheaderHarness} from './list-item-harness-base';
+import {
+  MatListItemHarnessBase,
+  MatListItemSection,
+  MatSubheaderHarness
+} from './list-item-harness-base';
 import {MatNavListHarness, MatNavListItemHarness} from './nav-list-harness';
 import {MatListOptionHarness, MatSelectionListHarness} from './selection-list-harness';
 
@@ -33,7 +37,8 @@ function runBaseListFunctionalityTests<
     },
     listItemHarnessBase: typeof MatListItemHarnessBase,
     subheaderHarness: typeof MatSubheaderHarness,
-    dividerHarness: typeof MatDividerHarness) {
+    dividerHarness: typeof MatDividerHarness,
+    selectors: {content: string}) {
   describe('base list functionality', () => {
     let simpleListHarness: L;
     let emptyListHarness: L;
@@ -183,6 +188,13 @@ function runBaseListFunctionalityTests<
       const childHarness = await items[1].getHarness(TestItemContentHarness);
       expect(childHarness).not.toBeNull();
     });
+
+    it('should be able to get content harness loader of list item', async () => {
+      const items = await simpleListHarness.getItems();
+      expect(items.length).toBe(3);
+      const loader = await items[1].getChildLoader(selectors.content as MatListItemSection);
+      await expectAsync(loader.getHarness(TestItemContentHarness)).toBeResolved();
+    });
   });
 }
 
@@ -199,17 +211,18 @@ export function runHarnessTests(
     selectionListHarness: typeof MatSelectionListHarness,
     listItemHarnessBase: typeof MatListItemHarnessBase,
     subheaderHarness: typeof MatSubheaderHarness,
-    dividerHarness: typeof MatDividerHarness) {
+    dividerHarness: typeof MatDividerHarness,
+    selectors: {content: string}) {
   describe('MatListHarness', () => {
     runBaseListFunctionalityTests<MatListHarness, MatListItemHarness>(
         ListHarnessTest, listModule, listHarness, listItemHarnessBase, subheaderHarness,
-        dividerHarness);
+        dividerHarness, selectors);
   });
 
   describe('MatActionListHarness', () => {
     runBaseListFunctionalityTests<MatActionListHarness, MatActionListItemHarness>(
         ActionListHarnessTest, listModule, actionListHarness, listItemHarnessBase, subheaderHarness,
-        dividerHarness);
+        dividerHarness, selectors);
 
     describe('additional functionality', () => {
       let harness: MatActionListHarness;
@@ -244,7 +257,7 @@ export function runHarnessTests(
   describe('MatNavListHarness', () => {
     runBaseListFunctionalityTests<MatNavListHarness, MatNavListItemHarness>(
         NavListHarnessTest, listModule, navListHarness, listItemHarnessBase, subheaderHarness,
-        dividerHarness);
+        dividerHarness, selectors);
 
     describe('additional functionality', () => {
       let harness: MatNavListHarness;
@@ -290,7 +303,7 @@ export function runHarnessTests(
   describe('MatSelectionListHarness', () => {
     runBaseListFunctionalityTests<MatSelectionListHarness, MatListOptionHarness>(
         SelectionListHarnessTest, listModule, selectionListHarness, listItemHarnessBase,
-        subheaderHarness, dividerHarness);
+        subheaderHarness, dividerHarness, selectors);
 
     describe('additional functionality', () => {
       let harness: MatSelectionListHarness;

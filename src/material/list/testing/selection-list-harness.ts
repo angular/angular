@@ -62,8 +62,9 @@ export class MatSelectionListHarness extends MatListHarnessBase<
     if (!filters.length) {
       return this.getItems();
     }
-    return ([] as MatListOptionHarness[]).concat(...await Promise.all(
-        filters.map(filter => this.locatorForAll(MatListOptionHarness.with(filter))())));
+    const matches = await Promise.all(
+      filters.map(filter => this.locatorForAll(MatListOptionHarness.with(filter))()));
+    return matches.reduce((result, current) => [...result, ...current], []);
   }
 }
 

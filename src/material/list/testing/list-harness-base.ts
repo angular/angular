@@ -31,7 +31,7 @@ export interface ListSection<I> {
  * @template F The filter type used filter list item harness of type `C`.
  * @docs-private
  */
-export class MatListHarnessBase
+export abstract class MatListHarnessBase
     <
       T extends (ComponentHarnessConstructor<C> & {with: (options?: F) => HarnessPredicate<C>}),
       C extends ComponentHarness,

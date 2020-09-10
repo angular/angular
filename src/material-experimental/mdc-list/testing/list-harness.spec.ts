@@ -15,5 +15,5 @@ describe('MDC-based list harnesses', () => {
   runHarnessTests(
       MatListModule, MatListHarness as any, MatActionListHarness as any, MatNavListHarness as any,
       MatSelectionListHarness as any, MatListItemHarnessBase as any, MatSubheaderHarness as any,
-      MatDividerHarness);
+      MatDividerHarness, {content: MatListItemSection.CONTENT});
 });
