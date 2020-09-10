@@ -1,7 +1,0 @@
-{
-  "name": "zone.js/task-tracking.min",
-  "main": "../../bundles/task-tracking.umd.min.js",
-  "fesm2015": "../../fesm2015/task-tracking.min.js",
-  "es2015": "../../fesm2015/task-tracking.min.js",
-  "module": "../../fesm2015/task-tracking.min.js"
-}
