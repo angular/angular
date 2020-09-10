@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {detectChanges, markDirty} from '../instructions/all';
+import {detectChanges, markDirty} from '../instructions/change_detection';
 import {getRootComponents} from './discovery_utils';
 
 /**
