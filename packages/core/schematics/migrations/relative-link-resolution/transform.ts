@@ -23,8 +23,6 @@ export class RelativeLinkResolutionTransform {
       const args = c.arguments;
       if (args.length === 1) {
         this._updateCallExpressionWithoutNavigationExtras(c);
-      } else if (args.length === 2 && ts.isObjectLiteralExpression(args[1])) {
-        this._maybeUpdateLiteral(args[1] as ts.ObjectLiteralExpression);
       }
     });
   }
@@ -59,7 +57,7 @@ export class RelativeLinkResolutionTransform {
   private _maybeUpdateLiteral(literal: ts.ObjectLiteralExpression) {
     const updatedLiteral = this._getMigratedLiteralExpression(literal);
     if (updatedLiteral !== literal) {
-      this._updateNode(literal, this._getMigratedLiteralExpression(literal));
+      this._updateNode(literal, updatedLiteral);
     }
   }
 

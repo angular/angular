@@ -24,8 +24,10 @@ export class RelativeLinkResolutionCollector {
     let forRootCall: ts.CallExpression|null = null;
     let literal: ts.ObjectLiteralExpression|null = null;
     if (isRouterModuleForRoot(this.typeChecker, node) && node.arguments.length > 0) {
-      if (node.arguments.length === 1 || ts.isObjectLiteralExpression(node.arguments[1])) {
+      if (node.arguments.length === 1) {
         forRootCall = node;
+      } else if (ts.isObjectLiteralExpression(node.arguments[1])) {
+        literal = node.arguments[1] as ts.ObjectLiteralExpression;
       } else if (ts.isIdentifier(node.arguments[1])) {
         literal = this.getLiteralNeedingMigrationFromIdentifier(node.arguments[1] as ts.Identifier);
       }
