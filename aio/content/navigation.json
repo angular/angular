@@ -423,6 +423,11 @@
           "tooltip": "Information about updating Angular applications and libraries to the latest version."
         },
         {
+          "url": "guide/property-binding-best-practices",
+          "title": "Property Binding Best Practices",
+          "tooltip": "Use property binding efficiently."
+        },
+        {
           "title": "Testing",
           "tooltip": "Testing your Angular apps.",
           "children": [

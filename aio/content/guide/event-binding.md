@@ -99,7 +99,7 @@ in the `$event` variable.
 
 ## Template statements have side effects
 
-Though [template expressions](guide/interpolation#template-expressions) shouldn't have [side effects](guide/property-binding#avoid-side-effects), template
+Though [template expressions](guide/interpolation#template-expressions) shouldn't have [side effects](guide/property-binding-best-practices#avoid-side-effects), template
 statements usually do. The `deleteItem()` method does have
 a side effect: it deletes an item.
 
