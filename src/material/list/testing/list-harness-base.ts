@@ -56,7 +56,7 @@ export class MatListHarnessBase
    */
   async getItemsGroupedBySubheader(filters?: F): Promise<ListSection<C>[]> {
     const listSections = [];
-    let currentSection: ListSection<C> = {items: []};
+    let currentSection: {items: C[], heading?: Promise<string>} = {items: []};
     const itemsAndSubheaders =
         await this.getItemsWithSubheadersAndDividers({item: filters, divider: false});
     for (const itemOrSubheader of itemsAndSubheaders) {
@@ -64,7 +64,7 @@ export class MatListHarnessBase
         if (currentSection.heading !== undefined || currentSection.items.length) {
           listSections.push(currentSection);
         }
-        currentSection = {heading: await itemOrSubheader.getText(), items: []};
+        currentSection = {heading: itemOrSubheader.getText(), items: []};
       } else {
         currentSection.items.push(itemOrSubheader);
       }
@@ -73,7 +73,10 @@ export class MatListHarnessBase
         !listSections.length) {
       listSections.push(currentSection);
     }
-    return listSections;
+
+    // Concurrently wait for all sections to resolve their heading if present.
+    return Promise.all(listSections.map(async (s) =>
+      ({items: s.items, heading: await s.heading})));
   }
 
   /**
