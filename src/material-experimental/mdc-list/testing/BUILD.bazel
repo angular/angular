@@ -1,0 +1,48 @@
+load("//tools:defaults.bzl", "ng_test_library", "ng_web_test_suite", "ts_library")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_library(
+    name = "testing",
+    srcs = glob(
+        ["**/*.ts"],
+        exclude = ["**/*.spec.ts"],
+    ),
+    module_name = "@angular/material-experimental/mdc-list/testing",
+    deps = [
+        "//src/cdk/coercion",
+        "//src/cdk/testing",
+        "//src/material-experimental/mdc-list",
+        "//src/material/divider/testing",
+    ],
+)
+
+filegroup(
+    name = "source-files",
+    srcs = glob(["**/*.ts"]),
+)
+
+ng_test_library(
+    name = "unit_tests_lib",
+    srcs = glob(
+        ["**/*.spec.ts"],
+        exclude = ["shared.spec.ts"],
+    ),
+    deps = [
+        ":testing",
+        "//src/material-experimental/mdc-list",
+        "//src/material/divider/testing",
+        "//src/material/list/testing:harness_tests_lib",
+    ],
+)
+
+ng_web_test_suite(
+    name = "unit_tests",
+    static_files = [
+        "@npm//:node_modules/@material/list/dist/mdc.list.js",
+    ],
+    deps = [
+        ":unit_tests_lib",
+        "//src/material-experimental:mdc_require_config.js",
+    ],
+)

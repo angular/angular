@@ -9,14 +9,13 @@
 import {
   ComponentHarness,
   ComponentHarnessConstructor,
-  HarnessLoader,
-  HarnessPredicate,
   ContentContainerComponentHarness,
+  HarnessPredicate
 } from '@angular/cdk/testing';
 import {BaseListItemHarnessFilters, SubheaderHarnessFilters} from './list-harness-filters';
 
-const iconSelector = '.mat-list-icon';
-const avatarSelector = '.mat-list-avatar';
+const iconSelector = '.mat-mdc-list-icon';
+const avatarSelector = '.mat-mdc-list-avatar';
 
 /**
  * Gets a `HarnessPredicate` that applies the given `BaseListItemHarnessFilters` to the given
@@ -30,17 +29,19 @@ export function getListItemPredicate<H extends MatListItemHarnessBase>(
     harnessType: ComponentHarnessConstructor<H>,
     options: BaseListItemHarnessFilters): HarnessPredicate<H> {
   return new HarnessPredicate(harnessType, options)
-      .addOption('text', options.text,
+      .addOption(
+          'text', options.text,
           (harness, text) => HarnessPredicate.stringMatches(harness.getText(), text));
 }
 
-/** Harness for interacting with a list subheader. */
+/** Harness for interacting with a MDC-based list subheader. */
 export class MatSubheaderHarness extends ComponentHarness {
-  static hostSelector = '.mat-subheader';
+  static hostSelector = '.mat-mdc-subheader';
 
   static with(options: SubheaderHarnessFilters = {}): HarnessPredicate<MatSubheaderHarness> {
     return new HarnessPredicate(MatSubheaderHarness, options)
-        .addOption('text', options.text,
+        .addOption(
+            'text', options.text,
             (harness, text) => HarnessPredicate.stringMatches(harness.getText(), text));
   }
 
@@ -52,17 +53,19 @@ export class MatSubheaderHarness extends ComponentHarness {
 
 /** Selectors for the various list item sections that may contain user content. */
 export const enum MatListItemSection {
-  CONTENT = '.mat-list-item-content'
+  CONTENT = '.mdc-list-item__text',
 }
 
 /**
  * Shared behavior among the harnesses for the various `MatListItem` flavors.
  * @docs-private
  */
-export class MatListItemHarnessBase extends ContentContainerComponentHarness<MatListItemSection> {
+export abstract class MatListItemHarnessBase
+    extends ContentContainerComponentHarness<MatListItemSection> {
+
   private _lines = this.locatorForAll('.mat-line');
-  private _avatar = this.locatorForOptional(avatarSelector);
-  private _icon = this.locatorForOptional(iconSelector);
+  private _avatar = this.locatorForOptional('.mat-mdc-list-avatar');
+  private _icon = this.locatorForOptional('.mat-mdc-list-icon');
 
   /** Gets the full text content of the list item. */
   async getText(): Promise<string> {
@@ -82,14 +85,5 @@ export class MatListItemHarnessBase extends ContentContainerComponentHarness<Mat
   /** Whether this list item has an icon. */
   async hasIcon(): Promise<boolean> {
     return !!await this._icon();
-  }
-
-  /**
-   * Gets a `HarnessLoader` used to get harnesses within the list item's content.
-   * @deprecated Use `getChildLoader(MatListItemSection.CONTENT)` or `getHarness` instead.
-   * @breaking-change 12.0.0
-   */
-  async getHarnessLoaderForContent(): Promise<HarnessLoader> {
-    return this.getChildLoader(MatListItemSection.CONTENT);
   }
 }

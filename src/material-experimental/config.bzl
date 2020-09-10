@@ -19,6 +19,7 @@ entryPoints = [
     "mdc-input",
     "mdc-input/testing",
     "mdc-list",
+    "mdc-list/testing",
     "mdc-menu",
     "mdc-menu/testing",
     "mdc-paginator",
