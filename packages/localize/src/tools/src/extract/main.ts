@@ -208,7 +208,7 @@ export function extractTranslations({
 
 export function getSerializer(
     format: string, sourceLocale: string, rootPath: AbsoluteFsPath, useLegacyIds: boolean,
-    formatOptions: FormatOptions): TranslationSerializer {
+    formatOptions: FormatOptions = {}): TranslationSerializer {
   switch (format) {
     case 'xlf':
     case 'xlif':

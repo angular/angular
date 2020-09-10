@@ -27,7 +27,7 @@ const LEGACY_XLIFF_MESSAGE_LENGTH = 40;
 export class Xliff1TranslationSerializer implements TranslationSerializer {
   constructor(
       private sourceLocale: string, private basePath: AbsoluteFsPath, private useLegacyIds: boolean,
-      private formatOptions: FormatOptions) {
+      private formatOptions: FormatOptions = {}) {
     validateOptions('Xliff1TranslationSerializer', [['xml:space', ['preserve']]], formatOptions);
   }
 

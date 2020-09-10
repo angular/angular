@@ -27,7 +27,7 @@ export class Xliff2TranslationSerializer implements TranslationSerializer {
   private currentPlaceholderId = 0;
   constructor(
       private sourceLocale: string, private basePath: AbsoluteFsPath, private useLegacyIds: boolean,
-      private formatOptions: FormatOptions) {
+      private formatOptions: FormatOptions = {}) {
     validateOptions('Xliff1TranslationSerializer', [['xml:space', ['preserve']]], formatOptions);
   }
 
