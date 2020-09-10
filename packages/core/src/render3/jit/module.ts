@@ -11,7 +11,7 @@ import {resolveForwardRef} from '../../di/forward_ref';
 import {NG_INJ_DEF} from '../../di/interface/defs';
 import {reflectDependencies} from '../../di/jit/util';
 import {Type} from '../../interface/type';
-import {Component} from '../../metadata';
+import {Component} from '../../metadata/directives';
 import {ModuleWithProviders, NgModule, NgModuleDef, NgModuleTransitiveScopes} from '../../metadata/ng_module';
 import {deepForEach, flatten} from '../../util/array_utils';
 import {assertDefined} from '../../util/assert';

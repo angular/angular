@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AttributeMarker, ComponentTemplate} from '..';
 import {Injector, SchemaMetadata} from '../../core';
 import {Sanitizer} from '../../sanitization/sanitizer';
 import {KeyValueArray} from '../../util/array_utils';
@@ -14,8 +13,8 @@ import {assertDefined} from '../../util/assert';
 import {createNamedArrayType} from '../../util/named_array_type';
 import {initNgDevMode} from '../../util/ng_dev_mode';
 import {CONTAINER_HEADER_OFFSET, HAS_TRANSPLANTED_VIEWS, LContainer, MOVED_VIEWS, NATIVE} from '../interfaces/container';
-import {DirectiveDefList, PipeDefList, ViewQueriesFunction} from '../interfaces/definition';
-import {PropertyAliases, TConstants, TContainerNode, TElementNode, TNode as ITNode, TNodeFlags, TNodeProviderIndexes, TNodeType, TNodeTypeAsString, TViewNode} from '../interfaces/node';
+import {ComponentTemplate, DirectiveDefList, PipeDefList, ViewQueriesFunction} from '../interfaces/definition';
+import {AttributeMarker, PropertyAliases, TConstants, TContainerNode, TElementNode, TNode as ITNode, TNodeFlags, TNodeProviderIndexes, TNodeType, TNodeTypeAsString, TViewNode} from '../interfaces/node';
 import {SelectorFlags} from '../interfaces/projection';
 import {LQueries, TQueries} from '../interfaces/query';
 import {RComment, RElement, Renderer3, RendererFactory3, RNode} from '../interfaces/renderer';
