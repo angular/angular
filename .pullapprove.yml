@@ -380,6 +380,7 @@ groups:
           'aio/content/examples/binding-syntax/**',
           'aio/content/guide/property-binding.md',
           'aio/content/examples/property-binding/**',
+          'aio/content/guide/property-binding-best-practices.md',
           'aio/content/guide/attribute-binding.md',
           'aio/content/examples/attribute-binding/**',
           'aio/content/guide/two-way-binding.md',
