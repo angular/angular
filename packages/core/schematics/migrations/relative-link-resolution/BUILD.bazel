@@ -7,8 +7,7 @@ ts_library(
     visibility = [
         "//packages/core/schematics:__pkg__",
         "//packages/core/schematics/migrations/google3:__pkg__",
-        # TODO(atscott): add google3 migration
-        # "//packages/core/schematics/migrations/relative-link-resolution/google3:__pkg__",
+        "//packages/core/schematics/migrations/relative-link-resolution/google3:__pkg__",
         "//packages/core/schematics/test:__pkg__",
     ],
     deps = [

@@ -1,0 +1,13 @@
+load("//tools:defaults.bzl", "ts_library")
+
+ts_library(
+    name = "google3",
+    srcs = glob(["**/*.ts"]),
+    tsconfig = "//packages/core/schematics:tsconfig.json",
+    visibility = ["//packages/core/schematics/migrations/google3:__pkg__"],
+    deps = [
+        "//packages/core/schematics/migrations/relative-link-resolution",
+        "@npm//tslint",
+        "@npm//typescript",
+    ],
+)
