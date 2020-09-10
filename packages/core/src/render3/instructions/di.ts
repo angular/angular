@@ -9,7 +9,7 @@ import {InjectFlags, InjectionToken, resolveForwardRef} from '../../di';
 import {assertInjectImplementationNotEqual} from '../../di/inject_switch';
 import {ɵɵinject} from '../../di/injector_compatibility';
 import {Type} from '../../interface/type';
-import {getOrCreateInjectable, injectAttributeImpl} from '../di';
+import {getOrCreateInjectable} from '../di';
 import {TDirectiveHostNode} from '../interfaces/node';
 import {getCurrentTNode, getLView} from '../state';
 
@@ -52,15 +52,6 @@ export function ɵɵdirectiveInject<T>(
   const tNode = getCurrentTNode();
   return getOrCreateInjectable<T>(
       tNode as TDirectiveHostNode, lView, resolveForwardRef(token), flags);
-}
-
-/**
- * Facade for the attribute injection from DI.
- *
- * @codeGenApi
- */
-export function ɵɵinjectAttribute(attrNameToInject: string): string|null {
-  return injectAttributeImpl(getCurrentTNode()!, attrNameToInject);
 }
 
 /**

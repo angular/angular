@@ -9,7 +9,8 @@
 import {CompilerFacade, getCompilerFacade, R3DependencyMetadataFacade, R3ResolvedDependencyType} from '../../compiler/compiler_facade';
 import {Type} from '../../interface/type';
 import {ReflectionCapabilities} from '../../reflection/reflection_capabilities';
-import {Attribute, Host, Inject, Optional, Self, SkipSelf} from '../metadata';
+import {Host, Inject, Optional, Self, SkipSelf} from '../metadata';
+import {Attribute} from '../metadata_attr';
 
 let _reflect: ReflectionCapabilities|null = null;
 
