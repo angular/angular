@@ -109,7 +109,7 @@ Angular versions ^4.0.0, ^5.0.0, ^6.0.0 and ^7.0.0 are no longer under support.
 
 ### LTS fixes
 
-As a general rule, a fix is considered for an LTS version if it fixes one of:
+As a general rule, a fix is considered for an LTS version if it resolves one of:
 
 * a newly identified security vulnerability,
 * a regression, since the start of LTS, caused by a 3rd party change, such as a new browser version.
