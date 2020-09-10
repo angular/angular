@@ -690,11 +690,10 @@ runInEachFileSystem(() => {
 
         const inputBbinding = (nodes[0] as TmplAstElement).inputs[1];
         const bSymbol = templateTypeChecker.getSymbolOfNode(inputBbinding, cmp)!;
-        // TODO(atscott): The BoundTarget is not assigning renamed properties correctly
-        // assertInputBindingSymbol(bSymbol);
-        // expect((bSymbol.bindings[0].tsSymbol!.declarations[0] as ts.PropertyDeclaration)
-        //            .name.getText())
-        //     .toEqual('inputB');
+        assertInputBindingSymbol(bSymbol);
+        expect((bSymbol.bindings[0].tsSymbol!.declarations[0] as ts.PropertyDeclaration)
+                   .name.getText())
+            .toEqual('inputB');
       });
 
       it('does not retrieve a symbol for an input when undeclared', () => {
@@ -983,11 +982,10 @@ runInEachFileSystem(() => {
 
         const outputBBinding = (nodes[0] as TmplAstElement).outputs[1];
         const bSymbol = templateTypeChecker.getSymbolOfNode(outputBBinding, cmp)!;
-        // TODO(atscott): The BoundTarget is not assigning renamed properties correctly
-        // assertOutputBindingSymbol(bSymbol);
-        // expect((bSymbol.bindings[0].tsSymbol!.declarations[0] as ts.PropertyDeclaration)
-        //            .name.getText())
-        //     .toEqual('outputB');
+        assertOutputBindingSymbol(bSymbol);
+        expect((bSymbol.bindings[0].tsSymbol!.declarations[0] as ts.PropertyDeclaration)
+                   .name.getText())
+            .toEqual('outputB');
       });
 
       it('should find symbol for output binding when there are multiple directives', () => {
