@@ -103,7 +103,13 @@ To help you get going, the following steps use predefined product data from the 
       The preview pane immediately updates to display the name of each product in the list.
 
       <div class="lightbox">
-        <img src="generated/images/guide/start/template-syntax-product-names.png" alt="Product names added to list">
+        <img src="generated/imag
+
+
+
+
+
+es/guide/start/template-syntax-product-names.png" alt="Product names added to list">
       </div>
 
 1. To make each product name a link to product details, add the `<a>` element and set its title to be the product's name by using the property binding `[ ]` syntax, as follows:
