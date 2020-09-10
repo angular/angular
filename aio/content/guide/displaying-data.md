@@ -1,4 +1,4 @@
-# Displaying data in views
+# Exploring template syntax
 
 Angular [components](guide/glossary#component) form the data structure of your application.
 The HTML [template](guide/glossary#template) associated with a component provides the means to display that data in the context of a web page.
@@ -13,9 +13,15 @@ Angular defines a *template language* that expands HTML notation with syntax tha
 When the page is rendered, Angular interprets the template syntax to update the HTML according to your logic and current data state.
 Before you read the complete [template syntax guide](guide/template-syntax), the exercises on this page give you a quick demonstration of how template syntax works.
 
-In this demo, you'll create a component with a list of heroes.
-You'll display the list of hero names and conditionally show a message below the list.
-The final UI looks like this:
+In this tutorial, explore the different ways you can display data using Angular's template syntax. Specifically, this tutorial covers the following common tasks:
+
+* Displaying component properties with interpolation
+* Initializing component variables
+* Creating a class to store your data
+* Looping through data using `*ngFor`
+* Conditionally displaying data using `*ngIf`
+
+At the end of this tutorial, your app will resemble the following.
 
 <div class="lightbox">
   <img src="generated/images/guide/displaying-data/final.png" alt="Final UI">
@@ -23,14 +29,25 @@ The final UI looks like this:
 
 <div class="alert is-helpful">
 
-The <live-example></live-example> demonstrates all of the syntax and code snippets described in this page.
+See the <live-example></live-example> for a working example containing the code snippets in this guide.
 
 </div>
 
+{@a prerequisites}
+
+## Prerequisites
+
+To complete this tutorial, you should have a basic understanding of the following concepts:
+
+* JavaScript
+* HTML
+* CSS
+* [Angular CLI](/cli)
+
 {@a interpolation}
 
-## Showing component properties with interpolation
-The easiest way to display a component property is to bind the property name through interpolation.
+## Displaying component properties with interpolation
+A common way to display a component property is to bind the property name through interpolation.
 With interpolation, you put the property name in the view template, enclosed in double curly braces: `{{myHero}}`.
 
 Use the CLI command [`ng new displaying-data`](cli/new) to create a workspace and app named `displaying-data`.
@@ -91,6 +108,7 @@ Now run the app. It should display the title and hero name:
 
 The next few sections review some of the coding choices in the app.
 
+<!-- To do: Move to Template overview?
 
 ## Choosing the template source
 
@@ -113,6 +131,8 @@ Here the app uses inline HTML because the template is small and the demo is simp
   </code-example>
 
 </div>
+
+-->
 
 
 ## Initialization

@@ -606,8 +606,8 @@
         },
         {
           "url": "guide/displaying-data",
-          "title": "Data binding",
-          "tooltip": "Property binding helps show app data in the UI."
+          "title": "Displaying data in views",
+          "tooltip": "This tutorial shows you how to use data binding in different ways to change what appears in an application view."
         },
         {
           "url": "guide/web-worker",
