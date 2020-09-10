@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injector} from '../di';
+import {Injector} from '../di/injector';
 import {CONTAINER_HEADER_OFFSET, LContainer, NATIVE} from '../render3/interfaces/container';
 import {TElementNode, TNode, TNodeFlags, TNodeType} from '../render3/interfaces/node';
 import {isComponentHost, isLContainer} from '../render3/interfaces/type_checks';
@@ -15,7 +15,7 @@ import {getComponent, getContext, getInjectionTokens, getInjector, getListeners,
 import {INTERPOLATION_DELIMITER, renderStringify} from '../render3/util/misc_utils';
 import {getComponentLViewByIndex, getNativeByTNodeOrNull} from '../render3/util/view_utils';
 import {assertDomNode} from '../util/assert';
-import {DebugContext} from '../view/index';
+import {DebugContext} from '../view/types';
 
 
 

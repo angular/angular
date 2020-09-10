@@ -7,7 +7,7 @@
  */
 
 import {ERROR_DEBUG_CONTEXT, ERROR_LOGGER, ERROR_ORIGINAL_ERROR, ERROR_TYPE} from './util/errors';
-import {DebugContext} from './view';
+import {DebugContext} from './view/types';
 
 export function getType(error: Error): Function {
   return (error as any)[ERROR_TYPE];
