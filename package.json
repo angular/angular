@@ -128,7 +128,7 @@
     "magic-string": "0.25.4",
     "materialize-css": "1.0.0",
     "minimatch": "^3.0.4",
-    "minimist": "1.2.0",
+    "minimist": "^1.2.3",
     "node-fetch": "^2.6.0",
     "node-uuid": "1.4.8",
     "nodejs-websocket": "^1.7.2",
