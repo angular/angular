@@ -324,5 +324,5 @@ These techniques are useful for small-scale demonstrations, but they
 quickly become verbose and clumsy when handling large amounts of user input.
 Two-way data binding is a more elegant and compact way to move
 values between data entry fields and model properties.
-The next page, `Forms`, explains how to write
+The [`Forms`](guide/forms-overview) page explains how to write
 two-way bindings with `NgModel`.
