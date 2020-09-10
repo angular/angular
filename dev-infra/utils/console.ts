@@ -196,6 +196,9 @@ export function captureLogOutputForCommand(argv: Arguments) {
     /** Path to the log file location. */
     const logFilePath = join(getRepoBaseDir(), '.ng-dev.log');
 
+    // Strip ANSI escape codes from log outputs.
+    LOGGED_TEXT = LOGGED_TEXT.replace(/\x1B\[([0-9]{1,3}(;[0-9]{1,2})?)?[mGK]/g, '');
+
     writeFileSync(logFilePath, LOGGED_TEXT);
 
     // For failure codes greater than 1, the new logged lines should be written to a specific log
