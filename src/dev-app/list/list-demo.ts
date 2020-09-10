@@ -7,6 +7,7 @@
  */
 
 import {Component} from '@angular/core';
+import {MatListOptionCheckboxPosition} from '@angular/material/list';
 
 
 @Component({
@@ -27,7 +28,7 @@ export class ListDemo {
     {name: 'Bobby', headline: 'UX designer'}
   ];
 
-  checkboxPosition: 'before'|'after' = 'before';
+  checkboxPosition: MatListOptionCheckboxPosition = 'before';
 
   messages: {from: string, subject: string, message: string, image: string}[] = [
     {

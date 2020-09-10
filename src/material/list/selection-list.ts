@@ -83,6 +83,12 @@ export class MatSelectionListChange {
 }
 
 /**
+ * Type describing possible positions of a checkbox in a list option
+ * with respect to the list item's text.
+ */
+export type MatListOptionCheckboxPosition = 'before'|'after';
+
+/**
  * Component for list-options of selection-list. Each list-option can automatically
  * generate a checkbox and can put current item into the selectionModel of selection-list
  * if the current item is selected.
@@ -131,7 +137,7 @@ export class MatListOption extends _MatListOptionMixinBase implements AfterConte
   @ViewChild('text') _text: ElementRef;
 
   /** Whether the label should appear before or after the checkbox. Defaults to 'after' */
-  @Input() checkboxPosition: 'before' | 'after' = 'after';
+  @Input() checkboxPosition: MatListOptionCheckboxPosition = 'after';
 
   /** Theme color of the list option. This sets the color of the checkbox. */
   @Input()

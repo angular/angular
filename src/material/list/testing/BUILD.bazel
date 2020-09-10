@@ -13,6 +13,7 @@ ts_library(
         "//src/cdk/coercion",
         "//src/cdk/testing",
         "//src/material/divider/testing",
+        "//src/material/list",
     ],
 )
 

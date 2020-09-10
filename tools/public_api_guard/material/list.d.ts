@@ -53,7 +53,7 @@ export declare class MatListOption extends _MatListOptionMixinBase implements Af
     _icon: MatListIconCssMatStyler;
     _lines: QueryList<MatLine>;
     _text: ElementRef;
-    checkboxPosition: 'before' | 'after';
+    checkboxPosition: MatListOptionCheckboxPosition;
     get color(): ThemePalette;
     set color(newValue: ThemePalette);
     get disabled(): any;
@@ -84,6 +84,8 @@ export declare class MatListOption extends _MatListOptionMixinBase implements Af
     static ɵcmp: i0.ɵɵComponentDefWithMeta<MatListOption, "mat-list-option", ["matListOption"], { "disableRipple": "disableRipple"; "checkboxPosition": "checkboxPosition"; "color": "color"; "value": "value"; "disabled": "disabled"; "selected": "selected"; }, {}, ["_avatar", "_icon", "_lines"], ["*", "[mat-list-avatar], [mat-list-icon], [matListAvatar], [matListIcon]"]>;
     static ɵfac: i0.ɵɵFactoryDef<MatListOption, never>;
 }
+
+export declare type MatListOptionCheckboxPosition = 'before' | 'after';
 
 export declare class MatListSubheaderCssMatStyler {
     static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatListSubheaderCssMatStyler, "[mat-subheader], [matSubheader]", never, {}, {}, never>;

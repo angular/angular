@@ -53,6 +53,7 @@ export class MatSubheaderHarness extends ComponentHarness {
 /** Selectors for the various list item sections that may contain user content. */
 export const enum MatListItemSection {
   CONTENT = '.mat-list-item-content'
+  // TODO(mmalerba): consider adding sections for leading/trailing icons.
 }
 
 /**

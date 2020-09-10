@@ -7,6 +7,7 @@
  */
 
 import {HarnessPredicate} from '@angular/cdk/testing';
+import {MatListOptionCheckboxPosition} from '@angular/material/list';
 import {MatListHarnessBase} from './list-harness-base';
 import {
   ListItemHarnessFilters,
@@ -88,7 +89,7 @@ export class MatListOptionHarness extends MatListItemHarnessBase {
   private _itemContent = this.locatorFor('.mat-list-item-content');
 
   /** Gets the position of the checkbox relative to the list option content. */
-  async getCheckboxPosition(): Promise<'before' | 'after'> {
+  async getCheckboxPosition(): Promise<MatListOptionCheckboxPosition> {
     return await (await this._itemContent()).hasClass('mat-list-item-content-reverse') ?
         'after' : 'before';
   }

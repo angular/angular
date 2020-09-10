@@ -54,10 +54,10 @@
   height: $size;
   border-radius: 50%;
 
-  // If the avatar is displayed in the graphic section of a list-item (i.e. at the start),
-  // we override the default "graphic" horizontal spacing that is designed for icons, to
-  // work for actual avatar images. The avatar by default is used within the `graphic` section,
-  // but could be also outside in case of a selection-list option with a checkbox at start.
+  // Avatars that come before the text have the .mdc-list-item__graphic class.
+  // MDC's .mdc-list--avatar-list class would normally apply overrides to set the appropriate
+  // margins for avatar images, but since ours is a per-list-item setting we need to add similar
+  // styles ourselves.
   &.mdc-list-item__graphic {
     margin-left: 0;
     margin-right: $margin-value;

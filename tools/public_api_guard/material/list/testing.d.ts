@@ -52,7 +52,7 @@ export declare class MatListOptionHarness extends MatListItemHarnessBase {
     blur(): Promise<void>;
     deselect(): Promise<void>;
     focus(): Promise<void>;
-    getCheckboxPosition(): Promise<'before' | 'after'>;
+    getCheckboxPosition(): Promise<MatListOptionCheckboxPosition>;
     isDisabled(): Promise<boolean>;
     isFocused(): Promise<boolean>;
     isSelected(): Promise<boolean>;
