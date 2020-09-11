@@ -239,7 +239,8 @@ const externalModuleIdentifier = new o.ExternalReference(anotherModuleUrl, 'some
     });
 
     it('should support comments', () => {
-      expect(emitStmt(new o.CommentStmt('a\nb'))).toEqual(['// a', '// b'].join('\n'));
+      expect(emitStmt(new o.ReturnStatement(o.literal(1), null, [o.leadingComment('a\nb')])))
+          .toEqual('// a\n// b\nreturn 1;');
     });
 
     it('should support if stmt', () => {
@@ -441,29 +442,40 @@ const externalModuleIdentifier = new o.ExternalReference(anotherModuleUrl, 'some
       });
 
       it('should support singleline comments', () => {
-        expect(emitStmt(new o.CommentStmt('Simple comment'))).toBe('// Simple comment');
+        expect(emitStmt(new o.ReturnStatement(o.literal(1), null, [o.leadingComment('a\nb')])))
+            .toBe('// a\n// b\nreturn 1;');
       });
 
       it('should support multiline comments', () => {
-        expect(emitStmt(new o.CommentStmt('Multiline comment', true)))
-            .toBe('/* Multiline comment */');
-        expect(emitStmt(new o.CommentStmt(`Multiline\ncomment`, true)))
-            .toBe(`/* Multiline\ncomment */`);
+        expect(emitStmt(new o.ReturnStatement(o.literal(1), null, [
+          o.leadingComment('Multiline comment', true)
+        ]))).toBe('/* Multiline comment */\nreturn 1;');
+        expect(emitStmt(new o.ReturnStatement(o.literal(1), null, [
+          o.leadingComment(`Multiline\ncomment`, true)
+        ]))).toBe(`/* Multiline\ncomment */\nreturn 1;`);
+      });
+
+      it('should support inline multiline comments', () => {
+        expect(emitStmt(new o.ReturnStatement(o.literal(1), null, [
+          o.leadingComment('inline comment', true, false)
+        ]))).toBe('/* inline comment */return 1;');
       });
 
       it('should support JSDoc comments', () => {
-        expect(emitStmt(new o.JSDocCommentStmt([{text: 'Intro comment'}])))
-            .toBe(`/**\n * Intro comment\n */`);
-        expect(emitStmt(new o.JSDocCommentStmt([
-          {tagName: o.JSDocTagName.Desc, text: 'description'}
-        ]))).toBe(`/**\n * @desc description\n */`);
-        expect(emitStmt(new o.JSDocCommentStmt([
-          {text: 'Intro comment'},
-          {tagName: o.JSDocTagName.Desc, text: 'description'},
-          {tagName: o.JSDocTagName.Id, text: '{number} identifier 123'},
-        ])))
+        expect(emitStmt(new o.ReturnStatement(o.literal(1), null, [
+          o.jsDocComment([{text: 'Intro comment'}])
+        ]))).toBe(`/**\n * Intro comment\n */\nreturn 1;`);
+        expect(emitStmt(new o.ReturnStatement(o.literal(1), null, [
+          o.jsDocComment([{tagName: o.JSDocTagName.Desc, text: 'description'}])
+        ]))).toBe(`/**\n * @desc description\n */\nreturn 1;`);
+        expect(emitStmt(new o.ReturnStatement(
+                   o.literal(1), null, [o.jsDocComment([
+                     {text: 'Intro comment'},
+                     {tagName: o.JSDocTagName.Desc, text: 'description'},
+                     {tagName: o.JSDocTagName.Id, text: '{number} identifier 123'},
+                   ])])))
             .toBe(
-                `/**\n * Intro comment\n * @desc description\n * @id {number} identifier 123\n */`);
+                `/**\n * Intro comment\n * @desc description\n * @id {number} identifier 123\n */\nreturn 1;`);
       });
     });
 

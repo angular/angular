@@ -233,12 +233,6 @@ class StatementInterpreter implements o.StatementVisitor, o.ExpressionVisitor {
   visitThrowStmt(stmt: o.ThrowStmt, ctx: _ExecutionContext): any {
     throw stmt.error.visitExpression(this, ctx);
   }
-  visitCommentStmt(stmt: o.CommentStmt, context?: any): any {
-    return null;
-  }
-  visitJSDocCommentStmt(stmt: o.JSDocCommentStmt, context?: any): any {
-    return null;
-  }
   visitInstantiateExpr(ast: o.InstantiateExpr, ctx: _ExecutionContext): any {
     const args = this.visitAllExpressions(ast.args, ctx);
     const clazz = ast.classExpr.visitExpression(this, ctx);

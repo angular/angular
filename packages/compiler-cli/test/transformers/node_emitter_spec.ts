@@ -267,48 +267,69 @@ describe('TypeScriptNodeEmitter', () => {
   });
 
   describe('comments', () => {
-    it('should support a preamble', () => {
-      expect(emitStmt(o.variable('a').toStmt(), Format.Flat, '/* SomePreamble */'))
-          .toBe('/* SomePreamble */ a;');
-    });
+    it('should support a preamble, which is wrapped as a multi-line comment with no trimming or padding',
+       () => {
+         expect(emitStmt(o.variable('a').toStmt(), Format.Raw, '*\n * SomePreamble\n '))
+             .toBe('/**\n * SomePreamble\n */\na;');
+       });
 
     it('should support singleline comments', () => {
-      expect(emitStmt(new o.CommentStmt('Simple comment'))).toBe('// Simple comment');
+      expect(emitStmt(
+                 new o.ReturnStatement(o.literal(1), null, [o.leadingComment(' a\n b', false)]),
+                 Format.Raw))
+          .toBe('// a\n// b\nreturn 1;');
     });
 
     it('should support multiline comments', () => {
-      expect(emitStmt(new o.CommentStmt('Multiline comment', true)))
-          .toBe('/* Multiline comment */');
-      expect(emitStmt(new o.CommentStmt(`Multiline\ncomment`, true), Format.Raw))
-          .toBe(`/* Multiline\ncomment */`);
+      expect(emitStmt(
+                 new o.ReturnStatement(
+                     o.literal(1), null, [o.leadingComment('Multiline comment', true)]),
+                 Format.Raw))
+          .toBe('/* Multiline comment */\nreturn 1;');
+      expect(emitStmt(
+                 new o.ReturnStatement(
+                     o.literal(1), null, [o.leadingComment(`Multiline\ncomment`, true)]),
+                 Format.Raw))
+          .toBe(`/* Multiline\ncomment */\nreturn 1;`);
     });
 
     describe('JSDoc comments', () => {
       it('should be supported', () => {
-        expect(emitStmt(new o.JSDocCommentStmt([{text: 'Intro comment'}]), Format.Raw))
-            .toBe(`/**\n * Intro comment\n */`);
         expect(emitStmt(
-                   new o.JSDocCommentStmt([{tagName: o.JSDocTagName.Desc, text: 'description'}]),
+                   new o.ReturnStatement(
+                       o.literal(1), null, [o.jsDocComment([{text: 'Intro comment'}])]),
                    Format.Raw))
-            .toBe(`/**\n * @desc description\n */`);
+            .toBe(`/**\n * Intro comment\n */\nreturn 1;`);
         expect(emitStmt(
-                   new o.JSDocCommentStmt([
-                     {text: 'Intro comment'},
-                     {tagName: o.JSDocTagName.Desc, text: 'description'},
-                     {tagName: o.JSDocTagName.Id, text: '{number} identifier 123'},
-                   ]),
+                   new o.ReturnStatement(
+                       o.literal(1), null,
+                       [o.jsDocComment([{tagName: o.JSDocTagName.Desc, text: 'description'}])]),
+                   Format.Raw))
+            .toBe(`/**\n * @desc description\n */\nreturn 1;`);
+        expect(emitStmt(
+                   new o.ReturnStatement(
+                       o.literal(1), null, [o.jsDocComment([
+                         {text: 'Intro comment'},
+                         {tagName: o.JSDocTagName.Desc, text: 'description'},
+                         {tagName: o.JSDocTagName.Id, text: '{number} identifier 123'},
+                       ])]),
                    Format.Raw))
             .toBe(
-                `/**\n * Intro comment\n * @desc description\n * @id {number} identifier 123\n */`);
+                `/**\n * Intro comment\n * @desc description\n * @id {number} identifier 123\n */\nreturn 1;`);
       });
 
       it('should escape @ in the text', () => {
-        expect(emitStmt(new o.JSDocCommentStmt([{text: 'email@google.com'}]), Format.Raw))
-            .toBe(`/**\n * email\\@google.com\n */`);
+        expect(emitStmt(
+                   new o.ReturnStatement(
+                       o.literal(1), null, [o.jsDocComment([{text: 'email@google.com'}])]),
+                   Format.Raw))
+            .toBe(`/**\n * email\\@google.com\n */\nreturn 1;`);
       });
 
       it('should not allow /* and */ in the text', () => {
-        expect(() => emitStmt(new o.JSDocCommentStmt([{text: 'some text /* */'}]), Format.Raw))
+        expect(
+            () => emitStmt(new o.ReturnStatement(
+                o.literal(1), null, [o.jsDocComment([{text: 'some text /* */'}])])))
             .toThrowError(`JSDoc text cannot contain "/*" and "*/"`);
       });
     });

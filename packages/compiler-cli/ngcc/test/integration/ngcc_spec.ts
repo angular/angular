@@ -1663,12 +1663,12 @@ runInEachFileSystem(() => {
             JSON.stringify({angularCompilerOptions: {annotateForClosureCompiler: true}}));
         mainNgcc({basePath: '/dist', propertiesToConsider: ['es2015']});
         const jsContents = fs.readFile(_(`/dist/local-package/index.js`));
-        expect(jsContents).toContain('/** @nocollapse */ \nAppComponent.ɵcmp =');
+        expect(jsContents).toContain('/** @nocollapse */\nAppComponent.ɵcmp =');
       });
       it('should default to not give closure annotated output', () => {
         mainNgcc({basePath: '/dist', propertiesToConsider: ['es2015']});
         const jsContents = fs.readFile(_(`/dist/local-package/index.js`));
-        expect(jsContents).not.toContain('/** @nocollapse */');
+        expect(jsContents).not.toContain('@nocollapse');
       });
     });
 
