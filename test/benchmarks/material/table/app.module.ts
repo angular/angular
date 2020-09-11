@@ -20,7 +20,7 @@ import {
 // tslint:disable:max-line-length
 @Component({
   selector: 'app-root',
-  templateUrl: './app.module.html',
+  templateUrl: './table-app.html',
   encapsulation: ViewEncapsulation.None,
   styleUrls: ['//src/material/core/theming/prebuilt/indigo-pink.css'],
 })

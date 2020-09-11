@@ -9,7 +9,7 @@ component_benchmark(
         "@npm//@types/jasmine",
     ],
     ng_assets = [
-        ":app.module.html",
+        ":table-app.html",
         ":basic-table.html",
     ],
     ng_deps = [
