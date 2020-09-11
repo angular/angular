@@ -61,7 +61,7 @@ you have custom content within the dialog that is not wrapped with `matDialogCon
 
 We provide a backwards compatibility mixin that re-adds the outer padding. The use of this mixin
 is generally not recommended as it results in inefficient CSS for the dialog because padding from
-the content elements would need to be off set (to not have stacked padding).Ideally, if you have
+the content elements would need to be off set (to not have stacked padding). Ideally, if you have
 custom content outside of the provided dialog sections, add the necessary padding to the element
 directly through CSS, or move them into one of the defined sections the Angular Material dialog
 provides.
