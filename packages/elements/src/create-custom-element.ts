@@ -170,9 +170,11 @@ export function createCustomElement<P>(
     connectedCallback(): void {
       // Collect pre-existing values on the element to re-apply through the strategy.
       const preExistingValues =
-          inputs.filter(({propName}) => this.hasOwnProperty(propName)).map(({propName}): [
+          inputs.filter(({propName, templateName}) => {
+            return this.hasOwnProperty(propName) || this.getAttribute(templateName);
+          }).map(({propName}): [
             string, any
-          ] => [propName, (this as any)[propName]]);
+          ] => [propName, (this as any)[propName] || this.getAttribute(templateName)]);
 
       // In some browsers (e.g. IE10), `Object.setPrototypeOf()` (which is required by some Custom
       // Elements polyfills) is not defined and is thus polyfilled in a way that does not preserve
