@@ -35,4 +35,17 @@ describe('diagnostic', () => {
     expect(text.substring(start!, start! + length!)).toBe('nope');
     expect(messageText).toBe(`Property 'nope' does not exist on type 'AppComponent'.`);
   });
+
+  it('should not produce error on type guards', () => {
+    service.overwriteInlineTemplate(APP_COMPONENT, `
+      <ng-container *ngIf="user.type === 'user1'; else user2">
+        {{ user.name }}
+      </ng-container>
+      <ng-template #user2>
+        {{ user.address }}
+      </ng-template>
+    `);
+    const diags = ngLS.getSemanticDiagnostics(APP_COMPONENT);
+    expect(diags.length).toBe(0);
+  });
 });

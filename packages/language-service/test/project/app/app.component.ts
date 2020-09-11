@@ -13,6 +13,16 @@ export interface Hero {
   name: string;
 }
 
+interface User1 {
+  type: 'user1';
+  name: string;
+}
+
+interface User2 {
+  type: 'user2';
+  address: string;
+}
+
 @Component({
   selector: 'my-app',
   template: `
@@ -23,6 +33,10 @@ export interface Hero {
 export class AppComponent {
   title = 'Tour of Heroes';
   hero: Hero = {id: 1, name: 'Windstorm'};
+  user: User1|User2 = {
+    type: 'user1',
+    name: 'John',
+  };
   private internal: string = 'internal';
   setTitle(newTitle: string) {
     this.title = newTitle;
