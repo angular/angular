@@ -194,4 +194,38 @@ describe('t2 binding', () => {
       expect(consumer).toEqual(el);
     });
   });
+
+  describe('used pipes', () => {
+    it('should record pipes used in interpolations', () => {
+      const template = parseTemplate('{{value|date}}', '', {});
+      const binder = new R3TargetBinder(makeSelectorMatcher());
+      const res = binder.bind({template: template.nodes});
+      expect(res.getUsedPipes()).toEqual(['date']);
+    });
+
+    it('should record pipes used in bound attributes', () => {
+      const template = parseTemplate('<person [age]="age|number"></person>', '', {});
+      const binder = new R3TargetBinder(makeSelectorMatcher());
+      const res = binder.bind({template: template.nodes});
+      expect(res.getUsedPipes()).toEqual(['number']);
+    });
+
+    it('should record pipes used in bound template attributes', () => {
+      const template = parseTemplate('<ng-template [ngIf]="obs|async"></ng-template>', '', {});
+      const binder = new R3TargetBinder(makeSelectorMatcher());
+      const res = binder.bind({template: template.nodes});
+      expect(res.getUsedPipes()).toEqual(['async']);
+    });
+
+    it('should record pipes used in ICUs', () => {
+      const template = parseTemplate(
+          `<span i18n>{count|number, plural,
+            =1 { {{value|date}} }
+          }</span>`,
+          '', {});
+      const binder = new R3TargetBinder(makeSelectorMatcher());
+      const res = binder.bind({template: template.nodes});
+      expect(res.getUsedPipes()).toEqual(['number', 'date']);
+    });
+  });
 });

@@ -434,7 +434,10 @@ class TemplateBinder extends RecursiveAstVisitor implements Visitor {
   visitText(text: Text) {}
   visitContent(content: Content) {}
   visitTextAttribute(attribute: TextAttribute) {}
-  visitIcu(icu: Icu): void {}
+  visitIcu(icu: Icu): void {
+    Object.keys(icu.vars).forEach(key => icu.vars[key].visit(this));
+    Object.keys(icu.placeholders).forEach(key => icu.placeholders[key].visit(this));
+  }
 
   // The remaining visitors are concerned with processing AST expressions within template bindings
 
