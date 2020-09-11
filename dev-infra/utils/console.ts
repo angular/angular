@@ -7,7 +7,7 @@
  */
 
 import chalk from 'chalk';
-import {writeFileSync} from 'fs-extra';
+import {writeFileSync} from 'fs';
 import {createPromptModule, ListChoiceOptions, prompt} from 'inquirer';
 import * as inquirerAutocomplete from 'inquirer-autocomplete-prompt';
 import {join} from 'path';
