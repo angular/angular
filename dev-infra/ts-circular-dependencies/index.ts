@@ -112,7 +112,8 @@ export function main(
   if (fixedCircularDeps.length !== 0) {
     error(yellow(`   Fixed circular dependencies that need to be removed from the golden:`));
     fixedCircularDeps.forEach(c => error(`     • ${convertReferenceChainToString(c)}`));
-    error();
+    info(yellow(`\n   Total: ${newCircularDeps.length} new cycle(s), ${
+        fixedCircularDeps.length} fixed cycle(s). \n`));
     if (approveCommand) {
       info(yellow(`   Please approve the new golden with: ${approveCommand}`));
     } else {
