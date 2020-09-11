@@ -9,10 +9,10 @@
 import {Component, NgModule, ViewEncapsulation} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {MatTabsModule} from '@angular/material/tabs';
+import {MatTabsModule} from '@angular/material-experimental/mdc-tabs';
 import {threeTabs, tenTabs, twentyTabs} from './fake-tab-data';
 
-/** component: mat-tab */
+/** component: mdc-tab */
 
 @Component({
   selector: 'app-root',
@@ -27,7 +27,7 @@ import {threeTabs, tenTabs, twentyTabs} from './fake-tab-data';
     <mat-tab-group *ngIf="areTwentyTabsVisible">${twentyTabs}</mat-tab-group>
   `,
   encapsulation: ViewEncapsulation.None,
-  styleUrls: ['//src/material/core/theming/prebuilt/indigo-pink.css'],
+  styleUrls: ['//src/material-experimental/mdc-theming/prebuilt/indigo-pink.css'],
 })
 export class TabsBenchmarkApp {
   areThreeTabsVisible = false;
