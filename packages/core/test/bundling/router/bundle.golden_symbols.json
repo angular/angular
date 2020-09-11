@@ -1950,12 +1950,6 @@
     "name": "throwIfEmpty"
   },
   {
-    "name": "throwMixedMultiProviderError"
-  },
-  {
-    "name": "throwMultipleComponentError"
-  },
-  {
     "name": "toRefArray"
   },
   {
