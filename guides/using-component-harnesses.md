@@ -88,7 +88,7 @@ it('should work', async () => {
 
 Notice the example code uses `async` and `await` syntax. All component harness APIs are
 asynchronous and return `Promise` objects. Because of this, the Angular team recommends using the
-[ES2017 `async`/`await` synax](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function)
+[ES2017 `async`/`await` syntax](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function)
 with your tests.
 
 The example above retrieves all button harnesses and uses an array index to get the harness for a
