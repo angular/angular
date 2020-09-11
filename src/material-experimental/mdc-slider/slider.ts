@@ -256,6 +256,8 @@ export class MatSlider implements AfterViewInit, OnChanges, OnDestroy, ControlVa
     registerWindowEventHandler: () => {},
     deregisterWindowEventHandler: () => {},
     removeTrackActiveStyleProperty: (_propertyName: string) => {},
+    emitDragStartEvent: (_value: number, _thumb: Thumb) => {},
+    emitDragEndEvent: (_value: number, _thumb: Thumb) => {}
   };
 
   /** Instance of the MDC slider foundation for this slider. */
