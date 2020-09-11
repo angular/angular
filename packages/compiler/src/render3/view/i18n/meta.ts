@@ -231,7 +231,7 @@ export function parseI18nMeta(meta: string = ''): I18nMeta {
 
 // Converts i18n meta information for a message (id, description, meaning)
 // to a JsDoc statement formatted as expected by the Closure compiler.
-export function i18nMetaToDocStmt(meta: I18nMeta): o.JSDocCommentStmt|null {
+export function i18nMetaToJSDoc(meta: I18nMeta): o.JSDocComment|null {
   const tags: o.JSDocTag[] = [];
   if (meta.description) {
     tags.push({tagName: o.JSDocTagName.Desc, text: meta.description});
@@ -239,5 +239,5 @@ export function i18nMetaToDocStmt(meta: I18nMeta): o.JSDocCommentStmt|null {
   if (meta.meaning) {
     tags.push({tagName: o.JSDocTagName.Meaning, text: meta.meaning});
   }
-  return tags.length == 0 ? null : new o.JSDocCommentStmt(tags);
+  return tags.length == 0 ? null : o.jsDocComment(tags);
 }

@@ -94,3 +94,10 @@ export function ngToTsDiagnostic(ng: Diagnostic): ts.Diagnostic {
     length,
   };
 }
+
+/**
+ * Strip multiline comment start and end markers from the `commentText` string.
+ */
+export function stripComment(commentText: string): string {
+  return commentText.replace(/^\/\*/, '').replace(/\*\/$/, '').trim();
+}

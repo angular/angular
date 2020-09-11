@@ -16,15 +16,11 @@ export enum TypeModifier {
 }
 
 export abstract class Type {
-  constructor(public modifiers: TypeModifier[]|null = null) {
-    if (!modifiers) {
-      this.modifiers = [];
-    }
-  }
+  constructor(public modifiers: TypeModifier[] = []) {}
   abstract visitType(visitor: TypeVisitor, context: any): any;
 
   hasModifier(modifier: TypeModifier): boolean {
-    return this.modifiers!.indexOf(modifier) !== -1;
+    return this.modifiers.indexOf(modifier) !== -1;
   }
 }
 
@@ -40,7 +36,7 @@ export enum BuiltinTypeName {
 }
 
 export class BuiltinType extends Type {
-  constructor(public name: BuiltinTypeName, modifiers: TypeModifier[]|null = null) {
+  constructor(public name: BuiltinTypeName, modifiers?: TypeModifier[]) {
     super(modifiers);
   }
   visitType(visitor: TypeVisitor, context: any): any {
@@ -50,8 +46,7 @@ export class BuiltinType extends Type {
 
 export class ExpressionType extends Type {
   constructor(
-      public value: Expression, modifiers: TypeModifier[]|null = null,
-      public typeParams: Type[]|null = null) {
+      public value: Expression, modifiers?: TypeModifier[], public typeParams: Type[]|null = null) {
     super(modifiers);
   }
   visitType(visitor: TypeVisitor, context: any): any {
@@ -61,7 +56,7 @@ export class ExpressionType extends Type {
 
 
 export class ArrayType extends Type {
-  constructor(public of: Type, modifiers: TypeModifier[]|null = null) {
+  constructor(public of: Type, modifiers?: TypeModifier[]) {
     super(modifiers);
   }
   visitType(visitor: TypeVisitor, context: any): any {
@@ -72,7 +67,7 @@ export class ArrayType extends Type {
 
 export class MapType extends Type {
   public valueType: Type|null;
-  constructor(valueType: Type|null|undefined, modifiers: TypeModifier[]|null = null) {
+  constructor(valueType: Type|null|undefined, modifiers?: TypeModifier[]) {
     super(modifiers);
     this.valueType = valueType || null;
   }
@@ -357,7 +352,7 @@ export class WriteVarExpr extends Expression {
     return visitor.visitWriteVarExpr(this, context);
   }
 
-  toDeclStmt(type?: Type|null, modifiers?: StmtModifier[]|null): DeclareVarStmt {
+  toDeclStmt(type?: Type|null, modifiers?: StmtModifier[]): DeclareVarStmt {
     return new DeclareVarStmt(this.name, this.value, type, modifiers, this.sourceSpan);
   }
 
@@ -764,7 +759,7 @@ export class FunctionExpr extends Expression {
     return visitor.visitFunctionExpr(this, context);
   }
 
-  toDeclStmt(name: string, modifiers: StmtModifier[]|null = null): DeclareFunctionStmt {
+  toDeclStmt(name: string, modifiers?: StmtModifier[]): DeclareFunctionStmt {
     return new DeclareFunctionStmt(
         name, this.params, this.statements, this.type, modifiers, this.sourceSpan);
   }
@@ -978,13 +973,25 @@ export enum StmtModifier {
   Static,
 }
 
-export abstract class Statement {
-  public modifiers: StmtModifier[];
-  public sourceSpan: ParseSourceSpan|null;
-  constructor(modifiers?: StmtModifier[]|null, sourceSpan?: ParseSourceSpan|null) {
-    this.modifiers = modifiers || [];
-    this.sourceSpan = sourceSpan || null;
+export class LeadingComment {
+  constructor(public text: string, public multiline: boolean, public trailingNewline: boolean) {}
+  toString() {
+    return this.multiline ? ` ${this.text} ` : this.text;
   }
+}
+export class JSDocComment extends LeadingComment {
+  constructor(public tags: JSDocTag[]) {
+    super('', /* multiline */ true, /* trailingNewline */ true);
+  }
+  toString(): string {
+    return serializeTags(this.tags);
+  }
+}
+
+export abstract class Statement {
+  constructor(
+      public modifiers: StmtModifier[] = [], public sourceSpan: ParseSourceSpan|null = null,
+      public leadingComments?: LeadingComment[]) {}
   /**
    * Calculates whether this statement produces the same value as the given statement.
    * Note: We don't check Types nor ParseSourceSpans nor function arguments.
@@ -994,7 +1001,12 @@ export abstract class Statement {
   abstract visitStatement(visitor: StatementVisitor, context: any): any;
 
   hasModifier(modifier: StmtModifier): boolean {
-    return this.modifiers!.indexOf(modifier) !== -1;
+    return this.modifiers.indexOf(modifier) !== -1;
+  }
+
+  addLeadingComment(leadingComment: LeadingComment): void {
+    this.leadingComments = this.leadingComments ?? [];
+    this.leadingComments.push(leadingComment);
   }
 }
 
@@ -1002,9 +1014,9 @@ export abstract class Statement {
 export class DeclareVarStmt extends Statement {
   public type: Type|null;
   constructor(
-      public name: string, public value?: Expression, type?: Type|null,
-      modifiers: StmtModifier[]|null = null, sourceSpan?: ParseSourceSpan|null) {
-    super(modifiers, sourceSpan);
+      public name: string, public value?: Expression, type?: Type|null, modifiers?: StmtModifier[],
+      sourceSpan?: ParseSourceSpan|null, leadingComments?: LeadingComment[]) {
+    super(modifiers, sourceSpan, leadingComments);
     this.type = type || (value && value.type) || null;
   }
   isEquivalent(stmt: Statement): boolean {
@@ -1020,28 +1032,29 @@ export class DeclareFunctionStmt extends Statement {
   public type: Type|null;
   constructor(
       public name: string, public params: FnParam[], public statements: Statement[],
-      type?: Type|null, modifiers: StmtModifier[]|null = null, sourceSpan?: ParseSourceSpan|null) {
-    super(modifiers, sourceSpan);
+      type?: Type|null, modifiers?: StmtModifier[], sourceSpan?: ParseSourceSpan|null,
+      leadingComments?: LeadingComment[]) {
+    super(modifiers, sourceSpan, leadingComments);
     this.type = type || null;
   }
   isEquivalent(stmt: Statement): boolean {
     return stmt instanceof DeclareFunctionStmt && areAllEquivalent(this.params, stmt.params) &&
         areAllEquivalent(this.statements, stmt.statements);
   }
-
   visitStatement(visitor: StatementVisitor, context: any): any {
     return visitor.visitDeclareFunctionStmt(this, context);
   }
 }
 
 export class ExpressionStatement extends Statement {
-  constructor(public expr: Expression, sourceSpan?: ParseSourceSpan|null) {
-    super(null, sourceSpan);
+  constructor(
+      public expr: Expression, sourceSpan?: ParseSourceSpan|null,
+      leadingComments?: LeadingComment[]) {
+    super([], sourceSpan, leadingComments);
   }
   isEquivalent(stmt: Statement): boolean {
     return stmt instanceof ExpressionStatement && this.expr.isEquivalent(stmt.expr);
   }
-
   visitStatement(visitor: StatementVisitor, context: any): any {
     return visitor.visitExpressionStmt(this, context);
   }
@@ -1049,8 +1062,10 @@ export class ExpressionStatement extends Statement {
 
 
 export class ReturnStatement extends Statement {
-  constructor(public value: Expression, sourceSpan?: ParseSourceSpan|null) {
-    super(null, sourceSpan);
+  constructor(
+      public value: Expression, sourceSpan: ParseSourceSpan|null = null,
+      leadingComments?: LeadingComment[]) {
+    super([], sourceSpan, leadingComments);
   }
   isEquivalent(stmt: Statement): boolean {
     return stmt instanceof ReturnStatement && this.value.isEquivalent(stmt.value);
@@ -1061,21 +1076,15 @@ export class ReturnStatement extends Statement {
 }
 
 export class AbstractClassPart {
-  public type: Type|null;
-  constructor(type: Type|null|undefined, public modifiers: StmtModifier[]|null) {
-    if (!modifiers) {
-      this.modifiers = [];
-    }
-    this.type = type || null;
-  }
+  constructor(public type: Type|null = null, public modifiers: StmtModifier[] = []) {}
   hasModifier(modifier: StmtModifier): boolean {
-    return this.modifiers!.indexOf(modifier) !== -1;
+    return this.modifiers.indexOf(modifier) !== -1;
   }
 }
 
 export class ClassField extends AbstractClassPart {
   constructor(
-      public name: string, type?: Type|null, modifiers: StmtModifier[]|null = null,
+      public name: string, type?: Type|null, modifiers?: StmtModifier[],
       public initializer?: Expression) {
     super(type, modifiers);
   }
@@ -1088,7 +1097,7 @@ export class ClassField extends AbstractClassPart {
 export class ClassMethod extends AbstractClassPart {
   constructor(
       public name: string|null, public params: FnParam[], public body: Statement[],
-      type?: Type|null, modifiers: StmtModifier[]|null = null) {
+      type?: Type|null, modifiers?: StmtModifier[]) {
     super(type, modifiers);
   }
   isEquivalent(m: ClassMethod) {
@@ -1099,8 +1108,7 @@ export class ClassMethod extends AbstractClassPart {
 
 export class ClassGetter extends AbstractClassPart {
   constructor(
-      public name: string, public body: Statement[], type?: Type|null,
-      modifiers: StmtModifier[]|null = null) {
+      public name: string, public body: Statement[], type?: Type|null, modifiers?: StmtModifier[]) {
     super(type, modifiers);
   }
   isEquivalent(m: ClassGetter) {
@@ -1113,9 +1121,9 @@ export class ClassStmt extends Statement {
   constructor(
       public name: string, public parent: Expression|null, public fields: ClassField[],
       public getters: ClassGetter[], public constructorMethod: ClassMethod,
-      public methods: ClassMethod[], modifiers: StmtModifier[]|null = null,
-      sourceSpan?: ParseSourceSpan|null) {
-    super(modifiers, sourceSpan);
+      public methods: ClassMethod[], modifiers?: StmtModifier[], sourceSpan?: ParseSourceSpan|null,
+      leadingComments?: LeadingComment[]) {
+    super(modifiers, sourceSpan, leadingComments);
   }
   isEquivalent(stmt: Statement): boolean {
     return stmt instanceof ClassStmt && this.name === stmt.name &&
@@ -1134,8 +1142,9 @@ export class ClassStmt extends Statement {
 export class IfStmt extends Statement {
   constructor(
       public condition: Expression, public trueCase: Statement[],
-      public falseCase: Statement[] = [], sourceSpan?: ParseSourceSpan|null) {
-    super(null, sourceSpan);
+      public falseCase: Statement[] = [], sourceSpan?: ParseSourceSpan|null,
+      leadingComments?: LeadingComment[]) {
+    super([], sourceSpan, leadingComments);
   }
   isEquivalent(stmt: Statement): boolean {
     return stmt instanceof IfStmt && this.condition.isEquivalent(stmt.condition) &&
@@ -1147,38 +1156,11 @@ export class IfStmt extends Statement {
   }
 }
 
-export class CommentStmt extends Statement {
-  constructor(public comment: string, public multiline = false, sourceSpan?: ParseSourceSpan|null) {
-    super(null, sourceSpan);
-  }
-  isEquivalent(stmt: Statement): boolean {
-    return stmt instanceof CommentStmt;
-  }
-  visitStatement(visitor: StatementVisitor, context: any): any {
-    return visitor.visitCommentStmt(this, context);
-  }
-}
-
-export class JSDocCommentStmt extends Statement {
-  constructor(public tags: JSDocTag[] = [], sourceSpan?: ParseSourceSpan|null) {
-    super(null, sourceSpan);
-  }
-  isEquivalent(stmt: Statement): boolean {
-    return stmt instanceof JSDocCommentStmt && this.toString() === stmt.toString();
-  }
-  visitStatement(visitor: StatementVisitor, context: any): any {
-    return visitor.visitJSDocCommentStmt(this, context);
-  }
-  toString(): string {
-    return serializeTags(this.tags);
-  }
-}
-
 export class TryCatchStmt extends Statement {
   constructor(
       public bodyStmts: Statement[], public catchStmts: Statement[],
-      sourceSpan?: ParseSourceSpan|null) {
-    super(null, sourceSpan);
+      sourceSpan: ParseSourceSpan|null = null, leadingComments?: LeadingComment[]) {
+    super([], sourceSpan, leadingComments);
   }
   isEquivalent(stmt: Statement): boolean {
     return stmt instanceof TryCatchStmt && areAllEquivalent(this.bodyStmts, stmt.bodyStmts) &&
@@ -1191,8 +1173,10 @@ export class TryCatchStmt extends Statement {
 
 
 export class ThrowStmt extends Statement {
-  constructor(public error: Expression, sourceSpan?: ParseSourceSpan|null) {
-    super(null, sourceSpan);
+  constructor(
+      public error: Expression, sourceSpan: ParseSourceSpan|null = null,
+      leadingComments?: LeadingComment[]) {
+    super([], sourceSpan, leadingComments);
   }
   isEquivalent(stmt: ThrowStmt): boolean {
     return stmt instanceof TryCatchStmt && this.error.isEquivalent(stmt.error);
@@ -1211,8 +1195,6 @@ export interface StatementVisitor {
   visitIfStmt(stmt: IfStmt, context: any): any;
   visitTryCatchStmt(stmt: TryCatchStmt, context: any): any;
   visitThrowStmt(stmt: ThrowStmt, context: any): any;
-  visitCommentStmt(stmt: CommentStmt, context: any): any;
-  visitJSDocCommentStmt(stmt: JSDocCommentStmt, context: any): any;
 }
 
 export class AstTransformer implements StatementVisitor, ExpressionVisitor {
@@ -1374,7 +1356,7 @@ export class AstTransformer implements StatementVisitor, ExpressionVisitor {
     const entries = ast.entries.map(
         (entry): LiteralMapEntry => new LiteralMapEntry(
             entry.key, entry.value.visitExpression(this, context), entry.quoted));
-    const mapType = new MapType(ast.valueType, null);
+    const mapType = new MapType(ast.valueType);
     return this.transformExpr(new LiteralMapExpr(entries, mapType, ast.sourceSpan), context);
   }
   visitCommaExpr(ast: CommaExpr, context: any): any {
@@ -1388,25 +1370,30 @@ export class AstTransformer implements StatementVisitor, ExpressionVisitor {
   visitDeclareVarStmt(stmt: DeclareVarStmt, context: any): any {
     const value = stmt.value && stmt.value.visitExpression(this, context);
     return this.transformStmt(
-        new DeclareVarStmt(stmt.name, value, stmt.type, stmt.modifiers, stmt.sourceSpan), context);
+        new DeclareVarStmt(
+            stmt.name, value, stmt.type, stmt.modifiers, stmt.sourceSpan, stmt.leadingComments),
+        context);
   }
   visitDeclareFunctionStmt(stmt: DeclareFunctionStmt, context: any): any {
     return this.transformStmt(
         new DeclareFunctionStmt(
             stmt.name, stmt.params, this.visitAllStatements(stmt.statements, context), stmt.type,
-            stmt.modifiers, stmt.sourceSpan),
+            stmt.modifiers, stmt.sourceSpan, stmt.leadingComments),
         context);
   }
 
   visitExpressionStmt(stmt: ExpressionStatement, context: any): any {
     return this.transformStmt(
-        new ExpressionStatement(stmt.expr.visitExpression(this, context), stmt.sourceSpan),
+        new ExpressionStatement(
+            stmt.expr.visitExpression(this, context), stmt.sourceSpan, stmt.leadingComments),
         context);
   }
 
   visitReturnStmt(stmt: ReturnStatement, context: any): any {
     return this.transformStmt(
-        new ReturnStatement(stmt.value.visitExpression(this, context), stmt.sourceSpan), context);
+        new ReturnStatement(
+            stmt.value.visitExpression(this, context), stmt.sourceSpan, stmt.leadingComments),
+        context);
   }
 
   visitDeclareClassStmt(stmt: ClassStmt, context: any): any {
@@ -1435,7 +1422,8 @@ export class AstTransformer implements StatementVisitor, ExpressionVisitor {
         new IfStmt(
             stmt.condition.visitExpression(this, context),
             this.visitAllStatements(stmt.trueCase, context),
-            this.visitAllStatements(stmt.falseCase, context), stmt.sourceSpan),
+            this.visitAllStatements(stmt.falseCase, context), stmt.sourceSpan,
+            stmt.leadingComments),
         context);
   }
 
@@ -1443,21 +1431,16 @@ export class AstTransformer implements StatementVisitor, ExpressionVisitor {
     return this.transformStmt(
         new TryCatchStmt(
             this.visitAllStatements(stmt.bodyStmts, context),
-            this.visitAllStatements(stmt.catchStmts, context), stmt.sourceSpan),
+            this.visitAllStatements(stmt.catchStmts, context), stmt.sourceSpan,
+            stmt.leadingComments),
         context);
   }
 
   visitThrowStmt(stmt: ThrowStmt, context: any): any {
     return this.transformStmt(
-        new ThrowStmt(stmt.error.visitExpression(this, context), stmt.sourceSpan), context);
-  }
-
-  visitCommentStmt(stmt: CommentStmt, context: any): any {
-    return this.transformStmt(stmt, context);
-  }
-
-  visitJSDocCommentStmt(stmt: JSDocCommentStmt, context: any): any {
-    return this.transformStmt(stmt, context);
+        new ThrowStmt(
+            stmt.error.visitExpression(this, context), stmt.sourceSpan, stmt.leadingComments),
+        context);
   }
 
   visitAllStatements(stmts: Statement[], context: any): Statement[] {
@@ -1647,12 +1630,6 @@ export class RecursiveAstVisitor implements StatementVisitor, ExpressionVisitor 
     stmt.error.visitExpression(this, context);
     return stmt;
   }
-  visitCommentStmt(stmt: CommentStmt, context: any): any {
-    return stmt;
-  }
-  visitJSDocCommentStmt(stmt: JSDocCommentStmt, context: any): any {
-    return stmt;
-  }
   visitAllStatements(stmts: Statement[], context: any): void {
     stmts.forEach(stmt => stmt.visitStatement(this, context));
   }
@@ -1743,6 +1720,15 @@ class _ApplySourceSpanTransformer extends AstTransformer {
   }
 }
 
+export function leadingComment(
+    text: string, multiline: boolean = false, trailingNewline: boolean = true): LeadingComment {
+  return new LeadingComment(text, multiline, trailingNewline);
+}
+
+export function jsDocComment(tags: JSDocTag[] = []): JSDocComment {
+  return new JSDocComment(tags);
+}
+
 export function variable(
     name: string, type?: Type|null, sourceSpan?: ParseSourceSpan|null): ReadVarExpr {
   return new ReadVarExpr(name, type, sourceSpan);
@@ -1755,14 +1741,13 @@ export function importExpr(
 }
 
 export function importType(
-    id: ExternalReference, typeParams: Type[]|null = null,
-    typeModifiers: TypeModifier[]|null = null): ExpressionType|null {
+    id: ExternalReference, typeParams?: Type[]|null,
+    typeModifiers?: TypeModifier[]): ExpressionType|null {
   return id != null ? expressionType(importExpr(id, typeParams, null), typeModifiers) : null;
 }
 
 export function expressionType(
-    expr: Expression, typeModifiers: TypeModifier[]|null = null,
-    typeParams: Type[]|null = null): ExpressionType {
+    expr: Expression, typeModifiers?: TypeModifier[], typeParams?: Type[]|null): ExpressionType {
   return new ExpressionType(expr, typeModifiers, typeParams);
 }
 
@@ -1802,8 +1787,10 @@ export function fn(
   return new FunctionExpr(params, body, type, sourceSpan, name);
 }
 
-export function ifStmt(condition: Expression, thenClause: Statement[], elseClause?: Statement[]) {
-  return new IfStmt(condition, thenClause, elseClause);
+export function ifStmt(
+    condition: Expression, thenClause: Statement[], elseClause?: Statement[],
+    sourceSpan?: ParseSourceSpan, leadingComments?: LeadingComment[]) {
+  return new IfStmt(condition, thenClause, elseClause, sourceSpan, leadingComments);
 }
 
 export function literal(
@@ -1865,10 +1852,15 @@ function tagToString(tag: JSDocTag): string {
 function serializeTags(tags: JSDocTag[]): string {
   if (tags.length === 0) return '';
 
+  if (tags.length === 1 && tags[0].tagName && !tags[0].text) {
+    // The JSDOC comment is a single simple tag: e.g `/** @tagname */`.
+    return `*${tagToString(tags[0])} `;
+  }
+
   let out = '*\n';
   for (const tag of tags) {
     out += ' *';
-    // If the tagToString is multi-line, insert " * " prefixes on subsequent lines.
+    // If the tagToString is multi-line, insert " * " prefixes on lines.
     out += tagToString(tag).replace(/\n/g, '\n * ');
     out += '\n';
   }

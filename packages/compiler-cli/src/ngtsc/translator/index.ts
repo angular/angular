@@ -6,4 +6,4 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export {Import, ImportManager, NamedImport, translateExpression, translateStatement, translateType} from './src/translator';
+export {attachComments, Import, ImportManager, NamedImport, translateExpression, translateStatement, translateType} from './src/translator';

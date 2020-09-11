@@ -893,7 +893,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       const templateFunctionExpr = templateVisitor.buildTemplateFunction(
           template.children, template.variables,
           this._ngContentReservedSlots.length + this._ngContentSelectorsOffset, template.i18n);
-      this.constantPool.statements.push(templateFunctionExpr.toDeclStmt(templateName, null));
+      this.constantPool.statements.push(templateFunctionExpr.toDeclStmt(templateName));
       if (templateVisitor._ngContentReservedSlots.length) {
         this._ngContentReservedSlots.push(...templateVisitor._ngContentReservedSlots);
       }
