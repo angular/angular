@@ -171,8 +171,8 @@ export function createCustomElement<P>(
       // Collect pre-existing values on the element to re-apply through the strategy.
       const preExistingValues =
           inputs.filter(({propName, templateName}) => {
-            return this.hasOwnProperty(propName) || this.getAttribute(templateName);
-          }).map(({propName}): [
+            return this.hasOwnProperty(propName) || this.hasAttribute(templateName);
+          }).map(({propName, templateName}): [
             string, any
           ] => [propName, (this as any)[propName] || this.getAttribute(templateName)]);
 
