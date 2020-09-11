@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {existsSync, readFileSync} from 'fs-extra';
+import {existsSync, readFileSync} from 'fs';
 import * as multimatch from 'multimatch';
 import {join} from 'path';
 import {parse as parseYaml} from 'yaml';
