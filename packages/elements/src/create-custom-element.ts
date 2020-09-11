@@ -150,28 +150,6 @@ export function createCustomElement<P>(
       if (!this._ngElementStrategy) {
         const strategy = this._ngElementStrategy =
             strategyFactory.create(this.injector || config.injector);
-
-        // Collect pre-existing values on the element to re-apply through the strategy.
-        const preExistingValues =
-            inputs.filter(({propName}) => this.hasOwnProperty(propName)).map(({propName}): [
-              string, any
-            ] => [propName, (this as any)[propName]]);
-
-        // In some browsers (e.g. IE10), `Object.setPrototypeOf()` (which is required by some Custom
-        // Elements polyfills) is not defined and is thus polyfilled in a way that does not preserve
-        // the prototype chain. In such cases, `this` will not be an instance of `NgElementImpl` and
-        // thus not have the component input getters/setters defined on `NgElementImpl.prototype`.
-        if (!(this instanceof NgElementImpl)) {
-          // Add getters and setters to the instance itself for each property input.
-          defineInputGettersSetters(inputs, this);
-        } else {
-          // Delete the property from the instance, so that it can go through the getters/setters
-          // set on `NgElementImpl.prototype`.
-          preExistingValues.forEach(([propName]) => delete (this as any)[propName]);
-        }
-
-        // Re-apply pre-existing values through the strategy.
-        preExistingValues.forEach(([propName, value]) => strategy.setInputValue(propName, value));
       }
 
       return this._ngElementStrategy!;
@@ -190,6 +168,28 @@ export function createCustomElement<P>(
     }
 
     connectedCallback(): void {
+      // Collect pre-existing values on the element to re-apply through the strategy.
+      const preExistingValues =
+          inputs.filter(({propName}) => this.hasOwnProperty(propName)).map(({propName}): [
+            string, any
+          ] => [propName, (this as any)[propName]]);
+
+      // In some browsers (e.g. IE10), `Object.setPrototypeOf()` (which is required by some Custom
+      // Elements polyfills) is not defined and is thus polyfilled in a way that does not preserve
+      // the prototype chain. In such cases, `this` will not be an instance of `NgElementImpl` and
+      // thus not have the component input getters/setters defined on `NgElementImpl.prototype`.
+      if (!(this instanceof NgElementImpl)) {
+        // Add getters and setters to the instance itself for each property input.
+        defineInputGettersSetters(inputs, this);
+      } else {
+        // Delete the property from the instance, so that it can go through the getters/setters
+        // set on `NgElementImpl.prototype`.
+        preExistingValues.forEach(([propName]) => delete (this as any)[propName]);
+      }
+
+      // Re-apply pre-existing values through the strategy.
+      preExistingValues.forEach(([propName, value]) => this.ngElementStrategy.setInputValue(propName, value));
+      
       // For historical reasons, some strategies may not have initialized the `events` property
       // until after `connect()` is run. Subscribe to `events` if it is available before running
       // `connect()` (in order to capture events emitted suring inittialization), otherwise
