@@ -148,7 +148,7 @@ export function createCustomElement<P>(
       // TODO(andrewseguin): Add e2e tests that cover cases where the constructor isn't called. For
       // now this is tested using a Google internal test suite.
       if (!this._ngElementStrategy) {
-        const strategy = this._ngElementStrategy =
+        this._ngElementStrategy =
             strategyFactory.create(this.injector || config.injector);
       }
 
