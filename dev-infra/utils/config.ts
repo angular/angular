@@ -49,7 +49,7 @@ export type NgDevConfig<T = {}> = CommonConfig&T;
 const CONFIG_FILE_PATH = '.ng-dev/config';
 
 /** The configuration for ng-dev. */
-let CONFIG: {}|null = null;
+let cachedConfig: NgDevConfig|null = null;
 
 /**
  * The filename expected for local user config, without the file extension to allow a typescript,
@@ -58,7 +58,7 @@ let CONFIG: {}|null = null;
 const USER_CONFIG_FILE_PATH = '.ng-dev.user';
 
 /** The local user configuration for ng-dev. */
-let USER_CONFIG: {[key: string]: any};
+let userConfig: {[key: string]: any}|null = null;
 
 /**
  * Get the configuration from the file system, returning the already loaded
@@ -66,15 +66,15 @@ let USER_CONFIG: {[key: string]: any};
  */
 export function getConfig(): NgDevConfig {
   // If the global config is not defined, load it from the file system.
-  if (CONFIG === null) {
+  if (cachedConfig === null) {
     // The full path to the configuration file.
     const configPath = join(getRepoBaseDir(), CONFIG_FILE_PATH);
-    // Set the global config object.
-    CONFIG = readConfigFile(configPath);
+    // Read the configuration and validate it before caching it for the future.
+    cachedConfig = validateCommonConfig(readConfigFile(configPath));
   }
-  // Return a clone of the global config to ensure that a new instance of the config is returned
-  // each time, preventing unexpected effects of modifications to the config object.
-  return validateCommonConfig({...CONFIG});
+  // Return a clone of the cached global config to ensure that a new instance of the config
+  // is returned each time, preventing unexpected effects of modifications to the config object.
+  return {...cachedConfig};
 }
 
 /** Validate the common configuration has been met for the ng-dev command. */
@@ -162,13 +162,13 @@ export function getRepoBaseDir() {
  */
 export function getUserConfig() {
   // If the global config is not defined, load it from the file system.
-  if (USER_CONFIG === undefined) {
+  if (userConfig === null) {
     // The full path to the configuration file.
     const configPath = join(getRepoBaseDir(), USER_CONFIG_FILE_PATH);
     // Set the global config object.
-    USER_CONFIG = readConfigFile(configPath, true);
+    userConfig = readConfigFile(configPath, true);
   }
-  // Return a clone of the global config to ensure that a new instance of the config is returned
+  // Return a clone of the user config to ensure that a new instance of the config is returned
   // each time, preventing unexpected effects of modifications to the config object.
-  return {...USER_CONFIG};
+  return {...userConfig};
 }
