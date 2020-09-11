@@ -245,7 +245,8 @@ export class Environment {
    */
   referenceExternalType(moduleName: string, name: string, typeParams?: Type[]): ts.TypeNode {
     const external = new ExternalExpr({moduleName, name});
-    return translateType(new ExpressionType(external, null, typeParams), this.importManager);
+    return translateType(
+        new ExpressionType(external, [/* modifiers */], typeParams), this.importManager);
   }
 
   getPreludeStatements(): ts.Statement[] {

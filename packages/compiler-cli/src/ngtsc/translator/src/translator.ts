@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ArrayType, AssertNotNull, BinaryOperator, BinaryOperatorExpr, BuiltinType, BuiltinTypeName, CastExpr, ClassStmt, CommaExpr, CommentStmt, ConditionalExpr, DeclareFunctionStmt, DeclareVarStmt, Expression, ExpressionStatement, ExpressionType, ExpressionVisitor, ExternalExpr, FunctionExpr, IfStmt, InstantiateExpr, InvokeFunctionExpr, InvokeMethodExpr, JSDocCommentStmt, LiteralArrayExpr, LiteralExpr, LiteralMapExpr, MapType, NotExpr, ParseSourceSpan, ReadKeyExpr, ReadPropExpr, ReadVarExpr, ReturnStatement, Statement, StatementVisitor, StmtModifier, ThrowStmt, TryCatchStmt, Type, TypeofExpr, TypeVisitor, WrappedNodeExpr, WriteKeyExpr, WritePropExpr, WriteVarExpr} from '@angular/compiler';
+import {ArrayType, AssertNotNull, BinaryOperator, BinaryOperatorExpr, BuiltinType, BuiltinTypeName, CastExpr, ClassStmt, CommaExpr, ConditionalExpr, DeclareFunctionStmt, DeclareVarStmt, Expression, ExpressionStatement, ExpressionType, ExpressionVisitor, ExternalExpr, FunctionExpr, IfStmt, InstantiateExpr, InvokeFunctionExpr, InvokeMethodExpr, LeadingComment, LiteralArrayExpr, LiteralExpr, LiteralMapExpr, MapType, NotExpr, ParseSourceSpan, ReadKeyExpr, ReadPropExpr, ReadVarExpr, ReturnStatement, Statement, StatementVisitor, StmtModifier, ThrowStmt, TryCatchStmt, Type, TypeofExpr, TypeVisitor, WrappedNodeExpr, WriteKeyExpr, WritePropExpr, WriteVarExpr} from '@angular/compiler';
 import {LocalizedString, UnaryOperator, UnaryOperatorExpr} from '@angular/compiler/src/output/output_ast';
 import * as ts from 'typescript';
 
@@ -134,34 +134,45 @@ class ExpressionTranslatorVisitor implements ExpressionVisitor, StatementVisitor
       private scriptTarget: Exclude<ts.ScriptTarget, ts.ScriptTarget.JSON>) {}
 
   visitDeclareVarStmt(stmt: DeclareVarStmt, context: Context): ts.VariableStatement {
-    const nodeFlags =
-        ((this.scriptTarget >= ts.ScriptTarget.ES2015) && stmt.hasModifier(StmtModifier.Final)) ?
-        ts.NodeFlags.Const :
-        ts.NodeFlags.None;
-    return ts.createVariableStatement(
-        undefined,
-        ts.createVariableDeclarationList(
-            [ts.createVariableDeclaration(
-                stmt.name, undefined,
-                stmt.value && stmt.value.visitExpression(this, context.withExpressionMode))],
-            nodeFlags));
+    const isConst =
+        this.scriptTarget >= ts.ScriptTarget.ES2015 && stmt.hasModifier(StmtModifier.Final);
+    const varDeclaration = ts.createVariableDeclaration(
+        /* name */ stmt.name,
+        /* type */ undefined,
+        /* initializer */ stmt.value?.visitExpression(this, context.withExpressionMode));
+    const declarationList = ts.createVariableDeclarationList(
+        /* declarations */[varDeclaration],
+        /* flags */ isConst ? ts.NodeFlags.Const : ts.NodeFlags.None);
+    const varStatement = ts.createVariableStatement(undefined, declarationList);
+    return attachComments(varStatement, stmt.leadingComments);
   }
 
   visitDeclareFunctionStmt(stmt: DeclareFunctionStmt, context: Context): ts.FunctionDeclaration {
-    return ts.createFunctionDeclaration(
-        undefined, undefined, undefined, stmt.name, undefined,
+    const fnDeclaration = ts.createFunctionDeclaration(
+        /* decorators */ undefined,
+        /* modifiers */ undefined,
+        /* asterisk */ undefined,
+        /* name */ stmt.name,
+        /* typeParameters */ undefined,
+        /* parameters */
         stmt.params.map(param => ts.createParameter(undefined, undefined, undefined, param.name)),
-        undefined,
+        /* type */ undefined,
+        /* body */
         ts.createBlock(
             stmt.statements.map(child => child.visitStatement(this, context.withStatementMode))));
+    return attachComments(fnDeclaration, stmt.leadingComments);
   }
 
   visitExpressionStmt(stmt: ExpressionStatement, context: Context): ts.ExpressionStatement {
-    return ts.createStatement(stmt.expr.visitExpression(this, context.withStatementMode));
+    return attachComments(
+        ts.createStatement(stmt.expr.visitExpression(this, context.withStatementMode)),
+        stmt.leadingComments);
   }
 
   visitReturnStmt(stmt: ReturnStatement, context: Context): ts.ReturnStatement {
-    return ts.createReturn(stmt.value.visitExpression(this, context.withExpressionMode));
+    return attachComments(
+        ts.createReturn(stmt.value.visitExpression(this, context.withExpressionMode)),
+        stmt.leadingComments);
   }
 
   visitDeclareClassStmt(stmt: ClassStmt, context: Context) {
@@ -174,14 +185,15 @@ class ExpressionTranslatorVisitor implements ExpressionVisitor, StatementVisitor
   }
 
   visitIfStmt(stmt: IfStmt, context: Context): ts.IfStatement {
-    return ts.createIf(
-        stmt.condition.visitExpression(this, context),
+    const thenBlock = ts.createBlock(
+        stmt.trueCase.map(child => child.visitStatement(this, context.withStatementMode)));
+    const elseBlock = stmt.falseCase.length > 0 ?
         ts.createBlock(
-            stmt.trueCase.map(child => child.visitStatement(this, context.withStatementMode))),
-        stmt.falseCase.length > 0 ?
-            ts.createBlock(stmt.falseCase.map(
-                child => child.visitStatement(this, context.withStatementMode))) :
-            undefined);
+            stmt.falseCase.map(child => child.visitStatement(this, context.withStatementMode))) :
+        undefined;
+    const ifStatement =
+        ts.createIf(stmt.condition.visitExpression(this, context), thenBlock, elseBlock);
+    return attachComments(ifStatement, stmt.leadingComments);
   }
 
   visitTryCatchStmt(stmt: TryCatchStmt, context: Context) {
@@ -189,25 +201,9 @@ class ExpressionTranslatorVisitor implements ExpressionVisitor, StatementVisitor
   }
 
   visitThrowStmt(stmt: ThrowStmt, context: Context): ts.ThrowStatement {
-    return ts.createThrow(stmt.error.visitExpression(this, context.withExpressionMode));
-  }
-
-  visitCommentStmt(stmt: CommentStmt, context: Context): ts.NotEmittedStatement {
-    const commentStmt = ts.createNotEmittedStatement(ts.createLiteral(''));
-    ts.addSyntheticLeadingComment(
-        commentStmt,
-        stmt.multiline ? ts.SyntaxKind.MultiLineCommentTrivia :
-                         ts.SyntaxKind.SingleLineCommentTrivia,
-        stmt.comment, /** hasTrailingNewLine */ false);
-    return commentStmt;
-  }
-
-  visitJSDocCommentStmt(stmt: JSDocCommentStmt, context: Context): ts.NotEmittedStatement {
-    const commentStmt = ts.createNotEmittedStatement(ts.createLiteral(''));
-    const text = stmt.toString();
-    const kind = ts.SyntaxKind.MultiLineCommentTrivia;
-    ts.setSyntheticLeadingComments(commentStmt, [{kind, text, pos: -1, end: -1}]);
-    return commentStmt;
+    return attachComments(
+        ts.createThrow(stmt.error.visitExpression(this, context.withExpressionMode)),
+        stmt.leadingComments);
   }
 
   visitReadVarExpr(ast: ReadVarExpr, context: Context): ts.Identifier {
@@ -784,4 +780,31 @@ function createTemplateTail(cooked: string, raw: string): ts.TemplateTail {
   const node: ts.TemplateLiteralLikeNode = ts.createTemplateHead(cooked, raw);
   (node.kind as ts.SyntaxKind) = ts.SyntaxKind.TemplateTail;
   return node as ts.TemplateTail;
+}
+
+/**
+ * Attach the given `leadingComments` to the `statement` node.
+ *
+ * @param statement The statement that will have comments attached.
+ * @param leadingComments The comments to attach to the statement.
+ */
+export function attachComments<T extends ts.Statement>(
+    statement: T, leadingComments?: LeadingComment[]): T {
+  if (leadingComments === undefined) {
+    return statement;
+  }
+
+  for (const comment of leadingComments) {
+    const commentKind = comment.multiline ? ts.SyntaxKind.MultiLineCommentTrivia :
+                                            ts.SyntaxKind.SingleLineCommentTrivia;
+    if (comment.multiline) {
+      ts.addSyntheticLeadingComment(
+          statement, commentKind, comment.toString(), comment.trailingNewline);
+    } else {
+      for (const line of comment.text.split('\n')) {
+        ts.addSyntheticLeadingComment(statement, commentKind, line, comment.trailingNewline);
+      }
+    }
+  }
+  return statement;
 }

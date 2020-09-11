@@ -45,14 +45,14 @@ export function convertMetaToOutput(meta: any, ctx: OutputContext): o.Expression
 }
 
 export function typeWithParameters(type: o.Expression, numParams: number): o.ExpressionType {
-  let params: o.Type[]|null = null;
-  if (numParams > 0) {
-    params = [];
-    for (let i = 0; i < numParams; i++) {
-      params.push(o.DYNAMIC_TYPE);
-    }
+  if (numParams === 0) {
+    return o.expressionType(type);
   }
-  return o.expressionType(type, null, params);
+  const params: o.Type[] = [];
+  for (let i = 0; i < numParams; i++) {
+    params.push(o.DYNAMIC_TYPE);
+  }
+  return o.expressionType(type, undefined, params);
 }
 
 export interface R3Reference {
