@@ -24,6 +24,7 @@ def js_expected_symbol_test(name, src, golden, data = [], **kwargs):
         name = name,
         data = all_data,
         entry_point = entry_point,
+        tags = kwargs.pop("tags", []) + ["symbol_extractor"],
         templated_args = ["$(rootpath %s)" % src, "$(rootpath %s)" % golden],
         configuration_env_vars = ["angular_ivy_enabled"],
         **kwargs
