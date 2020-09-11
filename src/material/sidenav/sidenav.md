@@ -197,7 +197,7 @@ class YourComponent implements AfterViewInit {
 
 ### Accessibility
 
-The `<mat-sidenav>` an `<mat-sidenav-content>` should each be given an appropriate `role` attribute
+The `<mat-sidenav>` and `<mat-sidenav-content>` should each be given an appropriate `role` attribute
 depending on the context in which they are used.
 
 For example, a `<mat-sidenav>` that contains links
