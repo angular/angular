@@ -116,6 +116,8 @@ export class ComponentNgElementStrategy implements NgElementStrategy {
       // Schedule the component to be destroyed after a small timeout in case it is being
       // moved elsewhere in the DOM
       this.scheduledDestroyFn = scheduler.schedule(() => {
+        this.scheduledDestroyFn = null;
+
         if (this.componentRef !== null) {
           this.componentRef.destroy();
           this.componentRef = null;
@@ -171,7 +173,9 @@ export class ComponentNgElementStrategy implements NgElementStrategy {
     const childInjector = Injector.create({providers: [], parent: this.injector});
     const projectableNodes =
         extractProjectableNodes(element, this.componentFactory.ngContentSelectors);
-    this.componentRef = this.componentFactory.create(childInjector, projectableNodes, element);
+    const div = document.createElement('div');
+    element.appendChild(div);
+    this.componentRef = this.componentFactory.create(childInjector, projectableNodes, div);
 
     this.implementsOnChanges = isFunction((this.componentRef.instance as OnChanges).ngOnChanges);
 
