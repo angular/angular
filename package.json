@@ -35,6 +35,8 @@
     "tslint": "tsc -p tools/tsconfig.json && tslint -c tslint.json \"+(dev-infra|packages|modules|scripts|tools)/**/*.+(js|ts)\"",
     "public-api:check": "node goldens/public-api/manage.js test",
     "public-api:update": "node goldens/public-api/manage.js accept",
+    "symbol-extractor:check": "node tools/symbol-extractor/run_all_symbols_extractor_tests.js test",
+    "symbol-extractor:update": "node tools/symbol-extractor/run_all_symbols_extractor_tests.js accept",
     "ts-circular-deps": "ts-node --transpile-only -- dev-infra/ts-circular-dependencies/index.ts --config ./packages/circular-deps-test.conf.js",
     "ts-circular-deps:check": "yarn -s ts-circular-deps check",
     "ts-circular-deps:approve": "yarn -s ts-circular-deps approve",
