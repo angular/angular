@@ -266,12 +266,12 @@ class _TreeBuilder {
       // Elements that are self-closed have their `endSourceSpan` set to the full span, as the
       // element start tag also represents the end tag.
       this._popElement(fullName, span);
-    }
-    if (startTagToken.type === lex.TokenType.INCOMPLETE_TAG_OPEN) {
+    } else if (startTagToken.type === lex.TokenType.INCOMPLETE_TAG_OPEN) {
       // We already know the opening tag is not complete, so it is unlikely it has a corresponding
       // close tag. Let's optimistically parse it as a full element and emit an error.
       this._popElement(fullName, null);
-      this.errors.push(TreeError.create(fullName, span, 'Opening tag not terminated.'));
+      this.errors.push(
+          TreeError.create(fullName, span, `Opening tag "${fullName}" not terminated.`));
     }
   }
 
@@ -315,7 +315,7 @@ class _TreeBuilder {
         // removed from the element stack at this point are closed implicitly, so they won't get
         // an end source span (as there is no explicit closing element).
         el.endSourceSpan = endSourceSpan;
-        el.sourceSpan.end = endSourceSpan?.end ?? el.sourceSpan.end;
+        el.sourceSpan.end = endSourceSpan !== null ? endSourceSpan.end : el.sourceSpan.end;
 
         this._elementStack.splice(stackIndex, this._elementStack.length - stackIndex);
         return true;

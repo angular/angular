@@ -851,8 +851,8 @@ import {humanizeDom, humanizeDomSourceSpans, humanizeLineColumn, humanizeNodes} 
             ]);
 
             expect(humanizeErrors(errors)).toEqual([
-              ['div', 'Opening tag not terminated.', '0:0'],
-              ['div', 'Opening tag not terminated.', '0:10'],
+              ['div', 'Opening tag "div" not terminated.', '0:0'],
+              ['div', 'Opening tag "div" not terminated.', '0:10'],
             ]);
           });
 
@@ -868,7 +868,7 @@ import {humanizeDom, humanizeDomSourceSpans, humanizeLineColumn, humanizeNodes} 
             ]);
 
             expect(humanizeErrors(errors)).toEqual([
-              ['div', 'Opening tag not terminated.', '0:0'],
+              ['div', 'Opening tag "div" not terminated.', '0:0'],
             ]);
           });
 
@@ -882,7 +882,7 @@ import {humanizeDom, humanizeDomSourceSpans, humanizeLineColumn, humanizeNodes} 
             ]);
 
             expect(humanizeErrors(errors)).toEqual([
-              ['div', 'Opening tag not terminated.', '0:0'],
+              ['div', 'Opening tag "div" not terminated.', '0:0'],
             ]);
           });
 
@@ -890,7 +890,7 @@ import {humanizeDom, humanizeDomSourceSpans, humanizeLineColumn, humanizeNodes} 
             const errors = parser.parse('<div</div>', 'TestComp').errors;
             expect(errors.length).toEqual(2);
             expect(humanizeErrors(errors)).toEqual([
-              ['div', 'Opening tag not terminated.', '0:0'],
+              ['div', 'Opening tag "div" not terminated.', '0:0'],
               // TODO(ayazhafiz): the following error is unnecessary and can be pruned if we keep
               // track of the incomplete tag names.
               [
