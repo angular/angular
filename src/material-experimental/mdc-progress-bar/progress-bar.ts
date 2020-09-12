@@ -87,6 +87,19 @@ export class MatProgressBar extends _MatProgressBarMixinBase implements AfterVie
     },
     setBufferBarStyle: (styleProperty: string, value: string) => {
       (this._bufferBar.style as any)[styleProperty] = value;
+    },
+    setStyle: (styleProperty: string, value: string) => {
+      (this._rootElement.style as any)[styleProperty] = value;
+    },
+    getWidth: () => this._rootElement.offsetWidth,
+    attachResizeObserver: (callback) => {
+      if (window.ResizeObserver) {
+        const ro = new ResizeObserver(callback);
+        ro.observe(this._rootElement);
+        return ro;
+      }
+
+      return null;
     }
   };
 
