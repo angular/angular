@@ -99,6 +99,21 @@ describe('Renderer to Renderer2 migration', () => {
       expect(content).toContain(`import { Component } from '@angular/core';`);
       expect(content).toContain(`import { Renderer } from './my-renderer';`);
     });
+
+    it('should not change imports if Renderer2 was already imported', async () => {
+      writeFile('/index.ts', `
+          import { Renderer, Component, Renderer2 } from '@angular/core';
+
+          @Component({template: ''})
+          export class MyComp {
+            constructor(renderer: Renderer) {}
+          }
+        `);
+
+      await runMigration();
+      expect(tree.readContent('/index.ts'))
+          .toContain(`import { Renderer, Component, Renderer2 } from '@angular/core';`);
+    });
   });
 
   describe('type renaming', () => {
