@@ -394,6 +394,14 @@ function weekGetter(size: number, monthBased = false): DateFormatter {
   };
 }
 
+function weekNumberingYearGetter(size: number, trim: boolean): DateFormatter {
+  return function(date: Date, locale: string) {
+    const thisThurs = getThursdayThisWeek(date);
+    const result = thisThurs.getFullYear();
+    return padNumber(result, size, getLocaleNumberSymbol(locale, NumberSymbol.MinusSign), trim);
+  };
+}
+
 type DateFormatter = (date: Date, locale: string, offset: number) => string;
 
 const DATE_FORMATS: {[format: string]: DateFormatter} = {};
@@ -429,13 +437,27 @@ function getDateFormatter(format: string): DateFormatter|null {
     case 'yy':
       formatter = dateGetter(DateType.FullYear, 2, 0, true, true);
       break;
-    // 3 digit representation of the year, padded (000-999). (e.g. AD 2001 => 01, AD 2010 => 10)
+    // 3 digit representation of the year, padded (000-999). (e.g. AD 1 => 001, AD 2010 => 2010)
     case 'yyy':
       formatter = dateGetter(DateType.FullYear, 3, 0, false, true);
       break;
     // 4 digit representation of the year (e.g. AD 1 => 0001, AD 2010 => 2010)
     case 'yyyy':
       formatter = dateGetter(DateType.FullYear, 4, 0, false, true);
+      break;
+
+    // ISO week-numbering year
+    case 'r':
+      formatter = weekNumberingYearGetter(1, false);
+      break;
+    case 'rr':
+      formatter = weekNumberingYearGetter(2, true);
+      break;
+    case 'rrr':
+      formatter = weekNumberingYearGetter(3, false);
+      break;
+    case 'rrrr':
+      formatter = weekNumberingYearGetter(4, false);
       break;
 
     // Month of the year (1-12), numeric

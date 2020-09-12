@@ -361,5 +361,14 @@ describe('Format date', () => {
       expect(formatDate(3001, 'm:ss.SS', 'en')).toEqual('0:03.00');
       expect(formatDate(3001, 'm:ss.SSS', 'en')).toEqual('0:03.001');
     });
+
+    // https://github.com/angular/angular/issues/38739
+    it('should format correctly for iso week-numbering year', () => {
+      const date = new Date(2018, 11, 31);
+      expect(formatDate(date, 'r', 'en')).toEqual('2019');
+      expect(formatDate(date, 'rr', 'en')).toEqual('19');
+      expect(formatDate(date, 'rrr', 'en')).toEqual('2019');
+      expect(formatDate(date, 'rrrr', 'en')).toEqual('2019');
+    });
   });
 });
