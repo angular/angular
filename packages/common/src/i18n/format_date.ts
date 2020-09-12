@@ -13,7 +13,7 @@ export const ISO8601_DATE_REGEX =
 //    1        2       3         4          5          6          7          8  9     10      11
 const NAMED_FORMATS: {[localeId: string]: {[format: string]: string}} = {};
 const DATE_FORMATS_SPLIT =
-    /((?:[^GyMLwWdEabBhHmsSzZO']+)|(?:'(?:[^']|'')*')|(?:G{1,5}|y{1,4}|M{1,5}|L{1,5}|w{1,2}|W{1}|d{1,2}|E{1,6}|a{1,5}|b{1,5}|B{1,5}|h{1,2}|H{1,2}|m{1,2}|s{1,2}|S{1,3}|z{1,4}|Z{1,5}|O{1,4}))([\s\S]*)/;
+    /((?:[^GyrMLwWdEabBhHmsSzZO']+)|(?:'(?:[^']|'')*')|(?:G{1,5}|y{1,4}|r{1,4}|M{1,5}|L{1,5}|w{1,2}|W{1}|d{1,2}|E{1,6}|a{1,5}|b{1,5}|B{1,5}|h{1,2}|H{1,2}|m{1,2}|s{1,2}|S{1,3}|z{1,4}|Z{1,5}|O{1,4}))([\s\S]*)/;
 
 enum ZoneWidth {
   Short,
@@ -394,6 +394,18 @@ function weekGetter(size: number, monthBased = false): DateFormatter {
   };
 }
 
+/**
+ * Returns a date formatter that provides the week-numbering year for the input date.
+ */
+function weekNumberingYearGetter(size: number, trim = false): DateFormatter {
+  return function(date: Date, locale: string) {
+    const thisThurs = getThursdayThisWeek(date);
+    const weekNumberingYear = thisThurs.getFullYear();
+    return padNumber(
+        weekNumberingYear, size, getLocaleNumberSymbol(locale, NumberSymbol.MinusSign), trim);
+  };
+}
+
 type DateFormatter = (date: Date, locale: string, offset: number) => string;
 
 const DATE_FORMATS: {[format: string]: DateFormatter} = {};
@@ -436,6 +448,25 @@ function getDateFormatter(format: string): DateFormatter|null {
     // 4 digit representation of the year (e.g. AD 1 => 0001, AD 2010 => 2010)
     case 'yyyy':
       formatter = dateGetter(DateType.FullYear, 4, 0, false, true);
+      break;
+
+    // 1 digit representation of the week-numbering year, e.g. (AD 1 => 1, AD 199 => 199)
+    case 'r':
+      formatter = weekNumberingYearGetter(1);
+      break;
+    // 2 digit representation of the week-numbering year, padded (00-99). (e.g. AD 2001 => 01, AD
+    // 2010 => 10)
+    case 'rr':
+      formatter = weekNumberingYearGetter(2, true);
+      break;
+    // 3 digit representation of the week-numbering year, padded (000-999). (e.g. AD 1 => 001, AD
+    // 2010 => 2010)
+    case 'rrr':
+      formatter = weekNumberingYearGetter(3);
+      break;
+    // 4 digit representation of the week-numbering year (e.g. AD 1 => 0001, AD 2010 => 2010)
+    case 'rrrr':
+      formatter = weekNumberingYearGetter(4);
       break;
 
     // Month of the year (1-12), numeric
