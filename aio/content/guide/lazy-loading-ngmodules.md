@@ -103,7 +103,7 @@ The import path is the relative path to the module.
 
 #### Add another feature module
 
-Use the same command to create a second lazy-loaded feature module with routing, along with its stub component.
+Use the same command to create a second lazy-loaded feature module with routing, along with its sub component.
 
 <code-example language="bash">
 ng generate module orders --route orders --module app.module
