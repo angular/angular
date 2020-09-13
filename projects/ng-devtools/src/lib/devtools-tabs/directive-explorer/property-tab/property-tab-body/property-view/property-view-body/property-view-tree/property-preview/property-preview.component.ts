@@ -9,9 +9,9 @@ import { FlatNode } from '../../../../../../property-resolver/element-property-r
 })
 export class PropertyPreviewComponent {
   @Input() node: FlatNode;
-  @Output() inspectFunction = new EventEmitter<void>();
+  @Output() inspect = new EventEmitter<void>();
 
-  get isFunctionProp(): boolean {
-    return this.node.prop.descriptor.type === PropType.Function;
+  get isClickableProp(): boolean {
+    return this.node.prop.descriptor.type === PropType.Function || this.node.prop.descriptor.type === PropType.HTMLNode;
   }
 }

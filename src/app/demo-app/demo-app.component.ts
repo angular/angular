@@ -1,4 +1,4 @@
-import { Component, ViewChild, ViewEncapsulation } from '@angular/core';
+import { Component, ElementRef, ViewChild, ViewEncapsulation } from '@angular/core';
 import { ZippyComponent } from './zippy/zippy.component';
 
 @Component({
@@ -8,6 +8,7 @@ import { ZippyComponent } from './zippy/zippy.component';
 })
 export class DemoAppComponent {
   @ViewChild(ZippyComponent) zippy: ZippyComponent;
+  @ViewChild('elementReference') elementRef: ElementRef;
 
   getTitle(): '► Click to expand' | '▼ Click to collapse' {
     if (!this.zippy || !this.zippy.visible) {

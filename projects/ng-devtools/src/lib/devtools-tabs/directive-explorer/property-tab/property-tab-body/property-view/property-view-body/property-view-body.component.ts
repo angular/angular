@@ -18,7 +18,7 @@ export class PropertyViewBodyComponent {
   @Input() directiveOutputControls: DirectiveTreeData;
   @Input() directiveStateControls: DirectiveTreeData;
 
-  @Output() inspectFunction = new EventEmitter<{ node: FlatNode; directivePosition: DirectivePosition }>();
+  @Output() inspect = new EventEmitter<{ node: FlatNode; directivePosition: DirectivePosition }>();
 
   categoryOrder = [0, 1, 2];
 
@@ -54,8 +54,8 @@ export class PropertyViewBodyComponent {
     moveItemInArray(this.categoryOrder, event.previousIndex, event.currentIndex);
   }
 
-  handleInspectFunction(node: FlatNode): void {
-    this.inspectFunction.emit({
+  handleInspect(node: FlatNode): void {
+    this.inspect.emit({
       node,
       directivePosition: this.controller.directivePosition,
     });

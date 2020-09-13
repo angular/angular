@@ -10,5 +10,5 @@ import { DirectivePosition } from 'protocol';
 export class PropertyTabComponent {
   @Input() currentSelectedElement: IndexedNode;
   @Output() viewSource = new EventEmitter<void>();
-  @Output() inspectFunction = new EventEmitter<{ node: FlatNode; directivePosition: DirectivePosition }>();
+  @Output() inspect = new EventEmitter<{ node: FlatNode; directivePosition: DirectivePosition }>();
 }

@@ -14,14 +14,14 @@ export class ChromeApplicationOperations extends ApplicationOperations {
     }
   }
 
-  inspectFunction(directivePosition: DirectivePosition, keyPath: string[]): void {
+  inspect(directivePosition: DirectivePosition, objectPath: string[]): void {
     if (chrome.devtools) {
       const args = {
         directivePosition,
-        keyPath,
+        objectPath,
       };
       chrome.devtools.inspectedWindow.eval(
-        `inspect(inspectedApplication.findFunctionByPosition('${JSON.stringify(args)}'))`
+        `inspect(inspectedApplication.findPropertyByPosition('${JSON.stringify(args)}'))`
       );
     }
   }

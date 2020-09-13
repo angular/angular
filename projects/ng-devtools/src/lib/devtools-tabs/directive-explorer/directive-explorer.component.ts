@@ -193,8 +193,8 @@ export class DirectiveExplorerComponent implements OnInit {
     this._cdr.detectChanges();
   }
 
-  inspectFunction({ node, directivePosition }: { node: PropertyFlatNode; directivePosition: DirectivePosition }): void {
-    const keyPath = constructPathOfKeysToPropertyValue(node.prop);
-    this._appOperations.inspectFunction(directivePosition, keyPath);
+  inspect({ node, directivePosition }: { node: PropertyFlatNode; directivePosition: DirectivePosition }): void {
+    const objectPath = constructPathOfKeysToPropertyValue(node.prop);
+    this._appOperations.inspect(directivePosition, objectPath);
   }
 }

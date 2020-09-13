@@ -10,7 +10,7 @@ import { DirectivePosition } from 'protocol';
 })
 export class PropertyTabBodyComponent {
   @Input() currentSelectedElement: IndexedNode | null;
-  @Output() inspectFunction = new EventEmitter<{ node: FlatNode; directivePosition: DirectivePosition }>();
+  @Output() inspect = new EventEmitter<{ node: FlatNode; directivePosition: DirectivePosition }>();
 
   getCurrentDirectives(): string[] | undefined {
     if (!this.currentSelectedElement) {
