@@ -113,5 +113,10 @@
       color: #54c9bd;
     }
   }
-}
 
+  ::ng-deep {
+    rect {
+      stroke: #303030;
+    }
+  }
+}
