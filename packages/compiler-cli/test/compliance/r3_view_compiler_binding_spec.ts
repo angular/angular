@@ -7,20 +7,24 @@
  */
 import {AttributeMarker} from '@angular/compiler/src/core';
 import {MockDirectory, setup} from '@angular/compiler/test/aot/test_util';
-import {compile, expectEmit} from './mock_compile';
+import {createCompileFn, expectEmit} from './mock_compile';
+import {runInEachCompilationMode} from './test_runner';
 
-describe('compiler compliance: bindings', () => {
-  const angularFiles = setup({
-    compileAngular: false,
-    compileFakeCore: true,
-    compileAnimations: false,
-  });
+runInEachCompilationMode(compilationMode => {
+  const compile = createCompileFn(compilationMode);
 
-  describe('text bindings', () => {
-    it('should generate interpolation instruction', () => {
-      const files: MockDirectory = {
-        app: {
-          'example.ts': `
+  describe('compiler compliance: bindings', () => {
+    const angularFiles = setup({
+      compileAngular: false,
+      compileFakeCore: true,
+      compileAnimations: false,
+    });
+
+    describe('text bindings', () => {
+      it('should generate interpolation instruction', () => {
+        const files: MockDirectory = {
+          app: {
+            'example.ts': `
           import {Component, NgModule} from '@angular/core';
           @Component({
             selector: 'my-component',
@@ -33,10 +37,10 @@ describe('compiler compliance: bindings', () => {
           @NgModule({declarations: [MyComponent]})
           export class MyModule {}
           `
-        }
-      };
+          }
+        };
 
-      const template = `
+        const template = `
       template:function MyComponent_Template(rf, $ctx$){
         if (rf & 1) {
           $i0$.ɵɵelementStart(0, "div");
@@ -48,16 +52,16 @@ describe('compiler compliance: bindings', () => {
           $i0$.ɵɵtextInterpolate1("Hello ", $ctx$.name, "");
         }
       }`;
-      const result = compile(files, angularFiles);
-      expectEmit(result.source, template, 'Incorrect interpolated text binding');
+        const result = compile(files, angularFiles);
+        expectEmit(result.source, template, 'Incorrect interpolated text binding');
+      });
     });
-  });
 
-  describe('property bindings', () => {
-    it('should generate bind instruction', () => {
-      const files: MockDirectory = {
-        app: {
-          'example.ts': `
+    describe('property bindings', () => {
+      it('should generate bind instruction', () => {
+        const files: MockDirectory = {
+          app: {
+            'example.ts': `
           import {Component, NgModule} from '@angular/core';
 
           @Component({
@@ -70,10 +74,10 @@ describe('compiler compliance: bindings', () => {
 
           @NgModule({declarations: [MyComponent]})
           export class MyModule {}`
-        }
-      };
+          }
+        };
 
-      const template = `
+        const template = `
       …
       consts: [[${AttributeMarker.Bindings}, "title"]],
       template:function MyComponent_Template(rf, $ctx$){
@@ -84,14 +88,14 @@ describe('compiler compliance: bindings', () => {
           $i0$.ɵɵproperty("title", $ctx$.title);
         }
       }`;
-      const result = compile(files, angularFiles);
-      expectEmit(result.source, template, 'Incorrect property binding');
-    });
+        const result = compile(files, angularFiles);
+        expectEmit(result.source, template, 'Incorrect property binding');
+      });
 
-    it('should generate interpolation instruction for {{...}} bindings', () => {
-      const files: MockDirectory = {
-        app: {
-          'example.ts': `
+      it('should generate interpolation instruction for {{...}} bindings', () => {
+        const files: MockDirectory = {
+          app: {
+            'example.ts': `
           import {Component, NgModule} from '@angular/core';
           @Component({
             selector: 'my-component',
@@ -104,10 +108,10 @@ describe('compiler compliance: bindings', () => {
           @NgModule({declarations: [MyComponent]})
           export class MyModule {}
           `
-        }
-      };
+          }
+        };
 
-      const template = `
+        const template = `
       …
       consts: [[${AttributeMarker.Bindings}, "title"]],
       template:function MyComponent_Template(rf, $ctx$){
@@ -118,14 +122,14 @@ describe('compiler compliance: bindings', () => {
           $i0$.ɵɵpropertyInterpolate1("title", "Hello ", $ctx$.name, "");
         }
       }`;
-      const result = compile(files, angularFiles);
-      expectEmit(result.source, template, 'Incorrect interpolated property binding');
-    });
+        const result = compile(files, angularFiles);
+        expectEmit(result.source, template, 'Incorrect interpolated property binding');
+      });
 
-    it('should ignore empty bindings', () => {
-      const files: MockDirectory = {
-        app: {
-          'example.ts': `
+      it('should ignore empty bindings', () => {
+        const files: MockDirectory = {
+          app: {
+            'example.ts': `
             import {Component} from '@angular/core';
             @Component({
               selector: 'test',
@@ -133,17 +137,17 @@ describe('compiler compliance: bindings', () => {
             })
             class FooCmp {}
           `
-        }
-      };
-      const result = compile(files, angularFiles);
-      expect(result.source).not.toContain('i0.ɵɵproperty');
-    });
+          }
+        };
+        const result = compile(files, angularFiles);
+        expect(result.source).not.toContain('i0.ɵɵproperty');
+      });
 
-    it('should not remap property names whose names do not correspond to their attribute names',
-       () => {
-         const files = {
-           app: {
-             'spec.ts': `
+      it('should not remap property names whose names do not correspond to their attribute names',
+         () => {
+           const files = {
+             app: {
+               'spec.ts': `
               import {Component, NgModule} from '@angular/core';
 
               @Component({
@@ -158,10 +162,10 @@ describe('compiler compliance: bindings', () => {
               @NgModule({declarations: [MyComponent]})
               export class MyModule {}
           `
-           }
-         };
+             }
+           };
 
-         const template = `
+           const template = `
       consts: [[${AttributeMarker.Bindings}, "for"]]
 
       // ...
@@ -175,22 +179,22 @@ describe('compiler compliance: bindings', () => {
         }
       }`;
 
-         const result = compile(files, angularFiles);
+           const result = compile(files, angularFiles);
 
-         expectEmit(result.source, template, 'Incorrect template');
-       });
+           expectEmit(result.source, template, 'Incorrect template');
+         });
 
-    it('should emit temporary evaluation within the binding expression for in-order execution',
-       () => {
-         // https://github.com/angular/angular/issues/37194
-         // Verifies that temporary expressions used for expressions with potential side-effects in
-         // the LHS of a safe navigation access are emitted within the binding expression itself, to
-         // ensure that these temporaries are evaluated during the evaluation of the binding. This
-         // is important for when the LHS contains a pipe, as pipe evaluation depends on the current
-         // binding index.
-         const files = {
-           app: {
-             'example.ts': `
+      it('should emit temporary evaluation within the binding expression for in-order execution',
+         () => {
+           // https://github.com/angular/angular/issues/37194
+           // Verifies that temporary expressions used for expressions with potential side-effects
+           // in the LHS of a safe navigation access are emitted within the binding expression
+           // itself, to ensure that these temporaries are evaluated during the evaluation of the
+           // binding. This is important for when the LHS contains a pipe, as pipe evaluation
+           // depends on the current binding index.
+           const files = {
+             app: {
+               'example.ts': `
             import {Component} from '@angular/core';
 
             @Component({
@@ -200,11 +204,11 @@ describe('compiler compliance: bindings', () => {
               myTitle = 'hello';
               auth?: () => { identity(): any; };
             }`
-           }
-         };
+             }
+           };
 
-         const result = compile(files, angularFiles);
-         const template = `
+           const result = compile(files, angularFiles);
+           const template = `
           …
           template: function MyComponent_Template(rf, ctx) {
             …
@@ -215,13 +219,13 @@ describe('compiler compliance: bindings', () => {
           }
         `;
 
-         expectEmit(result.source, template, 'Incorrect template');
-       });
+           expectEmit(result.source, template, 'Incorrect template');
+         });
 
-    it('should chain multiple property bindings into a single instruction', () => {
-      const files = {
-        app: {
-          'example.ts': `
+      it('should chain multiple property bindings into a single instruction', () => {
+        const files = {
+          app: {
+            'example.ts': `
             import {Component} from '@angular/core';
 
             @Component({
@@ -231,11 +235,11 @@ describe('compiler compliance: bindings', () => {
               myTitle = 'hello';
               buttonId = 'special-button';
             }`
-        }
-      };
+          }
+        };
 
-      const result = compile(files, angularFiles);
-      const template = `
+        const result = compile(files, angularFiles);
+        const template = `
           …
           template: function MyComponent_Template(rf, ctx) {
             …
@@ -245,24 +249,24 @@ describe('compiler compliance: bindings', () => {
           }
         `;
 
-      expectEmit(result.source, template, 'Incorrect template');
-    });
+        expectEmit(result.source, template, 'Incorrect template');
+      });
 
-    it('should chain property bindings in the presence of other bindings', () => {
-      const files = {
-        app: {
-          'example.ts': `
+      it('should chain property bindings in the presence of other bindings', () => {
+        const files = {
+          app: {
+            'example.ts': `
             import {Component} from '@angular/core';
 
             @Component({
               template: '<button [title]="1" [attr.id]="2" [tabindex]="3" aria-label="{{1 + 3}}"></button>'
             })
             export class MyComponent {}`
-        }
-      };
+          }
+        };
 
-      const result = compile(files, angularFiles);
-      const template = `
+        const result = compile(files, angularFiles);
+        const template = `
           …
           template: function MyComponent_Template(rf, ctx) {
             …
@@ -274,24 +278,24 @@ describe('compiler compliance: bindings', () => {
           }
         `;
 
-      expectEmit(result.source, template, 'Incorrect template');
-    });
+        expectEmit(result.source, template, 'Incorrect template');
+      });
 
-    it('should not add interpolated properties to the property instruction chain', () => {
-      const files = {
-        app: {
-          'example.ts': `
+      it('should not add interpolated properties to the property instruction chain', () => {
+        const files = {
+          app: {
+            'example.ts': `
             import {Component} from '@angular/core';
 
             @Component({
               template: '<button [title]="1" [id]="2" tabindex="{{0 + 3}}" aria-label="hello-{{1 + 3}}-{{2 + 3}}"></button>'
             })
             export class MyComponent {}`
-        }
-      };
+          }
+        };
 
-      const result = compile(files, angularFiles);
-      const template = `
+        const result = compile(files, angularFiles);
+        const template = `
           …
           template: function MyComponent_Template(rf, ctx) {
             …
@@ -303,13 +307,13 @@ describe('compiler compliance: bindings', () => {
           }
         `;
 
-      expectEmit(result.source, template, 'Incorrect template');
-    });
+        expectEmit(result.source, template, 'Incorrect template');
+      });
 
-    it('should chain synthetic property bindings together with regular property bindings', () => {
-      const files = {
-        app: {
-          'example.ts': `
+      it('should chain synthetic property bindings together with regular property bindings', () => {
+        const files = {
+          app: {
+            'example.ts': `
             import {Component} from '@angular/core';
 
             @Component({
@@ -324,11 +328,11 @@ describe('compiler compliance: bindings', () => {
             export class MyComponent {
               expansionState = 'expanded';
             }`
-        }
-      };
+          }
+        };
 
-      const result = compile(files, angularFiles);
-      const template = `
+        const result = compile(files, angularFiles);
+        const template = `
           …
           template: function MyComponent_Template(rf, ctx) {
             …
@@ -338,13 +342,13 @@ describe('compiler compliance: bindings', () => {
           }
         `;
 
-      expectEmit(result.source, template, 'Incorrect template');
-    });
+        expectEmit(result.source, template, 'Incorrect template');
+      });
 
-    it('should chain multiple property bindings on an ng-template', () => {
-      const files = {
-        app: {
-          'example.ts': `
+      it('should chain multiple property bindings on an ng-template', () => {
+        const files = {
+          app: {
+            'example.ts': `
             import {Component} from '@angular/core';
 
             @Component({
@@ -354,11 +358,11 @@ describe('compiler compliance: bindings', () => {
               myTitle = 'hello';
               buttonId = 'custom-id';
             }`
-        }
-      };
+          }
+        };
 
-      const result = compile(files, angularFiles);
-      const template = `
+        const result = compile(files, angularFiles);
+        const template = `
           …
           template: function MyComponent_Template(rf, ctx) {
             …
@@ -368,13 +372,13 @@ describe('compiler compliance: bindings', () => {
           }
         `;
 
-      expectEmit(result.source, template, 'Incorrect template');
-    });
+        expectEmit(result.source, template, 'Incorrect template');
+      });
 
-    it('should chain multiple property bindings when there are multiple elements', () => {
-      const files = {
-        app: {
-          'example.ts': `
+      it('should chain multiple property bindings when there are multiple elements', () => {
+        const files = {
+          app: {
+            'example.ts': `
             import {Component} from '@angular/core';
 
             @Component({
@@ -388,11 +392,11 @@ describe('compiler compliance: bindings', () => {
               myTitle = 'hello';
               buttonId = 'special-button';
             }`
-        }
-      };
+          }
+        };
 
-      const result = compile(files, angularFiles);
-      const template = `
+        const result = compile(files, angularFiles);
+        const template = `
           …
           template: function MyComponent_Template(rf, ctx) {
             …
@@ -406,13 +410,13 @@ describe('compiler compliance: bindings', () => {
           }
         `;
 
-      expectEmit(result.source, template, 'Incorrect template');
-    });
+        expectEmit(result.source, template, 'Incorrect template');
+      });
 
-    it('should chain multiple property bindings when there are child elements', () => {
-      const files = {
-        app: {
-          'example.ts': `
+      it('should chain multiple property bindings when there are child elements', () => {
+        const files = {
+          app: {
+            'example.ts': `
             import {Component} from '@angular/core';
 
             @Component({
@@ -425,11 +429,11 @@ describe('compiler compliance: bindings', () => {
               myTitle = 'hello';
               buttonId = 'special-button';
             }`
-        }
-      };
+          }
+        };
 
-      const result = compile(files, angularFiles);
-      const template = `
+        const result = compile(files, angularFiles);
+        const template = `
           …
           template: function MyComponent_Template(rf, ctx) {
             …
@@ -441,15 +445,15 @@ describe('compiler compliance: bindings', () => {
           }
         `;
 
-      expectEmit(result.source, template, 'Incorrect template');
+        expectEmit(result.source, template, 'Incorrect template');
+      });
     });
-  });
 
-  describe('attribute bindings', () => {
-    it('should chain multiple attribute bindings into a single instruction', () => {
-      const files = {
-        app: {
-          'example.ts': `
+    describe('attribute bindings', () => {
+      it('should chain multiple attribute bindings into a single instruction', () => {
+        const files = {
+          app: {
+            'example.ts': `
             import {Component} from '@angular/core';
 
             @Component({
@@ -461,11 +465,11 @@ describe('compiler compliance: bindings', () => {
               myTitle = 'hello';
               buttonId = 'special-button';
             }`
-        }
-      };
+          }
+        };
 
-      const result = compile(files, angularFiles);
-      const template = `
+        const result = compile(files, angularFiles);
+        const template = `
           …
           template: function MyComponent_Template(rf, ctx) {
             …
@@ -475,13 +479,14 @@ describe('compiler compliance: bindings', () => {
           }
         `;
 
-      expectEmit(result.source, template, 'Incorrect template');
-    });
+        expectEmit(result.source, template, 'Incorrect template');
+      });
 
-    it('should chain multiple single-interpolation attribute bindings into one instruction', () => {
-      const files = {
-        app: {
-          'example.ts': `
+      it('should chain multiple single-interpolation attribute bindings into one instruction',
+         () => {
+           const files = {
+             app: {
+               'example.ts': `
             import {Component} from '@angular/core';
 
             @Component({
@@ -493,11 +498,11 @@ describe('compiler compliance: bindings', () => {
               myTitle = 'hello';
               buttonId = 'special-button';
             }`
-        }
-      };
+             }
+           };
 
-      const result = compile(files, angularFiles);
-      const template = `
+           const result = compile(files, angularFiles);
+           const template = `
           …
           template: function MyComponent_Template(rf, ctx) {
             …
@@ -507,13 +512,13 @@ describe('compiler compliance: bindings', () => {
           }
         `;
 
-      expectEmit(result.source, template, 'Incorrect template');
-    });
+           expectEmit(result.source, template, 'Incorrect template');
+         });
 
-    it('should chain attribute bindings in the presence of other bindings', () => {
-      const files = {
-        app: {
-          'example.ts': `
+      it('should chain attribute bindings in the presence of other bindings', () => {
+        const files = {
+          app: {
+            'example.ts': `
             import {Component} from '@angular/core';
 
             @Component({
@@ -523,11 +528,11 @@ describe('compiler compliance: bindings', () => {
               \`
             })
             export class MyComponent {}`
-        }
-      };
+          }
+        };
 
-      const result = compile(files, angularFiles);
-      const template = `
+        const result = compile(files, angularFiles);
+        const template = `
           …
           template: function MyComponent_Template(rf, ctx) {
             …
@@ -539,13 +544,13 @@ describe('compiler compliance: bindings', () => {
           }
         `;
 
-      expectEmit(result.source, template, 'Incorrect template');
-    });
+        expectEmit(result.source, template, 'Incorrect template');
+      });
 
-    it('should not add interpolated attributes to the attribute instruction chain', () => {
-      const files = {
-        app: {
-          'example.ts': `
+      it('should not add interpolated attributes to the attribute instruction chain', () => {
+        const files = {
+          app: {
+            'example.ts': `
             import {Component} from '@angular/core';
 
             @Component({
@@ -557,11 +562,11 @@ describe('compiler compliance: bindings', () => {
                   attr.aria-label="hello-{{1 + 3}}-{{2 + 3}}"></button>\`
             })
             export class MyComponent {}`
-        }
-      };
+          }
+        };
 
-      const result = compile(files, angularFiles);
-      const template = `
+        const result = compile(files, angularFiles);
+        const template = `
           …
           template: function MyComponent_Template(rf, ctx) {
             …
@@ -573,13 +578,13 @@ describe('compiler compliance: bindings', () => {
           }
         `;
 
-      expectEmit(result.source, template, 'Incorrect template');
-    });
+        expectEmit(result.source, template, 'Incorrect template');
+      });
 
-    it('should chain multiple attribute bindings when there are multiple elements', () => {
-      const files = {
-        app: {
-          'example.ts': `
+      it('should chain multiple attribute bindings when there are multiple elements', () => {
+        const files = {
+          app: {
+            'example.ts': `
             import {Component} from '@angular/core';
 
             @Component({
@@ -593,11 +598,11 @@ describe('compiler compliance: bindings', () => {
               myTitle = 'hello';
               buttonId = 'special-button';
             }`
-        }
-      };
+          }
+        };
 
-      const result = compile(files, angularFiles);
-      const template = `
+        const result = compile(files, angularFiles);
+        const template = `
           …
           template: function MyComponent_Template(rf, ctx) {
             …
@@ -611,13 +616,13 @@ describe('compiler compliance: bindings', () => {
           }
         `;
 
-      expectEmit(result.source, template, 'Incorrect template');
-    });
+        expectEmit(result.source, template, 'Incorrect template');
+      });
 
-    it('should chain multiple attribute bindings when there are child elements', () => {
-      const files = {
-        app: {
-          'example.ts': `
+      it('should chain multiple attribute bindings when there are child elements', () => {
+        const files = {
+          app: {
+            'example.ts': `
             import {Component} from '@angular/core';
 
             @Component({
@@ -630,11 +635,11 @@ describe('compiler compliance: bindings', () => {
               myTitle = 'hello';
               buttonId = 'special-button';
             }`
-        }
-      };
+          }
+        };
 
-      const result = compile(files, angularFiles);
-      const template = `
+        const result = compile(files, angularFiles);
+        const template = `
           …
           template: function MyComponent_Template(rf, ctx) {
             …
@@ -646,13 +651,13 @@ describe('compiler compliance: bindings', () => {
           }
         `;
 
-      expectEmit(result.source, template, 'Incorrect template');
-    });
+        expectEmit(result.source, template, 'Incorrect template');
+      });
 
-    it('should exclude attribute bindings from the attributes array', () => {
-      const files: MockDirectory = {
-        app: {
-          'example.ts': `
+      it('should exclude attribute bindings from the attributes array', () => {
+        const files: MockDirectory = {
+          app: {
+            'example.ts': `
           import {Component, NgModule} from '@angular/core';
 
           @Component({
@@ -673,24 +678,24 @@ describe('compiler compliance: bindings', () => {
 
           @NgModule({declarations: [MyComponent]})
           export class MyModule {}`
-        }
-      };
+          }
+        };
 
-      const template = `
+        const template = `
         consts: [["target", "_blank", "aria-label", "link", ${
-          AttributeMarker.Bindings}, "title", "id", "customEvent"]],
+            AttributeMarker.Bindings}, "title", "id", "customEvent"]],
         …
       `;
-      const result = compile(files, angularFiles);
-      expectEmit(result.source, template, 'Incorrect attribute array');
+        const result = compile(files, angularFiles);
+        expectEmit(result.source, template, 'Incorrect attribute array');
+      });
     });
-  });
 
-  describe('host bindings', () => {
-    it('should support host bindings', () => {
-      const files = {
-        app: {
-          'spec.ts': `
+    describe('host bindings', () => {
+      it('should support host bindings', () => {
+        const files = {
+          app: {
+            'spec.ts': `
             import {Directive, HostBinding, NgModule} from '@angular/core';
 
             @Directive({selector: '[hostBindingDir]'})
@@ -701,10 +706,10 @@ describe('compiler compliance: bindings', () => {
             @NgModule({declarations: [HostBindingDir]})
             export class MyModule {}
           `
-        }
-      };
+          }
+        };
 
-      const HostBindingDirDeclaration = `
+        const HostBindingDirDeclaration = `
       HostBindingDir.ɵdir = $r3$.ɵɵdefineDirective({
         type: HostBindingDir,
         selectors: [["", "hostBindingDir", ""]],
@@ -717,16 +722,16 @@ describe('compiler compliance: bindings', () => {
         });
       `;
 
-      const result = compile(files, angularFiles);
-      const source = result.source;
+        const result = compile(files, angularFiles);
+        const source = result.source;
 
-      expectEmit(source, HostBindingDirDeclaration, 'Invalid host binding code');
-    });
+        expectEmit(source, HostBindingDirDeclaration, 'Invalid host binding code');
+      });
 
-    it('should support host bindings with temporary expressions', () => {
-      const files = {
-        app: {
-          'spec.ts': `
+      it('should support host bindings with temporary expressions', () => {
+        const files = {
+          app: {
+            'spec.ts': `
             import {Directive, NgModule} from '@angular/core';
 
             @Directive({
@@ -740,10 +745,10 @@ describe('compiler compliance: bindings', () => {
             @NgModule({declarations: [HostBindingDir]})
             export class MyModule {}
           `
-        }
-      };
+          }
+        };
 
-      const HostBindingDirDeclaration = `
+        const HostBindingDirDeclaration = `
       HostBindingDir.ɵdir = $r3$.ɵɵdefineDirective({
         type: HostBindingDir,
         selectors: [["", "hostBindingDir", ""]],
@@ -757,16 +762,16 @@ describe('compiler compliance: bindings', () => {
         });
       `;
 
-      const result = compile(files, angularFiles);
-      const source = result.source;
+        const result = compile(files, angularFiles);
+        const source = result.source;
 
-      expectEmit(source, HostBindingDirDeclaration, 'Invalid host binding code');
-    });
+        expectEmit(source, HostBindingDirDeclaration, 'Invalid host binding code');
+      });
 
-    it('should support host bindings with pure functions', () => {
-      const files = {
-        app: {
-          'spec.ts': `
+      it('should support host bindings with pure functions', () => {
+        const files = {
+          app: {
+            'spec.ts': `
             import {Component, NgModule} from '@angular/core';
 
             @Component({
@@ -783,10 +788,10 @@ describe('compiler compliance: bindings', () => {
             @NgModule({declarations: [HostBindingComp]})
             export class MyModule {}
           `
-        }
-      };
+          }
+        };
 
-      const HostBindingCompDeclaration = `
+        const HostBindingCompDeclaration = `
         const $ff$ = function ($v$) { return ["red", $v$]; };
         …
         HostBindingComp.ɵcmp = $r3$.ɵɵdefineComponent({
@@ -805,16 +810,16 @@ describe('compiler compliance: bindings', () => {
         });
       `;
 
-      const result = compile(files, angularFiles);
-      const source = result.source;
+        const result = compile(files, angularFiles);
+        const source = result.source;
 
-      expectEmit(source, HostBindingCompDeclaration, 'Invalid host binding code');
-    });
+        expectEmit(source, HostBindingCompDeclaration, 'Invalid host binding code');
+      });
 
-    it('should support host attribute bindings', () => {
-      const files = {
-        app: {
-          'spec.ts': `
+      it('should support host attribute bindings', () => {
+        const files = {
+          app: {
+            'spec.ts': `
             import {Directive, NgModule} from '@angular/core';
 
             @Directive({
@@ -830,10 +835,10 @@ describe('compiler compliance: bindings', () => {
             @NgModule({declarations: [HostAttributeDir]})
             export class MyModule {}
           `
-        }
-      };
+          }
+        };
 
-      const HostAttributeDirDeclaration = `
+        const HostAttributeDirDeclaration = `
         HostAttributeDir.ɵdir = $r3$.ɵɵdefineDirective({
           type: HostAttributeDir,
           selectors: [["", "hostAttributeDir", ""]],
@@ -846,16 +851,16 @@ describe('compiler compliance: bindings', () => {
         });
       `;
 
-      const result = compile(files, angularFiles);
-      const source = result.source;
+        const result = compile(files, angularFiles);
+        const source = result.source;
 
-      expectEmit(source, HostAttributeDirDeclaration, 'Invalid host attribute code');
-    });
+        expectEmit(source, HostAttributeDirDeclaration, 'Invalid host attribute code');
+      });
 
-    it('should support host attributes', () => {
-      const files = {
-        app: {
-          'spec.ts': `
+      it('should support host attributes', () => {
+        const files = {
+          app: {
+            'spec.ts': `
             import {Directive, NgModule} from '@angular/core';
 
             @Directive({
@@ -870,10 +875,10 @@ describe('compiler compliance: bindings', () => {
             @NgModule({declarations: [HostAttributeDir]})
             export class MyModule {}
           `
-        }
-      };
+          }
+        };
 
-      const HostAttributeDirDeclaration = `
+        const HostAttributeDirDeclaration = `
         HostAttributeDir.ɵdir = $r3$.ɵɵdefineDirective({
           type: HostAttributeDir,
           selectors: [["", "hostAttributeDir", ""]],
@@ -881,16 +886,16 @@ describe('compiler compliance: bindings', () => {
         });
       `;
 
-      const result = compile(files, angularFiles);
-      const source = result.source;
+        const result = compile(files, angularFiles);
+        const source = result.source;
 
-      expectEmit(source, HostAttributeDirDeclaration, 'Invalid host attribute code');
-    });
+        expectEmit(source, HostAttributeDirDeclaration, 'Invalid host attribute code');
+      });
 
-    it('should support host attributes together with host classes and styles', () => {
-      const files = {
-        app: {
-          'spec.ts': `
+      it('should support host attributes together with host classes and styles', () => {
+        const files = {
+          app: {
+            'spec.ts': `
             import {Component, Directive, NgModule} from '@angular/core';
 
             @Component({
@@ -920,37 +925,37 @@ describe('compiler compliance: bindings', () => {
             @NgModule({declarations: [HostAttributeComp, HostAttributeDir]})
             export class MyModule {}
           `
-        }
-      };
+          }
+        };
 
-      const CompAndDirDeclaration = `
+        const CompAndDirDeclaration = `
         HostAttributeComp.ɵcmp = $r3$.ɵɵdefineComponent({
           type: HostAttributeComp,
           selectors: [["my-host-attribute-component"]],
           hostAttrs: ["title", "hello there from component", ${
-          AttributeMarker.Styles}, "opacity", "1"],
+            AttributeMarker.Styles}, "opacity", "1"],
         …
         HostAttributeDir.ɵdir = $r3$.ɵɵdefineDirective({
           type: HostAttributeDir,
           selectors: [["", "hostAttributeDir", ""]],
           hostAttrs: ["title", "hello there from directive", ${
-          AttributeMarker.Classes}, "one", "two", ${
-          AttributeMarker.Styles}, "width", "200px", "height", "500px"],
+            AttributeMarker.Classes}, "one", "two", ${
+            AttributeMarker.Styles}, "width", "200px", "height", "500px"],
           hostVars: 4,
           hostBindings: function HostAttributeDir_HostBindings(rf, ctx) {
             …
           }
     `;
 
-      const result = compile(files, angularFiles);
-      const source = result.source;
-      expectEmit(source, CompAndDirDeclaration, 'Invalid host attribute code');
-    });
+        const result = compile(files, angularFiles);
+        const source = result.source;
+        expectEmit(source, CompAndDirDeclaration, 'Invalid host attribute code');
+      });
 
-    it('should chain multiple host property bindings into a single instruction', () => {
-      const files = {
-        app: {
-          'example.ts': `
+      it('should chain multiple host property bindings into a single instruction', () => {
+        const files = {
+          app: {
+            'example.ts': `
             import {Directive} from '@angular/core';
 
             @Directive({
@@ -965,11 +970,11 @@ describe('compiler compliance: bindings', () => {
               myTitle = 'hello';
               myId = 'special-directive';
             }`
-        }
-      };
+          }
+        };
 
-      const result = compile(files, angularFiles);
-      const template = `
+        const result = compile(files, angularFiles);
+        const template = `
           …
           hostBindings: function MyDirective_HostBindings(rf, ctx) {
             …
@@ -979,13 +984,13 @@ describe('compiler compliance: bindings', () => {
           }
         `;
 
-      expectEmit(result.source, template, 'Incorrect template');
-    });
+        expectEmit(result.source, template, 'Incorrect template');
+      });
 
-    it('should chain both host properties in the decorator and on the class', () => {
-      const files = {
-        app: {
-          'example.ts': `
+      it('should chain both host properties in the decorator and on the class', () => {
+        const files = {
+          app: {
+            'example.ts': `
             import {Directive, HostBinding} from '@angular/core';
 
             @Directive({
@@ -1001,11 +1006,11 @@ describe('compiler compliance: bindings', () => {
               @HostBinding('id')
               myId = 'special-directive';
             }`
-        }
-      };
+          }
+        };
 
-      const result = compile(files, angularFiles);
-      const template = `
+        const result = compile(files, angularFiles);
+        const template = `
           …
           hostBindings: function MyDirective_HostBindings(rf, ctx) {
             …
@@ -1015,13 +1020,13 @@ describe('compiler compliance: bindings', () => {
           }
         `;
 
-      expectEmit(result.source, template, 'Incorrect template');
-    });
+        expectEmit(result.source, template, 'Incorrect template');
+      });
 
-    it('should chain multiple host property bindings in the presence of other bindings', () => {
-      const files = {
-        app: {
-          'example.ts': `
+      it('should chain multiple host property bindings in the presence of other bindings', () => {
+        const files = {
+          app: {
+            'example.ts': `
             import {Directive} from '@angular/core';
 
             @Directive({
@@ -1033,11 +1038,11 @@ describe('compiler compliance: bindings', () => {
               }
             })
             export class MyDirective {}`
-        }
-      };
+          }
+        };
 
-      const result = compile(files, angularFiles);
-      const template = `
+        const result = compile(files, angularFiles);
+        const template = `
           …
           hostBindings: function MyDirective_HostBindings(rf, ctx) {
             …
@@ -1048,13 +1053,13 @@ describe('compiler compliance: bindings', () => {
           }
         `;
 
-      expectEmit(result.source, template, 'Incorrect template');
-    });
+        expectEmit(result.source, template, 'Incorrect template');
+      });
 
-    it('should chain multiple synthetic properties into a single instruction call', () => {
-      const files = {
-        app: {
-          'example.ts': `
+      it('should chain multiple synthetic properties into a single instruction call', () => {
+        const files = {
+          app: {
+            'example.ts': `
             import {Directive} from '@angular/core';
 
             @Directive({
@@ -1069,11 +1074,11 @@ describe('compiler compliance: bindings', () => {
               expandedState = 'collapsed';
               isSmall = true;
             }`
-        }
-      };
+          }
+        };
 
-      const result = compile(files, angularFiles);
-      const template = `
+        const result = compile(files, angularFiles);
+        const template = `
         …
         hostBindings: function MyDirective_HostBindings(rf, ctx) {
           …
@@ -1083,13 +1088,13 @@ describe('compiler compliance: bindings', () => {
         }
       `;
 
-      expectEmit(result.source, template, 'Incorrect template');
-    });
+        expectEmit(result.source, template, 'Incorrect template');
+      });
 
-    it('should chain multiple host attribute bindings into a single instruction', () => {
-      const files = {
-        app: {
-          'example.ts': `
+      it('should chain multiple host attribute bindings into a single instruction', () => {
+        const files = {
+          app: {
+            'example.ts': `
             import {Directive} from '@angular/core';
 
             @Directive({
@@ -1104,11 +1109,11 @@ describe('compiler compliance: bindings', () => {
               myTitle = 'hello';
               myId = 'special-directive';
             }`
-        }
-      };
+          }
+        };
 
-      const result = compile(files, angularFiles);
-      const template = `
+        const result = compile(files, angularFiles);
+        const template = `
           …
           hostBindings: function MyDirective_HostBindings(rf, ctx) {
             …
@@ -1118,13 +1123,13 @@ describe('compiler compliance: bindings', () => {
           }
         `;
 
-      expectEmit(result.source, template, 'Incorrect template');
-    });
+        expectEmit(result.source, template, 'Incorrect template');
+      });
 
-    it('should chain both host attributes in the decorator and on the class', () => {
-      const files = {
-        app: {
-          'example.ts': `
+      it('should chain both host attributes in the decorator and on the class', () => {
+        const files = {
+          app: {
+            'example.ts': `
             import {Directive, HostBinding} from '@angular/core';
 
             @Directive({
@@ -1140,11 +1145,11 @@ describe('compiler compliance: bindings', () => {
               @HostBinding('attr.id')
               myId = 'special-directive';
             }`
-        }
-      };
+          }
+        };
 
-      const result = compile(files, angularFiles);
-      const template = `
+        const result = compile(files, angularFiles);
+        const template = `
           …
           hostBindings: function MyDirective_HostBindings(rf, ctx) {
             …
@@ -1154,13 +1159,13 @@ describe('compiler compliance: bindings', () => {
           }
         `;
 
-      expectEmit(result.source, template, 'Incorrect template');
-    });
+        expectEmit(result.source, template, 'Incorrect template');
+      });
 
-    it('should chain multiple host attribute bindings in the presence of other bindings', () => {
-      const files = {
-        app: {
-          'example.ts': `
+      it('should chain multiple host attribute bindings in the presence of other bindings', () => {
+        const files = {
+          app: {
+            'example.ts': `
             import {Directive} from '@angular/core';
 
             @Directive({
@@ -1172,11 +1177,11 @@ describe('compiler compliance: bindings', () => {
               }
             })
             export class MyDirective {}`
-        }
-      };
+          }
+        };
 
-      const result = compile(files, angularFiles);
-      const template = `
+        const result = compile(files, angularFiles);
+        const template = `
             …
             hostBindings: function MyDirective_HostBindings(rf, ctx) {
               …
@@ -1187,13 +1192,13 @@ describe('compiler compliance: bindings', () => {
             }
           `;
 
-      expectEmit(result.source, template, 'Incorrect template');
-    });
+        expectEmit(result.source, template, 'Incorrect template');
+      });
 
-    it('should chain multiple host listeners into a single instruction', () => {
-      const files = {
-        app: {
-          'example.ts': `
+      it('should chain multiple host listeners into a single instruction', () => {
+        const files = {
+          app: {
+            'example.ts': `
             import {Directive, HostListener} from '@angular/core';
 
             @Directive({
@@ -1210,11 +1215,11 @@ describe('compiler compliance: bindings', () => {
               @HostListener('click')
               click() {}
             }`
-        }
-      };
+          }
+        };
 
-      const result = compile(files, angularFiles);
-      const template = `
+        const result = compile(files, angularFiles);
+        const template = `
           …
           hostBindings: function MyDirective_HostBindings(rf, ctx) {
             if (rf & 1) {
@@ -1223,13 +1228,13 @@ describe('compiler compliance: bindings', () => {
           }
         `;
 
-      expectEmit(result.source, template, 'Incorrect template');
-    });
+        expectEmit(result.source, template, 'Incorrect template');
+      });
 
-    it('should chain multiple synthetic host listeners into a single instruction', () => {
-      const files = {
-        app: {
-          'example.ts': `
+      it('should chain multiple synthetic host listeners into a single instruction', () => {
+        const files = {
+          app: {
+            'example.ts': `
             import {Component, HostListener} from '@angular/core';
 
             @Component({
@@ -1243,11 +1248,11 @@ describe('compiler compliance: bindings', () => {
               @HostListener('@animation.start')
               start() {}
             }`
-        }
-      };
+          }
+        };
 
-      const result = compile(files, angularFiles);
-      const template = `
+        const result = compile(files, angularFiles);
+        const template = `
           …
           hostBindings: function MyComponent_HostBindings(rf, ctx) {
             if (rf & 1) {
@@ -1256,13 +1261,13 @@ describe('compiler compliance: bindings', () => {
           }
         `;
 
-      expectEmit(result.source, template, 'Incorrect template');
-    });
+        expectEmit(result.source, template, 'Incorrect template');
+      });
 
-    it('should chain multiple regular and synthetic host listeners into two instructions', () => {
-      const files = {
-        app: {
-          'example.ts': `
+      it('should chain multiple regular and synthetic host listeners into two instructions', () => {
+        const files = {
+          app: {
+            'example.ts': `
             import {Component, HostListener} from '@angular/core';
 
             @Component({
@@ -1281,11 +1286,11 @@ describe('compiler compliance: bindings', () => {
               @HostListener('click')
               click() {}
             }`
-        }
-      };
+          }
+        };
 
-      const result = compile(files, angularFiles);
-      const template = `
+        const result = compile(files, angularFiles);
+        const template = `
         …
         hostBindings: function MyComponent_HostBindings(rf, ctx) {
           if (rf & 1) {
@@ -1294,14 +1299,14 @@ describe('compiler compliance: bindings', () => {
           }
         }
       `;
-      expectEmit(result.source, template, 'Incorrect template');
+        expectEmit(result.source, template, 'Incorrect template');
+      });
     });
-  });
 
-  describe('non bindable behavior', () => {
-    const getAppFiles = (template: string = ''): MockDirectory => ({
-      app: {
-        'example.ts': `
+    describe('non bindable behavior', () => {
+      const getAppFiles = (template: string = ''): MockDirectory => ({
+        app: {
+          'example.ts': `
           import {Component, NgModule} from '@angular/core';
 
           @Component({
@@ -1314,11 +1319,11 @@ describe('compiler compliance: bindings', () => {
 
           @NgModule({declarations: [MyComponent]})
           export class MyModule {}`
-      }
-    });
+        }
+      });
 
-    it('should generate the proper update instructions for interpolated properties', () => {
-      const files: MockDirectory = getAppFiles(`
+      it('should generate the proper update instructions for interpolated properties', () => {
+        const files: MockDirectory = getAppFiles(`
         <div title="a{{one}}b{{two}}c{{three}}d{{four}}e{{five}}f{{six}}g{{seven}}h{{eight}}i{{nine}}j"></div>
         <div title="a{{one}}b{{two}}c{{three}}d{{four}}e{{five}}f{{six}}g{{seven}}h{{eight}}i"></div>
         <div title="a{{one}}b{{two}}c{{three}}d{{four}}e{{five}}f{{six}}g{{seven}}h"></div>
@@ -1331,7 +1336,7 @@ describe('compiler compliance: bindings', () => {
         <div title="{{one}}"></div>
       `);
 
-      const template = `
+        const template = `
       …
         if (rf & 2) {
           i0.ɵɵpropertyInterpolateV("title", ["a", ctx.one, "b", ctx.two, "c", ctx.three, "d", ctx.four, "e", ctx.five, "f", ctx.six, "g", ctx.seven, "h", ctx.eight, "i", ctx.nine, "j"]);
@@ -1356,13 +1361,13 @@ describe('compiler compliance: bindings', () => {
       }
       …
       `;
-      const result = compile(files, angularFiles);
-      expectEmit(result.source, template, 'Incorrect handling of interpolated properties');
-    });
+        const result = compile(files, angularFiles);
+        expectEmit(result.source, template, 'Incorrect handling of interpolated properties');
+      });
 
 
-    it('should generate the proper update instructions for interpolated attributes', () => {
-      const files: MockDirectory = getAppFiles(`
+      it('should generate the proper update instructions for interpolated attributes', () => {
+        const files: MockDirectory = getAppFiles(`
         <div attr.title="a{{one}}b{{two}}c{{three}}d{{four}}e{{five}}f{{six}}g{{seven}}h{{eight}}i{{nine}}j"></div>
         <div attr.title="a{{one}}b{{two}}c{{three}}d{{four}}e{{five}}f{{six}}g{{seven}}h{{eight}}i"></div>
         <div attr.title="a{{one}}b{{two}}c{{three}}d{{four}}e{{five}}f{{six}}g{{seven}}h"></div>
@@ -1375,7 +1380,7 @@ describe('compiler compliance: bindings', () => {
         <div attr.title="{{one}}"></div>
       `);
 
-      const template = `
+        const template = `
       …
         if (rf & 2) {
           i0.ɵɵattributeInterpolateV("title", ["a", ctx.one, "b", ctx.two, "c", ctx.three, "d", ctx.four, "e", ctx.five, "f", ctx.six, "g", ctx.seven, "h", ctx.eight, "i", ctx.nine, "j"]);
@@ -1400,19 +1405,19 @@ describe('compiler compliance: bindings', () => {
       }
       …
       `;
-      const result = compile(files, angularFiles);
-      expectEmit(result.source, template, 'Incorrect handling of interpolated properties');
-    });
+        const result = compile(files, angularFiles);
+        expectEmit(result.source, template, 'Incorrect handling of interpolated properties');
+      });
 
-    it('should keep local ref for host element', () => {
-      const files: MockDirectory = getAppFiles(`
+      it('should keep local ref for host element', () => {
+        const files: MockDirectory = getAppFiles(`
         <b ngNonBindable #myRef id="my-id">
           <i>Hello {{ name }}!</i>
         </b>
         {{ myRef.id }}
       `);
 
-      const template = `
+        const template = `
         …
         consts: [["id", "my-id"], ["myRef", ""]],
         template:function MyComponent_Template(rf, $ctx$){
@@ -1433,18 +1438,18 @@ describe('compiler compliance: bindings', () => {
           }
         }
       `;
-      const result = compile(files, angularFiles);
-      expectEmit(result.source, template, 'Incorrect handling of local refs for host element');
-    });
+        const result = compile(files, angularFiles);
+        expectEmit(result.source, template, 'Incorrect handling of local refs for host element');
+      });
 
-    it('should not have local refs for nested elements', () => {
-      const files: MockDirectory = getAppFiles(`
+      it('should not have local refs for nested elements', () => {
+        const files: MockDirectory = getAppFiles(`
        <div ngNonBindable>
          <input value="one" #myInput> {{ myInput.value }}
        </div>
       `);
 
-      const template = `
+        const template = `
         …
         consts: [["value", "one", "#myInput", ""]],
         template:function MyComponent_Template(rf, $ctx$){
@@ -1457,18 +1462,18 @@ describe('compiler compliance: bindings', () => {
             $i0$.ɵɵelementEnd();
         }
       `;
-      const result = compile(files, angularFiles);
-      expectEmit(result.source, template, 'Incorrect handling of local refs for nested elements');
-    });
+        const result = compile(files, angularFiles);
+        expectEmit(result.source, template, 'Incorrect handling of local refs for nested elements');
+      });
 
-    it('should not process property bindings and listeners', () => {
-      const files: MockDirectory = getAppFiles(`
+      it('should not process property bindings and listeners', () => {
+        const files: MockDirectory = getAppFiles(`
         <div ngNonBindable>
           <div [id]="my-id" (click)="onclick"></div>
         </div>
       `);
 
-      const template = `
+        const template = `
         …
         consts: [["[id]", "my-id", "(click)", "onclick"]],
         template:function MyComponent_Template(rf, $ctx$){
@@ -1480,24 +1485,26 @@ describe('compiler compliance: bindings', () => {
             $i0$.ɵɵelementEnd();
         }
       `;
-      const result = compile(files, angularFiles);
-      expectEmit(result.source, template, 'Incorrect handling of property bindings and listeners');
-    });
+        const result = compile(files, angularFiles);
+        expectEmit(
+            result.source, template, 'Incorrect handling of property bindings and listeners');
+      });
 
-    it('should not generate extra instructions for elements with no children', () => {
-      const files: MockDirectory = getAppFiles(`
+      it('should not generate extra instructions for elements with no children', () => {
+        const files: MockDirectory = getAppFiles(`
         <div ngNonBindable></div>
       `);
 
-      const template = `
+        const template = `
         template:function MyComponent_Template(rf, $ctx$){
           if (rf & 1) {
             $i0$.ɵɵelement(0, "div");
           }
         }
       `;
-      const result = compile(files, angularFiles);
-      expectEmit(result.source, template, 'Incorrect handling of elements with no children');
+        const result = compile(files, angularFiles);
+        expectEmit(result.source, template, 'Incorrect handling of elements with no children');
+      });
     });
   });
 });

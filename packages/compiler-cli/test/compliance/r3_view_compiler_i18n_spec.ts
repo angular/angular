@@ -14,7 +14,8 @@ import {decimalDigest} from '../../../compiler/src/i18n/digest';
 import {extractMessages} from '../../../compiler/src/i18n/extractor_merger';
 import {HtmlParser} from '../../../compiler/src/ml_parser/html_parser';
 
-import {compile, expectEmit} from './mock_compile';
+import {createCompileFn, expectEmit} from './mock_compile';
+import {runInEachCompilationMode} from './test_runner';
 
 const angularFiles = setup({
   compileAngular: false,
@@ -153,35 +154,6 @@ ${output}
   `);
 };
 
-const verify = (input: string, output: string, extra: any = {}): void => {
-  const files = getAppFilesWithTemplate(input, extra.inputArgs);
-  const opts = (i18nUseExternalIds: boolean) =>
-      ({i18nUseExternalIds, ...(extra.compilerOptions || {})});
-
-  // invoke with file-based prefix translation names
-  if (!extra.skipPathBasedCheck) {
-    const result = compile(files, angularFiles, opts(false));
-    maybePrint(result.source, extra.verbose);
-    expect(verifyPlaceholdersIntegrity(result.source)).toBe(true);
-    expect(verifyUniqueConsts(result.source)).toBe(true);
-    expectEmit(result.source, output, 'Incorrect template');
-  }
-
-  // invoke with translation names based on external ids
-  if (!extra.skipIdBasedCheck) {
-    const result = compile(files, angularFiles, opts(true));
-    maybePrint(result.source, extra.verbose);
-    const interpolationConfig = extra.inputArgs && extra.inputArgs.interpolation ?
-        InterpolationConfig.fromArray(extra.inputArgs.interpolation) :
-        undefined;
-    expect(verifyTranslationIds(input, result.source, extra.exceptions, interpolationConfig))
-        .toBe(true);
-    expect(verifyPlaceholdersIntegrity(result.source)).toBe(true);
-    expect(verifyUniqueConsts(result.source)).toBe(true);
-    expectEmit(result.source, output, 'Incorrect template');
-  }
-};
-
 // Describes message metadata object.
 interface Meta {
   desc?: string;
@@ -281,10 +253,41 @@ const i18nIcuMsg = (message: string, placeholders: Placeholder[] = []) => {
   return i18nMsgWithPostprocess(message, [], undefined, placeholders);
 };
 
-describe('i18n support in the template compiler', () => {
-  describe('element attributes', () => {
-    it('should add the meaning and description as JsDoc comments and metadata blocks', () => {
-      const input = `
+runInEachCompilationMode(compilationMode => {
+  const compile = createCompileFn(compilationMode);
+  const verify = (input: string, output: string, extra: any = {}): void => {
+    const files = getAppFilesWithTemplate(input, extra.inputArgs);
+    const opts = (i18nUseExternalIds: boolean) =>
+        ({i18nUseExternalIds, ...(extra.compilerOptions || {})});
+
+    // invoke with file-based prefix translation names
+    if (!extra.skipPathBasedCheck) {
+      const result = compile(files, angularFiles, opts(false));
+      maybePrint(result.source, extra.verbose);
+      expect(verifyPlaceholdersIntegrity(result.source)).toBe(true);
+      expect(verifyUniqueConsts(result.source)).toBe(true);
+      expectEmit(result.source, output, 'Incorrect template');
+    }
+
+    // invoke with translation names based on external ids
+    if (!extra.skipIdBasedCheck) {
+      const result = compile(files, angularFiles, opts(true));
+      maybePrint(result.source, extra.verbose);
+      const interpolationConfig = extra.inputArgs && extra.inputArgs.interpolation ?
+          InterpolationConfig.fromArray(extra.inputArgs.interpolation) :
+          undefined;
+      expect(verifyTranslationIds(input, result.source, extra.exceptions, interpolationConfig))
+          .toBe(true);
+      expect(verifyPlaceholdersIntegrity(result.source)).toBe(true);
+      expect(verifyUniqueConsts(result.source)).toBe(true);
+      expectEmit(result.source, output, 'Incorrect template');
+    }
+  };
+
+  describe('i18n support in the template compiler', () => {
+    describe('element attributes', () => {
+      it('should add the meaning and description as JsDoc comments and metadata blocks', () => {
+        const input = `
         <div i18n="meaningA|descA@@idA">Content A</div>
         <div i18n-title="meaningB|descB@@idB" title="Title B">Content B</div>
         <div i18n-title="meaningC|" title="Title C">Content C</div>
@@ -295,21 +298,21 @@ describe('i18n support in the template compiler', () => {
         <div i18n="Some text \\' [BACKUP_MESSAGE_ID: xxx]">Content H</div>
       `;
 
-      const i18n_0 = i18nMsg('Content A', [], {id: 'idA', meaning: 'meaningA', desc: 'descA'});
-      const i18n_1 = i18nMsg('Title B', [], {id: 'idB', meaning: 'meaningB', desc: 'descB'});
-      const i18n_2 = i18nMsg('Title C', [], {meaning: 'meaningC'});
-      const i18n_3 = i18nMsg('Title D', [], {meaning: 'meaningD', desc: 'descD'});
-      const i18n_4 = i18nMsg('Title E', [], {id: 'idE', desc: 'meaningE'});
-      const i18n_5 = i18nMsg('Title F', [], {id: 'idF'});
+        const i18n_0 = i18nMsg('Content A', [], {id: 'idA', meaning: 'meaningA', desc: 'descA'});
+        const i18n_1 = i18nMsg('Title B', [], {id: 'idB', meaning: 'meaningB', desc: 'descB'});
+        const i18n_2 = i18nMsg('Title C', [], {meaning: 'meaningC'});
+        const i18n_3 = i18nMsg('Title D', [], {meaning: 'meaningD', desc: 'descD'});
+        const i18n_4 = i18nMsg('Title E', [], {id: 'idE', desc: 'meaningE'});
+        const i18n_5 = i18nMsg('Title F', [], {id: 'idF'});
 
-      // Keeping this block as a raw string, since it checks escaping of special chars.
-      const i18n_6 = String.raw`
+        // Keeping this block as a raw string, since it checks escaping of special chars.
+        const i18n_6 = String.raw`
         let $i18n_23$;
         if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
           /**
            * @desc [BACKUP_$` +
-          String.raw`{MESSAGE}_ID:idH]` +
-          '`' + String.raw`desc
+            String.raw`{MESSAGE}_ID:idH]` +
+            '`' + String.raw`desc
            */
           const $MSG_EXTERNAL_idG$$APP_SPEC_TS_24$ = goog.getMsg("Title G");
           $i18n_23$ = $MSG_EXTERNAL_idG$$APP_SPEC_TS_24$;
@@ -319,8 +322,8 @@ describe('i18n support in the template compiler', () => {
         }
       `;
 
-      // Keeping this block as a raw string, since it checks escaping of special chars.
-      const i18n_7 = String.raw`
+        // Keeping this block as a raw string, since it checks escaping of special chars.
+        const i18n_7 = String.raw`
         let $i18n_7$;
         if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
           /**
@@ -334,7 +337,7 @@ describe('i18n support in the template compiler', () => {
         }
       `;
 
-      const output = String.raw`
+        const output = String.raw`
         consts: function () {
           ${i18n_0}
           ${i18n_1}
@@ -392,16 +395,16 @@ describe('i18n support in the template compiler', () => {
         }
       `;
 
-      verify(input, output);
-    });
+        verify(input, output);
+      });
 
-    it('should support i18n attributes on explicit <ng-template> elements', () => {
-      const input = `
+      it('should support i18n attributes on explicit <ng-template> elements', () => {
+        const input = `
         <ng-template i18n-title title="Hello"></ng-template>
       `;
 
-      const i18n_0 = i18nMsg('Hello');
-      const output = String.raw`
+        const i18n_0 = i18nMsg('Hello');
+        const output = String.raw`
         consts: function () {
           ${i18n_0}
           return [
@@ -416,18 +419,18 @@ describe('i18n support in the template compiler', () => {
           }
         }
       `;
-      verify(input, output);
-    });
+        verify(input, output);
+      });
 
-    it('should support i18n attributes on explicit <ng-template> with structural directives',
-       () => {
-         const input = `
+      it('should support i18n attributes on explicit <ng-template> with structural directives',
+         () => {
+           const input = `
             <ng-template *ngIf="visible" i18n-title title="Hello">Test</ng-template>
           `;
 
-         const i18n_0 = i18nMsg('Hello');
+           const i18n_0 = i18nMsg('Hello');
 
-         const output = String.raw`
+           const output = String.raw`
             function MyComponent_0_ng_template_0_Template(rf, ctx) {
               if (rf & 1) {
                 $r3$.ɵɵtext(0, "Test");
@@ -457,18 +460,18 @@ describe('i18n support in the template compiler', () => {
               }
             }
           `;
-         verify(input, output);
-       });
+           verify(input, output);
+         });
 
-    it('should support i18n attributes with interpolations on explicit <ng-template> elements',
-       () => {
-         const input = `
+      it('should support i18n attributes with interpolations on explicit <ng-template> elements',
+         () => {
+           const input = `
            <ng-template i18n-title title="Hello {{ name }}"></ng-template>
          `;
 
-         const i18n_0 =
-             i18nMsg('Hello {$interpolation}', [['interpolation', String.raw`\uFFFD0\uFFFD`]]);
-         const output = String.raw`
+           const i18n_0 =
+               i18nMsg('Hello {$interpolation}', [['interpolation', String.raw`\uFFFD0\uFFFD`]]);
+           const output = String.raw`
            consts: function() {
              ${i18n_0}
              return [
@@ -487,18 +490,18 @@ describe('i18n support in the template compiler', () => {
              }
            }
          `;
-         verify(input, output);
-       });
+           verify(input, output);
+         });
 
-    it('should support i18n attributes with interpolations on explicit <ng-template> elements with structural directives',
-       () => {
-         const input = `
+      it('should support i18n attributes with interpolations on explicit <ng-template> elements with structural directives',
+         () => {
+           const input = `
             <ng-template *ngIf="true" i18n-title title="Hello {{ name }}"></ng-template>
           `;
 
-         const i18n_0 =
-             i18nMsg('Hello {$interpolation}', [['interpolation', String.raw`\uFFFD0\uFFFD`]]);
-         const output = String.raw`
+           const i18n_0 =
+               i18nMsg('Hello {$interpolation}', [['interpolation', String.raw`\uFFFD0\uFFFD`]]);
+           const output = String.raw`
             function MyComponent_0_Template(rf, ctx) {
               if (rf & 1) {
                 $r3$.ɵɵtemplate(0, MyComponent_0_ng_template_0_Template, 0, 0, "ng-template", 1);
@@ -528,15 +531,15 @@ describe('i18n support in the template compiler', () => {
               }
             },
           `;
-         verify(input, output);
-       });
+           verify(input, output);
+         });
 
-    it('should not create translations for empty attributes', () => {
-      const input = `
+      it('should not create translations for empty attributes', () => {
+        const input = `
         <div id="static" i18n-title="m|d" title></div>
       `;
 
-      const output = `
+        const output = `
         …
         consts: [["id", "static", "title", ""]],
         template: function MyComponent_Template(rf, ctx) {
@@ -546,18 +549,18 @@ describe('i18n support in the template compiler', () => {
         }
       `;
 
-      verify(input, output);
-    });
+        verify(input, output);
+      });
 
-    it('should not create translations for bound attributes', () => {
-      const input = `
+      it('should not create translations for bound attributes', () => {
+        const input = `
         <div
           [title]="title" i18n-title
           [attr.label]="label" i18n-attr.label>
         </div>
       `;
 
-      const output = `
+        const output = `
         consts: [[3, "title"]],
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
@@ -570,17 +573,17 @@ describe('i18n support in the template compiler', () => {
         }
       `;
 
-      verify(input, output);
-    });
+        verify(input, output);
+      });
 
-    it('should translate static attributes', () => {
-      const input = `
+      it('should translate static attributes', () => {
+        const input = `
         <div id="static" i18n-title="m|d" title="introduction"></div>
       `;
 
-      const i18n_0 = i18nMsg('introduction', [], {meaning: 'm', desc: 'd'});
+        const i18n_0 = i18nMsg('introduction', [], {meaning: 'm', desc: 'd'});
 
-      const output = String.raw`
+        const output = String.raw`
         consts: function() {
           ${i18n_0}
           return [
@@ -597,11 +600,11 @@ describe('i18n support in the template compiler', () => {
         }
       `;
 
-      verify(input, output);
-    });
+        verify(input, output);
+      });
 
-    it('should support interpolation', () => {
-      const input = `
+      it('should support interpolation', () => {
+        const input = `
         <div id="dynamic-1"
           i18n-title="m|d" title="intro {{ valueA | uppercase }}"
           i18n-aria-label="m1|d1" aria-label="{{ valueB }}"
@@ -613,24 +616,24 @@ describe('i18n support in the template compiler', () => {
         ></div>
       `;
 
-      const i18n_0 = i18nMsg('static text');
-      const i18n_1 = i18nMsg(
-          'intro {$interpolation}', [['interpolation', String.raw`\uFFFD0\uFFFD`]],
-          {meaning: 'm', desc: 'd'});
-      const i18n_2 = i18nMsg(
-          '{$interpolation}', [['interpolation', String.raw`\uFFFD0\uFFFD`]],
-          {meaning: 'm1', desc: 'd1'});
-      const i18n_3 = i18nMsg(
-          '{$interpolation} and {$interpolation_1} and again {$interpolation_2}',
-          [
-            ['interpolation', String.raw`\uFFFD0\uFFFD`],
-            ['interpolation_1', String.raw`\uFFFD1\uFFFD`],
-            ['interpolation_2', String.raw`\uFFFD2\uFFFD`]
-          ],
-          {meaning: 'm2', desc: 'd2'});
-      const i18n_4 = i18nMsg('{$interpolation}', [['interpolation', String.raw`\uFFFD0\uFFFD`]]);
+        const i18n_0 = i18nMsg('static text');
+        const i18n_1 = i18nMsg(
+            'intro {$interpolation}', [['interpolation', String.raw`\uFFFD0\uFFFD`]],
+            {meaning: 'm', desc: 'd'});
+        const i18n_2 = i18nMsg(
+            '{$interpolation}', [['interpolation', String.raw`\uFFFD0\uFFFD`]],
+            {meaning: 'm1', desc: 'd1'});
+        const i18n_3 = i18nMsg(
+            '{$interpolation} and {$interpolation_1} and again {$interpolation_2}',
+            [
+              ['interpolation', String.raw`\uFFFD0\uFFFD`],
+              ['interpolation_1', String.raw`\uFFFD1\uFFFD`],
+              ['interpolation_2', String.raw`\uFFFD2\uFFFD`]
+            ],
+            {meaning: 'm2', desc: 'd2'});
+        const i18n_4 = i18nMsg('{$interpolation}', [['interpolation', String.raw`\uFFFD0\uFFFD`]]);
 
-      const output = String.raw`
+        const output = String.raw`
         decls: 5,
         vars: 8,
         consts: function() {
@@ -667,19 +670,19 @@ describe('i18n support in the template compiler', () => {
         }
       `;
 
-      verify(input, output);
-    });
+        verify(input, output);
+      });
 
-    it('should support interpolation with custom interpolation config', () => {
-      const input = `
+      it('should support interpolation with custom interpolation config', () => {
+        const input = `
         <div i18n-title="m|d" title="intro {% valueA | uppercase %}"></div>
       `;
 
-      const i18n_0 = i18nMsg(
-          'intro {$interpolation}', [['interpolation', String.raw`\uFFFD0\uFFFD`]],
-          {meaning: 'm', desc: 'd'});
+        const i18n_0 = i18nMsg(
+            'intro {$interpolation}', [['interpolation', String.raw`\uFFFD0\uFFFD`]],
+            {meaning: 'm', desc: 'd'});
 
-      const output = String.raw`
+        const output = String.raw`
         consts: function() {
           ${i18n_0}
           return [
@@ -700,21 +703,21 @@ describe('i18n support in the template compiler', () => {
           }
         }
       `;
-      verify(input, output, {inputArgs: {interpolation: ['{%', '%}']}});
-    });
+        verify(input, output, {inputArgs: {interpolation: ['{%', '%}']}});
+      });
 
-    it('should correctly bind to context in nested template', () => {
-      const input = `
+      it('should correctly bind to context in nested template', () => {
+        const input = `
         <div *ngFor="let outer of items">
           <div i18n-title="m|d" title="different scope {{ outer | uppercase }}"></div>
         </div>
       `;
 
-      const i18n_0 = i18nMsg(
-          'different scope {$interpolation}', [['interpolation', String.raw`\uFFFD0\uFFFD`]],
-          {meaning: 'm', desc: 'd'});
+        const i18n_0 = i18nMsg(
+            'different scope {$interpolation}', [['interpolation', String.raw`\uFFFD0\uFFFD`]],
+            {meaning: 'm', desc: 'd'});
 
-      const output = String.raw`
+        const output = String.raw`
         function MyComponent_div_0_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵelementStart(0, "div");
@@ -752,18 +755,18 @@ describe('i18n support in the template compiler', () => {
         }
       `;
 
-      verify(input, output);
-    });
+        verify(input, output);
+      });
 
-    it('should support complex expressions in interpolation', () => {
-      const input = `
+      it('should support complex expressions in interpolation', () => {
+        const input = `
         <div i18n-title title="{{valueA.getRawValue()?.getTitle()}} title"></div>
       `;
 
-      const i18n_0 =
-          i18nMsg('{$interpolation} title', [['interpolation', String.raw`\uFFFD0\uFFFD`]]);
+        const i18n_0 =
+            i18nMsg('{$interpolation} title', [['interpolation', String.raw`\uFFFD0\uFFFD`]]);
 
-      const output = String.raw`
+        const output = String.raw`
         decls: 2,
         vars: 1,
         consts: function() {
@@ -787,11 +790,11 @@ describe('i18n support in the template compiler', () => {
         }
       `;
 
-      verify(input, output);
-    });
+        verify(input, output);
+      });
 
-    it('should support interpolation', () => {
-      const input = `
+      it('should support interpolation', () => {
+        const input = `
         <div id="dynamic-1"
           i18n-title="m|d" title="intro {{ valueA | uppercase }}"
           i18n-aria-label="m1|d1" aria-label="{{ valueB }}"
@@ -803,24 +806,24 @@ describe('i18n support in the template compiler', () => {
         ></div>
       `;
 
-      const i18n_0 = i18nMsg('static text');
-      const i18n_1 = i18nMsg(
-          'intro {$interpolation}', [['interpolation', String.raw`\uFFFD0\uFFFD`]],
-          {meaning: 'm', desc: 'd'});
-      const i18n_2 = i18nMsg(
-          '{$interpolation}', [['interpolation', String.raw`\uFFFD0\uFFFD`]],
-          {meaning: 'm1', desc: 'd1'});
-      const i18n_3 = i18nMsg(
-          '{$interpolation} and {$interpolation_1} and again {$interpolation_2}',
-          [
-            ['interpolation', String.raw`\uFFFD0\uFFFD`],
-            ['interpolation_1', String.raw`\uFFFD1\uFFFD`],
-            ['interpolation_2', String.raw`\uFFFD2\uFFFD`]
-          ],
-          {meaning: 'm2', desc: 'd2'});
-      const i18n_4 = i18nMsg('{$interpolation}', [['interpolation', String.raw`\uFFFD0\uFFFD`]]);
+        const i18n_0 = i18nMsg('static text');
+        const i18n_1 = i18nMsg(
+            'intro {$interpolation}', [['interpolation', String.raw`\uFFFD0\uFFFD`]],
+            {meaning: 'm', desc: 'd'});
+        const i18n_2 = i18nMsg(
+            '{$interpolation}', [['interpolation', String.raw`\uFFFD0\uFFFD`]],
+            {meaning: 'm1', desc: 'd1'});
+        const i18n_3 = i18nMsg(
+            '{$interpolation} and {$interpolation_1} and again {$interpolation_2}',
+            [
+              ['interpolation', String.raw`\uFFFD0\uFFFD`],
+              ['interpolation_1', String.raw`\uFFFD1\uFFFD`],
+              ['interpolation_2', String.raw`\uFFFD2\uFFFD`]
+            ],
+            {meaning: 'm2', desc: 'd2'});
+        const i18n_4 = i18nMsg('{$interpolation}', [['interpolation', String.raw`\uFFFD0\uFFFD`]]);
 
-      const output = String.raw`
+        const output = String.raw`
         decls: 5,
         vars: 8,
         consts: function() {
@@ -857,21 +860,21 @@ describe('i18n support in the template compiler', () => {
         }
       `;
 
-      verify(input, output);
-    });
+        verify(input, output);
+      });
 
-    it('should correctly bind to context in nested template', () => {
-      const input = `
+      it('should correctly bind to context in nested template', () => {
+        const input = `
         <div *ngFor="let outer of items">
           <div i18n-title="m|d" title="different scope {{ outer | uppercase }}"></div>
         </div>
       `;
 
-      const i18n_0 = i18nMsg(
-          'different scope {$interpolation}', [['interpolation', String.raw`\uFFFD0\uFFFD`]],
-          {meaning: 'm', desc: 'd'});
+        const i18n_0 = i18nMsg(
+            'different scope {$interpolation}', [['interpolation', String.raw`\uFFFD0\uFFFD`]],
+            {meaning: 'm', desc: 'd'});
 
-      const output = String.raw`
+        const output = String.raw`
         function MyComponent_div_0_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵelementStart(0, "div");
@@ -909,18 +912,18 @@ describe('i18n support in the template compiler', () => {
         }
       `;
 
-      verify(input, output);
-    });
+        verify(input, output);
+      });
 
-    it('should work correctly when placed on i18n root node', () => {
-      const input = `
+      it('should work correctly when placed on i18n root node', () => {
+        const input = `
         <div i18n i18n-title="m|d" title="Element title">Some content</div>
       `;
 
-      const i18n_0 = i18nMsg('Element title', [], {meaning: 'm', desc: 'd'});
-      const i18n_1 = i18nMsg('Some content');
+        const i18n_0 = i18nMsg('Element title', [], {meaning: 'm', desc: 'd'});
+        const i18n_1 = i18nMsg('Some content');
 
-      const output = String.raw`
+        const output = String.raw`
         consts: function() {
           ${i18n_0}
           ${i18n_1}
@@ -939,18 +942,18 @@ describe('i18n support in the template compiler', () => {
           }
         }
       `;
-      verify(input, output);
-    });
+        verify(input, output);
+      });
 
-    it('should sanitize ids and generate proper variable names', () => {
-      const input = `
+      it('should sanitize ids and generate proper variable names', () => {
+        const input = `
         <div i18n="@@ID.WITH.INVALID.CHARS.2" i18n-title="@@ID.WITH.INVALID.CHARS" title="Element title">
           Some content
         </div>
       `;
 
-      // Keeping raw content (avoiding `i18nMsg`) to illustrate message id sanitization.
-      const output = String.raw`
+        // Keeping raw content (avoiding `i18nMsg`) to illustrate message id sanitization.
+        const output = String.raw`
         let $I18N_0$;
         if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
             const $MSG_EXTERNAL_ID_WITH_INVALID_CHARS$$APP_SPEC_TS_1$ = goog.getMsg("Element title");
@@ -970,17 +973,17 @@ describe('i18n support in the template compiler', () => {
         }
       `;
 
-      const exceptions = {
-        'ID.WITH.INVALID.CHARS': 'Verify const name generation only',
-        'ID.WITH.INVALID.CHARS.2': 'Verify const name generation only'
-      };
-      verify(input, output, {exceptions, skipPathBasedCheck: true});
+        const exceptions = {
+          'ID.WITH.INVALID.CHARS': 'Verify const name generation only',
+          'ID.WITH.INVALID.CHARS.2': 'Verify const name generation only'
+        };
+        verify(input, output, {exceptions, skipPathBasedCheck: true});
+      });
     });
-  });
 
-  describe('nested nodes', () => {
-    it('should not produce instructions for empty content', () => {
-      const input = `
+    describe('nested nodes', () => {
+      it('should not produce instructions for empty content', () => {
+        const input = `
         <div i18n></div>
         <div i18n>  </div>
         <div i18n>
@@ -988,7 +991,7 @@ describe('i18n support in the template compiler', () => {
         </div>
       `;
 
-      const output = String.raw`
+        const output = String.raw`
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵelement(0, "div");
@@ -998,30 +1001,30 @@ describe('i18n support in the template compiler', () => {
         }
       `;
 
-      const exceptions = {
-        '6524085439495453930': 'No translation is produced for empty content (whitespaces)',
-        '814405839137385666': 'No translation is produced for empty content (line breaks)'
-      };
-      verify(input, output, {exceptions});
-    });
+        const exceptions = {
+          '6524085439495453930': 'No translation is produced for empty content (whitespaces)',
+          '814405839137385666': 'No translation is produced for empty content (line breaks)'
+        };
+        verify(input, output, {exceptions});
+      });
 
-    it('should ignore HTML comments within translated text', () => {
-      const input = `<div i18n>Some <!-- comments --> text</div>`;
-      const output = i18nMsg('Some  text');
-      verify(input, output);
-    });
+      it('should ignore HTML comments within translated text', () => {
+        const input = `<div i18n>Some <!-- comments --> text</div>`;
+        const output = i18nMsg('Some  text');
+        verify(input, output);
+      });
 
-    it('should properly escape quotes in content', () => {
-      const input = `
+      it('should properly escape quotes in content', () => {
+        const input = `
         <div i18n>Some text 'with single quotes', "with double quotes", \`with backticks\` and without quotes.</div>
       `;
 
-      // Keeping raw content (avoiding `i18nMsg`) to illustrate quotes escaping.
-      const output = String.raw`
+        // Keeping raw content (avoiding `i18nMsg`) to illustrate quotes escaping.
+        const output = String.raw`
         let $I18N_0$;
         if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
             const $MSG_EXTERNAL_4924931801512133405$$APP_SPEC_TS_0$ = goog.getMsg("Some text 'with single quotes', \"with double quotes\", ` +
-          '`with backticks`' + String.raw` and without quotes.");
+            '`with backticks`' + String.raw` and without quotes.");
             $I18N_0$ = $MSG_EXTERNAL_4924931801512133405$$APP_SPEC_TS_0$;
         }
         else {
@@ -1029,28 +1032,28 @@ describe('i18n support in the template compiler', () => {
         }
       `;
 
-      verify(input, output);
-    });
+        verify(input, output);
+      });
 
-    it('should handle interpolations wrapped in backticks', () => {
-      const input = '<div i18n>`{{ count }}`</div>';
-      // Keeping raw content (avoiding `i18nMsg`) to illustrate backticks escaping.
-      const output = String.raw`
+      it('should handle interpolations wrapped in backticks', () => {
+        const input = '<div i18n>`{{ count }}`</div>';
+        // Keeping raw content (avoiding `i18nMsg`) to illustrate backticks escaping.
+        const output = String.raw`
       let $I18N_0$;
       if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
           const $MSG_APP_SPEC_TS_1$ = goog.getMsg("` +
-          '`{$interpolation}`' + String.raw`", { "interpolation": "\uFFFD0\uFFFD" });
+            '`{$interpolation}`' + String.raw`", { "interpolation": "\uFFFD0\uFFFD" });
           $I18N_0$ = $MSG_APP_SPEC_TS_1$;
       }
       else {
           $I18N_0$ = $localize \`\\\`$` +
-          String.raw`{"\uFFFD0\uFFFD"}:INTERPOLATION:\\\`\`;
+            String.raw`{"\uFFFD0\uFFFD"}:INTERPOLATION:\\\`\`;
       }`;
-      verify(input, output);
-    });
+        verify(input, output);
+      });
 
-    it('should handle i18n attributes with plain-text content', () => {
-      const input = `
+      it('should handle i18n attributes with plain-text content', () => {
+        const input = `
         <div i18n>My i18n block #1</div>
         <div>My non-i18n block #1</div>
         <div i18n>My i18n block #2</div>
@@ -1058,11 +1061,11 @@ describe('i18n support in the template compiler', () => {
         <div i18n>My i18n block #3</div>
       `;
 
-      const i18n_0 = i18nMsg('My i18n block #1');
-      const i18n_1 = i18nMsg('My i18n block #2');
-      const i18n_2 = i18nMsg('My i18n block #3');
+        const i18n_0 = i18nMsg('My i18n block #1');
+        const i18n_1 = i18nMsg('My i18n block #2');
+        const i18n_2 = i18nMsg('My i18n block #3');
 
-      const output = String.raw`
+        const output = String.raw`
         consts: function() {
           ${i18n_0}
           ${i18n_1}
@@ -1094,20 +1097,20 @@ describe('i18n support in the template compiler', () => {
         }
       `;
 
-      verify(input, output);
-    });
+        verify(input, output);
+      });
 
-    it('should support named interpolations', () => {
-      const input = `
+      it('should support named interpolations', () => {
+        const input = `
         <div i18n>
           Named interpolation: {{ valueA // i18n(ph="PH_A") }}
           Named interpolation with spaces: {{ valueB // i18n(ph="PH B") }}
         </div>
       `;
 
-      // Keeping raw content (avoiding `i18nMsg`) to illustrate how named interpolations are
-      // generated.
-      const i18n_0 = String.raw`
+        // Keeping raw content (avoiding `i18nMsg`) to illustrate how named interpolations are
+        // generated.
+        const i18n_0 = String.raw`
         let $I18N_0$;
         if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
             const $MSG_EXTERNAL_7597881511811528589$$APP_SPEC_TS_0$ = goog.getMsg(" Named interpolation: {$phA} Named interpolation with spaces: {$phB} ", {
@@ -1118,12 +1121,12 @@ describe('i18n support in the template compiler', () => {
         }
         else {
             $I18N_0$ = $localize \` Named interpolation: $` +
-          String.raw`{"\uFFFD0\uFFFD"}:PH_A: Named interpolation with spaces: $` +
-          String.raw`{"\uFFFD1\uFFFD"}:PH_B: \`;
+            String.raw`{"\uFFFD0\uFFFD"}:PH_A: Named interpolation with spaces: $` +
+            String.raw`{"\uFFFD1\uFFFD"}:PH_B: \`;
         }
       `;
 
-      const output = String.raw`
+        const output = String.raw`
         decls: 2,
         vars: 2,
         consts: function() {
@@ -1146,17 +1149,17 @@ describe('i18n support in the template compiler', () => {
         }
       `;
 
-      verify(input, output);
-    });
+        verify(input, output);
+      });
 
-    it('should support interpolation with custom interpolation config', () => {
-      const input = `
+      it('should support interpolation with custom interpolation config', () => {
+        const input = `
         <div i18n>{% valueA %}</div>
       `;
 
-      const i18n_0 = i18nMsg('{$interpolation}', [['interpolation', String.raw`\uFFFD0\uFFFD`]]);
+        const i18n_0 = i18nMsg('{$interpolation}', [['interpolation', String.raw`\uFFFD0\uFFFD`]]);
 
-      const output = String.raw`
+        const output = String.raw`
         consts: function() {
           ${i18n_0}
           return [
@@ -1176,11 +1179,11 @@ describe('i18n support in the template compiler', () => {
           }
         }
       `;
-      verify(input, output, {inputArgs: {interpolation: ['{%', '%}']}});
-    });
+        verify(input, output, {inputArgs: {interpolation: ['{%', '%}']}});
+      });
 
-    it('should support interpolations with complex expressions', () => {
-      const input = `
+      it('should support interpolations with complex expressions', () => {
+        const input = `
         <div i18n>
           {{ valueA | async }}
           {{ valueA?.a?.b }}
@@ -1188,13 +1191,13 @@ describe('i18n support in the template compiler', () => {
         </div>
       `;
 
-      const i18n_0 = i18nMsg(' {$interpolation} {$interpolation_1} {$interpolation_2} ', [
-        ['interpolation', String.raw`\uFFFD0\uFFFD`],
-        ['interpolation_1', String.raw`\uFFFD1\uFFFD`],
-        ['interpolation_2', String.raw`\uFFFD2\uFFFD`]
-      ]);
+        const i18n_0 = i18nMsg(' {$interpolation} {$interpolation_1} {$interpolation_2} ', [
+          ['interpolation', String.raw`\uFFFD0\uFFFD`],
+          ['interpolation_1', String.raw`\uFFFD1\uFFFD`],
+          ['interpolation_2', String.raw`\uFFFD2\uFFFD`]
+        ]);
 
-      const output = String.raw`
+        const output = String.raw`
         consts: function() {
           ${i18n_0}
           return [
@@ -1218,24 +1221,24 @@ describe('i18n support in the template compiler', () => {
           }
         }
       `;
-      verify(input, output);
-    });
+        verify(input, output);
+      });
 
-    it('should handle i18n attributes with bindings in content', () => {
-      const input = `
+      it('should handle i18n attributes with bindings in content', () => {
+        const input = `
         <div i18n>My i18n block #{{ one }}</div>
         <div i18n>My i18n block #{{ two | uppercase }}</div>
         <div i18n>My i18n block #{{ three + four + five }}</div>
       `;
 
-      const i18n_0 = i18nMsg(
-          'My i18n block #{$interpolation}', [['interpolation', String.raw`\uFFFD0\uFFFD`]]);
-      const i18n_1 = i18nMsg(
-          'My i18n block #{$interpolation}', [['interpolation', String.raw`\uFFFD0\uFFFD`]]);
-      const i18n_2 = i18nMsg(
-          'My i18n block #{$interpolation}', [['interpolation', String.raw`\uFFFD0\uFFFD`]]);
+        const i18n_0 = i18nMsg(
+            'My i18n block #{$interpolation}', [['interpolation', String.raw`\uFFFD0\uFFFD`]]);
+        const i18n_1 = i18nMsg(
+            'My i18n block #{$interpolation}', [['interpolation', String.raw`\uFFFD0\uFFFD`]]);
+        const i18n_2 = i18nMsg(
+            'My i18n block #{$interpolation}', [['interpolation', String.raw`\uFFFD0\uFFFD`]]);
 
-      const output = String.raw`
+        const output = String.raw`
         decls: 7,
         vars: 5,
         consts: function() {
@@ -1275,11 +1278,11 @@ describe('i18n support in the template compiler', () => {
         }
       `;
 
-      verify(input, output);
-    });
+        verify(input, output);
+      });
 
-    it('should handle i18n attributes with bindings and nested elements in content', () => {
-      const input = `
+      it('should handle i18n attributes with bindings and nested elements in content', () => {
+        const input = `
         <div i18n>
           My i18n block #{{ one }}
           <span>Plain text in nested element</span>
@@ -1296,25 +1299,25 @@ describe('i18n support in the template compiler', () => {
         </div>
       `;
 
-      const i18n_0 = i18nMsg(
-          ' My i18n block #{$interpolation} {$startTagSpan}Plain text in nested element{$closeTagSpan}',
-          [
-            ['interpolation', String.raw`\uFFFD0\uFFFD`],
-            ['startTagSpan', String.raw`\uFFFD#2\uFFFD`],
-            ['closeTagSpan', String.raw`\uFFFD/#2\uFFFD`]
-          ]);
-      const i18n_1 = i18nMsgWithPostprocess(
-          ' My i18n block #{$interpolation} {$startTagDiv}{$startTagDiv}{$startTagSpan} More bindings in more nested element: {$interpolation_1} {$closeTagSpan}{$closeTagDiv}{$closeTagDiv}',
-          [
-            ['interpolation', String.raw`\uFFFD0\uFFFD`],
-            ['startTagDiv', String.raw`[\uFFFD#6\uFFFD|\uFFFD#7\uFFFD]`],
-            ['startTagSpan', String.raw`\uFFFD#8\uFFFD`],
-            ['interpolation_1', String.raw`\uFFFD1\uFFFD`],
-            ['closeTagSpan', String.raw`\uFFFD/#8\uFFFD`],
-            ['closeTagDiv', String.raw`[\uFFFD/#7\uFFFD|\uFFFD/#6\uFFFD]`]
-          ]);
+        const i18n_0 = i18nMsg(
+            ' My i18n block #{$interpolation} {$startTagSpan}Plain text in nested element{$closeTagSpan}',
+            [
+              ['interpolation', String.raw`\uFFFD0\uFFFD`],
+              ['startTagSpan', String.raw`\uFFFD#2\uFFFD`],
+              ['closeTagSpan', String.raw`\uFFFD/#2\uFFFD`]
+            ]);
+        const i18n_1 = i18nMsgWithPostprocess(
+            ' My i18n block #{$interpolation} {$startTagDiv}{$startTagDiv}{$startTagSpan} More bindings in more nested element: {$interpolation_1} {$closeTagSpan}{$closeTagDiv}{$closeTagDiv}',
+            [
+              ['interpolation', String.raw`\uFFFD0\uFFFD`],
+              ['startTagDiv', String.raw`[\uFFFD#6\uFFFD|\uFFFD#7\uFFFD]`],
+              ['startTagSpan', String.raw`\uFFFD#8\uFFFD`],
+              ['interpolation_1', String.raw`\uFFFD1\uFFFD`],
+              ['closeTagSpan', String.raw`\uFFFD/#8\uFFFD`],
+              ['closeTagDiv', String.raw`[\uFFFD/#7\uFFFD|\uFFFD/#6\uFFFD]`]
+            ]);
 
-      const output = String.raw`
+        const output = String.raw`
         decls: 9,
         vars: 5,
         consts: function() {
@@ -1354,11 +1357,11 @@ describe('i18n support in the template compiler', () => {
         }
       `;
 
-      verify(input, output);
-    });
+        verify(input, output);
+      });
 
-    it('should handle i18n attributes with bindings in content and element attributes', () => {
-      const input = `
+      it('should handle i18n attributes with bindings in content and element attributes', () => {
+        const input = `
         <div i18n>
           My i18n block #1 with value: {{ valueA }}
           <span i18n-title title="Span title {{ valueB }} and {{ valueC }}">
@@ -1373,27 +1376,28 @@ describe('i18n support in the template compiler', () => {
         </div>
       `;
 
-      const i18n_0 = i18nMsg('Span title {$interpolation} and {$interpolation_1}', [
-        ['interpolation', String.raw`\uFFFD0\uFFFD`], ['interpolation_1', String.raw`\uFFFD1\uFFFD`]
-      ]);
-      const i18n_1 = i18nMsg(
-          ' My i18n block #1 with value: {$interpolation} {$startTagSpan} Plain text in nested element (block #1) {$closeTagSpan}',
-          [
-            ['interpolation', String.raw`\uFFFD0\uFFFD`],
-            ['startTagSpan', String.raw`\uFFFD#2\uFFFD`],
-            ['closeTagSpan', String.raw`\uFFFD/#2\uFFFD`]
-          ]);
-      const i18n_2 =
-          i18nMsg('Span title {$interpolation}', [['interpolation', String.raw`\uFFFD0\uFFFD`]]);
-      const i18n_3 = i18nMsg(
-          ' My i18n block #2 with value {$interpolation} {$startTagSpan} Plain text in nested element (block #2) {$closeTagSpan}',
-          [
-            ['interpolation', String.raw`\uFFFD0\uFFFD`],
-            ['startTagSpan', String.raw`\uFFFD#7\uFFFD`],
-            ['closeTagSpan', String.raw`\uFFFD/#7\uFFFD`]
-          ]);
+        const i18n_0 = i18nMsg('Span title {$interpolation} and {$interpolation_1}', [
+          ['interpolation', String.raw`\uFFFD0\uFFFD`],
+          ['interpolation_1', String.raw`\uFFFD1\uFFFD`]
+        ]);
+        const i18n_1 = i18nMsg(
+            ' My i18n block #1 with value: {$interpolation} {$startTagSpan} Plain text in nested element (block #1) {$closeTagSpan}',
+            [
+              ['interpolation', String.raw`\uFFFD0\uFFFD`],
+              ['startTagSpan', String.raw`\uFFFD#2\uFFFD`],
+              ['closeTagSpan', String.raw`\uFFFD/#2\uFFFD`]
+            ]);
+        const i18n_2 =
+            i18nMsg('Span title {$interpolation}', [['interpolation', String.raw`\uFFFD0\uFFFD`]]);
+        const i18n_3 = i18nMsg(
+            ' My i18n block #2 with value {$interpolation} {$startTagSpan} Plain text in nested element (block #2) {$closeTagSpan}',
+            [
+              ['interpolation', String.raw`\uFFFD0\uFFFD`],
+              ['startTagSpan', String.raw`\uFFFD#7\uFFFD`],
+              ['closeTagSpan', String.raw`\uFFFD/#7\uFFFD`]
+            ]);
 
-      const output = String.raw`
+        const output = String.raw`
         decls: 9,
         vars: 7,
         consts: function() {
@@ -1444,11 +1448,11 @@ describe('i18n support in the template compiler', () => {
         }
       `;
 
-      verify(input, output);
-    });
+        verify(input, output);
+      });
 
-    it('should handle i18n attributes in nested templates', () => {
-      const input = `
+      it('should handle i18n attributes in nested templates', () => {
+        const input = `
         <div>
           Some content
           <div *ngIf="visible">
@@ -1462,16 +1466,16 @@ describe('i18n support in the template compiler', () => {
         </div>
       `;
 
-      const i18n_0 = i18nMsg(
-          ' Some other content {$interpolation} {$startTagDiv} More nested levels with bindings {$interpolation_1} {$closeTagDiv}',
-          [
-            ['interpolation', String.raw`\uFFFD0\uFFFD`],
-            ['startTagDiv', String.raw`\uFFFD#3\uFFFD`],
-            ['interpolation_1', String.raw`\uFFFD1\uFFFD`],
-            ['closeTagDiv', String.raw`\uFFFD/#3\uFFFD`]
-          ]);
+        const i18n_0 = i18nMsg(
+            ' Some other content {$interpolation} {$startTagDiv} More nested levels with bindings {$interpolation_1} {$closeTagDiv}',
+            [
+              ['interpolation', String.raw`\uFFFD0\uFFFD`],
+              ['startTagDiv', String.raw`\uFFFD#3\uFFFD`],
+              ['interpolation_1', String.raw`\uFFFD1\uFFFD`],
+              ['closeTagDiv', String.raw`\uFFFD/#3\uFFFD`]
+            ]);
 
-      const output = String.raw`
+        const output = String.raw`
         function MyComponent_div_2_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵelementStart(0, "div");
@@ -1514,20 +1518,20 @@ describe('i18n support in the template compiler', () => {
         }
       `;
 
-      verify(input, output);
-    });
+        verify(input, output);
+      });
 
-    it('should ignore i18n attributes on self-closing tags', () => {
-      const input = `
+      it('should ignore i18n attributes on self-closing tags', () => {
+        const input = `
         <img src="logo.png" i18n />
         <img src="logo.png" i18n *ngIf="visible" />
         <img src="logo.png" i18n *ngIf="visible" i18n-title title="App logo #{{ id }}" />
       `;
 
-      const i18n_0 =
-          i18nMsg('App logo #{$interpolation}', [['interpolation', String.raw`\uFFFD0\uFFFD`]]);
+        const i18n_0 =
+            i18nMsg('App logo #{$interpolation}', [['interpolation', String.raw`\uFFFD0\uFFFD`]]);
 
-      const output = String.raw`
+        const output = String.raw`
         function MyComponent_img_1_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵelement(0, "img", 0);
@@ -1575,11 +1579,11 @@ describe('i18n support in the template compiler', () => {
         }
       `;
 
-      verify(input, output);
-    });
+        verify(input, output);
+      });
 
-    it('should handle i18n context in nested templates', () => {
-      const input = `
+      it('should handle i18n context in nested templates', () => {
+        const input = `
         <div i18n>
           Some content
           <div *ngIf="visible">
@@ -1603,27 +1607,27 @@ describe('i18n support in the template compiler', () => {
         </div>
       `;
 
-      const i18n_0 = i18nMsgWithPostprocess(
-          ' Some content {$startTagDiv_2} Some other content {$interpolation} {$startTagDiv} More nested levels with bindings {$interpolation_1} {$startTagDiv_1} Content inside sub-template {$interpolation_2} {$startTagDiv} Bottom level element {$interpolation_3} {$closeTagDiv}{$closeTagDiv}{$closeTagDiv}{$closeTagDiv}{$startTagDiv_3} Some other content {$interpolation_4} {$startTagDiv} More nested levels with bindings {$interpolation_5} {$closeTagDiv}{$closeTagDiv}',
-          [
-            ['startTagDiv_2', String.raw`\uFFFD*2:1\uFFFD\uFFFD#1:1\uFFFD`],
+        const i18n_0 = i18nMsgWithPostprocess(
+            ' Some content {$startTagDiv_2} Some other content {$interpolation} {$startTagDiv} More nested levels with bindings {$interpolation_1} {$startTagDiv_1} Content inside sub-template {$interpolation_2} {$startTagDiv} Bottom level element {$interpolation_3} {$closeTagDiv}{$closeTagDiv}{$closeTagDiv}{$closeTagDiv}{$startTagDiv_3} Some other content {$interpolation_4} {$startTagDiv} More nested levels with bindings {$interpolation_5} {$closeTagDiv}{$closeTagDiv}',
             [
-              'closeTagDiv',
-              String
-                  .raw`[\uFFFD/#2:2\uFFFD|\uFFFD/#1:2\uFFFD\uFFFD/*4:2\uFFFD|\uFFFD/#2:1\uFFFD|\uFFFD/#1:1\uFFFD\uFFFD/*2:1\uFFFD|\uFFFD/#2:3\uFFFD|\uFFFD/#1:3\uFFFD\uFFFD/*3:3\uFFFD]`
-            ],
-            ['startTagDiv_3', String.raw`\uFFFD*3:3\uFFFD\uFFFD#1:3\uFFFD`],
-            ['interpolation', String.raw`\uFFFD0:1\uFFFD`],
-            ['startTagDiv', String.raw`[\uFFFD#2:1\uFFFD|\uFFFD#2:2\uFFFD|\uFFFD#2:3\uFFFD]`],
-            ['interpolation_1', String.raw`\uFFFD1:1\uFFFD`],
-            ['startTagDiv_1', String.raw`\uFFFD*4:2\uFFFD\uFFFD#1:2\uFFFD`],
-            ['interpolation_2', String.raw`\uFFFD0:2\uFFFD`],
-            ['interpolation_3', String.raw`\uFFFD1:2\uFFFD`],
-            ['interpolation_4', String.raw`\uFFFD0:3\uFFFD`],
-            ['interpolation_5', String.raw`\uFFFD1:3\uFFFD`]
-          ]);
+              ['startTagDiv_2', String.raw`\uFFFD*2:1\uFFFD\uFFFD#1:1\uFFFD`],
+              [
+                'closeTagDiv',
+                String
+                    .raw`[\uFFFD/#2:2\uFFFD|\uFFFD/#1:2\uFFFD\uFFFD/*4:2\uFFFD|\uFFFD/#2:1\uFFFD|\uFFFD/#1:1\uFFFD\uFFFD/*2:1\uFFFD|\uFFFD/#2:3\uFFFD|\uFFFD/#1:3\uFFFD\uFFFD/*3:3\uFFFD]`
+              ],
+              ['startTagDiv_3', String.raw`\uFFFD*3:3\uFFFD\uFFFD#1:3\uFFFD`],
+              ['interpolation', String.raw`\uFFFD0:1\uFFFD`],
+              ['startTagDiv', String.raw`[\uFFFD#2:1\uFFFD|\uFFFD#2:2\uFFFD|\uFFFD#2:3\uFFFD]`],
+              ['interpolation_1', String.raw`\uFFFD1:1\uFFFD`],
+              ['startTagDiv_1', String.raw`\uFFFD*4:2\uFFFD\uFFFD#1:2\uFFFD`],
+              ['interpolation_2', String.raw`\uFFFD0:2\uFFFD`],
+              ['interpolation_3', String.raw`\uFFFD1:2\uFFFD`],
+              ['interpolation_4', String.raw`\uFFFD0:3\uFFFD`],
+              ['interpolation_5', String.raw`\uFFFD1:3\uFFFD`]
+            ]);
 
-      const output = String.raw`
+        const output = String.raw`
         function MyComponent_div_2_div_4_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵi18nStart(0, 0, 2);
@@ -1703,20 +1707,22 @@ describe('i18n support in the template compiler', () => {
         }
       `;
 
-      verify(input, output);
-    });
+        verify(input, output);
+      });
 
-    it('should handle i18n attribute with directives', () => {
-      const input = `
+      it('should handle i18n attribute with directives', () => {
+        const input = `
         <div i18n *ngIf="visible">Some other content <span>{{ valueA }}</span></div>
       `;
 
-      const i18n_0 = i18nMsg('Some other content {$startTagSpan}{$interpolation}{$closeTagSpan}', [
-        ['startTagSpan', String.raw`\uFFFD#2\uFFFD`], ['interpolation', String.raw`\uFFFD0\uFFFD`],
-        ['closeTagSpan', String.raw`\uFFFD/#2\uFFFD`]
-      ]);
+        const i18n_0 =
+            i18nMsg('Some other content {$startTagSpan}{$interpolation}{$closeTagSpan}', [
+              ['startTagSpan', String.raw`\uFFFD#2\uFFFD`],
+              ['interpolation', String.raw`\uFFFD0\uFFFD`],
+              ['closeTagSpan', String.raw`\uFFFD/#2\uFFFD`]
+            ]);
 
-      const output = String.raw`
+        const output = String.raw`
         function MyComponent_div_0_Template(rf, ctx) {
           if (rf & 1) {
               $r3$.ɵɵelementStart(0, "div");
@@ -1752,17 +1758,17 @@ describe('i18n support in the template compiler', () => {
         }
       `;
 
-      verify(input, output);
-    });
+        verify(input, output);
+      });
 
-    it('should generate event listeners instructions before i18n ones', () => {
-      const input = `
+      it('should generate event listeners instructions before i18n ones', () => {
+        const input = `
         <div i18n (click)="onClick()">Hello</div>
       `;
 
-      const i18n_0 = i18nMsg('Hello');
+        const i18n_0 = i18nMsg('Hello');
 
-      const output = String.raw`
+        const output = String.raw`
         consts: function() {
           ${i18n_0}
           return [
@@ -1780,19 +1786,19 @@ describe('i18n support in the template compiler', () => {
         }
       `;
 
-      verify(input, output);
+        verify(input, output);
+      });
     });
-  });
 
-  describe('self-closing i18n instructions', () => {
-    it('should be generated with text-only content', () => {
-      const input = `
+    describe('self-closing i18n instructions', () => {
+      it('should be generated with text-only content', () => {
+        const input = `
         <div i18n>My i18n block #1</div>
       `;
 
-      const i18n_0 = i18nMsg('My i18n block #1');
+        const i18n_0 = i18nMsg('My i18n block #1');
 
-      const output = String.raw`
+        const output = String.raw`
         consts: function() {
           ${i18n_0}
           return [
@@ -1808,19 +1814,19 @@ describe('i18n support in the template compiler', () => {
         }
       `;
 
-      verify(input, output);
-    });
+        verify(input, output);
+      });
 
-    it('should be generated for ICU-only i18n blocks', () => {
-      const input = `
+      it('should be generated for ICU-only i18n blocks', () => {
+        const input = `
         <div i18n>{age, select, 10 {ten} 20 {twenty} other {other}}</div>
       `;
 
-      const i18n_0 = i18nIcuMsg(
-          '{VAR_SELECT, select, 10 {ten} 20 {twenty} other {other}}',
-          [['VAR_SELECT', String.raw`\uFFFD0\uFFFD`]]);
+        const i18n_0 = i18nIcuMsg(
+            '{VAR_SELECT, select, 10 {ten} 20 {twenty} other {other}}',
+            [['VAR_SELECT', String.raw`\uFFFD0\uFFFD`]]);
 
-      const output = String.raw`
+        const output = String.raw`
         decls: 2,
         vars: 1,
         consts: function() {
@@ -1843,19 +1849,19 @@ describe('i18n support in the template compiler', () => {
         }
       `;
 
-      verify(input, output);
-    });
+        verify(input, output);
+      });
 
-    it('should be generated within <ng-container> and <ng-template> blocks', () => {
-      const input = `
+      it('should be generated within <ng-container> and <ng-template> blocks', () => {
+        const input = `
         <ng-template i18n>My i18n block #1</ng-template>
         <ng-container i18n>My i18n block #2</ng-container>
       `;
 
-      const i18n_0 = i18nMsg('My i18n block #2');
-      const i18n_1 = i18nMsg('My i18n block #1');
+        const i18n_0 = i18nMsg('My i18n block #2');
+        const i18n_1 = i18nMsg('My i18n block #1');
 
-      const output = String.raw`
+        const output = String.raw`
         function MyComponent_ng_template_0_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵi18n(0, 1);
@@ -1880,19 +1886,19 @@ describe('i18n support in the template compiler', () => {
         }
       `;
 
-      verify(input, output);
-    });
+        verify(input, output);
+      });
 
-    it('should not be generated in case we have styling instructions', () => {
-      const input = `
+      it('should not be generated in case we have styling instructions', () => {
+        const input = `
         <span i18n class="myClass">Text #1</span>
         <span i18n style="padding: 10px;">Text #2</span>
       `;
 
-      const i18n_0 = i18nMsg('Text #1');
-      const i18n_1 = i18nMsg('Text #2');
+        const i18n_0 = i18nMsg('Text #1');
+        const i18n_1 = i18nMsg('Text #2');
 
-      const output = String.raw`
+        const output = String.raw`
         decls: 4,
         vars: 0,
         consts: function() {
@@ -1917,20 +1923,20 @@ describe('i18n support in the template compiler', () => {
         }
       `;
 
-      verify(input, output);
+        verify(input, output);
+      });
     });
-  });
 
-  describe('ng-container and ng-template', () => {
-    it('should handle single translation message using <ng-container>', () => {
-      const input = `
+    describe('ng-container and ng-template', () => {
+      it('should handle single translation message using <ng-container>', () => {
+        const input = `
         <ng-container i18n>Some content: {{ valueA | uppercase }}</ng-container>
       `;
 
-      const i18n_0 =
-          i18nMsg('Some content: {$interpolation}', [['interpolation', String.raw`\uFFFD0\uFFFD`]]);
+        const i18n_0 = i18nMsg(
+            'Some content: {$interpolation}', [['interpolation', String.raw`\uFFFD0\uFFFD`]]);
 
-      const output = String.raw`
+        const output = String.raw`
         decls: 3,
         vars: 3,
         consts: function() {
@@ -1954,18 +1960,18 @@ describe('i18n support in the template compiler', () => {
         }
       `;
 
-      verify(input, output);
-    });
+        verify(input, output);
+      });
 
-    it('should handle single translation message using <ng-template>', () => {
-      const input = `
+      it('should handle single translation message using <ng-template>', () => {
+        const input = `
         <ng-template i18n>Some content: {{ valueA | uppercase }}</ng-template>
       `;
 
-      const i18n_0 =
-          i18nMsg('Some content: {$interpolation}', [['interpolation', String.raw`\uFFFD0\uFFFD`]]);
+        const i18n_0 = i18nMsg(
+            'Some content: {$interpolation}', [['interpolation', String.raw`\uFFFD0\uFFFD`]]);
 
-      const output = String.raw`
+        const output = String.raw`
         function MyComponent_ng_template_0_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵi18n(0, 0);
@@ -1993,29 +1999,29 @@ describe('i18n support in the template compiler', () => {
         }
       `;
 
-      verify(input, output);
-    });
+        verify(input, output);
+      });
 
-    it('should be able to act as child elements inside i18n block', () => {
-      const input = `
+      it('should be able to act as child elements inside i18n block', () => {
+        const input = `
         <div i18n>
           <ng-template>Template content: {{ valueA | uppercase }}</ng-template>
           <ng-container>Container content: {{ valueB | uppercase }}</ng-container>
         </div>
       `;
 
-      const i18n_0 = i18nMsg(
-          '{$startTagNgTemplate}Template content: {$interpolation}{$closeTagNgTemplate}{$startTagNgContainer}Container content: {$interpolation_1}{$closeTagNgContainer}',
-          [
-            ['startTagNgTemplate', String.raw`\uFFFD*2:1\uFFFD`],
-            ['closeTagNgTemplate', String.raw`\uFFFD/*2:1\uFFFD`],
-            ['startTagNgContainer', String.raw`\uFFFD#3\uFFFD`],
-            ['interpolation_1', String.raw`\uFFFD0\uFFFD`],
-            ['closeTagNgContainer', String.raw`\uFFFD/#3\uFFFD`],
-            ['interpolation', String.raw`\uFFFD0:1\uFFFD`]
-          ]);
+        const i18n_0 = i18nMsg(
+            '{$startTagNgTemplate}Template content: {$interpolation}{$closeTagNgTemplate}{$startTagNgContainer}Container content: {$interpolation_1}{$closeTagNgContainer}',
+            [
+              ['startTagNgTemplate', String.raw`\uFFFD*2:1\uFFFD`],
+              ['closeTagNgTemplate', String.raw`\uFFFD/*2:1\uFFFD`],
+              ['startTagNgContainer', String.raw`\uFFFD#3\uFFFD`],
+              ['interpolation_1', String.raw`\uFFFD0\uFFFD`],
+              ['closeTagNgContainer', String.raw`\uFFFD/#3\uFFFD`],
+              ['interpolation', String.raw`\uFFFD0:1\uFFFD`]
+            ]);
 
-      const output = String.raw`
+        const output = String.raw`
         function MyComponent_ng_template_2_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵi18n(0, 0, 1);
@@ -2055,23 +2061,23 @@ describe('i18n support in the template compiler', () => {
         }
       `;
 
-      verify(input, output);
-    });
+        verify(input, output);
+      });
 
-    it('should handle ICUs outside of translatable sections', () => {
-      const input = `
+      it('should handle ICUs outside of translatable sections', () => {
+        const input = `
         <ng-template>{gender, select, male {male} female {female} other {other}}</ng-template>
         <ng-container>{age, select, 10 {ten} 20 {twenty} other {other}}</ng-container>
       `;
 
-      const i18n_0 = i18nIcuMsg(
-          '{VAR_SELECT, select, 10 {ten} 20 {twenty} other {other}}',
-          [['VAR_SELECT', String.raw`\uFFFD0\uFFFD`]]);
-      const i18n_1 = i18nIcuMsg(
-          '{VAR_SELECT, select, male {male} female {female} other {other}}',
-          [['VAR_SELECT', String.raw`\uFFFD0\uFFFD`]]);
+        const i18n_0 = i18nIcuMsg(
+            '{VAR_SELECT, select, 10 {ten} 20 {twenty} other {other}}',
+            [['VAR_SELECT', String.raw`\uFFFD0\uFFFD`]]);
+        const i18n_1 = i18nIcuMsg(
+            '{VAR_SELECT, select, male {male} female {female} other {other}}',
+            [['VAR_SELECT', String.raw`\uFFFD0\uFFFD`]]);
 
-      const output = String.raw`
+        const output = String.raw`
         function MyComponent_ng_template_0_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵi18n(0, 1);
@@ -2108,11 +2114,11 @@ describe('i18n support in the template compiler', () => {
         }
       `;
 
-      verify(input, output);
-    });
+        verify(input, output);
+      });
 
-    it('should correctly propagate i18n context through nested templates', () => {
-      const input = `
+      it('should correctly propagate i18n context through nested templates', () => {
+        const input = `
         <div i18n>
           <ng-template>
             Template A: {{ valueA | uppercase }}
@@ -2126,22 +2132,23 @@ describe('i18n support in the template compiler', () => {
         </div>
       `;
 
-      const i18n_0 = i18nMsgWithPostprocess(
-          '{$startTagNgTemplate} Template A: {$interpolation} {$startTagNgTemplate} Template B: {$interpolation_1} {$startTagNgTemplate} Template C: {$interpolation_2} {$closeTagNgTemplate}{$closeTagNgTemplate}{$closeTagNgTemplate}',
-          [
+        const i18n_0 = i18nMsgWithPostprocess(
+            '{$startTagNgTemplate} Template A: {$interpolation} {$startTagNgTemplate} Template B: {$interpolation_1} {$startTagNgTemplate} Template C: {$interpolation_2} {$closeTagNgTemplate}{$closeTagNgTemplate}{$closeTagNgTemplate}',
             [
-              'startTagNgTemplate', String.raw`[\uFFFD*2:1\uFFFD|\uFFFD*2:2\uFFFD|\uFFFD*1:3\uFFFD]`
-            ],
-            [
-              'closeTagNgTemplate',
-              String.raw`[\uFFFD/*1:3\uFFFD|\uFFFD/*2:2\uFFFD|\uFFFD/*2:1\uFFFD]`
-            ],
-            ['interpolation', String.raw`\uFFFD0:1\uFFFD`],
-            ['interpolation_1', String.raw`\uFFFD0:2\uFFFD`],
-            ['interpolation_2', String.raw`\uFFFD0:3\uFFFD`]
-          ]);
+              [
+                'startTagNgTemplate',
+                String.raw`[\uFFFD*2:1\uFFFD|\uFFFD*2:2\uFFFD|\uFFFD*1:3\uFFFD]`
+              ],
+              [
+                'closeTagNgTemplate',
+                String.raw`[\uFFFD/*1:3\uFFFD|\uFFFD/*2:2\uFFFD|\uFFFD/*2:1\uFFFD]`
+              ],
+              ['interpolation', String.raw`\uFFFD0:1\uFFFD`],
+              ['interpolation_1', String.raw`\uFFFD0:2\uFFFD`],
+              ['interpolation_2', String.raw`\uFFFD0:3\uFFFD`]
+            ]);
 
-      const output = String.raw`
+        const output = String.raw`
         function MyComponent_ng_template_2_ng_template_2_ng_template_1_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵi18n(0, 0, 3);
@@ -2200,23 +2207,23 @@ describe('i18n support in the template compiler', () => {
         }
       `;
 
-      verify(input, output);
-    });
+        verify(input, output);
+      });
 
-    it('should work with ICUs', () => {
-      const input = `
+      it('should work with ICUs', () => {
+        const input = `
         <ng-container i18n>{gender, select, male {male} female {female} other {other}}</ng-container>
         <ng-template i18n>{age, select, 10 {ten} 20 {twenty} other {other}}</ng-template>
       `;
 
-      const i18n_0 = i18nIcuMsg(
-          '{VAR_SELECT, select, male {male} female {female} other {other}}',
-          [['VAR_SELECT', String.raw`\uFFFD0\uFFFD`]]);
-      const i18n_1 = i18nIcuMsg(
-          '{VAR_SELECT, select, 10 {ten} 20 {twenty} other {other}}',
-          [['VAR_SELECT', String.raw`\uFFFD0\uFFFD`]]);
+        const i18n_0 = i18nIcuMsg(
+            '{VAR_SELECT, select, male {male} female {female} other {other}}',
+            [['VAR_SELECT', String.raw`\uFFFD0\uFFFD`]]);
+        const i18n_1 = i18nIcuMsg(
+            '{VAR_SELECT, select, 10 {ten} 20 {twenty} other {other}}',
+            [['VAR_SELECT', String.raw`\uFFFD0\uFFFD`]]);
 
-      const output = String.raw`
+        const output = String.raw`
         function MyComponent_ng_template_2_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵi18n(0, 1);
@@ -2253,11 +2260,11 @@ describe('i18n support in the template compiler', () => {
         }
       `;
 
-      verify(input, output);
-    });
+        verify(input, output);
+      });
 
-    it('should handle self-closing tags as content', () => {
-      const input = `
+      it('should handle self-closing tags as content', () => {
+        const input = `
         <ng-container i18n>
           <img src="logo.png" title="Logo" /> is my logo #1
         </ng-container>
@@ -2266,12 +2273,12 @@ describe('i18n support in the template compiler', () => {
         </ng-template>
       `;
 
-      const i18n_0 = i18nMsg(
-          '{$tagImg} is my logo #1 ', [['tagImg', String.raw`\uFFFD#2\uFFFD\uFFFD/#2\uFFFD`]]);
-      const i18n_1 = i18nMsg(
-          '{$tagImg} is my logo #2 ', [['tagImg', String.raw`\uFFFD#1\uFFFD\uFFFD/#1\uFFFD`]]);
+        const i18n_0 = i18nMsg(
+            '{$tagImg} is my logo #1 ', [['tagImg', String.raw`\uFFFD#2\uFFFD\uFFFD/#2\uFFFD`]]);
+        const i18n_1 = i18nMsg(
+            '{$tagImg} is my logo #2 ', [['tagImg', String.raw`\uFFFD#1\uFFFD\uFFFD/#1\uFFFD`]]);
 
-      const output = String.raw`
+        const output = String.raw`
         function MyComponent_ng_template_3_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵi18nStart(0, 2);
@@ -2301,11 +2308,11 @@ describe('i18n support in the template compiler', () => {
         }
       `;
 
-      verify(input, output);
-    });
+        verify(input, output);
+      });
 
-    it('should not emit duplicate i18n consts for nested <ng-container>s', () => {
-      const input = `
+      it('should not emit duplicate i18n consts for nested <ng-container>s', () => {
+        const input = `
         <ng-template i18n>
           Root content
           <ng-container *ngIf="visible">
@@ -2314,45 +2321,46 @@ describe('i18n support in the template compiler', () => {
         </ng-template>
       `;
 
-      const output =
-          i18nMsg(' Root content {$startTagNgContainer} Nested content {$closeTagNgContainer}', [
-            ['startTagNgContainer', String.raw`\uFFFD*1:1\uFFFD\uFFFD#1:1\uFFFD`],
-            ['closeTagNgContainer', String.raw`\uFFFD/#1:1\uFFFD\uFFFD/*1:1\uFFFD`]
-          ]);
+        const output =
+            i18nMsg(' Root content {$startTagNgContainer} Nested content {$closeTagNgContainer}', [
+              ['startTagNgContainer', String.raw`\uFFFD*1:1\uFFFD\uFFFD#1:1\uFFFD`],
+              ['closeTagNgContainer', String.raw`\uFFFD/#1:1\uFFFD\uFFFD/*1:1\uFFFD`]
+            ]);
 
-      verify(input, output);
-    });
+        verify(input, output);
+      });
 
-    it('should not emit duplicate i18n consts for elements with the same content', () => {
-      const input = `
+      it('should not emit duplicate i18n consts for elements with the same content', () => {
+        const input = `
         <div i18n>Test</div>
         <div i18n>Test</div>
       `;
 
-      // TODO(FW-635): currently we generate unique consts for each i18n block even though it
-      // might contain the same content. This should be optimized by translation statements caching,
-      // that can be implemented in the future.
-      const output = String.raw`
+        // TODO(FW-635): currently we generate unique consts for each i18n block even though it
+        // might contain the same content. This should be optimized by translation statements
+        // caching, that can be implemented in the future.
+        const output = String.raw`
         ${i18nMsg('Test')}
         ${i18nMsg('Test')}
       `;
 
-      verify(input, output);
-    });
+        verify(input, output);
+      });
 
-    it('should generate a self-closing container instruction for ng-container inside i18n', () => {
-      const input = `
+      it('should generate a self-closing container instruction for ng-container inside i18n',
+         () => {
+           const input = `
         <div i18n>
           Hello <ng-container>there</ng-container>
         </div>
       `;
 
-      const i18n_0 = i18nMsg(' Hello {$startTagNgContainer}there{$closeTagNgContainer}', [
-        ['startTagNgContainer', String.raw`\uFFFD#2\uFFFD`],
-        ['closeTagNgContainer', String.raw`\uFFFD/#2\uFFFD`]
-      ]);
+           const i18n_0 = i18nMsg(' Hello {$startTagNgContainer}there{$closeTagNgContainer}', [
+             ['startTagNgContainer', String.raw`\uFFFD#2\uFFFD`],
+             ['closeTagNgContainer', String.raw`\uFFFD/#2\uFFFD`]
+           ]);
 
-      const output = String.raw`
+           const output = String.raw`
         decls: 3,
         vars: 0,
         consts: function() {
@@ -2372,27 +2380,27 @@ describe('i18n support in the template compiler', () => {
         }
       `;
 
-      verify(input, output);
-    });
+           verify(input, output);
+         });
 
-    it('should not generate a self-closing container instruction for ng-container with non-text content inside i18n',
-       () => {
-         const input = `
+      it('should not generate a self-closing container instruction for ng-container with non-text content inside i18n',
+         () => {
+           const input = `
           <div i18n>
             Hello <ng-container>there <strong>!</strong></ng-container>
           </div>
         `;
 
-         const i18n_0 = i18nMsg(
-             ' Hello {$startTagNgContainer}there {$startTagStrong}!{$closeTagStrong}{$closeTagNgContainer}',
-             [
-               ['startTagNgContainer', String.raw`\uFFFD#2\uFFFD`],
-               ['startTagStrong', String.raw`\uFFFD#3\uFFFD`],
-               ['closeTagStrong', String.raw`\uFFFD/#3\uFFFD`],
-               ['closeTagNgContainer', String.raw`\uFFFD/#2\uFFFD`]
-             ]);
+           const i18n_0 = i18nMsg(
+               ' Hello {$startTagNgContainer}there {$startTagStrong}!{$closeTagStrong}{$closeTagNgContainer}',
+               [
+                 ['startTagNgContainer', String.raw`\uFFFD#2\uFFFD`],
+                 ['startTagStrong', String.raw`\uFFFD#3\uFFFD`],
+                 ['closeTagStrong', String.raw`\uFFFD/#3\uFFFD`],
+                 ['closeTagNgContainer', String.raw`\uFFFD/#2\uFFFD`]
+               ]);
 
-         const output = String.raw`
+           const output = String.raw`
           decls: 4,
           vars: 0,
           consts: function() {
@@ -2414,21 +2422,21 @@ describe('i18n support in the template compiler', () => {
           }
         `;
 
-         verify(input, output);
-       });
+           verify(input, output);
+         });
 
-    // Note: applying structural directives to <ng-template> is typically user error,
-    // but it is technically allowed, so we need to support it.
-    it('should handle structural directives', () => {
-      const input = `
+      // Note: applying structural directives to <ng-template> is typically user error,
+      // but it is technically allowed, so we need to support it.
+      it('should handle structural directives', () => {
+        const input = `
         <ng-template *ngIf="someFlag" i18n>Content A</ng-template>
         <ng-container *ngIf="someFlag" i18n>Content B</ng-container>
       `;
 
-      const i18n_0 = i18nMsg('Content A');
-      const i18n_1 = i18nMsg('Content B');
+        const i18n_0 = i18nMsg('Content A');
+        const i18n_1 = i18nMsg('Content B');
 
-      const output = String.raw`
+        const output = String.raw`
         function MyComponent_0_ng_template_0_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵi18n(0, 1);
@@ -2471,22 +2479,22 @@ describe('i18n support in the template compiler', () => {
           }
         }
       `;
-      verify(input, output);
+        verify(input, output);
+      });
     });
-  });
 
-  describe('whitespace preserving mode', () => {
-    it('should keep inner content of i18n block as is', () => {
-      const input = `
+    describe('whitespace preserving mode', () => {
+      it('should keep inner content of i18n block as is', () => {
+        const input = `
         <div i18n>
           Some text
           <span>Text inside span</span>
         </div>
       `;
 
-      // Keeping raw content (avoiding `i18nMsg`) to illustrate message layout
-      // in case of whitespace preserving mode.
-      const i18n_0 = String.raw`
+        // Keeping raw content (avoiding `i18nMsg`) to illustrate message layout
+        // in case of whitespace preserving mode.
+        const i18n_0 = String.raw`
         let $I18N_0$;
         if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
             const $MSG_EXTERNAL_963542717423364282$$APP_SPEC_TS_0$ = goog.getMsg("\n          Some text\n          {$startTagSpan}Text inside span{$closeTagSpan}\n        ", {
@@ -2499,13 +2507,13 @@ describe('i18n support in the template compiler', () => {
             $I18N_0$ = $localize \`
           Some text
           $` +
-          String.raw`{"\uFFFD#3\uFFFD"}:START_TAG_SPAN:Text inside span$` +
-          String.raw`{"\uFFFD/#3\uFFFD"}:CLOSE_TAG_SPAN:
+            String.raw`{"\uFFFD#3\uFFFD"}:START_TAG_SPAN:Text inside span$` +
+            String.raw`{"\uFFFD/#3\uFFFD"}:CLOSE_TAG_SPAN:
         \`;
         }
       `;
 
-      const output = String.raw`
+        const output = String.raw`
         consts: function() {
           ${i18n_0}
           return [
@@ -2525,21 +2533,21 @@ describe('i18n support in the template compiler', () => {
         }
       `;
 
-      verify(input, output, {inputArgs: {preserveWhitespaces: true}});
+        verify(input, output, {inputArgs: {preserveWhitespaces: true}});
+      });
     });
-  });
 
-  describe('icu logic', () => {
-    it('should handle single icus', () => {
-      const input = `
+    describe('icu logic', () => {
+      it('should handle single icus', () => {
+        const input = `
         <div i18n>{gender, select, male {male} female {female} other {other}}</div>
       `;
 
-      const i18n_0 = i18nIcuMsg(
-          '{VAR_SELECT, select, male {male} female {female} other {other}}',
-          [['VAR_SELECT', String.raw`\uFFFD0\uFFFD`]]);
+        const i18n_0 = i18nIcuMsg(
+            '{VAR_SELECT, select, male {male} female {female} other {other}}',
+            [['VAR_SELECT', String.raw`\uFFFD0\uFFFD`]]);
 
-      const output = String.raw`
+        const output = String.raw`
         decls: 2,
         vars: 1,
         consts: function() {
@@ -2562,15 +2570,15 @@ describe('i18n support in the template compiler', () => {
         }
       `;
 
-      verify(input, output);
-    });
+        verify(input, output);
+      });
 
-    it('should properly escape quotes in content', () => {
-      const input = `
+      it('should properly escape quotes in content', () => {
+        const input = `
         <div i18n>{gender, select, single {'single quotes'} double {"double quotes"} other {other}}</div>
       `;
 
-      const output = String.raw`
+        const output = String.raw`
         let $I18N_0$;
         if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
             const $MSG_EXTERNAL_4166854826696768832$$APP_SPEC_TS_0$ = goog.getMsg("{VAR_SELECT, select, single {'single quotes'} double {\"double quotes\"} other {other}}");
@@ -2584,19 +2592,19 @@ describe('i18n support in the template compiler', () => {
         });
       `;
 
-      verify(input, output);
-    });
+        verify(input, output);
+      });
 
-    it('should support ICU-only templates', () => {
-      const input = `
+      it('should support ICU-only templates', () => {
+        const input = `
         {age, select, 10 {ten} 20 {twenty} other {other}}
       `;
 
-      const i18n_0 = i18nIcuMsg(
-          '{VAR_SELECT, select, 10 {ten} 20 {twenty} other {other}}',
-          [['VAR_SELECT', String.raw`\uFFFD0\uFFFD`]]);
+        const i18n_0 = i18nIcuMsg(
+            '{VAR_SELECT, select, 10 {ten} 20 {twenty} other {other}}',
+            [['VAR_SELECT', String.raw`\uFFFD0\uFFFD`]]);
 
-      const output = String.raw`
+        const output = String.raw`
         decls: 1,
         vars: 1,
         consts: function() {
@@ -2616,11 +2624,11 @@ describe('i18n support in the template compiler', () => {
         }
       `;
 
-      verify(input, output);
-    });
+        verify(input, output);
+      });
 
-    it('should generate i18n instructions for icus generated outside of i18n blocks', () => {
-      const input = `
+      it('should generate i18n instructions for icus generated outside of i18n blocks', () => {
+        const input = `
         <div>{gender, select, male {male} female {female} other {other}}</div>
         <div *ngIf="visible" title="icu only">
           {age, select, 10 {ten} 20 {twenty} other {other}}
@@ -2630,18 +2638,19 @@ describe('i18n support in the template compiler', () => {
         </div>
       `;
 
-      const i18n_0 = i18nIcuMsg(
-          '{VAR_SELECT, select, male {male} female {female} other {other}}',
-          [['VAR_SELECT', String.raw`\uFFFD0\uFFFD`]]);
-      const i18n_1 = i18nIcuMsg(
-          '{VAR_SELECT, select, 10 {ten} 20 {twenty} other {other}}',
-          [['VAR_SELECT', String.raw`\uFFFD0\uFFFD`]]);
-      const i18n_2 = i18nIcuMsg(
-          '{VAR_SELECT, select, 0 {no emails} 1 {one email} other {{INTERPOLATION} emails}}', [
-            ['VAR_SELECT', String.raw`\uFFFD0\uFFFD`], ['INTERPOLATION', String.raw`\uFFFD1\uFFFD`]
-          ]);
+        const i18n_0 = i18nIcuMsg(
+            '{VAR_SELECT, select, male {male} female {female} other {other}}',
+            [['VAR_SELECT', String.raw`\uFFFD0\uFFFD`]]);
+        const i18n_1 = i18nIcuMsg(
+            '{VAR_SELECT, select, 10 {ten} 20 {twenty} other {other}}',
+            [['VAR_SELECT', String.raw`\uFFFD0\uFFFD`]]);
+        const i18n_2 = i18nIcuMsg(
+            '{VAR_SELECT, select, 0 {no emails} 1 {one email} other {{INTERPOLATION} emails}}', [
+              ['VAR_SELECT', String.raw`\uFFFD0\uFFFD`],
+              ['INTERPOLATION', String.raw`\uFFFD1\uFFFD`]
+            ]);
 
-      const output = String.raw`
+        const output = String.raw`
         function MyComponent_div_2_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵelementStart(0, "div", 3);
@@ -2710,20 +2719,21 @@ describe('i18n support in the template compiler', () => {
         }
       `;
 
-      verify(input, output);
-    });
+        verify(input, output);
+      });
 
-    it('should support interpolation with custom interpolation config', () => {
-      const input = `
+      it('should support interpolation with custom interpolation config', () => {
+        const input = `
         <div i18n>{age, select, 10 {ten} 20 {twenty} other {{% other %}}}</div>
       `;
 
-      const i18n_0 =
-          i18nIcuMsg('{VAR_SELECT, select, 10 {ten} 20 {twenty} other {{INTERPOLATION}}}', [
-            ['VAR_SELECT', String.raw`\uFFFD0\uFFFD`], ['INTERPOLATION', String.raw`\uFFFD1\uFFFD`]
-          ]);
+        const i18n_0 =
+            i18nIcuMsg('{VAR_SELECT, select, 10 {ten} 20 {twenty} other {{INTERPOLATION}}}', [
+              ['VAR_SELECT', String.raw`\uFFFD0\uFFFD`],
+              ['INTERPOLATION', String.raw`\uFFFD1\uFFFD`]
+            ]);
 
-      const output = String.raw`
+        const output = String.raw`
         consts: function() {
           ${i18n_0}
           return [
@@ -2744,11 +2754,11 @@ describe('i18n support in the template compiler', () => {
         }
       `;
 
-      verify(input, output, {inputArgs: {interpolation: ['{%', '%}']}});
-    });
+        verify(input, output, {inputArgs: {interpolation: ['{%', '%}']}});
+      });
 
-    it('should handle icus with html', () => {
-      const input = `
+      it('should handle icus with html', () => {
+        const input = `
         <div i18n>
           {gender, select, male {male - <b>male</b>} female {female <b>female</b>} other {<div class="other"><i>other</i></div>}}
           <b>Other content</b>
@@ -2756,31 +2766,31 @@ describe('i18n support in the template compiler', () => {
         </div>
       `;
 
-      const i18n_0 = i18nIcuMsg(
-          '{VAR_SELECT, select, male {male - {START_BOLD_TEXT}male{CLOSE_BOLD_TEXT}} female {female {START_BOLD_TEXT}female{CLOSE_BOLD_TEXT}} other {{START_TAG_DIV}{START_ITALIC_TEXT}other{CLOSE_ITALIC_TEXT}{CLOSE_TAG_DIV}}}',
-          [
-            ['VAR_SELECT', String.raw`\uFFFD0\uFFFD`],
-            ['START_BOLD_TEXT', '<b>'],
-            ['CLOSE_BOLD_TEXT', '</b>'],
-            ['START_ITALIC_TEXT', '<i>'],
-            ['CLOSE_ITALIC_TEXT', '</i>'],
-            ['START_TAG_DIV', '<div class=\\"other\\">'],
-            ['CLOSE_TAG_DIV', '</div>'],
-          ]);
+        const i18n_0 = i18nIcuMsg(
+            '{VAR_SELECT, select, male {male - {START_BOLD_TEXT}male{CLOSE_BOLD_TEXT}} female {female {START_BOLD_TEXT}female{CLOSE_BOLD_TEXT}} other {{START_TAG_DIV}{START_ITALIC_TEXT}other{CLOSE_ITALIC_TEXT}{CLOSE_TAG_DIV}}}',
+            [
+              ['VAR_SELECT', String.raw`\uFFFD0\uFFFD`],
+              ['START_BOLD_TEXT', '<b>'],
+              ['CLOSE_BOLD_TEXT', '</b>'],
+              ['START_ITALIC_TEXT', '<i>'],
+              ['CLOSE_ITALIC_TEXT', '</i>'],
+              ['START_TAG_DIV', '<div class=\\"other\\">'],
+              ['CLOSE_TAG_DIV', '</div>'],
+            ]);
 
-      const i18n_1 = i18nMsg(
-          ' {$icu} {$startBoldText}Other content{$closeBoldText}{$startTagDiv}{$startItalicText}Another content{$closeItalicText}{$closeTagDiv}',
-          [
-            ['startBoldText', String.raw`\uFFFD#2\uFFFD`],
-            ['closeBoldText', String.raw`\uFFFD/#2\uFFFD`],
-            ['startTagDiv', String.raw`\uFFFD#3\uFFFD`],
-            ['startItalicText', String.raw`\uFFFD#4\uFFFD`],
-            ['closeItalicText', String.raw`\uFFFD/#4\uFFFD`],
-            ['closeTagDiv', String.raw`\uFFFD/#3\uFFFD`],
-            ['icu', '$I18N_0$'],
-          ]);
+        const i18n_1 = i18nMsg(
+            ' {$icu} {$startBoldText}Other content{$closeBoldText}{$startTagDiv}{$startItalicText}Another content{$closeItalicText}{$closeTagDiv}',
+            [
+              ['startBoldText', String.raw`\uFFFD#2\uFFFD`],
+              ['closeBoldText', String.raw`\uFFFD/#2\uFFFD`],
+              ['startTagDiv', String.raw`\uFFFD#3\uFFFD`],
+              ['startItalicText', String.raw`\uFFFD#4\uFFFD`],
+              ['closeItalicText', String.raw`\uFFFD/#4\uFFFD`],
+              ['closeTagDiv', String.raw`\uFFFD/#3\uFFFD`],
+              ['icu', '$I18N_0$'],
+            ]);
 
-      const output = String.raw`
+        const output = String.raw`
         decls: 5,
         vars: 1,
         consts: function() {
@@ -2810,22 +2820,22 @@ describe('i18n support in the template compiler', () => {
         }
       `;
 
-      verify(input, output);
-    });
+        verify(input, output);
+      });
 
-    it('should handle icus with expressions', () => {
-      const input = `
+      it('should handle icus with expressions', () => {
+        const input = `
         <div i18n>{gender, select, male {male of age: {{ ageA + ageB + ageC }}} female {female} other {other}}</div>
       `;
 
-      const i18n_0 = i18nIcuMsg(
-          '{VAR_SELECT, select, male {male of age: {INTERPOLATION}} female {female} other {other}}',
-          [
-            ['VAR_SELECT', String.raw`\uFFFD0\uFFFD`],
-            ['INTERPOLATION', String.raw`\uFFFD1\uFFFD`],
-          ]);
+        const i18n_0 = i18nIcuMsg(
+            '{VAR_SELECT, select, male {male of age: {INTERPOLATION}} female {female} other {other}}',
+            [
+              ['VAR_SELECT', String.raw`\uFFFD0\uFFFD`],
+              ['INTERPOLATION', String.raw`\uFFFD1\uFFFD`],
+            ]);
 
-      const output = String.raw`
+        const output = String.raw`
         decls: 2,
         vars: 2,
         consts: function() {
@@ -2848,29 +2858,29 @@ describe('i18n support in the template compiler', () => {
         }
       `;
 
-      verify(input, output);
-    });
+        verify(input, output);
+      });
 
-    it('should handle multiple icus in one block', () => {
-      const input = `
+      it('should handle multiple icus in one block', () => {
+        const input = `
         <div i18n>
           {gender, select, male {male} female {female} other {other}}
           {age, select, 10 {ten} 20 {twenty} 30 {thirty} other {other}}
         </div>
       `;
 
-      const i18n_0 = i18nIcuMsg(
-          '{VAR_SELECT, select, male {male} female {female} other {other}}',
-          [['VAR_SELECT', String.raw`\uFFFD0\uFFFD`]]);
-      const i18n_1 = i18nIcuMsg(
-          '{VAR_SELECT, select, 10 {ten} 20 {twenty} 30 {thirty} other {other}}',
-          [['VAR_SELECT', String.raw`\uFFFD1\uFFFD`]]);
-      const i18n_2 = i18nMsg(' {$icu} {$icu_1} ', [
-        ['icu', '$i18n_0$'],
-        ['icu_1', '$i18n_1$'],
-      ]);
+        const i18n_0 = i18nIcuMsg(
+            '{VAR_SELECT, select, male {male} female {female} other {other}}',
+            [['VAR_SELECT', String.raw`\uFFFD0\uFFFD`]]);
+        const i18n_1 = i18nIcuMsg(
+            '{VAR_SELECT, select, 10 {ten} 20 {twenty} 30 {thirty} other {other}}',
+            [['VAR_SELECT', String.raw`\uFFFD1\uFFFD`]]);
+        const i18n_2 = i18nMsg(' {$icu} {$icu_1} ', [
+          ['icu', '$i18n_0$'],
+          ['icu_1', '$i18n_1$'],
+        ]);
 
-      const output = String.raw`
+        const output = String.raw`
         decls: 2,
         vars: 2,
         consts: function() {
@@ -2895,11 +2905,11 @@ describe('i18n support in the template compiler', () => {
         }
       `;
 
-      verify(input, output);
-    });
+        verify(input, output);
+      });
 
-    it('should handle multiple icus that share same placeholder', () => {
-      const input = `
+      it('should handle multiple icus that share same placeholder', () => {
+        const input = `
         <div i18n>
           {gender, select, male {male} female {female} other {other}}
           <div>
@@ -2911,9 +2921,9 @@ describe('i18n support in the template compiler', () => {
         </div>
       `;
 
-      // Keeping raw content here to illustrate the difference in placeholders generated for
-      // goog.getMsg and $localize calls (see last i18n block).
-      const i18n_0 = String.raw`
+        // Keeping raw content here to illustrate the difference in placeholders generated for
+        // goog.getMsg and $localize calls (see last i18n block).
+        const i18n_0 = String.raw`
         let $I18N_1$;
         if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
             const $MSG_APP_SPEC_TS_1$ = goog.getMsg("{VAR_SELECT, select, male {male} female {female} other {other}}");
@@ -2959,20 +2969,20 @@ describe('i18n support in the template compiler', () => {
         }
         else {
             $I18N_0$ = $localize \` $` +
-          String.raw`{"\uFFFDI18N_EXP_ICU\uFFFD"}:ICU: $` +
-          String.raw`{"\uFFFD#2\uFFFD"}:START_TAG_DIV: $` +
-          String.raw`{"\uFFFDI18N_EXP_ICU\uFFFD"}:ICU: $` + String.raw
-      `{"[\uFFFD/#2\uFFFD|\uFFFD/#1:1\uFFFD\uFFFD/*3:1\uFFFD]"}:CLOSE_TAG_DIV:$` +
-          String.raw`{"\uFFFD*3:1\uFFFD\uFFFD#1:1\uFFFD"}:START_TAG_DIV_1: $` +
-          String.raw`{"\uFFFDI18N_EXP_ICU\uFFFD"}:ICU: $` + String.raw
-      `{"[\uFFFD/#2\uFFFD|\uFFFD/#1:1\uFFFD\uFFFD/*3:1\uFFFD]"}:CLOSE_TAG_DIV:\`;
+            String.raw`{"\uFFFDI18N_EXP_ICU\uFFFD"}:ICU: $` +
+            String.raw`{"\uFFFD#2\uFFFD"}:START_TAG_DIV: $` +
+            String.raw`{"\uFFFDI18N_EXP_ICU\uFFFD"}:ICU: $` + String.raw
+        `{"[\uFFFD/#2\uFFFD|\uFFFD/#1:1\uFFFD\uFFFD/*3:1\uFFFD]"}:CLOSE_TAG_DIV:$` +
+            String.raw`{"\uFFFD*3:1\uFFFD\uFFFD#1:1\uFFFD"}:START_TAG_DIV_1: $` +
+            String.raw`{"\uFFFDI18N_EXP_ICU\uFFFD"}:ICU: $` + String.raw
+        `{"[\uFFFD/#2\uFFFD|\uFFFD/#1:1\uFFFD\uFFFD/*3:1\uFFFD]"}:CLOSE_TAG_DIV:\`;
         }
         $I18N_0$ = $r3$.ɵɵi18nPostprocess($I18N_0$, {
           "ICU": [$I18N_1$, $I18N_2$, $I18N_4$]
         });
       `;
 
-      const output = String.raw`
+        const output = String.raw`
         function MyComponent_div_3_Template(rf, ctx) {
           if (rf & 1) {
               $r3$.ɵɵi18nStart(0, 0, 1);
@@ -3014,14 +3024,14 @@ describe('i18n support in the template compiler', () => {
         }
       `;
 
-      // TODO(FW-635): this use-case is currently supported with
-      // file-based prefix for translation const names. Translation statements
-      // caching is required to support this use-case with id-based consts.
-      verify(input, output, {skipIdBasedCheck: true});
-    });
+        // TODO(FW-635): this use-case is currently supported with
+        // file-based prefix for translation const names. Translation statements
+        // caching is required to support this use-case with id-based consts.
+        verify(input, output, {skipIdBasedCheck: true});
+      });
 
-    it('should handle nested icus', () => {
-      const input = `
+      it('should handle nested icus', () => {
+        const input = `
         <div i18n>
           {gender, select,
             male {male of age: {age, select, 10 {ten} 20 {twenty} 30 {thirty} other {other}}}
@@ -3031,12 +3041,14 @@ describe('i18n support in the template compiler', () => {
         </div>
       `;
 
-      const i18n_0 = i18nIcuMsg(
-          '{VAR_SELECT_1, select, male {male of age: {VAR_SELECT, select, 10 {ten} 20 {twenty} 30 {thirty} other {other}}} female {female} other {other}}',
-          [['VAR_SELECT', String.raw`\uFFFD0\uFFFD`], ['VAR_SELECT_1', String.raw`\uFFFD1\uFFFD`]]);
-      const i18n_1 = i18nMsg(' {$icu} ', [['icu', '$i18n_0$']]);
+        const i18n_0 = i18nIcuMsg(
+            '{VAR_SELECT_1, select, male {male of age: {VAR_SELECT, select, 10 {ten} 20 {twenty} 30 {thirty} other {other}}} female {female} other {other}}',
+            [
+              ['VAR_SELECT', String.raw`\uFFFD0\uFFFD`], ['VAR_SELECT_1', String.raw`\uFFFD1\uFFFD`]
+            ]);
+        const i18n_1 = i18nMsg(' {$icu} ', [['icu', '$i18n_0$']]);
 
-      const output = String.raw`
+        const output = String.raw`
         decls: 2,
         vars: 2,
         consts: function() {
@@ -3060,14 +3072,14 @@ describe('i18n support in the template compiler', () => {
         }
       `;
 
-      const exceptions = {
-        '3052001905251380936': 'Wrapper message generated by "ng xi18n" around ICU: "  {$ICU}  "'
-      };
-      verify(input, output, {exceptions});
-    });
+        const exceptions = {
+          '3052001905251380936': 'Wrapper message generated by "ng xi18n" around ICU: "  {$ICU}  "'
+        };
+        verify(input, output, {exceptions});
+      });
 
-    it('nested with interpolations in "other" blocks', () => {
-      const input = `
+      it('nested with interpolations in "other" blocks', () => {
+        const input = `
         <div i18n>{count, plural,
           =0 {zero}
           =2 {{{count}} {name, select,
@@ -3078,15 +3090,15 @@ describe('i18n support in the template compiler', () => {
         }</div>
       `;
 
-      const i18n_0 = i18nIcuMsg(
-          '{VAR_PLURAL, plural, =0 {zero} =2 {{INTERPOLATION} {VAR_SELECT, select, cat {cats} dog {dogs} other {animals}} !} other {other - {INTERPOLATION}}}',
-          [
-            ['VAR_SELECT', String.raw`\uFFFD0\uFFFD`],
-            ['VAR_PLURAL', String.raw`\uFFFD1\uFFFD`],
-            ['INTERPOLATION', String.raw`\uFFFD2\uFFFD`],
-          ]);
+        const i18n_0 = i18nIcuMsg(
+            '{VAR_PLURAL, plural, =0 {zero} =2 {{INTERPOLATION} {VAR_SELECT, select, cat {cats} dog {dogs} other {animals}} !} other {other - {INTERPOLATION}}}',
+            [
+              ['VAR_SELECT', String.raw`\uFFFD0\uFFFD`],
+              ['VAR_PLURAL', String.raw`\uFFFD1\uFFFD`],
+              ['INTERPOLATION', String.raw`\uFFFD2\uFFFD`],
+            ]);
 
-      const output = String.raw`
+        const output = String.raw`
         decls: 2,
         vars: 3,
         consts: function() {
@@ -3109,11 +3121,11 @@ describe('i18n support in the template compiler', () => {
         }
       `;
 
-      verify(input, output);
-    });
+        verify(input, output);
+      });
 
-    it('should handle icus in different contexts', () => {
-      const input = `
+      it('should handle icus in different contexts', () => {
+        const input = `
         <div i18n>
           {gender, select, male {male} female {female} other {other}}
           <span *ngIf="ageVisible">
@@ -3122,20 +3134,20 @@ describe('i18n support in the template compiler', () => {
         </div>
       `;
 
-      const i18n_0 = i18nIcuMsg(
-          '{VAR_SELECT, select, male {male} female {female} other {other}}',
-          [['VAR_SELECT', String.raw`\uFFFD0\uFFFD`]]);
-      const i18n_1 = i18nIcuMsg(
-          '{VAR_SELECT, select, 10 {ten} 20 {twenty} 30 {thirty} other {other}}',
-          [['VAR_SELECT', String.raw`\uFFFD0:1\uFFFD`]]);
-      const i18n_2 = i18nMsg(' {$icu} {$startTagSpan} {$icu_1} {$closeTagSpan}', [
-        ['startTagSpan', String.raw`\uFFFD*2:1\uFFFD\uFFFD#1:1\uFFFD`],
-        ['closeTagSpan', String.raw`\uFFFD/#1:1\uFFFD\uFFFD/*2:1\uFFFD`],
-        ['icu', '$i18n_0$'],
-        ['icu_1', '$i18n_1$'],
-      ]);
+        const i18n_0 = i18nIcuMsg(
+            '{VAR_SELECT, select, male {male} female {female} other {other}}',
+            [['VAR_SELECT', String.raw`\uFFFD0\uFFFD`]]);
+        const i18n_1 = i18nIcuMsg(
+            '{VAR_SELECT, select, 10 {ten} 20 {twenty} 30 {thirty} other {other}}',
+            [['VAR_SELECT', String.raw`\uFFFD0:1\uFFFD`]]);
+        const i18n_2 = i18nMsg(' {$icu} {$startTagSpan} {$icu_1} {$closeTagSpan}', [
+          ['startTagSpan', String.raw`\uFFFD*2:1\uFFFD\uFFFD#1:1\uFFFD`],
+          ['closeTagSpan', String.raw`\uFFFD/#1:1\uFFFD\uFFFD/*2:1\uFFFD`],
+          ['icu', '$i18n_0$'],
+          ['icu_1', '$i18n_1$'],
+        ]);
 
-      const output = String.raw`
+        const output = String.raw`
         function MyComponent_span_2_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵi18nStart(0, 0, 1);
@@ -3178,11 +3190,11 @@ describe('i18n support in the template compiler', () => {
         }
       `;
 
-      verify(input, output);
-    });
+        verify(input, output);
+      });
 
-    it('should handle icus with interpolations', () => {
-      const input = `
+      it('should handle icus with interpolations', () => {
+        const input = `
         <div i18n>
           {gender, select, male {male {{ weight }}} female {female {{ height }}} other {other}}
           <span *ngIf="ageVisible">
@@ -3191,26 +3203,27 @@ describe('i18n support in the template compiler', () => {
         </div>
       `;
 
-      const i18n_0 = i18nIcuMsg(
-          '{VAR_SELECT, select, male {male {INTERPOLATION}} female {female {INTERPOLATION_1}} other {other}}',
-          [
-            ['VAR_SELECT', String.raw`\uFFFD0\uFFFD`],
-            ['INTERPOLATION', String.raw`\uFFFD1\uFFFD`],
-            ['INTERPOLATION_1', String.raw`\uFFFD2\uFFFD`],
-          ]);
-      const i18n_1 = i18nIcuMsg(
-          '{VAR_SELECT, select, 10 {ten} 20 {twenty} 30 {thirty} other {other: {INTERPOLATION}}}', [
-            ['VAR_SELECT', String.raw`\uFFFD0:1\uFFFD`],
-            ['INTERPOLATION', String.raw`\uFFFD1:1\uFFFD`],
-          ]);
-      const i18n_2 = i18nMsg(' {$icu} {$startTagSpan} {$icu_1} {$closeTagSpan}', [
-        ['startTagSpan', String.raw`\uFFFD*2:1\uFFFD\uFFFD#1:1\uFFFD`],
-        ['closeTagSpan', String.raw`\uFFFD/#1:1\uFFFD\uFFFD/*2:1\uFFFD`],
-        ['icu', '$i18n_0$'],
-        ['icu_1', '$i18n_1$'],
-      ]);
+        const i18n_0 = i18nIcuMsg(
+            '{VAR_SELECT, select, male {male {INTERPOLATION}} female {female {INTERPOLATION_1}} other {other}}',
+            [
+              ['VAR_SELECT', String.raw`\uFFFD0\uFFFD`],
+              ['INTERPOLATION', String.raw`\uFFFD1\uFFFD`],
+              ['INTERPOLATION_1', String.raw`\uFFFD2\uFFFD`],
+            ]);
+        const i18n_1 = i18nIcuMsg(
+            '{VAR_SELECT, select, 10 {ten} 20 {twenty} 30 {thirty} other {other: {INTERPOLATION}}}',
+            [
+              ['VAR_SELECT', String.raw`\uFFFD0:1\uFFFD`],
+              ['INTERPOLATION', String.raw`\uFFFD1:1\uFFFD`],
+            ]);
+        const i18n_2 = i18nMsg(' {$icu} {$startTagSpan} {$icu_1} {$closeTagSpan}', [
+          ['startTagSpan', String.raw`\uFFFD*2:1\uFFFD\uFFFD#1:1\uFFFD`],
+          ['closeTagSpan', String.raw`\uFFFD/#1:1\uFFFD\uFFFD/*2:1\uFFFD`],
+          ['icu', '$i18n_0$'],
+          ['icu_1', '$i18n_1$'],
+        ]);
 
-      const output = String.raw`
+        const output = String.raw`
         function MyComponent_span_2_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵi18nStart(0, 0, 1);
@@ -3253,11 +3266,11 @@ describe('i18n support in the template compiler', () => {
         }
       `;
 
-      verify(input, output);
-    });
+        verify(input, output);
+      });
 
-    it('should handle icus with named interpolations', () => {
-      const input = `
+      it('should handle icus with named interpolations', () => {
+        const input = `
         <div i18n>{
           gender,
           select,
@@ -3267,16 +3280,16 @@ describe('i18n support in the template compiler', () => {
         }</div>
       `;
 
-      const i18n_0 = i18nIcuMsg(
-          '{VAR_SELECT, select, male {male {PH_A}} female {female {PH_B}} other {other {PH_WITH_SPACES}}}',
-          [
-            ['VAR_SELECT', String.raw`\uFFFD0\uFFFD`],
-            ['PH_A', String.raw`\uFFFD1\uFFFD`],
-            ['PH_B', String.raw`\uFFFD2\uFFFD`],
-            ['PH_WITH_SPACES', String.raw`\uFFFD3\uFFFD`],
-          ]);
+        const i18n_0 = i18nIcuMsg(
+            '{VAR_SELECT, select, male {male {PH_A}} female {female {PH_B}} other {other {PH_WITH_SPACES}}}',
+            [
+              ['VAR_SELECT', String.raw`\uFFFD0\uFFFD`],
+              ['PH_A', String.raw`\uFFFD1\uFFFD`],
+              ['PH_B', String.raw`\uFFFD2\uFFFD`],
+              ['PH_WITH_SPACES', String.raw`\uFFFD3\uFFFD`],
+            ]);
 
-      const output = String.raw`
+        const output = String.raw`
         decls: 2,
         vars: 4,
         consts: function() {
@@ -3299,52 +3312,52 @@ describe('i18n support in the template compiler', () => {
         }
       `;
 
-      verify(input, output);
-    });
+        verify(input, output);
+      });
 
-    it('should attach metadata in case an ICU represents the whole message', () => {
-      const input = `
+      it('should attach metadata in case an ICU represents the whole message', () => {
+        const input = `
         <div i18n="meaningA|descA@@idA">{count, select, 1 {one} other {more than one}}</div>
       `;
 
-      const output = i18nMsgWithPostprocess(
-          '{VAR_SELECT, select, 1 {one} other {more than one}}', [],
-          {meaning: 'meaningA', desc: 'descA', id: 'idA'},
-          [['VAR_SELECT', String.raw`\uFFFD0\uFFFD`]]);
+        const output = i18nMsgWithPostprocess(
+            '{VAR_SELECT, select, 1 {one} other {more than one}}', [],
+            {meaning: 'meaningA', desc: 'descA', id: 'idA'},
+            [['VAR_SELECT', String.raw`\uFFFD0\uFFFD`]]);
 
-      verify(input, output);
-    });
+        verify(input, output);
+      });
 
-    it('should produce proper messages when `select` or `plural` keywords have spaces after them',
-       () => {
-         const input = `
+      it('should produce proper messages when `select` or `plural` keywords have spaces after them',
+         () => {
+           const input = `
             <div i18n>
               {count, select , 1 {one} other {more than one}}
               {count, plural , =1 {one} other {more than one}}
             </div>
           `;
 
-         const i18n_0 = i18nIcuMsg(
-             '{VAR_SELECT , select , 1 {one} other {more than one}}',
-             [['VAR_SELECT', String.raw`\uFFFD0\uFFFD`]]);
-         const i18n_1 = i18nIcuMsg(
-             '{VAR_PLURAL , plural , =1 {one} other {more than one}}',
-             [['VAR_PLURAL', String.raw`\uFFFD1\uFFFD`]]);
+           const i18n_0 = i18nIcuMsg(
+               '{VAR_SELECT , select , 1 {one} other {more than one}}',
+               [['VAR_SELECT', String.raw`\uFFFD0\uFFFD`]]);
+           const i18n_1 = i18nIcuMsg(
+               '{VAR_PLURAL , plural , =1 {one} other {more than one}}',
+               [['VAR_PLURAL', String.raw`\uFFFD1\uFFFD`]]);
 
-         const output = String.raw`
+           const output = String.raw`
             ${i18n_0}
             ${i18n_1}
           `;
 
-         verify(input, output);
-       });
-  });
+           verify(input, output);
+         });
+    });
 
-  describe('$localize legacy message ids', () => {
-    it('should add legacy message ids if `enableI18nLegacyMessageIdFormat` is true', () => {
-      const input = `<div i18n>Some Message</div>`;
+    describe('$localize legacy message ids', () => {
+      it('should add legacy message ids if `enableI18nLegacyMessageIdFormat` is true', () => {
+        const input = `<div i18n>Some Message</div>`;
 
-      const output = String.raw`
+        const output = String.raw`
         let $I18N_0$;
         if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) { … }
         else {
@@ -3353,13 +3366,13 @@ describe('i18n support in the template compiler', () => {
         …
         `;
 
-      verify(input, output, {compilerOptions: {enableI18nLegacyMessageIdFormat: true}});
-    });
+        verify(input, output, {compilerOptions: {enableI18nLegacyMessageIdFormat: true}});
+      });
 
-    it('should add legacy message ids if `enableI18nLegacyMessageIdFormat` is undefined', () => {
-      const input = `<div i18n>Some Message</div>`;
+      it('should add legacy message ids if `enableI18nLegacyMessageIdFormat` is undefined', () => {
+        const input = `<div i18n>Some Message</div>`;
 
-      const output = String.raw`
+        const output = String.raw`
         let $I18N_0$;
         if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) { … }
         else {
@@ -3368,21 +3381,21 @@ describe('i18n support in the template compiler', () => {
         …
         `;
 
-      verify(input, output, {compilerOptions: {enableI18nLegacyMessageIdFormat: undefined}});
+        verify(input, output, {compilerOptions: {enableI18nLegacyMessageIdFormat: undefined}});
+      });
     });
-  });
 
-  describe('line ending normalization', () => {
-    [true, false].forEach(
-        templateUrl => describe(templateUrl ? '[templateUrl]' : '[inline template]', () => {
-          [true, false, undefined].forEach(
-              i18nNormalizeLineEndingsInICUs => describe(
-                  `{i18nNormalizeLineEndingsInICUs: ${i18nNormalizeLineEndingsInICUs}}`, () => {
-                    it('should normalize line endings in templates', () => {
-                      const input =
-                          `<div title="abc\r\ndef" i18n-title i18n>\r\nSome Message\r\n{\r\n  value,\r\n  select,\r\n  =0 {\r\n    zero\r\n  }\r\n}</div>`;
+    describe('line ending normalization', () => {
+      [true, false].forEach(
+          templateUrl => describe(templateUrl ? '[templateUrl]' : '[inline template]', () => {
+            [true, false, undefined].forEach(
+                i18nNormalizeLineEndingsInICUs => describe(
+                    `{i18nNormalizeLineEndingsInICUs: ${i18nNormalizeLineEndingsInICUs}}`, () => {
+                      it('should normalize line endings in templates', () => {
+                        const input =
+                            `<div title="abc\r\ndef" i18n-title i18n>\r\nSome Message\r\n{\r\n  value,\r\n  select,\r\n  =0 {\r\n    zero\r\n  }\r\n}</div>`;
 
-                      const output = String.raw`
+                        const output = String.raw`
         $I18N_0$ = $localize \`abc
 def\`;
         …
@@ -3394,33 +3407,33 @@ Some Message
 $` + String.raw`{$I18N_4$}:ICU:\`;
         `;
 
-                      verify(input, output, {
-                        inputArgs: {templateUrl},
-                        compilerOptions: {i18nNormalizeLineEndingsInICUs}
+                        verify(input, output, {
+                          inputArgs: {templateUrl},
+                          compilerOptions: {i18nNormalizeLineEndingsInICUs}
+                        });
                       });
-                    });
 
-                    it('should compute the correct message id for messages', () => {
-                      const input =
-                          `<div title="abc\r\ndef" i18n-title i18n>\r\nSome Message\r\n{\r\n  value,\r\n  select,\r\n  =0 {\r\n    zero\r\n  }\r\n}</div>`;
+                      it('should compute the correct message id for messages', () => {
+                        const input =
+                            `<div title="abc\r\ndef" i18n-title i18n>\r\nSome Message\r\n{\r\n  value,\r\n  select,\r\n  =0 {\r\n    zero\r\n  }\r\n}</div>`;
 
-                      // The ids generated by the compiler are different if the template is external
-                      // and we are not explicitly normalizing the line endings.
-                      const ICU_EXPRESSION_ID =
-                          templateUrl && i18nNormalizeLineEndingsInICUs !== true ?
-                          `␟70a685282be2d956e4db234fa3d985970672faa0` :
-                          `␟b5fe162f4e47ab5b3e534491d30b715e0dff0f52`;
-                      const ICU_ID = templateUrl && i18nNormalizeLineEndingsInICUs !== true ?
-                          `␟6a55b51b9bcf8f84b1b868c585ae09949668a72b` :
-                          `␟e31c7bc4db2f2e56dc40f005958055a02fd43a2e`;
+                        // The ids generated by the compiler are different if the template is
+                        // external and we are not explicitly normalizing the line endings.
+                        const ICU_EXPRESSION_ID =
+                            templateUrl && i18nNormalizeLineEndingsInICUs !== true ?
+                            `␟70a685282be2d956e4db234fa3d985970672faa0` :
+                            `␟b5fe162f4e47ab5b3e534491d30b715e0dff0f52`;
+                        const ICU_ID = templateUrl && i18nNormalizeLineEndingsInICUs !== true ?
+                            `␟6a55b51b9bcf8f84b1b868c585ae09949668a72b` :
+                            `␟e31c7bc4db2f2e56dc40f005958055a02fd43a2e`;
 
-                      const output =
-                          String.raw`
+                        const output =
+                            String.raw`
         $I18N_0$ = $localize \`:␟4f9ce2c66b187afd9898b25f6336d1eb2be8b5dc␟7326958852138509669:abc
 def\`;
         …
         $I18N_4$ = $localize \`:${
-                              ICU_EXPRESSION_ID}␟4863953183043480207:{VAR_SELECT, select, =0 {zero
+                                ICU_EXPRESSION_ID}␟4863953183043480207:{VAR_SELECT, select, =0 {zero
   }}\`
         …
         $I18N_3$ = $localize \`:${ICU_ID}␟2773178924738647105:
@@ -3428,91 +3441,94 @@ Some Message
 $` + String.raw`{$I18N_4$}:ICU:\`;
         `;
 
-                      verify(input, output, {
-                        inputArgs: {templateUrl},
-                        compilerOptions:
-                            {i18nNormalizeLineEndingsInICUs, enableI18nLegacyMessageIdFormat: true}
+                        verify(input, output, {
+                          inputArgs: {templateUrl},
+                          compilerOptions: {
+                            i18nNormalizeLineEndingsInICUs,
+                            enableI18nLegacyMessageIdFormat: true
+                          }
+                        });
                       });
-                    });
-                  }));
-        }));
-  });
+                    }));
+          }));
+    });
 
-  describe('es5 support', () => {
-    it('should generate ES5 compliant localized messages if the target is ES5', () => {
-      const input = `
+    describe('es5 support', () => {
+      it('should generate ES5 compliant localized messages if the target is ES5', () => {
+        const input = `
         <div i18n="meaning:A|descA@@idA">Content A</div>
       `;
 
-      const output = String.raw`
+        const output = String.raw`
         var $I18N_0$;
         …
         $I18N_0$ = $localize(…__makeTemplateObject([":meaning:A|descA@@idA:Content A"], [":meaning\\:A|descA@@idA:Content A"])…);
       `;
 
-      verify(
-          input, output, {skipIdBasedCheck: true, compilerOptions: {target: ts.ScriptTarget.ES5}});
+        verify(
+            input, output,
+            {skipIdBasedCheck: true, compilerOptions: {target: ts.ScriptTarget.ES5}});
+      });
     });
-  });
 
-  describe('errors', () => {
-    const verifyNestedSectionsError = (errorThrown: any, expectedErrorText: string) => {
-      expect(errorThrown.ngParseErrors.length).toBe(1);
-      const msg = errorThrown.ngParseErrors[0].toString();
-      expect(msg).toContain(
-          'Cannot mark an element as translatable inside of a translatable section. Please remove the nested i18n marker.');
-      expect(msg).toContain(expectedErrorText);
-      expect(msg).toMatch(/app\/spec\.ts\@\d+\:\d+/);
-    };
+    describe('errors', () => {
+      const verifyNestedSectionsError = (errorThrown: any, expectedErrorText: string) => {
+        expect(errorThrown.ngParseErrors.length).toBe(1);
+        const msg = errorThrown.ngParseErrors[0].toString();
+        expect(msg).toContain(
+            'Cannot mark an element as translatable inside of a translatable section. Please remove the nested i18n marker.');
+        expect(msg).toContain(expectedErrorText);
+        expect(msg).toMatch(/app\/spec\.ts\@\d+\:\d+/);
+      };
 
-    it('should throw on nested i18n sections', () => {
-      const files = getAppFilesWithTemplate(`
+      it('should throw on nested i18n sections', () => {
+        const files = getAppFilesWithTemplate(`
         <div i18n>
           <div i18n>Some content</div>
         </div>
       `);
-      try {
-        compile(files, angularFiles);
-      } catch (error) {
-        verifyNestedSectionsError(error, '[ERROR ->]<div i18n>Some content</div>');
-      }
-    });
+        try {
+          compile(files, angularFiles);
+        } catch (error) {
+          verifyNestedSectionsError(error, '[ERROR ->]<div i18n>Some content</div>');
+        }
+      });
 
-    it('should throw on nested i18n sections with tags in between', () => {
-      const files = getAppFilesWithTemplate(`
+      it('should throw on nested i18n sections with tags in between', () => {
+        const files = getAppFilesWithTemplate(`
         <div i18n>
           <div>
             <div i18n>Some content</div>
           </div>
         </div>
       `);
-      try {
-        compile(files, angularFiles);
-      } catch (error) {
-        verifyNestedSectionsError(error, '[ERROR ->]<div i18n>Some content</div>');
-      }
-    });
+        try {
+          compile(files, angularFiles);
+        } catch (error) {
+          verifyNestedSectionsError(error, '[ERROR ->]<div i18n>Some content</div>');
+        }
+      });
 
-    it('should throw on nested i18n sections represented with <ng-container>s', () => {
-      const files = getAppFilesWithTemplate(`
+      it('should throw on nested i18n sections represented with <ng-container>s', () => {
+        const files = getAppFilesWithTemplate(`
         <ng-container i18n>
           <div>
             <ng-container i18n>Some content</ng-container>
           </div>
         </ng-container>
       `);
-      try {
-        compile(files, angularFiles);
-      } catch (error) {
-        verifyNestedSectionsError(
-            error, '[ERROR ->]<ng-container i18n>Some content</ng-container>');
-      }
+        try {
+          compile(files, angularFiles);
+        } catch (error) {
+          verifyNestedSectionsError(
+              error, '[ERROR ->]<ng-container i18n>Some content</ng-container>');
+        }
+      });
     });
-  });
 
-  describe('namespaces', () => {
-    it('should handle namespaces inside i18n blocks', () => {
-      const input = `
+    describe('namespaces', () => {
+      it('should handle namespaces inside i18n blocks', () => {
+        const input = `
         <svg xmlns="http://www.w3.org/2000/svg">
           <foreignObject i18n>
             <xhtml:div xmlns="http://www.w3.org/1999/xhtml">
@@ -3522,7 +3538,7 @@ $` + String.raw`{$I18N_4$}:ICU:\`;
         </svg>
       `;
 
-      const i18n_0 = String.raw`
+        const i18n_0 = String.raw`
         let $I18N_0$;
         if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
           const $MSG_EXTERNAL_7128002169381370313$$APP_SPEC_TS_1$ = goog.getMsg("{$startTagXhtmlDiv} Count: {$startTagXhtmlSpan}5{$closeTagXhtmlSpan}{$closeTagXhtmlDiv}", {
@@ -3535,14 +3551,14 @@ $` + String.raw`{$I18N_4$}:ICU:\`;
         }
         else {
           $I18N_0$ = $localize \`$` +
-          String.raw`{"\uFFFD#3\uFFFD"}:START_TAG__XHTML_DIV: Count: $` +
-          String.raw`{"\uFFFD#4\uFFFD"}:START_TAG__XHTML_SPAN:5$` +
-          String.raw`{"\uFFFD/#4\uFFFD"}:CLOSE_TAG__XHTML_SPAN:$` +
-          String.raw`{"\uFFFD/#3\uFFFD"}:CLOSE_TAG__XHTML_DIV:\`;
+            String.raw`{"\uFFFD#3\uFFFD"}:START_TAG__XHTML_DIV: Count: $` +
+            String.raw`{"\uFFFD#4\uFFFD"}:START_TAG__XHTML_SPAN:5$` +
+            String.raw`{"\uFFFD/#4\uFFFD"}:CLOSE_TAG__XHTML_SPAN:$` +
+            String.raw`{"\uFFFD/#3\uFFFD"}:CLOSE_TAG__XHTML_DIV:\`;
         }
       `;
 
-      const output = String.raw`
+        const output = String.raw`
         …
         consts: function() {
           ${i18n_0}
@@ -3569,11 +3585,11 @@ $` + String.raw`{$I18N_4$}:ICU:\`;
         }
       `;
 
-      verify(input, output);
-    });
+        verify(input, output);
+      });
 
-    it('should handle namespaces on i18n block containers', () => {
-      const input = `
+      it('should handle namespaces on i18n block containers', () => {
+        const input = `
         <svg xmlns="http://www.w3.org/2000/svg">
           <foreignObject>
             <xhtml:div xmlns="http://www.w3.org/1999/xhtml" i18n>
@@ -3583,7 +3599,7 @@ $` + String.raw`{$I18N_4$}:ICU:\`;
         </svg>
       `;
 
-      const i18n_0 = String.raw`
+        const i18n_0 = String.raw`
         let $I18N_0$;
         if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
           const $MSG_EXTERNAL_7428861019045796010$$APP_SPEC_TS_1$ = goog.getMsg(" Count: {$startTagXhtmlSpan}5{$closeTagXhtmlSpan}", {
@@ -3594,12 +3610,12 @@ $` + String.raw`{$I18N_4$}:ICU:\`;
         }
         else {
           $I18N_0$ = $localize \` Count: $` +
-          String.raw`{"\uFFFD#4\uFFFD"}:START_TAG__XHTML_SPAN:5$` +
-          String.raw`{"\uFFFD/#4\uFFFD"}:CLOSE_TAG__XHTML_SPAN:\`;
+            String.raw`{"\uFFFD#4\uFFFD"}:START_TAG__XHTML_SPAN:5$` +
+            String.raw`{"\uFFFD/#4\uFFFD"}:CLOSE_TAG__XHTML_SPAN:\`;
         }
       `;
 
-      const output = String.raw`
+        const output = String.raw`
         consts: function() {
           ${i18n_0}
           return [
@@ -3625,7 +3641,8 @@ $` + String.raw`{$I18N_4$}:ICU:\`;
         }
       `;
 
-      verify(input, output);
+        verify(input, output);
+      });
     });
   });
 });

@@ -7,22 +7,26 @@
  */
 import {AttributeMarker} from '@angular/compiler/src/core';
 import {setup} from '@angular/compiler/test/aot/test_util';
-import {compile, expectEmit} from './mock_compile';
+import {createCompileFn, expectEmit} from './mock_compile';
+import {runInEachCompilationMode} from './test_runner';
 
 /* These tests are codified version of the tests in compiler_canonical_spec.ts. Every
  * test in compiler_canonical_spec.ts should have a corresponding test here.
  */
-describe('compiler compliance: listen()', () => {
-  const angularFiles = setup({
-    compileAngular: false,
-    compileFakeCore: true,
-    compileAnimations: false,
-  });
+runInEachCompilationMode(compilationMode => {
+  const compile = createCompileFn(compilationMode);
 
-  it('should create listener instruction on element', () => {
-    const files = {
-      app: {
-        'spec.ts': `
+  describe('compiler compliance: listen()', () => {
+    const angularFiles = setup({
+      compileAngular: false,
+      compileFakeCore: true,
+      compileAnimations: false,
+    });
+
+    it('should create listener instruction on element', () => {
+      const files = {
+        app: {
+          'spec.ts': `
               import {Component, NgModule} from '@angular/core';
 
               @Component({
@@ -36,11 +40,11 @@ describe('compiler compliance: listen()', () => {
               @NgModule({declarations: [MyComponent]})
               export class MyModule {}
           `
-      }
-    };
+        }
+      };
 
-    // The template should look like this (where IDENT is a wild card for an identifier):
-    const template = `
+      // The template should look like this (where IDENT is a wild card for an identifier):
+      const template = `
         …
         consts: [[${AttributeMarker.Bindings}, "click"]],
         template: function MyComponent_Template(rf, ctx) {
@@ -55,15 +59,15 @@ describe('compiler compliance: listen()', () => {
         }
         `;
 
-    const result = compile(files, angularFiles);
+      const result = compile(files, angularFiles);
 
-    expectEmit(result.source, template, 'Incorrect template');
-  });
+      expectEmit(result.source, template, 'Incorrect template');
+    });
 
-  it('should create listener instruction on other components', () => {
-    const files = {
-      app: {
-        'spec.ts': `
+    it('should create listener instruction on other components', () => {
+      const files = {
+        app: {
+          'spec.ts': `
               import {Component, NgModule} from '@angular/core';
 
               @Component({
@@ -83,10 +87,10 @@ describe('compiler compliance: listen()', () => {
               @NgModule({declarations: [MyComponent]})
               export class MyModule {}
           `
-      }
-    };
+        }
+      };
 
-    const template = `
+      const template = `
         …
         consts: [[${AttributeMarker.Bindings}, "click"]],
         template: function MyComponent_Template(rf, ctx) {
@@ -100,15 +104,15 @@ describe('compiler compliance: listen()', () => {
         }
         `;
 
-    const result = compile(files, angularFiles);
+      const result = compile(files, angularFiles);
 
-    expectEmit(result.source, template, 'Incorrect template');
-  });
+      expectEmit(result.source, template, 'Incorrect template');
+    });
 
-  it('should create multiple listener instructions that share a view snapshot', () => {
-    const files = {
-      app: {
-        'spec.ts': `
+    it('should create multiple listener instructions that share a view snapshot', () => {
+      const files = {
+        app: {
+          'spec.ts': `
               import {Component, NgModule} from '@angular/core';
 
               @Component({
@@ -129,10 +133,10 @@ describe('compiler compliance: listen()', () => {
               @NgModule({declarations: [MyComponent]})
               export class MyModule {}
           `
-      }
-    };
+        }
+      };
 
-    const template = `
+      const template = `
         function MyComponent_div_0_Template(rf, ctx) {
           if (rf & 1) {
             const $s$ = $r3$.ɵɵgetCurrentView();
@@ -166,15 +170,15 @@ describe('compiler compliance: listen()', () => {
         }
         `;
 
-    const result = compile(files, angularFiles);
+      const result = compile(files, angularFiles);
 
-    expectEmit(result.source, template, 'Incorrect template');
-  });
+      expectEmit(result.source, template, 'Incorrect template');
+    });
 
-  it('local refs in listeners defined before the local refs', () => {
-    const files = {
-      app: {
-        'spec.ts': `
+    it('local refs in listeners defined before the local refs', () => {
+      const files = {
+        app: {
+          'spec.ts': `
             import {Component, NgModule} from '@angular/core';
 
             @Component({
@@ -189,10 +193,10 @@ describe('compiler compliance: listen()', () => {
             @NgModule({declarations: [MyComponent]})
             export class MyModule {}
           `
-      }
-    };
+        }
+      };
 
-    const MyComponentDefinition = `
+      const MyComponentDefinition = `
         …
         MyComponent.ɵcmp = $r3$.ɵɵdefineComponent({
           type: MyComponent,
@@ -218,21 +222,21 @@ describe('compiler compliance: listen()', () => {
         });
       `;
 
-    const MyComponentFactory = `
+      const MyComponentFactory = `
       MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); };
     `;
 
-    const result = compile(files, angularFiles);
-    const source = result.source;
+      const result = compile(files, angularFiles);
+      const source = result.source;
 
-    expectEmit(source, MyComponentDefinition, 'Incorrect MyComponent.ɵcmp');
-    expectEmit(source, MyComponentFactory, 'Incorrect MyComponent.ɵfac');
-  });
+      expectEmit(source, MyComponentDefinition, 'Incorrect MyComponent.ɵcmp');
+      expectEmit(source, MyComponentFactory, 'Incorrect MyComponent.ɵfac');
+    });
 
-  it('should chain multiple listeners on the same element', () => {
-    const files = {
-      app: {
-        'spec.ts': `
+    it('should chain multiple listeners on the same element', () => {
+      const files = {
+        app: {
+          'spec.ts': `
             import {Component, NgModule} from '@angular/core';
 
             @Component({
@@ -245,10 +249,10 @@ describe('compiler compliance: listen()', () => {
             @NgModule({declarations: [MyComponent]})
             export class MyModule {}
           `
-      }
-    };
+        }
+      };
 
-    const template = `
+      const template = `
         …
         consts: [[${AttributeMarker.Bindings}, "click", "change"]],
         template: function MyComponent_Template(rf, ctx) {
@@ -264,14 +268,14 @@ describe('compiler compliance: listen()', () => {
         }
         `;
 
-    const result = compile(files, angularFiles);
-    expectEmit(result.source, template, 'Incorrect template');
-  });
+      const result = compile(files, angularFiles);
+      expectEmit(result.source, template, 'Incorrect template');
+    });
 
-  it('should chain multiple listeners across elements', () => {
-    const files = {
-      app: {
-        'spec.ts': `
+    it('should chain multiple listeners across elements', () => {
+      const files = {
+        app: {
+          'spec.ts': `
             import {Component, NgModule} from '@angular/core';
 
             @Component({
@@ -287,13 +291,13 @@ describe('compiler compliance: listen()', () => {
             @NgModule({declarations: [MyComponent]})
             export class MyModule {}
           `
-      }
-    };
+        }
+      };
 
-    const template = `
+      const template = `
         …
         consts: [[${AttributeMarker.Bindings}, "click", "change"], [${
-        AttributeMarker.Bindings}, "update", "delete"]],
+          AttributeMarker.Bindings}, "update", "delete"]],
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵelementStart(0, "div", 0);
@@ -306,14 +310,14 @@ describe('compiler compliance: listen()', () => {
         }
         `;
 
-    const result = compile(files, angularFiles);
-    expectEmit(result.source, template, 'Incorrect template');
-  });
+      const result = compile(files, angularFiles);
+      expectEmit(result.source, template, 'Incorrect template');
+    });
 
-  it('should chain multiple listeners on the same template', () => {
-    const files = {
-      app: {
-        'spec.ts': `
+    it('should chain multiple listeners on the same template', () => {
+      const files = {
+        app: {
+          'spec.ts': `
             import {Component, NgModule} from '@angular/core';
 
             @Component({
@@ -326,10 +330,10 @@ describe('compiler compliance: listen()', () => {
             @NgModule({declarations: [MyComponent]})
             export class MyModule {}
           `
-      }
-    };
+        }
+      };
 
-    const template = `
+      const template = `
         …
         consts: [[${AttributeMarker.Bindings}, "click", "change"]],
         template: function MyComponent_Template(rf, ctx) {
@@ -340,14 +344,14 @@ describe('compiler compliance: listen()', () => {
         }
         `;
 
-    const result = compile(files, angularFiles);
-    expectEmit(result.source, template, 'Incorrect template');
-  });
+      const result = compile(files, angularFiles);
+      expectEmit(result.source, template, 'Incorrect template');
+    });
 
-  it('should not generate the $event argument if it is not being used in a template', () => {
-    const files = {
-      app: {
-        'spec.ts': `
+    it('should not generate the $event argument if it is not being used in a template', () => {
+      const files = {
+        app: {
+          'spec.ts': `
           import {Component} from '@angular/core';
 
           @Component({
@@ -357,10 +361,10 @@ describe('compiler compliance: listen()', () => {
             onClick() {}
           }
         `
-      }
-    };
+        }
+      };
 
-    const template = `
+      const template = `
       …
       consts: [[${AttributeMarker.Bindings}, "click"]],
       template: function MyComponent_Template(rf, ctx) {
@@ -374,15 +378,15 @@ describe('compiler compliance: listen()', () => {
       }
     `;
 
-    const result = compile(files, angularFiles);
+      const result = compile(files, angularFiles);
 
-    expectEmit(result.source, template, 'Incorrect template');
-  });
+      expectEmit(result.source, template, 'Incorrect template');
+    });
 
-  it('should not generate the $event argument if it is not being used in a host listener', () => {
-    const files = {
-      app: {
-        'spec.ts': `
+    it('should not generate the $event argument if it is not being used in a host listener', () => {
+      const files = {
+        app: {
+          'spec.ts': `
           import {Component, HostListener} from '@angular/core';
 
           @Component({
@@ -398,10 +402,10 @@ describe('compiler compliance: listen()', () => {
             click() {}
           }
         `
-      }
-    };
+        }
+      };
 
-    const template = `
+      const template = `
       …
       hostBindings: function MyComponent_HostBindings(rf, ctx) {
         if (rf & 1) {
@@ -414,14 +418,14 @@ describe('compiler compliance: listen()', () => {
       }
     `;
 
-    const result = compile(files, angularFiles);
-    expectEmit(result.source, template, 'Incorrect host bindings');
-  });
+      const result = compile(files, angularFiles);
+      expectEmit(result.source, template, 'Incorrect host bindings');
+    });
 
-  it('should generate the $event argument if it is being used in a host listener', () => {
-    const files = {
-      app: {
-        'spec.ts': `
+    it('should generate the $event argument if it is being used in a host listener', () => {
+      const files = {
+        app: {
+          'spec.ts': `
           import {Directive, HostListener} from '@angular/core';
 
           @Directive()
@@ -430,10 +434,10 @@ describe('compiler compliance: listen()', () => {
             click(t: EventTarget) {}
           }
         `
-      }
-    };
+        }
+      };
 
-    const template = `
+      const template = `
       …
       hostBindings: function MyComponent_HostBindings(rf, ctx) {
         if (rf & 1) {
@@ -444,7 +448,8 @@ describe('compiler compliance: listen()', () => {
       }
     `;
 
-    const result = compile(files, angularFiles);
-    expectEmit(result.source, template, 'Incorrect host bindings');
+      const result = compile(files, angularFiles);
+      expectEmit(result.source, template, 'Incorrect host bindings');
+    });
   });
 });

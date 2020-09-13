@@ -7,20 +7,24 @@
  */
 import {AttributeMarker} from '@angular/compiler/src/core';
 import {setup} from '@angular/compiler/test/aot/test_util';
-import {compile, expectEmit} from './mock_compile';
+import {createCompileFn, expectEmit} from './mock_compile';
+import {runInEachCompilationMode} from './test_runner';
 
-describe('compiler compliance: directives', () => {
-  const angularFiles = setup({
-    compileAngular: false,
-    compileAnimations: false,
-    compileFakeCore: true,
-  });
+runInEachCompilationMode(compilationMode => {
+  const compile = createCompileFn(compilationMode);
 
-  describe('matching', () => {
-    it('should not match directives on i18n attribute', () => {
-      const files = {
-        app: {
-          'spec.ts': `
+  describe('compiler compliance: directives', () => {
+    const angularFiles = setup({
+      compileAngular: false,
+      compileAnimations: false,
+      compileFakeCore: true,
+    });
+
+    describe('matching', () => {
+      it('should not match directives on i18n attribute', () => {
+        const files = {
+          app: {
+            'spec.ts': `
                 import {Component, Directive, NgModule} from '@angular/core';
 
                 @Directive({selector: '[i18n]'})
@@ -31,11 +35,11 @@ describe('compiler compliance: directives', () => {
 
                 @NgModule({declarations: [I18nDirective, MyComponent]})
                 export class MyModule{}`
-        }
-      };
+          }
+        };
 
-      // MyComponent definition should be:
-      const MyComponentDefinition = `
+        // MyComponent definition should be:
+        const MyComponentDefinition = `
             MyComponent.ɵcmp = $r3$.ɵɵdefineComponent({
                 type: MyComponent,
                 selectors: [["my-component"]],
@@ -50,21 +54,21 @@ describe('compiler compliance: directives', () => {
             });
         `;
 
-      const MyComponentFactory = `
+        const MyComponentFactory = `
         MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); };
       `;
 
-      const result = compile(files, angularFiles);
-      const source = result.source;
+        const result = compile(files, angularFiles);
+        const source = result.source;
 
-      expectEmit(source, MyComponentDefinition, 'Incorrect ChildComponent.ɵcmp');
-      expectEmit(source, MyComponentFactory, 'Incorrect ChildComponent.ɵfac');
-    });
+        expectEmit(source, MyComponentDefinition, 'Incorrect ChildComponent.ɵcmp');
+        expectEmit(source, MyComponentFactory, 'Incorrect ChildComponent.ɵfac');
+      });
 
-    it('should not match directives on i18n-prefixed attributes', () => {
-      const files = {
-        app: {
-          'spec.ts': `
+      it('should not match directives on i18n-prefixed attributes', () => {
+        const files = {
+          app: {
+            'spec.ts': `
                 import {Component, Directive, NgModule} from '@angular/core';
 
                 @Directive({selector: '[i18n]'})
@@ -81,11 +85,11 @@ describe('compiler compliance: directives', () => {
 
                 @NgModule({declarations: [I18nDirective, I18nFooDirective, FooDirective, MyComponent]})
                 export class MyModule{}`
-        }
-      };
+          }
+        };
 
-      // MyComponent definition should be:
-      const MyComponentDefinition = `
+        // MyComponent definition should be:
+        const MyComponentDefinition = `
             MyComponent.ɵcmp = $r3$.ɵɵdefineComponent({
                 type: MyComponent,
                 selectors: [["my-component"]],
@@ -100,21 +104,21 @@ describe('compiler compliance: directives', () => {
             });
         `;
 
-      const MyComponentFactory = `
+        const MyComponentFactory = `
         MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); };
       `;
 
-      const result = compile(files, angularFiles);
-      const source = result.source;
+        const result = compile(files, angularFiles);
+        const source = result.source;
 
-      expectEmit(source, MyComponentDefinition, 'Incorrect ChildComponent.ɵcmp');
-      expectEmit(source, MyComponentFactory, 'Incorrect ChildComponent.ɵfac');
-    });
+        expectEmit(source, MyComponentDefinition, 'Incorrect ChildComponent.ɵcmp');
+        expectEmit(source, MyComponentFactory, 'Incorrect ChildComponent.ɵfac');
+      });
 
-    it('should match directives on element bindings', () => {
-      const files = {
-        app: {
-          'spec.ts': `
+      it('should match directives on element bindings', () => {
+        const files = {
+          app: {
+            'spec.ts': `
             import {Component, Directive, Input, NgModule} from '@angular/core';
 
             @Directive({selector: '[someDirective]'})
@@ -128,12 +132,12 @@ describe('compiler compliance: directives', () => {
             @NgModule({declarations: [SomeDirective, MyComponent]})
             export class MyModule{}
           `
-        }
-      };
+          }
+        };
 
 
-      // MyComponent definition should be:
-      const MyComponentDefinition = `
+        // MyComponent definition should be:
+        const MyComponentDefinition = `
           …
           MyComponent.ɵcmp = $r3$.ɵɵdefineComponent({
               …
@@ -152,16 +156,16 @@ describe('compiler compliance: directives', () => {
           });
       `;
 
-      const result = compile(files, angularFiles);
-      const source = result.source;
+        const result = compile(files, angularFiles);
+        const source = result.source;
 
-      expectEmit(source, MyComponentDefinition, 'Incorrect ChildComponent.ɵcmp');
-    });
+        expectEmit(source, MyComponentDefinition, 'Incorrect ChildComponent.ɵcmp');
+      });
 
-    it('should match directives on ng-templates', () => {
-      const files = {
-        app: {
-          'spec.ts': `
+      it('should match directives on ng-templates', () => {
+        const files = {
+          app: {
+            'spec.ts': `
             import {Component, Directive, NgModule, TemplateRef} from '@angular/core';
 
             @Directive({
@@ -182,10 +186,10 @@ describe('compiler compliance: directives', () => {
             @NgModule({declarations: [DirectiveA, MyComponent]})
             export class MyModule{}
           `
-        }
-      };
+          }
+        };
 
-      const MyComponentDefinition = `
+        const MyComponentDefinition = `
         …
         function MyComponent_ng_template_0_Template(rf, ctx) {
           if (rf & 1) {
@@ -207,14 +211,14 @@ describe('compiler compliance: directives', () => {
         });
       `;
 
-      const result = compile(files, angularFiles);
-      expectEmit(result.source, MyComponentDefinition, 'Incorrect ChildComponent.ɵcmp');
-    });
+        const result = compile(files, angularFiles);
+        expectEmit(result.source, MyComponentDefinition, 'Incorrect ChildComponent.ɵcmp');
+      });
 
-    it('should match directives on ng-container', () => {
-      const files = {
-        app: {
-          'spec.ts': `
+      it('should match directives on ng-container', () => {
+        const files = {
+          app: {
+            'spec.ts': `
               import {Component, Directive, NgModule, TemplateRef} from '@angular/core';
 
               @Directive({
@@ -235,10 +239,10 @@ describe('compiler compliance: directives', () => {
               @NgModule({declarations: [DirectiveA, MyComponent]})
               export class MyModule{}
             `
-        }
-      };
+          }
+        };
 
-      const MyComponentDefinition = `
+        const MyComponentDefinition = `
         …
         function MyComponent_ng_container_0_Template(rf, ctx) {
           if (rf & 1) {
@@ -265,14 +269,14 @@ describe('compiler compliance: directives', () => {
         });
       `;
 
-      const result = compile(files, angularFiles);
-      expectEmit(result.source, MyComponentDefinition, 'Incorrect ChildComponent.ɵcmp');
-    });
+        const result = compile(files, angularFiles);
+        expectEmit(result.source, MyComponentDefinition, 'Incorrect ChildComponent.ɵcmp');
+      });
 
-    it('should match directives on ng-template bindings', () => {
-      const files = {
-        app: {
-          'spec.ts': `
+      it('should match directives on ng-template bindings', () => {
+        const files = {
+          app: {
+            'spec.ts': `
             import {Component, Directive, Input, NgModule} from '@angular/core';
 
             @Directive({selector: '[someDirective]'})
@@ -286,12 +290,12 @@ describe('compiler compliance: directives', () => {
             @NgModule({declarations: [SomeDirective, MyComponent]})
             export class MyModule{}
           `
-        }
-      };
+          }
+        };
 
 
-      // MyComponent definition should be:
-      const MyComponentDefinition = `
+        // MyComponent definition should be:
+        const MyComponentDefinition = `
         …
         MyComponent.ɵcmp = $r3$.ɵɵdefineComponent({
             …
@@ -310,16 +314,16 @@ describe('compiler compliance: directives', () => {
         });
     `;
 
-      const result = compile(files, angularFiles);
-      const source = result.source;
+        const result = compile(files, angularFiles);
+        const source = result.source;
 
-      expectEmit(source, MyComponentDefinition, 'Incorrect ChildComponent.ɵcmp');
-    });
+        expectEmit(source, MyComponentDefinition, 'Incorrect ChildComponent.ɵcmp');
+      });
 
-    it('should match structural directives', () => {
-      const files = {
-        app: {
-          'spec.ts': `
+      it('should match structural directives', () => {
+        const files = {
+          app: {
+            'spec.ts': `
             import {Component, Directive, Input, NgModule} from '@angular/core';
 
             @Directive({selector: '[someDirective]'})
@@ -333,11 +337,11 @@ describe('compiler compliance: directives', () => {
             @NgModule({declarations: [SomeDirective, MyComponent]})
             export class MyModule{}
           `
-        }
-      };
+          }
+        };
 
-      // MyComponent definition should be:
-      const MyComponentDefinition = `
+        // MyComponent definition should be:
+        const MyComponentDefinition = `
           …
           MyComponent.ɵcmp = $r3$.ɵɵdefineComponent({
               …
@@ -353,16 +357,16 @@ describe('compiler compliance: directives', () => {
           });
       `;
 
-      const result = compile(files, angularFiles);
-      const source = result.source;
+        const result = compile(files, angularFiles);
+        const source = result.source;
 
-      expectEmit(source, MyComponentDefinition, 'Incorrect ChildComponent.ɵcmp');
-    });
+        expectEmit(source, MyComponentDefinition, 'Incorrect ChildComponent.ɵcmp');
+      });
 
-    it('should match directives on element outputs', () => {
-      const files = {
-        app: {
-          'spec.ts': `
+      it('should match directives on element outputs', () => {
+        const files = {
+          app: {
+            'spec.ts': `
             import {Component, Directive, Output, EventEmitter, NgModule} from '@angular/core';
 
             @Directive({selector: '[someDirective]'})
@@ -378,12 +382,12 @@ describe('compiler compliance: directives', () => {
             @NgModule({declarations: [SomeDirective, MyComponent]})
             export class MyModule{}
           `
-        }
-      };
+          }
+        };
 
 
-      // MyComponent definition should be:
-      const MyComponentDefinition = `
+        // MyComponent definition should be:
+        const MyComponentDefinition = `
         …
         MyComponent.ɵcmp = $r3$.ɵɵdefineComponent({
             …
@@ -401,10 +405,11 @@ describe('compiler compliance: directives', () => {
         });
     `;
 
-      const result = compile(files, angularFiles);
-      const source = result.source;
+        const result = compile(files, angularFiles);
+        const source = result.source;
 
-      expectEmit(source, MyComponentDefinition, 'Incorrect ChildComponent.ɵcmp');
+        expectEmit(source, MyComponentDefinition, 'Incorrect ChildComponent.ɵcmp');
+      });
     });
   });
 });

@@ -7,19 +7,23 @@
  */
 
 import {MockDirectory, setup} from '@angular/compiler/test/aot/test_util';
-import {compile, expectEmit} from './mock_compile';
+import {createCompileFn, expectEmit} from './mock_compile';
+import {runInEachCompilationMode} from './test_runner';
 
-describe('compiler compliance: dependency injection', () => {
-  const angularFiles = setup({
-    compileAngular: false,
-    compileFakeCore: true,
-    compileAnimations: false,
-  });
+runInEachCompilationMode(compilationMode => {
+  const compile = createCompileFn(compilationMode);
 
-  it('should create factory methods', () => {
-    const files = {
-      app: {
-        'spec.ts': `
+  describe('compiler compliance: dependency injection', () => {
+    const angularFiles = setup({
+      compileAngular: false,
+      compileFakeCore: true,
+      compileAnimations: false,
+    });
+
+    it('should create factory methods', () => {
+      const files = {
+        app: {
+          'spec.ts': `
               import {Component, NgModule, Injectable, Attribute, Host, SkipSelf, Self, Optional} from '@angular/core';
 
               @Injectable()
@@ -44,10 +48,10 @@ describe('compiler compliance: dependency injection', () => {
               @NgModule({declarations: [MyComponent], providers: [MyService]})
               export class MyModule {}
           `
-      }
-    };
+        }
+      };
 
-    const factory = `
+      const factory = `
       MyComponent.ɵfac = function MyComponent_Factory(t) {
         return new (t || MyComponent)(
           $r3$.ɵɵinjectAttribute('name'),
@@ -61,15 +65,15 @@ describe('compiler compliance: dependency injection', () => {
       }`;
 
 
-    const result = compile(files, angularFiles);
+      const result = compile(files, angularFiles);
 
-    expectEmit(result.source, factory, 'Incorrect factory');
-  });
+      expectEmit(result.source, factory, 'Incorrect factory');
+    });
 
-  it('should create a factory definition for an injectable', () => {
-    const files = {
-      app: {
-        'spec.ts': `
+    it('should create a factory definition for an injectable', () => {
+      const files = {
+        app: {
+          'spec.ts': `
           import {Injectable} from '@angular/core';
 
           class MyDependency {}
@@ -79,30 +83,31 @@ describe('compiler compliance: dependency injection', () => {
             constructor(dep: MyDependency) {}
           }
         `
-      }
-    };
+        }
+      };
 
-    const factory = `
+      const factory = `
       MyService.ɵfac = function MyService_Factory(t) {
         return new (t || MyService)($r3$.ɵɵinject(MyDependency));
       }`;
 
-    const def = `
+      const def = `
       MyService.ɵprov = $r3$.ɵɵdefineInjectable({
         token: MyService,
         factory: MyService.ɵfac
       });
     `;
 
-    const result = compile(files, angularFiles);
-    expectEmit(result.source, factory, 'Incorrect factory definition');
-    expectEmit(result.source, def, 'Incorrect injectable definition');
-  });
+      const result = compile(files, angularFiles);
+      expectEmit(result.source, factory, 'Incorrect factory definition');
+      expectEmit(result.source, def, 'Incorrect injectable definition');
+    });
 
-  it('should create a factory definition for an injectable with an overloaded constructor', () => {
-    const files = {
-      app: {
-        'spec.ts': `
+    it('should create a factory definition for an injectable with an overloaded constructor',
+       () => {
+         const files = {
+           app: {
+             'spec.ts': `
           import {Injectable, Optional} from '@angular/core';
 
           class MyDependency {}
@@ -114,30 +119,30 @@ describe('compiler compliance: dependency injection', () => {
             constructor(dep: MyDependency, @Optional() optionalDep?: MyOptionalDependency) {}
           }
         `
-      }
-    };
+           }
+         };
 
-    const factory = `
+         const factory = `
       MyService.ɵfac = function MyService_Factory(t) {
         return new (t || MyService)($r3$.ɵɵinject(MyDependency), $r3$.ɵɵinject(MyOptionalDependency, 8));
       }`;
 
-    const def = `
+         const def = `
       MyService.ɵprov = $r3$.ɵɵdefineInjectable({
         token: MyService,
         factory: MyService.ɵfac
       });
     `;
 
-    const result = compile(files, angularFiles);
-    expectEmit(result.source, factory, 'Incorrect factory definition');
-    expectEmit(result.source, def, 'Incorrect injectable definition');
-  });
+         const result = compile(files, angularFiles);
+         expectEmit(result.source, factory, 'Incorrect factory definition');
+         expectEmit(result.source, def, 'Incorrect injectable definition');
+       });
 
-  it('should create a single factory def if the class has more than one decorator', () => {
-    const files = {
-      app: {
-        'spec.ts': `
+    it('should create a single factory def if the class has more than one decorator', () => {
+      const files = {
+        app: {
+          'spec.ts': `
           import {Injectable, Pipe} from '@angular/core';
 
           @Injectable()
@@ -145,19 +150,19 @@ describe('compiler compliance: dependency injection', () => {
           export class MyPipe {
           }
         `
-      }
-    };
+        }
+      };
 
-    const result = compile(files, angularFiles).source;
-    const matches = result.match(/MyPipe\.ɵfac = function MyPipe_Factory/g);
-    expect(matches ? matches.length : 0).toBe(1);
-  });
+      const result = compile(files, angularFiles).source;
+      const matches = result.match(/MyPipe\.ɵfac = function MyPipe_Factory/g);
+      expect(matches ? matches.length : 0).toBe(1);
+    });
 
-  it('should delegate directly to the alternate factory when setting `useFactory` without `deps`',
-     () => {
-       const files = {
-         app: {
-           'spec.ts': `
+    it('should delegate directly to the alternate factory when setting `useFactory` without `deps`',
+       () => {
+         const files = {
+           app: {
+             'spec.ts': `
               import {Injectable} from '@angular/core';
 
               class MyAlternateService {}
@@ -172,10 +177,10 @@ describe('compiler compliance: dependency injection', () => {
               export class MyService {
               }
             `
-         }
-       };
+           }
+         };
 
-       const def = `
+         const def = `
           MyService.ɵprov = $r3$.ɵɵdefineInjectable({
             token: MyService,
             factory: function() {
@@ -184,15 +189,15 @@ describe('compiler compliance: dependency injection', () => {
           });
         `;
 
-       const result = compile(files, angularFiles);
-       expectEmit(result.source, def, 'Incorrect injectable definition');
-     });
+         const result = compile(files, angularFiles);
+         expectEmit(result.source, def, 'Incorrect injectable definition');
+       });
 
-  it('should not delegate directly to the alternate factory when setting `useFactory` with `deps`',
-     () => {
-       const files = {
-         app: {
-           'spec.ts': `
+    it('should not delegate directly to the alternate factory when setting `useFactory` with `deps`',
+       () => {
+         const files = {
+           app: {
+             'spec.ts': `
               import {Injectable} from '@angular/core';
 
               class SomeDep {}
@@ -205,10 +210,10 @@ describe('compiler compliance: dependency injection', () => {
               export class MyService {
               }
             `
-         }
-       };
+           }
+         };
 
-       const def = `
+         const def = `
           MyService.ɵprov = $r3$.ɵɵdefineInjectable({
             token: MyService,
             factory: function MyService_Factory(t) {
@@ -223,15 +228,15 @@ describe('compiler compliance: dependency injection', () => {
           });
         `;
 
-       const result = compile(files, angularFiles);
-       expectEmit(result.source, def, 'Incorrect injectable definition');
-     });
+         const result = compile(files, angularFiles);
+         expectEmit(result.source, def, 'Incorrect injectable definition');
+       });
 
-  it('should delegate directly to the alternate class factory when setting `useClass` without `deps`',
-     () => {
-       const files = {
-         app: {
-           'spec.ts': `
+    it('should delegate directly to the alternate class factory when setting `useClass` without `deps`',
+       () => {
+         const files = {
+           app: {
+             'spec.ts': `
               import {Injectable} from '@angular/core';
 
               @Injectable()
@@ -243,10 +248,10 @@ describe('compiler compliance: dependency injection', () => {
               export class MyService {
               }
             `
-         }
-       };
+           }
+         };
 
-       const factory = `
+         const factory = `
           MyService.ɵprov = $r3$.ɵɵdefineInjectable({
             token: MyService,
             factory: function(t) {
@@ -255,15 +260,15 @@ describe('compiler compliance: dependency injection', () => {
           });
         `;
 
-       const result = compile(files, angularFiles);
-       expectEmit(result.source, factory, 'Incorrect factory definition');
-     });
+         const result = compile(files, angularFiles);
+         expectEmit(result.source, factory, 'Incorrect factory definition');
+       });
 
-  it('should not delegate directly to the alternate class when setting `useClass` with `deps`',
-     () => {
-       const files = {
-         app: {
-           'spec.ts': `
+    it('should not delegate directly to the alternate class when setting `useClass` with `deps`',
+       () => {
+         const files = {
+           app: {
+             'spec.ts': `
             import {Injectable} from '@angular/core';
 
             class SomeDep {}
@@ -278,10 +283,10 @@ describe('compiler compliance: dependency injection', () => {
             export class MyService {
             }
           `
-         }
-       };
+           }
+         };
 
-       const factory = `
+         const factory = `
           MyService.ɵprov = $r3$.ɵɵdefineInjectable({
             token: MyService,
             factory: function MyService_Factory(t) {
@@ -296,14 +301,14 @@ describe('compiler compliance: dependency injection', () => {
           });
         `;
 
-       const result = compile(files, angularFiles);
-       expectEmit(result.source, factory, 'Incorrect factory definition');
-     });
+         const result = compile(files, angularFiles);
+         expectEmit(result.source, factory, 'Incorrect factory definition');
+       });
 
-  it('should unwrap forward refs when delegating to a different class', () => {
-    const files = {
-      app: {
-        'spec.ts': `
+    it('should unwrap forward refs when delegating to a different class', () => {
+      const files = {
+        app: {
+          'spec.ts': `
             import {Injectable, forwardRef} from '@angular/core';
 
             @Injectable({providedIn: 'root', useClass: forwardRef(() => SomeProviderImpl)})
@@ -314,10 +319,10 @@ describe('compiler compliance: dependency injection', () => {
             class SomeProviderImpl extends SomeProvider {
             }
           `
-      }
-    };
+        }
+      };
 
-    const factory = `
+      const factory = `
       SomeProvider.ɵprov = $r3$.ɵɵdefineInjectable({
         token: SomeProvider,
         factory: function(t) {
@@ -327,15 +332,15 @@ describe('compiler compliance: dependency injection', () => {
       });
     `;
 
-    const result = compile(files, angularFiles);
-    expectEmit(result.source, factory, 'Incorrect factory definition');
-  });
+      const result = compile(files, angularFiles);
+      expectEmit(result.source, factory, 'Incorrect factory definition');
+    });
 
-  it('should have the pipe factory take precedence over the injectable factory, if a class has multiple decorators',
-     () => {
-       const files = {
-         app: {
-           'spec.ts': `
+    it('should have the pipe factory take precedence over the injectable factory, if a class has multiple decorators',
+       () => {
+         const files = {
+           app: {
+             'spec.ts': `
             import {Component, NgModule, Pipe, PipeTransform, Injectable} from '@angular/core';
 
             @Injectable()
@@ -364,29 +369,30 @@ describe('compiler compliance: dependency injection', () => {
             @NgModule({declarations: [MyPipe, MyOtherPipe, MyApp], declarations: [Service]})
             export class MyModule {}
           `
-         }
-       };
+           }
+         };
 
-       const result = compile(files, angularFiles);
-       const source = result.source;
+         const result = compile(files, angularFiles);
+         const source = result.source;
 
-       // The prov definition must be last so MyPipe.fac is defined
-       const MyPipeDefs = `
+         // The prov definition must be last so MyPipe.fac is defined
+         const MyPipeDefs = `
         MyPipe.ɵfac = function MyPipe_Factory(t) { return new (t || MyPipe)(i0.ɵɵdirectiveInject(Service)); };
         MyPipe.ɵpipe = i0.ɵɵdefinePipe({ name: "myPipe", type: MyPipe, pure: true });
         MyPipe.ɵprov = i0.ɵɵdefineInjectable({ token: MyPipe, factory: MyPipe.ɵfac });
       `;
 
-       // The prov definition must be last so MyOtherPipe.fac is defined
-       const MyOtherPipeDefs = `
+         // The prov definition must be last so MyOtherPipe.fac is defined
+         const MyOtherPipeDefs = `
         MyOtherPipe.ɵfac = function MyOtherPipe_Factory(t) { return new (t || MyOtherPipe)($r3$.ɵɵdirectiveInject(Service)); };
         MyOtherPipe.ɵpipe = i0.ɵɵdefinePipe({ name: "myOtherPipe", type: MyOtherPipe, pure: true });
         MyOtherPipe.ɵprov = i0.ɵɵdefineInjectable({ token: MyOtherPipe, factory: MyOtherPipe.ɵfac });
       `;
 
-       expectEmit(source, MyPipeDefs, 'Invalid pipe factory function');
-       expectEmit(source, MyOtherPipeDefs, 'Invalid pipe factory function');
-       expect(source.match(/MyPipe\.ɵfac =/g)!.length).toBe(1);
-       expect(source.match(/MyOtherPipe\.ɵfac =/g)!.length).toBe(1);
-     });
+         expectEmit(source, MyPipeDefs, 'Invalid pipe factory function');
+         expectEmit(source, MyOtherPipeDefs, 'Invalid pipe factory function');
+         expect(source.match(/MyPipe\.ɵfac =/g)!.length).toBe(1);
+         expect(source.match(/MyOtherPipe\.ɵfac =/g)!.length).toBe(1);
+       });
+  });
 });

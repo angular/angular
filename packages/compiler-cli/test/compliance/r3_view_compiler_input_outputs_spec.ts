@@ -7,19 +7,23 @@
  */
 
 import {MockDirectory, setup} from '@angular/compiler/test/aot/test_util';
-import {compile, expectEmit} from './mock_compile';
+import {createCompileFn, expectEmit} from './mock_compile';
+import {runInEachCompilationMode} from './test_runner';
 
-describe('compiler compliance: listen()', () => {
-  const angularFiles = setup({
-    compileAngular: false,
-    compileFakeCore: true,
-    compileAnimations: false,
-  });
+runInEachCompilationMode(compilationMode => {
+  const compile = createCompileFn(compilationMode);
 
-  it('should declare inputs/outputs', () => {
-    const files = {
-      app: {
-        'spec.ts': `
+  describe('compiler compliance: listen()', () => {
+    const angularFiles = setup({
+      compileAngular: false,
+      compileFakeCore: true,
+      compileAnimations: false,
+    });
+
+    it('should declare inputs/outputs', () => {
+      const files = {
+        app: {
+          'spec.ts': `
               import {Component, Directive, NgModule, Input, Output} from '@angular/core';
 
               @Component({
@@ -48,10 +52,10 @@ describe('compiler compliance: listen()', () => {
               @NgModule({declarations: [MyComponent, MyDirective]})
               export class MyModule {}
           `
-      }
-    };
+        }
+      };
 
-    const componentDef = `
+      const componentDef = `
       MyComponent.ɵcmp = IDENT.ɵɵdefineComponent({
           …
           inputs:{
@@ -65,7 +69,7 @@ describe('compiler compliance: listen()', () => {
           …
         });`;
 
-    const directiveDef = `
+      const directiveDef = `
       MyDirective.ɵdir = IDENT.ɵɵdefineDirective({
         …
         inputs:{
@@ -80,9 +84,10 @@ describe('compiler compliance: listen()', () => {
       });`;
 
 
-    const result = compile(files, angularFiles);
+      const result = compile(files, angularFiles);
 
-    expectEmit(result.source, componentDef, 'Incorrect component definition');
-    expectEmit(result.source, directiveDef, 'Incorrect directive definition');
+      expectEmit(result.source, componentDef, 'Incorrect component definition');
+      expectEmit(result.source, directiveDef, 'Incorrect directive definition');
+    });
   });
 });

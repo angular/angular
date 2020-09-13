@@ -5,11 +5,11 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AotCompilerOptions} from '@angular/compiler';
 import {escapeRegExp} from '@angular/compiler/src/util';
 import {arrayToMockDir, MockCompilerHost, MockData, MockDirectory, toMockFileArray} from '@angular/compiler/test/aot/test_util';
 import * as ts from 'typescript';
 
+import {NgCompilerOptions} from '../../src/ngtsc/core/api';
 import {NodeJSFileSystem, setFileSystem} from '../../src/ngtsc/file_system';
 import {NgtscProgram} from '../../src/ngtsc/program';
 
@@ -198,10 +198,7 @@ function buildMatcher(pieces: (string|RegExp)[]): {regexp: RegExp, groups: Map<s
 
 
 export function compile(
-    data: MockDirectory, angularFiles: MockData, options: AotCompilerOptions = {},
-    errorCollector: (error: any, fileName?: string) => void = error => {
-      throw error;
-    }): {
+    data: MockDirectory, angularFiles: MockData, options: NgCompilerOptions = {}): {
   source: string,
 } {
   setFileSystem(new NodeJSFileSystem());
@@ -225,4 +222,10 @@ export function compile(
       scripts.map(script => mockCompilerHost.readFile(script.replace(/\.ts$/, '.js'))).join('\n');
 
   return {source};
+}
+
+export function createCompileFn(compilationMode: 'full'|'partial'): typeof compile {
+  return (data, angularFiles, options: NgCompilerOptions = {}) => {
+    return compile(data, angularFiles, {...options, compilationMode});
+  };
 }

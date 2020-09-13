@@ -7,19 +7,23 @@
  */
 
 import {setup} from '@angular/compiler/test/aot/test_util';
-import {compile, expectEmit} from './mock_compile';
+import {createCompileFn, expectEmit} from './mock_compile';
+import {runInEachCompilationMode} from './test_runner';
 
-describe('compiler compliance: providers', () => {
-  const angularFiles = setup({
-    compileAngular: false,
-    compileFakeCore: true,
-    compileAnimations: false,
-  });
+runInEachCompilationMode(compilationMode => {
+  const compile = createCompileFn(compilationMode);
 
-  it('should emit the ProvidersFeature feature when providers and viewProviders', () => {
-    const files = {
-      app: {
-        'spec.ts': `
+  describe('compiler compliance: providers', () => {
+    const angularFiles = setup({
+      compileAngular: false,
+      compileFakeCore: true,
+      compileAnimations: false,
+    });
+
+    it('should emit the ProvidersFeature feature when providers and viewProviders', () => {
+      const files = {
+        app: {
+          'spec.ts': `
               import {Component, NgModule} from '@angular/core';
 
               abstract class Greeter { abstract greet(): string; }
@@ -40,20 +44,20 @@ describe('compiler compliance: providers', () => {
               @NgModule({declarations: [MyComponent]})
               export class MyModule {}
           `
-      }
-    };
+        }
+      };
 
-    const result = compile(files, angularFiles);
-    expectEmit(
-        result.source,
-        'features: [i0.ɵɵProvidersFeature([GreeterEN, {provide: Greeter, useClass: GreeterEN}], [GreeterEN])],',
-        'Incorrect features');
-  });
+      const result = compile(files, angularFiles);
+      expectEmit(
+          result.source,
+          'features: [i0.ɵɵProvidersFeature([GreeterEN, {provide: Greeter, useClass: GreeterEN}], [GreeterEN])],',
+          'Incorrect features');
+    });
 
-  it('should emit the ProvidersFeature feature when providers only', () => {
-    const files = {
-      app: {
-        'spec.ts': `
+    it('should emit the ProvidersFeature feature when providers only', () => {
+      const files = {
+        app: {
+          'spec.ts': `
               import {Component, NgModule} from '@angular/core';
 
               abstract class Greeter { abstract greet(): string; }
@@ -73,20 +77,20 @@ describe('compiler compliance: providers', () => {
               @NgModule({declarations: [MyComponent]})
               export class MyModule {}
           `
-      }
-    };
+        }
+      };
 
-    const result = compile(files, angularFiles);
-    expectEmit(
-        result.source,
-        'features: [i0.ɵɵProvidersFeature([GreeterEN, {provide: Greeter, useClass: GreeterEN}])],',
-        'Incorrect features');
-  });
+      const result = compile(files, angularFiles);
+      expectEmit(
+          result.source,
+          'features: [i0.ɵɵProvidersFeature([GreeterEN, {provide: Greeter, useClass: GreeterEN}])],',
+          'Incorrect features');
+    });
 
-  it('should emit the ProvidersFeature feature when viewProviders only', () => {
-    const files = {
-      app: {
-        'spec.ts': `
+    it('should emit the ProvidersFeature feature when viewProviders only', () => {
+      const files = {
+        app: {
+          'spec.ts': `
               import {Component, NgModule} from '@angular/core';
 
               abstract class Greeter { abstract greet(): string; }
@@ -106,18 +110,19 @@ describe('compiler compliance: providers', () => {
               @NgModule({declarations: [MyComponent]})
               export class MyModule {}
           `
-      }
-    };
+        }
+      };
 
-    const result = compile(files, angularFiles);
-    expectEmit(
-        result.source, 'features: [i0.ɵɵProvidersFeature([], [GreeterEN])],', 'Incorrect features');
-  });
+      const result = compile(files, angularFiles);
+      expectEmit(
+          result.source, 'features: [i0.ɵɵProvidersFeature([], [GreeterEN])],',
+          'Incorrect features');
+    });
 
-  it('should not emit the ProvidersFeature feature when no providers', () => {
-    const files = {
-      app: {
-        'spec.ts': `
+    it('should not emit the ProvidersFeature feature when no providers', () => {
+      const files = {
+        app: {
+          'spec.ts': `
               import {Component, NgModule} from '@angular/core';
 
               abstract class Greeter { abstract greet(): string; }
@@ -136,12 +141,12 @@ describe('compiler compliance: providers', () => {
               @NgModule({declarations: [MyComponent]})
               export class MyModule {}
           `
-      }
-    };
+        }
+      };
 
-    const result = compile(files, angularFiles);
-    expectEmit(
-        result.source, `
+      const result = compile(files, angularFiles);
+      expectEmit(
+          result.source, `
         export class MyComponent {
         }
         MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); };
@@ -157,6 +162,7 @@ describe('compiler compliance: providers', () => {
           },
           encapsulation: 2
         });`,
-        'Incorrect features');
+          'Incorrect features');
+    });
   });
 });

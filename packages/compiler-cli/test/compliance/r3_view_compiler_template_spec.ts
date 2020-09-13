@@ -7,19 +7,23 @@
  */
 import {AttributeMarker} from '@angular/compiler/src/core';
 import {setup} from '@angular/compiler/test/aot/test_util';
-import {compile, expectEmit} from './mock_compile';
+import {createCompileFn, expectEmit} from './mock_compile';
+import {runInEachCompilationMode} from './test_runner';
 
-describe('compiler compliance: template', () => {
-  const angularFiles = setup({
-    compileAngular: false,
-    compileFakeCore: true,
-    compileAnimations: false,
-  });
+runInEachCompilationMode(compilationMode => {
+  const compile = createCompileFn(compilationMode);
 
-  it('should correctly bind to context in nested template', () => {
-    const files = {
-      app: {
-        'spec.ts': `
+  describe('compiler compliance: template', () => {
+    const angularFiles = setup({
+      compileAngular: false,
+      compileFakeCore: true,
+      compileAnimations: false,
+    });
+
+    it('should correctly bind to context in nested template', () => {
+      const files = {
+        app: {
+          'spec.ts': `
               import {Component, NgModule} from '@angular/core';
 
               @Component({
@@ -45,11 +49,11 @@ describe('compiler compliance: template', () => {
               @NgModule({declarations: [MyComponent]})
               export class MyModule {}
           `
-      }
-    };
+        }
+      };
 
-    // The template should look like this (where IDENT is a wild card for an identifier):
-    const template = `
+      // The template should look like this (where IDENT is a wild card for an identifier):
+      const template = `
       function MyComponent_ul_0_li_1_div_1_Template(rf, ctx) {
         if (rf & 1) {
           const $s$ = $i0$.ɵɵgetCurrentView();
@@ -104,9 +108,9 @@ describe('compiler compliance: template', () => {
       }
       // ...
       consts: [[${AttributeMarker.Template}, "ngFor", "ngForOf"], [${
-        AttributeMarker.Bindings}, "title", "click", ${
-        AttributeMarker.Template}, "ngFor", "ngForOf"], [${
-        AttributeMarker.Bindings}, "title", "click"]],
+          AttributeMarker.Bindings}, "title", "click", ${
+          AttributeMarker.Template}, "ngFor", "ngForOf"], [${
+          AttributeMarker.Bindings}, "title", "click"]],
       template:function MyComponent_Template(rf, ctx){
         if (rf & 1) {
           $i0$.ɵɵtemplate(0, MyComponent_ul_0_Template, 2, 1, "ul", 0);
@@ -116,15 +120,15 @@ describe('compiler compliance: template', () => {
         }
       }`;
 
-    const result = compile(files, angularFiles);
+      const result = compile(files, angularFiles);
 
-    expectEmit(result.source, template, 'Incorrect template');
-  });
+      expectEmit(result.source, template, 'Incorrect template');
+    });
 
-  it('should correctly bind to context in nested template with many bindings', () => {
-    const files = {
-      app: {
-        'spec.ts': `
+    it('should correctly bind to context in nested template with many bindings', () => {
+      const files = {
+        app: {
+          'spec.ts': `
               import {Component, NgModule} from '@angular/core';
 
               @Component({
@@ -141,10 +145,10 @@ describe('compiler compliance: template', () => {
               @NgModule({declarations: [MyComponent]})
               export class MyModule {}
           `
-      }
-    };
+        }
+      };
 
-    const template = `
+      const template = `
         function MyComponent_div_0_Template(rf, ctx) {
           if (rf & 1) {
             const $s$ = $r3$.ɵɵgetCurrentView();
@@ -161,7 +165,7 @@ describe('compiler compliance: template', () => {
         }
         // ...
         consts: [[${AttributeMarker.Bindings}, "click", ${
-        AttributeMarker.Template}, "ngFor", "ngForOf"], [${AttributeMarker.Bindings}, "click"]],
+          AttributeMarker.Template}, "ngFor", "ngForOf"], [${AttributeMarker.Bindings}, "click"]],
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵtemplate(0, MyComponent_div_0_Template, 1, 0, "div", 0);
@@ -172,15 +176,15 @@ describe('compiler compliance: template', () => {
         }
         `;
 
-    const result = compile(files, angularFiles);
+      const result = compile(files, angularFiles);
 
-    expectEmit(result.source, template, 'Incorrect template');
-  });
+      expectEmit(result.source, template, 'Incorrect template');
+    });
 
-  it('should correctly bind to implicit receiver in template', () => {
-    const files = {
-      app: {
-        'spec.ts': `
+    it('should correctly bind to implicit receiver in template', () => {
+      const files = {
+        app: {
+          'spec.ts': `
           import {Component, NgModule} from '@angular/core';
 
           @Component({
@@ -197,10 +201,10 @@ describe('compiler compliance: template', () => {
           @NgModule({declarations: [MyComponent]})
           export class MyModule {}
         `
-      }
-    };
+        }
+      };
 
-    const template = `
+      const template = `
       function MyComponent_div_0_Template(rf, ctx) {
         if (rf & 1) {
           const $_r2$ = i0.ɵɵgetCurrentView();
@@ -224,15 +228,15 @@ describe('compiler compliance: template', () => {
       }
     `;
 
-    const result = compile(files, angularFiles);
+      const result = compile(files, angularFiles);
 
-    expectEmit(result.source, template, 'Incorrect template');
-  });
+      expectEmit(result.source, template, 'Incorrect template');
+    });
 
-  it('should support ngFor context variables', () => {
-    const files = {
-      app: {
-        'spec.ts': `
+    it('should support ngFor context variables', () => {
+      const files = {
+        app: {
+          'spec.ts': `
               import {Component, NgModule} from '@angular/core';
 
               @Component({
@@ -247,10 +251,10 @@ describe('compiler compliance: template', () => {
               @NgModule({declarations: [MyComponent]})
               export class MyModule {}
           `
-      }
-    };
+        }
+      };
 
-    const template = `
+      const template = `
       function MyComponent_span_0_Template(rf, ctx) {
         if (rf & 1) {
           $i0$.ɵɵelementStart(0, "span");
@@ -275,15 +279,15 @@ describe('compiler compliance: template', () => {
         }
       }`;
 
-    const result = compile(files, angularFiles);
+      const result = compile(files, angularFiles);
 
-    expectEmit(result.source, template, 'Incorrect template');
-  });
+      expectEmit(result.source, template, 'Incorrect template');
+    });
 
-  it('should support ngFor context variables in parent views', () => {
-    const files = {
-      app: {
-        'spec.ts': `
+    it('should support ngFor context variables in parent views', () => {
+      const files = {
+        app: {
+          'spec.ts': `
               import {Component, NgModule} from '@angular/core';
 
               @Component({
@@ -300,10 +304,10 @@ describe('compiler compliance: template', () => {
               @NgModule({declarations: [MyComponent]})
               export class MyModule {}
           `
-      }
-    };
+        }
+      };
 
-    const template = `
+      const template = `
       function MyComponent_div_0_span_1_Template(rf, ctx) {
         if (rf & 1) {
           $i0$.ɵɵelementStart(0, "span");
@@ -334,7 +338,7 @@ describe('compiler compliance: template', () => {
 
       // ...
       consts: [[${AttributeMarker.Template}, "ngFor", "ngForOf"], [${
-        AttributeMarker.Template}, "ngIf"]],
+          AttributeMarker.Template}, "ngIf"]],
       template:function MyComponent_Template(rf, ctx){
         if (rf & 1) {
           $i0$.ɵɵtemplate(0, MyComponent_div_0_Template, 2, 1, "div", 0);
@@ -344,15 +348,15 @@ describe('compiler compliance: template', () => {
         }
       }`;
 
-    const result = compile(files, angularFiles);
+      const result = compile(files, angularFiles);
 
-    expectEmit(result.source, template, 'Incorrect template');
-  });
+      expectEmit(result.source, template, 'Incorrect template');
+    });
 
-  it('should correctly skip contexts as needed', () => {
-    const files = {
-      app: {
-        'spec.ts': `
+    it('should correctly skip contexts as needed', () => {
+      const files = {
+        app: {
+          'spec.ts': `
               import {Component, NgModule} from '@angular/core';
 
               @Component({
@@ -371,11 +375,11 @@ describe('compiler compliance: template', () => {
               @NgModule({declarations: [MyComponent]})
               export class MyModule {}
           `
-      }
-    };
+        }
+      };
 
-    // The template should look like this (where IDENT is a wild card for an identifier):
-    const template = `
+      // The template should look like this (where IDENT is a wild card for an identifier):
+      const template = `
       function MyComponent_div_0_div_1_div_1_Template(rf, ctx) {
         if (rf & 1) {
           $i0$.ɵɵelementStart(0, "div");
@@ -426,15 +430,15 @@ describe('compiler compliance: template', () => {
         }
       }`;
 
-    const result = compile(files, angularFiles);
+      const result = compile(files, angularFiles);
 
-    expectEmit(result.source, template, 'Incorrect template');
-  });
+      expectEmit(result.source, template, 'Incorrect template');
+    });
 
-  it('should support <ng-template>', () => {
-    const files = {
-      app: {
-        'spec.ts': `
+    it('should support <ng-template>', () => {
+      const files = {
+        app: {
+          'spec.ts': `
               import {Component, NgModule} from '@angular/core';
 
               @Component({
@@ -449,10 +453,10 @@ describe('compiler compliance: template', () => {
               @NgModule({declarations: [MyComponent]})
               export class MyModule {}
           `
-      }
-    };
+        }
+      };
 
-    const template = `
+      const template = `
       function MyComponent_ng_template_0_Template(rf, ctx) {
         if (rf & 1) {
           $i0$.ɵɵtext(0, " some-content ");
@@ -471,15 +475,15 @@ describe('compiler compliance: template', () => {
         }
       }`;
 
-    const result = compile(files, angularFiles);
+      const result = compile(files, angularFiles);
 
-    expectEmit(result.source, template, 'Incorrect template');
-  });
+      expectEmit(result.source, template, 'Incorrect template');
+    });
 
-  it('should support local refs on <ng-template>', () => {
-    const files = {
-      app: {
-        'spec.ts': `
+    it('should support local refs on <ng-template>', () => {
+      const files = {
+        app: {
+          'spec.ts': `
               import {Component, NgModule} from '@angular/core';
 
               @Component({
@@ -491,10 +495,10 @@ describe('compiler compliance: template', () => {
               @NgModule({declarations: [MyComponent]})
               export class MyModule {}
           `
-      }
-    };
+        }
+      };
 
-    const template = `
+      const template = `
       function MyComponent_ng_template_0_Template(rf, ctx) {
         if (rf & 1) {
           $i0$.ɵɵtext(0, "some-content");
@@ -509,15 +513,15 @@ describe('compiler compliance: template', () => {
         }
       }`;
 
-    const result = compile(files, angularFiles);
+      const result = compile(files, angularFiles);
 
-    expectEmit(result.source, template, 'Incorrect template');
-  });
+      expectEmit(result.source, template, 'Incorrect template');
+    });
 
-  it('should support directive outputs on <ng-template>', () => {
-    const files = {
-      app: {
-        'spec.ts': `
+    it('should support directive outputs on <ng-template>', () => {
+      const files = {
+        app: {
+          'spec.ts': `
               import {Component, NgModule} from '@angular/core';
 
               @Component({
@@ -529,10 +533,10 @@ describe('compiler compliance: template', () => {
               @NgModule({declarations: [MyComponent]})
               export class MyModule {}
           `
-      }
-    };
+        }
+      };
 
-    const template = `
+      const template = `
       function MyComponent_ng_template_0_Template(rf, ctx) { }
 
       // ...
@@ -545,15 +549,15 @@ describe('compiler compliance: template', () => {
         }
       }`;
 
-    const result = compile(files, angularFiles);
+      const result = compile(files, angularFiles);
 
-    expectEmit(result.source, template, 'Incorrect template');
-  });
+      expectEmit(result.source, template, 'Incorrect template');
+    });
 
-  it('should allow directive inputs as an interpolated prop on <ng-template>', () => {
-    const files = {
-      app: {
-        'spec.ts': `
+    it('should allow directive inputs as an interpolated prop on <ng-template>', () => {
+      const files = {
+        app: {
+          'spec.ts': `
           import {Component, Directive, Input} from '@angular/core';
 
           @Directive({selector: '[dir]'})
@@ -569,10 +573,10 @@ describe('compiler compliance: template', () => {
             message = 'Hello';
           }
         `
-      }
-    };
-    const result = compile(files, angularFiles);
-    const expectedTemplate = `
+        }
+      };
+      const result = compile(files, angularFiles);
+      const expectedTemplate = `
       consts: [[${AttributeMarker.Bindings}, "dir"]],
       template: function TestComp_Template(rf, ctx) {
         if (rf & 1) {
@@ -583,14 +587,14 @@ describe('compiler compliance: template', () => {
         }
       },
     `;
-    expectEmit(result.source, expectedTemplate, 'Incorrect template');
-  });
+      expectEmit(result.source, expectedTemplate, 'Incorrect template');
+    });
 
-  it('should allow directive inputs as an interpolated prop on <ng-template> (with structural directives)',
-     () => {
-       const files = {
-         app: {
-           'spec.ts': `
+    it('should allow directive inputs as an interpolated prop on <ng-template> (with structural directives)',
+       () => {
+         const files = {
+           app: {
+             'spec.ts': `
               import {Component, Directive, Input} from '@angular/core';
 
               @Directive({selector: '[dir]'})
@@ -606,12 +610,12 @@ describe('compiler compliance: template', () => {
                 message = 'Hello';
               }
             `
-         }
-       };
-       const result = compile(files, angularFiles);
+           }
+         };
+         const result = compile(files, angularFiles);
 
-       // Expect that `ɵɵpropertyInterpolate` is generated in the inner template function.
-       const expectedInnerTemplate = `
+         // Expect that `ɵɵpropertyInterpolate` is generated in the inner template function.
+         const expectedInnerTemplate = `
           function $TestComp_0_Template$(rf, ctx) {
             if (rf & 1) {
               $i0$.ɵɵtemplate(0, $TestComp_0_ng_template_0_Template$, 0, 0, "ng-template", 1);
@@ -622,10 +626,10 @@ describe('compiler compliance: template', () => {
             }
           }
         `;
-       expectEmit(result.source, expectedInnerTemplate, 'Incorrect template');
+         expectEmit(result.source, expectedInnerTemplate, 'Incorrect template');
 
-       // Main template should just contain *ngIf property.
-       const expectedMainTemplate = `
+         // Main template should just contain *ngIf property.
+         const expectedMainTemplate = `
           consts: [[4, "ngIf"], [3, "dir"]],
           template: function TestComp_Template(rf, ctx) {
             if (rf & 1) {
@@ -636,14 +640,14 @@ describe('compiler compliance: template', () => {
             }
           },
         `;
-       expectEmit(result.source, expectedMainTemplate, 'Incorrect template');
-     });
+         expectEmit(result.source, expectedMainTemplate, 'Incorrect template');
+       });
 
-  it('should create unique template function names even for similar nested template structures',
-     () => {
-       const files = {
-         app: {
-           'spec1.ts': `
+    it('should create unique template function names even for similar nested template structures',
+       () => {
+         const files = {
+           app: {
+             'spec1.ts': `
           import {Component, NgModule} from '@angular/core';
 
           @Component({
@@ -665,7 +669,7 @@ describe('compiler compliance: template', () => {
           @NgModule({declarations: [AComponent]})
           export class AModule {}
         `,
-           'spec2.ts': `
+             'spec2.ts': `
           import {Component, NgModule} from '@angular/core';
 
           @Component({
@@ -697,29 +701,29 @@ describe('compiler compliance: template', () => {
           @NgModule({declarations: [BComponent]})
           export class BModule {}
         `,
-         },
-       };
+           },
+         };
 
-       const result = compile(files, angularFiles);
+         const result = compile(files, angularFiles);
 
-       const allTemplateFunctionsNames = (result.source.match(/function ([^\s(]+)/g) || [])
-                                             .map(x => x.slice(9))
-                                             .filter(x => x.includes('Template'))
-                                             .sort();
-       const uniqueTemplateFunctionNames = Array.from(new Set(allTemplateFunctionsNames));
+         const allTemplateFunctionsNames = (result.source.match(/function ([^\s(]+)/g) || [])
+                                               .map(x => x.slice(9))
+                                               .filter(x => x.includes('Template'))
+                                               .sort();
+         const uniqueTemplateFunctionNames = Array.from(new Set(allTemplateFunctionsNames));
 
-       // Expected template function:
-       // - 5 for AComponent's template.
-       // - 9 for BComponent's template.
-       // - 2 for the two components.
-       expect(allTemplateFunctionsNames.length).toBe(5 + 9 + 2);
-       expect(allTemplateFunctionsNames).toEqual(uniqueTemplateFunctionNames);
-     });
+         // Expected template function:
+         // - 5 for AComponent's template.
+         // - 9 for BComponent's template.
+         // - 2 for the two components.
+         expect(allTemplateFunctionsNames.length).toBe(5 + 9 + 2);
+         expect(allTemplateFunctionsNames).toEqual(uniqueTemplateFunctionNames);
+       });
 
-  it('should create unique template function names for ng-content templates', () => {
-    const files = {
-      app: {
-        'spec.ts': `
+    it('should create unique template function names for ng-content templates', () => {
+      const files = {
+        app: {
+          'spec.ts': `
           import {Component, NgModule} from '@angular/core';
 
           @Component({
@@ -745,30 +749,30 @@ describe('compiler compliance: template', () => {
           @NgModule({declarations: [AComponent, BComponent]})
           export class AModule {}
         `
-      },
-    };
+        },
+      };
 
-    const result = compile(files, angularFiles);
+      const result = compile(files, angularFiles);
 
-    const allTemplateFunctionsNames = (result.source.match(/function ([^\s(]+)/g) || [])
-                                          .map(x => x.slice(9))
-                                          .filter(x => x.includes('Template'))
-                                          .sort();
-    const uniqueTemplateFunctionNames = Array.from(new Set(allTemplateFunctionsNames));
+      const allTemplateFunctionsNames = (result.source.match(/function ([^\s(]+)/g) || [])
+                                            .map(x => x.slice(9))
+                                            .filter(x => x.includes('Template'))
+                                            .sort();
+      const uniqueTemplateFunctionNames = Array.from(new Set(allTemplateFunctionsNames));
 
-    // Expected template function:
-    // - 1 for AComponent's template.
-    // - 1 for BComponent's template.
-    // - 2 for the two components.
-    expect(allTemplateFunctionsNames.length).toBe(1 + 1 + 2);
-    expect(allTemplateFunctionsNames).toEqual(uniqueTemplateFunctionNames);
-  });
+      // Expected template function:
+      // - 1 for AComponent's template.
+      // - 1 for BComponent's template.
+      // - 2 for the two components.
+      expect(allTemplateFunctionsNames.length).toBe(1 + 1 + 2);
+      expect(allTemplateFunctionsNames).toEqual(uniqueTemplateFunctionNames);
+    });
 
-  it('should create unique listener function names even for similar nested template structures',
-     () => {
-       const files = {
-         app: {
-           'spec.ts': `
+    it('should create unique listener function names even for similar nested template structures',
+       () => {
+         const files = {
+           app: {
+             'spec.ts': `
           import {Component, NgModule} from '@angular/core';
 
           @Component({
@@ -790,25 +794,25 @@ describe('compiler compliance: template', () => {
           @NgModule({declarations: [MyComponent]})
           export class MyModule {}
         `,
-         },
-       };
+           },
+         };
 
-       const result = compile(files, angularFiles);
+         const result = compile(files, angularFiles);
 
-       const allListenerFunctionsNames = (result.source.match(/function ([^\s(]+)/g) || [])
-                                             .map(x => x.slice(9))
-                                             .filter(x => x.includes('listener'))
-                                             .sort();
-       const uniqueListenerFunctionNames = Array.from(new Set(allListenerFunctionsNames));
+         const allListenerFunctionsNames = (result.source.match(/function ([^\s(]+)/g) || [])
+                                               .map(x => x.slice(9))
+                                               .filter(x => x.includes('listener'))
+                                               .sort();
+         const uniqueListenerFunctionNames = Array.from(new Set(allListenerFunctionsNames));
 
-       expect(allListenerFunctionsNames.length).toBe(3);
-       expect(allListenerFunctionsNames).toEqual(uniqueListenerFunctionNames);
-     });
+         expect(allListenerFunctionsNames.length).toBe(3);
+         expect(allListenerFunctionsNames).toEqual(uniqueListenerFunctionNames);
+       });
 
-  it('should support pipes in template bindings', () => {
-    const files = {
-      app: {
-        'spec.ts': `
+    it('should support pipes in template bindings', () => {
+      const files = {
+        app: {
+          'spec.ts': `
               import {Component, NgModule} from '@angular/core';
 
               @Component({
@@ -821,10 +825,10 @@ describe('compiler compliance: template', () => {
               @NgModule({declarations: [MyComponent]})
               export class MyModule {}
           `
-      }
-    };
+        }
+      };
 
-    const template = `
+      const template = `
       function MyComponent_div_0_Template(rf, ctx) {
         if (rf & 1) {
           $i0$.ɵɵelement(0, "div");
@@ -842,15 +846,15 @@ describe('compiler compliance: template', () => {
         }
       }`;
 
-    const result = compile(files, angularFiles);
+      const result = compile(files, angularFiles);
 
-    expectEmit(result.source, template, 'Incorrect template');
-  });
+      expectEmit(result.source, template, 'Incorrect template');
+    });
 
-  it('should safely nest ternary operations', () => {
-    const files = {
-      app: {
-        'spec.ts': `
+    it('should safely nest ternary operations', () => {
+      const files = {
+        app: {
+          'spec.ts': `
             import {Component, NgModule} from '@angular/core';
 
             @Component({
@@ -863,12 +867,13 @@ describe('compiler compliance: template', () => {
             @NgModule({declarations: [MyComponent]})
             export class MyModule {}
         `
-      }
-    };
+        }
+      };
 
-    const template = `i0.ɵɵtextInterpolate1(" ", (ctx.a == null ? null : ctx.a.b) ? 1 : 2, "")`;
+      const template = `i0.ɵɵtextInterpolate1(" ", (ctx.a == null ? null : ctx.a.b) ? 1 : 2, "")`;
 
-    const result = compile(files, angularFiles);
-    expectEmit(result.source, template, 'Incorrect template');
+      const result = compile(files, angularFiles);
+      expectEmit(result.source, template, 'Incorrect template');
+    });
   });
 });

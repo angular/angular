@@ -7,20 +7,24 @@
  */
 
 import {MockDirectory, setup} from '@angular/compiler/test/aot/test_util';
-import {compile, expectEmit} from './mock_compile';
+import {createCompileFn, expectEmit} from './mock_compile';
+import {runInEachCompilationMode} from './test_runner';
 
-describe('r3_view_compiler', () => {
-  const angularFiles = setup({
-    compileAngular: false,
-    compileFakeCore: true,
-    compileAnimations: false,
-  });
+runInEachCompilationMode(compilationMode => {
+  const compile = createCompileFn(compilationMode);
 
-  describe('hello world', () => {
-    it('should be able to generate the hello world component', () => {
-      const files: MockDirectory = {
-        app: {
-          'hello.ts': `
+  describe('r3_view_compiler', () => {
+    const angularFiles = setup({
+      compileAngular: false,
+      compileFakeCore: true,
+      compileAnimations: false,
+    });
+
+    describe('hello world', () => {
+      it('should be able to generate the hello world component', () => {
+        const files: MockDirectory = {
+          app: {
+            'hello.ts': `
            import {Component, NgModule} from '@angular/core';
 
            @Component({
@@ -36,16 +40,16 @@ describe('r3_view_compiler', () => {
            })
            export class HelloWorldModule {}
         `
-        }
-      };
-      compile(files, angularFiles);
+          }
+        };
+        compile(files, angularFiles);
+      });
     });
-  });
 
-  it('should be able to generate the example', () => {
-    const files: MockDirectory = {
-      app: {
-        'example.ts': `
+    it('should be able to generate the example', () => {
+      const files: MockDirectory = {
+        app: {
+          'example.ts': `
         import {Component, OnInit, OnDestroy, ElementRef, Input, NgModule} from '@angular/core';
 
         @Component({
@@ -85,18 +89,19 @@ describe('r3_view_compiler', () => {
         })
         export class TodoModule{}
         `
-      }
-    };
-    const result = compile(files, angularFiles);
-    expect(result.source).toContain('@angular/core');
-  });
+        }
+      };
+      const result = compile(files, angularFiles);
+      expect(result.source).toContain('@angular/core');
+    });
 
-  describe('interpolations', () => {
-    // Regression #21927
-    it('should generate a correct call to textInterpolateV with more than 8 interpolations', () => {
-      const files: MockDirectory = {
-        app: {
-          'example.ts': `
+    describe('interpolations', () => {
+      // Regression #21927
+      it('should generate a correct call to textInterpolateV with more than 8 interpolations',
+         () => {
+           const files: MockDirectory = {
+             app: {
+               'example.ts': `
           import {Component, NgModule} from '@angular/core';
 
           @Component({
@@ -109,10 +114,10 @@ describe('r3_view_compiler', () => {
 
           @NgModule({declarations: [MyApp]})
           export class MyModule {}`
-        }
-      };
+             }
+           };
 
-      const bV_call = `
+           const bV_call = `
       …
       function MyApp_Template(rf, ctx) {
         if (rf & 1) {
@@ -124,16 +129,16 @@ describe('r3_view_compiler', () => {
       }
       …
       `;
-      const result = compile(files, angularFiles);
-      expectEmit(result.source, bV_call, 'Incorrect bV call');
+           const result = compile(files, angularFiles);
+           expectEmit(result.source, bV_call, 'Incorrect bV call');
+         });
     });
-  });
 
-  describe('animations', () => {
-    it('should not register any @attr attributes as static attributes', () => {
-      const files: MockDirectory = {
-        app: {
-          'example.ts': `
+    describe('animations', () => {
+      it('should not register any @attr attributes as static attributes', () => {
+        const files: MockDirectory = {
+          app: {
+            'example.ts': `
           import {Component, NgModule} from '@angular/core';
 
           @Component({
@@ -145,10 +150,10 @@ describe('r3_view_compiler', () => {
 
           @NgModule({declarations: [MyApp]})
           export class MyModule {}`
-        }
-      };
+          }
+        };
 
-      const template = `
+        const template = `
       template: function MyApp_Template(rf, ctx) {
         if (rf & 1) {
           $i0$.ɵɵelement(0, "div");
@@ -157,14 +162,14 @@ describe('r3_view_compiler', () => {
           $i0$.ɵɵproperty("@attr", …)("@binding", …);
         }
       }`;
-      const result = compile(files, angularFiles);
-      expectEmit(result.source, template, 'Incorrect initialization attributes');
-    });
+        const result = compile(files, angularFiles);
+        expectEmit(result.source, template, 'Incorrect initialization attributes');
+      });
 
-    it('should dedup multiple [@event] listeners', () => {
-      const files: MockDirectory = {
-        app: {
-          'example.ts': `
+      it('should dedup multiple [@event] listeners', () => {
+        const files: MockDirectory = {
+          app: {
+            'example.ts': `
           import {Component, NgModule} from '@angular/core';
 
           @Component({
@@ -176,10 +181,10 @@ describe('r3_view_compiler', () => {
 
           @NgModule({declarations: [MyApp]})
           export class MyModule {}`
-        }
-      };
+          }
+        };
 
-      const template = `
+        const template = `
       template: function MyApp_Template(rf, ctx) {
         if (rf & 1) {
           $i0$.ɵɵelementStart(0, "div");
@@ -187,8 +192,9 @@ describe('r3_view_compiler', () => {
           $i0$.ɵɵproperty("@mySelector", …);
         }
       }`;
-      const result = compile(files, angularFiles);
-      expectEmit(result.source, template, 'Incorrect initialization attributes');
+        const result = compile(files, angularFiles);
+        expectEmit(result.source, template, 'Incorrect initialization attributes');
+      });
     });
   });
 });
