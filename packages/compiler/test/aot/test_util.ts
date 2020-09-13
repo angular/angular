@@ -10,6 +10,7 @@ import {AotCompilerHost, AotCompilerOptions, createAotCompiler, GeneratedFile, t
 import {MetadataBundlerHost} from '@angular/compiler-cli/src/metadata/bundler';
 import {MetadataCollector} from '@angular/compiler-cli/src/metadata/collector';
 import {ModuleMetadata} from '@angular/compiler-cli/src/metadata/index';
+import {getCachedSourceFile} from '@angular/compiler-cli/test/helpers';
 import {newArray} from '@angular/compiler/src/util';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -182,6 +183,10 @@ export class EmittingCompilerHost implements ts.CompilerHost {
       onError?: (message: string) => void): ts.SourceFile {
     const content = this.readFile(fileName);
     if (content) {
+      const cachedSf = getCachedSourceFile(fileName, () => content);
+      if (cachedSf !== null) {
+        return cachedSf;
+      }
       return ts.createSourceFile(fileName, content, languageVersion, /* setParentNodes */ true);
     }
     throw new Error(`File not found '${fileName}'.`);
@@ -316,16 +321,20 @@ export class MockCompilerHost implements ts.CompilerHost {
   // ts.CompilerHost
   getSourceFile(
       fileName: string, languageVersion: ts.ScriptTarget,
-      onError?: (message: string) => void): ts.SourceFile {
+      onError?: (message: string) => void): ts.SourceFile|undefined {
     let result = this.sourceFiles.get(fileName);
     if (!result) {
       const content = this.getFileContent(fileName);
+      const cachedSf = getCachedSourceFile(fileName, () => content);
+      if (cachedSf !== null) {
+        return cachedSf;
+      }
       if (content) {
         result = ts.createSourceFile(fileName, content, languageVersion);
         this.sourceFiles.set(fileName, result);
       }
     }
-    return result!;
+    return result;
   }
 
   getDefaultLibFileName(options: ts.CompilerOptions): string {
@@ -424,7 +433,7 @@ export class MockAotCompilerHost implements AotCompilerHost {
       }
     } else {
       const sf = this.tsHost.getSourceFile(modulePath, ts.ScriptTarget.Latest);
-      const metadata = this.metadataProvider.getMetadata(sf);
+      const metadata = sf && this.metadataProvider.getMetadata(sf);
       return metadata ? [metadata] : [];
     }
     return undefined;
