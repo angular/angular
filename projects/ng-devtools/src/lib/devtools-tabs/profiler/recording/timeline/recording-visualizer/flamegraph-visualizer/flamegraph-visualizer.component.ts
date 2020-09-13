@@ -26,9 +26,7 @@ export class FlamegraphVisualizerComponent {
   // graph options
   graphData: GraphNode[] = [];
   view: [number, number] = [235, 200];
-  colorScheme = {
-    domain: ['#E71D36', '#2EC4B6', '#FF9F1C', '#011627'],
-  };
+
   colors = {
     hue: [50, 0],
     saturation: 280,
