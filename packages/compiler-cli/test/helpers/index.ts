@@ -7,3 +7,4 @@
  */
 export {getAngularPackagesFromRunfiles, resolveNpmTreeArtifact} from './src/runfile_helpers';
 export * from './src/mock_file_loading';
+export * from './src/cached_source_files';

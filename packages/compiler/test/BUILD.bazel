@@ -29,6 +29,7 @@ ts_library(
         "//packages:types",
         "//packages/compiler",
         "//packages/compiler-cli",
+        "//packages/compiler-cli/test/helpers",
         "@npm//typescript",
     ],
 )
