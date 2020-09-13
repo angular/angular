@@ -10,8 +10,8 @@ export class DemoApplicationOperations extends ApplicationOperations {
     console.warn('selectDomElement() is not implemented because the demo app runs in an Iframe');
     throw new Error('Not implemented in demo app.');
   }
-  inspectFunction(position: DirectivePosition, keyPath: string[]): void {
-    console.warn('inspectFunction() is not implemented because the demo app runs in an Iframe');
+  inspect(directivePosition: DirectivePosition, keyPath: string[]): void {
+    console.warn('inspect() is not implemented because the demo app runs in an Iframe');
     return;
   }
 }

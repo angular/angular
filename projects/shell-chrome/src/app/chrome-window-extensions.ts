@@ -36,8 +36,8 @@ const chromeWindowExtensions = {
     }
     return node.nativeElement;
   },
-  findFunctionByPosition: (args): any => {
-    const { directivePosition, keyPath } = JSON.parse(args);
+  findPropertyByPosition: (args): any => {
+    const { directivePosition, objectPath } = JSON.parse(args);
     const node = queryDirectiveForest(directivePosition.element, buildDirectiveForest());
     if (node === null) {
       console.error(`Cannot find element associated with node ${directivePosition}`);
@@ -49,16 +49,16 @@ const chromeWindowExtensions = {
       node.directives[directivePosition.directive] &&
       typeof node.directives[directivePosition.directive] === 'object';
     if (isDirective) {
-      return traverseDirective(node.directives[directivePosition.directive].instance, keyPath);
+      return traverseDirective(node.directives[directivePosition.directive].instance, objectPath);
     }
     if (node.component) {
-      return traverseDirective(node.component.instance, keyPath);
+      return traverseDirective(node.component.instance, objectPath);
     }
   },
 };
 
-const traverseDirective = (dir: any, keyPath: string[]): any => {
-  for (const key of keyPath) {
+const traverseDirective = (dir: any, objectPath: string[]): any => {
+  for (const key of objectPath) {
     if (!dir[key]) {
       return;
     }

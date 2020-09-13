@@ -10,7 +10,7 @@ import { DirectivePosition } from 'protocol';
 })
 export class PropertyViewComponent {
   @Input() directive: string;
-  @Output() inspectFunction = new EventEmitter<{ node: FlatNode; directivePosition: DirectivePosition }>();
+  @Output() inspect = new EventEmitter<{ node: FlatNode; directivePosition: DirectivePosition }>();
 
   constructor(private _nestedProps: ElementPropertyResolver) {}
 

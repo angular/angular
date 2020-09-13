@@ -2,7 +2,7 @@
   <mat-tree-node matTreeNodePaddingIndent="14" *matTreeNodeDef="let node" matTreeNodePadding>
     <span class="name non-expandable"> {{ node.prop.name }} </span>:&nbsp;
     <ng-container *ngIf="!node.prop.descriptor.editable; else editable">
-      <ng-property-preview (inspectFunction)="inspectFunction.emit(node)" [node]="node"></ng-property-preview>
+      <ng-property-preview (inspect)="inspect.emit(node)" [node]="node"></ng-property-preview>
     </ng-container>
     <ng-template #editable>
       <ng-property-editor
