@@ -120,7 +120,7 @@ export const TViewConstructor = class TView implements ITView {
       public template: ComponentTemplate<{}>|null,           //
       public queries: TQueries|null,                         //
       public viewQuery: ViewQueriesFunction<{}>|null,        //
-      public node: ITNode|null,                              //
+      public declTNode: ITNode|null,                         //
       public data: TData,                                    //
       public bindingStartIndex: number,                      //
       public expandoStartIndex: number,                      //
