@@ -9,6 +9,7 @@
 // TODO(josephperrott): migrate golden testing to ng-dev toolset
 const {spawnSync} = require('child_process');
 const minimist = require('minimist');
+const path = require('path');
 
 // Remove all command line flags from the arguments.
 const argv = minimist(process.argv.slice(2));
@@ -24,7 +25,7 @@ const ALL_TEST_TARGETS =
           '-s', 'bazel', 'query', '--output', 'label',
           `kind(nodejs_test, ...) intersect attr("tags", "symbol_extractor", ...)`
         ],
-        {encoding: 'utf8'})
+        {encoding: 'utf8', shell: true, cwd: path.resolve(__dirname, '../..')})
         .stdout.trim()
         .split('\n')
         .map(line => line.trim());
