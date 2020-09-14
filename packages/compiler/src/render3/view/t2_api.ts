@@ -46,6 +46,9 @@ export interface DirectiveMeta {
    */
   name: string;
 
+  /** The selector for the directive or `null` if there isn't one. */
+  selector: string|null;
+
   /**
    * Whether the directive is a component.
    */

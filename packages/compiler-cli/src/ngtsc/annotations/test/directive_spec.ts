@@ -104,6 +104,7 @@ runInEachFileSystem(() => {
         outputs: analysis.outputs,
         isComponent: false,
         name: 'Dir',
+        selector: '[dir]',
       };
       matcher.addSelectables(CssSelector.parse('[dir]'), dirMeta);
 
