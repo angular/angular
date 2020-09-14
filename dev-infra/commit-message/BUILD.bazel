@@ -39,6 +39,6 @@ jasmine_node_test(
     name = "test",
     bootstrap = ["//tools/testing:node_no_angular_es5"],
     deps = [
-        "test_lib",
+        ":test_lib",
     ],
 )
