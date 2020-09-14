@@ -59,7 +59,7 @@ export function ɵɵdirectiveInject<T>(
  * @codeGenApi
  */
 export function ɵɵinjectAttribute(attrNameToInject: string): string|null {
-  return injectAttributeImpl(getPreviousOrParentTNode(), attrNameToInject);
+  return injectAttributeImpl(getPreviousOrParentTNode()!, attrNameToInject);
 }
 
 /**

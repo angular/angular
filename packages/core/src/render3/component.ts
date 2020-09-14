@@ -229,7 +229,7 @@ export function createRootComponent<T>(
     componentDef.contentQueries(RenderFlags.Create, component, rootLView.length - 1);
   }
 
-  const rootTNode = getPreviousOrParentTNode();
+  const rootTNode = getPreviousOrParentTNode()!;
   if (tView.firstCreatePass &&
       (componentDef.hostBindings !== null || componentDef.hostAttrs !== null)) {
     const elementIndex = rootTNode.index - HEADER_OFFSET;

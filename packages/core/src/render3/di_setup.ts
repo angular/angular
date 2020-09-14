@@ -76,7 +76,7 @@ function resolveProvider(
     let token: any = isTypeProvider(provider) ? provider : resolveForwardRef(provider.provide);
     let providerFactory: () => any = providerToFactory(provider);
 
-    const tNode = getPreviousOrParentTNode();
+    const tNode = getPreviousOrParentTNode()!;
     const beginIndex = tNode.providerIndexes & TNodeProviderIndexes.ProvidersStartIndexMask;
     const endIndex = tNode.directiveStart;
     const cptViewProvidersCount =
