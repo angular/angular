@@ -17,7 +17,7 @@ import {getInjectorIndex} from '../di';
 import {CONTAINER_HEADER_OFFSET, HAS_TRANSPLANTED_VIEWS, LContainer, MOVED_VIEWS, NATIVE} from '../interfaces/container';
 import {ComponentTemplate, DirectiveDef, DirectiveDefList, PipeDefList, ViewQueriesFunction} from '../interfaces/definition';
 import {NO_PARENT_INJECTOR, PARENT_INJECTOR, TNODE} from '../interfaces/injector';
-import {AttributeMarker, PropertyAliases, TConstants, TContainerNode, TElementNode, TNode as ITNode, TNodeFlags, TNodeProviderIndexes, TNodeType, TNodeTypeAsString, TViewNode} from '../interfaces/node';
+import {AttributeMarker, PropertyAliases, TConstants, TContainerNode, TElementNode, TNode as ITNode, TNodeFlags, TNodeProviderIndexes, TNodeType, TNodeTypeAsString} from '../interfaces/node';
 import {SelectorFlags} from '../interfaces/projection';
 import {LQueries, TQueries} from '../interfaces/query';
 import {RComment, RElement, Renderer3, RendererFactory3, RNode} from '../interfaces/renderer';
@@ -116,12 +116,11 @@ function nameSuffix(text: string|null|undefined): string {
 export const TViewConstructor = class TView implements ITView {
   constructor(
       public type: TViewType,                                //
-      public id: number,                                     //
       public blueprint: LView,                               //
       public template: ComponentTemplate<{}>|null,           //
       public queries: TQueries|null,                         //
       public viewQuery: ViewQueriesFunction<{}>|null,        //
-      public node: TViewNode|TElementNode|null,              //
+      public node: ITNode|null,                              //
       public data: TData,                                    //
       public bindingStartIndex: number,                      //
       public expandoStartIndex: number,                      //
@@ -493,7 +492,7 @@ export class LViewDebug implements ILViewDebug {
   get queries(): LQueries|null {
     return this._raw_lView[QUERIES];
   }
-  get tHost(): TViewNode|TElementNode|null {
+  get tHost(): ITNode|null {
     return this._raw_lView[T_HOST];
   }
 

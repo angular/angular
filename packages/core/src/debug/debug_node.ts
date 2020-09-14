@@ -7,6 +7,7 @@
  */
 
 import {Injector} from '../di/injector';
+import {assertTNodeForLView} from '../render3/assert';
 import {CONTAINER_HEADER_OFFSET, LContainer, NATIVE} from '../render3/interfaces/container';
 import {TElementNode, TNode, TNodeFlags, TNodeType} from '../render3/interfaces/node';
 import {isComponentHost, isLContainer} from '../render3/interfaces/type_checks';
@@ -15,7 +16,7 @@ import {getComponent, getContext, getInjectionTokens, getInjector, getListeners,
 import {INTERPOLATION_DELIMITER, renderStringify} from '../render3/util/misc_utils';
 import {getComponentLViewByIndex, getNativeByTNodeOrNull} from '../render3/util/view_utils';
 import {assertDomNode} from '../util/assert';
-import {DebugContext} from '../view/types';
+import {DebugContext} from '../view/index';
 
 
 
@@ -525,6 +526,7 @@ function _queryAllR3(
 function _queryNodeChildrenR3(
     tNode: TNode, lView: LView, predicate: Predicate<DebugElement>|Predicate<DebugNode>,
     matches: DebugElement[]|DebugNode[], elementsOnly: boolean, rootNativeNode: any) {
+  ngDevMode && assertTNodeForLView(tNode, lView);
   const nativeNode = getNativeByTNodeOrNull(tNode, lView);
   // For each type of TNode, specific logic is executed.
   if (tNode.type === TNodeType.Element || tNode.type === TNodeType.ElementContainer) {
@@ -616,9 +618,11 @@ function _queryNodeChildrenInContainerR3(
     lContainer: LContainer, predicate: Predicate<DebugElement>|Predicate<DebugNode>,
     matches: DebugElement[]|DebugNode[], elementsOnly: boolean, rootNativeNode: any) {
   for (let i = CONTAINER_HEADER_OFFSET; i < lContainer.length; i++) {
-    const childView = lContainer[i];
-    _queryNodeChildrenR3(
-        childView[TVIEW].node!, childView, predicate, matches, elementsOnly, rootNativeNode);
+    const childView = lContainer[i] as LView;
+    const firstChild = childView[TVIEW].firstChild;
+    if (firstChild) {
+      _queryNodeChildrenR3(firstChild, childView, predicate, matches, elementsOnly, rootNativeNode);
+    }
   }
 }
 
@@ -658,7 +662,7 @@ function _addQueryMatchR3(
  *
  * @param nativeNode the current native node
  * @param predicate the predicate to match
- * @param matches the list of positive matches
+ * @param matches the list where matches are stored
  * @param elementsOnly whether only elements should be searched
  */
 function _queryNativeNodeDescendants(

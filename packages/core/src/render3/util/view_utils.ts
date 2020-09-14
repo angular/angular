@@ -105,10 +105,10 @@ export function getNativeByTNode(tNode: TNode, lView: LView): RNode {
  * @param tNode
  * @param lView
  */
-export function getNativeByTNodeOrNull(tNode: TNode, lView: LView): RNode|null {
-  const index = tNode.index;
+export function getNativeByTNodeOrNull(tNode: TNode|null, lView: LView): RNode|null {
+  const index = tNode === null ? -1 : tNode.index;
   if (index !== -1) {
-    ngDevMode && assertTNodeForLView(tNode, lView);
+    ngDevMode && assertTNodeForLView(tNode!, lView);
     const node: RNode|null = unwrapRNode(lView[index]);
     ngDevMode && node !== null && !isProceduralRenderer(lView[RENDERER]) && assertDomNode(node);
     return node;
@@ -216,6 +216,7 @@ export function updateTransplantedViewCount(lContainer: LContainer, amount: 1|- 
  * crashes on it, so we unwrap it.
  */
 export function getNonViewFirstChild(tView: TView): TNode|null {
+  // FIXME(misko): Delete me! (as TNodeType.View no longer exists)
   const firstChild = tView.firstChild;
   return firstChild === null ? null :
                                (firstChild.type === TNodeType.View ? firstChild.child : firstChild);

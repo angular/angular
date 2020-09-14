@@ -180,9 +180,6 @@
     "name": "addHostBindingsToExpandoInstructions"
   },
   {
-    "name": "addRemoveViewFromContainer"
-  },
-  {
     "name": "addToArray"
   },
   {
@@ -259,9 +256,6 @@
   },
   {
     "name": "createLView"
-  },
-  {
-    "name": "createTNode"
   },
   {
     "name": "createTView"
@@ -354,9 +348,6 @@
     "name": "getConstant"
   },
   {
-    "name": "getContainerRenderParent"
-  },
-  {
     "name": "getDebugContext"
   },
   {
@@ -424,9 +415,6 @@
   },
   {
     "name": "getParentInjectorView"
-  },
-  {
-    "name": "getParentInjectorViewOffset"
   },
   {
     "name": "getParentState"

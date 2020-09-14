@@ -797,7 +797,7 @@ describe('styling', () => {
 
     onlyInIvy('perf counters').expectPerfCounters({
       rendererSetStyle: 1,
-      tNode: 3,
+      tNode: 2,
     });
   });
 

@@ -705,9 +705,6 @@
     "name": "addHostBindingsToExpandoInstructions"
   },
   {
-    "name": "addRemoveViewFromContainer"
-  },
-  {
     "name": "addToArray"
   },
   {
@@ -820,9 +817,6 @@
   },
   {
     "name": "createPlatformFactory"
-  },
-  {
-    "name": "createTNode"
   },
   {
     "name": "createTView"
@@ -975,9 +969,6 @@
     "name": "getConstant"
   },
   {
-    "name": "getContainerRenderParent"
-  },
-  {
     "name": "getDOM"
   },
   {
@@ -1063,9 +1054,6 @@
   },
   {
     "name": "getParentInjectorView"
-  },
-  {
-    "name": "getParentInjectorViewOffset"
   },
   {
     "name": "getParentState"

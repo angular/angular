@@ -59,12 +59,12 @@ function testTemplate(rf: RenderFlags, ctx: any) {
 }
 
 const rootLView = createLView(
-    null, createTView(TViewType.Root, -1, null, 0, 0, null, null, null, null, null), {},
-    LViewFlags.IsRoot, null, null);
+    null, createTView(TViewType.Root, null, null, 0, 0, null, null, null, null, null), {},
+    LViewFlags.IsRoot, null, null, null, null, null, null);
 
 const viewTNode = createTNode(null!, null, TNodeType.View, -1, null, null) as TViewNode;
 const embeddedTView = createTView(
-    TViewType.Root, -1, testTemplate, 2, 0, [NgIfLike.ɵdir], null, null, null,
+    TViewType.Root, null, testTemplate, 2, 0, [NgIfLike.ɵdir], null, null, null,
     [['viewManipulation', '']]);
 
 // create view once so we don't profile first template pass
