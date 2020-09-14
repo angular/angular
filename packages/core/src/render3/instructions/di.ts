@@ -10,7 +10,7 @@ import {assertInjectImplementationNot, ɵɵinject} from '../../di/injector_compa
 import {Type} from '../../interface/type';
 import {getOrCreateInjectable, injectAttributeImpl} from '../di';
 import {TDirectiveHostNode} from '../interfaces/node';
-import {getLView, getPreviousOrParentTNode} from '../state';
+import {getCurrentTNode, getLView} from '../state';
 
 /**
  * Returns the value associated to the given token from the injectors.
@@ -48,7 +48,7 @@ export function ɵɵdirectiveInject<T>(
     ngDevMode && assertInjectImplementationNot(ɵɵdirectiveInject);
     return ɵɵinject(token, flags);
   }
-  const tNode = getPreviousOrParentTNode();
+  const tNode = getCurrentTNode();
   return getOrCreateInjectable<T>(
       tNode as TDirectiveHostNode, lView, resolveForwardRef(token), flags);
 }
@@ -59,7 +59,7 @@ export function ɵɵdirectiveInject<T>(
  * @codeGenApi
  */
 export function ɵɵinjectAttribute(attrNameToInject: string): string|null {
-  return injectAttributeImpl(getPreviousOrParentTNode()!, attrNameToInject);
+  return injectAttributeImpl(getCurrentTNode()!, attrNameToInject);
 }
 
 /**

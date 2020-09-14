@@ -9,7 +9,7 @@ import {assertEqual, assertIndexInRange} from '../../util/assert';
 import {TElementNode, TNodeType} from '../interfaces/node';
 import {HEADER_OFFSET, RENDERER, T_HOST} from '../interfaces/view';
 import {appendChild, createTextNode} from '../node_manipulation';
-import {getBindingIndex, getLView, getTView, setPreviousOrParentTNode} from '../state';
+import {getBindingIndex, getLView, getTView, setCurrentTNode} from '../state';
 
 import {getOrCreateTNode} from './shared';
 
@@ -42,5 +42,5 @@ export function ɵɵtext(index: number, value: string = ''): void {
   appendChild(tView, lView, textNative, tNode);
 
   // Text nodes are self closing.
-  setPreviousOrParentTNode(tNode, false);
+  setCurrentTNode(tNode, false);
 }

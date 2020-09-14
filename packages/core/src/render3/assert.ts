@@ -16,7 +16,6 @@ import {isLContainer, isLView} from './interfaces/type_checks';
 import {HEADER_OFFSET, LView, TVIEW, TView} from './interfaces/view';
 
 
-
 // [Assert functions do not constraint type when they are guarded by a truthy
 // expression.](https://github.com/microsoft/TypeScript/issues/37295)
 
@@ -49,13 +48,13 @@ export function assertNgModuleType(
   }
 }
 
-export function assertPreviousIsParent(isParent: boolean) {
-  assertEqual(isParent, true, 'previousOrParentTNode should be a parent');
+export function assertCurrentTNodeIsParent(isParent: boolean) {
+  assertEqual(isParent, true, 'currentTNode should be a parent');
 }
 
 export function assertHasParent(tNode: TNode|null) {
-  assertDefined(tNode, 'previousOrParentTNode should exist!');
-  assertDefined(tNode!.parent, 'previousOrParentTNode should have a parent');
+  assertDefined(tNode, 'currentTNode should exist!');
+  assertDefined(tNode!.parent, 'currentTNode should have a parent');
 }
 
 export function assertDataNext(lView: LView, index: number, arr?: any[]) {

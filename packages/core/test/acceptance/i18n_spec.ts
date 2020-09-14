@@ -687,7 +687,7 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
         '(lView[0] as Element).appendChild(lView[2])',
         'lView[4] = document.createTextNode("World")',
         '(lView[2] as Element).appendChild(lView[4])',
-        'setPreviousOrParentTNode(tView.data[2] as TNode)',
+        'setCurrentTNode(tView.data[2] as TNode)',
         'lView[5] = document.createTextNode("!")',
         '(lView[0] as Element).appendChild(lView[5])',
       ]);
