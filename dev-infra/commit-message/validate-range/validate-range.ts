@@ -5,11 +5,11 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {error, info} from '../utils/console';
-import {exec} from '../utils/shelljs';
+import {error, info} from '../../utils/console';
+import {exec} from '../../utils/shelljs';
 
-import {parseCommitMessage} from './parse';
-import {printValidationErrors, validateCommitMessage, ValidateCommitMessageOptions} from './validate';
+import {parseCommitMessage} from '../parse';
+import {printValidationErrors, validateCommitMessage, ValidateCommitMessageOptions} from '../validate';
 
 // Whether the provided commit is a fixup commit.
 const isNonFixup = (m: string) => !parseCommitMessage(m).isFixup;

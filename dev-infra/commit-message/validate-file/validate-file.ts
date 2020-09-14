@@ -8,11 +8,11 @@
 import {readFileSync} from 'fs';
 import {resolve} from 'path';
 
-import {getRepoBaseDir, getUserConfig} from '../utils/config';
-import {error, green, info, log, red, yellow} from '../utils/console';
+import {getRepoBaseDir} from '../../utils/config';
+import {error, green, info, log, red, yellow} from '../../utils/console';
 
-import {deleteCommitMessageDraft, saveCommitMessageDraft} from './commit-message-draft';
-import {printValidationErrors, validateCommitMessage} from './validate';
+import {deleteCommitMessageDraft, saveCommitMessageDraft} from '../commit-message-draft';
+import {printValidationErrors, validateCommitMessage} from '../validate';
 
 /** Validate commit message at the provided file path. */
 export function validateFile(filePath: string, isErrorMode: boolean) {
