@@ -162,8 +162,8 @@ function getExecutor(
     const {retryAttempts, retryDelay} = config.getLockingConfig();
     const locker = new AsyncLocker(lockFile, logger, retryDelay, retryAttempts);
     if (inParallel) {
-      // Execute in parallel. Use up to 8 CPU cores for workers, always reserving one for master.
-      const workerCount = Math.min(8, os.cpus().length - 1);
+      // Execute in parallel. Use up to 4 CPU cores for workers, always reserving one for master.
+      const workerCount = Math.min(4, os.cpus().length - 1);
       return new ClusterExecutor(
           workerCount, fileSystem, logger, fileWriter, pkgJsonUpdater, locker,
           createTaskCompletedCallback);
