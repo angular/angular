@@ -203,7 +203,8 @@ export function getInjectorIndex(tNode: TNode, lView: LView): number {
  * Finds the index of the parent injector, with a view offset if applicable. Used to set the
  * parent injector initially.
  *
- * Returns a combination of number of `LView` we have to go up and index in that `LView`
+ * @returns Returns a number that is the combination of the number of LViews that we have to go up
+ * to find the LView containing the parent inject AND the index of the injector within that LView.
  */
 export function getParentInjectorLocation(tNode: TNode, lView: LView): RelativeInjectorLocation {
   if (tNode.parent && tNode.parent.injectorIndex !== -1) {
@@ -227,8 +228,9 @@ export function getParentInjectorLocation(tNode: TNode, lView: LView): RelativeI
     const tView = lViewCursor[TVIEW];
     const tViewType = tView.type;
     if (tViewType === TViewType.Embedded) {
-      ngDevMode && assertDefined(tView.node, 'Embedded TNodes should have declaration parents.');
-      parentTNode = tView.node;
+      ngDevMode &&
+          assertDefined(tView.declTNode, 'Embedded TNodes should have declaration parents.');
+      parentTNode = tView.declTNode;
     } else if (tViewType === TViewType.Component) {
       // Components don't have `TView.declTNode` because each instance of component could be
       // inserted in different location, hence `TView.declTNode` is meaningless.
@@ -255,7 +257,6 @@ export function getParentInjectorLocation(tNode: TNode, lView: LView): RelativeI
   }
   return NO_PARENT_INJECTOR;
 }
-
 /**
  * Makes a type or an injection token public to the DI system by adding it to an
  * injector's bloom filter.
