@@ -15,7 +15,7 @@ import {deleteCommitMessageDraft, saveCommitMessageDraft} from './commit-message
 import {printValidationErrors, validateCommitMessage} from './validate';
 
 /** Validate commit message at the provided file path. */
-export function validateFile(filePath: string) {
+export function validateFile(filePath: string, isErrorMode: boolean) {
   const commitMessage = readFileSync(resolve(getRepoBaseDir(), filePath), 'utf8');
   const {valid, errors} = validateCommitMessage(commitMessage);
   if (valid) {
@@ -25,12 +25,6 @@ export function validateFile(filePath: string) {
     return;
   }
 
-  /**
-   * Whether the validation failure should be treated as an error, otherwise treated as a warning.
-   *
-   * The tool running on CI is set to always run treating validation failures as an error.
-   */
-  const isErrorMode = !!getUserConfig().commitMessage?.errorOnInvalidMessage || !!process.env['CI'];
   /** Function used to print to the console log. */
   let printFn = isErrorMode ? error : log;
 
