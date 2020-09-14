@@ -12,6 +12,7 @@ import {loadTestFiles} from '../../../test/helpers';
 import {NgccConfiguration} from '../../src/packages/configuration';
 import {EntryPoint, EntryPointFormat, EntryPointJsonProperty, getEntryPointInfo, isEntryPoint} from '../../src/packages/entry_point';
 import {EntryPointBundle, makeEntryPointBundle} from '../../src/packages/entry_point_bundle';
+import {TransformCache} from '../../src/packages/transform_cache';
 import {FileWriter} from '../../src/writing/file_writer';
 import {NewEntryPointFileWriter} from '../../src/writing/new_entry_point_file_writer';
 import {DirectPackageJsonUpdater} from '../../src/writing/package_json_updater';
@@ -635,6 +636,7 @@ runInEachFileSystem(() => {
       fs: FileSystem, entryPoint: EntryPoint, formatProperty: EntryPointJsonProperty,
       format: EntryPointFormat): EntryPointBundle {
     return makeEntryPointBundle(
-        fs, entryPoint, entryPoint.packageJson[formatProperty]!, false, format, true);
+        fs, entryPoint, new TransformCache(fs), entryPoint.packageJson[formatProperty]!, false,
+        format, true);
   }
 });

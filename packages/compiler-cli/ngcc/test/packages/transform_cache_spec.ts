@@ -1,0 +1,158 @@
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+import * as ts from 'typescript';
+
+import {absoluteFrom, FileSystem, getFileSystem} from '../../../src/ngtsc/file_system';
+import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
+import {loadTestFiles} from '../../../test/helpers';
+import {EntryPointCache, isDefaultLibrary, TransformCache} from '../../src/packages/transform_cache';
+
+runInEachFileSystem(() => {
+  describe('Transform caching', () => {
+    let _: typeof absoluteFrom;
+    let fs: FileSystem;
+    beforeEach(() => {
+      _ = absoluteFrom;
+      fs = getFileSystem();
+      loadTestFiles([
+        {
+          name: _('/node_modules/typescript/lib/lib.es5.d.ts'),
+          contents: `export declare interface Array {}`,
+        },
+        {
+          name: _('/node_modules/typescript/lib/lib.dom.d.ts'),
+          contents: `export declare interface Window {}`,
+        },
+        {
+          name: _('/index.ts'),
+          contents: `export const index = true;`,
+        },
+        {
+          name: _('/main.ts'),
+          contents: `export const main = true;`,
+        },
+      ]);
+    });
+
+    describe('TransformCache', () => {
+      it('should cache a parsed source file for default libraries', () => {
+        const cache = new TransformCache(fs);
+
+        const libEs5 = cache.getCachedSourceFile('/node_modules/typescript/lib/lib.es5.d.ts')!;
+        expect(libEs5).not.toBeUndefined();
+        expect(libEs5.text).toContain('Array');
+
+        const libDom = cache.getCachedSourceFile('/node_modules/typescript/lib/lib.dom.d.ts')!;
+        expect(libDom).not.toBeUndefined();
+        expect(libDom.text).toContain('Window');
+
+        const libEs5_2 = cache.getCachedSourceFile('/node_modules/typescript/lib/lib.es5.d.ts')!;
+        expect(libEs5_2).toBe(libEs5);
+
+        const libDom_2 = cache.getCachedSourceFile('/node_modules/typescript/lib/lib.dom.d.ts')!;
+        expect(libDom_2).toBe(libDom);
+      });
+
+      it('should not cache files that are not default library files inside of the typescript package',
+         () => {
+           const cache = new TransformCache(fs);
+
+           expect(cache.getCachedSourceFile('/node_modules/typescript/lib/typescript.d.ts'))
+               .toBeUndefined();
+           expect(cache.getCachedSourceFile('/typescript/lib.es5.d.ts')).toBeUndefined();
+         });
+    });
+
+    describe('isDefaultLibrary()', () => {
+      it('should accept lib files inside of the typescript package', () => {
+        expect(isDefaultLibrary(_('/node_modules/typescript/lib/lib.es5.d.ts'), fs)).toBe(true);
+        expect(isDefaultLibrary(_('/node_modules/typescript/lib/lib.dom.d.ts'), fs)).toBe(true);
+        expect(isDefaultLibrary(_('/node_modules/typescript/lib/lib.es2015.core.d.ts'), fs))
+            .toBe(true);
+        expect(isDefaultLibrary(_('/root/node_modules/typescript/lib/lib.es5.d.ts'), fs))
+            .toBe(true);
+      });
+      it('should reject non lib files inside of the typescript package', () => {
+        expect(isDefaultLibrary(_('/node_modules/typescript/lib/typescript.d.ts'), fs)).toBe(false);
+        expect(isDefaultLibrary(_('/node_modules/typescript/lib/lib.es5.ts'), fs)).toBe(false);
+        expect(isDefaultLibrary(_('/node_modules/typescript/lib/lib.d.ts'), fs)).toBe(false);
+        expect(isDefaultLibrary(_('/node_modules/typescript/lib.es5.d.ts'), fs)).toBe(false);
+      });
+      it('should reject lib files outside of the typescript package', () => {
+        expect(isDefaultLibrary(_('/node_modules/ttypescript/lib/lib.es5.d.ts'), fs)).toBe(false);
+        expect(isDefaultLibrary(_('/node_modules/ttypescript/lib/lib.es5.d.ts'), fs)).toBe(false);
+        expect(isDefaultLibrary(_('/typescript/lib/lib.es5.d.ts'), fs)).toBe(false);
+      });
+    });
+
+    describe('EntryPointCache', () => {
+      let transformCache: TransformCache;
+      beforeEach(() => {
+        transformCache = new TransformCache(fs);
+      });
+
+      it('should prefer source files cached in TransformCache', () => {
+        const cache1 = new EntryPointCache(fs, transformCache);
+        const libEs5_1 = cache1.getCachedSourceFile(
+            '/node_modules/typescript/lib/lib.es5.d.ts', ts.ScriptTarget.ESNext)!;
+        expect(libEs5_1).not.toBeUndefined();
+        expect(libEs5_1.text).toContain('Array');
+        expect(libEs5_1.languageVersion).toBe(ts.ScriptTarget.ES2015);
+
+        const cache2 = new EntryPointCache(fs, transformCache);
+        const libEs5_2 = cache2.getCachedSourceFile(
+            '/node_modules/typescript/lib/lib.es5.d.ts', ts.ScriptTarget.ESNext)!;
+        expect(libEs5_1).toBe(libEs5_2);
+      });
+
+      it('should provide the module resolution cache of the TransformCache', () => {
+        const cache = new EntryPointCache(fs, transformCache);
+        expect(cache.moduleResolutionCache).toBe(transformCache.moduleResolutionCache);
+      });
+
+      it('should cache source files that are not default library files', () => {
+        const cache = new EntryPointCache(fs, transformCache);
+        const index = cache.getCachedSourceFile('/index.ts', ts.ScriptTarget.ESNext)!;
+        expect(index).not.toBeUndefined();
+        expect(index.text).toContain('index');
+        expect(index.languageVersion).toBe(ts.ScriptTarget.ESNext);
+
+        const main = cache.getCachedSourceFile('/main.ts', ts.ScriptTarget.ESNext)!;
+        expect(main).not.toBeUndefined();
+        expect(main.text).toContain('main');
+        expect(main.languageVersion).toBe(ts.ScriptTarget.ESNext);
+
+        const index_2 = cache.getCachedSourceFile('/index.ts', ts.ScriptTarget.ESNext)!;
+        expect(index_2).toBe(index);
+
+        const main_2 = cache.getCachedSourceFile('/main.ts', ts.ScriptTarget.ESNext)!;
+        expect(main_2).toBe(main);
+      });
+
+      it('should not share non-library files across multiple cache instances', () => {
+        const cache1 = new EntryPointCache(fs, transformCache);
+        const cache2 = new EntryPointCache(fs, transformCache);
+
+        const index1 = cache1.getCachedSourceFile('/index.ts', ts.ScriptTarget.ESNext)!;
+        const index2 = cache2.getCachedSourceFile('/index.ts', ts.ScriptTarget.ESNext)!;
+        expect(index1).not.toBe(index2);
+      });
+
+      it('should return undefined if the file does not exist', () => {
+        const cache = new EntryPointCache(fs, transformCache);
+        expect(cache.getCachedSourceFile('/nonexistent.ts', ts.ScriptTarget.ESNext))
+            .toBeUndefined();
+      });
+
+      it('should return undefined if the path is a directory', () => {
+        const cache = new EntryPointCache(fs, transformCache);
+        expect(cache.getCachedSourceFile('/node_modules', ts.ScriptTarget.ESNext)).toBeUndefined();
+      });
+    });
+  });
+});

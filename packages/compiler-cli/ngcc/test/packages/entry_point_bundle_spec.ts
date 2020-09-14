@@ -10,6 +10,7 @@ import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
 import {loadTestFiles} from '../../../test/helpers';
 import {EntryPoint} from '../../src/packages/entry_point';
 import {makeEntryPointBundle} from '../../src/packages/entry_point_bundle';
+import {TransformCache} from '../../src/packages/transform_cache';
 
 runInEachFileSystem(() => {
   describe('entry point bundle', () => {
@@ -180,7 +181,8 @@ runInEachFileSystem(() => {
            ignoreMissingDependencies: false,
            generateDeepReexports: false,
          };
-         const esm5bundle = makeEntryPointBundle(fs, entryPoint, './index.js', false, 'esm5', true);
+         const esm5bundle = makeEntryPointBundle(
+             fs, entryPoint, new TransformCache(fs), './index.js', false, 'esm5', true);
 
          expect(esm5bundle.src.program.getSourceFiles().map(sf => sf.fileName))
              .toEqual(jasmine.arrayWithExactContents([
@@ -292,7 +294,8 @@ runInEachFileSystem(() => {
         generateDeepReexports: false,
       };
       const esm5bundle = makeEntryPointBundle(
-          fs, entryPoint, './index.js', false, 'esm5', /* transformDts */ true,
+          fs, entryPoint, new TransformCache(fs), './index.js', false, 'esm5',
+          /* transformDts */ true,
           /* pathMappings */ undefined, /* mirrorDtsFromSrc */ true);
 
       expect(esm5bundle.src.program.getSourceFiles().map(sf => _(sf.fileName)))
@@ -329,7 +332,8 @@ runInEachFileSystem(() => {
               generateDeepReexports: false,
             };
             const esm5bundle = makeEntryPointBundle(
-                fs, entryPoint, './index.js', false, 'esm5', /* transformDts */ true,
+                fs, entryPoint, new TransformCache(fs), './index.js', false, 'esm5',
+                /* transformDts */ true,
                 /* pathMappings */ undefined, /* mirrorDtsFromSrc */ true);
             expect(esm5bundle.src.program.getSourceFiles().map(sf => sf.fileName))
                 .toContain(absoluteFrom('/node_modules/test/internal.js'));
@@ -352,7 +356,8 @@ runInEachFileSystem(() => {
               generateDeepReexports: false,
             };
             const esm5bundle = makeEntryPointBundle(
-                fs, entryPoint, './esm2015/index.js', false, 'esm2015', /* transformDts */ true,
+                fs, entryPoint, new TransformCache(fs), './esm2015/index.js', false, 'esm2015',
+                /* transformDts */ true,
                 /* pathMappings */ undefined, /* mirrorDtsFromSrc */ true);
             expect(esm5bundle.src.program.getSourceFiles().map(sf => sf.fileName))
                 .toContain(absoluteFrom('/node_modules/internal/esm2015/src/internal.js'));
@@ -375,7 +380,8 @@ runInEachFileSystem(() => {
               generateDeepReexports: false,
             };
             const esm5bundle = makeEntryPointBundle(
-                fs, entryPoint, './index.js', false, 'esm5', /* transformDts */ true,
+                fs, entryPoint, new TransformCache(fs), './index.js', false, 'esm5',
+                /* transformDts */ true,
                 /* pathMappings */ undefined, /* mirrorDtsFromSrc */ false);
             expect(esm5bundle.src.program.getSourceFiles().map(sf => sf.fileName))
                 .toContain(absoluteFrom('/node_modules/test/internal.js'));
@@ -399,7 +405,8 @@ runInEachFileSystem(() => {
         generateDeepReexports: false,
       };
       const bundle = makeEntryPointBundle(
-          fs, entryPoint, './index.js', false, 'esm2015', /* transformDts */ true,
+          fs, entryPoint, new TransformCache(fs), './index.js', false, 'esm2015',
+          /* transformDts */ true,
           /* pathMappings */ undefined, /* mirrorDtsFromSrc */ true);
       expect(bundle.rootDirs).toEqual([absoluteFrom('/node_modules/primary')]);
     });
