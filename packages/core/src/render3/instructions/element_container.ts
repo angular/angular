@@ -98,7 +98,7 @@ export function ɵɵelementContainerStart(
  * @codeGenApi
  */
 export function ɵɵelementContainerEnd(): void {
-  let previousOrParentTNode = getPreviousOrParentTNode();
+  let previousOrParentTNode = getPreviousOrParentTNode()!;
   const tView = getTView();
   if (getIsParent()) {
     setIsNotParent();

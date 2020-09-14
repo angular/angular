@@ -1125,7 +1125,7 @@ function logUnknownPropertyError(propName: string, tNode: TNode): void {
  * Instantiate a root component.
  */
 export function instantiateRootComponent<T>(tView: TView, lView: LView, def: ComponentDef<T>): T {
-  const rootTNode = getPreviousOrParentTNode();
+  const rootTNode = getPreviousOrParentTNode()!;
   if (tView.firstCreatePass) {
     if (def.providersResolver) def.providersResolver(def);
     generateExpandoInstructionBlock(tView, rootTNode, 1);

@@ -504,7 +504,7 @@ export function ɵɵcontentQuery<T>(
     directiveIndex: number, predicate: Type<any>|InjectionToken<unknown>|string[], descend: boolean,
     read?: any): void {
   contentQueryInternal(
-      getTView(), getLView(), predicate, descend, read, false, getPreviousOrParentTNode(),
+      getTView(), getLView(), predicate, descend, read, false, getPreviousOrParentTNode()!,
       directiveIndex);
 }
 
@@ -524,7 +524,7 @@ export function ɵɵstaticContentQuery<T>(
     directiveIndex: number, predicate: Type<any>|InjectionToken<unknown>|string[], descend: boolean,
     read?: any): void {
   contentQueryInternal(
-      getTView(), getLView(), predicate, descend, read, true, getPreviousOrParentTNode(),
+      getTView(), getLView(), predicate, descend, read, true, getPreviousOrParentTNode()!,
       directiveIndex);
 }
 

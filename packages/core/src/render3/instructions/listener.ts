@@ -41,7 +41,7 @@ export function ɵɵlistener(
     eventTargetResolver?: GlobalTargetResolver): typeof ɵɵlistener {
   const lView = getLView();
   const tView = getTView();
-  const tNode = getPreviousOrParentTNode();
+  const tNode = getPreviousOrParentTNode()!;
   listenerInternal(
       tView, lView, lView[RENDERER], tNode, eventName, listenerFn, useCapture, eventTargetResolver);
   return ɵɵlistener;
@@ -71,7 +71,7 @@ export function ɵɵlistener(
 export function ɵɵsyntheticHostListener(
     eventName: string, listenerFn: (e?: any) => any, useCapture = false,
     eventTargetResolver?: GlobalTargetResolver): typeof ɵɵsyntheticHostListener {
-  const tNode = getPreviousOrParentTNode();
+  const tNode = getPreviousOrParentTNode()!;
   const lView = getLView();
   const tView = getTView();
   const currentDef = getCurrentDirectiveDef(tView.data);

@@ -128,7 +128,7 @@ export function ɵɵelementStart(
  * @codeGenApi
  */
 export function ɵɵelementEnd(): void {
-  let previousOrParentTNode = getPreviousOrParentTNode();
+  let previousOrParentTNode = getPreviousOrParentTNode()!;
   ngDevMode && assertDefined(previousOrParentTNode, 'No parent node to close.');
   if (getIsParent()) {
     setIsNotParent();

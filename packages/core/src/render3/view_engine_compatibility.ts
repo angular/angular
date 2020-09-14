@@ -43,7 +43,7 @@ import { ViewRef } from './view_ref';
  */
 export function injectElementRef(ElementRefToken: typeof ViewEngine_ElementRef):
     ViewEngine_ElementRef {
-  return createElementRef(ElementRefToken, getPreviousOrParentTNode(), getLView());
+  return createElementRef(ElementRefToken, getPreviousOrParentTNode()!, getLView());
 }
 
 let R3ElementRef: {new (native: RElement|RComment): ViewEngine_ElementRef};
@@ -79,7 +79,7 @@ export function injectTemplateRef<T>(
     TemplateRefToken: typeof ViewEngine_TemplateRef,
     ElementRefToken: typeof ViewEngine_ElementRef): ViewEngine_TemplateRef<T>|null {
   return createTemplateRef<T>(
-      TemplateRefToken, ElementRefToken, getPreviousOrParentTNode(), getLView());
+      TemplateRefToken, ElementRefToken, getPreviousOrParentTNode()!, getLView());
 }
 
 /**
@@ -407,7 +407,7 @@ export function createContainerRef(
 
 /** Returns a ChangeDetectorRef (a.k.a. a ViewRef) */
 export function injectChangeDetectorRef(isPipe = false): ViewEngine_ChangeDetectorRef {
-  return createViewRef(getPreviousOrParentTNode(), getLView(), isPipe);
+  return createViewRef(getPreviousOrParentTNode()!, getLView(), isPipe);
 }
 
 /**
@@ -453,7 +453,7 @@ export function injectRenderer2(): Renderer2 {
   // We need the Renderer to be based on the component that it's being injected into, however since
   // DI happens before we've entered its view, `getLView` will return the parent view instead.
   const lView = getLView();
-  const tNode = getPreviousOrParentTNode();
+  const tNode = getPreviousOrParentTNode()!;
   const nodeAtIndex = getComponentLViewByIndex(tNode.index, lView);
   return getOrCreateRenderer2(isLView(nodeAtIndex) ? nodeAtIndex : lView);
 }
