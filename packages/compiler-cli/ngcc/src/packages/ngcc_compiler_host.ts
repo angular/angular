@@ -10,6 +10,7 @@ import * as ts from 'typescript';
 import {AbsoluteFsPath, FileSystem, NgtscCompilerHost} from '../../../src/ngtsc/file_system';
 import {isWithinPackage} from '../analysis/util';
 import {isRelativePath} from '../utils';
+import {EntryPointFileCache} from './source_file_cache';
 
 /**
  * Represents a compiler host that resolves a module import as a JavaScript source file if
@@ -18,11 +19,15 @@ import {isRelativePath} from '../utils';
  * would otherwise let TypeScript prefer the .d.ts file instead of the JavaScript source file.
  */
 export class NgccSourcesCompilerHost extends NgtscCompilerHost {
-  private cache = ts.createModuleResolutionCache(
-      this.getCurrentDirectory(), file => this.getCanonicalFileName(file));
-
-  constructor(fs: FileSystem, options: ts.CompilerOptions, protected packagePath: AbsoluteFsPath) {
+  constructor(
+      fs: FileSystem, options: ts.CompilerOptions, private cache: EntryPointFileCache,
+      private moduleResolutionCache: ts.ModuleResolutionCache,
+      protected packagePath: AbsoluteFsPath) {
     super(fs, options);
+  }
+
+  getSourceFile(fileName: string, languageVersion: ts.ScriptTarget): ts.SourceFile|undefined {
+    return this.cache.getCachedSourceFile(fileName, languageVersion);
   }
 
   resolveModuleNames(
@@ -30,7 +35,8 @@ export class NgccSourcesCompilerHost extends NgtscCompilerHost {
       redirectedReference?: ts.ResolvedProjectReference): Array<ts.ResolvedModule|undefined> {
     return moduleNames.map(moduleName => {
       const {resolvedModule} = ts.resolveModuleName(
-          moduleName, containingFile, this.options, this, this.cache, redirectedReference);
+          moduleName, containingFile, this.options, this, this.moduleResolutionCache,
+          redirectedReference);
 
       // If the module request originated from a relative import in a JavaScript source file,
       // TypeScript may have resolved the module to its .d.ts declaration file if the .js source
@@ -55,6 +61,34 @@ export class NgccSourcesCompilerHost extends NgtscCompilerHost {
         return undefined;
       }
 
+      return resolvedModule;
+    });
+  }
+}
+
+/**
+ * A compiler host implementation that is used for the typings program. It leverages the entry-point
+ * cache for source files and module resolution, as these results can be reused across the sources
+ * program.
+ */
+export class NgccDtsCompilerHost extends NgtscCompilerHost {
+  constructor(
+      fs: FileSystem, options: ts.CompilerOptions, private cache: EntryPointFileCache,
+      private moduleResolutionCache: ts.ModuleResolutionCache) {
+    super(fs, options);
+  }
+
+  getSourceFile(fileName: string, languageVersion: ts.ScriptTarget): ts.SourceFile|undefined {
+    return this.cache.getCachedSourceFile(fileName, languageVersion);
+  }
+
+  resolveModuleNames(
+      moduleNames: string[], containingFile: string, reusedNames?: string[],
+      redirectedReference?: ts.ResolvedProjectReference): Array<ts.ResolvedModule|undefined> {
+    return moduleNames.map(moduleName => {
+      const {resolvedModule} = ts.resolveModuleName(
+          moduleName, containingFile, this.options, this, this.moduleResolutionCache,
+          redirectedReference);
       return resolvedModule;
     });
   }
