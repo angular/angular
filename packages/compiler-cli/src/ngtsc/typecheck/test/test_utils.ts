@@ -433,6 +433,7 @@ function prepareDeclarations(
       name: decl.name,
       ref: new Reference(resolveDeclaration(decl)),
       exportAs: decl.exportAs || null,
+      selector: decl.selector || null,
       hasNgTemplateContextGuard: decl.hasNgTemplateContextGuard || false,
       inputs: ClassPropertyMapping.fromMappedObject(decl.inputs || {}),
       isComponent: decl.isComponent || false,
