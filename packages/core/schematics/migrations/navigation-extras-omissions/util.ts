@@ -40,9 +40,9 @@ export function migrateLiteral(
     // Only look for regular and shorthand property assignments since resolving things
     // like spread operators becomes too complicated for this migration.
     if ((ts.isPropertyAssignment(property) || ts.isShorthandPropertyAssignment(property)) &&
-        (ts.isStringLiteral(property.name) || ts.isNumericLiteral(property.name) ||
+        (ts.isStringLiteralLike(property.name) || ts.isNumericLiteral(property.name) ||
          ts.isIdentifier(property.name))) {
-      if (!property.name || allowedProperties.has(property.name.text)) {
+      if (allowedProperties.has(property.name.text)) {
         propertiesToKeep.push(property);
       } else {
         removedPropertyNames.push(property.name.text);

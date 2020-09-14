@@ -45,8 +45,17 @@ export function getImportOfIdentifier(typeChecker: ts.TypeChecker, node: ts.Iden
 
 
 /**
- * Gets a top-level import specifier with a specific
- * name that is imported from a particular module.
+ * Gets a top-level import specifier with a specific name that is imported from a particular module.
+ * E.g. given a file that looks like:
+ *
+ * ```
+ * import { Component, Directive } from '@angular/core';
+ * import { Foo } from './foo';
+ * ```
+ *
+ * Calling `getImportSpecifier(sourceFile, '@angular/core', 'Directive')` will yield the node
+ * referring to `Directive` in the top import.
+ *
  * @param sourceFile File in which to look for imports.
  * @param moduleName Name of the import's module.
  * @param specifierName Original name of the specifier to look for. Aliases will be resolved to
