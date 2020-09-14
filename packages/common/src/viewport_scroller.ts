@@ -178,8 +178,7 @@ function getScrollRestorationProperty(obj: any): PropertyDescriptor|undefined {
 }
 
 /**
- * Provides an empty implementation of the viewport scroller. This will
- * live in @angular/common as it will be used by both platform-server and platform-webworker.
+ * Provides an empty implementation of the viewport scroller.
  */
 export class NullViewportScroller implements ViewportScroller {
   /**

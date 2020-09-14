@@ -28,8 +28,6 @@ import * as platformBrowserAnimations from '@angular/platform-browser/animations
 import * as platformBrowserTesting from '@angular/platform-browser/testing';
 import * as platformServer from '@angular/platform-server';
 import * as platformServerTesting from '@angular/platform-server/testing';
-import * as platformWebworker from '@angular/platform-webworker';
-import * as platformWebworkerDynamic from '@angular/platform-webworker-dynamic';
 import * as router from '@angular/router';
 import * as routerTesting from '@angular/router/testing';
 import * as routerUpgrade from '@angular/router/upgrade';
@@ -59,8 +57,6 @@ export default {
   platformBrowserAnimations,
   platformServer,
   platformServerTesting,
-  platformWebworker,
-  platformWebworkerDynamic,
   router,
   routerTesting,
   routerUpgrade,

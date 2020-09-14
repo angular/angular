@@ -50,8 +50,6 @@ GENERATED_NPM_PACKAGES = [
     "@angular/platform-browser",
     "@angular/platform-browser-dynamic",
     "@angular/platform-server",
-    "@angular/platform-webworker",
-    "@angular/platform-webworker-dynamic",
     "@angular/router",
     "@angular/service-worker",
     "@angular/upgrade",

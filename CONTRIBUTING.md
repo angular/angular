@@ -209,9 +209,9 @@ Any line of the commit message cannot be longer than 100 characters.
   │       │
   │       └─⫸ Commit Scope: animations|bazel|benchpress|common|compiler|compiler-cli|core|
   │                          elements|forms|http|language-service|localize|platform-browser|
-  │                          platform-browser-dynamic|platform-server|platform-webworker|
-  │                          platform-webworker-dynamic|router|service-worker|upgrade|zone.js|
-  │                          packaging|changelog|dev-infra|docs-infra|migrations|ngcc|ve
+  │                          platform-browser-dynamic|platform-server|router|service-worker|
+  │                          upgrade|zone.js|packaging|changelog|dev-infra|docs-infra|migrations|
+  │                          ngcc|ve
   │
   └─⫸ Commit Type: build|ci|docs|feat|fix|perf|refactor|style|test
 ```
@@ -253,8 +253,6 @@ The following is the list of supported scopes:
 * `platform-browser`
 * `platform-browser-dynamic`
 * `platform-server`
-* `platform-webworker`
-* `platform-webworker-dynamic`
 * `router`
 * `service-worker`
 * `upgrade`

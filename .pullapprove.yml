@@ -303,8 +303,6 @@ groups:
           'packages/platform-browser/**',
           'packages/examples/platform-browser/**',
           'packages/platform-browser-dynamic/**',
-          'packages/platform-webworker/**',
-          'packages/platform-webworker-dynamic/**',
           'packages/examples/common/**',
           'packages/docs/**',
           'aio/content/guide/accessibility.md',
