@@ -25,21 +25,17 @@ export const enum TNodeType {
    */
   Projection = 1,
   /**
-   * The TNode contains information about an {@link LView}
-   */
-  View = 2,
-  /**
    * The TNode contains information about a DOM element aka {@link RNode}.
    */
-  Element = 3,
+  Element = 2,
   /**
    * The TNode contains information about an `<ng-container>` element {@link RNode}.
    */
-  ElementContainer = 4,
+  ElementContainer = 3,
   /**
    * The TNode contains information about an ICU comment used in `i18n`.
    */
-  IcuContainer = 5,
+  IcuContainer = 4,
 }
 
 /**
@@ -49,10 +45,9 @@ export const enum TNodeType {
 export const TNodeTypeAsString = [
   'Container',         // 0
   'Projection',        // 1
-  'View',              // 2
-  'Element',           // 3
-  'ElementContainer',  // 4
-  'IcuContainer'       // 5
+  'Element',           // 2
+  'ElementContainer',  // 3
+  'IcuContainer'       // 4
 ] as const;
 
 
@@ -722,16 +717,6 @@ export interface TIcuContainerNode extends TNode {
   index: number;
   child: TElementNode|TTextNode|null;
   parent: TElementNode|TElementContainerNode|null;
-  tViews: null;
-  projection: null;
-}
-
-/** Static data for a view  */
-export interface TViewNode extends TNode {
-  /** If -1, it's a dynamically created view. Otherwise, it is the view block ID. */
-  index: number;
-  child: TElementNode|TTextNode|TElementContainerNode|TContainerNode|TProjectionNode|null;
-  parent: TContainerNode|null;
   tViews: null;
   projection: null;
 }

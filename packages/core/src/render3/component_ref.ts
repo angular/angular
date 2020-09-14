@@ -218,10 +218,9 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
       leaveView();
     }
 
-    const componentRef = new ComponentRef(
+    return new ComponentRef(
         this.componentType, component,
         createElementRef(viewEngine_ElementRef, tElementNode, rootLView), rootLView, tElementNode);
-    return componentRef;
   }
 }
 

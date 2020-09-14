@@ -7,7 +7,7 @@
  */
 import {addToViewTree, createLContainer, createLView, createTNode, createTView, getOrCreateTNode, refreshView, renderView} from '../../../src/render3/instructions/shared';
 import {ComponentTemplate, DirectiveDefList} from '../../../src/render3/interfaces/definition';
-import {TAttributes, TNodeType, TViewNode} from '../../../src/render3/interfaces/node';
+import {TAttributes, TElementNode, TNodeType} from '../../../src/render3/interfaces/node';
 import {domRendererFactory3, RendererFactory3} from '../../../src/render3/interfaces/renderer';
 import {LView, LViewFlags, TVIEW, TView, TViewType} from '../../../src/render3/interfaces/view';
 import {insertView} from '../../../src/render3/node_manipulation';
@@ -20,7 +20,7 @@ const rendererFactory: RendererFactory3 =
 const renderer = rendererFactory.createRenderer(null, null);
 
 export function createAndRenderLView(
-    parentLView: LView, tView: TView, hostTNode: TViewNode): LView {
+    parentLView: LView, tView: TView, hostTNode: TElementNode): LView {
   const embeddedLView = createLView(
       parentLView, tView, {}, LViewFlags.CheckAlways, null, hostTNode, rendererFactory, renderer,
       null, null);
@@ -66,7 +66,7 @@ export function setupTestHarness(
   const embeddedTView = createTView(
       TViewType.Embedded, null, templateFn, decls, vars, directiveRegistry, null, null, null,
       consts);
-  const viewTNode = createTNode(hostTView, null, TNodeType.View, -1, null, null) as TViewNode;
+  const viewTNode = createTNode(hostTView, null, TNodeType.Element, -1, null, null);
 
   function createEmbeddedLView(): LView {
     const embeddedLView = createLView(
