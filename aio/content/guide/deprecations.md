@@ -48,7 +48,6 @@ v9 - v12
 | `@angular/upgrade`            | [`@angular/upgrade`](#upgrade)                                                | <!--v8--> v11 |
 | `@angular/upgrade`            | [`getAngularLib`](#upgrade-static)                                            | <!--v8--> v11 |
 | `@angular/upgrade`            | [`setAngularLib`](#upgrade-static)                                            | <!--v8--> v11 |
-| `@angular/platform-webworker` | [All entry points](api/platform-webworker)                                    | <!--v8--> v11 |
 | template syntax               | [`<template`>](#template-tag)                                                 | <!--v7--> v11 |
 | polyfills                     | [reflect-metadata](#reflect-metadata)                                         | <!--v8--> v11 |
 | npm package format            | [`esm5` and `fesm5` entry-points in @angular/* npm packages](guide/deprecations#esm5-fesm5) | <!-- v9 --> v11 |
@@ -122,20 +121,6 @@ Tip: In the [API reference section](api) of this doc site, deprecated APIs are i
 | API | Replacement | Deprecation announced | Notes |
 | --- | ----------- | --------------------- | ----- |
 | [`preserveQueryParams`](api/router/UrlCreationOptions#preserveQueryParams) | [`queryParamsHandling`](api/router/UrlCreationOptions#queryParamsHandling) | v4 | none |
-
-{@a platform-webworker}
-### @angular/platform-webworker
-
-| API | Replacement | Deprecation announced | Notes |
-| --- | ----------- | --------------------- | ----- |
-| [All entry points](api/platform-webworker) | none | v8 | See [platform-webworker](#webworker-apps). |
-
-{@a platform-webworker-dynamic}
-### @angular/platform-webworker-dynamic
-
-| API | Replacement | Deprecation announced | Notes |
-| --- | ----------- | --------------------- | ----- |
-| [All entry points](api/platform-webworker-dynamic) | none | v8 | See [platform-webworker](#webworker-apps). |
 
 {@a upgrade}
 ### @angular/upgrade
@@ -390,28 +375,6 @@ These two properties have subtle differences, so switching to `textContent` unde
 ### `wtfStartTimeRange` and all `wtf*` APIs
 
 All of the `wtf*` APIs are deprecated and will be removed in a future version.
-
-{@a webworker-apps}
-### Running Angular applications in platform-webworker
-
-The `@angular/platform-*` packages enable Angular to be run in different contexts. For examples,
-`@angular/platform-server` enables Angular to be run on the server, and `@angular/platform-browser`
-enables Angular to be run in a web browser.
-
-`@angular/platform-webworker` was introduced in Angular version 2 as an experiment in leveraging
-Angular's rendering architecture to run an entire web application in a
-[web worker](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API). We've learned a lot
-from this experiment and have come to the conclusion that running the entire application in a web
-worker is not the best strategy for most applications.
-
-Going forward, we will focus our efforts related to web workers around their primary use case of
-offloading CPU-intensive, non-critical work needed for initial rendering (such as in-memory search
-and image processing). Learn more in the
-[guide to Using Web Workers with the Angular CLI](guide/web-worker).
-
-As of Angular version 8, all  `platform-webworker` APIs are deprecated.
-This includes both packages: `@angular/platform-webworker` and
-`@angular/platform-webworker-dynamic`.
 
 {@a entryComponents}
 ### `entryComponents` and `ANALYZE_FOR_ENTRY_COMPONENTS` no longer required

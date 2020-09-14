@@ -21,8 +21,6 @@ const angularPackages = [
   'http',
   'platform-browser',
   'platform-browser-dynamic',
-  'platform-webworker',
-  'platform-webworker-dynamic',
   'router',
   'upgrade',
   'upgrade/static',
