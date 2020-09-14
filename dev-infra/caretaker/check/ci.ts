@@ -14,7 +14,7 @@ import {GitClient} from '../../utils/git';
 
 /** The results of checking the status of CI.  */
 interface StatusCheckResult {
-  status: 'unknown'|'success';
+  status: 'success'|'failed'|'canceled'|'infrastructure_fail'|'timedout'|'failed'|'no_tests';
   timestamp: Date;
   buildUrl: string;
 }
@@ -32,23 +32,28 @@ export async function printCiStatus(git: GitClient) {
 async function printStatus(git: GitClient, branch: string) {
   const result = await getStatusOfBranch(git, branch);
   const branchName = branch.padEnd(10);
-  if (result.status === 'success') {
-    info(`${branchName} ${green('✅')}`);
+  if (result === null) {
+    info(`${branchName} was not found on CircleCI`);
+  } else if (result.status === 'success') {
+    info(`${branchName} ✅`);
   } else {
-    info(`${branchName} ${red('❌')} (Ran at: ${result.timestamp.toLocaleString()})`);
+    info(`${branchName} ❌ (Ran at: ${result.timestamp.toLocaleString()})`);
   }
 }
 
 /** Get the CI status of a given branch from CircleCI. */
-async function getStatusOfBranch(git: GitClient, branch: string): Promise<StatusCheckResult> {
+async function getStatusOfBranch(git: GitClient, branch: string): Promise<StatusCheckResult|null> {
   const {owner, name} = git.remoteConfig;
   const url = `https://circleci.com/api/v1.1/project/gh/${owner}/${name}/tree/${
       branch}?limit=1&filter=completed&shallow=true`;
-  const result = await fetch(url).then(result => result.json());
+  const result = (await fetch(url).then(result => result.json()))?.[0];
 
-  return {
-    status: result[0]?.outcome ?? 'unknown',
-    timestamp: new Date(result[0]?.stop_time),
-    buildUrl: result[0]?.build_url
-  };
+  if (result) {
+    return {
+      status: result.outcome,
+      timestamp: new Date(result.stop_time),
+      buildUrl: result.build_url
+    };
+  }
+  return null;
 }
