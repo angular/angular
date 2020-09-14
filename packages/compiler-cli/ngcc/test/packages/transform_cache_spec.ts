@@ -10,7 +10,7 @@ import * as ts from 'typescript';
 import {absoluteFrom, FileSystem, getFileSystem} from '../../../src/ngtsc/file_system';
 import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
 import {loadTestFiles} from '../../../test/helpers';
-import {EntryPointCache, isDefaultLibrary, TransformCache} from '../../src/packages/transform_cache';
+import {EntryPointCache, isAngularDts, isDefaultLibrary, TransformCache} from '../../src/packages/transform_cache';
 
 runInEachFileSystem(() => {
   describe('Transform caching', () => {
@@ -27,6 +27,14 @@ runInEachFileSystem(() => {
         {
           name: _('/node_modules/typescript/lib/lib.dom.d.ts'),
           contents: `export declare interface Window {}`,
+        },
+        {
+          name: _('/node_modules/@angular/core/core.d.ts'),
+          contents: `export declare interface Component {}`,
+        },
+        {
+          name: _('/node_modules/@angular/common/common.d.ts'),
+          contents: `export declare interface NgIf {}`,
         },
         {
           name: _('/index.ts'),
@@ -58,6 +66,49 @@ runInEachFileSystem(() => {
         expect(libDom_2).toBe(libDom);
       });
 
+      it('should cache a parsed source file for @angular scoped packages', () => {
+        const cache = new TransformCache(fs);
+
+        const core = cache.getCachedSourceFile('/node_modules/@angular/core/core.d.ts')!;
+        expect(core).not.toBeUndefined();
+        expect(core.text).toContain('Component');
+
+        const common = cache.getCachedSourceFile('/node_modules/@angular/common/common.d.ts')!;
+        expect(common).not.toBeUndefined();
+        expect(common.text).toContain('NgIf');
+
+        const core_2 = cache.getCachedSourceFile('/node_modules/@angular/core/core.d.ts')!;
+        expect(core_2).toBe(core);
+
+        const common_2 = cache.getCachedSourceFile('/node_modules/@angular/common/common.d.ts')!;
+        expect(common_2).toBe(common);
+      });
+
+      it('should reparse @angular d.ts files when they change', () => {
+        const cache = new TransformCache(fs);
+
+        const core = cache.getCachedSourceFile('/node_modules/@angular/core/core.d.ts')!;
+        expect(core).not.toBeUndefined();
+        expect(core.text).toContain('Component');
+
+        const common = cache.getCachedSourceFile('/node_modules/@angular/common/common.d.ts')!;
+        expect(common).not.toBeUndefined();
+        expect(common.text).toContain('NgIf');
+
+        fs.writeFile(
+            _('/node_modules/@angular/core/core.d.ts'), `export declare interface Directive {}`);
+
+        const core_2 = cache.getCachedSourceFile('/node_modules/@angular/core/core.d.ts')!;
+        expect(core_2).not.toBe(core);
+        expect(core_2.text).toContain('Directive');
+
+        const core_3 = cache.getCachedSourceFile('/node_modules/@angular/core/core.d.ts')!;
+        expect(core_3).toBe(core_2);
+
+        const common_2 = cache.getCachedSourceFile('/node_modules/@angular/common/common.d.ts')!;
+        expect(common_2).toBe(common);
+      });
+
       it('should not cache files that are not default library files inside of the typescript package',
          () => {
            const cache = new TransformCache(fs);
@@ -87,6 +138,25 @@ runInEachFileSystem(() => {
         expect(isDefaultLibrary(_('/node_modules/ttypescript/lib/lib.es5.d.ts'), fs)).toBe(false);
         expect(isDefaultLibrary(_('/node_modules/ttypescript/lib/lib.es5.d.ts'), fs)).toBe(false);
         expect(isDefaultLibrary(_('/typescript/lib/lib.es5.d.ts'), fs)).toBe(false);
+      });
+    });
+
+    describe('isAngularDts()', () => {
+      it('should accept .d.ts files inside of the @angular scope', () => {
+        expect(isAngularDts(_('/node_modules/@angular/core/core.d.ts'), fs)).toBe(true);
+        expect(isAngularDts(_('/node_modules/@angular/common/common.d.ts'), fs)).toBe(true);
+      });
+      it('should reject non-.d.ts files inside @angular scoped packages', () => {
+        expect(isAngularDts(_('/node_modules/@angular/common/src/common.ts'), fs)).toBe(false);
+      });
+      it('should reject .d.ts files nested deeply inside @angular scoped packages', () => {
+        expect(isAngularDts(_('/node_modules/@angular/common/src/common.d.ts'), fs)).toBe(false);
+      });
+      it('should reject .d.ts files directly inside the @angular scope', () => {
+        expect(isAngularDts(_('/node_modules/@angular/common.d.ts'), fs)).toBe(false);
+      });
+      it('should reject files that are not inside node_modules', () => {
+        expect(isAngularDts(_('/@angular/core/core.d.ts'), fs)).toBe(false);
       });
     });
 
