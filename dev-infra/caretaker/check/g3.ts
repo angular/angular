@@ -12,11 +12,11 @@ import {join} from 'path';
 import {parse as parseYaml} from 'yaml';
 
 import {getRepoBaseDir} from '../../utils/config';
-import {bold, debug, info} from '../../utils/console';
+import {bold, debug, error, info} from '../../utils/console';
 import {GitClient} from '../../utils/git/index';
 
 /** Compare the upstream master to the upstream g3 branch, if it exists. */
-export async function printG3Comparison(git: GitClient) {
+export async function getG3ComparisonPrinter(git: GitClient) {
   const angularRobotFilePath = join(getRepoBaseDir(), '.github/angular-robot.yml');
   if (!existsSync(angularRobotFilePath)) {
     return debug('No angular robot configuration file exists, skipping.');
@@ -47,17 +47,18 @@ export async function printG3Comparison(git: GitClient) {
   /** The statistical information about the git diff between master and g3. */
   const stats = getDiffStats();
 
-  info.group(bold('g3 branch check'));
-  info(`${stats.commits} commits between g3 and master`);
-  if (stats.files === 0) {
-    info('✅ No sync is needed at this time');
-  } else {
-    info(`${stats.files} files changed, ${stats.insertions} insertions(+), ${
-        stats.deletions} deletions(-) will be included in the next sync`);
-  }
-  info.groupEnd();
-  info();
-
+  return () => {
+    info.group(bold('g3 branch check'));
+    if (stats.files === 0) {
+      info(`${stats.commits} commits between g3 and master`);
+      info('✅  No sync is needed at this time');
+    } else {
+      info(`${stats.files} files changed, ${stats.insertions} insertions(+), ${
+          stats.deletions} deletions(-) will be included in the next sync`);
+    }
+    info.groupEnd();
+    info();
+  };
 
   /** Fetch and retrieve the latest sha for a specific branch. */
   function getShaForBranchLatest(branch: string) {

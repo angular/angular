@@ -24,14 +24,22 @@ interface StatusCheckResult {
 }
 
 /** Retrieve and log stasuses for all of the services of concern. */
-export async function printServiceStatuses() {
-  info.group(bold(`Service Statuses (checked: ${new Date().toLocaleString()})`));
-  logStatus('CircleCI', await getCircleCiStatus());
-  logStatus('Github', await getGithubStatus());
-  logStatus('NPM', await getNpmStatus());
-  logStatus('Saucelabs', await getSaucelabsStatus());
-  info.groupEnd();
-  info();
+export async function getServicesStatusPrinter() {
+  const [circleCi, github, npm, saucelabs] = await Promise.all([
+    getCircleCiStatus(),
+    getGithubStatus(),
+    getNpmStatus(),
+    getSaucelabsStatus(),
+  ]);
+  return () => {
+    info.group(bold(`Service Statuses (checked: ${new Date().toLocaleString()})`));
+    logStatus('CircleCI', circleCi);
+    logStatus('Github', github);
+    logStatus('NPM', npm);
+    logStatus('Saucelabs', saucelabs);
+    info.groupEnd();
+    info();
+  };
 }
 
 

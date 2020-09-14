@@ -1097,20 +1097,20 @@ function getLtsNpmDistTagOfMajor(major) {
  * found in the LICENSE file at https://angular.io/license
  */
 /** Retrieve and log status of CI for the project. */
-function printCiStatus(git) {
+function getCiStatusPrinter(git) {
     return tslib.__awaiter(this, void 0, void 0, function* () {
         const releaseTrains = yield fetchActiveReleaseTrains(Object.assign({ api: git.github }, git.remoteConfig));
-        info.group(bold(`CI`));
-        for (const [trainName, train] of Object.entries(releaseTrains)) {
-            if (train === null) {
-                debug(`No active release train for ${trainName}`);
-                continue;
-            }
-            const status = yield getStatusOfBranch(git, train.branchName);
-            yield printStatus(`${trainName.padEnd(6)} (${train.branchName})`, status);
-        }
-        info.groupEnd();
-        info();
+        const ciStatusResults = yield Promise.all(Object.entries(releaseTrains).map(([trainName, train]) => tslib.__awaiter(this, void 0, void 0, function* () {
+            return {
+                label: `${trainName.padEnd(6)} (${train.branchName})`,
+                status: yield getStatusOfBranch(git, train.branchName),
+            };
+        })));
+        return () => {
+            info.group(bold(`CI`));
+            ciStatusResults.forEach(result => printStatus(result.label, result.status));
+            info.groupEnd();
+        };
     });
 }
 /** Log the status of CI for a given branch to the console. */
@@ -1151,7 +1151,7 @@ function getStatusOfBranch(git, branch) {
  * found in the LICENSE file at https://angular.io/license
  */
 /** Compare the upstream master to the upstream g3 branch, if it exists. */
-function printG3Comparison(git) {
+function getG3ComparisonPrinter(git) {
     var _a, _b, _c, _d;
     return tslib.__awaiter(this, void 0, void 0, function* () {
         const angularRobotFilePath = path.join(getRepoBaseDir(), '.github/angular-robot.yml');
@@ -1178,16 +1178,18 @@ function printG3Comparison(git) {
         }
         /** The statistical information about the git diff between master and g3. */
         const stats = getDiffStats();
-        info.group(bold('g3 branch check'));
-        info(`${stats.commits} commits between g3 and master`);
-        if (stats.files === 0) {
-            info('✅ No sync is needed at this time');
-        }
-        else {
-            info(`${stats.files} files changed, ${stats.insertions} insertions(+), ${stats.deletions} deletions(-) will be included in the next sync`);
-        }
-        info.groupEnd();
-        info();
+        return () => {
+            info.group(bold('g3 branch check'));
+            if (stats.files === 0) {
+                info(`${stats.commits} commits between g3 and master`);
+                info('✅  No sync is needed at this time');
+            }
+            else {
+                info(`${stats.files} files changed, ${stats.insertions} insertions(+), ${stats.deletions} deletions(-) will be included in the next sync`);
+            }
+            info.groupEnd();
+            info();
+        };
         /** Fetch and retrieve the latest sha for a specific branch. */
         function getShaForBranchLatest(branch) {
             /** The result fo the fetch command. */
@@ -1257,31 +1259,35 @@ function printG3Comparison(git) {
  * found in the LICENSE file at https://angular.io/license
  */
 /**
- * Cap the returned issues in the queries to an arbitrary 100. At that point, caretaker has a lot
+ * Cap the returned issues in the queries to an arbitrary 20. At that point, caretaker has a lot
  * of work to do and showing more than that isn't really useful.
  */
 const MAX_RETURNED_ISSUES = 20;
 /** Retrieve the number of matching issues for each github query. */
-function printGithubTasks(git, config) {
+function getGithubTaskPrinter(git, config) {
     var _a;
     return tslib.__awaiter(this, void 0, void 0, function* () {
         if (!((_a = config === null || config === void 0 ? void 0 : config.githubQueries) === null || _a === void 0 ? void 0 : _a.length)) {
-            debug('No github queries defined in the configuration, skipping.');
+            debug('No github queries defined in the configuration, skipping');
             return;
         }
-        info.group(bold(`Github Tasks`));
-        yield getGithubInfo(git, config);
-        info.groupEnd();
-        info();
+        const results = yield getGithubQueryResults(git, config);
+        return () => {
+            info.group(bold('Github Tasks'));
+            printGithubQueryResults(results);
+            info.groupEnd();
+            info();
+        };
     });
 }
 /** Retrieve query match counts and log discovered counts to the console. */
-function getGithubInfo(git, { githubQueries: queries = [] }) {
+function getGithubQueryResults(git, { githubQueries: queries = [] }) {
     return tslib.__awaiter(this, void 0, void 0, function* () {
+        const { owner, name: repo } = git.remoteConfig;
         /** The query object for graphql. */
         const graphQlQuery = {};
         /** The Github search filter for the configured repository. */
-        const repoFilter = `repo:${git.remoteConfig.owner}/${git.remoteConfig.name}`;
+        const repoFilter = `repo:${owner}/${repo}`;
         queries.forEach(({ name, query }) => {
             /** The name of the query, with spaces removed to match GraphQL requirements. */
             const queryKey = typedGraphqlify.alias(name.replace(/ /g, ''), 'search');
@@ -1302,24 +1308,31 @@ function getGithubInfo(git, { githubQueries: queries = [] }) {
             });
         });
         /** The results of the generated github query. */
-        const results = yield git.github.graphql.query(graphQlQuery);
-        Object.values(results).forEach((result, i) => {
-            var _a, _b;
-            info(`${(_a = queries[i]) === null || _a === void 0 ? void 0 : _a.name.padEnd(25)} ${result.issueCount}`);
-            if (result.issueCount > 0) {
-                const { owner, name: repo } = git.remoteConfig;
-                const url = encodeURI(`https://github.com/${owner}/${repo}/issues?q=${(_b = queries[i]) === null || _b === void 0 ? void 0 : _b.query}`);
-                info.group(`${url}`);
-                if (result.nodes.length === MAX_RETURNED_ISSUES && result.nodes.length < result.issueCount) {
-                    info(`(first ${MAX_RETURNED_ISSUES})`);
-                }
-                for (const node of result.nodes) {
-                    info(`- ${node.url}`);
-                }
-                info.groupEnd();
-            }
+        const queryResult = yield git.github.graphql.query(graphQlQuery);
+        return Object.values(queryResult).map((result, i) => {
+            var _a;
+            return ({
+                queryName: queries[i].name,
+                count: result.issueCount,
+                queryUrl: encodeURI(`https://github.com/${owner}/${repo}/issues?q=${(_a = queries[i]) === null || _a === void 0 ? void 0 : _a.query}`),
+                matchedUrls: result.nodes.map(node => node.url)
+            });
         });
     });
+}
+function printGithubQueryResults(results) {
+    const minQueryNameLength = Math.max(...results.map(result => result.queryName.length));
+    for (const result of results) {
+        info(`${result.queryName.padEnd(minQueryNameLength)}  ${result.count}`);
+        if (result.count > 0) {
+            info.group(result.queryUrl);
+            result.matchedUrls.forEach(url => info(`- ${url}`));
+            if (result.count > MAX_RETURNED_ISSUES) {
+                info(`... ${result.count - MAX_RETURNED_ISSUES} additional matches`);
+            }
+            info.groupEnd();
+        }
+    }
 }
 
 /**
@@ -1336,15 +1349,23 @@ var ServiceStatus;
     ServiceStatus[ServiceStatus["RED"] = 1] = "RED";
 })(ServiceStatus || (ServiceStatus = {}));
 /** Retrieve and log stasuses for all of the services of concern. */
-function printServiceStatuses() {
+function getServicesStatusPrinter() {
     return tslib.__awaiter(this, void 0, void 0, function* () {
-        info.group(bold(`Service Statuses (checked: ${new Date().toLocaleString()})`));
-        logStatus('CircleCI', yield getCircleCiStatus());
-        logStatus('Github', yield getGithubStatus());
-        logStatus('NPM', yield getNpmStatus());
-        logStatus('Saucelabs', yield getSaucelabsStatus());
-        info.groupEnd();
-        info();
+        const [circleCi, github, npm, saucelabs] = yield Promise.all([
+            getCircleCiStatus(),
+            getGithubStatus(),
+            getNpmStatus(),
+            getSaucelabsStatus(),
+        ]);
+        return () => {
+            info.group(bold(`Service Statuses (checked: ${new Date().toLocaleString()})`));
+            logStatus('CircleCI', circleCi);
+            logStatus('Github', github);
+            logStatus('NPM', npm);
+            logStatus('Saucelabs', saucelabs);
+            info.groupEnd();
+            info();
+        };
     });
 }
 /** Log the status of the service to the console. */
@@ -1412,11 +1433,13 @@ function checkServiceStatuses(githubToken) {
         const git = new GitClient(githubToken, config);
         // Prevent logging of the git commands being executed during the check.
         GitClient.LOG_COMMANDS = false;
-        // TODO(josephperrott): Allow these checks to be loaded in parallel.
-        yield printServiceStatuses();
-        yield printGithubTasks(git, config.caretaker);
-        yield printG3Comparison(git);
-        yield printCiStatus(git);
+        const printers = yield Promise.all([
+            getServicesStatusPrinter(), getGithubTaskPrinter(git, config.caretaker),
+            getG3ComparisonPrinter(git), getCiStatusPrinter(git)
+        ]);
+        for (const printer of printers) {
+            printer && printer();
+        }
     });
 }
 

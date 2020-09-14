@@ -19,20 +19,22 @@ interface StatusCheckResult {
 }
 
 /** Retrieve and log status of CI for the project. */
-export async function printCiStatus(git: GitClient) {
+export async function getCiStatusPrinter(git: GitClient) {
   const releaseTrains = await fetchActiveReleaseTrains({api: git.github, ...git.remoteConfig});
 
-  info.group(bold(`CI`));
-  for (const [trainName, train] of Object.entries(releaseTrains)) {
-    if (train === null) {
-      debug(`No active release train for ${trainName}`);
-      continue;
-    }
-    const status = await getStatusOfBranch(git, train.branchName);
-    await printStatus(`${trainName.padEnd(6)} (${train.branchName})`, status);
-  }
-  info.groupEnd();
-  info();
+  const ciStatusResults =
+      await Promise.all(Object.entries(releaseTrains).map(async ([trainName, train]) => {
+        return {
+          label: `${trainName.padEnd(6)} (${train.branchName})`,
+          status: await getStatusOfBranch(git, train.branchName),
+        };
+      }));
+
+  return () => {
+    info.group(bold(`CI`));
+    ciStatusResults.forEach(result => printStatus(result.label, result.status));
+    info.groupEnd();
+  };
 }
 
 /** Log the status of CI for a given branch to the console. */

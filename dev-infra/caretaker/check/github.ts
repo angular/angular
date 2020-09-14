@@ -12,26 +12,38 @@ import {bold, debug, info} from '../../utils/console';
 import {GitClient} from '../../utils/git/index';
 import {CaretakerConfig} from '../config';
 
+/** A list of generated results for a github query. */
+type GithubQueryResults = {
+  queryName: string; count: number; queryUrl: string; matchedUrls: string[];
+}[];
+
 /**
- * Cap the returned issues in the queries to an arbitrary 100. At that point, caretaker has a lot
+ * Cap the returned issues in the queries to an arbitrary 20. At that point, caretaker has a lot
  * of work to do and showing more than that isn't really useful.
  */
 const MAX_RETURNED_ISSUES = 20;
 
 /** Retrieve the number of matching issues for each github query. */
-export async function printGithubTasks(git: GitClient, config?: CaretakerConfig) {
+export async function getGithubTaskPrinter(git: GitClient, config?: CaretakerConfig) {
   if (!config?.githubQueries?.length) {
-    debug('No github queries defined in the configuration, skipping.');
+    debug('No github queries defined in the configuration, skipping');
     return;
   }
-  info.group(bold(`Github Tasks`));
-  await getGithubInfo(git, config);
-  info.groupEnd();
-  info();
+  const results = await getGithubQueryResults(git, config);
+
+  return () => {
+    info.group(bold('Github Tasks'));
+    printGithubQueryResults(results);
+    info.groupEnd();
+    info();
+  };
 }
 
+
 /** Retrieve query match counts and log discovered counts to the console. */
-async function getGithubInfo(git: GitClient, {githubQueries: queries = []}: CaretakerConfig) {
+async function getGithubQueryResults(
+    git: GitClient, {githubQueries: queries = []}: CaretakerConfig): Promise<GithubQueryResults> {
+  const {owner, name: repo} = git.remoteConfig;
   /** The query object for graphql. */
   const graphQlQuery: {
     [key: string]: {
@@ -40,7 +52,7 @@ async function getGithubInfo(git: GitClient, {githubQueries: queries = []}: Care
     }
   } = {};
   /** The Github search filter for the configured repository. */
-  const repoFilter = `repo:${git.remoteConfig.owner}/${git.remoteConfig.name}`;
+  const repoFilter = `repo:${owner}/${repo}`;
   queries.forEach(({name, query}) => {
     /** The name of the query, with spaces removed to match GraphQL requirements. */
     const queryKey = alias(name.replace(/ /g, ''), 'search');
@@ -64,20 +76,28 @@ async function getGithubInfo(git: GitClient, {githubQueries: queries = []}: Care
     );
   });
   /** The results of the generated github query. */
-  const results = await git.github.graphql.query(graphQlQuery);
-  Object.values(results).forEach((result, i) => {
-    info(`${queries[i]?.name.padEnd(25)} ${result.issueCount}`);
-    if (result.issueCount > 0) {
-      const {owner, name: repo} = git.remoteConfig;
-      const url = encodeURI(`https://github.com/${owner}/${repo}/issues?q=${queries[i]?.query}`);
-      info.group(`${url}`);
-      if (result.nodes.length === MAX_RETURNED_ISSUES && result.nodes.length < result.issueCount) {
-        info(`(first ${MAX_RETURNED_ISSUES})`);
-      }
-      for (const node of result.nodes) {
-        info(`- ${node.url}`);
+  const queryResult = await git.github.graphql.query(graphQlQuery);
+  return Object.values(queryResult).map((result, i) => ({
+                                          queryName: queries[i].name,
+                                          count: result.issueCount,
+                                          queryUrl: encodeURI(`https://github.com/${owner}/${
+                                              repo}/issues?q=${queries[i]?.query}`),
+                                          matchedUrls: result.nodes.map(node => node.url)
+                                        }));
+}
+
+function printGithubQueryResults(results: GithubQueryResults) {
+  const minQueryNameLength = Math.max(...results.map(result => result.queryName.length));
+  for (const result of results) {
+    info(`${result.queryName.padEnd(minQueryNameLength)}  ${result.count}`);
+
+    if (result.count > 0) {
+      info.group(result.queryUrl);
+      result.matchedUrls.forEach(url => info(`- ${url}`));
+      if (result.count > MAX_RETURNED_ISSUES) {
+        info(`... ${result.count - MAX_RETURNED_ISSUES} additional matches`);
       }
       info.groupEnd();
     }
-  });
+  }
 }

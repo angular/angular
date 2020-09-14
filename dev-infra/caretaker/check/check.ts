@@ -9,10 +9,10 @@
 import {GitClient} from '../../utils/git/index';
 import {getCaretakerConfig} from '../config';
 
-import {printCiStatus} from './ci';
-import {printG3Comparison} from './g3';
-import {printGithubTasks} from './github';
-import {printServiceStatuses} from './services';
+import {getCiStatusPrinter} from './ci';
+import {getG3ComparisonPrinter} from './g3';
+import {getGithubTaskPrinter} from './github';
+import {getServicesStatusPrinter} from './services';
 
 
 /** Check the status of services which Angular caretakers need to monitor. */
@@ -24,9 +24,12 @@ export async function checkServiceStatuses(githubToken: string) {
   // Prevent logging of the git commands being executed during the check.
   GitClient.LOG_COMMANDS = false;
 
-  // TODO(josephperrott): Allow these checks to be loaded in parallel.
-  await printServiceStatuses();
-  await printGithubTasks(git, config.caretaker);
-  await printG3Comparison(git);
-  await printCiStatus(git);
+  const printers = await Promise.all([
+    getServicesStatusPrinter(), getGithubTaskPrinter(git, config.caretaker),
+    getG3ComparisonPrinter(git), getCiStatusPrinter(git)
+  ]);
+
+  for (const printer of printers) {
+    printer && printer();
+  }
 }
