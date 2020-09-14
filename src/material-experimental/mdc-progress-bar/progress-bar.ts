@@ -93,7 +93,7 @@ export class MatProgressBar extends _MatProgressBarMixinBase implements AfterVie
     },
     getWidth: () => this._rootElement.offsetWidth,
     attachResizeObserver: (callback) => {
-      if (window.ResizeObserver) {
+      if ((typeof window !== 'undefined') && window.ResizeObserver) {
         const ro = new ResizeObserver(callback);
         ro.observe(this._rootElement);
         return ro;

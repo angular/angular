@@ -11,7 +11,7 @@
     "importHelpers": false,
     "module": "umd",
     "target": "es5",
-    "types": ["jasmine"],
+    "types": ["jasmine", "resize-observer-browser"],
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "paths": {

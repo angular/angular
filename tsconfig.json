@@ -20,7 +20,7 @@
     "strictBindCallApply": true,
     "target": "es2015",
     "lib": ["es5", "es2015", "dom"],
-    "types": ["jasmine"],
+    "types": ["jasmine", "resize-observer-browser"],
     "baseUrl": ".",
     "paths": {
       "@angular/cdk": ["./src/cdk"],
