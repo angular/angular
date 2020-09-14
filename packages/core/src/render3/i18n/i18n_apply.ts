@@ -354,7 +354,13 @@ function appendI18nNode(
   // Re-organize node tree to put this node in the correct position.
   if (previousTNode === parentTNode && tNode !== parentTNode.child) {
     tNode.next = parentTNode.child;
-    parentTNode.child = tNode;
+    // FIXME(misko): Checking `tNode.parent` is a temporary workaround until we properly
+    // refactor the i18n code in #38707 and this code will be deleted.
+    if (tNode.parent === null) {
+      tView.firstChild = tNode;
+    } else {
+      parentTNode.child = tNode;
+    }
   } else if (previousTNode !== parentTNode && tNode !== previousTNode.next) {
     tNode.next = previousTNode.next;
     previousTNode.next = tNode;
@@ -446,7 +452,7 @@ function removeNode(tView: TView, lView: LView, index: number, markAsDetached: b
     }
   }
 
-  if (markAsDetached) {
+  if (markAsDetached && removedPhTNode) {
     // Define this node as detached to avoid projecting it later
     removedPhTNode.flags |= TNodeFlags.isDetached;
   }

@@ -190,13 +190,11 @@ export function isDirectiveInstance(instance: any): boolean {
  * Locates the element within the given LView and returns the matching index
  */
 function findViaNativeElement(lView: LView, target: RElement): number {
-  let tNode = lView[TVIEW].firstChild;
-  while (tNode) {
-    const native = getNativeByTNodeOrNull(tNode, lView)!;
-    if (native === target) {
-      return tNode.index;
+  const tView = lView[TVIEW];
+  for (let i = HEADER_OFFSET; i < tView.bindingStartIndex; i++) {
+    if (unwrapRNode(lView[i]) === target) {
+      return i;
     }
-    tNode = traverseNextElement(tNode);
   }
 
   return -1;
@@ -206,7 +204,11 @@ function findViaNativeElement(lView: LView, target: RElement): number {
  * Locates the next tNode (child, sibling or parent).
  */
 function traverseNextElement(tNode: TNode): TNode|null {
-  if (tNode.child) {
+  if (tNode.child && tNode.child.parent === tNode) {
+    // FIXME(misko): checking if `tNode.child.parent === tNode` should not be necessary
+    // We have added it here because i18n creates TNode's which are not valid, so this is a work
+    // around. The i18n code is being refactored in #??? and once it lands this extra check can be
+    // deleted.
     return tNode.child;
   } else if (tNode.next) {
     return tNode.next;

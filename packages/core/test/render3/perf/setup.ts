@@ -22,7 +22,8 @@ const renderer = rendererFactory.createRenderer(null, null);
 export function createAndRenderLView(
     parentLView: LView, tView: TView, hostTNode: TViewNode): LView {
   const embeddedLView = createLView(
-      parentLView, tView, {}, LViewFlags.CheckAlways, null, hostTNode, rendererFactory, renderer);
+      parentLView, tView, {}, LViewFlags.CheckAlways, null, hostTNode, rendererFactory, renderer,
+      null, null);
   renderView(tView, embeddedLView, null);
   return embeddedLView;
 }
@@ -49,12 +50,12 @@ export function setupTestHarness(
     embeddedViewContext: any = {}, consts: TAttributes[]|null = null,
     directiveRegistry: DirectiveDefList|null = null): TestHarness {
   // Create a root view with a container
-  const hostTView = createTView(TViewType.Root, -1, null, 1, 0, null, null, null, null, consts);
+  const hostTView = createTView(TViewType.Root, null, null, 1, 0, null, null, null, null, consts);
   const tContainerNode = getOrCreateTNode(hostTView, 0, TNodeType.Container, null, null);
   const hostNode = renderer.createElement('div');
   const hostLView = createLView(
       null, hostTView, {}, LViewFlags.CheckAlways | LViewFlags.IsRoot, hostNode, null,
-      rendererFactory, renderer);
+      rendererFactory, renderer, null, null);
   const mockRCommentNode = renderer.createComment('');
   const lContainer =
       createLContainer(mockRCommentNode, hostLView, mockRCommentNode, tContainerNode);
@@ -63,13 +64,14 @@ export function setupTestHarness(
 
   // create test embedded views
   const embeddedTView = createTView(
-      TViewType.Embedded, -1, templateFn, decls, vars, directiveRegistry, null, null, null, consts);
+      TViewType.Embedded, null, templateFn, decls, vars, directiveRegistry, null, null, null,
+      consts);
   const viewTNode = createTNode(hostTView, null, TNodeType.View, -1, null, null) as TViewNode;
 
   function createEmbeddedLView(): LView {
     const embeddedLView = createLView(
         hostLView, embeddedTView, embeddedViewContext, LViewFlags.CheckAlways, null, viewTNode,
-        rendererFactory, renderer);
+        rendererFactory, renderer, null, null);
     renderView(embeddedTView, embeddedLView, embeddedViewContext);
     return embeddedLView;
   }

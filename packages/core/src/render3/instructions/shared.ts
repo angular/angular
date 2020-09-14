@@ -17,7 +17,7 @@ import {createNamedArrayType} from '../../util/named_array_type';
 import {initNgDevMode} from '../../util/ng_dev_mode';
 import {normalizeDebugBindingName, normalizeDebugBindingValue} from '../../util/ng_reflect';
 import {stringify} from '../../util/stringify';
-import {assertFirstCreatePass, assertLContainer, assertLView} from '../assert';
+import {assertFirstCreatePass, assertLContainer, assertLView, assertTNodeForLView} from '../assert';
 import {attachPatchData} from '../context_discovery';
 import {getFactoryDef} from '../definition';
 import {diPublicInInjector, getNodeInjectable, getOrCreateNodeInjectorForNode} from '../di';
@@ -172,13 +172,14 @@ export function elementCreate(name: string, renderer: Renderer3, namespace: stri
 
 export function createLView<T>(
     parentLView: LView|null, tView: TView, context: T|null, flags: LViewFlags, host: RElement|null,
-    tHostNode: TViewNode|TElementNode|null, rendererFactory?: RendererFactory3|null,
-    renderer?: Renderer3|null, sanitizer?: Sanitizer|null, injector?: Injector|null): LView {
+    tHostNode: TNode|null, rendererFactory: RendererFactory3|null, renderer: Renderer3|null,
+    sanitizer: Sanitizer|null, injector: Injector|null): LView {
   const lView =
       ngDevMode ? cloneToLViewFromTViewBlueprint(tView) : tView.blueprint.slice() as LView;
   lView[HOST] = host;
   lView[FLAGS] = flags | LViewFlags.CreationMode | LViewFlags.Attached | LViewFlags.FirstLViewPass;
   resetPreOrderHookFlags(lView);
+  ngDevMode && tView.node && parentLView && assertTNodeForLView(tView.node, parentLView);
   lView[PARENT] = lView[DECLARATION_VIEW] = parentLView;
   lView[CONTEXT] = context;
   lView[RENDERER_FACTORY] = (rendererFactory || parentLView && parentLView[RENDERER_FACTORY])!;
@@ -250,7 +251,7 @@ function createTNodeAtIndex(
   const parentInSameView = parent !== null && parent.type !== TNodeType.View;
   const tParentNode = parentInSameView ? parent as TElementNode | TContainerNode : null;
   const tNode = tView.data[adjustedIndex] =
-      createTNode(tView, tParentNode, type, adjustedIndex, name, attrs);
+      createTNode(tView, parent as TElementNode | TContainerNode, type, adjustedIndex, name, attrs);
   // Assign a pointer to the first child node of a given view. The first node is not always the one
   // at index 0, in case of i18n, index 0 can be the instruction `i18nStart` and the first node has
   // the index 1 or more, so we can't just check node index.
@@ -267,23 +268,6 @@ function createTNodeAtIndex(
     }
   }
   return tNode;
-}
-
-export function assignTViewNodeToLView(
-    tView: TView, tParentNode: TNode|null, index: number, lView: LView): void {
-  // View nodes are not stored in data because they can be added / removed at runtime (which
-  // would cause indices to change). Their TNodes are instead stored in tView.node.
-  let tNode = tView.node;
-  if (tNode == null) {
-    ngDevMode && tParentNode &&
-        assertNodeOfPossibleTypes(tParentNode, [TNodeType.Element, TNodeType.Container]);
-    tView.node = tNode = createTNode(
-                             tView,
-                             tParentNode as TElementNode | TContainerNode | null,  //
-                             TNodeType.View, index, null, null) as TViewNode;
-  }
-
-  lView[T_HOST] = tNode as TViewNode;
 }
 
 
@@ -623,8 +607,11 @@ export function getOrCreateTComponentView(def: ComponentDef<any>): TView {
   // Create a TView if there isn't one, or recreate it if the first create pass didn't
   // complete successfully since we can't know for sure whether it's in a usable shape.
   if (tView === null || tView.incompleteFirstPass) {
+    // Declaration node here is null since this function is called when we dynamically create a
+    // component and hence there is no declaration.
+    const declTNode = null;
     return def.tView = createTView(
-               TViewType.Component, -1, def.template, def.decls, def.vars, def.directiveDefs,
+               TViewType.Component, declTNode, def.template, def.decls, def.vars, def.directiveDefs,
                def.pipeDefs, def.viewQuery, def.schemas, def.consts);
   }
 
@@ -635,7 +622,8 @@ export function getOrCreateTComponentView(def: ComponentDef<any>): TView {
 /**
  * Creates a TView instance
  *
- * @param viewIndex The viewBlockId for inline views, or -1 if it's a component/dynamic
+ * @param type Type of `TView`.
+ * @param declTNode Declaration location of this `TView`.
  * @param templateFn Template function
  * @param decls The number of nodes, local refs, and pipes in this template
  * @param directives Registry of directives for this view
@@ -645,7 +633,7 @@ export function getOrCreateTComponentView(def: ComponentDef<any>): TView {
  * @param consts Constants for this view
  */
 export function createTView(
-    type: TViewType, viewIndex: number, templateFn: ComponentTemplate<any>|null, decls: number,
+    type: TViewType, declTNode: TNode|null, templateFn: ComponentTemplate<any>|null, decls: number,
     vars: number, directives: DirectiveDefListOrFactory|null, pipes: PipeDefListOrFactory|null,
     viewQuery: ViewQueriesFunction<any>|null, schemas: SchemaMetadata[]|null,
     constsOrFactory: TConstantsOrFactory|null): TView {
@@ -660,12 +648,11 @@ export function createTView(
   const tView = blueprint[TVIEW as any] = ngDevMode ?
       new TViewConstructor(
           type,
-          viewIndex,   // id: number,
           blueprint,   // blueprint: LView,
           templateFn,  // template: ComponentTemplate<{}>|null,
           null,        // queries: TQueries|null
           viewQuery,   // viewQuery: ViewQueriesFunction<{}>|null,
-          null!,       // node: TViewNode|TElementNode|null,
+          declTNode,   // declTNode: TNode|null,
           cloneToTViewData(blueprint).fill(null, bindingStartIndex),  // data: TData,
           bindingStartIndex,                                          // bindingStartIndex: number,
           initialViewLength,                                          // expandoStartIndex: number,
@@ -697,12 +684,11 @@ export function createTView(
           ) :
       {
         type: type,
-        id: viewIndex,
         blueprint: blueprint,
         template: templateFn,
         queries: null,
         viewQuery: viewQuery,
-        node: null!,
+        node: declTNode,
         data: blueprint.slice().fill(null, bindingStartIndex),
         bindingStartIndex: bindingStartIndex,
         expandoStartIndex: initialViewLength,
@@ -812,6 +798,7 @@ export function storeCleanupWithContext(
  * Constructs a TNode object from the arguments.
  *
  * @param tView `TView` to which this `TNode` belongs (used only in `ngDevMode`)
+ * @param tParent Parent `TNode`
  * @param type The type of the node
  * @param adjustedIndex The index of the TNode in TView.data, adjusted for HEADER_OFFSET
  * @param tagName The tag name of the node
@@ -1488,7 +1475,8 @@ function addComponentLogic<T>(lView: LView, hostTNode: TElementNode, def: Compon
       lView,
       createLView(
           lView, tView, null, def.onPush ? LViewFlags.Dirty : LViewFlags.CheckAlways, native,
-          hostTNode as TElementNode, rendererFactory, rendererFactory.createRenderer(native, def)));
+          hostTNode as TElementNode, rendererFactory, rendererFactory.createRenderer(native, def),
+          null, null));
 
   // Component view will always be created before any injected LContainers,
   // so this is a regular element, wrap it with the component view

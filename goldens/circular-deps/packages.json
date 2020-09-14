@@ -396,27 +396,6 @@
     "packages/core/src/change_detection/change_detection.ts",
     "packages/core/src/change_detection/change_detector_ref.ts",
     "packages/core/src/render3/view_engine_compatibility.ts",
-    "packages/core/src/render3/node_manipulation.ts",
-    "packages/core/src/core.ts",
-    "packages/core/src/metadata.ts",
-    "packages/core/src/di.ts",
-    "packages/core/src/di/index.ts",
-    "packages/core/src/di/injectable.ts",
-    "packages/core/src/di/jit/injectable.ts",
-    "packages/core/src/di/jit/environment.ts",
-    "packages/core/src/di/injector_compatibility.ts",
-    "packages/core/src/di/injector.ts",
-    "packages/core/src/di/r3_injector.ts",
-    "packages/core/src/render3/definition.ts",
-    "packages/core/src/metadata/ng_module.ts"
-  ],
-  [
-    "packages/core/src/application_ref.ts",
-    "packages/core/src/application_tokens.ts",
-    "packages/core/src/linker/component_factory.ts",
-    "packages/core/src/change_detection/change_detection.ts",
-    "packages/core/src/change_detection/change_detector_ref.ts",
-    "packages/core/src/render3/view_engine_compatibility.ts",
     "packages/core/src/render3/view_ref.ts"
   ],
   [
@@ -903,6 +882,12 @@
   [
     "packages/core/src/change_detection/differs/default_keyvalue_differ.ts",
     "packages/core/src/change_detection/differs/keyvalue_differs.ts"
+  ],
+  [
+    "packages/core/src/debug/debug_node.ts",
+    "packages/core/src/view/index.ts",
+    "packages/core/src/view/entrypoint.ts",
+    "packages/core/src/view/services.ts"
   ],
   [
     "packages/core/src/di/injectable.ts",

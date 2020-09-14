@@ -9,6 +9,7 @@
 import '../util/ng_dev_mode';
 
 import {Type} from '../interface/type';
+import {assertNotEqual} from '../util/assert';
 import {getClosureSafeProperty} from '../util/property';
 import {stringify} from '../util/stringify';
 
@@ -82,6 +83,19 @@ export function setInjectImplementation(
   const previous = _injectImplementation;
   _injectImplementation = impl;
   return previous;
+}
+
+/**
+ * Assert that `_injectImplementation` is not `fn`.
+ *
+ * This is useful, to prevent infinite recursion.
+ *
+ * @param fn Function which it should not equal to
+ */
+export function assertInjectImplementationNot(
+    fn: (<T>(token: Type<T>|InjectionToken<T>, flags?: InjectFlags) => T | null)) {
+  ngDevMode &&
+      assertNotEqual(_injectImplementation, fn, 'Calling ɵɵinject would cause infinite recursion');
 }
 
 export function injectInjectorOnly<T>(token: Type<T>|InjectionToken<T>): T;

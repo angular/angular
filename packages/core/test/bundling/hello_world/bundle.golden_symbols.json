@@ -60,9 +60,6 @@
     "name": "allocLFrame"
   },
   {
-    "name": "appendChild"
-  },
-  {
     "name": "attachPatchData"
   },
   {
@@ -109,6 +106,9 @@
   },
   {
     "name": "extractPipeDef"
+  },
+  {
+    "name": "getBeforeNodeForView"
   },
   {
     "name": "getCheckNoChangesMode"
@@ -235,5 +235,8 @@
   },
   {
     "name": "viewAttachedToChangeDetector"
+  },
+  {
+    "name": "ɵɵtext"
   }
 ]

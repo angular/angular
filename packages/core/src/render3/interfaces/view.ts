@@ -41,6 +41,7 @@ export const RENDERER = 11;
 export const SANITIZER = 12;
 export const CHILD_HEAD = 13;
 export const CHILD_TAIL = 14;
+// FIXME(misko): Investigate if the three declarations aren't all same thing.
 export const DECLARATION_VIEW = 15;
 export const DECLARATION_COMPONENT_VIEW = 16;
 export const DECLARATION_LCONTAINER = 17;
@@ -79,8 +80,7 @@ export interface LView extends Array<any> {
   debug?: LViewDebug;
 
   /**
-   * The host node for this LView instance, if this is a component view.
-   * If this is an embedded view, HOST will be null.
+   * The node into which this `LView` is inserted.
    */
   [HOST]: RElement|null;
 
@@ -120,16 +120,35 @@ export interface LView extends Array<any> {
   [QUERIES]: LQueries|null;
 
   /**
-   * Pointer to the `TViewNode` or `TElementNode` which represents the root of the view.
+   * Store the `TNode` of the location where the current `LView` is inserted into.
    *
-   * If `TViewNode`, this is an embedded view of a container. We need this to be able to
-   * efficiently find the `LViewNode` when inserting the view into an anchor.
+   * Given:
+   * ```
+   * <div>
+   *   <ng-template><span></span></ng-template>
+   * </div>
+   * ```
    *
-   * If `TElementNode`, this is the LView of a component.
+   * We end up with two `TView`s.
+   * - `parent` `TView` which contains `<div><!-- anchor --></div>`
+   * - `child` `TView` which contains `<span></span>`
    *
-   * If null, this is the root view of an application (root component is in this view).
+   * Typically the `child` is inserted into the declaration location of the `parent`, but it can be
+   * inserted anywhere. Because it can be inserted anywhere it is not possible to store the
+   * insertion information in the `TView` and instead we must store it in the `LView[T_HOST]`.
+   *
+   * So to determine where is our insertion parent we would execute:
+   * ```
+   * const parentLView = lView[PARENT];
+   * const parentTNode = lView[T_HOST];
+   * const insertionParent = parentLView[parentTNode.index];
+   * ```
+   *
+   *
+   * If `null`, this is the root view of an application (root component is in this view) and it has
+   * no parents.
    */
-  [T_HOST]: TViewNode|TElementNode|null;
+  [T_HOST]: TNode|null;
 
   /**
    * When a view is destroyed, listeners need to be released and outputs need to be
@@ -182,8 +201,6 @@ export interface LView extends Array<any> {
 
   /**
    * View where this view's template was declared.
-   *
-   * Only applicable for dynamically created views. Will be null for inline/component views.
    *
    * The template for a dynamically created view may be declared in a different view than
    * it is inserted. We already track the "insertion view" (view where the template was
@@ -440,6 +457,17 @@ export const enum TViewType {
 }
 
 /**
+ * Converts `TViewType` into human readable text.
+ * Make sure this matches with `TViewType`
+ */
+export const TViewTypeAsString = [
+  'Root',       // 0
+  'Component',  // 1
+  'Embedded',   // 2
+] as const;
+
+
+/**
  * The static data for an LView (shared between all templates of a
  * given type).
  *
@@ -450,15 +478,6 @@ export interface TView {
    * Type of `TView` (`Root`|`Component`|`Embedded`).
    */
   type: TViewType;
-
-  /**
-   * ID for inline views to determine whether a view is the same as the previous view
-   * in a certain position. If it's not, we know the new view needs to be inserted
-   * and the one that exists needs to be removed (e.g. if/else statements)
-   *
-   * If this is -1, then this is a component view or a dynamically created view.
-   */
-  readonly id: number;
 
   /**
    * This is a blueprint used to generate LView instances for this TView. Copying this
@@ -478,21 +497,12 @@ export interface TView {
   viewQuery: ViewQueriesFunction<{}>|null;
 
   /**
-   * Pointer to the host `TNode` (not part of this TView).
-   *
-   * If this is a `TViewNode` for an `LViewNode`, this is an embedded view of a container.
-   * We need this pointer to be able to efficiently find this node when inserting the view
-   * into an anchor.
-   *
-   * If this is a `TElementNode`, this is the view of a root component. It has exactly one
-   * root TNode.
-   *
-   * If this is null, this is the view of a component that is not at root. We do not store
-   * the host TNodes for child component views because they can potentially have several
-   * different host TNodes, depending on where the component is being used. These host
-   * TNodes cannot be shared (due to different indices, etc).
+   * A `TNode` representing the declaration location of this `TView` (not part of this TView).
    */
-  node: TViewNode|TElementNode|null;
+  // FIXME(misko): Rename `node` to `declTNode`
+  node: TNode|null;
+
+  // FIXME(misko): Why does `TView` not have `declarationTView` property?
 
   /** Whether or not this template has been processed in creation mode. */
   firstCreatePass: boolean;
@@ -1038,7 +1048,7 @@ export interface DebugNode {
   injector: NodeInjectorDebug;
 }
 
-interface NodeInjectorDebug {
+export interface NodeInjectorDebug {
   /**
    * Instance bloom. Does the current injector have a provider with a given bloom mask.
    */

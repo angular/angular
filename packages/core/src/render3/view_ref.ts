@@ -35,11 +35,8 @@ export class ViewRef<T> implements viewEngine_EmbeddedViewRef<T>, viewEngine_Int
 
   get rootNodes(): any[] {
     const lView = this._lView;
-    if (lView[HOST] == null) {
-      const hostTView = lView[T_HOST] as TViewNode;
-      return collectNativeNodes(lView[TVIEW], lView, hostTView.child, []);
-    }
-    return [];
+    const tView = lView[TVIEW];
+    return collectNativeNodes(tView, lView, tView.firstChild, []);
   }
 
   constructor(
