@@ -54,8 +54,7 @@ interface LFrame {
    *
    * This is used in conjunction with `isParent`.
    */
-  // FIXME(misko): should be `TNode|null` (add comment explaining it.)
-  previousOrParentTNode: TNode;
+  previousOrParentTNode: TNode|null;
 
   /**
    * If `isParent` is:
@@ -263,7 +262,7 @@ export function ɵɵrestoreView(viewToRestore: OpaqueViewState) {
   instructionState.lFrame.contextLView = viewToRestore as any as LView;
 }
 
-export function getPreviousOrParentTNode(): TNode {
+export function getPreviousOrParentTNode(): TNode|null {
   return instructionState.lFrame.previousOrParentTNode;
 }
 
@@ -441,20 +440,20 @@ function allocLFrame() {
 
 function createLFrame(parent: LFrame|null): LFrame {
   const lFrame: LFrame = {
-    previousOrParentTNode: null!,  //
-    isParent: true,                //
-    lView: null!,                  //
-    tView: null!,                  //
-    selectedIndex: 0,              //
-    contextLView: null!,           //
-    elementDepthCount: 0,          //
-    currentNamespace: null,        //
-    currentDirectiveIndex: -1,     //
-    bindingRootIndex: -1,          //
-    bindingIndex: -1,              //
-    currentQueryIndex: 0,          //
-    parent: parent!,               //
-    child: null,                   //
+    previousOrParentTNode: null,  //
+    isParent: true,               //
+    lView: null!,                 //
+    tView: null!,                 //
+    selectedIndex: 0,             //
+    contextLView: null!,          //
+    elementDepthCount: 0,         //
+    currentNamespace: null,       //
+    currentDirectiveIndex: -1,    //
+    bindingRootIndex: -1,         //
+    bindingIndex: -1,             //
+    currentQueryIndex: 0,         //
+    parent: parent!,              //
+    child: null,                  //
   };
   parent !== null && (parent.child = lFrame);  // link the new LFrame for reuse.
   return lFrame;

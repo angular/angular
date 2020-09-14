@@ -70,7 +70,7 @@ export function i18nStartFirstPass(
     lView: LView, tView: TView, index: number, message: string, subTemplateIndex?: number) {
   const startIndex = tView.blueprint.length - HEADER_OFFSET;
   i18nVarsCount = 0;
-  const previousOrParentTNode = getPreviousOrParentTNode();
+  const previousOrParentTNode = getPreviousOrParentTNode()!;
   const parentTNode =
       getIsParent() ? previousOrParentTNode : previousOrParentTNode && previousOrParentTNode.parent;
   let parentIndex =
@@ -212,7 +212,7 @@ export function i18nStartFirstPass(
  */
 export function i18nAttributesFirstPass(
     lView: LView, tView: TView, index: number, values: string[]) {
-  const previousElement = getPreviousOrParentTNode();
+  const previousElement = getPreviousOrParentTNode()!;
   const previousElementIndex = previousElement.index - HEADER_OFFSET;
   const updateOpCodes: I18nUpdateOpCodes = [];
   if (ngDevMode) {
