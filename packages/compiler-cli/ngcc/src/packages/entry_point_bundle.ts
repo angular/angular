@@ -6,11 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import * as ts from 'typescript';
-import {AbsoluteFsPath, FileSystem, NgtscCompilerHost} from '../../../src/ngtsc/file_system';
+import {AbsoluteFsPath, FileSystem} from '../../../src/ngtsc/file_system';
 import {PathMappings} from '../path_mappings';
 import {BundleProgram, makeBundleProgram} from './bundle_program';
 import {EntryPoint, EntryPointFormat} from './entry_point';
-import {NgccSourcesCompilerHost} from './ngcc_compiler_host';
+import {NgccDtsCompilerHost, NgccSourcesCompilerHost} from './ngcc_compiler_host';
+import {EntryPointFileCache, SharedFileCache} from './source_file_cache';
 
 /**
  * A bundle of files and paths (and TS programs) that correspond to a particular
@@ -31,6 +32,8 @@ export interface EntryPointBundle {
  * Get an object that describes a formatted bundle for an entry-point.
  * @param fs The current file-system being used.
  * @param entryPoint The entry-point that contains the bundle.
+ * @param sharedFileCache The cache to use for source files that are shared across all entry-points.
+ * @param moduleResolutionCache The module resolution cache to use.
  * @param formatPath The path to the source files for this bundle.
  * @param isCore This entry point is the Angular core package.
  * @param format The underlying format of the bundle.
@@ -42,7 +45,8 @@ export interface EntryPointBundle {
  * component templates.
  */
 export function makeEntryPointBundle(
-    fs: FileSystem, entryPoint: EntryPoint, formatPath: string, isCore: boolean,
+    fs: FileSystem, entryPoint: EntryPoint, sharedFileCache: SharedFileCache,
+    moduleResolutionCache: ts.ModuleResolutionCache, formatPath: string, isCore: boolean,
     format: EntryPointFormat, transformDts: boolean, pathMappings?: PathMappings,
     mirrorDtsFromSrc: boolean = false,
     enableI18nLegacyMessageIdFormat: boolean = true): EntryPointBundle {
@@ -50,8 +54,10 @@ export function makeEntryPointBundle(
   const rootDir = entryPoint.packagePath;
   const options: ts
       .CompilerOptions = {allowJs: true, maxNodeModuleJsDepth: Infinity, rootDir, ...pathMappings};
-  const srcHost = new NgccSourcesCompilerHost(fs, options, entryPoint.packagePath);
-  const dtsHost = new NgtscCompilerHost(fs, options);
+  const entryPointCache = new EntryPointFileCache(fs, sharedFileCache);
+  const dtsHost = new NgccDtsCompilerHost(fs, options, entryPointCache, moduleResolutionCache);
+  const srcHost = new NgccSourcesCompilerHost(
+      fs, options, entryPointCache, moduleResolutionCache, entryPoint.packagePath);
 
   // Create the bundle programs, as necessary.
   const absFormatPath = fs.resolve(entryPoint.path, formatPath);

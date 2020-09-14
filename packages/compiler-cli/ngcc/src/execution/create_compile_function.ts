@@ -14,6 +14,7 @@ import {Logger} from '../../../src/ngtsc/logging';
 import {ParsedConfiguration} from '../../../src/perform_compile';
 import {getEntryPointFormat} from '../packages/entry_point';
 import {makeEntryPointBundle} from '../packages/entry_point_bundle';
+import {createModuleResolutionCache, SharedFileCache} from '../packages/source_file_cache';
 import {PathMappings} from '../path_mappings';
 import {FileWriter} from '../writing/file_writer';
 
@@ -30,6 +31,8 @@ export function getCreateCompileFn(
   return (beforeWritingFiles, onTaskCompleted) => {
     const {Transformer} = require('../packages/transformer');
     const transformer = new Transformer(fileSystem, logger, tsConfig);
+    const sharedFileCache = new SharedFileCache(fileSystem);
+    const moduleResolutionCache = createModuleResolutionCache(fileSystem);
 
     return (task: Task) => {
       const {entryPoint, formatProperty, formatPropertiesToMarkAsProcessed, processDts} = task;
@@ -54,8 +57,8 @@ export function getCreateCompileFn(
       logger.info(`Compiling ${entryPoint.name} : ${formatProperty} as ${format}`);
 
       const bundle = makeEntryPointBundle(
-          fileSystem, entryPoint, formatPath, isCore, format, processDts, pathMappings, true,
-          enableI18nLegacyMessageIdFormat);
+          fileSystem, entryPoint, sharedFileCache, moduleResolutionCache, formatPath, isCore,
+          format, processDts, pathMappings, true, enableI18nLegacyMessageIdFormat);
 
       const result = transformer.transform(bundle);
       if (result.success) {
