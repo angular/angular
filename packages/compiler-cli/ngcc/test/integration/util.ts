@@ -213,13 +213,15 @@ export function compileIntoApf(
       fs.resolve(`/node_modules/${pkgName}/package.json`), JSON.stringify(pkgJson, null, 2));
 }
 
+const stdFiles = loadStandardTestFiles({fakeCore: false});
+
 /**
  * Prepares a mock filesystem that contains all provided source files, which can be used to emit
  * compiled code into.
  */
 function setupCompileFs(sources: PackageSources): {rootNames: string[], compileFs: FileSystem} {
   const compileFs = new MockFileSystemPosix(true);
-  compileFs.init(loadStandardTestFiles({fakeCore: false}));
+  compileFs.init(stdFiles);
 
   const rootNames = Object.keys(sources);
 
