@@ -39,7 +39,34 @@ which is the attribute, spelled with a lowercase `s`.
 
 For more details, see the [MDN HTMLTableCellElement](https://developer.mozilla.org/en-US/docs/Web/API/HTMLTableCellElement) documentation.
 
-For more information about `colSpan` and `colspan`, see the [Attribute binding](guide/attribute-binding#colspan) guide.
+{@a colspan}
+
+#### `colspan` and `colSpan`
+
+A common point of confusion is between the attribute, `colspan`, and the property, `colSpan`.
+Notice that these two names differ by only a single letter.
+
+If you wrote something like this:
+
+<code-example language="html">
+  &lt;tr&gt;&lt;td colspan="{{1 + 1}}"&gt;Three-Four&lt;/td&gt;&lt;/tr&gt;
+</code-example>
+
+You'd get this error:
+
+<code-example language="bash">
+  Template parse errors:
+  Can't bind to 'colspan' since it isn't a known native property
+</code-example>
+
+As the message says, the `<td>` element does not have a `colspan` property. This is true
+because `colspan` is an attribute&mdash;`colSpan`, with a capital `S`, is the
+corresponding property. Interpolation and property binding can set only *properties*, not attributes.
+
+Instead, you'd use property binding and write it like this:
+
+<code-example path="attribute-binding/src/app/app.component.html" region="colSpan" header="src/app/app.component.html"></code-example>
+
 
 Another example is disabling a button when the component says that it `isUnchanged`:
 

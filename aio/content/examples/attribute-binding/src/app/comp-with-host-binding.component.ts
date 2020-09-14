@@ -11,6 +11,9 @@ export class CompWithHostBindingComponent {
   @HostBinding('style.color')
   color = 'green';
 
+  // #docregion hostbinding
   @HostBinding('style.width')
   width = '200px';
+  // #enddocregion hostbinding
+
 }
