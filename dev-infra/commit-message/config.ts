@@ -8,6 +8,7 @@
 
 import {assertNoErrors, getConfig, NgDevConfig} from '../utils/config';
 
+/** Configuration for commit-message comands. */
 export interface CommitMessageConfig {
   maxLineLength: number;
   minBodyLength: number;

@@ -6,112 +6,20 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import * as yargs from 'yargs';
-import {getUserConfig} from '../utils/config';
 
-import {info} from '../utils/console';
-
-import {restoreCommitMessage} from './restore-commit-message';
-import {validateFile} from './validate-file';
-import {validateCommitRange} from './validate-range';
-import {runWizard} from './wizard';
+import {RestoreCommitMessageModule} from './restore-commit-message/cli';
+import {ValidateFileModule} from './validate-file/cli';
+import {ValidateRangeModule} from './validate-range/cli';
+import {WizardModule} from './wizard/cli';
 
 /** Build the parser for the commit-message commands. */
 export function buildCommitMessageParser(localYargs: yargs.Argv) {
   return localYargs.help()
       .strict()
-      .command(
-          'restore-commit-message-draft', false,
-          args => {
-            return args.option('file-env-variable', {
-              type: 'string',
-              array: true,
-              conflicts: ['file'],
-              required: true,
-              description:
-                  'The key for the environment variable which holds the arguments for the\n' +
-                  'prepare-commit-msg hook as described here:\n' +
-                  'https://git-scm.com/docs/githooks#_prepare_commit_msg',
-              coerce: arg => {
-                const [file, source] = (process.env[arg] || '').split(' ');
-                if (!file) {
-                  throw new Error(`Provided environment variable "${arg}" was not found.`);
-                }
-                return [file, source];
-              },
-            });
-          },
-          args => {
-            restoreCommitMessage(args['file-env-variable'][0], args['file-env-variable'][1] as any);
-          })
-      .command(
-          'wizard <filePath> [source] [commitSha]', '', ((args: any) => {
-            return args
-                .positional(
-                    'filePath',
-                    {description: 'The file path to write the generated commit message into'})
-                .positional('source', {
-                  choices: ['message', 'template', 'merge', 'squash', 'commit'],
-                  description: 'The source of the commit message as described here: ' +
-                      'https://git-scm.com/docs/githooks#_prepare_commit_msg'
-                })
-                .positional(
-                    'commitSha', {description: 'The commit sha if source is set to `commit`'});
-          }),
-          async (args: any) => {
-            await runWizard(args);
-          })
-      .command(
-          'pre-commit-validate', 'Validate the most recent commit message', {
-            'file': {
-              type: 'string',
-              conflicts: ['file-env-variable'],
-              description: 'The path of the commit message file.',
-            },
-            'file-env-variable': {
-              type: 'string',
-              conflicts: ['file'],
-              description:
-                  'The key of the environment variable for the path of the commit message file.',
-              coerce: arg => {
-                const file = process.env[arg];
-                if (!file) {
-                  throw new Error(`Provided environment variable "${arg}" was not found.`);
-                }
-                return file;
-              },
-            },
-            'error': {
-              type: 'boolean',
-              description:
-                  'Whether invalid commit messages should be treated as failures rather than a warning',
-              default: !!getUserConfig().commitMessage?.errorOnInvalidMessage || !!process.env['CI']
-            }
-          },
-          args => {
-            const file = args.file || args['file-env-variable'] || '.git/COMMIT_EDITMSG';
-            validateFile(file, args.error);
-          })
-      .command(
-          'validate-range', 'Validate a range of commit messages', {
-            'range': {
-              description: 'The range of commits to check, e.g. --range abc123..xyz456',
-              demandOption: '  A range must be provided, e.g. --range abc123..xyz456',
-              type: 'string',
-              requiresArg: true,
-            },
-          },
-          argv => {
-            // If on CI, and not pull request number is provided, assume the branch
-            // being run on is an upstream branch.
-            if (process.env['CI'] && process.env['CI_PULL_REQUEST'] === 'false') {
-              info(`Since valid commit messages are enforced by PR linting on CI, we do not`);
-              info(`need to validate commit messages on CI runs on upstream branches.`);
-              info();
-              info(`Skipping check of provided commit range`);
-              return;
-            }
-            validateCommitRange(argv.range);
-          });
+      .command(RestoreCommitMessageModule)
+      .command(WizardModule)
+      .command(ValidateFileModule)
+      .command(ValidateRangeModule);
 }
 
 if (require.main == module) {
