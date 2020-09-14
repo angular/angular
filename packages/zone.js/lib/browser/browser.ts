@@ -149,8 +149,12 @@ Zone.__load_patch('XHR', (global: any, Zone: ZoneType) => {
             // check whether the xhr has registered onload listener
             // if that is the case, the task should invoke after all
             // onload listeners finish.
+            // Also if the request failed without response (status = 0), the load event handler
+            // will not be triggered, in that case, we should also invoke the placeholder callback
+            // to close the XMLHttpRequest::send macroTask.
+            // https://github.com/angular/angular/issues/38795
             const loadTasks = target[Zone.__symbol__('loadfalse')];
-            if (loadTasks && loadTasks.length > 0) {
+            if (target.status !== 0 && loadTasks && loadTasks.length > 0) {
               const oriInvoke = task.invoke;
               task.invoke = function() {
                 // need to load the tasks again, because in other
