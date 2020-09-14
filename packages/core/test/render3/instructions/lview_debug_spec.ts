@@ -26,7 +26,7 @@ describe('lView_debug', () => {
     let tNode!: TNodeDebug;
     let tView!: TView;
     beforeEach(() => {
-      tView = createTView(TViewType.Component, 0, null, 0, 0, null, null, null, null, null);
+      tView = createTView(TViewType.Component, null, null, 0, 0, null, null, null, null, null);
       tNode = createTNode(tView, null!, TNodeType.Element, 0, '', null) as TNodeDebug;
     });
     afterEach(() => tNode = tView = null!);

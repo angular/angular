@@ -927,9 +927,6 @@
     "name": "addHostBindingsToExpandoInstructions"
   },
   {
-    "name": "addRemoveViewFromContainer"
-  },
-  {
     "name": "addToArray"
   },
   {
@@ -1069,9 +1066,6 @@
   },
   {
     "name": "createRouterScroller"
-  },
-  {
-    "name": "createTNode"
   },
   {
     "name": "createTView"
@@ -1287,9 +1281,6 @@
     "name": "getConstant"
   },
   {
-    "name": "getContainerRenderParent"
-  },
-  {
     "name": "getCurrentQueryIndex"
   },
   {
@@ -1393,9 +1384,6 @@
   },
   {
     "name": "getParentInjectorView"
-  },
-  {
-    "name": "getParentInjectorViewOffset"
   },
   {
     "name": "getParentState"

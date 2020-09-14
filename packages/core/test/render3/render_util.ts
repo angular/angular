@@ -261,10 +261,10 @@ export function renderTemplate<T>(
     const renderer = providedRendererFactory.createRenderer(null, null);
 
     // We need to create a root view so it's possible to look up the host element through its index
-    const tView = createTView(TViewType.Root, -1, null, 1, 0, null, null, null, null, null);
+    const tView = createTView(TViewType.Root, null, null, 1, 0, null, null, null, null, null);
     const hostLView = createLView(
         null, tView, {}, LViewFlags.CheckAlways | LViewFlags.IsRoot, null, null,
-        providedRendererFactory, renderer);
+        providedRendererFactory, renderer, null, null);
     enterView(hostLView);
 
     const def: ComponentDef<any> = ɵɵdefineComponent({
@@ -282,7 +282,7 @@ export function renderTemplate<T>(
     hostLView[hostTNode.index] = hostNode;
     componentView = createLView(
         hostLView, componentTView, context, LViewFlags.CheckAlways, hostNode, hostTNode,
-        providedRendererFactory, renderer, sanitizer);
+        providedRendererFactory, renderer, sanitizer || null, null);
   }
   renderComponentOrTemplate(componentView[TVIEW], componentView, templateFn, context);
   return componentView;

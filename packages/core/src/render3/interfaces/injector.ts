@@ -14,6 +14,11 @@ import {assertDefined, assertEqual} from '../../util/assert';
 import {TDirectiveHostNode} from './node';
 import {LView, TData} from './view';
 
+/**
+ * Offset from 'injectorIndex' where:
+ * - `TViewData[injectorIndex + TNODE]` => `TNode` associated with the current injector.
+ * - `LView[injectorIndex + TNODE]` => index to the parent injector.
+ */
 export const TNODE = 8;
 export const PARENT_INJECTOR = 8;
 export const INJECTOR_BLOOM_PARENT_SIZE = 9;

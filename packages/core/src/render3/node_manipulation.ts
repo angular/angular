@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Renderer2} from '../core';
 import {ViewEncapsulation} from '../metadata/view';
+import {Renderer2} from '../render/api';
 import {addToArray, removeFromArray} from '../util/array_utils';
 import {assertDefined, assertDomNode, assertEqual, assertSame, assertString} from '../util/assert';
 
@@ -20,7 +20,7 @@ import {TElementNode, TNode, TNodeFlags, TNodeType, TProjectionNode, TViewNode, 
 import {unusedValueExportToPlacateAjd as unused3} from './interfaces/projection';
 import {isProceduralRenderer, ProceduralRenderer3, RElement, Renderer3, RNode, RText, unusedValueExportToPlacateAjd as unused4} from './interfaces/renderer';
 import {isLContainer, isLView} from './interfaces/type_checks';
-import {CHILD_HEAD, CLEANUP, DECLARATION_COMPONENT_VIEW, DECLARATION_LCONTAINER, DestroyHookData, FLAGS, HookData, HookFn, HOST, LView, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, T_HOST, TVIEW, TView, unusedValueExportToPlacateAjd as unused5} from './interfaces/view';
+import {CHILD_HEAD, CLEANUP, DECLARATION_COMPONENT_VIEW, DECLARATION_LCONTAINER, DestroyHookData, FLAGS, HookData, HookFn, HOST, LView, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, T_HOST, TVIEW, TView, TViewType, unusedValueExportToPlacateAjd as unused5} from './interfaces/view';
 import {assertNodeOfPossibleTypes, assertNodeType} from './node_assert';
 import {getLViewParent} from './util/view_traversal_utils';
 import {getNativeByTNode, getNonViewFirstChild, unwrapRNode, updateTransplantedViewCount} from './util/view_utils';
@@ -125,7 +125,7 @@ export function createTextNode(value: string, renderer: Renderer3): RText {
 }
 
 /**
- * Adds or removes all DOM elements associated with a view.
+ * Removes all DOM elements associated with a view.
  *
  * Because some root nodes of the view may be containers, we sometimes need
  * to propagate deeply into the nested containers to remove all elements in the
@@ -133,23 +133,36 @@ export function createTextNode(value: string, renderer: Renderer3): RText {
  *
  * @param tView The `TView' of the `LView` from which elements should be added or removed
  * @param lView The view from which elements should be added or removed
- * @param insertMode Whether or not elements should be added (if false, removing)
+ */
+export function removeViewFromContainer(tView: TView, lView: LView): void {
+  const renderer = lView[RENDERER];
+  applyView(tView, lView, renderer, WalkTNodeTreeAction.Detach, null, null);
+  lView[HOST] = null;
+  lView[T_HOST] = null;
+}
+
+/**
+ * Adds all DOM elements associated with a view.
+ *
+ * Because some root nodes of the view may be containers, we sometimes need
+ * to propagate deeply into the nested containers to add all elements in the
+ * views beneath it.
+ *
+ * @param tView The `TView' of the `LView` from which elements should be added or removed
+ * @param parentTNode The `TNode` where the `LView` should be attached to.
+ * @param renderer Current renderer to use for DOM manipulations.
+ * @param lView The view from which elements should be added or removed
+ * @param parentNativeNode The parent `RElement` where it should be inserted into.
  * @param beforeNode The node before which elements should be added, if insert mode
  */
-export function addRemoveViewFromContainer(
-    tView: TView, lView: LView, insertMode: true, beforeNode: RNode|null): void;
-export function addRemoveViewFromContainer(
-    tView: TView, lView: LView, insertMode: false, beforeNode: null): void;
-export function addRemoveViewFromContainer(
-    tView: TView, lView: LView, insertMode: boolean, beforeNode: RNode|null): void {
-  const renderParent = getContainerRenderParent(tView.node as TViewNode, lView);
-  ngDevMode && assertNodeType(tView.node as TNode, TNodeType.View);
-  if (renderParent) {
-    const renderer = lView[RENDERER];
-    const action = insertMode ? WalkTNodeTreeAction.Insert : WalkTNodeTreeAction.Detach;
-    applyView(tView, lView, renderer, action, renderParent, beforeNode);
-  }
+export function addViewToContainer(
+    tView: TView, parentTNode: TNode, renderer: Renderer3, lView: LView, parentNativeNode: RElement,
+    beforeNode: RNode|null): void {
+  lView[HOST] = parentNativeNode;
+  lView[T_HOST] = parentTNode;
+  applyView(tView, lView, renderer, WalkTNodeTreeAction.Insert, parentNativeNode, beforeNode);
 }
+
 
 /**
  * Detach a `LView` from the DOM by detaching its nodes.
@@ -334,7 +347,7 @@ export function detachView(lContainer: LContainer, removeIndex: number): LView|u
       lContainer[indexInContainer - 1][NEXT] = viewToDetach[NEXT] as LView;
     }
     const removedLView = removeFromArray(lContainer, CONTAINER_HEADER_OFFSET + removeIndex);
-    addRemoveViewFromContainer(viewToDetach[TVIEW], viewToDetach, false, null);
+    removeViewFromContainer(viewToDetach[TVIEW], viewToDetach);
 
     // notify query that a view has been removed
     const lQueries = removedLView[QUERIES];
@@ -417,10 +430,8 @@ function cleanUpView(tView: TView, lView: LView): void {
 
     executeOnDestroys(tView, lView);
     removeListeners(tView, lView);
-    const hostTNode = lView[T_HOST];
-    // For component views only, the local renderer is destroyed as clean up time.
-    if (hostTNode && hostTNode.type === TNodeType.Element &&
-        isProceduralRenderer(lView[RENDERER])) {
+    // For component views only, the local renderer is destroyed at clean up time.
+    if (lView[TVIEW].type === TViewType.Component && isProceduralRenderer(lView[RENDERER])) {
       ngDevMode && ngDevMode.rendererDestroy++;
       (lView[RENDERER] as ProceduralRenderer3).destroy();
     }
@@ -530,7 +541,7 @@ function getRenderParent(tView: TView, tNode: TNode, currentView: LView): REleme
   // or a component view.
   if (parentTNode == null) {
     const hostTNode = currentView[T_HOST]!;
-    if (hostTNode.type === TNodeType.View) {
+    if (hostTNode && hostTNode.type === TNodeType.View) {
       // We are inserting a root element of an embedded view We might delay insertion of children
       // for a given view if it is disconnected. This might happen for 2 main reasons:
       // - view is not inserted into any container(view was created but not inserted yet)
@@ -542,7 +553,6 @@ function getRenderParent(tView: TView, tNode: TNode, currentView: LView): REleme
     } else {
       // We are inserting a root element of the component view into the component host element and
       // it should always be eager.
-      ngDevMode && assertNodeOfPossibleTypes(hostTNode, [TNodeType.Element]);
       return currentView[HOST];
     }
   } else {
@@ -817,15 +827,19 @@ function applyNodes(
  * @param lView The LView which needs to be inserted, detached, destroyed.
  * @param renderer Renderer to use
  * @param action action to perform (insert, detach, destroy)
- * @param renderParent parent DOM element for insertion/removal.
+ * @param renderParent parent DOM element for insertion (Removal does not need it).
  * @param beforeNode Before which node the insertions should happen.
  */
 function applyView(
+    tView: TView, lView: LView, renderer: Renderer3, action: WalkTNodeTreeAction.Destroy,
+    renderParent: null, beforeNode: null): void;
+function applyView(
     tView: TView, lView: LView, renderer: Renderer3, action: WalkTNodeTreeAction,
-    renderParent: RElement|null, beforeNode: RNode|null) {
-  ngDevMode && assertNodeType(tView.node!, TNodeType.View);
-  const viewRootTNode: TNode|null = getNonViewFirstChild(tView);
-  applyNodes(renderer, action, viewRootTNode, lView, renderParent, beforeNode, false);
+    renderParent: RElement|null, beforeNode: RNode|null): void;
+function applyView(
+    tView: TView, lView: LView, renderer: Renderer3, action: WalkTNodeTreeAction,
+    renderParent: RElement|null, beforeNode: RNode|null): void {
+  applyNodes(renderer, action, tView.firstChild, lView, renderParent, beforeNode, false);
 }
 
 /**

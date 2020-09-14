@@ -53,7 +53,7 @@ describe('acceptance integration tests', () => {
       expect(fixture.nativeElement.innerHTML).toEqual('<h1>Hello, World!</h1>');
       onlyInIvy('perf counters').expectPerfCounters({
         tView: 2,  // Host view + App
-        tNode: 4,  // Host Node + App Node + <span> + #text
+        tNode: 3,  // Host Node + <h1> + #text
       });
 
       fixture.componentInstance.name = 'New World';
@@ -63,7 +63,7 @@ describe('acceptance integration tests', () => {
       // Assert that the tView/tNode count does not increase (they are correctly cached)
       onlyInIvy('perf counters').expectPerfCounters({
         tView: 2,
-        tNode: 4,
+        tNode: 3,
       });
     });
   });
