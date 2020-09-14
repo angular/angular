@@ -5,6 +5,8 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import * as os from 'os';
+
 import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem} from '../../src/ngtsc/file_system';
 import {ConsoleLogger, Logger, LogLevel} from '../../src/ngtsc/logging';
 import {ParsedConfiguration, readConfiguration} from '../../src/perform_compile';
@@ -253,4 +255,27 @@ function checkForSolutionStyleTsConfig(
         `If you did intend to use this file, then you can hide this warning by providing it explicitly:\n\n` +
         `  ngcc ... --tsconfig "${fileSystem.relative(projectPath, tsConfig.project)}"`);
   }
+}
+
+/**
+ * Determines the maximum number of workers to use for parallel execution. This can be set using the
+ * NGCC_MAX_WORKERS environment variable, or is computed based on the number of available CPUs. One
+ * CPU core is always reserved for the master process, so we take the number of CPUs minus one, with
+ * a maximum of 4 workers. We don't scale the number of workers beyond 4 by default, as it takes
+ * considerably more memory and CPU cycles while not offering a substantial improvement in time.
+ */
+export function getMaxNumberOfWorkers(): number {
+  const maxWorkers = process.env.NGCC_MAX_WORKERS;
+  if (maxWorkers === undefined) {
+    // Use up to 4 CPU cores for workers, always reserving one for master.
+    return Math.max(1, Math.min(4, os.cpus().length - 1));
+  }
+
+  const numericMaxWorkers = +maxWorkers.trim();
+  if (!Number.isInteger(numericMaxWorkers)) {
+    throw new Error('NGCC_MAX_WORKERS should be an integer.');
+  } else if (numericMaxWorkers < 1) {
+    throw new Error('NGCC_MAX_WORKERS should be at least 1.');
+  }
+  return numericMaxWorkers;
 }
