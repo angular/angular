@@ -48,19 +48,19 @@ export function ɵɵpipe(index: number, pipeName: string): any {
 
   const pipeFactory = pipeDef.factory || (pipeDef.factory = getFactoryDef(pipeDef.type, true));
   const previousInjectImplementation = setInjectImplementation(ɵɵdirectiveInject);
-  let pipeInstance: any;
-
   try {
     // DI for pipes is supposed to behave like directives when placed on a component
     // host node, which means that we have to disable access to `viewProviders`.
     const previousIncludeViewProviders = setIncludeViewProviders(false);
-    pipeInstance = pipeFactory();
+    const pipeInstance = pipeFactory();
     setIncludeViewProviders(previousIncludeViewProviders);
+    store(tView, getLView(), index, pipeInstance);
+    return pipeInstance;
   } finally {
+    // we have to restore the injector implementation in finally, just in case the creation of the
+    // pipe throws an error.
     setInjectImplementation(previousInjectImplementation);
   }
-  store(tView, getLView(), index, pipeInstance);
-  return pipeInstance;
 }
 
 /**

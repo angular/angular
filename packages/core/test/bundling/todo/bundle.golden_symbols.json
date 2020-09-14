@@ -330,9 +330,6 @@
     "name": "generatePropertyAliases"
   },
   {
-    "name": "getBeforeNodeForView"
-  },
-  {
     "name": "getCheckNoChangesMode"
   },
   {
@@ -363,9 +360,6 @@
     "name": "getLCleanup"
   },
   {
-    "name": "getLContainer"
-  },
-  {
     "name": "getLView"
   },
   {
@@ -385,9 +379,6 @@
   },
   {
     "name": "getNodeInjectable"
-  },
-  {
-    "name": "getNonViewFirstChild"
   },
   {
     "name": "getOrCreateInjectable"
@@ -415,9 +406,6 @@
   },
   {
     "name": "getParentInjectorView"
-  },
-  {
-    "name": "getParentState"
   },
   {
     "name": "getPreviousIndex"

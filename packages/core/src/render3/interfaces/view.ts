@@ -15,7 +15,7 @@ import {Sanitizer} from '../../sanitization/sanitizer';
 import {LContainer} from './container';
 import {ComponentDef, ComponentTemplate, DirectiveDef, DirectiveDefList, HostBindingsFunction, PipeDef, PipeDefList, ViewQueriesFunction} from './definition';
 import {I18nUpdateOpCodes, TI18n} from './i18n';
-import {TConstants, TElementNode, TNode, TNodeTypeAsString, TViewNode} from './node';
+import {TConstants, TNode, TNodeTypeAsString} from './node';
 import {PlayerHandler} from './player';
 import {LQueries, TQueries} from './query';
 import {RComment, RElement, Renderer3, RendererFactory3} from './renderer';

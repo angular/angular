@@ -8,7 +8,7 @@
 
 import {assertDefined, assertEqual} from '../util/assert';
 
-import {TContainerNode, TElementContainerNode, TElementNode, TIcuContainerNode, TNode, TNodeType, TProjectionNode} from './interfaces/node';
+import {TContainerNode, TElementContainerNode, TElementNode, TIcuContainerNode, TNode, TNodeType, TNodeTypeAsString, TProjectionNode} from './interfaces/node';
 
 export function assertNodeType(
     tNode: TNode, type: TNodeType.Container): asserts tNode is TContainerNode;
@@ -20,7 +20,6 @@ export function assertNodeType(
     tNode: TNode, type: TNodeType.IcuContainer): asserts tNode is TIcuContainerNode;
 export function assertNodeType(
     tNode: TNode, type: TNodeType.Projection): asserts tNode is TProjectionNode;
-export function assertNodeType(tNode: TNode, type: TNodeType.View): asserts tNode is TContainerNode;
 export function assertNodeType(tNode: TNode, type: TNodeType): asserts tNode is TNode {
   assertDefined(tNode, 'should be called with a TNode');
   assertEqual(tNode.type, type, `should be a ${typeName(type)}`);
@@ -46,11 +45,5 @@ export function assertNodeNotOfTypes(tNode: TNode, types: TNodeType[], message?:
 }
 
 function typeName(type: TNodeType): string {
-  if (type == TNodeType.Projection) return 'Projection';
-  if (type == TNodeType.Container) return 'Container';
-  if (type == TNodeType.IcuContainer) return 'IcuContainer';
-  if (type == TNodeType.View) return 'View';
-  if (type == TNodeType.Element) return 'Element';
-  if (type == TNodeType.ElementContainer) return 'ElementContainer';
-  return '<unknown>';
+  return TNodeTypeAsString[type] || '<unknown>';
 }

@@ -108,9 +108,6 @@
     "name": "extractPipeDef"
   },
   {
-    "name": "getBeforeNodeForView"
-  },
-  {
     "name": "getCheckNoChangesMode"
   },
   {
@@ -124,9 +121,6 @@
   },
   {
     "name": "getFirstLContainer"
-  },
-  {
-    "name": "getLContainer"
   },
   {
     "name": "getNativeByTNode"
@@ -163,9 +157,6 @@
   },
   {
     "name": "invertObject"
-  },
-  {
-    "name": "isLContainer"
   },
   {
     "name": "isProceduralRenderer"
@@ -228,15 +219,9 @@
     "name": "setSelectedIndex"
   },
   {
-    "name": "unwrapRNode"
-  },
-  {
     "name": "updateTransplantedViewCount"
   },
   {
     "name": "viewAttachedToChangeDetector"
-  },
-  {
-    "name": "ɵɵtext"
   }
 ]

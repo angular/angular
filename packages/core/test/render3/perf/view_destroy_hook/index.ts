@@ -11,7 +11,7 @@ import {LViewFlags, TViewType} from '@angular/core/src/render3/interfaces/view';
 import {ɵɵdefineDirective, ɵɵelement, ɵɵelementEnd, ɵɵelementStart} from '../../../../src/render3/index';
 import {createLView, createTNode, createTView} from '../../../../src/render3/instructions/shared';
 import {RenderFlags} from '../../../../src/render3/interfaces/definition';
-import {TNodeType, TViewNode} from '../../../../src/render3/interfaces/node';
+import {TNodeType} from '../../../../src/render3/interfaces/node';
 import {destroyLView} from '../../../../src/render3/node_manipulation';
 import {createBenchmark} from '../micro_bench';
 import {createAndRenderLView} from '../setup';
@@ -55,7 +55,7 @@ const rootLView = createLView(
     null, createTView(TViewType.Root, null, null, 0, 0, null, null, null, null, null), {},
     LViewFlags.IsRoot, null, null, null, null, null, null);
 
-const viewTNode = createTNode(null!, null, TNodeType.View, -1, null, null) as TViewNode;
+const viewTNode = createTNode(null!, null, TNodeType.Element, -1, null, null);
 const embeddedTView = createTView(
     TViewType.Embedded, null, testTemplate, 21, 10, [ToDestroy.ɵdir], null, null, null,
     [['to-destroy']]);
