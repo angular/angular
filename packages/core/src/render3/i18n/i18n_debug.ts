@@ -100,7 +100,7 @@ export function i18nMutateOpCodesToString(
         return `(lView[${ref}] as Element).setAttribute("${parser.consumeString()}", "${
             parser.consumeString()}")`;
       case I18nMutateOpCode.ElementEnd:
-        return `setPreviousOrParentTNode(tView.data[${ref}] as TNode)`;
+        return `setCurrentTNode(tView.data[${ref}] as TNode)`;
       case I18nMutateOpCode.RemoveNestedIcu:
         return `removeNestedICU(${ref})`;
     }

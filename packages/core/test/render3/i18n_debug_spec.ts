@@ -128,7 +128,7 @@ describe('i18n debug', () => {
     it('should print ElementEnd', () => {
       expect(i18nMutateOpCodesToString([
         1 << I18nMutateOpCode.SHIFT_REF | I18nMutateOpCode.ElementEnd,
-      ])).toEqual(['setPreviousOrParentTNode(tView.data[1] as TNode)']);
+      ])).toEqual(['setCurrentTNode(tView.data[1] as TNode)']);
     });
 
     it('should print RemoveNestedIcu', () => {

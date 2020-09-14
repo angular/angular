@@ -345,6 +345,9 @@
     "name": "getConstant"
   },
   {
+    "name": "getCurrentTNode"
+  },
+  {
     "name": "getDebugContext"
   },
   {
@@ -352,9 +355,6 @@
   },
   {
     "name": "getInjectorIndex"
-  },
-  {
-    "name": "getIsParent"
   },
   {
     "name": "getLCleanup"
@@ -409,9 +409,6 @@
   },
   {
     "name": "getPreviousIndex"
-  },
-  {
-    "name": "getPreviousOrParentTNode"
   },
   {
     "name": "getSelectedIndex"
@@ -481,6 +478,9 @@
   },
   {
     "name": "isCssClassMatching"
+  },
+  {
+    "name": "isCurrentTNodeParent"
   },
   {
     "name": "isDirectiveHost"
@@ -651,6 +651,9 @@
     "name": "setCurrentQueryIndex"
   },
   {
+    "name": "setCurrentTNode"
+  },
+  {
     "name": "setDirectiveInputsWhichShadowsStyling"
   },
   {
@@ -664,9 +667,6 @@
   },
   {
     "name": "setInputsFromAttrs"
-  },
-  {
-    "name": "setPreviousOrParentTNode"
   },
   {
     "name": "setSelectedIndex"

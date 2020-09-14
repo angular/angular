@@ -120,6 +120,9 @@
     "name": "getComponentLViewByIndex"
   },
   {
+    "name": "getCurrentTNode"
+  },
+  {
     "name": "getFirstLContainer"
   },
   {
@@ -133,9 +136,6 @@
   },
   {
     "name": "getOrCreateTNode"
-  },
-  {
-    "name": "getPreviousOrParentTNode"
   },
   {
     "name": "getSimpleChangesStore"
@@ -207,13 +207,13 @@
     "name": "setCurrentQueryIndex"
   },
   {
+    "name": "setCurrentTNode"
+  },
+  {
     "name": "setIncludeViewProviders"
   },
   {
     "name": "setInjectImplementation"
-  },
-  {
-    "name": "setPreviousOrParentTNode"
   },
   {
     "name": "setSelectedIndex"

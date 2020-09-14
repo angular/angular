@@ -20,7 +20,7 @@ import {TNodeType} from '../interfaces/node';
 import {RComment, RElement} from '../interfaces/renderer';
 import {SanitizerFn} from '../interfaces/sanitization';
 import {HEADER_OFFSET, LView, T_HOST, TView} from '../interfaces/view';
-import {getIsParent, getPreviousOrParentTNode} from '../state';
+import {getCurrentTNode, isCurrentTNodeParent} from '../state';
 import {attachDebugGetter} from '../util/debug_utils';
 import {getNativeByIndex, getTNode} from '../util/view_utils';
 
@@ -70,9 +70,8 @@ export function i18nStartFirstPass(
     lView: LView, tView: TView, index: number, message: string, subTemplateIndex?: number) {
   const startIndex = tView.blueprint.length - HEADER_OFFSET;
   i18nVarsCount = 0;
-  const previousOrParentTNode = getPreviousOrParentTNode()!;
-  const parentTNode =
-      getIsParent() ? previousOrParentTNode : previousOrParentTNode && previousOrParentTNode.parent;
+  const currentTNode = getCurrentTNode()!;
+  const parentTNode = isCurrentTNodeParent() ? currentTNode : currentTNode && currentTNode.parent;
   let parentIndex =
       parentTNode && parentTNode !== lView[T_HOST] ? parentTNode.index - HEADER_OFFSET : index;
   let parentIndexPointer = 0;
@@ -86,11 +85,11 @@ export function i18nStartFirstPass(
   // keep track whether an element was a parent node or not, so that the logic that consumes
   // the generated `I18nMutateOpCode`s can leverage this information to properly set TNode state
   // (whether it's a parent or sibling).
-  if (index > 0 && previousOrParentTNode !== parentTNode) {
-    let previousTNodeIndex = previousOrParentTNode.index - HEADER_OFFSET;
+  if (index > 0 && currentTNode !== parentTNode) {
+    let previousTNodeIndex = currentTNode.index - HEADER_OFFSET;
     // If current TNode is a sibling node, encode it using a negative index. This information is
     // required when the `Select` action is processed (see the `readCreateOpCodes` function).
-    if (!getIsParent()) {
+    if (!isCurrentTNodeParent()) {
       previousTNodeIndex = ~previousTNodeIndex;
     }
     // Create an OpCode to select the previous TNode
@@ -212,7 +211,7 @@ export function i18nStartFirstPass(
  */
 export function i18nAttributesFirstPass(
     lView: LView, tView: TView, index: number, values: string[]) {
-  const previousElement = getPreviousOrParentTNode()!;
+  const previousElement = getCurrentTNode()!;
   const previousElementIndex = previousElement.index - HEADER_OFFSET;
   const updateOpCodes: I18nUpdateOpCodes = [];
   if (ngDevMode) {

@@ -6,33 +6,33 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import { ChangeDetectorRef as ViewEngine_ChangeDetectorRef } from '../change_detection/change_detector_ref';
-import { Injector } from '../di/injector';
-import { ComponentFactory as viewEngine_ComponentFactory, ComponentRef as viewEngine_ComponentRef } from '../linker/component_factory';
-import { ElementRef as ViewEngine_ElementRef } from '../linker/element_ref';
-import { NgModuleRef as viewEngine_NgModuleRef } from '../linker/ng_module_factory';
-import { TemplateRef as ViewEngine_TemplateRef } from '../linker/template_ref';
-import { ViewContainerRef as ViewEngine_ViewContainerRef } from '../linker/view_container_ref';
-import { EmbeddedViewRef as viewEngine_EmbeddedViewRef, ViewRef as viewEngine_ViewRef } from '../linker/view_ref';
-import { Renderer2 } from '../render/api';
-import { addToArray, removeFromArray } from '../util/array_utils';
-import { assertDefined, assertEqual, assertGreaterThan, assertLessThan } from '../util/assert';
-import { assertLContainer, assertNodeInjector } from './assert';
-import { getParentInjectorLocation, NodeInjector } from './di';
-import { addToViewTree, createLContainer, createLView, renderView } from './instructions/shared';
-import { CONTAINER_HEADER_OFFSET, LContainer, NATIVE, VIEW_REFS } from './interfaces/container';
-import { TNODE } from './interfaces/injector';
-import { TContainerNode, TDirectiveHostNode, TElementContainerNode, TElementNode, TNode, TNodeType } from './interfaces/node';
-import { isProceduralRenderer, RComment, RElement } from './interfaces/renderer';
-import { isComponentHost, isLContainer, isLView, isRootView } from './interfaces/type_checks';
-import { DECLARATION_COMPONENT_VIEW, DECLARATION_LCONTAINER, LView, LViewFlags, PARENT, QUERIES, RENDERER, TVIEW, TView, T_HOST } from './interfaces/view';
-import { assertNodeOfPossibleTypes } from './node_assert';
-import { addViewToContainer, appendChild, destroyLView, detachView, getBeforeNodeForView, insertView, nativeInsertBefore, nativeNextSibling, nativeParentNode } from './node_manipulation';
-import { getLView, getPreviousOrParentTNode } from './state';
-import { getParentInjectorIndex, getParentInjectorView, hasParentInjector } from './util/injector_utils';
-import { getComponentLViewByIndex, getNativeByTNode, unwrapRNode, viewAttachedToContainer } from './util/view_utils';
-import { ViewRef } from './view_ref';
+import {ChangeDetectorRef as ViewEngine_ChangeDetectorRef} from '../change_detection/change_detector_ref';
+import {Injector} from '../di/injector';
+import {ComponentFactory as viewEngine_ComponentFactory, ComponentRef as viewEngine_ComponentRef} from '../linker/component_factory';
+import {ElementRef as ViewEngine_ElementRef} from '../linker/element_ref';
+import {NgModuleRef as viewEngine_NgModuleRef} from '../linker/ng_module_factory';
+import {TemplateRef as ViewEngine_TemplateRef} from '../linker/template_ref';
+import {ViewContainerRef as ViewEngine_ViewContainerRef} from '../linker/view_container_ref';
+import {EmbeddedViewRef as viewEngine_EmbeddedViewRef, ViewRef as viewEngine_ViewRef} from '../linker/view_ref';
+import {Renderer2} from '../render/api';
+import {addToArray, removeFromArray} from '../util/array_utils';
+import {assertDefined, assertEqual, assertGreaterThan, assertLessThan} from '../util/assert';
 
+import {assertLContainer, assertNodeInjector} from './assert';
+import {getParentInjectorLocation, NodeInjector} from './di';
+import {addToViewTree, createLContainer, createLView, renderView} from './instructions/shared';
+import {CONTAINER_HEADER_OFFSET, LContainer, NATIVE, VIEW_REFS} from './interfaces/container';
+import {TNODE} from './interfaces/injector';
+import {TContainerNode, TDirectiveHostNode, TElementContainerNode, TElementNode, TNode, TNodeType} from './interfaces/node';
+import {isProceduralRenderer, RComment, RElement} from './interfaces/renderer';
+import {isComponentHost, isLContainer, isLView, isRootView} from './interfaces/type_checks';
+import {DECLARATION_COMPONENT_VIEW, DECLARATION_LCONTAINER, LView, LViewFlags, PARENT, QUERIES, RENDERER, T_HOST, TVIEW, TView} from './interfaces/view';
+import {assertNodeOfPossibleTypes} from './node_assert';
+import {addViewToContainer, appendChild, destroyLView, detachView, getBeforeNodeForView, insertView, nativeInsertBefore, nativeNextSibling, nativeParentNode} from './node_manipulation';
+import {getCurrentTNode, getLView} from './state';
+import {getParentInjectorIndex, getParentInjectorView, hasParentInjector} from './util/injector_utils';
+import {getComponentLViewByIndex, getNativeByTNode, unwrapRNode, viewAttachedToContainer} from './util/view_utils';
+import {ViewRef} from './view_ref';
 
 
 
@@ -43,7 +43,7 @@ import { ViewRef } from './view_ref';
  */
 export function injectElementRef(ElementRefToken: typeof ViewEngine_ElementRef):
     ViewEngine_ElementRef {
-  return createElementRef(ElementRefToken, getPreviousOrParentTNode()!, getLView());
+  return createElementRef(ElementRefToken, getCurrentTNode()!, getLView());
 }
 
 let R3ElementRef: {new (native: RElement|RComment): ViewEngine_ElementRef};
@@ -78,8 +78,7 @@ let R3TemplateRef: {
 export function injectTemplateRef<T>(
     TemplateRefToken: typeof ViewEngine_TemplateRef,
     ElementRefToken: typeof ViewEngine_ElementRef): ViewEngine_TemplateRef<T>|null {
-  return createTemplateRef<T>(
-      TemplateRefToken, ElementRefToken, getPreviousOrParentTNode()!, getLView());
+  return createTemplateRef<T>(TemplateRefToken, ElementRefToken, getCurrentTNode()!, getLView());
 }
 
 /**
@@ -149,8 +148,7 @@ let R3ViewContainerRef: {
 export function injectViewContainerRef(
     ViewContainerRefToken: typeof ViewEngine_ViewContainerRef,
     ElementRefToken: typeof ViewEngine_ElementRef): ViewEngine_ViewContainerRef {
-  const previousTNode =
-      getPreviousOrParentTNode() as TElementNode | TElementContainerNode | TContainerNode;
+  const previousTNode = getCurrentTNode() as TElementNode | TElementContainerNode | TContainerNode;
   return createContainerRef(ViewContainerRefToken, ElementRefToken, previousTNode, getLView());
 }
 
@@ -407,7 +405,7 @@ export function createContainerRef(
 
 /** Returns a ChangeDetectorRef (a.k.a. a ViewRef) */
 export function injectChangeDetectorRef(isPipe = false): ViewEngine_ChangeDetectorRef {
-  return createViewRef(getPreviousOrParentTNode()!, getLView(), isPipe);
+  return createViewRef(getCurrentTNode()!, getLView(), isPipe);
 }
 
 /**
@@ -453,7 +451,7 @@ export function injectRenderer2(): Renderer2 {
   // We need the Renderer to be based on the component that it's being injected into, however since
   // DI happens before we've entered its view, `getLView` will return the parent view instead.
   const lView = getLView();
-  const tNode = getPreviousOrParentTNode()!;
+  const tNode = getCurrentTNode()!;
   const nodeAtIndex = getComponentLViewByIndex(tNode.index, lView);
   return getOrCreateRenderer2(isLView(nodeAtIndex) ? nodeAtIndex : lView);
 }
