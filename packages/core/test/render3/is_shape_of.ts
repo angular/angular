@@ -94,7 +94,7 @@ const ShapeOfTView: ShapeOf<TView> = {
   blueprint: true,
   template: true,
   viewQuery: true,
-  node: true,
+  declTNode: true,
   firstCreatePass: true,
   firstUpdatePass: true,
   data: true,

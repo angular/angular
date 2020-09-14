@@ -499,8 +499,7 @@ export interface TView {
   /**
    * A `TNode` representing the declaration location of this `TView` (not part of this TView).
    */
-  // FIXME(misko): Rename `node` to `declTNode`
-  node: TNode|null;
+  declTNode: TNode|null;
 
   // FIXME(misko): Why does `TView` not have `declarationTView` property?
 

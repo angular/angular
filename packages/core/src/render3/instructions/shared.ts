@@ -179,7 +179,7 @@ export function createLView<T>(
   lView[HOST] = host;
   lView[FLAGS] = flags | LViewFlags.CreationMode | LViewFlags.Attached | LViewFlags.FirstLViewPass;
   resetPreOrderHookFlags(lView);
-  ngDevMode && tView.node && parentLView && assertTNodeForLView(tView.node, parentLView);
+  ngDevMode && tView.declTNode && parentLView && assertTNodeForLView(tView.declTNode, parentLView);
   lView[PARENT] = lView[DECLARATION_VIEW] = parentLView;
   lView[CONTEXT] = context;
   lView[RENDERER_FACTORY] = (rendererFactory || parentLView && parentLView[RENDERER_FACTORY])!;
@@ -682,7 +682,7 @@ export function createTView(
         template: templateFn,
         queries: null,
         viewQuery: viewQuery,
-        node: declTNode,
+        declTNode: declTNode,
         data: blueprint.slice().fill(null, bindingStartIndex),
         bindingStartIndex: bindingStartIndex,
         expandoStartIndex: initialViewLength,
