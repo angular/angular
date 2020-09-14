@@ -50,23 +50,24 @@ To complete this tutorial, you should have a basic understanding of the followin
 A common way to display a component property is to bind the property name through interpolation.
 With interpolation, you put the property name in the view template, enclosed in double curly braces: `{{myHero}}`.
 
-Use the CLI command [`ng new displaying-data`](cli/new) to create a workspace and app named `displaying-data`.
+1. Use the CLI command [`ng new displaying-data`](cli/new) to create a workspace and app named `displaying-data`.
 
-Delete the <code>app.component.html</code> file. It is not needed for this example.
+1. Delete the <code>app.component.html</code> file. It is not needed for this example.
 
-Then modify the <code>app.component.ts</code> file by
-changing the template and the body of the component.
+1. Modify the <code>app.component.ts</code> file by changing the template and the body of the component as follows:
 
-When you're done, it should look like this:
+   <code-example path="displaying-data/src/app/app.component.1.ts" header="src/app/app.component.ts"></code-example>
 
-<code-example path="displaying-data/src/app/app.component.1.ts" header="src/app/app.component.ts"></code-example>
 
-You added two properties to the formerly empty component: `title` and `myHero`.
+Notice that you added two properties to the formerly empty component: `title` and `myHero`.
 
-The template displays the two component properties using double curly brace
-interpolation:
+The template uses interpoloation to display these two component properties.
 
 <code-example path="displaying-data/src/app/app.component.1.ts" header="src/app/app.component.ts (template)" region="template"></code-example>
+
+Angular automatically pulls the value of the `title` and `myHero` properties from the component and
+inserts those values into the browser. Angular updates the display
+when these properties change. A change is often
 
 <div class="alert is-helpful">
 
@@ -77,22 +78,11 @@ HTML more readable.
 
 </div>
 
-Angular automatically pulls the value of the `title` and `myHero` properties from the component and
-inserts those values into the browser. Angular updates the display
-when these properties change.
-
-<div class="alert is-helpful">
-
-More precisely, the redisplay occurs after some kind of asynchronous event related to
-the view, such as a keystroke, a timer completion, or a response to an HTTP request.
-
-</div>
-
 Notice that you don't call **new** to create an instance of the `AppComponent` class.
-Angular is creating an instance for you. How?
-
-The CSS `selector` in the `@Component` decorator specifies an element named `<app-root>`.
-That element is a placeholder in the body of your `index.html` file:
+Instead, Angular uses the `selector` you defined in the `@Component()` decorator and then
+looks for a corresponding elements that matches the selector in the template.
+In this example, you defined the `selector` as `app-root`, and your template includes an
+`<app-root>` element.
 
 <code-example path="displaying-data/src/index.html" header="src/index.html (body)" region="body"></code-example>
 
@@ -100,7 +90,7 @@ When you bootstrap with the `AppComponent` class (in <code>main.ts</code>), Angu
 in the `index.html`, finds it, instantiates an instance of `AppComponent`, and renders it
 inside the `<app-root>` tag.
 
-Now run the app. It should display the title and hero name:
+When you run the app, you should see a display that shows the title and hero name.
 
 <div class="lightbox">
   <img src="generated/images/guide/displaying-data/title-and-hero.png" alt="Title and Hero">
