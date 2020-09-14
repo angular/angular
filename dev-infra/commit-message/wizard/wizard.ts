@@ -7,16 +7,12 @@
  */
 import {writeFileSync} from 'fs';
 
-import {getUserConfig} from '../utils/config';
-import {debug, info} from '../utils/console';
+import {getUserConfig} from '../../utils/config';
+import {debug, info} from '../../utils/console';
 
-import {buildCommitMessage} from './builder';
+import {buildCommitMessage} from '../builder';
+import {CommitMsgSource} from '../commit-message-source';
 
-/**
- * The source triggering the git commit message creation.
- * As described in: https://git-scm.com/docs/githooks#_prepare_commit_msg
- */
-export type PrepareCommitMsgHookSource = 'message'|'template'|'merge'|'squash'|'commit';
 
 /** The default commit message used if the wizard does not procude a commit message. */
 const defaultCommitMessage = `<type>(<scope>): <summary>
@@ -25,7 +21,7 @@ const defaultCommitMessage = `<type>(<scope>): <summary>
 #  lines at 100 characters.>\n\n`;
 
 export async function runWizard(
-    args: {filePath: string, source?: PrepareCommitMsgHookSource, commitSha?: string}) {
+    args: {filePath: string, source?: CommitMsgSource, commitSha?: string}) {
   if (getUserConfig().commitMessage?.disableWizard) {
     debug('Skipping commit message wizard due to enabled `commitMessage.disableWizard` option in');
     debug('user config.');

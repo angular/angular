@@ -8,9 +8,10 @@
 
 import {writeFileSync} from 'fs';
 
-import {debug, log} from '../utils/console';
+import {debug, log} from '../../utils/console';
 
-import {loadCommitMessageDraft} from './commit-message-draft';
+import {loadCommitMessageDraft} from '../commit-message-draft';
+import {CommitMsgSource} from '../commit-message-source';
 
 /**
  * Restore the commit message draft to the git to be used as the default commit message.
@@ -18,8 +19,7 @@ import {loadCommitMessageDraft} from './commit-message-draft';
  * The source provided may be one of the sources described in
  *   https://git-scm.com/docs/githooks#_prepare_commit_msg
  */
-export function restoreCommitMessage(
-    filePath: string, source?: 'message'|'template'|'squash'|'commit') {
+export function restoreCommitMessage(filePath: string, source?: CommitMsgSource) {
   if (!!source) {
     log('Skipping commit message restoration attempt');
     if (source === 'message') {
