@@ -406,6 +406,7 @@ groups:
           'aio/content/guide/structural-directives.md',
           'aio/content/examples/structural-directives/**',
           'aio/content/guide/svg-in-templates.md',
+          'aio/content/guide/style-precedence.md',
           'aio/content/images/guide/structural-directives/**',
           'aio/content/guide/template-statements.md',
           'aio/content/guide/user-input.md',
