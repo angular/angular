@@ -28,7 +28,7 @@ import {TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeType, u
 import {LQueries, LQuery, TQueries, TQuery, TQueryMetadata, unusedValueExportToPlacateAjd as unused4} from './interfaces/query';
 import {DECLARATION_LCONTAINER, LView, PARENT, QUERIES, TVIEW, TView} from './interfaces/view';
 import {assertNodeOfPossibleTypes} from './node_assert';
-import {getCurrentQueryIndex, getLView, getPreviousOrParentTNode, getTView, setCurrentQueryIndex} from './state';
+import {getCurrentQueryIndex, getCurrentTNode, getLView, getTView, setCurrentQueryIndex} from './state';
 import {isCreationMode} from './util/view_utils';
 import {createContainerRef, createElementRef, createTemplateRef} from './view_engine_compatibility';
 
@@ -504,8 +504,7 @@ export function ɵɵcontentQuery<T>(
     directiveIndex: number, predicate: Type<any>|InjectionToken<unknown>|string[], descend: boolean,
     read?: any): void {
   contentQueryInternal(
-      getTView(), getLView(), predicate, descend, read, false, getPreviousOrParentTNode()!,
-      directiveIndex);
+      getTView(), getLView(), predicate, descend, read, false, getCurrentTNode()!, directiveIndex);
 }
 
 /**
@@ -524,8 +523,7 @@ export function ɵɵstaticContentQuery<T>(
     directiveIndex: number, predicate: Type<any>|InjectionToken<unknown>|string[], descend: boolean,
     read?: any): void {
   contentQueryInternal(
-      getTView(), getLView(), predicate, descend, read, true, getPreviousOrParentTNode()!,
-      directiveIndex);
+      getTView(), getLView(), predicate, descend, read, true, getCurrentTNode()!, directiveIndex);
 }
 
 function contentQueryInternal<T>(

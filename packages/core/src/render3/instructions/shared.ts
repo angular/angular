@@ -33,7 +33,7 @@ import {isComponentDef, isComponentHost, isContentQueryHost, isLContainer, isRoo
 import {CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTEXT, DECLARATION_COMPONENT_VIEW, DECLARATION_VIEW, FLAGS, HEADER_OFFSET, HOST, InitPhaseState, INJECTOR, LView, LViewFlags, NEXT, PARENT, RENDERER, RENDERER_FACTORY, RootContext, RootContextFlags, SANITIZER, T_HOST, TData, TRANSPLANTED_VIEWS_TO_REFRESH, TVIEW, TView, TViewType} from '../interfaces/view';
 import {assertNodeNotOfTypes, assertNodeOfPossibleTypes} from '../node_assert';
 import {isInlineTemplate, isNodeMatchingSelectorList} from '../node_selector_matcher';
-import {enterView, getBindingsEnabled, getCheckNoChangesMode, getCurrentDirectiveIndex, getIsParent, getPreviousOrParentTNode, getSelectedIndex, leaveView, setBindingIndex, setBindingRootForHostBindings, setCheckNoChangesMode, setCurrentDirectiveIndex, setCurrentQueryIndex, setPreviousOrParentTNode, setSelectedIndex} from '../state';
+import {enterView, getBindingsEnabled, getCheckNoChangesMode, getCurrentDirectiveIndex, getCurrentTNode, getSelectedIndex, isCurrentTNodeParent, leaveView, setBindingIndex, setBindingRootForHostBindings, setCheckNoChangesMode, setCurrentDirectiveIndex, setCurrentQueryIndex, setCurrentTNode, setSelectedIndex} from '../state';
 import {NO_CHANGE} from '../tokens';
 import {isAnimationProp, mergeHostAttrs} from '../util/attrs_utils';
 import {INTERPOLATION_DELIMITER, renderStringify, stringifyForError} from '../util/misc_utils';
@@ -232,7 +232,7 @@ export function getOrCreateTNode(
   const adjustedIndex = index + HEADER_OFFSET;
   const tNode = tView.data[adjustedIndex] as TNode ||
       createTNodeAtIndex(tView, adjustedIndex, type, name, attrs);
-  setPreviousOrParentTNode(tNode, true);
+  setCurrentTNode(tNode, true);
   return tNode as TElementNode & TContainerNode & TElementContainerNode & TProjectionNode &
       TIcuContainerNode;
 }
@@ -240,10 +240,9 @@ export function getOrCreateTNode(
 function createTNodeAtIndex(
     tView: TView, adjustedIndex: number, type: TNodeType, name: string|null,
     attrs: TAttributes|null) {
-  const previousOrParentTNode = getPreviousOrParentTNode();
-  const isParent = getIsParent();
-  const parent =
-      isParent ? previousOrParentTNode : previousOrParentTNode && previousOrParentTNode.parent;
+  const currentTNode = getCurrentTNode();
+  const isParent = isCurrentTNodeParent();
+  const parent = isParent ? currentTNode : currentTNode && currentTNode.parent;
   // Parents cannot cross component boundaries because components will be used in multiple places.
   const tNode = tView.data[adjustedIndex] =
       createTNode(tView, parent as TElementNode | TContainerNode, type, adjustedIndex, name, attrs);
@@ -253,12 +252,12 @@ function createTNodeAtIndex(
   if (tView.firstChild === null) {
     tView.firstChild = tNode;
   }
-  if (previousOrParentTNode) {
-    if (isParent && previousOrParentTNode.child == null && tNode.parent !== null) {
+  if (currentTNode !== null) {
+    if (isParent && currentTNode.child == null && tNode.parent !== null) {
       // We are in the same view, which means we are adding content node to the parent view.
-      previousOrParentTNode.child = tNode;
+      currentTNode.child = tNode;
     } else if (!isParent) {
-      previousOrParentTNode.next = tNode;
+      currentTNode.next = tNode;
     }
   }
   return tNode;
@@ -1125,7 +1124,7 @@ function logUnknownPropertyError(propName: string, tNode: TNode): void {
  * Instantiate a root component.
  */
 export function instantiateRootComponent<T>(tView: TView, lView: LView, def: ComponentDef<T>): T {
-  const rootTNode = getPreviousOrParentTNode()!;
+  const rootTNode = getCurrentTNode()!;
   if (tView.firstCreatePass) {
     if (def.providersResolver) def.providersResolver(def);
     generateExpandoInstructionBlock(tView, rootTNode, 1);

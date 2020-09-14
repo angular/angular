@@ -13,7 +13,7 @@ import {LocalRefExtractor, TAttributes, TContainerNode, TNodeType} from '../inte
 import {isDirectiveHost} from '../interfaces/type_checks';
 import {HEADER_OFFSET, LView, RENDERER, TView, TViewType} from '../interfaces/view';
 import {appendChild} from '../node_manipulation';
-import {getLView, getTView, setPreviousOrParentTNode} from '../state';
+import {getLView, getTView, setCurrentTNode} from '../state';
 import {getConstant} from '../util/view_utils';
 import {addToViewTree, createDirectivesInstances, createLContainer, createTView, getOrCreateTNode, resolveDirectives, saveResolvedLocalsInData} from './shared';
 
@@ -77,7 +77,7 @@ export function ɵɵtemplate(
       templateFirstCreatePass(
           index, tView, lView, templateFn, decls, vars, tagName, attrsIndex, localRefsIndex) :
       tView.data[adjustedIndex] as TContainerNode;
-  setPreviousOrParentTNode(tNode, false);
+  setCurrentTNode(tNode, false);
 
   const comment = lView[RENDERER].createComment(ngDevMode ? 'container' : '');
   appendChild(tView, lView, comment, tNode);

@@ -11,7 +11,7 @@
 import {Type} from '../core';
 import {Injector} from '../di/injector';
 import {Sanitizer} from '../sanitization/sanitizer';
-import {assertIndexInRange} from '../util/assert';
+import {assertDefined, assertIndexInRange} from '../util/assert';
 
 import {assertComponentType} from './assert';
 import {getComponentDef} from './definition';
@@ -24,7 +24,7 @@ import {PlayerHandler} from './interfaces/player';
 import {domRendererFactory3, RElement, Renderer3, RendererFactory3} from './interfaces/renderer';
 import {CONTEXT, HEADER_OFFSET, LView, LViewFlags, RootContext, RootContextFlags, TVIEW, TViewType} from './interfaces/view';
 import {writeDirectClass, writeDirectStyle} from './node_manipulation';
-import {enterView, getPreviousOrParentTNode, leaveView, setSelectedIndex} from './state';
+import {enterView, getCurrentTNode, leaveView, setSelectedIndex} from './state';
 import {computeStaticStyling} from './styling/static_styling';
 import {setUpAttributes} from './util/attrs_utils';
 import {publishDefaultGlobalUtils} from './util/global_utils';
@@ -229,7 +229,8 @@ export function createRootComponent<T>(
     componentDef.contentQueries(RenderFlags.Create, component, rootLView.length - 1);
   }
 
-  const rootTNode = getPreviousOrParentTNode()!;
+  const rootTNode = getCurrentTNode()!;
+  ngDevMode && assertDefined(rootTNode, 'tNode should have been already created');
   if (tView.firstCreatePass &&
       (componentDef.hostBindings !== null || componentDef.hostAttrs !== null)) {
     const elementIndex = rootTNode.index - HEADER_OFFSET;

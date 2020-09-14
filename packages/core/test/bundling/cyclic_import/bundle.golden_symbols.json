@@ -171,10 +171,10 @@
     "name": "getConstant"
   },
   {
-    "name": "getFirstLContainer"
+    "name": "getCurrentTNode"
   },
   {
-    "name": "getIsParent"
+    "name": "getFirstLContainer"
   },
   {
     "name": "getLView"
@@ -199,9 +199,6 @@
   },
   {
     "name": "getOrCreateTNode"
-  },
-  {
-    "name": "getPreviousOrParentTNode"
   },
   {
     "name": "getSimpleChangesStore"
@@ -244,6 +241,9 @@
   },
   {
     "name": "isCssClassMatching"
+  },
+  {
+    "name": "isCurrentTNodeParent"
   },
   {
     "name": "isInlineTemplate"
@@ -324,6 +324,9 @@
     "name": "setCurrentQueryIndex"
   },
   {
+    "name": "setCurrentTNode"
+  },
+  {
     "name": "setDirectiveInputsWhichShadowsStyling"
   },
   {
@@ -334,9 +337,6 @@
   },
   {
     "name": "setInputsFromAttrs"
-  },
-  {
-    "name": "setPreviousOrParentTNode"
   },
   {
     "name": "setSelectedIndex"
