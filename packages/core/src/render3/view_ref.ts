@@ -13,13 +13,13 @@ import {EmbeddedViewRef as viewEngine_EmbeddedViewRef, InternalViewRef as viewEn
 import {assertDefined} from '../util/assert';
 import {checkNoChangesInRootView, checkNoChangesInternal, detectChangesInRootView, detectChangesInternal, markViewDirty, storeCleanupWithContext} from './instructions/shared';
 import {CONTAINER_HEADER_OFFSET} from './interfaces/container';
-import {TElementNode, TNode, TNodeType, TViewNode} from './interfaces/node';
+import {TElementNode, TNode, TNodeType} from './interfaces/node';
 import {isLContainer} from './interfaces/type_checks';
 import {CONTEXT, DECLARATION_COMPONENT_VIEW, FLAGS, HOST, LView, LViewFlags, T_HOST, TVIEW, TView} from './interfaces/view';
 import {assertNodeOfPossibleTypes} from './node_assert';
 import {destroyLView, renderDetachView} from './node_manipulation';
 import {getLViewParent} from './util/view_traversal_utils';
-import {getNonViewFirstChild, unwrapRNode} from './util/view_utils';
+import {unwrapRNode} from './util/view_utils';
 
 
 
@@ -337,7 +337,7 @@ function collectNativeNodes(
     if (isLContainer(lNode)) {
       for (let i = CONTAINER_HEADER_OFFSET; i < lNode.length; i++) {
         const lViewInAContainer = lNode[i];
-        const lViewFirstChildTNode = getNonViewFirstChild(lViewInAContainer[TVIEW]);
+        const lViewFirstChildTNode = lViewInAContainer[TVIEW].firstChild;
         if (lViewFirstChildTNode !== null) {
           collectNativeNodes(
               lViewInAContainer[TVIEW], lViewInAContainer, lViewFirstChildTNode, result);

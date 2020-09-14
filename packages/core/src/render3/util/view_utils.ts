@@ -207,17 +207,3 @@ export function updateTransplantedViewCount(lContainer: LContainer, amount: 1|- 
     parent = parent[PARENT];
   }
 }
-
-/**
- * Retrieves the `TView.firstChild` and unwraps if it is `TNodeType.View`.
- *
- * We are inconsistent about the way we store root of Views. Embedded views have `TNodeType.View` in
- * the root but component views do not. A lot of logic does not expect to see `TNodeType.View` and
- * crashes on it, so we unwrap it.
- */
-export function getNonViewFirstChild(tView: TView): TNode|null {
-  // FIXME(misko): Delete me! (as TNodeType.View no longer exists)
-  const firstChild = tView.firstChild;
-  return firstChild === null ? null :
-                               (firstChild.type === TNodeType.View ? firstChild.child : firstChild);
-}

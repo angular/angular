@@ -13,7 +13,6 @@ describe('node interfaces', () => {
     it('should agree with TNodeTypeAsString', () => {
       expect(TNodeTypeAsString[TNodeType.Container]).toEqual('Container');
       expect(TNodeTypeAsString[TNodeType.Projection]).toEqual('Projection');
-      expect(TNodeTypeAsString[TNodeType.View]).toEqual('View');
       expect(TNodeTypeAsString[TNodeType.Element]).toEqual('Element');
       expect(TNodeTypeAsString[TNodeType.ElementContainer]).toEqual('ElementContainer');
       expect(TNodeTypeAsString[TNodeType.IcuContainer]).toEqual('IcuContainer');

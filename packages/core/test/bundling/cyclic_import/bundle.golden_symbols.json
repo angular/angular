@@ -177,9 +177,6 @@
     "name": "getIsParent"
   },
   {
-    "name": "getLContainer"
-  },
-  {
     "name": "getLView"
   },
   {
@@ -250,9 +247,6 @@
   },
   {
     "name": "isInlineTemplate"
-  },
-  {
-    "name": "isLContainer"
   },
   {
     "name": "isNodeMatchingSelector"
@@ -349,9 +343,6 @@
   },
   {
     "name": "setUpAttributes"
-  },
-  {
-    "name": "unwrapRNode"
   },
   {
     "name": "updateTransplantedViewCount"

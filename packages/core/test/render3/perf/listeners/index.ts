@@ -9,7 +9,7 @@ import {ɵɵelementEnd, ɵɵelementStart} from '../../../../src/render3/instruct
 import {ɵɵlistener} from '../../../../src/render3/instructions/listener';
 import {createLView, createTNode, createTView} from '../../../../src/render3/instructions/shared';
 import {RenderFlags} from '../../../../src/render3/interfaces/definition';
-import {TNodeType, TViewNode} from '../../../../src/render3/interfaces/node';
+import {TNodeType} from '../../../../src/render3/interfaces/node';
 import {LViewFlags, TViewType} from '../../../../src/render3/interfaces/view';
 import {createBenchmark} from '../micro_bench';
 import {createAndRenderLView} from '../setup';
@@ -69,7 +69,7 @@ const rootLView = createLView(
     null, createTView(TViewType.Root, null, null, 0, 0, null, null, null, null, null), {},
     LViewFlags.IsRoot, null, null, null, null, null, null);
 
-const viewTNode = createTNode(null!, null, TNodeType.View, -1, null, null) as TViewNode;
+const viewTNode = createTNode(null!, null, TNodeType.Element, -1, null, null);
 const embeddedTView = createTView(
     TViewType.Embedded, null, testTemplate, 11, 0, null, null, null, null, [[3, 'click', 'input']]);
 

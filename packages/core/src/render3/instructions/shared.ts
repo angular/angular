@@ -26,7 +26,7 @@ import {executeCheckHooks, executeInitAndCheckHooks, incrementInitPhaseFlags} fr
 import {CONTAINER_HEADER_OFFSET, HAS_TRANSPLANTED_VIEWS, LContainer, MOVED_VIEWS} from '../interfaces/container';
 import {ComponentDef, ComponentTemplate, DirectiveDef, DirectiveDefListOrFactory, PipeDefListOrFactory, RenderFlags, ViewQueriesFunction} from '../interfaces/definition';
 import {INJECTOR_BLOOM_PARENT_SIZE, NodeInjectorFactory} from '../interfaces/injector';
-import {AttributeMarker, InitialInputData, InitialInputs, LocalRefExtractor, PropertyAliases, PropertyAliasValue, TAttributes, TConstantsOrFactory, TContainerNode, TDirectiveHostNode, TElementContainerNode, TElementNode, TIcuContainerNode, TNode, TNodeFlags, TNodeProviderIndexes, TNodeType, TProjectionNode, TViewNode} from '../interfaces/node';
+import {AttributeMarker, InitialInputData, InitialInputs, LocalRefExtractor, PropertyAliases, PropertyAliasValue, TAttributes, TConstantsOrFactory, TContainerNode, TDirectiveHostNode, TElementContainerNode, TElementNode, TIcuContainerNode, TNode, TNodeFlags, TNodeProviderIndexes, TNodeType, TProjectionNode} from '../interfaces/node';
 import {isProceduralRenderer, RComment, RElement, Renderer3, RendererFactory3, RNode, RText} from '../interfaces/renderer';
 import {SanitizerFn} from '../interfaces/sanitization';
 import {isComponentDef, isComponentHost, isContentQueryHost, isLContainer, isRootView} from '../interfaces/type_checks';
@@ -233,8 +233,8 @@ export function getOrCreateTNode(
   const tNode = tView.data[adjustedIndex] as TNode ||
       createTNodeAtIndex(tView, adjustedIndex, type, name, attrs);
   setPreviousOrParentTNode(tNode, true);
-  return tNode as TElementNode & TViewNode & TContainerNode & TElementContainerNode &
-      TProjectionNode & TIcuContainerNode;
+  return tNode as TElementNode & TContainerNode & TElementContainerNode & TProjectionNode &
+      TIcuContainerNode;
 }
 
 function createTNodeAtIndex(
@@ -244,12 +244,7 @@ function createTNodeAtIndex(
   const isParent = getIsParent();
   const parent =
       isParent ? previousOrParentTNode : previousOrParentTNode && previousOrParentTNode.parent;
-  // Parents cannot cross component boundaries because components will be used in multiple places,
-  // so it's only set if the view is the same.
-  // FIXME(misko): This check for `TNodeType.View` should not be needed. But removing it breaks DI,
-  // so more investigation is needed.
-  const parentInSameView = parent !== null && parent.type !== TNodeType.View;
-  const tParentNode = parentInSameView ? parent as TElementNode | TContainerNode : null;
+  // Parents cannot cross component boundaries because components will be used in multiple places.
   const tNode = tView.data[adjustedIndex] =
       createTNode(tView, parent as TElementNode | TContainerNode, type, adjustedIndex, name, attrs);
   // Assign a pointer to the first child node of a given view. The first node is not always the one
@@ -259,8 +254,7 @@ function createTNodeAtIndex(
     tView.firstChild = tNode;
   }
   if (previousOrParentTNode) {
-    if (isParent && previousOrParentTNode.child == null &&
-        (tNode.parent !== null || previousOrParentTNode.type === TNodeType.View)) {
+    if (isParent && previousOrParentTNode.child == null && tNode.parent !== null) {
       // We are in the same view, which means we are adding content node to the parent view.
       previousOrParentTNode.child = tNode;
     } else if (!isParent) {
@@ -806,6 +800,24 @@ export function storeCleanupWithContext(
  * @param tViews Any TViews attached to this node
  * @returns the TNode object
  */
+export function createTNode(
+    tView: TView, tParent: TElementNode|TContainerNode|null, type: TNodeType.Container,
+    adjustedIndex: number, tagName: string|null, attrs: TAttributes|null): TContainerNode;
+export function createTNode(
+    tView: TView, tParent: TElementNode|TContainerNode|null, type: TNodeType.Element,
+    adjustedIndex: number, tagName: string|null, attrs: TAttributes|null): TElementNode;
+export function createTNode(
+    tView: TView, tParent: TElementNode|TContainerNode|null, type: TNodeType.ElementContainer,
+    adjustedIndex: number, tagName: string|null, attrs: TAttributes|null): TElementContainerNode;
+export function createTNode(
+    tView: TView, tParent: TElementNode|TContainerNode|null, type: TNodeType.IcuContainer,
+    adjustedIndex: number, tagName: string|null, attrs: TAttributes|null): TIcuContainerNode;
+export function createTNode(
+    tView: TView, tParent: TElementNode|TContainerNode|null, type: TNodeType.Projection,
+    adjustedIndex: number, tagName: string|null, attrs: TAttributes|null): TProjectionNode;
+export function createTNode(
+    tView: TView, tParent: TElementNode|TContainerNode|null, type: TNodeType, adjustedIndex: number,
+    tagName: string|null, attrs: TAttributes|null): TNode;
 export function createTNode(
     tView: TView, tParent: TElementNode|TContainerNode|null, type: TNodeType, adjustedIndex: number,
     tagName: string|null, attrs: TAttributes|null): TNode {
