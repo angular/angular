@@ -9,7 +9,24 @@
 import {SpawnSyncOptions, SpawnSyncReturns} from 'child_process';
 import * as parseArgs from 'minimist';
 
+import {NgDevConfig} from '../config';
 import {GitClient} from '../git/index';
+
+/**
+ * Temporary directory which will be used as project directory in tests. Note that
+ * this environment variable is automatically set by Bazel for tests.
+ */
+export const testTmpDir: string = process.env['TEST_TMPDIR']!;
+
+
+/** A mock instance of a configuration for the ng-dev toolset for default testing. */
+export const mockNgDevConfig: NgDevConfig = {
+  github: {
+    name: 'name',
+    owner: 'owner',
+  }
+};
+
 
 /** Type describing a Git head. */
 interface GitHead {
@@ -170,4 +187,13 @@ export class VirtualGitClient extends GitClient {
       newCommits: [...head.newCommits],
     };
   }
+}
+
+
+/**
+ * Builds a Virtual Git Client instance with the provided config and set the temporary test
+ * directory.
+ */
+export function buildVirtualGitClient(config = mockNgDevConfig, tmpDir = testTmpDir) {
+  return (new VirtualGitClient(undefined, config, tmpDir));
 }

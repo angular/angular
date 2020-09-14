@@ -9,11 +9,18 @@
 import {GitClient} from '../../utils/git/index';
 import {getCaretakerConfig} from '../config';
 
-import {printCiStatus} from './ci';
-import {printG3Comparison} from './g3';
-import {printGithubTasks} from './github';
-import {printServiceStatuses} from './services';
+import {CiModule} from './ci';
+import {G3Module} from './g3';
+import {GithubQueriesModule} from './github';
+import {ServicesModule} from './services';
 
+/** List of modules checked for the caretaker check command. */
+const moduleList = [
+  GithubQueriesModule,
+  ServicesModule,
+  CiModule,
+  G3Module,
+];
 
 /** Check the status of services which Angular caretakers need to monitor. */
 export async function checkServiceStatuses(githubToken: string) {
@@ -23,10 +30,15 @@ export async function checkServiceStatuses(githubToken: string) {
   const git = new GitClient(githubToken, config);
   // Prevent logging of the git commands being executed during the check.
   GitClient.LOG_COMMANDS = false;
+  /** List of instances of Caretaker Check modules */
+  const caretakerCheckModules = moduleList.map(module => new module(git, config));
 
-  // TODO(josephperrott): Allow these checks to be loaded in parallel.
-  await printServiceStatuses();
-  await printGithubTasks(git, config.caretaker);
-  await printG3Comparison(git);
-  await printCiStatus(git);
+  // Module's `data` is casted as Promise<unknown> because the data types of the `module`'s `data`
+  // promises do not match typings, however our usage here is only to determine when the promise
+  // resolves.
+  await Promise.all(caretakerCheckModules.map(module => module.data as Promise<unknown>));
+
+  for (const module of caretakerCheckModules) {
+    await module.printToTerminal();
+  }
 }
