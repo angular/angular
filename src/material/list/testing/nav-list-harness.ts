@@ -33,9 +33,7 @@ export class MatNavListHarness extends MatListHarnessBase<
 /** Harness for interacting with a nav list item. */
 export class MatNavListItemHarness extends MatListItemHarnessBase {
   /** The selector for the host element of a `MatListItem` instance. */
-  static hostSelector = ['mat-list-item', 'a[mat-list-item]', 'button[mat-list-item]']
-      .map(selector => `${MatNavListHarness.hostSelector} ${selector}`)
-      .join(',');
+  static hostSelector = `${MatNavListHarness.hostSelector} .mat-list-item`;
 
   /**
    * Gets a `HarnessPredicate` that can be used to search for a `MatNavListItemHarness` that

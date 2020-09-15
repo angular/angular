@@ -51,9 +51,9 @@ export class MatSubheaderHarness extends ComponentHarness {
  * @docs-private
  */
 export class MatListItemHarnessBase extends ComponentHarness {
-  private _lines = this.locatorForAll('[mat-line], [matLine]');
-  private _avatar = this.locatorForOptional('[mat-list-avatar], [matListAvatar]');
-  private _icon = this.locatorForOptional('[mat-list-icon], [matListIcon]');
+  private _lines = this.locatorForAll('.mat-line');
+  private _avatar = this.locatorForOptional('.mat-list-avatar');
+  private _icon = this.locatorForOptional('.mat-list-icon');
 
   /** Gets the full text content of the list item (including text from any font icons). */
   async getText(): Promise<string> {
