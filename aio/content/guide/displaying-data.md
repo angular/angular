@@ -124,7 +124,7 @@ Here the app uses inline HTML because the template is small and the demo is simp
 
 -->
 
-
+<!-- Move this section to an overview of Components. Retitle: "Initializing a component">
 ## Initialization
 
 The following example uses variable assignment to initialize the components.
@@ -133,48 +133,43 @@ The following example uses variable assignment to initialize the components.
 
  You could instead declare and initialize the properties using a constructor.
  This app uses more terse "variable assignment" style simply for brevity.
-
+-->
 
 {@a ngFor}
 
 ## Add logic to loop through data
 
-The `*ngFor` directive (predefined by Angular) lets you loop through data. The following example uses the directive to show all of the values in an array property.
+Next, you'll use Angular's `*ngFor` directive to loop through an array of hero names and display those names in the HTML template.
 
-To display a list of heroes, begin by adding an array of hero names to the component and redefine `myHero` to be the first name in the array.
+1. Create an array of hero names to the component and redefine `myHero` to be the first name in the array.
 
+   <code-example path="displaying-data/src/app/app.component.2.ts" header="src/app/app.component.ts (class)" region="class"></code-example>
 
-<code-example path="displaying-data/src/app/app.component.2.ts" header="src/app/app.component.ts (class)" region="class"></code-example>
+1. Add the Angular `ngFor` directive in the template to display each item in the `heroes` list.
 
-
-Now use the Angular `ngFor` directive in the template to display each item in the `heroes` list.
-
-
-<code-example path="displaying-data/src/app/app.component.2.ts" header="src/app/app.component.ts (template)" region="template"></code-example>
+   <code-example path="displaying-data/src/app/app.component.2.ts" header="src/app/app.component.ts (template)" region="template"></code-example>
 
 
-This UI uses the HTML unordered list with `<ul>` and `<li>` tags. The `*ngFor`
-in the `<li>` element is the Angular "repeater" directive.
-It marks that `<li>` element (and its children) as the "repeater template":
-
+This example uses an HTML unordered list with `<ul>` and `<li>` tags. The `*ngFor`
+in the `<li>` element instructs Angular to add one `<li>` element for every item in the heroes array.
 
 <code-example path="displaying-data/src/app/app.component.2.ts" header="src/app/app.component.ts (li)" region="li"></code-example>
 
 <div class="alert is-important">
 
 Don't forget the leading asterisk (\*) in `*ngFor`. It is an essential part of the syntax.
-Read more about `ngFor` and `*` in the [ngFor section](guide/built-in-directives#ngfor) of the [Built-in directives](guide/built-in-directives) page.
+For more information about `*ngFor`, see the [ngFor section](guide/built-in-directives#ngfor) in [Built-in directives](guide/built-in-directives).
 
 </div>
 
-Notice the `hero` in the `ngFor` double-quoted instruction;
-it is an example of a template input variable. Read
-more about template input variables in the [microsyntax](guide/built-in-directives#microsyntax) section of
-the [Built-in directives](guide/built-in-directives) page.
+Notice the quoted string, `"let hero of heroes"`. This code is an example of _microsyntax_&mdash;a piece of text that Angular interprets.
+In this example, the string `"let hero of heroes"` instructs Angular to do the following:
 
-Angular duplicates the `<li>` for each item in the list, setting the `hero` variable
-to the item (the hero) in the current iteration. Angular uses that variable as the
-context for the interpolation in the double curly braces.
+1. Duplicate the `<li>` for each item in the list.
+1. Set the `hero` variable to the item (the hero) in the current iteration.
+1. Use that variable as the context for the interpolation in the double curly braces.
+
+For more information about how you can use microsyntax with directives like `*ngFor`, see [Built-in directives](guide/built-in-directives) page.
 
 <div class="alert is-helpful">
 
@@ -190,43 +185,41 @@ Now the heroes appear in an unordered list.
 </div>
 
 
-## Creating a class for the data
+## Create a class for the data
 
-The app's code defines the data directly inside the component, which isn't best practice.
-In a simple demo, however, it's fine.
+The current application code defines the data directly inside the component. In general, this is an anti-pattern.
+A better option is to turn the array of hero names into an array of `Hero` objects. To accomplish this task, you
+need to create a class.
 
-At the moment, the binding is to an array of strings.
-In real applications, most bindings are to more specialized objects.
-
-To convert this binding to use specialized objects, turn the array
-of hero names into an array of `Hero` objects. For that you'll need a `Hero` class:
+To create a class, run the following command in your terminal window.
 
 <code-example language="sh" class="code-shell">
-  ng generate class hero
+ng generate class hero
 </code-example>
 
 This command creates the following code.
 
-
 <code-example path="displaying-data/src/app/hero.ts" header="src/app/hero.ts"></code-example>
 
-You've defined a class with a constructor and two properties: `id` and `name`.
-
-It might not look like the class has properties, but it does.
-The declaration of the constructor parameters takes advantage of a TypeScript shortcut.
-
-Consider the first parameter:
-
+You have now defined a class with a constructor and two properties: `id` and `name`.
+These two properties are created using a TypeScript shortcut.
+Take a closer look at the first parameter.
 
 <code-example path="displaying-data/src/app/hero.ts" header="src/app/hero.ts (id)" region="id"></code-example>
 
-That brief syntax does a lot:
+This syntax performs the following tasks:
 
 * Declares a constructor parameter and its type.
 * Declares a public property of the same name.
 * Initializes that property with the corresponding argument when creating an instance of the class.
 
+<!-- TODO: Add 'Import the Hero class' section
 
+### Import the Hero class
+
+To use your newly-created Hero class, you must import it into your `AppComponent.ts` file.
+
+-->
 ### Using the Hero class
 
 After importing the `Hero` class, the `AppComponent.heroes` property can return a _typed_ array
