@@ -31,7 +31,9 @@ export class MatChipHarness extends ComponentHarness {
 
   /** Gets the text of the chip. */
   async getText(): Promise<string> {
-    return (await this.host()).text();
+    return (await this.host()).text({
+      exclude: '.mat-chip-avatar, .mat-chip-trailing-icon, .mat-icon'
+    });
   }
 
   /** Whether the chip is selected. */

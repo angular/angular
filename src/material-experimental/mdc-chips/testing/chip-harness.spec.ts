@@ -22,22 +22,24 @@ describe('MatChipHarness', () => {
 
   it('should get correct number of chip harnesses', async () => {
     const harnesses = await loader.getAllHarnesses(MatChipHarness);
-    expect(harnesses.length).toBe(3);
+    expect(harnesses.length).toBe(4);
   });
 
   it('should get the chip text content', async () => {
     const harnesses = await loader.getAllHarnesses(MatChipHarness);
     expect(await harnesses[0].getText()).toBe('Basic Chip');
     expect(await harnesses[1].getText()).toBe('Chip');
-    expect(await harnesses[2].getText()).toBe('Disabled Chip');
+    expect(await harnesses[2].getText()).toBe('Chip with avatar');
+    expect(await harnesses[3].getText()).toBe('Disabled Chip');
   });
 });
 
 @Component({
   template: `
-    <mat-basic-chip> Basic Chip </mat-basic-chip>
-    <mat-chip> Chip </mat-chip>
-    <mat-chip disabled> Disabled Chip </mat-chip>
+    <mat-basic-chip>Basic Chip</mat-basic-chip>
+    <mat-chip>Chip <span matChipTrailingIcon>trailing_icon</span></mat-chip>
+    <mat-chip><mat-chip-avatar>B</mat-chip-avatar>Chip with avatar</mat-chip>
+    <mat-chip disabled>Disabled Chip <span matChipRemove>remove_icon</span></mat-chip>
   `
 })
 class ChipHarnessTest {}

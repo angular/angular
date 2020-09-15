@@ -306,9 +306,14 @@ export function runHarnessTests(
       [multiple]="isMultiple"
       [aria-orientation]="orientation">
       <mat-chip (removed)="remove()">Chip 1</mat-chip>
-      <mat-chip (removed)="remove()">Chip 2</mat-chip>
-      <mat-chip disabled (removed)="remove()">Chip 3</mat-chip>
-      <mat-chip (removed)="remove()">Chip 4</mat-chip>
+      <mat-chip (removed)="remove()">Chip 2 <span matChipRemove>remove_icon</span></mat-chip>
+      <mat-chip
+        disabled
+        (removed)="remove()">
+        Chip 3
+        <span matChipTrailingIcon>trailing_icon</span>
+      </mat-chip>
+      <mat-chip (removed)="remove()"><mat-chip-avatar>C</mat-chip-avatar>Chip 4</mat-chip>
     </mat-chip-list>
 
     <mat-chip-list></mat-chip-list>
