@@ -155,7 +155,7 @@ export class BindingParser {
       } else if (binding.value) {
         const valueSpan = moveParseSourceSpan(sourceSpan, binding.value.ast.sourceSpan);
         this._parsePropertyAst(
-            key, binding.value, sourceSpan, valueSpan, targetMatchableAttrs, targetProps);
+            key, binding.value, bindingSpan, valueSpan, targetMatchableAttrs, targetProps);
       } else {
         targetMatchableAttrs.push([key, '' /* value */]);
         // Since this is a literal attribute with no RHS, source span should be

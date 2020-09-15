@@ -251,9 +251,17 @@ describe('R3 AST source spans', () => {
       // </ng-template>
       expectFromHtml('<div *ngFor="item of items"></div>').toEqual([
         ['Template', '0:34', '0:28', '28:34'],
-        ['BoundAttribute', '5:27', '13:17'],  // ngFor="item of items" -> item
-        ['BoundAttribute', '5:27', '21:26'],  // ngFor="item of items" -> items
+        ['BoundAttribute', '6:18', '13:17'],   // ngFor="item -> item
+        ['BoundAttribute', '18:26', '21:26'],  // of items -> items
         ['Element', '0:34', '0:28', '28:34'],
+      ]);
+
+      expectFromHtml('<div *ngFor="item of items; trackBy: trackByFn"></div>').toEqual([
+        ['Template', '0:54', '0:48', '48:54'],
+        ['BoundAttribute', '6:18', '13:17'],   // ngFor="item -> item
+        ['BoundAttribute', '18:28', '21:26'],  // of items;  -> items
+        ['BoundAttribute', '28:46', '37:46'],  // trackBy: trackByFn -> trackByFn
+        ['Element', '0:54', '0:48', '48:54'],
       ]);
     });
 
