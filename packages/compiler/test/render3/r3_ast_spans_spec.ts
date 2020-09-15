@@ -238,7 +238,7 @@ describe('R3 AST source spans', () => {
       expectFromHtml('<div *ngFor="let item of items"></div>').toEqual([
         ['Template', '0:38', '0:32', '32:38'],
         ['TextAttribute', '6:11', '<empty>'],  // ngFor
-        ['BoundAttribute', '5:31', '25:30'],   // *ngFor="let item of items" -> items
+        ['BoundAttribute', '22:30', '25:30'],  // of items -> items
         ['Variable', '13:22', '<empty>'],      // let item
         ['Element', '0:38', '0:32', '32:38'],
       ]);
@@ -256,12 +256,13 @@ describe('R3 AST source spans', () => {
         ['Element', '0:34', '0:28', '28:34'],
       ]);
 
-      expectFromHtml('<div *ngFor="item of items; trackBy: trackByFn"></div>').toEqual([
-        ['Template', '0:54', '0:48', '48:54'],
-        ['BoundAttribute', '6:18', '13:17'],   // ngFor="item -> item
-        ['BoundAttribute', '18:28', '21:26'],  // of items;  -> items
-        ['BoundAttribute', '28:46', '37:46'],  // trackBy: trackByFn -> trackByFn
-        ['Element', '0:54', '0:48', '48:54'],
+      expectFromHtml('<div *ngFor="let item of items; trackBy: trackByFn"></div>').toEqual([
+        ['Template', '0:58', '0:52', '52:58'],
+        ['TextAttribute', '6:11', '<empty>'],  // ngFor
+        ['BoundAttribute', '22:32', '25:30'],  // of items;  -> item
+        ['BoundAttribute', '32:50', '41:50'],  // trackBy: trackByFn -> trackByFn
+        ['Variable', '13:22', '<empty>'],      // let item
+        ['Element', '0:58', '0:52', '52:58'],
       ]);
     });
 
@@ -277,9 +278,18 @@ describe('R3 AST source spans', () => {
     it('is correct for variables via as ...', () => {
       expectFromHtml('<div *ngIf="expr as local"></div>').toEqual([
         ['Template', '0:33', '0:27', '27:33'],
-        ['BoundAttribute', '5:26', '12:16'],  // ngIf="expr as local" -> expr
+        ['BoundAttribute', '6:17', '12:16'],  // ngIf="expr -> expr
         ['Variable', '6:25', '6:10'],         // ngIf="expr as local -> ngIf
         ['Element', '0:33', '0:27', '27:33'],
+      ]);
+
+      expectFromHtml('<div *ngFor="let item of items | async as items"></div>').toEqual([
+        ['Template', '0:55', '0:49', '49:55'],
+        ['TextAttribute', '6:11', '<empty>'],  // ngFor
+        ['BoundAttribute', '22:39', '25:38'],  // `of items | async` -> `items | async`
+        ['Variable', '13:22', '<empty>'],      // let item
+        ['Variable', '22:47', '22:24'],        // `of items | async as items` -> `of`
+        ['Element', '0:55', '0:49', '49:55'],
       ]);
     });
   });
