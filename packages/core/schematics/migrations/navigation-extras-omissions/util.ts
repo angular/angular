@@ -73,6 +73,7 @@ export function findLiteralsToMigrate(sourceFile: ts.SourceFile, typeChecker: ts
   const results = new Map<string, Set<ts.ObjectLiteralExpression>>(
       Array.from(methodConfig.keys(), key => [key, new Set()]));
   const routerImport = getImportSpecifier(sourceFile, '@angular/router', 'Router');
+  const seenLiterals = new Map<ts.ObjectLiteralExpression, string>();
 
   if (routerImport) {
     sourceFile.forEachChild(function visitNode(node: ts.Node) {
@@ -83,12 +84,22 @@ export function findLiteralsToMigrate(sourceFile: ts.SourceFile, typeChecker: ts
         // Check whether the type of the object on which the
         // function is called refers to the Router import.
         if (isReferenceToImport(typeChecker, node.expression.expression, routerImport)) {
+          const methodName = node.expression.name.text;
           const parameterDeclaration =
               typeChecker.getTypeAtLocation(node.arguments[1]).getSymbol()?.valueDeclaration;
 
           // Find the source of the object literal.
           if (parameterDeclaration && ts.isObjectLiteralExpression(parameterDeclaration)) {
-            results.get(node.expression.name.text)!.add(parameterDeclaration);
+            if (!seenLiterals.has(parameterDeclaration)) {
+              results.get(methodName)!.add(parameterDeclaration);
+              seenLiterals.set(parameterDeclaration, methodName);
+              // If the same literal has been passed into multiple different methods, we can't
+              // migrate it, because the supported properties are different. When we detect such
+              // a case, we drop it from the results so that it gets ignored. If it's used multiple
+              // times for the same method, it can still be migrated.
+            } else if (seenLiterals.get(parameterDeclaration) !== methodName) {
+              results.forEach(literals => literals.delete(parameterDeclaration));
+            }
           }
         }
       } else {

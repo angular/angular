@@ -143,6 +143,28 @@ describe('Google3 NavigationExtras omissions TSLint rule', () => {
     expect(content).toContain(`return router.createUrlTree(['/'], {});`);
   });
 
+  it('should not change objects that are used in multiple different methods', () => {
+    writeFile('/index.ts', `
+      import {Router} from '@angular/router';
+
+      const config = {replaceUrl: true, fragment: 'foo', state: {}};
+
+      class Navigator {
+        constructor(private _router: Router) {}
+
+        goHome() {
+          this._router.navigateByUrl('/', config);
+          return this._router.createUrlTree(['/'], config);
+        }
+      }
+    `);
+
+    runTSLint(true);
+
+    const content = getFile('/index.ts');
+    expect(content).toContain(`const config = {replaceUrl: true, fragment: 'foo', state: {}};`);
+  });
+
   it('should preserve calls if the router does not come from @angular/router', () => {
     writeFile('/index.ts', `
       import {Router} from '@custom/router';
@@ -282,5 +304,31 @@ describe('Google3 NavigationExtras omissions TSLint rule', () => {
     const content = getFile('/index.ts');
     expect(content).toContain(
         `router.navigateByUrl('/', { /* Removed unsupported properties by Angular migration: fragment. */ replaceUrl: true, ...overrides });`);
+  });
+
+  it('should migrate objects that are used in multiple calls of the same method', () => {
+    writeFile('/index.ts', `
+      import {Router} from '@angular/router';
+
+      const config = {skipLocationChange: false, fragment: 'foo'};
+
+      class Navigator {
+        constructor(private _router: Router) {}
+
+        goHome() {
+          this._router.navigateByUrl('/', config);
+        }
+
+        goFish() {
+          this._router.navigateByUrl('/fish', config);
+        }
+      }
+    `);
+
+    runTSLint(true);
+
+    const content = getFile('/index.ts');
+    expect(content).toContain(
+        `const config = { /* Removed unsupported properties by Angular migration: fragment. */ skipLocationChange: false };`);
   });
 });

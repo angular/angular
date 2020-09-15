@@ -102,6 +102,28 @@ describe('NavigationExtras omissions migration', () => {
     expect(content).toContain(`return router.createUrlTree(['/'], {});`);
   });
 
+  it('should not change objects that are used in multiple different methods', async () => {
+    writeFile('/index.ts', `
+      import {Router} from '@angular/router';
+
+      const config = {replaceUrl: true, fragment: 'foo', state: {}};
+
+      class Navigator {
+        constructor(private _router: Router) {}
+
+        goHome() {
+          this._router.navigateByUrl('/', config);
+          return this._router.createUrlTree(['/'], config);
+        }
+      }
+    `);
+
+    await runMigration();
+
+    const content = tree.readContent('/index.ts');
+    expect(content).toContain(`const config = {replaceUrl: true, fragment: 'foo', state: {}};`);
+  });
+
   it('should preserve calls if the router does not come from @angular/router', async () => {
     writeFile('/index.ts', `
       import {Router} from '@custom/router';
@@ -243,6 +265,31 @@ describe('NavigationExtras omissions migration', () => {
         `router.navigateByUrl('/', { /* Removed unsupported properties by Angular migration: fragment. */ replaceUrl: true, ...overrides });`);
   });
 
+  it('should migrate objects that are used in multiple calls of the same method', async () => {
+    writeFile('/index.ts', `
+      import {Router} from '@angular/router';
+
+      const config = {skipLocationChange: false, fragment: 'foo'};
+
+      class Navigator {
+        constructor(private _router: Router) {}
+
+        goHome() {
+          this._router.navigateByUrl('/', config);
+        }
+
+        goFish() {
+          this._router.navigateByUrl('/fish', config);
+        }
+      }
+    `);
+
+    await runMigration();
+
+    const content = tree.readContent('/index.ts');
+    expect(content).toContain(
+        `const config = { /* Removed unsupported properties by Angular migration: fragment. */ skipLocationChange: false };`);
+  });
 
   function writeFile(filePath: string, contents: string) {
     host.sync.write(normalize(filePath), virtualFs.stringToFileBuffer(contents));
