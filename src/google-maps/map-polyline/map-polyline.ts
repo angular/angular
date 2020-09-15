@@ -188,7 +188,6 @@ export class MapPolyline implements OnInit, OnDestroy {
    */
   getPath(): google.maps.MVCArray<google.maps.LatLng> {
     this._assertInitialized();
-    // @breaking-change 11.0.0 Make the return value nullable.
     return this.polyline.getPath();
   }
 

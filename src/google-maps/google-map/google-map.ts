@@ -19,7 +19,6 @@ import {
   OnInit,
   Output,
   ViewEncapsulation,
-  Optional,
   Inject,
   PLATFORM_ID,
   NgZone,
@@ -231,15 +230,9 @@ export class GoogleMap implements OnChanges, OnInit, OnDestroy {
   constructor(
     private readonly _elementRef: ElementRef,
     private _ngZone: NgZone,
-    /**
-     * @deprecated `platformId` parameter to become required.
-     * @breaking-change 10.0.0
-     */
-    @Optional() @Inject(PLATFORM_ID) platformId?: Object) {
+    @Inject(PLATFORM_ID) platformId: Object) {
 
-    // @breaking-change 10.0.0 Remove null check for `platformId`.
-    this._isBrowser =
-        platformId ? isPlatformBrowser(platformId) : typeof window === 'object' && !!window;
+    this._isBrowser = isPlatformBrowser(platformId);
 
     if (this._isBrowser) {
       const googleMapsWindow: GoogleMapsWindow = window;

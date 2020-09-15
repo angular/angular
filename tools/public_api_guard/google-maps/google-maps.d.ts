@@ -29,8 +29,7 @@ export declare class GoogleMap implements OnChanges, OnInit, OnDestroy {
     width: string | number | null;
     set zoom(zoom: number);
     zoomChanged: Observable<void>;
-    constructor(_elementRef: ElementRef, _ngZone: NgZone,
-    platformId?: Object);
+    constructor(_elementRef: ElementRef, _ngZone: NgZone, platformId: Object);
     fitBounds(bounds: google.maps.LatLngBounds | google.maps.LatLngBoundsLiteral, padding?: number | google.maps.Padding): void;
     getBounds(): google.maps.LatLngBounds | null;
     getCenter(): google.maps.LatLng;
@@ -48,7 +47,7 @@ export declare class GoogleMap implements OnChanges, OnInit, OnDestroy {
     panTo(latLng: google.maps.LatLng | google.maps.LatLngLiteral): void;
     panToBounds(latLngBounds: google.maps.LatLngBounds | google.maps.LatLngBoundsLiteral, padding?: number | google.maps.Padding): void;
     static ɵcmp: i0.ɵɵComponentDefWithMeta<GoogleMap, "google-map", ["googleMap"], { "height": "height"; "width": "width"; "mapTypeId": "mapTypeId"; "center": "center"; "zoom": "zoom"; "options": "options"; }, { "boundsChanged": "boundsChanged"; "centerChanged": "centerChanged"; "mapClick": "mapClick"; "mapDblclick": "mapDblclick"; "mapDrag": "mapDrag"; "mapDragend": "mapDragend"; "mapDragstart": "mapDragstart"; "headingChanged": "headingChanged"; "idle": "idle"; "maptypeidChanged": "maptypeidChanged"; "mapMousemove": "mapMousemove"; "mapMouseout": "mapMouseout"; "mapMouseover": "mapMouseover"; "projectionChanged": "projectionChanged"; "mapRightclick": "mapRightclick"; "tilesloaded": "tilesloaded"; "tiltChanged": "tiltChanged"; "zoomChanged": "zoomChanged"; }, never, ["*"]>;
-    static ɵfac: i0.ɵɵFactoryDef<GoogleMap, [null, null, { optional: true; }]>;
+    static ɵfac: i0.ɵɵFactoryDef<GoogleMap, never>;
 }
 
 export declare class GoogleMapsModule {
