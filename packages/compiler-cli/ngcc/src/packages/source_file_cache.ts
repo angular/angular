@@ -9,8 +9,8 @@ import * as ts from 'typescript';
 import {AbsoluteFsPath, FileSystem} from '../../../src/ngtsc/file_system';
 
 /**
- * A cache that holds on to data that can be shared for processing all entry-points in a single
- * invocation of ngcc. In particular, the following aspects are shared across all entry-points
+ * A cache that holds on to source files that can be shared for processing all entry-points in a
+ * single invocation of ngcc. In particular, the following files are shared across all entry-points
  * through this cache:
  *
  * 1. Default library files such as `lib.dom.d.ts` and `lib.es5.d.ts`. These files don't change
@@ -21,26 +21,15 @@ import {AbsoluteFsPath, FileSystem} from '../../../src/ngtsc/file_system';
  *    Especially `@angular/core/core.d.ts` is large and expensive to parse repeatedly. In contrast
  *    to default library files, we have to account for these files to be invalidated during a single
  *    invocation of ngcc, as ngcc will overwrite the .d.ts files during its processing.
- * 3. A module resolution cache for TypeScript to use for module resolution. Module resolution is
- *    an expensive operation due to the large number of filesystem accesses. During a single
- *    invocation of ngcc it is assumed that the filesystem layout does not change, so a single
- *    module resolution cache is provided for use by all entry-points.
  *
  * The lifecycle of this cache corresponds with a single invocation of ngcc. Separate invocations,
  * e.g. the CLI's synchronous module resolution fallback will therefore all have their own cache.
- * This is because module resolution results cannot be assumed to be valid across invocations, as
- * modifications of the file-system may have invalidated earlier results. Additionally, it allows
- * for the source file cache to be garbage collected once ngcc processing has completed.
+ * This allows for the source file cache to be garbage collected once ngcc processing has completed.
  */
-export class TransformCache {
+export class SharedFileCache {
   private sfCache = new Map<AbsoluteFsPath, ts.SourceFile>();
-  readonly moduleResolutionCache: ts.ModuleResolutionCache;
 
-  constructor(private fs: FileSystem) {
-    this.moduleResolutionCache = ts.createModuleResolutionCache(fs.pwd(), fileName => {
-      return fs.isCaseSensitive() ? fileName : fileName.toLowerCase();
-    });
-  }
+  constructor(private fs: FileSystem) {}
 
   /**
    * Loads a `ts.SourceFile` if the provided `fileName` is deemed appropriate to be cached. To
@@ -153,20 +142,23 @@ function isFile(
 
 /**
  * A cache for processing a single entry-point. This exists to share `ts.SourceFile`s between the
- * source and typing programs that are created for a single program. Additionally, it leverages the
- * transform cache for module resolution and sharing of default library files.
+ * source and typing programs that are created for a single program.
  */
-export class EntryPointCache {
+export class EntryPointFileCache {
   private readonly sfCache = new Map<AbsoluteFsPath, ts.SourceFile>();
 
-  constructor(private fs: FileSystem, private transformCache: TransformCache) {}
+  constructor(private fs: FileSystem, private sharedFileCache: SharedFileCache) {}
 
-  get moduleResolutionCache(): ts.ModuleResolutionCache {
-    return this.transformCache.moduleResolutionCache;
-  }
-
+  /**
+   * Returns and caches a parsed `ts.SourceFile` for the provided `fileName`. If the `fileName` is
+   * cached in the shared file cache, that result is used. Otherwise, the source file is cached
+   * internally. This method returns `undefined` id the requested file does not exist.
+   *
+   * @param fileName The path of the file to retrieve a source file for.
+   * @param languageVersion The language version to use for parsing the file.
+   */
   getCachedSourceFile(fileName: string, languageVersion: ts.ScriptTarget): ts.SourceFile|undefined {
-    const staticSf = this.transformCache.getCachedSourceFile(fileName);
+    const staticSf = this.sharedFileCache.getCachedSourceFile(fileName);
     if (staticSf !== undefined) {
       return staticSf;
     }
@@ -191,4 +183,15 @@ function readFile(absPath: AbsoluteFsPath, fs: FileSystem): string|undefined {
     return undefined;
   }
   return fs.readFile(absPath);
+}
+
+/**
+ * Creates a `ts.ModuleResolutionCache` that uses the provided filesystem for path operations.
+ *
+ * @param fs The filesystem to use for path operations.
+ */
+export function createModuleResolutionCache(fs: FileSystem): ts.ModuleResolutionCache {
+  return ts.createModuleResolutionCache(fs.pwd(), fileName => {
+    return fs.isCaseSensitive() ? fileName : fileName.toLowerCase();
+  });
 }

@@ -10,7 +10,7 @@ import * as ts from 'typescript';
 import {AbsoluteFsPath, FileSystem, NgtscCompilerHost} from '../../../src/ngtsc/file_system';
 import {isWithinPackage} from '../analysis/util';
 import {isRelativePath} from '../utils';
-import {EntryPointCache} from './transform_cache';
+import {EntryPointFileCache} from './source_file_cache';
 
 /**
  * Represents a compiler host that resolves a module import as a JavaScript source file if
@@ -20,7 +20,8 @@ import {EntryPointCache} from './transform_cache';
  */
 export class NgccSourcesCompilerHost extends NgtscCompilerHost {
   constructor(
-      fs: FileSystem, options: ts.CompilerOptions, private cache: EntryPointCache,
+      fs: FileSystem, options: ts.CompilerOptions, private cache: EntryPointFileCache,
+      private moduleResolutionCache: ts.ModuleResolutionCache,
       protected packagePath: AbsoluteFsPath) {
     super(fs, options);
   }
@@ -34,7 +35,7 @@ export class NgccSourcesCompilerHost extends NgtscCompilerHost {
       redirectedReference?: ts.ResolvedProjectReference): Array<ts.ResolvedModule|undefined> {
     return moduleNames.map(moduleName => {
       const {resolvedModule} = ts.resolveModuleName(
-          moduleName, containingFile, this.options, this, this.cache.moduleResolutionCache,
+          moduleName, containingFile, this.options, this, this.moduleResolutionCache,
           redirectedReference);
 
       // If the module request originated from a relative import in a JavaScript source file,
@@ -71,7 +72,9 @@ export class NgccSourcesCompilerHost extends NgtscCompilerHost {
  * program.
  */
 export class NgccDtsCompilerHost extends NgtscCompilerHost {
-  constructor(fs: FileSystem, options: ts.CompilerOptions, private cache: EntryPointCache) {
+  constructor(
+      fs: FileSystem, options: ts.CompilerOptions, private cache: EntryPointFileCache,
+      private moduleResolutionCache: ts.ModuleResolutionCache) {
     super(fs, options);
   }
 
@@ -84,7 +87,7 @@ export class NgccDtsCompilerHost extends NgtscCompilerHost {
       redirectedReference?: ts.ResolvedProjectReference): Array<ts.ResolvedModule|undefined> {
     return moduleNames.map(moduleName => {
       const {resolvedModule} = ts.resolveModuleName(
-          moduleName, containingFile, this.options, this, this.cache.moduleResolutionCache,
+          moduleName, containingFile, this.options, this, this.moduleResolutionCache,
           redirectedReference);
       return resolvedModule;
     });

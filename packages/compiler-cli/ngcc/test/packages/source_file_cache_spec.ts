@@ -10,10 +10,10 @@ import * as ts from 'typescript';
 import {absoluteFrom, FileSystem, getFileSystem} from '../../../src/ngtsc/file_system';
 import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
 import {loadTestFiles} from '../../../test/helpers';
-import {EntryPointCache, isAngularDts, isDefaultLibrary, TransformCache} from '../../src/packages/transform_cache';
+import {EntryPointFileCache, isAngularDts, isDefaultLibrary, SharedFileCache} from '../../src/packages/source_file_cache';
 
 runInEachFileSystem(() => {
-  describe('Transform caching', () => {
+  describe('caching', () => {
     let _: typeof absoluteFrom;
     let fs: FileSystem;
     beforeEach(() => {
@@ -47,9 +47,9 @@ runInEachFileSystem(() => {
       ]);
     });
 
-    describe('TransformCache', () => {
+    describe('SharedFileCache', () => {
       it('should cache a parsed source file for default libraries', () => {
-        const cache = new TransformCache(fs);
+        const cache = new SharedFileCache(fs);
 
         const libEs5 = cache.getCachedSourceFile('/node_modules/typescript/lib/lib.es5.d.ts')!;
         expect(libEs5).not.toBeUndefined();
@@ -67,7 +67,7 @@ runInEachFileSystem(() => {
       });
 
       it('should cache a parsed source file for @angular scoped packages', () => {
-        const cache = new TransformCache(fs);
+        const cache = new SharedFileCache(fs);
 
         const core = cache.getCachedSourceFile('/node_modules/@angular/core/core.d.ts')!;
         expect(core).not.toBeUndefined();
@@ -85,7 +85,7 @@ runInEachFileSystem(() => {
       });
 
       it('should reparse @angular d.ts files when they change', () => {
-        const cache = new TransformCache(fs);
+        const cache = new SharedFileCache(fs);
 
         const core = cache.getCachedSourceFile('/node_modules/@angular/core/core.d.ts')!;
         expect(core).not.toBeUndefined();
@@ -111,7 +111,7 @@ runInEachFileSystem(() => {
 
       it('should not cache files that are not default library files inside of the typescript package',
          () => {
-           const cache = new TransformCache(fs);
+           const cache = new SharedFileCache(fs);
 
            expect(cache.getCachedSourceFile('/node_modules/typescript/lib/typescript.d.ts'))
                .toBeUndefined();
@@ -160,33 +160,28 @@ runInEachFileSystem(() => {
       });
     });
 
-    describe('EntryPointCache', () => {
-      let transformCache: TransformCache;
+    describe('EntryPointFileCache', () => {
+      let sharedFileCache: SharedFileCache;
       beforeEach(() => {
-        transformCache = new TransformCache(fs);
+        sharedFileCache = new SharedFileCache(fs);
       });
 
-      it('should prefer source files cached in TransformCache', () => {
-        const cache1 = new EntryPointCache(fs, transformCache);
+      it('should prefer source files cached in SharedFileCache', () => {
+        const cache1 = new EntryPointFileCache(fs, sharedFileCache);
         const libEs5_1 = cache1.getCachedSourceFile(
             '/node_modules/typescript/lib/lib.es5.d.ts', ts.ScriptTarget.ESNext)!;
         expect(libEs5_1).not.toBeUndefined();
         expect(libEs5_1.text).toContain('Array');
         expect(libEs5_1.languageVersion).toBe(ts.ScriptTarget.ES2015);
 
-        const cache2 = new EntryPointCache(fs, transformCache);
+        const cache2 = new EntryPointFileCache(fs, sharedFileCache);
         const libEs5_2 = cache2.getCachedSourceFile(
             '/node_modules/typescript/lib/lib.es5.d.ts', ts.ScriptTarget.ESNext)!;
         expect(libEs5_1).toBe(libEs5_2);
       });
 
-      it('should provide the module resolution cache of the TransformCache', () => {
-        const cache = new EntryPointCache(fs, transformCache);
-        expect(cache.moduleResolutionCache).toBe(transformCache.moduleResolutionCache);
-      });
-
       it('should cache source files that are not default library files', () => {
-        const cache = new EntryPointCache(fs, transformCache);
+        const cache = new EntryPointFileCache(fs, sharedFileCache);
         const index = cache.getCachedSourceFile('/index.ts', ts.ScriptTarget.ESNext)!;
         expect(index).not.toBeUndefined();
         expect(index.text).toContain('index');
@@ -205,8 +200,8 @@ runInEachFileSystem(() => {
       });
 
       it('should not share non-library files across multiple cache instances', () => {
-        const cache1 = new EntryPointCache(fs, transformCache);
-        const cache2 = new EntryPointCache(fs, transformCache);
+        const cache1 = new EntryPointFileCache(fs, sharedFileCache);
+        const cache2 = new EntryPointFileCache(fs, sharedFileCache);
 
         const index1 = cache1.getCachedSourceFile('/index.ts', ts.ScriptTarget.ESNext)!;
         const index2 = cache2.getCachedSourceFile('/index.ts', ts.ScriptTarget.ESNext)!;
@@ -214,13 +209,13 @@ runInEachFileSystem(() => {
       });
 
       it('should return undefined if the file does not exist', () => {
-        const cache = new EntryPointCache(fs, transformCache);
+        const cache = new EntryPointFileCache(fs, sharedFileCache);
         expect(cache.getCachedSourceFile('/nonexistent.ts', ts.ScriptTarget.ESNext))
             .toBeUndefined();
       });
 
       it('should return undefined if the path is a directory', () => {
-        const cache = new EntryPointCache(fs, transformCache);
+        const cache = new EntryPointFileCache(fs, sharedFileCache);
         expect(cache.getCachedSourceFile('/node_modules', ts.ScriptTarget.ESNext)).toBeUndefined();
       });
     });
