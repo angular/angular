@@ -601,18 +601,6 @@ In practical terms, the `package.json` of all `@angular` packages has changed in
 
 For more information about the npm package format, see the [Angular Package Format spec](https://goo.gl/jB3GVv).
 
-{@a removed}
-## Removed APIs
-
-The following APIs have been removed starting with version 10.0.0*:
-
-| Package          | API            | Replacement | Notes |
-| ---------------- | -------------- | ----------- | ----- |
-| `@angular/core`  | Undecorated base classes that use Angular features | Add Angular decorator | See [migration guide](guide/migration-undecorated-classes) for more info |
-| `@angular/core`  | `ModuleWithProviders` without a generic             | `ModuleWithProviders` with a generic | See [migration guide](guide/migration-module-with-providers) for more info |
-
-*To see APIs removed in version 9, check out this guide on the [version 9 docs site](https://v9.angular.io/guide/deprecations#removed).
-
 {@a style-sanitization}
 ### Style Sanitization for `[style]` and `[style.prop]` bindings
 Angular used to sanitize `[style]` and `[style.prop]` bindings to prevent malicious code from being inserted through `javascript:` expressions in CSS `url()` entries. However, most modern browsers no longer support the usage of these expressions, so sanitization was only maintained for the sake of IE 6 and 7. Given that Angular does not support either IE 6 or 7 and sanitization has a performance cost, we will no longer sanitize style bindings as of version 10 of Angular.
