@@ -418,10 +418,10 @@ class TcbReferenceOp extends TcbOp {
 
   execute(): ts.Identifier {
     const id = this.tcb.allocateId();
-    let initializer = ts.getMutableClone(
+    let initializer =
         this.target instanceof TmplAstTemplate || this.target instanceof TmplAstElement ?
-            this.scope.resolve(this.target) :
-            this.scope.resolve(this.host, this.target));
+        this.scope.resolve(this.target) :
+        this.scope.resolve(this.host, this.target);
 
     // The reference is either to an element, an <ng-template> node, or to a directive on an
     // element or template.
@@ -1121,7 +1121,8 @@ class Scope {
 
   /**
    * Look up a `ts.Expression` representing the value of some operation in the current `Scope`,
-   * including any parent scope(s).
+   * including any parent scope(s). This method always returns a mutable clone of the
+   * `ts.Expression` with the comments cleared.
    *
    * @param node a `TmplAstNode` of the operation in question. The lookup performed will depend on
    * the type of this node:
@@ -1142,7 +1143,18 @@ class Scope {
     // Attempt to resolve the operation locally.
     const res = this.resolveLocal(node, directive);
     if (res !== null) {
-      return res;
+      // We want to get a clone of the resolved expression and clear the trailing comments
+      // so they don't continue to appear in every place the expression is used.
+      // As an example, this would otherwise produce:
+      // var _t1 /**T:DIR*/ /*1,2*/ = _ctor1();
+      // _t1 /**T:DIR*/ /*1,2*/.input = 'value';
+      //
+      // In addition, returning a clone prevents the consumer of `Scope#resolve` from
+      // attaching comments at the declaration site.
+
+      const clone = ts.getMutableClone(res);
+      ts.setSyntheticTrailingComments(clone, []);
+      return clone;
     } else if (this.parent !== null) {
       // Check with the parent.
       return this.parent.resolve(node, directive);
@@ -1547,7 +1559,7 @@ class TcbExpressionTranslator {
       return null;
     }
 
-    const expr = ts.getMutableClone(this.scope.resolve(binding));
+    const expr = this.scope.resolve(binding);
     addParseSpanInfo(expr, ast.sourceSpan);
     return expr;
   }

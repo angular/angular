@@ -165,6 +165,22 @@ describe('type check blocks diagnostics', () => {
             .toContain('((_t1 /*23,24*/) || (_t1 /*28,29*/) /*23,29*/);');
       });
     });
+
+    describe('attaching comments for generic directive inputs', () => {
+      it('should be correct for directive refs', () => {
+        const DIRECTIVES: TestDeclaration[] = [{
+          type: 'directive',
+          name: 'MyComponent',
+          selector: 'my-cmp',
+          isComponent: true,
+          isGeneric: true,
+          inputs: {'inputA': 'inputA'},
+        }];
+        const TEMPLATE = `<my-cmp [inputA]="''"></my-cmp>`;
+        expect(tcbWithSpans(TEMPLATE, DIRECTIVES))
+            .toContain('_t1.inputA = ("" /*18,20*/) /*8,21*/;');
+      });
+    });
   });
 });
 
