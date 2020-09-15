@@ -189,6 +189,33 @@ runInEachFileSystem(() => {
           target: null,
         });
       });
+
+      it('should discover properties in template expressions and resist collisions', () => {
+        const template = '<div *ngFor="let foo of (foos ? foos : foos)"></div>';
+        const refs = getTemplateIdentifiers(bind(template));
+
+        const refArr = Array.from(refs);
+        expect(refArr).toEqual(jasmine.arrayContaining([
+          {
+            name: 'foos',
+            kind: IdentifierKind.Property,
+            span: new AbsoluteSourceSpan(25, 29),
+            target: null,
+          },
+          {
+            name: 'foos',
+            kind: IdentifierKind.Property,
+            span: new AbsoluteSourceSpan(32, 36),
+            target: null,
+          },
+          {
+            name: 'foos',
+            kind: IdentifierKind.Property,
+            span: new AbsoluteSourceSpan(39, 43),
+            target: null,
+          },
+        ]));
+      });
     });
 
     describe('generates identifiers for PropertyWrites', () => {
