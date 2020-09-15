@@ -615,7 +615,7 @@ This sample app recreates the heroes feature in the "Services" section of the [T
 
 A typical application has multiple feature areas, each dedicated to a particular business purpose with its own folder.
 
-This section shows you how refactor the app into different feature modules, import them into the main module and navigate among them.
+This section shows you how to refactor the app into different feature modules, import them into the main module and navigate among them.
 
 
 {@a heroes-functionality}
