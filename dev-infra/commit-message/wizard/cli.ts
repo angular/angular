@@ -8,7 +8,7 @@
 
 import {Arguments, Argv, CommandModule} from 'yargs';
 
-import {CommitMsgSource} from '../config';
+import {CommitMsgSource} from '../commit-message-source';
 
 import {runWizard} from './wizard';
 
@@ -48,5 +48,7 @@ export const WizardModule: CommandModule<{}, WizardOptions> = {
   handler,
   builder,
   command: 'wizard <filePath> [source] [commitSha]',
+  // Description: Run the wizard to build a base commit message before opening to complete.
+  // No describe is defiend to hide the command from the --help.
   describe: false,
 };

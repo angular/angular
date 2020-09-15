@@ -8,14 +8,6 @@
 
 import {assertNoErrors, getConfig, NgDevConfig} from '../utils/config';
 
-
-/**
- * The source triggering the git commit message creation.
- * As described in: https://git-scm.com/docs/githooks#_prepare_commit_msg
- */
-export type CommitMsgSource = 'message'|'template'|'merge'|'squash'|'commit';
-
-
 /** Configuration for commit-message comands. */
 export interface CommitMessageConfig {
   maxLineLength: number;

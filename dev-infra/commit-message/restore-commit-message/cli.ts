@@ -8,7 +8,7 @@
 
 import {Arguments, Argv, CommandModule} from 'yargs';
 
-import {CommitMsgSource} from '../config';
+import {CommitMsgSource} from '../commit-message-source';
 
 import {restoreCommitMessage} from './restore-commit-message';
 
@@ -21,8 +21,7 @@ function builder(yargs: Argv) {
   return yargs.option('file-env-variable' as 'fileEnvVariable', {
     type: 'string',
     array: true,
-    conflicts: ['file'],
-    required: true,
+    demandOption: true,
     description: 'The key for the environment variable which holds the arguments for the\n' +
         'prepare-commit-msg hook as described here:\n' +
         'https://git-scm.com/docs/githooks#_prepare_commit_msg',
@@ -46,5 +45,7 @@ export const RestoreCommitMessageModule: CommandModule<{}, RestoreCommitMessageO
   handler,
   builder,
   command: 'restore-commit-message-draft',
+  // Description: Restore a commit message draft if one has been saved from a failed commit attempt.
+  // No describe is defiend to hide the command from the --help.
   describe: false,
 };

@@ -11,7 +11,7 @@ import {getUserConfig} from '../../utils/config';
 import {debug, info} from '../../utils/console';
 
 import {buildCommitMessage} from '../builder';
-import {CommitMsgSource} from '../config';
+import {CommitMsgSource} from '../commit-message-source';
 
 
 /** The default commit message used if the wizard does not procude a commit message. */

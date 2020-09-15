@@ -29,7 +29,7 @@ function builder(yargs: Argv) {
 
 /** Handles the command. */
 async function handler({range}: Arguments<ValidateRangeOptions>) {
-  // If on CI, and not pull request number is provided, assume the branch
+  // If on CI, and no pull request number is provided, assume the branch
   // being run on is an upstream branch.
   if (process.env['CI'] && process.env['CI_PULL_REQUEST'] === 'false') {
     info(`Since valid commit messages are enforced by PR linting on CI, we do not`);
