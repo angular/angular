@@ -61,7 +61,7 @@ describe('menu performance benchmarks', () => {
       url: '',
       ignoreBrowserSynchronization: true,
       params: [],
-      setup: () => {
+      setup: async () => {
         trigger = element(by.buttonText('Nested Menu'));
       },
       work: async () => {
