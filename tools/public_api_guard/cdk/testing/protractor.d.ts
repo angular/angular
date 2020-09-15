@@ -29,6 +29,7 @@ export declare class ProtractorHarnessEnvironment extends HarnessEnvironment<Ele
     protected getAllRawElements(selector: string): Promise<ElementFinder[]>;
     protected getDocumentRoot(): ElementFinder;
     waitForTasksOutsideAngular(): Promise<void>;
+    static getNativeElement(el: TestElement): ElementFinder;
     static loader(options?: ProtractorHarnessEnvironmentOptions): HarnessLoader;
 }
 

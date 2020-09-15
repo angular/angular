@@ -7,6 +7,7 @@ export declare class TestbedHarnessEnvironment extends HarnessEnvironment<Elemen
     protected getDocumentRoot(): Element;
     waitForTasksOutsideAngular(): Promise<void>;
     static documentRootLoader(fixture: ComponentFixture<unknown>, options?: TestbedHarnessEnvironmentOptions): HarnessLoader;
+    static getNativeElement(el: TestElement): Element;
     static harnessForFixture<T extends ComponentHarness>(fixture: ComponentFixture<unknown>, harnessType: ComponentHarnessConstructor<T>, options?: TestbedHarnessEnvironmentOptions): Promise<T>;
     static loader(fixture: ComponentFixture<unknown>, options?: TestbedHarnessEnvironmentOptions): HarnessLoader;
 }
