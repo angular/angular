@@ -116,7 +116,7 @@ export function isAngularDts(absPath: AbsoluteFsPath, fs: FileSystem): boolean {
 /**
  * Helper function to determine whether a file corresponds with a given pattern of segments.
  *
- * @param path The path for which to determine whether it represented to provided segments.
+ * @param path The path for which to determine if it corresponds with the provided segments.
  * @param segments Array of segments; the `path` must have ending segments that match the
  * patterns in this array.
  * @param fs The filesystem to use for inspecting the path.
@@ -152,7 +152,7 @@ export class EntryPointFileCache {
   /**
    * Returns and caches a parsed `ts.SourceFile` for the provided `fileName`. If the `fileName` is
    * cached in the shared file cache, that result is used. Otherwise, the source file is cached
-   * internally. This method returns `undefined` id the requested file does not exist.
+   * internally. This method returns `undefined` if the requested file does not exist.
    *
    * @param fileName The path of the file to retrieve a source file for.
    * @param languageVersion The language version to use for parsing the file.
