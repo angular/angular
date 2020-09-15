@@ -123,20 +123,11 @@ Remember, components, directives, and pipes belong to one module only. You only 
 The module's `imports` array appears exclusively in the `@NgModule` metadata object.
 It tells Angular about other NgModules that this particular module needs to function properly.
 
-```typescript
-@NgModule({
-  declarations: [
-    AppComponent
-  ],
-  imports: [
-    BrowserModule,
-    FormsModule,
-    HttpClientModule
-  ],
-  providers: [],
-  bootstrap: [AppComponent]
-})
-```
+<code-example
+    path="bootstrapping/src/app/app.module.ts"
+    region="imports"
+    header="src/app/app.module.ts (excerpt)">
+</code-example>
 
 This list of modules are those that export components, directives, or pipes
 that component templates in this module reference. In this case, the component is
