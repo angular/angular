@@ -42,18 +42,30 @@ export class TransformCache {
     });
   }
 
+  /**
+   * Loads a `ts.SourceFile` if the provided `fileName` is deemed appropriate to be cached. To
+   * optimize for memory usage, only files that are generally used in all entry-points are cached.
+   * If `fileName` is not considered to benefit from caching or the requested file does not exist,
+   * then `undefined` is returned.
+   */
   getCachedSourceFile(fileName: string): ts.SourceFile|undefined {
     const absPath = this.fs.resolve(fileName);
     if (isDefaultLibrary(absPath, this.fs)) {
-      return this.getDefaultLibFileCached(absPath);
+      return this.getStableCachedFile(absPath);
     } else if (isAngularDts(absPath, this.fs)) {
-      return this.getAngularDtsCached(absPath);
+      return this.getVolatileCachedFile(absPath);
     } else {
       return undefined;
     }
   }
 
-  private getDefaultLibFileCached(absPath: AbsoluteFsPath): ts.SourceFile|undefined {
+  /**
+   * Attempts to load the source file from the cache, or parses the file into a `ts.SourceFile` if
+   * it's not yet cached. This method assumes that the file will not be modified for the duration
+   * that this cache is valid for. If that assumption does not hold, the `getVolatileCachedFile`
+   * method is to be used instead.
+   */
+  private getStableCachedFile(absPath: AbsoluteFsPath): ts.SourceFile|undefined {
     if (!this.sfCache.has(absPath)) {
       const content = readFile(absPath, this.fs);
       if (content === undefined) {
@@ -66,14 +78,13 @@ export class TransformCache {
   }
 
   /**
-   * The entry-point .d.ts files of @angular packages are also cached, as they are fairly large and
-   * commonly used in entry-points. Unlike the default library files, we must account for the
-   * possibility that the source file cache is out of date, as @angular packages are themselves
-   * processed by ngcc so their .d.ts files will be overwritten. Therefore, the file is always read
-   * from disk and compared with the cached source file's text; if the contents have changed the
-   * file is re-parsed and the cache entry is replaced.
+   * In contrast to `getStableCachedFile`, this method always verifies that the cached source file
+   * is the same as what's stored on disk. This is done for files that are expected to change during
+   * ngcc's processing, such as @angular scoped packages for which the .d.ts files are overwritten
+   * by ngcc. If the contents on disk have changed compared to a previously cached source file, the
+   * content from disk is re-parsed and the cache entry is replaced.
    */
-  private getAngularDtsCached(absPath: AbsoluteFsPath): ts.SourceFile|undefined {
+  private getVolatileCachedFile(absPath: AbsoluteFsPath): ts.SourceFile|undefined {
     const content = readFile(absPath, this.fs);
     if (content === undefined) {
       return undefined;
@@ -86,16 +97,20 @@ export class TransformCache {
   }
 }
 
+const DEFAULT_LIB_PATTERN = ['node_modules', 'typescript', 'lib', /^lib\..+\.d\.ts$/];
+
 /**
  * Determines whether the provided path corresponds with a default library file inside of the
  * typescript package.
  *
- * @param absPath The path for which to determine whether it is a default library file.
+ * @param absPath The path for which to determine if it corresponds with a default library file.
  * @param fs The filesystem to use for inspecting the path.
  */
 export function isDefaultLibrary(absPath: AbsoluteFsPath, fs: FileSystem): boolean {
-  return isFile(absPath, ['node_modules', 'typescript', 'lib', /^lib\..+\.d\.ts$/], fs);
+  return isFile(absPath, DEFAULT_LIB_PATTERN, fs);
 }
+
+const ANGULAR_DTS_PATTERN = ['node_modules', '@angular', /./, /\.d\.ts$/];
 
 /**
  * Determines whether the provided path corresponds with a .d.ts file inside of an @angular
@@ -106,20 +121,21 @@ export function isDefaultLibrary(absPath: AbsoluteFsPath, fs: FileSystem): boole
  * @param fs The filesystem to use for inspecting the path.
  */
 export function isAngularDts(absPath: AbsoluteFsPath, fs: FileSystem): boolean {
-  return isFile(absPath, ['node_modules', '@angular', /./, /\.d\.ts$/], fs);
+  return isFile(absPath, ANGULAR_DTS_PATTERN, fs);
 }
 
 /**
  * Helper function to determine whether a file corresponds with a given pattern of segments.
  *
  * @param path The path for which to determine whether it represented to provided segments.
- * @param segments Array of segments; the full path must have ending segments that match the
+ * @param segments Array of segments; the `path` must have ending segments that match the
  * patterns in this array.
  * @param fs The filesystem to use for inspecting the path.
  */
 function isFile(
     path: AbsoluteFsPath, segments: ReadonlyArray<string|RegExp>, fs: FileSystem): boolean {
-  for (const pattern of segments.slice().reverse()) {
+  for (let i = segments.length - 1; i >= 0; i--) {
+    const pattern = segments[i];
     const segment = fs.basename(path);
     if (typeof pattern === 'string') {
       if (pattern !== segment) {
