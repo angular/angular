@@ -62,7 +62,7 @@
     "@bazel/rollup": "1.7.0",
     "@bazel/terser": "1.7.0",
     "@bazel/typescript": "1.7.0",
-    "@microsoft/api-extractor": "7.7.11",
+    "@microsoft/api-extractor": "7.9.15",
     "@octokit/rest": "16.28.7",
     "@octokit/types": "^5.0.1",
     "@schematics/angular": "10.0.0-rc.2",
