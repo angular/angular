@@ -13,15 +13,9 @@ import {GitClient} from '../../utils/git';
 import {CaretakerConfig} from '../config';
 
 
-interface GithubInfoQuery {
-  [key: string]: {
-    issueCount: number,
-  };
-}
-
 /** Retrieve the number of matching issues for each github query. */
-export async function printGithubTasks(git: GitClient, config: CaretakerConfig) {
-  if (!config.githubQueries?.length) {
+export async function printGithubTasks(git: GitClient, config?: CaretakerConfig) {
+  if (!config?.githubQueries?.length) {
     debug('No github queries defined in the configuration, skipping.');
     return;
   }
