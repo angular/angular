@@ -39,3 +39,4 @@ testem.log
 /.git
 /.firebase
 /.bazelrc.user
+*.log

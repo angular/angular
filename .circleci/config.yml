@@ -336,6 +336,7 @@ jobs:
             yarn check-entry-point-setup $(bazel info bazel-bin)/entry_points_manifest.json
 
       - run: yarn ng-dev format changed --check << pipeline.git.base_revision >>
+      - run: yarn ng-dev commit-message validate-range --range << pipeline.git.base_revision >>...<<pipeline.git.revision>>
       - run: yarn ownerslint
       - run: yarn stylelint
       - run: yarn tslint
