@@ -21,7 +21,6 @@ import {
   OnDestroy,
   StaticProvider,
 } from '@angular/core';
-import {Location} from '@angular/common';
 import {of as observableOf} from 'rxjs';
 import {MAT_BOTTOM_SHEET_DATA, MatBottomSheetConfig} from './bottom-sheet-config';
 import {MatBottomSheetContainer} from './bottom-sheet-container';
@@ -58,7 +57,6 @@ export class MatBottomSheet implements OnDestroy {
       private _overlay: Overlay,
       private _injector: Injector,
       @Optional() @SkipSelf() private _parentBottomSheet: MatBottomSheet,
-      @Optional() private _location?: Location,
       @Optional() @Inject(MAT_BOTTOM_SHEET_DEFAULT_OPTIONS)
           private _defaultOptions?: MatBottomSheetConfig) {}
 
@@ -74,7 +72,7 @@ export class MatBottomSheet implements OnDestroy {
         _applyConfigDefaults(this._defaultOptions || new MatBottomSheetConfig(), config);
     const overlayRef = this._createOverlay(_config);
     const container = this._attachContainer(overlayRef, _config);
-    const ref = new MatBottomSheetRef<T, R>(container, overlayRef, this._location);
+    const ref = new MatBottomSheetRef<T, R>(container, overlayRef);
 
     if (componentOrTemplateRef instanceof TemplateRef) {
       container.attachTemplatePortal(new TemplatePortal<T>(componentOrTemplateRef, null!, {

@@ -5,12 +5,12 @@ export declare const MAT_BOTTOM_SHEET_DEFAULT_OPTIONS: InjectionToken<MatBottomS
 export declare class MatBottomSheet implements OnDestroy {
     get _openedBottomSheetRef(): MatBottomSheetRef<any> | null;
     set _openedBottomSheetRef(value: MatBottomSheetRef<any> | null);
-    constructor(_overlay: Overlay, _injector: Injector, _parentBottomSheet: MatBottomSheet, _location?: Location | undefined, _defaultOptions?: MatBottomSheetConfig<any> | undefined);
+    constructor(_overlay: Overlay, _injector: Injector, _parentBottomSheet: MatBottomSheet, _defaultOptions?: MatBottomSheetConfig<any> | undefined);
     dismiss<R = any>(result?: R): void;
     ngOnDestroy(): void;
     open<T, D = any, R = any>(component: ComponentType<T>, config?: MatBottomSheetConfig<D>): MatBottomSheetRef<T, R>;
     open<T, D = any, R = any>(template: TemplateRef<T>, config?: MatBottomSheetConfig<D>): MatBottomSheetRef<T, R>;
-    static ɵfac: i0.ɵɵFactoryDef<MatBottomSheet, [null, null, { optional: true; skipSelf: true; }, { optional: true; }, { optional: true; }]>;
+    static ɵfac: i0.ɵɵFactoryDef<MatBottomSheet, [null, null, { optional: true; skipSelf: true; }, { optional: true; }]>;
     static ɵprov: i0.ɵɵInjectableDef<MatBottomSheet>;
 }
 
@@ -61,7 +61,7 @@ export declare class MatBottomSheetRef<T = any, R = any> {
     containerInstance: MatBottomSheetContainer;
     disableClose: boolean | undefined;
     instance: T;
-    constructor(containerInstance: MatBottomSheetContainer, _overlayRef: OverlayRef, _location?: Location);
+    constructor(containerInstance: MatBottomSheetContainer, _overlayRef: OverlayRef);
     afterDismissed(): Observable<R | undefined>;
     afterOpened(): Observable<void>;
     backdropClick(): Observable<MouseEvent>;

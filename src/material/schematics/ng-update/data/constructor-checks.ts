@@ -22,6 +22,10 @@ export const constructorChecks: VersionChanges<ConstructorChecksUpgradeData> = {
     {
       pr: 'https://github.com/angular/components/pull/20449',
       changes: ['MatDatepickerContent']
+    },
+    {
+      pr: 'https://github.com/angular/components/pull/20545',
+      changes: ['MatBottomSheet', 'MatBottomSheetRef']
     }
   ],
   [TargetVersion.V10]: [
