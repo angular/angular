@@ -63,8 +63,15 @@ describe('MDC-based MatTabHeader', () => {
     });
 
     it('should initialize to the selected index', () => {
+      // Recreate the fixture so we can test that it works with a non-default selected index
+      fixture.destroy();
+      fixture = TestBed.createComponent(SimpleTabHeaderApp);
+      fixture.componentInstance.selectedIndex = 1;
       fixture.detectChanges();
-      expect(appComponent.tabHeader.focusIndex).toBe(appComponent.selectedIndex);
+      appComponent = fixture.componentInstance;
+      tabListContainer = appComponent.tabHeader._tabListContainer.nativeElement;
+
+      expect(appComponent.tabHeader.focusIndex).toBe(1);
     });
 
     it('should send focus change event', () => {

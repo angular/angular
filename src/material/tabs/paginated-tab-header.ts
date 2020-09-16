@@ -196,7 +196,7 @@ export abstract class MatPaginatedTabHeader implements AfterContentChecked, Afte
       .withHomeAndEnd()
       .withWrap();
 
-    this._keyManager.updateActiveItem(0);
+    this._keyManager.updateActiveItem(this._selectedIndex);
 
     // Defer the first call in order to allow for slower browsers to lay out the elements.
     // This helps in cases where the user lands directly on a page with paginated tabs.

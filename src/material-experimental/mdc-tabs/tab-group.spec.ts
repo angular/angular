@@ -248,12 +248,12 @@ describe('MDC-based MatTabGroup', () => {
 
       expect(fixture.componentInstance.handleFocus).toHaveBeenCalledTimes(0);
 
-      tabLabels[1].nativeElement.click();
+      tabLabels[2].nativeElement.click();
       fixture.detectChanges();
 
       expect(fixture.componentInstance.handleFocus).toHaveBeenCalledTimes(1);
       expect(fixture.componentInstance.handleFocus)
-        .toHaveBeenCalledWith(jasmine.objectContaining({index: 1}));
+        .toHaveBeenCalledWith(jasmine.objectContaining({index: 2}));
     });
 
     it('should emit focusChange on arrow key navigation', () => {
@@ -267,8 +267,8 @@ describe('MDC-based MatTabGroup', () => {
       expect(fixture.componentInstance.handleFocus).toHaveBeenCalledTimes(0);
 
       // In order to verify that the `focusChange` event also fires with the correct
-      // index, we focus the second tab before testing the keyboard navigation.
-      tabLabels[1].nativeElement.click();
+      // index, we focus the third tab before testing the keyboard navigation.
+      tabLabels[2].nativeElement.click();
       fixture.detectChanges();
 
       expect(fixture.componentInstance.handleFocus).toHaveBeenCalledTimes(1);
@@ -277,7 +277,7 @@ describe('MDC-based MatTabGroup', () => {
 
       expect(fixture.componentInstance.handleFocus).toHaveBeenCalledTimes(2);
       expect(fixture.componentInstance.handleFocus)
-        .toHaveBeenCalledWith(jasmine.objectContaining({index: 0}));
+        .toHaveBeenCalledWith(jasmine.objectContaining({index: 1}));
     });
 
     it('should clean up the tabs QueryList on destroy', () => {
