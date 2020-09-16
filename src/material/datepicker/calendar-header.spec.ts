@@ -1,6 +1,10 @@
 import {Directionality} from '@angular/cdk/bidi';
 import {Component} from '@angular/core';
-import {waitForAsync, ComponentFixture, TestBed} from '@angular/core/testing';
+import {
+  ComponentFixture,
+  TestBed,
+  waitForAsync
+} from '@angular/core/testing';
 import {MatNativeDateModule, DateAdapter} from '@angular/material/core';
 import {DEC, FEB, JAN} from '@angular/material/testing';
 import {By} from '@angular/platform-browser';
@@ -71,6 +75,44 @@ describe('MatCalendarHeader', () => {
 
       expect(calendarInstance.currentView).toBe('month');
     });
+
+    it('should emit viewChanged when view changed from \'month\' to \'multi-year\'',
+     () => {
+      expect(calendarInstance.currentView).toBe('month');
+      spyOn(calendarInstance.viewChanged, 'emit');
+
+      periodButton.click();
+      fixture.detectChanges();
+
+      expect(calendarInstance.viewChanged.emit).toHaveBeenCalledWith('multi-year');
+    });
+
+    it('should emit viewChanged when view changed from \'multi-year\' to \'month\'',
+      () => {
+      periodButton.click();
+      fixture.detectChanges();
+      expect(calendarInstance.currentView).toBe('multi-year');
+      spyOn(calendarInstance.viewChanged, 'emit');
+
+      periodButton.click();
+      fixture.detectChanges();
+
+      expect(calendarInstance.viewChanged.emit).toHaveBeenCalledWith('month');
+    });
+
+    it('should emit viewChanged when view changed from \'multi-year\' to \'year\'',
+    () => {
+      periodButton.click();
+      fixture.detectChanges();
+      expect(calendarInstance.currentView).toBe('multi-year');
+      spyOn(calendarInstance.viewChanged, 'emit');
+
+      (calendarElement.querySelector('.mat-calendar-body-active') as HTMLElement).click();
+      fixture.detectChanges();
+
+      expect(calendarInstance.viewChanged.emit).toHaveBeenCalledWith('year');
+    });
+
 
     it('should go to next and previous month', () => {
       expect(calendarInstance.activeDate).toEqual(new Date(2017, JAN, 31));

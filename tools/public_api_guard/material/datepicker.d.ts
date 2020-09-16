@@ -77,6 +77,7 @@ export declare class MatCalendar<D> implements AfterContentInit, AfterViewChecke
     set startAt(value: D | null);
     startView: MatCalendarView;
     stateChanges: Subject<void>;
+    readonly viewChanged: EventEmitter<MatCalendarView>;
     readonly yearSelected: EventEmitter<D>;
     yearView: MatYearView<D>;
     constructor(_intl: MatDatepickerIntl, _dateAdapter: DateAdapter<D>, _dateFormats: MatDateFormats, _changeDetectorRef: ChangeDetectorRef);
@@ -90,7 +91,7 @@ export declare class MatCalendar<D> implements AfterContentInit, AfterViewChecke
     ngOnChanges(changes: SimpleChanges): void;
     ngOnDestroy(): void;
     updateTodaysDate(): void;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatCalendar<any>, "mat-calendar", ["matCalendar"], { "headerComponent": "headerComponent"; "startAt": "startAt"; "startView": "startView"; "selected": "selected"; "minDate": "minDate"; "maxDate": "maxDate"; "dateFilter": "dateFilter"; "dateClass": "dateClass"; "comparisonStart": "comparisonStart"; "comparisonEnd": "comparisonEnd"; }, { "selectedChange": "selectedChange"; "yearSelected": "yearSelected"; "monthSelected": "monthSelected"; "_userSelection": "_userSelection"; }, never, never>;
+    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatCalendar<any>, "mat-calendar", ["matCalendar"], { "headerComponent": "headerComponent"; "startAt": "startAt"; "startView": "startView"; "selected": "selected"; "minDate": "minDate"; "maxDate": "maxDate"; "dateFilter": "dateFilter"; "dateClass": "dateClass"; "comparisonStart": "comparisonStart"; "comparisonEnd": "comparisonEnd"; }, { "selectedChange": "selectedChange"; "yearSelected": "yearSelected"; "monthSelected": "monthSelected"; "viewChanged": "viewChanged"; "_userSelection": "_userSelection"; }, never, never>;
     static ɵfac: i0.ɵɵFactoryDef<MatCalendar<any>, [null, { optional: true; }, { optional: true; }, null]>;
 }
 

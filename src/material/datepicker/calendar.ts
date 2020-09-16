@@ -268,6 +268,12 @@ export class MatCalendar<D> implements AfterContentInit, AfterViewChecked, OnDes
    */
   @Output() readonly monthSelected: EventEmitter<D> = new EventEmitter<D>();
 
+  /**
+   * Emits when the current view changes.
+   */
+  @Output() readonly viewChanged: EventEmitter<MatCalendarView> =
+    new EventEmitter<MatCalendarView>(true);
+
   /** Emits when any date is selected. */
   @Output() readonly _userSelection: EventEmitter<MatCalendarUserEvent<D | null>> =
       new EventEmitter<MatCalendarUserEvent<D | null>>();
@@ -296,9 +302,13 @@ export class MatCalendar<D> implements AfterContentInit, AfterViewChecked, OnDes
   /** Whether the calendar is in month view. */
   get currentView(): MatCalendarView { return this._currentView; }
   set currentView(value: MatCalendarView) {
+    const viewChangedResult = this._currentView !== value ? value : null;
     this._currentView = value;
     this._moveFocusOnNextTick = true;
     this._changeDetectorRef.markForCheck();
+    if (viewChangedResult) {
+      this.viewChanged.emit(viewChangedResult);
+    }
   }
   private _currentView: MatCalendarView;
 

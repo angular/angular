@@ -50,7 +50,7 @@ import {
 import {MatDialog, MatDialogRef} from '@angular/material/dialog';
 import {merge, Subject, Observable, Subscription} from 'rxjs';
 import {filter, take} from 'rxjs/operators';
-import {MatCalendar} from './calendar';
+import {MatCalendar, MatCalendarView} from './calendar';
 import {matDatepickerAnimations} from './datepicker-animations';
 import {createMissingDateImplError} from './datepicker-errors';
 import {MatCalendarUserEvent, MatCalendarCellClassFunction} from './calendar-body';
@@ -301,6 +301,12 @@ export abstract class MatDatepickerBase<C extends MatDatepickerControl<D>, S,
    */
   @Output() readonly monthSelected: EventEmitter<D> = new EventEmitter<D>();
 
+  /**
+   * Emits when the current view changes.
+   */
+  @Output() readonly viewChanged: EventEmitter<MatCalendarView> =
+    new EventEmitter<MatCalendarView>(true);
+
   /** Classes to be passed to the date picker panel. Supports the same syntax as `ngClass`. */
   @Input() panelClass: string | string[];
 
@@ -411,6 +417,11 @@ export abstract class MatDatepickerBase<C extends MatDatepickerControl<D>, S,
   /** Emits selected month in year view */
   _selectMonth(normalizedMonth: D): void {
     this.monthSelected.emit(normalizedMonth);
+  }
+
+  /** Emits changed view */
+  _viewChanged(view: MatCalendarView): void {
+    this.viewChanged.emit(view);
   }
 
   /**
