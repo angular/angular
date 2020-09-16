@@ -1,5 +1,32 @@
 [
   {
+    "name": "ngrome",
+    "location": "Online",
+    "linkUrl": "https://ngrome.io/",
+    "date": {
+      "start": "2020-10-20",
+      "end": "2020-10-20"
+    }
+  },
+  {
+    "name": "EnterpriseNG",
+    "location": "Online",
+    "linkUrl": "https://www.ng-conf.org/",
+    "date": {
+      "start": "2020-11-19",
+      "end": "2020-11-20"
+    }
+  },
+  {
+    "name": "ng-china",
+    "location": "Online",
+    "linkUrl": "https://ng-china.org/",
+    "date": {
+      "start": "2020-11-21",
+      "end": "2020-11-22"
+    }
+  },
+  {
     "name": "ngVikings",
     "location": "Oslo, Norway",
     "linkUrl": "https://ngvikings.org/",
