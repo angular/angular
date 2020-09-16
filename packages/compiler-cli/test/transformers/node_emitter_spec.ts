@@ -267,10 +267,11 @@ describe('TypeScriptNodeEmitter', () => {
   });
 
   describe('comments', () => {
-    it('should support a preamble', () => {
-      expect(emitStmt(o.variable('a').toStmt(), Format.Raw, '/* SomePreamble */'))
-          .toBe('/* SomePreamble */\na;');
-    });
+    it('should support a preamble, which is wrapped as a multi-line comment with no trimming or padding',
+       () => {
+         expect(emitStmt(o.variable('a').toStmt(), Format.Raw, '*\n * SomePreamble\n '))
+             .toBe('/**\n * SomePreamble\n */\na;');
+       });
 
     it('should support singleline comments', () => {
       expect(emitStmt(

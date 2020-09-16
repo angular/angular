@@ -10,7 +10,7 @@ import {AssertNotNull, BinaryOperator, BinaryOperatorExpr, BuiltinMethod, Builti
 import * as ts from 'typescript';
 
 import {attachComments} from '../ngtsc/translator';
-import {error, stripComment} from './util';
+import {error} from './util';
 
 export interface Node {
   sourceSpan: ParseSourceSpan|null;
@@ -38,7 +38,11 @@ export class TypeScriptNodeEmitter {
       // this node type as a marker of the preamble to ensure that it adds its own new nodes after
       // the preamble.
       const preambleCommentHolder = ts.createNotEmittedStatement(sourceFile);
-      attachComments(preambleCommentHolder, [leadingComment(stripComment(preamble), true)]);
+      // Preamble comments are passed through as-is, which means that they must already contain a
+      // leading `*` if they should be a JSDOC comment.
+      ts.addSyntheticLeadingComment(
+          preambleCommentHolder, ts.SyntaxKind.MultiLineCommentTrivia, preamble,
+          /* hasTrailingNewline */ true);
       sourceStatements.unshift(preambleCommentHolder);
     }
 
