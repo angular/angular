@@ -10,6 +10,8 @@
 
 // MDC Table applies `table-layout: fixed`, but this is a backwards incompatible
 // change since the table did not previously apply it.
+// TODO: Add a mixin to MDC to set the layout instead of including this override,
+// see this issue: https://github.com/material-components/material-components-web/issues/6412
 .mdc-data-table__table {
   table-layout: auto;
 }
