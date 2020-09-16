@@ -37,11 +37,3 @@ export function MAT_CHECKBOX_DEFAULT_OPTIONS_FACTORY(): MatCheckboxDefaultOption
  * undefined: Same as `check-indeterminate`.
  */
 export type MatCheckboxClickAction = 'noop' | 'check' | 'check-indeterminate' | undefined;
-
-/**
- * Injection token that can be used to specify the checkbox click behavior.
- * @deprecated Injection token will be removed, use `MAT_CHECKBOX_DEFAULT_OPTIONS` instead.
- * @breaking-change 10.0.0
- */
-export const MAT_CHECKBOX_CLICK_ACTION =
-    new InjectionToken<MatCheckboxClickAction>('mat-checkbox-click-action');

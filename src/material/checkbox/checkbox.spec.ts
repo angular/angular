@@ -15,7 +15,6 @@ import {
   MatCheckboxChange,
   MatCheckboxModule
 } from './index';
-import {MAT_CHECKBOX_CLICK_ACTION} from './checkbox-config';
 import {MutationObserverFactory} from '@angular/cdk/observers';
 import {ThemePalette} from '@angular/material/core';
 
@@ -542,39 +541,6 @@ describe('MatCheckbox', () => {
 
         expect(checkboxNativeElement.classList)
           .not.toContain('mat-checkbox-anim-unchecked-indeterminate');
-      }));
-    });
-
-    describe(`when MAT_CHECKBOX_CLICK_ACTION is set`, () => {
-      beforeEach(() => {
-        TestBed.resetTestingModule();
-        TestBed.configureTestingModule({
-          imports: [MatCheckboxModule, FormsModule, ReactiveFormsModule],
-          declarations: [SingleCheckbox],
-          providers: [
-            {provide: MAT_CHECKBOX_CLICK_ACTION, useValue: 'check'},
-            {provide: MAT_CHECKBOX_DEFAULT_OPTIONS, useValue: {clickAction: 'noop'}}
-          ]
-        });
-
-        fixture = createComponent(SingleCheckbox);
-        fixture.detectChanges();
-
-        checkboxDebugElement = fixture.debugElement.query(By.directive(MatCheckbox))!;
-        checkboxNativeElement = checkboxDebugElement.nativeElement;
-        testComponent = fixture.debugElement.componentInstance;
-
-        inputElement = checkboxNativeElement.querySelector('input') as HTMLInputElement;
-      });
-
-      it('should override the value set in the default options', fakeAsync(() => {
-        testComponent.isIndeterminate = true;
-        inputElement.click();
-        fixture.detectChanges();
-        flush();
-
-        expect(inputElement.checked).toBe(true);
-        expect(inputElement.indeterminate).toBe(true);
       }));
     });
 

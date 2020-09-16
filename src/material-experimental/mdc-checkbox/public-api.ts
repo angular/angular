@@ -12,7 +12,6 @@ export * from './checkbox';
 export * from './module';
 
 export {
-  MAT_CHECKBOX_CLICK_ACTION,
   MAT_CHECKBOX_REQUIRED_VALIDATOR,
   MatCheckboxClickAction,
   MatCheckboxRequiredValidator,

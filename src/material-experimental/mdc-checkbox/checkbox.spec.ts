@@ -11,7 +11,6 @@ import {ThemePalette} from '@angular/material/core';
 import {FormControl, FormsModule, NgModel, ReactiveFormsModule} from '@angular/forms';
 import {By} from '@angular/platform-browser';
 import {
-  MAT_CHECKBOX_CLICK_ACTION,
   MatCheckbox,
   MatCheckboxChange,
   MatCheckboxModule
@@ -475,39 +474,6 @@ describe('MDC-based MatCheckbox', () => {
         expect(checkboxNativeElement.classList).toContain('mat-accent');
       }));
 
-    });
-
-    describe(`when MAT_CHECKBOX_CLICK_ACTION is set`, () => {
-      beforeEach(() => {
-        TestBed.resetTestingModule();
-        TestBed.configureTestingModule({
-          imports: [MatCheckboxModule, FormsModule, ReactiveFormsModule],
-          declarations: [SingleCheckbox],
-          providers: [
-            {provide: MAT_CHECKBOX_CLICK_ACTION, useValue: 'check'},
-            {provide: MAT_CHECKBOX_DEFAULT_OPTIONS, useValue: {clickAction: 'noop'}}
-          ]
-        });
-
-        fixture = createComponent(SingleCheckbox);
-        fixture.detectChanges();
-
-        checkboxDebugElement = fixture.debugElement.query(By.directive(MatCheckbox))!;
-        checkboxNativeElement = checkboxDebugElement.nativeElement;
-        testComponent = fixture.debugElement.componentInstance;
-
-        inputElement = checkboxNativeElement.querySelector('input') as HTMLInputElement;
-      });
-
-      it('should override the value set in the default options', fakeAsync(() => {
-        testComponent.isIndeterminate = true;
-        inputElement.click();
-        fixture.detectChanges();
-        flush();
-
-        expect(inputElement.checked).toBe(true);
-        expect(inputElement.indeterminate).toBe(true);
-      }));
     });
 
     describe(`when MAT_CHECKBOX_CLICK_ACTION is 'check'`, () => {

@@ -45,9 +45,7 @@ import {
 } from '@angular/material/core';
 import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
 import {
-  MAT_CHECKBOX_CLICK_ACTION,
   MAT_CHECKBOX_DEFAULT_OPTIONS,
-  MatCheckboxClickAction,
   MatCheckboxDefaultOptions
 } from './checkbox-config';
 
@@ -202,13 +200,6 @@ export class MatCheckbox extends _MatCheckboxMixinBase implements ControlValueAc
               private _focusMonitor: FocusMonitor,
               private _ngZone: NgZone,
               @Attribute('tabindex') tabIndex: string,
-              /**
-               * @deprecated `_clickAction` parameter to be removed, use
-               * `MAT_CHECKBOX_DEFAULT_OPTIONS`
-               * @breaking-change 10.0.0
-               */
-              @Optional() @Inject(MAT_CHECKBOX_CLICK_ACTION)
-                  private _clickAction: MatCheckboxClickAction,
               @Optional() @Inject(ANIMATION_MODULE_TYPE) public _animationMode?: string,
               @Optional() @Inject(MAT_CHECKBOX_DEFAULT_OPTIONS)
                   private _options?: MatCheckboxDefaultOptions) {
@@ -220,9 +211,6 @@ export class MatCheckbox extends _MatCheckboxMixinBase implements ControlValueAc
     }
 
     this.tabIndex = parseInt(tabIndex) || 0;
-
-    // TODO: Remove this after the `_clickAction` parameter is removed as an injection parameter.
-    this._clickAction = this._clickAction || this._options.clickAction;
   }
 
   ngAfterViewInit() {
@@ -398,6 +386,8 @@ export class MatCheckbox extends _MatCheckboxMixinBase implements ControlValueAc
    * @param event
    */
   _onInputClick(event: Event) {
+    const clickAction = this._options?.clickAction;
+
     // We have to stop propagation for click events on the visual hidden input element.
     // By default, when a user clicks on a label element, a generated click event will be
     // dispatched on the associated input element. Since we are using a label element as our
@@ -408,9 +398,9 @@ export class MatCheckbox extends _MatCheckboxMixinBase implements ControlValueAc
     event.stopPropagation();
 
     // If resetIndeterminate is false, and the current state is indeterminate, do nothing on click
-    if (!this.disabled && this._clickAction !== 'noop') {
+    if (!this.disabled && clickAction !== 'noop') {
       // When user manually click on the checkbox, `indeterminate` is set to false.
-      if (this.indeterminate && this._clickAction !== 'check') {
+      if (this.indeterminate && clickAction !== 'check') {
 
         Promise.resolve().then(() => {
           this._indeterminate = false;
@@ -426,7 +416,7 @@ export class MatCheckbox extends _MatCheckboxMixinBase implements ControlValueAc
       // It is important to only emit it, if the native input triggered one, because
       // we don't want to trigger a change event, when the `checked` variable changes for example.
       this._emitChangeEvent();
-    } else if (!this.disabled && this._clickAction === 'noop') {
+    } else if (!this.disabled && clickAction === 'noop') {
       // Reset native input when clicked with noop. The native checkbox becomes checked after
       // click, reset it to be align with `checked` value of `mat-checkbox`.
       this._inputElement.nativeElement.checked = this.checked;
