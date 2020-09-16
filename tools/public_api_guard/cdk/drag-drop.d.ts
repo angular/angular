@@ -168,6 +168,7 @@ export declare class CdkDropList<T = any> implements OnDestroy {
     id: string;
     lockAxis: DragAxis;
     orientation: DropListOrientation;
+    sortPredicate: (index: number, drag: CdkDrag, drop: CdkDropList) => boolean;
     sorted: EventEmitter<CdkDragSortEvent<T>>;
     sortingDisabled: boolean;
     constructor(
@@ -180,7 +181,7 @@ export declare class CdkDropList<T = any> implements OnDestroy {
     static ngAcceptInputType_autoScrollDisabled: BooleanInput;
     static ngAcceptInputType_disabled: BooleanInput;
     static ngAcceptInputType_sortingDisabled: BooleanInput;
-    static ɵdir: i0.ɵɵDirectiveDefWithMeta<CdkDropList<any>, "[cdkDropList], cdk-drop-list", ["cdkDropList"], { "connectedTo": "cdkDropListConnectedTo"; "data": "cdkDropListData"; "orientation": "cdkDropListOrientation"; "id": "id"; "lockAxis": "cdkDropListLockAxis"; "disabled": "cdkDropListDisabled"; "sortingDisabled": "cdkDropListSortingDisabled"; "enterPredicate": "cdkDropListEnterPredicate"; "autoScrollDisabled": "cdkDropListAutoScrollDisabled"; }, { "dropped": "cdkDropListDropped"; "entered": "cdkDropListEntered"; "exited": "cdkDropListExited"; "sorted": "cdkDropListSorted"; }, never>;
+    static ɵdir: i0.ɵɵDirectiveDefWithMeta<CdkDropList<any>, "[cdkDropList], cdk-drop-list", ["cdkDropList"], { "connectedTo": "cdkDropListConnectedTo"; "data": "cdkDropListData"; "orientation": "cdkDropListOrientation"; "id": "id"; "lockAxis": "cdkDropListLockAxis"; "disabled": "cdkDropListDisabled"; "sortingDisabled": "cdkDropListSortingDisabled"; "enterPredicate": "cdkDropListEnterPredicate"; "sortPredicate": "cdkDropListSortPredicate"; "autoScrollDisabled": "cdkDropListAutoScrollDisabled"; }, { "dropped": "cdkDropListDropped"; "entered": "cdkDropListEntered"; "exited": "cdkDropListExited"; "sorted": "cdkDropListSorted"; }, never>;
     static ɵfac: i0.ɵɵFactoryDef<CdkDropList<any>, [null, null, null, { optional: true; }, { optional: true; skipSelf: true; }, null, { optional: true; }]>;
 }
 
@@ -357,6 +358,7 @@ export declare class DropListRef<T = any> {
         container: DropListRef;
     }>;
     lockAxis: 'x' | 'y';
+    sortPredicate: (index: number, drag: DragRef, drop: DropListRef) => boolean;
     sorted: Subject<{
         previousIndex: number;
         currentIndex: number;

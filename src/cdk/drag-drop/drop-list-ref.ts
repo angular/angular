@@ -97,6 +97,9 @@ export class DropListRef<T = any> {
    */
   enterPredicate: (drag: DragRef, drop: DropListRef) => boolean = () => true;
 
+  /** Functions that is used to determine whether an item can be sorted into a particular index. */
+  sortPredicate: (index: number, drag: DragRef, drop: DropListRef) => boolean = () => true;
+
   /** Emits right before dragging has started. */
   beforeStarted = new Subject<void>();
 
@@ -739,10 +742,9 @@ export class DropListRef<T = any> {
    * @param delta Direction in which the user is moving their pointer.
    */
   private _getItemIndexFromPointerPosition(item: DragRef, pointerX: number, pointerY: number,
-                                           delta?: {x: number, y: number}) {
+                                           delta?: {x: number, y: number}): number {
     const isHorizontal = this._orientation === 'horizontal';
-
-    return findIndex(this._itemPositions, ({drag, clientRect}, _, array) => {
+    const index = findIndex(this._itemPositions, ({drag, clientRect}, _, array) => {
       if (drag === item) {
         // If there's only one item left in the container, it must be
         // the dragged item itself so we use it as a reference.
@@ -767,6 +769,8 @@ export class DropListRef<T = any> {
           pointerX >= Math.floor(clientRect.left) && pointerX < Math.floor(clientRect.right) :
           pointerY >= Math.floor(clientRect.top) && pointerY < Math.floor(clientRect.bottom);
     });
+
+    return (index === -1 || !this.sortPredicate(index, item, this)) ? -1 : index;
   }
 
   /** Caches the current items in the list and their positions. */

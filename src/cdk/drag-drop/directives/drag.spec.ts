@@ -4153,6 +4153,62 @@ describe('CdkDrag', () => {
       expect(placeholder).toBeTruthy();
     }));
 
+    it('should not move item into position not allowed by the sort predicate', fakeAsync(() => {
+      const fixture = createComponent(DraggableInDropZone);
+      fixture.detectChanges();
+      const dragItems = fixture.componentInstance.dragItems;
+      const spy = jasmine.createSpy('sort predicate spy').and.returnValue(false);
+      fixture.componentInstance.dropInstance.sortPredicate = spy;
+
+      expect(dragItems.map(drag => drag.element.nativeElement.textContent!.trim()))
+          .toEqual(['Zero', 'One', 'Two', 'Three']);
+
+      const firstItem = dragItems.first;
+      const thirdItemRect = dragItems.toArray()[2].element.nativeElement.getBoundingClientRect();
+
+      startDraggingViaMouse(fixture, firstItem.element.nativeElement);
+      dispatchMouseEvent(document, 'mousemove', thirdItemRect.left + 1, thirdItemRect.top + 1);
+      fixture.detectChanges();
+
+      expect(spy).toHaveBeenCalledWith(2, firstItem, fixture.componentInstance.dropInstance);
+      expect(dragItems.map(drag => drag.element.nativeElement.textContent!.trim()))
+          .toEqual(['Zero', 'One', 'Two', 'Three']);
+
+      dispatchMouseEvent(document, 'mouseup');
+      fixture.detectChanges();
+      flush();
+
+      const event = fixture.componentInstance.droppedSpy.calls.mostRecent().args[0];
+
+      // Assert the event like this, rather than `toHaveBeenCalledWith`, because Jasmine will
+      // go into an infinite loop trying to stringify the event, if the test fails.
+      expect(event).toEqual({
+        previousIndex: 0,
+        currentIndex: 0,
+        item: firstItem,
+        container: fixture.componentInstance.dropInstance,
+        previousContainer: fixture.componentInstance.dropInstance,
+        isPointerOverContainer: jasmine.any(Boolean),
+        distance: {x: jasmine.any(Number), y: jasmine.any(Number)}
+      });
+    }));
+
+    it('should not call the sort predicate for the same index', fakeAsync(() => {
+      const fixture = createComponent(DraggableInDropZone);
+      fixture.detectChanges();
+      const spy = jasmine.createSpy('sort predicate spy').and.returnValue(true);
+      fixture.componentInstance.dropInstance.sortPredicate = spy;
+
+      const item = fixture.componentInstance.dragItems.first.element.nativeElement;
+      const itemRect = item.getBoundingClientRect();
+
+      startDraggingViaMouse(fixture, item);
+      dispatchMouseEvent(document, 'mousemove', itemRect.left + 10, itemRect.top + 10);
+      fixture.detectChanges();
+
+      expect(spy).not.toHaveBeenCalled();
+    }));
+
   });
 
   describe('in a connected drop container', () => {

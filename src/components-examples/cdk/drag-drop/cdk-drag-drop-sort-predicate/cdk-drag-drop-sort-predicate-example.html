@@ -1,0 +1,11 @@
+<div
+  cdkDropList
+  class="example-list"
+  (cdkDropListDropped)="drop($event)"
+  [cdkDropListSortPredicate]="sortPredicate">
+  <div
+    class="example-box"
+    *ngFor="let number of numbers"
+    [cdkDragData]="number"
+    cdkDrag>{{number}}</div>
+</div>

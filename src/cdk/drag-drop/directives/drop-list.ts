@@ -127,6 +127,10 @@ export class CdkDropList<T = any> implements OnDestroy {
   @Input('cdkDropListEnterPredicate')
   enterPredicate: (drag: CdkDrag, drop: CdkDropList) => boolean = () => true
 
+  /** Functions that is used to determine whether an item can be sorted into a particular index. */
+  @Input('cdkDropListSortPredicate')
+  sortPredicate: (index: number, drag: CdkDrag, drop: CdkDropList) => boolean = () => true
+
   /** Whether to auto-scroll the view when the user moves their pointer close to the edges. */
   @Input('cdkDropListAutoScrollDisabled')
   autoScrollDisabled: boolean;
@@ -184,6 +188,11 @@ export class CdkDropList<T = any> implements OnDestroy {
     this._dropListRef.enterPredicate = (drag: DragRef<CdkDrag>, drop: DropListRef<CdkDropList>) => {
       return this.enterPredicate(drag.data, drop.data);
     };
+
+    this._dropListRef.sortPredicate =
+      (index: number, drag: DragRef<CdkDrag>, drop: DropListRef<CdkDropList>) => {
+        return this.sortPredicate(index, drag.data, drop.data);
+      };
 
     this._setupInputSyncSubscription(this._dropListRef);
     this._handleEvents(this._dropListRef);

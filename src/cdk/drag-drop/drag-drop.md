@@ -211,3 +211,11 @@ moved by a user. The element's position can be explicitly set, however, via the
 draggable's position after a user has navigated away and then returned.
 
 <!-- example(cdk-drag-drop-free-drag-position) -->
+
+### Controlling whether an item can be sorted into a particular index
+`cdkDrag` items can be sorted into any position inside of a `cdkDropList` by default. You can change
+this behavior by setting a `cdkDropListSortPredicate`. The predicate function will be called
+whenever an item is about to be moved into a new index. If the predicate returns `true`, the
+item will be moved into the new index, otherwise it will keep its current position.
+
+<!-- example(cdk-drag-drop-sort-predicate) -->
