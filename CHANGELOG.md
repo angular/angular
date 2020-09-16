@@ -1,3 +1,25 @@
+<a name="10.1.2"></a>
+## 10.1.2 (2020-09-16)
+
+
+### Bug Fixes
+
+* **compiler:** detect pipes in ICUs in template binder ([#38810](https://github.com/angular/angular/issues/38810)) ([ec2dbe7](https://github.com/angular/angular/commit/ec2dbe7)), closes [#38539](https://github.com/angular/angular/issues/38539) [#38539](https://github.com/angular/angular/issues/38539) [#38539](https://github.com/angular/angular/issues/38539)
+* **core:** clear the `RefreshTransplantedView` when detached ([#38768](https://github.com/angular/angular/issues/38768)) ([edb7f90](https://github.com/angular/angular/commit/edb7f90)), closes [#38619](https://github.com/angular/angular/issues/38619)
+* **localize:** ensure that `formatOptions` is optional ([#38787](https://github.com/angular/angular/issues/38787)) ([a47383d](https://github.com/angular/angular/commit/a47383d))
+* **router:** Ensure routes are processed in priority order and only if needed ([#38780](https://github.com/angular/angular/issues/38780)) ([9c51ba3](https://github.com/angular/angular/commit/9c51ba3)), closes [#38691](https://github.com/angular/angular/issues/38691)
+* **upgrade:** add try/catch when downgrading injectables ([#38671](https://github.com/angular/angular/issues/38671)) ([5de2ac3](https://github.com/angular/angular/commit/5de2ac3)), closes [#37579](https://github.com/angular/angular/issues/37579)
+
+
+### Performance Improvements
+
+* **compiler-cli:** only emit directive/pipe references that are used ([#38843](https://github.com/angular/angular/issues/38843)) ([5658405](https://github.com/angular/angular/commit/5658405))
+* **compiler-cli:** optimize computation of type-check scope information ([#38843](https://github.com/angular/angular/issues/38843)) ([ebede67](https://github.com/angular/angular/commit/ebede67))
+* **ngcc:** introduce cache for sharing data across entry-points ([#38840](https://github.com/angular/angular/issues/38840)) ([58411e7](https://github.com/angular/angular/commit/58411e7))
+* **ngcc:** reduce maximum worker count ([#38840](https://github.com/angular/angular/issues/38840)) ([ea36466](https://github.com/angular/angular/commit/ea36466))
+
+
+
 <a name="11.0.0-next.1"></a>
 # 11.0.0-next.1 (2020-09-09)
 
