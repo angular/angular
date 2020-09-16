@@ -18,7 +18,8 @@
                    [optional]="step.optional"
                    [errorMessage]="step.errorMessage"
                    [iconOverrides]="_iconOverrides"
-                   [disableRipple]="disableRipple">
+                   [disableRipple]="disableRipple"
+                   [color]="step.color || color">
   </mat-step-header>
 
   <div class="mat-vertical-content-container" [class.mat-stepper-vertical-line]="!isLast">

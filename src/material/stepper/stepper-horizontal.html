@@ -19,7 +19,8 @@
                      [optional]="step.optional"
                      [errorMessage]="step.errorMessage"
                      [iconOverrides]="_iconOverrides"
-                     [disableRipple]="disableRipple">
+                     [disableRipple]="disableRipple"
+                     [color]="step.color || color">
     </mat-step-header>
     <div *ngIf="!isLast" class="mat-stepper-horizontal-line"></div>
   </ng-container>

@@ -14,6 +14,7 @@ import {MatCheckboxModule} from '@angular/material/checkbox';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatInputModule} from '@angular/material/input';
 import {MatStepperModule} from '@angular/material/stepper';
+import {MatSelectModule} from '@angular/material/select';
 import {RouterModule} from '@angular/router';
 import {StepperDemo} from './stepper-demo';
 
@@ -26,6 +27,7 @@ import {StepperDemo} from './stepper-demo';
     MatFormFieldModule,
     MatInputModule,
     MatStepperModule,
+    MatSelectModule,
     ReactiveFormsModule,
     RouterModule.forChild([{path: '', component: StepperDemo}]),
   ],

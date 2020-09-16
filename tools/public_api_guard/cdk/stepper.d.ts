@@ -33,7 +33,7 @@ export declare class CdkStep implements OnChanges {
 }
 
 export declare class CdkStepHeader implements FocusableOption {
-    protected _elementRef: ElementRef<HTMLElement>;
+    _elementRef: ElementRef<HTMLElement>;
     constructor(_elementRef: ElementRef<HTMLElement>);
     focus(): void;
     static ɵdir: i0.ɵɵDirectiveDefWithMeta<CdkStepHeader, "[cdkStepHeader]", never, {}, {}, never>;

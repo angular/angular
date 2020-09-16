@@ -39,7 +39,7 @@ import {
 } from '@angular/core';
 import {FormControl, FormGroupDirective, NgForm} from '@angular/forms';
 import {DOCUMENT} from '@angular/common';
-import {ErrorStateMatcher} from '@angular/material/core';
+import {ErrorStateMatcher, ThemePalette} from '@angular/material/core';
 import {Subject} from 'rxjs';
 import {takeUntil, distinctUntilChanged} from 'rxjs/operators';
 
@@ -62,6 +62,9 @@ import {MatStepperIcon, MatStepperIconContext} from './stepper-icon';
 export class MatStep extends CdkStep implements ErrorStateMatcher {
   /** Content for step label given by `<ng-template matStepLabel>`. */
   @ContentChild(MatStepLabel) stepLabel: MatStepLabel;
+
+  /** Theme color for the particular step. */
+  @Input() color: ThemePalette;
 
   /** @breaking-change 8.0.0 remove the `?` after `stepperOptions` */
   constructor(@Inject(forwardRef(() => MatStepper)) stepper: MatStepper,
@@ -103,6 +106,9 @@ export class MatStepper extends CdkStepper implements AfterContentInit {
 
   /** Whether ripples should be disabled for the step headers. */
   @Input() disableRipple: boolean;
+
+  /** Theme color for all of the steps in stepper. */
+  @Input() color: ThemePalette;
 
   /** Consumer-specified template-refs to be used to override the header icons. */
   _iconOverrides: {[key: string]: TemplateRef<MatStepperIconContext>} = {};

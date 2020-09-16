@@ -17,14 +17,15 @@ export declare class MatHorizontalStepper extends MatStepper {
 }
 
 export declare class MatStep extends CdkStep implements ErrorStateMatcher {
+    color: ThemePalette;
     stepLabel: MatStepLabel;
     constructor(stepper: MatStepper, _errorStateMatcher: ErrorStateMatcher, stepperOptions?: StepperOptions);
     isErrorState(control: FormControl | null, form: FormGroupDirective | NgForm | null): boolean;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatStep, "mat-step", ["matStep"], {}, {}, ["stepLabel"], ["*"]>;
+    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatStep, "mat-step", ["matStep"], { "color": "color"; }, {}, ["stepLabel"], ["*"]>;
     static ɵfac: i0.ɵɵFactoryDef<MatStep, [null, { skipSelf: true; }, { optional: true; }]>;
 }
 
-export declare class MatStepHeader extends CdkStepHeader implements AfterViewInit, OnDestroy {
+export declare class MatStepHeader extends _MatStepHeaderMixinBase implements AfterViewInit, OnDestroy, CanColor {
     _intl: MatStepperIntl;
     active: boolean;
     disableRipple: boolean;
@@ -46,7 +47,7 @@ export declare class MatStepHeader extends CdkStepHeader implements AfterViewIni
     focus(): void;
     ngAfterViewInit(): void;
     ngOnDestroy(): void;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatStepHeader, "mat-step-header", never, { "state": "state"; "label": "label"; "errorMessage": "errorMessage"; "iconOverrides": "iconOverrides"; "index": "index"; "selected": "selected"; "active": "active"; "optional": "optional"; "disableRipple": "disableRipple"; }, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatStepHeader, "mat-step-header", never, { "color": "color"; "state": "state"; "label": "label"; "errorMessage": "errorMessage"; "iconOverrides": "iconOverrides"; "index": "index"; "selected": "selected"; "active": "active"; "optional": "optional"; "disableRipple": "disableRipple"; }, {}, never, never>;
     static ɵfac: i0.ɵɵFactoryDef<MatStepHeader, never>;
 }
 
@@ -64,6 +65,7 @@ export declare class MatStepper extends CdkStepper implements AfterContentInit {
     _stepHeader: QueryList<MatStepHeader>;
     _steps: QueryList<MatStep>;
     readonly animationDone: EventEmitter<void>;
+    color: ThemePalette;
     disableRipple: boolean;
     readonly steps: QueryList<MatStep>;
     ngAfterContentInit(): void;
@@ -71,7 +73,7 @@ export declare class MatStepper extends CdkStepper implements AfterContentInit {
     static ngAcceptInputType_editable: BooleanInput;
     static ngAcceptInputType_hasError: BooleanInput;
     static ngAcceptInputType_optional: BooleanInput;
-    static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatStepper, "[matStepper]", never, { "disableRipple": "disableRipple"; }, { "animationDone": "animationDone"; }, ["_steps", "_icons"]>;
+    static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatStepper, "[matStepper]", never, { "disableRipple": "disableRipple"; "color": "color"; }, { "animationDone": "animationDone"; }, ["_steps", "_icons"]>;
     static ɵfac: i0.ɵɵFactoryDef<MatStepper, never>;
 }
 

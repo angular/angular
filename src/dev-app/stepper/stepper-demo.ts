@@ -7,6 +7,7 @@
  */
 
 import {Component, OnInit} from '@angular/core';
+import {ThemePalette} from '@angular/material/core';
 import {AbstractControl, FormBuilder, FormGroup, Validators} from '@angular/forms';
 
 
@@ -30,6 +31,14 @@ export class StepperDemo implements OnInit {
     {label: 'Confirm your address', content: '1600 Amphitheater Pkwy MTV'},
     {label: 'You are now done', content: 'Finished!'}
   ];
+
+  availableThemes: {value: ThemePalette, name: string}[] = [
+    {value: 'primary', name: 'Primary'},
+    {value: 'accent', name: 'Accent'},
+    {value: 'warn', name: 'Warn'}
+  ];
+
+  theme = this.availableThemes[0].value;
 
   /** Returns a FormArray with the name 'formArray'. */
   get formArray(): AbstractControl | null { return this.formGroup.get('formArray'); }

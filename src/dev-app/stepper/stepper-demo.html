@@ -1,15 +1,27 @@
-<mat-checkbox [(ngModel)]="isNonLinear">Disable linear mode</mat-checkbox>
-<mat-checkbox [(ngModel)]="disableRipple">Disable header ripple</mat-checkbox>
+<p>
+  <mat-checkbox [(ngModel)]="isNonLinear">Disable linear mode</mat-checkbox>
+</p>
+<p>
+  <mat-checkbox [(ngModel)]="disableRipple">Disable header ripple</mat-checkbox>
+</p>
 <p>
   <button mat-stroked-button (click)="showLabelBottom = !showLabelBottom">
     Toggle label position
   </button>
 </p>
+<p>
+  <mat-form-field>
+    <mat-label>Theme</mat-label>
+    <mat-select [(ngModel)]="theme">
+      <mat-option *ngFor="let theme of availableThemes" [value]="theme.value">{{theme.name}}</mat-option>
+    </mat-select>
+  </mat-form-field>
+</p>
 
 <h3>Linear Vertical Stepper Demo using a single form</h3>
 <form [formGroup]="formGroup">
   <mat-vertical-stepper #linearVerticalStepper="matVerticalStepper" formArrayName="formArray"
-                        [linear]="!isNonLinear" [disableRipple]="disableRipple">
+                        [linear]="!isNonLinear" [disableRipple]="disableRipple" [color]="theme">
     <mat-step formGroupName="0" [stepControl]="formArray?.get([0]) === null ? undefined! : formArray?.get([0])!">
       <ng-template matStepLabel>Fill out your name</ng-template>
       <mat-form-field>
@@ -58,7 +70,8 @@
 <h3>Linear Horizontal Stepper Demo using a different form for each step</h3>
 <mat-horizontal-stepper #linearHorizontalStepper="matHorizontalStepper" [linear]="!isNonLinear"
                         [disableRipple]="disableRipple"
-                        [labelPosition]="showLabelBottom ? 'bottom' : 'end'">
+                        [labelPosition]="showLabelBottom ? 'bottom' : 'end'"
+                        [color]="theme">
   <mat-step [stepControl]="nameFormGroup">
     <form [formGroup]="nameFormGroup">
       <ng-template matStepLabel>Fill out your name</ng-template>
@@ -107,7 +120,7 @@
 
 <h3>Vertical Stepper Demo</h3>
 <mat-checkbox [(ngModel)]="isNonEditable">Make steps non-editable</mat-checkbox>
-<mat-vertical-stepper>
+<mat-vertical-stepper [color]="theme">
   <mat-step [editable]="!isNonEditable">
     <ng-template matStepLabel>Fill out your name</ng-template>
     <mat-form-field>
@@ -162,7 +175,7 @@
 </mat-vertical-stepper>
 
 <h3>Horizontal Stepper Demo with Text Label</h3>
-<mat-horizontal-stepper>
+<mat-horizontal-stepper [color]="theme">
   <mat-step label="Fill out your name">
     <mat-form-field>
       <mat-label>First name</mat-label>
@@ -209,7 +222,7 @@
 </mat-horizontal-stepper>
 
 <h3>Horizontal Stepper Demo with Templated Label</h3>
-<mat-horizontal-stepper>
+<mat-horizontal-stepper [color]="theme">
   <mat-step *ngFor="let step of steps">
     <ng-template matStepLabel>{{step.label}}</ng-template>
     <mat-form-field>
@@ -224,7 +237,7 @@
 </mat-horizontal-stepper>
 
 <h3>Stepper with autosize textarea</h3>
-<mat-horizontal-stepper>
+<mat-horizontal-stepper [color]="theme">
   <mat-step label="Step 1">
     <mat-form-field>
       <mat-label>Autosize textarea</mat-label>

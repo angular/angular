@@ -10,6 +10,7 @@
   $foreground: map-get($config, foreground);
   $background: map-get($config, background);
   $primary: map-get($config, primary);
+  $accent: map-get($config, accent);
   $warn: map-get($config, warn);
 
   .mat-step-header {
@@ -47,6 +48,32 @@
     .mat-step-icon-state-edit {
       background-color: mat-color($primary);
       color: mat-color($primary, default-contrast);
+    }
+
+    &.mat-accent {
+      .mat-step-icon {
+        color: mat-color($accent, default-contrast);
+      }
+
+      .mat-step-icon-selected,
+      .mat-step-icon-state-done,
+      .mat-step-icon-state-edit {
+        background-color: mat-color($accent);
+        color: mat-color($accent, default-contrast);
+      }
+    }
+
+    &.mat-warn {
+      .mat-step-icon {
+        color: mat-color($warn, default-contrast);
+      }
+
+      .mat-step-icon-selected,
+      .mat-step-icon-state-done,
+      .mat-step-icon-state-edit {
+        background-color: mat-color($warn);
+        color: mat-color($warn, default-contrast);
+      }
     }
 
     .mat-step-icon-state-error {
@@ -118,7 +145,7 @@
     }
 
     .mat-stepper-label-position-bottom .mat-horizontal-stepper-header,
-    .mat-vertical-stepper-header, {
+    .mat-vertical-stepper-header {
       padding: $vertical-padding $mat-stepper-side-gap;
     }
 

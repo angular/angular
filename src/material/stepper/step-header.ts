@@ -23,12 +23,25 @@ import {MatStepLabel} from './step-label';
 import {MatStepperIntl} from './stepper-intl';
 import {MatStepperIconContext} from './stepper-icon';
 import {CdkStepHeader, StepState} from '@angular/cdk/stepper';
+import {CanColorCtor, mixinColor, CanColor} from '@angular/material/core';
 
+
+// Boilerplate for applying mixins to MatStepHeader.
+/** @docs-private */
+class MatStepHeaderBase extends CdkStepHeader {
+  constructor(elementRef: ElementRef) {
+    super(elementRef);
+  }
+}
+
+const _MatStepHeaderMixinBase: CanColorCtor & typeof MatStepHeaderBase =
+    mixinColor(MatStepHeaderBase, 'primary');
 
 @Component({
   selector: 'mat-step-header',
   templateUrl: 'step-header.html',
   styleUrls: ['step-header.css'],
+  inputs: ['color'],
   host: {
     'class': 'mat-step-header mat-focus-indicator',
     'role': 'tab',
@@ -36,7 +49,8 @@ import {CdkStepHeader, StepState} from '@angular/cdk/stepper';
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MatStepHeader extends CdkStepHeader implements AfterViewInit, OnDestroy {
+export class MatStepHeader extends _MatStepHeaderMixinBase implements AfterViewInit, OnDestroy,
+  CanColor {
   private _intlSubscription: Subscription;
 
   /** State of the given step. */
