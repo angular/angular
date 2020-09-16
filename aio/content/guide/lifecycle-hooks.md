@@ -1,23 +1,50 @@
+<!--
 # Hooking into the component lifecycle
+-->
+# 컴포넌트 라이프싸이클 후킹
 
+<!--
 A component instance has a lifecycle that starts when Angular instantiates the component class and renders the component view along with its child views.
 The lifecycle continues with change detection, as Angular checks to see when data-bound properties change, and updates both the view and the component instance as needed.
 The lifecycle ends when Angular destroys the component instance and removes its rendered template from the DOM.
 Directives have a similar lifecycle, as Angular creates, updates, and destroys instances in the course of execution.
 
 Your application can use [lifecycle hook methods](guide/glossary#lifecycle-hook "Definition of lifecycle hook") to tap into key events in the lifecycle of a component or directive in order to initialize new instances, initiate change detection when needed, respond to updates during change detection, and clean up before deletion of instances.
+-->
+컴포넌트 인스턴스는 Angular가 컴포넌트 클래스의 인스턴스를 생성한 시점부터 미리 정의된 라이프싸이클을 따라 동작하며 라이프싸이클 단계에 따라 화면에 렌더링되고 자식 컴포넌트를 화면에 추가합니다.
+그리고 컴포넌트가 동작하는 동안 프로퍼티로 바인딩된 데이터가 변경되었는지 감지하며, 값이 변경되면 화면과 컴포넌트 인스턴스에 있는 데이터를 갱신하기도 합니다.
+라이프싸이클은 Angular가 컴포넌트 인스턴스를 종료하고 DOM에서 템플릿을 제거할 때까지 이어집니다.
+그리고 디렉티브도 컴포넌트와 비슷하게 Angular가 인스턴스를 생성하고 갱신하며 종료하는 라이프싸이클을 따릅니다.
 
+애플리케이션에서 [라이프싸이클 후킹 메서드(lifecycle hook method)](guide/glossary#lifecycle-hook "Definition of lifecycle hook")를 사용하면 컴포넌트나 디렉티브가 동작하는 라이프싸이클에 개입할 수 있습니다.
+그래서 인스턴스가 생성되는 시점, 데이터 변화가 감지되는 시점, 데이터 변화가 감지된 이후 시점, 인스턴스가 종료되는 시점에 원하는 동작을 할 수 있습니다.
+
+
+<!--
 ## Prerequisites
+-->
+## 사전지식
 
+<!--
 Before working with lifecycle hooks, you should have a basic understanding of the following:
 
 * [TypeScript programming](https://www.typescriptlang.org/).
 * Angular app-design fundamentals, as described in [Angular Concepts](guide/architecture "Introduction to fundamental app-design concepts").
+-->
+라이프싸이클에 대해 알아보기 전에 다음 내용을 먼저 이해하는 것이 좋습니다:
+
+* [TypeScript 문법](https://www.typescriptlang.org/)
+* Angular 앱의 구조, [Angular 개요](guide/architecture "Introduction to fundamental app-design concepts") 문서를 참고하세요.
+
 
 {@a hooks-overview}
 
+<!--
 ## Responding to lifecycle events
+-->
+## 라이프싸이클 이벤트에 반응하기
 
+<!--
 You can respond to events in the lifecycle of a component or directive by implementing one or more of the *lifecycle hook* interfaces in the Angular `core` library.
 The hooks give you the opportunity to act on a component or directive instance at the appropriate moment, as Angular creates, updates, or destroys that instance.
 
@@ -27,23 +54,47 @@ For example, the `OnInit` interface has a hook method named `ngOnInit()`. If you
 <code-example path="lifecycle-hooks/src/app/peek-a-boo.component.ts" region="ngOnInit" header="peek-a-boo.component.ts (excerpt)"></code-example>
 
 You don't have to implement all (or any) of the lifecycle hooks, just the ones you need.
+-->
+Angular `core` 라이브러리의 *라이프싸이클 훅* 인터페이스에 정의된 메서드를 컴포넌트나 디렉티브 클래스에 구현하면 해당 라이프싸이클에 반응할 수 있습니다.
+그래서 Angular가 컴포넌트나 디렉티브 인스턴스를 초기화하고, 갱신하며, 종료하는 시점에 원하는 동작을 실행할 수 있습니다.
+
+각 인터페이스에는 라이프싸이클 후킹 메서드가 하나씩 정의되어 있으며, 이 메서드의 이름은 인터페이스 이름에 `ng` 접두사를 붙인 형태입니다.
+`OnInit` 인터페이스에는 `ngOnInit()` 메서드가 정의되어 있는 식입니다.
+`ngOnInit()` 메서드를 컴포넌트나 디렉티브 클래스에 정의하면 Angular가 입력 프로퍼티를 검사한 직후에 실행되기 때문에 인스턴스 초기화 로직을 작성할 수 있습니다.
+
+<code-example path="lifecycle-hooks/src/app/peek-a-boo.component.ts" region="ngOnInit" header="peek-a-boo.component.ts (일부)"></code-example>
+
+라이프싸이클 후킹 함수를 전부 구현할 필요는 없습니다.
+필요한 것만 구현해서 사용하면 됩니다.
+
 
 {@a hooks-purpose-timing}
 
+<!--
 ### Lifecycle event sequence
+-->
+### 라이프싸이클 이벤트 순서
 
+<!--
 After your application instantiates a component or directive by calling its constructor, Angular calls the hook methods you have implemented at the appropriate point in the lifecycle of that instance.
 
 Angular executes hook methods in the following sequence. You can use them to perform the following kinds of operations.
+-->
+애플리케이션이 컴포넌트나 디렉티브 클래스의 생성자를 실행하면서 인스턴스를 초기화하고 나면 정해진 시점에 라이프싸이클 메서드가 실행됩니다.
 
 <table width="100%">
   <col width="20%"></col>
   <col width="60%"></col>
   <col width="20%"></col>
   <tr>
+    <!--
     <th>Hook method</th>
     <th>Purpose</th>
     <th>Timing</th>
+    -->
+    <th>후킹 메서드</th>
+    <th>용도</th>
+    <th>실행 시점</th>
   </tr>
   <tr style='vertical-align:top'>
     <td>
@@ -51,16 +102,27 @@ Angular executes hook methods in the following sequence. You can use them to per
     </td>
     <td>
 
+      <!--
       Respond when Angular sets or resets data-bound input properties.
       The method receives a `SimpleChanges` object of current and previous property values.
 
       Note that this happens very frequently, so any operation you perform here impacts performance significantly.
       See details in [Using change detection hooks](#onchanges) in this document.
+      -->
+      바인딩된 입력 프로퍼티 값이 처음 설정되거나 변경될 때 실행됩니다.
+      이 메서드는 프로퍼티의 이전 값과 현재 값을 표현하는 `SimpleChanges` 객체를 인자로 받습니다.
+
+      이 메서드는 매우 자주 실행됩니다.
+      그래서 이 메서드에 복잡한 로직을 작성하면 애플리케이션 성능이 크게 저하될 수 있습니다.
+      자세한 내용은 [변화 감지 후킹 함수 활용하기](#onchanges) 섹션을 참고하세요.
 
     </td>
     <td>
 
+      <!--
       Called before `ngOnInit()` and whenever one or more data-bound input properties change.
+      -->
+      `ngOnInit()`이 실행되기 전에 한 번 실행되며 입력 프로퍼티로 바인딩된 값이 변경될 때마다 실행됩니다.
 
     </td>
   </tr>
@@ -70,14 +132,21 @@ Angular executes hook methods in the following sequence. You can use them to per
     </td>
     <td>
 
+      <!--
       Initialize the directive or component after Angular first displays the data-bound properties
       and sets the directive or component's input properties.
       See details in [Initializing a component or directive](#oninit) in this document.
+      -->
+      디렉티브나 컴포넌트에 바인딩된 입력 프로퍼티 값이 처음 할당된 후에 실행됩니다.
+      자세한 내용은 [컴포넌트, 디렉티브 초기화하기](#oninit) 섹션을 참고하세요.
 
     </td>
     <td>
 
+      <!--
       Called once, after the first `ngOnChanges()`.
+      -->
+      `ngOnChanges()`가 처음 실행된 후에 한 번 실행됩니다.
 
     </td>
   </tr>
@@ -87,13 +156,20 @@ Angular executes hook methods in the following sequence. You can use them to per
     </td>
     <td>
 
+      <!--
       Detect and act upon changes that Angular can't or won't detect on its own.
       See details and example in [Defining custom change detection](#docheck) in this document.
+      -->
+      Angular가 검출하지 못한 변화에 반응하거나, Angular가 변화를 감지하지 못하게 할 때 사용합니다.
+      자세한 내용은 [커스텀 변화감지 로직 정의하기](#docheck) 섹션을 참고하세요.
 
     </td>
     <td>
 
+    <!--
     Called immediately after `ngOnChanges()` on every change detection run, and immediately after `ngOnInit()` on the first run.
+    -->
+    `ngOnInit()`이 실행된 직후에 한 번 실행되며, 변화 감지 싸이클이 실행되면서 `ngOnChanges()`가 실행된 이후에 매번 실행됩니다.
 
     </td>
   </tr>
@@ -103,15 +179,23 @@ Angular executes hook methods in the following sequence. You can use them to per
     </td>
     <td>
 
+      <!--
       Respond after Angular projects external content into the component's view, or into the view that a directive is in.
 
       See details and example in [Responding to changes in content](#aftercontent) in this document.
+      -->
+      Angular가 외부 컨텐츠를 컴포넌트나 디렉티브 뷰에 프로젝션한 이후에 실행됩니다.
+
+      자세한 내용은 [외부 컨텐츠 변경사항 감지하기](#aftercontent) 섹션을 참고하세요.
 
 
     </td>
     <td>
 
+      <!--
       Called _once_ after the first `ngDoCheck()`.
+      -->
+      `ngDoCheck()`가 처음 실행된 후 _한 번_ 실행됩니다.
 
     </td>
   </tr>
@@ -121,15 +205,23 @@ Angular executes hook methods in the following sequence. You can use them to per
     </td>
     <td>
 
+      <!--
       Respond after Angular checks the content projected into the directive or component.
 
       See details and example in [Responding to projected content changes](#aftercontent) in this document.
+      -->
+      Angular가 디렉티브나 컴포넌트에 프로젝션된 컨텐츠를 검사하고 난 후에 실행됩니다.
+
+      자세한 내용은 [외부 컨텐츠 변경사항 감지하기](#aftercontent) 섹션을 참고하세요.
 
     </td>
 
     <td>
 
+      <!--
       Called after `ngAfterContentInit()` and every subsequent `ngDoCheck()`.
+      -->
+      `ngAfterContentInit()`이 실행된 후, `ngDoCheck()`가 실행된 이후마다 실행됩니다.
 
     </td>
   </tr>
@@ -139,15 +231,24 @@ Angular executes hook methods in the following sequence. You can use them to per
     </td>
     <td>
 
+      <!--
       Respond after Angular initializes the component's views and child views, or the view that contains the directive.
 
       See details and example in [Responding to view changes](#afterview) in this document.
+      -->
+      Angular가 컴포넌트나 디렉티브 화면과 자식 컴포넌트 화면을 초기화한 후에 실행됩니다.
+
+      자세한 내용은 [화면 변경사항 감지하기](#afterview) 섹션을 참고하세요.
 
     </td>
 
     <td>
 
+      <!--
       Called _once_ after the first `ngAfterContentChecked()`.
+      -->
+      `ngAfterContentChecked()`가 처음 실행된 후에 _한 번_ 실행됩니다.
+
     </td>
   </tr>
   <tr style='vertical-align:top'>
@@ -156,13 +257,19 @@ Angular executes hook methods in the following sequence. You can use them to per
     </td>
     <td>
 
+      <!--
       Respond after Angular checks the component's views and child views, or the view that contains the directive.
+      -->
+      Angular가 컴포넌트나 디렉티브 화면과 자식 화면을 검사한 후에 실행됩니다.
 
     </td>
 
     <td>
 
+      <!--
       Called after the `ngAfterViewInit()` and every subsequent `ngAfterContentChecked()`.
+      -->
+      `ngAfterViewInit()`가 실행된 후, `ngAfterContentChecked()`가 실행된 이후마다 실행됩니다.
 
     </td>
   </tr>
@@ -172,24 +279,37 @@ Angular executes hook methods in the following sequence. You can use them to per
     </td>
     <td>
 
+      <!--
       Cleanup just before Angular destroys the directive or component.
       Unsubscribe Observables and detach event handlers to avoid memory leaks.
       See details in [Cleaning up on instance destruction](#ondestroy) in this document.
+      -->
+      Angular가 디렉티브나 컴포넌트 인스턴스를 종료하기 전에 실행됩니다.
+      이 메서드는 옵저버블을 구독 해지하거나 이벤트 핸들러를 제거하는 등 메모리 누수를 방지하는 로직을 작성하는 용도로 사용합니다.
+      자세한 내용은 [인스턴스 종료하기](#ondestroy) 섹션을 참고하세요.
 
     </td>
 
     <td>
 
+      <!--
       Called immediately before Angular destroys the directive or component.
+      -->
+      Angular가 디렉티브나 컴포넌트 인스턴스를 종료하기 직전에 실행됩니다.
 
     </td>
   </tr>
 </table>
 
+
 {@a the-sample}
 
+<!--
 ### Lifecycle example set
+-->
+### 라이프싸이클 활용 예제
 
+<!--
 The <live-example></live-example>
 demonstrates the use of lifecycle hooks through a series of exercises
 presented as components under the control of the root `AppComponent`.
@@ -198,13 +318,24 @@ a *child* component that illustrates one or more of the lifecycle hook methods.
 
 The following table lists the exercises with brief descriptions.
 The sample code is also used to illustrate specific tasks in the following sections.
+-->
+<live-example></live-example>에서 최상위 컴포넌트 `AppComponent` 안에 있는 컴포넌트들을 보면 라이프싸이클 후킹 함수를 어떻게 활용하는지 확인할 수 있습니다.
+이 예제 프로젝트에서 `AppComponent`는 모든 자식 컴포넌트의 테스트 베드로 동작하며 자식 컴포넌트는 개별 라이프싸이클 후킹 메서드를 다룹니다.
+
+예제 프로젝트에서 어떤 내용을 다루는지 간단하게 살펴봅시다.
+개별 항목에 대해서는 이 문서를 진행하면서 계속 알아봅니다.
+
 
 <table width="100%">
   <col width="20%"></col>
   <col width="80%"></col>
   <tr>
+    <!--
     <th>Component</th>
     <th>Description</th>
+    -->
+    <th>컴포넌트</th>
+    <th>설명</th>
   </tr>
   <tr style='vertical-align:top'>
     <td>
@@ -212,8 +343,12 @@ The sample code is also used to illustrate specific tasks in the following secti
     </td>
     <td>
 
+      <!--
       Demonstrates every lifecycle hook.
       Each hook method writes to the on-screen log.
+      -->
+      전체 라이프싸이클 후킹 메서드가 어떻게 동작하는지 보여줍니다.
+      개별 후킹 메서드가 실행되는 것을 화면에서 확인할 수 있습니다.
 
     </td>
   </tr>
@@ -223,9 +358,13 @@ The sample code is also used to illustrate specific tasks in the following secti
     </td>
     <td>
 
+      <!--
       Shows how you can use lifecycle hooks with a custom directive.
       The `SpyDirective` implements the `ngOnInit()` and `ngOnDestroy()` hooks,
       and uses them to watch and report when an element goes in or out of the current view.
+      -->
+      커스텀 디렉티브로 라이프싸이클 후킹 메서드를 활용하는 방법에 대해 다룹니다.
+      `SpyDirective`에는 `ngOnInit()`과 `ngOnDestroy()` 후킹 메서드가 정의되어 있으며, 이 디렉티브를 사용해서 엘리먼트가 화면에 추가되고 제거되는 것을 확인할 수 있습니다.
 
     </td>
   </tr>
@@ -235,9 +374,13 @@ The sample code is also used to illustrate specific tasks in the following secti
     </td>
     <td>
 
+      <!--
       Demonstrates how Angular calls the `ngOnChanges()` hook
       every time one of the component input properties changes,
       and shows how to interpret the `changes` object passed to the hook method.
+      -->
+      컴포넌트의 입력 프로퍼티 값이 변경될 때 `ngOnChanges()`가 어떻게 실행되는지에 대해 다룹니다.
+      후킹 메서드에 전달되는 `changes` 객체를 어떻게 활용할 수 있는지도 확인해 보세요.
 
     </td>
   </tr>
@@ -247,8 +390,12 @@ The sample code is also used to illustrate specific tasks in the following secti
     </td>
     <td>
 
+      <!--
       Implements the `ngDoCheck()` method with custom change detection.
       Watch the hook post changes to a log to see how often Angular calls this hook.
+      -->
+      `ngDoCheck()` 메서드로 커스텀 변화감지 로직을 구현하는 방법에 대해 다룹니다.
+      `ngDoCheck()` 메서드가 얼마나 자주 실행되는지 화면에 표시되는 로그를 확인해 보세요.
 
     </td>
   </tr>
@@ -258,8 +405,12 @@ The sample code is also used to illustrate specific tasks in the following secti
     </td>
     <td>
 
+      <!--
       Shows what Angular means by a [view](guide/glossary#view "Definition of view.").
       Demonstrates the `ngAfterViewInit()` and `ngAfterViewChecked()` hooks.
+      -->
+      Angular에서 의미하는 [화면(view)](guide/glossary#view "Definition of view.")가 어떤 것인지 다룹니다.
+      `ngAfterViewInit()` 메서드와 `ngAfterViewChecked()` 메서드에 대해 다룹니다.
 
     </td>
   </tr>
@@ -269,9 +420,13 @@ The sample code is also used to illustrate specific tasks in the following secti
     </td>
     <td>
 
+      <!--
       Shows how to project external content into a component and
       how to distinguish projected content from a component's view children.
       Demonstrates the `ngAfterContentInit()` and `ngAfterContentChecked()` hooks.
+      -->
+      외부 컨텐츠를 컴포넌트에 프로젝션하는 것에 대해 다룹니다.
+      컴포넌트 자식 뷰와 프로젝션된 컨텐츠를 구분하는 방법도 설명하며, `ngAfterContentInit()` 메서드와 `ngAfterContentChecked()` 메서드에 대해 다룹니다.
 
     </td>
   </tr>
@@ -281,7 +436,10 @@ The sample code is also used to illustrate specific tasks in the following secti
     </td>
     <td>
 
+      <!--
       Demonstrates a combination of a component and a directive, each with its own hooks.
+      -->
+      컴포넌트와 디렉티브를 함께 사용할 때 라이프싸이클 후킹 함수를 각각 어떻게 적용하는지 알아봅니다.
 
     </td>
   </tr>
@@ -290,8 +448,12 @@ The sample code is also used to illustrate specific tasks in the following secti
 
 {@a oninit}
 
+<!--
 ## Initializing a component or directive
+-->
+## 컴포넌트, 디렉티브 초기화하기
 
+<!--
 Use the `ngOnInit()` method to perform the following initialization tasks.
 
 * Perform complex initializations outside of the constructor.
@@ -322,11 +484,46 @@ Use the `ngOnInit()` method to perform the following initialization tasks.
      It only calls `ngOnInit()` once.
 
   </div>
+-->
+`ngOnInit()` 메서드를 활용하면 다음과 같은 초기화 작업을 실행할 수 있습니다.
+
+* 일반적으로 컴포넌트는 가볍고 간단하게 생성할 수 있어야 합니다.
+  그래서 하지만 초기화 로직이 복잡하다면 이 로직은 생성자에 작성하지 않는 것이 좋습니다.
+  외부에서 데이터를 받아와야 하는 로직도 마찬가지입니다.
+  이런 로직이 생성자에 있으면 테스트 환경에서 컴포넌트를 생성하거나 화면에 컴포넌트가 표시되기 전에도 외부로 HTTP 요청이 발생할 수 있습니다.
+
+  데이터를 외부에서 받아오고 컴포넌트를 초기화하는 로직은 `ngOnInit()`에 작성하는 것이 좋습니다.
+  [히어로들의 여행 튜토리얼](tutorial/toh-pt4#oninit)에서도 이 내용을 확인할 수 있습니다.
+
+  <div class="alert is-helpful">
+
+  Angular 팀 리더인 Misko Hevery가 설명하는 [한계: 생성자가 실제로 동작하는 방식](http://misko.hevery.com/code-reviewers-guide/flaw-constructor-does-real-work/)를 확인해 보세요. 생성자에 복잡한 로직을 사용하지 말아야 하는 이유에 대해 설명합니다.
+
+  </div>
+
+* Angular가 입력 프로퍼티 값을 할당한 후에 컴포넌트 초기화 작업을 할 수 있습니다.
+  생성자에서는 지역 변수를 할당하는 것 이외의 로직은 작성하지 않는 것이 좋습니다.
+
+  디렉티브에 바인딩되는 입력 프로퍼티 값은 _생성자가 실행된 후에나_ 제대로 할당된다는 것을 명심하세요.
+  이 프로퍼티 값에 따라 디렉티브를 초기화해야 한다면 생성자가 아니라 `ngOnInit()`에서 해야 합니다.
+
+  <div class="alert is-helpful">
+
+     입력 프로퍼티에 데이터가 전달되는 것을 가장 먼저 확인할 수 있는 메서드는 `ngOnChanges())` 메서드입니다.
+     하지만 `ngOnChanges()`는 `ngOnInit()` 이전뿐 아니라 그 이후에도 여러번 실행됩니다.
+     `ngOnInit()`은 한번만 실행되기 때문에 초기화 로직은 이 메서드에 작성하는 것이 좋습니다.
+
+  </div>
+
 
 {@a ondestroy}
 
+<!--
 ## Cleaning up on instance destruction
+-->
+## 인스턴스 종료하기
 
+<!--
 Put cleanup logic in `ngOnDestroy()`, the logic that must run before Angular destroys the directive.
 
 This is the place to free resources that won't be garbage-collected automatically.
@@ -337,6 +534,17 @@ You risk memory leaks if you neglect to do so.
 * Unregister all callbacks that the directive registered with global or application services.
 
 The `ngOnDestroy()` method is also the time to notify another part of the application that the component is going away.
+-->
+Angular가 디렉티브나 컴포넌트를 종료하기 전에 실행해야 하는 로직이 있다면 이 로직은 `ngOnDestroy()`에 작성합니다.
+
+그래서 자동으로 메모리 정리되지 않는 항목이 있다면 이 메서드에서 정리하면 됩니다.
+이런 용도로 활용할 수 있습니다.
+
+* 옵저버블이나 DOM 이벤트 구독 해지
+* 인터벌 타이머 중단
+* 디렉티브가 전역이나 애플리케이션 서비스에 등록한 콜백 정리
+
+`ngOnDestroy()` 메소드는 컴포넌트나 디렉티브가 종료된다는 것을 애플리케이션 다른 영역으로 전달하는 용도로도 사용할 수 있습니다.
 
 
 ## General examples
@@ -420,8 +628,11 @@ In this example, a `CounterComponent` uses the `ngOnChanges()` method to log a c
 This example applies the `SpyDirective` from the previous example to the `CounterComponent` log, in order to watch the creation and destruction of log entries.
 
 {@a onchanges}
-
+{@a using-change-detection-hooks}
+<!--
 ## Using change detection hooks
+-->
+## 변화 감지 후킹 함수 활용하기
 
 Angular calls the `ngOnChanges()` method of a component or directive whenever it detects changes to the  ***input properties***.
 The *onChanges* example demonstrates this by monitoring the `OnChanges()` hook.
@@ -455,7 +666,10 @@ The object reference did not change when the value of its own `name` property ch
 
 {@a afterview}
 
+<!--
 ### Responding to view changes
+-->
+### 화면 변경사항 감지하기
 
 As Angular traverses the [view hierarchy](guide/glossary#view-hierarchy "Definition of view hierarchy definition") during change detection, it needs to be sure that a change in a child does not attempt to cause a change in its own parent. Such a change would not be rendered properly, because of how [unidirectional data flow](guide/glossary#unidirectional-data-flow "Definition") works.
 
@@ -509,7 +723,10 @@ Be very careful about how much logic or computation you put into one of these me
 {@a aftercontent-hooks}
 {@a content-projection}
 
+<!--
 ### Responding to projected content changes
+-->
+### 외부 컨텐츠 변경사항 감지하기
 
 *Content projection* is a way to import HTML content from outside the component and insert that content
 into the component's template in a designated spot.
@@ -583,8 +800,11 @@ There is a small window between the `AfterContent...` and `AfterView...` hooks t
 </div>
 
 {@a docheck}
-
+{@a defining-custom-change-detection}
+<!--
 ## Defining custom change detection
+-->
+## 커스텀 변화감지 로직 정의하기
 
 To monitor changes that occur where `ngOnChanges()` won't catch them, you can implement your own change check, as shown in the *DoCheck* example.
 This example shows how you can use the `ngDoCheck()` hook to detect and act upon changes that Angular doesn't catch on its own.
