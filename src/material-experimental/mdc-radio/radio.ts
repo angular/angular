@@ -8,6 +8,7 @@
 
 import {
   AfterViewInit,
+  Attribute,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
@@ -136,9 +137,10 @@ export class MatRadioButton extends _MatRadioButtonBase implements AfterViewInit
               _radioDispatcher: UniqueSelectionDispatcher,
               @Optional() @Inject(ANIMATION_MODULE_TYPE) _animationMode?: string,
               @Optional() @Inject(MAT_RADIO_DEFAULT_OPTIONS)
-              _providerOverride?: MatRadioDefaultOptions) {
+              _providerOverride?: MatRadioDefaultOptions,
+              @Attribute('tabindex') tabIndex?: string) {
     super(radioGroup, elementRef, _changeDetector, _focusMonitor,
-        _radioDispatcher, _animationMode, _providerOverride);
+        _radioDispatcher, _animationMode, _providerOverride, tabIndex);
   }
 
   ngAfterViewInit() {

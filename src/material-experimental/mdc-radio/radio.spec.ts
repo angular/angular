@@ -794,6 +794,16 @@ describe('MDC-based MatRadio', () => {
       expect(radioButtonEl.getAttribute('tabindex')).toBe('-1');
     });
 
+    it('should forward a pre-defined tabindex to the underlying input', () => {
+      const predefinedFixture = TestBed.createComponent(RadioButtonWithPredefinedTabindex);
+      predefinedFixture.detectChanges();
+
+      const radioButtonInput = predefinedFixture.debugElement
+        .query(By.css('.mat-mdc-radio-button input'))!.nativeElement as HTMLInputElement;
+
+      expect(radioButtonInput.getAttribute('tabindex')).toBe('5');
+    });
+
     it('should remove the aria attributes from the host element', () => {
       const predefinedFixture = TestBed.createComponent(RadioButtonWithPredefinedAriaAttributes);
       predefinedFixture.detectChanges();
@@ -1016,7 +1026,7 @@ class TranscludingWrapper {}
 
 
 @Component({
-  template: `<mat-radio-button tabindex="0"></mat-radio-button>`
+  template: `<mat-radio-button tabindex="5"></mat-radio-button>`
 })
 class RadioButtonWithPredefinedTabindex {}
 

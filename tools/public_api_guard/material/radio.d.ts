@@ -22,7 +22,7 @@ export declare abstract class _MatRadioButtonBase extends _MatRadioButtonMixinBa
     set required(value: boolean);
     get value(): any;
     set value(value: any);
-    constructor(radioGroup: _MatRadioGroupBase<_MatRadioButtonBase>, elementRef: ElementRef, _changeDetector: ChangeDetectorRef, _focusMonitor: FocusMonitor, _radioDispatcher: UniqueSelectionDispatcher, _animationMode?: string | undefined, _providerOverride?: MatRadioDefaultOptions | undefined);
+    constructor(radioGroup: _MatRadioGroupBase<_MatRadioButtonBase>, elementRef: ElementRef, _changeDetector: ChangeDetectorRef, _focusMonitor: FocusMonitor, _radioDispatcher: UniqueSelectionDispatcher, _animationMode?: string | undefined, _providerOverride?: MatRadioDefaultOptions | undefined, tabIndex?: string);
     _isRippleDisabled(): boolean;
     _markForCheck(): void;
     _onInputChange(event: Event): void;
@@ -84,9 +84,9 @@ export declare const MAT_RADIO_GROUP: InjectionToken<_MatRadioGroupBase<_MatRadi
 export declare const MAT_RADIO_GROUP_CONTROL_VALUE_ACCESSOR: any;
 
 export declare class MatRadioButton extends _MatRadioButtonBase {
-    constructor(radioGroup: MatRadioGroup, elementRef: ElementRef, changeDetector: ChangeDetectorRef, focusMonitor: FocusMonitor, radioDispatcher: UniqueSelectionDispatcher, animationMode?: string, providerOverride?: MatRadioDefaultOptions);
+    constructor(radioGroup: MatRadioGroup, elementRef: ElementRef, changeDetector: ChangeDetectorRef, focusMonitor: FocusMonitor, radioDispatcher: UniqueSelectionDispatcher, animationMode?: string, providerOverride?: MatRadioDefaultOptions, tabIndex?: string);
     static ɵcmp: i0.ɵɵComponentDefWithMeta<MatRadioButton, "mat-radio-button", ["matRadioButton"], { "disableRipple": "disableRipple"; "tabIndex": "tabIndex"; }, {}, never, ["*"]>;
-    static ɵfac: i0.ɵɵFactoryDef<MatRadioButton, [{ optional: true; }, null, null, null, null, { optional: true; }, { optional: true; }]>;
+    static ɵfac: i0.ɵɵFactoryDef<MatRadioButton, [{ optional: true; }, null, null, null, null, { optional: true; }, { optional: true; }, { attribute: "tabindex"; }]>;
 }
 
 export declare class MatRadioChange {

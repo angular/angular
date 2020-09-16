@@ -7,11 +7,17 @@
  */
 
 import {FocusMonitor} from '@angular/cdk/a11y';
-import {BooleanInput, coerceBooleanProperty, NumberInput} from '@angular/cdk/coercion';
+import {
+  BooleanInput,
+  coerceBooleanProperty,
+  coerceNumberProperty,
+  NumberInput,
+} from '@angular/cdk/coercion';
 import {UniqueSelectionDispatcher} from '@angular/cdk/collections';
 import {
   AfterContentInit,
   AfterViewInit,
+  Attribute,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
@@ -489,12 +495,17 @@ export abstract class _MatRadioButtonBase extends _MatRadioButtonMixinBase imple
               private _focusMonitor: FocusMonitor,
               private _radioDispatcher: UniqueSelectionDispatcher,
               public _animationMode?: string,
-              private _providerOverride?: MatRadioDefaultOptions) {
+              private _providerOverride?: MatRadioDefaultOptions,
+              tabIndex?: string) {
     super(elementRef);
 
     // Assertions. Ideally these should be stripped out by the compiler.
     // TODO(jelbourn): Assert that there's no name binding AND a parent radio group.
     this.radioGroup = radioGroup;
+
+    if (tabIndex) {
+      this.tabIndex = coerceNumberProperty(tabIndex, 0);
+    }
 
     this._removeUniqueSelectionListener =
       _radioDispatcher.listen((id: string, name: string) => {
@@ -641,8 +652,9 @@ export class MatRadioButton extends _MatRadioButtonBase {
               radioDispatcher: UniqueSelectionDispatcher,
               @Optional() @Inject(ANIMATION_MODULE_TYPE) animationMode?: string,
                 @Optional() @Inject(MAT_RADIO_DEFAULT_OPTIONS)
-                  providerOverride?: MatRadioDefaultOptions) {
+                  providerOverride?: MatRadioDefaultOptions,
+              @Attribute('tabindex') tabIndex?: string) {
     super(radioGroup, elementRef, changeDetector, focusMonitor, radioDispatcher,
-          animationMode, providerOverride);
+          animationMode, providerOverride, tabIndex);
   }
 }
