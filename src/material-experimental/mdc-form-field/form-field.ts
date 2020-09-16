@@ -132,12 +132,9 @@ export class MatFormField implements AfterViewInit, OnDestroy, AfterContentCheck
   @ContentChild(MatLabel) _labelChildNonStatic: MatLabel|undefined;
   @ContentChild(MatLabel, {static: true}) _labelChildStatic: MatLabel|undefined;
   @ContentChild(MatFormFieldControl) _formFieldControl: MatFormFieldControl<any>;
-  // TODO: Remove cast once https://github.com/angular/angular/pull/37506 is available.
-  @ContentChildren(MAT_PREFIX as any, {descendants: true}) _prefixChildren: QueryList<MatPrefix>;
-  // TODO: Remove cast once https://github.com/angular/angular/pull/37506 is available.
-  @ContentChildren(MAT_SUFFIX as any, {descendants: true}) _suffixChildren: QueryList<MatSuffix>;
-  // TODO: Remove cast once https://github.com/angular/angular/pull/37506 is available.
-  @ContentChildren(MAT_ERROR as any, {descendants: true}) _errorChildren: QueryList<MatError>;
+  @ContentChildren(MAT_PREFIX, {descendants: true}) _prefixChildren: QueryList<MatPrefix>;
+  @ContentChildren(MAT_SUFFIX, {descendants: true}) _suffixChildren: QueryList<MatSuffix>;
+  @ContentChildren(MAT_ERROR, {descendants: true}) _errorChildren: QueryList<MatError>;
   @ContentChildren(MatHint, {descendants: true}) _hintChildren: QueryList<MatHint>;
 
   /** Whether the required marker should be hidden. */

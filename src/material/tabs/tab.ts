@@ -53,18 +53,16 @@ export const MAT_TAB_GROUP = new InjectionToken<any>('MAT_TAB_GROUP');
   exportAs: 'matTab',
 })
 export class MatTab extends _MatTabMixinBase implements OnInit, CanDisable, OnChanges, OnDestroy {
-  // TODO: Remove cast once https://github.com/angular/angular/pull/37506 is available.
   /** Content for the tab label given by `<ng-template mat-tab-label>`. */
-  @ContentChild(MAT_TAB_LABEL as any)
+  @ContentChild(MAT_TAB_LABEL)
   get templateLabel(): MatTabLabel { return this._templateLabel; }
   set templateLabel(value: MatTabLabel) { this._setTemplateLabelInput(value); }
   protected _templateLabel: MatTabLabel;
 
-  // TODO: Remove cast once https://github.com/angular/angular/pull/37506 is available.
   /**
    * Template provided in the tab content that will be used if present, used to enable lazy-loading
    */
-  @ContentChild(MAT_TAB_CONTENT as any, {read: TemplateRef, static: true})
+  @ContentChild(MAT_TAB_CONTENT, {read: TemplateRef, static: true})
   _explicitContent: TemplateRef<any>;
 
   /** Template inside the MatTab view that contains an `<ng-content>`. */

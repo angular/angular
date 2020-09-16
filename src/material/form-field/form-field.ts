@@ -273,14 +273,10 @@ export class MatFormField extends _MatFormFieldMixinBase
   @ContentChild(MatLabel, {static: true}) _labelChildStatic: MatLabel;
   @ContentChild(MatPlaceholder) _placeholderChild: MatPlaceholder;
 
-  // TODO: Remove cast once https://github.com/angular/angular/pull/37506 is available.
-  @ContentChildren(MAT_ERROR as any, {descendants: true}) _errorChildren: QueryList<MatError>;
-  // TODO: Remove cast once https://github.com/angular/angular/pull/37506 is available.
-  @ContentChildren(_MAT_HINT as any, {descendants: true}) _hintChildren: QueryList<MatHint>;
-  // TODO: Remove cast once https://github.com/angular/angular/pull/37506 is available.
-  @ContentChildren(MAT_PREFIX as any, {descendants: true}) _prefixChildren: QueryList<MatPrefix>;
-  // TODO: Remove cast once https://github.com/angular/angular/pull/37506 is available.
-  @ContentChildren(MAT_SUFFIX as any, {descendants: true}) _suffixChildren: QueryList<MatSuffix>;
+  @ContentChildren(MAT_ERROR, {descendants: true}) _errorChildren: QueryList<MatError>;
+  @ContentChildren(_MAT_HINT, {descendants: true}) _hintChildren: QueryList<MatHint>;
+  @ContentChildren(MAT_PREFIX, {descendants: true}) _prefixChildren: QueryList<MatPrefix>;
+  @ContentChildren(MAT_SUFFIX, {descendants: true}) _suffixChildren: QueryList<MatSuffix>;
 
   constructor(
       public _elementRef: ElementRef, private _changeDetectorRef: ChangeDetectorRef,

@@ -72,17 +72,14 @@ export class CdkDrag<T = any> implements AfterViewInit, OnChanges, OnDestroy {
   /** Reference to the underlying drag instance. */
   _dragRef: DragRef<CdkDrag<T>>;
 
-  // TODO: Remove cast once https://github.com/angular/angular/pull/37506 is available.
   /** Elements that can be used to drag the draggable item. */
-  @ContentChildren(CDK_DRAG_HANDLE as any, {descendants: true}) _handles: QueryList<CdkDragHandle>;
+  @ContentChildren(CDK_DRAG_HANDLE, {descendants: true}) _handles: QueryList<CdkDragHandle>;
 
-  // TODO: Remove cast once https://github.com/angular/angular/pull/37506 is available.
   /** Element that will be used as a template to create the draggable item's preview. */
-  @ContentChild(CDK_DRAG_PREVIEW as any) _previewTemplate: CdkDragPreview;
+  @ContentChild(CDK_DRAG_PREVIEW) _previewTemplate: CdkDragPreview;
 
-  // TODO: Remove cast once https://github.com/angular/angular/pull/37506 is available.
   /** Template for placeholder element rendered to show where a draggable would be dropped. */
-  @ContentChild(CDK_DRAG_PLACEHOLDER as any) _placeholderTemplate: CdkDragPlaceholder;
+  @ContentChild(CDK_DRAG_PLACEHOLDER) _placeholderTemplate: CdkDragPlaceholder;
 
   /** Arbitrary data to attach to this drag instance. */
   @Input('cdkDragData') data: T;

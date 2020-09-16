@@ -189,17 +189,14 @@ export class MatChip extends _MatChipMixinBase implements FocusableOption, OnDes
   /** Whether the chip list as a whole is disabled. */
   _chipListDisabled: boolean = false;
 
-  // TODO: Remove cast once https://github.com/angular/angular/pull/37506 is available.
   /** The chip avatar */
-  @ContentChild(MAT_CHIP_AVATAR as any) avatar: MatChipAvatar;
+  @ContentChild(MAT_CHIP_AVATAR) avatar: MatChipAvatar;
 
-  // TODO: Remove cast once https://github.com/angular/angular/pull/37506 is available.
   /** The chip's trailing icon. */
-  @ContentChild(MAT_CHIP_TRAILING_ICON as any) trailingIcon: MatChipTrailingIcon;
+  @ContentChild(MAT_CHIP_TRAILING_ICON) trailingIcon: MatChipTrailingIcon;
 
-  // TODO: Remove cast once https://github.com/angular/angular/pull/37506 is available.
   /** The chip's remove toggler. */
-  @ContentChild(MAT_CHIP_REMOVE as any) removeIcon: MatChipRemove;
+  @ContentChild(MAT_CHIP_REMOVE) removeIcon: MatChipRemove;
 
   /** Whether the chip is selected. */
   @Input()

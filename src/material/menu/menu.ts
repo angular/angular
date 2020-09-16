@@ -177,12 +177,11 @@ export class _MatMenuBase implements AfterContentInit, MatMenuPanel<MatMenuItem>
    */
   @ContentChildren(MatMenuItem, {descendants: false}) items: QueryList<MatMenuItem>;
 
-  // TODO: Remove cast once https://github.com/angular/angular/pull/37506 is available.
   /**
    * Menu content that will be rendered lazily.
    * @docs-private
    */
-  @ContentChild(MAT_MENU_CONTENT as any) lazyContent: MatMenuContent;
+  @ContentChild(MAT_MENU_CONTENT) lazyContent: MatMenuContent;
 
   /** Whether the menu should overlap its trigger. */
   @Input()

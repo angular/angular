@@ -232,17 +232,14 @@ export class MatChip extends _MatChipMixinBase implements AfterContentInit, Afte
   /** Subject that emits when the component has been destroyed. */
   protected _destroyed = new Subject<void>();
 
-  // TODO: Remove cast once https://github.com/angular/angular/pull/37506 is available.
   /** The chip's leading icon. */
-  @ContentChild(MAT_CHIP_AVATAR as any) leadingIcon: MatChipAvatar;
+  @ContentChild(MAT_CHIP_AVATAR) leadingIcon: MatChipAvatar;
 
-  // TODO: Remove cast once https://github.com/angular/angular/pull/37506 is available.
   /** The chip's trailing icon. */
-  @ContentChild(MAT_CHIP_TRAILING_ICON as any) trailingIcon: MatChipTrailingIcon;
+  @ContentChild(MAT_CHIP_TRAILING_ICON) trailingIcon: MatChipTrailingIcon;
 
-  // TODO: Remove cast once https://github.com/angular/angular/pull/37506 is available.
   /** The chip's trailing remove icon. */
-  @ContentChild(MAT_CHIP_REMOVE as any) removeIcon: MatChipRemove;
+  @ContentChild(MAT_CHIP_REMOVE) removeIcon: MatChipRemove;
 
   /** Reference to the MatRipple instance of the chip. */
   @ViewChild(MatRipple) ripple: MatRipple;
