@@ -58,6 +58,12 @@ $mat-date-range-input-part-max-width: calc(50% - #{$mat-date-range-input-separat
     display: none;
   }
 
+  // Undo the red box-shadow glow added by Firefox on invalid inputs.
+  // See https://developer.mozilla.org/en-US/docs/Web/CSS/:-moz-ui-invalid
+  &:-moz-ui-invalid {
+    box-shadow: none;
+  }
+
   @include input-placeholder {
     @include _mat-date-range-input-placeholder-transition(color);
   }
