@@ -83,7 +83,7 @@ export class DragDropRegistry<I, C> implements OnDestroy {
       this._ngZone.runOutsideAngular(() => {
         // The event handler has to be explicitly active,
         // because newer browsers make it passive by default.
-        this._document.addEventListener('touchmove', this._preventDefaultWhileDragging,
+        this._document.addEventListener('touchmove', this._persistentTouchmoveListener,
             activeCapturingEventOptions);
       });
     }
@@ -100,7 +100,7 @@ export class DragDropRegistry<I, C> implements OnDestroy {
     this.stopDragging(drag);
 
     if (this._dragInstances.size === 0) {
-      this._document.removeEventListener('touchmove', this._preventDefaultWhileDragging,
+      this._document.removeEventListener('touchmove', this._persistentTouchmoveListener,
           activeCapturingEventOptions);
     }
   }
@@ -120,18 +120,12 @@ export class DragDropRegistry<I, C> implements OnDestroy {
 
     if (this._activeDragInstances.size === 1) {
       const isTouchEvent = event.type.startsWith('touch');
-      const moveEvent = isTouchEvent ? 'touchmove' : 'mousemove';
-      const upEvent = isTouchEvent ? 'touchend' : 'mouseup';
 
       // We explicitly bind __active__ listeners here, because newer browsers will default to
       // passive ones for `mousemove` and `touchmove`. The events need to be active, because we
       // use `preventDefault` to prevent the page from scrolling while the user is dragging.
       this._globalListeners
-        .set(moveEvent, {
-          handler: (e: Event) => this.pointerMove.next(e as TouchEvent | MouseEvent),
-          options: activeCapturingEventOptions
-        })
-        .set(upEvent, {
+        .set(isTouchEvent ? 'touchend' : 'mouseup', {
           handler: (e: Event) => this.pointerUp.next(e as TouchEvent | MouseEvent),
           options: true
         })
@@ -149,6 +143,15 @@ export class DragDropRegistry<I, C> implements OnDestroy {
           handler: this._preventDefaultWhileDragging,
           options: activeCapturingEventOptions
         });
+
+      // We don't have to bind a move event for touch drag sequences, because
+      // we already have a persistent global one bound from `registerDragItem`.
+      if (!isTouchEvent) {
+        this._globalListeners.set('mousemove', {
+          handler: (e: Event) => this.pointerMove.next(e as MouseEvent),
+          options: activeCapturingEventOptions
+        });
+      }
 
       this._ngZone.runOutsideAngular(() => {
         this._globalListeners.forEach((config, name) => {
@@ -187,6 +190,14 @@ export class DragDropRegistry<I, C> implements OnDestroy {
   private _preventDefaultWhileDragging = (event: Event) => {
     if (this._activeDragInstances.size) {
       event.preventDefault();
+    }
+  }
+
+  /** Event listener for `touchmove` that is bound even if no dragging is happening. */
+  private _persistentTouchmoveListener = (event: TouchEvent) => {
+    if (this._activeDragInstances.size) {
+      event.preventDefault();
+      this.pointerMove.next(event);
     }
   }
 
