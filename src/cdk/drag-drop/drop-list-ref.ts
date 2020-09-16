@@ -339,24 +339,17 @@ export class DropListRef<T = any> {
    * Drops an item into this container.
    * @param item Item being dropped into the container.
    * @param currentIndex Index at which the item should be inserted.
+   * @param previousIndex Index of the item when dragging started.
    * @param previousContainer Container from which the item got dragged in.
    * @param isPointerOverContainer Whether the user's pointer was over the
    *    container when the item was dropped.
    * @param distance Distance the user has dragged since the start of the dragging sequence.
-   * @param previousIndex Index of the item when dragging started.
-   *
-   * @breaking-change 11.0.0 `previousIndex` parameter to become required.
    */
-  drop(item: DragRef, currentIndex: number, previousContainer: DropListRef,
-    isPointerOverContainer: boolean, distance: Point, previousIndex?: number): void {
+  drop(item: DragRef, currentIndex: number, previousIndex: number, previousContainer: DropListRef,
+    isPointerOverContainer: boolean, distance: Point): void {
     this._reset();
-
-    // @breaking-change 11.0.0 Remove this fallback logic once `previousIndex` is a required param.
-    if (previousIndex == null) {
-      previousIndex = previousContainer.getItemIndex(item);
-    }
-
-    this.dropped.next({item,
+    this.dropped.next({
+      item,
       currentIndex,
       previousIndex,
       container: this,

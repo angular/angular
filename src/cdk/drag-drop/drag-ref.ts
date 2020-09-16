@@ -851,8 +851,8 @@ export class DragRef<T = any> {
         isPointerOverContainer,
         distance
       });
-      container.drop(this, currentIndex, this._initialContainer, isPointerOverContainer, distance,
-          this._initialIndex);
+      container.drop(this, currentIndex, this._initialIndex, this._initialContainer,
+        isPointerOverContainer, distance);
       this._dropContainer = this._initialContainer;
     });
   }

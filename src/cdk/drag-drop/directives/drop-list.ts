@@ -168,15 +168,11 @@ export class CdkDropList<T = any> implements OnDestroy {
   constructor(
       /** Element that the drop list is attached to. */
       public element: ElementRef<HTMLElement>, dragDrop: DragDrop,
-      private _changeDetectorRef: ChangeDetectorRef, @Optional() private _dir?: Directionality,
+      private _changeDetectorRef: ChangeDetectorRef,
+      private _scrollDispatcher: ScrollDispatcher,
+      @Optional() private _dir?: Directionality,
       @Optional() @Inject(CDK_DROP_LIST_GROUP) @SkipSelf()
       private _group?: CdkDropListGroup<CdkDropList>,
-
-      /**
-       * @deprecated _scrollDispatcher parameter to become required.
-       * @breaking-change 11.0.0
-       */
-      private _scrollDispatcher?: ScrollDispatcher,
       @Optional() @Inject(CDK_DRAG_CONFIG) config?: DragDropConfig) {
     this._dropListRef = dragDrop.createDropList(element);
     this._dropListRef.data = this;
@@ -284,8 +280,7 @@ export class CdkDropList<T = any> implements OnDestroy {
 
       // Note that we resolve the scrollable parents here so that we delay the resolution
       // as long as possible, ensuring that the element is in its final place in the DOM.
-      // @breaking-change 11.0.0 Remove null check for _scrollDispatcher once it's required.
-      if (!this._scrollableParentsResolved && this._scrollDispatcher) {
+      if (!this._scrollableParentsResolved) {
         const scrollableParents = this._scrollDispatcher
           .getAncestorScrollContainers(this.element)
           .map(scrollable => scrollable.getElementRef().nativeElement);

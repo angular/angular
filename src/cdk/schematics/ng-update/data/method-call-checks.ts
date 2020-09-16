@@ -16,6 +16,17 @@ export interface MethodCallUpgradeData {
 }
 
 export const methodCallChecks: VersionChanges<MethodCallUpgradeData> = {
+  [TargetVersion.V11]: [{
+    pr: 'https://github.com/angular/components/pull/20500',
+    changes: [{
+      className: 'DropListRef',
+      method: 'drop',
+      invalidArgCounts: [{
+        count: 5,
+        message: 'The "previousIndex" parameter is required and the parameter order has changed.'
+      }]
+    }]
+  }],
   [TargetVersion.V9]: [{
     pr: 'https://github.com/angular/components/pull/17084',
     changes: [{

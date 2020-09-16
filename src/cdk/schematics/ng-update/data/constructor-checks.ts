@@ -21,6 +21,10 @@ export const constructorChecks: VersionChanges<ConstructorChecksUpgradeData> = {
     {
       pr: 'https://github.com/angular/components/pull/20454',
       changes: ['ScrollDispatcher', 'ViewportRuler', 'CdkVirtualScrollViewport']
+    },
+    {
+      pr: 'https://github.com/angular/components/pull/20500',
+      changes: ['CdkDropList']
     }
   ],
   [TargetVersion.V10]: [
