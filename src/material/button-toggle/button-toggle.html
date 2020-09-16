@@ -8,13 +8,13 @@
         [attr.aria-label]="ariaLabel"
         [attr.aria-labelledby]="ariaLabelledby"
         (click)="_onButtonClick()">
-  <div class="mat-button-toggle-label-content">
+  <span class="mat-button-toggle-label-content">
     <ng-content></ng-content>
-  </div>
+  </span>
 </button>
 
-<div class="mat-button-toggle-focus-overlay"></div>
-<div class="mat-button-toggle-ripple" matRipple
+<span class="mat-button-toggle-focus-overlay"></span>
+<span class="mat-button-toggle-ripple" matRipple
      [matRippleTrigger]="button"
      [matRippleDisabled]="this.disableRipple || this.disabled">
-</div>
+</span>
