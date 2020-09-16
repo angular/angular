@@ -187,8 +187,7 @@ export function runHarnessTests(
   it('should be able to get harness loader for content of panel', async () => {
     const panel =
         await loader.getHarness(expansionPanelHarness.with({selector: '#standalonePanel'}));
-    const contentHarnessLoader = await panel.getHarnessLoaderForContent();
-    const matchedHarnesses = await contentHarnessLoader.getAllHarnesses(TestContentHarness);
+    const matchedHarnesses = await panel.getAllHarnesses(TestContentHarness);
     expect(matchedHarnesses.length).toBe(1);
     expect(await matchedHarnesses[0].getText()).toBe('Part of expansion panel');
   });

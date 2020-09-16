@@ -2,7 +2,7 @@ export interface DrawerHarnessFilters extends BaseHarnessFilters {
     position?: 'start' | 'end';
 }
 
-export declare class MatDrawerHarness extends ComponentHarness {
+export declare class MatDrawerHarness extends ContentContainerComponentHarness<string> {
     getMode(): Promise<'over' | 'push' | 'side'>;
     getPosition(): Promise<'start' | 'end'>;
     isOpen(): Promise<boolean>;

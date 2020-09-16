@@ -6,9 +6,13 @@ export declare class MatTabGroupHarness extends ComponentHarness {
     static with(options?: TabGroupHarnessFilters): HarnessPredicate<MatTabGroupHarness>;
 }
 
-export declare class MatTabHarness extends ComponentHarness {
+export declare class MatTabHarness extends ContentContainerComponentHarness<string> {
+    getAllChildLoaders(selector: string): Promise<HarnessLoader[]>;
+    getAllHarnesses<T extends ComponentHarness>(query: HarnessQuery<T>): Promise<T[]>;
     getAriaLabel(): Promise<string | null>;
     getAriaLabelledby(): Promise<string | null>;
+    getChildLoader(selector: string): Promise<HarnessLoader>;
+    getHarness<T extends ComponentHarness>(query: HarnessQuery<T>): Promise<T>;
     getHarnessLoaderForContent(): Promise<HarnessLoader>;
     getLabel(): Promise<string>;
     getTextContent(): Promise<string>;

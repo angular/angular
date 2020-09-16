@@ -6,12 +6,20 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ComponentHarness, HarnessPredicate, TestElement, TestKey} from '@angular/cdk/testing';
+import {
+  ComponentHarness,
+  ContentContainerComponentHarness,
+  HarnessLoader,
+  HarnessPredicate,
+  HarnessQuery,
+  TestElement,
+  TestKey,
+} from '@angular/cdk/testing';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {MenuHarnessFilters, MenuItemHarnessFilters} from './menu-harness-filters';
 
 /** Harness for interacting with a standard mat-menu in tests. */
-export class MatMenuHarness extends ComponentHarness {
+export class MatMenuHarness extends ContentContainerComponentHarness<string> {
   /** The selector for the host element of a `MatMenu` instance. */
   static hostSelector = '.mat-menu-trigger';
 
@@ -119,6 +127,28 @@ export class MatMenuHarness extends ComponentHarness {
     return menu.clickItem(...subItemFilters as [Omit<MenuItemHarnessFilters, 'ancestor'>]);
   }
 
+  async getChildLoader(selector: string): Promise<HarnessLoader> {
+    return (await this._getPanelLoader()).getChildLoader(selector);
+  }
+
+  async getAllChildLoaders(selector: string): Promise<HarnessLoader[]> {
+    return (await this._getPanelLoader()).getAllChildLoaders(selector);
+  }
+
+  async getHarness<T extends ComponentHarness>(query: HarnessQuery<T>): Promise<T> {
+    return (await this._getPanelLoader()).getHarness(query);
+  }
+
+  async getAllHarnesses<T extends ComponentHarness>(query: HarnessQuery<T>): Promise<T[]> {
+    return (await this._getPanelLoader()).getAllHarnesses(query);
+  }
+
+  /** Gets the element id for the content of the current step. */
+  private async _getPanelLoader(): Promise<HarnessLoader> {
+    const panelId = await this._getPanelId();
+    return this.documentRootLocatorFactory().harnessLoaderFor(`#${panelId}`);
+  }
+
   /** Gets the menu panel associated with this menu. */
   private async _getMenuPanel(): Promise<TestElement | null> {
     const panelId = await this._getPanelId();
@@ -134,7 +164,7 @@ export class MatMenuHarness extends ComponentHarness {
 
 
 /** Harness for interacting with a standard mat-menu-item in tests. */
-export class MatMenuItemHarness extends ComponentHarness {
+export class MatMenuItemHarness extends ContentContainerComponentHarness<string> {
   /** The selector for the host element of a `MatMenuItem` instance. */
   static hostSelector = '.mat-menu-item';
 

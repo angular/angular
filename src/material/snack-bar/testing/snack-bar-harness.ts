@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ComponentHarness, HarnessPredicate} from '@angular/cdk/testing';
+import {ContentContainerComponentHarness, HarnessPredicate} from '@angular/cdk/testing';
 import {SnackBarHarnessFilters} from './snack-bar-harness-filters';
 
 /** Harness for interacting with a standard mat-snack-bar in tests. */
-export class MatSnackBarHarness extends ComponentHarness {
+export class MatSnackBarHarness extends ContentContainerComponentHarness<string> {
   // Developers can provide a custom component or template for the
   // snackbar. The canonical snack-bar parent is the "MatSnackBarContainer".
   /** The selector for the host element of a `MatSnackBar` instance. */

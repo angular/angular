@@ -44,6 +44,10 @@ export declare class MatListItemHarness extends MatListItemHarnessBase {
     static with(options?: ListItemHarnessFilters): HarnessPredicate<MatListItemHarness>;
 }
 
+export declare const enum MatListItemSection {
+    CONTENT = ".mat-list-item-content"
+}
+
 export declare class MatListOptionHarness extends MatListItemHarnessBase {
     blur(): Promise<void>;
     deselect(): Promise<void>;

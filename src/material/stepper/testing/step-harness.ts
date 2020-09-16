@@ -107,7 +107,7 @@ export class MatStepHarness extends ContentContainerComponentHarness<string> {
     return (await this._getContentLoader()).getAllHarnesses(query);
   }
 
-  /** Gets the element id for the content of the current step. */
+  /** Gets the harness loader for the content of the current step. */
   private async _getContentLoader(): Promise<HarnessLoader> {
     const contentId = await (await this.host()).getAttribute('aria-controls');
     return this.documentRootLocatorFactory().harnessLoaderFor(`#${contentId}`);

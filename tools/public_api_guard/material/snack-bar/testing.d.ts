@@ -1,4 +1,4 @@
-export declare class MatSnackBarHarness extends ComponentHarness {
+export declare class MatSnackBarHarness extends ContentContainerComponentHarness<string> {
     dismissWithAction(): Promise<void>;
     getActionDescription(): Promise<string>;
     getMessage(): Promise<string>;

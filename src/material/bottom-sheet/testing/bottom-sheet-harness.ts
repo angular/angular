@@ -6,14 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ComponentHarness, HarnessPredicate, TestKey} from '@angular/cdk/testing';
+import {ContentContainerComponentHarness, HarnessPredicate, TestKey} from '@angular/cdk/testing';
 import {BottomSheetHarnessFilters} from './bottom-sheet-harness-filters';
 
-/**
- * Harness for interacting with a standard MatBottomSheet in tests.
- * @dynamic
- */
-export class MatBottomSheetHarness extends ComponentHarness {
+/** Harness for interacting with a standard MatBottomSheet in tests. */
+export class MatBottomSheetHarness extends ContentContainerComponentHarness<string> {
   // Developers can provide a custom component or template for the
   // bottom sheet. The canonical parent is the ".mat-bottom-sheet-container".
   static hostSelector = '.mat-bottom-sheet-container';

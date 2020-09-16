@@ -180,8 +180,8 @@ function runBaseListFunctionalityTests<
     it('should get harness loader for list item content', async () => {
       const items = await simpleListHarness.getItems();
       expect(items.length).toBe(3);
-      const item2Loader = await items[1].getHarnessLoaderForContent();
-      expect(await item2Loader.getHarness(TestItemContentHarness)).not.toBeNull();
+      const childHarness = await items[1].getHarness(TestItemContentHarness);
+      expect(childHarness).not.toBeNull();
     });
   });
 }

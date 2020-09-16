@@ -11,10 +11,7 @@ import {MatBadgePosition, MatBadgeSize} from '@angular/material/badge';
 import {BadgeHarnessFilters} from './badge-harness-filters';
 
 
-/**
- * Harness for interacting with a standard Material badge in tests.
- * @dynamic
- */
+/** Harness for interacting with a standard Material badge in tests. */
 export class MatBadgeHarness extends ComponentHarness {
   static hostSelector = '.mat-badge';
 

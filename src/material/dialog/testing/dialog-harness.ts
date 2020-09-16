@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ComponentHarness, HarnessPredicate, TestKey} from '@angular/cdk/testing';
+import {ContentContainerComponentHarness, HarnessPredicate, TestKey} from '@angular/cdk/testing';
 import {DialogRole} from '@angular/material/dialog';
 import {DialogHarnessFilters} from './dialog-harness-filters';
 
 /** Harness for interacting with a standard `MatDialog` in tests. */
-export class MatDialogHarness extends ComponentHarness {
+export class MatDialogHarness extends ContentContainerComponentHarness<string> {
   // Developers can provide a custom component or template for the
   // dialog. The canonical dialog parent is the "MatDialogContainer".
   /** The selector for the host element of a `MatDialog` instance. */

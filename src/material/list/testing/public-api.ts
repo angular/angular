@@ -11,3 +11,4 @@ export * from './list-harness';
 export * from './list-harness-filters';
 export * from './nav-list-harness';
 export * from './selection-list-harness';
+export {MatListItemSection} from './list-item-harness-base';

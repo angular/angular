@@ -6,20 +6,31 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ComponentHarness, HarnessLoader, HarnessPredicate} from '@angular/cdk/testing';
+import {
+  ContentContainerComponentHarness,
+  HarnessLoader,
+  HarnessPredicate,
+} from '@angular/cdk/testing';
 import {ExpansionPanelHarnessFilters} from './expansion-harness-filters';
 
-const EXPANSION_PANEL_CONTENT_SELECTOR = '.mat-expansion-panel-content';
+/** Selectors for the various `mat-expansion-panel` sections that may contain user content. */
+export const enum MatExpansionPanelSection {
+  HEADER = '.mat-expansion-panel-header',
+  TITLE = '.mat-expansion-panel-header-title',
+  DESCRIPTION = '.mat-expansion-panel-header-description',
+  CONTENT = '.mat-expansion-panel-content'
+}
 
 /** Harness for interacting with a standard mat-expansion-panel in tests. */
-export class MatExpansionPanelHarness extends ComponentHarness {
+export class MatExpansionPanelHarness extends
+  ContentContainerComponentHarness<MatExpansionPanelSection> {
   static hostSelector = '.mat-expansion-panel';
 
-  private _header = this.locatorFor('.mat-expansion-panel-header');
-  private _title = this.locatorForOptional('.mat-expansion-panel-header-title');
-  private _description = this.locatorForOptional('.mat-expansion-panel-header-description');
+  private _header = this.locatorFor(MatExpansionPanelSection.HEADER);
+  private _title = this.locatorForOptional(MatExpansionPanelSection.TITLE);
+  private _description = this.locatorForOptional(MatExpansionPanelSection.DESCRIPTION);
   private _expansionIndicator = this.locatorForOptional('.mat-expansion-indicator');
-  private _content = this.locatorFor(EXPANSION_PANEL_CONTENT_SELECTOR);
+  private _content = this.locatorFor(MatExpansionPanelSection.CONTENT);
 
   /**
    * Gets a `HarnessPredicate` that can be used to search for an expansion-panel
@@ -110,9 +121,12 @@ export class MatExpansionPanelHarness extends ComponentHarness {
   /**
    * Gets a `HarnessLoader` that can be used to load harnesses for
    * components within the panel's content area.
+   * @deprecated Use either `getChildLoader(MatExpansionPanelSection.CONTENT)`, `getHarness` or
+   *    `getAllHarnesses` instead.
+   * @breaking-change 12.0.0
    */
   async getHarnessLoaderForContent(): Promise<HarnessLoader> {
-    return this.locatorFactory.harnessLoaderFor(EXPANSION_PANEL_CONTENT_SELECTOR);
+    return this.getChildLoader(MatExpansionPanelSection.CONTENT);
   }
 
   /** Focuses the panel. */

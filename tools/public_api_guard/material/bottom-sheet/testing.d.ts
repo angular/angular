@@ -1,7 +1,7 @@
 export interface BottomSheetHarnessFilters extends BaseHarnessFilters {
 }
 
-export declare class MatBottomSheetHarness extends ComponentHarness {
+export declare class MatBottomSheetHarness extends ContentContainerComponentHarness<string> {
     dismiss(): Promise<void>;
     getAriaLabel(): Promise<string | null>;
     static hostSelector: string;

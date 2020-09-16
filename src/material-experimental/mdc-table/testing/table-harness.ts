@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ComponentHarness, HarnessPredicate} from '@angular/cdk/testing';
+import {ContentContainerComponentHarness, HarnessPredicate} from '@angular/cdk/testing';
 import {TableHarnessFilters, RowHarnessFilters} from './table-harness-filters';
 import {
   MatRowHarness,
@@ -25,7 +25,7 @@ export interface MatTableHarnessColumnsText {
 }
 
 /** Harness for interacting with an MDC-based mat-table in tests. */
-export class MatTableHarness extends ComponentHarness {
+export class MatTableHarness extends ContentContainerComponentHarness<string> {
   /** The selector for the host element of a `MatTableHarness` instance. */
   static hostSelector = '.mat-mdc-table';
 

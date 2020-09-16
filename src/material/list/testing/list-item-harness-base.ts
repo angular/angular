@@ -10,7 +10,8 @@ import {
   ComponentHarness,
   ComponentHarnessConstructor,
   HarnessLoader,
-  HarnessPredicate
+  HarnessPredicate,
+  ContentContainerComponentHarness,
 } from '@angular/cdk/testing';
 import {BaseListItemHarnessFilters, SubheaderHarnessFilters} from './list-harness-filters';
 
@@ -46,11 +47,16 @@ export class MatSubheaderHarness extends ComponentHarness {
   }
 }
 
+/** Selectors for the various list item sections that may contain user content. */
+export const enum MatListItemSection {
+  CONTENT = '.mat-list-item-content'
+}
+
 /**
  * Shared behavior among the harnesses for the various `MatListItem` flavors.
  * @docs-private
  */
-export class MatListItemHarnessBase extends ComponentHarness {
+export class MatListItemHarnessBase extends ContentContainerComponentHarness<MatListItemSection> {
   private _lines = this.locatorForAll('.mat-line');
   private _avatar = this.locatorForOptional('.mat-list-avatar');
   private _icon = this.locatorForOptional('.mat-list-icon');
@@ -75,8 +81,12 @@ export class MatListItemHarnessBase extends ComponentHarness {
     return !!await this._icon();
   }
 
-  /** Gets a `HarnessLoader` used to get harnesses within the list item's content. */
+  /**
+   * Gets a `HarnessLoader` used to get harnesses within the list item's content.
+   * @deprecated Use `getChildLoader(MatListItemSection.CONTENT)` or `getHarness` instead.
+   * @breaking-change 12.0.0
+   */
   async getHarnessLoaderForContent(): Promise<HarnessLoader> {
-    return this.locatorFactory.harnessLoaderFor('.mat-list-item-content');
+    return this.getChildLoader(MatListItemSection.CONTENT);
   }
 }

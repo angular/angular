@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ComponentHarness, HarnessPredicate} from '@angular/cdk/testing';
+import {ContentContainerComponentHarness, HarnessPredicate} from '@angular/cdk/testing';
 import {DrawerHarnessFilters} from './drawer-harness-filters';
 
 /** Harness for interacting with a standard mat-drawer in tests. */
-export class MatDrawerHarness extends ComponentHarness {
+export class MatDrawerHarness extends ContentContainerComponentHarness<string> {
   /** The selector for the host element of a `MatDrawer` instance. */
   static hostSelector = '.mat-drawer';
 

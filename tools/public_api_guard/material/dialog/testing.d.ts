@@ -1,7 +1,7 @@
 export interface DialogHarnessFilters extends BaseHarnessFilters {
 }
 
-export declare class MatDialogHarness extends ComponentHarness {
+export declare class MatDialogHarness extends ContentContainerComponentHarness<string> {
     close(): Promise<void>;
     getAriaDescribedby(): Promise<string | null>;
     getAriaLabel(): Promise<string | null>;

@@ -40,7 +40,6 @@ export class SubComponentHarness extends ComponentHarness {
   }
 }
 
-/** @dynamic */
 export class SubComponentSpecialHarness extends SubComponentHarness {
   static readonly hostSelector = 'test-sub.test-special';
 }

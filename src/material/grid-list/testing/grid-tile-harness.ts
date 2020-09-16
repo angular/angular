@@ -6,11 +6,17 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ComponentHarness, HarnessPredicate} from '@angular/cdk/testing';
+import {ContentContainerComponentHarness, HarnessPredicate} from '@angular/cdk/testing';
 import {GridTileHarnessFilters} from './grid-list-harness-filters';
 
+/** Selectors for the various `mat-grid-tile` sections that may contain user content. */
+export const enum MatGridTileSection {
+  HEADER = '.mat-grid-tile-header',
+  FOOTER = '.mat-grid-tile-footer'
+}
+
 /** Harness for interacting with a standard `MatGridTitle` in tests. */
-export class MatGridTileHarness extends ComponentHarness {
+export class MatGridTileHarness extends ContentContainerComponentHarness<MatGridTileSection> {
   /** The selector for the host element of a `MatGridTile` instance. */
   static hostSelector = '.mat-grid-tile';
 
@@ -30,8 +36,8 @@ export class MatGridTileHarness extends ComponentHarness {
             (harness, pattern) => HarnessPredicate.stringMatches(harness.getFooterText(), pattern));
   }
 
-  private _header = this.locatorForOptional('.mat-grid-tile-header');
-  private _footer = this.locatorForOptional('.mat-grid-tile-footer');
+  private _header = this.locatorForOptional(MatGridTileSection.HEADER);
+  private _footer = this.locatorForOptional(MatGridTileSection.FOOTER);
   private _avatar = this.locatorForOptional('.mat-grid-avatar');
 
   /** Gets the amount of rows that the grid-tile takes up. */

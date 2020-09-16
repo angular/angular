@@ -17,7 +17,7 @@ export declare class MatGridListHarness extends ComponentHarness {
     static with(options?: GridListHarnessFilters): HarnessPredicate<MatGridListHarness>;
 }
 
-export declare class MatGridTileHarness extends ComponentHarness {
+export declare class MatGridTileHarness extends ContentContainerComponentHarness<MatGridTileSection> {
     getColspan(): Promise<number>;
     getFooterText(): Promise<string | null>;
     getHeaderText(): Promise<string | null>;
@@ -27,4 +27,9 @@ export declare class MatGridTileHarness extends ComponentHarness {
     hasHeader(): Promise<boolean>;
     static hostSelector: string;
     static with(options?: GridTileHarnessFilters): HarnessPredicate<MatGridTileHarness>;
+}
+
+export declare const enum MatGridTileSection {
+    HEADER = ".mat-grid-tile-header",
+    FOOTER = ".mat-grid-tile-footer"
 }
