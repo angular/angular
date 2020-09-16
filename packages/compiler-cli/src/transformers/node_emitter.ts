@@ -34,10 +34,12 @@ export class TypeScriptNodeEmitter {
     const sourceStatements =
         [...converter.getReexports(), ...converter.getImports(), ...statements];
     if (preamble) {
-      if (sourceStatements.length === 0) {
-        sourceStatements.push(ts.createNotEmittedStatement(sourceFile));
-      }
-      attachComments(sourceStatements[0], [leadingComment(stripComment(preamble), true)]);
+      // We always attach the preamble comment to a `NotEmittedStatement` node, because tsickle uses
+      // this node type as a marker of the preamble to ensure that it adds its own new nodes after
+      // the preamble.
+      const preambleCommentHolder = ts.createNotEmittedStatement(sourceFile);
+      attachComments(preambleCommentHolder, [leadingComment(stripComment(preamble), true)]);
+      sourceStatements.unshift(preambleCommentHolder);
     }
 
     converter.updateSourceMap(sourceStatements);
