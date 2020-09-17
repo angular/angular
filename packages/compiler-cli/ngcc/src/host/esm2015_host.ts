@@ -10,7 +10,7 @@ import * as ts from 'typescript';
 
 import {absoluteFromSourceFile} from '../../../src/ngtsc/file_system';
 import {Logger} from '../../../src/ngtsc/logging';
-import {ClassDeclaration, ClassMember, ClassMemberKind, CtorParameter, Declaration, Decorator, EnumMember, isDecoratorIdentifier, isNamedClassDeclaration, isNamedFunctionDeclaration, isNamedVariableDeclaration, KnownDeclaration, reflectObjectLiteral, SpecialDeclarationKind, TypeScriptReflectionHost, TypeValueReference, TypeValueReferenceKind, ValueUnavailableKind} from '../../../src/ngtsc/reflection';
+import {ClassDeclaration, ClassMember, ClassMemberKind, CtorParameter, Declaration, Decorator, EnumMember, Import, isDecoratorIdentifier, isNamedClassDeclaration, isNamedFunctionDeclaration, isNamedVariableDeclaration, KnownDeclaration, reflectObjectLiteral, SpecialDeclarationKind, TypeScriptReflectionHost, TypeValueReference, TypeValueReferenceKind, ValueUnavailableKind} from '../../../src/ngtsc/reflection';
 import {isWithinPackage} from '../analysis/util';
 import {BundleProgram} from '../packages/bundle_program';
 import {findAll, getNameText, hasNameIdentifier, isDefined, stripDollarSuffix} from '../utils';
@@ -1608,10 +1608,11 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
   /**
    * Compute the `TypeValueReference` for the given `typeExpression`.
    *
-   * In ngcc, all the `typeExpression` are guaranteed to be "values" because it is working in JS and
-   * not TS. This means that the TS compiler is not going to remove the "type" import and so we can
-   * always use a LOCAL `TypeValueReference` kind, rather than trying to force an additional import
-   * for non-local expressions.
+   * Although `typeExpression` is a valid `ts.Expression` that could be emitted directly into the
+   * generated code, ngcc still needs to resolve the declaration and create an `IMPORTED` type
+   * value reference as the compiler has specialized handling for some symbols, for example
+   * `ChangeDetectorRef` from `@angular/core`. Such an `IMPORTED` type value reference will result
+   * in a newly generated namespace import, instead of emitting the original `typeExpression` as is.
    */
   private typeToValue(typeExpression: ts.Expression|null): TypeValueReference {
     if (typeExpression === null) {
@@ -1621,11 +1622,40 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
       };
     }
 
+    const imp = this.getImportOfExpression(typeExpression);
+    const decl = this.getDeclarationOfExpression(typeExpression);
+    if (imp === null || decl === null || decl.node === null) {
+      return {
+        kind: TypeValueReferenceKind.LOCAL,
+        expression: typeExpression,
+        defaultImportStatement: null,
+      };
+    }
+
     return {
-      kind: TypeValueReferenceKind.LOCAL,
-      expression: typeExpression,
-      defaultImportStatement: null,
+      kind: TypeValueReferenceKind.IMPORTED,
+      valueDeclaration: decl.node,
+      moduleName: imp.from,
+      importedName: imp.name,
+      nestedPath: null,
     };
+  }
+
+  /**
+   * Determines where the `expression` is imported from.
+   *
+   * @param expression the expression to determine the import details for.
+   * @returns the `Import` for the expression, or `null` if the expression is not imported or the
+   * expression syntax is not supported.
+   */
+  private getImportOfExpression(expression: ts.Expression): Import|null {
+    if (ts.isIdentifier(expression)) {
+      return this.getImportOfIdentifier(expression);
+    } else if (ts.isPropertyAccessExpression(expression) && ts.isIdentifier(expression.name)) {
+      return this.getImportOfIdentifier(expression.name);
+    } else {
+      return null;
+    }
   }
 
   /**

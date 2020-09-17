@@ -99,7 +99,14 @@ function compileIntoFlatPackage(
     program.emit();
   };
 
-  emit({declaration: true, module: options.module, target: options.target, lib: []});
+  emit({
+    declaration: true,
+    emitDecoratorMetadata: true,
+    moduleResolution: ts.ModuleResolutionKind.NodeJs,
+    module: options.module,
+    target: options.target,
+    lib: [],
+  });
 
   // Copy over the JS and .d.ts files, and add a .metadata.json for each .d.ts file.
   for (const file of rootNames) {
@@ -152,7 +159,9 @@ export function compileIntoApf(
   compileFs.ensureDir(compileFs.resolve('esm2015'));
   emit({
     declaration: true,
+    emitDecoratorMetadata: true,
     outDir: './esm2015',
+    moduleResolution: ts.ModuleResolutionKind.NodeJs,
     module: ts.ModuleKind.ESNext,
     target: ts.ScriptTarget.ES2015,
     lib: [],
@@ -178,7 +187,9 @@ export function compileIntoApf(
   compileFs.ensureDir(compileFs.resolve('esm5'));
   emit({
     declaration: false,
+    emitDecoratorMetadata: true,
     outDir: './esm5',
+    moduleResolution: ts.ModuleResolutionKind.NodeJs,
     module: ts.ModuleKind.ESNext,
     target: ts.ScriptTarget.ES5,
     lib: [],
