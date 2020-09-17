@@ -1,20 +1,22 @@
+import { Injector } from '@angular/core';
+import { Subject } from 'rxjs';
 import { Duration, Event, EventsComponent } from './events.component';
 import { EventsService } from './events.service';
-import { ReflectiveInjector } from '@angular/core';
-import { Subject } from 'rxjs';
 
 describe('EventsComponent', () => {
   let component: EventsComponent;
-  let injector: ReflectiveInjector;
+  let injector: Injector;
   let eventsService: TestEventsService;
 
   beforeEach(() => {
-    injector = ReflectiveInjector.resolveAndCreate([
-      EventsComponent,
-      { provide: EventsService, useClass: TestEventsService },
-    ]);
-    eventsService = injector.get(EventsService) as any;
-    component = injector.get(EventsComponent);
+    injector = Injector.create({
+      providers: [
+        { provide: EventsComponent, deps: [EventsService] } ,
+        { provide: EventsService, useClass: TestEventsService, deps: [] },
+      ]
+    });
+    eventsService = injector.get(EventsService) as unknown as TestEventsService;
+    component = injector.get(EventsComponent) as unknown as EventsComponent;
   });
 
   it('should have no pastEvents when first created', () => {
