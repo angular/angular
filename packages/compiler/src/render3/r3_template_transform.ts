@@ -332,15 +332,26 @@ class HtmlAstToIvyAst implements html.Visitor {
     const absoluteOffset =
         attribute.valueSpan ? attribute.valueSpan.start.offset : srcSpan.start.offset;
 
+    function createKeySpan(srcSpan: ParseSourceSpan, prefix: string, identifier: string) {
+      // We need to adjust the start location for the keySpan to account for the removed 'data-'
+      // prefix from `normalizeAttributeName`.
+      const normalizationAdjustment = attribute.name.length - name.length;
+      const keySpanStart = srcSpan.start.moveBy(prefix.length + normalizationAdjustment);
+      const keySpanEnd = keySpanStart.moveBy(identifier.length);
+      return new ParseSourceSpan(keySpanStart, keySpanEnd, identifier);
+    }
+
     const bindParts = name.match(BIND_NAME_REGEXP);
     let hasBinding = false;
 
     if (bindParts) {
       hasBinding = true;
       if (bindParts[KW_BIND_IDX] != null) {
+        const identifier = bindParts[IDENT_KW_IDX];
+        const keySpan = createKeySpan(srcSpan, bindParts[KW_BIND_IDX], identifier);
         this.bindingParser.parsePropertyBinding(
-            bindParts[IDENT_KW_IDX], value, false, srcSpan, absoluteOffset, attribute.valueSpan,
-            matchableAttributes, parsedProperties);
+            identifier, value, false, srcSpan, absoluteOffset, attribute.valueSpan,
+            matchableAttributes, parsedProperties, keySpan);
 
       } else if (bindParts[KW_LET_IDX]) {
         if (isTemplateElement) {
@@ -353,37 +364,41 @@ class HtmlAstToIvyAst implements html.Visitor {
       } else if (bindParts[KW_REF_IDX]) {
         const identifier = bindParts[IDENT_KW_IDX];
         this.parseReference(identifier, value, srcSpan, attribute.valueSpan, references);
-
       } else if (bindParts[KW_ON_IDX]) {
         const events: ParsedEvent[] = [];
+        const identifier = bindParts[IDENT_KW_IDX];
         this.bindingParser.parseEvent(
-            bindParts[IDENT_KW_IDX], value, srcSpan, attribute.valueSpan || srcSpan,
-            matchableAttributes, events);
+            identifier, value, srcSpan, attribute.valueSpan || srcSpan, matchableAttributes,
+            events);
         addEvents(events, boundEvents);
       } else if (bindParts[KW_BINDON_IDX]) {
+        const identifier = bindParts[IDENT_KW_IDX];
+        const keySpan = createKeySpan(srcSpan, bindParts[KW_BINDON_IDX], identifier);
         this.bindingParser.parsePropertyBinding(
-            bindParts[IDENT_KW_IDX], value, false, srcSpan, absoluteOffset, attribute.valueSpan,
-            matchableAttributes, parsedProperties);
+            identifier, value, false, srcSpan, absoluteOffset, attribute.valueSpan,
+            matchableAttributes, parsedProperties, keySpan);
         this.parseAssignmentEvent(
-            bindParts[IDENT_KW_IDX], value, srcSpan, attribute.valueSpan, matchableAttributes,
-            boundEvents);
+            identifier, value, srcSpan, attribute.valueSpan, matchableAttributes, boundEvents);
       } else if (bindParts[KW_AT_IDX]) {
+        const keySpan = createKeySpan(srcSpan, '', name);
         this.bindingParser.parseLiteralAttr(
             name, value, srcSpan, absoluteOffset, attribute.valueSpan, matchableAttributes,
-            parsedProperties);
+            parsedProperties, keySpan);
 
       } else if (bindParts[IDENT_BANANA_BOX_IDX]) {
+        const keySpan = createKeySpan(srcSpan, '[(', bindParts[IDENT_BANANA_BOX_IDX]);
         this.bindingParser.parsePropertyBinding(
             bindParts[IDENT_BANANA_BOX_IDX], value, false, srcSpan, absoluteOffset,
-            attribute.valueSpan, matchableAttributes, parsedProperties);
+            attribute.valueSpan, matchableAttributes, parsedProperties, keySpan);
         this.parseAssignmentEvent(
             bindParts[IDENT_BANANA_BOX_IDX], value, srcSpan, attribute.valueSpan,
             matchableAttributes, boundEvents);
 
       } else if (bindParts[IDENT_PROPERTY_IDX]) {
+        const keySpan = createKeySpan(srcSpan, '[', bindParts[IDENT_PROPERTY_IDX]);
         this.bindingParser.parsePropertyBinding(
             bindParts[IDENT_PROPERTY_IDX], value, false, srcSpan, absoluteOffset,
-            attribute.valueSpan, matchableAttributes, parsedProperties);
+            attribute.valueSpan, matchableAttributes, parsedProperties, keySpan);
 
       } else if (bindParts[IDENT_EVENT_IDX]) {
         const events: ParsedEvent[] = [];
@@ -393,8 +408,10 @@ class HtmlAstToIvyAst implements html.Visitor {
         addEvents(events, boundEvents);
       }
     } else {
+      const keySpan = createKeySpan(srcSpan, '' /* prefix */, name);
       hasBinding = this.bindingParser.parsePropertyInterpolation(
-          name, value, srcSpan, attribute.valueSpan, matchableAttributes, parsedProperties);
+          name, value, srcSpan, attribute.valueSpan, matchableAttributes, parsedProperties,
+          keySpan);
     }
 
     return hasBinding;
