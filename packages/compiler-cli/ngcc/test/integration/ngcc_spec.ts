@@ -576,6 +576,35 @@ runInEachFileSystem(() => {
               `TestClass.ɵprov = ɵngcc0.ɵɵdefineInjectable({`);
     });
 
+    // https://github.com/angular/angular/issues/38883
+    it('should recognize ChangeDetectorRef as special symbol for pipes', () => {
+      compileIntoFlatEs2015Package('test-package', {
+        '/index.ts': `
+        import {ChangeDetectorRef, Pipe, PipeTransform} from '@angular/core';
+
+        @Pipe({
+          name: 'myTestPipe'
+        })
+        export class TestClass implements PipeTransform {
+          constructor(cdr: ChangeDetectorRef) {}
+          transform(value: any) { return value; }
+        }
+        `,
+      });
+
+      mainNgcc({
+        basePath: '/node_modules',
+        targetEntryPointPath: 'test-package',
+        propertiesToConsider: ['esm2015'],
+      });
+
+      const jsContents = fs.readFile(_(`/node_modules/test-package/index.js`));
+      expect(jsContents)
+          .toContain(
+              `TestClass.ɵfac = function TestClass_Factory(t) { ` +
+              `return new (t || TestClass)(ɵngcc0.ɵɵinjectPipeChangeDetectorRef()); };`);
+    });
+
     it('should use the correct type name in typings files when an export has a different name in source files',
        () => {
          // We need to make sure that changes to the typings files use the correct name
