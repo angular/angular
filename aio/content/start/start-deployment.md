@@ -1,4 +1,4 @@
-# Try it: Deployment
+# Deploying an application
 
 
 To deploy your application, you have to compile it, and then host the JavaScript, CSS, and HTML on a web server. Built Angular applications are very portable and can live in any environment or served by any technology, such as Node, Java, .NET, PHP, and many others.
