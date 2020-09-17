@@ -610,11 +610,6 @@
           "tooltip": "Create a template-driven form using directives and Angular template syntax."
         },
         {
-          "url": "guide/displaying-data",
-          "title": "Data binding",
-          "tooltip": "Property binding helps show app data in the UI."
-        },
-        {
           "url": "guide/web-worker",
           "title": "Web Workers",
           "tooltip": "Using web workers for background processing."

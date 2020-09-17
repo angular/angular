@@ -11,7 +11,7 @@ about the features and tools that can help you develop and deliver Angular appli
 
 ## Application architecture
 
-* The [Components and templates](guide/displaying-data) guide explains how to connect the application data in your [components](guide/glossary#component) to your page-display [templates](guide/glossary#template), to create a complete interactive application.
+* The **Main Concepts** section located in the table of contents contains several topics that explain how to connect the application data in your [components](guide/glossary#component) to your page-display [templates](guide/glossary#template), to create a complete interactive application.
 
 * The [NgModules](guide/ngmodules) guide provides in-depth information on the modular structure of an Angular application.
 
@@ -21,7 +21,7 @@ about the features and tools that can help you develop and deliver Angular appli
 
 ## Responsive programming
 
-The **Components and Templates** guide provides guidance and details of the [template syntax](guide/template-syntax) that you use to display your component data when and where you want it within a view, and to collect input from users that you can respond to.
+The [template syntax](guide/template-syntax) and related topics contain details about how to display your component data when and where you want it within a view, and how to collect input from users that you can respond to.
 
 Additional pages and sections describe some basic programming techniques for Angular apps.
 
@@ -52,8 +52,6 @@ For some platforms and applications, you might also want to use the PWA (Progres
 
 ## Support for the development cycle
 
-The **Development Workflow** section describes the tools and processes you use to compile, test, and deploy Angular applications.
-
 * [CLI Command Reference](cli): The Angular CLI is a command-line tool that you use to create projects, generate application and library code, and perform a variety of ongoing development tasks such as testing, bundling, and deployment.
 
 * [Compilation](guide/aot-compiler): Angular provides just-in-time (JIT) compilation for the development environment, and ahead-of-time (AOT) compilation for the production environment.
@@ -67,7 +65,6 @@ The **Development Workflow** section describes the tools and processes you use t
 * [Internationalization](guide/i18n): Make your app available in multiple languages with Angular's internationalization (i18n) tools.
 
 * [Accessibility](guide/accessibility): Make your app accessible to all users.
-
 
 ## File structure, configuration, and dependencies
 
