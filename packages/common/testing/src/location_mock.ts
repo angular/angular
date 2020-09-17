@@ -123,6 +123,16 @@ export class SpyLocation implements Location {
       this._subject.emit({'url': this.path(), 'state': this.getState(), 'pop': true});
     }
   }
+
+  historyGo(relativePosition: number = 0): void {
+    const nextPageIndex = this._historyIndex + relativePosition;
+    if (nextPageIndex >= 0 && nextPageIndex < this._history.length) {
+      this._historyIndex = nextPageIndex;
+      this._subject.emit(
+          {'url': this.path(), 'state': this.getState(), 'pop': true, 'type': 'popstate'});
+    }
+  }
+
   onUrlChange(fn: (url: string, state: unknown) => void) {
     this._urlChangeListeners.push(fn);
 

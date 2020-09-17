@@ -81,6 +81,54 @@ describe('Location Class', () => {
 
       expect(location.getState()).toEqual({url: 'test1'});
     });
+
+    it('should work after using forward button', () => {
+      expect(location.getState()).toBe(null);
+
+      location.go('/test1', '', {url: 'test1'});
+      location.go('/test2', '', {url: 'test2'});
+      expect(location.getState()).toEqual({url: 'test2'});
+
+      location.back();
+      expect(location.getState()).toEqual({url: 'test1'});
+
+      location.forward();
+      expect(location.getState()).toEqual({url: 'test2'});
+    });
+
+    it('should work after using location.historyGo()', () => {
+      expect(location.getState()).toBe(null);
+
+      location.go('/test1', '', {url: 'test1'});
+      location.go('/test2', '', {url: 'test2'});
+      location.go('/test3', '', {url: 'test3'});
+      expect(location.getState()).toEqual({url: 'test3'});
+
+      location.historyGo(-2);
+      expect(location.getState()).toEqual({url: 'test1'});
+
+      location.historyGo(2);
+      expect(location.getState()).toEqual({url: 'test3'});
+
+      location.go('/test3', '', {url: 'test4'});
+      location.historyGo(0);
+      expect(location.getState()).toEqual({url: 'test4'});
+
+      location.historyGo();
+      expect(location.getState()).toEqual({url: 'test4'});
+
+      // we are testing the behaviour of the `historyGo` method  at the moment when the value of
+      // the relativePosition goes out of bounds.
+      // The result should be that the locationState does not change.
+      location.historyGo(100);
+      expect(location.getState()).toEqual({url: 'test4'});
+
+      location.historyGo(-100);
+      expect(location.getState()).toEqual({url: 'test4'});
+
+      location.back();
+      expect(location.getState()).toEqual({url: 'test3'});
+    });
   });
 
   describe('location.onUrlChange()', () => {

@@ -189,6 +189,22 @@ export class Location {
   }
 
   /**
+   * Navigate to a specific page from session history, identified by its relative position to the
+   * current page.
+   *
+   * @param relativePosition  Position of the target page in the history relative to the current
+   *     page.
+   * A negative value moves backwards, a positive value moves forwards, e.g. `location.historyGo(2)`
+   * moves forward two pages and `location.historyGo(-2)` moves back two pages. When we try to go
+   * beyond what's stored in the history session, we stay in the current page. Same behaviour occurs
+   * when `relativePosition` equals 0.
+   * @see https://developer.mozilla.org/en-US/docs/Web/API/History_API#Moving_to_a_specific_point_in_history
+   */
+  historyGo(relativePosition: number = 0): void {
+    this._platformStrategy.historyGo?.(relativePosition);
+  }
+
+  /**
    * Registers a URL change listener. Use to catch updates performed by the Angular
    * framework that are not detectible through "popstate" or "hashchange" events.
    *
