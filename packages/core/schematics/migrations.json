@@ -59,6 +59,11 @@
       "version": "11.0.0-beta",
       "description": "In Angular version 11, the type of `AbstractControl.parent` can be `null` to reflect the runtime value more accurately. This migration automatically adds non-null assertions to existing accesses of the `parent` property on types like `FormControl`, `FormArray` and `FormGroup`.",
       "factory": "./migrations/abstract-control-parent/index"
+    },
+    "migration-v11-native-view-encapsulation": {
+      "version": "11.0.0-beta",
+      "description": "ViewEncapsulation.Native has been removed as of Angular version 11. This migration replaces any usages with ViewEncapsulation.ShadowDom.",
+      "factory": "./migrations/native-view-encapsulation/index"
     }
   }
 }
