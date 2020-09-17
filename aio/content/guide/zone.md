@@ -9,7 +9,7 @@ To understand the benefits of `NgZone`, it is important to have a clear grasp of
 
 ### Displaying and updating data in Angular
 
-In Angular, you can [display data](guide/displaying-data) by binding controls in an HTML template to the properties of an Angular component.
+In Angular, you can display data by binding controls in an HTML template to the properties of an Angular component.
 
 <code-example path="displaying-data/src/app/app.component.1.ts" header="src/app/app.component.ts"></code-example>
 
@@ -102,13 +102,13 @@ In Angular, this step is unnecessary. Whenever you update the data, your HTML is
 
 To understand how change detection works, first consider when the application needs to update the HTML. Typically, updates occur for one of the following reasons:
 
-1. Component initialization. For example, when bootstrapping an Angular application, Angular loads the bootstrap component and triggers the [ApplicationRef.tick()](api/core/ApplicationRef#tick) to call change detection and View Rendering. Just as in the [displaying data](guide/displaying-data) sample, the `AppComponent` is the bootstrap component. This component has the properties `title` and `myHero`, which the application renders in the HTML.
+1. Component initialization. For example, when bootstrapping an Angular application, Angular loads the bootstrap component and triggers the [ApplicationRef.tick()](api/core/ApplicationRef#tick) to call change detection and View Rendering.
 
-2. Event listener. The DOM event listener can update the data in an Angular component and also trigger change detection, as in the following example.
+1. Event listener. The DOM event listener can update the data in an Angular component and also trigger change detection, as in the following example.
 
 <code-example path="user-input/src/app/click-me.component.ts" region="click-me-component" header="src/app/click-me.component.ts"></code-example>
 
-3. HTTP Data Request. You can also get data from a server through an HTTP request. For example:
+1. HTTP Data Request. You can also get data from a server through an HTTP request. For example:
 
 ```typescript
 @Component({
