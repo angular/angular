@@ -841,7 +841,10 @@ export class ParsedProperty {
 
   constructor(
       public name: string, public expression: ASTWithSource, public type: ParsedPropertyType,
-      public sourceSpan: ParseSourceSpan, public valueSpan?: ParseSourceSpan) {
+      // TODO(atscott): `keySpan` should really be required but allows `undefined` so VE does
+      // not need to be updated. Make `keySpan` required when VE is removed.
+      public sourceSpan: ParseSourceSpan, readonly keySpan: ParseSourceSpan|undefined,
+      public valueSpan: ParseSourceSpan|undefined) {
     this.isLiteral = this.type === ParsedPropertyType.LITERAL_ATTR;
     this.isAnimation = this.type === ParsedPropertyType.ANIMATION;
   }
@@ -896,5 +899,5 @@ export class BoundElementProperty {
   constructor(
       public name: string, public type: BindingType, public securityContext: SecurityContext,
       public value: ASTWithSource, public unit: string|null, public sourceSpan: ParseSourceSpan,
-      public valueSpan?: ParseSourceSpan) {}
+      readonly keySpan: ParseSourceSpan|undefined, public valueSpan: ParseSourceSpan|undefined) {}
 }

@@ -43,12 +43,18 @@ export class BoundAttribute implements Node {
   constructor(
       public name: string, public type: BindingType, public securityContext: SecurityContext,
       public value: AST, public unit: string|null, public sourceSpan: ParseSourceSpan,
-      public valueSpan?: ParseSourceSpan, public i18n?: I18nMeta) {}
+      readonly keySpan: ParseSourceSpan, public valueSpan: ParseSourceSpan|undefined,
+      public i18n: I18nMeta|undefined) {}
 
-  static fromBoundElementProperty(prop: BoundElementProperty, i18n?: I18nMeta) {
+  static fromBoundElementProperty(prop: BoundElementProperty, i18n?: I18nMeta): BoundAttribute {
+    if (prop.keySpan === undefined) {
+      throw new Error(
+          `Unexpected state: keySpan must be defined for bound attributes but was not for ${
+              prop.name}: ${prop.sourceSpan}`);
+    }
     return new BoundAttribute(
         prop.name, prop.type, prop.securityContext, prop.value, prop.unit, prop.sourceSpan,
-        prop.valueSpan, i18n);
+        prop.keySpan, prop.valueSpan, i18n);
   }
 
   visit<Result>(visitor: Visitor<Result>): Result {

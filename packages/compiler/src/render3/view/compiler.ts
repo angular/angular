@@ -582,9 +582,8 @@ function createHostBindingsFunction(
   // bindings with pipes. These calculates happen after this block.
   let totalHostVarsCount = 0;
   bindings && bindings.forEach((binding: ParsedProperty) => {
-    const name = binding.name;
-    const stylingInputWasSet =
-        styleBuilder.registerInputBasedOnName(name, binding.expression, binding.sourceSpan);
+    const stylingInputWasSet = styleBuilder.registerInputBasedOnName(
+        binding.name, binding.expression, hostBindingSourceSpan);
     if (stylingInputWasSet) {
       totalHostVarsCount += MIN_STYLING_BINDING_SLOTS_REQUIRED;
     } else {
