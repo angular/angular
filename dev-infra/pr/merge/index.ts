@@ -33,8 +33,8 @@ import {MergeResult, MergeStatus, PullRequestMergeTask} from './task';
 export async function mergePullRequest(
     prNumber: number, githubToken: string, projectRoot: string = getRepoBaseDir(),
     config?: MergeConfigWithRemote) {
-  // Set an environment variable for the duration of the process to skip all git commit hooks
-  // triggered by husky.
+  // Set the environment variable to skip all git commit hooks triggered by husky. We are unable to
+  // rely on `---no-verify` as some hooks still run, notably the `prepare-commit-msg` hook.
   process.env['HUSKY_SKIP_HOOKS'] = '1';
 
   const api = await createPullRequestMergeTask(githubToken, projectRoot, config);
