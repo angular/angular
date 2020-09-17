@@ -187,6 +187,47 @@ describe('Integration', () => {
          expect(navigation.extras.state).toEqual(state);
        })));
 
+    it('should navigate correctly when using `Location#historyGo',
+       fakeAsync(inject([Router, Location], (router: Router, location: SpyLocation) => {
+         router.resetConfig([
+           {path: 'first', component: SimpleCmp},
+           {path: 'second', component: SimpleCmp},
+
+         ]);
+
+         createRoot(router, RootCmp);
+
+         router.navigateByUrl('/first');
+         tick();
+         router.navigateByUrl('/second');
+         tick();
+         expect(router.url).toEqual('/second');
+
+         location.historyGo(-1);
+         tick();
+         expect(router.url).toEqual('/first');
+
+         location.historyGo(1);
+         tick();
+         expect(router.url).toEqual('/second');
+
+         location.historyGo(-100);
+         tick();
+         expect(router.url).toEqual('/second');
+
+         location.historyGo(100);
+         tick();
+         expect(router.url).toEqual('/second');
+
+         location.historyGo(0);
+         tick();
+         expect(router.url).toEqual('/second');
+
+         location.historyGo();
+         tick();
+         expect(router.url).toEqual('/second');
+       })));
+
     it('should not error if state is not {[key: string]: any}',
        fakeAsync(inject([Router, Location], (router: Router, location: SpyLocation) => {
          router.resetConfig([

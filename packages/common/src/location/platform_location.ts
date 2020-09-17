@@ -64,6 +64,10 @@ export abstract class PlatformLocation {
   abstract forward(): void;
 
   abstract back(): void;
+
+  historyGo?(relativePosition: number): void {
+    throw new Error('Not implemented');
+  }
 }
 
 export function useBrowserPlatformLocation() {
@@ -187,6 +191,10 @@ export class BrowserPlatformLocation extends PlatformLocation {
 
   back(): void {
     this._history.back();
+  }
+
+  historyGo(relativePosition: number = 0): void {
+    this._history.go(relativePosition);
   }
 
   getState(): unknown {

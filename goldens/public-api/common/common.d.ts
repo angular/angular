@@ -101,6 +101,7 @@ export declare class HashLocationStrategy extends LocationStrategy implements On
     back(): void;
     forward(): void;
     getBaseHref(): string;
+    historyGo(relativePosition?: number): void;
     ngOnDestroy(): void;
     onPopState(fn: LocationChangeListener): void;
     path(includeHash?: boolean): string;
@@ -156,6 +157,7 @@ export declare class Location {
     forward(): void;
     getState(): unknown;
     go(path: string, query?: string, state?: any): void;
+    historyGo(relativePosition?: number): void;
     isCurrentPathEqualTo(path: string, query?: string): boolean;
     normalize(url: string): string;
     onUrlChange(fn: (url: string, state: unknown) => void): void;
@@ -183,6 +185,7 @@ export declare abstract class LocationStrategy {
     abstract back(): void;
     abstract forward(): void;
     abstract getBaseHref(): string;
+    historyGo?(relativePosition: number): void;
     abstract onPopState(fn: LocationChangeListener): void;
     abstract path(includeHash?: boolean): string;
     abstract prepareExternalUrl(internal: string): string;
@@ -330,6 +333,7 @@ export declare class PathLocationStrategy extends LocationStrategy implements On
     back(): void;
     forward(): void;
     getBaseHref(): string;
+    historyGo(relativePosition?: number): void;
     ngOnDestroy(): void;
     onPopState(fn: LocationChangeListener): void;
     path(includeHash?: boolean): string;
@@ -357,6 +361,7 @@ export declare abstract class PlatformLocation {
     abstract forward(): void;
     abstract getBaseHrefFromDOM(): string;
     abstract getState(): unknown;
+    historyGo?(relativePosition: number): void;
     abstract onHashChange(fn: LocationChangeListener): VoidFunction;
     abstract onPopState(fn: LocationChangeListener): VoidFunction;
     abstract pushState(state: any, title: string, url: string): void;

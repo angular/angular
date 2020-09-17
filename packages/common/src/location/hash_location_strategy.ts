@@ -98,4 +98,8 @@ export class HashLocationStrategy extends LocationStrategy implements OnDestroy 
   back(): void {
     this._platformLocation.back();
   }
+
+  historyGo(relativePosition: number = 0): void {
+    this._platformLocation.historyGo?.(relativePosition);
+  }
 }
