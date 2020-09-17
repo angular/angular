@@ -177,6 +177,7 @@
 /getting-started/forms	/start/start-forms
 /getting-started/deployment	/start/start-deployment
 /guide/cli-quickstart	/start
+/guide/displaying-data	/start#template-syntax
 /guide/learning-angular	/start
 /guide/learning-angular.html	/start
 /guide/metadata	/guide/aot-compiler

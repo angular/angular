@@ -31,6 +31,7 @@
       {"type": 301, "source": "/guide/quickstart", "destination": "/start"},
       {"type": 301, "source": "/getting-started", "destination": "/start"},
       {"type": 301, "source": "/getting-started/:rest*", "destination": "/start/:rest*"},
+      {"type": 301, "source": "/guide/displaying-data", "destination": "/start#template-syntax"},
 
       // Renaming of Getting Started topics
       {"type": 301, "source": "/start/data", "destination": "/start/start-data"},

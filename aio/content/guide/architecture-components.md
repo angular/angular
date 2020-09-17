@@ -89,7 +89,7 @@ This example from the `HeroListComponent` template uses three of these forms.
 
 <code-example path="architecture/src/app/hero-list.component.1.html" header="src/app/hero-list.component.html (binding)" region="binding"></code-example>
 
-* The `{{hero.name}}` [*interpolation*](guide/displaying-data#interpolation)
+* The `{{hero.name}}` [*interpolation*](guide/interpolation)
 displays the component's `hero.name` property value within the `<li>` element.
 
 * The `[hero]` [*property binding*](guide/property-binding) passes the value of
@@ -166,8 +166,8 @@ The example template uses two built-in structural directives to add application 
 
 <code-example path="architecture/src/app/hero-list.component.1.html" header="src/app/hero-list.component.html (structural)" region="structural"></code-example>
 
-* [`*ngFor`](guide/displaying-data#ngFor) is an iterative; it tells Angular to stamp out one `<li>` per hero in the `heroes` list.
-* [`*ngIf`](guide/displaying-data#ngIf) is a conditional; it includes the `HeroDetail` component only if a selected hero exists.
+* [`*ngFor`](guide/structural-directives#inside-ngfor) is an iterative; it tells Angular to stamp out one `<li>` per hero in the `heroes` list.
+* [`*ngIf`](guide/structural-directives#ngif-case-study) is a conditional; it includes the `HeroDetail` component only if a selected hero exists.
 
 #### Attribute directives
 
