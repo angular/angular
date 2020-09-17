@@ -1,4 +1,4 @@
-# In-app navigation
+# Adding navigation
 
 At the end of [part 1](start "Get started with a basic Angular app"), the online store application has a basic product catalog.
 The app doesn't have any variable states or navigation.
