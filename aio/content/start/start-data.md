@@ -1,4 +1,4 @@
-# Try it: Manage data
+# Managing data
 
 At the end of [In-app Navigation](start/start-routing "Try it: In-app Navigation"), the online store application has a product catalog with two views: a product list and product details.
 Users can click on a product name from the list to see details in a new view, with a distinct URL, or route.

@@ -61,27 +61,27 @@
             "children": [
               {
                 "url": "start",
-                "title": "A Sample App",
+                "title": "Getting started",
                 "tooltip": "Take a look at Angular's component model, template syntax, and component communication."
               },
               {
                 "url": "start/start-routing",
-                "title": "In-app Navigation",
+                "title": "Adding navigation",
                 "tooltip": "Navigate among different page views using the browser's URL."
               },
               {
                 "url": "start/start-data",
-                "title": "Manage Data",
+                "title": "Managing Data",
                 "tooltip": "Use services and access external data via HTTP."
               },
               {
                 "url": "start/start-forms",
-                "title": "Forms for User Input",
+                "title": "Using Forms for User Input",
                 "tooltip": "Learn about fetching and managing data from users with forms."
               },
               {
                 "url": "start/start-deployment",
-                "title": "Deployment",
+                "title": "Deploying an application",
                 "tooltip": "Move to local development, or deploy your application to Firebase or your own server."
               }
             ]
