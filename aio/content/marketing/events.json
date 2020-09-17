@@ -1,11 +1,11 @@
 [
   {
-    "name": "ngrome",
+    "name": "ng-china",
     "location": "Online",
-    "linkUrl": "https://ngrome.io/",
+    "linkUrl": "https://ng-china.org/",
     "date": {
-      "start": "2020-10-20",
-      "end": "2020-10-20"
+      "start": "2020-11-21",
+      "end": "2020-11-22"
     }
   },
   {
@@ -18,12 +18,12 @@
     }
   },
   {
-    "name": "ng-china",
+    "name": "ngrome",
     "location": "Online",
-    "linkUrl": "https://ng-china.org/",
+    "linkUrl": "https://ngrome.io/",
     "date": {
-      "start": "2020-11-21",
-      "end": "2020-11-22"
+      "start": "2020-10-20",
+      "end": "2020-10-20"
     }
   },
   {
