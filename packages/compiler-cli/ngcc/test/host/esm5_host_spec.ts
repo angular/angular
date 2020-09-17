@@ -1252,7 +1252,7 @@ runInEachFileSystem(() => {
     });
 
     describe('getConstructorParameters()', () => {
-      it('should always specify LOCAL type value references for decorated constructor parameter types',
+      it('should retain imported name for type value references for decorated constructor parameter types',
          () => {
            const files = [
              {
@@ -1310,7 +1310,8 @@ runInEachFileSystem(() => {
            const parameters = host.getConstructorParameters(classNode)!;
 
            expect(parameters.map(p => p.name)).toEqual(['arg1', 'arg2', 'arg3']);
-           expectTypeValueReferencesForParameters(parameters, ['Baz', 'External', 'SameFile']);
+           expectTypeValueReferencesForParameters(
+               parameters, ['Baz', 'External', 'SameFile'], ['shared-lib', './local', null]);
          });
 
       it('should find the decorated constructor parameters', () => {

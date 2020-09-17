@@ -1332,7 +1332,7 @@ runInEachFileSystem(() => {
     });
 
     describe('getConstructorParameters', () => {
-      it('should always specify LOCAL type value references for decorated constructor parameter types',
+      it('should retain imported name for type value references for decorated constructor parameter types',
          () => {
            const files = [
              {
@@ -1369,7 +1369,7 @@ runInEachFileSystem(() => {
                name: _('/main.js'),
                contents: `
   (function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('shared-lib), require('./local')) :
+    typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('shared-lib'), require('./local')) :
     typeof define === 'function' && define.amd ? define('main', ['exports', 'shared-lib', './local'], factory) :
     (factory(global.main, global.shared, global.local));
   }(this, (function (exports, shared, local) { 'use strict';
@@ -1401,7 +1401,7 @@ runInEachFileSystem(() => {
 
            expect(parameters.map(p => p.name)).toEqual(['arg1', 'arg2', 'arg3']);
            expectTypeValueReferencesForParameters(
-               parameters, ['shared.Baz', 'local.External', 'SameFile']);
+               parameters, ['Baz', 'External', 'SameFile'], ['shared-lib', './local', null]);
          });
 
       it('should find the decorated constructor parameters', () => {
