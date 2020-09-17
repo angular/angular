@@ -2528,8 +2528,8 @@ export class HttpClient {
   }): Observable<HttpResponse<Object>>;
 
   /**
-   * Constructs a `PUT` request that interprets the body as a JSON object and returns the full HTTP
-   * response.
+   * Constructs a `PUT` request that interprets the body as an instance of the requested type and
+   * returns the full HTTP response.
    *
    * @param url The endpoint URL.
    * @param body The resources to add/update.
@@ -2547,14 +2547,14 @@ export class HttpClient {
   }): Observable<HttpResponse<T>>;
 
   /**
-   * Constructs a `PUT` request that interprets the body as a JSON object and returns the response
-   * body as a JSON object.
+   * Constructs a `PUT` request that interprets the body as a JSON object
+   * and returns an observable of JSON object.
    *
    * @param url The endpoint URL.
    * @param body The resources to add/update.
    * @param options HTTP options
    *
-   * @return An `Observable` of the response, with the response body as a JSON object.
+   * @return An `Observable` of the response as a JSON object.
    */
   put(url: string, body: any|null, options?: {
     headers?: HttpHeaders|{[header: string]: string | string[]},
@@ -2566,15 +2566,14 @@ export class HttpClient {
   }): Observable<Object>;
 
   /**
-   * Constructs a `PUT` request that interprets the body as a JSON object
-   * and returns an observable of the response.
+   * Constructs a `PUT` request that interprets the body as an instance of the requested type
+   * and returns an observable of the requested type.
    *
    * @param url The endpoint URL.
    * @param body The resources to add/update.
    * @param options HTTP options
    *
-   * @return An `Observable` of the `HTTPResponse` for the request, with a response body in the
-   *     requested type.
+   * @return An `Observable` of the requested type.
    */
   put<T>(url: string, body: any|null, options?: {
     headers?: HttpHeaders|{[header: string]: string | string[]},
