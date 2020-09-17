@@ -547,14 +547,25 @@ Angular가 디렉티브나 컴포넌트를 종료하기 전에 실행해야 하�
 `ngOnDestroy()` 메소드는 컴포넌트나 디렉티브가 종료된다는 것을 애플리케이션 다른 영역으로 전달하는 용도로도 사용할 수 있습니다.
 
 
+<!--
 ## General examples
+-->
+## 활용 예제
 
+<!--
 The following examples demonstrate the call sequence and relative frequency of the various lifecycle events, and how the hooks can be used separately or together for components and directives.
+-->
+라이프싸이클 이벤트가 얼마나 자주 발생하는지, 어떻게 활용할 수 있는지 예제를 보며 확인해 봅시다.
+
 
 {@a peek-a-boo}
 
+<!--
 ### Sequence and frequency of all lifecycle events
+-->
+### 라이프싸이클 이벤트 발생 순서, 빈도
 
+<!--
 To show how Angular calls the hooks in the expected order, the `PeekABooComponent` demonstrates all of the hooks in one component.
 
 In practice you would rarely, if ever, implement all of the interfaces the way this demo does.
@@ -578,11 +589,41 @@ The sequence of log messages follows the prescribed hook calling order:
 
 Had the user clicked the *Update Hero* button, the log would show another `OnChanges` and two more triplets of `DoCheck`, `AfterContentChecked` and `AfterViewChecked`.
 Notice that these three hooks fire *often*, so it is important to keep their logic as lean as possible.
+-->
+Angular가 라이프싸이클 후킹 메서드를 어떤 순서로 실행하는지 확인하려면 `PeekABooComponent`를 확인하면 됩니다.
+
+물론 실제 앱에서 이 컴포넌트처럼 모든 라이프싸이클 메서드를 정의할 일은 거의 없으며, 데모를 위해 구현한 것입니다.
+
+이 컴포넌트에서 *Create...* 버튼을 누른 후에 *Destroy...* 버튼을 누르면 다음과 같은 로그가 화면에 표시됩니다.
+
+<div class="lightbox">
+  <img src="generated/images/guide/lifecycle-hooks/peek-a-boo.png" alt="Peek-a-boo">
+</div>
+
+라이프싸이클 후킹 메서드가 실행된 순서는 이렇습니다:
+`OnChanges`, `OnInit`, `DoCheck`&nbsp;(3번), `AfterContentInit`, `AfterContentChecked`&nbsp;(3번),
+`AfterViewInit`, `AfterViewChecked`&nbsp;(3번), `OnDestroy`.
+
+<div class="alert is-helpful">
+
+  입력 프로퍼티(예제에서는 `name` 프로퍼티)의 값은 생성자가 실행되는 시점에 할당되지 않았다는 것에 주의하세요.
+  그래서 입력 프로퍼티를 활용해서 컴포넌트를 초기화하는 로직은 `onInit()` 메소드 안에 작성해야 합니다.
+
+</div>
+
+그리고 *Update Hero* 버튼을 누르면 `OnChanges` 로그와 함께 `DoCheck`, `AfterContentChecked`, `AfterViewChecked` 로그도 함께 출력됩니다.
+이 인터페이스로 구현하는 라이프싸이클 후킹 메서드는 *자주* 실행됩니다.
+이 메서드에는 간단한 로직만 작성하는 것이 좋습니다.
+
 
 {@a spy}
 
+<!--
 ### Use directives to watch the DOM
+-->
+### DOM을 추적하는 디렉티브
 
+<!--
 The `Spy` example demonstrates how you can use hook method for directives as well as components.
 The `SpyDirective` implements two hooks, `ngOnInit()` and `ngOnDestroy()`, in order to discover when a watched element is in the current view.
 
@@ -618,14 +659,56 @@ Adding a hero results in a new hero `<div>`. The spy's `ngOnInit()` logs that ev
 The *Reset* button clears the `heroes` list.
 Angular removes all hero `<div>` elements from the DOM and destroys their spy directives at the same time.
 The spy's `ngOnDestroy()` method reports its last moments.
+-->
+`Spy` 예제를 보면 디렉티브에 라이프싸이클 메서드를 정의해서 컴포넌트처럼 사용하는 방법을 확인할 수 있습니다.
+`SpyDirective`에는 엘리먼트가 화면에 표시되는 시점을 확인하기 위해 `ngOnInit()`, `ngOnDestroy()` 메서드를 구현했습니다.
+
+그리고 부모 컴포넌트 `SpyComponent` 템플릿의 `ngFor` 안에서 반복하는 `<div>`에 `SpyDirective`를 적용했습니다.
+
+이번 예제에서는 디렉티브를 초기화하거나 정리하는 로직이 없습니다.
+이 디렉티브는 단순하게 엘리먼트가 화면에 나타나고 사라지는 것을 추적하는 용도로만 활용합니다.
+
+스파이 디렉티브는 이렇게 개발자가 직접 조작할 수 없는 DOM 객체를 추적하는 용도로 활용할 수 있습니다.
+그래서 네이티브 `<div>` 엘리먼트의 구현 코드나 서드 파티 컴포넌트를 직접 수정하지 않아도 됩니다.
+
+이 디렉티브는 `ngOnInit()`, `ngOnDestroy()` 후킹 메서드가 실행될 때마다 `LoggerService`를 사용해서 로그 메시지를 출력합니다.
+
+<code-example path="lifecycle-hooks/src/app/spy.directive.ts" region="spy-directive" header="src/app/spy.directive.ts"></code-example>
+
+이 스파이 디렉티브는 네이티브 엘리먼트나 컴포넌트 엘리먼트에 자유롭게 적용할 수 있으며, 동시에 여러 엘리먼트에 적용할 수도 있습니다.
+이렇게 사용하면 됩니다:
+
+<code-example path="lifecycle-hooks/src/app/spy.component.html" region="template" header="src/app/spy.component.html"></code-example>
+
+히어로 목록이 변경되면서 `<div>` 엘리먼트가 화면에 나타나거나 제거되면 관련 로그가 다음과 같이 표시됩니다:
+
+<div class="lightbox">
+  <img src='generated/images/guide/lifecycle-hooks/spy-directive.gif' alt="Spy Directive">
+</div>
+
+새 히어로가 추가되면서 `<div>` 엘리먼트가 DOM에 추가되면 `ngOnInit()` 에 정의한 로그가 화면에 표시됩니다.
+
+*Reset* 버튼을 눌러서 `heroes` 목록을 초기화 해보세요.
+그러면 Angular가 히어로와 관련된 `<div>` 엘리먼트를 모두 DOM에서 제거하면서 스파이 디렉티브도 종료됩니다.
+이 때 `ngOnDestroy()` 메소드에 정의한 로그가 화면에 표시됩니다.
+
 
 {@a counter}
 
+<!--
 ### Use component and directive hooks together
+-->
+### 컴포넌트와 디렉티브에서 동시에 후킹하기
 
+<!--
 In this example, a `CounterComponent` uses the `ngOnChanges()` method to log a change every time the parent component increments its input `counter` property.
 
 This example applies the `SpyDirective` from the previous example to the `CounterComponent` log, in order to watch the creation and destruction of log entries.
+-->
+이 예제에서 `CounterComponent`는 `ngOnChanges()` 메서드를 사용해서 부모 컴포넌트에서 전달되는 `counter` 프로퍼티 값이 변경될 때마다 로그를 출력합니다.
+
+코드를 보면 `SpyDirective`가 `CounterComponent`에도 적용된 것을 확인할 수 있으며, 이 경우에도 `SpyDirective`가 출력하는 로그로 `CounterComponent`가 생성되고 종료되는 시점을 확인할 수 있습니다.
+
 
 {@a onchanges}
 {@a using-change-detection-hooks}
