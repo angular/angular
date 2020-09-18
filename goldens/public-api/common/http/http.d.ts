@@ -1498,13 +1498,13 @@ export declare interface HttpDownloadProgressEvent extends HttpProgressEvent {
     type: HttpEventType.DownloadProgress;
 }
 
-export declare class HttpErrorResponse extends HttpResponseBase implements Error {
-    readonly error: any | null;
+export declare class HttpErrorResponse<E = any> extends HttpResponseBase implements Error {
+    readonly error: E | ProgressEvent | ErrorEvent | Error | null;
     readonly message: string;
     readonly name = "HttpErrorResponse";
     readonly ok = false;
     constructor(init: {
-        error?: any;
+        error?: E | ProgressEvent | ErrorEvent | Error;
         headers?: HttpHeaders;
         status?: number;
         statusText?: string;
