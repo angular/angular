@@ -371,6 +371,7 @@ groups:
           'aio/content/guide/built-in-template-functions.md',
           'aio/content/examples/built-in-template-functions/**',
           'aio/content/guide/event-binding.md',
+          'aio/content/guide/event-binding-concepts.md',
           'aio/content/examples/event-binding/**',
           'aio/content/guide/interpolation.md',
           'aio/content/examples/interpolation/**',
