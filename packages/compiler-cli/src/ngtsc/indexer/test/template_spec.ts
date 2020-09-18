@@ -124,6 +124,20 @@ runInEachFileSystem(() => {
         });
       });
 
+      it('should handle bound attributes with no value', () => {
+        const template = '<div [bar]></div>';
+        const refs = getTemplateIdentifiers(bind(template));
+
+        const refArr = Array.from(refs);
+        expect(refArr).toEqual([{
+          name: 'div',
+          kind: IdentifierKind.Element,
+          span: new AbsoluteSourceSpan(1, 4),
+          attributes: new Set(),
+          usedDirectives: new Set(),
+        }]);
+      });
+
       it('should discover variables in bound attributes', () => {
         const template = '<div #div [value]="div.innerText"></div>';
         const refs = getTemplateIdentifiers(bind(template));
