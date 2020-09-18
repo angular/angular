@@ -240,9 +240,9 @@ export interface MatOptionParentComponent {
 
 export declare class MatOptionSelectionChange {
     isUserInput: boolean;
-    source: MatOption;
+    source: _MatOptionBase;
     constructor(
-    source: MatOption,
+    source: _MatOptionBase,
     isUserInput?: boolean);
 }
 

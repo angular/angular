@@ -1,0 +1,45 @@
+<div cdk-overlay-origin
+     class="mat-mdc-select-trigger"
+     (click)="toggle()"
+     #fallbackOverlayOrigin="cdkOverlayOrigin"
+     #trigger>
+  <div class="mat-mdc-select-value" [ngSwitch]="empty" [attr.id]="_valueId">
+    <span class="mat-mdc-select-placeholder" *ngSwitchCase="true">{{placeholder || '\u00A0'}}</span>
+    <span class="mat-mdc-select-value-text" *ngSwitchCase="false" [ngSwitch]="!!customTrigger">
+      <span *ngSwitchDefault>{{triggerValue || '\u00A0'}}</span>
+      <ng-content select="mat-select-trigger" *ngSwitchCase="true"></ng-content>
+    </span>
+  </div>
+
+  <div class="mat-mdc-select-arrow-wrapper"><div class="mat-mdc-select-arrow"></div></div>
+</div>
+
+<ng-template
+  cdk-connected-overlay
+  cdkConnectedOverlayLockPosition
+  cdkConnectedOverlayHasBackdrop
+  cdkConnectedOverlayBackdropClass="cdk-overlay-transparent-backdrop"
+  [cdkConnectedOverlayScrollStrategy]="_scrollStrategy"
+  [cdkConnectedOverlayOrigin]="_preferredOverlayOrigin || fallbackOverlayOrigin"
+  [cdkConnectedOverlayOpen]="panelOpen"
+  [cdkConnectedOverlayPositions]="_positions"
+  [cdkConnectedOverlayWidth]="_overlayWidth"
+  (backdropClick)="close()"
+  (attach)="_onAttached()"
+  (detach)="close()">
+  <div
+    #panel
+    role="listbox"
+    tabindex="-1"
+    class="mat-mdc-select-panel mdc-menu-surface mdc-menu-surface--open {{ _getPanelTheme() }}"
+    [attr.id]="id + '-panel'"
+    [attr.aria-multiselectable]="multiple"
+    [attr.aria-label]="ariaLabel || null"
+    [attr.aria-labelledby]="_getPanelAriaLabelledby()"
+    [ngClass]="panelClass"
+    [@transformPanel]="'showing'"
+    (@transformPanel.done)="_panelDoneAnimatingStream.next($event.toState)"
+    (keydown)="_handleKeydown($event)">
+    <ng-content></ng-content>
+  </div>
+</ng-template>

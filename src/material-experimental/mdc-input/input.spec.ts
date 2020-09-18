@@ -26,6 +26,7 @@ import {
   MatFormField,
   MatFormFieldAppearance,
   MatFormFieldModule,
+  FloatLabelType,
 } from '@angular/material-experimental/mdc-form-field';
 import {
   ErrorStateMatcher,
@@ -793,6 +794,34 @@ describe('MatMdcInput without forms', () => {
     expect(input.focused).toBe(false);
     expect(container.classList).not.toContain('mat-focused');
   }));
+
+  it('should only show the native control placeholder, when there is a label, on focus', () => {
+    const fixture = createComponent(MatInputWithLabelAndPlaceholder);
+    fixture.detectChanges();
+
+    const container = fixture.debugElement.query(By.css('mat-form-field'))!.nativeElement;
+    const label = fixture.debugElement.query(By.css('label'))!.nativeElement;
+    const input = fixture.debugElement.query(By.css('input'))!.nativeElement;
+
+    expect(container.classList).toContain('mat-form-field-hide-placeholder');
+    expect(label.textContent.trim()).toBe('Label');
+
+    input.value = 'Value';
+    fixture.detectChanges();
+
+    expect(container.classList).not.toContain('mat-form-field-hide-placeholder');
+  });
+
+  it('should always show the native control placeholder when floatLabel is set to "always"', () => {
+    const fixture = createComponent(MatInputWithLabelAndPlaceholder);
+
+    fixture.componentInstance.floatLabel = 'always';
+    fixture.detectChanges();
+
+    const container = fixture.debugElement.query(By.css('mat-form-field'))!.nativeElement;
+
+    expect(container.classList).not.toContain('mat-form-field-hide-placeholder');
+  });
 
   it('should not add the `placeholder` attribute if there is no placeholder', () => {
     const fixture = createComponent(MatInputWithoutPlaceholder);
@@ -1562,6 +1591,18 @@ class MatInputWithReadonlyInput {
   `
 })
 class MatInputWithLabel {}
+
+@Component({
+  template: `
+    <mat-form-field [floatLabel]="floatLabel">
+      <mat-label>Label</mat-label>
+      <input matInput placeholder="Placeholder">
+    </mat-form-field>
+  `
+})
+class MatInputWithLabelAndPlaceholder {
+  floatLabel: FloatLabelType;
+}
 
 @Component({
   template: `

@@ -95,6 +95,7 @@ export const DEV_APP_ROUTES: Routes = [
       'mdc-progress-spinner/mdc-progress-spinner-demo-module#MdcProgressSpinnerDemoModule'
   },
   {path: 'mdc-radio', loadChildren: 'mdc-radio/mdc-radio-demo-module#MdcRadioDemoModule'},
+  {path: 'mdc-select', loadChildren: 'mdc-select/mdc-select-demo-module#MdcSelectDemoModule'},
   {path: 'mdc-sidenav', loadChildren: 'mdc-sidenav/mdc-sidenav-demo-module#MdcSidenavDemoModule'},
   {
     path: 'mdc-snack-bar',

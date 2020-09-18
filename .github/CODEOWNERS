@@ -186,6 +186,7 @@
 /src/dev-app/mdc-progress-bar/**                   @crisbeto
 /src/dev-app/mdc-progress-spinner/**               @annieyw @mmalerba
 /src/dev-app/mdc-radio/**                          @mmalerba
+/src/dev-app/mdc-select/**                         @crisbeto
 /src/dev-app/mdc-snack-bar/**                      @andrewseguin
 /src/dev-app/mdc-sidenav/**                        @crisbeto
 /src/dev-app/mdc-snack-bar/**                      @andrewseguin

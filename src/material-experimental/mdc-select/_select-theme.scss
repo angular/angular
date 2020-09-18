@@ -1,22 +1,98 @@
+@import '@material/menu-surface/mixins.import';
+@import '@material/list/mixins.import';
+@import '@material/theme/variables.import';
+@import '@material/select/variables.import';
 @import '../mdc-helpers/mdc-helpers';
+
+// Gets the color to use for some text that is highlighted while a select has focus.
+@function _get-mdc-focused-text-color($palette) {
+  @return rgba(mdc-theme-prop-value($palette), 0.87);
+}
 
 @mixin mat-mdc-select-color($config-or-theme) {
   $config: mat-get-color-config($config-or-theme);
+
+  // Save original values of MDC global variables. We need to save these so we can restore the
+  // variables to their original values and prevent unintended side effects from using this mixin.
+  $orig-mdc-select-ink-color: $mdc-select-ink-color;
+  $orig-mdc-select-label-color: $mdc-select-label-color;
+  $orig-mdc-select-disabled-label-color: $mdc-select-disabled-label-color;
+  $orig-mdc-select-dropdown-icon-color: $mdc-select-dropdown-icon-color;
+  $orig-mdc-select-disabled-dropdown-icon-color: $mdc-select-disabled-dropdown-icon-color;
+
   @include mat-using-mdc-theme($config) {
-    // TODO: implement MDC-based select.
+    $mdc-select-ink-color: rgba(mdc-theme-prop-value(on-surface), 0.87) !global;
+    $mdc-select-label-color: rgba(mdc-theme-prop-value(on-surface), 0.6) !global;
+    $mdc-select-disabled-label-color: rgba(mdc-theme-prop-value(on-surface), 0.38) !global;
+    $mdc-select-dropdown-icon-color: rgba(mdc-theme-prop-value(on-surface), 0.54) !global;
+    $mdc-select-disabled-dropdown-icon-color: rgba(mdc-theme-prop-value(on-surface), 0.38) !global;
+
+    @include mdc-menu-surface-core-styles($mat-theme-styles-query);
+    @include mdc-list-without-ripple($mat-theme-styles-query);
+
+    .mat-mdc-select-value {
+      color: $mdc-select-ink-color;
+    }
+
+    .mat-mdc-select-placeholder {
+      color: $mdc-select-label-color;
+    }
+
+    .mat-mdc-select-disabled .mat-mdc-select-value {
+      color: $mdc-select-disabled-label-color;
+    }
+
+    .mat-mdc-select-arrow {
+      color: $mdc-select-dropdown-icon-color;
+    }
+
+    .mat-mdc-form-field {
+      &.mat-focused {
+        .mat-mdc-select-arrow {
+          color: _get-mdc-focused-text-color(primary);
+        }
+
+        &.mat-accent .mat-mdc-select-arrow {
+          color: _get-mdc-focused-text-color(secondary);
+        }
+
+        &.mat-warn .mat-mdc-select-arrow {
+          color: _get-mdc-focused-text-color(error);
+        }
+      }
+
+      .mat-mdc-select.mat-mdc-select-invalid .mat-mdc-select-arrow {
+        color: _get-mdc-focused-text-color(error);
+      }
+
+      .mat-mdc-select.mat-mdc-select-disabled .mat-mdc-select-arrow {
+        color: $mdc-select-disabled-dropdown-icon-color;
+      }
+    }
   }
+
+  // Restore original values of MDC global variables.
+  $mdc-select-ink-color: $orig-mdc-select-ink-color !global;
+  $mdc-select-label-color: $orig-mdc-select-label-color !global;
+  $mdc-select-disabled-label-color: $orig-mdc-select-disabled-label-color !global;
+  $mdc-select-dropdown-icon-color: $orig-mdc-select-dropdown-icon-color !global;
+  $mdc-select-disabled-dropdown-icon-color: $orig-mdc-select-disabled-dropdown-icon-color !global;
 }
 
 @mixin mat-mdc-select-typography($config-or-theme) {
   $config: mat-get-typography-config($config-or-theme);
   @include mat-using-mdc-typography($config) {
-    // TODO: implement MDC-based select.
+    @include mdc-menu-surface-core-styles($mat-typography-styles-query);
+
+    .mat-mdc-select-panel {
+      // Note that we include this private mixin, because the public one adds
+      // a bunch of styles that we aren't using for the select panel.
+      @include mdc-list-base_($mat-typography-styles-query);
+    }
   }
 }
 
-@mixin mat-mdc-select-density($config-or-theme) {
-  $density-scale: mat-get-density-config($config-or-theme);
-}
+@mixin mat-mdc-select-density($config-or-theme) {}
 
 @mixin mat-mdc-select-theme($theme-or-color-config) {
   $theme: _mat-legacy-get-theme($theme-or-color-config);

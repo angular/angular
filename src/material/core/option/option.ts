@@ -39,7 +39,7 @@ let _uniqueIdCounter = 0;
 export class MatOptionSelectionChange {
   constructor(
     /** Reference to the option that emitted the event. */
-    public source: MatOption,
+    public source: _MatOptionBase,
     /** Whether the change in the option's value was a result of a user action. */
     public isUserInput = false) { }
 }

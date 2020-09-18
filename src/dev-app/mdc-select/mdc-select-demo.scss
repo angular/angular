@@ -2,9 +2,10 @@
   display: flex;
   flex-flow: row wrap;
 
-  .mat-card {
+  .mat-mdc-card {
     width: 450px;
     margin: 24px 24px 0 0;
+    display: block;
 
     [dir='rtl'] :host & {
       margin: 24px 0 0 24px;

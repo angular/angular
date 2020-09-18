@@ -10,11 +10,14 @@
   @include mdc-list-item-base_;
   @include mdc-list-list-item-padding-variant(
     $mdc-list-textual-variant-config, $query: $mat-base-styles-query);
-  @include mdc-list-list-item-height-variant(
-    $mdc-list-textual-variant-config, $query: $mat-base-styles-query);
   @include mdc-list-item-disabled-text-opacity($mdc-list-text-disabled-opacity,
     $query: $mat-base-styles-query);
   @include user-select(none);
+
+  // Set the `min-height` here ourselves, instead of going through
+  // the `mdc-list-list-item-height-variant` mixin, because it sets a `height`
+  // which doesn't work well with multi-line options.
+  min-height: map-get($mdc-list-textual-variant-config, single-line-height);
 
   &:not(.mdc-list-item--disabled) {
     cursor: pointer;

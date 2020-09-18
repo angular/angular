@@ -100,10 +100,17 @@ const FLOATING_LABEL_DEFAULT_DOCKED_TRANSFORM = `translateY(-50%)`;
   host: {
     'class': 'mat-mdc-form-field',
     '[class.mat-mdc-form-field-label-always-float]': '_shouldAlwaysFloat()',
+
+    // Note that these classes reuse the same names as the non-MDC version, because they can be
+    // considered a public API since custom form controls may use them to style themselves.
+    // See https://github.com/angular/components/pull/20502#discussion_r486124901.
     '[class.mat-form-field-invalid]': '_control.errorState',
     '[class.mat-form-field-disabled]': '_control.disabled',
     '[class.mat-form-field-autofilled]': '_control.autofilled',
     '[class.mat-form-field-no-animations]': '_animationMode === "NoopAnimations"',
+    '[class.mat-form-field-appearance-fill]': 'appearance == "fill"',
+    '[class.mat-form-field-appearance-outline]': 'appearance == "outline"',
+    '[class.mat-form-field-hide-placeholder]': '_hasFloatingLabel() && !_shouldLabelFloat()',
     '[class.mat-focused]': '_control.focused',
     '[class.mat-accent]': 'color == "accent"',
     '[class.mat-warn]': 'color == "warn"',
