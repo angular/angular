@@ -68,6 +68,7 @@ merge:
       - "packages/**/integrationtest/**"
       - "packages/**/test/**"
       - "packages/zone.js/*"
+      - "packages/zone.js/dist/**"
       - "packages/zone.js/doc/**"
       - "packages/zone.js/example/**"
       - "packages/zone.js/scripts/**"
