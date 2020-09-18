@@ -95,7 +95,7 @@ function humanizeSpan(span: ParseSourceSpan|null|undefined): string {
   if (span === null || span === undefined) {
     return `<empty>`;
   }
-  return `${span.start.offset}:${span.end.offset}`;
+  return span.toString();
 }
 
 function expectFromHtml(html: string) {
@@ -113,21 +113,21 @@ describe('R3 AST source spans', () => {
   describe('nodes without binding', () => {
     it('is correct for text nodes', () => {
       expectFromHtml('a').toEqual([
-        ['Text', '0:1'],
+        ['Text', 'a'],
       ]);
     });
 
     it('is correct for elements with attributes', () => {
       expectFromHtml('<div a="b"></div>').toEqual([
-        ['Element', '0:17', '0:11', '11:17'],
-        ['TextAttribute', '5:10', '8:9'],
+        ['Element', '<div a="b"></div>', '<div a="b">', '</div>'],
+        ['TextAttribute', 'a="b"', 'b'],
       ]);
     });
 
     it('is correct for elements with attributes without value', () => {
       expectFromHtml('<div a></div>').toEqual([
-        ['Element', '0:13', '0:7', '7:13'],
-        ['TextAttribute', '5:6', '<empty>'],
+        ['Element', '<div a></div>', '<div a>', '</div>'],
+        ['TextAttribute', 'a', '<empty>'],
       ]);
     });
   });
@@ -135,7 +135,7 @@ describe('R3 AST source spans', () => {
   describe('bound text nodes', () => {
     it('is correct for bound text nodes', () => {
       expectFromHtml('{{a}}').toEqual([
-        ['BoundText', '0:5'],
+        ['BoundText', '{{a}}'],
       ]);
     });
   });
@@ -143,29 +143,29 @@ describe('R3 AST source spans', () => {
   describe('bound attributes', () => {
     it('is correct for bound properties', () => {
       expectFromHtml('<div [someProp]="v"></div>').toEqual([
-        ['Element', '0:26', '0:20', '20:26'],
-        ['BoundAttribute', '5:19', '17:18'],
+        ['Element', '<div [someProp]="v"></div>', '<div [someProp]="v">', '</div>'],
+        ['BoundAttribute', '[someProp]="v"', 'v'],
       ]);
     });
 
     it('is correct for bound properties without value', () => {
       expectFromHtml('<div [someProp]></div>').toEqual([
-        ['Element', '0:22', '0:16', '16:22'],
-        ['BoundAttribute', '5:15', '<empty>'],
+        ['Element', '<div [someProp]></div>', '<div [someProp]>', '</div>'],
+        ['BoundAttribute', '[someProp]', '<empty>'],
       ]);
     });
 
     it('is correct for bound properties via bind- ', () => {
       expectFromHtml('<div bind-prop="v"></div>').toEqual([
-        ['Element', '0:25', '0:19', '19:25'],
-        ['BoundAttribute', '5:18', '16:17'],
+        ['Element', '<div bind-prop="v"></div>', '<div bind-prop="v">', '</div>'],
+        ['BoundAttribute', 'bind-prop="v"', 'v'],
       ]);
     });
 
     it('is correct for bound properties via {{...}}', () => {
       expectFromHtml('<div prop="{{v}}"></div>').toEqual([
-        ['Element', '0:24', '0:18', '18:24'],
-        ['BoundAttribute', '5:17', '11:16'],
+        ['Element', '<div prop="{{v}}"></div>', '<div prop="{{v}}">', '</div>'],
+        ['BoundAttribute', 'prop="{{v}}"', '{{v}}'],
       ]);
     });
   });
@@ -173,57 +173,68 @@ describe('R3 AST source spans', () => {
   describe('templates', () => {
     it('is correct for * directives', () => {
       expectFromHtml('<div *ngIf></div>').toEqual([
-        ['Template', '0:17', '0:11', '11:17'],
-        ['TextAttribute', '6:10', '<empty>'],  // ngIf
-        ['Element', '0:17', '0:11', '11:17'],
+        ['Template', '<div *ngIf></div>', '<div *ngIf>', '</div>'],
+        ['TextAttribute', 'ngIf', '<empty>'],
+        ['Element', '<div *ngIf></div>', '<div *ngIf>', '</div>'],
       ]);
     });
 
     it('is correct for <ng-template>', () => {
       expectFromHtml('<ng-template></ng-template>').toEqual([
-        ['Template', '0:27', '0:13', '13:27'],
+        ['Template', '<ng-template></ng-template>', '<ng-template>', '</ng-template>'],
       ]);
     });
 
     it('is correct for reference via #...', () => {
       expectFromHtml('<ng-template #a></ng-template>').toEqual([
-        ['Template', '0:30', '0:16', '16:30'],
-        ['Reference', '13:15', '<empty>'],
+        ['Template', '<ng-template #a></ng-template>', '<ng-template #a>', '</ng-template>'],
+        ['Reference', '#a', '<empty>'],
       ]);
     });
 
     it('is correct for reference with name', () => {
       expectFromHtml('<ng-template #a="b"></ng-template>').toEqual([
-        ['Template', '0:34', '0:20', '20:34'],
-        ['Reference', '13:19', '17:18'],
+        [
+          'Template', '<ng-template #a="b"></ng-template>', '<ng-template #a="b">', '</ng-template>'
+        ],
+        ['Reference', '#a="b"', 'b'],
       ]);
     });
 
     it('is correct for reference via ref-...', () => {
       expectFromHtml('<ng-template ref-a></ng-template>').toEqual([
-        ['Template', '0:33', '0:19', '19:33'],
-        ['Reference', '13:18', '<empty>'],
+        ['Template', '<ng-template ref-a></ng-template>', '<ng-template ref-a>', '</ng-template>'],
+        ['Reference', 'ref-a', '<empty>'],
       ]);
     });
 
     it('is correct for variables via let-...', () => {
       expectFromHtml('<ng-template let-a="b"></ng-template>').toEqual([
-        ['Template', '0:37', '0:23', '23:37'],
-        ['Variable', '13:22', '20:21'],
+        [
+          'Template', '<ng-template let-a="b"></ng-template>', '<ng-template let-a="b">',
+          '</ng-template>'
+        ],
+        ['Variable', 'let-a="b"', 'b'],
       ]);
     });
 
     it('is correct for attributes', () => {
       expectFromHtml('<ng-template k1="v1"></ng-template>').toEqual([
-        ['Template', '0:35', '0:21', '21:35'],
-        ['TextAttribute', '13:20', '17:19'],
+        [
+          'Template', '<ng-template k1="v1"></ng-template>', '<ng-template k1="v1">',
+          '</ng-template>'
+        ],
+        ['TextAttribute', 'k1="v1"', 'v1'],
       ]);
     });
 
     it('is correct for bound attributes', () => {
       expectFromHtml('<ng-template [k1]="v1"></ng-template>').toEqual([
-        ['Template', '0:37', '0:23', '23:37'],
-        ['BoundAttribute', '13:22', '19:21'],
+        [
+          'Template', '<ng-template [k1]="v1"></ng-template>', '<ng-template [k1]="v1">',
+          '</ng-template>'
+        ],
+        ['BoundAttribute', '[k1]="v1"', 'v1'],
       ]);
     });
   });
@@ -236,11 +247,17 @@ describe('R3 AST source spans', () => {
       //   <div></div>
       // </ng-template>
       expectFromHtml('<div *ngFor="let item of items"></div>').toEqual([
-        ['Template', '0:38', '0:32', '32:38'],
-        ['TextAttribute', '6:11', '<empty>'],  // ngFor
-        ['BoundAttribute', '5:31', '25:30'],   // *ngFor="let item of items" -> items
-        ['Variable', '13:22', '<empty>'],      // let item
-        ['Element', '0:38', '0:32', '32:38'],
+        [
+          'Template', '<div *ngFor="let item of items"></div>', '<div *ngFor="let item of items">',
+          '</div>'
+        ],
+        ['TextAttribute', 'ngFor', '<empty>'],
+        ['BoundAttribute', '*ngFor="let item of items"', 'items'],
+        ['Variable', 'let item ', '<empty>'],
+        [
+          'Element', '<div *ngFor="let item of items"></div>', '<div *ngFor="let item of items">',
+          '</div>'
+        ],
       ]);
 
       // Note that this test exercises an *incorrect* usage of the ngFor
@@ -250,28 +267,30 @@ describe('R3 AST source spans', () => {
       //   <div></div>
       // </ng-template>
       expectFromHtml('<div *ngFor="item of items"></div>').toEqual([
-        ['Template', '0:34', '0:28', '28:34'],
-        ['BoundAttribute', '5:27', '13:17'],  // ngFor="item of items" -> item
-        ['BoundAttribute', '5:27', '21:26'],  // ngFor="item of items" -> items
-        ['Element', '0:34', '0:28', '28:34'],
+        [
+          'Template', '<div *ngFor="item of items"></div>', '<div *ngFor="item of items">', '</div>'
+        ],
+        ['BoundAttribute', '*ngFor="item of items"', 'item'],
+        ['BoundAttribute', '*ngFor="item of items"', 'items'],
+        ['Element', '<div *ngFor="item of items"></div>', '<div *ngFor="item of items">', '</div>'],
       ]);
     });
 
     it('is correct for variables via let ...', () => {
       expectFromHtml('<div *ngIf="let a=b"></div>').toEqual([
-        ['Template', '0:27', '0:21', '21:27'],
-        ['TextAttribute', '6:10', '<empty>'],  // ngIf
-        ['Variable', '12:19', '18:19'],        // let a=b -> b
-        ['Element', '0:27', '0:21', '21:27'],
+        ['Template', '<div *ngIf="let a=b"></div>', '<div *ngIf="let a=b">', '</div>'],
+        ['TextAttribute', 'ngIf', '<empty>'],
+        ['Variable', 'let a=b', 'b'],
+        ['Element', '<div *ngIf="let a=b"></div>', '<div *ngIf="let a=b">', '</div>'],
       ]);
     });
 
     it('is correct for variables via as ...', () => {
       expectFromHtml('<div *ngIf="expr as local"></div>').toEqual([
-        ['Template', '0:33', '0:27', '27:33'],
-        ['BoundAttribute', '5:26', '12:16'],  // ngIf="expr as local" -> expr
-        ['Variable', '6:25', '6:10'],         // ngIf="expr as local -> ngIf
-        ['Element', '0:33', '0:27', '27:33'],
+        ['Template', '<div *ngIf="expr as local"></div>', '<div *ngIf="expr as local">', '</div>'],
+        ['BoundAttribute', '*ngIf="expr as local"', 'expr'],
+        ['Variable', 'ngIf="expr as local', 'ngIf'],
+        ['Element', '<div *ngIf="expr as local"></div>', '<div *ngIf="expr as local">', '</div>'],
       ]);
     });
   });
@@ -279,31 +298,31 @@ describe('R3 AST source spans', () => {
   describe('events', () => {
     it('is correct for event names case sensitive', () => {
       expectFromHtml('<div (someEvent)="v"></div>').toEqual([
-        ['Element', '0:27', '0:21', '21:27'],
-        ['BoundEvent', '5:20', '18:19'],
+        ['Element', '<div (someEvent)="v"></div>', '<div (someEvent)="v">', '</div>'],
+        ['BoundEvent', '(someEvent)="v"', 'v'],
       ]);
     });
 
     it('is correct for bound events via on-', () => {
       expectFromHtml('<div on-event="v"></div>').toEqual([
-        ['Element', '0:24', '0:18', '18:24'],
-        ['BoundEvent', '5:17', '15:16'],
+        ['Element', '<div on-event="v"></div>', '<div on-event="v">', '</div>'],
+        ['BoundEvent', 'on-event="v"', 'v'],
       ]);
     });
 
     it('is correct for bound events and properties via [(...)]', () => {
       expectFromHtml('<div [(prop)]="v"></div>').toEqual([
-        ['Element', '0:24', '0:18', '18:24'],
-        ['BoundAttribute', '5:17', '15:16'],
-        ['BoundEvent', '5:17', '15:16'],
+        ['Element', '<div [(prop)]="v"></div>', '<div [(prop)]="v">', '</div>'],
+        ['BoundAttribute', '[(prop)]="v"', 'v'],
+        ['BoundEvent', '[(prop)]="v"', 'v'],
       ]);
     });
 
     it('is correct for bound events and properties via bindon-', () => {
       expectFromHtml('<div bindon-prop="v"></div>').toEqual([
-        ['Element', '0:27', '0:21', '21:27'],
-        ['BoundAttribute', '5:20', '18:19'],
-        ['BoundEvent', '5:20', '18:19'],
+        ['Element', '<div bindon-prop="v"></div>', '<div bindon-prop="v">', '</div>'],
+        ['BoundAttribute', 'bindon-prop="v"', 'v'],
+        ['BoundEvent', 'bindon-prop="v"', 'v'],
       ]);
     });
   });
@@ -311,22 +330,22 @@ describe('R3 AST source spans', () => {
   describe('references', () => {
     it('is correct for references via #...', () => {
       expectFromHtml('<div #a></div>').toEqual([
-        ['Element', '0:14', '0:8', '8:14'],
-        ['Reference', '5:7', '<empty>'],
+        ['Element', '<div #a></div>', '<div #a>', '</div>'],
+        ['Reference', '#a', '<empty>'],
       ]);
     });
 
     it('is correct for references with name', () => {
       expectFromHtml('<div #a="b"></div>').toEqual([
-        ['Element', '0:18', '0:12', '12:18'],
-        ['Reference', '5:11', '9:10'],
+        ['Element', '<div #a="b"></div>', '<div #a="b">', '</div>'],
+        ['Reference', '#a="b"', 'b'],
       ]);
     });
 
     it('is correct for references via ref-', () => {
       expectFromHtml('<div ref-a></div>').toEqual([
-        ['Element', '0:17', '0:11', '11:17'],
-        ['Reference', '5:10', '<empty>'],
+        ['Element', '<div ref-a></div>', '<div ref-a>', '</div>'],
+        ['Reference', 'ref-a', '<empty>'],
       ]);
     });
   });
