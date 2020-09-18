@@ -777,6 +777,11 @@
                   "url": "guide/architecture-next-steps",
                   "title": "Next Steps",
                   "tooltip": "Beyond the basics."
+                },
+                {
+                  "url": "guide/event-binding-concepts",
+                  "title": "How event binding works",
+                  "tooltip": "About event binding."
                 }
               ]
             },
