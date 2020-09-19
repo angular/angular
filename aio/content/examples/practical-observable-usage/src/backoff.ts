@@ -1,17 +1,18 @@
 // TODO: Add unit tests for this file.
-import { pipe, range, timer, zip } from 'rxjs';
+import { of, pipe, range, throwError, timer, zip } from 'rxjs';
 import { ajax } from 'rxjs/ajax';
-import { retryWhen, map, mergeMap } from 'rxjs/operators';
+import { map, mergeMap, retryWhen } from 'rxjs/operators';
 
-function backoff(maxTries, ms) {
- return pipe(
-   retryWhen(attempts => zip(range(1, maxTries), attempts)
-     .pipe(
-       map(([i]) => i * i),
-       mergeMap(i =>  timer(i * ms))
-     )
-   )
- );
+function backoff(maxTries, delay) {
+  return pipe(
+    retryWhen(attempts =>
+      zip(range(1, maxTries + 1), attempts).pipe(
+        mergeMap(([i, err]) => (i > maxTries) ? throwError(err) : of(i)),
+        map(i => i * i),
+        mergeMap(v => timer(v * delay)),
+      ),
+    ),
+  );
 }
 
 ajax('/api/endpoint')
