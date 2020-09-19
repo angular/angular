@@ -512,6 +512,81 @@ export declare class SelectMultipleControlValueAccessor implements ControlValueA
     writeValue(value: any): void;
 }
 
+export declare class StrictFormArray<T> extends FormArray {
+    controls: Array<GenericStrictFormElement<T>>;
+    readonly status: FormStatus;
+    readonly statusChanges: Observable<FormStatus>;
+    readonly value: PartialFormArrayValue<T>;
+    readonly valueChanges: Observable<PartialFormArrayValue<T>>;
+    constructor(controls: Array<GenericStrictFormElement<T>>, validatorOrOpts?: ValidatorFn | ValidatorFn[] | AbstractControlOptions | null, asyncValidator?: AsyncValidatorFn | AsyncValidatorFn[] | null);
+    at(index: number): GenericStrictFormElement<T>;
+    insert(index: number, control: GenericStrictFormElement<T>): void;
+    patchValue(value: PartialFormArrayValue<T>, options?: {
+        onlySelf?: boolean;
+        emitEvent?: boolean;
+    }): void;
+    push(control: GenericStrictFormElement<T>): void;
+    reset(value?: FormElementResetValue<T>, options?: {
+        onlySelf?: boolean;
+        emitEvent?: boolean;
+    }): void;
+    setControl(index: number, control: GenericStrictFormElement<T>): void;
+    setValue(value: RequiredFormArrayValue<T>, options?: {
+        onlySelf?: boolean;
+        emitEvent?: boolean;
+    }): void;
+}
+
+export declare class StrictFormControl<T> extends FormControl {
+    readonly status: FormStatus;
+    readonly statusChanges: Observable<FormStatus>;
+    readonly value: T | undefined;
+    readonly valueChanges: Observable<T>;
+    constructor(formState?: InitialValue<T>, validatorOrOpts?: ValidatorFn | ValidatorFn[] | AbstractControlOptions | null, asyncValidator?: AsyncValidatorFn | AsyncValidatorFn[] | null);
+    patchValue(value: T, options?: {
+        onlySelf?: boolean;
+        emitEvent?: boolean;
+        emitModelToViewChange?: boolean;
+        emitViewToModelChange?: boolean;
+    }): void;
+    reset(formState?: InitialValue<T>, options?: {
+        onlySelf?: boolean;
+        emitEvent?: boolean;
+    }): void;
+    setValue(value: T, options?: {
+        onlySelf?: boolean;
+        emitEvent?: boolean;
+        emitModelToViewChange?: boolean;
+        emitViewToModelChange?: boolean;
+    }): void;
+}
+
+export declare class StrictFormGroup<T extends StrictFormGroupElements<T>> extends FormGroup {
+    controls: StrictFormGroupElements<T>;
+    readonly status: FormStatus;
+    readonly statusChanges: Observable<FormStatus>;
+    readonly value: PartialFormGroupValue<T>;
+    readonly valueChanges: Observable<PartialFormGroupValue<T>>;
+    constructor(controls: StrictFormGroupElements<T>, validatorOrOpts?: ValidatorFn | ValidatorFn[] | AbstractControlOptions | null, asyncValidator?: AsyncValidatorFn | AsyncValidatorFn[] | null);
+    addControl<K extends Extract<keyof T, string>>(name: K, control: GenericStrictFormElement<T[K]>): void;
+    contains(controlName: Extract<keyof T, string>): boolean;
+    patchValue(value: PartialFormGroupValue<T>, options?: {
+        onlySelf?: boolean;
+        emitEvent?: boolean;
+    }): void;
+    registerControl<K extends Extract<keyof T, string>>(name: K, control: GenericStrictFormElement<T[K]>): AbstractControl;
+    removeControl(name: Extract<OptionalKeys<T>, string>): void;
+    reset(value?: FormGroupResetValue<T>, options?: {
+        onlySelf?: boolean;
+        emitEvent?: boolean;
+    }): void;
+    setControl<K extends Extract<keyof T, string>>(name: K, control: GenericStrictFormElement<T[K]>): void;
+    setValue(value: RequiredFormGroupValue<T>, options?: {
+        onlySelf?: boolean;
+        emitEvent?: boolean;
+    }): void;
+}
+
 export declare type ValidationErrors = {
     [key: string]: any;
 };
