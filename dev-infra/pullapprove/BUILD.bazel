@@ -14,6 +14,7 @@ ts_library(
         "verify.ts",
     ],
     module_name = "@angular/dev-infra-private/pullapprove",
+    prodmode_target = "es5",
     visibility = ["//dev-infra:__subpackages__"],
     deps = [
         "//dev-infra/utils",

@@ -48,7 +48,3 @@ export function buildFormatParser(localYargs: yargs.Argv) {
             executionCmd(files!);
           });
 }
-
-if (require.main === module) {
-  buildFormatParser(yargs).parse();
-}

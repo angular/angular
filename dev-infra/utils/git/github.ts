@@ -7,7 +7,7 @@
  */
 
 import {graphql} from '@octokit/graphql';
-import * as Octokit from '@octokit/rest';
+import * as OctokitType from '@octokit/rest';
 import {RequestParameters} from '@octokit/types';
 import {query, types} from 'typed-graphqlify';
 
@@ -32,7 +32,7 @@ export class GithubApiRequestError extends Error {
  * Additionally, provides convenience methods for actions which require multiple requests, or
  * would provide value from memoized style responses.
  **/
-export class GithubClient extends Octokit {
+export class GithubClient extends OctokitType {
   /** The Github GraphQL (v4) API. */
   graphql: GithubGraphqlClient;
 

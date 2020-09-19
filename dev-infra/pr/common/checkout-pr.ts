@@ -9,7 +9,7 @@
 import {types as graphQLTypes} from 'typed-graphqlify';
 
 import {info} from '../../utils/console';
-import {GitClient} from '../../utils/git';
+import {GitClient} from '../../utils/git/index';
 import {addTokenToGitHttpsUrl} from '../../utils/git/github-urls';
 import {getPr} from '../../utils/github';
 

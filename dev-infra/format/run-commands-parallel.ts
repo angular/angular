@@ -13,7 +13,7 @@ import {exec} from 'shelljs';
 
 import {info} from '../utils/console';
 
-import {Formatter, FormatterAction, getActiveFormatters} from './formatters';
+import {Formatter, FormatterAction, getActiveFormatters} from './formatters/index';
 
 const AVAILABLE_THREADS = Math.max(cpus().length - 1, 1);
 
@@ -36,9 +36,9 @@ export function runFormatterInParallel(allFiles: string[], action: FormatterActi
     const pendingCommands: {formatter: Formatter, file: string}[] = [];
 
     for (const formatter of formatters) {
-      pendingCommands.push(...multimatch(allFiles, formatter.getFileMatcher(), {
-                             dot: true
-                           }).map(file => ({formatter, file})));
+      pendingCommands.push(
+          ...multimatch.call(undefined, allFiles, formatter.getFileMatcher(), {dot: true})
+              .map(file => ({formatter, file})));
     }
 
     // If no commands are generated, resolve the promise as `false` as no files

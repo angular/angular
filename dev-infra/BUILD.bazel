@@ -1,12 +1,18 @@
-load("@build_bazel_rules_nodejs//:index.bzl", "pkg_npm")
+load("@build_bazel_rules_nodejs//:index.bzl", "pkg_npm", "generated_file_test")
 load("@npm//@bazel/typescript:index.bzl", "ts_library")
+load("@npm//@bazel/rollup:index.bzl", "rollup_bundle")
+load("@npm//@bazel/terser:index.bzl", "terser_minified")
 
 ts_library(
     name = "cli",
-    srcs = [
-        "cli.ts",
-    ],
+    srcs = glob(
+        [
+            "**/*.ts",
+        ],
+        exclude = ["**/*.spec.ts"],
+    ),
     module_name = "@angular/dev-infra-private",
+    prodmode_target = "es5",
     deps = [
         "//dev-infra/caretaker",
         "//dev-infra/commit-message",
@@ -22,6 +28,35 @@ ts_library(
         "@npm//yargs",
     ],
 )
+
+
+rollup_bundle(
+    name = "cli_rollup",
+    entry_point = ":cli.ts",
+    format = "cjs",
+    silent = True,
+    sourcemap = "false",
+    deps = [
+        ":cli",
+        "@npm//rollup-plugin-commonjs",
+        "@npm//rollup-plugin-node-resolve",
+        "@npm//rollup-plugin-sourcemaps",
+    ],
+)
+
+terser_minified(
+    name = "cli_minified",
+    src = "cli_rollup.js",
+    sourcemap = False,
+    args = ["--comments=false"],
+)
+
+generated_file_test(
+    name = "local_ng_dev",
+    generated = "cli_minified",
+    src = "ng-dev"
+)
+
 
 genrule(
     name = "package-json",

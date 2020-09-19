@@ -4,6 +4,7 @@ ts_library(
     name = "ts-circular-dependencies",
     srcs = glob(["*.ts"]),
     module_name = "@angular/dev-infra-private/ts-circular-dependencies",
+    prodmode_target = "es5",
     visibility = ["//dev-infra:__subpackages__"],
     deps = [
         "//dev-infra/utils",

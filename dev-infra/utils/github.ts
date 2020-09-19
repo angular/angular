@@ -8,7 +8,7 @@
 
 import {params, types} from 'typed-graphqlify';
 
-import {GitClient} from './git';
+import {GitClient} from './git/index';
 
 /** Get a PR from github  */
 export async function getPr<PrSchema>(prSchema: PrSchema, prNumber: number, git: GitClient) {

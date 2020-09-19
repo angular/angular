@@ -9,7 +9,7 @@
 import fetch from 'node-fetch';
 
 import {bold, green, info, red} from '../../utils/console';
-import {GitClient} from '../../utils/git';
+import {GitClient} from '../../utils/git/index';
 
 
 /** The results of checking the status of CI.  */

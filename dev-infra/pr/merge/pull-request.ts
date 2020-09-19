@@ -8,7 +8,7 @@
 
 import * as Octokit from '@octokit/rest';
 
-import {GitClient} from '../../utils/git';
+import {GitClient} from '../../utils/git/index';
 
 import {PullRequestFailure} from './failures';
 import {matchesPattern} from './string-pattern';

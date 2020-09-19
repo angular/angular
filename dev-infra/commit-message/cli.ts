@@ -21,7 +21,3 @@ export function buildCommitMessageParser(localYargs: yargs.Argv) {
       .command(ValidateFileModule)
       .command(ValidateRangeModule);
 }
-
-if (require.main == module) {
-  buildCommitMessageParser(yargs).parse();
-}

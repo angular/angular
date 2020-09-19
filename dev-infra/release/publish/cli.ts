@@ -11,7 +11,7 @@ import {Arguments, Argv, CommandModule} from 'yargs';
 import {getConfig, getRepoBaseDir} from '../../utils/config';
 import {error, green, info, red, yellow} from '../../utils/console';
 import {addGithubTokenOption} from '../../utils/git/github-yargs';
-import {getReleaseConfig} from '../config';
+import {getReleaseConfig} from '../config/index';
 
 import {CompletionState, ReleaseTool} from './index';
 

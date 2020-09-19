@@ -11,7 +11,7 @@ import {types as graphQLTypes} from 'typed-graphqlify';
 
 import {getConfig, NgDevConfig} from '../../utils/config';
 import {error, info} from '../../utils/console';
-import {GitClient} from '../../utils/git';
+import {GitClient} from '../../utils/git/index';
 import {getPendingPrs} from '../../utils/github';
 import {exec} from '../../utils/shelljs';
 
