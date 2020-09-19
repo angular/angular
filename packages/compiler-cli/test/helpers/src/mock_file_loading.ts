@@ -22,28 +22,36 @@ export function loadTestFiles(files: TestFile[]) {
   });
 }
 
+let typescriptFolder: Folder|null = null;
+let angularFolder: Folder|null = null;
+let rxjsFolder: Folder|null = null;
+
 export function loadStandardTestFiles(
     {fakeCore = true, rxjs = false}: {fakeCore?: boolean, rxjs?: boolean} = {}): Folder {
   const tmpFs = new MockFileSystemPosix(true);
   const basePath = '/' as AbsoluteFsPath;
 
-  loadTestDirectory(
-      tmpFs, resolveNpmTreeArtifact('typescript'),
-      tmpFs.resolve(basePath, 'node_modules/typescript'));
+  if (typescriptFolder === null) {
+    typescriptFolder = loadFolder(resolveNpmTreeArtifact('typescript'));
+  }
+  tmpFs.mount(tmpFs.resolve('/node_modules/typescript'), typescriptFolder);
 
   loadTsLib(tmpFs, basePath);
 
   if (fakeCore) {
     loadFakeCore(tmpFs, basePath);
   } else {
-    getAngularPackagesFromRunfiles().forEach(({name, pkgPath}) => {
-      loadTestDirectory(tmpFs, pkgPath, tmpFs.resolve(basePath, 'node_modules/@angular', name));
-    });
+    if (angularFolder === null) {
+      angularFolder = loadAngularFolder();
+    }
+    tmpFs.mount(tmpFs.resolve('/node_modules/@angular'), angularFolder);
   }
 
   if (rxjs) {
-    loadTestDirectory(
-        tmpFs, resolveNpmTreeArtifact('rxjs'), tmpFs.resolve(basePath, 'node_modules/rxjs'));
+    if (rxjsFolder === null) {
+      rxjsFolder = loadFolder(resolveNpmTreeArtifact('rxjs'));
+    }
+    tmpFs.mount(tmpFs.resolve('/node_modules/rxjs'), rxjsFolder);
   }
 
   return tmpFs.dump();
@@ -58,6 +66,20 @@ export function loadFakeCore(fs: FileSystem, basePath: string = '/') {
   loadTestDirectory(
       fs, resolveNpmTreeArtifact('angular/packages/compiler-cli/test/ngtsc/fake_core/npm_package'),
       fs.resolve(basePath, 'node_modules/@angular/core'));
+}
+
+function loadFolder(path: string): Folder {
+  const tmpFs = new MockFileSystemPosix(true);
+  loadTestDirectory(tmpFs, tmpFs.resolve(path), tmpFs.resolve('/'));
+  return tmpFs.dump();
+}
+
+function loadAngularFolder(): Folder {
+  const tmpFs = new MockFileSystemPosix(true);
+  getAngularPackagesFromRunfiles().forEach(({name, pkgPath}) => {
+    loadTestDirectory(tmpFs, pkgPath, tmpFs.resolve(name));
+  });
+  return tmpFs.dump();
 }
 
 /**
