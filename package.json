@@ -74,7 +74,7 @@
     "document-register-element": "^1.7.2",
     "husky": "^4.2.1",
     "jasmine-core": "~3.6.0",
-    "jasmine-spec-reporter": "~5.0.0",
+    "jasmine-spec-reporter": "~6.0.0",
     "karma": "~5.2.0",
     "karma-chrome-launcher": "~3.1.0",
     "karma-coverage-istanbul-reporter": "~3.0.0",
