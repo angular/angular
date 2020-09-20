@@ -6975,10 +6975,10 @@ jasmine-core@~2.8.0:
   resolved "https://registry.yarnpkg.com/jasmine-core/-/jasmine-core-2.8.0.tgz#bcc979ae1f9fd05701e45e52e65d3a5d63f1a24e"
   integrity sha1-vMl5rh+f0FcB5F5S5l06XWPxok4=
 
-jasmine-spec-reporter@~5.0.0:
-  version "5.0.2"
-  resolved "https://registry.yarnpkg.com/jasmine-spec-reporter/-/jasmine-spec-reporter-5.0.2.tgz#b61288ab074ad440dc2477c4d42840b0e74a6b95"
-  integrity sha512-6gP1LbVgJ+d7PKksQBc2H0oDGNRQI3gKUsWlswKaQ2fif9X5gzhQcgM5+kiJGCQVurOG09jqNhk7payggyp5+g==
+jasmine-spec-reporter@~6.0.0:
+  version "6.0.0"
+  resolved "https://registry.yarnpkg.com/jasmine-spec-reporter/-/jasmine-spec-reporter-6.0.0.tgz#3b9c85689676a351f343ba8dd6d3957f11a4bf1d"
+  integrity sha512-MvTOVoMxDZAftQYBApIlSfKnGMzi9cj351nXeqtnZTuXffPlbONN31+Es7F+Ke4okUeQ2xISukt4U1npfzLVrQ==
   dependencies:
     colors "1.4.0"
 
