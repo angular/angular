@@ -104,4 +104,4 @@ A nivel del componente, registra un proveedor de servicios en la propiedad `Prov
 
    <code-example path="architecture/src/app/hero-list.component.ts" header="src/app/hero-list.component.ts (component providers)" region="providers"></code-example>
 
-Para obtener información más detallada, consulte la sección [Inyección de dependencia] (guía / inyección de dependencia).
+Para obtener información más detallada, consulta la sección [Inyección de dependencia] (guía / inyección de dependencia).
