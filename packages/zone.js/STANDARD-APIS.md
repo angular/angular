@@ -1,11 +1,11 @@
 # Zone.js's support for standard apis
 
 Zone.js patched most standard APIs such as DOM event listeners, XMLHttpRequest in Browser, EventEmitter and fs API in Node.js so they can be in zone.
-  
-In this document, all patched API are listed. 
+
+In this document, all patched API are listed.
 
 For non-standard APIs, please see [NON-STANDARD-APIS.md](NON-STANDARD-APIS.md)
- 
+
 ## Patch Mechanisms
 
 There are several patch mechanisms
@@ -15,10 +15,10 @@ There are several patch mechanisms
   1. MacroTask
   2. MicroTask
   3. EventTask
-  
+
 Some APIs which should be treated as Tasks, but are currently still patched in the wrap way. These will be patched as Tasks soon.
- 
-## Browser 
+
+## Browser
 
 Web APIs
 
@@ -26,7 +26,7 @@ Web APIs
 | --- | --- | --- |
 | setTimeout/clearTimeout | MacroTask | app can get handlerId, interval, args, isPeriodic(false) through task.data |
 | setImmediate/clearImmediate | MacroTask | same with setTimeout |
-| setInterval/clearInterval | MacroTask | isPeriodic is true, so setInterval will not trigger onHasTask callback | 
+| setInterval/clearInterval | MacroTask | isPeriodic is true, so setInterval will not trigger onHasTask callback |
 | requestAnimationFrame/cancelAnimationFrame | MacroTask |  |
 | mozRequestAnimationFrame/mozCancelAnimationFrame | MacroTask |  |
 | webkitRequestAnimationFrame/webkitCancelAnimationFrame | MacroTask |  |
@@ -56,7 +56,7 @@ EventTarget
 from EventTarget will also be patched.
 - For browsers that do not support EventTarget, Zone.js will patch the following APIs in the IDL
  that inherit from EventTarget
- 
+
  |||||
  |---|---|---|---|
  |ApplicationCache|EventSource|FileReader|InputMethodContext|
@@ -94,8 +94,8 @@ The following 'on' properties, such as onclick, onreadystatechange, are patched 
 | --- | --- | --- |
 | setTimeout/clearTimeout | MacroTask | app can get handlerId, interval, args, isPeriodic(false) through task.data |
 | setImmediate/clearImmediate | MacroTask | same with setTimeout |
-| setInterval/clearInterval | MacroTask | isPeriodic is true, so setInterval will not trigger onHasTask callback | 
-| process.nextTick | Microtask | isPeriodic is true, so setInterval will not trigger onHasTask callback | 
+| setInterval/clearInterval | MacroTask | isPeriodic is true, so setInterval will not trigger onHasTask callback |
+| process.nextTick | Microtask | isPeriodic is true, so setInterval will not trigger onHasTask callback |
 | Promise | MicroTask |  |
 | EventEmitter | EventTask | All APIs inherit EventEmitter are patched as EventTask  |
 | crypto | MacroTask |  |
@@ -104,9 +104,9 @@ The following 'on' properties, such as onclick, onreadystatechange, are patched 
 EventEmitter, addEventListener, prependEventListener and 'on' will be patched once as EventTasks, and removeEventListener and
 removeAllListeners will remove those EventTasks
 
-## Electron 
+## Electron
 
-Zone.js does not patch the Electron API, although in Electron both browser APIs and node APIs are patched, so 
+Zone.js does not patch the Electron API, although in Electron both browser APIs and node APIs are patched, so
 if you want to include Zone.js in Electron, please use dist/zone-mix.js
 
 ## ZoneAwareError
@@ -117,7 +117,7 @@ This type of issue would happen when creating an error without `new`: `this` wou
 non-strict mode. It could cause some very difficult to detect issues.
 
 ```javascript
-  const error = Error(); 
+  const error = Error();
 ```
 
 ZoneAwareError makes sure that `this` is ZoneAwareError even without new.
@@ -127,10 +127,10 @@ ZoneAwareError makes sure that `this` is ZoneAwareError even without new.
 ZoneAwarePromise wraps the global Promise and makes it run in zones as a MicroTask.
 It also passes promise A+ tests.
 
-## BlackListEvents
+## UnpatchedEvents
 
-Sometimes we don't want some `event` to be patched by `zone.js`, we can blacklist events
-by following settings.
+Sometimes we don't want some `event` to be patched by `zone.js`, we can instruct zone.js to leave
+these `event` to be unpatched by following settings.
 
 ```javascript
     // disable on properties
@@ -144,5 +144,5 @@ by following settings.
     });
 
     // disable addEventListener
-    global['__zone_symbol__BLACK_LISTED_EVENTS'] = ['scroll'];
+    global['__zone_symbol__UNPATCHED_EVENTS'] = ['scroll'];
 ```
