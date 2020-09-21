@@ -1,5 +1,4 @@
 <h1 align="center">Angular - One framework. Mobile & desktop.</h1>
-[![Discord](https://img.shields.io/discord/463752820026376202.svg?label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2)](https://discord.gg/angular)
 
 <p align="center">
   <img src="aio/src/assets/images/logos/angular/angular.png" alt="angular-logo" width="120px" height="120px"/>
@@ -25,14 +24,21 @@
 </p>
 
 <p align="center">
-  <a href="https://circleci.com/gh/angular/workflows/angular/tree/master" alt="CI Status"><img src="https://circleci.com/gh/angular/angular/tree/master.svg?style=shield"></a>
-  <a href="https://www.npmjs.com/@angular/core" alt="Download"><img src="https://badge.fury.io/js/%40angular%2Fcore.svg"></a>
-  <a href="https://gitter.im/angular/angular?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge" alt="Gitter Conversation"><img src="https://badges.gitter.im/Join%20Chat.svg"></a>
+  <a href="https://circleci.com/gh/angular/workflows/angular/tree/master">
+    <img src="https://img.shields.io/circleci/build/github/angular/angular/master.svg?logo=circleci&logoColor=fff&label=CircleCI" alt="CI status" />
+  </a>&nbsp;
+  <a href="https://www.npmjs.com/@angular/core">
+    <img src="https://img.shields.io/npm/v/@angular/core.svg?logo=npm&logoColor=fff&label=NPM+package&color=limegreen" alt="Angular on npm" />
+  </a>&nbsp;
+  <a href="https://discord.gg/angular">
+    <img src="https://img.shields.io/discord/463752820026376202.svg?logo=discord&logoColor=fff&label=Discord&color=7389d8" alt="Discord conversation" />
+  </a>
 </p>
 
 <hr>
 
 ## Documentation
+
 Get started with Angular, learn the fundamentals and explore advanced topics on our documentation website.
 
 - [Getting Started][quickstart]
@@ -41,36 +47,42 @@ Get started with Angular, learn the fundamentals and explore advanced topics on 
 - [Forms][forms]
 - [API][api]
 
- ### Advanced
+### Advanced
+
 - [Angular Elements][angularelements]
 - [Server Side Rendering][ssr]
 - [Schematics][schematics]
 - [Lazy Loading][lazyloading]
 
- ## Development Setup
+## Development Setup
 
- ### Prerequisites
+### Prerequisites
+
 - Install [Node.js] which includes [Node Package Manager][npm]
 
 ### Setting Up a Project
+
 Intall the Angular CLI globally:
 
- ```
+```
 npm install -g @angular/cli
 ```
 
 Create workspace:
+
 ```
 ng new [PROJECT NAME]
 ```
 
 Run the application:
- ```
+
+```
 cd [PROJECT NAME]
 ng serve
 ```
 
 ## Quickstart
+
 [Get started in 5 minutes][quickstart].
 
 ## Ecosystem
@@ -82,18 +94,18 @@ ng serve
 - [Angular Command Line (CLI)][cli]
 - [Angular Material][angularmaterial]
 
-
 ## Changelog
 
 [Learn about the latest improvements][changelog].
 
 ## Upgrading
-Check out our [upgrade guide](https://update.angular.io/) to find out the best way to upgrade your project.
 
+Check out our [upgrade guide](https://update.angular.io/) to find out the best way to upgrade your project.
 
 ## Contributing
 
 ### Contributing Guidelines
+
 Read through our [contributing guidelines][contributing] to learn about our submission process, coding rules and more.
 
 ### Want to Help?
@@ -104,14 +116,13 @@ Want to file a bug, contribute some code, or improve documentation? Excellent! R
 
 Help us keep Angular open and inclusive. Please read and follow our [Code of Conduct][codeofconduct].
 
-
 ## Community
+
 Join the conversation and help the community.
 
 - [Twitter][twitter]
 - [Gitter][gitter]
 - Find a Local [Meetup][meetup]
-
 
 [![Love Angular badge](https://img.shields.io/badge/angular-love-blue?logo=angular&angular=love)](https://www.github.com/angular/angular)
 
@@ -124,7 +135,6 @@ Join the conversation and help the community.
 [documentation]: https://angular.io/docs
 [angularmaterial]: https://material.angular.io/
 [cli]: https://cli.angular.io/
-
 [architecture]: https://angular.io/guide/architecture
 [componentstemplates]: https://angular.io/guide/displaying-data
 [forms]: https://angular.io/guide/forms-overview
@@ -133,8 +143,9 @@ Join the conversation and help the community.
 [ssr]: https://angular.io/guide/universal
 [schematics]: https://angular.io/guide/schematics
 [lazyloading]: https://angular.io/guide/lazy-loading-ngmodules
-[Node.js]: https://nodejs.org/
+[node.js]: https://nodejs.org/
 [npm]: https://www.npmjs.com/get-npm
+[codeofconduct]: CODE_OF_CONDUCT.md
+[twitter]: https://www.twitter.com/angular
 [gitter]: https://gitter.im/angular/angular
 [meetup]: https://www.meetup.com/find/?keywords=angular"
-[twitter]: https://www.twitter.com/angular
