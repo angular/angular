@@ -409,7 +409,7 @@ The sample code is also used to illustrate specific tasks in the following secti
       Shows what Angular means by a [view](guide/glossary#view "Definition of view.").
       Demonstrates the `ngAfterViewInit()` and `ngAfterViewChecked()` hooks.
       -->
-      Angular에서 의미하는 [화면(view)](guide/glossary#view "Definition of view.")가 어떤 것인지 다룹니다.
+      Angular에서 의미하는 [화면(view)](guide/glossary#view "Definition of view.")이 무엇인지에 대해 다룹니다.
       `ngAfterViewInit()` 메서드와 `ngAfterViewChecked()` 메서드에 대해 다룹니다.
 
     </td>
@@ -488,7 +488,7 @@ Use the `ngOnInit()` method to perform the following initialization tasks.
 `ngOnInit()` 메서드를 활용하면 다음과 같은 초기화 작업을 실행할 수 있습니다.
 
 * 일반적으로 컴포넌트는 가볍고 간단하게 생성할 수 있어야 합니다.
-  그래서 하지만 초기화 로직이 복잡하다면 이 로직은 생성자에 작성하지 않는 것이 좋습니다.
+  그래서 초기화 로직이 복잡하다면 이 로직은 생성자에 작성하지 않는 것이 좋습니다.
   외부에서 데이터를 받아와야 하는 로직도 마찬가지입니다.
   이런 로직이 생성자에 있으면 테스트 환경에서 컴포넌트를 생성하거나 화면에 컴포넌트가 표시되기 전에도 외부로 HTTP 요청이 발생할 수 있습니다.
 
@@ -504,7 +504,7 @@ Use the `ngOnInit()` method to perform the following initialization tasks.
 * Angular가 입력 프로퍼티 값을 할당한 후에 컴포넌트 초기화 작업을 할 수 있습니다.
   생성자에서는 지역 변수를 할당하는 것 이외의 로직은 작성하지 않는 것이 좋습니다.
 
-  디렉티브에 바인딩되는 입력 프로퍼티 값은 _생성자가 실행된 후에나_ 제대로 할당된다는 것을 명심하세요.
+  디렉티브에 바인딩되는 입력 프로퍼티 값은 _생성자가 실행된 후에_ 할당된다는 것을 명심하세요.
   이 프로퍼티 값에 따라 디렉티브를 초기화해야 한다면 생성자가 아니라 `ngOnInit()`에서 해야 합니다.
 
   <div class="alert is-helpful">
@@ -544,7 +544,7 @@ Angular가 디렉티브나 컴포넌트를 종료하기 전에 실행해야 하�
 * 인터벌 타이머 중단
 * 디렉티브가 전역이나 애플리케이션 서비스에 등록한 콜백 정리
 
-`ngOnDestroy()` 메소드는 컴포넌트나 디렉티브가 종료된다는 것을 애플리케이션 다른 영역으로 전달하는 용도로도 사용할 수 있습니다.
+`ngOnDestroy()` 메서드는 컴포넌트나 디렉티브가 종료된다는 것을 애플리케이션 다른 영역으로 전달하는 용도로도 사용할 수 있습니다.
 
 
 <!--
@@ -607,7 +607,7 @@ Angular가 라이프싸이클 후킹 메서드를 어떤 순서로 실행하는�
 <div class="alert is-helpful">
 
   입력 프로퍼티(예제에서는 `name` 프로퍼티)의 값은 생성자가 실행되는 시점에 할당되지 않았다는 것에 주의하세요.
-  그래서 입력 프로퍼티를 활용해서 컴포넌트를 초기화하는 로직은 `onInit()` 메소드 안에 작성해야 합니다.
+  그래서 입력 프로퍼티를 활용해서 컴포넌트를 초기화하는 로직은 `onInit()` 메서드 안에 작성해야 합니다.
 
 </div>
 
@@ -665,7 +665,7 @@ The spy's `ngOnDestroy()` method reports its last moments.
 
 그리고 부모 컴포넌트 `SpyComponent` 템플릿의 `ngFor` 안에서 반복하는 `<div>`에 `SpyDirective`를 적용했습니다.
 
-이번 예제에서는 디렉티브를 초기화하거나 정리하는 로직이 없습니다.
+이번 예제에는 디렉티브를 초기화하거나 정리하는 로직이 없습니다.
 이 디렉티브는 단순하게 엘리먼트가 화면에 나타나고 사라지는 것을 추적하는 용도로만 활용합니다.
 
 스파이 디렉티브는 이렇게 개발자가 직접 조작할 수 없는 DOM 객체를 추적하는 용도로 활용할 수 있습니다.
@@ -675,7 +675,7 @@ The spy's `ngOnDestroy()` method reports its last moments.
 
 <code-example path="lifecycle-hooks/src/app/spy.directive.ts" region="spy-directive" header="src/app/spy.directive.ts"></code-example>
 
-이 스파이 디렉티브는 네이티브 엘리먼트나 컴포넌트 엘리먼트에 자유롭게 적용할 수 있으며, 동시에 여러 엘리먼트에 적용할 수도 있습니다.
+이 스파이 디렉티브는 네이티브 엘리먼트나 컴포넌트 엘리먼트에도 자유롭게 적용할 수 있으며, 동시에 여러 엘리먼트에 적용할 수도 있습니다.
 이렇게 사용하면 됩니다:
 
 <code-example path="lifecycle-hooks/src/app/spy.component.html" region="template" header="src/app/spy.component.html"></code-example>
@@ -690,7 +690,7 @@ The spy's `ngOnDestroy()` method reports its last moments.
 
 *Reset* 버튼을 눌러서 `heroes` 목록을 초기화 해보세요.
 그러면 Angular가 히어로와 관련된 `<div>` 엘리먼트를 모두 DOM에서 제거하면서 스파이 디렉티브도 종료됩니다.
-이 때 `ngOnDestroy()` 메소드에 정의한 로그가 화면에 표시됩니다.
+이 때 `ngOnDestroy()` 메서드에 정의한 로그가 화면에 표시됩니다.
 
 
 {@a counter}
@@ -717,6 +717,7 @@ This example applies the `SpyDirective` from the previous example to the `Counte
 -->
 ## 변화 감지 후킹 함수 활용하기
 
+<!--
 Angular calls the `ngOnChanges()` method of a component or directive whenever it detects changes to the  ***input properties***.
 The *onChanges* example demonstrates this by monitoring the `OnChanges()` hook.
 
@@ -745,6 +746,34 @@ Notice, however, that the `ngOnChanges()` method does not catch changes to `hero
 This is because Angular calls the hook only when the value of the input property changes.
 In this case, `hero` is the input property, and the value of the `hero` property is the *reference to the hero object*.
 The object reference did not change when the value of its own `name` property changed.
+-->
+컴포넌트나 디렉티브에 바인딩된 ***입력 프로퍼티*** 값이 변경된 것을 감지하면 Angular가 `ngOnChanges()` 메서드를 실행합니다.
+`ngOnChanges()` 함수에서 값이 어떻게 변경되었는지 확인하려면 다음과 같이 작성하면 됩니다.
+
+<code-example path="lifecycle-hooks/src/app/on-changes.component.ts" region="ng-on-changes" header="on-changes.component.ts (일부)"></code-example>
+
+`ngOnChanges()` 메서드는 [SimpleChange](api/core/SimpleChange) 객체를 인자로 받는데, 이 객체에는 개별 입력 프로퍼티가 객체의 프로퍼티 이름으로 선언되어 이전값과 현재값을 전달합니다.
+그래서 객체 프로퍼티를 순회하면 어떤 값이 변경되었는지 확인할 수 있습니다.
+
+예제로 다루는 `OnChangesComponent`에는 입력 프로퍼티가 2개 있습니다: `hero`, `power`.
+
+<code-example path="lifecycle-hooks/src/app/on-changes.component.ts" region="inputs" header="src/app/on-changes.component.ts"></code-example>
+
+그리고 이 입력 프로퍼티들은 `OnChangesParentComponent`에서 이렇게 바인딩됩니다.
+
+<code-example path="lifecycle-hooks/src/app/on-changes-parent.component.html" region="on-changes" header="src/app/on-changes-parent.component.html"></code-example>
+
+사용자가 입력 프로퍼티 값을 변경할 때 어떻게 동작하는지 확인해 보세요.
+
+<div class="lightbox">
+  <img src='generated/images/guide/lifecycle-hooks/on-changes-anim.gif' alt="OnChanges">
+</div>
+
+*power* 프로퍼티의 값이 변경될 때마다 로그가 출력됩니다.
+하지만 `hero.name` 프로퍼티가 변경된 것은 감지하지 못하며 `ngOnChanges()` 메서드도 실행되지 않는 것에 주의하세요.
+왜냐하면 Angular는 기본 상태에서 입력 프로퍼티 객체 자체가 변경된 것만 감지하기 때문입니다.
+이 경우에 입력 프로퍼티는 `hero`이며 `hero` 값은 *히어로 객체 참조*입니다.
+그래서 `hero` 안에 있는 `name` 프로퍼티 값이 변경되는 것은 감지하지 못합니다.
 
 
 {@a afterview}
@@ -754,6 +783,7 @@ The object reference did not change when the value of its own `name` property ch
 -->
 ### 화면 변경사항 감지하기
 
+<!--
 As Angular traverses the [view hierarchy](guide/glossary#view-hierarchy "Definition of view hierarchy definition") during change detection, it needs to be sure that a change in a child does not attempt to cause a change in its own parent. Such a change would not be rendered properly, because of how [unidirectional data flow](guide/glossary#unidirectional-data-flow "Definition") works.
 
 If you need to make a change that inverts the expected data flow, you must trigger a new change detection cycle to allow that change to be rendered.
@@ -775,11 +805,37 @@ which can only be reached by querying for the child view via the property decora
 [@ViewChild](api/core/ViewChild).
 
 <code-example path="lifecycle-hooks/src/app/after-view.component.ts" region="hooks" header="AfterViewComponent (class excerpts)"></code-example>
+-->
+변화 감지 싸이클이 실행되는 동안 Angular가 [뷰 계층](guide/glossary#view-hierarchy "Definition of view hierarchy definition")를 순회하면서 자식 뷰에서 발생한 변화가 부모 뷰에 영향을 미치지 않아야 합니다.
+자식 뷰에서 부모 뷰에 영향을 주면 [단방향 데이터 흐름](guide/glossary#unidirectional-data-flow "Definition")을 어기게 되기 때문에 예상한대로 렌더링되지 않을 수 있습니다.
+
+그래서 자식 뷰에서 부모 뷰로 전달되는 변화를 만들어 내려면 이 변화를 반영하는 변화 감지 싸이클을 새로 발생시켜야 합니다.
+이 과정을 어떻게 처리하는지 알아봅시다.
+
+*AfterView* 예제는 컴포넌트 자식 뷰를 생성한 *후에* Angular가 실행하는 `AfterViewInit()`, `AfterViewChecked()` 후킹 메서드에 대해 다룹니다.
+
+자식 뷰는 히어로의 이름을 `<input>` 엘리먼트에 표시합니다:
+
+<code-example path="lifecycle-hooks/src/app/after-view.component.ts" region="child-view" header="ChildComponent"></code-example>
+
+그리고 `AfterViewComponent`는 *템플릿 안에* 이 자식 뷰를 표시합니다:
+
+<code-example path="lifecycle-hooks/src/app/after-view.component.ts" region="template" header="AfterViewComponent (템플릿)"></code-example>
+
+아래 코드는 *자식 뷰 안에서* 발생한 변화를 감지했을 때 처리하는 로직을 구현한 것입니다.
+자식 뷰에 있는 프로퍼티에 접근하기 위해 [@ViewChild](api/core/ViewChild) 데코레이터를 사용했습니다.
+
+<code-example path="lifecycle-hooks/src/app/after-view.component.ts" region="hooks" header="AfterViewComponent (클래스 일부)"></code-example>
+
 
 {@a wait-a-tick}
 
+<!--
 #### Wait before updating the view
+-->
+#### 화면이 갱신될 때까지 기다리기
 
+<!--
 In this example, the `doSomething()` method updates the screen when the hero name exceeds 10 characters, but waits a tick before updating `comment`.
 
 <code-example path="lifecycle-hooks/src/app/after-view.component.ts" region="do-something" header="AfterViewComponent (doSomething)"></code-example>
@@ -789,11 +845,35 @@ If you modify the code so that the hook updates the component's data-bound `comm
 
 The `LoggerService.tick_then()` statement postpones the log update
 for one turn of the browser's JavaScript cycle, which triggers a new change-detection cycle.
+-->
+이 예제에서 `doSomething()` 메서드는 히어로의 이름이 10글자를 넘어갔을 때 화면에 관련 메시지를 표시하는데, `comment` 프로퍼티를 갱신하기 전에 한 싸이클(tick) 기다립니다.
 
+<code-example path="lifecycle-hooks/src/app/after-view.component.ts" region="do-something" header="AfterViewComponent (doSomething())"></code-example>
+
+후킹 메서드 `ngAfterViewInit()`과 `ngAfterViewChecked()`는 모두 컴포넌트 뷰가 갱신된 후에 실행됩니다.
+이 때 컴포넌트에 바인딩되는 `comment` 프로퍼티 값을 즉시 변경하면 Angular가 에러를 발생시킵니다.
+
+그래서 `LoggerService.tick_then()`를 사용해서 브라우저의 JavaScript 싸이클을 한 번 지연시킨 후 새로운 변화 감지 싸이클을 시작하는 방식으로 구현하는 것이 좋습니다.
+
+
+<!--
 #### Write lean hook methods to avoid performance problems
+-->
+#### 성능 저하에 주의하세요.
 
+<!--
 When you run the *AfterView* sample, notice how frequently Angular calls `AfterViewChecked()`-often when there are no changes of interest.
 Be very careful about how much logic or computation you put into one of these methods.
+
+<div class="lightbox">
+
+  <img src='generated/images/guide/lifecycle-hooks/after-view-anim.gif' alt="AfterView">
+
+</div>
+-->
+*AfterView* 예제를 실행해보면 별다른 변화가 없어도 `AfterViewChecked()` 메서드가 자주 실행되는 것을 확인할 수 있습니다.
+이렇게 자주 실행되는 라이프싸이클 후킹 메서드에는 복잡한 로직을 작성하지 않아야 합니다.
+그래야 앱 성능 저하를 피할 수 있습니다.
 
 <div class="lightbox">
 
@@ -811,6 +891,7 @@ Be very careful about how much logic or computation you put into one of these me
 -->
 ### 외부 컨텐츠 변경사항 감지하기
 
+<!--
 *Content projection* is a way to import HTML content from outside the component and insert that content
 into the component's template in a designated spot.
 You can identify content projection in a template by looking for the following constructs.
@@ -848,10 +929,49 @@ In this case, the projected content is the `<app-child>` from the parent.
 <div class="lightbox">
   <img src='generated/images/guide/lifecycle-hooks/projected-child-view.png' alt="Projected Content">
 </div>
+-->
+*컨텐츠 프로젝션(content projection)*은 컴포넌트 밖에서 가져온 HTML 컨텐츠를 컴포넌트 템플릿 안에 표시하는 것을 의미합니다.
+템플릿에 사용된 컨텐츠 프로젝션은 이런 경우입니다.
+
+  * 컴포넌트 엘리먼트 태그 안에 들어있는 HTML
+  * 컴포넌트 템플릿에서 `<ng-content>`가 사용된 부분
+
+<div class="alert is-helpful">
+
+  AngularJS에서는 이 테크닉을 *트랜스클루전(transclusion)*이라고 했습니다.
+
+</div>
+
+*AfterContent* 예제에서 다루는 `AfterContentInit`과 `AfterContentChecked` 후킹 함수는 Angular가 외부 컨텐츠를 컴포넌트 안에 프로젝션한 *후에* 실행됩니다.
+
+[이전에 살펴본 _AfterView_](#afterview) 예제와 비교해 보세요.
+이번에는 템플릿에 자식 뷰를 포함하는 것이 아니라 부모 컴포넌트 `AfterContentComponent`에서 받아오는 방식으로 구현했습니다.
+그래서 부모 템플릿은 이렇게 구성됩니다.
+
+<code-example path="lifecycle-hooks/src/app/after-content.component.ts" region="parent-template" header="AfterContentParentComponent (템플릿 일부)"></code-example>
+
+`<app-child>` 태그가 `<after-content>` 태그 안에 들어가 있는 것을 유심히 보세요.
+*컴포넌트 안에 프로젝션하는 경우가 아니라면* 컴포넌트 엘리먼트 태그 안에는 아무것도 넣어서는 안됩니다.
+
+이제 컴포넌트 템플릿을 봅시다.
+
+<code-example path="lifecycle-hooks/src/app/after-content.component.ts" region="template" header="AfterContentComponent (템플릿)"></code-example>
+
+`<ng-content>` 태그는 외부 컨텐츠가 들어갈 위치를 지정합니다.
+그래서 이 경우에는 부모 컴포넌트에 사용한 `<app-child>`가 컴포넌트 안으로 프로젝션 됩니다.
+
+<div class="lightbox">
+  <img src='generated/images/guide/lifecycle-hooks/projected-child-view.png' alt="Projected Content">
+</div>
 
 
+{@a using-aftercontent-hooks}
+<!--
 #### Using AfterContent hooks
+-->
+#### AfterContent 후킹 함수 활용하기
 
+<!--
 *AfterContent* hooks are similar to the *AfterView* hooks.
 The key difference is in the child component.
 
@@ -881,6 +1001,35 @@ Angular completes composition of the projected content *before* finishing the co
 There is a small window between the `AfterContent...` and `AfterView...` hooks that allows you to modify the host view.
 
 </div>
+-->
+*AfterContent*는 *AfterView*와 비슷하게 동작합니다.
+자식 컴포넌트에서 일어난다는 점만 다릅니다.
+
+* *AfterView*는 `ViewChildren`과 관련이 있습니다. 컴포넌트 템플릿 *안에* 사용된 자식 컴포넌트 태그에 반응합니다.
+
+* *AfterContent*는 `ContentChildren`과 관련이 있습니다. 컴포넌트에 프로젝션된 자식 컴포넌트에 반응합니다.
+
+아래 예제 코드에서 *AfterContent* 후킹 함수는 *자식 컨텐츠*가 변경된 것을 감지할 때 동작합니다.
+컴포넌트 클래스에서 자식 컨텐츠를 참조하려면 [@ContentChild](api/core/ContentChild) 데코레이터를 사용하면 됩니다.
+
+<code-example path="lifecycle-hooks/src/app/after-content.component.ts" region="hooks" header="AfterContentComponent (클래스 일부)"></code-example>
+
+{@a no-unidirectional-flow-worries}
+
+<div class="alert is-helpful">
+
+<header>컨텐츠가 갱신된 것은 기다릴 필요가 없습니다.</header>
+
+컴포넌트에 정의된 `doSomething()` 메서드는 컴포넌트에 바인딩된 `comment` 프로퍼티 값을 즉시 갱신합니다.
+그런데 이때는 [렌더링이 제대로 되도록 한 싸이클 기다리는 동작](#wait-a-tick "Delaying updates")을 할 필요가 없습니다.
+
+Angular는 *AfterView*를 실행하기 전에 *AfterContent* 후킹 함수를 먼저 실행합니다.
+그리고 컨텐츠 프로젝션이 마무리 되는 시점은 Angular가 컴포넌트 뷰 화면을 마무리하기 *전* 입니다.
+따라서 `AfterContent...`와 `AfterView...` 후킹함수가 실행되는 타이밍 사이에 약간의 틈이 있습니다.
+이 시점에 호스트 뷰에서 무언가 변경해도 정상적으로 렌더링 됩니다.
+
+</div>
+
 
 {@a docheck}
 {@a defining-custom-change-detection}
@@ -889,6 +1038,7 @@ There is a small window between the `AfterContent...` and `AfterView...` hooks t
 -->
 ## 커스텀 변화감지 로직 정의하기
 
+<!--
 To monitor changes that occur where `ngOnChanges()` won't catch them, you can implement your own change check, as shown in the *DoCheck* example.
 This example shows how you can use the `ngDoCheck()` hook to detect and act upon changes that Angular doesn't catch on its own.
 
@@ -913,3 +1063,27 @@ Most of these initial checks are triggered by Angular's first rendering of *unre
 Just moving the cursor into another `<input>` triggers a call.
 Relatively few calls reveal actual changes to pertinent data.
 If you use this hook, your implementation must be extremely lightweight or the user experience suffers.
+-->
+입력 프로퍼티 값이 변경되었지만 `ngOnChanges()`에서 감지하지 못했다면, *DoCheck* 예제에서 다룬 것처럼 직접 변화를 감지하는 로직을 작성해도 됩니다.
+아래 예제를 확인해 보세요.
+
+*DoCheck* 예제는 *OnChanges* 앱을 확장하며 `ngDoCheck()` 메서드를 추가한 것입니다:
+
+<code-example path="lifecycle-hooks/src/app/do-check.component.ts" region="ng-do-check" header="DoCheckComponent (ngDoCheck())"></code-example>
+
+이 코드는 _확인하고 싶은 값_ 을 직접 가져와서 이전 값과 현재 값을 비교하고, `hero` 프로퍼티와 `power` 프로퍼티 값이 변경되지 않으면 변경된 내용이 없다는 메시지를 출력합니다.
+이 과정은 `DoCheck()`가 실행될 때마다 반복됩니다.
+실행되는 모습을 확인해 보세요.
+
+<div class="lightbox">
+  <img src='generated/images/guide/lifecycle-hooks/do-check-anim.gif' alt="DoCheck">
+</div>
+
+이렇게 구현하면 `ngDoCheck()` 메서드에서 히어로의 `name` 프로퍼티가 변경된 것을 감지할 수 있지만, 이 방식은 아주 무거운 부하를 동반합니다.
+`ngDoCheck()` 메서드는 꼭 필요하지 않은 변화 감지 싸이클에도 _매번_ 반응하며 실행되기 때문입니다.
+실제로 사용자가 아무런 동작을 하지 않아도 이 메서드는 20번 이상 실행되는 것도 확인할 수 있습니다.
+
+이 중 대부분은 Angular가 화면을 렌더링하는 동안 *이 컴포넌트와는 상관없는 영역에서 일어난 변화* 때문에 실행된 것입니다.
+심지어 마우스 커서를 `<input>` 엘리먼트로 옮기기만 해도 후킹 함수가 실행됩니다.
+실제로 변화를 감지하기 위해 필요한 함수 실행은 몇 번 되지 않습니다.
+그래서 이 후킹 메서드를 사용하면서 사용자에게 불편을 주지 않으려면 메서드 안에 들어가는 로직을 아주 간단하게 작성해야 합니다.
