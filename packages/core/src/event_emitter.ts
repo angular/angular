@@ -80,7 +80,7 @@ export interface EventEmitter<T> extends Subject<T> {
    * Emits an event containing a given value.
    * @param value The value to emit.
    */
-  emit(value?: T): void;
+  emit(value: T): void;
 
   /**
    * Registers handlers for events emitted by this instance.

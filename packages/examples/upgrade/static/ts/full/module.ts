@@ -41,8 +41,8 @@ export class TextFormatter {
 })
 export class Ng2HeroesComponent {
   @Input() heroes!: Hero[];
-  @Output() addHero = new EventEmitter();
-  @Output() removeHero = new EventEmitter();
+  @Output() addHero = new EventEmitter<void>();
+  @Output() removeHero = new EventEmitter<Hero>();
 }
 // #enddocregion
 

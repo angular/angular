@@ -15,5 +15,6 @@ pkg_npm(
     deps = [
         "//packages/core/schematics/migrations/entry-components",
         "//packages/core/schematics/migrations/typed-forms",
+        "//packages/core/schematics/migrations/void-event-emitter",
     ],
 )

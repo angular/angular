@@ -9,6 +9,11 @@
       "version": "9999.0.0",
       "description": "Experimental migration that adds <any>s for Typed Forms.",
       "factory": "./migrations/typed-forms/index"
+    },
+    "migration-v14-void-event-emitter": {
+      "version": "14.0.0-beta",
+      "description": "Adds `<void>` type parameter to `EventEmitter` constructor calls if `.emit()` is used without an argument",
+      "factory": "./migrations/void-event-emitter/index"
     }
   }
 }
