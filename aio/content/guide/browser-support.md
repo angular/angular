@@ -53,18 +53,7 @@ Angular supports most recent browsers. This includes the following specific vers
       IE
     </td>
     <td>
-      <div> 11, 10*, 9* ("compatibility view" mode not supported) </div>
-      <div>*deprecated in v10, see the {@link guide/deprecations#ie-9-10-and-mobile deprecations guide}.</div>
-    </td>
-  </tr>
- <tr>
-   <tr>
-    <td>
-      IE Mobile*
-    </td>
-    <td>
-      11
-      <div>*deprecated in v10, see the {@link guide/deprecations#ie-9-10-and-mobile deprecations guide}.</div>
+      <div>11</div>
     </td>
   </tr>
  <tr>
@@ -185,26 +174,12 @@ These are the polyfills required to run an Angular application on each supported
 
     <td>
       Chrome, Firefox, Edge, <br>
-      Safari, Android, IE 10+
+      Safari, Android, IE 11
     </td>
 
     <td>
 
       [ES2015](guide/browser-support#core-es6)
-
-    </td>
-
-  </tr>
-
-  <tr style="vertical-align: top">
-
-    <td>
-      IE 9
-    </td>
-
-    <td>
-
-      ES2015<br>[classList](guide/browser-support#classlist)
 
     </td>
 
@@ -272,30 +247,7 @@ Some features of Angular may require additional polyfills.
     </td>
 
     <td>
-      IE 10, IE 11
-    </td>
-
-  </tr>
-
-  <tr style="vertical-align: top">
-
-    <td>
-
-      [Http](guide/http) when sending and receiving binary data
-    </td>
-
-    <td>
-
-      [Typed&nbsp;Array](guide/browser-support#typedarray)<br>
-
-      [Blob](guide/browser-support#blob)<br>
-
-      [FormData](guide/browser-support#formdata)
-
-    </td>
-
-    <td>
-      IE 9
+      IE 11
     </td>
 
   </tr>
@@ -433,60 +385,6 @@ The following polyfills are used to test the framework itself. They are a good s
 
     <td>
       14.8KB
-    </td>
-
-  </tr>
-
-  <tr>
-
-    <td>
-
-      <a id='typedarray' href="https://github.com/inexorabletash/polyfill/blob/master/typedarray.js">Typed Array</a>
-
-    </td>
-
-    <td>
-      MIT
-    </td>
-
-    <td>
-      4KB
-    </td>
-
-  </tr>
-
-  <tr>
-
-    <td>
-
-       <a id='blob' href="https://github.com/eligrey/Blob.js">Blob</a>
-
-    </td>
-
-    <td>
-      MIT
-    </td>
-
-    <td>
-      1.3KB
-    </td>
-
-  </tr>
-
-  <tr>
-
-    <td>
-
-       <a id='formdata' href="https://github.com/francois2metz/html5-formdata">FormData</a>
-
-    </td>
-
-    <td>
-      MIT
-    </td>
-
-    <td>
-      0.4KB
     </td>
 
   </tr>
