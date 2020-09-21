@@ -18,7 +18,8 @@ export function translateExpression(
     expression: o.Expression, imports: ImportGenerator<ts.Expression>,
     options: TranslatorOptions<ts.Expression> = {}): ts.Expression {
   return expression.visitExpression(
-      new ExpressionTranslatorVisitor(new TypeScriptAstFactory(), imports, options),
+      new ExpressionTranslatorVisitor<ts.Statement, ts.Expression>(
+          new TypeScriptAstFactory(), imports, options),
       new Context(false));
 }
 
@@ -26,6 +27,7 @@ export function translateStatement(
     statement: o.Statement, imports: ImportGenerator<ts.Expression>,
     options: TranslatorOptions<ts.Expression> = {}): ts.Statement {
   return statement.visitStatement(
-      new ExpressionTranslatorVisitor(new TypeScriptAstFactory(), imports, options),
+      new ExpressionTranslatorVisitor<ts.Statement, ts.Expression>(
+          new TypeScriptAstFactory(), imports, options),
       new Context(true));
 }
