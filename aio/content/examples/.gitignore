@@ -17,6 +17,7 @@
 **/e2e/tsconfig.e2e.json
 **/src/karma.conf.js
 **/.angular-cli.json
+**/.browserslistrc
 **/.editorconfig
 **/.gitignore
 **/angular.json
@@ -30,7 +31,6 @@
 **/tslint.json
 **/karma-test-shim.js
 **/browser-test-shim.js
-**/browserslist
 **/node_modules
 
 # built files

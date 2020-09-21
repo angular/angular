@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "target": "es5",
-    "module": "es2015",
+    "module": "es2020",
     "moduleResolution": "node",
     "sourceMap": true,
     "emitDecoratorMetadata": true,
