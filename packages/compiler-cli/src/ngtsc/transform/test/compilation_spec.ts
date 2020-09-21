@@ -9,7 +9,7 @@ import {absoluteFrom} from '../../file_system';
 import {runInEachFileSystem} from '../../file_system/testing';
 import {NOOP_INCREMENTAL_BUILD} from '../../incremental';
 import {NOOP_PERF_RECORDER} from '../../perf';
-import {ClassDeclaration, TypeScriptReflectionHost} from '../../reflection';
+import {TypeScriptReflectionHost} from '../../reflection';
 import {makeProgram} from '../../testing';
 import {DtsTransformRegistry, TraitCompiler} from '../../transform';
 import {AnalysisOutput, CompileResult, DecoratorHandler, HandlerPrecedence} from '../src/api';

@@ -12,7 +12,7 @@ import * as ts from 'typescript';
 import {ErrorCode, FatalDiagnosticError, makeDiagnostic, makeRelatedInformation} from '../../diagnostics';
 import {DefaultImportRecorder, Reference, ReferenceEmitter} from '../../imports';
 import {InjectableClassRegistry, MetadataReader, MetadataRegistry} from '../../metadata';
-import {PartialEvaluator, ResolvedValue, ResolvedValueArray} from '../../partial_evaluator';
+import {PartialEvaluator, ResolvedValue} from '../../partial_evaluator';
 import {ClassDeclaration, Decorator, ReflectionHost, reflectObjectLiteral, typeNodeToValueExpr} from '../../reflection';
 import {NgModuleRouteAnalyzer} from '../../routing';
 import {LocalModuleScopeRegistry, ScopeData} from '../../scope';
