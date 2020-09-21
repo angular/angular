@@ -6,39 +6,39 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ArrayType, AssertNotNull, BinaryOperatorExpr, BuiltinType, BuiltinTypeName, CastExpr, CommaExpr, ConditionalExpr, Expression, ExpressionType, ExpressionVisitor, ExternalExpr, FunctionExpr, InstantiateExpr, InvokeFunctionExpr, InvokeMethodExpr, LiteralArrayExpr, LiteralExpr, LiteralMapExpr, LocalizedString, MapType, NotExpr, ReadKeyExpr, ReadPropExpr, ReadVarExpr, Type, TypeofExpr, TypeVisitor, UnaryOperatorExpr, WrappedNodeExpr, WriteKeyExpr, WritePropExpr, WriteVarExpr} from '@angular/compiler';
+import * as o from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {Context} from './context';
 import {ImportManager} from './import_manager';
 
 
-export function translateType(type: Type, imports: ImportManager): ts.TypeNode {
+export function translateType(type: o.Type, imports: ImportManager): ts.TypeNode {
   return type.visitType(new TypeTranslatorVisitor(imports), new Context(false));
 }
 
-export class TypeTranslatorVisitor implements ExpressionVisitor, TypeVisitor {
+export class TypeTranslatorVisitor implements o.ExpressionVisitor, o.TypeVisitor {
   constructor(private imports: ImportManager) {}
 
-  visitBuiltinType(type: BuiltinType, context: Context): ts.KeywordTypeNode {
+  visitBuiltinType(type: o.BuiltinType, context: Context): ts.KeywordTypeNode {
     switch (type.name) {
-      case BuiltinTypeName.Bool:
+      case o.BuiltinTypeName.Bool:
         return ts.createKeywordTypeNode(ts.SyntaxKind.BooleanKeyword);
-      case BuiltinTypeName.Dynamic:
+      case o.BuiltinTypeName.Dynamic:
         return ts.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword);
-      case BuiltinTypeName.Int:
-      case BuiltinTypeName.Number:
+      case o.BuiltinTypeName.Int:
+      case o.BuiltinTypeName.Number:
         return ts.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword);
-      case BuiltinTypeName.String:
+      case o.BuiltinTypeName.String:
         return ts.createKeywordTypeNode(ts.SyntaxKind.StringKeyword);
-      case BuiltinTypeName.None:
+      case o.BuiltinTypeName.None:
         return ts.createKeywordTypeNode(ts.SyntaxKind.NeverKeyword);
       default:
-        throw new Error(`Unsupported builtin type: ${BuiltinTypeName[type.name]}`);
+        throw new Error(`Unsupported builtin type: ${o.BuiltinTypeName[type.name]}`);
     }
   }
 
-  visitExpressionType(type: ExpressionType, context: Context): ts.TypeNode {
+  visitExpressionType(type: o.ExpressionType, context: Context): ts.TypeNode {
     const typeNode = this.translateExpression(type.value, context);
     if (type.typeParams === null) {
       return typeNode;
@@ -56,11 +56,11 @@ export class TypeTranslatorVisitor implements ExpressionVisitor, TypeVisitor {
     return ts.createTypeReferenceNode(typeNode.typeName, typeArgs);
   }
 
-  visitArrayType(type: ArrayType, context: Context): ts.ArrayTypeNode {
+  visitArrayType(type: o.ArrayType, context: Context): ts.ArrayTypeNode {
     return ts.createArrayTypeNode(this.translateType(type.of, context));
   }
 
-  visitMapType(type: MapType, context: Context): ts.TypeLiteralNode {
+  visitMapType(type: o.MapType, context: Context): ts.TypeLiteralNode {
     const parameter = ts.createParameter(
         undefined, undefined, undefined, 'key', undefined,
         ts.createKeywordTypeNode(ts.SyntaxKind.StringKeyword));
@@ -71,38 +71,38 @@ export class TypeTranslatorVisitor implements ExpressionVisitor, TypeVisitor {
     return ts.createTypeLiteralNode([indexSignature]);
   }
 
-  visitReadVarExpr(ast: ReadVarExpr, context: Context): ts.TypeQueryNode {
+  visitReadVarExpr(ast: o.ReadVarExpr, context: Context): ts.TypeQueryNode {
     if (ast.name === null) {
       throw new Error(`ReadVarExpr with no variable name in type`);
     }
     return ts.createTypeQueryNode(ts.createIdentifier(ast.name));
   }
 
-  visitWriteVarExpr(expr: WriteVarExpr, context: Context): never {
+  visitWriteVarExpr(expr: o.WriteVarExpr, context: Context): never {
     throw new Error('Method not implemented.');
   }
 
-  visitWriteKeyExpr(expr: WriteKeyExpr, context: Context): never {
+  visitWriteKeyExpr(expr: o.WriteKeyExpr, context: Context): never {
     throw new Error('Method not implemented.');
   }
 
-  visitWritePropExpr(expr: WritePropExpr, context: Context): never {
+  visitWritePropExpr(expr: o.WritePropExpr, context: Context): never {
     throw new Error('Method not implemented.');
   }
 
-  visitInvokeMethodExpr(ast: InvokeMethodExpr, context: Context): never {
+  visitInvokeMethodExpr(ast: o.InvokeMethodExpr, context: Context): never {
     throw new Error('Method not implemented.');
   }
 
-  visitInvokeFunctionExpr(ast: InvokeFunctionExpr, context: Context): never {
+  visitInvokeFunctionExpr(ast: o.InvokeFunctionExpr, context: Context): never {
     throw new Error('Method not implemented.');
   }
 
-  visitInstantiateExpr(ast: InstantiateExpr, context: Context): never {
+  visitInstantiateExpr(ast: o.InstantiateExpr, context: Context): never {
     throw new Error('Method not implemented.');
   }
 
-  visitLiteralExpr(ast: LiteralExpr, context: Context): ts.TypeNode {
+  visitLiteralExpr(ast: o.LiteralExpr, context: Context): ts.TypeNode {
     if (ast.value === null) {
       // TODO(alan-agius4): Remove when we no longer support TS 3.9
       // Use: return ts.createLiteralTypeNode(ts.createNull()) directly.
@@ -120,11 +120,11 @@ export class TypeTranslatorVisitor implements ExpressionVisitor, TypeVisitor {
     }
   }
 
-  visitLocalizedString(ast: LocalizedString, context: Context): never {
+  visitLocalizedString(ast: o.LocalizedString, context: Context): never {
     throw new Error('Method not implemented.');
   }
 
-  visitExternalExpr(ast: ExternalExpr, context: Context): ts.EntityName|ts.TypeReferenceNode {
+  visitExternalExpr(ast: o.ExternalExpr, context: Context): ts.EntityName|ts.TypeReferenceNode {
     if (ast.value.moduleName === null || ast.value.name === null) {
       throw new Error(`Import unknown module or symbol`);
     }
@@ -132,9 +132,8 @@ export class TypeTranslatorVisitor implements ExpressionVisitor, TypeVisitor {
         this.imports.generateNamedImport(ast.value.moduleName, ast.value.name);
     const symbolIdentifier = ts.createIdentifier(symbol);
 
-    const typeName = moduleImport ?
-        ts.createQualifiedName(ts.createIdentifier(moduleImport), symbolIdentifier) :
-        symbolIdentifier;
+    const typeName =
+        moduleImport ? ts.createQualifiedName(moduleImport, symbolIdentifier) : symbolIdentifier;
 
     const typeArguments = ast.typeParams !== null ?
         ast.typeParams.map(type => this.translateType(type, context)) :
@@ -142,48 +141,48 @@ export class TypeTranslatorVisitor implements ExpressionVisitor, TypeVisitor {
     return ts.createTypeReferenceNode(typeName, typeArguments);
   }
 
-  visitConditionalExpr(ast: ConditionalExpr, context: Context) {
+  visitConditionalExpr(ast: o.ConditionalExpr, context: Context) {
     throw new Error('Method not implemented.');
   }
 
-  visitNotExpr(ast: NotExpr, context: Context) {
+  visitNotExpr(ast: o.NotExpr, context: Context) {
     throw new Error('Method not implemented.');
   }
 
-  visitAssertNotNullExpr(ast: AssertNotNull, context: Context) {
+  visitAssertNotNullExpr(ast: o.AssertNotNull, context: Context) {
     throw new Error('Method not implemented.');
   }
 
-  visitCastExpr(ast: CastExpr, context: Context) {
+  visitCastExpr(ast: o.CastExpr, context: Context) {
     throw new Error('Method not implemented.');
   }
 
-  visitFunctionExpr(ast: FunctionExpr, context: Context) {
+  visitFunctionExpr(ast: o.FunctionExpr, context: Context) {
     throw new Error('Method not implemented.');
   }
 
-  visitUnaryOperatorExpr(ast: UnaryOperatorExpr, context: Context) {
+  visitUnaryOperatorExpr(ast: o.UnaryOperatorExpr, context: Context) {
     throw new Error('Method not implemented.');
   }
 
-  visitBinaryOperatorExpr(ast: BinaryOperatorExpr, context: Context) {
+  visitBinaryOperatorExpr(ast: o.BinaryOperatorExpr, context: Context) {
     throw new Error('Method not implemented.');
   }
 
-  visitReadPropExpr(ast: ReadPropExpr, context: Context) {
+  visitReadPropExpr(ast: o.ReadPropExpr, context: Context) {
     throw new Error('Method not implemented.');
   }
 
-  visitReadKeyExpr(ast: ReadKeyExpr, context: Context) {
+  visitReadKeyExpr(ast: o.ReadKeyExpr, context: Context) {
     throw new Error('Method not implemented.');
   }
 
-  visitLiteralArrayExpr(ast: LiteralArrayExpr, context: Context): ts.TupleTypeNode {
+  visitLiteralArrayExpr(ast: o.LiteralArrayExpr, context: Context): ts.TupleTypeNode {
     const values = ast.entries.map(expr => this.translateExpression(expr, context));
     return ts.createTupleTypeNode(values);
   }
 
-  visitLiteralMapExpr(ast: LiteralMapExpr, context: Context): ts.TypeLiteralNode {
+  visitLiteralMapExpr(ast: o.LiteralMapExpr, context: Context): ts.TypeLiteralNode {
     const entries = ast.entries.map(entry => {
       const {key, quoted} = entry;
       const type = this.translateExpression(entry.value, context);
@@ -197,11 +196,11 @@ export class TypeTranslatorVisitor implements ExpressionVisitor, TypeVisitor {
     return ts.createTypeLiteralNode(entries);
   }
 
-  visitCommaExpr(ast: CommaExpr, context: Context) {
+  visitCommaExpr(ast: o.CommaExpr, context: Context) {
     throw new Error('Method not implemented.');
   }
 
-  visitWrappedNodeExpr(ast: WrappedNodeExpr<any>, context: Context): ts.TypeNode {
+  visitWrappedNodeExpr(ast: o.WrappedNodeExpr<any>, context: Context): ts.TypeNode {
     const node: ts.Node = ast.node;
     if (ts.isEntityName(node)) {
       return ts.createTypeReferenceNode(node, /* typeArguments */ undefined);
@@ -215,7 +214,7 @@ export class TypeTranslatorVisitor implements ExpressionVisitor, TypeVisitor {
     }
   }
 
-  visitTypeofExpr(ast: TypeofExpr, context: Context): ts.TypeQueryNode {
+  visitTypeofExpr(ast: o.TypeofExpr, context: Context): ts.TypeQueryNode {
     const typeNode = this.translateExpression(ast.expr, context);
     if (!ts.isTypeReferenceNode(typeNode)) {
       throw new Error(`The target of a typeof expression must be a type reference, but it was
@@ -224,7 +223,7 @@ export class TypeTranslatorVisitor implements ExpressionVisitor, TypeVisitor {
     return ts.createTypeQueryNode(typeNode.typeName);
   }
 
-  private translateType(type: Type, context: Context): ts.TypeNode {
+  private translateType(type: o.Type, context: Context): ts.TypeNode {
     const typeNode = type.visitType(this, context);
     if (!ts.isTypeNode(typeNode)) {
       throw new Error(
@@ -233,7 +232,7 @@ export class TypeTranslatorVisitor implements ExpressionVisitor, TypeVisitor {
     return typeNode;
   }
 
-  private translateExpression(expr: Expression, context: Context): ts.TypeNode {
+  private translateExpression(expr: o.Expression, context: Context): ts.TypeNode {
     const typeNode = expr.visitExpression(this, context);
     if (!ts.isTypeNode(typeNode)) {
       throw new Error(
