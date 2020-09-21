@@ -223,76 +223,107 @@ describe('Utils', () => {
 
     it('serializeI18nHead()', () => {
       expect(o.localizedString(meta(), [literal('')], [], []).serializeI18nHead())
-          .toEqual({cooked: '', raw: ''});
+          .toEqual({cooked: '', raw: '', range: jasmine.any(ParseSourceSpan)});
       expect(o.localizedString(meta('', '', 'desc'), [literal('')], [], []).serializeI18nHead())
-          .toEqual({cooked: ':desc:', raw: ':desc:'});
+          .toEqual({cooked: ':desc:', raw: ':desc:', range: jasmine.any(ParseSourceSpan)});
       expect(o.localizedString(meta('id', '', 'desc'), [literal('')], [], []).serializeI18nHead())
-          .toEqual({cooked: ':desc@@id:', raw: ':desc@@id:'});
+          .toEqual({cooked: ':desc@@id:', raw: ':desc@@id:', range: jasmine.any(ParseSourceSpan)});
       expect(
           o.localizedString(meta('', 'meaning', 'desc'), [literal('')], [], []).serializeI18nHead())
-          .toEqual({cooked: ':meaning|desc:', raw: ':meaning|desc:'});
+          .toEqual({
+            cooked: ':meaning|desc:',
+            raw: ':meaning|desc:',
+            range: jasmine.any(ParseSourceSpan)
+          });
       expect(o.localizedString(meta('id', 'meaning', 'desc'), [literal('')], [], [])
                  .serializeI18nHead())
-          .toEqual({cooked: ':meaning|desc@@id:', raw: ':meaning|desc@@id:'});
+          .toEqual({
+            cooked: ':meaning|desc@@id:',
+            raw: ':meaning|desc@@id:',
+            range: jasmine.any(ParseSourceSpan)
+          });
       expect(o.localizedString(meta('id', '', ''), [literal('')], [], []).serializeI18nHead())
-          .toEqual({cooked: ':@@id:', raw: ':@@id:'});
+          .toEqual({cooked: ':@@id:', raw: ':@@id:', range: jasmine.any(ParseSourceSpan)});
 
       // Escaping colons (block markers)
       expect(o.localizedString(meta('id:sub_id', 'meaning', 'desc'), [literal('')], [], [])
                  .serializeI18nHead())
-          .toEqual({cooked: ':meaning|desc@@id:sub_id:', raw: ':meaning|desc@@id\\:sub_id:'});
+          .toEqual({
+            cooked: ':meaning|desc@@id:sub_id:',
+            raw: ':meaning|desc@@id\\:sub_id:',
+            range: jasmine.any(ParseSourceSpan)
+          });
       expect(o.localizedString(meta('id', 'meaning:sub_meaning', 'desc'), [literal('')], [], [])
                  .serializeI18nHead())
-          .toEqual(
-              {cooked: ':meaning:sub_meaning|desc@@id:', raw: ':meaning\\:sub_meaning|desc@@id:'});
+          .toEqual({
+            cooked: ':meaning:sub_meaning|desc@@id:',
+            raw: ':meaning\\:sub_meaning|desc@@id:',
+            range: jasmine.any(ParseSourceSpan)
+          });
       expect(o.localizedString(meta('id', 'meaning', 'desc:sub_desc'), [literal('')], [], [])
                  .serializeI18nHead())
-          .toEqual({cooked: ':meaning|desc:sub_desc@@id:', raw: ':meaning|desc\\:sub_desc@@id:'});
+          .toEqual({
+            cooked: ':meaning|desc:sub_desc@@id:',
+            raw: ':meaning|desc\\:sub_desc@@id:',
+            range: jasmine.any(ParseSourceSpan)
+          });
       expect(o.localizedString(meta('id', 'meaning', 'desc'), [literal('message source')], [], [])
                  .serializeI18nHead())
           .toEqual({
             cooked: ':meaning|desc@@id:message source',
-            raw: ':meaning|desc@@id:message source'
+            raw: ':meaning|desc@@id:message source',
+            range: jasmine.any(ParseSourceSpan)
           });
       expect(o.localizedString(meta('id', 'meaning', 'desc'), [literal(':message source')], [], [])
                  .serializeI18nHead())
           .toEqual({
             cooked: ':meaning|desc@@id::message source',
-            raw: ':meaning|desc@@id::message source'
+            raw: ':meaning|desc@@id::message source',
+            range: jasmine.any(ParseSourceSpan)
           });
       expect(o.localizedString(meta('', '', ''), [literal('message source')], [], [])
                  .serializeI18nHead())
-          .toEqual({cooked: 'message source', raw: 'message source'});
+          .toEqual({
+            cooked: 'message source',
+            raw: 'message source',
+            range: jasmine.any(ParseSourceSpan)
+          });
       expect(o.localizedString(meta('', '', ''), [literal(':message source')], [], [])
                  .serializeI18nHead())
-          .toEqual({cooked: ':message source', raw: '\\:message source'});
+          .toEqual({
+            cooked: ':message source',
+            raw: '\\:message source',
+            range: jasmine.any(ParseSourceSpan)
+          });
     });
 
     it('serializeI18nPlaceholderBlock()', () => {
       expect(o.localizedString(meta('', '', ''), [literal(''), literal('')], [literal('')], [])
                  .serializeI18nTemplatePart(1))
-          .toEqual({cooked: '', raw: ''});
+          .toEqual({cooked: '', raw: '', range: jasmine.any(ParseSourceSpan)});
       expect(o.localizedString(
                   meta('', '', ''), [literal(''), literal('')],
                   [new o.LiteralPiece('abc', {} as any)], [])
                  .serializeI18nTemplatePart(1))
-          .toEqual({cooked: ':abc:', raw: ':abc:'});
+          .toEqual({cooked: ':abc:', raw: ':abc:', range: jasmine.any(ParseSourceSpan)});
       expect(
           o.localizedString(meta('', '', ''), [literal(''), literal('message')], [literal('')], [])
               .serializeI18nTemplatePart(1))
-          .toEqual({cooked: 'message', raw: 'message'});
+          .toEqual({cooked: 'message', raw: 'message', range: jasmine.any(ParseSourceSpan)});
       expect(o.localizedString(
                   meta('', '', ''), [literal(''), literal('message')], [literal('abc')], [])
                  .serializeI18nTemplatePart(1))
-          .toEqual({cooked: ':abc:message', raw: ':abc:message'});
+          .toEqual(
+              {cooked: ':abc:message', raw: ':abc:message', range: jasmine.any(ParseSourceSpan)});
       expect(
           o.localizedString(meta('', '', ''), [literal(''), literal(':message')], [literal('')], [])
               .serializeI18nTemplatePart(1))
-          .toEqual({cooked: ':message', raw: '\\:message'});
+          .toEqual({cooked: ':message', raw: '\\:message', range: jasmine.any(ParseSourceSpan)});
       expect(o.localizedString(
                   meta('', '', ''), [literal(''), literal(':message')], [literal('abc')], [])
                  .serializeI18nTemplatePart(1))
-          .toEqual({cooked: ':abc::message', raw: ':abc::message'});
+          .toEqual(
+              {cooked: ':abc::message', raw: ':abc::message', range: jasmine.any(ParseSourceSpan)});
     });
 
     function meta(customId?: string, meaning?: string, description?: string): I18nMeta {
