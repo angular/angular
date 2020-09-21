@@ -24,7 +24,7 @@ export class UploaderService {
   // }
 
   upload(file: File) {
-    if (!file) { return; }
+    if (!file) { return of<string>(); }
 
     // COULD HAVE WRITTEN:
     // return this.http.post('/upload/file', file, {
