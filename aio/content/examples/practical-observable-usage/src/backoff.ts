@@ -17,18 +17,16 @@ export function backoff(maxTries, delay) {
 }
 
 // #enddocregion
-/**
- * This function declaration is necessary to ensure that it does not get called
- * when running the unit tests. It will not get rendered into the docs.
- * The indention needs to start in the most level position as well because of how
- * the docplaster combines the different regions together.
- */
+/*
+  This function declaration is necessary to ensure that it does not get called
+  when running the unit tests. It will not get rendered into the docs.
+  The indentation needs to start in the leftmost level position as well because of how
+  the docplaster combines the different regions together.
+*/
 function docRegionAjaxCall() {
 // #docregion
 ajax('/api/endpoint')
   .pipe(backoff(3, 250))
-  .subscribe(data => () => {
-    // ...
-  });
+  .subscribe(function handleData(data) { /* ... */ });
 // #enddocregion
 }
