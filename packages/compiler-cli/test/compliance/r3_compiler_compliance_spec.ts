@@ -1638,7 +1638,7 @@ describe('compiler compliance', () => {
                 $r3$.ɵɵviewQuery(SomeDirective, true);
               }
               if (rf & 2) {
-                var $tmp$;
+                let $tmp$;
                 $r3$.ɵɵqueryRefresh($tmp$ = $r3$.ɵɵloadQuery()) && (ctx.someDir = $tmp$.first);
                 $r3$.ɵɵqueryRefresh($tmp$ = $r3$.ɵɵloadQuery()) && (ctx.someDirs = $tmp$);
               }
@@ -1697,7 +1697,7 @@ describe('compiler compliance', () => {
                 $r3$.ɵɵviewQuery($e1_attrs$, true);
               }
               if (rf & 2) {
-                var $tmp$;
+                let $tmp$;
                 $r3$.ɵɵqueryRefresh($tmp$ = $r3$.ɵɵloadQuery()) && (ctx.myRef = $tmp$.first);
                 $r3$.ɵɵqueryRefresh($tmp$ = $r3$.ɵɵloadQuery()) && (ctx.myRefs = $tmp$);
               }
@@ -1748,7 +1748,7 @@ describe('compiler compliance', () => {
                 $r3$.ɵɵviewQuery($refs$, true);
               }
               if (rf & 2) {
-                var $tmp$;
+                let $tmp$;
                 $r3$.ɵɵqueryRefresh($tmp$ = $r3$.ɵɵloadQuery()) && (ctx.someDir = $tmp$.first);
                 $r3$.ɵɵqueryRefresh($tmp$ = $r3$.ɵɵloadQuery()) && (ctx.foo = $tmp$.first);
               }
@@ -1814,7 +1814,7 @@ describe('compiler compliance', () => {
                 $r3$.ɵɵviewQuery(SomeDirective, true, TemplateRef);
               }
               if (rf & 2) {
-                var $tmp$;
+                let $tmp$;
                 $r3$.ɵɵqueryRefresh($tmp$ = $r3$.ɵɵloadQuery()) && (ctx.myRef = $tmp$.first);
                 $r3$.ɵɵqueryRefresh($tmp$ = $r3$.ɵɵloadQuery()) && (ctx.someDir = $tmp$.first);
                 $r3$.ɵɵqueryRefresh($tmp$ = $r3$.ɵɵloadQuery()) && (ctx.myRefs = $tmp$);
@@ -1875,7 +1875,7 @@ describe('compiler compliance', () => {
               $r3$.ɵɵcontentQuery(dirIndex, SomeDirective, false);
               }
               if (rf & 2) {
-              var $tmp$;
+              let $tmp$;
                 $r3$.ɵɵqueryRefresh($tmp$ = $r3$.ɵɵloadQuery()) && (ctx.someDir = $tmp$.first);
                 $r3$.ɵɵqueryRefresh($tmp$ = $r3$.ɵɵloadQuery()) && (ctx.someDirList = $tmp$);
               }
@@ -1935,7 +1935,7 @@ describe('compiler compliance', () => {
               $r3$.ɵɵcontentQuery(dirIndex, $e1_attrs$, false);
               }
               if (rf & 2) {
-              var $tmp$;
+              let $tmp$;
                 $r3$.ɵɵqueryRefresh($tmp$ = $r3$.ɵɵloadQuery()) && (ctx.myRef = $tmp$.first);
                 $r3$.ɵɵqueryRefresh($tmp$ = $r3$.ɵɵloadQuery()) && (ctx.myRefs = $tmp$);
               }
@@ -1994,7 +1994,7 @@ describe('compiler compliance', () => {
               $r3$.ɵɵcontentQuery(dirIndex, $ref0$, true);
               }
               if (rf & 2) {
-              var $tmp$;
+              let $tmp$;
                 $r3$.ɵɵqueryRefresh($tmp$ = $r3$.ɵɵloadQuery()) && (ctx.someDir = $tmp$.first);
                 $r3$.ɵɵqueryRefresh($tmp$ = $r3$.ɵɵloadQuery()) && (ctx.foo = $tmp$.first);
               }
@@ -2061,7 +2061,7 @@ describe('compiler compliance', () => {
               $r3$.ɵɵcontentQuery(dirIndex, SomeDirective, false, TemplateRef);
               }
               if (rf & 2) {
-              var $tmp$;
+              let $tmp$;
                 $r3$.ɵɵqueryRefresh($tmp$ = $r3$.ɵɵloadQuery()) && (ctx.myRef = $tmp$.first);
                 $r3$.ɵɵqueryRefresh($tmp$ = $r3$.ɵɵloadQuery()) && (ctx.someDir = $tmp$.first);
                 $r3$.ɵɵqueryRefresh($tmp$ = $r3$.ɵɵloadQuery()) && (ctx.myRefs = $tmp$);
