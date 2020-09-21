@@ -315,18 +315,18 @@ export class ExpandingRowHost implements AfterViewInit, OnDestroy, ExpandingRowH
   }
 
   /**
-   * Check if element is blacklisted.  Blacklisted elements will not collapse an
+   * Check if element is collapsible.  Elements marked as uncollapsible will not collapse an
    * open row when clicked.
    */
-  isBlacklisted(element: HTMLElement|null): boolean {
+  isCollapsible(element: HTMLElement|null): boolean {
     const clickRoot = this.getClickRootElement();
     while (element && element !== clickRoot) {
-      if (element.hasAttribute('cfcexpandingrowblacklist')) {
-        return true;
+      if (element.hasAttribute('cfcUncollapsible')) {
+        return false;
       }
       element = element.parentElement;
     }
-    return false;
+    return true;
   }
 
   /**

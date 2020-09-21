@@ -14,7 +14,7 @@ import {Directive} from '@angular/core';
  * expanded row
  */
 @Directive({
-  selector: '[cfcExpandingRowBlacklist]',
+  selector: '[cfcUncollapsible]',
 })
-export class ExpandingRowBlacklist {
+export class ExpandingRowUncollapsible {
 }
