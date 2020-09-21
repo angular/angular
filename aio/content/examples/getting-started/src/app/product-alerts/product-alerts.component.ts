@@ -13,5 +13,5 @@ import { Output, EventEmitter } from '@angular/core';
 // #docregion input-output
 export class ProductAlertsComponent {
   @Input() product;
-  @Output() notify = new EventEmitter();
+  @Output() notify = new EventEmitter<void>();
 }
