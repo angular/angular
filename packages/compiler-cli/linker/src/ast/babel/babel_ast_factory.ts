@@ -11,7 +11,7 @@ import {AstFactory, BinaryOperator, LeadingComment, ObjectLiteralProperty, Sourc
 import {assert} from '../utils';
 
 export class BabelAstFactory implements AstFactory<t.Statement, t.Expression> {
-  attachComments(statement: t.Statement, leadingComments?: LeadingComment[]): t.Statement {
+  attachComments(statement: t.Statement, leadingComments: LeadingComment[]|undefined): t.Statement {
     if (leadingComments === undefined) {
       return statement;
     }

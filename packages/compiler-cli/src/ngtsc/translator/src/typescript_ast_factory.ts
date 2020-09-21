@@ -235,7 +235,7 @@ export function createTemplateTail(cooked: string, raw: string): ts.TemplateTail
  * @param leadingComments The comments to attach to the statement.
  */
 export function attachComments<T extends ts.Statement>(
-    statement: T, leadingComments?: LeadingComment[]): T {
+    statement: T, leadingComments: LeadingComment[]|undefined): T {
   if (leadingComments === undefined) {
     return statement;
   }

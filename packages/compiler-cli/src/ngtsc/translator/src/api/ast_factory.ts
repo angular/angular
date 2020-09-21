@@ -21,7 +21,7 @@ export interface AstFactory<TStatement, TExpression> {
    * @param leadingComments the comments to attach.
    * @returns the node passed in as `statement` with the comments attached.
    */
-  attachComments(statement: TStatement, leadingComments?: LeadingComment[]): TStatement;
+  attachComments(statement: TStatement, leadingComments: LeadingComment[]|undefined): TStatement;
 
   /**
    * Create a literal array expresion (e.g. `[expr1, expr2]`).

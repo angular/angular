@@ -12,6 +12,9 @@ import {FatalLinkerError} from '../../fatal_linker_error';
 import {AstHost, Range} from '../ast_host';
 import {assert} from '../utils';
 
+/**
+ * This implementation of `AstHost` is able to get information from Babel AST nodes.
+ */
 export class BabelAstHost implements AstHost<t.Expression> {
   getSymbolName(node: t.Expression): string|null {
     if (t.isIdentifier(node)) {

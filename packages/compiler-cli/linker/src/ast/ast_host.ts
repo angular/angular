@@ -6,6 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+/**
+ * An abstraction for getting information from an AST while being agnostic to the underlying AST
+ * implementation.
+ */
 export interface AstHost<TExpression> {
   /**
    * Get the name of the symbol represented by the given expression node, or `null` if it is not a

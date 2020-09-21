@@ -14,6 +14,8 @@ import {assert} from '../utils';
 
 
 /**
+ * This implementation of `AstHost` is able to get information from TypeScript AST nodes.
+ *
  * This host is not actually used at runtime in the current code.
  *
  * It is implemented here to ensure that the `AstHost` abstraction is not unfairly skewed towards
