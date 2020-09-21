@@ -186,10 +186,6 @@ export class ActivateRoutes {
             // Activate the outlet when it has already been instantiated
             // Otherwise it will get activated from its `ngOnInit` when instantiated
             context.outlet.activateWith(future, cmpFactoryResolver);
-          } else if (isDevMode() && console && console.warn) {
-            console.warn(
-                `A router outlet has not been instantiated during routes activation. URL Segment: '${
-                    future.snapshot._urlSegment}'`);
           }
 
           this.activateChildRoutes(futureNode, null, context.children);
