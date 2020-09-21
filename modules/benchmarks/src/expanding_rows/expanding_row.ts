@@ -45,10 +45,10 @@ export interface ExpandingRowHostBase {
   handleRowSummaryClick(row: ExpandingRow): void;
 
   /**
-   * Check if element is blacklisted.  Blacklisted elements will not collapse an
+   * Check if element is collapsible.  Elements marked as uncollapsible will not collapse an
    * open row when clicked.
    */
-  isBlacklisted(element: HTMLElement|null): boolean;
+  isCollapsible(element: HTMLElement|null): boolean;
 
   /**
    * Handles caption element click on a cfc-expanding-row component. Note
@@ -247,16 +247,15 @@ export class ExpandingRow {
    * notify click on its host element. Note that caption is only shown when
    * the row is expanded. Hence this will collapse this row and put the focus
    * on it.
-   * If a blacklisted element exists in the caption, clicking that element will
+   * If an uncollapsible element exists in the caption, clicking that element will
    * not trigger the row collapse.
    */
   handleCaptionClick(event: MouseEvent): void {
-    if (this.expandingRowHost.isBlacklisted(event.target as {} as HTMLElement)) {
-      return;
+    if (this.expandingRowHost.isCollapsible(event.target as {} as HTMLElement)) {
+      this.expandingRowHost.handleRowCaptionClick(this);
+      this.collapse();
+      this.focus();
     }
-    this.expandingRowHost.handleRowCaptionClick(this);
-    this.collapse();
-    this.focus();
   }
 
   /**
