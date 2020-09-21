@@ -545,7 +545,7 @@ export class LocalizedString extends Expression {
    * @param meta The metadata to serialize
    * @param messagePart The first part of the tagged string
    */
-  serializeI18nHead(): {cooked: string, raw: string} {
+  serializeI18nHead(): CookedRawString {
     const MEANING_SEPARATOR = '|';
     const ID_SEPARATOR = '@@';
     const LEGACY_ID_INDICATOR = '␟';
@@ -562,7 +562,8 @@ export class LocalizedString extends Expression {
         metaBlock = `${metaBlock}${LEGACY_ID_INDICATOR}${legacyId}`;
       });
     }
-    return createCookedRawString(metaBlock, this.messageParts[0].text);
+    return createCookedRawString(
+        metaBlock, this.messageParts[0].text, this.getMessagePartSourceSpan(0));
   }
 
   getMessagePartSourceSpan(i: number): ParseSourceSpan|null {
@@ -581,11 +582,22 @@ export class LocalizedString extends Expression {
    * @param placeholderName The placeholder name to serialize
    * @param messagePart The following message string after this placeholder
    */
-  serializeI18nTemplatePart(partIndex: number): {cooked: string, raw: string} {
+  serializeI18nTemplatePart(partIndex: number): CookedRawString {
     const placeholderName = this.placeHolderNames[partIndex - 1].text;
     const messagePart = this.messageParts[partIndex];
-    return createCookedRawString(placeholderName, messagePart.text);
+    return createCookedRawString(
+        placeholderName, messagePart.text, this.getMessagePartSourceSpan(partIndex));
   }
+}
+
+/**
+ * A structure to hold the cooked and raw strings of a template literal element, along with its
+ * source-span range.
+ */
+export interface CookedRawString {
+  cooked: string;
+  raw: string;
+  range: ParseSourceSpan|null;
 }
 
 const escapeSlashes = (str: string): string => str.replace(/\\/g, '\\\\');
@@ -608,17 +620,20 @@ const escapeForMessagePart = (str: string): string =>
  * @param metaBlock Any metadata that should be prepended to the string
  * @param messagePart The message part of the string
  */
-function createCookedRawString(metaBlock: string, messagePart: string) {
+function createCookedRawString(
+    metaBlock: string, messagePart: string, range: ParseSourceSpan|null): CookedRawString {
   if (metaBlock === '') {
     return {
       cooked: messagePart,
-      raw: escapeForMessagePart(escapeStartingColon(escapeSlashes(messagePart)))
+      raw: escapeForMessagePart(escapeStartingColon(escapeSlashes(messagePart))),
+      range,
     };
   } else {
     return {
       cooked: `:${metaBlock}:${messagePart}`,
       raw: escapeForMessagePart(
-          `:${escapeColons(escapeSlashes(metaBlock))}:${escapeSlashes(messagePart)}`)
+          `:${escapeColons(escapeSlashes(metaBlock))}:${escapeSlashes(messagePart)}`),
+      range,
     };
   }
 }
