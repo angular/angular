@@ -6,14 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CommonModule, Location} from '@angular/common';
+import {CommonModule, Location, LocationStrategy, PlatformLocation} from '@angular/common';
 import {SpyLocation} from '@angular/common/testing';
-import {ChangeDetectionStrategy, Component, Injectable, NgModule, NgModuleFactoryLoader, NgModuleRef, NgZone, OnDestroy, ViewChild, ɵConsole as Console, ɵNoopNgZone as NoopNgZone} from '@angular/core';
+import {ChangeDetectionStrategy, Component, EventEmitter, Injectable, NgModule, NgModuleFactoryLoader, NgModuleRef, NgZone, OnDestroy, ViewChild, ɵConsole as Console, ɵNoopNgZone as NoopNgZone} from '@angular/core';
 import {ComponentFixture, fakeAsync, inject, TestBed, tick} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {ActivatedRoute, ActivatedRouteSnapshot, ActivationEnd, ActivationStart, CanActivate, CanDeactivate, ChildActivationEnd, ChildActivationStart, DefaultUrlSerializer, DetachedRouteHandle, Event, GuardsCheckEnd, GuardsCheckStart, Navigation, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, ParamMap, Params, PreloadAllModules, PreloadingStrategy, PRIMARY_OUTLET, Resolve, ResolveEnd, ResolveStart, RouteConfigLoadEnd, RouteConfigLoadStart, Router, RouteReuseStrategy, RouterEvent, RouterLink, RouterLinkWithHref, RouterModule, RouterPreloader, RouterStateSnapshot, RoutesRecognized, RunGuardsAndResolvers, UrlHandlingStrategy, UrlSegmentGroup, UrlSerializer, UrlTree} from '@angular/router';
-import {EMPTY, Observable, Observer, of, Subscription} from 'rxjs';
+import {EMPTY, Observable, Observer, of, Subscription, SubscriptionLike} from 'rxjs';
 import {delay, filter, first, map, mapTo, tap} from 'rxjs/operators';
 
 import {forEach} from '../src/utils/collection';
@@ -446,10 +446,10 @@ describe('Integration', () => {
 
       @Component({
         template: `
-        <router-outlet (deactivate)="logDeactivate('primary')"></router-outlet>
-        <router-outlet name="first" (deactivate)="logDeactivate('first')"></router-outlet>
-        <router-outlet name="second" (deactivate)="logDeactivate('second')"></router-outlet>
-        `
+         <router-outlet (deactivate)="logDeactivate('primary')"></router-outlet>
+         <router-outlet name="first" (deactivate)="logDeactivate('first')"></router-outlet>
+         <router-outlet name="second" (deactivate)="logDeactivate('second')"></router-outlet>
+         `
       })
       class NamedOutletHost {
         logDeactivate(route: string) {
@@ -1000,7 +1000,7 @@ describe('Integration', () => {
          expect(fixture.nativeElement).toHaveText('team 33 [ , right:  ]');
        })));
 
-    it('should should set `state` with urlUpdateStrategy="eagar"',
+    it('should set `state` with urlUpdateStrategy="eagar"',
        fakeAsync(inject([Router, Location], (router: Router, location: SpyLocation) => {
          router.urlUpdateStrategy = 'eager';
          router.resetConfig([
@@ -2289,11 +2289,11 @@ describe('Integration', () => {
          @Component({
            selector: 'someCmp',
            template: `<router-outlet></router-outlet>
-               <a [routerLink]="null">Link</a>
-               <button [routerLink]="null">Button</button>
-               <a [routerLink]="undefined">Link</a>
-               <button [routerLink]="undefined">Button</button>
-               `
+                <a [routerLink]="null">Link</a>
+                <button [routerLink]="null">Button</button>
+                <a [routerLink]="undefined">Link</a>
+                <button [routerLink]="undefined">Button</button>
+                `
          })
          class CmpWithLink {
          }
@@ -2661,7 +2661,426 @@ describe('Integration', () => {
          expect(location.path()).toEqual('/initial');
        })));
   });
+  describe('`restoredState#ɵrouterPageId`', () => {
+    // TODO: Remove RouterSpyLocation after #38884 is submitted.
+    class RouterSpyLocation implements Location {
+      urlChanges: string[] = [];
+      private _history: LocationState[] = [new LocationState('', '', null)];
+      private _historyIndex: number = 0;
+      /** @internal */
+      _subject: EventEmitter<any> = new EventEmitter();
+      /** @internal */
+      _baseHref: string = '';
+      /** @internal */
+      _platformStrategy: LocationStrategy = null!;
+      /** @internal */
+      _platformLocation: PlatformLocation = null!;
+      /** @internal */
+      _urlChangeListeners: ((url: string, state: unknown) => void)[] = [];
+      /** @internal */
+      _urlChangeSubscription?: SubscriptionLike;
 
+      setInitialPath(url: string) {
+        this._history[this._historyIndex].path = url;
+      }
+
+      setBaseHref(url: string) {
+        this._baseHref = url;
+      }
+
+      path(): string {
+        return this._history[this._historyIndex].path;
+      }
+
+      getState(): unknown {
+        return this._history[this._historyIndex].state;
+      }
+
+      isCurrentPathEqualTo(path: string, query: string = ''): boolean {
+        const givenPath = path.endsWith('/') ? path.substring(0, path.length - 1) : path;
+        const currPath = this.path().endsWith('/') ?
+            this.path().substring(0, this.path().length - 1) :
+            this.path();
+
+        return currPath == givenPath + (query.length > 0 ? ('?' + query) : '');
+      }
+
+      simulateUrlPop(pathname: string) {
+        this._subject.emit({'url': pathname, 'pop': true, 'type': 'popstate'});
+      }
+
+      simulateHashChange(pathname: string) {
+        // Because we don't prevent the native event, the browser will independently update the path
+        this.setInitialPath(pathname);
+        this.urlChanges.push('hash: ' + pathname);
+        this._subject.emit({'url': pathname, 'pop': true, 'type': 'hashchange'});
+      }
+
+      prepareExternalUrl(url: string): string {
+        if (url.length > 0 && !url.startsWith('/')) {
+          url = '/' + url;
+        }
+        return this._baseHref + url;
+      }
+
+      go(path: string, query: string = '', state: any = null) {
+        path = this.prepareExternalUrl(path);
+
+        if (this._historyIndex > 0) {
+          this._history.splice(this._historyIndex + 1);
+        }
+        this._history.push(new LocationState(path, query, state));
+        this._historyIndex = this._history.length - 1;
+
+        const locationState = this._history[this._historyIndex - 1];
+        if (locationState.path == path && locationState.query == query) {
+          return;
+        }
+
+        const url = path + (query.length > 0 ? ('?' + query) : '');
+        this.urlChanges.push(url);
+        this._subject.emit({'url': url, 'pop': false});
+      }
+
+      replaceState(path: string, query: string = '', state: any = null) {
+        path = this.prepareExternalUrl(path);
+
+        const history = this._history[this._historyIndex];
+        if (history.path == path && history.query == query) {
+          return;
+        }
+
+        history.path = path;
+        history.query = query;
+        history.state = state;
+
+        const url = path + (query.length > 0 ? ('?' + query) : '');
+        this.urlChanges.push('replace: ' + url);
+      }
+
+      forward() {
+        if (this._historyIndex < (this._history.length - 1)) {
+          this._historyIndex++;
+          this._subject.emit(
+              {'url': this.path(), 'state': this.getState(), 'pop': true, 'type': 'popstate'});
+        }
+      }
+
+      back() {
+        if (this._historyIndex > 0) {
+          this._historyIndex--;
+          this._subject.emit(
+              {'url': this.path(), 'state': this.getState(), 'pop': true, 'type': 'popstate'});
+        }
+      }
+
+      historyGo(relativePosition: number = 0): void {
+        const nextPageIndex = this._historyIndex + relativePosition;
+        if (nextPageIndex >= 0 && nextPageIndex < this._history.length) {
+          this._historyIndex = nextPageIndex;
+          this._subject.emit(
+              {'url': this.path(), 'state': this.getState(), 'pop': true, 'type': 'popstate'});
+        }
+      }
+
+      onUrlChange(fn: (url: string, state: unknown) => void) {
+        this._urlChangeListeners.push(fn);
+
+        if (!this._urlChangeSubscription) {
+          this._urlChangeSubscription = this.subscribe(v => {
+            this._notifyUrlChangeListeners(v.url, v.state);
+          });
+        }
+      }
+
+      /** @internal */
+      _notifyUrlChangeListeners(url: string = '', state: unknown) {
+        this._urlChangeListeners.forEach(fn => fn(url, state));
+      }
+
+      subscribe(
+          onNext: (value: any) => void, onThrow?: ((error: any) => void)|null,
+          onReturn?: (() => void)|null): SubscriptionLike {
+        return this._subject.subscribe({next: onNext, error: onThrow, complete: onReturn});
+      }
+
+      normalize(url: string): string {
+        return null!;
+      }
+    }
+
+    class LocationState {
+      constructor(public path: string, public query: string, public state: any) {}
+    }
+
+    @Injectable({providedIn: 'root'})
+    class MyCanDeactivateGuard implements CanDeactivate<any> {
+      allow: boolean = true;
+      canDeactivate(): boolean {
+        return this.allow;
+      }
+    }
+
+    @Injectable({providedIn: 'root'})
+    class MyCanActivateGuard implements CanActivate {
+      allow: boolean = true;
+      canActivate(): boolean {
+        return this.allow;
+      }
+    }
+    @Injectable({providedIn: 'root'})
+    class MyResolve implements Resolve<Observable<any>> {
+      myresolve: Observable<any> = of(2);
+      resolve(): Observable<any> {
+        return this.myresolve;
+      }
+    }
+
+    @NgModule(
+        {imports: [RouterModule.forChild([{path: '', component: BlankCmp}])]},
+        )
+    class LoadedModule {
+    }
+
+    let fixture: ComponentFixture<unknown>;
+
+    beforeEach(fakeAsync(() => {
+      TestBed.configureTestingModule({
+        imports: [TestModule],
+        providers: [
+          {provide: 'alwaysFalse', useValue: (a: any) => false},
+          {provide: Location, useClass: RouterSpyLocation}
+        ]
+      });
+      const router = TestBed.inject(Router);
+      (router as any).canceledNavigationResolution = 'computed';
+      const location = TestBed.inject(Location);
+      fixture = createRoot(router, SimpleCmp);
+      router.resetConfig([
+        {
+          path: 'first',
+          component: SimpleCmp,
+          canDeactivate: [MyCanDeactivateGuard],
+          canActivate: [MyCanActivateGuard],
+          resolve: [MyResolve]
+        },
+        {
+          path: 'second',
+          component: SimpleCmp,
+          canDeactivate: [MyCanDeactivateGuard],
+          canActivate: [MyCanActivateGuard],
+          resolve: [MyResolve]
+        },
+        {
+          path: 'third',
+          component: SimpleCmp,
+          canDeactivate: [MyCanDeactivateGuard],
+          canActivate: [MyCanActivateGuard],
+          resolve: [MyResolve]
+        },
+        {path: 'loaded', loadChildren: () => of(LoadedModule), canLoad: ['alwaysFalse']}
+      ]);
+      router.navigateByUrl('/first');
+      advance(fixture);
+
+      router.navigateByUrl('/second');
+      advance(fixture);
+
+      router.navigateByUrl('/third');
+      advance(fixture);
+
+      location.back();
+      advance(fixture);
+    }));
+
+    it('should work when CanActivate returns false', fakeAsync(() => {
+         const location = TestBed.inject(Location);
+         const router = TestBed.inject(Router);
+         expect(location.path()).toEqual('/second');
+         expect(location.getState()).toEqual(jasmine.objectContaining({ɵrouterPageId: 3}));
+
+         TestBed.inject(MyCanActivateGuard).allow = false;
+         location.back();
+         advance(fixture);
+         expect(location.path()).toEqual('/second');
+         expect(location.getState()).toEqual(jasmine.objectContaining({ɵrouterPageId: 3}));
+
+         TestBed.inject(MyCanActivateGuard).allow = true;
+         location.back();
+         advance(fixture);
+         expect(location.path()).toEqual('/first');
+         expect(location.getState()).toEqual(jasmine.objectContaining({ɵrouterPageId: 2}));
+
+         TestBed.inject(MyCanActivateGuard).allow = false;
+         location.forward();
+         advance(fixture);
+         expect(location.path()).toEqual('/first');
+         expect(location.getState()).toEqual(jasmine.objectContaining({ɵrouterPageId: 2}));
+
+         router.navigateByUrl('/second');
+         advance(fixture);
+         expect(location.path()).toEqual('/first');
+         expect(location.getState()).toEqual(jasmine.objectContaining({ɵrouterPageId: 2}));
+       }));
+
+
+    it('should work when CanDeactivate returns false', fakeAsync(() => {
+         const location = TestBed.inject(Location);
+         const router = TestBed.inject(Router);
+
+         TestBed.inject(MyCanDeactivateGuard).allow = false;
+         location.back();
+         advance(fixture);
+         expect(location.path()).toEqual('/second');
+         expect(location.getState()).toEqual(jasmine.objectContaining({ɵrouterPageId: 3}));
+
+         location.forward();
+         advance(fixture);
+         expect(location.path()).toEqual('/second');
+         expect(location.getState()).toEqual(jasmine.objectContaining({ɵrouterPageId: 3}));
+
+         router.navigateByUrl('third');
+         advance(fixture);
+         expect(location.path()).toEqual('/second');
+         expect(location.getState()).toEqual(jasmine.objectContaining({ɵrouterPageId: 3}));
+
+
+         TestBed.inject(MyCanDeactivateGuard).allow = true;
+         location.forward();
+         advance(fixture);
+         expect(location.path()).toEqual('/third');
+         expect(location.getState()).toEqual(jasmine.objectContaining({ɵrouterPageId: 4}));
+       }));
+
+    it('should work when using `NavigationExtras.skipLocationChange`', fakeAsync(() => {
+         const location = TestBed.inject(Location);
+         const router = TestBed.inject(Router);
+
+         expect(location.path()).toEqual('/second');
+         expect(location.getState()).toEqual(jasmine.objectContaining({ɵrouterPageId: 3}));
+
+         router.navigateByUrl('/first', {skipLocationChange: true});
+         advance(fixture);
+         expect(location.getState()).toEqual(jasmine.objectContaining({ɵrouterPageId: 3}));
+
+         router.navigateByUrl('/third');
+         advance(fixture);
+         expect(location.getState()).toEqual(jasmine.objectContaining({ɵrouterPageId: 4}));
+
+         location.back();
+         advance(fixture);
+         expect(location.getState()).toEqual(jasmine.objectContaining({ɵrouterPageId: 3}));
+       }));
+
+    it('should work when using `NavigationExtras.replaceUrl`', fakeAsync(() => {
+         const location = TestBed.inject(Location);
+         const router = TestBed.inject(Router);
+
+         expect(location.path()).toEqual('/second');
+         expect(location.getState()).toEqual(jasmine.objectContaining({ɵrouterPageId: 3}));
+
+         router.navigateByUrl('/first', {replaceUrl: true});
+         advance(fixture);
+         expect(location.getState()).toEqual(jasmine.objectContaining({ɵrouterPageId: 3}));
+         expect(location.path()).toEqual('/first');
+       }));
+
+    it('should work when CanLoad returns false', fakeAsync(() => {
+         const location = TestBed.inject(Location);
+         const router = TestBed.inject(Router);
+
+         router.navigateByUrl('/loaded');
+         advance(fixture);
+         expect(location.path()).toEqual('/second');
+         expect(location.getState()).toEqual(jasmine.objectContaining({ɵrouterPageId: 3}));
+       }));
+
+    it('should work when resolve empty', fakeAsync(() => {
+         const location = TestBed.inject(Location);
+         const router = TestBed.inject(Router);
+
+         expect(location.path()).toEqual('/second');
+         expect(location.getState()).toEqual(jasmine.objectContaining({ɵrouterPageId: 3}));
+
+         TestBed.inject(MyResolve).myresolve = EMPTY;
+
+         location.back();
+         advance(fixture);
+         expect(location.getState()).toEqual(jasmine.objectContaining({ɵrouterPageId: 3}));
+         expect(location.path()).toEqual('/second');
+
+         TestBed.inject(MyResolve).myresolve = of(2);
+
+         location.back();
+         advance(fixture);
+         expect(location.getState()).toEqual(jasmine.objectContaining({ɵrouterPageId: 2}));
+         expect(location.path()).toEqual('/first');
+
+         TestBed.inject(MyResolve).myresolve = EMPTY;
+
+         // We should cancel the navigation to `/third` when myresolve is empty
+         router.navigateByUrl('/third');
+         advance(fixture);
+         expect(location.getState()).toEqual(jasmine.objectContaining({ɵrouterPageId: 2}));
+         expect(location.path()).toEqual('/first');
+
+         location.historyGo(2);
+         advance(fixture);
+         expect(location.getState()).toEqual(jasmine.objectContaining({ɵrouterPageId: 2}));
+         expect(location.path()).toEqual('/first');
+
+         TestBed.inject(MyResolve).myresolve = of(2);
+         location.historyGo(2);
+         advance(fixture);
+         expect(location.getState()).toEqual(jasmine.objectContaining({ɵrouterPageId: 4}));
+         expect(location.path()).toEqual('/third');
+
+         TestBed.inject(MyResolve).myresolve = EMPTY;
+         location.historyGo(-2);
+         advance(fixture);
+         expect(location.getState()).toEqual(jasmine.objectContaining({ɵrouterPageId: 4}));
+         expect(location.path()).toEqual('/third');
+       }));
+
+
+    it('should work when an error occured during navigation', fakeAsync(() => {
+         const location = TestBed.inject(Location);
+         const router = TestBed.inject(Router);
+
+         expect(location.path()).toEqual('/second');
+         expect(location.getState()).toEqual(jasmine.objectContaining({ɵrouterPageId: 3}));
+
+
+         router.navigateByUrl('/invalid').catch(() => null);
+         advance(fixture);
+         expect(location.path()).toEqual('/second');
+         expect(location.getState()).toEqual(jasmine.objectContaining({ɵrouterPageId: 3}));
+
+         location.back();
+         advance(fixture);
+         expect(location.path()).toEqual('/first');
+         expect(location.getState()).toEqual(jasmine.objectContaining({ɵrouterPageId: 2}));
+       }));
+
+    it('should work when urlUpdateStrategy="eagar"', fakeAsync(() => {
+         const location = TestBed.inject(Location) as SpyLocation;
+         const router = TestBed.inject(Router);
+         expect(location.path()).toEqual('/second');
+         expect(location.getState()).toEqual(jasmine.objectContaining({ɵrouterPageId: 3}));
+         router.urlUpdateStrategy = 'eager';
+
+         TestBed.inject(MyCanActivateGuard).allow = false;
+         router.navigateByUrl('/first');
+         advance(fixture);
+         expect(location.path()).toEqual('/second');
+         expect(location.getState()).toEqual(jasmine.objectContaining({ɵrouterPageId: 3}));
+
+         location.back();
+         advance(fixture);
+         expect(location.path()).toEqual('/second');
+         expect(location.getState()).toEqual(jasmine.objectContaining({ɵrouterPageId: 3}));
+       }));
+  });
   describe('guards', () => {
     describe('CanActivate', () => {
       describe('should not activate a route when CanActivate returns false', () => {
@@ -2884,161 +3303,6 @@ describe('Integration', () => {
              expect(location.path()).toEqual('/');
              expect(fixture.nativeElement).toHaveText('simple');
            })));
-      });
-
-      describe('should not break the history', () => {
-        @Injectable({providedIn: 'root'})
-        class MyGuard implements CanDeactivate<any> {
-          allow: boolean = true;
-          canDeactivate(): boolean {
-            return this.allow;
-          }
-        }
-
-        @Component({selector: 'parent', template: '<router-outlet></router-outlet>'})
-        class Parent {
-        }
-
-        @Component({selector: 'home', template: 'home'})
-        class Home {
-        }
-
-        @Component({selector: 'child1', template: 'child1'})
-        class Child1 {
-        }
-
-        @Component({selector: 'child2', template: 'child2'})
-        class Child2 {
-        }
-
-        @Component({selector: 'child3', template: 'child3'})
-        class Child3 {
-        }
-
-        @Component({selector: 'child4', template: 'child4'})
-        class Child4 {
-        }
-
-        @Component({selector: 'child5', template: 'child5'})
-        class Child5 {
-        }
-
-        @NgModule({
-          declarations: [Parent, Home, Child1, Child2, Child3, Child4, Child5],
-          entryComponents: [Child1, Child2, Child3, Child4, Child5],
-          imports: [RouterModule]
-        })
-        class TestModule {
-        }
-
-        let fixture: ComponentFixture<unknown>;
-
-        beforeEach(fakeAsync(() => {
-          TestBed.configureTestingModule({imports: [TestModule]});
-          const router = TestBed.get(Router);
-          const location = TestBed.get(Location);
-          fixture = createRoot(router, Parent);
-
-          router.resetConfig([
-            {path: '', component: Home},
-            {path: 'first', component: Child1},
-            {path: 'second', component: Child2},
-            {path: 'third', component: Child3, canDeactivate: [MyGuard]},
-            {path: 'fourth', component: Child4},
-            {path: 'fifth', component: Child5},
-          ]);
-
-          // Create a navigation history of pages 1-5, and go back to 3 so that there is both
-          // back and forward history.
-          router.navigateByUrl('/first');
-          advance(fixture);
-          router.navigateByUrl('/second');
-          advance(fixture);
-          router.navigateByUrl('/third');
-          advance(fixture);
-          router.navigateByUrl('/fourth');
-          advance(fixture);
-          router.navigateByUrl('/fifth');
-          advance(fixture);
-          location.back();
-          advance(fixture);
-          location.back();
-          advance(fixture);
-        }));
-
-        // TODO(https://github.com/angular/angular/issues/13586)
-        // A fix to this requires much more design
-        xit('when navigate back using Back button', fakeAsync(() => {
-              const location = TestBed.get(Location);
-              expect(location.path()).toEqual('/third');
-
-              TestBed.get(MyGuard).allow = false;
-              location.back();
-              advance(fixture);
-              expect(location.path()).toEqual('/third');
-              expect(fixture.nativeElement).toHaveText('child3');
-
-              TestBed.get(MyGuard).allow = true;
-              location.back();
-              advance(fixture);
-              expect(location.path()).toEqual('/second');
-              expect(fixture.nativeElement).toHaveText('child2');
-            }));
-
-        it('when navigate back imperatively', fakeAsync(() => {
-             const router = TestBed.get(Router);
-             const location = TestBed.get(Location);
-             expect(location.path()).toEqual('/third');
-
-             TestBed.get(MyGuard).allow = false;
-             router.navigateByUrl('/second');
-             advance(fixture);
-             expect(location.path()).toEqual('/third');
-             expect(fixture.nativeElement).toHaveText('child3');
-
-             TestBed.get(MyGuard).allow = true;
-             location.back();
-             advance(fixture);
-             expect(location.path()).toEqual('/second');
-             expect(fixture.nativeElement).toHaveText('child2');
-           }));
-
-        // TODO(https://github.com/angular/angular/issues/13586)
-        // A fix to this requires much more design
-        xit('when navigate back using Foward button', fakeAsync(() => {
-              const location = TestBed.get(Location);
-              expect(location.path()).toEqual('/third');
-
-              TestBed.get(MyGuard).allow = false;
-              location.forward();
-              advance(fixture);
-              expect(location.path()).toEqual('/third');
-              expect(fixture.nativeElement).toHaveText('child3');
-
-              TestBed.get(MyGuard).allow = true;
-              location.forward();
-              advance(fixture);
-              expect(location.path()).toEqual('/fourth');
-              expect(fixture.nativeElement).toHaveText('child4');
-            }));
-
-        it('when navigate forward imperatively', fakeAsync(() => {
-             const router = TestBed.get(Router);
-             const location = TestBed.get(Location);
-             expect(location.path()).toEqual('/third');
-
-             TestBed.get(MyGuard).allow = false;
-             router.navigateByUrl('/fourth');
-             advance(fixture);
-             expect(location.path()).toEqual('/third');
-             expect(fixture.nativeElement).toHaveText('child3');
-
-             TestBed.get(MyGuard).allow = true;
-             location.forward();
-             advance(fixture);
-             expect(location.path()).toEqual('/fourth');
-             expect(fixture.nativeElement).toHaveText('child4');
-           }));
       });
 
       describe('should redirect when guard returns UrlTree', () => {
@@ -4754,10 +5018,10 @@ describe('Integration', () => {
     it('should expose an isActive property', fakeAsync(() => {
          @Component({
            template: `<a routerLink="/team" routerLinkActive #rla="routerLinkActive"></a>
-              <p>{{rla.isActive}}</p>
-              <span *ngIf="rla.isActive"></span>
-              <span [ngClass]="{'highlight': rla.isActive}"></span>
-              <router-outlet></router-outlet>`
+               <p>{{rla.isActive}}</p>
+               <span *ngIf="rla.isActive"></span>
+               <span [ngClass]="{'highlight': rla.isActive}"></span>
+               <router-outlet></router-outlet>`
          })
          class ComponentWithRouterLink {
          }
@@ -5664,8 +5928,8 @@ describe('Integration', () => {
            selector: 'link-cmp',
            template:
                `<a [relativeTo]="route.parent" [routerLink]="[{outlets: {'secondary': null}}]">link</a>
-           <button [relativeTo]="route.parent" [routerLink]="[{outlets: {'secondary': null}}]">link</button>
-           `
+            <button [relativeTo]="route.parent" [routerLink]="[{outlets: {'secondary': null}}]">link</button>
+            `
          })
          class RelativeLinkCmp {
            @ViewChild(RouterLink) buttonLink!: RouterLink;
@@ -6032,8 +6296,8 @@ class AbsoluteLinkCmp {
   selector: 'link-cmp',
   template:
       `<router-outlet></router-outlet><a routerLinkActive="active" [routerLinkActiveOptions]="{exact: exact}" [routerLink]="['./']">link</a>
-<button routerLinkActive="active" [routerLinkActiveOptions]="{exact: exact}" [routerLink]="['./']">button</button>
-`
+ <button routerLinkActive="active" [routerLinkActiveOptions]="{exact: exact}" [routerLink]="['./']">button</button>
+ `
 })
 class DummyLinkCmp {
   private exact: boolean;
@@ -6195,9 +6459,9 @@ class OutletInNgIf {
 @Component({
   selector: 'link-cmp',
   template: `<router-outlet></router-outlet>
-             <div id="link-parent" routerLinkActive="active" [routerLinkActiveOptions]="{exact: exact}">
-               <div ngClass="{one: 'true'}"><a [routerLink]="['./']">link</a></div>
-             </div>`
+              <div id="link-parent" routerLinkActive="active" [routerLinkActiveOptions]="{exact: exact}">
+                <div ngClass="{one: 'true'}"><a [routerLink]="['./']">link</a></div>
+              </div>`
 })
 class DummyLinkWithParentCmp {
   private exact: boolean;
