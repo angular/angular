@@ -742,9 +742,12 @@ export class TypeTranslatorVisitor implements ExpressionVisitor, TypeVisitor {
   }
 
   visitTypeofExpr(ast: TypeofExpr, context: Context): ts.TypeQueryNode {
-    let expr = translateExpression(
-        ast.expr, this.imports, NOOP_DEFAULT_IMPORT_RECORDER, ts.ScriptTarget.ES2015);
-    return ts.createTypeQueryNode(expr as ts.Identifier);
+    const typeNode = this.translateExpression(ast.expr, context);
+    if (!ts.isTypeReferenceNode(typeNode)) {
+      throw new Error(`The target of a typeof expression must be a type reference, but it was
+          ${ts.SyntaxKind[typeNode.kind]}`);
+    }
+    return ts.createTypeQueryNode(typeNode.typeName);
   }
 
   private translateType(type: Type, context: Context): ts.TypeNode {
