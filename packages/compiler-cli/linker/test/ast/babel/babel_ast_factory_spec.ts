@@ -364,19 +364,19 @@ describe('BabelAstFactory', () => {
       expect(expr.end).toBeUndefined();
 
       factory.setSourceMapRange(expr, {
-        start: {line: 0, column: 1, offset: 2},
-        end: {line: 3, column: 4, offset: 5},
-        content: '42',
-        url: 'test.ts'
+        start: {line: 0, column: 1, offset: 1},
+        end: {line: 2, column: 3, offset: 15},
+        content: '-****\n*****\n****',
+        url: 'original.ts'
       });
 
       // Lines are 1-based in Babel.
       expect(expr.loc).toEqual({
         start: {line: 1, column: 1},
-        end: {line: 4, column: 4},
+        end: {line: 3, column: 3},
       });
-      expect(expr.start).toEqual(2);
-      expect(expr.end).toEqual(5);
+      expect(expr.start).toEqual(1);
+      expect(expr.end).toEqual(15);
     });
   });
 });

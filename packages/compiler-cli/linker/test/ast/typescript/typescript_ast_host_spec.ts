@@ -200,7 +200,7 @@ describe('TypeScriptAstHost', () => {
       expect(host.isFunctionExpression(rhs('x = () => true'))).toBe(true);
     });
 
-    it('should return false if the expression is not an array literal', () => {
+    it('should return false if the expression is not a function', () => {
       expect(host.isFunctionExpression(expr('[]'))).toBe(false);
       expect(host.isFunctionExpression(expr('"moo"'))).toBe(false);
       expect(host.isFunctionExpression(expr('\'moo\''))).toBe(false);
@@ -251,7 +251,7 @@ describe('TypeScriptAstHost', () => {
       expect(() => host.parseReturnValue(rhs('x = function () { const x = 10; }')))
           .toThrowError(
               'Unsupported syntax, expected a function body with a single return statement.');
-      expect(() => host.parseReturnValue(rhs('x = () => {const x = 10; }')))
+      expect(() => host.parseReturnValue(rhs('x = () => { const x = 10; }')))
           .toThrowError(
               'Unsupported syntax, expected a function body with a single return statement.');
     });

@@ -12,6 +12,14 @@ import {FatalLinkerError} from '../../fatal_linker_error';
 import {AstHost, Range} from '../ast_host';
 import {assert} from '../utils';
 
+
+/**
+ * This host is not actually used at runtime in the current code.
+ *
+ * It is implemented here to ensure that the `AstHost` abstraction is not unfairly skewed towards
+ * the Babel implementation. It could also provide a basis for a 3rd TypeScript compiler plugin to
+ * do linking in the future.
+ */
 export class TypeScriptAstHost implements AstHost<ts.Expression> {
   getSymbolName(node: ts.Expression): string|null {
     if (ts.isIdentifier(node)) {

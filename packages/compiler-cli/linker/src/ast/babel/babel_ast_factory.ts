@@ -60,7 +60,7 @@ export class BabelAstFactory implements AstFactory<t.Statement, t.Expression> {
 
   createExpressionStatement = t.expressionStatement;
 
-  createFunctionDeclaration(functionName: string|null, parameters: string[], body: t.Statement):
+  createFunctionDeclaration(functionName: string, parameters: string[], body: t.Statement):
       t.Statement {
     assert(body, t.isBlockStatement, 'a block');
     return t.functionDeclaration(

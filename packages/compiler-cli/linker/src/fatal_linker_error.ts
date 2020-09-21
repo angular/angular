@@ -27,5 +27,5 @@ export class FatalLinkerError extends Error {
  * Whether the given object `e` is a FatalLinkerError.
  */
 export function isFatalLinkerError(e: any): e is FatalLinkerError {
-  return e.type === 'FatalLinkerError';
+  return e && e.type === 'FatalLinkerError';
 }
