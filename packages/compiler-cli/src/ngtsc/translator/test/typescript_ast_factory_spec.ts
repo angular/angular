@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {leadingComment} from '@angular/compiler';
+import {EOL} from 'os';
 import * as ts from 'typescript';
 
 import {TypeScriptAstFactory} from '../src/typescript_ast_factory';
@@ -24,7 +25,7 @@ describe('TypeScriptAstFactory', () => {
         '/* comment 1 */',
         '//comment 2',
         'x = 10;',
-      ].join('\n'));
+      ].join(EOL));
     });
   });
 
@@ -61,7 +62,7 @@ describe('TypeScriptAstFactory', () => {
         '    x = 10;',
         '    y = 20;',
         '}',
-      ].join('\n'));
+      ].join(EOL));
     });
   });
 
@@ -152,7 +153,7 @@ describe('TypeScriptAstFactory', () => {
         '    x = 10;',
         'else',
         '    x = 42;',
-      ].join('\n'));
+      ].join(EOL));
     });
 
     it('should create an if statement if the else expression is null', () => {
@@ -162,7 +163,7 @@ describe('TypeScriptAstFactory', () => {
       expect(generate(ifStmt)).toEqual([
         'if (!test)',
         '    x = 10;',
-      ].join('\n'));
+      ].join(EOL));
     });
   });
 
