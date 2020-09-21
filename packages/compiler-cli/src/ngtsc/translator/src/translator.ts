@@ -134,15 +134,16 @@ class ExpressionTranslatorVisitor implements ExpressionVisitor, StatementVisitor
       private scriptTarget: Exclude<ts.ScriptTarget, ts.ScriptTarget.JSON>) {}
 
   visitDeclareVarStmt(stmt: DeclareVarStmt, context: Context): ts.VariableStatement {
-    const isConst =
-        this.scriptTarget >= ts.ScriptTarget.ES2015 && stmt.hasModifier(StmtModifier.Final);
+    const varType = this.scriptTarget < ts.ScriptTarget.ES2015 ?
+        ts.NodeFlags.None :
+        stmt.hasModifier(StmtModifier.Final) ? ts.NodeFlags.Const : ts.NodeFlags.Let;
     const varDeclaration = ts.createVariableDeclaration(
         /* name */ stmt.name,
         /* type */ undefined,
         /* initializer */ stmt.value?.visitExpression(this, context.withExpressionMode));
     const declarationList = ts.createVariableDeclarationList(
         /* declarations */[varDeclaration],
-        /* flags */ isConst ? ts.NodeFlags.Const : ts.NodeFlags.None);
+        /* flags */ varType);
     const varStatement = ts.createVariableStatement(undefined, declarationList);
     return attachComments(varStatement, stmt.leadingComments);
   }

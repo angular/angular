@@ -32,6 +32,8 @@ import {getRootFiles, makeTestEntryPointBundle} from '../helpers/utils';
 class TestRenderingFormatter implements RenderingFormatter {
   private printer = ts.createPrinter({newLine: ts.NewLineKind.LineFeed});
 
+  constructor(private isEs5: boolean) {}
+
   addImports(output: MagicString, imports: Import[], sf: ts.SourceFile) {
     output.prepend('\n// ADD IMPORTS\n');
   }
@@ -63,7 +65,8 @@ class TestRenderingFormatter implements RenderingFormatter {
   }
   printStatement(stmt: Statement, sourceFile: ts.SourceFile, importManager: ImportManager): string {
     const node = translateStatement(
-        stmt, importManager, NOOP_DEFAULT_IMPORT_RECORDER, ts.ScriptTarget.ES2015);
+        stmt, importManager, NOOP_DEFAULT_IMPORT_RECORDER,
+        this.isEs5 ? ts.ScriptTarget.ES5 : ts.ScriptTarget.ES2015);
     const code = this.printer.printNode(ts.EmitHint.Unspecified, node, sourceFile);
 
     return `// TRANSPILED\n${code}`;
@@ -94,7 +97,7 @@ function createTestRenderer(
                                    .analyzeProgram(bundle.src.program);
   const privateDeclarationsAnalyses =
       new PrivateDeclarationsAnalyzer(host, referencesRegistry).analyzeProgram(bundle.src.program);
-  const testFormatter = new TestRenderingFormatter();
+  const testFormatter = new TestRenderingFormatter(isEs5);
   spyOn(testFormatter, 'addExports').and.callThrough();
   spyOn(testFormatter, 'addImports').and.callThrough();
   spyOn(testFormatter, 'addDefinitions').and.callThrough();
@@ -569,7 +572,7 @@ UndecoratedBase.ɵfac = function UndecoratedBase_Factory(t) { return new (t || U
 UndecoratedBase.ɵdir = ɵngcc0.ɵɵdefineDirective({ type: UndecoratedBase, viewQuery: function UndecoratedBase_Query(rf, ctx) { if (rf & 1) {
         ɵngcc0.ɵɵstaticViewQuery(_c0, true);
     } if (rf & 2) {
-        var _t;
+        let _t;
         ɵngcc0.ɵɵqueryRefresh(_t = ɵngcc0.ɵɵloadQuery()) && (ctx.test = _t.first);
     } } });`);
         });

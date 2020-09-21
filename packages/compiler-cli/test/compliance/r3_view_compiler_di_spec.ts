@@ -212,7 +212,7 @@ describe('compiler compliance: dependency injection', () => {
           MyService.ɵprov = $r3$.ɵɵdefineInjectable({
             token: MyService,
             factory: function MyService_Factory(t) {
-              var r = null;
+              let r = null;
               if (t) {
                 r = new t();
               } else {
@@ -285,7 +285,7 @@ describe('compiler compliance: dependency injection', () => {
           MyService.ɵprov = $r3$.ɵɵdefineInjectable({
             token: MyService,
             factory: function MyService_Factory(t) {
-              var r = null;
+              let r = null;
               if (t) {
                 r = new t();
               } else {

@@ -251,7 +251,7 @@ const i18nMsg = (message: string, placeholders: Placeholder[] = [], meta?: Meta)
   const closurePlaceholders = i18nPlaceholdersToString(placeholders);
   const locMessageWithPlaceholders = i18nMsgInsertLocalizePlaceholders(message, placeholders);
   return String.raw`
-    var ${varName};
+    let ${varName};
     if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
         ${i18nMsgClosureMeta(meta)}
         const $MSG_EXTERNAL_${msgIndex}$ = goog.getMsg("${message}"${closurePlaceholders});
@@ -304,7 +304,7 @@ describe('i18n support in the template compiler', () => {
 
       // Keeping this block as a raw string, since it checks escaping of special chars.
       const i18n_6 = String.raw`
-        var $i18n_23$;
+        let $i18n_23$;
         if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
           /**
            * @desc [BACKUP_$` +
@@ -321,7 +321,7 @@ describe('i18n support in the template compiler', () => {
 
       // Keeping this block as a raw string, since it checks escaping of special chars.
       const i18n_7 = String.raw`
-        var $i18n_7$;
+        let $i18n_7$;
         if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
           /**
            * @desc Some text \' [BACKUP_MESSAGE_ID: xxx]
@@ -780,7 +780,7 @@ describe('i18n support in the template compiler', () => {
             $r3$.ɵɵelementEnd();
           }
           if (rf & 2) {
-              var $tmp_0_0$ = null;
+              let $tmp_0_0$ = null;
               $r3$.ɵɵi18nExp(($tmp_0_0$ = ctx.valueA.getRawValue()) == null ? null : $tmp_0_0$.getTitle());
               $r3$.ɵɵi18nApply(1);
           }
@@ -942,7 +942,7 @@ describe('i18n support in the template compiler', () => {
       verify(input, output);
     });
 
-    it('should sanitize ids and generate proper var names', () => {
+    it('should sanitize ids and generate proper variable names', () => {
       const input = `
         <div i18n="@@ID.WITH.INVALID.CHARS.2" i18n-title="@@ID.WITH.INVALID.CHARS" title="Element title">
           Some content
@@ -951,7 +951,7 @@ describe('i18n support in the template compiler', () => {
 
       // Keeping raw content (avoiding `i18nMsg`) to illustrate message id sanitization.
       const output = String.raw`
-        var $I18N_0$;
+        let $I18N_0$;
         if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
             const $MSG_EXTERNAL_ID_WITH_INVALID_CHARS$$APP_SPEC_TS_1$ = goog.getMsg("Element title");
             $I18N_0$ = $MSG_EXTERNAL_ID_WITH_INVALID_CHARS$$APP_SPEC_TS_1$;
@@ -960,7 +960,7 @@ describe('i18n support in the template compiler', () => {
             $I18N_0$ = $localize \`:@@ID.WITH.INVALID.CHARS:Element title\`;
         }
         …
-        var $I18N_2$;
+        let $I18N_2$;
         if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
             const $MSG_EXTERNAL_ID_WITH_INVALID_CHARS_2$$APP_SPEC_TS_4$ = goog.getMsg(" Some content ");
             $I18N_2$ = $MSG_EXTERNAL_ID_WITH_INVALID_CHARS_2$$APP_SPEC_TS_4$;
@@ -1018,7 +1018,7 @@ describe('i18n support in the template compiler', () => {
 
       // Keeping raw content (avoiding `i18nMsg`) to illustrate quotes escaping.
       const output = String.raw`
-        var $I18N_0$;
+        let $I18N_0$;
         if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
             const $MSG_EXTERNAL_4924931801512133405$$APP_SPEC_TS_0$ = goog.getMsg("Some text 'with single quotes', \"with double quotes\", ` +
           '`with backticks`' + String.raw` and without quotes.");
@@ -1036,7 +1036,7 @@ describe('i18n support in the template compiler', () => {
       const input = '<div i18n>`{{ count }}`</div>';
       // Keeping raw content (avoiding `i18nMsg`) to illustrate backticks escaping.
       const output = String.raw`
-      var $I18N_0$;
+      let $I18N_0$;
       if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
           const $MSG_APP_SPEC_TS_1$ = goog.getMsg("` +
           '`{$interpolation}`' + String.raw`", { "interpolation": "\uFFFD0\uFFFD" });
@@ -1108,7 +1108,7 @@ describe('i18n support in the template compiler', () => {
       // Keeping raw content (avoiding `i18nMsg`) to illustrate how named interpolations are
       // generated.
       const i18n_0 = String.raw`
-        var $I18N_0$;
+        let $I18N_0$;
         if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
             const $MSG_EXTERNAL_7597881511811528589$$APP_SPEC_TS_0$ = goog.getMsg(" Named interpolation: {$phA} Named interpolation with spaces: {$phB} ", {
               "phA": "\uFFFD0\uFFFD",
@@ -1209,7 +1209,7 @@ describe('i18n support in the template compiler', () => {
             $r3$.ɵɵelementEnd();
           }
           if (rf & 2) {
-            var $tmp_2_0$ = null;
+            let $tmp_2_0$ = null;
             $r3$.ɵɵadvance(2);
             $r3$.ɵɵi18nExp($r3$.ɵɵpipeBind1(2, 3, ctx.valueA))
                           (ctx.valueA == null ? null : ctx.valueA.a == null ? null : ctx.valueA.a.b)
@@ -2487,7 +2487,7 @@ describe('i18n support in the template compiler', () => {
       // Keeping raw content (avoiding `i18nMsg`) to illustrate message layout
       // in case of whitespace preserving mode.
       const i18n_0 = String.raw`
-        var $I18N_0$;
+        let $I18N_0$;
         if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
             const $MSG_EXTERNAL_963542717423364282$$APP_SPEC_TS_0$ = goog.getMsg("\n          Some text\n          {$startTagSpan}Text inside span{$closeTagSpan}\n        ", {
               "startTagSpan": "\uFFFD#3\uFFFD",
@@ -2571,7 +2571,7 @@ describe('i18n support in the template compiler', () => {
       `;
 
       const output = String.raw`
-        var $I18N_0$;
+        let $I18N_0$;
         if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
             const $MSG_EXTERNAL_4166854826696768832$$APP_SPEC_TS_0$ = goog.getMsg("{VAR_SELECT, select, single {'single quotes'} double {\"double quotes\"} other {other}}");
             $I18N_0$ = $MSG_EXTERNAL_4166854826696768832$$APP_SPEC_TS_0$;
@@ -2914,7 +2914,7 @@ describe('i18n support in the template compiler', () => {
       // Keeping raw content here to illustrate the difference in placeholders generated for
       // goog.getMsg and $localize calls (see last i18n block).
       const i18n_0 = String.raw`
-        var $I18N_1$;
+        let $I18N_1$;
         if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
             const $MSG_APP_SPEC_TS_1$ = goog.getMsg("{VAR_SELECT, select, male {male} female {female} other {other}}");
             $I18N_1$ = $MSG_APP_SPEC_TS_1$;
@@ -2925,7 +2925,7 @@ describe('i18n support in the template compiler', () => {
         $I18N_1$ = $r3$.ɵɵi18nPostprocess($I18N_1$, {
           "VAR_SELECT": "\uFFFD0\uFFFD"
         });
-        var $I18N_2$;
+        let $I18N_2$;
         if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
             const $MSG_APP_SPEC_TS_2$ = goog.getMsg("{VAR_SELECT, select, male {male} female {female} other {other}}");
             $I18N_2$ = $MSG_APP_SPEC_TS_2$;
@@ -2936,7 +2936,7 @@ describe('i18n support in the template compiler', () => {
         $I18N_2$ = $r3$.ɵɵi18nPostprocess($I18N_2$, {
           "VAR_SELECT": "\uFFFD1\uFFFD"
         });
-        var $I18N_4$;
+        let $I18N_4$;
         if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
             const $MSG_APP_SPEC_TS__4$ = goog.getMsg("{VAR_SELECT, select, male {male} female {female} other {other}}");
             $I18N_4$ = $MSG_APP_SPEC_TS__4$;
@@ -2947,7 +2947,7 @@ describe('i18n support in the template compiler', () => {
         $I18N_4$ = $r3$.ɵɵi18nPostprocess($I18N_4$, {
           "VAR_SELECT": "\uFFFD0:1\uFFFD"
         });
-        var $I18N_0$;
+        let $I18N_0$;
         if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
             const $MSG_APP_SPEC_TS_0$ = goog.getMsg(" {$icu} {$startTagDiv} {$icu} {$closeTagDiv}{$startTagDiv_1} {$icu} {$closeTagDiv}", {
               "startTagDiv": "\uFFFD#2\uFFFD",
@@ -3345,7 +3345,7 @@ describe('i18n support in the template compiler', () => {
       const input = `<div i18n>Some Message</div>`;
 
       const output = String.raw`
-        var $I18N_0$;
+        let $I18N_0$;
         if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) { … }
         else {
             $I18N_0$ = $localize \`:␟ec93160d6d6a8822214060dd7938bf821c22b226␟6795333002533525253:Some Message\`;
@@ -3360,7 +3360,7 @@ describe('i18n support in the template compiler', () => {
       const input = `<div i18n>Some Message</div>`;
 
       const output = String.raw`
-        var $I18N_0$;
+        let $I18N_0$;
         if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) { … }
         else {
             $I18N_0$ = $localize \`:␟ec93160d6d6a8822214060dd7938bf821c22b226␟6795333002533525253:Some Message\`;
@@ -3523,7 +3523,7 @@ $` + String.raw`{$I18N_4$}:ICU:\`;
       `;
 
       const i18n_0 = String.raw`
-        var $I18N_0$;
+        let $I18N_0$;
         if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
           const $MSG_EXTERNAL_7128002169381370313$$APP_SPEC_TS_1$ = goog.getMsg("{$startTagXhtmlDiv} Count: {$startTagXhtmlSpan}5{$closeTagXhtmlSpan}{$closeTagXhtmlDiv}", {
             "startTagXhtmlDiv": "\uFFFD#3\uFFFD",
@@ -3584,7 +3584,7 @@ $` + String.raw`{$I18N_4$}:ICU:\`;
       `;
 
       const i18n_0 = String.raw`
-        var $I18N_0$;
+        let $I18N_0$;
         if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
           const $MSG_EXTERNAL_7428861019045796010$$APP_SPEC_TS_1$ = goog.getMsg(" Count: {$startTagXhtmlSpan}5{$closeTagXhtmlSpan}", {
             "startTagXhtmlSpan": "\uFFFD#4\uFFFD",
