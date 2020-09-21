@@ -1,4 +1,5 @@
-load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
+load("//tools:defaults.bzl", "ts_library")
+load(":compliance.bzl", "compliance_test")
 
 ts_library(
     name = "test_lib",
@@ -16,7 +17,7 @@ ts_library(
     ],
 )
 
-jasmine_node_test(
+compliance_test(
     name = "compliance",
     bootstrap = ["//tools/testing:node_no_angular_es5"],
     data = [

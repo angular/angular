@@ -12,6 +12,7 @@ import * as ts from 'typescript';
 
 import {NodeJSFileSystem, setFileSystem} from '../../src/ngtsc/file_system';
 import {NgtscProgram} from '../../src/ngtsc/program';
+import {getCompilationMode} from './compilation_mode_flag';
 
 const IDENTIFIER = /[A-Za-z_$ɵ][A-Za-z0-9_$]*/;
 const OPERATOR =
@@ -217,6 +218,7 @@ export function compile(
         module: ts.ModuleKind.ES2015,
         moduleResolution: ts.ModuleResolutionKind.NodeJs,
         enableI18nLegacyMessageIdFormat: false,
+        compilationMode: getCompilationMode(),
         ...options,
       },
       mockCompilerHost);
