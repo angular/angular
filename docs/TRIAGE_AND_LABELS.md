@@ -2,7 +2,7 @@
 
 This document describes how the Angular team uses labels and milestones to triage issues on GitHub.
 The basic idea of the process is that caretaker only assigns a component (`comp: *`) label.
-The owner of the component is then responsible for the secondary / component-level triage.
+The owner of the component is then responsible for the detailed / component-level triage.
 
 
 ## Label Types
@@ -10,7 +10,8 @@ The owner of the component is then responsible for the secondary / component-lev
 ### Components
 
 The caretaker should be able to determine which component the issue belongs to.
-The components have a clear piece of source code associated with it within the `/packages/` folder of this repo.
+The components have a clear piece of source code associated with it within the `/packages/` folder
+of this repo.
 
 * `comp: animations`
 * `comp: bazel` - @angular/bazel rules
@@ -48,84 +49,80 @@ We will treat them as a component even thought no specific source tree is associ
 * `comp: performance`
 * `comp: security`
 
-Sometimes, especially in the case of cross-cutting issues or PRs, these PRs or issues belong to multiple components.
-In these cases, all applicable component labels should be used to triage the issue or PR.
+Sometimes, especially in the case of cross-cutting issues or PRs, these PRs or issues belong to
+multiple components. In these cases, all applicable component labels should be used to triage the
+issue or PR.
+
+## Caretaker Triage Process (Initial Triage)
+
+The caretaker assigns `comp:  *` labels to new issues as they come in.
+Untriaged issues can be found by selecting the issues with no milestone.
+
+If an issue or PR obviously relates to a release regression, the caretaker must assign an
+appropriate priority (`P0` or `P1`) and ensure that someone from the team is actively working to
+resolve it.
+
+Initial triage should occur daily so that issues can move into detailed triage.
+
+Once the initial triage is done, the ng-bot automatically adds the milestone `needs triage`.
+
+## Detailed Triage
+
+Detailed triage can be done by anyone familiar with the issue subject matter.
+
+### Step 1: Does the issue have enough information?
+
+Gauge whether the issue has enough information to act upon. This typically includes a test case
+via StackBlitz or GitHub and steps to reproduce. If the issue may be legitimate but needs more
+information, add the "needs clarification" label. These labels can be revisted if the author can
+provide further clarification. If the issue does have enough information, move on to step 2.
+
+### Step 2: Bug, feature, or discussion?
+
+By default, all issues are considered bugs. Bug reports require only a priority label.
+
+If the issue is a feature request, apply the "feature" label. Use your judgement to determine
+whether the feature request is reasonable. If it's clear that the issue requests something
+infeasible, close the issue with a comment explaining why.
+
+If the issue is an RFC or discussion, apply the "discussion" label. Use your judgement to determine
+whether this discussion belongs on GitHub. Discussions here should pertain to the technical
+implementation details of Angular. Redirect requests for debugging help or advice to a more
+appropriate channel unless they're capturing a legitimate bug. 
+
+### Step 3: Set a Priority
+
+For bug reports, set a priority label.
+
+| Label | Description |
+|----|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| P0 | An issue that causes a full outage, breakage, or major function unavailability for everyone, without any known workaround. The issue must be fixed immediately, taking precedence over all other work. Should receive updates at least once per day. |
+| P1 | An issue that significantly impacts a large percentage of users; if there is a workaround it is partial or overly painful. The issue should be resolved before the next release.                                                                     |
+| P2 | The issue is important to a large percentage of users, with a workaround. Issues that are significantly ugly or painful (especially first-use or install-time issues). Issues with workarounds that would otherwise be P0 or P1.                     |
+| P3 | An issue that is relevant to core functions, but does not impede progress. Important, but not urgent.                                                                                                                                                |
+| P4 | A relatively minor issue that is not relevant to core functions, or relates only to the attractiveness or pleasantness of use of the system. Good to have but not necessary changes/fixes.                                                           |
+| P5 | The team acknowledges the request but (due to any number of reasons) does not plan to work on or accept contributions for this request. The issue remains open for discussion.                                                                       |
 
 
-### Type
+Issues marked with "feature" or "discussion" don't require a priority. 
 
-What kind of problem is this?
+### Step 4: Apply additional information labels
 
-* `type: RFC / discussion / question`
-* `type: bug`
-* `type: docs`
-* `type: feature`
-* `type: performance`
-* `type: refactor`
-* `type: use-case`
-* `type: confusing`
+Many optional labels provide additional context for issues. Consider adding any of the following if
+they apply to the issue:
 
+* Browser or operating system labels (`windows`, `ie11`, etc.)
+* Labels that inform the severity (`regression`, `has workaround`, `no workaround`)
+* Labels that categorize the bug (`performance`, `refactoring`, `memory leak`)
+* Community engagement labels (`good first issue`)
 
-## Caretaker Triage Process (Primary Triage)
-
-It is the caretaker's responsibility to assign `comp:  *` to each new issue as they come in.
-Issues that haven't been triaged can be found by selecting the issues with no milestone.
-
-If it's obvious that the issue or PR is related to a release regression, the caretaker is also responsible for assigning the `severity(5): regression` label to make the issue or PR highly visible.
-
-The primary triage should be done on a daily basis so that the issues become available for secondary triage without much of delay.
-
-The reason why we limit the responsibility of the caretaker to this one label is that it is likely that without domain knowledge the caretaker could mislabel issues or lack knowledge of duplicate issues.
-
-Once the primary triage is done, the ng-bot automatically adds the milestone `needsTriage`.
-
-
-## Component's owner Triage Process
-
-The component owner is responsible for assigning one of the labels from each of these categories to the issues that have the milestone `needsTriage`:
-
-- `type: *`
-- `frequency: *` (only required for `type: bug/fix`)
-- `severity: *` (only required for `type: bug/fix`)
-
-We've adopted the issue categorization based on [user pain](http://www.lostgarden.com/2008/05/improving-bug-triage-with-user-pain.html) used by AngularJS. In this system every issue is assigned frequency and severity based on which the total user pain score is calculated.
-
-The issues with type `type: feature`, `type: refactor` and `type: RFC / Discussion / question` do not require a frequency and severity.
-
-Following is the definition of various frequency and severity levels:
-
-1. `freq(score): *` – How often does this issue come up? How many developers does this affect?
-    * low (1) - obscure issue affecting a handful of developers
-    * moderate (2) - impacts auxiliary usage patterns, only small number of applications are affected
-    * high (3) - impacts primary usage patterns, affecting most Angular apps
-    * critical (4) - impacts all Angular apps
-1. `severity(score): *` - How bad is the issue?
-    * inconvenience (1) - causes ugly/boilerplate code in apps
-    * confusing (2) - unexpected or inconsistent behavior; hard-to-debug
-    * broken expected use (3) - it's hard or impossible for a developer using Angular to accomplish something that Angular should be able to do
-    * memory leak (4)
-    * regression (5) - functionality that used to work no longer works in a new release due to an unintentional change
-    * security issue (6)
-
-
-These criteria are then used to calculate a "user pain" score as follows:
-
-`pain = severity × frequency`
-
-This score can then be used to estimate the impact of the issue which helps with prioritization.
-
-Once the component's owner triage is done, the ng-bot automatically changes the milestone from `needsTriage` to `Backlog`.
+Once this triage is done, the ng-bot automatically changes the milestone from `needs triage` to
+`Backlog`.
 
 
 ## Triaging PRs
 
-Triaging PRs is the same as triaging issues, except that the labels `frequency: *` and `severity: *` are replaced by:
-- `effort*`
-- `risk: *`
-
-PRs also have additional label categories that should be used to signal their state.
-
-Every triaged PR must have a `action: *` label assigned to it:
+PRs labels signal their state. Every triaged PR must have a `action: *` label assigned to it:
 
 * `action: discuss`: Discussion is needed, to be led by the author.
   * _**Who adds it:** Typically the PR author._

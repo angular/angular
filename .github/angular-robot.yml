@@ -137,24 +137,28 @@ triage:
   # arrays of labels that determine if an issue has been fully triaged
   l2TriageLabels:
     -
-      - "type: bug/fix"
-      - "severity*"
-      - "freq*"
+      - "P0"
       - "comp: *"
     -
-      - "type: feature"
+      - "P1"
       - "comp: *"
     -
-      - "type: refactor"
+      - "P2"
       - "comp: *"
     -
-      - "type: RFC / Discussion / question"
+      - "P3"
       - "comp: *"
     -
-      - "type: confusing"
+      - "P4"
       - "comp: *"
     -
-      - "type: use-case"
+      - "P5"
+      - "comp: *"
+    -
+      - "feature"
+      - "comp: *"
+    -
+      - "discussion"
       - "comp: *"
 
 # options for the triage PR plugin
