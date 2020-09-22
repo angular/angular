@@ -6,6 +6,12 @@
       "--no-sandbox"
     ]
   },
+  "ChromeLocalDebug": {
+    "base": "Chrome",
+    "flags": [
+      "--window-size=1024,768"
+    ]
+  },
   "SAUCELABS_IOS13": {
     "base": "SauceLabs",
     "browserName": "Safari",
