@@ -34,7 +34,7 @@ Angular Element는 웹 표준인 Web Component를 Angular 방식으로 지원하
 
 <div class="alert is-helpful">
 
-  For the sample app that this page describes, see the <live-example></live-example>.
+  이 문서에서 다루는 예제는 <live-example></live-example>에서 확인하거나 다운받을 수 있습니다.
 
 </div>
 
