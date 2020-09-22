@@ -1,0 +1,29 @@
+load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
+
+ts_library(
+    name = "prelink_bootstrap",
+    testonly = True,
+    srcs = ["bootstrap.ts"],
+    deps = [
+        "//packages:types",
+        "//packages/compiler-cli/test/compliance/mock_compile",
+    ],
+)
+
+jasmine_node_test(
+    name = "prelink",
+    bootstrap = [
+        "//tools/testing:node_no_angular_es5",
+        ":prelink_bootstrap_es5",
+    ],
+    data = [
+        "//packages/compiler-cli/test/ngtsc/fake_core:npm_package",
+    ],
+    shard_count = 4,
+    tags = [
+        "ivy-only",
+    ],
+    deps = [
+        "//packages/compiler-cli/test/compliance:test_lib",
+    ],
+)

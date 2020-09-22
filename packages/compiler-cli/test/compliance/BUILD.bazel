@@ -6,11 +6,15 @@ ts_library(
     srcs = glob(
         ["**/*.ts"],
     ),
+    visibility = [
+        ":__subpackages__",
+    ],
     deps = [
         "//packages:types",
         "//packages/compiler",
         "//packages/compiler-cli",
         "//packages/compiler-cli/src/ngtsc/file_system",
+        "//packages/compiler-cli/test/compliance/mock_compile",
         "//packages/compiler/test:test_utils",
         "@npm//typescript",
     ],
