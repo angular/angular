@@ -11,7 +11,9 @@ import {MatSelectHarness} from './select-harness';
 
 /** Shared tests to run on both the original and MDC-based select. */
 export function runHarnessTests(
-    selectModule: typeof MatSelectModule, selectHarness: typeof MatSelectHarness) {
+    formFieldModule: typeof MatFormFieldModule,
+    selectModule: typeof MatSelectModule,
+    selectHarness: typeof MatSelectHarness) {
   let fixture: ComponentFixture<SelectHarnessTest>;
   let loader: HarnessLoader;
   let overlayContainer: OverlayContainer;
@@ -20,7 +22,7 @@ export function runHarnessTests(
     await TestBed.configureTestingModule({
       imports: [
         selectModule,
-        MatFormFieldModule,
+        formFieldModule,
         NoopAnimationsModule,
         ReactiveFormsModule,
       ],
