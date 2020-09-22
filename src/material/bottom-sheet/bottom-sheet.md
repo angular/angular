@@ -55,7 +55,7 @@ Similarly to `MatDialog`, `MatBottomSheet` instantiates components at run-time. 
 work, the Angular compiler needs extra information to create the necessary `ComponentFactory` for
 your bottom sheet content component.
 
-Any components that are include inside of a bottom sheet have to be added to the `entryComponents`
+Any components that are included inside of a bottom sheet have to be added to the `entryComponents`
 inside your `NgModule`.
 
 
