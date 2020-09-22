@@ -48,7 +48,7 @@
     shelljs "0.8.2"
     tsickle "^0.38.0"
 
-"@angular/benchpress@0.2.1", "@angular/benchpress@^0.2.1":
+"@angular/benchpress@0.2.1":
   version "0.2.1"
   resolved "https://registry.yarnpkg.com/@angular/benchpress/-/benchpress-0.2.1.tgz#f8b58d9acfda0d29959b87dcb8082b1c33735db5"
   integrity sha512-ojHCP96ZunHBZpt08USSEdLJsuXnEEdJtfzl+9oTdMXbooKkzSVO7N6bVdjefbGRNAleAuSAo3gVrdPqumLznA==

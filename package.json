@@ -73,7 +73,7 @@
     "@angular-devkit/core": "^10.0.5",
     "@angular-devkit/schematics": "^10.0.5",
     "@angular/bazel": "^10.1.0",
-    "@angular/benchpress": "^0.2.1",
+    "@angular/benchpress": "0.2.1",
     "@angular/compiler-cli": "^10.1.0",
     "@angular/dev-infra-private": "https://github.com/angular/dev-infra-private-builds.git#0364a68f33191747a0bb7580e44a9ad6d50add10",
     "@angular/platform-browser-dynamic": "^10.1.0",
