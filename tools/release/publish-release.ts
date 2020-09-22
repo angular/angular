@@ -144,7 +144,7 @@ class PublishReleaseTask extends BaseReleaseTask {
    * through the release staging script.
    */
   private _verifyLastCommitFromStagingScript() {
-    if (!/chore: (bump version|update changelog for)/.test(this.git.getCommitTitle('HEAD'))) {
+    if (!/release: (bump version|update changelog for)/.test(this.git.getCommitTitle('HEAD'))) {
       console.error(chalk.red(`  ✘   The latest commit of the current branch does not seem to be ` +
         ` created by the release staging script.`));
       console.error(chalk.red(`      Please stage the release using the staging script.`));
