@@ -30,6 +30,10 @@ export const constructorChecks: VersionChanges<ConstructorChecksUpgradeData> = {
     {
       pr: 'https://github.com/angular/components/issues/20535',
       changes: ['MatCheckbox']
+    },
+    {
+      pr: 'https://github.com/angular/components/pull/20499',
+      changes: ['MatPaginatedTabHeader', 'MatTabBodyPortal', 'MatTabNav', 'MatTab']
     }
   ],
   [TargetVersion.V10]: [

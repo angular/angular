@@ -27,6 +27,7 @@ import {
 } from '@angular/material/tabs';
 import {PortalHostDirective} from '@angular/cdk/portal';
 import {Directionality} from '@angular/cdk/bidi';
+import {DOCUMENT} from '@angular/common';
 
 /**
  * The portal host directive for the contents of the tab.
@@ -39,8 +40,9 @@ export class MatTabBodyPortal extends BaseMatTabBodyPortal {
   constructor(
     componentFactoryResolver: ComponentFactoryResolver,
     viewContainerRef: ViewContainerRef,
-    @Inject(forwardRef(() => MatTabBody)) host: MatTabBody) {
-    super(componentFactoryResolver, viewContainerRef, host);
+    @Inject(forwardRef(() => MatTabBody)) host: MatTabBody,
+    @Inject(DOCUMENT) _document: any) {
+    super(componentFactoryResolver, viewContainerRef, host, _document);
   }
 }
 

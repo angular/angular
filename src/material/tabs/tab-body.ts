@@ -71,11 +71,7 @@ export class MatTabBodyPortal extends CdkPortalOutlet implements OnInit, OnDestr
     componentFactoryResolver: ComponentFactoryResolver,
     viewContainerRef: ViewContainerRef,
     @Inject(forwardRef(() => MatTabBody)) private _host: MatTabBody,
-    /**
-     * @deprecated `_document` parameter to be made required.
-     * @breaking-change 9.0.0
-     */
-    @Inject(DOCUMENT) _document?: any) {
+    @Inject(DOCUMENT) _document: any) {
     super(componentFactoryResolver, viewContainerRef, _document);
   }
 

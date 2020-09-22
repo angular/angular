@@ -89,10 +89,7 @@ export abstract class _MatTabNavBase extends MatPaginatedTabHeader implements Af
               ngZone: NgZone,
               changeDetectorRef: ChangeDetectorRef,
               viewportRuler: ViewportRuler,
-              /**
-               * @deprecated @breaking-change 9.0.0 `platform` parameter to become required.
-               */
-              platform?: Platform,
+              platform: Platform,
               @Optional() @Inject(ANIMATION_MODULE_TYPE) animationMode?: string) {
     super(elementRef, changeDetectorRef, viewportRuler, dir, ngZone, platform, animationMode);
   }
@@ -111,11 +108,8 @@ export abstract class _MatTabNavBase extends MatPaginatedTabHeader implements Af
     super.ngAfterContentInit();
   }
 
-  /**
-   * Notifies the component that the active link has been changed.
-   * @breaking-change 8.0.0 `element` parameter to be removed.
-   */
-  updateActiveLink(_element?: ElementRef) {
+  /** Notifies the component that the active link has been changed. */
+  updateActiveLink() {
     if (!this._items) {
       return;
     }
@@ -172,10 +166,7 @@ export class MatTabNav extends _MatTabNavBase {
     ngZone: NgZone,
     changeDetectorRef: ChangeDetectorRef,
     viewportRuler: ViewportRuler,
-    /**
-     * @deprecated @breaking-change 9.0.0 `platform` parameter to become required.
-     */
-    platform?: Platform,
+    platform: Platform,
     @Optional() @Inject(ANIMATION_MODULE_TYPE) animationMode?: string) {
     super(elementRef, dir, ngZone, changeDetectorRef, viewportRuler, platform, animationMode);
   }
@@ -203,7 +194,7 @@ export class _MatTabLinkBase extends _MatTabLinkMixinBase implements AfterViewIn
   set active(value: boolean) {
     if (value !== this._isActive) {
       this._isActive = value;
-      this._tabNavBar.updateActiveLink(this.elementRef);
+      this._tabNavBar.updateActiveLink();
     }
   }
 

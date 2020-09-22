@@ -106,11 +106,10 @@ export declare abstract class _MatTabNavBase extends MatPaginatedTabHeader imple
     color: ThemePalette;
     get disableRipple(): any;
     set disableRipple(value: any);
-    constructor(elementRef: ElementRef, dir: Directionality, ngZone: NgZone, changeDetectorRef: ChangeDetectorRef, viewportRuler: ViewportRuler,
-    platform?: Platform, animationMode?: string);
+    constructor(elementRef: ElementRef, dir: Directionality, ngZone: NgZone, changeDetectorRef: ChangeDetectorRef, viewportRuler: ViewportRuler, platform: Platform, animationMode?: string);
     protected _itemSelected(): void;
     ngAfterContentInit(): void;
-    updateActiveLink(_element?: ElementRef): void;
+    updateActiveLink(): void;
     static ɵdir: i0.ɵɵDirectiveDefWithMeta<_MatTabNavBase, never, never, { "backgroundColor": "backgroundColor"; "disableRipple": "disableRipple"; "color": "color"; }, {}, never>;
     static ɵfac: i0.ɵɵFactoryDef<_MatTabNavBase, [null, { optional: true; }, null, null, null, null, { optional: true; }]>;
 }
@@ -130,7 +129,7 @@ export declare class MatInkBar {
 }
 
 export declare class MatTab extends _MatTabMixinBase implements OnInit, CanDisable, OnChanges, OnDestroy {
-    _closestTabGroup?: any;
+    _closestTabGroup: any;
     _explicitContent: TemplateRef<any>;
     _implicitContent: TemplateRef<any>;
     readonly _stateChanges: Subject<void>;
@@ -144,15 +143,14 @@ export declare class MatTab extends _MatTabMixinBase implements OnInit, CanDisab
     get templateLabel(): MatTabLabel;
     set templateLabel(value: MatTabLabel);
     textLabel: string;
-    constructor(_viewContainerRef: ViewContainerRef,
-    _closestTabGroup?: any);
+    constructor(_viewContainerRef: ViewContainerRef, _closestTabGroup: any);
     protected _setTemplateLabelInput(value: MatTabLabel): void;
     ngOnChanges(changes: SimpleChanges): void;
     ngOnDestroy(): void;
     ngOnInit(): void;
     static ngAcceptInputType_disabled: BooleanInput;
     static ɵcmp: i0.ɵɵComponentDefWithMeta<MatTab, "mat-tab", ["matTab"], { "disabled": "disabled"; "textLabel": "label"; "ariaLabel": "aria-label"; "ariaLabelledby": "aria-labelledby"; }, {}, ["templateLabel", "_explicitContent"], ["*"]>;
-    static ɵfac: i0.ɵɵFactoryDef<MatTab, [null, { optional: true; }]>;
+    static ɵfac: i0.ɵɵFactoryDef<MatTab, never>;
 }
 
 export declare class MatTabBody extends _MatTabBodyBase {
@@ -165,8 +163,7 @@ export declare class MatTabBody extends _MatTabBodyBase {
 export declare type MatTabBodyOriginState = 'left' | 'right';
 
 export declare class MatTabBodyPortal extends CdkPortalOutlet implements OnInit, OnDestroy {
-    constructor(componentFactoryResolver: ComponentFactoryResolver, viewContainerRef: ViewContainerRef, _host: MatTabBody,
-    _document?: any);
+    constructor(componentFactoryResolver: ComponentFactoryResolver, viewContainerRef: ViewContainerRef, _host: MatTabBody, _document: any);
     ngOnDestroy(): void;
     ngOnInit(): void;
     static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatTabBodyPortal, "[matTabBodyHost]", never, {}, {}, never>;
@@ -241,8 +238,7 @@ export declare class MatTabNav extends _MatTabNavBase {
     _previousPaginator: ElementRef<HTMLElement>;
     _tabList: ElementRef;
     _tabListContainer: ElementRef;
-    constructor(elementRef: ElementRef, dir: Directionality, ngZone: NgZone, changeDetectorRef: ChangeDetectorRef, viewportRuler: ViewportRuler,
-    platform?: Platform, animationMode?: string);
+    constructor(elementRef: ElementRef, dir: Directionality, ngZone: NgZone, changeDetectorRef: ChangeDetectorRef, viewportRuler: ViewportRuler, platform: Platform, animationMode?: string);
     static ngAcceptInputType_disableRipple: BooleanInput;
     static ɵcmp: i0.ɵɵComponentDefWithMeta<MatTabNav, "[mat-tab-nav-bar]", ["matTabNavBar", "matTabNav"], { "color": "color"; }, {}, ["_items"], ["*"]>;
     static ɵfac: i0.ɵɵFactoryDef<MatTabNav, [null, { optional: true; }, null, null, null, null, { optional: true; }]>;

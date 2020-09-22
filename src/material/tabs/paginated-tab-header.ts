@@ -148,11 +148,7 @@ export abstract class MatPaginatedTabHeader implements AfterContentChecked, Afte
               private _viewportRuler: ViewportRuler,
               @Optional() private _dir: Directionality,
               private _ngZone: NgZone,
-              /**
-               * @deprecated @breaking-change 9.0.0 `_platform` and `_animationMode`
-               * parameters to become required.
-               */
-              private _platform?: Platform,
+              private _platform: Platform,
               @Optional() @Inject(ANIMATION_MODULE_TYPE) public _animationMode?: string) {
 
     // Bind the `mouseleave` event on the outside since it doesn't change anything in the view.
@@ -370,7 +366,6 @@ export abstract class MatPaginatedTabHeader implements AfterContentChecked, Afte
     }
 
     const scrollDistance = this.scrollDistance;
-    const platform = this._platform;
     const translateX = this._getLayoutDirection() === 'ltr' ? -scrollDistance : scrollDistance;
 
     // Don't use `translate3d` here because we don't want to create a new layer. A new layer
@@ -385,8 +380,7 @@ export abstract class MatPaginatedTabHeader implements AfterContentChecked, Afte
     // position to be thrown off in some cases. We have to reset it ourselves to ensure that
     // it doesn't get thrown off. Note that we scope it only to IE and Edge, because messing
     // with the scroll position throws off Chrome 71+ in RTL mode (see #14689).
-    // @breaking-change 9.0.0 Remove null check for `platform` after it can no longer be undefined.
-    if (platform && (platform.TRIDENT || platform.EDGE)) {
+    if (this._platform.TRIDENT || this._platform.EDGE) {
       this._tabListContainer.nativeElement.scrollLeft = 0;
     }
   }
