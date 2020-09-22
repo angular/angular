@@ -5,8 +5,9 @@ import * as minimatch from 'minimatch';
 
 /**
  * Rule that enforces certain decorator properties to be defined and to match a pattern.
- * Properties can be forbidden by prefixing their name with a `!`. Supports whitelisting
- * files via the third argument, as well as validating all the arguments by passing in a regex. E.g.
+ * Properties can be forbidden by prefixing their name with a `!`. Supports specifying a matcher for
+ * filtering valid files via the third argument, as well as validating all the arguments by passing
+ * in a regex. E.g.
  *
  * ```
  * "validate-decorators": [true, {
