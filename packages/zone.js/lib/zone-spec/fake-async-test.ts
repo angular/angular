@@ -92,6 +92,10 @@ class Scheduler {
     this._currentRealTime = realTime;
   }
 
+  getRealSystemTime() {
+    return OriginalDate.now();
+  }
+
   scheduleFunction(cb: Function, delay: number, options?: {
     args?: any[],
     isPeriodic?: boolean,
@@ -143,6 +147,27 @@ class Scheduler {
         break;
       }
     }
+  }
+
+  removeAll(): void {
+    this._schedulerQueue = [];
+  }
+
+  getTimerCount(): number {
+    return this._schedulerQueue.length;
+  }
+
+  tickToNext(step: number = 1, doTick?: (elapsed: number) => void, tickOptions?: {
+    processNewMacroTasksSynchronously: boolean
+  }) {
+    if (this._schedulerQueue.length < step) {
+      return;
+    }
+    // Find the last task currently queued in the scheduler queue and tick
+    // till that time.
+    const startTime = this._currentTime;
+    const targetTask = this._schedulerQueue[step - 1];
+    this.tick(targetTask.endTime - startTime, doTick, tickOptions);
   }
 
   tick(millis: number = 0, doTick?: (elapsed: number) => void, tickOptions?: {
@@ -210,6 +235,18 @@ class Scheduler {
     if (doTick) {
       doTick(this._currentTime - lastCurrentTime);
     }
+  }
+
+  flushOnlyPendingTimers(doTick?: (elapsed: number) => void): number {
+    if (this._schedulerQueue.length === 0) {
+      return 0;
+    }
+    // Find the last task currently queued in the scheduler queue and tick
+    // till that time.
+    const startTime = this._currentTime;
+    const lastTask = this._schedulerQueue[this._schedulerQueue.length - 1];
+    this.tick(lastTask.endTime - startTime, doTick, {processNewMacroTasksSynchronously: false});
+    return this._currentTime - startTime;
   }
 
   flush(limit = 20, flushPeriodic = false, doTick?: (elapsed: number) => void): number {
@@ -401,6 +438,10 @@ class FakeAsyncTestZoneSpec implements ZoneSpec {
     this._scheduler.setCurrentRealTime(realTime);
   }
 
+  getRealSystemTime() {
+    return this._scheduler.getRealSystemTime();
+  }
+
   static patchDate() {
     if (!!global[Zone.__symbol__('disableDatePatching')]) {
       // we don't want to patch global Date
@@ -450,6 +491,20 @@ class FakeAsyncTestZoneSpec implements ZoneSpec {
     FakeAsyncTestZoneSpec.resetDate();
   }
 
+  tickToNext(steps: number = 1, doTick?: (elapsed: number) => void, tickOptions: {
+    processNewMacroTasksSynchronously: boolean
+  } = {processNewMacroTasksSynchronously: true}): void {
+    if (steps <= 0) {
+      return;
+    }
+    FakeAsyncTestZoneSpec.assertInZone();
+    this.flushMicrotasks();
+    this._scheduler.tickToNext(steps, doTick, tickOptions);
+    if (this._lastError !== null) {
+      this._resetLastErrorAndThrow();
+    }
+  }
+
   tick(millis: number = 0, doTick?: (elapsed: number) => void, tickOptions: {
     processNewMacroTasksSynchronously: boolean
   } = {processNewMacroTasksSynchronously: true}): void {
@@ -484,6 +539,27 @@ class FakeAsyncTestZoneSpec implements ZoneSpec {
       this._resetLastErrorAndThrow();
     }
     return elapsed;
+  }
+
+  flushOnlyPendingTimers(doTick?: (elapsed: number) => void): number {
+    FakeAsyncTestZoneSpec.assertInZone();
+    this.flushMicrotasks();
+    const elapsed = this._scheduler.flushOnlyPendingTimers(doTick);
+    if (this._lastError !== null) {
+      this._resetLastErrorAndThrow();
+    }
+    return elapsed;
+  }
+
+  removeAllTimers() {
+    FakeAsyncTestZoneSpec.assertInZone();
+    this._scheduler.removeAll();
+    this.pendingPeriodicTimers = [];
+    this.pendingTimers = [];
+  }
+
+  getTimerCount() {
+    return this._scheduler.getTimerCount() + this._microtasks.length;
   }
 
   // ZoneSpec implementation below.
