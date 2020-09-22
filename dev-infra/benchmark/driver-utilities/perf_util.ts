@@ -34,8 +34,8 @@ export async function runBenchmark({
   setup,
 }: {
   id: string,
-  url: string,
-  params: {name: string, value: any}[],
+  url?: string,
+  params?: {name: string, value: any}[],
   ignoreBrowserSynchronization?: boolean,
   microMetrics?: {[key: string]: string},
   work?: (() => void)|(() => Promise<unknown>),
@@ -46,8 +46,6 @@ export async function runBenchmark({
   if (setup) {
     await setup();
   }
-  const description: {[key: string]: any} = {};
-  params.forEach((param) => description[param.name] = param.value);
   return runner.sample({
     id,
     execute: work,
