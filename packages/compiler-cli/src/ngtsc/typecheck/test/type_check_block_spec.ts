@@ -700,6 +700,7 @@ describe('type check blocks', () => {
       applyTemplateContextGuards: true,
       checkQueries: false,
       checkTemplateBodies: true,
+      alwaysCheckSchemaInTemplateBodies: true,
       checkTypeOfInputBindings: true,
       honorAccessModifiersForInputBindings: false,
       strictNullInputBindings: true,

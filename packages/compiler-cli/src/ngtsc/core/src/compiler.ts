@@ -423,6 +423,7 @@ export class NgCompiler {
         applyTemplateContextGuards: strictTemplates,
         checkQueries: false,
         checkTemplateBodies: true,
+        alwaysCheckSchemaInTemplateBodies: true,
         checkTypeOfInputBindings: strictTemplates,
         honorAccessModifiersForInputBindings: false,
         strictNullInputBindings: strictTemplates,
@@ -451,6 +452,9 @@ export class NgCompiler {
         applyTemplateContextGuards: false,
         checkQueries: false,
         checkTemplateBodies: false,
+        // Enable deep schema checking in "basic" template type-checking mode only if Closure
+        // compilation is requested, which is a good proxy for "only in google3".
+        alwaysCheckSchemaInTemplateBodies: this.closureCompilerEnabled,
         checkTypeOfInputBindings: false,
         strictNullInputBindings: false,
         honorAccessModifiersForInputBindings: false,
