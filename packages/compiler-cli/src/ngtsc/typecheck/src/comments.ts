@@ -42,6 +42,7 @@ export enum CommentTriviaType {
 /** Identifies what the TCB expression is for (for example, a directive declaration). */
 export enum ExpressionIdentifier {
   DIRECTIVE = 'DIR',
+  CONTEXT_COMPLETION = 'CCTX',
 }
 
 /** Tags the node with the given expression identifier. */
@@ -86,6 +87,7 @@ function makeRecursiveVisitor<T extends ts.Node>(visitor: (node: ts.Node) => T |
 export interface FindOptions<T extends ts.Node> {
   filter: (node: ts.Node) => node is T;
   withSpan?: AbsoluteSourceSpan|ParseSourceSpan;
+  withExpressionIdentifier?: ExpressionIdentifier;
 }
 
 function getSpanFromOptions(opts: FindOptions<ts.Node>) {
@@ -119,6 +121,11 @@ export function findFirstMatchingNode<T extends ts.Node>(tcb: ts.Node, opts: Fin
       if (comment === null || withSpan.start !== comment.start || withSpan.end !== comment.end) {
         return null;
       }
+    }
+
+    if (opts.withExpressionIdentifier !== undefined &&
+        !hasExpressionIdentifier(sf, node, opts.withExpressionIdentifier)) {
+      return null;
     }
     return node;
   });

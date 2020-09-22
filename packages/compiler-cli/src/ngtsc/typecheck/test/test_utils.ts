@@ -27,6 +27,7 @@ import {Environment} from '../src/environment';
 import {OutOfBandDiagnosticRecorder} from '../src/oob';
 import {TypeCheckShimGenerator} from '../src/shim';
 import {generateTypeCheckBlock} from '../src/type_check_block';
+type X = Omit<string, number>;
 
 export function typescriptLibDts(): TestFile {
   return {
@@ -34,6 +35,8 @@ export function typescriptLibDts(): TestFile {
     contents: `
       type Partial<T> = { [P in keyof T]?: T[P]; };
       type Pick<T, K extends keyof T> = { [P in K]: T[P]; };
+      type Exclude<T, U> = T extends U ? never : T;
+      type Omit<T, K extends keyof any> = Pick<T, Exclude<keyof T, K>>;
       type NonNullable<T> = T extends null | undefined ? never : T;
 
       // The following native type declarations are required for proper type inference
@@ -127,29 +130,35 @@ export function ngForDeclaration(): TestDeclaration {
   };
 }
 
-export function ngForDts(): TestFile {
+export function ngForDts(): TestFile&TypeCheckingTarget {
+  const name = absoluteFrom('/ngfor.d.ts');
+  const contents = `
+  export declare class NgForOf<T> {
+    ngForOf: T[];
+    ngForTrackBy: TrackByFunction<T>;
+    static ngTemplateContextGuard<T>(dir: NgForOf<T>, ctx: any): ctx is NgForOfContext<T>;
+  }
+
+  export interface TrackByFunction<T> {
+    (index: number, item: T): any;
+  }
+
+  export declare class NgForOfContext<T> {
+    $implicit: T;
+    index: number;
+    count: number;
+    readonly odd: boolean;
+    readonly even: boolean;
+    readonly first: boolean;
+    readonly last: boolean;
+  }`;
+
   return {
-    name: absoluteFrom('/ngfor.d.ts'),
-    contents: `
-    export declare class NgForOf<T> {
-      ngForOf: T[];
-      ngForTrackBy: TrackByFunction<T>;
-      static ngTemplateContextGuard<T>(dir: NgForOf<T>, ctx: any): ctx is NgForOfContext<T>;
-    }
-
-    export interface TrackByFunction<T> {
-      (index: number, item: T): any;
-    }
-
-    export declare class NgForOfContext<T> {
-      $implicit: T;
-      index: number;
-      count: number;
-      readonly odd: boolean;
-      readonly even: boolean;
-      readonly first: boolean;
-      readonly last: boolean;
-    }`,
+    name,
+    fileName: name,
+    templates: {},
+    contents,
+    source: contents,
   };
 }
 
@@ -531,4 +540,18 @@ export class NoopOobRecorder implements OutOfBandDiagnosticRecorder {
   duplicateTemplateVar(): void {}
   requiresInlineTcb(): void {}
   requiresInlineTypeConstructors(): void {}
+}
+
+export function getLineAtPosition(sf: ts.SourceFile, pos: number): string {
+  const {line, character} = ts.getLineAndCharacterOfPosition(sf, pos);
+  const posNextLine = ts.getPositionOfLineAndCharacter(sf, line + 1, 0);
+  const posCurrLine = pos - character;
+  return sf.text.substring(posCurrLine, posNextLine - 1);
+}
+
+export function getLineAtPositionWithCursor(sf: ts.SourceFile, pos: number): string {
+  const {line, character} = ts.getLineAndCharacterOfPosition(sf, pos);
+  const posNextLine = ts.getPositionOfLineAndCharacter(sf, line + 1, 0);
+  const posCurrLine = pos - character;
+  return sf.text.substring(posCurrLine, pos) + '|' + sf.text.substring(pos, posNextLine - 1);
 }

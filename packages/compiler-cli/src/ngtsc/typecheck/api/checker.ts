@@ -6,8 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, ParseError, TmplAstNode,} from '@angular/compiler';
+import {AST, ParseError, TmplAstBoundEvent, TmplAstNode, TmplAstTemplate} from '@angular/compiler';
 import * as ts from 'typescript';
+
+import {AbsoluteFsPath} from '../../file_system';
 
 import {Symbol} from './symbols';
 
@@ -88,6 +90,38 @@ export interface TemplateTypeChecker {
    * @see Symbol
    */
   getSymbolOfNode(node: AST|TmplAstNode, component: ts.ClassDeclaration): Symbol|null;
+
+  /**
+   * Retrieve a `CompletionContext` for a given global context within the template, which will allow
+   * for use of TypeScript Language Service APIs to access relevant code completion results for that
+   * location.
+   *
+   * The `context` given can either be a particular embedded view, or `null` to represent the
+   * top level of the template.
+   */
+  getGlobalCompletionPosition(component: ts.ClassDeclaration, context: TmplAstTemplate|null):
+      CompletionPosition|null;
+}
+
+/**
+ * A pointer into the TCB where an expression has been generated that's suitable as an input to
+ * TypeScript's code completion APIs.
+ */
+export interface CompletionPosition {
+  /**
+   * Full path to the shim file which contains the TCB for the given template.
+   */
+  shimFile: AbsoluteFsPath;
+
+  /**
+   * Offset into the shim file of an expression which is suitable as an input to TypeScript code
+   * completion APIs.
+   *
+   * Often this expression is of the form `foo. ;`, an incomplete expression that emulates what a
+   * user might type to retrieve completions that are property values of `foo`. The given position
+   * immediately follows the `.`.
+   */
+  position: number;
 }
 
 /**

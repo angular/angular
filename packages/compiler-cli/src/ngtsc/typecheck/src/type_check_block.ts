@@ -963,11 +963,113 @@ class TcbUnclaimedOutputsOp extends TcbOp {
 }
 
 /**
+ * var _t0: typeof ctx;
+ * _t0. /.. T:CTX ./;
+ *
+ */
+class TcbCompletionTemplateContextOp extends TcbOp {
+  constructor(private tcb: Context, private scope: Scope, private template: TmplAstTemplate|null) {
+    super();
+  }
+
+  readonly optional = true;
+
+  execute(): ts.Expression {
+    let baseTypeNode: ts.TypeNode;
+
+    const overrideMap = new Map<string, TmplAstReference|TmplAstVariable>();
+    for (const ref of this.scope.references) {
+      overrideMap.set(ref.name, ref);
+    }
+
+    if (this.template === null || this.scope.parent === null) {
+      baseTypeNode = ts.createTypeQueryNode(ts.createIdentifier('ctx'));
+    } else {
+      const parentExpr = this.scope.parent.completionContext;
+      if (!ts.isIdentifier(parentExpr)) {
+        throw new Error(`AssertionError: expected parent completion context to be a ts.Identifier`);
+      }
+      baseTypeNode = ts.createTypeQueryNode(parentExpr);
+
+      if (this.template.variables.length > 0) {
+        for (const v of this.template.variables) {
+          overrideMap.set(v.name, v);
+        }
+      }
+    }
+
+    let typeNode: ts.TypeNode;
+    if (overrideMap.size === 0) {
+      // If there are no overrides, the current context completion type is the same as the parent
+      // template's (or the component context if at the root).
+      typeNode = baseTypeNode;
+    } else {
+      // There are names declared at the current scoping level which "override" properties on the
+      // parent context.
+      //
+      // Construct a type that excludes those overridden names from the parent type, and replaces
+      // them with the correct types for those declarations.
+      //
+      // For example, if the name 'foo' is overridden from the parent type, the type signature used
+      // for completion will end up looking like `Omit<typeof _parent, 'foo'> & {foo: typeof _foo}`.
+
+      const overrideNames: ts.LiteralTypeNode[] = [];
+      const overrideProperties: ts.PropertySignature[] = [];
+
+      for (const [name, refOrVar] of overrideMap) {
+        const expr = this.scope.resolve(refOrVar);
+        if (!ts.isIdentifier(expr)) {
+          throw new Error(`AssertionError: Expected variable to have a ts.Identifier expression`);
+        }
+
+        overrideNames.push(ts.createLiteralTypeNode(ts.createStringLiteral(name)));
+        overrideProperties.push(ts.createPropertySignature(
+            /* modifiers */ undefined,
+            /* name */ name,
+            /* questionToken */ undefined,
+            /* type */ ts.createTypeQueryNode(expr),
+            /* initializer */ undefined,
+            ));
+      }
+
+      let overrideNamesTypeNode: ts.TypeNode =
+          overrideNames.length > 1 ? ts.createUnionTypeNode(overrideNames) : overrideNames[0];
+
+      // Construct an Omit<> type which excludes all overridden names from the `baseTypeNode`.
+      const baseTypeOmitOverrides = ts.createTypeReferenceNode('Omit', [
+        baseTypeNode,
+        overrideNamesTypeNode,
+      ]);
+
+      // Intersect the Omit<> type from above with a literal type which declares the type of all
+      // overridden names.
+      typeNode = ts.createIntersectionTypeNode([
+        baseTypeOmitOverrides,
+        ts.createTypeLiteralNode(overrideProperties),
+      ]);
+    }
+
+    const id = this.tcb.allocateId();
+    this.scope.addStatement(tsDeclareVariable(id, typeNode));
+    const accessExpr = ts.createPropertyAccess(id, '');
+    markIgnoreDiagnostics(accessExpr);
+    addExpressionIdentifier(accessExpr, ExpressionIdentifier.CONTEXT_COMPLETION);
+
+    if (this.template !== null) {
+      addParseSpanInfo(accessExpr, this.template.sourceSpan);
+    }
+
+    this.scope.addStatement(ts.createExpressionStatement(accessExpr));
+    return id;
+  }
+}
+
+/**
  * Value used to break a circular reference between `TcbOp`s.
  *
- * This value is returned whenever `TcbOp`s have a circular dependency. The expression is a non-null
- * assertion of the null value (in TypeScript, the expression `null!`). This construction will infer
- * the least narrow type for whatever it's assigned to.
+ * This value is returned whenever `TcbOp`s have a circular dependency. The expression is a
+ * non-null assertion of the null value (in TypeScript, the expression `null!`). This construction
+ * will infer the least narrow type for whatever it's assigned to.
  */
 const INFER_TYPE_FOR_CIRCULAR_OP_EXPR = ts.createNonNullExpression(ts.createNull());
 
@@ -1023,9 +1125,10 @@ class Scope {
   /**
    * A queue of operations which need to be performed to generate the TCB code for this scope.
    *
-   * This array can contain either a `TcbOp` which has yet to be executed, or a `ts.Expression|null`
-   * representing the memoized result of executing the operation. As operations are executed, their
-   * results are written into the `opQueue`, overwriting the original operation.
+   * This array can contain either a `TcbOp` which has yet to be executed, or a
+   * `ts.Expression|null` representing the memoized result of executing the operation. As
+   * operations are executed, their results are written into the `opQueue`, overwriting the
+   * original operation.
    *
    * If an operation is in the process of being executed, it is temporarily overwritten here with
    * `INFER_TYPE_FOR_CIRCULAR_OP_EXPR`. This way, if a cycle is encountered where an operation
@@ -1054,6 +1157,8 @@ class Scope {
   /**
    * Map of immediately nested <ng-template>s (within this `Scope`) represented by `TmplAstTemplate`
    * nodes to the index of their `TcbTemplateContextOp`s in the `opQueue`.
+   * Map of immediately nested <ng-template>s (within this `Scope`) represented by
+   * `TmplAstTemplate` nodes to the index of their `TcbTemplateContextOp`s in the `opQueue`.
    */
   private templateCtxOpMap = new Map<TmplAstTemplate, number>();
 
@@ -1063,6 +1168,8 @@ class Scope {
    */
   private varMap = new Map<TmplAstVariable, number>();
 
+  private completionContextOp: number|null = null;
+
   /**
    * Statements for this template.
    *
@@ -1071,7 +1178,7 @@ class Scope {
   private statements: ts.Statement[] = [];
 
   private constructor(
-      private tcb: Context, private parent: Scope|null = null,
+      private tcb: Context, readonly parent: Scope|null = null,
       private guard: ts.Expression|null = null) {}
 
   /**
@@ -1113,6 +1220,15 @@ class Scope {
     } else {
       children = templateOrNodes;
     }
+
+    if (tcb.env.config.enableTemplateTypeChecker) {
+      // Context completion is only generated when the template type-checker API is active.
+      scope.completionContextOp =
+          scope.opQueue.push(new TcbCompletionTemplateContextOp(
+              tcb, scope, templateOrNodes instanceof TmplAstTemplate ? templateOrNodes : null)) -
+          1;
+    }
+
     for (const node of children) {
       scope.appendNode(node);
     }
@@ -1163,6 +1279,7 @@ class Scope {
     }
   }
 
+
   /**
    * Add a statement to this scope.
    */
@@ -1207,6 +1324,17 @@ class Scope {
       // narrowing that is required for this scope's guard to be valid.
       return ts.createBinary(parentGuards, ts.SyntaxKind.AmpersandAmpersandToken, this.guard);
     }
+  }
+
+  get completionContext(): ts.Expression {
+    if (this.completionContextOp === null) {
+      throw new Error(`AssertionError: completion contexts are not set up`);
+    }
+    return this.resolveOp(this.completionContextOp);
+  }
+
+  get references(): TmplAstReference[] {
+    return Array.from(this.referenceOpMap.keys());
   }
 
   private resolveLocal(
@@ -1271,8 +1399,8 @@ class Scope {
     }
 
     // Set the result of the operation in the queue to its circular fallback. If executing this
-    // operation results in a circular dependency, this will prevent an infinite loop and allow for
-    // the resolution of such cycles.
+    // operation results in a circular dependency, this will prevent an infinite loop and allow
+    // for the resolution of such cycles.
     this.opQueue[opIndex] = op.circularFallback();
     const res = op.execute();
     // Once the operation has finished executing, it's safe to cache the real result.
@@ -1361,8 +1489,8 @@ class Scope {
       }
 
       this.opQueue.push(new TcbUnclaimedInputsOp(this.tcb, this, node, claimedInputs));
-      // If there are no directives which match this element, then it's a "plain" DOM element (or a
-      // web component), and should be checked against the DOM schema. If any directives match,
+      // If there are no directives which match this element, then it's a "plain" DOM element (or
+      // a web component), and should be checked against the DOM schema. If any directives match,
       // we must assume that the element could be custom (either a component, or a directive like
       // <router-outlet>) and shouldn't validate the element name itself.
       const checkElement = directives.length === 0;
@@ -1527,10 +1655,10 @@ class TcbExpressionTranslator {
         return result;
       }
 
-      // Attempt to resolve a bound target for the method, and generate the method call if a target
-      // could be resolved. If no target is available, then the method is referencing the top-level
-      // component context, in which case `null` is returned to let the `ImplicitReceiver` being
-      // resolved to the component context.
+      // Attempt to resolve a bound target for the method, and generate the method call if a
+      // target could be resolved. If no target is available, then the method is referencing the
+      // top-level component context, in which case `null` is returned to let the
+      // `ImplicitReceiver` being resolved to the component context.
       const receiver = this.resolveTarget(ast);
       if (receiver === null) {
         return null;
@@ -1566,8 +1694,8 @@ class TcbExpressionTranslator {
 }
 
 /**
- * Call the type constructor of a directive instance on a given template node, inferring a type for
- * the directive instance from any bound inputs.
+ * Call the type constructor of a directive instance on a given template node, inferring a type
+ * for the directive instance from any bound inputs.
  */
 function tcbCallTypeCtor(
     dir: TypeCheckableDirectiveMeta, tcb: Context, inputs: TcbDirectiveInput[]): ts.Expression {
@@ -1709,9 +1837,9 @@ const enum EventParamType {
  *
  * When `eventType` is set to `Infer`, the `$event` parameter will not have an explicit type. This
  * allows for the created handler function to have its `$event` parameter's type inferred based on
- * how it's used, to enable strict type checking of event bindings. When set to `Any`, the `$event`
- * parameter will have an explicit `any` type, effectively disabling strict type checking of event
- * bindings. Alternatively, an explicit type can be passed for the `$event` parameter.
+ * how it's used, to enable strict type checking of event bindings. When set to `Any`, the
+ * `$event` parameter will have an explicit `any` type, effectively disabling strict type checking
+ * of event bindings. Alternatively, an explicit type can be passed for the `$event` parameter.
  */
 function tcbCreateEventHandler(
     event: TmplAstBoundEvent, tcb: Context, scope: Scope,

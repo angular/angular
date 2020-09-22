@@ -203,3 +203,8 @@ function getTemplateId(node: ts.Node, sourceFile: ts.SourceFile): TemplateId|nul
     return commentText;
   }) as TemplateId || null;
 }
+
+export function isTemplateDiagnostic(diagnostic: ts.Diagnostic): diagnostic is TemplateDiagnostic {
+  return diagnostic.hasOwnProperty('componentFile') &&
+      ts.isSourceFile((diagnostic as any).componentFile);
+}

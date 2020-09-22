@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, ParseError, parseTemplate, TmplAstNode} from '@angular/compiler';
+import {AST, ParseError, parseTemplate, TmplAstBoundEvent, TmplAstNode, TmplAstTemplate} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {absoluteFromSourceFile, AbsoluteFsPath, getSourceFileOrError} from '../../file_system';
@@ -15,9 +15,10 @@ import {IncrementalBuild} from '../../incremental/api';
 import {ReflectionHost} from '../../reflection';
 import {isShim} from '../../shims';
 import {getSourceFileOrNull} from '../../util/src/typescript';
-import {OptimizeFor, ProgramTypeCheckAdapter, Symbol, TemplateId, TemplateTypeChecker, TypeCheckingConfig, TypeCheckingProgramStrategy, UpdateMode} from '../api';
+import {CompletionPosition, OptimizeFor, ProgramTypeCheckAdapter, Symbol, TemplateId, TemplateTypeChecker, TypeCheckingConfig, TypeCheckingProgramStrategy, UpdateMode} from '../api';
 import {TemplateDiagnostic} from '../diagnostics';
 
+import {ExpressionIdentifier, findFirstMatchingNode} from './comments';
 import {InliningMode, ShimTypeCheckingData, TemplateData, TypeCheckContextImpl, TypeCheckingHost} from './context';
 import {findTypeCheckBlock, shouldReportDiagnostic, TemplateSourceResolver, translateDiagnostic} from './diagnostics';
 import {TemplateSourceManager} from './source';
@@ -211,6 +212,38 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
     return node;
   }
 
+  getGlobalCompletionPosition(component: ts.ClassDeclaration, template: TmplAstTemplate|null):
+      CompletionPosition|null {
+    this.ensureAllShimsForOneFile(component.getSourceFile());
+    const tcb = this.getTypeCheckBlock(component);
+    if (tcb === null) {
+      return null;
+    }
+
+    let node: ts.PropertyAccessExpression|null = null;
+    if (template === null) {
+      node = findFirstMatchingNode(tcb, {
+        filter: ts.isPropertyAccessExpression,
+        withExpressionIdentifier: ExpressionIdentifier.CONTEXT_COMPLETION
+      });
+    } else if (template instanceof TmplAstTemplate) {
+      node = findFirstMatchingNode(tcb, {
+        filter: ts.isPropertyAccessExpression,
+        withSpan: template.sourceSpan,
+        withExpressionIdentifier: ExpressionIdentifier.CONTEXT_COMPLETION,
+      });
+    }
+
+    if (node === null) {
+      return null;
+    }
+
+    return {
+      shimFile: this.typeCheckingStrategy.shimPathForComponent(component),
+      position: node.end,
+    };
+  }
+
   private maybeAdoptPriorResultsForFile(sf: ts.SourceFile): void {
     const sfPath = absoluteFromSourceFile(sf);
     if (this.state.has(sfPath)) {
@@ -390,8 +423,8 @@ function convertDiagnostic(
  */
 export interface FileTypeCheckingData {
   /**
-   * Whether the type-checking shim required any inline changes to the original file, which affects
-   * whether the shim can be reused.
+   * Whether the type-checking shim required any inline changes to the original file, which
+   * affects whether the shim can be reused.
    */
   hasInlines: boolean;
 
@@ -415,8 +448,8 @@ export interface FileTypeCheckingData {
   shimData: Map<AbsoluteFsPath, ShimTypeCheckingData>;
 
   /**
-   * Whether the template type-checker is certain that all components from this input file have had
-   * type-checking code generated into shims.
+   * Whether the template type-checker is certain that all components from this input file have
+   * had type-checking code generated into shims.
    */
   isComplete: boolean;
 }
@@ -517,9 +550,9 @@ class SingleFileTypeCheckingHost implements TypeCheckingHost {
     // supported). If the current operation also requires inlines, this presents a problem:
     // generating new inlines may invalidate any old inlines that old state depends on.
     //
-    // Rather than resolve this issue by tracking specific dependencies on inlines, if the new state
-    // relies on inlines, any old state that relied on them is simply cleared. This happens when the
-    // first new state that uses inlines is encountered.
+    // Rather than resolve this issue by tracking specific dependencies on inlines, if the new
+    // state relies on inlines, any old state that relied on them is simply cleared. This happens
+    // when the first new state that uses inlines is encountered.
     if (data.hasInlines && !this.seenInlines) {
       this.impl.clearAllShimDataUsingInlines();
       this.seenInlines = true;
@@ -538,8 +571,8 @@ class SingleFileTypeCheckingHost implements TypeCheckingHost {
 }
 
 /**
- * Drives a `TypeCheckContext` to generate type-checking code efficiently for only those components
- * which map to a single shim of a single input file.
+ * Drives a `TypeCheckContext` to generate type-checking code efficiently for only those
+ * components which map to a single shim of a single input file.
  */
 class SingleShimTypeCheckingHost extends SingleFileTypeCheckingHost {
   constructor(
