@@ -48,7 +48,7 @@
 
     .mat-mdc-form-field {
       &.mat-focused {
-        .mat-mdc-select-arrow {
+        &.mat-primary .mat-mdc-select-arrow {
           color: _get-mdc-focused-text-color(primary);
         }
 

@@ -31,6 +31,7 @@ import {
   FloatLabelType,
   MAT_LABEL_GLOBAL_OPTIONS,
   ShowOnDirtyErrorStateMatcher,
+  ThemePalette,
 } from '@angular/material/core';
 import {
   getMatFormFieldDuplicatedHintError,
@@ -1034,6 +1035,27 @@ describe('MatInput without forms', () => {
     expect(() => {
       createComponent(MatInputWithAnotherNgIf).detectChanges();
     }).not.toThrow();
+  }));
+
+  it('should default the form field color to primary', fakeAsync(() => {
+    const fixture = createComponent(MatInputWithColor);
+    fixture.detectChanges();
+
+    const formField = fixture.nativeElement.querySelector('.mat-form-field');
+    expect(formField.classList).toContain('mat-primary');
+  }));
+
+  it('should be able to change the form field color', fakeAsync(() => {
+    const fixture = createComponent(MatInputWithColor);
+    fixture.componentInstance.color = 'accent';
+    fixture.detectChanges();
+    const formField = fixture.nativeElement.querySelector('.mat-form-field');
+
+    expect(formField.classList).toContain('mat-accent');
+
+    fixture.componentInstance.color = 'warn';
+    fixture.detectChanges();
+    expect(formField.classList).toContain('mat-warn');
   }));
 
 });
@@ -2322,4 +2344,15 @@ class MatInputWithDefaultNgIf {}
 })
 class MatInputWithAnotherNgIf {
   inputValue = 'test';
+}
+
+
+@Component({
+  template: `
+    <mat-form-field [color]="color">
+      <input matNativeControl>
+    </mat-form-field>`
+})
+class MatInputWithColor {
+  color: ThemePalette;
 }

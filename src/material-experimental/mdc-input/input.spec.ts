@@ -32,6 +32,7 @@ import {
   ErrorStateMatcher,
   MAT_LABEL_GLOBAL_OPTIONS,
   ShowOnDirtyErrorStateMatcher,
+  ThemePalette,
 } from '@angular/material/core';
 import {By} from '@angular/platform-browser';
 import {BrowserAnimationsModule, NoopAnimationsModule} from '@angular/platform-browser/animations';
@@ -852,6 +853,27 @@ describe('MatMdcInput without forms', () => {
     fixture.detectChanges();
 
     expect(formField._control.empty).toBe(false);
+  }));
+
+  it('should default the form field color to primary', fakeAsync(() => {
+    const fixture = createComponent(MatInputWithColor);
+    fixture.detectChanges();
+
+    const formField = fixture.nativeElement.querySelector('.mat-mdc-form-field');
+    expect(formField.classList).toContain('mat-primary');
+  }));
+
+  it('should be able to change the form field color', fakeAsync(() => {
+    const fixture = createComponent(MatInputWithColor);
+    fixture.componentInstance.color = 'accent';
+    fixture.detectChanges();
+    const formField = fixture.nativeElement.querySelector('.mat-mdc-form-field');
+
+    expect(formField.classList).toContain('mat-accent');
+
+    fixture.componentInstance.color = 'warn';
+    fixture.detectChanges();
+    expect(formField.classList).toContain('mat-warn');
   }));
 
 });
@@ -1716,4 +1738,15 @@ class CustomMatInputAccessor {
   get value() { return this._value; }
   set value(_value: any) {}
   private _value = null;
+}
+
+
+@Component({
+  template: `
+    <mat-form-field [color]="color">
+      <input matNativeControl>
+    </mat-form-field>`
+})
+class MatInputWithColor {
+  color: ThemePalette;
 }
