@@ -231,6 +231,12 @@ export interface TypeCheckingConfig {
   checkTemplateBodies: boolean;
 
   /**
+   * Whether to always apply DOM schema checks in template bodies, independently of the
+   * `checkTemplateBodies` setting.
+   */
+  alwaysCheckSchemaInTemplateBodies: boolean;
+
+  /**
    * Whether to check resolvable queries.
    *
    * This is currently an unsupported feature.
