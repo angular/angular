@@ -37,10 +37,10 @@ If you're curious about the specific migrations being run by the CLI, see the [a
 {@a deprecations}
 ### New Deprecations
 
-| Area                          | API or Feature                                                                 | May be removed in |
-| ----------------------------- | ---------------------------------------------------------------------------    | ----------------- |
-| `@angular/core`               | [`WrappedValue`](guide/deprecations#wrapped-value)                                     | <!--v10--> v12 |
-| browser support               | [`IE 9, 10, and IE Mobile`](guide/deprecations#ie-9-10-and-ie-mobile-support) | <!--v10--> v11 |
+| Area                          | API or Feature                                     | May be removed in |
+| ----------------------------- | -------------------------------------------------- | ----------------- |
+| `@angular/core`               | [`WrappedValue`](guide/deprecations#wrapped-value) | <!--v10--> v12 |
+| browser support               | IE 9, 10, and IE Mobile                            | <!--v10--> v11 |
 
 
 {@a removals}
