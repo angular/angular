@@ -5,13 +5,13 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AotCompilerOptions} from '@angular/compiler';
 import {escapeRegExp} from '@angular/compiler/src/util';
 import {arrayToMockDir, MockCompilerHost, MockData, MockDirectory, toMockFileArray} from '@angular/compiler/test/aot/test_util';
 import * as ts from 'typescript';
 
-import {NodeJSFileSystem, setFileSystem} from '../../src/ngtsc/file_system';
-import {NgtscProgram} from '../../src/ngtsc/program';
+import {NgCompilerOptions} from '../../../src/ngtsc/core/api';
+import {NodeJSFileSystem, setFileSystem} from '../../../src/ngtsc/file_system';
+import {NgtscProgram} from '../../../src/ngtsc/program';
 
 const IDENTIFIER = /[A-Za-z_$ɵ][A-Za-z0-9_$]*/;
 const OPERATOR =
@@ -196,12 +196,8 @@ function buildMatcher(pieces: (string|RegExp)[]): {regexp: RegExp, groups: Map<s
   };
 }
 
-
-export function compile(
-    data: MockDirectory, angularFiles: MockData, options: AotCompilerOptions = {},
-    errorCollector: (error: any, fileName?: string) => void = error => {
-      throw error;
-    }): {
+export function doCompile(
+    data: MockDirectory, angularFiles: MockData, options: NgCompilerOptions = {}): {
   source: string,
 } {
   setFileSystem(new NodeJSFileSystem());
@@ -225,4 +221,19 @@ export function compile(
       scripts.map(script => mockCompilerHost.readFile(script.replace(/\.ts$/, '.js'))).join('\n');
 
   return {source};
+}
+
+export type CompileFn = typeof doCompile;
+
+/**
+ * The actual compile function that will be used to compile the test code.
+ * This can be updated by a test bootstrap script to provide an alternative compile function.
+ */
+export let compile: CompileFn = doCompile;
+
+/**
+ * Update the `compile` exported function to use a new implementation.
+ */
+export function setCompileFn(compileFn: CompileFn) {
+  compile = compileFn;
 }
