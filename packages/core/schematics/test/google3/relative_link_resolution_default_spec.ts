@@ -126,32 +126,32 @@ describe('Google3 relativeLinkResolution TSLint rule', () => {
 
   it('should migrate when options is a variable with AsExpression', () => {
     writeFile('/index.ts', `
-        import { NavigationExtras } from '@angular/router';
-        const options = {useHash: true} as NavigationExtras;
+        import { ExtraOptions } from '@angular/router';
+        const options = {useHash: true} as ExtraOptions;
       `);
 
     runTSLint(true);
     expect(getFile('/index.ts'))
         .toContain(
-            `const options = { useHash: true, relativeLinkResolution: "legacy" } as NavigationExtras;`);
+            `const options = { useHash: true, relativeLinkResolution: "legacy" } as ExtraOptions;`);
   });
 
   it('should migrate when options is a variable', () => {
     writeFile('/index.ts', `
-        import { NavigationExtras } from '@angular/router';
-        const options: NavigationExtras = {useHash: true};
+        import { ExtraOptions } from '@angular/router';
+        const options: ExtraOptions = {useHash: true};
       `);
 
     runTSLint(true);
     expect(getFile('/index.ts'))
         .toContain(
-            `const options: NavigationExtras = { useHash: true, relativeLinkResolution: "legacy" };`);
+            `const options: ExtraOptions = { useHash: true, relativeLinkResolution: "legacy" };`);
   });
 
   it('should migrate when options is a variable with no type', () => {
     writeFile('/index.ts', `
         import { NgModule } from '@angular/core';
-        import { NavigationExtras, RouterModule } from '@angular/router';
+        import { ExtraOptions, RouterModule } from '@angular/router';
 
         const options = {useHash: true};
 
@@ -172,14 +172,14 @@ describe('Google3 relativeLinkResolution TSLint rule', () => {
 
   it('should migrate when aliased options is a variable', () => {
     writeFile('/index.ts', `
-        import { NavigationExtras as RouterNavigationExtras } from '@angular/router';
-        const options: RouterNavigationExtras = {useHash: true};
+        import { ExtraOptions as RouterExtraOptions } from '@angular/router';
+        const options: RouterExtraOptions = {useHash: true};
       `);
 
     runTSLint(true);
     expect(getFile('/index.ts'))
         .toContain(
-            `const options: RouterNavigationExtras = { useHash: true, relativeLinkResolution: "legacy" };`);
+            `const options: RouterExtraOptions = { useHash: true, relativeLinkResolution: "legacy" };`);
   });
 
   it('should migrate aliased RouterModule.forRoot', () => {

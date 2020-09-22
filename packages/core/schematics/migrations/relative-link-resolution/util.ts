@@ -21,13 +21,13 @@ export function isRouterModuleForRoot(
       !node.typeArguments;
 }
 
-export function isNavigationExtras(
+export function isExtraOptions(
     typeChecker: ts.TypeChecker, node: ts.Node): node is ts.TypeReferenceNode {
   if (!ts.isTypeReferenceNode(node) || !ts.isIdentifier(node.typeName)) {
     return false;
   }
 
   const imp = getImportOfIdentifier(typeChecker, node.typeName);
-  return imp !== null && imp.name === 'NavigationExtras' &&
-      imp.importModule === '@angular/router' && !node.typeArguments;
+  return imp !== null && imp.name === 'ExtraOptions' && imp.importModule === '@angular/router' &&
+      !node.typeArguments;
 }

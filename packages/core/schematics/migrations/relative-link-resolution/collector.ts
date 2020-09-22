@@ -7,7 +7,7 @@
  */
 import * as ts from 'typescript';
 
-import {isNavigationExtras, isRouterModuleForRoot} from './util';
+import {isExtraOptions, isRouterModuleForRoot} from './util';
 
 
 /**
@@ -16,7 +16,7 @@ import {isNavigationExtras, isRouterModuleForRoot} from './util';
  */
 export class RelativeLinkResolutionCollector {
   readonly forRootCalls: ts.CallExpression[] = [];
-  readonly navigationExtrasLiterals: ts.ObjectLiteralExpression[] = [];
+  readonly extraOptionsLiterals: ts.ObjectLiteralExpression[] = [];
 
   constructor(private readonly typeChecker: ts.TypeChecker) {}
 
@@ -36,7 +36,7 @@ export class RelativeLinkResolutionCollector {
     }
 
     if (literal !== null) {
-      this.navigationExtrasLiterals.push(literal);
+      this.extraOptionsLiterals.push(literal);
     } else if (forRootCall !== null) {
       this.forRootCalls.push(forRootCall);
     } else {
@@ -71,14 +71,14 @@ export class RelativeLinkResolutionCollector {
       return null;
     }
 
-    // declaration could be `x: NavigationExtras = {}` or `x = {} as NavigationExtras`
+    // declaration could be `x: ExtraOptions = {}` or `x = {} as ExtraOptions`
     if (ts.isAsExpression(node.initializer) &&
         ts.isObjectLiteralExpression(node.initializer.expression) &&
-        isNavigationExtras(this.typeChecker, node.initializer.type)) {
+        isExtraOptions(this.typeChecker, node.initializer.type)) {
       return node.initializer.expression;
     } else if (
         node.type !== undefined && ts.isObjectLiteralExpression(node.initializer) &&
-        isNavigationExtras(this.typeChecker, node.type)) {
+        isExtraOptions(this.typeChecker, node.type)) {
       return node.initializer;
     }
 

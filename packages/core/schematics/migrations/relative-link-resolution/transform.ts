@@ -20,7 +20,7 @@ export class RelativeLinkResolutionTransform {
   /** Migrate the ExtraOptions#RelativeLinkResolution property assignments. */
   migrateRouterModuleForRootCalls(calls: ts.CallExpression[]) {
     calls.forEach(c => {
-      this._updateCallExpressionWithoutNavigationExtras(c);
+      this._updateCallExpressionWithoutExtraOptions(c);
     });
   }
 
@@ -28,7 +28,7 @@ export class RelativeLinkResolutionTransform {
     vars.forEach(v => this._maybeUpdateLiteral(v));
   }
 
-  private _updateCallExpressionWithoutNavigationExtras(callExpression: ts.CallExpression) {
+  private _updateCallExpressionWithoutExtraOptions(callExpression: ts.CallExpression) {
     const args = callExpression.arguments;
     const emptyLiteral = ts.createObjectLiteral();
     const newNode = ts.updateCall(

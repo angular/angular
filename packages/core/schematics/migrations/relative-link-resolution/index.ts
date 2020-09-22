@@ -42,11 +42,11 @@ function runRelativeLinkResolutionMigration(tree: Tree, tsconfigPath: string, ba
   // Analyze source files by detecting all modules.
   sourceFiles.forEach(sourceFile => relativeLinkResolutionCollector.visitNode(sourceFile));
 
-  const {forRootCalls, navigationExtrasLiterals} = relativeLinkResolutionCollector;
+  const {forRootCalls, extraOptionsLiterals} = relativeLinkResolutionCollector;
   const transformer = new RelativeLinkResolutionTransform(getUpdateRecorder);
   const updateRecorders = new Map<ts.SourceFile, UpdateRecorder>();
   transformer.migrateRouterModuleForRootCalls(forRootCalls);
-  transformer.migrateObjectLiterals(navigationExtrasLiterals);
+  transformer.migrateObjectLiterals(extraOptionsLiterals);
 
   // Walk through each update recorder and commit the update. We need to commit the
   // updates in batches per source file as there can be only one recorder per source

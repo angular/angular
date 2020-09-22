@@ -25,10 +25,10 @@ export class Rule extends Rules.TypedRule {
     // Analyze source files by detecting all modules.
     sourceFiles.forEach(sourceFile => relativeLinkResolutionCollector.visitNode(sourceFile));
 
-    const {forRootCalls, navigationExtrasLiterals} = relativeLinkResolutionCollector;
+    const {forRootCalls, extraOptionsLiterals} = relativeLinkResolutionCollector;
     const transformer = new RelativeLinkResolutionTransform(getUpdateRecorder);
     transformer.migrateRouterModuleForRootCalls(forRootCalls);
-    transformer.migrateObjectLiterals(navigationExtrasLiterals);
+    transformer.migrateObjectLiterals(extraOptionsLiterals);
 
     if (updateRecorders.has(sourceFile)) {
       return updateRecorders.get(sourceFile)!.failures;
