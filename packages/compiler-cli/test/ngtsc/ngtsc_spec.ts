@@ -390,6 +390,43 @@ runInEachFileSystem(os => {
           expect(jsContents).toContain('/** @nocollapse */ TestCmp.ɵcmp');
         });
 
+        it('should still perform schema checks in embedded views', () => {
+          env.tsconfig({
+            'fullTemplateTypeCheck': false,
+            'annotateForClosureCompiler': true,
+            'ivyTemplateTypeCheck': true,
+          });
+          env.write('test.ts', `
+            import {Component, Directive, NgModule} from '@angular/core';
+
+            @Component({
+              selector: 'test-cmp',
+              template: \`
+                <ng-template>
+                  <some-dir>Has a directive, should be okay</some-dir>
+                  <not-a-cmp>Should trigger a schema error</not-a-cmp>
+                </ng-template>
+              \`
+            })
+            export class TestCmp {}
+
+            @Directive({
+              selector: 'some-dir',
+            })
+            export class TestDir {}
+
+            @NgModule({
+              declarations: [TestCmp, TestDir],
+            })
+            export class TestModule {}
+          `);
+
+          const diags = env.driveDiagnostics();
+          expect(diags.length).toBe(1);
+          expect(diags[0].code).toBe(ngErrorCode(ErrorCode.SCHEMA_INVALID_ELEMENT));
+          expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '\n'))
+              .toContain('not-a-cmp');
+        });
         /**
          * The following set of tests verify that after Tsickle run we do not have cases
          * which trigger automatic semicolon insertion, which breaks the code. In order

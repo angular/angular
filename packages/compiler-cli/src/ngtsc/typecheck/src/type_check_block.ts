@@ -1172,6 +1172,8 @@ class Scope {
         const ctxIndex = this.opQueue.push(new TcbTemplateContextOp(this.tcb, this)) - 1;
         this.templateCtxOpMap.set(node, ctxIndex);
         this.opQueue.push(new TcbTemplateBodyOp(this.tcb, this, node));
+      } else if (this.tcb.env.config.alwaysCheckSchemaInTemplateBodies) {
+        this.appendDeepSchemaChecks(node.children);
       }
       this.checkReferencesOfNode(node);
     } else if (node instanceof TmplAstBoundText) {
@@ -1262,6 +1264,33 @@ class Scope {
       }
 
       this.opQueue.push(new TcbUnclaimedOutputsOp(this.tcb, this, node, claimedOutputs));
+    }
+  }
+
+  private appendDeepSchemaChecks(nodes: TmplAstNode[]): void {
+    for (const node of nodes) {
+      if (!(node instanceof TmplAstElement || node instanceof TmplAstTemplate)) {
+        continue;
+      }
+
+      if (node instanceof TmplAstElement) {
+        const claimedInputs = new Set<string>();
+        const directives = this.tcb.boundTarget.getDirectivesOfNode(node);
+        let hasDirectives: boolean;
+        if (directives === null || directives.length === 0) {
+          hasDirectives = false;
+        } else {
+          hasDirectives = true;
+          for (const dir of directives) {
+            for (const propertyName of dir.inputs.propertyNames) {
+              claimedInputs.add(propertyName);
+            }
+          }
+        }
+        this.opQueue.push(new TcbDomSchemaCheckerOp(this.tcb, node, !hasDirectives, claimedInputs));
+      }
+
+      this.appendDeepSchemaChecks(node.children);
     }
   }
 }
