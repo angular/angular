@@ -8,7 +8,7 @@
 
 import {Directionality} from '@angular/cdk/bidi';
 import {coerceNumberProperty, NumberInput} from '@angular/cdk/coercion';
-import {Directive, ElementRef, Input, OnDestroy, Optional, Renderer2} from '@angular/core';
+import {Directive, ElementRef, Input, OnDestroy, Optional} from '@angular/core';
 import {takeUntil} from 'rxjs/operators';
 import {Subject} from 'rxjs';
 import {CdkTree, CdkTreeNode} from './tree';
@@ -50,11 +50,6 @@ export class CdkTreeNodePadding<T> implements OnDestroy {
 
   constructor(private _treeNode: CdkTreeNode<T>,
               private _tree: CdkTree<T>,
-              /**
-               * @deprecated _renderer parameter no longer being used. To be removed.
-               * @breaking-change 11.0.0
-               */
-              _renderer: Renderer2,
               private _element: ElementRef<HTMLElement>,
               @Optional() private _dir: Directionality) {
     this._setPadding();

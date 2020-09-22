@@ -25,6 +25,10 @@ export const constructorChecks: VersionChanges<ConstructorChecksUpgradeData> = {
     {
       pr: 'https://github.com/angular/components/pull/20500',
       changes: ['CdkDropList']
+    },
+    {
+      pr: 'https://github.com/angular/components/pull/20572',
+      changes: ['CdkTreeNodePadding']
     }
   ],
   [TargetVersion.V10]: [

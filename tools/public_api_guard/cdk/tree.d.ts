@@ -120,8 +120,7 @@ export declare class CdkTreeNodePadding<T> implements OnDestroy {
     indentUnits: string;
     get level(): number;
     set level(value: number);
-    constructor(_treeNode: CdkTreeNode<T>, _tree: CdkTree<T>,
-    _renderer: Renderer2, _element: ElementRef<HTMLElement>, _dir: Directionality);
+    constructor(_treeNode: CdkTreeNode<T>, _tree: CdkTree<T>, _element: ElementRef<HTMLElement>, _dir: Directionality);
     _paddingIndent(): string | null;
     protected _setIndentInput(indent: number | string): void;
     protected _setLevelInput(value: number): void;
@@ -129,7 +128,7 @@ export declare class CdkTreeNodePadding<T> implements OnDestroy {
     ngOnDestroy(): void;
     static ngAcceptInputType_level: NumberInput;
     static ɵdir: i0.ɵɵDirectiveDefWithMeta<CdkTreeNodePadding<any>, "[cdkTreeNodePadding]", never, { "level": "cdkTreeNodePadding"; "indent": "cdkTreeNodePaddingIndent"; }, {}, never>;
-    static ɵfac: i0.ɵɵFactoryDef<CdkTreeNodePadding<any>, [null, null, null, null, { optional: true; }]>;
+    static ɵfac: i0.ɵɵFactoryDef<CdkTreeNodePadding<any>, [null, null, null, { optional: true; }]>;
 }
 
 export declare class CdkTreeNodeToggle<T> {
