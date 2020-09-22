@@ -1,0 +1,60 @@
+.example-menu {
+  display: inline-flex;
+  flex-direction: column;
+  min-width: 180px;
+  max-width: 280px;
+  background-color: rgb(255, 255, 255);
+  padding: 6px 0;
+}
+
+.example-menu .example-menu-item {
+  width: 100%;
+}
+
+hr {
+  width: 100%;
+  color: rgba(0, 0, 0, 0.12);
+}
+
+.example-menu-item,
+.example-standalone-item {
+  background-color: transparent;
+  cursor: pointer;
+  outline: none;
+  border: none;
+
+  user-select: none;
+  min-width: 64px;
+  line-height: 36px;
+  padding: 0 16px;
+
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  flex: 1;
+}
+
+.example-menu-item:hover {
+  background-color: rgb(208, 208, 208);
+}
+
+.example-menu-item:active {
+  background-color: rgb(170, 170, 170);
+}
+
+.example-standalone-item {
+  background-color: rgb(239, 239, 239);
+}
+.example-standalone-item:hover {
+  background-color: rgb(208, 208, 208);
+}
+.example-standalone-item[aria-expanded='true'] {
+  background-color: rgb(208, 208, 208);
+}
+
+.example-menu-item[role='menuitemradio'][aria-checked='true'] {
+  background-color: rgb(225, 225, 225);
+}
+.example-menu-item[role='menuitemcheckbox'][aria-checked='true'] {
+  background-color: rgb(225, 225, 225);
+}

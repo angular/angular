@@ -29,7 +29,10 @@ menu directives to build your custom menu. A typical menu consists of the follow
 - `cdkMenu` - the actual menu you want to open
 - `cdkMenuItem` - added to each button
 
-<!-- TODO basic standalone menu example (like mat-menu has) -->
+<!-- example({
+  "example": "cdk-menu-standalone-menu",
+  "file": "cdk-menu-standalone-menu-example.html"
+  }) -->
 
 Most menu interactions consist of two parts: a trigger and a menu panel.
 
@@ -70,7 +73,10 @@ layed out horizontally or vertically (defaulting to horizontal). If the layout c
 the `orientation` attribute to match in order for the keyboard navigation to work properly and for
 menus to open up in the correct location.
 
-<!-- TODO basic menubar example (google docs?) -->
+<!-- example({
+  "example": "cdk-menu-menubar",
+  "file": "cdk-menu-menubar-example.html"
+  }) -->
 
 ### Context Menus
 
@@ -79,7 +85,10 @@ container element with the `cdkContextMenuTriggerFor`, which behaves like `cdkMe
 that it responds to the browser's native `contextmenu` event. Custom context menus appear next to
 the cursor, similarly to native context menus.
 
-<!-- TODO basic context menu example -->
+<!-- example({
+  "example": "cdk-menu-context",
+  "file": "cdk-menu-context-example.html"
+  }) -->
 
 You can nest context menu container elements. Upon right-click, the menu associated with the closest
 container element will open.
@@ -101,7 +110,10 @@ trigger. You can use an inline menu when you want a persistent menu interaction 
 items within an inline menus are logically grouped together and you can navigate through them using
 your keyboard.
 
-<!-- TODO inline menu example (gmail buttons?) -->
+<!-- example({
+  "example": "cdk-menu-inline",
+  "file": "cdk-menu-inline-example.html"
+  }) -->
 
 ### Menu Items
 
@@ -177,7 +189,10 @@ Note however that when the menu is closed and reopened any state is lost. You mu
 groups `change` output, or to `cdkMenuItemToggled` on each radio item and track changes your self.
 Finally, you can provide state for each item using the `checked` attribute.
 
-<!-- TODO standalone menu example with checkboxes and grouped radios -->
+<!-- example({
+  "example": "cdk-menu-standalone-stateful-menu",
+  "file": "cdk-menu-standalone-stateful-menu-example.html"
+  }) -->
 
 ### Smart Menu Aim
 

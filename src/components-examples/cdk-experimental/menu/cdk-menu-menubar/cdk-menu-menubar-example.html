@@ -1,0 +1,66 @@
+<div cdkMenuBar>
+  <button class="example-menu-bar-item" cdkMenuItem [cdkMenuTriggerFor]="file">File</button>
+  <button class="example-menu-bar-item" cdkMenuItem [cdkMenuTriggerFor]="edit">Edit</button>
+  <button class="example-menu-bar-item" cdkMenuItem [cdkMenuTriggerFor]="format">Format</button>
+</div>
+
+<ng-template cdkMenuPanel #file="cdkMenuPanel">
+  <div class="example-menu" cdkMenu [cdkMenuPanel]="file">
+    <button class="example-menu-item" cdkMenuItem>Share</button>
+    <hr />
+    <button class="example-menu-item" cdkMenuItem [cdkMenuTriggerFor]="new">
+      New <span>&#10148;</span>
+    </button>
+    <button class="example-menu-item" cdkMenuItem>Open</button>
+    <button class="example-menu-item" cdkMenuItem>Make a Copy</button>
+    <hr />
+    <button class="example-menu-item" cdkMenuItem [cdkMenuTriggerFor]="download">
+      Download <span>&#10148;</span>
+    </button>
+  </div>
+</ng-template>
+
+<ng-template #edit="cdkMenuPanel" cdkMenuPanel>
+  <div class="example-menu" cdkMenu [cdkMenuPanel]="edit">
+    <button class="example-menu-item" cdkMenuItem>Undo</button>
+    <button class="example-menu-item" cdkMenuItem>Redo</button>
+    <hr />
+    <button class="example-menu-item" cdkMenuItem>Cut</button>
+    <button class="example-menu-item" cdkMenuItem>Copy</button>
+    <button class="example-menu-item" cdkMenuItem>Paste</button>
+  </div>
+</ng-template>
+
+<ng-template #format="cdkMenuPanel" cdkMenuPanel>
+  <div class="example-menu" cdkMenu [cdkMenuPanel]="format">
+    <div class="example-menu-group" cdkMenuGroup>
+      <button class="example-menu-item" checked id="bf" cdkMenuItemCheckbox>Bold</button>
+      <button class="example-menu-item" id="if" cdkMenuItemCheckbox>Italic</button>
+    </div>
+    <hr />
+    <div class="example-menu-group" cdkMenuGroup>
+      <button class="example-menu-item" id="small" cdkMenuItemRadio>Small</button>
+      <button class="example-menu-item" checked id="normal" cdkMenuItemRadio>Normal</button>
+      <button class="example-menu-item" id="large" cdkMenuItemRadio>Big</button>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #new="cdkMenuPanel" cdkMenuPanel>
+  <div class="example-menu" cdkMenu [cdkMenuPanel]="new">
+    <button class="example-menu-item" cdkMenuItem>Document</button>
+    <button class="example-menu-item" cdkMenuItem>From template</button>
+    <hr />
+    <button class="example-menu-item" cdkMenuItem>Spreadsheet</button>
+    <button class="example-menu-item" cdkMenuItem>Presentation</button>
+    <button class="example-menu-item" cdkMenuItem>Form</button>
+  </div>
+</ng-template>
+
+<ng-template #download="cdkMenuPanel" cdkMenuPanel>
+  <div class="example-menu" cdkMenu [cdkMenuPanel]="download">
+    <button class="example-menu-item" cdkMenuItem>Microsoft Word</button>
+    <button class="example-menu-item" cdkMenuItem>PDF</button>
+    <button class="example-menu-item" cdkMenuItem>Plain text</button>
+  </div>
+</ng-template>
