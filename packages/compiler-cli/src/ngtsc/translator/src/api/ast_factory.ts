@@ -97,7 +97,7 @@ export interface AstFactory<TStatement, TExpression> {
    * @param parameters the names of the function's parameters.
    * @param body a statement (or a block of statements) that are the body of the function.
    */
-  createFunctionDeclaration(functionName: string|null, parameters: string[], body: TStatement):
+  createFunctionDeclaration(functionName: string, parameters: string[], body: TStatement):
       TStatement;
 
   /**
