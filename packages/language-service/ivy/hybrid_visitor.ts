@@ -31,10 +31,15 @@ class R3Visitor implements t.Visitor {
   constructor(private readonly position: number) {}
 
   visit(node: t.Node) {
+    if (node instanceof t.BoundAttribute) {
+      node.visit(this);
+      return;
+    }
+
     const {start, end} = getSpanIncludingEndTag(node);
     // Note both start and end are inclusive because we want to match conditions
     // like ¦start and end¦ where ¦ is the cursor.
-    if (start <= this.position && this.position <= end) {
+    if (isWithin(this.position, {start, end})) {
       const length = end - start;
       const last: t.Node|e.AST|undefined = this.path[this.path.length - 1];
       if (last) {
@@ -97,8 +102,13 @@ class R3Visitor implements t.Visitor {
   }
 
   visitBoundAttribute(attribute: t.BoundAttribute) {
-    const visitor = new ExpressionVisitor(this.position);
-    visitor.visit(attribute.value, this.path);
+    if (isWithin(this.position, attribute.keySpan)) {
+      this.path.push(attribute);
+    } else if (attribute.valueSpan && isWithin(this.position, attribute.valueSpan)) {
+      this.path.push(attribute);
+      const visitor = new ExpressionVisitor(this.position);
+      visitor.visit(attribute.value, this.path);
+    }
   }
 
   visitBoundEvent(attribute: t.BoundEvent) {
@@ -147,7 +157,7 @@ class ExpressionVisitor extends e.RecursiveAstVisitor {
     const {start, end} = node.sourceSpan;
     // The third condition is to account for the implicit receiver, which should
     // not be visited.
-    if (start <= this.position && this.position <= end && !(node instanceof e.ImplicitReceiver)) {
+    if (isWithin(this.position, {start, end}) && !(node instanceof e.ImplicitReceiver)) {
       path.push(node);
       node.visit(this, path);
     }
@@ -177,4 +187,16 @@ function getSpanIncludingEndTag(ast: t.Node) {
     result.end = ast.endSourceSpan.end.offset;
   }
   return result;
+}
+
+function isWithin(position: number, span: {start: number, end: number}|ParseSourceSpan): boolean {
+  let start: number, end: number;
+  if (span instanceof ParseSourceSpan) {
+    start = span.start.offset;
+    end = span.end.offset;
+  } else {
+    start = span.start;
+    end = span.end;
+  }
+  return start <= position && position <= end;
 }
