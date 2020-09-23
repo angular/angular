@@ -167,9 +167,7 @@ describe('compiler compliance', () => {
       expectEmit(result.source, template, 'Incorrect template');
     });
 
-    // TODO(https://github.com/angular/angular/issues/24426): We need to support the parser actually
-    // building the proper attributes based off of xmlns attributes.
-    xit('should support namespaced attributes', () => {
+    it('should support namespaced attributes', () => {
       const files = {
         app: {
           'spec.ts': `
@@ -194,7 +192,10 @@ describe('compiler compliance', () => {
       // The template should look like this (where IDENT is a wild card for an identifier):
       const template = `
           …
-          consts: [["class", "my-app", 0, "http://someuri/foo", "foo:bar", "baz", "title", "Hello", 0, "http://someuri/foo", "foo:qux", "quacks"]],
+          consts: [[${AttributeMarker.NamespaceURI}, "xmlns", "foo", "http://someuri/foo", ${
+          AttributeMarker.NamespaceURI}, "foo", "bar", "baz", "title", "Hello", ${
+          AttributeMarker.NamespaceURI}, "foo", "qux", "quacks", ${
+          AttributeMarker.Classes}, "my-app"]],
           template: function MyComponent_Template(rf, ctx) {
             if (rf & 1) {
               $r3$.ɵɵelementStart(0, "div", 0);
