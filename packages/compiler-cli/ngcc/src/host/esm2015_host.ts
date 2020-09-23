@@ -2311,7 +2311,7 @@ function isInitializedVariableClassDeclaration(node: ts.Node):
  * var MyClass = alias1 = alias2 = <<declaration>>
  * ```
  *
- * @node the LHS of a variable declaration.
+ * @param node the LHS of a variable declaration.
  * @returns the original AST node or the RHS of a series of assignments in a variable
  *     declaration.
  */

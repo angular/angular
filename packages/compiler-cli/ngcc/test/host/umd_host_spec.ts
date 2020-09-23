@@ -638,7 +638,8 @@ runInEachFileSystem(() => {
               `  exports.d = b;\n` +
               `  exports.e = e;\n` +
               `  exports.DirectiveX = core.Directive;\n` +
-              `  exports.SomeClass = SomeClass;\n` +
+              `  var SomeClass_1;\n` +
+              `  exports.SomeClass = SomeClass_1 = SomeClass;\n` +
               `})));\n`,
         },
         {
