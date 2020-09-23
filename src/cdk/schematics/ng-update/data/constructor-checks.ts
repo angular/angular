@@ -29,6 +29,10 @@ export const constructorChecks: VersionChanges<ConstructorChecksUpgradeData> = {
     {
       pr: 'https://github.com/angular/components/pull/20572',
       changes: ['CdkTreeNodePadding']
+    },
+    {
+      pr: 'https://github.com/angular/components/pull/20511',
+      changes: ['OverlayContainer', 'FullscreenOverlayContainer', 'OverlayRef', 'Overlay']
     }
   ],
   [TargetVersion.V10]: [

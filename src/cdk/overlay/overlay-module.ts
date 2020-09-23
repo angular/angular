@@ -9,16 +9,13 @@
 import {BidiModule} from '@angular/cdk/bidi';
 import {PortalModule} from '@angular/cdk/portal';
 import {ScrollingModule} from '@angular/cdk/scrolling';
-import {NgModule, Provider} from '@angular/core';
-import {OVERLAY_KEYBOARD_DISPATCHER_PROVIDER} from './dispatchers/overlay-keyboard-dispatcher';
+import {NgModule} from '@angular/core';
 import {Overlay} from './overlay';
-import {OVERLAY_CONTAINER_PROVIDER} from './overlay-container';
 import {
   CDK_CONNECTED_OVERLAY_SCROLL_STRATEGY_PROVIDER,
   CdkConnectedOverlay,
   CdkOverlayOrigin,
 } from './overlay-directives';
-import {OverlayPositionBuilder} from './position/overlay-position-builder';
 
 
 @NgModule({
@@ -31,17 +28,3 @@ import {OverlayPositionBuilder} from './position/overlay-position-builder';
   ],
 })
 export class OverlayModule {}
-
-
-/**
- * @deprecated Use `OverlayModule` instead.
- * @breaking-change 8.0.0
- * @docs-private
- */
-export const OVERLAY_PROVIDERS: Provider[] = [
-  Overlay,
-  OverlayPositionBuilder,
-  OVERLAY_KEYBOARD_DISPATCHER_PROVIDER,
-  OVERLAY_CONTAINER_PROVIDER,
-  CDK_CONNECTED_OVERLAY_SCROLL_STRATEGY_PROVIDER,
-];

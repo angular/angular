@@ -60,10 +60,8 @@ export class OverlayRef implements PortalOutlet, OverlayReference {
       private _ngZone: NgZone,
       private _keyboardDispatcher: OverlayKeyboardDispatcher,
       private _document: Document,
-      // @breaking-change 8.0.0 `_location` parameter to be made required.
-      private _location?: Location,
-      // @breaking-change 9.0.0 `_mouseClickDispatcher` parameter to be made required.
-      private _outsideClickDispatcher?: OverlayOutsideClickDispatcher) {
+      private _location: Location,
+      private _outsideClickDispatcher: OverlayOutsideClickDispatcher) {
 
     if (_config.scrollStrategy) {
       this._scrollStrategy = _config.scrollStrategy;
@@ -152,17 +150,11 @@ export class OverlayRef implements PortalOutlet, OverlayReference {
     // Track this overlay by the keyboard dispatcher
     this._keyboardDispatcher.add(this);
 
-    // @breaking-change 8.0.0 remove the null check for `_location`
-    // once the constructor parameter is made required.
-    if (this._config.disposeOnNavigation && this._location) {
+    if (this._config.disposeOnNavigation) {
       this._locationChanges = this._location.subscribe(() => this.dispose());
     }
 
-    // @breaking-change 9.0.0 remove the null check for `_mouseClickDispatcher`
-    if (this._outsideClickDispatcher) {
-      this._outsideClickDispatcher.add(this);
-    }
-
+    this._outsideClickDispatcher.add(this);
     return attachResult;
   }
 
@@ -201,15 +193,8 @@ export class OverlayRef implements PortalOutlet, OverlayReference {
     // Keeping the host element in the DOM can cause scroll jank, because it still gets
     // rendered, even though it's transparent and unclickable which is why we remove it.
     this._detachContentWhenStable();
-
-    // Stop listening for location changes.
     this._locationChanges.unsubscribe();
-
-    // @breaking-change 9.0.0 remove the null check for `_outsideClickDispatcher`
-    if (this._outsideClickDispatcher) {
-      this._outsideClickDispatcher.remove(this);
-    }
-
+    this._outsideClickDispatcher.remove(this);
     return detachmentResult;
   }
 
@@ -230,11 +215,7 @@ export class OverlayRef implements PortalOutlet, OverlayReference {
     this._backdropClick.complete();
     this._keydownEvents.complete();
     this._outsidePointerEvents.complete();
-
-    // @breaking-change 9.0.0 remove the null check for `_outsideClickDispatcher`
-    if (this._outsideClickDispatcher) {
-      this._outsideClickDispatcher.remove(this);
-    }
+    this._outsideClickDispatcher.remove(this);
 
     if (this._host && this._host.parentNode) {
       this._host.parentNode.removeChild(this._host);

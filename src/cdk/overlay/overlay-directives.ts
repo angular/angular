@@ -37,7 +37,6 @@ import {
 } from './position/flexible-connected-position-strategy';
 import {
   RepositionScrollStrategy,
-  RepositionScrollStrategyConfig,
   ScrollStrategy,
 } from './scroll/index';
 
@@ -73,12 +72,6 @@ const defaultPositionList: ConnectedPosition[] = [
 /** Injection token that determines the scroll handling while the connected overlay is open. */
 export const CDK_CONNECTED_OVERLAY_SCROLL_STRATEGY =
     new InjectionToken<() => ScrollStrategy>('cdk-connected-overlay-scroll-strategy');
-
-/** @docs-private @deprecated @breaking-change 8.0.0 */
-export function CDK_CONNECTED_OVERLAY_SCROLL_STRATEGY_FACTORY(overlay: Overlay):
-  () => ScrollStrategy {
-  return (config?: RepositionScrollStrategyConfig) => overlay.scrollStrategies.reposition(config);
-}
 
 /**
  * Directive applied to an element to make it usable as an origin for an Overlay using a

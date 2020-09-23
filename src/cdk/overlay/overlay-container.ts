@@ -7,14 +7,7 @@
  */
 
 import {DOCUMENT} from '@angular/common';
-import {
-  Inject,
-  Injectable,
-  InjectionToken,
-  OnDestroy,
-  Optional,
-  SkipSelf,
-} from '@angular/core';
+import {Inject, Injectable, OnDestroy} from '@angular/core';
 import {Platform} from '@angular/cdk/platform';
 
 /**
@@ -30,13 +23,7 @@ export class OverlayContainer implements OnDestroy {
   protected _containerElement: HTMLElement;
   protected _document: Document;
 
-  constructor(
-    @Inject(DOCUMENT) document: any,
-    /**
-     * @deprecated `platform` parameter to become required.
-     * @breaking-change 10.0.0
-     */
-    protected _platform?: Platform) {
+  constructor(@Inject(DOCUMENT) document: any, protected _platform: Platform) {
     this._document = document;
   }
 
@@ -67,11 +54,9 @@ export class OverlayContainer implements OnDestroy {
    * with the 'cdk-overlay-container' class on the document body.
    */
   protected _createContainer(): void {
-    // @breaking-change 10.0.0 Remove null check for `_platform`.
-    const isBrowser = this._platform ? this._platform.isBrowser : typeof window !== 'undefined';
     const containerClass = 'cdk-overlay-container';
 
-    if (isBrowser || isTestEnvironment) {
+    if (this._platform.isBrowser || isTestEnvironment) {
       const oppositePlatformContainers =
           this._document.querySelectorAll(`.${containerClass}[platform="server"], ` +
                                           `.${containerClass}[platform="test"]`);
@@ -97,7 +82,7 @@ export class OverlayContainer implements OnDestroy {
     // TODO(crisbeto): remove the test environment check once we have an overlay testing module.
     if (isTestEnvironment) {
       container.setAttribute('platform', 'test');
-    } else if (!isBrowser) {
+    } else if (!this._platform.isBrowser) {
       container.setAttribute('platform', 'server');
     }
 
@@ -105,21 +90,3 @@ export class OverlayContainer implements OnDestroy {
     this._containerElement = container;
   }
 }
-
-
-/** @docs-private @deprecated @breaking-change 8.0.0 */
-export function OVERLAY_CONTAINER_PROVIDER_FACTORY(parentContainer: OverlayContainer,
-  _document: any) {
-  return parentContainer || new OverlayContainer(_document);
-}
-
-/** @docs-private @deprecated @breaking-change 8.0.0 */
-export const OVERLAY_CONTAINER_PROVIDER = {
-  // If there is already an OverlayContainer available, use that. Otherwise, provide a new one.
-  provide: OverlayContainer,
-  deps: [
-    [new Optional(), new SkipSelf(), OverlayContainer],
-    DOCUMENT as InjectionToken<any> // We need to use the InjectionToken somewhere to keep TS happy
-  ],
-  useFactory: OVERLAY_CONTAINER_PROVIDER_FACTORY
-};

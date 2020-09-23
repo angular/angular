@@ -152,8 +152,7 @@ export declare type FlexibleConnectedPositionStrategyOrigin = ElementRef | Eleme
 };
 
 export declare class FullscreenOverlayContainer extends OverlayContainer implements OnDestroy {
-    constructor(_document: any,
-    platform?: Platform);
+    constructor(_document: any, platform: Platform);
     protected _createContainer(): void;
     getFullscreenElement(): Element;
     ngOnDestroy(): void;
@@ -191,14 +190,12 @@ export interface OriginConnectionPosition {
 export declare class Overlay {
     scrollStrategies: ScrollStrategyOptions;
     constructor(
-    scrollStrategies: ScrollStrategyOptions, _overlayContainer: OverlayContainer, _componentFactoryResolver: ComponentFactoryResolver, _positionBuilder: OverlayPositionBuilder, _keyboardDispatcher: OverlayKeyboardDispatcher, _injector: Injector, _ngZone: NgZone, _document: any, _directionality: Directionality, _location?: Location | undefined, _outsideClickDispatcher?: OverlayOutsideClickDispatcher | undefined);
+    scrollStrategies: ScrollStrategyOptions, _overlayContainer: OverlayContainer, _componentFactoryResolver: ComponentFactoryResolver, _positionBuilder: OverlayPositionBuilder, _keyboardDispatcher: OverlayKeyboardDispatcher, _injector: Injector, _ngZone: NgZone, _document: any, _directionality: Directionality, _location: Location, _outsideClickDispatcher: OverlayOutsideClickDispatcher);
     create(config?: OverlayConfig): OverlayRef;
     position(): OverlayPositionBuilder;
     static ɵfac: i0.ɵɵFactoryDef<Overlay, never>;
     static ɵprov: i0.ɵɵInjectableDef<Overlay>;
 }
-
-export declare const OVERLAY_PROVIDERS: Provider[];
 
 export declare class OverlayConfig {
     backdropClass?: string | string[];
@@ -225,9 +222,8 @@ export interface OverlayConnectionPosition {
 export declare class OverlayContainer implements OnDestroy {
     protected _containerElement: HTMLElement;
     protected _document: Document;
-    protected _platform?: Platform | undefined;
-    constructor(document: any,
-    _platform?: Platform | undefined);
+    protected _platform: Platform;
+    constructor(document: any, _platform: Platform);
     protected _createContainer(): void;
     getContainerElement(): HTMLElement;
     ngOnDestroy(): void;
@@ -271,7 +267,7 @@ export declare class OverlayRef implements PortalOutlet, OverlayReference {
     get backdropElement(): HTMLElement | null;
     get hostElement(): HTMLElement;
     get overlayElement(): HTMLElement;
-    constructor(_portalOutlet: PortalOutlet, _host: HTMLElement, _pane: HTMLElement, _config: ImmutableObject<OverlayConfig>, _ngZone: NgZone, _keyboardDispatcher: OverlayKeyboardDispatcher, _document: Document, _location?: Location | undefined, _outsideClickDispatcher?: OverlayOutsideClickDispatcher | undefined);
+    constructor(_portalOutlet: PortalOutlet, _host: HTMLElement, _pane: HTMLElement, _config: ImmutableObject<OverlayConfig>, _ngZone: NgZone, _keyboardDispatcher: OverlayKeyboardDispatcher, _document: Document, _location: Location, _outsideClickDispatcher: OverlayOutsideClickDispatcher);
     addPanelClass(classes: string | string[]): void;
     attach<T>(portal: ComponentPortal<T>): ComponentRef<T>;
     attach<T>(portal: TemplatePortal<T>): EmbeddedViewRef<T>;

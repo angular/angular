@@ -7,13 +7,7 @@
  */
 
 import {DOCUMENT} from '@angular/common';
-import {
-  Inject,
-  Injectable,
-  InjectionToken,
-  Optional,
-  SkipSelf,
-} from '@angular/core';
+import {Inject, Injectable} from '@angular/core';
 import {OverlayReference} from '../overlay-reference';
 import {BaseOverlayDispatcher} from './base-overlay-dispatcher';
 
@@ -67,25 +61,3 @@ export class OverlayKeyboardDispatcher extends BaseOverlayDispatcher {
     }
   }
 }
-
-
-/** @docs-private @deprecated @breaking-change 8.0.0 */
-export function OVERLAY_KEYBOARD_DISPATCHER_PROVIDER_FACTORY(
-    dispatcher: OverlayKeyboardDispatcher, _document: any) {
-  return dispatcher || new OverlayKeyboardDispatcher(_document);
-}
-
-/** @docs-private @deprecated @breaking-change 8.0.0 */
-export const OVERLAY_KEYBOARD_DISPATCHER_PROVIDER = {
-  // If there is already an OverlayKeyboardDispatcher available, use that.
-  // Otherwise, provide a new one.
-  provide: OverlayKeyboardDispatcher,
-  deps: [
-    [new Optional(), new SkipSelf(), OverlayKeyboardDispatcher],
-
-    // Coerce to `InjectionToken` so that the `deps` match the "shape"
-    // of the type expected by Angular
-    DOCUMENT as InjectionToken<any>
-  ],
-  useFactory: OVERLAY_KEYBOARD_DISPATCHER_PROVIDER_FACTORY
-};

@@ -55,10 +55,8 @@ export class Overlay {
               private _ngZone: NgZone,
               @Inject(DOCUMENT) private _document: any,
               private _directionality: Directionality,
-              // @breaking-change 8.0.0 `_location` parameter to be made required.
-              private _location?: Location,
-              // @breaking-change 9.0.0 `_outsideClickDispatcher` parameter to be made required.
-              private _outsideClickDispatcher?: OverlayOutsideClickDispatcher) { }
+              private _location: Location,
+              private _outsideClickDispatcher: OverlayOutsideClickDispatcher) { }
 
   /**
    * Creates an overlay.
