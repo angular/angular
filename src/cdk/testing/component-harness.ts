@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {parallel} from './change-detection';
 import {TestElement} from './test-element';
 
 /** An async function that returns a promise when called. */
@@ -486,7 +487,10 @@ export class HarnessPredicate<T extends ComponentHarness> {
    * @return A list of harnesses that satisfy this predicate.
    */
   async filter(harnesses: T[]): Promise<T[]> {
-    const results = await Promise.all(harnesses.map(h => this.evaluate(h)));
+    if (harnesses.length === 0) {
+      return [];
+    }
+    const results = await parallel(() => harnesses.map(h => this.evaluate(h)));
     return harnesses.filter((_, i) => results[i]);
   }
 
@@ -497,7 +501,7 @@ export class HarnessPredicate<T extends ComponentHarness> {
    *   and resolves to false otherwise.
    */
   async evaluate(harness: T): Promise<boolean> {
-    const results = await Promise.all(this._predicates.map(p => p(harness)));
+    const results = await parallel(() => this._predicates.map(p => p(harness)));
     return results.reduce((combined, current) => combined && current, true);
   }
 

@@ -145,6 +145,29 @@ provide convenience methods on their `ComponentHarness` subclass to facilitate t
 `HarnessPredicate` instances. However, if the harness author's API is not sufficient, they can be
 created manually.
 
+#### Change detection
+By default, test harnesses will run Angular's change detection before reading the state of a DOM
+element and after interacting with a DOM element. While convenient in most cases, there may be times
+that you need finer-grained control over change detection. For example, you may want to check the
+state of a component while an async operation is pending. In these cases you can use the
+`manualChangeDetection` function to disable automatic handling of change detection for a block of
+code. For example:
+
+```ts
+it('checks state while async action is in progress', async () => {
+  const buttonHarness = loader.getHarness(MyButtonHarness);
+  await manualChangeDetection(async () => {
+    await buttonHarness.click();
+    fixture.detectChanges();
+    // Check expectations while async click operation is in progress.
+    expect(isProgressSpinnerVisible()).toBe(true);
+    await fixture.whenStable();
+    // Check expectations after async click operation complete.
+    expect(isProgressSpinnerVisible()).toBe(false);
+  });
+});
+```
+
 #### Working with asynchronous component harness methods
 
 To support both unit and end-to-end tests, and to insulate tests against changes in
@@ -154,21 +177,23 @@ therefore, the Angular team recommends using
 to improve the test readability.
 
 Note that `await` statements block the execution of your test until the associated `Promise`
-resolves. When reading multiple properties of a harness it may not be necessary to block on the
-first before asking for the next, in these cases use `Promise.all` to parallelize.
-
-For example, consider the following example of reading both the `checked` and `indeterminate` state
-off of a checkbox harness:
+resolves. Occasionally, you may want to perform multiple actions simultaneously and wait until
+they're all done rather than performing each action sequentially. For example, reading multiple
+properties off a single component. In these situations use the `parallel` function to parallelize
+the operations. The parallel function works similarly to `Promise.all`, while also optimizing change
+detection, so it is not run an excessive number of times. The following code demonstrates how you
+can read multiple properties from a harness with `parallel`:
 
 ```ts
 it('reads properties in parallel', async () => {
   const checkboxHarness = loader.getHarness(MyCheckboxHarness);
-  const [checked, indeterminate] = await Promise.all([
+  // Read the checked and intermediate properties simultaneously.
+  const [checked, indeterminate] = await parallel(() => [
     checkboxHarness.isChecked(),
     checkboxHarness.isIndeterminate()
   ]);
-
-  // ... make some assertions
+  expect(checked).toBe(false);
+  expect(indeterminate).toBe(true);
 });
 ```
 
@@ -421,7 +446,7 @@ class MyMenuHarness extends ComponentHarness {
   protected getPopupHarness = this.locatorFor(MyPopupHarness);
 
   /** Gets the text of the menu trigger. */
-  getTriggerText(): Promise<string> {
+  async getTriggerText(): Promise<string> {
     const popupHarness = await this.getPopupHarness();
     return popupHarness.getTriggerText();
   }
@@ -625,3 +650,20 @@ The
 and
 [`ProtractorHarnessEnvironment`](https://github.com/angular/components/blob/master/src/cdk/testing/protractor/protractor-harness-environment.ts#L16)
 implementations in Angular CDK serve as good examples of implementations of this interface.
+
+#### Handling auto change detection status
+In order to support the `manualChangeDetection` and `parallel` APIs, your environment should install
+a handler for the auto change detection status.
+
+When your environment wants to start handling the auto change detection status it can call
+`handleAutoChangeDetectionStatus(handler)`. The handler function will receive a 
+`AutoChangeDetectionStatus` which has two properties:
+ 
+* `isDisabled: boolean` - Indicates whether auto change detection is currently disabled. When true,
+  your environment's `forceStabilize` method should act as a no-op. This allows users to trigger
+  change detection manually instead.
+* `onDetectChangesNow?: () => void` - If this optional callback is specified, your environment
+  should trigger change detection immediately and call the callback when change detection finishes.
+
+If your environment wants to stop handling auto change detection status it can call
+`stopHandlingAutoChangeDetectionStatus()`.

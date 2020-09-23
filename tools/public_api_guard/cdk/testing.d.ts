@@ -6,6 +6,11 @@ export declare type AsyncOptionPredicate<T, O> = (item: T, option: O) => Promise
 
 export declare type AsyncPredicate<T> = (item: T) => Promise<boolean>;
 
+export interface AutoChangeDetectionStatus {
+    isDisabled: boolean;
+    onDetectChangesNow?: () => void;
+}
+
 export interface BaseHarnessFilters {
     ancestor?: string;
     selector?: string;
@@ -41,6 +46,8 @@ export interface ElementDimensions {
     top: number;
     width: number;
 }
+
+export declare function handleAutoChangeDetectionStatus(handler: (status: AutoChangeDetectionStatus) => void): void;
 
 export declare abstract class HarnessEnvironment<E> implements HarnessLoader, LocatorFactory {
     protected rawRootElement: E;
@@ -108,12 +115,18 @@ export declare type LocatorFnResult<T extends (HarnessQuery<any> | string)[]> = 
     } ? C : T[I] extends string ? TestElement : never;
 }[number];
 
+export declare function manualChangeDetection<T>(fn: () => Promise<T>): Promise<T>;
+
 export interface ModifierKeys {
     alt?: boolean;
     control?: boolean;
     meta?: boolean;
     shift?: boolean;
 }
+
+export declare function parallel<T>(values: () => Iterable<T | PromiseLike<T>>): Promise<T[]>;
+
+export declare function stopHandlingAutoChangeDetectionStatus(): void;
 
 export interface TestElement {
     blur(): Promise<void>;
