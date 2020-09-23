@@ -603,21 +603,38 @@ export class CdkTable<T> implements AfterContentChecked, CollectionViewer, OnDes
     }
     const viewContainer = this._rowOutlet.viewContainer;
 
-    // @breaking-change 11.0.0 Remove null check for `_viewRepeater`
-    // once it's a required parameter in the constructor.
-    this._viewRepeater?.applyChanges(
-        changes,
-        viewContainer,
-        (record: IterableChangeRecord<RenderRow<T>>,
-         _adjustedPreviousIndex: number|null,
-         currentIndex: number|null) => this._getEmbeddedViewArgs(record.item, currentIndex!),
-        (record) => record.item.data,
-        (change: _ViewRepeaterItemChange<RenderRow<T>, RowContext<T>>) => {
-          if (change.operation === _ViewRepeaterOperation.INSERTED && change.context) {
-            this._renderCellTemplateForItem(change.record.item.rowDef, change.context);
+    // @breaking-change 11.0.0 Remove null check for `_viewRepeater` and the
+    // `else` clause once `_viewRepeater` is turned into a required parameter.
+    if (this._viewRepeater) {
+      this._viewRepeater.applyChanges(
+          changes,
+          viewContainer,
+          (record: IterableChangeRecord<RenderRow<T>>,
+           _adjustedPreviousIndex: number|null,
+           currentIndex: number|null) => this._getEmbeddedViewArgs(record.item, currentIndex!),
+          (record) => record.item.data,
+          (change: _ViewRepeaterItemChange<RenderRow<T>, RowContext<T>>) => {
+            if (change.operation === _ViewRepeaterOperation.INSERTED && change.context) {
+              this._renderCellTemplateForItem(change.record.item.rowDef, change.context);
+            }
+          });
+    } else {
+      changes.forEachOperation(
+        (record: IterableChangeRecord<RenderRow<T>>, prevIndex: number|null,
+         currentIndex: number|null) => {
+          if (record.previousIndex == null) {
+            const renderRow = record.item;
+            const rowDef = renderRow.rowDef;
+            const context: RowContext<T> = {$implicit: renderRow.data};
+            this._renderRow(this._rowOutlet, rowDef, currentIndex!, context);
+          } else if (currentIndex == null) {
+            viewContainer.remove(prevIndex!);
+          } else {
+            const view = <RowViewRef<T>>viewContainer.get(prevIndex!);
+            viewContainer.move(view!, currentIndex);
           }
-        }
-    );
+        });
+    }
 
     // Update the meta context of a row's context data (index, count, first, last, ...)
     this._updateRowIndexContext();
