@@ -127,7 +127,7 @@ export abstract class MockFileSystem implements FileSystem {
     delete folder[name];
   }
 
-  ensureDir(path: AbsoluteFsPath): void {
+  ensureDir(path: AbsoluteFsPath): Folder {
     const segments = this.splitPath(path).map(segment => this.getCanonicalPath(segment));
 
     // Convert the root folder to a canonical empty string `''` (on Windows it would be `'C:'`).
@@ -147,6 +147,7 @@ export abstract class MockFileSystem implements FileSystem {
       }
       current = current[segment] as Folder;
     }
+    return current;
   }
 
   removeDeep(path: AbsoluteFsPath): void {
@@ -233,20 +234,18 @@ export abstract class MockFileSystem implements FileSystem {
 
     return this.cloneFolder(entity);
   }
+
   init(folder: Folder): void {
     this.mount(this.resolve('/'), folder);
   }
+
   mount(path: AbsoluteFsPath, folder: Folder): void {
     if (this.exists(path)) {
       throw new Error(`Unable to mount in '${path}' as it already exists.`);
     }
-    this.ensureDir(path);
-    const {entity} = this.findFromPath(path);
-    if (entity === null || !isFolder(entity)) {
-      throw new Error(`Unable to mount in '${path}' as it is not a folder.`);
-    }
+    const mountFolder = this.ensureDir(path);
 
-    this.copyInto(folder, entity);
+    this.copyInto(folder, mountFolder);
   }
 
   private cloneFolder(folder: Folder): Folder {

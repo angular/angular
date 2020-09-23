@@ -22,36 +22,43 @@ export function loadTestFiles(files: TestFile[]) {
   });
 }
 
-let typescriptFolder: Folder|null = null;
-let angularFolder: Folder|null = null;
-let rxjsFolder: Folder|null = null;
+/**
+ * A folder that is lazily loaded upon first access and then cached.
+ */
+class CachedFolder {
+  private folder: Folder|null = null;
+
+  constructor(private loader: () => Folder) {}
+
+  get(): Folder {
+    if (this.folder === null) {
+      this.folder = this.loader();
+    }
+    return this.folder;
+  }
+}
+
+const typescriptFolder = new CachedFolder(() => loadFolder(resolveNpmTreeArtifact('typescript')));
+const angularFolder = new CachedFolder(loadAngularFolder);
+const rxjsFolder = new CachedFolder(() => loadFolder(resolveNpmTreeArtifact('rxjs')));
 
 export function loadStandardTestFiles(
     {fakeCore = true, rxjs = false}: {fakeCore?: boolean, rxjs?: boolean} = {}): Folder {
   const tmpFs = new MockFileSystemPosix(true);
   const basePath = '/' as AbsoluteFsPath;
 
-  if (typescriptFolder === null) {
-    typescriptFolder = loadFolder(resolveNpmTreeArtifact('typescript'));
-  }
-  tmpFs.mount(tmpFs.resolve('/node_modules/typescript'), typescriptFolder);
+  tmpFs.mount(tmpFs.resolve('/node_modules/typescript'), typescriptFolder.get());
 
   loadTsLib(tmpFs, basePath);
 
   if (fakeCore) {
     loadFakeCore(tmpFs, basePath);
   } else {
-    if (angularFolder === null) {
-      angularFolder = loadAngularFolder();
-    }
-    tmpFs.mount(tmpFs.resolve('/node_modules/@angular'), angularFolder);
+    tmpFs.mount(tmpFs.resolve('/node_modules/@angular'), angularFolder.get());
   }
 
   if (rxjs) {
-    if (rxjsFolder === null) {
-      rxjsFolder = loadFolder(resolveNpmTreeArtifact('rxjs'));
-    }
-    tmpFs.mount(tmpFs.resolve('/node_modules/rxjs'), rxjsFolder);
+    tmpFs.mount(tmpFs.resolve('/node_modules/rxjs'), rxjsFolder.get());
   }
 
   return tmpFs.dump();
