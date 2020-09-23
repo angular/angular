@@ -15,6 +15,7 @@ import {BundleProgram} from '../packages/bundle_program';
 import {FactoryMap, getTsHelperFnFromIdentifier, stripExtension} from '../utils';
 
 import {DefinePropertyReexportStatement, ExportDeclaration, ExportsStatement, extractGetterFnExpression, findNamespaceOfIdentifier, findRequireCallReference, isDefinePropertyReexportStatement, isExportsStatement, isExternalImport, isRequireCall, isWildcardReexportStatement, WildcardReexportStatement} from './commonjs_umd_utils';
+import {isAssignment} from './esm2015_host';
 import {Esm5ReflectionHost} from './esm5_host';
 import {stripParentheses} from './utils';
 
@@ -134,7 +135,7 @@ export class UmdReflectionHost extends Esm5ReflectionHost {
 
   private extractBasicUmdExportDeclaration(statement: ExportsStatement): ExportDeclaration {
     const name = statement.expression.left.name.text;
-    const exportExpression = statement.expression.right;
+    const exportExpression = skipAliases(statement.expression.right);
     return this.extractUmdExportDeclaration(name, exportExpression);
   }
 
@@ -399,4 +400,21 @@ function getRequiredModulePath(wrapperFn: ts.FunctionExpression, paramIndex: num
  */
 export function isExportIdentifier(node: ts.Node): node is ts.Identifier {
   return ts.isIdentifier(node) && node.text === 'exports';
+}
+
+/**
+ * Find the far right hand side of a sequence of aliased assignements of the form
+ *
+ * ```
+ * exports.MyClass = alias1 = alias2 = <<declaration>>
+ * ```
+ *
+ * @param node the expression to parse
+ * @returns the original `node` or the far right expression of a series of assignments.
+ */
+export function skipAliases(node: ts.Expression): ts.Expression {
+  while (isAssignment(node)) {
+    node = node.right;
+  }
+  return node;
 }
