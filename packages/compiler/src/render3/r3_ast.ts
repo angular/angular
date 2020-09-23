@@ -118,7 +118,7 @@ export class Content implements Node {
 export class Variable implements Node {
   constructor(
       public name: string, public value: string, public sourceSpan: ParseSourceSpan,
-      public valueSpan?: ParseSourceSpan) {}
+      readonly keySpan: ParseSourceSpan, public valueSpan?: ParseSourceSpan) {}
   visit<Result>(visitor: Visitor<Result>): Result {
     return visitor.visitVariable(this);
   }
