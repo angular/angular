@@ -231,8 +231,9 @@ class CustomValidatorDirective implements Validator {
       });
 
       describe('addFormGroup', () => {
-        const matchingPasswordsValidator = (g: FormGroup) => {
-          if (g.controls['password'].value != g.controls['passwordConfirm'].value) {
+        const matchingPasswordsValidator = (g: AbstractControl) => {
+          const controls = (g as FormGroup).controls;
+          if (controls['password'].value != controls['passwordConfirm'].value) {
             return {'differentPasswords': true};
           } else {
             return null;

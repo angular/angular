@@ -13,7 +13,7 @@ import {FormGroup} from '../model';
 import {ControlContainer} from './control_container';
 import {Form} from './form_interface';
 import {composeAsyncValidators, composeValidators, controlPath} from './shared';
-import {AsyncValidatorFn, ValidatorFn} from './validators';
+import {AsyncValidator, AsyncValidatorFn, Validator, ValidatorFn} from './validators';
 
 
 
@@ -41,7 +41,7 @@ export class AbstractFormGroupDirective extends ControlContainer implements OnIn
    * @internal
    */
   // TODO(issue/24571): remove '!'.
-  _validators!: any[];
+  _validators!: (Validator|ValidatorFn)[];
 
   /**
    * @description
@@ -50,7 +50,7 @@ export class AbstractFormGroupDirective extends ControlContainer implements OnIn
    * @internal
    */
   // TODO(issue/24571): remove '!'.
-  _asyncValidators!: any[];
+  _asyncValidators!: (AsyncValidator|AsyncValidatorFn)[];
 
   /** @nodoc */
   ngOnInit(): void {

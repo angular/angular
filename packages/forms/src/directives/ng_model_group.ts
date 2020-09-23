@@ -14,6 +14,7 @@ import {AbstractFormGroupDirective} from './abstract_form_group_directive';
 import {ControlContainer} from './control_container';
 import {NgForm} from './ng_form';
 import {TemplateDrivenErrors} from './template_driven_errors';
+import {AsyncValidator, AsyncValidatorFn, Validator, ValidatorFn} from './validators';
 
 export const modelGroupProvider: any = {
   provide: ControlContainer,
@@ -58,8 +59,9 @@ export class NgModelGroup extends AbstractFormGroupDirective implements OnInit, 
 
   constructor(
       @Host() @SkipSelf() parent: ControlContainer,
-      @Optional() @Self() @Inject(NG_VALIDATORS) validators: any[],
-      @Optional() @Self() @Inject(NG_ASYNC_VALIDATORS) asyncValidators: any[]) {
+      @Optional() @Self() @Inject(NG_VALIDATORS) validators: (Validator|ValidatorFn)[],
+      @Optional() @Self() @Inject(NG_ASYNC_VALIDATORS) asyncValidators:
+          (AsyncValidator|AsyncValidatorFn)[]) {
     super();
     this._parent = parent;
     this._validators = validators;
