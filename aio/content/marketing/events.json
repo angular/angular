@@ -27,6 +27,15 @@
     }
   },
   {
+    "name": "DevReach",
+    "location": "Online",
+    "linkUrl": "https://www.telerik.com/devreach/online/agenda-thursday#sessions",
+    "date": {
+      "start": "2020-10-19",
+      "end": "2020-10-23"
+    }
+  },
+  {
     "name": "ngVikings",
     "location": "Oslo, Norway",
     "linkUrl": "https://ngvikings.org/",
