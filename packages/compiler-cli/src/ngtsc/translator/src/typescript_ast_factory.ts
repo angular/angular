@@ -79,13 +79,13 @@ export class TypeScriptAstFactory implements AstFactory<ts.Statement, ts.Express
 
   createExpressionStatement = ts.createExpressionStatement;
 
-  createFunctionDeclaration(functionName: string|null, parameters: string[], body: ts.Statement):
+  createFunctionDeclaration(functionName: string, parameters: string[], body: ts.Statement):
       ts.Statement {
     if (!ts.isBlock(body)) {
       throw new Error(`Invalid syntax, expected a block, but got ${ts.SyntaxKind[body.kind]}.`);
     }
     return ts.createFunctionDeclaration(
-        undefined, undefined, undefined, functionName ?? undefined, undefined,
+        undefined, undefined, undefined, functionName, undefined,
         parameters.map(param => ts.createParameter(undefined, undefined, undefined, param)),
         undefined, body);
   }
