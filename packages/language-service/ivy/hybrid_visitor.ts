@@ -152,10 +152,9 @@ class ExpressionVisitor extends e.RecursiveAstVisitor {
       // `ASTWithSource` and and underlying node that it wraps.
       node = node.ast;
     }
-    const {start, end} = node.sourceSpan;
     // The third condition is to account for the implicit receiver, which should
     // not be visited.
-    if (isWithin(this.position, {start, end}) && !(node instanceof e.ImplicitReceiver)) {
+    if (isWithin(this.position, node.sourceSpan) && !(node instanceof e.ImplicitReceiver)) {
       path.push(node);
       node.visit(this, path);
     }
