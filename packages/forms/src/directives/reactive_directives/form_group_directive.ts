@@ -14,6 +14,7 @@ import {ControlContainer} from '../control_container';
 import {Form} from '../form_interface';
 import {ReactiveErrors} from '../reactive_errors';
 import {cleanUpControl, composeAsyncValidators, composeValidators, removeDir, setUpControl, setUpFormContainer, syncPendingControls} from '../shared';
+import {AsyncValidator, AsyncValidatorFn, Validator, ValidatorFn} from '../validators';
 
 import {FormControlName} from './form_control_name';
 import {FormArrayName, FormGroupName} from './form_group_name';
@@ -81,8 +82,9 @@ export class FormGroupDirective extends ControlContainer implements Form, OnChan
   @Output() ngSubmit = new EventEmitter();
 
   constructor(
-      @Optional() @Self() @Inject(NG_VALIDATORS) private _validators: any[],
-      @Optional() @Self() @Inject(NG_ASYNC_VALIDATORS) private _asyncValidators: any[]) {
+      @Optional() @Self() @Inject(NG_VALIDATORS) private _validators: (Validator|ValidatorFn)[],
+      @Optional() @Self() @Inject(NG_ASYNC_VALIDATORS) private _asyncValidators:
+          (AsyncValidator|AsyncValidatorFn)[]) {
     super();
   }
 

@@ -199,7 +199,7 @@ export declare class FormArrayName extends ControlContainer implements OnInit, O
     name: string | number | null;
     get path(): string[];
     get validator(): ValidatorFn | null;
-    constructor(parent: ControlContainer, validators: any[], asyncValidators: any[]);
+    constructor(parent: ControlContainer, validators: (Validator | ValidatorFn)[], asyncValidators: (AsyncValidator | AsyncValidatorFn)[]);
     ngOnDestroy(): void;
     ngOnInit(): void;
 }
@@ -246,7 +246,7 @@ export declare class FormControlDirective extends NgControl implements OnChanges
     /** @deprecated */ update: EventEmitter<any>;
     get validator(): ValidatorFn | null;
     viewModel: any;
-    constructor(validators: Array<Validator | ValidatorFn>, asyncValidators: Array<AsyncValidator | AsyncValidatorFn>, valueAccessors: ControlValueAccessor[], _ngModelWarningConfig: string | null);
+    constructor(validators: (Validator | ValidatorFn)[], asyncValidators: (AsyncValidator | AsyncValidatorFn)[], valueAccessors: ControlValueAccessor[], _ngModelWarningConfig: string | null);
     ngOnChanges(changes: SimpleChanges): void;
     viewToModelUpdate(newValue: any): void;
 }
@@ -261,7 +261,7 @@ export declare class FormControlName extends NgControl implements OnChanges, OnD
     get path(): string[];
     /** @deprecated */ update: EventEmitter<any>;
     get validator(): ValidatorFn | null;
-    constructor(parent: ControlContainer, validators: Array<Validator | ValidatorFn>, asyncValidators: Array<AsyncValidator | AsyncValidatorFn>, valueAccessors: ControlValueAccessor[], _ngModelWarningConfig: string | null);
+    constructor(parent: ControlContainer, validators: (Validator | ValidatorFn)[], asyncValidators: (AsyncValidator | AsyncValidatorFn)[], valueAccessors: ControlValueAccessor[], _ngModelWarningConfig: string | null);
     ngOnChanges(changes: SimpleChanges): void;
     ngOnDestroy(): void;
     viewToModelUpdate(newValue: any): void;
@@ -306,7 +306,7 @@ export declare class FormGroupDirective extends ControlContainer implements Form
     ngSubmit: EventEmitter<any>;
     get path(): string[];
     readonly submitted: boolean;
-    constructor(_validators: any[], _asyncValidators: any[]);
+    constructor(_validators: (Validator | ValidatorFn)[], _asyncValidators: (AsyncValidator | AsyncValidatorFn)[]);
     addControl(dir: FormControlName): FormControl;
     addFormArray(dir: FormArrayName): void;
     addFormGroup(dir: FormGroupName): void;
@@ -325,7 +325,7 @@ export declare class FormGroupDirective extends ControlContainer implements Form
 
 export declare class FormGroupName extends AbstractFormGroupDirective implements OnInit, OnDestroy {
     name: string | number | null;
-    constructor(parent: ControlContainer, validators: any[], asyncValidators: any[]);
+    constructor(parent: ControlContainer, validators: (Validator | ValidatorFn)[], asyncValidators: (AsyncValidator | AsyncValidatorFn)[]);
 }
 
 export declare class FormsModule {
@@ -380,7 +380,7 @@ export declare class NgForm extends ControlContainer implements Form, AfterViewI
     };
     get path(): string[];
     readonly submitted: boolean;
-    constructor(validators: any[], asyncValidators: any[]);
+    constructor(validators: (Validator | ValidatorFn)[], asyncValidators: (AsyncValidator | AsyncValidatorFn)[]);
     addControl(dir: NgModel): void;
     addFormGroup(dir: NgModelGroup): void;
     getControl(dir: NgModel): FormControl;
@@ -413,7 +413,7 @@ export declare class NgModel extends NgControl implements OnChanges, OnDestroy {
     update: EventEmitter<any>;
     get validator(): ValidatorFn | null;
     viewModel: any;
-    constructor(parent: ControlContainer, validators: Array<Validator | ValidatorFn>, asyncValidators: Array<AsyncValidator | AsyncValidatorFn>, valueAccessors: ControlValueAccessor[]);
+    constructor(parent: ControlContainer, validators: (Validator | ValidatorFn)[], asyncValidators: (AsyncValidator | AsyncValidatorFn)[], valueAccessors: ControlValueAccessor[]);
     ngOnChanges(changes: SimpleChanges): void;
     ngOnDestroy(): void;
     viewToModelUpdate(newValue: any): void;
@@ -422,7 +422,7 @@ export declare class NgModel extends NgControl implements OnChanges, OnDestroy {
 
 export declare class NgModelGroup extends AbstractFormGroupDirective implements OnInit, OnDestroy {
     name: string;
-    constructor(parent: ControlContainer, validators: any[], asyncValidators: any[]);
+    constructor(parent: ControlContainer, validators: (Validator | ValidatorFn)[], asyncValidators: (AsyncValidator | AsyncValidatorFn)[]);
 }
 
 export declare class NgSelectOption implements OnDestroy {

@@ -14,7 +14,7 @@ import {AbstractFormGroupDirective} from '../abstract_form_group_directive';
 import {ControlContainer} from '../control_container';
 import {ReactiveErrors} from '../reactive_errors';
 import {composeAsyncValidators, composeValidators, controlPath} from '../shared';
-import {AsyncValidatorFn, ValidatorFn} from '../validators';
+import {AsyncValidator, AsyncValidatorFn, Validator, ValidatorFn} from '../validators';
 
 import {FormGroupDirective} from './form_group_directive';
 
@@ -86,8 +86,9 @@ export class FormGroupName extends AbstractFormGroupDirective implements OnInit,
 
   constructor(
       @Optional() @Host() @SkipSelf() parent: ControlContainer,
-      @Optional() @Self() @Inject(NG_VALIDATORS) validators: any[],
-      @Optional() @Self() @Inject(NG_ASYNC_VALIDATORS) asyncValidators: any[]) {
+      @Optional() @Self() @Inject(NG_VALIDATORS) validators: (Validator|ValidatorFn)[],
+      @Optional() @Self() @Inject(NG_ASYNC_VALIDATORS) asyncValidators:
+          (AsyncValidator|AsyncValidatorFn)[]) {
     super();
     this._parent = parent;
     this._validators = validators;
@@ -137,10 +138,10 @@ export class FormArrayName extends ControlContainer implements OnInit, OnDestroy
   _parent: ControlContainer;
 
   /** @internal */
-  _validators: any[];
+  _validators: (Validator|ValidatorFn)[];
 
   /** @internal */
-  _asyncValidators: any[];
+  _asyncValidators: (AsyncValidator|AsyncValidatorFn)[];
 
   /**
    * @description
@@ -156,8 +157,9 @@ export class FormArrayName extends ControlContainer implements OnInit, OnDestroy
 
   constructor(
       @Optional() @Host() @SkipSelf() parent: ControlContainer,
-      @Optional() @Self() @Inject(NG_VALIDATORS) validators: any[],
-      @Optional() @Self() @Inject(NG_ASYNC_VALIDATORS) asyncValidators: any[]) {
+      @Optional() @Self() @Inject(NG_VALIDATORS) validators: (Validator|ValidatorFn)[],
+      @Optional() @Self() @Inject(NG_ASYNC_VALIDATORS) asyncValidators:
+          (AsyncValidator|AsyncValidatorFn)[]) {
     super();
     this._parent = parent;
     this._validators = validators;
