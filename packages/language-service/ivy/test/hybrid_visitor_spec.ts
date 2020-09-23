@@ -518,6 +518,16 @@ describe('findNodeAtPosition for microsyntax expression', () => {
     expect((node as t.BoundAttribute).name).toBe('ngForOf');
   });
 
+  it('should locate bound attribute key for trackBy', () => {
+    const {errors, nodes, position} =
+        parse(`<div *ngFor="let item of items; trac¦kBy: trackByFn"></div>`);
+    expect(errors).toBe(null);
+    const node = findNodeAtPosition(nodes, position);
+    expect(isTemplateNode(node!)).toBe(true);
+    expect(node).toBeInstanceOf(t.BoundAttribute);
+    expect((node as t.BoundAttribute).name).toBe('ngForTrackBy');
+  });
+
   it('should locate bound attribute value', () => {
     const {errors, nodes, position} = parse(`<div *ngFor="let item of it¦ems"></div>`);
     expect(errors).toBe(null);
