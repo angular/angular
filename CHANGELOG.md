@@ -1,3 +1,35 @@
+<a name="11.0.0-next.3"></a>
+# 11.0.0-next.3 (2020-09-23)
+
+
+### Bug Fixes
+
+* **common:** add `params` and `reportProgress` options to `HttpClient.put()` overload ([#37873](https://github.com/angular/angular/issues/37873)) ([dd8d8c8](https://github.com/angular/angular/commit/dd8d8c8)), closes [#23600](https://github.com/angular/angular/issues/23600)
+* **compiler-cli:** generate `let` statements in ES2015+ mode ([#38775](https://github.com/angular/angular/issues/38775)) ([123bff7](https://github.com/angular/angular/commit/123bff7))
+* **core:** ensure TestBed is not instantiated before override provider ([#38717](https://github.com/angular/angular/issues/38717)) ([c8f056b](https://github.com/angular/angular/commit/c8f056b))
+* **forms:** type NG_VALUE_ACCESSOR injection token as array ([#29723](https://github.com/angular/angular/issues/29723)) ([2b1b718](https://github.com/angular/angular/commit/2b1b718)), closes [#29351](https://github.com/angular/angular/issues/29351)
+
+
+### Features
+
+* **common:** Add ISO week-numbering year formats support to formatDate ([#38828](https://github.com/angular/angular/issues/38828)) ([984ed39](https://github.com/angular/angular/commit/984ed39))
+* **compiler:** Parse and recover on incomplete opening HTML tags ([#38681](https://github.com/angular/angular/issues/38681)) ([6ae3b68](https://github.com/angular/angular/commit/6ae3b68)), closes [#38596](https://github.com/angular/angular/issues/38596)
+* **router:** add migration to update calls to navigateByUrl and createUrlTree with invalid parameters ([#38825](https://github.com/angular/angular/issues/38825)) ([7849fdd](https://github.com/angular/angular/commit/7849fdd)), closes [#38227](https://github.com/angular/angular/issues/38227)
+* **service-worker:** add the option to prefer network for navigation requests ([#38565](https://github.com/angular/angular/issues/38565)) ([a206852](https://github.com/angular/angular/commit/a206852)), closes [#38194](https://github.com/angular/angular/issues/38194)
+
+
+### BREAKING CHANGES
+
+* **core:** If you call `TestBed.overrideProvider` after TestBed initialization, provider overrides are not applied. This
+behavior is consistent with other override methods (such as `TestBed.overrideDirective`, etc) but they
+throw an error to indicate that, when the check was missing in the `TestBed.overrideProvider` function.
+Now calling `TestBed.overrideProvider` after TestBed initialization also triggers an
+error, thus there is a chance that some tests (where `TestBed.overrideProvider` is
+called after TestBed initialization) will start to fail and require updates to move `TestBed.overrideProvider` calls
+before TestBed initialization is completed.
+
+
+
 <a name="10.1.3"></a>
 ## 10.1.3 (2020-09-23)
 
