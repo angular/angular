@@ -44,8 +44,8 @@ export class UmdReflectionHost extends Esm5ReflectionHost {
   }
 
   getDeclarationOfIdentifier(id: ts.Identifier): Declaration|null {
-    return this.getUmdModuleDeclaration(id) || this.getUmdDeclaration(id) ||
-        super.getDeclarationOfIdentifier(id);
+    return this.getExportsDeclaration(id) || this.getUmdModuleDeclaration(id) ||
+        this.getUmdDeclaration(id) || super.getDeclarationOfIdentifier(id);
   }
 
   getExportsOfModule(module: ts.Node): Map<string, Declaration>|null {
@@ -249,6 +249,29 @@ export class UmdReflectionHost extends Esm5ReflectionHost {
     return {...declaration, viaModule, known: getTsHelperFnFromIdentifier(id)};
   }
 
+  private getExportsDeclaration(id: ts.Identifier): Declaration|null {
+    if (!isExportIdentifier(id)) {
+      return null;
+    }
+
+    // Sadly, in the case of `exports.foo = bar`, we can't use `this.findUmdImportParameter(id)` to
+    // check whether this `exports` is from the IIFE body arguments, because
+    // `this.checker.getSymbolAtLocation(id)` will return the symbol for the `foo` identifier rather
+    // than the `exports` identifier.
+    //
+    // Instead we search the symbols in the current local scope.
+    const exportsSymbol = this.checker.getSymbolsInScope(id, ts.SymbolFlags.Variable)
+                              .find(symbol => symbol.name === 'exports');
+    if (exportsSymbol !== undefined &&
+        !ts.isFunctionExpression(exportsSymbol.valueDeclaration.parent)) {
+      // There is an `exports` symbol in the local scope that is not a function parameter.
+      // So this `exports` identifier must be a local variable and does not represent the module.
+      return {node: exportsSymbol.valueDeclaration, viaModule: null, known: null, identity: null};
+    }
+
+    return {node: id.getSourceFile(), viaModule: null, known: null, identity: null};
+  }
+
   private getUmdModuleDeclaration(id: ts.Identifier): Declaration|null {
     const importPath = this.getImportPathFromParameter(id) || this.getImportPathFromRequireCall(id);
     if (importPath === null) {
@@ -369,4 +392,11 @@ function getRequiredModulePath(wrapperFn: ts.FunctionExpression, paramIndex: num
       node.forEachChild(findModulePaths);
     }
   }
+}
+
+/**
+ * Is the `node` an identifier with the name "exports"?
+ */
+export function isExportIdentifier(node: ts.Node): node is ts.Identifier {
+  return ts.isIdentifier(node) && node.text === 'exports';
 }
