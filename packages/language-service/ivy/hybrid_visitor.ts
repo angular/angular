@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ParseSourceSpan} from '@angular/compiler';
+import {AbsoluteSourceSpan, ParseSourceSpan} from '@angular/compiler';
 import * as e from '@angular/compiler/src/expression_parser/ast';  // e for expression AST
 import * as t from '@angular/compiler/src/render3/r3_ast';         // t for template AST
 
@@ -37,8 +37,6 @@ class R3Visitor implements t.Visitor {
     }
 
     const {start, end} = getSpanIncludingEndTag(node);
-    // Note both start and end are inclusive because we want to match conditions
-    // like ¦start and end¦ where ¦ is the cursor.
     if (isWithin(this.position, {start, end})) {
       const length = end - start;
       const last: t.Node|e.AST|undefined = this.path[this.path.length - 1];
@@ -189,7 +187,7 @@ function getSpanIncludingEndTag(ast: t.Node) {
   return result;
 }
 
-function isWithin(position: number, span: {start: number, end: number}|ParseSourceSpan): boolean {
+function isWithin(position: number, span: AbsoluteSourceSpan|ParseSourceSpan): boolean {
   let start: number, end: number;
   if (span instanceof ParseSourceSpan) {
     start = span.start.offset;
@@ -198,5 +196,7 @@ function isWithin(position: number, span: {start: number, end: number}|ParseSour
     start = span.start;
     end = span.end;
   }
+  // Note both start and end are inclusive because we want to match conditions
+  // like ¦start and end¦ where ¦ is the cursor.
   return start <= position && position <= end;
 }
