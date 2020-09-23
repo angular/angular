@@ -50,8 +50,12 @@ class R3AstSourceSpans implements t.Visitor<void> {
   }
 
   visitVariable(variable: t.Variable) {
-    this.result.push(
-        ['Variable', humanizeSpan(variable.sourceSpan), humanizeSpan(variable.valueSpan)]);
+    this.result.push([
+      'Variable',
+      humanizeSpan(variable.sourceSpan),
+      humanizeSpan(variable.keySpan),
+      humanizeSpan(variable.valueSpan),
+    ]);
   }
 
   visitReference(reference: t.Reference) {
@@ -233,7 +237,7 @@ describe('R3 AST source spans', () => {
           'Template', '<ng-template let-a="b"></ng-template>', '<ng-template let-a="b">',
           '</ng-template>'
         ],
-        ['Variable', 'let-a="b"', 'b'],
+        ['Variable', 'let-a="b"', 'a', 'b'],
       ]);
     });
 
@@ -243,7 +247,7 @@ describe('R3 AST source spans', () => {
           'Template', '<ng-template data-let-a="b"></ng-template>', '<ng-template data-let-a="b">',
           '</ng-template>'
         ],
-        ['Variable', 'data-let-a="b"', 'b'],
+        ['Variable', 'data-let-a="b"', 'a', 'b'],
       ]);
     });
 
@@ -282,7 +286,7 @@ describe('R3 AST source spans', () => {
         ],
         ['TextAttribute', 'ngFor', '<empty>'],
         ['BoundAttribute', '*ngFor="let item of items"', 'of', 'items'],
-        ['Variable', 'let item ', '<empty>'],
+        ['Variable', 'let item ', 'item', '<empty>'],
         [
           'Element', '<div *ngFor="let item of items"></div>', '<div *ngFor="let item of items">',
           '</div>'
@@ -314,7 +318,7 @@ describe('R3 AST source spans', () => {
         [
           'BoundAttribute', '*ngFor="let item of items; trackBy: trackByFn"', 'trackBy', 'trackByFn'
         ],
-        ['Variable', 'let item ', '<empty>'],
+        ['Variable', 'let item ', 'item', '<empty>'],
         [
           'Element', '<div *ngFor="let item of items; trackBy: trackByFn"></div>',
           '<div *ngFor="let item of items; trackBy: trackByFn">', '</div>'
@@ -327,7 +331,7 @@ describe('R3 AST source spans', () => {
       expectFromHtml('<div *ngIf="let a=b"></div>').toEqual([
         ['Template', '<div *ngIf="let a=b"></div>', '<div *ngIf="let a=b">', '</div>'],
         ['TextAttribute', 'ngIf', '<empty>'],
-        ['Variable', 'let a=b', 'b'],
+        ['Variable', 'let a=b', 'a', 'b'],
         ['Element', '<div *ngIf="let a=b"></div>', '<div *ngIf="let a=b">', '</div>'],
       ]);
     });
@@ -336,7 +340,7 @@ describe('R3 AST source spans', () => {
       expectFromHtml('<div *ngIf="expr as local"></div>').toEqual([
         ['Template', '<div *ngIf="expr as local"></div>', '<div *ngIf="expr as local">', '</div>'],
         ['BoundAttribute', '*ngIf="expr as local"', 'ngIf', 'expr'],
-        ['Variable', 'ngIf="expr as local', 'ngIf'],
+        ['Variable', 'ngIf="expr as local', 'local', 'ngIf'],
         ['Element', '<div *ngIf="expr as local"></div>', '<div *ngIf="expr as local">', '</div>'],
       ]);
     });

@@ -159,7 +159,7 @@ class HtmlAstToIvyAst implements html.Visitor {
             templateKey, templateValue, attribute.sourceSpan, absoluteValueOffset, [],
             templateParsedProperties, parsedVariables);
         templateVariables.push(...parsedVariables.map(
-            v => new t.Variable(v.name, v.value, v.sourceSpan, v.valueSpan)));
+            v => new t.Variable(v.name, v.value, v.sourceSpan, v.keySpan, v.valueSpan)));
       } else {
         // Check for variables, events, property bindings, interpolation
         hasBinding = this.parseAttribute(
@@ -356,7 +356,8 @@ class HtmlAstToIvyAst implements html.Visitor {
       } else if (bindParts[KW_LET_IDX]) {
         if (isTemplateElement) {
           const identifier = bindParts[IDENT_KW_IDX];
-          this.parseVariable(identifier, value, srcSpan, attribute.valueSpan, variables);
+          const keySpan = createKeySpan(srcSpan, bindParts[KW_LET_IDX], identifier);
+          this.parseVariable(identifier, value, srcSpan, keySpan, attribute.valueSpan, variables);
         } else {
           this.reportError(`"let-" is only supported on ng-template elements.`, srcSpan);
         }
@@ -425,7 +426,7 @@ class HtmlAstToIvyAst implements html.Visitor {
   }
 
   private parseVariable(
-      identifier: string, value: string, sourceSpan: ParseSourceSpan,
+      identifier: string, value: string, sourceSpan: ParseSourceSpan, keySpan: ParseSourceSpan,
       valueSpan: ParseSourceSpan|undefined, variables: t.Variable[]) {
     if (identifier.indexOf('-') > -1) {
       this.reportError(`"-" is not allowed in variable names`, sourceSpan);
@@ -433,7 +434,7 @@ class HtmlAstToIvyAst implements html.Visitor {
       this.reportError(`Variable does not have a name`, sourceSpan);
     }
 
-    variables.push(new t.Variable(identifier, value, sourceSpan, valueSpan));
+    variables.push(new t.Variable(identifier, value, sourceSpan, keySpan, valueSpan));
   }
 
   private parseReference(
