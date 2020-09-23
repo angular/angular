@@ -12,7 +12,7 @@ include the following information:
 - Node and Angular CLI version (local version only).
 - How long each command took to initialize and execute.
 - Command name that was run.
-- For Schematics commands (add, generate, new and update), a list of whitelisted flags.
+- For Schematics commands (add, generate, new and update), a list of selected flags.
 - For build commands (build, serve), the number and size of bundles (initial and lazy),
   compilation units, the time it took to build and rebuild, and basic Angular-specific
   API usage.
