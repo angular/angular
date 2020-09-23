@@ -182,7 +182,8 @@ export abstract class AbstractControl<T = any> {
   // TODO(issue/24571): remove '!'.
   _updateOn!: FormHooks;
 
-  private _parent: FormGroup|FormArray|null = null;
+  // TODO(issue/24571): remove '!'.
+  private _parent!: FormGroup<T>|FormArray|null = null;
   private _asyncValidationSubscription: any;
 
   /**
@@ -275,7 +276,7 @@ export abstract class AbstractControl<T = any> {
   /**
    * The parent control.
    */
-  get parent(): FormGroup|FormArray|null {
+  get parent(): FormGroup<T>|FormArray|null {
     return this._parent;
   }
 
@@ -701,7 +702,7 @@ export abstract class AbstractControl<T = any> {
   /**
    * @param parent Sets the parent of the control
    */
-  setParent(parent: FormGroup|FormArray): void {
+  setParent(parent: FormGroup<T>|FormArray): void {
     this._parent = parent;
   }
 
@@ -1429,7 +1430,24 @@ export class FormControl<T = any> extends AbstractControl<T> {
  *
  * @publicApi
  */
-export class FormGroup<T extends object = any> extends AbstractControl<T> {
+type Nullable<T> = {
+  [P in keyof T]: T[P]|null;
+};
+
+type NotAKey<K, T> = K extends keyof T ? never : K;
+
+interface FormGroupCtor {
+  new<T extends object>(controls: {[key in keyof T]: AbstractControl<T[key]>}):
+      FormGroupImpl<Nullable<T>>;
+}
+
+export declare interface FormGroup<T> extends AbstractControl<T> {
+  addControl<K extends keyof T>(name: K, control: AbstractControl<T[K]>): void;
+  addControl<K extends string>(name: NotAKey<K, T>, control: AbstractControl<any>): void;
+}
+
+export class FormGroupImpl<T extends object = any> extends AbstractControl<T> implements
+    FormGroup<T> {
   /**
    * The current value of the control.
    *
@@ -1569,7 +1587,9 @@ export class FormGroup<T extends object = any> extends AbstractControl<T> {
    * Check whether there is an enabled control with the given name in the group.
    *
    * Reports false for disabled controls. If you'd like to check for existence in the group
-   * only, use {@link AbstractControl#get get} instead.
+   * only, use {
+     @link AbstractControl #get get
+   } instead.
    *
    * @param controlName The control name to check for existence in the collection
    *
@@ -1604,8 +1624,9 @@ export class FormGroup<T extends object = any> extends AbstractControl<T> {
    * @param value The new value for the control that matches the structure of the group.
    * @param options Configuration options that determine how the control propagates changes
    * and emits events after the value changes.
-   * The configuration options are passed to the {@link AbstractControl#updateValueAndValidity
-   * updateValueAndValidity} method.
+   * The configuration options are passed to the {
+     @link AbstractControl #updateValueAndValidity * updateValueAndValidity
+   } method.
    *
    * * `onlySelf`: When true, each change only affects this control, and not its parent. Default is
    * false.
@@ -1653,15 +1674,19 @@ export class FormGroup<T extends object = any> extends AbstractControl<T> {
    * * `emitEvent`: When true or not supplied (the default), both the `statusChanges` and
    * `valueChanges` observables emit events with the latest status and value when the control value
    * is updated. When false, no events are emitted. The configuration options are passed to
-   * the {@link AbstractControl#updateValueAndValidity updateValueAndValidity} method.
-   */
+   * the {
+     @link AbstractControl #updateValueAndValidity updateValueAndValidity
+   }
+   method.
+ */
   patchValue<K extends keyof T>(
       value: Partial<T>, options: {onlySelf?: boolean, emitEvent?: boolean} = {}): void {
-    // Even though the `value` argument type doesn't allow `null` and `undefined` values, the
-    // `patchValue` can be called recursively and inner data structures might have these values, so
-    // we just ignore such cases when a field containing FormGroup instance receives `null` or
-    // `undefined` as a value.
-    if (value == null /* both `null` and `undefined` */) return;
+    / /
+    Even though the`value` argument type doesn't allow `null` and `undefined` values, the
+        // `patchValue` can be called recursively and inner data structures might have these values, so
+        // we just ignore such cases when a field containing FormGroup instance receives `null` or
+        // `undefined` as a value.
+        if (value == null /* both `null` and `undefined` */) return;
 
     (Object.keys(value) as K[]).forEach(name => {
       if (this.controls[name]) {
@@ -1846,6 +1871,8 @@ export class FormGroup<T extends object = any> extends AbstractControl<T> {
     });
   }
 }
+
+export const FormGroup: FormGroupCtor = FormGroupImpl;
 
 /**
  * Tracks the value and validity state of an array of `FormControl`,
