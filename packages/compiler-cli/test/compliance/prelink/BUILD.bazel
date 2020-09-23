@@ -2,7 +2,7 @@ load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
 
 ts_library(
     name = "prelink_bootstrap",
-    testonly = 1,
+    testonly = True,
     srcs = ["bootstrap.ts"],
     deps = [
         "//packages:types",
