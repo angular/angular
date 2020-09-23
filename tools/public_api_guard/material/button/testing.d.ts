@@ -4,6 +4,8 @@ export interface ButtonHarnessFilters extends BaseHarnessFilters {
 
 export declare class MatButtonHarness extends ComponentHarness {
     blur(): Promise<void>;
+    click(relativeX: number, relativeY: number): Promise<void>;
+    click(location: 'center'): Promise<void>;
     click(): Promise<void>;
     focus(): Promise<void>;
     getText(): Promise<string>;

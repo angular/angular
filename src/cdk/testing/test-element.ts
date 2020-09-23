@@ -67,8 +67,15 @@ export interface TestElement {
   /** Clear the element's input (for input and textarea elements only). */
   clear(): Promise<void>;
 
-  /** Click the element at the element's center. */
+  /**
+   * Click the element at the default location for the current environment. If you need to guarantee
+   * the element is clicked at a specific location, consider using `click('center')` or
+   * `click(x, y)` instead.
+   */
   click(): Promise<void>;
+
+  /** Click the element at the element's center. */
+  click(location: 'center'): Promise<void>;
 
   /**
    * Click the element at the specified coordinates relative to the top-left of the element.

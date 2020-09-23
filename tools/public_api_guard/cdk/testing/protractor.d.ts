@@ -3,7 +3,7 @@ export declare class ProtractorElement implements TestElement {
     constructor(element: ElementFinder);
     blur(): Promise<void>;
     clear(): Promise<void>;
-    click(...args: number[]): Promise<void>;
+    click(...args: [] | ['center'] | [number, number]): Promise<void>;
     focus(): Promise<void>;
     getAttribute(name: string): Promise<string | null>;
     getCssValue(property: string): Promise<string>;

@@ -61,7 +61,7 @@ export class MatTabHarness extends ContentContainerComponentHarness<string> {
 
   /** Selects the given tab by clicking on the label. Tab cannot be selected if disabled. */
   async select(): Promise<void> {
-    await (await this.host()).click();
+    await (await this.host()).click('center');
   }
 
   /** Gets the text content of the tab. */

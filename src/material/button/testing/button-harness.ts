@@ -37,9 +37,18 @@ export class MatButtonHarness extends ComponentHarness {
             (harness, text) => HarnessPredicate.stringMatches(harness.getText(), text));
   }
 
+  /**
+   * Clicks the button at the given position relative to its top-left.
+   * @param relativeX The relative x position of the click.
+   * @param relativeY The relative y position of the click.
+   */
+  click(relativeX: number, relativeY: number): Promise<void>;
+  /** Clicks the button at its center. */
+  click(location: 'center'): Promise<void>;
   /** Clicks the button. */
-  async click(): Promise<void> {
-    return (await this.host()).click();
+  click(): Promise<void>;
+  async click(...args: [] | ['center'] | [number, number]): Promise<void> {
+    return (await this.host()).click(...(args as []));
   }
 
   /** Whether the button is disabled. */

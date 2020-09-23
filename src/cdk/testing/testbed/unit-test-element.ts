@@ -77,15 +77,19 @@ export class UnitTestElement implements TestElement {
     await this._stabilize();
   }
 
-  async click(...args: number[]): Promise<void> {
-    const {left, top, width, height} = await this.getDimensions();
-    const relativeX = args.length ? args[0] : width / 2;
-    const relativeY = args.length ? args[1] : height / 2;
+  async click(...args: [] | ['center'] | [number, number]): Promise<void> {
+    let clientX: number | undefined = undefined;
+    let clientY: number | undefined = undefined;
+    if (args.length) {
+      const {left, top, width, height} = await this.getDimensions();
+      const relativeX = args[0] === 'center' ? width / 2 : args[0];
+      const relativeY = args[0] === 'center' ? height / 2 : args[1];
 
-    // Round the computed click position as decimal pixels are not
-    // supported by mouse events and could lead to unexpected results.
-    const clientX = Math.round(left + relativeX);
-    const clientY = Math.round(top + relativeY);
+      // Round the computed click position as decimal pixels are not
+      // supported by mouse events and could lead to unexpected results.
+      clientX = Math.round(left + relativeX);
+      clientY = Math.round(top + relativeY);
+    }
 
     this._dispatchPointerEventIfSupported('pointerdown', clientX, clientY);
     dispatchMouseEvent(this.element, 'mousedown', clientX, clientY);

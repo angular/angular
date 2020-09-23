@@ -322,7 +322,14 @@ export function crossEnvironmentSpecs(
     it('should be able to click at a specific position within an element', async () => {
       const clickTest = await harness.clickTest();
       const clickTestResult = await harness.clickTestResult();
-      await clickTest.click(50, 50);
+      await clickTest.click(10, 10);
+      expect(await clickTestResult.text()).toBe('10-10');
+    });
+
+    it('should be able to click the center of an element', async () => {
+      const clickTest = await harness.clickTest();
+      const clickTestResult = await harness.clickTestResult();
+      await clickTest.click('center');
       expect(await clickTestResult.text()).toBe('50-50');
     });
 

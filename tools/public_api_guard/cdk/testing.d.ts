@@ -119,6 +119,7 @@ export interface TestElement {
     blur(): Promise<void>;
     clear(): Promise<void>;
     click(): Promise<void>;
+    click(location: 'center'): Promise<void>;
     click(relativeX: number, relativeY: number): Promise<void>;
     focus(): Promise<void>;
     getAttribute(name: string): Promise<string | null>;
