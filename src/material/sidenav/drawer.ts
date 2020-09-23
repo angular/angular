@@ -263,10 +263,6 @@ export class MatDrawer implements AfterContentInit, AfterContentChecked, OnDestr
               private _platform: Platform,
               private _ngZone: NgZone,
               @Optional() @Inject(DOCUMENT) private _doc: any,
-              /**
-               * @deprecated `_container` parameter to be made required.
-               * @breaking-change 10.0.0
-               */
               @Optional() @Inject(MAT_DRAWER_CONTAINER) public _container?: MatDrawerContainer) {
 
     this.openedChange.subscribe((opened: boolean) => {
@@ -626,7 +622,6 @@ export class MatDrawerContainer implements AfterContentInit, DoCheck, OnDestroy 
     this._allDrawers.changes
       .pipe(startWith(this._allDrawers), takeUntil(this._destroyed))
       .subscribe((drawer: QueryList<MatDrawer>) => {
-        // @breaking-change 10.0.0 Remove `_container` check once container parameter is required.
         this._drawers.reset(drawer.filter(item => !item._container || item._container === this));
         this._drawers.notifyOnChanges();
       });

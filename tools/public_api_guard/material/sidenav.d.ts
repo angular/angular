@@ -24,8 +24,7 @@ export declare class MatDrawer implements AfterContentInit, AfterContentChecked,
     readonly openedStart: Observable<void>;
     get position(): 'start' | 'end';
     set position(value: 'start' | 'end');
-    constructor(_elementRef: ElementRef<HTMLElement>, _focusTrapFactory: FocusTrapFactory, _focusMonitor: FocusMonitor, _platform: Platform, _ngZone: NgZone, _doc: any,
-    _container?: MatDrawerContainer | undefined);
+    constructor(_elementRef: ElementRef<HTMLElement>, _focusTrapFactory: FocusTrapFactory, _focusMonitor: FocusMonitor, _platform: Platform, _ngZone: NgZone, _doc: any, _container?: MatDrawerContainer | undefined);
     _animationDoneListener(event: AnimationEvent): void;
     _animationStartListener(event: AnimationEvent): void;
     _closeViaBackdropClick(): Promise<MatDrawerToggleResult>;
