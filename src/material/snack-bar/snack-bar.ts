@@ -205,6 +205,13 @@ export class MatSnackBar implements OnDestroy {
       state.matches ? classList.add(this.handsetCssClass) : classList.remove(this.handsetCssClass);
     });
 
+    if (config.announcementMessage) {
+      // Wait until the snack bar contents have been announced then deliver this message.
+      container._onAnnounce.subscribe(() => {
+        this._live.announce(config.announcementMessage!, config.politeness);
+      });
+    }
+
     this._animateSnackBar(snackBarRef, config);
     this._openedSnackBarRef = snackBarRef;
     return this._openedSnackBarRef;
@@ -239,10 +246,6 @@ export class MatSnackBar implements OnDestroy {
     // If a dismiss timeout is provided, set up dismiss based on after the snackbar is opened.
     if (config.duration && config.duration > 0) {
       snackBarRef.afterOpened().subscribe(() => snackBarRef._dismissAfter(config.duration!));
-    }
-
-    if (config.announcementMessage) {
-      this._live.announce(config.announcementMessage, config.politeness);
     }
   }
 

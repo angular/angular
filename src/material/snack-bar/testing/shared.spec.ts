@@ -70,17 +70,32 @@ export function runHarnessTests(
   });
 
   it('should be able to get role of snack-bar', async () => {
+    // Get role is now deprecated, so it should always return null.
     fixture.componentInstance.openCustom();
     let snackBar = await loader.getHarness(snackBarHarness);
-    expect(await snackBar.getRole()).toBe('alert');
+    expect(await snackBar.getRole()).toBe(null);
 
     fixture.componentInstance.openCustom({politeness: 'polite'});
     snackBar = await loader.getHarness(snackBarHarness);
-    expect(await snackBar.getRole()).toBe('status');
+    expect(await snackBar.getRole()).toBe(null);
 
     fixture.componentInstance.openCustom({politeness: 'off'});
     snackBar = await loader.getHarness(snackBarHarness);
     expect(await snackBar.getRole()).toBe(null);
+  });
+
+  it('should be able to get aria-live of snack-bar', async () => {
+    fixture.componentInstance.openCustom();
+    let snackBar = await loader.getHarness(snackBarHarness);
+    expect(await snackBar.getAriaLive()).toBe('assertive');
+
+    fixture.componentInstance.openCustom({politeness: 'polite'});
+    snackBar = await loader.getHarness(snackBarHarness);
+    expect(await snackBar.getAriaLive()).toBe('polite');
+
+    fixture.componentInstance.openCustom({politeness: 'off'});
+    snackBar = await loader.getHarness(snackBarHarness);
+    expect(await snackBar.getAriaLive()).toBe('off');
   });
 
   it('should be able to get message of simple snack-bar', async () => {

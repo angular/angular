@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {AriaLivePoliteness} from '@angular/cdk/a11y';
 import {ComponentHarness, HarnessPredicate} from '@angular/cdk/testing';
 import {SnackBarHarnessFilters} from './snack-bar-harness-filters';
 
@@ -20,6 +21,7 @@ export class MatSnackBarHarness extends ComponentHarness {
   static hostSelector = '.mat-mdc-snack-bar-container:not([mat-exit])';
 
   private _simpleSnackBar = this.locatorForOptional('.mat-mdc-simple-snack-bar');
+  private _simpleSnackBarLiveRegion = this.locatorFor('[aria-live]');
   private _simpleSnackBarMessage =
       this.locatorFor('.mat-mdc-simple-snack-bar .mat-mdc-snack-bar-label');
   private _simpleSnackBarActionButton =
@@ -38,9 +40,19 @@ export class MatSnackBarHarness extends ComponentHarness {
   /**
    * Gets the role of the snack-bar. The role of a snack-bar is determined based
    * on the ARIA politeness specified in the snack-bar config.
+   * @deprecated @breaking-change 13.0.0 Use `getAriaLive` instead.
    */
   async getRole(): Promise<'alert'|'status'|null> {
     return (await this.host()).getAttribute('role') as Promise<'alert'|'status'|null>;
+  }
+
+  /**
+   * Gets the aria-live of the snack-bar's live region. The aria-live of a snack-bar is
+   * determined based on the ARIA politeness specified in the snack-bar config.
+   */
+  async getAriaLive(): Promise<AriaLivePoliteness> {
+    return (await this._simpleSnackBarLiveRegion())
+        .getAttribute('aria-live') as Promise<AriaLivePoliteness>;
   }
 
   /**

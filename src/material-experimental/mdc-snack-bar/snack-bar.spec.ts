@@ -34,6 +34,9 @@ describe('MatSnackBar', () => {
   let simpleMessage = 'Burritos are here!';
   let simpleActionLabel = 'pickup';
 
+  const announceDelay = 150;
+  const animationFrameDelay = 16;
+
   beforeEach(fakeAsync(() => {
     TestBed.configureTestingModule({
       imports: [MatSnackBarModule, SnackBarTestModule, NoopAnimationsModule],
@@ -60,36 +63,91 @@ describe('MatSnackBar', () => {
     testViewContainerRef = viewContainerFixture.componentInstance.childViewContainer;
   });
 
-  it('should have the role of `alert` with an `assertive` politeness if no announcement message ' +
-      'is provided', () => {
+  it('should open with content first in the inert region', () => {
+    snackBar.open('Snack time!', 'Chew');
+    viewContainerFixture.detectChanges();
+
+    const containerElement = overlayContainerElement.querySelector('mat-mdc-snack-bar-container')!;
+    const inertElement = containerElement.querySelector('[aria-hidden]')!;
+
+    expect(inertElement.getAttribute('aria-hidden'))
+      .toBe('true', 'Expected the non-live region to be aria-hidden');
+    expect(inertElement.textContent).toContain('Snack time!',
+        'Expected non-live region to contain the snack bar content');
+
+    const liveElement = containerElement.querySelector('[aria-live]')!;
+    expect(liveElement.childNodes.length)
+        .toBe(0, 'Expected live region to not contain any content');
+  });
+
+  it('should move content to the live region after 150ms', fakeAsync(() => {
+    snackBar.open('Snack time!', 'Chew');
+    viewContainerFixture.detectChanges();
+
+    const containerElement = overlayContainerElement.querySelector('mat-mdc-snack-bar-container')!;
+    const liveElement = containerElement.querySelector('[aria-live]')!;
+    tick(announceDelay);
+
+    expect(liveElement.textContent).toContain('Snack time!',
+        'Expected live region to contain the snack bar content');
+
+    const inertElement = containerElement.querySelector('[aria-hidden]')!;
+    expect(inertElement).toBeFalsy('Expected non-live region to not contain any content');
+    flush();
+  }));
+
+  it('should preserve focus when moving content to the live region', fakeAsync(() => {
+    snackBar.open('Snack time!', 'Chew');
+    viewContainerFixture.detectChanges();
+    tick(animationFrameDelay);
+
+    const actionButton = overlayContainerElement
+        .querySelector('.mat-mdc-simple-snack-bar .mat-mdc-snack-bar-action')! as HTMLElement;
+    actionButton.focus();
+    expect(document.activeElement)
+        .toBe(actionButton, 'Expected the focus to move to the action button');
+
+    flush();
+    expect(document.activeElement)
+        .toBe(actionButton, 'Expected the focus to remain on the action button');
+  }));
+
+  it('should have aria-live of `assertive` with an `assertive` politeness if no announcement ' +
+      'message is provided', () => {
     snackBar.openFromComponent(BurritosNotification,
         {announcementMessage: '', politeness: 'assertive'});
 
     viewContainerFixture.detectChanges();
 
     const containerElement = overlayContainerElement.querySelector('mat-mdc-snack-bar-container')!;
-    expect(containerElement.getAttribute('role'))
-        .toBe('alert', 'Expected snack bar container to have role="alert"');
+    const liveElement = containerElement.querySelector('[aria-live]')!;
+
+    expect(liveElement.getAttribute('aria-live')).toBe('assertive',
+        'Expected snack bar container live region to have aria-live="assertive"');
   });
 
-  it('should have the role of `status` with an `assertive` politeness if an announcement message ' +
-      'is provided', () => {
+  it('should have aria-live of `polite` with an `assertive` politeness if an announcement ' +
+      'message is provided', () => {
     snackBar.openFromComponent(BurritosNotification,
         {announcementMessage: 'Yay Burritos', politeness: 'assertive'});
     viewContainerFixture.detectChanges();
 
     const containerElement = overlayContainerElement.querySelector('mat-mdc-snack-bar-container')!;
-    expect(containerElement.getAttribute('role'))
-        .toBe('status', 'Expected snack bar container to have role="status"');
+    const liveElement = containerElement.querySelector('[aria-live]')!;
+
+    expect(liveElement.getAttribute('aria-live'))
+        .toBe('polite', 'Expected snack bar container live region to have aria-live="polite"');
   });
 
-  it('should have the role of `status` with a `polite` politeness', () => {
+  it('should have aria-live of `polite` with a `polite` politeness', () => {
     snackBar.openFromComponent(BurritosNotification, {politeness: 'polite'});
     viewContainerFixture.detectChanges();
 
     const containerElement = overlayContainerElement.querySelector('mat-mdc-snack-bar-container')!;
-    expect(containerElement.getAttribute('role'))
-        .toBe('status', 'Expected snack bar container to have role="status"');
+    const liveElement = containerElement.querySelector('[aria-live]')!;
+
+    expect(liveElement.getAttribute('aria-live'))
+        .toBe('polite', 'Expected snack bar container live region to have aria-live="polite"');
   });
 
   it('should remove the role if the politeness is turned off', () => {
@@ -97,7 +155,10 @@ describe('MatSnackBar', () => {
     viewContainerFixture.detectChanges();
 
     const containerElement = overlayContainerElement.querySelector('mat-mdc-snack-bar-container')!;
-    expect(containerElement.getAttribute('role')).toBeFalsy('Expected role to be removed');
+    const liveElement = containerElement.querySelector('[aria-live]')!;
+
+    expect(liveElement.getAttribute('aria-live'))
+        .toBe('off', 'Expected snack bar container live region to have aria-live="off"');
   });
 
   it('should have exactly one MDC label element when opened through simple snack bar', () => {
@@ -197,6 +258,7 @@ describe('MatSnackBar', () => {
 
     snackBar.open(simpleMessage, undefined, {announcementMessage: simpleMessage});
     viewContainerFixture.detectChanges();
+    flush();
 
     expect(overlayContainerElement.childElementCount)
         .toBe(1, 'Expected the overlay with the default announcement message to be added');
@@ -212,6 +274,7 @@ describe('MatSnackBar', () => {
       politeness: 'assertive'
     });
     viewContainerFixture.detectChanges();
+    flush();
 
     expect(overlayContainerElement.childElementCount)
         .toBe(1, 'Expected the overlay with a custom `announcementMessage` to be added');

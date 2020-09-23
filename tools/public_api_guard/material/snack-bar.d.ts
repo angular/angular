@@ -1,4 +1,5 @@
 export interface _SnackBarContainer {
+    _onAnnounce: Subject<any>;
     _onEnter: Subject<any>;
     _onExit: Subject<any>;
     attachComponentPortal: <T>(portal: ComponentPortal<T>) => ComponentRef<T>;
@@ -48,13 +49,14 @@ export declare class MatSnackBarConfig<D = any> {
 
 export declare class MatSnackBarContainer extends BasePortalOutlet implements OnDestroy, _SnackBarContainer {
     _animationState: string;
+    _live: AriaLivePoliteness;
+    readonly _onAnnounce: Subject<void>;
     readonly _onEnter: Subject<void>;
     readonly _onExit: Subject<void>;
     _portalOutlet: CdkPortalOutlet;
-    _role: 'alert' | 'status' | null;
     attachDomPortal: (portal: DomPortal) => void;
     snackBarConfig: MatSnackBarConfig;
-    constructor(_ngZone: NgZone, _elementRef: ElementRef<HTMLElement>, _changeDetectorRef: ChangeDetectorRef,
+    constructor(_ngZone: NgZone, _elementRef: ElementRef<HTMLElement>, _changeDetectorRef: ChangeDetectorRef, _platform: Platform,
     snackBarConfig: MatSnackBarConfig);
     attachComponentPortal<T>(portal: ComponentPortal<T>): ComponentRef<T>;
     attachTemplatePortal<C>(portal: TemplatePortal<C>): EmbeddedViewRef<C>;

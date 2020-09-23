@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {AriaLivePoliteness} from '@angular/cdk/a11y';
 import {
   BasePortalOutlet,
   CdkPortalOutlet,
@@ -19,6 +20,7 @@ import {
   ComponentRef,
   ElementRef,
   EmbeddedViewRef,
+  NgZone,
   OnDestroy,
   ViewChild,
   ViewEncapsulation
@@ -49,7 +51,6 @@ const MDC_SNACKBAR_LABEL_CLASS = 'mdc-snackbar__label';
   changeDetection: ChangeDetectionStrategy.Default,
   encapsulation: ViewEncapsulation.None,
   host: {
-    '[attr.role]': '_role',
     'class': 'mdc-snackbar mat-mdc-snack-bar-container',
     '[class.mat-snack-bar-container]': 'false',
     // Mark this element with a 'mat-exit' attribute to indicate that the snackbar has
@@ -60,14 +61,23 @@ const MDC_SNACKBAR_LABEL_CLASS = 'mdc-snackbar__label';
 })
 export class MatSnackBarContainer extends BasePortalOutlet
     implements _SnackBarContainer, AfterViewChecked, OnDestroy {
+  /** The number of milliseconds to wait before announcing the snack bar's content. */
+  private readonly _announceDelay: number = 150;
+
+  /** The timeout for announcing the snack bar's content. */
+  private _announceTimeoutId: number;
+
+  /** Subject for notifying that the snack bar has announced to screen readers. */
+  readonly _onAnnounce: Subject<void> = new Subject();
+
   /** Subject for notifying that the snack bar has exited from view. */
   readonly _onExit: Subject<void> = new Subject();
 
   /** Subject for notifying that the snack bar has finished entering the view. */
   readonly _onEnter: Subject<void> = new Subject();
 
-  /** ARIA role for the snack bar container. */
-  _role: 'alert' | 'status' | null;
+  /** aria-live value for the live region. */
+  _live: AriaLivePoliteness;
 
   /** Whether the snack bar is currently exiting. */
   _exiting = false;
@@ -103,17 +113,18 @@ export class MatSnackBarContainer extends BasePortalOutlet
   constructor(
       private _elementRef: ElementRef<HTMLElement>,
       public snackBarConfig: MatSnackBarConfig,
-      private _platform: Platform) {
+      private _platform: Platform,
+      private _ngZone: NgZone) {
     super();
 
-    // Based on the ARIA spec, `alert` and `status` roles have an
-    // implicit `assertive` and `polite` politeness respectively.
+    // Use aria-live rather than a live role like 'alert' or 'status'
+    // because NVDA and JAWS have show inconsistent behavior with live roles.
     if (snackBarConfig.politeness === 'assertive' && !snackBarConfig.announcementMessage) {
-      this._role = 'alert';
+      this._live = 'assertive';
     } else if (snackBarConfig.politeness === 'off') {
-      this._role = null;
+      this._live = 'off';
     } else {
-      this._role = 'status';
+      this._live = 'polite';
     }
 
     // `MatSnackBar` will use the config's timeout to determine when the snack bar should be closed.
@@ -141,12 +152,18 @@ export class MatSnackBarContainer extends BasePortalOutlet
     // MDC uses some browser APIs that will throw during server-side rendering.
     if (this._platform.isBrowser) {
       this._mdcFoundation.open();
+      this._screenReaderAnnounce();
     }
   }
 
   exit(): Observable<void> {
     this._exiting = true;
     this._mdcFoundation.close();
+
+    // If the snack bar hasn't been announced by the time it exits it wouldn't have been open
+    // long enough to visually read it either, so clear the timeout for announcing.
+    clearTimeout(this._announceTimeoutId);
+
     return this._onExit;
   }
 
@@ -186,6 +203,38 @@ export class MatSnackBarContainer extends BasePortalOutlet
   private _assertNotAttached() {
     if (this._portalOutlet.hasAttached() && (typeof ngDevMode === 'undefined' || ngDevMode)) {
       throw Error('Attempting to attach snack bar content after content is already attached');
+    }
+  }
+
+  /**
+   * Starts a timeout to move the snack bar content to the live region so screen readers will
+   * announce it.
+   */
+  private _screenReaderAnnounce() {
+    if (!this._announceTimeoutId) {
+      this._ngZone.runOutsideAngular(() => {
+        this._announceTimeoutId = setTimeout(() => {
+          const inertElement = this._elementRef.nativeElement.querySelector('[aria-hidden]');
+          const liveElement = this._elementRef.nativeElement.querySelector('[aria-live]');
+
+          if (inertElement && liveElement) {
+            // If an element in the snack bar content is focused before being moved
+            // track it and restore focus after moving to the live region.
+            let focusedElement: HTMLElement | null = null;
+            if (document.activeElement instanceof HTMLElement &&
+                inertElement.contains(document.activeElement)) {
+              focusedElement = document.activeElement;
+            }
+
+            inertElement.removeAttribute('aria-hidden');
+            liveElement.appendChild(inertElement);
+            focusedElement?.focus();
+
+            this._onAnnounce.next();
+            this._onAnnounce.complete();
+          }
+        }, this._announceDelay);
+      });
     }
   }
 }

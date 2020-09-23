@@ -7,6 +7,8 @@
  */
 
 import {AnimationEvent} from '@angular/animations';
+import {AriaLivePoliteness} from '@angular/cdk/a11y';
+import {Platform} from '@angular/cdk/platform';
 import {
   BasePortalOutlet,
   CdkPortalOutlet,
@@ -37,6 +39,7 @@ import {MatSnackBarConfig} from './snack-bar-config';
  */
 export interface _SnackBarContainer {
   snackBarConfig: MatSnackBarConfig;
+  _onAnnounce: Subject<any>;
   _onExit: Subject<any>;
   _onEnter: Subject<any>;
   enter: () => void;
@@ -61,7 +64,6 @@ export interface _SnackBarContainer {
   encapsulation: ViewEncapsulation.None,
   animations: [matSnackBarAnimations.snackBarState],
   host: {
-    '[attr.role]': '_role',
     'class': 'mat-snack-bar-container',
     '[@state]': '_animationState',
     '(@state.done)': 'onAnimationEnd($event)'
@@ -69,11 +71,20 @@ export interface _SnackBarContainer {
 })
 export class MatSnackBarContainer extends BasePortalOutlet
     implements OnDestroy, _SnackBarContainer {
+  /** The number of milliseconds to wait before announcing the snack bar's content. */
+  private readonly _announceDelay: number = 150;
+
+  /** The timeout for announcing the snack bar's content. */
+  private _announceTimeoutId: number;
+
   /** Whether the component has been destroyed. */
   private _destroyed = false;
 
   /** The portal outlet inside of this container into which the snack bar content will be loaded. */
   @ViewChild(CdkPortalOutlet, {static: true}) _portalOutlet: CdkPortalOutlet;
+
+  /** Subject for notifying that the snack bar has announced to screen readers. */
+  readonly _onAnnounce: Subject<void> = new Subject();
 
   /** Subject for notifying that the snack bar has exited from view. */
   readonly _onExit: Subject<void> = new Subject();
@@ -84,26 +95,27 @@ export class MatSnackBarContainer extends BasePortalOutlet
   /** The state of the snack bar animations. */
   _animationState = 'void';
 
-  /** ARIA role for the snack bar container. */
-  _role: 'alert' | 'status' | null;
+  /** aria-live value for the live region. */
+  _live: AriaLivePoliteness;
 
   constructor(
     private _ngZone: NgZone,
     private _elementRef: ElementRef<HTMLElement>,
     private _changeDetectorRef: ChangeDetectorRef,
+    private _platform: Platform,
     /** The snack bar configuration. */
     public snackBarConfig: MatSnackBarConfig) {
 
     super();
 
-    // Based on the ARIA spec, `alert` and `status` roles have an
-    // implicit `assertive` and `polite` politeness respectively.
+    // Use aria-live rather than a live role like 'alert' or 'status'
+    // because NVDA and JAWS have show inconsistent behavior with live roles.
     if (snackBarConfig.politeness === 'assertive' && !snackBarConfig.announcementMessage) {
-      this._role = 'alert';
+      this._live = 'assertive';
     } else if (snackBarConfig.politeness === 'off') {
-      this._role = null;
+      this._live = 'off';
     } else {
-      this._role = 'status';
+      this._live = 'polite';
     }
   }
 
@@ -157,6 +169,7 @@ export class MatSnackBarContainer extends BasePortalOutlet
     if (!this._destroyed) {
       this._animationState = 'visible';
       this._changeDetectorRef.detectChanges();
+      this._screenReaderAnnounce();
     }
   }
 
@@ -171,6 +184,10 @@ export class MatSnackBarContainer extends BasePortalOutlet
     // been dismissed and will soon be removed from the DOM. This is used by the snackbar
     // test harness.
     this._elementRef.nativeElement.setAttribute('mat-exit', '');
+
+    // If the snack bar hasn't been announced by the time it exits it wouldn't have been open
+    // long enough to visually read it either, so clear the timeout for announcing.
+    clearTimeout(this._announceTimeoutId);
 
     return this._onExit;
   }
@@ -219,6 +236,39 @@ export class MatSnackBarContainer extends BasePortalOutlet
   private _assertNotAttached() {
     if (this._portalOutlet.hasAttached() && (typeof ngDevMode === 'undefined' || ngDevMode)) {
       throw Error('Attempting to attach snack bar content after content is already attached');
+    }
+  }
+
+  /**
+   * Starts a timeout to move the snack bar content to the live region so screen readers will
+   * announce it.
+   */
+  private _screenReaderAnnounce() {
+    if (!this._announceTimeoutId) {
+      this._ngZone.runOutsideAngular(() => {
+        this._announceTimeoutId = setTimeout(() => {
+          const inertElement = this._elementRef.nativeElement.querySelector('[aria-hidden]');
+          const liveElement = this._elementRef.nativeElement.querySelector('[aria-live]');
+
+          if (inertElement && liveElement) {
+            // If an element in the snack bar content is focused before being moved
+            // track it and restore focus after moving to the live region.
+            let focusedElement: HTMLElement | null = null;
+            if (this._platform.isBrowser &&
+                document.activeElement instanceof HTMLElement &&
+                inertElement.contains(document.activeElement)) {
+              focusedElement = document.activeElement;
+            }
+
+            inertElement.removeAttribute('aria-hidden');
+            liveElement.appendChild(inertElement);
+            focusedElement?.focus();
+
+            this._onAnnounce.next();
+            this._onAnnounce.complete();
+          }
+        }, this._announceDelay);
+      });
     }
   }
 }
