@@ -14,6 +14,7 @@ import {MockLogger} from '../../../src/ngtsc/logging/testing';
 import {ClassMemberKind, ConcreteDeclaration, CtorParameter, DownleveledEnum, Import, InlineDeclaration, isNamedClassDeclaration, isNamedFunctionDeclaration, isNamedVariableDeclaration, KnownDeclaration, TypeScriptReflectionHost, TypeValueReferenceKind} from '../../../src/ngtsc/reflection';
 import {getDeclaration} from '../../../src/ngtsc/testing';
 import {loadFakeCore, loadTestFiles} from '../../../test/helpers';
+import {isExportsStatement} from '../../src/host/commonjs_umd_utils';
 import {DelegatingReflectionHost} from '../../src/host/delegating_host';
 import {getIifeBody} from '../../src/host/esm2015_host';
 import {NgccReflectionHost} from '../../src/host/ngcc_host';
@@ -34,6 +35,7 @@ runInEachFileSystem(() => {
     let SIMPLE_CLASS_FILE: TestFile;
     let FOO_FUNCTION_FILE: TestFile;
     let INLINE_EXPORT_FILE: TestFile;
+    let EXPORTS_IDENTIFIERS_FILE: TestFile;
     let INVALID_DECORATORS_FILE: TestFile;
     let INVALID_DECORATOR_ARGS_FILE: TestFile;
     let INVALID_PROP_DECORATORS_FILE: TestFile;
@@ -234,6 +236,33 @@ runInEachFileSystem(() => {
     { type: core.Directive, args: [{ selector: '[ignored]' },] }
   ];
   exports.directives = [foo];
+})));
+`,
+      };
+
+      EXPORTS_IDENTIFIERS_FILE = {
+        name: _('/exports_identifiers.js'),
+        contents: `
+(function (global, factory) {
+  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@angular/core')) :
+  typeof define === 'function' && define.amd ? define('foo_function', ['exports', '@angular/core'], factory) :
+  (factory(global.inline_export,global.ng.core));
+}(this, (function (exports,core) { 'use strict';
+  var x = exports;
+  exports.foo = 42;
+
+  function simpleFn() {
+    exports.foo = 42;
+  }
+
+  function localVar() {
+    var exports = {};
+    exports.foo = 42;
+  }
+
+  function exportsArg(exports) {
+    exports.foo = 42;
+  }
 })));
 `,
       };
@@ -2078,6 +2107,111 @@ runInEachFileSystem(() => {
         expect(actualDeclaration!.viaModule).toBe('@angular/core');
       });
 
+      it('should return the source file as the declaration of a standalone "exports" identifier',
+         () => {
+           loadTestFiles([EXPORTS_IDENTIFIERS_FILE]);
+           const bundle = makeTestBundleProgram(EXPORTS_IDENTIFIERS_FILE.name);
+           const host = createHost(bundle, new UmdReflectionHost(new MockLogger(), false, bundle));
+           const xVar = getDeclaration(
+               bundle.program, EXPORTS_IDENTIFIERS_FILE.name, 'x', ts.isVariableDeclaration);
+           const exportsIdentifier = xVar.initializer;
+           if (exportsIdentifier === undefined || !ts.isIdentifier(exportsIdentifier)) {
+             throw new Error('Bad test - unable to find `var x = exports;` statement');
+           }
+           const exportsDeclaration = host.getDeclarationOfIdentifier(exportsIdentifier);
+           expect(exportsDeclaration).not.toBeNull();
+           expect(exportsDeclaration!.node).toBe(bundle.file);
+         });
+
+      it('should return the source file as the declaration of "exports" in the LHS of a property access',
+         () => {
+           loadTestFiles([EXPORTS_IDENTIFIERS_FILE]);
+           const bundle = makeTestBundleProgram(EXPORTS_IDENTIFIERS_FILE.name);
+           const host = createHost(bundle, new UmdReflectionHost(new MockLogger(), false, bundle));
+           const exportsStatement = walkForNode(bundle.file, isExportsStatement);
+           if (exportsStatement === undefined) {
+             throw new Error('Bad test - unable to find `exports.foo = 42;` statement');
+           }
+           const exportsIdentifier = exportsStatement.expression.left.expression;
+           const exportDeclaration = host.getDeclarationOfIdentifier(exportsIdentifier);
+           expect(exportDeclaration).not.toBeNull();
+           expect(exportDeclaration!.node).toBe(bundle.file);
+         });
+
+      it('should return the source file as the declaration of "exports" in the LHS of a property access inside a local function',
+         () => {
+           loadTestFiles([EXPORTS_IDENTIFIERS_FILE]);
+           const bundle = makeTestBundleProgram(EXPORTS_IDENTIFIERS_FILE.name);
+           const host = createHost(bundle, new UmdReflectionHost(new MockLogger(), false, bundle));
+           const simpleFn = getDeclaration(
+               bundle.program, EXPORTS_IDENTIFIERS_FILE.name, 'simpleFn', ts.isFunctionDeclaration);
+           const exportsStatement = walkForNode(simpleFn, isExportsStatement);
+           if (exportsStatement === undefined) {
+             throw new Error('Bad test - unable to find `exports.foo = 42;` statement');
+           }
+           const exportsIdentifier = exportsStatement.expression.left.expression;
+           const exportDeclaration = host.getDeclarationOfIdentifier(exportsIdentifier);
+           expect(exportDeclaration).not.toBeNull();
+           expect(exportDeclaration!.node).toBe(bundle.file);
+         });
+
+      it('should return the variable declaration if a standalone "exports" is declared locally',
+         () => {
+           loadTestFiles([EXPORTS_IDENTIFIERS_FILE]);
+           const bundle = makeTestBundleProgram(EXPORTS_IDENTIFIERS_FILE.name);
+           const host = createHost(bundle, new UmdReflectionHost(new MockLogger(), false, bundle));
+           const localVarFn = getDeclaration(
+               bundle.program, EXPORTS_IDENTIFIERS_FILE.name, 'localVar', ts.isFunctionDeclaration);
+           const exportsVar = walkForNode(localVarFn, ts.isVariableDeclaration);
+           if (exportsVar === undefined) {
+             throw new Error('Bad test - unable to find `var exports = {}` statement');
+           }
+           const exportsIdentifier = exportsVar.name;
+           if (exportsIdentifier === undefined || !ts.isIdentifier(exportsIdentifier)) {
+             throw new Error('Bad test - unable to find `var exports = {};` statement');
+           }
+           const exportsDeclaration = host.getDeclarationOfIdentifier(exportsIdentifier);
+           expect(exportsDeclaration).not.toBeNull();
+           expect(exportsDeclaration!.node).toBe(exportsVar);
+         });
+
+      it('should return the variable declaration of "exports" in the LHS of a property access, if it is declared locally',
+         () => {
+           loadTestFiles([EXPORTS_IDENTIFIERS_FILE]);
+           const bundle = makeTestBundleProgram(EXPORTS_IDENTIFIERS_FILE.name);
+           const host = createHost(bundle, new UmdReflectionHost(new MockLogger(), false, bundle));
+           const localVarFn = getDeclaration(
+               bundle.program, EXPORTS_IDENTIFIERS_FILE.name, 'localVar', ts.isFunctionDeclaration);
+           const exportsVar = walkForNode(localVarFn, ts.isVariableDeclaration);
+           const exportsStatement = walkForNode(localVarFn, isExportsStatement);
+           if (exportsStatement === undefined) {
+             throw new Error('Bad test - unable to find `exports.foo = 42;` statement');
+           }
+           const exportsIdentifier = exportsStatement.expression.left.expression;
+           const exportDeclaration = host.getDeclarationOfIdentifier(exportsIdentifier);
+           expect(exportDeclaration).not.toBeNull();
+           expect(exportDeclaration?.node).toBe(exportsVar);
+         });
+
+      it('should return the variable declaration of "exports" in the LHS of a property access, if it is a local function parameter',
+         () => {
+           loadTestFiles([EXPORTS_IDENTIFIERS_FILE]);
+           const bundle = makeTestBundleProgram(EXPORTS_IDENTIFIERS_FILE.name);
+           const host = createHost(bundle, new UmdReflectionHost(new MockLogger(), false, bundle));
+           const exportsArgFn = getDeclaration(
+               bundle.program, EXPORTS_IDENTIFIERS_FILE.name, 'exportsArg',
+               ts.isFunctionDeclaration);
+           const exportsVar = exportsArgFn.parameters[0];
+           const exportsStatement = walkForNode(exportsArgFn, isExportsStatement);
+           if (exportsStatement === undefined) {
+             throw new Error('Bad test - unable to find `exports.foo = 42;` statement');
+           }
+           const exportsIdentifier = exportsStatement.expression.left.expression;
+           const exportDeclaration = host.getDeclarationOfIdentifier(exportsIdentifier);
+           expect(exportDeclaration).not.toBeNull();
+           expect(exportDeclaration?.node).toBe(exportsVar);
+         });
+
       it('should recognize TypeScript helpers (as function declarations)', () => {
         const file: TestFile = {
           name: _('/test.js'),
@@ -3232,3 +3366,8 @@ runInEachFileSystem(() => {
     });
   });
 });
+
+type WalkerPredicate<T extends ts.Node> = (node: ts.Node) => node is T;
+function walkForNode<T extends ts.Node>(node: ts.Node, predicate: WalkerPredicate<T>): T|undefined {
+  return node.forEachChild(child => predicate(child) ? child : walkForNode(child, predicate));
+}
