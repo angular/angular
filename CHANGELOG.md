@@ -1,3 +1,19 @@
+<a name="10.1.3"></a>
+## 10.1.3 (2020-09-23)
+
+
+### Bug Fixes
+
+* **http:** Fix error message when we call jsonp without importing HttpClientJsonpModule ([#38756](https://github.com/angular/angular/issues/38756)) ([3902ec0](https://github.com/angular/angular/commit/3902ec0))
+* **ngcc:** fix compilation of `ChangeDetectorRef` in pipe constructors ([#38892](https://github.com/angular/angular/issues/38892)) ([093c3a1](https://github.com/angular/angular/commit/093c3a1)), closes [#38666](https://github.com/angular/angular/issues/38666) [#38883](https://github.com/angular/angular/issues/38883)
+
+
+### Reverts
+
+* feat(router): better warning message when a router outlet has not been instantiated ([#38920](https://github.com/angular/angular/issues/38920)) ([04d0aa6](https://github.com/angular/angular/commit/04d0aa6))
+
+
+
 <a name="11.0.0-next.2"></a>
 # 11.0.0-next.2 (2020-09-16)
 
