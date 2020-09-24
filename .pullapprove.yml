@@ -324,6 +324,7 @@ groups:
           'aio/content/examples/component-interaction/**',
           'aio/content/images/guide/component-interaction/**',
           'aio/content/guide/component-styles.md',
+          'aio/content/guide/view-encapsulation.md',
           'aio/content/examples/component-styles/**',
           'aio/content/guide/dependency-injection.md',
           'aio/content/examples/dependency-injection/**',
