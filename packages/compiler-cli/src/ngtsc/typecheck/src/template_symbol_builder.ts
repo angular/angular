@@ -54,19 +54,23 @@ export class SymbolBuilder {
     return null;
   }
 
-  private getSymbolOfTextAttribute(attr: TmplAstTextAttribute): TextAttributeSymbol|null {
+  private getSymbolOfTextAttribute(attr: TmplAstTextAttribute): TextAttributeSymbol
+      |InputBindingSymbol|null {
     const consumer = this.templateData.boundTarget.getConsumerOfBinding(attr);
-    if (consumer === null ||
-        !(consumer instanceof TmplAstTemplate) && !(consumer instanceof TmplAstElement)) {
+    if (consumer === null) {
       return null;
     }
 
-    const host = this.getSymbol(consumer);
-    if (host === null) {
-      return null;
-    }
+    if ((consumer instanceof TmplAstTemplate) || (consumer instanceof TmplAstElement)) {
+      const host = this.getSymbol(consumer);
+      if (host === null) {
+        return null;
+      }
 
-    return {kind: SymbolKind.TextAttribute, host};
+      return {kind: SymbolKind.TextAttribute, host};
+    } else {
+      return this.getSymbolOfInputBinding(attr);
+    }
   }
 
   private getSymbolOfAstTemplate(template: TmplAstTemplate): TemplateSymbol|null {
@@ -141,14 +145,14 @@ export class SymbolBuilder {
   }
 
   private getDirectiveMeta(
-      parent: TmplAstTemplate|TmplAstElement,
+      host: TmplAstTemplate|TmplAstElement,
       directiveDeclaration: ts.Declaration): TypeCheckableDirectiveMeta|null {
-    const typeCheckableDirectiveMetas = this.templateData.boundTarget.getDirectivesOfNode(parent);
-    if (typeCheckableDirectiveMetas === null) {
+    const directives = this.templateData.boundTarget.getDirectivesOfNode(host);
+    if (directives === null) {
       return null;
     }
 
-    return typeCheckableDirectiveMetas.find(m => m.ref.node === directiveDeclaration) ?? null;
+    return directives.find(m => m.ref.node === directiveDeclaration) ?? null;
   }
 
   private getSymbolOfBoundEvent(eventBinding: TmplAstBoundEvent): OutputBindingSymbol|null {
@@ -198,8 +202,8 @@ export class SymbolBuilder {
     };
   }
 
-  private getSymbolOfInputBinding(attributeBinding: TmplAstBoundAttribute): InputBindingSymbol
-      |null {
+  private getSymbolOfInputBinding(attributeBinding: TmplAstBoundAttribute|
+                                  TmplAstTextAttribute): InputBindingSymbol|null {
     const node = findFirstMatchingNode(
         this.typeCheckBlock, {withSpan: attributeBinding.sourceSpan, filter: isAssignment});
     if (node === null || !isAccessExpression(node.left)) {
@@ -387,18 +391,15 @@ export class SymbolBuilder {
     }
 
     let tsSymbol: ts.Symbol|undefined;
-    let positionInShimFile: number;
     if (ts.isPropertyAccessExpression(node)) {
       tsSymbol = this.typeChecker.getSymbolAtLocation(node.name);
-      positionInShimFile = this.getShimPositionForNode(node);
     } else if (ts.isElementAccessExpression(node)) {
       tsSymbol = this.typeChecker.getSymbolAtLocation(node.argumentExpression);
-      positionInShimFile = this.getShimPositionForNode(node.argumentExpression);
     } else {
       tsSymbol = this.typeChecker.getSymbolAtLocation(node);
-      positionInShimFile = this.getShimPositionForNode(node);
     }
 
+    const positionInShimFile = this.getShimPositionForNode(node);
     const type = this.typeChecker.getTypeAtLocation(node);
     return {
       // If we could not find a symbol, fall back to the symbol on the type for the node.

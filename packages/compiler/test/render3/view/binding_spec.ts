@@ -38,7 +38,7 @@ function makeSelectorMatcher(): SelectorMatcher<DirectiveMeta> {
     inputs: new IdentityInputMapping(['ngForOf']),
     outputs: new IdentityInputMapping([]),
     isComponent: false,
-    selector: '[ngFor][ngForOf]'
+    selector: '[ngFor][ngForOf]',
   });
   matcher.addSelectables(CssSelector.parse('[dir]'), {
     name: 'Dir',

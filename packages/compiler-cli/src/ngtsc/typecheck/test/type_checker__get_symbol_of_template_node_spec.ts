@@ -39,6 +39,41 @@ runInEachFileSystem(() => {
       assertElementSymbol(symbol.host);
     });
 
+    it('should get a symbol for regular attributes', () => {
+      const fileName = absoluteFrom('/main.ts');
+      const dirFile = absoluteFrom('/dir.ts');
+      const templateString = `<div name="helloWorld"></div>`;
+      const {templateTypeChecker, program} = setup(
+          [
+            {
+              fileName,
+              templates: {'Cmp': templateString},
+              declarations: [{
+                name: 'NameDiv',
+                selector: 'div[name]',
+                file: dirFile,
+                type: 'directive',
+                inputs: {name: 'name'},
+              }]
+            },
+            {
+              fileName: dirFile,
+              source: `export class NameDiv {name!: string;}`,
+              templates: {},
+            }
+          ],
+      );
+      const sf = getSourceFileOrError(program, fileName);
+      const cmp = getClass(sf, 'Cmp');
+      const {attributes} = getAstElements(templateTypeChecker, cmp)[0];
+
+      const symbol = templateTypeChecker.getSymbolOfNode(attributes[0], cmp)!;
+      assertInputBindingSymbol(symbol);
+      expect(
+          (symbol.bindings[0].tsSymbol!.declarations[0] as ts.PropertyDeclaration).name.getText())
+          .toEqual('name');
+    });
+
     describe('templates', () => {
       describe('ng-templates', () => {
         let templateTypeChecker: TemplateTypeChecker;
