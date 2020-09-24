@@ -3,7 +3,7 @@
 Angular es un framework de diseño de aplicaciones y plataforma de desarrollo para crear aplicaciones de una
 sola página eficientes y sofisticadas
 
-Esta documentación de Angular te ayuda a aprender y usar el framework y la plataforma de desarrollo, desde su
+Esta documentación de Angular te ayuda a aprender y usar el framework y la plataforma de desarrollo, desde tu
 primera aplicación hasta la optimización de aplicaciones complejas de una sola página, para empresas.
 Los tutoriales y guías incluyen ejemplos descargables para acelerar tus proyectos.
 
@@ -38,14 +38,14 @@ Los tutoriales y guías incluyen ejemplos descargables para acelerar tus proyect
 ## Supuestos
 
 
-Esta documentación asume que estas familiarizado con
+Esta documentación asume que estás familiarizado con
 [HTML](https://developer.mozilla.org/es/docs/Learn/HTML/Introduccion_a_HTML "Aprende HTML"),
 [CSS](https://developer.mozilla.org/es/docs/Learn/CSS/First_steps "Aprende CSS"),
 [JavaScript](https://developer.mozilla.org/es/docs/Web/JavaScript/Una_re-introducci%C3%B3n_a_JavaScript "Aprende JavaScript"),
 y algunas herramientas de los
 [últimos estándares javascript](https://developer.mozilla.org/es/docs/Web/JavaScript/Language_Resources "Últimos estándares JavaScript"),
 como son las [clases](https://developer.mozilla.org/es/docs/Web/JavaScript/Referencia/Classes "Clases ES2015")
-y [modulos](https://developer.mozilla.org/es/docs/Web/JavaScript/Referencia/Sentencias/import "Modulos ES2015").
+y [módulos](https://developer.mozilla.org/es/docs/Web/JavaScript/Referencia/Sentencias/import "Modulos ES2015").
 Los ejemplos de código son escritos usando [TypeScript](https://www.typescriptlang.org/ "TypeScript").
 La mayor parte del código Angular se puede escribir tan solo con la versión más reciente de JavaScript, usando
 [tipos](https://www.typescriptlang.org/docs/handbook/classes.html "Tipos TypeScript") para inyección de
@@ -55,7 +55,7 @@ para metadatos.
 
 ## Retrolimentación
 
-<h3>Puedes sentarte con nosotros!</h3>
+<h3>¡Puedes sentarte con nosotros!</h3>
 
 Queremos saber de ti. 
 [Informa problemas o envía sugerencias para nueva documentación.](https://github.com/angular-hispano/angular/issues/new/choose "Repositorio GitHub de Angular, form para nuevo issue")
@@ -67,5 +67,5 @@ Mira [Colaborando a Angular](https://github.com/angular-hispano/angular/blob/mas
 para obtener información sobre las pautas de envío de nuevas colaboraciones.
 
 Nuestra comunidad valora la comunicación respetuosa y solidaria.
-Consulta y adhierete al
+Consulta y adhiérete al
 [Código de Conducta](https://angular.lat/coc "Código de Conducta del comunidad").
