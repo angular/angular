@@ -185,6 +185,13 @@ export class Parser {
         location, absoluteOffset, this.errors);
   }
 
+  /**
+   * Splits a string of text into "raw" text segments and expressions present in interpolations in
+   * the string.
+   * Returns `null` if there are no interpolations, otherwise a
+   * `SplitInterpolation` with splits that look like
+   *   <raw text> <expression> <raw text> ... <raw text> <expression> <raw text>
+   */
   splitInterpolation(
       input: string, location: string,
       interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG): SplitInterpolation
@@ -195,30 +202,34 @@ export class Parser {
     const stringSpans: {start: number, end: number}[] = [];
     const expressionSpans: {start: number, end: number}[] = [];
     let i = 0;
-    let inInterpolation = false;
+    let atInterpolation = false;
     let {start: interpStart, end: interpEnd} = interpolationConfig;
     while (i < input.length) {
-      if (!inInterpolation) {
+      if (!atInterpolation) {
         // parse until starting {{
         const start = i;
-        while (i < input.length && input.substring(i, i + interpStart.length) !== interpStart) {
+        while (i < input.length && !input.startsWith(interpStart, i)) {
           ++i;
         }
         const part = input.substring(start, i);
         strings.push(part);
         stringSpans.push({start, end: i});
 
-        inInterpolation = true;
+        atInterpolation = true;
       } else {
         // parse from starting {{ to ending }}
         const fullStart = i;
         const exprStart = fullStart + interpStart.length;
         let exprEnd = exprStart;
-        while (exprEnd < input.length &&
-               input.substring(exprEnd, exprEnd + interpEnd.length) !== interpEnd) {
+        while (exprEnd < input.length && !input.startsWith(interpEnd, exprEnd)) {
           ++exprEnd;
         }
         const fullEnd = exprEnd + interpEnd.length;
+
+        if (exprEnd >= input.length) {
+          i = fullStart;
+          break;
+        }
 
         const part = input.substring(exprStart, exprEnd);
         if (part.trim().length > 0) {
@@ -233,15 +244,14 @@ export class Parser {
         expressionSpans.push({start: fullStart, end: fullEnd});
 
         i = fullEnd;
-        inInterpolation = false;
+        atInterpolation = false;
       }
     }
-    if (!inInterpolation) {
-      // If we ended with an interpolation, add an empty string, which is expected by
-      // SplitInterpolation consumers.
-      strings.push('');
-      const loc = input.length;
-      stringSpans.push({start: loc, end: loc});
+    if (!atInterpolation) {
+      // If we ended with an interpolation, add the remaining content as a raw
+      // string.
+      strings.push(input.substring(i));
+      stringSpans.push({start: i, end: input.length});
     }
     return expressions.length === 0 ?
         null :

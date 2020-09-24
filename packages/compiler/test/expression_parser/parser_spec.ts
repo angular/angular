@@ -650,6 +650,10 @@ describe('parser', () => {
       expect(parseInterpolation('nothing')).toBe(null);
     });
 
+    it('should return null if malformed interpolation', () => {
+      expect(parseInterpolation('{{example}<!---->}')).toBe(null);
+    });
+
     it('should parse no prefix/suffix interpolation', () => {
       const ast = parseInterpolation('{{a}}')!.ast as Interpolation;
       expect(ast.strings).toEqual(['', '']);
