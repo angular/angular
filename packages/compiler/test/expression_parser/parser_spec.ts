@@ -728,6 +728,13 @@ describe('parser', () => {
       expect(parseInterpolation('nothing')).toBe(null);
     });
 
+    it('should not parse malformed interpolations as strings', () => {
+      const ast = parseInterpolation('{{a}} {{example}<!--->}')!.ast as Interpolation;
+      expect(ast.strings).toEqual(['', ' {{example}<!--->}']);
+      expect(ast.expressions.length).toEqual(1);
+      expect(ast.expressions[0].name).toEqual('a');
+    });
+
     it('should parse no prefix/suffix interpolation', () => {
       const ast = parseInterpolation('{{a}}')!.ast as Interpolation;
       expect(ast.strings).toEqual(['', '']);
