@@ -208,8 +208,9 @@ export class Parser {
       if (!atInterpolation) {
         // parse until starting {{
         const start = i;
-        while (i < input.length && !input.startsWith(interpStart, i)) {
-          ++i;
+        i = input.indexOf(interpStart, i);
+        if (i === -1) {
+          i = input.length;
         }
         const part = input.substring(start, i);
         strings.push(part);
@@ -220,16 +221,13 @@ export class Parser {
         // parse from starting {{ to ending }}
         const fullStart = i;
         const exprStart = fullStart + interpStart.length;
-        let exprEnd = exprStart;
-        while (exprEnd < input.length && !input.startsWith(interpEnd, exprEnd)) {
-          ++exprEnd;
-        }
-        const fullEnd = exprEnd + interpEnd.length;
-
-        if (exprEnd >= input.length) {
-          i = fullStart;
+        const exprEnd = input.indexOf(interpEnd, exprStart);
+        if (exprEnd === -1) {
+          // Could not find the end of the interpolation; do not parse an
+          // expression.
           break;
         }
+        const fullEnd = exprEnd + interpEnd.length;
 
         const part = input.substring(exprStart, exprEnd);
         if (part.trim().length > 0) {
