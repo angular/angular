@@ -19,13 +19,13 @@ __karma__.loaded = function() {};
 let entryPoint = 'browser_entry_point';
 
 if (typeof __karma__ !== 'undefined') {
-  (window as any)['__Zone_Error_BlacklistedStackFrames_policy'] =
+  (window as any)['__Zone_Error_ZoneJsInternalStackFrames_policy'] =
       (__karma__ as any).config.errorpolicy;
   if ((__karma__ as any).config.entrypoint) {
     entryPoint = (__karma__ as any).config.entrypoint;
   }
 } else if (typeof process !== 'undefined') {
-  (window as any)['__Zone_Error_BlacklistedStackFrames_policy'] = process.env.errorpolicy;
+  (window as any)['__Zone_Error_ZoneJsInternalStackFrames_policy'] = process.env.errorpolicy;
   if (process.env.entrypoint) {
     entryPoint = process.env.entrypoint;
   }
