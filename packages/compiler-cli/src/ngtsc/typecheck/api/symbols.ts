@@ -21,14 +21,14 @@ export enum SymbolKind {
   Element,
   Template,
   Expression,
-  TextAttribute,
+  DomBinding,
 }
 
 /**
  * A representation of an entity in the `TemplateAst`.
  */
 export type Symbol = InputBindingSymbol|OutputBindingSymbol|ElementSymbol|ReferenceSymbol|
-    VariableSymbol|ExpressionSymbol|DirectiveSymbol|TemplateSymbol|TextAttributeSymbol;
+    VariableSymbol|ExpressionSymbol|DirectiveSymbol|TemplateSymbol|DomBindingSymbol;
 
 /** Information about where a `ts.Node` can be found in the type check block shim file. */
 export interface ShimLocation {
@@ -236,9 +236,13 @@ export interface DirectiveSymbol {
   isComponent: boolean;
 }
 
-/** A representation of a text attribute on an element or template. */
-export interface TextAttributeSymbol {
-  kind: SymbolKind.TextAttribute;
+/**
+ * A representation of an attribute on an element or template. These bindings aren't currently
+ * type-checked (see `checkTypeOfDomBindings`) so they won't have a `ts.Type`, `ts.Symbol`, or shim
+ * location.
+ */
+export interface DomBindingSymbol {
+  kind: SymbolKind.DomBinding;
 
   /** The symbol for the element or template of the text attribute. */
   host: ElementSymbol|TemplateSymbol;

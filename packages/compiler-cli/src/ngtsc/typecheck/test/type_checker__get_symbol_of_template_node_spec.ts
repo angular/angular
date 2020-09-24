@@ -12,7 +12,7 @@ import * as ts from 'typescript';
 import {absoluteFrom, getSourceFileOrError} from '../../file_system';
 import {runInEachFileSystem} from '../../file_system/testing';
 import {ClassDeclaration} from '../../reflection';
-import {DirectiveSymbol, ElementSymbol, ExpressionSymbol, InputBindingSymbol, OutputBindingSymbol, ReferenceSymbol, Symbol, SymbolKind, TemplateSymbol, TemplateTypeChecker, TextAttributeSymbol, TypeCheckingConfig, VariableSymbol} from '../api';
+import {DirectiveSymbol, DomBindingSymbol, ElementSymbol, ExpressionSymbol, InputBindingSymbol, OutputBindingSymbol, ReferenceSymbol, Symbol, SymbolKind, TemplateSymbol, TemplateTypeChecker, TypeCheckingConfig, VariableSymbol} from '../api';
 
 import {getClass, ngForDeclaration, ngForTypeCheckTarget, setup as baseTestSetup, TypeCheckingTarget} from './test_utils';
 
@@ -35,11 +35,11 @@ runInEachFileSystem(() => {
       const {attributes} = getAstElements(templateTypeChecker, cmp)[0];
 
       const symbol = templateTypeChecker.getSymbolOfNode(attributes[0], cmp)!;
-      assertAttributeSymbol(symbol);
+      assertDomBindingSymbol(symbol);
       assertElementSymbol(symbol.host);
     });
 
-    it('should get a symbol for regular attributes', () => {
+    it('should get a symbol for text attributes corresponding with a directive input', () => {
       const fileName = absoluteFrom('/main.ts');
       const dirFile = absoluteFrom('/dir.ts');
       const templateString = `<div name="helloWorld"></div>`;
@@ -834,9 +834,9 @@ runInEachFileSystem(() => {
             .toEqual('ngForOf');
       });
 
-      it('returns empty list when there is no directive registered for the binding', () => {
+      it('returns dom binding input binds only to the dom element', () => {
         const fileName = absoluteFrom('/main.ts');
-        const templateString = `<div dir [inputA]="'my input'"></div>`;
+        const templateString = `<div [name]="'my input'"></div>`;
         const {program, templateTypeChecker} = setup([
           {fileName, templates: {'Cmp': templateString}, declarations: []},
         ]);
@@ -846,11 +846,12 @@ runInEachFileSystem(() => {
         const nodes = templateTypeChecker.getTemplate(cmp)!;
         const binding = (nodes[0] as TmplAstElement).inputs[0];
 
-        const symbol = templateTypeChecker.getSymbolOfNode(binding, cmp);
-        expect(symbol).toBeNull();
+        const symbol = templateTypeChecker.getSymbolOfNode(binding, cmp)!;
+        assertDomBindingSymbol(symbol);
+        assertElementSymbol(symbol.host);
       });
 
-      it('returns empty list when directive members do not match the input', () => {
+      it('returns dom binding when directive members do not match the input', () => {
         const fileName = absoluteFrom('/main.ts');
         const dirFile = absoluteFrom('/dir.ts');
         const templateString = `<div dir [inputA]="'my input A'"></div>`;
@@ -878,8 +879,9 @@ runInEachFileSystem(() => {
         const nodes = templateTypeChecker.getTemplate(cmp)!;
 
         const inputAbinding = (nodes[0] as TmplAstElement).inputs[0];
-        const symbol = templateTypeChecker.getSymbolOfNode(inputAbinding, cmp);
-        expect(symbol).toBeNull();
+        const symbol = templateTypeChecker.getSymbolOfNode(inputAbinding, cmp)!;
+        assertDomBindingSymbol(symbol);
+        assertElementSymbol(symbol.host);
       });
 
       it('can match binding when there are two directives', () => {
@@ -1384,8 +1386,8 @@ function assertElementSymbol(tSymbol: Symbol): asserts tSymbol is ElementSymbol 
   expect(tSymbol.kind).toEqual(SymbolKind.Element);
 }
 
-function assertAttributeSymbol(tSymbol: Symbol): asserts tSymbol is TextAttributeSymbol {
-  expect(tSymbol.kind).toEqual(SymbolKind.TextAttribute);
+function assertDomBindingSymbol(tSymbol: Symbol): asserts tSymbol is DomBindingSymbol {
+  expect(tSymbol.kind).toEqual(SymbolKind.DomBinding);
 }
 
 export function setup(targets: TypeCheckingTarget[], config?: Partial<TypeCheckingConfig>) {

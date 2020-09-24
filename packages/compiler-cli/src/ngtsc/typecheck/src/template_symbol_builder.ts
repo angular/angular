@@ -11,7 +11,7 @@ import * as ts from 'typescript';
 
 import {AbsoluteFsPath} from '../../file_system';
 import {isAssignment} from '../../util/src/typescript';
-import {DirectiveSymbol, ElementSymbol, ExpressionSymbol, InputBindingSymbol, OutputBindingSymbol, ReferenceSymbol, Symbol, SymbolKind, TemplateSymbol, TextAttributeSymbol, TsNodeSymbolInfo, TypeCheckableDirectiveMeta, VariableSymbol} from '../api';
+import {DirectiveSymbol, DomBindingSymbol, ElementSymbol, ExpressionSymbol, InputBindingSymbol, OutputBindingSymbol, ReferenceSymbol, Symbol, SymbolKind, TemplateSymbol, TsNodeSymbolInfo, TypeCheckableDirectiveMeta, VariableSymbol} from '../api';
 
 import {ExpressionIdentifier, findAllMatchingNodes, findFirstMatchingNode, hasExpressionIdentifier} from './comments';
 import {TemplateData} from './context';
@@ -31,7 +31,7 @@ export class SymbolBuilder {
   getSymbol(node: TmplAstReference|TmplAstVariable): ReferenceSymbol|VariableSymbol|null;
   getSymbol(node: AST|TmplAstNode): Symbol|null;
   getSymbol(node: AST|TmplAstNode): Symbol|null {
-    if (node instanceof TmplAstBoundAttribute) {
+    if (node instanceof TmplAstBoundAttribute || node instanceof TmplAstTextAttribute) {
       // TODO(atscott): input and output bindings only return the first directive match but should
       // return a list of bindings for all of them.
       return this.getSymbolOfInputBinding(node);
@@ -45,32 +45,11 @@ export class SymbolBuilder {
       return this.getSymbolOfVariable(node);
     } else if (node instanceof TmplAstReference) {
       return this.getSymbolOfReference(node);
-    } else if (node instanceof TmplAstTextAttribute) {
-      return this.getSymbolOfTextAttribute(node);
     } else if (node instanceof AST) {
       return this.getSymbolOfTemplateExpression(node);
     }
     // TODO(atscott): TmplAstContent, TmplAstIcu
     return null;
-  }
-
-  private getSymbolOfTextAttribute(attr: TmplAstTextAttribute): TextAttributeSymbol
-      |InputBindingSymbol|null {
-    const consumer = this.templateData.boundTarget.getConsumerOfBinding(attr);
-    if (consumer === null) {
-      return null;
-    }
-
-    if ((consumer instanceof TmplAstTemplate) || (consumer instanceof TmplAstElement)) {
-      const host = this.getSymbol(consumer);
-      if (host === null) {
-        return null;
-      }
-
-      return {kind: SymbolKind.TextAttribute, host};
-    } else {
-      return this.getSymbolOfInputBinding(attr);
-    }
   }
 
   private getSymbolOfAstTemplate(template: TmplAstTemplate): TemplateSymbol|null {
@@ -202,27 +181,30 @@ export class SymbolBuilder {
     };
   }
 
-  private getSymbolOfInputBinding(attributeBinding: TmplAstBoundAttribute|
-                                  TmplAstTextAttribute): InputBindingSymbol|null {
+  private getSymbolOfInputBinding(binding: TmplAstBoundAttribute|
+                                  TmplAstTextAttribute): InputBindingSymbol|DomBindingSymbol|null {
+    const consumer = this.templateData.boundTarget.getConsumerOfBinding(binding);
+    if (consumer === null) {
+      return null;
+    }
+
+    if (consumer instanceof TmplAstElement || consumer instanceof TmplAstTemplate) {
+      const host = this.getSymbol(consumer);
+      return host !== null ? {kind: SymbolKind.DomBinding, host} : null;
+    }
+
     const node = findFirstMatchingNode(
-        this.typeCheckBlock, {withSpan: attributeBinding.sourceSpan, filter: isAssignment});
+        this.typeCheckBlock, {withSpan: binding.sourceSpan, filter: isAssignment});
     if (node === null || !isAccessExpression(node.left)) {
       return null;
     }
 
     const symbolInfo = this.getSymbolOfTsNode(node.left);
-    const consumer = this.templateData.boundTarget.getConsumerOfBinding(attributeBinding);
-    if (symbolInfo === null || symbolInfo.tsSymbol === null || consumer === null) {
+    if (symbolInfo === null || symbolInfo.tsSymbol === null) {
       return null;
     }
 
-    let target: ElementSymbol|TemplateSymbol|DirectiveSymbol|null;
-    if (consumer instanceof TmplAstTemplate || consumer instanceof TmplAstElement) {
-      target = this.getSymbol(consumer);
-    } else {
-      target = this.getDirectiveSymbolForAccessExpression(node.left, consumer);
-    }
-
+    const target = this.getDirectiveSymbolForAccessExpression(node.left, consumer);
     if (target === null) {
       return null;
     }
