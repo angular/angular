@@ -14,7 +14,7 @@ import '../lib/zone';
 import '../lib/common/promise';
 import '../lib/common/to-string';
 
-process.env['errorpolicy'] = (global as any)['__Zone_Error_BlacklistedStackFrames_policy'] =
+process.env['errorpolicy'] = (global as any)['__Zone_Error_ZoneJsInternalStackFrames_policy'] =
     'disable';
 // Setup test environment
 require('@bazel/jasmine').boot();

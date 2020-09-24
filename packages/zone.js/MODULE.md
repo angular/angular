@@ -102,7 +102,7 @@ This package will provide following functionality.
 
      without `zone-error` patch, the example above will output `false`, with the patch, the reuslt will be `true`.
 
-  2. BlacklistZoneStackFrames: remove zone.js stack from `stackTrace`, and add `zone`  information. Without this patch, a lot of `zone.js` invocation stack will be shown
+  2. ZoneJsInternalStackFrames: remove zone.js stack from `stackTrace`, and add `zone`  information. Without this patch, a lot of `zone.js` invocation stack will be shown
      in stack frames.
 
     ```
@@ -123,18 +123,18 @@ This package will provide following functionality.
      ```
 
   The second feature will slow down the `Error` performance, so `zone.js` provide a flag to let you be able to control the behavior.
-  The flag is `__Zone_Error_BlacklistedStackFrames_policy`. And the available options is:
+  The flag is `__Zone_Error_ZoneJsInternalStackFrames_policy`. And the available options is:
 
     1. default: this is the default one, if you load `zone.js/dist/zone-error` without
-     setting the flag, `default` will be used, and `BlackListStackFrames` will be available
+     setting the flag, `default` will be used, and `ZoneJsInternalStackFrames` will be available
      when `new Error()`, you can get a `error.stack`  which is `zone stack free`. But this
      will slow down `new Error()` a little bit.
 
-    2. disable: this will disable `BlackListZoneStackFrame` feature, and if you load
+    2. disable: this will disable `ZoneJsInternalStackFrames` feature, and if you load
      `zone.js/dist/zone-error`, you will only get a `wrapped Error` which can handle
       `Error inherit` issue.
 
-    3. lazy: this is a feature to let you be able to get `BlackListZoneStackFrame` feature,
+    3. lazy: this is a feature to let you be able to get `ZoneJsInternalStackFrames` feature,
      but not impact performance. But as a trade off, you can't get the `zone free stack
      frames` by access `error.stack`. You can only get it by access `error.zoneAwareStack`.
 
