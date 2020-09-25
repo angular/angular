@@ -618,6 +618,12 @@ class TcbDirectiveInputsOp extends TcbOp {
               ts.createPropertyAccess(dirId, ts.createIdentifier(fieldName));
         }
 
+
+        if (input.attribute.keySpan !== null) {
+          // If we have a keySpan for the attribute, add it to the target node so it can be uniquely
+          // identified.
+          addParseSpanInfo(target, input.attribute.keySpan);
+        }
         // Finally the assignment is extended by assigning it into the target expression.
         assignment = ts.createBinary(target, ts.SyntaxKind.EqualsToken, assignment);
       }

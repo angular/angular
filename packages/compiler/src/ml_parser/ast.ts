@@ -53,7 +53,8 @@ export class ExpansionCase implements Node {
 export class Attribute extends NodeWithI18n {
   constructor(
       public name: string, public value: string, sourceSpan: ParseSourceSpan,
-      public valueSpan?: ParseSourceSpan, i18n?: I18nMeta) {
+      readonly keySpan: ParseSourceSpan|null, public valueSpan: ParseSourceSpan|undefined,
+      i18n: I18nMeta|undefined) {
     super(sourceSpan, i18n);
   }
   visit(visitor: Visitor, context: any): any {

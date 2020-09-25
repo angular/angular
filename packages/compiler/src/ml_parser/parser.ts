@@ -346,8 +346,10 @@ class _TreeBuilder {
       const quoteToken = this._advance();
       end = quoteToken.sourceSpan.end;
     }
+    const keySpan = new ParseSourceSpan(attrName.sourceSpan.start, attrName.sourceSpan.end);
     return new html.Attribute(
-        fullName, value, new ParseSourceSpan(attrName.sourceSpan.start, end), valueSpan);
+        fullName, value, new ParseSourceSpan(attrName.sourceSpan.start, end), keySpan, valueSpan,
+        undefined /* i18n */);
   }
 
   private _getParentElement(): html.Element|null {

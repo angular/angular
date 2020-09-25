@@ -15,6 +15,7 @@ import {DirectiveSymbol, ElementSymbol, ExpressionSymbol, InputBindingSymbol, Ou
 
 import {ExpressionIdentifier, findAllMatchingNodes, findFirstMatchingNode, hasExpressionIdentifier} from './comments';
 import {TemplateData} from './context';
+import {isAccessExpression} from './ts_util';
 import {TcbDirectiveOutputsOp} from './type_check_block';
 
 
@@ -149,40 +150,19 @@ export class SymbolBuilder {
     };
   }
 
-  private getSymbolOfInputBinding(attributeBinding: TmplAstBoundAttribute): InputBindingSymbol
-      |null {
+  private getSymbolOfInputBinding(binding: TmplAstBoundAttribute): InputBindingSymbol|null {
     const node = findFirstMatchingNode(
-        this.typeCheckBlock, {withSpan: attributeBinding.sourceSpan, filter: isAssignment});
+        this.typeCheckBlock, {withSpan: binding.keySpan, filter: isAccessExpression});
     if (node === null) {
       return null;
     }
 
-    let tsSymbol: ts.Symbol|undefined;
-    let positionInShimFile: number|null = null;
-    let tsType: ts.Type;
-    if (ts.isElementAccessExpression(node.left)) {
-      tsSymbol = this.typeChecker.getSymbolAtLocation(node.left.argumentExpression);
-      positionInShimFile = node.left.argumentExpression.getStart();
-      tsType = this.typeChecker.getTypeAtLocation(node.left.argumentExpression);
-    } else if (ts.isPropertyAccessExpression(node.left)) {
-      tsSymbol = this.typeChecker.getSymbolAtLocation(node.left.name);
-      positionInShimFile = node.left.name.getStart();
-      tsType = this.typeChecker.getTypeAtLocation(node.left.name);
-    } else {
-      return null;
-    }
-    if (tsSymbol === undefined || positionInShimFile === null) {
+    const symbolInfo = this.getSymbolOfTsNode(node);
+    if (symbolInfo === null || symbolInfo.tsSymbol === null) {
       return null;
     }
 
-    const consumer = this.templateData.boundTarget.getConsumerOfBinding(attributeBinding);
-    let target: ElementSymbol|TemplateSymbol|DirectiveSymbol|null;
-    if (consumer instanceof TmplAstTemplate || consumer instanceof TmplAstElement) {
-      target = this.getSymbol(consumer);
-    } else {
-      target = this.getDirectiveSymbolForAccessExpression(node.left);
-    }
-
+    const target = this.getDirectiveSymbolForAccessExpression(node);
     if (target === null) {
       return null;
     }
@@ -190,11 +170,10 @@ export class SymbolBuilder {
     return {
       kind: SymbolKind.Input,
       bindings: [{
+        ...symbolInfo,
+        tsSymbol: symbolInfo.tsSymbol,
         kind: SymbolKind.Binding,
-        tsSymbol,
-        tsType,
         target,
-        shimLocation: {shimPath: this.shimPath, positionInShimFile},
       }],
     };
   }
