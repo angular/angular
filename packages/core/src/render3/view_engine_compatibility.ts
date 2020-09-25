@@ -22,7 +22,7 @@ import {assertLContainer, assertNodeInjector} from './assert';
 import {getParentInjectorLocation, NodeInjector} from './di';
 import {addToViewTree, createLContainer, createLView, renderView} from './instructions/shared';
 import {CONTAINER_HEADER_OFFSET, LContainer, NATIVE, VIEW_REFS} from './interfaces/container';
-import {TNODE} from './interfaces/injector';
+import {NodeInjectorOffset} from './interfaces/injector';
 import {TContainerNode, TDirectiveHostNode, TElementContainerNode, TElementNode, TNode, TNodeType} from './interfaces/node';
 import {isProceduralRenderer, RComment, RElement} from './interfaces/renderer';
 import {isComponentHost, isLContainer, isLView, isRootView} from './interfaces/type_checks';
@@ -190,7 +190,8 @@ export function createContainerRef(
           const parentView = getParentInjectorView(parentLocation, this._hostView);
           const injectorIndex = getParentInjectorIndex(parentLocation);
           ngDevMode && assertNodeInjector(parentView, injectorIndex);
-          const parentTNode = parentView[TVIEW].data[injectorIndex + TNODE] as TElementNode;
+          const parentTNode =
+              parentView[TVIEW].data[injectorIndex + NodeInjectorOffset.TNODE] as TElementNode;
           return new NodeInjector(parentTNode, parentView);
         } else {
           return new NodeInjector(null, this._hostView);
