@@ -54,7 +54,7 @@ Una dependencia no tiene que ser solamente un servicio&mdash;podría ser una fun
 
 </div>
 
-Cuando Angular crea una nueva instancia de una clase de componente, determina qué servicios u otras dependencias necesita ese componente al observar los tipos de parámetros del constructor. Por ejemplo, el constructor de `HeroListComponent` necesita` HeroService`.
+Cuando Angular crea una nueva instancia de una clase de componente, determina qué servicios u otras dependencias necesita ese componente al observar los tipos de parámetros del constructor. Por ejemplo, el constructor de `HeroListComponent` necesita `HeroService`.
 
 <code-example path="architecture/src/app/hero-list.component.ts" header="src/app/hero-list.component.ts (constructor)" region="ctor"></code-example>
 
@@ -70,7 +70,7 @@ El proceso de inyección de "HeroService" se parece a esto.
 
 ### Proporcionar servicios
 
-Usted debería registrar al menos un * proveedor * de cualquier servicio que vaya a utilizar.
+Deberías registrar al menos un * proveedor * de cualquier servicio que vayas a utilizar.
 El proveedor puede formar parte de los propios metadatos del servicio, haciendo que ese servicio esté disponible en todas partes, o puede registrar proveedores con módulos o componentes específicos.
 Debes registrar proveedores en los metadatos del servicio (en el decorador `@Injectable()`),
 o en los metadatos `@NgModule()` o `@Component()`
