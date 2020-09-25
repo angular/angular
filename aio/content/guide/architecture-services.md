@@ -1,88 +1,81 @@
-# Introduction to services and dependency injection
+# Introducción a servicios e inyección de dependencias
 
-*Service* is a broad category encompassing any value, function, or feature that an app needs.
-A service is typically a class with a narrow, well-defined purpose.
-It should do something specific and do it well.
+*Servicio* es una categoría amplia que abarca cualquier valor, función o característica que necesite una aplicación.
+Un servicio es típicamente una clase con un propósito limitado y bien definido.
+Debe hacer algo específico y hacerlo bien.
 
-Angular distinguishes components from services to increase modularity and reusability.
-By separating a component's view-related functionality from other kinds of processing,
-you can make your component classes lean and efficient.
+Angular distingue los componentes de los servicios para aumentar la modularidad y la reutilización.
+Al separar la funcionalidad relacionada con la vista de un componente de otros tipos de procesamiento, puedes hacer que tus componentes sean ágiles y eficientes.
 
-Ideally, a component's job is to enable the user experience and nothing more.
-A component should present properties and methods for data binding,
-in order to mediate between the view (rendered by the template)
-and the application logic (which often includes some notion of a *model*).
+Idealmente, el trabajo de un componente es permitir la experiencia del usuario y nada más.
+Un componente debe presentar propiedades y métodos para el enlace de datos,
+para mediar entre la vista (representada por la plantilla)
+y la lógica de la aplicación (que a menudo incluye alguna noción de * modelo *).
 
-A component can delegate certain tasks to services, such as fetching data from the server,
-validating user input, or logging directly to the console.
-By defining such processing tasks in an *injectable service class*, you make those tasks
-available to any component.
-You can also make your app more adaptable by injecting different providers of the same kind of service,
-as appropriate in different circumstances.
+Un componente puede delegar ciertas tareas a los servicios, como obtener datos del servidor, validar la entrada del usuario o iniciar sesión directamente en la consola.
+Al definir tales tareas de procesamiento en una * clase de servicio inyectable *, hace que esas tareas sean disponibles para cualquier componente.
+También puedes hacer que tu aplicación sea más adaptable inyectando diferentes proveedores del mismo tipo de servicio, según corresponda en diferentes circunstancias.
 
-Angular doesn't *enforce* these principles. Angular does help you *follow* these principles
-by making it easy to factor your application logic into services and make those services
-available to components through *dependency injection*.
+Angular no * impone * estos principios. Angular te ayuda a * seguir * estos principios
+al facilitar la integración de la lógica de tu aplicación en los servicios y hacer que esos servicios sean disponibles para los componentes a través de * inyección de dependencia *.
 
-## Service examples
+## Ejemplos de servicios
 
-Here's an example of a service class that logs to the browser console.
+A continuación, se muestra un ejemplo de una clase de servicio que se registra en la consola del navegador.
 
 <code-example path="architecture/src/app/logger.service.ts" header="src/app/logger.service.ts (class)" region="class"></code-example>
 
-Services can depend on other services. For example, here's a `HeroService` that depends on the `Logger` service, and also uses `BackendService` to get heroes. That service in turn might depend on the `HttpClient` service to fetch heroes asynchronously from a server.
+Servicios pueden depender de otros servicios. Por ejemplo, hay un `HeroService` que depende del `Logger` service, y también usa `BackendService` para obtener heroes. Ese servicio, a su vez, podría depender del servicio `HttpClient` para buscar héroes de forma asíncrona desde un servidor.
 
 <code-example path="architecture/src/app/hero.service.ts" header="src/app/hero.service.ts (class)" region="class"></code-example>
 
-## Dependency injection (DI)
+## Inyección de dependencia (ID)
 
 <img src="generated/images/guide/architecture/dependency-injection.png" alt="Service" class="left">
 
-DI is wired into the Angular framework and used everywhere to provide new components with the services or other things they need.
-Components consume services; that is, you can *inject* a service into a component, giving the component access to that service class.
+ID está conectado al framework de Angular y se usa en todas partes para proporcionar nuevos componentes con los servicios u otras cosas que necesitan.
+Los componentes consumen servicios; es decir, puede * inyectar * un servicio en un componente, dándole acceso al componente a ese servicio.
 
-To define a class as a service in Angular, use the `@Injectable()` decorator to provide the metadata that allows Angular to inject it into a component as a *dependency*.
-Similarly, use the `@Injectable()` decorator to indicate that a component or other class (such as another service, a pipe, or an NgModule) *has* a dependency.
+Para definir una clase como un servicio en Angular, use el decorador `@Injectable ()` para proporcionar los metadatos que le permitan a Angular inyectarlo en un componente como una * dependencia *.
+De manera similar, use el decorador `@Injectable ()` para indicar que un componente u otra clase (como otro servicio, un pipeline o un NgModule) * tiene * una dependencia.
 
-* The *injector* is the main mechanism. Angular creates an application-wide injector for you during the bootstrap process, and additional injectors as needed. You don't have to create injectors.
+* El * inyector * es el mecanismo principal. Angular crea un inyector para toda la aplicación durante el proceso de arranque e inyectores adicionales según sea necesario. No es necesario crear inyectores.
 
-* An injector creates dependencies, and maintains a *container* of dependency instances that it reuses if possible.
+* Un inyector crea dependencias y mantiene un * contenedor * de instancias de dependencia que reutiliza si es posible.
 
-* A *provider* is an object that tells an injector how to obtain or create a dependency.
+* Un * proveedor * es un objeto que le dice a un inyector cómo obtener o crear una dependencia.
 
-For any dependency that you need in your app, you must register a provider with the app's injector,
-so that the injector can use the provider to create new instances.
-For a service, the provider is typically the service class itself.
+Para cualquier dependencia que necesites en tu aplicación, debes registrar un proveedor con el inyector de la aplicación, con el fin de que el inyector pueda utilizar el proveedor para crear nuevas instancias.
+Para un servicio, el proveedor suele ser la propia clase de servicio.
 
 <div class="alert is-helpful">
 
-A dependency doesn't have to be a service&mdash;it could be a function, for example, or a value.
+Una dependencia no tiene que ser solamente un servicio&mdash;podría ser una función, por ejemplo, o un valor.
 
 </div>
 
-When Angular creates a new instance of a component class, it determines which services or other dependencies that component needs by looking at the constructor parameter types. For example, the constructor of `HeroListComponent` needs `HeroService`.
+Cuando Angular crea una nueva instancia de una clase de componente, determina qué servicios u otras dependencias necesita ese componente al observar los tipos de parámetros del constructor. Por ejemplo, el constructor de `HeroListComponent` necesita` HeroService`.
 
 <code-example path="architecture/src/app/hero-list.component.ts" header="src/app/hero-list.component.ts (constructor)" region="ctor"></code-example>
 
-When Angular discovers that a component depends on a service, it first checks if the injector has any existing instances of that service. If a requested service instance doesn't yet exist, the injector makes one using the registered provider, and adds it to the injector before returning the service to Angular.
+Cuando Angular descubre que un componente depende de un servicio, primero verifica si el inyector tiene instancias existentes de ese servicio. Si una instancia de servicio solicitada aún no existe, el inyector crea una utilizando el proveedor registrado y la agrega al inyector antes de devolver el servicio a Angular.
 
-When all requested services have been resolved and returned, Angular can call the component's constructor with those services as arguments.
+Cuando todos los servicios solicitados se han resuelto y devuelto, Angular puede llamar al constructor del componente con esos servicios como argumentos.
 
-The process of `HeroService` injection looks something like this.
+El proceso de inyección de "HeroService" se parece a esto.
 
 <div class="lightbox">
   <img src="generated/images/guide/architecture/injector-injects.png" alt="Service" class="left">
 </div>
 
-### Providing services
+### Proporcionar servicios
 
-You must register at least one *provider* of any service you are going to use.
-The provider can be part of the service's own metadata, making that service available everywhere,
-or you can register providers with specific modules or components.
-You register providers in the metadata of the service (in the `@Injectable()` decorator),
-or in the `@NgModule()` or `@Component()` metadata
+Usted debería registrar al menos un * proveedor * de cualquier servicio que vaya a utilizar.
+El proveedor puede formar parte de los propios metadatos del servicio, haciendo que ese servicio esté disponible en todas partes, o puede registrar proveedores con módulos o componentes específicos.
+Debes registrar proveedores en los metadatos del servicio (en el decorador `@Injectable ()`),
+o en los metadatos `@NgModule ()` o `@Component ()`
 
-* By default, the Angular CLI command [`ng generate service`](cli/generate) registers a provider with the root injector for your service by including provider metadata in the `@Injectable()` decorator. The tutorial uses this method to register the provider of HeroService class definition.
+* Por defecto, el comando CLI de Angular [`ng generate service`] (cli / generate) registra un proveedor con el inyector raíz para tu servicio al incluir metadatos del proveedor en el decorador` @Injectable () `. El tutorial utiliza este método para registrar el proveedor de la definición de clase HeroService.
 
    ```
    @Injectable({
@@ -90,12 +83,10 @@ or in the `@NgModule()` or `@Component()` metadata
    })
    ```
 
-   When you provide the service at the root level, Angular creates a single, shared instance of `HeroService`
-   and injects it into any class that asks for it.
-   Registering the provider in the `@Injectable()` metadata also allows Angular to optimize an app
-   by removing the service from the compiled app if it isn't used.
+   Cuando proporcionas el servicio en el nivel raíz, Angular crea una instancia única compartida de `HeroService` y lo inyecta en cualquier clase que lo solicite.
+   El registro del proveedor en los metadatos `@Injectable ()` también permite a Angular optimizar una aplicación eliminando el servicio de la aplicación compilada si no se utiliza.
 
-* When you register a provider with a [specific NgModule](guide/architecture-modules), the same instance of a service is available to all components in that NgModule. To register at this level, use the `providers` property of the `@NgModule()` decorator,
+* Cuando registras un proveedor con un [NgModule específico] (guía / módulos de arquitectura), la misma instancia de un servicio está disponible para todos los componentes en ese NgModule. Para registrarse en este nivel, usa la propiedad `Provider` del decorador` @NgModule () `,
 
    ```
    @NgModule({
@@ -107,10 +98,10 @@ or in the `@NgModule()` or `@Component()` metadata
    })
    ```
 
-* When you register a provider at the component level, you get a new instance of the
-service with each new instance of that component.
-At the component level, register a service provider in the `providers` property of the `@Component()` metadata.
+* Cuando registras un proveedor a nivel del componente, obtienes una nueva instancia del
+servicio con cada nueva instancia de ese componente.
+A nivel del componente, registra un proveedor de servicios en la propiedad `Providers` de los metadatos` @Component () `.
 
    <code-example path="architecture/src/app/hero-list.component.ts" header="src/app/hero-list.component.ts (component providers)" region="providers"></code-example>
 
-For more detailed information, see the [Dependency Injection](guide/dependency-injection) section.
+Para obtener información más detallada, consulta la sección [Inyección de dependencia] (guía / inyección de dependencia).
