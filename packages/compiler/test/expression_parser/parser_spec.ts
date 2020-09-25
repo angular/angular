@@ -154,6 +154,84 @@ describe('parser', () => {
       });
     });
 
+    describe('keyed read', () => {
+      it('should parse keyed reads', () => {
+        checkAction('a["a"]');
+        checkAction('this.a["a"]', 'a["a"]');
+        checkAction('a.a["a"]');
+      });
+
+      describe('malformed keyed reads', () => {
+        it('should recover on missing keys', () => {
+          checkActionWithError('a[]', 'a[]', 'Key access cannot be empty');
+        });
+
+        it('should recover on incomplete expression keys', () => {
+          checkActionWithError('a[1 + ]', 'a[1 + ]', 'Unexpected token ]');
+        });
+
+        it('should recover on unterminated keys', () => {
+          checkActionWithError(
+              'a[1 + 2', 'a[1 + 2]', 'Missing expected ] at the end of the expression');
+        });
+
+        it('should recover on incomplete and unterminated keys', () => {
+          checkActionWithError(
+              'a[1 + ', 'a[1 + ]', 'Missing expected ] at the end of the expression');
+        });
+      });
+    });
+
+    describe('keyed write', () => {
+      it('should parse keyed writes', () => {
+        checkAction('a["a"] = 1 + 2');
+        checkAction('this.a["a"] = 1 + 2', 'a["a"] = 1 + 2');
+        checkAction('a.a["a"] = 1 + 2');
+      });
+
+      describe('malformed keyed writes', () => {
+        it('should recover on empty rvalues', () => {
+          checkActionWithError('a["a"] = ', 'a["a"] = ', 'Unexpected end of expression');
+        });
+
+        it('should recover on incomplete rvalues', () => {
+          checkActionWithError('a["a"] = 1 + ', 'a["a"] = 1 + ', 'Unexpected end of expression');
+        });
+
+        it('should recover on missing keys', () => {
+          checkActionWithError('a[] = 1', 'a[] = 1', 'Key access cannot be empty');
+        });
+
+        it('should recover on incomplete expression keys', () => {
+          checkActionWithError('a[1 + ] = 1', 'a[1 + ] = 1', 'Unexpected token ]');
+        });
+
+        it('should recover on unterminated keys', () => {
+          checkActionWithError('a[1 + 2 = 1', 'a[1 + 2] = 1', 'Missing expected ]');
+        });
+
+        it('should recover on incomplete and unterminated keys', () => {
+          const ast = parseAction('a[1 + = 1');
+          expect(unparse(ast)).toEqual('a[1 + ] = 1');
+          validate(ast);
+
+          const errors = ast.errors.map(e => e.message);
+          expect(errors.length).toBe(2);
+          expect(errors[0]).toContain('Unexpected token =');
+          expect(errors[1]).toContain('Missing expected ]');
+        });
+
+        it('should error on writes after a keyed write', () => {
+          const ast = parseAction('a[1] = 1 = 2');
+          expect(unparse(ast)).toEqual('a[1] = 1');
+          validate(ast);
+
+          expect(ast.errors.length).toBe(1);
+          expect(ast.errors[0].message).toContain('Unexpected token \'=\'');
+        });
+      });
+    });
+
     describe('conditional', () => {
       it('should parse ternary/conditional expressions', () => {
         checkAction('7 == 3 + 4 ? 10 : 20');
@@ -925,4 +1003,13 @@ function expectActionError(text: string, message: string) {
 
 function expectBindingError(text: string, message: string) {
   expectError(validate(parseBinding(text)), message);
+}
+
+/**
+ * Check that an malformed action parses to a recovered AST while emitting an
+ * error.
+ */
+function checkActionWithError(text: string, expected: string, error: string) {
+  checkAction(text, expected);
+  expectActionError(text, error);
 }
