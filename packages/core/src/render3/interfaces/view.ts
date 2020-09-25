@@ -14,7 +14,7 @@ import {Sanitizer} from '../../sanitization/sanitizer';
 
 import {LContainer} from './container';
 import {ComponentDef, ComponentTemplate, DirectiveDef, DirectiveDefList, HostBindingsFunction, PipeDef, PipeDefList, ViewQueriesFunction} from './definition';
-import {I18nUpdateOpCodes, TI18n} from './i18n';
+import {I18nUpdateOpCodes, TI18n, TIcu} from './i18n';
 import {TConstants, TNode, TNodeTypeAsString} from './node';
 import {PlayerHandler} from './player';
 import {LQueries, TQueries} from './query';
@@ -839,7 +839,7 @@ export type DestroyHookData = (HookEntry|HookData)[];
  */
 export type TData =
     (TNode|PipeDef<any>|DirectiveDef<any>|ComponentDef<any>|number|TStylingRange|TStylingKey|
-     Type<any>|InjectionToken<any>|TI18n|I18nUpdateOpCodes|null|string)[];
+     Type<any>|InjectionToken<any>|TI18n|I18nUpdateOpCodes|TIcu|null|string)[];
 
 // Note: This hack is necessary so we don't erroneously get a circular dependency
 // failure based on types.
@@ -873,6 +873,11 @@ export interface LViewDebug {
   };
 
   /**
+   * Associated TView
+   */
+  readonly tView: TView;
+
+  /**
    * Parent view (or container)
    */
   readonly parent: LViewDebug|LContainerDebug|null;
@@ -893,6 +898,12 @@ export interface LViewDebug {
    * Hierarchical tree of nodes.
    */
   readonly nodes: DebugNode[];
+
+  /**
+   * Template structure (no instance data).
+   * (Shows how TNodes are connected)
+   */
+  readonly template: string;
 
   /**
    * HTML representation of the `LView`.
@@ -920,11 +931,6 @@ export interface LViewDebug {
    * Sub range of `LView` containing vars (bindings).
    */
   readonly vars: LViewDebugRange;
-
-  /**
-   * Sub range of `LView` containing i18n (translated DOM elements).
-   */
-  readonly i18n: LViewDebugRange;
 
   /**
    * Sub range of `LView` containing expando (used by DI).

@@ -223,6 +223,7 @@
     "packages/core/src/render3/assert.ts",
     "packages/core/src/render3/interfaces/container.ts",
     "packages/core/src/render3/interfaces/node.ts",
+    "packages/core/src/render3/interfaces/i18n.ts",
     "packages/core/src/render3/interfaces/view.ts",
     "packages/core/src/di/injector.ts",
     "packages/core/src/di/r3_injector.ts",
@@ -239,6 +240,7 @@
     "packages/core/src/render3/assert.ts",
     "packages/core/src/render3/interfaces/container.ts",
     "packages/core/src/render3/interfaces/node.ts",
+    "packages/core/src/render3/interfaces/i18n.ts",
     "packages/core/src/render3/interfaces/view.ts",
     "packages/core/src/metadata.ts",
     "packages/core/src/di.ts",
@@ -262,6 +264,7 @@
     "packages/core/src/render3/assert.ts",
     "packages/core/src/render3/interfaces/container.ts",
     "packages/core/src/render3/interfaces/node.ts",
+    "packages/core/src/render3/interfaces/i18n.ts",
     "packages/core/src/render3/interfaces/view.ts",
     "packages/core/src/render3/interfaces/definition.ts",
     "packages/core/src/core.ts",
@@ -968,11 +971,13 @@
   [
     "packages/core/src/render3/interfaces/container.ts",
     "packages/core/src/render3/interfaces/node.ts",
+    "packages/core/src/render3/interfaces/i18n.ts",
     "packages/core/src/render3/interfaces/view.ts"
   ],
   [
     "packages/core/src/render3/interfaces/definition.ts",
     "packages/core/src/render3/interfaces/node.ts",
+    "packages/core/src/render3/interfaces/i18n.ts",
     "packages/core/src/render3/interfaces/view.ts"
   ],
   [
@@ -980,13 +985,23 @@
     "packages/core/src/render3/interfaces/view.ts"
   ],
   [
-    "packages/core/src/render3/interfaces/node.ts",
+    "packages/core/src/render3/interfaces/i18n.ts",
+    "packages/core/src/render3/interfaces/node.ts"
+  ],
+  [
+    "packages/core/src/render3/interfaces/i18n.ts",
     "packages/core/src/render3/interfaces/view.ts"
   ],
   [
-    "packages/core/src/render3/interfaces/node.ts",
+    "packages/core/src/render3/interfaces/i18n.ts",
     "packages/core/src/render3/interfaces/view.ts",
-    "packages/core/src/render3/interfaces/query.ts"
+    "packages/core/src/render3/interfaces/node.ts"
+  ],
+  [
+    "packages/core/src/render3/interfaces/i18n.ts",
+    "packages/core/src/render3/interfaces/view.ts",
+    "packages/core/src/render3/interfaces/query.ts",
+    "packages/core/src/render3/interfaces/node.ts"
   ],
   [
     "packages/core/src/render3/interfaces/query.ts",

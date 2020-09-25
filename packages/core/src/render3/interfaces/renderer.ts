@@ -74,7 +74,7 @@ export interface ProceduralRenderer3 {
    */
   destroyNode?: ((node: RNode) => void)|null;
   appendChild(parent: RElement, newChild: RNode): void;
-  insertBefore(parent: RNode, newChild: RNode, refChild: RNode|null): void;
+  insertBefore(parent: RNode, newChild: RNode, refChild: RNode|null, isMove?: boolean): void;
   removeChild(parent: RElement, oldChild: RNode, isHostElement?: boolean): void;
   selectRootElement(selectorOrNode: string|any, preserveContent?: boolean): RElement;
 

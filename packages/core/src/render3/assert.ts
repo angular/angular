@@ -10,6 +10,7 @@ import {assertDefined, assertEqual, assertNumber, throwError} from '../util/asse
 import {getComponentDef, getNgModuleDef} from './definition';
 import {LContainer} from './interfaces/container';
 import {DirectiveDef} from './interfaces/definition';
+import {TIcu} from './interfaces/i18n';
 import {NodeInjectorOffset} from './interfaces/injector';
 import {TNode} from './interfaces/node';
 import {isLContainer, isLView} from './interfaces/type_checks';
@@ -25,11 +26,26 @@ export function assertTNodeForLView(tNode: TNode, lView: LView) {
 }
 
 export function assertTNodeForTView(tNode: TNode, tView: TView) {
-  assertDefined(tNode, 'TNode must be defined');
+  assertTNode(tNode);
   tNode.hasOwnProperty('tView_') &&
       assertEqual(
           (tNode as any as {tView_: TView}).tView_, tView,
           'This TNode does not belong to this TView.');
+}
+
+export function assertTNode(tNode: TNode) {
+  assertDefined(tNode, 'TNode must be defined');
+  if (!(tNode && typeof tNode === 'object' && tNode.hasOwnProperty('directiveStylingLast'))) {
+    throwError('Not of type TNode, got: ' + tNode);
+  }
+}
+
+
+export function assertTIcu(tIcu: TIcu) {
+  assertDefined(tIcu, 'Expected TIcu to be defined');
+  if (!(typeof tIcu.currentCaseLViewIndex === 'number')) {
+    throwError('Object is not of TIcu type.');
+  }
 }
 
 export function assertComponentType(
@@ -106,18 +122,15 @@ export function assertIndexInDeclRange(lView: LView, index: number) {
 export function assertIndexInVarsRange(lView: LView, index: number) {
   const tView = lView[1];
   assertBetween(
-      tView.bindingStartIndex, (tView as any as {i18nStartIndex: number}).i18nStartIndex, index);
-}
-
-export function assertIndexInI18nRange(lView: LView, index: number) {
-  const tView = lView[1];
-  assertBetween(
-      (tView as any as {i18nStartIndex: number}).i18nStartIndex, tView.expandoStartIndex, index);
+      tView.bindingStartIndex,
+      (tView as any as {originalExpandoStartIndex: number}).originalExpandoStartIndex, index);
 }
 
 export function assertIndexInExpandoRange(lView: LView, index: number) {
   const tView = lView[1];
-  assertBetween(tView.expandoStartIndex, lView.length, index);
+  assertBetween(
+      (tView as any as {originalExpandoStartIndex: number}).originalExpandoStartIndex, lView.length,
+      index);
 }
 
 export function assertBetween(lower: number, upper: number, index: number) {

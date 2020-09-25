@@ -258,6 +258,9 @@
     "name": "createLView"
   },
   {
+    "name": "createTNode"
+  },
+  {
     "name": "createTView"
   },
   {
@@ -330,9 +333,6 @@
     "name": "generatePropertyAliases"
   },
   {
-    "name": "isInCheckNoChangesMode"
-  },
-  {
     "name": "getClosureSafeProperty"
   },
   {
@@ -346,6 +346,9 @@
   },
   {
     "name": "getCurrentTNode"
+  },
+  {
+    "name": "getCurrentTNodePlaceholderOk"
   },
   {
     "name": "getDebugContext"
@@ -441,6 +444,9 @@
     "name": "hasTagAndTypeMatch"
   },
   {
+    "name": "icuContainerIterate"
+  },
+  {
     "name": "includeViewProviders"
   },
   {
@@ -484,6 +490,9 @@
   },
   {
     "name": "isDirectiveHost"
+  },
+  {
+    "name": "isInCheckNoChangesMode"
   },
   {
     "name": "isInlineTemplate"
@@ -642,9 +651,6 @@
     "name": "setBindingRootForHostBindings"
   },
   {
-    "name": "setIsInCheckNoChangesMode"
-  },
-  {
     "name": "setCurrentDirectiveIndex"
   },
   {
@@ -667,6 +673,9 @@
   },
   {
     "name": "setInputsFromAttrs"
+  },
+  {
+    "name": "setIsInCheckNoChangesMode"
   },
   {
     "name": "setSelectedIndex"

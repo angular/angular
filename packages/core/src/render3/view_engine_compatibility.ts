@@ -20,7 +20,7 @@ import {assertDefined, assertEqual, assertGreaterThan, assertLessThan} from '../
 
 import {assertLContainer, assertNodeInjector} from './assert';
 import {getParentInjectorLocation, NodeInjector} from './di';
-import {addToViewTree, createLContainer, createLView, renderView} from './instructions/shared';
+import {addToViewTree, createLContainer, createLView, createTNode, renderView} from './instructions/shared';
 import {CONTAINER_HEADER_OFFSET, LContainer, NATIVE, VIEW_REFS} from './interfaces/container';
 import {NodeInjectorOffset} from './interfaces/injector';
 import {TContainerNode, TDirectiveHostNode, TElementContainerNode, TElementNode, TNode, TNodeType} from './interfaces/node';
@@ -287,9 +287,9 @@ export function createContainerRef(
         // Physical operation of adding the DOM nodes.
         const beforeNode = getBeforeNodeForView(adjustedIdx, lContainer);
         const renderer = lView[RENDERER];
-        const renderParent = nativeParentNode(renderer, lContainer[NATIVE] as RElement | RComment);
-        if (renderParent !== null) {
-          addViewToContainer(tView, lContainer[T_HOST], renderer, lView, renderParent, beforeNode);
+        const parentRNode = nativeParentNode(renderer, lContainer[NATIVE] as RElement | RComment);
+        if (parentRNode !== null) {
+          addViewToContainer(tView, lContainer[T_HOST], renderer, lView, parentRNode, beforeNode);
         }
 
         (viewRef as ViewRef<any>).attachToViewContainerRef(this);
@@ -388,9 +388,14 @@ export function createContainerRef(
         const hostNative = getNativeByTNode(hostTNode, hostView)!;
         const parentOfHostNative = nativeParentNode(renderer, hostNative);
         nativeInsertBefore(
-            renderer, parentOfHostNative!, commentNode, nativeNextSibling(renderer, hostNative));
+            renderer, parentOfHostNative!, commentNode, nativeNextSibling(renderer, hostNative),
+            false);
       } else {
-        appendChild(hostView[TVIEW], hostView, commentNode, hostTNode);
+        // The TNode created here is bogus, in that it is not added to the TView. It is only created
+        // to allow us to create a dynamic Comment node.
+        const commentTNode = createTNode(
+            hostView[TVIEW], hostTNode.parent, TNodeType.Container, hostTNode.type, null, null);
+        appendChild(hostView[TVIEW], hostView, commentNode, commentTNode);
       }
     }
 

@@ -204,11 +204,7 @@ function findViaNativeElement(lView: LView, target: RElement): number {
  * Locates the next tNode (child, sibling or parent).
  */
 function traverseNextElement(tNode: TNode): TNode|null {
-  if (tNode.child && tNode.child.parent === tNode) {
-    // FIXME(misko): checking if `tNode.child.parent === tNode` should not be necessary
-    // We have added it here because i18n creates TNode's which are not valid, so this is a work
-    // around. The i18n code will be refactored in #39003 and once it lands this extra check can be
-    // deleted.
+  if (tNode.child) {
     return tNode.child;
   } else if (tNode.next) {
     return tNode.next;

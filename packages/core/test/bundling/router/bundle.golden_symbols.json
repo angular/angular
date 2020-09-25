@@ -1032,6 +1032,9 @@
     "name": "createContainerRef"
   },
   {
+    "name": "createElementNode"
+  },
+  {
     "name": "createElementRef"
   },
   {
@@ -1063,6 +1066,9 @@
   },
   {
     "name": "createRouterScroller"
+  },
+  {
+    "name": "createTNode"
   },
   {
     "name": "createTView"
@@ -1138,9 +1144,6 @@
   },
   {
     "name": "domRendererFactory3"
-  },
-  {
-    "name": "elementCreate"
   },
   {
     "name": "empty"
@@ -1260,9 +1263,6 @@
     "name": "getBootstrapListener"
   },
   {
-    "name": "isInCheckNoChangesMode"
-  },
-  {
     "name": "getClosureSafeProperty"
   },
   {
@@ -1279,6 +1279,9 @@
   },
   {
     "name": "getCurrentTNode"
+  },
+  {
+    "name": "getCurrentTNodePlaceholderOk"
   },
   {
     "name": "getDOM"
@@ -1440,6 +1443,9 @@
     "name": "hostReportError"
   },
   {
+    "name": "icuContainerIterate"
+  },
+  {
     "name": "identity"
   },
   {
@@ -1516,6 +1522,9 @@
   },
   {
     "name": "isFunction"
+  },
+  {
+    "name": "isInCheckNoChangesMode"
   },
   {
     "name": "isInlineTemplate"
@@ -1818,9 +1827,6 @@
     "name": "setBindingRootForHostBindings"
   },
   {
-    "name": "setIsInCheckNoChangesMode"
-  },
-  {
     "name": "setCurrentDirectiveIndex"
   },
   {
@@ -1846,6 +1852,9 @@
   },
   {
     "name": "setInputsFromAttrs"
+  },
+  {
+    "name": "setIsInCheckNoChangesMode"
   },
   {
     "name": "setLocaleId"

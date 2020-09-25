@@ -5,43 +5,43 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {Injector} from '../../di';
-import {ErrorHandler} from '../../error_handler';
-import {DoCheck, OnChanges, OnInit} from '../../interface/lifecycle_hooks';
-import {CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA, SchemaMetadata} from '../../metadata/schema';
-import {ViewEncapsulation} from '../../metadata/view';
-import {validateAgainstEventAttributes, validateAgainstEventProperties} from '../../sanitization/sanitization';
-import {Sanitizer} from '../../sanitization/sanitizer';
-import {assertDefined, assertDomNode, assertEqual, assertGreaterThan, assertIndexInRange, assertLessThan, assertNotEqual, assertNotSame, assertSame} from '../../util/assert';
-import {createNamedArrayType} from '../../util/named_array_type';
-import {initNgDevMode} from '../../util/ng_dev_mode';
-import {normalizeDebugBindingName, normalizeDebugBindingValue} from '../../util/ng_reflect';
-import {stringify} from '../../util/stringify';
-import {assertFirstCreatePass, assertLContainer, assertLView, assertTNodeForLView} from '../assert';
-import {attachPatchData} from '../context_discovery';
-import {getFactoryDef} from '../definition';
-import {diPublicInInjector, getNodeInjectable, getOrCreateNodeInjectorForNode} from '../di';
-import {throwMultipleComponentError} from '../errors';
-import {executeCheckHooks, executeInitAndCheckHooks, incrementInitPhaseFlags} from '../hooks';
-import {CONTAINER_HEADER_OFFSET, HAS_TRANSPLANTED_VIEWS, LContainer, MOVED_VIEWS} from '../interfaces/container';
-import {ComponentDef, ComponentTemplate, DirectiveDef, DirectiveDefListOrFactory, PipeDefListOrFactory, RenderFlags, ViewQueriesFunction} from '../interfaces/definition';
-import {NodeInjectorFactory, NodeInjectorOffset} from '../interfaces/injector';
-import {AttributeMarker, InitialInputData, InitialInputs, LocalRefExtractor, PropertyAliases, PropertyAliasValue, TAttributes, TConstantsOrFactory, TContainerNode, TDirectiveHostNode, TElementContainerNode, TElementNode, TIcuContainerNode, TNode, TNodeFlags, TNodeProviderIndexes, TNodeType, TProjectionNode} from '../interfaces/node';
-import {isProceduralRenderer, RComment, RElement, Renderer3, RendererFactory3, RNode, RText} from '../interfaces/renderer';
-import {SanitizerFn} from '../interfaces/sanitization';
-import {isComponentDef, isComponentHost, isContentQueryHost, isRootView} from '../interfaces/type_checks';
-import {CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTEXT, DECLARATION_COMPONENT_VIEW, DECLARATION_VIEW, FLAGS, HEADER_OFFSET, HOST, InitPhaseState, INJECTOR, LView, LViewFlags, NEXT, PARENT, RENDERER, RENDERER_FACTORY, RootContext, RootContextFlags, SANITIZER, T_HOST, TData, TRANSPLANTED_VIEWS_TO_REFRESH, TVIEW, TView, TViewType} from '../interfaces/view';
-import {assertNodeNotOfTypes, assertNodeOfPossibleTypes} from '../node_assert';
-import {isInlineTemplate, isNodeMatchingSelectorList} from '../node_selector_matcher';
-import {enterView, getBindingsEnabled, getCurrentDirectiveIndex, getCurrentTNode, getSelectedIndex, isCurrentTNodeParent, isInCheckNoChangesMode, leaveView, setBindingIndex, setBindingRootForHostBindings, setCurrentDirectiveIndex, setCurrentQueryIndex, setCurrentTNode, setIsInCheckNoChangesMode, setSelectedIndex} from '../state';
-import {NO_CHANGE} from '../tokens';
-import {isAnimationProp, mergeHostAttrs} from '../util/attrs_utils';
-import {INTERPOLATION_DELIMITER, renderStringify, stringifyForError} from '../util/misc_utils';
-import {getFirstLContainer, getLViewParent, getNextLContainer} from '../util/view_traversal_utils';
-import {getComponentLViewByIndex, getNativeByIndex, getNativeByTNode, isCreationMode, readPatchedLView, resetPreOrderHookFlags, unwrapLView, updateTransplantedViewCount, viewAttachedToChangeDetector} from '../util/view_utils';
-
-import {selectIndexInternal} from './advance';
-import {attachLContainerDebug, attachLViewDebug, cloneToLViewFromTViewBlueprint, cloneToTViewData, LCleanup, LViewBlueprint, MatchesArray, TCleanup, TNodeDebug, TNodeInitialInputs, TNodeLocalNames, TViewComponents, TViewConstructor} from './lview_debug';
+import { Injector } from '../../di';
+import { ErrorHandler } from '../../error_handler';
+import { DoCheck, OnChanges, OnInit } from '../../interface/lifecycle_hooks';
+import { CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA, SchemaMetadata } from '../../metadata/schema';
+import { ViewEncapsulation } from '../../metadata/view';
+import { validateAgainstEventAttributes, validateAgainstEventProperties } from '../../sanitization/sanitization';
+import { Sanitizer } from '../../sanitization/sanitizer';
+import { assertDefined, assertDomNode, assertEqual, assertGreaterThan, assertIndexInRange, assertLessThan, assertNotEqual, assertNotSame, assertSame, assertString } from '../../util/assert';
+import { createNamedArrayType } from '../../util/named_array_type';
+import { initNgDevMode } from '../../util/ng_dev_mode';
+import { normalizeDebugBindingName, normalizeDebugBindingValue } from '../../util/ng_reflect';
+import { stringify } from '../../util/stringify';
+import { assertFirstCreatePass, assertFirstUpdatePass, assertLContainer, assertLView, assertTNodeForLView, assertTNodeForTView } from '../assert';
+import { attachPatchData } from '../context_discovery';
+import { getFactoryDef } from '../definition';
+import { diPublicInInjector, getNodeInjectable, getOrCreateNodeInjectorForNode } from '../di';
+import { throwMultipleComponentError } from '../errors';
+import { executeCheckHooks, executeInitAndCheckHooks, incrementInitPhaseFlags } from '../hooks';
+import { CONTAINER_HEADER_OFFSET, HAS_TRANSPLANTED_VIEWS, LContainer, MOVED_VIEWS } from '../interfaces/container';
+import { ComponentDef, ComponentTemplate, DirectiveDef, DirectiveDefListOrFactory, PipeDefListOrFactory, RenderFlags, ViewQueriesFunction } from '../interfaces/definition';
+import { NodeInjectorFactory, NodeInjectorOffset } from '../interfaces/injector';
+import { AttributeMarker, InitialInputData, InitialInputs, LocalRefExtractor, PropertyAliases, PropertyAliasValue, TAttributes, TConstantsOrFactory, TContainerNode, TDirectiveHostNode, TElementContainerNode, TElementNode, TIcuContainerNode, TNode, TNodeFlags, TNodeProviderIndexes, TNodeType, TProjectionNode } from '../interfaces/node';
+import { isProceduralRenderer, RComment, RElement, Renderer3, RendererFactory3, RNode, RText } from '../interfaces/renderer';
+import { SanitizerFn } from '../interfaces/sanitization';
+import { isComponentDef, isComponentHost, isContentQueryHost, isRootView } from '../interfaces/type_checks';
+import { CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTEXT, DECLARATION_COMPONENT_VIEW, DECLARATION_VIEW, FLAGS, HEADER_OFFSET, HOST, InitPhaseState, INJECTOR, LView, LViewFlags, NEXT, PARENT, RENDERER, RENDERER_FACTORY, RootContext, RootContextFlags, SANITIZER, TData, TRANSPLANTED_VIEWS_TO_REFRESH, TVIEW, TView, TViewType, T_HOST } from '../interfaces/view';
+import { assertNodeNotOfTypes, assertNodeOfPossibleTypes } from '../node_assert';
+import { updateTextNode } from '../node_manipulation';
+import { isInlineTemplate, isNodeMatchingSelectorList } from '../node_selector_matcher';
+import { enterView, getBindingsEnabled, getCurrentDirectiveIndex, getCurrentParentTNode, getCurrentTNode, getCurrentTNodePlaceholderOk, getSelectedIndex, isCurrentTNodeParent, isInCheckNoChangesMode, isInI18nBlock, leaveView, setBindingIndex, setBindingRootForHostBindings, setCurrentDirectiveIndex, setCurrentQueryIndex, setCurrentTNode, setIsInCheckNoChangesMode, setSelectedIndex } from '../state';
+import { NO_CHANGE } from '../tokens';
+import { isAnimationProp, mergeHostAttrs } from '../util/attrs_utils';
+import { INTERPOLATION_DELIMITER, renderStringify, stringifyForError } from '../util/misc_utils';
+import { getFirstLContainer, getLViewParent, getNextLContainer } from '../util/view_traversal_utils';
+import { getComponentLViewByIndex, getNativeByIndex, getNativeByTNode, isCreationMode, readPatchedLView, resetPreOrderHookFlags, unwrapLView, updateTransplantedViewCount, viewAttachedToChangeDetector } from '../util/view_utils';
+import { selectIndexInternal } from './advance';
+import { attachLContainerDebug, attachLViewDebug, cloneToLViewFromTViewBlueprint, cloneToTViewData, LCleanup, LViewBlueprint, MatchesArray, TCleanup, TNodeDebug, TNodeInitialInputs, TNodeLocalNames, TViewComponents, TViewConstructor } from './lview_debug';
 
 
 
@@ -155,21 +155,6 @@ function renderChildComponents(hostLView: LView, components: number[]): void {
   }
 }
 
-/**
- * Creates a native element from a tag name, using a renderer.
- * @param name the tag name
- * @param renderer A renderer to use
- * @returns the element created
- */
-export function elementCreate(name: string, renderer: Renderer3, namespace: string|null): RElement {
-  if (isProceduralRenderer(renderer)) {
-    return renderer.createElement(name, namespace);
-  } else {
-    return namespace === null ? renderer.createElement(name) :
-                                renderer.createElementNS(namespace, name);
-  }
-}
-
 export function createLView<T>(
     parentLView: LView|null, tView: TView, context: T|null, flags: LViewFlags, host: RElement|null,
     tHostNode: TNode|null, rendererFactory: RendererFactory3|null, renderer: Renderer3|null,
@@ -230,17 +215,34 @@ export function getOrCreateTNode(
     TElementNode&TContainerNode&TElementContainerNode&TProjectionNode&TIcuContainerNode {
   // Keep this function short, so that the VM will inline it.
   const adjustedIndex = index + HEADER_OFFSET;
-  const tNode = tView.data[adjustedIndex] as TNode ||
-      createTNodeAtIndex(tView, adjustedIndex, type, name, attrs);
+  let tNode = tView.data[adjustedIndex] as TNode;
+  if (tNode === null) {
+    tNode = createTNodeAtIndex(tView, adjustedIndex, type, name, attrs);
+    if (isInI18nBlock()) {
+      // If we are in i18n block then all elements should be pre declared through `Placeholder`
+      // See `TNodeType.Placeholder` and `LFrame.inI18n` for more context.
+      // If the `TNode` was not pre-declared than it means it was not mentioned which means it was
+      // removed, so we mark it as detached.
+      tNode.flags |= TNodeFlags.isDetached;
+    }
+  } else if (tNode.type == TNodeType.Placeholder) {
+    tNode.type = type;
+    tNode.tagName = name;
+    tNode.attrs = attrs;
+    const parent = getCurrentParentTNode();
+    tNode.injectorIndex = parent === null ? -1 : parent.injectorIndex;
+    ngDevMode && assertTNodeForTView(tNode, tView);
+    ngDevMode && assertEqual(index + HEADER_OFFSET, tNode.index, 'Expecting same index');
+  }
   setCurrentTNode(tNode, true);
   return tNode as TElementNode & TContainerNode & TElementContainerNode & TProjectionNode &
       TIcuContainerNode;
 }
 
-function createTNodeAtIndex(
+export function createTNodeAtIndex(
     tView: TView, adjustedIndex: number, type: TNodeType, name: string|null,
     attrs: TAttributes|null) {
-  const currentTNode = getCurrentTNode();
+  const currentTNode = getCurrentTNodePlaceholderOk();
   const isParent = isCurrentTNodeParent();
   const parent = isParent ? currentTNode : currentTNode && currentTNode.parent;
   // Parents cannot cross component boundaries because components will be used in multiple places.
@@ -253,11 +255,18 @@ function createTNodeAtIndex(
     tView.firstChild = tNode;
   }
   if (currentTNode !== null) {
-    if (isParent && currentTNode.child == null && tNode.parent !== null) {
-      // We are in the same view, which means we are adding content node to the parent view.
-      currentTNode.child = tNode;
-    } else if (!isParent) {
-      currentTNode.next = tNode;
+    if (isParent) {
+      // FIXME(misko): This logic looks unnecessarily complicated. Could we simplify?
+      if (currentTNode.child == null && tNode.parent !== null) {
+        // We are in the same view, which means we are adding content node to the parent view.
+        currentTNode.child = tNode;
+      }
+    } else {
+      if (currentTNode.next === null) {
+        // In the case of i18n the `currentTNode` may already be linked, in which case we don't want
+        // to break the links which i18n created.
+        currentTNode.next = tNode;
+      }
     }
   }
   return tNode;
@@ -266,36 +275,40 @@ function createTNodeAtIndex(
 
 /**
  * When elements are created dynamically after a view blueprint is created (e.g. through
- * i18nApply() or ComponentFactory.create), we need to adjust the blueprint for future
+ * i18nApply()), we need to adjust the blueprint for future
  * template passes.
  *
  * @param tView `TView` associated with `LView`
- * @param view The `LView` containing the blueprint to adjust
+ * @param lView The `LView` containing the blueprint to adjust
  * @param numSlotsToAlloc The number of slots to alloc in the LView, should be >0
  */
-export function allocExpando(tView: TView, lView: LView, numSlotsToAlloc: number) {
-  ngDevMode &&
-      assertGreaterThan(
-          numSlotsToAlloc, 0, 'The number of slots to alloc should be greater than 0');
-  if (numSlotsToAlloc > 0) {
-    if (tView.firstCreatePass) {
-      for (let i = 0; i < numSlotsToAlloc; i++) {
-        tView.blueprint.push(null);
-        tView.data.push(null);
-        lView.push(null);
-      }
-
-      // We should only increment the expando start index if there aren't already directives
-      // and injectors saved in the "expando" section
-      if (!tView.expandoInstructions) {
-        tView.expandoStartIndex += numSlotsToAlloc;
-      } else {
-        // Since we're adding the dynamic nodes into the expando section, we need to let the host
-        // bindings know that they should skip x slots
-        tView.expandoInstructions.push(numSlotsToAlloc);
-      }
-    }
+export function allocExpando(tView: TView, lView: LView, numSlotsToAlloc: number): number {
+  if (ngDevMode) {
+    assertGreaterThan(numSlotsToAlloc, 0, 'The number of slots to alloc should be greater than 0');
+    assertEqual(tView.data.length, lView.length, 'Expecting LView to be same size as TView');
+    assertEqual(
+        tView.data.length, tView.blueprint.length, 'Expecting Blueprint to be same size as TView');
+    assertFirstUpdatePass(tView);
   }
+  const allocIdx = lView.length;
+  for (let i = 0; i < numSlotsToAlloc; i++) {
+    tView.blueprint.push(null);
+    tView.data.push(null);
+    lView.push(null);
+  }
+
+  // We should only increment the expando start index if there aren't already directives
+  // and injectors saved in the "expando" section
+  if (!tView.expandoInstructions) {
+    tView.expandoStartIndex += numSlotsToAlloc;
+  } else {
+    // Since we're adding the dynamic nodes into the expando section, we need to let the host
+    // bindings know that they should skip x slots
+    // FIXME(misko): Refactor `expandoInstructions` so that it does not rely on relative binding
+    // offsets, but absolute values which Means we would not have to store it here.
+    tView.expandoInstructions.push(numSlotsToAlloc);
+  }
+  return allocIdx;
 }
 
 
@@ -824,12 +837,14 @@ export function createTNode(
     tagName: string|null, attrs: TAttributes|null): TNode {
   ngDevMode && assertNotSame(attrs, undefined, '\'undefined\' is not valid value for \'attrs\'');
   ngDevMode && ngDevMode.tNode++;
+  ngDevMode && tParent && assertTNodeForTView(tParent, tView);
   let injectorIndex = tParent ? tParent.injectorIndex : -1;
   const tNode = ngDevMode ?
       new TNodeDebug(
           tView,          // tView_: TView
           type,           // type: TNodeType
           adjustedIndex,  // index: number
+          null,           // insertBeforeIndex: null|-1|number|number[]
           injectorIndex,  // injectorIndex: number
           -1,             // directiveStart: number
           -1,             // directiveEnd: number
@@ -862,6 +877,7 @@ export function createTNode(
       {
         type: type,
         index: adjustedIndex,
+        insertBeforeIndex: null,
         injectorIndex: injectorIndex,
         directiveStart: -1,
         directiveEnd: -1,
@@ -1509,7 +1525,12 @@ export function elementAttributeInternal(
             `Host bindings are not valid on ng-container or ng-template.`);
   }
   const element = getNativeByTNode(tNode, lView) as RElement;
-  const renderer = lView[RENDERER];
+  setElementAttribute(lView[RENDERER], element, namespace, tNode.tagName, name, value, sanitizer);
+}
+
+export function setElementAttribute(
+    renderer: Renderer3, element: RElement, namespace: string|null|undefined, tagName: string|null,
+    name: string, value: any, sanitizer: SanitizerFn|null|undefined) {
   if (value == null) {
     ngDevMode && ngDevMode.rendererRemoveAttribute++;
     isProceduralRenderer(renderer) ? renderer.removeAttribute(element, name, namespace) :
@@ -1517,7 +1538,7 @@ export function elementAttributeInternal(
   } else {
     ngDevMode && ngDevMode.rendererSetAttribute++;
     const strValue =
-        sanitizer == null ? renderStringify(value) : sanitizer(value, tNode.tagName || '', name);
+        sanitizer == null ? renderStringify(value) : sanitizer(value, tagName || '', name);
 
 
     if (isProceduralRenderer(renderer)) {
@@ -2065,11 +2086,10 @@ export function setInputsForProperty(
  * Updates a text binding at a given index in a given LView.
  */
 export function textBindingInternal(lView: LView, index: number, value: string): void {
+  ngDevMode && assertString(value, 'Value should be a string');
   ngDevMode && assertNotSame(value, NO_CHANGE as any, 'value should not be NO_CHANGE');
   ngDevMode && assertIndexInRange(lView, index + HEADER_OFFSET);
   const element = getNativeByIndex(index, lView) as any as RText;
   ngDevMode && assertDefined(element, 'native element should exist');
-  ngDevMode && ngDevMode.rendererSetText++;
-  const renderer = lView[RENDERER];
-  isProceduralRenderer(renderer) ? renderer.setValue(element, value) : element.textContent = value;
+  updateTextNode(lView[RENDERER], element, value);
 }

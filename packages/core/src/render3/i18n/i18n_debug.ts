@@ -7,8 +7,38 @@
  */
 
 import {assertNumber, assertString} from '../../util/assert';
+import {COMMENT_MARKER, ELEMENT_MARKER, getInstructionFromI18nMutateOpCode, getParentFromI18nMutateOpCode, getRefFromI18nMutateOpCode, I18nCreateOpCode, I18nMutateOpCode, I18nMutateOpCodes, I18nUpdateOpCode, I18nUpdateOpCodes} from '../interfaces/i18n';
 
-import {COMMENT_MARKER, ELEMENT_MARKER, getInstructionFromI18nMutateOpCode, getParentFromI18nMutateOpCode, getRefFromI18nMutateOpCode, I18nMutateOpCode, I18nMutateOpCodes, I18nUpdateOpCode, I18nUpdateOpCodes} from '../interfaces/i18n';
+
+/**
+ * Converts `I18nCreateOpCodes` array into a human readable format.
+ *
+ * This function is attached to the `I18nCreateOpCodes.debug` property if `ngDevMode` is enabled.
+ * This function provides a human readable view of the opcodes. This is useful when debugging the
+ * application as well as writing more readable tests.
+ *
+ * @param this `I18nCreateOpCodes` if attached as a method.
+ * @param opcodes `I18nCreateOpCodes` if invoked as a function.
+ */
+export function i18nCreateOpCodesToString(
+    this: I18nUpdateOpCodes|void, opcodes?: I18nUpdateOpCodes): string[] {
+  const createOpCodes: I18nUpdateOpCodes = opcodes || (Array.isArray(this) ? this : []);
+  let lines: string[] = [];
+  for (let i = 0; i < createOpCodes.length; i++) {
+    const opCode = createOpCodes[i++] as any;
+    const text = createOpCodes[i] as string;
+    const isComment = (opCode & I18nCreateOpCode.COMMENT) === I18nCreateOpCode.COMMENT;
+    const appendNow =
+        (opCode & I18nCreateOpCode.APPEND_EAGERLY) === I18nCreateOpCode.APPEND_EAGERLY;
+    const index = opCode >>> I18nCreateOpCode.SHIFT;
+    lines.push(`lView[${index}] = document.${isComment ? 'createComment' : 'createText'}(${
+        JSON.stringify(text)});`);
+    if (appendNow) {
+      lines.push(`parent.appendChild(lView[${index}]);`);
+    }
+  }
+  return lines;
+}
 
 /**
  * Converts `I18nUpdateOpCodes` array into a human readable format.
@@ -37,9 +67,9 @@ export function i18nUpdateOpCodesToString(
         const value = sanitizationFn ? `(${sanitizationFn})($$$)` : '$$$';
         return `(lView[${ref}] as Element).setAttribute('${attrName}', ${value})`;
       case I18nUpdateOpCode.IcuSwitch:
-        return `icuSwitchCase(lView[${ref}] as Comment, ${parser.consumeNumber()}, $$$)`;
+        return `icuSwitchCase(${ref}, $$$)`;
       case I18nUpdateOpCode.IcuUpdate:
-        return `icuUpdateCase(lView[${ref}] as Comment, ${parser.consumeNumber()})`;
+        return `icuUpdateCase(${ref})`;
     }
     throw new Error('unexpected OpCode');
   }
@@ -57,7 +87,9 @@ export function i18nUpdateOpCodesToString(
         statement += value;
       } else if (value < 0) {
         // Negative numbers are ref indexes
-        statement += '${lView[' + (0 - value) + ']}';
+        // Here `i` refers to current binding index. It is to signify that the value is relative,
+        // rather than absolute.
+        statement += '${lView[i' + value + ']}';
       } else {
         // Positive numbers are operations.
         const opCodeText = consumeOpCode(value);
@@ -89,9 +121,6 @@ export function i18nMutateOpCodesToString(
     const parent = getParentFromI18nMutateOpCode(opCode);
     const ref = getRefFromI18nMutateOpCode(opCode);
     switch (getInstructionFromI18nMutateOpCode(opCode)) {
-      case I18nMutateOpCode.Select:
-        lastRef = ref;
-        return '';
       case I18nMutateOpCode.AppendChild:
         return `(lView[${parent}] as Element).appendChild(lView[${lastRef}])`;
       case I18nMutateOpCode.Remove:
@@ -99,8 +128,6 @@ export function i18nMutateOpCodesToString(
       case I18nMutateOpCode.Attr:
         return `(lView[${ref}] as Element).setAttribute("${parser.consumeString()}", "${
             parser.consumeString()}")`;
-      case I18nMutateOpCode.ElementEnd:
-        return `setCurrentTNode(tView.data[${ref}] as TNode)`;
       case I18nMutateOpCode.RemoveNestedIcu:
         return `removeNestedICU(${ref})`;
     }
