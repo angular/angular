@@ -186,7 +186,7 @@ runInEachFileSystem(() => {
         beforeEach(() => {
           const fileName = absoluteFrom('/main.ts');
           const templateString = `
-              <div *ngFor="let user of users; let i = index;">
+              <div *ngFor="let user of users; trackBy: trackByFn; let i = index;">
                 {{user.name}} {{user.streetNumber}}
                 <div [tabIndex]="i"></div>
               </div>`;
@@ -219,6 +219,17 @@ runInEachFileSystem(() => {
           assertExpressionSymbol(symbol);
           expect(program.getTypeChecker().symbolToString(symbol.tsSymbol!)).toEqual('users');
           expect(program.getTypeChecker().typeToString(symbol.tsType)).toEqual('Array<User>');
+        });
+
+        it('should retrieve a symbol for second binding inside microsyntax', () => {
+          const ngForTrackByBinding = templateNode.templateAttrs.find(
+                                          a => a.name === 'ngForTrackBy')! as TmplAstBoundAttribute;
+          const symbol = templateTypeChecker.getSymbolOfNode(ngForTrackByBinding, cmp)!;
+          assertInputBindingSymbol(symbol);
+          expect(program.getTypeChecker().symbolToString(symbol.bindings[0].tsSymbol))
+              .toEqual('ngForTrackBy');
+          expect(program.getTypeChecker().typeToString(symbol.bindings[0].tsType))
+              .toEqual('TrackByFunction<User>');
         });
 
         it('should retrieve a symbol for property reads of implicit variable inside structural binding',

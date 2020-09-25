@@ -193,18 +193,21 @@ export class SymbolBuilder {
       return host !== null ? {kind: SymbolKind.DomBinding, host} : null;
     }
 
+    if (binding.keySpan === null) {
+      return null;
+    }
     const node = findFirstMatchingNode(
-        this.typeCheckBlock, {withSpan: binding.sourceSpan, filter: isAssignment});
-    if (node === null || !isAccessExpression(node.left)) {
+        this.typeCheckBlock, {withSpan: binding.keySpan, filter: isAccessExpression});
+    if (node === null) {
       return null;
     }
 
-    const symbolInfo = this.getSymbolOfTsNode(node.left);
+    const symbolInfo = this.getSymbolOfTsNode(node);
     if (symbolInfo === null || symbolInfo.tsSymbol === null) {
       return null;
     }
 
-    const target = this.getDirectiveSymbolForAccessExpression(node.left, consumer);
+    const target = this.getDirectiveSymbolForAccessExpression(node, consumer);
     if (target === null) {
       return null;
     }
