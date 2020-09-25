@@ -1,19 +1,16 @@
 // #docregion
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 
 @Component({
   selector: 'app-countdown-timer',
   template: '<p>{{message}}</p>'
 })
-export class CountdownTimerComponent implements OnInit, OnDestroy {
+export class CountdownTimerComponent implements OnDestroy {
 
   intervalId = 0;
   message = '';
   seconds = 11;
 
-  clearTimer() { clearInterval(this.intervalId); }
-
-  ngOnInit()    { this.start(); }
   ngOnDestroy() { this.clearTimer(); }
 
   start() { this.countDown(); }
@@ -21,6 +18,8 @@ export class CountdownTimerComponent implements OnInit, OnDestroy {
     this.clearTimer();
     this.message = `Holding at T-${this.seconds} seconds`;
   }
+
+  private clearTimer() { clearInterval(this.intervalId); }
 
   private countDown() {
     this.clearTimer();

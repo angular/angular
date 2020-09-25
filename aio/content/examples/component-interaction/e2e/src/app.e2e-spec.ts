@@ -2,11 +2,7 @@ import { browser, element, by } from 'protractor';
 
 describe('Component Communication Cookbook Tests', () => {
 
-  // Note: '?e2e' which app can read to know it is running in protractor
-  // e.g. `if (!/e2e/.test(location.search)) { ...`
-  beforeAll(() => {
-    browser.get('?e2e');
-  });
+  beforeAll(() => browser.get(browser.baseUrl));
 
   describe('Parent-to-child communication', () => {
     // #docregion parent-to-child
@@ -156,11 +152,11 @@ describe('Component Communication Cookbook Tests', () => {
   // Can't run timer tests in protractor because
   // interaction w/ zones causes all tests to freeze & timeout.
   xdescribe('Parent calls child via local var', () => {
-    countDownTimerTests('countdown-parent-lv');
+    countDownTimerTests('app-countdown-parent-lv');
   });
 
   xdescribe('Parent calls ViewChild', () => {
-    countDownTimerTests('countdown-parent-vc');
+    countDownTimerTests('app-countdown-parent-vc');
   });
 
   function countDownTimerTests(parentTag: string) {
@@ -168,10 +164,14 @@ describe('Component Communication Cookbook Tests', () => {
     // ...
     it('timer and parent seconds should match', () => {
       const parent = element(by.tagName(parentTag));
+      const startButton = parent.element(by.tagName('button')).get(0);
       const message = parent.element(by.tagName('app-countdown-timer')).getText();
-      browser.sleep(10); // give `seconds` a chance to catchup with `message`
-      const seconds = parent.element(by.className('seconds')).getText();
-      expect(message).toContain(seconds);
+
+      startButton.click().then(() => {
+        browser.sleep(10); // give `seconds` a chance to catchup with `message`
+        const seconds = parent.element(by.className('seconds')).getText();
+        expect(message).toContain(seconds);
+      });
     });
 
     it('should stop the countdown', () => {
