@@ -128,14 +128,21 @@ describe('parser', () => {
       });
 
       it('should only allow identifier or keyword as member names', () => {
-        expectActionError('x.(', 'identifier or keyword');
-        expectActionError('x. 1234', 'identifier or keyword');
-        expectActionError('x."foo"', 'identifier or keyword');
+        checkActionWithError('x.', 'x.', 'identifier or keyword');
+        checkActionWithError('x.(', 'x.', 'identifier or keyword');
+        checkActionWithError('x. 1234', 'x.', 'identifier or keyword');
+        checkActionWithError('x."foo"', 'x.', 'identifier or keyword');
       });
 
       it('should parse safe field access', () => {
         checkAction('a?.a');
         checkAction('a.a?.a');
+      });
+
+      it('should parse incomplete safe field accesses', () => {
+        checkActionWithError('a?.a.', 'a?.a.', 'identifier or keyword');
+        checkActionWithError('a.a?.a.', 'a.a?.a.', 'identifier or keyword');
+        checkActionWithError('a.a?.a?. 1234', 'a.a?.a?.', 'identifier or keyword');
       });
     });
 
