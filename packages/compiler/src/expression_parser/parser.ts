@@ -203,6 +203,7 @@ export class Parser {
     const expressionSpans: {start: number, end: number}[] = [];
     let i = 0;
     let atInterpolation = false;
+    let extendLastString = false;
     let {start: interpStart, end: interpEnd} = interpolationConfig;
     while (i < input.length) {
       if (!atInterpolation) {
@@ -223,8 +224,10 @@ export class Parser {
         const exprStart = fullStart + interpStart.length;
         const exprEnd = input.indexOf(interpEnd, exprStart);
         if (exprEnd === -1) {
-          // Could not find the end of the interpolation; do not parse an
-          // expression.
+          // Could not find the end of the interpolation; do not parse an expression.
+          // Instead we should extend the content on the last raw string.
+          atInterpolation = false;
+          extendLastString = true;
           break;
         }
         const fullEnd = exprEnd + interpEnd.length;
@@ -246,10 +249,14 @@ export class Parser {
       }
     }
     if (!atInterpolation) {
-      // If we ended with an interpolation, add the remaining content as a raw
-      // string.
-      strings.push(input.substring(i));
-      stringSpans.push({start: i, end: input.length});
+      // If we are now at a text section, add the remaining content as a raw string.
+      if (extendLastString) {
+        strings[strings.length - 1] += input.substring(i);
+        stringSpans[stringSpans.length - 1].end = input.length;
+      } else {
+        strings.push(input.substring(i));
+        stringSpans.push({start: i, end: input.length});
+      }
     }
     return expressions.length === 0 ?
         null :
