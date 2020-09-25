@@ -11,11 +11,11 @@ import * as ts from 'typescript';
 
 import {CycleAnalyzer} from '../../cycles';
 import {ErrorCode, FatalDiagnosticError, ngErrorCode} from '../../diagnostics';
-import {absoluteFrom, relative} from '../../file_system';
+import {absoluteFrom, relative, resolve} from '../../file_system';
 import {DefaultImportRecorder, ModuleResolver, Reference, ReferenceEmitter} from '../../imports';
 import {DependencyTracker} from '../../incremental/api';
 import {IndexingContext} from '../../indexer';
-import {ClassPropertyMapping, DirectiveMeta, DirectiveTypeCheckMeta, extractDirectiveTypeCheckMeta, InjectableClassRegistry, MetadataReader, MetadataRegistry} from '../../metadata';
+import {ClassPropertyMapping, DirectiveMeta, DirectiveTypeCheckMeta, extractDirectiveTypeCheckMeta, InjectableClassRegistry, MetadataReader, MetadataRegistry, TemplateMapping} from '../../metadata';
 import {EnumValue, PartialEvaluator} from '../../partial_evaluator';
 import {ClassDeclaration, Decorator, ReflectionHost, reflectObjectLiteral} from '../../reflection';
 import {ComponentScopeReader, LocalModuleScopeRegistry} from '../../scope';
@@ -83,9 +83,10 @@ export class ComponentDecoratorHandler implements
       private reflector: ReflectionHost, private evaluator: PartialEvaluator,
       private metaRegistry: MetadataRegistry, private metaReader: MetadataReader,
       private scopeReader: ComponentScopeReader, private scopeRegistry: LocalModuleScopeRegistry,
-      private isCore: boolean, private resourceLoader: ResourceLoader,
-      private rootDirs: ReadonlyArray<string>, private defaultPreserveWhitespaces: boolean,
-      private i18nUseExternalIds: boolean, private enableI18nLegacyMessageIdFormat: boolean,
+      private templateMapping: TemplateMapping, private isCore: boolean,
+      private resourceLoader: ResourceLoader, private rootDirs: ReadonlyArray<string>,
+      private defaultPreserveWhitespaces: boolean, private i18nUseExternalIds: boolean,
+      private enableI18nLegacyMessageIdFormat: boolean,
       private i18nNormalizeLineEndingsInICUs: boolean|undefined,
       private moduleResolver: ModuleResolver, private cycleAnalyzer: CycleAnalyzer,
       private refEmitter: ReferenceEmitter, private defaultImportRecorder: DefaultImportRecorder,
@@ -383,6 +384,10 @@ export class ComponentDecoratorHandler implements
       baseClass: analysis.baseClass,
       ...analysis.typeCheckMeta,
     });
+
+    if (!analysis.template.isInline) {
+      this.templateMapping.register(resolve(analysis.template.templateUrl), node);
+    }
 
     this.injectableRegistry.registerInjectable(node);
   }
