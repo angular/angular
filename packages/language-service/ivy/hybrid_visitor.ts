@@ -58,15 +58,6 @@ class R3Visitor implements t.Visitor {
           return;
         }
       }
-      if (node instanceof t.BoundEvent &&
-          this.path.find((n => n instanceof t.BoundAttribute && node.name === n.name + 'Change'))) {
-        // For two-way binding aka banana-in-a-box, there are two matches:
-        // BoundAttribute and BoundEvent. Both have the same spans. We choose to
-        // return BoundAttribute because it matches the identifier name verbatim.
-        // TODO: For operations like go to definition, ideally we want to return
-        // both.
-        return;
-      }
       this.path.push(node);
       node.visit(this);
     }
@@ -111,9 +102,20 @@ class R3Visitor implements t.Visitor {
     visitor.visit(attribute.value, this.path);
   }
 
-  visitBoundEvent(attribute: t.BoundEvent) {
+  visitBoundEvent(event: t.BoundEvent) {
+    const isTwoWayBinding =
+        this.path.some(n => n instanceof t.BoundAttribute && event.name === n.name + 'Change');
+    if (isTwoWayBinding) {
+      // For two-way binding aka banana-in-a-box, there are two matches:
+      // BoundAttribute and BoundEvent. Both have the same spans. We choose to
+      // return BoundAttribute because it matches the identifier name verbatim.
+      // TODO: For operations like go to definition, ideally we want to return
+      // both.
+      this.path.pop();  // remove bound event from the AST path
+      return;
+    }
     const visitor = new ExpressionVisitor(this.position);
-    visitor.visit(attribute.handler, this.path);
+    visitor.visit(event.handler, this.path);
   }
 
   visitText(text: t.Text) {
