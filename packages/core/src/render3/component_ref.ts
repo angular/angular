@@ -23,13 +23,13 @@ import {assertComponentType} from './assert';
 import {createRootComponent, createRootComponentView, createRootContext, LifecycleHooksFeature} from './component';
 import {getComponentDef} from './definition';
 import {NodeInjector} from './di';
-import {createLView, createTView, elementCreate, locateHostElement, renderView} from './instructions/shared';
+import {createLView, createTView, locateHostElement, renderView} from './instructions/shared';
 import {ComponentDef} from './interfaces/definition';
 import {TContainerNode, TElementContainerNode, TElementNode, TNode} from './interfaces/node';
 import {domRendererFactory3, RendererFactory3, RNode} from './interfaces/renderer';
 import {LView, LViewFlags, TViewType} from './interfaces/view';
 import {MATH_ML_NAMESPACE, SVG_NAMESPACE} from './namespaces';
-import {writeDirectClass} from './node_manipulation';
+import {createElementNode, writeDirectClass} from './node_manipulation';
 import {extractAttrsAndClassesFromSelector, stringifyCSSSelectorList} from './node_selector_matcher';
 import {enterView, leaveView} from './state';
 import {setUpAttributes} from './util/attrs_utils';
@@ -147,8 +147,8 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
     const elementName = this.componentDef.selectors[0][0] as string || 'div';
     const hostRNode = rootSelectorOrNode ?
         locateHostElement(hostRenderer, rootSelectorOrNode, this.componentDef.encapsulation) :
-        elementCreate(
-            elementName, rendererFactory.createRenderer(null, this.componentDef),
+        createElementNode(
+            rendererFactory.createRenderer(null, this.componentDef), elementName,
             getNamespace(elementName));
 
     const rootFlags = this.componentDef.onPush ? LViewFlags.Dirty | LViewFlags.IsRoot :

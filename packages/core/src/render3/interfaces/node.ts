@@ -7,6 +7,7 @@
  */
 import {KeyValueArray} from '../../util/array_utils';
 import {TStylingRange} from '../interfaces/styling';
+import {TIcu} from './i18n';
 import {CssSelector} from './projection';
 import {RNode} from './renderer';
 import {LView, TView} from './view';
@@ -16,9 +17,11 @@ import {LView, TView} from './view';
  * TNodeType corresponds to the {@link TNode} `type` property.
  */
 export const enum TNodeType {
+  // FIXME(misko): Add `Text` type so that it would be much easier to reason/debug about `TNode`s.
   /**
    * The TNode contains information about an {@link LContainer} for embedded views.
    */
+  // FIXME(misko): Verify that we still need a `Container`, at the very least update the text.
   Container = 0,
   /**
    * The TNode contains information about an `<ng-content>` projection
@@ -36,6 +39,20 @@ export const enum TNodeType {
    * The TNode contains information about an ICU comment used in `i18n`.
    */
   IcuContainer = 4,
+  /**
+   * Special node type representing a placeholder for future `TNode` at this location.
+   *
+   * I18n translation blocks are created before the element nodes which they contain. (I18n blocks
+   * can span over many elements.) Because i18n `TNode`s (representing text) are created first they
+   * often may need to point to element `TNode`s which are not yet created. In such a case we create
+   * a `Placeholder` `TNode`. This allows the i18n to structurally link the `TNode`s together
+   * without knowing any information about the future nodes which will be at that location.
+   *
+   * On `firstCreatePass` When element instruction executes it will try to create a `TNode` at that
+   * location. Seeing a `Placeholder` `TNode` already there tells the system that it should reuse
+   * existing `TNode` (rather than create a new one) and just update the missing information.
+   */
+  Placeholder = 5,
 }
 
 /**
@@ -47,7 +64,8 @@ export const TNodeTypeAsString = [
   'Projection',        // 1
   'Element',           // 2
   'ElementContainer',  // 3
-  'IcuContainer'       // 4
+  'IcuContainer',      // 4
+  'Placeholder',       // 5
 ] as const;
 
 
@@ -294,6 +312,59 @@ export interface TNode {
   index: number;
 
   /**
+   * Insert before existing DOM node index.
+   *
+   * When DOM nodes are being inserted, normally they are being appended as they are created.
+   * Under i18n case, the translated text nodes are created ahead of time as part of the
+   * `ɵɵi18nStart` instruction which means that this `TNode` can't just be appended and instead
+   * needs to be inserted using `insertBeforeIndex` semantics.
+   *
+   * Additionally sometimes it is necessary to insert new text nodes as a child of this `TNode`. In
+   * such a case the value stores an array of text nodes to insert.
+   *
+   * Example:
+   * ```
+   * <div i18n>
+   *   Hello <span>World</span>!
+   * </div>
+   * ```
+   * In the above example the `ɵɵi18nStart` instruction can create `Hello `, `World` and `!` text
+   * nodes. It can also insert `Hello ` and `!` text node as a child of `<div>`, but it can't
+   * insert `World` because the `<span>` node has not yet been created. In such a case the
+   * `<span>` `TNode` will have an array which will direct the `<span>` to not only insert
+   * itself in front of `!` but also to insert the `World` (created by `ɵɵi18nStart`) into `<span>`
+   * itself.
+   *
+   * Pseudo code:
+   * ```
+   *   if (insertBeforeIndex === null) {
+   *     // append as normal
+   *   } else if (Array.isArray(insertBeforeIndex)) {
+   *     // First insert current `TNode` at correct location
+   *     const currentNode = lView[this.index];
+   *     parentNode.insertBefore(currentNode, lView[this.insertBeforeIndex[0]]);
+   *     // Now append all of the children
+   *     for(let i=1; i<this.insertBeforeIndex; i++) {
+   *       currentNode.appendChild(lView[this.insertBeforeIndex[i]]);
+   *     }
+   *   } else {
+   *     parentNode.insertBefore(lView[this.index], lView[this.insertBeforeIndex])
+   *   }
+   * ```
+   * - null: Append as normal using `parentNode.appendChild`
+   * - `number`: Append using
+   *      `parentNode.insertBefore(lView[this.index], lView[this.insertBeforeIndex])`
+   *
+   * *Initialization*
+   *
+   * Because `ɵɵi18nStart` executes before nodes are created, on `TView.firstCreatePass` it is not
+   * possible for `ɵɵi18nStart` to set the `insertBeforeIndex` value as the corresponding `TNode`
+   * has not yet been created. For this reason the `ɵɵi18nStart` creates a `TNodeType.Placeholder`
+   * `TNode` at that location. See `TNodeType.Placeholder` for more information.
+   */
+  insertBeforeIndex: InsertBeforeIndex;
+
+  /**
    * The index of the closest injector in this node's LView.
    *
    * If the index === -1, there is no injector on this node or any ancestor node in this view.
@@ -357,6 +428,8 @@ export interface TNode {
   providerIndexes: TNodeProviderIndexes;
 
   /** The tag name associated with this node. */
+  // FIXME(misko): rename to `value` and change the type to `any` so that
+  // subclasses of `TNode` can use it to link additional payload
   tagName: string|null;
 
   /**
@@ -643,6 +716,11 @@ export interface TNode {
   styleBindings: TStylingRange;
 }
 
+/**
+ * See `TNode.insertBeforeIndex`
+ */
+export type InsertBeforeIndex = null|number|number[];
+
 /** Static data for an element  */
 export interface TElementNode extends TNode {
   /** Index in the data[] array */
@@ -715,10 +793,12 @@ export interface TElementContainerNode extends TNode {
 export interface TIcuContainerNode extends TNode {
   /** Index in the LView[] array. */
   index: number;
-  child: TElementNode|TTextNode|null;
+  child: null;
   parent: TElementNode|TElementContainerNode|null;
   tViews: null;
   projection: null;
+  // FIXME(misko): Refactor to enable the next line
+  // tagName: TIcu;
 }
 
 /** Static data for an LProjectionNode  */

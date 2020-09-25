@@ -41,13 +41,8 @@ describe('render3 matchers', () => {
     it('should produce human readable errors', () => {
       const matcher = matchMyShape({propA: 'different'});
       expect(matcher.asymmetricMatch(myShape, [])).toEqual(false);
-      expect(matcher.jasmineToString!()).toEqual(dedent`
-        MyShape({
-          propA: "value",
-          ...
-        }) != MyShape({
-          propA: "different"
-        }))`);
+      expect(matcher.jasmineToString!())
+          .toEqual('\n  property obj.propA to equal different but got value');
     });
   });
 

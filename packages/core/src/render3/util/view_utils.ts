@@ -7,10 +7,10 @@
  */
 
 import {assertDefined, assertDomNode, assertGreaterThan, assertIndexInRange, assertLessThan} from '../../util/assert';
-import {assertTNodeForLView} from '../assert';
+import {assertTNode, assertTNodeForLView} from '../assert';
 import {LContainer, TYPE} from '../interfaces/container';
 import {LContext, MONKEY_PATCH_KEY_NAME} from '../interfaces/context';
-import {TConstants, TNode, TNodeType} from '../interfaces/node';
+import {TConstants, TNode} from '../interfaces/node';
 import {isProceduralRenderer, RNode} from '../interfaces/renderer';
 import {isLContainer, isLView} from '../interfaces/type_checks';
 import {FLAGS, HEADER_OFFSET, HOST, LView, LViewFlags, PARENT, PREORDER_HOOK_FLAGS, RENDERER, TData, TRANSPLANTED_VIEWS_TO_REFRESH, TView} from '../interfaces/view';
@@ -117,10 +117,13 @@ export function getNativeByTNodeOrNull(tNode: TNode|null, lView: LView): RNode|n
 }
 
 
+// fixme(misko): The return Type should be `TNode|null`
 export function getTNode(tView: TView, index: number): TNode {
   ngDevMode && assertGreaterThan(index, -1, 'wrong index for TNode');
-  ngDevMode && assertLessThan(index, tView.data.length, 'wrong index for TNode');
-  return tView.data[index + HEADER_OFFSET] as TNode;
+  ngDevMode && assertLessThan(index, tView.data.length - HEADER_OFFSET, 'wrong index for TNode');
+  const tNode = tView.data[index + HEADER_OFFSET] as TNode;
+  ngDevMode && tNode !== null && assertTNode(tNode);
+  return tNode;
 }
 
 /** Retrieves a value from any `LView` or `TData`. */
