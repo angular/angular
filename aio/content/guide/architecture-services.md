@@ -37,7 +37,7 @@ Inyección de dependencia está conectado al framework de Angular y se usa en to
 Los componentes consumen servicios; es decir, puede * inyectar * un servicio en un componente, dándole acceso al componente a ese servicio.
 
 Para definir una clase como un servicio en Angular, usa el decorador `@Injectable ()` para proporcionar los metadatos que le permitan a Angular inyectarlo en un componente como una * dependencia *.
-De manera similar, use el decorador `@Injectable ()` para indicar que un componente u otra clase (como otro servicio, un pipeline o un NgModule) * tiene * una dependencia.
+De manera similar, usa el decorador `@Injectable()` para indicar que un componente u otra clase (como otro servicio, un pipeline o un NgModule) * tiene * una dependencia.
 
 * El * inyector * es el mecanismo principal. Angular crea un inyector para toda la aplicación durante el proceso de arranque e inyectores adicionales según sea necesario. No es necesario crear inyectores.
 
@@ -72,8 +72,8 @@ El proceso de inyección de "HeroService" se parece a esto.
 
 Usted debería registrar al menos un * proveedor * de cualquier servicio que vaya a utilizar.
 El proveedor puede formar parte de los propios metadatos del servicio, haciendo que ese servicio esté disponible en todas partes, o puede registrar proveedores con módulos o componentes específicos.
-Debes registrar proveedores en los metadatos del servicio (en el decorador `@Injectable ()`),
-o en los metadatos `@NgModule ()` o `@Component ()`
+Debes registrar proveedores en los metadatos del servicio (en el decorador `@Injectable()`),
+o en los metadatos `@NgModule()` o `@Component()`
 
 * Por defecto, el comando CLI de Angular [`ng generate service`](cli/generate) registra un proveedor con el inyector raíz para tu servicio al incluir metadatos del proveedor en el decorador `@Injectable()`. El tutorial utiliza este método para registrar el proveedor de la definición de clase HeroService.
 
