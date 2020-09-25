@@ -10,7 +10,7 @@ import {assertDefined, assertEqual, assertNumber, throwError} from '../util/asse
 import {getComponentDef, getNgModuleDef} from './definition';
 import {LContainer} from './interfaces/container';
 import {DirectiveDef} from './interfaces/definition';
-import {PARENT_INJECTOR} from './interfaces/injector';
+import {NodeInjectorOffset} from './interfaces/injector';
 import {TNode} from './interfaces/node';
 import {isLContainer, isLView} from './interfaces/type_checks';
 import {HEADER_OFFSET, LView, TVIEW, TView} from './interfaces/view';
@@ -136,7 +136,7 @@ export function assertBetween(lower: number, upper: number, index: number) {
  */
 export function assertNodeInjector(lView: LView, injectorIndex: number) {
   assertIndexInExpandoRange(lView, injectorIndex);
-  assertIndexInExpandoRange(lView, injectorIndex + PARENT_INJECTOR);
+  assertIndexInExpandoRange(lView, injectorIndex + NodeInjectorOffset.PARENT);
   assertNumber(lView[injectorIndex + 0], 'injectorIndex should point to a bloom filter');
   assertNumber(lView[injectorIndex + 1], 'injectorIndex should point to a bloom filter');
   assertNumber(lView[injectorIndex + 2], 'injectorIndex should point to a bloom filter');
@@ -146,6 +146,6 @@ export function assertNodeInjector(lView: LView, injectorIndex: number) {
   assertNumber(lView[injectorIndex + 6], 'injectorIndex should point to a bloom filter');
   assertNumber(lView[injectorIndex + 7], 'injectorIndex should point to a bloom filter');
   assertNumber(
-      lView[injectorIndex + 8 /*PARENT_INJECTOR*/],
+      lView[injectorIndex + NodeInjectorOffset.PARENT],
       'injectorIndex should point to parent injector');
 }

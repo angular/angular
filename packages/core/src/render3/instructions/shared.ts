@@ -25,7 +25,7 @@ import {throwMultipleComponentError} from '../errors';
 import {executeCheckHooks, executeInitAndCheckHooks, incrementInitPhaseFlags} from '../hooks';
 import {CONTAINER_HEADER_OFFSET, HAS_TRANSPLANTED_VIEWS, LContainer, MOVED_VIEWS} from '../interfaces/container';
 import {ComponentDef, ComponentTemplate, DirectiveDef, DirectiveDefListOrFactory, PipeDefListOrFactory, RenderFlags, ViewQueriesFunction} from '../interfaces/definition';
-import {INJECTOR_BLOOM_PARENT_SIZE, NodeInjectorFactory} from '../interfaces/injector';
+import {NodeInjectorFactory, NodeInjectorOffset} from '../interfaces/injector';
 import {AttributeMarker, InitialInputData, InitialInputs, LocalRefExtractor, PropertyAliases, PropertyAliasValue, TAttributes, TConstantsOrFactory, TContainerNode, TDirectiveHostNode, TElementContainerNode, TElementNode, TIcuContainerNode, TNode, TNodeFlags, TNodeProviderIndexes, TNodeType, TProjectionNode} from '../interfaces/node';
 import {isProceduralRenderer, RComment, RElement, Renderer3, RendererFactory3, RNode, RText} from '../interfaces/renderer';
 import {SanitizerFn} from '../interfaces/sanitization';
@@ -88,7 +88,7 @@ export function setHostBindingsByExecutingExpandoInstructions(tView: TView, lVie
 
             // Injector block and providers are taken into account.
             const providerCount = (expandoInstructions[++i] as number);
-            bindingRootIndex += INJECTOR_BLOOM_PARENT_SIZE + providerCount;
+            bindingRootIndex += NodeInjectorOffset.SIZE + providerCount;
 
             currentDirectiveIndex = bindingRootIndex;
           } else {
