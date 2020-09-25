@@ -7,41 +7,44 @@
  */
 
 import {ɵɵi18nAttributes, ɵɵi18nPostprocess, ɵɵi18nStart} from '@angular/core';
-import {getTranslationForTemplate} from '@angular/core/src/render3/i18n/i18n_parse';
-import {setDelayProjection, ɵɵelementEnd, ɵɵelementStart} from '../../../src/render3/instructions/all';
-import {I18nUpdateOpCodes, TI18n, TIcu} from '../../../src/render3/interfaces/i18n';
-import {TConstants} from '../../../src/render3/interfaces/node';
-import {HEADER_OFFSET, LView, TVIEW} from '../../../src/render3/interfaces/view';
+import {ɵɵi18n} from '@angular/core/src/core';
+import {getTranslationForTemplate, i18nStartFirstCreatePass} from '@angular/core/src/render3/i18n/i18n_parse';
+import {getTIcu} from '@angular/core/src/render3/i18n/i18n_util';
+import {TElementNode, TNodeType} from '@angular/core/src/render3/interfaces/node';
+import {getCurrentTNode} from '@angular/core/src/render3/state';
+import {ɵɵelementEnd, ɵɵelementStart} from '../../../src/render3/instructions/all';
+import {I18nCreateOpCode, I18nUpdateOpCodes, TI18n, TIcu} from '../../../src/render3/interfaces/i18n';
+import {HEADER_OFFSET, LView, TVIEW, TView} from '../../../src/render3/interfaces/view';
 import {getNativeByIndex} from '../../../src/render3/util/view_utils';
+import {matchTNode} from '../matchers';
 import {TemplateFixture} from '../render_util';
 import {debugMatch} from '../utils';
+import {ViewFixture} from '../view_fixture';
+
 
 
 describe('Runtime i18n', () => {
-  afterEach(() => {
-    setDelayProjection(false);
-  });
   describe('getTranslationForTemplate', () => {
     it('should crop messages for the selected template', () => {
       let message = `simple text`;
-      expect(getTranslationForTemplate(message)).toEqual(message);
+      expect(getTranslationForTemplate(message, -1)).toEqual(message);
 
       message = `Hello �0�!`;
-      expect(getTranslationForTemplate(message)).toEqual(message);
+      expect(getTranslationForTemplate(message, -1)).toEqual(message);
 
       message = `Hello �#2��0��/#2�!`;
-      expect(getTranslationForTemplate(message)).toEqual(message);
+      expect(getTranslationForTemplate(message, -1)).toEqual(message);
 
       // Embedded sub-templates
       message = `�0� is rendered as: �*2:1�before�*1:2�middle�/*1:2�after�/*2:1�!`;
-      expect(getTranslationForTemplate(message)).toEqual('�0� is rendered as: �*2:1��/*2:1�!');
+      expect(getTranslationForTemplate(message, -1)).toEqual('�0� is rendered as: �*2:1��/*2:1�!');
       expect(getTranslationForTemplate(message, 1)).toEqual('before�*1:2��/*1:2�after');
       expect(getTranslationForTemplate(message, 2)).toEqual('middle');
 
       // Embedded & sibling sub-templates
       message =
           `�0� is rendered as: �*2:1�before�*1:2�middle�/*1:2�after�/*2:1� and also �*4:3�before�*1:4�middle�/*1:4�after�/*4:3�!`;
-      expect(getTranslationForTemplate(message))
+      expect(getTranslationForTemplate(message, -1))
           .toEqual('�0� is rendered as: �*2:1��/*2:1� and also �*4:3��/*4:3�!');
       expect(getTranslationForTemplate(message, 1)).toEqual('before�*1:2��/*1:2�after');
       expect(getTranslationForTemplate(message, 2)).toEqual('middle');
@@ -51,20 +54,19 @@ describe('Runtime i18n', () => {
 
     it('should throw if the template is malformed', () => {
       const message = `�*2:1�message!`;
-      expect(() => getTranslationForTemplate(message)).toThrowError(/Tag mismatch/);
+      expect(() => getTranslationForTemplate(message, -1)).toThrowError(/Tag mismatch/);
     });
   });
 
+  let tView: TView;
+
   function getOpCodes(
-      messageOrAtrs: string|string[], createTemplate: () => void, updateTemplate: (() => void)|null,
-      nbDecls: number, index: number): TI18n|I18nUpdateOpCodes {
-    const fixture = new TemplateFixture({
-      create: createTemplate,
-      update: updateTemplate || undefined,
-      decls: nbDecls,
-      consts: [messageOrAtrs]
-    });
-    const tView = fixture.hostView[TVIEW];
+      messageOrAtrs: string|string[], createTemplate: () => void,
+      updateTemplate: (() => void)|undefined, nbDecls: number, index: number): TI18n|
+      I18nUpdateOpCodes {
+    const fixture = new TemplateFixture(
+        {create: createTemplate, update: updateTemplate, decls: nbDecls, consts: [messageOrAtrs]});
+    tView = fixture.hostView[TVIEW];
     return tView.data[index + HEADER_OFFSET] as TI18n;
   }
 
@@ -72,19 +74,19 @@ describe('Runtime i18n', () => {
     it('for text', () => {
       const message = 'simple text';
       const nbConsts = 1;
-      const index = 0;
+      const index = 1;
       const opCodes = getOpCodes(message, () => {
+                        ɵɵelementStart(0, 'div');
                         ɵɵi18nStart(index, 0);
-                      }, null, nbConsts, index) as TI18n;
+                        ɵɵelementEnd();
+                      }, undefined, nbConsts, index) as TI18n;
 
       expect(opCodes).toEqual({
-        vars: 1,
         create: debugMatch([
-          'lView[1] = document.createTextNode("simple text")',
-          '(lView[0] as Element).appendChild(lView[1])'
+          `lView[${HEADER_OFFSET + 1}] = document.createText("simple text");`,
+          `parent.appendChild(lView[${HEADER_OFFSET + 1}]);`,
         ]),
         update: [],
-        icus: null
       });
     });
 
@@ -95,29 +97,23 @@ describe('Runtime i18n', () => {
       const nbConsts = 4;
       const index = 1;
       const opCodes = getOpCodes(message, () => {
+        ɵɵelementStart(0, 'div');
         ɵɵi18nStart(index, 0);
-      }, null, nbConsts, index);
+        ɵɵelementEnd();
+      }, undefined, nbConsts, index);
 
       expect(opCodes).toEqual({
-        vars: 5,
         create: debugMatch([
-          'lView[4] = document.createTextNode("Hello ")',
-          '(lView[1] as Element).appendChild(lView[4])',
-          '(lView[1] as Element).appendChild(lView[2])',
-          'lView[5] = document.createTextNode("world")',
-          '(lView[2] as Element).appendChild(lView[5])',
-          'setCurrentTNode(tView.data[2] as TNode)',
-          'lView[6] = document.createTextNode(" and ")',
-          '(lView[1] as Element).appendChild(lView[6])',
-          '(lView[1] as Element).appendChild(lView[3])',
-          'lView[7] = document.createTextNode("universe")',
-          '(lView[3] as Element).appendChild(lView[7])',
-          'setCurrentTNode(tView.data[3] as TNode)',
-          'lView[8] = document.createTextNode("!")',
-          '(lView[1] as Element).appendChild(lView[8])',
+          `lView[${HEADER_OFFSET + 4}] = document.createText("Hello ");`,
+          `parent.appendChild(lView[${HEADER_OFFSET + 4}]);`,
+          `lView[${HEADER_OFFSET + 5}] = document.createText("world");`,
+          `lView[${HEADER_OFFSET + 6}] = document.createText(" and ");`,
+          `parent.appendChild(lView[${HEADER_OFFSET + 6}]);`,
+          `lView[${HEADER_OFFSET + 7}] = document.createText("universe");`,
+          `lView[${HEADER_OFFSET + 8}] = document.createText("!");`,
+          `parent.appendChild(lView[${HEADER_OFFSET + 8}]);`,
         ]),
         update: [],
-        icus: null
       });
     });
 
@@ -126,22 +122,23 @@ describe('Runtime i18n', () => {
       const nbConsts = 2;
       const index = 1;
       const opCodes = getOpCodes(message, () => {
+        ɵɵelementStart(0, 'div');
         ɵɵi18nStart(index, 0);
-      }, null, nbConsts, index);
+        ɵɵelementEnd();
+      }, undefined, nbConsts, index);
 
       expect((opCodes as any).update.debug).toEqual([
-        'if (mask & 0b1) { (lView[2] as Text).textContent = `Hello ${lView[1]}!`; }'
+        'if (mask & 0b1) { (lView[22] as Text).textContent = `Hello ${lView[i-1]}!`; }'
       ]);
 
       expect(opCodes).toEqual({
-        vars: 1,
         create: debugMatch([
-          'lView[2] = document.createTextNode("")',
-          '(lView[1] as Element).appendChild(lView[2])',
+          `lView[${HEADER_OFFSET + 2}] = document.createText("");`,
+          `parent.appendChild(lView[${HEADER_OFFSET + 2}]);`,
         ]),
-        update: debugMatch(
-            ['if (mask & 0b1) { (lView[2] as Text).textContent = `Hello ${lView[1]}!`; }']),
-        icus: null
+        update: debugMatch([
+          'if (mask & 0b1) { (lView[22] as Text).textContent = `Hello ${lView[i-1]}!`; }',
+        ]),
       });
     });
 
@@ -150,18 +147,19 @@ describe('Runtime i18n', () => {
       const nbConsts = 2;
       const index = 1;
       const opCodes = getOpCodes(message, () => {
+        ɵɵelementStart(0, 'div');
         ɵɵi18nStart(index, 0);
-      }, null, nbConsts, index);
+        ɵɵelementEnd();
+      }, undefined, nbConsts, index);
 
       expect(opCodes).toEqual({
-        vars: 1,
         create: debugMatch([
-          'lView[2] = document.createTextNode("")', '(lView[1] as Element).appendChild(lView[2])'
+          `lView[${HEADER_OFFSET + 2}] = document.createText("");`,
+          `parent.appendChild(lView[${HEADER_OFFSET + 2}]);`,
         ]),
         update: debugMatch([
-          'if (mask & 0b11) { (lView[2] as Text).textContent = `Hello ${lView[1]} and ${lView[2]}, again ${lView[1]}!`; }'
+          'if (mask & 0b11) { (lView[22] as Text).textContent = `Hello ${lView[i-1]} and ${lView[i-2]}, again ${lView[i-1]}!`; }',
         ]),
-        icus: null
       });
     });
 
@@ -182,63 +180,56 @@ describe('Runtime i18n', () => {
       let nbConsts = 3;
       let index = 1;
       let opCodes = getOpCodes(message, () => {
+        ɵɵelementStart(0, 'div');
         ɵɵi18nStart(index, 0);
-      }, null, nbConsts, index);
+        ɵɵelementEnd();
+      }, undefined, nbConsts, index);
 
       expect(opCodes).toEqual({
-        vars: 2,
         create: debugMatch([
-          'lView[3] = document.createTextNode("")', '(lView[1] as Element).appendChild(lView[3])',
-          '(lView[1] as Element).appendChild(lView[16381])',
-          'lView[4] = document.createTextNode("!")', '(lView[1] as Element).appendChild(lView[4])'
+          `lView[${HEADER_OFFSET + 3}] = document.createText("");`,
+          `parent.appendChild(lView[${HEADER_OFFSET + 3}]);`,
+          `lView[${HEADER_OFFSET + 4}] = document.createText("!");`,
+          `parent.appendChild(lView[${HEADER_OFFSET + 4}]);`,
         ]),
         update: debugMatch([
-          'if (mask & 0b1) { (lView[3] as Text).textContent = `${lView[1]} is rendered as: `; }'
+          'if (mask & 0b1) { (lView[23] as Text).textContent = `${lView[i-1]} is rendered as: `; }',
         ]),
-        icus: null
       });
 
 
       /**** First sub-template ****/
       // �#1:1�before�*2:2�middle�/*2:2�after�/#1:1�
       nbConsts = 3;
-      index = 0;
+      index = 1;
       opCodes = getOpCodes(message, () => {
+        ɵɵelementStart(0, 'div');
         ɵɵi18nStart(index, 0, 1);
-      }, null, nbConsts, index);
+      }, undefined, nbConsts, index);
 
       expect(opCodes).toEqual({
-        vars: 2,
         create: debugMatch([
-          '(lView[0] as Element).appendChild(lView[1])',
-          'lView[3] = document.createTextNode("before")',
-          '(lView[1] as Element).appendChild(lView[3])',
-          '(lView[1] as Element).appendChild(lView[16381])',
-          'lView[4] = document.createTextNode("after")',
-          '(lView[1] as Element).appendChild(lView[4])', 'setCurrentTNode(tView.data[1] as TNode)'
+          `lView[${HEADER_OFFSET + 3}] = document.createText("before");`,
+          `lView[${HEADER_OFFSET + 4}] = document.createText("after");`,
         ]),
         update: [],
-        icus: null
       });
 
 
       /**** Second sub-template ****/
       // middle
       nbConsts = 2;
-      index = 0;
+      index = 1;
       opCodes = getOpCodes(message, () => {
+        ɵɵelementStart(0, 'div');
         ɵɵi18nStart(index, 0, 2);
-      }, null, nbConsts, index);
+      }, undefined, nbConsts, index);
 
       expect(opCodes).toEqual({
-        vars: 1,
         create: debugMatch([
-          '(lView[0] as Element).appendChild(lView[1])',
-          'lView[2] = document.createTextNode("middle")',
-          '(lView[1] as Element).appendChild(lView[2])', 'setCurrentTNode(tView.data[1] as TNode)'
+          `lView[${HEADER_OFFSET + 2}] = document.createText("middle");`,
         ]),
         update: [],
-        icus: null
       });
     });
 
@@ -248,82 +239,81 @@ describe('Runtime i18n', () => {
         =1 {one <i>email</i>}
         other {�0� <span title="�1�">emails</span>}
       }`;
-      const nbConsts = 1;
-      const index = 0;
+      const nbConsts = 2;
+      const index = 1;
       const opCodes = getOpCodes(message, () => {
+                        ɵɵelementStart(0, 'div');
                         ɵɵi18nStart(index, 0);
-                      }, null, nbConsts, index) as TI18n;
+                        ɵɵelementEnd();
+                      }, undefined, nbConsts, index) as TI18n;
 
       expect(opCodes).toEqual({
-        vars: 6,
-        update: debugMatch([
-          'if (mask & 0b1) { icuSwitchCase(lView[1] as Comment, 0, `${lView[1]}`); }',
-          'if (mask & 0b11) { icuUpdateCase(lView[1] as Comment, 0); }',
-        ]),
         create: debugMatch([
-          'lView[1] = document.createComment("ICU 1")',
-          '(lView[0] as Element).appendChild(lView[1])',
+          `lView[${HEADER_OFFSET + 2}] = document.createComment("ICU 1:0");`,
+          `parent.appendChild(lView[${HEADER_OFFSET + 2}]);`,
         ]),
-        icus: [<TIcu>{
-          type: 1,
-          currentCaseLViewIndex: 22,
-          vars: [5, 4, 4],
-          childIcus: [[], [], []],
-          cases: ['0', '1', 'other'],
-          create: [
-            debugMatch([
-              'lView[3] = document.createTextNode("no ")',
-              '(lView[1] as Element).appendChild(lView[3])',
-              'lView[4] = document.createElement("b")',
-              '(lView[1] as Element).appendChild(lView[4])',
-              '(lView[4] as Element).setAttribute("title", "none")',
-              'lView[5] = document.createTextNode("emails")',
-              '(lView[4] as Element).appendChild(lView[5])',
-              'lView[6] = document.createTextNode("!")',
-              '(lView[1] as Element).appendChild(lView[6])',
-            ]),
-            debugMatch([
-              'lView[3] = document.createTextNode("one ")',
-              '(lView[1] as Element).appendChild(lView[3])',
-              'lView[4] = document.createElement("i")',
-              '(lView[1] as Element).appendChild(lView[4])',
-              'lView[5] = document.createTextNode("email")',
-              '(lView[4] as Element).appendChild(lView[5])',
-            ]),
-            debugMatch([
-              'lView[3] = document.createTextNode("")',
-              '(lView[1] as Element).appendChild(lView[3])',
-              'lView[4] = document.createElement("span")',
-              '(lView[1] as Element).appendChild(lView[4])',
-              'lView[5] = document.createTextNode("emails")',
-              '(lView[4] as Element).appendChild(lView[5])',
-            ])
-          ],
-          remove: [
-            debugMatch([
-              '(lView[0] as Element).remove(lView[3])',
-              '(lView[0] as Element).remove(lView[5])',
-              '(lView[0] as Element).remove(lView[4])',
-              '(lView[0] as Element).remove(lView[6])',
-            ]),
-            debugMatch([
-              '(lView[0] as Element).remove(lView[3])',
-              '(lView[0] as Element).remove(lView[5])',
-              '(lView[0] as Element).remove(lView[4])',
-            ]),
-            debugMatch([
-              '(lView[0] as Element).remove(lView[3])',
-              '(lView[0] as Element).remove(lView[5])',
-              '(lView[0] as Element).remove(lView[4])',
-            ])
-          ],
-          update: [
-            debugMatch([]), debugMatch([]), debugMatch([
-              'if (mask & 0b1) { (lView[3] as Text).textContent = `${lView[1]} `; }',
-              'if (mask & 0b10) { (lView[4] as Element).setAttribute(\'title\', `${lView[2]}`); }'
-            ])
-          ]
-        }]
+        update: debugMatch([
+          'if (mask & 0b1) { icuSwitchCase(22, `${lView[i-1]}`); }',
+          'if (mask & 0b1) { icuUpdateCase(22); }',
+        ]),
+      });
+      expect(getTIcu(tView, 22)).toEqual(<TIcu>{
+        type: 1,
+        currentCaseLViewIndex: 23,
+        anchorIdx: 22,
+        cases: ['0', '1', 'other'],
+        create: [
+          debugMatch([
+            `lView[${HEADER_OFFSET + 4}] = document.createTextNode("no ")`,
+            `(lView[${HEADER_OFFSET + 0}] as Element).appendChild(lView[${HEADER_OFFSET + 4}])`,
+            'lView[25] = document.createElement("b")',
+            `(lView[${HEADER_OFFSET + 0}] as Element).appendChild(lView[${HEADER_OFFSET + 5}])`,
+            '(lView[25] as Element).setAttribute("title", "none")',
+            `lView[${HEADER_OFFSET + 6}] = document.createTextNode("emails")`,
+            `(lView[${HEADER_OFFSET + 5}] as Element).appendChild(lView[${HEADER_OFFSET + 6}])`,
+            `lView[${HEADER_OFFSET + 7}] = document.createTextNode("!")`,
+            `(lView[${HEADER_OFFSET + 0}] as Element).appendChild(lView[${HEADER_OFFSET + 7}])`,
+          ]),
+          debugMatch([
+            `lView[${HEADER_OFFSET + 8}] = document.createTextNode("one ")`,
+            `(lView[${HEADER_OFFSET + 0}] as Element).appendChild(lView[${HEADER_OFFSET + 8}])`,
+            'lView[29] = document.createElement("i")',
+            `(lView[${HEADER_OFFSET + 0}] as Element).appendChild(lView[${HEADER_OFFSET + 9}])`,
+            'lView[30] = document.createTextNode("email")',
+            '(lView[29] as Element).appendChild(lView[30])',
+          ]),
+          debugMatch([
+            'lView[31] = document.createTextNode("")',
+            '(lView[20] as Element).appendChild(lView[31])',
+            'lView[32] = document.createElement("span")',
+            '(lView[20] as Element).appendChild(lView[32])',
+            'lView[33] = document.createTextNode("emails")',
+            '(lView[32] as Element).appendChild(lView[33])',
+          ]),
+        ],
+        remove: [
+          debugMatch([
+            '(lView[0] as Element).remove(lView[24])',
+            '(lView[0] as Element).remove(lView[25])',
+            '(lView[0] as Element).remove(lView[27])',
+          ]),
+          debugMatch([
+            '(lView[0] as Element).remove(lView[28])',
+            '(lView[0] as Element).remove(lView[29])',
+          ]),
+          debugMatch([
+            '(lView[0] as Element).remove(lView[31])',
+            '(lView[0] as Element).remove(lView[32])',
+          ]),
+        ],
+        update: [
+          debugMatch([]),
+          debugMatch([]),
+          debugMatch([
+            'if (mask & 0b1) { (lView[31] as Text).textContent = `${lView[i-1]} `; }',
+            'if (mask & 0b10) { (lView[32] as Element).setAttribute(\'title\', `${lView[i-2]}`); }',
+          ]),
+        ]
       });
     });
 
@@ -336,91 +326,91 @@ describe('Runtime i18n', () => {
                        other {animals}
                      }!}
       }`;
-      const nbConsts = 1;
-      const index = 0;
+      const nbConsts = 2;
+      const index = 1;
       const opCodes = getOpCodes(message, () => {
-        ɵɵi18nStart(index, 0);
-      }, null, nbConsts, index);
+        ɵɵelementStart(0, 'div');
+        ɵɵi18n(index, 0);
+        ɵɵelementEnd();
+      }, undefined, nbConsts, index);
 
       expect(opCodes).toEqual({
-        vars: 9,
         create: debugMatch([
-          'lView[1] = document.createComment("ICU 1")',
-          '(lView[0] as Element).appendChild(lView[1])'
+          `lView[${HEADER_OFFSET + 2}] = document.createComment("ICU 1:0");`,
+          `parent.appendChild(lView[${HEADER_OFFSET + 2}]);`,
         ]),
         update: debugMatch([
-          'if (mask & 0b1) { icuSwitchCase(lView[1] as Comment, 1, `${lView[1]}`); }',
-          'if (mask & 0b11) { icuUpdateCase(lView[1] as Comment, 1); }'
+          'if (mask & 0b1) { icuSwitchCase(22, `${lView[i-1]}`); }',
+          'if (mask & 0b10) { icuSwitchCase(26, `${lView[i-2]}`); }',
+          'if (mask & 0b1) { icuUpdateCase(22); }',
         ]),
-        icus: [
-          {
-            type: 0,
-            vars: [2, 2, 2],
-            currentCaseLViewIndex: 26,
-            childIcus: [[], [], []],
-            cases: ['cat', 'dog', 'other'],
-            create: [
-              debugMatch([
-                'lView[7] = document.createTextNode("cats")',
-                '(lView[4] as Element).appendChild(lView[7])'
-              ]),
-              debugMatch([
-                'lView[7] = document.createTextNode("dogs")',
-                '(lView[4] as Element).appendChild(lView[7])'
-              ]),
-              debugMatch([
-                'lView[7] = document.createTextNode("animals")',
-                '(lView[4] as Element).appendChild(lView[7])'
-              ]),
-            ],
-            remove: [
-              debugMatch(['(lView[0] as Element).remove(lView[7])']),
-              debugMatch(['(lView[0] as Element).remove(lView[7])']),
-              debugMatch(['(lView[0] as Element).remove(lView[7])'])
-            ],
-            update: [
-              debugMatch([]),
-              debugMatch([]),
-              debugMatch([]),
-            ]
-          },
-          {
-            type: 1,
-            vars: [2, 6],
-            childIcus: [[], [0]],
-            currentCaseLViewIndex: 22,
-            cases: ['0', 'other'],
-            create: [
-              debugMatch([
-                'lView[3] = document.createTextNode("zero")',
-                '(lView[1] as Element).appendChild(lView[3])'
-              ]),
-              debugMatch([
-                'lView[3] = document.createTextNode("")',
-                '(lView[1] as Element).appendChild(lView[3])',
-                'lView[4] = document.createComment("nested ICU 0")',
-                '(lView[1] as Element).appendChild(lView[4])',
-                'lView[5] = document.createTextNode("!")',
-                '(lView[1] as Element).appendChild(lView[5])'
-              ]),
-            ],
-            remove: [
-              debugMatch(['(lView[0] as Element).remove(lView[3])']),
-              debugMatch([
-                '(lView[0] as Element).remove(lView[3])', '(lView[0] as Element).remove(lView[5])',
-                'removeNestedICU(0)', '(lView[0] as Element).remove(lView[4])'
-              ]),
-            ],
-            update: [
-              debugMatch([]),
-              debugMatch([
-                'if (mask & 0b1) { (lView[3] as Text).textContent = `${lView[1]} `; }',
-                'if (mask & 0b10) { icuSwitchCase(lView[4] as Comment, 0, `${lView[2]}`); }',
-                'if (mask & 0b10) { icuUpdateCase(lView[4] as Comment, 0); }'
-              ]),
-            ]
-          }
-        ]
+      });
+      expect(getTIcu(tView, 22)).toEqual({
+        type: 1,
+        anchorIdx: 22,
+        currentCaseLViewIndex: 23,
+        cases: ['0', 'other'],
+        create: [
+          debugMatch([
+            `lView[${HEADER_OFFSET + 4}] = document.createTextNode("zero")`,
+            `(lView[${HEADER_OFFSET + 0}] as Element).appendChild(lView[${HEADER_OFFSET + 4}])`,
+          ]),
+          debugMatch([
+            `lView[${HEADER_OFFSET + 5}] = document.createTextNode("")`,
+            `(lView[${HEADER_OFFSET + 0}] as Element).appendChild(lView[${HEADER_OFFSET + 5}])`,
+            'lView[26] = document.createComment("nested ICU 0")',
+            `(lView[${HEADER_OFFSET + 0}] as Element).appendChild(lView[${HEADER_OFFSET + 6}])`,
+            'lView[31] = document.createTextNode("!")',
+            '(lView[20] as Element).appendChild(lView[31])',
+          ]),
+        ],
+        update: [
+          debugMatch([]),
+          debugMatch([
+            'if (mask & 0b1) { (lView[25] as Text).textContent = `${lView[i-1]} `; }',
+          ]),
+        ],
+        remove: [
+          debugMatch([
+            '(lView[0] as Element).remove(lView[24])',
+          ]),
+          debugMatch([
+            '(lView[0] as Element).remove(lView[25])',
+            'removeNestedICU(26)',
+            '(lView[0] as Element).remove(lView[26])',
+            '(lView[0] as Element).remove(lView[31])',
+          ]),
+        ],
+      });
+      expect(tView.data[26]).toEqual({
+        type: 0,
+        anchorIdx: 26,
+        currentCaseLViewIndex: 27,
+        cases: ['cat', 'dog', 'other'],
+        create: [
+          debugMatch([
+            `lView[${HEADER_OFFSET + 8}] = document.createTextNode("cats")`,
+            `(lView[${HEADER_OFFSET + 0}] as Element).appendChild(lView[${HEADER_OFFSET + 8}])`,
+          ]),
+          debugMatch([
+            `lView[${HEADER_OFFSET + 9}] = document.createTextNode("dogs")`,
+            `(lView[${HEADER_OFFSET + 0}] as Element).appendChild(lView[${HEADER_OFFSET + 9}])`,
+          ]),
+          debugMatch([
+            'lView[30] = document.createTextNode("animals")',
+            '(lView[20] as Element).appendChild(lView[30])',
+          ]),
+        ],
+        update: [
+          debugMatch([]),
+          debugMatch([]),
+          debugMatch([]),
+        ],
+        remove: [
+          debugMatch(['(lView[0] as Element).remove(lView[28])']),
+          debugMatch(['(lView[0] as Element).remove(lView[29])']),
+          debugMatch(['(lView[0] as Element).remove(lView[30])'])
+        ],
       });
     });
   });
@@ -459,10 +449,10 @@ describe('Runtime i18n', () => {
         ɵɵelementStart(0, 'div');
         ɵɵi18nAttributes(index, 0);
         ɵɵelementEnd();
-      }, null, nbConsts, index);
+      }, undefined, nbConsts, index);
 
       expect(opCodes).toEqual(debugMatch([
-        'if (mask & 0b1) { (lView[0] as Element).setAttribute(\'title\', `Hello ${lView[1]}!`); }'
+        'if (mask & 0b1) { (lView[20] as Element).setAttribute(\'title\', `Hello ${lView[i-1]}!`); }',
       ]));
     });
 
@@ -475,10 +465,10 @@ describe('Runtime i18n', () => {
         ɵɵelementStart(0, 'div');
         ɵɵi18nAttributes(index, 0);
         ɵɵelementEnd();
-      }, null, nbConsts, index);
+      }, undefined, nbConsts, index);
 
       expect(opCodes).toEqual(debugMatch([
-        'if (mask & 0b11) { (lView[0] as Element).setAttribute(\'title\', `Hello ${lView[1]} and ${lView[2]}, again ${lView[1]}!`); }'
+        'if (mask & 0b11) { (lView[20] as Element).setAttribute(\'title\', `Hello ${lView[i-1]} and ${lView[i-2]}, again ${lView[i-1]}!`); }',
       ]));
     });
 
@@ -491,11 +481,11 @@ describe('Runtime i18n', () => {
         ɵɵelementStart(0, 'div');
         ɵɵi18nAttributes(index, 0);
         ɵɵelementEnd();
-      }, null, nbConsts, index);
+      }, undefined, nbConsts, index);
 
       expect(opCodes).toEqual(debugMatch([
-        'if (mask & 0b1) { (lView[0] as Element).setAttribute(\'title\', `Hello ${lView[1]}!`); }',
-        'if (mask & 0b1) { (lView[0] as Element).setAttribute(\'aria-label\', `Hello ${lView[1]}!`); }'
+        'if (mask & 0b1) { (lView[20] as Element).setAttribute(\'title\', `Hello ${lView[i-1]}!`); }',
+        'if (mask & 0b1) { (lView[20] as Element).setAttribute(\'aria-label\', `Hello ${lView[i-1]}!`); }',
       ]));
     });
   });
@@ -636,6 +626,127 @@ describe('Runtime i18n', () => {
           () => ɵɵi18nPostprocess(
               'My ICU #1: �I18N_EXP_ICU�, My ICU #2: �I18N_EXP_ICU�', {ICU: ['ICU_VALUE_1']}))
           .toThrowError();
+    });
+  });
+
+  describe('i18nStartFirstCreatePass', () => {
+    let fixture: ViewFixture;
+    let divTNode: TElementNode;
+    const DECLS = 20;
+    const VARS = 10;
+    beforeEach(() => {
+      fixture = new ViewFixture({decls: DECLS, vars: VARS});
+      fixture.enterView();
+      ɵɵelementStart(0, 'div');
+      divTNode = getCurrentTNode() as TElementNode;
+    });
+
+    afterEach(ViewFixture.cleanUp);
+
+    function i18nRangeOffset(offset: number): number {
+      return HEADER_OFFSET + DECLS + VARS + offset;
+    }
+
+    function i18nRangeOffsetOpcode(
+        offset: number,
+        {appendLater, comment}: {appendLater?: boolean, comment?: boolean} = {}): number {
+      let index = i18nRangeOffset(offset) << I18nCreateOpCode.SHIFT;
+      if (!appendLater) {
+        index |= I18nCreateOpCode.APPEND_EAGERLY;
+      }
+      if (comment) {
+        index |= I18nCreateOpCode.COMMENT;
+      }
+      return index;
+    }
+
+    it('should process text node with no siblings and no children', () => {
+      i18nStartFirstCreatePass(fixture.tView, 0, fixture.lView, 1, 'Hello World!', -1);
+      const ti18n = fixture.tView.data[HEADER_OFFSET + 1] as TI18n;
+      // Expect that we only create the `Hello World!` text node and nothing else.
+      expect(ti18n.create).toEqual([
+        i18nRangeOffsetOpcode(0), 'Hello World!',  //
+      ]);
+      const lViewDebug = fixture.lView.debug!;
+      expect(lViewDebug.template).toEqual('<div>#text</div>');
+    });
+
+    it('should process text with a child node', () => {
+      i18nStartFirstCreatePass(fixture.tView, 0, fixture.lView, 1, 'Hello �#2��/#2�!', -1);
+      const ti18n = fixture.tView.data[HEADER_OFFSET + 1] as TI18n;
+      expect(ti18n.create).toEqual([
+        i18nRangeOffsetOpcode(0), 'Hello ',  //
+        i18nRangeOffsetOpcode(1), '!',       //
+      ]);
+      // Leave behind `Placeholder` to be picked up by `TNode` creation.
+      expect(fixture.tView.data[HEADER_OFFSET + 2]).toEqual(matchTNode({
+        type: TNodeType.Placeholder,
+        // It should insert itself in front of "!"
+        insertBeforeIndex: i18nRangeOffset(1),
+      }));
+      const lViewDebug = fixture.lView.debug!;
+      expect(lViewDebug.template).toEqual('<div>#text<Placeholder></Placeholder>#text</div>');
+    });
+
+    it('should process text with a child node that has text', () => {
+      i18nStartFirstCreatePass(fixture.tView, 0, fixture.lView, 1, 'Hello �#2�World�/#2�!', -1);
+      const ti18n = fixture.tView.data[HEADER_OFFSET + 1] as TI18n;
+      expect(ti18n.create).toEqual([
+        i18nRangeOffsetOpcode(0), 'Hello ',                      //
+        i18nRangeOffsetOpcode(1, {appendLater: true}), 'World',  //
+        i18nRangeOffsetOpcode(2), '!',                           //
+      ]);
+      // Leave behind `Placeholder` to be picked up by `TNode` creation.
+      expect(fixture.tView.data[HEADER_OFFSET + 2]).toEqual(matchTNode({
+        type: TNodeType.Placeholder,
+        insertBeforeIndex: [
+          i18nRangeOffset(2),  // It should insert itself in front of "!"
+          i18nRangeOffset(1),  // It should append "World"
+        ]
+      }));
+    });
+
+    it('should process text with a child node that has text and with bindings', () => {
+      i18nStartFirstCreatePass(
+          fixture.tView, 0, fixture.lView, 1,
+          '�0� �#2��1��/#2�!' /* {{salutation}} <b>{{name}}</b>! */, -1);
+      const ti18n = fixture.tView.data[HEADER_OFFSET + 1] as TI18n;
+      expect(ti18n.create).toEqual([
+        i18nRangeOffsetOpcode(0), '',                       // 1 is saved for binding
+        i18nRangeOffsetOpcode(1, {appendLater: true}), '',  // 3 is saved for binding
+        i18nRangeOffsetOpcode(2), '!',                      //
+      ]);
+      // Leave behind `insertBeforeIndex` to be picked up by `TNode` creation.
+      expect(fixture.tView.data[HEADER_OFFSET + 2]).toEqual(matchTNode({
+        type: TNodeType.Placeholder,
+        insertBeforeIndex: [
+          i18nRangeOffset(2),  // It should insert itself in front of "!"
+          i18nRangeOffset(1),  // It should append child text node "{{name}}"
+        ],
+      }));
+      expect(ti18n.update).toEqual(debugMatch([
+        'if (mask & 0b1) { (lView[50] as Text).textContent = `${lView[i-1]} `; }',
+        'if (mask & 0b10) { (lView[51] as Text).textContent = `${lView[i-2]}`; }'
+      ]));
+      const lViewDebug = fixture.lView.debug!;
+      expect(lViewDebug.template).toEqual('<div>#text<Placeholder>#text</Placeholder>#text</div>');
+    });
+
+    it('should process text with a child template', () => {
+      i18nStartFirstCreatePass(fixture.tView, 0, fixture.lView, 1, 'Hello �*2:1�World�/*2:1�!', -1);
+      const ti18n = fixture.tView.data[HEADER_OFFSET + 1] as TI18n;
+      expect(ti18n.create.debug).toEqual([
+        'lView[50] = document.createText("Hello ");',
+        'parent.appendChild(lView[50]);',
+        'lView[51] = document.createText("!");',
+        'parent.appendChild(lView[51]);',
+      ]);
+      // Leave behind `Placeholder` to be picked up by `TNode` creation.
+      // It should insert itself in front of "!"
+      expect(fixture.tView.data[HEADER_OFFSET + 2]).toEqual(matchTNode({
+        type: TNodeType.Placeholder,
+        insertBeforeIndex: 51,
+      }));
     });
   });
 });

@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {i18nMutateOpCodesToString, i18nUpdateOpCodesToString} from '@angular/core/src/render3/i18n/i18n_debug';
-import {COMMENT_MARKER, ELEMENT_MARKER, I18nMutateOpCode, I18nUpdateOpCode} from '@angular/core/src/render3/interfaces/i18n';
+import {i18nCreateOpCodesToString, i18nMutateOpCodesToString, i18nUpdateOpCodesToString} from '@angular/core/src/render3/i18n/i18n_debug';
+import {COMMENT_MARKER, ELEMENT_MARKER, I18nCreateOpCode, I18nMutateOpCode, I18nUpdateOpCode} from '@angular/core/src/render3/interfaces/i18n';
 
 describe('i18n debug', () => {
   describe('i18nUpdateOpCodesToString', () => {
@@ -25,7 +25,7 @@ describe('i18n debug', () => {
         1 << I18nUpdateOpCode.SHIFT_REF | I18nUpdateOpCode.Text,
       ]))
           .toEqual(
-              ['if (mask & 0b11) { (lView[1] as Text).textContent = `pre ${lView[4]} post`; }']);
+              ['if (mask & 0b11) { (lView[1] as Text).textContent = `pre ${lView[i-4]} post`; }']);
     });
 
     it('should print Attribute opCode', () => {
@@ -42,37 +42,27 @@ describe('i18n debug', () => {
         'title', (v) => v,
       ]))
           .toEqual([
-            'if (mask & 0b1) { (lView[1] as Element).setAttribute(\'title\', `pre ${lView[4]} in ${lView[3]} post`); }',
-            'if (mask & 0b10) { (lView[1] as Element).setAttribute(\'title\', (function (v) { return v; })(`pre ${lView[4]} in ${lView[3]} post`)); }'
+            'if (mask & 0b1) { (lView[1] as Element).setAttribute(\'title\', `pre ${lView[i-4]} in ${lView[i-3]} post`); }',
+            'if (mask & 0b10) { (lView[1] as Element).setAttribute(\'title\', (function (v) { return v; })(`pre ${lView[i-4]} in ${lView[i-3]} post`)); }'
           ]);
     });
 
     it('should print icuSwitch opCode', () => {
       expect(i18nUpdateOpCodesToString([
-        0b100, 2, -5, 12 << I18nUpdateOpCode.SHIFT_REF | I18nUpdateOpCode.IcuSwitch,
-        2  // FIXME(misko): Should be part of IcuSwitch
-      ])).toEqual(['if (mask & 0b100) { icuSwitchCase(lView[12] as Comment, 2, `${lView[5]}`); }']);
+        0b100, 2, -5, 12 << I18nUpdateOpCode.SHIFT_REF | I18nUpdateOpCode.IcuSwitch
+      ])).toEqual(['if (mask & 0b100) { icuSwitchCase(12, `${lView[i-5]}`); }']);
     });
 
     it('should print icuUpdate opCode', () => {
       expect(i18nUpdateOpCodesToString([
-        0b1000, 2, 13 << I18nUpdateOpCode.SHIFT_REF | I18nUpdateOpCode.IcuUpdate,
-        3  // FIXME(misko): should be part of IcuUpdate
-      ])).toEqual(['if (mask & 0b1000) { icuUpdateCase(lView[13] as Comment, 3); }']);
+        0b1000, 1, 13 << I18nUpdateOpCode.SHIFT_REF | I18nUpdateOpCode.IcuUpdate
+      ])).toEqual(['if (mask & 0b1000) { icuUpdateCase(13); }']);
     });
   });
 
   describe('i18nMutateOpCodesToString', () => {
     it('should print nothing', () => {
       expect(i18nMutateOpCodesToString([])).toEqual([]);
-    });
-
-    it('should print Move', () => {
-      expect(i18nMutateOpCodesToString([
-        1 << I18nMutateOpCode.SHIFT_REF | I18nMutateOpCode.Select,
-        2 << I18nMutateOpCode.SHIFT_PARENT | 0 << I18nMutateOpCode.SHIFT_REF |
-            I18nMutateOpCode.AppendChild,
-      ])).toEqual(['(lView[2] as Element).appendChild(lView[1])']);
     });
 
     it('should print text AppendChild', () => {
@@ -125,16 +115,34 @@ describe('i18n debug', () => {
       ])).toEqual(['(lView[1] as Element).setAttribute("attr", "value")']);
     });
 
-    it('should print ElementEnd', () => {
-      expect(i18nMutateOpCodesToString([
-        1 << I18nMutateOpCode.SHIFT_REF | I18nMutateOpCode.ElementEnd,
-      ])).toEqual(['setCurrentTNode(tView.data[1] as TNode)']);
-    });
-
     it('should print RemoveNestedIcu', () => {
       expect(i18nMutateOpCodesToString([
         1 << I18nMutateOpCode.SHIFT_REF | I18nMutateOpCode.RemoveNestedIcu,
       ])).toEqual(['removeNestedICU(1)']);
+    });
+  });
+
+  describe('i18nCreateOpCodesToString', () => {
+    it('should print nothing', () => {
+      expect(i18nCreateOpCodesToString([])).toEqual([]);
+    });
+
+    it('should print text/comment creation', () => {
+      expect(i18nCreateOpCodesToString([
+        10 << I18nCreateOpCode.SHIFT, 'text at 10',                                            //
+        11 << I18nCreateOpCode.SHIFT | I18nCreateOpCode.APPEND_EAGERLY, 'text at 11, append',  //
+        12 << I18nCreateOpCode.SHIFT | I18nCreateOpCode.COMMENT, 'comment at 12',              //
+        13 << I18nCreateOpCode.SHIFT | I18nCreateOpCode.COMMENT | I18nCreateOpCode.APPEND_EAGERLY,
+        'comment at 13, append',  //
+      ]))
+          .toEqual([
+            'lView[10] = document.createText("text at 10");',
+            'lView[11] = document.createText("text at 11, append");',
+            'parent.appendChild(lView[11]);',
+            'lView[12] = document.createComment("comment at 12");',
+            'lView[13] = document.createComment("comment at 13, append");',
+            'parent.appendChild(lView[13]);',
+          ]);
     });
   });
 });

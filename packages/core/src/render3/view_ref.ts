@@ -11,11 +11,14 @@ import {ChangeDetectorRef as viewEngine_ChangeDetectorRef} from '../change_detec
 import {ViewContainerRef as viewEngine_ViewContainerRef} from '../linker/view_container_ref';
 import {EmbeddedViewRef as viewEngine_EmbeddedViewRef, InternalViewRef as viewEngine_InternalViewRef} from '../linker/view_ref';
 import {assertDefined} from '../util/assert';
+
 import {checkNoChangesInRootView, checkNoChangesInternal, detectChangesInRootView, detectChangesInternal, markViewDirty, storeCleanupWithContext} from './instructions/shared';
 import {CONTAINER_HEADER_OFFSET} from './interfaces/container';
-import {TElementNode, TNode, TNodeType} from './interfaces/node';
+import {icuContainerIterate} from './interfaces/i18n';
+import {TElementNode, TIcuContainerNode, TNode, TNodeType} from './interfaces/node';
+import {RNode} from './interfaces/renderer';
 import {isLContainer} from './interfaces/type_checks';
-import {CONTEXT, DECLARATION_COMPONENT_VIEW, FLAGS, HOST, LView, LViewFlags, T_HOST, TVIEW, TView} from './interfaces/view';
+import {CONTEXT, DECLARATION_COMPONENT_VIEW, FLAGS, LView, LViewFlags, T_HOST, TVIEW, TView} from './interfaces/view';
 import {assertNodeOfPossibleTypes} from './node_assert';
 import {destroyLView, renderDetachView} from './node_manipulation';
 import {getLViewParent} from './util/view_traversal_utils';
@@ -346,8 +349,14 @@ function collectNativeNodes(
     }
 
     const tNodeType = tNode.type;
-    if (tNodeType === TNodeType.ElementContainer || tNodeType === TNodeType.IcuContainer) {
+    if (tNodeType === TNodeType.ElementContainer) {
       collectNativeNodes(tView, lView, tNode.child, result);
+    } else if (tNodeType === TNodeType.IcuContainer) {
+      const nextRNode = icuContainerIterate(tNode as TIcuContainerNode, lView);
+      let rNode: RNode|null;
+      while (rNode = nextRNode()) {
+        result.push(rNode);
+      }
     } else if (tNodeType === TNodeType.Projection) {
       const componentView = lView[DECLARATION_COMPONENT_VIEW];
       const componentHost = componentView[T_HOST] as TElementNode;

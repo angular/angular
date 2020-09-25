@@ -156,9 +156,6 @@
     "name": "generatePropertyAliases"
   },
   {
-    "name": "isInCheckNoChangesMode"
-  },
-  {
     "name": "getClosureSafeProperty"
   },
   {
@@ -172,6 +169,9 @@
   },
   {
     "name": "getCurrentTNode"
+  },
+  {
+    "name": "getCurrentTNodePlaceholderOk"
   },
   {
     "name": "getFirstLContainer"
@@ -246,6 +246,9 @@
     "name": "isCurrentTNodeParent"
   },
   {
+    "name": "isInCheckNoChangesMode"
+  },
+  {
     "name": "isInlineTemplate"
   },
   {
@@ -280,6 +283,9 @@
   },
   {
     "name": "nativeAppendOrInsertBefore"
+  },
+  {
+    "name": "nativeInsertBefore"
   },
   {
     "name": "nextNgElementId"
@@ -343,6 +349,9 @@
   },
   {
     "name": "setUpAttributes"
+  },
+  {
+    "name": "unwrapRNode"
   },
   {
     "name": "updateTransplantedViewCount"

@@ -64,7 +64,7 @@ onlyInIvy('Ivy specific').describe('Debug Representation', () => {
           length: 1,
           content: [{index: HEADER_OFFSET + 2, t: null, l: 'World'}]
         });
-        expect(myComponentView.i18n).toEqual({
+        expect(myComponentView.expando).toEqual({
           start: HEADER_OFFSET + 3,
           end: HEADER_OFFSET + 4,
           length: 1,
@@ -74,8 +74,6 @@ onlyInIvy('Ivy specific').describe('Debug Representation', () => {
             l: matchDomText('Hello World')
           }]
         });
-        expect(myComponentView.expando)
-            .toEqual({start: HEADER_OFFSET + 4, end: HEADER_OFFSET + 4, length: 0, content: []});
       });
     });
   });

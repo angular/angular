@@ -108,9 +108,6 @@
     "name": "extractPipeDef"
   },
   {
-    "name": "isInCheckNoChangesMode"
-  },
-  {
     "name": "getClosureSafeProperty"
   },
   {
@@ -121,6 +118,9 @@
   },
   {
     "name": "getCurrentTNode"
+  },
+  {
+    "name": "getCurrentTNodePlaceholderOk"
   },
   {
     "name": "getFirstLContainer"
@@ -159,6 +159,9 @@
     "name": "invertObject"
   },
   {
+    "name": "isInCheckNoChangesMode"
+  },
+  {
     "name": "isProceduralRenderer"
   },
   {
@@ -172,6 +175,9 @@
   },
   {
     "name": "nativeAppendOrInsertBefore"
+  },
+  {
+    "name": "nativeInsertBefore"
   },
   {
     "name": "nextNgElementId"
@@ -219,9 +225,15 @@
     "name": "setSelectedIndex"
   },
   {
+    "name": "unwrapRNode"
+  },
+  {
     "name": "updateTransplantedViewCount"
   },
   {
     "name": "viewAttachedToChangeDetector"
+  },
+  {
+    "name": "ɵɵtext"
   }
 ]

@@ -38,7 +38,7 @@ export function ɵɵtext(index: number, value: string = ''): void {
       getOrCreateTNode(tView, index, TNodeType.Element, null, null) :
       tView.data[adjustedIndex] as TElementNode;
 
-  const textNative = lView[adjustedIndex] = createTextNode(value, lView[RENDERER]);
+  const textNative = lView[adjustedIndex] = createTextNode(lView[RENDERER], value);
   appendChild(tView, lView, textNative, tNode);
 
   // Text nodes are self closing.
