@@ -207,7 +207,7 @@ function traverseNextElement(tNode: TNode): TNode|null {
   if (tNode.child && tNode.child.parent === tNode) {
     // FIXME(misko): checking if `tNode.child.parent === tNode` should not be necessary
     // We have added it here because i18n creates TNode's which are not valid, so this is a work
-    // around. The i18n code is being refactored in #??? and once it lands this extra check can be
+    // around. The i18n code will be refactored in #39003 and once it lands this extra check can be
     // deleted.
     return tNode.child;
   } else if (tNode.next) {

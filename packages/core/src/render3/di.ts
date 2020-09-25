@@ -21,7 +21,7 @@ import {getFactoryDef} from './definition';
 import {NG_ELEMENT_ID, NG_FACTORY_DEF} from './fields';
 import {registerPreOrderHooks} from './hooks';
 import {DirectiveDef, FactoryFn} from './interfaces/definition';
-import {isFactory, NO_PARENT_INJECTOR, NodeInjectorFactory, PARENT_INJECTOR, RelativeInjectorLocation, RelativeInjectorLocationFlags, TNODE} from './interfaces/injector';
+import {isFactory, NO_PARENT_INJECTOR, NodeInjectorFactory, NodeInjectorOffset, RelativeInjectorLocation, RelativeInjectorLocationFlags} from './interfaces/injector';
 import {AttributeMarker, TContainerNode, TDirectiveHostNode, TElementContainerNode, TElementNode, TNode, TNodeProviderIndexes, TNodeType} from './interfaces/node';
 import {isComponentDef, isComponentHost} from './interfaces/type_checks';
 import {DECLARATION_COMPONENT_VIEW, DECLARATION_VIEW, INJECTOR, LView, T_HOST, TData, TVIEW, TView, TViewType} from './interfaces/view';
@@ -170,12 +170,12 @@ export function getOrCreateNodeInjectorForNode(
     const parentData = parentLView[TVIEW].data as any;
     // Creates a cumulative bloom filter that merges the parent's bloom filter
     // and its own cumulative bloom (which contains tokens for all ancestors)
-    for (let i = 0; i < 8; i++) {
+    for (let i = 0; i < NodeInjectorOffset.BLOOM_SIZE; i++) {
       lView[injectorIndex + i] = parentLView[parentIndex + i] | parentData[parentIndex + i];
     }
   }
 
-  lView[injectorIndex + PARENT_INJECTOR] = parentLoc;
+  lView[injectorIndex + NodeInjectorOffset.PARENT] = parentLoc;
   return injectorIndex;
 }
 
@@ -191,7 +191,7 @@ export function getInjectorIndex(tNode: TNode, lView: LView): number {
       (tNode.parent && tNode.parent.injectorIndex === tNode.injectorIndex) ||
       // After the first template pass, the injector index might exist but the parent values
       // might not have been calculated yet for this instance
-      lView[tNode.injectorIndex + PARENT_INJECTOR] == null) {
+      lView[tNode.injectorIndex + NodeInjectorOffset.PARENT] === null) {
     return -1;
   } else {
     ngDevMode && assertIndexInRange(lView, tNode.injectorIndex);
@@ -402,7 +402,7 @@ export function getOrCreateInjectable<T>(
       // searching the parent injector.
       if (injectorIndex === -1 || flags & InjectFlags.SkipSelf) {
         parentLocation = injectorIndex === -1 ? getParentInjectorLocation(tNode, lView) :
-                                                lView[injectorIndex + PARENT_INJECTOR];
+                                                lView[injectorIndex + NodeInjectorOffset.PARENT];
 
         if (parentLocation === NO_PARENT_INJECTOR || !shouldSearchParent(flags, false)) {
           injectorIndex = -1;
@@ -420,7 +420,9 @@ export function getOrCreateInjectable<T>(
 
         // Check the current injector. If it matches, see if it contains token.
         const tView = lView[TVIEW];
-        ngDevMode && assertTNodeForLView(tView.data[injectorIndex + TNODE] as TNode, lView);
+        ngDevMode &&
+            assertTNodeForLView(
+                tView.data[injectorIndex + NodeInjectorOffset.TNODE] as TNode, lView);
         if (bloomHasToken(bloomHash, injectorIndex, tView.data)) {
           // At this point, we have an injector which *may* contain the token, so we step through
           // the providers and directives associated with the injector's corresponding node to get
@@ -431,10 +433,11 @@ export function getOrCreateInjectable<T>(
             return instance;
           }
         }
-        parentLocation = lView[injectorIndex + PARENT_INJECTOR];
+        parentLocation = lView[injectorIndex + NodeInjectorOffset.PARENT];
         if (parentLocation !== NO_PARENT_INJECTOR &&
             shouldSearchParent(
-                flags, lView[TVIEW].data[injectorIndex + TNODE] === hostTElementNode) &&
+                flags,
+                lView[TVIEW].data[injectorIndex + NodeInjectorOffset.TNODE] === hostTElementNode) &&
             bloomHasToken(bloomHash, injectorIndex, lView)) {
           // The def wasn't found anywhere on this node, so it was a false positive.
           // Traverse up the tree and continue searching.
@@ -485,7 +488,7 @@ function searchTokensOnInjector<T>(
     injectorIndex: number, lView: LView, token: Type<T>|InjectionToken<T>,
     previousTView: TView|null, flags: InjectFlags, hostTElementNode: TNode|null) {
   const currentTView = lView[TVIEW];
-  const tNode = currentTView.data[injectorIndex + TNODE] as TNode;
+  const tNode = currentTView.data[injectorIndex + NodeInjectorOffset.TNODE] as TNode;
   // First, we need to determine if view providers can be accessed by the starting element.
   // There are two possibilities
   const canAccessViewProviders = previousTView == null ?

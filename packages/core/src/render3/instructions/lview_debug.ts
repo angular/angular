@@ -16,7 +16,7 @@ import {assertNodeInjector} from '../assert';
 import {getInjectorIndex} from '../di';
 import {CONTAINER_HEADER_OFFSET, HAS_TRANSPLANTED_VIEWS, LContainer, MOVED_VIEWS, NATIVE} from '../interfaces/container';
 import {ComponentTemplate, DirectiveDef, DirectiveDefList, PipeDefList, ViewQueriesFunction} from '../interfaces/definition';
-import {NO_PARENT_INJECTOR, PARENT_INJECTOR, TNODE} from '../interfaces/injector';
+import {NO_PARENT_INJECTOR, NodeInjectorOffset} from '../interfaces/injector';
 import {AttributeMarker, PropertyAliases, TConstants, TContainerNode, TElementNode, TNode as ITNode, TNodeFlags, TNodeProviderIndexes, TNodeType, TNodeTypeAsString} from '../interfaces/node';
 import {SelectorFlags} from '../interfaces/projection';
 import {LQueries, TQueries} from '../interfaces/query';
@@ -218,9 +218,9 @@ class TNode implements ITNode {
     let injectorIndex = getInjectorIndex(this, lView);
     ngDevMode && assertNodeInjector(lView, injectorIndex);
     while (injectorIndex !== -1) {
-      const tNode = lView[TVIEW].data[injectorIndex + TNODE] as TNode;
+      const tNode = lView[TVIEW].data[injectorIndex + NodeInjectorOffset.TNODE] as TNode;
       path.push(buildDebugNode(tNode, lView));
-      const parentLocation = lView[injectorIndex + PARENT_INJECTOR];
+      const parentLocation = lView[injectorIndex + NodeInjectorOffset.PARENT];
       if (parentLocation === NO_PARENT_INJECTOR) {
         injectorIndex = -1;
       } else {

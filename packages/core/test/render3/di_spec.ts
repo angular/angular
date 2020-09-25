@@ -9,11 +9,11 @@
 import {InjectFlags, Optional, Renderer2, Self} from '@angular/core';
 import {createLView, createTView, getOrCreateTNode} from '@angular/core/src/render3/instructions/shared';
 import {RenderFlags} from '@angular/core/src/render3/interfaces/definition';
+import {NodeInjectorOffset} from '@angular/core/src/render3/interfaces/injector';
 
 import {ɵɵdefineComponent} from '../../src/render3/definition';
 import {bloomAdd, bloomHashBitOrFactory as bloomHash, bloomHasToken, getOrCreateNodeInjectorForNode} from '../../src/render3/di';
 import {ɵɵdefineDirective, ɵɵdirectiveInject, ɵɵelement, ɵɵelementEnd, ɵɵelementStart, ɵɵtext} from '../../src/render3/index';
-import {TNODE} from '../../src/render3/interfaces/injector';
 import {TNodeType} from '../../src/render3/interfaces/node';
 import {isProceduralRenderer} from '../../src/render3/interfaces/renderer';
 import {LViewFlags, TVIEW, TViewType} from '../../src/render3/interfaces/view';
@@ -150,7 +150,7 @@ describe('di', () => {
       });
 
       function bloomState() {
-        return mockTView.data.slice(0, TNODE).reverse();
+        return mockTView.data.slice(0, NodeInjectorOffset.TNODE).reverse();
       }
 
       class Dir0 {
