@@ -97,6 +97,13 @@ describe('findNodeAtPosition for template AST', () => {
     expect(node).toBeInstanceOf(e.PropertyRead);
   });
 
+  it('should not locate bound attribute if cursor is between key and value', () => {
+    const {errors, nodes, position} = parse(`<test-cmp [foo]¦="bar"></test-cmp>`);
+    expect(errors).toBeNull();
+    const node = findNodeAtPosition(nodes, position);
+    expect(node).toBeUndefined();
+  });
+
   it('should locate bound event key', () => {
     const {errors, nodes, position} = parse(`<test-cmp (fo¦o)="bar()"></test-cmp>`);
     expect(errors).toBe(null);

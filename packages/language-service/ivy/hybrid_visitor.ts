@@ -19,7 +19,19 @@ import * as t from '@angular/compiler/src/render3/r3_ast';         // t for temp
 export function findNodeAtPosition(ast: t.Node[], position: number): t.Node|e.AST|undefined {
   const visitor = new R3Visitor(position);
   visitor.visitAll(ast);
-  return visitor.path[visitor.path.length - 1];
+  const candidate = visitor.path[visitor.path.length - 1];
+  if (!candidate) {
+    return;
+  }
+  if (isTemplateNodeWithKeyAndValue(candidate)) {
+    const {keySpan, valueSpan} = candidate;
+    // If cursor is within source span but not within key span or value span,
+    // do not return the node.
+    if (!isWithin(position, keySpan) && (valueSpan && !isWithin(position, valueSpan))) {
+      return;
+    }
+  }
+  return candidate;
 }
 
 class R3Visitor implements t.Visitor {
@@ -31,11 +43,6 @@ class R3Visitor implements t.Visitor {
   constructor(private readonly position: number) {}
 
   visit(node: t.Node) {
-    if (node instanceof t.BoundAttribute) {
-      node.visit(this);
-      return;
-    }
-
     const {start, end} = getSpanIncludingEndTag(node);
     if (isWithin(this.position, {start, end})) {
       const length = end - start;
@@ -100,13 +107,8 @@ class R3Visitor implements t.Visitor {
   }
 
   visitBoundAttribute(attribute: t.BoundAttribute) {
-    if (isWithin(this.position, attribute.keySpan)) {
-      this.path.push(attribute);
-    } else if (attribute.valueSpan && isWithin(this.position, attribute.valueSpan)) {
-      this.path.push(attribute);
-      const visitor = new ExpressionVisitor(this.position);
-      visitor.visit(attribute.value, this.path);
-    }
+    const visitor = new ExpressionVisitor(this.position);
+    visitor.visit(attribute.value, this.path);
   }
 
   visitBoundEvent(attribute: t.BoundEvent) {
@@ -164,6 +166,15 @@ class ExpressionVisitor extends e.RecursiveAstVisitor {
 export function isTemplateNode(node: t.Node|e.AST): node is t.Node {
   // Template node implements the Node interface so we cannot use instanceof.
   return node.sourceSpan instanceof ParseSourceSpan;
+}
+
+interface NodeWithKeyAndValue extends t.Node {
+  keySpan: ParseSourceSpan;
+  valueSpan?: ParseSourceSpan;
+}
+
+export function isTemplateNodeWithKeyAndValue(node: t.Node|e.AST): node is NodeWithKeyAndValue {
+  return isTemplateNode(node) && node.hasOwnProperty('keySpan');
 }
 
 export function isExpressionNode(node: t.Node|e.AST): node is e.AST {
