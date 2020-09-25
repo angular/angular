@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {TI18n} from '@angular/core/src/render3/interfaces/i18n';
+import {TI18n, TIcu} from '@angular/core/src/render3/interfaces/i18n';
 import {TNode} from '@angular/core/src/render3/interfaces/node';
 import {TView} from '@angular/core/src/render3/interfaces/view';
 
@@ -75,10 +75,26 @@ export function isTI18n(obj: any): obj is TI18n {
   return isShapeOf<TI18n>(obj, ShapeOfTI18n);
 }
 const ShapeOfTI18n: ShapeOf<TI18n> = {
-  vars: true,
   create: true,
   update: true,
-  icus: true,
+};
+
+
+/**
+ * Determines if `obj` matches the shape `TIcu`.
+ * @param obj
+ */
+export function isTIcu(obj: any): obj is TIcu {
+  return isShapeOf<TIcu>(obj, ShapeOfTIcu);
+}
+const ShapeOfTIcu: ShapeOf<TIcu> = {
+  type: true,
+  anchorIdx: true,
+  currentCaseLViewIndex: true,
+  cases: true,
+  create: true,
+  remove: true,
+  update: true
 };
 
 
@@ -133,6 +149,7 @@ export function isTNode(obj: any): obj is TNode {
 const ShapeOfTNode: ShapeOf<TNode> = {
   type: true,
   index: true,
+  insertBeforeIndex: true,
   injectorIndex: true,
   directiveStart: true,
   directiveEnd: true,

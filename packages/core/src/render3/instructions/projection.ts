@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {newArray} from '../../util/array_utils';
-import {TAttributes, TElementNode, TNode, TNodeType} from '../interfaces/node';
+import {TAttributes, TElementNode, TNode, TNodeFlags, TNodeType} from '../interfaces/node';
 import {ProjectionSlots} from '../interfaces/projection';
 import {DECLARATION_COMPONENT_VIEW, T_HOST} from '../interfaces/view';
 import {applyProjection} from '../node_manipulation';
@@ -103,11 +103,6 @@ export function ɵɵprojectionDef(projectionSlots?: ProjectionSlots): void {
   }
 }
 
-let delayProjection = false;
-export function setDelayProjection(value: boolean) {
-  delayProjection = value;
-}
-
 
 /**
  * Inserts previously re-distributed projected nodes. This instruction must be preceded by a call
@@ -133,8 +128,7 @@ export function ɵɵprojection(
   // `<ng-content>` has no content
   setCurrentTNodeAsNotParent();
 
-  // We might need to delay the projection of nodes if they are in the middle of an i18n block
-  if (!delayProjection) {
+  if ((tProjectionNode.flags & TNodeFlags.isDetached) !== TNodeFlags.isDetached) {
     // re-distribution of projectable nodes is stored on a component's view level
     applyProjection(tView, lView, tProjectionNode);
   }

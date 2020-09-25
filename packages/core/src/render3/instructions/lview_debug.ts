@@ -17,7 +17,7 @@ import {getInjectorIndex} from '../di';
 import {CONTAINER_HEADER_OFFSET, HAS_TRANSPLANTED_VIEWS, LContainer, MOVED_VIEWS, NATIVE} from '../interfaces/container';
 import {ComponentTemplate, DirectiveDef, DirectiveDefList, PipeDefList, ViewQueriesFunction} from '../interfaces/definition';
 import {NO_PARENT_INJECTOR, NodeInjectorOffset} from '../interfaces/injector';
-import {AttributeMarker, PropertyAliases, TConstants, TContainerNode, TElementNode, TNode as ITNode, TNodeFlags, TNodeProviderIndexes, TNodeType, TNodeTypeAsString} from '../interfaces/node';
+import {AttributeMarker, InsertBeforeIndex, PropertyAliases, TConstants, TContainerNode, TElementNode, TNode as ITNode, TNodeFlags, TNodeProviderIndexes, TNodeType, TNodeTypeAsString} from '../interfaces/node';
 import {SelectorFlags} from '../interfaces/projection';
 import {LQueries, TQueries} from '../interfaces/query';
 import {RComment, RElement, Renderer3, RendererFactory3, RNode} from '../interfaces/renderer';
@@ -160,7 +160,13 @@ export const TViewConstructor = class TView implements ITView {
     return TViewTypeAsString[this.type] || `TViewType.?${this.type}?`;
   }
 
-  get i18nStartIndex(): number {
+  /**
+   * Returns initial value of `expandoStartIndex`.
+   */
+  // FIXME(misko): `originalExpandoStartIndex` should not be needed because it should be the same as
+  // `expandoStartIndex`. However `expandoStartIndex` is misnamed as it changes as more items get
+  // allocated in expando.
+  get originalExpandoStartIndex(): number {
     return HEADER_OFFSET + this._decls + this._vars;
   }
 };
@@ -170,6 +176,7 @@ class TNode implements ITNode {
       public tView_: TView,                                                          //
       public type: TNodeType,                                                        //
       public index: number,                                                          //
+      public insertBeforeIndex: InsertBeforeIndex,                                   //
       public injectorIndex: number,                                                  //
       public directiveStart: number,                                                 //
       public directiveEnd: number,                                                   //
@@ -249,8 +256,13 @@ class TNode implements ITNode {
   }
 
   get template_(): string {
+    if (this.tagName === null && this.type === TNodeType.Element) return '#text';
     const buf: string[] = [];
-    buf.push('<', this.tagName || this.type_);
+    const tagName = typeof this.tagName === 'string' && this.tagName || this.type_;
+    buf.push('<', tagName);
+    if (this.flags) {
+      buf.push(' ', this.flags_);
+    }
     if (this.attrs) {
       for (let i = 0; i < this.attrs.length;) {
         const attrName = this.attrs[i++];
@@ -263,7 +275,7 @@ class TNode implements ITNode {
     }
     buf.push('>');
     processTNodeChildren(this.child, buf);
-    buf.push('</', this.tagName || this.type_, '>');
+    buf.push('</', tagName, '>');
     return buf.join('');
   }
 
@@ -444,7 +456,7 @@ export class LViewDebug implements ILViewDebug {
     return toHtml(this._raw_lView[HOST], true);
   }
   get html(): string {
-    return (this.nodes || []).map(node => toHtml(node.native, true)).join('');
+    return (this.nodes || []).map(mapToHTML).join('');
   }
   get context(): {}|null {
     return this._raw_lView[CONTEXT];
@@ -458,7 +470,9 @@ export class LViewDebug implements ILViewDebug {
     const tNode = lView[TVIEW].firstChild;
     return toDebugNodes(tNode, lView);
   }
-
+  get template(): string {
+    return (this.tView as any as {template_: string}).template_;
+  }
   get tView(): ITView {
     return this._raw_lView[TVIEW];
   }
@@ -504,20 +518,15 @@ export class LViewDebug implements ILViewDebug {
     const tView = this.tView;
     return toLViewRange(
         tView, this._raw_lView, tView.bindingStartIndex,
-        (tView as any as {i18nStartIndex: number}).i18nStartIndex);
-  }
-
-  get i18n(): LViewDebugRange {
-    const tView = this.tView;
-    return toLViewRange(
-        tView, this._raw_lView, (tView as any as {i18nStartIndex: number}).i18nStartIndex,
-        tView.expandoStartIndex);
+        (tView as any as {originalExpandoStartIndex: number}).originalExpandoStartIndex);
   }
 
   get expando(): LViewDebugRange {
     const tView = this.tView as any as {_decls: number, _vars: number};
     return toLViewRange(
-        this.tView, this._raw_lView, this.tView.expandoStartIndex, this._raw_lView.length);
+        this.tView, this._raw_lView,
+        (tView as any as {originalExpandoStartIndex: number}).originalExpandoStartIndex,
+        this._raw_lView.length);
   }
 
   /**
@@ -531,6 +540,16 @@ export class LViewDebug implements ILViewDebug {
       child = child.next;
     }
     return childViews;
+  }
+}
+
+function mapToHTML(node: DebugNode): string {
+  if (node.type === 'ElementContainer') {
+    return (node.children || []).map(mapToHTML).join('');
+  } else if (node.type === 'IcuContainer') {
+    throw new Error('Not implemented');
+  } else {
+    return toHtml(node.native, true) || '';
   }
 }
 

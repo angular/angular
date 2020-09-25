@@ -163,6 +163,7 @@ export function renderComponent<T>(
  * @param rNode Render host element.
  * @param def ComponentDef
  * @param rootView The parent view where the host node is stored
+ * @param rendererFactory Factory to be used for creating child renderers.
  * @param hostRenderer The current renderer
  * @param sanitizer The sanitizer, if provided
  *
@@ -174,7 +175,10 @@ export function createRootComponentView(
   const tView = rootView[TVIEW];
   ngDevMode && assertIndexInRange(rootView, 0 + HEADER_OFFSET);
   rootView[0 + HEADER_OFFSET] = rNode;
-  const tNode: TElementNode = getOrCreateTNode(tView, 0, TNodeType.Element, null, null);
+  // '#host' is added here as we don't know the real host DOM name (we don't want to read it) and at
+  // the same time we want to communicate the the debug `TNode` that this is a special `TNode`
+  // representing a host element.
+  const tNode = getOrCreateTNode(tView, 0, TNodeType.Element, '#host', null);
   const mergedAttrs = tNode.mergedAttrs = def.hostAttrs;
   if (mergedAttrs !== null) {
     computeStaticStyling(tNode, mergedAttrs, true);
