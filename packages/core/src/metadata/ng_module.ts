@@ -341,9 +341,9 @@ export const NgModule: NgModuleDecorator = makeDecorator(
  * // A more advanced use case...
  * // Bootstrap multiple elements on the same page.
  * // Useful when partially replacing an existing frontend with Angular.
- * // Found from ["Stackoverflow"](https://stackoverflow.com/a/49144150/5399323) and modified slightly.
- * export class AppModule implements DoBootstrap {
- *  constructor(private resolver: ComponentFactoryResolver) {}
+ * // Found from ["Stackoverflow"](https://stackoverflow.com/a/49144150/5399323) and modified
+ * slightly. export class AppModule implements DoBootstrap { constructor(private resolver:
+ * ComponentFactoryResolver) {}
  *
  *  ngDoBootstrap(appRef: ApplicationRef) {
  *    entryComponents.forEach((component: any) => {
