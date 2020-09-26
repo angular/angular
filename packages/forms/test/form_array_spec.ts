@@ -178,6 +178,10 @@ describe('FormArray', () => {
     let a: FormArray;
 
     it('should work with nested form groups/arrays', () => {
+      const fa = new FormArray(
+          [new FormGroup({'c2': new FormControl('v2'), 'c3': new FormControl('v3')})]);
+
+
       a = new FormArray([
         new FormGroup({'c2': new FormControl('v2'), 'c3': new FormControl('v3')}),
         new FormArray([new FormControl('v4'), new FormControl('v5')])
