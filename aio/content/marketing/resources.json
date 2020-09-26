@@ -441,6 +441,12 @@
             "rev": true,
             "title": "material-dayjs-adapter",
             "url": "https://www.npmjs.com/package/@tabuckner/material-dayjs-adapter"
+          },
+          "ng-vcl": {
+            "desc": "A comprehensive library of components adopting latest NG features with very good extensibility and stylability.",
+            "rev": true,
+            "title": "Angular VCL",
+            "url": "https://vcl.github.io/ng-vcl/master/#/"
           }
         }
       }
