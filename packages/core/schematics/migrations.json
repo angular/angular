@@ -54,6 +54,11 @@
       "version": "11.0.0-beta",
       "description": "The default value for `relativeLinkResolution` is changing from 'legacy' to 'corrected'.\nThis migration updates `RouterModule` configurations that use the default value to \nnow specifically use 'legacy' to prevent breakages when updating.",
       "factory": "./migrations/relative-link-resolution/index"
+    },
+    "migration-v11-abstract-control-parent": {
+      "version": "11.0.0-beta",
+      "description": "In Angular version 11, the type of `AbstractControl.parent` can be `null` to reflect the runtime value more accurately. This migration automatically adds non-null assertions to existing accesses of the `parent` property on types like `FormControl`, `FormArray` and `FormGroup`.",
+      "factory": "./migrations/abstract-control-parent/index"
     }
   }
 }
