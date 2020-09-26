@@ -442,6 +442,27 @@ runInEachFileSystem(() => {
       // https://github.com/angular/angular/issues/30079), this would have crashed.
     });
 
+    // https://github.com/angular/angular/issues/38979
+    it('should retain ambient types provided by auto-discovered @types', () => {
+      // This test verifies that ambient types declared in node_modules/@types are still available
+      // in incremental compilations. In the below code, the usage of `require` should be valid
+      // in the original program and the incremental program.
+      env.tsconfig({fullTemplateTypeCheck: true});
+      env.write('node_modules/@types/node/index.d.ts', 'declare var require: any;');
+      env.write('main.ts', `
+        import {Component} from '@angular/core';
+
+        require('path');
+
+        @Component({template: ''})
+        export class MyComponent {}
+      `);
+      env.driveMain();
+      env.invalidateCachedFile('main.ts');
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(0);
+    });
+
     // https://github.com/angular/angular/pull/26036
     it('should handle redirected source files', () => {
       env.tsconfig({fullTemplateTypeCheck: true});
