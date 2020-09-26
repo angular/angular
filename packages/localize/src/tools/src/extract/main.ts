@@ -6,13 +6,13 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {getFileSystem, setFileSystem, NodeJSFileSystem, AbsoluteFsPath} from '@angular/compiler-cli/src/ngtsc/file_system';
+import {setFileSystem, NodeJSFileSystem, AbsoluteFsPath, FileSystem} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {ConsoleLogger, Logger, LogLevel} from '@angular/compiler-cli/src/ngtsc/logging';
 import {ɵParsedMessage} from '@angular/localize';
 import * as glob from 'glob';
 import * as yargs from 'yargs';
 
-import {DiagnosticHandlingStrategy, Diagnostics} from '../diagnostics';
+import {DiagnosticHandlingStrategy} from '../diagnostics';
 
 import {checkDuplicateMessages} from './duplicates';
 import {MessageExtractor} from './extraction';
@@ -97,8 +97,8 @@ if (require.main === module) {
           .help()
           .parse(args);
 
-  const fs = new NodeJSFileSystem();
-  setFileSystem(fs);
+  const fileSystem = new NodeJSFileSystem();
+  setFileSystem(fileSystem);
 
   const rootPath = options.r;
   const sourceFilePaths = glob.sync(options.s, {cwd: rootPath, nodir: true});
@@ -119,6 +119,7 @@ if (require.main === module) {
     useLegacyIds: options.useLegacyIds,
     duplicateMessageHandling,
     formatOptions,
+    fileSystem,
   });
 }
 
@@ -166,6 +167,10 @@ export interface ExtractTranslationsOptions {
    * A collection of formatting options to pass to the translation file serializer.
    */
   formatOptions?: FormatOptions;
+  /**
+   * The file-system abstraction to use.
+   */
+  fileSystem: FileSystem;
 }
 
 export function extractTranslations({
@@ -179,8 +184,8 @@ export function extractTranslations({
   useLegacyIds,
   duplicateMessageHandling,
   formatOptions = {},
+  fileSystem: fs,
 }: ExtractTranslationsOptions) {
-  const fs = getFileSystem();
   const basePath = fs.resolve(rootPath);
   const extractor = new MessageExtractor(fs, logger, {basePath, useSourceMaps});
 
@@ -196,7 +201,7 @@ export function extractTranslations({
 
   const outputPath = fs.resolve(rootPath, output);
   const serializer =
-      getSerializer(format, sourceLocale, fs.dirname(outputPath), useLegacyIds, formatOptions);
+      getSerializer(format, sourceLocale, fs.dirname(outputPath), useLegacyIds, formatOptions, fs);
   const translationFile = serializer.serialize(messages);
   fs.ensureDir(fs.dirname(outputPath));
   fs.writeFile(outputPath, translationFile);
@@ -208,18 +213,20 @@ export function extractTranslations({
 
 export function getSerializer(
     format: string, sourceLocale: string, rootPath: AbsoluteFsPath, useLegacyIds: boolean,
-    formatOptions: FormatOptions = {}): TranslationSerializer {
+    formatOptions: FormatOptions = {}, fs: FileSystem): TranslationSerializer {
   switch (format) {
     case 'xlf':
     case 'xlif':
     case 'xliff':
-      return new Xliff1TranslationSerializer(sourceLocale, rootPath, useLegacyIds, formatOptions);
+      return new Xliff1TranslationSerializer(
+          sourceLocale, rootPath, useLegacyIds, formatOptions, fs);
     case 'xlf2':
     case 'xlif2':
     case 'xliff2':
-      return new Xliff2TranslationSerializer(sourceLocale, rootPath, useLegacyIds, formatOptions);
+      return new Xliff2TranslationSerializer(
+          sourceLocale, rootPath, useLegacyIds, formatOptions, fs);
     case 'xmb':
-      return new XmbTranslationSerializer(rootPath, useLegacyIds);
+      return new XmbTranslationSerializer(rootPath, useLegacyIds, fs);
     case 'json':
       return new SimpleJsonTranslationSerializer(sourceLocale);
   }

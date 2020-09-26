@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {FileSystem, getFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {ɵParsedTranslation} from '@angular/localize';
 import {NodePath, PluginObj} from '@babel/core';
 import {TaggedTemplateExpression} from '@babel/types';
@@ -21,8 +22,8 @@ import {buildCodeFrameError, buildLocalizeReplacement, isBabelParseError, isLoca
  */
 export function makeEs2015TranslatePlugin(
     diagnostics: Diagnostics, translations: Record<string, ɵParsedTranslation>,
-    {missingTranslation = 'error', localizeName = '$localize'}: TranslatePluginOptions = {}):
-    PluginObj {
+    {missingTranslation = 'error', localizeName = '$localize'}: TranslatePluginOptions = {},
+    fs: FileSystem = getFileSystem()): PluginObj {
   return {
     visitor: {
       TaggedTemplateExpression(path: NodePath<TaggedTemplateExpression>) {
@@ -30,7 +31,7 @@ export function makeEs2015TranslatePlugin(
           const tag = path.get('tag');
           if (isLocalize(tag, localizeName)) {
             const [messageParts] =
-                unwrapMessagePartsFromTemplateLiteral(path.get('quasi').get('quasis'));
+                unwrapMessagePartsFromTemplateLiteral(path.get('quasi').get('quasis'), fs);
             const translated = translate(
                 diagnostics, translations, messageParts, path.node.quasi.expressions,
                 missingTranslation);

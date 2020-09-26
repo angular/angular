@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {absoluteFrom} from '@angular/compiler-cli/src/ngtsc/file_system';
+import {absoluteFrom, FileSystem, getFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {runInEachFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
 import {ɵmakeTemplateObject} from '@angular/localize';
 import {NodePath, TransformOptions, transformSync} from '@babel/core';
@@ -16,6 +16,8 @@ import {Expression, Identifier, TaggedTemplateExpression, ExpressionStatement, C
 import {isGlobalIdentifier, isNamedIdentifier, isStringLiteralArray, isArrayOfExpressions, unwrapStringLiteralArray, unwrapMessagePartsFromLocalizeCall, wrapInParensIfNecessary, buildLocalizeReplacement, unwrapSubstitutionsFromLocalizeCall, unwrapMessagePartsFromTemplateLiteral, getLocation} from '../src/source_file_utils';
 
 runInEachFileSystem(() => {
+  let fs: FileSystem;
+  beforeEach(() => fs = getFileSystem());
   describe('utils', () => {
     describe('isNamedIdentifier()', () => {
       it('should return true if the expression is an identifier with name `$localize`', () => {
@@ -77,7 +79,7 @@ runInEachFileSystem(() => {
       it('should return an array of string literals and locations from a direct call to a tag function',
          () => {
            const localizeCall = getLocalizeCall(`$localize(['a', 'b\\t', 'c'], 1, 2)`);
-           const [parts, locations] = unwrapMessagePartsFromLocalizeCall(localizeCall);
+           const [parts, locations] = unwrapMessagePartsFromLocalizeCall(localizeCall, fs);
            expect(parts).toEqual(['a', 'b\t', 'c']);
            expect(locations).toEqual([
              {
@@ -105,7 +107,7 @@ runInEachFileSystem(() => {
          () => {
            let localizeCall = getLocalizeCall(
                `$localize(__makeTemplateObject(['a', 'b\\t', 'c'], ['a', 'b\\\\t', 'c']), 1, 2)`);
-           const [parts, locations] = unwrapMessagePartsFromLocalizeCall(localizeCall);
+           const [parts, locations] = unwrapMessagePartsFromLocalizeCall(localizeCall, fs);
            expect(parts).toEqual(['a', 'b\t', 'c']);
            expect(parts.raw).toEqual(['a', 'b\\t', 'c']);
            expect(locations).toEqual([
@@ -138,7 +140,7 @@ runInEachFileSystem(() => {
           return _templateObject = function() { return e }, e
         }
         $localize(_templateObject(), 1, 2)`);
-           const [parts, locations] = unwrapMessagePartsFromLocalizeCall(localizeCall);
+           const [parts, locations] = unwrapMessagePartsFromLocalizeCall(localizeCall, fs);
            expect(parts).toEqual(['a', 'b\t', 'c']);
            expect(parts.raw).toEqual(['a', 'b\\t', 'c']);
            expect(locations).toEqual([
@@ -173,7 +175,7 @@ runInEachFileSystem(() => {
         const localizeStatement = localizeCall.parentPath as NodePath<ExpressionStatement>;
         const statements = localizeStatement.container as object[];
         expect(statements.length).toEqual(2);
-        unwrapMessagePartsFromLocalizeCall(localizeCall);
+        unwrapMessagePartsFromLocalizeCall(localizeCall, fs);
         expect(statements.length).toEqual(1);
         expect(statements[0]).toBe(localizeStatement.node);
       });
@@ -183,7 +185,7 @@ runInEachFileSystem(() => {
       it('should return the substitutions and locations from a direct call to a tag function',
          () => {
            const call = getLocalizeCall(`$localize(['a', 'b\t', 'c'], 1, 2)`);
-           const [substitutions, locations] = unwrapSubstitutionsFromLocalizeCall(call);
+           const [substitutions, locations] = unwrapSubstitutionsFromLocalizeCall(call, fs);
            expect((substitutions as NumericLiteral[]).map(s => s.value)).toEqual([1, 2]);
            expect(locations).toEqual([
              {
@@ -204,7 +206,7 @@ runInEachFileSystem(() => {
       it('should return the substitutions and locations from a downleveled tagged template', () => {
         const call = getLocalizeCall(
             `$localize(__makeTemplateObject(['a', 'b', 'c'], ['a', 'b', 'c']), 1, 2)`);
-        const [substitutions, locations] = unwrapSubstitutionsFromLocalizeCall(call);
+        const [substitutions, locations] = unwrapSubstitutionsFromLocalizeCall(call, fs);
         expect((substitutions as NumericLiteral[]).map(s => s.value)).toEqual([1, 2]);
         expect(locations).toEqual([
           {
@@ -226,7 +228,8 @@ runInEachFileSystem(() => {
     describe('unwrapMessagePartsFromTemplateLiteral', () => {
       it('should return a TemplateStringsArray built from the template literal elements', () => {
         const taggedTemplate = getTaggedTemplate('$localize `a${1}b\\t${2}c`;');
-        expect(unwrapMessagePartsFromTemplateLiteral(taggedTemplate.get('quasi').get('quasis'))[0])
+        expect(
+            unwrapMessagePartsFromTemplateLiteral(taggedTemplate.get('quasi').get('quasis'), fs)[0])
             .toEqual(ɵmakeTemplateObject(['a', 'b\t', 'c'], ['a', 'b\\t', 'c']));
       });
     });
@@ -248,7 +251,7 @@ runInEachFileSystem(() => {
     describe('unwrapStringLiteralArray', () => {
       it('should return an array of string from an array expression', () => {
         const array = getFirstExpression(`['a', 'b', 'c']`);
-        const [expressions, locations] = unwrapStringLiteralArray(array);
+        const [expressions, locations] = unwrapStringLiteralArray(array, fs);
         expect(expressions).toEqual(['a', 'b', 'c']);
         expect(locations).toEqual([
           {
@@ -274,7 +277,7 @@ runInEachFileSystem(() => {
 
       it('should throw an error if any elements of the array are not literal strings', () => {
         const array = getFirstExpression(`['a', 2, 'c']`);
-        expect(() => unwrapStringLiteralArray(array))
+        expect(() => unwrapStringLiteralArray(array, fs))
             .toThrowError(
                 'Unexpected messageParts for `$localize` (expected an array of strings).');
       });
@@ -315,7 +318,7 @@ runInEachFileSystem(() => {
           filename: 'src/test.js',
           sourceRoot: '/root',
         });
-        const location = getLocation(taggedTemplate)!;
+        const location = getLocation(fs, taggedTemplate)!;
         expect(location).toBeDefined();
         expect(location.start).toEqual({line: 0, column: 10});
         expect(location.start.constructor.name).toEqual('Object');
@@ -327,7 +330,7 @@ runInEachFileSystem(() => {
       it('should return `undefined` if the NodePath has no filename', () => {
         const taggedTemplate = getTaggedTemplate(
             'const x = $localize ``;', {sourceRoot: '/root', filename: undefined});
-        const location = getLocation(taggedTemplate);
+        const location = getLocation(fs, taggedTemplate);
         expect(location).toBeUndefined();
       });
     });

@@ -5,7 +5,8 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system';
+import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem, setFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system';
+import {InvalidFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/src/invalid_file_system';
 import {runInEachFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
 import {MockLogger} from '@angular/compiler-cli/src/ngtsc/logging/testing';
 import {loadTestDirectory} from '@angular/compiler-cli/test/helpers';
@@ -34,6 +35,7 @@ runInEachFileSystem(() => {
 
     fs.ensureDir(fs.dirname(sourceFilePath));
     loadTestDirectory(fs, __dirname + '/test_files', absoluteFrom('/project/test_files'));
+    setFileSystem(new InvalidFileSystem());
   });
 
   describe('extractTranslations()', () => {
@@ -48,6 +50,7 @@ runInEachFileSystem(() => {
         useSourceMaps: false,
         useLegacyIds: false,
         duplicateMessageHandling: 'ignore',
+        fileSystem: fs,
       });
       expect(fs.readFile(outputPath)).toEqual([
         `{`,
@@ -70,6 +73,7 @@ runInEachFileSystem(() => {
             useSourceMaps: false,
             useLegacyIds,
             duplicateMessageHandling: 'ignore',
+            fileSystem: fs,
           });
           expect(fs.readFile(outputPath)).toEqual([
             `{`,
@@ -97,6 +101,7 @@ runInEachFileSystem(() => {
             useSourceMaps: false,
             useLegacyIds,
             duplicateMessageHandling: 'ignore',
+            fileSystem: fs,
           });
           expect(fs.readFile(outputPath)).toEqual([
             `<?xml version="1.0" encoding="UTF-8" ?>`,
@@ -151,6 +156,7 @@ runInEachFileSystem(() => {
                  useLegacyIds,
                  duplicateMessageHandling: 'ignore',
                  formatOptions,
+                 fileSystem: fs,
                });
                expect(fs.readFile(outputPath)).toEqual([
                  `<?xml version="1.0" encoding="UTF-8" ?>`,
@@ -222,6 +228,7 @@ runInEachFileSystem(() => {
               useLegacyIds,
               duplicateMessageHandling: 'ignore',
               formatOptions,
+              fileSystem: fs,
             });
             expect(fs.readFile(outputPath)).toEqual([
               `<?xml version="1.0" encoding="UTF-8" ?>`,
@@ -299,6 +306,7 @@ runInEachFileSystem(() => {
              useSourceMaps: true,
              useLegacyIds: false,
              duplicateMessageHandling: 'ignore',
+             fileSystem: fs,
            });
            expect(fs.readFile(outputPath)).toEqual([
              `<?xml version="1.0" encoding="UTF-8" ?>`,
@@ -308,7 +316,8 @@ runInEachFileSystem(() => {
              `      <trans-unit id="157258427077572998" datatype="html">`,
              `        <source>Message in <x id="a-file" equiv-text="file"/>!</source>`,
              `        <context-group purpose="location">`,
-             // These source file paths are due to how Bazel TypeScript compilation source-maps work
+             // These source file paths are due to how Bazel TypeScript compilation source-maps
+             // work
              `          <context context-type="sourcefile">../packages/localize/src/tools/test/extract/integration/test_files/src/a.ts</context>`,
              `          <context context-type="linenumber">3</context>`,
              `        </context-group>`,
@@ -339,6 +348,7 @@ runInEachFileSystem(() => {
                  useSourceMaps: false,
                  useLegacyIds: false,
                  duplicateMessageHandling: 'error',
+                 fileSystem: fs,
                }))
             .toThrowError(
                 `Failed to extract messages\n` +
@@ -360,6 +370,7 @@ runInEachFileSystem(() => {
           useSourceMaps: false,
           useLegacyIds: false,
           duplicateMessageHandling: 'warning',
+          fileSystem: fs,
         });
         expect(logger.logs.warn).toEqual([
           ['Messages extracted with warnings\n' +
@@ -390,6 +401,7 @@ runInEachFileSystem(() => {
           useSourceMaps: false,
           useLegacyIds: false,
           duplicateMessageHandling: 'ignore',
+          fileSystem: fs,
         });
         expect(logger.logs.warn).toEqual([]);
         expect(fs.readFile(outputPath)).toEqual([

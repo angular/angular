@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AbsoluteFsPath, relative} from '@angular/compiler-cli/src/ngtsc/file_system';
+import {AbsoluteFsPath, FileSystem, getFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {ɵParsedMessage, ɵSourceLocation} from '@angular/localize';
 
 import {FormatOptions, validateOptions} from './format_options';
@@ -28,7 +28,7 @@ const LEGACY_XLIFF_MESSAGE_LENGTH = 40;
 export class Xliff1TranslationSerializer implements TranslationSerializer {
   constructor(
       private sourceLocale: string, private basePath: AbsoluteFsPath, private useLegacyIds: boolean,
-      private formatOptions: FormatOptions = {}) {
+      private formatOptions: FormatOptions = {}, private fs: FileSystem = getFileSystem()) {
     validateOptions('Xliff1TranslationSerializer', [['xml:space', ['preserve']]], formatOptions);
   }
 
@@ -115,7 +115,7 @@ export class Xliff1TranslationSerializer implements TranslationSerializer {
 
   private serializeLocation(xml: XmlFile, location: ɵSourceLocation): void {
     xml.startTag('context-group', {purpose: 'location'});
-    this.renderContext(xml, 'sourcefile', relative(this.basePath, location.file));
+    this.renderContext(xml, 'sourcefile', this.fs.relative(this.basePath, location.file));
     const endLineString = location.end !== undefined && location.end.line !== location.start.line ?
         `,${location.end.line + 1}` :
         '';
