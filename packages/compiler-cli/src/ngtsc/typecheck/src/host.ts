@@ -11,10 +11,58 @@ import * as ts from 'typescript';
 import {copyFileShimData, ShimReferenceTagger} from '../../shims';
 
 /**
+ * Represents the `ts.CompilerHost` interface, with a transformation applied that turns all
+ * methods (even optional ones) into required fields (which may be `undefined`, if the method was
+ * optional).
+ */
+export type RequiredCompilerHostDelegations = {
+  [M in keyof Required<ts.CompilerHost>]: ts.CompilerHost[M];
+};
+
+/**
+ * Delegates all methods of `ts.CompilerHost` to a delegate, with the exception of
+ * `getSourceFile`, `fileExists` and `writeFile` which are implemented in `TypeCheckProgramHost`.
+ *
+ * If a new method is added to `ts.CompilerHost` which is not delegated, a type error will be
+ * generated for this class.
+ */
+export class DelegatingCompilerHost implements
+    Omit<RequiredCompilerHostDelegations, 'getSourceFile'|'fileExists'|'writeFile'> {
+  constructor(protected delegate: ts.CompilerHost) {}
+
+  private delegateMethod<M extends keyof ts.CompilerHost>(name: M): ts.CompilerHost[M] {
+    return this.delegate[name] !== undefined ? (this.delegate[name] as any).bind(this.delegate) :
+                                               undefined;
+  }
+
+  // Excluded are 'getSourceFile', 'fileExists' and 'writeFile', which are actually implemented by
+  // `TypeCheckProgramHost` below.
+  createHash = this.delegateMethod('createHash');
+  directoryExists = this.delegateMethod('directoryExists');
+  getCancellationToken = this.delegateMethod('getCancellationToken');
+  getCanonicalFileName = this.delegateMethod('getCanonicalFileName');
+  getCurrentDirectory = this.delegateMethod('getCurrentDirectory');
+  getDefaultLibFileName = this.delegateMethod('getDefaultLibFileName');
+  getDefaultLibLocation = this.delegateMethod('getDefaultLibLocation');
+  getDirectories = this.delegateMethod('getDirectories');
+  getEnvironmentVariable = this.delegateMethod('getEnvironmentVariable');
+  getNewLine = this.delegateMethod('getNewLine');
+  getParsedCommandLine = this.delegateMethod('getParsedCommandLine');
+  getSourceFileByPath = this.delegateMethod('getSourceFileByPath');
+  readDirectory = this.delegateMethod('readDirectory');
+  readFile = this.delegateMethod('readFile');
+  realpath = this.delegateMethod('realpath');
+  resolveModuleNames = this.delegateMethod('resolveModuleNames');
+  resolveTypeReferenceDirectives = this.delegateMethod('resolveTypeReferenceDirectives');
+  trace = this.delegateMethod('trace');
+  useCaseSensitiveFileNames = this.delegateMethod('useCaseSensitiveFileNames');
+}
+
+/**
  * A `ts.CompilerHost` which augments source files with type checking code from a
  * `TypeCheckContext`.
  */
-export class TypeCheckProgramHost implements ts.CompilerHost {
+export class TypeCheckProgramHost extends DelegatingCompilerHost {
   /**
    * Map of source file names to `ts.SourceFile` instances.
    */
@@ -32,20 +80,11 @@ export class TypeCheckProgramHost implements ts.CompilerHost {
    */
   private shimTagger = new ShimReferenceTagger(this.shimExtensionPrefixes);
 
-  readonly resolveModuleNames?: ts.CompilerHost['resolveModuleNames'];
-
   constructor(
       sfMap: Map<string, ts.SourceFile>, private originalProgram: ts.Program,
-      private delegate: ts.CompilerHost, private shimExtensionPrefixes: string[]) {
+      delegate: ts.CompilerHost, private shimExtensionPrefixes: string[]) {
+    super(delegate);
     this.sfMap = sfMap;
-
-    if (delegate.getDirectories !== undefined) {
-      this.getDirectories = (path: string) => delegate.getDirectories!(path);
-    }
-
-    if (delegate.resolveModuleNames !== undefined) {
-      this.resolveModuleNames = delegate.resolveModuleNames;
-    }
   }
 
   getSourceFile(
@@ -88,42 +127,11 @@ export class TypeCheckProgramHost implements ts.CompilerHost {
     this.shimTagger.finalize();
   }
 
-  // The rest of the methods simply delegate to the underlying `ts.CompilerHost`.
-
-  getDefaultLibFileName(options: ts.CompilerOptions): string {
-    return this.delegate.getDefaultLibFileName(options);
-  }
-
-  writeFile(
-      fileName: string, data: string, writeByteOrderMark: boolean,
-      onError: ((message: string) => void)|undefined,
-      sourceFiles: ReadonlyArray<ts.SourceFile>|undefined): void {
+  writeFile(): never {
     throw new Error(`TypeCheckProgramHost should never write files`);
-  }
-
-  getCurrentDirectory(): string {
-    return this.delegate.getCurrentDirectory();
-  }
-
-  getDirectories?: (path: string) => string[];
-
-  getCanonicalFileName(fileName: string): string {
-    return this.delegate.getCanonicalFileName(fileName);
-  }
-
-  useCaseSensitiveFileNames(): boolean {
-    return this.delegate.useCaseSensitiveFileNames();
-  }
-
-  getNewLine(): string {
-    return this.delegate.getNewLine();
   }
 
   fileExists(fileName: string): boolean {
     return this.sfMap.has(fileName) || this.delegate.fileExists(fileName);
-  }
-
-  readFile(fileName: string): string|undefined {
-    return this.delegate.readFile(fileName);
   }
 }
