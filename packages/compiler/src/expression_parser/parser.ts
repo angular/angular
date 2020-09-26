@@ -642,7 +642,7 @@ export class _ParseAST {
         this.writeContext = true;
         const key = this.parsePipe();
         if (key instanceof EmptyExpr) {
-          this.error(`Key access cannot be empty`)
+          this.error(`Key access cannot be empty`);
         }
         this.rbracketsExpected--;
         this.expectCharacter(chars.$RBRACKET);
