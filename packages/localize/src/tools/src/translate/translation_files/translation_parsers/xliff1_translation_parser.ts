@@ -21,6 +21,7 @@ import {addErrorsToBundle, addParseDiagnostic, addParseError, canParseXml, getAt
  * http://docs.oasis-open.org/xliff/v1.2/xliff-profile-html/xliff-profile-html-1.2.html
  *
  * @see Xliff1TranslationSerializer
+ * @publicApi used by CLI
  */
 export class Xliff1TranslationParser implements TranslationParser<XmlTranslationParserHint> {
   /**

@@ -18,6 +18,7 @@ import {XmlFile} from './xml_file';
  * http://cldr.unicode.org/development/development-process/design-proposals/xmb
  *
  * @see XmbTranslationParser
+ * @publicApi used by CLI
  */
 export class XmbTranslationSerializer implements TranslationSerializer {
   constructor(private basePath: AbsoluteFsPath, private useLegacyIds: boolean) {}
