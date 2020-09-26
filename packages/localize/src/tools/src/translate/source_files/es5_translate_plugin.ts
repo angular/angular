@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {FileSystem, getFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {ɵParsedTranslation} from '@angular/localize';
 import {NodePath, PluginObj} from '@babel/core';
 import {CallExpression} from '@babel/types';
@@ -21,16 +22,16 @@ import {buildCodeFrameError, buildLocalizeReplacement, isBabelParseError, isLoca
  */
 export function makeEs5TranslatePlugin(
     diagnostics: Diagnostics, translations: Record<string, ɵParsedTranslation>,
-    {missingTranslation = 'error', localizeName = '$localize'}: TranslatePluginOptions = {}):
-    PluginObj {
+    {missingTranslation = 'error', localizeName = '$localize'}: TranslatePluginOptions = {},
+    fs: FileSystem = getFileSystem()): PluginObj {
   return {
     visitor: {
       CallExpression(callPath: NodePath<CallExpression>) {
         try {
           const calleePath = callPath.get('callee');
           if (isLocalize(calleePath, localizeName)) {
-            const [messageParts] = unwrapMessagePartsFromLocalizeCall(callPath);
-            const [expressions] = unwrapSubstitutionsFromLocalizeCall(callPath);
+            const [messageParts] = unwrapMessagePartsFromLocalizeCall(callPath, fs);
+            const [expressions] = unwrapSubstitutionsFromLocalizeCall(callPath, fs);
             const translated =
                 translate(diagnostics, translations, messageParts, expressions, missingTranslation);
             callPath.replaceWith(buildLocalizeReplacement(translated[0], translated[1]));
