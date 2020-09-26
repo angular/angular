@@ -513,6 +513,16 @@ export function reflectObjectLiteral(node: ts.ObjectLiteralExpression): Map<stri
       map.set(name, prop.initializer);
     } else if (ts.isShorthandPropertyAssignment(prop)) {
       map.set(prop.name.text, prop.name);
+    } else if (ts.isMethodDeclaration(prop) && prop.body !== undefined) {
+      const name = propertyNameToString(prop.name);
+      if (name === null) {
+        return;
+      }
+      map.set(
+          name,
+          ts.createFunctionExpression(
+              undefined, prop.asteriskToken, name, prop.typeParameters, prop.parameters, prop.type,
+              prop.body));
     } else {
       return;
     }

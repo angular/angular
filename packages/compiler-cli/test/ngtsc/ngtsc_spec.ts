@@ -150,6 +150,66 @@ runInEachFileSystem(os => {
       expect(dtsContents).toContain('static ɵfac: i0.ɵɵFactoryDef<Service, never>;');
     });
 
+    it('should compile Injectables with providedIn and a method declaration factory', () => {
+      env.write('test.ts', `
+        import {Injectable} from '@angular/core';
+
+        @Injectable({
+          providedIn: 'root',
+          useFactory() { return new Service(); }
+        })
+        export class Service {
+          constructor() {}
+        }
+    `);
+
+      env.driveMain();
+
+      const jsContents = env.getContents('test.js');
+      expect(jsContents).toContain('Service.ɵprov =');
+      expect(jsContents)
+          .toContain(
+              // This is split into two strings, because clang-format reformats
+              // the entire file if it's a single string longer than the line limit.
+              'factory: function () { return (function useFactory() { ' +
+              'return new Service(); })(); }');
+      expect(jsContents).toContain('Service_Factory(t) { return new (t || Service)(); }');
+      expect(jsContents).toContain(', providedIn: \'root\' });');
+      expect(jsContents).not.toContain('__decorate');
+      const dtsContents = env.getContents('test.d.ts');
+      expect(dtsContents).toContain('static ɵprov: i0.ɵɵInjectableDef<Service>;');
+      expect(dtsContents).toContain('static ɵfac: i0.ɵɵFactoryDef<Service, never>;');
+    });
+
+    it('should compile Injectables with providedIn and a function expression factory', () => {
+      env.write('test.ts', `
+        import {Injectable} from '@angular/core';
+
+        @Injectable({
+          providedIn: 'root',
+          useFactory: function() { return new Service(); }
+        })
+        export class Service {
+          constructor() {}
+        }
+    `);
+
+      env.driveMain();
+
+      const jsContents = env.getContents('test.js');
+      expect(jsContents).toContain('Service.ɵprov =');
+      expect(jsContents)
+          .toContain(
+              'factory: function () { return (function () { ' +
+              'return new Service(); })(); }');
+      expect(jsContents).toContain('Service_Factory(t) { return new (t || Service)(); }');
+      expect(jsContents).toContain(', providedIn: \'root\' });');
+      expect(jsContents).not.toContain('__decorate');
+      const dtsContents = env.getContents('test.d.ts');
+      expect(dtsContents).toContain('static ɵprov: i0.ɵɵInjectableDef<Service>;');
+      expect(dtsContents).toContain('static ɵfac: i0.ɵɵFactoryDef<Service, never>;');
+    });
+
     it('should compile Injectables with providedIn and factory with deps without errors', () => {
       env.write('test.ts', `
         import {Injectable} from '@angular/core';

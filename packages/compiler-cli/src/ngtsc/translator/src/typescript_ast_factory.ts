@@ -65,7 +65,10 @@ export class TypeScriptAstFactory implements AstFactory<ts.Statement, ts.Express
   }
 
   createCallExpression(callee: ts.Expression, args: ts.Expression[], pure: boolean): ts.Expression {
-    const call = ts.createCall(callee, undefined, args);
+    const expression = (ts.isFunctionExpression(callee) || ts.isArrowFunction(callee)) ?
+        ts.createParen(callee) :
+        callee;
+    const call = ts.createCall(expression, undefined, args);
     if (pure) {
       ts.addSyntheticLeadingComment(
           call, ts.SyntaxKind.MultiLineCommentTrivia, '@__PURE__', /* trailing newline */ false);
