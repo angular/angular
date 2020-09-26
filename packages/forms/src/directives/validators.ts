@@ -206,12 +206,12 @@ export const MIN_VALIDATOR: Provider = {
  * @experimental
  */
 @Directive({
-  selector: '[min][formControlName],[min][formControl],[min][ngModel]',
+  selector:
+      '[formControlName],input[type=number][min][formControl],input[type=number][min][ngModel]',
   providers: [MIN_VALIDATOR],
   host: {'[attr.min]': 'min ? min : null'}
 })
-export class MinValidator implements Validator,
-    OnChanges {
+export class MinValidator implements Validator, OnChanges {
   private _validator: ValidatorFn;
   private _onChange: () => void;
 
@@ -224,11 +224,17 @@ export class MinValidator implements Validator,
     }
   }
 
-  validate(c: AbstractControl): ValidationErrors|null { return this._validator(c); }
+  validate(c: AbstractControl): ValidationErrors|null {
+    return this._validator(c);
+  }
 
-  registerOnValidatorChange(fn: () => void): void { this._onChange = fn; }
+  registerOnValidatorChange(fn: () => void): void {
+    this._onChange = fn;
+  }
 
-  private _createValidator(): void { this._validator = Validators.min(parseInt(this.min, 10)); }
+  private _createValidator(): void {
+    this._validator = Validators.min(parseInt(this.min, 10));
+  }
 }
 
 
@@ -245,12 +251,12 @@ export const MAX_VALIDATOR: Provider = {
  * @experimental
  */
 @Directive({
-  selector: '[max][formControlName],[max][formControl],[max][ngModel]',
+  selector:
+      '[formControlName],input[type=number][max][formControl],input[type=number][max][ngModel]',
   providers: [MAX_VALIDATOR],
   host: {'[attr.max]': 'max ? max : null'}
 })
-export class MaxValidator implements Validator,
-    OnChanges {
+export class MaxValidator implements Validator, OnChanges {
   private _validator: ValidatorFn;
   private _onChange: () => void;
 
@@ -263,11 +269,17 @@ export class MaxValidator implements Validator,
     }
   }
 
-  validate(c: AbstractControl): ValidationErrors|null { return this._validator(c); }
+  validate(c: AbstractControl): ValidationErrors|null {
+    return this._validator(c);
+  }
 
-  registerOnValidatorChange(fn: () => void): void { this._onChange = fn; }
+  registerOnValidatorChange(fn: () => void): void {
+    this._onChange = fn;
+  }
 
-  private _createValidator(): void { this._validator = Validators.max(parseInt(this.max, 10)); }
+  private _createValidator(): void {
+    this._validator = Validators.max(parseInt(this.max, 10));
+  }
 }
 
 
