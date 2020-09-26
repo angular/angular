@@ -13,6 +13,12 @@ import {Diagnostics} from '../../diagnostics';
 
 import {buildCodeFrameError, buildLocalizeReplacement, isBabelParseError, isLocalize, translate, TranslatePluginOptions, unwrapMessagePartsFromLocalizeCall, unwrapSubstitutionsFromLocalizeCall} from '../../source_file_utils';
 
+/**
+ * Create a Babel plugin that can be used to do compile-time translation of `$localize` tagged
+ * messages.
+ *
+ * @publicApi used by CLI
+ */
 export function makeEs5TranslatePlugin(
     diagnostics: Diagnostics, translations: Record<string, ɵParsedTranslation>,
     {missingTranslation = 'error', localizeName = '$localize'}: TranslatePluginOptions = {}):

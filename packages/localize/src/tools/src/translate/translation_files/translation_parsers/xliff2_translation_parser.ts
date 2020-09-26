@@ -20,6 +20,7 @@ import {addErrorsToBundle, addParseDiagnostic, addParseError, canParseXml, getAt
  * http://docs.oasis-open.org/xliff/xliff-core/v2.0/os/xliff-core-v2.0-os.html
  *
  * @see Xliff2TranslationSerializer
+ * @publicApi used by CLI
  */
 export class Xliff2TranslationParser implements TranslationParser<XmlTranslationParserHint> {
   /**

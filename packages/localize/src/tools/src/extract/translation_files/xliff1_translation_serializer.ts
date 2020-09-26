@@ -23,6 +23,7 @@ const LEGACY_XLIFF_MESSAGE_LENGTH = 40;
  * http://docs.oasis-open.org/xliff/v1.2/xliff-profile-html/xliff-profile-html-1.2.html
  *
  * @see Xliff1TranslationParser
+ * @publicApi used by CLI
  */
 export class Xliff1TranslationSerializer implements TranslationSerializer {
   constructor(
