@@ -8,7 +8,7 @@
 import {removeComments, removeMapFileComments} from 'convert-source-map';
 import {decode, encode, SourceMapMappings, SourceMapSegment} from 'sourcemap-codec';
 
-import {AbsoluteFsPath, dirname, relative} from '../../file_system';
+import {AbsoluteFsPath, FileSystem} from '../../file_system';
 
 import {RawSourceMap} from './raw_source_map';
 import {compareSegments, offsetSegment, SegmentMarker} from './segment_marker';
@@ -38,7 +38,9 @@ export class SourceFile {
       /** Whether this source file's source map was inline or external. */
       readonly inline: boolean,
       /** Any source files referenced by the raw source map associated with this source file. */
-      readonly sources: (SourceFile|null)[]) {
+      readonly sources: (SourceFile|null)[],
+      private fs: FileSystem,
+  ) {
     this.contents = removeSourceMapComments(contents);
     this.startOfLinePositions = computeStartOfLinePositions(this.contents);
     this.flattenedMappings = this.flattenMappings();
@@ -75,11 +77,11 @@ export class SourceFile {
       mappings[line].push(mappingArray);
     }
 
-    const sourcePathDir = dirname(this.sourcePath);
+    const sourcePathDir = this.fs.dirname(this.sourcePath);
     const sourceMap: RawSourceMap = {
       version: 3,
-      file: relative(sourcePathDir, this.sourcePath),
-      sources: sources.map(sf => relative(sourcePathDir, sf.sourcePath)),
+      file: this.fs.relative(sourcePathDir, this.sourcePath),
+      sources: sources.map(sf => this.fs.relative(sourcePathDir, sf.sourcePath)),
       names,
       mappings: encode(mappings),
       sourcesContent: sources.map(sf => sf.contents),
