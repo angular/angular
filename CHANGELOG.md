@@ -52,7 +52,7 @@ before TestBed initialization is completed.
 
 ### Bug Fixes
 
-* **common:** do not round up fractions of a millisecond in `DatePipe` ([#38009](https://github.com/angular/angular/issues/38009)) ([26f2820](https://github.com/angular/angular/commit/26f2820)), closes [/www.ecma-international.org/ecma-262/5.1/#sec-15](https://github.com//www.ecma-international.org/ecma-262/5.1//issues/sec-15) [#37989](https://github.com/angular/angular/issues/37989)
+* **common:** do not round up fractions of a millisecond in `DatePipe` ([#38009](https://github.com/angular/angular/issues/38009)) ([26f2820](https://github.com/angular/angular/commit/26f2820)), closes [www.ecma-international.org/ecma-262/5.1/#sec-15](https://github.com//www.ecma-international.org/ecma-262/5.1//issues/sec-15) [#37989](https://github.com/angular/angular/issues/37989)
 * **common:** mark locale data arrays as readonly ([#30397](https://github.com/angular/angular/issues/30397)) ([6acea54](https://github.com/angular/angular/commit/6acea54)), closes [#27003](https://github.com/angular/angular/issues/27003)
 * **compiler:** source span for microsyntax text att should be key span ([#38766](https://github.com/angular/angular/issues/38766)) ([8f349b2](https://github.com/angular/angular/commit/8f349b2))
 * **router:** Fix arguments order for call to shouldReuseRoute ([#26949](https://github.com/angular/angular/issues/26949)) ([3817e5f](https://github.com/angular/angular/commit/3817e5f)), closes [#16192](https://github.com/angular/angular/issues/16192) [#16192](https://github.com/angular/angular/issues/16192)
