@@ -7,7 +7,7 @@
  */
 import {commentRegex, fromComment, mapFileCommentRegex} from 'convert-source-map';
 
-import {absoluteFrom, AbsoluteFsPath, FileSystem} from '../../file_system';
+import {AbsoluteFsPath, FileSystem} from '../../file_system';
 import {Logger} from '../../logging';
 
 import {RawSourceMap} from './raw_source_map';
@@ -83,7 +83,7 @@ export class SourceFileLoader {
         inline = mapAndPath.mapPath === null;
       }
 
-      return new SourceFile(sourcePath, contents, map, inline, sources);
+      return new SourceFile(sourcePath, contents, map, inline, sources, this.fs);
     } catch (e) {
       this.logger.warn(
           `Unable to fully load ${sourcePath} for source-map flattening: ${e.message}`);
@@ -124,7 +124,7 @@ export class SourceFileLoader {
       }
     }
 
-    const impliedMapPath = absoluteFrom(sourcePath + '.map');
+    const impliedMapPath = this.fs.resolve(sourcePath + '.map');
     if (this.fs.exists(impliedMapPath)) {
       return {map: this.readRawSourceMap(impliedMapPath), mapPath: impliedMapPath};
     }
