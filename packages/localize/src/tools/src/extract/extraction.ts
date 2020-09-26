@@ -52,8 +52,8 @@ export class MessageExtractor {
         sourceRoot: this.basePath,
         filename,
         plugins: [
-          makeEs2015ExtractPlugin(messages, this.localizeName),
-          makeEs5ExtractPlugin(messages, this.localizeName),
+          makeEs2015ExtractPlugin(this.fs, messages, this.localizeName),
+          makeEs5ExtractPlugin(this.fs, messages, this.localizeName),
         ],
         code: false,
         ast: false

@@ -78,8 +78,8 @@ export class SourceFileTranslationHandler implements TranslationHandler {
       generatorOpts: {minified: true},
       plugins: [
         makeLocalePlugin(translationBundle.locale),
-        makeEs2015TranslatePlugin(diagnostics, translationBundle.translations, options),
-        makeEs5TranslatePlugin(diagnostics, translationBundle.translations, options),
+        makeEs2015TranslatePlugin(diagnostics, translationBundle.translations, options, this.fs),
+        makeEs5TranslatePlugin(diagnostics, translationBundle.translations, options, this.fs),
       ],
       filename,
     });
