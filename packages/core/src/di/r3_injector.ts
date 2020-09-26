@@ -504,7 +504,7 @@ export function providerToFactory(
     if (isValueProvider(provider)) {
       factory = () => resolveForwardRef(provider.useValue);
     } else if (isFactoryProvider(provider)) {
-      factory = () => provider.useFactory(...injectArgs(provider.deps || []));
+      factory = () => (provider as any).useFactory(...injectArgs(provider.deps || []));
     } else if (isExistingProvider(provider)) {
       factory = () => ɵɵinject(resolveForwardRef(provider.useExisting));
     } else {

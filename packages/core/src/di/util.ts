@@ -35,9 +35,10 @@ export function convertInjectableProviderToFactory(
   } else if ((provider as ExistingSansProvider).useExisting) {
     const existingProvider = (provider as ExistingSansProvider);
     return () => ɵɵinject(resolveForwardRef(existingProvider.useExisting));
-  } else if ((provider as FactorySansProvider).useFactory) {
+  } else if ((provider as FactorySansProvider).useFactory!) {
     const factoryProvider = (provider as FactorySansProvider);
-    return () => factoryProvider.useFactory(...injectArgs(factoryProvider.deps || EMPTY_ARRAY));
+    return () => (factoryProvider as any)
+                     .useFactory(...injectArgs(factoryProvider.deps || EMPTY_ARRAY));
   } else if ((provider as StaticClassSansProvider | ClassSansProvider).useClass) {
     const classProvider = (provider as StaticClassSansProvider | ClassSansProvider);
     let deps = (provider as StaticClassSansProvider).deps;

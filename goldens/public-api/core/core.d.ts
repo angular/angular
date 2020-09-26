@@ -337,7 +337,7 @@ export declare interface FactoryProvider extends FactorySansProvider {
 
 export declare interface FactorySansProvider {
     deps?: any[];
-    useFactory: Function;
+    useFactory: (this: never, ...args: any[]) => any;
 }
 
 export declare function forwardRef(forwardRefFn: ForwardRefFn): Type<any>;

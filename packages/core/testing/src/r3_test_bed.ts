@@ -143,12 +143,12 @@ export class TestBedRender3 implements TestBed {
   }
 
   static overrideProvider(token: any, provider: {
-    useFactory: Function,
+    useFactory: (this: never, ...args: any[]) => any,
     deps: any[],
   }): TestBedStatic;
   static overrideProvider(token: any, provider: {useValue: any;}): TestBedStatic;
   static overrideProvider(token: any, provider: {
-    useFactory?: Function,
+    useFactory?: (this: never, ...args: any[]) => any,
     useValue?: any,
     deps?: any[],
   }): TestBedStatic {
@@ -325,8 +325,11 @@ export class TestBedRender3 implements TestBed {
   /**
    * Overwrites all providers for the given token with the given provider definition.
    */
-  overrideProvider(token: any, provider: {useFactory?: Function, useValue?: any, deps?: any[]}):
-      void {
+  overrideProvider(token: any, provider: {
+    useFactory?: (this: never, ...args: any[]) => any,
+    useValue?: any,
+    deps?: any[]
+  }): void {
     this.assertNotInstantiated('overrideProvider', 'override provider');
     this.compiler.overrideProvider(token, provider);
   }

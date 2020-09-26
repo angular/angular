@@ -217,7 +217,7 @@ function resolveProvider(provider: SupportedProvider): Record {
   if (USE_VALUE in provider) {
     // We need to use USE_VALUE in provider since provider.useValue could be defined as undefined.
     value = (provider as ValueProvider).useValue;
-  } else if ((provider as FactoryProvider).useFactory) {
+  } else if ((provider as FactoryProvider).useFactory!) {
     fn = (provider as FactoryProvider).useFactory;
   } else if ((provider as ExistingProvider).useExisting) {
     // Just use IDENT

@@ -157,9 +157,12 @@ export class R3TestBedCompiler {
     this.pendingPipes.add(pipe);
   }
 
-  overrideProvider(
-      token: any,
-      provider: {useFactory?: Function, useValue?: any, deps?: any[], multi?: boolean}): void {
+  overrideProvider(token: any, provider: {
+    useFactory?: (this: never, ...args: any[]) => any,
+    useValue?: any,
+    deps?: any[],
+    multi?: boolean
+  }): void {
     let providerDef: Provider;
     if (provider.useFactory !== undefined) {
       providerDef = {

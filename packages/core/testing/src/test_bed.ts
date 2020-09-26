@@ -78,12 +78,15 @@ export interface TestBed {
    * Overwrites all providers for the given token with the given provider definition.
    */
   overrideProvider(token: any, provider: {
-    useFactory: Function,
+    useFactory: (this: never, ...args: any[]) => any,
     deps: any[],
   }): void;
   overrideProvider(token: any, provider: {useValue: any;}): void;
-  overrideProvider(token: any, provider: {useFactory?: Function, useValue?: any, deps?: any[]}):
-      void;
+  overrideProvider(token: any, provider: {
+    useFactory?: (this: never, ...args: any[]) => any,
+    useValue?: any,
+    deps?: any[]
+  }): void;
 
   overrideTemplateUsingTestingModule(component: Type<any>, template: string): void;
 
@@ -203,12 +206,12 @@ export class TestBedViewEngine implements TestBed {
    * Note: This works for JIT and AOTed components as well.
    */
   static overrideProvider(token: any, provider: {
-    useFactory: Function,
+    useFactory: (this: never, ...args: any[]) => any,
     deps: any[],
   }): TestBedStatic;
   static overrideProvider(token: any, provider: {useValue: any;}): TestBedStatic;
   static overrideProvider(token: any, provider: {
-    useFactory?: Function,
+    useFactory?: (this: never, ...args: any[]) => any,
     useValue?: any,
     deps?: any[],
   }): TestBedStatic {
@@ -529,19 +532,22 @@ export class TestBedViewEngine implements TestBed {
    * Overwrites all providers for the given token with the given provider definition.
    */
   overrideProvider(token: any, provider: {
-    useFactory: Function,
+    useFactory: (this: never, ...args: any[]) => any,
     deps: any[],
   }): void;
   overrideProvider(token: any, provider: {useValue: any;}): void;
-  overrideProvider(token: any, provider: {useFactory?: Function, useValue?: any, deps?: any[]}):
-      void {
+  overrideProvider(token: any, provider: {
+    useFactory?: (this: never, ...args: any[]) => any,
+    useValue?: any,
+    deps?: any[]
+  }): void {
     this._assertNotInstantiated('overrideProvider', 'override provider');
     this.overrideProviderImpl(token, provider);
   }
 
   private overrideProviderImpl(
       token: any, provider: {
-        useFactory?: Function,
+        useFactory?: (this: never, ...args: any[]) => any,
         useValue?: any,
         deps?: any[],
       },
