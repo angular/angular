@@ -22,6 +22,7 @@ const MAX_LEGACY_XLIFF_2_MESSAGE_LENGTH = 20;
  * http://docs.oasis-open.org/xliff/xliff-core/v2.0/os/xliff-core-v2.0-os.html
  *
  * @see Xliff2TranslationParser
+ * @publicApi used by CLI
  */
 export class Xliff2TranslationSerializer implements TranslationSerializer {
   private currentPlaceholderId = 0;

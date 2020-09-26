@@ -36,7 +36,9 @@ export function isNamedIdentifier(
 
 /**
  * Is the given `identifier` declared globally.
+ *
  * @param identifier The identifier to check.
+ * @publicApi used by CLI
  */
 export function isGlobalIdentifier(identifier: NodePath<t.Identifier>) {
   return !identifier.scope || !identifier.scope.hasBinding(identifier.node.name);
@@ -46,6 +48,7 @@ export function isGlobalIdentifier(identifier: NodePath<t.Identifier>) {
  * Build a translated expression to replace the call to `$localize`.
  * @param messageParts The static parts of the message.
  * @param substitutions The expressions to substitute into the message.
+ * @publicApi used by CLI
  */
 export function buildLocalizeReplacement(
     messageParts: TemplateStringsArray, substitutions: readonly t.Expression[]): t.Expression {
@@ -65,6 +68,7 @@ export function buildLocalizeReplacement(
  * to a helper function like `__makeTemplateObject`.
  *
  * @param call The AST node of the call to process.
+ * @publicApi used by CLI
  */
 export function unwrapMessagePartsFromLocalizeCall(call: NodePath<t.CallExpression>):
     [TemplateStringsArray, (ɵSourceLocation | undefined)[]] {
@@ -142,9 +146,11 @@ export function unwrapMessagePartsFromLocalizeCall(call: NodePath<t.CallExpressi
   return [ɵmakeTemplateObject(cookedStrings, rawStrings), rawLocations];
 }
 
-
-export function unwrapSubstitutionsFromLocalizeCall(call: NodePath<t.CallExpression>):
-    [t.Expression[], (ɵSourceLocation | undefined)[]] {
+/**
+ * Parse the localize call expression to extract the arguments that hold the substition expressions.
+ *
+ * @publicApi used by CLI
+ */
   const expressions = call.get('arguments').splice(1);
   if (!isArrayOfExpressions(expressions)) {
     const badExpression = expressions.find(expression => !expression.isExpression())!;
@@ -157,8 +163,11 @@ export function unwrapSubstitutionsFromLocalizeCall(call: NodePath<t.CallExpress
   ];
 }
 
-export function unwrapMessagePartsFromTemplateLiteral(elements: NodePath<t.TemplateElement>[]):
-    [TemplateStringsArray, (ɵSourceLocation | undefined)[]] {
+/**
+ * Parse the tagged template literal to extract the message parts.
+ *
+ * @publicApi used by CLI
+ */
   const cooked = elements.map(q => {
     if (q.node.value.cooked === undefined) {
       throw new BabelParseError(
@@ -172,9 +181,11 @@ export function unwrapMessagePartsFromTemplateLiteral(elements: NodePath<t.Templ
   return [ɵmakeTemplateObject(cooked, raw), locations];
 }
 
-export function unwrapExpressionsFromTemplateLiteral(quasi: NodePath<t.TemplateLiteral>):
-    [t.Expression[], (ɵSourceLocation | undefined)[]] {
-  return [quasi.node.expressions, quasi.get('expressions').map(e => getLocation(e))];
+/**
+ * Parse the tagged template literal to extract the interpolation expressions.
+ *
+ * @publicApi used by CLI
+ */
 }
 
 /**
@@ -321,6 +332,7 @@ export interface TranslatePluginOptions {
  * Translate the text of the given message, using the given translations.
  *
  * Logs as warning if the translation is not available
+ * @publicApi used by CLI
  */
 export function translate(
     diagnostics: Diagnostics, translations: Record<string, ɵParsedTranslation>,

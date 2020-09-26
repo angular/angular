@@ -25,6 +25,7 @@ import {ParseAnalysis, ParsedTranslationBundle, TranslationParser} from './trans
  * ```
  *
  * @see SimpleJsonTranslationSerializer
+ * @publicApi used by CLI
  */
 export class SimpleJsonTranslationParser implements TranslationParser<Object> {
   /**

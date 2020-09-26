@@ -23,6 +23,8 @@ export interface ExtractionOptions {
 /**
  * Extracts parsed messages from file contents, by parsing the contents as JavaScript
  * and looking for occurrences of `$localize` in the source code.
+ *
+ * @publicApi used by CLI
  */
 export class MessageExtractor {
   private basePath: AbsoluteFsPath;
