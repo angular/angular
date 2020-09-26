@@ -433,8 +433,13 @@ runInEachFileSystem(() => {
     });
 
     it('should compile incrementally with template type-checking turned on', () => {
-      env.tsconfig({ivyTemplateTypeCheck: true});
-      env.write('main.ts', 'export class Foo {}');
+      env.tsconfig({fullTemplateTypeCheck: true});
+      env.write('main.ts', `
+        import {Component} from '@angular/core';
+
+        @Component({template: ''})
+        export class MyComponent {}
+      `);
       env.driveMain();
       env.invalidateCachedFile('main.ts');
       env.driveMain();
@@ -482,8 +487,12 @@ runInEachFileSystem(() => {
       env.write('node_modules/b/index.js', `export {ServiceA as ServiceB} from 'a';`);
       env.write('node_modules/b/index.d.ts', `export {ServiceA as ServiceB} from 'a';`);
       env.write('test.ts', `
+        import {Component} from '@angular/core';
         import {ServiceA} from 'a';
         import {ServiceB} from 'b';
+
+        @Component({template: ''})
+        export class MyComponent {}
       `);
       env.driveMain();
       env.flushWrittenFileTracking();
