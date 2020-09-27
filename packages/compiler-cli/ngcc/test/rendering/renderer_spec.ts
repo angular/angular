@@ -66,7 +66,7 @@ class TestRenderingFormatter implements RenderingFormatter {
   printStatement(stmt: Statement, sourceFile: ts.SourceFile, importManager: ImportManager): string {
     const node = translateStatement(
         stmt, importManager,
-        {downlevelLocalizedStrings: this.isEs5, downlevelVariableDeclarations: this.isEs5});
+        {downlevelTaggedTemplates: this.isEs5, downlevelVariableDeclarations: this.isEs5});
     const code = this.printer.printNode(ts.EmitHint.Unspecified, node, sourceFile);
 
     return `// TRANSPILED\n${code}`;
