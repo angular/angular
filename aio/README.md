@@ -6,6 +6,7 @@ Everything in this folder is part of the documentation project. This includes
 * the dgeni configuration for converting source files to rendered files that can be viewed in the web site.
 * the tooling for setting up examples for development; and generating live-example and zip files from the examples.
 
+<a name="developer-tasks"></a>
 ## Developer tasks
 
 We use [Yarn](https://yarnpkg.com) to manage the dependencies and to run build tasks.
