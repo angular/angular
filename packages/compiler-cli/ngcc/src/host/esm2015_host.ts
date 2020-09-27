@@ -132,15 +132,8 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
     if (symbol !== undefined) {
       return symbol;
     }
-
-    if (declaration.parent !== undefined && isNamedVariableDeclaration(declaration.parent)) {
-      const variableValue = this.getVariableValue(declaration.parent);
-      if (variableValue !== null) {
-        declaration = variableValue;
-      }
-    }
-
-    return this.getClassSymbolFromInnerDeclaration(declaration);
+    const innerDeclaration = this.getInnerDeclarationFromAliasOrInner(declaration);
+    return this.getClassSymbolFromInnerDeclaration(innerDeclaration);
   }
 
   /**
@@ -243,13 +236,7 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
           clazz.name.text} to be a class declaration.`);
     }
 
-    if (classSymbol.adjacent !== undefined) {
-      return this.getNameFromClassSymbolDeclaration(
-          classSymbol, classSymbol.adjacent.valueDeclaration);
-    } else {
-      return this.getNameFromClassSymbolDeclaration(
-          classSymbol, classSymbol.implementation.valueDeclaration);
-    }
+    return this.getAdjacentNameOfClassSymbol(classSymbol);
   }
 
   private getNameFromClassSymbolDeclaration(
@@ -430,21 +417,8 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    */
   findClassSymbols(sourceFile: ts.SourceFile): NgccClassSymbol[] {
     const classes: NgccClassSymbol[] = [];
-    this.getModuleStatements(sourceFile).forEach(statement => {
-      if (ts.isVariableStatement(statement)) {
-        statement.declarationList.declarations.forEach(declaration => {
-          const classSymbol = this.getClassSymbol(declaration);
-          if (classSymbol) {
-            classes.push(classSymbol);
-          }
-        });
-      } else if (ts.isClassDeclaration(statement)) {
-        const classSymbol = this.getClassSymbol(statement);
-        if (classSymbol) {
-          classes.push(classSymbol);
-        }
-      }
-    });
+    this.getModuleStatements(sourceFile)
+        .forEach(statement => this.addClassSymbolsFromStatement(classes, statement));
     return classes;
   }
 
@@ -570,6 +544,41 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
   ///////////// Protected Helpers /////////////
 
   /**
+   * Extract all the "classes" from the `statement` and add them to the `classes` array.
+   */
+  protected addClassSymbolsFromStatement(classes: NgccClassSymbol[], statement: ts.Statement):
+      void {
+    if (ts.isVariableStatement(statement)) {
+      statement.declarationList.declarations.forEach(declaration => {
+        const classSymbol = this.getClassSymbol(declaration);
+        if (classSymbol) {
+          classes.push(classSymbol);
+        }
+      });
+    } else if (ts.isClassDeclaration(statement)) {
+      const classSymbol = this.getClassSymbol(statement);
+      if (classSymbol) {
+        classes.push(classSymbol);
+      }
+    }
+  }
+
+  /**
+   * Compute the inner declaration node of a "class" from the given `declaration` node.
+   *
+   * @param declaration a node that is either an inner declaration or an alias of a class.
+   */
+  protected getInnerDeclarationFromAliasOrInner(declaration: ts.Node): ts.Node {
+    if (declaration.parent !== undefined && isNamedVariableDeclaration(declaration.parent)) {
+      const variableValue = this.getVariableValue(declaration.parent);
+      if (variableValue !== null) {
+        declaration = variableValue;
+      }
+    }
+    return declaration;
+  }
+
+  /**
    * A class may be declared as a top level class declaration:
    *
    * ```
@@ -611,7 +620,7 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
   protected getClassSymbolFromOuterDeclaration(declaration: ts.Node): NgccClassSymbol|undefined {
     // Return a class symbol without an inner declaration if it is a regular "top level" class
     if (isNamedClassDeclaration(declaration) && isTopLevel(declaration)) {
-      return this.createClassSymbol(declaration, null);
+      return this.createClassSymbol(declaration.name, null);
     }
 
     // Otherwise, an outer class declaration must be an initialized variable declaration:
@@ -620,12 +629,11 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
     }
 
     const innerDeclaration = getInnerClassDeclaration(skipClassAliases(declaration));
-    if (innerDeclaration !== null) {
-      return this.createClassSymbol(declaration, innerDeclaration);
+    if (innerDeclaration === null) {
+      return undefined;
     }
 
-
-    return undefined;
+    return this.createClassSymbol(declaration.name, innerDeclaration);
   }
 
   /**
@@ -681,7 +689,7 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
       return undefined;
     }
 
-    return this.createClassSymbol(outerDeclaration, declaration);
+    return this.createClassSymbol(outerDeclaration.name, declaration);
   }
 
   /**
@@ -695,10 +703,10 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    * @returns the `NgccClassSymbol` representing the class, or undefined if a `ts.Symbol` for any of
    * the declarations could not be resolved.
    */
-  protected createClassSymbol(outerDeclaration: ClassDeclaration, innerDeclaration: ts.Node|null):
+  protected createClassSymbol(outerDeclaration: ts.Identifier, innerDeclaration: ts.Node|null):
       NgccClassSymbol|undefined {
     const declarationSymbol =
-        this.checker.getSymbolAtLocation(outerDeclaration.name) as ClassSymbol | undefined;
+        this.checker.getSymbolAtLocation(outerDeclaration) as ClassSymbol | undefined;
     if (declarationSymbol === undefined) {
       return undefined;
     }
@@ -716,12 +724,8 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
       name: declarationSymbol.name,
       declaration: declarationSymbol,
       implementation: implementationSymbol,
+      adjacent: this.getAdjacentSymbol(declarationSymbol, implementationSymbol),
     };
-
-    let adjacent = this.getAdjacentSymbol(declarationSymbol, implementationSymbol);
-    if (adjacent !== null) {
-      classSymbol.adjacent = adjacent;
-    }
 
     return classSymbol;
   }
@@ -1166,8 +1170,7 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
 
     const outerDeclaration = classSymbol.declaration.valueDeclaration;
     const innerDeclaration = classSymbol.implementation.valueDeclaration;
-    const adjacentDeclaration =
-        this.getAdjacentNameOfClass((classSymbol.declaration.valueDeclaration)).parent;
+    const adjacentDeclaration = this.getAdjacentNameOfClassSymbol(classSymbol).parent;
     const matchesClass = (identifier: ts.Identifier) => {
       const decl = this.getDeclarationOfIdentifier(identifier);
       return decl !== null &&
@@ -2017,6 +2020,16 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
     }
     return reflectEnumAssignment(innerExpression);
   }
+
+  private getAdjacentNameOfClassSymbol(classSymbol: NgccClassSymbol): ts.Identifier {
+    if (classSymbol.adjacent !== undefined) {
+      return this.getNameFromClassSymbolDeclaration(
+          classSymbol, classSymbol.adjacent.valueDeclaration);
+    } else {
+      return this.getNameFromClassSymbolDeclaration(
+          classSymbol, classSymbol.implementation.valueDeclaration);
+    }
+  }
 }
 
 ///////////// Exported Helpers /////////////
@@ -2305,6 +2318,7 @@ function isInitializedVariableClassDeclaration(node: ts.Node):
     node is InitializedVariableClassDeclaration {
   return isNamedVariableDeclaration(node) && node.initializer !== undefined;
 }
+
 /**
  * Handle a variable declaration of the form
  *
@@ -2364,7 +2378,7 @@ export function skipClassAliases(node: InitializedVariableClassDeclaration): ts.
  * @param expression the node that represents the class whose declaration we are finding.
  * @returns the declaration of the class or `null` if it is not a "class".
  */
-function getInnerClassDeclaration(expression: ts.Expression):
+export function getInnerClassDeclaration(expression: ts.Expression):
     ClassDeclaration<ts.ClassExpression|ts.ClassDeclaration|ts.FunctionDeclaration>|null {
   if (ts.isClassExpression(expression) && hasNameIdentifier(expression)) {
     return expression;
