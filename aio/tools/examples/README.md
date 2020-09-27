@@ -3,7 +3,7 @@
 Many of the documentation pages contain snippets of code examples.
 These snippets are extracted from real working example applications, which are stored in sub-folders of the [aio/content/examples/](.) folder.
 Each example can be built and run independently.
-Each example also provides e2e tests (and some of them unit tests), which are run as part of our CircleCI `test_docs_examples*` jobs, to verify that the examples continue to work as expected, as changes are made to the core Angular libraries.
+Each example also provides tests (mostly e2e and occasionally unit tests), which are run as part of our CircleCI `test_docs_examples*` jobs, to verify that the examples continue to work as expected, as changes are made to the core Angular libraries.
 
 In order to build, run and test these examples independently, you need to install dependencies into their sub-folder.
 Also there are a number of common boilerplate files that are needed to configure each example's project.
@@ -18,9 +18,13 @@ These common boilerplate files are maintained centrally to reduce the amount of 
 ## Boilerplate overview
 
 As mentioned above, many of the documentation pages contain snippets extracted from real example applications.
-To achieve that, all those applications needs to contain some basic boilerplate, such as a `node_modules/` folder, a `package.json` file with scripts and dependencies, etc.
+To achieve that, all those applications need to contain some basic boilerplate, such as a `node_modules/` folder, a `package.json` file with scripts and dependencies, etc.
 
-To avoid having to maintain the boilerplate in each example, we use the [example-boilerplate-js](./example-boilerplate.js) script to provide a set of files that works across all the examples.
+There are also different project types, each with its own boilerplate.
+For example, there are projects based on the Angular CLI, projects that use AngularJS, Custom Elements, i18n, server-side rendering, etc.
+(See the [example configuration section](#example-config) below for more info on how to specify the project type.)
+
+To avoid having to maintain the boilerplate in each example, we use the [example-boilerplate-js](./example-boilerplate.js) script to provide a set of files that works across all the examples of a specific type.
 
 
 ### Boilerplate files
@@ -36,13 +40,13 @@ Currently, the following project types are supported:
 - `i18n`: For CLI-based examples that also use internationalization.
 - `schematics`: For CLI-based examples that include a library with schematics.
 - `service-worker`: For CLI-based examples that also use `@angular/service-worker`.
-- `systemjs`: For non-CLI legacy examples using SystemJS. This is in deprecation and only used in few examples.
+- `systemjs`: For non-CLI legacy examples using SystemJS. This is deprecated and only used in few examples.
 - `testing`: For CLI-based examples that are related to unit testing.
 - `universal`: For CLI-based examples that also use `@nguniversal/express-engine` for SSR.
 
 There are also the following special folders:
 - `common`: Contains files used in many examples.
-  (See the [next section](#example-config) for info on how to not include common files in certain examples.)
+  (See the [next section](#example-config) for info on how to exclude common files in certain examples.)
 - `viewengine/cli`: Additional configuration for running CLI-based examples with `ViewEngine` (the pre-Ivy compiler/renderer).
   This applies to all CLI-based examples, such as `cli-ajs`, `elements`, `getting-started`, etc.
 - `viewengine/systemjs`: Additional configuration for running SystemJS-based examples with `ViewEngine` (the pre-Ivy compiler/renderer).
@@ -78,6 +82,7 @@ The file is expected to contain a JSON object with zero or more of the following
 - `tests: object[]`: An array of objects, each specifying a test command. This can be used to run multiple test commands in series (for example, to run unit and e2e tests).
   The commands are specified as `{cmd: string, args: string[]}` and must be in a format that could be passed to Node.js' `child_process.spawn(cmd, args)`. You can use a special `{PORT}` placeholder, that will be replaced with the port on which the app is served during the actual test.
   Default:
+
   ```json
   [
     {
@@ -99,10 +104,10 @@ An empty `example-config.json` file is equivalent with `{"projectType": "cli"}`.
 <a name="symlinked-node_modules"></a>
 ### A `node_modules/` to share
 
-With all the boilerplate files in place, the only missing piece are the installed packages.
+With all the boilerplate files in place, the only missing piece is the installed packages.
 For that we have [shared/package.json](./shared/package.json), which contains **all** the packages needed to run any example type.
 
-After installing these dependencies, a [shared/node_modules/](./shared/node_modules) folder will be created.
+Upon installing these dependencies, a [shared/node_modules/](./shared/node_modules) folder is created.
 This folder will be **symlinked** into each example.
 So it is not a copy like the other boilerplate files.
 
@@ -117,6 +122,7 @@ If you are using a custom test command, make sure e2e specs are picked up (if ap
 
 For SystemJS-based examples, create an `e2e-spec.ts` file inside the example root folder.
 These apps will be tested with the following command:
+
 ```sh
 yarn protractor aio/tools/examples/shared/protractor.config.js \
   --specs=<example-folder>/e2e-spec.ts \
@@ -130,8 +136,8 @@ The [example-boilerplate.js](./example-boilerplate.js) script installs the depen
 
 It also contains a function to remove all the boilerplate.
 It uses `git clean -xdf` to do the job.
-It will remove all files that are not tracked by git, **including any new file that you are working on that hasn't been stage yet.**
-So, be sure to save your work before removing the boilerplate.
+It will remove all files that are not tracked by git, **including any new files that you are working on that haven't been stageg yet.**
+So, be sure to commit your work before removing the boilerplate.
 
 
 ### `run-example-e2e.js`
@@ -142,7 +148,7 @@ It is named `*-e2e` for historical reasons, but it is not limited to running e2e
 
 See [aio/README.md](../../README.md#developer-tasks) for the available command-line options.
 
-Running the script will create an `aio/protractor-results.txt` with the results of the tests.
+Running the script will create an `aio/protractor-results.txt` file with the results of the tests.
 
 
 ### Updating example dependencies

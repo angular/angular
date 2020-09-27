@@ -38,7 +38,7 @@ Any necessary changes to boilerplate files will be done automatically through mi
   > In order for `ng update` to work, there must be a `node_modules/` directory with installed dependencies inside the [shared/boilerplate/cli/](./shared/boilerplate/cli) directory.
   > This `node_modules/` directory is only needed during the update operation and is otherwise ignored (both by git and by the [example-boilerplate.js](./example-boilerplate.js) script) by means of the [shared/boilerplate/.gitignore](./shared/boilerplate/.gitignore) file.
 
-- The previous command made any necessary changes to boilerplate files inside the `cli/` folder, but the same changes need to be applied to the other CLI-based boilerplate folder.
+- The previous command made any necessary changes to boilerplate files inside the `cli/` folder, but the same changes need to be applied to the other CLI-based boilerplate folders.
   Inspect the changes in `cli/` and manually apply the necessary ones to other CLI-based boilerplate folders.
 
 - Ensure any changes to [cli/tslint.json](./shared/boilerplate/cli/tslint.json) are ported over to [systemjs/tslint.json](./shared/boilerplate/systemjs/tslint.json) and also [aio/content/examples/tslint.json](../../content/examples/tslint.json).
