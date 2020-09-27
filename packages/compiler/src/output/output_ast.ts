@@ -126,18 +126,24 @@ export function nullSafeIsEquivalent<T extends {isEquivalent(other: T): boolean}
   return base.isEquivalent(other);
 }
 
-export function areAllEquivalent<T extends {isEquivalent(other: T): boolean}>(
-    base: T[], other: T[]) {
+function areAllEquivalentPredicate<T>(
+    base: T[], other: T[], equivalentPredicate: (baseElement: T, otherElement: T) => boolean) {
   const len = base.length;
   if (len !== other.length) {
     return false;
   }
   for (let i = 0; i < len; i++) {
-    if (!base[i].isEquivalent(other[i])) {
+    if (!equivalentPredicate(base[i], other[i])) {
       return false;
     }
   }
   return true;
+}
+
+export function areAllEquivalent<T extends {isEquivalent(other: T): boolean}>(
+    base: T[], other: T[]) {
+  return areAllEquivalentPredicate(
+      base, other, (baseElement: T, otherElement: T) => baseElement.isEquivalent(otherElement));
 }
 
 export abstract class Expression {
@@ -468,6 +474,30 @@ export class InvokeFunctionExpr extends Expression {
 }
 
 
+export class TaggedTemplateExpr extends Expression {
+  constructor(
+      public tag: Expression, public template: TemplateLiteral, type?: Type|null,
+      sourceSpan?: ParseSourceSpan|null) {
+    super(type, sourceSpan);
+  }
+
+  isEquivalent(e: Expression): boolean {
+    return e instanceof TaggedTemplateExpr && this.tag.isEquivalent(e.tag) &&
+        areAllEquivalentPredicate(
+               this.template.elements, e.template.elements, (a, b) => a.text === b.text) &&
+        areAllEquivalent(this.template.expressions, e.template.expressions);
+  }
+
+  isConstant() {
+    return false;
+  }
+
+  visitExpression(visitor: ExpressionVisitor, context: any): any {
+    return visitor.visitTaggedTemplateExpr(this, context);
+  }
+}
+
+
 export class InstantiateExpr extends Expression {
   constructor(
       public classExpr: Expression, public args: Expression[], type?: Type|null,
@@ -507,6 +537,23 @@ export class LiteralExpr extends Expression {
 
   visitExpression(visitor: ExpressionVisitor, context: any): any {
     return visitor.visitLiteralExpr(this, context);
+  }
+}
+
+export class TemplateLiteral {
+  constructor(public elements: TemplateLiteralElement[], public expressions: Expression[]) {}
+}
+export class TemplateLiteralElement {
+  rawText: string;
+  constructor(public text: string, public sourceSpan?: ParseSourceSpan, rawText?: string) {
+    // If `rawText` is not provided, try to extract the raw string from its
+    // associated `sourceSpan`. If that is also not available, "fake" the raw
+    // string instead by escaping the following control sequences:
+    // - "\" would otherwise indicate that the next character is a control character.
+    // - "`" and "${" are template string control sequences that would otherwise prematurely
+    // indicate the end of the template literal element.
+    this.rawText =
+        rawText ?? sourceSpan?.toString() ?? escapeForTemplateLiteral(escapeSlashes(text));
   }
 }
 
@@ -603,7 +650,7 @@ export interface CookedRawString {
 const escapeSlashes = (str: string): string => str.replace(/\\/g, '\\\\');
 const escapeStartingColon = (str: string): string => str.replace(/^:/, '\\:');
 const escapeColons = (str: string): string => str.replace(/:/g, '\\:');
-const escapeForMessagePart = (str: string): string =>
+const escapeForTemplateLiteral = (str: string): string =>
     str.replace(/`/g, '\\`').replace(/\${/g, '$\\{');
 
 /**
@@ -625,13 +672,13 @@ function createCookedRawString(
   if (metaBlock === '') {
     return {
       cooked: messagePart,
-      raw: escapeForMessagePart(escapeStartingColon(escapeSlashes(messagePart))),
+      raw: escapeForTemplateLiteral(escapeStartingColon(escapeSlashes(messagePart))),
       range,
     };
   } else {
     return {
       cooked: `:${metaBlock}:${messagePart}`,
-      raw: escapeForMessagePart(
+      raw: escapeForTemplateLiteral(
           `:${escapeColons(escapeSlashes(metaBlock))}:${escapeSlashes(messagePart)}`),
       range,
     };
@@ -953,6 +1000,7 @@ export interface ExpressionVisitor {
   visitWritePropExpr(expr: WritePropExpr, context: any): any;
   visitInvokeMethodExpr(ast: InvokeMethodExpr, context: any): any;
   visitInvokeFunctionExpr(ast: InvokeFunctionExpr, context: any): any;
+  visitTaggedTemplateExpr(ast: TaggedTemplateExpr, context: any): any;
   visitInstantiateExpr(ast: InstantiateExpr, context: any): any;
   visitLiteralExpr(ast: LiteralExpr, context: any): any;
   visitLocalizedString(ast: LocalizedString, context: any): any;
@@ -1275,6 +1323,17 @@ export class AstTransformer implements StatementVisitor, ExpressionVisitor {
         context);
   }
 
+  visitTaggedTemplateExpr(ast: TaggedTemplateExpr, context: any): any {
+    return this.transformExpr(
+        new TaggedTemplateExpr(
+            ast.tag.visitExpression(this, context),
+            new TemplateLiteral(
+                ast.template.elements,
+                ast.template.expressions.map((e) => e.visitExpression(this, context))),
+            ast.type, ast.sourceSpan),
+        context);
+  }
+
   visitInstantiateExpr(ast: InstantiateExpr, context: any): any {
     return this.transformExpr(
         new InstantiateExpr(
@@ -1378,7 +1437,7 @@ export class AstTransformer implements StatementVisitor, ExpressionVisitor {
     return this.transformExpr(
         new CommaExpr(this.visitAllExpressions(ast.parts, context), ast.sourceSpan), context);
   }
-  visitAllExpressions(exprs: Expression[], context: any): Expression[] {
+  visitAllExpressions<T extends Expression>(exprs: T[], context: any): T[] {
     return exprs.map(expr => expr.visitExpression(this, context));
   }
 
@@ -1522,6 +1581,11 @@ export class RecursiveAstVisitor implements StatementVisitor, ExpressionVisitor 
   visitInvokeFunctionExpr(ast: InvokeFunctionExpr, context: any): any {
     ast.fn.visitExpression(this, context);
     this.visitAllExpressions(ast.args, context);
+    return this.visitExpression(ast, context);
+  }
+  visitTaggedTemplateExpr(ast: TaggedTemplateExpr, context: any): any {
+    ast.tag.visitExpression(this, context);
+    this.visitAllExpressions(ast.template.expressions, context);
     return this.visitExpression(ast, context);
   }
   visitInstantiateExpr(ast: InstantiateExpr, context: any): any {
@@ -1806,6 +1870,12 @@ export function ifStmt(
     condition: Expression, thenClause: Statement[], elseClause?: Statement[],
     sourceSpan?: ParseSourceSpan, leadingComments?: LeadingComment[]) {
   return new IfStmt(condition, thenClause, elseClause, sourceSpan, leadingComments);
+}
+
+export function taggedTemplate(
+    tag: Expression, template: TemplateLiteral, type?: Type|null,
+    sourceSpan?: ParseSourceSpan|null): TaggedTemplateExpr {
+  return new TaggedTemplateExpr(tag, template, type, sourceSpan);
 }
 
 export function literal(

@@ -197,6 +197,15 @@ class StatementInterpreter implements o.StatementVisitor, o.ExpressionVisitor {
       return fn.apply(null, args);
     }
   }
+  visitTaggedTemplateExpr(expr: o.TaggedTemplateExpr, ctx: _ExecutionContext): any {
+    const templateElements = expr.template.elements.map((e) => e.text);
+    Object.defineProperty(
+        templateElements, 'raw', {value: expr.template.elements.map((e) => e.rawText)});
+    const args = this.visitAllExpressions(expr.template.expressions, ctx);
+    args.unshift(templateElements);
+    const tag = expr.tag.visitExpression(this, ctx);
+    return tag.apply(null, args);
+  }
   visitReturnStmt(stmt: o.ReturnStatement, ctx: _ExecutionContext): any {
     return new ReturnValue(stmt.value.visitExpression(this, ctx));
   }
