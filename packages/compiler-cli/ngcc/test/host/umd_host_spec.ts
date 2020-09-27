@@ -971,7 +971,7 @@ runInEachFileSystem(() => {
         const bundle = makeTestBundleProgram(SOME_DIRECTIVE_FILE.name);
         const host = createHost(bundle, new UmdReflectionHost(new MockLogger(), false, bundle));
         const classNode = getDeclaration(
-            bundle.program, SOME_DIRECTIVE_FILE.name, 'SomeDirective', isNamedVariableDeclaration);
+            bundle.program, SOME_DIRECTIVE_FILE.name, 'SomeDirective', isNamedFunctionDeclaration);
         const decorators = host.getDecoratorsOfDeclaration(classNode)!;
 
         expect(decorators).toBeDefined();
@@ -1081,7 +1081,7 @@ runInEachFileSystem(() => {
         const host = createHost(bundle, new UmdReflectionHost(new MockLogger(), false, bundle));
 
         const classNode = getDeclaration(
-            bundle.program, SOME_DIRECTIVE_FILE.name, 'SomeDirective', isNamedVariableDeclaration);
+            bundle.program, SOME_DIRECTIVE_FILE.name, 'SomeDirective', isNamedFunctionDeclaration);
         const decorators = host.getDecoratorsOfDeclaration(classNode)!;
 
         expect(decorators.length).toEqual(1);
@@ -1159,7 +1159,7 @@ runInEachFileSystem(() => {
         const bundle = makeTestBundleProgram(SOME_DIRECTIVE_FILE.name);
         const host = createHost(bundle, new UmdReflectionHost(new MockLogger(), false, bundle));
         const classNode = getDeclaration(
-            bundle.program, SOME_DIRECTIVE_FILE.name, 'SomeDirective', isNamedVariableDeclaration);
+            bundle.program, SOME_DIRECTIVE_FILE.name, 'SomeDirective', isNamedFunctionDeclaration);
         const members = host.getMembersOfClass(classNode);
 
         const input1 = members.find(member => member.name === 'input1')!;
@@ -1178,7 +1178,7 @@ runInEachFileSystem(() => {
         const bundle = makeTestBundleProgram(SOME_DIRECTIVE_FILE.name);
         const host = createHost(bundle, new UmdReflectionHost(new MockLogger(), false, bundle));
         const classNode = getDeclaration(
-            bundle.program, SOME_DIRECTIVE_FILE.name, 'SomeDirective', isNamedVariableDeclaration);
+            bundle.program, SOME_DIRECTIVE_FILE.name, 'SomeDirective', isNamedFunctionDeclaration);
         const members = host.getMembersOfClass(classNode);
 
         const instanceProperty = members.find(member => member.name === 'instanceProperty')!;
@@ -1193,7 +1193,7 @@ runInEachFileSystem(() => {
         const bundle = makeTestBundleProgram(SOME_DIRECTIVE_FILE.name);
         const host = createHost(bundle, new UmdReflectionHost(new MockLogger(), false, bundle));
         const classNode = getDeclaration(
-            bundle.program, SOME_DIRECTIVE_FILE.name, 'SomeDirective', isNamedVariableDeclaration);
+            bundle.program, SOME_DIRECTIVE_FILE.name, 'SomeDirective', isNamedFunctionDeclaration);
         const members = host.getMembersOfClass(classNode);
 
         const staticMethod = members.find(member => member.name === 'staticMethod')!;
@@ -1207,7 +1207,7 @@ runInEachFileSystem(() => {
         const bundle = makeTestBundleProgram(SOME_DIRECTIVE_FILE.name);
         const host = createHost(bundle, new UmdReflectionHost(new MockLogger(), false, bundle));
         const classNode = getDeclaration(
-            bundle.program, SOME_DIRECTIVE_FILE.name, 'SomeDirective', isNamedVariableDeclaration);
+            bundle.program, SOME_DIRECTIVE_FILE.name, 'SomeDirective', isNamedFunctionDeclaration);
         const members = host.getMembersOfClass(classNode);
 
         const staticProperty = members.find(member => member.name === 'staticProperty')!;
@@ -1304,7 +1304,7 @@ runInEachFileSystem(() => {
       const host = createHost(bundle, new UmdReflectionHost(new MockLogger(), false, bundle));
 
       const classNode = getDeclaration(
-          bundle.program, SOME_DIRECTIVE_FILE.name, 'SomeDirective', isNamedVariableDeclaration);
+          bundle.program, SOME_DIRECTIVE_FILE.name, 'SomeDirective', isNamedFunctionDeclaration);
       const decorators = host.getDecoratorsOfDeclaration(classNode)!;
 
       expect(decorators.length).toEqual(1);
@@ -1425,7 +1425,7 @@ runInEachFileSystem(() => {
            const bundle = makeTestBundleProgram(_('/main.js'));
            const host = createHost(bundle, new UmdReflectionHost(new MockLogger(), false, bundle));
            const classNode = getDeclaration(
-               bundle.program, _('/main.js'), 'SomeClass', isNamedVariableDeclaration);
+               bundle.program, _('/main.js'), 'SomeClass', isNamedFunctionDeclaration);
 
            const parameters = host.getConstructorParameters(classNode)!;
 
@@ -1439,7 +1439,7 @@ runInEachFileSystem(() => {
         const bundle = makeTestBundleProgram(SOME_DIRECTIVE_FILE.name);
         const host = createHost(bundle, new UmdReflectionHost(new MockLogger(), false, bundle));
         const classNode = getDeclaration(
-            bundle.program, SOME_DIRECTIVE_FILE.name, 'SomeDirective', isNamedVariableDeclaration);
+            bundle.program, SOME_DIRECTIVE_FILE.name, 'SomeDirective', isNamedFunctionDeclaration);
         const parameters = host.getConstructorParameters(classNode);
 
         expect(parameters).toBeDefined();
@@ -1604,7 +1604,7 @@ runInEachFileSystem(() => {
           const host = createHost(bundle, new UmdReflectionHost(new MockLogger(), false, bundle));
           const classNode = getDeclaration(
               bundle.program, SOME_DIRECTIVE_FILE.name, 'SomeDirective',
-              isNamedVariableDeclaration);
+              isNamedFunctionDeclaration);
           const mockImportInfo: Import = {from: '@angular/core', name: 'Directive'};
           const spy = spyOn(UmdReflectionHost.prototype, 'getImportOfIdentifier')
                           .and.returnValue(mockImportInfo);
@@ -2033,7 +2033,7 @@ runInEachFileSystem(() => {
         const bundle = makeTestBundleProgram(SOME_DIRECTIVE_FILE.name);
         const host = createHost(bundle, new UmdReflectionHost(new MockLogger(), false, bundle));
         const classNode = getDeclaration(
-            bundle.program, SOME_DIRECTIVE_FILE.name, 'SomeDirective', isNamedVariableDeclaration);
+            bundle.program, SOME_DIRECTIVE_FILE.name, 'SomeDirective', isNamedFunctionDeclaration);
         const ctrDecorators = host.getConstructorParameters(classNode)!;
         const identifierOfViewContainerRef = (ctrDecorators[0].typeValueReference! as {
                                                kind: TypeValueReferenceKind.LOCAL,
@@ -2092,7 +2092,7 @@ runInEachFileSystem(() => {
         const bundle = makeTestBundleProgram(SOME_DIRECTIVE_FILE.name);
         const host = createHost(bundle, new UmdReflectionHost(new MockLogger(), false, bundle));
         const classNode = getDeclaration(
-            bundle.program, SOME_DIRECTIVE_FILE.name, 'SomeDirective', isNamedVariableDeclaration);
+            bundle.program, SOME_DIRECTIVE_FILE.name, 'SomeDirective', isNamedFunctionDeclaration);
         const classDecorators = host.getDecoratorsOfDeclaration(classNode)!;
         const identifierOfDirective =
             (((classDecorators[0].node as ts.ObjectLiteralExpression).properties[0] as
