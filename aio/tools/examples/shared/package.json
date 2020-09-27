@@ -8,7 +8,8 @@
     "protractor": "protractor",
     "webdriver:update": "node ../../../../scripts/webdriver-manager-update.js",
     "preinstall": "node ../../../../tools/yarn/check-yarn.js",
-    "postinstall": "yarn webdriver:update"
+    "postinstall": "yarn webdriver:update",
+    "sync-deps": "node sync-boilerplate-dependencies"
   },
   "//engines-comment": "Keep this in sync with /package.json and /aio/package.json",
   "engines": {
