@@ -71,9 +71,9 @@ export function findAll<T>(node: ts.Node, test: (node: ts.Node) => node is ts.No
  * @param declaration The declaration to test.
  * @returns true if the declaration has an identifier for a name.
  */
-export function hasNameIdentifier(declaration: ts.Declaration): declaration is ts.Declaration&
+export function hasNameIdentifier(declaration: ts.Node): declaration is ts.Declaration&
     {name: ts.Identifier} {
-  const namedDeclaration: ts.Declaration&{name?: ts.Node} = declaration;
+  const namedDeclaration: ts.Node&{name?: ts.Node} = declaration;
   return namedDeclaration.name !== undefined && ts.isIdentifier(namedDeclaration.name);
 }
 

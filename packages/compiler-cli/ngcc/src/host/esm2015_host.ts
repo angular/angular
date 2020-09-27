@@ -302,6 +302,7 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
     if (superDeclaration.known !== null || superDeclaration.identity !== null) {
       return superDeclaration;
     }
+
     let declarationNode: ts.Node = superDeclaration.node;
     if (isNamedVariableDeclaration(superDeclaration.node) && !isTopLevel(superDeclaration.node)) {
       const variableValue = this.getVariableValue(superDeclaration.node);
@@ -310,9 +311,9 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
       }
     }
 
-    const outerClassNode = getClassDeclarationFromInnerDeclaration(declarationNode);
-    const declaration = outerClassNode !== null ?
-        this.getDeclarationOfIdentifier(outerClassNode.name) :
+    const outerNode = getOuterNodeFromInnerDeclaration(declarationNode);
+    const declaration = outerNode !== null && isNamedVariableDeclaration(outerNode) ?
+        this.getDeclarationOfIdentifier(outerNode.name) :
         superDeclaration;
     if (declaration === null || declaration.node === null || declaration.known !== null) {
       return declaration;
@@ -2569,51 +2570,53 @@ function isTopLevel(node: ts.Node): boolean {
 }
 
 /**
- * Get the actual (outer) declaration of a class.
+ * Get a node that represents the actual (outer) declaration of a class from its implementation.
  *
  * Sometimes, the implementation of a class is an expression that is hidden inside an IIFE and
- * returned to be assigned to a variable outside the IIFE, which is what the rest of the program
- * interacts with.
+ * assigned to a variable outside the IIFE, which is what the rest of the program interacts with.
+ * For example,
  *
- * Given the inner declaration, we want to get to the declaration of the outer variable that
- * represents the class.
+ * ```
+ * OuterNode = Alias = (function() { function InnerNode() {} return InnerNode; })();
+ * ```
  *
- * @param node a node that could be the inner declaration inside an IIFE.
- * @returns the outer variable declaration or `null` if it is not a "class".
+ * @param node a node that could be the implementation inside an IIFE.
+ * @returns a node that represents the outer declaration, or `null` if it is does not match the IIFE
+ *     format shown above.
  */
-export function getClassDeclarationFromInnerDeclaration(node: ts.Node):
-    ClassDeclaration<ts.VariableDeclaration>|null {
-  if (ts.isFunctionDeclaration(node) || ts.isClassDeclaration(node) ||
-      ts.isVariableStatement(node)) {
-    // It might be the function expression inside the IIFE. We need to go 5 levels up...
-
-    // - IIFE body.
-    let outerNode = node.parent;
-    if (!outerNode || !ts.isBlock(outerNode)) return null;
-
-    // - IIFE function expression.
-    outerNode = outerNode.parent;
-    if (!outerNode || (!ts.isFunctionExpression(outerNode) && !ts.isArrowFunction(outerNode))) {
-      return null;
-    }
-    outerNode = outerNode.parent;
-
-    // - Parenthesis inside IIFE.
-    if (outerNode && ts.isParenthesizedExpression(outerNode)) outerNode = outerNode.parent;
-
-    // - IIFE call expression.
-    if (!outerNode || !ts.isCallExpression(outerNode)) return null;
-    outerNode = outerNode.parent;
-
-    // - Parenthesis around IIFE.
-    if (outerNode && ts.isParenthesizedExpression(outerNode)) outerNode = outerNode.parent;
-
-    // - Outer variable declaration.
-    if (!outerNode || !ts.isVariableDeclaration(outerNode)) return null;
-
-    // Finally, ensure that the variable declaration has a `name` identifier.
-    return hasNameIdentifier(outerNode) ? outerNode : null;
+export function getOuterNodeFromInnerDeclaration(node: ts.Node): ts.Node|null {
+  if (!ts.isFunctionDeclaration(node) && !ts.isClassDeclaration(node) &&
+      !ts.isVariableStatement(node)) {
+    return null;
   }
 
-  return null;
+  // It might be the function expression inside the IIFE. We need to go 5 levels up...
+
+  // - IIFE body.
+  let outerNode = node.parent;
+  if (!outerNode || !ts.isBlock(outerNode)) return null;
+
+  // - IIFE function expression.
+  outerNode = outerNode.parent;
+  if (!outerNode || (!ts.isFunctionExpression(outerNode) && !ts.isArrowFunction(outerNode))) {
+    return null;
+  }
+  outerNode = outerNode.parent;
+
+  // - Parenthesis inside IIFE.
+  if (outerNode && ts.isParenthesizedExpression(outerNode)) outerNode = outerNode.parent;
+
+  // - IIFE call expression.
+  if (!outerNode || !ts.isCallExpression(outerNode)) return null;
+  outerNode = outerNode.parent;
+
+  // - Parenthesis around IIFE.
+  if (outerNode && ts.isParenthesizedExpression(outerNode)) outerNode = outerNode.parent;
+
+  // - Skip any aliases between the IIFE and the far left hand side of any assignments.
+  while (isAssignment(outerNode.parent)) {
+    outerNode = outerNode.parent;
+  }
+
+  return outerNode;
 }
