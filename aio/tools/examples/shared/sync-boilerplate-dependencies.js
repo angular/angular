@@ -23,10 +23,7 @@ const boilerplatePkgJsonPaths = [
   ...collectPackageJsonFiles(VIEWENGINE_DIR),
 ];
 
-boilerplatePkgJsonPaths.forEach(boilerplatePkgJsonPath => {
-  const updatedPkgJson = syncDependencies(boilerplatePkgJsonPath);
-  fs.writeFileSync(boilerplatePkgJsonPath, `${JSON.stringify(updatedPkgJson, null, 2)}\n`);
-});
+boilerplatePkgJsonPaths.forEach(syncDependencies);
 
 // Helpers
 function collectPackageJsonFiles(dirPath) {
@@ -63,5 +60,5 @@ function syncDependencies(boilerplatePkgJsonPath) {
       }
     });
 
-  return boilerplatePkgJson;
+  fs.writeFileSync(boilerplatePkgJsonPath, `${JSON.stringify(boilerplatePkgJson, null, 2)}\n`);
 }
