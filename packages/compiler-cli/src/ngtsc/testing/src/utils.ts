@@ -60,7 +60,8 @@ export function getDeclaration<T extends ts.Declaration>(
     throw new Error(`No such symbol: ${name} in ${fileName}`);
   }
   if (!assert(chosenDecl)) {
-    throw new Error(`Symbol ${name} from ${fileName} is a ${ts.SyntaxKind[chosenDecl.kind]}`);
+    throw new Error(`Symbol ${name} from ${fileName} is a ${
+        ts.SyntaxKind[chosenDecl.kind]}. Expected it to pass predicate "${assert.name}()".`);
   }
   return chosenDecl;
 }
