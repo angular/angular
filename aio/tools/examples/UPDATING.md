@@ -9,7 +9,7 @@ Follow these steps to update the examples to the latest versions of Angular (and
 
 - In the [shared/](./shared) folder, run `yarn` to update the dependencies in the [shared/node_modules/](./shared/node_modules) folder and the [shared/yarn.lock](./shared/yarn.lock) file.
 
-- In the [shared/boilerplate/](./shared/boilerplate) folder, go through each sub-folder and update the dependency versions in all `package.json` files to match the ones in [shared/package.json](./shared/package.json).
+- In the [shared/](./shared) folder, run `yarn sync-deps` to update the dependency versions of the `package.json` files in each sub-folder of [shared/boilerplate/](./shared/boilerplate) to match the ones in [shared/package.json](./shared/package.json).
 
 - Follow the steps in the following section to update the rest of the boilerplate files.
 
