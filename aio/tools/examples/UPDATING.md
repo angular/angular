@@ -32,14 +32,11 @@ Any necessary changes to boilerplate files will be done automatically through mi
   # Migrate project to new versions.
   yarn ng update @angular/cli --migrate-only --from=<previous-cli-version>
   yarn ng update @angular/core --migrate-only --from=<previous-core-version>
-
-  # Remove `node_modules/` and `yarn.lock`.
-  rm -rf node_modules yarn.lock
   ```
 
   > NOTE:
   > In order for `ng update` to work, there must be a `node_modules/` directory with installed dependencies inside the [shared/boilerplate/cli/](./shared/boilerplate/cli) directory.
-  > This `node_modules/` directory is only needed during the update operation and must be subsequently removed to avoid its being copied into all CLI-based examples.
+  > This `node_modules/` directory is only needed during the update operation and is otherwise ignored (both by git and by the [example-boilerplate.js](./example-boilerplate.js) script) by means of the [shared/boilerplate/.gitignore](./shared/boilerplate/.gitignore) file.
 
 - The previous command made any necessary changes to boilerplate files inside the `cli/` folder, but the same changes need to be applied to the other CLI-based boilerplate folders.
   Inspect the changes in `cli/` and manually apply the necessary ones to other CLI-based boilerplate folders.
