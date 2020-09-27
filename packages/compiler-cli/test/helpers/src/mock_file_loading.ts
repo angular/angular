@@ -77,7 +77,9 @@ export function loadFakeCore(fs: FileSystem, basePath: string = '/') {
 
 function loadFolder(path: string): Folder {
   const tmpFs = new MockFileSystemPosix(true);
-  loadTestDirectory(tmpFs, tmpFs.resolve(path), tmpFs.resolve('/'));
+  // Note that we intentionally pass the native `path`, without resolving it through the file
+  // system, because the mock posix file system may break paths coming from a non-posix system.
+  loadTestDirectory(tmpFs, path, tmpFs.resolve('/'));
   return tmpFs.dump();
 }
 
