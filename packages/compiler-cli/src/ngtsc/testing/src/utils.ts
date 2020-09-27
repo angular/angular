@@ -50,52 +50,64 @@ export function makeProgram(
   return {program, host: compilerHost, options: compilerOptions};
 }
 
+/**
+ * Search the file specified by `fileName` in the given `program` for a declaration that has the
+ * name `name` and passes the `predicate` function.
+ *
+ * An error will be thrown if there is not at least one AST node with the given `name` and passes
+ * the `predicate` test.
+ */
 export function getDeclaration<T extends ts.Declaration>(
     program: ts.Program, fileName: AbsoluteFsPath, name: string,
     assert: (value: any) => value is T): T {
   const sf = getSourceFileOrError(program, fileName);
-  const chosenDecl = walkForDeclaration(name, sf);
+  const chosenDecls = walkForDeclarations(name, sf);
 
-  if (chosenDecl === null) {
+  if (chosenDecls.length === 0) {
     throw new Error(`No such symbol: ${name} in ${fileName}`);
   }
-  if (!assert(chosenDecl)) {
-    throw new Error(`Symbol ${name} from ${fileName} is a ${
-        ts.SyntaxKind[chosenDecl.kind]}. Expected it to pass predicate "${assert.name}()".`);
+  const chosenDecl = chosenDecls.find(assert);
+  if (chosenDecl === undefined) {
+    throw new Error(`Symbols with name ${name} in ${fileName} have types: ${
+        chosenDecls.map(decl => ts.SyntaxKind[decl.kind])}. Expected one to pass predicate "${
+        assert.name}()".`);
   }
   return chosenDecl;
 }
 
-// We walk the AST tree looking for a declaration that matches
-export function walkForDeclaration(name: string, rootNode: ts.Node): ts.Declaration|null {
-  let chosenDecl: ts.Declaration|null = null;
+/**
+ * Walk the AST tree from the `rootNode` looking for a declaration that has the given `name`.
+ */
+export function walkForDeclarations(name: string, rootNode: ts.Node): ts.Declaration[] {
+  const chosenDecls: ts.Declaration[] = [];
   rootNode.forEachChild(node => {
-    if (chosenDecl !== null) {
-      return;
-    }
     if (ts.isVariableStatement(node)) {
       node.declarationList.declarations.forEach(decl => {
         if (bindingNameEquals(decl.name, name)) {
-          chosenDecl = decl;
+          chosenDecls.push(decl);
+          if (decl.initializer) {
+            chosenDecls.push(...walkForDeclarations(name, decl.initializer));
+          }
         } else {
-          chosenDecl = walkForDeclaration(name, node);
+          chosenDecls.push(...walkForDeclarations(name, node));
         }
       });
     } else if (
         ts.isClassDeclaration(node) || ts.isFunctionDeclaration(node) ||
         ts.isInterfaceDeclaration(node) || ts.isClassExpression(node)) {
       if (node.name !== undefined && node.name.text === name) {
-        chosenDecl = node;
+        chosenDecls.push(node);
       }
+      chosenDecls.push(...walkForDeclarations(name, node));
     } else if (
         ts.isImportDeclaration(node) && node.importClause !== undefined &&
         node.importClause.name !== undefined && node.importClause.name.text === name) {
-      chosenDecl = node.importClause;
+      chosenDecls.push(node.importClause);
     } else {
-      chosenDecl = walkForDeclaration(name, node);
+      chosenDecls.push(...walkForDeclarations(name, node));
     }
   });
-  return chosenDecl;
+  return chosenDecls;
 }
 
 const COMPLETE_REUSE_FAILURE_MESSAGE =

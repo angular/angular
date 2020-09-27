@@ -13,7 +13,7 @@ import {runInEachFileSystem, TestFile} from '../../../src/ngtsc/file_system/test
 import {MockLogger} from '../../../src/ngtsc/logging/testing';
 import {ClassMemberKind, ConcreteDeclaration, CtorParameter, DownleveledEnum, isNamedClassDeclaration, isNamedFunctionDeclaration, isNamedVariableDeclaration, TypeScriptReflectionHost} from '../../../src/ngtsc/reflection';
 import {getDeclaration} from '../../../src/ngtsc/testing';
-import {walkForDeclaration} from '../../../src/ngtsc/testing/src/utils';
+import {walkForDeclarations} from '../../../src/ngtsc/testing/src/utils';
 import {loadFakeCore, loadTestFiles} from '../../../test/helpers';
 import {DelegatingReflectionHost} from '../../src/host/delegating_host';
 import {Esm2015ReflectionHost} from '../../src/host/esm2015_host';
@@ -1732,13 +1732,13 @@ runInEachFileSystem(() => {
            const classDeclaration = getDeclaration(
                bundle.program, WRAPPED_CLASS_EXPRESSION_FILE.name, 'DecoratedWrappedClass',
                ts.isVariableDeclaration);
-           const innerClassDeclaration =
-               walkForDeclaration('InnerDecoratedWrappedClass', classDeclaration);
-           if (innerClassDeclaration === null) {
+           const innerClassDeclarations =
+               walkForDeclarations('InnerDecoratedWrappedClass', classDeclaration);
+           if (innerClassDeclarations.length === 0) {
              throw new Error('Expected InnerDecoratedWrappedClass to exist');
            }
            const aliasedClassIdentifier =
-               (innerClassDeclaration.parent as ts.BinaryExpression).left as ts.Identifier;
+               (innerClassDeclarations[0].parent as ts.BinaryExpression).left as ts.Identifier;
            expect(aliasedClassIdentifier.text).toBe('DecoratedWrappedClass_1');
            const d = host.getDeclarationOfIdentifier(aliasedClassIdentifier);
            expect(d!.node).toBe(classDeclaration);
@@ -2065,18 +2065,18 @@ runInEachFileSystem(() => {
            const outerNode = getDeclaration(
                bundle.program, WRAPPED_CLASS_EXPRESSION_FILE.name, 'DecoratedWrappedClass',
                isNamedVariableDeclaration);
-           const innerNode = walkForDeclaration('InnerDecoratedWrappedClass', outerNode);
-           if (innerNode === null) {
+           const innerNodes = walkForDeclarations('InnerDecoratedWrappedClass', outerNode);
+           if (innerNodes.length === 0) {
              throw new Error('Expected to find InnerDecoratedWrappedClass');
            }
-           const classSymbol = host.getClassSymbol(innerNode);
+           const classSymbol = host.getClassSymbol(innerNodes[0]);
 
            if (classSymbol === undefined) {
              return fail('Expected classSymbol to be defined');
            }
            expect(classSymbol.name).toEqual('DecoratedWrappedClass');
            expect(classSymbol.declaration.valueDeclaration).toBe(outerNode);
-           expect(classSymbol.implementation.valueDeclaration).toBe(innerNode);
+           expect(classSymbol.implementation.valueDeclaration).toBe(innerNodes[0]);
 
            if (classSymbol.adjacent === undefined ||
                !isNamedVariableDeclaration(classSymbol.adjacent.valueDeclaration)) {
@@ -2096,8 +2096,8 @@ runInEachFileSystem(() => {
            const outerNode = getDeclaration(
                bundle.program, WRAPPED_CLASS_EXPRESSION_FILE.name, 'DecoratedWrappedClass',
                isNamedVariableDeclaration);
-           const innerNode = walkForDeclaration('InnerDecoratedWrappedClass', outerNode);
-           if (innerNode === null) {
+           const innerNodes = walkForDeclarations('InnerDecoratedWrappedClass', outerNode);
+           if (innerNodes.length === 0) {
              throw new Error('Expected to find InnerDecoratedWrappedClass');
            }
            const adjacentNode: ts.ClassExpression =
@@ -2112,7 +2112,7 @@ runInEachFileSystem(() => {
            }
            expect(classSymbol.name).toEqual('DecoratedWrappedClass');
            expect(classSymbol.declaration.valueDeclaration).toBe(outerNode);
-           expect(classSymbol.implementation.valueDeclaration).toBe(innerNode);
+           expect(classSymbol.implementation.valueDeclaration).toBe(innerNodes[0]);
 
            if (classSymbol.adjacent === undefined ||
                !isNamedVariableDeclaration(classSymbol.adjacent.valueDeclaration)) {
@@ -2131,12 +2131,12 @@ runInEachFileSystem(() => {
            const outerNode = getDeclaration(
                bundle.program, WRAPPED_CLASS_EXPRESSION_FILE.name, 'DecoratedWrappedClass',
                isNamedVariableDeclaration);
-           const innerNode = walkForDeclaration('InnerDecoratedWrappedClass', outerNode);
-           if (innerNode === null) {
+           const innerNodes = walkForDeclarations('InnerDecoratedWrappedClass', outerNode);
+           if (innerNodes.length === 0) {
              throw new Error('Expected to find InnerDecoratedWrappedClass');
            }
 
-           const innerSymbol = host.getClassSymbol(innerNode)!;
+           const innerSymbol = host.getClassSymbol(innerNodes[0])!;
            const outerSymbol = host.getClassSymbol(outerNode)!;
            expect(innerSymbol.declaration).toBe(outerSymbol.declaration);
            expect(innerSymbol.implementation).toBe(outerSymbol.implementation);
