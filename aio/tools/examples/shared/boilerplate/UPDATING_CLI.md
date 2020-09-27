@@ -1,6 +1,7 @@
 # How to update the CLI project
 
-The Angular CLI default setup is updated using `ng update`. Any necessary file changes will be done automatically through migration schematics.
+The Angular CLI default setup is updated using `ng update`.
+Any necessary file changes will be done automatically through migration schematics.
 
 In the `cli` folder, update the Angular CLI depedencies to the latest version:
 
@@ -18,7 +19,8 @@ Commit any changes to the `cli` folder to the repository.
 
 ## Updating other CLI-based projects
 
-Along with the boilerplate files for the `cli` folder, the other cli-based projects need to be updated also. Each cli-based project has slightly modified files specific to the project type. Make sure any necessary changes to these projects are made also to be in alignment with the `cli` project files.
+Along with the boilerplate files for the `cli` folder, the other cli-based projects need to be updated also. Each cli-based project has slightly modified files specific to the project type.
+Make sure any necessary changes to these projects are made also to be in alignment with the `cli` project files.
 
 The specific changes to each project type are listed below:
 
