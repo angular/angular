@@ -540,8 +540,7 @@ export class NgModuleDecoratorHandler implements
   }
 
   // Verify that a `ts.Declaration` reference is a `ClassDeclaration` reference.
-  private isClassDeclarationReference(ref: Reference<ts.Declaration>):
-      ref is Reference<ClassDeclaration> {
+  private isClassDeclarationReference(ref: Reference): ref is Reference<ClassDeclaration> {
     return this.reflector.isClass(ref.node);
   }
 
@@ -568,7 +567,7 @@ export class NgModuleDecoratorHandler implements
       if (Array.isArray(entry)) {
         // Recurse into nested arrays.
         refList.push(...this.resolveTypeList(expr, entry, className, arrayName));
-      } else if (isDeclarationReference(entry)) {
+      } else if (entry instanceof Reference) {
         if (!this.isClassDeclarationReference(entry)) {
           throw createValueHasWrongTypeError(
               entry.node, entry,
@@ -592,10 +591,4 @@ export class NgModuleDecoratorHandler implements
 function isNgModule(node: ClassDeclaration, compilation: ScopeData): boolean {
   return !compilation.directives.some(directive => directive.ref.node === node) &&
       !compilation.pipes.some(pipe => pipe.ref.node === node);
-}
-
-function isDeclarationReference(ref: any): ref is Reference<ts.Declaration> {
-  return ref instanceof Reference &&
-      (ts.isClassDeclaration(ref.node) || ts.isFunctionDeclaration(ref.node) ||
-       ts.isVariableDeclaration(ref.node));
 }
