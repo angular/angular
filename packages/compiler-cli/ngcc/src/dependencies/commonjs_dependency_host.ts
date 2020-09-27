@@ -9,7 +9,6 @@ import * as ts from 'typescript';
 
 import {AbsoluteFsPath} from '../../../src/ngtsc/file_system';
 import {isRequireCall, isWildcardReexportStatement, RequireCall} from '../host/commonjs_umd_utils';
-import {isAssignment, isAssignmentStatement} from '../host/esm2015_host';
 
 import {DependencyHostBase} from './dependency_host';
 
