@@ -14,7 +14,7 @@ import {Declaration, Import} from '../../../src/ngtsc/reflection';
 import {BundleProgram} from '../packages/bundle_program';
 import {FactoryMap, getTsHelperFnFromIdentifier, stripExtension} from '../utils';
 
-import {DefinePropertyReexportStatement, ExportDeclaration, ExportStatement, extractGetterFnExpression, findNamespaceOfIdentifier, findRequireCallReference, isDefinePropertyReexportStatement, isExportStatement, isExternalImport, isRequireCall, isWildcardReexportStatement, WildcardReexportStatement} from './commonjs_umd_utils';
+import {DefinePropertyReexportStatement, ExportDeclaration, ExportsStatement, extractGetterFnExpression, findNamespaceOfIdentifier, findRequireCallReference, isDefinePropertyReexportStatement, isExportsStatement, isExternalImport, isRequireCall, isWildcardReexportStatement, WildcardReexportStatement} from './commonjs_umd_utils';
 import {Esm5ReflectionHost} from './esm5_host';
 import {stripParentheses} from './utils';
 
@@ -90,7 +90,7 @@ export class UmdReflectionHost extends Esm5ReflectionHost {
   private computeExportsOfUmdModule(sourceFile: ts.SourceFile): Map<string, Declaration>|null {
     const moduleMap = new Map<string, Declaration>();
     for (const statement of this.getModuleStatements(sourceFile)) {
-      if (isExportStatement(statement)) {
+      if (isExportsStatement(statement)) {
         const exportDeclaration = this.extractBasicUmdExportDeclaration(statement);
         moduleMap.set(exportDeclaration.name, exportDeclaration.declaration);
       } else if (isWildcardReexportStatement(statement)) {
@@ -132,7 +132,7 @@ export class UmdReflectionHost extends Esm5ReflectionHost {
     return importPath;
   }
 
-  private extractBasicUmdExportDeclaration(statement: ExportStatement): ExportDeclaration {
+  private extractBasicUmdExportDeclaration(statement: ExportsStatement): ExportDeclaration {
     const name = statement.expression.left.name.text;
     const exportExpression = statement.expression.right;
     return this.extractUmdExportDeclaration(name, exportExpression);
