@@ -43,7 +43,7 @@ Al utilizar la API web en memoria, no tendrá que configurar un servidor para ob
 
 **Importante:** el módulo API web en memoria no tiene nada que ver con HTTP en Angular.
 
-Si solo está leyendo este tutorial para aprender sobre `HttpClient`, puede [omitir](# import-heroes) este paso.
+Si solo está leyendo este tutorial para aprender sobre `HttpClient`, puede [omitir](#import-heroes) este paso.
 Si está codificando junto con este tutorial, quédese aquí y agregue la API web en memoria ahora.
 
 </div>
@@ -220,7 +220,7 @@ Aquí está la versión final de `getHeroes()` con el `tap()` que registra la op
 
 La mayoría de las API web admiten una solicitud _get by id_ en la forma `: baseURL /: id`.
 
-Aquí, la _base URL_ es el `heroesURL` definido en la  [Heroes y HTTP](tutorial/toh-pt6#heroes-and-http) sección (`api/heroes`) y _id_ es
+Aquí, la _base URL_ es el `heroesURL` definido en la  [Heroes y HTTP](tutorial/toh-pt6#import-heroes) sección (`api/heroes`) y _id_ es
 El número del héroe que quieres recuperar. Por ejemplo, `api/heroes/11`.
 
 Actualice el método `HeroService` `getHero()` con lo siguiente para hacer esa solicitud:
