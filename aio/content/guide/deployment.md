@@ -387,7 +387,7 @@ List the generated bundles in the `dist/` folder.
 
 <code-example language="none" class="code-shell">
 
-  ls dist/*.bundle.js
+  ls dist/*.js
 
 </code-example>
 
@@ -396,7 +396,7 @@ The following example displays the graph for the _main_ bundle.
 
 <code-example language="none" class="code-shell">
 
-  node_modules/.bin/source-map-explorer dist/main.*.bundle.js
+  node_modules/.bin/source-map-explorer dist/main*
 
 </code-example>
 
