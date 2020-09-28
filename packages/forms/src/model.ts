@@ -1042,6 +1042,40 @@ export abstract class AbstractControl<T = any> {
   }
 }
 
+type Nullable<T> = {
+  [key: string]: unknown
+}&{
+  [K in keyof T]?: T[K]|null;
+};
+
+type NotAKey<K, T> = K extends keyof T ? never : K;
+
+interface FormGroupCtor {
+  new<T extends object>(
+      controls: {[key in keyof T]: AbstractControl<T[key]>},
+      validatorOrOpts?: ValidatorFn|ValidatorFn[]|AbstractControlOptions|null,
+      asyncValidator?: AsyncValidatorFn|AsyncValidatorFn[]|null): FormGroup<Nullable<T>>;
+  new(controls: {[key: string]: AbstractControl},
+      validatorOrOpts?: ValidatorFn|ValidatorFn[]|AbstractControlOptions|null,
+      asyncValidator?: AsyncValidatorFn|AsyncValidatorFn[]|null): FormGroup<any>;
+}
+
+/**
+ * @publicApi
+ */
+export declare interface FormGroup<T extends object = any> extends AbstractControl<T> {
+  controls: {[key in keyof T]: AbstractControl<T[key]>};
+  addControl<K extends keyof T>(name: K, control: AbstractControl<T[K]>): void;
+  addControl<K extends string>(name: NotAKey<K, T>, control: AbstractControl<any>): void;
+  contains(controlName: keyof T): boolean;
+  removeControl(name: keyof T): void;
+  setControl<K extends keyof T>(name: K, control: AbstractControl<T[K]>): void;
+  registerControl<K extends keyof T>(name: K, control: AbstractControl<T[K]>): AbstractControl;
+  getRawValue(): T;
+  patchValue<K extends keyof T>(
+      value: Partial<T>, options?: {onlySelf?: boolean, emitEvent?: boolean}): void;
+}
+
 /**
  * Tracks the value and validation status of an individual form control.
  *
@@ -1430,29 +1464,6 @@ export class FormControl<T = any> extends AbstractControl<T> {
  *
  * @publicApi
  */
-type Nullable<T> = {
-  [P in keyof T]: T[P]|null;
-};
-
-type NotAKey<K, T> = K extends keyof T ? never : K;
-
-// type of value
-interface FormGroupCtor {
-  new<T extends object>(
-      controls: {[key in keyof T]: AbstractControl<T[key]>},
-      validatorOrOpts?: ValidatorFn|ValidatorFn[]|AbstractControlOptions|null,
-      asyncValidator?: AsyncValidatorFn|AsyncValidatorFn[]|null): FormGroup<Nullable<T>>;
-  new(controls: {[key: string]: AbstractControl},
-      validatorOrOpts?: ValidatorFn|ValidatorFn[]|AbstractControlOptions|null,
-      asyncValidator?: AsyncValidatorFn|AsyncValidatorFn[]|null): FormGroup<any>;
-}
-
-export declare interface FormGroup<T extends object = any> extends AbstractControl<T> {
-  controls: {[key in keyof T]: AbstractControl<T[key]>};
-  addControl<K extends keyof T>(name: K, control: AbstractControl<T[K]>): void;
-  addControl<K extends string>(name: NotAKey<K, T>, control: AbstractControl<any>): void;
-}
-
 class FormGroupImpl<T extends object = any> extends AbstractControl<T> implements FormGroup<T> {
   /**
    * The current value of the control.
@@ -1511,7 +1522,7 @@ class FormGroupImpl<T extends object = any> extends AbstractControl<T> implement
   registerControl<K extends keyof T>(name: K, control: AbstractControl<T[K]>): AbstractControl {
     if (this.controls[name]) return this.controls[name];
     this.controls[name] = control;
-    control.setParent(this);
+    control.setParent(this as unknown as FormGroup<any>);
     control._registerOnCollectionChange(this._onCollectionChange);
     return control;
   }
@@ -1535,7 +1546,7 @@ class FormGroupImpl<T extends object = any> extends AbstractControl<T> implement
   addControl(name: string, control: AbstractControl, options: {emitEvent?: boolean}): void;
   addControl<K extends keyof T>(name: K, control: AbstractControl<T[K]>, options: {
     emitEvent?: boolean
-  } = {}): void {
+  } = {}) {
     this.registerControl(name, control);
     this.updateValueAndValidity({emitEvent: options.emitEvent});
     this._onCollectionChange();
@@ -1810,8 +1821,8 @@ class FormGroupImpl<T extends object = any> extends AbstractControl<T> implement
 
   /** @internal */
   _setUpControls(): void {
-    this._forEachChild((control: AbstractControl) => {
-      control.setParent(this);
+    this._forEachChild((control: AbstractControl<T>) => {
+      control.setParent(this as unknown as FormGroup<any>);
       control._registerOnCollectionChange(this._onCollectionChange);
     });
   }
@@ -1870,7 +1881,10 @@ class FormGroupImpl<T extends object = any> extends AbstractControl<T> implement
   }
 }
 
-export const FormGroup: FormGroupCtor = FormGroupImpl;
+/**
+ * @publicApi
+ */
+export const FormGroup: FormGroupCtor = FormGroupImpl as FormGroupCtor;
 
 /**
  * Tracks the value and validity state of an array of `FormControl`,
@@ -1944,14 +1958,19 @@ type Unwrap<T extends readonly AbstractControl<unknown>[]> =
     });  // yes, infer a tuple type
 
 
+/**
+ * @publicApi
+ */
 export declare interface FormArray<T = any> extends AbstractControl<T> {
   length: number;
   controls: AbstractControl<T>[];
   at(index: number): AbstractControl<T>;
   push(control: AbstractControl<T>): void;
   push(control: AbstractControl): void;
-  removeAt(index: number): void clear(): void;
+  removeAt(index: number): void;
+  clear(): void;
   insert(index: number, control: AbstractControl<T>): void;
+  insert(index: number, control: AbstractControl): void;
   getRawValue(): T[];
   setControl(index: number, control: AbstractControl<T>): void;
 }
@@ -1962,6 +1981,9 @@ interface FormArrayCtor {
       asyncValidator?: AsyncValidatorFn|AsyncValidatorFn[]|null): FormArray<Unwrap<T>>;
 }
 
+/**
+ * @publicApi
+ */
 export class FormArrayImpl<T extends unknown[] = any[]> extends AbstractControl<T> implements
     FormArray<T> {
   /**
@@ -2371,4 +2393,7 @@ export class FormArrayImpl<T extends unknown[] = any[]> extends AbstractControl<
   }
 }
 
+/**
+ * @publicApi
+ */
 export const FormArray: FormArrayCtor = FormArrayImpl as FormArrayCtor;

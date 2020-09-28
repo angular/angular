@@ -164,7 +164,7 @@ export class FormBuilder {
       validatorOrOpts?: ValidatorFn|ValidatorFn[]|AbstractControlOptions|null,
       asyncValidator?: AsyncValidatorFn|AsyncValidatorFn[]|null): FormArray {
     const controls = controlsConfig.map(c => this._createControl(c));
-    return new FormArray<Item>(controls, validatorOrOpts, asyncValidator);
+    return new FormArray(controls, validatorOrOpts, asyncValidator);
   }
 
   /** @internal */

@@ -64,7 +64,7 @@ import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util'
 
       const input = fixture.debugElement.query(By.css('input'));
       form.valueChanges.subscribe({
-        next: (value) => {
+        next: (value: any) => {
           throw 'Should not happen';
         }
       });
