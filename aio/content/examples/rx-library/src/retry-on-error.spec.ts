@@ -1,5 +1,5 @@
 import { of, throwError } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { mergeMap, tap } from 'rxjs/operators';
 import { docRegionDefault } from './retry-on-error';
 
 describe('retry-on-error', () => {
@@ -31,6 +31,30 @@ describe('retry-on-error', () => {
       ['Subscribed to AJAX'],
       ['Error occured.'],
       ['data: ', []],
+    ]);
+  });
+
+  it('should return the response if the request succeeds upon retrying', () => {
+    // Fail on the first two requests, but succeed from the 3rd onwards.
+    let failCount = 2;
+    const ajax = () => of(null).pipe(
+      tap(() => mockConsole.log('Subscribed to AJAX')),
+      // Fail on the first 2 requests, but succeed from the 3rd onwards.
+      mergeMap(() => {
+        if (failCount > 0) {
+          failCount--;
+          return throwError('Test error');
+        }
+        return of({ response: { foo: 'bar' } });
+      }),
+    );
+
+    docRegionDefault(mockConsole, ajax);
+    expect(mockConsole.log.calls.allArgs()).toEqual([
+      ['Subscribed to AJAX'],  // Initial request   | 1st attempt overall
+      ['Subscribed to AJAX'],  // 1st retry attempt | 2nd attempt overall
+      ['Subscribed to AJAX'],  // 2nd retry attempt | 3rd attempt overall
+      ['data: ', { foo: 'bar' }],
     ]);
   });
 
