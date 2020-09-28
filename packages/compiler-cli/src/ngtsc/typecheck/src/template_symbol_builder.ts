@@ -10,7 +10,6 @@ import {AST, ASTWithSource, BindingPipe, MethodCall, PropertyWrite, SafeMethodCa
 import * as ts from 'typescript';
 
 import {AbsoluteFsPath} from '../../file_system';
-import {isAssignment} from '../../util/src/typescript';
 import {DirectiveSymbol, DomBindingSymbol, ElementSymbol, ExpressionSymbol, InputBindingSymbol, OutputBindingSymbol, ReferenceSymbol, Symbol, SymbolKind, TemplateSymbol, TsNodeSymbolInfo, TypeCheckableDirectiveMeta, VariableSymbol} from '../api';
 
 import {ExpressionIdentifier, findAllMatchingNodes, findFirstMatchingNode, hasExpressionIdentifier} from './comments';
@@ -54,7 +53,7 @@ export class SymbolBuilder {
 
   private getSymbolOfAstTemplate(template: TmplAstTemplate): TemplateSymbol|null {
     const directives = this.getDirectivesOfNode(template);
-    return {kind: SymbolKind.Template, directives};
+    return {kind: SymbolKind.Template, directives, templateNode: template};
   }
 
   private getSymbolOfElement(element: TmplAstElement): ElementSymbol|null {
@@ -66,7 +65,7 @@ export class SymbolBuilder {
       return null;
     }
 
-    const symbolFromDeclaration = this.getSymbolOfVariableDeclaration(node);
+    const symbolFromDeclaration = this.getSymbolOfTsNode(node);
     if (symbolFromDeclaration === null || symbolFromDeclaration.tsSymbol === null) {
       return null;
     }
@@ -79,6 +78,7 @@ export class SymbolBuilder {
       ...symbolFromDeclaration,
       kind: SymbolKind.Element,
       directives,
+      templateNode: element,
     };
   }
 
@@ -89,21 +89,18 @@ export class SymbolBuilder {
     // - var _t1: TestDir /*T:D*/ = (null!);
     // - var _t1 /*T:D*/ = _ctor1({});
     const isDirectiveDeclaration = (node: ts.Node): node is ts.TypeNode|ts.Identifier =>
-        (ts.isTypeNode(node) || ts.isIdentifier(node)) &&
+        (ts.isTypeNode(node) || ts.isIdentifier(node)) && ts.isVariableDeclaration(node.parent) &&
         hasExpressionIdentifier(tcbSourceFile, node, ExpressionIdentifier.DIRECTIVE);
 
     const nodes = findAllMatchingNodes(
         this.typeCheckBlock, {withSpan: elementSourceSpan, filter: isDirectiveDeclaration});
     return nodes
         .map(node => {
-          const symbol = (ts.isIdentifier(node) && ts.isVariableDeclaration(node.parent)) ?
-              this.getSymbolOfVariableDeclaration(node.parent) :
-              this.getSymbolOfTsNode(node);
+          const symbol = this.getSymbolOfTsNode(node.parent);
           if (symbol === null || symbol.tsSymbol === null ||
               symbol.tsSymbol.declarations.length === 0) {
             return null;
           }
-
           const meta = this.getDirectiveMeta(element, symbol.tsSymbol.declarations[0]);
           if (meta === null) {
             return null;
@@ -243,7 +240,7 @@ export class SymbolBuilder {
       return null;
     }
 
-    const symbol = this.getSymbolOfVariableDeclaration(declaration);
+    const symbol = this.getSymbolOfTsNode(declaration);
     if (symbol === null || symbol.tsSymbol === null) {
       return null;
     }
@@ -261,11 +258,11 @@ export class SymbolBuilder {
   private getSymbolOfVariable(variable: TmplAstVariable): VariableSymbol|null {
     const node = findFirstMatchingNode(
         this.typeCheckBlock, {withSpan: variable.sourceSpan, filter: ts.isVariableDeclaration});
-    if (node === null) {
+    if (node === null || node.initializer === undefined) {
       return null;
     }
 
-    const expressionSymbol = this.getSymbolOfVariableDeclaration(node);
+    const expressionSymbol = this.getSymbolOfTsNode(node.initializer);
     if (expressionSymbol === null) {
       return null;
     }
@@ -282,8 +279,15 @@ export class SymbolBuilder {
       return null;
     }
 
-    // TODO(atscott): Shim location will need to be adjusted
-    const symbol = this.getSymbolOfTsNode(node.name);
+    // Get the original declaration for the references variable, with the exception of template refs
+    // which are of the form var _t3 = (_t2 as any as i2.TemplateRef<any>)
+    const originalDeclaration = ts.isParenthesizedExpression(node.initializer) ?
+        this.typeChecker.getSymbolAtLocation(node.name) :
+        this.typeChecker.getSymbolAtLocation(node.initializer);
+    if (originalDeclaration === undefined || originalDeclaration.valueDeclaration === undefined) {
+      return null;
+    }
+    const symbol = this.getSymbolOfTsNode(originalDeclaration.valueDeclaration);
     if (symbol === null || symbol.tsSymbol === null) {
       return null;
     }
@@ -394,26 +398,6 @@ export class SymbolBuilder {
       tsType: type,
       shimLocation: {shimPath: this.shimPath, positionInShimFile},
     };
-  }
-
-  private getSymbolOfVariableDeclaration(declaration: ts.VariableDeclaration): TsNodeSymbolInfo
-      |null {
-    // Instead of returning the Symbol for the temporary variable, we want to get the `ts.Symbol`
-    // for:
-    // - The type reference for `var _t2: MyDir = xyz` (prioritize/trust the declared type)
-    // - The initializer for `var _t2 = _t1.index`.
-    if (declaration.type && ts.isTypeReferenceNode(declaration.type)) {
-      return this.getSymbolOfTsNode(declaration.type.typeName);
-    }
-    if (declaration.initializer === undefined) {
-      return null;
-    }
-
-    const symbol = this.getSymbolOfTsNode(declaration.initializer);
-    if (symbol === null) {
-      return null;
-    }
-    return symbol;
   }
 
   private getShimPositionForNode(node: ts.Node): number {
