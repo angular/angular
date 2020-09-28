@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, forwardRef, Input, OnChanges, SimpleChanges, StaticProvider} from '@angular/core';
+import {Directive, forwardRef, Input, OnChanges, Provider, SimpleChanges, StaticProvider} from '@angular/core';
 import {Observable} from 'rxjs';
 
 import {AbstractControl} from '../model';
@@ -207,16 +207,17 @@ export const MIN_VALIDATOR: Provider = {
  */
 @Directive({
   selector:
-      '[formControlName],input[type=number][min][formControl],input[type=number][min][ngModel]',
+      'input[type=number][min][formControlName],input[type=number][min][formControl],input[type=number][min][ngModel]',
   providers: [MIN_VALIDATOR],
   host: {'[attr.min]': 'min ? min : null'}
 })
 export class MinValidator implements Validator, OnChanges {
-  private _validator: ValidatorFn;
-  private _onChange: () => void;
+  private _validator!: ValidatorFn;
+  private _onChange!: () => void;
 
-  @Input() min: string;
+  @Input() min!: string;
 
+  /** @nodoc */
   ngOnChanges(changes: SimpleChanges): void {
     if ('min' in changes) {
       this._createValidator();
@@ -224,10 +225,12 @@ export class MinValidator implements Validator, OnChanges {
     }
   }
 
+  /** @nodoc */
   validate(c: AbstractControl): ValidationErrors|null {
     return this._validator(c);
   }
 
+  /** @nodoc */
   registerOnValidatorChange(fn: () => void): void {
     this._onChange = fn;
   }
@@ -252,16 +255,17 @@ export const MAX_VALIDATOR: Provider = {
  */
 @Directive({
   selector:
-      '[formControlName],input[type=number][max][formControl],input[type=number][max][ngModel]',
+      'input[type=number][max][formControlName],input[type=number][max][formControl],input[type=number][max][ngModel]',
   providers: [MAX_VALIDATOR],
   host: {'[attr.max]': 'max ? max : null'}
 })
 export class MaxValidator implements Validator, OnChanges {
-  private _validator: ValidatorFn;
-  private _onChange: () => void;
+  private _validator!: ValidatorFn;
+  private _onChange!: () => void;
 
-  @Input() max: string;
+  @Input() max!: string;
 
+  /** @nodoc */
   ngOnChanges(changes: SimpleChanges): void {
     if ('max' in changes) {
       this._createValidator();
@@ -269,10 +273,12 @@ export class MaxValidator implements Validator, OnChanges {
     }
   }
 
+  /** @nodoc */
   validate(c: AbstractControl): ValidationErrors|null {
     return this._validator(c);
   }
 
+  /** @nodoc */
   registerOnValidatorChange(fn: () => void): void {
     this._onChange = fn;
   }
