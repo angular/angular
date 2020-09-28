@@ -7,6 +7,7 @@ ts_library(
     deps = [
         "//packages/compiler",
         "//packages/language-service/ivy",
+        "//packages/language-service/test:test_utils_lib",
         "@npm//typescript",
     ],
 )

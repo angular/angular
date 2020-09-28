@@ -13,10 +13,11 @@ import * as ng from './types';
 import {inSpan} from './utils';
 
 // Reverse mappings of enum would generate strings
-const SYMBOL_SPACE = ts.SymbolDisplayPartKind[ts.SymbolDisplayPartKind.space];
-const SYMBOL_PUNC = ts.SymbolDisplayPartKind[ts.SymbolDisplayPartKind.punctuation];
-const SYMBOL_TEXT = ts.SymbolDisplayPartKind[ts.SymbolDisplayPartKind.text];
-const SYMBOL_INTERFACE = ts.SymbolDisplayPartKind[ts.SymbolDisplayPartKind.interfaceName];
+export const SYMBOL_SPACE = ts.SymbolDisplayPartKind[ts.SymbolDisplayPartKind.space];
+export const SYMBOL_PUNC = ts.SymbolDisplayPartKind[ts.SymbolDisplayPartKind.punctuation];
+export const SYMBOL_TEXT = ts.SymbolDisplayPartKind[ts.SymbolDisplayPartKind.text];
+export const SYMBOL_INTERFACE = ts.SymbolDisplayPartKind[ts.SymbolDisplayPartKind.interfaceName];
+export const ALIAS_NAME = ts.SymbolDisplayPartKind[ts.SymbolDisplayPartKind.aliasName];
 
 /**
  * Traverse the template AST and look for the symbol located at `position`, then
@@ -80,7 +81,7 @@ export function getTsHover(
  * @param type user-friendly name of the type
  * @param documentation docstring or comment
  */
-function createQuickInfo(
+export function createQuickInfo(
     name: string, kind: string, textSpan: ts.TextSpan, containerName?: string, type?: string,
     documentation?: ts.SymbolDisplayPart[]): ts.QuickInfo {
   const containerDisplayParts = containerName ?

@@ -24,8 +24,13 @@ export function create(info: ts.server.PluginCreateInfo): ts.LanguageService {
     return diagnostics;
   }
 
+  function getQuickInfoAtPosition(fileName: string, position: number): ts.QuickInfo|undefined {
+    return ngLS.getQuickInfoAtPosition(fileName, position);
+  }
+
   return {
     ...tsLS,
     getSemanticDiagnostics,
+    getQuickInfoAtPosition,
   };
 }

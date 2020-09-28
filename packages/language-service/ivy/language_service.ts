@@ -14,6 +14,7 @@ import {PatchedProgramIncrementalBuildStrategy} from '@angular/compiler-cli/src/
 import {isShim} from '@angular/compiler-cli/src/ngtsc/shims';
 import {TypeCheckShimGenerator} from '@angular/compiler-cli/src/ngtsc/typecheck';
 import {OptimizeFor, TypeCheckingProgramStrategy} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
+import {QuickInfoBuilder} from '@angular/language-service/ivy/quick_info';
 import * as ts from 'typescript/lib/tsserverlibrary';
 
 export class LanguageService {
@@ -45,17 +46,19 @@ export class LanguageService {
     throw new Error('Ivy LS currently does not support external template');
   }
 
+  getQuickInfoAtPosition(fileName: string, position: number): ts.QuickInfo|undefined {
+    const program = this.strategy.getProgram();
+    const compiler = this.createCompiler(program);
+    const templateTypeChecker = compiler.getTemplateTypeChecker();
+    return new QuickInfoBuilder(program, templateTypeChecker, this.tsLS)
+        .getQuickInfoAtPosition(fileName, position);
+  }
+
   private createCompiler(program: ts.Program): NgCompiler {
     return new NgCompiler(
-        this.adapter,
-        this.options,
-        program,
-        this.strategy,
+        this.adapter, this.options, program, this.strategy,
         new PatchedProgramIncrementalBuildStrategy(),
-        /** enableTemplateTypeChecker */ true,
-        this.lastKnownProgram,
-        /** perfRecorder (use default) */ undefined,
-    );
+        /** enableTemplateTypeChecker */ true, this.lastKnownProgram);
   }
 
   private watchConfigFile(project: ts.server.Project) {

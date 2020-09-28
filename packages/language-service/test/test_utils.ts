@@ -474,3 +474,7 @@ export function findDirectiveMetadataByName(
     }
   }
 }
+
+export function toText(displayParts?: ts.SymbolDisplayPart[]): string {
+  return (displayParts || []).map(p => p.text).join('');
+}

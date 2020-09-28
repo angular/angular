@@ -11,7 +11,7 @@ import * as ts from 'typescript';
 import {createLanguageService} from '../src/language_service';
 import {TypeScriptServiceHost} from '../src/typescript_host';
 
-import {MockTypescriptHost} from './test_utils';
+import {MockTypescriptHost, toText} from './test_utils';
 
 const TEST_TEMPLATE = '/app/test.ng';
 const PARSING_CASES = '/app/parsing-cases.ts';
@@ -351,7 +351,3 @@ describe('hover', () => {
     });
   });
 });
-
-function toText(displayParts?: ts.SymbolDisplayPart[]): string {
-  return (displayParts || []).map(p => p.text).join('');
-}
