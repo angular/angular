@@ -7,18 +7,18 @@ describe('retry-on-error', () => {
   beforeEach(() => mockConsole = { log: jasmine.createSpy('log') });
 
   it('should return the response object', () => {
-    const ajax = jasmine.createSpy('ajax').and.returnValue(of({ response: { foo: 'bar' } }));
+    const ajax = () => of({ response: { foo: 'bar' } });
 
     docRegionDefault(mockConsole, ajax);
     expect(mockConsole.log.calls.allArgs()).toEqual([
-      ['data: ', { foo: 'bar' }]
+      ['data: ', { foo: 'bar' }],
     ]);
   });
 
   it('should return an empty array after 3 retries + 1 initial request', () => {
-    const ajax = jasmine.createSpy('ajax').and.callFake((url: string) => {
-      return of({}).pipe(tap(() => mockConsole.log('Subscribed to AJAX')));
-    });
+    const ajax = () => {
+      return of({ noresponse: true }).pipe(tap(() => mockConsole.log('Subscribed to AJAX')));
+    };
 
     docRegionDefault(mockConsole, ajax);
     expect(mockConsole.log.calls.allArgs()).toEqual([
@@ -30,18 +30,16 @@ describe('retry-on-error', () => {
       ['Error occured.'],
       ['Subscribed to AJAX'],
       ['Error occured.'],
-      ['data: ', []]
+      ['data: ', []],
     ]);
   });
 
   it('should return an empty array when the ajax observable throws an error', () => {
-    const ajax = jasmine.createSpy('ajax').and.callFake((url: string) => {
-      return throwError('Test Error');
-    });
+    const ajax = () => throwError('Test Error');
 
     docRegionDefault(mockConsole, ajax);
     expect(mockConsole.log.calls.allArgs()).toEqual([
-      ['data: ', []]
+      ['data: ', []],
     ]);
   });
 });
