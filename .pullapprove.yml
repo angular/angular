@@ -284,7 +284,7 @@ groups:
       users:
         - alxhub
         - crisbeto
-        - devversion
+        # OOO as of 2020-09-28 - devversion
 
 
   # =========================================================
@@ -419,7 +419,7 @@ groups:
         - atscott
         - ~kara  # do not request reviews from Kara, but allow her to approve PRs
         - mhevery
-        - pkozlowski-opensource
+        # OOO as of 2020-09-28 - pkozlowski-opensource
 
 
   # =========================================================
@@ -662,7 +662,7 @@ groups:
       users:
         - AndrewKushnir
         - IgorMinar
-        - pkozlowski-opensource
+        # OOO as of 2020-09-28 - pkozlowski-opensource
 
 
   # =========================================================
@@ -679,7 +679,7 @@ groups:
     reviewers:
       users:
         - IgorMinar
-        - pkozlowski-opensource
+        # OOO as of 2020-09-28 - pkozlowski-opensource
 
 
   # =========================================================
@@ -697,7 +697,7 @@ groups:
       users:
         - IgorMinar
         - jelbourn
-        - pkozlowski-opensource
+        # OOO as of 2020-09-28 - pkozlowski-opensource
 
 
   # =========================================================
@@ -723,7 +723,7 @@ groups:
         - IgorMinar
         - mhevery
         - jelbourn
-        - pkozlowski-opensource
+        # OOO as of 2020-09-28 - pkozlowski-opensource
     reviews:
       request: -1   # request reviews from everyone
       required: 2   # require at least 2 approvals
@@ -1150,7 +1150,7 @@ groups:
           ])
     reviewers:
       users:
-        - devversion
+        # OOO as of 2020-09-28 - devversion
         - filipesilva
         - gkalpak
         - IgorMinar
@@ -1184,7 +1184,7 @@ groups:
         - atscott
         - jelbourn
         - petebacondarwin
-        - pkozlowski-opensource
+        # OOO as of 2020-09-28 - pkozlowski-opensource
     reviews:
       request: 4 # Request reviews from four people
       required: 3 # Require that three people approve
@@ -1212,7 +1212,7 @@ groups:
         - atscott
         - jelbourn
         - petebacondarwin
-        - pkozlowski-opensource
+        # OOO as of 2020-09-28 - pkozlowski-opensource
     reviews:
       request: 4 # Request reviews from four people
       required: 2 # Require that two people approve
@@ -1240,7 +1240,7 @@ groups:
         - atscott
         - jelbourn
         - petebacondarwin
-        - pkozlowski-opensource
+        # OOO as of 2020-09-28 - pkozlowski-opensource
 
 
 ####################################################################################
