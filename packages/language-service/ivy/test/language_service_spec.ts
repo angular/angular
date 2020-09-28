@@ -17,7 +17,7 @@ describe('parseNgCompilerOptions', () => {
     const options = parseNgCompilerOptions(project);
     expect(options).toEqual(jasmine.objectContaining({
       enableIvy: true,  // default for ivy is true
-      fullTemplateTypeCheck: true,
+      strictTemplates: true,
       strictInjectionParameters: true,
     }));
   });

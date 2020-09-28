@@ -16,6 +16,8 @@ import {TypeCheckShimGenerator} from '@angular/compiler-cli/src/ngtsc/typecheck'
 import {OptimizeFor, TypeCheckingProgramStrategy} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
 import * as ts from 'typescript/lib/tsserverlibrary';
 
+import {QuickInfoBuilder} from './quick_info';
+
 export class LanguageService {
   private options: CompilerOptions;
   private lastKnownProgram: ts.Program|null = null;
@@ -43,6 +45,12 @@ export class LanguageService {
       return diagnostics;
     }
     throw new Error('Ivy LS currently does not support external template');
+  }
+
+  getQuickInfoAtPosition(fileName: string, position: number): ts.QuickInfo|undefined {
+    const program = this.strategy.getProgram();
+    const compiler = this.createCompiler(program);
+    return new QuickInfoBuilder(this.tsLS, compiler).get(fileName, position);
   }
 
   private createCompiler(program: ts.Program): NgCompiler {
