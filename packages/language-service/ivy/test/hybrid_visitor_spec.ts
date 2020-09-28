@@ -10,7 +10,8 @@ import {ParseError, parseTemplate} from '@angular/compiler';
 import * as e from '@angular/compiler/src/expression_parser/ast';  // e for expression AST
 import * as t from '@angular/compiler/src/render3/r3_ast';         // t for template AST
 
-import {findNodeAtPosition, isExpressionNode, isTemplateNode} from '../hybrid_visitor';
+import {findNodeAtPosition} from '../hybrid_visitor';
+import {isExpressionNode, isTemplateNode} from '../utils';
 
 interface ParseResult {
   nodes: t.Node[];

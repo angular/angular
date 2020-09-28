@@ -15,6 +15,8 @@ ts_library(
         "//packages/compiler-cli/src/ngtsc/shims",
         "//packages/compiler-cli/src/ngtsc/typecheck",
         "//packages/compiler-cli/src/ngtsc/typecheck/api",
+        # TODO(atscott): Pull functions/variables common to VE and Ivy into a new package
+        "//packages/language-service",
         "@npm//typescript",
     ],
 )

@@ -10,6 +10,8 @@ import {AbsoluteSourceSpan, ParseSourceSpan} from '@angular/compiler';
 import * as e from '@angular/compiler/src/expression_parser/ast';  // e for expression AST
 import * as t from '@angular/compiler/src/render3/r3_ast';         // t for template AST
 
+import {isTemplateNode, isTemplateNodeWithKeyAndValue} from './utils';
+
 /**
  * Return the template AST node or expression AST node that most accurately
  * represents the node at the specified cursor `position`.
@@ -163,24 +165,6 @@ class ExpressionVisitor extends e.RecursiveAstVisitor {
       node.visit(this, path);
     }
   }
-}
-
-export function isTemplateNode(node: t.Node|e.AST): node is t.Node {
-  // Template node implements the Node interface so we cannot use instanceof.
-  return node.sourceSpan instanceof ParseSourceSpan;
-}
-
-interface NodeWithKeyAndValue extends t.Node {
-  keySpan: ParseSourceSpan;
-  valueSpan?: ParseSourceSpan;
-}
-
-export function isTemplateNodeWithKeyAndValue(node: t.Node|e.AST): node is NodeWithKeyAndValue {
-  return isTemplateNode(node) && node.hasOwnProperty('keySpan');
-}
-
-export function isExpressionNode(node: t.Node|e.AST): node is e.AST {
-  return node instanceof e.AST;
 }
 
 function getSpanIncludingEndTag(ast: t.Node) {
