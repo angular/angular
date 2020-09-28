@@ -204,6 +204,8 @@ export interface ElementSymbol {
 
   /** The location in the shim file for the variable that holds the type of the element. */
   shimLocation: ShimLocation;
+
+  templateNode: TmplAstElement;
 }
 
 export interface TemplateSymbol {
@@ -211,6 +213,8 @@ export interface TemplateSymbol {
 
   /** A list of directives applied to the element. */
   directives: DirectiveSymbol[];
+
+  templateNode: TmplAstTemplate;
 }
 
 /**
