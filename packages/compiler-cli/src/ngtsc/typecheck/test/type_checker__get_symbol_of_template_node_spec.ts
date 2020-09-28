@@ -133,6 +133,7 @@ runInEachFileSystem(() => {
         it('should get a symbol for local ref which refers to a directive', () => {
           const symbol = templateTypeChecker.getSymbolOfNode(templateNode.references[1], cmp)!;
           assertReferenceSymbol(symbol);
+          expect(program.getTypeChecker().symbolToString(symbol.tsSymbol)).toEqual('TestDir');
           assertDirectiveReference(symbol);
         });
 
@@ -140,6 +141,7 @@ runInEachFileSystem(() => {
           const symbol = templateTypeChecker.getSymbolOfNode(
               (templateNode.children[0] as TmplAstTemplate).inputs[2].value, cmp)!;
           assertReferenceSymbol(symbol);
+          expect(program.getTypeChecker().symbolToString(symbol.tsSymbol)).toEqual('TestDir');
           assertDirectiveReference(symbol);
         });
 
@@ -737,6 +739,40 @@ runInEachFileSystem(() => {
     });
 
     describe('input bindings', () => {
+      it('can get a symbol for empty binding', () => {
+        const fileName = absoluteFrom('/main.ts');
+        const dirFile = absoluteFrom('/dir.ts');
+        const {program, templateTypeChecker} = setup([
+          {
+            fileName,
+            templates: {'Cmp': `<div dir [inputA]=""></div>`},
+            declarations: [{
+              name: 'TestDir',
+              selector: '[dir]',
+              file: dirFile,
+              type: 'directive',
+              inputs: {inputA: 'inputA'},
+            }]
+          },
+          {
+            fileName: dirFile,
+            source: `export class TestDir {inputA?: string; }`,
+            templates: {},
+          }
+        ]);
+        const sf = getSourceFileOrError(program, fileName);
+        const cmp = getClass(sf, 'Cmp');
+
+        const nodes = templateTypeChecker.getTemplate(cmp)!;
+
+        const inputAbinding = (nodes[0] as TmplAstElement).inputs[0];
+        const aSymbol = templateTypeChecker.getSymbolOfNode(inputAbinding, cmp)!;
+        assertInputBindingSymbol(aSymbol);
+        expect((aSymbol.bindings[0].tsSymbol!.declarations[0] as ts.PropertyDeclaration)
+                   .name.getText())
+            .toEqual('inputA');
+      });
+
       it('can retrieve a symbol for an input binding', () => {
         const fileName = absoluteFrom('/main.ts');
         const dirFile = absoluteFrom('/dir.ts');
