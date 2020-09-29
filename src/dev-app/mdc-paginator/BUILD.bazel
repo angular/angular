@@ -1,0 +1,26 @@
+load("//tools:defaults.bzl", "ng_module", "sass_binary")
+
+package(default_visibility = ["//visibility:public"])
+
+ng_module(
+    name = "mdc-paginator",
+    srcs = glob(["**/*.ts"]),
+    assets = [
+        "mdc-paginator-demo.html",
+        ":mdc_paginator_demo_scss",
+    ],
+    deps = [
+        "//src/material-experimental/mdc-card",
+        "//src/material-experimental/mdc-form-field",
+        "//src/material-experimental/mdc-input",
+        "//src/material-experimental/mdc-paginator",
+        "//src/material-experimental/mdc-slide-toggle",
+        "@npm//@angular/forms",
+        "@npm//@angular/router",
+    ],
+)
+
+sass_binary(
+    name = "mdc_paginator_demo_scss",
+    src = "mdc-paginator-demo.scss",
+)

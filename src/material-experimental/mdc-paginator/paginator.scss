@@ -1,0 +1,83 @@
+@import '../mdc-form-field/form-field-theme';
+
+$mat-mdc-paginator-padding: 0 8px;
+$mat-mdc-paginator-page-size-margin-right: 8px;
+
+$mat-mdc-paginator-items-per-page-label-margin: 0 4px;
+$mat-mdc-paginator-selector-margin: 0 4px;
+$mat-mdc-paginator-selector-trigger-width: 84px;
+
+$mat-mdc-paginator-range-label-margin: 0 32px 0 24px;
+$mat-mdc-paginator-button-icon-size: 28px;
+
+.mat-mdc-paginator {
+  display: block;
+
+  // We need the form field to be as narrow as possible in order to fit
+  // into the paginator so we always use the densest layout available.
+  @include mat-mdc-form-field-density(minimum);
+
+  // This element reserves space for hints and error messages.
+  // Hide it since we know that we won't need it.
+  .mat-mdc-form-field-subscript-wrapper {
+    display: none;
+  }
+
+  .mat-mdc-select {
+    // The smaller font size inherited from the paginator throws off the centering of the select
+    // inside the form field. This `line-height` helps to center it relative to the other text.
+    line-height: 1.5;
+  }
+}
+
+// Note: this wrapper element is only used to get the flexbox vertical centering to work
+// with the `min-height` on IE11. It can be removed if we drop support for IE.
+.mat-mdc-paginator-outer-container {
+  display: flex;
+}
+
+.mat-mdc-paginator-container {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: $mat-mdc-paginator-padding;
+  flex-wrap: wrap-reverse;
+  width: 100%;
+}
+
+.mat-mdc-paginator-page-size {
+  display: flex;
+  align-items: baseline;
+  margin-right: $mat-mdc-paginator-page-size-margin-right;
+
+  [dir='rtl'] & {
+    margin-right: 0;
+    margin-left: $mat-mdc-paginator-page-size-margin-right;
+  }
+}
+
+.mat-mdc-paginator-page-size-label {
+  margin: $mat-mdc-paginator-items-per-page-label-margin;
+}
+
+.mat-mdc-paginator-page-size-select {
+  margin: $mat-mdc-paginator-selector-margin;
+  width: $mat-mdc-paginator-selector-trigger-width;
+}
+
+.mat-mdc-paginator-range-label {
+  margin: $mat-mdc-paginator-range-label-margin;
+}
+
+.mat-mdc-paginator-range-actions {
+  display: flex;
+  align-items: center;
+}
+
+.mat-mdc-paginator-icon {
+  width: $mat-mdc-paginator-button-icon-size;
+
+  [dir='rtl'] & {
+    transform: rotate(180deg);
+  }
+}

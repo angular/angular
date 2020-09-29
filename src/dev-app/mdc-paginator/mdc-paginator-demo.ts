@@ -7,14 +7,14 @@
  */
 
 import {Component} from '@angular/core';
-import {PageEvent} from '@angular/material/paginator';
+import {PageEvent} from '@angular/material-experimental/mdc-paginator';
 
 @Component({
-  selector: 'paginator-demo',
-  templateUrl: 'paginator-demo.html',
-  styleUrls: ['paginator-demo.css'],
+  selector: 'mdc-paginator-demo',
+  templateUrl: 'mdc-paginator-demo.html',
+  styleUrls: ['mdc-paginator-demo.css'],
 })
-export class PaginatorDemo {
+export class MdcPaginatorDemo {
   length = 50;
   pageSize = 10;
   pageIndex = 0;

@@ -1,0 +1,42 @@
+<mat-card class="demo-section">
+  <h2>No inputs</h2>
+  <mat-paginator></mat-paginator>
+</mat-card>
+
+<mat-card class="demo-section">
+  <div class="demo-options">
+    <mat-form-field>
+      <mat-label>Length</mat-label>
+      <input matInput type="number" [(ngModel)]="length">
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Page Size</mat-label>
+      <input matInput type="number" [(ngModel)]="pageSize">
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Page Index</mat-label>
+      <input matInput type="number" [(ngModel)]="pageIndex">
+    </mat-form-field>
+
+    <mat-slide-toggle [(ngModel)]="hidePageSize">Hide page size</mat-slide-toggle>
+    <mat-slide-toggle [(ngModel)]="showPageSizeOptions">Show multiple page size options</mat-slide-toggle>
+    <mat-slide-toggle [(ngModel)]="showFirstLastButtons">Show first/last buttons</mat-slide-toggle>
+    <mat-slide-toggle [(ngModel)]="disabled">Disabled</mat-slide-toggle>
+  </div>
+
+  <mat-paginator #paginator
+                 (page)="handlePageEvent($event)"
+                 [length]="length"
+                 [pageSize]="pageSize"
+                 [disabled]="disabled"
+                 [showFirstLastButtons]="showFirstLastButtons"
+                 [pageSizeOptions]="showPageSizeOptions ? pageSizeOptions : []"
+                 [hidePageSize]="hidePageSize"
+                 [pageIndex]="pageIndex">
+  </mat-paginator>
+
+  <div> Output event: {{pageEvent | json}} </div>
+  <div> getNumberOfPages: {{paginator.getNumberOfPages()}} </div>
+</mat-card>

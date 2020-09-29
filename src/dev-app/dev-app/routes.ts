@@ -90,6 +90,10 @@ export const DEV_APP_ROUTES: Routes = [
   {path: 'mdc-list', loadChildren: 'mdc-list/mdc-list-demo-module#MdcListDemoModule'},
   {path: 'mdc-menu', loadChildren: 'mdc-menu/mdc-menu-demo-module#MdcMenuDemoModule'},
   {
+    path: 'mdc-paginator',
+    loadChildren: 'mdc-paginator/mdc-paginator-demo-module#MdcPaginatorDemoModule'
+  },
+  {
     path: 'mdc-progress-spinner',
     loadChildren:
       'mdc-progress-spinner/mdc-progress-spinner-demo-module#MdcProgressSpinnerDemoModule'

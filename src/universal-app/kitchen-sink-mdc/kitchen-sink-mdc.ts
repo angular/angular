@@ -19,6 +19,7 @@ import {MatIconModule} from '@angular/material/icon';
 import {MatSnackBarModule, MatSnackBar} from '@angular/material-experimental/mdc-snack-bar';
 import {MatProgressSpinnerModule} from '@angular/material-experimental/mdc-progress-spinner';
 import {MatSelectModule} from '@angular/material-experimental/mdc-select';
+import {MatPaginatorModule} from '@angular/material-experimental/mdc-paginator';
 
 @Component({
   template: `<button>Do the thing</button>`
@@ -57,6 +58,7 @@ export class KitchenSinkMdc {
     MatSnackBarModule,
     MatProgressSpinnerModule,
     MatSelectModule,
+    MatPaginatorModule,
   ],
   declarations: [KitchenSinkMdc, TestEntryComponent],
   exports: [KitchenSinkMdc, TestEntryComponent],

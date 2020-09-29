@@ -109,6 +109,7 @@
 /src/material-experimental/mdc-list/**             @mmalerba @devversion
 /src/material-experimental/mdc-menu/**             @crisbeto
 /src/material-experimental/mdc-select/**           @crisbeto
+/src/material-experimental/mdc-paginator/**        @crisbeto
 /src/material-experimental/mdc-progress-spinner/** @andrewseguin
 /src/material-experimental/mdc-progress-bar/**     @andrewseguin
 /src/material-experimental/mdc-radio/**            @mmalerba
@@ -183,6 +184,7 @@
 /src/dev-app/mdc-input/**                          @devversion @mmalerba
 /src/dev-app/mdc-list/**                           @mmalerba
 /src/dev-app/mdc-menu/**                           @crisbeto
+/src/dev-app/mdc-paginator/**                      @crisbeto
 /src/dev-app/mdc-progress-bar/**                   @crisbeto
 /src/dev-app/mdc-progress-spinner/**               @annieyw @mmalerba
 /src/dev-app/mdc-radio/**                          @mmalerba

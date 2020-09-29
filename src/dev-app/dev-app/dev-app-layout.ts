@@ -91,6 +91,7 @@ export class DevAppLayout {
     {name: 'MDC List', route: '/mdc-list'},
     {name: 'MDC Menu', route: '/mdc-menu'},
     {name: 'MDC Radio', route: '/mdc-radio'},
+    {name: 'MDC Paginator', route: '/mdc-paginator'},
     {name: 'MDC Progress Bar', route: '/mdc-progress-bar'},
     {name: 'MDC Progress Spinner', route: '/mdc-progress-spinner'},
     {name: 'MDC Tabs', route: '/mdc-tabs'},

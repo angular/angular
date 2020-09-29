@@ -56,6 +56,7 @@ ng_module(
         "//src/dev-app/mdc-input",
         "//src/dev-app/mdc-list",
         "//src/dev-app/mdc-menu",
+        "//src/dev-app/mdc-paginator",
         "//src/dev-app/mdc-progress-bar",
         "//src/dev-app/mdc-progress-spinner",
         "//src/dev-app/mdc-radio",

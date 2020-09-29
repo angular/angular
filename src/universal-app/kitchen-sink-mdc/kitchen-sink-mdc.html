@@ -132,6 +132,12 @@
  <a mat-tab-link href="https://google.com" [active]="true">Also Google</a>
 </nav>
 
+<h2>MDC Paginator</h2>
+
+<mat-paginator [length]="100"
+               [pageSizeOptions]="[5, 10, 25, 100]">
+</mat-paginator>
+
 <h2>MDC Table</h2>
 <table mat-table [dataSource]="[1, 2, 3]">
   <ng-container matColumnDef="first-column">
