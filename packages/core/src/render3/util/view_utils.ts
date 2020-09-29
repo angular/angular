@@ -176,8 +176,13 @@ export function viewAttachedToContainer(view: LView): boolean {
 }
 
 /** Returns a constant from `TConstants` instance. */
+export function getConstant<T>(consts: TConstants|null, index: null|undefined): null;
+export function getConstant<T>(consts: TConstants, index: number): T|null;
+export function getConstant<T>(consts: TConstants|null, index: number|null|undefined): T|null;
 export function getConstant<T>(consts: TConstants|null, index: number|null|undefined): T|null {
-  return consts === null || index == null ? null : consts[index] as unknown as T;
+  if (index === null || index === undefined) return null;
+  ngDevMode && assertIndexInRange(consts!, index);
+  return consts![index] as unknown as T;
 }
 
 /**

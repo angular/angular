@@ -205,14 +205,16 @@ describe('lView_debug', () => {
         });
       }
 
-      const fixture = new TemplateFixture(
-          () => {
-            ɵɵelementStart(0, 'my-comp', 0);
-            ɵɵelement(1, 'my-child');
-            ɵɵelementEnd();
-          },
-          () => null, 2, 0, [MyComponent, MyDirective, MyChild], null, null, undefined,
-          [['my-dir', '']]);
+      const fixture = new TemplateFixture({
+        create: () => {
+          ɵɵelementStart(0, 'my-comp', 0);
+          ɵɵelement(1, 'my-child');
+          ɵɵelementEnd();
+        },
+        decls: 2,
+        directives: [MyComponent, MyDirective, MyChild],
+        consts: [['my-dir', '']]
+      });
       const lView = fixture.hostView;
       const lViewDebug = lView.debug!;
       const myCompNode = lViewDebug.nodes[0];
