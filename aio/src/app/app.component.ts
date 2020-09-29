@@ -147,7 +147,7 @@ export class AppComponent implements OnInit {
     // Compute the version picker list from the current version and the versions in the navigation map
     combineLatest([
       this.navigationService.versionInfo,
-      this.navigationService.navigationViews.pipe(map(views => views['docVersions'])),
+      this.navigationService.navigationViews.pipe(map(views => views.docVersions)),
     ]).subscribe(([versionInfo, versions]) => {
       // TODO(pbd): consider whether we can lookup the stable and next versions from the internet
       const computedVersions: NavigationNode[] = [
@@ -167,10 +167,10 @@ export class AppComponent implements OnInit {
     });
 
     this.navigationService.navigationViews.subscribe(views => {
-      this.footerNodes = views['Footer'] || [];
-      this.sideNavNodes = views['SideNav'] || [];
-      this.topMenuNodes = views['TopBar'] || [];
-      this.topMenuNarrowNodes = views['TopBarNarrow'] || this.topMenuNodes;
+      this.footerNodes = views.Footer || [];
+      this.sideNavNodes = views.SideNav || [];
+      this.topMenuNodes = views.TopBar || [];
+      this.topMenuNarrowNodes = views.TopBarNarrow || this.topMenuNodes;
     });
 
     this.navigationService.versionInfo.subscribe(vi => this.versionInfo = vi);
