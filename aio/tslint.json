@@ -68,7 +68,6 @@
       true,
       "as-needed"
     ],
-    "only-arrow-functions": false,
     "quotemark": [
       true,
       "single"
