@@ -223,7 +223,7 @@ runInEachFileSystem(() => {
     }());
     var SuperClass = (function() { function SuperClass() {} return SuperClass; }());
     var ChildClass = /** @class */ (function (_super) {
-      __extends(ChildClass, _super);
+      __extends(InnerChildClass, _super);
       function InnerChildClass() {}
       return InnerChildClass;
     }(SuperClass);
