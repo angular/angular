@@ -317,7 +317,7 @@ class TemplateParseVisitor implements html.Visitor {
         const absoluteOffset = (attr.valueSpan || attr.sourceSpan).start.offset;
         this._bindingParser.parseInlineTemplateBinding(
             templateKey!, templateValue!, attr.sourceSpan, absoluteOffset, templateMatchableAttrs,
-            templateElementOrDirectiveProps, parsedVariables);
+            templateElementOrDirectiveProps, parsedVariables, false /* isIvyAst */);
         templateElementVars.push(...parsedVariables.map(v => t.VariableAst.fromParsedVariable(v)));
       }
 

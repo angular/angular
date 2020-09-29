@@ -285,7 +285,7 @@ describe('R3 AST source spans', () => {
           '</div>'
         ],
         ['TextAttribute', 'ngFor', '<empty>'],
-        ['BoundAttribute', '*ngFor="let item of items"', 'of', 'items'],
+        ['BoundAttribute', 'of items', 'of', 'items'],
         ['Variable', 'let item ', 'item', '<empty>'],
         [
           'Element', '<div *ngFor="let item of items"></div>', '<div *ngFor="let item of items">',
@@ -303,8 +303,8 @@ describe('R3 AST source spans', () => {
         [
           'Template', '<div *ngFor="item of items"></div>', '<div *ngFor="item of items">', '</div>'
         ],
-        ['BoundAttribute', '*ngFor="item of items"', 'ngFor', 'item'],
-        ['BoundAttribute', '*ngFor="item of items"', 'of', 'items'],
+        ['BoundAttribute', 'ngFor="item ', 'ngFor', 'item'],
+        ['BoundAttribute', 'of items', 'of', 'items'],
         ['Element', '<div *ngFor="item of items"></div>', '<div *ngFor="item of items">', '</div>'],
       ]);
 
@@ -314,10 +314,8 @@ describe('R3 AST source spans', () => {
           '<div *ngFor="let item of items; trackBy: trackByFn">', '</div>'
         ],
         ['TextAttribute', 'ngFor', '<empty>'],
-        ['BoundAttribute', '*ngFor="let item of items; trackBy: trackByFn"', 'of', 'items'],
-        [
-          'BoundAttribute', '*ngFor="let item of items; trackBy: trackByFn"', 'trackBy', 'trackByFn'
-        ],
+        ['BoundAttribute', 'of items; ', 'of', 'items'],
+        ['BoundAttribute', 'trackBy: trackByFn', 'trackBy', 'trackByFn'],
         ['Variable', 'let item ', 'item', '<empty>'],
         [
           'Element', '<div *ngFor="let item of items; trackBy: trackByFn"></div>',
@@ -339,7 +337,7 @@ describe('R3 AST source spans', () => {
     it('is correct for variables via as ...', () => {
       expectFromHtml('<div *ngIf="expr as local"></div>').toEqual([
         ['Template', '<div *ngIf="expr as local"></div>', '<div *ngIf="expr as local">', '</div>'],
-        ['BoundAttribute', '*ngIf="expr as local"', 'ngIf', 'expr'],
+        ['BoundAttribute', 'ngIf="expr ', 'ngIf', 'expr'],
         ['Variable', 'ngIf="expr as local', 'local', 'ngIf'],
         ['Element', '<div *ngIf="expr as local"></div>', '<div *ngIf="expr as local">', '</div>'],
       ]);
