@@ -8,7 +8,8 @@
 
 import {Component} from '@angular/core';
 import {FormControl, Validators} from '@angular/forms';
-import {ErrorStateMatcher, ThemePalette, FloatLabelType} from '@angular/material/core';
+import {ErrorStateMatcher, ThemePalette} from '@angular/material/core';
+import {FloatLabelType} from '@angular/material/form-field';
 import {MatSelectChange} from '@angular/material/select';
 
 /** Error any time control is invalid */

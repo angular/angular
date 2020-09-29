@@ -54,18 +54,6 @@ function setClass(element: ElementRef<HTMLElement>, className: string, isAdd: bo
   isAdd ? classList.add(className) : classList.remove(className);
 }
 
-/**
- * Helper that takes a query list of lines and sets the correct class on the host.
- * @docs-private
- * @deprecated Use `setLines` instead.
- * @breaking-change 8.0.0
- */
-export class MatLineSetter {
-  constructor(lines: QueryList<MatLine>, element: ElementRef<HTMLElement>) {
-    setLines(lines, element);
-  }
-}
-
 @NgModule({
   imports: [MatCommonModule],
   exports: [MatLine, MatCommonModule],

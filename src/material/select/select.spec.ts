@@ -53,12 +53,14 @@ import {
 } from '@angular/forms';
 import {
   ErrorStateMatcher,
-  FloatLabelType,
-  MAT_LABEL_GLOBAL_OPTIONS,
   MatOption,
   MatOptionSelectionChange,
 } from '@angular/material/core';
-import {MatFormFieldModule} from '@angular/material/form-field';
+import {
+  FloatLabelType,
+  MatFormFieldModule,
+  MAT_FORM_FIELD_DEFAULT_OPTIONS,
+} from '@angular/material/form-field';
 import {By} from '@angular/platform-browser';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {LiveAnnouncer} from '@angular/cdk/a11y';
@@ -2347,7 +2349,10 @@ describe('MatSelect', () => {
         declarations: [
           FloatLabelSelect
         ],
-        providers: [{ provide: MAT_LABEL_GLOBAL_OPTIONS, useValue: { float: 'always' } }]
+        providers: [{
+          provide: MAT_FORM_FIELD_DEFAULT_OPTIONS,
+          useValue: {floatLabel: 'always'}
+        }]
       });
 
       fixture = TestBed.createComponent(FloatLabelSelect);

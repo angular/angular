@@ -30,8 +30,6 @@ import {
 } from '@angular/core';
 import {
   CanColor, CanColorCtor,
-  LabelOptions,
-  MAT_LABEL_GLOBAL_OPTIONS,
   mixinColor,
 } from '@angular/material/core';
 import {fromEvent, merge, Subject} from 'rxjs';
@@ -160,7 +158,6 @@ export const MAT_FORM_FIELD = new InjectionToken<MatFormField>('MatFormField');
 
 export class MatFormField extends _MatFormFieldMixinBase
     implements AfterContentInit, AfterContentChecked, AfterViewInit, OnDestroy, CanColor {
-  private _labelOptions: LabelOptions;
 
   /**
    * Whether the outline gap needs to be calculated
@@ -280,14 +277,19 @@ export class MatFormField extends _MatFormFieldMixinBase
 
   constructor(
       public _elementRef: ElementRef, private _changeDetectorRef: ChangeDetectorRef,
-      @Optional() @Inject(MAT_LABEL_GLOBAL_OPTIONS) labelOptions: LabelOptions,
+      /**
+       * @deprecated `_labelOptions` parameter no longer being used. To be removed.
+       * @breaking-change 12.0.0
+       */
+      @Inject(ElementRef)
+          // Use `ElementRef` here so Angular has something to inject.
+          _labelOptions: any,
       @Optional() private _dir: Directionality,
       @Optional() @Inject(MAT_FORM_FIELD_DEFAULT_OPTIONS) private _defaults:
           MatFormFieldDefaultOptions, private _platform: Platform, private _ngZone: NgZone,
       @Optional() @Inject(ANIMATION_MODULE_TYPE) _animationMode: string) {
     super(_elementRef);
 
-    this._labelOptions = labelOptions ? labelOptions : {};
     this.floatLabel = this._getDefaultFloatLabelState();
     this._animationsEnabled = _animationMode !== 'NoopAnimations';
 
@@ -492,7 +494,7 @@ export class MatFormField extends _MatFormFieldMixinBase
 
   /** Gets the default float label state. */
   private _getDefaultFloatLabelState(): FloatLabelType {
-    return (this._defaults && this._defaults.floatLabel) || this._labelOptions.float || 'auto';
+    return (this._defaults && this._defaults.floatLabel) || 'auto';
   }
 
   /**

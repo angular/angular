@@ -8,7 +8,8 @@
 
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {FormControl, Validators} from '@angular/forms';
-import {ErrorStateMatcher, FloatLabelType} from '@angular/material/core';
+import {ErrorStateMatcher} from '@angular/material/core';
+import {FloatLabelType} from '@angular/material/form-field';
 
 
 let max = 5;

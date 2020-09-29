@@ -28,7 +28,7 @@ import {
   ViewEncapsulation
 } from '@angular/core';
 import {NgControl} from '@angular/forms';
-import {LabelOptions, MAT_LABEL_GLOBAL_OPTIONS, ThemePalette} from '@angular/material/core';
+import {ThemePalette} from '@angular/material/core';
 import {
   getMatFormFieldDuplicatedHintError,
   getMatFormFieldMissingControlError,
@@ -66,6 +66,7 @@ export type MatFormFieldAppearance = 'fill' | 'outline';
 export interface MatFormFieldDefaultOptions {
   appearance?: MatFormFieldAppearance;
   hideRequiredMarker?: boolean;
+  floatLabel?: FloatLabelType;
 }
 
 /**
@@ -154,8 +155,7 @@ export class MatFormField implements AfterViewInit, OnDestroy, AfterContentCheck
   /** Whether the label should always float or float as the user types. */
   @Input()
   get floatLabel(): FloatLabelType {
-    return this._floatLabel || (this._labelOptions && this._labelOptions.float)
-        || DEFAULT_FLOAT_LABEL;
+    return this._floatLabel || this._defaults?.floatLabel || DEFAULT_FLOAT_LABEL;
   }
   set floatLabel(value: FloatLabelType) {
     if (value !== this._floatLabel) {
@@ -303,7 +303,6 @@ export class MatFormField implements AfterViewInit, OnDestroy, AfterContentCheck
               private _platform: Platform,
               @Optional() @Inject(MAT_FORM_FIELD_DEFAULT_OPTIONS)
               private _defaults?: MatFormFieldDefaultOptions,
-              @Optional() @Inject(MAT_LABEL_GLOBAL_OPTIONS) private _labelOptions?: LabelOptions,
               @Optional() @Inject(ANIMATION_MODULE_TYPE) public _animationMode?: string) {
     if (_defaults && _defaults.appearance) {
       this.appearance = _defaults.appearance;

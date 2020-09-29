@@ -30,7 +30,6 @@ import {
 } from '@angular/material-experimental/mdc-form-field';
 import {
   ErrorStateMatcher,
-  MAT_LABEL_GLOBAL_OPTIONS,
   ShowOnDirtyErrorStateMatcher,
   ThemePalette,
 } from '@angular/material/core';
@@ -51,7 +50,7 @@ describe('MatMdcInput without forms', () => {
 
   it('should default to global floating label type', fakeAsync(() => {
     let fixture = createComponent(MatInputWithLabel, [{
-      provide: MAT_LABEL_GLOBAL_OPTIONS, useValue: {float: 'always'}
+      provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: {floatLabel: 'always'}
     }]);
     fixture.detectChanges();
 

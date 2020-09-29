@@ -28,8 +28,6 @@ import {
 } from '@angular/forms';
 import {
   ErrorStateMatcher,
-  FloatLabelType,
-  MAT_LABEL_GLOBAL_OPTIONS,
   ShowOnDirtyErrorStateMatcher,
   ThemePalette,
 } from '@angular/material/core';
@@ -41,6 +39,7 @@ import {
   MatFormField,
   MatFormFieldAppearance,
   MatFormFieldModule,
+  FloatLabelType,
 } from '@angular/material/form-field';
 import {By} from '@angular/platform-browser';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
@@ -60,18 +59,6 @@ describe('MatInput without forms', () => {
         .componentInstance as MatFormField;
     expect(formField.floatLabel).toBe('auto',
         'Expected MatInput to set floatingLabel to auto by default.');
-  }));
-
-  it('should default to floating label type from deprecated global label options', fakeAsync(() => {
-    let fixture = createComponent(MatInputWithId, [{
-      provide: MAT_LABEL_GLOBAL_OPTIONS, useValue: {float: 'always'}
-    }]);
-    fixture.detectChanges();
-
-    let formField = fixture.debugElement.query(By.directive(MatFormField))!
-        .componentInstance as MatFormField;
-    expect(formField.floatLabel).toBe('always',
-      'Expected MatInput to set floatingLabel to always from global option.');
   }));
 
   it('should default to floating label type provided by global default options', fakeAsync(() => {

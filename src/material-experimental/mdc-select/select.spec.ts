@@ -50,16 +50,17 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import {
-  ErrorStateMatcher,
-  MAT_LABEL_GLOBAL_OPTIONS,
-} from '@angular/material/core';
+import {ErrorStateMatcher} from '@angular/material/core';
 import {
   MatOption,
   MatOptionSelectionChange,
 } from '@angular/material-experimental/mdc-core';
 import {MAT_SELECT_CONFIG, MatSelectConfig} from '@angular/material/select';
-import {FloatLabelType, MatFormFieldModule} from '@angular/material-experimental/mdc-form-field';
+import {
+  FloatLabelType,
+  MatFormFieldModule,
+  MAT_FORM_FIELD_DEFAULT_OPTIONS,
+} from '@angular/material-experimental/mdc-form-field';
 import {By} from '@angular/platform-browser';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {LiveAnnouncer} from '@angular/cdk/a11y';
@@ -2312,8 +2313,7 @@ describe('MDC-based MatSelect', () => {
         declarations: [
           FloatLabelSelect
         ],
-        // TODO(crisbeto): switch this to use `MAT_FORM_FIELD_DEFAULT_OPTIONS` once #20479 goes in.
-        providers: [{ provide: MAT_LABEL_GLOBAL_OPTIONS, useValue: { float: 'always' } }]
+        providers: [{ provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: { floatLabel: 'always' } }]
       });
 
       const fixture = TestBed.createComponent(FloatLabelSelect);

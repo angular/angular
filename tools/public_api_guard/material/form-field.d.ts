@@ -53,7 +53,8 @@ export declare class MatFormField extends _MatFormFieldMixinBase implements Afte
     get hintLabel(): string;
     set hintLabel(value: string);
     underlineRef: ElementRef;
-    constructor(_elementRef: ElementRef, _changeDetectorRef: ChangeDetectorRef, labelOptions: LabelOptions, _dir: Directionality, _defaults: MatFormFieldDefaultOptions, _platform: Platform, _ngZone: NgZone, _animationMode: string);
+    constructor(_elementRef: ElementRef, _changeDetectorRef: ChangeDetectorRef,
+    _labelOptions: any, _dir: Directionality, _defaults: MatFormFieldDefaultOptions, _platform: Platform, _ngZone: NgZone, _animationMode: string);
     _animateAndLockLabel(): void;
     _canLabelFloat(): boolean;
     _getDisplayedMessages(): 'error' | 'hint';
@@ -74,7 +75,7 @@ export declare class MatFormField extends _MatFormFieldMixinBase implements Afte
     updateOutlineGap(): void;
     static ngAcceptInputType_hideRequiredMarker: BooleanInput;
     static ɵcmp: i0.ɵɵComponentDefWithMeta<MatFormField, "mat-form-field", ["matFormField"], { "color": "color"; "appearance": "appearance"; "hideRequiredMarker": "hideRequiredMarker"; "hintLabel": "hintLabel"; "floatLabel": "floatLabel"; }, {}, ["_controlNonStatic", "_controlStatic", "_labelChildNonStatic", "_labelChildStatic", "_placeholderChild", "_errorChildren", "_hintChildren", "_prefixChildren", "_suffixChildren"], ["[matPrefix]", "*", "mat-placeholder", "mat-label", "[matSuffix]", "mat-error", "mat-hint:not([align='end'])", "mat-hint[align='end']"]>;
-    static ɵfac: i0.ɵɵFactoryDef<MatFormField, [null, null, { optional: true; }, { optional: true; }, { optional: true; }, null, null, { optional: true; }]>;
+    static ɵfac: i0.ɵɵFactoryDef<MatFormField, [null, null, null, { optional: true; }, { optional: true; }, null, null, { optional: true; }]>;
 }
 
 export declare const matFormFieldAnimations: {

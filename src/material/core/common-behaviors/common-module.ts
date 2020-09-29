@@ -40,12 +40,6 @@ export interface GranularSanityChecks {
   doctype: boolean;
   theme: boolean;
   version: boolean;
-
-  /**
-   * @deprecated No longer being used.
-   * @breaking-change 10.0.0
-   */
-  hammer: boolean;
 }
 
 /**
@@ -66,13 +60,12 @@ export class MatCommonModule {
   private _sanityChecks: SanityChecks;
 
   /** Used to reference correct document/window */
-  protected _document?: Document;
+  protected _document: Document;
 
   constructor(
       highContrastModeDetector: HighContrastModeDetector,
       @Optional() @Inject(MATERIAL_SANITY_CHECKS) sanityChecks: any,
-      /** @breaking-change 11.0.0 make document required */
-      @Optional() @Inject(DOCUMENT) document?: any) {
+      @Inject(DOCUMENT) document: any) {
     this._document = document;
 
     // While A11yModule also does this, we repeat it here to avoid importing A11yModule
@@ -91,18 +84,11 @@ export class MatCommonModule {
     }
   }
 
-    /** Access injected document if available or fallback to global document reference */
-    private _getDocument(): Document | null {
-      const doc = this._document || document;
-      return typeof doc === 'object' && doc ? doc : null;
-    }
-
-    /** Use defaultView of injected document if available or fallback to global window reference */
-    private _getWindow(): Window | null {
-      const doc = this._getDocument();
-      const win = doc?.defaultView || window;
-      return typeof win === 'object' && win ? win : null;
-    }
+  /** Use defaultView of injected document if available or fallback to global window reference */
+  private _getWindow(): Window | null {
+    const win = this._document.defaultView || window;
+    return typeof win === 'object' && win ? win : null;
+  }
 
   /** Whether any sanity checks are enabled. */
   private _checksAreEnabled(): boolean {
@@ -122,9 +108,8 @@ export class MatCommonModule {
   private _checkDoctypeIsDefined(): void {
     const isEnabled = this._checksAreEnabled() &&
       (this._sanityChecks === true || (this._sanityChecks as GranularSanityChecks).doctype);
-    const document = this._getDocument();
 
-    if (isEnabled && document && !document.doctype) {
+    if (isEnabled && !this._document.doctype) {
       console.warn(
         'Current document does not have a doctype. This may cause ' +
         'some Angular Material components not to behave as expected.'
@@ -137,17 +122,15 @@ export class MatCommonModule {
     // and the `body` won't be defined if the consumer put their scripts in the `head`.
     const isDisabled = !this._checksAreEnabled() ||
       (this._sanityChecks === false || !(this._sanityChecks as GranularSanityChecks).theme);
-    const document = this._getDocument();
 
-    if (isDisabled || !document || !document.body ||
-        typeof getComputedStyle !== 'function') {
+    if (isDisabled || !this._document.body || typeof getComputedStyle !== 'function') {
       return;
     }
 
-    const testElement = document.createElement('div');
+    const testElement = this._document.createElement('div');
 
     testElement.classList.add('mat-theme-loaded-marker');
-    document.body.appendChild(testElement);
+    this._document.body.appendChild(testElement);
 
     const computedStyle = getComputedStyle(testElement);
 
@@ -162,7 +145,7 @@ export class MatCommonModule {
       );
     }
 
-    document.body.removeChild(testElement);
+    this._document.body.removeChild(testElement);
   }
 
   /** Checks whether the material version matches the cdk version */

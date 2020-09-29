@@ -128,11 +128,8 @@ export declare class ErrorStateMatcher {
     static ɵprov: i0.ɵɵInjectableDef<ErrorStateMatcher>;
 }
 
-export declare type FloatLabelType = 'always' | 'never' | 'auto';
-
 export interface GranularSanityChecks {
     doctype: boolean;
-    hammer: boolean;
     theme: boolean;
     version: boolean;
 }
@@ -151,22 +148,11 @@ export interface HasTabIndex {
 
 export declare type HasTabIndexCtor = Constructor<HasTabIndex>;
 
-export interface LabelOptions {
-    float?: FloatLabelType;
-}
-
 export declare const MAT_DATE_FORMATS: InjectionToken<MatDateFormats>;
 
 export declare const MAT_DATE_LOCALE: InjectionToken<string>;
 
 export declare function MAT_DATE_LOCALE_FACTORY(): string;
-
-export declare const MAT_DATE_LOCALE_PROVIDER: {
-    provide: InjectionToken<string>;
-    useExisting: InjectionToken<string>;
-};
-
-export declare const MAT_LABEL_GLOBAL_OPTIONS: InjectionToken<LabelOptions>;
 
 export declare const MAT_NATIVE_DATE_FORMATS: MatDateFormats;
 
@@ -177,9 +163,8 @@ export declare const MAT_OPTION_PARENT_COMPONENT: InjectionToken<MatOptionParent
 export declare const MAT_RIPPLE_GLOBAL_OPTIONS: InjectionToken<RippleGlobalOptions>;
 
 export declare class MatCommonModule {
-    protected _document?: Document;
-    constructor(highContrastModeDetector: HighContrastModeDetector, sanityChecks: any,
-    document?: any);
+    protected _document: Document;
+    constructor(highContrastModeDetector: HighContrastModeDetector, sanityChecks: any, document: any);
     static ɵinj: i0.ɵɵInjectorDef<MatCommonModule>;
     static ɵmod: i0.ɵɵNgModuleDefWithMeta<MatCommonModule, never, [typeof i1.BidiModule], [typeof i1.BidiModule]>;
 }
@@ -206,10 +191,6 @@ export declare class MatLine {
 export declare class MatLineModule {
     static ɵinj: i0.ɵɵInjectorDef<MatLineModule>;
     static ɵmod: i0.ɵɵNgModuleDefWithMeta<MatLineModule, [typeof MatLine], [typeof i1.MatCommonModule], [typeof MatLine, typeof i1.MatCommonModule]>;
-}
-
-export declare class MatLineSetter {
-    constructor(lines: QueryList<MatLine>, element: ElementRef<HTMLElement>);
 }
 
 export declare class MatNativeDateModule {
