@@ -75,7 +75,7 @@ describe('site App', function() {
   it('should show the tutorial index page at `/tutorial` after jitterbugging through features', () => {
     // check that we can navigate directly to the tutorial page
     page.navigateTo('tutorial');
-    expect(page.getDocViewerText()).toMatch(/Tour of Heroes App and Tutorial/i);
+    expect(page.getDocViewerText()).toMatch(/Aplicación y tutorial Tour de héroes/i);
 
     // navigate to a different page
     page.click(page.getTopMenuLink('features'));
@@ -86,8 +86,8 @@ describe('site App', function() {
 
     // Tutorial folder should still be expanded because this test runs in wide mode
     // Navigate to the tutorial introduction via a link in the sidenav
-    page.click(page.getNavItem(/The Hero Editor/i));
-    expect(page.getDocViewerText()).toMatch(/The Hero Editor/i);
+    page.click(page.getNavItem(/El Editor de Héroe/i));
+    expect(page.getDocViewerText()).toMatch(/The hero editor/i);
   });
 
   it('should render `{@example}` dgeni tags as `<code-example>` elements with HTML escaped content', () => {
@@ -114,7 +114,7 @@ describe('site App', function() {
       page.scrollTo('bottom');
       expect(page.getScrollTop()).toBeGreaterThan(0);
 
-      page.click(page.getNavItem(/security/i));
+      page.click(page.getNavItem(/Seguridad/i));
       expect(page.locationPath()).toBe('/guide/security');
       expect(page.getScrollTop()).toBe(0);
     });
@@ -170,38 +170,6 @@ describe('site App', function() {
       expect(names4).not.toEqual(names3);
       expect(names4).not.toEqual(names2);
       expect(names4).toEqual(names1);
-    });
-  });
-
-  describe('google analytics', () => {
-
-    it('should call ga with initial URL', done => {
-      let path: string;
-      page.navigateTo('api');
-      page.locationPath()
-        .then(p => path = p)
-        .then(() => page.ga())
-        .then(calls => {
-          // The last call (length-1) will be the `send` command
-          // The second to last call (length-2) will be the command to `set` the page url
-          expect(calls[calls.length - 2]).toEqual(['set', 'page', path]);
-          done();
-        });
-    });
-
-    it('should call ga with new URL on navigation', done => {
-      let path: string;
-      page.navigateTo('');
-      page.click(page.getTopMenuLink('features'));
-      page.locationPath()
-        .then(p => path = p)
-        .then(() => page.ga())
-        .then(calls => {
-          // The last call (length-1) will be the `send` command
-          // The second to last call (length-2) will be the command to `set` the page url
-          expect(calls[calls.length - 2]).toEqual(['set', 'page', path]);
-          done();
-        });
     });
   });
 

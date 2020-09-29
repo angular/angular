@@ -93,7 +93,7 @@
     "@angular/compiler": "10.0.2",
     "@angular/core": "10.0.2",
     "@angular/elements": "10.0.2",
-    "@angular/fire": "6.0.0",
+    "@angular/fire": "~6.0.3",
     "@angular/forms": "10.0.2",
     "@angular/material": "10.0.1",
     "@angular/platform-browser": "10.0.2",
