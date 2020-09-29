@@ -100,7 +100,7 @@ export class LocationService {
   /**
    * Handle user's anchor click
    *
-   * @param anchor {HTMLAnchorElement} - the anchor element clicked
+   * @param anchor The anchor element clicked
    * @param button Number of the mouse button held down. 0 means left or none
    * @param ctrlKey True if control key held down
    * @param metaKey True if command or window key held down

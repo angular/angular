@@ -13,14 +13,13 @@ import { Logger } from 'app/shared/logger.service';
  * 1. Checks for available ServiceWorker updates once instantiated.
  * 2. Re-checks every 6 hours.
  * 3. Whenever an update is available, it activates the update.
- *
- * @property
- * `updateActivated` {Observable<string>} - Emit the version hash whenever an update is activated.
  */
 @Injectable()
 export class SwUpdatesService implements OnDestroy {
   private checkInterval = 1000 * 60 * 60 * 6;  // 6 hours
   private onDestroy = new Subject<void>();
+
+  /** Emit the version hash whenever an update is activated. */
   updateActivated: Observable<string>;
 
   constructor(appRef: ApplicationRef, private logger: Logger, private swu: SwUpdate) {
