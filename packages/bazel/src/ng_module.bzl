@@ -47,14 +47,6 @@ def is_ivy_enabled(ctx):
          ctx.attr._renderer[BuildSettingInfo].value == "ivy")):
         return True
 
-    # TODO(josephperott): Remove after ~Feb 2020, to allow local script migrations
-    if "compile" in ctx.var and ctx.workspace_name == "angular":
-        fail(
-            msg = "Setting ViewEngine/Ivy using --define=compile is deprecated, please use " +
-                  "--config=ivy or --config=view-engine instead.",
-            attr = "ng_module",
-        )
-
     # This attribute is only defined in google's private ng_module rule and not
     # available externally. For external users, this is effectively a no-op.
     if hasattr(ctx.attr, "ivy") and ctx.attr.ivy == True:
