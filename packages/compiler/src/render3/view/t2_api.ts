@@ -150,6 +150,12 @@ export interface BoundTarget<DirectiveT extends DirectiveMeta> {
   getNestingLevel(template: Template): number;
 
   /**
+   * Get all `Reference`s and `Variables` visible within the given `Template` (or at the top level,
+   * if `null` is passed).
+   */
+  getEntitiesInTemplateScope(template: Template|null): ReadonlySet<Reference|Variable>;
+
+  /**
    * Get a list of all the directives used by the target.
    */
   getUsedDirectives(): DirectiveT[];
