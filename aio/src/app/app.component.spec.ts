@@ -782,7 +782,7 @@ describe('AppComponent', () => {
         it('should grab focus when the / key is pressed', () => {
           const searchBox: SearchBoxComponent = fixture.debugElement.query(By.directive(SearchBoxComponent)).componentInstance;
           spyOn(searchBox, 'focus');
-          window.document.dispatchEvent(new KeyboardEvent('keyup', { 'key': '/' }));
+          window.document.dispatchEvent(new KeyboardEvent('keyup', { key: '/' }));
           fixture.detectChanges();
           expect(searchBox.focus).toHaveBeenCalled();
         });
@@ -791,7 +791,7 @@ describe('AppComponent', () => {
           const searchBox: SearchBoxComponent = fixture.debugElement.query(By.directive(SearchBoxComponent)).componentInstance;
           spyOn(searchBox, 'focus');
           component.showSearchResults = true;
-          window.document.dispatchEvent(new KeyboardEvent('keyup', { 'key': 'Escape' }));
+          window.document.dispatchEvent(new KeyboardEvent('keyup', { key: 'Escape' }));
           fixture.detectChanges();
           expect(searchBox.focus).toHaveBeenCalled();
         });
@@ -1311,42 +1311,42 @@ class TestHttpClient {
 
   // tslint:disable:quotemark
   navJson = {
-    "TopBar": [
+    TopBar: [
       {
-        "url": "features",
-        "title": "Features"
+        url: 'features',
+        title: 'Features',
       },
       {
-        "url": "no-title",
-        "title": "No Title"
+        url: 'no-title',
+        title: 'No Title',
       },
     ],
-    "SideNav": [
+    SideNav: [
       {
-      "title": "Core",
-      "tooltip": "Learn the core capabilities of Angular",
-      "children": [
+        title: 'Core',
+        tooltip: 'Learn the core capabilities of Angular',
+        children: [
           {
-            "url": "guide/pipes",
-            "title": "Pipes",
-            "tooltip": "Pipes transform displayed values within a template."
+            url: 'guide/pipes',
+            title: 'Pipes',
+            tooltip: 'Pipes transform displayed values within a template.',
           },
           {
-            "url": "guide/bags",
-            "title": "Bags",
-            "tooltip": "Pack your bags for a code adventure."
-          }
-        ]
+            url: 'guide/bags',
+            title: 'Bags',
+            tooltip: 'Pack your bags for a code adventure.',
+          },
+        ],
       },
       {
-        "url": "api",
-        "title": "API",
-        "tooltip": "Details of the Angular classes and values."
-      }
+        url: 'api',
+        title: 'API',
+        tooltip: 'Details of the Angular classes and values.',
+      },
     ],
-    "docVersions": TestHttpClient.docVersions,
+    docVersions: TestHttpClient.docVersions,
 
-    "__versionInfo": TestHttpClient.versionInfo,
+    __versionInfo: TestHttpClient.versionInfo,
   };
 
   get(url: string) {
