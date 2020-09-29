@@ -419,10 +419,10 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    * @returns An array of class symbols.
    */
   findClassSymbols(sourceFile: ts.SourceFile): NgccClassSymbol[] {
-    const classes: NgccClassSymbol[] = [];
+    const classes = new Map<ts.Symbol, NgccClassSymbol>();
     this.getModuleStatements(sourceFile)
         .forEach(statement => this.addClassSymbolsFromStatement(classes, statement));
-    return classes;
+    return Array.from(classes.values());
   }
 
   /**
@@ -462,20 +462,27 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
           declaration.getText()} in ${declaration.getSourceFile().fileName}`);
     }
 
+    const decl = this.getDeclarationOfIdentifier(declaration.name);
+    if (decl === null) {
+      throw new Error(
+          `Cannot get the dts file for a node that cannot be associated with a declaration ${
+              declaration.getText()} in ${declaration.getSourceFile().fileName}`);
+    }
+
     // Try to retrieve the dts declaration from the public map
     if (this.publicDtsDeclarationMap === null) {
       this.publicDtsDeclarationMap = this.computePublicDtsDeclarationMap(this.src, this.dts);
     }
-    if (this.publicDtsDeclarationMap.has(declaration)) {
-      return this.publicDtsDeclarationMap.get(declaration)!;
+    if (this.publicDtsDeclarationMap.has(decl.node)) {
+      return this.publicDtsDeclarationMap.get(decl.node)!;
     }
 
     // No public export, try the private map
     if (this.privateDtsDeclarationMap === null) {
       this.privateDtsDeclarationMap = this.computePrivateDtsDeclarationMap(this.src, this.dts);
     }
-    if (this.privateDtsDeclarationMap.has(declaration)) {
-      return this.privateDtsDeclarationMap.get(declaration)!;
+    if (this.privateDtsDeclarationMap.has(decl.node)) {
+      return this.privateDtsDeclarationMap.get(decl.node)!;
     }
 
     // No declaration found at all
@@ -547,21 +554,21 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
   ///////////// Protected Helpers /////////////
 
   /**
-   * Extract all the "classes" from the `statement` and add them to the `classes` array.
+   * Extract all the "classes" from the `statement` and add them to the `classes` map.
    */
-  protected addClassSymbolsFromStatement(classes: NgccClassSymbol[], statement: ts.Statement):
-      void {
+  protected addClassSymbolsFromStatement(
+      classes: Map<ts.Symbol, NgccClassSymbol>, statement: ts.Statement): void {
     if (ts.isVariableStatement(statement)) {
       statement.declarationList.declarations.forEach(declaration => {
         const classSymbol = this.getClassSymbol(declaration);
         if (classSymbol) {
-          classes.push(classSymbol);
+          classes.set(classSymbol.implementation, classSymbol);
         }
       });
     } else if (ts.isClassDeclaration(statement)) {
       const classSymbol = this.getClassSymbol(statement);
       if (classSymbol) {
-        classes.push(classSymbol);
+        classes.set(classSymbol.implementation, classSymbol);
       }
     }
   }
