@@ -216,7 +216,7 @@ export class MatCheckbox extends _MatCheckboxMixinBase implements AfterViewInit,
    * MDC uses animation events to determine when to update `aria-checked` which is unreliable.
    * Therefore we disable it and handle it ourselves.
    */
-  private _attrBlacklist = new Set(['aria-checked']);
+  private _mdcFoundationIgnoredAttrs = new Set(['aria-checked']);
 
   /** The `MDCCheckboxAdapter` instance for this checkbox. */
   private _checkboxAdapter: MDCCheckboxAdapter = {
@@ -229,13 +229,13 @@ export class MatCheckbox extends _MatCheckboxMixinBase implements AfterViewInit,
     isIndeterminate: () => this.indeterminate,
     removeNativeControlAttr:
         (attr) => {
-          if (!this._attrBlacklist.has(attr)) {
+          if (!this._mdcFoundationIgnoredAttrs.has(attr)) {
             this._nativeCheckbox.nativeElement.removeAttribute(attr);
           }
         },
     setNativeControlAttr:
         (attr, value) => {
-          if (!this._attrBlacklist.has(attr)) {
+          if (!this._mdcFoundationIgnoredAttrs.has(attr)) {
             this._nativeCheckbox.nativeElement.setAttribute(attr, value);
           }
         },
