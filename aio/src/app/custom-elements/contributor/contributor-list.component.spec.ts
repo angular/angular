@@ -63,7 +63,7 @@ describe('ContributorListComponent', () => {
   it('should set the query to the "GDE" group when user selects "GDE"', () => {
     component = getComponent();
     component.selectGroup('GDE');
-    expect(locationService.searchResult['group']).toBe('GDE');
+    expect(locationService.searchResult.group).toBe('GDE');
   });
 
   it('should set the query to the first group when user selects unknown name', () => {
@@ -71,7 +71,7 @@ describe('ContributorListComponent', () => {
     component.selectGroup('GDE'); // a legit group that isn't the first
 
     component.selectGroup('foo'); // not a legit group name
-    expect(locationService.searchResult['group']).toBe('Angular');
+    expect(locationService.searchResult.group).toBe('Angular');
   });
 
   //// Test Helpers ////

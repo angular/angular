@@ -968,23 +968,23 @@ describe('AppComponent', () => {
 
         // Initially, `isTransitoning` is true.
         expect(component.isTransitioning).toBe(true);
-        expect(toolbar.classes['transitioning']).toBe(true);
+        expect(toolbar.classes.transitioning).toBe(true);
 
         triggerDocViewerEvent('docRendered');
         fixture.detectChanges();
         expect(component.isTransitioning).toBe(false);
-        expect(toolbar.classes['transitioning']).toBeFalsy();
+        expect(toolbar.classes.transitioning).toBeFalsy();
 
         // While a document is being rendered, `isTransitoning` is set to true.
         triggerDocViewerEvent('docReady');
         fixture.detectChanges();
         expect(component.isTransitioning).toBe(true);
-        expect(toolbar.classes['transitioning']).toBe(true);
+        expect(toolbar.classes.transitioning).toBe(true);
 
         triggerDocViewerEvent('docRendered');
         fixture.detectChanges();
         expect(component.isTransitioning).toBe(false);
-        expect(toolbar.classes['transitioning']).toBeFalsy();
+        expect(toolbar.classes.transitioning).toBeFalsy();
       });
 
       it('should update the sidenav state as soon as a new document is inserted (but not before)', () => {
@@ -1031,15 +1031,15 @@ describe('AppComponent', () => {
 
         navigateTo('guide/pipes');
         expect(component.pageId).toEqual('guide-pipes');
-        expect(container.properties['id']).toEqual('guide-pipes');
+        expect(container.properties.id).toEqual('guide-pipes');
 
         navigateTo('news');
         expect(component.pageId).toEqual('news');
-        expect(container.properties['id']).toEqual('news');
+        expect(container.properties.id).toEqual('news');
 
         navigateTo('');
         expect(component.pageId).toEqual('home');
-        expect(container.properties['id']).toEqual('home');
+        expect(container.properties.id).toEqual('home');
       });
 
       it('should not be affected by changes to the query', () => {
@@ -1050,7 +1050,7 @@ describe('AppComponent', () => {
         navigateTo('guide/other?search=http');
 
         expect(component.pageId).toEqual('guide-other');
-        expect(container.properties['id']).toEqual('guide-other');
+        expect(container.properties.id).toEqual('guide-other');
       });
     });
 
@@ -1125,7 +1125,7 @@ describe('AppComponent', () => {
 
       function checkHostClass(type: string, value: string) {
         const host = fixture.debugElement;
-        const classes: string = host.properties['className'];
+        const classes: string = host.properties.className;
         const classArray = classes.split(' ').filter(c => c.indexOf(`${type}-`) === 0);
         expect(classArray.length).toBeLessThanOrEqual(1, `"${classes}" should have only one class matching ${type}-*`);
         expect(classArray).toEqual([`${type}-${value}`], `"${classes}" should contain ${type}-${value}`);
