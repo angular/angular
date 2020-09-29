@@ -963,6 +963,30 @@ class TcbUnclaimedOutputsOp extends TcbOp {
 }
 
 /**
+ * A `TcbOp` which generates a completion point for the component context.
+ *
+ * This completion point looks like `ctx. ;` in the TCB output, and does not produce diagnostics.
+ * TypeScript autocompletion APIs can be used at this completion point (after the '.') to produce
+ * autocompletion results of properties and methods from the template's component context.
+ */
+class TcbComponentContextCompletionOp extends TcbOp {
+  constructor(private scope: Scope) {
+    super();
+  }
+
+  readonly optional = false;
+
+  execute(): null {
+    const ctx = ts.createIdentifier('ctx');
+    const ctxDot = ts.createPropertyAccess(ctx, '');
+    markIgnoreDiagnostics(ctxDot);
+    addExpressionIdentifier(ctxDot, ExpressionIdentifier.COMPONENT_COMPLETION);
+    this.scope.addStatement(ts.createExpressionStatement(ctxDot));
+    return null;
+  }
+}
+
+/**
  * Value used to break a circular reference between `TcbOp`s.
  *
  * This value is returned whenever `TcbOp`s have a circular dependency. The expression is a non-null
@@ -1088,6 +1112,11 @@ class Scope {
       tcb: Context, parent: Scope|null, templateOrNodes: TmplAstTemplate|(TmplAstNode[]),
       guard: ts.Expression|null): Scope {
     const scope = new Scope(tcb, parent, guard);
+
+    if (parent === null && tcb.env.config.enableTemplateTypeChecker) {
+      // Add an autocompletion point for the component context.
+      scope.opQueue.push(new TcbComponentContextCompletionOp(scope));
+    }
 
     let children: TmplAstNode[];
 

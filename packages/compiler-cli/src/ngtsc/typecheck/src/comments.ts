@@ -42,6 +42,7 @@ export enum CommentTriviaType {
 /** Identifies what the TCB expression is for (for example, a directive declaration). */
 export enum ExpressionIdentifier {
   DIRECTIVE = 'DIR',
+  COMPONENT_COMPLETION = 'COMPCOMP',
 }
 
 /** Tags the node with the given expression identifier. */
@@ -85,6 +86,7 @@ function makeRecursiveVisitor<T extends ts.Node>(visitor: (node: ts.Node) => T |
 
 export interface FindOptions<T extends ts.Node> {
   filter: (node: ts.Node) => node is T;
+  withExpressionIdentifier?: ExpressionIdentifier;
   withSpan?: AbsoluteSourceSpan|ParseSourceSpan;
 }
 
@@ -109,6 +111,7 @@ function getSpanFromOptions(opts: FindOptions<ts.Node>) {
 export function findFirstMatchingNode<T extends ts.Node>(tcb: ts.Node, opts: FindOptions<T>): T|
     null {
   const withSpan = getSpanFromOptions(opts);
+  const withExpressionIdentifier = opts.withExpressionIdentifier;
   const sf = tcb.getSourceFile();
   const visitor = makeRecursiveVisitor<T>(node => {
     if (!opts.filter(node)) {
@@ -119,6 +122,10 @@ export function findFirstMatchingNode<T extends ts.Node>(tcb: ts.Node, opts: Fin
       if (comment === null || withSpan.start !== comment.start || withSpan.end !== comment.end) {
         return null;
       }
+    }
+    if (withExpressionIdentifier !== undefined &&
+        !hasExpressionIdentifier(sf, node, withExpressionIdentifier)) {
+      return null;
     }
     return node;
   });
@@ -135,6 +142,7 @@ export function findFirstMatchingNode<T extends ts.Node>(tcb: ts.Node, opts: Fin
  */
 export function findAllMatchingNodes<T extends ts.Node>(tcb: ts.Node, opts: FindOptions<T>): T[] {
   const withSpan = getSpanFromOptions(opts);
+  const withExpressionIdentifier = opts.withExpressionIdentifier;
   const results: T[] = [];
   const stack: ts.Node[] = [tcb];
   const sf = tcb.getSourceFile();
@@ -152,6 +160,10 @@ export function findAllMatchingNodes<T extends ts.Node>(tcb: ts.Node, opts: Find
         stack.push(...node.getChildren());
         continue;
       }
+    }
+    if (withExpressionIdentifier !== undefined &&
+        !hasExpressionIdentifier(sf, node, withExpressionIdentifier)) {
+      continue;
     }
 
     results.push(node);

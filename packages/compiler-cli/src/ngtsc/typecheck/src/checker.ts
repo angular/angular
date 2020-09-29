@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, ParseError, parseTemplate, TmplAstNode} from '@angular/compiler';
+import {AST, ParseError, parseTemplate, TmplAstNode, TmplAstReference, TmplAstTemplate, TmplAstVariable} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {absoluteFromSourceFile, AbsoluteFsPath, getSourceFileOrError} from '../../file_system';
@@ -16,9 +16,10 @@ import {ReflectionHost} from '../../reflection';
 import {ComponentScopeReader} from '../../scope';
 import {isShim} from '../../shims';
 import {getSourceFileOrNull} from '../../util/src/typescript';
-import {OptimizeFor, ProgramTypeCheckAdapter, Symbol, TemplateId, TemplateTypeChecker, TypeCheckingConfig, TypeCheckingProgramStrategy, UpdateMode} from '../api';
+import {CompletionKind, GlobalCompletion, OptimizeFor, ProgramTypeCheckAdapter, Symbol, TemplateId, TemplateTypeChecker, TypeCheckingConfig, TypeCheckingProgramStrategy, UpdateMode} from '../api';
 import {TemplateDiagnostic} from '../diagnostics';
 
+import {ExpressionIdentifier, findFirstMatchingNode} from './comments';
 import {InliningMode, ShimTypeCheckingData, TemplateData, TypeCheckContextImpl, TypeCheckingHost} from './context';
 import {findTypeCheckBlock, shouldReportDiagnostic, TemplateSourceResolver, translateDiagnostic} from './diagnostics';
 import {TemplateSourceManager} from './source';
@@ -53,14 +54,15 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
   }
 
   getTemplate(component: ts.ClassDeclaration): TmplAstNode[]|null {
-    const templateData = this.getTemplateData(component);
-    if (templateData === null) {
+    const {data} = this.getLatestComponentState(component);
+    if (data === null) {
       return null;
     }
-    return templateData.template;
+    return data.template;
   }
 
-  private getTemplateData(component: ts.ClassDeclaration): TemplateData|null {
+  private getLatestComponentState(component: ts.ClassDeclaration):
+      {data: TemplateData|null, tcb: ts.Node|null, shimPath: AbsoluteFsPath} {
     this.ensureShimForComponent(component);
 
     const sf = component.getSourceFile();
@@ -70,17 +72,34 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
     const fileRecord = this.getFileData(sfPath);
 
     if (!fileRecord.shimData.has(shimPath)) {
-      return null;
+      return {data: null, tcb: null, shimPath};
     }
 
     const templateId = fileRecord.sourceManager.getTemplateId(component);
     const shimRecord = fileRecord.shimData.get(shimPath)!;
+    const id = fileRecord.sourceManager.getTemplateId(component);
 
-    if (!shimRecord.templates.has(templateId)) {
-      return null;
+    const program = this.typeCheckingStrategy.getProgram();
+    const shimSf = getSourceFileOrNull(program, shimPath);
+
+    if (shimSf === null || !fileRecord.shimData.has(shimPath)) {
+      throw new Error(`Error: no shim file in program: ${shimPath}`);
     }
 
-    return shimRecord.templates.get(templateId)!;
+    let tcb: ts.Node|null = findTypeCheckBlock(shimSf, id);
+
+    if (tcb === null) {
+      // Try for an inline block.
+      const inlineSf = getSourceFileOrError(program, sfPath);
+      tcb = findTypeCheckBlock(inlineSf, id);
+    }
+
+    let data: TemplateData|null = null;
+    if (shimRecord.templates.has(templateId)) {
+      data = shimRecord.templates.get(templateId)!;
+    }
+
+    return {data, tcb, shimPath};
   }
 
   overrideComponentTemplate(component: ts.ClassDeclaration, template: string):
@@ -186,31 +205,55 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
   }
 
   getTypeCheckBlock(component: ts.ClassDeclaration): ts.Node|null {
-    this.ensureAllShimsForOneFile(component.getSourceFile());
+    return this.getLatestComponentState(component).tcb;
+  }
 
-    const program = this.typeCheckingStrategy.getProgram();
-    const filePath = absoluteFromSourceFile(component.getSourceFile());
-    const shimPath = this.typeCheckingStrategy.shimPathForComponent(component);
-
-    if (!this.state.has(filePath)) {
-      throw new Error(`Error: no data for source file: ${filePath}`);
-    }
-    const fileRecord = this.state.get(filePath)!;
-    const id = fileRecord.sourceManager.getTemplateId(component);
-
-    const shimSf = getSourceFileOrNull(program, shimPath);
-    if (shimSf === null || !fileRecord.shimData.has(shimPath)) {
-      throw new Error(`Error: no shim file in program: ${shimPath}`);
+  getGlobalCompletions(context: TmplAstTemplate|null, component: ts.ClassDeclaration):
+      GlobalCompletion[] {
+    const {tcb, data, shimPath} = this.getLatestComponentState(component);
+    if (tcb === null || data === null) {
+      return [];
     }
 
-    let node: ts.Node|null = findTypeCheckBlock(shimSf, id);
-    if (node === null) {
-      // Try for an inline block.
-      const inlineSf = getSourceFileOrError(program, filePath);
-      node = findTypeCheckBlock(inlineSf, id);
+    const {boundTarget} = data;
+
+    // Global completions are the union of two separate pieces: a `ContextComponentCompletion` which
+    // is created from an expression within the TCB, and a list of named entities (variables and
+    // references) which are visible within the given `context` template.
+    const completions: GlobalCompletion[] = [];
+
+    const globalRead = findFirstMatchingNode(tcb, {
+      filter: ts.isPropertyAccessExpression,
+      withExpressionIdentifier: ExpressionIdentifier.COMPONENT_COMPLETION
+    });
+
+    if (globalRead === null) {
+      return [];
     }
 
-    return node;
+    completions.push({
+      kind: CompletionKind.ContextComponent,
+      shimPath,
+      positionInShimFile: globalRead.name.getStart(),
+    });
+
+    // Add completions for each entity in the template scope. Since each entity is uniquely named,
+    // there is no special ordering applied here.
+    for (const node of boundTarget.getEntitiesInTemplateScope(context)) {
+      if (node instanceof TmplAstReference) {
+        completions.push({
+          kind: CompletionKind.Reference,
+          node: node,
+        });
+      } else {
+        completions.push({
+          kind: CompletionKind.Variable,
+          node: node,
+        });
+      }
+    }
+
+    return completions;
   }
 
   private maybeAdoptPriorResultsForFile(sf: ts.SourceFile): void {
@@ -362,17 +405,12 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
   }
 
   getSymbolOfNode(node: AST|TmplAstNode, component: ts.ClassDeclaration): Symbol|null {
-    const tcb = this.getTypeCheckBlock(component);
-    if (tcb === null) {
+    const {tcb, data, shimPath} = this.getLatestComponentState(component);
+    if (tcb === null || data === null) {
       return null;
     }
 
     const typeChecker = this.typeCheckingStrategy.getProgram().getTypeChecker();
-    const shimPath = this.typeCheckingStrategy.shimPathForComponent(component);
-    const data = this.getTemplateData(component);
-    if (data === null) {
-      return null;
-    }
 
     return new SymbolBuilder(typeChecker, shimPath, tcb, data, this.componentScopeReader)
         .getSymbol(node);
