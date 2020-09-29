@@ -8,7 +8,7 @@
 
 import * as ts from 'typescript';
 
-import {ClassDeclaration, ClassMember, ClassMemberKind, CtorParameter, Declaration, Decorator, FunctionDefinition, Import, isDecoratorIdentifier, ReflectionHost} from './host';
+import {ClassDeclaration, ClassMember, ClassMemberKind, CtorParameter, Declaration, DeclarationKind, DeclarationNode, Decorator, FunctionDefinition, Import, isDecoratorIdentifier, ReflectionHost} from './host';
 import {typeToValue} from './type_to_value';
 import {isNamedClassDeclaration} from './util';
 
@@ -19,7 +19,7 @@ import {isNamedClassDeclaration} from './util';
 export class TypeScriptReflectionHost implements ReflectionHost {
   constructor(protected checker: ts.TypeChecker) {}
 
-  getDecoratorsOfDeclaration(declaration: ts.Declaration): Decorator[]|null {
+  getDecoratorsOfDeclaration(declaration: DeclarationNode): Decorator[]|null {
     if (declaration.decorators === undefined || declaration.decorators.length === 0) {
       return null;
     }
@@ -187,7 +187,7 @@ export class TypeScriptReflectionHost implements ReflectionHost {
     return declaration.initializer || null;
   }
 
-  getDtsDeclaration(_: ts.Declaration): ts.Declaration|null {
+  getDtsDeclaration(_: ClassDeclaration): ts.Declaration|null {
     return null;
   }
 
@@ -207,7 +207,7 @@ export class TypeScriptReflectionHost implements ReflectionHost {
       return null;
     }
 
-    const decl: ts.Declaration = symbol.declarations[0];
+    const decl = symbol.declarations[0];
     const importDecl = getContainingImportDeclaration(decl);
 
     // Ignore declarations that are defined locally (not imported).
@@ -318,6 +318,7 @@ export class TypeScriptReflectionHost implements ReflectionHost {
         known: null,
         viaModule,
         identity: null,
+        kind: DeclarationKind.Concrete,
       };
     } else if (symbol.declarations !== undefined && symbol.declarations.length > 0) {
       return {
@@ -325,6 +326,7 @@ export class TypeScriptReflectionHost implements ReflectionHost {
         known: null,
         viaModule,
         identity: null,
+        kind: DeclarationKind.Concrete,
       };
     } else {
       return null;

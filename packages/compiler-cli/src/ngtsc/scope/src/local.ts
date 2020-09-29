@@ -12,7 +12,7 @@ import * as ts from 'typescript';
 import {ErrorCode, makeDiagnostic, makeRelatedInformation} from '../../diagnostics';
 import {AliasingHost, Reexport, Reference, ReferenceEmitter} from '../../imports';
 import {DirectiveMeta, MetadataReader, MetadataRegistry, NgModuleMeta, PipeMeta} from '../../metadata';
-import {ClassDeclaration} from '../../reflection';
+import {ClassDeclaration, DeclarationNode} from '../../reflection';
 import {identifierOfNode, nodeNameForError} from '../../util/src/typescript';
 
 import {ExportScope, ScopeData} from './api';
@@ -293,14 +293,14 @@ export class LocalModuleScopeRegistry implements MetadataRegistry, ComponentScop
     // - the directives and pipes which are exported to any NgModules which import this one.
 
     // Directives and pipes in the compilation scope.
-    const compilationDirectives = new Map<ts.Declaration, DirectiveMeta>();
-    const compilationPipes = new Map<ts.Declaration, PipeMeta>();
+    const compilationDirectives = new Map<DeclarationNode, DirectiveMeta>();
+    const compilationPipes = new Map<DeclarationNode, PipeMeta>();
 
-    const declared = new Set<ts.Declaration>();
+    const declared = new Set<DeclarationNode>();
 
     // Directives and pipes exported to any importing NgModules.
-    const exportDirectives = new Map<ts.Declaration, DirectiveMeta>();
-    const exportPipes = new Map<ts.Declaration, PipeMeta>();
+    const exportDirectives = new Map<DeclarationNode, DirectiveMeta>();
+    const exportPipes = new Map<DeclarationNode, PipeMeta>();
 
     // The algorithm is as follows:
     // 1) Add all of the directives/pipes from each NgModule imported into the current one to the
@@ -477,7 +477,7 @@ export class LocalModuleScopeRegistry implements MetadataRegistry, ComponentScop
    */
   private getExportedScope(
       ref: Reference<ClassDeclaration>, diagnostics: ts.Diagnostic[],
-      ownerForErrors: ts.Declaration, type: 'import'|'export'): ExportScope|null|undefined {
+      ownerForErrors: DeclarationNode, type: 'import'|'export'): ExportScope|null|undefined {
     if (ref.node.getSourceFile().isDeclarationFile) {
       // The NgModule is declared in a .d.ts file. Resolve it with the `DependencyScopeReader`.
       if (!ts.isClassDeclaration(ref.node)) {
@@ -499,7 +499,7 @@ export class LocalModuleScopeRegistry implements MetadataRegistry, ComponentScop
   }
 
   private getReexports(
-      ngModule: NgModuleMeta, ref: Reference<ClassDeclaration>, declared: Set<ts.Declaration>,
+      ngModule: NgModuleMeta, ref: Reference<ClassDeclaration>, declared: Set<DeclarationNode>,
       exported: {directives: DirectiveMeta[], pipes: PipeMeta[]},
       diagnostics: ts.Diagnostic[]): Reexport[]|null {
     let reexports: Reexport[]|null = null;
@@ -569,7 +569,7 @@ export class LocalModuleScopeRegistry implements MetadataRegistry, ComponentScop
  * Produce a `ts.Diagnostic` for an invalid import or export from an NgModule.
  */
 function invalidRef(
-    clazz: ts.Declaration, decl: Reference<ts.Declaration>,
+    clazz: DeclarationNode, decl: Reference<DeclarationNode>,
     type: 'import'|'export'): ts.Diagnostic {
   const code =
       type === 'import' ? ErrorCode.NGMODULE_INVALID_IMPORT : ErrorCode.NGMODULE_INVALID_EXPORT;
@@ -607,7 +607,7 @@ function invalidRef(
  * Produce a `ts.Diagnostic` for an import or export which itself has errors.
  */
 function invalidTransitiveNgModuleRef(
-    clazz: ts.Declaration, decl: Reference<ts.Declaration>,
+    clazz: DeclarationNode, decl: Reference<DeclarationNode>,
     type: 'import'|'export'): ts.Diagnostic {
   const code =
       type === 'import' ? ErrorCode.NGMODULE_INVALID_IMPORT : ErrorCode.NGMODULE_INVALID_EXPORT;
@@ -620,7 +620,7 @@ function invalidTransitiveNgModuleRef(
  * Produce a `ts.Diagnostic` for an exported directive or pipe which was not declared or imported
  * by the NgModule in question.
  */
-function invalidReexport(clazz: ts.Declaration, decl: Reference<ts.Declaration>): ts.Diagnostic {
+function invalidReexport(clazz: DeclarationNode, decl: Reference<DeclarationNode>): ts.Diagnostic {
   return makeDiagnostic(
       ErrorCode.NGMODULE_INVALID_REEXPORT, identifierOfNode(decl.node) || decl.node,
       `Present in the NgModule.exports of ${

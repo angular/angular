@@ -10,7 +10,7 @@ import * as ts from 'typescript';
 
 import {absoluteFrom} from '../../../src/ngtsc/file_system';
 import {Logger} from '../../../src/ngtsc/logging';
-import {Declaration, Import} from '../../../src/ngtsc/reflection';
+import {Declaration, DeclarationKind, Import} from '../../../src/ngtsc/reflection';
 import {BundleProgram} from '../packages/bundle_program';
 import {FactoryMap, getTsHelperFnFromIdentifier, stripExtension} from '../utils';
 
@@ -172,17 +172,8 @@ export class UmdReflectionHost extends Esm5ReflectionHost {
 
     const viaModule = stripExtension(importedFile.fileName);
     const reexports: ExportDeclaration[] = [];
-    importedExports.forEach((decl, name) => {
-      if (decl.node !== null) {
-        reexports.push({
-          name,
-          declaration: {node: decl.node, known: null, viaModule, identity: decl.identity}
-        });
-      } else {
-        reexports.push(
-            {name, declaration: {node: null, known: null, expression: decl.expression, viaModule}});
-      }
-    });
+    importedExports.forEach(
+        (decl, name) => reexports.push({name, declaration: {...decl, viaModule}}));
     return reexports;
   }
 
@@ -204,7 +195,7 @@ export class UmdReflectionHost extends Esm5ReflectionHost {
     }
     return {
       name,
-      declaration: {node: null, known: null, expression, viaModule: null},
+      declaration: {kind: DeclarationKind.Inline, node: expression, known: null, viaModule: null},
     };
   }
 
@@ -255,22 +246,31 @@ export class UmdReflectionHost extends Esm5ReflectionHost {
       return null;
     }
 
-    // Sadly, in the case of `exports.foo = bar`, we can't use `this.findUmdImportParameter(id)` to
-    // check whether this `exports` is from the IIFE body arguments, because
-    // `this.checker.getSymbolAtLocation(id)` will return the symbol for the `foo` identifier rather
-    // than the `exports` identifier.
+    // Sadly, in the case of `exports.foo = bar`, we can't use `this.findUmdImportParameter(id)`
+    // to check whether this `exports` is from the IIFE body arguments, because
+    // `this.checker.getSymbolAtLocation(id)` will return the symbol for the `foo` identifier
+    // rather than the `exports` identifier.
     //
     // Instead we search the symbols in the current local scope.
     const exportsSymbol = this.checker.getSymbolsInScope(id, ts.SymbolFlags.Variable)
                               .find(symbol => symbol.name === 'exports');
-    if (exportsSymbol !== undefined &&
-        !ts.isFunctionExpression(exportsSymbol.valueDeclaration.parent)) {
-      // There is an `exports` symbol in the local scope that is not a function parameter.
-      // So this `exports` identifier must be a local variable and does not represent the module.
-      return {node: exportsSymbol.valueDeclaration, viaModule: null, known: null, identity: null};
-    }
 
-    return {node: id.getSourceFile(), viaModule: null, known: null, identity: null};
+    const node = exportsSymbol !== undefined &&
+            !ts.isFunctionExpression(exportsSymbol.valueDeclaration.parent) ?
+        // There is a locally defined `exports` variable that is not a function parameter.
+        // So this `exports` identifier must be a local variable and does not represent the module.
+        exportsSymbol.valueDeclaration :
+        // There is no local symbol or it is a parameter of an IIFE.
+        // So this `exports` represents the current "module".
+        id.getSourceFile();
+
+    return {
+      kind: DeclarationKind.Concrete,
+      node,
+      viaModule: null,
+      known: null,
+      identity: null,
+    };
   }
 
   private getUmdModuleDeclaration(id: ts.Identifier): Declaration|null {
@@ -285,7 +285,7 @@ export class UmdReflectionHost extends Esm5ReflectionHost {
     }
 
     const viaModule = isExternalImport(importPath) ? importPath : null;
-    return {node: module, viaModule, known: null, identity: null};
+    return {kind: DeclarationKind.Concrete, node: module, viaModule, known: null, identity: null};
   }
 
   private getImportPathFromParameter(id: ts.Identifier): string|null {
