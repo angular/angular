@@ -26,7 +26,7 @@ function createIndex(loadIndexFn: IndexLoader): lunr.Index {
   // The lunr typings are missing QueryLexer so we have to add them here manually.
   const queryLexer = (lunr as any as { QueryLexer: { termSeparator: RegExp } }).QueryLexer;
   queryLexer.termSeparator = lunr.tokenizer.separator = /\s+/;
-  return lunr(/** @this */function() {
+  return lunr(function() {
     this.ref('path');
     this.field('topics', { boost: 15 });
     this.field('titleWords', { boost: 10 });
