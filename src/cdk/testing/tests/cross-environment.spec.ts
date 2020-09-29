@@ -354,23 +354,23 @@ export function crossEnvironmentSpecs(
     });
 
     it('should be able to hover', async () => {
-      const host = await harness.host();
-      let classAttr = await host.getAttribute('class');
+      const box = await harness.hoverTest();
+      let classAttr = await box.getAttribute('class');
       expect(classAttr).not.toContain('hovering');
-      await host.hover();
-      classAttr = await host.getAttribute('class');
+      await box.hover();
+      classAttr = await box.getAttribute('class');
       expect(classAttr).toContain('hovering');
     });
 
     it('should be able to stop hovering', async () => {
-      const host = await harness.host();
-      let classAttr = await host.getAttribute('class');
+      const box = await harness.hoverTest();
+      let classAttr = await box.getAttribute('class');
       expect(classAttr).not.toContain('hovering');
-      await host.hover();
-      classAttr = await host.getAttribute('class');
+      await box.hover();
+      classAttr = await box.getAttribute('class');
       expect(classAttr).toContain('hovering');
-      await host.mouseAway();
-      classAttr = await host.getAttribute('class');
+      await box.mouseAway();
+      classAttr = await box.getAttribute('class');
       expect(classAttr).not.toContain('hovering');
     });
 

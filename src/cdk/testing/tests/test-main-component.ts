@@ -22,11 +22,6 @@ import {
 @Component({
   selector: 'test-main',
   templateUrl: 'test-main-component.html',
-  host: {
-    '[class.hovering]': '_isHovering',
-    '(mouseenter)': 'onMouseEnter()',
-    '(mouseleave)': 'onMouseLeave()',
-  },
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -39,7 +34,7 @@ export class TestMainComponent implements OnDestroy {
   memo: string;
   testTools: string[];
   testMethods: string[];
-  _isHovering: boolean;
+  isHovering = false;
   specialKey = '';
   relativeX = 0;
   relativeY = 0;
@@ -53,14 +48,6 @@ export class TestMainComponent implements OnDestroy {
   @ViewChild('taskStateResult') taskStateResultElement: ElementRef<HTMLElement>;
 
   private _fakeOverlayElement: HTMLElement;
-
-  onMouseEnter() {
-    this._isHovering = true;
-  }
-
-  onMouseLeave() {
-    this._isHovering = false;
-  }
 
   constructor(private _cdr: ChangeDetectorRef, private _zone: NgZone) {
     this.username = 'Yi';

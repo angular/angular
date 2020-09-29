@@ -7,7 +7,7 @@
  *   - `saucelabs`: Launches the browser within Saucelabs
  */
 const browserConfig = {
-  'Edge83':            {unitTest: {target: 'saucelabs'}},
+  'Edge83':            {unitTest: {target: 'browserstack'}},
   'iOS13':             {unitTest: {target: 'saucelabs'}},
   'Safari13':          {unitTest: {target: 'browserstack'}},
 };
