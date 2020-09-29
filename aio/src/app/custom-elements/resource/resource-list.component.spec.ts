@@ -63,7 +63,7 @@ describe('ResourceListComponent', () => {
   it('should set the query to the "education" category when user selects "education"', () => {
     component = getComponent();
     component.selectCategory('education');
-    expect(locationService.searchResult['category']).toBe('education');
+    expect(locationService.searchResult.category).toBe('education');
   });
 
   it('should set the query to the first category when user selects unknown name', () => {
@@ -71,7 +71,7 @@ describe('ResourceListComponent', () => {
     component.selectCategory('education'); // a legit group that isn't the first
 
     component.selectCategory('foo'); // not a legit group name
-    expect(locationService.searchResult['category']).toBe('development');
+    expect(locationService.searchResult.category).toBe('development');
   });
 
   //// Test Helpers ////
