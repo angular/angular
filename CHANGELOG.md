@@ -1,3 +1,60 @@
+## 10.2.3 "polyester-pancake" (2020-09-28)
+
+### cdk
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **table:** add fallback code if view repeater isn't provided ([#20604](https://github.com/angular/components/issues/20604)) ([bfb7e57](https://github.com/angular/components/commit/bfb7e57)), closes [#20601](https://github.com/angular/components/issues/20601) |
+
+
+## 10.2.2 "cement-flower" (2020-09-21)
+
+### cdk
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **tree:** remove FocusMonitor from CdkTreeModule providers ([#20493](https://github.com/angular/components/issues/20493)) ([7ec2ee5](https://github.com/angular/components/commit/7ec2ee5)) |
+
+### material
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **button-toggle:** don't use divs inside button template ([#20390](https://github.com/angular/components/issues/20390)) ([95e48bb](https://github.com/angular/components/commit/95e48bb)), closes [#20376](https://github.com/angular/components/issues/20376) |
+| bug fix |  **datepicker:** remove red shadow from invalid range inputs in Firefox ([#20489](https://github.com/angular/components/issues/20489)) ([bdc5aa3](https://github.com/angular/components/commit/bdc5aa3)), closes [#20483](https://github.com/angular/components/issues/20483) |
+| bug fix |  **list/testing:** avoid element selectors that could conflict with the MDC version ([#20528](https://github.com/angular/components/issues/20528)) ([989463f](https://github.com/angular/components/commit/989463f)) |
+| bug fix |  **radio:** take default tabindex value from attribute ([#20453](https://github.com/angular/components/issues/20453)) ([1f4d598](https://github.com/angular/components/commit/1f4d598)) |
+| bug fix |  **tabs:** always defaulting focusIndex to 0 on initialization ([#20384](https://github.com/angular/components/issues/20384)) ([60a3527](https://github.com/angular/components/commit/60a3527)), closes [#20374](https://github.com/angular/components/issues/20374) |
+| performance |  **drag-drop:** bind fewer touchmove listeners ([#20404](https://github.com/angular/components/issues/20404)) ([f7e0f31](https://github.com/angular/components/commit/f7e0f31)) |
+
+### chips
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **testing:** exclude icons from getText result ([#20508](https://github.com/angular/components/issues/20508)) ([16f9f83](https://github.com/angular/components/commit/16f9f83)), closes [#20503](https://github.com/angular/components/issues/20503) |
+
+
+## 10.2.1 "wooden-cowboy" (2020-09-14)
+
+### cdk
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **table:** resolve breaking constructor changes ([#20425](https://github.com/angular/components/issues/20425)) ([fdd87b9](https://github.com/angular/components/commit/fdd87b9)), closes [#19964](https://github.com/angular/components/issues/19964) [#19750](https://github.com/angular/components/issues/19750) [#20422](https://github.com/angular/components/issues/20422) |
+| bug fix |  **tree:** remove CdkTreeNodeDef from CdkTreeModules providers ([#20491](https://github.com/angular/components/issues/20491)) ([1887f80](https://github.com/angular/components/commit/1887f80)) |
+
+### material
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **datepicker:** don't revalidate if new date object for same date is passed through input ([#20362](https://github.com/angular/components/issues/20362)) ([5dca925](https://github.com/angular/components/commit/5dca925)), closes [#19907](https://github.com/angular/components/issues/19907) |
+
+### material-experimental
+
+|            |                       |
+| ---------- | --------------------- |
+| feature |  bump peer dependency to MDC v8.0.0 canary ([#20527](https://github.com/angular/components/issues/20527)) ([1dd6edb](https://github.com/angular/components/commit/1dd6edb)) |
+
+
 # 10.2.0 "cloth-shirt" (2020-09-02)
 
 ### cdk
