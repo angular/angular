@@ -26,7 +26,7 @@ describe('instructions', () => {
   }
 
   function createDiv() {
-    ɵɵelement(0, 'div', 0);
+    ɵɵelement(0, 'div');
   }
 
   function createScript() {
@@ -36,7 +36,7 @@ describe('instructions', () => {
   describe('ɵɵadvance', () => {
     it('should error in DevMode if index is out of range', () => {
       // Only one constant added, meaning only index `0` is valid.
-      const t = new TemplateFixture(createDiv, () => {}, 1, 0);
+      const t = new TemplateFixture({create: createDiv, decls: 1});
       expect(() => {
         t.update(() => {
           ɵɵadvance(-1);
@@ -52,7 +52,7 @@ describe('instructions', () => {
 
   describe('bind', () => {
     it('should update bindings when value changes with the correct perf counters', () => {
-      const t = new TemplateFixture(createAnchor, () => {}, 1, 1);
+      const t = new TemplateFixture({create: createAnchor, update: () => {}, decls: 1, vars: 1});
 
       t.update(() => {
         ɵɵproperty('title', 'Hello');
@@ -77,7 +77,8 @@ describe('instructions', () => {
          const idempotentUpdate = () => {
            ɵɵproperty('title', 'Hello');
          };
-         const t = new TemplateFixture(createAnchor, idempotentUpdate, 1, 1);
+         const t = new TemplateFixture(
+             {create: createAnchor, update: idempotentUpdate, decls: 1, vars: 1});
 
          t.update();
          expect(t.html).toEqual('<a title="Hello"></a>');
@@ -96,9 +97,14 @@ describe('instructions', () => {
 
   describe('element', () => {
     it('should create an element with the correct perf counters', () => {
-      const t = new TemplateFixture(() => {
-        ɵɵelement(0, 'div', 0);
-      }, () => {}, 1, 0, null, null, null, undefined, [['id', 'test', 'title', 'Hello']]);
+      const t = new TemplateFixture({
+        create: () => {
+          ɵɵelement(0, 'div', 0);
+        },
+        decls: 1,
+        vars: 0,
+        consts: [['id', 'test', 'title', 'Hello']]
+      });
 
       const div = (t.hostElement as HTMLElement).querySelector('div')!;
       expect(div.id).toEqual('test');
@@ -114,7 +120,7 @@ describe('instructions', () => {
 
   describe('attribute', () => {
     it('should use sanitizer function', () => {
-      const t = new TemplateFixture(createDiv, () => {}, 1, 1);
+      const t = new TemplateFixture({create: createDiv, decls: 1, vars: 1});
 
       t.update(() => {
         ɵɵattribute('title', 'javascript:true', ɵɵsanitizeUrl);
@@ -143,7 +149,7 @@ describe('instructions', () => {
      */
     it('should chain', () => {
       // <div [title]="title" [accesskey]="key"></div>
-      const t = new TemplateFixture(createDiv, () => {}, 1, 2);
+      const t = new TemplateFixture({create: createDiv, update: () => {}, decls: 1, vars: 2});
       t.update(() => {
         ɵɵproperty('title', 'one')('accessKey', 'A');
       });
@@ -165,14 +171,16 @@ describe('instructions', () => {
   describe('styleProp', () => {
     it('should allow values even if a bypass operation is applied', () => {
       let backgroundImage: string|SafeValue = 'url("http://server")';
-      const t = new TemplateFixture(
-          () => {
-            return createDiv();
-          },
-          () => {
-            ɵɵstyleProp('background-image', backgroundImage);
-          },
-          2, 2);
+      const t = new TemplateFixture({
+        create: () => {
+          return createDiv();
+        },
+        update: () => {
+          ɵɵstyleProp('background-image', backgroundImage);
+        },
+        decls: 2,
+        vars: 2
+      });
       // nothing is set because sanitizer suppresses it.
       expect((t.hostElement.firstChild as HTMLElement).style.getPropertyValue('background-image'))
           .toEqual('url("http://server")');
@@ -192,9 +200,15 @@ describe('instructions', () => {
     }
 
     it('should add style', () => {
-      const fixture = new TemplateFixture(createDivWithStyle, () => {
-        ɵɵstyleMap({'background-color': 'red'});
-      }, 1, 2, null, null, null, undefined, attrs);
+      const fixture = new TemplateFixture({
+        create: createDivWithStyle,
+        update: () => {
+          ɵɵstyleMap({'background-color': 'red'});
+        },
+        decls: 1,
+        vars: 2,
+        consts: attrs
+      });
       fixture.update();
       expect(fixture.html).toEqual('<div style="background-color: red; height: 10px;"></div>');
     });
@@ -206,9 +220,14 @@ describe('instructions', () => {
     }
 
     it('should add class', () => {
-      const fixture = new TemplateFixture(createDivWithStyling, () => {
-        ɵɵclassMap('multiple classes');
-      }, 1, 2);
+      const fixture = new TemplateFixture({
+        create: createDivWithStyling,
+        update: () => {
+          ɵɵclassMap('multiple classes');
+        },
+        decls: 1,
+        vars: 2
+      });
       const div = fixture.containerElement.querySelector('div.multiple')!;
       expect(getSortedClassName(div)).toEqual('classes multiple');
     });
@@ -284,7 +303,7 @@ describe('instructions', () => {
   describe('sanitization injection compatibility', () => {
     it('should work for url sanitization', () => {
       const s = new LocalMockSanitizer(value => `${value}-sanitized`);
-      const t = new TemplateFixture(createAnchor, undefined, 1, 1, null, null, s);
+      const t = new TemplateFixture({create: createAnchor, decls: 1, vars: 1, sanitizer: s});
       const inputValue = 'http://foo';
       const outputValue = 'http://foo-sanitized';
 
@@ -297,7 +316,7 @@ describe('instructions', () => {
 
     it('should bypass url sanitization if marked by the service', () => {
       const s = new LocalMockSanitizer(value => '');
-      const t = new TemplateFixture(createAnchor, undefined, 1, 1, null, null, s);
+      const t = new TemplateFixture({create: createAnchor, decls: 1, vars: 1, sanitizer: s});
       const inputValue = s.bypassSecurityTrustUrl('http://foo');
       const outputValue = 'http://foo';
 
@@ -310,7 +329,7 @@ describe('instructions', () => {
 
     it('should bypass ivy-level url sanitization if a custom sanitizer is used', () => {
       const s = new LocalMockSanitizer(value => '');
-      const t = new TemplateFixture(createAnchor, undefined, 1, 1, null, null, s);
+      const t = new TemplateFixture({create: createAnchor, decls: 1, vars: 1, sanitizer: s});
       const inputValue = bypassSanitizationTrustUrl('http://foo');
       const outputValue = 'http://foo-ivy';
 
@@ -323,7 +342,7 @@ describe('instructions', () => {
 
     it('should work for style sanitization', () => {
       const s = new LocalMockSanitizer(value => `color:blue`);
-      const t = new TemplateFixture(createDiv, undefined, 1, 1, null, null, s);
+      const t = new TemplateFixture({create: createDiv, decls: 1, vars: 1, sanitizer: s});
       const inputValue = 'color:red';
       const outputValue = 'color:blue';
 
@@ -336,7 +355,7 @@ describe('instructions', () => {
 
     it('should bypass style sanitization if marked by the service', () => {
       const s = new LocalMockSanitizer(value => '');
-      const t = new TemplateFixture(createDiv, undefined, 1, 1, null, null, s);
+      const t = new TemplateFixture({create: createDiv, decls: 1, vars: 1, sanitizer: s});
       const inputValue = s.bypassSecurityTrustStyle('color:maroon');
       const outputValue = 'color:maroon';
 
@@ -349,7 +368,7 @@ describe('instructions', () => {
 
     it('should bypass ivy-level style sanitization if a custom sanitizer is used', () => {
       const s = new LocalMockSanitizer(value => '');
-      const t = new TemplateFixture(createDiv, undefined, 1, 1, null, null, s);
+      const t = new TemplateFixture({create: createDiv, decls: 1, vars: 1, sanitizer: s});
       const inputValue = bypassSanitizationTrustStyle('font-family:foo');
       const outputValue = 'font-family:foo-ivy';
 
@@ -362,7 +381,7 @@ describe('instructions', () => {
 
     it('should work for resourceUrl sanitization', () => {
       const s = new LocalMockSanitizer(value => `${value}-sanitized`);
-      const t = new TemplateFixture(createScript, undefined, 1, 1, null, null, s);
+      const t = new TemplateFixture({create: createScript, decls: 1, vars: 1, sanitizer: s});
       const inputValue = 'http://resource';
       const outputValue = 'http://resource-sanitized';
 
@@ -375,7 +394,7 @@ describe('instructions', () => {
 
     it('should bypass resourceUrl sanitization if marked by the service', () => {
       const s = new LocalMockSanitizer(value => '');
-      const t = new TemplateFixture(createScript, undefined, 1, 1, null, null, s);
+      const t = new TemplateFixture({create: createScript, decls: 1, vars: 1, sanitizer: s});
       const inputValue = s.bypassSecurityTrustResourceUrl('file://all-my-secrets.pdf');
       const outputValue = 'file://all-my-secrets.pdf';
 
@@ -388,7 +407,7 @@ describe('instructions', () => {
 
     it('should bypass ivy-level resourceUrl sanitization if a custom sanitizer is used', () => {
       const s = new LocalMockSanitizer(value => '');
-      const t = new TemplateFixture(createScript, undefined, 1, 1, null, null, s);
+      const t = new TemplateFixture({create: createScript, decls: 1, vars: 1, sanitizer: s});
       const inputValue = bypassSanitizationTrustResourceUrl('file://all-my-secrets.pdf');
       const outputValue = 'file://all-my-secrets.pdf-ivy';
 
@@ -401,7 +420,7 @@ describe('instructions', () => {
 
     it('should work for script sanitization', () => {
       const s = new LocalMockSanitizer(value => `${value} //sanitized`);
-      const t = new TemplateFixture(createScript, undefined, 1, 1, null, null, s);
+      const t = new TemplateFixture({create: createScript, decls: 1, vars: 1, sanitizer: s});
       const inputValue = 'fn();';
       const outputValue = 'fn(); //sanitized';
 
@@ -414,7 +433,7 @@ describe('instructions', () => {
 
     it('should bypass script sanitization if marked by the service', () => {
       const s = new LocalMockSanitizer(value => '');
-      const t = new TemplateFixture(createScript, undefined, 1, 1, null, null, s);
+      const t = new TemplateFixture({create: createScript, decls: 1, vars: 1, sanitizer: s});
       const inputValue = s.bypassSecurityTrustScript('alert("bar")');
       const outputValue = 'alert("bar")';
 
@@ -427,7 +446,7 @@ describe('instructions', () => {
 
     it('should bypass ivy-level script sanitization if a custom sanitizer is used', () => {
       const s = new LocalMockSanitizer(value => '');
-      const t = new TemplateFixture(createScript, undefined, 1, 1, null, null, s);
+      const t = new TemplateFixture({create: createScript, decls: 1, vars: 1, sanitizer: s});
       const inputValue = bypassSanitizationTrustScript('alert("bar")');
       const outputValue = 'alert("bar")-ivy';
 
@@ -440,7 +459,7 @@ describe('instructions', () => {
 
     it('should work for html sanitization', () => {
       const s = new LocalMockSanitizer(value => `${value} <!--sanitized-->`);
-      const t = new TemplateFixture(createDiv, undefined, 1, 1, null, null, s);
+      const t = new TemplateFixture({create: createDiv, decls: 1, vars: 1, sanitizer: s});
       const inputValue = '<header></header>';
       const outputValue = '<header></header> <!--sanitized-->';
 
@@ -453,7 +472,7 @@ describe('instructions', () => {
 
     it('should bypass html sanitization if marked by the service', () => {
       const s = new LocalMockSanitizer(value => '');
-      const t = new TemplateFixture(createDiv, undefined, 1, 1, null, null, s);
+      const t = new TemplateFixture({create: createDiv, decls: 1, vars: 1, sanitizer: s});
       const inputValue = s.bypassSecurityTrustHtml('<div onclick="alert(123)"></div>');
       const outputValue = '<div onclick="alert(123)"></div>';
 
@@ -466,7 +485,7 @@ describe('instructions', () => {
 
     it('should bypass ivy-level script sanitization if a custom sanitizer is used', () => {
       const s = new LocalMockSanitizer(value => '');
-      const t = new TemplateFixture(createDiv, undefined, 1, 1, null, null, s);
+      const t = new TemplateFixture({create: createDiv, decls: 1, vars: 1, sanitizer: s});
       const inputValue = bypassSanitizationTrustHtml('<div onclick="alert(123)"></div>');
       const outputValue = '<div onclick="alert(123)"></div>-ivy';
 

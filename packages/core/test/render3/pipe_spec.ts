@@ -52,14 +52,24 @@ describe('pipe', () => {
     }
 
     it('should unwrap', () => {
-      const fixture =
-          new TemplateFixture(createTemplate, updateTemplate, 2, 3, undefined, [WrappingPipe]);
+      const fixture = new TemplateFixture({
+        create: createTemplate,
+        update: updateTemplate,
+        decls: 2,
+        vars: 3,
+        pipes: [WrappingPipe]
+      });
       expect(fixture.html).toEqual('Bar');
     });
 
     it('should force change detection', () => {
-      const fixture =
-          new TemplateFixture(createTemplate, updateTemplate, 2, 3, undefined, [WrappingPipe]);
+      const fixture = new TemplateFixture({
+        create: createTemplate,
+        update: updateTemplate,
+        decls: 2,
+        vars: 3,
+        pipes: [WrappingPipe]
+      });
       expect(fixture.html).toEqual('Bar');
 
       fixture.hostElement.childNodes[0]!.textContent = 'Foo';
@@ -101,15 +111,18 @@ describe('pipe', () => {
       static ɵpipe = ɵɵdefinePipe({name: 'sayHello', type: SayHelloPipe, pure: true});
     }
 
-    const fixture = new TemplateFixture(
-        () => {
-          ɵɵtext(0);
-          ɵɵpipe(1, 'sayHello');
-        },
-        () => {
-          ɵɵtextInterpolate1('', ɵɵpipeBind1(1, 1, null), '');
-        },
-        2, 3, undefined, [SayHelloPipe]);
+    const fixture = new TemplateFixture({
+      create: () => {
+        ɵɵtext(0);
+        ɵɵpipe(1, 'sayHello');
+      },
+      update: () => {
+        ɵɵtextInterpolate1('', ɵɵpipeBind1(1, 1, null), '');
+      },
+      decls: 2,
+      vars: 3,
+      pipes: [SayHelloPipe]
+    });
 
     expect(fixture.html).toBe('Hello there');
   });

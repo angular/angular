@@ -29,7 +29,7 @@ import {NodeInjectorFactory, NodeInjectorOffset} from '../interfaces/injector';
 import {AttributeMarker, InitialInputData, InitialInputs, LocalRefExtractor, PropertyAliases, PropertyAliasValue, TAttributes, TConstantsOrFactory, TContainerNode, TDirectiveHostNode, TElementContainerNode, TElementNode, TIcuContainerNode, TNode, TNodeFlags, TNodeProviderIndexes, TNodeType, TProjectionNode} from '../interfaces/node';
 import {isProceduralRenderer, RComment, RElement, Renderer3, RendererFactory3, RNode, RText} from '../interfaces/renderer';
 import {SanitizerFn} from '../interfaces/sanitization';
-import {isComponentDef, isComponentHost, isContentQueryHost, isLContainer, isRootView} from '../interfaces/type_checks';
+import {isComponentDef, isComponentHost, isContentQueryHost, isRootView} from '../interfaces/type_checks';
 import {CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTEXT, DECLARATION_COMPONENT_VIEW, DECLARATION_VIEW, FLAGS, HEADER_OFFSET, HOST, InitPhaseState, INJECTOR, LView, LViewFlags, NEXT, PARENT, RENDERER, RENDERER_FACTORY, RootContext, RootContextFlags, SANITIZER, T_HOST, TData, TRANSPLANTED_VIEWS_TO_REFRESH, TVIEW, TView, TViewType} from '../interfaces/view';
 import {assertNodeNotOfTypes, assertNodeOfPossibleTypes} from '../node_assert';
 import {isInlineTemplate, isNodeMatchingSelectorList} from '../node_selector_matcher';
@@ -822,6 +822,7 @@ export function createTNode(
 export function createTNode(
     tView: TView, tParent: TElementNode|TContainerNode|null, type: TNodeType, adjustedIndex: number,
     tagName: string|null, attrs: TAttributes|null): TNode {
+  ngDevMode && assertNotSame(attrs, undefined, '\'undefined\' is not valid value for \'attrs\'');
   ngDevMode && ngDevMode.tNode++;
   let injectorIndex = tParent ? tParent.injectorIndex : -1;
   const tNode = ngDevMode ?

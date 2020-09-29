@@ -57,19 +57,15 @@ describe('Runtime i18n', () => {
     });
   });
 
-  function prepareFixture(
-      createTemplate: () => void, updateTemplate: (() => void)|null, nbConsts = 0, nbVars = 0,
-      consts: TConstants = []): TemplateFixture {
-    return new TemplateFixture(
-        createTemplate, updateTemplate || noop, nbConsts, nbVars, null, null, null, undefined,
-        consts);
-  }
-
   function getOpCodes(
       messageOrAtrs: string|string[], createTemplate: () => void, updateTemplate: (() => void)|null,
-      nbConsts: number, index: number): TI18n|I18nUpdateOpCodes {
-    const fixture =
-        prepareFixture(createTemplate, updateTemplate, nbConsts, undefined, [messageOrAtrs]);
+      nbDecls: number, index: number): TI18n|I18nUpdateOpCodes {
+    const fixture = new TemplateFixture({
+      create: createTemplate,
+      update: updateTemplate || undefined,
+      decls: nbDecls,
+      consts: [messageOrAtrs]
+    });
     const tView = fixture.hostView[TVIEW];
     return tView.data[index + HEADER_OFFSET] as TI18n;
   }
@@ -435,13 +431,18 @@ describe('Runtime i18n', () => {
     it('for text', () => {
       const message = `Hello world!`;
       const attrs = ['title', message];
-      const nbConsts = 2;
+      const nbDecls = 2;
       const index = 1;
-      const fixture = prepareFixture(() => {
-        ɵɵelementStart(0, 'div');
-        ɵɵi18nAttributes(index, 0);
-        ɵɵelementEnd();
-      }, null, nbConsts, index, [attrs]);
+      const fixture = new TemplateFixture({
+        create: () => {
+          ɵɵelementStart(0, 'div');
+          ɵɵi18nAttributes(index, 0);
+          ɵɵelementEnd();
+        },
+        decls: nbDecls,
+        vars: index,
+        consts: [attrs],
+      });
       const tView = fixture.hostView[TVIEW];
       const opCodes = tView.data[index + HEADER_OFFSET] as I18nUpdateOpCodes;
 

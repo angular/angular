@@ -372,11 +372,16 @@ describe('event listeners', () => {
       });
     }
 
-    const fixture = new TemplateFixture(() => {
-      ɵɵelementStart(0, 'button', 0);
-      ɵɵtext(1, 'Click');
-      ɵɵelementEnd();
-    }, () => {}, 2, 0, [HostListenerDir], null, null, undefined, [['hostListenerDir', '']]);
+    const fixture = new TemplateFixture({
+      create: () => {
+        ɵɵelementStart(0, 'button', 0);
+        ɵɵtext(1, 'Click');
+        ɵɵelementEnd();
+      },
+      decls: 2,
+      directives: [HostListenerDir],
+      consts: [['hostListenerDir', '']]
+    });
 
     const button = fixture.hostElement.querySelector('button')!;
 
@@ -388,9 +393,14 @@ describe('event listeners', () => {
   });
 
   it('should support global host listeners on directives', () => {
-    const fixture = new TemplateFixture(() => {
-      ɵɵelement(0, 'div', 0);
-    }, () => {}, 1, 0, [GlobalHostListenerDir], null, null, undefined, [['hostListenerDir', '']]);
+    const fixture = new TemplateFixture({
+      create: () => {
+        ɵɵelement(0, 'div', 0);
+      },
+      decls: 1,
+      directives: [GlobalHostListenerDir],
+      consts: [['hostListenerDir', '']]
+    });
 
     const doc = fixture.hostElement.ownerDocument!;
 
