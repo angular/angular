@@ -3027,6 +3027,13 @@ describe('Integration', () => {
                   resolve: {data: 'resolver'},
                 },
               ]
+            },
+            {
+              path: 'throwing',
+              runGuardsAndResolvers,
+              component: ThrowingCmp,
+              canActivate: ['guard'],
+              resolve: {data: 'resolver'}
             }
           ]);
 
@@ -3125,6 +3132,15 @@ describe('Integration', () => {
              advance(fixture);
              expect(guardRunCount).toEqual(5);
              expect(recordedData).toEqual([{data: 0}, {data: 1}, {data: 2}, {data: 3}, {data: 4}]);
+
+             // Issue #39030, always running guards and resolvers should not throw
+             // when navigating away from a component with a throwing constructor.
+             expect(() => {
+               router.navigateByUrl('/throwing').catch(() => {});
+               advance(fixture);
+               router.navigateByUrl('/a;p=1');
+               advance(fixture);
+             }).not.toThrow();
            })));
 
         it('should rerun rerun guards and resolvers when path params change',
