@@ -28,7 +28,7 @@ export class MyComponent {
   private _control = new FormControl();
 
   getParentValue() {
-    return this._control.parent!.value;
+    return this._control.parent!.value; // <- Non-null assertion added during the migration.
   }
 }
 ```

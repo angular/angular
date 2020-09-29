@@ -79,11 +79,29 @@ function isNullCheck(node: ts.PropertyAccessExpression): boolean {
     return false;
   }
 
-  return (ts.isBinaryExpression(node.parent) && node.parent.left === node) ||
-      (node.parent.parent && ts.isBinaryExpression(node.parent.parent) &&
-       node.parent.parent.left === node.parent) ||
-      (ts.isIfStatement(node.parent) && node.parent.expression === node) ||
-      (ts.isConditionalExpression(node.parent) && node.parent.condition === node);
+  // `control.parent && control.parent.value` where `node` is `control.parent`.
+  if (ts.isBinaryExpression(node.parent) && node.parent.left === node) {
+    return true;
+  }
+
+  // `control.parent && control.parent.parent && control.parent.parent.value`
+  // where `node` is `control.parent`.
+  if (node.parent.parent && ts.isBinaryExpression(node.parent.parent) &&
+      node.parent.parent.left === node.parent) {
+    return true;
+  }
+
+  // `if (control.parent) {...}` where `node` is `control.parent`.
+  if (ts.isIfStatement(node.parent) && node.parent.expression === node) {
+    return true;
+  }
+
+  // `control.parent ? control.parent.value : null` where `node` is `control.parent`.
+  if (ts.isConditionalExpression(node.parent) && node.parent.condition === node) {
+    return true;
+  }
+
+  return false;
 }
 
 /** Checks whether a property access is safe (e.g. `foo.parent?.value`). */
@@ -96,6 +114,7 @@ function isSafeAccess(node: ts.PropertyAccessExpression): boolean {
 function isAbstractControlReference(
     typeChecker: ts.TypeChecker, node: ts.PropertyAccessExpression): boolean {
   let current: ts.Expression = node;
+  const formsPattern = /node_modules\/?.*\/@angular\/forms/;
   // Walks up the property access chain and tries to find a symbol tied to a `SourceFile`.
   // If such a node is found, we check whether the type is one of the `AbstractControl` symbols
   // and whether it comes from the `@angular/forms` directory in the `node_modules`.
@@ -104,7 +123,6 @@ function isAbstractControlReference(
     const symbol = type.getSymbol();
     if (symbol && type) {
       const sourceFile = symbol.valueDeclaration?.getSourceFile();
-      const formsPattern = /node_modules\/?.*\/@angular\/forms/;
       return sourceFile != null &&
           formsPattern.test(normalize(sourceFile.fileName).replace(/\\/g, '/')) &&
           hasAbstractControlType(typeChecker, type);
