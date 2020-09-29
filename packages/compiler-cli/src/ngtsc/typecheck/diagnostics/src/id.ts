@@ -7,6 +7,7 @@
  */
 
 import * as ts from 'typescript';
+import {DeclarationNode} from '../../../reflection';
 
 import {TemplateId} from '../../api';
 
@@ -22,7 +23,7 @@ interface HasNextTemplateId {
   [NEXT_TEMPLATE_ID]: number;
 }
 
-export function getTemplateId(clazz: ts.Declaration): TemplateId {
+export function getTemplateId(clazz: DeclarationNode): TemplateId {
   const node = clazz as ts.Declaration & Partial<HasTemplateId>;
   if (node[TEMPLATE_ID] === undefined) {
     node[TEMPLATE_ID] = allocateTemplateId(node.getSourceFile());

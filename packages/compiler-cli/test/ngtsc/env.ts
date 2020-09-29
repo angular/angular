@@ -16,6 +16,7 @@ import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem, NgtscCompilerHo
 import {Folder, MockFileSystem} from '../../src/ngtsc/file_system/testing';
 import {IndexedComponent} from '../../src/ngtsc/indexer';
 import {NgtscProgram} from '../../src/ngtsc/program';
+import {DeclarationNode} from '../../src/ngtsc/reflection';
 import {LazyRoute} from '../../src/ngtsc/routing';
 import {setWrapHostForTest} from '../../src/transformers/compiler_host';
 import {getCachedSourceFile} from '../helpers';
@@ -259,7 +260,7 @@ export class NgtscTestEnvironment {
     return program.listLazyRoutes(entryPoint);
   }
 
-  driveIndexer(): Map<ts.Declaration, IndexedComponent> {
+  driveIndexer(): Map<DeclarationNode, IndexedComponent> {
     const {rootNames, options} = readNgcCommandLineAndConfiguration(['-p', this.basePath]);
     const host = createCompilerHost({options});
     const program = createProgram({rootNames, host, options});

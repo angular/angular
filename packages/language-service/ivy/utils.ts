@@ -7,6 +7,7 @@
  */
 import {AbsoluteSourceSpan, CssSelector, ParseSourceSpan, SelectorMatcher} from '@angular/compiler';
 import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
+import {DeclarationNode} from '@angular/compiler-cli/src/ngtsc/reflection';
 import {DirectiveSymbol} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
 import * as e from '@angular/compiler/src/expression_parser/ast';  // e for expression AST
 import * as t from '@angular/compiler/src/render3/r3_ast';         // t for template AST
@@ -81,7 +82,7 @@ export function getTemplateInfoAtPosition(
  * First, attempt to sort component declarations by file name.
  * If the files are the same, sort by start location of the declaration.
  */
-function tsDeclarationSortComparator(a: ts.Declaration, b: ts.Declaration): number {
+function tsDeclarationSortComparator(a: DeclarationNode, b: DeclarationNode): number {
   const aFile = a.getSourceFile().fileName;
   const bFile = b.getSourceFile().fileName;
   if (aFile < bFile) {

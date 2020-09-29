@@ -29,7 +29,7 @@ export function getComponentDeclaration(componentStr: string, className: string)
 
   return getDeclaration(
       program.program, getTestFilePath(), className,
-      (value: ts.Declaration): value is ClassDeclaration => ts.isClassDeclaration(value));
+      (value: ts.Node): value is ClassDeclaration => ts.isClassDeclaration(value));
 }
 
 /**

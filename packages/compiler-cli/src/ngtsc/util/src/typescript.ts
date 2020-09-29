@@ -11,6 +11,7 @@ const D_TS = /\.d\.ts$/i;
 
 import * as ts from 'typescript';
 import {AbsoluteFsPath, absoluteFrom} from '../../file_system';
+import {DeclarationNode} from '../../reflection';
 
 export function isDtsPath(filePath: string): boolean {
   return D_TS.test(filePath);
@@ -82,7 +83,7 @@ export function isTypeDeclaration(node: ts.Node): node is ts.EnumDeclaration|
       ts.isInterfaceDeclaration(node);
 }
 
-export function isExported(node: ts.Declaration): boolean {
+export function isExported(node: DeclarationNode): boolean {
   let topLevel: ts.Node = node;
   if (ts.isVariableDeclaration(node) && ts.isVariableDeclarationList(node.parent)) {
     topLevel = node.parent.parent;
