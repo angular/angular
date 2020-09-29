@@ -232,9 +232,12 @@ describe('ViewContainerRef', () => {
           ɵɵelement(1, 'footer');
         }
 
-        new TemplateFixture(
-            createTemplate, undefined, 2, 0, [DirectiveWithVCRef], null, null, undefined,
-            [['vcref', '']]);
+        new TemplateFixture({
+          create: createTemplate,
+          decls: 2,
+          directives: [DirectiveWithVCRef],
+          consts: [['vcref', '']]
+        });
 
         expect(directiveInstance!.vcref.element.nativeElement.tagName.toLowerCase())
             .toEqual('header');
@@ -253,9 +256,12 @@ describe('ViewContainerRef', () => {
           ɵɵelement(1, 'footer');
         }
 
-        new TemplateFixture(
-            createTemplate, undefined, 2, 0, [HeaderComponent, DirectiveWithVCRef], null, null,
-            undefined, [['vcref', '']]);
+        new TemplateFixture({
+          create: createTemplate,
+          decls: 2,
+          directives: [HeaderComponent, DirectiveWithVCRef],
+          consts: [['vcref', '']]
+        });
 
         expect(directiveInstance!.vcref.element.nativeElement.tagName.toLowerCase())
             .toEqual('header-cmp');
@@ -430,10 +436,10 @@ describe('ViewContainerRef', () => {
       fixture.update();
 
       // Destroying the parent view will also destroy all of its children views and call their
-      // onDestroy hooks. Here, our child view attempts to destroy itself *again* in its onDestroy.
-      // This test exists to verify that no errors are thrown when doing this. We want the test
-      // component to destroy its own view in onDestroy because the destroy hooks happen as a
-      // *part of* view destruction. We also ensure that the test component has at least one
+      // onDestroy hooks. Here, our child view attempts to destroy itself *again* in its
+      // onDestroy. This test exists to verify that no errors are thrown when doing this. We want
+      // the test component to destroy its own view in onDestroy because the destroy hooks happen
+      // as a *part of* view destruction. We also ensure that the test component has at least one
       // listener so that it runs the event listener cleanup code path.
       fixture.destroy();
     });

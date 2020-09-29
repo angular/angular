@@ -15,6 +15,7 @@ import {Renderer2} from '@angular/core/src/render/api';
 import {createLView, createTView, getOrCreateTComponentView, getOrCreateTNode, renderComponentOrTemplate} from '@angular/core/src/render3/instructions/shared';
 import {TConstants, TNodeType} from '@angular/core/src/render3/interfaces/node';
 import {enterView, getLView} from '@angular/core/src/render3/state';
+import {EMPTY_ARRAY} from '@angular/core/src/util/empty';
 import {stringifyElement} from '@angular/platform-browser/testing/src/browser_util';
 
 import {SWITCH_CHANGE_DETECTOR_REF_FACTORY__POST_R3__ as R3_CHANGE_DETECTOR_REF_FACTORY} from '../../src/change_detection/change_detector_ref';
@@ -97,6 +98,10 @@ export class TemplateFixture extends BaseFixture {
   private _pipeDefs: PipeDefList|null;
   private _sanitizer: Sanitizer|null;
   private _rendererFactory: RendererFactory3;
+  private _consts: TConstants;
+  private _vars: number;
+  private createBlock: () => void;
+  private updateBlock: () => void;
 
   /**
    *
@@ -105,16 +110,36 @@ export class TemplateFixture extends BaseFixture {
    * @param updateBlock Optional instructions which go into the update block:
    *          `if (rf & RenderFlags.Update) { __here__ }`.
    */
-  constructor(
-      private createBlock: () => void, private updateBlock: () => void = noop, decls: number = 0,
-      private vars: number = 0, directives?: DirectiveTypesOrFactory|null,
-      pipes?: PipeTypesOrFactory|null, sanitizer?: Sanitizer|null,
-      rendererFactory?: RendererFactory3, private _consts?: TConstants) {
+  constructor({
+    create = noop,
+    update = noop,
+    decls = 0,
+    vars = 0,
+    directives,
+    pipes,
+    sanitizer = null,
+    rendererFactory = domRendererFactory3,
+    consts = EMPTY_ARRAY
+  }: {
+    create?: (() => void),
+    update?: (() => void),
+    decls?: number,
+    vars?: number,
+    directives?: DirectiveTypesOrFactory,
+    pipes?: PipeTypesOrFactory,
+    sanitizer?: Sanitizer|null,
+    rendererFactory?: RendererFactory3,
+    consts?: TConstants
+  }) {
     super();
+    this._consts = consts;
+    this._vars = vars;
+    this.createBlock = create;
+    this.updateBlock = update;
     this._directiveDefs = toDefs(directives, extractDirectiveDef);
     this._pipeDefs = toDefs(pipes, extractPipeDef);
-    this._sanitizer = sanitizer || null;
-    this._rendererFactory = rendererFactory || domRendererFactory3;
+    this._sanitizer = sanitizer;
+    this._rendererFactory = rendererFactory;
     this.hostView = renderTemplate(
         this.hostElement,
         (rf: RenderFlags, ctx: any) => {
@@ -136,7 +161,7 @@ export class TemplateFixture extends BaseFixture {
    */
   update(updateBlock?: () => void): void {
     renderTemplate(
-        this.hostElement, updateBlock || this.updateBlock, 0, this.vars, null!,
+        this.hostElement, updateBlock || this.updateBlock, 0, this._vars, null!,
         this._rendererFactory, this.hostView, this._directiveDefs, this._pipeDefs, this._sanitizer,
         this._consts);
   }
