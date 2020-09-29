@@ -964,8 +964,8 @@
       "children": [
         {
           "url": "about",
-          "title": "Contribuyentes",
-          "tooltip": "Contribuyentes de Angular."
+          "title": "Colaboradores",
+          "tooltip": "Colaboradores de Angular."
         },
         {
           "url": "resources",
@@ -1068,19 +1068,23 @@
       "title": "Idiomas",
       "children": [
         {
-          "title": "简体中文版",
+          "title": "Inglés",
+          "url": "https://angular.io/"
+        },
+        {
+          "title": "Chino simplificado",
           "url": "https://angular.cn/"
         },
         {
-          "title": "正體中文版",
+          "title": "Chino tradicional",
           "url": "https://angular.tw/"
         },
         {
-          "title": "日本語版",
+          "title": "Japonés",
           "url": "https://angular.jp/"
         },
         {
-          "title": "한국어",
+          "title": "Coreano",
           "url": "https://angular.kr/"
         }
       ]
