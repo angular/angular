@@ -17,7 +17,7 @@ import {DependencyTracker} from '../../incremental/api';
 import {IndexingContext} from '../../indexer';
 import {ClassPropertyMapping, DirectiveMeta, DirectiveTypeCheckMeta, extractDirectiveTypeCheckMeta, InjectableClassRegistry, MetadataReader, MetadataRegistry, TemplateMapping} from '../../metadata';
 import {EnumValue, PartialEvaluator} from '../../partial_evaluator';
-import {ClassDeclaration, Decorator, ReflectionHost, reflectObjectLiteral} from '../../reflection';
+import {ClassDeclaration, DeclarationNode, Decorator, ReflectionHost, reflectObjectLiteral} from '../../reflection';
 import {ComponentScopeReader, LocalModuleScopeRegistry} from '../../scope';
 import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerFlags, HandlerPrecedence, ResolveResult} from '../../transform';
 import {TemplateSourceMapping, TypeCheckContext} from '../../typecheck/api';
@@ -103,7 +103,7 @@ export class ComponentDecoratorHandler implements
    * any potential <link> tags which might need to be loaded. This cache ensures that work is not
    * thrown away, and the parsed template is reused during the analyze phase.
    */
-  private preanalyzeTemplateCache = new Map<ts.Declaration, ParsedTemplateWithSource>();
+  private preanalyzeTemplateCache = new Map<DeclarationNode, ParsedTemplateWithSource>();
 
   readonly precedence = HandlerPrecedence.PRIMARY;
   readonly name = ComponentDecoratorHandler.name;

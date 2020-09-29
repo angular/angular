@@ -6,13 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as ts from 'typescript';
+import {DeclarationNode} from '../../reflection';
 
 export interface PerfRecorder {
   readonly enabled: boolean;
 
-  mark(name: string, node?: ts.SourceFile|ts.Declaration, category?: string, detail?: string): void;
-  start(name: string, node?: ts.SourceFile|ts.Declaration, category?: string, detail?: string):
-      number;
+  mark(name: string, node?: DeclarationNode, category?: string, detail?: string): void;
+  start(name: string, node?: DeclarationNode, category?: string, detail?: string): number;
   stop(span: number): void;
 }

@@ -8,7 +8,7 @@
 import * as ts from 'typescript';
 
 import {absoluteFromSourceFile, AbsoluteFsPath} from '../../../src/ngtsc/file_system';
-import {ConcreteDeclaration} from '../../../src/ngtsc/reflection';
+import {Declaration} from '../../../src/ngtsc/reflection';
 import {NgccReflectionHost} from '../host/ngcc_host';
 import {hasNameIdentifier, isDefined} from '../utils';
 
@@ -40,8 +40,8 @@ export class PrivateDeclarationsAnalyzer {
 
   private getPrivateDeclarations(
       rootFiles: ts.SourceFile[],
-      declarations: Map<ts.Identifier, ConcreteDeclaration>): PrivateDeclarationsAnalyses {
-    const privateDeclarations: Map<ts.Identifier, ConcreteDeclaration> = new Map(declarations);
+      declarations: Map<ts.Identifier, Declaration>): PrivateDeclarationsAnalyses {
+    const privateDeclarations: Map<ts.Identifier, Declaration> = new Map(declarations);
 
     rootFiles.forEach(f => {
       const exports = this.host.getExportsOfModule(f);

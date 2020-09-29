@@ -10,7 +10,7 @@ import * as ts from 'typescript';
 
 import {absoluteFromSourceFile} from '../../../src/ngtsc/file_system';
 import {Logger} from '../../../src/ngtsc/logging';
-import {ClassDeclaration, ClassMember, ClassMemberKind, CtorParameter, Declaration, Decorator, EnumMember, Import, isDecoratorIdentifier, isNamedClassDeclaration, isNamedFunctionDeclaration, isNamedVariableDeclaration, KnownDeclaration, reflectObjectLiteral, SpecialDeclarationKind, TypeScriptReflectionHost, TypeValueReference, TypeValueReferenceKind, ValueUnavailableKind} from '../../../src/ngtsc/reflection';
+import {ClassDeclaration, ClassMember, ClassMemberKind, CtorParameter, Declaration, DeclarationNode, Decorator, EnumMember, Import, isConcreteDeclaration, isDecoratorIdentifier, isNamedClassDeclaration, isNamedFunctionDeclaration, isNamedVariableDeclaration, KnownDeclaration, reflectObjectLiteral, SpecialDeclarationKind, TypeScriptReflectionHost, TypeValueReference, TypeValueReferenceKind, ValueUnavailableKind} from '../../../src/ngtsc/reflection';
 import {isWithinPackage} from '../analysis/util';
 import {BundleProgram} from '../packages/bundle_program';
 import {findAll, getNameText, hasNameIdentifier, isDefined, stripDollarSuffix} from '../utils';
@@ -58,7 +58,7 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    * tree. Note that by definition the key and value declarations will not be in the same TS
    * program.
    */
-  protected publicDtsDeclarationMap: Map<ts.Declaration, ts.Declaration>|null = null;
+  protected publicDtsDeclarationMap: Map<DeclarationNode, ts.Declaration>|null = null;
   /**
    * A mapping from source declarations to typings declarations, which are not publicly exported.
    *
@@ -66,7 +66,7 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    * the same name in both the source and the dts file. Note that by definition the key and value
    * declarations will not be in the same TS program.
    */
-  protected privateDtsDeclarationMap: Map<ts.Declaration, ts.Declaration>|null = null;
+  protected privateDtsDeclarationMap: Map<DeclarationNode, ts.Declaration>|null = null;
 
   /**
    * The set of source files that have already been preprocessed.
@@ -88,7 +88,7 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    *
    * This map is populated during the preprocessing of each source file.
    */
-  protected aliasedClassDeclarations = new Map<ts.Declaration, ts.Identifier>();
+  protected aliasedClassDeclarations = new Map<DeclarationNode, ts.Identifier>();
 
   /**
    * Caches the information of the decorators on a class, as the work involved with extracting
@@ -140,16 +140,17 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    * Examine a declaration (for example, of a class or function) and return metadata about any
    * decorators present on the declaration.
    *
-   * @param declaration a TypeScript `ts.Declaration` node representing the class or function over
-   * which to reflect. For example, if the intent is to reflect the decorators of a class and the
-   * source is in ES6 format, this will be a `ts.ClassDeclaration` node. If the source is in ES5
-   * format, this might be a `ts.VariableDeclaration` as classes in ES5 are represented as the
-   * result of an IIFE execution.
+   * @param declaration a TypeScript node representing the class or function over which to reflect.
+   *     For example, if the intent is to reflect the decorators of a class and the source is in ES6
+   *     format, this will be a `ts.ClassDeclaration` node. If the source is in ES5 format, this
+   *     might be a `ts.VariableDeclaration` as classes in ES5 are represented as the result of an
+   *     IIFE execution.
    *
    * @returns an array of `Decorator` metadata if decorators are present on the declaration, or
-   * `null` if either no decorators were present or if the declaration is not of a decoratable type.
+   *     `null` if either no decorators were present or if the declaration is not of a decoratable
+   *     type.
    */
-  getDecoratorsOfDeclaration(declaration: ts.Declaration): Decorator[]|null {
+  getDecoratorsOfDeclaration(declaration: DeclarationNode): Decorator[]|null {
     const symbol = this.getClassSymbol(declaration);
     if (!symbol) {
       return null;
@@ -280,13 +281,14 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
   getDeclarationOfIdentifier(id: ts.Identifier): Declaration|null {
     const superDeclaration = super.getDeclarationOfIdentifier(id);
 
-    // If no declaration was found or it's an inline declaration, return as is.
-    if (superDeclaration === null || superDeclaration.node === null) {
+    // If no declaration was found, return.
+    if (superDeclaration === null) {
       return superDeclaration;
     }
 
     // If the declaration already has traits assigned to it, return as is.
-    if (superDeclaration.known !== null || superDeclaration.identity !== null) {
+    if (superDeclaration.known !== null ||
+        isConcreteDeclaration(superDeclaration) && superDeclaration.identity !== null) {
       return superDeclaration;
     }
 
@@ -302,7 +304,8 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
     const declaration = outerNode !== null && isNamedVariableDeclaration(outerNode) ?
         this.getDeclarationOfIdentifier(outerNode.name) :
         superDeclaration;
-    if (declaration === null || declaration.node === null || declaration.known !== null) {
+    if (declaration === null || declaration.known !== null ||
+        isConcreteDeclaration(declaration) && declaration.identity !== null) {
       return declaration;
     }
 
@@ -314,7 +317,7 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
     }
 
     // Variable declarations may represent an enum declaration, so attempt to resolve its members.
-    if (ts.isVariableDeclaration(declaration.node)) {
+    if (isConcreteDeclaration(declaration) && ts.isVariableDeclaration(declaration.node)) {
       const enumMembers = this.resolveEnumMembers(declaration.node);
       if (enumMembers !== null) {
         declaration.identity = {kind: SpecialDeclarationKind.DownleveledEnum, enumMembers};
@@ -450,7 +453,7 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    * Note that the `ts.ClassDeclaration` returned from this function may not be from the same
    * `ts.Program` as the input declaration.
    */
-  getDtsDeclaration(declaration: ts.Declaration): ts.Declaration|null {
+  getDtsDeclaration(declaration: DeclarationNode): ts.Declaration|null {
     if (this.dts === null) {
       return null;
     }
@@ -777,7 +780,7 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    * @returns The original identifier that the given class declaration resolves to, or `undefined`
    * if the declaration does not represent an aliased class.
    */
-  protected resolveAliasedClassIdentifier(declaration: ts.Declaration): ts.Identifier|null {
+  protected resolveAliasedClassIdentifier(declaration: DeclarationNode): ts.Identifier|null {
     this.ensurePreprocessed(declaration.getSourceFile());
     return this.aliasedClassDeclarations.has(declaration) ?
         this.aliasedClassDeclarations.get(declaration)! :
@@ -829,7 +832,7 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
     const aliasedIdentifier = initializer.left;
 
     const aliasedDeclaration = this.getDeclarationOfIdentifier(aliasedIdentifier);
-    if (aliasedDeclaration === null || aliasedDeclaration.node === null) {
+    if (aliasedDeclaration === null) {
       throw new Error(
           `Unable to locate declaration of ${aliasedIdentifier.text} in "${statement.getText()}"`);
     }
@@ -1628,7 +1631,7 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
 
     const imp = this.getImportOfExpression(typeExpression);
     const decl = this.getDeclarationOfExpression(typeExpression);
-    if (imp === null || decl === null || decl.node === null) {
+    if (imp === null || decl === null) {
       return {
         kind: TypeValueReferenceKind.LOCAL,
         expression: typeExpression,
@@ -1788,8 +1791,8 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    * @returns a map of source declarations to typings declarations.
    */
   protected computePublicDtsDeclarationMap(src: BundleProgram, dts: BundleProgram):
-      Map<ts.Declaration, ts.Declaration> {
-    const declarationMap = new Map<ts.Declaration, ts.Declaration>();
+      Map<DeclarationNode, ts.Declaration> {
+    const declarationMap = new Map<DeclarationNode, ts.Declaration>();
     const dtsDeclarationMap = new Map<string, ts.Declaration>();
     const rootDts = getRootFileOrFail(dts);
     this.collectDtsExportedDeclarations(dtsDeclarationMap, rootDts, dts.program.getTypeChecker());
@@ -1812,8 +1815,8 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    * @returns a map of source declarations to typings declarations.
    */
   protected computePrivateDtsDeclarationMap(src: BundleProgram, dts: BundleProgram):
-      Map<ts.Declaration, ts.Declaration> {
-    const declarationMap = new Map<ts.Declaration, ts.Declaration>();
+      Map<DeclarationNode, ts.Declaration> {
+    const declarationMap = new Map<DeclarationNode, ts.Declaration>();
     const dtsDeclarationMap = new Map<string, ts.Declaration>();
     const typeChecker = dts.program.getTypeChecker();
 
@@ -1855,13 +1858,13 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
 
 
   protected collectSrcExportedDeclarations(
-      declarationMap: Map<ts.Declaration, ts.Declaration>,
+      declarationMap: Map<DeclarationNode, ts.Declaration>,
       dtsDeclarationMap: Map<string, ts.Declaration>, srcFile: ts.SourceFile): void {
     const fileExports = this.getExportsOfModule(srcFile);
     if (fileExports !== null) {
-      for (const [exportName, {node: declaration}] of fileExports) {
-        if (declaration !== null && dtsDeclarationMap.has(exportName)) {
-          declarationMap.set(declaration, dtsDeclarationMap.get(exportName)!);
+      for (const [exportName, {node: declarationNode}] of fileExports) {
+        if (dtsDeclarationMap.has(exportName)) {
+          declarationMap.set(declarationNode, dtsDeclarationMap.get(exportName)!);
         }
       }
     }
@@ -1877,7 +1880,7 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
     }
 
     const namespaceDecl = this.getDeclarationOfIdentifier(expression.expression);
-    if (!namespaceDecl || namespaceDecl.node === null || !ts.isSourceFile(namespaceDecl.node)) {
+    if (!namespaceDecl || !ts.isSourceFile(namespaceDecl.node)) {
       return null;
     }
 
@@ -1896,9 +1899,6 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
 
   /** Checks if the specified declaration resolves to the known JavaScript global `Object`. */
   protected isJavaScriptObjectDeclaration(decl: Declaration): boolean {
-    if (decl.node === null) {
-      return false;
-    }
     const node = decl.node;
     // The default TypeScript library types the global `Object` variable through
     // a variable declaration with a type reference resolving to `ObjectConstructor`.

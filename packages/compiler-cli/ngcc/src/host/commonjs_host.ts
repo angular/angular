@@ -10,7 +10,7 @@ import * as ts from 'typescript';
 
 import {absoluteFrom} from '../../../src/ngtsc/file_system';
 import {Logger} from '../../../src/ngtsc/logging';
-import {Declaration, Import} from '../../../src/ngtsc/reflection';
+import {Declaration, DeclarationKind, Import} from '../../../src/ngtsc/reflection';
 import {BundleProgram} from '../packages/bundle_program';
 import {FactoryMap, isDefined} from '../utils';
 
@@ -181,7 +181,7 @@ export class CommonJsReflectionHost extends Esm5ReflectionHost {
     } else {
       return {
         name,
-        declaration: {node: null, known: null, expression, viaModule: null},
+        declaration: {node: expression, known: null, kind: DeclarationKind.Inline, viaModule: null},
       };
     }
   }
@@ -204,7 +204,7 @@ export class CommonJsReflectionHost extends Esm5ReflectionHost {
       return null;
     }
     const viaModule = isExternalImport(importPath) ? importPath : null;
-    return {node: module, known: null, viaModule, identity: null};
+    return {node: module, known: null, viaModule, identity: null, kind: DeclarationKind.Concrete};
   }
 
   private resolveModuleName(moduleName: string, containingFile: ts.SourceFile): ts.SourceFile

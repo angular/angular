@@ -8,7 +8,7 @@
 
 import * as ts from 'typescript';
 
-import {ClassDeclaration, ClassMember, ClassMemberKind, Declaration, Decorator, FunctionDefinition, isNamedFunctionDeclaration, KnownDeclaration, Parameter, reflectObjectLiteral} from '../../../src/ngtsc/reflection';
+import {ClassDeclaration, ClassMember, ClassMemberKind, Declaration, DeclarationKind, Decorator, FunctionDefinition, isNamedFunctionDeclaration, KnownDeclaration, Parameter, reflectObjectLiteral} from '../../../src/ngtsc/reflection';
 import {getTsHelperFnFromDeclaration, getTsHelperFnFromIdentifier, hasNameIdentifier} from '../utils';
 
 import {Esm2015ReflectionHost, getOuterNodeFromInnerDeclaration, getPropertyValueFromSymbol, isAssignmentStatement, ParamInfo} from './esm2015_host';
@@ -82,9 +82,9 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
         // `importHelpers: false` (the default). This is, for example, the case with
         // `@nativescript/angular@9.0.0-next-2019-11-12-155500-01`.
         return {
-          expression: id,
+          kind: DeclarationKind.Inline,
+          node: id,
           known: nonEmittedNorImportedTsHelperDeclaration,
-          node: null,
           viaModule: null,
         };
       }

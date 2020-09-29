@@ -13,7 +13,7 @@ import {ErrorCode, FatalDiagnosticError, makeDiagnostic, makeRelatedInformation}
 import {DefaultImportRecorder, Reference, ReferenceEmitter} from '../../imports';
 import {InjectableClassRegistry, MetadataReader, MetadataRegistry} from '../../metadata';
 import {PartialEvaluator, ResolvedValue} from '../../partial_evaluator';
-import {ClassDeclaration, Decorator, ReflectionHost, reflectObjectLiteral, typeNodeToValueExpr} from '../../reflection';
+import {ClassDeclaration, DeclarationNode, Decorator, isNamedClassDeclaration, ReflectionHost, reflectObjectLiteral, typeNodeToValueExpr} from '../../reflection';
 import {NgModuleRouteAnalyzer} from '../../routing';
 import {LocalModuleScopeRegistry, ScopeData} from '../../scope';
 import {FactoryTracker} from '../../shims/api';
@@ -434,14 +434,14 @@ export class NgModuleDecoratorHandler implements
   }
 
   private _toR3Reference(
-      valueRef: Reference<ts.Declaration>, valueContext: ts.SourceFile,
+      valueRef: Reference<ClassDeclaration>, valueContext: ts.SourceFile,
       typeContext: ts.SourceFile): R3Reference {
     if (valueRef.hasOwningModuleGuess) {
       return toR3Reference(valueRef, valueRef, valueContext, valueContext, this.refEmitter);
     } else {
       let typeRef = valueRef;
       let typeNode = this.reflector.getDtsDeclaration(typeRef.node);
-      if (typeNode !== null && ts.isClassDeclaration(typeNode)) {
+      if (typeNode !== null && isNamedClassDeclaration(typeNode)) {
         typeRef = new Reference(typeNode);
       }
       return toR3Reference(valueRef, typeRef, valueContext, typeContext, this.refEmitter);
@@ -539,7 +539,7 @@ export class NgModuleDecoratorHandler implements
     return null;
   }
 
-  // Verify that a `ts.Declaration` reference is a `ClassDeclaration` reference.
+  // Verify that a "Declaration" reference is a `ClassDeclaration` reference.
   private isClassDeclarationReference(ref: Reference): ref is Reference<ClassDeclaration> {
     return this.reflector.isClass(ref.node);
   }

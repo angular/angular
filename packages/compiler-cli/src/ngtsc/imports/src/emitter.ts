@@ -11,7 +11,7 @@ import * as ts from 'typescript';
 import {UnifiedModulesHost} from '../../core/api';
 import {absoluteFromSourceFile, dirname, LogicalFileSystem, LogicalProjectPath, relative, toRelativeImport} from '../../file_system';
 import {stripExtension} from '../../file_system/src/util';
-import {ReflectionHost} from '../../reflection';
+import {DeclarationNode, isConcreteDeclaration, ReflectionHost} from '../../reflection';
 import {getSourceFile, isDeclaration, isTypeDeclaration, nodeNameForError} from '../../util/src/typescript';
 
 import {findExportedNameOfNode} from './find_export';
@@ -136,7 +136,7 @@ export class AbsoluteModuleStrategy implements ReferenceEmitStrategy {
    * A cache of the exports of specific modules, because resolving a module to its exports is a
    * costly operation.
    */
-  private moduleExportsCache = new Map<string, Map<ts.Declaration, string>|null>();
+  private moduleExportsCache = new Map<string, Map<DeclarationNode, string>|null>();
 
   constructor(
       protected program: ts.Program, protected checker: ts.TypeChecker,
@@ -170,7 +170,7 @@ export class AbsoluteModuleStrategy implements ReferenceEmitStrategy {
     return new ExternalExpr(new ExternalReference(specifier, symbolName));
   }
 
-  private resolveImportName(moduleName: string, target: ts.Declaration, fromFile: string): string
+  private resolveImportName(moduleName: string, target: DeclarationNode, fromFile: string): string
       |null {
     const exports = this.getExportsOfModule(moduleName, fromFile);
     if (exports !== null && exports.has(target)) {
@@ -181,7 +181,7 @@ export class AbsoluteModuleStrategy implements ReferenceEmitStrategy {
   }
 
   private getExportsOfModule(moduleName: string, fromFile: string):
-      Map<ts.Declaration, string>|null {
+      Map<DeclarationNode, string>|null {
     if (!this.moduleExportsCache.has(moduleName)) {
       this.moduleExportsCache.set(moduleName, this.enumerateExportsOfModule(moduleName, fromFile));
     }
@@ -189,7 +189,7 @@ export class AbsoluteModuleStrategy implements ReferenceEmitStrategy {
   }
 
   protected enumerateExportsOfModule(specifier: string, fromFile: string):
-      Map<ts.Declaration, string>|null {
+      Map<DeclarationNode, string>|null {
     // First, resolve the module specifier to its entry point, and get the ts.Symbol for it.
     const entryPointFile = this.moduleResolver.resolveModule(specifier, fromFile);
     if (entryPointFile === null) {
@@ -200,13 +200,9 @@ export class AbsoluteModuleStrategy implements ReferenceEmitStrategy {
     if (exports === null) {
       return null;
     }
-    const exportMap = new Map<ts.Declaration, string>();
+    const exportMap = new Map<DeclarationNode, string>();
     exports.forEach((declaration, name) => {
-      // It's okay to skip inline declarations, since by definition they're not target-able with a
-      // ts.Declaration anyway.
-      if (declaration.node !== null) {
-        exportMap.set(declaration.node, name);
-      }
+      exportMap.set(declaration.node, name);
     });
     return exportMap;
   }

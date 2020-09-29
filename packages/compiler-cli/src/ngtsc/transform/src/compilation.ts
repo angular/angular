@@ -13,7 +13,7 @@ import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
 import {IncrementalBuild} from '../../incremental/api';
 import {IndexingContext} from '../../indexer';
 import {PerfRecorder} from '../../perf';
-import {ClassDeclaration, Decorator, ReflectionHost} from '../../reflection';
+import {ClassDeclaration, DeclarationNode, Decorator, ReflectionHost} from '../../reflection';
 import {ProgramTypeCheckAdapter, TypeCheckContext} from '../../typecheck/api';
 import {getSourceFile, isExported} from '../../util/src/typescript';
 
@@ -463,7 +463,7 @@ export class TraitCompiler implements ProgramTypeCheckAdapter {
     }
   }
 
-  compile(clazz: ts.Declaration, constantPool: ConstantPool): CompileResult[]|null {
+  compile(clazz: DeclarationNode, constantPool: ConstantPool): CompileResult[]|null {
     const original = ts.getOriginalNode(clazz) as typeof clazz;
     if (!this.reflector.isClass(clazz) || !this.reflector.isClass(original) ||
         !this.classes.has(original)) {
