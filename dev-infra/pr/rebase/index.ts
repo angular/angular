@@ -7,7 +7,6 @@
  */
 
 import {types as graphQLTypes} from 'typed-graphqlify';
-import {URL} from 'url';
 
 import {getConfig, NgDevConfig} from '../../utils/config';
 import {error, info, promptConfirm} from '../../utils/console';
@@ -100,12 +99,12 @@ export async function rebasePr(
       info(`Pushing rebased PR #${prNumber} to ${fullHeadRef}`);
       git.run(['push', headRefUrl, `HEAD:${headRefName}`, forceWithLeaseFlag]);
       info(`Rebased and updated PR #${prNumber}`);
-      cleanUpGitState();
+      git.checkout(previousBranchOrRevision, true);
       process.exit(0);
     }
   } catch (err) {
     error(err.message);
-    cleanUpGitState();
+    git.checkout(previousBranchOrRevision, true);
     process.exit(1);
   }
 
@@ -128,16 +127,6 @@ export async function rebasePr(
     info(`Cleaning up git state, and restoring previous state.`);
   }
 
-  cleanUpGitState();
+  git.checkout(previousBranchOrRevision, true);
   process.exit(1);
-
-  /** Reset git back to the original branch. */
-  function cleanUpGitState() {
-    // Ensure that any outstanding rebases are aborted.
-    git.runGraceful(['rebase', '--abort'], {stdio: 'ignore'});
-    // Ensure that any changes in the current repo state are cleared.
-    git.runGraceful(['reset', '--hard'], {stdio: 'ignore'});
-    // Checkout the original branch from before the run began.
-    git.runGraceful(['checkout', previousBranchOrRevision], {stdio: 'ignore'});
-  }
 }
