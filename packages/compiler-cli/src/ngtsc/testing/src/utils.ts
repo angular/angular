@@ -93,9 +93,7 @@ export function walkForDeclarations(name: string, rootNode: ts.Node): Declaratio
           chosenDecls.push(...walkForDeclarations(name, node));
         }
       });
-    } else if (
-        ts.isClassDeclaration(node) || ts.isFunctionDeclaration(node) ||
-        ts.isInterfaceDeclaration(node) || ts.isClassExpression(node)) {
+    } else if (isNamedDeclaration(node)) {
       if (node.name !== undefined && node.name.text === name) {
         chosenDecls.push(node);
       }
@@ -109,6 +107,11 @@ export function walkForDeclarations(name: string, rootNode: ts.Node): Declaratio
     }
   });
   return chosenDecls;
+}
+
+export function isNamedDeclaration(node: ts.Node): node is ts.Declaration&{name: ts.Identifier} {
+  const namedNode = node as {name?: ts.Identifier};
+  return namedNode.name !== undefined && ts.isIdentifier(namedNode.name);
 }
 
 const COMPLETE_REUSE_FAILURE_MESSAGE =
