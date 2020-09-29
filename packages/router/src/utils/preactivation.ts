@@ -121,9 +121,8 @@ function getRouteGuards(
       getChildRouteGuards(futureNode, currNode, parentContexts, futurePath, checks);
     }
 
-    if (shouldRun) {
-      const component = context && context.outlet && context.outlet.component || null;
-      checks.canDeactivateChecks.push(new CanDeactivate(component, curr));
+    if (shouldRun && context && context.outlet && context.outlet.isActivated) {
+      checks.canDeactivateChecks.push(new CanDeactivate(context.outlet.component, curr));
     }
   } else {
     if (curr) {
