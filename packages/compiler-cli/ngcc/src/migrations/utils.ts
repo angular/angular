@@ -10,7 +10,7 @@ import {Reference} from '../../../src/ngtsc/imports';
 import {ClassDeclaration, Decorator, isNamedClassDeclaration, isNamedFunctionDeclaration, isNamedVariableDeclaration} from '../../../src/ngtsc/reflection';
 import {MigrationHost} from './migration';
 
-export function isClassDeclaration(clazz: ts.Declaration): clazz is ClassDeclaration {
+export function isClassDeclaration(clazz: ts.Node): clazz is ClassDeclaration<ts.Declaration> {
   return isNamedClassDeclaration(clazz) || isNamedFunctionDeclaration(clazz) ||
       isNamedVariableDeclaration(clazz);
 }

@@ -151,7 +151,7 @@ function migrateProviderClass(provider: ResolvedValue, host: MigrationHost): voi
     return;
   }
 
-  const clazz = provider.node as ts.Declaration;
+  const clazz = provider.node;
   if (isClassDeclaration(clazz) && host.isInScope(clazz) && needsInjectableDecorator(clazz, host)) {
     host.injectSyntheticDecorator(clazz, createInjectableDecorator(clazz));
   }

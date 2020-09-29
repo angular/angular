@@ -21,7 +21,7 @@ import {CompoundMetadataReader, CompoundMetadataRegistry, DtsMetadataReader, Inj
 import {ModuleWithProvidersScanner} from '../../modulewithproviders';
 import {PartialEvaluator} from '../../partial_evaluator';
 import {NOOP_PERF_RECORDER, PerfRecorder} from '../../perf';
-import {TypeScriptReflectionHost} from '../../reflection';
+import {DeclarationNode, TypeScriptReflectionHost} from '../../reflection';
 import {AdapterResourceLoader} from '../../resource';
 import {entryPointKeyFor, NgModuleRouteAnalyzer} from '../../routing';
 import {ComponentScopeReader, LocalModuleScopeRegistry, MetadataDtsModuleScopeResolver} from '../../scope';
@@ -350,7 +350,7 @@ export class NgCompiler {
    *
    * See the `indexing` package for more details.
    */
-  getIndexedComponents(): Map<ts.Declaration, IndexedComponent> {
+  getIndexedComponents(): Map<DeclarationNode, IndexedComponent> {
     const compilation = this.ensureAnalyzed();
     const context = new IndexingContext();
     compilation.traitCompiler.index(context);
@@ -845,7 +845,7 @@ https://v9.angular.io/guide/template-typecheck#template-type-checking`,
 class ReferenceGraphAdapter implements ReferencesRegistry {
   constructor(private graph: ReferenceGraph) {}
 
-  add(source: ts.Declaration, ...references: Reference<ts.Declaration>[]): void {
+  add(source: DeclarationNode, ...references: Reference<DeclarationNode>[]): void {
     for (const {node} of references) {
       let sourceFile = node.getSourceFile();
       if (sourceFile === undefined) {

@@ -2076,7 +2076,8 @@ runInEachFileSystem(() => {
            }
            expect(classSymbol.name).toEqual('DecoratedWrappedClass');
            expect(classSymbol.declaration.valueDeclaration).toBe(outerNode);
-           expect(classSymbol.implementation.valueDeclaration).toBe(innerNodes[0]);
+           expect(classSymbol.implementation.valueDeclaration)
+               .toBe(innerNodes[0] as ts.Declaration);
 
            if (classSymbol.adjacent === undefined ||
                !isNamedVariableDeclaration(classSymbol.adjacent.valueDeclaration)) {
@@ -2112,7 +2113,8 @@ runInEachFileSystem(() => {
            }
            expect(classSymbol.name).toEqual('DecoratedWrappedClass');
            expect(classSymbol.declaration.valueDeclaration).toBe(outerNode);
-           expect(classSymbol.implementation.valueDeclaration).toBe(innerNodes[0]);
+           expect(classSymbol.implementation.valueDeclaration)
+               .toBe(innerNodes[0] as ts.Declaration);
 
            if (classSymbol.adjacent === undefined ||
                !isNamedVariableDeclaration(classSymbol.adjacent.valueDeclaration)) {

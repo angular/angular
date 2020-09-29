@@ -10,7 +10,7 @@ import {Expression, ExternalExpr, FunctionExpr, Identifiers, InvokeFunctionExpr,
 import * as ts from 'typescript';
 
 import {DefaultImportRecorder} from '../../imports';
-import {CtorParameter, Decorator, ReflectionHost, TypeValueReferenceKind} from '../../reflection';
+import {CtorParameter, DeclarationNode, Decorator, ReflectionHost, TypeValueReferenceKind} from '../../reflection';
 
 import {valueReferenceToExpression, wrapFunctionExpressionsInParens} from './util';
 
@@ -23,8 +23,9 @@ import {valueReferenceToExpression, wrapFunctionExpressionsInParens} from './uti
  * as a `Statement` for inclusion along with the class.
  */
 export function generateSetClassMetadataCall(
-    clazz: ts.Declaration, reflection: ReflectionHost, defaultImportRecorder: DefaultImportRecorder,
-    isCore: boolean, annotateForClosureCompiler?: boolean): Statement|null {
+    clazz: DeclarationNode, reflection: ReflectionHost,
+    defaultImportRecorder: DefaultImportRecorder, isCore: boolean,
+    annotateForClosureCompiler?: boolean): Statement|null {
   if (!reflection.isClass(clazz)) {
     return null;
   }

@@ -11,6 +11,7 @@
 import * as ts from 'typescript';
 
 import {AbsoluteFsPath, dirname, getFileSystem, getSourceFileOrError, NgtscCompilerHost} from '../../file_system';
+import {DeclarationNode} from '../../reflection';
 
 export function makeProgram(
     files: {name: AbsoluteFsPath, contents: string, isRoot?: boolean}[],
@@ -57,7 +58,7 @@ export function makeProgram(
  * An error will be thrown if there is not at least one AST node with the given `name` and passes
  * the `predicate` test.
  */
-export function getDeclaration<T extends ts.Declaration>(
+export function getDeclaration<T extends DeclarationNode>(
     program: ts.Program, fileName: AbsoluteFsPath, name: string,
     assert: (value: any) => value is T): T {
   const sf = getSourceFileOrError(program, fileName);
@@ -78,8 +79,8 @@ export function getDeclaration<T extends ts.Declaration>(
 /**
  * Walk the AST tree from the `rootNode` looking for a declaration that has the given `name`.
  */
-export function walkForDeclarations(name: string, rootNode: ts.Node): ts.Declaration[] {
-  const chosenDecls: ts.Declaration[] = [];
+export function walkForDeclarations(name: string, rootNode: ts.Node): DeclarationNode[] {
+  const chosenDecls: DeclarationNode[] = [];
   rootNode.forEachChild(node => {
     if (ts.isVariableStatement(node)) {
       node.declarationList.declarations.forEach(decl => {

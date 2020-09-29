@@ -8,7 +8,7 @@
 
 import * as ts from 'typescript';
 
-import {ClassDeclaration, ClassMember, CtorParameter, Declaration, Decorator, FunctionDefinition, Import, ReflectionHost} from '../../../src/ngtsc/reflection';
+import {ClassDeclaration, ClassMember, CtorParameter, Declaration, DeclarationNode, Decorator, FunctionDefinition, Import, ReflectionHost} from '../../../src/ngtsc/reflection';
 import {isFromDtsFile} from '../../../src/ngtsc/util/src/typescript';
 
 import {NgccClassSymbol, NgccReflectionHost, SwitchableVariableDeclaration} from './ngcc_host';
@@ -38,7 +38,7 @@ export class DelegatingReflectionHost implements NgccReflectionHost {
     return this.ngccHost.getDeclarationOfIdentifier(id);
   }
 
-  getDecoratorsOfDeclaration(declaration: ts.Declaration): Decorator[]|null {
+  getDecoratorsOfDeclaration(declaration: DeclarationNode): Decorator[]|null {
     if (isFromDtsFile(declaration)) {
       return this.tsHost.getDecoratorsOfDeclaration(declaration);
     }
@@ -52,7 +52,7 @@ export class DelegatingReflectionHost implements NgccReflectionHost {
     return this.ngccHost.getDefinitionOfFunction(fn);
   }
 
-  getDtsDeclaration(declaration: ts.Declaration): ts.Declaration|null {
+  getDtsDeclaration(declaration: DeclarationNode): ts.Declaration|null {
     if (isFromDtsFile(declaration)) {
       return this.tsHost.getDtsDeclaration(declaration);
     }

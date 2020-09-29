@@ -11,7 +11,7 @@ import * as ts from 'typescript';
 import {absoluteFrom, getFileSystem, getSourceFileOrError} from '../../../src/ngtsc/file_system';
 import {runInEachFileSystem, TestFile} from '../../../src/ngtsc/file_system/testing';
 import {MockLogger} from '../../../src/ngtsc/logging/testing';
-import {ClassMemberKind, ConcreteDeclaration, CtorParameter, Decorator, DownleveledEnum, isNamedClassDeclaration, isNamedFunctionDeclaration, isNamedVariableDeclaration, KnownDeclaration, TypeScriptReflectionHost, TypeValueReferenceKind} from '../../../src/ngtsc/reflection';
+import {ClassMemberKind, ConcreteDeclaration, CtorParameter, DeclarationKind, Decorator, DownleveledEnum, isNamedClassDeclaration, isNamedFunctionDeclaration, isNamedVariableDeclaration, KnownDeclaration, TypeScriptReflectionHost, TypeValueReferenceKind} from '../../../src/ngtsc/reflection';
 import {getDeclaration} from '../../../src/ngtsc/testing';
 import {loadFakeCore, loadTestFiles} from '../../../test/helpers';
 import {DelegatingReflectionHost} from '../../src/host/delegating_host';
@@ -1858,6 +1858,7 @@ runInEachFileSystem(() => {
                 const helperDeclaration = host.getDeclarationOfIdentifier(helperIdentifier);
 
                 expect(helperDeclaration).toEqual({
+                  kind: DeclarationKind.Concrete,
                   known: knownAs,
                   node: getHelperDeclaration(helperName),
                   viaModule,
@@ -2253,9 +2254,9 @@ runInEachFileSystem(() => {
           const helperDeclaration = host.getDeclarationOfIdentifier(helperIdentifier);
 
           expect(helperDeclaration).toEqual({
+            kind: DeclarationKind.Inline,
             known: knownAs,
-            expression: helperIdentifier,
-            node: null,
+            node: helperIdentifier,
             viaModule: null,
           });
         };
@@ -2284,9 +2285,9 @@ runInEachFileSystem(() => {
           const helperDeclaration = host.getDeclarationOfIdentifier(helperIdentifier);
 
           expect(helperDeclaration).toEqual({
+            kind: DeclarationKind.Inline,
             known: knownAs,
-            expression: helperIdentifier,
-            node: null,
+            node: helperIdentifier,
             viaModule: null,
           });
         };

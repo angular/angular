@@ -11,7 +11,7 @@ import {absoluteFrom, getSourceFileOrError} from '../../file_system';
 import {runInEachFileSystem} from '../../file_system/testing';
 import {Reference} from '../../imports';
 import {DependencyTracker} from '../../incremental/api';
-import {Declaration, KnownDeclaration, SpecialDeclarationKind, TypeScriptReflectionHost} from '../../reflection';
+import {Declaration, DeclarationKind, isConcreteDeclaration, KnownDeclaration, SpecialDeclarationKind, TypeScriptReflectionHost} from '../../reflection';
 import {getDeclaration, makeProgram} from '../../testing';
 import {DynamicValue} from '../src/dynamic';
 import {PartialEvaluator} from '../src/interface';
@@ -920,7 +920,7 @@ runInEachFileSystem(() => {
   class DownleveledEnumReflectionHost extends TypeScriptReflectionHost {
     getDeclarationOfIdentifier(id: ts.Identifier): Declaration|null {
       const declaration = super.getDeclarationOfIdentifier(id);
-      if (declaration !== null && declaration.node !== null) {
+      if (declaration !== null && isConcreteDeclaration(declaration)) {
         const enumMembers = [
           {name: ts.createStringLiteral('ValueA'), initializer: ts.createStringLiteral('a')},
           {name: ts.createStringLiteral('ValueB'), initializer: ts.createStringLiteral('b')},
@@ -961,6 +961,7 @@ runInEachFileSystem(() => {
           node: id,
           viaModule: null,
           identity: null,
+          kind: DeclarationKind.Concrete,
         };
       }
 
@@ -968,8 +969,8 @@ runInEachFileSystem(() => {
     }
   }
 
-  function getTsHelperFn(node: ts.Declaration): KnownDeclaration|null {
-    const id = (node as ts.Declaration & {name?: ts.Identifier}).name || null;
+  function getTsHelperFn(node: ts.Node): KnownDeclaration|null {
+    const id = (node as ts.Node & {name?: ts.Identifier}).name || null;
     const name = id && id.text;
 
     switch (name) {

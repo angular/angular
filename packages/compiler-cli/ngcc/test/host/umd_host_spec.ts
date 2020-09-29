@@ -11,7 +11,7 @@ import * as ts from 'typescript';
 import {absoluteFrom, getFileSystem, getSourceFileOrError} from '../../../src/ngtsc/file_system';
 import {runInEachFileSystem, TestFile} from '../../../src/ngtsc/file_system/testing';
 import {MockLogger} from '../../../src/ngtsc/logging/testing';
-import {ClassMemberKind, ConcreteDeclaration, CtorParameter, DownleveledEnum, Import, InlineDeclaration, isNamedClassDeclaration, isNamedFunctionDeclaration, isNamedVariableDeclaration, KnownDeclaration, TypeScriptReflectionHost, TypeValueReferenceKind} from '../../../src/ngtsc/reflection';
+import {ClassMemberKind, ConcreteDeclaration, CtorParameter, DeclarationKind, DownleveledEnum, Import, InlineDeclaration, isNamedClassDeclaration, isNamedFunctionDeclaration, isNamedVariableDeclaration, KnownDeclaration, TypeScriptReflectionHost, TypeValueReferenceKind} from '../../../src/ngtsc/reflection';
 import {getDeclaration} from '../../../src/ngtsc/testing';
 import {loadFakeCore, loadTestFiles} from '../../../test/helpers';
 import {isExportsStatement} from '../../src/host/commonjs_umd_utils';
@@ -2003,6 +2003,7 @@ runInEachFileSystem(() => {
                 const helperDeclaration = host.getDeclarationOfIdentifier(helperIdentifier);
 
                 expect(helperDeclaration).toEqual({
+                  kind: DeclarationKind.Concrete,
                   known: knownAs,
                   node: getHelperDeclaration(factoryFn, helperName),
                   viaModule,
@@ -2410,9 +2411,9 @@ runInEachFileSystem(() => {
           const helperDeclaration = host.getDeclarationOfIdentifier(helperIdentifier);
 
           expect(helperDeclaration).toEqual({
+            kind: DeclarationKind.Inline,
             known: knownAs,
-            expression: helperIdentifier,
-            node: null,
+            node: helperIdentifier,
             viaModule: null,
           });
         };
@@ -2449,9 +2450,9 @@ runInEachFileSystem(() => {
           const helperDeclaration = host.getDeclarationOfIdentifier(helperIdentifier);
 
           expect(helperDeclaration).toEqual({
+            kind: DeclarationKind.Inline,
             known: knownAs,
-            expression: helperIdentifier,
-            node: null,
+            node: helperIdentifier,
             viaModule: null,
           });
         };
@@ -2697,10 +2698,10 @@ runInEachFileSystem(() => {
         const file = getSourceFileOrError(bundle.program, INLINE_EXPORT_FILE.name);
         const exportDeclarations = host.getExportsOfModule(file);
         expect(exportDeclarations).not.toBe(null);
-        const decl = exportDeclarations!.get('directives') as InlineDeclaration;
-        expect(decl).not.toBeUndefined();
-        expect(decl.node).toBeNull();
-        expect(decl.expression).toBeDefined();
+        const decl = exportDeclarations!.get('directives')!;
+        expect(decl).toBeDefined();
+        expect(decl.node).toBeDefined();
+        expect(decl.kind).toEqual(DeclarationKind.Inline);
       });
 
       it('should recognize declarations of known TypeScript helpers', () => {
@@ -2901,7 +2902,7 @@ runInEachFileSystem(() => {
            const classSymbol = host.getClassSymbol(outerNode);
 
            expect(classSymbol).toBeDefined();
-           expect(classSymbol!.declaration.valueDeclaration).toBe(outerNode);
+           expect(classSymbol!.declaration.valueDeclaration).toBe(outerNode as any);
            expect(classSymbol!.implementation.valueDeclaration).toBe(innerNode);
          });
 
