@@ -6,6 +6,7 @@ import {createFakeYtNamespace} from './fake-youtube-player';
 import {Subscription} from 'rxjs';
 
 const VIDEO_ID = 'a12345';
+const YT_LOADING_STATE_MOCK = {loading: 1, loaded: 0};
 
 describe('YoutubePlayer', () => {
   let playerCtorSpy: jasmine.Spy;
@@ -381,6 +382,8 @@ describe('YoutubePlayer', () => {
     });
 
     it('waits until the api is ready before initializing', () => {
+      (window.YT as any) = YT_LOADING_STATE_MOCK;
+
       fixture = TestBed.createComponent(TestApp);
       testComponent = fixture.debugElement.componentInstance;
       fixture.detectChanges();
