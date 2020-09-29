@@ -266,10 +266,6 @@ jobs:
       - run: yarn --cwd aio test-pwa-score-localhost $CI_AIO_MIN_PWA_SCORE
         # Run accessibility tests
       - run: yarn --cwd aio test-a11y-score-localhost
-        # Check the bundle sizes.
-      - run: yarn --cwd aio payload-size
-        # Run unit tests for Firebase redirects
-      - run: yarn --cwd aio redirects-test
 
   deploy_aio:
     executor: default-executor
@@ -299,8 +295,6 @@ jobs:
       - run: yarn --cwd aio e2e --configuration=ci
         # Run PWA-score tests
       - run: yarn --cwd aio test-pwa-score-localhost $CI_AIO_MIN_PWA_SCORE
-        # Check the bundle sizes.
-      - run: yarn --cwd aio payload-size aio-local<<# parameters.viewengine >>-viewengine<</ parameters.viewengine >>
 
   test_aio_tools:
     executor: default-executor
@@ -313,26 +307,6 @@ jobs:
         # Run tools tests
       - run: yarn --cwd aio tools-test
       - run: ./aio/aio-builds-setup/scripts/test.sh
-
-  test_docs_examples:
-    parameters:
-      viewengine:
-        type: boolean
-        default: false
-    executor:
-      name: default-executor
-      resource_class: medium
-    parallelism: 4
-    steps:
-      - custom_attach_workspace
-      - init_environment
-      - install_chrome_libs
-        # Install aio
-      - run: yarn --cwd aio install --frozen-lockfile --non-interactive
-        # Run examples tests. The "CIRCLE_NODE_INDEX" will be set if "parallelism" is enabled.
-        # Since the parallelism is set to "4", there will be four parallel CircleCI containers.
-        # with either "0", "1", etc as node index. This can be passed to the "--shard" argument.
-      - run: yarn --cwd aio example-e2e --setup --local <<# parameters.viewengine >>--viewengine<</ parameters.viewengine >> --cliSpecsConcurrency=4 --shard=${CIRCLE_NODE_INDEX}/${CIRCLE_NODE_TOTAL} --retry 2
 
   # This job should only be run on PR builds, where `CI_PULL_REQUEST` is not `false`.
   aio_preview:
@@ -420,9 +394,6 @@ workflows:
           requires:
             - build-npm-packages
       - test_aio_tools:
-          requires:
-            - build-npm-packages
-      - test_docs_examples:
           requires:
             - build-npm-packages
       - aio_preview:

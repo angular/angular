@@ -52,7 +52,6 @@
     "deploy-production": "scripts/deploy-to-firebase.sh",
     "check-env": "yarn ~~check-env",
     "postcheck-env": "yarn aio-check-local",
-    "payload-size": "scripts/payload.sh",
     "predocs": "node scripts/contributors/check-pictures && yarn generate-stackblitz && yarn generate-zips",
     "docs": "yarn docs-only",
     "docs-only": "dgeni ./tools/transforms/angular.io-package",

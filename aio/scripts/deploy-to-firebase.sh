@@ -63,29 +63,15 @@ fi
 
 case $deployEnv in
   next)
-    readonly projectId=aio-staging
-    readonly siteId=$projectId
-    readonly deployedUrl=https://next.angular.io/
+    readonly projectId=angular-hispano-staging
+    readonly siteId=angular-hispano-docs-staging
+    readonly deployedUrl=https://angular-hispano-docs-staging.web.app/
     readonly firebaseToken=$CI_SECRET_AIO_DEPLOY_FIREBASE_TOKEN
     ;;
   stable)
-    readonly projectId=angular-io
-    readonly siteId=$projectId
-    readonly deployedUrl=https://angular.io/
-    readonly firebaseToken=$CI_SECRET_AIO_DEPLOY_FIREBASE_TOKEN
-    ;;
-  archive)
-    # Special case v9-angular-io because its piloting the firebase hosting "multisites" setup
-    # See https://angular-team.atlassian.net/browse/DEV-125 for more info.
-    if [[ "$majorVersion" == "9" ]]; then
-      readonly projectId=aio-staging
-      readonly siteId=v9-angular-io
-    else
-      readonly projectId=v${majorVersion}-angular-io
-      readonly siteId=$projectId
-    fi
-
-    readonly deployedUrl=https://v${majorVersion}.angular.io/
+    readonly projectId=angular-latino
+    readonly siteId=angular-hispano-docs-prod
+    readonly deployedUrl=https://docs.angular.lat/
     readonly firebaseToken=$CI_SECRET_AIO_DEPLOY_FIREBASE_TOKEN
     ;;
 esac
