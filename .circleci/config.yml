@@ -419,20 +419,10 @@ workflows:
       - test_aio_local:
           requires:
             - build-npm-packages
-      - test_aio_local:
-          name: test_aio_local_viewengine
-          viewengine: true
-          requires:
-            - build-npm-packages
       - test_aio_tools:
           requires:
             - build-npm-packages
       - test_docs_examples:
-          requires:
-            - build-npm-packages
-      - test_docs_examples:
-          name: test_docs_examples_viewengine
-          viewengine: true
           requires:
             - build-npm-packages
       - aio_preview:
