@@ -111,6 +111,9 @@ export function assertDomNode(node: any): asserts node is Node {
 
 
 export function assertIndexInRange(arr: any[], index: number) {
-  const maxLen = arr ? arr.length : 0;
-  assertLessThan(index, maxLen, `Index expected to be less than ${maxLen} but got ${index}`);
+  assertDefined(arr, 'Array must be defined.');
+  const maxLen = arr.length;
+  if (index < 0 || index > maxLen) {
+    throwError(`Index expected to be less than ${maxLen} but got ${index}`);
+  }
 }
