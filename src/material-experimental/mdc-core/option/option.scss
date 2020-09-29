@@ -19,6 +19,15 @@
   // which doesn't work well with multi-line options.
   min-height: map-get($mdc-list-textual-variant-config, single-line-height);
 
+  // Workaround for https://goo.gl/pFmjJD in IE 11. Adds a pseudo
+  // element that will stretch the option to the correct height. See:
+  // https://connect.microsoft.com/IE/feedback/details/802625
+  &::after {
+    display: inline-block;
+    min-height: inherit;
+    content: '';
+  }
+
   &:not(.mdc-list-item--disabled) {
     cursor: pointer;
   }
