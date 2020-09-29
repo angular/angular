@@ -24,8 +24,13 @@ export function create(info: ts.server.PluginCreateInfo): ts.LanguageService {
     return diagnostics;
   }
 
+  function getTypeDefinitionAtPosition(fileName: string, position: number) {
+    return undefined;
+  }
+
   return {
     ...tsLS,
     getSemanticDiagnostics,
+    getTypeDefinitionAtPosition,
   };
 }
