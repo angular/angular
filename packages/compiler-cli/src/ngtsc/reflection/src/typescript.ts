@@ -105,7 +105,6 @@ export class TypeScriptReflectionHost implements ReflectionHost {
     if (!ts.isSourceFile(node)) {
       throw new Error(`getExportsOfModule() called on non-SourceFile in TS code`);
     }
-    const map = new Map<string, Declaration>();
 
     // Reflect the module to a Symbol, and use getExportsOfModule() to get a list of exported
     // Symbols.
@@ -113,6 +112,8 @@ export class TypeScriptReflectionHost implements ReflectionHost {
     if (symbol === undefined) {
       return null;
     }
+
+    const map = new Map<string, Declaration>();
     this.checker.getExportsOfModule(symbol).forEach(exportSymbol => {
       // Map each exported Symbol to a Declaration and add it to the map.
       const decl = this.getDeclarationOfSymbol(exportSymbol, null);
