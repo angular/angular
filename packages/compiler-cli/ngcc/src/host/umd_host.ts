@@ -10,13 +10,14 @@ import * as ts from 'typescript';
 
 import {absoluteFrom} from '../../../src/ngtsc/file_system';
 import {Logger} from '../../../src/ngtsc/logging';
-import {Declaration, DeclarationKind, Import} from '../../../src/ngtsc/reflection';
+import {Declaration, DeclarationKind, Import, isNamedFunctionDeclaration} from '../../../src/ngtsc/reflection';
 import {BundleProgram} from '../packages/bundle_program';
 import {FactoryMap, getTsHelperFnFromIdentifier, stripExtension} from '../utils';
 
-import {DefinePropertyReexportStatement, ExportDeclaration, ExportsStatement, extractGetterFnExpression, findNamespaceOfIdentifier, findRequireCallReference, isDefinePropertyReexportStatement, isExportsStatement, isExternalImport, isRequireCall, isWildcardReexportStatement, WildcardReexportStatement} from './commonjs_umd_utils';
-import {isAssignment} from './esm2015_host';
+import {DefinePropertyReexportStatement, ExportDeclaration, ExportsStatement, extractGetterFnExpression, findNamespaceOfIdentifier, findRequireCallReference, isDefinePropertyReexportStatement, isExportsAssignment, isExportsDeclaration, isExportsStatement, isExternalImport, isRequireCall, isWildcardReexportStatement, WildcardReexportStatement} from './commonjs_umd_utils';
+import {getInnerClassDeclaration, getOuterNodeFromInnerDeclaration, isAssignment} from './esm2015_host';
 import {Esm5ReflectionHost} from './esm5_host';
+import {NgccClassSymbol} from './ngcc_host';
 import {stripParentheses} from './utils';
 
 export class UmdReflectionHost extends Esm5ReflectionHost {
@@ -45,8 +46,40 @@ export class UmdReflectionHost extends Esm5ReflectionHost {
   }
 
   getDeclarationOfIdentifier(id: ts.Identifier): Declaration|null {
-    return this.getExportsDeclaration(id) || this.getUmdModuleDeclaration(id) ||
-        this.getUmdDeclaration(id) || super.getDeclarationOfIdentifier(id);
+    // First we try one of the the following:
+    // 1. The `exports` identifier - referring to the current file/module.
+    // 2. An identifier (e.g. `foo`) that refers to an imported UMD module.
+    // 3. A UMD style export identifier (e.g. the `foo` of `exports.foo`).
+    const declaration = this.getExportsDeclaration(id) || this.getUmdModuleDeclaration(id) ||
+        this.getUmdDeclaration(id);
+    if (declaration !== null) {
+      return declaration;
+    }
+
+    // Try to get the declaration using the super class.
+    const superDeclaration = super.getDeclarationOfIdentifier(id);
+    if (superDeclaration === null) {
+      return null;
+    }
+
+    // Check to see if the declaration is the inner node of a declaration IIFE.
+    const outerNode = getOuterNodeFromInnerDeclaration(superDeclaration.node);
+    if (outerNode === null) {
+      return superDeclaration;
+    }
+
+    // We are only interested if the outer declaration is of the form
+    // `exports.<name> = <initializer>`.
+    if (!isExportsAssignment(outerNode)) {
+      return superDeclaration;
+    }
+
+    return {
+      kind: DeclarationKind.Inline,
+      node: outerNode.left,
+      known: null,
+      viaModule: null,
+    };
   }
 
   getExportsOfModule(module: ts.Node): Map<string, Declaration>|null {
@@ -78,6 +111,102 @@ export class UmdReflectionHost extends Esm5ReflectionHost {
     return umdModule !== null ? Array.from(umdModule.factoryFn.body.statements) : [];
   }
 
+  protected getClassSymbolFromOuterDeclaration(declaration: ts.Node): NgccClassSymbol|undefined {
+    const superSymbol = super.getClassSymbolFromOuterDeclaration(declaration);
+    if (superSymbol) {
+      return superSymbol;
+    }
+
+    if (!isExportsDeclaration(declaration)) {
+      return undefined;
+    }
+
+    let initializer = skipAliases(declaration.parent.right);
+
+    if (ts.isIdentifier(initializer)) {
+      const implementation = this.getDeclarationOfIdentifier(initializer);
+      if (implementation !== null) {
+        const implementationSymbol = this.getClassSymbol(implementation.node);
+        if (implementationSymbol !== null) {
+          return implementationSymbol;
+        }
+      }
+    }
+
+    const innerDeclaration = getInnerClassDeclaration(initializer);
+    if (innerDeclaration !== null) {
+      return this.createClassSymbol(declaration.name, innerDeclaration);
+    }
+
+    return undefined;
+  }
+
+
+  protected getClassSymbolFromInnerDeclaration(declaration: ts.Node): NgccClassSymbol|undefined {
+    const superClassSymbol = super.getClassSymbolFromInnerDeclaration(declaration);
+    if (superClassSymbol !== undefined) {
+      return superClassSymbol;
+    }
+
+    if (!isNamedFunctionDeclaration(declaration)) {
+      return undefined;
+    }
+
+    const outerNode = getOuterNodeFromInnerDeclaration(declaration);
+    if (outerNode === null || !isExportsAssignment(outerNode)) {
+      return undefined;
+    }
+
+    return this.createClassSymbol(outerNode.left.name, declaration);
+  }
+
+  /**
+   * Extract all "classes" from the `statement` and add them to the `classes` map.
+   */
+  protected addClassSymbolsFromStatement(
+      classes: Map<ts.Symbol, NgccClassSymbol>, statement: ts.Statement): void {
+    super.addClassSymbolsFromStatement(classes, statement);
+
+    // Also check for exports of the form: `exports.<name> = <class def>;`
+    if (isExportsStatement(statement)) {
+      const classSymbol = this.getClassSymbol(statement.expression.left);
+      if (classSymbol) {
+        classes.set(classSymbol.implementation, classSymbol);
+      }
+    }
+  }
+
+  /**
+   * Analyze the given statement to see if it corresponds with an exports declaration like
+   * `exports.MyClass = MyClass_1 = <class def>;`. If so, the declaration of `MyClass_1`
+   * is associated with the `MyClass` identifier.
+   *
+   * @param statement The statement that needs to be preprocessed.
+   */
+  protected preprocessStatement(statement: ts.Statement): void {
+    super.preprocessStatement(statement);
+
+    if (!isExportsStatement(statement)) {
+      return;
+    }
+
+    const declaration = statement.expression.left;
+    const initializer = statement.expression.right;
+    if (!isAssignment(initializer) || !ts.isIdentifier(initializer.left) ||
+        !this.isClass(declaration)) {
+      return;
+    }
+
+    const aliasedIdentifier = initializer.left;
+
+    const aliasedDeclaration = this.getDeclarationOfIdentifier(aliasedIdentifier);
+    if (aliasedDeclaration === null || aliasedDeclaration.node === null) {
+      throw new Error(
+          `Unable to locate declaration of ${aliasedIdentifier.text} in "${statement.getText()}"`);
+    }
+    this.aliasedClassDeclarations.set(aliasedDeclaration.node, declaration.name);
+  }
+
   private computeUmdModule(sourceFile: ts.SourceFile): UmdModule|null {
     if (sourceFile.statements.length !== 1) {
       throw new Error(
@@ -93,7 +222,17 @@ export class UmdReflectionHost extends Esm5ReflectionHost {
     for (const statement of this.getModuleStatements(sourceFile)) {
       if (isExportsStatement(statement)) {
         const exportDeclaration = this.extractBasicUmdExportDeclaration(statement);
-        moduleMap.set(exportDeclaration.name, exportDeclaration.declaration);
+        if (!moduleMap.has(exportDeclaration.name)) {
+          // We assume that the first `exports.<name>` is the actual declaration, and that any
+          // subsequent statements that match are decorating the original declaration.
+          // For example:
+          // ```
+          // exports.foo = <declaration>;
+          // exports.foo = __decorate(<decorator>, exports.foo);
+          // ```
+          // The declaration is the first line not the second.
+          moduleMap.set(exportDeclaration.name, exportDeclaration.declaration);
+        }
       } else if (isWildcardReexportStatement(statement)) {
         const reexports = this.extractUmdWildcardReexports(statement, sourceFile);
         for (const reexport of reexports) {
@@ -136,7 +275,13 @@ export class UmdReflectionHost extends Esm5ReflectionHost {
   private extractBasicUmdExportDeclaration(statement: ExportsStatement): ExportDeclaration {
     const name = statement.expression.left.name.text;
     const exportExpression = skipAliases(statement.expression.right);
-    return this.extractUmdExportDeclaration(name, exportExpression);
+    const declaration = this.getDeclarationOfExpression(exportExpression) ?? {
+      kind: DeclarationKind.Inline,
+      node: statement.expression.left,
+      known: null,
+      viaModule: null,
+    };
+    return {name, declaration};
   }
 
   private extractUmdWildcardReexports(
@@ -185,17 +330,20 @@ export class UmdReflectionHost extends Esm5ReflectionHost {
     if (getterFnExpression === null) {
       return null;
     }
-    return this.extractUmdExportDeclaration(name, getterFnExpression);
-  }
 
-  private extractUmdExportDeclaration(name: string, expression: ts.Expression): ExportDeclaration {
-    const declaration = this.getDeclarationOfExpression(expression);
+    const declaration = this.getDeclarationOfExpression(getterFnExpression);
     if (declaration !== null) {
       return {name, declaration};
     }
+
     return {
       name,
-      declaration: {kind: DeclarationKind.Inline, node: expression, known: null, viaModule: null},
+      declaration: {
+        kind: DeclarationKind.Inline,
+        node: getterFnExpression,
+        known: null,
+        viaModule: null,
+      },
     };
   }
 
@@ -214,6 +362,21 @@ export class UmdReflectionHost extends Esm5ReflectionHost {
     if (nsIdentifier === null) {
       return null;
     }
+
+    if (nsIdentifier.parent.parent && isExportsAssignment(nsIdentifier.parent.parent)) {
+      const initializer = nsIdentifier.parent.parent.right;
+      if (ts.isIdentifier(initializer)) {
+        return this.getDeclarationOfIdentifier(initializer);
+      }
+      return this.detectKnownDeclaration({
+        kind: DeclarationKind.Inline,
+        node: nsIdentifier.parent.parent.left,
+        implementation: skipAliases(nsIdentifier.parent.parent.right),
+        viaModule: null,
+        known: null,
+      });
+    }
+
     const moduleDeclaration = this.getUmdModuleDeclaration(nsIdentifier);
     if (moduleDeclaration === null || moduleDeclaration.node === null ||
         !ts.isSourceFile(moduleDeclaration.node)) {
@@ -242,7 +405,7 @@ export class UmdReflectionHost extends Esm5ReflectionHost {
   }
 
   private getExportsDeclaration(id: ts.Identifier): Declaration|null {
-    if (!isExportIdentifier(id)) {
+    if (!isExportsIdentifier(id)) {
       return null;
     }
 
@@ -398,7 +561,7 @@ function getRequiredModulePath(wrapperFn: ts.FunctionExpression, paramIndex: num
 /**
  * Is the `node` an identifier with the name "exports"?
  */
-export function isExportIdentifier(node: ts.Node): node is ts.Identifier {
+function isExportsIdentifier(node: ts.Node): node is ts.Identifier {
   return ts.isIdentifier(node) && node.text === 'exports';
 }
 
@@ -412,7 +575,7 @@ export function isExportIdentifier(node: ts.Node): node is ts.Identifier {
  * @param node the expression to parse
  * @returns the original `node` or the far right expression of a series of assignments.
  */
-export function skipAliases(node: ts.Expression): ts.Expression {
+function skipAliases(node: ts.Expression): ts.Expression {
   while (isAssignment(node)) {
     node = node.right;
   }
