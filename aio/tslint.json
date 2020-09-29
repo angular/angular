@@ -48,6 +48,8 @@
         ]
       }
     ],
+    // TODO(gkalpak): Fix the code and enable this to align with CLI. (Failures: 114)
+    // "no-any": true,
     "no-console": [
       true,
       "debug",
@@ -61,7 +63,10 @@
       true,
       "ignore-params"
     ],
+    // TODO(gkalpak): Fix the code and enable this to align with CLI. (Failures: 59)
+    // "no-non-null-assertion": true,
     "no-redundant-jsdoc": true,
+    // TODO(gkalpak): Fix the code and remove this to align with CLI.
     "no-switch-case-fall-through": true,
     "no-var-requires": false,
     "object-literal-key-quotes": [
@@ -86,6 +91,11 @@
         "named": "never"
       }
     },
+    // TODO(gkalpak): Fix the code and enable this to align with CLI. (Failures: 243)
+    // "typedef": [
+    //   true,
+    //   "call-signature"
+    // ],
     "typedef-whitespace": {
       "options": [
         {
