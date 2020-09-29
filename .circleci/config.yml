@@ -296,7 +296,7 @@ jobs:
   test_ivy_aot:
     executor:
       name: default-executor
-      resource_class: xlarge
+      resource_class: medium
     steps:
       - custom_attach_workspace
       - init_environment
@@ -334,7 +334,7 @@ jobs:
       # In order to avoid the bottleneck of having a slow host machine, we acquire a better
       # container for this job. This is necessary because we launch a lot of browsers concurrently
       # and therefore the tunnel and Karma need to process a lot of file requests and tests.
-      resource_class: xlarge
+      resource_class: medium
     steps:
       - custom_attach_workspace
       - init_environment
@@ -358,7 +358,7 @@ jobs:
       # In order to avoid the bottleneck of having a slow host machine, we acquire a better
       # container for this job. This is necessary because we launch a lot of browsers concurrently
       # and therefore the tunnel and Karma need to process a lot of file requests and tests.
-      resource_class: xlarge
+      resource_class: medium
     steps:
       - custom_attach_workspace
       - init_environment
@@ -448,7 +448,7 @@ jobs:
         default: false
     executor:
       name: default-executor
-      resource_class: xlarge
+      resource_class: medium
     parallelism: 5
     steps:
       - custom_attach_workspace
@@ -501,7 +501,7 @@ jobs:
   build-npm-packages:
     executor:
       name: default-executor
-      resource_class: xlarge
+      resource_class: medium
     steps:
       - custom_attach_workspace
       - init_environment
@@ -527,7 +527,7 @@ jobs:
   build-ivy-npm-packages:
     executor:
       name: default-executor
-      resource_class: xlarge
+      resource_class: medium
     steps:
       - custom_attach_workspace
       - init_environment
@@ -644,7 +644,7 @@ jobs:
       # In order to avoid the bottleneck of having a slow host machine, we acquire a better
       # container for this job. This is necessary because we launch a lot of browsers concurrently
       # and therefore the tunnel and Karma need to process a lot of file requests and tests.
-      resource_class: xlarge
+      resource_class: medium
     steps:
       - custom_attach_workspace
       - init_environment
@@ -673,7 +673,7 @@ jobs:
   components-repo-unit-tests:
     executor:
       name: default-executor
-      resource_class: xlarge
+      resource_class: medium
     steps:
       - custom_attach_workspace
       - init_environment
@@ -721,7 +721,7 @@ jobs:
   test_zonejs:
     executor:
       name: default-executor
-      resource_class: xlarge
+      resource_class: medium
     steps:
       - custom_attach_workspace
       - init_environment
