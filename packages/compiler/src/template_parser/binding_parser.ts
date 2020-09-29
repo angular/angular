@@ -141,8 +141,8 @@ export class BindingParser {
    */
   parseInlineTemplateBinding(
       tplKey: string, tplValue: string, sourceSpan: ParseSourceSpan, absoluteValueOffset: number,
-      targetMatchableAttrs: string[][], targetProps: ParsedProperty[],
-      targetVars: ParsedVariable[]) {
+      targetMatchableAttrs: string[][], targetProps: ParsedProperty[], targetVars: ParsedVariable[],
+      isIvyAst: boolean) {
     const absoluteKeyOffset = sourceSpan.start.offset + TEMPLATE_ATTR_PREFIX.length;
     const bindings = this._parseTemplateBindings(
         tplKey, tplValue, sourceSpan, absoluteKeyOffset, absoluteValueOffset);
@@ -159,9 +159,10 @@ export class BindingParser {
             binding.value ? moveParseSourceSpan(sourceSpan, binding.value.span) : undefined;
         targetVars.push(new ParsedVariable(key, value, bindingSpan, keySpan, valueSpan));
       } else if (binding.value) {
+        const srcSpan = isIvyAst ? bindingSpan : sourceSpan;
         const valueSpan = moveParseSourceSpan(sourceSpan, binding.value.ast.sourceSpan);
         this._parsePropertyAst(
-            key, binding.value, sourceSpan, keySpan, valueSpan, targetMatchableAttrs, targetProps);
+            key, binding.value, srcSpan, keySpan, valueSpan, targetMatchableAttrs, targetProps);
       } else {
         targetMatchableAttrs.push([key, '' /* value */]);
         // Since this is a literal attribute with no RHS, source span should be
