@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, BindingPipe, BindingType, BoundTarget, DYNAMIC_TYPE, ImplicitReceiver, MethodCall, ParsedEventType, ParseSourceSpan, PropertyRead, PropertyWrite, SchemaMetadata, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstBoundText, TmplAstElement, TmplAstNode, TmplAstReference, TmplAstTemplate, TmplAstTextAttribute, TmplAstVariable} from '@angular/compiler';
+import {AST, BindingPipe, BindingType, BoundTarget, DYNAMIC_TYPE, ImplicitReceiver, MethodCall, ParsedEventType, ParseSourceSpan, PropertyRead, PropertyWrite, SchemaMetadata, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstBoundText, TmplAstElement, TmplAstIcu, TmplAstNode, TmplAstReference, TmplAstTemplate, TmplAstTextAttribute, TmplAstVariable} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {Reference} from '../../imports';
@@ -1333,6 +1333,8 @@ class Scope {
       this.checkAndAppendReferencesOfNode(node);
     } else if (node instanceof TmplAstBoundText) {
       this.opQueue.push(new TcbTextInterpolationOp(this.tcb, this, node));
+    } else if (node instanceof TmplAstIcu) {
+      this.appendIcuExpressions(node);
     }
   }
 
@@ -1457,6 +1459,17 @@ class Scope {
       }
 
       this.appendDeepSchemaChecks(node.children);
+    }
+  }
+
+  private appendIcuExpressions(node: TmplAstIcu): void {
+    for (const variable of Object.values(node.vars)) {
+      this.opQueue.push(new TcbTextInterpolationOp(this.tcb, this, variable));
+    }
+    for (const placeholder of Object.values(node.placeholders)) {
+      if (placeholder instanceof TmplAstBoundText) {
+        this.opQueue.push(new TcbTextInterpolationOp(this.tcb, this, placeholder));
+      }
     }
   }
 }
