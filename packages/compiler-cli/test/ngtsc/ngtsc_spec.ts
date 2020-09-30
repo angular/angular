@@ -3064,12 +3064,13 @@ runInEachFileSystem(os => {
     it('should generate queries for directives', () => {
       env.write(`test.ts`, `
         import {Directive, ContentChild, ContentChildren, TemplateRef, ViewChild} from '@angular/core';
+        import * as core from '@angular/core';
 
         @Directive({
           selector: '[test]',
           queries: {
             'mview': new ViewChild('test1'),
-            'mcontent': new ContentChild('test2'),
+            'mcontent': new core.ContentChild('test2'),
           }
         })
         class FooCmp {
