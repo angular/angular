@@ -504,8 +504,7 @@ describe('findNodeAtPosition for microsyntax expression', () => {
     const {errors, nodes, position} = parse(`<div *ngFor="l¦et item of items"></div>`);
     expect(errors).toBe(null);
     const node = findNodeAtPosition(nodes, position);
-    // TODO: this is currently wrong because node is currently pointing to
-    // "item". In this case, it should return undefined.
+    expect(node).toBeUndefined();
   });
 
   it('should locate let variable', () => {

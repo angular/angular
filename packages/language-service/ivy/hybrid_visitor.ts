@@ -27,9 +27,11 @@ export function findNodeAtPosition(ast: t.Node[], position: number): t.Node|e.AS
   }
   if (isTemplateNodeWithKeyAndValue(candidate)) {
     const {keySpan, valueSpan} = candidate;
-    // If cursor is within source span but not within key span or value span,
-    // do not return the node.
-    if (!isWithin(position, keySpan) && (valueSpan && !isWithin(position, valueSpan))) {
+    const isWithinKeyValue =
+        isWithin(position, keySpan) || (valueSpan && isWithin(position, valueSpan));
+    if (!isWithinKeyValue) {
+      // If cursor is within source span but not within key span or value span,
+      // do not return the node.
       return;
     }
   }
