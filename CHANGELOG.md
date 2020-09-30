@@ -1,3 +1,89 @@
+<a name="11.0.0-next.4"></a>
+# 11.0.0-next.4 (2020-09-30)
+
+
+### Bug Fixes
+
+* **common:** correct and simplify typing of `KeyValuePipe` ([#37447](https://github.com/angular/angular/issues/37447)) ([4dfe0fa](https://github.com/angular/angular/commit/4dfe0fa))
+* **common:** correct and simplify typing of AsyncPipe ([#37447](https://github.com/angular/angular/issues/37447)) ([5f815c0](https://github.com/angular/angular/commit/5f815c0))
+* **common:** correct and simplify typing of I18nPluralPipe ([#37447](https://github.com/angular/angular/issues/37447)) ([3b919ef](https://github.com/angular/angular/commit/3b919ef))
+* **common:** correct typing and implementation of `SlicePipe` ([#37447](https://github.com/angular/angular/issues/37447)) ([4744c22](https://github.com/angular/angular/commit/4744c22))
+* **common:** let case conversion pipes accept type unions with `null` ([#36259](https://github.com/angular/angular/issues/36259)) ([#37447](https://github.com/angular/angular/issues/37447)) ([c7d5555](https://github.com/angular/angular/commit/c7d5555))
+* **compiler-cli:** perform DOM schema checks even in basic mode in g3 ([#38943](https://github.com/angular/angular/issues/38943)) ([40975e0](https://github.com/angular/angular/commit/40975e0))
+* **language-service:** hybrid visitor returns parent node of BoundAttribute ([#38995](https://github.com/angular/angular/issues/38995)) ([323be39](https://github.com/angular/angular/commit/323be39))
+* **packaging:** remove polyfills needed to run tests on IE9 and IE 10 ([#38931](https://github.com/angular/angular/issues/38931)) ([4ca1c73](https://github.com/angular/angular/commit/4ca1c73))
+* **platform-webworker:** remove platform-webworker and platform-webworker-dynamic ([#38846](https://github.com/angular/angular/issues/38846)) ([93c3d8f](https://github.com/angular/angular/commit/93c3d8f))
+* **router:** make relativeLinkResolution corrected by default ([#25609](https://github.com/angular/angular/issues/25609)) ([837889f](https://github.com/angular/angular/commit/837889f)), closes [#22394](https://github.com/angular/angular/issues/22394)
+
+
+### Code Refactoring
+
+* **router:** Adjust type of parameter in navigateByUrl and createUrlTree to be more accurate ([#38227](https://github.com/angular/angular/issues/38227)) ([e4f4d18](https://github.com/angular/angular/commit/e4f4d18)), closes [#18798](https://github.com/angular/angular/issues/18798)
+
+
+### Features
+
+* **common:** stricter types for DatePipe ([#37447](https://github.com/angular/angular/issues/37447)) ([daf8b7f](https://github.com/angular/angular/commit/daf8b7f))
+* **common:** stricter types for number pipes ([#37447](https://github.com/angular/angular/issues/37447)) ([7b2aac9](https://github.com/angular/angular/commit/7b2aac9))
+* **compiler:** Add keySpan to Variable Node ([#38965](https://github.com/angular/angular/issues/38965)) ([239968d](https://github.com/angular/angular/commit/239968d))
+* **router:** Add `relativeLinkResolution` migration to update default value ([#38698](https://github.com/angular/angular/issues/38698)) ([15ea811](https://github.com/angular/angular/commit/15ea811))
+
+
+### BREAKING CHANGES
+
+* **packaging:** In v10, IE 9, 10, and IE mobile support was deprecated. In v11, Angular framework removes IE 9,
+10, and IE mobile support completely.
+Supporting outdated browsers like these increases bundle size, code complexity, and test load,
+and also requires time and effort that could be spent on improvements to the framework.
+For example, fixing issues can be more difficult, as a straightforward fix for modern browsers
+could break old ones that have quirks due to not receiving updates from vendors.
+* **platform-webworker:** @angular/platform-webworker and @angular/platform-webworker-dynamic
+have been removed as they were deprecated in v8
+* **common:** The `slice` pipe now returns `null` for the `undefined` input value,
+which is consistent with the behavior of most pipes. If you rely on
+`undefined` being the result in that case, you now need to check for it
+explicitly.
+* **common:** The typing of the `keyvalue` pipe has been fixed to report that for
+input objects that have `number` keys, the result will contain the
+string representation of the keys. This was already the case and the
+code has simply been updated to reflect this. Please update the
+consumers of the pipe output if they were relying on the incorrect
+types. Note that this does not affect use cases where the input values
+are `Map`s, so if you need to preserve `number`s, this is an effective
+way.
+* **common:** The signatures of the number pipes now explicitly state which types are
+accepted. This should only cause issues in corner cases, as any other
+values would result in runtime exceptions.
+* **common:** The signature of the `date` pipe now explicitly states which types are
+accepted. This should only cause issues in corner cases, as any other
+values would result in runtime exceptions.
+* **common:** The async pipe no longer claims to return `undefined` for an input that
+was typed as `undefined`. Note that the code actually returned `null` on
+`undefined` inputs. In the unlikely case you were relying on this,
+please fix the typing of the consumers of the pipe output.
+* **common:** The case conversion pipes no longer let falsy values through. They now
+map both `null` and `undefined` to `null` and raise an exception on
+invalid input (`0`, `false`, `NaN`) just like most "common pipes". If
+your code required falsy values to pass through, you need to handle them
+explicitly.
+* **router:** While the new parameter types allow a variable of type
+`NavigationExtras` to be passed in, they will not allow object literals,
+as they may only specify known properties. They will also not accept
+types that do not have properties in common with the ones in the `Pick`.
+To fix this error, only specify properties from the `NavigationExtras` which are
+actually used in the respective function calls or use a type assertion
+on the object or variable: `as NavigationExtras`.
+* **router:** This commit changes the default value of
+`relativeLinkResolution` from `'legacy'` to `'default'`. If your
+application previously used the default by not specifying a value in the
+`ExtraOptions` and uses relative links when navigating from children of
+empty path routes, you will need to update your `RouterModule` to
+specifically specify `'legacy'` for `relativeLinkResolution`.
+See https://angular.io/api/router/ExtraOptions#relativeLinkResolution
+for more details.
+
+
+
 <a name="10.1.4"></a>
 ## 10.1.4 (2020-09-30)
 
