@@ -141,7 +141,14 @@ class ExpressionSourceHumanizer extends e.RecursiveAstVisitor implements t.Visit
   }
   visitContent(ast: t.Content) {}
   visitText(ast: t.Text) {}
-  visitIcu(ast: t.Icu) {}
+  visitIcu(ast: t.Icu) {
+    for (const key of Object.keys(ast.vars)) {
+      ast.vars[key].visit(this);
+    }
+    for (const key of Object.keys(ast.placeholders)) {
+      ast.placeholders[key].visit(this);
+    }
+  }
 }
 
 /**

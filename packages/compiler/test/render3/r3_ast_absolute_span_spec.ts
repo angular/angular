@@ -339,4 +339,25 @@ describe('expression AST absolute source spans', () => {
               [['As', new AbsoluteSourceSpan(22, 24)], ['Bs', new AbsoluteSourceSpan(35, 37)]]));
     });
   });
+
+  describe('ICU expressions', () => {
+    it('is correct for variables and placeholders', () => {
+      const spans = humanizeExpressionSource(
+          parse('<span i18n>{item.var, plural, other { {{item.placeholder}} items } }</span>')
+              .nodes);
+      expect(spans).toContain(['item.var', new AbsoluteSourceSpan(12, 20)]);
+      expect(spans).toContain(['item.placeholder', new AbsoluteSourceSpan(40, 56)]);
+    });
+
+    it('is correct for variables and placeholders', () => {
+      const spans = humanizeExpressionSource(
+          parse(
+              '<span i18n>{item.var, plural, other { {{item.placeholder}} {nestedVar, plural, other { {{nestedPlaceholder}} }}} }</span>')
+              .nodes);
+      expect(spans).toContain(['item.var', new AbsoluteSourceSpan(12, 20)]);
+      expect(spans).toContain(['item.placeholder', new AbsoluteSourceSpan(40, 56)]);
+      expect(spans).toContain(['nestedVar', new AbsoluteSourceSpan(60, 69)]);
+      expect(spans).toContain(['nestedPlaceholder', new AbsoluteSourceSpan(89, 106)]);
+    });
+  });
 });

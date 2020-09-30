@@ -128,6 +128,26 @@ export class BindingParser {
   }
 
   /**
+   * Similar to `parseInterpolation`, but treats the provided string as a single expression
+   * element that would normally appear within the interpolation prefix and suffix (`{{` and `}}`).
+   * This is used for parsing the switch expression in ICUs.
+   */
+  parseInterpolationExpression(expression: string, sourceSpan: ParseSourceSpan): ASTWithSource {
+    const sourceInfo = sourceSpan.start.toString();
+
+    try {
+      const ast = this._exprParser.parseInterpolationExpression(
+          expression, sourceInfo, sourceSpan.start.offset);
+      if (ast) this._reportExpressionParserErrors(ast.errors, sourceSpan);
+      this._checkPipes(ast, sourceSpan);
+      return ast;
+    } catch (e) {
+      this._reportError(`${e}`, sourceSpan);
+      return this._exprParser.wrapLiteralPrimitive('ERROR', sourceInfo, sourceSpan.start.offset);
+    }
+  }
+
+  /**
    * Parses the bindings in a microsyntax expression, and converts them to
    * `ParsedProperty` or `ParsedVariable`.
    *
