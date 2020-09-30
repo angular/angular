@@ -8,6 +8,7 @@
 
 import {join} from 'path';
 import * as ts from 'typescript/lib/tsserverlibrary';
+import {isTypeScriptFile} from '../language_service_adapter';
 
 const logger: ts.server.Logger = {
   close(): void{},
@@ -161,10 +162,24 @@ class MockService {
 
   getScriptInfo(fileName: string): ts.server.ScriptInfo {
     const scriptInfo = this.ps.getScriptInfo(fileName);
-    if (!scriptInfo) {
+    if (scriptInfo) {
+      return scriptInfo;
+    }
+    // There is no script info for external template, so create one.
+    // But we need to make sure it's not a TS file.
+    if (isTypeScriptFile(fileName)) {
       throw new Error(`No existing script info for ${fileName}`);
     }
-    return scriptInfo;
+    const newScriptInfo = this.ps.getOrCreateScriptInfoForNormalizedPath(
+        ts.server.toNormalizedPath(fileName),
+        true,                    // openedByClient
+        '',                      // fileContent
+        ts.ScriptKind.External,  // scriptKind
+    );
+    if (!newScriptInfo) {
+      throw new Error(`Failed to create new script info for ${fileName}`);
+    }
+    return newScriptInfo;
   }
 
   /**
