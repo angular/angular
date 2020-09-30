@@ -14,6 +14,7 @@ import {
   QueryList,
   Type,
   Provider,
+  ChangeDetectionStrategy,
 } from '@angular/core';
 import {Direction, Directionality} from '@angular/cdk/bidi';
 import {OverlayContainer, Overlay} from '@angular/cdk/overlay';
@@ -241,6 +242,42 @@ describe('MDC-based MatMenu', () => {
     const backdrop = <HTMLElement>overlayContainerElement.querySelector('.cdk-overlay-backdrop');
 
     expect(backdrop.classList).toContain('custom-backdrop');
+  }));
+
+
+  it('should be able to set a custom class on the overlay panel', fakeAsync(() => {
+    const optionsProvider =  {
+      provide: MAT_MENU_DEFAULT_OPTIONS,
+      useValue: {overlayPanelClass: 'custom-panel-class'}
+    };
+    const fixture = createComponent(SimpleMenu, [optionsProvider], [FakeIcon]);
+
+    fixture.detectChanges();
+    fixture.componentInstance.trigger.openMenu();
+    fixture.detectChanges();
+    tick(500);
+
+    const overlayPane = <HTMLElement>overlayContainerElement.querySelector('.cdk-overlay-pane');
+
+    expect(overlayPane.classList).toContain('custom-panel-class');
+  }));
+
+  it('should be able to set a custom classes on the overlay panel', fakeAsync(() => {
+    const optionsProvider =  {
+      provide: MAT_MENU_DEFAULT_OPTIONS,
+      useValue: {overlayPanelClass: ['custom-panel-class-1', 'custom-panel-class-2']}
+    };
+    const fixture = createComponent(SimpleMenu, [optionsProvider], [FakeIcon]);
+
+    fixture.detectChanges();
+    fixture.componentInstance.trigger.openMenu();
+    fixture.detectChanges();
+    tick(500);
+
+    const overlayPane = <HTMLElement>overlayContainerElement.querySelector('.cdk-overlay-pane');
+
+    expect(overlayPane.classList).toContain('custom-panel-class-1');
+    expect(overlayPane.classList).toContain('custom-panel-class-2');
   }));
 
   it('should restore focus to the root trigger when the menu was opened by mouse', fakeAsync(() => {
@@ -904,6 +941,25 @@ describe('MDC-based MatMenu', () => {
 
     expect(document.activeElement).toBe(items[4], 'Expected fifth item to be focused');
     flush();
+  }));
+
+  it('should open submenus when the menu is inside an OnPush component', fakeAsync(() => {
+    const fixture = createComponent(LazyMenuWithOnPush);
+    fixture.detectChanges();
+
+    // Open the top-level menu
+    fixture.componentInstance.rootTrigger.nativeElement.click();
+    fixture.detectChanges();
+    flush();
+
+    // Dispatch a `mouseenter` on the menu item to open the submenu.
+    // This will only work if the top-level menu is aware the this menu item exists.
+    dispatchMouseEvent(fixture.componentInstance.menuItemWithSubmenu.nativeElement, 'mouseenter');
+    fixture.detectChanges();
+    flush();
+
+    expect(overlayContainerElement.querySelectorAll('.mat-mdc-menu-item').length)
+        .toBe(2, 'Expected two open menus');
   }));
 
   it('should focus the menu panel if all items are disabled', fakeAsync(() => {
@@ -2585,6 +2641,30 @@ class SimpleMenuWithRepeaterInLazyContent {
   @ViewChild(MatMenuTrigger) trigger: MatMenuTrigger;
   @ViewChild(MatMenu) menu: MatMenu;
   items = [{label: 'Pizza', disabled: false}, {label: 'Pasta', disabled: false}];
+}
+
+
+@Component({
+  template: `
+    <button [matMenuTriggerFor]="menu" #triggerEl>Toggle menu</button>
+
+    <mat-menu #menu="matMenu">
+      <ng-template matMenuContent>
+        <button [matMenuTriggerFor]="menu2" mat-menu-item #menuItem>Item</button>
+      </ng-template>
+    </mat-menu>
+
+    <mat-menu #menu2="matMenu">
+      <ng-template matMenuContent>
+        <button mat-menu-item #subMenuItem>Sub item</button>
+      </ng-template>
+    </mat-menu>
+  `,
+  changeDetection: ChangeDetectionStrategy.OnPush,
+})
+class LazyMenuWithOnPush {
+  @ViewChild('triggerEl', {read: ElementRef}) rootTrigger: ElementRef;
+  @ViewChild('menuItem', {read: ElementRef}) menuItemWithSubmenu: ElementRef;
 }
 
 

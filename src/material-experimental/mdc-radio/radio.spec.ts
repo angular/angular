@@ -784,6 +784,16 @@ describe('MDC-based MatRadio', () => {
           .toBe(4, 'Expected the tabindex to be set to "4".');
     });
 
+    it('should remove the tabindex from the host element', () => {
+      const predefinedFixture = TestBed.createComponent(RadioButtonWithPredefinedTabindex);
+      predefinedFixture.detectChanges();
+
+      const radioButtonEl =
+          predefinedFixture.debugElement.query(By.css('.mat-mdc-radio-button'))!.nativeElement;
+
+      expect(radioButtonEl.getAttribute('tabindex')).toBe('-1');
+    });
+
     it('should set the tabindex to -1 on the host element', () => {
       const predefinedFixture = TestBed.createComponent(RadioButtonWithPredefinedTabindex);
       predefinedFixture.detectChanges();
