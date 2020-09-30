@@ -15,6 +15,7 @@ import {buildReleaseParser} from './release/cli';
 import {buildPrParser} from './pr/cli';
 import {captureLogOutputForCommand} from './utils/console';
 import {buildCaretakerParser} from './caretaker/cli';
+import {buildNgbotParser} from './ngbot/cli';
 
 yargs.scriptName('ng-dev')
     .middleware(captureLogOutputForCommand)
@@ -27,6 +28,7 @@ yargs.scriptName('ng-dev')
     .command('release <command>', '', buildReleaseParser)
     .command('ts-circular-deps <command>', '', tsCircularDependenciesBuilder)
     .command('caretaker <command>', '', buildCaretakerParser)
+    .command('ngbot <command>', false, buildNgbotParser)
     .wrap(120)
     .strict()
     .parse();
