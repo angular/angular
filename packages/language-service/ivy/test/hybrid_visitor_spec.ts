@@ -535,6 +535,19 @@ describe('findNodeAtPosition for microsyntax expression', () => {
     expect((node as t.BoundAttribute).name).toBe('ngForTrackBy');
   });
 
+  it('should locate first bound attribute when there are two', () => {
+    // It used to be the case that all microsyntax bindings share the same
+    // source span, so the second bound attribute would overwrite the first.
+    // This has been fixed in pr/39036, this case is added to prevent regression.
+    const {errors, nodes, position} =
+        parse(`<div *ngFor="let item o¦f items; trackBy: trackByFn"></div>`);
+    expect(errors).toBe(null);
+    const node = findNodeAtPosition(nodes, position);
+    expect(isTemplateNode(node!)).toBe(true);
+    expect(node).toBeInstanceOf(t.BoundAttribute);
+    expect((node as t.BoundAttribute).name).toBe('ngForOf');
+  });
+
   it('should locate bound attribute value', () => {
     const {errors, nodes, position} = parse(`<div *ngFor="let item of it¦ems"></div>`);
     expect(errors).toBe(null);
