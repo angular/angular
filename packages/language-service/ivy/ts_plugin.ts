@@ -38,10 +38,22 @@ export function create(info: ts.server.PluginCreateInfo): ts.LanguageService {
     }
   }
 
+  function getDefinitionAndBoundSpan(
+      fileName: string, position: number): ts.DefinitionInfoAndBoundSpan|undefined {
+    if (angularOnly) {
+      return ngLS.getDefinitionAndBoundSpan(fileName, position);
+    } else {
+      // If TS could answer the query, then return that result. Otherwise, return from Angular LS.
+      return tsLS.getDefinitionAndBoundSpan(fileName, position) ??
+          ngLS.getDefinitionAndBoundSpan(fileName, position);
+    }
+  }
+
   return {
     ...tsLS,
     getSemanticDiagnostics,
     getTypeDefinitionAtPosition,
     getQuickInfoAtPosition,
+    getDefinitionAndBoundSpan,
   };
 }
