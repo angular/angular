@@ -1,3 +1,13 @@
+<a name="10.1.4"></a>
+## 10.1.4 (2020-09-30)
+
+
+### Bug Fixes
+
+* **compiler-cli:** enable [@types](https://github.com/types) discovery in incremental rebuilds ([#39011](https://github.com/angular/angular/issues/39011)) ([6e99427](https://github.com/angular/angular/commit/6e99427)), closes [#38979](https://github.com/angular/angular/issues/38979)
+
+
+
 <a name="11.0.0-next.3"></a>
 # 11.0.0-next.3 (2020-09-23)
 
