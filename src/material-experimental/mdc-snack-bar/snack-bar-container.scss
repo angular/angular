@@ -16,6 +16,10 @@
 }
 
 // These elements need to have full width using flex layout.
-.mat-mdc-snack-bar-handset, .mat-mdc-snack-bar-container, .mat-mdc-snack-bar-label {
-  flex: 1;
+.mat-mdc-snack-bar-handset,
+.mat-mdc-snack-bar-container,
+.mat-mdc-snack-bar-label {
+  // Note that we need to include the full `flex` shorthand
+  // declaration so the container doesn't collapse on IE11.
+  flex: 1 0 auto;
 }
