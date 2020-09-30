@@ -16,6 +16,7 @@ import {TypeCheckShimGenerator} from '@angular/compiler-cli/src/ngtsc/typecheck'
 import {OptimizeFor, TypeCheckingProgramStrategy} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
 import * as ts from 'typescript/lib/tsserverlibrary';
 
+import {DefinitionBuilder} from './definitions';
 import {QuickInfoBuilder} from './quick_info';
 
 export class LanguageService {
@@ -45,6 +46,13 @@ export class LanguageService {
       return diagnostics;
     }
     throw new Error('Ivy LS currently does not support external template');
+  }
+
+  getDefinitionAndBoundSpan(fileName: string, position: number): ts.DefinitionInfoAndBoundSpan
+      |undefined {
+    const program = this.strategy.getProgram();
+    const compiler = this.createCompiler(program);
+    return new DefinitionBuilder(this.tsLS, compiler).getDefinitionAndBoundSpan(fileName, position);
   }
 
   getQuickInfoAtPosition(fileName: string, position: number): ts.QuickInfo|undefined {

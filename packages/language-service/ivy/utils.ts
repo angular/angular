@@ -226,3 +226,8 @@ export function filterAliasImports(displayParts: ts.SymbolDisplayPart[]): ts.Sym
     return !aliasNameFollowedByDot && !dotPrecededByAlias;
   });
 }
+
+export function isDollarEvent(n: t.Node|e.AST): n is e.PropertyRead {
+  return n instanceof e.PropertyRead && n.name === '$event' &&
+      n.receiver instanceof e.ImplicitReceiver;
+}
