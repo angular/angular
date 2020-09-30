@@ -13553,9 +13553,9 @@ sauce-connect-launcher@^1.2.4:
     lodash "^4.16.6"
     rimraf "^2.5.4"
 
-"sauce-connect@https://saucelabs.com/downloads/sc-4.5.1-linux.tar.gz":
+"sauce-connect@https://saucelabs.com/downloads/sc-4.6.2-linux.tar.gz":
   version "0.0.0"
-  resolved "https://saucelabs.com/downloads/sc-4.5.1-linux.tar.gz#5ca9328724c5ff16b12ea49e7a748d44f7305be5"
+  resolved "https://saucelabs.com/downloads/sc-4.6.2-linux.tar.gz#7b7f35433af9c3380758e048894d7b9aecf3754e"
 
 saucelabs@^1.5.0:
   version "1.5.0"
