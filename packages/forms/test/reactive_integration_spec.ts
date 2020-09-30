@@ -10,7 +10,7 @@ import {ɵgetDOM as getDOM} from '@angular/common';
 import {Component, Directive, forwardRef, Input, NgModule, OnDestroy, Type} from '@angular/core';
 import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {expect} from '@angular/core/testing/src/testing_internal';
-import {AbstractControl, AsyncValidator, AsyncValidatorFn, COMPOSITION_BUFFER_MODE, ControlValueAccessor, DefaultValueAccessor, FormArray, FormControl, FormControlDirective, FormControlName, FormGroup, FormGroupDirective, FormsModule, NG_ASYNC_VALIDATORS, NG_VALIDATORS, NG_VALUE_ACCESSOR, ReactiveFormsModule, Validator, Validators} from '@angular/forms';
+import {AbstractControl, AsyncValidator, AsyncValidatorFn, COMPOSITION_BUFFER_MODE, ControlValueAccessor, DefaultValueAccessor, FormArray, FormControl, FormControlDirective, FormControlName, FormGroup, FormGroupDirective, FormsModule, MaxValidator, MinValidator, NG_ASYNC_VALIDATORS, NG_VALIDATORS, NG_VALUE_ACCESSOR, ReactiveFormsModule, Validator, Validators} from '@angular/forms';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {dispatchEvent, sortedClassList} from '@angular/platform-browser/testing/src/browser_util';
 import {merge, NEVER, of, Subscription, timer} from 'rxjs';
@@ -2346,6 +2346,155 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
            expect(resultArr.length)
                .toEqual(2, `Expected original observable to be canceled on the next value change.`);
          }));
+
+
+      it('should validate max', () => {
+        const fixture = initTest(FormGroupMinMaxComp);
+        fixture.componentInstance.form = new FormGroup({'pin': new FormControl(5)});
+        fixture.detectChanges();
+
+        const input = fixture.debugElement.query(By.css('input')).nativeElement;
+        const form = fixture.componentInstance.form;
+
+        expect(input.value).toEqual('5');
+        expect(form.valid).toBeTruthy();
+        expect(form.controls.pin.errors).toBeNull();
+
+        input.value = 2;
+        dispatchEvent(input, 'input');
+        expect(form.value).toEqual({pin: 2});
+        expect(form.valid).toBeTruthy();
+        expect(form.controls.pin.errors).toBeNull();
+
+        fixture.componentInstance.max = 1;
+        fixture.detectChanges();
+
+        expect(form.valid).toBeFalse();
+        expect(form.controls.pin.errors).toEqual({max: {max: 1, actual: 2}});
+      });
+
+      it('should apply max validation when control value is defined as a string', () => {
+        const fixture = initTest(FormGroupMinMaxComp);
+        fixture.componentInstance.form = new FormGroup({'pin': new FormControl('5')});
+        fixture.detectChanges();
+
+        const input = fixture.debugElement.query(By.css('input')).nativeElement;
+        const form = fixture.componentInstance.form;
+
+        expect(input.value).toEqual('5');
+        expect(form.valid).toBeTruthy();
+        expect(form.controls.pin.errors).toBeNull();
+
+        input.value = '2';
+        dispatchEvent(input, 'input');
+        expect(form.value).toEqual({pin: 2});
+        expect(form.valid).toBeTruthy();
+        expect(form.controls.pin.errors).toBeNull();
+
+        fixture.componentInstance.max = 1;
+        fixture.detectChanges();
+        expect(form.valid).toBeFalse();
+        expect(form.controls.pin.errors).toEqual({max: {max: 1, actual: 2}});
+      });
+
+      it('should validate min', () => {
+        const fixture = initTest(FormGroupMinMaxComp);
+        fixture.componentInstance.form = new FormGroup({'pin': new FormControl(5)});
+        fixture.detectChanges();
+
+        const input = fixture.debugElement.query(By.css('input')).nativeElement;
+        const form = fixture.componentInstance.form;
+
+        expect(input.value).toEqual('5');
+        expect(form.valid).toBeTruthy();
+        expect(form.controls.pin.errors).toBeNull();
+
+        input.value = 2;
+        dispatchEvent(input, 'input');
+        expect(form.value).toEqual({pin: 2});
+        expect(form.valid).toBeTruthy();
+        expect(form.controls.pin.errors).toBeNull();
+
+        fixture.componentInstance.min = 5;
+        fixture.detectChanges();
+        expect(form.valid).toBeFalse();
+        expect(form.controls.pin.errors).toEqual({min: {min: 5, actual: 2}});
+      });
+
+      it('should apply min validation when control value is defined as a string', () => {
+        const fixture = initTest(FormGroupMinMaxComp);
+        fixture.componentInstance.form = new FormGroup({'pin': new FormControl('5')});
+        fixture.detectChanges();
+
+        const input = fixture.debugElement.query(By.css('input')).nativeElement;
+        const form = fixture.componentInstance.form;
+
+        expect(input.value).toEqual('5');
+        expect(form.valid).toBeTruthy();
+        expect(form.controls.pin.errors).toBeNull();
+
+        input.value = '2';
+        dispatchEvent(input, 'input');
+        expect(form.value).toEqual({pin: 2});
+        expect(form.valid).toBeTruthy();
+        expect(form.controls.pin.errors).toBeNull();
+
+        fixture.componentInstance.min = 5;
+        fixture.detectChanges();
+        expect(form.valid).toBeFalse();
+        expect(form.controls.pin.errors).toEqual({min: {min: 5, actual: 2}});
+      });
+
+      it('should run min/max validation for empty values', () => {
+        const fixture = initTest(FormGroupMinMaxComp);
+        const minValidateFnSpy = spyOn(MinValidator.prototype, 'validate');
+        const maxValidateFnSpy = spyOn(MaxValidator.prototype, 'validate');
+
+        fixture.componentInstance.form = new FormGroup({'pin': new FormControl()});
+        fixture.detectChanges();
+
+        const input = fixture.debugElement.query(By.css('input')).nativeElement;
+        const form = fixture.componentInstance.form;
+
+        expect(input.value).toEqual('');
+        expect(form.valid).toBeTruthy();
+        expect(form.controls.pin.errors).toBeNull();
+        expect(minValidateFnSpy).toHaveBeenCalled();
+        expect(maxValidateFnSpy).toHaveBeenCalled();
+      });
+
+      it('should run min/max validation for negative values', () => {
+        const fixture = initTest(FormGroupMinMaxComp);
+        fixture.componentInstance.form = new FormGroup({'pin': new FormControl(-30)});
+        fixture.componentInstance.min = -20;
+        fixture.componentInstance.max = -10;
+        fixture.detectChanges();
+
+        const input = fixture.debugElement.query(By.css('input')).nativeElement;
+        const form = fixture.componentInstance.form;
+
+        expect(input.value).toEqual('-30');
+        expect(form.valid).toBeFalse();
+        expect(form.controls.pin.errors).toEqual({min: {min: -20, actual: -30}});
+
+        input.value = -15;
+        dispatchEvent(input, 'input');
+        expect(form.value).toEqual({pin: -15});
+        expect(form.valid).toBeTruthy();
+        expect(form.controls.pin.errors).toBeNull();
+
+        input.value = -5;
+        dispatchEvent(input, 'input');
+        expect(form.value).toEqual({pin: -5});
+        expect(form.valid).toBeFalse();
+        expect(form.controls.pin.errors).toEqual({max: {max: -10, actual: -5}});
+
+        input.value = 0;
+        dispatchEvent(input, 'input');
+        expect(form.value).toEqual({pin: 0});
+        expect(form.valid).toBeFalse();
+        expect(form.controls.pin.errors).toEqual({max: {max: -10, actual: 0}});
+      });
     });
 
     describe('errors', () => {
@@ -4460,4 +4609,17 @@ class MultipleFormControls {
 class NgForFormControlWithValidators {
   form = new FormGroup({login: new FormControl('a')});
   logins = ['a', 'b', 'c'];
+}
+
+@Component({
+  selector: 'form-group-min-max-comp',
+  template: `
+    <div [formGroup]="form">
+      <input type="number" formControlName="pin" [max]="max" [min]="min">
+   </div>`
+})
+class FormGroupMinMaxComp {
+  form!: FormGroup;
+  min: number = 1;
+  max: number = 10;
 }

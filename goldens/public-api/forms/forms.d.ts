@@ -337,11 +337,19 @@ export declare class MaxLengthValidator implements Validator, OnChanges {
     validate(control: AbstractControl): ValidationErrors | null;
 }
 
+export declare class MaxValidator extends AbstractValidatorDirective {
+    max: string;
+}
+
 export declare class MinLengthValidator implements Validator, OnChanges {
     minlength: string | number;
     ngOnChanges(changes: SimpleChanges): void;
     registerOnValidatorChange(fn: () => void): void;
     validate(control: AbstractControl): ValidationErrors | null;
+}
+
+export declare class MinValidator extends AbstractValidatorDirective {
+    min: string;
 }
 
 export declare const NG_ASYNC_VALIDATORS: InjectionToken<(Function | Validator)[]>;
