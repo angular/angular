@@ -7,7 +7,7 @@
  */
 
 import {NgForOf as NgForOfDef, NgIf as NgIfDef, NgTemplateOutlet as NgTemplateOutletDef} from '@angular/common';
-import {IterableDiffers, NgIterable, TemplateRef, ViewContainerRef} from '@angular/core';
+import {IterableDiffers, NgIterable, TemplateRef, ViewContainerRef, ɵConsole as Console} from '@angular/core';
 
 import {DirectiveType, ɵɵdefineDirective, ɵɵdirectiveInject, ɵɵNgOnChangesFeature} from '../../src/render3/index';
 
@@ -27,7 +27,7 @@ NgForOf.ɵdir = ɵɵdefineDirective({
 
 NgForOf.ɵfac = () => new NgForOfDef(
     ɵɵdirectiveInject(ViewContainerRef as any), ɵɵdirectiveInject(TemplateRef as any),
-    ɵɵdirectiveInject(IterableDiffers));
+    ɵɵdirectiveInject(IterableDiffers), ɵɵdirectiveInject(Console));
 
 NgIf.ɵdir = ɵɵdefineDirective({
   type: NgIfDef,

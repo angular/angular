@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, DoCheck, EmbeddedViewRef, Input, isDevMode, IterableChangeRecord, IterableChanges, IterableDiffer, IterableDiffers, NgIterable, TemplateRef, TrackByFunction, ViewContainerRef} from '@angular/core';
+import {Directive, DoCheck, EmbeddedViewRef, Input, isDevMode, IterableChangeRecord, IterableChanges, IterableDiffer, IterableDiffers, NgIterable, TemplateRef, TrackByFunction, ViewContainerRef, ɵConsole as Console} from '@angular/core';
 
 /**
  * @publicApi
@@ -160,12 +160,9 @@ export class NgForOf<T, U extends NgIterable<T> = NgIterable<T>> implements DoCh
   @Input()
   set ngForTrackBy(fn: TrackByFunction<T>) {
     if (isDevMode() && fn != null && typeof fn !== 'function') {
-      // TODO(vicb): use a log service once there is a public one available
-      if (<any>console && <any>console.warn) {
-        console.warn(
-            `trackBy must be a function, but received ${JSON.stringify(fn)}. ` +
-            `See https://angular.io/api/common/NgForOf#change-propagation for more information.`);
-      }
+      this._console.warn(
+          `trackBy must be a function, but received ${JSON.stringify(fn)}. ` +
+          `See https://angular.io/api/common/NgForOf#change-propagation for more information.`);
     }
     this._trackByFn = fn;
   }
@@ -182,7 +179,8 @@ export class NgForOf<T, U extends NgIterable<T> = NgIterable<T>> implements DoCh
 
   constructor(
       private _viewContainer: ViewContainerRef,
-      private _template: TemplateRef<NgForOfContext<T, U>>, private _differs: IterableDiffers) {}
+      private _template: TemplateRef<NgForOfContext<T, U>>, private _differs: IterableDiffers,
+      private _console: Console) {}
 
   /**
    * A reference to the template that is stamped out for each item in the iterable.

@@ -7,7 +7,7 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {Component} from '@angular/core';
+import {Component, ɵConsole as Console} from '@angular/core';
 import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
@@ -17,6 +17,7 @@ let thisArg: any;
 {
   describe('ngFor', () => {
     let fixture: ComponentFixture<any>;
+    let fakeConsole: jasmine.SpyObj<Console>;
 
     function getComponent(): TestComponent {
       return fixture.componentInstance;
@@ -32,9 +33,14 @@ let thisArg: any;
     });
 
     beforeEach(() => {
+      fakeConsole = {
+        log: jasmine.createSpy('console.log'),
+        warn: jasmine.createSpy('console.warn')
+      };
       TestBed.configureTestingModule({
         declarations: [TestComponent],
         imports: [CommonModule],
+        providers: [{provide: Console, useValue: fakeConsole}],
       });
     });
 
@@ -299,15 +305,18 @@ let thisArg: any;
 
     describe('track by', () => {
       it('should console.warn if trackBy is not a function', waitForAsync(() => {
-           // TODO(vicb): expect a warning message when we have a proper log service
            const template = `<p *ngFor="let item of items; trackBy: value"></p>`;
            fixture = createTestComponent(template);
            fixture.componentInstance.value = 0;
            fixture.detectChanges();
+           expect(fakeConsole.warn)
+               .toHaveBeenCalledWith(
+                   `trackBy must be a function, but received ${
+                       JSON.stringify(fixture.componentInstance.value)}. ` +
+                   `See https://angular.io/api/common/NgForOf#change-propagation for more information.`);
          }));
 
       it('should track by identity when trackBy is to `null` or `undefined`', waitForAsync(() => {
-           // TODO(vicb): expect no warning message when we have a proper log service
            const template = `<p *ngFor="let item of items; trackBy: value">{{ item }}</p>`;
            fixture = createTestComponent(template);
            fixture.componentInstance.items = ['a', 'b', 'c'];
@@ -315,6 +324,7 @@ let thisArg: any;
            detectChangesAndExpectText('abc');
            fixture.componentInstance.value = undefined;
            detectChangesAndExpectText('abc');
+           expect(fakeConsole).not.toHaveBeenCalled();
          }));
 
       it('should set the context to the component instance', waitForAsync(() => {

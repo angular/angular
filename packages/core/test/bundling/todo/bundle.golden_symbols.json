@@ -6,6 +6,9 @@
     "name": "ChangeDetectionStrategy"
   },
   {
+    "name": "Console"
+  },
+  {
     "name": "DefaultIterableDiffer"
   },
   {
