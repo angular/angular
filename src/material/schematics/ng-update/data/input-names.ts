@@ -15,7 +15,7 @@ export const inputNames: VersionChanges<InputNameUpgradeData> = {
       changes: [{
         replace: 'align',
         replaceWith: 'labelPosition',
-        whitelist: {elements: ['mat-radio-group', 'mat-radio-button']}
+        limitedTo: {elements: ['mat-radio-group', 'mat-radio-button']}
       }]
     },
 
@@ -24,18 +24,18 @@ export const inputNames: VersionChanges<InputNameUpgradeData> = {
       changes: [{
         replace: 'align',
         replaceWith: 'position',
-        whitelist: {elements: ['mat-drawer', 'mat-sidenav']}
+        limitedTo: {elements: ['mat-drawer', 'mat-sidenav']}
       }]
     },
 
     {
       pr: 'https://github.com/angular/components/pull/10294',
       changes: [
-        {replace: 'dividerColor', replaceWith: 'color', whitelist: {elements: ['mat-form-field']}},
+        {replace: 'dividerColor', replaceWith: 'color', limitedTo: {elements: ['mat-form-field']}},
         {
           replace: 'floatPlaceholder',
           replaceWith: 'floatLabel',
-          whitelist: {elements: ['mat-form-field']}
+          limitedTo: {elements: ['mat-form-field']}
         }
       ]
     },
@@ -45,14 +45,14 @@ export const inputNames: VersionChanges<InputNameUpgradeData> = {
       changes: [{
         replace: 'mat-dynamic-height',
         replaceWith: 'dynamicHeight',
-        whitelist: {elements: ['mat-tab-group']}
+        limitedTo: {elements: ['mat-tab-group']}
       }]
     },
 
     {
       pr: 'https://github.com/angular/components/pull/10342',
       changes: [
-        {replace: 'align', replaceWith: 'labelPosition', whitelist: {elements: ['mat-checkbox']}}
+        {replace: 'align', replaceWith: 'labelPosition', limitedTo: {elements: ['mat-checkbox']}}
       ]
     },
 
@@ -61,18 +61,18 @@ export const inputNames: VersionChanges<InputNameUpgradeData> = {
       changes: [{
         replace: 'tooltip-position',
         replaceWith: 'matTooltipPosition',
-        whitelist: {attributes: ['matTooltip']}
+        limitedTo: {attributes: ['matTooltip']}
       }]
     },
 
     {
       pr: 'https://github.com/angular/components/pull/10373',
       changes: [
-        {replace: 'thumb-label', replaceWith: 'thumbLabel', whitelist: {elements: ['mat-slider']}},
+        {replace: 'thumb-label', replaceWith: 'thumbLabel', limitedTo: {elements: ['mat-slider']}},
         {
           replace: 'tick-interval',
           replaceWith: 'tickInterval',
-          whitelist: {elements: ['mat-slider']}
+          limitedTo: {elements: ['mat-slider']}
         }
       ]
     }

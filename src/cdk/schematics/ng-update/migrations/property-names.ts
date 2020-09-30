@@ -38,7 +38,7 @@ export class PropertyNamesMigration extends Migration<UpgradeData> {
         return;
       }
 
-      if (!data.whitelist || data.whitelist.classes.includes(typeName)) {
+      if (!data.limitedTo || data.limitedTo.classes.includes(typeName)) {
         this.fileSystem.edit(this.fileSystem.resolve(node.getSourceFile().fileName))
           .remove(node.name.getStart(), node.name.getWidth())
           .insertRight(node.name.getStart(), data.replaceWith);

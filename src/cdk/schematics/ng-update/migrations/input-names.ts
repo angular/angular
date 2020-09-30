@@ -44,17 +44,17 @@ export class InputNamesMigration extends Migration<UpgradeData> {
 
   visitTemplate(template: ResolvedResource): void {
     this.data.forEach(name => {
-      const whitelist = name.whitelist;
+      const limitedTo = name.limitedTo;
       const relativeOffsets: number[] = [];
 
-      if (whitelist.attributes) {
+      if (limitedTo.attributes) {
         relativeOffsets.push(
-            ...findInputsOnElementWithAttr(template.content, name.replace, whitelist.attributes));
+            ...findInputsOnElementWithAttr(template.content, name.replace, limitedTo.attributes));
       }
 
-      if (whitelist.elements) {
+      if (limitedTo.elements) {
         relativeOffsets.push(
-            ...findInputsOnElementWithTag(template.content, name.replace, whitelist.elements));
+            ...findInputsOnElementWithTag(template.content, name.replace, limitedTo.elements));
       }
 
       relativeOffsets.map(offset => template.start + offset)

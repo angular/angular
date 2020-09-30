@@ -20,7 +20,7 @@ import {getVersionUpgradeData, UpgradeData} from '../upgrade-data';
  */
 export class CssSelectorsMigration extends Migration<UpgradeData> {
   /** Change data that upgrades to the specified target version. */
-  data = getVersionUpgradeData(this, 'cssSelectors');
+  data: CssSelectorUpgradeData[] = getVersionUpgradeData(this, 'cssSelectors');
 
   // Only enable the migration rule if there is upgrade data.
   enabled = this.data.length !== 0;
@@ -33,7 +33,7 @@ export class CssSelectorsMigration extends Migration<UpgradeData> {
 
   visitTemplate(template: ResolvedResource): void {
     this.data.forEach(data => {
-      if (data.whitelist && !data.whitelist.html) {
+      if (data.replaceIn && !data.replaceIn.html) {
         return;
       }
 
@@ -45,7 +45,7 @@ export class CssSelectorsMigration extends Migration<UpgradeData> {
 
   visitStylesheet(stylesheet: ResolvedResource): void {
     this.data.forEach(data => {
-      if (data.whitelist && !data.whitelist.stylesheet) {
+      if (data.replaceIn && !data.replaceIn.stylesheet) {
         return;
       }
 
@@ -64,7 +64,7 @@ export class CssSelectorsMigration extends Migration<UpgradeData> {
     const filePath = this.fileSystem.resolve(node.getSourceFile().fileName);
 
     this.data.forEach(data => {
-      if (data.whitelist && !data.whitelist.strings) {
+      if (data.replaceIn && !data.replaceIn.tsStringLiterals) {
         return;
       }
 

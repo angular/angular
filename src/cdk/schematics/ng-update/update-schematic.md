@@ -132,7 +132,7 @@ export const propertyNames: VersionChanges<MaterialPropertyNameData> = {
         {
           replace: 'color',
           replaceWith: 'newColor',
-          whitelist: {
+          limitedTo: {
             classes: ['MatRipple']
           }
         }

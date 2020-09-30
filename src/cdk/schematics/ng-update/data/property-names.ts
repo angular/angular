@@ -14,8 +14,8 @@ export interface PropertyNameUpgradeData {
   replace: string;
   /** The new name for the property. */
   replaceWith: string;
-  /** Whitelist where this replacement is made. If omitted it is made for all Classes. */
-  whitelist: {
+  /** Controls which classes in which this replacement is made. */
+  limitedTo: {
     /** Replace the property only when its type is one of the given Classes. */
     classes: string[];
   };
@@ -28,7 +28,7 @@ export const propertyNames: VersionChanges<PropertyNameUpgradeData> = {
       changes: [{
         replace: 'boundaryElementSelector',
         replaceWith: 'boundaryElement',
-        whitelist: {classes: ['CdkDrag']}
+        limitedTo: {classes: ['CdkDrag']}
       }]
     },
     {
@@ -36,7 +36,7 @@ export const propertyNames: VersionChanges<PropertyNameUpgradeData> = {
       changes: [{
         replace: 'onChange',
         replaceWith: 'changed',
-        whitelist: {classes: ['SelectionModel']}
+        limitedTo: {classes: ['SelectionModel']}
       }]
     }
   ],
@@ -45,7 +45,7 @@ export const propertyNames: VersionChanges<PropertyNameUpgradeData> = {
     {
       pr: 'https://github.com/angular/components/pull/8286',
       changes:
-          [{replace: 'onChange', replaceWith: 'changed', whitelist: {classes: ['SelectionModel']}}]
+          [{replace: 'onChange', replaceWith: 'changed', limitedTo: {classes: ['SelectionModel']}}]
     },
 
     {
@@ -53,7 +53,7 @@ export const propertyNames: VersionChanges<PropertyNameUpgradeData> = {
       changes: [{
         replace: 'flexibleDiemsions',
         replaceWith: 'flexibleDimensions',
-        whitelist: {classes: ['CdkConnectedOverlay']}
+        limitedTo: {classes: ['CdkConnectedOverlay']}
       }]
     }
   ],
@@ -65,62 +65,62 @@ export const propertyNames: VersionChanges<PropertyNameUpgradeData> = {
         {
           replace: '_deprecatedOrigin',
           replaceWith: 'origin',
-          whitelist: {classes: ['CdkConnectedOverlay', 'ConnectedOverlayDirective']}
+          limitedTo: {classes: ['CdkConnectedOverlay', 'ConnectedOverlayDirective']}
         },
         {
           replace: '_deprecatedPositions',
           replaceWith: 'positions',
-          whitelist: {classes: ['CdkConnectedOverlay', 'ConnectedOverlayDirective']}
+          limitedTo: {classes: ['CdkConnectedOverlay', 'ConnectedOverlayDirective']}
         },
         {
           replace: '_deprecatedOffsetX',
           replaceWith: 'offsetX',
-          whitelist: {classes: ['CdkConnectedOverlay', 'ConnectedOverlayDirective']}
+          limitedTo: {classes: ['CdkConnectedOverlay', 'ConnectedOverlayDirective']}
         },
         {
           replace: '_deprecatedOffsetY',
           replaceWith: 'offsetY',
-          whitelist: {classes: ['CdkConnectedOverlay', 'ConnectedOverlayDirective']}
+          limitedTo: {classes: ['CdkConnectedOverlay', 'ConnectedOverlayDirective']}
         },
         {
           replace: '_deprecatedWidth',
           replaceWith: 'width',
-          whitelist: {classes: ['CdkConnectedOverlay', 'ConnectedOverlayDirective']}
+          limitedTo: {classes: ['CdkConnectedOverlay', 'ConnectedOverlayDirective']}
         },
         {
           replace: '_deprecatedHeight',
           replaceWith: 'height',
-          whitelist: {classes: ['CdkConnectedOverlay', 'ConnectedOverlayDirective']}
+          limitedTo: {classes: ['CdkConnectedOverlay', 'ConnectedOverlayDirective']}
         },
         {
           replace: '_deprecatedMinWidth',
           replaceWith: 'minWidth',
-          whitelist: {classes: ['CdkConnectedOverlay', 'ConnectedOverlayDirective']}
+          limitedTo: {classes: ['CdkConnectedOverlay', 'ConnectedOverlayDirective']}
         },
         {
           replace: '_deprecatedMinHeight',
           replaceWith: 'minHeight',
-          whitelist: {classes: ['CdkConnectedOverlay', 'ConnectedOverlayDirective']}
+          limitedTo: {classes: ['CdkConnectedOverlay', 'ConnectedOverlayDirective']}
         },
         {
           replace: '_deprecatedBackdropClass',
           replaceWith: 'backdropClass',
-          whitelist: {classes: ['CdkConnectedOverlay', 'ConnectedOverlayDirective']}
+          limitedTo: {classes: ['CdkConnectedOverlay', 'ConnectedOverlayDirective']}
         },
         {
           replace: '_deprecatedScrollStrategy',
           replaceWith: 'scrollStrategy',
-          whitelist: {classes: ['CdkConnectedOverlay', 'ConnectedOverlayDirective']}
+          limitedTo: {classes: ['CdkConnectedOverlay', 'ConnectedOverlayDirective']}
         },
         {
           replace: '_deprecatedOpen',
           replaceWith: 'open',
-          whitelist: {classes: ['CdkConnectedOverlay', 'ConnectedOverlayDirective']}
+          limitedTo: {classes: ['CdkConnectedOverlay', 'ConnectedOverlayDirective']}
         },
         {
           replace: '_deprecatedHasBackdrop',
           replaceWith: 'hasBackdrop',
-          whitelist: {classes: ['CdkConnectedOverlay', 'ConnectedOverlayDirective']}
+          limitedTo: {classes: ['CdkConnectedOverlay', 'ConnectedOverlayDirective']}
         }
       ]
     },
@@ -131,12 +131,12 @@ export const propertyNames: VersionChanges<PropertyNameUpgradeData> = {
         {
           replace: '_deprecatedPortal',
           replaceWith: 'portal',
-          whitelist: {classes: ['CdkPortalOutlet']}
+          limitedTo: {classes: ['CdkPortalOutlet']}
         },
         {
           replace: '_deprecatedPortalHost',
           replaceWith: 'portal',
-          whitelist: {classes: ['CdkPortalOutlet']}
+          limitedTo: {classes: ['CdkPortalOutlet']}
         }
       ]
     },
