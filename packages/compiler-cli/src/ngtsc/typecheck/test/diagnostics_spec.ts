@@ -176,6 +176,21 @@ runInEachFileSystem(() => {
       ]);
     });
 
+    it('checks expressions in ICUs', () => {
+      const messages = diagnose(
+          `<span i18n>{switch, plural, other { {{interpolation}}
+            {nestedSwitch, plural, other { {{nestedInterpolation}} }}
+          }}</span>`,
+          `class TestComponent {}`);
+
+      expect(messages.sort()).toEqual([
+        `TestComponent.html(1, 13): Property 'switch' does not exist on type 'TestComponent'.`,
+        `TestComponent.html(1, 39): Property 'interpolation' does not exist on type 'TestComponent'.`,
+        `TestComponent.html(2, 14): Property 'nestedSwitch' does not exist on type 'TestComponent'.`,
+        `TestComponent.html(2, 46): Property 'nestedInterpolation' does not exist on type 'TestComponent'.`,
+      ]);
+    });
+
     it('produces diagnostics for pipes', () => {
       const messages = diagnose(
           `<div>{{ person.name | pipe:person.age:1 }}</div>`, `
