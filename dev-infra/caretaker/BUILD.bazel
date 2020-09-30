@@ -8,6 +8,7 @@ ts_library(
     module_name = "@angular/dev-infra-private/caretaker",
     visibility = ["//dev-infra:__subpackages__"],
     deps = [
+        "//dev-infra/release/versioning",
         "//dev-infra/utils",
         "@npm//@types/node",
         "@npm//@types/node-fetch",
