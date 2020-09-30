@@ -8,60 +8,74 @@
 
 import {CompilerOptions, createNgCompilerOptions} from '@angular/compiler-cli';
 import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
-import {NgCompilerAdapter} from '@angular/compiler-cli/src/ngtsc/core/api';
-import {absoluteFrom, absoluteFromSourceFile, AbsoluteFsPath} from '@angular/compiler-cli/src/ngtsc/file_system';
+import {absoluteFromSourceFile, AbsoluteFsPath} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {PatchedProgramIncrementalBuildStrategy} from '@angular/compiler-cli/src/ngtsc/incremental';
-import {isShim} from '@angular/compiler-cli/src/ngtsc/shims';
 import {TypeCheckShimGenerator} from '@angular/compiler-cli/src/ngtsc/typecheck';
 import {OptimizeFor, TypeCheckingProgramStrategy} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
 import * as ts from 'typescript/lib/tsserverlibrary';
 
 import {DefinitionBuilder} from './definitions';
+import {isExternalTemplate, isTypeScriptFile, LanguageServiceAdapter} from './language_service_adapter';
 import {QuickInfoBuilder} from './quick_info';
 
 export class LanguageService {
   private options: CompilerOptions;
   private lastKnownProgram: ts.Program|null = null;
   private readonly strategy: TypeCheckingProgramStrategy;
-  private readonly adapter: NgCompilerAdapter;
+  private readonly adapter: LanguageServiceAdapter;
 
   constructor(project: ts.server.Project, private readonly tsLS: ts.LanguageService) {
     this.options = parseNgCompilerOptions(project);
     this.strategy = createTypeCheckingProgramStrategy(project);
-    this.adapter = createNgCompilerAdapter(project);
+    this.adapter = new LanguageServiceAdapter(project);
     this.watchConfigFile(project);
   }
 
   getSemanticDiagnostics(fileName: string): ts.Diagnostic[] {
     const program = this.strategy.getProgram();
-    const compiler = this.createCompiler(program);
-    if (fileName.endsWith('.ts')) {
+    const compiler = this.createCompiler(program, fileName);
+    const ttc = compiler.getTemplateTypeChecker();
+    const diagnostics: ts.Diagnostic[] = [];
+    if (isTypeScriptFile(fileName)) {
       const sourceFile = program.getSourceFile(fileName);
-      if (!sourceFile) {
-        return [];
+      if (sourceFile) {
+        diagnostics.push(...ttc.getDiagnosticsForFile(sourceFile, OptimizeFor.SingleFile));
       }
-      const ttc = compiler.getTemplateTypeChecker();
-      const diagnostics = ttc.getDiagnosticsForFile(sourceFile, OptimizeFor.SingleFile);
-      this.lastKnownProgram = compiler.getNextProgram();
-      return diagnostics;
+    } else {
+      const components = compiler.getComponentsWithTemplateFile(fileName);
+      for (const component of components) {
+        if (ts.isClassDeclaration(component)) {
+          diagnostics.push(...ttc.getDiagnosticsForComponent(component));
+        }
+      }
     }
-    throw new Error('Ivy LS currently does not support external template');
+    this.lastKnownProgram = compiler.getNextProgram();
+    return diagnostics;
   }
 
   getDefinitionAndBoundSpan(fileName: string, position: number): ts.DefinitionInfoAndBoundSpan
       |undefined {
     const program = this.strategy.getProgram();
-    const compiler = this.createCompiler(program);
+    const compiler = this.createCompiler(program, fileName);
     return new DefinitionBuilder(this.tsLS, compiler).getDefinitionAndBoundSpan(fileName, position);
   }
 
   getQuickInfoAtPosition(fileName: string, position: number): ts.QuickInfo|undefined {
     const program = this.strategy.getProgram();
-    const compiler = this.createCompiler(program);
+    const compiler = this.createCompiler(program, fileName);
     return new QuickInfoBuilder(this.tsLS, compiler).get(fileName, position);
   }
 
-  private createCompiler(program: ts.Program): NgCompiler {
+  /**
+   * Create a new instance of Ivy compiler.
+   * If the specified `fileName` refers to an external template, check if it has
+   * changed since the last time it was read. If it has changed, signal the
+   * compiler to reload the file via the adapter.
+   */
+  private createCompiler(program: ts.Program, fileName: string): NgCompiler {
+    if (isExternalTemplate(fileName)) {
+      this.adapter.registerTemplateUpdate(fileName);
+    }
     return new NgCompiler(
         this.adapter,
         this.options,
@@ -105,31 +119,6 @@ export function parseNgCompilerOptions(project: ts.server.Project): CompilerOpti
   }
   const basePath = project.getCurrentDirectory();
   return createNgCompilerOptions(basePath, config, project.getCompilationSettings());
-}
-
-function createNgCompilerAdapter(project: ts.server.Project): NgCompilerAdapter {
-  return {
-    entryPoint: null,  // entry point is only needed if code is emitted
-    constructionDiagnostics: [],
-    ignoreForEmit: new Set(),
-    factoryTracker: null,      // no .ngfactory shims
-    unifiedModulesHost: null,  // only used in Bazel
-    rootDirs: project.getCompilationSettings().rootDirs?.map(absoluteFrom) || [],
-    isShim,
-    fileExists(fileName: string): boolean {
-      return project.fileExists(fileName);
-    },
-    readFile(fileName: string): string |
-        undefined {
-          return project.readFile(fileName);
-        },
-    getCurrentDirectory(): string {
-      return project.getCurrentDirectory();
-    },
-    getCanonicalFileName(fileName: string): string {
-      return project.projectService.toCanonicalFileName(fileName);
-    },
-  };
 }
 
 function createTypeCheckingProgramStrategy(project: ts.server.Project):
