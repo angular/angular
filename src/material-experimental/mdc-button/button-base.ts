@@ -23,6 +23,7 @@ import {
   RippleAnimationConfig
 } from '@angular/material/core';
 import {numbers} from '@material/ripple';
+import {FocusOrigin} from '@angular/cdk/a11y';
 
 /** Inputs common to all buttons. */
 export const MAT_BUTTON_INPUTS = ['disabled', 'disableRipple', 'color'];
@@ -119,8 +120,8 @@ export class MatButtonBase extends _MatButtonBaseMixin implements CanDisable, Ca
   }
 
   /** Focuses the button. */
-  focus(): void {
-    this._elementRef.nativeElement.focus();
+  focus(_origin: FocusOrigin = 'program', options?: FocusOptions): void {
+    this._elementRef.nativeElement.focus(options);
   }
 
   /** Gets whether the button has one of the given attributes. */
