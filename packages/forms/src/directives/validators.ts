@@ -70,6 +70,189 @@ export interface Validator {
 }
 
 /**
+ * A base class for Validator-based Directives. The class contains common logic shared across such
+ * Directives.
+ *
+ * For internal use only, this class is not intended for use outside of the Forms package.
+ */
+@Directive()
+abstract class AbstractValidatorDirective implements Validator {
+  private _validator: ValidatorFn = Validators.nullValidator;
+  private _onChange!: () => void;
+
+  /**
+   * Name of an input that matches directive selector attribute (e.g. `minlength` for
+   * `MinLengthDirective`). An input with a given name might contain configuration information (like
+   * `minlength='10'`) or a flag that indicates whether validator should be enabled (like
+   * `[required]='false'`).
+   *
+   * @internal
+   */
+  abstract inputName: string;
+
+  /**
+   * Creates an instance of a validator (specific to a directive that extends this base class).
+   *
+   * @internal
+   */
+  abstract createValidator(input: unknown): ValidatorFn;
+
+  /**
+   * Performs the necessary input normalization based on a specific logic of a Directive.
+   * For example, the function might be used to convert string-based representation of the
+   * `minlength` input to an integer value that can later be used in the `Validators.minLength`
+   * validator.
+   *
+   * @internal
+   */
+  abstract normalizeInput(input: unknown): unknown;
+
+  /**
+   * Helper function invoked from child classes to process changes (from `ngOnChanges` hook).
+   * @nodoc
+   */
+  handleChanges(changes: SimpleChanges): void {
+    if (this.inputName in changes) {
+      const input = this.normalizeInput(changes[this.inputName].currentValue);
+      this._validator = this.createValidator(input);
+      if (this._onChange) {
+        this._onChange();
+      }
+    }
+  }
+
+  /** @nodoc */
+  validate(control: AbstractControl): ValidationErrors|null {
+    return this._validator(control);
+  }
+
+  /** @nodoc */
+  registerOnValidatorChange(fn: () => void): void {
+    this._onChange = fn;
+  }
+}
+
+/**
+ * @description
+ * Provider which adds `MaxValidator` to the `NG_VALIDATORS` multi-provider list.
+ */
+export const MAX_VALIDATOR: StaticProvider = {
+  provide: NG_VALIDATORS,
+  useExisting: forwardRef(() => MaxValidator),
+  multi: true
+};
+
+/**
+ * A directive which installs the {@link MaxValidator} for any `formControlName`,
+ * `formControl`, or control with `ngModel` that also has a `max` attribute.
+ *
+ * @see [Form Validation](guide/form-validation)
+ *
+ * @usageNotes
+ *
+ * ### Adding a max validator
+ *
+ * The following example shows how to add a max validator to an input attached to an
+ * ngModel binding.
+ *
+ * ```html
+ * <input type="number" ngModel max="4">
+ * ```
+ *
+ * @ngModule ReactiveFormsModule
+ * @ngModule FormsModule
+ * @publicApi
+ */
+@Directive({
+  selector:
+      'input[type=number][max][formControlName],input[type=number][max][formControl],input[type=number][max][ngModel]',
+  providers: [MAX_VALIDATOR],
+  host: {'[attr.max]': 'max ? max : null'}
+})
+export class MaxValidator extends AbstractValidatorDirective implements OnChanges {
+  /**
+   * @description
+   * Tracks changes to the max bound to this directive.
+   */
+  @Input() max!: string|number;
+  /** @internal */
+  inputName = 'max';
+  /** @internal */
+  normalizeInput = (input: string): number => parseInt(input, 10);
+  /** @internal */
+  createValidator = (max: number): ValidatorFn => Validators.max(max);
+  /**
+   * Declare `ngOnChanges` lifecycle hook at the main directive level (vs keeping it in base class)
+   * to avoid differences in handling inheritance of lifecycle hooks between Ivy and ViewEngine in
+   * AOT mode. This could be refactored once ViewEngine is removed.
+   * @nodoc
+   */
+  ngOnChanges(changes: SimpleChanges): void {
+    this.handleChanges(changes);
+  }
+}
+
+/**
+ * @description
+ * Provider which adds `MinValidator` to the `NG_VALIDATORS` multi-provider list.
+ */
+export const MIN_VALIDATOR: StaticProvider = {
+  provide: NG_VALIDATORS,
+  useExisting: forwardRef(() => MinValidator),
+  multi: true
+};
+
+/**
+ * A directive which installs the {@link MinValidator} for any `formControlName`,
+ * `formControl`, or control with `ngModel` that also has a `min` attribute.
+ *
+ * @see [Form Validation](guide/form-validation)
+ *
+ * @usageNotes
+ *
+ * ### Adding a min validator
+ *
+ * The following example shows how to add a min validator to an input attached to an
+ * ngModel binding.
+ *
+ * ```html
+ * <input type="number" ngModel min="4">
+ * ```
+ *
+ * @ngModule ReactiveFormsModule
+ * @ngModule FormsModule
+ * @publicApi
+ */
+@Directive({
+  selector:
+      'input[type=number][min][formControlName],input[type=number][min][formControl],input[type=number][min][ngModel]',
+  providers: [MIN_VALIDATOR],
+  host: {'[attr.min]': 'min ? min : null'}
+})
+export class MinValidator extends AbstractValidatorDirective implements OnChanges {
+  /**
+   * @description
+   * Tracks changes to the min bound to this directive.
+   */
+  @Input() min!: string|number;
+  /** @internal */
+  inputName = 'min';
+  /** @internal */
+  normalizeInput = (input: string): number => parseInt(input, 10);
+  /** @internal */
+  createValidator = (min: number): ValidatorFn => Validators.min(min);
+  /**
+   * Declare `ngOnChanges` lifecycle hook at the main directive level (vs keeping it in base class)
+   * to avoid differences in handling inheritance of lifecycle hooks between Ivy and ViewEngine in
+   * AOT mode. This could be refactored once ViewEngine is removed.
+   * @nodoc
+   */
+  ngOnChanges(changes: SimpleChanges): void {
+    this.handleChanges(changes);
+  }
+}
+
+/**
  * @description
  * An interface implemented by classes that perform asynchronous validation.
  *
