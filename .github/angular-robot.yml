@@ -48,7 +48,7 @@ merge:
       - "packages/bazel/src/protractor/**"
       - "packages/bazel/src/schematics/**"
       - "packages/compiler-cli/ngcc/**"
-      - "packages/compiler-cli/src/ngtsc/sourcemaps/**",
+      - "packages/compiler-cli/src/ngtsc/sourcemaps/**"
       - "packages/docs/**"
       - "packages/elements/schematics/**"
       - "packages/examples/**"
