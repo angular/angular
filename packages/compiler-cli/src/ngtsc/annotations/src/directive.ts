@@ -463,12 +463,20 @@ export function extractQueriesFromDecorator(
   }
   reflectObjectLiteral(queryData).forEach((queryExpr, propertyName) => {
     queryExpr = unwrapExpression(queryExpr);
-    if (!ts.isNewExpression(queryExpr) || !ts.isIdentifier(queryExpr.expression)) {
+    if (!ts.isNewExpression(queryExpr)) {
       throw new FatalDiagnosticError(
           ErrorCode.VALUE_HAS_WRONG_TYPE, queryData,
           'Decorator query metadata must be an instance of a query type');
     }
-    const type = reflector.getImportOfIdentifier(queryExpr.expression);
+    const queryType = ts.isPropertyAccessExpression(queryExpr.expression) ?
+        queryExpr.expression.name :
+        queryExpr.expression;
+    if (!ts.isIdentifier(queryType)) {
+      throw new FatalDiagnosticError(
+          ErrorCode.VALUE_HAS_WRONG_TYPE, queryData,
+          'Decorator query metadata must be an instance of a query type');
+    }
+    const type = reflector.getImportOfIdentifier(queryType);
     if (type === null || (!isCore && type.from !== '@angular/core') ||
         !QUERY_TYPES.has(type.name)) {
       throw new FatalDiagnosticError(
