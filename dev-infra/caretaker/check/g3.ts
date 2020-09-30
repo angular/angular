@@ -44,7 +44,8 @@ export async function printG3Comparison(git: GitClient) {
   /** Url of the ref for fetching master and g3 branches. */
   const refUrl = `https://github.com/${git.remoteConfig.owner}/${git.remoteConfig.name}.git`;
   /** The result fo the fetch command. */
-  const fetchResult = git.runGraceful(['fetch', refUrl, `master:${masterRef}`, `g3:${g3Ref}`]);
+  const fetchResult =
+      git.runGraceful(['fetch', '-q', refUrl, `master:${masterRef}`, `g3:${g3Ref}`]);
 
   // If the upstream repository does not have a g3 branch to compare to, skip the comparison.
   if (fetchResult.status !== 0) {
