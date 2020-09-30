@@ -266,12 +266,6 @@ class HtmlAstToIvyAst implements html.Visitor {
     Object.keys(message.placeholders).forEach(key => {
       const value = message.placeholders[key];
       if (key.startsWith(I18N_ICU_VAR_PREFIX)) {
-        const config = this.bindingParser.interpolationConfig;
-
-        // ICU expression is a plain string, not wrapped into start
-        // and end tags, so we wrap it before passing to binding parser
-        const wrapped = `${config.start}${value}${config.end}`;
-
         // Currently when the `plural` or `select` keywords in an ICU contain trailing spaces (e.g.
         // `{count, select , ...}`), these spaces are also included into the key names in ICU vars
         // (e.g. "VAR_SELECT "). These trailing spaces are not desirable, since they will later be
@@ -279,10 +273,11 @@ class HtmlAstToIvyAst implements html.Visitor {
         // mismatches at runtime (i.e. placeholder will not be replaced with the correct value).
         const formattedKey = key.trim();
 
-        vars[formattedKey] =
-            this._visitTextWithInterpolation(wrapped, expansion.sourceSpan) as t.BoundText;
+        const ast = this.bindingParser.parseInterpolationExpression(value.text, value.sourceSpan);
+
+        vars[formattedKey] = new t.BoundText(ast, value.sourceSpan);
       } else {
-        placeholders[key] = this._visitTextWithInterpolation(value, expansion.sourceSpan);
+        placeholders[key] = this._visitTextWithInterpolation(value.text, value.sourceSpan);
       }
     });
     return new t.Icu(vars, placeholders, expansion.sourceSpan, message);

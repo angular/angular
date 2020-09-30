@@ -39,7 +39,7 @@ interface I18nMessageVisitorContext {
   isIcu: boolean;
   icuDepth: number;
   placeholderRegistry: PlaceholderRegistry;
-  placeholderToContent: {[phName: string]: string};
+  placeholderToContent: {[phName: string]: i18n.MessagePlaceholder};
   placeholderToMessage: {[phName: string]: i18n.Message};
   visitNodeFn: VisitNodeFn;
 }
@@ -83,13 +83,19 @@ class _I18nVisitor implements html.Visitor {
     const isVoid: boolean = getHtmlTagDefinition(el.name).isVoid;
     const startPhName =
         context.placeholderRegistry.getStartTagPlaceholderName(el.name, attrs, isVoid);
-    context.placeholderToContent[startPhName] = el.startSourceSpan.toString();
+    context.placeholderToContent[startPhName] = {
+      text: el.startSourceSpan.toString(),
+      sourceSpan: el.startSourceSpan,
+    };
 
     let closePhName = '';
 
     if (!isVoid) {
       closePhName = context.placeholderRegistry.getCloseTagPlaceholderName(el.name);
-      context.placeholderToContent[closePhName] = `</${el.name}>`;
+      context.placeholderToContent[closePhName] = {
+        text: `</${el.name}>`,
+        sourceSpan: el.endSourceSpan ?? el.sourceSpan,
+      };
     }
 
     const node = new i18n.TagPlaceholder(
@@ -128,7 +134,10 @@ class _I18nVisitor implements html.Visitor {
       // - the ICU message is nested.
       const expPh = context.placeholderRegistry.getUniquePlaceholder(`VAR_${icu.type}`);
       i18nIcu.expressionPlaceholder = expPh;
-      context.placeholderToContent[expPh] = icu.switchValue;
+      context.placeholderToContent[expPh] = {
+        text: icu.switchValue,
+        sourceSpan: icu.switchValueSourceSpan,
+      };
       return context.visitNodeFn(icu, i18nIcu);
     }
 
@@ -175,7 +184,10 @@ class _I18nVisitor implements html.Visitor {
       const expressionSpan =
           getOffsetSourceSpan(sourceSpan, splitInterpolation.expressionsSpans[i]);
       nodes.push(new i18n.Placeholder(expression, phName, expressionSpan));
-      context.placeholderToContent[phName] = sDelimiter + expression + eDelimiter;
+      context.placeholderToContent[phName] = {
+        text: sDelimiter + expression + eDelimiter,
+        sourceSpan: expressionSpan,
+      };
     }
 
     // The last index contains no expression

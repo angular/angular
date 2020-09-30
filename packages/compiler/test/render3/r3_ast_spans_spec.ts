@@ -89,7 +89,13 @@ class R3AstSourceSpans implements t.Visitor<void> {
   }
 
   visitIcu(icu: t.Icu) {
-    return null;
+    this.result.push(['Icu', humanizeSpan(icu.sourceSpan)]);
+    for (const key of Object.keys(icu.vars)) {
+      this.result.push(['Icu:Var', humanizeSpan(icu.vars[key].sourceSpan)]);
+    }
+    for (const key of Object.keys(icu.placeholders)) {
+      this.result.push(['Icu:Placeholder', humanizeSpan(icu.placeholders[key].sourceSpan)]);
+    }
   }
 
   private visitAll(nodes: t.Node[][]) {
@@ -418,6 +424,42 @@ describe('R3 AST source spans', () => {
         ['Element', '<div ref-a></div>', '<div ref-a>', '</div>'],
         ['Reference', 'ref-a', '<empty>'],
       ]);
+    });
+  });
+
+  describe('ICU expressions', () => {
+    it('is correct for variables and placeholders', () => {
+      expectFromHtml('<span i18n>{item.var, plural, other { {{item.placeholder}} items } }</span>')
+          .toEqual([
+            [
+              'Element',
+              '<span i18n>{item.var, plural, other { {{item.placeholder}} items } }</span>',
+              '<span i18n>', '</span>'
+            ],
+            ['Icu', '{item.var, plural, other { {{item.placeholder}} items } }'],
+            ['Icu:Var', 'item.var'],
+            ['Icu:Placeholder', '{{item.placeholder}}'],
+          ]);
+    });
+
+    it('is correct for nested ICUs', () => {
+      expectFromHtml(
+          '<span i18n>{item.var, plural, other { {{item.placeholder}} {nestedVar, plural, other { {{nestedPlaceholder}} }}} }</span>')
+          .toEqual([
+            [
+              'Element',
+              '<span i18n>{item.var, plural, other { {{item.placeholder}} {nestedVar, plural, other { {{nestedPlaceholder}} }}} }</span>',
+              '<span i18n>', '</span>'
+            ],
+            [
+              'Icu',
+              '{item.var, plural, other { {{item.placeholder}} {nestedVar, plural, other { {{nestedPlaceholder}} }}} }'
+            ],
+            ['Icu:Var', 'nestedVar'],
+            ['Icu:Var', 'item.var'],
+            ['Icu:Placeholder', '{{item.placeholder}}'],
+            ['Icu:Placeholder', '{{nestedPlaceholder}}'],
+          ]);
     });
   });
 });

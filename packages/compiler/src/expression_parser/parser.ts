@@ -179,10 +179,33 @@ export class Parser {
       expressions.push(ast);
     }
 
-    const span = new ParseSpan(0, input == null ? 0 : input.length);
-    return new ASTWithSource(
-        new Interpolation(span, span.toAbsolute(absoluteOffset), split.strings, expressions), input,
-        location, absoluteOffset, this.errors);
+    return this.createInterpolationAst(split.strings, expressions, input, location, absoluteOffset);
+  }
+
+  /**
+   * Similar to `parseInterpolation`, but treats the provided string as a single expression
+   * element that would normally appear within the interpolation prefix and suffix (`{{` and `}}`).
+   * This is used for parsing the switch expression in ICUs.
+   */
+  parseInterpolationExpression(expression: string, location: any, absoluteOffset: number):
+      ASTWithSource {
+    const sourceToLex = this._stripComments(expression);
+    const tokens = this._lexer.tokenize(sourceToLex);
+    const ast = new _ParseAST(
+                    expression, location, absoluteOffset, tokens, sourceToLex.length,
+                    /* parseAction */ false, this.errors, 0)
+                    .parseChain();
+    const strings = ['', ''];  // The prefix and suffix strings are both empty
+    return this.createInterpolationAst(strings, [ast], expression, location, absoluteOffset);
+  }
+
+  private createInterpolationAst(
+      strings: string[], expressions: AST[], input: string, location: string,
+      absoluteOffset: number): ASTWithSource {
+    const span = new ParseSpan(0, input.length);
+    const interpolation =
+        new Interpolation(span, span.toAbsolute(absoluteOffset), strings, expressions);
+    return new ASTWithSource(interpolation, input, location, absoluteOffset, this.errors);
   }
 
   /**

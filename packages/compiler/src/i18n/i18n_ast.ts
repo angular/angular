@@ -8,6 +8,18 @@
 
 import {ParseSourceSpan} from '../parse_util';
 
+/**
+ * Describes the text contents of a placeholder as it appears in an ICU expression, including its
+ * source span information.
+ */
+export interface MessagePlaceholder {
+  /** The text contents of the placeholder */
+  text: string;
+
+  /** The source span of the placeholder */
+  sourceSpan: ParseSourceSpan;
+}
+
 export class Message {
   sources: MessageSpan[];
   id: string = this.customId;
@@ -16,14 +28,14 @@ export class Message {
 
   /**
    * @param nodes message AST
-   * @param placeholders maps placeholder names to static content
+   * @param placeholders maps placeholder names to static content and their source spans
    * @param placeholderToMessage maps placeholder names to messages (used for nested ICU messages)
    * @param meaning
    * @param description
    * @param customId
    */
   constructor(
-      public nodes: Node[], public placeholders: {[phName: string]: string},
+      public nodes: Node[], public placeholders: {[phName: string]: MessagePlaceholder},
       public placeholderToMessage: {[phName: string]: Message}, public meaning: string,
       public description: string, public customId: string) {
     if (nodes.length) {
