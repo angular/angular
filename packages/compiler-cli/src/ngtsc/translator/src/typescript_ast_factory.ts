@@ -234,12 +234,7 @@ export function createTemplateTail(cooked: string, raw: string): ts.TemplateTail
  * @param statement The statement that will have comments attached.
  * @param leadingComments The comments to attach to the statement.
  */
-export function attachComments<T extends ts.Statement>(
-    statement: T, leadingComments: LeadingComment[]|undefined): T {
-  if (leadingComments === undefined) {
-    return statement;
-  }
-
+export function attachComments(statement: ts.Statement, leadingComments: LeadingComment[]): void {
   for (const comment of leadingComments) {
     const commentKind = comment.multiline ? ts.SyntaxKind.MultiLineCommentTrivia :
                                             ts.SyntaxKind.SingleLineCommentTrivia;
@@ -252,5 +247,4 @@ export function attachComments<T extends ts.Statement>(
       }
     }
   }
-  return statement;
 }

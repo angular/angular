@@ -10,17 +10,16 @@ import * as t from '@babel/types';
 import {AstFactory, BinaryOperator, LeadingComment, ObjectLiteralProperty, SourceMapRange, TemplateLiteral, VariableDeclarationType} from '../../../../src/ngtsc/translator';
 import {assert} from '../utils';
 
+/**
+ * A Babel flavored implementation of the AstFactory.
+ */
 export class BabelAstFactory implements AstFactory<t.Statement, t.Expression> {
-  attachComments(statement: t.Statement, leadingComments: LeadingComment[]|undefined): t.Statement {
-    if (leadingComments === undefined) {
-      return statement;
-    }
+  attachComments(statement: t.Statement, leadingComments: LeadingComment[]): void {
     // We must process the comments in reverse because `t.addComment()` will add new ones in front.
     for (let i = leadingComments.length - 1; i >= 0; i--) {
       const comment = leadingComments[i];
       t.addComment(statement, 'leading', comment.toString(), !comment.multiline);
     }
-    return statement;
   }
 
   createArrayLiteral = t.arrayExpression;
