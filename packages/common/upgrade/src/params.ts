@@ -309,10 +309,7 @@ function toKeyValue(obj: {[k: string]: unknown}) {
  * Logic from https://github.com/angular/angular.js/blob/864c7f0/src/Angular.js#L1437
  */
 function encodeUriSegment(val: string) {
-  return encodeUriQuery(val, true)
-      .replace(/%26/gi, '&')
-      .replace(/%3D/gi, '=')
-      .replace(/%2B/gi, '+');
+  return encodeUriQuery(val, true).replace(/%26/g, '&').replace(/%3D/gi, '=').replace(/%2B/gi, '+');
 }
 
 
@@ -331,7 +328,7 @@ function encodeUriSegment(val: string) {
  */
 function encodeUriQuery(val: string, pctEncodeSpaces: boolean = false) {
   return encodeURIComponent(val)
-      .replace(/%40/gi, '@')
+      .replace(/%40/g, '@')
       .replace(/%3A/gi, ':')
       .replace(/%24/g, '$')
       .replace(/%2C/gi, ',')
