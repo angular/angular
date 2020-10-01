@@ -324,6 +324,45 @@ describe('findNodeAtPosition for template AST', () => {
     expect(node).toBeInstanceOf(e.PropertyRead);
     expect((node as e.PropertyRead).name).toBe('bar');
   });
+
+  it('should locate switch value in ICUs', () => {
+    const {errors, nodes, position} = parse(`<span i18n>{sw¦itch, plural, other {text}}"></span>`);
+    expect(errors).toBe(null);
+    const node = findNodeAtPosition(nodes, position);
+    expect(isExpressionNode(node!)).toBe(true);
+    expect(node).toBeInstanceOf(e.PropertyRead);
+    expect((node as e.PropertyRead).name).toBe('switch');
+  });
+
+  it('should locate switch value in nested ICUs', () => {
+    const {errors, nodes, position} = parse(
+        `<span i18n>{expr, plural, other { {ne¦sted, plural, =1 { {{nestedInterpolation}} }} }}"></span>`);
+    expect(errors).toBe(null);
+    const node = findNodeAtPosition(nodes, position);
+    expect(isExpressionNode(node!)).toBe(true);
+    expect(node).toBeInstanceOf(e.PropertyRead);
+    expect((node as e.PropertyRead).name).toBe('nested');
+  });
+
+  it('should locate interpolation expressions in ICUs', () => {
+    const {errors, nodes, position} =
+        parse(`<span i18n>{expr, plural, other { {{ i¦nterpolation }} }}"></span>`);
+    expect(errors).toBe(null);
+    const node = findNodeAtPosition(nodes, position);
+    expect(isExpressionNode(node!)).toBe(true);
+    expect(node).toBeInstanceOf(e.PropertyRead);
+    expect((node as e.PropertyRead).name).toBe('interpolation');
+  });
+
+  it('should locate interpolation expressions in nested ICUs', () => {
+    const {errors, nodes, position} = parse(
+        `<span i18n>{expr, plural, other { {nested, plural, =1 { {{n¦estedInterpolation}} }} }}"></span>`);
+    expect(errors).toBe(null);
+    const node = findNodeAtPosition(nodes, position);
+    expect(isExpressionNode(node!)).toBe(true);
+    expect(node).toBeInstanceOf(e.PropertyRead);
+    expect((node as e.PropertyRead).name).toBe('nestedInterpolation');
+  });
 });
 
 describe('findNodeAtPosition for expression AST', () => {
