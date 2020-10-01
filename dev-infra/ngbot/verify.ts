@@ -10,7 +10,7 @@ import {resolve} from 'path';
 import {parse as parseYaml} from 'yaml';
 
 import {getRepoBaseDir} from '../utils/config';
-import {error, info} from '../utils/console';
+import {error, green, info, red} from '../utils/console';
 
 export function verify() {
   /** Full path to NgBot config file */
@@ -22,9 +22,10 @@ export function verify() {
   try {
     // Try parsing the config file to verify that the syntax is correct.
     parseYaml(ngBotYaml);
-    info('NgBot YAML config is valid');
+    info(`${green('√')}  Valid NgBot YAML config`);
   } catch (e) {
+    error(`${red('!')} Invalid NgBot YAML config`);
     error(e);
-    process.exit(1);
+    process.exitCode = 1;
   }
 }
