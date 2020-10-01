@@ -24,7 +24,3 @@ export function buildReleaseParser(localYargs: yargs.Argv) {
           'build-env-stamp', 'Build the environment stamping information', {},
           () => buildEnvStamp());
 }
-
-if (require.main === module) {
-  buildReleaseParser(yargs).parse();
-}

@@ -46,7 +46,7 @@ async function handler(args: Arguments<ReleaseSetDistTagOptions>) {
     process.exit(1);
   }
 
-  const spinner = ora().start();
+  const spinner = ora.call(undefined).start();
   debug(`Setting "${tagName}" NPM dist tag for release packages to v${version}.`);
 
   for (const pkgName of npmPackages) {

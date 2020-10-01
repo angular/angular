@@ -54,7 +54,7 @@ export async function invokeSetNpmDistCommand(npmDistTag: string, version: semve
  * packages for the currently checked out branch.
  */
 export async function invokeReleaseBuildCommand(): Promise<BuiltPackage[]> {
-  const spinner = ora().start('Building release output.');
+  const spinner = ora.call(undefined).start('Building release output.');
   try {
     // Since we expect JSON to be printed from the `ng-dev release build` command,
     // we spawn the process in silent mode. We have set up an Ora progress spinner.

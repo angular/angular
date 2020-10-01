@@ -13,7 +13,7 @@ import {parse as parseYaml} from 'yaml';
 
 import {getRepoBaseDir} from '../../utils/config';
 import {bold, debug, info} from '../../utils/console';
-import {GitClient} from '../../utils/git';
+import {GitClient} from '../../utils/git/index';
 
 /** Compare the upstream master to the upstream g3 branch, if it exists. */
 export async function printG3Comparison(git: GitClient) {
@@ -120,6 +120,8 @@ export async function printG3Comparison(git: GitClient) {
   /** Determine whether the file name passes both include and exclude checks. */
   function checkMatchAgainstIncludeAndExclude(
       file: string, includes: string[], excludes: string[]) {
-    return multimatch(file, includes).length >= 1 && multimatch(file, excludes).length === 0;
+    return (
+        multimatch.call(undefined, file, includes).length >= 1 &&
+        multimatch.call(undefined, file, excludes).length === 0);
   }
 }

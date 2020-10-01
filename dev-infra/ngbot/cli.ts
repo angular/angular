@@ -13,7 +13,3 @@ export function buildNgbotParser(localYargs: yargs.Argv) {
   return localYargs.help().strict().demandCommand().command(
       'verify', 'Verify the NgBot config', {}, () => verify());
 }
-
-if (require.main === module) {
-  buildNgbotParser(yargs).parse();
-}

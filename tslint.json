@@ -98,7 +98,8 @@
       "./modules/benchmarks_external/**/*",
       // Ignore zone.js directory
       // TODO(JiaLiPassion): add zone.js back later
-      "./packages/zone.js/**/*"
+      "./packages/zone.js/**/*",
+      "./dev-infra/ng-dev.js"
     ]
   }
 }

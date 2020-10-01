@@ -8,6 +8,9 @@ ts_library(
         exclude = ["**/*.spec.ts"],
     ),
     module_name = "@angular/dev-infra-private/pr/merge",
+    # prodmode target must be set to es5 as the Ora class, which is extended is not a proper
+    # prototyped object.
+    prodmode_target = "es5",
     visibility = ["//dev-infra:__subpackages__"],
     deps = [
         "//dev-infra/commit-message",

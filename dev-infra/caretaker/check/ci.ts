@@ -10,7 +10,7 @@ import fetch from 'node-fetch';
 import {fetchActiveReleaseTrains} from '../../release/versioning/index';
 
 import {bold, debug, info} from '../../utils/console';
-import {GitClient} from '../../utils/git';
+import {GitClient} from '../../utils/git/index';
 
 
 /** The results of checking the status of CI.  */
