@@ -105,9 +105,7 @@
 
     li {
       box-sizing: border-box;
-      @include font-size(12);
-      @include line-height(16);
-      padding: 3px 0 3px 12px;
+      padding: 7px 0 7px 12px;
       position: relative;
       transition: all 0.3s ease-in-out;
 
@@ -129,6 +127,7 @@
         color: lighten($darkgray, 10);
         overflow: visible;
         @include font-size(12);
+        @include line-height(16);
         display: table-cell;
       }
 
@@ -168,11 +167,11 @@
       }
 
       &:first-child:before {
-        top: 13px;
+        top: 15px;
       }
 
       &:last-child:before {
-        bottom: calc(100% - 14px);
+        bottom: calc(100% - 15px);
       }
 
       &:not(.active):hover a:before {
