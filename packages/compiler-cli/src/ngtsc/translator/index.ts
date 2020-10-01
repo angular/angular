@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export {AstFactory, BinaryOperator, LeadingComment, ObjectLiteralProperty, SourceMapLocation, SourceMapRange, TemplateElement, TemplateLiteral, UnaryOperator} from './src/api/ast_factory';
+export {AstFactory, BinaryOperator, LeadingComment, ObjectLiteralProperty, SourceMapLocation, SourceMapRange, TemplateElement, TemplateLiteral, UnaryOperator, VariableDeclarationType} from './src/api/ast_factory';
 export {Import, ImportGenerator, NamedImport} from './src/api/import_generator';
 export {ImportManager} from './src/import_manager';
 export {RecordWrappedNodeExprFn} from './src/translator';

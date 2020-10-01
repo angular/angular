@@ -1,7 +1,7 @@
 import { browser, by, element, ElementFinder } from 'protractor';
 import { SitePage } from './app.po';
 
-describe('site App', function() {
+describe('site App', () => {
   let page: SitePage;
 
   beforeEach(() => {

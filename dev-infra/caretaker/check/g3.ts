@@ -119,6 +119,6 @@ export async function printG3Comparison(git: GitClient) {
   /** Determine whether the file name passes both include and exclude checks. */
   function checkMatchAgainstIncludeAndExclude(
       file: string, includes: string[], excludes: string[]) {
-    return multimatch(multimatch(file, includes), excludes, {flipNegate: true}).length !== 0;
+    return multimatch(file, includes).length >= 1 && multimatch(file, excludes).length === 0;
   }
 }

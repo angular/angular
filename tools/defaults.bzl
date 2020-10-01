@@ -2,12 +2,12 @@
 
 load("@bazel_tools//tools/build_defs/pkg:pkg.bzl", "pkg_tar")
 load("@build_bazel_rules_nodejs//:index.bzl", _nodejs_binary = "nodejs_binary", _pkg_npm = "pkg_npm")
-load("@npm_bazel_jasmine//:index.bzl", _jasmine_node_test = "jasmine_node_test")
-load("@npm_bazel_karma//:index.bzl", _karma_web_test = "karma_web_test", _karma_web_test_suite = "karma_web_test_suite")
-load("@npm_bazel_rollup//:index.bzl", _rollup_bundle = "rollup_bundle")
-load("@npm_bazel_terser//:index.bzl", "terser_minified")
-load("@npm_bazel_typescript//:index.bzl", _ts_devserver = "ts_devserver", _ts_library = "ts_library")
-load("@npm_bazel_protractor//:index.bzl", _protractor_web_test_suite = "protractor_web_test_suite")
+load("@npm//@bazel/jasmine:index.bzl", _jasmine_node_test = "jasmine_node_test")
+load("@npm//@bazel/karma:index.bzl", _karma_web_test = "karma_web_test", _karma_web_test_suite = "karma_web_test_suite")
+load("@npm//@bazel/rollup:index.bzl", _rollup_bundle = "rollup_bundle")
+load("@npm//@bazel/terser:index.bzl", "terser_minified")
+load("@npm//@bazel/typescript:index.bzl", _ts_config = "ts_config", _ts_devserver = "ts_devserver", _ts_library = "ts_library")
+load("@npm//@bazel/protractor:index.bzl", _protractor_web_test_suite = "protractor_web_test_suite")
 load("@npm//typescript:index.bzl", "tsc")
 load("//packages/bazel:index.bzl", _ng_module = "ng_module", _ng_package = "ng_package")
 load("//dev-infra/benchmark/ng_rollup_bundle:ng_rollup_bundle.bzl", _ng_rollup_bundle = "ng_rollup_bundle")
@@ -93,6 +93,8 @@ def ts_devserver(**kwargs):
         **kwargs
     )
 
+ts_config = _ts_config
+
 def ts_library(name, tsconfig = None, testonly = False, deps = [], module_name = None, **kwargs):
     """Default values for ts_library"""
     deps = deps + ["@npm//tslib"]
@@ -168,12 +170,23 @@ def ng_package(name, readme_md = None, license_banner = None, deps = [], **kwarg
     ]
     visibility = kwargs.pop("visibility", None)
 
+    common_substitutions = dict(kwargs.pop("substitutions", {}), **PKG_GROUP_REPLACEMENTS)
+    substitutions = dict(common_substitutions, **{
+        "0.0.0-PLACEHOLDER": "0.0.0",
+    })
+    stamped_substitutions = dict(common_substitutions, **{
+        "0.0.0-PLACEHOLDER": "{BUILD_SCM_VERSION}",
+    })
+
     _ng_package(
         name = name,
         deps = deps,
         readme_md = readme_md,
         license_banner = license_banner,
-        substitutions = PKG_GROUP_REPLACEMENTS,
+        substitutions = select({
+            "//:stamp": stamped_substitutions,
+            "//conditions:default": substitutions,
+        }),
         ng_packager = _INTERNAL_NG_PACKAGE_PACKAGER,
         terser_config_file = _INTERNAL_NG_PACKAGE_DEFALUT_TERSER_CONFIG_FILE,
         rollup_config_tmpl = _INTERNAL_NG_PACKAGE_DEFAULT_ROLLUP_CONFIG_TMPL,
@@ -192,13 +205,24 @@ def ng_package(name, readme_md = None, license_banner = None, deps = [], **kwarg
         visibility = visibility,
     )
 
-def pkg_npm(name, substitutions = {}, **kwargs):
+def pkg_npm(name, **kwargs):
     """Default values for pkg_npm"""
     visibility = kwargs.pop("visibility", None)
 
+    common_substitutions = dict(kwargs.pop("substitutions", {}), **PKG_GROUP_REPLACEMENTS)
+    substitutions = dict(common_substitutions, **{
+        "0.0.0-PLACEHOLDER": "0.0.0",
+    })
+    stamped_substitutions = dict(common_substitutions, **{
+        "0.0.0-PLACEHOLDER": "{BUILD_SCM_VERSION}",
+    })
+
     _pkg_npm(
         name = name,
-        substitutions = dict(substitutions, **PKG_GROUP_REPLACEMENTS),
+        substitutions = select({
+            "//:stamp": stamped_substitutions,
+            "//conditions:default": substitutions,
+        }),
         visibility = visibility,
         **kwargs
     )

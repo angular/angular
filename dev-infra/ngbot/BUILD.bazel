@@ -1,0 +1,19 @@
+load("@npm//@bazel/typescript:index.bzl", "ts_library")
+
+ts_library(
+    name = "ngbot",
+    srcs = [
+        "cli.ts",
+        "verify.ts",
+    ],
+    module_name = "@angular/dev-infra-private/ngbot",
+    visibility = ["//dev-infra:__subpackages__"],
+    deps = [
+        "//dev-infra/utils",
+        "@npm//@types/node",
+        "@npm//@types/yaml",
+        "@npm//@types/yargs",
+        "@npm//yaml",
+        "@npm//yargs",
+    ],
+)
