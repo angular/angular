@@ -78,12 +78,12 @@ export interface TestBed {
    * Overwrites all providers for the given token with the given provider definition.
    */
   overrideProvider(token: any, provider: {
-    useFactory: (this: never, ...args: any[]) => any,
+    useFactory: (this: void, ...args: any[]) => any,
     deps: any[],
   }): void;
   overrideProvider(token: any, provider: {useValue: any;}): void;
   overrideProvider(token: any, provider: {
-    useFactory?: (this: never, ...args: any[]) => any,
+    useFactory?: (this: void, ...args: any[]) => any,
     useValue?: any,
     deps?: any[]
   }): void;
@@ -206,12 +206,12 @@ export class TestBedViewEngine implements TestBed {
    * Note: This works for JIT and AOTed components as well.
    */
   static overrideProvider(token: any, provider: {
-    useFactory: (this: never, ...args: any[]) => any,
+    useFactory: (this: void, ...args: any[]) => any,
     deps: any[],
   }): TestBedStatic;
   static overrideProvider(token: any, provider: {useValue: any;}): TestBedStatic;
   static overrideProvider(token: any, provider: {
-    useFactory?: (this: never, ...args: any[]) => any,
+    useFactory?: (this: void, ...args: any[]) => any,
     useValue?: any,
     deps?: any[],
   }): TestBedStatic {
@@ -532,12 +532,12 @@ export class TestBedViewEngine implements TestBed {
    * Overwrites all providers for the given token with the given provider definition.
    */
   overrideProvider(token: any, provider: {
-    useFactory: (this: never, ...args: any[]) => any,
+    useFactory: (this: void, ...args: any[]) => any,
     deps: any[],
   }): void;
   overrideProvider(token: any, provider: {useValue: any;}): void;
   overrideProvider(token: any, provider: {
-    useFactory?: (this: never, ...args: any[]) => any,
+    useFactory?: (this: void, ...args: any[]) => any,
     useValue?: any,
     deps?: any[]
   }): void {
@@ -547,7 +547,7 @@ export class TestBedViewEngine implements TestBed {
 
   private overrideProviderImpl(
       token: any, provider: {
-        useFactory?: (this: never, ...args: any[]) => any,
+        useFactory?: (this: void, ...args: any[]) => any,
         useValue?: any,
         deps?: any[],
       },

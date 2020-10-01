@@ -206,7 +206,7 @@ export interface FactorySansProvider {
    * A function to invoke to create a value for this `token`. The function is invoked with
    * resolved values of `token`s in the `deps` field.
    */
-  useFactory: (this: never, ...args: any[]) => any;
+  useFactory: (this: void, ...args: any[]) => any;
 
   /**
    * A list of `token`s to be resolved by the injector. The list of values is then

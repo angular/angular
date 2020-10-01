@@ -37,8 +37,7 @@ export function convertInjectableProviderToFactory(
     return () => ɵɵinject(resolveForwardRef(existingProvider.useExisting));
   } else if ((provider as FactorySansProvider).useFactory!) {
     const factoryProvider = (provider as FactorySansProvider);
-    return () => (factoryProvider as any)
-                     .useFactory(...injectArgs(factoryProvider.deps || EMPTY_ARRAY));
+    return () => factoryProvider.useFactory(...injectArgs(factoryProvider.deps || EMPTY_ARRAY));
   } else if ((provider as StaticClassSansProvider | ClassSansProvider).useClass) {
     const classProvider = (provider as StaticClassSansProvider | ClassSansProvider);
     let deps = (provider as StaticClassSansProvider).deps;

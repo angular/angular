@@ -158,7 +158,7 @@ export class R3TestBedCompiler {
   }
 
   overrideProvider(token: any, provider: {
-    useFactory?: (this: never, ...args: any[]) => any,
+    useFactory?: (this: void, ...args: any[]) => any,
     useValue?: any,
     deps?: any[],
     multi?: boolean

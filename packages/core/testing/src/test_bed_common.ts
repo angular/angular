@@ -104,12 +104,12 @@ export interface TestBedStatic {
    * Note: This works for JIT and AOTed components as well.
    */
   overrideProvider(token: any, provider: {
-    useFactory: (this: never, ...args: any[]) => any,
+    useFactory: (this: void, ...args: any[]) => any,
     deps: any[],
   }): TestBedStatic;
   overrideProvider(token: any, provider: {useValue: any;}): TestBedStatic;
   overrideProvider(token: any, provider: {
-    useFactory?: (this: never, ...args: any[]) => any,
+    useFactory?: (this: void, ...args: any[]) => any,
     useValue?: any,
     deps?: any[],
   }): TestBedStatic;

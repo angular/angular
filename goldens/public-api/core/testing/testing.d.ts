@@ -72,14 +72,14 @@ export declare interface TestBed {
     overrideModule(ngModule: Type<any>, override: MetadataOverride<NgModule>): void;
     overridePipe(pipe: Type<any>, override: MetadataOverride<Pipe>): void;
     overrideProvider(token: any, provider: {
-        useFactory: (this: never, ...args: any[]) => any;
+        useFactory: (this: void, ...args: any[]) => any;
         deps: any[];
     }): void;
     overrideProvider(token: any, provider: {
         useValue: any;
     }): void;
     overrideProvider(token: any, provider: {
-        useFactory?: (this: never, ...args: any[]) => any;
+        useFactory?: (this: void, ...args: any[]) => any;
         useValue?: any;
         deps?: any[];
     }): void;
@@ -109,14 +109,14 @@ export declare interface TestBedStatic {
     overrideModule(ngModule: Type<any>, override: MetadataOverride<NgModule>): TestBedStatic;
     overridePipe(pipe: Type<any>, override: MetadataOverride<Pipe>): TestBedStatic;
     overrideProvider(token: any, provider: {
-        useFactory: (this: never, ...args: any[]) => any;
+        useFactory: (this: void, ...args: any[]) => any;
         deps: any[];
     }): TestBedStatic;
     overrideProvider(token: any, provider: {
         useValue: any;
     }): TestBedStatic;
     overrideProvider(token: any, provider: {
-        useFactory?: (this: never, ...args: any[]) => any;
+        useFactory?: (this: void, ...args: any[]) => any;
         useValue?: any;
         deps?: any[];
     }): TestBedStatic;
