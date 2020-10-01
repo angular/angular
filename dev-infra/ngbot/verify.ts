@@ -16,7 +16,7 @@ export function verify() {
   /** Full path to NgBot config file */
   const NGBOT_CONFIG_YAML_PATH = resolve(getRepoBaseDir(), '.github/angular-robot.yml');
 
-  /** The pull approve config file. */
+  /** The NgBot config file */
   const ngBotYaml = readFileSync(NGBOT_CONFIG_YAML_PATH, 'utf8');
 
   try {

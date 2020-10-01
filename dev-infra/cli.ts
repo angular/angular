@@ -28,7 +28,7 @@ yargs.scriptName('ng-dev')
     .command('release <command>', '', buildReleaseParser)
     .command('ts-circular-deps <command>', '', tsCircularDependenciesBuilder)
     .command('caretaker <command>', '', buildCaretakerParser)
-    .command('ngbot <command>', '', buildNgbotParser)
+    .command('ngbot <command>', false, buildNgbotParser)
     .wrap(120)
     .strict()
     .parse();
