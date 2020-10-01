@@ -2,10 +2,12 @@
 """
 
 load(
+    # Replaced with "//@bazel/typescript/internal:..." in published package
     "@npm//@bazel/typescript/internal:build_defs.bzl",
     _tsc_wrapped_tsconfig = "tsc_wrapped_tsconfig",
 )
 load(
+    # Replaced with "//@bazel/typescript/internal:..." in published package
     "@npm//@bazel/typescript/internal:common/compilation.bzl",
     _COMMON_ATTRIBUTES = "COMMON_ATTRIBUTES",
     _COMMON_OUTPUTS = "COMMON_OUTPUTS",
@@ -14,6 +16,7 @@ load(
     _ts_providers_dict_to_struct = "ts_providers_dict_to_struct",
 )
 load(
+    # Replaced with "//@bazel/typescript/internal:..." in published package
     "@npm//@bazel/typescript/internal:ts_config.bzl",
     _TsConfigInfo = "TsConfigInfo",
 )
@@ -43,9 +46,24 @@ ts_providers_dict_to_struct = _ts_providers_dict_to_struct
 # is loaded differently anyways where this file is overridden.
 BuildSettingInfo = provider(doc = "Not used outside google3.")
 
-DEFAULT_API_EXTRACTOR = "@npm//@angular/bazel/bin:api-extractor"
-DEFAULT_NG_COMPILER = "@npm//@angular/bazel/bin:ngc-wrapped"
-DEFAULT_NG_XI18N = "@npm//@angular/bazel/bin:xi18n"
+DEFAULT_API_EXTRACTOR = (
+    # BEGIN-DEV-ONLY
+    "@npm" +
+    # END-DEV-ONLY
+    "//@angular/bazel/bin:api-extractor"
+)
+DEFAULT_NG_COMPILER = (
+    # BEGIN-DEV-ONLY
+    "@npm" +
+    # END-DEV-ONLY
+    "//@angular/bazel/bin:ngc-wrapped"
+)
+DEFAULT_NG_XI18N = (
+    # BEGIN-DEV-ONLY
+    "@npm" +
+    # END-DEV-ONLY
+    "//@angular/bazel/bin:xi18n"
+)
 FLAT_DTS_FILE_SUFFIX = ".bundle.d.ts"
 TsConfigInfo = _TsConfigInfo
 js_ecma_script_module_info = _js_ecma_script_module_info

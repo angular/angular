@@ -32,7 +32,12 @@ _DEFAULT_NG_PACKAGER = "//@angular/bazel/bin:packager"
 _DEFAULT_ROLLUP_CONFIG_TMPL = "//:node_modules/@angular/bazel/src/ng_package/rollup.config.js"
 _DEFALUT_TERSER_CONFIG_FILE = "//:node_modules/@angular/bazel/src/ng_package/terser_config.default.json"
 _DEFAULT_ROLLUP = "//@angular/bazel/src/ng_package:rollup_for_ng_package"
-_DEFAULT_TERSER = "@npm//terser/bin:terser"
+_DEFAULT_TERSER = (
+    # BEGIN-DEV-ONLY
+    "@npm" +
+    # END-DEV-ONLY
+    "//terser/bin:terser"
+)
 
 _NG_PACKAGE_MODULE_MAPPINGS_ATTR = "ng_package_module_mappings"
 
