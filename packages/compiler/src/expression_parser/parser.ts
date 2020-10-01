@@ -288,11 +288,23 @@ export class IvyParser extends Parser {
   simpleExpressionChecker = IvySimpleExpressionChecker;  //
 }
 
+/** Describes a stateful context an expression parser is in. */
+enum ParseContext {
+  /**
+   * A Writable context is one in which a value may be written to an lvalue.
+   * For example, after we see a property access, we may expect a write to the
+   * property via the "=" operator.
+   *   a.b
+   *       ^ possible "=" after
+   */
+  Writable = 1,
+}
+
 export class _ParseAST {
   private rparensExpected = 0;
   private rbracketsExpected = 0;
   private rbracesExpected = 0;
-  private writeContext = false;
+  private context: ParseContext = 0;
 
   // Cache of expression start and input indeces to the absolute source span they map to, used to
   // prevent creating superfluous source spans in `sourceSpan`.
@@ -367,6 +379,16 @@ export class _ParseAST {
 
   advance() {
     this.index++;
+  }
+
+  /**
+   * Executes a callback in the provided context.
+   */
+  private withContext<T extends(...args: any) => any>(context: ParseContext, cb: T): ReturnType<T> {
+    this.context |= context;
+    const ret = cb();
+    this.context ^= context;
+    return ret;
   }
 
   consumeOptionalCharacter(code: number): boolean {
@@ -639,21 +661,22 @@ export class _ParseAST {
 
       } else if (this.consumeOptionalCharacter(chars.$LBRACKET)) {
         this.rbracketsExpected++;
-        this.writeContext = true;
-        const key = this.parsePipe();
-        if (key instanceof EmptyExpr) {
-          this.error(`Key access cannot be empty`);
-        }
-        this.rbracketsExpected--;
-        this.expectCharacter(chars.$RBRACKET);
-        if (this.consumeOptionalOperator('=')) {
-          const value = this.parseConditional();
-          result = new KeyedWrite(
-              this.span(resultStart), this.sourceSpan(resultStart), result, key, value);
-        } else {
-          result = new KeyedRead(this.span(resultStart), this.sourceSpan(resultStart), result, key);
-        }
-        this.writeContext = false;
+        this.withContext(ParseContext.Writable, () => {
+          const key = this.parsePipe();
+          if (key instanceof EmptyExpr) {
+            this.error(`Key access cannot be empty`);
+          }
+          this.rbracketsExpected--;
+          this.expectCharacter(chars.$RBRACKET);
+          if (this.consumeOptionalOperator('=')) {
+            const value = this.parseConditional();
+            result = new KeyedWrite(
+                this.span(resultStart), this.sourceSpan(resultStart), result, key, value);
+          } else {
+            result =
+                new KeyedRead(this.span(resultStart), this.sourceSpan(resultStart), result, key);
+          }
+        });
       } else if (this.consumeOptionalCharacter(chars.$LPAREN)) {
         this.rparensExpected++;
         const args = this.parseCallArguments();
@@ -1045,7 +1068,7 @@ export class _ParseAST {
            (this.rparensExpected <= 0 || !n.isCharacter(chars.$RPAREN)) &&
            (this.rbracesExpected <= 0 || !n.isCharacter(chars.$RBRACE)) &&
            (this.rbracketsExpected <= 0 || !n.isCharacter(chars.$RBRACKET)) &&
-           !(this.writeContext && n.isOperator('='))) {
+           (!(this.context & ParseContext.Writable) || !n.isOperator('='))) {
       if (this.next.isError()) {
         this.errors.push(
             new ParserError(this.next.toString()!, this.input, this.locationText(), this.location));
