@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {GitClient} from '../../utils/git';
+import {GitClient} from '../../utils/git/index';
 import {getCaretakerConfig} from '../config';
 
 import {printCiStatus} from './ci';

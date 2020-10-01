@@ -301,7 +301,7 @@ export abstract class ReleaseAction {
     return new Promise((resolve, reject) => {
       debug(`Waiting for pull request #${id} to be merged.`);
 
-      const spinner = ora().start(`Waiting for pull request #${id} to be merged.`);
+      const spinner = ora.call(undefined).start(`Waiting for pull request #${id} to be merged.`);
       const intervalId = setInterval(async () => {
         const prState = await getPullRequestState(this.git, id);
         if (prState === 'merged') {
@@ -517,7 +517,7 @@ export abstract class ReleaseAction {
   /** Publishes the given built package to NPM with the specified NPM dist tag. */
   private async _publishBuiltPackageToNpm(pkg: BuiltPackage, npmDistTag: string) {
     debug(`Starting publish of "${pkg.name}".`);
-    const spinner = ora().start(`Publishing "${pkg.name}"`);
+    const spinner = ora.call(undefined).start(`Publishing "${pkg.name}"`);
 
     try {
       await runNpmPublish(pkg.outputPath, npmDistTag, this.config.publishRegistry);

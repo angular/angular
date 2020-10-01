@@ -7,7 +7,7 @@
  */
 
 import {promptConfirm} from '../../utils/console';
-import {GitClient, GitCommandError} from '../../utils/git';
+import {GitClient, GitCommandError} from '../../utils/git/index';
 
 import {MergeConfigWithRemote} from './config';
 import {PullRequestFailure} from './failures';

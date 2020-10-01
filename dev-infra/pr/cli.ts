@@ -28,7 +28,3 @@ export function buildPrParser(localYargs: yargs.Argv) {
           buildRebaseCommand, handleRebaseCommand)
       .command(CheckoutCommandModule);
 }
-
-if (require.main === module) {
-  buildPrParser(yargs).parse();
-}
