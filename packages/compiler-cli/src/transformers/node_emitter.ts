@@ -287,7 +287,7 @@ export class NodeEmitterVisitor implements StatementVisitor, ExpressionVisitor {
     if (tsNode && !this._nodeMap.has(tsNode)) {
       this._nodeMap.set(tsNode, ngNode);
     }
-    if (tsNode !== null && ngNode instanceof Statement) {
+    if (tsNode !== null && ngNode instanceof Statement && ngNode.leadingComments !== undefined) {
       attachComments(tsNode as unknown as ts.Statement, ngNode.leadingComments);
     }
     return tsNode as RecordedNode<T>;

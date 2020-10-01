@@ -61,14 +61,14 @@ export class ExpressionTranslatorVisitor<TStatement, TExpression> implements o.E
     const varType = this.downlevelVariableDeclarations ?
         'var' :
         stmt.hasModifier(o.StmtModifier.Final) ? 'const' : 'let';
-    return this.factory.attachComments(
+    return this.attachComments(
         this.factory.createVariableDeclaration(
             stmt.name, stmt.value?.visitExpression(this, context.withExpressionMode), varType),
         stmt.leadingComments);
   }
 
   visitDeclareFunctionStmt(stmt: o.DeclareFunctionStmt, context: Context): TStatement {
-    return this.factory.attachComments(
+    return this.attachComments(
         this.factory.createFunctionDeclaration(
             stmt.name, stmt.params.map(param => param.name),
             this.factory.createBlock(
@@ -77,14 +77,14 @@ export class ExpressionTranslatorVisitor<TStatement, TExpression> implements o.E
   }
 
   visitExpressionStmt(stmt: o.ExpressionStatement, context: Context): TStatement {
-    return this.factory.attachComments(
+    return this.attachComments(
         this.factory.createExpressionStatement(
             stmt.expr.visitExpression(this, context.withStatementMode)),
         stmt.leadingComments);
   }
 
   visitReturnStmt(stmt: o.ReturnStatement, context: Context): TStatement {
-    return this.factory.attachComments(
+    return this.attachComments(
         this.factory.createReturnStatement(
             stmt.value.visitExpression(this, context.withExpressionMode)),
         stmt.leadingComments);
@@ -95,7 +95,7 @@ export class ExpressionTranslatorVisitor<TStatement, TExpression> implements o.E
   }
 
   visitIfStmt(stmt: o.IfStmt, context: Context): TStatement {
-    return this.factory.attachComments(
+    return this.attachComments(
         this.factory.createIfStatement(
             stmt.condition.visitExpression(this, context),
             this.factory.createBlock(
@@ -111,7 +111,7 @@ export class ExpressionTranslatorVisitor<TStatement, TExpression> implements o.E
   }
 
   visitThrowStmt(stmt: o.ThrowStmt, context: Context): TStatement {
-    return this.factory.attachComments(
+    return this.attachComments(
         this.factory.createThrowStatement(
             stmt.error.visitExpression(this, context.withExpressionMode)),
         stmt.leadingComments);
@@ -386,6 +386,14 @@ export class ExpressionTranslatorVisitor<TStatement, TExpression> implements o.E
   private setSourceMapRange<T extends TExpression|TStatement>(ast: T, span: o.ParseSourceSpan|null):
       T {
     return this.factory.setSourceMapRange(ast, createRange(span));
+  }
+
+  private attachComments(statement: TStatement, leadingComments: o.LeadingComment[]|undefined):
+      TStatement {
+    if (leadingComments !== undefined) {
+      this.factory.attachComments(statement, leadingComments);
+    }
+    return statement;
   }
 }
 
