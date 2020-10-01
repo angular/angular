@@ -61,7 +61,7 @@ describe('initial navigation migration', () => {
 
     await runMigration();
     expect(tree.readContent('/index.ts'))
-        .toContain(`RouterModule.forRoot([], { relativeLinkResolution: 'legacy' })`);
+        .toContain(`RouterModule.forRoot([], { relativeLinkResolution: "legacy" })`);
   });
 
   it('should migrate options without relativeLinkResolution', async () => {
@@ -79,7 +79,7 @@ describe('initial navigation migration', () => {
 
     await runMigration();
     expect(tree.readContent('/index.ts'))
-        .toContain(`RouterModule.forRoot([], { useHash: true, relativeLinkResolution: 'legacy' })`);
+        .toContain(`RouterModule.forRoot([], { useHash: true, relativeLinkResolution: "legacy" })`);
   });
 
   it('should not migrate options containing relativeLinkResolution', async () => {
@@ -109,7 +109,7 @@ describe('initial navigation migration', () => {
     await runMigration();
     expect(tree.readContent('/index.ts'))
         .toContain(
-            `const options = { useHash: true, relativeLinkResolution: 'legacy' } as ExtraOptions;`);
+            `const options = { useHash: true, relativeLinkResolution: "legacy" } as ExtraOptions;`);
   });
 
   it('should migrate when options is a variable', async () => {
@@ -121,7 +121,7 @@ describe('initial navigation migration', () => {
     await runMigration();
     expect(tree.readContent('/index.ts'))
         .toContain(
-            `const options: ExtraOptions = { useHash: true, relativeLinkResolution: 'legacy' };`);
+            `const options: ExtraOptions = { useHash: true, relativeLinkResolution: "legacy" };`);
   });
 
   it('should migrate when options is a variable with no type', async () => {
@@ -142,7 +142,7 @@ describe('initial navigation migration', () => {
 
     await runMigration();
     expect(tree.readContent('/index.ts'))
-        .toContain(`const options = { useHash: true, relativeLinkResolution: 'legacy' };`);
+        .toContain(`const options = { useHash: true, relativeLinkResolution: "legacy" };`);
     expect(tree.readContent('/index.ts')).toContain(`RouterModule.forRoot([], options)`);
   });
 
@@ -155,7 +155,7 @@ describe('initial navigation migration', () => {
     await runMigration();
     expect(tree.readContent('/index.ts'))
         .toContain(
-            `const options: RouterExtraOptions = { useHash: true, relativeLinkResolution: 'legacy' };`);
+            `const options: RouterExtraOptions = { useHash: true, relativeLinkResolution: "legacy" };`);
   });
 
   it('should migrate aliased RouterModule.forRoot', async () => {
@@ -173,7 +173,7 @@ describe('initial navigation migration', () => {
 
     await runMigration();
     expect(tree.readContent('/index.ts'))
-        .toContain(`AngularRouterModule.forRoot([], { relativeLinkResolution: 'legacy' }),`);
+        .toContain(`AngularRouterModule.forRoot([], { relativeLinkResolution: "legacy" }),`);
   });
 
   function writeFile(filePath: string, contents: string) {
