@@ -10,7 +10,7 @@ import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
 import {DirectiveSymbol, DomBindingSymbol, ElementSymbol, ExpressionSymbol, InputBindingSymbol, OutputBindingSymbol, ReferenceSymbol, ShimLocation, Symbol, SymbolKind, VariableSymbol} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
 import * as ts from 'typescript';
 
-import {createQuickInfo, SYMBOL_PUNC, SYMBOL_SPACE, SYMBOL_TEXT} from '../src/hover';
+import {createQuickInfo, SYMBOL_PUNC, SYMBOL_SPACE, SYMBOL_TEXT} from '../common/quick_info';
 
 import {findNodeAtPosition} from './hybrid_visitor';
 import {filterAliasImports, getDirectiveMatches, getDirectiveMatchesForAttribute, getTemplateInfoAtPosition, getTextSpanOfNode} from './utils';
