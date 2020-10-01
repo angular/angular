@@ -530,7 +530,7 @@ last 2 Edge major versions
 last 2 Safari major versions
 last 2 iOS major versions
 Firefox ESR
-not IE 9-11 # For IE 9-11 support, remove 'not'.
+not IE 11 # Angular supports IE 11 only as an opt-in. To opt-in, remove the 'not' prefix on this line.
 </code-example>
 
 <code-example language="json" header="tsconfig.json">
