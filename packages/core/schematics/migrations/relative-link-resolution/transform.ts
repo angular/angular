@@ -44,8 +44,8 @@ export class RelativeLinkResolutionTransform {
       // literal already defines a value for relativeLinkResolution. Skip it
       return literal;
     }
-    const legacyExpression = ts.createPropertyAssignment(
-        RELATIVE_LINK_RESOLUTION, ts.createStringLiteral('legacy', true /* singleQuotes */));
+    const legacyExpression =
+        ts.createPropertyAssignment(RELATIVE_LINK_RESOLUTION, ts.createStringLiteral('legacy'));
     return ts.updateObjectLiteral(literal, [...literal.properties, legacyExpression]);
   }
 
