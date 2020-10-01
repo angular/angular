@@ -22,7 +22,7 @@ import {Subject} from 'rxjs';
 `
 })
 export class NgIfSimple {
-  show: boolean = true;
+  show = true;
 }
 // #enddocregion
 
@@ -38,7 +38,7 @@ export class NgIfSimple {
 `
 })
 export class NgIfElse {
-  show: boolean = true;
+  show = true;
 }
 // #enddocregion
 
@@ -58,7 +58,7 @@ export class NgIfElse {
 })
 export class NgIfThenElse implements OnInit {
   thenBlock: TemplateRef<any>|null = null;
-  show: boolean = true;
+  show = true;
 
   @ViewChild('primaryBlock', {static: true}) primaryBlock: TemplateRef<any>|null = null;
   @ViewChild('secondaryBlock', {static: true}) secondaryBlock: TemplateRef<any>|null = null;
