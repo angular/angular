@@ -38,6 +38,7 @@ merge:
       - "modules/benchmarks/**"
       - "modules/system.d.ts"
       - "packages/**"
+      - "dev-infra/benchmark/driver-utilities/**"
     # list of patterns to ignore for the files changed by the PR
     exclude:
       - "packages/*"
@@ -47,6 +48,7 @@ merge:
       - "packages/bazel/src/ng_package/**"
       - "packages/bazel/src/protractor/**"
       - "packages/bazel/src/schematics/**"
+      - "packages/compiler-cli/src/ngcc/**"
       - "packages/compiler-cli/linker/**"
       - "packages/compiler-cli/ngcc/**"
       - "packages/compiler-cli/src/ngtsc/sourcemaps/**"
@@ -57,6 +59,8 @@ merge:
       - "packages/localize/**"
       - "packages/private/**"
       - "packages/service-worker/**"
+      - "packages/common/locales/**"
+      - "packages/http/**"
       - "**/.gitignore"
       - "**/.gitkeep"
       - "**/yarn.lock"
