@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 /**
  * @license
  * Copyright Google LLC All Rights Reserved.
@@ -7,15 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import * as yargs from 'yargs';
-import {tsCircularDependenciesBuilder} from './ts-circular-dependencies/index';
-import {buildPullapproveParser} from './pullapprove/cli';
+
+import {buildCaretakerParser} from './caretaker/cli';
 import {buildCommitMessageParser} from './commit-message/cli';
 import {buildFormatParser} from './format/cli';
-import {buildReleaseParser} from './release/cli';
-import {buildPrParser} from './pr/cli';
-import {captureLogOutputForCommand} from './utils/console';
-import {buildCaretakerParser} from './caretaker/cli';
 import {buildNgbotParser} from './ngbot/cli';
+import {buildPrParser} from './pr/cli';
+import {buildPullapproveParser} from './pullapprove/cli';
+import {buildReleaseParser} from './release/cli';
+import {tsCircularDependenciesBuilder} from './ts-circular-dependencies/index';
+import {captureLogOutputForCommand} from './utils/console';
 
 yargs.scriptName('ng-dev')
     .middleware(captureLogOutputForCommand)

@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 /**
  * @license
  * Copyright Google LLC All Rights Reserved.
@@ -13,12 +12,12 @@ import {isAbsolute, relative, resolve} from 'path';
 import * as ts from 'typescript';
 import * as yargs from 'yargs';
 
-import {green, info, error, red, yellow} from '../utils/console';
+import {error, green, info, red, yellow} from '../utils/console';
 
 import {Analyzer, ReferenceChain} from './analyzer';
-import {compareGoldens, convertReferenceChainToGolden, Golden} from './golden';
+import {CircularDependenciesTestConfig, loadTestConfig} from './config';
 import {convertPathToForwardSlash} from './file_system';
-import {loadTestConfig, CircularDependenciesTestConfig} from './config';
+import {compareGoldens, convertReferenceChainToGolden, Golden} from './golden';
 
 
 export function tsCircularDependenciesBuilder(localYargs: yargs.Argv) {
@@ -133,8 +132,4 @@ function getRelativePath(baseDir: string, path: string) {
 /** Converts the given reference chain to its string representation. */
 function convertReferenceChainToString(chain: ReferenceChain<string>) {
   return chain.join(' → ');
-}
-
-if (require.main === module) {
-  tsCircularDependenciesBuilder(yargs).parse();
 }

@@ -1,5 +1,6 @@
-load("@build_bazel_rules_nodejs//:index.bzl", "pkg_npm")
+load("@build_bazel_rules_nodejs//:index.bzl", "generated_file_test", "pkg_npm")
 load("@npm//@bazel/typescript:index.bzl", "ts_library")
+load("@npm//@bazel/rollup:index.bzl", "rollup_bundle")
 
 ts_library(
     name = "cli",
@@ -21,6 +22,23 @@ ts_library(
         "@npm//@types/yargs",
         "@npm//yargs",
     ],
+)
+
+rollup_bundle(
+    name = "cli_rollup",
+    entry_point = ":cli.ts",
+    format = "cjs",
+    silent = True,
+    sourcemap = "false",
+    deps = [
+        ":cli",
+    ],
+)
+
+generated_file_test(
+    name = "local_ng_dev",
+    src = "ng-dev.js",
+    generated = "cli_rollup",
 )
 
 genrule(

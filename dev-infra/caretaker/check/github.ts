@@ -9,7 +9,7 @@
 import {alias, onUnion, params, types} from 'typed-graphqlify';
 
 import {bold, debug, info} from '../../utils/console';
-import {GitClient} from '../../utils/git';
+import {GitClient} from '../../utils/git/index';
 import {CaretakerConfig} from '../config';
 
 /**
