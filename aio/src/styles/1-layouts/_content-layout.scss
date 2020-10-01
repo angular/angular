@@ -6,6 +6,8 @@
 .sidenav-content {
   min-height: 100vh;
   padding: 80px 3rem 2rem;
+  max-width: 50em;
+  margin: 0 auto;
 
   @media screen and (max-width: 600px) {
     min-height: 450px;
