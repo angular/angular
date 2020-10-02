@@ -15,7 +15,7 @@ import {BehaviorSubject, combineLatest, Observable, of as observableOf} from 'rx
 import {map} from 'rxjs/operators';
 import {CdkColumnDef} from './cell';
 import {CdkTableModule} from './index';
-import {CdkHeaderRowDef, CdkRowDef, CdkCellOutlet} from './row';
+import {CdkHeaderRowDef, CdkRowDef, CdkCellOutlet, CdkNoDataRow} from './row';
 import {CdkTable} from './table';
 import {
   getTableDuplicateColumnNameError,
@@ -701,6 +701,15 @@ describe('CdkTable', () => {
       ['a_2', 'b_2', 'a_2', 'b_2'],
       ['a_3', 'b_3', 'a_3', 'b_3']
     ]);
+  });
+
+  it('should be able to register a no data row defined outside the table', () => {
+    setupTableTestApp(OuterTableApp, [WrapperCdkTableApp]);
+
+    fixture.componentInstance.dataSource.data = [];
+    fixture.detectChanges();
+
+    expect(tableElement.textContent).toContain('No data');
   });
 
   describe('using when predicate', () => {
@@ -2308,6 +2317,7 @@ class RowContextCdkTableApp {
       </ng-container>
 
       <cdk-row *cdkRowDef="let row; columns: columns"></cdk-row>
+      <ng-template cdkNoDataRow>No data</ng-template>
     </cdk-table>
   `
 })
@@ -2315,6 +2325,7 @@ class WrapperCdkTableApp<T> implements AfterContentInit {
   @ContentChildren(CdkColumnDef) columnDefs: QueryList<CdkColumnDef>;
   @ContentChild(CdkHeaderRowDef) headerRowDef: CdkHeaderRowDef;
   @ContentChildren(CdkRowDef) rowDefs: QueryList<CdkRowDef<T>>;
+  @ContentChild(CdkNoDataRow) noDataRow: CdkNoDataRow;
 
   @ViewChild(CdkTable, {static: true}) table: CdkTable<T>;
 
@@ -2326,6 +2337,7 @@ class WrapperCdkTableApp<T> implements AfterContentInit {
     this.columnDefs.forEach(columnDef => this.table.addColumnDef(columnDef));
     this.rowDefs.forEach(rowDef => this.table.addRowDef(rowDef));
     this.table.addHeaderRowDef(this.headerRowDef);
+    this.table.setNoDataRow(this.noDataRow);
   }
 }
 

@@ -281,6 +281,9 @@ export class CdkTable<T> implements AfterContentChecked, CollectionViewer, OnDes
    */
   private _customFooterRowDefs = new Set<CdkFooterRowDef>();
 
+  /** No data row that was defined outside of the direct content children of the table. */
+  private _customNoDataRow: CdkNoDataRow | null;
+
   /**
    * Whether the header row definition has been changed. Triggers an update to the header row after
    * content is checked. Initialized as true so that the table renders the initial set of rows.
@@ -692,6 +695,11 @@ export class CdkTable<T> implements AfterContentChecked, CollectionViewer, OnDes
   removeFooterRowDef(footerRowDef: CdkFooterRowDef) {
     this._customFooterRowDefs.delete(footerRowDef);
     this._footerRowDefChanged = true;
+  }
+
+  /** Sets a no data row definition that was not included as a part of the content children. */
+  setNoDataRow(noDataRow: CdkNoDataRow | null) {
+    this._customNoDataRow = noDataRow;
   }
 
   /**
@@ -1228,12 +1236,14 @@ export class CdkTable<T> implements AfterContentChecked, CollectionViewer, OnDes
 
   /** Creates or removes the no data row, depending on whether any data is being shown. */
   private _updateNoDataRow() {
-    if (this._noDataRow) {
+    const noDataRow = this._customNoDataRow || this._noDataRow;
+
+    if (noDataRow) {
       const shouldShow = this._rowOutlet.viewContainer.length === 0;
 
       if (shouldShow !== this._isShowingNoDataRow) {
         const container = this._noDataRowOutlet.viewContainer;
-        shouldShow ? container.createEmbeddedView(this._noDataRow.templateRef) : container.clear();
+        shouldShow ? container.createEmbeddedView(noDataRow.templateRef) : container.clear();
         this._isShowingNoDataRow = shouldShow;
       }
     }
