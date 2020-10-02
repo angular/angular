@@ -362,10 +362,7 @@ the component's inputs will be watched using AngularJS change detection.
 When those inputs change, the corresponding properties in the component
 are set. You can also hook into the changes by implementing the
 [OnChanges](api/core/OnChanges) interface in the component,
-just like you could if it hadn't been downgraded. By default, change
-detection will also run for every AngularJS `$digest` cycle. If you wish
-to only have change detection run when the inputs change, set
-`propagateDigest: false` when downgrading components.
+just like you could if it hadn't been downgraded.
 
 Correspondingly, when you upgrade an AngularJS component and use it from Angular,
 all the bindings defined for the component directive's `scope` (or `bindToController`)
@@ -481,6 +478,15 @@ using the `downgradeComponent()` method. The result is an AngularJS
 
 <code-example path="upgrade-module/src/app/downgrade-static/app.module.ts" region="downgradecomponent" header="app.module.ts">
 </code-example>
+
+<div class="alert is-helpful">
+
+By default, Angular change detection will also run on the component for every
+AngularJS `$digest` cycle. If you wish to only have change detection run when
+the inputs change, you can set `propagateDigest` to `false` when calling
+`downgradeComponent`.
+
+</div>
 
 Because `HeroDetailComponent` is an Angular component, you must also add it to the
 `declarations` in the `AppModule`.
