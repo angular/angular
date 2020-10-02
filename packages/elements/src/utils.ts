@@ -59,7 +59,7 @@ export function createCustomEvent(doc: Document, name: string, detail: any): Cus
   const bubbles = false;
   const cancelable = false;
 
-  // On IE9-11, `CustomEvent` is not a constructor.
+  // On IE11, `CustomEvent` is not a constructor.
   if (typeof CustomEvent !== 'function') {
     const event = doc.createEvent('CustomEvent');
     event.initCustomEvent(name, bubbles, cancelable, detail);

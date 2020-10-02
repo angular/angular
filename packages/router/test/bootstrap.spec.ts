@@ -301,7 +301,7 @@ describe('bootstrap', () => {
     await router.navigateByUrl('/aa');
     window.scrollTo(0, 5000);
 
-    // IE 9/10/11 use non-standard pageYOffset instead of scrollY
+    // IE 11 uses non-standard pageYOffset instead of scrollY
     const getScrollY = () => window.scrollY !== undefined ? window.scrollY : window.pageYOffset;
 
     await router.navigateByUrl('/fail');
