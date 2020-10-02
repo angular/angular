@@ -1,45 +1,44 @@
 
 {@a attribute-directive}
 
-# Testing Attribute Directives
+# Probando Directivas de Atributo
 
-An _attribute directive_ modifies the behavior of an element, component or another directive.
-Its name reflects the way the directive is applied: as an attribute on a host element.
+Una _directiva de atributo_ modifica el comportamiento de un elemento, componente u otra directiva.
+Su nombre refleja la forma en que se aplica la directiva: como un atributo en un elemento anfitrión.
 
 <div class="alert is-helpful">
 
-  For the sample app that the testing guides describe, see the <live-example name="testing" embedded-style noDownload>sample app</live-example>.
+  Para la aplicación de muestra que describen las guías de prueba, visita la <live-example name="testing" embedded-style noDownload>aplicación de muestra</live-example>.
 
-  For the tests features in the testing guides, see <live-example name="testing" stackblitz="specs" noDownload>tests</live-example>.
+  Para las funcionalidaddes de las pruebas en las guías de pruebas, visita las <live-example name="testing" stackblitz="specs" noDownload>pruebas</live-example>.
 
 </div>
 
-## Testing the `HighlightDirective`
+## Probando la `HighlightDirective`
 
-The sample application's `HighlightDirective` sets the background color of an element
-based on either a data bound color or a default color (lightgray).
-It also sets a custom property of the element (`customProperty`) to `true`
-for no reason other than to show that it can.
+La directiva de muestra `HighlightDirective` fija el color de fondo de un elemento basado en un color de referencia o en un color predeterminado (lightgray).
+También establece una propiedad personalizada del elemento (`customProperty`) a `true`
+sin otro motivo más que demostrar que puede.
 
 <code-example path="testing/src/app/shared/highlight.directive.ts" header="app/shared/highlight.directive.ts"></code-example>
 
-It's used throughout the application, perhaps most simply in the `AboutComponent`:
+Se usa a lo largo de la aplicación, quizás más sencillamente en el `AboutComponent`:
 
 <code-example path="testing/src/app/about/about.component.ts" header="app/about/about.component.ts"></code-example>
 
-Testing the specific use of the `HighlightDirective` within the `AboutComponent` requires only the techniques explored in the ["Nested component tests"](guide/testing-components-scenarios#nested-component-tests) section of [Component testing scenarios](guide/testing-components-scenarios).
+Probar el uso específico de la `HighlightDirective` dentro del `AboutComponent` sólo requiere las técnicas exploradas en la sección ["Pruebas de componentes anidados"](guide/testing-components-scenarios#nested-component-tests) de [Escenarios de pruebas de componentes](guide/testing-components-scenarios).
 
 <code-example path="testing/src/app/about/about.component.spec.ts" region="tests" header="app/about/about.component.spec.ts"></code-example>
 
-However, testing a single use case is unlikely to explore the full range of a directive's capabilities.
-Finding and testing all components that use the directive is tedious, brittle, and almost as unlikely to afford full coverage.
+Sin embargo, probar un solo caso de uso es poco probable que explore toda la variedad de las posibilidades de una directiva.
+Encontrar y probar todos los componentes que utilizan la directiva es tedioso, delicado y casi igual de improbable que permita una cobertura completa.
 
-_Class-only tests_ might be helpful,
-but attribute directives like this one tend to manipulate the DOM.
-Isolated unit tests don't touch the DOM and, therefore,
-do not inspire confidence in the directive's efficacy.
+Las _Pruebas de clase exclusivas_ pueden ser de ayuda,
+pero las directivas de atributo como ésta tienden a manipular el DOM.
+Las pruebas unitarias aisladas no tocan el DOM y, por lo tanto,
+no inspiran confianza en la eficacia de la directiva.
 
-A better solution is to create an artificial test component that demonstrates all ways to apply the directive.
+Una solución mejor es crear un componente de prueba artificial que demuestre todas las formas de aplicar la directiva.
 
 <code-example path="testing/src/app/shared/highlight.directive.spec.ts" region="test-component" header="app/shared/highlight.directive.spec.ts (TestComponent)"></code-example>
 
@@ -49,30 +48,30 @@ A better solution is to create an artificial test component that demonstrates al
 
 <div class="alert is-helpful">
 
-The `<input>` case binds the `HighlightDirective` to the name of a color value in the input box.
-The initial value is the word "cyan" which should be the background color of the input box.
+El caso de `<input>` vincula la `HighlightDirective` al nombre de un valor de color en el campo de entrada.
+El valor inicial es la palabra "cyan" que debería ser el color de fondo del cuadro de entrada.
 
 </div>
 
-Here are some tests of this component:
+Aquí hay algunas pruebas de este componente:
 
 <code-example path="testing/src/app/shared/highlight.directive.spec.ts" region="selected-tests" header="app/shared/highlight.directive.spec.ts (selected tests)"></code-example>
 
-A few techniques are noteworthy:
+Cabe destacar algunas técnicas:
 
-- The `By.directive` predicate is a great way to get the elements that have this directive _when their element types are unknown_.
+- El predicado de la `By.directive` es una buena forma de obtener los elementos que tienen esta directiva _cuando sus tipos de elementos son desconocidos_.
 
-- The <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/:not">`:not` pseudo-class</a>
-  in `By.css('h2:not([highlight])')` helps find `<h2>` elements that _do not_ have the directive.
-  `By.css('*:not([highlight])')` finds _any_ element that does not have the directive.
+- La <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/:not">`:not` pseudo-clase</a>
+  en `By.css('h2:not([highlight])')` ayuda a encontrar los elementos `<h2>` _que no_ tienen la directiva.
+  `By.css('*:not([highlight])')` encuentra _cualquier_ elemento que no tiene la directiva.
 
-- `DebugElement.styles` affords access to element styles even in the absence of a real browser, thanks to the `DebugElement` abstraction.
-  But feel free to exploit the `nativeElement` when that seems easier or more clear than the abstraction.
+- `DebugElement.styles` permite acceder a los estilos de los elementos incluso en ausencia de un navegador real, gracias a la abstracción de `DebugElement`.
+  Pero siéntete libre de explotar el `nativeElement` cuando te parezca más fácil o más claro que la abstracción.
 
-- Angular adds a directive to the injector of the element to which it is applied.
-  The test for the default color uses the injector of the second `<h2>` to get its `HighlightDirective` instance
-  and its `defaultColor`.
+- Angular añade una directiva al inyector del elemento al que se aplica.
+  La prueba para el color por defecto usa el inyector del segundo `<h2>` para obtener la instancia de su `HighlightDirective`
+  y su `defaultColor`.
 
-- `DebugElement.properties` affords access to the artificial custom property that is set by the directive.
+- `DebugElement.properties` permite el acceso a la propiedad artificial personalizada que se establece en la directiva.
 
 <hr>
