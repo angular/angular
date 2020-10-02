@@ -14,4 +14,6 @@ export declare function coerceElement<T>(elementOrRef: ElementRef<T> | T): T;
 export declare function coerceNumberProperty(value: any): number;
 export declare function coerceNumberProperty<D>(value: any, fallback: D): number | D;
 
+export declare function coerceStringArray(value: any, separator?: string | RegExp): string[];
+
 export declare type NumberInput = string | number | null | undefined;

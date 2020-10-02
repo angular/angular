@@ -8,7 +8,7 @@ export declare abstract class _MatAutocompleteBase extends _MatAutocompleteMixin
     protected abstract _visibleClass: string;
     get autoActiveFirstOption(): boolean;
     set autoActiveFirstOption(value: boolean);
-    set classList(value: string);
+    set classList(value: string | string[]);
     readonly closed: EventEmitter<void>;
     displayWith: ((value: any) => string) | null;
     id: string;

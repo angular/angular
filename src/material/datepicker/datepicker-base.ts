@@ -7,7 +7,7 @@
  */
 
 import {Directionality} from '@angular/cdk/bidi';
-import {BooleanInput, coerceBooleanProperty} from '@angular/cdk/coercion';
+import {BooleanInput, coerceBooleanProperty, coerceStringArray} from '@angular/cdk/coercion';
 import {ESCAPE, UP_ARROW} from '@angular/cdk/keycodes';
 import {
   Overlay,
@@ -307,9 +307,6 @@ export abstract class MatDatepickerBase<C extends MatDatepickerControl<D>, S,
   @Output() readonly viewChanged: EventEmitter<MatCalendarView> =
     new EventEmitter<MatCalendarView>(true);
 
-  /** Classes to be passed to the date picker panel. Supports the same syntax as `ngClass`. */
-  @Input() panelClass: string | string[];
-
   /** Function that can be used to add custom CSS classes to dates. */
   @Input() dateClass: MatCalendarCellClassFunction<D>;
 
@@ -319,6 +316,16 @@ export abstract class MatDatepickerBase<C extends MatDatepickerControl<D>, S,
   /** Emits when the datepicker has been closed. */
   @Output('closed') closedStream: EventEmitter<void> = new EventEmitter<void>();
 
+  /**
+   * Classes to be passed to the date picker panel.
+   * Supports string and string array values, similar to `ngClass`.
+   */
+  @Input()
+  get panelClass(): string | string[] { return this._panelClass; }
+  set panelClass(value: string | string[]) {
+    this._panelClass = coerceStringArray(value);
+  }
+  private _panelClass: string[];
 
   /** Whether the calendar is open. */
   @Input()
