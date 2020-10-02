@@ -336,7 +336,14 @@ jobs:
             yarn check-entry-point-setup $(bazel info bazel-bin)/entry_points_manifest.json
 
       - run: yarn ng-dev format changed --check << pipeline.git.base_revision >>
-      - run: yarn ng-dev commit-message validate-range --range << pipeline.git.base_revision >>...<<pipeline.git.revision>>
+      - run:
+          name: Check Commit Message (PR Only)
+          # Only run the commit message checks on pull requests since we can't do
+          # much about any failures that have made it into the main branch.
+          command: |
+            if [ -n "$CIRCLE_PR_NUMBER" ]; then
+              yarn ng-dev commit-message validate-range --range << pipeline.git.base_revision >>...<<pipeline.git.revision>>
+            fi
       - run: yarn ownerslint
       - run: yarn stylelint
       - run: yarn tslint
