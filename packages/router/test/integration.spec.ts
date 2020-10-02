@@ -5625,30 +5625,54 @@ describe('Integration', () => {
 });
 
 describe('Testing router options', () => {
-  describe('paramsInheritanceStrategy', () => {
-    beforeEach(() => {
+  describe('should configure the router', () => {
+    it('assigns errorHandler', () => {
+      function errorHandler(error: any) {
+        throw error;
+      }
       TestBed.configureTestingModule(
-          {imports: [RouterTestingModule.withRoutes([], {paramsInheritanceStrategy: 'always'})]});
+          {imports: [RouterTestingModule.withRoutes([], {errorHandler})]});
+      const router: Router = TestBed.inject(Router);
+      expect(router.errorHandler).toBe(errorHandler);
     });
 
-    it('should configure the router', fakeAsync(inject([Router], (router: Router) => {
-         expect(router.paramsInheritanceStrategy).toEqual('always');
-       })));
-  });
-
-  describe('malformedUriErrorHandler', () => {
-    function malformedUriErrorHandler(e: URIError, urlSerializer: UrlSerializer, url: string) {
-      return urlSerializer.parse('/error');
-    }
-
-    beforeEach(() => {
+    it('assigns malformedUriErrorHandler', () => {
+      function malformedUriErrorHandler(e: URIError, urlSerializer: UrlSerializer, url: string) {
+        return urlSerializer.parse('/error');
+      }
       TestBed.configureTestingModule(
           {imports: [RouterTestingModule.withRoutes([], {malformedUriErrorHandler})]});
+      const router: Router = TestBed.inject(Router);
+      expect(router.malformedUriErrorHandler).toBe(malformedUriErrorHandler);
     });
 
-    it('should configure the router', fakeAsync(inject([Router], (router: Router) => {
-         expect(router.malformedUriErrorHandler).toBe(malformedUriErrorHandler);
-       })));
+    it('assigns onSameUrlNavigation', () => {
+      TestBed.configureTestingModule(
+          {imports: [RouterTestingModule.withRoutes([], {onSameUrlNavigation: 'reload'})]});
+      const router: Router = TestBed.inject(Router);
+      expect(router.onSameUrlNavigation).toBe('reload');
+    });
+
+    it('assigns paramsInheritanceStrategy', () => {
+      TestBed.configureTestingModule(
+          {imports: [RouterTestingModule.withRoutes([], {paramsInheritanceStrategy: 'always'})]});
+      const router: Router = TestBed.inject(Router);
+      expect(router.paramsInheritanceStrategy).toBe('always');
+    });
+
+    it('assigns relativeLinkResolution', () => {
+      TestBed.configureTestingModule(
+          {imports: [RouterTestingModule.withRoutes([], {relativeLinkResolution: 'corrected'})]});
+      const router: Router = TestBed.inject(Router);
+      expect(router.relativeLinkResolution).toBe('corrected');
+    });
+
+    it('assigns urlUpdateStrategy', () => {
+      TestBed.configureTestingModule(
+          {imports: [RouterTestingModule.withRoutes([], {urlUpdateStrategy: 'eager'})]});
+      const router: Router = TestBed.inject(Router);
+      expect(router.urlUpdateStrategy).toBe('eager');
+    });
   });
 });
 
