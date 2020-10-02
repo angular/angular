@@ -448,13 +448,7 @@ export function setupRouter(
     router.routeReuseStrategy = routeReuseStrategy;
   }
 
-  if (opts.errorHandler) {
-    router.errorHandler = opts.errorHandler;
-  }
-
-  if (opts.malformedUriErrorHandler) {
-    router.malformedUriErrorHandler = opts.malformedUriErrorHandler;
-  }
+  assignExtraOptionsToRouter(opts, router);
 
   if (opts.enableTracing) {
     const dom = getDOM();
@@ -466,6 +460,18 @@ export function setupRouter(
     });
   }
 
+  return router;
+}
+
+export function assignExtraOptionsToRouter(opts: ExtraOptions, router: Router): void {
+  if (opts.errorHandler) {
+    router.errorHandler = opts.errorHandler;
+  }
+
+  if (opts.malformedUriErrorHandler) {
+    router.malformedUriErrorHandler = opts.malformedUriErrorHandler;
+  }
+
   if (opts.onSameUrlNavigation) {
     router.onSameUrlNavigation = opts.onSameUrlNavigation;
   }
@@ -474,15 +480,13 @@ export function setupRouter(
     router.paramsInheritanceStrategy = opts.paramsInheritanceStrategy;
   }
 
-  if (opts.urlUpdateStrategy) {
-    router.urlUpdateStrategy = opts.urlUpdateStrategy;
-  }
-
   if (opts.relativeLinkResolution) {
     router.relativeLinkResolution = opts.relativeLinkResolution;
   }
 
-  return router;
+  if (opts.urlUpdateStrategy) {
+    router.urlUpdateStrategy = opts.urlUpdateStrategy;
+  }
 }
 
 export function rootRoute(router: Router): ActivatedRoute {
