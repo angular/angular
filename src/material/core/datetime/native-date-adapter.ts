@@ -283,14 +283,7 @@ export class NativeDateAdapter extends DateAdapter<Date> {
 
   /** Creates a date but allows the month and date to overflow. */
   private _createDateWithOverflow(year: number, month: number, date: number) {
-    const result = new Date(year, month, date);
-
-    // We need to correct for the fact that JS native Date treats years in range [0, 99] as
-    // abbreviations for 19xx.
-    if (year >= 0 && year < 100) {
-      result.setFullYear(this.getYear(result) - 1900);
-    }
-    return result;
+    return this._correctYear(new Date(year, month, date), year);
   }
 
   /**
@@ -325,9 +318,22 @@ export class NativeDateAdapter extends DateAdapter<Date> {
    * @returns A Date object with its UTC representation based on the passed in date info
    */
   private _format(dtf: Intl.DateTimeFormat, date: Date) {
+    const year = date.getFullYear();
     const d = new Date(Date.UTC(
-        date.getFullYear(), date.getMonth(), date.getDate(), date.getHours(),
+        year, date.getMonth(), date.getDate(), date.getHours(),
         date.getMinutes(), date.getSeconds(), date.getMilliseconds()));
-    return dtf.format(d);
+    return dtf.format(this._correctYear(d, year));
+  }
+
+  /**
+   * Corrects the year of a date, accounting for the fact that JS
+   * native Date treats years between 0 and 99 as abbreviations for 19xx.
+   */
+  private _correctYear(date: Date, intendedYear: number): Date {
+    if (intendedYear >= 0 && intendedYear < 100) {
+      date.setFullYear(this.getYear(date) - 1900);
+    }
+
+    return date;
   }
 }

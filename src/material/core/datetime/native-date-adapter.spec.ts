@@ -152,6 +152,16 @@ describe('NativeDateAdapter', () => {
     expect(adapter.getYearName(new Date(2017, JAN, 1))).toBe('2017');
   });
 
+  it('should year name for low year numbers', () => {
+    const createAndFormat = (year: number) => {
+      return adapter.getYearName(adapter.createDate(year, JAN, 1));
+    };
+
+    expect(createAndFormat(50)).toBe('50');
+    expect(createAndFormat(99)).toBe('99');
+    expect(createAndFormat(100)).toBe('100');
+  });
+
   it('should get year name in a different locale', () => {
     adapter.setLocale('ja-JP');
     if (SUPPORTS_INTL) {
@@ -185,6 +195,22 @@ describe('NativeDateAdapter', () => {
     expect(adapter.createDate(50, JAN, 1).getFullYear()).toBe(50);
     expect(adapter.createDate(99, JAN, 1).getFullYear()).toBe(99);
     expect(adapter.createDate(100, JAN, 1).getFullYear()).toBe(100);
+  });
+
+  it('should format Date with low year number', () => {
+    const createAndFormat = (year: number) => {
+      return adapter.format(adapter.createDate(year, JAN, 1), {});
+    };
+
+    if (SUPPORTS_INTL) {
+      expect(createAndFormat(50)).toBe('1/1/50');
+      expect(createAndFormat(99)).toBe('1/1/99');
+      expect(createAndFormat(100)).toBe('1/1/100');
+    } else {
+      expect(createAndFormat(50)).toBe('Sat Jan 01 0050');
+      expect(createAndFormat(99)).toBe('Thu Jan 01 0099');
+      expect(createAndFormat(100)).toBe('Fri Jan 01 0100');
+    }
   });
 
   it("should get today's date", () => {
