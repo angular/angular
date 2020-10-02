@@ -52,32 +52,6 @@ import {BrowserDetection} from '../testing/src/browser_util';
         isOldChrome: false
       },
       {
-        name: 'IE9',
-        ua: 'Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; Trident/5.0; SLCC2; .NET CLR 2.0.50727)',
-        isFirefox: false,
-        isAndroid: false,
-        isEdge: false,
-        isIE: true,
-        isWebkit: false,
-        isIOS7: false,
-        isSlow: true,
-        isChromeDesktop: false,
-        isOldChrome: false
-      },
-      {
-        name: 'IE10',
-        ua: 'Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.2; WOW64; Trident/6.0; .NET4.0E; .NET4.0C)',
-        isFirefox: false,
-        isAndroid: false,
-        isEdge: false,
-        isIE: true,
-        isWebkit: false,
-        isIOS7: false,
-        isSlow: true,
-        isChromeDesktop: false,
-        isOldChrome: false
-      },
-      {
         name: 'IE11',
         ua: 'Mozilla/5.0 (Windows NT 6.3; WOW64; Trident/7.0; .NET4.0E; .NET4.0C; rv:11.0) like Gecko',
         isFirefox: false,

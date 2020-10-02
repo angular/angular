@@ -39,37 +39,6 @@ jasmine_node_test(
 
 karma_web_test_suite(
     name = "test_web",
-    tags = [
-        # FIXME: fix on saucelabs
-        # IE 10.0.0 (Windows 8.0.0) AnimationRenderer should support nested animation triggers FAILED
-        #     TypeError: Unable to get property 'length' of undefined or null reference
-        #     error properties: Object({ number: -2146823281 })
-        #         at <Jasmine>
-        # IE 10.0.0 (Windows 8.0.0) AnimationRenderer should hook into the engine's setProperty call if the property begins with `@` FAILED
-        #     TypeError: Unable to get property 'setProperty' of undefined or null reference
-        #     error properties: Object({ number: -2146823281 })
-        #         at <Jasmine>
-        # IE 10.0.0 (Windows 8.0.0) AnimationRenderer should hook into the engine's insert operations when removing children FAILED
-        #     TypeError: Unable to get property 'onRemove' of undefined or null reference
-        #     error properties: Object({ number: -2146823281 })
-        #         at <Jasmine>
-        # IE 10.0.0 (Windows 8.0.0) AnimationRenderer should hook into the engine's insert operations when inserting a child before another FAILED
-        #     TypeError: Unable to get property 'onInsert' of undefined or null reference
-        #     error properties: Object({ number: -2146823281 })
-        #         at <Jasmine>
-        # IE 10.0.0 (Windows 8.0.0) AnimationRenderer should hook into the engine's insert operations when appending children FAILED
-        #     TypeError: Unable to get property 'onInsert' of undefined or null reference
-        #     error properties: Object({ number: -2146823281 })
-        #         at <Jasmine>
-        # IE 10.0.0 (Windows 8.0.0) AnimationRenderer listen should hook into the engine's listen call if the property begins with `@` FAILED
-        #     TypeError: Unable to get property 'listen' of undefined or null reference
-        #     error properties: Object({ number: -2146823281 })
-        #         at <Jasmine>
-        # IE 10.0.0 (Windows 8.0.0) AnimationRenderer listen should resolve the body|document|window nodes given their values as strings as input FAILED
-        #     Error: Unable to listen on the animation trigger event "event" because the animation trigger "" doesn't exist!
-        #         at <Jasmine>
-        "fixme-saucelabs-ivy",
-    ],
     deps = [
         ":test_lib",
     ],
