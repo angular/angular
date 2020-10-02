@@ -14,28 +14,6 @@ import * as ts from 'typescript';
 
 import {ALIAS_NAME, SYMBOL_PUNC} from '../common/quick_info';
 
-/**
- * Given a list of directives and a text to use as a selector, returns the directives which match
- * for the selector.
- */
-export function getDirectiveMatches(
-    directives: DirectiveSymbol[], selector: string): Set<DirectiveSymbol> {
-  const selectorToMatch = CssSelector.parse(selector);
-  if (selectorToMatch.length === 0) {
-    return new Set();
-  }
-  return new Set(directives.filter((dir: DirectiveSymbol) => {
-    if (dir.selector === null) {
-      return false;
-    }
-
-    const matcher = new SelectorMatcher();
-    matcher.addSelectables(CssSelector.parse(dir.selector));
-
-    return matcher.match(selectorToMatch[0], null);
-  }));
-}
-
 export function getTextSpanOfNode(node: t.Node|e.AST): ts.TextSpan {
   if (isTemplateNodeWithKeyAndValue(node)) {
     return toTextSpan(node.keySpan);
@@ -162,43 +140,106 @@ function getInlineTemplateInfoAtPosition(
 }
 
 /**
- * Given an attribute name and the element or template the attribute appears on, determines which
- * directives match because the attribute is present. That is, we find which directives are applied
- * because of this attribute by elimination: compare the directive matches with the attribute
- * present against the directive matches without it. The difference would be the directives which
- * match because the attribute is present.
- *
- * @param attribute The attribute name to use for directive matching.
- * @param hostNode The element or template node that the attribute is on.
- * @param directives The list of directives to match against.
- * @returns The list of directives matching the attribute via the strategy described above.
+ * Given an attribute node, converts it to string form.
  */
-export function getDirectiveMatchesForAttribute(
-    attribute: string, hostNode: t.Template|t.Element,
-    directives: DirectiveSymbol[]): Set<DirectiveSymbol> {
-  const attributes: Array<t.TextAttribute|t.BoundAttribute> =
-      [...hostNode.attributes, ...hostNode.inputs];
-  if (hostNode instanceof t.Template) {
-    attributes.push(...hostNode.templateAttrs);
-  }
-  function toAttributeString(a: t.TextAttribute|t.BoundAttribute) {
-    return `[${a.name}=${a.valueSpan?.toString() ?? ''}]`;
-  }
-  const attrs = attributes.map(toAttributeString);
-  const attrsOmit = attributes.map(a => a.name === attribute ? '' : toAttributeString(a));
+function toAttributeString(attribute: t.TextAttribute|t.BoundAttribute): string {
+  return `[${attribute.name}=${attribute.valueSpan?.toString() ?? ''}]`;
+}
 
-  const hostNodeName = hostNode instanceof t.Template ? hostNode.tagName : hostNode.name;
-  const directivesWithAttribute = getDirectiveMatches(directives, hostNodeName + attrs.join(''));
-  const directivesWithoutAttribute =
-      getDirectiveMatches(directives, hostNodeName + attrsOmit.join(''));
+function getNodeName(node: t.Template|t.Element): string {
+  return node instanceof t.Template ? node.tagName : node.name;
+}
 
-  const result = new Set<DirectiveSymbol>();
-  for (const dir of directivesWithAttribute) {
-    if (!directivesWithoutAttribute.has(dir)) {
+/**
+ * Given a template or element node, returns all attributes on the node.
+ */
+function getAttributes(node: t.Template|t.Element): Array<t.TextAttribute|t.BoundAttribute> {
+  const attributes: Array<t.TextAttribute|t.BoundAttribute> = [...node.attributes, ...node.inputs];
+  if (node instanceof t.Template) {
+    attributes.push(...node.templateAttrs);
+  }
+  return attributes;
+}
+
+/**
+ * Given two `Set`s, returns all items in the `left` which do not appear in the `right`.
+ */
+function difference<T>(left: Set<T>, right: Set<T>): Set<T> {
+  const result = new Set<T>();
+  for (const dir of left) {
+    if (!right.has(dir)) {
       result.add(dir);
     }
   }
   return result;
+}
+
+/**
+ * Given an element or template, determines which directives match because the tag is present. For
+ * example, if a directive selector is `div[myAttr]`, this would match div elements but would not if
+ * the selector were just `[myAttr]`. We find which directives are applied because of this tag by
+ * elimination: compare the directive matches with the tag present against the directive matches
+ * without it. The difference would be the directives which match because the tag is present.
+ *
+ * @param element The element or template node that the attribute/tag is part of.
+ * @param directives The list of directives to match against.
+ * @returns The list of directives matching the tag name via the strategy described above.
+ */
+// TODO(atscott): Add unit tests for this and the one for attributes
+export function getDirectiveMatchesForElementTag(
+    element: t.Template|t.Element, directives: DirectiveSymbol[]): Set<DirectiveSymbol> {
+  const attributes = getAttributes(element);
+  const allAttrs = attributes.map(toAttributeString);
+  const allDirectiveMatches =
+      getDirectiveMatchesForSelector(directives, getNodeName(element) + allAttrs.join(''));
+  const matchesWithoutElement = getDirectiveMatchesForSelector(directives, allAttrs.join(''));
+  return difference(allDirectiveMatches, matchesWithoutElement);
+}
+
+/**
+ * Given an attribute name, determines which directives match because the attribute is present. We
+ * find which directives are applied because of this attribute by elimination: compare the directive
+ * matches with the attribute present against the directive matches without it. The difference would
+ * be the directives which match because the attribute is present.
+ *
+ * @param name The name of the attribute
+ * @param hostNode The node which the attribute appears on
+ * @param directives The list of directives to match against.
+ * @returns The list of directives matching the tag name via the strategy described above.
+ */
+export function getDirectiveMatchesForAttribute(
+    name: string, hostNode: t.Template|t.Element,
+    directives: DirectiveSymbol[]): Set<DirectiveSymbol> {
+  const attributes = getAttributes(hostNode);
+  const allAttrs = attributes.map(toAttributeString);
+  const allDirectiveMatches =
+      getDirectiveMatchesForSelector(directives, getNodeName(hostNode) + allAttrs.join(''));
+  const attrsExcludingName = attributes.filter(a => a.name !== name).map(toAttributeString);
+  const matchesWithoutAttr =
+      getDirectiveMatchesForSelector(directives, attrsExcludingName.join(''));
+  return difference(allDirectiveMatches, matchesWithoutAttr);
+}
+
+/**
+ * Given a list of directives and a text to use as a selector, returns the directives which match
+ * for the selector.
+ */
+function getDirectiveMatchesForSelector(
+    directives: DirectiveSymbol[], selector: string): Set<DirectiveSymbol> {
+  const selectors = CssSelector.parse(selector);
+  if (selectors.length === 0) {
+    return new Set();
+  }
+  return new Set(directives.filter((dir: DirectiveSymbol) => {
+    if (dir.selector === null) {
+      return false;
+    }
+
+    const matcher = new SelectorMatcher();
+    matcher.addSelectables(CssSelector.parse(dir.selector));
+
+    return selectors.some(selector => matcher.match(selector, null));
+  }));
 }
 
 /**
@@ -230,4 +271,16 @@ export function filterAliasImports(displayParts: ts.SymbolDisplayPart[]): ts.Sym
 export function isDollarEvent(n: t.Node|e.AST): n is e.PropertyRead {
   return n instanceof e.PropertyRead && n.name === '$event' &&
       n.receiver instanceof e.ImplicitReceiver;
+}
+
+/**
+ * Returns a new array formed by applying a given callback function to each element of the array,
+ * and then flattening the result by one level.
+ */
+export function flatMap<T, R>(items: T[]|readonly T[], f: (item: T) => R[] | readonly R[]): R[] {
+  const results: R[] = [];
+  for (const x of items) {
+    results.push(...f(x));
+  }
+  return results;
 }

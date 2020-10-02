@@ -28,6 +28,14 @@ describe('quick info', () => {
         expectedDisplayString: '(element) button: HTMLButtonElement'
       });
     });
+
+    it('should work for directives which match native element tags', () => {
+      expectQuickInfo({
+        templateOverride: `<butt¦on compound custom-button></button>`,
+        expectedSpanText: '<button compound custom-button></button>',
+        expectedDisplayString: '(directive) AppModule.CompoundCustomButtonDirective'
+      });
+    });
   });
 
   describe('templates', () => {
@@ -357,8 +365,7 @@ describe('quick info', () => {
       expect(documentation).toBe('This is the title of the `AppComponent` Component.');
     });
 
-    // TODO(atscott): Enable once #39065 is merged
-    xit('works with external template', () => {
+    it('works with external template', () => {
       const {position, text} = service.overwrite(TEST_TEMPLATE, '<butt¦on></button>');
       const quickInfo = ngLS.getQuickInfoAtPosition(TEST_TEMPLATE, position);
       expect(quickInfo).toBeTruthy();
