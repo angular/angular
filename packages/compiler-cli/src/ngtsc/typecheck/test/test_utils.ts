@@ -11,10 +11,11 @@ import * as ts from 'typescript';
 
 import {absoluteFrom, AbsoluteFsPath, getSourceFileOrError, LogicalFileSystem} from '../../file_system';
 import {TestFile} from '../../file_system/testing';
-import {AbsoluteModuleStrategy, LocalIdentifierStrategy, LogicalProjectStrategy, ModuleResolver, Reference, ReferenceEmitter} from '../../imports';
+import {AbsoluteModuleStrategy, LocalIdentifierStrategy, LogicalProjectStrategy, ModuleResolver, Reexport, Reference, ReferenceEmitter} from '../../imports';
 import {NOOP_INCREMENTAL_BUILD} from '../../incremental';
 import {ClassPropertyMapping} from '../../metadata';
 import {ClassDeclaration, isNamedClassDeclaration, TypeScriptReflectionHost} from '../../reflection';
+import {ComponentScopeReader, ScopeData} from '../../scope';
 import {makeProgram} from '../../testing';
 import {getRootDirs} from '../../util/src/typescript';
 import {ProgramTypeCheckAdapter, TemplateTypeChecker, TypeCheckContext} from '../api';
@@ -404,9 +405,32 @@ export function setup(targets: TypeCheckingTarget[], overrides: {
     (programStrategy as any).supportsInlineOperations = overrides.inlining;
   }
 
+  const fakeScopeReader = {
+    getRequiresRemoteScope() {
+      return null;
+    },
+    // If there is a module with [className] + 'Module' in the same source file, returns
+    // `LocalModuleScope` with the ngModule class and empty arrays for everything else.
+    getScopeForComponent(clazz: ClassDeclaration) {
+      try {
+        const ngModule = getClass(clazz.getSourceFile(), `${clazz.name.getText()}Module`);
+        const stubScopeData = {directives: [], ngModules: [], pipes: []};
+        return {
+          ngModule,
+          compilation: stubScopeData,
+          reexports: [],
+          schemas: [],
+          exported: stubScopeData
+        };
+      } catch (e) {
+        return null;
+      }
+    }
+  };
+
   const templateTypeChecker = new TemplateTypeCheckerImpl(
       program, programStrategy, checkAdapter, fullConfig, emitter, reflectionHost, host,
-      NOOP_INCREMENTAL_BUILD);
+      NOOP_INCREMENTAL_BUILD, fakeScopeReader);
   return {
     templateTypeChecker,
     program,

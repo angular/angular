@@ -13,6 +13,7 @@ import {absoluteFromSourceFile, AbsoluteFsPath, getSourceFileOrError} from '../.
 import {ReferenceEmitter} from '../../imports';
 import {IncrementalBuild} from '../../incremental/api';
 import {ReflectionHost} from '../../reflection';
+import {ComponentScopeReader} from '../../scope';
 import {isShim} from '../../shims';
 import {getSourceFileOrNull} from '../../util/src/typescript';
 import {OptimizeFor, ProgramTypeCheckAdapter, Symbol, TemplateId, TemplateTypeChecker, TypeCheckingConfig, TypeCheckingProgramStrategy, UpdateMode} from '../api';
@@ -38,7 +39,8 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
       private typeCheckAdapter: ProgramTypeCheckAdapter, private config: TypeCheckingConfig,
       private refEmitter: ReferenceEmitter, private reflector: ReflectionHost,
       private compilerHost: Pick<ts.CompilerHost, 'getCanonicalFileName'>,
-      private priorBuild: IncrementalBuild<unknown, FileTypeCheckingData>) {}
+      private priorBuild: IncrementalBuild<unknown, FileTypeCheckingData>,
+      private readonly componentScopeReader: ComponentScopeReader) {}
 
   resetOverrides(): void {
     for (const fileRecord of this.state.values()) {
@@ -372,7 +374,8 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
       return null;
     }
 
-    return new SymbolBuilder(typeChecker, shimPath, tcb, data).getSymbol(node);
+    return new SymbolBuilder(typeChecker, shimPath, tcb, data, this.componentScopeReader)
+        .getSymbol(node);
   }
 }
 

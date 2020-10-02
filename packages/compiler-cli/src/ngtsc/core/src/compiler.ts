@@ -21,7 +21,7 @@ import {CompoundMetadataReader, CompoundMetadataRegistry, DtsMetadataReader, Inj
 import {ModuleWithProvidersScanner} from '../../modulewithproviders';
 import {PartialEvaluator} from '../../partial_evaluator';
 import {NOOP_PERF_RECORDER, PerfRecorder} from '../../perf';
-import {TypeScriptReflectionHost} from '../../reflection';
+import {ClassDeclaration, TypeScriptReflectionHost} from '../../reflection';
 import {AdapterResourceLoader} from '../../resource';
 import {entryPointKeyFor, NgModuleRouteAnalyzer} from '../../routing';
 import {ComponentScopeReader, LocalModuleScopeRegistry, MetadataDtsModuleScopeResolver} from '../../scope';
@@ -780,7 +780,8 @@ export class NgCompiler {
 
     const templateTypeChecker = new TemplateTypeCheckerImpl(
         this.tsProgram, this.typeCheckingProgramStrategy, traitCompiler,
-        this.getTypeCheckingConfig(), refEmitter, reflector, this.adapter, this.incrementalDriver);
+        this.getTypeCheckingConfig(), refEmitter, reflector, this.adapter, this.incrementalDriver,
+        scopeRegistry);
 
     return {
       isCore,

@@ -10,6 +10,8 @@ import {AST, ASTWithSource, BindingPipe, MethodCall, PropertyWrite, SafeMethodCa
 import * as ts from 'typescript';
 
 import {AbsoluteFsPath} from '../../file_system';
+import {ClassDeclaration} from '../../reflection';
+import {ComponentScopeReader} from '../../scope';
 import {isAssignment} from '../../util/src/typescript';
 import {DirectiveSymbol, DomBindingSymbol, ElementSymbol, ExpressionSymbol, InputBindingSymbol, OutputBindingSymbol, ReferenceSymbol, Symbol, SymbolKind, TemplateSymbol, TsNodeSymbolInfo, TypeCheckableDirectiveMeta, VariableSymbol} from '../api';
 
@@ -24,8 +26,12 @@ import {TcbDirectiveOutputsOp} from './type_check_block';
  */
 export class SymbolBuilder {
   constructor(
-      private readonly typeChecker: ts.TypeChecker, private readonly shimPath: AbsoluteFsPath,
-      private readonly typeCheckBlock: ts.Node, private readonly templateData: TemplateData) {}
+      private readonly typeChecker: ts.TypeChecker,
+      private readonly shimPath: AbsoluteFsPath,
+      private readonly typeCheckBlock: ts.Node,
+      private readonly templateData: TemplateData,
+      private readonly componentScopeReader: ComponentScopeReader,
+  ) {}
 
   getSymbol(node: TmplAstTemplate|TmplAstElement): TemplateSymbol|ElementSymbol|null;
   getSymbol(node: TmplAstReference|TmplAstVariable): ReferenceSymbol|VariableSymbol|null;
@@ -99,14 +105,16 @@ export class SymbolBuilder {
         .map(node => {
           const symbol = this.getSymbolOfTsNode(node.parent);
           if (symbol === null || symbol.tsSymbol === null ||
-              symbol.tsSymbol.declarations.length === 0) {
+              symbol.tsSymbol.valueDeclaration === undefined ||
+              !ts.isClassDeclaration(symbol.tsSymbol.valueDeclaration)) {
             return null;
           }
-          const meta = this.getDirectiveMeta(element, symbol.tsSymbol.declarations[0]);
+          const meta = this.getDirectiveMeta(element, symbol.tsSymbol.valueDeclaration);
           if (meta === null) {
             return null;
           }
 
+          const ngModule = this.getDirectiveModule(symbol.tsSymbol.valueDeclaration);
           const selector = meta.selector ?? null;
           const isComponent = meta.isComponent ?? null;
           const directiveSymbol: DirectiveSymbol = {
@@ -114,6 +122,7 @@ export class SymbolBuilder {
             tsSymbol: symbol.tsSymbol,
             selector,
             isComponent,
+            ngModule,
             kind: SymbolKind.Directive
           };
           return directiveSymbol;
@@ -130,6 +139,14 @@ export class SymbolBuilder {
     }
 
     return directives.find(m => m.ref.node === directiveDeclaration) ?? null;
+  }
+
+  private getDirectiveModule(declaration: ts.ClassDeclaration): ClassDeclaration|null {
+    const scope = this.componentScopeReader.getScopeForComponent(declaration as ClassDeclaration);
+    if (scope === null || scope === 'error') {
+      return null;
+    }
+    return scope.ngModule;
   }
 
   private getSymbolOfBoundEvent(eventBinding: TmplAstBoundEvent): OutputBindingSymbol|null {
@@ -239,10 +256,13 @@ export class SymbolBuilder {
     }
 
     const symbol = this.getSymbolOfTsNode(declaration);
-    if (symbol === null || symbol.tsSymbol === null) {
+    if (symbol === null || symbol.tsSymbol === null ||
+        symbol.tsSymbol.valueDeclaration === undefined ||
+        !ts.isClassDeclaration(symbol.tsSymbol.valueDeclaration)) {
       return null;
     }
 
+    const ngModule = this.getDirectiveModule(symbol.tsSymbol.valueDeclaration);
     return {
       kind: SymbolKind.Directive,
       tsSymbol: symbol.tsSymbol,
@@ -250,6 +270,7 @@ export class SymbolBuilder {
       shimLocation: symbol.shimLocation,
       isComponent,
       selector,
+      ngModule,
     };
   }
 

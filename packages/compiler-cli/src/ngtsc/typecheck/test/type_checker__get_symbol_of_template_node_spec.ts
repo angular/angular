@@ -1304,7 +1304,11 @@ runInEachFileSystem(() => {
                 fileName: dirFile,
                 source: `
               export class TestDir {}
+              // Allow the fake ComponentScopeReader to return a module for TestDir
+              export class TestDirModule {}
               export class TestDir2 {}
+              // Allow the fake ComponentScopeReader to return a module for TestDir2
+              export class TestDir2Module {}
               export class TestDirAllDivs {}
             `,
                 templates: {},
@@ -1327,6 +1331,15 @@ runInEachFileSystem(() => {
         const expectedSelectors = ['[dir]', '[dir2]', 'div'].sort();
         const actualSelectors = symbol.directives.map(dir => dir.selector).sort();
         expect(actualSelectors).toEqual(expectedSelectors);
+
+        // Testing this fully requires an integration test with a real `NgCompiler` (like in the
+        // Language Service, which uses the ngModule name for quick info). However, this path does
+        // assert that we are able to handle when the scope reader returns `null` or a class from
+        // the fake implementation.
+        const expectedModules = new Set([null, 'TestDirModule', 'TestDir2Module']);
+        const actualModules =
+            new Set(symbol.directives.map(dir => dir.ngModule?.name.getText() ?? null));
+        expect(actualModules).toEqual(expectedModules);
       });
     });
 
