@@ -86,7 +86,7 @@ interface DirectiveClassLike {
  * For example,
  *     v---------- `decoratorId`
  * @NgModule({           <
- *   declarations: [],   < classDecl
+ *   declarations: [],   < classDecln-al
  * })                    <
  * class AppModule {}    <
  *          ^----- `classId`
