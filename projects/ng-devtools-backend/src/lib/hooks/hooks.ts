@@ -102,15 +102,10 @@ const getLifeCycleName = (obj: {}, fn: any): keyof LifecycleProfile | 'unknown' 
 };
 
 /**
- * This is a temporal "polyfill" until we receive more comprehensive framework
- * debugging APIs. This observer checks for new elements added. When it detects
- * this has happened, it checks if any of the elements in the tree with root
- * the added element is a component. If it is, it throws a creation event.
- * The polyfill also patches the tView template function reference to allow
- * tracking of how much time we spend in the particular component in change detection.
+ * This is a temporal "polyfill" until we receive
+ * more comprehensive framework debugging APIs.
  */
-export class DirectiveForestObserver {
-  private _mutationObserver = new MutationObserver(this._onMutation.bind(this));
+export class DirectiveForestHooks {
   private _patched = new Map<any, () => void>();
   private _undoLifecyclePatch: (() => void)[] = [];
   private _lastChangeDetection = new Map<any, number>();
@@ -150,15 +145,10 @@ export class DirectiveForestObserver {
   }
 
   initialize(): void {
-    this._mutationObserver.observe(document, {
-      subtree: true,
-      childList: true,
-    });
     this.indexForest();
   }
 
   destroy(): void {
-    this._mutationObserver.disconnect();
     this._lastChangeDetection = new Map<any, number>();
     this._tracker.destroy();
 

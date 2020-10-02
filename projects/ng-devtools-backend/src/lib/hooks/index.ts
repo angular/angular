@@ -1,5 +1,5 @@
 import { getDirectiveName } from '../highlighter';
-import { DirectiveForestObserver } from './observer';
+import { DirectiveForestHooks } from './hooks';
 import { LifecycleProfile } from 'protocol';
 
 const markName = (s: string, method: Method) => `🅰️ ${s}#${method}`;
@@ -36,12 +36,12 @@ export const disableTimingAPI = () => (timingAPIFlag = false);
 
 const timingAPIEnabled = () => timingAPIFlag;
 
-export let observer: DirectiveForestObserver;
-export const initializeOrGetDirectiveForestObserver = () => {
-  if (observer) {
-    return observer;
+export let directiveForestHooks: DirectiveForestHooks;
+export const initializeOrGetDirectiveForestHooks = () => {
+  if (directiveForestHooks) {
+    return directiveForestHooks;
   }
-  observer = new DirectiveForestObserver({
+  directiveForestHooks = new DirectiveForestHooks({
     onChangeDetectionStart(component: any): void {
       if (!timingAPIEnabled()) {
         return;
@@ -67,6 +67,6 @@ export const initializeOrGetDirectiveForestObserver = () => {
       endMark(getDirectiveName(component), lifecyle);
     },
   });
-  observer.initialize();
-  return observer;
+  directiveForestHooks.initialize();
+  return directiveForestHooks;
 };
