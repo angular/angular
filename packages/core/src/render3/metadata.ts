@@ -30,18 +30,8 @@ export function setClassMetadata(
   return noSideEffects(() => {
            const clazz = type as TypeWithMetadata;
 
-           // We determine whether a class has its own metadata by taking the metadata from the
-           // parent constructor and checking whether it's the same as the subclass metadata below.
-           // We can't use `hasOwnProperty` here because it doesn't work correctly in IE10 for
-           // static fields that are defined by TS. See
-           // https://github.com/angular/angular/pull/28439#issuecomment-459349218.
-           const parentPrototype = clazz.prototype ? Object.getPrototypeOf(clazz.prototype) : null;
-           const parentConstructor: TypeWithMetadata|null =
-               parentPrototype && parentPrototype.constructor;
-
            if (decorators !== null) {
-             if (clazz.decorators !== undefined &&
-                 (!parentConstructor || parentConstructor.decorators !== clazz.decorators)) {
+             if (clazz.hasOwnProperty('decorators') && clazz.decorators !== undefined) {
                clazz.decorators.push(...decorators);
              } else {
                clazz.decorators = decorators;
@@ -58,9 +48,7 @@ export function setClassMetadata(
              // different decorator types. Decorators on individual fields are not merged, as it's
              // also incredibly unlikely that a field will be decorated both with an Angular
              // decorator and a non-Angular decorator that's also been downleveled.
-             if (clazz.propDecorators !== undefined &&
-                 (!parentConstructor ||
-                  parentConstructor.propDecorators !== clazz.propDecorators)) {
+             if (clazz.hasOwnProperty('propDecorators') && clazz.propDecorators !== undefined) {
                clazz.propDecorators = {...clazz.propDecorators, ...propDecorators};
              } else {
                clazz.propDecorators = propDecorators;
