@@ -7,11 +7,9 @@
  */
 
 import {
-  ComponentHarness,
   ContentContainerComponentHarness,
   HarnessLoader,
   HarnessPredicate,
-  HarnessQuery,
   TestElement,
   TestKey,
 } from '@angular/cdk/testing';
@@ -127,24 +125,7 @@ export class MatMenuHarness extends ContentContainerComponentHarness<string> {
     return menu.clickItem(...subItemFilters as [Omit<MenuItemHarnessFilters, 'ancestor'>]);
   }
 
-  async getChildLoader(selector: string): Promise<HarnessLoader> {
-    return (await this._getPanelLoader()).getChildLoader(selector);
-  }
-
-  async getAllChildLoaders(selector: string): Promise<HarnessLoader[]> {
-    return (await this._getPanelLoader()).getAllChildLoaders(selector);
-  }
-
-  async getHarness<T extends ComponentHarness>(query: HarnessQuery<T>): Promise<T> {
-    return (await this._getPanelLoader()).getHarness(query);
-  }
-
-  async getAllHarnesses<T extends ComponentHarness>(query: HarnessQuery<T>): Promise<T[]> {
-    return (await this._getPanelLoader()).getAllHarnesses(query);
-  }
-
-  /** Gets the element id for the content of the current step. */
-  private async _getPanelLoader(): Promise<HarnessLoader> {
+  protected async getRootHarnessLoader(): Promise<HarnessLoader> {
     const panelId = await this._getPanelId();
     return this.documentRootLocatorFactory().harnessLoaderFor(`#${panelId}`);
   }

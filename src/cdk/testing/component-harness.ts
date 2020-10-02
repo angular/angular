@@ -384,20 +384,28 @@ export abstract class ComponentHarness {
 export abstract class ContentContainerComponentHarness<S extends string = string>
   extends ComponentHarness implements HarnessLoader {
 
-  getChildLoader(selector: S): Promise<HarnessLoader> {
-    return this.locatorFactory.harnessLoaderFor(selector);
+  async getChildLoader(selector: S): Promise<HarnessLoader> {
+    return (await this.getRootHarnessLoader()).getChildLoader(selector);
   }
 
-  getAllChildLoaders(selector: S): Promise<HarnessLoader[]> {
-    return this.locatorFactory.harnessLoaderForAll(selector);
+  async getAllChildLoaders(selector: S): Promise<HarnessLoader[]> {
+    return (await this.getRootHarnessLoader()).getAllChildLoaders(selector);
   }
 
-  getHarness<T extends ComponentHarness>(query: HarnessQuery<T>): Promise<T> {
-    return this.locatorFor(query)();
+  async getHarness<T extends ComponentHarness>(query: HarnessQuery<T>): Promise<T> {
+    return (await this.getRootHarnessLoader()).getHarness(query);
   }
 
-  getAllHarnesses<T extends ComponentHarness>(query: HarnessQuery<T>): Promise<T[]> {
-    return this.locatorForAll(query)();
+  async getAllHarnesses<T extends ComponentHarness>(query: HarnessQuery<T>): Promise<T[]> {
+    return (await this.getRootHarnessLoader()).getAllHarnesses(query);
+  }
+
+  /**
+   * Gets the root harness loader from which to start
+   * searching for content contained by this harness.
+   */
+  protected async getRootHarnessLoader(): Promise<HarnessLoader> {
+    return this.locatorFactory.rootHarnessLoader();
   }
 }
 

@@ -3,11 +3,8 @@ export declare class MatMenuHarness extends ContentContainerComponentHarness<str
     clickItem(itemFilter: Omit<MenuItemHarnessFilters, 'ancestor'>, ...subItemFilters: Omit<MenuItemHarnessFilters, 'ancestor'>[]): Promise<void>;
     close(): Promise<void>;
     focus(): Promise<void>;
-    getAllChildLoaders(selector: string): Promise<HarnessLoader[]>;
-    getAllHarnesses<T extends ComponentHarness>(query: HarnessQuery<T>): Promise<T[]>;
-    getChildLoader(selector: string): Promise<HarnessLoader>;
-    getHarness<T extends ComponentHarness>(query: HarnessQuery<T>): Promise<T>;
     getItems(filters?: Omit<MenuItemHarnessFilters, 'ancestor'>): Promise<MatMenuItemHarness[]>;
+    protected getRootHarnessLoader(): Promise<HarnessLoader>;
     getTriggerText(): Promise<string>;
     isDisabled(): Promise<boolean>;
     isFocused(): Promise<boolean>;

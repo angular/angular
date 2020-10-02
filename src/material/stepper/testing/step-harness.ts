@@ -10,8 +10,6 @@ import {
   ContentContainerComponentHarness,
   HarnessPredicate,
   HarnessLoader,
-  ComponentHarness,
-  HarnessQuery,
 } from '@angular/cdk/testing';
 import {StepHarnessFilters} from './step-harness-filters';
 
@@ -91,24 +89,7 @@ export class MatStepHarness extends ContentContainerComponentHarness<string> {
     await (await this.host()).click();
   }
 
-  async getChildLoader(selector: string): Promise<HarnessLoader> {
-    return (await this._getContentLoader()).getChildLoader(selector);
-  }
-
-  async getAllChildLoaders(selector: string): Promise<HarnessLoader[]> {
-    return (await this._getContentLoader()).getAllChildLoaders(selector);
-  }
-
-  async getHarness<T extends ComponentHarness>(query: HarnessQuery<T>): Promise<T> {
-    return (await this._getContentLoader()).getHarness(query);
-  }
-
-  async getAllHarnesses<T extends ComponentHarness>(query: HarnessQuery<T>): Promise<T[]> {
-    return (await this._getContentLoader()).getAllHarnesses(query);
-  }
-
-  /** Gets the harness loader for the content of the current step. */
-  private async _getContentLoader(): Promise<HarnessLoader> {
+  protected async getRootHarnessLoader(): Promise<HarnessLoader> {
     const contentId = await (await this.host()).getAttribute('aria-controls');
     return this.documentRootLocatorFactory().harnessLoaderFor(`#${contentId}`);
   }

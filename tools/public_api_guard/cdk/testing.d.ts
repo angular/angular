@@ -38,6 +38,7 @@ export declare abstract class ContentContainerComponentHarness<S extends string 
     getAllHarnesses<T extends ComponentHarness>(query: HarnessQuery<T>): Promise<T[]>;
     getChildLoader(selector: S): Promise<HarnessLoader>;
     getHarness<T extends ComponentHarness>(query: HarnessQuery<T>): Promise<T>;
+    protected getRootHarnessLoader(): Promise<HarnessLoader>;
 }
 
 export interface ElementDimensions {

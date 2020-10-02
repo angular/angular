@@ -1,11 +1,8 @@
 export declare class MatStepHarness extends ContentContainerComponentHarness<string> {
-    getAllChildLoaders(selector: string): Promise<HarnessLoader[]>;
-    getAllHarnesses<T extends ComponentHarness>(query: HarnessQuery<T>): Promise<T[]>;
     getAriaLabel(): Promise<string | null>;
     getAriaLabelledby(): Promise<string | null>;
-    getChildLoader(selector: string): Promise<HarnessLoader>;
-    getHarness<T extends ComponentHarness>(query: HarnessQuery<T>): Promise<T>;
     getLabel(): Promise<string>;
+    protected getRootHarnessLoader(): Promise<HarnessLoader>;
     hasErrors(): Promise<boolean>;
     isCompleted(): Promise<boolean>;
     isOptional(): Promise<boolean>;

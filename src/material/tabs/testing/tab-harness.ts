@@ -7,11 +7,9 @@
  */
 
 import {
-  ComponentHarness,
   ContentContainerComponentHarness,
   HarnessLoader,
   HarnessPredicate,
-  HarnessQuery,
 } from '@angular/cdk/testing';
 import {TabHarnessFilters} from './tab-harness-filters';
 
@@ -78,24 +76,12 @@ export class MatTabHarness extends ContentContainerComponentHarness<string> {
    * @breaking-change 12.0.0
    */
   async getHarnessLoaderForContent(): Promise<HarnessLoader> {
+    return this.getRootHarnessLoader();
+  }
+
+  protected async getRootHarnessLoader(): Promise<HarnessLoader> {
     const contentId = await this._getContentId();
     return this.documentRootLocatorFactory().harnessLoaderFor(`#${contentId}`);
-  }
-
-  async getChildLoader(selector: string): Promise<HarnessLoader> {
-    return (await this.getHarnessLoaderForContent()).getChildLoader(selector);
-  }
-
-  async getAllChildLoaders(selector: string): Promise<HarnessLoader[]> {
-    return (await this.getHarnessLoaderForContent()).getAllChildLoaders(selector);
-  }
-
-  async getHarness<T extends ComponentHarness>(query: HarnessQuery<T>): Promise<T> {
-    return (await this.getHarnessLoaderForContent()).getHarness(query);
-  }
-
-  async getAllHarnesses<T extends ComponentHarness>(query: HarnessQuery<T>): Promise<T[]> {
-    return (await this.getHarnessLoaderForContent()).getAllHarnesses(query);
   }
 
   /** Gets the element id for the content of the current tab. */
