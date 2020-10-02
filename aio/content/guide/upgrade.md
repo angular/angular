@@ -484,7 +484,7 @@ using the `downgradeComponent()` method. The result is an AngularJS
 By default, Angular change detection will also run on the component for every
 AngularJS `$digest` cycle. If you wish to only have change detection run when
 the inputs change, you can set `propagateDigest` to `false` when calling
-`downgradeComponent`.
+`downgradeComponent()`.
 
 </div>
 
