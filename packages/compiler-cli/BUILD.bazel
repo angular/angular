@@ -1,6 +1,7 @@
 package(default_visibility = ["//visibility:public"])
 
-load("//tools:defaults.bzl", "pkg_npm", "ts_api_guardian_test", "ts_config", "ts_library")
+load("//tools:defaults.bzl", "pkg_npm", "ts_api_guardian_test", "ts_library")
+load("@npm_bazel_typescript//:index.bzl", "ts_config")
 
 ts_config(
     name = "tsconfig",

@@ -862,16 +862,9 @@ workflows:
             - build-npm-packages
             - build-ivy-npm-packages
             - legacy-unit-tests-saucelabs
-      # Temporarily disabled components-repo-unit-tests to update rules_nodejs to 2.0.0. Breaking changes in
-      # rules_nodejs create a dependency sandwich between angular/angular & angular/components that are very
-      # difficult and time consuming to resolve and involve patching @angular/bazel in components repo such
-      # as https://github.com/angular/components/commit/9e7ba251207df77164d73d66620e619bcbc4d2ad. It is simpler to
-      # 1) land angular/angular upgrade to rule_nodejs 2.0.0 which has breaking changes
-      # 2) land angular/components upgrade to rules_nodejs 2.0.0 using the @angular/bazel builds snapshot
-      # 3) update angular/angular to the landed components commit and re-enable these tests
-      # - components-repo-unit-tests:
-      #     requires:
-      #       - build-npm-packages
+      - components-repo-unit-tests:
+          requires:
+            - build-npm-packages
       - test_zonejs:
           requires:
             - setup

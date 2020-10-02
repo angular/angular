@@ -188,15 +188,8 @@ class TestRunner {
           if (binary.startsWith('external/')) {
             binary = `../${binary.substring('external/'.length)}`;
           }
-          try {
-            // Attempt to resolve runfiles location if command is expected to
-            // be in runfiles. For example, $(rootpath @nodejs//:yarn_bin)
-            const runfilesBinary = runfiles.resolveWorkspaceRelative(binary);
-            binary = (runfilesBinary && fs.existsSync(runfilesBinary)) ? runfilesBinary : binary;
-          } catch (e) {
-            // If resolveWorkspaceRelative then command is likely a built-in
-            // such as 'mkdir' or 'rm'
-          }
+          const runfilesBinary = runfiles.resolveWorkspaceRelative(binary);
+          binary = fs.existsSync(runfilesBinary) ? runfilesBinary : binary;
           log(`running test command ${this.successful + 1} of ${this.config.commands.length}: '${
               binary} ${args.join(' ')}' in '${this.testRoot}'`);
           const spawnedProcess = spawnSync(binary, args, {cwd: this.testRoot, stdio: 'inherit'});
