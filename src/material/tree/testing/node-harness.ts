@@ -7,15 +7,15 @@
  */
 
 import {
-  ComponentHarness,
   ComponentHarnessConstructor,
-  HarnessPredicate
+  ContentContainerComponentHarness,
+  HarnessPredicate,
 } from '@angular/cdk/testing';
 import {TreeNodeHarnessFilters} from './tree-harness-filters';
 import {coerceBooleanProperty, coerceNumberProperty} from '@angular/cdk/coercion';
 
 /** Harness for interacting with a standard Angular Material tree node. */
-export class MatTreeNodeHarness extends ComponentHarness {
+export class MatTreeNodeHarness extends ContentContainerComponentHarness<string> {
   /** The selector of the host element of a `MatTreeNode` instance. */
   static hostSelector = '.mat-tree-node, .mat-nested-tree-node';
 

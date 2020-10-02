@@ -4,7 +4,7 @@ export declare class MatTreeHarness extends ComponentHarness {
     static with(options?: TreeHarnessFilters): HarnessPredicate<MatTreeHarness>;
 }
 
-export declare class MatTreeNodeHarness extends ComponentHarness {
+export declare class MatTreeNodeHarness extends ContentContainerComponentHarness<string> {
     _toggle: import("@angular/cdk/testing").AsyncFactoryFn<import("@angular/cdk/testing").TestElement | null>;
     collapse(): Promise<void>;
     expand(): Promise<void>;
