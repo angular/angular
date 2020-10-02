@@ -1020,8 +1020,7 @@ function expectBindingError(text: string, message: string) {
 }
 
 /**
- * Check that an malformed action parses to a recovered AST while emitting an
- * error.
+ * Check that an malformed action parses to a recovered AST while emitting an error.
  */
 function checkActionWithError(text: string, expected: string, error: string) {
   checkAction(text, expected);
