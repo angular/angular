@@ -26,7 +26,7 @@ import {
   MAT_BUTTON_INPUTS,
   MatButtonBase
 } from './button-base';
-import {ThemePalette} from '@angular/material/core';
+import {ThemePalette} from '@angular/material-experimental/mdc-core';
 
 /**
  * Material Design floating action button (FAB) component. These buttons represent the primary

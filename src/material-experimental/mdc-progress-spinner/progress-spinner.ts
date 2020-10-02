@@ -22,7 +22,7 @@ import {
   MDCCircularProgressAdapter,
   MDCCircularProgressFoundation
 } from '@material/circular-progress';
-import {CanColor, CanColorCtor, mixinColor} from '@angular/material/core';
+import {CanColor, CanColorCtor, mixinColor} from '@angular/material-experimental/mdc-core';
 import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
 import {
   MAT_PROGRESS_SPINNER_DEFAULT_OPTIONS,

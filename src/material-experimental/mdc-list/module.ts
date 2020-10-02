@@ -8,7 +8,11 @@
 
 import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
-import {MatLineModule, MatPseudoCheckboxModule, MatRippleModule} from '@angular/material/core';
+import {
+  MatLineModule,
+  MatPseudoCheckboxModule,
+  MatRippleModule,
+} from '@angular/material-experimental/mdc-core';
 import {MatDividerModule} from '@angular/material/divider';
 import {MatActionList} from './action-list';
 import {

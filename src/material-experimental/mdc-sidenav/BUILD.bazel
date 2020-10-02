@@ -16,7 +16,7 @@ ng_module(
     ] + glob(["**/*.html"]),
     module_name = "@angular/material-experimental/mdc-sidenav",
     deps = [
-        "//src/material/core",
+        "//src/material-experimental/mdc-core",
     ],
 )
 

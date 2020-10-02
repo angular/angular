@@ -7,7 +7,7 @@ import {
   flushMicrotasks,
   TestBed,
 } from '@angular/core/testing';
-import {ThemePalette} from '@angular/material/core';
+import {ThemePalette} from '@angular/material-experimental/mdc-core';
 import {FormControl, FormsModule, NgModel, ReactiveFormsModule} from '@angular/forms';
 import {By} from '@angular/platform-browser';
 import {

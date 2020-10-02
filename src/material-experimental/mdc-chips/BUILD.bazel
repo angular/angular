@@ -21,7 +21,7 @@ ng_module(
     module_name = "@angular/material-experimental/mdc-chips",
     deps = [
         "//src:dev_mode_types",
-        "//src/material/core",
+        "//src/material-experimental/mdc-core",
         "//src/material/form-field",
         "@npm//@angular/animations",
         "@npm//@angular/common",
@@ -68,7 +68,7 @@ ng_test_library(
         "//src/cdk/platform",
         "//src/cdk/testing",
         "//src/cdk/testing/private",
-        "//src/material/core",
+        "//src/material-experimental/mdc-core",
         "//src/material/form-field",
         "//src/material/input",
         "@npm//@angular/animations",

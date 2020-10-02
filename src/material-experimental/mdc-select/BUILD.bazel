@@ -17,7 +17,6 @@ ng_module(
         "//src/cdk/overlay",
         "//src/material-experimental/mdc-core",
         "//src/material-experimental/mdc-form-field",
-        "//src/material/core",
         "//src/material/select",
     ],
 )

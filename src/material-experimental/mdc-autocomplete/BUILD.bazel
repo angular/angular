@@ -19,7 +19,6 @@ ng_module(
         "//src/cdk/scrolling",
         "//src/material-experimental/mdc-core",
         "//src/material/autocomplete",
-        "//src/material/core",
         "@npm//@angular/common",
     ],
 )

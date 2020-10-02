@@ -19,8 +19,8 @@ ng_module(
     assets = glob(["**/*.html"]),
     module_name = "@angular/material-experimental/mdc-input",
     deps = [
+        "//src/material-experimental/mdc-core",
         "//src/material-experimental/mdc-form-field",
-        "//src/material/core",
         "//src/material/input",
         "@npm//@angular/forms",
         "@npm//@material/textfield",
@@ -50,6 +50,7 @@ ng_test_library(
         ":mdc-input",
         "//src/cdk/platform",
         "//src/cdk/testing/private",
+        "//src/material-experimental/mdc-core",
         "//src/material-experimental/mdc-form-field",
         "//src/material/core",
         "@npm//@angular/forms",

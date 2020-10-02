@@ -18,7 +18,12 @@ import {
   OnDestroy,
   QueryList
 } from '@angular/core';
-import {RippleConfig, RippleRenderer, RippleTarget, setLines} from '@angular/material/core';
+import {
+  RippleConfig,
+  RippleRenderer,
+  RippleTarget,
+  setLines,
+} from '@angular/material-experimental/mdc-core';
 import {Subscription} from 'rxjs';
 import {startWith} from 'rxjs/operators';
 

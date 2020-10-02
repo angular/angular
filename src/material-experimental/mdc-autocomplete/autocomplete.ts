@@ -13,10 +13,10 @@ import {
   ContentChildren,
   QueryList,
 } from '@angular/core';
-import {MAT_OPTGROUP} from '@angular/material/core';
 import {_MatAutocompleteBase} from '@angular/material/autocomplete';
 import {
   MAT_OPTION_PARENT_COMPONENT,
+  MAT_OPTGROUP,
   MatOptgroup,
   MatOption,
 } from '@angular/material-experimental/mdc-core';

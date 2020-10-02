@@ -25,7 +25,7 @@ import {
   ViewChild,
   ViewEncapsulation
 } from '@angular/core';
-import {MatLine, ThemePalette} from '@angular/material/core';
+import {MatLine, ThemePalette} from '@angular/material-experimental/mdc-core';
 import {MatListAvatarCssMatStyler, MatListIconCssMatStyler} from './list';
 import {MatListBase, MatListItemBase} from './list-base';
 

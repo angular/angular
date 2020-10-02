@@ -28,7 +28,7 @@ import {
   ViewEncapsulation
 } from '@angular/core';
 import {NgControl} from '@angular/forms';
-import {ThemePalette} from '@angular/material/core';
+import {ThemePalette} from '@angular/material-experimental/mdc-core';
 import {
   getMatFormFieldDuplicatedHintError,
   getMatFormFieldMissingControlError,

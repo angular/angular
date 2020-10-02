@@ -20,7 +20,7 @@ import {
   AfterViewInit,
   OnDestroy,
 } from '@angular/core';
-import {CanColor, CanColorCtor, mixinColor} from '@angular/material/core';
+import {CanColor, CanColorCtor, mixinColor} from '@angular/material-experimental/mdc-core';
 import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
 import {ProgressAnimationEnd} from '@angular/material/progress-bar';
 import {MDCLinearProgressAdapter, MDCLinearProgressFoundation} from '@material/linear-progress';

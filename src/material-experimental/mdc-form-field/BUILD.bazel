@@ -20,7 +20,7 @@ ng_module(
         "//src/cdk/bidi",
         "//src/cdk/observers",
         "//src/cdk/platform",
-        "//src/material/core",
+        "//src/material-experimental/mdc-core",
         "//src/material/form-field",
         "@npm//@angular/forms",
         "@npm//@material/line-ripple",

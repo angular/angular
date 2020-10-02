@@ -32,7 +32,7 @@ import {
   NumberInput
 } from '@angular/cdk/coercion';
 import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
-import {ThemePalette, RippleAnimationConfig} from '@angular/material/core';
+import {ThemePalette, RippleAnimationConfig} from '@angular/material-experimental/mdc-core';
 import {numbers} from '@material/ripple';
 import {
   MAT_SLIDE_TOGGLE_DEFAULT_OPTIONS,

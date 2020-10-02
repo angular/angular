@@ -27,7 +27,7 @@ import {
   ViewEncapsulation
 } from '@angular/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
-import {ThemePalette} from '@angular/material/core';
+import {ThemePalette} from '@angular/material-experimental/mdc-core';
 import {MDCListAdapter} from '@material/list';
 import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';

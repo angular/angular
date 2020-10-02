@@ -38,7 +38,7 @@ import {
   mixinDisabled,
   CanColor,
   CanDisable,
-} from '@angular/material/core';
+} from '@angular/material-experimental/mdc-core';
 import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
 import {MDCCheckboxAdapter, MDCCheckboxFoundation} from '@material/checkbox';
 import {numbers} from '@material/ripple';

@@ -9,8 +9,7 @@
 import {OverlayModule} from '@angular/cdk/overlay';
 import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
-import {MatCommonModule} from '@angular/material/core';
-import {MatOptionModule} from '@angular/material-experimental/mdc-core';
+import {MatCommonModule, MatOptionModule} from '@angular/material-experimental/mdc-core';
 import {MatFormFieldModule} from '@angular/material-experimental/mdc-form-field';
 import {CdkScrollableModule} from '@angular/cdk/scrolling';
 import {MAT_SELECT_SCROLL_STRATEGY_PROVIDER} from '@angular/material/select';

@@ -22,7 +22,7 @@ import {
   QueryList,
   ViewEncapsulation
 } from '@angular/core';
-import {HasTabIndex, HasTabIndexCtor, mixinTabIndex} from '@angular/material/core';
+import {HasTabIndex, HasTabIndexCtor, mixinTabIndex} from '@angular/material-experimental/mdc-core';
 import {MDCChipSetAdapter, MDCChipSetFoundation} from '@material/chips';
 import {merge, Observable, Subject, Subscription} from 'rxjs';
 import {startWith, takeUntil} from 'rxjs/operators';

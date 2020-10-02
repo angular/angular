@@ -27,7 +27,7 @@ ng_module(
     module_name = "@angular/material-experimental/mdc-button",
     deps = [
         "//src/cdk/platform",
-        "//src/material/core",
+        "//src/material-experimental/mdc-core",
         "@npm//@material/ripple",
     ],
 )
@@ -97,8 +97,8 @@ ng_test_library(
     deps = [
         ":mdc-button",
         "//src/cdk/platform",
+        "//src/material-experimental/mdc-core",
         "//src/material/button",
-        "//src/material/core",
         "@npm//@angular/platform-browser",
     ],
 )

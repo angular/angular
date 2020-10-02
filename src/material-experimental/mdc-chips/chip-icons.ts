@@ -15,7 +15,7 @@ import {
   HasTabIndexCtor,
   mixinDisabled,
   mixinTabIndex,
-} from '@angular/material/core';
+} from '@angular/material-experimental/mdc-core';
 import {MDCChipTrailingActionAdapter, MDCChipTrailingActionFoundation} from '@material/chips';
 import {Subject} from 'rxjs';
 

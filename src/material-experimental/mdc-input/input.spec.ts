@@ -32,7 +32,7 @@ import {
   ErrorStateMatcher,
   ShowOnDirtyErrorStateMatcher,
   ThemePalette,
-} from '@angular/material/core';
+} from '@angular/material-experimental/mdc-core';
 import {By} from '@angular/platform-browser';
 import {BrowserAnimationsModule, NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {MAT_INPUT_VALUE_ACCESSOR, MatInput, MatInputModule} from './index';

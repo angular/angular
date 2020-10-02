@@ -41,7 +41,7 @@ import {
   mixinDisableRipple,
   mixinTabIndex,
   RippleAnimationConfig,
-} from '@angular/material/core';
+} from '@angular/material-experimental/mdc-core';
 import {MDCChipAdapter, MDCChipFoundation} from '@material/chips';
 import {numbers} from '@material/ripple';
 import {SPACE, ENTER, hasModifierKey} from '@angular/cdk/keycodes';

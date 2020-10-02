@@ -17,7 +17,7 @@ import {
   QueryList, ViewChild,
   ViewEncapsulation
 } from '@angular/core';
-import {MatLine} from '@angular/material/core';
+import {MatLine} from '@angular/material-experimental/mdc-core';
 import {MatListBase, MatListItemBase} from './list-base';
 
 /**

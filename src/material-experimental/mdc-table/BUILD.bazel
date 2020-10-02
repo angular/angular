@@ -21,7 +21,7 @@ ng_module(
     module_name = "@angular/material-experimental/mdc-table",
     deps = [
         "//src/cdk/table",
-        "//src/material/core",
+        "//src/material-experimental/mdc-core",
         "@npm//@angular/core",
         "@npm//material-components-web",
     ],

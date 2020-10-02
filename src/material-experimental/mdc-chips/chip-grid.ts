@@ -33,7 +33,7 @@ import {
   CanUpdateErrorStateCtor,
   ErrorStateMatcher,
   mixinErrorState,
-} from '@angular/material/core';
+} from '@angular/material-experimental/mdc-core';
 import {MatFormFieldControl} from '@angular/material/form-field';
 import {MatChipTextControl} from './chip-text-control';
 import {merge, Observable, Subscription} from 'rxjs';

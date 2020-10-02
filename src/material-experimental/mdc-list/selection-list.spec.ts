@@ -22,7 +22,7 @@ import {
   tick,
 } from '@angular/core/testing';
 import {FormControl, FormsModule, NgModel, ReactiveFormsModule} from '@angular/forms';
-import {defaultRippleAnimationConfig, ThemePalette} from '@angular/material/core';
+import {defaultRippleAnimationConfig, ThemePalette} from '@angular/material-experimental/mdc-core';
 import {By} from '@angular/platform-browser';
 import {numbers} from '@material/list';
 import {MatListModule, MatListOption, MatSelectionList, MatSelectionListChange} from './index';

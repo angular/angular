@@ -18,12 +18,13 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 import {MAT_SELECT_TRIGGER, _MatSelectBase} from '@angular/material/select';
-import {MatOptgroup, MatOption} from '@angular/material-experimental/mdc-core';
 import {
+  MatOptgroup,
+  MatOption,
   MAT_OPTGROUP,
   MAT_OPTION_PARENT_COMPONENT,
   _getOptionScrollPosition,
-} from '@angular/material/core';
+} from '@angular/material-experimental/mdc-core';
 import {CdkOverlayOrigin, ConnectedPosition} from '@angular/cdk/overlay';
 import {MatFormFieldControl} from '@angular/material/form-field';
 import {takeUntil} from 'rxjs/operators';

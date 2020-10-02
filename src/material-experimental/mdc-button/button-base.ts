@@ -21,7 +21,7 @@ import {
   mixinDisabled,
   mixinDisableRipple,
   RippleAnimationConfig
-} from '@angular/material/core';
+} from '@angular/material-experimental/mdc-core';
 import {numbers} from '@material/ripple';
 import {FocusOrigin} from '@angular/cdk/a11y';
 
