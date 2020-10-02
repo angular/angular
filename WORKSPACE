@@ -8,8 +8,8 @@ load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 # Fetch rules_nodejs so we can install our npm dependencies
 http_archive(
     name = "build_bazel_rules_nodejs",
-    sha256 = "4952ef879704ab4ad6729a29007e7094aef213ea79e9f2e94cbe1c9a753e63ef",
-    urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/2.2.0/rules_nodejs-2.2.0.tar.gz"],
+    sha256 = "84abf7ac4234a70924628baa9a73a5a5cbad944c4358cf9abdb4aab29c9a5b77",
+    urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/1.7.0/rules_nodejs-1.7.0.tar.gz"],
 )
 
 # Check the rules_nodejs version and download npm dependencies
@@ -17,7 +17,7 @@ http_archive(
 # assert on that.
 load("@build_bazel_rules_nodejs//:index.bzl", "check_rules_nodejs_version", "node_repositories", "yarn_install")
 
-check_rules_nodejs_version(minimum_version_string = "2.2.0")
+check_rules_nodejs_version(minimum_version_string = "1.7.0")
 
 # Setup the Node.js toolchain
 node_repositories(
@@ -39,18 +39,23 @@ yarn_install(
     yarn_lock = "//:yarn.lock",
 )
 
+# Install all bazel dependencies of the @npm npm packages
+load("@npm//:install_bazel_dependencies.bzl", "install_bazel_dependencies")
+
+install_bazel_dependencies()
+
 # Load angular dependencies
 load("//packages/bazel:package.bzl", "rules_angular_dev_dependencies")
 
 rules_angular_dev_dependencies()
 
 # Load protractor dependencies
-load("@npm//@bazel/protractor:package.bzl", "npm_bazel_protractor_dependencies")
+load("@npm_bazel_protractor//:package.bzl", "npm_bazel_protractor_dependencies")
 
 npm_bazel_protractor_dependencies()
 
 # Load karma dependencies
-load("@npm//@bazel/karma:package.bzl", "npm_bazel_karma_dependencies")
+load("@npm_bazel_karma//:package.bzl", "npm_bazel_karma_dependencies")
 
 npm_bazel_karma_dependencies()
 
@@ -62,6 +67,11 @@ web_test_repositories()
 load("//dev-infra/browsers:browser_repositories.bzl", "browser_repositories")
 
 browser_repositories()
+
+# Setup the rules_typescript tooolchain
+load("@npm_bazel_typescript//:index.bzl", "ts_setup_workspace")
+
+ts_setup_workspace()
 
 # Setup the rules_sass toolchain
 load("@io_bazel_rules_sass//sass:sass_repositories.bzl", "sass_repositories")

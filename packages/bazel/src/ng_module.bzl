@@ -19,7 +19,6 @@ load(
     "TsConfigInfo",
     "compile_ts",
     "js_ecma_script_module_info",
-    "js_module_info",
     "js_named_module_info",
     "node_modules_aspect",
     "ts_providers_dict_to_struct",
@@ -637,10 +636,6 @@ def _ng_module_impl(ctx):
     # See design doc https://docs.google.com/document/d/1ggkY5RqUkVL4aQLYm7esRW978LgX3GUCnQirrk5E1C0/edit#
     # and issue https://github.com/bazelbuild/rules_nodejs/issues/57 for more details.
     ts_providers["providers"].extend([
-        js_module_info(
-            sources = ts_providers["typescript"]["es5_sources"],
-            deps = ctx.attr.deps,
-        ),
         js_named_module_info(
             sources = ts_providers["typescript"]["es5_sources"],
             deps = ctx.attr.deps,
@@ -698,9 +693,12 @@ NG_MODULE_ATTRIBUTES = {
     "compiler": attr.label(
         doc = """Sets a different ngc compiler binary to use for this library.
 
-        The default ngc compiler depends on the `//@angular/bazel`
+        The default ngc compiler depends on the `@npm//@angular/bazel`
         target which is setup for projects that use bazel managed npm deps that
-        fetch the @angular/bazel npm package.
+        fetch the @angular/bazel npm package. It is recommended that you use
+        the workspace name `@npm` for bazel managed deps so the default
+        compiler works out of the box. Otherwise, you'll have to override
+        the compiler attribute manually.
         """,
         default = Label(DEFAULT_NG_COMPILER),
         executable = True,
@@ -719,11 +717,14 @@ NG_MODULE_RULE_ATTRS = dict(dict(COMMON_ATTRIBUTES, **NG_MODULE_ATTRIBUTES), **{
     "node_modules": attr.label(
         doc = """The npm packages which should be available during the compile.
 
-        The default value of `//typescript:typescript__typings` is
-        for projects that use bazel managed npm deps. This default is in place
+        The default value of `@npm//typescript:typescript__typings` is
+        for projects that use bazel managed npm deps. It is recommended
+        that you use the workspace name `@npm` for bazel managed deps so the
+        default value works out of the box. Otherwise, you'll have to
+        override the node_modules attribute manually. This default is in place
         since code compiled by ng_module will always depend on at least the
         typescript default libs which are provided by
-        `//typescript:typescript__typings`.
+        `@npm//typescript:typescript__typings`.
 
         This attribute is DEPRECATED. As of version 0.18.0 the recommended
         approach to npm dependencies is to use fine grained npm dependencies
@@ -775,12 +776,7 @@ NG_MODULE_RULE_ATTRS = dict(dict(COMMON_ATTRIBUTES, **NG_MODULE_ATTRIBUTES), **{
           yarn_lock = "//:yarn.lock",
         )
         """,
-        default = Label(
-            # BEGIN-DEV-ONLY
-            "@npm" +
-            # END-DEV-ONLY
-            "//typescript:typescript__typings",
-        ),
+        default = Label("@npm//typescript:typescript__typings"),
     ),
     "entry_point": attr.label(allow_single_file = True),
 
