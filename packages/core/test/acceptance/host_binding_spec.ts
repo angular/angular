@@ -1132,9 +1132,6 @@ describe('host bindings', () => {
     fixture.componentInstance.name = 'Ned';
     fixture.detectChanges();
 
-    // Note that we assert for each binding individually, rather than checking against
-    // innerHTML, because IE10 changes the attribute order and makes it inconsistent with
-    // all other browsers.
     expect(hostElement.id).toBe('red,blue');
     expect(hostElement.title).toBe('blue');
     expect(fixture.nativeElement.innerHTML.endsWith('Ned')).toBe(true);

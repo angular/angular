@@ -1290,13 +1290,6 @@ describe('providers', () => {
     function addFoo() {
       return (constructor: Type<any>): any => {
         const decoratedClass = class Extender extends constructor { foo = 'bar'; };
-
-        // On IE10 child classes don't inherit static properties by default. If we detect
-        // such a case, try to account for it so the tests are consistent between browsers.
-        if (Object.getPrototypeOf(decoratedClass) !== constructor) {
-          decoratedClass.prototype = constructor.prototype;
-        }
-
         return decoratedClass;
       };
     }

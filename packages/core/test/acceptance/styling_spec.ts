@@ -3460,8 +3460,8 @@ describe('styling', () => {
       if (!ivyEnabled && !supportsWritingStringsToStyleProperty()) {
         // VE does not treat `[style]` as anything special, instead it simply writes to the
         // `style` property on the element like so `element.style=value`. This seems to work fine
-        // every where except ie10, where it throws an error and as a consequence this test fails in
-        // VE on ie10.
+        // every where except IE11, where it throws an error and as a consequence this test fails in
+        // VE on IE11.
         return;
       }
       @Component({template: `<div [style]="style"></div>`})
@@ -3479,7 +3479,7 @@ describe('styling', () => {
     /**
      * Tests to see if the current browser supports non standard way of writing into styles.
      *
-     * This is not the correct way to write to style and is not supported in ie10.
+     * This is not the correct way to write to style and is not supported in IE11.
      * ```
      * div.style = 'color: white';
      * ```
@@ -3490,7 +3490,7 @@ describe('styling', () => {
      * ```
      *
      * Even though writing to `div.style` is not officially supported, it works in all
-     * browsers except ie10.
+     * browsers except IE11.
      *
      * This function detects this condition and allows us to skip the test.
      */
