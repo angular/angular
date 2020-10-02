@@ -351,6 +351,7 @@ describe('cdkMonitorFocus', () => {
         ComplexComponentWithMonitorElementFocus,
         ComplexComponentWithMonitorSubtreeFocus,
         ComplexComponentWithMonitorSubtreeFocusAndMonitorElementFocus,
+        FocusMonitorOnCommentNode,
       ],
     }).compileComponents();
   });
@@ -548,6 +549,14 @@ describe('cdkMonitorFocus', () => {
           expect(childElement.classList).toContain('cdk-keyboard-focused');
         }));
   });
+
+  it('should not throw when trying to monitor focus on a non-element node', () => {
+    expect(() => {
+      const fixture = TestBed.createComponent(FocusMonitorOnCommentNode);
+      fixture.detectChanges();
+      fixture.destroy();
+    }).not.toThrow();
+  });
 });
 
 describe('FocusMonitor observable stream', () => {
@@ -610,7 +619,14 @@ class ComplexComponentWithMonitorElementFocus {}
 })
 class ComplexComponentWithMonitorSubtreeFocus {}
 
+
 @Component({
   template: `<div cdkMonitorSubtreeFocus><button cdkMonitorElementFocus></button></div>`
 })
 class ComplexComponentWithMonitorSubtreeFocusAndMonitorElementFocus {}
+
+
+@Component({
+  template: `<ng-container cdkMonitorElementFocus></ng-container>`
+})
+class FocusMonitorOnCommentNode {}
