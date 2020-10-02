@@ -60,6 +60,14 @@ export class LanguageService {
     return new DefinitionBuilder(this.tsLS, compiler).getDefinitionAndBoundSpan(fileName, position);
   }
 
+  getTypeDefinitionAtPosition(fileName: string, position: number):
+      readonly ts.DefinitionInfo[]|undefined {
+    const program = this.strategy.getProgram();
+    const compiler = this.createCompiler(program, fileName);
+    return new DefinitionBuilder(this.tsLS, compiler)
+        .getTypeDefinitionsAtPosition(fileName, position);
+  }
+
   getQuickInfoAtPosition(fileName: string, position: number): ts.QuickInfo|undefined {
     const program = this.strategy.getProgram();
     const compiler = this.createCompiler(program, fileName);

@@ -24,6 +24,7 @@ import * as ParsingCases from './parsing-cases';
     ParsingCases.TestComponent,
     ParsingCases.TestPipe,
     ParsingCases.WithContextDirective,
+    ParsingCases.CompoundCustomButtonDirective,
   ]
 })
 export class AppModule {

@@ -11,6 +11,7 @@ import * as ts from 'typescript/lib/tsserverlibrary';
 import {LanguageService} from '../language_service';
 
 import {APP_COMPONENT, setup} from './mock_host';
+import {humanizeDefinitionInfo} from './test_utils';
 
 describe('definitions', () => {
   const {project, service, tsLS} = setup();
@@ -404,17 +405,6 @@ describe('definitions', () => {
     expect(text.substring(textSpan.start, textSpan.start + textSpan.length))
         .toEqual(expectedSpanText);
     expect(definitions).toBeTruthy();
-    return definitions!.map(d => humanizeDefinitionInfo(d));
-  }
-
-  function humanizeDefinitionInfo(def: ts.DefinitionInfo) {
-    const snapshot = service.getScriptInfo(def.fileName).getSnapshot();
-    return {
-      fileName: def.fileName,
-      textSpan: snapshot.getText(def.textSpan.start, def.textSpan.start + def.textSpan.length),
-      contextSpan: def.contextSpan ?
-          snapshot.getText(def.contextSpan.start, def.contextSpan.start + def.contextSpan.length) :
-          undefined,
-    };
+    return definitions!.map(d => humanizeDefinitionInfo(d, service));
   }
 });

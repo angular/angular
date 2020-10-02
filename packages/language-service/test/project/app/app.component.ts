@@ -8,10 +8,15 @@
 
 import {Component} from '@angular/core';
 
+export interface Address {
+  streetName: string;
+}
+
 /** The most heroic being. */
 export interface Hero {
   id: number;
   name: string;
+  address?: Address;
 }
 
 @Component({

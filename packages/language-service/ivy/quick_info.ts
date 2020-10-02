@@ -13,7 +13,7 @@ import * as ts from 'typescript';
 import {createQuickInfo, SYMBOL_PUNC, SYMBOL_SPACE, SYMBOL_TEXT} from '../common/quick_info';
 
 import {findNodeAtPosition} from './hybrid_visitor';
-import {filterAliasImports, getDirectiveMatches, getDirectiveMatchesForAttribute, getTemplateInfoAtPosition, getTextSpanOfNode} from './utils';
+import {filterAliasImports, getDirectiveMatchesForAttribute, getDirectiveMatchesForElementTag, getTemplateInfoAtPosition, getTextSpanOfNode} from './utils';
 
 /**
  * The type of Angular directive. Used for QuickInfo in template.
@@ -94,7 +94,7 @@ export class QuickInfoBuilder {
 
   private getQuickInfoForElementSymbol(symbol: ElementSymbol): ts.QuickInfo {
     const {templateNode} = symbol;
-    const matches = getDirectiveMatches(symbol.directives, templateNode.name);
+    const matches = getDirectiveMatchesForElementTag(templateNode, symbol.directives);
     if (matches.size > 0) {
       return this.getQuickInfoForDirectiveSymbol(matches.values().next().value, templateNode);
     }

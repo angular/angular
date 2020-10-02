@@ -1060,6 +1060,10 @@
       "title": "Languages",
       "children": [
         {
+          "title": "Versión en Español.",
+          "url":"http://docs.angular.lat/"
+        },
+        {
           "title": "简体中文版",
           "url": "https://angular.cn/"
         },

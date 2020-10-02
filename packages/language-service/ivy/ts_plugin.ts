@@ -24,10 +24,6 @@ export function create(info: ts.server.PluginCreateInfo): ts.LanguageService {
     return diagnostics;
   }
 
-  function getTypeDefinitionAtPosition(fileName: string, position: number) {
-    return undefined;
-  }
-
   function getQuickInfoAtPosition(fileName: string, position: number): ts.QuickInfo|undefined {
     if (angularOnly) {
       return ngLS.getQuickInfoAtPosition(fileName, position);
@@ -35,6 +31,17 @@ export function create(info: ts.server.PluginCreateInfo): ts.LanguageService {
       // If TS could answer the query, then return that result. Otherwise, return from Angular LS.
       return tsLS.getQuickInfoAtPosition(fileName, position) ??
           ngLS.getQuickInfoAtPosition(fileName, position);
+    }
+  }
+
+  function getTypeDefinitionAtPosition(
+      fileName: string, position: number): readonly ts.DefinitionInfo[]|undefined {
+    if (angularOnly) {
+      return ngLS.getTypeDefinitionAtPosition(fileName, position);
+    } else {
+      // If TS could answer the query, then return that result. Otherwise, return from Angular LS.
+      return tsLS.getTypeDefinitionAtPosition(fileName, position) ??
+          ngLS.getTypeDefinitionAtPosition(fileName, position);
     }
   }
 

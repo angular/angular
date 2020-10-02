@@ -110,7 +110,7 @@ interface OverwriteResult {
   text: string;
 }
 
-class MockService {
+export class MockService {
   private readonly overwritten = new Set<ts.server.NormalizedPath>();
 
   constructor(
