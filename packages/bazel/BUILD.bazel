@@ -1,4 +1,3 @@
-# BEGIN-DEV-ONLY
 load("//tools:defaults.bzl", "pkg_npm")
 
 pkg_npm(
@@ -18,8 +17,9 @@ pkg_npm(
     ],
     substitutions = {
         "(#|\/\/)\\s+BEGIN-DEV-ONLY[\\w\W]+?(#|\/\/)\\s+END-DEV-ONLY": "",
-        "//packages/bazel/": "//@angular/bazel/",
-        "@npm//@bazel/typescript/internal:": "//@bazel/typescript/internal:",
+        "//packages/bazel/src/ngc-wrapped": "@npm//@angular/bazel/bin:ngc-wrapped",
+        "//packages/bazel/": "//",
+        "angular/packages/bazel/": "npm_angular_bazel/",
     },
     tags = ["release-with-framework"],
     # Do not add more to this list.
@@ -31,4 +31,3 @@ pkg_npm(
         "//packages/bazel/src/ngc-wrapped:ngc_lib",
     ],
 )
-# END-DEV-ONLY
