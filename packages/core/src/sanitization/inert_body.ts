@@ -88,7 +88,7 @@ class InertDocumentHelper implements InertBodyHelper {
     const inertBody = this.inertDocument.createElement('body');
     inertBody.innerHTML = trustedHTMLFromString(html) as string;
 
-    // Support: IE 9-11 only
+    // Support: IE 11 only
     // strip custom-namespaced attributes on IE<=11
     if ((this.defaultDoc as any).documentMode) {
       this.stripCustomNsAttrs(inertBody);
@@ -98,7 +98,7 @@ class InertDocumentHelper implements InertBodyHelper {
   }
 
   /**
-   * When IE9-11 comes across an unknown namespaced attribute e.g. 'xlink:foo' it adds 'xmlns:ns1'
+   * When IE11 comes across an unknown namespaced attribute e.g. 'xlink:foo' it adds 'xmlns:ns1'
    * attribute to declare ns1 namespace and prefixes the attribute with 'ns1' (e.g.
    * 'ns1:xlink:foo').
    *

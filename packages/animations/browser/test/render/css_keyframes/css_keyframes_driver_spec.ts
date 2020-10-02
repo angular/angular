@@ -106,7 +106,7 @@ describe('CssKeyframesDriver tests', () => {
 
     it('should animate until the `animationend` method is emitted, but stil retain the <style> method and the element animation details',
        fakeAsync(() => {
-         // IE10 and IE11 cannot create an instanceof AnimationEvent
+         // IE11 cannot create an instanceof AnimationEvent
          if (!supportsAnimationEventCreation()) return;
 
          const elm = createElement();
