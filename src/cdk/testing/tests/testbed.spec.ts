@@ -83,6 +83,13 @@ describe('TestbedHarnessEnvironment', () => {
         const element = TestbedHarnessEnvironment.getNativeElement(await harness.host());
         expect(element.id).toContain('root');
       });
+
+      it('should wait for async operation to complete in fakeAsync test', fakeAsync(async () => {
+        const asyncCounter = await harness.asyncCounter();
+        expect(await asyncCounter.text()).toBe('5');
+        await harness.increaseCounter(3);
+        expect(await asyncCounter.text()).toBe('8');
+      }));
     });
 
     describe('change detection behavior', () => {
