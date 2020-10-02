@@ -2,7 +2,7 @@ import {MutationObserverFactory} from '@angular/cdk/observers';
 import {Component, Input} from '@angular/core';
 import {ComponentFixture, fakeAsync, flush, inject, TestBed, tick} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
-import {A11yModule} from '../index';
+import {A11yModule, AriaLivePoliteness} from '../index';
 import {LiveAnnouncer} from './live-announcer';
 import {
   LIVE_ANNOUNCER_ELEMENT_TOKEN,
@@ -282,6 +282,15 @@ describe('CdkAriaLive', () => {
     announcer.ngOnDestroy();
   }));
 
+  it('should default politeness to polite', fakeAsync(() => {
+    fixture.componentInstance.content = 'New content';
+    fixture.detectChanges();
+    invokeMutationCallbacks();
+    flush();
+
+    expect(announcer.announce).toHaveBeenCalledWith('New content', 'polite');
+  }));
+
   it('should dynamically update the politeness', fakeAsync(() => {
     fixture.componentInstance.content = 'New content';
     fixture.detectChanges();
@@ -340,8 +349,8 @@ class TestApp {
   }
 }
 
-@Component({template: `<div [cdkAriaLive]="politeness">{{content}}</div>`})
+@Component({template: `<div [cdkAriaLive]="politeness ? politeness : null">{{content}}</div>`})
 class DivWithCdkAriaLive {
-  @Input() politeness = 'polite';
+  @Input() politeness: AriaLivePoliteness;
   @Input() content = 'Initial content';
 }

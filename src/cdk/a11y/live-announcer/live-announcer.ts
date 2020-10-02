@@ -186,7 +186,7 @@ export class CdkAriaLive implements OnDestroy {
   @Input('cdkAriaLive')
   get politeness(): AriaLivePoliteness { return this._politeness; }
   set politeness(value: AriaLivePoliteness) {
-    this._politeness = value === 'polite' || value === 'assertive' ? value : 'off';
+    this._politeness = value === 'off' || value === 'assertive' ? value : 'polite';
     if (this._politeness === 'off') {
       if (this._subscription) {
         this._subscription.unsubscribe();
@@ -210,7 +210,7 @@ export class CdkAriaLive implements OnDestroy {
       });
     }
   }
-  private _politeness: AriaLivePoliteness = 'off';
+  private _politeness: AriaLivePoliteness = 'polite';
 
   private _previousAnnouncedText?: string;
   private _subscription: Subscription | null;
