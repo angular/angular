@@ -31,6 +31,7 @@ import {DragDrop} from '../drag-drop';
 import {DropListOrientation, DragAxis, DragDropConfig, CDK_DRAG_CONFIG} from './config';
 import {Subject} from 'rxjs';
 import {startWith, takeUntil} from 'rxjs/operators';
+import {assertElementNode} from './assertions';
 
 /** Counter used to generate unique ids for drop zones. */
 let _uniqueIdCounter = 0;
@@ -60,7 +61,7 @@ export const CDK_DROP_LIST = new InjectionToken<CdkDropList>('CdkDropList');
   ],
   host: {
     'class': 'cdk-drop-list',
-    '[id]': 'id',
+    '[attr.id]': 'id',
     '[class.cdk-drop-list-disabled]': 'disabled',
     '[class.cdk-drop-list-dragging]': '_dropListRef.isDragging()',
     '[class.cdk-drop-list-receiving]': '_dropListRef.isReceiving()',
@@ -174,6 +175,11 @@ export class CdkDropList<T = any> implements OnDestroy {
       @Optional() @Inject(CDK_DROP_LIST_GROUP) @SkipSelf()
       private _group?: CdkDropListGroup<CdkDropList>,
       @Optional() @Inject(CDK_DRAG_CONFIG) config?: DragDropConfig) {
+
+    if (typeof ngDevMode === 'undefined' || ngDevMode) {
+      assertElementNode(element.nativeElement, 'cdkDropList');
+    }
+
     this._dropListRef = dragDrop.createDropList(element);
     this._dropListRef.data = this;
 

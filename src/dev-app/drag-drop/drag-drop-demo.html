@@ -9,7 +9,7 @@
       [cdkDropListData]="todo">
       <div *ngFor="let item of todo" cdkDrag>
         {{item}}
-        <mat-icon cdkDragHandle svgIcon="dnd-move"></mat-icon>
+        <ng-container cdkDragHandle>move</ng-container>
       </div>
     </div>
   </div>

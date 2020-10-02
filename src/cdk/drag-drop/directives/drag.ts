@@ -54,6 +54,7 @@ import {DragRef, Point} from '../drag-ref';
 import {CDK_DROP_LIST, CdkDropListInternal as CdkDropList} from './drop-list';
 import {DragDrop} from '../drag-drop';
 import {CDK_DRAG_CONFIG, DragDropConfig, DragStartDelay, DragAxis} from './config';
+import {assertElementNode} from './assertions';
 
 /** Element that can be moved inside a CdkDropList container. */
 @Directive({
@@ -182,7 +183,11 @@ export class CdkDrag<T = any> implements AfterViewInit, OnChanges, OnDestroy {
       public element: ElementRef<HTMLElement>,
       /** Droppable container that the draggable is a part of. */
       @Inject(CDK_DROP_LIST) @Optional() @SkipSelf() public dropContainer: CdkDropList,
-      @Inject(DOCUMENT) private _document: any, private _ngZone: NgZone,
+      /**
+       * @deprecated `_document` parameter no longer being used and will be removed.
+       * @breaking-change 12.0.0
+       */
+      @Inject(DOCUMENT) _document: any, private _ngZone: NgZone,
       private _viewContainerRef: ViewContainerRef,
       @Optional() @Inject(CDK_DRAG_CONFIG) config: DragDropConfig,
       @Optional() private _dir: Directionality, dragDrop: DragDrop,
@@ -322,10 +327,8 @@ export class CdkDrag<T = any> implements AfterViewInit, OnChanges, OnDestroy {
     const rootElement = this.rootElementSelector ?
         getClosestMatchingAncestor(element, this.rootElementSelector) : element;
 
-    if (rootElement && rootElement.nodeType !== this._document.ELEMENT_NODE &&
-        (typeof ngDevMode === 'undefined' || ngDevMode)) {
-      throw Error(`cdkDrag must be attached to an element node. ` +
-                  `Currently attached to "${rootElement.nodeName}".`);
+    if (rootElement && (typeof ngDevMode === 'undefined' || ngDevMode)) {
+      assertElementNode(rootElement, 'cdkDrag');
     }
 
     this._dragRef.withRootElement(rootElement || element);

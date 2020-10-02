@@ -952,7 +952,7 @@ describe('CdkDrag', () => {
       expect(dragElement.style.transform).toBe('translate3d(50px, 50px, 0px)');
     }));
 
-    it('should throw if attached to an ng-container', fakeAsync(() => {
+    it('should throw if drag item is attached to an ng-container', fakeAsync(() => {
       expect(() => {
         createComponent(DraggableOnNgContainer).detectChanges();
         flush();
@@ -1457,6 +1457,13 @@ describe('CdkDrag', () => {
       fixture.detectChanges();
 
       expect(dragElement.style.webkitTapHighlightColor).toBe('purple');
+    }));
+
+    it('should throw if drag handle is attached to an ng-container', fakeAsync(() => {
+      expect(() => {
+        createComponent(DragHandleOnNgContainer).detectChanges();
+        flush();
+      }).toThrowError(/^cdkDragHandle must be attached to an element node/);
     }));
 
   });
@@ -4209,6 +4216,13 @@ describe('CdkDrag', () => {
       expect(spy).not.toHaveBeenCalled();
     }));
 
+    it('should throw if drop list is attached to an ng-container', fakeAsync(() => {
+      expect(() => {
+        createComponent(DropListOnNgContainer).detectChanges();
+        flush();
+      }).toThrowError(/^cdkDropList must be attached to an element node/);
+    }));
+
   });
 
   describe('in a connected drop container', () => {
@@ -6199,6 +6213,24 @@ class NestedDropListGroups {
   `
 })
 class DraggableOnNgContainer {}
+
+
+@Component({
+  template: `
+    <div cdkDrag>
+      <ng-container cdkDragHandle></ng-container>
+    </div>
+  `
+})
+class DragHandleOnNgContainer {}
+
+
+@Component({
+  template: `
+    <ng-container cdkDropList></ng-container>
+  `
+})
+class DropListOnNgContainer {}
 
 
 @Component({
