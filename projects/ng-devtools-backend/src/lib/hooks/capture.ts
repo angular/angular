@@ -1,15 +1,15 @@
-import { DirectiveForestObserver, Hooks } from './observer';
+import { DirectiveForestHooks, Hooks } from './hooks';
 import { ElementPosition, ProfilerFrame, ElementProfile, DirectiveProfile, LifecycleProfile } from 'protocol';
 import { runOutsideAngular, isCustomElement } from '../utils';
 import { getDirectiveName } from '../highlighter';
 import { ComponentTreeNode } from '../component-tree';
-import { initializeOrGetDirectiveForestObserver } from '.';
+import { initializeOrGetDirectiveForestHooks } from '.';
 
 let inProgress = false;
 let inChangeDetection = false;
 let eventMap: Map<any, DirectiveProfile>;
 let frameDuration = 0;
-let observerHooks: Partial<Hooks> = {};
+let hooks: Partial<Hooks> = {};
 
 export const start = (onFrame: (frame: ProfilerFrame) => void): void => {
   if (inProgress) {
@@ -17,15 +17,15 @@ export const start = (onFrame: (frame: ProfilerFrame) => void): void => {
   }
   eventMap = new Map<any, DirectiveProfile>();
   inProgress = true;
-  observerHooks = getObserverHooks(onFrame);
-  initializeOrGetDirectiveForestObserver().subscribe(observerHooks);
+  hooks = getHooks(onFrame);
+  initializeOrGetDirectiveForestHooks().subscribe(hooks);
 };
 
 export const stop = (): ProfilerFrame => {
-  const observer = initializeOrGetDirectiveForestObserver();
-  const result = flushBuffer(observer);
-  initializeOrGetDirectiveForestObserver().unsubscribe(observerHooks);
-  observerHooks = {};
+  const directiveForestHooks = initializeOrGetDirectiveForestHooks();
+  const result = flushBuffer(directiveForestHooks);
+  initializeOrGetDirectiveForestHooks().unsubscribe(hooks);
+  hooks = {};
   inProgress = false;
   return result;
 };
@@ -42,7 +42,7 @@ const getEventStart = (map: { [key: string]: number }, directive: any, label: st
   return map[key];
 };
 
-const getObserverHooks = (onFrame: (frame: ProfilerFrame) => void) => {
+const getHooks = (onFrame: (frame: ProfilerFrame) => void) => {
   const timeStartMap: { [key: string]: number } = {};
   return {
     // We flush here because it's possible the current node to overwrite
@@ -63,7 +63,7 @@ const getObserverHooks = (onFrame: (frame: ProfilerFrame) => void) => {
         runOutsideAngular(() => {
           Promise.resolve().then(() => {
             inChangeDetection = false;
-            onFrame(flushBuffer(initializeOrGetDirectiveForestObserver(), source));
+            onFrame(flushBuffer(initializeOrGetDirectiveForestHooks(), source));
           });
         });
       }
@@ -196,14 +196,14 @@ const prepareInitialFrame = (source: string, duration: number) => {
     duration,
     directives: [],
   };
-  const observer = initializeOrGetDirectiveForestObserver();
-  const directiveForest = observer.getDirectiveForest();
+  const directiveForestHooks = initializeOrGetDirectiveForestHooks();
+  const directiveForest = directiveForestHooks.getDirectiveForest();
   const traverse = (node: ComponentTreeNode, children = frame.directives) => {
     let position: ElementPosition | undefined;
     if (node.component) {
-      position = observer.getDirectivePosition(node.component.instance);
+      position = directiveForestHooks.getDirectivePosition(node.component.instance);
     } else {
-      position = observer.getDirectivePosition(node.directives[0].instance);
+      position = directiveForestHooks.getDirectivePosition(node.directives[0].instance);
     }
     if (position === undefined) {
       return;
@@ -235,12 +235,12 @@ const prepareInitialFrame = (source: string, duration: number) => {
   return frame;
 };
 
-const flushBuffer = (obs: DirectiveForestObserver, source: string = '') => {
+const flushBuffer = (directiveForestHooks: DirectiveForestHooks, source: string = '') => {
   const items = Array.from(eventMap.keys());
   const positions: ElementPosition[] = [];
   const positionDirective = new Map<ElementPosition, any>();
   items.forEach((dir) => {
-    const position = obs.getDirectivePosition(dir);
+    const position = directiveForestHooks.getDirectivePosition(dir);
     if (position === undefined) {
       return;
     }
