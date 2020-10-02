@@ -1066,6 +1066,33 @@ describe('MatSelect', () => {
           expect(options[1].getAttribute('aria-disabled')).toEqual('false');
           expect(options[2].getAttribute('aria-disabled')).toEqual('false');
         }));
+
+        it('should remove the active state from options that have been deselected while closed',
+          fakeAsync(() => {
+            let activeOptions = options.filter(option => option.classList.contains('mat-active'));
+            expect(activeOptions).toEqual([options[0]],
+                'Expected first option to have active styles.');
+
+            options[1].click();
+            fixture.detectChanges();
+            trigger.click();
+            fixture.detectChanges();
+            flush();
+
+            activeOptions = options.filter(option => option.classList.contains('mat-active'));
+            expect(activeOptions).toEqual([options[1]],
+              'Expected only selected option to be marked as active after it is clicked.');
+
+            fixture.componentInstance.control.setValue(fixture.componentInstance.foods[7].value);
+            fixture.detectChanges();
+            trigger.click();
+            fixture.detectChanges();
+            flush();
+
+            activeOptions = options.filter(option => option.classList.contains('mat-active'));
+            expect(activeOptions).toEqual([options[7]],
+              'Expected only selected option to be marked as active after the value has changed.');
+          }));
       });
 
       describe('for option groups', () => {

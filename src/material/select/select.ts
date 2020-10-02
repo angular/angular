@@ -813,16 +813,17 @@ export abstract class _MatSelectBase<C> extends _MatSelectMixinBase implements A
    * found with the designated value, the select trigger is cleared.
    */
   private _setSelectionByValue(value: any | any[]): void {
+    this._selectionModel.selected.forEach(option => option.setInactiveStyles());
+    this._selectionModel.clear();
+
     if (this.multiple && value) {
       if (!Array.isArray(value) && (typeof ngDevMode === 'undefined' || ngDevMode)) {
         throw getMatSelectNonArrayValueError();
       }
 
-      this._selectionModel.clear();
       value.forEach((currentValue: any) => this._selectValue(currentValue));
       this._sortValues();
     } else {
-      this._selectionModel.clear();
       const correspondingOption = this._selectValue(value);
 
       // Shift focus to the active item. Note that we shouldn't do this in multiple
