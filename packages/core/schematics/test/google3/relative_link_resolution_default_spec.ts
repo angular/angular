@@ -85,7 +85,7 @@ describe('Google3 relativeLinkResolution TSLint rule', () => {
 
     runTSLint(true);
     expect(getFile('/index.ts'))
-        .toContain(`RouterModule.forRoot([], { relativeLinkResolution: "legacy" })`);
+        .toContain(`RouterModule.forRoot([], { relativeLinkResolution: 'legacy' })`);
   });
 
   it('should migrate options without relativeLinkResolution', () => {
@@ -103,7 +103,7 @@ describe('Google3 relativeLinkResolution TSLint rule', () => {
 
     runTSLint(true);
     expect(getFile('/index.ts'))
-        .toContain(`RouterModule.forRoot([], { useHash: true, relativeLinkResolution: "legacy" })`);
+        .toContain(`RouterModule.forRoot([], { useHash: true, relativeLinkResolution: 'legacy' })`);
   });
 
   it('should not migrate options containing relativeLinkResolution', () => {
@@ -133,7 +133,7 @@ describe('Google3 relativeLinkResolution TSLint rule', () => {
     runTSLint(true);
     expect(getFile('/index.ts'))
         .toContain(
-            `const options = { useHash: true, relativeLinkResolution: "legacy" } as ExtraOptions;`);
+            `const options = { useHash: true, relativeLinkResolution: 'legacy' } as ExtraOptions;`);
   });
 
   it('should migrate when options is a variable', () => {
@@ -145,7 +145,7 @@ describe('Google3 relativeLinkResolution TSLint rule', () => {
     runTSLint(true);
     expect(getFile('/index.ts'))
         .toContain(
-            `const options: ExtraOptions = { useHash: true, relativeLinkResolution: "legacy" };`);
+            `const options: ExtraOptions = { useHash: true, relativeLinkResolution: 'legacy' };`);
   });
 
   it('should migrate when options is a variable with no type', () => {
@@ -166,7 +166,7 @@ describe('Google3 relativeLinkResolution TSLint rule', () => {
 
     runTSLint(true);
     expect(getFile('/index.ts'))
-        .toContain(`const options = { useHash: true, relativeLinkResolution: "legacy" };`);
+        .toContain(`const options = { useHash: true, relativeLinkResolution: 'legacy' };`);
     expect(getFile('/index.ts')).toContain(`RouterModule.forRoot([], options)`);
   });
 
@@ -179,7 +179,7 @@ describe('Google3 relativeLinkResolution TSLint rule', () => {
     runTSLint(true);
     expect(getFile('/index.ts'))
         .toContain(
-            `const options: RouterExtraOptions = { useHash: true, relativeLinkResolution: "legacy" };`);
+            `const options: RouterExtraOptions = { useHash: true, relativeLinkResolution: 'legacy' };`);
   });
 
   it('should migrate aliased RouterModule.forRoot', () => {
@@ -197,6 +197,6 @@ describe('Google3 relativeLinkResolution TSLint rule', () => {
 
     runTSLint(true);
     expect(getFile('/index.ts'))
-        .toContain(`AngularRouterModule.forRoot([], { relativeLinkResolution: "legacy" }),`);
+        .toContain(`AngularRouterModule.forRoot([], { relativeLinkResolution: 'legacy' }),`);
   });
 });
