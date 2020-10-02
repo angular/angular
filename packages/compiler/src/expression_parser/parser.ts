@@ -1057,8 +1057,8 @@ export class _ParseAST {
    * parseChain() is always the root production and it expects a ';'.
    *
    * Furthermore, the presence of a stateful context can add more recovery points.
-   *   - in a `writeContext`, we are able to recover after seeing the `=` operator, which signals
-   *     the presence of an independent rvalue expression following the `=` operator.
+   *   - in a `Writable` context, we are able to recover after seeing the `=` operator, which
+   *     signals the presence of an independent rvalue expression following the `=` operator.
    *
    * If a production expects one of these token it increments the corresponding nesting count,
    * and then decrements it just prior to checking if the token is in the input.
