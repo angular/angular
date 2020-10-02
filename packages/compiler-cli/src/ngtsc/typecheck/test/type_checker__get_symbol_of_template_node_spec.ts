@@ -1274,7 +1274,7 @@ runInEachFileSystem(() => {
       it('element with directive matches', () => {
         const fileName = absoluteFrom('/main.ts');
         const dirFile = absoluteFrom('/dir.ts');
-        const {program, templateTypeChecker} = setup(
+        const {program, templateTypeChecker, componentScopeReader} = setup(
             [
               {
                 fileName,
@@ -1327,6 +1327,11 @@ runInEachFileSystem(() => {
         const expectedSelectors = ['[dir]', '[dir2]', 'div'].sort();
         const actualSelectors = symbol.directives.map(dir => dir.selector).sort();
         expect(actualSelectors).toEqual(expectedSelectors);
+
+        // Testing this fully requires an integration test with a real `NgCompiler` (like in the
+        // Language Service, which uses the ngModule name for quick info). However, this path does
+        // assert that we are able to handle when the scope reader returns `null` or `'error'`.
+        expect(symbol.directives[0].ngModule).toEqual(null);
       });
     });
 

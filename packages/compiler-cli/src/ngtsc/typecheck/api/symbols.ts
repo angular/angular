@@ -10,6 +10,7 @@ import {TmplAstElement, TmplAstReference, TmplAstTemplate, TmplAstVariable} from
 import * as ts from 'typescript';
 
 import {AbsoluteFsPath} from '../../file_system';
+import {ClassDeclaration} from '../../reflection';
 
 export enum SymbolKind {
   Input,
@@ -238,6 +239,9 @@ export interface DirectiveSymbol {
 
   /** `true` if this `DirectiveSymbol` is for a @Component. */
   isComponent: boolean;
+
+  /** The `NgModule` that this directive is declared in or `null` if it could not be determined. */
+  ngModule: ClassDeclaration|null;
 }
 
 /**

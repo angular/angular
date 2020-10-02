@@ -15,6 +15,7 @@ import {AbsoluteModuleStrategy, LocalIdentifierStrategy, LogicalProjectStrategy,
 import {NOOP_INCREMENTAL_BUILD} from '../../incremental';
 import {ClassPropertyMapping} from '../../metadata';
 import {ClassDeclaration, isNamedClassDeclaration, TypeScriptReflectionHost} from '../../reflection';
+import {ComponentScopeReader} from '../../scope';
 import {makeProgram} from '../../testing';
 import {getRootDirs} from '../../util/src/typescript';
 import {ProgramTypeCheckAdapter, TemplateTypeChecker, TypeCheckContext} from '../api';
@@ -404,9 +405,18 @@ export function setup(targets: TypeCheckingTarget[], overrides: {
     (programStrategy as any).supportsInlineOperations = overrides.inlining;
   }
 
+  const stubScopeReader = {
+    getRequiresRemoteScope() {
+      return null;
+    },
+    getScopeForComponent() {
+      return 'error' as const;
+    }
+  };
+
   const templateTypeChecker = new TemplateTypeCheckerImpl(
       program, programStrategy, checkAdapter, fullConfig, emitter, reflectionHost, host,
-      NOOP_INCREMENTAL_BUILD);
+      NOOP_INCREMENTAL_BUILD, stubScopeReader);
   return {
     templateTypeChecker,
     program,
