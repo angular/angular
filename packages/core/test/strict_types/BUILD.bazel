@@ -1,7 +1,6 @@
 package(default_visibility = ["//visibility:private"])
 
-load("@npm_bazel_typescript//:index.bzl", "ts_config")
-load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
+load("//tools:defaults.bzl", "jasmine_node_test", "ts_config", "ts_library")
 
 ts_config(
     name = "tsconfig",

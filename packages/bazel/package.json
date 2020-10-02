@@ -19,12 +19,6 @@
       }
     }
   },
-  "bazelWorkspaces": {
-    "npm_angular_bazel": {
-      "version": "0.0.0-PLACEHOLDER",
-      "rootPath": "."
-    }
-  },
   "dependencies": {
     "@microsoft/api-extractor": "^7.7.13",
     "shelljs": "0.8.2",
