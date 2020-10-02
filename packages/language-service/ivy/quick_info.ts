@@ -143,9 +143,14 @@ export class QuickInfoBuilder {
       ts.QuickInfo {
     const kind = dir.isComponent ? QuickInfoKind.COMPONENT : QuickInfoKind.DIRECTIVE;
     const documentation = this.getDocumentationFromTypeDefAtLocation(dir.shimLocation);
+    let containerName: string|undefined;
+    if (ts.isClassDeclaration(dir.tsSymbol.valueDeclaration) && dir.ngModule !== null) {
+      containerName = dir.ngModule.name.getText();
+    }
+
     return createQuickInfo(
-        this.typeChecker.typeToString(dir.tsType), kind, getTextSpanOfNode(node),
-        undefined /* containerName */, undefined, documentation);
+        this.typeChecker.typeToString(dir.tsType), kind, getTextSpanOfNode(node), containerName,
+        undefined, documentation);
   }
 
   private getDocumentationFromTypeDefAtLocation(shimLocation: ShimLocation):

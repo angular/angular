@@ -47,9 +47,7 @@ describe('quick info', () => {
       expectQuickInfo({
         templateOverride: `<div string-model¦></div>`,
         expectedSpanText: 'string-model',
-        // TODO(atscott): Find a way to include the module
-        // expectedDisplayParts: '(directive) AppModule.StringModel'
-        expectedDisplayString: '(directive) StringModel'
+        expectedDisplayString: '(directive) AppModule.StringModel'
       });
     });
 
@@ -57,9 +55,7 @@ describe('quick info', () => {
       const {documentation} = expectQuickInfo({
         templateOverride: `<t¦est-comp></test-comp>`,
         expectedSpanText: '<test-comp></test-comp>',
-        // TODO(atscott): Find a way to include the module
-        // expectedDisplayParts: '(component) AppModule.TestComponent'
-        expectedDisplayString: '(component) TestComponent'
+        expectedDisplayString: '(component) AppModule.TestComponent'
       });
       expect(toText(documentation)).toBe('This Component provides the `test-comp` selector.');
     });
