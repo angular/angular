@@ -6,13 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ComponentHarness, HarnessPredicate} from '@angular/cdk/testing';
+import {ContentContainerComponentHarness, HarnessPredicate} from '@angular/cdk/testing';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {ButtonHarnessFilters} from './button-harness-filters';
 
 
 /** Harness for interacting with a standard mat-button in tests. */
-export class MatButtonHarness extends ComponentHarness {
+export class MatButtonHarness extends ContentContainerComponentHarness {
   // TODO(jelbourn) use a single class, like `.mat-button-base`
   /** The selector for the host element of a `MatButton` instance. */
   static hostSelector = [

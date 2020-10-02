@@ -2,7 +2,7 @@ export interface ButtonHarnessFilters extends BaseHarnessFilters {
     text?: string | RegExp;
 }
 
-export declare class MatButtonHarness extends ComponentHarness {
+export declare class MatButtonHarness extends ContentContainerComponentHarness {
     blur(): Promise<void>;
     click(relativeX: number, relativeY: number): Promise<void>;
     click(location: 'center'): Promise<void>;

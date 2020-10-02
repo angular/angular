@@ -5,6 +5,8 @@ import {Component} from '@angular/core';
 import {ComponentFixture, inject, TestBed} from '@angular/core/testing';
 import {MatButtonModule} from '@angular/material/button';
 import {MatButtonHarness} from '@angular/material/button/testing/button-harness';
+import {MatIconModule} from '@angular/material/icon';
+import {MatIconHarness} from '@angular/material/icon/testing/icon-harness';
 
 /** Shared tests to run on both the original and MDC-based buttons. */
 export function runHarnessTests(
@@ -15,7 +17,7 @@ export function runHarnessTests(
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [buttonModule, PlatformModule],
+      imports: [buttonModule, MatIconModule, PlatformModule],
       declarations: [ButtonHarnessTest],
     }).compileComponents();
 
@@ -30,7 +32,7 @@ export function runHarnessTests(
 
   it('should load all button harnesses', async () => {
     const buttons = await loader.getAllHarnesses(buttonHarness);
-    expect(buttons.length).toBe(14);
+    expect(buttons.length).toBe(15);
   });
 
   it('should load button with exact text', async () => {
@@ -96,6 +98,17 @@ export function runHarnessTests(
 
     expect(fixture.componentInstance.clicked).toBe(false);
   });
+
+  it('should be able to handle nested harnesses', async () => {
+    const homeBtn = await loader.getHarness(buttonHarness.with({selector: '#home-icon'}));
+    const favBtn = await loader.getHarness(buttonHarness.with({selector: '#favorite-icon'}));
+
+    const homeIcon = await homeBtn.getHarness(MatIconHarness);
+    const favIcon = await favBtn.getHarness(MatIconHarness);
+
+    expect(await homeIcon.getName()).toBe('home');
+    expect(await favIcon.getName()).toBe('favorite');
+  });
 }
 
 @Component({
@@ -110,7 +123,12 @@ export function runHarnessTests(
     </button>
     <button id="raised" type="button" mat-raised-button>Raised button</button>
     <button id="stroked" type="button" mat-stroked-button>Stroked button</button>
-    <button id="icon" type="button" mat-icon-button>Icon button</button>
+    <button id="home-icon" type="button" mat-icon-button>
+      <mat-icon>home</mat-icon>
+    </button>
+    <button id="favorite-icon" type="button" mat-icon-button>
+      <mat-icon>favorite</mat-icon>
+    </button>
     <button id="fab" type="button" mat-fab>Fab button</button>
     <button id="mini-fab" type="button" mat-mini-fab>Mini Fab button</button>
 
