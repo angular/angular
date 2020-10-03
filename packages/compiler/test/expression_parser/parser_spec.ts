@@ -146,6 +146,38 @@ describe('parser', () => {
       });
     });
 
+    describe('property write', () => {
+      it('should parse property writes', () => {
+        checkAction('a.a = 1 + 2');
+        checkAction('this.a.a = 1 + 2', 'a.a = 1 + 2');
+        checkAction('a.a.a = 1 + 2');
+      });
+
+      describe('malformed property writes', () => {
+        it('should recover on empty rvalues', () => {
+          checkActionWithError('a.a = ', 'a.a = ', 'Unexpected end of expression');
+        });
+
+        it('should recover on incomplete rvalues', () => {
+          checkActionWithError('a.a = 1 + ', 'a.a = 1 + ', 'Unexpected end of expression');
+        });
+
+        it('should recover on missing properties', () => {
+          checkActionWithError(
+              'a. = 1', 'a. = 1', 'Expected identifier for property access at column 2');
+        });
+
+        it('should error on writes after a property write', () => {
+          const ast = parseAction('a.a = 1 = 2');
+          expect(unparse(ast)).toEqual('a.a = 1');
+          validate(ast);
+
+          expect(ast.errors.length).toBe(1);
+          expect(ast.errors[0].message).toContain('Unexpected token \'=\'');
+        });
+      });
+    });
+
     describe('method calls', () => {
       it('should parse method calls', () => {
         checkAction('fn()');
