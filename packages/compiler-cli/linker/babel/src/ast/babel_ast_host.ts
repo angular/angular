@@ -8,9 +8,7 @@
 
 import * as t from '@babel/types';
 
-import {FatalLinkerError} from '../../fatal_linker_error';
-import {AstHost, Range} from '../ast_host';
-import {assert} from '../utils';
+import {assert, AstHost, FatalLinkerError, Range} from '../../../../linker';
 
 /**
  * This implementation of `AstHost` is able to get information from Babel AST nodes.

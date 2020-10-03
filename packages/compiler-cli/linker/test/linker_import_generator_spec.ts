@@ -8,7 +8,7 @@
 import {LinkerImportGenerator} from '../src/linker_import_generator';
 
 const ngImport = {
-  type: 'ngImport'
+  ngImport: true
 };
 
 describe('LinkerImportGenerator<TExpression>', () => {

@@ -7,8 +7,8 @@
  */
 import * as t from '@babel/types';
 
+import {assert} from '../../../../linker';
 import {AstFactory, BinaryOperator, LeadingComment, ObjectLiteralProperty, SourceMapRange, TemplateLiteral, VariableDeclarationType} from '../../../../src/ngtsc/translator';
-import {assert} from '../utils';
 
 /**
  * A Babel flavored implementation of the AstFactory.

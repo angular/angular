@@ -5,8 +5,8 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-
 import {ImportGenerator, NamedImport} from '../../src/ngtsc/translator';
+import {FatalLinkerError} from './fatal_linker_error';
 
 /**
  * A class that is used to generate imports when translating from Angular Output AST to an AST to
@@ -31,7 +31,8 @@ export class LinkerImportGenerator<TExpression> implements ImportGenerator<TExpr
 
   private assertModuleName(moduleName: string): void {
     if (moduleName !== '@angular/core') {
-      throw new Error(`Unable to import from anything other than '@angular/core'`);
+      throw new FatalLinkerError(
+          this.ngImport, `Unable to import from anything other than '@angular/core'`);
     }
   }
 }
