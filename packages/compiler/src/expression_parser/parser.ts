@@ -848,7 +848,13 @@ export class _ParseAST {
   parseAccessMemberOrMethodCall(receiver: AST, isSafe: boolean = false): AST {
     const start = receiver.span.start;
     const nameStart = this.inputIndex;
-    const id = this.expectIdentifierOrKeyword();
+    const id = this.withContext(ParseContextFlags.Writable, () => {
+      const id = this.expectIdentifierOrKeyword();
+      if (id.length === 0) {
+        this.error(`Property access cannot be empty`, receiver.span.end);
+      }
+      return id;
+    });
     const nameSpan = this.sourceSpan(nameStart);
 
     if (this.consumeOptionalCharacter(chars.$LPAREN)) {
