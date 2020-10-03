@@ -10,7 +10,7 @@ import generate from '@babel/generator';
 import {expression, statement} from '@babel/template';
 import * as t from '@babel/types';
 
-import {BabelAstFactory} from '../../../src/ast/babel/babel_ast_factory';
+import {BabelAstFactory} from '../../src/ast/babel_ast_factory';
 
 describe('BabelAstFactory', () => {
   let factory: BabelAstFactory;

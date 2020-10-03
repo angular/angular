@@ -8,7 +8,7 @@
 import * as t from '@babel/types';
 import template from '@babel/template';
 import {parse} from '@babel/parser';
-import {BabelAstHost} from '../../../src/ast/babel/babel_ast_host';
+import {BabelAstHost} from '../../src/ast/babel_ast_host';
 
 describe('BabelAstHost', () => {
   let host: BabelAstHost;

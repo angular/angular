@@ -10,7 +10,7 @@
  * An unrecoverable error during linking.
  */
 export class FatalLinkerError extends Error {
-  private readonly type = 'FatalLinkerError';
+  readonly type = 'FatalLinkerError';
 
   /**
    * Create a new FatalLinkerError.
