@@ -728,6 +728,7 @@ jobs:
     steps:
       - custom_attach_workspace
       - init_environment
+      - install_java
         # Install
       - run: yarn --cwd packages/zone.js install --frozen-lockfile --non-interactive
         # Run zone.js tools tests
@@ -736,9 +737,11 @@ jobs:
       - run: yarn bazel build //packages/zone.js:npm_package &&
              cp dist/bin/packages/zone.js/npm_package/bundles/zone-mix.umd.js ./packages/zone.js/test/extra/ &&
              cp dist/bin/packages/zone.js/npm_package/bundles/zone-patch-electron.umd.js ./packages/zone.js/test/extra/ &&
-             yarn --cwd packages/zone.js electrontest
+             cp dist/bin/packages/zone.js/npm_package/bundles/zone.umd.js ./packages/zone.js/build/test/closure/zone.js
       - run: yarn --cwd packages/zone.js jest:test
       - run: yarn --cwd packages/zone.js jest:nodetest
+      - run: yarn --cwd packages/zone.js electrontest
+      - run: yarn --cwd packages/zone.js closuretest
       - run: yarn --cwd packages/zone.js/test/typings install --frozen-lockfile --non-interactive
       - run: yarn --cwd packages/zone.js/test/typings test
 
