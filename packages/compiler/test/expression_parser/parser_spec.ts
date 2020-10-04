@@ -735,11 +735,23 @@ describe('parser', () => {
       expect(parseInterpolation('nothing')).toBe(null);
     });
 
-    it('should not parse malformed interpolations as strings', () => {
-      const ast = parseInterpolation('{{a}} {{example}<!--->}')!.ast as Interpolation;
-      expect(ast.strings).toEqual(['', ' {{example}<!--->}']);
-      expect(ast.expressions.length).toEqual(1);
-      expect(ast.expressions[0].name).toEqual('a');
+    it('should parse mal-terminated interpolations', () => {
+      const ast = parseInterpolation('{{a}} {{example}<!--->}')!;
+      expect(unparse(ast)).toEqual('{{ a }} {{ example }}');
+      expectError(ast, 'Interpolation is not terminated with "}}" at columns 6-23');
+    });
+
+    it('should parse unterminated interpolations', () => {
+      const ast = parseInterpolation('{{a}} {{1 + 2 a b d')!;
+      expect(unparse(ast)).toEqual('{{ a }} {{ 1 + 2 }}');
+      expectError(ast, 'Interpolation is not terminated with "}}" at columns 6-19');
+    });
+
+    it('should parse multiple unterminated interpolations', () => {
+      const ast = parseInterpolation('{{a}} {{1 + 2 {{ b.c {{ d }}')!;
+      expect(unparse(ast)).toEqual('{{ a }} {{ 1 + 2 }}{{ b.c }}{{ d }}');
+      expectError(ast, 'Interpolation is not terminated with "}}" at columns 6-14');
+      expectError(ast, 'Interpolation is not terminated with "}}" at columns 14-21');
     });
 
     it('should parse no prefix/suffix interpolation', () => {

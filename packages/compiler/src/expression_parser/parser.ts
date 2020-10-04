@@ -245,15 +245,31 @@ export class Parser {
         // parse from starting {{ to ending }}
         const fullStart = i;
         const exprStart = fullStart + interpStart.length;
-        const exprEnd = input.indexOf(interpEnd, exprStart);
-        if (exprEnd === -1) {
-          // Could not find the end of the interpolation; do not parse an expression.
-          // Instead we should extend the content on the last raw string.
-          atInterpolation = false;
-          extendLastString = true;
-          break;
+
+        const nextInterpEnd = input.indexOf(interpEnd, exprStart);
+        const nextInterpStart = input.indexOf(interpStart, exprStart);
+        let exprEnd;
+        let fullEnd;  // end of interpolation including closing }}, if present
+        if (nextInterpEnd === -1 || (nextInterpStart !== -1 && nextInterpStart < nextInterpEnd)) {
+          // There are a couple cases when the interpolation is unterminated:
+          //   1. The unterminated interpolation is followed by another interpolation.
+          //      In this case parse the interpolation until the start of the next one.
+          //      {{ 1 + 2 {{ 3 + 4 }}
+          //      ^^^^^^^^^            first interpolation
+          //               ^^^^^^^^^^^ second interpolation
+          //   2. The unterminated interpolation rides out to the end of the input.
+          //      In this case parse the interpolation until the end of the input.
+          //      {{ 1 + 2
+          //      ^^^^^^^^ parsed interpolation
+          exprEnd = nextInterpStart !== -1 ? nextInterpStart : input.length;
+          fullEnd = exprEnd;
+          this._reportError(
+              `Interpolation is not terminated with "${interpEnd}"`, input,
+              `at columns ${fullStart}-${fullEnd} in`, location);
+        } else {
+          exprEnd = nextInterpEnd;
+          fullEnd = exprEnd + interpEnd.length;
         }
-        const fullEnd = exprEnd + interpEnd.length;
 
         const part = input.substring(exprStart, exprEnd);
         if (part.trim().length > 0) {
