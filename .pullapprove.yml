@@ -1114,6 +1114,7 @@ groups:
           'docs/DEBUG.md',
           'docs/DEBUG_COMPONENTS_REPO_IVY.md',
           'docs/DEVELOPER.md',
+          'docs/FIXUP_COMMITS.md',
           'docs/GITHUB_PROCESS.md',
           'docs/PR_REVIEW.md',
           'docs/SAVED_REPLIES.md',

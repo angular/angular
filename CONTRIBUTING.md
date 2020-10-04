@@ -107,7 +107,7 @@ Before you submit your Pull Request (PR) consider the following guidelines:
    Adherence to these conventions is necessary because release notes are automatically generated from these messages.
 
      ```shell
-     git commit -a
+     git commit --all
      ```
     Note: the optional commit `-a` command line option will automatically "add" and "rm" edited files.
 
@@ -119,16 +119,31 @@ Before you submit your Pull Request (PR) consider the following guidelines:
 
 11. In GitHub, send a pull request to `angular:master`.
 
-   If we ask for changes via code reviews then:
 
-   * Make the required updates.
-   * Re-run the Angular test suites to ensure tests are still passing.
-   * Rebase your branch and force push to your GitHub repository (this will update your Pull Request):
+#### Addressing review feedback
 
-      ```shell
-      git rebase master -i
-      git push -f
-      ```
+If we ask for changes via code reviews then:
+
+1. Make the required updates to the code.
+
+2. Re-run the Angular test suites to ensure tests are still passing.
+
+3. Create a fixup commit and push to your GitHub repository (this will update your Pull Request):
+
+    ```shell
+    git commit --all --fixup HEAD
+    git push
+    ```
+
+    For more info on working with fixup commits see [here](docs/FIXUP_COMMITS.md).
+
+> Fixup commits (as shown above) are preferred when addressing review feedback, but in some cases you may need to amend the original commit instead of creating a fixup commit (for example, if you want to update the commit message).
+> To amend the last commit and update the Pull Request:
+>
+> ```shell
+> git commit --all --amend
+> git push --force-with-lease
+> ```
 
 That's it! Thank you for your contribution!
 
