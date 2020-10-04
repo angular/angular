@@ -283,7 +283,12 @@ export class NativeDateAdapter extends DateAdapter<Date> {
 
   /** Creates a date but allows the month and date to overflow. */
   private _createDateWithOverflow(year: number, month: number, date: number) {
-    return this._correctYear(new Date(year, month, date), year);
+    // Passing the year to the constructor causes year numbers <100 to be converted to 19xx.
+    // To work around this we use `setFullYear` and `setHours` instead.
+    const d = new Date();
+    d.setFullYear(year, month, date);
+    d.setHours(0, 0, 0, 0);
+    return d;
   }
 
   /**
@@ -318,22 +323,11 @@ export class NativeDateAdapter extends DateAdapter<Date> {
    * @returns A Date object with its UTC representation based on the passed in date info
    */
   private _format(dtf: Intl.DateTimeFormat, date: Date) {
-    const year = date.getFullYear();
-    const d = new Date(Date.UTC(
-        year, date.getMonth(), date.getDate(), date.getHours(),
-        date.getMinutes(), date.getSeconds(), date.getMilliseconds()));
-    return dtf.format(this._correctYear(d, year));
-  }
-
-  /**
-   * Corrects the year of a date, accounting for the fact that JS
-   * native Date treats years between 0 and 99 as abbreviations for 19xx.
-   */
-  private _correctYear(date: Date, intendedYear: number): Date {
-    if (intendedYear >= 0 && intendedYear < 100) {
-      date.setFullYear(this.getYear(date) - 1900);
-    }
-
-    return date;
+    // Passing the year to the constructor causes year numbers <100 to be converted to 19xx.
+    // To work around this we use `setUTCFullYear` and `setUTCHours` instead.
+    const d = new Date();
+    d.setUTCFullYear(date.getFullYear(), date.getMonth(), date.getDate());
+    d.setUTCHours(date.getHours(), date.getMinutes(), date.getSeconds(), date.getMilliseconds());
+    return dtf.format(d);
   }
 }

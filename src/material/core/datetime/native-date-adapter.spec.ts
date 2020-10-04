@@ -152,7 +152,7 @@ describe('NativeDateAdapter', () => {
     expect(adapter.getYearName(new Date(2017, JAN, 1))).toBe('2017');
   });
 
-  it('should year name for low year numbers', () => {
+  it('should get year name for low year numbers', () => {
     const createAndFormat = (year: number) => {
       return adapter.getYearName(adapter.createDate(year, JAN, 1));
     };
