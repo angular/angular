@@ -12,6 +12,11 @@
 * **zone.js:** zone.js toString patch should check typeof Promise is function ([#38350](https://github.com/angular/angular/issues/38350)) ([18e474f](https://github.com/angular/angular/commit/18e474f)), closes [#38361](https://github.com/angular/angular/issues/38361)
 
 
+### Features
+
+* **zone.js:** add jest fakeTimers support ([#39016](https://github.com/angular/angular/issues/39016)) ([82d54fe](https://github.com/angular/angular/commit/82d54fe)), closes [#38851](https://github.com/angular/angular/issues/38851)
+
+
 ### BREAKING CHANGES
 
 * **zone.js:** ZoneJS no longer swallows errors produced by `Object.defineProperty` calls.
