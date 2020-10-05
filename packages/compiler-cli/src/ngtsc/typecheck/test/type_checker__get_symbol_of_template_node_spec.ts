@@ -1274,7 +1274,7 @@ runInEachFileSystem(() => {
       it('element with directive matches', () => {
         const fileName = absoluteFrom('/main.ts');
         const dirFile = absoluteFrom('/dir.ts');
-        const {program, templateTypeChecker, componentScopeReader} = setup(
+        const {program, templateTypeChecker} = setup(
             [
               {
                 fileName,
@@ -1304,7 +1304,11 @@ runInEachFileSystem(() => {
                 fileName: dirFile,
                 source: `
               export class TestDir {}
+              // Allow the fake ComponentScopeReader to return a module for TestDir
+              export class TestDirModule {}
               export class TestDir2 {}
+              // Allow the fake ComponentScopeReader to return a module for TestDir2
+              export class TestDir2Module {}
               export class TestDirAllDivs {}
             `,
                 templates: {},
@@ -1330,8 +1334,12 @@ runInEachFileSystem(() => {
 
         // Testing this fully requires an integration test with a real `NgCompiler` (like in the
         // Language Service, which uses the ngModule name for quick info). However, this path does
-        // assert that we are able to handle when the scope reader returns `null` or `'error'`.
-        expect(symbol.directives[0].ngModule).toEqual(null);
+        // assert that we are able to handle when the scope reader returns `null` or a class from
+        // the fake implementation.
+        const expectedModules = new Set([null, 'TestDirModule', 'TestDir2Module']);
+        const actualModules =
+            new Set(symbol.directives.map(dir => dir.ngModule?.name.getText() ?? null));
+        expect(actualModules).toEqual(expectedModules);
       });
     });
 

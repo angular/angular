@@ -143,7 +143,10 @@ export class SymbolBuilder {
 
   private getDirectiveModule(declaration: ts.ClassDeclaration): ClassDeclaration|null {
     const scope = this.componentScopeReader.getScopeForComponent(declaration as ClassDeclaration);
-    return scope === null || scope === 'error' ? null : scope.ngModule;
+    if (scope === null || scope === 'error') {
+      return null;
+    }
+    return scope.ngModule;
   }
 
   private getSymbolOfBoundEvent(eventBinding: TmplAstBoundEvent): OutputBindingSymbol|null {
