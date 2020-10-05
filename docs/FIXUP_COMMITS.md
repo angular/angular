@@ -81,7 +81,12 @@ The easiest way to re-order and squash any commit is via [rebasing interactively
 See the [`git` docs](https://git-scm.com/docs/git-rebase#Documentation/git-rebase.txt---autosquash) for more details.
 
 
-### Configuring `git` to auto-squash by default
+### Additional options
+
+You may like to consider some optional configurations:
+
+
+#### Configuring `git` to auto-squash by default
 
 By default, `git` will not automatically squash fixup commits when interactively rebasing.
 If you prefer to not have to pass the `--autosquash` option every time, you can change the default behavior by setting the `rebase.autoSquash` `git` config option to true.
