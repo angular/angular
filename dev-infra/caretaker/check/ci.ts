@@ -53,7 +53,7 @@ async function getStatusOfBranch(git: GitClient, branch: string): Promise<Status
   const url = `https://circleci.com/gh/${owner}/${name}/tree/${branch}.svg?style=shield`;
   const result = await fetch(url).then(result => result.text());
 
-  if (result) {
+  if (result && !result.includes('no builds')) {
     return {
       status: result.includes('passing') ? 'success' : 'failed',
     };
