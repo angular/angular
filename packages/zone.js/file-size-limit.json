@@ -1,14 +1,16 @@
 {
   "targets": [
     {
-      "path": "dist/zone-evergreen.min.js",
+      "path": "../../dist/zone.js-dist/zone.js/fesm2015/zone.js",
       "checkTarget": true,
-      "limit": 43000
+      "limit": 139000,
+      "gzipLimit": 26300
     },
     {
-      "path": "dist/zone.min.js",
+      "path": "../../dist/zone.js-dist/zone.js/bundles/zone.umd.js",
       "checkTarget": true,
-      "limit": 45000
+      "limit": 165000,
+      "gzipLimit": 31200
     }
   ]
 }

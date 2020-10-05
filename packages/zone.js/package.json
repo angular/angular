@@ -21,6 +21,7 @@
   },
   "scripts": {
     "electrontest": "cd test/extra && node electron.js",
+    "filesizetest": "node ./check-file-size.js",
     "jesttest": "jest --config ./test/jest/jest.config.js ./test/jest/jest.spec.js",
     "promisetest": "tsc -p . && node ./test/promise/promise-test.js",
     "promisefinallytest": "tsc -p . && mocha ./test/promise/promise.finally.spec.js"
