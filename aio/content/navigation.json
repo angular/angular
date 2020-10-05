@@ -128,7 +128,7 @@
             },
             {
               "url": "guide/inputs-outputs",
-              "title": "Inputs and Outputs",
+              "title": "Sharing data between child and parent directives and components",
               "tooltip": "Introductory guide to sharing data between parent and child directives or components."
             },
             {
