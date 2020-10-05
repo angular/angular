@@ -12,9 +12,9 @@ This document provides information and guidelines for working with fixup commits
 ## <a name="about-fixup-commits"></a> What are fixup commits
 
 At their core, fixup commits are just regular commits with a special commit message:
-The first line of their commit message starts with `fixup! ` (notice the space after `!`) followed by the first line of the commit message of an earlier commit (it doesn't have to be the immediately preceeding one).
+The first line of their commit message starts with "fixup! " (notice the space after "!") followed by the first line of the commit message of an earlier commit (it doesn't have to be the immediately preceding one).
 
-The purpose of a fixup commit is to "fix up" an earlier commit.
+The purpose of a fixup commit is to modify an earlier commit.
 I.e. it allows adding more changes in a new commit, but "marking" them as belonging to an earlier commit.
 `Git` provides tools to make it easy to squash fixup commits into the original commit at a later time (see [below](#squash-fixup-commits) for details).
 
@@ -39,7 +39,7 @@ fixup! feat: first commit
 
 So, when are fixup commits useful?
 
-Often times, when submitting a Pull Request, a reviewer might request changes.
+During the life of a Pull Request, a reviewer might request changes.
 The Pull Request author can make the requested changes and submit them for another review.
 Normally, these changes should be part of one of the original commits of the Pull Request.
 However, amending an existing commit with the changes makes it difficult for the reviewer to know exactly what has changed since the last time they reviewed the Pull Request.

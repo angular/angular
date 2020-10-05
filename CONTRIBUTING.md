@@ -107,7 +107,7 @@ Before you submit your Pull Request (PR) consider the following guidelines:
    Adherence to these conventions is necessary because release notes are automatically generated from these messages.
 
      ```shell
-     git commit -a
+     git commit --all
      ```
     Note: the optional commit `-a` command line option will automatically "add" and "rm" edited files.
 
@@ -131,7 +131,7 @@ If we ask for changes via code reviews then:
 3. Create a fixup commit and push to your GitHub repository (this will update your Pull Request):
 
     ```shell
-    git commit --fixup HEAD
+    git commit --all --fixup HEAD
     git push
     ```
 
