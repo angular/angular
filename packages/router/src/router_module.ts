@@ -10,11 +10,10 @@ import {APP_BASE_HREF, HashLocationStrategy, Location, LOCATION_INITIALIZED, Loc
 import {ANALYZE_FOR_ENTRY_COMPONENTS, APP_BOOTSTRAP_LISTENER, APP_INITIALIZER, ApplicationRef, Compiler, ComponentRef, Inject, Injectable, InjectionToken, Injector, ModuleWithProviders, NgModule, NgModuleFactoryLoader, NgProbeToken, Optional, Provider, SkipSelf, SystemJsNgModuleLoader} from '@angular/core';
 import {of, Subject} from 'rxjs';
 
-import {EmptyOutletComponent} from './components/empty_outlet';
 import {Route, Routes} from './config';
 import {RouterLink, RouterLinkWithHref} from './directives/router_link';
 import {RouterLinkActive} from './directives/router_link_active';
-import {RouterOutlet} from './directives/router_outlet';
+import {EmptyOutletComponent, RouterOutlet} from './directives/router_outlet';
 import {Event} from './events';
 import {RouteReuseStrategy} from './route_reuse_strategy';
 import {ErrorHandler, Router} from './router';

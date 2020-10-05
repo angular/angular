@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {EmptyOutletComponent} from '../components/empty_outlet';
 import {Route, Routes} from '../config';
+import {EmptyOutletComponent} from '../directives/router_outlet';
 import {PRIMARY_OUTLET} from '../shared';
 
 export function validateConfig(config: Routes, parentPath: string = ''): void {
