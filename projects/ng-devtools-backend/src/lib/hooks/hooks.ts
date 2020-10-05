@@ -6,7 +6,6 @@ import {
   getDirectiveHostElement,
   METADATA_PROPERTY_NAME,
 } from '../lview-transform';
-import { DEV_TOOLS_HIGHLIGHT_NODE_ID } from '../highlighter';
 import { Subject } from 'rxjs';
 
 export type CreationHook = (
@@ -185,13 +184,6 @@ export class DirectiveForestHooks {
     this._hooks.splice(this._hooks.indexOf(config), 1);
   }
 
-  private _onMutation(records: MutationRecord[]): void {
-    if (this._isDevToolsMutation(records)) {
-      return;
-    }
-    this.indexForest();
-  }
-
   private _fireCreationCallback(component: any, isComponent: boolean): void {
     const position = this._tracker.getDirectivePosition(component);
     const id = this._tracker.getDirectiveId(component);
@@ -283,18 +275,6 @@ export class DirectiveForestHooks {
     });
   }
 
-  private _isDevToolsMutation(records: MutationRecord[]): boolean {
-    for (const record of records) {
-      if (containsInternalElements(record.addedNodes)) {
-        return true;
-      }
-      if (containsInternalElements(record.removedNodes)) {
-        return true;
-      }
-    }
-    return false;
-  }
-
   private _onCreate(
     _: any,
     __: Node,
@@ -375,18 +355,3 @@ export class DirectiveForestHooks {
     });
   }
 }
-
-const containsInternalElements = (nodes: NodeList): boolean => {
-  // tslint:disable prefer-for-of
-  for (let i = 0; i < nodes.length; i++) {
-    const node = nodes[i];
-    if (!(node instanceof Element)) {
-      continue;
-    }
-    const attr = node.getAttribute('id');
-    if (attr === DEV_TOOLS_HIGHLIGHT_NODE_ID) {
-      return true;
-    }
-  }
-  return false;
-};
