@@ -97,7 +97,7 @@ const extractNodes = (lViewOrLContainer: any, nodes: ComponentTreeNode[] = []): 
   const lView = lViewOrLContainer;
   const tView = lView[LVIEW_TVIEW];
   for (let i = HEADER_OFFSET; i < lView.length; i++) {
-    if (lView[i] && lView[i][ELEMENT] instanceof Node) {
+    if (lView[i] && tView.data && lView[i][ELEMENT] instanceof Node) {
       const node = getNode(lView, tView.data, i);
 
       // TODO(mgechev): verify if this won't make us skip projected content.
