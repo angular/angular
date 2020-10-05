@@ -80,7 +80,7 @@ executors:
 
   windows-executor:
     working_directory: ~/ng
-    resource_class: windows.medium
+    resource_class: windows.2xlarge
     # CircleCI windows VMs do have the GitBash shell available:
     # https://github.com/CircleCI-Public/windows-preview-docs#shells
     # But in this specific case we really should not use it because Bazel must not be ran from
