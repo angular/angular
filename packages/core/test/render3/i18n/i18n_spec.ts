@@ -8,16 +8,14 @@
 
 import {ɵɵi18nAttributes, ɵɵi18nPostprocess, ɵɵi18nStart} from '@angular/core';
 import {getTranslationForTemplate} from '@angular/core/src/render3/i18n/i18n_parse';
+import {setDelayProjection, ɵɵelementEnd, ɵɵelementStart} from '../../../src/render3/instructions/all';
+import {I18nUpdateOpCodes, TI18n, TIcu} from '../../../src/render3/interfaces/i18n';
+import {TConstants} from '../../../src/render3/interfaces/node';
+import {HEADER_OFFSET, LView, TVIEW} from '../../../src/render3/interfaces/view';
+import {getNativeByIndex} from '../../../src/render3/util/view_utils';
+import {TemplateFixture} from '../render_util';
+import {debugMatch} from '../utils';
 
-import {noop} from '../../../compiler/src/render3/view/util';
-import {setDelayProjection, ɵɵelementEnd, ɵɵelementStart} from '../../src/render3/instructions/all';
-import {I18nUpdateOpCodes, TI18n, TIcu} from '../../src/render3/interfaces/i18n';
-import {TConstants} from '../../src/render3/interfaces/node';
-import {HEADER_OFFSET, LView, TVIEW} from '../../src/render3/interfaces/view';
-import {getNativeByIndex} from '../../src/render3/util/view_utils';
-
-import {TemplateFixture} from './render_util';
-import {debugMatch} from './utils';
 
 describe('Runtime i18n', () => {
   afterEach(() => {
