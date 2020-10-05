@@ -48,7 +48,7 @@
     "integration-tests:size-test": "bazel test //integration/size-test/...",
     "check-mdc-tests": "ts-node --project scripts/tsconfig.json scripts/check-mdc-tests.ts"
   },
-  "version": "11.0.0-next.0",
+  "version": "11.0.0-next.1",
   "dependencies": {
     "@angular/animations": "^10.1.0",
     "@angular/common": "^10.1.0",

@@ -1,3 +1,85 @@
+# 11.0.0-next.1 "zirconium-czar" (2020-10-05)
+
+### cdk
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **a11y:** cdkAriaLive default to polite ([#20672](https://github.com/angular/components/issues/20672)) ([1ac653f](https://github.com/angular/components/commit/1ac653f)), closes [#11618](https://github.com/angular/components/issues/11618) |
+| bug fix |  **a11y:** error if FocusMonitor is used on non-element nodes ([#20640](https://github.com/angular/components/issues/20640)) ([9edab81](https://github.com/angular/components/commit/9edab81)), closes [#20632](https://github.com/angular/components/issues/20632) |
+| bug fix |  **drag-drop:** throw if drop list or handle are set on a non-element node ([#20668](https://github.com/angular/components/issues/20668)) ([d4b505a](https://github.com/angular/components/commit/d4b505a)), closes [#13540](https://github.com/angular/components/issues/13540) |
+| bug fix |  **testing:** fix behavior in fakeAsync tests ([#20638](https://github.com/angular/components/issues/20638)) ([40fa9ff](https://github.com/angular/components/commit/40fa9ff)) |
+| bug fix |  **tree:** fix level for nested tree nodes ([#20226](https://github.com/angular/components/issues/20226)) ([f951bf4](https://github.com/angular/components/commit/f951bf4)) |
+| feature |  **coercion:** add coercion for string arrays ([#20652](https://github.com/angular/components/issues/20652)) ([a14eeb4](https://github.com/angular/components/commit/a14eeb4)) |
+| feature |  **table:** add API for registering no data row ([#20658](https://github.com/angular/components/issues/20658)) ([58341a7](https://github.com/angular/components/commit/58341a7)), closes [#20560](https://github.com/angular/components/issues/20560) |
+| feature |  **table:** fixed table layouts ([#20258](https://github.com/angular/components/issues/20258)) ([58e0c48](https://github.com/angular/components/commit/58e0c48)) |
+| feature |  **testing:** add getNativeElement to harness environments ([#20538](https://github.com/angular/components/issues/20538)) ([1328420](https://github.com/angular/components/commit/1328420)) |
+| feature |  **testing:** add the ability to select options inside a native select ([6de8ca3](https://github.com/angular/components/commit/6de8ca3)) |
+| feature |  **testing:** allow disabling & batching of change detection ([#20464](https://github.com/angular/components/issues/20464)) ([5562788](https://github.com/angular/components/commit/5562788)) |
+| feature |  **testing:** make MatButtonHarness extend ContentContainerComponentHarness ([#20653](https://github.com/angular/components/issues/20653)) ([8cacf64](https://github.com/angular/components/commit/8cacf64)) |
+| performance |  **testing:** Improve performance of clicking in unit tests. ([#20441](https://github.com/angular/components/issues/20441)) ([5b725d6](https://github.com/angular/components/commit/5b725d6)) |
+
+### material
+
+_Breaking changes:_
+
+* **snack-bar:** matSnackBarHarness.getRole() replaced with .getAriaLive() due to using aria-live
+rather than the alert and status roles.
+* Deprecated month constants from `@angular/material/core` have been
+removed. These have been accidentally published in the past while they
+were only intended for internal consumption in tests.
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **core:** incorrectly formatting dates in the years 0 to 99 ([#20612](https://github.com/angular/components/issues/20612)) ([dd49fa6](https://github.com/angular/components/commit/dd49fa6)), closes [#20418](https://github.com/angular/components/issues/20418) |
+| bug fix |  **datepicker:** fix handling of short years ([#20709](https://github.com/angular/components/issues/20709)) ([b3f1fb3](https://github.com/angular/components/commit/b3f1fb3)) |
+| bug fix |  **menu:** open animation not working on repeat opens ([#20382](https://github.com/angular/components/issues/20382)) ([ea628c9](https://github.com/angular/components/commit/ea628c9)), closes [#20379](https://github.com/angular/components/issues/20379) |
+| bug fix |  **select:** option active styling not removed when value is changed programmatically ([#20649](https://github.com/angular/components/issues/20649)) ([c4078aa](https://github.com/angular/components/commit/c4078aa)), closes [#19970](https://github.com/angular/components/issues/19970) [#19970](https://github.com/angular/components/issues/19970) |
+| bug fix |  **snack-bar:** flaky screen reader announcements for NVDA/JAWS ([#20487](https://github.com/angular/components/issues/20487)) ([cf8e8ee](https://github.com/angular/components/commit/cf8e8ee)) |
+| feature |  **autocomplete:** add panelClass default option ([#20429](https://github.com/angular/components/issues/20429)) ([3c2334c](https://github.com/angular/components/commit/3c2334c)) |
+| feature |  **datepicker:** add viewChanged output to calendar ([#13759](https://github.com/angular/components/issues/13759)) ([#20468](https://github.com/angular/components/issues/20468)) ([dfdf5cf](https://github.com/angular/components/commit/dfdf5cf)) |
+| feature |  **drag-drop:** add predicate function for whether an item can be sorted into an index ([#20389](https://github.com/angular/components/issues/20389)) ([d14d986](https://github.com/angular/components/commit/d14d986)), closes [#19436](https://github.com/angular/components/issues/19436) |
+| feature |  **stepper:** add theming support ([#20424](https://github.com/angular/components/issues/20424)) ([e545b56](https://github.com/angular/components/commit/e545b56)), closes [#20416](https://github.com/angular/components/issues/20416) |
+| feature |  **tree:** add test harness for MatTree ([#20323](https://github.com/angular/components/issues/20323)) ([5916800](https://github.com/angular/components/commit/5916800)) |
+| refactor |  remove month constants from core ([#18111](https://github.com/angular/components/issues/18111)) ([98d4799](https://github.com/angular/components/commit/98d4799)) |
+
+### youtube-player
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  YT.Player is not a constructor ([#20616](https://github.com/angular/components/issues/20616)) ([b0d0388](https://github.com/angular/components/commit/b0d0388)), closes [#20598](https://github.com/angular/components/issues/20598) [angular#20598](https://github.com/angular/issues/20598) |
+
+### cdk-experimental
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **combobox:** not cleaning up overlay on destroy ([#20407](https://github.com/angular/components/issues/20407)) ([6d1a259](https://github.com/angular/components/commit/6d1a259)) |
+| feature |  **menu:** add ability to open menus from a standalone trigger ([#20363](https://github.com/angular/components/issues/20363)) ([de98466](https://github.com/angular/components/commit/de98466)) |
+| feature |  **menu:** add smart aim functionality to the menu ([#20442](https://github.com/angular/components/issues/20442)) ([fb8721a](https://github.com/angular/components/commit/fb8721a)) |
+
+### material-experimental
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **mdc-button:** align public API with material/button ([#20679](https://github.com/angular/components/issues/20679)) ([55b74e3](https://github.com/angular/components/commit/55b74e3)) |
+| bug fix |  **mdc-core:** active option not visible in high contrast mode ([#20396](https://github.com/angular/components/issues/20396)) ([23b4c88](https://github.com/angular/components/commit/23b4c88)) |
+| bug fix |  **mdc-core:** expose same symbols as material/core ([#20664](https://github.com/angular/components/issues/20664)) ([4f77679](https://github.com/angular/components/commit/4f77679)) |
+| bug fix |  **mdc-core:** option text not centered on IE11 ([#20626](https://github.com/angular/components/issues/20626)) ([4b37b98](https://github.com/angular/components/commit/4b37b98)) |
+| bug fix |  **mdc-dialog:** blending in with background in high contrast mode ([#20387](https://github.com/angular/components/issues/20387)) ([1219b1e](https://github.com/angular/components/commit/1219b1e)) |
+| bug fix |  **mdc-form-field:** not adding mat-primary theme class ([#20605](https://github.com/angular/components/issues/20605)) ([d8def8b](https://github.com/angular/components/commit/d8def8b)) |
+| bug fix |  **mdc-snack-bar:** button pushed outside container ([#20696](https://github.com/angular/components/issues/20696)) ([50d3f29](https://github.com/angular/components/commit/50d3f29)), closes [#20690](https://github.com/angular/components/issues/20690) |
+| bug fix |  **mdc-snack-bar:** not aligned correctly on IE11 ([#20690](https://github.com/angular/components/issues/20690)) ([c9fcbef](https://github.com/angular/components/commit/c9fcbef)) |
+| feature |  **mdc-paginator:** add test harness ([#20686](https://github.com/angular/components/issues/20686)) ([49a57bc](https://github.com/angular/components/commit/49a57bc)) |
+| feature |  **mdc-paginator:** implement MDC-based paginator ([#20607](https://github.com/angular/components/issues/20607)) ([d87ae3c](https://github.com/angular/components/commit/d87ae3c)) |
+| feature |  **mdc-select:** add test harness ([#20603](https://github.com/angular/components/issues/20603)) ([29e1f26](https://github.com/angular/components/commit/29e1f26)) |
+| feature |  **mdc-select:** implement MDC-based mat-select ([#20502](https://github.com/angular/components/issues/20502)) ([7f08922](https://github.com/angular/components/commit/7f08922)) |
+
+### input
+
+|            |                       |
+| ---------- | --------------------- |
+| feature |  **testing:** add test harnesses for native select and option ([ca464bd](https://github.com/angular/components/commit/ca464bd)) |
+
+
 ## 10.2.3 "polyester-pancake" (2020-09-28)
 
 ### cdk
