@@ -393,6 +393,11 @@ describe('parser', () => {
         checkBinding('a | b:(c | d)', '(a | b:(c | d))');
       });
 
+      it('should parse incomplete pipes', () => {
+        checkBinding('a | b | ', '((a | b) | )');
+        expectBindingError('a | b | ', 'Unexpected end of input, expected identifier or keyword');
+      });
+
       it('should only allow identifier or keyword as formatter names', () => {
         expectBindingError('"Foo"|(', 'identifier or keyword');
         expectBindingError('"Foo"|1234', 'identifier or keyword');
