@@ -340,6 +340,18 @@ import {normalizeCSS} from '@angular/platform-browser/testing/src/browser_util';
       const css = s(styleStr, 'contenta');
       expect(css).toEqual('div[contenta] {background-image:url("a.jpg"); color:red;}');
     });
+
+    it('should shim rules with an escaped quote inside quoted content', () => {
+      const styleStr = 'div::after { content: "\\"" }';
+      const css = s(styleStr, 'contenta');
+      expect(css).toEqual('div[contenta]::after { content:"\\""}');
+    });
+
+    it('should shim rules with curly braces inside quoted content', () => {
+      const styleStr = 'div::after { content: "{}" }';
+      const css = s(styleStr, 'contenta');
+      expect(css).toEqual('div[contenta]::after { content:"{}"}');
+    });
   });
 
   describe('processRules', () => {
