@@ -2,8 +2,8 @@
 # https://docs.bazel.build/versions/master/install-windows.html
 # https://docs.bazel.build/versions/master/windows.html
 # Install MSYS2 and packages
-choco install msys2 --version 20180531.0.0 --no-progress --package-parameters "/NoUpdate"
-C:\tools\msys64\usr\bin\bash.exe -l -c "pacman --needed --noconfirm -S zip unzip patch diffutils git"
+choco install msys2 --version 20200903.0.0 --no-progress --package-parameters "/NoUpdate"
+C:\tools\msys64\usr\bin\bash.exe -l -c "pacman --needed --noconfirm -S zip unzip patch diffutils"
 
 # Add PATH modifications to the Powershell profile. This is the win equivalent of .bash_profile.
 # https://docs.microsoft.com/en-us/previous-versions//bb613488(v=vs.85)

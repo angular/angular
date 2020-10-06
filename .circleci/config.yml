@@ -876,20 +876,12 @@ workflows:
       - test_zonejs:
           requires:
             - setup
-      # Windows Jobs
-      # These are very slow so we run them on non-PRs only for now.
-      # TODO: remove the filter when CircleCI makes Windows FS faster.
-      # The Windows jobs are only run after their non-windows counterparts finish successfully.
-      # This isn't strictly necessary as there is no artifact dependency, but helps economize
-      # CI resources by not attempting to build when we know should fail.
       - test_win:
-          <<: *skip_on_pull_requests
           requires:
-            - test
+            - setup
       - test_ivy_aot_win:
-          <<: *skip_on_pull_requests
           requires:
-            - test_ivy_aot
+            - setup
 
   monitoring:
     jobs:
