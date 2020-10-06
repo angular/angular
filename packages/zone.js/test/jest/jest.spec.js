@@ -125,14 +125,23 @@ describe('jest modern fakeTimers with zone.js fakeAsync', () => {
     expect(typeof fakeAsyncZoneSpec.tick).toEqual('function');
   });
 
-  test('setSystemTime should set FakeDate.currentRealTime', () => {
+  test('setSystemTime should set FakeDate.currentFakeTime', () => {
     const fakeAsyncZoneSpec = Zone.current.get('FakeAsyncTestZoneSpec');
-    const d = Date.now();
+    let d = fakeAsyncZoneSpec.getRealSystemTime();
     jest.setSystemTime(d);
     expect(Date.now()).toEqual(d);
     for (let i = 0; i < 100000; i++) {
     }
     expect(fakeAsyncZoneSpec.getRealSystemTime()).not.toEqual(d);
+    d = fakeAsyncZoneSpec.getRealSystemTime();
+    let timeoutTriggered = false;
+    setTimeout(() => {
+      timeoutTriggered = true;
+    }, 100);
+    jest.setSystemTime(d);
+    tick(100);
+    expect(timeoutTriggered).toBe(true);
+    expect(Date.now()).toEqual(d + 100);
   });
 
   test('runAllTicks should run all microTasks', () => {

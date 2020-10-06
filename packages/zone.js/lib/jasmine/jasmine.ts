@@ -127,7 +127,7 @@ Zone.__load_patch('jasmine', (global: any, Zone: ZoneType, api: _ZonePrivate) =>
           const fakeAsyncZoneSpec = Zone.current.get('FakeAsyncTestZoneSpec');
           if (fakeAsyncZoneSpec) {
             const dateTime = arguments.length > 0 ? arguments[0] : new Date();
-            return fakeAsyncZoneSpec.setCurrentRealTime.apply(
+            return fakeAsyncZoneSpec.setFakeBaseSystemTime.apply(
                 fakeAsyncZoneSpec,
                 dateTime && typeof dateTime.getTime === 'function' ? [dateTime.getTime()] :
                                                                      arguments);
