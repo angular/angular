@@ -148,6 +148,7 @@
     "!/styleguide/**",
     "!/testing",
     "!/testing/**",
-    "!/config/**"
+    "!/config/**",
+    "!/strict"
   ]
 }
