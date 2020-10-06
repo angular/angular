@@ -17,7 +17,7 @@ import {HEADER_OFFSET} from '../interfaces/view';
 import {getLView, getTView, nextBindingIndex} from '../state';
 import {getConstant} from '../util/view_utils';
 
-import {setDelayProjection} from './all';
+import {setDelayProjection} from './projection';
 
 /**
  * Marks a block of text as translatable.

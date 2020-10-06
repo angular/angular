@@ -231,6 +231,19 @@ ng_benchmark(
 )
 
 ng_rollup_bundle(
+    name = "i18n_lib",
+    entry_point = ":i18n/index.ts",
+    deps = [
+        ":perf_lib",
+    ],
+)
+
+ng_benchmark(
+    name = "i18n",
+    bundle = ":i18n",
+)
+
+ng_rollup_bundle(
     name = "view_destroy_hook_lib",
     entry_point = ":view_destroy_hook/index.ts",
     deps = [
