@@ -35,31 +35,17 @@ export async function printG3Comparison(git: GitClient) {
     return;
   }
 
-  /** Random prefix to create unique branch names. */
-  const randomPrefix = `prefix${Math.floor(Math.random() * 1000000)}`;
-  /** Ref name of the temporary master branch. */
-  const masterRef = `${randomPrefix}-master`;
-  /** Ref name of the temporary g3 branch. */
-  const g3Ref = `${randomPrefix}-g3`;
-  /** Url of the ref for fetching master and g3 branches. */
-  const refUrl = `https://github.com/${git.remoteConfig.owner}/${git.remoteConfig.name}.git`;
-  /** The result fo the fetch command. */
-  const fetchResult =
-      git.runGraceful(['fetch', '-q', refUrl, `master:${masterRef}`, `g3:${g3Ref}`]);
+  /** The latest sha for the g3 branch. */
+  const g3Ref = getShaForBranchLatest('g3');
+  /** The latest sha for the master branch. */
+  const masterRef = getShaForBranchLatest('master');
 
-  // If the upstream repository does not have a g3 branch to compare to, skip the comparison.
-  if (fetchResult.status !== 0) {
-    if (fetchResult.stderr.includes(`couldn't find remote ref g3`)) {
-      return debug('No g3 branch exists on upstream, skipping.');
-    }
-    throw Error('Fetch of master and g3 branches for comparison failed.');
+  if (!g3Ref && !masterRef) {
+    return debug('Exiting early as either the g3 or master was unable to be retrieved');
   }
 
   /** The statistical information about the git diff between master and g3. */
-  const stats = getDiffStats(git);
-
-  // Delete the temporarily created mater and g3 branches.
-  git.runGraceful(['branch', '-D', masterRef, g3Ref]);
+  const stats = getDiffStats();
 
   info.group(bold('g3 branch check'));
   info(`${stats.commits} commits between g3 and master`);
@@ -73,11 +59,27 @@ export async function printG3Comparison(git: GitClient) {
   info();
 
 
+  /** Fetch and retrieve the latest sha for a specific branch. */
+  function getShaForBranchLatest(branch: string) {
+    /** The result fo the fetch command. */
+    const fetchResult = git.runGraceful([
+      'fetch', '-q', `https://github.com/${git.remoteConfig.owner}/${git.remoteConfig.name}.git`,
+      branch
+    ]);
+
+    if (fetchResult.status !== 0 &&
+        fetchResult.stderr.includes(`couldn't find remote ref ${branch}`)) {
+      debug(`No '${branch}' branch exists on upstream, skipping.`);
+      return false;
+    }
+    return git.runGraceful(['rev-parse', 'FETCH_HEAD']).stdout.trim();
+  }
+
   /**
    * Get git diff stats between master and g3, for all files and filtered to only g3 affecting
    * files.
    */
-  function getDiffStats(git: GitClient) {
+  function getDiffStats() {
     /** The diff stats to be returned. */
     const stats = {
       insertions: 0,
@@ -85,7 +87,6 @@ export async function printG3Comparison(git: GitClient) {
       files: 0,
       commits: 0,
     };
-
 
     // Determine the number of commits between master and g3 refs. */
     stats.commits = parseInt(git.run(['rev-list', '--count', `${g3Ref}..${masterRef}`]).stdout, 10);
