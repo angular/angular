@@ -251,7 +251,14 @@ class AstTranslator implements AstVisitor {
     //     ^     nameSpan
     const leftWithPath = wrapForDiagnostics(left);
     addParseSpanInfo(leftWithPath, ast.sourceSpan);
-    const right = this.translate(ast.value);
+    let right = this.translate(ast.value);
+    // The right needs to be wrapped in parens as well or we cannot accurately match its
+    // span to just the RHS. For example, the span in `e = $event /*0,10*/` is ambiguous.
+    // It could refer to either the whole binary expression or just the RHS.
+    // We should instead generate `e = ($event /*0,10*/)` so we know the span 0,10 matches RHS.
+    if (!ts.isParenthesizedExpression(right)) {
+      right = wrapForTypeChecker(right);
+    }
     const node =
         wrapForDiagnostics(ts.createBinary(leftWithPath, ts.SyntaxKind.EqualsToken, right));
     addParseSpanInfo(node, ast.sourceSpan);

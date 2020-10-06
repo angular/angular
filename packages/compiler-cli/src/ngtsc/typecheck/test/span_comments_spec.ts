@@ -94,6 +94,12 @@ describe('type check blocks diagnostics', () => {
               '(((((((ctx).a /*14,15*/) /*14,15*/).b /*16,17*/) /*14,17*/).c /*18,19*/) /*14,23*/ = ((ctx).d /*22,23*/) /*22,23*/) /*14,23*/');
     });
 
+    it('should $event property writes', () => {
+      const TEMPLATE = `<div (click)='a = $event'></div>`;
+      expect(tcbWithSpans(TEMPLATE))
+          .toContain('(((ctx).a /*14,15*/) /*14,24*/ = ($event /*18,24*/)) /*14,24*/;');
+    });
+
     it('should annotate keyed property access', () => {
       const TEMPLATE = `{{ a[b] }}`;
       expect(tcbWithSpans(TEMPLATE))
