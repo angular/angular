@@ -4,12 +4,19 @@
 
 "@angular/core@file:../../dist/packages-dist/core":
   version "9.0.0-rc.1"
+  dependencies:
+    "@types/trusted-types" "^1.0.6"
 
 "@angular/language-service@file:../../dist/packages-dist/language-service":
   version "9.0.0-rc.1"
 
 "@types/node@file:../../node_modules/@types/node":
   version "12.11.1"
+
+"@types/trusted-types@^1.0.6":
+  version "1.0.6"
+  resolved "https://registry.yarnpkg.com/@types/trusted-types/-/trusted-types-1.0.6.tgz#569b8a08121d3203398290d602d84d73c8dcf5da"
+  integrity sha512-230RC8sFeHoT6sSUlRO6a8cAnclO06eeiq1QDfiv2FGCLWFvvERWgwIQD4FWqD9A69BN7Lzee4OXwoMVnnsWDw==
 
 balanced-match@^1.0.0:
   version "1.0.0"

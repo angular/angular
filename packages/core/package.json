@@ -5,6 +5,7 @@
   "author": "angular",
   "license": "MIT",
   "dependencies": {
+    "@types/trusted-types": "^1.0.6",
     "tslib": "^2.0.0"
   },
   "peerDependencies": {

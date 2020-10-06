@@ -13,6 +13,7 @@ ts_library(
     deps = [
         "//packages/zone.js/lib:zone_d_ts",
         "@npm//@types/hammerjs",
+        "@npm//@types/trusted-types",
     ],
 )
 

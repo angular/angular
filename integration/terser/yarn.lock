@@ -22,6 +22,13 @@
 
 "@angular/core@file:../../dist/packages-dist/core":
   version "9.0.0-rc.1"
+  dependencies:
+    "@types/trusted-types" "^1.0.6"
+
+"@types/trusted-types@^1.0.6":
+  version "1.0.6"
+  resolved "https://registry.yarnpkg.com/@types/trusted-types/-/trusted-types-1.0.6.tgz#569b8a08121d3203398290d602d84d73c8dcf5da"
+  integrity sha512-230RC8sFeHoT6sSUlRO6a8cAnclO06eeiq1QDfiv2FGCLWFvvERWgwIQD4FWqD9A69BN7Lzee4OXwoMVnnsWDw==
 
 ansi-regex@^2.0.0:
   version "2.1.1"

@@ -165,6 +165,8 @@
 
 "@angular/core@file:../../dist/packages-dist/core":
   version "9.0.0-rc.1"
+  dependencies:
+    "@types/trusted-types" "^1.0.6"
 
 "@angular/forms@file:../../dist/packages-dist/forms":
   version "9.0.0-rc.1"
@@ -1080,6 +1082,11 @@
   version "0.1.2"
   resolved "https://registry.yarnpkg.com/@types/source-list-map/-/source-list-map-0.1.2.tgz#0078836063ffaf17412349bba364087e0ac02ec9"
   integrity sha512-K5K+yml8LTo9bWJI/rECfIPrGgxdpeNbj+d53lwN4QjW1MCwlkhUms+gtdzigTeUyBr09+u8BwOIY3MXvHdcsA==
+
+"@types/trusted-types@^1.0.6":
+  version "1.0.6"
+  resolved "https://registry.yarnpkg.com/@types/trusted-types/-/trusted-types-1.0.6.tgz#569b8a08121d3203398290d602d84d73c8dcf5da"
+  integrity sha512-230RC8sFeHoT6sSUlRO6a8cAnclO06eeiq1QDfiv2FGCLWFvvERWgwIQD4FWqD9A69BN7Lzee4OXwoMVnnsWDw==
 
 "@types/webpack-sources@^0.1.5":
   version "0.1.5"
