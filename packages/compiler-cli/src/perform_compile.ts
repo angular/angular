@@ -115,6 +115,7 @@ export interface ParsedConfiguration {
   projectReferences?: readonly ts.ProjectReference[]|undefined;
   emitFlags: api.EmitFlags;
   errors: Diagnostics;
+  allExtendedConfigs: string[];
 }
 
 export function calcProjectFileAndBasePath(project: string):
@@ -143,10 +144,12 @@ export function readConfiguration(
   try {
     const fs = getFileSystem();
     const {projectFile, basePath} = calcProjectFileAndBasePath(project);
+    const allExtendedConfigs: string[] = [];
 
     const readExtendedConfigFile =
         (configFile: string, existingConfig?: any): {config?: any, error?: ts.Diagnostic} => {
-          const {config, error} = ts.readConfigFile(configFile, ts.sys.readFile);
+          const {config, error} =
+              ts.readConfigFile(configFile, path => fs.readFile(fs.resolve(path)));
 
           if (error) {
             return {error};
@@ -170,6 +173,7 @@ export function readConfiguration(
 
             if (fs.exists(extendedConfigPath)) {
               // Call read config recursively as TypeScript only merges CompilerOptions
+              allExtendedConfigs.push(extendedConfigPath);
               return readExtendedConfigFile(extendedConfigPath, baseConfig);
             }
           }
@@ -185,7 +189,8 @@ export function readConfiguration(
         errors: [error],
         rootNames: [],
         options: {},
-        emitFlags: api.EmitFlags.Default
+        emitFlags: api.EmitFlags.Default,
+        allExtendedConfigs,
       };
     }
     const parseConfigHost = {
@@ -214,7 +219,8 @@ export function readConfiguration(
       projectReferences,
       options,
       errors: parsed.errors,
-      emitFlags
+      emitFlags,
+      allExtendedConfigs,
     };
   } catch (e) {
     const errors: Diagnostics = [{
@@ -223,7 +229,14 @@ export function readConfiguration(
       source: api.SOURCE,
       code: api.UNKNOWN_ERROR_CODE
     }];
-    return {project: '', errors, rootNames: [], options: {}, emitFlags: api.EmitFlags.Default};
+    return {
+      project: '',
+      errors,
+      rootNames: [],
+      options: {},
+      emitFlags: api.EmitFlags.Default,
+      allExtendedConfigs: [],
+    };
   }
 }
 

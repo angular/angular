@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {getFileSystem, NodeJSFileSystem, setFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {join} from 'path';
 import * as ts from 'typescript/lib/tsserverlibrary';
 
@@ -41,31 +42,117 @@ const NOOP_FILE_WATCHER: ts.FileWatcher = {
   close() {}
 };
 
-export const host: ts.server.ServerHost = {
-  ...ts.sys,
-  readFile(absPath: string, encoding?: string): string |
-      undefined {
-        return ts.sys.readFile(absPath, encoding);
-      },
+class MockWatcher implements ts.FileWatcher {
+  constructor(
+      private readonly fileName: string,
+      private readonly cb: ts.FileWatcherCallback,
+      readonly close: () => void,
+  ) {}
+
+  changed() {
+    this.cb(this.fileName, ts.FileWatcherEventKind.Changed);
+  }
+
+  deleted() {
+    this.cb(this.fileName, ts.FileWatcherEventKind.Deleted);
+  }
+}
+
+/**
+ * A mock server host _and_ file system.
+ *
+ * File system mocking is needed to test dynamic changes of non-script files (namely, config files)
+ * that are watched and read from the file system rather than from a project service.
+ * NB: If you need to modify TS and template file contents, use the methods
+ *     provided the `MockService` rather than this mock filesystem.
+ */
+export class MockHost extends NodeJSFileSystem implements ts.server.ServerHost {
+  private overwrittenConfigs = new Map<string, string>();
+  private configFileWatchers = new Map<string, MockWatcher>();
+
+  exists(path: string): boolean {
+    return this.overwrittenConfigs.has(path) || ts.sys.fileExists(path) ||
+        ts.sys.directoryExists(path);
+  }
+
+  writeFile(path: string, data: string) {
+    throw new Error(`writeFile is not implemented; did you mean writeConfigFile?`);
+  }
+  writeConfigFile(path: string, data: string) {
+    if (!path.endsWith('.json')) {
+      throw new Error(`Only config files may be overwritten in the mock file system, got ${path}.`);
+    }
+    this.overwrittenConfigs.set(path, data.toString());
+    this.configFileWatchers.get(path)?.changed();
+  }
+
+  readFile(path: string): string {
+    return this.overwrittenConfigs.get(path) ?? ts.sys.readFile(path)!;
+  }
+
+  deleteFile(path: string) {
+    this.overwrittenConfigs.delete(path);
+    this.configFileWatchers.get(path)?.deleted();
+    this.configFileWatchers.delete(path);
+  }
+
+  clear() {
+    const configs = [...this.overwrittenConfigs.keys(), ...this.configFileWatchers.keys()];
+    for (const config of configs) {
+      this.deleteFile(config);
+    }
+  }
+
+  args = ts.sys.args;
+  newLine = ts.sys.newLine;
+  useCaseSensitiveFileNames = ts.sys.useCaseSensitiveFileNames;
+  write = ts.sys.write;
+  resolvePath = ts.sys.resolvePath;
+  fileExists(path: string): boolean {
+    return this.overwrittenConfigs.has(path) || ts.sys.fileExists(path);
+  }
+  directoryExists(path: string): boolean {
+    return this.overwrittenConfigs.has(path) || ts.sys.directoryExists(path);
+  }
+  createDirectory = ts.sys.createDirectory;
+  getExecutingFilePath = ts.sys.getExecutingFilePath;
+  getCurrentDirectory = ts.sys.getCurrentDirectory;
+  getDirectories = ts.sys.getDirectories;
+  readDirectory = ts.sys.readDirectory;
+  createHash = ts.sys.createHash;
+  exit = ts.sys.exit;
+  realpath<T>(path: T): T {
+    return path;
+  }
+
   watchFile(path: string, callback: ts.FileWatcherCallback): ts.FileWatcher {
-    return NOOP_FILE_WATCHER;
-  },
+    const watcher = new MockWatcher(path, callback, () => {
+      this.configFileWatchers.delete(path);
+    });
+    this.configFileWatchers.set(path, watcher);
+    return watcher;
+  }
+
   watchDirectory(path: string, callback: ts.DirectoryWatcherCallback): ts.FileWatcher {
     return NOOP_FILE_WATCHER;
-  },
+  }
+
   setTimeout() {
-    throw new Error('setTimeout is not implemented');
-  },
+    // no-op
+  }
+
   clearTimeout() {
     throw new Error('clearTimeout is not implemented');
-  },
+  }
+
   setImmediate() {
     throw new Error('setImmediate is not implemented');
-  },
+  }
+
   clearImmediate() {
     throw new Error('clearImmediate is not implemented');
-  },
-};
+  }
+}
 
 /**
  * Create a ConfiguredProject and an actual program for the test project located
@@ -74,6 +161,7 @@ export const host: ts.server.ServerHost = {
  * and modify test files.
  */
 export function setup() {
+  const host = new MockHost();
   const projectService = new ts.server.ProjectService({
     host,
     logger,
@@ -91,10 +179,12 @@ export function setup() {
   }
   // The following operation forces a ts.Program to be created.
   const tsLS = project.getLanguageService();
+  const service = new MockService(project, projectService);
   return {
-    service: new MockService(project, projectService),
+    service,
     project,
     tsLS,
+    host,
   };
 }
 

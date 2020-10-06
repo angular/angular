@@ -32,7 +32,8 @@ describe('perform watch', () => {
       rootNames: [path.resolve(testSupport.basePath, 'src/index.ts')],
       project: path.resolve(testSupport.basePath, 'src/tsconfig.json'),
       emitFlags: ng.EmitFlags.Default,
-      errors: []
+      errors: [],
+      allExtendedConfigs: [],
     };
   }
 
