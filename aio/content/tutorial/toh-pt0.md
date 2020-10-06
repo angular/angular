@@ -1,54 +1,54 @@
-# Create a new project
+# Crea un nuevo proyecto
 
-You begin by creating an initial application using the Angular CLI. Throughout this tutorial, you’ll modify and extend that starter application to create the Tour of Heroes app.
+Primero, crea la aplicación inicial usando el Angular CLI. En este Tutorial, modificarás y ampliarás la aplicación inicial para crear la aplicación Tour de Héroes.
 
-In this part of the tutorial, you'll do the following:
+En esta parte del tutorial, harás lo siguiente:
 
-1. Set up your environment.
-2. Create a new workspace and initial app project.
-3. Serve the application.
-4. Make changes to the application.
+1. Establecer tu ambiente de desarrollo.
+2. Crear un nuevo espacio de trabajo y un proyecto de aplicación inicial.
+3. Servir la aplicación.
+4. Hacer cambios a la aplicación.
 
 <div class="alert is-helpful">
 
-  For the sample app that this page describes, see the <live-example></live-example>.
+Para ver la aplicación de ejemplo que describe esta página, consulta el <live-example></live-example>.
 
 </div>
 
-## Set up your environment
+## Configura tu entorno
 
-To set up your development environment, follow the instructions in [Local Environment Setup](guide/setup-local "Setting up for Local Development").
+Para preparar tu entorno de desarrollo, sigue las instrucciones en [Creación de un entorno local](guide/setup-local "Configuración para el desarrollo local").
 
+## Crear un nuevo espacio de trabajo y un enlace de aplicación inicial
 
-## Create a new workspace and an initial application
+Desarrolla tu aplicación en el contexto del espacio de trabajo Angular. [Espacio de trabajo](guide/glossary#workspace). contiene uno o más archivos [proyecto]. Un proyecto es un conjunto de archivos que componen una aplicación, biblioteca o prueba de extremo a extremo (e2e).
+En este Tutorial, crearas un nuevo espacio de trabajo.
 
-You develop apps in the context of an Angular [workspace](guide/glossary#workspace). A workspace contains the files for one or more [projects](guide/glossary#project). A project is the set of files that comprise an app, a library, or end-to-end (e2e) tests. For this tutorial, you will create a new workspace.
+Para crear un nuevo espacio de trabajo y un proyecto de aplicación inicial:
 
-To create a new workspace and an initial app project:
-
-  1. Ensure that you are not already in an Angular workspace folder. For example, if you have previously created the Getting Started workspace, change to the parent of that folder.
-  2. Run the CLI command `ng new` and provide the name `angular-tour-of-heroes`, as shown here:
+  1. Asegurate de que no esté en la carpeta del espacio de trabajo Angular. Por ejemplo, si creó anteriormente el espacio de trabajo Introducción, cambia a la carpeta principal de esa carpeta.
+  2. Ejecuta el comando CLI `ng new` y asígnale el nombre `angular-tour-of-heroes`, como se muestra a continuación.
 
   <code-example language="sh" class="code-shell">
-     ng new angular-tour-of-heroes
+    ng new angular-tour-of-heroes
   </code-example>
 
-  3. The `ng new` command prompts you for information about features to include in the initial app project. Accept the defaults by pressing the Enter or Return key.
+3. Ejecuta el comando `ng new` y verá información sobre las funciones que desea incluir en su primer proyecto de aplicación. Presione Entrar o Volver para aceptar el valor predeterminado.
 
-The Angular CLI installs the necessary Angular `npm` packages and other dependencies. This can take a few minutes.
+Angular CLI instala los paquetes Angular npm necesarios y otras dependencias. Esto puede tomar unos pocos minutos.
 
-It also creates the following workspace and starter project files:
+También crea el siguiente espacio de trabajo y archivos de proyecto de inicio.
 
-  * A new workspace, with a root folder named `angular-tour-of-heroes`.
-  * An initial skeleton app project, also called `angular-tour-of-heroes` (in the `src` subfolder).
-  * An end-to-end test project (in the e2e subfolder).
-  * Related configuration files.
+  * Un nuevo espacio de trabajo con una carpeta raíz llamada `angular-tour-of-heroes`.
+  * Un proyecto de aplicación esqueleto inicial también llamado `angular-tour-of-heroes`. (En la subcarpeta `src`)
+  * Proyecto de prueba de extremo a extremo. (En la subcarpeta `e2e`)
+  * Archivos de configuración relacionados.
 
-The initial app project contains a simple Welcome app, ready to run.
+El primer proyecto de aplicación contiene una aplicación de bienvenida simple que puede ejecutar de inmediato.
 
-## Serve the application
+## Servir la aplicación
 
-Go to the workspace directory and launch the application.
+Ve al directorio de tu espacio de trabajo e inicia la aplicación.
 
 <code-example language="sh" class="code-shell">
   cd angular-tour-of-heroes
@@ -57,68 +57,67 @@ Go to the workspace directory and launch the application.
 
 <div class="alert is-helpful">
 
-The `ng serve` command builds the app, starts the development server,
-watches the source files, and rebuilds the app as you make changes to those files.
+El comando `ng serve` crea la aplicación, inicia el servidor de desarrollo y observa los archivos de origen.
+Cuando realiza un cambio en un archivo que se está viendo, se realizará una reconstrucción en el archivo modificado.
 
-The `--open` flag opens a browser to `http://localhost:4200/`.
+Si especificas la bandera `--open`, se abrirá `http://localhost:4200` en tu navegador.
 
 </div>
 
-You should see the app running in your browser.
+Asegúrate de que la aplicación se esté ejecutando en su navegador.
 
-## Angular components
+## Componentes de Angular
 
-The page you see is the _application shell_.
-The shell is controlled by an Angular **component** named `AppComponent`.
+La página que se muestra es _Shell de Aplicación_.
+Este shell funciona desde un **componente** Angular llamado `AppComponent`.
 
-_Components_ are the fundamental building blocks of Angular applications.
-They display data on the screen, listen for user input, and take action based on that input.
+Los componentes son los bloques de construcción fundamentales de las aplicaciones Angular.
+Ellos muestran informacion en la pantalla, esperan el ingreso de datos del usuario y toman acciones basados en esa informacion ingresada.
 
-## Make changes to the application
+## Cambiar la aplicación
 
-Open the project in your favorite editor or IDE and navigate to the `src/app` folder to make some changes to the starter app.
+Para hacer algunos cambios en la aplicación de inicio, abre el proyecto en su editor de texto favorito o IDE y vaya a `src/app`.
 
-You'll find the implementation of the shell `AppComponent` distributed over three files:
+Encontrará la implementación del shell `AppComponent`, dividido en tres archivos:
 
-1. `app.component.ts`&mdash; the component class code, written in TypeScript.
-1. `app.component.html`&mdash; the component template, written in HTML.
-1. `app.component.css`&mdash; the component's private CSS styles.
+1. `app.component.ts`&mdash; Este es el código para la clase de componente escrita en TypeScript.
+1. `app.component.html`&mdash; Este es el componente Plantillas escrito en HTML.
+1. `app.component.css`&mdash; CSS solo para este componente.
 
-### Change the application title
+### Cambiar el título de la aplicación
 
-Open the component class file (`app.component.ts`) and change the value of the `title` property to 'Tour of Heroes'.
+Abre el archivo de clase de componente (`app.component.ts`) y cambia el valor de la propiedad `title` a `Tour de Heroes`.
 
 <code-example path="toh-pt0/src/app/app.component.ts" region="set-title" header="app.component.ts (class title property)"></code-example>
 
-Open the component template file (`app.component.html`) and
-delete the default template generated by the Angular CLI.
-Replace it with the following line of HTML.
+Abre el archivo de plantilla de componente (`app.component.html`) y
+Elimina la plantilla predeterminada generada por el Angular CLI.
+Coloca el siguiente HTML en su lugar.
 
 <code-example path="toh-pt0/src/app/app.component.html"
   header="app.component.html (template)"></code-example>
 
-The double curly braces are Angular's *interpolation binding* syntax.
-This interpolation binding presents the component's `title` property value
-inside the HTML header tag.
+Las llaves dobles son la sintaxis de *interpolación vinculante* de Angular.
+Este enlace de interpolación pasa el valor de la propiedad `title` del componente en la etiqueta de encabezado HTML.
 
-The browser refreshes and displays the new application title.
+El navegador actualiza la página con el nuevo título de la aplicación.
 
 {@a app-wide-styles}
 
-### Add application styles
+### Añadir estilo de aplicación
 
-Most apps strive for a consistent look across the application.
-The CLI generated an empty `styles.css` for this purpose.
-Put your application-wide styles there.
+La mayoría de las aplicaciones apuntan a una apariencia consistente en toda la aplicación.
+El CLI ha generado un `styles.css` vacío para este propósito.
+Escriba estilos que se apliquen a toda la aplicación, allí.
 
-Open `src/styles.css` and add the code below to the file.
+Abre `src/style.css` y agrega el siguiente código al archivo.
 
 <code-example path="toh-pt0/src/styles.1.css" header="src/styles.css (excerpt)">
 </code-example>
 
-## Final code review
+## Revisión final del código
 
-Here are the code files discussed on this page.
+A continuación se muestra un archivo del código mencionado en esta página.
 
 <code-tabs>
 
@@ -134,8 +133,8 @@ Here are the code files discussed on this page.
   </code-pane>
 </code-tabs>
 
-## Summary
+## Resumen
 
-* You created the initial application structure using the Angular CLI.
-* You learned that Angular components display data.
-* You used the double curly braces of interpolation to display the app title.
+* Creaste la estructura de la aplicación inicial utilizando el CLI Angular.
+* Aprendiste que los componentes de Angular muestran datos.
+* Utilizaste las llaves dobles de interpolación para mostrar el título de la aplicación.
