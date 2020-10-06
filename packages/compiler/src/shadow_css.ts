@@ -567,15 +567,15 @@ export class CssRule {
 }
 
 export function processRules(input: string, ruleCallback: (rule: CssRule) => CssRule): string {
-  const inputWithEscapedBlocks = escapeBlocks(input, CONTENT_PAIRS, BLOCK_PLACEHOLDER);
-  const inputWithEscapedQuotes =
-      escapeBlocks(inputWithEscapedBlocks.escapedString, QUOTE_PAIRS, QUOTE_PLACEHOLDER);
+  const inputWithEscapedQuotes = escapeBlocks(input, QUOTE_PAIRS, QUOTE_PLACEHOLDER);
+  const inputWithEscapedBlocks =
+      escapeBlocks(inputWithEscapedQuotes.escapedString, CONTENT_PAIRS, BLOCK_PLACEHOLDER);
   let nextBlockIndex = 0;
   let nextQuoteIndex = 0;
-  return inputWithEscapedQuotes.escapedString
+  return inputWithEscapedBlocks.escapedString
       .replace(
           _ruleRe,
-          function(...m: string[]) {
+          (...m: string[]) => {
             const selector = m[2];
             let content = '';
             let suffix = m[4];
@@ -600,35 +600,38 @@ function escapeBlocks(
   const resultParts: string[] = [];
   const escapedBlocks: string[] = [];
   let openCharCount = 0;
-  let currentBlockParts: string[] = [];
+  let nonBlockStartIndex = 0;
+  let blockStartIndex = -1;
   let openChar: string|undefined;
   let closeChar: string|undefined;
   for (let i = 0; i < input.length; i++) {
     const char = input[i];
-    const hasClosed = char === closeChar;
-    if (hasClosed) {
+    if (char === '\\') {
+      i++;
+    } else if (char === closeChar) {
       openCharCount--;
-    }
-    if (openCharCount > 0) {
-      currentBlockParts.push(char);
-    } else {
-      if (currentBlockParts.length > 0) {
-        escapedBlocks.push(currentBlockParts.join(''));
+      if (openCharCount === 0) {
+        escapedBlocks.push(input.substring(blockStartIndex, i));
         resultParts.push(placeholder);
-        currentBlockParts = [];
+        nonBlockStartIndex = i;
+        blockStartIndex = -1;
+        openChar = closeChar = undefined;
       }
-      resultParts.push(char);
-    }
-    if (!hasClosed && (openCharCount === 0 || char === openChar) && charPairs.has(char)) {
-      closeChar = charPairs.get(char);
-      openChar = char;
-      currentBlockParts.push('');  // Allow for empty blocks.
+    } else if (char === openChar) {
       openCharCount++;
+    } else if (openCharCount === 0 && charPairs.has(char)) {
+      openChar = char;
+      closeChar = charPairs.get(char);
+      openCharCount = 1;
+      blockStartIndex = i + 1;
+      resultParts.push(input.substring(nonBlockStartIndex, blockStartIndex));
     }
   }
-  if (currentBlockParts.length > 0) {
-    escapedBlocks.push(currentBlockParts.join(''));
+  if (blockStartIndex !== -1) {
+    escapedBlocks.push(input.substring(blockStartIndex));
     resultParts.push(placeholder);
+  } else {
+    resultParts.push(input.substring(nonBlockStartIndex));
   }
   return new StringWithEscapedBlocks(resultParts.join(''), escapedBlocks);
 }
