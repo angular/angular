@@ -156,7 +156,7 @@ The library must be rebuilt on every change.
 When linking a library, make sure that the build step runs in watch mode, and that the library's `package.json` configuration points at the correct entry points.
 For example, `main` should point at a JavaScript file, not a TypeScript file.
 
-## Use TypeScript path mapping for peer dependencies
+### Use TypeScript path mapping for peer dependencies
 
 Angular libraries should list all `@angular/*` dependencies as peer dependencies.
 This ensures that when modules ask for Angular, they all get the exact same module.
