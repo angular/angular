@@ -102,6 +102,11 @@
           "tooltip": "Building dynamic views with data binding",
           "children": [
             {
+              "url": "guide/component-overview",
+              "title": "Overview",
+              "tooltip": "Overview of how to create Angular components."
+            },
+            {
               "url": "guide/user-input",
               "title": "User Input",
               "tooltip": "User input triggers DOM events. Angular listens to those events with event bindings that funnel updated values back into your app's components and models."
