@@ -116,7 +116,7 @@
               "title": "Component Lifecycle",
               "tooltip": "Angular calls lifecycle hook methods on directives and components as it creates, changes, and destroys them."
             },
-            { 
+            {
               "url": "guide/view-encapsulation",
               "title": "View Encapsulation",
               "tooltip": "Describes how component CSS styles are encapsulated into a component's view."
@@ -1008,6 +1008,11 @@
           "url": "https://stackoverflow.com/questions/tagged/angular",
           "title": "Stack Overflow",
           "tooltip": "Stack Overflow: where the community answers your technical Angular questions."
+        },
+        {
+          "url": "https://discord.gg/angular",
+          "title": "Join Discord",
+          "tooltip": "Join the discussions at Angular Community Discord server."
         },
         {
           "url": "https://gitter.im/angular/angular",
