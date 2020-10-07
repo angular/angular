@@ -209,7 +209,9 @@ export class MatTooltip implements OnDestroy, AfterViewInit {
     this._ariaDescriber.removeDescription(this._elementRef.nativeElement, this._message);
 
     // If the message is not a string (e.g. number), convert it to a string and trim it.
-    this._message = value != null ? `${value}`.trim() : '';
+    // Must convert with `String(value)`, not `${value}`, otherwise Closure Compiler optimises
+    // away the string-conversion: https://github.com/angular/components/issues/20684
+    this._message = value != null ? String(value).trim() : '';
 
     if (!this._message && this._isTooltipVisible()) {
       this.hide(0);
