@@ -1186,6 +1186,24 @@ describe('MDC-based MatAutocomplete', () => {
       expect(escapeEvent.defaultPrevented).toBe(true);
     }));
 
+    it('should not close the panel when pressing escape with a modifier', fakeAsync(() => {
+      const trigger = fixture.componentInstance.trigger;
+
+      input.focus();
+      flush();
+      fixture.detectChanges();
+
+      expect(document.activeElement).toBe(input, 'Expected input to be focused.');
+      expect(trigger.panelOpen).toBe(true, 'Expected panel to be open.');
+
+      const event = dispatchKeyboardEvent(document.body, 'keydown', ESCAPE, undefined, {alt: true});
+      fixture.detectChanges();
+
+      expect(document.activeElement).toBe(input, 'Expected input to continue to be focused.');
+      expect(trigger.panelOpen).toBe(true, 'Expected panel to stay open.');
+      expect(event.defaultPrevented).toBe(false, 'Expected default action not to be prevented.');
+    }));
+
     it('should close the panel when pressing ALT + UP_ARROW', fakeAsync(() => {
       const trigger = fixture.componentInstance.trigger;
       const upArrowEvent = createKeyboardEvent('keydown', UP_ARROW, undefined, {alt: true});

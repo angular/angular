@@ -7,7 +7,7 @@
  */
 import {Directionality} from '@angular/cdk/bidi';
 import {BooleanInput, coerceBooleanProperty} from '@angular/cdk/coercion';
-import {DOWN_ARROW, ENTER, ESCAPE, TAB, UP_ARROW} from '@angular/cdk/keycodes';
+import {DOWN_ARROW, ENTER, ESCAPE, TAB, UP_ARROW, hasModifierKey} from '@angular/cdk/keycodes';
 import {
   FlexibleConnectedPositionStrategy,
   Overlay,
@@ -393,7 +393,7 @@ export abstract class _MatAutocompleteTriggerBase implements ControlValueAccesso
     // in line with other browsers. By default, pressing escape on IE will cause it to revert
     // the input value to the one that it had on focus, however it won't dispatch any events
     // which means that the model value will be out of sync with the view.
-    if (keyCode === ESCAPE) {
+    if (keyCode === ESCAPE && !hasModifierKey(event)) {
       event.preventDefault();
     }
 
@@ -571,7 +571,7 @@ export abstract class _MatAutocompleteTriggerBase implements ControlValueAccesso
    */
   private _clearPreviousSelectedOption(skip: MatOption) {
     this.autocomplete.options.forEach(option => {
-      if (option != skip && option.selected) {
+      if (option !== skip && option.selected) {
         option.deselect();
       }
     });
@@ -600,7 +600,8 @@ export abstract class _MatAutocompleteTriggerBase implements ControlValueAccesso
       overlayRef.keydownEvents().subscribe(event => {
         // Close when pressing ESCAPE or ALT + UP_ARROW, based on the a11y guidelines.
         // See: https://www.w3.org/TR/wai-aria-practices-1.1/#textbox-keyboard-interaction
-        if (event.keyCode === ESCAPE || (event.keyCode === UP_ARROW && event.altKey)) {
+        if ((event.keyCode === ESCAPE && !hasModifierKey(event)) ||
+            (event.keyCode === UP_ARROW && hasModifierKey(event, 'altKey'))) {
           this._resetActiveItem();
           this._closeKeyEventStream.next();
 
