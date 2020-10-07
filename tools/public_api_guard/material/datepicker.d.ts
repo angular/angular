@@ -192,18 +192,21 @@ export declare class MatDatepickerContent<S, D = ExtractDateTypeFromSelection<S>
     _animationDone: Subject<void>;
     _animationState: 'enter' | 'void';
     _calendar: MatCalendar<D>;
+    _closeButtonFocused: boolean;
+    _closeButtonText: string;
     _isAbove: boolean;
     comparisonEnd: D | null;
     comparisonStart: D | null;
     datepicker: MatDatepickerBase<any, S, D>;
-    constructor(elementRef: ElementRef, _changeDetectorRef: ChangeDetectorRef, _model: MatDateSelectionModel<S, D>, _dateAdapter: DateAdapter<D>, _rangeSelectionStrategy: MatDateRangeSelectionStrategy<D>);
+    constructor(elementRef: ElementRef, _changeDetectorRef: ChangeDetectorRef, _model: MatDateSelectionModel<S, D>, _dateAdapter: DateAdapter<D>, _rangeSelectionStrategy: MatDateRangeSelectionStrategy<D>,
+    intl?: MatDatepickerIntl);
     _getSelected(): D | DateRange<D> | null;
     _handleUserSelection(event: MatCalendarUserEvent<D | null>): void;
     _startExitAnimation(): void;
     ngAfterViewInit(): void;
     ngOnDestroy(): void;
     static ɵcmp: i0.ɵɵComponentDefWithMeta<MatDatepickerContent<any, any>, "mat-datepicker-content", ["matDatepickerContent"], { "color": "color"; }, {}, never, never>;
-    static ɵfac: i0.ɵɵFactoryDef<MatDatepickerContent<any, any>, [null, null, null, null, { optional: true; }]>;
+    static ɵfac: i0.ɵɵFactoryDef<MatDatepickerContent<any, any>, [null, null, null, null, { optional: true; }, null]>;
 }
 
 export declare class MatDatepickerInput<D> extends MatDatepickerInputBase<D | null, D> implements MatDatepickerControl<D | null> {
@@ -245,6 +248,7 @@ export declare class MatDatepickerInputEvent<D, S = unknown> {
 export declare class MatDatepickerIntl {
     calendarLabel: string;
     readonly changes: Subject<void>;
+    closeCalendarLabel: string;
     nextMonthLabel: string;
     nextMultiYearLabel: string;
     nextYearLabel: string;

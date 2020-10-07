@@ -64,6 +64,7 @@ import {
   MAT_DATE_RANGE_SELECTION_STRATEGY,
   MatDateRangeSelectionStrategy,
 } from './date-range-selection-strategy';
+import {MatDatepickerIntl} from './datepicker-intl';
 
 /** Used to generate a unique ID for each datepicker instance. */
 let datepickerUid = 0;
@@ -149,14 +150,27 @@ export class MatDatepickerContent<S, D = ExtractDateTypeFromSelection<S>>
   /** Emits when an animation has finished. */
   _animationDone = new Subject<void>();
 
+  /** Text for the close button. */
+  _closeButtonText: string;
+
+  /** Whether the close button currently has focus. */
+  _closeButtonFocused: boolean;
+
   constructor(
     elementRef: ElementRef,
     private _changeDetectorRef: ChangeDetectorRef,
     private _model: MatDateSelectionModel<S, D>,
     private _dateAdapter: DateAdapter<D>,
     @Optional() @Inject(MAT_DATE_RANGE_SELECTION_STRATEGY)
-        private _rangeSelectionStrategy: MatDateRangeSelectionStrategy<D>) {
+        private _rangeSelectionStrategy: MatDateRangeSelectionStrategy<D>,
+    /**
+     * @deprecated `intl` argument to become required.
+     * @breaking-change 12.0.0
+     */
+    intl?: MatDatepickerIntl) {
     super(elementRef);
+    // @breaking-change 12.0.0 Remove fallback for `intl`.
+    this._closeButtonText = intl?.closeCalendarLabel || 'Close calendar';
   }
 
   ngAfterViewInit() {

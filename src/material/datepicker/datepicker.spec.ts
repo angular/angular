@@ -501,6 +501,38 @@ describe('MatDatepicker', () => {
         expect(event.defaultPrevented).toBe(false);
       }));
 
+      it('should show the invisible close button on focus', fakeAsync(() => {
+        testComponent.opened = true;
+        fixture.detectChanges();
+        flush();
+
+        const button = document.querySelector('.mat-datepicker-close-button') as HTMLButtonElement;
+        expect(button.classList).toContain('cdk-visually-hidden');
+
+        dispatchFakeEvent(button, 'focus');
+        fixture.detectChanges();
+        expect(button.classList).not.toContain('cdk-visually-hidden');
+
+        dispatchFakeEvent(button, 'blur');
+        fixture.detectChanges();
+        expect(button.classList).toContain('cdk-visually-hidden');
+      }));
+
+      it('should close the overlay when clicking on the invisible close button', fakeAsync(() => {
+        testComponent.opened = true;
+        fixture.detectChanges();
+        flush();
+
+        const button = document.querySelector('.mat-datepicker-close-button') as HTMLButtonElement;
+        expect(document.querySelector('.mat-datepicker-content')).not.toBeNull();
+
+        button.click();
+        fixture.detectChanges();
+        flush();
+
+        expect(document.querySelector('.mat-datepicker-content')).toBeNull();
+      }));
+
     });
 
     describe('datepicker with too many inputs', () => {
