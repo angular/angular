@@ -18,6 +18,7 @@ import {
   UP_ARROW,
   SPACE,
   ESCAPE,
+  hasModifierKey,
 } from '@angular/cdk/keycodes';
 import {
   AfterContentInit,
@@ -290,7 +291,7 @@ export class MatMonthView<D> implements AfterContentInit, OnChanges, OnDestroy {
         return;
       case ESCAPE:
         // Abort the current range selection if the user presses escape mid-selection.
-        if (this._previewEnd != null) {
+        if (this._previewEnd != null && !hasModifierKey(event)) {
           this._previewStart = this._previewEnd = null;
           this.selectedChange.emit(null);
           this._userSelection.emit({value: null, event});

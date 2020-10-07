@@ -8,7 +8,7 @@
 
 import {Directionality} from '@angular/cdk/bidi';
 import {BooleanInput, coerceBooleanProperty, coerceStringArray} from '@angular/cdk/coercion';
-import {ESCAPE, UP_ARROW} from '@angular/cdk/keycodes';
+import {ESCAPE, hasModifierKey, UP_ARROW} from '@angular/cdk/keycodes';
 import {
   Overlay,
   OverlayConfig,
@@ -607,8 +607,8 @@ export abstract class MatDatepickerBase<C extends MatDatepickerControl<D>, S,
       this._popupRef.detachments(),
       this._popupRef.keydownEvents().pipe(filter(event => {
         // Closing on alt + up is only valid when there's an input associated with the datepicker.
-        return event.keyCode === ESCAPE ||
-               (this._datepickerInput && event.altKey && event.keyCode === UP_ARROW);
+        return (event.keyCode === ESCAPE && !hasModifierKey(event)) || (this._datepickerInput &&
+            hasModifierKey(event, 'altKey') && event.keyCode === UP_ARROW);
       }))
     ).subscribe(event => {
       if (event) {

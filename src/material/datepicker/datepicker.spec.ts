@@ -223,6 +223,23 @@ describe('MatDatepicker', () => {
         expect(event.defaultPrevented).toBe(true);
       }));
 
+      it('should not close the popup when pressing ESCAPE with a modifier key', fakeAsync(() => {
+        testComponent.datepicker.open();
+        fixture.detectChanges();
+
+        expect(testComponent.datepicker.opened).toBe(true, 'Expected datepicker to be open.');
+
+        const event = dispatchKeyboardEvent(document.body, 'keydown', ESCAPE, undefined, {
+          alt: true
+        });
+        fixture.detectChanges();
+        flush();
+
+        expect(testComponent.datepicker.opened).toBe(true, 'Expected datepicker to stay open.');
+        expect(event.defaultPrevented).toBe(false);
+      }));
+
+
       it('should set the proper role on the popup', fakeAsync(() => {
         testComponent.datepicker.open();
         fixture.detectChanges();
