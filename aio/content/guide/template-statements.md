@@ -37,7 +37,7 @@ The following JavaScript and template expression syntax is not allowed:
 * increment and decrement operators, `++` and `--`
 * operator assignment, such as `+=` and `-=`
 * the bitwise operators, such as `|` and `&`
-* the [pipe operator](guide/template-expression-operators#pipe)
+* the [pipe operator](guide/pipes)
 
 ## Statement context
 
