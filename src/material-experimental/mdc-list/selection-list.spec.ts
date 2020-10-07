@@ -71,25 +71,25 @@ describe('MDC-based MatSelectionList without forms', () => {
     });
 
     it('should not emit a selectionChange event if an option changed programmatically', () => {
-      spyOn(fixture.componentInstance, 'onValueChange');
+      spyOn(fixture.componentInstance, 'onSelectionChange');
 
-      expect(fixture.componentInstance.onValueChange).toHaveBeenCalledTimes(0);
+      expect(fixture.componentInstance.onSelectionChange).toHaveBeenCalledTimes(0);
 
       listOptions[2].componentInstance.toggle();
       fixture.detectChanges();
 
-      expect(fixture.componentInstance.onValueChange).toHaveBeenCalledTimes(0);
+      expect(fixture.componentInstance.onSelectionChange).toHaveBeenCalledTimes(0);
     });
 
     it('should emit a selectionChange event if an option got clicked', () => {
-      spyOn(fixture.componentInstance, 'onValueChange');
+      spyOn(fixture.componentInstance, 'onSelectionChange');
 
-      expect(fixture.componentInstance.onValueChange).toHaveBeenCalledTimes(0);
+      expect(fixture.componentInstance.onSelectionChange).toHaveBeenCalledTimes(0);
 
       dispatchMouseEvent(listOptions[2].nativeElement, 'click');
       fixture.detectChanges();
 
-      expect(fixture.componentInstance.onValueChange).toHaveBeenCalledTimes(1);
+      expect(fixture.componentInstance.onSelectionChange).toHaveBeenCalledTimes(1);
     });
 
     it('should be able to dispatch one selected item', () => {
@@ -523,6 +523,23 @@ describe('MDC-based MatSelectionList without forms', () => {
       fixture.detectChanges();
 
       expect(listOptions.every(option => option.componentInstance.selected)).toBe(false);
+    });
+
+    // MDC does not support the common CTRL + A keyboard shortcut.
+    // Tracked with: https://github.com/material-components/material-components-web/issues/6366
+    // tslint:disable-next-line:ban
+    xit('should dispatch the selectionChange event when selecting via ctrl + a', () => {
+      const spy = spyOn(fixture.componentInstance, 'onSelectionChange');
+      listOptions.forEach(option => option.componentInstance.disabled = false);
+      const event = createKeyboardEvent('keydown', A, undefined, {control: true});
+
+      dispatchEvent(selectionList.nativeElement, event);
+      fixture.detectChanges();
+
+      expect(spy).toHaveBeenCalledTimes(1);
+      expect(spy).toHaveBeenCalledWith(jasmine.objectContaining({
+        options: listOptions.map(option => option.componentInstance)
+      }));
     });
 
     it('should be able to jump focus down to an item by typing', fakeAsync(() => {
@@ -1433,7 +1450,7 @@ describe('MDC-based MatSelectionList with forms', () => {
 @Component({template: `
   <mat-selection-list
     id="selection-list-1"
-    (selectionChange)="onValueChange($event)"
+    (selectionChange)="onSelectionChange($event)"
     [disableRipple]="listRippleDisabled"
     [color]="selectionListColor"
     [multiple]="multiple">
@@ -1462,7 +1479,7 @@ class SelectionListWithListOptions {
   selectionListColor: ThemePalette;
   firstOptionColor: ThemePalette;
 
-  onValueChange(_change: MatSelectionListChange) {}
+  onSelectionChange(_change: MatSelectionListChange) {}
 }
 
 @Component({template: `

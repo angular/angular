@@ -116,7 +116,7 @@ export declare class MatSelectionList extends _MatSelectionListMixinBase impleme
     readonly selectionChange: EventEmitter<MatSelectionListChange>;
     tabIndex: number;
     constructor(_element: ElementRef<HTMLElement>, tabIndex: string, _changeDetector: ChangeDetectorRef, _focusMonitor?: FocusMonitor | undefined);
-    _emitChangeEvent(option: MatListOption): void;
+    _emitChangeEvent(options: MatListOption[]): void;
     _keydown(event: KeyboardEvent): void;
     _removeOptionFromList(option: MatListOption): MatListOption | null;
     _reportValueChange(): void;
@@ -140,8 +140,10 @@ export declare class MatSelectionList extends _MatSelectionListMixinBase impleme
 
 export declare class MatSelectionListChange {
     option: MatListOption;
+    options: MatListOption[];
     source: MatSelectionList;
     constructor(
     source: MatSelectionList,
-    option: MatListOption);
+    option: MatListOption,
+    options: MatListOption[]);
 }
