@@ -58,6 +58,10 @@
   box-sizing: border-box;
 }
 
+.mat-mdc-form-field-hint-end {
+  order: 1;
+}
+
 // In order to make it possible for developers to disable animations for form-fields,
 // we only activate the animation styles if animations are not explicitly disabled.
 .mat-mdc-form-field:not(.mat-form-field-no-animations) {

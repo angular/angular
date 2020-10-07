@@ -25,7 +25,7 @@ export const _MAT_HINT = new InjectionToken<MatHint>('MatHint');
   selector: 'mat-hint',
   host: {
     'class': 'mat-hint',
-    '[class.mat-right]': 'align == "end"',
+    '[class.mat-form-field-hint-end]': 'align === "end"',
     '[attr.id]': 'id',
     // Remove align attribute to prevent it from interfering with layout.
     '[attr.align]': 'null',

@@ -539,6 +539,20 @@ describe('MatMdcInput without forms', () => {
     expect(input.getAttribute('aria-describedby')).toBe('start end');
   }));
 
+  it('should set a class on the hint element based on its alignment', fakeAsync(() => {
+    const fixture = createComponent(MatInputMultipleHintTestController);
+
+    fixture.componentInstance.startId = 'start';
+    fixture.componentInstance.endId = 'end';
+    fixture.detectChanges();
+
+    const start = fixture.nativeElement.querySelector('#start');
+    const end = fixture.nativeElement.querySelector('#end');
+
+    expect(start.classList).not.toContain('mat-mdc-form-field-hint-end');
+    expect(end.classList).toContain('mat-mdc-form-field-hint-end');
+  }));
+
   it('sets the aria-describedby when a hintLabel is set, in addition to a mat-hint',
     fakeAsync(() => {
       let fixture = createComponent(MatInputMultipleHintMixedTestController);
@@ -546,9 +560,9 @@ describe('MatMdcInput without forms', () => {
       fixture.detectChanges();
 
       let hintLabel = fixture.debugElement.query(
-          By.css('.mat-mdc-form-field-hint:not(.mat-form-field-hint-end)'))!.nativeElement;
+          By.css('.mat-mdc-form-field-hint:not(.mat-mdc-form-field-hint-end)'))!.nativeElement;
       let endLabel = fixture.debugElement
-          .query(By.css('.mat-mdc-form-field-hint.mat-form-field-hint-end'))!.nativeElement;
+          .query(By.css('.mat-mdc-form-field-hint.mat-mdc-form-field-hint-end'))!.nativeElement;
       let input = fixture.debugElement.query(By.css('input'))!.nativeElement;
       let ariaValue = input.getAttribute('aria-describedby');
 
