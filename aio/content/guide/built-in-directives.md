@@ -265,12 +265,6 @@ The `nullCustomer` will not be displayed as long as it is `null`.
 
 <code-example path="built-in-directives/src/app/app.component.html" region="NgIf-2b" header="src/app/app.component.html"></code-example>
 
-<div class="alert is-helpful">
-
-See also the
-[safe navigation operator](guide/template-expression-operators#safe-navigation-operator "Safe navigation operator (?.)") below.
-
-</div>
 <hr/>
 
 {@a ngFor}
