@@ -39,7 +39,7 @@ const ICU_BLOCK_REGEXP = /^\s*(�\d+:?\d*�)\s*,\s*(select|plural)\s*,/;
 
 const MARKER = `�`;
 const SUBTEMPLATE_REGEXP = /�\/?\*(\d+:\d+)�/gi;
-const PH_REGEXP = /�(\/?[#*!]\d+):?\d*�/gi;
+const PH_REGEXP = /�(\/?[#*]\d+):?\d*�/gi;
 
 /**
  * Angular Dart introduced &ngsp; as a placeholder for non-removable space, see:
@@ -120,7 +120,7 @@ export function i18nStartFirstCreatePass(
       // At this point value is something like: '/#1:2' (originally coming from '�/#1:2�')
       const isClosing = value.charCodeAt(0) === CharCode.SLASH;
       const type = value.charCodeAt(isClosing ? 1 : 0);
-      ngDevMode && assertOneOf(type, CharCode.STAR, CharCode.HASH, CharCode.EXCLAMATION);
+      ngDevMode && assertOneOf(type, CharCode.STAR, CharCode.HASH);
       const index = HEADER_OFFSET + Number.parseInt(value.substring((isClosing ? 2 : 1)));
       if (isClosing) {
         existingTNodeStack.shift();
