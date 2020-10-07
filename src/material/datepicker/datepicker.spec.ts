@@ -2121,7 +2121,8 @@ describe('MatDatepicker', () => {
       fixture.detectChanges();
 
       const datepickerContent = testComponent.datepicker['_dialogRef']!!.componentInstance;
-      const actualClasses = datepickerContent._elementRef.nativeElement.children[1].classList;
+      const actualClasses =
+          datepickerContent._elementRef.nativeElement.querySelector('.mat-calendar').classList;
       expect(actualClasses.contains('foo')).toBe(true);
       expect(actualClasses.contains('bar')).toBe(true);
     });
