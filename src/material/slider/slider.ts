@@ -134,6 +134,13 @@ const _MatSliderMixinBase:
     '[attr.aria-valuemax]': 'max',
     '[attr.aria-valuemin]': 'min',
     '[attr.aria-valuenow]': 'value',
+
+    // NVDA and Jaws appear to announce the `aria-valuenow` by calculating its percentage based
+    // on its value between `aria-valuemin` and `aria-valuemax`. Due to how decimals are handled,
+    // it can cause the slider to read out a very long value like 0.20000068 if the current value
+    // is 0.2 with a min of 0 and max of 1. We work around the issue by setting `aria-valuetext`
+    // to the same value that we set on the slider's thumb which will be truncated.
+    '[attr.aria-valuetext]': 'displayValue',
     '[attr.aria-orientation]': 'vertical ? "vertical" : "horizontal"',
     '[class.mat-slider-disabled]': 'disabled',
     '[class.mat-slider-has-ticks]': 'tickInterval',
