@@ -1,3 +1,42 @@
+<a name="11.0.0-next.5"></a>
+# 11.0.0-next.5 (2020-10-07)
+
+
+### Bug Fixes
+
+* **common:** add boolean to valid json for testing ([#37893](https://github.com/angular/angular/issues/37893)) ([3c474ec](https://github.com/angular/angular/commit/3c474ec)), closes [#20690](https://github.com/angular/angular/issues/20690)
+* **core:** use single quotes for relative link resolution migration to align with style guide ([#39070](https://github.com/angular/angular/issues/39070)) ([8894706](https://github.com/angular/angular/commit/8894706))
+* **forms:** improve types of directive constructor arguments ([#38944](https://github.com/angular/angular/issues/38944)) ([246de9a](https://github.com/angular/angular/commit/246de9a))
+* **forms:** include null in .parent of abstract control ([#32671](https://github.com/angular/angular/issues/32671)) ([f4f1bcc](https://github.com/angular/angular/commit/f4f1bcc)), closes [#16999](https://github.com/angular/angular/issues/16999)
+* **language-service:** [Ivy] hybrid visitor should not locate let keyword ([#39061](https://github.com/angular/angular/issues/39061)) ([70e13dc](https://github.com/angular/angular/commit/70e13dc))
+* **router:** properly assign ExtraOptions to Router in RouterTestingModule ([#39096](https://github.com/angular/angular/issues/39096)) ([d8c0534](https://github.com/angular/angular/commit/d8c0534)), closes [#23347](https://github.com/angular/angular/issues/23347)
+
+
+### Features
+
+* **compiler-cli:** support getting resource dependencies for a source file ([#38048](https://github.com/angular/angular/issues/38048)) ([5dbf357](https://github.com/angular/angular/commit/5dbf357))
+* **forms:** add migration for AbstractControl.parent accesses ([#39009](https://github.com/angular/angular/issues/39009)) ([aeec223](https://github.com/angular/angular/commit/aeec223)), closes [#32671](https://github.com/angular/angular/issues/32671)
+* **language-service:** Add getDefinitionAndBoundSpan (go to definition) ([#39101](https://github.com/angular/angular/issues/39101)) ([3975dd9](https://github.com/angular/angular/commit/3975dd9))
+* **language-service:** add quick info for inline templates in ivy ([#39060](https://github.com/angular/angular/issues/39060)) ([904adb7](https://github.com/angular/angular/commit/904adb7))
+
+
+### BREAKING CHANGES
+
+* **forms:** Directives in the `@angular/forms` package used to have `any[]` as a type of `validators` and
+`asyncValidators` arguments in constructors. Now these arguments are properly typed, so if your
+code relies on directive constructor types it may require some updates to improve type safety.
+* **forms:** Type of AbstractFormControl.parent now includes null
+
+`null` is now included in the types of .parent. If you don't already have a check for this case,
+the TypeScript compiler might compain. A v11 migration exists which adds the not-null assertion
+operator where necessary.
+
+In an unlikely case your code was testing the parnet against undefined with sitrct equality,
+you'll need to change this to `=== null` instead, since the parent is not explicily initialized
+with `null` instead of being left `undefined`.
+
+
+
 <a name="10.1.5"></a>
 ## 10.1.5 (2020-10-07)
 
