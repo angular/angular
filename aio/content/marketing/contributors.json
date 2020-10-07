@@ -862,5 +862,13 @@
     "website": "https://carloscaballero.io/",
     "bio": "Carlos Caballero is a computer science engineer and a PhD in Computer Science from the University of Málaga. He earned his masters in Software Engineering and Artificial Intelligence. He is a full-time teacher in vocational training. He has written several teaching books and more than a dozen research articles in the first international journals.",
     "groups": ["GDE"]
-  }
+  },
+  "srashtisj": {
+     "name": "Srashti Jain",
+     "picture": "srashti_jain.jpg",
+     "twitter": "srashtisj",
+     "website": "https://github.com/srashtisj",
+     "bio": "Srashti is Senior Developer at Hvantage Technologies. She's also a Google Developer Expert for Angular and Microsoft MVP (Developer Technologies) based in India. Co-organiser All About Web (@itsAllAboutWeb) and Indore Technical Community (#ngIndore).",
+     "groups": ["GDE"]
+   }
 }
