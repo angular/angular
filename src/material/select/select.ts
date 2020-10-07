@@ -179,6 +179,9 @@ export interface MatSelectConfig {
 
   /** Time to wait in milliseconds after the last keystroke before moving focus to an item. */
   typeaheadDebounceInterval?: number;
+
+  /** Class or list of classes to be applied to the menu's overlay panel. */
+  overlayPanelClass?: string | string[];
 }
 
 /** Injection token that can be used to provide the default options the select module. */
@@ -311,6 +314,8 @@ export abstract class _MatSelectBase<C> extends _MatSelectMixinBase implements A
   /** Strategy that will be used to handle scrolling while the select panel is open. */
   _scrollStrategy: ScrollStrategy;
 
+  _overlayPanelClass: string | string[] = this._defaultOptions?.overlayPanelClass || '';
+
   /** Whether the select is focused. */
   get focused(): boolean {
     return this._focused || this._panelOpen;
@@ -373,7 +378,7 @@ export abstract class _MatSelectBase<C> extends _MatSelectMixinBase implements A
   set disableOptionCentering(value: boolean) {
     this._disableOptionCentering = coerceBooleanProperty(value);
   }
-  private _disableOptionCentering: boolean = false;
+  private _disableOptionCentering = this._defaultOptions?.disableOptionCentering ?? false;
 
   /**
    * Function to compare the option values with the selected values. The first argument
@@ -422,7 +427,7 @@ export abstract class _MatSelectBase<C> extends _MatSelectMixinBase implements A
   set typeaheadDebounceInterval(value: number) {
     this._typeaheadDebounceInterval = coerceNumberProperty(value);
   }
-  private _typeaheadDebounceInterval: number;
+  private _typeaheadDebounceInterval = this._defaultOptions?.typeaheadDebounceInterval ?? 0;
 
   /**
    * Function used to sort the values in a select in multiple mode.
@@ -489,7 +494,7 @@ export abstract class _MatSelectBase<C> extends _MatSelectMixinBase implements A
     @Attribute('tabindex') tabIndex: string,
     @Inject(MAT_SELECT_SCROLL_STRATEGY) scrollStrategyFactory: any,
     private _liveAnnouncer: LiveAnnouncer,
-    @Optional() @Inject(MAT_SELECT_CONFIG) defaults?: MatSelectConfig) {
+    @Optional() @Inject(MAT_SELECT_CONFIG) private _defaultOptions?: MatSelectConfig) {
     super(elementRef, _defaultErrorStateMatcher, _parentForm,
           _parentFormGroup, ngControl);
 
@@ -505,16 +510,6 @@ export abstract class _MatSelectBase<C> extends _MatSelectMixinBase implements A
 
     // Force setter to be called in case id was not specified.
     this.id = this.id;
-
-    if (defaults) {
-      if (defaults.disableOptionCentering != null) {
-        this.disableOptionCentering = defaults.disableOptionCentering;
-      }
-
-      if (defaults.typeaheadDebounceInterval != null) {
-        this.typeaheadDebounceInterval = defaults.typeaheadDebounceInterval;
-      }
-    }
   }
 
   ngOnInit() {
