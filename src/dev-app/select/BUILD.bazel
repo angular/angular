@@ -12,6 +12,7 @@ ng_module(
     deps = [
         "//src/material/button",
         "//src/material/card",
+        "//src/material/dialog",
         "//src/material/form-field",
         "//src/material/icon",
         "//src/material/input",

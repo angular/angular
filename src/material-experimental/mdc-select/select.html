@@ -1,4 +1,14 @@
+<!--
+ Note that the select trigger element specifies `aria-owns` pointing to the listbox overlay.
+ While aria-owns is not required for the ARIA 1.2 `role="combobox"` interaction pattern,
+ it fixes an issue with VoiceOver when the select appears inside of an `aria-model="true"`
+ element (e.g. a dialog). Without this `aria-owns`, the `aria-modal` on a dialog prevents
+ VoiceOver from "seeing" the select's listbox overlay for aria-activedescendant.
+ Using `aria-owns` re-parents the select overlay so that it works again.
+ See https://github.com/angular/components/issues/20694
+-->
 <div cdk-overlay-origin
+     [attr.aria-owns]="panelOpen ? id + '-panel' : null"
      class="mat-mdc-select-trigger"
      (click)="toggle()"
      #fallbackOverlayOrigin="cdkOverlayOrigin"

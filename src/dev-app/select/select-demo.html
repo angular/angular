@@ -246,6 +246,33 @@ Space above cards: <input type="number" [formControl]="topHeightCtrl">
     </mat-card>
   </div>
 
+  <mat-card>
+    <mat-card-subtitle>MatSelect inside a dialog</mat-card-subtitle>
+    <mat-card-content>
+
+      <button (click)="openDialogWithSelectInside(dialogTemplate)">Open dialog</button>
+
+      <ng-template #dialogTemplate>
+        <mat-form-field>
+          <mat-label>Your name</mat-label>
+          <input matInput>
+        </mat-form-field>
+
+        <mat-form-field>
+          <mat-label>Select a topping</mat-label>
+          <mat-select>
+            <mat-option>Cheese</mat-option>
+            <mat-option>Onion</mat-option>
+            <mat-option>Pepper</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <button>Done</button>
+      </ng-template>
+
+    </mat-card-content>
+  </mat-card>
+
 </div>
 
 <mat-card class="demo-card demo-basic">

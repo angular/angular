@@ -196,6 +196,19 @@ describe('MDC-based MatSelect', () => {
           expect(ariaControls).toBe(document.querySelector('.mat-mdc-select-panel')!.id);
         }));
 
+        it('should point the aria-owns attribute to the listbox on the trigger', fakeAsync(() => {
+          const trigger = select.querySelector('.mat-mdc-select-trigger')!;
+          expect(trigger.hasAttribute('aria-owns')).toBe(false);
+
+          fixture.componentInstance.select.open();
+          fixture.detectChanges();
+          flush();
+
+          const ariaOwns = trigger.getAttribute('aria-owns');
+          expect(ariaOwns).toBeTruthy();
+          expect(ariaOwns).toBe(document.querySelector('.mat-mdc-select-panel')!.id);
+        }));
+
         it('should set aria-expanded based on the select open state', fakeAsync(() => {
           expect(select.getAttribute('aria-expanded')).toBe('false');
 
