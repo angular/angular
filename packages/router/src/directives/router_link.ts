@@ -14,6 +14,7 @@ import {QueryParamsHandling} from '../config';
 import {Event, NavigationEnd} from '../events';
 import {Router} from '../router';
 import {ActivatedRoute} from '../router_state';
+import {Params} from '../shared';
 import {UrlTree} from '../url_tree';
 
 
@@ -122,24 +123,21 @@ export class RouterLink implements OnChanges {
    * @see {@link UrlCreationOptions#queryParams UrlCreationOptions#queryParams}
    * @see {@link Router#createUrlTree Router#createUrlTree}
    */
-  // TODO(issue/24571): remove '!'.
-  @Input() queryParams!: {[k: string]: any};
+  @Input() queryParams?: Params|null;
   /**
    * Passed to {@link Router#createUrlTree Router#createUrlTree} as part of the
    * `UrlCreationOptions`.
    * @see {@link UrlCreationOptions#fragment UrlCreationOptions#fragment}
    * @see {@link Router#createUrlTree Router#createUrlTree}
    */
-  // TODO(issue/24571): remove '!'.
-  @Input() fragment!: string;
+  @Input() fragment?: string;
   /**
    * Passed to {@link Router#createUrlTree Router#createUrlTree} as part of the
    * `UrlCreationOptions`.
    * @see {@link UrlCreationOptions#queryParamsHandling UrlCreationOptions#queryParamsHandling}
    * @see {@link Router#createUrlTree Router#createUrlTree}
    */
-  // TODO(issue/24571): remove '!'.
-  @Input() queryParamsHandling!: QueryParamsHandling;
+  @Input() queryParamsHandling?: QueryParamsHandling|null;
   /**
    * Passed to {@link Router#createUrlTree Router#createUrlTree} as part of the
    * `UrlCreationOptions`.
@@ -264,24 +262,21 @@ export class RouterLinkWithHref implements OnChanges, OnDestroy {
    * @see {@link UrlCreationOptions#queryParams UrlCreationOptions#queryParams}
    * @see {@link Router#createUrlTree Router#createUrlTree}
    */
-  // TODO(issue/24571): remove '!'.
-  @Input() queryParams!: {[k: string]: any};
+  @Input() queryParams?: Params|null;
   /**
    * Passed to {@link Router#createUrlTree Router#createUrlTree} as part of the
    * `UrlCreationOptions`.
    * @see {@link UrlCreationOptions#fragment UrlCreationOptions#fragment}
    * @see {@link Router#createUrlTree Router#createUrlTree}
    */
-  // TODO(issue/24571): remove '!'.
-  @Input() fragment!: string;
+  @Input() fragment?: string;
   /**
    * Passed to {@link Router#createUrlTree Router#createUrlTree} as part of the
    * `UrlCreationOptions`.
    * @see {@link UrlCreationOptions#queryParamsHandling UrlCreationOptions#queryParamsHandling}
    * @see {@link Router#createUrlTree Router#createUrlTree}
    */
-  // TODO(issue/24571): remove '!'.
-  @Input() queryParamsHandling!: QueryParamsHandling;
+  @Input() queryParamsHandling?: QueryParamsHandling|null;
   /**
    * Passed to {@link Router#createUrlTree Router#createUrlTree} as part of the
    * `UrlCreationOptions`.

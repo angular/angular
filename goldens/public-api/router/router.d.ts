@@ -376,13 +376,11 @@ export declare class RouterEvent {
 }
 
 export declare class RouterLink implements OnChanges {
-    fragment: string;
+    fragment?: string;
     preserveFragment: boolean;
     /** @deprecated */ set preserveQueryParams(value: boolean);
-    queryParams: {
-        [k: string]: any;
-    };
-    queryParamsHandling: QueryParamsHandling;
+    queryParams?: Params | null;
+    queryParamsHandling?: QueryParamsHandling | null;
     replaceUrl: boolean;
     set routerLink(commands: any[] | string | null | undefined);
     skipLocationChange: boolean;
@@ -410,14 +408,12 @@ export declare class RouterLinkActive implements OnChanges, OnDestroy, AfterCont
 }
 
 export declare class RouterLinkWithHref implements OnChanges, OnDestroy {
-    fragment: string;
+    fragment?: string;
     href: string;
     preserveFragment: boolean;
     /** @deprecated */ set preserveQueryParams(value: boolean);
-    queryParams: {
-        [k: string]: any;
-    };
-    queryParamsHandling: QueryParamsHandling;
+    queryParams?: Params | null;
+    queryParamsHandling?: QueryParamsHandling | null;
     replaceUrl: boolean;
     set routerLink(commands: any[] | string | null | undefined);
     skipLocationChange: boolean;
