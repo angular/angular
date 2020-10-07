@@ -197,7 +197,8 @@ const _MatDateRangeInputBase:
     {provide: NG_VALIDATORS, useExisting: MatStartDate, multi: true}
   ]
 })
-export class MatStartDate<D> extends _MatDateRangeInputBase<D> implements CanUpdateErrorState {
+export class MatStartDate<D> extends _MatDateRangeInputBase<D> implements
+    CanUpdateErrorState, DoCheck, OnInit {
   /** Validator that checks that the start date isn't after the end date. */
   private _startValidator: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
     const start = this._dateAdapter.getValidDateOrNull(
@@ -223,6 +224,26 @@ export class MatStartDate<D> extends _MatDateRangeInputBase<D> implements CanUpd
     // constructor once ViewEngine is removed.
     super(rangeInput, elementRef, defaultErrorStateMatcher, injector, parentForm, parentFormGroup,
         dateAdapter, dateFormats);
+  }
+
+  ngOnInit() {
+    // Normally this happens automatically, but it seems to break if not added explicitly when all
+    // of the criteria below are met:
+    // 1) The class extends a TS mixin.
+    // 2) The application is running in ViewEngine.
+    // 3) The application is being transpiled through tsickle.
+    // This can be removed once google3 is completely migrated to Ivy.
+    super.ngOnInit();
+  }
+
+  ngDoCheck() {
+    // Normally this happens automatically, but it seems to break if not added explicitly when all
+    // of the criteria below are met:
+    // 1) The class extends a TS mixin.
+    // 2) The application is running in ViewEngine.
+    // 3) The application is being transpiled through tsickle.
+    // This can be removed once google3 is completely migrated to Ivy.
+    super.ngDoCheck();
   }
 
   protected _validator = Validators.compose([...super._getValidators(), this._startValidator]);
@@ -282,7 +303,8 @@ export class MatStartDate<D> extends _MatDateRangeInputBase<D> implements CanUpd
     {provide: NG_VALIDATORS, useExisting: MatEndDate, multi: true}
   ]
 })
-export class MatEndDate<D> extends _MatDateRangeInputBase<D> implements CanUpdateErrorState {
+export class MatEndDate<D> extends _MatDateRangeInputBase<D> implements
+    CanUpdateErrorState, DoCheck, OnInit {
   /** Validator that checks that the end date isn't before the start date. */
   private _endValidator: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
     const end = this._dateAdapter.getValidDateOrNull(this._dateAdapter.deserialize(control.value));
@@ -307,6 +329,26 @@ export class MatEndDate<D> extends _MatDateRangeInputBase<D> implements CanUpdat
     // constructor once ViewEngine is removed.
     super(rangeInput, elementRef, defaultErrorStateMatcher, injector, parentForm, parentFormGroup,
         dateAdapter, dateFormats);
+  }
+
+  ngOnInit() {
+    // Normally this happens automatically, but it seems to break if not added explicitly when all
+    // of the criteria below are met:
+    // 1) The class extends a TS mixin.
+    // 2) The application is running in ViewEngine.
+    // 3) The application is being transpiled through tsickle.
+    // This can be removed once google3 is completely migrated to Ivy.
+    super.ngOnInit();
+  }
+
+  ngDoCheck() {
+    // Normally this happens automatically, but it seems to break if not added explicitly when all
+    // of the criteria below are met:
+    // 1) The class extends a TS mixin.
+    // 2) The application is running in ViewEngine.
+    // 3) The application is being transpiled through tsickle.
+    // This can be removed once google3 is completely migrated to Ivy.
+    super.ngDoCheck();
   }
 
   protected _validator = Validators.compose([...super._getValidators(), this._endValidator]);

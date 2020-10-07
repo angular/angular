@@ -366,13 +366,15 @@ export declare abstract class MatDateSelectionModel<S, D = ExtractDateTypeFromSe
     static ɵfac: i0.ɵɵFactoryDef<MatDateSelectionModel<any, any>, never>;
 }
 
-export declare class MatEndDate<D> extends _MatDateRangeInputBase<D> implements CanUpdateErrorState {
+export declare class MatEndDate<D> extends _MatDateRangeInputBase<D> implements CanUpdateErrorState, DoCheck, OnInit {
     protected _canEmitChangeEvent: (event: DateSelectionModelChange<DateRange<D>>) => boolean;
     protected _validator: ValidatorFn | null;
     constructor(rangeInput: MatDateRangeInputParent<D>, elementRef: ElementRef<HTMLInputElement>, defaultErrorStateMatcher: ErrorStateMatcher, injector: Injector, parentForm: NgForm, parentFormGroup: FormGroupDirective, dateAdapter: DateAdapter<D>, dateFormats: MatDateFormats);
     protected _assignValueToModel(value: D | null): void;
     protected _getValueFromModel(modelValue: DateRange<D>): D | null;
     _onKeydown(event: KeyboardEvent): void;
+    ngDoCheck(): void;
+    ngOnInit(): void;
     static ngAcceptInputType_disabled: BooleanInput;
     static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatEndDate<any>, "input[matEndDate]", never, {}, {}, never>;
     static ɵfac: i0.ɵɵFactoryDef<MatEndDate<any>, [null, null, null, null, { optional: true; }, { optional: true; }, { optional: true; }, { optional: true; }]>;
@@ -473,7 +475,7 @@ export declare class MatSingleDateSelectionModel<D> extends MatDateSelectionMode
     static ɵprov: i0.ɵɵInjectableDef<MatSingleDateSelectionModel<any>>;
 }
 
-export declare class MatStartDate<D> extends _MatDateRangeInputBase<D> implements CanUpdateErrorState {
+export declare class MatStartDate<D> extends _MatDateRangeInputBase<D> implements CanUpdateErrorState, DoCheck, OnInit {
     protected _canEmitChangeEvent: (event: DateSelectionModelChange<DateRange<D>>) => boolean;
     protected _validator: ValidatorFn | null;
     constructor(rangeInput: MatDateRangeInputParent<D>, elementRef: ElementRef<HTMLInputElement>, defaultErrorStateMatcher: ErrorStateMatcher, injector: Injector, parentForm: NgForm, parentFormGroup: FormGroupDirective, dateAdapter: DateAdapter<D>, dateFormats: MatDateFormats);
@@ -481,6 +483,8 @@ export declare class MatStartDate<D> extends _MatDateRangeInputBase<D> implement
     protected _formatValue(value: D | null): void;
     protected _getValueFromModel(modelValue: DateRange<D>): D | null;
     getMirrorValue(): string;
+    ngDoCheck(): void;
+    ngOnInit(): void;
     static ngAcceptInputType_disabled: BooleanInput;
     static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatStartDate<any>, "input[matStartDate]", never, {}, {}, never>;
     static ɵfac: i0.ɵɵFactoryDef<MatStartDate<any>, [null, null, null, null, { optional: true; }, { optional: true; }, { optional: true; }, { optional: true; }]>;
