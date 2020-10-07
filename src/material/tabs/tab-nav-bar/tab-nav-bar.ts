@@ -5,12 +5,15 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {FocusableOption, FocusMonitor} from '@angular/cdk/a11y';
 import {Directionality} from '@angular/cdk/bidi';
+import {BooleanInput, coerceBooleanProperty, NumberInput} from '@angular/cdk/coercion';
 import {Platform} from '@angular/cdk/platform';
 import {ViewportRuler} from '@angular/cdk/scrolling';
 import {
   AfterContentChecked,
   AfterContentInit,
+  AfterViewInit,
   Attribute,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
@@ -27,7 +30,6 @@ import {
   QueryList,
   ViewChild,
   ViewEncapsulation,
-  AfterViewInit,
 } from '@angular/core';
 import {
   CanDisable, CanDisableCtor,
@@ -42,12 +44,10 @@ import {
   RippleTarget,
   ThemePalette,
 } from '@angular/material/core';
-import {BooleanInput, coerceBooleanProperty, NumberInput} from '@angular/cdk/coercion';
-import {FocusMonitor, FocusableOption} from '@angular/cdk/a11y';
 import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
+import {startWith, takeUntil} from 'rxjs/operators';
 import {MatInkBar} from '../ink-bar';
 import {MatPaginatedTabHeader, MatPaginatedTabHeaderItem} from '../paginated-tab-header';
-import {startWith, takeUntil} from 'rxjs/operators';
 
 /**
  * Base class with all of the `MatTabNav` functionality.
@@ -192,7 +192,9 @@ export class _MatTabLinkBase extends _MatTabLinkMixinBase implements AfterViewIn
   @Input()
   get active(): boolean { return this._isActive; }
   set active(value: boolean) {
-    if (value !== this._isActive) {
+    const newValue = coerceBooleanProperty(value);
+
+    if (newValue !== this._isActive) {
       this._isActive = value;
       this._tabNavBar.updateActiveLink();
     }
@@ -216,7 +218,8 @@ export class _MatTabLinkBase extends _MatTabLinkMixinBase implements AfterViewIn
   }
 
   constructor(
-      private _tabNavBar: _MatTabNavBase, public elementRef: ElementRef,
+      private _tabNavBar: _MatTabNavBase,
+      /** @docs-private */ public elementRef: ElementRef,
       @Optional() @Inject(MAT_RIPPLE_GLOBAL_OPTIONS) globalRippleOptions: RippleGlobalOptions|null,
       @Attribute('tabindex') tabIndex: string, private _focusMonitor: FocusMonitor,
       @Optional() @Inject(ANIMATION_MODULE_TYPE) animationMode?: string) {
@@ -230,6 +233,7 @@ export class _MatTabLinkBase extends _MatTabLinkMixinBase implements AfterViewIn
     }
   }
 
+  /** Focuses the tab link. */
   focus() {
     this.elementRef.nativeElement.focus();
   }
@@ -242,6 +246,7 @@ export class _MatTabLinkBase extends _MatTabLinkMixinBase implements AfterViewIn
     this._focusMonitor.stopMonitoring(this.elementRef);
   }
 
+  static ngAcceptInputType_active: BooleanInput;
   static ngAcceptInputType_disabled: BooleanInput;
   static ngAcceptInputType_disableRipple: BooleanInput;
   static ngAcceptInputType_tabIndex: NumberInput;

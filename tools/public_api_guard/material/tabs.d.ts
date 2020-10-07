@@ -82,14 +82,14 @@ export declare abstract class _MatTabHeaderBase extends MatPaginatedTabHeader im
 export declare class _MatTabLinkBase extends _MatTabLinkMixinBase implements AfterViewInit, OnDestroy, CanDisable, CanDisableRipple, HasTabIndex, RippleTarget, FocusableOption {
     protected _isActive: boolean;
     get active(): boolean;
-    set active(value: boolean);
-    elementRef: ElementRef;
+    set active(value: boolean); elementRef: ElementRef;
     rippleConfig: RippleConfig & RippleGlobalOptions;
     get rippleDisabled(): boolean;
     constructor(_tabNavBar: _MatTabNavBase, elementRef: ElementRef, globalRippleOptions: RippleGlobalOptions | null, tabIndex: string, _focusMonitor: FocusMonitor, animationMode?: string);
     focus(): void;
     ngAfterViewInit(): void;
     ngOnDestroy(): void;
+    static ngAcceptInputType_active: BooleanInput;
     static ngAcceptInputType_disableRipple: BooleanInput;
     static ngAcceptInputType_disabled: BooleanInput;
     static ngAcceptInputType_tabIndex: NumberInput;
@@ -177,9 +177,8 @@ export declare class MatTabChangeEvent {
     tab: MatTab;
 }
 
-export declare class MatTabContent {
-    template: TemplateRef<any>;
-    constructor(template: TemplateRef<any>);
+export declare class MatTabContent { template: TemplateRef<any>;
+    constructor( template: TemplateRef<any>);
     static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatTabContent, "[matTabContent]", never, {}, {}, never>;
     static ɵfac: i0.ɵɵFactoryDef<MatTabContent, never>;
 }
