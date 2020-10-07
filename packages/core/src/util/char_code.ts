@@ -12,7 +12,6 @@
 export const enum CharCode {
   UPPER_CASE = ~32,   // & with this will make the char uppercase
   SPACE = 32,         // " "
-  EXCLAMATION = 33,   // "!"
   DOUBLE_QUOTE = 34,  // "\""
   HASH = 35,          // "#"
   SINGLE_QUOTE = 39,  // "'"
