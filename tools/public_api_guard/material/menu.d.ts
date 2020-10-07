@@ -1,9 +1,3 @@
-export declare class _MatMenu extends MatMenu {
-    constructor(elementRef: ElementRef<HTMLElement>, ngZone: NgZone, defaultOptions: MatMenuDefaultOptions);
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<_MatMenu, "mat-menu", ["matMenu"], {}, {}, never, ["*"]>;
-    static ɵfac: i0.ɵɵFactoryDef<_MatMenu, never>;
-}
-
 export declare class _MatMenuBase implements AfterContentInit, MatMenuPanel<MatMenuItem>, OnInit, OnDestroy {
     _allItems: QueryList<MatMenuItem>;
     _animationDone: Subject<AnimationEvent>;
@@ -74,7 +68,8 @@ export declare const MAT_MENU_PANEL: InjectionToken<MatMenuPanel<any>>;
 export declare const MAT_MENU_SCROLL_STRATEGY: InjectionToken<() => ScrollStrategy>;
 
 export declare class MatMenu extends _MatMenuBase {
-    static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatMenu, never, never, {}, {}, never>;
+    constructor(elementRef: ElementRef<HTMLElement>, ngZone: NgZone, defaultOptions: MatMenuDefaultOptions);
+    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatMenu, "mat-menu", ["matMenu"], {}, {}, never, ["*"]>;
     static ɵfac: i0.ɵɵFactoryDef<MatMenu, never>;
 }
 
@@ -126,7 +121,7 @@ export declare class MatMenuItem extends _MatMenuItemMixinBase implements Focusa
 
 export declare class MatMenuModule {
     static ɵinj: i0.ɵɵInjectorDef<MatMenuModule>;
-    static ɵmod: i0.ɵɵNgModuleDefWithMeta<MatMenuModule, [typeof i4._MatMenu, typeof i5.MatMenuItem], [typeof i6.CommonModule, typeof i3.MatCommonModule, typeof i3.MatRippleModule, typeof i7.OverlayModule, typeof _MatMenuDirectivesModule], [typeof i8.CdkScrollableModule, typeof i3.MatCommonModule, typeof i4._MatMenu, typeof i5.MatMenuItem, typeof _MatMenuDirectivesModule]>;
+    static ɵmod: i0.ɵɵNgModuleDefWithMeta<MatMenuModule, [typeof i4.MatMenu, typeof i5.MatMenuItem], [typeof i6.CommonModule, typeof i3.MatCommonModule, typeof i3.MatRippleModule, typeof i7.OverlayModule, typeof _MatMenuDirectivesModule], [typeof i8.CdkScrollableModule, typeof i3.MatCommonModule, typeof i4.MatMenu, typeof i5.MatMenuItem, typeof _MatMenuDirectivesModule]>;
 }
 
 export interface MatMenuPanel<T = any> {
@@ -164,7 +159,7 @@ export declare class MatMenuTrigger implements AfterContentInit, OnDestroy {
     readonly onMenuClose: EventEmitter<void>;
     readonly onMenuOpen: EventEmitter<void>;
     restoreFocus: boolean;
-    constructor(_overlay: Overlay, _element: ElementRef<HTMLElement>, _viewContainerRef: ViewContainerRef, scrollStrategy: any, _parentMenu: MatMenu, _menuItemInstance: MatMenuItem, _dir: Directionality, _focusMonitor?: FocusMonitor | undefined);
+    constructor(_overlay: Overlay, _element: ElementRef<HTMLElement>, _viewContainerRef: ViewContainerRef, scrollStrategy: any, parentMenu: MatMenuPanel, _menuItemInstance: MatMenuItem, _dir: Directionality, _focusMonitor?: FocusMonitor | undefined);
     _handleClick(event: MouseEvent): void;
     _handleKeydown(event: KeyboardEvent): void;
     _handleMousedown(event: MouseEvent): void;

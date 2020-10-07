@@ -20,7 +20,7 @@ import {
   MAT_MENU_DEFAULT_OPTIONS,
   MAT_MENU_PANEL,
   MAT_MENU_SCROLL_STRATEGY,
-  MatMenu as BaseMatMenu,
+  _MatMenuBase,
   matMenuAnimations,
   MatMenuDefaultOptions,
 } from '@angular/material/menu';
@@ -50,11 +50,9 @@ export const MAT_MENU_SCROLL_STRATEGY_FACTORY_PROVIDER: Provider = {
   ],
   providers: [
     {provide: MAT_MENU_PANEL, useExisting: MatMenu},
-    {provide: BaseMatMenu, useExisting: MatMenu},
   ]
 })
-export class MatMenu extends BaseMatMenu {
-
+export class MatMenu extends _MatMenuBase {
   constructor(_elementRef: ElementRef<HTMLElement>,
               _ngZone: NgZone,
               @Inject(MAT_MENU_DEFAULT_OPTIONS) _defaultOptions: MatMenuDefaultOptions) {

@@ -480,21 +480,6 @@ export class _MatMenuBase implements AfterContentInit, MatMenuPanel<MatMenuItem>
   static ngAcceptInputType_hasBackdrop: BooleanInput;
 }
 
-/** @docs-private We show the "_MatMenu" class as "MatMenu" in the docs. */
-@Directive()
-export class MatMenu extends _MatMenuBase {}
-
-// Note on the weird inheritance setup: we need three classes, because the MDC-based menu has to
-// extend `MatMenu`, however keeping a reference to it will cause the inlined template and styles
-// to be retained as well. The MDC menu also has to provide itself as a `MatMenu` in order for
-// queries and DI to work correctly, while still not referencing the actual menu class.
-// Class responsibility is split up as follows:
-// * _MatMenuBase - provides all the functionality without any of the Angular metadata.
-// * MatMenu - keeps the same name symbol name as the current menu and
-// is used as a provider for DI and query purposes.
-// * _MatMenu - the actual menu component implementation with the Angular metadata that should
-// be tree shaken away for MDC.
-
 /** @docs-public MatMenu */
 @Component({
   selector: 'mat-menu',
@@ -509,10 +494,9 @@ export class MatMenu extends _MatMenuBase {}
   ],
   providers: [
     {provide: MAT_MENU_PANEL, useExisting: MatMenu},
-    {provide: MatMenu, useExisting: _MatMenu}
   ]
 })
-export class _MatMenu extends MatMenu {
+export class MatMenu extends _MatMenuBase {
   constructor(elementRef: ElementRef<HTMLElement>, ngZone: NgZone,
       @Inject(MAT_MENU_DEFAULT_OPTIONS) defaultOptions: MatMenuDefaultOptions) {
     super(elementRef, ngZone, defaultOptions);

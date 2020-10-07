@@ -7,10 +7,9 @@
  */
 
 export {
-  MatMenu,
   MatMenuDefaultOptions,
   MAT_MENU_DEFAULT_OPTIONS,
-  _MatMenu,
+  MatMenu,
   _MatMenuBase,
 } from './menu';
 export {MatMenuItem} from './menu-item';
