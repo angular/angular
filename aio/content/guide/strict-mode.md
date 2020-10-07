@@ -1,5 +1,11 @@
 # Strict mode
 
+Stricter type checking and other similar constraints often enable more optimizations and correctness verification at build time. You can learn more about the theory behind this [here](https://www.youtube.com/watch?v=X-Dn5ZBUZH0). At the same time, constraints may have an impact on development experience (DX).
+
+In Angular, we want to enable the strictest flags to encourage best practices, without significantly impacting the learning curve when getting started with the framework, nor DX.
+
+As an experiment that will allow us to understand the limits we can push, we implemented strict mode. We are using the strict mode to encourage the adoption of best practices and understand the strict options developers will feel comfortable with while still enabling most compile-time correctness checks and optimizations. You can learn more about the strict flags we've been experimenting with and their implications [here](https://blog.angular.io/angular-cli-strict-mode-c94ba5965f63).
+
 When you create a new workspace or an application you have an option to create them in a strict mode using the `--strict` flag.
 
 Enabling this flag initializes your new workspace or application with a few new settings that improve maintainability, help you catch bugs ahead of time.
