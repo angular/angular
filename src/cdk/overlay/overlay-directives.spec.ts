@@ -176,6 +176,30 @@ describe('Overlay directives', () => {
     expect(event.defaultPrevented).toBe(false);
   });
 
+  it('should prevent closing via clicks on the backdrop by default', fakeAsync(() => {
+    fixture.componentInstance.hasBackdrop = true;
+    fixture.componentInstance.isOpen = true;
+    fixture.detectChanges();
+
+    const backdrop = overlayContainerElement.querySelector('.cdk-overlay-backdrop') as HTMLElement;
+    backdrop.click();
+    fixture.detectChanges();
+
+    expect(overlayContainerElement.textContent!.trim()).toBeTruthy();
+  }));
+
+  it('should prevent closing via the escape key with disableClose option', () => {
+    fixture.componentInstance.isOpen = true;
+    fixture.componentInstance.disableClose = true;
+    fixture.detectChanges();
+
+    const event = dispatchKeyboardEvent(document.body, 'keydown', ESCAPE);
+    fixture.detectChanges();
+
+    expect(overlayContainerElement.textContent!.trim()).toBeTruthy();
+    expect(event.defaultPrevented).toBe(false);
+  });
+
   it('should not depend on the order in which the `origin` and `open` are set', waitForAsync(() => {
     fixture.destroy();
 
@@ -663,6 +687,7 @@ describe('Overlay directives', () => {
             [cdkConnectedOverlayGrowAfterOpen]="growAfterOpen"
             [cdkConnectedOverlayPush]="push"
             [cdkConnectedOverlayScrollStrategy]="scrollStrategy"
+            [cdkConnectedOverlayDisableClose]="disableClose"
             cdkConnectedOverlayBackdropClass="mat-test-class"
             cdkConnectedOverlayPanelClass="cdk-test-panel-class"
             (backdropClick)="backdropClickHandler($event)"
@@ -694,6 +719,7 @@ class ConnectedOverlayDirectiveTest {
   offsetY: number;
   triggerOverride: CdkOverlayOrigin;
   hasBackdrop: boolean;
+  disableClose: boolean;
   viewportMargin: number;
   flexibleDimensions: boolean;
   growAfterOpen: boolean;
