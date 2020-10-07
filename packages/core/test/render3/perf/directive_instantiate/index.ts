@@ -5,12 +5,12 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {LViewFlags, TViewType} from '@angular/core/src/render3/interfaces/view';
 
 import {ɵɵdefineDirective, ɵɵelementEnd, ɵɵelementStart, ɵɵtext} from '../../../../src/render3/index';
 import {createLView, createTNode, createTView} from '../../../../src/render3/instructions/shared';
 import {RenderFlags} from '../../../../src/render3/interfaces/definition';
 import {TNodeType} from '../../../../src/render3/interfaces/node';
+import {LViewFlags, TViewType} from '../../../../src/render3/interfaces/view';
 import {createBenchmark} from '../micro_bench';
 import {createAndRenderLView} from '../setup';
 
