@@ -193,9 +193,14 @@
               "tooltip": "Introductory guide to sharing data between a class and a template."
             },
             {
-              "url": "guide/template-expression-operators",
-              "title": "Template expression operators",
-              "tooltip": "Introductory guide to transforming data, ensuring safe navigation, and guarding against null variables in templates."
+              "url": "guide/template-reference-variables",
+              "title": "Template reference variables",
+              "tooltip": "Introductory guide to referring to DOM elements within a template."
+            },
+            {
+              "url": "guide/inputs-outputs",
+              "title": "Inputs and Outputs",
+              "tooltip": "Introductory guide to sharing data between parent and child directives or components."
             },
             {
               "url": "guide/svg-in-templates",

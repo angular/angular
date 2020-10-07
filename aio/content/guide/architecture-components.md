@@ -126,7 +126,7 @@ Angular pipes let you declare display-value transformations in your template HTM
 
 Angular defines various pipes, such as the [date](api/common/DatePipe) pipe and [currency](api/common/CurrencyPipe) pipe; for a complete list, see the [Pipes API list](api?type=pipe). You can also define new pipes.
 
-To specify a value transformation in an HTML template, use the [pipe operator (|)](guide/template-expression-operators#pipe).
+To specify a value transformation in an HTML template, use the [pipe operator (|)](guide/pipes).
 
 `{{interpolated_value | pipe_name}}`
 
