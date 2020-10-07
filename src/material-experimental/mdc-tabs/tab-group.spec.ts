@@ -749,7 +749,7 @@ describe('MatTabNavBar with a default config', () => {
       imports: [MatTabsModule, BrowserAnimationsModule],
       declarations: [SimpleTabsTestApp],
       providers: [
-        {provide: MAT_TABS_CONFIG, useValue: {fitInkBarToContent: true}}
+        {provide: MAT_TABS_CONFIG, useValue: {fitInkBarToContent: true, dynamicHeight: true}}
       ]
     });
 
@@ -767,6 +767,10 @@ describe('MatTabNavBar with a default config', () => {
     const indicatorElement = tabElement.querySelector('.mdc-tab-indicator');
     expect(indicatorElement.parentElement).toBeTruthy();
     expect(indicatorElement.parentElement).toBe(contentElement);
+  });
+
+  it('should set whether the height of the tab group is dynamic', () => {
+    expect(fixture.componentInstance.tabGroup.dynamicHeight).toBe(true);
   });
 });
 
@@ -796,6 +800,7 @@ describe('MatTabNavBar with a default config', () => {
   `
 })
 class SimpleTabsTestApp {
+  @ViewChild(MatTabGroup) tabGroup: MatTabGroup;
   @ViewChildren(MatTab) tabs: QueryList<MatTab>;
   selectedIndex: number = 1;
   focusEvent: any;

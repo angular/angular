@@ -6,7 +6,7 @@ import {By} from '@angular/platform-browser';
 import {BrowserAnimationsModule, NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {CommonModule} from '@angular/common';
 import {Observable} from 'rxjs';
-import {MatTab, MatTabGroup, MatTabHeaderPosition, MatTabsModule} from './index';
+import {MatTab, MatTabGroup, MatTabHeaderPosition, MatTabsModule, MAT_TABS_CONFIG} from './index';
 
 
 describe('MatTabGroup', () => {
@@ -665,6 +665,30 @@ describe('MatTabGroup', () => {
   }
 });
 
+describe('MatTabNavBar with a default config', () => {
+  let fixture: ComponentFixture<SimpleTabsTestApp>;
+
+  beforeEach(fakeAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [MatTabsModule, BrowserAnimationsModule],
+      declarations: [SimpleTabsTestApp],
+      providers: [
+        {provide: MAT_TABS_CONFIG, useValue: {dynamicHeight: true}}
+      ]
+    });
+
+    TestBed.compileComponents();
+  }));
+
+  beforeEach(() => {
+    fixture = TestBed.createComponent(SimpleTabsTestApp);
+    fixture.detectChanges();
+  });
+
+  it('should set whether the height of the tab group is dynamic', () => {
+    expect(fixture.componentInstance.tabGroup.dynamicHeight).toBe(true);
+  });
+});
 
 describe('nested MatTabGroup with enabled animations', () => {
   beforeEach(fakeAsync(() => {
@@ -719,6 +743,7 @@ describe('nested MatTabGroup with enabled animations', () => {
   `
 })
 class SimpleTabsTestApp {
+  @ViewChild(MatTabGroup) tabGroup: MatTabGroup;
   @ViewChildren(MatTab) tabs: QueryList<MatTab>;
   selectedIndex: number = 1;
   focusEvent: any;

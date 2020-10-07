@@ -23,6 +23,9 @@ export interface MatTabsConfig {
    * This only applies to the MDC-based tabs.
    */
   fitInkBarToContent?: boolean;
+
+  /** Whether the tab group should grow to the size of the active tab. */
+  dynamicHeight?: boolean;
 }
 
 /** Injection token that can be used to provide the default options the tabs module. */
