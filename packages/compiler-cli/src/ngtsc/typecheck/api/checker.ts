@@ -100,7 +100,7 @@ export interface TemplateTypeChecker {
    * template variables which are in scope for that expression.
    */
   getGlobalCompletions(context: TmplAstTemplate|null, component: ts.ClassDeclaration):
-      GlobalCompletion[];
+      GlobalCompletion|null;
 }
 
 /**
