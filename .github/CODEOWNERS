@@ -342,7 +342,6 @@
 /.github/**                                        @angular/dev-infra-components
 /.github/CODEOWNERS                                @angular/dev-infra-components @jelbourn
 /.github/ISSUE_TEMPLATE/**                         @andrewseguin @jelbourn
-/.dependabot/**                                    @angular/dev-infra-components
 /.vscode/**                                        @angular/dev-infra-components @mmalerba
 /.ng-dev/**                                        @angular/dev-infra-components
 /goldens/size-test.yml                             @jelbourn @mmalerba @crisbeto
