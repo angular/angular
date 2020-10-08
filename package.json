@@ -75,7 +75,7 @@
     "@angular/bazel": "^10.1.0",
     "@angular/benchpress": "0.2.1",
     "@angular/compiler-cli": "^10.1.0",
-    "@angular/dev-infra-private": "https://github.com/angular/dev-infra-private-builds.git#0364a68f33191747a0bb7580e44a9ad6d50add10",
+    "@angular/dev-infra-private": "https://github.com/angular/dev-infra-private-builds.git#ddd71a787887dac21df25d904139d2227dba2456",
     "@angular/platform-browser-dynamic": "^10.1.0",
     "@angular/platform-server": "^10.1.0",
     "@angular/router": "^10.1.0",
@@ -180,7 +180,8 @@
   },
   "husky": {
     "hooks": {
-      "commit-msg": "yarn -s ng-dev commit-message pre-commit-validate --file-env-variable HUSKY_GIT_PARAMS"
+      "commit-msg": "yarn -s ng-dev commit-message pre-commit-validate --file-env-variable HUSKY_GIT_PARAMS",
+      "prepare-commit-msg": "yarn -s ng-dev commit-message restore-commit-message-draft --file-env-variable HUSKY_GIT_PARAMS"
     }
   }
 }

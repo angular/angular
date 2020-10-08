@@ -40,3 +40,4 @@ testem.log
 /.firebase
 /.bazelrc.user
 *.log
+.ng-dev.user*
