@@ -507,16 +507,6 @@ describe('MatSlider', () => {
       expect(sliderInstance.value).toBe(0.3);
     });
 
-    it('should set the truncated value to the aria-valuetext', () => {
-      fixture.componentInstance.step = 0.1;
-      fixture.detectChanges();
-
-      dispatchSlideEventSequence(sliderNativeElement, 0, 0.333333);
-      fixture.detectChanges();
-
-      expect(sliderNativeElement.getAttribute('aria-valuetext')).toBe('33');
-    });
-
   });
 
   describe('slider with auto ticks', () => {
