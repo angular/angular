@@ -3548,7 +3548,7 @@ braces@^2.3.1, braces@^2.3.2:
     split-string "^3.0.2"
     to-regex "^3.0.1"
 
-braces@~3.0.2:
+braces@^3.0.2, braces@~3.0.2:
   version "3.0.2"
   resolved "https://registry.yarnpkg.com/braces/-/braces-3.0.2.tgz#3454e1a462ee8d599e236df336cd9ea4f8afe107"
   integrity sha512-b8um+L1RzM3WDSzvhm6gIz1yfTbBt6YTlcEKAvsmqCZZFw46z626lVj9j1yEPW33H5H+lBQpZMP1k8l+78Ha0A==
@@ -4108,7 +4108,7 @@ check-side-effects@0.0.21:
   optionalDependencies:
     fsevents "~2.1.2"
 
-chokidar@^2.0.3, chokidar@^2.1.8:
+chokidar@^2.1.8:
   version "2.1.8"
   resolved "https://registry.yarnpkg.com/chokidar/-/chokidar-2.1.8.tgz#804b3a7b6a99358c3c5c61e71d8728f041cff917"
   integrity sha512-ZmZUazfOzf0Nve7duiCKD23PFSCs4JPoYyccjUFF3aQkQadqBhfzhjkwBH2mNOG9cTBwhamM37EIsIkZw3nRgg==
@@ -4952,7 +4952,7 @@ core-js@3.6.4:
   resolved "https://registry.yarnpkg.com/core-js/-/core-js-3.6.4.tgz#440a83536b458114b9cb2ac1580ba377dc470647"
   integrity sha512-4paDGScNgZP2IXXilaffL9X7968RuvwlkK3xWtZRVqgd8SYNiVKRJvkFd1aqqEuPfN7E68ZHEp9hDj6lHj4Hyw==
 
-core-js@^2.2.0, core-js@^2.4.0, core-js@^2.4.1:
+core-js@^2.4.0, core-js@^2.4.1:
   version "2.6.11"
   resolved "https://registry.yarnpkg.com/core-js/-/core-js-2.6.11.tgz#38831469f9922bded8ee21c9dc46985e0399308c"
   integrity sha512-5wjnpaT/3dV+XB4borEsnAYQchn00XSgTAWKDkEqv+K8KevjbzmofK6hfJ9TZIlpj2N0xQpazy7PiRQiWHqzWg==
@@ -9389,18 +9389,17 @@ karma-sourcemap-loader@^0.3.7:
   dependencies:
     graceful-fs "^4.1.2"
 
-karma@~4.1.0:
-  version "4.1.0"
-  resolved "https://registry.yarnpkg.com/karma/-/karma-4.1.0.tgz#d07387c9743a575b40faf73e8a3eb5421c2193e1"
-  integrity sha512-xckiDqyNi512U4dXGOOSyLKPwek6X/vUizSy2f3geYevbLj+UIdvNwbn7IwfUIL2g1GXEPWt/87qFD1fBbl/Uw==
+karma@~4.4.0:
+  version "4.4.1"
+  resolved "https://registry.yarnpkg.com/karma/-/karma-4.4.1.tgz#6d9aaab037a31136dc074002620ee11e8c2e32ab"
+  integrity sha512-L5SIaXEYqzrh6b1wqYC42tNsFMx2PWuxky84pK9coK09MvmL7mxii3G3bZBh/0rvD27lqDd0le9jyhzvwif73A==
   dependencies:
     bluebird "^3.3.0"
     body-parser "^1.16.1"
-    braces "^2.3.2"
-    chokidar "^2.0.3"
+    braces "^3.0.2"
+    chokidar "^3.0.0"
     colors "^1.1.0"
     connect "^3.6.0"
-    core-js "^2.2.0"
     di "^0.0.1"
     dom-serialize "^2.2.0"
     flatted "^2.0.0"
@@ -9408,7 +9407,7 @@ karma@~4.1.0:
     graceful-fs "^4.1.2"
     http-proxy "^1.13.0"
     isbinaryfile "^3.0.0"
-    lodash "^4.17.11"
+    lodash "^4.17.14"
     log4js "^4.0.0"
     mime "^2.3.1"
     minimatch "^3.0.2"

@@ -118,7 +118,7 @@
     "jasmine-core": "^3.5.0",
     "jquery": "3.0.0",
     "js-levenshtein": "^1.1.6",
-    "karma": "~4.1.0",
+    "karma": "~4.4.0",
     "karma-chrome-launcher": "^2.2.0",
     "karma-firefox-launcher": "^1.2.0",
     "karma-jasmine": "^2.0.1",
