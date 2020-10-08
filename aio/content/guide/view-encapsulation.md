@@ -13,8 +13,6 @@ Choose from the following modes:
   to attach a shadow DOM to the component's host element, and then puts the component
   view inside that shadow DOM. The component's styles are included within the shadow DOM.
 
-* `Native` view encapsulation uses a now deprecated version of the browser's native shadow DOM implementation - [learn about the changes](https://hayato.io/2016/shadowdomv1/).
-
 * `Emulated` view encapsulation (the default) emulates the behavior of shadow DOM by preprocessing
   (and renaming) the CSS code to effectively scope the CSS to the component's view.
   For details, see [Inspecting generated CSS](guide/view-encapsulation#inspect-generated-css) below.
@@ -26,7 +24,7 @@ Choose from the following modes:
 
 To set the components encapsulation mode, use the `encapsulation` property in the component metadata:
 
-<code-example path="component-styles/src/app/quest-summary.component.ts" region="encapsulation.native" header="src/app/quest-summary.component.ts"></code-example>
+<code-example path="component-styles/src/app/quest-summary.component.ts" region="encapsulation.shadow" header="src/app/quest-summary.component.ts"></code-example>
 
 `ShadowDom` view encapsulation only works on browsers that have native support
 for shadow DOM (see [Shadow DOM v1](https://caniuse.com/#feat=shadowdomv1) on the

@@ -517,8 +517,8 @@ function getRenderParent(tView: TView, tNode: TNode, currentView: LView): REleme
       // Since the projection would then move it to its final destination. Note that we can't
       // make this assumption when using the Shadow DOM, because the native projection placeholders
       // (<content> or <slot>) have to be in place as elements are being inserted.
-      if (encapsulation !== ViewEncapsulation.ShadowDom &&
-          encapsulation !== ViewEncapsulation.Native) {
+      if (encapsulation === ViewEncapsulation.None ||
+          encapsulation === ViewEncapsulation.Emulated) {
         return null;
       }
     }

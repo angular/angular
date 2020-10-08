@@ -163,8 +163,6 @@ export interface R3ComponentMetadata extends R3DirectiveMetadata {
 
   /**
    * An encapsulation policy for the template and CSS styles. One of:
-   * - `ViewEncapsulation.Native`: Use shadow roots. This works only if natively available on the
-   *   platform (note that this is marked the as the "deprecated shadow DOM" as of Angular v6.1.
    * - `ViewEncapsulation.Emulated`: Use shimmed CSS that emulates the native behavior.
    * - `ViewEncapsulation.None`: Use global CSS without any encapsulation.
    * - `ViewEncapsulation.ShadowDom`: Use the latest ShadowDOM API to natively encapsulate styles

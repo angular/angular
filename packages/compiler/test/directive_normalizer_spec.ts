@@ -226,7 +226,7 @@ function normalizeTemplate(normalizer: DirectiveNormalizer, o: {
     describe('normalizeLoadedTemplate', () => {
       it('should store the viewEncapsulation in the result',
          inject([DirectiveNormalizer], (normalizer: DirectiveNormalizer) => {
-           const viewEncapsulation = ViewEncapsulation.Native;
+           const viewEncapsulation = ViewEncapsulation.ShadowDom;
            const template = <CompileTemplateMetadata>normalizeTemplate(normalizer, {
              encapsulation: viewEncapsulation,
              template: '',

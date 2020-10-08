@@ -72,7 +72,7 @@ describe('compiler compliance: styling', () => {
          expectEmit(result.source, template, 'Incorrect template');
        });
 
-    it('should pass in the component metadata styles into the component definition but skip shimming when style encapsulation is set to native',
+    it('should pass in the component metadata styles into the component definition but skip shimming when style encapsulation is set to shadow dom',
        () => {
          const files = {
            app: {
@@ -80,7 +80,7 @@ describe('compiler compliance: styling', () => {
                 import {Component, NgModule, ViewEncapsulation} from '@angular/core';
 
                 @Component({
-                  encapsulation: ViewEncapsulation.Native,
+                  encapsulation: ViewEncapsulation.ShadowDom,
                   selector: "my-component",
                   styles: ["div.cool { color: blue; }", ":host.nice p { color: gold; }"],
                   template: "..."
@@ -98,7 +98,7 @@ describe('compiler compliance: styling', () => {
          MyComponent.ɵcmp = $r3$.ɵɵdefineComponent({
            …
            styles: ["div.cool { color: blue; }", ":host.nice p { color: gold; }"],
-           encapsulation: 1
+           encapsulation: 3
          })
          `;
          const result = compile(files, angularFiles);
