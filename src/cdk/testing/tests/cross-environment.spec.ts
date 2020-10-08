@@ -445,13 +445,20 @@ export function crossEnvironmentSpecs(
       expect(await button.matchesSelector('button:disabled')).toBe(false);
     });
 
-
     it('should get correct text excluding certain selectors', async () => {
       const results = await harness.subcomponentAndSpecialHarnesses();
       const subHarnessHost = await results[0].host();
 
       expect(await subHarnessHost.text({exclude: 'h2'})).toBe('ProtractorTestBedOther');
       expect(await subHarnessHost.text({exclude: 'li'})).toBe('List of test tools');
+    });
+
+    it('should dispatch a basic custom event', async () => {
+      const target = await harness.customEventBasic();
+
+      // @breaking-change 12.0.0 Remove non-null assertion once `dispatchEvent` is required.
+      await target.dispatchEvent!('myCustomEvent');
+      expect(await target.text()).toBe('Basic event: 1');
     });
 
     it('should get TestElements and ComponentHarnesses', async () => {

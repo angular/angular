@@ -147,6 +147,13 @@ export interface TestElement {
    * @breaking-change 12.0.0 To become a required method.
    */
   selectOptions?(...optionIndexes: number[]): Promise<void>;
+
+  /**
+   * Dispatches an event with a particular name.
+   * @param name Name of the event to be dispatched.
+   * @breaking-change 12.0.0 To be a required method.
+   */
+  dispatchEvent?(name: string): Promise<void>;
 }
 
 export interface TextOptions {

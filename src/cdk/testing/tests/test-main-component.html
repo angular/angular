@@ -41,7 +41,7 @@
   </select>
   <div id="multi-select-value">Multi-select: {{multiSelect}}</div>
   <div id="multi-select-change-counter">Change events: {{multiSelectChangeEventCount}}</div>
-
+  <div (myCustomEvent)="basicEvent = basicEvent + 1" id="custom-event-basic">Basic event: {{basicEvent}}</div>
 </div>
 <div class="subcomponents">
   <test-sub class="test-special" title="test tools" [items]="testTools"></test-sub>

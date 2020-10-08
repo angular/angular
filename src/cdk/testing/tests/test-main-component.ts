@@ -25,7 +25,6 @@ import {
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-
 export class TestMainComponent implements OnDestroy {
   username: string;
   counter: number;
@@ -42,6 +41,7 @@ export class TestMainComponent implements OnDestroy {
   singleSelectChangeEventCount = 0;
   multiSelect: string[] = [];
   multiSelectChangeEventCount = 0;
+  basicEvent = 0;
   _shadowDomSupported = _supportsShadowDom();
 
   @ViewChild('clickTestElement') clickTestElement: ElementRef<HTMLElement>;

@@ -200,6 +200,11 @@ export class UnitTestElement implements TestElement {
     return document.activeElement === this.element;
   }
 
+  async dispatchEvent(name: string): Promise<void> {
+    dispatchFakeEvent(this.element, name);
+    await this._stabilize();
+  }
+
   /**
    * Dispatches a pointer event on the current element if the browser supports it.
    * @param name Name of the pointer event to be dispatched.

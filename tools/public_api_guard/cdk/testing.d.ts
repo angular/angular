@@ -135,6 +135,7 @@ export interface TestElement {
     click(): Promise<void>;
     click(location: 'center'): Promise<void>;
     click(relativeX: number, relativeY: number): Promise<void>;
+    dispatchEvent?(name: string): Promise<void>;
     focus(): Promise<void>;
     getAttribute(name: string): Promise<string | null>;
     getCssValue(property: string): Promise<string>;

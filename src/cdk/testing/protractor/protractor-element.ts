@@ -198,4 +198,19 @@ export class ProtractorElement implements TestElement {
   async isFocused(): Promise<boolean> {
     return this.element.equals(browser.driver.switchTo().activeElement());
   }
+
+  async dispatchEvent(name: string): Promise<void> {
+    return browser.executeScript(_dispatchEvent, name, this.element);
+  }
+}
+
+/**
+ * Dispatches an event with a particular name and data to an element.
+ * Note that this needs to be a pure function, because it gets stringified by
+ * Protractor and is executed inside the browser.
+ */
+function _dispatchEvent(name: string, element: ElementFinder) {
+  const event = document.createEvent('Event');
+  event.initEvent(name);
+  element.dispatchEvent(event);
 }
