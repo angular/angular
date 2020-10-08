@@ -1,4 +1,5 @@
 {
+  "defaultSeverity": "error",
   "plugins": [
     "./tools/stylelint/loader-rule.js",
     "./tools/stylelint/no-prefixes/index.ts",
