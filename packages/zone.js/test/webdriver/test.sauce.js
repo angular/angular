@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-const webdriverio = require('webdriverio');
 const desiredCapabilities = {
   firefox52Win7: {browserName: 'firefox', platform: 'Windows 7', version: '52'},
   firefox53Win7: {browserName: 'firefox', platform: 'Windows 7', version: '53'},
@@ -20,18 +19,6 @@ const desiredCapabilities = {
   /*ios84: {browserName: 'iphone', platform: 'OS X 10.10', version: '8.4'},*/
   ios10: {browserName: 'iphone', platform: 'OS X 10.10', version: '10.3'},
   ios11: {browserName: 'iphone', platform: 'OS X 10.12', version: '11.2'},
-  /*
-  ie9: {
-    browserName: 'internet explorer',
-    platform: 'Windows 2008',
-    version: '9'
-  },*/
-  /*
-  ie10: {
-    browserName: 'internet explorer',
-    platform: 'Windows 2012',
-    version: '10'
-  },*/
   ie11: {browserName: 'internet explorer', platform: 'Windows 10', version: '11'},
   // andriod44: {browserName: 'android', platform: 'Linux', version: '4.4'},
   android51: {browserName: 'android', platform: 'Linux', version: '5.1'},
