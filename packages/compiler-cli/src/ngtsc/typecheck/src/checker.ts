@@ -42,6 +42,14 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
    * `ts.Program` changes, the `TemplateTypeCheckerImpl` as a whole is destroyed and replaced.
    */
   private completionCache = new Map<ts.ClassDeclaration, CompletionEngine>();
+  /**
+   * Stores the `SymbolBuilder` which creates symbols for each component class.
+   *
+   * Must be invalidated whenever the component's template or the `ts.Program` changes. Invalidation
+   * on template changes is performed within this `TemplateTypeCheckerImpl` instance. When the
+   * `ts.Program` changes, the `TemplateTypeCheckerImpl` as a whole is destroyed and replaced.
+   */
+  private symbolBuilderCache = new Map<ts.ClassDeclaration, SymbolBuilder>();
 
   private isComplete = false;
 
@@ -67,6 +75,7 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
     // but the `TemplateTypeCheckerImpl` does not track the class for components with overrides. As
     // a quick workaround, clear the entire cache instead.
     this.completionCache.clear();
+    this.symbolBuilderCache.clear();
   }
 
   getTemplate(component: ts.ClassDeclaration): TmplAstNode[]|null {
@@ -146,8 +155,9 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
     fileRecord.isComplete = false;
     this.isComplete = false;
 
-    // Overriding a component's template invalidates its autocompletion results.
+    // Overriding a component's template invalidates its cached results.
     this.completionCache.delete(component);
+    this.symbolBuilderCache.delete(component);
 
     return {nodes};
   }
@@ -400,15 +410,28 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
   }
 
   getSymbolOfNode(node: AST|TmplAstNode, component: ts.ClassDeclaration): Symbol|null {
+    const builder = this.getOrCreateSymbolBuilder(component);
+    if (builder === null) {
+      return null;
+    }
+    return builder.getSymbol(node);
+  }
+
+  private getOrCreateSymbolBuilder(component: ts.ClassDeclaration): SymbolBuilder|null {
+    if (this.symbolBuilderCache.has(component)) {
+      return this.symbolBuilderCache.get(component)!;
+    }
+
     const {tcb, data, shimPath} = this.getLatestComponentState(component);
     if (tcb === null || data === null) {
       return null;
     }
 
-    const typeChecker = this.typeCheckingStrategy.getProgram().getTypeChecker();
-
-    return new SymbolBuilder(typeChecker, shimPath, tcb, data, this.componentScopeReader)
-        .getSymbol(node);
+    const builder = new SymbolBuilder(
+        shimPath, tcb, data, this.componentScopeReader,
+        () => this.typeCheckingStrategy.getProgram().getTypeChecker());
+    this.symbolBuilderCache.set(component, builder);
+    return builder;
   }
 }
 
