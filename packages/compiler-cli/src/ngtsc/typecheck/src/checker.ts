@@ -20,6 +20,7 @@ import {CompletionKind, GlobalCompletion, OptimizeFor, ProgramTypeCheckAdapter, 
 import {TemplateDiagnostic} from '../diagnostics';
 
 import {ExpressionIdentifier, findFirstMatchingNode} from './comments';
+import {CompletionEngine} from './completion';
 import {InliningMode, ShimTypeCheckingData, TemplateData, TypeCheckContextImpl, TypeCheckingHost} from './context';
 import {findTypeCheckBlock, shouldReportDiagnostic, TemplateSourceResolver, translateDiagnostic} from './diagnostics';
 import {TemplateSourceManager} from './source';
@@ -32,6 +33,16 @@ import {SymbolBuilder} from './template_symbol_builder';
  */
 export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
   private state = new Map<AbsoluteFsPath, FileTypeCheckingData>();
+
+  /**
+   * Stores the `CompletionEngine` which powers autocompletion for each component class.
+   *
+   * Must be invalidated whenever the component's template or the `ts.Program` changes. Invalidation
+   * on template changes is performed within this `TemplateTypeCheckerImpl` instance. When the
+   * `ts.Program` changes, the `TemplateTypeCheckerImpl` as a whole is destroyed and replaced.
+   */
+  private completionCache = new Map<ts.ClassDeclaration, CompletionEngine>();
+
   private isComplete = false;
 
   constructor(
@@ -51,6 +62,11 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
         fileRecord.isComplete = false;
       }
     }
+
+    // Ideally only those components with overridden templates would have their caches invalidated,
+    // but the `TemplateTypeCheckerImpl` does not track the class for components with overrides. As
+    // a quick workaround, clear the entire cache instead.
+    this.completionCache.clear();
   }
 
   getTemplate(component: ts.ClassDeclaration): TmplAstNode[]|null {
@@ -129,6 +145,9 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
     fileRecord.shimData.delete(shimFile);
     fileRecord.isComplete = false;
     this.isComplete = false;
+
+    // Overriding a component's template invalidates its autocompletion results.
+    this.completionCache.delete(component);
 
     return {nodes};
   }
@@ -209,51 +228,27 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
   }
 
   getGlobalCompletions(context: TmplAstTemplate|null, component: ts.ClassDeclaration):
-      GlobalCompletion[] {
+      GlobalCompletion|null {
+    const engine = this.getOrCreateCompletionEngine(component);
+    if (engine === null) {
+      return null;
+    }
+    return engine.getGlobalCompletions(context);
+  }
+
+  private getOrCreateCompletionEngine(component: ts.ClassDeclaration): CompletionEngine|null {
+    if (this.completionCache.has(component)) {
+      return this.completionCache.get(component)!;
+    }
+
     const {tcb, data, shimPath} = this.getLatestComponentState(component);
     if (tcb === null || data === null) {
-      return [];
+      return null;
     }
 
-    const {boundTarget} = data;
-
-    // Global completions are the union of two separate pieces: a `ContextComponentCompletion` which
-    // is created from an expression within the TCB, and a list of named entities (variables and
-    // references) which are visible within the given `context` template.
-    const completions: GlobalCompletion[] = [];
-
-    const globalRead = findFirstMatchingNode(tcb, {
-      filter: ts.isPropertyAccessExpression,
-      withExpressionIdentifier: ExpressionIdentifier.COMPONENT_COMPLETION
-    });
-
-    if (globalRead === null) {
-      return [];
-    }
-
-    completions.push({
-      kind: CompletionKind.ContextComponent,
-      shimPath,
-      positionInShimFile: globalRead.name.getStart(),
-    });
-
-    // Add completions for each entity in the template scope. Since each entity is uniquely named,
-    // there is no special ordering applied here.
-    for (const node of boundTarget.getEntitiesInTemplateScope(context)) {
-      if (node instanceof TmplAstReference) {
-        completions.push({
-          kind: CompletionKind.Reference,
-          node: node,
-        });
-      } else {
-        completions.push({
-          kind: CompletionKind.Variable,
-          node: node,
-        });
-      }
-    }
-
-    return completions;
+    const engine = new CompletionEngine(tcb, data, shimPath);
+    this.completionCache.set(component, engine);
+    return engine;
   }
 
   private maybeAdoptPriorResultsForFile(sf: ts.SourceFile): void {
