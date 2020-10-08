@@ -315,11 +315,6 @@ describe('Zone', function() {
           // TODO: JiaLiPassion, need to find out why the test bundle is not `use strict`.
           xit('event handler with null context should use event.target',
               ifEnvSupports(canPatchOnProperty(Document.prototype, 'onmousedown'), function() {
-                const ieVer = getIEVersion();
-                if (ieVer && ieVer === 9) {
-                  // in ie9, this is window object even we call func.apply(undefined)
-                  return;
-                }
                 const logs: string[] = [];
                 const EventTarget = (window as any)['EventTarget'];
                 let oriAddEventListener = EventTarget && EventTarget.prototype ?
