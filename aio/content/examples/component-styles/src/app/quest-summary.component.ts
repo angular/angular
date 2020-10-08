@@ -13,8 +13,8 @@ import { Component, ViewEncapsulation } from '@angular/core';
 export class QuestSummaryComponent { }
 // #enddocregion
 /*
-  // #docregion encapsulation.native
+  // #docregion encapsulation.shadow
   // warning: few browsers support shadow DOM encapsulation at this time
-  encapsulation: ViewEncapsulation.Native
-  // #enddocregion encapsulation.native
+  encapsulation: ViewEncapsulation.ShadowDom
+  // #enddocregion encapsulation.shadow
 */

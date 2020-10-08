@@ -15,13 +15,11 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
 
 if (browserDetection.supportsShadowDom) {
   describe('ShadowDOM Support', () => {
-    let testContainer: HTMLDivElement;
-
     beforeEach(() => {
       TestBed.configureTestingModule({imports: [TestModule]});
     });
 
-    it('should attach and use a shadowRoot when ViewEncapsulation.Native is set', () => {
+    it('should attach and use a shadowRoot when ViewEncapsulation.ShadowDom is set', () => {
       const compEl = TestBed.createComponent(ShadowComponent).nativeElement;
       expect(compEl.shadowRoot!.textContent).toEqual('Hello World');
     });

@@ -74,6 +74,8 @@ function decoratePreventDefault(eventHandler: Function): Function {
   };
 }
 
+let hasLoggedNativeEncapsulationWarning = false;
+
 @Injectable()
 export class DomRendererFactory2 implements RendererFactory2 {
   private rendererByCompId = new Map<string, Renderer2>();
@@ -100,8 +102,16 @@ export class DomRendererFactory2 implements RendererFactory2 {
         (<EmulatedEncapsulationDomRenderer2>renderer).applyToHost(element);
         return renderer;
       }
-      case ViewEncapsulation.Native:
+      case 1:
       case ViewEncapsulation.ShadowDom:
+        // TODO(FW-2290): remove the `case 1:` fallback logic and the warning in v12.
+        if ((typeof ngDevMode === 'undefined' || ngDevMode) &&
+            !hasLoggedNativeEncapsulationWarning && type.encapsulation === 1) {
+          hasLoggedNativeEncapsulationWarning = true;
+          console.warn(
+              'ViewEncapsulation.Native is no longer supported. Falling back to ViewEncapsulation.ShadowDom. The fallback will be removed in v12.');
+        }
+
         return new ShadowDomRenderer(this.eventManager, this.sharedStylesHost, element, type);
       default: {
         if (!this.rendererByCompId.has(type.id)) {
@@ -302,13 +312,9 @@ class ShadowDomRenderer extends DefaultDomRenderer2 {
 
   constructor(
       eventManager: EventManager, private sharedStylesHost: DomSharedStylesHost,
-      private hostEl: any, private component: RendererType2) {
+      private hostEl: any, component: RendererType2) {
     super(eventManager);
-    if (component.encapsulation === ViewEncapsulation.ShadowDom) {
-      this.shadowRoot = (hostEl as any).attachShadow({mode: 'open'});
-    } else {
-      this.shadowRoot = (hostEl as any).createShadowRoot();
-    }
+    this.shadowRoot = (hostEl as any).attachShadow({mode: 'open'});
     this.sharedStylesHost.addHost(this.shadowRoot);
     const styles = flattenStyles(component.id, component.styles, []);
     for (let i = 0; i < styles.length; i++) {

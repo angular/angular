@@ -272,19 +272,19 @@ class ImageExampleModule {
 
 @Component({
   selector: 'app',
-  template: 'Native works',
-  encapsulation: ViewEncapsulation.Native,
+  template: 'Shadow DOM works',
+  encapsulation: ViewEncapsulation.ShadowDom,
   styles: [':host { color: red; }']
 })
-class NativeEncapsulationApp {
+class ShadowDomEncapsulationApp {
 }
 
 @NgModule({
-  declarations: [NativeEncapsulationApp],
+  declarations: [ShadowDomEncapsulationApp],
   imports: [BrowserModule.withServerTransition({appId: 'test'}), ServerModule],
-  bootstrap: [NativeEncapsulationApp]
+  bootstrap: [ShadowDomEncapsulationApp]
 })
-class NativeExampleModule {
+class ShadowDomExampleModule {
 }
 
 @Component({selector: 'my-child', template: 'Works!'})
@@ -666,8 +666,8 @@ describe('platform-server integration', () => {
          });
        }));
 
-    it('should handle ViewEncapsulation.Native', waitForAsync(() => {
-         renderModule(NativeExampleModule, {document: doc}).then(output => {
+    it('should handle ViewEncapsulation.ShadowDom', waitForAsync(() => {
+         renderModule(ShadowDomExampleModule, {document: doc}).then(output => {
            expect(output).not.toBe('');
            expect(output).toContain('color: red');
            called = true;

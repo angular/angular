@@ -41,7 +41,6 @@ v9 - v12
 | `@angular/core`               | [`DefaultIterableDiffer`](#core)                                              | <!--v7--> v11 |
 | `@angular/core`               | [`ReflectiveKey`](#core)                                                      | <!--v8--> v11 |
 | `@angular/core`               | [`RenderComponentType`](#core)                                                | <!--v7--> v11 |
-| `@angular/core`               | [`ViewEncapsulation.Native`](#core)                                           | <!--v6--> v11 |
 | `@angular/core`               | [`WrappedValue`](#core)                                                       | <!--v10--> v12 |
 | `@angular/forms`              | [`ngModel` with reactive forms](#ngmodel-reactive)                            | <!--v6--> v11 |
 | `@angular/router`             | [`preserveQueryParams`](#router)                                              | <!--v7--> v11 |
@@ -89,7 +88,6 @@ Tip: In the [API reference section](api) of this doc site, deprecated APIs are i
 | [`DefaultIterableDiffer`](api/core/DefaultIterableDiffer) | n/a | v4 | Not part of public API. |
 | [`ReflectiveInjector`](api/core/ReflectiveInjector) | [`Injector.create`](api/core/Injector#create)  | v5 | See [`ReflectiveInjector`](#reflectiveinjector) |
 | [`ReflectiveKey`](api/core/ReflectiveKey) | none | v5 | none |
-| [`ViewEncapsulation.Native`](api/core/ViewEncapsulation#Native) | [`ViewEncapsulation.ShadowDom`](api/core/ViewEncapsulation#ShadowDom) | v6 | Use the native encapsulation mechanism of the renderer. See [view.ts](https://github.com/angular/angular/blob/3e992e18ebf51d6036818f26c3d77b52d3ec48eb/packages/core/src/metadata/view.ts#L32).
 | [`defineInjectable`](api/core/defineInjectable) | `ɵɵdefineInjectable` | v8 | Used only in generated code. No source code should depend on this API. |
 | [`entryComponents`](api/core/NgModule#entryComponents) | none | v9 | See [`entryComponents`](#entryComponents) |
 | [`ANALYZE_FOR_ENTRY_COMPONENTS`](api/core/ANALYZE_FOR_ENTRY_COMPONENTS) | none | v9 | See [`ANALYZE_FOR_ENTRY_COMPONENTS`](#entryComponents) |
