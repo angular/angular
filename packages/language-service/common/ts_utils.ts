@@ -83,5 +83,5 @@ export function getClassDeclOfInlineTemplateNode(templateStringNode: ts.Node): t
   if (!tmplAsgn) {
     return;
   }
-  return getClassDeclFromDecoratorProp(tmplAsgn)
+  return getClassDeclFromDecoratorProp(tmplAsgn);
 }

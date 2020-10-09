@@ -6,24 +6,35 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as path from 'path';
 import * as ts from 'typescript';
 
 import {findTightestNode, getClassDeclFromDecoratorProp, getPropertyAssignmentFromValue} from './ts_utils';
+
+export interface ResourceResolver {
+  /**
+   * Resolve the url of a resource relative to the file that contains the reference to it.
+   *
+   * @param file The, possibly relative, url of the resource.
+   * @param basePath The path to the file that contains the URL of the resource.
+   * @returns A resolved url of resource.
+   * @throws An error if the resource cannot be resolved.
+   */
+  resolve(file: string, basePath: string): string;
+}
 
 /**
  * Gets an Angular-specific definition in a TypeScript source file.
  */
 export function getTsDefinitionAndBoundSpan(
     sf: ts.SourceFile, position: number,
-    tsLsHost: Pick<ts.LanguageServiceHost, 'fileExists'>): ts.DefinitionInfoAndBoundSpan|undefined {
+    resourceResolver: ResourceResolver): ts.DefinitionInfoAndBoundSpan|undefined {
   const node = findTightestNode(sf, position);
   if (!node) return;
   switch (node.kind) {
     case ts.SyntaxKind.StringLiteral:
     case ts.SyntaxKind.NoSubstitutionTemplateLiteral:
       // Attempt to extract definition of a URL in a property assignment.
-      return getUrlFromProperty(node as ts.StringLiteralLike, tsLsHost);
+      return getUrlFromProperty(node as ts.StringLiteralLike, resourceResolver);
     default:
       return undefined;
   }
@@ -34,9 +45,8 @@ export function getTsDefinitionAndBoundSpan(
  * directive decorator.
  * Currently applies to `templateUrl` and `styleUrls` properties.
  */
-function getUrlFromProperty(
-    urlNode: ts.StringLiteralLike,
-    tsLsHost: Pick<ts.LanguageServiceHost, 'fileExists'>): ts.DefinitionInfoAndBoundSpan|undefined {
+function getUrlFromProperty(urlNode: ts.StringLiteralLike, resourceResolver: ResourceResolver):
+    ts.DefinitionInfoAndBoundSpan|undefined {
   // Get the property assignment node corresponding to the `templateUrl` or `styleUrls` assignment.
   // These assignments are specified differently; `templateUrl` is a string, and `styleUrls` is
   // an array of strings:
@@ -65,13 +75,13 @@ function getUrlFromProperty(
   }
 
   const sf = urlNode.getSourceFile();
-  // Extract url path specified by the url node, which is relative to the TypeScript source file
-  // the url node is defined in.
-  const url = path.join(path.dirname(sf.fileName), urlNode.text);
-
-  // If the file does not exist, bail. It is possible that the TypeScript language service host
-  // does not have a `fileExists` method, in which case optimistically assume the file exists.
-  if (tsLsHost.fileExists && !tsLsHost.fileExists(url)) return;
+  let url: string;
+  try {
+    url = resourceResolver.resolve(urlNode.text, sf.fileName);
+  } catch {
+    // If the file does not exist, bail.
+    return;
+  }
 
   const templateDefinitions: ts.DefinitionInfo[] = [{
     kind: ts.ScriptElementKind.externalModuleName,
@@ -79,6 +89,9 @@ function getUrlFromProperty(
     containerKind: ts.ScriptElementKind.unknown,
     containerName: '',
     // Reading the template is expensive, so don't provide a preview.
+    // TODO(ayazhafiz): Consider providing an actual span:
+    //  1. We're likely to read the template anyway
+    //  2. We could show just the first 100 chars or so
     textSpan: {start: 0, length: 0},
     fileName: url,
   }];

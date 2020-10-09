@@ -448,6 +448,53 @@ describe('definitions', () => {
     });
   });
 
+  describe('external resources', () => {
+    it('should be able to find a template from a url', () => {
+      const {position, text} = service.overwrite(APP_COMPONENT, `
+        import {Component} from '@angular/core';
+	      @Component({
+	        templateUrl: './tes¦t.ng',
+	      })
+	      export class MyComponent {}`);
+      const result = ngLS.getDefinitionAndBoundSpan(APP_COMPONENT, position);
+
+      expect(result).toBeDefined();
+      const {textSpan, definitions} = result!;
+
+      expect(text.substring(textSpan.start, textSpan.start + textSpan.length)).toEqual('./test.ng');
+
+      expect(definitions).toBeDefined();
+      expect(definitions!.length).toBe(1);
+      const [def] = definitions!;
+      expect(def.fileName).toContain('/app/test.ng');
+      expect(def.textSpan).toEqual({start: 0, length: 0});
+    });
+
+    it('should be able to find a stylesheet from a url', () => {
+      const {position, text} = service.overwrite(APP_COMPONENT, `
+        import {Component} from '@angular/core';
+	      @Component({
+	        template: 'empty',
+	        styleUrls: ['./te¦st.css']
+	      })
+	      export class MyComponent {}`);
+      const result = ngLS.getDefinitionAndBoundSpan(APP_COMPONENT, position);
+
+
+      expect(result).toBeDefined();
+      const {textSpan, definitions} = result!;
+
+      expect(text.substring(textSpan.start, textSpan.start + textSpan.length))
+          .toEqual('./test.css');
+
+      expect(definitions).toBeDefined();
+      expect(definitions!.length).toBe(1);
+      const [def] = definitions!;
+      expect(def.fileName).toContain('/app/test.css');
+      expect(def.textSpan).toEqual({start: 0, length: 0});
+    });
+  });
+
   function getDefinitionsAndAssertBoundSpan(
       {templateOverride, expectedSpanText}: {templateOverride: string, expectedSpanText: string}):
       Array<{textSpan: string, contextSpan: string | undefined, fileName: string}> {

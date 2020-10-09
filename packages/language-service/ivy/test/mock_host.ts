@@ -8,7 +8,8 @@
 
 import {join} from 'path';
 import * as ts from 'typescript/lib/tsserverlibrary';
-import {isTypeScriptFile} from '../language_service_adapter';
+
+import {isTypeScriptFile} from '../utils';
 
 const logger: ts.server.Logger = {
   close(): void{},

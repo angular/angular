@@ -6,8 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {getTsDefinitionAndBoundSpan} from '@angular/language-service/common/definitions';
+import * as path from 'path';
 import * as tss from 'typescript/lib/tsserverlibrary';
+
+import {getTsDefinitionAndBoundSpan, ResourceResolver} from '../common/definitions';
 
 import {getTemplateCompletions} from './completions';
 import {getDefinitionAndBoundSpan} from './definitions';
@@ -76,13 +78,13 @@ class LanguageServiceImpl implements ng.LanguageService {
     if (templateInfo) {
       return getDefinitionAndBoundSpan(templateInfo, position);
     }
-
     // Attempt to get Angular-specific definitions in a TypeScript file, like templates defined
     // in a `templateUrl` property.
     if (fileName.endsWith('.ts')) {
       const sf = this.host.getSourceFile(fileName);
       if (sf) {
-        return getTsDefinitionAndBoundSpan(sf, position, this.host.tsLsHost);
+        return getTsDefinitionAndBoundSpan(
+            sf, position, new ViewEngineLSResourceResolver(this.host.tsLsHost));
       }
     }
   }
@@ -111,5 +113,22 @@ class LanguageServiceImpl implements ng.LanguageService {
       return;
     }
     return this.host.tsLS.getReferencesAtPosition(tsDef.fileName, tsDef.textSpan.start);
+  }
+}
+
+class ViewEngineLSResourceResolver implements ResourceResolver {
+  constructor(private host: ts.LanguageServiceHost) {}
+
+  resolve(file: string, basePath: string): string {
+    // Extract url path specified by the url node, which is relative to the TypeScript source file
+    // the url node is defined in.
+    const url = path.join(path.dirname(basePath), file);
+
+    // If the file does not exist, bail. It is possible that the TypeScript language service host
+    // does not have a `fileExists` method, in which case optimistically assume the file exists.
+    if (this.host.fileExists && !this.host.fileExists(url)) {
+      throw new Error(`ResourceResolver: could not resolve ${url} in context of ${basePath})`);
+    }
+    return url;
   }
 }

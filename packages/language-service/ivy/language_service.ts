@@ -7,7 +7,6 @@
  */
 
 import {CompilerOptions, createNgCompilerOptions} from '@angular/compiler-cli';
-import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
 import {absoluteFromSourceFile, AbsoluteFsPath} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {TypeCheckShimGenerator} from '@angular/compiler-cli/src/ngtsc/typecheck';
 import {OptimizeFor, TypeCheckingProgramStrategy} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
@@ -15,8 +14,9 @@ import * as ts from 'typescript/lib/tsserverlibrary';
 
 import {CompilerFactory} from './compiler_factory';
 import {DefinitionBuilder} from './definitions';
-import {isExternalTemplate, isTypeScriptFile, LanguageServiceAdapter} from './language_service_adapter';
+import {LanguageServiceAdapter} from './language_service_adapter';
 import {QuickInfoBuilder} from './quick_info';
+import {isTypeScriptFile} from './utils';
 
 export class LanguageService {
   private options: CompilerOptions;
@@ -57,8 +57,8 @@ export class LanguageService {
   getDefinitionAndBoundSpan(fileName: string, position: number): ts.DefinitionInfoAndBoundSpan
       |undefined {
     const compiler = this.compilerFactory.getOrCreateWithChangedFile(fileName, this.options);
-    const results =
-        new DefinitionBuilder(this.tsLS, compiler).getDefinitionAndBoundSpan(fileName, position);
+    const results = new DefinitionBuilder(this.tsLS, compiler, this.adapter)
+                        .getDefinitionAndBoundSpan(fileName, position);
     this.compilerFactory.registerLastKnownProgram();
     return results;
   }
@@ -66,8 +66,8 @@ export class LanguageService {
   getTypeDefinitionAtPosition(fileName: string, position: number):
       readonly ts.DefinitionInfo[]|undefined {
     const compiler = this.compilerFactory.getOrCreateWithChangedFile(fileName, this.options);
-    const results =
-        new DefinitionBuilder(this.tsLS, compiler).getTypeDefinitionsAtPosition(fileName, position);
+    const results = new DefinitionBuilder(this.tsLS, compiler, this.adapter)
+                        .getTypeDefinitionsAtPosition(fileName, position);
     this.compilerFactory.registerLastKnownProgram();
     return results;
   }

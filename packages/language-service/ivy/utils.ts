@@ -14,6 +14,7 @@ import * as t from '@angular/compiler/src/render3/r3_ast';         // t for temp
 import * as ts from 'typescript';
 
 import {ALIAS_NAME, SYMBOL_PUNC} from '../common/quick_info';
+import {findTightestNode, getClassDeclOfInlineTemplateNode} from '../common/ts_utils';
 
 export function getTextSpanOfNode(node: t.Node|e.AST): ts.TextSpan {
   if (isTemplateNodeWithKeyAndValue(node)) {
@@ -70,8 +71,8 @@ export interface TemplateInfo {
  */
 export function getTemplateInfoAtPosition(
     fileName: string, position: number, compiler: NgCompiler): TemplateInfo|undefined {
-  if (fileName.endsWith('.ts')) {
-    return getInlineTemplateInfoAtPosition(fileName, position, compiler);
+  if (isTypeScriptFile(fileName)) {
+    return getTemplateInfoFromClassMeta(fileName, position, compiler);
   } else {
     return getFirstComponentForTemplateFile(fileName, compiler);
   }
@@ -116,28 +117,29 @@ function getFirstComponentForTemplateFile(fileName: string, compiler: NgCompiler
 /**
  * Retrieves the `ts.ClassDeclaration` at a location along with its template nodes.
  */
-function getInlineTemplateInfoAtPosition(
+function getTemplateInfoFromClassMeta(
     fileName: string, position: number, compiler: NgCompiler): TemplateInfo|undefined {
+  const classDecl = getClassDeclForInlineTemplateAtPosition(fileName, position, compiler);
+  if (!classDecl || !classDecl.name) {  // Does not handle anonymous class
+    return;
+  }
+  const template = compiler.getTemplateTypeChecker().getTemplate(classDecl);
+  if (template === null) {
+    return;
+  }
+
+  return {template, component: classDecl};
+}
+
+function getClassDeclForInlineTemplateAtPosition(
+    fileName: string, position: number, compiler: NgCompiler): ts.ClassDeclaration|undefined {
   const sourceFile = compiler.getNextProgram().getSourceFile(fileName);
   if (!sourceFile) {
     return undefined;
   }
-
-  // We only support top level statements / class declarations
-  for (const statement of sourceFile.statements) {
-    if (!ts.isClassDeclaration(statement) || position < statement.pos || position > statement.end) {
-      continue;
-    }
-
-    const template = compiler.getTemplateTypeChecker().getTemplate(statement);
-    if (template === null) {
-      return undefined;
-    }
-
-    return {template, component: statement};
-  }
-
-  return undefined;
+  const node = findTightestNode(sourceFile, position);
+  if (!node) return;
+  return getClassDeclOfInlineTemplateNode(node);
 }
 
 /**
@@ -290,4 +292,12 @@ export function flatMap<T, R>(items: T[]|readonly T[], f: (item: T) => R[] | rea
     results.push(...f(x));
   }
   return results;
+}
+
+export function isTypeScriptFile(fileName: string): boolean {
+  return fileName.endsWith('.ts');
+}
+
+export function isExternalTemplate(fileName: string): boolean {
+  return !isTypeScriptFile(fileName);
 }
