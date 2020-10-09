@@ -10,6 +10,7 @@ import {AST, ParseError, TmplAstNode, TmplAstTemplate} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {GlobalCompletion} from './completion';
+import {DirectiveInScope, PipeInScope} from './scope';
 import {Symbol} from './symbols';
 
 /**
@@ -101,6 +102,16 @@ export interface TemplateTypeChecker {
    */
   getGlobalCompletions(context: TmplAstTemplate|null, component: ts.ClassDeclaration):
       GlobalCompletion|null;
+
+  /**
+   * Get basic metadata on the directives which are in scope for the given component.
+   */
+  getDirectivesInScope(component: ts.ClassDeclaration): DirectiveInScope[]|null;
+
+  /**
+   * Get basic metadata on the pipes which are in scope for the given component.
+   */
+  getPipesInScope(component: ts.ClassDeclaration): PipeInScope[]|null;
 }
 
 /**
