@@ -98,6 +98,45 @@ runInEachFileSystem(() => {
       expect(Array.from(afterReset.templateContext.keys())).toEqual(['foo']);
     });
   });
+
+  describe('TemplateTypeChecker scopes', () => {
+    it('should get directives and pipes in scope for a component', () => {
+      const MAIN_TS = absoluteFrom('/main.ts');
+      const {program, templateTypeChecker} = setup([{
+        fileName: MAIN_TS,
+        templates: {
+          'SomeCmp': 'Not important',
+        },
+        declarations: [
+          {
+            type: 'directive',
+            file: MAIN_TS,
+            name: 'OtherDir',
+            selector: 'other-dir',
+          },
+          {
+            type: 'pipe',
+            file: MAIN_TS,
+            name: 'OtherPipe',
+            pipeName: 'otherPipe',
+          }
+        ],
+        source: `
+            export class SomeCmp {}
+            export class OtherDir {}
+            export class OtherPipe {}
+            export class SomeCmpModule {}
+          `
+      }]);
+      const sf = getSourceFileOrError(program, MAIN_TS);
+      const SomeCmp = getClass(sf, 'SomeCmp');
+
+      const directives = templateTypeChecker.getDirectivesInScope(SomeCmp) ?? [];
+      const pipes = templateTypeChecker.getPipesInScope(SomeCmp) ?? [];
+      expect(directives.map(dir => dir.selector)).toEqual(['other-dir']);
+      expect(pipes.map(pipe => pipe.name)).toEqual(['otherPipe']);
+    });
+  });
 });
 
 function setupCompletions(

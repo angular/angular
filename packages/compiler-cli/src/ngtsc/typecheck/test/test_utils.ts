@@ -15,7 +15,7 @@ import {AbsoluteModuleStrategy, LocalIdentifierStrategy, LogicalProjectStrategy,
 import {NOOP_INCREMENTAL_BUILD} from '../../incremental';
 import {ClassPropertyMapping} from '../../metadata';
 import {ClassDeclaration, isNamedClassDeclaration, TypeScriptReflectionHost} from '../../reflection';
-import {ComponentScopeReader, ScopeData} from '../../scope';
+import {ComponentScopeReader, LocalModuleScope, ScopeData} from '../../scope';
 import {makeProgram} from '../../testing';
 import {getRootDirs} from '../../util/src/typescript';
 import {ProgramTypeCheckAdapter, TemplateTypeChecker, TypeCheckContext} from '../api';
@@ -355,6 +355,18 @@ export function setup(targets: TypeCheckingTarget[], overrides: {
   ]);
   const fullConfig = {...ALL_ENABLED_CONFIG, ...config};
 
+  // Map out the scope of each target component, which is needed for the ComponentScopeReader.
+  const scopeMap = new Map<ClassDeclaration, ScopeData>();
+  for (const target of targets) {
+    const sf = getSourceFileOrError(program, target.fileName);
+    const scope = makeScope(program, sf, target.declarations ?? []);
+
+    for (const className of Object.keys(target.templates)) {
+      const classDecl = getClass(sf, className);
+      scopeMap.set(classDecl, scope);
+    }
+  }
+
   const checkAdapter = createTypeCheckAdapter((sf, ctx) => {
     for (const target of targets) {
       if (getSourceFileOrError(program, target.fileName) !== sf) {
@@ -405,27 +417,47 @@ export function setup(targets: TypeCheckingTarget[], overrides: {
     (programStrategy as any).supportsInlineOperations = overrides.inlining;
   }
 
-  const fakeScopeReader = {
+  const fakeScopeReader: ComponentScopeReader = {
     getRequiresRemoteScope() {
       return null;
     },
-    // If there is a module with [className] + 'Module' in the same source file, returns
-    // `LocalModuleScope` with the ngModule class and empty arrays for everything else.
-    getScopeForComponent(clazz: ClassDeclaration) {
-      try {
-        const ngModule = getClass(clazz.getSourceFile(), `${clazz.name.getText()}Module`);
-        const stubScopeData = {directives: [], ngModules: [], pipes: []};
-        return {
-          ngModule,
-          compilation: stubScopeData,
-          reexports: [],
-          schemas: [],
-          exported: stubScopeData
-        };
-      } catch (e) {
-        return null;
-      }
-    }
+    // If there is a module with [className] + 'Module' in the same source file, that will be
+    // returned as the NgModule for the class.
+    getScopeForComponent(clazz: ClassDeclaration): LocalModuleScope |
+        null {
+          try {
+            const ngModule = getClass(clazz.getSourceFile(), `${clazz.name.getText()}Module`);
+
+            if (!scopeMap.has(clazz)) {
+              // This class wasn't part of the target set of components with templates, but is
+              // probably a declaration used in one of them. Return an empty scope.
+              const emptyScope: ScopeData = {
+                directives: [],
+                ngModules: [],
+                pipes: [],
+              };
+              return {
+                ngModule,
+                compilation: emptyScope,
+                reexports: [],
+                schemas: [],
+                exported: emptyScope,
+              };
+            }
+            const scope = scopeMap.get(clazz)!;
+
+            return {
+              ngModule,
+              compilation: scope,
+              reexports: [],
+              schemas: [],
+              exported: scope,
+            };
+          } catch (e) {
+            // No NgModule was found for this class, so it has no scope.
+            return null;
+          }
+        }
   };
 
   const templateTypeChecker = new TemplateTypeCheckerImpl(
@@ -490,6 +522,55 @@ export function getClass(sf: ts.SourceFile, name: string): ClassDeclaration<ts.C
     }
   }
   throw new Error(`Class ${name} not found in file: ${sf.fileName}: ${sf.text}`);
+}
+
+/**
+ * Synthesize `ScopeData` metadata from an array of `TestDeclaration`s.
+ */
+function makeScope(program: ts.Program, sf: ts.SourceFile, decls: TestDeclaration[]): ScopeData {
+  const scope: ScopeData = {
+    ngModules: [],
+    directives: [],
+    pipes: [],
+  };
+
+  for (const decl of decls) {
+    let declSf = sf;
+    if (decl.file !== undefined) {
+      declSf = getSourceFileOrError(program, decl.file);
+    }
+    const declClass = getClass(declSf, decl.name);
+
+    if (decl.type === 'directive') {
+      scope.directives.push({
+        ref: new Reference(declClass),
+        baseClass: null,
+        name: decl.name,
+        selector: decl.selector,
+        queries: [],
+        inputs: decl.inputs !== undefined ? ClassPropertyMapping.fromMappedObject(decl.inputs) :
+                                            ClassPropertyMapping.empty(),
+        outputs: decl.outputs !== undefined ? ClassPropertyMapping.fromMappedObject(decl.outputs) :
+                                              ClassPropertyMapping.empty(),
+        isComponent: decl.isComponent ?? false,
+        exportAs: decl.exportAs ?? null,
+        ngTemplateGuards: decl.ngTemplateGuards ?? [],
+        hasNgTemplateContextGuard: decl.hasNgTemplateContextGuard ?? false,
+        coercedInputFields: new Set(decl.coercedInputFields ?? []),
+        restrictedInputFields: new Set(decl.restrictedInputFields ?? []),
+        stringLiteralInputFields: new Set(decl.stringLiteralInputFields ?? []),
+        undeclaredInputFields: new Set(decl.undeclaredInputFields ?? []),
+        isGeneric: decl.isGeneric ?? false,
+      });
+    } else if (decl.type === 'pipe') {
+      scope.pipes.push({
+        ref: new Reference(declClass),
+        name: decl.pipeName,
+      });
+    }
+  }
+
+  return scope;
 }
 
 class FakeEnvironment /* implements Environment */ {

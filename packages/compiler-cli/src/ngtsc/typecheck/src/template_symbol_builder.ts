@@ -129,12 +129,14 @@ export class SymbolBuilder {
           }
 
           const ngModule = this.getDirectiveModule(symbol.tsSymbol.valueDeclaration);
-          const selector = meta.selector ?? null;
+          if (meta.selector === null) {
+            return null;
+          }
           const isComponent = meta.isComponent ?? null;
           const directiveSymbol: DirectiveSymbol = {
             ...symbol,
             tsSymbol: symbol.tsSymbol,
-            selector,
+            selector: meta.selector,
             isComponent,
             ngModule,
             kind: SymbolKind.Directive
@@ -256,7 +258,7 @@ export class SymbolBuilder {
     // In either case, `_t1["index"]` or `_t1.index`, `node.expression` is _t1.
     // The retrieved symbol for _t1 will be the variable declaration.
     const tsSymbol = this.getTypeChecker().getSymbolAtLocation(node.expression);
-    if (tsSymbol === undefined || tsSymbol.declarations.length === 0) {
+    if (tsSymbol === undefined || tsSymbol.declarations.length === 0 || selector === null) {
       return null;
     }
 
