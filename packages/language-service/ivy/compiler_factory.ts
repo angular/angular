@@ -12,7 +12,8 @@ import {TrackedIncrementalBuildStrategy} from '@angular/compiler-cli/src/ngtsc/i
 import {TypeCheckingProgramStrategy} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
 import * as ts from 'typescript/lib/tsserverlibrary';
 
-import {isExternalTemplate, LanguageServiceAdapter} from './language_service_adapter';
+import {LanguageServiceAdapter} from './language_service_adapter';
+import {isExternalTemplate} from './utils';
 
 export class CompilerFactory {
   private readonly incrementalStrategy = new TrackedIncrementalBuildStrategy();

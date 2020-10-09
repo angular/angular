@@ -6,7 +6,6 @@ ts_library(
     name = "common",
     srcs = glob(["*.ts"]),
     deps = [
-        "@npm//@types/node",
         "@npm//typescript",
     ],
 )

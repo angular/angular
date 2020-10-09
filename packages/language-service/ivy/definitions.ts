@@ -11,8 +11,10 @@ import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
 import {DirectiveSymbol, DomBindingSymbol, ElementSymbol, ShimLocation, Symbol, SymbolKind, TemplateSymbol} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
 import * as ts from 'typescript';
 
+import {getTsDefinitionAndBoundSpan, ResourceResolver} from '../common/definitions';
+
 import {getPathToNodeAtPosition} from './hybrid_visitor';
-import {flatMap, getDirectiveMatchesForAttribute, getDirectiveMatchesForElementTag, getTemplateInfoAtPosition, getTextSpanOfNode, isDollarEvent, TemplateInfo, toTextSpan} from './utils';
+import {flatMap, getDirectiveMatchesForAttribute, getDirectiveMatchesForElementTag, getTemplateInfoAtPosition, getTextSpanOfNode, isDollarEvent, isTypeScriptFile, TemplateInfo, toTextSpan} from './utils';
 
 interface DefinitionMeta {
   node: AST|TmplAstNode;
@@ -25,13 +27,25 @@ interface HasShimLocation {
 }
 
 export class DefinitionBuilder {
-  constructor(private readonly tsLS: ts.LanguageService, private readonly compiler: NgCompiler) {}
+  constructor(
+      private readonly tsLS: ts.LanguageService, private readonly compiler: NgCompiler,
+      private readonly resourceResolver: ResourceResolver) {}
 
   getDefinitionAndBoundSpan(fileName: string, position: number): ts.DefinitionInfoAndBoundSpan
       |undefined {
     const templateInfo = getTemplateInfoAtPosition(fileName, position, this.compiler);
     if (templateInfo === undefined) {
-      return;
+      // We were unable to get a template at the given position. If we are in a TS file, instead
+      // attempt to get an Angular definition at the location inside a TS file (examples of this
+      // would be templateUrl or a url in styleUrls).
+      if (!isTypeScriptFile(fileName)) {
+        return;
+      }
+      const sf = this.compiler.getNextProgram().getSourceFile(fileName);
+      if (!sf) {
+        return;
+      }
+      return getTsDefinitionAndBoundSpan(sf, position, this.resourceResolver);
     }
     const definitionMeta = this.getDefinitionMetaAtPosition(templateInfo, position);
     // The `$event` of event handlers would point to the $event parameter in the shim file, as in
