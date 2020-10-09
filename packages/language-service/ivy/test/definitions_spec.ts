@@ -22,12 +22,15 @@ describe('definitions', () => {
   });
 
   describe('elements', () => {
-    it('should return nothing for native elements', () => {
-      const {position} = service.overwriteInlineTemplate(APP_COMPONENT, `<butt¦on></button>`);
-      const definitionAndBoundSpan = ngLS.getDefinitionAndBoundSpan(APP_COMPONENT, position);
-      // The "definition" is this location itself so we should return nothing.
-      // getTypeDefinitionAtPosition would return the HTMLButtonElement interface.
-      expect(definitionAndBoundSpan!.definitions).toEqual([]);
+    it('should work for native elements', () => {
+      const defs = getDefinitionsAndAssertBoundSpan({
+        templateOverride: `<butt¦on></button>`,
+        expectedSpanText: `<button></button>`,
+      });
+      expect(defs.length).toEqual(2);
+      expect(defs[0].fileName).toContain('lib.dom.d.ts');
+      expect(defs[0].contextSpan).toContain('interface HTMLButtonElement extends HTMLElement');
+      expect(defs[1].contextSpan).toContain('declare var HTMLButtonElement');
     });
   });
 
@@ -42,11 +45,13 @@ describe('definitions', () => {
 
   describe('directives', () => {
     it('should work for directives', () => {
-      const definitions = getDefinitionsAndAssertBoundSpan({
+      const defs = getDefinitionsAndAssertBoundSpan({
         templateOverride: `<div string-model¦></div>`,
         expectedSpanText: 'string-model',
       });
-      expect(definitions).toEqual([]);
+      expect(defs.length).toEqual(1);
+      expect(defs[0].contextSpan).toContain('@Directive');
+      expect(defs[0].contextSpan).toContain('export class StringModel');
     });
 
     it('should work for components', () => {
@@ -58,17 +63,25 @@ describe('definitions', () => {
         templateOverride,
         expectedSpanText: templateOverride.replace('¦', '').trim(),
       });
-      expect(definitions).toEqual([]);
+      expect(definitions.length).toEqual(1);
+
+      expect(definitions.length).toEqual(1);
+      expect(definitions[0].textSpan).toEqual('TestComponent');
+      expect(definitions[0].contextSpan).toContain('@Component');
     });
 
-    it('should not return anything for structural directives where the key does not map to a binding',
-       () => {
-         const definitions = getDefinitionsAndAssertBoundSpan({
-           templateOverride: `<div *¦ngFor="let item of heroes"></div>`,
-           expectedSpanText: 'ngFor',
-         });
-         expect(definitions).toEqual([]);
-       });
+    it('should work for structural directives', () => {
+      const definitions = getDefinitionsAndAssertBoundSpan({
+        templateOverride: `<div *¦ngFor="let item of heroes"></div>`,
+        expectedSpanText: 'ngFor',
+      });
+      expect(definitions.length).toEqual(1);
+      expect(definitions[0].fileName).toContain('ng_for_of.d.ts');
+      expect(definitions[0].textSpan).toEqual('NgForOf');
+      expect(definitions[0].contextSpan)
+          .toContain(
+              'export declare class NgForOf<T, U extends NgIterable<T> = NgIterable<T>> implements DoCheck');
+    });
 
     it('should return binding for structural directive where key maps to a binding', () => {
       const definitions = getDefinitionsAndAssertBoundSpan({
@@ -83,11 +96,18 @@ describe('definitions', () => {
     });
 
     it('should work for directives with compound selectors', () => {
-      const definitions = getDefinitionsAndAssertBoundSpan({
-        templateOverride: `<ng-template ngF¦or let-item [ngForOf]="items">{{item}}</ng-template>`,
-        expectedSpanText: 'ngFor',
+      let defs = getDefinitionsAndAssertBoundSpan({
+        templateOverride: `<button com¦pound custom-button></button>`,
+        expectedSpanText: 'compound',
       });
-      expect(definitions).toEqual([]);
+      expect(defs.length).toEqual(1);
+      expect(defs[0].contextSpan).toContain('export class CompoundCustomButtonDirective');
+      defs = getDefinitionsAndAssertBoundSpan({
+        templateOverride: `<button compound cu¦stom-button></button>`,
+        expectedSpanText: 'custom-button',
+      });
+      expect(defs.length).toEqual(1);
+      expect(defs[0].contextSpan).toContain('export class CompoundCustomButtonDirective');
     });
   });
 

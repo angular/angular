@@ -8,7 +8,7 @@
 
 import {AST, TmplAstNode, TmplAstTextAttribute} from '@angular/compiler';
 import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
-import {ShimLocation, Symbol, SymbolKind} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
+import {DirectiveSymbol, DomBindingSymbol, ElementSymbol, ShimLocation, Symbol, SymbolKind, TemplateSymbol} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
 import * as ts from 'typescript';
 
 import {findNodeAtPosition} from './hybrid_visitor';
@@ -52,17 +52,12 @@ export class DefinitionBuilder {
       case SymbolKind.Element:
       case SymbolKind.Template:
       case SymbolKind.DomBinding:
-        // `Template` and `Element` types should not return anything because their "definitions" are
-        // the template locations themselves. Instead, `getTypeDefinitionAtPosition` should return
-        // the directive class / native element interface. `Directive` would have similar reasoning,
-        // though the `TemplateTypeChecker` only returns it as a list on `DomBinding`, `Element`, or
-        // `Template` so it's really only here for switch case completeness (it wouldn't ever appear
-        // here).
-        //
-        // `DomBinding` also does not return anything because the value assignment is internal to
-        // the TCB. Again, `getTypeDefinitionAtPosition` could return a possible directive the
-        // attribute binds to or the property in the native interface.
-        return [];
+        // Though it is generally more appropriate for the above symbol definitions to be
+        // associated with "type definitions" since the location in the template is the
+        // actual definition location, the better user experience would be to allow
+        // LS users to "go to definition" on an item in the template that maps to a class and be
+        // taken to the directive or HTML class.
+        return this.getTypeDefinitionsForTemplateInstance(symbol, node);
       case SymbolKind.Input:
       case SymbolKind.Output:
         return this.getDefinitionsForSymbols(...symbol.bindings);
@@ -111,13 +106,31 @@ export class DefinitionBuilder {
 
     const {symbol, node} = definitionMeta;
     switch (symbol.kind) {
+      case SymbolKind.Directive:
+      case SymbolKind.DomBinding:
+      case SymbolKind.Element:
+      case SymbolKind.Template:
+        return this.getTypeDefinitionsForTemplateInstance(symbol, node);
+      case SymbolKind.Output:
+      case SymbolKind.Input:
+        return this.getTypeDefinitionsForSymbols(...symbol.bindings);
+      case SymbolKind.Reference:
+      case SymbolKind.Expression:
+      case SymbolKind.Variable:
+        return this.getTypeDefinitionsForSymbols(symbol);
+    }
+  }
+
+  private getTypeDefinitionsForTemplateInstance(
+      symbol: TemplateSymbol|ElementSymbol|DomBindingSymbol|DirectiveSymbol,
+      node: AST|TmplAstNode): ts.DefinitionInfo[] {
+    switch (symbol.kind) {
       case SymbolKind.Template: {
         const matches = getDirectiveMatchesForElementTag(symbol.templateNode, symbol.directives);
         return this.getTypeDefinitionsForSymbols(...matches);
       }
       case SymbolKind.Element: {
-        const matches = getDirectiveMatchesForAttribute(
-            symbol.templateNode.name, symbol.templateNode, symbol.directives);
+        const matches = getDirectiveMatchesForElementTag(symbol.templateNode, symbol.directives);
         // If one of the directive matches is a component, we should not include the native element
         // in the results because it is replaced by the component.
         return Array.from(matches).some(dir => dir.isComponent) ?
@@ -132,13 +145,7 @@ export class DefinitionBuilder {
             node.name, symbol.host.templateNode, symbol.host.directives);
         return this.getTypeDefinitionsForSymbols(...dirs);
       }
-      case SymbolKind.Output:
-      case SymbolKind.Input:
-        return this.getTypeDefinitionsForSymbols(...symbol.bindings);
-      case SymbolKind.Reference:
       case SymbolKind.Directive:
-      case SymbolKind.Expression:
-      case SymbolKind.Variable:
         return this.getTypeDefinitionsForSymbols(symbol);
     }
   }
