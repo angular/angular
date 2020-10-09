@@ -11,6 +11,7 @@ import * as ts from 'typescript';
 
 import {AbsoluteFsPath} from '../../file_system';
 import {ClassDeclaration} from '../../reflection';
+import {DirectiveInScope} from './scope';
 
 export enum SymbolKind {
   Input,
@@ -222,23 +223,14 @@ export interface TemplateSymbol {
  * A representation of a directive/component whose selector matches a node in a component
  * template.
  */
-export interface DirectiveSymbol {
+export interface DirectiveSymbol extends DirectiveInScope {
   kind: SymbolKind.Directive;
 
   /** The `ts.Type` for the class declaration. */
   tsType: ts.Type;
 
-  /** The `ts.Symbol` for the class declaration. */
-  tsSymbol: ts.Symbol;
-
   /** The location in the shim file for the variable that holds the type of the directive. */
   shimLocation: ShimLocation;
-
-  /** The selector for the `Directive` / `Component`. */
-  selector: string|null;
-
-  /** `true` if this `DirectiveSymbol` is for a @Component. */
-  isComponent: boolean;
 
   /** The `NgModule` that this directive is declared in or `null` if it could not be determined. */
   ngModule: ClassDeclaration|null;

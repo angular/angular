@@ -12,11 +12,11 @@ import * as ts from 'typescript';
 import {absoluteFromSourceFile, AbsoluteFsPath, getSourceFileOrError} from '../../file_system';
 import {ReferenceEmitter} from '../../imports';
 import {IncrementalBuild} from '../../incremental/api';
-import {ReflectionHost} from '../../reflection';
+import {isNamedClassDeclaration, ReflectionHost} from '../../reflection';
 import {ComponentScopeReader} from '../../scope';
 import {isShim} from '../../shims';
 import {getSourceFileOrNull} from '../../util/src/typescript';
-import {CompletionKind, GlobalCompletion, OptimizeFor, ProgramTypeCheckAdapter, Symbol, TemplateId, TemplateTypeChecker, TypeCheckingConfig, TypeCheckingProgramStrategy, UpdateMode} from '../api';
+import {CompletionKind, DirectiveInScope, GlobalCompletion, OptimizeFor, PipeInScope, ProgramTypeCheckAdapter, Symbol, TemplateId, TemplateTypeChecker, TypeCheckingConfig, TypeCheckingProgramStrategy, UpdateMode} from '../api';
 import {TemplateDiagnostic} from '../diagnostics';
 
 import {ExpressionIdentifier, findFirstMatchingNode} from './comments';
@@ -50,6 +50,16 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
    * `ts.Program` changes, the `TemplateTypeCheckerImpl` as a whole is destroyed and replaced.
    */
   private symbolBuilderCache = new Map<ts.ClassDeclaration, SymbolBuilder>();
+
+  /**
+   * Stores directives and pipes that are in scope for each component.
+   *
+   * Unlike the other caches, the scope of a component is not affected by its template, so this
+   * cache does not need to be invalidate if the template is overridden. It will be destroyed when
+   * the `ts.Program` changes and the `TemplateTypeCheckerImpl` as a whole is destroyed and
+   * replaced.
+   */
+  private scopeCache = new Map<ts.ClassDeclaration, ScopeData>();
 
   private isComplete = false;
 
@@ -433,6 +443,73 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
     this.symbolBuilderCache.set(component, builder);
     return builder;
   }
+
+  getDirectivesInScope(component: ts.ClassDeclaration): DirectiveInScope[]|null {
+    const data = this.getScopeData(component);
+    if (data === null) {
+      return null;
+    }
+    return data.directives;
+  }
+
+  getPipesInScope(component: ts.ClassDeclaration): PipeInScope[]|null {
+    const data = this.getScopeData(component);
+    if (data === null) {
+      return null;
+    }
+    return data.pipes;
+  }
+
+  private getScopeData(component: ts.ClassDeclaration): ScopeData|null {
+    if (this.scopeCache.has(component)) {
+      return this.scopeCache.get(component)!;
+    }
+
+    if (!isNamedClassDeclaration(component)) {
+      throw new Error(`AssertionError: components must have names`);
+    }
+
+    const data: ScopeData = {
+      directives: [],
+      pipes: [],
+    };
+
+    const scope = this.componentScopeReader.getScopeForComponent(component);
+    if (scope === null || scope === 'error') {
+      return null;
+    }
+
+    const typeChecker = this.typeCheckingStrategy.getProgram().getTypeChecker();
+    for (const dir of scope.exported.directives) {
+      if (dir.selector === null) {
+        // Skip this directive, it can't be added to a template anyway.
+        continue;
+      }
+      const tsSymbol = typeChecker.getSymbolAtLocation(dir.ref.node.name);
+      if (tsSymbol === undefined) {
+        continue;
+      }
+      data.directives.push({
+        isComponent: dir.isComponent,
+        selector: dir.selector,
+        tsSymbol,
+      });
+    }
+
+    for (const pipe of scope.exported.pipes) {
+      const tsSymbol = typeChecker.getSymbolAtLocation(pipe.ref.node.name);
+      if (tsSymbol === undefined) {
+        continue;
+      }
+      data.pipes.push({
+        name: pipe.name,
+        tsSymbol,
+      });
+    }
+
+    this.scopeCache.set(component, data);
+    return data;
+  }
 }
 
 function convertDiagnostic(
@@ -621,4 +698,12 @@ class SingleShimTypeCheckingHost extends SingleFileTypeCheckingHost {
     // Only need to generate a TCB for the class if no shim exists for it currently.
     return !this.fileData.shimData.has(shimPath);
   }
+}
+
+/**
+ * Cached scope information for a component.
+ */
+interface ScopeData {
+  directives: DirectiveInScope[];
+  pipes: PipeInScope[];
 }
