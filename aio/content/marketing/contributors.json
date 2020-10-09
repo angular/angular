@@ -854,5 +854,13 @@
     "bio": "Jessica is a software engineer at Google. In her free time she is a historical fencer, astromech droid builder, photographer, pun purveyor, occasional cosplayer, and full time cat mom.",
     "groups": ["Angular"],
     "lead": "jelbourn"
+  },
+  "caballerog": {
+    "name": "Carlos Caballero",
+    "picture": "carloscaballero.jpg",
+    "twitter": "Carlillo",
+    "website": "http://carloscaballero.io",
+    "bio": "Carlos Caballero is a computer science engineer and a PhD in Computer Science from the University of Málaga. He earned his masters in Software Engineering and Artificial Intelligence. He is a full-time teacher in vocational training. He has written several teaching books and more than a dozen research articles in the first international journals.",
+    "groups": ["GDE"]
   }
 }
