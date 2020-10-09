@@ -158,6 +158,8 @@ export class MockService {
       }
     }
     this.overwritten.clear();
+    // updateGraph() will clear the internal dirty flag.
+    this.project.updateGraph();
   }
 
   getScriptInfo(fileName: string): ts.server.ScriptInfo {
@@ -179,6 +181,7 @@ export class MockService {
     if (!newScriptInfo) {
       throw new Error(`Failed to create new script info for ${fileName}`);
     }
+    newScriptInfo.attachToProject(this.project);
     return newScriptInfo;
   }
 
