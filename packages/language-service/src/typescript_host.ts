@@ -10,10 +10,12 @@ import {analyzeNgModules, AotSummaryResolver, CompileDirectiveSummary, CompileMe
 import {SchemaMetadata, ViewEncapsulation, ɵConsole as Console} from '@angular/core';
 import * as tss from 'typescript/lib/tsserverlibrary';
 
+import {findTightestNode, getClassDeclOfInlineTemplateNode} from '../common/ts_utils';
+
 import {createLanguageService} from './language_service';
 import {ReflectorHost} from './reflector_host';
 import {ExternalTemplate, InlineTemplate} from './template';
-import {findTightestNode, getClassDeclFromDecoratorProp, getDirectiveClassLike, getPropertyAssignmentFromValue} from './ts_utils';
+import {getDirectiveClassLike} from './ts_utils';
 import {AstResult, Declaration, DeclarationError, DiagnosticMessageChain, LanguageService, LanguageServiceHost, Span, TemplateSource} from './types';
 
 /**
@@ -382,11 +384,7 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
     if (!tss.isStringLiteralLike(node)) {
       return;
     }
-    const tmplAsgn = getPropertyAssignmentFromValue(node, 'template');
-    if (!tmplAsgn) {
-      return;
-    }
-    const classDecl = getClassDeclFromDecoratorProp(tmplAsgn);
+    const classDecl = getClassDeclOfInlineTemplateNode(node);
     if (!classDecl || !classDecl.name) {  // Does not handle anonymous class
       return;
     }
