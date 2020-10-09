@@ -10,6 +10,8 @@ import {getDocument} from '../render3/interfaces/document';
 import {SANITIZER} from '../render3/interfaces/view';
 import {getLView} from '../render3/state';
 import {renderStringify} from '../render3/util/misc_utils';
+import {TrustedHTML, TrustedScript, TrustedScriptURL} from '../util/security/trusted_type_defs';
+import {trustedHTMLFromString, trustedScriptFromString, trustedScriptURLFromString} from '../util/security/trusted_types';
 
 import {allowSanitizationBypassAndThrow, BypassType, unwrapSafeValue} from './bypass';
 import {_sanitizeHtml as _sanitizeHtml} from './html_sanitizer';
@@ -137,6 +139,51 @@ export function ɵɵsanitizeScript(unsafeScript: any): string {
     return unwrapSafeValue(unsafeScript);
   }
   throw new Error('unsafe value used in a script context');
+}
+
+/**
+ * Promotes the given constant string to a TrustedHTML.
+ * @param html constant string containing trusted HTML.
+ * @returns TrustedHTML wrapping `html`.
+ *
+ * @security This is a security-sensitive function and should only be used to
+ * convert constant values of attributes and properties found in
+ * application-provided Angular templates to TrustedHTML.
+ *
+ * @codeGenApi
+ */
+export function ɵɵtrustConstantHtml(html: string): TrustedHTML|string {
+  return trustedHTMLFromString(html);
+}
+
+/**
+ * Promotes the given constant string to a TrustedScript.
+ * @param script constant string containing a trusted script.
+ * @returns TrustedScript wrapping `script`.
+ *
+ * @security This is a security-sensitive function and should only be used to
+ * convert constant values of attributes and properties found in
+ * application-provided Angular templates to TrustedScript.
+ *
+ * @codeGenApi
+ */
+export function ɵɵtrustConstantScript(script: string): TrustedScript|string {
+  return trustedScriptFromString(script);
+}
+
+/**
+ * Promotes the given constant string to a TrustedScriptURL.
+ * @param url constant string containing a trusted script URL.
+ * @returns TrustedScriptURL wrapping `url`.
+ *
+ * @security This is a security-sensitive function and should only be used to
+ * convert constant values of attributes and properties found in
+ * application-provided Angular templates to TrustedScriptURL.
+ *
+ * @codeGenApi
+ */
+export function ɵɵtrustConstantResourceUrl(url: string): TrustedScriptURL|string {
+  return trustedScriptURLFromString(url);
 }
 
 /**
