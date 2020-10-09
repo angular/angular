@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {WorkspaceSchema, WorkspaceProject} from '@angular-devkit/core/src/experimental/workspace';
+import {ProjectDefinition, WorkspaceDefinition} from '@angular-devkit/core/src/workspace';
 import {SchematicsException} from '@angular-devkit/schematics';
 
 /**
@@ -14,10 +14,9 @@ import {SchematicsException} from '@angular-devkit/schematics';
  * couldn't be found.
  */
 export function getProjectFromWorkspace(
-    workspace: WorkspaceSchema,
-    projectName?: string): WorkspaceProject {
-
-  const project = workspace.projects[projectName || workspace.defaultProject!];
+    workspace: WorkspaceDefinition,
+    projectName = workspace.extensions.defaultProject as string): ProjectDefinition {
+  const project = workspace.projects.get(projectName);
 
   if (!project) {
     throw new SchematicsException(`Could not find project in workspace: ${projectName}`);

@@ -24,11 +24,11 @@ import {
 import {FileSystemSchematicContext} from '@angular-devkit/schematics/tools';
 import {Schema as ComponentOptions, Style} from '@schematics/angular/component/schema';
 import {InsertChange} from '@schematics/angular/utility/change';
-import {getWorkspace} from '@schematics/angular/utility/config';
+import {getWorkspace} from '@schematics/angular/utility/workspace';
 import {buildRelativePath, findModuleFromOptions} from '@schematics/angular/utility/find-module';
 import {parseName} from '@schematics/angular/utility/parse-name';
 import {validateHtmlSelector, validateName} from '@schematics/angular/utility/validation';
-import {ProjectType, WorkspaceProject} from '@schematics/angular/utility/workspace-models';
+import {ProjectType} from '@schematics/angular/utility/workspace-models';
 import {readFileSync, statSync} from 'fs';
 import {dirname, join, resolve} from 'path';
 import * as ts from 'typescript';
@@ -39,17 +39,18 @@ import {
 } from '../utils/vendored-ast-utils';
 import {getProjectFromWorkspace} from './get-project';
 import {getDefaultComponentOptions} from './schematic-options';
+import {ProjectDefinition} from '@angular-devkit/core/src/workspace';
 
 /**
  * Build a default project path for generating.
  * @param project The project to build the path for.
  */
-function buildDefaultPath(project: WorkspaceProject): string {
+function buildDefaultPath(project: ProjectDefinition): string {
   const root = project.sourceRoot
     ? `/${project.sourceRoot}/`
     : `/${project.root}/src/`;
 
-  const projectDirName = project.projectType === ProjectType.Application ? 'app' : 'lib';
+  const projectDirName = project.extensions.projectType === ProjectType.Application ? 'app' : 'lib';
 
   return `${root}${projectDirName}`;
 }
@@ -143,7 +144,7 @@ function addDeclarationToNgModule(options: ComponentOptions): Rule {
 }
 
 
-function buildSelector(options: ComponentOptions, projectPrefix: string) {
+function buildSelector(options: ComponentOptions, projectPrefix?: string) {
   let selector = strings.dasherize(options.name);
   if (options.prefix) {
     selector = `${options.prefix}-${selector}`;
@@ -176,8 +177,8 @@ function indentTextContent(text: string, numSpaces: number): string {
 export function buildComponent(options: ComponentOptions,
                                additionalFiles: {[key: string]: string} = {}): Rule {
 
-  return (host: Tree, context: FileSystemSchematicContext) => {
-    const workspace = getWorkspace(host);
+  return async (host: Tree, context: FileSystemSchematicContext) => {
+    const workspace = await getWorkspace(host);
     const project = getProjectFromWorkspace(workspace, options.project);
     const defaultComponentOptions = getDefaultComponentOptions(project);
 
@@ -200,7 +201,7 @@ export function buildComponent(options: ComponentOptions,
 
     if (options.path === undefined) {
       // TODO(jelbourn): figure out if the need for this `as any` is a bug due to two different
-      // incompatible `WorkspaceProject` classes in @angular-devkit
+      // incompatible `ProjectDefinition` classes in @angular-devkit
       options.path = buildDefaultPath(project as any);
     }
 
@@ -257,7 +258,7 @@ export function buildComponent(options: ComponentOptions,
       move(null as any, parsedPath.path),
     ]);
 
-    return chain([
+    return () => chain([
       branchAndMerge(chain([
         addDeclarationToNgModule(options),
         mergeWith(templateSource),

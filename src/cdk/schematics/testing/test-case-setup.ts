@@ -67,9 +67,7 @@ export async function createTestCaseSetup(migrationName: string, collectionPath:
 
   let logOutput = '';
   runner.logger.subscribe(entry => logOutput += `${entry.message}\n`);
-
-  const {appTree, writeFile} =
-    await createFileSystemTestApp(runner);
+  const {appTree, writeFile} = await createFileSystemTestApp(runner);
 
   _patchTypeScriptDefaultLib(appTree);
 

@@ -24,10 +24,8 @@ export default function(options: Schema): Rule {
 
 /** Adds the required modules to the main module of the CLI project. */
 function addDragDropModulesToModule(options: Schema) {
-  return (host: Tree) => {
-    const modulePath = findModuleFromOptions(host, options)!;
-
-    addModuleImportToModule(host, modulePath, 'DragDropModule', '@angular/cdk/drag-drop');
-    return host;
+  return async (host: Tree) => {
+    const modulePath = await findModuleFromOptions(host, options);
+    addModuleImportToModule(host, modulePath!, 'DragDropModule', '@angular/cdk/drag-drop');
   };
 }

@@ -6,19 +6,19 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {SchematicsException, Tree} from '@angular-devkit/schematics';
+import {Rule, SchematicsException, Tree} from '@angular-devkit/schematics';
 import {
   appendHtmlElementToHead,
   getProjectFromWorkspace,
   getProjectIndexFiles,
 } from '@angular/cdk/schematics';
-import {getWorkspace} from '@schematics/angular/utility/config';
+import {getWorkspace} from '@schematics/angular/utility/workspace';
 import {Schema} from '../schema';
 
 /** Adds the Material Design fonts to the index HTML file. */
-export function addFontsToIndex(options: Schema): (host: Tree) => Tree {
-  return (host: Tree) => {
-    const workspace = getWorkspace(host);
+export function addFontsToIndex(options: Schema): Rule {
+  return async (host: Tree) => {
+    const workspace = await getWorkspace(host);
     const project = getProjectFromWorkspace(workspace, options.project);
     const projectIndexFiles = getProjectIndexFiles(project);
 
@@ -36,7 +36,5 @@ export function addFontsToIndex(options: Schema): (host: Tree) => Tree {
         appendHtmlElementToHead(host, indexFilePath, `<link href="${f}" rel="stylesheet">`);
       });
     });
-
-    return host;
   };
 }

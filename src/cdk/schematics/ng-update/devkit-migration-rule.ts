@@ -8,7 +8,7 @@
 
 import {Rule, SchematicContext, Tree} from '@angular-devkit/schematics';
 import {NodePackageInstallTask} from '@angular-devkit/schematics/tasks';
-import {WorkspaceProject} from '@schematics/angular/utility/workspace-models';
+import {ProjectDefinition} from '@angular-devkit/core/src/workspace';
 
 import {UpdateProject} from '../update-tool';
 import {WorkspacePath} from '../update-tool/file-system';
@@ -62,7 +62,7 @@ export function createMigrationSchematicRule(
     upgradeData: UpgradeData, onMigrationCompleteFn?: PostMigrationFn): Rule {
   return async (tree: Tree, context: SchematicContext) => {
     const logger = context.logger;
-    const workspace = getWorkspaceConfigGracefully(tree);
+    const workspace = await getWorkspaceConfigGracefully(tree);
 
     if (workspace === null) {
       logger.error('Could not find workspace configuration file.');
@@ -74,12 +74,12 @@ export function createMigrationSchematicRule(
     // we don't want to check these again, as this would result in duplicated failure messages.
     const analyzedFiles = new Set<WorkspacePath>();
     const fileSystem = new DevkitFileSystem(tree);
-    const projectNames = Object.keys(workspace.projects);
+    const projectNames = workspace.projects.keys();
     const migrations: NullableDevkitMigration[] = [...cdkMigrations, ...extraMigrations];
     let hasFailures = false;
 
     for (const projectName of projectNames) {
-      const project = workspace.projects[projectName];
+      const project = workspace.projects.get(projectName)!;
       const buildTsconfigPath = getTargetTsconfigPath(project, 'build');
       const testTsconfigPath = getTargetTsconfigPath(project, 'test');
 
@@ -126,7 +126,7 @@ export function createMigrationSchematicRule(
     }
 
     /** Runs the migrations for the specified workspace project. */
-    function runMigrations(project: WorkspaceProject, projectName: string,
+    function runMigrations(project: ProjectDefinition, projectName: string,
                            tsconfigPath: WorkspacePath, additionalStylesheetPaths: string[],
                            isTestTarget: boolean) {
       const program = UpdateProject.createProgramFromTsconfig(tsconfigPath, fileSystem);

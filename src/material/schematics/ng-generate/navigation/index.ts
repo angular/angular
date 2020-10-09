@@ -33,14 +33,13 @@ export default function(options: Schema): Rule {
  * Adds the required modules to the relative module.
  */
 function addNavModulesToModule(options: Schema) {
-  return (host: Tree) => {
-    const modulePath = findModuleFromOptions(host, options)!;
+  return async (host: Tree) => {
+    const modulePath = (await findModuleFromOptions(host, options))!;
     addModuleImportToModule(host, modulePath, 'LayoutModule', '@angular/cdk/layout');
     addModuleImportToModule(host, modulePath, 'MatToolbarModule', '@angular/material/toolbar');
     addModuleImportToModule(host, modulePath, 'MatButtonModule', '@angular/material/button');
     addModuleImportToModule(host, modulePath, 'MatSidenavModule', '@angular/material/sidenav');
     addModuleImportToModule(host, modulePath, 'MatIconModule', '@angular/material/icon');
     addModuleImportToModule(host, modulePath, 'MatListModule', '@angular/material/list');
-    return host;
   };
 }

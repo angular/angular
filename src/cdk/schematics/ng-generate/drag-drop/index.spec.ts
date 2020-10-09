@@ -1,6 +1,4 @@
 import {SchematicTestRunner} from '@angular-devkit/schematics/testing';
-import {getProjectFromWorkspace} from '@angular/cdk/schematics';
-import {getWorkspace} from '@schematics/angular/utility/config';
 import {COLLECTION_PATH} from '../../index.spec';
 import {createTestApp, getFileContent} from '../../testing';
 import {Schema} from './schema';
@@ -56,16 +54,23 @@ describe('CDK drag-drop schematic', () => {
 
     it('should respect the deprecated "styleext" option value', async () => {
       let tree = await createTestApp(runner);
-      const workspace = getWorkspace(tree);
-      const project = getProjectFromWorkspace(workspace);
-
-      // We need to specify the default component options by overwriting
-      // the existing workspace configuration because passing the "styleext"
-      // option is no longer supported. Though we want to verify that we
-      // properly handle old CLI projects which still use the "styleext" option.
-      project.schematics!['@schematics/angular:component'] = {styleext: 'scss'};
-
-      tree.overwrite('angular.json', JSON.stringify(workspace));
+      tree.overwrite('angular.json', JSON.stringify({
+        version: 1,
+        defaultProject: 'material',
+        projects: {
+          material: {
+            projectType: 'application',
+            schematics: {
+              // We need to specify the default component options by overwriting
+              // the existing workspace configuration because passing the "styleext"
+              // option is no longer supported. Though we want to verify that we
+              // properly handle old CLI projects which still use the "styleext" option.
+              '@schematics/angular:component': {styleext: 'scss'}
+            },
+            root: 'projects/material'
+          }
+        }
+      }));
       tree = await runner.runSchematicAsync('drag-drop', baseOptions, tree).toPromise();
 
       expect(tree.files).toContain('/projects/material/src/app/foo/foo.component.scss');
@@ -153,16 +158,23 @@ describe('CDK drag-drop schematic', () => {
 
     it('should respect the deprecated global "spec" option value', async () => {
       let tree = await createTestApp(runner);
-      const workspace = getWorkspace(tree);
-      const project = getProjectFromWorkspace(workspace);
-
-      // We need to specify the default component options by overwriting
-      // the existing workspace configuration because passing the "spec"
-      // option is no longer supported. Though we want to verify that we
-      // properly handle old CLI projects which still use the "spec" option.
-      project.schematics!['@schematics/angular:component'] = {spec: false};
-
-      tree.overwrite('angular.json', JSON.stringify(workspace));
+      tree.overwrite('angular.json', JSON.stringify({
+        version: 1,
+        defaultProject: 'material',
+        projects: {
+          material: {
+            projectType: 'application',
+            schematics: {
+              // We need to specify the default component options by overwriting
+              // the existing workspace configuration because passing the "spec"
+              // option is no longer supported. Though we want to verify that we
+              // properly handle old CLI projects which still use the "spec" option.
+              '@schematics/angular:component': {spec: false}
+            },
+            root: 'projects/material'
+          }
+        }
+      }));
       tree = await runner.runSchematicAsync('drag-drop', baseOptions, tree).toPromise();
 
       expect(tree.files).not.toContain('/projects/material/src/app/foo/foo.component.spec.ts');

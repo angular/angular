@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {WorkspaceProject} from '@angular-devkit/core/src/experimental/workspace';
+import {ProjectDefinition, TargetDefinition} from '@angular-devkit/core/src/workspace';
+import {JsonValue} from '@angular-devkit/core';
 import {SchematicsException} from '@angular-devkit/schematics';
-import {BuilderTarget} from '@schematics/angular/utility/workspace-models';
 
 /** Object that maps a CLI target to its default builder name. */
 export const defaultTargetBuilders = {
@@ -17,28 +17,22 @@ export const defaultTargetBuilders = {
 };
 
 /** Resolves the architect options for the build target of the given project. */
-export function getProjectTargetOptions(project: WorkspaceProject, buildTarget: string) {
-  if (project.targets && project.targets[buildTarget] && project.targets[buildTarget].options) {
-    return project.targets[buildTarget].options;
-  }
+export function getProjectTargetOptions(project: ProjectDefinition, buildTarget: string):
+  Record<string, JsonValue | undefined> {
+  const options = project.targets?.get(buildTarget)?.options;
 
-  // TODO(devversion): consider removing this architect check if the CLI completely switched
-  // over to `targets`, and the `architect` support has been removed.
-  // See: https://github.com/angular/angular-cli/commit/307160806cb48c95ecb8982854f452303801ac9f
-  if (project.architect && project.architect[buildTarget] &&
-      project.architect[buildTarget].options) {
-    return project.architect[buildTarget].options;
-  }
-
-  throw new SchematicsException(
+  if (!options) {
+    throw new SchematicsException(
       `Cannot determine project target configuration for: ${buildTarget}.`);
+  }
+
+  return options;
 }
 
 /** Gets all targets from the given project that match the specified builder name. */
 export function getTargetsByBuilderName(
-    project: WorkspaceProject, builderName: string): BuilderTarget<any, unknown>[] {
-  const targets = project.targets || project.architect || {};
-  return Object.keys(targets)
-      .filter(name => targets[name].builder === builderName)
-      .map(name => targets[name]);
+    project: ProjectDefinition, builderName: string): TargetDefinition[] {
+  return Array.from(project.targets.keys())
+      .filter(name => project.targets.get(name)?.builder === builderName)
+      .map(name => project.targets.get(name)!);
 }

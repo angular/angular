@@ -33,14 +33,13 @@ export default function(options: Schema): Rule {
  * Adds the required modules to the relative module.
  */
 function addFormModulesToModule(options: Schema) {
-  return (host: Tree) => {
-    const modulePath = findModuleFromOptions(host, options)!;
+  return async (host: Tree) => {
+    const modulePath = (await findModuleFromOptions(host, options))!;
     addModuleImportToModule(host, modulePath, 'MatInputModule', '@angular/material/input');
     addModuleImportToModule(host, modulePath, 'MatButtonModule', '@angular/material/button');
     addModuleImportToModule(host, modulePath, 'MatSelectModule', '@angular/material/select');
     addModuleImportToModule(host, modulePath, 'MatRadioModule', '@angular/material/radio');
     addModuleImportToModule(host, modulePath, 'MatCardModule', '@angular/material/card');
     addModuleImportToModule(host, modulePath, 'ReactiveFormsModule', '@angular/forms');
-    return host;
   };
 }

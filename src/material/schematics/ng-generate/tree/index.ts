@@ -33,11 +33,10 @@ export default function(options: Schema): Rule {
  * Adds the required modules to the relative module.
  */
 function addTreeModulesToModule(options: Schema) {
-  return (host: Tree) => {
-    const modulePath = findModuleFromOptions(host, options)!;
+  return async (host: Tree) => {
+    const modulePath = (await findModuleFromOptions(host, options))!;
     addModuleImportToModule(host, modulePath, 'MatTreeModule', '@angular/material/tree');
     addModuleImportToModule(host, modulePath, 'MatIconModule', '@angular/material/icon');
     addModuleImportToModule(host, modulePath, 'MatButtonModule', '@angular/material/button');
-    return host;
   };
 }
