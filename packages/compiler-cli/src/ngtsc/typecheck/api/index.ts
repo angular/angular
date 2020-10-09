@@ -10,4 +10,5 @@ export * from './api';
 export * from './checker';
 export * from './completion';
 export * from './context';
+export * from './scope';
 export * from './symbols';
