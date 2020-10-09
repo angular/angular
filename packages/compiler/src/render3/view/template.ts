@@ -568,7 +568,8 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
     const nonContentSelectAttributes =
         ngContent.attributes.filter(attr => attr.name.toLowerCase() !== NG_CONTENT_SELECT_ATTR);
-    const attributes = this.getAttributeExpressions(nonContentSelectAttributes, [], []);
+    const attributes =
+        this.getAttributeExpressions(ngContent.name, nonContentSelectAttributes, [], []);
 
     if (attributes.length > 0) {
       parameters.push(o.literal(projectionSlotIdx), o.literalArr(attributes));
@@ -635,7 +636,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
     // add attributes for directive and projection matching purposes
     const attributes: o.Expression[] = this.getAttributeExpressions(
-        outputAttrs, allOtherInputs, element.outputs, stylingBuilder, [], i18nAttrs);
+        element.name, outputAttrs, allOtherInputs, element.outputs, stylingBuilder, [], i18nAttrs);
     parameters.push(this.addAttrsToConsts(attributes));
 
     // local refs (ex.: <div #foo #bar="baz">)
@@ -867,8 +868,8 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     // prepare attributes parameter (including attributes used for directive matching)
     const [i18nStaticAttrs, staticAttrs] = partitionArray(template.attributes, hasI18nMeta);
     const attrsExprs: o.Expression[] = this.getAttributeExpressions(
-        staticAttrs, template.inputs, template.outputs, undefined /* styles */,
-        template.templateAttrs, i18nStaticAttrs);
+        NG_TEMPLATE_TAG_NAME, staticAttrs, template.inputs, template.outputs,
+        undefined /* styles */, template.templateAttrs, i18nStaticAttrs);
     parameters.push(this.addAttrsToConsts(attrsExprs));
 
     // local refs (ex.: <ng-template #foo>)
@@ -1285,8 +1286,9 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
    * because those values are intended to always be generated as property instructions.
    */
   private getAttributeExpressions(
-      renderAttributes: t.TextAttribute[], inputs: t.BoundAttribute[], outputs: t.BoundEvent[],
-      styles?: StylingBuilder, templateAttrs: (t.BoundAttribute|t.TextAttribute)[] = [],
+      elementName: string, renderAttributes: t.TextAttribute[], inputs: t.BoundAttribute[],
+      outputs: t.BoundEvent[], styles?: StylingBuilder,
+      templateAttrs: (t.BoundAttribute|t.TextAttribute)[] = [],
       i18nAttrs: (t.BoundAttribute|t.TextAttribute)[] = []): o.Expression[] {
     const alreadySeen = new Set<string>();
     const attrExprs: o.Expression[] = [];
@@ -1296,7 +1298,8 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       if (attr.name === NG_PROJECT_AS_ATTR_NAME) {
         ngProjectAsAttr = attr;
       }
-      attrExprs.push(...getAttributeNameLiterals(attr.name), asLiteral(attr.value));
+      attrExprs.push(
+          ...getAttributeNameLiterals(attr.name), trustedConstAttribute(elementName, attr));
     });
 
     // Keep ngProjectAs next to the other name, value pairs so we can verify that we match
@@ -2125,6 +2128,20 @@ export function resolveSanitizationFn(context: core.SecurityContext, isAttribute
       return o.importExpr(R3.sanitizeResourceUrl);
     default:
       return null;
+  }
+}
+
+function trustedConstAttribute(tagName: string, attr: t.TextAttribute): o.Expression {
+  const value = asLiteral(attr.value);
+  switch (elementRegistry.securityContext(tagName, attr.name, /* isAttribute */ true)) {
+    case core.SecurityContext.HTML:
+      return o.importExpr(R3.trustConstantHtml).callFn([value], attr.valueSpan);
+    case core.SecurityContext.SCRIPT:
+      return o.importExpr(R3.trustConstantScript).callFn([value], attr.valueSpan);
+    case core.SecurityContext.RESOURCE_URL:
+      return o.importExpr(R3.trustConstantResourceUrl).callFn([value], attr.valueSpan);
+    default:
+      return value;
   }
 }
 
