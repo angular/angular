@@ -10,9 +10,11 @@ import {NgAnalyzedModules} from '@angular/compiler';
 import * as path from 'path';
 import * as ts from 'typescript';
 
+import {findTightestNode} from '../common/ts_utils';
+
 import {createDiagnostic, Diagnostic} from './diagnostic_messages';
 import {getTemplateExpressionDiagnostics} from './expression_diagnostics';
-import {findPropertyValueOfType, findTightestNode} from './ts_utils';
+import {findPropertyValueOfType} from './ts_utils';
 import * as ng from './types';
 import {TypeScriptServiceHost} from './typescript_host';
 import {offsetSpan, spanOf} from './utils';

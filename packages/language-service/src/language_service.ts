@@ -6,10 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {getTsDefinitionAndBoundSpan} from '@angular/language-service/common/definitions';
 import * as tss from 'typescript/lib/tsserverlibrary';
 
 import {getTemplateCompletions} from './completions';
-import {getDefinitionAndBoundSpan, getTsDefinitionAndBoundSpan} from './definitions';
+import {getDefinitionAndBoundSpan} from './definitions';
 import {getDeclarationDiagnostics, getTemplateDiagnostics, ngDiagnosticToTsDiagnostic} from './diagnostics';
 import {getTemplateHover, getTsHover} from './hover';
 import * as ng from './types';
