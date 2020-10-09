@@ -19,7 +19,6 @@ export class LanguageServiceAdapter implements NgCompilerAdapter {
   readonly unifiedModulesHost = null;  // only used in Bazel
   readonly rootDirs: AbsoluteFsPath[];
   private readonly templateVersion = new Map<string, string>();
-  private readonly modifiedTemplates = new Set<string>();
 
   constructor(private readonly project: ts.server.Project) {
     this.rootDirs = project.getCompilationSettings().rootDirs?.map(absoluteFrom) || [];
@@ -68,37 +67,13 @@ export class LanguageServiceAdapter implements NgCompilerAdapter {
     }
     const version = this.project.getScriptVersion(fileName);
     this.templateVersion.set(fileName, version);
-    this.modifiedTemplates.delete(fileName);
     return snapshot.getText(0, snapshot.getLength());
   }
 
-  /**
-   * getModifiedResourceFiles() is an Angular-specific method for notifying
-   * the Angular compiler templates that have changed since it last read them.
-   * It is a method on ExtendedTsCompilerHost, see
-   * packages/compiler-cli/src/ngtsc/core/api/src/interfaces.ts
-   */
-  getModifiedResourceFiles(): Set<string> {
-    return this.modifiedTemplates;
-  }
-
-  /**
-   * Check whether the specified `fileName` is newer than the last time it was
-   * read. If it is newer, register it and return true, otherwise do nothing and
-   * return false.
-   * @param fileName path to external template
-   */
-  registerTemplateUpdate(fileName: string): boolean {
-    if (!isExternalTemplate(fileName)) {
-      return false;
-    }
+  isTemplateDirty(fileName: string): boolean {
     const lastVersion = this.templateVersion.get(fileName);
     const latestVersion = this.project.getScriptVersion(fileName);
-    if (lastVersion !== latestVersion) {
-      this.modifiedTemplates.add(fileName);
-      return true;
-    }
-    return false;
+    return lastVersion !== latestVersion;
   }
 }
 

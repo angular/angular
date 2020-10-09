@@ -12,38 +12,20 @@ import {setup, TEST_TEMPLATE} from './mock_host';
 const {project, service} = setup();
 
 describe('Language service adapter', () => {
-  it('should register update if it has not seen the template before', () => {
+  it('should mark template dirty if it has not seen the template before', () => {
     const adapter = new LanguageServiceAdapter(project);
-    // Note that readResource() has never been called, so the adapter has no
-    // knowledge of the template at all.
-    const isRegistered = adapter.registerTemplateUpdate(TEST_TEMPLATE);
-    expect(isRegistered).toBeTrue();
-    expect(adapter.getModifiedResourceFiles().size).toBe(1);
+    expect(adapter.isTemplateDirty(TEST_TEMPLATE)).toBeTrue();
   });
 
-  it('should not register update if template has not changed', () => {
+  it('should not mark template dirty if template has not changed', () => {
     const adapter = new LanguageServiceAdapter(project);
     adapter.readResource(TEST_TEMPLATE);
-    const isRegistered = adapter.registerTemplateUpdate(TEST_TEMPLATE);
-    expect(isRegistered).toBeFalse();
-    expect(adapter.getModifiedResourceFiles().size).toBe(0);
+    expect(adapter.isTemplateDirty(TEST_TEMPLATE)).toBeFalse();
   });
 
-  it('should register update if template has changed', () => {
+  it('should mark template dirty if template has changed', () => {
     const adapter = new LanguageServiceAdapter(project);
-    adapter.readResource(TEST_TEMPLATE);
     service.overwrite(TEST_TEMPLATE, '<p>Hello World</p>');
-    const isRegistered = adapter.registerTemplateUpdate(TEST_TEMPLATE);
-    expect(isRegistered).toBe(true);
-    expect(adapter.getModifiedResourceFiles().size).toBe(1);
-  });
-
-  it('should clear template updates on read', () => {
-    const adapter = new LanguageServiceAdapter(project);
-    const isRegistered = adapter.registerTemplateUpdate(TEST_TEMPLATE);
-    expect(isRegistered).toBeTrue();
-    expect(adapter.getModifiedResourceFiles().size).toBe(1);
-    adapter.readResource(TEST_TEMPLATE);
-    expect(adapter.getModifiedResourceFiles().size).toBe(0);
+    expect(adapter.isTemplateDirty(TEST_TEMPLATE)).toBeTrue();
   });
 });

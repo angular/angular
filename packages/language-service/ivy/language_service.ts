@@ -9,18 +9,18 @@
 import {CompilerOptions, createNgCompilerOptions} from '@angular/compiler-cli';
 import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
 import {absoluteFromSourceFile, AbsoluteFsPath} from '@angular/compiler-cli/src/ngtsc/file_system';
-import {PatchedProgramIncrementalBuildStrategy} from '@angular/compiler-cli/src/ngtsc/incremental';
 import {TypeCheckShimGenerator} from '@angular/compiler-cli/src/ngtsc/typecheck';
 import {OptimizeFor, TypeCheckingProgramStrategy} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
 import * as ts from 'typescript/lib/tsserverlibrary';
 
+import {CompilerFactory} from './compiler_factory';
 import {DefinitionBuilder} from './definitions';
 import {isExternalTemplate, isTypeScriptFile, LanguageServiceAdapter} from './language_service_adapter';
 import {QuickInfoBuilder} from './quick_info';
 
 export class LanguageService {
   private options: CompilerOptions;
-  private lastKnownProgram: ts.Program|null = null;
+  private readonly compilerFactory: CompilerFactory;
   private readonly strategy: TypeCheckingProgramStrategy;
   private readonly adapter: LanguageServiceAdapter;
 
@@ -28,15 +28,16 @@ export class LanguageService {
     this.options = parseNgCompilerOptions(project);
     this.strategy = createTypeCheckingProgramStrategy(project);
     this.adapter = new LanguageServiceAdapter(project);
+    this.compilerFactory = new CompilerFactory(this.adapter, this.strategy);
     this.watchConfigFile(project);
   }
 
   getSemanticDiagnostics(fileName: string): ts.Diagnostic[] {
-    const program = this.strategy.getProgram();
-    const compiler = this.createCompiler(program, fileName);
+    const compiler = this.compilerFactory.getOrCreateWithChangedFile(fileName, this.options);
     const ttc = compiler.getTemplateTypeChecker();
     const diagnostics: ts.Diagnostic[] = [];
     if (isTypeScriptFile(fileName)) {
+      const program = compiler.getNextProgram();
       const sourceFile = program.getSourceFile(fileName);
       if (sourceFile) {
         diagnostics.push(...ttc.getDiagnosticsForFile(sourceFile, OptimizeFor.SingleFile));
@@ -49,51 +50,33 @@ export class LanguageService {
         }
       }
     }
-    this.lastKnownProgram = compiler.getNextProgram();
+    this.compilerFactory.registerLastKnownProgram();
     return diagnostics;
   }
 
   getDefinitionAndBoundSpan(fileName: string, position: number): ts.DefinitionInfoAndBoundSpan
       |undefined {
-    const program = this.strategy.getProgram();
-    const compiler = this.createCompiler(program, fileName);
-    return new DefinitionBuilder(this.tsLS, compiler).getDefinitionAndBoundSpan(fileName, position);
+    const compiler = this.compilerFactory.getOrCreateWithChangedFile(fileName, this.options);
+    const results =
+        new DefinitionBuilder(this.tsLS, compiler).getDefinitionAndBoundSpan(fileName, position);
+    this.compilerFactory.registerLastKnownProgram();
+    return results;
   }
 
   getTypeDefinitionAtPosition(fileName: string, position: number):
       readonly ts.DefinitionInfo[]|undefined {
-    const program = this.strategy.getProgram();
-    const compiler = this.createCompiler(program, fileName);
-    return new DefinitionBuilder(this.tsLS, compiler)
-        .getTypeDefinitionsAtPosition(fileName, position);
+    const compiler = this.compilerFactory.getOrCreateWithChangedFile(fileName, this.options);
+    const results =
+        new DefinitionBuilder(this.tsLS, compiler).getTypeDefinitionsAtPosition(fileName, position);
+    this.compilerFactory.registerLastKnownProgram();
+    return results;
   }
 
   getQuickInfoAtPosition(fileName: string, position: number): ts.QuickInfo|undefined {
-    const program = this.strategy.getProgram();
-    const compiler = this.createCompiler(program, fileName);
-    return new QuickInfoBuilder(this.tsLS, compiler).get(fileName, position);
-  }
-
-  /**
-   * Create a new instance of Ivy compiler.
-   * If the specified `fileName` refers to an external template, check if it has
-   * changed since the last time it was read. If it has changed, signal the
-   * compiler to reload the file via the adapter.
-   */
-  private createCompiler(program: ts.Program, fileName: string): NgCompiler {
-    if (isExternalTemplate(fileName)) {
-      this.adapter.registerTemplateUpdate(fileName);
-    }
-    return new NgCompiler(
-        this.adapter,
-        this.options,
-        program,
-        this.strategy,
-        new PatchedProgramIncrementalBuildStrategy(),
-        /** enableTemplateTypeChecker */ true,
-        this.lastKnownProgram,
-        /** perfRecorder (use default) */ undefined,
-    );
+    const compiler = this.compilerFactory.getOrCreateWithChangedFile(fileName, this.options);
+    const results = new QuickInfoBuilder(this.tsLS, compiler).get(fileName, position);
+    this.compilerFactory.registerLastKnownProgram();
+    return results;
   }
 
   private watchConfigFile(project: ts.server.Project) {
