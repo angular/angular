@@ -212,5 +212,6 @@ export class ProtractorElement implements TestElement {
 function _dispatchEvent(name: string, element: ElementFinder) {
   const event = document.createEvent('Event');
   event.initEvent(name);
-  element.dispatchEvent(event);
+  // This type has a string index signature, so we cannot access it using a dotted property access.
+  element['dispatchEvent'](event);
 }
