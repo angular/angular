@@ -85,3 +85,49 @@ export function trustedScriptFromString(script: string): TrustedScript|string {
 export function trustedScriptURLFromString(url: string): TrustedScriptURL|string {
   return getPolicy()?.createScriptURL(url) || url;
 }
+
+/**
+ * Unsafely call the Function constructor with the given string arguments. It
+ * is only available in development mode, and should be stripped out of
+ * production code.
+ * @security This is a security-sensitive function; any use of this function
+ * must go through security review. In particular, it must be assured that it
+ * is only called from development code, as use in production code can lead to
+ * XSS vulnerabilities.
+ */
+export function newTrustedFunctionForDev(...args: string[]): Function {
+  if (typeof ngDevMode === 'undefined') {
+    throw new Error('newTrustedFunctionForDev should never be called in production');
+  }
+  if (!global.trustedTypes) {
+    // In environments that don't support Trusted Types, fall back to the most
+    // straightforward implementation:
+    return new Function(...args);
+  }
+
+  // Chrome currently does not support passing TrustedScript to the Function
+  // constructor. The following implements the workaround proposed on the page
+  // below, where the Chromium bug is also referenced:
+  // https://github.com/w3c/webappsec-trusted-types/wiki/Trusted-Types-for-function-constructor
+  const fnArgs = args.slice(0, -1).join(',');
+  const fnBody = args.pop()!.toString();
+  const body = `(function anonymous(${fnArgs}
+) { ${fnBody}
+})`;
+
+  // Using eval directly confuses the compiler and prevents this module from
+  // being stripped out of JS binaries even if not used. The global['eval']
+  // indirection fixes that.
+  const fn = global['eval'](trustedScriptFromString(body) as string) as Function;
+
+  // To completely mimic the behavior of calling "new Function", two more
+  // things need to happen:
+  // 1. Stringifying the resulting function should return its source code
+  fn.toString = () => body;
+  // 2. When calling the resulting function, `this` should refer to `global`
+  return fn.bind(global);
+
+  // When Trusted Types support in Function constructors is widely available,
+  // the implementation of this function can be simplified to:
+  // return new Function(...args.map(a => trustedScriptFromString(a)));
+}
