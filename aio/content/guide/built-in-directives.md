@@ -16,12 +16,10 @@ For more detail, including how to build your own custom directives, see [Attribu
 
 ## Built-in attribute directives
 
-Attribute directives listen to and modify the behavior of
-other HTML elements, attributes, properties, and components.
-You usually apply them to elements as if they were HTML attributes, hence the name.
+Attribute directives listen to and modify the behavior of other HTML elements, attributes, properties, and components.
+You usually apply them to elements as if they were HTML attributes.
 
-Many NgModules such as the [`RouterModule`](guide/router "Routing and Navigation")
-and the [`FormsModule`](guide/forms "Forms") define their own attribute directives.
+Many NgModules such as the [`RouterModule`](guide/router "Routing and Navigation") and the [`FormsModule`](guide/forms "Forms") define their own attribute directives.
 The most common attribute directives are as follows:
 
 * [`NgClass`](guide/built-in-directives#ngClass)&mdash;adds and removes a set of CSS classes.
@@ -40,25 +38,24 @@ Add or remove several CSS classes simultaneously with `ngClass`.
 
 <div class="alert is-helpful">
 
-To add or remove a *single* class, use [class binding](guide/attribute-binding#class-binding) rather than `NgClass`.
+To add or remove a single class, see the [class binding](guide/attribute-binding#class-binding) section of [Attribute, class, and style bindings](guide/attribute-binding).
 
 </div>
 
-Consider a `setCurrentClasses()` component method that sets a component property,
-`currentClasses`, with an object that adds or removes three classes based on the
-`true`/`false` state of three other component properties. Each key of the object is a CSS class name; its value is `true` if the class should be added,
-`false` if it should be removed.
+Consider a `setCurrentClasses()` method that sets a property, `currentClasses`, with an object.
+The object adds or removes three classes based on the `true` or `false` value of the `saveable`, `modified`, and `special` properties.
+Each key of the object is a CSS class name.
+Angular adds the corresponding class when the value is `true` and removes the class when the value is `false`.
 
 <code-example path="built-in-directives/src/app/app.component.ts" region="setClasses" header="src/app/app.component.ts"></code-example>
 
-Adding an `ngClass` property binding to `currentClasses` sets the element's classes accordingly:
+Adding an `ngClass` property binding to `currentClasses` sets the element's classes according to the values in the `currentClasses` object.
 
 <code-example path="built-in-directives/src/app/app.component.html" region="NgClass-1" header="src/app/app.component.html"></code-example>
 
 <div class="alert is-helpful">
 
-Remember that in this situation you'd call `setCurrentClasses()`,
-both initially and when the dependent properties change.
+For more details about how to call `setCurrentClasses()` initially and when the dependent properties change, see the <live-example></live-example> .
 
 </div>
 
@@ -68,29 +65,20 @@ both initially and when the dependent properties change.
 
 ## `NgStyle`
 
-Use `NgStyle` to set many inline styles simultaneously and dynamically, based on the state of the component.
+`NgStyle` can set many inline styles simultaneously and dynamically, based on the state of the component.
 
-### Without `NgStyle`
-
-For context, consider setting a *single* style value with [style binding](guide/attribute-binding#style-binding), without `NgStyle`.
-
-<code-example path="built-in-directives/src/app/app.component.html" region="without-ng-style" header="src/app/app.component.html"></code-example>
-
-However, to set *many* inline styles at the same time, use the `NgStyle` directive.
-
-The following is a `setCurrentStyles()` method that sets a component
-property, `currentStyles`, with an object that defines three styles,
-based on the state of three other component properties:
+The following `setCurrentStyles()` method sets a property, `currentStyles`, with an object that defines three styles.
+The the value of `canSave`, `isUnchanged`, and `isSpecial` determine the styles.
 
 <code-example path="built-in-directives/src/app/app.component.ts" region="setStyles" header="src/app/app.component.ts"></code-example>
 
-Adding an `ngStyle` property binding to `currentStyles` sets the element's styles accordingly:
+Adding an `ngStyle` property binding to `currentStyles` sets the element's styles according to the values in the `currentStyles` object.
 
 <code-example path="built-in-directives/src/app/app.component.html" region="NgStyle-2" header="src/app/app.component.html"></code-example>
 
 <div class="alert is-helpful">
 
-Remember to call `setCurrentStyles()`, both initially and when the dependent properties change.
+For more details about how to call `setCurrentStyles()` initially and when the dependent properties change, see the <live-example></live-example>.
 
 </div>
 
