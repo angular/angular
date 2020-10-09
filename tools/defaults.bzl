@@ -400,6 +400,8 @@ def rollup_bundle(name, testonly = False, sourcemap = "true", **kwargs):
     es2015 iife                  : "%{name}.es2015.js"
     es2015 iife minified         : "%{name}.min.es2015.js"
     es2015 iife minified (debug) : "%{name}.min_debug.es2015.js"
+    esm                          : "%{name}.esm.js"
+    esm                          : "%{name}.min.esm.js"
     es5 iife                     : "%{name}.js"
     es5 iife minified            : "%{name}.min.js"
     es5 iife minified (debug)    : "%{name}.min_debug.js"
@@ -421,6 +423,11 @@ def rollup_bundle(name, testonly = False, sourcemap = "true", **kwargs):
         "args": ["--comments"],
         "sourcemap": False,
     }
+
+    # esm
+    _rollup_bundle(name = name + ".esm", testonly = testonly, format = "esm", sourcemap = sourcemap, **kwargs)
+    terser_minified(name = name + ".min.esm", testonly = testonly, src = name + ".esm", **common_terser_args)
+    native.filegroup(name = name + ".min.esm.js", testonly = testonly, srcs = [name + ".min.esm"])
 
     # es2015
     _rollup_bundle(name = name + ".es2015", testonly = testonly, format = "iife", sourcemap = sourcemap, **kwargs)

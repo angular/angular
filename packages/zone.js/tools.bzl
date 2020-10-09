@@ -31,7 +31,7 @@ def copy_dist(module_name, module_format, output_module_name, suffix, umd):
     native.genrule(
         name = module_name + "." + suffix_output + "dist",
         srcs = [
-            "//packages/zone.js:" + module_name + "-rollup." + suffix_output + module_format + "umd.js",
+            "//packages/zone.js:" + module_name + "-rollup." + suffix_output + module_format,
         ],
         outs = [
             output_module_name + "." + umd_output + suffix_output + "js",
@@ -69,9 +69,9 @@ def generate_rollup_bundle(bundles):
             )
 
 def generate_dist(bundles, output_format, umd):
-    module_format = ""
+    module_format = "esm.js"
     if output_format == "es5":
-        module_format = "es5"
+        module_format = "es5umd.js"
     for b in bundles:
         module_name = b[0]
         copy_dist(
