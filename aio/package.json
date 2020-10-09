@@ -64,7 +64,7 @@
     "tools-lint": "tslint --config \"tools/tslint.json\" --project \"tools/firebase-test-utils\"",
     "tools-test": "./scripts/deploy-to-firebase.test.sh && yarn docs-test && yarn boilerplate:test && jasmine tools/ng-packages-installer/index.spec.js && yarn firebase-utils-test",
     "preserve-and-sync": "yarn docs",
-    "serve-and-sync": "run-p \"start\" \"docs-watch --watch-only\"",
+    "serve-and-sync": "run-p \"docs-watch --watch-only\" \"start {@}\" --",
     "boilerplate:add": "node ./tools/examples/example-boilerplate add",
     "boilerplate:add:viewengine": "yarn boilerplate:add --viewengine",
     "boilerplate:remove": "node ./tools/examples/example-boilerplate remove",
