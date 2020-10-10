@@ -137,15 +137,35 @@ If we ask for changes via code reviews then:
 
     For more info on working with fixup commits see [here](docs/FIXUP_COMMITS.md).
 
-> Fixup commits (as shown above) are preferred when addressing review feedback, but in some cases you may need to amend the original commit instead of creating a fixup commit (for example, if you want to update the commit message).
-> To amend the last commit and update the Pull Request:
->
-> ```shell
-> git commit --all --amend
-> git push --force-with-lease
-> ```
-
 That's it! Thank you for your contribution!
+
+
+##### Updating the commit message
+
+A reviewer might often suggest changes to a commit message (for example, to add more context for a change or adhere to our [commit message guidelines](#commit)).
+In order to update the commit message of the last commit on your branch:
+
+1. Check out your branch:
+
+    ```shell
+    git checkout my-fix-branch
+    ```
+
+2. Amend the last commit and modify the commit message:
+
+    ```shell
+    git commit --amend
+    ```
+
+3. Push to your GitHub repository:
+
+    ```shell
+    git push --force-with-lease
+    ```
+
+> NOTE:<br />
+> If you need to update the commit message of an earlier commit, you can use `git rebase` in interactive mode.
+> See the [git docs](https://git-scm.com/docs/git-rebase#_interactive_mode) for more details.
 
 
 #### After your pull request is merged
