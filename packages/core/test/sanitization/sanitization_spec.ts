@@ -37,7 +37,7 @@ describe('sanitization', () => {
         .toEqual('<img src="unsafe:javascript:true">');
     expect(() => ɵɵsanitizeHtml(bypassSanitizationTrustUrl('<img src="javascript:true">')))
         .toThrowError(/Required a safe HTML, got a URL/);
-    expect(ɵɵsanitizeHtml(bypassSanitizationTrustHtml('<img src="javascript:true">')))
+    expect(ɵɵsanitizeHtml(bypassSanitizationTrustHtml('<img src="javascript:true">')).toString())
         .toEqual('<img src="javascript:true">');
   });
 
@@ -57,7 +57,7 @@ describe('sanitization', () => {
     expect(() => ɵɵsanitizeResourceUrl('javascript:true')).toThrowError(ERROR);
     expect(() => ɵɵsanitizeResourceUrl(bypassSanitizationTrustHtml('javascript:true')))
         .toThrowError(/Required a safe ResourceURL, got a HTML/);
-    expect(ɵɵsanitizeResourceUrl(bypassSanitizationTrustResourceUrl('javascript:true')))
+    expect(ɵɵsanitizeResourceUrl(bypassSanitizationTrustResourceUrl('javascript:true')).toString())
         .toEqual('javascript:true');
   });
 
@@ -78,7 +78,7 @@ describe('sanitization', () => {
     expect(() => ɵɵsanitizeScript('true')).toThrowError(ERROR);
     expect(() => ɵɵsanitizeScript(bypassSanitizationTrustHtml('true')))
         .toThrowError(/Required a safe Script, got a HTML/);
-    expect(ɵɵsanitizeScript(bypassSanitizationTrustScript('true'))).toEqual('true');
+    expect(ɵɵsanitizeScript(bypassSanitizationTrustScript('true')).toString()).toEqual('true');
   });
 
   it('should select correct sanitizer for URL props', () => {
@@ -114,7 +114,8 @@ describe('sanitization', () => {
             bypassSanitizationTrustHtml('javascript:true'), 'iframe', 'src'))
         .toThrowError(/Required a safe ResourceURL, got a HTML/);
     expect(ɵɵsanitizeUrlOrResourceUrl(
-               bypassSanitizationTrustResourceUrl('javascript:true'), 'iframe', 'src'))
+               bypassSanitizationTrustResourceUrl('javascript:true'), 'iframe', 'src')
+               .toString())
         .toEqual('javascript:true');
   });
 
