@@ -12,6 +12,7 @@ import {getLView} from '../render3/state';
 import {renderStringify} from '../render3/util/misc_utils';
 import {TrustedHTML, TrustedScript, TrustedScriptURL} from '../util/security/trusted_type_defs';
 import {trustedHTMLFromString, trustedScriptFromString, trustedScriptURLFromString} from '../util/security/trusted_types';
+import {trustedHTMLFromStringBypass, trustedScriptFromStringBypass, trustedScriptURLFromStringBypass} from '../util/security/trusted_types_bypass';
 
 import {allowSanitizationBypassAndThrow, BypassType, unwrapSafeValue} from './bypass';
 import {_sanitizeHtml as _sanitizeHtml} from './html_sanitizer';
@@ -39,10 +40,10 @@ import {_sanitizeUrl as _sanitizeUrl} from './url_sanitizer';
 export function ɵɵsanitizeHtml(unsafeHtml: any): TrustedHTML|string {
   const sanitizer = getSanitizer();
   if (sanitizer) {
-    return sanitizer.sanitize(SecurityContext.HTML, unsafeHtml) || '';
+    return trustedHTMLFromStringBypass(sanitizer.sanitize(SecurityContext.HTML, unsafeHtml) || '');
   }
   if (allowSanitizationBypassAndThrow(unsafeHtml, BypassType.Html)) {
-    return unwrapSafeValue(unsafeHtml);
+    return trustedHTMLFromStringBypass(unwrapSafeValue(unsafeHtml));
   }
   return _sanitizeHtml(getDocument(), renderStringify(unsafeHtml));
 }
@@ -110,10 +111,11 @@ export function ɵɵsanitizeUrl(unsafeUrl: any): string {
 export function ɵɵsanitizeResourceUrl(unsafeResourceUrl: any): TrustedScriptURL|string {
   const sanitizer = getSanitizer();
   if (sanitizer) {
-    return sanitizer.sanitize(SecurityContext.RESOURCE_URL, unsafeResourceUrl) || '';
+    return trustedScriptURLFromStringBypass(
+        sanitizer.sanitize(SecurityContext.RESOURCE_URL, unsafeResourceUrl) || '');
   }
   if (allowSanitizationBypassAndThrow(unsafeResourceUrl, BypassType.ResourceUrl)) {
-    return unwrapSafeValue(unsafeResourceUrl);
+    return trustedScriptURLFromStringBypass(unwrapSafeValue(unsafeResourceUrl));
   }
   throw new Error('unsafe value used in a resource URL context (see http://g.co/ng/security#xss)');
 }
@@ -133,10 +135,11 @@ export function ɵɵsanitizeResourceUrl(unsafeResourceUrl: any): TrustedScriptUR
 export function ɵɵsanitizeScript(unsafeScript: any): TrustedScript|string {
   const sanitizer = getSanitizer();
   if (sanitizer) {
-    return sanitizer.sanitize(SecurityContext.SCRIPT, unsafeScript) || '';
+    return trustedScriptFromStringBypass(
+        sanitizer.sanitize(SecurityContext.SCRIPT, unsafeScript) || '');
   }
   if (allowSanitizationBypassAndThrow(unsafeScript, BypassType.Script)) {
-    return unwrapSafeValue(unsafeScript);
+    return trustedScriptFromStringBypass(unwrapSafeValue(unsafeScript));
   }
   throw new Error('unsafe value used in a script context');
 }
