@@ -154,7 +154,7 @@ In order to update the commit message of the last commit on your branch:
 2. Amend the last commit and modify the commit message:
 
     ```shell
-    git commit --all --amend
+    git commit --amend
     ```
 
 3. Push to your GitHub repository:
