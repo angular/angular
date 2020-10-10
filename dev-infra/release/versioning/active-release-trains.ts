@@ -17,7 +17,7 @@ export interface ActiveReleaseTrains {
   releaseCandidate: ReleaseTrain|null;
   /** Release-train currently in the "latest" phase. */
   latest: ReleaseTrain;
-  /** Release-train in the `next` phase */
+  /** Release-train in the `next` phase. */
   next: ReleaseTrain;
 }
 

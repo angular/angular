@@ -65,14 +65,14 @@ export class CutLongTermSupportPatchAction extends ReleaseAction {
           {
             name: 'activeLtsBranch',
             type: 'list',
-            message: 'Please select a version for which you want to cut a LTS patch',
+            message: 'Please select a version for which you want to cut an LTS patch',
             choices: activeBranchChoices,
           },
           {
             name: 'inactiveLtsBranch',
             type: 'list',
             when: o => o.activeLtsBranch === null,
-            message: 'Please select an inactive LTS version for which you want to cut a LTS patch',
+            message: 'Please select an inactive LTS version for which you want to cut an LTS patch',
             choices: inactive.map(branch => this._getChoiceForLtsBranch(branch)),
           }
         ]);

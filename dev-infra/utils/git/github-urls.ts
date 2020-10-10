@@ -12,16 +12,16 @@ import {GithubConfig} from '../config';
 import {GitClient} from './index';
 
 /** URL to the Github page where personal access tokens can be managed. */
-export const GITHUB_TOKEN_SETTINGS_URL = `https://github.com/settings/tokens`;
+export const GITHUB_TOKEN_SETTINGS_URL = 'https://github.com/settings/tokens';
 
 /** URL to the Github page where personal access tokens can be generated. */
-export const GITHUB_TOKEN_GENERATE_URL = `https://github.com/settings/tokens/new`;
+export const GITHUB_TOKEN_GENERATE_URL = 'https://github.com/settings/tokens/new';
 
 /** Adds the provided token to the given Github HTTPs remote url. */
 export function addTokenToGitHttpsUrl(githubHttpsUrl: string, token: string) {
   const url = new URL(githubHttpsUrl);
   url.username = token;
-  return url.toString();
+  return url.href;
 }
 
 /** Gets the repository Git URL for the given github config. */
@@ -36,7 +36,7 @@ export function getRepositoryGitUrl(config: GithubConfig, githubToken?: string):
   return baseHttpUrl;
 }
 
-/** Gets a Github URL that refers to a lists of recent commits within a specified branch. */
+/** Gets a Github URL that refers to a list of recent commits within a specified branch. */
 export function getListCommitsInBranchUrl({remoteParams}: GitClient, branchName: string) {
   return `https://github.com/${remoteParams.owner}/${remoteParams.repo}/commits/${branchName}`;
 }

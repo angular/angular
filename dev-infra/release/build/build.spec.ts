@@ -60,7 +60,7 @@ describe('ng-dev release build', () => {
   });
 
   it('should error if package has not been built', async () => {
-    // Set up a NPM package that is not built.
+    // Set up an NPM package that is not built.
     npmPackages.push('@angular/non-existent');
 
     spyOn(console, 'error');

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as Ora from 'ora';
+import * as ora from 'ora';
 import * as semver from 'semver';
 import {Arguments, Argv, CommandModule} from 'yargs';
 
@@ -15,7 +15,7 @@ import {getReleaseConfig} from '../config/index';
 import {setNpmTagForPackage} from '../versioning/npm-publish';
 
 
-/** Command line options for setting a NPM dist tag. */
+/** Command line options for setting an NPM dist tag. */
 export interface ReleaseSetDistTagOptions {
   tagName: string;
   targetVersion: string;
@@ -42,11 +42,11 @@ async function handler(args: Arguments<ReleaseSetDistTagOptions>) {
   const version = semver.parse(rawVersion);
 
   if (version === null) {
-    error(red(`Invalid version specified. Unable to set NPM dist tag.`));
+    error(red(`Invalid version specified (${rawVersion}). Unable to set NPM dist tag.`));
     process.exit(1);
   }
 
-  const spinner = Ora().start();
+  const spinner = ora().start();
   debug(`Setting "${tagName}" NPM dist tag for release packages to v${version}.`);
 
   for (const pkgName of npmPackages) {
@@ -69,7 +69,7 @@ async function handler(args: Arguments<ReleaseSetDistTagOptions>) {
   info(green(`      ${bold(tagName)} will now point to ${bold(`v${version}`)}.`));
 }
 
-/** CLI command module for setting a NPM dist tag. */
+/** CLI command module for setting an NPM dist tag. */
 export const ReleaseSetDistTagCommand: CommandModule<{}, ReleaseSetDistTagOptions> = {
   builder,
   handler,

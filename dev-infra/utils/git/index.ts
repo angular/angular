@@ -88,8 +88,8 @@ export class GitClient {
    */
   runGraceful(args: string[], options: SpawnSyncOptions = {}): SpawnSyncReturns<string> {
     // To improve the debugging experience in case something fails, we print all executed Git
-    // commands unless the `stdio` is explicitly to `ignore` (which is equivalent to silent).
-    // Note that we do not want to print the token if is contained in the command. It's common
+    // commands unless the `stdio` is explicitly set to `ignore` (which is equivalent to silent).
+    // Note that we do not want to print the token if it is contained in the command. It's common
     // to share errors with others if the tool failed, and we do not want to leak tokens.
     // TODO: Add support for configuring this on a per-client basis. Some tools do not want
     // to print the Git command messages to the console at all (e.g. to maintain clean output).
@@ -202,7 +202,7 @@ export class GitClient {
   /**
    * Retrieve the OAuth scopes for the loaded Github token.
    **/
-  private async getAuthScopesForToken() {
+  private getAuthScopesForToken() {
     // If the OAuth scopes have already been loaded, return the Promise containing them.
     if (this._cachedOauthScopes !== null) {
       return this._cachedOauthScopes;

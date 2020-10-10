@@ -30,8 +30,8 @@ export async function assertActiveLtsBranch(
   const ltsNpmTag = getLtsNpmDistTagOfMajor(version.major);
   const ltsVersion = semver.parse(distTags[ltsNpmTag]);
 
-  // Ensure that there is a LTS version tagged for the given version-branch major. e.g.
-  // if the version branch is `9.2.x` then we want to make sure that there is a LTS
+  // Ensure that there is an LTS version tagged for the given version-branch major. e.g.
+  // if the version branch is `9.2.x` then we want to make sure that there is an LTS
   // version tagged in NPM for `v9`, following the `v{major}-lts` tag convention.
   if (ltsVersion === null) {
     throw new InvalidTargetBranchError(`No LTS version tagged for v${version.major} in NPM.`);

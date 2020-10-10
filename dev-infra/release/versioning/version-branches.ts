@@ -28,7 +28,7 @@ export interface VersionBranch {
 }
 
 /** Regular expression that matches version-branches. */
-const versionBranchNameRegex = /(\d+)\.(\d+)\.x/;
+const versionBranchNameRegex = /^(\d+)\.(\d+)\.x$/;
 
 /** Gets the version of a given branch by reading the `package.json` upstream. */
 export async function getVersionOfBranch(
@@ -56,8 +56,6 @@ export function isVersionBranch(branchName: string): boolean {
  * relevant but needed for parsing. SemVer does not allow `x` as patch digit.
  */
 export function getVersionForVersionBranch(branchName: string): semver.SemVer|null {
-  // Convert a given version-branch into a SemVer version that can be used
-  // with the SemVer utilities. i.e. to determine semantic order.
   return semver.parse(branchName.replace(versionBranchNameRegex, '$1.$2.0'));
 }
 

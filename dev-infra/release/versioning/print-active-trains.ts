@@ -59,14 +59,14 @@ export async function printActiveReleaseTrains(
         `published yet.`);
   }
 
-  // If no release-train in release-candidate of feature-freeze phase is active,
+  // If no release-train in release-candidate or feature-freeze phase is active,
   // we print a message as last bullet point to make this clear.
   if (releaseCandidate === null) {
-    info(` • No release-candidate or feature-freeze branch currently active.`);
+    info(' • No release-candidate or feature-freeze branch currently active.');
   }
 
   info();
-  info(blue(`Current active LTS version branches:`));
+  info(blue('Current active LTS version branches:'));
 
   // Print all active LTS branches (each branch as own bullet point).
   if (ltsBranches.active.length !== 0) {

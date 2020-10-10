@@ -34,16 +34,16 @@ export interface LtsBranch {
  * Number of months a major version in Angular is actively supported. See:
  * https://angular.io/guide/releases#support-policy-and-schedule.
  */
-export const majorActiveSupportDuration = 6;
+const majorActiveSupportDuration = 6;
 
 /**
  * Number of months a major version has active long-term support. See:
  * https://angular.io/guide/releases#support-policy-and-schedule.
  */
-export const majorActiveTermSupportDuration = 12;
+const majorLongTermSupportDuration = 12;
 
 /** Regular expression that matches LTS NPM dist tags. */
-export const ltsNpmDistTagRegex = /^v(\d+)-lts$/;
+const ltsNpmDistTagRegex = /^v(\d+)-lts$/;
 
 /** Finds all long-term support release trains from the specified NPM package. */
 export async function fetchLongTermSupportBranchesFromNpm(config: ReleaseConfig):
@@ -54,7 +54,7 @@ export async function fetchLongTermSupportBranchesFromNpm(config: ReleaseConfig)
   const inactive: LtsBranch[] = [];
 
   // Iterate through the NPM package information and determine active/inactive LTS versions with
-  // their corresponding branches. We assume that a LTS tagged version in NPM belongs to the
+  // their corresponding branches. We assume that an LTS tagged version in NPM belongs to the
   // last-minor branch of a given major (i.e. we assume there are no outdated LTS NPM dist tags).
   for (const npmDistTag in distTags) {
     if (ltsNpmDistTagRegex.test(npmDistTag)) {
@@ -64,7 +64,7 @@ export async function fetchLongTermSupportBranchesFromNpm(config: ReleaseConfig)
       const ltsEndDate = computeLtsEndDateOfMajor(majorReleaseDate);
       const ltsBranch: LtsBranch = {name: branchName, version, npmDistTag};
       // Depending on whether the LTS phase is still active, add the branch
-      // the list of active or inactive LTS branches.
+      // to the list of active or inactive LTS branches.
       if (today <= ltsEndDate) {
         active.push(ltsBranch);
       } else {
@@ -87,7 +87,7 @@ export async function fetchLongTermSupportBranchesFromNpm(config: ReleaseConfig)
 export function computeLtsEndDateOfMajor(majorReleaseDate: Date): Date {
   return new Date(
       majorReleaseDate.getFullYear(),
-      majorReleaseDate.getMonth() + majorActiveSupportDuration + majorActiveTermSupportDuration,
+      majorReleaseDate.getMonth() + majorActiveSupportDuration + majorLongTermSupportDuration,
       majorReleaseDate.getDate(), majorReleaseDate.getHours(), majorReleaseDate.getMinutes(),
       majorReleaseDate.getSeconds(), majorReleaseDate.getMilliseconds());
 }

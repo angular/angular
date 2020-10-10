@@ -13,7 +13,7 @@ import {CutLongTermSupportPatchAction} from '../actions/cut-lts-patch';
 
 import {expectStagingAndPublishWithCherryPick, fakeNpmPackageQueryRequest, getTestingMocksForReleaseAction, parse, setupReleaseActionForTesting, testTmpDir} from './test-utils';
 
-describe('cut a LTS patch action', () => {
+describe('cut an LTS patch action', () => {
   it('should be active', async () => {
     expect(await CutLongTermSupportPatchAction.isActive({
       releaseCandidate: null,
