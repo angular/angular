@@ -93,3 +93,11 @@ export class AngularTrustedTypesPolicy {
  * The Trusted Types policy used by Angular for all trusted conversions.
  */
 export const trustedTypesPolicy = new AngularTrustedTypesPolicy('angular');
+
+/**
+ * The Trusted Types policy used by Angular for untrusted legacy conversions in
+ * the sanitization pipeline, in particular for the bypassSecurityTrust
+ * functions and custom sanitizers.
+ */
+export const trustedTypesPolicyForLegacyBypass =
+    new AngularTrustedTypesPolicy('angular#unsafe-legacy-bypass');
