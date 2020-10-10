@@ -15,7 +15,7 @@ import {QueryList} from '../linker/query_list';
 import {TemplateRef} from '../linker/template_ref';
 import {ViewContainerRef} from '../linker/view_container_ref';
 import {Renderer2, RendererFactory2, RendererType2} from '../render/api';
-import {Sanitizer} from '../sanitization/sanitizer';
+import {Sanitizer, TrustedSanitizer} from '../sanitization/sanitizer';
 import {SecurityContext} from '../sanitization/security';
 
 
@@ -563,7 +563,7 @@ export interface RootData {
   renderer: Renderer2;
   rendererFactory: RendererFactory2;
   errorHandler: ErrorHandler;
-  sanitizer: Sanitizer;
+  sanitizer: Sanitizer|TrustedSanitizer;
 }
 
 export abstract class DebugContext {

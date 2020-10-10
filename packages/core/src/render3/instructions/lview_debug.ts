@@ -7,7 +7,7 @@
  */
 
 import {Injector, SchemaMetadata, Type} from '../../core';
-import {Sanitizer} from '../../sanitization/sanitizer';
+import {Sanitizer, TrustedSanitizer} from '../../sanitization/sanitizer';
 import {KeyValueArray} from '../../util/array_utils';
 import {assertDefined} from '../../util/assert';
 import {createNamedArrayType} from '../../util/named_array_type';
@@ -474,7 +474,7 @@ export class LViewDebug implements ILViewDebug {
   get renderer(): Renderer3 {
     return this._raw_lView[RENDERER];
   }
-  get sanitizer(): Sanitizer|null {
+  get sanitizer(): Sanitizer|TrustedSanitizer|null {
     return this._raw_lView[SANITIZER];
   }
   get childHead(): ILViewDebug|ILContainerDebug|null {

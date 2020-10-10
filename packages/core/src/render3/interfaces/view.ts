@@ -10,7 +10,7 @@ import {InjectionToken} from '../../di/injection_token';
 import {Injector} from '../../di/injector';
 import {Type} from '../../interface/type';
 import {SchemaMetadata} from '../../metadata';
-import {Sanitizer} from '../../sanitization/sanitizer';
+import {Sanitizer, TrustedSanitizer} from '../../sanitization/sanitizer';
 
 import {LContainer} from './container';
 import {ComponentDef, ComponentTemplate, DirectiveDef, DirectiveDefList, HostBindingsFunction, PipeDef, PipeDefList, ViewQueriesFunction} from './definition';
@@ -180,7 +180,7 @@ export interface LView extends Array<any> {
   [RENDERER]: Renderer3;
 
   /** An optional custom sanitizer. */
-  [SANITIZER]: Sanitizer|null;
+  [SANITIZER]: Sanitizer|TrustedSanitizer|null;
 
   /**
    * Reference to the first LView or LContainer beneath this LView in

@@ -7,7 +7,7 @@
  */
 
 import {DOCUMENT, isPlatformBrowser, ɵgetDOM as getDOM} from '@angular/common';
-import {APP_INITIALIZER, Compiler, Component, createPlatformFactory, CUSTOM_ELEMENTS_SCHEMA, Directive, ErrorHandler, Inject, Injector, Input, LOCALE_ID, NgModule, OnDestroy, Pipe, PLATFORM_ID, PLATFORM_INITIALIZER, Provider, Sanitizer, StaticProvider, Type, VERSION} from '@angular/core';
+import {APP_INITIALIZER, Compiler, Component, createPlatformFactory, CUSTOM_ELEMENTS_SCHEMA, Directive, ErrorHandler, Inject, Injector, Input, LOCALE_ID, NgModule, OnDestroy, Pipe, PLATFORM_ID, PLATFORM_INITIALIZER, Provider, Sanitizer, StaticProvider, TrustedSanitizer, Type, VERSION} from '@angular/core';
 import {ApplicationRef, destroyPlatform} from '@angular/core/src/application_ref';
 import {Console} from '@angular/core/src/console';
 import {ComponentRef} from '@angular/core/src/linker/component_factory';
@@ -206,7 +206,8 @@ function bootstrap(
            }));
 
     it('should retrieve sanitizer', inject([Injector], (injector: Injector) => {
-         const sanitizer: Sanitizer|null = injector.get(Sanitizer, null);
+         const sanitizer: Sanitizer|TrustedSanitizer|null =
+             injector.get(TrustedSanitizer, null) || injector.get(Sanitizer, null);
          if (ivyEnabled) {
            // In Ivy we don't want to have sanitizer in DI. We use DI only to overwrite the
            // sanitizer, but not for default one. The default one is pulled in by the Ivy

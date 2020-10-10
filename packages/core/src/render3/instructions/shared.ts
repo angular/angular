@@ -11,7 +11,7 @@ import {DoCheck, OnChanges, OnInit} from '../../interface/lifecycle_hooks';
 import {CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA, SchemaMetadata} from '../../metadata/schema';
 import {ViewEncapsulation} from '../../metadata/view';
 import {validateAgainstEventAttributes, validateAgainstEventProperties} from '../../sanitization/sanitization';
-import {Sanitizer} from '../../sanitization/sanitizer';
+import {Sanitizer, TrustedSanitizer} from '../../sanitization/sanitizer';
 import {assertDefined, assertDomNode, assertEqual, assertGreaterThan, assertIndexInRange, assertLessThan, assertNotEqual, assertNotSame, assertSame} from '../../util/assert';
 import {createNamedArrayType} from '../../util/named_array_type';
 import {initNgDevMode} from '../../util/ng_dev_mode';
@@ -173,7 +173,7 @@ export function elementCreate(name: string, renderer: Renderer3, namespace: stri
 export function createLView<T>(
     parentLView: LView|null, tView: TView, context: T|null, flags: LViewFlags, host: RElement|null,
     tHostNode: TNode|null, rendererFactory: RendererFactory3|null, renderer: Renderer3|null,
-    sanitizer: Sanitizer|null, injector: Injector|null): LView {
+    sanitizer: Sanitizer|TrustedSanitizer|null, injector: Injector|null): LView {
   const lView =
       ngDevMode ? cloneToLViewFromTViewBlueprint(tView) : tView.blueprint.slice() as LView;
   lView[HOST] = host;

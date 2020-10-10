@@ -226,7 +226,7 @@ export function validateAgainstEventAttributes(name: string) {
   }
 }
 
-function getSanitizer(): Sanitizer|null {
+function getSanitizer(): Sanitizer|TrustedSanitizer|null {
   const lView = getLView();
   return lView && lView[SANITIZER];
 }

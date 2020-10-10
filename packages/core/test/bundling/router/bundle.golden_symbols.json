@@ -816,6 +816,9 @@
     "name": "TreeNode"
   },
   {
+    "name": "TrustedSanitizer"
+  },
+  {
     "name": "USE_VALUE"
   },
   {

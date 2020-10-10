@@ -16,7 +16,7 @@ import {ComponentFactoryResolver as viewEngine_ComponentFactoryResolver} from '.
 import {ElementRef as viewEngine_ElementRef} from '../linker/element_ref';
 import {NgModuleRef as viewEngine_NgModuleRef} from '../linker/ng_module_factory';
 import {RendererFactory2} from '../render/api';
-import {Sanitizer} from '../sanitization/sanitizer';
+import {Sanitizer, TrustedSanitizer} from '../sanitization/sanitizer';
 import {VERSION} from '../version';
 import {NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR} from '../view/provider';
 import {assertComponentType} from './assert';
@@ -139,7 +139,13 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
 
     const rendererFactory =
         rootViewInjector.get(RendererFactory2, domRendererFactory3) as RendererFactory3;
-    const sanitizer = rootViewInjector.get(Sanitizer, null);
+    let sanitizer = rootViewInjector.get(TrustedSanitizer, null);
+    if (!sanitizer) {
+      // DO NOT REFACTOR. Using `get(TrustedSanitizer) || get(Sanitizer)` seems
+      // to cause internal google apps to fail. This is documented in the
+      // following internal bug issue: b/142967802
+      sanitizer = rootViewInjector.get(Sanitizer, null);
+    }
 
     const hostRenderer = rendererFactory.createRenderer(null, this.componentDef);
     // Determine a tag name used for creating host elements when this component is created
