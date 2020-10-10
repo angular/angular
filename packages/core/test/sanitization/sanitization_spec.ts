@@ -29,11 +29,11 @@ describe('sanitization', () => {
     }
   }
   it('should sanitize html', () => {
-    expect(ɵɵsanitizeHtml('<div></div>')).toEqual('<div></div>');
-    expect(ɵɵsanitizeHtml(new Wrap('<div></div>'))).toEqual('<div></div>');
-    expect(ɵɵsanitizeHtml('<img src="javascript:true">'))
+    expect(ɵɵsanitizeHtml('<div></div>').toString()).toEqual('<div></div>');
+    expect(ɵɵsanitizeHtml(new Wrap('<div></div>')).toString()).toEqual('<div></div>');
+    expect(ɵɵsanitizeHtml('<img src="javascript:true">').toString())
         .toEqual('<img src="unsafe:javascript:true">');
-    expect(ɵɵsanitizeHtml(new Wrap('<img src="javascript:true">')))
+    expect(ɵɵsanitizeHtml(new Wrap('<img src="javascript:true">')).toString())
         .toEqual('<img src="unsafe:javascript:true">');
     expect(() => ɵɵsanitizeHtml(bypassSanitizationTrustUrl('<img src="javascript:true">')))
         .toThrowError(/Required a safe HTML, got a URL/);
