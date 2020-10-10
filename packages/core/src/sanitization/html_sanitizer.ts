@@ -7,6 +7,7 @@
  */
 
 import {isDevMode} from '../util/is_dev_mode';
+import {trustedTypesPolicy} from '../util/security/trusted_types';
 import {getInertBodyHelper, InertBodyHelper} from './inert_body';
 import {_sanitizeUrl, sanitizeSrcset} from './url_sanitizer';
 
@@ -242,7 +243,7 @@ let inertBodyHelper: InertBodyHelper;
  * Sanitizes the given unsafe, untrusted HTML fragment, and returns HTML text that is safe to add to
  * the DOM in a browser environment.
  */
-export function _sanitizeHtml(defaultDoc: any, unsafeHtmlInput: string): string {
+export function _sanitizeHtml(defaultDoc: any, unsafeHtmlInput: string): TrustedHTML|string {
   let inertBodyElement: HTMLElement|null = null;
   try {
     inertBodyHelper = inertBodyHelper || getInertBodyHelper(defaultDoc);
@@ -274,7 +275,7 @@ export function _sanitizeHtml(defaultDoc: any, unsafeHtmlInput: string): string 
           'WARNING: sanitizing HTML stripped some content, see http://g.co/ng/security#xss');
     }
 
-    return safeHtml;
+    return trustedTypesPolicy.trustedHTMLFromStringRequiresSecurityReview(safeHtml);
   } finally {
     // In case anything goes wrong, clear out inertElement to reset the entire DOM structure.
     if (inertBodyElement) {
