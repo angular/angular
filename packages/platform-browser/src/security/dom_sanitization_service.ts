@@ -162,7 +162,7 @@ export class DomSanitizerImpl extends DomSanitizer {
         if (allowSanitizationBypassOrThrow(value, BypassType.Html)) {
           return unwrapSafeValue(value);
         }
-        return _sanitizeHtml(this._doc, String(value));
+        return _sanitizeHtml(this._doc, String(value)).toString();
       case SecurityContext.STYLE:
         if (allowSanitizationBypassOrThrow(value, BypassType.Style)) {
           return unwrapSafeValue(value);
