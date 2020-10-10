@@ -106,7 +106,7 @@ export abstract class DomSanitizer implements Sanitizer {
    * **WARNING:** calling this method with untrusted user data exposes your application to XSS
    * security risks!
    */
-  abstract bypassSecurityTrustHtml(value: string): SafeHtml;
+  abstract bypassSecurityTrustHtml(value: string|TrustedHTML): SafeHtml;
 
   /**
    * Bypass security and trust the given value to be safe style value (CSS).
@@ -122,7 +122,7 @@ export abstract class DomSanitizer implements Sanitizer {
    * **WARNING:** calling this method with untrusted user data exposes your application to XSS
    * security risks!
    */
-  abstract bypassSecurityTrustScript(value: string): SafeScript;
+  abstract bypassSecurityTrustScript(value: string|TrustedScript): SafeScript;
 
   /**
    * Bypass security and trust the given value to be a safe style URL, i.e. a value that can be used
@@ -140,7 +140,7 @@ export abstract class DomSanitizer implements Sanitizer {
    * **WARNING:** calling this method with untrusted user data exposes your application to XSS
    * security risks!
    */
-  abstract bypassSecurityTrustResourceUrl(value: string): SafeResourceUrl;
+  abstract bypassSecurityTrustResourceUrl(value: string|TrustedScriptURL): SafeResourceUrl;
 }
 
 export function domSanitizerImplFactory(injector: Injector) {
@@ -160,28 +160,28 @@ export class DomSanitizerImpl extends DomSanitizer {
         return value as string;
       case SecurityContext.HTML:
         if (allowSanitizationBypassOrThrow(value, BypassType.Html)) {
-          return unwrapSafeValue(value);
+          return unwrapSafeValue<TrustedHTML>(value).toString();
         }
         return _sanitizeHtml(this._doc, String(value));
       case SecurityContext.STYLE:
         if (allowSanitizationBypassOrThrow(value, BypassType.Style)) {
-          return unwrapSafeValue(value);
+          return unwrapSafeValue<string>(value);
         }
         return value as string;
       case SecurityContext.SCRIPT:
         if (allowSanitizationBypassOrThrow(value, BypassType.Script)) {
-          return unwrapSafeValue(value);
+          return unwrapSafeValue<TrustedScript>(value).toString();
         }
         throw new Error('unsafe value used in a script context');
       case SecurityContext.URL:
         const type = getSanitizationBypassType(value);
         if (allowSanitizationBypassOrThrow(value, BypassType.Url)) {
-          return unwrapSafeValue(value);
+          return unwrapSafeValue<string>(value);
         }
         return _sanitizeUrl(String(value));
       case SecurityContext.RESOURCE_URL:
         if (allowSanitizationBypassOrThrow(value, BypassType.ResourceUrl)) {
-          return unwrapSafeValue(value);
+          return unwrapSafeValue<TrustedScriptURL>(value).toString();
         }
         throw new Error(
             'unsafe value used in a resource URL context (see http://g.co/ng/security#xss)');
@@ -190,19 +190,19 @@ export class DomSanitizerImpl extends DomSanitizer {
     }
   }
 
-  bypassSecurityTrustHtml(value: string): SafeHtml {
+  bypassSecurityTrustHtml(value: string|TrustedHTML): SafeHtml {
     return bypassSanitizationTrustHtml(value);
   }
   bypassSecurityTrustStyle(value: string): SafeStyle {
     return bypassSanitizationTrustStyle(value);
   }
-  bypassSecurityTrustScript(value: string): SafeScript {
+  bypassSecurityTrustScript(value: string|TrustedScript): SafeScript {
     return bypassSanitizationTrustScript(value);
   }
   bypassSecurityTrustUrl(value: string): SafeUrl {
     return bypassSanitizationTrustUrl(value);
   }
-  bypassSecurityTrustResourceUrl(value: string): SafeResourceUrl {
+  bypassSecurityTrustResourceUrl(value: string|TrustedScriptURL): SafeResourceUrl {
     return bypassSanitizationTrustResourceUrl(value);
   }
 }

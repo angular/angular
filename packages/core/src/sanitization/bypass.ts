@@ -58,8 +58,8 @@ export interface SafeUrl extends SafeValue {}
 export interface SafeResourceUrl extends SafeValue {}
 
 
-abstract class SafeValueImpl implements SafeValue {
-  constructor(public changingThisBreaksApplicationSecurity: string) {}
+abstract class SafeValueImpl<T> implements SafeValue {
+  constructor(public changingThisBreaksApplicationSecurity: string|T) {}
 
   abstract getTypeName(): string;
 
@@ -69,35 +69,35 @@ abstract class SafeValueImpl implements SafeValue {
   }
 }
 
-class SafeHtmlImpl extends SafeValueImpl implements SafeHtml {
+class SafeHtmlImpl extends SafeValueImpl<TrustedHTML> implements SafeHtml {
   getTypeName() {
     return BypassType.Html;
   }
 }
-class SafeStyleImpl extends SafeValueImpl implements SafeStyle {
+class SafeStyleImpl extends SafeValueImpl<string> implements SafeStyle {
   getTypeName() {
     return BypassType.Style;
   }
 }
-class SafeScriptImpl extends SafeValueImpl implements SafeScript {
+class SafeScriptImpl extends SafeValueImpl<TrustedScript> implements SafeScript {
   getTypeName() {
     return BypassType.Script;
   }
 }
-class SafeUrlImpl extends SafeValueImpl implements SafeUrl {
+class SafeUrlImpl extends SafeValueImpl<string> implements SafeUrl {
   getTypeName() {
     return BypassType.Url;
   }
 }
-class SafeResourceUrlImpl extends SafeValueImpl implements SafeResourceUrl {
+class SafeResourceUrlImpl extends SafeValueImpl<TrustedScriptURL> implements SafeResourceUrl {
   getTypeName() {
     return BypassType.ResourceUrl;
   }
 }
 
-export function unwrapSafeValue(value: SafeValue): string;
+export function unwrapSafeValue<T>(value: SafeValue): string|T;
 export function unwrapSafeValue<T>(value: T): T;
-export function unwrapSafeValue<T>(value: T|SafeValue): T {
+export function unwrapSafeValue<T>(value: any): string|T {
   return value instanceof SafeValueImpl ? value.changingThisBreaksApplicationSecurity as any as T :
                                           value as any as T;
 }
@@ -137,7 +137,7 @@ export function getSanitizationBypassType(value: any): BypassType|null {
  * @param trustedHtml `html` string which needs to be implicitly trusted.
  * @returns a `html` which has been branded to be implicitly trusted.
  */
-export function bypassSanitizationTrustHtml(trustedHtml: string): SafeHtml {
+export function bypassSanitizationTrustHtml(trustedHtml: string|TrustedHTML): SafeHtml {
   return new SafeHtmlImpl(trustedHtml);
 }
 /**
@@ -161,7 +161,7 @@ export function bypassSanitizationTrustStyle(trustedStyle: string): SafeStyle {
  * @param trustedScript `script` string which needs to be implicitly trusted.
  * @returns a `script` which has been branded to be implicitly trusted.
  */
-export function bypassSanitizationTrustScript(trustedScript: string): SafeScript {
+export function bypassSanitizationTrustScript(trustedScript: string|TrustedScript): SafeScript {
   return new SafeScriptImpl(trustedScript);
 }
 /**
@@ -185,6 +185,7 @@ export function bypassSanitizationTrustUrl(trustedUrl: string): SafeUrl {
  * @param trustedResourceUrl `url` string which needs to be implicitly trusted.
  * @returns a `url` which has been branded to be implicitly trusted.
  */
-export function bypassSanitizationTrustResourceUrl(trustedResourceUrl: string): SafeResourceUrl {
+export function bypassSanitizationTrustResourceUrl(trustedResourceUrl: string|
+                                                   TrustedScriptURL): SafeResourceUrl {
   return new SafeResourceUrlImpl(trustedResourceUrl);
 }

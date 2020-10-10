@@ -17,9 +17,9 @@ export declare class By {
 export declare function disableDebugTools(): void;
 
 export declare abstract class DomSanitizer implements Sanitizer {
-    abstract bypassSecurityTrustHtml(value: string): SafeHtml;
-    abstract bypassSecurityTrustResourceUrl(value: string): SafeResourceUrl;
-    abstract bypassSecurityTrustScript(value: string): SafeScript;
+    abstract bypassSecurityTrustHtml(value: string | TrustedHTML): SafeHtml;
+    abstract bypassSecurityTrustResourceUrl(value: string | TrustedScriptURL): SafeResourceUrl;
+    abstract bypassSecurityTrustScript(value: string | TrustedScript): SafeScript;
     abstract bypassSecurityTrustStyle(value: string): SafeStyle;
     abstract bypassSecurityTrustUrl(value: string): SafeUrl;
     abstract sanitize(context: SecurityContext, value: SafeValue | string | null): string | null;

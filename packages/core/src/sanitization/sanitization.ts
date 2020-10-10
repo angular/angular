@@ -40,7 +40,7 @@ export function ɵɵsanitizeHtml(unsafeHtml: any): TrustedHTML|string {
     return sanitizer.sanitize(SecurityContext.HTML, unsafeHtml) || '';
   }
   if (allowSanitizationBypassAndThrow(unsafeHtml, BypassType.Html)) {
-    return unwrapSafeValue(unsafeHtml);
+    return unwrapSafeValue<TrustedHTML>(unsafeHtml);
   }
   return _sanitizeHtml(getDocument(), renderStringify(unsafeHtml));
 }
@@ -62,7 +62,7 @@ export function ɵɵsanitizeStyle(unsafeStyle: any): string {
     return sanitizer.sanitize(SecurityContext.STYLE, unsafeStyle) || '';
   }
   if (allowSanitizationBypassAndThrow(unsafeStyle, BypassType.Style)) {
-    return unwrapSafeValue(unsafeStyle);
+    return unwrapSafeValue<string>(unsafeStyle);
   }
   return renderStringify(unsafeStyle);
 }
@@ -89,7 +89,7 @@ export function ɵɵsanitizeUrl(unsafeUrl: any): string {
     return sanitizer.sanitize(SecurityContext.URL, unsafeUrl) || '';
   }
   if (allowSanitizationBypassAndThrow(unsafeUrl, BypassType.Url)) {
-    return unwrapSafeValue(unsafeUrl);
+    return unwrapSafeValue<string>(unsafeUrl);
   }
   return _sanitizeUrl(renderStringify(unsafeUrl));
 }
@@ -111,7 +111,7 @@ export function ɵɵsanitizeResourceUrl(unsafeResourceUrl: any): TrustedScriptUR
     return sanitizer.sanitize(SecurityContext.RESOURCE_URL, unsafeResourceUrl) || '';
   }
   if (allowSanitizationBypassAndThrow(unsafeResourceUrl, BypassType.ResourceUrl)) {
-    return unwrapSafeValue(unsafeResourceUrl);
+    return unwrapSafeValue<TrustedScriptURL>(unsafeResourceUrl);
   }
   throw new Error('unsafe value used in a resource URL context (see http://g.co/ng/security#xss)');
 }
@@ -134,7 +134,7 @@ export function ɵɵsanitizeScript(unsafeScript: any): TrustedScript|string {
     return sanitizer.sanitize(SecurityContext.SCRIPT, unsafeScript) || '';
   }
   if (allowSanitizationBypassAndThrow(unsafeScript, BypassType.Script)) {
-    return unwrapSafeValue(unsafeScript);
+    return unwrapSafeValue<TrustedScript>(unsafeScript);
   }
   throw new Error('unsafe value used in a script context');
 }
