@@ -57,10 +57,9 @@ function getRepresentativeNpmPackage(config: ReleaseConfig) {
 
 /** Fetches the specified NPM package from the NPM registry. */
 async function fetchPackageInfoFromNpmRegistry(pkgName: string): Promise<NpmPackageInfo> {
-  if (_npmPackageInfoCache[pkgName] !== undefined) {
-    return await _npmPackageInfoCache[pkgName];
+  if (_npmPackageInfoCache[pkgName] === undefined) {
+    _npmPackageInfoCache[pkgName] =
+        fetch(`https://registry.npmjs.org/${pkgName}`).then(r => r.json());
   }
-  const result = _npmPackageInfoCache[pkgName] =
-      fetch(`https://registry.npmjs.org/${pkgName}`).then(r => r.json());
-  return await result;
+  return await _npmPackageInfoCache[pkgName];
 }

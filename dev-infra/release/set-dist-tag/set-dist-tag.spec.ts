@@ -66,7 +66,7 @@ describe('ng-dev release set-dist-tag', () => {
     await invokeCommand('latest', '10.0');
 
     expect(console.error)
-        .toHaveBeenCalledWith('Invalid version specified. Unable to set NPM dist tag.');
+        .toHaveBeenCalledWith('Invalid version specified (10.0). Unable to set NPM dist tag.');
     expect(process.exit).toHaveBeenCalledWith(1);
     expect(process.exit).toHaveBeenCalledTimes(1);
   });
