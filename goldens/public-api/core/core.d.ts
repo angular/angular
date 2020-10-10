@@ -961,6 +961,15 @@ export declare const TRANSLATIONS: InjectionToken<string>;
 
 export declare const TRANSLATIONS_FORMAT: InjectionToken<string>;
 
+export declare abstract class TrustedSanitizer {
+    abstract sanitize(context: SecurityContext.HTML, value: {} | string | null): string | TrustedHTML | null;
+    abstract sanitize(context: SecurityContext.SCRIPT, value: {} | string | null): string | TrustedScript | null;
+    abstract sanitize(context: SecurityContext.RESOURCE_URL, value: {} | string | null): string | TrustedScriptURL | null;
+    abstract sanitize(context: SecurityContext, value: {} | string | null): string | null;
+    abstract sanitize(context: SecurityContext, value: {} | string | null): string | TrustedHTML | TrustedScript | TrustedScriptURL | null;
+    static ɵprov: never;
+}
+
 export declare const Type: FunctionConstructor;
 
 export declare interface TypeDecorator {

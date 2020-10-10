@@ -612,6 +612,9 @@
     "name": "TestabilityRegistry"
   },
   {
+    "name": "TrustedSanitizer"
+  },
+  {
     "name": "USE_VALUE"
   },
   {

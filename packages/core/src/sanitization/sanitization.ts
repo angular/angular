@@ -11,10 +11,10 @@ import {SANITIZER} from '../render3/interfaces/view';
 import {getLView} from '../render3/state';
 import {renderStringify} from '../render3/util/misc_utils';
 import {global} from '../util/global';
-import {trustedTypesPolicyForLegacyBypass} from '../util/security/trusted_types';
+import {trustedTypesPolicy, trustedTypesPolicyForLegacyBypass} from '../util/security/trusted_types';
 import {allowSanitizationBypassAndThrow, BypassType, unwrapSafeValue} from './bypass';
 import {_sanitizeHtml as _sanitizeHtml} from './html_sanitizer';
-import {Sanitizer} from './sanitizer';
+import {Sanitizer, TrustedSanitizer} from './sanitizer';
 import {SecurityContext} from './security';
 import {_sanitizeUrl as _sanitizeUrl} from './url_sanitizer';
 
@@ -38,8 +38,13 @@ import {_sanitizeUrl as _sanitizeUrl} from './url_sanitizer';
 export function ɵɵsanitizeHtml(unsafeHtml: any): TrustedHTML|string {
   const sanitizer = getSanitizer();
   if (sanitizer) {
-    return trustedTypesPolicyForLegacyBypass.trustedHTMLFromStringRequiresSecurityReview(
-        sanitizer.sanitize(SecurityContext.HTML, unsafeHtml) || '');
+    if (sanitizer instanceof TrustedSanitizer) {
+      return sanitizer.sanitize(SecurityContext.HTML, unsafeHtml) ||
+          trustedTypesPolicy.trustedHTMLFromStringRequiresSecurityReview('');
+    } else {
+      return trustedTypesPolicyForLegacyBypass.trustedHTMLFromStringRequiresSecurityReview(
+          sanitizer.sanitize(SecurityContext.HTML, unsafeHtml) || '');
+    }
   }
   if (allowSanitizationBypassAndThrow(unsafeHtml, BypassType.Html)) {
     const value = unwrapSafeValue<TrustedHTML>(unsafeHtml);
@@ -114,8 +119,13 @@ export function ɵɵsanitizeUrl(unsafeUrl: any): string {
 export function ɵɵsanitizeResourceUrl(unsafeResourceUrl: any): TrustedScriptURL|string {
   const sanitizer = getSanitizer();
   if (sanitizer) {
-    return trustedTypesPolicyForLegacyBypass.trustedScriptURLFromStringRequiresSecurityReview(
-        sanitizer.sanitize(SecurityContext.RESOURCE_URL, unsafeResourceUrl) || '');
+    if (sanitizer instanceof TrustedSanitizer) {
+      return sanitizer.sanitize(SecurityContext.RESOURCE_URL, unsafeResourceUrl) ||
+          trustedTypesPolicy.trustedScriptURLFromStringRequiresSecurityReview('');
+    } else {
+      return trustedTypesPolicyForLegacyBypass.trustedScriptURLFromStringRequiresSecurityReview(
+          sanitizer.sanitize(SecurityContext.RESOURCE_URL, unsafeResourceUrl) || '');
+    }
   }
   if (allowSanitizationBypassAndThrow(unsafeResourceUrl, BypassType.ResourceUrl)) {
     const value = unwrapSafeValue<TrustedScriptURL>(unsafeResourceUrl);
@@ -144,8 +154,13 @@ export function ɵɵsanitizeResourceUrl(unsafeResourceUrl: any): TrustedScriptUR
 export function ɵɵsanitizeScript(unsafeScript: any): TrustedScript|string {
   const sanitizer = getSanitizer();
   if (sanitizer) {
-    return trustedTypesPolicyForLegacyBypass.trustedScriptFromStringRequiresSecurityReview(
-        sanitizer.sanitize(SecurityContext.SCRIPT, unsafeScript) || '');
+    if (sanitizer instanceof TrustedSanitizer) {
+      return sanitizer.sanitize(SecurityContext.SCRIPT, unsafeScript) ||
+          trustedTypesPolicy.trustedScriptFromStringRequiresSecurityReview('');
+    } else {
+      return trustedTypesPolicyForLegacyBypass.trustedScriptFromStringRequiresSecurityReview(
+          sanitizer.sanitize(SecurityContext.SCRIPT, unsafeScript) || '');
+    }
   }
   if (allowSanitizationBypassAndThrow(unsafeScript, BypassType.Script)) {
     const value = unwrapSafeValue<TrustedScript>(unsafeScript);

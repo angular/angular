@@ -23,3 +23,26 @@ export abstract class Sanitizer {
     factory: () => null,
   });
 }
+
+/**
+ * TrustedSanitizer is used by the views to sanitize potentially dangerous
+ * values, using Trusted Types to prove their safety after sanitization.
+ *
+ * @publicApi
+ */
+export abstract class TrustedSanitizer {
+  abstract sanitize(context: SecurityContext.HTML, value: {}|string|null): string|TrustedHTML|null;
+  abstract sanitize(context: SecurityContext.SCRIPT, value: {}|string|null): string|TrustedScript
+      |null;
+  abstract sanitize(context: SecurityContext.RESOURCE_URL, value: {}|string|null): string
+      |TrustedScriptURL|null;
+  abstract sanitize(context: SecurityContext, value: {}|string|null): string|null;
+  abstract sanitize(context: SecurityContext, value: {}|string|null): string|TrustedHTML
+      |TrustedScript|TrustedScriptURL|null;
+  /** @nocollapse */
+  static ɵprov = ɵɵdefineInjectable({
+    token: TrustedSanitizer,
+    providedIn: 'root',
+    factory: () => null,
+  });
+}
