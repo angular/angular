@@ -41,8 +41,8 @@ export async function getDefaultTargetLabelConfiguration(
         // allow merging of PRs with `target: major`.
         if (!next.isMajor) {
           throw new InvalidTargetLabelError(
-              `Unable to merge pull request. The "${nextBranchName}" branch will be ` +
-              `released as a minor version.`);
+              `Unable to merge pull request. The "${nextBranchName}" branch will be released as ` +
+              'a minor version.');
         }
         return [nextBranchName];
       },

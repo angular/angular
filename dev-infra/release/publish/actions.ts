@@ -7,7 +7,7 @@
  */
 
 import {promises as fs} from 'fs';
-import * as Ora from 'ora';
+import * as ora from 'ora';
 import {join} from 'path';
 import * as semver from 'semver';
 
@@ -44,7 +44,7 @@ export interface PullRequest {
   forkBranch: string;
 }
 
-/** Constructor type for a instantiating a release action */
+/** Constructor type for instantiating a release action */
 export interface ReleaseActionConstructor<T extends ReleaseAction = ReleaseAction> {
   /** Whether the release action is currently active. */
   isActive(active: ActiveReleaseTrains): Promise<boolean>;
@@ -107,25 +107,22 @@ export abstract class ReleaseAction {
     if (state === 'failure') {
       error(
           red(`  ✘   Cannot stage release. Commit "${commitSha}" does not pass all github ` +
-              `status checks. Please make sure this commit passes all checks before re-running.`));
+              'status checks. Please make sure this commit passes all checks before re-running.'));
       error(`      Please have a look at: ${branchCommitsUrl}`);
 
       if (await promptConfirm('Do you want to ignore the Github status and proceed?')) {
         info(yellow(
-            `  ⚠   Upstream commit is failing CI checks, but status has been ` +
-            `forcibly ignored.`));
+            '  ⚠   Upstream commit is failing CI checks, but status has been forcibly ignored.'));
         return;
       }
       throw new UserAbortedReleaseActionError();
     } else if (state === 'pending') {
       error(
           red(`  ✘   Commit "${commitSha}" still has pending github statuses that ` +
-              `need to succeed before staging a release.`));
+              'need to succeed before staging a release.'));
       error(red(`      Please have a look at: ${branchCommitsUrl}`));
       if (await promptConfirm('Do you want to ignore the Github status and proceed?')) {
-        info(yellow(
-            `  ⚠   Upstream commit is pending CI, but status has been ` +
-            `forcibly ignored.`));
+        info(yellow('  ⚠   Upstream commit is pending CI, but status has been forcibly ignored.'));
         return;
       }
       throw new UserAbortedReleaseActionError();
@@ -157,9 +154,9 @@ export abstract class ReleaseAction {
    */
   protected async waitForEditsAndCreateReleaseCommit(newVersion: semver.SemVer) {
     info(yellow(
-        `  ⚠   Please review the changelog and ensure that the log contains only changes ` +
-        `that apply to the public API surface. Manual changes can be made. When done, please ` +
-        `proceed with the prompt below.`));
+        '  ⚠   Please review the changelog and ensure that the log contains only changes ' +
+        'that apply to the public API surface. Manual changes can be made. When done, please ' +
+        'proceed with the prompt below.'));
 
     if (!await promptConfirm('Do you want to proceed and commit the changes?')) {
       throw new UserAbortedReleaseActionError();
@@ -188,7 +185,7 @@ export abstract class ReleaseAction {
     const forks = result.repository.forks.nodes;
 
     if (forks.length === 0) {
-      error(red(`  ✘   Unable to find fork for currently authenticated user.`));
+      error(red('  ✘   Unable to find fork for currently authenticated user.'));
       error(red(`      Please ensure you created a fork of: ${owner}/${name}.`));
       throw new FatalReleaseActionError();
     }
@@ -304,7 +301,7 @@ export abstract class ReleaseAction {
     return new Promise((resolve, reject) => {
       debug(`Waiting for pull request #${id} to be merged.`);
 
-      const spinner = Ora().start(`Waiting for pull request #${id} to be merged.`);
+      const spinner = ora().start(`Waiting for pull request #${id} to be merged.`);
       const intervalId = setInterval(async () => {
         const prState = await getPullRequestState(this.git, id);
         if (prState === 'merged') {
@@ -451,7 +448,7 @@ export abstract class ReleaseAction {
 
     info(green(
         `  ✓   Pull request for cherry-picking the changelog into "${nextBranch}" ` +
-        `has been created.`));
+        'has been created.'));
     info(yellow(`      Please ask team members to review: ${url}.`));
     return true;
   }
@@ -490,7 +487,7 @@ export abstract class ReleaseAction {
 
     if (!await this._isCommitForVersionStaging(newVersion, versionBumpCommitSha)) {
       error(red(`  ✘   Latest commit in "${publishBranch}" branch is not a staging commit.`));
-      error(red(`      Please make sure the staging pull request has been merged.`));
+      error(red('      Please make sure the staging pull request has been merged.'));
       throw new FatalReleaseActionError();
     }
 
@@ -514,13 +511,13 @@ export abstract class ReleaseAction {
       await this._publishBuiltPackageToNpm(builtPackage, npmDistTag);
     }
 
-    info(green(`  ✓   Published all packages successfully`));
+    info(green('  ✓   Published all packages successfully'));
   }
 
   /** Publishes the given built package to NPM with the specified NPM dist tag. */
   private async _publishBuiltPackageToNpm(pkg: BuiltPackage, npmDistTag: string) {
     debug(`Starting publish of "${pkg.name}".`);
-    const spinner = Ora().start(`Publishing "${pkg.name}"`);
+    const spinner = ora().start(`Publishing "${pkg.name}"`);
 
     try {
       await runNpmPublish(pkg.outputPath, npmDistTag, this.config.publishRegistry);

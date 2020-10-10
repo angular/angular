@@ -48,7 +48,7 @@ export function spawnWithDebugOutput(
     childProcess.stderr.on('data', message => {
       logOutput += message;
       // If console output is enabled, print the message directly to the stderr. Note that
-      // we intentionally print all output to stderr as stderr should not be polluted.
+      // we intentionally print all output to stderr as stdout should not be polluted.
       if (outputMode === undefined || outputMode === 'enabled') {
         process.stderr.write(message);
       }
@@ -57,7 +57,7 @@ export function spawnWithDebugOutput(
       stdout += message;
       logOutput += message;
       // If console output is enabled, print the message directly to the stderr. Note that
-      // we intentionally print all output to stderr as stderr should not be polluted.
+      // we intentionally print all output to stderr as stdout should not be polluted.
       if (outputMode === undefined || outputMode === 'enabled') {
         process.stderr.write(message);
       }
@@ -67,7 +67,7 @@ export function spawnWithDebugOutput(
       const exitDescription = status !== null ? `exit code "${status}"` : `signal "${signal}"`;
       const printFn = outputMode === 'on-error' ? error : debug;
 
-      printFn(`Command ${commandText} completed with ${exitDescription}.`);
+      printFn(`Command "${commandText}" completed with ${exitDescription}.`);
       printFn(`Process output: \n${logOutput}`);
 
       // On success, resolve the promise. Otherwise reject with the captured stderr

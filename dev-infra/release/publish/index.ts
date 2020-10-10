@@ -66,8 +66,7 @@ export class ReleaseTool {
       // Only print the error message and stack if the error is not a known fatal release
       // action error (for which we print the error gracefully to the console with colors).
       if (!(e instanceof FatalReleaseActionError) && e instanceof Error) {
-        console.error(e.message);
-        console.error(e.stack);
+        console.error(e);
       }
       return CompletionState.FATAL_ERROR;
     } finally {
@@ -90,7 +89,7 @@ export class ReleaseTool {
       }
     }
 
-    info(`Please select the type of release you want to perform.`);
+    info('Please select the type of release you want to perform.');
 
     const {releaseAction} = await prompt<{releaseAction: ReleaseAction}>({
       name: 'releaseAction',
@@ -108,9 +107,7 @@ export class ReleaseTool {
    */
   private async _verifyNoUncommittedChanges(): Promise<boolean> {
     if (this._git.hasUncommittedChanges()) {
-      error(
-          red(`  ✘   There are changes which are not committed and should be ` +
-              `discarded.`));
+      error(red('  ✘   There are changes which are not committed and should be discarded.'));
       return false;
     }
     return true;
@@ -126,7 +123,7 @@ export class ReleaseTool {
         await this._git.github.repos.getBranch({...this._git.remoteParams, branch: nextBranchName});
 
     if (headSha !== data.commit.sha) {
-      error(red(`  ✘   Running release tool from an outdated local branch.`));
+      error(red('  ✘   Running release tool from an outdated local branch.'));
       error(red(`      Please make sure you are running from the "${nextBranchName}" branch.`));
       return false;
     }

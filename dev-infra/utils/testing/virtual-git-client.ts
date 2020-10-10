@@ -123,7 +123,7 @@ export class VirtualGitClient extends GitClient {
       this.branches[ref.destination] = {
         branch: ref.destination,
         ref: this.fetchHeadRef,
-        newCommits: []
+        newCommits: [],
       };
     }
   }
@@ -141,7 +141,7 @@ export class VirtualGitClient extends GitClient {
       }
       this.head = {ref: this.fetchHeadRef, newCommits: []};
     } else if (this.branches[target]) {
-      this.head = {...this._cloneHead(this.branches[target], detached)};
+      this.head = this._cloneHead(this.branches[target], detached);
     } else if (createBranch) {
       this.head = this.branches[target] = {branch: target, ...this._cloneHead(this.head, detached)};
     } else {

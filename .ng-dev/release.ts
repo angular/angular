@@ -26,7 +26,7 @@ export const release: ReleaseConfig = {
   ],
   // TODO: Implement release package building here.
   buildPackages: async () => [],
-  // TODO: This can be removed once there is a org-wide tool for changelog generation.
+  // TODO: This can be removed once there is an org-wide tool for changelog generation.
   generateReleaseNotesForHead: async () => {
     exec('yarn -s gulp changelog', {cwd: join(__dirname, '../')});
   },
