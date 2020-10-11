@@ -13,6 +13,7 @@ import {getInertBodyHelper} from '../../sanitization/inert_body';
 import {_sanitizeUrl, sanitizeSrcset} from '../../sanitization/url_sanitizer';
 import {addAllToArray} from '../../util/array_utils';
 import {assertEqual} from '../../util/assert';
+import {trustedConstantAttributeSanitizer} from '../../util/security/trusted_types';
 import {allocExpando, elementAttributeInternal, setInputsForProperty, setNgReflectProperties} from '../instructions/shared';
 import {getDocument} from '../interfaces/document';
 import {COMMENT_MARKER, ELEMENT_MARKER, I18nMutateOpCode, I18nMutateOpCodes, I18nUpdateOpCode, I18nUpdateOpCodes, IcuCase, IcuExpression, IcuType, TI18n, TIcu} from '../interfaces/i18n';
@@ -241,7 +242,13 @@ export function i18nAttributesFirstPass(
           // Set attributes for Elements only, for other types (like ElementContainer),
           // only set inputs below
           if (tNode.type === TNodeType.Element) {
-            elementAttributeInternal(tNode, lView, attrName, value, null, null);
+            elementAttributeInternal(
+                tNode, lView, attrName, value,
+                // A sanitizer that promotes values to Trusted Types without any
+                // sanitization. This is safe because this attribute has a
+                // constant value coming directly from an Angular template, and
+                // is thus trusted by the application.
+                trustedConstantAttributeSanitizer, null);
           }
           // Check if that attribute is a directive input
           const dataValue = tNode.inputs !== null && tNode.inputs[attrName];
