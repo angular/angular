@@ -8,6 +8,7 @@
 
 import {getPluralCase} from '../../i18n/localization';
 import {assertDefined, assertEqual, assertIndexInRange} from '../../util/assert';
+import {trustedConstantAttributeSanitizer} from '../../util/security/trusted_types';
 import {attachPatchData} from '../context_discovery';
 import {elementAttributeInternal, elementPropertyInternal, getOrCreateTNode, textBindingInternal} from '../instructions/shared';
 import {LContainer, NATIVE} from '../interfaces/container';
@@ -136,7 +137,12 @@ export function applyCreateOpCodes(
           // This code is used for ICU expressions only, since we don't support
           // directives/components in ICUs, we don't need to worry about inputs here
           elementAttributeInternal(
-              getTNode(tView, elementNodeIndex), lView, attrName, attrValue, null, null);
+              getTNode(tView, elementNodeIndex), lView, attrName, attrValue,
+              // A sanitizer that promotes values to Trusted Types without any
+              // sanitization. This is safe because this attribute has a
+              // constant value coming directly from an Angular template or its
+              // translation, and is thus trusted by the application.
+              trustedConstantAttributeSanitizer, null);
           break;
         default:
           throw new Error(`Unable to determine the type of mutate operation for "${opCode}"`);
