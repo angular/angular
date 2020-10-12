@@ -380,10 +380,10 @@ There are two potential workarounds to the above issues:
 
 위 두 상황은 다음 방법을 적용하면 해결될 수 있습니다:
 
-  1. `null`이 될 수 있는 표현식에 null 방지 연산자 `!`를 사용하면 됩니다. ex) `<user-detail [user]="user!" />`
+  1. `null`이 될 수 있는 표현식에 null값 아님 보장 연산자 `!`를 사용하면 됩니다. ex) `<user-detail [user]="user!" />`
 
   이렇게 작성하면 컴파일러가 `null`이 될 수 있는 상황을 고려하지 않습니다. TypeScript 코드에서 동작하는 것과 마찬가지입니다.
-  그리고 `async` 파이프의 경우에는 전체 표현식을 소괄호로 감싸고 null 방지 연산자를 사용하면 됩니다. ex) `<user-detail [user]="(user$ | async)!" />`
+  그리고 `async` 파이프의 경우에는 전체 표현식을 소괄호로 감싸고 null값 아님 보장 연산자를 사용하면 됩니다. ex) `<user-detail [user]="(user$ | async)!" />`
 
   1. Angular 템플릿을 검사할 때 엄격한 null 검사 모드를 해제하면 됩니다.
 
