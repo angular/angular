@@ -43,7 +43,7 @@ export function loadIcuContainerVisitor() {
     // FIXME(misko): This is a hack which allows us to associate `TI18n` with `TNode`.
     // This should be refactored so that one can attach arbitrary data with `TNode`
     ngDevMode && assertTNodeForLView(tIcuContainerNode, lView);
-    const tIcu: TIcu = tIcuContainerNode.tagName as any;
+    const tIcu: TIcu = tIcuContainerNode.value as any;
     enterIcu(tIcu, lView);
     return icuContainerIteratorNext;
   }

@@ -427,10 +427,14 @@ export interface TNode {
   // TODO(misko): break this into actual vars.
   providerIndexes: TNodeProviderIndexes;
 
-  /** The tag name associated with this node. */
-  // FIXME(misko): rename to `value` and change the type to `any` so that
-  // subclasses of `TNode` can use it to link additional payload
-  tagName: string|null;
+  /**
+   * The value name associated with this node.
+   * if type:
+   *   `TNodeType.Text`: text value
+   *   `TNodeType.Element`: tag name
+   *   `TNodeType.ICUContainer`: `TIcu`
+   */
+  value: string|null;
 
   /**
    * Attributes associated with an element. We need to store attributes to support various use-cases

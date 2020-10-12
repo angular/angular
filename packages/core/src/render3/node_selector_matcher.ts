@@ -62,7 +62,7 @@ function isCssClassMatching(
  * @param tNode current TNode
  */
 export function isInlineTemplate(tNode: TNode): boolean {
-  return tNode.type === TNodeType.Container && tNode.tagName !== NG_TEMPLATE_SELECTOR;
+  return tNode.type === TNodeType.Container && tNode.value !== NG_TEMPLATE_SELECTOR;
 }
 
 /**
@@ -78,9 +78,8 @@ export function isInlineTemplate(tNode: TNode): boolean {
  */
 function hasTagAndTypeMatch(
     tNode: TNode, currentSelector: string, isProjectionMode: boolean): boolean {
-  const tagNameToCompare = tNode.type === TNodeType.Container && !isProjectionMode ?
-      NG_TEMPLATE_SELECTOR :
-      tNode.tagName;
+  const tagNameToCompare =
+      tNode.type === TNodeType.Container && !isProjectionMode ? NG_TEMPLATE_SELECTOR : tNode.value;
   return currentSelector === tagNameToCompare;
 }
 

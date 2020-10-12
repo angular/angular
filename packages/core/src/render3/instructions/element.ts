@@ -188,7 +188,7 @@ function logUnknownElementError(
   // execute the check below.
   if (schemas === null) return;
 
-  const tagName = tNode.tagName;
+  const tagName = tNode.value;
 
   // If the element matches any directive, it's considered as valid.
   if (!hasDirectives && tagName !== null) {
