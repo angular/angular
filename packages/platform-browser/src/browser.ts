@@ -20,6 +20,7 @@ import {HAMMER_PROVIDERS} from './dom/events/hammer_gestures';
 import {KeyEventsPlugin} from './dom/events/key_events';
 import {DomSharedStylesHost, SharedStylesHost} from './dom/shared_styles_host';
 import {DomSanitizer, DomSanitizerImpl} from './security/dom_sanitization_service';
+import {TrustedDomSanitizer, TrustedDomSanitizerImpl} from './security/trusted_dom_sanitization_service';
 
 export function initDomAdapter() {
   BrowserDomAdapter.makeCurrent();
@@ -44,7 +45,8 @@ export const INTERNAL_BROWSER_PLATFORM_PROVIDERS: StaticProvider[] = [
 
 const BROWSER_SANITIZATION_PROVIDERS__PRE_R3__: StaticProvider[] = [
   {provide: Sanitizer, useExisting: DomSanitizer},
-  {provide: DomSanitizer, useClass: DomSanitizerImpl, deps: [DOCUMENT]},
+  {provide: DomSanitizer, useClass: DomSanitizerImpl, deps: [TrustedDomSanitizer]},
+  {provide: TrustedDomSanitizer, useClass: TrustedDomSanitizerImpl, deps: [DOCUMENT]},
 ];
 
 export const BROWSER_SANITIZATION_PROVIDERS__POST_R3__ = [];

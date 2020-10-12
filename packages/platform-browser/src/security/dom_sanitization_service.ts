@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {DOCUMENT} from '@angular/common';
 import {forwardRef, Inject, Injectable, Injector, Sanitizer, SecurityContext, ɵ_sanitizeHtml as _sanitizeHtml, ɵ_sanitizeUrl as _sanitizeUrl, ɵallowSanitizationBypassAndThrow as allowSanitizationBypassOrThrow, ɵbypassSanitizationTrustHtml as bypassSanitizationTrustHtml, ɵbypassSanitizationTrustResourceUrl as bypassSanitizationTrustResourceUrl, ɵbypassSanitizationTrustScript as bypassSanitizationTrustScript, ɵbypassSanitizationTrustStyle as bypassSanitizationTrustStyle, ɵbypassSanitizationTrustUrl as bypassSanitizationTrustUrl, ɵBypassType as BypassType, ɵgetSanitizationBypassType as getSanitizationBypassType, ɵunwrapSafeValue as unwrapSafeValue} from '@angular/core';
+import {TrustedDomSanitizer} from './trusted_dom_sanitization_service';
 
 export {SecurityContext};
 
@@ -143,51 +143,14 @@ export abstract class DomSanitizer implements Sanitizer {
   abstract bypassSecurityTrustResourceUrl(value: string|TrustedScriptURL): SafeResourceUrl;
 }
 
-export function domSanitizerImplFactory(injector: Injector) {
-  return new DomSanitizerImpl(injector.get(DOCUMENT));
-}
-
-@Injectable({providedIn: 'root', useFactory: domSanitizerImplFactory, deps: [Injector]})
+@Injectable({providedIn: 'root', deps: [TrustedDomSanitizer]})
 export class DomSanitizerImpl extends DomSanitizer {
-  constructor(@Inject(DOCUMENT) private _doc: any) {
+  constructor(private sanitizer: TrustedDomSanitizer) {
     super();
   }
 
   sanitize(ctx: SecurityContext, value: SafeValue|string|null): string|null {
-    if (value == null) return null;
-    switch (ctx) {
-      case SecurityContext.NONE:
-        return value as string;
-      case SecurityContext.HTML:
-        if (allowSanitizationBypassOrThrow(value, BypassType.Html)) {
-          return unwrapSafeValue<TrustedHTML>(value).toString();
-        }
-        return _sanitizeHtml(this._doc, String(value)).toString();
-      case SecurityContext.STYLE:
-        if (allowSanitizationBypassOrThrow(value, BypassType.Style)) {
-          return unwrapSafeValue<string>(value);
-        }
-        return value as string;
-      case SecurityContext.SCRIPT:
-        if (allowSanitizationBypassOrThrow(value, BypassType.Script)) {
-          return unwrapSafeValue<TrustedScript>(value).toString();
-        }
-        throw new Error('unsafe value used in a script context');
-      case SecurityContext.URL:
-        const type = getSanitizationBypassType(value);
-        if (allowSanitizationBypassOrThrow(value, BypassType.Url)) {
-          return unwrapSafeValue<string>(value);
-        }
-        return _sanitizeUrl(String(value));
-      case SecurityContext.RESOURCE_URL:
-        if (allowSanitizationBypassOrThrow(value, BypassType.ResourceUrl)) {
-          return unwrapSafeValue<TrustedScriptURL>(value).toString();
-        }
-        throw new Error(
-            'unsafe value used in a resource URL context (see http://g.co/ng/security#xss)');
-      default:
-        throw new Error(`Unexpected SecurityContext ${ctx} (see http://g.co/ng/security#xss)`);
-    }
+    return this.sanitizer.sanitize(ctx, value)?.toString() ?? null;
   }
 
   bypassSecurityTrustHtml(value: string|TrustedHTML): SafeHtml {
