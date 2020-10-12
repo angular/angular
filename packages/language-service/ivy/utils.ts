@@ -143,8 +143,12 @@ function getInlineTemplateInfoAtPosition(
 /**
  * Given an attribute node, converts it to string form.
  */
-function toAttributeString(attribute: t.TextAttribute|t.BoundAttribute): string {
-  return `[${attribute.name}=${attribute.valueSpan?.toString() ?? ''}]`;
+function toAttributeString(attribute: t.TextAttribute|t.BoundAttribute|t.BoundEvent): string {
+  if (attribute instanceof t.BoundEvent) {
+    return `[${attribute.name}]`;
+  } else {
+    return `[${attribute.name}=${attribute.valueSpan?.toString() ?? ''}]`;
+  }
 }
 
 function getNodeName(node: t.Template|t.Element): string {
@@ -154,8 +158,10 @@ function getNodeName(node: t.Template|t.Element): string {
 /**
  * Given a template or element node, returns all attributes on the node.
  */
-function getAttributes(node: t.Template|t.Element): Array<t.TextAttribute|t.BoundAttribute> {
-  const attributes: Array<t.TextAttribute|t.BoundAttribute> = [...node.attributes, ...node.inputs];
+function getAttributes(node: t.Template|
+                       t.Element): Array<t.TextAttribute|t.BoundAttribute|t.BoundEvent> {
+  const attributes: Array<t.TextAttribute|t.BoundAttribute|t.BoundEvent> =
+      [...node.attributes, ...node.inputs, ...node.outputs];
   if (node instanceof t.Template) {
     attributes.push(...node.templateAttrs);
   }
@@ -216,8 +222,8 @@ export function getDirectiveMatchesForAttribute(
   const allDirectiveMatches =
       getDirectiveMatchesForSelector(directives, getNodeName(hostNode) + allAttrs.join(''));
   const attrsExcludingName = attributes.filter(a => a.name !== name).map(toAttributeString);
-  const matchesWithoutAttr =
-      getDirectiveMatchesForSelector(directives, attrsExcludingName.join(''));
+  const matchesWithoutAttr = getDirectiveMatchesForSelector(
+      directives, getNodeName(hostNode) + attrsExcludingName.join(''));
   return difference(allDirectiveMatches, matchesWithoutAttr);
 }
 

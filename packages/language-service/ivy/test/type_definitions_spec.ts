@@ -14,6 +14,10 @@ import {HumanizedDefinitionInfo, humanizeDefinitionInfo} from './test_utils';
 describe('type definitions', () => {
   const {project, service, tsLS} = setup();
   const ngLS = new LanguageService(project, tsLS);
+  const possibleArrayDefFiles = new Set([
+    'lib.es5.d.ts', 'lib.es2015.core.d.ts', 'lib.es2015.iterable.d.ts',
+    'lib.es2015.symbol.wellknown.d.ts', 'lib.es2016.array.include.d.ts'
+  ]);
 
   beforeEach(() => {
     service.reset();
@@ -121,7 +125,11 @@ describe('type definitions', () => {
         const definitions = getTypeDefinitionsAndAssertBoundSpan({
           templateOverride: `<div *ngFor="let item o¦f heroes"></div>`,
         });
-        expectAllArrayDefinitions(definitions);
+        // In addition to all the array defs, this will also return the NgForOf def because the
+        // input is part of the selector ([ngFor][ngForOf]).
+        expectAllDefinitions(
+            definitions, new Set(['Array', 'NgForOf']),
+            new Set([...possibleArrayDefFiles, 'ng_for_of.d.ts']));
       });
 
       it('should return nothing for two-way binding providers', () => {
@@ -141,10 +149,25 @@ describe('type definitions', () => {
         });
         expect(definitions!.length).toEqual(2);
 
-        const [def, xyz] = definitions;
-        expect(def.textSpan).toEqual('EventEmitter');
-        expect(def.contextSpan).toContain('export interface EventEmitter<T> extends Subject<T>');
-        expect(xyz.textSpan).toEqual('EventEmitter');
+        const [emitterInterface, emitterConst] = definitions;
+        expect(emitterInterface.textSpan).toEqual('EventEmitter');
+        expect(emitterInterface.contextSpan)
+            .toContain('export interface EventEmitter<T> extends Subject<T>');
+        expect(emitterInterface.fileName).toContain('event_emitter.d.ts');
+        expect(emitterConst.textSpan).toEqual('EventEmitter');
+        expect(emitterConst.contextSpan).toContain('export declare const EventEmitter');
+        expect(emitterConst.fileName).toContain('event_emitter.d.ts');
+      });
+
+      it('should return the directive when the event is part of the selector', () => {
+        const definitions = getTypeDefinitionsAndAssertBoundSpan({
+          templateOverride: `<div (eventSelect¦or)="title = ''"></div>`,
+        });
+        expect(definitions!.length).toEqual(3);
+
+        // EventEmitter tested in previous test
+        const directiveDef = definitions[2];
+        expect(directiveDef.contextSpan).toContain('export class EventSelectorDirective');
       });
     });
   });
@@ -264,21 +287,21 @@ describe('type definitions', () => {
       const definitions = getTypeDefinitionsAndAssertBoundSpan({
         templateOverride: `<div *ngFor="let item of heroes as her¦oes2; trackBy: test;"></div>`,
       });
-      expectAllArrayDefinitions(definitions);
+      expectAllDefinitions(definitions, new Set(['Array']), possibleArrayDefFiles);
     });
 
     it('should work for uses of members in structural directives', () => {
       const definitions = getTypeDefinitionsAndAssertBoundSpan({
         templateOverride: `<div *ngFor="let item of heroes as heroes2">{{her¦oes2}}</div>`,
       });
-      expectAllArrayDefinitions(definitions);
+      expectAllDefinitions(definitions, new Set(['Array']), possibleArrayDefFiles);
     });
 
     it('should work for members in structural directives', () => {
       const definitions = getTypeDefinitionsAndAssertBoundSpan({
         templateOverride: `<div *ngFor="let item of her¦oes; trackBy: test;"></div>`,
       });
-      expectAllArrayDefinitions(definitions);
+      expectAllDefinitions(definitions, new Set(['Array']), possibleArrayDefFiles);
     });
 
     it('should return nothing for the $any() cast function', () => {
@@ -297,14 +320,12 @@ describe('type definitions', () => {
     return defs!.map(d => humanizeDefinitionInfo(d, service));
   }
 
-  function expectAllArrayDefinitions(definitions: HumanizedDefinitionInfo[]) {
+  function expectAllDefinitions(
+      definitions: HumanizedDefinitionInfo[], textSpans: Set<string>,
+      possibleFileNames: Set<string>) {
     expect(definitions!.length).toBeGreaterThan(0);
     const actualTextSpans = new Set(definitions.map(d => d.textSpan));
-    expect(actualTextSpans).toEqual(new Set(['Array']));
-    const possibleFileNames = [
-      'lib.es5.d.ts', 'lib.es2015.core.d.ts', 'lib.es2015.iterable.d.ts',
-      'lib.es2015.symbol.wellknown.d.ts', 'lib.es2016.array.include.d.ts'
-    ];
+    expect(actualTextSpans).toEqual(textSpans);
     for (const def of definitions) {
       const fileName = def.fileName.split('/').slice(-1)[0];
       expect(possibleFileNames)
