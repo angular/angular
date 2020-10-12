@@ -12,3 +12,17 @@ import * as ts from 'typescript';
 export function hasModifier(node: ts.Node, modifierKind: ts.SyntaxKind) {
   return !!node.modifiers && node.modifiers.some(m => m.kind === modifierKind);
 }
+
+/** Find the closest parent node of a particular kind. */
+export function closestNode<T extends ts.Node>(node: ts.Node, kind: ts.SyntaxKind): T|null {
+  let current: ts.Node = node;
+
+  while (current && !ts.isSourceFile(current)) {
+    if (current.kind === kind) {
+      return current as T;
+    }
+    current = current.parent;
+  }
+
+  return null;
+}

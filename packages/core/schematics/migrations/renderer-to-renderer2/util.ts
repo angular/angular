@@ -54,20 +54,6 @@ export function findRendererReferences(
   return {typedNodes, methodCalls, forwardRefs};
 }
 
-/** Gets the closest `NamedImports` to an `ImportSpecifier`. */
-export function getNamedImports(specifier: ts.ImportSpecifier): ts.NamedImports|null {
-  let current: ts.Node = specifier;
-
-  while (current && !ts.isSourceFile(current)) {
-    if (ts.isNamedImports(current)) {
-      return current;
-    }
-    current = current.parent;
-  }
-
-  return null;
-}
-
 /** Finds the identifier referring to the `Renderer` inside a `forwardRef` call expression. */
 function findRendererIdentifierInForwardRef(
     typeChecker: ts.TypeChecker, node: ts.CallExpression,
