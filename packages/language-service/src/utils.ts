@@ -7,6 +7,7 @@
  */
 
 import {AstPath, BoundEventAst, CompileDirectiveSummary, CompileTypeMetadata, CssSelector, DirectiveAst, ElementAst, EmbeddedTemplateAst, HtmlAstPath, identifierName, Identifiers, Node, ParseSourceSpan, RecursiveTemplateAstVisitor, RecursiveVisitor, TemplateAst, TemplateAstPath, templateVisitAll, visitAll} from '@angular/compiler';
+import {getClassDeclFromDecoratorProp, getPropertyAssignmentFromValue} from './ts_utils';
 import {AstResult, DiagnosticTemplateInfo, SelectorInfo, Span, Symbol, SymbolQuery} from './types';
 
 interface SpanHolder {

@@ -9,10 +9,8 @@
 import * as path from 'path';
 import * as tss from 'typescript/lib/tsserverlibrary';
 
-import {getTsDefinitionAndBoundSpan, ResourceResolver} from '../common/definitions';
-
 import {getTemplateCompletions} from './completions';
-import {getDefinitionAndBoundSpan} from './definitions';
+import {getDefinitionAndBoundSpan, getTsDefinitionAndBoundSpan, ResourceResolver} from './definitions';
 import {getDeclarationDiagnostics, getTemplateDiagnostics, ngDiagnosticToTsDiagnostic} from './diagnostics';
 import {getTemplateHover, getTsHover} from './hover';
 import * as ng from './types';
