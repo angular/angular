@@ -161,7 +161,7 @@ code relies on directive constructor types it may require some updates to improv
 the TypeScript compiler might compain. A v11 migration exists which adds the not-null assertion
 operator where necessary.
 
-In an unlikely case your code was testing the parnet against undefined with sitrct equality,
+In an unlikely case your code was testing the parnet against undefined with strict equality,
 you'll need to change this to `=== null` instead, since the parent is not explicily initialized
 with `null` instead of being left `undefined`.
 
