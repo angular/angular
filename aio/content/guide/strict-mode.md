@@ -1,6 +1,6 @@
 # Strict mode
 
-Stricter type checking and other similar constraints often enable more optimizations and correctness verification at build time. You can learn more about the theory behind this [here](https://www.youtube.com/watch?v=X-Dn5ZBUZH0). At the same time, constraints may have an impact on development experience (DX).
+Stricter type checking and other similar constraints often enable more optimizations and correctness verification at build time. For more information about this theory, see [Power in Constraints](https://www.youtube.com/watch?v=X-Dn5ZBUZH0). At the same time, constraints may impact the development experience.
 
 In Angular, we want to enable the strictest flags to encourage best practices, without significantly impacting the learning curve when getting started with the framework, nor DX.
 
