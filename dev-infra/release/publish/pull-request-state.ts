@@ -68,5 +68,6 @@ async function isCommitClosingPullRequest(api: GitClient, sha: string, id: numbe
   const {data} = await api.github.repos.getCommit({...api.remoteParams, ref: sha});
   // Matches the closing keyword supported in commit messages. See:
   // https://docs.github.com/en/enterprise/2.16/user/github/managing-your-work-on-github/closing-issues-using-keywords.
-  return data.commit.message.match(new RegExp(`close[sd]? #${id}(?!\\d)`, 'i'));
+  return data.commit.message.match(
+      new RegExp(`(?:close[sd]?|fix(?:e[sd]?)|resolve[sd]?):? #${id}(?!\\d)`, 'i'));
 }
