@@ -158,11 +158,11 @@ code relies on directive constructor types it may require some updates to improv
 * **forms:** Type of AbstractFormControl.parent now includes null
 
 `null` is now included in the types of .parent. If you don't already have a check for this case,
-the TypeScript compiler might compain. A v11 migration exists which adds the not-null assertion
+the TypeScript compiler might complain. A v11 migration exists which adds the non-null assertion
 operator where necessary.
 
-In an unlikely case your code was testing the parnet against undefined with sitrct equality,
-you'll need to change this to `=== null` instead, since the parent is not explicily initialized
+In an unlikely case your code was testing the parent against undefined with strict equality,
+you'll need to change this to `=== null` instead, since the parent is now explicitly initialized
 with `null` instead of being left `undefined`.
 
 
