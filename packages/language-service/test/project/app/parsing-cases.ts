@@ -75,6 +75,11 @@ export class CompoundCustomButtonDirective {
   @Input() config?: {color?: string};
 }
 
+@Directive({selector: '[eventSelector]'})
+export class EventSelectorDirective {
+  @Output() eventSelector = new EventEmitter<void>();
+}
+
 @Pipe({
   name: 'prefixPipe',
 })

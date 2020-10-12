@@ -13,12 +13,14 @@ import * as t from '@angular/compiler/src/render3/r3_ast';         // t for temp
 import {isTemplateNode, isTemplateNodeWithKeyAndValue} from './utils';
 
 /**
- * Return the template AST node or expression AST node that most accurately
+ * Return the path to the template AST node or expression AST node that most accurately
  * represents the node at the specified cursor `position`.
+ *
  * @param ast AST tree
  * @param position cursor position
  */
-export function findNodeAtPosition(ast: t.Node[], position: number): t.Node|e.AST|undefined {
+export function getPathToNodeAtPosition(ast: t.Node[], position: number): Array<t.Node|e.AST>|
+    undefined {
   const visitor = new R3Visitor(position);
   visitor.visitAll(ast);
   const candidate = visitor.path[visitor.path.length - 1];
@@ -35,7 +37,22 @@ export function findNodeAtPosition(ast: t.Node[], position: number): t.Node|e.AS
       return;
     }
   }
-  return candidate;
+  return visitor.path;
+}
+
+/**
+ * Return the template AST node or expression AST node that most accurately
+ * represents the node at the specified cursor `position`.
+ *
+ * @param ast AST tree
+ * @param position cursor position
+ */
+export function findNodeAtPosition(ast: t.Node[], position: number): t.Node|e.AST|undefined {
+  const path = getPathToNodeAtPosition(ast, position);
+  if (!path) {
+    return;
+  }
+  return path[path.length - 1];
 }
 
 class R3Visitor implements t.Visitor {

@@ -88,11 +88,14 @@ describe('definitions', () => {
         templateOverride: `<div *ng¦If="anyValue"></div>`,
         expectedSpanText: 'ngIf',
       });
-      expect(definitions!.length).toEqual(1);
+      // Because the input is also part of the selector, the directive is also returned.
+      expect(definitions!.length).toEqual(2);
+      const [inputDef, directiveDef] = definitions;
 
-      const [def] = definitions;
-      expect(def.textSpan).toEqual('ngIf');
-      expect(def.contextSpan).toEqual('set ngIf(condition: T);');
+      expect(inputDef.textSpan).toEqual('ngIf');
+      expect(inputDef.contextSpan).toEqual('set ngIf(condition: T);');
+      expect(directiveDef.textSpan).toEqual('NgIf');
+      expect(directiveDef.contextSpan).toContain('export declare class NgIf');
     });
 
     it('should work for directives with compound selectors', () => {
@@ -125,6 +128,18 @@ describe('definitions', () => {
         expect(def.contextSpan).toEqual(`@Input('tcName') name = 'test';`);
       });
 
+      it('should work for text inputs', () => {
+        const definitions = getDefinitionsAndAssertBoundSpan({
+          templateOverride: `<test-comp tcN¦ame="name"></test-comp>`,
+          expectedSpanText: 'tcName="name"',
+        });
+        expect(definitions!.length).toEqual(1);
+
+        const [def] = definitions;
+        expect(def.textSpan).toEqual('name');
+        expect(def.contextSpan).toEqual(`@Input('tcName') name = 'test';`);
+      });
+
       it('should work for structural directive inputs ngForTrackBy', () => {
         const definitions = getDefinitionsAndAssertBoundSpan({
           templateOverride: `<div *ngFor="let item of heroes; tr¦ackBy: test;"></div>`,
@@ -145,12 +160,16 @@ describe('definitions', () => {
           templateOverride: `<div *ngFor="let item o¦f heroes"></div>`,
           expectedSpanText: 'of',
         });
-        expect(definitions!.length).toEqual(1);
+        // Because the input is also part of the selector ([ngFor][ngForOf]), the directive is also
+        // returned.
+        expect(definitions!.length).toEqual(2);
+        const [inputDef, directiveDef] = definitions;
 
-        const [def] = definitions;
-        expect(def.textSpan).toEqual('ngForOf');
-        expect(def.contextSpan)
+        expect(inputDef.textSpan).toEqual('ngForOf');
+        expect(inputDef.contextSpan)
             .toEqual('set ngForOf(ngForOf: U & NgIterable<T> | undefined | null);');
+        expect(directiveDef.textSpan).toEqual('NgForOf');
+        expect(directiveDef.contextSpan).toContain('export declare class NgForOf');
       });
 
       it('should work for two-way binding providers', () => {
@@ -190,6 +209,20 @@ describe('definitions', () => {
             APP_COMPONENT, `<div string-model (modelChange)="myClick($e¦vent)"></div>`);
         const definitionAndBoundSpan = ngLS.getDefinitionAndBoundSpan(APP_COMPONENT, position);
         expect(definitionAndBoundSpan).toBeUndefined();
+      });
+
+      it('should return the directive when the event is part of the selector', () => {
+        const definitions = getDefinitionsAndAssertBoundSpan({
+          templateOverride: `<div (eventSelect¦or)="title = ''"></div>`,
+          expectedSpanText: `(eventSelector)="title = ''"`,
+        });
+        expect(definitions!.length).toEqual(2);
+
+        const [inputDef, directiveDef] = definitions;
+        expect(inputDef.textSpan).toEqual('eventSelector');
+        expect(inputDef.contextSpan).toEqual('@Output() eventSelector = new EventEmitter<void>();');
+        expect(directiveDef.textSpan).toEqual('EventSelectorDirective');
+        expect(directiveDef.contextSpan).toContain('export class EventSelectorDirective');
       });
     });
   });

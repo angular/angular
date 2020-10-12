@@ -6,16 +6,17 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, TmplAstNode, TmplAstTextAttribute} from '@angular/compiler';
+import {AST, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstElement, TmplAstNode, TmplAstTemplate, TmplAstTextAttribute} from '@angular/compiler';
 import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
 import {DirectiveSymbol, DomBindingSymbol, ElementSymbol, ShimLocation, Symbol, SymbolKind, TemplateSymbol} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
 import * as ts from 'typescript';
 
-import {findNodeAtPosition} from './hybrid_visitor';
+import {getPathToNodeAtPosition} from './hybrid_visitor';
 import {flatMap, getDirectiveMatchesForAttribute, getDirectiveMatchesForElementTag, getTemplateInfoAtPosition, getTextSpanOfNode, isDollarEvent, TemplateInfo, toTextSpan} from './utils';
 
 interface DefinitionMeta {
   node: AST|TmplAstNode;
+  path: Array<AST|TmplAstNode>;
   symbol: Symbol;
 }
 
@@ -41,12 +42,12 @@ export class DefinitionBuilder {
       return undefined;
     }
 
-    const definitions = this.getDefinitionsForSymbol(definitionMeta.symbol, definitionMeta.node);
+    const definitions = this.getDefinitionsForSymbol({...definitionMeta, ...templateInfo});
     return {definitions, textSpan: getTextSpanOfNode(definitionMeta.node)};
   }
 
-  private getDefinitionsForSymbol(symbol: Symbol, node: TmplAstNode|AST):
-      readonly ts.DefinitionInfo[]|undefined {
+  private getDefinitionsForSymbol({symbol, node, path, component}: DefinitionMeta&
+                                  TemplateInfo): readonly ts.DefinitionInfo[]|undefined {
     switch (symbol.kind) {
       case SymbolKind.Directive:
       case SymbolKind.Element:
@@ -58,9 +59,14 @@ export class DefinitionBuilder {
         // LS users to "go to definition" on an item in the template that maps to a class and be
         // taken to the directive or HTML class.
         return this.getTypeDefinitionsForTemplateInstance(symbol, node);
-      case SymbolKind.Input:
       case SymbolKind.Output:
-        return this.getDefinitionsForSymbols(...symbol.bindings);
+      case SymbolKind.Input: {
+        const bindingDefs = this.getDefinitionsForSymbols(...symbol.bindings);
+        // Also attempt to get directive matches for the input name. If there is a directive that
+        // has the input name as part of the selector, we want to return that as well.
+        const directiveDefs = this.getDirectiveTypeDefsForBindingNode(node, path, component);
+        return [...bindingDefs, ...directiveDefs];
+      }
       case SymbolKind.Variable:
       case SymbolKind.Reference: {
         const definitions: ts.DefinitionInfo[] = [];
@@ -112,8 +118,14 @@ export class DefinitionBuilder {
       case SymbolKind.Template:
         return this.getTypeDefinitionsForTemplateInstance(symbol, node);
       case SymbolKind.Output:
-      case SymbolKind.Input:
-        return this.getTypeDefinitionsForSymbols(...symbol.bindings);
+      case SymbolKind.Input: {
+        const bindingDefs = this.getTypeDefinitionsForSymbols(...symbol.bindings);
+        // Also attempt to get directive matches for the input name. If there is a directive that
+        // has the input name as part of the selector, we want to return that as well.
+        const directiveDefs = this.getDirectiveTypeDefsForBindingNode(
+            node, definitionMeta.path, templateInfo.component);
+        return [...bindingDefs, ...directiveDefs];
+      }
       case SymbolKind.Reference:
       case SymbolKind.Expression:
       case SymbolKind.Variable:
@@ -150,6 +162,28 @@ export class DefinitionBuilder {
     }
   }
 
+  private getDirectiveTypeDefsForBindingNode(
+      node: TmplAstNode|AST, pathToNode: Array<TmplAstNode|AST>, component: ts.ClassDeclaration) {
+    if (!(node instanceof TmplAstBoundAttribute) && !(node instanceof TmplAstTextAttribute) &&
+        !(node instanceof TmplAstBoundEvent)) {
+      return [];
+    }
+    const parent = pathToNode[pathToNode.length - 2];
+    if (!(parent instanceof TmplAstTemplate || parent instanceof TmplAstElement)) {
+      return [];
+    }
+    const templateOrElementSymbol =
+        this.compiler.getTemplateTypeChecker().getSymbolOfNode(parent, component);
+    if (templateOrElementSymbol === null ||
+        (templateOrElementSymbol.kind !== SymbolKind.Template &&
+         templateOrElementSymbol.kind !== SymbolKind.Element)) {
+      return [];
+    }
+    const dirs =
+        getDirectiveMatchesForAttribute(node.name, parent, templateOrElementSymbol.directives);
+    return this.getTypeDefinitionsForSymbols(...dirs);
+  }
+
   private getTypeDefinitionsForSymbols(...symbols: HasShimLocation[]): ts.DefinitionInfo[] {
     return flatMap(symbols, ({shimLocation}) => {
       const {shimPath, positionInShimFile} = shimLocation;
@@ -159,15 +193,16 @@ export class DefinitionBuilder {
 
   private getDefinitionMetaAtPosition({template, component}: TemplateInfo, position: number):
       DefinitionMeta|undefined {
-    const node = findNodeAtPosition(template, position);
-    if (node === undefined) {
+    const path = getPathToNodeAtPosition(template, position);
+    if (path === undefined) {
       return;
     }
 
+    const node = path[path.length - 1];
     const symbol = this.compiler.getTemplateTypeChecker().getSymbolOfNode(node, component);
     if (symbol === null) {
       return;
     }
-    return {node, symbol};
+    return {node, path, symbol};
   }
 }
