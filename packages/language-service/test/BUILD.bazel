@@ -59,7 +59,6 @@ ts_library(
         "//packages/compiler",
         "//packages/language-service",
         "//packages/language-service:ts_utils",
-        "//packages/language-service/common",
         "@npm//typescript",
     ],
 )

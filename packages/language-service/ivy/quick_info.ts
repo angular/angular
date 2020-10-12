@@ -10,26 +10,9 @@ import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
 import {DirectiveSymbol, DomBindingSymbol, ElementSymbol, ExpressionSymbol, InputBindingSymbol, OutputBindingSymbol, ReferenceSymbol, ShimLocation, Symbol, SymbolKind, VariableSymbol} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
 import * as ts from 'typescript';
 
-import {createQuickInfo, SYMBOL_PUNC, SYMBOL_SPACE, SYMBOL_TEXT} from '../common/quick_info';
-
+import {createDisplayParts, DisplayInfoKind, SYMBOL_PUNC, SYMBOL_SPACE, SYMBOL_TEXT, unsafeCastDisplayInfoKindToScriptElementKind} from './display_parts';
 import {findNodeAtPosition} from './hybrid_visitor';
 import {filterAliasImports, getDirectiveMatchesForAttribute, getDirectiveMatchesForElementTag, getTemplateInfoAtPosition, getTextSpanOfNode} from './utils';
-
-/**
- * The type of Angular directive. Used for QuickInfo in template.
- */
-export enum QuickInfoKind {
-  COMPONENT = 'component',
-  DIRECTIVE = 'directive',
-  EVENT = 'event',
-  REFERENCE = 'reference',
-  ELEMENT = 'element',
-  VARIABLE = 'variable',
-  PIPE = 'pipe',
-  PROPERTY = 'property',
-  METHOD = 'method',
-  TEMPLATE = 'template',
-}
 
 export class QuickInfoBuilder {
   private readonly typeChecker = this.compiler.getNextProgram().getTypeChecker();
@@ -86,7 +69,8 @@ export class QuickInfoBuilder {
       return undefined;
     }
 
-    const kind = symbol.kind === SymbolKind.Input ? QuickInfoKind.PROPERTY : QuickInfoKind.EVENT;
+    const kind =
+        symbol.kind === SymbolKind.Input ? DisplayInfoKind.PROPERTY : DisplayInfoKind.EVENT;
 
     const quickInfo = this.getQuickInfoAtShimLocation(symbol.bindings[0].shimLocation, node);
     return quickInfo === undefined ? undefined : updateQuickInfoKind(quickInfo, kind);
@@ -100,7 +84,7 @@ export class QuickInfoBuilder {
     }
 
     return createQuickInfo(
-        templateNode.name, QuickInfoKind.ELEMENT, getTextSpanOfNode(templateNode),
+        templateNode.name, DisplayInfoKind.ELEMENT, getTextSpanOfNode(templateNode),
         undefined /* containerName */, this.typeChecker.typeToString(symbol.tsType));
   }
 
@@ -108,7 +92,7 @@ export class QuickInfoBuilder {
       ts.QuickInfo {
     const documentation = this.getDocumentationFromTypeDefAtLocation(symbol.shimLocation);
     return createQuickInfo(
-        symbol.declaration.name, QuickInfoKind.VARIABLE, getTextSpanOfNode(node),
+        symbol.declaration.name, DisplayInfoKind.VARIABLE, getTextSpanOfNode(node),
         undefined /* containerName */, this.typeChecker.typeToString(symbol.tsType), documentation);
   }
 
@@ -116,14 +100,15 @@ export class QuickInfoBuilder {
       ts.QuickInfo {
     const documentation = this.getDocumentationFromTypeDefAtLocation(symbol.shimLocation);
     return createQuickInfo(
-        symbol.declaration.name, QuickInfoKind.REFERENCE, getTextSpanOfNode(node),
+        symbol.declaration.name, DisplayInfoKind.REFERENCE, getTextSpanOfNode(node),
         undefined /* containerName */, this.typeChecker.typeToString(symbol.tsType), documentation);
   }
 
   private getQuickInfoForPipeSymbol(symbol: ExpressionSymbol, node: TmplAstNode|AST): ts.QuickInfo
       |undefined {
     const quickInfo = this.getQuickInfoAtShimLocation(symbol.shimLocation, node);
-    return quickInfo === undefined ? undefined : updateQuickInfoKind(quickInfo, QuickInfoKind.PIPE);
+    return quickInfo === undefined ? undefined :
+                                     updateQuickInfoKind(quickInfo, DisplayInfoKind.PIPE);
   }
 
   private getQuickInfoForDomBinding(node: TmplAstNode|AST, symbol: DomBindingSymbol) {
@@ -141,7 +126,7 @@ export class QuickInfoBuilder {
 
   private getQuickInfoForDirectiveSymbol(dir: DirectiveSymbol, node: TmplAstNode|AST):
       ts.QuickInfo {
-    const kind = dir.isComponent ? QuickInfoKind.COMPONENT : QuickInfoKind.DIRECTIVE;
+    const kind = dir.isComponent ? DisplayInfoKind.COMPONENT : DisplayInfoKind.DIRECTIVE;
     const documentation = this.getDocumentationFromTypeDefAtLocation(dir.shimLocation);
     let containerName: string|undefined;
     if (ts.isClassDeclaration(dir.tsSymbol.valueDeclaration) && dir.ngModule !== null) {
@@ -179,7 +164,7 @@ export class QuickInfoBuilder {
   }
 }
 
-function updateQuickInfoKind(quickInfo: ts.QuickInfo, kind: QuickInfoKind): ts.QuickInfo {
+function updateQuickInfoKind(quickInfo: ts.QuickInfo, kind: DisplayInfoKind): ts.QuickInfo {
   if (quickInfo.displayParts === undefined) {
     return quickInfo;
   }
@@ -214,7 +199,7 @@ function isDollarAny(node: TmplAstNode|AST): node is MethodCall {
 function createDollarAnyQuickInfo(node: MethodCall): ts.QuickInfo {
   return createQuickInfo(
       '$any',
-      QuickInfoKind.METHOD,
+      DisplayInfoKind.METHOD,
       getTextSpanOfNode(node),
       /** containerName */ undefined,
       'any',
@@ -229,7 +214,7 @@ function createDollarAnyQuickInfo(node: MethodCall): ts.QuickInfo {
 function createNgTemplateQuickInfo(node: TmplAstNode|AST): ts.QuickInfo {
   return createQuickInfo(
       'ng-template',
-      QuickInfoKind.TEMPLATE,
+      DisplayInfoKind.TEMPLATE,
       getTextSpanOfNode(node),
       /** containerName */ undefined,
       /** type */ undefined,
@@ -239,4 +224,27 @@ function createNgTemplateQuickInfo(node: TmplAstNode|AST): ts.QuickInfo {
             'The `<ng-template>` is an Angular element for rendering HTML. It is never displayed directly.',
       }],
   );
+}
+
+/**
+ * Construct a QuickInfo object taking into account its container and type.
+ * @param name Name of the QuickInfo target
+ * @param kind component, directive, pipe, etc.
+ * @param textSpan span of the target
+ * @param containerName either the Symbol's container or the NgModule that contains the directive
+ * @param type user-friendly name of the type
+ * @param documentation docstring or comment
+ */
+export function createQuickInfo(
+    name: string, kind: DisplayInfoKind, textSpan: ts.TextSpan, containerName?: string,
+    type?: string, documentation?: ts.SymbolDisplayPart[]): ts.QuickInfo {
+  const displayParts = createDisplayParts(name, kind, containerName, type);
+
+  return {
+    kind: unsafeCastDisplayInfoKindToScriptElementKind(kind),
+    kindModifiers: ts.ScriptElementKindModifier.none,
+    textSpan: textSpan,
+    displayParts,
+    documentation,
+  };
 }
