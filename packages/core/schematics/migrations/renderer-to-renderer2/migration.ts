@@ -13,27 +13,6 @@ import {HelperFunction} from './helpers';
 /** A call expression that is based on a property access. */
 type PropertyAccessCallExpression = ts.CallExpression&{expression: ts.PropertyAccessExpression};
 
-/** Replaces an import inside an import statement with a different one. */
-export function replaceImport(
-    node: ts.NamedImports, existingImport: ts.ImportSpecifier, newImportName: string) {
-  const isAlreadyImported = node.elements.find(element => {
-    const {name, propertyName} = element;
-    return propertyName ? propertyName.text === newImportName : name.text === newImportName;
-  });
-
-  if (isAlreadyImported) {
-    return node;
-  }
-
-  return ts.updateNamedImports(node, [
-    ...node.elements.filter(current => current !== existingImport),
-    // Create a new import while trying to preserve the alias of the old one.
-    ts.createImportSpecifier(
-        existingImport.propertyName ? ts.createIdentifier(newImportName) : undefined,
-        existingImport.propertyName ? existingImport.name : ts.createIdentifier(newImportName))
-  ]);
-}
-
 /**
  * Migrates a function call expression from `Renderer` to `Renderer2`.
  * Returns null if the expression should be dropped.

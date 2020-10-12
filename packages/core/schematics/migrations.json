@@ -64,6 +64,11 @@
       "version": "11.0.0-beta",
       "description": "ViewEncapsulation.Native has been removed as of Angular version 11. This migration replaces any usages with ViewEncapsulation.ShadowDom.",
       "factory": "./migrations/native-view-encapsulation/index"
+    },
+    "migration-v11-wait-for-async": {
+      "version": "11.0.0-beta",
+      "description": "`async` to `waitForAsync` migration. The `async` testing function has been renamed to `waitForAsync` to avoid confusion with the native `async` keyword.",
+      "factory": "./migrations/wait-for-async/index"
     }
   }
 }

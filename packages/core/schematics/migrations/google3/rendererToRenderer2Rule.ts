@@ -8,11 +8,12 @@
 
 import {Replacement, RuleFailure, Rules} from 'tslint';
 import * as ts from 'typescript';
-import {getImportSpecifier} from '../../utils/typescript/imports';
 
+import {getImportSpecifier, replaceImport} from '../../utils/typescript/imports';
+import {closestNode} from '../../utils/typescript/nodes';
 import {getHelper, HelperFunction} from '../renderer-to-renderer2/helpers';
-import {migrateExpression, replaceImport} from '../renderer-to-renderer2/migration';
-import {findRendererReferences, getNamedImports} from '../renderer-to-renderer2/util';
+import {migrateExpression} from '../renderer-to-renderer2/migration';
+import {findRendererReferences} from '../renderer-to-renderer2/util';
 
 /**
  * TSLint rule that migrates from `Renderer` to `Renderer2`. More information on how it works:
@@ -24,8 +25,9 @@ export class Rule extends Rules.TypedRule {
     const printer = ts.createPrinter();
     const failures: RuleFailure[] = [];
     const rendererImportSpecifier = getImportSpecifier(sourceFile, '@angular/core', 'Renderer');
-    const rendererImport =
-        rendererImportSpecifier ? getNamedImports(rendererImportSpecifier) : null;
+    const rendererImport = rendererImportSpecifier ?
+        closestNode<ts.NamedImports>(rendererImportSpecifier, ts.SyntaxKind.NamedImports) :
+        null;
 
     // If there are no imports for the `Renderer`, we can exit early.
     if (!rendererImportSpecifier || !rendererImport) {
@@ -36,8 +38,7 @@ export class Rule extends Rules.TypedRule {
         findRendererReferences(sourceFile, typeChecker, rendererImportSpecifier);
     const helpersToAdd = new Set<HelperFunction>();
 
-    failures.push(
-        this._getNamedImportsFailure(rendererImport, rendererImportSpecifier, sourceFile, printer));
+    failures.push(this._getNamedImportsFailure(rendererImport, sourceFile, printer));
     typedNodes.forEach(node => failures.push(this._getTypedNodeFailure(node, sourceFile)));
     forwardRefs.forEach(node => failures.push(this._getIdentifierNodeFailure(node, sourceFile)));
 
@@ -65,10 +66,9 @@ export class Rule extends Rules.TypedRule {
 
   /** Gets a failure for an import of the Renderer. */
   private _getNamedImportsFailure(
-      node: ts.NamedImports, importSpecifier: ts.ImportSpecifier, sourceFile: ts.SourceFile,
-      printer: ts.Printer): RuleFailure {
+      node: ts.NamedImports, sourceFile: ts.SourceFile, printer: ts.Printer): RuleFailure {
     const replacementText = printer.printNode(
-        ts.EmitHint.Unspecified, replaceImport(node, importSpecifier, 'Renderer2'), sourceFile);
+        ts.EmitHint.Unspecified, replaceImport(node, 'Renderer', 'Renderer2'), sourceFile);
 
     return new RuleFailure(
         sourceFile, node.getStart(), node.getEnd(),
