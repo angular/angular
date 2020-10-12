@@ -9,8 +9,6 @@
 import {NgAnalyzedModules} from '@angular/compiler';
 import * as ts from 'typescript';
 
-import {createQuickInfo} from '../common/quick_info';
-
 import {locateSymbols} from './locate_symbol';
 import * as ng from './types';
 import {inSpan} from './utils';
@@ -66,4 +64,57 @@ export function getTsHover(
           directiveName, kind, textSpan, moduleName, ts.ScriptElementKind.classElement);
     }
   }
+}
+
+
+
+// Reverse mappings of enum would generate strings
+const ALIAS_NAME = ts.SymbolDisplayPartKind[ts.SymbolDisplayPartKind.aliasName];
+const SYMBOL_INTERFACE = ts.SymbolDisplayPartKind[ts.SymbolDisplayPartKind.interfaceName];
+const SYMBOL_PUNC = ts.SymbolDisplayPartKind[ts.SymbolDisplayPartKind.punctuation];
+const SYMBOL_SPACE = ts.SymbolDisplayPartKind[ts.SymbolDisplayPartKind.space];
+const SYMBOL_TEXT = ts.SymbolDisplayPartKind[ts.SymbolDisplayPartKind.text];
+
+/**
+ * Construct a QuickInfo object taking into account its container and type.
+ * @param name Name of the QuickInfo target
+ * @param kind component, directive, pipe, etc.
+ * @param textSpan span of the target
+ * @param containerName either the Symbol's container or the NgModule that contains the directive
+ * @param type user-friendly name of the type
+ * @param documentation docstring or comment
+ */
+function createQuickInfo(
+    name: string, kind: string, textSpan: ts.TextSpan, containerName?: string, type?: string,
+    documentation?: ts.SymbolDisplayPart[]): ts.QuickInfo {
+  const containerDisplayParts = containerName ?
+      [
+        {text: containerName, kind: SYMBOL_INTERFACE},
+        {text: '.', kind: SYMBOL_PUNC},
+      ] :
+      [];
+
+  const typeDisplayParts = type ?
+      [
+        {text: ':', kind: SYMBOL_PUNC},
+        {text: ' ', kind: SYMBOL_SPACE},
+        {text: type, kind: SYMBOL_INTERFACE},
+      ] :
+      [];
+
+  return {
+    kind: kind as ts.ScriptElementKind,
+    kindModifiers: ts.ScriptElementKindModifier.none,
+    textSpan: textSpan,
+    displayParts: [
+      {text: '(', kind: SYMBOL_PUNC},
+      {text: kind, kind: SYMBOL_TEXT},
+      {text: ')', kind: SYMBOL_PUNC},
+      {text: ' ', kind: SYMBOL_SPACE},
+      ...containerDisplayParts,
+      {text: name, kind: SYMBOL_INTERFACE},
+      ...typeDisplayParts,
+    ],
+    documentation,
+  };
 }

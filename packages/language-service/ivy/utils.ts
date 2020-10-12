@@ -12,7 +12,7 @@ import * as e from '@angular/compiler/src/expression_parser/ast';  // e for expr
 import * as t from '@angular/compiler/src/render3/r3_ast';         // t for template AST
 import * as ts from 'typescript';
 
-import {ALIAS_NAME, SYMBOL_PUNC} from '../common/quick_info';
+import {ALIAS_NAME, SYMBOL_PUNC} from './display_parts';
 
 /**
  * Given a list of directives and a text to use as a selector, returns the directives which match
