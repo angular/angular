@@ -10,12 +10,10 @@ import {analyzeNgModules, AotSummaryResolver, CompileDirectiveSummary, CompileMe
 import {SchemaMetadata, ViewEncapsulation, ɵConsole as Console} from '@angular/core';
 import * as tss from 'typescript/lib/tsserverlibrary';
 
-import {findTightestNode, getClassDeclOfInlineTemplateNode} from '../common/ts_utils';
-
 import {createLanguageService} from './language_service';
 import {ReflectorHost} from './reflector_host';
 import {ExternalTemplate, InlineTemplate} from './template';
-import {getDirectiveClassLike} from './ts_utils';
+import {findTightestNode, getClassDeclOfInlineTemplateNode, getDirectiveClassLike} from './ts_utils';
 import {AstResult, Declaration, DeclarationError, DiagnosticMessageChain, LanguageService, LanguageServiceHost, Span, TemplateSource} from './types';
 
 /**

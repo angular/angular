@@ -11,8 +11,7 @@ import {absoluteFrom, AbsoluteFsPath} from '@angular/compiler-cli/src/ngtsc/file
 import {AdapterResourceLoader} from '@angular/compiler-cli/src/ngtsc/resource';
 import {isShim} from '@angular/compiler-cli/src/ngtsc/shims';
 import * as ts from 'typescript/lib/tsserverlibrary';
-
-import {ResourceResolver} from '../common/definitions';
+import {ResourceResolver} from './definitions';
 
 import {isTypeScriptFile} from './utils';
 
