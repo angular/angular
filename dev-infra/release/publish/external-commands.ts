@@ -44,7 +44,7 @@ export async function invokeSetNpmDistCommand(npmDistTag: string, version: semve
     info(green(`  ✓   Set "${npmDistTag}" NPM dist tag for all packages to v${version}.`));
   } catch (e) {
     error(e);
-    error(red('  ✘   An error occurred while setting the NPM dist tag for "${npmDistTag}".'));
+    error(red(`  ✘   An error occurred while setting the NPM dist tag for "${npmDistTag}".`));
     throw new FatalReleaseActionError();
   }
 }
