@@ -60,7 +60,7 @@ describe('render3 matchers', () => {
 
     it('should match', () => {
       expect(tNode).toEqual(matchTNode());
-      expect(tNode).toEqual(matchTNode({type: TNodeType.Element, tagName: 'tagName'}));
+      expect(tNode).toEqual(matchTNode({type: TNodeType.Element, value: 'tagName'}));
       expect({node: tNode}).toEqual({node: matchTNode({type: TNodeType.Element})});
     });
   });
