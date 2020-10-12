@@ -184,7 +184,7 @@ class TNode implements ITNode {
       public propertyBindings: number[]|null,                                        //
       public flags: TNodeFlags,                                                      //
       public providerIndexes: TNodeProviderIndexes,                                  //
-      public tagName: string|null,                                                   //
+      public value: string|null,                                                     //
       public attrs: (string|AttributeMarker|(string|SelectorFlags)[])[]|null,        //
       public mergedAttrs: (string|AttributeMarker|(string|SelectorFlags)[])[]|null,  //
       public localNames: (string|number)[]|null,                                     //
@@ -256,9 +256,9 @@ class TNode implements ITNode {
   }
 
   get template_(): string {
-    if (this.tagName === null && this.type === TNodeType.Element) return '#text';
+    if (this.value === null && this.type === TNodeType.Element) return '#text';
     const buf: string[] = [];
-    const tagName = typeof this.tagName === 'string' && this.tagName || this.type_;
+    const tagName = typeof this.value === 'string' && this.value || this.type_;
     buf.push('<', tagName);
     if (this.flags) {
       buf.push(' ', this.flags_);

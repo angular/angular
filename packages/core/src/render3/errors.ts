@@ -22,7 +22,7 @@ export function throwCyclicDependencyError(token: any): never {
 
 /** Called when there are multiple component selectors that match a given node */
 export function throwMultipleComponentError(tNode: TNode): never {
-  throw new Error(`Multiple components match node with tagname ${tNode.tagName}`);
+  throw new Error(`Multiple components match node with tagname ${tNode.value}`);
 }
 
 export function throwMixedMultiProviderError() {

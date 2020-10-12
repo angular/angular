@@ -266,7 +266,7 @@ class DebugElement__POST_R3__ extends DebugNode__POST_R3__ implements DebugEleme
       const lView = context.lView;
       const tData = lView[TVIEW].data;
       const tNode = tData[context.nodeIndex] as TNode;
-      return tNode.tagName!;
+      return tNode.value!;
     } catch (e) {
       return this.nativeNode.nodeName;
     }

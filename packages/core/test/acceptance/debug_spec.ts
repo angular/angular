@@ -54,7 +54,7 @@ onlyInIvy('Ivy specific').describe('Debug Representation', () => {
           end: HEADER_OFFSET + 2,
           length: 2,
           content: [
-            {index: HEADER_OFFSET + 0, t: matchTNode({tagName: 'div'}), l: matchDomElement('div')},
+            {index: HEADER_OFFSET + 0, t: matchTNode({value: 'div'}), l: matchDomElement('div')},
             {index: HEADER_OFFSET + 1, t: matchTI18n(), l: null},
           ]
         });
@@ -70,7 +70,7 @@ onlyInIvy('Ivy specific').describe('Debug Representation', () => {
           length: 1,
           content: [{
             index: HEADER_OFFSET + 3,
-            t: matchTNode({type: TNodeType.Element, tagName: null}),
+            t: matchTNode({type: TNodeType.Element, value: null}),
             l: matchDomText('Hello World')
           }]
         });

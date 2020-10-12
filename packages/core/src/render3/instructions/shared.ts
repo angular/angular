@@ -227,7 +227,7 @@ export function getOrCreateTNode(
     }
   } else if (tNode.type == TNodeType.Placeholder) {
     tNode.type = type;
-    tNode.tagName = name;
+    tNode.value = name;
     tNode.attrs = attrs;
     const parent = getCurrentParentTNode();
     tNode.injectorIndex = parent === null ? -1 : parent.injectorIndex;
@@ -834,7 +834,7 @@ export function createTNode(
     tagName: string|null, attrs: TAttributes|null): TNode;
 export function createTNode(
     tView: TView, tParent: TElementNode|TContainerNode|null, type: TNodeType, adjustedIndex: number,
-    tagName: string|null, attrs: TAttributes|null): TNode {
+    value: string|null, attrs: TAttributes|null): TNode {
   ngDevMode && assertNotSame(attrs, undefined, '\'undefined\' is not valid value for \'attrs\'');
   ngDevMode && ngDevMode.tNode++;
   ngDevMode && tParent && assertTNodeForTView(tParent, tView);
@@ -852,7 +852,7 @@ export function createTNode(
           null,           // propertyBindings: number[]|null
           0,              // flags: TNodeFlags
           0,              // providerIndexes: TNodeProviderIndexes
-          tagName,        // tagName: string|null
+          value,          // value: string|null
           attrs,          // attrs: (string|AttributeMarker|(string|SelectorFlags)[])[]|null
           null,           // mergedAttrs
           null,           // localNames: (string|number)[]|null
@@ -885,7 +885,7 @@ export function createTNode(
         propertyBindings: null,
         flags: 0,
         providerIndexes: 0,
-        tagName: tagName,
+        value: value,
         attrs: attrs,
         mergedAttrs: null,
         localNames: null,
@@ -1027,7 +1027,7 @@ export function elementPropertyInternal<T>(
 
     // It is assumed that the sanitizer is only added when the compiler determines that the
     // property is risky, so sanitization can be done without further checks.
-    value = sanitizer != null ? (sanitizer(value, tNode.tagName || '', propName) as any) : value;
+    value = sanitizer != null ? (sanitizer(value, tNode.value || '', propName) as any) : value;
     if (isProceduralRenderer(renderer)) {
       renderer.setProperty(element as RElement, propName, value);
     } else if (!isAnimationProp(propName)) {
@@ -1037,7 +1037,7 @@ export function elementPropertyInternal<T>(
   } else if (tNode.type === TNodeType.Container || tNode.type === TNodeType.ElementContainer) {
     // If the node is a container and the property didn't
     // match any of the inputs or schemas we should throw.
-    if (ngDevMode && !matchingSchemas(tView, tNode.tagName)) {
+    if (ngDevMode && !matchingSchemas(tView, tNode.value)) {
       logUnknownPropertyError(propName, tNode);
     }
   }
@@ -1104,7 +1104,7 @@ function validateProperty(
 
   // The property is considered valid if the element matches the schema, it exists on the element
   // or it is synthetic, and we are in a browser context (web worker nodes should be skipped).
-  if (matchingSchemas(tView, tNode.tagName) || propName in element || isAnimationProp(propName)) {
+  if (matchingSchemas(tView, tNode.value) || propName in element || isAnimationProp(propName)) {
     return true;
   }
 
@@ -1135,8 +1135,7 @@ export function matchingSchemas(tView: TView, tagName: string|null): boolean {
  * @param tNode Node on which we encountered the property.
  */
 function logUnknownPropertyError(propName: string, tNode: TNode): void {
-  console.error(
-      `Can't bind to '${propName}' since it isn't a known property of '${tNode.tagName}'.`);
+  console.error(`Can't bind to '${propName}' since it isn't a known property of '${tNode.value}'.`);
 }
 
 /**
@@ -1404,7 +1403,7 @@ function findDirectiveDefMatches(
           if (ngDevMode) {
             assertNodeOfPossibleTypes(
                 tNode, [TNodeType.Element],
-                `"${tNode.tagName}" tags cannot be used as component hosts. ` +
+                `"${tNode.value}" tags cannot be used as component hosts. ` +
                     `Please use a different tag to activate the ${stringify(def.type)} component.`);
 
             if (tNode.flags & TNodeFlags.isComponentHost) throwMultipleComponentError(tNode);
@@ -1525,7 +1524,7 @@ export function elementAttributeInternal(
             `Host bindings are not valid on ng-container or ng-template.`);
   }
   const element = getNativeByTNode(tNode, lView) as RElement;
-  setElementAttribute(lView[RENDERER], element, namespace, tNode.tagName, name, value, sanitizer);
+  setElementAttribute(lView[RENDERER], element, namespace, tNode.value, name, value, sanitizer);
 }
 
 export function setElementAttribute(

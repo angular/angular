@@ -40,9 +40,9 @@ export function getTIcu(tView: TView, index: number): TIcu|null {
   // either TIcu or TIcuContainerNode. This is not ideal, but we still think it is OK because it
   // will be just two cases which fits into the browser inline cache (inline cache can take up to
   // 4)
-  const tIcu = value.hasOwnProperty('currentCaseLViewIndex') ?
+  const tIcu: TIcu = value.hasOwnProperty('currentCaseLViewIndex') ?
       value :
-      (value as TIcuContainerNode).tagName as any;
+      (value as TIcuContainerNode).value as any;
   ngDevMode && assertTIcu(tIcu);
   return tIcu;
 }
@@ -71,9 +71,7 @@ export function setTIcu(tView: TView, index: number, tIcu: TIcu): void {
     tView.data[index] = tIcu;
   } else {
     ngDevMode && assertNodeType(tNode, TNodeType.IcuContainer);
-    // FIXME(misko): This is a hack which allows us to associate `TI18n` with `TNode`.
-    // This should be refactored so that one can attach arbitrary data with `TNode`
-    tNode.tagName = tIcu as any;
+    tNode.value = tIcu as any;
   }
 }
 
