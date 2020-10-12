@@ -69,6 +69,11 @@
       "version": "11.0.0-beta",
       "description": "`async` to `waitForAsync` migration. The `async` testing function has been renamed to `waitForAsync` to avoid confusion with the native `async` keyword.",
       "factory": "./migrations/wait-for-async/index"
+    },
+    "migration-v11-router-preserve-query-params": {
+      "version": "11.0.0-beta",
+      "description": "NavigationExtras.preserveQueryParams has been removed as of Angular version 11.  This migration replaces any usages with the appropriate assignment of the queryParamsHandler key.",
+      "factory": "./migrations/router-preserve-query-params/index"
     }
   }
 }
