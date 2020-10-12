@@ -75,7 +75,7 @@
     "@angular/bazel": "^10.1.0",
     "@angular/benchpress": "0.2.1",
     "@angular/compiler-cli": "^10.1.0",
-    "@angular/dev-infra-private": "https://github.com/angular/dev-infra-private-builds.git#ddd71a787887dac21df25d904139d2227dba2456",
+    "@angular/dev-infra-private": "https://github.com/angular/dev-infra-private-builds.git#f8bc880d554d45ca8bf881b8a776f00f61b918fb",
     "@angular/platform-browser-dynamic": "^10.1.0",
     "@angular/platform-server": "^10.1.0",
     "@angular/router": "^10.1.0",
