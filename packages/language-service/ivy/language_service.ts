@@ -16,7 +16,8 @@ import {CompilerFactory} from './compiler_factory';
 import {DefinitionBuilder} from './definitions';
 import {LanguageServiceAdapter} from './language_service_adapter';
 import {QuickInfoBuilder} from './quick_info';
-import {isTypeScriptFile} from './utils';
+import {getTargetAtPosition} from './template_target';
+import {getTemplateInfoAtPosition, isTypeScriptFile} from './utils';
 
 export class LanguageService {
   private options: CompilerOptions;
@@ -73,8 +74,19 @@ export class LanguageService {
   }
 
   getQuickInfoAtPosition(fileName: string, position: number): ts.QuickInfo|undefined {
+    const program = this.strategy.getProgram();
     const compiler = this.compilerFactory.getOrCreateWithChangedFile(fileName, this.options);
-    const results = new QuickInfoBuilder(this.tsLS, compiler).get(fileName, position);
+    const templateInfo = getTemplateInfoAtPosition(fileName, position, compiler);
+    if (templateInfo === undefined) {
+      return undefined;
+    }
+    const positionDetails = getTargetAtPosition(templateInfo.template, position);
+    if (positionDetails === null) {
+      return undefined;
+    }
+    const results =
+        new QuickInfoBuilder(this.tsLS, compiler, templateInfo.component, positionDetails.node)
+            .get();
     this.compilerFactory.registerLastKnownProgram();
     return results;
   }
