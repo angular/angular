@@ -1,12 +1,11 @@
 import { NgModule, Type } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
-import { SharedModule } from '../../shared/shared.module';
 import { AnnouncementBarComponent } from './announcement-bar.component';
 import { WithCustomElementComponent } from '../element-registry';
 
 @NgModule({
-  imports: [ CommonModule, SharedModule, HttpClientModule ],
+  imports: [ CommonModule, HttpClientModule ],
   declarations: [ AnnouncementBarComponent ],
   entryComponents: [ AnnouncementBarComponent ],
 })
