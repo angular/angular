@@ -11,7 +11,7 @@ import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
 import {ShimLocation, Symbol, SymbolKind} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
 import * as ts from 'typescript';
 
-import {findNodeAtPosition} from './hybrid_visitor';
+import {getTargetAtPosition} from './template_target';
 import {getTemplateInfoAtPosition, getTextSpanOfNode, isDollarEvent, toTextSpan} from './utils';
 
 export class DefinitionBuilder {
@@ -27,12 +27,16 @@ export class DefinitionBuilder {
     }
     const {template, component} = templateInfo;
 
-    const node = findNodeAtPosition(template, position);
+    const result = getTargetAtPosition(template, position);
     // The `$event` of event handlers would point to the $event parameter in the shim file, as in
     // `_outputHelper(_t3["x"]).subscribe(function ($event): any { $event }) ;`
     // If we wanted to return something for this, it would be more appropriate for something like
     // `getTypeDefinition`.
-    if (node === undefined || isDollarEvent(node)) {
+    if (result === null) {
+      return undefined;
+    }
+    const {node} = result;
+    if (isDollarEvent(node)) {
       return undefined;
     }
 
