@@ -132,3 +132,28 @@ export function newTrustedFunctionForDev(...args: string[]): Function {
   // the implementation of this function can be simplified to:
   // return new Function(...args.map(a => trustedScriptFromString(a)));
 }
+
+/**
+ * A `SanitizerFn` that unsafely promotes constant strings to an appropriate
+ * Trusted Type based on the security context that the `attrName` attribute of
+ * the `tagName` tag imposes.
+ * @security This is a security-sensitive function; any use of this function
+ * must go through security review. In particular, it must be assured that the
+ * provided `value` is a trusted constant string from an Angular template.
+ */
+export function trustedConstantAttributeSanitizer(
+    value: any, tagName?: string, attrName?: string): string|TrustedHTML|TrustedScriptURL {
+  if (tagName && attrName && global.trustedTypes) {
+    const type =
+        (global.trustedTypes as TrustedTypePolicyFactory).getAttributeType(tagName, attrName);
+    if (type === 'TrustedHTML') {
+      return trustedHTMLFromString(value);
+    }
+    if (type === 'TrustedScriptURL') {
+      return trustedScriptURLFromString(value);
+    }
+    // We can ignore TrustedScript as Angular doesn't allow any script sinks in
+    // templates.
+  }
+  return value;
+}
