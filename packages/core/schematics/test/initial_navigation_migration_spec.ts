@@ -206,6 +206,28 @@ describe('initial navigation migration', () => {
     expect(tree.readContent('/index.ts')).toContain(`disabled`);
   });
 
+  it('should not migrate variable not used in forRoot', async () => {
+    writeFile('/index.ts', `
+        import { NgModule } from '@angular/core';
+        import { RouterModule } from '@angular/router';
+
+        const options = {initialNavigation: 'legacy_enabled'};
+
+        @NgModule({
+          imports: [
+            RouterModule.forRoot([]),
+          ]
+        })
+        export class AppModule {
+        }
+      `);
+
+    await runMigration();
+    expect(tree.readContent('/index.ts'))
+        .toContain(`const options = {initialNavigation: 'legacy_enabled'};`);
+    expect(tree.readContent('/index.ts')).toContain(`RouterModule.forRoot([])`);
+  });
+
   function writeFile(filePath: string, contents: string) {
     host.sync.write(normalize(filePath), virtualFs.stringToFileBuffer(contents));
   }

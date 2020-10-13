@@ -24,7 +24,7 @@ export class Rule extends Rules.TypedRule {
     const typeChecker = program.getTypeChecker();
     const sourceFiles = program.getSourceFiles().filter(
         s => !s.isDeclarationFile && !program.isSourceFileFromExternalLibrary(s));
-    const initialNavigationCollector = new InitialNavigationCollector();
+    const initialNavigationCollector = new InitialNavigationCollector(typeChecker);
     const failures: RuleFailure[] = [];
 
     // Analyze source files by detecting all ExtraOptions#InitialNavigation assignments
@@ -34,7 +34,7 @@ export class Rule extends Rules.TypedRule {
     const transformer = new InitialNavigationTransform(typeChecker, getUpdateRecorder);
     const updateRecorders = new Map<ts.SourceFile, TslintUpdateRecorder>();
 
-    transformer.migrateInitialNavigationAssignments(assignments);
+    transformer.migrateInitialNavigationAssignments(Array.from(assignments));
 
     if (updateRecorders.has(sourceFile)) {
       failures.push(...updateRecorders.get(sourceFile)!.failures);

@@ -35,7 +35,7 @@ export default function(): Rule {
 function runInitialNavigationMigration(tree: Tree, tsconfigPath: string, basePath: string) {
   const {program} = createMigrationProgram(tree, tsconfigPath, basePath);
   const typeChecker = program.getTypeChecker();
-  const initialNavigationCollector = new InitialNavigationCollector();
+  const initialNavigationCollector = new InitialNavigationCollector(typeChecker);
   const sourceFiles = program.getSourceFiles().filter(
       f => !f.isDeclarationFile && !program.isSourceFileFromExternalLibrary(f));
 
@@ -45,7 +45,7 @@ function runInitialNavigationMigration(tree: Tree, tsconfigPath: string, basePat
   const {assignments} = initialNavigationCollector;
   const transformer = new InitialNavigationTransform(typeChecker, getUpdateRecorder);
   const updateRecorders = new Map<ts.SourceFile, UpdateRecorder>();
-  transformer.migrateInitialNavigationAssignments(assignments);
+  transformer.migrateInitialNavigationAssignments(Array.from(assignments));
 
   // Walk through each update recorder and commit the update. We need to commit the
   // updates in batches per source file as there can be only one recorder per source

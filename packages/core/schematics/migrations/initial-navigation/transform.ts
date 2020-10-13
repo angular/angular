@@ -62,3 +62,14 @@ function getUpdatedInitialNavigationValue(initializer: ts.Expression): ts.Expres
 
   return !!newText ? ts.createIdentifier(`'${newText}'`) : null;
 }
+
+/**
+ * Check whether the value assigned to an `initialNavigation` assignment
+ * conforms to the expected types for ExtraOptions#InitialNavigation
+ * @param node the property assignment to check
+ */
+function isValidInitialNavigationValue(node: ts.PropertyAssignment): boolean {
+  return ts.isStringLiteralLike(node.initializer) ||
+      node.initializer.kind === ts.SyntaxKind.FalseKeyword ||
+      node.initializer.kind === ts.SyntaxKind.TrueKeyword;
+}
