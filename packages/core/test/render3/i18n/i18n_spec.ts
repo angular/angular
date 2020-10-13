@@ -668,7 +668,7 @@ describe('Runtime i18n', () => {
         i18nRangeOffsetOpcode(0), 'Hello World!',  //
       ]);
       const lViewDebug = fixture.lView.debug!;
-      expect(lViewDebug.template).toEqual('<div>#text</div>');
+      expect(lViewDebug.template).toEqual('<div>Hello World!</div>');
     });
 
     it('should process text with a child node', () => {
@@ -685,7 +685,7 @@ describe('Runtime i18n', () => {
         insertBeforeIndex: i18nRangeOffset(1),
       }));
       const lViewDebug = fixture.lView.debug!;
-      expect(lViewDebug.template).toEqual('<div>#text<Placeholder></Placeholder>#text</div>');
+      expect(lViewDebug.template).toEqual('<div>Hello <Placeholder></Placeholder>!</div>');
     });
 
     it('should process text with a child node that has text', () => {
@@ -729,7 +729,7 @@ describe('Runtime i18n', () => {
         'if (mask & 0b10) { (lView[51] as Text).textContent = `${lView[i-2]}`; }'
       ]));
       const lViewDebug = fixture.lView.debug!;
-      expect(lViewDebug.template).toEqual('<div>#text<Placeholder>#text</Placeholder>#text</div>');
+      expect(lViewDebug.template).toEqual('<div>{{?}}<Placeholder>{{?}}</Placeholder>!</div>');
     });
 
     it('should process text with a child template', () => {

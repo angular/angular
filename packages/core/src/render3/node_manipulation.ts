@@ -22,9 +22,11 @@ import {unusedValueExportToPlacateAjd as unused3} from './interfaces/projection'
 import {isProceduralRenderer, ProceduralRenderer3, RComment, RElement, Renderer3, RNode, RText, unusedValueExportToPlacateAjd as unused4} from './interfaces/renderer';
 import {isLContainer, isLView} from './interfaces/type_checks';
 import {CHILD_HEAD, CLEANUP, DECLARATION_COMPONENT_VIEW, DECLARATION_LCONTAINER, DestroyHookData, FLAGS, HookData, HookFn, HOST, LView, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, T_HOST, TVIEW, TView, TViewType, unusedValueExportToPlacateAjd as unused5} from './interfaces/view';
-import {assertNodeOfPossibleTypes, assertNodeType} from './node_assert';
+import {assertTNodeType} from './node_assert';
 import {getLViewParent} from './util/view_traversal_utils';
 import {getNativeByTNode, unwrapRNode, updateTransplantedViewCount} from './util/view_utils';
+
+
 
 const unusedValueToPlacateAjd = unused1 + unused2 + unused3 + unused4 + unused5;
 
@@ -539,9 +541,8 @@ export function getClosestRElement(tView: TView, tNode: TNode|null, lView: LView
   let parentTNode: TNode|null = tNode;
   // Skip over element and ICU containers as those are represented by a comment node and
   // can't be used as a render parent.
-  while (parentTNode != null &&
-         (parentTNode.type === TNodeType.ElementContainer ||
-          parentTNode.type === TNodeType.IcuContainer)) {
+  while (parentTNode !== null &&
+         (parentTNode.type & (TNodeType.ElementContainer | TNodeType.Icu))) {
     tNode = parentTNode;
     parentTNode = tNode.parent;
   }
@@ -553,7 +554,7 @@ export function getClosestRElement(tView: TView, tNode: TNode|null, lView: LView
     // it should always be eager.
     return lView[HOST];
   } else {
-    // ngDevMode && assertTNodeType(parentTNode, TNodeType.AnyRNode | TNodeType.Container);
+    ngDevMode && assertTNodeType(parentTNode, TNodeType.AnyRNode | TNodeType.Container);
     if (parentTNode.flags & TNodeFlags.isComponentHost) {
       ngDevMode && assertTNodeForLView(parentTNode, lView);
       const tData = tView.data;
@@ -650,8 +651,7 @@ function getInsertInFrontOfRNode(parentTNode: TNode, currentTNode: TNode, lView:
   const insertBeforeIndex =
       Array.isArray(tNodeInsertBeforeIndex) ? tNodeInsertBeforeIndex[0] : tNodeInsertBeforeIndex;
   if (insertBeforeIndex === null) {
-    if (parentTNode.type === TNodeType.ElementContainer ||
-        parentTNode.type === TNodeType.IcuContainer) {
+    if (parentTNode.type & (TNodeType.ElementContainer | TNodeType.Icu)) {
       return getNativeByTNode(parentTNode, lView);
     }
   } else {
@@ -716,7 +716,7 @@ function processI18nText(
   const isProcedural = isProceduralRenderer(renderer);
   let i18nParent: RElement|null = childRNode as RElement;
   let anchorRNode: RNode|null = null;
-  if (childTNode.type !== TNodeType.Element) {
+  if (!(childTNode.type & TNodeType.AnyRNode)) {
     anchorRNode = i18nParent;
     i18nParent = parentRElement;
   }
@@ -738,17 +738,17 @@ function processI18nText(
  */
 function getFirstNativeNode(lView: LView, tNode: TNode|null): RNode|null {
   if (tNode !== null) {
-    ngDevMode && assertNodeOfPossibleTypes(tNode, [
-      TNodeType.Element, TNodeType.Container, TNodeType.ElementContainer, TNodeType.IcuContainer,
-      TNodeType.Projection
-    ]);
+    ngDevMode &&
+        assertTNodeType(
+            tNode,
+            TNodeType.AnyRNode | TNodeType.AnyContainer | TNodeType.Icu | TNodeType.Projection);
 
     const tNodeType = tNode.type;
-    if (tNodeType === TNodeType.Element) {
+    if (tNodeType & TNodeType.AnyRNode) {
       return getNativeByTNode(tNode, lView);
-    } else if (tNodeType === TNodeType.Container) {
+    } else if (tNodeType & TNodeType.Container) {
       return getBeforeNodeForView(-1, lView[tNode.index]);
-    } else if (tNodeType === TNodeType.ElementContainer) {
+    } else if (tNodeType & TNodeType.ElementContainer) {
       const elIcuContainerChild = tNode.child;
       if (elIcuContainerChild !== null) {
         return getFirstNativeNode(lView, elIcuContainerChild);
@@ -760,7 +760,7 @@ function getFirstNativeNode(lView: LView, tNode: TNode|null): RNode|null {
           return unwrapRNode(rNodeOrLContainer);
         }
       }
-    } else if (tNodeType === TNodeType.IcuContainer) {
+    } else if (tNodeType & TNodeType.Icu) {
       let nextRNode = icuContainerIterate(tNode as TIcuContainerNode, lView);
       let rNode: RNode|null = nextRNode();
       // If the ICU container has no nodes, than we use the ICU anchor as the node.
@@ -824,10 +824,10 @@ function applyNodes(
     parentRElement: RElement|null, beforeNode: RNode|null, isProjection: boolean) {
   while (tNode != null) {
     ngDevMode && assertTNodeForLView(tNode, lView);
-    ngDevMode && assertNodeOfPossibleTypes(tNode, [
-      TNodeType.Container, TNodeType.Element, TNodeType.ElementContainer, TNodeType.Projection,
-      TNodeType.IcuContainer
-    ]);
+    ngDevMode &&
+        assertTNodeType(
+            tNode,
+            TNodeType.AnyRNode | TNodeType.AnyContainer | TNodeType.Projection | TNodeType.Icu);
     const rawSlotValue = lView[tNode.index];
     const tNodeType = tNode.type;
     if (isProjection) {
@@ -837,21 +837,21 @@ function applyNodes(
       }
     }
     if ((tNode.flags & TNodeFlags.isDetached) !== TNodeFlags.isDetached) {
-      if (tNodeType === TNodeType.ElementContainer) {
+      if (tNodeType & TNodeType.ElementContainer) {
         applyNodes(renderer, action, tNode.child, lView, parentRElement, beforeNode, false);
         applyToElementOrContainer(action, renderer, parentRElement, rawSlotValue, beforeNode);
-      } else if (tNodeType === TNodeType.IcuContainer) {
+      } else if (tNodeType & TNodeType.Icu) {
         const nextRNode = icuContainerIterate(tNode as TIcuContainerNode, lView);
         let rNode: RNode|null;
         while (rNode = nextRNode()) {
           applyToElementOrContainer(action, renderer, parentRElement, rNode, beforeNode);
         }
         applyToElementOrContainer(action, renderer, parentRElement, rawSlotValue, beforeNode);
-      } else if (tNodeType === TNodeType.Projection) {
+      } else if (tNodeType & TNodeType.Projection) {
         applyProjectionRecursive(
             renderer, action, lView, tNode as TProjectionNode, parentRElement, beforeNode);
       } else {
-        ngDevMode && assertNodeOfPossibleTypes(tNode, [TNodeType.Element, TNodeType.Container]);
+        ngDevMode && assertTNodeType(tNode, TNodeType.AnyRNode | TNodeType.Container);
         applyToElementOrContainer(action, renderer, parentRElement, rawSlotValue, beforeNode);
       }
     }

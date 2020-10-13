@@ -529,7 +529,7 @@ function _queryNodeChildrenR3(
   ngDevMode && assertTNodeForLView(tNode, lView);
   const nativeNode = getNativeByTNodeOrNull(tNode, lView);
   // For each type of TNode, specific logic is executed.
-  if (tNode.type === TNodeType.Element || tNode.type === TNodeType.ElementContainer) {
+  if (tNode.type & (TNodeType.AnyRNode | TNodeType.ElementContainer)) {
     // Case 1: the TNode is an element
     // The native node has to be checked.
     _addQueryMatchR3(nativeNode, predicate, matches, elementsOnly, rootNativeNode);
@@ -565,14 +565,14 @@ function _queryNodeChildrenR3(
       _queryNodeChildrenInContainerR3(
           nodeOrContainer, predicate, matches, elementsOnly, rootNativeNode);
     }
-  } else if (tNode.type === TNodeType.Container) {
+  } else if (tNode.type & TNodeType.Container) {
     // Case 2: the TNode is a container
     // The native node has to be checked.
     const lContainer = lView[tNode.index];
     _addQueryMatchR3(lContainer[NATIVE], predicate, matches, elementsOnly, rootNativeNode);
     // Each view inside the container has to be processed.
     _queryNodeChildrenInContainerR3(lContainer, predicate, matches, elementsOnly, rootNativeNode);
-  } else if (tNode.type === TNodeType.Projection) {
+  } else if (tNode.type & TNodeType.Projection) {
     // Case 3: the TNode is a projection insertion point (i.e. a <ng-content>).
     // The nodes projected at this location all need to be processed.
     const componentView = lView![DECLARATION_COMPONENT_VIEW];

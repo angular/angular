@@ -705,7 +705,7 @@ function updateStylingMap(
 function updateStyling(
     tView: TView, tNode: TNode, lView: LView, renderer: Renderer3, prop: string,
     value: string|undefined|null|boolean, isClassBased: boolean, bindingIndex: number) {
-  if (tNode.type !== TNodeType.Element) {
+  if (!(tNode.type & TNodeType.AnyRNode)) {
     // It is possible to have styling on non-elements (such as ng-container).
     // This is rare, but it does happen. In such a case, just ignore the binding.
     return;

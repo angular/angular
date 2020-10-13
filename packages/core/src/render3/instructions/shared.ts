@@ -5,43 +5,44 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import { Injector } from '../../di';
-import { ErrorHandler } from '../../error_handler';
-import { DoCheck, OnChanges, OnInit } from '../../interface/lifecycle_hooks';
-import { CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA, SchemaMetadata } from '../../metadata/schema';
-import { ViewEncapsulation } from '../../metadata/view';
-import { validateAgainstEventAttributes, validateAgainstEventProperties } from '../../sanitization/sanitization';
-import { Sanitizer } from '../../sanitization/sanitizer';
-import { assertDefined, assertDomNode, assertEqual, assertGreaterThan, assertIndexInRange, assertLessThan, assertNotEqual, assertNotSame, assertSame, assertString } from '../../util/assert';
-import { createNamedArrayType } from '../../util/named_array_type';
-import { initNgDevMode } from '../../util/ng_dev_mode';
-import { normalizeDebugBindingName, normalizeDebugBindingValue } from '../../util/ng_reflect';
-import { stringify } from '../../util/stringify';
-import { assertFirstCreatePass, assertFirstUpdatePass, assertLContainer, assertLView, assertTNodeForLView, assertTNodeForTView } from '../assert';
-import { attachPatchData } from '../context_discovery';
-import { getFactoryDef } from '../definition';
-import { diPublicInInjector, getNodeInjectable, getOrCreateNodeInjectorForNode } from '../di';
-import { throwMultipleComponentError } from '../errors';
-import { executeCheckHooks, executeInitAndCheckHooks, incrementInitPhaseFlags } from '../hooks';
-import { CONTAINER_HEADER_OFFSET, HAS_TRANSPLANTED_VIEWS, LContainer, MOVED_VIEWS } from '../interfaces/container';
-import { ComponentDef, ComponentTemplate, DirectiveDef, DirectiveDefListOrFactory, PipeDefListOrFactory, RenderFlags, ViewQueriesFunction } from '../interfaces/definition';
-import { NodeInjectorFactory, NodeInjectorOffset } from '../interfaces/injector';
-import { AttributeMarker, InitialInputData, InitialInputs, LocalRefExtractor, PropertyAliases, PropertyAliasValue, TAttributes, TConstantsOrFactory, TContainerNode, TDirectiveHostNode, TElementContainerNode, TElementNode, TIcuContainerNode, TNode, TNodeFlags, TNodeProviderIndexes, TNodeType, TProjectionNode } from '../interfaces/node';
-import { isProceduralRenderer, RComment, RElement, Renderer3, RendererFactory3, RNode, RText } from '../interfaces/renderer';
-import { SanitizerFn } from '../interfaces/sanitization';
-import { isComponentDef, isComponentHost, isContentQueryHost, isRootView } from '../interfaces/type_checks';
-import { CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTEXT, DECLARATION_COMPONENT_VIEW, DECLARATION_VIEW, FLAGS, HEADER_OFFSET, HOST, InitPhaseState, INJECTOR, LView, LViewFlags, NEXT, PARENT, RENDERER, RENDERER_FACTORY, RootContext, RootContextFlags, SANITIZER, TData, TRANSPLANTED_VIEWS_TO_REFRESH, TVIEW, TView, TViewType, T_HOST } from '../interfaces/view';
-import { assertNodeNotOfTypes, assertNodeOfPossibleTypes } from '../node_assert';
-import { updateTextNode } from '../node_manipulation';
-import { isInlineTemplate, isNodeMatchingSelectorList } from '../node_selector_matcher';
-import { enterView, getBindingsEnabled, getCurrentDirectiveIndex, getCurrentParentTNode, getCurrentTNode, getCurrentTNodePlaceholderOk, getSelectedIndex, isCurrentTNodeParent, isInCheckNoChangesMode, isInI18nBlock, leaveView, setBindingIndex, setBindingRootForHostBindings, setCurrentDirectiveIndex, setCurrentQueryIndex, setCurrentTNode, setIsInCheckNoChangesMode, setSelectedIndex } from '../state';
-import { NO_CHANGE } from '../tokens';
-import { isAnimationProp, mergeHostAttrs } from '../util/attrs_utils';
-import { INTERPOLATION_DELIMITER, renderStringify, stringifyForError } from '../util/misc_utils';
-import { getFirstLContainer, getLViewParent, getNextLContainer } from '../util/view_traversal_utils';
-import { getComponentLViewByIndex, getNativeByIndex, getNativeByTNode, isCreationMode, readPatchedLView, resetPreOrderHookFlags, unwrapLView, updateTransplantedViewCount, viewAttachedToChangeDetector } from '../util/view_utils';
-import { selectIndexInternal } from './advance';
-import { attachLContainerDebug, attachLViewDebug, cloneToLViewFromTViewBlueprint, cloneToTViewData, LCleanup, LViewBlueprint, MatchesArray, TCleanup, TNodeDebug, TNodeInitialInputs, TNodeLocalNames, TViewComponents, TViewConstructor } from './lview_debug';
+import {Injector} from '../../di';
+import {ErrorHandler} from '../../error_handler';
+import {DoCheck, OnChanges, OnInit} from '../../interface/lifecycle_hooks';
+import {CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA, SchemaMetadata} from '../../metadata/schema';
+import {ViewEncapsulation} from '../../metadata/view';
+import {validateAgainstEventAttributes, validateAgainstEventProperties} from '../../sanitization/sanitization';
+import {Sanitizer} from '../../sanitization/sanitizer';
+import {assertDefined, assertDomNode, assertEqual, assertGreaterThan, assertIndexInRange, assertLessThan, assertNotEqual, assertNotSame, assertSame, assertString} from '../../util/assert';
+import {createNamedArrayType} from '../../util/named_array_type';
+import {initNgDevMode} from '../../util/ng_dev_mode';
+import {normalizeDebugBindingName, normalizeDebugBindingValue} from '../../util/ng_reflect';
+import {stringify} from '../../util/stringify';
+import {assertFirstCreatePass, assertFirstUpdatePass, assertLContainer, assertLView, assertTNodeForLView, assertTNodeForTView} from '../assert';
+import {attachPatchData} from '../context_discovery';
+import {getFactoryDef} from '../definition';
+import {diPublicInInjector, getNodeInjectable, getOrCreateNodeInjectorForNode} from '../di';
+import {throwMultipleComponentError} from '../errors';
+import {executeCheckHooks, executeInitAndCheckHooks, incrementInitPhaseFlags} from '../hooks';
+import {CONTAINER_HEADER_OFFSET, HAS_TRANSPLANTED_VIEWS, LContainer, MOVED_VIEWS} from '../interfaces/container';
+import {ComponentDef, ComponentTemplate, DirectiveDef, DirectiveDefListOrFactory, PipeDefListOrFactory, RenderFlags, ViewQueriesFunction} from '../interfaces/definition';
+import {NodeInjectorFactory, NodeInjectorOffset} from '../interfaces/injector';
+import {AttributeMarker, InitialInputData, InitialInputs, LocalRefExtractor, PropertyAliases, PropertyAliasValue, TAttributes, TConstantsOrFactory, TContainerNode, TDirectiveHostNode, TElementContainerNode, TElementNode, TIcuContainerNode, TNode, TNodeFlags, TNodeProviderIndexes, TNodeType, TProjectionNode} from '../interfaces/node';
+import {isProceduralRenderer, RComment, RElement, Renderer3, RendererFactory3, RNode, RText} from '../interfaces/renderer';
+import {SanitizerFn} from '../interfaces/sanitization';
+import {isComponentDef, isComponentHost, isContentQueryHost, isRootView} from '../interfaces/type_checks';
+import {CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTEXT, DECLARATION_COMPONENT_VIEW, DECLARATION_VIEW, FLAGS, HEADER_OFFSET, HOST, InitPhaseState, INJECTOR, LView, LViewFlags, NEXT, PARENT, RENDERER, RENDERER_FACTORY, RootContext, RootContextFlags, SANITIZER, T_HOST, TData, TRANSPLANTED_VIEWS_TO_REFRESH, TVIEW, TView, TViewType} from '../interfaces/view';
+import {assertPureTNodeType, assertTNodeType} from '../node_assert';
+import {updateTextNode} from '../node_manipulation';
+import {isInlineTemplate, isNodeMatchingSelectorList} from '../node_selector_matcher';
+import {enterView, getBindingsEnabled, getCurrentDirectiveIndex, getCurrentParentTNode, getCurrentTNode, getCurrentTNodePlaceholderOk, getSelectedIndex, isCurrentTNodeParent, isInCheckNoChangesMode, isInI18nBlock, leaveView, setBindingIndex, setBindingRootForHostBindings, setCurrentDirectiveIndex, setCurrentQueryIndex, setCurrentTNode, setIsInCheckNoChangesMode, setSelectedIndex} from '../state';
+import {NO_CHANGE} from '../tokens';
+import {isAnimationProp, mergeHostAttrs} from '../util/attrs_utils';
+import {INTERPOLATION_DELIMITER, renderStringify, stringifyForError} from '../util/misc_utils';
+import {getFirstLContainer, getLViewParent, getNextLContainer} from '../util/view_traversal_utils';
+import {getComponentLViewByIndex, getNativeByIndex, getNativeByTNode, isCreationMode, readPatchedLView, resetPreOrderHookFlags, unwrapLView, updateTransplantedViewCount, viewAttachedToChangeDetector} from '../util/view_utils';
+
+import {selectIndexInternal} from './advance';
+import {attachLContainerDebug, attachLViewDebug, cloneToLViewFromTViewBlueprint, cloneToTViewData, LCleanup, LViewBlueprint, MatchesArray, TCleanup, TNodeDebug, TNodeInitialInputs, TNodeLocalNames, TViewComponents, TViewConstructor} from './lview_debug';
 
 
 
@@ -196,7 +197,7 @@ export function createLView<T>(
  * @param attrs Any attrs for the native element, if applicable
  */
 export function getOrCreateTNode(
-    tView: TView, index: number, type: TNodeType.Element, name: string|null,
+    tView: TView, index: number, type: TNodeType.Element|TNodeType.Text, name: string|null,
     attrs: TAttributes|null): TElementNode;
 export function getOrCreateTNode(
     tView: TView, index: number, type: TNodeType.Container, name: string|null,
@@ -208,12 +209,13 @@ export function getOrCreateTNode(
     tView: TView, index: number, type: TNodeType.ElementContainer, name: string|null,
     attrs: TAttributes|null): TElementContainerNode;
 export function getOrCreateTNode(
-    tView: TView, index: number, type: TNodeType.IcuContainer, name: null,
+    tView: TView, index: number, type: TNodeType.Icu, name: null,
     attrs: TAttributes|null): TElementContainerNode;
 export function getOrCreateTNode(
     tView: TView, index: number, type: TNodeType, name: string|null, attrs: TAttributes|null):
     TElementNode&TContainerNode&TElementContainerNode&TProjectionNode&TIcuContainerNode {
   // Keep this function short, so that the VM will inline it.
+  ngDevMode && assertPureTNodeType(type);
   const adjustedIndex = index + HEADER_OFFSET;
   let tNode = tView.data[adjustedIndex] as TNode;
   if (tNode === null) {
@@ -225,7 +227,7 @@ export function getOrCreateTNode(
       // removed, so we mark it as detached.
       tNode.flags |= TNodeFlags.isDetached;
     }
-  } else if (tNode.type == TNodeType.Placeholder) {
+  } else if (tNode.type & TNodeType.Placeholder) {
     tNode.type = type;
     tNode.value = name;
     tNode.attrs = attrs;
@@ -818,13 +820,13 @@ export function createTNode(
     tView: TView, tParent: TElementNode|TContainerNode|null, type: TNodeType.Container,
     adjustedIndex: number, tagName: string|null, attrs: TAttributes|null): TContainerNode;
 export function createTNode(
-    tView: TView, tParent: TElementNode|TContainerNode|null, type: TNodeType.Element,
+    tView: TView, tParent: TElementNode|TContainerNode|null, type: TNodeType.Element|TNodeType.Text,
     adjustedIndex: number, tagName: string|null, attrs: TAttributes|null): TElementNode;
 export function createTNode(
     tView: TView, tParent: TElementNode|TContainerNode|null, type: TNodeType.ElementContainer,
     adjustedIndex: number, tagName: string|null, attrs: TAttributes|null): TElementContainerNode;
 export function createTNode(
-    tView: TView, tParent: TElementNode|TContainerNode|null, type: TNodeType.IcuContainer,
+    tView: TView, tParent: TElementNode|TContainerNode|null, type: TNodeType.Icu,
     adjustedIndex: number, tagName: string|null, attrs: TAttributes|null): TIcuContainerNode;
 export function createTNode(
     tView: TView, tParent: TElementNode|TContainerNode|null, type: TNodeType.Projection,
@@ -1012,7 +1014,7 @@ export function elementPropertyInternal<T>(
     if (ngDevMode) {
       setNgReflectProperties(lView, element, tNode.type, dataValue, value);
     }
-  } else if (tNode.type === TNodeType.Element) {
+  } else if (tNode.type & TNodeType.AnyRNode) {
     propName = mapPropName(propName);
 
     if (ngDevMode) {
@@ -1034,7 +1036,7 @@ export function elementPropertyInternal<T>(
       (element as RElement).setProperty ? (element as any).setProperty(propName, value) :
                                           (element as any)[propName] = value;
     }
-  } else if (tNode.type === TNodeType.Container || tNode.type === TNodeType.ElementContainer) {
+  } else if (tNode.type & TNodeType.AnyContainer) {
     // If the node is a container and the property didn't
     // match any of the inputs or schemas we should throw.
     if (ngDevMode && !matchingSchemas(tView, tNode.value)) {
@@ -1057,7 +1059,7 @@ function setNgReflectProperty(
   const renderer = lView[RENDERER];
   attrName = normalizeDebugBindingName(attrName);
   const debugValue = normalizeDebugBindingValue(value);
-  if (type === TNodeType.Element) {
+  if (type & TNodeType.AnyRNode) {
     if (value == null) {
       isProceduralRenderer(renderer) ? renderer.removeAttribute((element as RElement), attrName) :
                                        (element as RElement).removeAttribute(attrName);
@@ -1079,7 +1081,7 @@ function setNgReflectProperty(
 export function setNgReflectProperties(
     lView: LView, element: RElement|RComment, type: TNodeType, dataValue: PropertyAliasValue,
     value: any) {
-  if (type === TNodeType.Element || type === TNodeType.Container) {
+  if (type & (TNodeType.AnyRNode | TNodeType.Container)) {
     /**
      * dataValue is an array containing runtime input or output names for the directives:
      * i+0: directive instance index
@@ -1300,7 +1302,7 @@ function instantiateAllDirectives(
     const isComponent = isComponentDef(def);
 
     if (isComponent) {
-      ngDevMode && assertNodeOfPossibleTypes(tNode, [TNodeType.Element]);
+      ngDevMode && assertTNodeType(tNode, TNodeType.AnyRNode);
       addComponentLogic(lView, tNode as TElementNode, def as ComponentDef<any>);
     }
 
@@ -1386,9 +1388,7 @@ function findDirectiveDefMatches(
     tView: TView, viewData: LView,
     tNode: TElementNode|TContainerNode|TElementContainerNode): DirectiveDef<any>[]|null {
   ngDevMode && assertFirstCreatePass(tView);
-  ngDevMode &&
-      assertNodeOfPossibleTypes(
-          tNode, [TNodeType.Element, TNodeType.ElementContainer, TNodeType.Container]);
+  ngDevMode && assertTNodeType(tNode, TNodeType.AnyRNode | TNodeType.AnyContainer);
 
   const registry = tView.directiveRegistry;
   let matches: any[]|null = null;
@@ -1401,8 +1401,8 @@ function findDirectiveDefMatches(
 
         if (isComponentDef(def)) {
           if (ngDevMode) {
-            assertNodeOfPossibleTypes(
-                tNode, [TNodeType.Element],
+            assertTNodeType(
+                tNode, TNodeType.Element,
                 `"${tNode.value}" tags cannot be used as component hosts. ` +
                     `Please use a different tag to activate the ${stringify(def.type)} component.`);
 
@@ -1518,8 +1518,8 @@ export function elementAttributeInternal(
   if (ngDevMode) {
     assertNotSame(value, NO_CHANGE as any, 'Incoming value should never be NO_CHANGE.');
     validateAgainstEventAttributes(name);
-    assertNodeNotOfTypes(
-        tNode, [TNodeType.Container, TNodeType.ElementContainer],
+    assertTNodeType(
+        tNode, TNodeType.Element,
         `Attempted to set attribute \`${name}\` on a container node. ` +
             `Host bindings are not valid on ng-container or ng-template.`);
   }

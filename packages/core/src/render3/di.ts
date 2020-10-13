@@ -13,7 +13,7 @@ import {injectRootLimpMode, setInjectImplementation} from '../di/injector_compat
 import {getInjectorDef} from '../di/interface/defs';
 import {InjectFlags} from '../di/interface/injector';
 import {Type} from '../interface/type';
-import {assertDefined, assertEqual, assertIndexInRange, throwError} from '../util/assert';
+import {assertDefined, assertEqual, assertIndexInRange} from '../util/assert';
 import {noSideEffects} from '../util/closure';
 
 import {assertDirectiveDef, assertNodeInjector, assertTNodeForLView} from './assert';
@@ -25,7 +25,7 @@ import {isFactory, NO_PARENT_INJECTOR, NodeInjectorFactory, NodeInjectorOffset, 
 import {AttributeMarker, TContainerNode, TDirectiveHostNode, TElementContainerNode, TElementNode, TNode, TNodeProviderIndexes, TNodeType} from './interfaces/node';
 import {isComponentDef, isComponentHost} from './interfaces/type_checks';
 import {DECLARATION_COMPONENT_VIEW, DECLARATION_VIEW, INJECTOR, LView, T_HOST, TData, TVIEW, TView, TViewType} from './interfaces/view';
-import {assertNodeOfPossibleTypes} from './node_assert';
+import {assertTNodeType} from './node_assert';
 import {enterDI, leaveDI} from './state';
 import {isNameOnlyAttributeMarker} from './util/attrs_utils';
 import {getParentInjectorIndex, getParentInjectorView, hasParentInjector} from './util/injector_utils';
@@ -301,9 +301,7 @@ export function diPublicInInjector(
  * @publicApi
  */
 export function injectAttributeImpl(tNode: TNode, attrNameToInject: string): string|null {
-  ngDevMode &&
-      assertNodeOfPossibleTypes(
-          tNode, [TNodeType.Container, TNodeType.Element, TNodeType.ElementContainer]);
+  ngDevMode && assertTNodeType(tNode, TNodeType.AnyContainer | TNodeType.AnyRNode);
   ngDevMode && assertDefined(tNode, 'expecting tNode');
   if (attrNameToInject === 'class') {
     return tNode.classes;
@@ -506,7 +504,7 @@ function searchTokensOnInjector<T>(
       // - AND the parent TNode is an Element.
       // This means that we just came from the Component's View and therefore are allowed to see
       // into the ViewProviders.
-      (previousTView != currentTView && (tNode.type === TNodeType.Element));
+      (previousTView != currentTView && ((tNode.type & TNodeType.AnyRNode) !== 0));
 
   // This special case happens when there is a @host on the inject and when we are searching
   // on the host element node.

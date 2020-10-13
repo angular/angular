@@ -10,7 +10,7 @@ import {getPluralCase} from '../../i18n/localization';
 import {assertDefined, assertDomNode, assertEqual, assertGreaterThan, assertIndexInRange, throwError} from '../../util/assert';
 import {assertIndexInExpandoRange, assertTIcu} from '../assert';
 import {attachPatchData} from '../context_discovery';
-import {elementPropertyInternal, setElementAttribute, textBindingInternal} from '../instructions/shared';
+import {elementPropertyInternal, setElementAttribute} from '../instructions/shared';
 import {COMMENT_MARKER, ELEMENT_MARKER, getCurrentICUCaseIndex, getParentFromI18nMutateOpCode, getRefFromI18nMutateOpCode, I18nCreateOpCode, I18nCreateOpCodes, I18nMutateOpCode, I18nMutateOpCodes, I18nUpdateOpCode, I18nUpdateOpCodes, IcuType, TI18n, TIcu} from '../interfaces/i18n';
 import {TNode} from '../interfaces/node';
 import {RElement, RNode, RText} from '../interfaces/renderer';

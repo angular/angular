@@ -63,7 +63,7 @@ export function addTNodeAndUpdateInsertBeforeIndex(previousTNodes: TNode[], newT
 }
 
 function isI18nText(tNode: TNode): boolean {
-  return tNode.type !== TNodeType.Placeholder;
+  return !(tNode.type & TNodeType.Placeholder);
 }
 
 function isNewTNodeCreatedBefore(existingTNode: TNode, newTNode: TNode): boolean {

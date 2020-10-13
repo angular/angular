@@ -618,7 +618,7 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
       const exclamation = b.nextSibling!;
       const lViewDebug = lView.debug!;
       expect(lViewDebug.nodes.map(toTypeContent)).toEqual([
-        'Element(Hello )', 'Element(<b>)', 'Element(!)'
+        'Text(Hello )', 'Element(<b>)', 'Text(!)'
       ]);
       expect(lViewDebug.decls).toEqual({
         start: HEADER_OFFSET,

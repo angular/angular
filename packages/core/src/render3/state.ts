@@ -12,6 +12,7 @@ import {DirectiveDef} from './interfaces/definition';
 import {TNode, TNodeType} from './interfaces/node';
 import {CONTEXT, DECLARATION_VIEW, LView, OpaqueViewState, TData, TVIEW, TView} from './interfaces/view';
 import {MATH_ML_NAMESPACE, SVG_NAMESPACE} from './namespaces';
+import {assertTNodeType} from './node_assert';
 import {getTNode} from './util/view_utils';
 
 

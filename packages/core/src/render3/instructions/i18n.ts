@@ -62,7 +62,7 @@ export function ɵɵi18nStart(
   const parentRNode = getClosestRElement(tView, sameViewParentTNode, lView);
   // If `parentTNode` is an `ElementContainer` than it has `<!--ng-container--->`.
   // When we do inserts we have to make sure to insert in front of `<!--ng-container--->`.
-  const insertInFrontOf = parentTNode && parentTNode.type === TNodeType.ElementContainer ?
+  const insertInFrontOf = parentTNode && (parentTNode.type & TNodeType.ElementContainer) ?
       lView[parentTNode.index] :
       null;
   applyCreateOpCodes(lView, tI18n.create, parentRNode, insertInFrontOf);

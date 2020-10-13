@@ -17,7 +17,7 @@ import {getInjectorIndex} from '../di';
 import {CONTAINER_HEADER_OFFSET, HAS_TRANSPLANTED_VIEWS, LContainer, MOVED_VIEWS, NATIVE} from '../interfaces/container';
 import {ComponentTemplate, DirectiveDef, DirectiveDefList, PipeDefList, ViewQueriesFunction} from '../interfaces/definition';
 import {NO_PARENT_INJECTOR, NodeInjectorOffset} from '../interfaces/injector';
-import {AttributeMarker, InsertBeforeIndex, PropertyAliases, TConstants, TContainerNode, TElementNode, TNode as ITNode, TNodeFlags, TNodeProviderIndexes, TNodeType, TNodeTypeAsString} from '../interfaces/node';
+import {AttributeMarker, InsertBeforeIndex, PropertyAliases, TConstants, TContainerNode, TElementNode, TNode as ITNode, TNodeFlags, TNodeProviderIndexes, TNodeType, toTNodeTypeAsString} from '../interfaces/node';
 import {SelectorFlags} from '../interfaces/projection';
 import {LQueries, TQueries} from '../interfaces/query';
 import {RComment, RElement, Renderer3, RendererFactory3, RNode} from '../interfaces/renderer';
@@ -239,7 +239,7 @@ class TNode implements ITNode {
   }
 
   get type_(): string {
-    return TNodeTypeAsString[this.type] || `TNodeType.?${this.type}?`;
+    return toTNodeTypeAsString(this.type) || `TNodeType.?${this.type}?`;
   }
 
   get flags_(): string {
@@ -256,7 +256,7 @@ class TNode implements ITNode {
   }
 
   get template_(): string {
-    if (this.value === null && this.type === TNodeType.Element) return '#text';
+    if (this.type & TNodeType.Text) return this.value!;
     const buf: string[] = [];
     const tagName = typeof this.value === 'string' && this.value || this.type_;
     buf.push('<', tagName);
@@ -594,7 +594,7 @@ export function buildDebugNode(tNode: ITNode, lView: LView): DebugNode {
   }
   return {
     html: toHtml(native),
-    type: TNodeTypeAsString[tNode.type],
+    type: toTNodeTypeAsString(tNode.type),
     native: native as any,
     children: toDebugNodes(tNode.child, lView),
     factories,

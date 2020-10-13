@@ -15,30 +15,47 @@ import {LView, TView} from './view';
 
 /**
  * TNodeType corresponds to the {@link TNode} `type` property.
+ *
+ * NOTE: type IDs are such that we use each bit to denote a type. This is done so that we can easily
+ * check if the `TNode` is of more than one type.
+ *
+ * `if (tNode.type === TNodeType.Text || tNode.type === TNode.Element)`
+ * can be written as:
+ * `if (tNode.type & (TNodeType.Text | TNodeType.Element))`
+ *
+ * However any given `TNode` can only be of one type.
  */
 export const enum TNodeType {
-  // FIXME(misko): Add `Text` type so that it would be much easier to reason/debug about `TNode`s.
+  /**
+   * The TNode contains information about a DOM element aka {@link RText}.
+   */
+  Text = 0b1,
+
+  /**
+   * The TNode contains information about a DOM element aka {@link RElement}.
+   */
+  Element = 0b10,
+
   /**
    * The TNode contains information about an {@link LContainer} for embedded views.
    */
-  // FIXME(misko): Verify that we still need a `Container`, at the very least update the text.
-  Container = 0,
-  /**
-   * The TNode contains information about an `<ng-content>` projection
-   */
-  Projection = 1,
-  /**
-   * The TNode contains information about a DOM element aka {@link RNode}.
-   */
-  Element = 2,
+  Container = 0b100,
+
   /**
    * The TNode contains information about an `<ng-container>` element {@link RNode}.
    */
-  ElementContainer = 3,
+  ElementContainer = 0b1000,
+
+  /**
+   * The TNode contains information about an `<ng-content>` projection
+   */
+  Projection = 0b10000,
+
   /**
    * The TNode contains information about an ICU comment used in `i18n`.
    */
-  IcuContainer = 4,
+  Icu = 0b100000,
+
   /**
    * Special node type representing a placeholder for future `TNode` at this location.
    *
@@ -52,22 +69,31 @@ export const enum TNodeType {
    * location. Seeing a `Placeholder` `TNode` already there tells the system that it should reuse
    * existing `TNode` (rather than create a new one) and just update the missing information.
    */
-  Placeholder = 5,
+  Placeholder = 0b1000000,
+
+  // Combined Types These should never be used for `TNode.type` only as a useful way to check
+  // if `TNode.type` is one of several choices.
+
+  // See: https://github.com/microsoft/TypeScript/issues/35875 why we can't refer to existing enum.
+  AnyRNode = 0b11,        // Text | Element,
+  AnyContainer = 0b1100,  // Container | ElementContainer, // See:
 }
 
 /**
  * Converts `TNodeType` into human readable text.
  * Make sure this matches with `TNodeType`
  */
-export const TNodeTypeAsString = [
-  'Container',         // 0
-  'Projection',        // 1
-  'Element',           // 2
-  'ElementContainer',  // 3
-  'IcuContainer',      // 4
-  'Placeholder',       // 5
-] as const;
-
+export function toTNodeTypeAsString(tNodeType: TNodeType): string {
+  let text = '';
+  (tNodeType & TNodeType.Text) && (text += '|Text');
+  (tNodeType & TNodeType.Element) && (text += '|Element');
+  (tNodeType & TNodeType.Container) && (text += '|Container');
+  (tNodeType & TNodeType.ElementContainer) && (text += '|ElementContainer');
+  (tNodeType & TNodeType.Projection) && (text += '|Projection');
+  (tNodeType & TNodeType.Icu) && (text += '|IcuContainer');
+  (tNodeType & TNodeType.Placeholder) && (text += '|Placeholder');
+  return text.length > 0 ? text.substring(1) : text;
+}
 
 /**
  * Corresponds to the TNode.flags property.
@@ -223,7 +249,8 @@ export const enum AttributeMarker {
   Template = 4,
 
   /**
-   * Signals that the following attribute is `ngProjectAs` and its value is a parsed `CssSelector`.
+   * Signals that the following attribute is `ngProjectAs` and its value is a parsed
+   * `CssSelector`.
    *
    * For example, given the following HTML:
    *
@@ -273,10 +300,10 @@ export type TAttributes = (string|AttributeMarker|CssSelector)[];
 export type TConstants = (TAttributes|string)[];
 
 /**
- * Factory function that returns an array of consts. Consts can be represented as a function in case
- * any additional statements are required to define consts in the list. An example is i18n where
- * additional i18n calls are generated, which should be executed when consts are requested for the
- * first time.
+ * Factory function that returns an array of consts. Consts can be represented as a function in
+ * case any additional statements are required to define consts in the list. An example is i18n
+ * where additional i18n calls are generated, which should be executed when consts are requested
+ * for the first time.
  */
 export type TConstantsFactory = () => TConstants;
 
@@ -332,8 +359,8 @@ export interface TNode {
    * nodes. It can also insert `Hello ` and `!` text node as a child of `<div>`, but it can't
    * insert `World` because the `<span>` node has not yet been created. In such a case the
    * `<span>` `TNode` will have an array which will direct the `<span>` to not only insert
-   * itself in front of `!` but also to insert the `World` (created by `ɵɵi18nStart`) into `<span>`
-   * itself.
+   * itself in front of `!` but also to insert the `World` (created by `ɵɵi18nStart`) into
+   * `<span>` itself.
    *
    * Pseudo code:
    * ```
@@ -369,10 +396,11 @@ export interface TNode {
    *
    * If the index === -1, there is no injector on this node or any ancestor node in this view.
    *
-   * If the index !== -1, it is the index of this node's injector OR the index of a parent injector
-   * in the same view. We pass the parent injector index down the node tree of a view so it's
-   * possible to find the parent injector without walking a potentially deep node tree. Injector
-   * indices are not set across view boundaries because there could be multiple component hosts.
+   * If the index !== -1, it is the index of this node's injector OR the index of a parent
+   * injector in the same view. We pass the parent injector index down the node tree of a view so
+   * it's possible to find the parent injector without walking a potentially deep node tree.
+   * Injector indices are not set across view boundaries because there could be multiple component
+   * hosts.
    *
    * If tNode.injectorIndex === tNode.parent.injectorIndex, then the index belongs to a parent
    * injector.
@@ -398,8 +426,8 @@ export interface TNode {
    *
    * Valid values are:
    * - `-1` No `hostBindings` instruction has executed.
-   * - `directiveStart <= directiveStylingLast < directiveEnd`: Points to the `DirectiveDef` of the
-   *   last styling instruction which executed in the `hostBindings`.
+   * - `directiveStart <= directiveStylingLast < directiveEnd`: Points to the `DirectiveDef` of
+   * the last styling instruction which executed in the `hostBindings`.
    *
    * This data is needed so that styling instructions know which static styling data needs to be
    * collected from the `DirectiveDef.hostAttrs`. A styling instruction needs to collect all data
@@ -408,13 +436,14 @@ export interface TNode {
   directiveStylingLast: number;
 
   /**
-   * Stores indexes of property bindings. This field is only set in the ngDevMode and holds indexes
-   * of property bindings so TestBed can get bound property metadata for a given node.
+   * Stores indexes of property bindings. This field is only set in the ngDevMode and holds
+   * indexes of property bindings so TestBed can get bound property metadata for a given node.
    */
   propertyBindings: number[]|null;
 
   /**
-   * Stores if Node isComponent, isProjected, hasContentQuery, hasClassInput and hasStyleInput etc.
+   * Stores if Node isComponent, isProjected, hasContentQuery, hasClassInput and hasStyleInput
+   * etc.
    */
   flags: TNodeFlags;
 
@@ -437,8 +466,8 @@ export interface TNode {
   value: any;
 
   /**
-   * Attributes associated with an element. We need to store attributes to support various use-cases
-   * (attribute injection, content projection with selectors, directives matching).
+   * Attributes associated with an element. We need to store attributes to support various
+   * use-cases (attribute injection, content projection with selectors, directives matching).
    * Attributes are stored statically because reading them from the DOM would be way too slow for
    * content projection and queries.
    *
@@ -528,10 +557,10 @@ export interface TNode {
   next: TNode|null;
 
   /**
-   * The next projected sibling. Since in Angular content projection works on the node-by-node basis
-   * the act of projecting nodes might change nodes relationship at the insertion point (target
-   * view). At the same time we need to keep initial relationship between nodes as expressed in
-   * content view.
+   * The next projected sibling. Since in Angular content projection works on the node-by-node
+   * basis the act of projecting nodes might change nodes relationship at the insertion point
+   * (target view). At the same time we need to keep initial relationship between nodes as
+   * expressed in content view.
    */
   projectionNext: TNode|null;
 
@@ -584,8 +613,8 @@ export interface TNode {
    *    - `projection` size is equal to the number of projections `<ng-content>`. The size of
    *      `c1` will be `1` because `<child>` has only one `<ng-content>`.
    * - we store `projection` with the host (`c1`, `c2`) rather than the `<ng-content>` (`cont1`)
-   *   because the same component (`<child>`) can be used in multiple locations (`c1`, `c2`) and as
-   *   a result have different set of nodes to project.
+   *   because the same component (`<child>`) can be used in multiple locations (`c1`, `c2`) and
+   * as a result have different set of nodes to project.
    * - without `projection` it would be difficult to efficiently traverse nodes to be projected.
    *
    * If `typeof projection == 'number'` then `TNode` is a `<ng-content>` element:
@@ -619,9 +648,9 @@ export interface TNode {
    * (e.g. `<div style="width:200px;">`)
    * Must be stored separately from `tNode.styles` to facilitate setting directive
    * inputs that shadow the `style` property. If we used `tNode.styles` as is for shadowed inputs,
-   * we would feed host styles back into directives as "inputs". If we used `tNode.attrs`, we would
-   * have to concatenate the attributes on every template pass. Instead, we process once on first
-   * create pass and store here.
+   * we would feed host styles back into directives as "inputs". If we used `tNode.attrs`, we
+   * would have to concatenate the attributes on every template pass. Instead, we process once on
+   * first create pass and store here.
    */
   stylesWithoutHost: string|null;
 
@@ -629,8 +658,8 @@ export interface TNode {
    * A `KeyValueArray` version of residual `styles`.
    *
    * When there are styling instructions than each instruction stores the static styling
-   * which is of lower priority than itself. This means that there may be a higher priority styling
-   * than the instruction.
+   * which is of lower priority than itself. This means that there may be a higher priority
+   * styling than the instruction.
    *
    * Imagine:
    * ```
@@ -671,10 +700,10 @@ export interface TNode {
    * Populated when there are one or more initial classes on an element
    * (e.g. `<div class="SOME_CLASS">`)
    * Must be stored separately from `tNode.classes` to facilitate setting directive
-   * inputs that shadow the `class` property. If we used `tNode.classes` as is for shadowed inputs,
-   * we would feed host classes back into directives as "inputs". If we used `tNode.attrs`, we would
-   * have to concatenate the attributes on every template pass. Instead, we process once on first
-   * create pass and store here.
+   * inputs that shadow the `class` property. If we used `tNode.classes` as is for shadowed
+   * inputs, we would feed host classes back into directives as "inputs". If we used
+   * `tNode.attrs`, we would have to concatenate the attributes on every template pass. Instead,
+   * we process once on first create pass and store here.
    */
   classesWithoutHost: string|null;
 
@@ -740,8 +769,8 @@ export interface TElementNode extends TNode {
 
   /**
    * If this is a component TNode with projection, this will be an array of projected
-   * TNodes or native nodes (see TNode.projection for more info). If it's a regular element node or
-   * a component without projection, it will be null.
+   * TNodes or native nodes (see TNode.projection for more info). If it's a regular element node
+   * or a component without projection, it will be null.
    */
   projection: (TNode|RNode[])[]|null;
 
