@@ -52,7 +52,7 @@ function numOfWhiteSpaceLeadingChars(text: string): number {
  *
  * ```
  * expect(obj).toEqual({
- *   create: debugMatch('someValue')
+ *   create: matchDebug('someValue')
  * })
  * ```
  *
@@ -60,16 +60,15 @@ function numOfWhiteSpaceLeadingChars(text: string): number {
  *
  * @param expected Expected value.
  */
-// FIXME(misko): rename to `matchDebug` to be consistent with other API.
-export function debugMatch<T>(expected: T): any {
+export function matchDebug<T>(expected: T): any {
   const matcher = function() {};
-  let actual: any = debugMatch;
+  let actual: any = matchDebug;
 
   matcher.asymmetricMatch = function(objectWithDebug: any) {
     return jasmine.matchersUtil.equals(actual = objectWithDebug.debug, expected);
   };
   matcher.jasmineToString = function() {
-    if (actual === debugMatch) {
+    if (actual === matchDebug) {
       // `asymmetricMatch` never got called hence no error to display
       return '';
     }
