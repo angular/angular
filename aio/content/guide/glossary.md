@@ -627,10 +627,11 @@ The [npm package manager](https://docs.npmjs.com/getting-started/what-is-npm) is
 
 Learn more about how Angular uses [Npm Packages](guide/npm-packages).
 
-{@ ngc}
+{@a ngc}
+
 ## ngc
 `ngc` is a Typescript-to-Javascript transpiler that processes Angular decorators, metadata, and templates, and emits JavaScript code.
-The most recent implementation is internally refered to as `ngtsc` because it's a minimalistic wrapper around the TypeScript compiler `tsc` that adds a transform for processing Angular code.
+The most recent implementation is internally referred to as `ngtsc` because it's a minimalistic wrapper around the TypeScript compiler `tsc` that adds a transform for processing Angular code.
 
 {@a O}
 
