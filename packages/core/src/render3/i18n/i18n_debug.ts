@@ -7,7 +7,7 @@
  */
 
 import {assertNumber, assertString} from '../../util/assert';
-import {COMMENT_MARKER, ELEMENT_MARKER, getInstructionFromI18nMutateOpCode, getParentFromI18nMutateOpCode, getRefFromI18nMutateOpCode, I18nCreateOpCode, I18nMutateOpCode, I18nMutateOpCodes, I18nUpdateOpCode, I18nUpdateOpCodes} from '../interfaces/i18n';
+import {ELEMENT_MARKER, getInstructionFromI18nMutateOpCode, getParentFromI18nMutateOpCode, getRefFromI18nMutateOpCode, I18nCreateOpCode, I18nMutateOpCode, I18nMutateOpCodes, I18nUpdateOpCode, I18nUpdateOpCodes, ICU_MARKER} from '../interfaces/i18n';
 
 
 /**
@@ -137,7 +137,7 @@ export function i18nMutateOpCodesToString(
   let lastRef = -1;
   while (parser.hasMore()) {
     let value = parser.consumeNumberStringOrMarker();
-    if (value === COMMENT_MARKER) {
+    if (value === ICU_MARKER) {
       const text = parser.consumeString();
       lastRef = parser.consumeNumber();
       lines.push(`lView[${lastRef}] = document.createComment("${text}")`);
@@ -201,13 +201,13 @@ class OpCodeParser {
     return value;
   }
 
-  consumeNumberStringOrMarker(): number|string|COMMENT_MARKER|ELEMENT_MARKER {
+  consumeNumberStringOrMarker(): number|string|ICU_MARKER|ELEMENT_MARKER {
     let value = this.codes[this.i++];
-    if (typeof value === 'string' || typeof value === 'number' || value == COMMENT_MARKER ||
+    if (typeof value === 'string' || typeof value === 'number' || value == ICU_MARKER ||
         value == ELEMENT_MARKER) {
       return value;
     }
-    assertNumber(value, 'expecting number, string, COMMENT_MARKER or ELEMENT_MARKER in OpCode');
+    assertNumber(value, 'expecting number, string, ICU_MARKER or ELEMENT_MARKER in OpCode');
     return value;
   }
 }

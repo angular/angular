@@ -117,17 +117,16 @@ export interface ELEMENT_MARKER {
 }
 
 /**
- * Marks that the next string is comment text.
+ * Marks that the next string is comment text need for ICU.
  *
  * See `I18nMutateOpCodes` documentation.
  */
-// FIXME(misko): Rename to ICU marker
-export const COMMENT_MARKER: COMMENT_MARKER = {
-  marker: 'comment'
+export const ICU_MARKER: ICU_MARKER = {
+  marker: 'ICU'
 };
 
-export interface COMMENT_MARKER {
-  marker: 'comment';
+export interface ICU_MARKER {
+  marker: 'ICU';
 }
 
 export interface I18nDebug {
@@ -220,7 +219,7 @@ export enum I18nCreateOpCode {
  *   // ---------------------
  *   // Equivalent to:
  *   //   lView[1].appendChild(lView[0] = document.createComment(''));
- *   COMMENT_MARKER, '', 0, 1 << SHIFT_PARENT | 0 << SHIFT_REF | AppendChild,
+ *   ICU_MARKER, '', 0, 1 << SHIFT_PARENT | 0 << SHIFT_REF | AppendChild,
  *
  *   // For moving existing nodes to a different location
  *   // --------------------------------------------------
@@ -245,7 +244,7 @@ export enum I18nCreateOpCode {
  *
  * See: `applyI18nCreateOpCodes`;
  */
-export interface I18nMutateOpCodes extends Array<number|string|ELEMENT_MARKER|COMMENT_MARKER|null>,
+export interface I18nMutateOpCodes extends Array<number|string|ELEMENT_MARKER|ICU_MARKER|null>,
                                            I18nDebug {}
 
 export const enum I18nUpdateOpCode {
