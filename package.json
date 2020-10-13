@@ -90,7 +90,6 @@
     "@types/semver": "^6.0.2",
     "@types/shelljs": "^0.8.6",
     "@types/systemjs": "0.19.32",
-    "@types/trusted-types": "^1.0.6",
     "@types/yaml": "^1.9.7",
     "@types/yargs": "^15.0.5",
     "@webcomponents/custom-elements": "^1.1.0",
