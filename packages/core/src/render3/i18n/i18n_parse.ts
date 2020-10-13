@@ -17,7 +17,7 @@ import {loadIcuContainerVisitor} from '../instructions/i18n_icu_container_visito
 import {allocExpando, createTNodeAtIndex, elementAttributeInternal, setInputsForProperty, setNgReflectProperties} from '../instructions/shared';
 import {getDocument} from '../interfaces/document';
 import {COMMENT_MARKER, ELEMENT_MARKER, ensureIcuContainerVisitorLoaded, I18nCreateOpCode, I18nCreateOpCodes, I18nMutateOpCode, i18nMutateOpCode, I18nMutateOpCodes, I18nUpdateOpCode, I18nUpdateOpCodes, IcuExpression, IcuType, TI18n, TIcu} from '../interfaces/i18n';
-import {TNode, TNodeType} from '../interfaces/node';
+import {TIcuContainerNode, TNode, TNodeType} from '../interfaces/node';
 import {RComment, RElement} from '../interfaces/renderer';
 import {SanitizerFn} from '../interfaces/sanitization';
 import {HEADER_OFFSET, LView, TView} from '../interfaces/view';
