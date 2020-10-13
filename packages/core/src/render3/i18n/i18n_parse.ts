@@ -16,7 +16,7 @@ import {CharCode} from '../../util/char_code';
 import {loadIcuContainerVisitor} from '../instructions/i18n_icu_container_visitor';
 import {allocExpando, createTNodeAtIndex, elementAttributeInternal, setInputsForProperty, setNgReflectProperties} from '../instructions/shared';
 import {getDocument} from '../interfaces/document';
-import {COMMENT_MARKER, ELEMENT_MARKER, ensureIcuContainerVisitorLoaded, I18nCreateOpCode, I18nCreateOpCodes, I18nMutateOpCode, i18nMutateOpCode, I18nMutateOpCodes, I18nUpdateOpCode, I18nUpdateOpCodes, IcuExpression, IcuType, TI18n, TIcu} from '../interfaces/i18n';
+import {ELEMENT_MARKER, ensureIcuContainerVisitorLoaded, I18nCreateOpCode, I18nCreateOpCodes, I18nMutateOpCode, i18nMutateOpCode, I18nMutateOpCodes, I18nUpdateOpCode, I18nUpdateOpCodes, ICU_MARKER, IcuExpression, IcuType, TI18n, TIcu} from '../interfaces/i18n';
 import {TNode, TNodeType} from '../interfaces/node';
 import {RComment, RElement} from '../interfaces/renderer';
 import {SanitizerFn} from '../interfaces/sanitization';
@@ -678,7 +678,7 @@ function walkIcuTree(
           const icuExpression: IcuExpression = nestedIcus[nestedIcuIndex];
           // Create the comment node that will anchor the ICU expression
           addCreateNodeAndAppend(
-              create, COMMENT_MARKER, ngDevMode ? `nested ICU ${nestedIcuIndex}` : '', parentIdx,
+              create, ICU_MARKER, ngDevMode ? `nested ICU ${nestedIcuIndex}` : '', parentIdx,
               newIndex);
           icuStart(tView, lView, sharedUpdateOpCodes, parentIdx, icuExpression, newIndex);
           addRemoveNestedIcu(remove, newIndex, depth);
@@ -714,7 +714,7 @@ function addUpdateIcuUpdate(update: I18nUpdateOpCodes, bindingMask: number, inde
 }
 
 function addCreateNodeAndAppend(
-    create: I18nMutateOpCodes, marker: null|COMMENT_MARKER|ELEMENT_MARKER, text: string,
+    create: I18nMutateOpCodes, marker: null|ICU_MARKER|ELEMENT_MARKER, text: string,
     appendToParentIdx: number, createAtIdx: number) {
   if (marker !== null) {
     create.push(marker);
