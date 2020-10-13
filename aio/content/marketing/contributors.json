@@ -845,5 +845,14 @@
     "website": "https://angular.schule",
     "bio": "Johannes works as a software architect and consultant for Angular. He is co-author of the German Angular book and a passionate speaker. With his company \"Angular.Schule\" he offers public Angular training and consulting. Johannes is head of the Angular Meetup in Heidelberg, Germany, and is engaged in a couple of open source projects.",
     "groups": ["GDE"]
+  },
+  "jessicajaniuk": {
+    "name": "Jessica Janiuk",
+    "picture": "jessicajaniuk.jpg",
+    "twitter": "thepunderwoman",
+    "website": "https://github.com/jessicajaniuk",
+    "bio": "Jessica is a software engineer at Google. In her free time she is a historical fencer, astromech droid builder, photographer, pun purveyor, occasional cosplayer, and full time cat mom.",
+    "groups": ["Angular"],
+    "lead": "jelbourn"
   }
 }
