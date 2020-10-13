@@ -13,20 +13,45 @@ import * as t from '@angular/compiler/src/render3/r3_ast';         // t for temp
 import {isTemplateNode, isTemplateNodeWithKeyAndValue} from './utils';
 
 /**
- * Return the path to the template AST node or expression AST node that most accurately
+ * Contextual information for a target position within the template.
+ */
+export interface TemplateTarget {
+  /**
+   * Target position within the template.
+   */
+  position: number;
+
+  /**
+   * The template node (or AST expression) closest to the search position.
+   */
+  node: t.Node|e.AST;
+
+  /**
+   * The `t.Template` which contains the found node or expression (or `null` if in the root
+   * template).
+   */
+  context: t.Template|null;
+
+  /**
+   * The immediate parent node of the targeted node.
+   */
+  parent: t.Node|e.AST|null;
+}
+
+/**
+ * Return the template AST node or expression AST node that most accurately
  * represents the node at the specified cursor `position`.
  *
- * @param ast AST tree
- * @param position cursor position
+ * @param template AST tree of the template
+ * @param position target cursor position
  */
-export function getPathToNodeAtPosition(ast: t.Node[], position: number): Array<t.Node|e.AST>|
-    undefined {
-  const visitor = new R3Visitor(position);
-  visitor.visitAll(ast);
-  const candidate = visitor.path[visitor.path.length - 1];
-  if (!candidate) {
-    return;
+export function getTargetAtPosition(template: t.Node[], position: number): TemplateTarget|null {
+  const path = TemplateTargetVisitor.visitTemplate(template, position);
+  if (path.length === 0) {
+    return null;
   }
+
+  const candidate = path[path.length - 1];
   if (isTemplateNodeWithKeyAndValue(candidate)) {
     const {keySpan, valueSpan} = candidate;
     const isWithinKeyValue =
@@ -34,34 +59,46 @@ export function getPathToNodeAtPosition(ast: t.Node[], position: number): Array<
     if (!isWithinKeyValue) {
       // If cursor is within source span but not within key span or value span,
       // do not return the node.
-      return;
+      return null;
     }
   }
-  return visitor.path;
+
+  // Walk up the result nodes to find the nearest `t.Template` which contains the targeted node.
+  let context: t.Template|null = null;
+  for (let i = path.length - 2; i >= 0; i--) {
+    const node = path[i];
+    if (node instanceof t.Template) {
+      context = node;
+      break;
+    }
+  }
+
+  let parent: t.Node|e.AST|null = null;
+  if (path.length >= 2) {
+    parent = path[path.length - 2];
+  }
+
+  return {position, node: candidate, context, parent};
 }
 
 /**
- * Return the template AST node or expression AST node that most accurately
- * represents the node at the specified cursor `position`.
- *
- * @param ast AST tree
- * @param position cursor position
+ * Visitor which, given a position and a template, identifies the node within the template at that
+ * position, as well as records the path of increasingly nested nodes that were traversed to reach
+ * that position.
  */
-export function findNodeAtPosition(ast: t.Node[], position: number): t.Node|e.AST|undefined {
-  const path = getPathToNodeAtPosition(ast, position);
-  if (!path) {
-    return;
-  }
-  return path[path.length - 1];
-}
-
-class R3Visitor implements t.Visitor {
+class TemplateTargetVisitor implements t.Visitor {
   // We need to keep a path instead of the last node because we might need more
   // context for the last node, for example what is the parent node?
   readonly path: Array<t.Node|e.AST> = [];
 
+  static visitTemplate(template: t.Node[], position: number): Array<t.Node|e.AST> {
+    const visitor = new TemplateTargetVisitor(position);
+    visitor.visitAll(template);
+    return visitor.path;
+  }
+
   // Position must be absolute in the source file.
-  constructor(private readonly position: number) {}
+  private constructor(private readonly position: number) {}
 
   visit(node: t.Node) {
     const {start, end} = getSpanIncludingEndTag(node);

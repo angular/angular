@@ -11,59 +11,50 @@ import {DirectiveSymbol, DomBindingSymbol, ElementSymbol, ExpressionSymbol, Inpu
 import * as ts from 'typescript';
 
 import {createDisplayParts, DisplayInfoKind, SYMBOL_PUNC, SYMBOL_SPACE, SYMBOL_TEXT, unsafeCastDisplayInfoKindToScriptElementKind} from './display_parts';
-import {findNodeAtPosition} from './hybrid_visitor';
 import {filterAliasImports, getDirectiveMatchesForAttribute, getDirectiveMatchesForElementTag, getTemplateInfoAtPosition, getTextSpanOfNode} from './utils';
 
 export class QuickInfoBuilder {
   private readonly typeChecker = this.compiler.getNextProgram().getTypeChecker();
-  constructor(private readonly tsLS: ts.LanguageService, private readonly compiler: NgCompiler) {}
 
-  get(fileName: string, position: number): ts.QuickInfo|undefined {
-    const templateInfo = getTemplateInfoAtPosition(fileName, position, this.compiler);
-    if (templateInfo === undefined) {
-      return undefined;
-    }
-    const {template, component} = templateInfo;
+  constructor(
+      private readonly tsLS: ts.LanguageService, private readonly compiler: NgCompiler,
+      private readonly component: ts.ClassDeclaration, private node: TmplAstNode|AST) {}
 
-    const node = findNodeAtPosition(template, position);
-    if (node === undefined) {
-      return undefined;
-    }
-
-    const symbol = this.compiler.getTemplateTypeChecker().getSymbolOfNode(node, component);
+  get(): ts.QuickInfo|undefined {
+    const symbol =
+        this.compiler.getTemplateTypeChecker().getSymbolOfNode(this.node, this.component);
     if (symbol === null) {
-      return isDollarAny(node) ? createDollarAnyQuickInfo(node) : undefined;
+      return isDollarAny(this.node) ? createDollarAnyQuickInfo(this.node) : undefined;
     }
 
-    return this.getQuickInfoForSymbol(symbol, node);
+    return this.getQuickInfoForSymbol(symbol);
   }
 
-  private getQuickInfoForSymbol(symbol: Symbol, node: TmplAstNode|AST): ts.QuickInfo|undefined {
+  private getQuickInfoForSymbol(symbol: Symbol): ts.QuickInfo|undefined {
     switch (symbol.kind) {
       case SymbolKind.Input:
       case SymbolKind.Output:
-        return this.getQuickInfoForBindingSymbol(symbol, node);
+        return this.getQuickInfoForBindingSymbol(symbol);
       case SymbolKind.Template:
-        return createNgTemplateQuickInfo(node);
+        return createNgTemplateQuickInfo(this.node);
       case SymbolKind.Element:
         return this.getQuickInfoForElementSymbol(symbol);
       case SymbolKind.Variable:
-        return this.getQuickInfoForVariableSymbol(symbol, node);
+        return this.getQuickInfoForVariableSymbol(symbol);
       case SymbolKind.Reference:
-        return this.getQuickInfoForReferenceSymbol(symbol, node);
+        return this.getQuickInfoForReferenceSymbol(symbol);
       case SymbolKind.DomBinding:
-        return this.getQuickInfoForDomBinding(node, symbol);
+        return this.getQuickInfoForDomBinding(symbol);
       case SymbolKind.Directive:
-        return this.getQuickInfoAtShimLocation(symbol.shimLocation, node);
+        return this.getQuickInfoAtShimLocation(symbol.shimLocation);
       case SymbolKind.Expression:
-        return node instanceof BindingPipe ?
-            this.getQuickInfoForPipeSymbol(symbol, node) :
-            this.getQuickInfoAtShimLocation(symbol.shimLocation, node);
+        return this.node instanceof BindingPipe ?
+            this.getQuickInfoForPipeSymbol(symbol) :
+            this.getQuickInfoAtShimLocation(symbol.shimLocation);
     }
   }
 
-  private getQuickInfoForBindingSymbol(
-      symbol: InputBindingSymbol|OutputBindingSymbol, node: TmplAstNode|AST): ts.QuickInfo
+  private getQuickInfoForBindingSymbol(symbol: InputBindingSymbol|OutputBindingSymbol): ts.QuickInfo
       |undefined {
     if (symbol.bindings.length === 0) {
       return undefined;
@@ -72,7 +63,7 @@ export class QuickInfoBuilder {
     const kind =
         symbol.kind === SymbolKind.Input ? DisplayInfoKind.PROPERTY : DisplayInfoKind.EVENT;
 
-    const quickInfo = this.getQuickInfoAtShimLocation(symbol.bindings[0].shimLocation, node);
+    const quickInfo = this.getQuickInfoAtShimLocation(symbol.bindings[0].shimLocation);
     return quickInfo === undefined ? undefined : updateQuickInfoKind(quickInfo, kind);
   }
 
@@ -88,43 +79,41 @@ export class QuickInfoBuilder {
         undefined /* containerName */, this.typeChecker.typeToString(symbol.tsType));
   }
 
-  private getQuickInfoForVariableSymbol(symbol: VariableSymbol, node: TmplAstNode|AST):
-      ts.QuickInfo {
+  private getQuickInfoForVariableSymbol(symbol: VariableSymbol): ts.QuickInfo {
     const documentation = this.getDocumentationFromTypeDefAtLocation(symbol.shimLocation);
     return createQuickInfo(
-        symbol.declaration.name, DisplayInfoKind.VARIABLE, getTextSpanOfNode(node),
+        symbol.declaration.name, DisplayInfoKind.VARIABLE, getTextSpanOfNode(this.node),
         undefined /* containerName */, this.typeChecker.typeToString(symbol.tsType), documentation);
   }
 
-  private getQuickInfoForReferenceSymbol(symbol: ReferenceSymbol, node: TmplAstNode|AST):
-      ts.QuickInfo {
+  private getQuickInfoForReferenceSymbol(symbol: ReferenceSymbol): ts.QuickInfo {
     const documentation = this.getDocumentationFromTypeDefAtLocation(symbol.shimLocation);
     return createQuickInfo(
-        symbol.declaration.name, DisplayInfoKind.REFERENCE, getTextSpanOfNode(node),
+        symbol.declaration.name, DisplayInfoKind.REFERENCE, getTextSpanOfNode(this.node),
         undefined /* containerName */, this.typeChecker.typeToString(symbol.tsType), documentation);
   }
 
-  private getQuickInfoForPipeSymbol(symbol: ExpressionSymbol, node: TmplAstNode|AST): ts.QuickInfo
-      |undefined {
-    const quickInfo = this.getQuickInfoAtShimLocation(symbol.shimLocation, node);
+  private getQuickInfoForPipeSymbol(symbol: ExpressionSymbol): ts.QuickInfo|undefined {
+    const quickInfo = this.getQuickInfoAtShimLocation(symbol.shimLocation);
     return quickInfo === undefined ? undefined :
                                      updateQuickInfoKind(quickInfo, DisplayInfoKind.PIPE);
   }
 
-  private getQuickInfoForDomBinding(node: TmplAstNode|AST, symbol: DomBindingSymbol) {
-    if (!(node instanceof TmplAstTextAttribute) && !(node instanceof TmplAstBoundAttribute)) {
+  private getQuickInfoForDomBinding(symbol: DomBindingSymbol) {
+    if (!(this.node instanceof TmplAstTextAttribute) &&
+        !(this.node instanceof TmplAstBoundAttribute)) {
       return undefined;
     }
     const directives = getDirectiveMatchesForAttribute(
-        node.name, symbol.host.templateNode, symbol.host.directives);
+        this.node.name, symbol.host.templateNode, symbol.host.directives);
     if (directives.size === 0) {
       return undefined;
     }
 
-    return this.getQuickInfoForDirectiveSymbol(directives.values().next().value, node);
+    return this.getQuickInfoForDirectiveSymbol(directives.values().next().value);
   }
 
-  private getQuickInfoForDirectiveSymbol(dir: DirectiveSymbol, node: TmplAstNode|AST):
+  private getQuickInfoForDirectiveSymbol(dir: DirectiveSymbol, node: TmplAstNode|AST = this.node):
       ts.QuickInfo {
     const kind = dir.isComponent ? DisplayInfoKind.COMPONENT : DisplayInfoKind.DIRECTIVE;
     const documentation = this.getDocumentationFromTypeDefAtLocation(dir.shimLocation);
@@ -134,8 +123,8 @@ export class QuickInfoBuilder {
     }
 
     return createQuickInfo(
-        this.typeChecker.typeToString(dir.tsType), kind, getTextSpanOfNode(node), containerName,
-        undefined, documentation);
+        this.typeChecker.typeToString(dir.tsType), kind, getTextSpanOfNode(this.node),
+        containerName, undefined, documentation);
   }
 
   private getDocumentationFromTypeDefAtLocation(shimLocation: ShimLocation):
@@ -149,8 +138,7 @@ export class QuickInfoBuilder {
         ?.documentation;
   }
 
-  private getQuickInfoAtShimLocation(location: ShimLocation, node: TmplAstNode|AST): ts.QuickInfo
-      |undefined {
+  private getQuickInfoAtShimLocation(location: ShimLocation): ts.QuickInfo|undefined {
     const quickInfo =
         this.tsLS.getQuickInfoAtPosition(location.shimPath, location.positionInShimFile);
     if (quickInfo === undefined || quickInfo.displayParts === undefined) {
@@ -159,7 +147,7 @@ export class QuickInfoBuilder {
 
     quickInfo.displayParts = filterAliasImports(quickInfo.displayParts);
 
-    const textSpan = getTextSpanOfNode(node);
+    const textSpan = getTextSpanOfNode(this.node);
     return {...quickInfo, textSpan};
   }
 }
