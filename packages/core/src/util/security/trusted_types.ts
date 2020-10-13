@@ -17,6 +17,7 @@
  */
 
 import {global} from '../global';
+import {TrustedHTML, TrustedScript, TrustedScriptURL, TrustedTypePolicy, TrustedTypePolicyFactory} from './trusted_type_defs';
 
 /**
  * The Trusted Types policy, or null if Trusted Types are not
