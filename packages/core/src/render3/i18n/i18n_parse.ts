@@ -17,7 +17,7 @@ import {loadIcuContainerVisitor} from '../instructions/i18n_icu_container_visito
 import {allocExpando, createTNodeAtIndex, elementAttributeInternal, setInputsForProperty, setNgReflectProperties} from '../instructions/shared';
 import {getDocument} from '../interfaces/document';
 import {COMMENT_MARKER, ELEMENT_MARKER, ensureIcuContainerVisitorLoaded, I18nCreateOpCode, I18nCreateOpCodes, I18nMutateOpCode, i18nMutateOpCode, I18nMutateOpCodes, I18nUpdateOpCode, I18nUpdateOpCodes, IcuExpression, IcuType, TI18n, TIcu} from '../interfaces/i18n';
-import {TIcuContainerNode, TNode, TNodeType} from '../interfaces/node';
+import {TNode, TNodeType} from '../interfaces/node';
 import {RComment, RElement} from '../interfaces/renderer';
 import {SanitizerFn} from '../interfaces/sanitization';
 import {HEADER_OFFSET, LView, TView} from '../interfaces/view';
@@ -152,7 +152,7 @@ export function i18nStartFirstCreatePass(
  */
 function createTNodeAndAddOpCode(
     tView: TView, rootTNode: TNode|null, existingTNodes: TNode[], lView: LView,
-    createOpCodes: I18nCreateOpCodes, text: string, isICU: boolean): TNode {
+    createOpCodes: I18nCreateOpCodes, text: string|null, isICU: boolean): TNode {
   const i18nNodeIdx = allocExpando(tView, lView, 1);
   let opCode = i18nNodeIdx << I18nCreateOpCode.SHIFT;
   let parentTNode = getCurrentParentTNode();
@@ -174,9 +174,12 @@ function createTNodeAndAddOpCode(
     opCode |= I18nCreateOpCode.COMMENT;
     ensureIcuContainerVisitorLoaded(loadIcuContainerVisitor);
   }
-  createOpCodes.push(opCode, text);
+  createOpCodes.push(opCode, text === null ? '' : text);
+  // We store `{{?}}` so that when looking at debug `TNodeType.template` we can see where the
+  // bindings are.
   const tNode = createTNodeAtIndex(
-      tView, i18nNodeIdx, isICU ? TNodeType.IcuContainer : TNodeType.Element, null, null);
+      tView, i18nNodeIdx, isICU ? TNodeType.Icu : TNodeType.Text,
+      text === null ? (ngDevMode ? '{{?}}' : '') : text, null);
   addTNodeAndUpdateInsertBeforeIndex(existingTNodes, tNode);
   const tNodeIdx = tNode.index;
   setCurrentTNode(tNode, false /* Text nodes are self closing */);
@@ -212,7 +215,7 @@ function i18nStartFirstCreatePassProcessTextNode(
     updateOpCodes: I18nUpdateOpCodes, lView: LView, text: string): void {
   const hasBinding = text.match(BINDING_REGEXP);
   const tNode = createTNodeAndAddOpCode(
-      tView, rootTNode, existingTNodes, lView, createOpCodes, hasBinding ? '' : text, false);
+      tView, rootTNode, existingTNodes, lView, createOpCodes, hasBinding ? null : text, false);
   if (hasBinding) {
     generateBindingUpdateOpCodes(updateOpCodes, text, tNode.index);
   }
@@ -251,7 +254,7 @@ export function i18nAttributesFirstPass(
           const tNode = getTNode(tView, previousElementIndex - HEADER_OFFSET);
           // Set attributes for Elements only, for other types (like ElementContainer),
           // only set inputs below
-          if (tNode.type === TNodeType.Element) {
+          if (tNode.type & TNodeType.AnyRNode) {
             elementAttributeInternal(tNode, lView, attrName, value, null, null);
           }
           // Check if that attribute is a directive input

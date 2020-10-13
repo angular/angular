@@ -19,7 +19,7 @@ import {TElementNode, TIcuContainerNode, TNode, TNodeType} from './interfaces/no
 import {RNode} from './interfaces/renderer';
 import {isLContainer} from './interfaces/type_checks';
 import {CONTEXT, DECLARATION_COMPONENT_VIEW, FLAGS, LView, LViewFlags, T_HOST, TVIEW, TView} from './interfaces/view';
-import {assertNodeOfPossibleTypes} from './node_assert';
+import {assertTNodeType} from './node_assert';
 import {destroyLView, renderDetachView} from './node_manipulation';
 import {getLViewParent} from './util/view_traversal_utils';
 import {unwrapRNode} from './util/view_utils';
@@ -324,10 +324,10 @@ function collectNativeNodes(
     tView: TView, lView: LView, tNode: TNode|null, result: any[],
     isProjection: boolean = false): any[] {
   while (tNode !== null) {
-    ngDevMode && assertNodeOfPossibleTypes(tNode, [
-      TNodeType.Element, TNodeType.Container, TNodeType.Projection, TNodeType.ElementContainer,
-      TNodeType.IcuContainer
-    ]);
+    ngDevMode &&
+        assertTNodeType(
+            tNode,
+            TNodeType.AnyRNode | TNodeType.AnyContainer | TNodeType.Projection | TNodeType.Icu);
 
     const lNode = lView[tNode.index];
     if (lNode !== null) {
@@ -349,15 +349,15 @@ function collectNativeNodes(
     }
 
     const tNodeType = tNode.type;
-    if (tNodeType === TNodeType.ElementContainer) {
+    if (tNodeType & TNodeType.ElementContainer) {
       collectNativeNodes(tView, lView, tNode.child, result);
-    } else if (tNodeType === TNodeType.IcuContainer) {
+    } else if (tNodeType & TNodeType.Icu) {
       const nextRNode = icuContainerIterate(tNode as TIcuContainerNode, lView);
       let rNode: RNode|null;
       while (rNode = nextRNode()) {
         result.push(rNode);
       }
-    } else if (tNodeType === TNodeType.Projection) {
+    } else if (tNodeType & TNodeType.Projection) {
       const componentView = lView[DECLARATION_COMPONENT_VIEW];
       const componentHost = componentView[T_HOST] as TElementNode;
       const slotIdx = tNode.projection as number;

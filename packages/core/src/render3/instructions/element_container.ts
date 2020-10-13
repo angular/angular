@@ -12,7 +12,7 @@ import {registerPostOrderHooks} from '../hooks';
 import {TAttributes, TElementContainerNode, TNodeType} from '../interfaces/node';
 import {isContentQueryHost, isDirectiveHost} from '../interfaces/type_checks';
 import {HEADER_OFFSET, LView, RENDERER, T_HOST, TView} from '../interfaces/view';
-import {assertNodeType} from '../node_assert';
+import {assertTNodeType} from '../node_assert';
 import {appendChild} from '../node_manipulation';
 import {getBindingIndex, getCurrentTNode, getLView, getTView, isCurrentTNodeParent, setCurrentTNode, setCurrentTNodeAsNotParent} from '../state';
 import {computeStaticStyling} from '../styling/static_styling';
@@ -108,7 +108,7 @@ export function ɵɵelementContainerEnd(): void {
     setCurrentTNode(currentTNode, false);
   }
 
-  ngDevMode && assertNodeType(currentTNode, TNodeType.ElementContainer);
+  ngDevMode && assertTNodeType(currentTNode, TNodeType.ElementContainer);
 
   if (tView.firstCreatePass) {
     registerPostOrderHooks(tView, currentTNode);

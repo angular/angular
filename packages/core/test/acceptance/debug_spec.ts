@@ -70,7 +70,7 @@ onlyInIvy('Ivy specific').describe('Debug Representation', () => {
           length: 1,
           content: [{
             index: HEADER_OFFSET + 3,
-            t: matchTNode({type: TNodeType.Element, value: null}),
+            t: matchTNode({type: TNodeType.Text, value: '{{?}}'}),
             l: matchDomText('Hello World')
           }]
         });
