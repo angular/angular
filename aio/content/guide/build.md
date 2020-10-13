@@ -1,4 +1,4 @@
-# Building and serving Angular apps
+# Building and serving Angular applications
 
 This page discusses build-specific configuration options for Angular projects.
 

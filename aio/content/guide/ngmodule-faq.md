@@ -540,7 +540,7 @@ For more information, see [Entry Components](guide/entry-components).
 
 ## Why does Angular need _entryComponents_?
 
-The reason is _tree shaking_. For production apps you want to load the smallest, fastest code possible. The code should contain only the classes that you actually need.
+The reason is _tree shaking_. For production applications you want to load the smallest, fastest code possible. The code should contain only the classes that you actually need.
 It should exclude a component that's never used, whether or not that component is declared.
 
 In fact, many libraries declare and export components you'll never use.

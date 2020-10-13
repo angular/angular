@@ -88,7 +88,7 @@ you must add it to `entryComponents` explicitly.
 
 ### `entryComponents` and the compiler
 
-For production apps you want to load the smallest code possible.
+For production applications you want to load the smallest code possible.
 The code should contain only the classes that you actually need and
 exclude components that are never used. For this reason, the Angular compiler only generates code for components which are reachable from the `entryComponents`; This means that adding more references to `@NgModule.declarations` does not imply that they will necessarily be included in the final bundle.
 

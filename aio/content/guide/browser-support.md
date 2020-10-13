@@ -393,7 +393,7 @@ The following polyfills are used to test the framework itself. They are a good s
 
 
 \* Figures are for minified and gzipped code,
-computed with the <a href="http://closure-compiler.appspot.com/home">closure compiler</a>.
+computed with the <a href="http://closure-compiler.applicationspot.com/home">closure compiler</a>.
 
 {@a non-cli}
 

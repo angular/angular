@@ -49,7 +49,7 @@ This gives users a meaningful first paint of your application that appears quick
 
 Learn more in [The App Shell Model](https://developers.google.com/web/fundamentals/architecture/app-shell).
 
-You can use the Angular CLI to [generate](cli/generate#appshell) an app shell.
+You can use the Angular CLI to [generate](cli/generate#applicationshell) an app shell.
 This can improve the user experience by quickly launching a static rendered page (a skeleton common to all pages) while the browser downloads the full client version and switches to it automatically after the code loads.
 
 See also [Service Worker and PWA](guide/service-worker-intro).
@@ -103,7 +103,7 @@ A way to initialize and launch an app or system.
 
 In Angular, an app's root NgModule (`AppModule`) has a `bootstrap` property that identifies the app's top-level [components](#component).
 During the bootstrap process, Angular creates and inserts these components into the `index.html` host web page.
-You can bootstrap multiple apps in the same `index.html`. Each app contains its own components.
+You can bootstrap multiple applications in the same `index.html`. Each app contains its own components.
 
 Learn more in [Bootstrapping](guide/bootstrapping).
 
@@ -244,7 +244,7 @@ See also [dynamic component loading](#dynamic-components).
 
 ## data binding
 
-A process that allows apps to display data values to a user and respond to user
+A process that allows applications to display data values to a user and respond to user
 actions (such as clicks, touches, and keystrokes).
 
 In data binding, you declare the relationship between an HTML widget and a data source
@@ -338,14 +338,14 @@ There are three categories of directive:
 
 Angular supplies a number of built-in directives that begin with the `ng` prefix.
 You can also create new directives to implement your own functionality.
-You associate a *selector* (an HTML tag such as `<my-directive>`) with a custom directive, thereby extending the [template syntax](guide/template-syntax) that you can use in your apps.
+You associate a *selector* (an HTML tag such as `<my-directive>`) with a custom directive, thereby extending the [template syntax](guide/template-syntax) that you can use in your applications.
 
 {@a dom}
 
 ## domain-specific language (DSL)
 
 A special-purpose library or API; see [Domain-specific language](https://en.wikipedia.org/wiki/Domain-specific_language).
-Angular extends TypeScript with domain-specific languages for a number of domains relevant to Angular apps, defined in NgModules such as [animations](guide/animations), [forms](guide/forms), and [routing and navigation](guide/router).
+Angular extends TypeScript with domain-specific languages for a number of domains relevant to Angular applications, defined in NgModules such as [animations](guide/animations), [forms](guide/forms), and [routing and navigation](guide/router).
 
 {@a dynamic-components}
 
@@ -547,9 +547,9 @@ Similarly, you can build custom elements that can be loaded into an Angular app 
 
 ## library
 
-In Angular, a [project](#project) that provides functionality that can be included in other Angular apps.
+In Angular, a [project](#project) that provides functionality that can be included in other Angular applications.
 A library isn't a complete Angular app and can't run independently.
-(To add re-usable Angular functionality to non-Angular web apps, you can use Angular [custom elements](#angular-element).)
+(To add re-usable Angular functionality to non-Angular web applications, you can use Angular [custom elements](#angular-element).)
 
 * Library developers can use the [Angular CLI](#cli) to `generate` scaffolding for a new library in an existing [workspace](#workspace), and can publish a library as an `npm` package.
 
@@ -773,7 +773,7 @@ A tool that configures and implements navigation among states and [views](#view)
 
 The `Router` module is an [NgModule](#ngmodule) that provides the necessary service providers and directives for navigating through application views. A [routing component](#routing-component) is one that imports the `Router` module and whose template contains a `RouterOutlet` element where it can display views produced by the router.
 
-The router defines navigation among views on a single page, as opposed to navigation among pages. It interprets URL-like links to determine which views to create or destroy, and which components to load or unload. It allows you to take advantage of [lazy loading](#lazy-load) in your Angular apps.
+The router defines navigation among views on a single page, as opposed to navigation among pages. It interprets URL-like links to determine which views to create or destroy, and which components to load or unload. It allows you to take advantage of [lazy loading](#lazy-load) in your Angular applications.
 
 To learn more, see [Routing and Navigation](guide/router).
 
@@ -808,7 +808,7 @@ A schematic defines [rules](#rule) that operate on a virtual file system called 
 
 The [Angular CLI](#cli) uses schematics to generate and modify [Angular projects](#project) and parts of projects.
 
-* Angular provides a set of schematics for use with the CLI. See the [Angular CLI command reference](cli). The [`ng add`](cli/add) command runs schematics as part of adding a library to your project. The [`ng generate`](cli/generate) command runs schematics to create apps, libraries, and Angular code constructs.
+* Angular provides a set of schematics for use with the CLI. See the [Angular CLI command reference](cli). The [`ng add`](cli/add) command runs schematics as part of adding a library to your project. The [`ng generate`](cli/generate) command runs schematics to create applications, libraries, and Angular code constructs.
 
 * [Library](#library) developers can create schematics that enable the Angular CLI to add and update their published libraries, and to generate artifacts the library defines.
 Add these schematics to the npm package that you use to publish and share your library.
@@ -1069,7 +1069,7 @@ A collection of Angular [projects](#project) (that is, applications and librarie
 The [CLI](#cli) [`ng new` command](cli/new) creates a file system directory (the "workspace root").
 In the workspace root, it also creates the workspace [configuration file](#configuration) (`angular.json`) and, by default, an initial application project with the same name.
 
-Commands that create or operate on apps and libraries (such as `add` and `generate`) must be executed from within a workspace folder.
+Commands that create or operate on applications and libraries (such as `add` and `generate`) must be executed from within a workspace folder.
 
 For more information, see [Workspace Configuration](guide/workspace-config).
 
@@ -1098,7 +1098,7 @@ For more information, see [Workspace and Project File Structure](guide/file-stru
 
 ## zone
 
-An execution context for a set of asynchronous tasks. Useful for debugging, profiling, and testing apps that include asynchronous operations such as event processing, promises, and calls to remote servers.
+An execution context for a set of asynchronous tasks. Useful for debugging, profiling, and testing applications that include asynchronous operations such as event processing, promises, and calls to remote servers.
 
 An Angular app runs in a zone where it can respond to asynchronous events by checking for data changes and updating the information it displays by resolving [data bindings](#data-binding).
 

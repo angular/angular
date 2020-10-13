@@ -29,7 +29,7 @@ The template syntax guides show you how you can control the UX/UI by coordinatin
 
 <div class="is-helpful alert">
 
-Most of the Template Syntax guides have dedicated working example apps that demonstrate the individual topic of each guide.
+Most of the Template Syntax guides have dedicated working example applications that demonstrate the individual topic of each guide.
 To see all of them working together in one app, see the comprehensive <live-example title="Template Syntax Live Code"></live-example>.
 
 </div>
@@ -37,7 +37,7 @@ To see all of them working together in one app, see the comprehensive <live-exam
 
 ## Empower your HTML
 
-With special Angular syntax in your templates, you can extend the HTML vocabulary of your apps.
+With special Angular syntax in your templates, you can extend the HTML vocabulary of your applications.
 For example, Angular helps you get and set DOM (Document Object Model) values dynamically with features such as built-in template functions, variables, event listening, and data binding.
 
 Almost all HTML syntax is valid template syntax.

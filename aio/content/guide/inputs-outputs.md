@@ -34,7 +34,7 @@ child component to send data out.
 
 #### `@Input()` and `@Output()` are independent
 
-Though `@Input()` and `@Output()` often appear together in apps, you can use
+Though `@Input()` and `@Output()` often appear together in applications, you can use
 them separately. If the nested
 component is such that it only needs to send data to its parent, you wouldn't
 need an `@Input()`, only an `@Output()`. The reverse is also true in that if the

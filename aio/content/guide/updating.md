@@ -2,7 +2,7 @@
 
 Just like Web and the entire web ecosystem, Angular is continuously improving. Angular balances continuous improvement with a strong focus on stability and making updates easy. Keeping your Angular app up-to-date enables you to take advantage of leading-edge new features, as well as optimizations and bug fixes.
 
-This document contains information and resources to help you keep your Angular apps and libraries up-to-date.
+This document contains information and resources to help you keep your Angular applications and libraries up-to-date.
 
 For information about our versioning policy and practices&mdash;including
 support and deprecation practices, as well as the release schedule&mdash;see [Angular versioning and releases](guide/releases "Angular versioning and releases").
@@ -43,7 +43,7 @@ You can also find the most current version of Angular by using the CLI command [
 
 
 {@a updating}
-## Updating your environment and apps
+## Updating your environment and applications
 
 To make updating easy, we provide complete instructions in the interactive [Angular Update Guide](https://update.angular.io/ "Angular Update Guide").
 

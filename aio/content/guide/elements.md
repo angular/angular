@@ -19,7 +19,7 @@ Creating a custom element is simple and straightforward, and automatically conne
 
 <div class="alert is-helpful">
 
-    We are working on custom elements that can be used by web apps built on other frameworks.
+    We are working on custom elements that can be used by web applications built on other frameworks.
     A minimal, self-contained version of the Angular framework will be injected as a service to support the component's change-detection and data-binding functionality.
     For more about the direction of development, check out this [video presentation](https://www.youtube.com/watch?v=Z1gLFPLVJjY&t=4s).
 

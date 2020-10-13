@@ -221,7 +221,7 @@ You must choose to configure _either_ for F5 with IIS _or_ for  `npm start` with
 
 
 
-### For apps that use routing
+### For applications that use routing
 
 If your app uses routing, you need to teach the server to always return 
 `index.html` when the user asks for an HTML page

@@ -49,11 +49,11 @@ expect, save and then click the refresh button.
 * StackBlitz is continually improving, so there may be
 slight differences in generated code, but the app's
 behavior will be the same.
-* When you generate the StackBlitz example apps that
+* When you generate the StackBlitz example applications that
 accompany the tutorials, StackBlitz creates the starter
 files and mock data for you. The files you'll use throughout
 the tutorials are in the `src` folder of the StackBlitz
-example apps.
+example applications.
 
 </div>
 

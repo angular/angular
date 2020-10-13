@@ -69,7 +69,7 @@ In order to support applications that are still running with version 8, the safe
 - *Libraries on version 9 with applications running version 8: *
 
   The schematic won't run on libraries.
-  As long as libraries retain their `static` flags from version 8, they should work with apps on 8.
+  As long as libraries retain their `static` flags from version 8, they should work with applications on 8.
 
 - *Libraries on version 8 with applications running version 9: *
 

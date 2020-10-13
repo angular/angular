@@ -1,7 +1,7 @@
 # JavaScript modules vs. NgModules
 
 JavaScript modules and NgModules can help you modularize your code, but they are very different.
-Angular apps rely on both kinds of modules.
+Angular applications rely on both kinds of modules.
 
 ## JavaScript modules: Files containing code
 

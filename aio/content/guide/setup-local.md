@@ -68,7 +68,7 @@ To install the Angular CLI, open a terminal window and run the following command
 
 ## Create a workspace and initial application
 
-You develop apps in the context of an Angular [**workspace**](guide/glossary#workspace).
+You develop applications in the context of an Angular [**workspace**](guide/glossary#workspace).
 
 To create a new workspace and initial starter app:
 

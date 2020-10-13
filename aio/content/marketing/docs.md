@@ -1,8 +1,8 @@
 <h1 class="no-toc">Introduction to the Angular Docs</h1>
 
-Angular is an application design framework and development platform for creating efficient and sophisticated single-page apps.
+Angular is an application design framework and development platform for creating efficient and sophisticated single-page applications.
 
-These Angular docs help you learn and use the Angular framework and development platform, from your first application to optimizing complex single-page apps for enterprises.
+These Angular docs help you learn and use the Angular framework and development platform, from your first application to optimizing complex single-page applications for enterprises.
 Tutorials and guides include downloadable examples to accelerate your projects.
 
 
@@ -15,7 +15,7 @@ Tutorials and guides include downloadable examples to accelerate your projects.
   </a>
   <a href="guide/architecture" class="docs-card" title="Angular Concepts">
       <section>Learn and Explore</section>
-      <p>Learn about the fundamental design concepts and architecture of Angular apps.</p>
+      <p>Learn about the fundamental design concepts and architecture of Angular applications.</p>
       <p class="card-footer">Introduction to Angular concepts</p>
   </a>
   <a href="start" class="docs-card" title="Try out Angular">

@@ -3,7 +3,7 @@
 Angular strives to balance innovation and stability.
 Sometimes, APIs and features become obsolete and need to be removed or replaced so that Angular can stay current with new best practices, changing dependencies, or changes in the (web) platform itself.
 
-To make these transitions as easy as possible, we deprecate APIs and features for a period of time before removing them. This gives you time to update your apps to the latest APIs and best practices.
+To make these transitions as easy as possible, we deprecate APIs and features for a period of time before removing them. This gives you time to update your applications to the latest APIs and best practices.
 
 This guide contains a summary of all Angular APIs and features that are currently deprecated.
 
@@ -20,7 +20,7 @@ For step-by-step instructions on how to update to the latest Angular release, us
 
 ## Index
 
-To help you future-proof your apps, the following table lists all deprecated APIs and features, organized by the release in which they are candidates for removal. Each item is linked to the section later in this guide that describes the deprecation reason and replacement options.
+To help you future-proof your applications, the following table lists all deprecated APIs and features, organized by the release in which they are candidates for removal. Each item is linked to the section later in this guide that describes the deprecation reason and replacement options.
 
 <!--
 deprecation -> removal cheat sheet

@@ -341,7 +341,7 @@ You import the `DebugElement` symbol from the Angular core library.
 ### _By.css()_
 
 Although the tests in this guide all run in the browser,
-some apps might run on a different platform at least some of the time.
+some applications might run on a different platform at least some of the time.
 
 For example, the component might render first on the server as part of a strategy to make the application launch faster on poorly connected devices. The server-side renderer might not support the full HTML element API.
 If it doesn't support `querySelector`, the previous test could fail.

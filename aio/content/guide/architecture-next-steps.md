@@ -23,7 +23,7 @@ about the features and tools that can help you develop and deliver Angular appli
 
 The **Components and Templates** guide provides guidance and details of the [template syntax](guide/template-syntax) that you use to display your component data when and where you want it within a view, and to collect input from users that you can respond to.
 
-Additional pages and sections describe some basic programming techniques for Angular apps.
+Additional pages and sections describe some basic programming techniques for Angular applications.
 
 * [Lifecycle hooks](guide/lifecycle-hooks): Tap into key moments in the lifetime of a component, from its creation to its destruction, by implementing the lifecycle hook interfaces.
 
@@ -38,8 +38,8 @@ without deep knowledge of animation techniques or CSS.
 
 ## Client-server interaction
 
-Angular provides a framework for single-page apps, where most of the logic and data resides on the client.
-Most apps still need to access a server using the `HttpClient` to access and save data.
+Angular provides a framework for single-page applications, where most of the logic and data resides on the client.
+Most applications still need to access a server using the `HttpClient` to access and save data.
 For some platforms and applications, you might also want to use the PWA (Progressive Web App) model to improve the user experience.
 
 * [HTTP](guide/http): Communicate with a server to get data, save data, and invoke server-side actions with an HTTP client.
@@ -79,7 +79,7 @@ The **Development Workflow** section describes the tools and processes you use t
 
 * [TypeScript configuration](guide/typescript-configuration): TypeScript is the primary language for Angular application development.
 
-* [Browser support](guide/browser-support): Make your apps compatible across a wide range of browsers.
+* [Browser support](guide/browser-support): Make your applications compatible across a wide range of browsers.
 
 ## Extending Angular
 

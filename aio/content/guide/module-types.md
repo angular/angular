@@ -18,7 +18,7 @@ For the example app used in NgModules-related topics, see the <live-example name
 
 ## Summary of NgModule categories
 
-All apps start by [bootstrapping a root NgModule](guide/bootstrapping "Launching an app with a root NgModule").
+All applications start by [bootstrapping a root NgModule](guide/bootstrapping "Launching an app with a root NgModule").
 You can organize your other NgModules any way you wish.
 
 This topic provides some guidelines for the following general categories of NgModules:

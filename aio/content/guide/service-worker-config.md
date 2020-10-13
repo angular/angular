@@ -38,7 +38,7 @@ Each section of the configuration file is described below.
 ## `appData`
 
 This section enables you to pass any data you want that describes this particular version of the app.
-The `SwUpdate` service includes that data in the update notifications. Many apps use this section to provide additional information for the display of UI popups, notifying users of the available update.
+The `SwUpdate` service includes that data in the update notifications. Many applications use this section to provide additional information for the display of UI popups, notifying users of the available update.
 
 {@a index-file}
 ## `index`

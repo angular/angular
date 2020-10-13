@@ -587,7 +587,7 @@ The routing module is helpful as your app grows and when the configuration inclu
 
 Some developers skip the routing module when the configuration is minimal and merge the routing configuration directly into the companion module (for example, `AppModule`).
 
-Most apps should implement a routing module for consistency.
+Most applications should implement a routing module for consistency.
 It keeps the code clean when configuration becomes complex.
 It makes testing the feature module easier.
 Its existence calls attention to the fact that a module is routed.
@@ -770,7 +770,7 @@ The updated `HeroesRoutingModule` looks like this:
 <div class="alert is-helpful">
 
 Consider giving each feature module its own route configuration file.
-Though the feature routes are currently minimal, routes have a tendency to grow more complex even in small apps.
+Though the feature routes are currently minimal, routes have a tendency to grow more complex even in small applications.
 
 </div>
 

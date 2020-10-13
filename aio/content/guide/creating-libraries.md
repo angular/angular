@@ -3,7 +3,7 @@
 This page provides a conceptual overview of how you can create and publish new libraries to extend Angular functionality.
 
 If you find that you need to solve the same problem in more than one app (or want to share your solution with other developers), you have a candidate for a library.
-A simple example might be a button that sends users to your company website, that would be included in all apps that your company builds.
+A simple example might be a button that sends users to your company website, that would be included in all applications that your company builds.
 
 ## Getting started
 
@@ -130,9 +130,9 @@ If you've never published a package in npm before, you must create a user accoun
 
 <div class="alert is-important">
 
-For now, it is not recommended to publish Ivy libraries to NPM because Ivy generated code is not backward compatible with View Engine, so apps using View Engine will not be able to consume them. Furthermore, the internal Ivy instructions are not yet stable, which can potentially break consumers using a different Angular version from the one used to build the library.
+For now, it is not recommended to publish Ivy libraries to NPM because Ivy generated code is not backward compatible with View Engine, so applications using View Engine will not be able to consume them. Furthermore, the internal Ivy instructions are not yet stable, which can potentially break consumers using a different Angular version from the one used to build the library.
 
-When a published library is used in an Ivy app, the Angular CLI will automatically convert it to Ivy using a tool known as the Angular compatibility compiler (`ngcc`). Thus, publishing your libraries using the View Engine compiler ensures that they can be transparently consumed by both View Engine and Ivy apps.
+When a published library is used in an Ivy app, the Angular CLI will automatically convert it to Ivy using a tool known as the Angular compatibility compiler (`ngcc`). Thus, publishing your libraries using the View Engine compiler ensures that they can be transparently consumed by both View Engine and Ivy applications.
 
 </div>
 
@@ -186,9 +186,9 @@ List all the peer dependencies that your library uses in the workspace TypeScrip
 This mapping ensures that your library always loads the local copies of the modules it needs.
 
 
-## Using your own library in apps
+## Using your own library in applications
 
-You don't have to publish your library to the npm package manager in order to use it in your own apps, but you do have to build it first.
+You don't have to publish your library to the npm package manager in order to use it in your own applications, but you do have to build it first.
 
 To use your own library in an app:
 
@@ -197,7 +197,7 @@ To use your own library in an app:
  ng build my-lib
  </code-example>
 
-* In your apps, import from the library by name:
+* In your applications, import from the library by name:
  ```
  import { myExport } from 'my-lib';
  ```
@@ -233,7 +233,7 @@ ng build my-lib --watch
 
 The CLI `build` command uses a different builder and invokes a different build tool for libraries than it does for applications.
 
-* The build system for apps, `@angular-devkit/build-angular`, is based on `webpack`, and is included in all new Angular CLI projects.
+* The build system for applications, `@angular-devkit/build-angular`, is based on `webpack`, and is included in all new Angular CLI projects.
 * The build system for libraries is based on `ng-packagr`. It is only added to your dependencies when you add a library using `ng generate library my-lib`.
 
 The two build systems support different things, and even where they support the same things, they do those things differently.

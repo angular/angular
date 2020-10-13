@@ -143,7 +143,7 @@ See [Build target](#build-target) below for more information.
 
 * The `architect/serve` section overrides build defaults and supplies additional serve defaults for the `ng serve` command. In addition to the options available for the `ng build` command, it adds options related to serving the app.
 
-* The `architect/e2e` section overrides build-option defaults for building end-to-end testing apps using the `ng e2e` command.
+* The `architect/e2e` section overrides build-option defaults for building end-to-end testing applications using the `ng e2e` command.
 
 * The `architect/test` section overrides build-option defaults for test builds and supplies additional test-running defaults for the `ng test` command.
 

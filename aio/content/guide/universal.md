@@ -83,7 +83,7 @@ You must wait for the full client app to bootstrap and run, or buffer the events
 [preboot](https://github.com/angular/preboot), which allow you to replay these events once the client-side scripts load.
 
 The transition from the server-rendered app to the client app happens quickly on a development machine, but you should
-always test your apps in real-world scenarios.
+always test your applications in real-world scenarios.
 
 You can simulate a slower network to see the transition more clearly as follows:
 

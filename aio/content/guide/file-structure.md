@@ -50,7 +50,7 @@ By default, the CLI command `ng new my-app` creates a workspace folder named "my
 A newly generated application contains source files for a root module, with a root component and template.
 
 When the workspace file structure is in place, you can use the `ng generate` command on the command line to add functionality and data to the application.
-This initial root-level application is the *default app* for CLI commands (unless you change the default after creating [additional apps](#multiple-projects)).
+This initial root-level application is the *default app* for CLI commands (unless you change the default after creating [additional applications](#multiple-projects)).
 
 <div class="alert is-helpful">
 
@@ -141,7 +141,7 @@ The following command creates a workspace with all of the workspace-wide configu
 ng new my-workspace --createApplication="false"
 </code-example>
 
-You can then generate apps and libraries with names that are unique within the workspace.
+You can then generate applications and libraries with names that are unique within the workspace.
 
 <code-example language="bash">
 cd my-workspace

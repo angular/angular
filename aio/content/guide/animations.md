@@ -21,7 +21,7 @@ The features described in this guide &mdash; and the more advanced features desc
 
 #### Prerequisites
 
-The guide assumes that you're familiar with building basic Angular apps, as described in the following sections:
+The guide assumes that you're familiar with building basic Angular applications, as described in the following sections:
 
 * [Tutorial](tutorial)
 * [Architecture Overview](guide/architecture)

@@ -47,7 +47,7 @@ When you use the [ng serve](cli/serve) command to build an app and serve it loca
 ## Workspaces and project files
 
 The [ng new](cli/new) command creates an *Angular workspace* folder and generates a new app skeleton.
-A workspace can contain multiple apps and libraries.
+A workspace can contain multiple applications and libraries.
 The initial app created by the [ng new](cli/new) command is at the top level of the workspace.
 When you generate an additional app or library in a workspace, it goes into a `projects/` subfolder.
 
@@ -56,7 +56,7 @@ Each app has a `src` folder that contains the logic, data, and assets.
 
 You can edit the generated files directly, or add to and modify them using CLI commands.
 Use the [ng generate](cli/generate) command to add new files for additional components and services, and code for new pipes, directives, and so on.
-Commands such as [add](cli/add) and [generate](cli/generate), which create or operate on apps and libraries, must be executed from within a workspace or project folder.
+Commands such as [add](cli/add) and [generate](cli/generate), which create or operate on applications and libraries, must be executed from within a workspace or project folder.
 
 * See more about the [Workspace file structure](guide/file-structure).
 

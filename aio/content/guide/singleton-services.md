@@ -27,7 +27,7 @@ For more detailed information on services, see the [Services](tutorial/toh-pt4) 
 
 ### NgModule `providers` array
 
-In apps built with Angular versions prior to 6.0, services are registered NgModule `providers` arrays as follows:
+In applications built with Angular versions prior to 6.0, services are registered NgModule `providers` arrays as follows:
 
 ```ts
 @NgModule({
@@ -58,7 +58,7 @@ There are multiple ways to prevent this:
 
 <div class="alert is-helpful">
 
-**Note:** There are two example apps where you can see this scenario; the more advanced <live-example noDownload name="ngmodules">NgModules live example</live-example>, which contains `forRoot()` and `forChild()` in the routing modules and the `GreetingModule`, and the simpler <live-example name="lazy-loading-ngmodules" noDownload>Lazy Loading live example</live-example>. For an introductory explanation see the [Lazy Loading Feature Modules](guide/lazy-loading-ngmodules) guide.
+**Note:** There are two example applications where you can see this scenario; the more advanced <live-example noDownload name="ngmodules">NgModules live example</live-example>, which contains `forRoot()` and `forChild()` in the routing modules and the `GreetingModule`, and the simpler <live-example name="lazy-loading-ngmodules" noDownload>Lazy Loading live example</live-example>. For an introductory explanation see the [Lazy Loading Feature Modules](guide/lazy-loading-ngmodules) guide.
 
 </div>
 
@@ -85,7 +85,7 @@ If the `RouterModule` didn’t have `forRoot()` then each feature module would i
 
 **Note:** If you have a module which has both providers and declarations,
 you _can_ use this
-technique to separate them out and you may see this pattern in legacy apps.
+technique to separate them out and you may see this pattern in legacy applications.
 However, since Angular 6.0, the best practice for providing services is with the
 `@Injectable()` `providedIn` property.
 

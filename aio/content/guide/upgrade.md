@@ -3,7 +3,7 @@
 _Angular_ is the name for the Angular of today and tomorrow.<br />
 _AngularJS_ is the name for all 1.x versions of Angular.
 
-AngularJS apps are great.
+AngularJS applications are great.
 Always consider the business case before moving to Angular.
 An important part of that case is the time and effort to get there.
 This guide describes the built-in tools for efficiently migrating AngularJS projects over to the
@@ -30,7 +30,7 @@ make incremental upgrading seamless.
 There are many ways to structure AngularJS applications. When you begin
 to upgrade these applications to Angular, some will turn out to be
 much more easy to work with than others. There are a few key techniques
-and patterns that you can apply to future proof apps even before you
+and patterns that you can apply to future proof applications even before you
 begin the migration.
 
 {@a follow-the-angular-styleguide}
@@ -791,7 +791,7 @@ compilation can pick it up.
 <div class="alert is-helpful">
 
 **Note:** The 'heroes' string inside the factory refers to the AngularJS `HeroesService`.
-It is common in AngularJS apps to choose a service name for the token, for example "heroes",
+It is common in AngularJS applications to choose a service name for the token, for example "heroes",
 and append the "Service" suffix to create the class name.
 
 </div>
@@ -971,13 +971,13 @@ Once you introduce the Angular Router, using the Angular Router triggers navigat
 
 <!--
 TODO:
-Correctly document how to use AOT with SystemJS-based `ngUpgrade` apps (or better yet update the
+Correctly document how to use AOT with SystemJS-based `ngUpgrade` applications (or better yet update the
 `ngUpgrade` examples/guides to use `@angular/cli`).
 See https://github.com/angular/angular/issues/35989.
 
-## Using Ahead-of-time compilation with hybrid apps
+## Using Ahead-of-time compilation with hybrid applications
 
-You can take advantage of Ahead-of-time (AOT) compilation on hybrid apps just like on any other
+You can take advantage of Ahead-of-time (AOT) compilation on hybrid applications just like on any other
 Angular application.
 The setup for a hybrid app is mostly the same as described in
 [the Ahead-of-time Compilation chapter](guide/aot-compiler)
@@ -993,7 +993,7 @@ bootstrap the hybrid app:
 <code-example path="upgrade-phonecat-2-hybrid/app/main-aot.ts" header="app/main-aot.ts">
 </code-example>
 
-And that's all you need do to get the full benefit of AOT for Angular apps!
+And that's all you need do to get the full benefit of AOT for Angular applications!
 -->
 
 ## PhoneCat Upgrade Tutorial
@@ -1878,7 +1878,7 @@ During TypeScript conversion, there is nothing to do to keep E2E tests
 working. But when you change the bootstrap to that of a Hybrid app,
 you must make a few changes.
 
-Update the `protractor-conf.js` to sync with hybrid apps:
+Update the `protractor-conf.js` to sync with hybrid applications:
 
 <code-example format="">
   ng12Hybrid: true
@@ -1991,7 +1991,7 @@ For PhoneCat you need to make the following changes in order to make things work
 When the bootstrap method is switched from that of `UpgradeModule` to
 pure Angular, AngularJS ceases to exist on the page completely.
 At this point, you need to tell Protractor that it should not be looking for
-an AngularJS app anymore, but instead it should find *Angular apps* from
+an AngularJS app anymore, but instead it should find *Angular applications* from
 the page.
 
 Replace the `ng12Hybrid` previously added with the following in `protractor-conf.js`:

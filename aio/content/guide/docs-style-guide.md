@@ -35,9 +35,9 @@ Adherence to Angular's writing guidelines ensures a consistent "voice", helps en
 Angular docs are written in Markdown, with custom extensions for this site. Correct markup ensures a consistent look-and-feel, and is essential for the doc to build and function correctly.
 
 
-* **Angular coding style:** Coding style for example apps and code snippets.
+* **Angular coding style:** Coding style for example applications and code snippets.
 Code examples are encouraged for demonstrating how to apply the concepts and features discussed.
-Angular has a custom framework that enables authors to include code snippets directly from example apps that are automatically tested as part of doc builds.
+Angular has a custom framework that enables authors to include code snippets directly from example applications that are automatically tested as part of doc builds.
 To contribute example code, you must understand Angular itself and the custom framework for Angular doc examples.
 
 For each aspect of style, the following table explains where to find the primary guidelines and what this Angular Documentation Style Guide offers.

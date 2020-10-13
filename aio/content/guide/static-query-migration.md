@@ -143,7 +143,7 @@ No, this change only affects `@ViewChild` and `@ContentChild` queries specifical
 {@a why-specify-static-false}
 ### ​Why do I have to specify `{static: false}`? Isn't that the default?
 
-The goal of this migration is to transition apps that aren't yet on version 9 to a query pattern that is compatible with version 9.
+The goal of this migration is to transition applications that aren't yet on version 9 to a query pattern that is compatible with version 9.
 However, most applications use libraries, and it's likely that some of these libraries may not be upgraded to version 8 yet (and thus might not have the proper flags).
 Since the application's version of Angular will be used for compilation, if we change the default, the behavior of queries in the library's components will change to the version 8 default and possibly break.
 This way, an application's dependencies will behave the same way during the transition as they did in the previous version.
@@ -158,10 +158,10 @@ Because we have not changed the default query behavior in version 8 (i.e. the co
 This guarantees your app will work in version 8 even if libraries take longer to update their code.
 
 {@a update-library-to-use-static-flag}
-###  Can I update my library to version 8 by adding the `static` flag to view queries, while still being compatible with Angular version 7 apps?
+###  Can I update my library to version 8 by adding the `static` flag to view queries, while still being compatible with Angular version 7 applications?
 
-Yes, the Angular team's recommendation for libraries is to update to version 8 and add the `static` flag. Angular version 7 apps will continue to work with libraries that have this flag.
+Yes, the Angular team's recommendation for libraries is to update to version 8 and add the `static` flag. Angular version 7 applications will continue to work with libraries that have this flag.
 
-However, if you update your library to Angular version 8 and want to take advantage of the new version 8 APIs, or you want more recent dependencies (such as Typescript or RxJS) your library will become incompatible with Angular version 7 apps. If your goal is to make your library compatible with Angular versions 7 and 8, you should not update your lib at all—except for `peerDependencies` in `package.json`.
+However, if you update your library to Angular version 8 and want to take advantage of the new version 8 APIs, or you want more recent dependencies (such as Typescript or RxJS) your library will become incompatible with Angular version 7 applications. If your goal is to make your library compatible with Angular versions 7 and 8, you should not update your lib at all—except for `peerDependencies` in `package.json`.
 
 In general, the most efficient plan is for libraries to adopt a 6 month major version schedule and bump the major version after each Angular update. That way, libraries stay in the same release cadence as Angular.

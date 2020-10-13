@@ -939,13 +939,13 @@ For example, the prefix `toh` represents **T**our **o**f **H**eroes and the pref
 
 <div class="s-why">
 
-**Why?** Prevents element name collisions with components in other apps and with native HTML elements.
+**Why?** Prevents element name collisions with components in other applications and with native HTML elements.
 
 </div>
 
 <div class="s-why">
 
-**Why?** Makes it easier to promote and share the component in other apps.
+**Why?** Makes it easier to promote and share the component in other applications.
 
 </div>
 
@@ -2192,7 +2192,7 @@ Here is a compliant folder and file structure:
 
 
 While components in dedicated folders are widely preferred,
-another option for small apps is to keep components flat (not in a dedicated folder).
+another option for small applications is to keep components flat (not in a dedicated folder).
 This adds up to four files to the existing folder, but also reduces the folder nesting.
 Whatever you choose, be consistent.
 

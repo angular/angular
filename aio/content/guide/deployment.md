@@ -145,9 +145,9 @@ This section covers changes you may have to make to the server or to files deplo
 
 {@a fallback}
 
-### Routed apps must fallback to `index.html`
+### Routed applications must fallback to `index.html`
 
-Angular apps are perfect candidates for serving with a simple static HTML server.
+Angular applications are perfect candidates for serving with a simple static HTML server.
 You don't need a server-side engine to dynamically compose application pages because
 Angular does that on the client-side.
 
@@ -195,7 +195,7 @@ The list is by no means exhaustive, but should provide you with a good starting 
 
 
 * [Nginx](http://nginx.org/): use `try_files`, as described in
-[Front Controller Pattern Web Apps](https://www.nginx.com/resources/wiki/start/topics/tutorials/config_pitfalls/#front-controller-pattern-web-apps),
+[Front Controller Pattern Web Apps](https://www.nginx.com/resources/wiki/start/topics/tutorials/config_pitfalls/#front-controller-pattern-web-applications),
 modified to serve `index.html`:
 
   ```
@@ -300,7 +300,7 @@ See [`ng build`](cli/build) for more about CLI build options and what they do.
 
 ### Enable runtime production mode
 
-In addition to build optimizations, Angular also has a runtime production mode. Angular apps run in development mode by default, as you can see by the following message on the browser console:
+In addition to build optimizations, Angular also has a runtime production mode. Angular applications run in development mode by default, as you can see by the following message on the browser console:
 
 <code-example format="nocode">
 

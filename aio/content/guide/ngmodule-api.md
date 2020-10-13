@@ -1,6 +1,6 @@
 # NgModule API
 
-At a high level, NgModules are a way to organize Angular apps
+At a high level, NgModules are a way to organize Angular applications
 and they accomplish this through the metadata in the `@NgModule`
 decorator.
 The metadata falls into three categories:
@@ -209,7 +209,7 @@ The following table summarizes the `@NgModule` metadata properties.
 
       That leaves only components bootstrapped using one of the imperative techniques, such as [`ViewComponentRef.createComponent()`](api/core/ViewContainerRef#createComponent) as undiscoverable.
 
-      Dynamic component loading is not common in most apps beyond the router. If you need to dynamically load components, you must add these components to the `entryComponents` list yourself.
+      Dynamic component loading is not common in most applications beyond the router. If you need to dynamically load components, you must add these components to the `entryComponents` list yourself.
 
       For more information, see [Entry Components](guide/entry-components).
 

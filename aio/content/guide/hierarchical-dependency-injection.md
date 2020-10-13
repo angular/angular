@@ -1,7 +1,7 @@
 # Hierarchical injectors
 
 Injectors in Angular have rules that you can leverage to
-achieve the desired visibility of injectables in your apps.
+achieve the desired visibility of injectables in your applications.
 By understanding these rules, you can determine in which
 NgModule, Component or Directive you should declare a provider.
 
@@ -89,10 +89,10 @@ This is the `root` `ModuleInjector`.
 
 The `platformBrowserDynamic()` method creates an injector
 configured by a `PlatformModule`, which contains platform-specific
-dependencies. This allows multiple apps to share a platform
+dependencies. This allows multiple applications to share a platform
 configuration.
 For example, a browser has only one URL bar, no matter how
-many apps you have running.
+many applications you have running.
 You can configure additional platform-specific providers at the
 platform level by supplying `extraProviders` using the `platformBrowser()` function.
 
@@ -128,7 +128,7 @@ with `root` in their own services.
 If you configure an app-wide provider in the `@NgModule()` of
 `AppModule`, it overrides one configured for `root` in the
 `@Injectable()` metadata. You can do this to configure a
-non-default provider of a service that is shared with multiple apps.
+non-default provider of a service that is shared with multiple applications.
 
 Here is an example of the case where the component router
 configuration includes

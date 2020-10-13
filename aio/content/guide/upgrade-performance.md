@@ -13,14 +13,14 @@ the Angular platform, one piece at a time. It is very similar to
 downgradeModule downgradeModule()} helper function instead of the {@link UpgradeModule
 UpgradeModule} class. This affects how the app is bootstrapped and how change detection is
 propagated between the two frameworks. It allows you to upgrade incrementally while improving the
-speed of your hybrid apps and leveraging the latest of Angular in AngularJS apps early in the
+speed of your hybrid applications and leveraging the latest of Angular in AngularJS applications early in the
 process of upgrading.
 
 
 
 ## Preparation
 
-Before discussing how you can use `downgradeModule()` to create hybrid apps, there are things that
+Before discussing how you can use `downgradeModule()` to create hybrid applications, there are things that
 you can do to ease the upgrade process even before you begin upgrading. Because the steps are the
 same regardless of how you upgrade, refer to the [Preparation](guide/upgrade#preparation) section of
 [Upgrading from AngularJS](guide/upgrade).
@@ -29,7 +29,7 @@ same regardless of how you upgrade, refer to the [Preparation](guide/upgrade#pre
 ## Upgrading with `ngUpgrade`
 
 With the `ngUpgrade` library in Angular you can upgrade an existing AngularJS app incrementally by
-building a hybrid app where you can run both frameworks side-by-side. In these hybrid apps you can
+building a hybrid app where you can run both frameworks side-by-side. In these hybrid applications you can
 mix and match AngularJS and Angular components and services and have them interoperate seamlessly.
 That means you don't have to do the upgrade work all at once as there is a natural coexistence
 between the two frameworks during the transition period.
@@ -38,7 +38,7 @@ between the two frameworks during the transition period.
 ### How `ngUpgrade` Works
 
 Regardless of whether you choose `downgradeModule()` or `UpgradeModule`, the basic principles of
-upgrading, the mental model behind hybrid apps, and how you use the {@link upgrade/static
+upgrading, the mental model behind hybrid applications, and how you use the {@link upgrade/static
 upgrade/static} utilities remain the same. For more information, see the
 [How `ngUpgrade` Works](guide/upgrade#how-ngupgrade-works) section of
 [Upgrading from AngularJS](guide/upgrade).
@@ -46,7 +46,7 @@ upgrade/static} utilities remain the same. For more information, see the
 <div class="alert is-helpful">
 
   The [Change Detection](guide/upgrade#change-detection) section of
-  [Upgrading from AngularJS](guide/upgrade) only applies to apps that use `UpgradeModule`. Though
+  [Upgrading from AngularJS](guide/upgrade) only applies to applications that use `UpgradeModule`. Though
   you handle change detection differently with `downgradeModule()`, which is the focus of this
   guide, reading the [Change Detection](guide/upgrade#change-detection) section provides helpful
   context for what follows.
@@ -81,9 +81,9 @@ you need to wrap it in
 triggering change detection in Angular you would use {@link NgZone#run ngZone.run()}.
 
 In many cases, a few extra change detection runs may not matter much. However, on larger or
-change-detection-heavy apps they can have a noticeable impact. By giving you more fine-grained
+change-detection-heavy applications they can have a noticeable impact. By giving you more fine-grained
 control over the change detection propagation, `downgradeModule()` allows you to achieve better
-performance for your hybrid apps.
+performance for your hybrid applications.
 
 
 ## Using `downgradeModule()`
@@ -156,7 +156,7 @@ of the Angular module. `downgradeModule()` accepts two types of factory function
 When you pass an `NgModuleFactory`, `downgradeModule()` uses it to instantiate the module using
 {@link platformBrowser platformBrowser}'s {@link PlatformRef#bootstrapModuleFactory
 bootstrapModuleFactory()}, which is compatible with ahead-of-time (AOT) compilation. AOT compilation
-helps make your apps load faster. For more about AOT and how to create an `NgModuleFactory`, see the
+helps make your applications load faster. For more about AOT and how to create an `NgModuleFactory`, see the
 [Ahead-of-Time Compilation](guide/aot-compiler) guide.
 
 Alternatively, you can pass a plain function, which is expected to return a promise resolving to an
@@ -278,7 +278,7 @@ The existing AngularJS code works as before _and_ you are ready to start adding 
 ### Using Components and Injectables
 
 The differences between `downgradeModule()` and `UpgradeModule` end here. The rest of the
-`upgrade/static` APIs and concepts work in the exact same way for both types of hybrid apps.
+`upgrade/static` APIs and concepts work in the exact same way for both types of hybrid applications.
 See [Upgrading from AngularJS](guide/upgrade) to learn about:
 
 - [Using Angular Components from AngularJS Code](guide/upgrade#using-angular-components-from-angularjs-code).<br />
@@ -307,9 +307,9 @@ See [Upgrading from AngularJS](guide/upgrade) to learn about:
 </div>
 
 
-## Using ahead-of-time compilation with hybrid apps
+## Using ahead-of-time compilation with hybrid applications
 
-You can take advantage of ahead-of-time (AOT) compilation in hybrid apps just like in any other
+You can take advantage of ahead-of-time (AOT) compilation in hybrid applications just like in any other
 Angular app. The setup for a hybrid app is mostly the same as described in the
 [Ahead-of-Time Compilation](guide/aot-compiler) guide save for differences in `index.html` and
 `main-aot.ts`.
@@ -331,17 +331,17 @@ angular.module('mainAngularJsModule', [
 ]);
 </code-example>
 
-And that is all you need to do to get the full benefit of AOT for hybrid Angular apps.
+And that is all you need to do to get the full benefit of AOT for hybrid Angular applications.
 
 
 ## Conclusion
 
 This page covered how to use the {@link upgrade/static upgrade/static} package to incrementally
-upgrade existing AngularJS apps at your own pace and without impeding further development of the app
+upgrade existing AngularJS applications at your own pace and without impeding further development of the app
 for the duration of the upgrade process.
 
 Specifically, this guide showed how you can achieve better performance and greater flexibility in
-your hybrid apps by using {@link downgradeModule downgradeModule()} instead of {@link UpgradeModule
+your hybrid applications by using {@link downgradeModule downgradeModule()} instead of {@link UpgradeModule
 UpgradeModule}.
 
 To summarize, the key differentiating factors of `downgradeModule()` are:
@@ -352,7 +352,7 @@ To summarize, the key differentiating factors of `downgradeModule()` are:
    greater ability to customize.
 3. It does not require you to change how you bootstrap your AngularJS app.
 
-Using `downgradeModule()` is a good option for hybrid apps when you want to keep the AngularJS and
+Using `downgradeModule()` is a good option for hybrid applications when you want to keep the AngularJS and
 Angular parts less coupled. You can still mix and match components and services from both
 frameworks, but you might need to manually propagate change detection. In return,
 `downgradeModule()` offers more control and better performance.

@@ -2,7 +2,7 @@
 
 Angular is a platform and framework for building single-page client applications using HTML and TypeScript.
 Angular is written in TypeScript.
-It implements core and optional functionality as a set of TypeScript libraries that you import into your apps.
+It implements core and optional functionality as a set of TypeScript libraries that you import into your applications.
 
 The architecture of an Angular application relies on certain fundamental concepts.
 The basic building blocks are *NgModules*, which provide a compilation context for *components*. NgModules collect related code into functional sets; an Angular app is defined by a set of NgModules. An app always has at least a *root module* that enables bootstrapping, and typically has many more *feature modules*.

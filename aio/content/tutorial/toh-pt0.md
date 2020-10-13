@@ -22,7 +22,7 @@ To set up your development environment, follow the instructions in [Local Enviro
 
 ## Create a new workspace and an initial application
 
-You develop apps in the context of an Angular [workspace](guide/glossary#workspace). A workspace contains the files for one or more [projects](guide/glossary#project). A project is the set of files that comprise an app, a library, or end-to-end (e2e) tests. For this tutorial, you will create a new workspace.
+You develop applications in the context of an Angular [workspace](guide/glossary#workspace). A workspace contains the files for one or more [projects](guide/glossary#project). A project is the set of files that comprise an app, a library, or end-to-end (e2e) tests. For this tutorial, you will create a new workspace.
 
 To create a new workspace and an initial app project:
 
@@ -107,7 +107,7 @@ The browser refreshes and displays the new application title.
 
 ### Add application styles
 
-Most apps strive for a consistent look across the application.
+Most applications strive for a consistent look across the application.
 The CLI generated an empty `styles.css` for this purpose.
 Put your application-wide styles there.
 

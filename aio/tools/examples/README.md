@@ -33,7 +33,7 @@ Inside [shared/boilerplate/](./shared/boilerplate) there is a sub-folder with bo
 
 Currently, the following project types are supported:
 
-- `cli`: For example apps based on the Angular CLI. This is the default type and is used in the majority of the examples.
+- `cli`: For example applications based on the Angular CLI. This is the default type and is used in the majority of the examples.
 - `cli-ajs`: For CLI-based examples that also use AngularJS (but not via `@angular/upgrade`).
 - `elements`: For CLI-based examples that also use `@angular/elements`.
 - `getting-started`: For the "Getting started" tutorial. Essentially the same as `cli` but with custom CSS styles.
@@ -121,7 +121,7 @@ This will be picked up by the default testing command (see the [example configur
 If you are using a custom test command, make sure e2e specs are picked up (if applicable).
 
 For SystemJS-based examples, create an `e2e-spec.ts` file inside the example root folder.
-These apps will be tested with the following command:
+These applications will be tested with the following command:
 
 ```sh
 yarn protractor aio/tools/examples/shared/protractor.config.js \
