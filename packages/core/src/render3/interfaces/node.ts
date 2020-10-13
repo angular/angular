@@ -434,7 +434,7 @@ export interface TNode {
    *   `TNodeType.Element`: tag name
    *   `TNodeType.ICUContainer`: `TIcu`
    */
-  value: string|null;
+  value: any;
 
   /**
    * Attributes associated with an element. We need to store attributes to support various use-cases
@@ -744,6 +744,11 @@ export interface TElementNode extends TNode {
    * a component without projection, it will be null.
    */
   projection: (TNode|RNode[])[]|null;
+
+  /**
+   * Stores TagName
+   */
+  value: string;
 }
 
 /** Static data for a text node */
@@ -781,6 +786,7 @@ export interface TContainerNode extends TNode {
   parent: TElementNode|TElementContainerNode|null;
   tViews: TView|TView[]|null;
   projection: null;
+  value: null;
 }
 
 /** Static data for an <ng-container> */
@@ -801,8 +807,7 @@ export interface TIcuContainerNode extends TNode {
   parent: TElementNode|TElementContainerNode|null;
   tViews: null;
   projection: null;
-  // FIXME(misko): Refactor to enable the next line
-  // tagName: TIcu;
+  value: TIcu;
 }
 
 /** Static data for an LProjectionNode  */
@@ -819,6 +824,7 @@ export interface TProjectionNode extends TNode {
 
   /** Index of the projection node. (See TNode.projection for more info.) */
   projection: number;
+  value: null;
 }
 
 /**
