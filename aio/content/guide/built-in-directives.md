@@ -1,5 +1,9 @@
+<!--
 # Built-in directives
+-->
+# 기본 디렉티브
 
+<!--
 Angular offers two kinds of built-in directives: [_attribute_ directives](guide/attribute-directives) and [_structural_ directives](guide/structural-directives).
 
 <div class="alert is-helpful">
@@ -9,13 +13,28 @@ See the <live-example></live-example> for a working example containing the code 
 </div>
 
 For more detail, including how to build your own custom directives, see [Attribute Directives](guide/attribute-directives) and [Structural Directives](guide/structural-directives).
+-->
+Angular는 두종류의 디렉티브를 제공하는데, 이 디렉티브는 [_어트리뷰트_ 디렉티브(attribute directive)](guide/attribute-directives)와 [_구조_ 디렉티브(structural directive)](guide/structural-directives)로 구분할 수 있습니다.
+
+<div class="alert is-helpful">
+
+이 문서에서 다루는 예제는 <live-example></live-example>에서 직접 확인하거나 다운받아 확인할 수 있습니다.
+
+</div>
+
+커스텀 디렉티브를 만드는 방법 등 디렉티브를 다양하게 활용하는 방법에 대해 알아보려면 [어트리뷰트 디렉티브](guide/attribute-directives) 문서와 [구조 디렉티브](guide/structural-directives) 문서를 참고하세요.
 
 <hr/>
 
+
 {@a attribute-directives}
 
+<!--
 ## Built-in attribute directives
+-->
+## 기본 어트리뷰트 디렉티브
 
+<!--
 Attribute directives listen to and modify the behavior of
 other HTML elements, attributes, properties, and components.
 You usually apply them to elements as if they were HTML attributes, hence the name.
@@ -27,6 +46,17 @@ The most common attribute directives are as follows:
 * [`NgClass`](guide/built-in-directives#ngClass)&mdash;adds and removes a set of CSS classes.
 * [`NgStyle`](guide/built-in-directives#ngStyle)&mdash;adds and removes a set of HTML styles.
 * [`NgModel`](guide/built-in-directives#ngModel)&mdash;adds two-way data binding to an HTML form element.
+-->
+어트리뷰트 디렉티브는 HTML 엘리먼트, 어트리뷰트, 프로퍼티, 컴포넌트에서 일어나는 일을 감지하거나 동작을 조작합니다.
+어트리뷰트 디렉티브는 HTML 엘리먼트에 일반 HTML 어트리뷰트와 비슷하게 사용합니다.
+
+[`RouterModule`](guide/router "Routing and Navigation")이나 [`FormsModule`](guide/forms "Forms")이 제공하는 어트리뷰트 디렉티브들이 있습니다.
+이중에서 자주 사용하는 어트리뷰트 디렉티브는 이런 것들이 있습니다:
+
+* [`NgClass`](guide/built-in-directives#ngClass) &mdash; CSS 클래스를 추가하거나 제거합니다.
+* [`NgStyle`](guide/built-in-directives#ngStyle) &mdash; HTML 스타일을 추가하거나 제거합니다.
+* [`NgModel`](guide/built-in-directives#ngModel) &mdash; HTML 폼 엘리먼트에 양방향 데이터 바인딩 기능을 추가합니다.
+
 
 <hr/>
 
@@ -34,6 +64,7 @@ The most common attribute directives are as follows:
 
 ## `NgClass`
 
+<!--
 Add or remove several CSS classes simultaneously with `ngClass`.
 
 <code-example path="built-in-directives/src/app/app.component.html" region="special-div" header="src/app/app.component.html"></code-example>
@@ -61,6 +92,32 @@ Remember that in this situation you'd call `setCurrentClasses()`,
 both initially and when the dependent properties change.
 
 </div>
+-->
+`NgClass`를 사용하면 CSS 클래스를 한번에 여러개 추가하거나 제거할 수 있습니다.
+
+<code-example path="built-in-directives/src/app/app.component.html" region="special-div" header="src/app/app.component.html"></code-example>
+
+<div class="alert is-helpful">
+
+CSS 클래스 *하나를* 추가하거나 제거하려면 `ngClass`보다 [클래스 바인딩(class binding)](guide/attribute-binding#class-binding)을 사용하는 것이 더 좋습니다.
+
+</div>
+
+`setCurrentClasses()` 컴포넌트 메서드는 컴포넌트 프로퍼티 `currentClasses`를 조작하는데, 이 프로퍼티는 다른 컴포넌트 프로퍼티의 상태에 따라 객체 형태로 클래스를 추가하거나 제거하는 프로퍼티입니다.
+이 프로퍼티의 객체 키는 각각 CSS 클래스 이름으로 구성되는데, 개별 클래스에 해당하는 값이 `true`이면 해당 클래스가 추가되고 `false`이면 해당 클래스가 제거됩니다.
+
+<code-example path="built-in-directives/src/app/app.component.ts" region="setClasses" header="src/app/app.component.ts"></code-example>
+
+`currentClasses` 프로퍼티를 다음과 같이 `ngClass`로 프로퍼티 바인딩하면 엘리먼트의 CSS 클래스를 조작할 수 있습니다:
+
+<code-example path="built-in-directives/src/app/app.component.html" region="NgClass-1" header="src/app/app.component.html"></code-example>
+
+<div class="alert is-helpful">
+
+이 코드처럼 구현하면 컴포넌트를 초기화 한 후에 한 번, 관련된 프로퍼티 값이 변경될 때마다 `setCurrentClasses()` 함수를 직접 실행해야 새로운 클래스가 반영됩니다.
+
+</div>
+
 
 <hr/>
 
@@ -68,10 +125,18 @@ both initially and when the dependent properties change.
 
 ## `NgStyle`
 
+<!--
 Use `NgStyle` to set many inline styles simultaneously and dynamically, based on the state of the component.
+-->
+`NgStyle`를 사용하면 인라인 스타일을 한번에 여러개 추가하거나 제거할 수 있습니다.
 
+
+<!--
 ### Without `NgStyle`
+-->
+### `NgStyle`을 사용하지 않은 경우
 
+<!--
 For context, consider setting a *single* style value with [style binding](guide/attribute-binding#style-binding), without `NgStyle`.
 
 <code-example path="built-in-directives/src/app/app.component.html" region="without-ng-style" header="src/app/app.component.html"></code-example>
@@ -93,22 +158,55 @@ Adding an `ngStyle` property binding to `currentStyles` sets the element's style
 Remember to call `setCurrentStyles()`, both initially and when the dependent properties change.
 
 </div>
+-->
+스타일 *하나를* 조작한다면 `NgStyle`보다 [스타일 바인딩(style binding)](guide/attribute-binding#style-binding)을 사용하는 것이 더 좋습니다.
+
+<code-example path="built-in-directives/src/app/app.component.html" region="without-ng-style" header="src/app/app.component.html"></code-example>
+
+`NgStyle` 디렉티브는 인라인 스타일 *여러개를* 동시에 조작할 때 사용합니다.
+
+아래 코드에서 `setCurrentStyles()` 메서드는 컴포넌트 프로퍼티 값에 따라 `currentStyles` 프로퍼티를 구성하는데, 이 프로퍼티는 객체 형태이며 관련된 컴포넌트 프로퍼티에 따라 3가지 스타일을 지정합니다:
+
+<code-example path="built-in-directives/src/app/app.component.ts" region="setStyles" header="src/app/app.component.ts"></code-example>
+
+`currentStyles`를 다음과 같이 `ngStyle`로 프로퍼티 바인딩하면 엘리먼트의 스타일을 조작할 수 있습니다:
+
+<code-example path="built-in-directives/src/app/app.component.html" region="NgStyle-2" header="src/app/app.component.html"></code-example>
+
+<div class="alert is-helpful">
+
+이 경우에도 컴포넌트를 초기화 한 후에 한 번, 관련된 프로퍼티 값이 변경될 때마다 `setCurrentStyles()` 함수를 직접 실행해야 새로운 스타일이 적용됩니다.
+
+</div>
 
 
 <hr/>
 
 {@a ngModel}
 
+<!--
 ## `[(ngModel)]`: Two-way binding
+-->
+## `[(ngModel)]`: 양방향 바인딩
 
+<!--
 The `NgModel` directive allows you to display a data property and
 update that property when the user makes changes. Here's an example:
 
 <code-example path="built-in-directives/src/app/app.component.html" header="src/app/app.component.html (NgModel example)" region="NgModel-1"></code-example>
+-->
+`NgModel` 디렉티브를 사용하면 화면에 데이터 프로퍼티 값을 표시하면서 이 프로퍼티 값이 변경되는 것을 감지할 수 있습니다.
+예제를 봅시다:
+
+<code-example path="built-in-directives/src/app/app.component.html" header="src/app/app.component.html (NgModel 예제)" region="NgModel-1"></code-example>
 
 
+<!--
 ### Import `FormsModule` to use `ngModel`
+-->
+### `FormsModule` 로드하기
 
+<!--
 Before using the `ngModel` directive in a two-way data binding,
 you must import the `FormsModule` and add it to the NgModule's `imports` list.
 Learn more about the `FormsModule` and `ngModel` in [Forms](guide/forms#ngModel).
@@ -129,9 +227,31 @@ To streamline the syntax, the `ngModel` directive hides the details behind its o
 
 The `ngModel` data property sets the element's value property and the `ngModelChange` event property
 listens for changes to the element's value.
+-->
+`ngModel` 디렉티브를 사용해서 양방향으로 데이터를 바인딩하려면 먼저 `FormsModule`을 로드하고 이 모듈을 NgModule `imports` 배열에 추가해야 합니다.
+`FormsModule`과 `ngModel`에 대해 자세하게 알아보려면 [폼](guide/forms#ngModel) 문서를 참고하세요.
 
+`FormsModule`은 이렇게 불러와서 등록하면 됩니다:
+
+<code-example path="built-in-directives/src/app/app.module.ts" header="src/app/app.module.ts (FormsModule import)" region="import-forms-module"></code-example>
+
+`<input>` 엘리먼트의 `value` 프로퍼티와 `input` 이벤트를 각각 바인딩하면 `ngModel`을 사용한 것과 같은 효과를 낼 수 있습니다:
+
+<code-example path="built-in-directives/src/app/app.component.html" region="without-NgModel" header="src/app/app.component.html"></code-example>
+
+`ngModel` 디렉티브는 사실 `ngModel` 입력 프로퍼티와 `ngModelChange` 출력 프로퍼티를 선언하는 디렉티브입니다:
+
+<code-example path="built-in-directives/src/app/app.component.html" region="NgModelChange" header="src/app/app.component.html"></code-example>
+
+`ngModel` 데이터 프로퍼티는 엘리먼트에 값을 할당하며, `ngModelChange` 이벤트 프로퍼티는 엘리먼트의 값이 변경되는 것을 감지합니다.
+
+
+<!--
 ### `NgModel` and value accessors
+-->
+### `NgModel`과 값 접근자
 
+<!--
 The details are specific to each kind of element and therefore the `NgModel` directive only works for an element
 supported by a [ControlValueAccessor](api/forms/ControlValueAccessor)
 that adapts an element to this protocol.
@@ -166,6 +286,34 @@ Here are all variations in action, including the uppercase version:
 <div class="lightbox">
   <img src='generated/images/guide/built-in-directives/ng-model-anim.gif' alt="NgModel variations">
 </div>
+-->
+`NgModel` 디렉티브는 어떤 엘리먼트에 적용되는지에 따라 동작하는 방식이 다르며, 이 동작 방식은 [ControlValueAccessor](api/forms/ControlValueAccessor)에 따라 정의되기 때문에 `NgModel` 디렉티브는 ControlValueAccessor가 정의된 엘리먼트에만 사용할 수 있습니다.
+Angular는 표준 HTML 폼 엘리먼트에 대해서는 모두 *값 접근자(value accessor)*를 제공합니다.
+자세한 내용은 [폼](guide/forms) 문서를 참고하세요.
+
+따라서 폼 엘리먼트가 아닌 기본 엘리먼트에는 `[(ngModel)]` 문법을 사용할 수 없으며, 값 접근자를 제공하지 않는 서드 파티 커스텀 컴포넌트에도 이 문법을 사용할 수 없습니다.
+자세한 내용은 [DefaultValueAccessor](api/forms/DefaultValueAccessor) 문서를 참고하세요.
+
+그런데 직접 만든 Angular 컴포넌트에는 값 접근자가 필요 없습니다.
+왜냐하면 Angular가 정한 방식으로 입출력 프로퍼티를 선언하면 `NgModel` 디렉티브 없이도 [양방향 바인딩 문법](guide/two-way-binding)을 사용할 수 있기 때문입니다.
+[양방향 바인딩](guide/two-way-binding) 문서에서는 `sizer` 프로퍼티로 이 개념을 확인해 봤습니다.
+
+`ngModel`을 사용하지 않아도 엘리먼트의 기능을 확장할 수 있지만, `[(ngModel)]` 문법을 활용하면 두가지 기능을 하는 바인딩 문법을 한 번에 작성할 수 있습니다:
+
+<code-example path="built-in-directives/src/app/app.component.html" region="NgModel-1" header="src/app/app.component.html"></code-example>
+
+`[(ngModel)]` 문법은 바인딩된 데이터 프로퍼티 값을 _할당_ 하기만 합니다.
+바인딩된 프로퍼티 값이 변경되는 것을 감지하는 로직을 작성하려면 다음과 같이 나눠서 작성해야 합니다.
+아래 코드는 `<input>`에 입력된 값을 대문자로 변경하는 예제 코드입니다:
+
+<code-example path="built-in-directives/src/app/app.component.html" region="uppercase" header="src/app/app.component.html"></code-example>
+
+`ngModel`는 이런 방식으로 다양하게 활용할 수 있습니다:
+
+<div class="lightbox">
+  <img src='generated/images/guide/built-in-directives/ng-model-anim.gif' alt="NgModel variations">
+</div>
+
 
 <hr/>
 
