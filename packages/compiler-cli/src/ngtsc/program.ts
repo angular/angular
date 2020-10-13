@@ -99,7 +99,7 @@ export class NgtscProgram implements api.Program {
 
     // Create the NgCompiler which will drive the rest of the compilation.
     this.compiler = new NgCompiler(
-        this.host, options, this.tsProgram, reusedProgramStrategy, this.incrementalStrategy,
+        this.host, options, reusedProgramStrategy, this.incrementalStrategy,
         /** enableTemplateTypeChecker */ false, reuseProgram, this.perfRecorder);
   }
 

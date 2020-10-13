@@ -90,6 +90,7 @@ export class NgCompiler {
   private diagnostics: ts.Diagnostic[]|null = null;
 
   private closureCompilerEnabled: boolean;
+  private tsProgram: ts.Program;
   private nextProgram: ts.Program;
   private entryPoint: ts.SourceFile|null;
   private moduleResolver: ModuleResolver;
@@ -102,7 +103,6 @@ export class NgCompiler {
   constructor(
       private adapter: NgCompilerAdapter,
       private options: NgCompilerOptions,
-      private tsProgram: ts.Program,
       private typeCheckingProgramStrategy: TypeCheckingProgramStrategy,
       private incrementalStrategy: IncrementalBuildStrategy,
       private enableTemplateTypeChecker: boolean,
@@ -114,7 +114,8 @@ export class NgCompiler {
     if (incompatibleTypeCheckOptionsDiagnostic !== null) {
       this.constructionDiagnostics.push(incompatibleTypeCheckOptionsDiagnostic);
     }
-
+    const tsProgram = this.typeCheckingProgramStrategy.getProgram();
+    this.tsProgram = tsProgram;
     this.nextProgram = tsProgram;
     this.closureCompilerEnabled = !!this.options.annotateForClosureCompiler;
 

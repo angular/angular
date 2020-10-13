@@ -101,9 +101,8 @@ export class NgTscPlugin implements TscPlugin {
     const typeCheckStrategy = new ReusedProgramStrategy(
         program, this.host, this.options, this.host.shimExtensionPrefixes);
     this._compiler = new NgCompiler(
-        this.host, this.options, program, typeCheckStrategy,
-        new PatchedProgramIncrementalBuildStrategy(), /** enableTemplateTypeChecker */ false,
-        oldProgram, NOOP_PERF_RECORDER);
+        this.host, this.options, typeCheckStrategy, new PatchedProgramIncrementalBuildStrategy(),
+        /** enableTemplateTypeChecker */ false, oldProgram, NOOP_PERF_RECORDER);
     return {
       ignoreForDiagnostics: this._compiler.ignoreForDiagnostics,
       ignoreForEmit: this._compiler.ignoreForEmit,

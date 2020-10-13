@@ -87,7 +87,6 @@ export class LanguageService {
     return new NgCompiler(
         this.adapter,
         this.options,
-        program,
         this.strategy,
         new PatchedProgramIncrementalBuildStrategy(),
         /** enableTemplateTypeChecker */ true,
