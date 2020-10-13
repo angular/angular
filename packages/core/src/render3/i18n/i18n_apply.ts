@@ -11,7 +11,7 @@ import {assertDefined, assertDomNode, assertEqual, assertGreaterThan, assertInde
 import {assertIndexInExpandoRange, assertTIcu} from '../assert';
 import {attachPatchData} from '../context_discovery';
 import {elementPropertyInternal, setElementAttribute} from '../instructions/shared';
-import {COMMENT_MARKER, ELEMENT_MARKER, getCurrentICUCaseIndex, getParentFromI18nMutateOpCode, getRefFromI18nMutateOpCode, I18nCreateOpCode, I18nCreateOpCodes, I18nMutateOpCode, I18nMutateOpCodes, I18nUpdateOpCode, I18nUpdateOpCodes, IcuType, TI18n, TIcu} from '../interfaces/i18n';
+import {ELEMENT_MARKER, getCurrentICUCaseIndex, getParentFromI18nMutateOpCode, getRefFromI18nMutateOpCode, I18nCreateOpCode, I18nCreateOpCodes, I18nMutateOpCode, I18nMutateOpCodes, I18nUpdateOpCode, I18nUpdateOpCodes, ICU_MARKER, IcuType, TI18n, TIcu} from '../interfaces/i18n';
 import {TNode} from '../interfaces/node';
 import {RElement, RNode, RText} from '../interfaces/renderer';
 import {SanitizerFn} from '../interfaces/sanitization';
@@ -20,6 +20,7 @@ import {createCommentNode, createElementNode, createTextNode, nativeInsertBefore
 import {getBindingIndex} from '../state';
 import {renderStringify} from '../util/misc_utils';
 import {getNativeByIndex, unwrapRNode} from '../util/view_utils';
+
 import {getLocaleId} from './i18n_locale_id';
 import {getTIcu} from './i18n_util';
 
@@ -202,7 +203,7 @@ export function applyMutableOpCodes(
       }
     } else {
       switch (opCode) {
-        case COMMENT_MARKER:
+        case ICU_MARKER:
           const commentValue = mutableOpCodes[++i] as string;
           const commentNodeIndex = mutableOpCodes[++i] as number;
           if (lView[commentNodeIndex] === null) {

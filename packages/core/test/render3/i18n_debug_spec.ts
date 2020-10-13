@@ -7,7 +7,7 @@
  */
 
 import {i18nCreateOpCodesToString, i18nMutateOpCodesToString, i18nUpdateOpCodesToString} from '@angular/core/src/render3/i18n/i18n_debug';
-import {COMMENT_MARKER, ELEMENT_MARKER, I18nCreateOpCode, I18nMutateOpCode, I18nUpdateOpCode} from '@angular/core/src/render3/interfaces/i18n';
+import {ELEMENT_MARKER, I18nCreateOpCode, I18nMutateOpCode, I18nUpdateOpCode, ICU_MARKER} from '@angular/core/src/render3/interfaces/i18n';
 
 describe('i18n debug', () => {
   describe('i18nUpdateOpCodesToString', () => {
@@ -92,7 +92,7 @@ describe('i18n debug', () => {
 
     it('should print comment AppendChild', () => {
       expect(i18nMutateOpCodesToString([
-        COMMENT_MARKER, 'xyz', 0,
+        ICU_MARKER, 'xyz', 0,
         1 << I18nMutateOpCode.SHIFT_PARENT | 0 << I18nMutateOpCode.SHIFT_REF |
             I18nMutateOpCode.AppendChild
       ]))
