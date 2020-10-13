@@ -13,6 +13,7 @@ import {PatchedProgramIncrementalBuildStrategy} from '@angular/compiler-cli/src/
 import {TypeCheckShimGenerator} from '@angular/compiler-cli/src/ngtsc/typecheck';
 import {OptimizeFor, TypeCheckingProgramStrategy} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
 import * as ts from 'typescript/lib/tsserverlibrary';
+import {CompletionBuilder} from './completions';
 
 import {DefinitionBuilder} from './definitions';
 import {isExternalTemplate, isTypeScriptFile, LanguageServiceAdapter} from './language_service_adapter';
@@ -75,6 +76,65 @@ export class LanguageService {
     }
     return new QuickInfoBuilder(this.tsLS, compiler, templateInfo.component, positionDetails.node)
         .get();
+  }
+
+  getCompletionsAtPosition(
+      fileName: string, position: number, options: ts.GetCompletionsAtPositionOptions|undefined):
+      ts.WithMetadata<ts.CompletionInfo>|undefined {
+    const program = this.strategy.getProgram();
+    const compiler = this.createCompiler(program, fileName);
+    const templateInfo = getTemplateInfoAtPosition(fileName, position, compiler);
+    if (templateInfo === undefined) {
+      return undefined;
+    }
+    const positionDetails = getTargetAtPosition(templateInfo.template, position);
+    if (positionDetails === null) {
+      return undefined;
+    }
+
+    return new CompletionBuilder(
+               this.tsLS, compiler, templateInfo.component, positionDetails.node,
+               positionDetails.context)
+        .getCompletionsAtPosition(options);
+  }
+
+  getCompletionEntryDetails(
+      fileName: string, position: number, entryName: string,
+      formatOptions: ts.FormatCodeOptions|ts.FormatCodeSettings|undefined,
+      preferences: ts.UserPreferences|undefined): ts.CompletionEntryDetails|undefined {
+    const program = this.strategy.getProgram();
+    const compiler = this.createCompiler(program, fileName);
+    const templateInfo = getTemplateInfoAtPosition(fileName, position, compiler);
+    if (templateInfo === undefined) {
+      return undefined;
+    }
+    const positionDetails = getTargetAtPosition(templateInfo.template, position);
+    if (positionDetails === null) {
+      return undefined;
+    }
+
+    return new CompletionBuilder(
+               this.tsLS, compiler, templateInfo.component, positionDetails.node,
+               positionDetails.context)
+        .getCompletionEntryDetails(entryName, formatOptions, preferences);
+  }
+
+  getCompletionEntrySymbol(fileName: string, position: number, name: string): ts.Symbol|undefined {
+    const program = this.strategy.getProgram();
+    const compiler = this.createCompiler(program, fileName);
+    const templateInfo = getTemplateInfoAtPosition(fileName, position, compiler);
+    if (templateInfo === undefined) {
+      return undefined;
+    }
+    const positionDetails = getTargetAtPosition(templateInfo.template, position);
+    if (positionDetails === null) {
+      return undefined;
+    }
+
+    return new CompletionBuilder(
+               this.tsLS, compiler, templateInfo.component, positionDetails.node,
+               positionDetails.context)
+        .getCompletionEntrySymbol(name);
   }
 
   /**
