@@ -128,7 +128,7 @@ To help you get going, the following steps use predefined product data from the 
     <code-example path="getting-started/src/app/product-list/product-list.component.3.html" header="src/app/product-list/product-list.component.html">
     </code-example>
 
-    The app now displays the name and description of each product in the list. Notice that the final product does not have a description paragraph. Because the product's description property is empty, Angular doesn't create the `<p>` element&mdash;including the word "Description".
+    The application now displays the name and description of each product in the list. Notice that the final product does not have a description paragraph. Because the product's description property is empty, Angular doesn't create the `<p>` element&mdash;including the word "Description".
 
     <div class="lightbox">
       <img src="generated/images/guide/start/template-syntax-product-description.png" alt="Product descriptions added to list">
@@ -151,7 +151,7 @@ To help you get going, the following steps use predefined product data from the 
       <img src="generated/images/guide/start/template-syntax-product-share-alert.png" alt="Alert box indicating product has been shared">
     </div>
 
-The app now has a product list and sharing feature.
+The application now has a product list and sharing feature.
 In the process, you've learned to use five common features of Angular's template syntax:
 * `*ngFor`
 * `*ngIf`
@@ -201,7 +201,7 @@ Let's take a quick look a the product list component's class definition:
 
 An Angular application comprises a tree of components, in which each Angular component has a specific purpose and responsibility.
 
-Currently, the example app has three components:
+Currently, the example application has three components:
 
 <div class="lightbox">
   <img src="generated/images/guide/start/app-components.png" alt="Online store with three components">
@@ -357,4 +357,4 @@ You've also learned how the component class and template interact, and how compo
 
 To continue exploring Angular, choose either of the following options:
 * [Continue to the "In-app navigation" section](start/start-routing "Try it: In-app navigation") to create a product details page that can be accessed by clicking a product name and that has its own URL pattern.
-* [Skip ahead to the "Deployment" section](start/start-deployment "Try it: Deployment") to move to local development, or deploy your app to Firebase or your own server.
+* [Skip ahead to the "Deployment" section](start/start-deployment "Try it: Deployment") to move to local development, or deploy your application to Firebase or your own server.

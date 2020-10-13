@@ -253,7 +253,7 @@ A provider object can associate any of these injection tokens with one or more c
 
 * [APP_BOOTSTRAP_LISTENER](api/core/APP_BOOTSTRAP_LISTENER): Callback is invoked for each component that is bootstrapped. The handler function receives the ComponentRef instance of the bootstrapped component.
 
-* [APP_INITIALIZER](api/core/APP_INITIALIZER): Callback is invoked before an app is initialized. All registered initializers can optionally return a Promise. All initializer functions that return Promises must be resolved before the application is bootstrapped. If one of the initializers fails to resolves, the application is not bootstrapped.
+* [APP_INITIALIZER](api/core/APP_INITIALIZER): Callback is invoked before an application is initialized. All registered initializers can optionally return a Promise. All initializer functions that return Promises must be resolved before the application is bootstrapped. If one of the initializers fails to resolves, the application is not bootstrapped.
 
 The provider object can have a third option, `multi: true`, which you can use with `APP_INITIALIZER`
 to register multiple handlers for the provide event.
@@ -288,7 +288,7 @@ Search for [Constants in API documentation](api?type=const) to find more built-i
 
 Note that the reference to the array returned for a `multi` provider is shared between all the
 places where the token is injected. We recommend avoiding mutations of the array (especially for
-predefined tokens) as it may lead to unexpected behavior in other parts of the app that inject
+predefined tokens) as it may lead to unexpected behavior in other parts of the application that inject
 the same token. You can prevent the value from being mutated by setting its type to `ReadonlyArray`.
 
 </div>
@@ -306,7 +306,7 @@ constructor(@Inject(MULTI_PROVIDER) multiProvider: ReadonlyArray<MultiProvider>)
 
 ## Tree-shakable providers
 
-Tree shaking refers to a compiler option that removes code from the final bundle if the app doesn't reference that code.
+Tree shaking refers to a compiler option that removes code from the final bundle if the application doesn't reference that code.
 When providers are tree-shakable, the Angular compiler removes the associated
 services from the final output when it determines that your application doesn't use those services.
 This significantly reduces the size of your bundles.
@@ -314,7 +314,7 @@ This significantly reduces the size of your bundles.
 <div class="alert is-helpful">
 
 Ideally, if an application isn't injecting a service, Angular shouldn't include it in the final output.
-However, Angular has to be able to identify at build time whether the app will require the service or not.
+However, Angular has to be able to identify at build time whether the application will require the service or not.
 Because it's always possible to inject a service directly using `injector.get(Service)`,
 Angular can't identify all of the places in your code where this injection could happen,
 so it has no choice but to include the service in the injector.

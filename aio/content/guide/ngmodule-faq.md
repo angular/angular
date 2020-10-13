@@ -30,7 +30,7 @@ Add only [declarable](guide/bootstrapping#the-declarations-array) classes to an 
 
 Do *not* declare the following:
 
-* A class that's already declared in another module, whether an app module, @NgModule, or third-party module.
+* A class that's already declared in another module, whether an application module, @NgModule, or third-party module.
 * An array of directives imported from another module.
 For example, don't declare `FORMS_DIRECTIVES` from `@angular/forms` because the `FormsModule` already declares it.
 
@@ -52,7 +52,7 @@ Membership in one list doesn't imply membership in another list.
 
 * `AppComponent` could be declared in this module but not bootstrapped.
 * `AppComponent` could be bootstrapped in this module but declared in a different feature module.
-* A component could be imported from another app module (so you can't declare it) and re-exported by this module.
+* A component could be imported from another application module (so you can't declare it) and re-exported by this module.
 * A component could be exported for inclusion in an external component's template
 as well as dynamically loaded in a pop-up dialog.
 
@@ -102,7 +102,7 @@ should import `BrowserModule` from `@angular/platform-browser`.
 
 `BrowserModule` also re-exports `CommonModule` from `@angular/common`,
 which means that components in the `AppModule` also have access to
-the Angular directives every app needs, such as `NgIf` and `NgFor`.
+the Angular directives every application needs, such as `NgIf` and `NgFor`.
 
 Do not import `BrowserModule` in any other module.
 *Feature modules* and *lazy-loaded modules* should import `CommonModule` instead.
@@ -399,9 +399,9 @@ not the root `AppComponent`.
 ### The eagerly loaded scenario
 When an eagerly loaded module provides a service, for example a `UserService`, that service is available application-wide. If the root module provides `UserService` and
 imports another module that provides the same `UserService`, Angular registers one of
-them in the root app injector (see [What if I import the same module twice?](guide/ngmodule-faq#q-reimport)).
+them in the root application injector (see [What if I import the same module twice?](guide/ngmodule-faq#q-reimport)).
 
-Then, when some component injects `UserService`, Angular finds it in the app root injector,
+Then, when some component injects `UserService`, Angular finds it in the application root injector,
 and delivers the app-wide singleton service. No problem.
 
 ### The lazy loaded scenario
@@ -417,7 +417,7 @@ and creates a _new_ instance of the `UserService`.
 This is an entirely different `UserService` instance
 than the app-wide singleton version that Angular injected in one of the eagerly loaded components.
 
-This scenario causes your app to create a new instance every time, instead of using the singleton.
+This scenario causes your application to create a new instance every time, instead of using the singleton.
 <!--KW--What does this cause? I wasn't able to get the suggestion of this to work from
 the current FAQ:
 To demonstrate, run the <live-example name="ngmodule">live example</live-example>.
@@ -438,7 +438,7 @@ For a lazy-loaded NgModule, Angular creates a _child injector_ and adds the modu
 This means that an NgModule behaves differently depending on whether it's loaded during application start
 or lazy-loaded later. Neglecting that difference can lead to [adverse consequences](guide/ngmodule-faq#q-why-bad).
 
-Why doesn't Angular add lazy-loaded providers to the app root injector as it does for eagerly loaded NgModules?
+Why doesn't Angular add lazy-loaded providers to the application root injector as it does for eagerly loaded NgModules?
 
 The answer is grounded in a fundamental characteristic of the Angular dependency-injection system.
 An injector can add providers _until it's first used_.
@@ -446,11 +446,11 @@ Once an injector starts creating and delivering services, its provider list is f
 
 When an applications starts, Angular first configures the root injector with the providers of all eagerly loaded NgModules
 _before_ creating its first component and injecting any of the provided services.
-Once the application begins, the app root injector is closed to new providers.
+Once the application begins, the application root injector is closed to new providers.
 
 Time passes and application logic triggers lazy loading of an NgModule.
 Angular must add the lazy-loaded module's providers to an injector somewhere.
-It can't add them to the app root injector because that injector is closed to new providers.
+It can't add them to the application root injector because that injector is closed to new providers.
 So Angular creates a new child injector for the lazy-loaded module context.
 
 <hr/>
@@ -464,7 +464,7 @@ Importing the module a second time by lazy loading a module could [produce erran
 that may be difficult to detect and diagnose.
 
 To prevent this issue, write a constructor that attempts to inject the module or service
-from the root app injector. If the injection succeeds, the class has been loaded a second time.
+from the root application injector. If the injection succeeds, the class has been loaded a second time.
 You can throw an error or take other remedial action.
 
 Certain NgModules, such as `BrowserModule`, implement such a guard.
@@ -525,7 +525,7 @@ Components listed in `@NgModule.bootstrap` are added automatically.
 Components referenced in router configuration are added automatically.
 These two mechanisms account for almost all entry components.
 
-If your app happens to bootstrap or dynamically load a component _by type_ in some other manner,
+If your application happens to bootstrap or dynamically load a component _by type_ in some other manner,
 you must add it to `entryComponents` explicitly.
 
 Although it's harmless to add components to this list,
@@ -563,7 +563,7 @@ the compiler omits it.
 
 ## What kinds of modules should I have and how should I use them?
 
-Every app is different. Developers have various levels of experience and comfort with the available choices.
+Every application is different. Developers have various levels of experience and comfort with the available choices.
 Some suggestions and guidelines appear to have wide appeal.
 
 ### `SharedModule`
@@ -578,11 +578,11 @@ The `SharedModule` should not have `providers` for reasons [explained previously
 Nor should any of its imported or re-exported modules have `providers`.
 
 Import the `SharedModule` in your _feature_ modules,
-both those loaded when the app starts and those you lazy load later.
+both those loaded when the application starts and those you lazy load later.
 
 ### Feature Modules
 
-Feature modules are modules you create around specific application business domains, user workflows, and utility collections. They support your app by containing a particular feature,
+Feature modules are modules you create around specific application business domains, user workflows, and utility collections. They support your application by containing a particular feature,
 such as routes, services, widgets, etc. To conceptualize what a feature module might be in your
 app, consider that if you would put the files related to a certain functionality, like a search,
 in one folder, that the contents of that folder would be a feature module that you might call

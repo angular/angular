@@ -11,11 +11,11 @@ The following properties, at the top level of the file, configure the workspace.
 
 * `version`: The configuration-file version.
 * `newProjectRoot`: Path where new projects are created. Absolute or relative to the workspace folder.
-* `defaultProject`: Default project name to use in commands, where not provided as an argument. When you use `ng new` to create a new app in a new workspace, that app is the default project for the workspace until you change it here.
+* `defaultProject`: Default project name to use in commands, where not provided as an argument. When you use `ng new` to create a new application in a new workspace, that application is the default project for the workspace until you change it here.
 * `schematics` : A set of [schematics](guide/glossary#schematic) that customize the `ng generate` sub-command option defaults for this workspace. See [Generation schematics](#schematics) below.
 * `projects` : Contains a subsection for each project (library or application) in the workspace, with the per-project configuration options.
 
-The initial app that you create with `ng new app_name` is listed under "projects":
+The initial application that you create with `ng new app_name` is listed under "projects":
 
 <code-example language="json">
 
@@ -28,13 +28,13 @@ The initial app that you create with `ng new app_name` is listed under "projects
 
 </code-example>
 
-Each additional app that you create with `ng generate application` has a corresponding end-to-end test project, with its own configuration section.
+Each additional application that you create with `ng generate application` has a corresponding end-to-end test project, with its own configuration section.
 When you create a library project with `ng generate library`, the library project is also added to the `projects` section.
 
 <div class="alert is-helpful">
 
   Note that the `projects` section of the configuration file does not correspond exactly to the workspace file structure.
-  * The initial app created by `ng new` is at the top level of the workspace file structure.
+  * The initial application created by `ng new` is at the top level of the workspace file structure.
   * Additional applications and libraries go into a `projects` folder in the workspace.
 
   For more information, see [Workspace and project file structure](guide/file-structure).
@@ -68,7 +68,7 @@ The following top-level configuration properties are available for each project,
 | `root`          | The root folder for this project's files, relative to the workspace folder. Empty for the initial app, which resides at the top level of the workspace. |
 | `sourceRoot`    | The root folder for this project's source files. |
 | `projectType`   | One of "application" or "library". An application can run independently in a browser, while a library cannot.|
-| `prefix`        | A string that Angular prepends to generated selectors. Can be customized to identify an app or feature area. |
+| `prefix`        | A string that Angular prepends to generated selectors. Can be customized to identify an application or feature area. |
 | `schematics`    | A set of schematics that customize the `ng generate` sub-command option defaults for this project. See [Generation schematics](#schematics) below.  |
 | `architect`     | Configuration defaults for Architect builder targets for this project. |
 
@@ -151,9 +151,9 @@ See [Build target](#build-target) below for more information.
 
 * The `architect/extract-i18n` section configures defaults for options of the `ng-xi18n` tool used by the `ng xi18n` command, which extracts marked message strings from source code and outputs translation files.
 
-* The `architect/server` section configures defaults for creating a Universal app with server-side rendering, using the `ng run <project>:server` command.
+* The `architect/server` section configures defaults for creating a Universal application with server-side rendering, using the `ng run <project>:server` command.
 
-* The `architect/app-shell` section configures defaults for creating an app shell for a progressive web app (PWA), using the `ng run <project>:app-shell` command.
+* The `architect/app-shell` section configures defaults for creating an application shell for a progressive web application (PWA), using the `ng run <project>:app-shell` command.
 
 In general, the options for which you can configure defaults correspond to the command options listed in the [CLI reference page](cli) for each command.
 Note that all options in the configuration file must use [camelCase](guide/glossary#case-conventions), rather than dash-case.
@@ -175,7 +175,7 @@ The `architect/build` section configures defaults for options of the `ng build` 
 
 ### Alternate build configurations
 
-By default, a `production` configuration is defined, and the `ng build` command has `--prod` option that builds using this configuration. The `production` configuration sets defaults that optimize the app in a number of ways, such as bundling files, minimizing excess whitespace, removing comments and dead code, and rewriting code to use short, cryptic names ("minification").
+By default, a `production` configuration is defined, and the `ng build` command has `--prod` option that builds using this configuration. The `production` configuration sets defaults that optimize the application in a number of ways, such as bundling files, minimizing excess whitespace, removing comments and dead code, and rewriting code to use short, cryptic names ("minification").
 
 You can define and name additional alternate configurations (such as `stage`, for instance) appropriate to your development process. Some examples of different build configurations are `stable`, `archive` and `next` used by AIO itself, and the individual locale-specific configurations required for building localized versions of an app. For details, see [Internationalization (i18n)](guide/i18n#merge-aot).
 

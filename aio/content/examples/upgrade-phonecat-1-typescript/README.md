@@ -21,7 +21,7 @@ Start like any example
 
     npm run start
 
-You'll find the app under the /app path: http://localhost:3002/app/index.html
+You'll find the application under the /application path: http://localhost:3002/app/index.html
 
 ## Running unit tests
 

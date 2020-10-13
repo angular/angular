@@ -1,10 +1,10 @@
 # Adding navigation
 
 At the end of [part 1](start "Get started with a basic Angular app"), the online store application has a basic product catalog.
-The app doesn't have any variable states or navigation.
+The application doesn't have any variable states or navigation.
 There is one URL, and that URL always displays the "My Store" page with a list of products and their descriptions.
 
-This guide shows you how to use Angular [routing](guide/glossary#router "Router definition") to give the user in-app navigation. In a single-page app, instead of loading new pages, you show different components and data to the user based on where the user is in the application.
+This guide shows you how to use Angular [routing](guide/glossary#router "Router definition") to give the user in-application navigation. In a single-page app, instead of loading new pages, you show different components and data to the user based on where the user is in the application.
 
 The router lets you display full product details in separate [views](guide/glossary#view "View definition"), each with its own URL. Routing enables navigation from one view to the next (within the same page) as users perform tasks such as the following:
 
@@ -14,7 +14,7 @@ The router lets you display full product details in separate [views](guide/gloss
 
 ## Registering a route
 
-The app is already set up to use the Angular `Router` and to use routing to navigate to the product list component you modified earlier. This section shows you how to define a route to show individual product details.
+The application is already set up to use the Angular `Router` and to use routing to navigate to the product list component you modified earlier. This section shows you how to define a route to show individual product details.
 
 1. Generate a new component for product details. Give the component the name `product-details`.
 
@@ -27,7 +27,7 @@ The app is already set up to use the Angular `Router` and to use routing to navi
 
     A route associates one or more URL paths with a component.
 
-1. The directive configures the component template to define how the user navigates to the route or URL. When the user clicks a product name, the app  displays the details for that product.
+1. The directive configures the component template to define how the user navigates to the route or URL. When the user clicks a product name, the application  displays the details for that product.
 
     1. Open `product-list.component.html`.
 
@@ -40,7 +40,7 @@ The app is already set up to use the Angular `Router` and to use routing to navi
 
       The RouterLink directive gives the router control over the anchor element. In this case, the route, or URL, contains one fixed segment, `/products`, while the final segment is variable, inserting the id property of the current product. For example, the URL for a product with an `id` of 1 will be similar to `https://getting-started-myfork.stackblitz.io/products/1`.
 
-1. Test the router by clicking a product name. The app displays the product details component, which currently always says "product-details works!"
+1. Test the router by clicking a product name. The application displays the product details component, which currently always says "product-details works!"
 
     Notice that the URL in the preview window changes. The final segment is `products/#`  where `#` is the number of the route you clicked.
 
@@ -110,4 +110,4 @@ Congratulations! You have integrated routing into your online store.
 
 To continue exploring Angular, choose either of the following options:
 * [Continue to the "Managing Data" section](start/start-data "Try it: Managing Data") to add a shopping cart feature, use a service to manage the cart data and use HTTP to retrieve external data for shipping prices.
-* [Skip ahead to the Deployment section](start/start-deployment "Try it: Deployment") to deploy your app to Firebase or move to local development.
+* [Skip ahead to the Deployment section](start/start-deployment "Try it: Deployment") to deploy your application to Firebase or move to local development.

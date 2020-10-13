@@ -75,12 +75,12 @@ The file is expected to contain a JSON object with zero or more of the following
 **SystemJS-only properties:**
 - `build: string`: The npm script to run in order to build the example app.
   Default: `"build"`
-- `run: string`: The npm script to run in order to serve the example app (so that e2e test can be run against it).
+- `run: string`: The npm script to run in order to serve the example application (so that e2e test can be run against it).
   Default `"serve:e2e"`
 
 **CLI-only properties:**
 - `tests: object[]`: An array of objects, each specifying a test command. This can be used to run multiple test commands in series (for example, to run unit and e2e tests).
-  The commands are specified as `{cmd: string, args: string[]}` and must be in a format that could be passed to Node.js' `child_process.spawn(cmd, args)`. You can use a special `{PORT}` placeholder, that will be replaced with the port on which the app is served during the actual test.
+  The commands are specified as `{cmd: string, args: string[]}` and must be in a format that could be passed to Node.js' `child_process.spawn(cmd, args)`. You can use a special `{PORT}` placeholder, that will be replaced with the port on which the application is served during the actual test.
   Default:
 
   ```json

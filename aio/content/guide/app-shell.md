@@ -11,14 +11,14 @@ Learn more in [The App Shell Model](https://developers.google.com/web/fundamenta
 
 You can do this with the following CLI command:
 <code-example language="bash">
-ng new my-app --routing
+ng new my-application --routing
 </code-example>
 
 For an existing application, you have to manually add the `RouterModule` and defining a `<router-outlet>` within your application.
 
-## Step 2: Create the app shell
+## Step 2: Create the application shell
 
-Use the CLI to automatically create the app shell.
+Use the CLI to automatically create the application shell.
 
 <code-example language="bash">
 ng generate app-shell
@@ -53,7 +53,7 @@ After running this command you will notice that the `angular.json` configuration
 }
 </code-example>
 
-## Step 3: Verify the app is built with the shell content
+## Step 3: Verify the application is built with the shell content
 
 Use the CLI to build the `app-shell` target.
 
@@ -67,6 +67,6 @@ Or to use the production configuration.
 ng run my-app:app-shell:production
 </code-example>
 
-To verify the build output, open `dist/my-app/index.html`. Look for default text `app-shell works!` to show that the app shell route was rendered as part of the output.
+To verify the build output, open `dist/my-app/index.html`. Look for default text `app-shell works!` to show that the application shell route was rendered as part of the output.
 
 

@@ -195,7 +195,7 @@ The list is by no means exhaustive, but should provide you with a good starting 
 
 
 * [Nginx](http://nginx.org/): use `try_files`, as described in
-[Front Controller Pattern Web Apps](https://www.nginx.com/resources/wiki/start/topics/tutorials/config_pitfalls/#front-controller-pattern-web-applications),
+[Front Controller Pattern Web Apps](https://www.nginx.com/resources/wiki/start/topics/tutorials/config_pitfalls/#front-controller-pattern-web-apps),
 modified to serve `index.html`:
 
   ```

@@ -15,7 +15,7 @@ can validate much of the component's behavior in an easier, more obvious way.
 
 <div class="alert is-helpful">
 
-  For the sample app that the testing guides describe, see the <live-example name="testing" embedded-style noDownload>sample app</live-example>.
+  For the sample application that the testing guides describe, see the <live-example name="testing" embedded-style noDownload>sample app</live-example>.
 
   For the tests features in the testing guides, see <live-example name="testing" stackblitz="specs" noDownload>tests</live-example>.
 
@@ -270,7 +270,7 @@ Later you'll encounter the `DebugElement.nativeElement` and it too has the `any`
 
 Angular can't know at compile time what kind of HTML element the `nativeElement` is or
 if it even is an HTML element.
-The app might be running on a _non-browser platform_, such as the server or a
+The application might be running on a _non-browser platform_, such as the server or a
 [Web Worker](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API),
 where the element may have a diminished API or not exist at all.
 

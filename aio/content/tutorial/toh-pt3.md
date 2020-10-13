@@ -12,7 +12,7 @@ The `HeroDetailComponent` will present details of a selected hero.
 
 <div class="alert is-helpful">
 
-  For the sample app that this page describes, see the <live-example></live-example>.
+  For the sample application that this page describes, see the <live-example></live-example>.
 
 </div>
 
@@ -121,7 +121,7 @@ The revised `HeroesComponent` template should look like this:
 <code-example path="toh-pt3/src/app/heroes/heroes.component.html"
   header="heroes.component.html"></code-example>
 
-The browser refreshes and the app starts working again as it did before.
+The browser refreshes and the application starts working again as it did before.
 
 ## What changed?
 

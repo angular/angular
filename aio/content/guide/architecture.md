@@ -5,7 +5,7 @@ Angular is written in TypeScript.
 It implements core and optional functionality as a set of TypeScript libraries that you import into your applications.
 
 The architecture of an Angular application relies on certain fundamental concepts.
-The basic building blocks are *NgModules*, which provide a compilation context for *components*. NgModules collect related code into functional sets; an Angular app is defined by a set of NgModules. An app always has at least a *root module* that enables bootstrapping, and typically has many more *feature modules*.
+The basic building blocks are *NgModules*, which provide a compilation context for *components*. NgModules collect related code into functional sets; an Angular application is defined by a set of NgModules. An application always has at least a *root module* that enables bootstrapping, and typically has many more *feature modules*.
 
 * Components define *views*, which are sets of screen elements that Angular can choose among and modify according to your program logic and data.
 
@@ -27,14 +27,14 @@ An app's components typically define many views, arranged hierarchically. Angula
 
 <div class="alert is-helpful">
 
-  For the sample app that this page describes, see the <live-example></live-example>.
+  For the sample application that this page describes, see the <live-example></live-example>.
 </div>
 
 ## Modules
 
 Angular *NgModules* differ from and complement JavaScript (ES2015) modules. An NgModule declares a compilation context for a set of components that is dedicated to an application domain, a workflow, or a closely related set of capabilities. An NgModule can associate its components with related code, such as services, to form functional units.
 
-Every Angular app has a *root module*, conventionally named `AppModule`, which provides the bootstrap mechanism that launches the application. An app typically contains many functional modules.
+Every Angular application has a *root module*, conventionally named `AppModule`, which provides the bootstrap mechanism that launches the application. An application typically contains many functional modules.
 
 Like JavaScript modules, NgModules can import functionality from other NgModules, and allow their own functionality to be exported and used by other NgModules. For example, to use the router service in your app, you import the `Router` NgModule.
 
@@ -66,7 +66,7 @@ A template combines HTML with Angular markup that can modify HTML elements befor
 Template *directives* provide program logic, and *binding markup* connects your application data and the DOM.
 There are two types of data binding:
 
-* *Event binding* lets your app respond to user input in the target environment by updating your application data.
+* *Event binding* lets your application respond to user input in the target environment by updating your application data.
 * *Property binding* lets you interpolate values that are computed from your application data into the HTML.
 
 Before a view is displayed, Angular evaluates the directives and resolves the binding syntax in the template to modify the HTML elements and the DOM, according to your program data and logic. Angular supports *two-way data binding*, meaning that changes in the DOM, such as user choices, are also reflected in your program data.

@@ -51,7 +51,7 @@ Please run `ng add @angular/localize` from the Angular CLI.
 ```
 
 This schematic automatically adds the `@angular/localize/init` import for you
-if your app uses Angular's i18n APIs.
+if your application uses Angular's i18n APIs.
 
 
 ## Why is my tslint failing?

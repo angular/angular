@@ -11,7 +11,7 @@ Whether you came here directly from [Part 1](start "Try it: A basic app"), or co
 
 ## Share your application
 
-StackBlitz projects are public by default, allowing you to share your Angular app via the project URL. Keep in mind that this is a great way to share ideas and prototypes, but it is not intended for production hosting.
+StackBlitz projects are public by default, allowing you to share your Angular application via the project URL. Keep in mind that this is a great way to share ideas and prototypes, but it is not intended for production hosting.
 
 1. In your StackBlitz project, make sure you have forked or saved your project.
 1. In the preview page, you should see a URL that looks like `https://<Project ID>.stackblitz.io`.
@@ -22,7 +22,7 @@ StackBlitz projects are public by default, allowing you to share your Angular ap
 
 To build your application locally or for production, download the source code from your StackBlitz project by clicking the `Download Project` icon in the left menu across from `Project` to download your files.
 
-Once you have the source code downloaded and unzipped, install `Node.js` and serve your app with the Angular CLI.
+Once you have the source code downloaded and unzipped, install `Node.js` and serve your application with the Angular CLI.
 
 From the terminal, install the Angular CLI globally with:
 
@@ -56,7 +56,7 @@ If the above `ng build` command throws an error about missing packages, append t
 
 The files in the `dist/my-project-name` folder are static. This means you can host them on any web server capable of serving files (such as `Node.js`, Java, .NET), or any backend (such as Firebase, Google Cloud, or App Engine).
 
-### Hosting an Angular app on Firebase
+### Hosting an Angular application on Firebase
 
 One of the easiest ways to get your site live is to host it using Firebase.
 
@@ -71,9 +71,9 @@ One of the easiest ways to get your site live is to host it using Firebase.
 1. Deploy your application with `ng deploy`.
 1. Once deployed, visit https://your-firebase-project-name.firebaseapp.com to see it live!
 
-### Hosting an Angular app anywhere else
+### Hosting an Angular application anywhere else
 
-To host an Angular app on another web host, upload or send the files to the host.
+To host an Angular application on another web host, upload or send the files to the host.
 Because you are building a single page application, you'll also need to make sure you redirect any invalid URLs to your `index.html` file.
 Read more about development and distribution of your application in the [Building & Serving](guide/build "Building and Serving Angular Apps") and [Deployment](guide/deployment "Deployment guide") guides.
 

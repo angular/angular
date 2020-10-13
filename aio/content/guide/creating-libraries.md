@@ -2,7 +2,7 @@
 
 This page provides a conceptual overview of how you can create and publish new libraries to extend Angular functionality.
 
-If you find that you need to solve the same problem in more than one app (or want to share your solution with other developers), you have a candidate for a library.
+If you find that you need to solve the same problem in more than one application (or want to share your solution with other developers), you have a candidate for a library.
 A simple example might be a button that sends users to your company website, that would be included in all applications that your company builds.
 
 ## Getting started
@@ -50,7 +50,7 @@ You can build, test, and lint the project with CLI commands:
  ng lint my-lib
 </code-example>
 
-Notice that the configured builder for the project is different from the default builder for app projects.
+Notice that the configured builder for the project is different from the default builder for application projects.
 This builder, among other things, ensures that the library is always built with the [AOT compiler](guide/aot-compiler), without the need to specify the `--prod` flag.
 
 To make library code reusable you must define a public API for it. This "user layer" defines what is available to consumers of your library. A user of your library should be able to access public functionality (such as NgModules, service providers and general utility functions) through a single import path.
@@ -61,7 +61,7 @@ Use an NgModule to expose services and components.
 
 Your library should supply documentation (typically a README file) for installation and maintenance.
 
-## Refactoring parts of an app into a library
+## Refactoring parts of an application into a library
 
 To make your solution reusable, you need to adjust it so that it does not depend on app-specific code.
 Here are some things to consider in migrating application functionality to a library.
@@ -204,7 +204,7 @@ To use your own library in an app:
 
 ### Building and rebuilding your library
 
-The build step is important if you haven't published your library as an npm package and then installed the package back into your app from npm.
+The build step is important if you haven't published your library as an npm package and then installed the package back into your application from npm.
 For instance, if you clone your git repository and run `npm install`, your editor will show the `my-lib` imports as missing if you haven't yet built your library.
 
 <div class="alert is-helpful">
@@ -217,7 +217,7 @@ The Angular CLI uses the `tsconfig` paths to tell the build system where to find
 
 </div>
 
-If you find that changes to your library are not reflected in your app, your app is probably using an old build of the library.
+If you find that changes to your library are not reflected in your app, your application is probably using an old build of the library.
 
 You can rebuild your library whenever you make changes to it, but this extra step takes time.
 *Incremental builds* functionality improves the library-development experience.
@@ -239,7 +239,7 @@ The CLI `build` command uses a different builder and invokes a different build t
 The two build systems support different things, and even where they support the same things, they do those things differently.
 This means that the TypeScript source can result in different JavaScript code in a built library than it would in a built application.
 
-For this reason, an app that depends on a library should only use TypeScript path mappings that point to the *built library*.
+For this reason, an application that depends on a library should only use TypeScript path mappings that point to the *built library*.
 TypeScript path mappings should *not* point to the library source `.ts` files.
 
 </div>

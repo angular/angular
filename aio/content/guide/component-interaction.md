@@ -350,7 +350,7 @@ So it displays `0` seconds initially.
 Then Angular calls the `ngAfterViewInit` lifecycle hook at which time it is *too late*
 to update the parent view's display of the countdown seconds.
 Angular's unidirectional data flow rule prevents updating the parent view's
-in the same cycle. The app has to *wait one turn* before it can display the seconds.
+in the same cycle. The application has to *wait one turn* before it can display the seconds.
 
 Use `setTimeout()` to wait one tick and then revise the `seconds()` method so
 that it takes future values from the timer component.
@@ -405,8 +405,8 @@ Each `AstronautComponent` is a child of the `MissionControlComponent` and theref
 
 
 Notice that this example captures the `subscription` and `unsubscribe()` when the `AstronautComponent` is destroyed.
-This is a memory-leak guard step. There is no actual risk in this app because the
-lifetime of a `AstronautComponent` is the same as the lifetime of the app itself.
+This is a memory-leak guard step. There is no actual risk in this application because the
+lifetime of a `AstronautComponent` is the same as the lifetime of the application itself.
 That *would not* always be true in a more complex application.
 
 You don't add this guard to the `MissionControlComponent` because, as the parent,

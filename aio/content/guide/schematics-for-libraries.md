@@ -323,7 +323,7 @@ ng generate my-lib:my-service --name my-data
 
 </code-example>
 
-In the console, you will see that the schematic was run and the `my-data.service.ts` file was created in your app folder.
+In the console, you will see that the schematic was run and the `my-data.service.ts` file was created in your application folder.
 
 <code-example language="bash" hideCopy="true">
 

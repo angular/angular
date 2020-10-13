@@ -172,7 +172,7 @@ Here's the updated directive in full:
 
 <code-example path="attribute-directives/src/app/highlight.directive.2.ts" header="src/app/highlight.directive.ts"></code-example>
 
-Run the app and confirm that the background color appears when
+Run the application and confirm that the background color appears when
 the pointer hovers over the paragraph element and disappears as the pointer moves out.
 
 <div class="lightbox">

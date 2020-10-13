@@ -9,7 +9,7 @@ As users access your application's features, the browser needs to render only th
 To define how users navigate through your application, you use routes. You can add routes to define how users navigate from one part of your application to another.
 You can also configure routes to guard against unexpected or unauthorized behavior.
 
-To explore a sample app featuring the contents of this tutorial, see the <live-example></live-example>.
+To explore a sample application featuring the contents of this tutorial, see the <live-example></live-example>.
 
 ## Objectives
 

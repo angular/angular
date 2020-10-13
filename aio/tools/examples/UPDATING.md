@@ -5,7 +5,7 @@ Follow these steps to update the examples to the latest versions of Angular (and
 - In [shared/package.json](./shared/package.json), bump all the `@angular/*` and `@nguniversal/*` package versions to the version you want to update to and update their peer dependencies (such as `@angular-devkit/*`, `rxjs`, `typescript`, `zone.js`) and other dependencies (e.g. `@types/*`) to the latest compatible versions.
 
   > NOTE:
-  > The [angular-cli-diff](https://github.com/cexbrayat/angular-cli-diff) repo can be a useful resource for discovering what dependency versions are used for a basic CLI app at a specific CLI version.
+  > The [angular-cli-diff](https://github.com/cexbrayat/angular-cli-diff) repo can be a useful resource for discovering what dependency versions are used for a basic CLI application at a specific CLI version.
 
 - In the [shared/](./shared) folder, run `yarn` to update the dependencies in the [shared/node_modules/](./shared/node_modules) folder and the [shared/yarn.lock](./shared/yarn.lock) file.
 

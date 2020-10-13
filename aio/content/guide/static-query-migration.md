@@ -155,7 +155,7 @@ In Angular version 9 and later, it will be safe to remove any `{static: false}` 
 
 Yes, absolutely!
 Because we have not changed the default query behavior in version 8 (i.e. the compiler still chooses a timing if no flag is set), when your application runs with a library that has not updated to version 8, the library will run the same way it did in version 7.
-This guarantees your app will work in version 8 even if libraries take longer to update their code.
+This guarantees your application will work in version 8 even if libraries take longer to update their code.
 
 {@a update-library-to-use-static-flag}
 ###  Can I update my library to version 8 by adding the `static` flag to view queries, while still being compatible with Angular version 7 applications?

@@ -82,4 +82,4 @@ To confirm submission, open the console where you should see an object containin
 
 Congratulations! You have a complete online store application with a product catalog, a shopping cart, and a checkout function.
 
-[Continue to the "Deployment" section](start/start-deployment "Try it: Deployment") to move to local development, or deploy your app to Firebase or your own server.
+[Continue to the "Deployment" section](start/start-deployment "Try it: Deployment") to move to local development, or deploy your application to Firebase or your own server.

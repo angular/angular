@@ -11,7 +11,7 @@ In Angular, the DI framework provides declared dependencies to a class when that
 
 <div class="alert is-helpful">
 
- You can run the <live-example></live-example> of the sample app that accompanies this guide.
+ You can run the <live-example></live-example> of the sample application that accompanies this guide.
 
 </div>
 
@@ -79,7 +79,7 @@ The command creates the following `HeroService` skeleton.
 <code-example path="dependency-injection/src/app/heroes/hero.service.0.ts" header="src/app/heroes/hero.service.ts (CLI-generated)">
 </code-example>
 
-The `@Injectable()` is an essential ingredient in every Angular service definition. The rest of the class has been written to expose a `getHeroes` method that returns the same mock data as before. (A real app would probably get its data asynchronously from a remote server, but we'll ignore that to focus on the mechanics of injecting the service.)
+The `@Injectable()` is an essential ingredient in every Angular service definition. The rest of the class has been written to expose a `getHeroes` method that returns the same mock data as before. (A real application would probably get its data asynchronously from a remote server, but we'll ignore that to focus on the mechanics of injecting the service.)
 
 <code-example path="dependency-injection/src/app/heroes/hero.service.3.ts" header="src/app/heroes/hero.service.ts">
 </code-example>
@@ -172,7 +172,7 @@ If you decided to provide `HeroService` in `AppModule`, `HeroListComponent` woul
 
 Services are singletons _within the scope of an injector_. That is, there is at most one instance of a service in a given injector.
 
-There is only one root injector for an app. Providing `UserService` at the `root` or `AppModule` level means it is registered with the root injector. There is just one `UserService` instance in the entire app and every class that injects `UserService` gets this service instance _unless_ you configure another provider with a _child injector_.
+There is only one root injector for an app. Providing `UserService` at the `root` or `AppModule` level means it is registered with the root injector. There is just one `UserService` instance in the entire application and every class that injects `UserService` gets this service instance _unless_ you configure another provider with a _child injector_.
 
 Angular DI has a [hierarchical injection system](guide/hierarchical-dependency-injection), which means that nested injectors can create their own service instances.
 Angular regularly creates nested injectors. Whenever Angular creates a new instance of a component that has `providers` specified in `@Component()`, it also creates a new _child injector_ for that instance.

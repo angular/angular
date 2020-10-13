@@ -50,7 +50,7 @@ The `HttpClient` service makes use of [observables](guide/glossary#observable "O
 
 You can run the <live-example></live-example> that accompanies this guide.
 
-The sample app does not require a data server.
+The sample application does not require a data server.
 It relies on the
 [Angular _in-memory-web-api_](https://github.com/angular/in-memory-web-api/blob/master/README.md),
 which replaces the _HttpClient_ module's `HttpBackend`.
@@ -94,7 +94,7 @@ Use the `params` property to configure a request with [HTTP URL parameters](#url
 </div>
 
 Applications often request JSON data from a server.
-In the `ConfigService` example, the app needs a configuration file on the server, `config.json`,
+In the `ConfigService` example, the application needs a configuration file on the server, `config.json`,
 that specifies resource URLs.
 
 <code-example
@@ -319,7 +319,7 @@ When an error occurs, you can obtain details of what failed in order to inform y
 {@a error-details}
 ### Getting error details
 
-An app should give the user useful feedback when data access fails.
+An application should give the user useful feedback when data access fails.
 A raw error object is not particularly useful as feedback.
 In addition to detecting that an error has occurred, you need to get error details and use those details to compose a user-friendly response.
 
@@ -371,7 +371,7 @@ The following example shows how you can pipe a failed request to the `retry()` o
 
 In addition to fetching data from a server, `HttpClient` supports other HTTP methods such as PUT, POST, and DELETE, which you can use to modify the remote data.
 
-The sample app for this guide includes a simplified version of the "Tour of Heroes" example
+The sample application for this guide includes a simplified version of the "Tour of Heroes" example
 that fetches heroes and enables users to add, delete, and update them.
 The following sections show examples of the data-update methods from the sample's `HeroesService`.
 
@@ -476,7 +476,7 @@ req.subscribe();
 
 ### Making a PUT request
 
-An app can send PUT requests using the HTTP client service.
+An application can send PUT requests using the HTTP client service.
 The following `HeroesService` example, like the POST example, replaces a resource with updated data.
 
 <code-example
@@ -598,13 +598,13 @@ This is a common middleware pattern found in frameworks such as Express.js.
 ### Provide the interceptor
 
 The `NoopInterceptor` is a service managed by Angular's [dependency injection (DI)](guide/dependency-injection) system.
-Like other services, you must provide the interceptor class before the app can use it.
+Like other services, you must provide the interceptor class before the application can use it.
 
 Because interceptors are (optional) dependencies of the `HttpClient` service,
 you must provide them in the same injector (or a parent of the injector) that provides `HttpClient`.
 Interceptors provided _after_ DI creates the `HttpClient` are ignored.
 
-This app provides `HttpClient` in the app's root injector, as a side-effect of importing the `HttpClientModule` in `AppModule`.
+This application provides `HttpClient` in the app's root injector, as a side-effect of importing the `HttpClientModule` in `AppModule`.
 You should provide interceptors in `AppModule` as well.
 
 After importing the `HTTP_INTERCEPTORS` injection token from `@angular/common/http`,
@@ -676,7 +676,7 @@ Some interceptors, however, need to examine and modify the response from `next.h
 Although interceptors are capable of modifying requests and responses,
 the `HttpRequest` and `HttpResponse` instance properties are `readonly`,
 rendering them largely immutable.
-They are immutable for a good reason: an app might retry a request several times before it succeeds, which means that the interceptor chain can re-process the same request multiple times.
+They are immutable for a good reason: an application might retry a request several times before it succeeds, which means that the interceptor chain can re-process the same request multiple times.
 If an interceptor could modify the original request object, the re-tried operation would start from the modified request rather than the original. Immutability ensures that interceptors see the same request for each try.
 
 <div class="alert is-helpful">
@@ -745,7 +745,7 @@ To do this, set the cloned request body to `null`.
 
 Apps often use an interceptor to set default headers on outgoing requests.
 
-The sample app has an `AuthService` that produces an authorization token.
+The sample application has an `AuthService` that produces an authorization token.
 Here is its `AuthInterceptor` that injects that service to get the token and
 adds an authorization header with that token to every outgoing request:
 
@@ -917,7 +917,7 @@ The `getEventMessage` method interprets each type of `HttpEvent` in the event st
 
 <div class="alert is-helpful">
 
-The sample app for this guide doesn't have a server that accepts uploaded files.
+The sample application for this guide doesn't have a server that accepts uploaded files.
 The `UploadInterceptor` in `app/http-interceptors/upload-interceptor.ts`
 intercepts and short-circuits upload requests
 by returning an observable of simulated events.
@@ -1034,12 +1034,12 @@ use `HttpClientXsrfModule.withOptions()` to override the defaults.
 As for any external dependency, you must mock the HTTP backend so your tests can simulate interaction with a remote server.
 The `@angular/common/http/testing` library makes it straightforward to set up such mocking.
 
-Angular's HTTP testing library is designed for a pattern of testing in which the app executes code and makes requests first.
+Angular's HTTP testing library is designed for a pattern of testing in which the application executes code and makes requests first.
 The test then expects that certain requests have or have not been made,
 performs assertions against those requests,
 and finally provides responses by "flushing" each expected request.
 
-At the end, tests can verify that the app has made no unexpected requests.
+At the end, tests can verify that the application has made no unexpected requests.
 
 <div class="alert is-helpful">
 

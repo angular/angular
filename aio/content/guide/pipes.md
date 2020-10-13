@@ -6,7 +6,7 @@ For example, you would use a pipe to show a date as **April 15, 1988** rather th
 
 <div class="alert is-helpful">
 
-  For the sample app used in this topic, see the <live-example></live-example>.
+  For the sample application used in this topic, see the <live-example></live-example>.
 
 </div>
 
@@ -155,7 +155,7 @@ Use `name` in template expressions as you would for a built-in pipe.
 
 <div class="alert is-important">
 
-* Include your pipe in the `declarations` field of the `NgModule` metadata in order for it to be available to a template. See the `app.module.ts` file in the example app (<live-example></live-example>). For details, see [NgModules](guide/ngmodules "NgModules introduction").
+* Include your pipe in the `declarations` field of the `NgModule` metadata in order for it to be available to a template. See the `app.module.ts` file in the example application (<live-example></live-example>). For details, see [NgModules](guide/ngmodules "NgModules introduction").
 * Register your custom pipes. The [Angular CLI](cli "CLI Overview and Command Reference") [`ng generate pipe`](cli/generate#pipe "ng generate pipe in the CLI Command Reference") command registers the pipe automatically.
 
 </div>
@@ -293,7 +293,7 @@ The tabs for the example show the following:
   </code-pane>
 </code-tabs>
 
-The app now shows unexpected behavior: When the user adds flying heroes, none of them appear under "Heroes who fly."
+The application now shows unexpected behavior: When the user adds flying heroes, none of them appear under "Heroes who fly."
 This happens because the code that adds a hero does so by pushing it onto the `heroes` array:
 
 <code-example path="pipes/src/app/flying-heroes.component.ts" region="push" header="src/app/flying-heroes.component.ts"></code-example>

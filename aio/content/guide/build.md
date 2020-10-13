@@ -197,7 +197,7 @@ Specify size values in the following formats:
 
 * 12%: Percentage of size relative to baseline. (Not valid for baseline values.)
 
-When you configure a budget, the build system warns or reports an error when a given part of the app reaches or exceeds a boundary size that you set.
+When you configure a budget, the build system warns or reports an error when a given part of the application reaches or exceeds a boundary size that you set.
 
 Each budget entry is a JSON object with the following properties:
 
@@ -320,7 +320,7 @@ See the [browserslist repo](https://github.com/browserslist/browserslist) for mo
 
 ### Backward compatibility with Lighthouse
 
-If you want to produce a progressive web app and are using [Lighthouse](https://developers.google.com/web/tools/lighthouse/) to grade the project, add the following `browserslist` entry to your `package.json` file, in order to eliminate the [old flexbox](https://developers.google.com/web/tools/lighthouse/audits/old-flexbox) prefixes:
+If you want to produce a progressive web application and are using [Lighthouse](https://developers.google.com/web/tools/lighthouse/) to grade the project, add the following `browserslist` entry to your `package.json` file, in order to eliminate the [old flexbox](https://developers.google.com/web/tools/lighthouse/audits/old-flexbox) prefixes:
 
 ```
 "browserslist": [

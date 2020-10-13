@@ -1,6 +1,6 @@
 # Two-way binding `[(...)]`
 
-Two-way binding gives your app a way to share data between a component class and
+Two-way binding gives your application a way to share data between a component class and
 its template.
 
 <div class="alert is-helpful">

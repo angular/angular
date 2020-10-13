@@ -3,7 +3,7 @@
 
 Whenever a PR job is run on CircleCI, we want to build `angular.io` and host the build artifacts on
 a publicly accessible server so that collaborators (developers, designers, authors, etc) can preview
-the changes without having to checkout and build the app locally.
+the changes without having to checkout and build the application locally.
 
 This document discusses the security considerations associated with moving build artifacts as
 part of the CI process and serving them publicly.
@@ -70,7 +70,7 @@ This section describes how each of the aforementioned sub-tasks is accomplished:
    - Was the webhook triggered by the designated CircleCI job (currently `aio_preview`)?
    - Was the build successful?
    - Are the associated GitHub organisation and repository what we expect (e.g. `angular/angular`)?
-   - Has the PR touched any files that might affect the angular.io app (currently the `aio/` or
+   - Has the PR touched any files that might affect the angular.io application (currently the `aio/` or
      `packages/` directories, ignoring spec files)?
 
    If any of the preliminary checks fails, the process is aborted and not preview is generated.

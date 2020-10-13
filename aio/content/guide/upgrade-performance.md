@@ -11,7 +11,7 @@ This guide describes some of the built-in tools for efficiently migrating Angula
 the Angular platform, one piece at a time. It is very similar to
 [Upgrading from AngularJS](guide/upgrade) with the exception that this one uses the {@link
 downgradeModule downgradeModule()} helper function instead of the {@link UpgradeModule
-UpgradeModule} class. This affects how the app is bootstrapped and how change detection is
+UpgradeModule} class. This affects how the application is bootstrapped and how change detection is
 propagated between the two frameworks. It allows you to upgrade incrementally while improving the
 speed of your hybrid applications and leveraging the latest of Angular in AngularJS applications early in the
 process of upgrading.
@@ -28,8 +28,8 @@ same regardless of how you upgrade, refer to the [Preparation](guide/upgrade#pre
 
 ## Upgrading with `ngUpgrade`
 
-With the `ngUpgrade` library in Angular you can upgrade an existing AngularJS app incrementally by
-building a hybrid app where you can run both frameworks side-by-side. In these hybrid applications you can
+With the `ngUpgrade` library in Angular you can upgrade an existing AngularJS application incrementally by
+building a hybrid application where you can run both frameworks side-by-side. In these hybrid applications you can
 mix and match AngularJS and Angular components and services and have them interoperate seamlessly.
 That means you don't have to do the upgrade work all at once as there is a natural coexistence
 between the two frameworks during the transition period.
@@ -65,14 +65,14 @@ the Angular part and vice versa. This is convenient as it ensures that neither f
 important change. Most of the time, though, these extra change detection runs are unnecessary.
 
 `downgradeModule()`, on the other side, avoids explicitly triggering change detection unless it
-knows the other part of the app is interested in the changes. For example, if a downgraded component
-defines an `@Input()`, chances are that the app needs to be aware when that value changes. Thus,
+knows the other part of the application is interested in the changes. For example, if a downgraded component
+defines an `@Input()`, chances are that the application needs to be aware when that value changes. Thus,
 `downgradeComponent()` automatically triggers change detection on that component.
 
 In most cases, though, the changes made locally in a particular component are of no interest to the
 rest of the app. For example, if the user clicks a button that submits a form, the component usually
 handles the result of this action. That being said, there _are_ cases where you want to propagate
-changes to some other part of the app that may be controlled by the other framework. In such cases,
+changes to some other part of the application that may be controlled by the other framework. In such cases,
 you are responsible for notifying the interested parties by manually triggering change detection.
 
 If you want a particular piece of code to trigger change detection in the AngularJS part of the app,
@@ -88,7 +88,7 @@ performance for your hybrid applications.
 
 ## Using `downgradeModule()`
 
-Both AngularJS and Angular have their own concept of modules to help organize an app into cohesive
+Both AngularJS and Angular have their own concept of modules to help organize an application into cohesive
 blocks of functionality.
 
 Their details are quite different in architecture and implementation. In AngularJS, you create a
@@ -97,7 +97,7 @@ module by specifying its name and dependencies with
 assets using its various methods. In Angular, you create a class adorned with an {@link NgModule
 NgModule} decorator that describes assets in metadata.
 
-In a hybrid app you run both frameworks at the same time. This means that you need at least one
+In a hybrid application you run both frameworks at the same time. This means that you need at least one
 module each from both AngularJS and Angular.
 
 For the most part, you specify the modules in the same way you would for a regular app. Then, you
@@ -126,7 +126,7 @@ There are a few things to note, though:
 1. You don't pass the Angular module directly to `downgradeModule()`. All `downgradeModule()` needs
    is a "recipe", for example, a factory function, to create an instance for your module.
 
-2. The Angular module is not instantiated until the app actually needs it.
+2. The Angular module is not instantiated until the application actually needs it.
 
 The following is an example of how you can use `downgradeModule()` to link the two modules.
 
@@ -192,9 +192,9 @@ until later. `downgradeModule()` is again less aggressive. It will only instanti
 when it is required for the first time; that is, as soon as it needs to create a downgraded
 component.
 
-You could go a step further and not even download the code for the Angular part of the app to the
+You could go a step further and not even download the code for the Angular part of the application to the
 user's browser until it is needed. This is especially useful when you use Angular on parts of the
-hybrid app that are not necessary for the initial rendering or that the user doesn't reach.
+hybrid application that are not necessary for the initial rendering or that the user doesn't reach.
 
 
 A few examples are:
@@ -203,7 +203,7 @@ A few examples are:
 - You use Angular for features that are only visible to specific types of users; for example,
   logged-in users, administrators, or VIP members. You don't need to load Angular until a user is
   authenticated.
-- You use Angular for a feature that is not critical for the initial rendering of the app and you
+- You use Angular for a feature that is not critical for the initial rendering of the application and you
   can afford a small delay in favor of better initial load performance.
 
 
@@ -251,7 +251,7 @@ declaration on its `NgModule` decorator.
 <div class="alert is-important">
 
   You do not add a `bootstrap` declaration to the `NgModule` decorator since AngularJS owns the root
-  template of the app and `ngUpgrade` bootstraps the necessary components.
+  template of the application and `ngUpgrade` bootstraps the necessary components.
 
 </div>
 
@@ -296,7 +296,7 @@ See [Upgrading from AngularJS](guide/upgrade) to learn about:
 
   While it is possible to downgrade injectables, downgraded injectables will not be available until
   the Angular module that provides them is instantiated. In order to be safe, you need to ensure
-  that the downgraded injectables are not used anywhere _outside_ the part of the app where it is
+  that the downgraded injectables are not used anywhere _outside_ the part of the application where it is
   guaranteed that their module has been instantiated.
 
   For example, it is _OK_ to use a downgraded service in an upgraded component that is only used
@@ -310,7 +310,7 @@ See [Upgrading from AngularJS](guide/upgrade) to learn about:
 ## Using ahead-of-time compilation with hybrid applications
 
 You can take advantage of ahead-of-time (AOT) compilation in hybrid applications just like in any other
-Angular app. The setup for a hybrid app is mostly the same as described in the
+Angular app. The setup for a hybrid application is mostly the same as described in the
 [Ahead-of-Time Compilation](guide/aot-compiler) guide save for differences in `index.html` and
 `main-aot.ts`.
 

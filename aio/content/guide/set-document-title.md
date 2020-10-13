@@ -2,7 +2,7 @@
 
 # Set the document title
 
-Your app should be able to make the browser title bar say whatever you want it to say.
+Your application should be able to make the browser title bar say whatever you want it to say.
 This cookbook explains how to do it.
 
 See the <live-example name="set-document-title"></live-example>.
@@ -20,14 +20,14 @@ The root component of the application is an element contained within the `<body>
 The HTML `<title>` is in the document `<head>`, outside the body, making it inaccessible to Angular data binding.
 
 You could grab the browser `document` object and set the title manually.
-That's dirty and undermines your chances of running the app outside of a browser someday.
+That's dirty and undermines your chances of running the application outside of a browser someday.
 
 <div class="alert is-helpful">
 
-  Running your app outside a browser means that you can take advantage of server-side
-  pre-rendering for near-instant first app render times and for SEO. It means you could run from
+  Running your application outside a browser means that you can take advantage of server-side
+  pre-rendering for near-instant first application render times and for SEO. It means you could run from
   inside a Web Worker to improve your app's responsiveness by using multiple threads. And it
-  means that you could run your app inside Electron.js or Windows Universal to deliver it to the desktop.
+  means that you could run your application inside Electron.js or Windows Universal to deliver it to the desktop.
 
 </div>
 

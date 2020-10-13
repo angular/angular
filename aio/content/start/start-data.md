@@ -237,7 +237,7 @@ For more information about services, see [Introduction to Services and Dependenc
 
 Servers often return data in the form of a stream.
 Streams are useful because they make it easy to transform the returned data and make modifications to the way you request that data.
-The Angular HTTP client, `HttpClient`, is a built-in way to fetch data from external APIs and provide them to your app as a stream.
+The Angular HTTP client, `HttpClient`, is a built-in way to fetch data from external APIs and provide them to your application as a stream.
 
 This section shows you how to use the HTTP client to retrieve shipping prices from an external file.
 
@@ -252,9 +252,9 @@ Use this data to add shipping prices for items in the cart.
 
 ### Use `HttpClient` in the `AppModule`
 
-Before you can use Angular's HTTP client, you must configure your app to use `HttpClientModule`.
+Before you can use Angular's HTTP client, you must configure your application to use `HttpClientModule`.
 
-Angular's `HttpClientModule` registers the providers your app needs to use a single instance of the `HttpClient` service throughout your app.
+Angular's `HttpClientModule` registers the providers your application needs to use a single instance of the `HttpClient` service throughout your app.
 
 1. Open `app.module.ts`.
 
@@ -272,7 +272,7 @@ Angular's `HttpClientModule` registers the providers your app needs to use a sin
 
 ### Use `HttpClient` in the cart service
 
-Now that the `AppModule` imports the `HttpClientModule`, the next step is to inject the `HttpClient` service into your service so your app can fetch data and interact with external APIs and resources.
+Now that the `AppModule` imports the `HttpClientModule`, the next step is to inject the `HttpClient` service into your service so your application can fetch data and interact with external APIs and resources.
 
 
 1. Open `cart.service.ts`.
@@ -309,7 +309,7 @@ For more information about Angular's `HttpClient`, see the [Client-Server Intera
 
 ## Define the shipping view
 
-Now that your app can retrieve shipping data, create a shipping component and  template.
+Now that your application can retrieve shipping data, create a shipping component and  template.
 
 1. Generate a new component named `shipping`.
 
@@ -353,7 +353,7 @@ Now that your app can retrieve shipping data, create a shipping component and  t
 
 1. Test your shipping prices feature:
 
-    Click the "Checkout" button to see the updated cart. Remember that changing the app causes the preview to refresh, which empties the cart.
+    Click the "Checkout" button to see the updated cart. Remember that changing the application causes the preview to refresh, which empties the cart.
 
     <div class="lightbox">
       <img src='generated/images/guide/start/cart-empty-with-shipping-prices.png' alt="Cart with link to shipping prices">
@@ -371,5 +371,5 @@ Now that your app can retrieve shipping data, create a shipping component and  t
 Congratulations! You have an online store application with a product catalog and shopping cart. You can also look up and display shipping prices.
 
 To continue exploring Angular, choose either of the following options:
-* [Continue to the "Forms" section](start/start-forms "Try it: Forms for User Input") to finish the app by adding the shopping cart view and a checkout form.
-* [Skip ahead to the "Deployment" section](start/start-deployment "Try it: Deployment") to move to local development, or deploy your app to Firebase or your own server.
+* [Continue to the "Forms" section](start/start-forms "Try it: Forms for User Input") to finish the application by adding the shopping cart view and a checkout form.
+* [Skip ahead to the "Deployment" section](start/start-deployment "Try it: Deployment") to move to local development, or deploy your application to Firebase or your own server.

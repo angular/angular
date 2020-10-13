@@ -69,7 +69,7 @@ Imagine a component for rendering breaking news about a financial instrument.
 For business reasons, this news component makes frequent calls
 directly into its parent instrument as changing market data streams by.
 
-The app probably defines more than a dozen financial instrument components.
+The application probably defines more than a dozen financial instrument components.
 If you're lucky, they all implement the same base class
 whose API your `NewsComponent` understands.
 

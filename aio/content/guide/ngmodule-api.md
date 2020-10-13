@@ -196,7 +196,7 @@ The following table summarizes the `@NgModule` metadata properties.
 
       A list of components that can be dynamically loaded into the view.
 
-      By default, an Angular app always has at least one entry component, the root component, `AppComponent`. Its purpose is to serve as a point of entry into the app, that is, you bootstrap it to launch the app.
+      By default, an Angular application always has at least one entry component, the root component, `AppComponent`. Its purpose is to serve as a point of entry into the app, that is, you bootstrap it to launch the app.
 
       Routed components are also _entry components_ because they need to be loaded dynamically.
       The router creates them and drops them into the DOM near a `<router-outlet>`.

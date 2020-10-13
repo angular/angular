@@ -12,7 +12,7 @@ work well for all users, including those who rely on assistive technologies.
 
 <div class="alert is-helpful">
 
-  For the sample app that this page describes, see the <live-example></live-example>.
+  For the sample application that this page describes, see the <live-example></live-example>.
 
 </div>
 

@@ -27,7 +27,7 @@ Anything that you import outside lazy modules can end up in the main bundle.
 See more details in the original issue [here](https://github.com/angular/angular-cli/issues/16146#issuecomment-557559287).
 
 1. Check that imported libraries have been marked side-effect-free.
-If your app imports from shared libraries that are meant to be free from side effects, add "sideEffects": false to their `package.json`.
+If your application imports from shared libraries that are meant to be free from side effects, add "sideEffects": false to their `package.json`.
 This will ensure that the libraries will be properly tree-shaken if they are imported but not directly referenced.
 See more details in the original issue [here](https://github.com/angular/angular-cli/issues/16799#issuecomment-580912090).
 
@@ -51,7 +51,7 @@ Please note that these constants are not meant to be used by 3rd party library o
 
 * Properties like `host` inside `@Component` and `@Directive` decorators can be inherited (previously, only properties with explicit field decorators like `@HostBinding` would be inherited).
 
-* HammerJS support is opt-in through importing the `HammerModule` (previously, it was always included in production bundles regardless of whether the app used HammerJS).
+* HammerJS support is opt-in through importing the `HammerModule` (previously, it was always included in production bundles regardless of whether the application used HammerJS).
 
 * `@ContentChild` and `@ContentChildren` queries will no longer be able to match their directive's own host node (previously, these queries would match the host node in addition to its content children).
 

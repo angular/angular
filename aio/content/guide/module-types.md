@@ -4,21 +4,21 @@ This topic provides a conceptual overview of the different categories of [NgModu
 These categories are not cast in stone—they are suggestions.
 You may want to create NgModules for other purposes, or combine the characteristics of some of these categories.
 
-NgModules are a great way to organize an app and keep code related to a specific functionality or feature separate from other code.
+NgModules are a great way to organize an application and keep code related to a specific functionality or feature separate from other code.
 Use NgModules to consolidate [components](guide/glossary#component "Definition of component"), [directives](guide/glossary#directive "Definition of directive"), and [pipes](guide/glossary#pipe "Definition of pipe)") into cohesive blocks of functionality.
 Focus each block on a feature or business domain, a workflow or navigation flow, a common collection of utilities, or one or more [providers](guide/glossary#provider "Definition of provider") for [services](guide/glossary#service "Definition of service").
 
-For more about NgModules, see [Organizing your app with NgModules](guide/ngmodules "Organizing your app with NgModules").
+For more about NgModules, see [Organizing your application with NgModules](guide/ngmodules "Organizing your application with NgModules").
 
 <div class="alert is-helpful">
 
-For the example app used in NgModules-related topics, see the <live-example name="ngmodules"></live-example>.
+For the example application used in NgModules-related topics, see the <live-example name="ngmodules"></live-example>.
 
 </div>
 
 ## Summary of NgModule categories
 
-All applications start by [bootstrapping a root NgModule](guide/bootstrapping "Launching an app with a root NgModule").
+All applications start by [bootstrapping a root NgModule](guide/bootstrapping "Launching an application with a root NgModule").
 You can organize your other NgModules any way you wish.
 
 This topic provides some guidelines for the following general categories of NgModules:
@@ -108,14 +108,14 @@ The following table summarizes the key characteristics of each category.
 
 ## Domain NgModules
 
-Use a domain NgModule to deliver a user experience dedicated to a particular feature or app domain, such as editing a customer or placing an order.
+Use a domain NgModule to deliver a user experience dedicated to a particular feature or application domain, such as editing a customer or placing an order.
 One example is `ContactModule` in the <live-example name="ngmodules"></live-example>.
 
 A domain NgModule organizes the code related to a certain function, containing all of the components, routing, and templates that make up the function.
 Your top component in the domain NgModule acts as the feature or domain's root, and is the only component you export.
 Private supporting subcomponents descend from it.
 
-Import a domain NgModule exactly once into another NgModule, such as a domain NgModule, or into the root NgModule (`AppModule`) of an app that contains only a few NgModules.
+Import a domain NgModule exactly once into another NgModule, such as a domain NgModule, or into the root NgModule (`AppModule`) of an application that contains only a few NgModules.
 
 Domain NgModules consist mostly of declarations.
 You rarely include providers.
@@ -216,13 +216,13 @@ To learn how to use shared modules to organize and streamline your code, see [Sh
 
 You may also be interested in the following:
 
-* For more about NgModules, see [Organizing your app with NgModules](guide/ngmodules "Organizing your app with NgModules").
-* To learn more about the root NgModule, see [Launching an app with a root NgModule](guide/bootstrapping "Launching an app with a root NgModule").
+* For more about NgModules, see [Organizing your application with NgModules](guide/ngmodules "Organizing your application with NgModules").
+* To learn more about the root NgModule, see [Launching an application with a root NgModule](guide/bootstrapping "Launching an application with a root NgModule").
 * To learn about frequently used Angular NgModules and how to import them into your app, see [Frequently-used modules](guide/frequent-ngmodules "Frequently-used modules").
 * For a complete description of the NgModule metadata properties, see [Using the NgModule metadata](guide/ngmodule-api "Using the NgModule metadata").
 
 If you want to manage NgModule loading and the use of dependencies and services, see the following:
 
-* To learn about loading NgModules eagerly when the app starts, or lazy-loading NgModules asynchronously by the router, see [Lazy-loading feature modules](guide/lazy-loading-ngmodules).
+* To learn about loading NgModules eagerly when the application starts, or lazy-loading NgModules asynchronously by the router, see [Lazy-loading feature modules](guide/lazy-loading-ngmodules).
 * To understand how to provide a service or other dependency for your app, see [Providing Dependencies for an NgModule](guide/providers "Providing Dependencies for an NgModule").
 * To learn how to create a singleton service to use in NgModules, see [Making a service a singleton](guide/singleton-services "Making a service a singleton").

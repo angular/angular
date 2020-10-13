@@ -21,7 +21,7 @@ If you already have projects running on your machine that use other versions of 
 Both `npm` and `yarn` install the packages that are identified in a [`package.json`](https://docs.npmjs.com/files/package.json) file.
 
 The CLI command `ng new` creates a `package.json` file when it creates the new workspace.
-This `package.json` is used by all projects in the workspace, including the initial app project that is created by the CLI when it creates the workspace.
+This `package.json` is used by all projects in the workspace, including the initial application project that is created by the CLI when it creates the workspace.
 
 Initially, this `package.json` includes _a starter set of packages_, some of which are required by Angular and others that support common application scenarios.
 You add packages to `package.json` as your application evolves.
@@ -68,8 +68,8 @@ Package name                               | Description
 [**@angular/core**](api/core) | Critical runtime parts of the framework that are needed by every application. Includes all metadata decorators, `Component`, `Directive`,  dependency injection, and the component lifecycle hooks.
 [**@angular/forms**](api/forms) | Support for both [template-driven](guide/forms) and [reactive forms](guide/reactive-forms). For information about choosing the best forms approach for your app, see [Introduction to forms](guide/forms-overview).
 [**@angular/<br />platform&#8209;browser**](api/platform-browser) | Everything DOM and browser related, especially the pieces that help render into the DOM. This package also includes the `bootstrapModuleFactory()` method for bootstrapping applications for production builds that pre-compile with [AOT](guide/aot-compiler).
-[**@angular/<br />platform&#8209;browser&#8209;dynamic**](api/platform-browser-dynamic) | Includes [providers](api/core/Provider) and methods to compile and run the app on the client using the [JIT compiler](guide/aot-compiler).
-[**@angular/router**](api/router) | The router module navigates among your app pages when the browser URL changes. For more information, see [Routing and Navigation](guide/router).
+[**@angular/<br />platform&#8209;browser&#8209;dynamic**](api/platform-browser-dynamic) | Includes [providers](api/core/Provider) and methods to compile and run the application on the client using the [JIT compiler](guide/aot-compiler).
+[**@angular/router**](api/router) | The router module navigates among your application pages when the browser URL changes. For more information, see [Routing and Navigation](guide/router).
 
 
 {@a support-packages}

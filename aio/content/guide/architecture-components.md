@@ -3,7 +3,7 @@
 A *component* controls a patch of screen called a [*view*](guide/glossary#view "Definition of view").
 For example, individual components define and control each of the following views from the [Tour of Heroes tutorial](tutorial):
 
-* The app root with the navigation links.
+* The application root with the navigation links.
 * The list of heroes.
 * The hero editor.
 
@@ -17,7 +17,7 @@ The service is provided to the component through the dependency injection system
 
 <code-example path="architecture/src/app/hero-list.component.ts" header="src/app/hero-list.component.ts (class)" region="class"></code-example>
 
-Angular creates, updates, and destroys components as the user moves through the application. Your app can take action at each moment in this lifecycle through optional [lifecycle hooks](guide/lifecycle-hooks), like `ngOnInit()`.
+Angular creates, updates, and destroys components as the user moves through the application. Your application can take action at each moment in this lifecycle through optional [lifecycle hooks](guide/lifecycle-hooks), like `ngOnInit()`.
 
 ## Component metadata
 
@@ -59,7 +59,7 @@ A view hierarchy can include views from components in the same NgModule, but it 
 
 ## Template syntax
 
-A template looks like regular HTML, except that it also contains Angular [template syntax](guide/template-syntax), which alters the HTML based on your app's logic and the state of app and DOM data. Your template can use *data binding* to coordinate the app and DOM data, *pipes* to transform data before it is displayed, and *directives* to apply app logic to what gets displayed.
+A template looks like regular HTML, except that it also contains Angular [template syntax](guide/template-syntax), which alters the HTML based on your app's logic and the state of application and DOM data. Your template can use *data binding* to coordinate the application and DOM data, *pipes* to transform data before it is displayed, and *directives* to apply application logic to what gets displayed.
 
 For example, here is a template for the Tutorial's `HeroListComponent`.
 

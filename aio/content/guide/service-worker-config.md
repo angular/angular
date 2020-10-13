@@ -47,7 +47,7 @@ Specifies the file that serves as the index page to satisfy navigation requests.
 
 ## `assetGroups`
 
-*Assets* are resources that are part of the app version that update along with the app. They can include resources loaded from the page's origin as well as third-party resources loaded from CDNs and other external URLs. As not all such external URLs may be known at build time, URL patterns can be matched.
+*Assets* are resources that are part of the application version that update along with the app. They can include resources loaded from the page's origin as well as third-party resources loaded from CDNs and other external URLs. As not all such external URLs may be known at build time, URL patterns can be matched.
 
 This field contains an array of asset groups, each of which defines a set of asset resources and the policy by which they are cached.
 
@@ -109,7 +109,7 @@ Defaults to `prefetch`.
 
 ### `updateMode`
 
-For resources already in the cache, the `updateMode` determines the caching behavior when a new version of the app is discovered. Any resources in the group that have changed since the previous version are updated in accordance with `updateMode`.
+For resources already in the cache, the `updateMode` determines the caching behavior when a new version of the application is discovered. Any resources in the group that have changed since the previous version are updated in accordance with `updateMode`.
 
 * `prefetch` tells the service worker to download and cache the changed resources immediately.
 
@@ -189,7 +189,7 @@ A list of URL patterns. URLs that match these patterns are cached according to t
  * `?` is matched literally; that is, it matches *only* the character `?`.
 
 ### `version`
-Occasionally APIs change formats in a way that is not backward-compatible. A new version of the app may not be compatible with the old API format and thus may not be compatible with existing cached resources from that API.
+Occasionally APIs change formats in a way that is not backward-compatible. A new version of the application may not be compatible with the old API format and thus may not be compatible with existing cached resources from that API.
 
 `version` provides a mechanism to indicate that the resources being cached have been updated in a backwards-incompatible way, and that the old cache entries&mdash;those from previous versions&mdash;should be discarded.
 

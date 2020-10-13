@@ -70,7 +70,7 @@ Here are a few essential commands for guide page authors.
 
 1. `yarn start`  &mdash;  starts the doc viewer application so you can see your local changes in the browser.
 
-1.  http://localhost:4200/  &mdash;  browse to the app running locally.
+1.  http://localhost:4200/  &mdash;  browse to the application running locally.
 
 You can combine `yarn docs-watch` and `yarn start` into one command with `yarn serve-and-sync`.
 
@@ -740,7 +740,7 @@ Here's an example that excerpts certain scripts from `package.json` into a parti
 
 #### Partial file naming
 
-Many guides tell a story. In that story, the app evolves incrementally, often with simplistic or incomplete code along the way.
+Many guides tell a story. In that story, the application evolves incrementally, often with simplistic or incomplete code along the way.
 
 To tell that story in code, you'll often need to create partial files or intermediate versions of the final source code file with fragments of code that don't appear in the final app.
 

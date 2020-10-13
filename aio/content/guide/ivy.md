@@ -152,7 +152,7 @@ import { APP_BASE_HREF } from '@angular/common';
 
 import { AppServerModuleNgFactory } from './src/app/app.server.module.ngfactory';
 
-// The Express app is exported so that it can be used by serverless Functions.
+// The Express application is exported so that it can be used by serverless Functions.
 export function app() {
   const server = express();
   const distFolder = join(process.cwd(), 'dist/ivy-test/browser');

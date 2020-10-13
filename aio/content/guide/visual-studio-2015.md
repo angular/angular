@@ -4,7 +4,7 @@
 
 Some developers prefer Visual Studio as their Integrated Development Environment (IDE).
 
-This cookbook describes the steps required to set up and use Angular app files in Visual Studio 2015 within an ASP.NET 4.x project.
+This cookbook describes the steps required to set up and use Angular application files in Visual Studio 2015 within an ASP.NET 4.x project.
 
 <div class="alert is-helpful">
 
@@ -116,7 +116,7 @@ restart it to make sure everything is clean.
 </h2>
 
 
- Follow the instructions in [Local Environment Setup](guide/setup-local "Setting up for Local Development") to create a starter Angular app using the CLI command [`ng new`](cli/new).
+ Follow the instructions in [Local Environment Setup](guide/setup-local "Setting up for Local Development") to create a starter Angular application using the CLI command [`ng new`](cli/new).
 
 
 
@@ -153,14 +153,14 @@ no authentication, and no hosting. Pick the template and options appropriate for
   Step 3: Copy the Angular project files into the ASP.NET project folder
 </h2>
 
-Copy files from the starter Angular app into the folder containing the `.csproj` file.
+Copy files from the starter Angular application into the folder containing the `.csproj` file.
 Include the files in the Visual Studio project as follows:
 
 * Click the `Show All Files` button in Solution Explorer to reveal all of the hidden files in the project.
 * Right-click on each folder/file to be included in the project and select `Include in Project`.
   Minimally, include the following folder/files:
 
-  * src/app folder (answer *No*  if asked to search for TypeScript Typings)
+  * src/application folder (answer *No*  if asked to search for TypeScript Typings)
   * src/styles.css
   * src/index.html
   * package.json
@@ -223,13 +223,13 @@ You must choose to configure _either_ for F5 with IIS _or_ for  `npm start` with
 
 ### For applications that use routing
 
-If your app uses routing, you need to teach the server to always return 
+If your application uses routing, you need to teach the server to always return 
 `index.html` when the user asks for an HTML page
 for reasons explained in the [Deployment](guide/deployment#fallback) guide.
 
 Everything seems fine while you move about _within_ the app.
 But you'll see the problem right away if you refresh the browser
-or paste a link to an app page (called a "deep link") into the browser address bar.
+or paste a link to an application page (called a "deep link") into the browser address bar.
 
 You'll most likely get a *404 - Page Not Found* response from the server
 for any address other than `/` or `/index.html`.
@@ -245,7 +245,7 @@ Visual Studio ships with IIS Express, which has the rewrite module baked in.
 However, if you're using regular IIS you'll have to install the rewrite 
 module.
 
-Tell Visual Studio how to handle requests for route app pages by adding these
+Tell Visual Studio how to handle requests for route application pages by adding these
 rewrite rules near the bottom of the `web.config`:
 
 
@@ -284,7 +284,7 @@ match the base href in `index.html`.
 
 
 
-Build and launch the app with debugger by clicking the **Run** button or by pressing `F5`.
+Build and launch the application with debugger by clicking the **Run** button or by pressing `F5`.
 
 
 <div class="alert is-helpful">

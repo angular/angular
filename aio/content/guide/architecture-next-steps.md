@@ -44,7 +44,7 @@ For some platforms and applications, you might also want to use the PWA (Progres
 
 * [HTTP](guide/http): Communicate with a server to get data, save data, and invoke server-side actions with an HTTP client.
 
-* [Server-side rendering](guide/universal): Angular Universal generates static application pages on the server through server-side rendering (SSR). This allows you to run your Angular app on the server in order to improve performance and show the first page quickly on mobile and low-powered devices, and also facilitate web crawlers.
+* [Server-side rendering](guide/universal): Angular Universal generates static application pages on the server through server-side rendering (SSR). This allows you to run your Angular application on the server in order to improve performance and show the first page quickly on mobile and low-powered devices, and also facilitate web crawlers.
 
 * [Service workers and PWA](guide/service-worker-intro): Use a service worker to reduce dependency on the network and significantly improve the user experience.
 
@@ -62,11 +62,11 @@ The **Development Workflow** section describes the tools and processes you use t
 
 * [Deployment](guide/deployment): Learn techniques for deploying your Angular application to a remote server.
 
-* [Security guidelines](guide/security): Learn about Angular's built-in protections against common web-app vulnerabilities and attacks such as cross-site scripting attacks.
+* [Security guidelines](guide/security): Learn about Angular's built-in protections against common web-application vulnerabilities and attacks such as cross-site scripting attacks.
 
-* [Internationalization](guide/i18n): Make your app available in multiple languages with Angular's internationalization (i18n) tools.
+* [Internationalization](guide/i18n): Make your application available in multiple languages with Angular's internationalization (i18n) tools.
 
-* [Accessibility](guide/accessibility): Make your app accessible to all users.
+* [Accessibility](guide/accessibility): Make your application accessible to all users.
 
 
 ## File structure, configuration, and dependencies

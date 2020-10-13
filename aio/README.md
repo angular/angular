@@ -135,7 +135,7 @@ yarn serve-and-sync
 You can automatically open the browser by using `yarn start -o` in the first terminal.
 
 * Make changes to the page's associated doc or example files. Every time a file is saved, the doc will
-be regenerated, the app will rebuild and the page will reload.
+be regenerated, the application will rebuild and the page will reload.
 
 * If you get a build error complaining about examples or any other odd behavior, be sure to consult
 the [Authors Style Guide](https://angular.io/guide/docs-style-guide).

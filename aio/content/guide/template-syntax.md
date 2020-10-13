@@ -20,10 +20,10 @@ In Angular, the component plays the part of the controller/viewmodel, and the te
 
 <hr />
 
-Each Angular template in your app is a section of HTML that you can include as a part of the page that the browser displays.
+Each Angular template in your application is a section of HTML that you can include as a part of the page that the browser displays.
 An Angular HTML template renders a view, or user interface, in the browser, just like regular HTML, but with a lot more functionality.
 
-When you generate an Angular app with the Angular CLI, the `app.component.html` file is the default template containing placeholder HTML.
+When you generate an Angular application with the Angular CLI, the `app.component.html` file is the default template containing placeholder HTML.
 
 The template syntax guides show you how you can control the UX/UI by coordinating data between the class and the template.
 

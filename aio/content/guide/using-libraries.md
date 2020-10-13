@@ -67,7 +67,7 @@ See the [Angular Update Guide](https://update.angular.io/) for help.
 
 ## Adding a library to the runtime global scope
 
-Legacy JavaScript libraries that are not imported into an app can be added to the runtime global scope and loaded as if they were in a script tag.
+Legacy JavaScript libraries that are not imported into an application can be added to the runtime global scope and loaded as if they were in a script tag.
 Configure the CLI to do this at build time using the "scripts" and "styles" options of the build target in the [CLI configuration file](guide/workspace-config), `angular.json`.
 
 For example, to use the [Bootstrap 4](https://getbootstrap.com/docs/4.0/getting-started/introduction/) library, first install the library and its dependencies using the npm package manager:

@@ -174,7 +174,7 @@ Type something in the input box, and watch the display update with each keystrok
 **This won't work at all unless you bind to an event**.
 
 Angular updates the bindings (and therefore the screen)
-only if the app does something in response to asynchronous events, such as keystrokes.
+only if the application does something in response to asynchronous events, such as keystrokes.
 This example code binds the `keyup` event
 to the number 0, the shortest template statement possible.
 While the statement does nothing useful,

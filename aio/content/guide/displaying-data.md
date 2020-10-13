@@ -33,7 +33,7 @@ The <live-example></live-example> demonstrates all of the syntax and code snippe
 The easiest way to display a component property is to bind the property name through interpolation.
 With interpolation, you put the property name in the view template, enclosed in double curly braces: `{{myHero}}`.
 
-Use the CLI command [`ng new displaying-data`](cli/new) to create a workspace and app named `displaying-data`.
+Use the CLI command [`ng new displaying-data`](cli/new) to create a workspace and application named `displaying-data`.
 
 Delete the <code>app.component.html</code> file. It is not needed for this example.
 
@@ -101,7 +101,7 @@ You can store your component's template in one of two places.
 * Alternatively, you can define the template in a separate HTML file and link to that file in the `templateUrl` property of the `@Component` decorator. This configuration is typical for anything more complex than a small test or demo, and is the default when you generate a new component.
 
 In either style, the template data bindings have the same access to the component's properties.
-Here the app uses inline HTML because the template is small and the demo is simpler without the additional HTML file.
+Here the application uses inline HTML because the template is small and the demo is simpler without the additional HTML file.
 
 <div class="alert is-helpful">
 
@@ -122,7 +122,7 @@ The following example uses variable assignment to initialize the components.
 <code-example path="displaying-data/src/app/app-ctor.component.1.ts" region="class"></code-example>
 
  You could instead declare and initialize the properties using a constructor.
- This app uses more terse "variable assignment" style simply for brevity.
+ This application uses more terse "variable assignment" style simply for brevity.
 
 
 {@a ngFor}
@@ -241,7 +241,7 @@ The display looks the same, but the code is clearer.
 
 ## Conditional display with NgIf
 
-Sometimes an app needs to display a view or a portion of a view only under specific circumstances.
+Sometimes an application needs to display a view or a portion of a view only under specific circumstances.
 
 Let's change the example to display a message if there are more than three heroes.
 

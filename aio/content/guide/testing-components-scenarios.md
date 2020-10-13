@@ -4,7 +4,7 @@ This guide explores common component testing use cases.
 
 <div class="alert is-helpful">
 
-  For the sample app that the testing guides describe, see the <live-example name="testing" embedded-style noDownload>sample app</live-example>.
+  For the sample application that the testing guides describe, see the <live-example name="testing" embedded-style noDownload>sample app</live-example>.
 
   For the tests features in the testing guides, see <live-example name="testing" stackblitz="specs" noDownload>tests</live-example>.
 
@@ -161,7 +161,7 @@ as the following variant of `BannerComponent` does.
 This syntax tells the Angular compiler to read the external files during component compilation.
 
 That's not a problem when you run the CLI `ng test` command because it
-_compiles the app before running the tests_.
+_compiles the application before running the tests_.
 
 However, if you run the tests in a **non-CLI environment**,
 tests of this component may fail.
@@ -1175,7 +1175,7 @@ This test expects the component to try to navigate to the `HeroListComponent`.
 
 <code-example path="testing/src/app/hero/hero-detail.component.spec.ts" region="route-bad-id" header="app/hero/hero-detail.component.spec.ts (bad id)"></code-example>
 
-While this app doesn't have a route to the `HeroDetailComponent` that omits the `id` parameter, it might add such a route someday.
+While this application doesn't have a route to the `HeroDetailComponent` that omits the `id` parameter, it might add such a route someday.
 The component should do something reasonable when there is no `id`.
 
 In this implementation, the component should create and display a new hero.
@@ -1399,7 +1399,7 @@ re-calculates parameters, or re-arranges navigation options when the user clicks
 
 Stubbed `RouterLink` tests can confirm that a component with links and an outlet is setup properly,
 that the component has the links it should have, and that they are all pointing in the expected direction.
-These tests do not concern whether the app will succeed in navigating to the target component when the user clicks a link.
+These tests do not concern whether the application will succeed in navigating to the target component when the user clicks a link.
 
 Stubbing the RouterLink and RouterOutlet is the best option for such limited testing goals.
 Relying on the real router would make them brittle.
@@ -1510,7 +1510,7 @@ The test fails when the `TestBed` tries to create the component.
   header="app/banner/banner.component.spec.ts (setup that fails)"
   avoid></code-example>
 
-Recall that the app hasn't been compiled.
+Recall that the application hasn't been compiled.
 So when you call `createComponent()`, the `TestBed` compiles implicitly.
 
 That's not a problem when the source code is in memory.
@@ -1669,7 +1669,7 @@ where Angular would have to compile them in the browser.
 
 #### Import a shared module
 
-Because many app components need the `FormsModule` and the `TitleCasePipe`, the developer created
+Because many application components need the `FormsModule` and the `TitleCasePipe`, the developer created
 a `SharedModule` to combine these and other frequently requested parts.
 
 The test configuration can use the `SharedModule` too as seen in this alternative setup:

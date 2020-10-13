@@ -39,13 +39,13 @@ Before doing this tutorial, you should have a basic understanding to the followi
 
 * [TypeScript](https://www.typescriptlang.org/docs/home.html "The TypeScript language") and HTML5 programming.
 
-* Fundamental concepts of [Angular app design](guide/architecture "Introduction to Angular app-design concepts").
+* Fundamental concepts of [Angular application design](guide/architecture "Introduction to Angular app-design concepts").
 
 * Basic knowledge of [reactive forms](guide/reactive-forms "Reactive forms guide").
 
 ## Enable reactive forms for your project
 
-Dynamic forms are based on reactive forms. To give the application access reactive forms directives, the [root module](guide/bootstrapping "Learn about bootstrapping an app from the root module.") imports `ReactiveFormsModule` from the `@angular/forms` library.
+Dynamic forms are based on reactive forms. To give the application access reactive forms directives, the [root module](guide/bootstrapping "Learn about bootstrapping an application from the root module.") imports `ReactiveFormsModule` from the `@angular/forms` library.
 
 The following code from the example shows the setup in the root module.
 
@@ -66,7 +66,7 @@ The following code from the example shows the setup in the root module.
 ## Create a form object model
 
 A dynamic form requires an object model that can describe all scenarios needed by the form functionality.
-The example hero-application form is a set of questions&mdash;that is, each control in the form must ask a question and accept an answer.
+The example hero-app form is a set of questions&mdash;that is, each control in the form must ask a question and accept an answer.
 
 The data model for this type of form must represent a question.
 The example includes the `DynamicFormQuestionComponent`, which defines a  question as the fundamental object in the model.
@@ -187,7 +187,7 @@ without making any hardcoded assumptions about specific questions.
 It adds both control metadata and validation criteria dynamically.
 
 To ensure valid input, the *Save* button is disabled until the form is in a valid state.
-When the form is valid, you can click *Save* and the app renders the current form values as JSON.
+When the form is valid, you can click *Save* and the application renders the current form values as JSON.
 
 The following figure shows the final form.
 

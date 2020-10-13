@@ -1,11 +1,11 @@
 # Display a selection list
 
-In this page, you'll expand the Tour of Heroes app to display a list of heroes, and
+In this page, you'll expand the Tour of Heroes application to display a list of heroes, and
 allow users to select a hero and display the hero's details.
 
 <div class="alert is-helpful">
 
-  For the sample app that this page describes, see the <live-example></live-example>.
+  For the sample application that this page describes, see the <live-example></live-example>.
 
 </div>
 
@@ -160,7 +160,7 @@ Open the browser developer tools and look in the console for an error message li
 
 #### What happened?
 
-When the app starts, the `selectedHero` is `undefined` _by design_.
+When the application starts, the `selectedHero` is `undefined` _by design_.
 
 Binding expressions in the template that refer to properties of `selectedHero`&mdash;expressions like `{{selectedHero.name}}`&mdash;_must fail_ because there is no selected hero.
 
@@ -185,7 +185,7 @@ Don't forget the asterisk (*) in front of `ngIf`. It's a critical part of the sy
 After the browser refreshes, the list of names reappears.
 The details area is blank.
 Click a hero in the list of heroes and its details appear.
-The app seems to be working again.
+The application seems to be working again.
 The heroes appear in a list and details about the clicked hero appear at the bottom of the page.
 
 
@@ -246,7 +246,7 @@ Here are the code files discussed on this page, including the `HeroesComponent` 
 
 ## Summary
 
-* The Tour of Heroes app displays a list of heroes in a Master/Detail view.
+* The Tour of Heroes application displays a list of heroes in a Master/Detail view.
 * The user can select a hero and see that hero's details.
 * You used `*ngFor` to display a list.
 * You used `*ngIf` to conditionally include or exclude a block of HTML.

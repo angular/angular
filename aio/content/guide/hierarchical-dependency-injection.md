@@ -34,7 +34,7 @@ Using the `@Injectable()` `providedIn` property is preferable
 to the `@NgModule()` `providers`
 array because with `@Injectable()` `providedIn`, optimization
 tools can perform
-tree-shaking, which removes services that your app isn't
+tree-shaking, which removes services that your application isn't
 using and results in smaller bundle sizes.
 
 Tree-shaking is especially useful for a library
@@ -76,7 +76,7 @@ here `root`, which makes the service available in the `root` `ModuleInjector`.
 There are two more injectors above `root`, an
 additional `ModuleInjector` and `NullInjector()`.
 
-Consider how Angular bootstraps the app with the
+Consider how Angular bootstraps the application with the
 following in `main.ts`:
 
 ```javascript
@@ -227,7 +227,7 @@ Angular's resolution behavior can be modified with `@Optional()`, `@Self()`,
 `@SkipSelf()` and `@Host()`. Import each of them from `@angular/core`
 and use each in the component class constructor when you inject your service.
 
-For a working app showcasing the resolution modifiers that
+For a working application showcasing the resolution modifiers that
 this section covers, see the <live-example name="resolution-modifiers">resolution modifiers example</live-example>.
 
 ### Types of modifiers
@@ -440,16 +440,16 @@ should be used at this location.
 </div>
 
 
-### Example app structure
+### Example application structure
 
-The example app has a `FlowerService` provided in `root` with an `emoji`
+The example application has a `FlowerService` provided in `root` with an `emoji`
 value of `🌺` (red hibiscus).
 
 <code-example path="providers-viewproviders/src/app/flower.service.ts" header="providers-viewproviders/src/app/flower.service.ts" region="flowerservice">
 
 </code-example>
 
-Consider a simple app with only an `AppComponent` and a `ChildComponent`.
+Consider a simple application with only an `AppComponent` and a `ChildComponent`.
 The most basic rendered view would look like nested HTML elements such as
 the following:
 
@@ -615,7 +615,7 @@ set it up on your own, skip ahead to [Modifying service availability](guide/hier
 </div>
 
 
-The example app features a second service, the `AnimalService` to
+The example application features a second service, the `AnimalService` to
 demonstrate `viewProviders`.
 
 First, create an `AnimalService` with an `emoji` property of 🐳 (whale):
@@ -852,7 +852,7 @@ In a logical tree, this same idea might look like this:
 </app-root>
 ```
 
-Though `<app-child>` provides the 🌻 (sunflower), the app renders
+Though `<app-child>` provides the 🌻 (sunflower), the application renders
 the 🌺 (red hibiscus) because `@SkipSelf()`  causes the current
 injector to skip
 itself and look to its parent.
@@ -880,7 +880,7 @@ for `FlowerService`, so it doesn't find it and returns `null`.
 
 <div class="alert is-helpful">
 
-**Note:** The example app uses `@Optional()` so the app does
+**Note:** The example application uses `@Optional()` so the application does
 not throw an error, but the principles are the same.
 
 </div>

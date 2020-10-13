@@ -10,7 +10,7 @@ You can use schematics to enforce architectural rules and conventions, making yo
 
 ## Schematics for the Angular CLI
 
-Schematics are part of the Angular ecosystem. The [Angular CLI](guide/glossary#cli)  uses schematics to apply transforms to a web-app project.
+Schematics are part of the Angular ecosystem. The [Angular CLI](guide/glossary#cli)  uses schematics to apply transforms to a web-application project.
 You can modify these schematics, and define new ones to do things like update your code to fix breaking changes in a dependency, for example, or to add a new configuration option or framework to an existing project.
 
 Schematics that are included in the `@schematics/angular` collection are run by default by the commands `ng generate` and `ng add`.
@@ -62,7 +62,7 @@ Partner and third party libraries also support the Angular CLI with add schemati
 For example, `@ng-bootstrap/schematics` adds [ng-bootstrap](https://ng-bootstrap.github.io/)  to an app, and  `@clr/angular` installs and sets up [Clarity from VMWare](https://vmware.github.io/clarity/documentation/v1.0/get-started).
 
 An add schematic can also update a project with configuration changes, add additional dependencies (such as polyfills), or scaffold package-specific initialization code.
-For example, the `@angular/pwa` schematic turns your application into a PWA by adding an app manifest and service worker, and the `@angular/elements`  schematic adds the `document-register-element.js` polyfill and dependencies for Angular Elements.
+For example, the `@angular/pwa` schematic turns your application into a PWA by adding an application manifest and service worker, and the `@angular/elements`  schematic adds the `document-register-element.js` polyfill and dependencies for Angular Elements.
 
 ### Generation schematics
 
