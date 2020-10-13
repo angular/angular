@@ -7,7 +7,7 @@
  */
 
 import {assertNumber, assertString} from '../../util/assert';
-import {ELEMENT_MARKER, getInstructionFromI18nMutateOpCode, getParentFromI18nMutateOpCode, getRefFromI18nMutateOpCode, I18nCreateOpCode, I18nMutateOpCode, I18nMutateOpCodes, I18nUpdateOpCode, I18nUpdateOpCodes, ICU_MARKER} from '../interfaces/i18n';
+import {ELEMENT_MARKER, getInstructionFromIcuCreateOpCode, getParentFromIcuCreateOpCode, getRefFromIcuCreateOpCode, I18nCreateOpCode, I18nCreateOpCodes, I18nRemoveOpCodes, I18nUpdateOpCode, I18nUpdateOpCodes, ICU_MARKER, IcuCreateOpCode, IcuCreateOpCodes} from '../interfaces/i18n';
 
 
 /**
@@ -21,8 +21,8 @@ import {ELEMENT_MARKER, getInstructionFromI18nMutateOpCode, getParentFromI18nMut
  * @param opcodes `I18nCreateOpCodes` if invoked as a function.
  */
 export function i18nCreateOpCodesToString(
-    this: I18nUpdateOpCodes|void, opcodes?: I18nUpdateOpCodes): string[] {
-  const createOpCodes: I18nUpdateOpCodes = opcodes || (Array.isArray(this) ? this : []);
+    this: I18nCreateOpCodes|void, opcodes?: I18nCreateOpCodes): string[] {
+  const createOpCodes: I18nCreateOpCodes = opcodes || (Array.isArray(this) ? this : [] as any);
   let lines: string[] = [];
   for (let i = 0; i < createOpCodes.length; i++) {
     const opCode = createOpCodes[i++] as any;
@@ -103,35 +103,31 @@ export function i18nUpdateOpCodesToString(
 }
 
 /**
- * Converts `I18nMutableOpCodes` array into a human readable format.
+ * Converts `I18nCreateOpCodes` array into a human readable format.
  *
- * This function is attached to the `I18nMutableOpCodes.debug` if `ngDevMode` is enabled. This
+ * This function is attached to the `I18nCreateOpCodes.debug` if `ngDevMode` is enabled. This
  * function provides a human readable view of the opcodes. This is useful when debugging the
  * application as well as writing more readable tests.
  *
- * @param this `I18nMutableOpCodes` if attached as a method.
- * @param opcodes `I18nMutableOpCodes` if invoked as a function.
+ * @param this `I18nCreateOpCodes` if attached as a method.
+ * @param opcodes `I18nCreateOpCodes` if invoked as a function.
  */
-export function i18nMutateOpCodesToString(
-    this: I18nMutateOpCodes|void, opcodes?: I18nMutateOpCodes): string[] {
+export function icuCreateOpCodesToString(
+    this: IcuCreateOpCodes|void, opcodes?: IcuCreateOpCodes): string[] {
   const parser = new OpCodeParser(opcodes || (Array.isArray(this) ? this : []));
   let lines: string[] = [];
 
   function consumeOpCode(opCode: number): string {
-    const parent = getParentFromI18nMutateOpCode(opCode);
-    const ref = getRefFromI18nMutateOpCode(opCode);
-    switch (getInstructionFromI18nMutateOpCode(opCode)) {
-      case I18nMutateOpCode.AppendChild:
+    const parent = getParentFromIcuCreateOpCode(opCode);
+    const ref = getRefFromIcuCreateOpCode(opCode);
+    switch (getInstructionFromIcuCreateOpCode(opCode)) {
+      case IcuCreateOpCode.AppendChild:
         return `(lView[${parent}] as Element).appendChild(lView[${lastRef}])`;
-      case I18nMutateOpCode.Remove:
-        return `(lView[${parent}] as Element).remove(lView[${ref}])`;
-      case I18nMutateOpCode.Attr:
+      case IcuCreateOpCode.Attr:
         return `(lView[${ref}] as Element).setAttribute("${parser.consumeString()}", "${
             parser.consumeString()}")`;
-      case I18nMutateOpCode.RemoveNestedIcu:
-        return `removeNestedICU(${ref})`;
     }
-    throw new Error('Unexpected OpCode');
+    throw new Error('Unexpected OpCode: ' + getInstructionFromIcuCreateOpCode(opCode));
   }
 
   let lastRef = -1;
@@ -153,6 +149,35 @@ export function i18nMutateOpCodesToString(
       line && lines.push(line);
     } else {
       throw new Error('Unexpected value');
+    }
+  }
+
+  return lines;
+}
+
+/**
+ * Converts `I18nRemoveOpCodes` array into a human readable format.
+ *
+ * This function is attached to the `I18nRemoveOpCodes.debug` if `ngDevMode` is enabled. This
+ * function provides a human readable view of the opcodes. This is useful when debugging the
+ * application as well as writing more readable tests.
+ *
+ * @param this `I18nRemoveOpCodes` if attached as a method.
+ * @param opcodes `I18nRemoveOpCodes` if invoked as a function.
+ */
+export function i18nRemoveOpCodesToString(
+    this: I18nRemoveOpCodes|void, opcodes?: I18nRemoveOpCodes): string[] {
+  const removeCodes = opcodes || (Array.isArray(this) ? this : []);
+  let lines: string[] = [];
+
+  for (let i = 0; i < removeCodes.length; i++) {
+    const nodeOrIcuIndex = removeCodes[i] as number;
+    if (nodeOrIcuIndex > 0) {
+      // Positive numbers are `RNode`s.
+      lines.push(`remove(lView[${nodeOrIcuIndex}])`);
+    } else {
+      // Negative numbers are ICUs
+      lines.push(`removeNestedICU(${~nodeOrIcuIndex})`);
     }
   }
 

@@ -31,7 +31,7 @@ export function attachDebugObject(obj: any, debug: any): void {
  * @param obj Object to patch
  * @param debugGetter Getter returning a value to patch
  */
-export function attachDebugGetter(obj: any, debugGetter: () => any): void {
+export function attachDebugGetter<T>(obj: T, debugGetter: (this: T) => any): void {
   if (ngDevMode) {
     Object.defineProperty(obj, 'debug', {get: debugGetter, enumerable: false});
   } else {

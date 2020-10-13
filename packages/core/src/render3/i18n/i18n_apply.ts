@@ -11,7 +11,7 @@ import {assertDefined, assertDomNode, assertEqual, assertGreaterThan, assertInde
 import {assertIndexInExpandoRange, assertTIcu} from '../assert';
 import {attachPatchData} from '../context_discovery';
 import {elementPropertyInternal, setElementAttribute} from '../instructions/shared';
-import {ELEMENT_MARKER, getCurrentICUCaseIndex, getParentFromI18nMutateOpCode, getRefFromI18nMutateOpCode, I18nCreateOpCode, I18nCreateOpCodes, I18nMutateOpCode, I18nMutateOpCodes, I18nUpdateOpCode, I18nUpdateOpCodes, ICU_MARKER, IcuType, TI18n, TIcu} from '../interfaces/i18n';
+import {ELEMENT_MARKER, getCurrentICUCaseIndex, getParentFromIcuCreateOpCode, getRefFromIcuCreateOpCode, I18nCreateOpCode, I18nCreateOpCodes, I18nUpdateOpCode, I18nUpdateOpCodes, ICU_MARKER, IcuCreateOpCode, IcuCreateOpCodes, IcuType, TI18n, TIcu} from '../interfaces/i18n';
 import {TNode} from '../interfaces/node';
 import {RElement, RNode, RText} from '../interfaces/renderer';
 import {SanitizerFn} from '../interfaces/sanitization';
@@ -122,7 +122,7 @@ export function applyCreateOpCodes(
  * @param anchorRNode place where the i18n node should be inserted.
  */
 export function applyMutableOpCodes(
-    tView: TView, mutableOpCodes: I18nMutateOpCodes, lView: LView, anchorRNode: RNode): void {
+    tView: TView, mutableOpCodes: IcuCreateOpCodes, lView: LView, anchorRNode: RNode): void {
   ngDevMode && assertDomNode(anchorRNode);
   const renderer = lView[RENDERER];
   // `rootIdx` represents the node into which all inserts happen.
@@ -143,9 +143,9 @@ export function applyMutableOpCodes(
         lView[textNodeIndex] = createTextNode(renderer, opCode);
       }
     } else if (typeof opCode == 'number') {
-      switch (opCode & I18nMutateOpCode.MASK_INSTRUCTION) {
-        case I18nMutateOpCode.AppendChild:
-          const parentIdx = getParentFromI18nMutateOpCode(opCode);
+      switch (opCode & IcuCreateOpCode.MASK_INSTRUCTION) {
+        case IcuCreateOpCode.AppendChild:
+          const parentIdx = getParentFromIcuCreateOpCode(opCode);
           if (rootIdx === null) {
             // The first operation should save the `rootIdx` because the first operation
             // must insert into the root. (Only subsequent operations can insert into a dynamic
@@ -169,7 +169,7 @@ export function applyMutableOpCodes(
             // create the elements. When the `LView` gets later added to a parent these "root" nodes
             // get picked up and added.
             ngDevMode && assertDomNode(parentRNode);
-            const refIdx = getRefFromI18nMutateOpCode(opCode);
+            const refIdx = getRefFromIcuCreateOpCode(opCode);
             ngDevMode && assertGreaterThan(refIdx, HEADER_OFFSET, 'Missing ref');
             // `unwrapRNode` is not needed here as all of these point to RNodes as part of the i18n
             // which can't have components.
@@ -188,8 +188,8 @@ export function applyMutableOpCodes(
             }
           }
           break;
-        case I18nMutateOpCode.Attr:
-          const elementNodeIndex = opCode >>> I18nMutateOpCode.SHIFT_REF;
+        case IcuCreateOpCode.Attr:
+          const elementNodeIndex = opCode >>> IcuCreateOpCode.SHIFT_REF;
           const attrName = mutableOpCodes[++i] as string;
           const attrValue = mutableOpCodes[++i] as string;
           // This code is used for ICU expressions only, since we don't support
@@ -393,17 +393,15 @@ function applyIcuSwitchCaseRemove(tView: TView, tIcu: TIcu, lView: LView) {
   let activeCaseIndex = getCurrentICUCaseIndex(tIcu, lView);
   if (activeCaseIndex !== null) {
     const removeCodes = tIcu.remove[activeCaseIndex];
-    for (let k = 0; k < removeCodes.length; k++) {
-      const removeOpCode = removeCodes[k] as number;
-      const nodeOrIcuIndex = removeOpCode >>> I18nMutateOpCode.SHIFT_REF;
-      switch (removeOpCode & I18nMutateOpCode.MASK_INSTRUCTION) {
-        case I18nMutateOpCode.Remove:
-          nativeRemoveNode(
-              lView[RENDERER], getNativeByIndex(nodeOrIcuIndex - HEADER_OFFSET, lView));
-          break;
-        case I18nMutateOpCode.RemoveNestedIcu:
-          applyIcuSwitchCaseRemove(tView, getTIcu(tView, nodeOrIcuIndex)!, lView);
-          break;
+    for (let i = 0; i < removeCodes.length; i++) {
+      const nodeOrIcuIndex = removeCodes[i] as number;
+      if (nodeOrIcuIndex > 0) {
+        // Positive numbers are `RNode`s.
+        const rNode = getNativeByIndex(nodeOrIcuIndex, lView);
+        rNode !== null && nativeRemoveNode(lView[RENDERER], rNode);
+      } else {
+        // Negative numbers are ICUs
+        applyIcuSwitchCaseRemove(tView, getTIcu(tView, ~nodeOrIcuIndex)!, lView);
       }
     }
   }

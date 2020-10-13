@@ -10,7 +10,7 @@ import {ɵɵi18nApply, ɵɵi18nExp} from '@angular/core';
 import {applyCreateOpCodes} from '@angular/core/src/render3/i18n/i18n_apply';
 import {i18nStartFirstCreatePass} from '@angular/core/src/render3/i18n/i18n_parse';
 import {getTIcu} from '@angular/core/src/render3/i18n/i18n_util';
-import {IcuType, TI18n} from '@angular/core/src/render3/interfaces/i18n';
+import {I18nUpdateOpCodes, IcuType, TI18n} from '@angular/core/src/render3/interfaces/i18n';
 import {HEADER_OFFSET} from '@angular/core/src/render3/interfaces/view';
 import {expect} from '@angular/core/testing/src/testing_internal';
 import {matchTI18n, matchTIcu} from '../matchers';
@@ -29,7 +29,7 @@ describe('i18n_parse', () => {
           'lView[22] = document.createText("some text");',
           'parent.appendChild(lView[22]);',
         ]),
-        update: [],
+        update: [] as unknown as I18nUpdateOpCodes,
       }));
 
       fixture.apply(() => applyCreateOpCodes(fixture.lView, tI18n.create, fixture.host, null));
@@ -88,8 +88,8 @@ describe('i18n_parse', () => {
           matchDebug([]),
         ],
         remove: [
-          matchDebug(['(lView[0] as Element).remove(lView[25])']),
-          matchDebug(['(lView[0] as Element).remove(lView[26])'])
+          matchDebug(['remove(lView[25])']),
+          matchDebug(['remove(lView[26])']),
         ],
       }));
 
@@ -204,13 +204,13 @@ describe('i18n_parse', () => {
         ],
         remove: [
           matchDebug([
-            '(lView[0] as Element).remove(lView[26])',
+            'remove(lView[26])',
             'removeNestedICU(27)',
-            '(lView[0] as Element).remove(lView[27])',
-            '(lView[0] as Element).remove(lView[31])',
+            'remove(lView[27])',
+            'remove(lView[31])',
           ]),
           matchDebug([
-            '(lView[0] as Element).remove(lView[32])',
+            'remove(lView[32])',
           ])
         ],
       }));
@@ -237,8 +237,8 @@ describe('i18n_parse', () => {
           ]),
         ],
         remove: [
-          matchDebug(['(lView[0] as Element).remove(lView[29])']),
-          matchDebug(['(lView[0] as Element).remove(lView[30])'])
+          matchDebug(['remove(lView[29])']),
+          matchDebug(['remove(lView[30])']),
         ],
       }));
 
