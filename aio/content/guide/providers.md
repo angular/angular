@@ -81,6 +81,22 @@ The router works at the root level so if you put providers in a component, even 
 <!-- KW--Make a diagram here -->
 Register a provider with a component when you must limit a service instance to a component and its component tree, that is, its child components. For example, a user editing component, `UserEditorComponent`, that needs a private copy of a caching `UserService` should register the `UserService` with the `UserEditorComponent`. Then each new instance of the `UserEditorComponent` gets its own cached service instance.
 
+{@a singleton-services}
+{@a component-child-injectors}
+
+## Injector hierarchy and service instances
+
+Services are singletons within the scope of an injector, which means there is at most one instance of a service in a given injector.
+
+Angular DI has a [hierarchical injection system](guide/hierarchical-dependency-injection), which means that nested injectors can create their own service instances.
+Whenever Angular creates a new instance of a component that has `providers` specified in `@Component()`, it also creates a new child injector for that instance.
+Similarly, when a new NgModule is lazy-loaded at run time, Angular can create an injector for it with its own providers.
+
+Child modules and component injectors are independent of each other, and create their own separate instances of the provided services. When Angular destroys an NgModule or component instance, it also destroys that injector and that injector's service instances.
+
+For more information, see [Hierarchical injectors](guide/hierarchical-dependency-injection).
+
+
 
 <hr>
 
