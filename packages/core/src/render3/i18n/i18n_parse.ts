@@ -16,7 +16,7 @@ import {CharCode} from '../../util/char_code';
 import {loadIcuContainerVisitor} from '../instructions/i18n_icu_container_visitor';
 import {allocExpando, createTNodeAtIndex, elementAttributeInternal, setInputsForProperty, setNgReflectProperties} from '../instructions/shared';
 import {getDocument} from '../interfaces/document';
-import {ELEMENT_MARKER, ensureIcuContainerVisitorLoaded, I18nCreateOpCode, I18nCreateOpCodes, I18nMutateOpCode, i18nMutateOpCode, I18nMutateOpCodes, I18nUpdateOpCode, I18nUpdateOpCodes, ICU_MARKER, IcuExpression, IcuType, TI18n, TIcu} from '../interfaces/i18n';
+import {ELEMENT_MARKER, ensureIcuContainerVisitorLoaded, I18nCreateOpCode, I18nCreateOpCodes, I18nRemoveOpCodes, I18nUpdateOpCode, I18nUpdateOpCodes, ICU_MARKER, icuCreateOpCode, IcuCreateOpCode, IcuCreateOpCodes, IcuExpression, IcuType, TI18n, TIcu} from '../interfaces/i18n';
 import {TNode, TNodeType} from '../interfaces/node';
 import {RComment, RElement} from '../interfaces/renderer';
 import {SanitizerFn} from '../interfaces/sanitization';
@@ -25,7 +25,7 @@ import {getCurrentParentTNode, getCurrentTNode, setCurrentTNode} from '../state'
 import {attachDebugGetter} from '../util/debug_utils';
 import {getNativeByIndex, getTNode} from '../util/view_utils';
 
-import {i18nCreateOpCodesToString, i18nMutateOpCodesToString, i18nUpdateOpCodesToString} from './i18n_debug';
+import {i18nCreateOpCodesToString, i18nRemoveOpCodesToString, i18nUpdateOpCodesToString, icuCreateOpCodesToString} from './i18n_debug';
 import {addTNodeAndUpdateInsertBeforeIndex} from './i18n_insert_before_index';
 import {createTNodePlaceholder, setTIcu, setTNodeInsertBeforeIndex} from './i18n_util';
 
@@ -70,8 +70,8 @@ export function i18nStartFirstCreatePass(
     tView: TView, parentTNodeIndex: number, lView: LView, index: number, message: string,
     subTemplateIndex: number) {
   const rootTNode = getCurrentParentTNode();
-  const createOpCodes: I18nCreateOpCodes = [];
-  const updateOpCodes: I18nUpdateOpCodes = [];
+  const createOpCodes: I18nCreateOpCodes = [] as any;
+  const updateOpCodes: I18nUpdateOpCodes = [] as any;
   const existingTNodeStack: TNode[][] = [[]];
   if (ngDevMode) {
     attachDebugGetter(createOpCodes, i18nCreateOpCodesToString);
@@ -158,7 +158,7 @@ function createTNodeAndAddOpCode(
   let parentTNode = getCurrentParentTNode();
 
   if (rootTNode === parentTNode) {
-    // FIXME(misko): A null `parentTNode` should represent when we fall of the `LView` boundry.
+    // FIXME(misko): A null `parentTNode` should represent when we fall of the `LView` boundary.
     // (there is no parent), but in some circumstances (because we are inconsistent about how we set
     // `previousOrParentTNode`) it could point to `rootTNode` So this is a work around.
     parentTNode = null;
@@ -228,7 +228,7 @@ export function i18nAttributesFirstPass(
     lView: LView, tView: TView, index: number, values: string[]) {
   const previousElement = getCurrentTNode()!;
   const previousElementIndex = previousElement.index;
-  const updateOpCodes: I18nUpdateOpCodes = [];
+  const updateOpCodes: I18nUpdateOpCodes = [] as any;
   if (ngDevMode) {
     attachDebugGetter(updateOpCodes, i18nUpdateOpCodesToString);
   }
@@ -583,12 +583,12 @@ export function i18nParseTextIntoPartsAndICU(pattern: string): (string|IcuExpres
 export function parseIcuCase(
     tView: TView, tIcu: TIcu, lView: LView, updateOpCodes: I18nUpdateOpCodes, parentIdx: number,
     caseName: string, unsafeCaseHtml: string, nestedIcus: IcuExpression[]): number {
-  const create: I18nMutateOpCodes = [];
-  const remove: I18nMutateOpCodes = [];
-  const update: I18nUpdateOpCodes = [];
+  const create: IcuCreateOpCodes = [] as any;
+  const remove: I18nRemoveOpCodes = [] as any;
+  const update: I18nUpdateOpCodes = [] as any;
   if (ngDevMode) {
-    attachDebugGetter(create, i18nMutateOpCodesToString);
-    attachDebugGetter(remove, i18nMutateOpCodesToString);
+    attachDebugGetter(create, icuCreateOpCodesToString);
+    attachDebugGetter(remove, i18nRemoveOpCodesToString);
     attachDebugGetter(update, i18nUpdateOpCodesToString);
   }
   tIcu.cases.push(caseName);
@@ -611,7 +611,7 @@ export function parseIcuCase(
 
 function walkIcuTree(
     tView: TView, tIcu: TIcu, lView: LView, sharedUpdateOpCodes: I18nUpdateOpCodes,
-    create: I18nMutateOpCodes, remove: I18nMutateOpCodes, update: I18nUpdateOpCodes,
+    create: IcuCreateOpCodes, remove: I18nRemoveOpCodes, update: I18nUpdateOpCodes,
     parentNode: Element, parentIdx: number, nestedIcus: IcuExpression[], depth: number): number {
   let bindingMask = 0;
   let currentNode = parentNode.firstChild;
@@ -648,9 +648,7 @@ function walkIcuTree(
   } (see http://g.co/ng/security#xss)`);
               }
             } else {
-              create.push(
-                  newIndex << I18nMutateOpCode.SHIFT_REF | I18nMutateOpCode.Attr, attr.name,
-                  attr.value);
+              addCreateAttribute(create, newIndex, attr);
             }
           }
           // Parse the children of this node (if any)
@@ -689,16 +687,17 @@ function walkIcuTree(
   }
   return bindingMask;
 }
-function addRemoveNode(remove: I18nMutateOpCodes, index: number, depth: number) {
+
+function addRemoveNode(remove: I18nRemoveOpCodes, index: number, depth: number) {
   if (depth === 0) {
-    remove.push(index << I18nMutateOpCode.SHIFT_REF | I18nMutateOpCode.Remove);
+    remove.push(index);
   }
 }
 
-function addRemoveNestedIcu(remove: I18nMutateOpCodes, index: number, depth: number) {
+function addRemoveNestedIcu(remove: I18nRemoveOpCodes, index: number, depth: number) {
   if (depth === 0) {
-    remove.push(index << I18nMutateOpCode.SHIFT_REF | I18nMutateOpCode.RemoveNestedIcu);
-    remove.push(index << I18nMutateOpCode.SHIFT_REF | I18nMutateOpCode.Remove);
+    remove.push(~index);  // remove ICU at `index`
+    remove.push(index);   // remove ICU comment at `index`
   }
 }
 
@@ -714,12 +713,16 @@ function addUpdateIcuUpdate(update: I18nUpdateOpCodes, bindingMask: number, inde
 }
 
 function addCreateNodeAndAppend(
-    create: I18nMutateOpCodes, marker: null|ICU_MARKER|ELEMENT_MARKER, text: string,
+    create: IcuCreateOpCodes, marker: null|ICU_MARKER|ELEMENT_MARKER, text: string,
     appendToParentIdx: number, createAtIdx: number) {
   if (marker !== null) {
     create.push(marker);
   }
   create.push(
       text, createAtIdx,
-      i18nMutateOpCode(I18nMutateOpCode.AppendChild, appendToParentIdx, createAtIdx));
+      icuCreateOpCode(IcuCreateOpCode.AppendChild, appendToParentIdx, createAtIdx));
+}
+
+function addCreateAttribute(create: IcuCreateOpCodes, newIndex: number, attr: Attr) {
+  create.push(newIndex << IcuCreateOpCode.SHIFT_REF | IcuCreateOpCode.Attr, attr.name, attr.value);
 }

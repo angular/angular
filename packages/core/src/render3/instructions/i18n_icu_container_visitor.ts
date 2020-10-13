@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {assertDomNode, assertEqual, assertNumber, assertNumberInRange} from '../../util/assert';
+import {assertDomNode, assertNumber, assertNumberInRange} from '../../util/assert';
 import {assertTIcu, assertTNodeForLView} from '../assert';
 import {EMPTY_ARRAY} from '../empty';
-import {getCurrentICUCaseIndex, I18nMutateOpCode, I18nMutateOpCodes, TIcu} from '../interfaces/i18n';
+import {getCurrentICUCaseIndex, I18nRemoveOpCodes, TIcu} from '../interfaces/i18n';
 import {TIcuContainerNode} from '../interfaces/node';
 import {RNode} from '../interfaces/renderer';
 import {LView, TVIEW} from '../interfaces/view';
@@ -18,7 +18,7 @@ export function loadIcuContainerVisitor() {
   const _stack: any[] = [];
   let _index: number = -1;
   let _lView: LView;
-  let _removes: I18nMutateOpCodes;
+  let _removes: I18nRemoveOpCodes;
 
   /**
    * Retrieves a set of root nodes from `TIcu.remove`. Used by `TNodeType.ICUContainer`
@@ -52,7 +52,7 @@ export function loadIcuContainerVisitor() {
       ngDevMode && assertNumberInRange(currentCase, 0, tIcu.cases.length - 1);
       _removes = tIcu.remove[currentCase];
     } else {
-      _removes = EMPTY_ARRAY;
+      _removes = EMPTY_ARRAY as any;
     }
   }
 
@@ -61,16 +61,15 @@ export function loadIcuContainerVisitor() {
     if (_index < _removes.length) {
       const removeOpCode = _removes[_index++] as number;
       ngDevMode && assertNumber(removeOpCode, 'Expecting OpCode number');
-      const opCode = removeOpCode & I18nMutateOpCode.MASK_INSTRUCTION;
-      if (opCode === I18nMutateOpCode.Remove) {
-        const rNode = _lView[removeOpCode >>> I18nMutateOpCode.SHIFT_REF];
+      if (removeOpCode > 0) {
+        const rNode = _lView[removeOpCode];
         ngDevMode && assertDomNode(rNode);
         return rNode;
       } else {
-        ngDevMode &&
-            assertEqual(opCode, I18nMutateOpCode.RemoveNestedIcu, 'Expecting RemoveNestedIcu');
         _stack.push(_index, _removes);
-        const tIcu = _lView[TVIEW].data[removeOpCode >>> I18nMutateOpCode.SHIFT_REF] as TIcu;
+        // ICUs are represented by negative indices
+        const tIcuIndex = ~removeOpCode;
+        const tIcu = _lView[TVIEW].data[tIcuIndex] as TIcu;
         ngDevMode && assertTIcu(tIcu);
         enterIcu(tIcu, _lView);
         return icuContainerIteratorNext();

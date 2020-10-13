@@ -86,7 +86,7 @@ describe('Runtime i18n', () => {
           `lView[${HEADER_OFFSET + 1}] = document.createText("simple text");`,
           `parent.appendChild(lView[${HEADER_OFFSET + 1}]);`,
         ]),
-        update: [],
+        update: [] as unknown as I18nUpdateOpCodes,
       });
     });
 
@@ -113,7 +113,7 @@ describe('Runtime i18n', () => {
           `lView[${HEADER_OFFSET + 8}] = document.createText("!");`,
           `parent.appendChild(lView[${HEADER_OFFSET + 8}]);`,
         ]),
-        update: [],
+        update: [] as unknown as I18nUpdateOpCodes,
       });
     });
 
@@ -212,7 +212,7 @@ describe('Runtime i18n', () => {
           `lView[${HEADER_OFFSET + 3}] = document.createText("before");`,
           `lView[${HEADER_OFFSET + 4}] = document.createText("after");`,
         ]),
-        update: [],
+        update: [] as unknown as I18nUpdateOpCodes,
       });
 
 
@@ -229,7 +229,7 @@ describe('Runtime i18n', () => {
         create: matchDebug([
           `lView[${HEADER_OFFSET + 2}] = document.createText("middle");`,
         ]),
-        update: [],
+        update: [] as unknown as I18nUpdateOpCodes,
       });
     });
 
@@ -293,17 +293,17 @@ describe('Runtime i18n', () => {
         ],
         remove: [
           matchDebug([
-            '(lView[0] as Element).remove(lView[24])',
-            '(lView[0] as Element).remove(lView[25])',
-            '(lView[0] as Element).remove(lView[27])',
+            'remove(lView[24])',
+            'remove(lView[25])',
+            'remove(lView[27])',
           ]),
           matchDebug([
-            '(lView[0] as Element).remove(lView[28])',
-            '(lView[0] as Element).remove(lView[29])',
+            'remove(lView[28])',
+            'remove(lView[29])',
           ]),
           matchDebug([
-            '(lView[0] as Element).remove(lView[31])',
-            '(lView[0] as Element).remove(lView[32])',
+            'remove(lView[31])',
+            'remove(lView[32])',
           ]),
         ],
         update: [
@@ -372,13 +372,13 @@ describe('Runtime i18n', () => {
         ],
         remove: [
           matchDebug([
-            '(lView[0] as Element).remove(lView[24])',
+            'remove(lView[24])',
           ]),
           matchDebug([
-            '(lView[0] as Element).remove(lView[25])',
+            'remove(lView[25])',
             'removeNestedICU(26)',
-            '(lView[0] as Element).remove(lView[26])',
-            '(lView[0] as Element).remove(lView[31])',
+            'remove(lView[26])',
+            'remove(lView[31])',
           ]),
         ],
       });
@@ -407,9 +407,9 @@ describe('Runtime i18n', () => {
           matchDebug([]),
         ],
         remove: [
-          matchDebug(['(lView[0] as Element).remove(lView[28])']),
-          matchDebug(['(lView[0] as Element).remove(lView[29])']),
-          matchDebug(['(lView[0] as Element).remove(lView[30])'])
+          matchDebug(['remove(lView[28])']),
+          matchDebug(['remove(lView[29])']),
+          matchDebug(['remove(lView[30])']),
         ],
       });
     });
