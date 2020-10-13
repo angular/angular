@@ -54,6 +54,22 @@ export abstract class DependencyHostBase implements DependencyHost {
   }
 
   /**
+   * Find all the dependencies for the provided paths.
+   *
+   * @param files The list of absolute paths of JavaScript files to scan for dependencies.
+   * @param dependencyInfo An object containing information about the dependencies of the
+   * entry-point, including those that were missing or deep imports into other entry-points. The
+   * sets in this object will be updated with new information about the entry-point's dependencies.
+   */
+  collectDependenciesInFiles(
+      files: AbsoluteFsPath[], {dependencies, missing, deepImports}: DependencyInfo): void {
+    const alreadySeen = new Set<AbsoluteFsPath>();
+    for (const file of files) {
+      this.processFile(file, dependencies, missing, deepImports, alreadySeen);
+    }
+  }
+
+  /**
    * Compute the dependencies of the given file.
    *
    * @param file An absolute path to the file whose dependencies we want to get.
@@ -102,17 +118,26 @@ export abstract class DependencyHostBase implements DependencyHost {
       return false;
     }
     if (resolvedModule instanceof ResolvedRelativeModule) {
-      const internalDependency = resolvedModule.modulePath;
-      if (!alreadySeen.has(internalDependency)) {
-        alreadySeen.add(internalDependency);
-        this.recursivelyCollectDependencies(
-            internalDependency, dependencies, missing, deepImports, alreadySeen);
-      }
+      this.processFile(resolvedModule.modulePath, dependencies, missing, deepImports, alreadySeen);
     } else if (resolvedModule instanceof ResolvedDeepImport) {
       deepImports.add(resolvedModule.importPath);
     } else {
       dependencies.add(resolvedModule.entryPointPath);
     }
     return true;
+  }
+
+  /**
+   * Processes the file if it has not already been seen. This will also recursively process
+   * all files that are imported from the file, while taking the set of already seen files
+   * into account.
+   */
+  protected processFile(
+      file: AbsoluteFsPath, dependencies: Set<AbsoluteFsPath>, missing: Set<string>,
+      deepImports: Set<string>, alreadySeen: Set<AbsoluteFsPath>): void {
+    if (!alreadySeen.has(file)) {
+      alreadySeen.add(file);
+      this.recursivelyCollectDependencies(file, dependencies, missing, deepImports, alreadySeen);
+    }
   }
 }

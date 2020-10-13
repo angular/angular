@@ -48,14 +48,12 @@ export class ProgramBasedEntryPointFinder extends TracingEntryPointFinder {
     const moduleResolver = new ModuleResolver(this.fs, this.pathMappings, ['', '.ts', '/index.ts']);
     const host = new EsmDependencyHost(this.fs, moduleResolver);
     const dependencies = createDependencyInfo();
+    const rootFiles = this.tsConfig.rootNames.map(rootName => this.fs.resolve(rootName));
     this.logger.debug(
         `Using the program from ${this.tsConfig.project} to seed the entry-point finding.`);
     this.logger.debug(
-        `Collecting dependencies from the following files:` +
-        this.tsConfig.rootNames.map(file => `\n- ${file}`));
-    this.tsConfig.rootNames.forEach(rootName => {
-      host.collectDependencies(this.fs.resolve(rootName), dependencies);
-    });
+        `Collecting dependencies from the following files:` + rootFiles.map(file => `\n- ${file}`));
+    host.collectDependenciesInFiles(rootFiles, dependencies);
     return Array.from(dependencies.dependencies);
   }
 
