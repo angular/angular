@@ -50,7 +50,7 @@ export interface TemplateTypeChecker {
    * is not valid. If the template cannot be parsed correctly, no override will occur.
    */
   overrideComponentTemplate(component: ts.ClassDeclaration, template: string):
-      {nodes: TmplAstNode[], errors?: ParseError[]};
+      {nodes: TmplAstNode[], errors: ParseError[]|null};
 
   /**
    * Get all `ts.Diagnostic`s currently available for the given `ts.SourceFile`.

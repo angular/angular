@@ -138,15 +138,11 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
   }
 
   overrideComponentTemplate(component: ts.ClassDeclaration, template: string):
-      {nodes: TmplAstNode[], errors?: ParseError[]} {
+      {nodes: TmplAstNode[], errors: ParseError[]|null} {
     const {nodes, errors} = parseTemplate(template, 'override.html', {
       preserveWhitespaces: true,
       leadingTriviaChars: [],
     });
-
-    if (errors !== null) {
-      return {nodes, errors};
-    }
 
     const filePath = absoluteFromSourceFile(component.getSourceFile());
 
@@ -169,7 +165,7 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
     this.completionCache.delete(component);
     this.symbolBuilderCache.delete(component);
 
-    return {nodes};
+    return {nodes, errors};
   }
 
   isTrackedTypeCheckFile(filePath: AbsoluteFsPath): boolean {
