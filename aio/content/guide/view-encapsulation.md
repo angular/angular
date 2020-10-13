@@ -22,7 +22,7 @@ Choose from the following modes:
   The scoping rules, isolations, and protections discussed earlier don't apply.
   This is essentially the same as pasting the component's styles into the HTML.
 
-To set the components encapsulation mode, use the `encapsulation` property in the component metadata:
+To set the component's encapsulation mode, use the `encapsulation` property in the component metadata:
 
 <code-example path="component-styles/src/app/quest-summary.component.ts" region="encapsulation.shadow" header="src/app/quest-summary.component.ts"></code-example>
 
@@ -61,7 +61,7 @@ There are two kinds of generated attributes:
 that identifies to which host's emulated shadow DOM this element belongs.
 
 The exact values of these attributes aren't important. They are automatically
-generated and you never refer to them in application code. But they are targeted
+generated and you should never refer to them in application code. But they are targeted
 by the generated component styles, which are in the `<head>` section of the DOM:
 
 <code-example format="">
