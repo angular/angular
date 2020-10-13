@@ -30,6 +30,10 @@ export const ELEMENT_MODULE_LOAD_CALLBACKS_AS_ROUTES = [
     loadChildren: () => import('./resource/resource-list.module').then(m => m.ResourceListModule),
   },
   {
+    selector: 'aio-search-results',
+    loadChildren: () => import('./search/search-results.module').then(m => m.SearchResultsModule),
+  },
+  {
     selector: 'aio-toc',
     loadChildren: () => import('./toc/toc.module').then(m => m.TocModule),
   },

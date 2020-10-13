@@ -4,9 +4,9 @@ import { Subject } from 'rxjs';
 import { LocationService } from 'app/shared/location.service';
 import { MockLocationService } from 'testing/location.service';
 import { SearchResults } from 'app/search/interfaces';
-import { SearchResultsComponent } from 'app/shared/search-results/search-results.component';
 import { SearchService } from 'app/search/search.service';
 import { FileNotFoundSearchComponent } from './file-not-found-search.component';
+import { SearchResultsComponent } from './search-results.component';
 
 
 describe('FileNotFoundSearchComponent', () => {

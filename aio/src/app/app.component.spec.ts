@@ -6,6 +6,7 @@ import { MatProgressBar } from '@angular/material/progress-bar';
 import { MatSidenav } from '@angular/material/sidenav';
 import { By, Title } from '@angular/platform-browser';
 import { ElementsLoader } from 'app/custom-elements/elements-loader';
+import { LazySearchResultsCustomElementComponent } from 'app/custom-elements/lazy-custom-element.component';
 import { DocumentService } from 'app/documents/document.service';
 import { DocViewerComponent } from 'app/layout/doc-viewer/doc-viewer.component';
 import { CurrentNodes } from 'app/navigation/navigation.model';
@@ -17,7 +18,6 @@ import { GaService } from 'app/shared/ga.service';
 import { LocationService } from 'app/shared/location.service';
 import { Logger } from 'app/shared/logger.service';
 import { ScrollService } from 'app/shared/scroll.service';
-import { SearchResultsComponent } from 'app/shared/search-results/search-results.component';
 import { SelectComponent } from 'app/shared/select/select.component';
 import { TocItem, TocService } from 'app/shared/toc.service';
 import { of, Subject, timer } from 'rxjs';
@@ -754,7 +754,7 @@ describe('AppComponent', () => {
           component.showSearchResults = true;
           fixture.detectChanges();
 
-          const searchResults = fixture.debugElement.query(By.directive(SearchResultsComponent));
+          const searchResults = fixture.debugElement.query(By.directive(LazySearchResultsCustomElementComponent));
           searchResults.nativeElement.click();
           fixture.detectChanges();
 
@@ -816,7 +816,8 @@ describe('AppComponent', () => {
           component.showSearchResults = true;
           fixture.detectChanges();
 
-          const searchResultsComponent = fixture.debugElement.query(By.directive(SearchResultsComponent));
+          const searchResultsComponent = fixture.debugElement.query(
+              By.directive(LazySearchResultsCustomElementComponent));
           searchResultsComponent.triggerEventHandler('resultSelected', {});
           fixture.detectChanges();
           expect(component.showSearchResults).toBe(false);

@@ -6,11 +6,11 @@ import {
   ELEMENT_MODULE_LOAD_CALLBACKS_AS_ROUTES,
   ELEMENT_MODULE_LOAD_CALLBACKS_TOKEN
 } from './element-registry';
-import { LazyCustomElementComponent } from './lazy-custom-element.component';
+import { LazyCustomElementComponent, LazySearchResultsCustomElementComponent } from './lazy-custom-element.component';
 
 @NgModule({
-  declarations: [ LazyCustomElementComponent ],
-  exports: [ LazyCustomElementComponent ],
+  declarations: [ LazyCustomElementComponent, LazySearchResultsCustomElementComponent ],
+  exports: [ LazyCustomElementComponent, LazySearchResultsCustomElementComponent ],
   providers: [
     ElementsLoader,
     { provide: ELEMENT_MODULE_LOAD_CALLBACKS_TOKEN, useValue: ELEMENT_MODULE_LOAD_CALLBACKS },

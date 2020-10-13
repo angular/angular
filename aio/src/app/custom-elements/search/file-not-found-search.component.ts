@@ -7,9 +7,10 @@ import { SearchService } from 'app/search/search.service';
 
 @Component({
   selector: 'aio-file-not-found-search',
-  template:
-  `<p>Let's see if any of these search results help...</p>
-  <aio-search-results class="embedded" [searchResults]="searchResults | async"></aio-search-results>`
+  template: `
+    <p>Let's see if any of these search results help...</p>
+    <aio-search-results class="embedded" [searchResults]="searchResults | async"></aio-search-results>
+  `,
 })
 export class FileNotFoundSearchComponent implements OnInit {
   searchResults: Observable<SearchResults>;
