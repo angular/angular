@@ -12,7 +12,7 @@ import {createTNodeAtIndex} from '../instructions/shared';
 import {TIcu} from '../interfaces/i18n';
 import {TIcuContainerNode, TNode, TNodeType} from '../interfaces/node';
 import {TView} from '../interfaces/view';
-import {assertNodeType} from '../node_assert';
+import {assertTNodeType} from '../node_assert';
 import {addTNodeAndUpdateInsertBeforeIndex} from './i18n_insert_before_index';
 
 
@@ -69,7 +69,7 @@ export function setTIcu(tView: TView, index: number, tIcu: TIcu): void {
   if (tNode === null) {
     tView.data[index] = tIcu;
   } else {
-    ngDevMode && assertNodeType(tNode, TNodeType.IcuContainer);
+    ngDevMode && assertTNodeType(tNode, TNodeType.Icu);
     tNode.value = tIcu;
   }
 }

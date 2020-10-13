@@ -27,7 +27,7 @@ import {unusedValueExportToPlacateAjd as unused2} from './interfaces/injector';
 import {TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeType, unusedValueExportToPlacateAjd as unused3} from './interfaces/node';
 import {LQueries, LQuery, TQueries, TQuery, TQueryMetadata, unusedValueExportToPlacateAjd as unused4} from './interfaces/query';
 import {DECLARATION_LCONTAINER, LView, PARENT, QUERIES, TVIEW, TView} from './interfaces/view';
-import {assertNodeOfPossibleTypes} from './node_assert';
+import {assertTNodeType} from './node_assert';
 import {getCurrentQueryIndex, getCurrentTNode, getLView, getTView, setCurrentQueryIndex} from './state';
 import {isCreationMode} from './util/view_utils';
 import {createContainerRef, createElementRef, createTemplateRef} from './view_engine_compatibility';
@@ -217,7 +217,7 @@ class TQuery_ implements TQuery {
       // - <needs-target><ng-container><i #target></i></ng-container></needs-target>: here we need
       // to go past `<ng-container>` to determine <i #target> parent node (but we shouldn't traverse
       // up past the query's host node!).
-      while (parent !== null && parent.type === TNodeType.ElementContainer &&
+      while (parent !== null && (parent.type & TNodeType.ElementContainer) &&
              parent.index !== declarationNodeIdx) {
         parent = parent.parent;
       }
@@ -238,7 +238,7 @@ class TQuery_ implements TQuery {
       }
     } else {
       if ((predicate as any) === ViewEngine_TemplateRef) {
-        if (tNode.type === TNodeType.Container) {
+        if (tNode.type & TNodeType.Container) {
           this.matchTNodeWithReadOption(tView, tNode, -1);
         }
       } else {
@@ -253,7 +253,7 @@ class TQuery_ implements TQuery {
       const read = this.metadata.read;
       if (read !== null) {
         if (read === ViewEngine_ElementRef || read === ViewContainerRef ||
-            read === ViewEngine_TemplateRef && tNode.type === TNodeType.Container) {
+            read === ViewEngine_TemplateRef && (tNode.type & TNodeType.Container)) {
           this.addMatch(tNode.index, -2);
         } else {
           const directiveOrProviderIdx =
@@ -299,9 +299,9 @@ function getIdxOfMatchingSelector(tNode: TNode, selector: string): number|null {
 
 
 function createResultByTNodeType(tNode: TNode, currentView: LView): any {
-  if (tNode.type === TNodeType.Element || tNode.type === TNodeType.ElementContainer) {
+  if (tNode.type & (TNodeType.AnyRNode | TNodeType.ElementContainer)) {
     return createElementRef(ViewEngine_ElementRef, tNode, currentView);
-  } else if (tNode.type === TNodeType.Container) {
+  } else if (tNode.type & TNodeType.Container) {
     return createTemplateRef(ViewEngine_TemplateRef, ViewEngine_ElementRef, tNode, currentView);
   }
   return null;
@@ -327,9 +327,7 @@ function createSpecialToken(lView: LView, tNode: TNode, read: any): any {
   } else if (read === ViewEngine_TemplateRef) {
     return createTemplateRef(ViewEngine_TemplateRef, ViewEngine_ElementRef, tNode, lView);
   } else if (read === ViewContainerRef) {
-    ngDevMode &&
-        assertNodeOfPossibleTypes(
-            tNode, [TNodeType.Element, TNodeType.Container, TNodeType.ElementContainer]);
+    ngDevMode && assertTNodeType(tNode, TNodeType.AnyRNode | TNodeType.AnyContainer);
     return createContainerRef(
         ViewContainerRef, ViewEngine_ElementRef,
         tNode as TElementNode | TContainerNode | TElementContainerNode, lView);

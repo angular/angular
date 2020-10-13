@@ -14,7 +14,7 @@ import {hasClassInput, hasStyleInput, TAttributes, TElementNode, TNode, TNodeFla
 import {RElement} from '../interfaces/renderer';
 import {isContentQueryHost, isDirectiveHost} from '../interfaces/type_checks';
 import {HEADER_OFFSET, LView, RENDERER, TView} from '../interfaces/view';
-import {assertNodeType} from '../node_assert';
+import {assertTNodeType} from '../node_assert';
 import {appendChild, createElementNode, writeDirectClass, writeDirectStyle} from '../node_manipulation';
 import {decreaseElementDepthCount, getBindingIndex, getCurrentTNode, getElementDepthCount, getLView, getNamespace, getTView, increaseElementDepthCount, isCurrentTNodeParent, setCurrentTNode, setCurrentTNodeAsNotParent} from '../state';
 import {computeStaticStyling} from '../styling/static_styling';
@@ -22,6 +22,7 @@ import {setUpAttributes} from '../util/attrs_utils';
 import {getConstant} from '../util/view_utils';
 import {setDirectiveInputsWhichShadowsStyling} from './property';
 import {createDirectivesInstances, executeContentQueries, getOrCreateTNode, matchingSchemas, resolveDirectives, saveResolvedLocalsInData} from './shared';
+
 
 
 function elementStartFirstCreatePass(
@@ -140,7 +141,7 @@ export function ɵɵelementEnd(): void {
   }
 
   const tNode = currentTNode;
-  ngDevMode && assertNodeType(tNode, TNodeType.Element);
+  ngDevMode && assertTNodeType(tNode, TNodeType.AnyRNode);
 
 
   decreaseElementDepthCount();
