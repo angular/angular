@@ -23,13 +23,13 @@ describe('retry-on-error', () => {
     docRegionDefault(mockConsole, ajax);
     expect(mockConsole.log.calls.allArgs()).toEqual([
       ['Subscribed to AJAX'],
-      ['Error occured.'],
+      ['Error occurred.'],
       ['Subscribed to AJAX'],
-      ['Error occured.'],
+      ['Error occurred.'],
       ['Subscribed to AJAX'],
-      ['Error occured.'],
+      ['Error occurred.'],
       ['Subscribed to AJAX'],
-      ['Error occured.'],
+      ['Error occurred.'],
       ['data: ', []],
     ]);
   });
