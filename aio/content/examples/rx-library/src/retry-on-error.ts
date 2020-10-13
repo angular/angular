@@ -17,7 +17,7 @@ export function docRegionDefault(console, ajax) {
   const apiData = ajax('/api/data').pipe(
     map((res: any) => {
       if (!res.response) {
-        console.log('Error occured.');
+        console.log('Error occurred.');
         throw new Error('Value expected!');
       }
       return res.response;
