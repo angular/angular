@@ -14,7 +14,7 @@ import {IcuType, TI18n} from '@angular/core/src/render3/interfaces/i18n';
 import {HEADER_OFFSET} from '@angular/core/src/render3/interfaces/view';
 import {expect} from '@angular/core/testing/src/testing_internal';
 import {matchTI18n, matchTIcu} from '../matchers';
-import {debugMatch} from '../utils';
+import {matchDebug} from '../utils';
 import {ViewFixture} from '../view_fixture';
 
 describe('i18n_parse', () => {
@@ -25,7 +25,7 @@ describe('i18n_parse', () => {
     it('should parse simple text', () => {
       const tI18n = toT18n('some text');
       expect(tI18n).toEqual(matchTI18n({
-        create: debugMatch([
+        create: matchDebug([
           'lView[22] = document.createText("some text");',
           'parent.appendChild(lView[22]);',
         ]),
@@ -56,7 +56,7 @@ describe('i18n_parse', () => {
             other {otherCase}
         }|after`);
       expect(tI18n).toEqual(matchTI18n({
-        create: debugMatch([
+        create: matchDebug([
           'lView[22] = document.createText("before|");',
           'parent.appendChild(lView[22]);',
           'lView[23] = document.createComment("ICU 0:0");',
@@ -64,7 +64,7 @@ describe('i18n_parse', () => {
           'lView[27] = document.createText("|after");',
           'parent.appendChild(lView[27]);',
         ]),
-        update: debugMatch([
+        update: matchDebug([
           'if (mask & 0b1) { icuSwitchCase(23, `${lView[i-1]}`); }',
         ])
       }));
@@ -74,22 +74,22 @@ describe('i18n_parse', () => {
         currentCaseLViewIndex: 24,
         cases: ['A', 'other'],
         create: [
-          debugMatch([
+          matchDebug([
             'lView[25] = document.createTextNode("caseA")',
             '(lView[0] as Element).appendChild(lView[25])'
           ]),
-          debugMatch([
+          matchDebug([
             'lView[26] = document.createTextNode("otherCase")',
             '(lView[0] as Element).appendChild(lView[26])',
           ])
         ],
         update: [
-          debugMatch([]),
-          debugMatch([]),
+          matchDebug([]),
+          matchDebug([]),
         ],
         remove: [
-          debugMatch(['(lView[0] as Element).remove(lView[25])']),
-          debugMatch(['(lView[0] as Element).remove(lView[26])'])
+          matchDebug(['(lView[0] as Element).remove(lView[25])']),
+          matchDebug(['(lView[0] as Element).remove(lView[26])'])
         ],
       }));
 
@@ -169,11 +169,11 @@ describe('i18n_parse', () => {
             other {parentOther}
         }`);
       expect(tI18n).toEqual(matchTI18n({
-        create: debugMatch([
+        create: matchDebug([
           'lView[24] = document.createComment("ICU 0:0");',
           'parent.appendChild(lView[24]);',
         ]),
-        update: debugMatch([
+        update: matchDebug([
           'if (mask & 0b1) { icuSwitchCase(24, `${lView[i-1]}`); }',
           'if (mask & 0b10) { icuSwitchCase(27, `${lView[i-2]}`); }',
           'if (mask & 0b100) { icuUpdateCase(27); }',
@@ -185,7 +185,7 @@ describe('i18n_parse', () => {
         currentCaseLViewIndex: 25,
         cases: ['A', 'other'],
         create: [
-          debugMatch([
+          matchDebug([
             'lView[26] = document.createTextNode("parentA ")',
             '(lView[0] as Element).appendChild(lView[26])',
             'lView[27] = document.createComment("nested ICU 0")',
@@ -193,23 +193,23 @@ describe('i18n_parse', () => {
             'lView[31] = document.createTextNode("!")',
             '(lView[0] as Element).appendChild(lView[31])',
           ]),
-          debugMatch([
+          matchDebug([
             'lView[32] = document.createTextNode("parentOther")',
             '(lView[0] as Element).appendChild(lView[32])',
           ])
         ],
         update: [
-          debugMatch([]),
-          debugMatch([]),
+          matchDebug([]),
+          matchDebug([]),
         ],
         remove: [
-          debugMatch([
+          matchDebug([
             '(lView[0] as Element).remove(lView[26])',
             'removeNestedICU(27)',
             '(lView[0] as Element).remove(lView[27])',
             '(lView[0] as Element).remove(lView[31])',
           ]),
-          debugMatch([
+          matchDebug([
             '(lView[0] as Element).remove(lView[32])',
           ])
         ],
@@ -221,24 +221,24 @@ describe('i18n_parse', () => {
         currentCaseLViewIndex: 28,
         cases: ['0', 'other'],
         create: [
-          debugMatch([
+          matchDebug([
             'lView[29] = document.createTextNode("nested0")',
             '(lView[0] as Element).appendChild(lView[29])'
           ]),
-          debugMatch([
+          matchDebug([
             'lView[30] = document.createTextNode("")',
             '(lView[0] as Element).appendChild(lView[30])',
           ])
         ],
         update: [
-          debugMatch([]),
-          debugMatch([
+          matchDebug([]),
+          matchDebug([
             'if (mask & 0b100) { (lView[30] as Text).textContent = `${lView[i-3]}`; }',
           ]),
         ],
         remove: [
-          debugMatch(['(lView[0] as Element).remove(lView[29])']),
-          debugMatch(['(lView[0] as Element).remove(lView[30])'])
+          matchDebug(['(lView[0] as Element).remove(lView[29])']),
+          matchDebug(['(lView[0] as Element).remove(lView[30])'])
         ],
       }));
 
