@@ -10,8 +10,8 @@ import {AST, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstElement, TmplAstNo
 import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
 import {DirectiveSymbol, DomBindingSymbol, ElementSymbol, ShimLocation, Symbol, SymbolKind, TemplateSymbol} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
 import * as ts from 'typescript';
+import {getTargetAtPosition} from './template_target';
 
-import {getPathToNodeAtPosition} from './hybrid_visitor';
 import {findTightestNode, flatMap, getClassDeclFromDecoratorProp, getDirectiveMatchesForAttribute, getDirectiveMatchesForElementTag, getPropertyAssignmentFromValue, getTemplateInfoAtPosition, getTextSpanOfNode, isDollarEvent, isTypeScriptFile, TemplateInfo, toTextSpan} from './utils';
 
 
@@ -111,10 +111,9 @@ function getUrlFromProperty(urlNode: ts.StringLiteralLike, resourceResolver: Res
   };
 }
 
-
 interface DefinitionMeta {
   node: AST|TmplAstNode;
-  path: Array<AST|TmplAstNode>;
+  parent: AST|TmplAstNode|null;
   symbol: Symbol;
 }
 
@@ -156,7 +155,7 @@ export class DefinitionBuilder {
     return {definitions, textSpan: getTextSpanOfNode(definitionMeta.node)};
   }
 
-  private getDefinitionsForSymbol({symbol, node, path, component}: DefinitionMeta&
+  private getDefinitionsForSymbol({symbol, node, parent, component}: DefinitionMeta&
                                   TemplateInfo): readonly ts.DefinitionInfo[]|undefined {
     switch (symbol.kind) {
       case SymbolKind.Directive:
@@ -174,7 +173,7 @@ export class DefinitionBuilder {
         const bindingDefs = this.getDefinitionsForSymbols(...symbol.bindings);
         // Also attempt to get directive matches for the input name. If there is a directive that
         // has the input name as part of the selector, we want to return that as well.
-        const directiveDefs = this.getDirectiveTypeDefsForBindingNode(node, path, component);
+        const directiveDefs = this.getDirectiveTypeDefsForBindingNode(node, parent, component);
         return [...bindingDefs, ...directiveDefs];
       }
       case SymbolKind.Variable:
@@ -233,7 +232,7 @@ export class DefinitionBuilder {
         // Also attempt to get directive matches for the input name. If there is a directive that
         // has the input name as part of the selector, we want to return that as well.
         const directiveDefs = this.getDirectiveTypeDefsForBindingNode(
-            node, definitionMeta.path, templateInfo.component);
+            node, definitionMeta.parent, templateInfo.component);
         return [...bindingDefs, ...directiveDefs];
       }
       case SymbolKind.Reference:
@@ -273,13 +272,13 @@ export class DefinitionBuilder {
   }
 
   private getDirectiveTypeDefsForBindingNode(
-      node: TmplAstNode|AST, pathToNode: Array<TmplAstNode|AST>, component: ts.ClassDeclaration) {
+      node: TmplAstNode|AST, parent: TmplAstNode|AST|null, component: ts.ClassDeclaration) {
     if (!(node instanceof TmplAstBoundAttribute) && !(node instanceof TmplAstTextAttribute) &&
         !(node instanceof TmplAstBoundEvent)) {
       return [];
     }
-    const parent = pathToNode[pathToNode.length - 2];
-    if (!(parent instanceof TmplAstTemplate || parent instanceof TmplAstElement)) {
+    if (parent === null ||
+        !(parent instanceof TmplAstTemplate || parent instanceof TmplAstElement)) {
       return [];
     }
     const templateOrElementSymbol =
@@ -303,16 +302,16 @@ export class DefinitionBuilder {
 
   private getDefinitionMetaAtPosition({template, component}: TemplateInfo, position: number):
       DefinitionMeta|undefined {
-    const path = getPathToNodeAtPosition(template, position);
-    if (path === undefined) {
-      return;
+    const target = getTargetAtPosition(template, position);
+    if (target === null) {
+      return undefined;
     }
+    const {node, parent} = target;
 
-    const node = path[path.length - 1];
     const symbol = this.compiler.getTemplateTypeChecker().getSymbolOfNode(node, component);
     if (symbol === null) {
-      return;
+      return undefined;
     }
-    return {node, path, symbol};
+    return {node, parent, symbol};
   }
 }
