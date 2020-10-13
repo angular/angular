@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {I18nDebug, I18nMutateOpCodes, TI18n, TIcu} from '@angular/core/src/render3/interfaces/i18n';
+import {I18nDebug, IcuCreateOpCodes, TI18n, TIcu} from '@angular/core/src/render3/interfaces/i18n';
 import {TNode} from '@angular/core/src/render3/interfaces/node';
 import {TView} from '@angular/core/src/render3/interfaces/view';
 
@@ -233,7 +233,7 @@ export function matchDomText(expectedText: string|undefined = undefined):
 }
 
 export function matchI18nMutableOpCodes(expectedMutableOpCodes: string[]):
-    jasmine.AsymmetricMatcher<I18nMutateOpCodes> {
+    jasmine.AsymmetricMatcher<IcuCreateOpCodes> {
   const matcher = function() {};
   let _actual: any = null;
 

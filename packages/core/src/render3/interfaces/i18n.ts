@@ -12,6 +12,18 @@ import {RNode} from './renderer';
 import {SanitizerFn} from './sanitization';
 import {LView} from './view';
 
+
+/**
+ * Stores a list of nodes which need to be removed.
+ *
+ * Numbers are indexes into the `LView`
+ * - index > 0: `removeRNode(lView[0])`
+ * - index < 0: `removeICU(~lView[0])`
+ */
+export interface I18nRemoveOpCodes extends Array<number> {
+  __brand__: 'I18nRemoveOpCodes';
+}
+
 /**
  * `I18nMutateOpCode` defines OpCodes for `I18nMutateOpCodes` array.
  *
@@ -35,11 +47,11 @@ import {LView} from './view';
  *
  * See: `I18nCreateOpCodes` for example of usage.
  */
-export const enum I18nMutateOpCode {
+export const enum IcuCreateOpCode {
   /**
    * Stores shift amount for bits 17-3 that contain reference index.
    */
-  SHIFT_REF = 3,
+  SHIFT_REF = 1,
   /**
    * Stores shift amount for bits 31-17 that contain parent index.
    */
@@ -47,61 +59,124 @@ export const enum I18nMutateOpCode {
   /**
    * Mask for OpCode
    */
-  // FIXME(misko): Shrink mask to 2 bits as 4 choices can fit into two bits.
-  MASK_INSTRUCTION = 0b111,
+  MASK_INSTRUCTION = 0b1,
 
   /**
    * Mask for the Reference node (bits 16-3)
    */
-  // FIXME(misko): Why is this not used?
-  MASK_REF = 0b11111111111111000,
+  MASK_REF = 0b11111111111111110,
   //           11111110000000000
   //           65432109876543210
 
   /**
    * Instruction to append the current node to `PARENT`.
    */
-  AppendChild = 0b001,
-
-  /**
-   * Instruction to remove the `REF` node from `PARENT`.
-   */
-  Remove = 0b011,
+  AppendChild = 0b0,
 
   /**
    * Instruction to set the attribute of a node.
    */
-  Attr = 0b100,
+  Attr = 0b1,
+}
+
+
+/**
+ * Array storing OpCode for dynamically creating `i18n` blocks.
+ *
+ * Example:
+ * ```ts
+ * <I18nCreateOpCode>[
+ *   // For adding text nodes
+ *   // ---------------------
+ *   // Equivalent to:
+ *   //   lView[1].appendChild(lView[0] = document.createTextNode('xyz'));
+ *   'xyz', 0, 1 << SHIFT_PARENT | 0 << SHIFT_REF | AppendChild,
+ *
+ *   // For adding element nodes
+ *   // ---------------------
+ *   // Equivalent to:
+ *   //   lView[1].appendChild(lView[0] = document.createElement('div'));
+ *   ELEMENT_MARKER, 'div', 0, 1 << SHIFT_PARENT | 0 << SHIFT_REF | AppendChild,
+ *
+ *   // For adding comment nodes
+ *   // ---------------------
+ *   // Equivalent to:
+ *   //   lView[1].appendChild(lView[0] = document.createComment(''));
+ *   ICU_MARKER, '', 0, 1 << SHIFT_PARENT | 0 << SHIFT_REF | AppendChild,
+ *
+ *   // For moving existing nodes to a different location
+ *   // --------------------------------------------------
+ *   // Equivalent to:
+ *   //   const node = lView[1];
+ *   //   lView[2].appendChild(node);
+ *   1 << SHIFT_REF | Select, 2 << SHIFT_PARENT | 0 << SHIFT_REF | AppendChild,
+ *
+ *   // For removing existing nodes
+ *   // --------------------------------------------------
+ *   //   const node = lView[1];
+ *   //   removeChild(tView.data(1), node, lView);
+ *   1 << SHIFT_REF | Remove,
+ *
+ *   // For writing attributes
+ *   // --------------------------------------------------
+ *   //   const node = lView[1];
+ *   //   node.setAttribute('attr', 'value');
+ *   1 << SHIFT_REF | Attr, 'attr', 'value'
+ * ];
+ * ```
+ */
+export interface IcuCreateOpCodes extends Array<number|string|ELEMENT_MARKER|ICU_MARKER|null>,
+                                          I18nDebug {
+  __brand__: 'I18nCreateOpCodes';
+}
+
+export const enum I18nUpdateOpCode {
+  /**
+   * Stores shift amount for bits 17-2 that contain reference index.
+   */
+  SHIFT_REF = 2,
+  /**
+   * Mask for OpCode
+   */
+  MASK_OPCODE = 0b11,
 
   /**
-   * Instruction to removed the nested ICU.
+   * Instruction to update a text node.
    */
-  RemoveNestedIcu = 0b110,
+  Text = 0b00,
+  /**
+   * Instruction to update a attribute of a node.
+   */
+  Attr = 0b01,
+  /**
+   * Instruction to switch the current ICU case.
+   */
+  IcuSwitch = 0b10,
+  /**
+   * Instruction to update the current ICU case.
+   */
+  IcuUpdate = 0b11,
 }
 
 // FIXME(misko): These function are technically not interfaces, and so we may consider moving them
 // elsewhere.
 
-// FIXME(misko): rename to `getParentFromI18nCreateOpCode`
-export function getParentFromI18nMutateOpCode(mergedCode: number): number {
-  return mergedCode >>> I18nMutateOpCode.SHIFT_PARENT;
+export function getParentFromIcuCreateOpCode(mergedCode: number): number {
+  return mergedCode >>> IcuCreateOpCode.SHIFT_PARENT;
 }
 
-// FIXME(misko): rename to `getRefFromI18nCreateOpCode`
-export function getRefFromI18nMutateOpCode(mergedCode: number): number {
-  return (mergedCode & I18nMutateOpCode.MASK_REF) >>> I18nMutateOpCode.SHIFT_REF;
+export function getRefFromIcuCreateOpCode(mergedCode: number): number {
+  return (mergedCode & IcuCreateOpCode.MASK_REF) >>> IcuCreateOpCode.SHIFT_REF;
 }
 
-// FIXME(misko): rename to `getInstructionFromI18nCreateOpCode`
-export function getInstructionFromI18nMutateOpCode(mergedCode: number): number {
-  return mergedCode & I18nMutateOpCode.MASK_INSTRUCTION;
+export function getInstructionFromIcuCreateOpCode(mergedCode: number): number {
+  return mergedCode & IcuCreateOpCode.MASK_INSTRUCTION;
 }
 
-// FIXME(misko): rename to `i18nCreateOpCode`
-export function i18nMutateOpCode(opCode: I18nMutateOpCode, parentIdx: number, refIdx: number) {
+export function icuCreateOpCode(opCode: IcuCreateOpCode, parentIdx: number, refIdx: number) {
   ngDevMode && assertGreaterThanOrEqual(parentIdx, 0, 'Missing parent index');
   ngDevMode && assertGreaterThan(refIdx, 0, 'Missing ref index');
-  return opCode | parentIdx << I18nMutateOpCode.SHIFT_PARENT | refIdx << I18nMutateOpCode.SHIFT_REF;
+  return opCode | parentIdx << IcuCreateOpCode.SHIFT_PARENT | refIdx << IcuCreateOpCode.SHIFT_REF;
 }
 
 /**
@@ -173,7 +248,9 @@ export interface I18nDebug {
  * }
  * ```
  */
-export interface I18nCreateOpCodes extends Array<number|string>, I18nDebug {}
+export interface I18nCreateOpCodes extends Array<number|string>, I18nDebug {
+  __brand__: 'I18nCreateOpCodes';
+}
 
 /**
  * See `I18nCreateOpCodes`
@@ -196,84 +273,6 @@ export enum I18nCreateOpCode {
   COMMENT = 0b10,
 }
 
-
-/**
- * Array storing OpCode for dynamically creating `i18n` blocks.
- *
- * Example:
- * ```ts
- * <I18nCreateOpCode>[
- *   // For adding text nodes
- *   // ---------------------
- *   // Equivalent to:
- *   //   lView[1].appendChild(lView[0] = document.createTextNode('xyz'));
- *   'xyz', 0, 1 << SHIFT_PARENT | 0 << SHIFT_REF | AppendChild,
- *
- *   // For adding element nodes
- *   // ---------------------
- *   // Equivalent to:
- *   //   lView[1].appendChild(lView[0] = document.createElement('div'));
- *   ELEMENT_MARKER, 'div', 0, 1 << SHIFT_PARENT | 0 << SHIFT_REF | AppendChild,
- *
- *   // For adding comment nodes
- *   // ---------------------
- *   // Equivalent to:
- *   //   lView[1].appendChild(lView[0] = document.createComment(''));
- *   ICU_MARKER, '', 0, 1 << SHIFT_PARENT | 0 << SHIFT_REF | AppendChild,
- *
- *   // For moving existing nodes to a different location
- *   // --------------------------------------------------
- *   // Equivalent to:
- *   //   const node = lView[1];
- *   //   lView[2].appendChild(node);
- *   1 << SHIFT_REF | Select, 2 << SHIFT_PARENT | 0 << SHIFT_REF | AppendChild,
- *
- *   // For removing existing nodes
- *   // --------------------------------------------------
- *   //   const node = lView[1];
- *   //   removeChild(tView.data(1), node, lView);
- *   1 << SHIFT_REF | Remove,
- *
- *   // For writing attributes
- *   // --------------------------------------------------
- *   //   const node = lView[1];
- *   //   node.setAttribute('attr', 'value');
- *   1 << SHIFT_REF | Attr, 'attr', 'value'
- * ];
- * ```
- *
- * See: `applyI18nCreateOpCodes`;
- */
-export interface I18nMutateOpCodes extends Array<number|string|ELEMENT_MARKER|ICU_MARKER|null>,
-                                           I18nDebug {}
-
-export const enum I18nUpdateOpCode {
-  /**
-   * Stores shift amount for bits 17-2 that contain reference index.
-   */
-  SHIFT_REF = 2,
-  /**
-   * Mask for OpCode
-   */
-  MASK_OPCODE = 0b11,
-
-  /**
-   * Instruction to update a text node.
-   */
-  Text = 0b00,
-  /**
-   * Instruction to update a attribute of a node.
-   */
-  Attr = 0b01,
-  /**
-   * Instruction to switch the current ICU case.
-   */
-  IcuSwitch = 0b10,
-  /**
-   * Instruction to update the current ICU case.
-   */
-  IcuUpdate = 0b11,
-}
 
 /**
  * Stores DOM operations which need to be applied to update DOM render tree due to changes in
@@ -347,7 +346,9 @@ export const enum I18nUpdateOpCode {
  * ```
  *
  */
-export interface I18nUpdateOpCodes extends Array<string|number|SanitizerFn|null>, I18nDebug {}
+export interface I18nUpdateOpCodes extends Array<string|number|SanitizerFn|null>, I18nDebug {
+  __brand__: 'I18nUpdateOpCodes';
+}
 
 /**
  * Store information for the i18n translation block.
@@ -410,14 +411,12 @@ export interface TIcu {
   /**
    * A set of OpCodes to apply in order to build up the DOM render tree for the ICU
    */
-  // FIXME(misko): Rename `I18nMutateOpCodes` to `I18nCreateOpCodes`.
-  create: I18nMutateOpCodes[];
+  create: IcuCreateOpCodes[];
 
   /**
    * A set of OpCodes to apply in order to destroy the DOM render tree for the ICU.
    */
-  // FIXME(misko): Rename `I18nMutateOpCodes` to `I18nRemoveOpCodes`.
-  remove: I18nMutateOpCodes[];
+  remove: I18nRemoveOpCodes[];
 
   /**
    * A set of OpCodes to apply in order to update the DOM render tree for the ICU bindings.
