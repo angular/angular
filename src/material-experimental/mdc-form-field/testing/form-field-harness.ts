@@ -15,8 +15,8 @@ import {
 } from '@angular/cdk/testing';
 import {FormFieldHarnessFilters} from '@angular/material/form-field/testing';
 import {MatFormFieldControlHarness} from '@angular/material/form-field/testing/control';
-import {MatInputHarness} from '@angular/material/input/testing';
-import {MatSelectHarness} from '@angular/material/select/testing';
+import {MatInputHarness} from '@angular/material-experimental/mdc-input/testing';
+import {MatSelectHarness} from '@angular/material-experimental/mdc-select/testing';
 
 // TODO(devversion): support datepicker harness once developed (COMP-203).
 // Also support chip list harness.
