@@ -9,7 +9,9 @@ export declare abstract class _MatDialogBase<C extends _MatDialogContainerBase> 
     closeAll(): void;
     getDialogById(id: string): MatDialogRef<any> | undefined;
     ngOnDestroy(): void;
-    open<T, D = any, R = any>(componentOrTemplateRef: ComponentType<T> | TemplateRef<T>, config?: MatDialogConfig<D>): MatDialogRef<T, R>;
+    open<T, D = any, R = any>(component: ComponentType<T>, config?: MatDialogConfig<D>): MatDialogRef<T, R>;
+    open<T, D = any, R = any>(template: TemplateRef<T>, config?: MatDialogConfig<D>): MatDialogRef<T, R>;
+    open<T, D = any, R = any>(template: ComponentType<T> | TemplateRef<T>, config?: MatDialogConfig<D>): MatDialogRef<T, R>;
     static ɵdir: i0.ɵɵDirectiveDefWithMeta<_MatDialogBase<any>, never, never, {}, {}, never>;
     static ɵfac: i0.ɵɵFactoryDef<_MatDialogBase<any>, never>;
 }
