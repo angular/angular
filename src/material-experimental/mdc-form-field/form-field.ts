@@ -294,6 +294,11 @@ export class MatFormField implements AfterViewInit, OnDestroy, AfterContentCheck
     // abstract form control instance.
     deregisterValidationAttributeChangeHandler: () => {},
     registerValidationAttributeChangeHandler: () => null as any,
+
+    // Used by foundation to dynamically remove aria-describedby when the hint text
+    // is shown only on invalid state, which should not be applicable here.
+    setInputAttr: () => undefined,
+    removeInputAttr: () => undefined,
   };
 
   constructor(private _elementRef: ElementRef,
