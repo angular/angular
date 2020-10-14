@@ -1,4 +1,4 @@
-load("@npm_bazel_typescript//:index.bzl", "ts_config")
+load("@npm//@bazel/typescript:index.bzl", "ts_config")
 load("//tools:defaults.bzl", "ng_module", "ng_package", "ng_test_library", "ng_web_test_suite")
 
 package(default_visibility = ["//visibility:public"])

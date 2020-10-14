@@ -33,10 +33,15 @@ export function resolveBazelPath(parent: string, relativePath: string) {
   for (const projectDir of projectDirs) {
     const relativeParent = path.relative(projectDir, parent);
     const workspacePath = path.join(relativeParent, relativePath).replace(/\\/g, '/');
-    const result = runfiles.resolveWorkspaceRelative(workspacePath);
-    if (result) {
-      return result;
-    }
+
+    try {
+      // In newer versions `resolveWorkspaceRelative` throws an error if it doesn't succeed.
+      const result = runfiles.resolveWorkspaceRelative(workspacePath);
+
+      if (result) {
+        return result;
+      }
+    } catch {}
   }
 
   throw Error(`Could not resolve path. Looked in: ${projectDirs.join(', ')}`);

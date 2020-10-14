@@ -1,4 +1,4 @@
-load("@npm_bazel_typescript//:index.bzl", "ts_devserver")
+load("@npm//@bazel/typescript:index.bzl", "ts_devserver")
 load("//:packages.bzl", "getAngularUmdTargets")
 load("//tools:defaults.bzl", "ng_module", "sass_binary")
 

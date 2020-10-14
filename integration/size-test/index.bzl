@@ -1,7 +1,7 @@
 load("@build_bazel_rules_nodejs//:index.bzl", "nodejs_binary", "nodejs_test")
 load("@bazel_skylib//lib:paths.bzl", "paths")
-load("@npm_bazel_rollup//:index.bzl", "rollup_bundle")
-load("@npm_bazel_terser//:index.bzl", "terser_minified")
+load("@npm//@bazel/rollup:index.bzl", "rollup_bundle")
+load("@npm//@bazel/terser:index.bzl", "terser_minified")
 load("//tools:defaults.bzl", "ng_module")
 load("//tools:expand_template.bzl", "expand_template")
 
