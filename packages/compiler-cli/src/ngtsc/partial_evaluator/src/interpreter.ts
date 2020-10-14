@@ -11,7 +11,7 @@ import * as ts from 'typescript';
 import {Reference} from '../../imports';
 import {OwningModule} from '../../imports/src/references';
 import {DependencyTracker} from '../../incremental/api';
-import {Declaration, DeclarationNode, EnumMember, FunctionDefinition, isConcreteDeclaration, ReflectionHost, SpecialDeclarationKind} from '../../reflection';
+import {Declaration, DeclarationKind, DeclarationNode, EnumMember, FunctionDefinition, isConcreteDeclaration, ReflectionHost, SpecialDeclarationKind} from '../../reflection';
 import {isDeclaration} from '../../util/src/typescript';
 
 import {ArrayConcatBuiltinFn, ArraySliceBuiltinFn} from './builtin';
@@ -231,7 +231,7 @@ export class StaticInterpreter {
       return this.getResolvedEnum(decl.node, decl.identity.enumMembers, context);
     }
     const declContext = {...context, ...joinModuleContext(context, node, decl)};
-    const result = this.visitDeclaration(decl.node, declContext);
+    const result = this.visitAmbiguousDeclaration(decl, declContext);
     if (result instanceof Reference) {
       // Only record identifiers to non-synthetic references. Synthetic references may not have the
       // same value at runtime as they do at compile time, so it's not legal to refer to them by the
@@ -337,8 +337,16 @@ export class StaticInterpreter {
       };
 
       // Visit both concrete and inline declarations.
-      return this.visitDeclaration(decl.node, declContext);
+      return this.visitAmbiguousDeclaration(decl, declContext);
     });
+  }
+
+  private visitAmbiguousDeclaration(decl: Declaration, declContext: Context) {
+    return decl.kind === DeclarationKind.Inline && decl.implementation !== undefined ?
+        // Inline declarations with an `implementation` should be visited as expressions
+        this.visitExpression(decl.implementation, declContext) :
+        // Otherwise just visit the declaration `node`
+        this.visitDeclaration(decl.node, declContext);
   }
 
   private accessHelper(node: ts.Node, lhs: ResolvedValue, rhs: string|number, context: Context):
