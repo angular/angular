@@ -1,5 +1,6 @@
 export declare class MatTreeHarness extends ComponentHarness {
     getNodes(filter?: TreeNodeHarnessFilters): Promise<MatTreeNodeHarness[]>;
+    getTreeStructure(): Promise<TextTree>;
     static hostSelector: string;
     static with(options?: TreeHarnessFilters): HarnessPredicate<MatTreeHarness>;
 }
@@ -16,6 +17,11 @@ export declare class MatTreeNodeHarness extends ContentContainerComponentHarness
     static hostSelector: string;
     static with(options?: TreeNodeHarnessFilters): HarnessPredicate<MatTreeNodeHarness>;
 }
+
+export declare type TextTree = {
+    text?: string;
+    children?: TextTree[];
+};
 
 export interface TreeHarnessFilters extends BaseHarnessFilters {
 }
