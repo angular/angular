@@ -1923,9 +1923,9 @@
     semver "5.5.0"
 
 "@webcomponents/custom-elements@^1.1.0":
-  version "1.2.1"
-  resolved "https://registry.yarnpkg.com/@webcomponents/custom-elements/-/custom-elements-1.2.1.tgz#0b9c8d06c6d8f059752ff389a6e4418f393338e7"
-  integrity sha512-flmTp4rVbBkcUIF3eBO3LNoAaYvleTdhPZKzdzr6iztWLLrxCctcK+7MAQeC3/SPjc3JDdC3jYLMRF4R6C3f9g==
+  version "1.4.2"
+  resolved "https://registry.yarnpkg.com/@webcomponents/custom-elements/-/custom-elements-1.4.2.tgz#a6fe80325c2b09e88e988c712144bc667c565499"
+  integrity sha512-bLw2XH9+2NBwmn7BI6WA2oIo2eOfBpl+GjAqkF/qnkZ8kq3HY5tKYTxtKowWALAferTp3wKD8W6FSn5OyK+rtQ==
 
 JSONStream@^1.0.4, JSONStream@^1.2.1:
   version "1.3.5"
