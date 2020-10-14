@@ -14,7 +14,7 @@ import {Declaration, DeclarationKind, Import} from '../../../src/ngtsc/reflectio
 import {BundleProgram} from '../packages/bundle_program';
 import {FactoryMap, isDefined} from '../utils';
 
-import {DefinePropertyReexportStatement, ExportDeclaration, ExportsStatement, extractGetterFnExpression, findNamespaceOfIdentifier, findRequireCallReference, isDefinePropertyReexportStatement, isExportsStatement, isExternalImport, isRequireCall, isWildcardReexportStatement, RequireCall, WildcardReexportStatement} from './commonjs_umd_utils';
+import {DefinePropertyReexportStatement, ExportDeclaration, ExportsStatement, extractGetterFnExpression, findNamespaceOfIdentifier, findRequireCallReference, isDefinePropertyReexportStatement, isExportsStatement, isExternalImport, isRequireCall, isWildcardReexportStatement, RequireCall, skipAliases, WildcardReexportStatement} from './commonjs_umd_utils';
 import {Esm5ReflectionHost} from './esm5_host';
 import {NgccClassSymbol} from './ngcc_host';
 
@@ -117,9 +117,16 @@ export class CommonJsReflectionHost extends Esm5ReflectionHost {
   }
 
   private extractBasicCommonJsExportDeclaration(statement: ExportsStatement): ExportDeclaration {
-    const exportExpression = statement.expression.right;
-    const name = statement.expression.left.name.text;
-    return this.extractCommonJsExportDeclaration(name, exportExpression);
+    const exportExpression = skipAliases(statement.expression.right);
+    const node = statement.expression.left;
+    const declaration = this.getDeclarationOfExpression(exportExpression) ?? {
+      kind: DeclarationKind.Inline,
+      node,
+      implementation: exportExpression,
+      known: null,
+      viaModule: null,
+    };
+    return {name: node.name.text, declaration};
   }
 
   private extractCommonJsWildcardReexports(
@@ -163,7 +170,22 @@ export class CommonJsReflectionHost extends Esm5ReflectionHost {
     if (getterFnExpression === null) {
       return null;
     }
-    return this.extractCommonJsExportDeclaration(name, getterFnExpression);
+
+    const declaration = this.getDeclarationOfExpression(getterFnExpression);
+    if (declaration !== null) {
+      return {name, declaration};
+    }
+
+    return {
+      name,
+      declaration: {
+        kind: DeclarationKind.Inline,
+        node: args[1],
+        implementation: getterFnExpression,
+        known: null,
+        viaModule: null,
+      },
+    };
   }
 
   private findCommonJsImport(id: ts.Identifier): RequireCall|null {
@@ -171,19 +193,6 @@ export class CommonJsReflectionHost extends Esm5ReflectionHost {
     // If so capture the symbol of the namespace, e.g. `core`.
     const nsIdentifier = findNamespaceOfIdentifier(id);
     return nsIdentifier && findRequireCallReference(nsIdentifier, this.checker);
-  }
-
-  private extractCommonJsExportDeclaration(name: string, expression: ts.Expression):
-      ExportDeclaration {
-    const declaration = this.getDeclarationOfExpression(expression);
-    if (declaration !== null) {
-      return {name, declaration};
-    } else {
-      return {
-        name,
-        declaration: {node: expression, known: null, kind: DeclarationKind.Inline, viaModule: null},
-      };
-    }
   }
 
   /**

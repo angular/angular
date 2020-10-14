@@ -2422,9 +2422,10 @@ exports.MissingClass2 = MissingClass2;
           const file = getSourceFileOrError(bundle.program, _('/inline_export.js'));
           const exportDeclarations = host.getExportsOfModule(file);
           expect(exportDeclarations).not.toBeNull();
-          const decl = exportDeclarations!.get('directives')!;
+          const decl = exportDeclarations!.get('directives') as InlineDeclaration;
           expect(decl).toBeDefined();
-          expect(decl.node).toBeDefined();
+          expect(decl.node.getText()).toEqual('exports.directives');
+          expect(decl.implementation!.getText()).toEqual('[foo]');
           expect(decl.kind).toEqual(DeclarationKind.Inline);
         });
 

@@ -14,7 +14,7 @@ import {Declaration, DeclarationKind, Import, isNamedFunctionDeclaration} from '
 import {BundleProgram} from '../packages/bundle_program';
 import {FactoryMap, getTsHelperFnFromIdentifier, stripExtension} from '../utils';
 
-import {DefinePropertyReexportStatement, ExportDeclaration, ExportsStatement, extractGetterFnExpression, findNamespaceOfIdentifier, findRequireCallReference, isDefinePropertyReexportStatement, isExportsAssignment, isExportsDeclaration, isExportsStatement, isExternalImport, isRequireCall, isWildcardReexportStatement, WildcardReexportStatement} from './commonjs_umd_utils';
+import {DefinePropertyReexportStatement, ExportDeclaration, ExportsStatement, extractGetterFnExpression, findNamespaceOfIdentifier, findRequireCallReference, isDefinePropertyReexportStatement, isExportsAssignment, isExportsDeclaration, isExportsStatement, isExternalImport, isRequireCall, isWildcardReexportStatement, skipAliases, WildcardReexportStatement} from './commonjs_umd_utils';
 import {getInnerClassDeclaration, getOuterNodeFromInnerDeclaration, isAssignment} from './esm2015_host';
 import {Esm5ReflectionHost} from './esm5_host';
 import {NgccClassSymbol} from './ngcc_host';
@@ -77,6 +77,7 @@ export class UmdReflectionHost extends Esm5ReflectionHost {
     return {
       kind: DeclarationKind.Inline,
       node: outerNode.left,
+      implementation: outerNode.right,
       known: null,
       viaModule: null,
     };
@@ -278,6 +279,7 @@ export class UmdReflectionHost extends Esm5ReflectionHost {
     const declaration = this.getDeclarationOfExpression(exportExpression) ?? {
       kind: DeclarationKind.Inline,
       node: statement.expression.left,
+      implementation: statement.expression.right,
       known: null,
       viaModule: null,
     };
@@ -340,7 +342,8 @@ export class UmdReflectionHost extends Esm5ReflectionHost {
       name,
       declaration: {
         kind: DeclarationKind.Inline,
-        node: getterFnExpression,
+        node: args[1],
+        implementation: getterFnExpression,
         known: null,
         viaModule: null,
       },
@@ -563,21 +566,4 @@ function getRequiredModulePath(wrapperFn: ts.FunctionExpression, paramIndex: num
  */
 function isExportsIdentifier(node: ts.Node): node is ts.Identifier {
   return ts.isIdentifier(node) && node.text === 'exports';
-}
-
-/**
- * Find the far right hand side of a sequence of aliased assignements of the form
- *
- * ```
- * exports.MyClass = alias1 = alias2 = <<declaration>>
- * ```
- *
- * @param node the expression to parse
- * @returns the original `node` or the far right expression of a series of assignments.
- */
-function skipAliases(node: ts.Expression): ts.Expression {
-  while (isAssignment(node)) {
-    node = node.right;
-  }
-  return node;
 }

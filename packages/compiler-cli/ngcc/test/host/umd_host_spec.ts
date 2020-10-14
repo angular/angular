@@ -2750,13 +2750,13 @@ runInEachFileSystem(() => {
           const exportDeclarations = host.getExportsOfModule(file);
           expect(exportDeclarations).not.toBe(null);
           expect(exportDeclarations!.size).toEqual(1);
-          const classDecl = exportDeclarations!.get('DecoratedClass')!;
+          const classDecl = exportDeclarations!.get('DecoratedClass') as InlineDeclaration;
           expect(classDecl).toBeDefined();
           expect(classDecl.kind).toEqual(DeclarationKind.Inline);
           expect(classDecl.known).toBe(null);
           expect(classDecl.viaModule).toBe(null);
           expect(classDecl.node.getText()).toEqual('exports.DecoratedClass');
-          expect(classDecl.node.parent.parent.getText()).toContain('function DecoratedClass() {');
+          expect(classDecl.implementation!.getText()).toContain('function DecoratedClass() {');
         });
 
         it('should handle wildcard re-exports of other modules (with emitted helpers)', () => {
@@ -2824,9 +2824,10 @@ runInEachFileSystem(() => {
           const file = getSourceFileOrError(bundle.program, INLINE_EXPORT_FILE.name);
           const exportDeclarations = host.getExportsOfModule(file);
           expect(exportDeclarations).not.toBe(null);
-          const decl = exportDeclarations!.get('directives')!;
+          const decl = exportDeclarations!.get('directives') as InlineDeclaration;
           expect(decl).toBeDefined();
-          expect(decl.node).toBeDefined();
+          expect(decl.node.getText()).toEqual('exports.directives');
+          expect(decl.implementation!.getText()).toEqual('[foo]');
           expect(decl.kind).toEqual(DeclarationKind.Inline);
         });
 
