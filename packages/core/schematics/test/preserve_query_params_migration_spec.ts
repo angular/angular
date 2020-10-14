@@ -117,7 +117,7 @@ describe('NavigationExtras preserveQueryParams migration', () => {
           `const config = { replaceUrl: true, fragment: 'foo', state: {}, queryParamsHandler: 'preserve' };`);
     });
 
-    it('should migrate when the value is `false`', async () => {
+    it('should remove when the value is `false`', async () => {
       writeFile('/index.ts', `
         import {Router} from '@angular/router';
 
@@ -138,7 +138,7 @@ describe('NavigationExtras preserveQueryParams migration', () => {
       expect(content).toContain(`const config = { replaceUrl: true, fragment: 'foo', state: {} };`);
     });
 
-    it('should migrate when the property is unused', async () => {
+    it('should not modify when the property is no present', async () => {
       writeFile('/index.ts', `
         import {Router} from '@angular/router';
 
@@ -181,7 +181,7 @@ describe('NavigationExtras preserveQueryParams migration', () => {
           `this._router.navigate('/', { replaceUrl: true, fragment: 'foo', state: {}, queryParamsHandler: 'preserve' });`);
     });
 
-    it('should migrate when the value is `false`', async () => {
+    it('should remove when the value is `false`', async () => {
       writeFile('/index.ts', `
         import {Router} from '@angular/router';
 
@@ -201,7 +201,7 @@ describe('NavigationExtras preserveQueryParams migration', () => {
           `this._router.createUrlTree(['/'], { replaceUrl: true, fragment: 'foo', state: {} };`);
     });
 
-    it('should migrate when the property is unused', async () => {
+    it('should not modify when the property is not present', async () => {
       writeFile('/index.ts', `
         import {Router} from '@angular/router';
 

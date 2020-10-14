@@ -29,7 +29,7 @@ export class MyComponent {
   constructor(private _router: Router) {}
 
   goHome() {
-    this._router.navigate('/', { skipLocationChange: 'foo', queryParamsHandler: 'preserve' });
+    this._router.navigate('/', { queryParamsHandler: 'preserve', skipLocationChange: 'foo' });
   }
 }
 ```
