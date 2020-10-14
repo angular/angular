@@ -108,7 +108,7 @@
     "name": "extractPipeDef"
   },
   {
-    "name": "getCheckNoChangesMode"
+    "name": "isInCheckNoChangesMode"
   },
   {
     "name": "getClosureSafeProperty"
