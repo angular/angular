@@ -151,18 +151,19 @@ export function createCustomElement<P>(
         const strategy = this._ngElementStrategy =
             strategyFactory.create(this.injector || config.injector);
 
-        // Collect pre-existing values on the element to re-apply through the strategy.
-        const preExistingValues =
-            inputs.filter(({propName}) => this.hasOwnProperty(propName)).map(({propName}): [
-              string, any
-            ] => [propName, (this as any)[propName]]);
+        // Re-apply pre-existing input values (set as properties on the element) through the
+        // strategy.
+        inputs.forEach(({propName}) => {
+          if (!this.hasOwnProperty(propName)) {
+            // No pre-existing value for `propName`.
+            return;
+          }
 
-        // Delete the property from the instance, so that it can go through the getters/setters
-        // set on `NgElementImpl.prototype`.
-        preExistingValues.forEach(([propName]) => delete (this as any)[propName]);
-
-        // Re-apply pre-existing values through the strategy.
-        preExistingValues.forEach(([propName, value]) => strategy.setInputValue(propName, value));
+          // Delete the property from the instance and re-apply it through the strategy.
+          const value = (this as any)[propName];
+          delete (this as any)[propName];
+          strategy.setInputValue(propName, value);
+        });
       }
 
       return this._ngElementStrategy!;
@@ -229,17 +230,8 @@ export function createCustomElement<P>(
   }
 
   // Add getters and setters to the prototype for each property input.
-  defineInputGettersSetters(inputs, NgElementImpl.prototype);
-
-  return (NgElementImpl as any) as NgElementConstructor<P>;
-}
-
-// Helpers
-function defineInputGettersSetters(
-    inputs: {propName: string, templateName: string}[], target: object): void {
-  // Add getters and setters for each property input.
   inputs.forEach(({propName}) => {
-    Object.defineProperty(target, propName, {
+    Object.defineProperty(NgElementImpl.prototype, propName, {
       get(): any {
         return this.ngElementStrategy.getInputValue(propName);
       },
@@ -250,4 +242,6 @@ function defineInputGettersSetters(
       enumerable: true,
     });
   });
+
+  return (NgElementImpl as any) as NgElementConstructor<P>;
 }
