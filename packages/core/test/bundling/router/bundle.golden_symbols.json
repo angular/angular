@@ -1260,7 +1260,7 @@
     "name": "getBootstrapListener"
   },
   {
-    "name": "getCheckNoChangesMode"
+    "name": "isInCheckNoChangesMode"
   },
   {
     "name": "getClosureSafeProperty"
@@ -1818,7 +1818,7 @@
     "name": "setBindingRootForHostBindings"
   },
   {
-    "name": "setCheckNoChangesMode"
+    "name": "setIsInCheckNoChangesMode"
   },
   {
     "name": "setCurrentDirectiveIndex"

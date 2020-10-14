@@ -156,7 +156,7 @@
     "name": "generatePropertyAliases"
   },
   {
-    "name": "getCheckNoChangesMode"
+    "name": "isInCheckNoChangesMode"
   },
   {
     "name": "getClosureSafeProperty"
