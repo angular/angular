@@ -391,8 +391,8 @@ export function createContainerRef(
       } else {
         // The TNode created here is bogus, in that it is not added to the TView. It is only created
         // to allow us to create a dynamic Comment node.
-        const commentTNode = createTNode(
-            hostView[TVIEW], hostTNode.parent, TNodeType.Container, hostTNode.type, null, null);
+        const commentTNode =
+            createTNode(hostView[TVIEW], hostTNode.parent, TNodeType.Container, 0, null, null);
         appendChild(hostView[TVIEW], hostView, commentNode, commentTNode);
       }
     }

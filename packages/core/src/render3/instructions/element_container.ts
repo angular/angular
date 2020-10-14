@@ -72,7 +72,8 @@ export function ɵɵelementContainerStart(
           'element containers should be created before any bindings');
 
   const tNode = tView.firstCreatePass ?
-      elementContainerStartFirstCreatePass(index, tView, lView, attrsIndex, localRefsIndex) :
+      elementContainerStartFirstCreatePass(
+          adjustedIndex, tView, lView, attrsIndex, localRefsIndex) :
       tView.data[adjustedIndex] as TElementContainerNode;
   setCurrentTNode(tNode, true);
 

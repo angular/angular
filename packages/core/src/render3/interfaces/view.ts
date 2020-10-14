@@ -47,7 +47,13 @@ export const DECLARATION_COMPONENT_VIEW = 16;
 export const DECLARATION_LCONTAINER = 17;
 export const PREORDER_HOOK_FLAGS = 18;
 export const QUERIES = 19;
-/** Size of LView's header. Necessary to adjust for it when setting slots.  */
+/**
+ * Size of LView's header. Necessary to adjust for it when setting slots.
+ *
+ * IMPORTANT: `HEADER_OFFSET` should only be referred to the in the `ɵɵ*` instructions to translate
+ * instruction index into `LView` index. All other indexes should be in the `LView` index space and
+ * there should be no need to refer to `HEADER_OFFSET` anywhere else.
+ */
 export const HEADER_OFFSET = 20;
 
 

@@ -132,7 +132,7 @@ export function i18nStartFirstCreatePass(
     }
   }
 
-  tView.data[index + HEADER_OFFSET] = <TI18n>{
+  tView.data[index] = <TI18n>{
     create: createOpCodes,
     update: updateOpCodes,
   };
@@ -247,11 +247,11 @@ export function i18nAttributesFirstPass(
         // Even indexes are text (including bindings)
         const hasBinding = !!value.match(BINDING_REGEXP);
         if (hasBinding) {
-          if (tView.firstCreatePass && tView.data[index + HEADER_OFFSET] === null) {
+          if (tView.firstCreatePass && tView.data[index] === null) {
             generateBindingUpdateOpCodes(updateOpCodes, value, previousElementIndex, attrName);
           }
         } else {
-          const tNode = getTNode(tView, previousElementIndex - HEADER_OFFSET);
+          const tNode = getTNode(tView, previousElementIndex);
           // Set attributes for Elements only, for other types (like ElementContainer),
           // only set inputs below
           if (tNode.type & TNodeType.AnyRNode) {
@@ -262,9 +262,7 @@ export function i18nAttributesFirstPass(
           if (dataValue) {
             setInputsForProperty(tView, lView, dataValue, attrName, value);
             if (ngDevMode) {
-              const element =
-                  getNativeByIndex(previousElementIndex - HEADER_OFFSET, lView) as RElement |
-                  RComment;
+              const element = getNativeByIndex(previousElementIndex, lView) as RElement | RComment;
               setNgReflectProperties(lView, element, tNode.type, dataValue, value);
             }
           }
@@ -273,8 +271,8 @@ export function i18nAttributesFirstPass(
     }
   }
 
-  if (tView.firstCreatePass && tView.data[index + HEADER_OFFSET] === null) {
-    tView.data[index + HEADER_OFFSET] = updateOpCodes;
+  if (tView.firstCreatePass && tView.data[index] === null) {
+    tView.data[index] = updateOpCodes;
   }
 }
 
@@ -326,25 +324,6 @@ export function generateBindingUpdateOpCodes(
   }
   updateOpCodes[maskIndex] = mask;
   updateOpCodes[sizeIndex] = updateOpCodes.length - startIndex;
-  return mask;
-}
-
-function getBindingMask(icuExpression: IcuExpression, mask = 0): number {
-  mask = mask | toMaskBit(icuExpression.mainBinding);
-  let match;
-  for (let i = 0; i < icuExpression.values.length; i++) {
-    const valueArr = icuExpression.values[i];
-    for (let j = 0; j < valueArr.length; j++) {
-      const value = valueArr[j];
-      if (typeof value === 'string') {
-        while (match = BINDING_REGEXP.exec(value)) {
-          mask = mask | toMaskBit(parseInt(match[1], 10));
-        }
-      } else {
-        mask = getBindingMask(value as IcuExpression, mask);
-      }
-    }
-  }
   return mask;
 }
 

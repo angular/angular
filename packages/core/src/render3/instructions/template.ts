@@ -73,10 +73,10 @@ export function ɵɵtemplate(
   const tView = getTView();
   const adjustedIndex = index + HEADER_OFFSET;
 
-  const tNode = tView.firstCreatePass ?
-      templateFirstCreatePass(
-          index, tView, lView, templateFn, decls, vars, tagName, attrsIndex, localRefsIndex) :
-      tView.data[adjustedIndex] as TContainerNode;
+  const tNode = tView.firstCreatePass ? templateFirstCreatePass(
+                                            adjustedIndex, tView, lView, templateFn, decls, vars,
+                                            tagName, attrsIndex, localRefsIndex) :
+                                        tView.data[adjustedIndex] as TContainerNode;
   setCurrentTNode(tNode, false);
 
   const comment = lView[RENDERER].createComment(ngDevMode ? 'container' : '');

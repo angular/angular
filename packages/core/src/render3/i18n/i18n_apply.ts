@@ -65,7 +65,7 @@ export function setMaskBit(hasChange: boolean) {
 export function applyI18n(tView: TView, lView: LView, index: number) {
   if (changeMaskCounter > 0) {
     ngDevMode && assertDefined(tView, `tView should be defined`);
-    const tI18n = tView.data[index + HEADER_OFFSET] as TI18n | I18nUpdateOpCodes;
+    const tI18n = tView.data[index] as TI18n | I18nUpdateOpCodes;
     // When `index` points to an `ɵɵi18nAttributes` then we have an array otherwise `TI18n`
     const updateOpCodes: I18nUpdateOpCodes =
         Array.isArray(tI18n) ? tI18n as I18nUpdateOpCodes : (tI18n as TI18n).update;
@@ -195,8 +195,8 @@ export function applyMutableOpCodes(
           // This code is used for ICU expressions only, since we don't support
           // directives/components in ICUs, we don't need to worry about inputs here
           setElementAttribute(
-              renderer, getNativeByIndex(elementNodeIndex - HEADER_OFFSET, lView) as RElement, null,
-              null, attrName, attrValue, null);
+              renderer, getNativeByIndex(elementNodeIndex, lView) as RElement, null, null, attrName,
+              attrValue, null);
           break;
         default:
           throw new Error(`Unable to determine the type of mutate operation for "${opCode}"`);
@@ -281,7 +281,7 @@ export function applyUpdateOpCodes(
                 const propName = updateOpCodes[++j] as string;
                 const sanitizeFn = updateOpCodes[++j] as SanitizerFn | null;
                 const tNodeOrTagName = tView.data[nodeIndex] as TNode | string;
-                ngDevMode && assertDefined(tNodeOrTagName, 'Expecting TNode or string');
+                ngDevMode && assertDefined(tNodeOrTagName, 'Experting TNode or string');
                 if (typeof tNodeOrTagName === 'string') {
                   // IF we don't have a `TNode`, then we are an element in ICU (as ICU content does
                   // not have TNode), in which case we know that there are no directives, and hence

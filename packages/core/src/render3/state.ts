@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {assertDefined, assertEqual, assertNotEqual} from '../util/assert';
+import {assertDefined, assertEqual, assertGreaterThanOrEqual, assertLessThan, assertNotEqual} from '../util/assert';
 import {assertLViewOrUndefined, assertTNodeForTView} from './assert';
 import {DirectiveDef} from './interfaces/definition';
 import {TNode, TNodeType} from './interfaces/node';
-import {CONTEXT, DECLARATION_VIEW, LView, OpaqueViewState, TData, TVIEW, TView} from './interfaces/view';
+import {CONTEXT, DECLARATION_VIEW, HEADER_OFFSET, LView, OpaqueViewState, TData, TVIEW, TView} from './interfaces/view';
 import {MATH_ML_NAMESPACE, SVG_NAMESPACE} from './namespaces';
 import {assertTNodeType} from './node_assert';
 import {getTNode} from './util/view_utils';
@@ -458,13 +458,14 @@ export function enterDI(newView: LView, tNode: TNode) {
  * @returns the previously active lView;
  */
 export function enterView(newView: LView): void {
+  ngDevMode && assertNotEqual(newView[0], newView[1] as any, '????');
   ngDevMode && assertLViewOrUndefined(newView);
   const newLFrame = allocLFrame();
   if (ngDevMode) {
     assertEqual(newLFrame.isParent, true, 'Expected clean LFrame');
     assertEqual(newLFrame.lView, null, 'Expected clean LFrame');
     assertEqual(newLFrame.tView, null, 'Expected clean LFrame');
-    assertEqual(newLFrame.selectedIndex, 0, 'Expected clean LFrame');
+    assertEqual(newLFrame.selectedIndex, -1, 'Expected clean LFrame');
     assertEqual(newLFrame.elementDepthCount, 0, 'Expected clean LFrame');
     assertEqual(newLFrame.currentDirectiveIndex, -1, 'Expected clean LFrame');
     assertEqual(newLFrame.currentNamespace, null, 'Expected clean LFrame');
@@ -498,7 +499,7 @@ function createLFrame(parent: LFrame|null): LFrame {
     isParent: true,
     lView: null!,
     tView: null!,
-    selectedIndex: 0,
+    selectedIndex: -1,
     contextLView: null!,
     elementDepthCount: 0,
     currentNamespace: null,
@@ -551,7 +552,7 @@ export function leaveView() {
   const oldLFrame = leaveViewLight();
   oldLFrame.isParent = true;
   oldLFrame.tView = null!;
-  oldLFrame.selectedIndex = 0;
+  oldLFrame.selectedIndex = -1;
   oldLFrame.contextLView = null!;
   oldLFrame.elementDepthCount = 0;
   oldLFrame.currentDirectiveIndex = -1;
@@ -599,6 +600,11 @@ export function getSelectedIndex() {
  * run if and when the provided `index` value is different from the current selected index value.)
  */
 export function setSelectedIndex(index: number) {
+  ngDevMode && index !== -1 &&
+      assertGreaterThanOrEqual(index, HEADER_OFFSET, 'Index must be past HEADER_OFFSET (or -1).');
+  ngDevMode &&
+      assertLessThan(
+          index, instructionState.lFrame.lView.length, 'Can\'t set index passed end of LView');
   instructionState.lFrame.selectedIndex = index;
 }
 

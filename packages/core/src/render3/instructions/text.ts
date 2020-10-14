@@ -35,7 +35,7 @@ export function ɵɵtext(index: number, value: string = ''): void {
   ngDevMode && assertIndexInRange(lView, adjustedIndex);
 
   const tNode = tView.firstCreatePass ?
-      getOrCreateTNode(tView, index, TNodeType.Text, value, null) :
+      getOrCreateTNode(tView, adjustedIndex, TNodeType.Text, value, null) :
       tView.data[adjustedIndex] as TElementNode;
 
   const textNative = lView[adjustedIndex] = createTextNode(lView[RENDERER], value);

@@ -8,7 +8,7 @@
 import {newArray} from '../../util/array_utils';
 import {TAttributes, TElementNode, TNode, TNodeFlags, TNodeType} from '../interfaces/node';
 import {ProjectionSlots} from '../interfaces/projection';
-import {DECLARATION_COMPONENT_VIEW, T_HOST} from '../interfaces/view';
+import {DECLARATION_COMPONENT_VIEW, HEADER_OFFSET, T_HOST} from '../interfaces/view';
 import {applyProjection} from '../node_manipulation';
 import {getProjectAsAttrValue, isNodeMatchingSelectorList, isSelectorInSelectorList} from '../node_selector_matcher';
 import {getLView, getTView, setCurrentTNodeAsNotParent} from '../state';
@@ -120,7 +120,7 @@ export function ɵɵprojection(
   const lView = getLView();
   const tView = getTView();
   const tProjectionNode =
-      getOrCreateTNode(tView, nodeIndex, TNodeType.Projection, null, attrs || null);
+      getOrCreateTNode(tView, HEADER_OFFSET + nodeIndex, TNodeType.Projection, null, attrs || null);
 
   // We can't use viewData[HOST_NODE] because projection nodes can be nested in embedded views.
   if (tProjectionNode.projection === null) tProjectionNode.projection = selectorIndex;

@@ -676,18 +676,3 @@ export class LContainerDebug implements ILContainerDebug {
     return toDebug(this._raw_lContainer[NEXT]);
   }
 }
-
-/**
- * Return an `LView` value if found.
- *
- * @param value `LView` if any
- */
-export function readLViewValue(value: any): LView|null {
-  while (Array.isArray(value)) {
-    // This check is not quite right, as it does not take into account `StylingContext`
-    // This is why it is in debug, not in util.ts
-    if (value.length >= HEADER_OFFSET - 1) return value as LView;
-    value = value[HOST];
-  }
-  return null;
-}
