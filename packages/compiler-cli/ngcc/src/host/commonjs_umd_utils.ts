@@ -264,3 +264,20 @@ export interface ExportsStatement extends ts.ExpressionStatement {
 export function isExportsStatement(stmt: ts.Node): stmt is ExportsStatement {
   return ts.isExpressionStatement(stmt) && isExportsAssignment(stmt.expression);
 }
+
+/**
+ * Find the far right hand side of a sequence of aliased assignements of the form
+ *
+ * ```
+ * exports.MyClass = alias1 = alias2 = <<declaration>>
+ * ```
+ *
+ * @param node the expression to parse
+ * @returns the original `node` or the far right expression of a series of assignments.
+ */
+export function skipAliases(node: ts.Expression): ts.Expression {
+  while (isAssignment(node)) {
+    node = node.right;
+  }
+  return node;
+}
