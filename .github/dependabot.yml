@@ -3,6 +3,8 @@ version: 2
 updates:
   - package-ecosystem: "npm"
     directory: "/"
+    schedule:
+      interval: "daily"
     commit-message:
       prefix: "build"
     labels:
@@ -10,3 +12,4 @@ updates:
       - "merge ready"
       - "merge safe"
       - "target: patch"
+    open-pull-requests-limit: 5
