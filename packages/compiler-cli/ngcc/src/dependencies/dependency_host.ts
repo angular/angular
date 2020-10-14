@@ -129,7 +129,7 @@ export abstract class DependencyHostBase implements DependencyHost {
 
   /**
    * Processes the file if it has not already been seen. This will also recursively process
-   * all files that are imported from the file, while keeping the set of already seen files
+   * all files that are imported from the file, while taking the set of already seen files
    * into account.
    */
   protected processFile(

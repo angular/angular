@@ -90,17 +90,17 @@ runInEachFileSystem(() => {
                name: _Abs(`${projectPath}/root-one.ts`),
                contents: `
                  import './root-two';
-                 import './no-root';
+                 import './not-root';
                `,
              },
              {
                name: _Abs(`${projectPath}/root-two.ts`),
                contents: `
-                 import './no-root';
+                 import './not-root';
                `,
              },
              {
-               name: _Abs(`${projectPath}/no-root.ts`),
+               name: _Abs(`${projectPath}/not-root.ts`),
                contents: `
               import {Component} from '@angular/core';
               `,
@@ -117,9 +117,15 @@ runInEachFileSystem(() => {
              ['@angular/core', '@angular/core'],
            ]);
 
-           // Three `extractImports` calls should have been made: `root-one.ts`,
-           // `root-two.ts` and `no-root.ts`.
-           expect(extractImportsSpy).toHaveBeenCalledTimes(3);
+           // Three `extractImports` calls should have been made corresponding with the three
+           // distinct source files in the project.
+           const extractImportFiles =
+               extractImportsSpy.calls.all().map((call: jasmine.CallInfo<any>) => call.args[0]);
+           expect(extractImportFiles).toEqual([
+             _Abs(`${projectPath}/root-one.ts`),
+             _Abs(`${projectPath}/root-two.ts`),
+             _Abs(`${projectPath}/not-root.ts`),
+           ]);
          });
 
       function createFinder(): ProgramBasedEntryPointFinder {
