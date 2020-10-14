@@ -181,7 +181,6 @@ commands:
   setup_win:
     description: Setup windows node environment
     steps:
-      # Use the Linux workspace directly, as it already has checkout, rebased and node modules.
       - checkout
       # Install Bazel pre-requisites that aren't in the preconfigured CircleCI Windows VM.
       - run: ./.circleci/windows-env.ps1
