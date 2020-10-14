@@ -481,15 +481,13 @@ This section contains a complete list all of the currently deprecated CLI flags.
 {@a removed}
 ## Removed APIs
 
-The following APIs have been removed starting with version 10.0.0*:
+The following APIs have been removed starting with version 11.0.0*:
 
 | Package          | API            | Replacement | Notes |
 | ---------------- | -------------- | ----------- | ----- |
-| `@angular/core`  | Undecorated base classes that use Angular features | Add Angular decorator | See [migration guide](guide/migration-undecorated-classes) for more info |
-| `@angular/core`  | `ModuleWithProviders` without a generic             | `ModuleWithProviders` with a generic | See [migration guide](guide/migration-module-with-providers) for more info |
-| `@angular/core`  | Style Sanitization | no action needed | See [style sanitization API removal](#style-sanitization) for more info
+| `@angular/router` | `preserveQueryParams` | [`queryParamsHandling`](api/router/UrlCreationOptions#queryParamsHandling) | |
 
-*To see APIs removed in version 9, check out this guide on the [version 9 docs site](https://v9.angular.io/guide/deprecations#removed).
+*To see APIs removed in version 10, check out this guide on the [version 10 docs site](https://v10.angular.io/guide/deprecations#removed).
 
 
 {@a esm5-fesm5}
