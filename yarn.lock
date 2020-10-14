@@ -7327,9 +7327,9 @@ karma-sauce-launcher@^2.0.2:
     selenium-webdriver "^4.0.0-alpha.1"
 
 karma-sourcemap-loader@^0.3.7:
-  version "0.3.7"
-  resolved "https://registry.yarnpkg.com/karma-sourcemap-loader/-/karma-sourcemap-loader-0.3.7.tgz#91322c77f8f13d46fed062b042e1009d4c4505d8"
-  integrity sha1-kTIsd/jxPUb+0GKwQuEAnUxFBdg=
+  version "0.3.8"
+  resolved "https://registry.yarnpkg.com/karma-sourcemap-loader/-/karma-sourcemap-loader-0.3.8.tgz#d4bae72fb7a8397328a62b75013d2df937bdcf9c"
+  integrity sha512-zorxyAakYZuBcHRJE+vbrK2o2JXLFWK8VVjiT/6P+ltLBUGUvqTEkUiQ119MGdOrK7mrmxXHZF1/pfT6GgIZ6g==
   dependencies:
     graceful-fs "^4.1.2"
 
