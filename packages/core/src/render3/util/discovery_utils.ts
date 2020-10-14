@@ -16,7 +16,7 @@ import {LContext} from '../interfaces/context';
 import {DirectiveDef} from '../interfaces/definition';
 import {TElementNode, TNode, TNodeProviderIndexes} from '../interfaces/node';
 import {isLView} from '../interfaces/type_checks';
-import {CLEANUP, CONTEXT, DebugNode, FLAGS, HEADER_OFFSET, HOST, LView, LViewFlags, T_HOST, TVIEW, TViewType} from '../interfaces/view';
+import {CLEANUP, CONTEXT, DebugNode, FLAGS, LView, LViewFlags, T_HOST, TVIEW, TViewType} from '../interfaces/view';
 
 import {stringifyForError} from './misc_utils';
 import {getLViewParent, getRootContext} from './view_traversal_utils';
@@ -387,8 +387,8 @@ export function getDebugNode(element: Element): DebugNode|null {
     const valueInLView = lView[nodeIndex];
     // this means that value in the lView is a component with its own
     // data. In this situation the TNode is not accessed at the same spot.
-    const tNode = isLView(valueInLView) ? (valueInLView[T_HOST] as TNode) :
-                                          getTNode(lView[TVIEW], nodeIndex - HEADER_OFFSET);
+    const tNode =
+        isLView(valueInLView) ? (valueInLView[T_HOST] as TNode) : getTNode(lView[TVIEW], nodeIndex);
     ngDevMode &&
         assertEqual(tNode.index, nodeIndex, 'Expecting that TNode at index is same as index');
     debugNode = buildDebugNode(tNode, lView);

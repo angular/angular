@@ -14,8 +14,6 @@ import {getTStylingRangeNext, getTStylingRangeNextDuplicate, getTStylingRangePre
 import {HEADER_OFFSET, TVIEW} from '@angular/core/src/render3/interfaces/view';
 import {getLView, leaveView, setBindingRootForHostBindings} from '@angular/core/src/render3/state';
 import {getNativeByIndex} from '@angular/core/src/render3/util/view_utils';
-import {bypassSanitizationTrustStyle} from '@angular/core/src/sanitization/bypass';
-import {ɵɵsanitizeStyle} from '@angular/core/src/sanitization/sanitization';
 import {keyValueArraySet} from '@angular/core/src/util/array_utils';
 import {ngDevModeResetPerfCounters} from '@angular/core/src/util/ng_dev_mode';
 import {getElementClasses, getElementStyles} from '@angular/core/testing/src/styling';
@@ -28,7 +26,7 @@ describe('styling', () => {
   afterEach(leaveView);
 
   let div!: HTMLElement;
-  beforeEach(() => div = getNativeByIndex(0, getLView()) as HTMLElement);
+  beforeEach(() => div = getNativeByIndex(HEADER_OFFSET, getLView()) as HTMLElement);
 
   it('should do set basic style', () => {
     ɵɵstyleProp('color', 'red');

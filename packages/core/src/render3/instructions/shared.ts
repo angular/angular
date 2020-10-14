@@ -12,7 +12,7 @@ import {CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA, SchemaMetadata} from '../../me
 import {ViewEncapsulation} from '../../metadata/view';
 import {validateAgainstEventAttributes, validateAgainstEventProperties} from '../../sanitization/sanitization';
 import {Sanitizer} from '../../sanitization/sanitizer';
-import {assertDefined, assertDomNode, assertEqual, assertGreaterThan, assertIndexInRange, assertLessThan, assertNotEqual, assertNotSame, assertSame, assertString} from '../../util/assert';
+import {assertDefined, assertDomNode, assertEqual, assertGreaterThan, assertGreaterThanOrEqual, assertIndexInRange, assertLessThan, assertNotEqual, assertNotSame, assertSame, assertString} from '../../util/assert';
 import {createNamedArrayType} from '../../util/named_array_type';
 import {initNgDevMode} from '../../util/ng_dev_mode';
 import {normalizeDebugBindingName, normalizeDebugBindingValue} from '../../util/ng_reflect';
@@ -214,12 +214,14 @@ export function getOrCreateTNode(
 export function getOrCreateTNode(
     tView: TView, index: number, type: TNodeType, name: string|null, attrs: TAttributes|null):
     TElementNode&TContainerNode&TElementContainerNode&TProjectionNode&TIcuContainerNode {
+  ngDevMode && index !== 0 &&  // 0 are bogus nodes and they are OK. See `createContainerRef` in
+                               // `view_engine_compatibility` for additional context.
+      assertGreaterThanOrEqual(index, HEADER_OFFSET, 'TNodes can\'t be in the LView header.');
   // Keep this function short, so that the VM will inline it.
   ngDevMode && assertPureTNodeType(type);
-  const adjustedIndex = index + HEADER_OFFSET;
-  let tNode = tView.data[adjustedIndex] as TNode;
+  let tNode = tView.data[index] as TNode;
   if (tNode === null) {
-    tNode = createTNodeAtIndex(tView, adjustedIndex, type, name, attrs);
+    tNode = createTNodeAtIndex(tView, index, type, name, attrs);
     if (isInI18nBlock()) {
       // If we are in i18n block then all elements should be pre declared through `Placeholder`
       // See `TNodeType.Placeholder` and `LFrame.inI18n` for more context.
@@ -234,7 +236,7 @@ export function getOrCreateTNode(
     const parent = getCurrentParentTNode();
     tNode.injectorIndex = parent === null ? -1 : parent.injectorIndex;
     ngDevMode && assertTNodeForTView(tNode, tView);
-    ngDevMode && assertEqual(index + HEADER_OFFSET, tNode.index, 'Expecting same index');
+    ngDevMode && assertEqual(index, tNode.index, 'Expecting same index');
   }
   setCurrentTNode(tNode, true);
   return tNode as TElementNode & TContainerNode & TElementContainerNode & TProjectionNode &
@@ -242,14 +244,13 @@ export function getOrCreateTNode(
 }
 
 export function createTNodeAtIndex(
-    tView: TView, adjustedIndex: number, type: TNodeType, name: string|null,
-    attrs: TAttributes|null) {
+    tView: TView, index: number, type: TNodeType, name: string|null, attrs: TAttributes|null) {
   const currentTNode = getCurrentTNodePlaceholderOk();
   const isParent = isCurrentTNodeParent();
   const parent = isParent ? currentTNode : currentTNode && currentTNode.parent;
   // Parents cannot cross component boundaries because components will be used in multiple places.
-  const tNode = tView.data[adjustedIndex] =
-      createTNode(tView, parent as TElementNode | TContainerNode, type, adjustedIndex, name, attrs);
+  const tNode = tView.data[index] =
+      createTNode(tView, parent as TElementNode | TContainerNode, type, index, name, attrs);
   // Assign a pointer to the first child node of a given view. The first node is not always the one
   // at index 0, in case of i18n, index 0 can be the instruction `i18nStart` and the first node has
   // the index 1 or more, so we can't just check node index.
@@ -546,7 +547,7 @@ function executeTemplate<T>(
     if (rf & RenderFlags.Update && lView.length > HEADER_OFFSET) {
       // When we're updating, inherently select 0 so we don't
       // have to generate that instruction for most update blocks.
-      selectIndexInternal(tView, lView, 0, isInCheckNoChangesMode());
+      selectIndexInternal(tView, lView, HEADER_OFFSET, isInCheckNoChangesMode());
     }
     templateFn(rf, context);
   } finally {
@@ -810,7 +811,7 @@ export function storeCleanupWithContext(
  * @param tView `TView` to which this `TNode` belongs (used only in `ngDevMode`)
  * @param tParent Parent `TNode`
  * @param type The type of the node
- * @param adjustedIndex The index of the TNode in TView.data, adjusted for HEADER_OFFSET
+ * @param index The index of the TNode in TView.data, adjusted for HEADER_OFFSET
  * @param tagName The tag name of the node
  * @param attrs The attributes defined on this node
  * @param tViews Any TViews attached to this node
@@ -818,25 +819,28 @@ export function storeCleanupWithContext(
  */
 export function createTNode(
     tView: TView, tParent: TElementNode|TContainerNode|null, type: TNodeType.Container,
-    adjustedIndex: number, tagName: string|null, attrs: TAttributes|null): TContainerNode;
+    index: number, tagName: string|null, attrs: TAttributes|null): TContainerNode;
 export function createTNode(
     tView: TView, tParent: TElementNode|TContainerNode|null, type: TNodeType.Element|TNodeType.Text,
-    adjustedIndex: number, tagName: string|null, attrs: TAttributes|null): TElementNode;
+    index: number, tagName: string|null, attrs: TAttributes|null): TElementNode;
 export function createTNode(
     tView: TView, tParent: TElementNode|TContainerNode|null, type: TNodeType.ElementContainer,
-    adjustedIndex: number, tagName: string|null, attrs: TAttributes|null): TElementContainerNode;
+    index: number, tagName: string|null, attrs: TAttributes|null): TElementContainerNode;
 export function createTNode(
-    tView: TView, tParent: TElementNode|TContainerNode|null, type: TNodeType.Icu,
-    adjustedIndex: number, tagName: string|null, attrs: TAttributes|null): TIcuContainerNode;
+    tView: TView, tParent: TElementNode|TContainerNode|null, type: TNodeType.Icu, index: number,
+    tagName: string|null, attrs: TAttributes|null): TIcuContainerNode;
 export function createTNode(
     tView: TView, tParent: TElementNode|TContainerNode|null, type: TNodeType.Projection,
-    adjustedIndex: number, tagName: string|null, attrs: TAttributes|null): TProjectionNode;
+    index: number, tagName: string|null, attrs: TAttributes|null): TProjectionNode;
 export function createTNode(
-    tView: TView, tParent: TElementNode|TContainerNode|null, type: TNodeType, adjustedIndex: number,
+    tView: TView, tParent: TElementNode|TContainerNode|null, type: TNodeType, index: number,
     tagName: string|null, attrs: TAttributes|null): TNode;
 export function createTNode(
-    tView: TView, tParent: TElementNode|TContainerNode|null, type: TNodeType, adjustedIndex: number,
+    tView: TView, tParent: TElementNode|TContainerNode|null, type: TNodeType, index: number,
     value: string|null, attrs: TAttributes|null): TNode {
+  ngDevMode && index !== 0 &&  // 0 are bogus nodes and they are OK. See `createContainerRef` in
+                               // `view_engine_compatibility` for additional context.
+      assertGreaterThanOrEqual(index, HEADER_OFFSET, 'TNodes can\'t be in the LView header.');
   ngDevMode && assertNotSame(attrs, undefined, '\'undefined\' is not valid value for \'attrs\'');
   ngDevMode && ngDevMode.tNode++;
   ngDevMode && tParent && assertTNodeForTView(tParent, tView);
@@ -845,7 +849,7 @@ export function createTNode(
       new TNodeDebug(
           tView,          // tView_: TView
           type,           // type: TNodeType
-          adjustedIndex,  // index: number
+          index,          // index: number
           null,           // insertBeforeIndex: null|-1|number|number[]
           injectorIndex,  // injectorIndex: number
           -1,             // directiveStart: number
@@ -877,10 +881,10 @@ export function createTNode(
           0 as any,       // styleBindings: TStylingRange;
           ) :
       {
-        type: type,
-        index: adjustedIndex,
+        type,
+        index,
         insertBeforeIndex: null,
-        injectorIndex: injectorIndex,
+        injectorIndex,
         directiveStart: -1,
         directiveEnd: -1,
         directiveStylingLast: -1,
@@ -1213,13 +1217,12 @@ export function resolveDirectives(
           // We will push the actual hook function into this array later during dir instantiation.
           // We cannot do it now because we must ensure hooks are registered in the same
           // order that directives are created (i.e. injection order).
-          (tView.preOrderHooks || (tView.preOrderHooks = [])).push(tNode.index - HEADER_OFFSET);
+          (tView.preOrderHooks || (tView.preOrderHooks = [])).push(tNode.index);
           preOrderHooksFound = true;
         }
 
         if (!preOrderCheckHooksFound && (lifeCycleHooks.ngOnChanges || lifeCycleHooks.ngDoCheck)) {
-          (tView.preOrderCheckHooks || (tView.preOrderCheckHooks = []))
-              .push(tNode.index - HEADER_OFFSET);
+          (tView.preOrderCheckHooks || (tView.preOrderCheckHooks = [])).push(tNode.index);
           preOrderCheckHooksFound = true;
         }
 
@@ -1325,7 +1328,7 @@ function invokeDirectivesHostBindings(tView: TView, lView: LView, tNode: TNode) 
   const end = tNode.directiveEnd;
   const expando = tView.expandoInstructions!;
   const firstCreatePass = tView.firstCreatePass;
-  const elementIndex = tNode.index - HEADER_OFFSET;
+  const elementIndex = tNode.index;
   const currentDirectiveIndex = getCurrentDirectiveIndex();
   try {
     setSelectedIndex(elementIndex);
@@ -1373,7 +1376,7 @@ export function generateExpandoInstructionBlock(
   // Important: In JS `-x` and `0-x` is not the same! If `x===0` then `-x` will produce `-0` which
   // requires non standard math arithmetic and it can prevent VM optimizations.
   // `0-0` will always produce `0` and will not cause a potential deoptimization in VM.
-  const elementIndex = HEADER_OFFSET - tNode.index;
+  const elementIndex = 0 - tNode.index;
   const providerStartIndex = tNode.providerIndexes & TNodeProviderIndexes.ProvidersStartIndexMask;
   const providerCount = tView.data.length - providerStartIndex;
   (tView.expandoInstructions || (tView.expandoInstructions = []))
@@ -2087,7 +2090,7 @@ export function setInputsForProperty(
 export function textBindingInternal(lView: LView, index: number, value: string): void {
   ngDevMode && assertString(value, 'Value should be a string');
   ngDevMode && assertNotSame(value, NO_CHANGE as any, 'value should not be NO_CHANGE');
-  ngDevMode && assertIndexInRange(lView, index + HEADER_OFFSET);
+  ngDevMode && assertIndexInRange(lView, index);
   const element = getNativeByIndex(index, lView) as any as RText;
   ngDevMode && assertDefined(element, 'native element should exist');
   updateTextNode(lView[RENDERER], element, value);

@@ -83,7 +83,8 @@ export function ɵɵelementStart(
   const renderer = lView[RENDERER];
   const native = lView[adjustedIndex] = createElementNode(renderer, name, getNamespace());
   const tNode = tView.firstCreatePass ?
-      elementStartFirstCreatePass(index, tView, lView, native, name, attrsIndex, localRefsIndex) :
+      elementStartFirstCreatePass(
+          adjustedIndex, tView, lView, native, name, attrsIndex, localRefsIndex) :
       tView.data[adjustedIndex] as TElementNode;
   setCurrentTNode(tNode, true);
 

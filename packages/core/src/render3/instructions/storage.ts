@@ -14,12 +14,11 @@ import {load} from '../util/view_utils';
 export function store<T>(tView: TView, lView: LView, index: number, value: T): void {
   // We don't store any static data for local variables, so the first time
   // we see the template, we should store as null to avoid a sparse array
-  const adjustedIndex = index + HEADER_OFFSET;
-  if (adjustedIndex >= tView.data.length) {
-    tView.data[adjustedIndex] = null;
-    tView.blueprint[adjustedIndex] = null;
+  if (index >= tView.data.length) {
+    tView.data[index] = null;
+    tView.blueprint[index] = null;
   }
-  lView[adjustedIndex] = value;
+  lView[index] = value;
 }
 
 /**
@@ -34,5 +33,5 @@ export function store<T>(tView: TView, lView: LView, index: number, value: T): v
  */
 export function ɵɵreference<T>(index: number) {
   const contextLView = getContextLView();
-  return load<T>(contextLView, index);
+  return load<T>(contextLView, HEADER_OFFSET + index);
 }

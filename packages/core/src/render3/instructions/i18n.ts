@@ -49,15 +49,16 @@ export function ɵɵi18nStart(
     index: number, messageIndex: number, subTemplateIndex: number = -1): void {
   const tView = getTView();
   const lView = getLView();
+  const adjustedIndex = HEADER_OFFSET + index;
   ngDevMode && assertDefined(tView, `tView should be defined`);
   const message = getConstant<string>(tView.consts, messageIndex)!;
   const parentTNode = getCurrentParentTNode() as TElementNode | null;
   if (tView.firstCreatePass) {
     i18nStartFirstCreatePass(
-        tView, parentTNode === null ? 0 : parentTNode.index, lView, index, message,
+        tView, parentTNode === null ? 0 : parentTNode.index, lView, adjustedIndex, message,
         subTemplateIndex);
   }
-  const tI18n = tView.data[HEADER_OFFSET + index] as TI18n;
+  const tI18n = tView.data[adjustedIndex] as TI18n;
   const sameViewParentTNode = parentTNode === lView[T_HOST] ? null : parentTNode;
   const parentRNode = getClosestRElement(tView, sameViewParentTNode, lView);
   // If `parentTNode` is an `ElementContainer` than it has `<!--ng-container--->`.
@@ -125,7 +126,7 @@ export function ɵɵi18nAttributes(index: number, attrsIndex: number): void {
   const tView = getTView();
   ngDevMode && assertDefined(tView, `tView should be defined`);
   const attrs = getConstant<string[]>(tView.consts, attrsIndex)!;
-  i18nAttributesFirstPass(lView, tView, index, attrs);
+  i18nAttributesFirstPass(lView, tView, index + HEADER_OFFSET, attrs);
 }
 
 
@@ -154,7 +155,7 @@ export function ɵɵi18nExp<T>(value: T): typeof ɵɵi18nExp {
  * @codeGenApi
  */
 export function ɵɵi18nApply(index: number) {
-  applyI18n(getTView(), getLView(), index);
+  applyI18n(getTView(), getLView(), index + HEADER_OFFSET);
 }
 
 /**

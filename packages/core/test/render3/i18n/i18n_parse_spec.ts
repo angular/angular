@@ -45,7 +45,7 @@ describe('i18n_parse', () => {
       // 21: Binding for ICU        |
       //                   ----- EXPANDO -----
       // 22: null                   | #text(before|)
-      // 23: TIcu                   | <!-- ICU 0:0 -->
+      // 23: TIcu                   | <!-- ICU 20:0 -->
       // 24: null                   | currently selected ICU case
       // 25: null                   | #text(caseA)
       // 26: null                   | #text(otherCase)
@@ -59,7 +59,7 @@ describe('i18n_parse', () => {
         create: matchDebug([
           'lView[22] = document.createText("before|");',
           'parent.appendChild(lView[22]);',
-          'lView[23] = document.createComment("ICU 0:0");',
+          'lView[23] = document.createComment("ICU 20:0");',
           'parent.appendChild(lView[23]);',
           'lView[27] = document.createText("|after");',
           'parent.appendChild(lView[27]);',
@@ -95,22 +95,22 @@ describe('i18n_parse', () => {
 
       fixture.apply(() => {
         applyCreateOpCodes(fixture.lView, tI18n.create, fixture.host, null);
-        expect(fixture.host.innerHTML).toEqual('before|<!--ICU 0:0-->|after');
+        expect(fixture.host.innerHTML).toEqual('before|<!--ICU 20:0-->|after');
       });
       fixture.apply(() => {
         ɵɵi18nExp('A');
         ɵɵi18nApply(0);  // index 0 + HEADER_OFFSET = 20;
-        expect(fixture.host.innerHTML).toEqual('before|caseA<!--ICU 0:0-->|after');
+        expect(fixture.host.innerHTML).toEqual('before|caseA<!--ICU 20:0-->|after');
       });
       fixture.apply(() => {
         ɵɵi18nExp('x');
         ɵɵi18nApply(0);  // index 0 + HEADER_OFFSET = 20;
-        expect(fixture.host.innerHTML).toEqual('before|otherCase<!--ICU 0:0-->|after');
+        expect(fixture.host.innerHTML).toEqual('before|otherCase<!--ICU 20:0-->|after');
       });
       fixture.apply(() => {
         ɵɵi18nExp('A');
         ɵɵi18nApply(0);  // index 0 + HEADER_OFFSET = 20;
-        expect(fixture.host.innerHTML).toEqual('before|caseA<!--ICU 0:0-->|after');
+        expect(fixture.host.innerHTML).toEqual('before|caseA<!--ICU 20:0-->|after');
       });
     });
 
@@ -122,23 +122,23 @@ describe('i18n_parse', () => {
       }`);
       fixture.apply(() => {
         applyCreateOpCodes(fixture.lView, tI18n.create, fixture.host, null);
-        expect(fixture.host.innerHTML).toEqual('<!--ICU 0:0-->');
+        expect(fixture.host.innerHTML).toEqual('<!--ICU 20:0-->');
       });
       fixture.apply(() => {
         ɵɵi18nExp('A');
         ɵɵi18nApply(0);  // index 0 + HEADER_OFFSET = 20;
-        expect(fixture.host.innerHTML).toEqual('Hello <b>world<i>!</i></b><!--ICU 0:0-->');
+        expect(fixture.host.innerHTML).toEqual('Hello <b>world<i>!</i></b><!--ICU 20:0-->');
       });
       fixture.apply(() => {
         ɵɵi18nExp('x');
         ɵɵi18nApply(0);  // index 0 + HEADER_OFFSET = 20;
         expect(fixture.host.innerHTML)
-            .toEqual('<div>nestedOther<!--nested ICU 0--></div><!--ICU 0:0-->');
+            .toEqual('<div>nestedOther<!--nested ICU 0--></div><!--ICU 20:0-->');
       });
       fixture.apply(() => {
         ɵɵi18nExp('A');
         ɵɵi18nApply(0);  // index 0 + HEADER_OFFSET = 20;
-        expect(fixture.host.innerHTML).toEqual('Hello <b>world<i>!</i></b><!--ICU 0:0-->');
+        expect(fixture.host.innerHTML).toEqual('Hello <b>world<i>!</i></b><!--ICU 20:0-->');
       });
     });
 
@@ -154,7 +154,7 @@ describe('i18n_parse', () => {
       // 22: Binding for child ICU  |
       // 23: Binding for child ICU  |
       //                   ----- EXPANDO -----
-      // 24: TIcu (parent)          | <!-- ICU 0:0 -->
+      // 24: TIcu (parent)          | <!-- ICU 20:0 -->
       // 25: null                   | currently selected ICU case
       // 26: null                   | #text( parentA )
       // 27: TIcu (child)           | <!-- nested ICU 0 -->
@@ -170,7 +170,7 @@ describe('i18n_parse', () => {
         }`);
       expect(tI18n).toEqual(matchTI18n({
         create: matchDebug([
-          'lView[24] = document.createComment("ICU 0:0");',
+          'lView[24] = document.createComment("ICU 20:0");',
           'parent.appendChild(lView[24]);',
         ]),
         update: matchDebug([
@@ -244,45 +244,46 @@ describe('i18n_parse', () => {
 
       fixture.apply(() => {
         applyCreateOpCodes(fixture.lView, tI18n.create, fixture.host, null);
-        expect(fixture.host.innerHTML).toEqual('<!--ICU 0:0-->');
+        expect(fixture.host.innerHTML).toEqual('<!--ICU 20:0-->');
       });
       fixture.apply(() => {
         ɵɵi18nExp('A');
         ɵɵi18nExp('0');
         ɵɵi18nExp('value1');
         ɵɵi18nApply(0);  // index 0 + HEADER_OFFSET = 20;
-        expect(fixture.host.innerHTML).toEqual('parentA nested0<!--nested ICU 0-->!<!--ICU 0:0-->');
+        expect(fixture.host.innerHTML)
+            .toEqual('parentA nested0<!--nested ICU 0-->!<!--ICU 20:0-->');
       });
       fixture.apply(() => {
         ɵɵi18nExp('A');
         ɵɵi18nExp('x');
         ɵɵi18nExp('value1');
         ɵɵi18nApply(0);  // index 0 + HEADER_OFFSET = 20;
-        expect(fixture.host.innerHTML).toEqual('parentA value1<!--nested ICU 0-->!<!--ICU 0:0-->');
+        expect(fixture.host.innerHTML).toEqual('parentA value1<!--nested ICU 0-->!<!--ICU 20:0-->');
       });
       fixture.apply(() => {
         ɵɵi18nExp('x');
         ɵɵi18nExp('x');
         ɵɵi18nExp('value2');
         ɵɵi18nApply(0);  // index 0 + HEADER_OFFSET = 20;
-        expect(fixture.host.innerHTML).toEqual('parentOther<!--ICU 0:0-->');
+        expect(fixture.host.innerHTML).toEqual('parentOther<!--ICU 20:0-->');
       });
       fixture.apply(() => {
         ɵɵi18nExp('A');
         ɵɵi18nExp('A');
         ɵɵi18nExp('value2');
         ɵɵi18nApply(0);  // index 0 + HEADER_OFFSET = 20;
-        expect(fixture.host.innerHTML).toEqual('parentA value2<!--nested ICU 0-->!<!--ICU 0:0-->');
+        expect(fixture.host.innerHTML).toEqual('parentA value2<!--nested ICU 0-->!<!--ICU 20:0-->');
       });
     });
   });
 
   function toT18n(text: string) {
-    const tNodeIndex = 0;
+    const tNodeIndex = HEADER_OFFSET;
     fixture.enterView();
     i18nStartFirstCreatePass(fixture.tView, 0, fixture.lView, tNodeIndex, text, -1);
     fixture.leaveView();
-    const tI18n = fixture.tView.data[tNodeIndex + HEADER_OFFSET] as TI18n;
+    const tI18n = fixture.tView.data[tNodeIndex] as TI18n;
     expect(tI18n).toEqual(matchTI18n({}));
     return tI18n;
   }

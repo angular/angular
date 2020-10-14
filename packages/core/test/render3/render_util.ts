@@ -17,7 +17,6 @@ import {TConstants, TNodeType} from '@angular/core/src/render3/interfaces/node';
 import {enterView, getLView} from '@angular/core/src/render3/state';
 import {EMPTY_ARRAY} from '@angular/core/src/util/empty';
 import {stringifyElement} from '@angular/platform-browser/testing/src/browser_util';
-
 import {SWITCH_CHANGE_DETECTOR_REF_FACTORY__POST_R3__ as R3_CHANGE_DETECTOR_REF_FACTORY} from '../../src/change_detection/change_detector_ref';
 import {Injector} from '../../src/di/injector';
 import {Type} from '../../src/interface/type';
@@ -33,11 +32,10 @@ import {ComponentDef, ComponentTemplate, ComponentType, DirectiveDef, DirectiveT
 import {DirectiveDefList, DirectiveDefListOrFactory, DirectiveTypesOrFactory, HostBindingsFunction, PipeDef, PipeDefList, PipeDefListOrFactory, PipeTypesOrFactory} from '../../src/render3/interfaces/definition';
 import {PlayerHandler} from '../../src/render3/interfaces/player';
 import {domRendererFactory3, ProceduralRenderer3, RComment, RElement, Renderer3, RendererFactory3, RendererStyleFlags3, RNode, RText} from '../../src/render3/interfaces/renderer';
-import {HEADER_OFFSET, LView, LViewFlags, T_HOST, TVIEW, TViewType} from '../../src/render3/interfaces/view';
+import {HEADER_OFFSET, LView, LViewFlags, TVIEW, TViewType} from '../../src/render3/interfaces/view';
 import {destroyLView} from '../../src/render3/node_manipulation';
 import {getRootView} from '../../src/render3/util/view_traversal_utils';
 import {Sanitizer} from '../../src/sanitization/sanitizer';
-
 import {getRendererFactory2} from './imported_renderer2';
 
 
@@ -434,7 +432,7 @@ export function createDirective(
 
 /** Gets the directive on the given node at the given index */
 export function getDirectiveOnNode(nodeIndex: number, dirIndex: number = 0) {
-  const directives = getDirectivesAtNodeIndex(nodeIndex + HEADER_OFFSET, getLView(), true);
+  const directives = getDirectivesAtNodeIndex(nodeIndex, getLView(), true);
   if (directives == null) {
     throw new Error(`No directives exist on node in slot ${nodeIndex}`);
   }

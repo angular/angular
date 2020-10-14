@@ -56,7 +56,7 @@ describe('render3 matchers', () => {
   });
   describe('matchTNode', () => {
     const tView = createTView(TViewType.Root, null, null, 2, 3, null, null, null, null, null);
-    const tNode = createTNode(tView, null, TNodeType.Element, 1, 'tagName', []);
+    const tNode = createTNode(tView, null, TNodeType.Element, 0, 'tagName', []);
 
     it('should match', () => {
       expect(tNode).toEqual(matchTNode());
