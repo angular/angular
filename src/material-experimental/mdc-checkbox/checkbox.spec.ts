@@ -71,6 +71,9 @@ describe('MDC-based MatCheckbox', () => {
          expect(inputElement.checked).toBe(false);
        }));
 
+    it('should expose the ripple instance', () => {
+      expect(checkboxInstance.ripple).toBeTruthy();
+    });
 
     it('should toggle checkbox ripple disabledness correctly', fakeAsync(() => {
       const rippleSelector = '.mat-ripple-element:not(.mat-checkbox-persistent-ripple)';
@@ -188,6 +191,15 @@ describe('MDC-based MatCheckbox', () => {
          expect(inputElement.checked).toBe(false);
          expect(testComponent.isIndeterminate).toBe(true);
        }));
+
+    it('should change native element checked when check programmatically', () => {
+      expect(inputElement.checked).toBe(false);
+
+      checkboxInstance.checked = true;
+      fixture.detectChanges();
+
+      expect(inputElement.checked).toBe(true);
+    });
 
     it('should toggle checked state on click', fakeAsync(() => {
          expect(checkboxInstance.checked).toBe(false);

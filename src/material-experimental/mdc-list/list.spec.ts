@@ -33,7 +33,7 @@ describe('MDC-based MatList', () => {
     expect(listItem.nativeElement.classList).toContain('mat-mdc-list-item-single-line');
   });
 
-  it('should apply mat-mdc-2-line class to lists with two lines', () => {
+  it('should apply a particular class to lists with two lines', () => {
     const fixture = TestBed.createComponent(ListWithTwoLineItem);
     fixture.detectChanges();
 
@@ -42,7 +42,7 @@ describe('MDC-based MatList', () => {
     expect(listItems[1].nativeElement.className).toContain('mat-mdc-2-line');
   });
 
-  it('should apply mat-mdc-3-line class to lists with three lines', () => {
+  it('should apply a particular class to lists with three lines', () => {
     const fixture = TestBed.createComponent(ListWithThreeLineItem);
     fixture.detectChanges();
 
@@ -51,13 +51,22 @@ describe('MDC-based MatList', () => {
     expect(listItems[1].nativeElement.className).toContain('mat-mdc-3-line');
   });
 
-  it('should apply mat-mdc-multi-line class to lists with more than 3 lines', () => {
+  it('should apply a particular class to lists with more than 3 lines', () => {
     const fixture = TestBed.createComponent(ListWithManyLines);
     fixture.detectChanges();
 
     const listItems = fixture.debugElement.children[0].queryAll(By.css('mat-list-item'));
     expect(listItems[0].nativeElement.className).toContain('mat-mdc-multi-line');
     expect(listItems[1].nativeElement.className).toContain('mat-mdc-multi-line');
+  });
+
+  it('should apply a class to list items with avatars', () => {
+    const fixture = TestBed.createComponent(ListWithAvatar);
+    fixture.detectChanges();
+
+    const listItems = fixture.debugElement.children[0].queryAll(By.css('mat-list-item'));
+    expect(listItems[0].nativeElement.className).toContain('mat-mdc-list-item-with-avatar');
+    expect(listItems[1].nativeElement.className).not.toContain('mat-mdc-list-item-with-avatar');
   });
 
   it('should have a strong focus indicator configured for all list-items', () => {

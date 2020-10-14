@@ -150,7 +150,7 @@ describe('MatSnackBar', () => {
         .toBe('polite', 'Expected snack bar container live region to have aria-live="polite"');
   });
 
-  it('should remove the role if the politeness is turned off', () => {
+  it('should have aria-live of `off` if the politeness is turned off', () => {
     snackBar.openFromComponent(BurritosNotification, {politeness: 'off'});
     viewContainerFixture.detectChanges();
 
@@ -500,6 +500,18 @@ describe('MatSnackBar', () => {
 
     expect(overlayContainerElement.childElementCount).toBe(0);
     expect(foundation.destroy).toHaveBeenCalled();
+  }));
+
+  it('should cap the timeout to the maximum accepted delay in setTimeout', fakeAsync(() => {
+    snackBar.open('content', 'test', {duration: Infinity});
+    viewContainerFixture.detectChanges();
+    tick(100);
+    spyOn(window, 'setTimeout').and.callThrough();
+    tick(100);
+
+    expect(window.setTimeout).toHaveBeenCalledWith(jasmine.any(Function), Math.pow(2, 31) - 1);
+
+    flush();
   }));
 
   describe('with custom component', () => {

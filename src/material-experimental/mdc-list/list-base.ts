@@ -10,6 +10,7 @@ import {BooleanInput, coerceBooleanProperty} from '@angular/cdk/coercion';
 import {Platform} from '@angular/cdk/platform';
 import {
   AfterContentInit,
+  ContentChildren,
   Directive,
   ElementRef,
   HostBinding,
@@ -24,6 +25,7 @@ import {
   RippleTarget,
   setLines,
 } from '@angular/material-experimental/mdc-core';
+import {MatListAvatarCssMatStyler, MatListIconCssMatStyler} from './list-styling';
 import {Subscription} from 'rxjs';
 import {startWith} from 'rxjs/operators';
 
@@ -46,6 +48,9 @@ export abstract class MatListItemBase implements AfterContentInit, OnDestroy, Ri
 
   /** Host element for the list item. */
   _hostElement: HTMLElement;
+
+  @ContentChildren(MatListAvatarCssMatStyler, {descendants: false}) _avatars: QueryList<never>;
+  @ContentChildren(MatListIconCssMatStyler, {descendants: false}) _icons: QueryList<never>;
 
   @Input()
   get disableRipple(): boolean {
@@ -108,6 +113,11 @@ export abstract class MatListItemBase implements AfterContentInit, OnDestroy, Ri
   /** Gets the label for the list item. This is used for the typeahead. */
   _getItemLabel(): string {
     return this._itemText ? (this._itemText.nativeElement.textContent || '') : '';
+  }
+
+  /** Whether the list item has icons or avatars. */
+  _hasIconOrAvatar() {
+    return this._avatars.length || this._icons.length;
   }
 
   private _initInteractiveListItem() {

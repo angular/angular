@@ -11,7 +11,6 @@ import {
   ChangeDetectionStrategy,
   Component,
   ContentChildren,
-  Directive,
   ElementRef,
   NgZone,
   QueryList, ViewChild,
@@ -19,38 +18,6 @@ import {
 } from '@angular/core';
 import {MatLine} from '@angular/material-experimental/mdc-core';
 import {MatListBase, MatListItemBase} from './list-base';
-
-/**
- * Directive whose purpose is to add the mat- CSS styling to this selector.
- * @docs-private
- */
-@Directive({
-  selector: '[mat-list-avatar], [matListAvatar]',
-  host: {'class': 'mat-mdc-list-avatar mdc-list-item__graphic'}
-})
-export class MatListAvatarCssMatStyler {}
-
-/**
- * Directive whose purpose is to add the mat- CSS styling to this selector.
- * @docs-private
- */
-@Directive({
-  selector: '[mat-list-icon], [matListIcon]',
-  host: {'class': 'mat-mdc-list-icon mdc-list-item__graphic'}
-})
-export class MatListIconCssMatStyler {}
-
-/**
- * Directive whose purpose is to add the mat- CSS styling to this selector.
- * @docs-private
- */
-@Directive({
-  selector: '[mat-subheader], [matSubheader]',
-  // TODO(mmalerba): MDC's subheader font looks identical to the list item font, figure out why and
-  //  make a change in one of the repos to visually distinguish.
-  host: {'class': 'mat-mdc-subheader mdc-list-group__subheader'}
-})
-export class MatListSubheaderCssMatStyler {}
 
 @Component({
   selector: 'mat-list',
@@ -73,6 +40,7 @@ export class MatList extends MatListBase {}
   exportAs: 'matListItem',
   host: {
     'class': 'mat-mdc-list-item mdc-list-item',
+    '[class.mat-mdc-list-item-with-avatar]': '_hasIconOrAvatar()',
   },
   templateUrl: 'list-item.html',
   encapsulation: ViewEncapsulation.None,

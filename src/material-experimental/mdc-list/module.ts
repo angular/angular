@@ -17,14 +17,16 @@ import {MatDividerModule} from '@angular/material/divider';
 import {MatActionList} from './action-list';
 import {
   MatList,
-  MatListAvatarCssMatStyler,
-  MatListIconCssMatStyler,
   MatListItem,
-  MatListSubheaderCssMatStyler,
 } from './list';
 import {MatNavList} from './nav-list';
 import {MatSelectionList} from './selection-list';
 import {MatListOption} from './list-option';
+import {
+  MatListAvatarCssMatStyler,
+  MatListIconCssMatStyler,
+  MatListSubheaderCssMatStyler,
+} from './list-styling';
 
 @NgModule({
   imports: [

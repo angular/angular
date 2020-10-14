@@ -26,7 +26,6 @@ import {
   ViewEncapsulation
 } from '@angular/core';
 import {MatLine, ThemePalette} from '@angular/material-experimental/mdc-core';
-import {MatListAvatarCssMatStyler, MatListIconCssMatStyler} from './list';
 import {MatListBase, MatListItemBase} from './list-base';
 
 /**
@@ -86,9 +85,6 @@ export class MatListOption extends MatListItemBase implements OnInit, OnDestroy 
   @ViewChild('text') _itemText: ElementRef<HTMLElement>;
   @ContentChildren(MatLine, {read: ElementRef, descendants: true}) lines:
     QueryList<ElementRef<Element>>;
-
-  @ContentChildren(MatListAvatarCssMatStyler, {descendants: false}) _avatars: QueryList<never>;
-  @ContentChildren(MatListIconCssMatStyler, {descendants: false}) _icons: QueryList<never>;
 
   /** Unique id for the text. Used for describing the underlying checkbox input. */
   _optionTextId: string = `mat-mdc-list-option-text-${uniqueId++}`;
@@ -192,11 +188,6 @@ export class MatListOption extends MatListItemBase implements OnInit, OnDestroy 
   /** Whether the list-option has a checkbox. */
   _hasCheckbox() {
     return this._selectionList.multiple;
-  }
-
-  /** Whether the list-option has icons or avatars. */
-  _hasIconOrAvatar() {
-    return this._avatars.length || this._icons.length;
   }
 
   _handleBlur() {

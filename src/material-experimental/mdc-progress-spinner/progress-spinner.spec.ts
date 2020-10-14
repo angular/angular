@@ -152,6 +152,42 @@ describe('MDC-based MatProgressSpinner', () => {
       .toBe('0 0 130 130', 'Expected the viewBox to be adjusted based on the stroke width.');
   });
 
+  it('should allow floating point values for custom diameter', () => {
+    const fixture = TestBed.createComponent(ProgressSpinnerCustomDiameter);
+
+    fixture.componentInstance.diameter = 32.5;
+    fixture.detectChanges();
+
+    const spinner = fixture.debugElement.query(By.css('mat-progress-spinner'))!.nativeElement;
+    const svgElement: HTMLElement = fixture.nativeElement.querySelector('svg');
+
+    expect(parseFloat(spinner.style.width))
+      .toBe(32.5, 'Expected the custom diameter to be applied to the host element width.');
+    expect(parseFloat(spinner.style.height))
+      .toBe(32.5, 'Expected the custom diameter to be applied to the host element height.');
+    expect(Math.ceil(svgElement.clientWidth))
+      .toBe(33, 'Expected the custom diameter to be applied to the svg element width.');
+    expect(Math.ceil(svgElement.clientHeight))
+      .toBe(33, 'Expected the custom diameter to be applied to the svg element height.');
+    expect(svgElement.getAttribute('viewBox'))
+      .toBe('0 0 25.75 25.75', 'Expected the custom diameter to be applied to the svg viewBox.');
+  });
+
+  it('should allow floating point values for custom stroke width', () => {
+    const fixture = TestBed.createComponent(ProgressSpinnerCustomStrokeWidth);
+
+    fixture.componentInstance.strokeWidth = 40.5;
+    fixture.detectChanges();
+
+    const circleElement = fixture.nativeElement.querySelector('circle');
+    const svgElement = fixture.nativeElement.querySelector('svg');
+
+    expect(parseFloat(circleElement.style.strokeWidth)).toBe(40.5, 'Expected the custom stroke ' +
+      'width to be applied to the circle element as a percentage of the element size.');
+    expect(svgElement.getAttribute('viewBox'))
+      .toBe('0 0 130.5 130.5', 'Expected the viewBox to be adjusted based on the stroke width.');
+  });
+
   it('should expand the host element if the stroke width is greater than the default', () => {
     const fixture = TestBed.createComponent(ProgressSpinnerCustomStrokeWidth);
     const element = fixture.debugElement.nativeElement.querySelector('.mat-mdc-progress-spinner');

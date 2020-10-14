@@ -1214,7 +1214,7 @@ describe('MatCheckboxDefaultOptions', () => {
       TestBed.compileComponents();
     });
 
-    it('should override default color in Component', () => {
+    it('should override default color in component', () => {
       const fixture: ComponentFixture<SimpleCheckbox> =
           TestBed.createComponent(SimpleCheckbox);
       fixture.detectChanges();
