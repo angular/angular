@@ -79,12 +79,7 @@ export function setHostBindingsByExecutingExpandoInstructions(tView: TView, lVie
           if (instruction <= 0) {
             // Negative numbers mean that we are starting new EXPANDO block and need to update
             // the current element and directive index.
-            // Important: In JS `-x` and `0-x` is not the same! If `x===0` then `-x` will produce
-            // `-0` which requires non standard math arithmetic and it can prevent VM optimizations.
-            // `0-0` will always produce `0` and will not cause a potential deoptimization in VM.
-            // TODO(misko): PERF This should be refactored to use `~instruction` as that does not
-            // suffer from `-0` and it is faster/more compact.
-            currentElementIndex = 0 - instruction;
+            currentElementIndex = ~instruction;
             setSelectedIndex(currentElementIndex);
 
             // Injector block and providers are taken into account.
@@ -1373,10 +1368,7 @@ export function generateExpandoInstructionBlock(
           tView.firstCreatePass, true,
           'Expando block should only be generated on first create pass.');
 
-  // Important: In JS `-x` and `0-x` is not the same! If `x===0` then `-x` will produce `-0` which
-  // requires non standard math arithmetic and it can prevent VM optimizations.
-  // `0-0` will always produce `0` and will not cause a potential deoptimization in VM.
-  const elementIndex = 0 - tNode.index;
+  const elementIndex = ~tNode.index;
   const providerStartIndex = tNode.providerIndexes & TNodeProviderIndexes.ProvidersStartIndexMask;
   const providerCount = tView.data.length - providerStartIndex;
   (tView.expandoInstructions || (tView.expandoInstructions = []))
