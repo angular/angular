@@ -121,7 +121,7 @@ export class CommonJsReflectionHost extends Esm5ReflectionHost {
     const node = statement.expression.left;
     const declaration = this.getDeclarationOfExpression(exportExpression) ?? {
       kind: DeclarationKind.Inline,
-      node: statement.expression.left,
+      node,
       implementation: exportExpression,
       known: null,
       viaModule: null,
