@@ -333,6 +333,13 @@ export function crossEnvironmentSpecs(
       expect(await clickTestResult.text()).toBe('50-50');
     });
 
+    it('should be able to right click at a specific position within an element', async () => {
+      const clickTest = await harness.clickTest();
+      const contextmenuTestResult = await harness.contextmenuTestResult();
+      await clickTest.rightClick!(50, 50);
+      expect(await contextmenuTestResult.text()).toBe('50-50-2');
+    });
+
     it('should be able to send key', async () => {
       const input = await harness.input();
       const value = await harness.value();

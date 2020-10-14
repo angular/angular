@@ -14,7 +14,7 @@ import {
   TestKey,
   TextOptions
 } from '@angular/cdk/testing';
-import {browser, by, ElementFinder, Key} from 'protractor';
+import {browser, Button, by, ElementFinder, Key} from 'protractor';
 
 /** Maps the `TestKey` constants to Protractor's `Key` constants. */
 const keyMap = {
@@ -81,15 +81,11 @@ export class ProtractorElement implements TestElement {
   }
 
   async click(...args: [] | ['center'] | [number, number]): Promise<void> {
-    // Omitting the offset argument to mouseMove results in clicking the center.
-    // This is the default behavior we want, so we use an empty array of offsetArgs if no args are
-    // passed to this method.
-    const offsetArgs = args.length === 2 ? [{x: args[0], y: args[1]}] : [];
+    await this._dispatchClickEventSequence(args);
+  }
 
-    await browser.actions()
-      .mouseMove(await this.element.getWebElement(), ...offsetArgs)
-      .click()
-      .perform();
+  async rightClick(...args: [] | ['center'] | [number, number]): Promise<void> {
+    await this._dispatchClickEventSequence(args, Button.RIGHT);
   }
 
   async focus(): Promise<void> {
@@ -201,6 +197,21 @@ export class ProtractorElement implements TestElement {
 
   async dispatchEvent(name: string): Promise<void> {
     return browser.executeScript(_dispatchEvent, name, this.element);
+  }
+
+  /** Dispatches all the events that are part of a click event sequence. */
+  private async _dispatchClickEventSequence(
+    args: [] | ['center'] | [number, number],
+    button?: string) {
+    // Omitting the offset argument to mouseMove results in clicking the center.
+    // This is the default behavior we want, so we use an empty array of offsetArgs if no args are
+    // passed to this method.
+    const offsetArgs = args.length === 2 ? [{x: args[0], y: args[1]}] : [];
+
+    await browser.actions()
+      .mouseMove(await this.element.getWebElement(), ...offsetArgs)
+      .click(button)
+      .perform();
   }
 }
 

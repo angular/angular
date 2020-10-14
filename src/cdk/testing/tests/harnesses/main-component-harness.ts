@@ -34,6 +34,7 @@ export class MainComponentHarness extends ComponentHarness {
   readonly multiSelect = this.locatorFor('#multi-select');
   readonly multiSelectValue = this.locatorFor('#multi-select-value');
   readonly multiSelectChangeEventCounter = this.locatorFor('#multi-select-change-counter');
+  readonly contextmenuTestResult = this.locatorFor('.contextmenu-test-result');
   // Allow null for element
   readonly nullItem = this.locatorForOptional('wrong locator');
   // Allow null for component harness

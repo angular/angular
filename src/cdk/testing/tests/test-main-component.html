@@ -1,8 +1,9 @@
-<div class="click-test" (click)="onClick($event)"
+<div class="click-test" (click)="onClick($event)" (contextmenu)="onRightClick($event)"
      style="width: 100px; height: 100px; background: grey"
      #clickTestElement>
 </div>
-<div class="click-test-result">{{relativeX}}-{{relativeY}}</div>
+<div class="click-test-result">{{clickResult.x}}-{{clickResult.y}}</div>
+<div class="contextmenu-test-result">{{rightClickResult.x}}-{{rightClickResult.y}}-{{rightClickResult.button}}</div>
 <h1 style="height: 100px; width: 200px;">Main Component</h1>
 <div id="username">Hello {{username}} from Angular 2!</div>
 <div class="counters">

@@ -35,14 +35,14 @@ export class TestMainComponent implements OnDestroy {
   testMethods: string[];
   isHovering = false;
   specialKey = '';
-  relativeX = 0;
-  relativeY = 0;
   singleSelect: string;
   singleSelectChangeEventCount = 0;
   multiSelect: string[] = [];
   multiSelectChangeEventCount = 0;
   basicEvent = 0;
   _shadowDomSupported = _supportsShadowDom();
+  clickResult = {x: -1, y: -1};
+  rightClickResult = {x: -1, y: -1, button: -1};
 
   @ViewChild('clickTestElement') clickTestElement: ElementRef<HTMLElement>;
   @ViewChild('taskStateResult') taskStateResultElement: ElementRef<HTMLElement>;
@@ -89,14 +89,23 @@ export class TestMainComponent implements OnDestroy {
   }
 
   onClick(event: MouseEvent) {
-    const {top, left} = this.clickTestElement.nativeElement.getBoundingClientRect();
-    this.relativeX = Math.round(event.clientX - left);
-    this.relativeY = Math.round(event.clientY - top);
+    this._assignRelativeCoordinates(event, this.clickResult);
+  }
+
+  onRightClick(event: MouseEvent) {
+    this.rightClickResult.button = event.button;
+    this._assignRelativeCoordinates(event, this.rightClickResult);
   }
 
   runTaskOutsideZone() {
     this._zone.runOutsideAngular(() => setTimeout(() => {
       this.taskStateResultElement.nativeElement.textContent = 'result';
     }, 100));
+  }
+
+  private _assignRelativeCoordinates(event: MouseEvent, obj: {x: number, y: number}) {
+    const {top, left} = this.clickTestElement.nativeElement.getBoundingClientRect();
+    obj.x = Math.round(event.clientX - left);
+    obj.y = Math.round(event.clientY - top);
   }
 }
