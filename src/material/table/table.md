@@ -346,6 +346,11 @@ container has a complex box shadow and has sibling elements, the stuck cells wil
 There is currently an [open issue with Edge](https://developer.microsoft.com/en-us/microsoft-edge/platform/issues/17514118/)
 to resolve this.
 
+
+#### Multiple row templates
+
+When using the `multiTemplateDataRows` directive to support multiple rows for each data object, the context of `*matRowDef` is the same except that the `index` value is replaced by `dataIndex` and `renderIndex`.
+
 ### Accessibility
 Tables without text or labels should be given a meaningful label via `aria-label` or
 `aria-labelledby`. The `aria-readonly` defaults to `true` if it's not set.
