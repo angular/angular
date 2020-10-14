@@ -159,14 +159,17 @@ interface InstructionState {
    * In this mode, any changes in bindings will throw an ExpressionChangedAfterChecked error.
    *
    * Necessary to support ChangeDetectorRef.checkNoChanges().
+   *
+   * checkNoChanges Runs only in devmode=true and verifies that no unintended changes exist in
+   * the change detector or its children.
    */
-  checkNoChangesMode: boolean;
+  isInCheckNoChangesMode: boolean;
 }
 
 export const instructionState: InstructionState = {
   lFrame: createLFrame(null),
   bindingsEnabled: true,
-  checkNoChangesMode: false,
+  isInCheckNoChangesMode: false,
 };
 
 
@@ -287,13 +290,13 @@ export function getContextLView(): LView {
   return instructionState.lFrame.contextLView;
 }
 
-export function getCheckNoChangesMode(): boolean {
+export function isInCheckNoChangesMode(): boolean {
   // TODO(misko): remove this from the LView since it is ngDevMode=true mode only.
-  return instructionState.checkNoChangesMode;
+  return instructionState.isInCheckNoChangesMode;
 }
 
-export function setCheckNoChangesMode(mode: boolean): void {
-  instructionState.checkNoChangesMode = mode;
+export function setIsInCheckNoChangesMode(mode: boolean): void {
+  instructionState.isInCheckNoChangesMode = mode;
 }
 
 // top level variables should not be exported for performance reasons (PERF_NOTES.md)

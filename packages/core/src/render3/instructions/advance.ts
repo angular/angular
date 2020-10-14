@@ -8,7 +8,7 @@
 import {assertGreaterThan, assertIndexInRange} from '../../util/assert';
 import {executeCheckHooks, executeInitAndCheckHooks} from '../hooks';
 import {FLAGS, HEADER_OFFSET, InitPhaseState, LView, LViewFlags, TView} from '../interfaces/view';
-import {getCheckNoChangesMode, getLView, getSelectedIndex, getTView, setSelectedIndex} from '../state';
+import {getLView, getSelectedIndex, getTView, isInCheckNoChangesMode, setSelectedIndex} from '../state';
 
 
 /**
@@ -36,7 +36,7 @@ import {getCheckNoChangesMode, getLView, getSelectedIndex, getTView, setSelected
  */
 export function ɵɵadvance(delta: number): void {
   ngDevMode && assertGreaterThan(delta, 0, 'Can only advance forward');
-  selectIndexInternal(getTView(), getLView(), getSelectedIndex() + delta, getCheckNoChangesMode());
+  selectIndexInternal(getTView(), getLView(), getSelectedIndex() + delta, isInCheckNoChangesMode());
 }
 
 export function selectIndexInternal(

@@ -33,7 +33,7 @@ import {isComponentDef, isComponentHost, isContentQueryHost, isLContainer, isRoo
 import {CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTEXT, DECLARATION_COMPONENT_VIEW, DECLARATION_VIEW, FLAGS, HEADER_OFFSET, HOST, InitPhaseState, INJECTOR, LView, LViewFlags, NEXT, PARENT, RENDERER, RENDERER_FACTORY, RootContext, RootContextFlags, SANITIZER, T_HOST, TData, TRANSPLANTED_VIEWS_TO_REFRESH, TVIEW, TView, TViewType} from '../interfaces/view';
 import {assertNodeNotOfTypes, assertNodeOfPossibleTypes} from '../node_assert';
 import {isInlineTemplate, isNodeMatchingSelectorList} from '../node_selector_matcher';
-import {enterView, getBindingsEnabled, getCheckNoChangesMode, getCurrentDirectiveIndex, getCurrentTNode, getSelectedIndex, isCurrentTNodeParent, leaveView, setBindingIndex, setBindingRootForHostBindings, setCheckNoChangesMode, setCurrentDirectiveIndex, setCurrentQueryIndex, setCurrentTNode, setSelectedIndex} from '../state';
+import {enterView, getBindingsEnabled, getCurrentDirectiveIndex, getCurrentTNode, getSelectedIndex, isCurrentTNodeParent, isInCheckNoChangesMode, leaveView, setBindingIndex, setBindingRootForHostBindings, setCurrentDirectiveIndex, setCurrentQueryIndex, setCurrentTNode, setIsInCheckNoChangesMode, setSelectedIndex} from '../state';
 import {NO_CHANGE} from '../tokens';
 import {isAnimationProp, mergeHostAttrs} from '../util/attrs_utils';
 import {INTERPOLATION_DELIMITER, renderStringify, stringifyForError} from '../util/misc_utils';
@@ -383,7 +383,9 @@ export function refreshView<T>(
   const flags = lView[FLAGS];
   if ((flags & LViewFlags.Destroyed) === LViewFlags.Destroyed) return;
   enterView(lView);
-  const checkNoChangesMode = getCheckNoChangesMode();
+  // Check no changes mode is a dev only mode used to verify that bindings have not changed
+  // since they were assigned. We do not want to execute lifecycle hooks in that mode.
+  const isInCheckNoChangesPass = isInCheckNoChangesMode();
   try {
     resetPreOrderHookFlags(lView);
 
@@ -397,7 +399,7 @@ export function refreshView<T>(
 
     // execute pre-order hooks (OnInit, OnChanges, DoCheck)
     // PERF WARNING: do NOT extract this to a separate function without running benchmarks
-    if (!checkNoChangesMode) {
+    if (!isInCheckNoChangesPass) {
       if (hooksInitPhaseCompleted) {
         const preOrderCheckHooks = tView.preOrderCheckHooks;
         if (preOrderCheckHooks !== null) {
@@ -425,7 +427,7 @@ export function refreshView<T>(
 
     // execute content hooks (AfterContentInit, AfterContentChecked)
     // PERF WARNING: do NOT extract this to a separate function without running benchmarks
-    if (!checkNoChangesMode) {
+    if (!isInCheckNoChangesPass) {
       if (hooksInitPhaseCompleted) {
         const contentCheckHooks = tView.contentCheckHooks;
         if (contentCheckHooks !== null) {
@@ -459,7 +461,7 @@ export function refreshView<T>(
 
     // execute view hooks (AfterViewInit, AfterViewChecked)
     // PERF WARNING: do NOT extract this to a separate function without running benchmarks
-    if (!checkNoChangesMode) {
+    if (!isInCheckNoChangesPass) {
       if (hooksInitPhaseCompleted) {
         const viewCheckHooks = tView.viewCheckHooks;
         if (viewCheckHooks !== null) {
@@ -489,7 +491,7 @@ export function refreshView<T>(
     // refresh a `NgClass` binding should work. If we would reset the dirty state in the check
     // no changes cycle, the component would be not be dirty for the next update pass. This would
     // be different in production mode where the component dirty state is not reset.
-    if (!checkNoChangesMode) {
+    if (!isInCheckNoChangesPass) {
       lView[FLAGS] &= ~(LViewFlags.Dirty | LViewFlags.FirstLViewPass);
     }
     if (lView[FLAGS] & LViewFlags.RefreshTransplantedView) {
@@ -504,7 +506,7 @@ export function refreshView<T>(
 export function renderComponentOrTemplate<T>(
     tView: TView, lView: LView, templateFn: ComponentTemplate<{}>|null, context: T) {
   const rendererFactory = lView[RENDERER_FACTORY];
-  const normalExecutionPath = !getCheckNoChangesMode();
+  const normalExecutionPath = !isInCheckNoChangesMode();
   const creationModeIsActive = isCreationMode(lView);
   try {
     if (normalExecutionPath && !creationModeIsActive && rendererFactory.begin) {
@@ -529,7 +531,7 @@ function executeTemplate<T>(
     if (rf & RenderFlags.Update && lView.length > HEADER_OFFSET) {
       // When we're updating, inherently select 0 so we don't
       // have to generate that instruction for most update blocks.
-      selectIndexInternal(tView, lView, 0, getCheckNoChangesMode());
+      selectIndexInternal(tView, lView, 0, isInCheckNoChangesMode());
     }
     templateFn(rf, context);
   } finally {
@@ -1918,11 +1920,11 @@ export function detectChangesInRootView(lView: LView): void {
 }
 
 export function checkNoChangesInternal<T>(tView: TView, view: LView, context: T) {
-  setCheckNoChangesMode(true);
+  setIsInCheckNoChangesMode(true);
   try {
     detectChangesInternal(tView, view, context);
   } finally {
-    setCheckNoChangesMode(false);
+    setIsInCheckNoChangesMode(false);
   }
 }
 
@@ -1936,11 +1938,11 @@ export function checkNoChangesInternal<T>(tView: TView, view: LView, context: T)
  * @param lView The view which the change detection should be checked on.
  */
 export function checkNoChangesInRootView(lView: LView): void {
-  setCheckNoChangesMode(true);
+  setIsInCheckNoChangesMode(true);
   try {
     detectChangesInRootView(lView);
   } finally {
-    setCheckNoChangesMode(false);
+    setIsInCheckNoChangesMode(false);
   }
 }
 
