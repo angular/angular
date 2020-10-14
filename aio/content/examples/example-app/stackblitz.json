@@ -1,0 +1,10 @@
+{
+  "description": "Your Example App Title",
+  "files": [
+    "!**/*.d.ts",
+    "!**/*.js",
+    "!**/*.[1,2].*"
+  ],
+  "file": "src/app/app.component.ts",
+  "tags": ["add your tags here"]
+}
