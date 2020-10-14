@@ -13,7 +13,7 @@ import {NgOnChangesFeatureImpl} from './features/ng_onchanges_feature';
 import {DirectiveDef} from './interfaces/definition';
 import {TNode} from './interfaces/node';
 import {FLAGS, HookData, InitPhaseState, LView, LViewFlags, PREORDER_HOOK_FLAGS, PreOrderHookFlags, TView} from './interfaces/view';
-import {getCheckNoChangesMode} from './state';
+import {isInCheckNoChangesMode} from './state';
 
 
 
@@ -205,8 +205,8 @@ function callHooks(
     currentNodeIndex: number|null|undefined): void {
   ngDevMode &&
       assertEqual(
-          getCheckNoChangesMode(), false,
-          'Hooks should never be run in the check no changes mode.');
+          isInCheckNoChangesMode(), false,
+          'Hooks should never be run when in check no changes mode.');
   const startIndex = currentNodeIndex !== undefined ?
       (currentView[PREORDER_HOOK_FLAGS] & PreOrderHookFlags.IndexOfTheNextPreOrderHookMaskMask) :
       0;
