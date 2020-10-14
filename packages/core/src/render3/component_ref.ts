@@ -27,7 +27,7 @@ import {createLView, createTView, locateHostElement, renderView} from './instruc
 import {ComponentDef} from './interfaces/definition';
 import {TContainerNode, TElementContainerNode, TElementNode, TNode} from './interfaces/node';
 import {domRendererFactory3, RendererFactory3, RNode} from './interfaces/renderer';
-import {LView, LViewFlags, TViewType} from './interfaces/view';
+import {HEADER_OFFSET, LView, LViewFlags, TViewType} from './interfaces/view';
 import {MATH_ML_NAMESPACE, SVG_NAMESPACE} from './namespaces';
 import {createElementNode, writeDirectClass} from './node_manipulation';
 import {extractAttrsAndClassesFromSelector, stringifyCSSSelectorList} from './node_selector_matcher';
@@ -192,7 +192,7 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
         }
       }
 
-      tElementNode = getTNode(rootTView, 0) as TElementNode;
+      tElementNode = getTNode(rootTView, HEADER_OFFSET) as TElementNode;
 
       if (projectableNodes !== undefined) {
         const projection: (TNode|RNode[]|null)[] = tElementNode.projection = [];

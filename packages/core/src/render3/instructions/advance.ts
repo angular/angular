@@ -8,7 +8,7 @@
 import {assertGreaterThan} from '../../util/assert';
 import {assertIndexInDeclRange} from '../assert';
 import {executeCheckHooks, executeInitAndCheckHooks} from '../hooks';
-import {FLAGS, HEADER_OFFSET, InitPhaseState, LView, LViewFlags, TView} from '../interfaces/view';
+import {FLAGS, InitPhaseState, LView, LViewFlags, TView} from '../interfaces/view';
 import {getLView, getSelectedIndex, getTView, isInCheckNoChangesMode, setSelectedIndex} from '../state';
 
 
@@ -42,7 +42,7 @@ export function ɵɵadvance(delta: number): void {
 
 export function selectIndexInternal(
     tView: TView, lView: LView, index: number, checkNoChangesMode: boolean) {
-  ngDevMode && assertIndexInDeclRange(lView, index + HEADER_OFFSET);
+  ngDevMode && assertIndexInDeclRange(lView, index);
 
   // Flush the initial hooks for elements in the view that have been added up to this point.
   // PERF WARNING: do NOT extract this to a separate function without running benchmarks

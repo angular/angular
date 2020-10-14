@@ -67,7 +67,7 @@ describe('Runtime i18n', () => {
     const fixture = new TemplateFixture(
         {create: createTemplate, update: updateTemplate, decls: nbDecls, consts: [messageOrAtrs]});
     tView = fixture.hostView[TVIEW];
-    return tView.data[index + HEADER_OFFSET] as TI18n;
+    return tView.data[index] as TI18n | I18nUpdateOpCodes;
   }
 
   describe('i18nStart', () => {
@@ -79,7 +79,7 @@ describe('Runtime i18n', () => {
                         ɵɵelementStart(0, 'div');
                         ɵɵi18nStart(index, 0);
                         ɵɵelementEnd();
-                      }, undefined, nbConsts, index) as TI18n;
+                      }, undefined, nbConsts, HEADER_OFFSET + index) as TI18n;
 
       expect(opCodes).toEqual({
         create: matchDebug([
@@ -100,7 +100,7 @@ describe('Runtime i18n', () => {
         ɵɵelementStart(0, 'div');
         ɵɵi18nStart(index, 0);
         ɵɵelementEnd();
-      }, undefined, nbConsts, index);
+      }, undefined, nbConsts, HEADER_OFFSET + index);
 
       expect(opCodes).toEqual({
         create: matchDebug([
@@ -125,7 +125,7 @@ describe('Runtime i18n', () => {
         ɵɵelementStart(0, 'div');
         ɵɵi18nStart(index, 0);
         ɵɵelementEnd();
-      }, undefined, nbConsts, index);
+      }, undefined, nbConsts, HEADER_OFFSET + index);
 
       expect((opCodes as any).update.debug).toEqual([
         'if (mask & 0b1) { (lView[22] as Text).textContent = `Hello ${lView[i-1]}!`; }'
@@ -150,7 +150,7 @@ describe('Runtime i18n', () => {
         ɵɵelementStart(0, 'div');
         ɵɵi18nStart(index, 0);
         ɵɵelementEnd();
-      }, undefined, nbConsts, index);
+      }, undefined, nbConsts, HEADER_OFFSET + index);
 
       expect(opCodes).toEqual({
         create: matchDebug([
@@ -183,7 +183,7 @@ describe('Runtime i18n', () => {
         ɵɵelementStart(0, 'div');
         ɵɵi18nStart(index, 0);
         ɵɵelementEnd();
-      }, undefined, nbConsts, index);
+      }, undefined, nbConsts, HEADER_OFFSET + index);
 
       expect(opCodes).toEqual({
         create: matchDebug([
@@ -205,7 +205,7 @@ describe('Runtime i18n', () => {
       opCodes = getOpCodes(message, () => {
         ɵɵelementStart(0, 'div');
         ɵɵi18nStart(index, 0, 1);
-      }, undefined, nbConsts, index);
+      }, undefined, nbConsts, index + HEADER_OFFSET);
 
       expect(opCodes).toEqual({
         create: matchDebug([
@@ -223,7 +223,7 @@ describe('Runtime i18n', () => {
       opCodes = getOpCodes(message, () => {
         ɵɵelementStart(0, 'div');
         ɵɵi18nStart(index, 0, 2);
-      }, undefined, nbConsts, index);
+      }, undefined, nbConsts, index + HEADER_OFFSET);
 
       expect(opCodes).toEqual({
         create: matchDebug([
@@ -245,11 +245,11 @@ describe('Runtime i18n', () => {
                         ɵɵelementStart(0, 'div');
                         ɵɵi18nStart(index, 0);
                         ɵɵelementEnd();
-                      }, undefined, nbConsts, index) as TI18n;
+                      }, undefined, nbConsts, HEADER_OFFSET + index) as TI18n;
 
       expect(opCodes).toEqual({
         create: matchDebug([
-          `lView[${HEADER_OFFSET + 2}] = document.createComment("ICU 1:0");`,
+          `lView[${HEADER_OFFSET + 2}] = document.createComment("ICU 21:0");`,
           `parent.appendChild(lView[${HEADER_OFFSET + 2}]);`,
         ]),
         update: matchDebug([
@@ -332,11 +332,11 @@ describe('Runtime i18n', () => {
         ɵɵelementStart(0, 'div');
         ɵɵi18n(index, 0);
         ɵɵelementEnd();
-      }, undefined, nbConsts, index);
+      }, undefined, nbConsts, HEADER_OFFSET + index);
 
       expect(opCodes).toEqual({
         create: matchDebug([
-          `lView[${HEADER_OFFSET + 2}] = document.createComment("ICU 1:0");`,
+          `lView[${HEADER_OFFSET + 2}] = document.createComment("ICU 21:0");`,
           `parent.appendChild(lView[${HEADER_OFFSET + 2}]);`,
         ]),
         update: matchDebug([
@@ -432,11 +432,11 @@ describe('Runtime i18n', () => {
         consts: [attrs],
       });
       const tView = fixture.hostView[TVIEW];
-      const opCodes = tView.data[index + HEADER_OFFSET] as I18nUpdateOpCodes;
+      const opCodes = tView.data[HEADER_OFFSET + index] as I18nUpdateOpCodes;
 
       expect(opCodes).toEqual([]);
-      expect(
-          (getNativeByIndex(0, fixture.hostView as LView) as any as Element).getAttribute('title'))
+      expect((getNativeByIndex(HEADER_OFFSET, fixture.hostView as LView) as any as Element)
+                 .getAttribute('title'))
           .toEqual(message);
     });
 
@@ -449,7 +449,7 @@ describe('Runtime i18n', () => {
         ɵɵelementStart(0, 'div');
         ɵɵi18nAttributes(index, 0);
         ɵɵelementEnd();
-      }, undefined, nbConsts, index);
+      }, undefined, nbConsts, HEADER_OFFSET + index);
 
       expect(opCodes).toEqual(matchDebug([
         'if (mask & 0b1) { (lView[20] as Element).setAttribute(\'title\', `Hello ${lView[i-1]}!`); }',
@@ -465,7 +465,7 @@ describe('Runtime i18n', () => {
         ɵɵelementStart(0, 'div');
         ɵɵi18nAttributes(index, 0);
         ɵɵelementEnd();
-      }, undefined, nbConsts, index);
+      }, undefined, nbConsts, HEADER_OFFSET + index);
 
       expect(opCodes).toEqual(matchDebug([
         'if (mask & 0b11) { (lView[20] as Element).setAttribute(\'title\', `Hello ${lView[i-1]} and ${lView[i-2]}, again ${lView[i-1]}!`); }',
@@ -481,7 +481,7 @@ describe('Runtime i18n', () => {
         ɵɵelementStart(0, 'div');
         ɵɵi18nAttributes(index, 0);
         ɵɵelementEnd();
-      }, undefined, nbConsts, index);
+      }, undefined, nbConsts, HEADER_OFFSET + index);
 
       expect(opCodes).toEqual(matchDebug([
         'if (mask & 0b1) { (lView[20] as Element).setAttribute(\'title\', `Hello ${lView[i-1]}!`); }',
@@ -631,14 +631,12 @@ describe('Runtime i18n', () => {
 
   describe('i18nStartFirstCreatePass', () => {
     let fixture: ViewFixture;
-    let divTNode: TElementNode;
     const DECLS = 20;
     const VARS = 10;
     beforeEach(() => {
       fixture = new ViewFixture({decls: DECLS, vars: VARS});
       fixture.enterView();
       ɵɵelementStart(0, 'div');
-      divTNode = getCurrentTNode() as TElementNode;
     });
 
     afterEach(ViewFixture.cleanUp);
@@ -661,7 +659,8 @@ describe('Runtime i18n', () => {
     }
 
     it('should process text node with no siblings and no children', () => {
-      i18nStartFirstCreatePass(fixture.tView, 0, fixture.lView, 1, 'Hello World!', -1);
+      i18nStartFirstCreatePass(
+          fixture.tView, 0, fixture.lView, HEADER_OFFSET + 1, 'Hello World!', -1);
       const ti18n = fixture.tView.data[HEADER_OFFSET + 1] as TI18n;
       // Expect that we only create the `Hello World!` text node and nothing else.
       expect(ti18n.create).toEqual([
@@ -672,7 +671,8 @@ describe('Runtime i18n', () => {
     });
 
     it('should process text with a child node', () => {
-      i18nStartFirstCreatePass(fixture.tView, 0, fixture.lView, 1, 'Hello �#2��/#2�!', -1);
+      i18nStartFirstCreatePass(
+          fixture.tView, 0, fixture.lView, HEADER_OFFSET + 1, 'Hello �#2��/#2�!', -1);
       const ti18n = fixture.tView.data[HEADER_OFFSET + 1] as TI18n;
       expect(ti18n.create).toEqual([
         i18nRangeOffsetOpcode(0), 'Hello ',  //
@@ -689,7 +689,8 @@ describe('Runtime i18n', () => {
     });
 
     it('should process text with a child node that has text', () => {
-      i18nStartFirstCreatePass(fixture.tView, 0, fixture.lView, 1, 'Hello �#2�World�/#2�!', -1);
+      i18nStartFirstCreatePass(
+          fixture.tView, 0, fixture.lView, HEADER_OFFSET + 1, 'Hello �#2�World�/#2�!', -1);
       const ti18n = fixture.tView.data[HEADER_OFFSET + 1] as TI18n;
       expect(ti18n.create).toEqual([
         i18nRangeOffsetOpcode(0), 'Hello ',                      //
@@ -708,7 +709,7 @@ describe('Runtime i18n', () => {
 
     it('should process text with a child node that has text and with bindings', () => {
       i18nStartFirstCreatePass(
-          fixture.tView, 0, fixture.lView, 1,
+          fixture.tView, 0, fixture.lView, HEADER_OFFSET + 1,
           '�0� �#2��1��/#2�!' /* {{salutation}} <b>{{name}}</b>! */, -1);
       const ti18n = fixture.tView.data[HEADER_OFFSET + 1] as TI18n;
       expect(ti18n.create).toEqual([
@@ -733,7 +734,8 @@ describe('Runtime i18n', () => {
     });
 
     it('should process text with a child template', () => {
-      i18nStartFirstCreatePass(fixture.tView, 0, fixture.lView, 1, 'Hello �*2:1�World�/*2:1�!', -1);
+      i18nStartFirstCreatePass(
+          fixture.tView, 0, fixture.lView, HEADER_OFFSET + 1, 'Hello �*2:1�World�/*2:1�!', -1);
       const ti18n = fixture.tView.data[HEADER_OFFSET + 1] as TI18n;
       expect(ti18n.create.debug).toEqual([
         'lView[50] = document.createText("Hello ");',

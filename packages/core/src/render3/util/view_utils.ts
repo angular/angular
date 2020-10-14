@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {assertDefined, assertDomNode, assertGreaterThan, assertIndexInRange, assertLessThan} from '../../util/assert';
+import {assertDefined, assertDomNode, assertGreaterThan, assertGreaterThanOrEqual, assertIndexInRange, assertLessThan} from '../../util/assert';
 import {assertTNode, assertTNodeForLView} from '../assert';
 import {LContainer, TYPE} from '../interfaces/container';
 import {LContext, MONKEY_PATCH_KEY_NAME} from '../interfaces/context';
@@ -78,7 +78,9 @@ export function unwrapLContainer(value: RNode|LView|LContainer): LContainer|null
  * from any containers, component views, or style contexts.
  */
 export function getNativeByIndex(index: number, lView: LView): RNode {
-  return unwrapRNode(lView[index + HEADER_OFFSET]);
+  ngDevMode && assertIndexInRange(lView, index);
+  ngDevMode && assertGreaterThanOrEqual(index, HEADER_OFFSET, 'Expected to be past HEADER_OFFSET');
+  return unwrapRNode(lView[index]);
 }
 
 /**
@@ -120,16 +122,16 @@ export function getNativeByTNodeOrNull(tNode: TNode|null, lView: LView): RNode|n
 // fixme(misko): The return Type should be `TNode|null`
 export function getTNode(tView: TView, index: number): TNode {
   ngDevMode && assertGreaterThan(index, -1, 'wrong index for TNode');
-  ngDevMode && assertLessThan(index, tView.data.length - HEADER_OFFSET, 'wrong index for TNode');
-  const tNode = tView.data[index + HEADER_OFFSET] as TNode;
+  ngDevMode && assertLessThan(index, tView.data.length, 'wrong index for TNode');
+  const tNode = tView.data[index] as TNode;
   ngDevMode && tNode !== null && assertTNode(tNode);
   return tNode;
 }
 
 /** Retrieves a value from any `LView` or `TData`. */
 export function load<T>(view: LView|TData, index: number): T {
-  ngDevMode && assertIndexInRange(view, index + HEADER_OFFSET);
-  return view[index + HEADER_OFFSET];
+  ngDevMode && assertIndexInRange(view, index);
+  return view[index];
 }
 
 export function getComponentLViewByIndex(nodeIndex: number, hostView: LView): LView {

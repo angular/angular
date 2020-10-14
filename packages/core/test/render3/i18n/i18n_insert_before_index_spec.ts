@@ -54,44 +54,44 @@ describe('addTNodeAndUpdateInsertBeforeIndex', () => {
     describe('whose index is smaller than current nodes', () => {
       it('should update the previous insertBeforeIndex', () => {
         const previousTNodes: TNode[] = [
-          tPlaceholderElementNode(20),
           tPlaceholderElementNode(21),
+          tPlaceholderElementNode(22),
         ];
-        addTNodeAndUpdateInsertBeforeIndex(previousTNodes, tPlaceholderElementNode(19));
+        addTNodeAndUpdateInsertBeforeIndex(previousTNodes, tPlaceholderElementNode(20));
         expect(previousTNodes).toEqual([
-          matchTNode({index: 20, insertBeforeIndex: 19}),
-          matchTNode({index: 21, insertBeforeIndex: 19}),
-          matchTNode({index: 19, insertBeforeIndex: null}),
+          matchTNode({index: 21, insertBeforeIndex: 20}),
+          matchTNode({index: 22, insertBeforeIndex: 20}),
+          matchTNode({index: 20, insertBeforeIndex: null}),
         ]);
       });
 
       it('should not update the previous insertBeforeIndex if it is already set', () => {
         const previousTNodes: TNode[] = [
-          tPlaceholderElementNode(20, 19),
-          tPlaceholderElementNode(21, 19),
-          tPlaceholderElementNode(19),
+          tPlaceholderElementNode(22, 21),
+          tPlaceholderElementNode(23, 21),
+          tPlaceholderElementNode(21),
         ];
-        addTNodeAndUpdateInsertBeforeIndex(previousTNodes, tPlaceholderElementNode(18));
+        addTNodeAndUpdateInsertBeforeIndex(previousTNodes, tPlaceholderElementNode(20));
         expect(previousTNodes).toEqual([
-          matchTNode({index: 20, insertBeforeIndex: 19}),
-          matchTNode({index: 21, insertBeforeIndex: 19}),
-          matchTNode({index: 19, insertBeforeIndex: 18}),
-          matchTNode({index: 18, insertBeforeIndex: null}),
+          matchTNode({index: 22, insertBeforeIndex: 21}),
+          matchTNode({index: 23, insertBeforeIndex: 21}),
+          matchTNode({index: 21, insertBeforeIndex: 20}),
+          matchTNode({index: 20, insertBeforeIndex: null}),
         ]);
       });
 
       it('should not update the previous insertBeforeIndex if it is created after', () => {
         const previousTNodes: TNode[] = [
-          tPlaceholderElementNode(20, 15),
-          tPlaceholderElementNode(21, 15),
-          tPlaceholderElementNode(15),
+          tPlaceholderElementNode(25, 20),
+          tPlaceholderElementNode(26, 20),
+          tPlaceholderElementNode(20),
         ];
-        addTNodeAndUpdateInsertBeforeIndex(previousTNodes, tPlaceholderElementNode(18));
+        addTNodeAndUpdateInsertBeforeIndex(previousTNodes, tPlaceholderElementNode(23));
         expect(previousTNodes).toEqual([
-          matchTNode({index: 20, insertBeforeIndex: 15}),
-          matchTNode({index: 21, insertBeforeIndex: 15}),
-          matchTNode({index: 15, insertBeforeIndex: null}),
-          matchTNode({index: 18, insertBeforeIndex: null}),
+          matchTNode({index: 25, insertBeforeIndex: 20}),
+          matchTNode({index: 26, insertBeforeIndex: 20}),
+          matchTNode({index: 20, insertBeforeIndex: null}),
+          matchTNode({index: 23, insertBeforeIndex: null}),
         ]);
       });
     });
@@ -116,44 +116,44 @@ describe('addTNodeAndUpdateInsertBeforeIndex', () => {
     describe('whose index is smaller than current nodes', () => {
       it('should update the previous insertBeforeIndex', () => {
         const previousTNodes: TNode[] = [
-          tPlaceholderElementNode(20),
           tPlaceholderElementNode(21),
+          tPlaceholderElementNode(22),
         ];
-        addTNodeAndUpdateInsertBeforeIndex(previousTNodes, tI18NTextNode(19));
+        addTNodeAndUpdateInsertBeforeIndex(previousTNodes, tI18NTextNode(20));
         expect(previousTNodes).toEqual([
-          matchTNode({index: 20, insertBeforeIndex: 19}),
-          matchTNode({index: 21, insertBeforeIndex: 19}),
-          matchTNode({index: 19, insertBeforeIndex: null}),
+          matchTNode({index: 21, insertBeforeIndex: 20}),
+          matchTNode({index: 22, insertBeforeIndex: 20}),
+          matchTNode({index: 20, insertBeforeIndex: null}),
         ]);
       });
 
       it('should not update the previous insertBeforeIndex if it is already set', () => {
         const previousTNodes: TNode[] = [
-          tPlaceholderElementNode(20, 19),
-          tPlaceholderElementNode(21, 19),
-          tPlaceholderElementNode(19),
+          tPlaceholderElementNode(22, 21),
+          tPlaceholderElementNode(23, 21),
+          tPlaceholderElementNode(21),
         ];
-        addTNodeAndUpdateInsertBeforeIndex(previousTNodes, tI18NTextNode(18));
+        addTNodeAndUpdateInsertBeforeIndex(previousTNodes, tI18NTextNode(20));
         expect(previousTNodes).toEqual([
-          matchTNode({index: 20, insertBeforeIndex: 19}),
-          matchTNode({index: 21, insertBeforeIndex: 19}),
-          matchTNode({index: 19, insertBeforeIndex: 18}),
-          matchTNode({index: 18, insertBeforeIndex: null}),
+          matchTNode({index: 22, insertBeforeIndex: 21}),
+          matchTNode({index: 23, insertBeforeIndex: 21}),
+          matchTNode({index: 21, insertBeforeIndex: 20}),
+          matchTNode({index: 20, insertBeforeIndex: null}),
         ]);
       });
 
       it('should not update the previous insertBeforeIndex if it is created after', () => {
         const previousTNodes: TNode[] = [
-          tPlaceholderElementNode(20, 15),
-          tPlaceholderElementNode(21, 15),
-          tPlaceholderElementNode(15),
+          tPlaceholderElementNode(25, 20),
+          tPlaceholderElementNode(26, 20),
+          tPlaceholderElementNode(20),
         ];
-        addTNodeAndUpdateInsertBeforeIndex(previousTNodes, tI18NTextNode(18));
+        addTNodeAndUpdateInsertBeforeIndex(previousTNodes, tI18NTextNode(23));
         expect(previousTNodes).toEqual([
-          matchTNode({index: 20, insertBeforeIndex: 15}),
-          matchTNode({index: 21, insertBeforeIndex: 15}),
-          matchTNode({index: 15, insertBeforeIndex: 18}),
-          matchTNode({index: 18, insertBeforeIndex: null}),
+          matchTNode({index: 25, insertBeforeIndex: 20}),
+          matchTNode({index: 26, insertBeforeIndex: 20}),
+          matchTNode({index: 20, insertBeforeIndex: 23}),
+          matchTNode({index: 23, insertBeforeIndex: null}),
         ]);
       });
     });
