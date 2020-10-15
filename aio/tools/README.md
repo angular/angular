@@ -29,11 +29,12 @@ sub-folder. Also there are a number of common boilerplate files that are needed 
 example's project. We maintain these common boilerplate files centrally to reduce the amount of effort
 if one of them needs to change.
 
-This `examples` tool folder contains two utilities:
+This `examples` tool folder contains three utilities:
 
 * example-boilerplate.js - install/remove the npm dependencies and boilerplate files into/from each of the
   examples' subfolders.
 * run-example-e2e.js - run the e2e tests for one or more examples
+* create-example.js - create a new example from the `example-scaffold/` directory or by importing files from a CLI project.
 
 See the [README.md](examples/README.md) for more details.
 

@@ -36,8 +36,9 @@ Here are the most important tasks you might need to use:
 
 * `yarn boilerplate:add` - generate all the boilerplate code for the examples, so that they can be run locally.
 * `yarn boilerplate:add:viewengine` - same as `boilerplate:add` but also turns on `ViewEngine` (pre-Ivy) mode.
-
 * `yarn boilerplate:remove` - remove all the boilerplate code that was added via `yarn boilerplate:add`.
+* `yarn create-example` - create a new example directory containing initial source files.
+
 * `yarn generate-stackblitz` - generate the stackblitz files that are used by the `live-example` tags in the docs.
 * `yarn generate-zips` - generate the zip files from the examples. Zip available via the `live-example` tags in the docs.
 
