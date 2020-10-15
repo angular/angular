@@ -1,3 +1,49 @@
+## 10.2.5 "ink-peony" (2020-10-15)
+
+### material
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **autocomplete:** don't prevent escape key actions with modifiers ([#20706](https://github.com/angular/components/issues/20706)) ([9332230](https://github.com/angular/components/commit/9332230)), closes [#16202](https://github.com/angular/components/issues/16202) |
+| bug fix |  **datepicker:** lifecycle hooks not being called ([#20700](https://github.com/angular/components/issues/20700)) ([6318389](https://github.com/angular/components/commit/6318389)) |
+| bug fix |  **form-field:** dynamic hint end alignment not working ([#20657](https://github.com/angular/components/issues/20657)) ([95cc020](https://github.com/angular/components/commit/95cc020)), closes [#20629](https://github.com/angular/components/issues/20629) |
+| bug fix |  **list:** emit selectionChange event when selecting with ctrl + a ([#20667](https://github.com/angular/components/issues/20667)) ([d10a20f](https://github.com/angular/components/commit/d10a20f)), closes [#15696](https://github.com/angular/components/issues/15696) |
+| bug fix |  **slider:** some screen readers announcing long decimal values ([#20721](https://github.com/angular/components/issues/20721)) ([ad17eb9](https://github.com/angular/components/commit/ad17eb9)), closes [#20719](https://github.com/angular/components/issues/20719) |
+| bug fix |  **tabs:** some bugs with docs and coercion ([#20356](https://github.com/angular/components/issues/20356)) ([f9547dd](https://github.com/angular/components/commit/f9547dd)) |
+| bug fix |  **tooltip:** convert message to string ([#20685](https://github.com/angular/components/issues/20685)) ([214bc7b](https://github.com/angular/components/commit/214bc7b)), closes [#20684](https://github.com/angular/components/issues/20684) |
+
+
+## 10.2.4 "thorium-thunder" (2020-10-05)
+
+### cdk
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **a11y:** cdkAriaLive default to polite ([#20672](https://github.com/angular/components/issues/20672)) ([f514ae5](https://github.com/angular/components/commit/f514ae5)), closes [#11618](https://github.com/angular/components/issues/11618) |
+| bug fix |  **a11y:** error if FocusMonitor is used on non-element nodes ([#20640](https://github.com/angular/components/issues/20640)) ([92c29c8](https://github.com/angular/components/commit/92c29c8)), closes [#20632](https://github.com/angular/components/issues/20632) |
+
+### material
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **core:** incorrectly formatting dates in the years 0 to 99 ([#20612](https://github.com/angular/components/issues/20612)) ([9a0c4c0](https://github.com/angular/components/commit/9a0c4c0)), closes [#20418](https://github.com/angular/components/issues/20418) |
+| bug fix |  **datepicker:** fix handling of short years ([#20709](https://github.com/angular/components/issues/20709)) ([8b4ce73](https://github.com/angular/components/commit/8b4ce73)) |
+
+### youtube-player
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  YT.Player is not a constructor ([#20616](https://github.com/angular/components/issues/20616)) ([3393ec7](https://github.com/angular/components/commit/3393ec7)), closes [#20598](https://github.com/angular/components/issues/20598) [angular#20598](https://github.com/angular/issues/20598) |
+
+### material-experimental
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **mdc-button:** align public API with material/button ([#20679](https://github.com/angular/components/issues/20679)) ([3a34ab0](https://github.com/angular/components/commit/3a34ab0)) |
+| bug fix |  **mdc-snack-bar:** button pushed outside container ([#20696](https://github.com/angular/components/issues/20696)) ([c5fd98a](https://github.com/angular/components/commit/c5fd98a)), closes [#20690](https://github.com/angular/components/issues/20690) |
+| bug fix |  **mdc-snack-bar:** not aligned correctly on IE11 ([#20690](https://github.com/angular/components/issues/20690)) ([e1ea7df](https://github.com/angular/components/commit/e1ea7df)) |
+
+
 # 11.0.0-next.1 "zirconium-czar" (2020-10-05)
 
 ### cdk
