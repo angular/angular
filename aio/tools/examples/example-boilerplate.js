@@ -34,7 +34,6 @@ class ExampleBoilerPlate {
       shelljs.exec(`yarn --cwd ${SHARED_PATH} ngcc --properties es2015 browser module main --first-only --create-ivy-entry-points`);
     }
 
-
     exampleFolders.forEach(exampleFolder => {
       const exampleConfig = this.loadJsonFile(path.resolve(exampleFolder, EXAMPLE_CONFIG_FILENAME));
 
@@ -69,14 +68,14 @@ class ExampleBoilerPlate {
     });
   }
 
-  remove() {
-    shelljs.exec('git clean -xdfq', {cwd: EXAMPLES_BASE_PATH});
-  }
+  /**
+   * Remove all the boilerplate files from all the examples
+   */
+  remove() { shelljs.exec('git clean -xdfq', {cwd: EXAMPLES_BASE_PATH}); }
 
   main() {
     yargs.usage('$0 <cmd> [args]')
-        .command(
-            'add', 'add the boilerplate to each example', yrgs => this.add(yrgs.argv.viewengine))
+        .command('add', 'add the boilerplate to each example', yrgs => this.add(yrgs.argv.viewengine))
         .command('remove', 'remove the boilerplate from each example', () => this.remove())
         .demandCommand(1, 'Please supply a command from the list above')
         .argv;
@@ -88,9 +87,7 @@ class ExampleBoilerPlate {
     return glob.sync(pattern, {ignore: [ignorePattern]}).map(file => path.dirname(file));
   }
 
-  loadJsonFile(filePath) {
-    return fs.readJsonSync(filePath, {throws: false}) || {};
-  }
+  loadJsonFile(filePath) { return fs.readJsonSync(filePath, {throws: false}) || {}; }
 
   copyDirectoryContents(srcDir, dstDir, isPathIgnored) {
     shelljs.ls('-Al', srcDir).forEach(stat => {
