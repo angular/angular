@@ -150,6 +150,14 @@ See [aio/README.md](../../README.md#developer-tasks) for the available command-l
 
 Running the script will create an `aio/protractor-results.txt` file with the results of the tests.
 
+### `create-example.js`
+
+The [create-example.js](./create-example.js) script creates a new example under the `aio/content/examples` directory.
+
+You must provide a new name for the example.
+By default the script will place basic scaffold files into the new example (from [shared/example-scaffold](./shared/example-scaffold)).
+But you can also specify the path to a separate CLI project, from which the script will copy files that would not be considered "boilerplate".
+See the [Boilerplate overview](#boilerplate-overview) for more information.
 
 ### Updating example dependencies
 
