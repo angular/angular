@@ -180,7 +180,7 @@ give it a `catchError()` operator.
 </code-example>
 
 The `catchError()` operator intercepts an **`Observable` that failed**.
-It passes the error an error handler that can do what it wants with the error.
+The operator then passes the error to the error handling function.
 
 The following `handleError()` method reports the error and then returns an
 innocuous result so that the application keeps working.
