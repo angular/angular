@@ -81,23 +81,41 @@ describe('create-example tool', () => {
 
   describe('copyExampleFiles', () => {
     it('should copy over files that are not ignored by git', () => {
+      const examplesGitIgnorePath = path.resolve(EXAMPLES_BASE_PATH, '.gitignore');
+      const sourceGitIgnorePath = path.resolve('/source/path', '.gitignore');
+
       spyOn(console, 'log');
-      const readFileSyncSpy =
-          spyOn(fs, 'readFileSync').and.returnValue(['a/b', '**/*.bad'].join('\n'));
+      spyOn(fs, 'existsSync').and.returnValue(true);
+      const readFileSyncSpy = spyOn(fs, 'readFileSync').and.callFake(p => {
+        switch (p) {
+          case examplesGitIgnorePath:
+            return '**/a/b/**';
+          case sourceGitIgnorePath:
+            return '**/*.bad';
+          default:
+            throw new Error('Unexpected path');
+        }
+      });
       spyOn(glob, 'sync').and.returnValue([
         'a/', 'a/b/', 'a/c', 'x.ts', 'x.bad', 'a/b/y.ts', 'a/b/y.bad'
       ]);
       const ensureDirSyncSpy = spyOn(fs, 'ensureDirSync');
       const copySyncSpy = spyOn(fs, 'copySync');
 
-      copyExampleFiles('/source/path', '/example/path');
-      expect(readFileSyncSpy)
-          .toHaveBeenCalledWith(path.resolve(EXAMPLES_BASE_PATH, '.gitignore'), 'utf8');
-      expect(ensureDirSyncSpy).toHaveBeenCalledWith('/example/path/a/b');
-      expect(copySyncSpy).toHaveBeenCalledTimes(3);
-      expect(copySyncSpy).toHaveBeenCalledWith('/source/path/a/c', '/example/path/a/c');
-      expect(copySyncSpy).toHaveBeenCalledWith('/source/path/x.ts', '/example/path/x.ts');
-      expect(copySyncSpy).toHaveBeenCalledWith('/source/path/a/b/y.ts', '/example/path/a/b/y.ts');
+      copyExampleFiles('/source/path', '/path/to/test-example', 'test-example');
+
+      expect(readFileSyncSpy).toHaveBeenCalledWith(examplesGitIgnorePath, 'utf8');
+      expect(readFileSyncSpy).toHaveBeenCalledWith(sourceGitIgnorePath, 'utf8');
+
+      expect(ensureDirSyncSpy.calls.allArgs()).toEqual([
+        ['/path/to/test-example/a'],
+        ['/path/to/test-example'],
+      ]);
+
+      expect(copySyncSpy.calls.allArgs()).toEqual([
+        ['/source/path/a/c', '/path/to/test-example/a/c'],
+        ['/source/path/x.ts', '/path/to/test-example/x.ts'],
+      ]);
     });
   });
 

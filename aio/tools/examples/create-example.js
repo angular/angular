@@ -34,7 +34,7 @@ if (require.main === module) {
   const sourcePath =
       options.source !== undefined ? path.resolve(options.source) : BASIC_SOURCE_PATH;
   console.log('Copying files from', sourcePath);
-  copyExampleFiles(sourcePath, examplePath);
+  copyExampleFiles(sourcePath, examplePath, exampleName);
 
   console.log(`The new "${exampleName}" example has been created.`);
   console.log('Now run "yarn boilerplate:add" to set it up for development.');
@@ -87,11 +87,9 @@ function writeStackBlitzFile(exampleName, examplePath) {
  * Copy all the files from the `sourcePath`, which are not ignored by the `.gitignore` file in the
  * `EXAMPLES_BASE_PATH`, to the `examplePath`.
  */
-function copyExampleFiles(sourcePath, examplePath) {
-  const gitignoreFilePath = path.resolve(EXAMPLES_BASE_PATH, '.gitignore');
-  const gitignoreFile = fs.readFileSync(gitignoreFilePath, 'utf8');
-  const gitignore = ignore().add(gitignoreFile);
-  const sourceDir = path.basename(sourcePath);
+function copyExampleFiles(sourcePath, examplePath, exampleName) {
+  const gitIgnoreSource = getGitIgnore(sourcePath);
+  const gitIgnoreExamples = getGitIgnore(EXAMPLES_BASE_PATH);
 
   // Grab the files in the source folder and filter them based on the gitignore rules.
   const sourceFiles =
@@ -101,19 +99,29 @@ function copyExampleFiles(sourcePath, examplePath) {
             ignore: ['**/node_modules/**', '.git/**', '.gitignore'],
             mark: true
           })
-          .filter(
-              filePath =>
-                  !/\/$/.test(filePath))  // this filter removes the directories, leaving only files
-          .filter(
-              filePath => !gitignore.ignores(path.join(
-                  sourceDir,
-                  filePath)));  // this filter removes files that match the .gitignore rules
+          // Filter out the directories, leaving only files
+          .filter(filePath => !/\/$/.test(filePath))
+          // Filter out files that match the source directory .gitignore rules
+          .filter(filePath => !gitIgnoreSource.ignores(filePath))
+          // Filter out files that match the examples directory .gitignore rules
+          .filter(filePath => !gitIgnoreExamples.ignores(path.join(exampleName, filePath)));
+
   for (const sourceFile of sourceFiles) {
     console.log(' - ', sourceFile);
     const destPath = path.resolve(examplePath, sourceFile)
     fs.ensureDirSync(path.dirname(destPath));
     fs.copySync(path.resolve(sourcePath, sourceFile), destPath);
   }
+}
+
+function getGitIgnore(directory) {
+  const gitIgnoreMatcher = ignore();
+  const gitignoreFilePath = path.resolve(directory, '.gitignore');
+  if (fs.existsSync(gitignoreFilePath)) {
+    const gitignoreFile = fs.readFileSync(gitignoreFilePath, 'utf8');
+    gitIgnoreMatcher.add(gitignoreFile);
+  }
+  return gitIgnoreMatcher;
 }
 
 /**
