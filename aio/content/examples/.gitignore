@@ -32,6 +32,7 @@
 **/karma-test-shim.js
 **/browser-test-shim.js
 **/node_modules
+**/yarn.lock
 
 # built files
 *.map
