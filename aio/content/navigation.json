@@ -911,6 +911,11 @@
           "url": "api"
         },
         {
+          "title": "Example applications",
+          "tooltip": "List of all of the example applications in the Angular documentation.",
+          "url": "guide/example-apps-list"
+        },
+        {
           "url": "guide/glossary",
           "title": "Angular Glossary",
           "tooltip": "Brief definitions of the most important words in the Angular vocabulary."
