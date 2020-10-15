@@ -1,3 +1,33 @@
+# 11.0.0-next.2 "cashmere-cup" (2020-10-15)
+
+### cdk
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **testing:** avoid using dotted property access for dispatchEven… ([#20754](https://github.com/angular/components/issues/20754)) ([7d99c35](https://github.com/angular/components/commit/7d99c35)) |
+| feature |  **overlay:** connected-overlay directive should have input for disabling escape close ([#20585](https://github.com/angular/components/issues/20585)) ([57c7b6a](https://github.com/angular/components/commit/57c7b6a)) |
+| feature |  **testing:** add the ability to dispatch arbitrary events ([#20714](https://github.com/angular/components/issues/20714)) ([b7cfe67](https://github.com/angular/components/commit/b7cfe67)) |
+| feature |  **testing:** support right clicking on a TestElement ([#20400](https://github.com/angular/components/issues/20400)) ([b1be164](https://github.com/angular/components/commit/b1be164)), closes [#20385](https://github.com/angular/components/issues/20385) |
+
+### material
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **datepicker:** add close button for screen readers ([#20666](https://github.com/angular/components/issues/20666)) ([407398f](https://github.com/angular/components/commit/407398f)), closes [#14379](https://github.com/angular/components/issues/14379) |
+| bug fix |  **datepicker:** don't handle escape key presses with modifier ([#20713](https://github.com/angular/components/issues/20713)) ([54f36a3](https://github.com/angular/components/commit/54f36a3)) |
+| bug fix |  **select:** make VoiceOver read options for selects in dialogs ([#20695](https://github.com/angular/components/issues/20695)) ([33a43f7](https://github.com/angular/components/commit/33a43f7)), closes [#20694](https://github.com/angular/components/issues/20694) |
+| feature |  **select:** add a global option to specify overlay panel class ([#20702](https://github.com/angular/components/issues/20702)) ([17a9ad0](https://github.com/angular/components/commit/17a9ad0)) |
+| feature |  **tabs:** allow for dynamicHeight to be configured through MAT_TABS_CONFIG ([#19677](https://github.com/angular/components/issues/19677)) ([d6e6f44](https://github.com/angular/components/commit/d6e6f44)), closes [#19662](https://github.com/angular/components/issues/19662) |
+| feature |  **tree:** add getTreeStructure for tree harness ([#20568](https://github.com/angular/components/issues/20568)) ([483c3e2](https://github.com/angular/components/commit/483c3e2)) |
+
+### material-experimental
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **mdc-form-field:** implement new methods added to text field adapter ([#20739](https://github.com/angular/components/issues/20739)) ([c3aa76e](https://github.com/angular/components/commit/c3aa76e)) |
+| bug fix |  **mdc-form-field:** test harness referring to non-MDC harnesses ([#20762](https://github.com/angular/components/issues/20762)) ([02d334c](https://github.com/angular/components/commit/02d334c)) |
+
+
 ## 10.2.5 "ink-peony" (2020-10-15)
 
 ### material
