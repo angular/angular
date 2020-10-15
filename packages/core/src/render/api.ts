@@ -10,6 +10,7 @@ import {InjectionToken} from '../di/injection_token';
 import {ViewEncapsulation} from '../metadata/view';
 import {injectRenderer2 as render3InjectRenderer2} from '../render3/view_engine_compatibility';
 import {noop} from '../util/noop';
+import {TrustedHTML, TrustedScript, TrustedScriptURL} from '../util/security/trusted_type_defs';
 
 
 export const Renderer2Interceptor = new InjectionToken<Renderer2[]>('Renderer2Interceptor');
@@ -205,7 +206,9 @@ export abstract class Renderer2 {
    * @param value The new value.
    * @param namespace The namespace.
    */
-  abstract setAttribute(el: any, name: string, value: string, namespace?: string|null): void;
+  abstract setAttribute(
+      el: any, name: string, value: string|TrustedHTML|TrustedScript|TrustedScriptURL,
+      namespace?: string|null): void;
 
   /**
    * Implement this callback to remove an attribute from an element in the DOM.
