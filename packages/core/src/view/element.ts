@@ -8,7 +8,10 @@
 
 import {ViewEncapsulation} from '../metadata/view';
 import {RendererType2} from '../render/api';
+import {Sanitizer} from '../sanitization/sanitizer';
 import {SecurityContext} from '../sanitization/security';
+import {TrustedHTML, TrustedScript, TrustedScriptURL} from '../util/security/trusted_type_defs';
+import {trustedHTMLFromStringBypass, trustedScriptFromStringBypass, trustedScriptURLFromStringBypass} from '../util/security/trusted_types_bypass';
 
 import {asElementData, BindingDef, BindingFlags, ElementData, ElementHandleEventFn, NodeDef, NodeFlags, OutputDef, OutputType, QueryValueType, ViewData, ViewDefinitionFactory} from './types';
 import {calcBindingFlags, checkAndUpdateBinding, dispatchEvent, elementEventFullName, getParentRenderElement, NOOP, resolveDefinition, resolveRendererType2, splitMatchedQueriesDsl, splitNamespace} from './util';
@@ -268,8 +271,8 @@ function setElementAttribute(
     view: ViewData, binding: BindingDef, renderNode: any, ns: string|null, name: string,
     value: any) {
   const securityContext = binding.securityContext;
-  let renderValue = securityContext ? view.root.sanitizer.sanitize(securityContext, value) : value;
-  renderValue = renderValue != null ? renderValue.toString() : null;
+  const renderValue = securityContext ? sanitize(view.root.sanitizer, securityContext, value) :
+                                        value?.toString() ?? null;
   const renderer = view.renderer;
   if (value != null) {
     renderer.setAttribute(renderNode, name, renderValue, ns);
@@ -311,6 +314,23 @@ function setElementStyle(
 function setElementProperty(
     view: ViewData, binding: BindingDef, renderNode: any, name: string, value: any) {
   const securityContext = binding.securityContext;
-  let renderValue = securityContext ? view.root.sanitizer.sanitize(securityContext, value) : value;
+  const renderValue =
+      securityContext ? sanitize(view.root.sanitizer, securityContext, value) : value;
   view.renderer.setProperty(renderNode, name, renderValue);
+}
+
+function sanitize(sanitizer: Sanitizer, securityContext: SecurityContext, value: any): string|
+    TrustedHTML|TrustedScript|TrustedScriptURL|null {
+  const safe = sanitizer.sanitize(securityContext, value);
+  if (safe === null) return null;
+  switch (securityContext) {
+    case SecurityContext.HTML:
+      return trustedHTMLFromStringBypass(safe);
+    case SecurityContext.SCRIPT:
+      return trustedScriptFromStringBypass(safe);
+    case SecurityContext.RESOURCE_URL:
+      return trustedScriptURLFromStringBypass(safe);
+    default:
+      return safe;
+  }
 }
