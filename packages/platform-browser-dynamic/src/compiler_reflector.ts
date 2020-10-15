@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CompileReflector, ExternalReference, getUrlScheme, Identifiers, syntaxError} from '@angular/compiler';
-import {ANALYZE_FOR_ENTRY_COMPONENTS, ChangeDetectionStrategy, ChangeDetectorRef, Component, ComponentFactory, ComponentFactoryResolver, ComponentRef, ElementRef, Injector, LOCALE_ID, NgModuleFactory, NgModuleRef, QueryList, Renderer2, SecurityContext, TemplateRef, TRANSLATIONS_FORMAT, ViewContainerRef, ViewEncapsulation, ɵand, ɵccf, ɵcmf, ɵCodegenComponentFactoryResolver, ɵcrt, ɵdid, ɵeld, ɵEMPTY_ARRAY, ɵEMPTY_MAP, ɵinlineInterpolate, ɵinterpolate, ɵmod, ɵmpd, ɵncd, ɵnov, ɵpad, ɵpid, ɵpod, ɵppd, ɵprd, ɵqud, ɵReflectionCapabilities as ReflectionCapabilities, ɵregisterModuleFactory, ɵstringify as stringify, ɵted, ɵunv, ɵvid} from '@angular/core';
+import {CompileReflector, ExternalReference, getUrlScheme, Identifiers, R3Identifiers, syntaxError} from '@angular/compiler';
+import {ANALYZE_FOR_ENTRY_COMPONENTS, ChangeDetectionStrategy, ChangeDetectorRef, Component, ComponentFactory, ComponentFactoryResolver, ComponentRef, ElementRef, Injector, LOCALE_ID, NgModuleFactory, NgModuleRef, QueryList, Renderer2, SecurityContext, TemplateRef, TRANSLATIONS_FORMAT, ViewContainerRef, ViewEncapsulation, ɵand, ɵccf, ɵcmf, ɵCodegenComponentFactoryResolver, ɵcrt, ɵdid, ɵeld, ɵEMPTY_ARRAY, ɵEMPTY_MAP, ɵinlineInterpolate, ɵinterpolate, ɵmod, ɵmpd, ɵncd, ɵnov, ɵpad, ɵpid, ɵpod, ɵppd, ɵprd, ɵqud, ɵReflectionCapabilities as ReflectionCapabilities, ɵregisterModuleFactory, ɵstringify as stringify, ɵted, ɵunv, ɵvid, ɵɵtrustConstantHtml, ɵɵtrustConstantResourceUrl, ɵɵtrustConstantScript} from '@angular/core';
 
 export const MODULE_SUFFIX = '';
 const builtinExternalReferences = createBuiltinExternalReferencesMap();
@@ -80,6 +80,9 @@ function createBuiltinExternalReferencesMap() {
   map.set(Identifiers.ViewEncapsulation, ViewEncapsulation);
   map.set(Identifiers.ChangeDetectionStrategy, ChangeDetectionStrategy);
   map.set(Identifiers.SecurityContext, SecurityContext);
+  map.set(R3Identifiers.trustConstantHtml, ɵɵtrustConstantHtml);
+  map.set(R3Identifiers.trustConstantScript, ɵɵtrustConstantScript);
+  map.set(R3Identifiers.trustConstantResourceUrl, ɵɵtrustConstantResourceUrl);
   map.set(Identifiers.LOCALE_ID, LOCALE_ID);
   map.set(Identifiers.TRANSLATIONS_FORMAT, TRANSLATIONS_FORMAT);
   map.set(Identifiers.inlineInterpolate, ɵinlineInterpolate);

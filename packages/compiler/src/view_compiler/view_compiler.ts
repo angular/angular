@@ -9,7 +9,7 @@
 import {CompileDirectiveMetadata, CompilePipeSummary, CompileQueryMetadata, rendererTypeName, tokenReference, viewClassName} from '../compile_metadata';
 import {CompileReflector} from '../compile_reflector';
 import {BindingForm, BuiltinConverter, convertActionBinding, convertPropertyBinding, convertPropertyBindingBuiltins, EventHandlerVars, LocalResolver} from '../compiler_util/expression_converter';
-import {ArgumentType, BindingFlags, ChangeDetectionStrategy, NodeFlags, QueryBindingType, QueryValueType, ViewFlags} from '../core';
+import {ArgumentType, BindingFlags, ChangeDetectionStrategy, NodeFlags, QueryBindingType, QueryValueType, SecurityContext, ViewFlags} from '../core';
 import {AST, ASTWithSource, Interpolation} from '../expression_parser/ast';
 import {Identifiers} from '../identifiers';
 import {LifecycleHooks} from '../lifecycle_reflector';
@@ -17,6 +17,8 @@ import {isNgContainer} from '../ml_parser/tags';
 import * as o from '../output/output_ast';
 import {convertValueToOutputAst} from '../output/value_util';
 import {ParseSourceSpan} from '../parse_util';
+import {Identifiers as R3} from '../render3/r3_identifiers';
+import {DomElementSchemaRegistry} from '../schema/dom_element_schema_registry';
 import {AttrAst, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventAst, BoundTextAst, DirectiveAst, ElementAst, EmbeddedTemplateAst, NgContentAst, PropertyBindingType, ProviderAst, QueryMatch, ReferenceAst, TemplateAst, TemplateAstVisitor, templateVisitAll, TextAst, VariableAst} from '../template_parser/template_ast';
 import {OutputContext} from '../util';
 
@@ -25,6 +27,8 @@ import {componentFactoryResolverProviderDef, depDef, lifecycleHookToNodeFlag, pr
 const CLASS_ATTR = 'class';
 const STYLE_ATTR = 'style';
 const IMPLICIT_TEMPLATE_VAR = '\$implicit';
+
+const elementRegistry = new DomElementSchemaRegistry();
 
 export class ViewCompileResult {
   constructor(public viewClassVar: string, public rendererTypeVar: string) {}
@@ -988,8 +992,23 @@ function fixedAttrsDef(elementAst: ElementAst): o.Expression {
   });
   // Note: We need to sort to get a defined output order
   // for tests and for caching generated artifacts...
-  return o.literalArr(Object.keys(mapResult).sort().map(
-      (attrName) => o.literalArr([o.literal(attrName), o.literal(mapResult[attrName])])));
+  return o.literalArr(Object.keys(mapResult).sort().map((attrName) => o.literalArr([
+    o.literal(attrName), trustedConstAttribute(elementAst.name, attrName, mapResult[attrName])
+  ])));
+}
+
+function trustedConstAttribute(tagName: string, attrName: string, value: string): o.Expression {
+  const expr = o.literal(value);
+  switch (elementRegistry.securityContext(tagName, attrName, /* isAttribute */ true)) {
+    case SecurityContext.HTML:
+      return o.importExpr(R3.trustConstantHtml).callFn([expr]);
+    case SecurityContext.SCRIPT:
+      return o.importExpr(R3.trustConstantScript).callFn([expr]);
+    case SecurityContext.RESOURCE_URL:
+      return o.importExpr(R3.trustConstantResourceUrl).callFn([expr]);
+    default:
+      return expr;
+  }
 }
 
 function mergeAttributeValue(attrName: string, attrValue1: string, attrValue2: string): string {
