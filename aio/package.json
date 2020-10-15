@@ -71,6 +71,7 @@
     "boilerplate:test": "node tools/examples/test.js",
     "generate-stackblitz": "node ./tools/stackblitz-builder/generateStackblitz",
     "generate-zips": "node ./tools/example-zipper/generateZips",
+    "create-example": "node ./tools/examples/create-example.js",
     "build-404-page": "node scripts/build-404-page",
     "update-webdriver": "node ../scripts/webdriver-manager-update.js",
     "~~audit-web-app": "node scripts/audit-web-app",
@@ -172,6 +173,6 @@
     "unist-util-visit-parents": "^1.1.1",
     "watchr": "^3.0.1",
     "xregexp": "^4.0.0",
-    "yargs": "^7.0.2"
+    "yargs": "^16.1.0"
   }
 }

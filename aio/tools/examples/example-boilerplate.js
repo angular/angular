@@ -4,17 +4,14 @@ const ignore = require('ignore');
 const path = require('canonical-path');
 const shelljs = require('shelljs');
 const yargs = require('yargs');
+const {EXAMPLES_BASE_PATH, EXAMPLE_CONFIG_FILENAME, SHARED_PATH} = require('./constants');
 
-const SHARED_PATH = path.resolve(__dirname, 'shared');
 const SHARED_NODE_MODULES_PATH = path.resolve(SHARED_PATH, 'node_modules');
 
 const BOILERPLATE_BASE_PATH = path.resolve(SHARED_PATH, 'boilerplate');
 const BOILERPLATE_CLI_PATH = path.resolve(BOILERPLATE_BASE_PATH, 'cli');
 const BOILERPLATE_COMMON_PATH = path.resolve(BOILERPLATE_BASE_PATH, 'common');
 const BOILERPLATE_VIEWENGINE_PATH = path.resolve(BOILERPLATE_BASE_PATH, 'viewengine');
-
-const EXAMPLES_BASE_PATH = path.resolve(__dirname, '../../content/examples');
-const EXAMPLE_CONFIG_FILENAME = 'example-config.json';
 
 class ExampleBoilerPlate {
   /**
