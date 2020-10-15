@@ -21,22 +21,19 @@ class ExampleBoilerPlate {
     // Get all the examples folders, indicated by those that contain a `example-config.json` file
     const exampleFolders =
         this.getFoldersContaining(EXAMPLES_BASE_PATH, EXAMPLE_CONFIG_FILENAME, 'node_modules');
-    const gitignore =
-        ignore().add(fs.readFileSync(path.resolve(BOILERPLATE_BASE_PATH, '.gitignore'), 'utf8'));
-    const isPathIgnored = absolutePath =>
-        gitignore.ignores(path.relative(BOILERPLATE_BASE_PATH, absolutePath));
+    const gitignore = ignore().add(fs.readFileSync(path.resolve(BOILERPLATE_BASE_PATH, '.gitignore'), 'utf8'));
+    const isPathIgnored = absolutePath => gitignore.ignores(path.relative(BOILERPLATE_BASE_PATH, absolutePath));
 
     if (!fs.existsSync(SHARED_NODE_MODULES_PATH)) {
       throw new Error(
-          `The shared node_modules folder for the examples (${
-              SHARED_NODE_MODULES_PATH}) is missing.\n` +
+          `The shared node_modules folder for the examples (${SHARED_NODE_MODULES_PATH}) is missing.\n` +
           'Perhaps you need to run "yarn example-use-npm" or "yarn example-use-local" to install the dependencies?');
     }
 
     if (!viewengine) {
-      shelljs.exec(`yarn --cwd ${
-          SHARED_PATH} ngcc --properties es2015 browser module main --first-only --create-ivy-entry-points`);
+      shelljs.exec(`yarn --cwd ${SHARED_PATH} ngcc --properties es2015 browser module main --first-only --create-ivy-entry-points`);
     }
+
 
     exampleFolders.forEach(exampleFolder => {
       const exampleConfig = this.loadJsonFile(path.resolve(exampleFolder, EXAMPLE_CONFIG_FILENAME));
@@ -72,9 +69,6 @@ class ExampleBoilerPlate {
     });
   }
 
-  /**
-   * Remove all the boilerplate files from all the examples
-   */
   remove() {
     shelljs.exec('git clean -xdfq', {cwd: EXAMPLES_BASE_PATH});
   }

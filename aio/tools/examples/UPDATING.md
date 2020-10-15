@@ -41,8 +41,8 @@ Any necessary changes to boilerplate files will be done automatically through mi
 - The previous command made any necessary changes to boilerplate files inside the `cli/` directory, but the same changes need to be applied to the other CLI-based boilerplate directories.
   Inspect the changes in `cli/` and manually apply the necessary ones to other CLI-based boilerplate directories.
 
-- Also ensure that any relevant changes in the [shared/boilerplate/cli/](./shared/boilerplate/cli) directory are copied to the [shared/example_scaffold](./shared/example_scaffold) directory, which is used when creating new examples (via `yarn create-example ...`).
-  Only non-boilerplate files should be added to the `example-scaffold` directory.
+- Also ensure that any relevant changes in the [shared/boilerplate/cli/](./shared/boilerplate/cli) directory are copied to the [shared/example-scaffold/](./shared/example-scaffold) directory, which is used when creating new examples (via `yarn create-example ...`).
+  Only files that would not be considered boilerplate should be added to the `example-scaffold/` directory.
 
 - Ensure any changes to [cli/tslint.json](./shared/boilerplate/cli/tslint.json) are ported over to [systemjs/tslint.json](./shared/boilerplate/systemjs/tslint.json) and also [aio/content/examples/tslint.json](../../content/examples/tslint.json).
   This last part is important, since this file is used to lint example code on CI.

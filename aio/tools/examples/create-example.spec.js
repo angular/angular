@@ -21,7 +21,7 @@ describe('create-example tool', () => {
       spyOn(fs, 'ensureDirSync');
       const writeFileSpy = spyOn(fs, 'writeFileSync');
 
-      createEmptyExample('foo-bar', '/path/to/foo-bar', {}, {});
+      createEmptyExample('foo-bar', '/path/to/foo-bar');
       expect(writeFileSpy).toHaveBeenCalledTimes(2);
       expect(writeFileSpy)
           .toHaveBeenCalledWith(`/path/to/foo-bar/${EXAMPLE_CONFIG_FILENAME}`, jasmine.any(String));
@@ -50,15 +50,15 @@ describe('create-example tool', () => {
   describe('writeExampleConfigFile', () => {
     it('should write a JSON file to disk', () => {
       const spy = spyOn(fs, 'writeFileSync');
-      writeExampleConfigFile('/foo/bar', {});
-      expect(spy).toHaveBeenCalledWith(`/foo/bar/${EXAMPLE_CONFIG_FILENAME}`, '{}');
+      writeExampleConfigFile('/foo/bar');
+      expect(spy).toHaveBeenCalledWith(`/foo/bar/${EXAMPLE_CONFIG_FILENAME}`, '');
     });
   });
 
   describe('writeStackBlitzFile', () => {
     it('should write a JSON file to disk', () => {
       const spy = spyOn(fs, 'writeFileSync');
-      writeStackBlitzFile('bar-bar', '/foo/bar-bar', {});
+      writeStackBlitzFile('bar-bar', '/foo/bar-bar');
       expect(spy).toHaveBeenCalledWith(`/foo/bar-bar/${STACKBLITZ_CONFIG_FILENAME}`, [
         '{',
         '  "description": "Bar Bar",',
@@ -67,7 +67,6 @@ describe('create-example tool', () => {
         '    "!**/*.js",',
         '    "!**/*.[1,2].*"',
         '  ],',
-        '  "file": "src/app/app.component.ts",',
         '  "tags": [',
         '    [',
         '      "bar",',
@@ -75,6 +74,7 @@ describe('create-example tool', () => {
         '    ]',
         '  ]',
         '}',
+        '',
       ].join('\n'));
     });
   });
@@ -102,7 +102,7 @@ describe('create-example tool', () => {
   });
 
   describe('titleize', () => {
-    it('should convert a snake-case string to title-case', () => {
+    it('should convert a kebab-case string to title-case', () => {
       expect(titleize('abc')).toEqual('Abc');
       expect(titleize('abc-def')).toEqual('Abc Def');
       expect(titleize('123')).toEqual('123');

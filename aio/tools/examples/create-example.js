@@ -7,7 +7,7 @@ const yargs = require('yargs');
 
 const {EXAMPLES_BASE_PATH, EXAMPLE_CONFIG_FILENAME, SHARED_PATH, STACKBLITZ_CONFIG_FILENAME} =
     require('./constants');
-const BASIC_SOURCE_PATH = path.resolve(SHARED_PATH, 'example_scaffold');
+const BASIC_SOURCE_PATH = path.resolve(SHARED_PATH, 'example-scaffold');
 
 shelljs.set('-e');
 
@@ -29,27 +29,30 @@ if (require.main === module) {
   const examplePath = path.resolve(EXAMPLES_BASE_PATH, exampleName);
 
   console.log('Creating new example at', examplePath);
-  createEmptyExample(exampleName, examplePath, {}, {});
+  createEmptyExample(exampleName, examplePath);
 
-  const sourcePath = options.source !== undefined ? path.resolve(options.source) : BASIC_SOURCE_PATH
+  const sourcePath =
+      options.source !== undefined ? path.resolve(options.source) : BASIC_SOURCE_PATH;
   console.log('Copying files from', sourcePath);
   copyExampleFiles(sourcePath, examplePath);
 
   console.log(`The new "${exampleName}" example has been created.`);
   console.log('Now run "yarn boilerplate:add" to set it up for development.');
+  console.log(
+      'You can find more info on working with docs examples in aio/tools/examples/README.md.')
 }
 
 /**
- * Create the folder and marker files for the new example.
+ * Create the directory and marker files for the new example.
  */
-function createEmptyExample(exampleName, examplePath, exampleConfig, stackblitzConfig) {
+function createEmptyExample(exampleName, examplePath) {
   ensureExamplePath(examplePath);
-  writeExampleConfigFile(examplePath, exampleConfig);
-  writeStackBlitzFile(exampleName, examplePath, stackblitzConfig);
+  writeExampleConfigFile(examplePath);
+  writeStackBlitzFile(exampleName, examplePath);
 }
 
 /**
- * Ensure that the new example folder exists.
+ * Ensure that the new example directory exists.
  */
 function ensureExamplePath(examplePath) {
   if (fs.existsSync(examplePath)) {
@@ -62,30 +65,22 @@ function ensureExamplePath(examplePath) {
 /**
  * Write the `example-config.json` file to the new example.
  */
-function writeExampleConfigFile(examplePath, additionalConfig) {
-  fs.writeFileSync(
-      path.resolve(examplePath, EXAMPLE_CONFIG_FILENAME),
-      JSON.stringify(
-          {
-            ...{/* BASIC CONFIG */},
-            ...additionalConfig,
-          },
-          undefined, 2));
+function writeExampleConfigFile(examplePath) {
+  fs.writeFileSync(path.resolve(examplePath, EXAMPLE_CONFIG_FILENAME), '');
 }
 
 /**
  * Write the `stackblitz.json` file into the new example.
  */
-function writeStackBlitzFile(exampleName, examplePath, additionalConfig) {
+function writeStackBlitzFile(exampleName, examplePath) {
   const config = {
     description: titleize(exampleName),
     files: ['!**/*.d.ts', '!**/*.js', '!**/*.[1,2].*'],
-    file: 'src/app/app.component.ts',
-    tags: [exampleName.split('-')],
-    ...additionalConfig,
+    tags: [exampleName.split('-')]
   };
   fs.writeFileSync(
-      path.resolve(examplePath, STACKBLITZ_CONFIG_FILENAME), JSON.stringify(config, undefined, 2));
+      path.resolve(examplePath, STACKBLITZ_CONFIG_FILENAME),
+      JSON.stringify(config, null, 2) + '\n');
 }
 
 /**
@@ -98,17 +93,17 @@ function copyExampleFiles(sourcePath, examplePath) {
   const gitignore = ignore().add(gitignoreFile);
   const sourceDir = path.basename(sourcePath);
 
-  // Grab the files in
+  // Grab the files in the source folder and filter them based on the gitignore rules.
   const sourceFiles =
       glob.sync('**/*', {
             cwd: sourcePath,
             dot: true,
-            ignore: ['**/node_modules/**', '.git/**', ',gitignore'],
+            ignore: ['**/node_modules/**', '.git/**', '.gitignore'],
             mark: true
           })
           .filter(
               filePath =>
-                  !/\/$/.test(filePath))  // this filter removes the folders, leaving only files
+                  !/\/$/.test(filePath))  // this filter removes the directories, leaving only files
           .filter(
               filePath => !gitignore.ignores(path.join(
                   sourceDir,
@@ -122,7 +117,7 @@ function copyExampleFiles(sourcePath, examplePath) {
 }
 
 /**
- * Convert a snake case string to space separated title case string.
+ * Convert a kebab-case string to space separated Title Case string.
  */
 function titleize(input) {
   return input.replace(
