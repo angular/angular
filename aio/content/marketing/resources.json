@@ -128,6 +128,11 @@
             "title": "ngrx",
             "url": "https://ngrx.io/"
           },
+          "rx-angular": {
+            "desc": "RxAngular is a reactive library that provides extensions for developing high performant and scalable applications. It addresses the issues of local state management, rendering performance, and reactive architecture.",
+            "title": "rx-angular",
+            "url": "https://rx-angular.io"
+          },
           "ngxs": {
             "desc": "NGXS is a state management pattern + library for Angular. NGXS is modeled after the CQRS pattern popularly implemented in libraries like Redux and NgRx but reduces boilerplate by using modern TypeScript features such as classes and decorators.",
             "title": "NGXS",
