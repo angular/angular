@@ -1,4 +1,4 @@
-# Displaying data in views
+# Exploring template syntax
 
 Angular [components](guide/glossary#component) form the data structure of your application.
 The HTML [template](guide/glossary#template) associated with a component provides the means to display that data in the context of a web page.
@@ -13,9 +13,15 @@ Angular defines a *template language* that expands HTML notation with syntax tha
 When the page is rendered, Angular interprets the template syntax to update the HTML according to your logic and current data state.
 Before you read the complete [template syntax guide](guide/template-syntax), the exercises on this page give you a quick demonstration of how template syntax works.
 
-In this demo, you'll create a component with a list of heroes.
-You'll display the list of hero names and conditionally show a message below the list.
-The final UI looks like this:
+In this tutorial, explore the different ways you can display data using Angular's template syntax. Specifically, this tutorial covers the following common tasks:
+
+* Displaying component properties with interpolation
+* Initializing component variables
+* Creating a class to store your data
+* Looping through data using `*ngFor`
+* Conditionally displaying data using `*ngIf`
+
+At the end of this tutorial, your app will resemble the following.
 
 <div class="lightbox">
   <img src="generated/images/guide/displaying-data/final.png" alt="Final UI">
@@ -23,33 +29,45 @@ The final UI looks like this:
 
 <div class="alert is-helpful">
 
-The <live-example></live-example> demonstrates all of the syntax and code snippets described in this page.
+See the <live-example></live-example> for a working example containing the code snippets in this guide.
 
 </div>
 
+{@a prerequisites}
+
+## Prerequisites
+
+To complete this tutorial, you should have a basic understanding of the following concepts:
+
+* JavaScript
+* HTML
+* CSS
+* [Angular CLI](/cli)
+
 {@a interpolation}
 
-## Showing component properties with interpolation
-The easiest way to display a component property is to bind the property name through interpolation.
+## Displaying component properties with interpolation
+A common way to display a component property is to bind the property name through interpolation.
 With interpolation, you put the property name in the view template, enclosed in double curly braces: `{{myHero}}`.
 
-Use the CLI command [`ng new displaying-data`](cli/new) to create a workspace and app named `displaying-data`.
+1. Use the CLI command [`ng new displaying-data`](cli/new) to create a workspace and app named `displaying-data`.
 
-Delete the <code>app.component.html</code> file. It is not needed for this example.
+1. Delete the <code>app.component.html</code> file. It is not needed for this example.
 
-Then modify the <code>app.component.ts</code> file by
-changing the template and the body of the component.
+1. Modify the <code>app.component.ts</code> file by changing the template and the body of the component as follows:
 
-When you're done, it should look like this:
+   <code-example path="displaying-data/src/app/app.component.1.ts" header="src/app/app.component.ts"></code-example>
 
-<code-example path="displaying-data/src/app/app.component.1.ts" header="src/app/app.component.ts"></code-example>
 
-You added two properties to the formerly empty component: `title` and `myHero`.
+Notice that you added two properties to the formerly empty component: `title` and `myHero`.
 
-The template displays the two component properties using double curly brace
-interpolation:
+The template uses interpoloation to display these two component properties.
 
 <code-example path="displaying-data/src/app/app.component.1.ts" header="src/app/app.component.ts (template)" region="template"></code-example>
+
+Angular automatically pulls the value of the `title` and `myHero` properties from the component and
+inserts those values into the browser. Angular updates the display
+when these properties change. A change is often
 
 <div class="alert is-helpful">
 
@@ -60,22 +78,11 @@ HTML more readable.
 
 </div>
 
-Angular automatically pulls the value of the `title` and `myHero` properties from the component and
-inserts those values into the browser. Angular updates the display
-when these properties change.
-
-<div class="alert is-helpful">
-
-More precisely, the redisplay occurs after some kind of asynchronous event related to
-the view, such as a keystroke, a timer completion, or a response to an HTTP request.
-
-</div>
-
 Notice that you don't call **new** to create an instance of the `AppComponent` class.
-Angular is creating an instance for you. How?
-
-The CSS `selector` in the `@Component` decorator specifies an element named `<app-root>`.
-That element is a placeholder in the body of your `index.html` file:
+Instead, Angular uses the `selector` you defined in the `@Component()` decorator and then
+looks for a corresponding elements that matches the selector in the template.
+In this example, you defined the `selector` as `app-root`, and your template includes an
+`<app-root>` element.
 
 <code-example path="displaying-data/src/index.html" header="src/index.html (body)" region="body"></code-example>
 
@@ -83,7 +90,7 @@ When you bootstrap with the `AppComponent` class (in <code>main.ts</code>), Angu
 in the `index.html`, finds it, instantiates an instance of `AppComponent`, and renders it
 inside the `<app-root>` tag.
 
-Now run the app. It should display the title and hero name:
+When you run the app, you should see a display that shows the title and hero name.
 
 <div class="lightbox">
   <img src="generated/images/guide/displaying-data/title-and-hero.png" alt="Title and Hero">
@@ -91,6 +98,7 @@ Now run the app. It should display the title and hero name:
 
 The next few sections review some of the coding choices in the app.
 
+<!-- To do: Move to Template overview?
 
 ## Choosing the template source
 
@@ -114,7 +122,9 @@ Here the app uses inline HTML because the template is small and the demo is simp
 
 </div>
 
+-->
 
+<!-- Move this section to an overview of Components. Retitle: "Initializing a component">
 ## Initialization
 
 The following example uses variable assignment to initialize the components.
@@ -123,48 +133,43 @@ The following example uses variable assignment to initialize the components.
 
  You could instead declare and initialize the properties using a constructor.
  This app uses more terse "variable assignment" style simply for brevity.
-
+-->
 
 {@a ngFor}
 
 ## Add logic to loop through data
 
-The `*ngFor` directive (predefined by Angular) lets you loop through data. The following example uses the directive to show all of the values in an array property.
+Next, you'll use Angular's `*ngFor` directive to loop through an array of hero names and display those names in the HTML template.
 
-To display a list of heroes, begin by adding an array of hero names to the component and redefine `myHero` to be the first name in the array.
+1. Create an array of hero names to the component and redefine `myHero` to be the first name in the array.
 
+   <code-example path="displaying-data/src/app/app.component.2.ts" header="src/app/app.component.ts (class)" region="class"></code-example>
 
-<code-example path="displaying-data/src/app/app.component.2.ts" header="src/app/app.component.ts (class)" region="class"></code-example>
+1. Add the Angular `ngFor` directive in the template to display each item in the `heroes` list.
 
-
-Now use the Angular `ngFor` directive in the template to display each item in the `heroes` list.
-
-
-<code-example path="displaying-data/src/app/app.component.2.ts" header="src/app/app.component.ts (template)" region="template"></code-example>
+   <code-example path="displaying-data/src/app/app.component.2.ts" header="src/app/app.component.ts (template)" region="template"></code-example>
 
 
-This UI uses the HTML unordered list with `<ul>` and `<li>` tags. The `*ngFor`
-in the `<li>` element is the Angular "repeater" directive.
-It marks that `<li>` element (and its children) as the "repeater template":
-
+This example uses an HTML unordered list with `<ul>` and `<li>` tags. The `*ngFor`
+in the `<li>` element instructs Angular to add one `<li>` element for every item in the heroes array.
 
 <code-example path="displaying-data/src/app/app.component.2.ts" header="src/app/app.component.ts (li)" region="li"></code-example>
 
 <div class="alert is-important">
 
 Don't forget the leading asterisk (\*) in `*ngFor`. It is an essential part of the syntax.
-Read more about `ngFor` and `*` in the [ngFor section](guide/built-in-directives#ngfor) of the [Built-in directives](guide/built-in-directives) page.
+For more information about `*ngFor`, see the [ngFor section](guide/built-in-directives#ngfor) in [Built-in directives](guide/built-in-directives).
 
 </div>
 
-Notice the `hero` in the `ngFor` double-quoted instruction;
-it is an example of a template input variable. Read
-more about template input variables in the [microsyntax](guide/built-in-directives#microsyntax) section of
-the [Built-in directives](guide/built-in-directives) page.
+Notice the quoted string, `"let hero of heroes"`. This code is an example of _microsyntax_&mdash;a piece of text that Angular interprets.
+In this example, the string `"let hero of heroes"` instructs Angular to do the following:
 
-Angular duplicates the `<li>` for each item in the list, setting the `hero` variable
-to the item (the hero) in the current iteration. Angular uses that variable as the
-context for the interpolation in the double curly braces.
+1. Duplicate the `<li>` for each item in the list.
+1. Set the `hero` variable to the item (the hero) in the current iteration.
+1. Use that variable as the context for the interpolation in the double curly braces.
+
+For more information about how you can use microsyntax with directives like `*ngFor`, see [Built-in directives](guide/built-in-directives) page.
 
 <div class="alert is-helpful">
 
@@ -180,43 +185,41 @@ Now the heroes appear in an unordered list.
 </div>
 
 
-## Creating a class for the data
+## Create a class for the data
 
-The app's code defines the data directly inside the component, which isn't best practice.
-In a simple demo, however, it's fine.
+The current application code defines the data directly inside the component. In general, this is an anti-pattern.
+A better option is to turn the array of hero names into an array of `Hero` objects. To accomplish this task, you
+need to create a class.
 
-At the moment, the binding is to an array of strings.
-In real applications, most bindings are to more specialized objects.
-
-To convert this binding to use specialized objects, turn the array
-of hero names into an array of `Hero` objects. For that you'll need a `Hero` class:
+To create a class, run the following command in your terminal window.
 
 <code-example language="sh" class="code-shell">
-  ng generate class hero
+ng generate class hero
 </code-example>
 
 This command creates the following code.
 
-
 <code-example path="displaying-data/src/app/hero.ts" header="src/app/hero.ts"></code-example>
 
-You've defined a class with a constructor and two properties: `id` and `name`.
-
-It might not look like the class has properties, but it does.
-The declaration of the constructor parameters takes advantage of a TypeScript shortcut.
-
-Consider the first parameter:
-
+You have now defined a class with a constructor and two properties: `id` and `name`.
+These two properties are created using a TypeScript shortcut.
+Take a closer look at the first parameter.
 
 <code-example path="displaying-data/src/app/hero.ts" header="src/app/hero.ts (id)" region="id"></code-example>
 
-That brief syntax does a lot:
+This syntax performs the following tasks:
 
 * Declares a constructor parameter and its type.
 * Declares a public property of the same name.
 * Initializes that property with the corresponding argument when creating an instance of the class.
 
+<!-- TODO: Add 'Import the Hero class' section
 
+### Import the Hero class
+
+To use your newly-created Hero class, you must import it into your `AppComponent.ts` file.
+
+-->
 ### Using the Hero class
 
 After importing the `Hero` class, the `AppComponent.heroes` property can return a _typed_ array
