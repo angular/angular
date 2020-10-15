@@ -6,10 +6,6 @@
 # https://docs.bazel.build/versions/master/guide.html#bazelrc-syntax-and-semantics
 try-import %workspace%/.circleci/bazel.common.rc
 
-# Save downloaded repositories in a location that can be cached by CircleCI. This helps us
-# speeding up the analysis time significantly with Bazel managed node dependencies on the CI.
-build --repository_cache=C:/Users/circleci/bazel_repository_cache
-
 # Manually set the local resources used in windows CI runs
 build --local_ram_resources=120000
 build --local_cpu_resources=32
