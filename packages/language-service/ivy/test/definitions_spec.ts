@@ -6,16 +6,20 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as ts from 'typescript/lib/tsserverlibrary';
-
 import {LanguageService} from '../language_service';
 
-import {APP_COMPONENT, setup} from './mock_host';
+import {APP_COMPONENT, MockService, setup} from './mock_host';
 import {humanizeDefinitionInfo} from './test_utils';
 
 describe('definitions', () => {
-  const {project, service, tsLS} = setup();
-  const ngLS = new LanguageService(project, tsLS);
+  let service: MockService;
+  let ngLS: LanguageService;
+
+  beforeAll(() => {
+    const {project, service: _service, tsLS} = setup();
+    service = _service;
+    ngLS = new LanguageService(project, tsLS);
+  });
 
   beforeEach(() => {
     service.reset();

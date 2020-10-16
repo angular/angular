@@ -8,12 +8,19 @@
 
 import {LanguageService} from '../language_service';
 
-import {APP_COMPONENT, setup} from './mock_host';
+import {APP_COMPONENT, MockService, setup} from './mock_host';
 import {HumanizedDefinitionInfo, humanizeDefinitionInfo} from './test_utils';
 
 describe('type definitions', () => {
-  const {project, service, tsLS} = setup();
-  const ngLS = new LanguageService(project, tsLS);
+  let service: MockService;
+  let ngLS: LanguageService;
+
+  beforeAll(() => {
+    const {project, service: _service, tsLS} = setup();
+    service = _service;
+    ngLS = new LanguageService(project, tsLS);
+  });
+
   const possibleArrayDefFiles = new Set([
     'lib.es5.d.ts', 'lib.es2015.core.d.ts', 'lib.es2015.iterable.d.ts',
     'lib.es2015.symbol.wellknown.d.ts', 'lib.es2016.array.include.d.ts'
