@@ -163,7 +163,7 @@ export class AppComponent implements OnInit {
       // Find the current version - eithers title matches the current deployment mode
       // or its title matches the major version of the current version info
       this.currentDocVersion = this.docVersions.find(version =>
-        version.title === this.deployment.mode || version.title === `v${versionInfo.major}`)!;
+        version.title === this.deployment.mode || version.title === `v${versionInfo.major}`) as NavigationNode;
       this.currentDocVersion.title += ` (v${versionInfo.raw})`;
     });
 

@@ -45,12 +45,12 @@ export class ElementsLoader {
   loadCustomElement(selector: string): Promise<void> {
     if (this.elementsLoading.has(selector)) {
       // The custom element is in the process of being loaded and registered.
-      return this.elementsLoading.get(selector)!;
+      return this.elementsLoading.get(selector) as Promise<void>;
     }
 
     if (this.elementsToLoad.has(selector)) {
       // Load and register the custom element (for the first time).
-      const modulePathLoader = this.elementsToLoad.get(selector)!;
+      const modulePathLoader = this.elementsToLoad.get(selector) as LoadChildrenCallback;
       const loadedAndRegistered =
           (modulePathLoader() as Promise<NgModuleFactory<WithCustomElementComponent> | Type<WithCustomElementComponent>>)
           .then(elementModuleOrFactory => {
@@ -73,7 +73,7 @@ export class ElementsLoader {
             const CustomElementComponent = elementModuleRef.instance.customElementComponent;
             const CustomElement = createCustomElement(CustomElementComponent, {injector});
 
-            customElements!.define(selector, CustomElement);
+            customElements.define(selector, CustomElement);
             return customElements.whenDefined(selector);
           })
           .then(() => {

@@ -213,10 +213,10 @@ describe('DocViewerComponent', () => {
       describe('needed', () => {
         it('should add an embedded ToC element if there is an `<h1>` heading', () => {
           doPrepareTitleAndToc(DOC_WITH_H1);
-          const tocEl = getTocEl()!;
+          const tocEl = getTocEl();
 
           expect(tocEl).toBeTruthy();
-          expect(tocEl.classList.contains('embedded')).toBe(true);
+          expect(tocEl?.classList.contains('embedded')).toBe(true);
         });
 
         it('should not add a second ToC element if there a hard coded one in place', () => {

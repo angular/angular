@@ -38,7 +38,7 @@ describe('ApiListComponent', () => {
     component.filteredSections.subscribe(filtered => {
       filtered = filtered.filter(section => section.items);
       expect(filtered.length).toBeGreaterThan(0, 'expected something');
-      expect(filtered.every(section => section.items!.every(itemTest))).toBe(true, label);
+      expect(filtered.every(section => section.items?.every(itemTest))).toBe(true, label);
     });
   }
 
@@ -66,7 +66,7 @@ describe('ApiListComponent', () => {
         filtered = filtered.filter(section => Array.isArray(section.items));
         expect(filtered.length).toBe(1, 'only one section');
         expect(filtered[0].name).toBe('core');
-        expect(filtered[0].items).toEqual(sections.find(section => section.name === 'core')!.items);
+        expect(filtered[0].items).toEqual(sections.find(section => section.name === 'core')?.items as ApiItem[]);
       });
     });
 
@@ -74,8 +74,8 @@ describe('ApiListComponent', () => {
       it('should null if there are no matching items and the section itself does not match', () => {
         component.setQuery('core');
         component.filteredSections.subscribe(filtered => {
-          const commonSection = filtered.find(section => section.name === 'common')!;
-          expect(commonSection.items).toBe(null);
+          const commonSection = filtered.find(section => section.name === 'common');
+          expect(commonSection?.items).toBe(null);
         });
       });
 
@@ -117,7 +117,7 @@ describe('ApiListComponent', () => {
         filtered = filtered.filter(s => s.items);
         expect(filtered.length).toBe(1, 'sections');
         expect(filtered[0].name).toBe(section, 'section name');
-        const items = filtered[0].items!;
+        const items = filtered[0].items as ApiItem[];
         expect(items.length).toBe(1, 'items');
 
         const item = items[0];

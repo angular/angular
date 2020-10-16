@@ -237,23 +237,23 @@ describe('TocService', () => {
     });
 
     it('should have href with docId and heading\'s id', () => {
-      const tocItem = lastTocList.find(item => item.title === 'Heading one')!;
-      expect(tocItem.href).toEqual(`${docId}#heading-one-special-id`);
+      const tocItem = lastTocList.find(item => item.title === 'Heading one');
+      expect(tocItem?.href).toEqual(`${docId}#heading-one-special-id`);
     });
 
     it('should have level "h1" for an <h1>', () => {
-      const tocItem = lastTocList.find(item => item.title === 'Fun with TOC')!;
-      expect(tocItem.level).toEqual('h1');
+      const tocItem = lastTocList.find(item => item.title === 'Fun with TOC');
+      expect(tocItem?.level).toEqual('h1');
     });
 
     it('should have level "h2" for an <h2>', () => {
-      const tocItem = lastTocList.find(item => item.title === 'Heading one')!;
-      expect(tocItem.level).toEqual('h2');
+      const tocItem = lastTocList.find(item => item.title === 'Heading one');
+      expect(tocItem?.level).toEqual('h2');
     });
 
     it('should have level "h3" for an <h3>', () => {
-      const tocItem = lastTocList.find(item => item.title === 'H3 3a')!;
-      expect(tocItem.level).toEqual('h3');
+      const tocItem = lastTocList.find(item => item.title === 'H3 3a');
+      expect(tocItem?.level).toEqual('h3');
     });
 
     it('should have title which is heading\'s textContent ', () => {
@@ -275,8 +275,8 @@ describe('TocService', () => {
     });
 
     it('should have href with docId and calculated heading id', () => {
-      const tocItem = lastTocList.find(item => item.title === 'H2 Two')!;
-      expect(tocItem.href).toEqual(`${docId}#h2-two`);
+      const tocItem = lastTocList.find(item => item.title === 'H2 Two');
+      expect(tocItem?.href).toEqual(`${docId}#h2-two`);
     });
 
     it('should ignore HTML in heading when calculating id', () => {

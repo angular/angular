@@ -5,7 +5,7 @@ export class MockLocationService {
   urlSubject = new BehaviorSubject<string>(this.initialUrl);
   currentUrl = this.urlSubject.asObservable().pipe(map(url => this.stripSlashes(url)));
   // strip off query and hash
-  currentPath = this.currentUrl.pipe(map(url => url.match(/[^?#]*/)![0]));
+  currentPath = this.currentUrl.pipe(map(url => url.match(/[^?#]*/)?.[0] || ''));
   search = jasmine.createSpy('search').and.returnValue({});
   setSearch = jasmine.createSpy('setSearch');
   fullPageNavigationNeeded = jasmine.createSpy('Location.fullPageNavigationNeeded');
@@ -22,5 +22,5 @@ export class MockLocationService {
   private stripSlashes(url: string) {
     return url.replace(/^\/+/, '').replace(/\/+(\?|#|$)/, '$1');
   }
-}
 
+}

@@ -251,7 +251,7 @@ describe('CodeComponent', () => {
         actualCode = spy.calls.mostRecent().args[0];
 
         expect(actualCode).toBe(expectedCode, `when linenums=${linenums}`);
-        expect(actualCode.match(/\r?\n/g)!.length).toBe(5);
+        expect(actualCode.match(/\r?\n/g)?.length).toBe(5);
 
         spy.calls.reset();
       });
