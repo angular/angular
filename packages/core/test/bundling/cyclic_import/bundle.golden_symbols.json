@@ -69,10 +69,10 @@
     "name": "addComponentLogic"
   },
   {
-    "name": "addHostBindingsToExpandoInstructions"
+    "name": "addToViewTree"
   },
   {
-    "name": "addToViewTree"
+    "name": "allocExpando"
   },
   {
     "name": "allocLFrame"
@@ -85,9 +85,6 @@
   },
   {
     "name": "autoRegisterModuleById"
-  },
-  {
-    "name": "baseResolveDirective"
   },
   {
     "name": "callHook"
@@ -103,6 +100,9 @@
   },
   {
     "name": "concatStringsWithSpace"
+  },
+  {
+    "name": "configureViewWithDirective"
   },
   {
     "name": "createLFrame"
@@ -145,9 +145,6 @@
   },
   {
     "name": "findAttrIndexInNode"
-  },
-  {
-    "name": "generateExpandoInstructionBlock"
   },
   {
     "name": "generateInitialInputs"
@@ -205,9 +202,6 @@
   },
   {
     "name": "getTView"
-  },
-  {
-    "name": "growHostVarsSpace"
   },
   {
     "name": "hasTagAndTypeMatch"
@@ -285,9 +279,6 @@
     "name": "nativeAppendOrInsertBefore"
   },
   {
-    "name": "nativeInsertBefore"
-  },
-  {
     "name": "nextNgElementId"
   },
   {
@@ -304,6 +295,9 @@
   },
   {
     "name": "refreshView"
+  },
+  {
+    "name": "registerHostBindingOpCodes"
   },
   {
     "name": "rememberChangeHistoryAndInvokeOnChangesHook"
@@ -349,9 +343,6 @@
   },
   {
     "name": "setUpAttributes"
-  },
-  {
-    "name": "unwrapRNode"
   },
   {
     "name": "updateTransplantedViewCount"

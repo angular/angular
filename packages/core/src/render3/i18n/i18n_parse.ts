@@ -154,7 +154,7 @@ export function i18nStartFirstCreatePass(
 function createTNodeAndAddOpCode(
     tView: TView, rootTNode: TNode|null, existingTNodes: TNode[], lView: LView,
     createOpCodes: I18nCreateOpCodes, text: string|null, isICU: boolean): TNode {
-  const i18nNodeIdx = allocExpando(tView, lView, 1);
+  const i18nNodeIdx = allocExpando(tView, lView, 1, null);
   let opCode = i18nNodeIdx << I18nCreateOpCode.SHIFT;
   let parentTNode = getCurrentParentTNode();
 
@@ -423,7 +423,7 @@ export function icuStart(
   let bindingMask = 0;
   const tIcu: TIcu = {
     type: icuExpression.type,
-    currentCaseLViewIndex: allocExpando(tView, lView, 1),
+    currentCaseLViewIndex: allocExpando(tView, lView, 1, null),
     anchorIdx,
     cases: [],
     create: [],
@@ -596,7 +596,7 @@ function walkIcuTree(
   let bindingMask = 0;
   let currentNode = parentNode.firstChild;
   while (currentNode) {
-    const newIndex = allocExpando(tView, lView, 1);
+    const newIndex = allocExpando(tView, lView, 1, null);
     switch (currentNode.nodeType) {
       case Node.ELEMENT_NODE:
         const element = currentNode as Element;

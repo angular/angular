@@ -22,7 +22,7 @@ import {SelectorFlags} from '../interfaces/projection';
 import {LQueries, TQueries} from '../interfaces/query';
 import {RComment, RElement, Renderer3, RendererFactory3, RNode} from '../interfaces/renderer';
 import {getTStylingRangeNext, getTStylingRangeNextDuplicate, getTStylingRangePrev, getTStylingRangePrevDuplicate, TStylingKey, TStylingRange} from '../interfaces/styling';
-import {CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTEXT, DebugNode, DECLARATION_VIEW, DestroyHookData, ExpandoInstructions, FLAGS, HEADER_OFFSET, HookData, HOST, INJECTOR, LContainerDebug as ILContainerDebug, LView, LViewDebug as ILViewDebug, LViewDebugRange, LViewDebugRangeContent, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, RENDERER_FACTORY, SANITIZER, T_HOST, TData, TView as ITView, TVIEW, TView, TViewType, TViewTypeAsString} from '../interfaces/view';
+import {CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTEXT, DebugNode, DECLARATION_VIEW, DestroyHookData, FLAGS, HEADER_OFFSET, HookData, HOST, HostBindingOpCodes, INJECTOR, LContainerDebug as ILContainerDebug, LView, LViewDebug as ILViewDebug, LViewDebugRange, LViewDebugRangeContent, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, RENDERER_FACTORY, SANITIZER, T_HOST, TData, TView as ITView, TVIEW, TView, TViewType, TViewTypeAsString} from '../interfaces/view';
 import {attachDebugObject} from '../util/debug_utils';
 import {getParentInjectorIndex, getParentInjectorView} from '../util/injector_utils';
 import {unwrapRNode} from '../util/view_utils';
@@ -115,38 +115,38 @@ function nameSuffix(text: string|null|undefined): string {
  */
 export const TViewConstructor = class TView implements ITView {
   constructor(
-      public type: TViewType,                                //
-      public blueprint: LView,                               //
-      public template: ComponentTemplate<{}>|null,           //
-      public queries: TQueries|null,                         //
-      public viewQuery: ViewQueriesFunction<{}>|null,        //
-      public declTNode: ITNode|null,                         //
-      public data: TData,                                    //
-      public bindingStartIndex: number,                      //
-      public expandoStartIndex: number,                      //
-      public expandoInstructions: ExpandoInstructions|null,  //
-      public firstCreatePass: boolean,                       //
-      public firstUpdatePass: boolean,                       //
-      public staticViewQueries: boolean,                     //
-      public staticContentQueries: boolean,                  //
-      public preOrderHooks: HookData|null,                   //
-      public preOrderCheckHooks: HookData|null,              //
-      public contentHooks: HookData|null,                    //
-      public contentCheckHooks: HookData|null,               //
-      public viewHooks: HookData|null,                       //
-      public viewCheckHooks: HookData|null,                  //
-      public destroyHooks: DestroyHookData|null,             //
-      public cleanup: any[]|null,                            //
-      public contentQueries: number[]|null,                  //
-      public components: number[]|null,                      //
-      public directiveRegistry: DirectiveDefList|null,       //
-      public pipeRegistry: PipeDefList|null,                 //
-      public firstChild: ITNode|null,                        //
-      public schemas: SchemaMetadata[]|null,                 //
-      public consts: TConstants|null,                        //
-      public incompleteFirstPass: boolean,                   //
-      public _decls: number,                                 //
-      public _vars: number,                                  //
+      public type: TViewType,
+      public blueprint: LView,
+      public template: ComponentTemplate<{}>|null,
+      public queries: TQueries|null,
+      public viewQuery: ViewQueriesFunction<{}>|null,
+      public declTNode: ITNode|null,
+      public data: TData,
+      public bindingStartIndex: number,
+      public expandoStartIndex: number,
+      public hostBindingOpCodes: HostBindingOpCodes|null,
+      public firstCreatePass: boolean,
+      public firstUpdatePass: boolean,
+      public staticViewQueries: boolean,
+      public staticContentQueries: boolean,
+      public preOrderHooks: HookData|null,
+      public preOrderCheckHooks: HookData|null,
+      public contentHooks: HookData|null,
+      public contentCheckHooks: HookData|null,
+      public viewHooks: HookData|null,
+      public viewCheckHooks: HookData|null,
+      public destroyHooks: DestroyHookData|null,
+      public cleanup: any[]|null,
+      public contentQueries: number[]|null,
+      public components: number[]|null,
+      public directiveRegistry: DirectiveDefList|null,
+      public pipeRegistry: PipeDefList|null,
+      public firstChild: ITNode|null,
+      public schemas: SchemaMetadata[]|null,
+      public consts: TConstants|null,
+      public incompleteFirstPass: boolean,
+      public _decls: number,
+      public _vars: number,
 
   ) {}
 

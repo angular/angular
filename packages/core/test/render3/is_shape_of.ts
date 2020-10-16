@@ -119,7 +119,7 @@ const ShapeOfTView: ShapeOf<TView> = {
   staticViewQueries: true,
   staticContentQueries: true,
   firstChild: true,
-  expandoInstructions: true,
+  hostBindingOpCodes: true,
   directiveRegistry: true,
   pipeRegistry: true,
   preOrderHooks: true,
