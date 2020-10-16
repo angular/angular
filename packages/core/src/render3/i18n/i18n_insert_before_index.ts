@@ -8,6 +8,8 @@
 
 import {assertEqual} from '../../util/assert';
 import {TNode, TNodeType} from '../interfaces/node';
+import {setI18nHandling} from '../node_manipulation';
+import {getInsertInFrontOfRNodeWithI18n, processI18nInsertBefore} from '../node_manipulation_i18n';
 
 /**
  * Add `tNode` to `previousTNodes` list and update relevant `TNode`s in `previousTNodes` list
@@ -81,6 +83,7 @@ function setInsertBeforeIndex(tNode: TNode, value: number): void {
     // Array is stored if we have to insert child nodes. See `TNode.insertBeforeIndex`
     index[0] = value;
   } else {
+    setI18nHandling(getInsertInFrontOfRNodeWithI18n, processI18nInsertBefore);
     tNode.insertBeforeIndex = value;
   }
 }
