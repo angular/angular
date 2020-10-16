@@ -65,5 +65,5 @@ describe('CustomIconRegistry', () => {
 function createSvg(svgSrc: string): SVGElement {
   const div = document.createElement('div');
   div.innerHTML = svgSrc;
-  return div.querySelector('svg')!;
+  return div.querySelector('svg') as SVGElement;
 }

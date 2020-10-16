@@ -635,61 +635,53 @@ describe('AppComponent', () => {
     });
 
     describe('aio-toc', () => {
-      let tocContainer: HTMLElement|null;
-      let toc: HTMLElement|null;
-
-      const setHasFloatingToc = (hasFloatingToc: boolean) => {
+      function setHasFloatingTocAndGetToc(hasFloatingToc: false): [null, null];
+      function setHasFloatingTocAndGetToc(hasFloatingToc: true): [HTMLElement, HTMLElement];
+      function setHasFloatingTocAndGetToc(hasFloatingToc: boolean) {
         component.hasFloatingToc = hasFloatingToc;
         fixture.detectChanges();
 
-        tocContainer = fixture.debugElement.nativeElement.querySelector('.toc-container');
-        toc = tocContainer && tocContainer.querySelector('aio-toc');
-      };
+        const tocContainer = fixture.debugElement.nativeElement.querySelector('.toc-container');
+        const toc = tocContainer && tocContainer.querySelector('aio-toc');
 
-
-      beforeEach(() => {
-        tocContainer = null;
-        toc = null;
-      });
+        return [toc, tocContainer];
+      }
 
       it('should show/hide `<aio-toc>` based on `hasFloatingToc`', () => {
-        expect(tocContainer).toBeFalsy();
-        expect(toc).toBeFalsy();
+        const [toc1, tocContainer1] = setHasFloatingTocAndGetToc(true);
+        expect(tocContainer1).toBeTruthy();
+        expect(toc1).toBeTruthy();
 
-        setHasFloatingToc(true);
-        expect(tocContainer).toBeTruthy();
-        expect(toc).toBeTruthy();
-
-        setHasFloatingToc(false);
-        expect(tocContainer).toBeFalsy();
-        expect(toc).toBeFalsy();
+        const [toc2, tocContainer2] = setHasFloatingTocAndGetToc(false);
+        expect(tocContainer2).toBeFalsy();
+        expect(toc2).toBeFalsy();
       });
 
       it('should have a non-embedded `<aio-toc>` element', () => {
-        setHasFloatingToc(true);
-        expect(toc!.classList.contains('embedded')).toBe(false);
+        const [toc] = setHasFloatingTocAndGetToc(true);
+        expect(toc.classList.contains('embedded')).toBe(false);
       });
 
       it('should update the TOC container\'s `maxHeight` based on `tocMaxHeight`', () => {
-        setHasFloatingToc(true);
+        const [, tocContainer] = setHasFloatingTocAndGetToc(true);
 
         component.tocMaxHeight = '100';
         fixture.detectChanges();
-        expect(tocContainer!.style.maxHeight).toBe('100px');
+        expect(tocContainer.style.maxHeight).toBe('100px');
 
         component.tocMaxHeight = '200';
         fixture.detectChanges();
-        expect(tocContainer!.style.maxHeight).toBe('200px');
+        expect(tocContainer.style.maxHeight).toBe('200px');
       });
 
       it('should restrain scrolling inside the ToC container', () => {
         const restrainScrolling = spyOn(component, 'restrainScrolling');
         const evt = new WheelEvent('wheel');
+        const [, tocContainer] = setHasFloatingTocAndGetToc(true);
 
-        setHasFloatingToc(true);
         expect(restrainScrolling).not.toHaveBeenCalled();
 
-        tocContainer!.dispatchEvent(evt);
+        tocContainer.dispatchEvent(evt);
         expect(restrainScrolling).toHaveBeenCalledWith(evt);
       });
 
@@ -697,7 +689,7 @@ describe('AppComponent', () => {
         const loader = fixture.debugElement.injector.get(ElementsLoader) as unknown as TestElementsLoader;
         expect(loader.loadCustomElement).not.toHaveBeenCalled();
 
-        setHasFloatingToc(true);
+        setHasFloatingTocAndGetToc(true);
         expect(loader.loadCustomElement).toHaveBeenCalledWith('aio-toc');
       });
     });
@@ -721,7 +713,7 @@ describe('AppComponent', () => {
         createTestingModule('a/b', 'stable');
         await initializeTest();
         const banner: HTMLElement = fixture.debugElement.query(By.css('aio-mode-banner')).nativeElement;
-        expect(banner.textContent!.trim()).toEqual('');
+        expect(banner.textContent?.trim()).toEqual('');
       });
     });
 
@@ -1355,10 +1347,10 @@ class TestHttpClient {
     if (/navigation\.json/.test(url)) {
       data = this.navJson;
     } else {
-      const match = /generated\/docs\/(.+)\.json/.exec(url)!;
-      const id = match[1]!;
+      const match = /generated\/docs\/(.+)\.json/.exec(url);
+      const id = match?.[1];
       // Make up a title for test purposes
-      const title = id.split('/').pop()!.replace(/^([a-z])/, (_, letter) => letter.toUpperCase());
+      const title = id?.split('/')?.pop()?.replace(/^([a-z])/, (_, letter) => letter.toUpperCase());
       const h1 = (id === 'no-title') ? '' : `<h1 class="no-toc">${title}</h1>`;
       const contents = `${h1}<h2 id="#somewhere">Some heading</h2>`;
       data = { id, contents };

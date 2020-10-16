@@ -144,7 +144,7 @@ describe('NavigationService', () => {
           url: 'b',
           view: 'SideNav',
           nodes: [
-            sideNavNodes[0].children![0],
+            sideNavNodes[0].children?.[0] as NavigationNode,
             sideNavNodes[0]
           ]
         }
@@ -156,8 +156,8 @@ describe('NavigationService', () => {
           url: 'd',
           view: 'SideNav',
           nodes: [
-            sideNavNodes[0].children![0].children![1],
-            sideNavNodes[0].children![0],
+            sideNavNodes[0].children?.[0].children?.[1] as NavigationNode,
+            sideNavNodes[0].children?.[0] as NavigationNode,
             sideNavNodes[0]
           ]
         }
@@ -201,8 +201,8 @@ describe('NavigationService', () => {
           url: 'c',
           view: 'SideNav',
           nodes: [
-            sideNavNodes[0].children![0].children![0],
-            sideNavNodes[0].children![0],
+            sideNavNodes[0].children?.[0].children?.[0] as NavigationNode,
+            sideNavNodes[0].children?.[0] as NavigationNode,
             sideNavNodes[0]
           ]
         }

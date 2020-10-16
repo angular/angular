@@ -33,7 +33,7 @@ export class ScrollService implements OnDestroy {
       const toolbar = this.document.querySelector('.app-toolbar');
       this._topOffset = (toolbar && toolbar.clientHeight || 0) + topMargin;
     }
-    return this._topOffset!;
+    return this._topOffset as number;
   }
 
   get topOfPageElement() {
