@@ -1,6 +1,7 @@
 const {buildOptimizer} = require('@angular-devkit/build-optimizer');
 const node = require('rollup-plugin-node-resolve');
-const {ivyEnabled} = require('angular_material/tools/angular_ivy_enabled');
+const path = require('path');
+const {ivyEnabled} = require(getIvyEnabledHelperPath());
 
 console.info(`Processing rollup bundle in ${ivyEnabled ? 'Ivy' : 'View Engine'} mode.`);
 
@@ -36,3 +37,14 @@ module.exports = {
     }),
   ],
 };
+
+function getIvyEnabledHelperPath() {
+  const parts = path.normalize(__dirname).split(path.sep);
+  const binIndex = parts.indexOf('bin');
+
+  if (binIndex === -1) {
+    throw Error('Cannot resolve Ivy helper path.');
+  }
+
+  return path.join(parts.slice(0, binIndex).join(path.sep), 'bin/tools/angular_ivy_enabled');
+}
