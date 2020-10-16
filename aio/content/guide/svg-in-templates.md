@@ -1,27 +1,21 @@
-# SVG in templates
+# SVG en templates
 
-It is possible to use SVG as valid templates in Angular. All of the template syntax below is
-applicable to both SVG and HTML. Learn more in the SVG [1.1](https://www.w3.org/TR/SVG11/) and
-[2.0](https://www.w3.org/TR/SVG2/) specifications.
+Es posible utilizar SVG como un template válido en Angular. Toda la sintaxis de templates a continuación es aplicable tanto a SVG como a HTML. Puedes consultar más en las especificaciones SVG [1.1](https://www.w3.org/TR/SVG11/) y [2.0](https://www.w3.org/TR/SVG2/) .
 
 <div class="alert is-helpful">
 
-See the <live-example name="template-syntax"></live-example> for a working example containing the code snippets in this guide.
+Consulta <live-example name="template-syntax"></live-example> para ver un ejemplo funcional que contiene los fragmentos de código mostrados en esta guía. </div>
 
-</div>
+¿Por qué usar un template SVG, cuando puedes simplemente añadirlo como una imagen a tu aplicación? 
 
-Why would you use SVG as template, instead of simply adding it as image to your application?
+Cuando utilizas SVG como template, puedes emplear directivas y enlaces de la misma forma que harías con templates HTML. Esto significa que puedes generar gráficos interactivos dinámicamente
 
-When you use an SVG as the template, you are able to use directives and bindings just like with HTML
-templates. This means that you will be able to dynamically generate interactive graphics.
-
-Refer to the sample code snippet below for a syntax example:
+Consulta el fragmento de código proporcionado para un ejemplo de la sintaxis:
 
 <code-example path="template-syntax/src/app/svg.component.ts" header="src/app/svg.component.ts"></code-example>
 
-Add the following code to your `svg.component.svg` file:
+Añade este código a tu archivo`svg.component.svg`:
 
 <code-example path="template-syntax/src/app/svg.component.svg" header="src/app/svg.component.svg"></code-example>
 
-Here you can see the use of a `click()` event binding and the property binding syntax
-(`[attr.fill]="fillColor"`).
+Aquí puedes ver el uso de un enlace de evento `click()` y la sintaxis de un enlace de propiedad (`[attr.fill]="fillColor"`).
