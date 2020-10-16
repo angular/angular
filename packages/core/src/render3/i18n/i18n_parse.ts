@@ -117,7 +117,7 @@ export function i18nStartFirstCreatePass(
       }
     } else {
       // Odd indexes are placeholders (elements and sub-templates)
-      // At this point value is something like: '/#1:2' (orginally coming from '�/#1:2�')
+      // At this point value is something like: '/#1:2' (originally coming from '�/#1:2�')
       const isClosing = value.charCodeAt(0) === CharCode.SLASH;
       const type = value.charCodeAt(isClosing ? 1 : 0);
       ngDevMode && assertOneOf(type, CharCode.STAR, CharCode.HASH, CharCode.EXCLAMATION);

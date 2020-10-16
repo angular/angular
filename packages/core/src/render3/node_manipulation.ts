@@ -639,7 +639,7 @@ export function nativeNextSibling(renderer: Renderer3, node: RNode): RNode|null 
  * Find a node in front of which `currentTNode` should be inserted.
  *
  * This method determines the `RNode` in front of which we should insert the `currentRNode`. This
- * takes `TNode.insertBeforeIndex` into account.
+ * takes `TNode.insertBeforeIndex` into account if i18n code has been invoked.
  *
  * @param parentTNode parent `TNode`
  * @param currentTNode current `TNode` (The node which we would like to insert into the DOM)
@@ -647,18 +647,54 @@ export function nativeNextSibling(renderer: Renderer3, node: RNode): RNode|null 
  */
 function getInsertInFrontOfRNode(parentTNode: TNode, currentTNode: TNode, lView: LView): RNode|
     null {
-  const tNodeInsertBeforeIndex = currentTNode.insertBeforeIndex;
-  const insertBeforeIndex =
-      Array.isArray(tNodeInsertBeforeIndex) ? tNodeInsertBeforeIndex[0] : tNodeInsertBeforeIndex;
-  if (insertBeforeIndex === null) {
-    if (parentTNode.type & (TNodeType.ElementContainer | TNodeType.Icu)) {
-      return getNativeByTNode(parentTNode, lView);
-    }
-  } else {
-    ngDevMode && assertIndexInRange(lView, insertBeforeIndex);
-    return unwrapRNode(lView[insertBeforeIndex]);
+  return _getInsertInFrontOfRNodeWithI18n(parentTNode, currentTNode, lView);
+}
+
+
+/**
+ * Find a node in front of which `currentTNode` should be inserted. (Does not take i18n into
+ * account)
+ *
+ * This method determines the `RNode` in front of which we should insert the `currentRNode`. This
+ * does not take `TNode.insertBeforeIndex` into account.
+ *
+ * @param parentTNode parent `TNode`
+ * @param currentTNode current `TNode` (The node which we would like to insert into the DOM)
+ * @param lView current `LView`
+ */
+export function getInsertInFrontOfRNodeWithNoI18n(
+    parentTNode: TNode, currentTNode: TNode, lView: LView): RNode|null {
+  if (parentTNode.type & (TNodeType.ElementContainer | TNodeType.Icu)) {
+    return getNativeByTNode(parentTNode, lView);
   }
   return null;
+}
+
+/**
+ * Tree shakable boundary for `getInsertInFrontOfRNodeWithI18n` function.
+ *
+ * This function will only be set if i18n code runs.
+ */
+let _getInsertInFrontOfRNodeWithI18n: (parentTNode: TNode, currentTNode: TNode, lView: LView) =>
+    RNode | null = getInsertInFrontOfRNodeWithNoI18n;
+
+/**
+ * Tree shakable boundary for `processI18nInsertBefore` function.
+ *
+ * This function will only be set if i18n code runs.
+ */
+let _processI18nInsertBefore: (
+    renderer: Renderer3, childTNode: TNode, lView: LView, childRNode: RNode|RNode[],
+    parentRElement: RElement|null) => void;
+
+export function setI18nHandling(
+    getInsertInFrontOfRNodeWithI18n: (parentTNode: TNode, currentTNode: TNode, lView: LView) =>
+        RNode | null,
+    processI18nInsertBefore: (
+        renderer: Renderer3, childTNode: TNode, lView: LView, childRNode: RNode|RNode[],
+        parentRElement: RElement|null) => void) {
+  _getInsertInFrontOfRNodeWithI18n = getInsertInFrontOfRNodeWithI18n;
+  _processI18nInsertBefore = processI18nInsertBefore;
 }
 
 /**
@@ -685,50 +721,8 @@ export function appendChild(
     }
   }
 
-  const tNodeInsertBeforeIndex = childTNode.insertBeforeIndex;
-  if (Array.isArray(tNodeInsertBeforeIndex) &&
-      (childTNode.flags & TNodeFlags.isComponentHost) === 0) {
-    // An array indicates that there are i18n nodes that need to be added as children of this
-    // `rChildNode`. These i18n nodes were created before this `rChildNode` was available and so
-    // only now can be added. The first element of the array is the normal index where we should
-    // insert the `rChildNode`. Additional elements are the extra nodes to be added as children of
-    // `rChildNode`.
-    processI18nText(renderer, childTNode, lView, childRNode, parentRNode, tNodeInsertBeforeIndex);
-  }
-}
-
-/**
- * Process `TNode.insertBeforeIndex` by adding i18n text nodes.
- *
- * See `TNode.insertBeforeIndex`
- *
- * @param renderer
- * @param childTNode
- * @param lView
- * @param childRNode
- * @param parentRElement
- * @param i18nChildren
- */
-function processI18nText(
-    renderer: Renderer3, childTNode: TNode, lView: LView, childRNode: RNode|RNode[],
-    parentRElement: RElement|null, i18nChildren: number[]): void {
-  ngDevMode && assertDomNode(childRNode);
-  const isProcedural = isProceduralRenderer(renderer);
-  let i18nParent: RElement|null = childRNode as RElement;
-  let anchorRNode: RNode|null = null;
-  if (!(childTNode.type & TNodeType.AnyRNode)) {
-    anchorRNode = i18nParent;
-    i18nParent = parentRElement;
-  }
-  const isViewRoot = childTNode.parent === null;
-  if (i18nParent !== null) {
-    for (let i = 1; i < i18nChildren.length; i++) {
-      // No need to `unwrapRNode` because all of the indexes point to i18n text nodes.
-      // see `assertDomNode` below.
-      const i18nChild = lView[i18nChildren[i]];
-      nativeInsertBefore(renderer, i18nParent, i18nChild, anchorRNode, false);
-    }
-  }
+  _processI18nInsertBefore !== undefined &&
+      _processI18nInsertBefore(renderer, childTNode, lView, childRNode, parentRNode);
 }
 
 /**

@@ -232,5 +232,8 @@
   },
   {
     "name": "viewAttachedToChangeDetector"
+  },
+  {
+    "name": "ɵɵtext"
   }
 ]
