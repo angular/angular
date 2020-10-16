@@ -409,11 +409,17 @@ export interface TNode {
 
   /**
    * Stores starting index of the directives.
+   *
+   * NOTE: The first directive is always component (if present).
    */
   directiveStart: number;
 
   /**
    * Stores final exclusive index of the directives.
+   *
+   * The area right behind the `directiveStart-directiveEnd` range is used to allocate the
+   * `HostBindingFunction` `vars` (or null if no bindings.) Therefore `directiveEnd` is used to set
+   * `LFrame.bindingRootIndex` before `HostBindingFunction` is executed.
    */
   directiveEnd: number;
 

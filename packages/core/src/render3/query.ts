@@ -570,7 +570,7 @@ function createTQuery(tView: TView, metadata: TQueryMetadata, nodeIndex: number)
 function saveContentQueryAndDirectiveIndex(tView: TView, directiveIndex: number) {
   const tViewContentQueries = tView.contentQueries || (tView.contentQueries = []);
   const lastSavedDirectiveIndex =
-      tView.contentQueries.length ? tViewContentQueries[tViewContentQueries.length - 1] : -1;
+      tViewContentQueries.length ? tViewContentQueries[tViewContentQueries.length - 1] : -1;
   if (directiveIndex !== lastSavedDirectiveIndex) {
     tViewContentQueries.push(tView.queries!.length - 1, directiveIndex);
   }
