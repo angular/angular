@@ -50,7 +50,11 @@ let cloneUniqueId = 0;
 /** Transfers the data of one input element to another. */
 function transferInputData(source: Element & {value: string},
                            clone: Element & {value: string; name: string; type: string}) {
-  clone.value = source.value;
+  // Browsers throw an error when assigning the value of a file input programmatically.
+  if (clone.type !== 'file') {
+    clone.value = source.value;
+  }
+
   // Radio button `name` attributes must be unique for radio button groups
   // otherwise original radio buttons can lose their checked state
   // once the clone is inserted in the DOM.
