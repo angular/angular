@@ -131,6 +131,9 @@ function analyzeExamples(sourceFiles: string[], baseDir: string): AnalyzedExampl
       if (primaryComponent.styleUrls) {
         example.files.push(...primaryComponent.styleUrls);
       }
+      if (primaryComponent.componentName.includes('Harness')) {
+        example.files.push(primaryComponent.selector + '.spec.ts');
+      }
 
       if (secondaryComponents.length) {
         for (const meta of secondaryComponents) {
