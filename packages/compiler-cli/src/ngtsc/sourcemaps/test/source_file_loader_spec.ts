@@ -242,216 +242,217 @@ runInEachFileSystem(() => {
         expect(sourceFile.sources.length).toEqual(1);
         expect(sourceFile.sources[0]).toBe(null);
       });
-    });
 
-    it('should log a warning if there is a cyclic dependency in source files loaded from disk',
-       () => {
-         // a.js -> a.js.map -> b.js -> b.js.map -> c.js -> c.js.map -> (external) a.js
-         //                                                             ^^^^^^^^^^^^^^^
-         // c.js.map incorrectly links to a.js, creating a cycle
+      it('should log a warning if there is a cyclic dependency in source files loaded from disk',
+         () => {
+           // a.js -> a.js.map -> b.js -> b.js.map -> c.js -> c.js.map -> (external) a.js
+           //                                                             ^^^^^^^^^^^^^^^
+           // c.js.map incorrectly links to a.js, creating a cycle
 
-         fs.ensureDir(_('/foo/src'));
+           fs.ensureDir(_('/foo/src'));
 
-         const aMap = createRawSourceMap({file: 'a.js', sources: ['b.js']});
+           const aMap = createRawSourceMap({file: 'a.js', sources: ['b.js']});
 
-         const aPath = _('/foo/src/a.js');
-         fs.writeFile(aPath, 'a content\n' + fromObject(aMap).toComment());
+           const aPath = _('/foo/src/a.js');
+           fs.writeFile(aPath, 'a content\n' + fromObject(aMap).toComment());
 
-         const bPath = _('/foo/src/b.js');
-         fs.writeFile(
-             bPath,
-             'b content\n' +
-                 fromObject(createRawSourceMap({file: 'b.js', sources: ['c.js']})).toComment());
+           const bPath = _('/foo/src/b.js');
+           fs.writeFile(
+               bPath,
+               'b content\n' +
+                   fromObject(createRawSourceMap({file: 'b.js', sources: ['c.js']})).toComment());
 
-         const cPath = _('/foo/src/c.js');
-         fs.writeFile(
-             cPath,
-             'c content\n' +
-                 fromObject(createRawSourceMap({file: 'c.js', sources: ['a.js']})).toComment());
+           const cPath = _('/foo/src/c.js');
+           fs.writeFile(
+               cPath,
+               'c content\n' +
+                   fromObject(createRawSourceMap({file: 'c.js', sources: ['a.js']})).toComment());
 
-         const sourceFile = registry.loadSourceFile(aPath)!;
-         expect(sourceFile).not.toBe(null!);
-         expect(sourceFile.contents).toEqual('a content\n');
-         expect(sourceFile.sourcePath).toEqual(_('/foo/src/a.js'));
-         if (sourceFile.rawMap === null) {
-           return fail('Expected source map to be defined');
-         }
-         expect(sourceFile.rawMap.map).toEqual(aMap);
-         expect(sourceFile.sources.length).toEqual(1);
+           const sourceFile = registry.loadSourceFile(aPath)!;
+           expect(sourceFile).not.toBe(null!);
+           expect(sourceFile.contents).toEqual('a content\n');
+           expect(sourceFile.sourcePath).toEqual(_('/foo/src/a.js'));
+           if (sourceFile.rawMap === null) {
+             return fail('Expected source map to be defined');
+           }
+           expect(sourceFile.rawMap.map).toEqual(aMap);
+           expect(sourceFile.sources.length).toEqual(1);
 
-         expect(logger.logs.warn[0][0])
-             .toContain(
-                 `Circular source file mapping dependency: ` +
-                 `${aPath} -> ${bPath} -> ${cPath} -> ${aPath}`);
-       });
-
-    it('should log a warning if there is a cyclic dependency in source maps loaded from disk',
-       () => {
-         // a.js -> a.js.map -> b.js -> a.js.map -> c.js
-         //                             ^^^^^^^^
-         // b.js incorrectly links to a.js.map, creating a cycle
-
-         fs.ensureDir(_('/foo/src'));
-         const aPath = _('/foo/src/a.js');
-         fs.writeFile(aPath, 'a.js content\n//# sourceMappingURL=a.js.map');
-
-         const aMap = createRawSourceMap({file: 'a.js', sources: ['b.js']});
-         const aMapPath = _('/foo/src/a.js.map');
-         fs.writeFile(aMapPath, JSON.stringify(aMap));
-
-         const bPath = _('/foo/src/b.js');
-         fs.writeFile(bPath, 'b.js content\n//# sourceMappingURL=a.js.map');
-
-         const sourceFile = registry.loadSourceFile(aPath);
-         if (sourceFile === null) {
-           return fail('Expected source file to be defined');
-         }
-         expect(sourceFile.contents).toEqual('a.js content\n');
-         expect(sourceFile.sourcePath).toEqual(_('/foo/src/a.js'));
-         if (sourceFile.rawMap === null) {
-           return fail('Expected source map to be defined');
-         }
-         expect(sourceFile.rawMap.map).toEqual(aMap);
-         expect(sourceFile.sources.length).toEqual(1);
-
-         expect(logger.logs.warn[0][0])
-             .toContain(
-                 `Circular source file mapping dependency: ` +
-                 `${aPath} -> ${aMapPath} -> ${bPath} -> ${aMapPath}`);
-         const innerSourceFile = sourceFile.sources[0];
-         if (innerSourceFile === null) {
-           return fail('Expected source file to be defined');
-         }
-         expect(innerSourceFile.contents).toEqual('b.js content\n');
-         expect(innerSourceFile.sourcePath).toEqual(_('/foo/src/b.js'));
-         // The source-map from b.js was not loaded as it would have caused a cycle
-         expect(innerSourceFile.rawMap).toBe(null);
-         expect(innerSourceFile.sources.length).toEqual(0);
-       });
-
-    it('should not fail if the filename of an inline source looks like a cyclic dependency', () => {
-      // a.js -> (inline) a.js.map -> (inline) a.js
-      //                              ^^^^^^^^^^^^^
-      // a.js loads despite same name as previous file because it is inline
-
-      fs.ensureDir(_('/foo/src'));
-      const aPath = _('/foo/src/a.js');
-      const aMap = createRawSourceMap(
-          {file: 'a.js', sources: ['a.js'], sourcesContent: ['inline original a.js content']});
-      fs.writeFile(aPath, 'a content\n' + fromObject(aMap).toComment());
-
-      const sourceFile = registry.loadSourceFile(aPath);
-      if (sourceFile === null) {
-        return fail('Expected source file to be defined');
-      }
-      expect(sourceFile.sources.length).toEqual(1);
-      expect(sourceFile.sources[0]!.contents).toEqual('inline original a.js content');
-      expect(sourceFile.sources[0]!.sourcePath).toEqual(aPath);
-      expect(sourceFile.sources[0]!.rawMap).toBe(null);
-      expect(sourceFile.sources[0]!.sources).toEqual([]);
-
-      expect(logger.logs.warn.length).toEqual(0);
-    });
-
-    it('should not load source-maps (after the initial map) from disk if the source file was inline',
-       () => {
-         // a.js -> (initial) a.js.map -> b.js -> b.js.map -> (inline) c.js -> c.js.map
-         //                                                                    ^^^^^^^^
-         // c.js.map is not loaded because the referencing source file (c.js) was inline
-
-         fs.ensureDir(_('/foo/src'));
-
-         const aPath = _('/foo/src/a.js');
-         fs.writeFile(aPath, 'a.js content\n//# sourceMappingURL=a.js.map');
-         const aMapPath = _('/foo/src/a.js.map');
-         const aMap = createRawSourceMap({file: 'a.js', sources: ['b.js']});
-         fs.writeFile(aMapPath, JSON.stringify(aMap));
-
-         const bPath = _('/foo/src/b.js');
-         fs.writeFile(bPath, 'b.js content\n//# sourceMappingURL=b.js.map');
-         const bMapPath = _('/foo/src/b.js.map');
-         const bMap = createRawSourceMap({
-           file: 'b.js',
-           sources: ['c.js'],
-           sourcesContent: ['c content\n//# sourceMappingURL=c.js.map']
+           expect(logger.logs.warn[0][0])
+               .toContain(
+                   `Circular source file mapping dependency: ` +
+                   `${aPath} -> ${bPath} -> ${cPath} -> ${aPath}`);
          });
-         fs.writeFile(bMapPath, JSON.stringify(bMap));
 
-         const cMapPath = _('/foo/src/c.js.map');
-         const cMap = createRawSourceMap({file: 'c.js', sources: ['d.js']});
-         fs.writeFile(cMapPath, JSON.stringify(cMap));
+      it('should log a warning if there is a cyclic dependency in source maps loaded from disk',
+         () => {
+           // a.js -> a.js.map -> b.js -> a.js.map -> c.js
+           //                             ^^^^^^^^
+           // b.js incorrectly links to a.js.map, creating a cycle
 
-         const sourceFile = registry.loadSourceFile(aPath);
-         if (sourceFile === null) {
-           return fail('Expected source file to be defined');
-         }
-         const bSource = sourceFile.sources[0];
-         if (!bSource) {
-           return fail('Expected source file to be defined');
-         }
-         const cSource = bSource.sources[0];
-         if (!cSource) {
-           return fail('Expected source file to be defined');
-         }
-         // External c.js.map never gets loaded because c.js was inline source
-         expect(cSource.rawMap).toBe(null);
-         expect(cSource.sources).toEqual([]);
+           fs.ensureDir(_('/foo/src'));
+           const aPath = _('/foo/src/a.js');
+           fs.writeFile(aPath, 'a.js content\n//# sourceMappingURL=a.js.map');
 
-         expect(logger.logs.warn.length).toEqual(0);
-       });
+           const aMap = createRawSourceMap({file: 'a.js', sources: ['b.js']});
+           const aMapPath = _('/foo/src/a.js.map');
+           fs.writeFile(aMapPath, JSON.stringify(aMap));
 
-    for (const {scheme, mappedPath} of
-             [{scheme: 'WEBPACK://', mappedPath: '/foo/src/index.ts'},
-              {scheme: 'webpack://', mappedPath: '/foo/src/index.ts'},
-              {scheme: 'missing://', mappedPath: '/src/index.ts'},
-    ]) {
-      it(`should handle source paths that are protocol mapped [scheme:"${scheme}"]`, () => {
-        fs.ensureDir(_('/foo/src'));
+           const bPath = _('/foo/src/b.js');
+           fs.writeFile(bPath, 'b.js content\n//# sourceMappingURL=a.js.map');
 
-        const indexSourceMap = createRawSourceMap({
-          file: 'index.js',
-          sources: [`${scheme}/src/index.ts`],
-          'sourcesContent': ['original content']
+           const sourceFile = registry.loadSourceFile(aPath);
+           if (sourceFile === null) {
+             return fail('Expected source file to be defined');
+           }
+           expect(sourceFile.contents).toEqual('a.js content\n');
+           expect(sourceFile.sourcePath).toEqual(_('/foo/src/a.js'));
+           if (sourceFile.rawMap === null) {
+             return fail('Expected source map to be defined');
+           }
+           expect(sourceFile.rawMap.map).toEqual(aMap);
+           expect(sourceFile.sources.length).toEqual(1);
+
+           expect(logger.logs.warn[0][0])
+               .toContain(
+                   `Circular source file mapping dependency: ` +
+                   `${aPath} -> ${aMapPath} -> ${bPath} -> ${aMapPath}`);
+           const innerSourceFile = sourceFile.sources[0];
+           if (innerSourceFile === null) {
+             return fail('Expected source file to be defined');
+           }
+           expect(innerSourceFile.contents).toEqual('b.js content\n');
+           expect(innerSourceFile.sourcePath).toEqual(_('/foo/src/b.js'));
+           // The source-map from b.js was not loaded as it would have caused a cycle
+           expect(innerSourceFile.rawMap).toBe(null);
+           expect(innerSourceFile.sources.length).toEqual(0);
+         });
+
+      it('should not fail if the filename of an inline source looks like a cyclic dependency',
+         () => {
+           // a.js -> (inline) a.js.map -> (inline) a.js
+           //                              ^^^^^^^^^^^^^
+           // a.js loads despite same name as previous file because it is inline
+
+           fs.ensureDir(_('/foo/src'));
+           const aPath = _('/foo/src/a.js');
+           const aMap = createRawSourceMap(
+               {file: 'a.js', sources: ['a.js'], sourcesContent: ['inline original a.js content']});
+           fs.writeFile(aPath, 'a content\n' + fromObject(aMap).toComment());
+
+           const sourceFile = registry.loadSourceFile(aPath);
+           if (sourceFile === null) {
+             return fail('Expected source file to be defined');
+           }
+           expect(sourceFile.sources.length).toEqual(1);
+           expect(sourceFile.sources[0]!.contents).toEqual('inline original a.js content');
+           expect(sourceFile.sources[0]!.sourcePath).toEqual(aPath);
+           expect(sourceFile.sources[0]!.rawMap).toBe(null);
+           expect(sourceFile.sources[0]!.sources).toEqual([]);
+
+           expect(logger.logs.warn.length).toEqual(0);
+         });
+
+      it('should not load source-maps (after the initial map) from disk if the source file was inline',
+         () => {
+           // a.js -> (initial) a.js.map -> b.js -> b.js.map -> (inline) c.js -> c.js.map
+           //                                                                    ^^^^^^^^
+           // c.js.map is not loaded because the referencing source file (c.js) was inline
+
+           fs.ensureDir(_('/foo/src'));
+
+           const aPath = _('/foo/src/a.js');
+           fs.writeFile(aPath, 'a.js content\n//# sourceMappingURL=a.js.map');
+           const aMapPath = _('/foo/src/a.js.map');
+           const aMap = createRawSourceMap({file: 'a.js', sources: ['b.js']});
+           fs.writeFile(aMapPath, JSON.stringify(aMap));
+
+           const bPath = _('/foo/src/b.js');
+           fs.writeFile(bPath, 'b.js content\n//# sourceMappingURL=b.js.map');
+           const bMapPath = _('/foo/src/b.js.map');
+           const bMap = createRawSourceMap({
+             file: 'b.js',
+             sources: ['c.js'],
+             sourcesContent: ['c content\n//# sourceMappingURL=c.js.map']
+           });
+           fs.writeFile(bMapPath, JSON.stringify(bMap));
+
+           const cMapPath = _('/foo/src/c.js.map');
+           const cMap = createRawSourceMap({file: 'c.js', sources: ['d.js']});
+           fs.writeFile(cMapPath, JSON.stringify(cMap));
+
+           const sourceFile = registry.loadSourceFile(aPath);
+           if (sourceFile === null) {
+             return fail('Expected source file to be defined');
+           }
+           const bSource = sourceFile.sources[0];
+           if (!bSource) {
+             return fail('Expected source file to be defined');
+           }
+           const cSource = bSource.sources[0];
+           if (!cSource) {
+             return fail('Expected source file to be defined');
+           }
+           // External c.js.map never gets loaded because c.js was inline source
+           expect(cSource.rawMap).toBe(null);
+           expect(cSource.sources).toEqual([]);
+
+           expect(logger.logs.warn.length).toEqual(0);
+         });
+
+      for (const {scheme, mappedPath} of
+               [{scheme: 'WEBPACK://', mappedPath: '/foo/src/index.ts'},
+                {scheme: 'webpack://', mappedPath: '/foo/src/index.ts'},
+                {scheme: 'missing://', mappedPath: '/src/index.ts'},
+      ]) {
+        it(`should handle source paths that are protocol mapped [scheme:"${scheme}"]`, () => {
+          fs.ensureDir(_('/foo/src'));
+
+          const indexSourceMap = createRawSourceMap({
+            file: 'index.js',
+            sources: [`${scheme}/src/index.ts`],
+            'sourcesContent': ['original content']
+          });
+          fs.writeFile(_('/foo/src/index.js.map'), JSON.stringify(indexSourceMap));
+          const sourceFile = registry.loadSourceFile(_('/foo/src/index.js'), 'generated content');
+          if (sourceFile === null) {
+            return fail('Expected source file to be defined');
+          }
+          const originalSource = sourceFile.sources[0];
+          if (originalSource === null) {
+            return fail('Expected source file to be defined');
+          }
+          expect(originalSource.contents).toEqual('original content');
+          expect(originalSource.sourcePath).toEqual(_(mappedPath));
+          expect(originalSource.rawMap).toBe(null);
+          expect(originalSource.sources).toEqual([]);
         });
-        fs.writeFile(_('/foo/src/index.js.map'), JSON.stringify(indexSourceMap));
-        const sourceFile = registry.loadSourceFile(_('/foo/src/index.js'), 'generated content');
-        if (sourceFile === null) {
-          return fail('Expected source file to be defined');
-        }
-        const originalSource = sourceFile.sources[0];
-        if (originalSource === null) {
-          return fail('Expected source file to be defined');
-        }
-        expect(originalSource.contents).toEqual('original content');
-        expect(originalSource.sourcePath).toEqual(_(mappedPath));
-        expect(originalSource.rawMap).toBe(null);
-        expect(originalSource.sources).toEqual([]);
-      });
 
-      it(`should handle source roots that are protocol mapped [scheme:"${scheme}"]`, () => {
-        fs.ensureDir(_('/foo/src'));
+        it(`should handle source roots that are protocol mapped [scheme:"${scheme}"]`, () => {
+          fs.ensureDir(_('/foo/src'));
 
-        const indexSourceMap = createRawSourceMap({
-          file: 'index.js',
-          sources: ['index.ts'],
-          'sourcesContent': ['original content'],
-          sourceRoot: `${scheme}/src`,
+          const indexSourceMap = createRawSourceMap({
+            file: 'index.js',
+            sources: ['index.ts'],
+            'sourcesContent': ['original content'],
+            sourceRoot: `${scheme}/src`,
+          });
+          fs.writeFile(_('/foo/src/index.js.map'), JSON.stringify(indexSourceMap));
+          const sourceFile = registry.loadSourceFile(_('/foo/src/index.js'), 'generated content');
+          if (sourceFile === null) {
+            return fail('Expected source file to be defined');
+          }
+          const originalSource = sourceFile.sources[0];
+          if (originalSource === null) {
+            return fail('Expected source file to be defined');
+          }
+          expect(originalSource.contents).toEqual('original content');
+          expect(originalSource.sourcePath).toEqual(_(mappedPath));
+          expect(originalSource.rawMap).toBe(null);
+          expect(originalSource.sources).toEqual([]);
         });
-        fs.writeFile(_('/foo/src/index.js.map'), JSON.stringify(indexSourceMap));
-        const sourceFile = registry.loadSourceFile(_('/foo/src/index.js'), 'generated content');
-        if (sourceFile === null) {
-          return fail('Expected source file to be defined');
-        }
-        const originalSource = sourceFile.sources[0];
-        if (originalSource === null) {
-          return fail('Expected source file to be defined');
-        }
-        expect(originalSource.contents).toEqual('original content');
-        expect(originalSource.sourcePath).toEqual(_(mappedPath));
-        expect(originalSource.rawMap).toBe(null);
-        expect(originalSource.sources).toEqual([]);
-      });
-    }
+      }
+    });
   });
 });
 
