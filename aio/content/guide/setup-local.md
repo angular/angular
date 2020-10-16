@@ -1,64 +1,64 @@
-# Setting up the local environment and workspace
+# Configurar el ambiente y el espacio de trabajo locales
 
 
-This guide explains how to set up your environment for Angular development using the [Angular CLI tool](cli "CLI command reference").
-It includes information about prerequisites, installing the CLI, creating an initial workspace and starter app, and running that app locally to verify your setup.
+Esta guía explica cómo configurar tu ambiente para el desarrollo Angular usando la [Herramienta CLI de Angular](cli "CLI command reference").
+Incluye información sobre los requisitos previos, la instalación de la CLI, la creación de un espacio de trabajo inicial y una aplicación de inicio, y la ejecución de esa aplicación localmente para verificar su configuración.
 
 
 <div class="callout is-helpful">
-<header>Try Angular without local setup</header>
+<header>Prueba Angular sin configuración local</header>
 
-If you are new to Angular, you might want to start with [Try it now!](start), which introduces the essentials of Angular in the context of a ready-made basic online store app that you can examine and modify. This standalone tutorial takes advantage of the interactive [StackBlitz](https://stackblitz.com/) environment for online development. You don't need to set up your local environment until you're ready.
+Si eres nuevo en Angular, quizás quieras comenzar con [¡Pruebalo ahora!](start), que presenta los aspectos esenciales de Angular en el contexto de una aplicación de tienda en línea básica lista para usar que puedes examinar y modificar. Este tutorial independiente aprovecha lo interactivo del ambiente [StackBlitz](https://stackblitz.com/) para el desarrollo online. No es necesario que configures tu entorno local hasta que estes listo.
 
 </div>
 
 
 {@a devenv}
 {@a prerequisites}
-## Prerequisites
+## Prerrequisitos
 
-To use the Angular framework, you should be familiar with the following:
+Para usar el framewok Angular, debes estar familiarizado con lo siguiente:
 
 * [JavaScript](https://developer.mozilla.org/en-US/docs/Web/JavaScript/A_re-introduction_to_JavaScript)
 * [HTML](https://developer.mozilla.org/docs/Learn/HTML/Introduction_to_HTML)
 * [CSS](https://developer.mozilla.org/docs/Learn/CSS/First_steps)
 
-Knowledge of [TypeScript](https://www.typescriptlang.org/) is helpful, but not required.
+Conocimiento de [TypeScript](https://www.typescriptlang.org/) es útil, pero no obligatorio.
 
-To install Angular on your local system, you need the following:
+Para instalar Angular en su sistema local, necesitas lo siguiente:
 
 {@a nodejs}
 
 * **Node.js**
   
-  Angular requires a [current, active LTS, or maintenance LTS](https://nodejs.org/about/releases) version of Node.js.
+  Angular requiere una versión [actual, LTS activa o LTS de mantenimiento](https://nodejs.org/about/releases) de Node.js.
 
   <div class="alert is-helpful">
 
-  For information about specific version requirements, see the `engines` key in the [package.json](https://unpkg.com/@angular/cli/package.json) file.
+  Para obtener información sobre los requisitos específicos de la versión, consulta la llave `engines` en el archivo [package.json](https://unpkg.com/@angular/cli/package.json).
 
   </div>
 
-  For more information on installing Node.js, see [nodejs.org](http://nodejs.org "Nodejs.org").
-  If you are unsure what version of Node.js runs on your system, run `node -v` in a terminal window.
+  Para obtener más información sobre la instalación de Node.js, consulta [nodejs.org](http://nodejs.org "Nodejs.org").
+  Si no estas seguro de qué versión de Node.js se ejecuta en tu sistema, ejecuta `node -v` en una terminal.
 
 {@a npm}
 
 * **npm package manager**
 
-  Angular, the Angular CLI, and Angular applications depend on [npm packages](https://docs.npmjs.com/getting-started/what-is-npm) for many features and functions.
-  To download and install npm packages, you need an npm package manager.
-  This guide uses the [npm client](https://docs.npmjs.com/cli/install) command line interface, which is installed with `Node.js` by default.
-  To check that you have the npm client installed, run `npm -v` in a terminal window.
+  Angular, CLI de Angular, y las aplicaciones de Angular dependen de [paquetes npm](https://docs.npmjs.com/getting-started/what-is-npm) para muchas funcionalidades y funciones.
+  Para descargar e instalar paquetes npm, necesitas un administrador de paquetes npm.
+  Esta guía utiliza la interfaz de línea de comandos del [cliente npm](https://docs.npmjs.com/cli/install), que se instala con `Node.js` por defecto.
+  Para comprobar que tiene instalado el cliente npm, ejecute `npm -v` en una terminal.
 
 
 {@a install-cli}
 
-## Install the Angular CLI
+## Instalar la CLI de Angular
 
-You use the Angular CLI to create projects, generate application and library code, and perform a variety of ongoing development tasks such as testing, bundling, and deployment.
+Utilizaraz la CLI de Angular para crear proyectos, generar código de aplicaciones y bibliotecas, y realizar una variedad de tareas de desarrollo, como pruebas, agrupación e implementación.
 
-To install the Angular CLI, open a terminal window and run the following command:
+Para instalar CLI de Angular, abre una terminal y ejecuta el siguiente comando:
 
 <code-example language="sh" class="code-shell">
   npm install -g @angular/cli
@@ -66,54 +66,54 @@ To install the Angular CLI, open a terminal window and run the following command
 
 {@a create-proj}
 
-## Create a workspace and initial application
+## Crea un espacio de trabajo y una aplicación inicial
 
-You develop apps in the context of an Angular [**workspace**](guide/glossary#workspace).
+Desarrollas aplicaciones en el contexto de un [**espacio de trabajo**](guide/glossary#workspace) de Angular.
 
-To create a new workspace and initial starter app:
+Para crear un nuevo espacio de trabajo y una aplicación inicial:
 
-1. Run the CLI command `ng new` and provide the name `my-app`, as shown here:
+1. Ejecuta el comando CLI `ng new` y proporciona el nombre `my-app`, como se muestra aquí:
 
     <code-example language="sh" class="code-shell">
       ng new my-app
 
     </code-example>
 
-2. The `ng new` command prompts you for information about features to include in the initial app. Accept the defaults by pressing the Enter or Return key.
+2. El comando `ng new` te solicitara información sobre las funciones que debe incluir en la aplicación inicial. Acepta los valores predeterminados presionando la tecla Enter o Return.
 
-The Angular CLI installs the necessary Angular npm packages and other dependencies. This can take a few minutes.
+La CLI de Angular instala los paquetes npm de Angular necesarios y otras dependencias. Esto puede tardar unos minutos.
 
-The CLI creates a new workspace and a simple Welcome app, ready to run.
+La CLI crea un nuevo espacio de trabajo y una aplicación de bienvenida simple, lista para ejecutarse.
 
 <div class="alert is-helpful">
 
-You also have the option to use Angular's strict mode, which can help you write better, more maintainable code.
-For more information, see [Strict mode](/guide/strict-mode).
+También tienes la opción de usar el modo estricto de Angular, que puede ayudarte a escribir un código mejor y más fácil de mantener.
+Para más información, mira [Modo estricto](/guide/strict-mode).
 
 </div>
 
 {@a serve}
 
-## Run the application
+## Ejecutar la aplicación
 
-The Angular CLI includes a server, so that you can build and serve your app locally.
+La CLI de Angular incluye un servidor, de modo que puede crear y servir su aplicación localmente.
 
-1. Navigate to the workspace folder, such as `my-app`.
+1. Navega a la carpeta del espacio de trabajo, como `my-app`.
 
-1. Run the following command:
+1. Ejecuta el siguiente comando:
 
 <code-example language="sh" class="code-shell">
   cd my-app
   ng serve --open
 </code-example>
 
-The `ng serve` command launches the server, watches your files,
-and rebuilds the app as you make changes to those files.
+El comando `ng serve` inicia el servidor, observa sus archivos,
+y reconstruye la aplicación a medida que realizas cambios en esos archivos.
 
-The `--open` (or just `-o`) option automatically opens your browser
-to `http://localhost:4200/`.
+La opción `--open` (o simplemente` -o`) abre automáticamente su navegador
+en `http://localhost:4200/`.
 
-If your installation and setup was successful, you should see a page similar to the following.
+Si tu instalación y configuración fue exitosa, deberías ver una página similar a la siguiente.
 
 
 <div class="lightbox">
@@ -121,12 +121,12 @@ If your installation and setup was successful, you should see a page similar to 
 </div>
 
 
-## Next steps
+## Pasos siguientes
 
-* For a more thorough introduction to the fundamental concepts and terminology of Angular single-page app architecture and design principles, read the [Angular Concepts](guide/architecture) section.
+* Para obtener una introducción más completa a los conceptos fundamentales y la terminología de la arquitectura de aplicaciones de una sola página y los principios de diseño de Angular, lee la sección [Conceptos Angular](guide/architecture) .
 
-* Work through the [Tour of Heroes Tutorial](tutorial), a complete hands-on exercise that introduces you to the app development process using the Angular CLI and walks through important subsystems.
+* Trabaja en el [Tutorial de Tour de los Heroes](tutorial), un ejercicio práctico completo que te presenta el proceso de desarrollo de aplicaciones mediante la CLI de Angular y te explica los subsistemas importantes.
 
-* To learn more about using the Angular CLI, see the [CLI Overview](cli "CLI Overview"). In addition to creating the initial workspace and app scaffolding, you can use the CLI to generate Angular code such as components and services. The CLI supports the full development cycle, including building, testing, bundling, and deployment.
+* Para obtener más información sobre el uso de la CLI de Angular, consulta la [Descripción general del CLI](cli "CLI Overview"). Además de crear el espacio de trabajo inicial y andamios de la aplicación, puedes usar la CLI para generar código de Angular como componentes y servicios. La CLI soporta el ciclo de desarrollo completo, incluida la creación, las pruebas, la agrupación y la implementación.
 
-* For more information about the Angular files generated by `ng new`, see [Workspace and Project File Structure](guide/file-structure).
+* Para obtener más información sobre los archivos de Angular generados por `ng new`, consulta [Espacio de trabajo y Estructura de archivos del proyecto](guide/file-structure).
