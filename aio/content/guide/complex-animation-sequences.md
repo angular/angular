@@ -1,104 +1,105 @@
-# Complex animation sequences
+# Secuencias de animación complejas
 
-#### Prerequisites
+#### Requisitos
 
-A basic understanding of the following concepts:
+Una comprensión básica de los siguientes conceptos:
 
-* [Introduction to Angular animations](guide/animations)
-* [Transition and triggers](guide/transition-and-triggers)
+- [Introducción a animaciones Angular](guide/animations)
+- [Transición y triggers](guide/transition-and-triggers)
 
 <hr>
 
-So far, we've learned simple animations of single HTML elements. Angular also lets you animate coordinated sequences, such as an entire grid or list of elements as they enter and leave a page. You can choose to run multiple animations in parallel, or run discrete animations sequentially, one following another.
+Hasta ahora, hemos aprendido animaciones simples de elementos HTML individuales. Angular también te permite animar secuencias coordinadas, como un grid completo o una lista de elementos cuando entran y salen de una página. Puedes elegir ejecutar varias animaciones en paralelo, o ejecutar animaciones discretas secuencialmente, una tras otra.
 
-Functions that control complex animation sequences are as follows:
+Las funciones que controlan secuencias de animación complejas son las siguientes:
 
-* `query()` finds one or more inner HTML elements.
-* `stagger()` applies a cascading delay to animations for multiple elements.
-* [`group()`](api/animations/group) runs multiple animation steps in parallel.
-* `sequence()` runs animation steps one after another.
+- `query()` encuentra uno o más elementos HTML internos.
+- `stagger()` aplica un retraso en cascada a las animaciones para varios elementos.
+- [`group()`](api/animations/group) ejecuta varios pasos de animación en paralelo.
+- `sequence()` ejecuta pasos de animación uno tras otro.
 
 {@a complex-sequence}
 
-## Animate multiple elements using query() and stagger() functions
+## Animar varios elementos usando las funciones query() y stagger()
 
-The `query()` function allows you to find inner elements within the element that is being animated. This function targets specific HTML elements within a parent component and applies animations to each element individually. Angular intelligently handles setup, teardown, and cleanup as it coordinates the elements across the page.
+La función `query()` permite encontrar elementos internos dentro del elemento que estás animando. Esta función se dirige a elementos HTML específicos dentro de un componente principal y aplica animaciones a cada elemento individualmente. Angular maneja de manera inteligente la configuración, el desmontaje y la limpieza a medida que coordina los elementos en la página.
 
-The `stagger()` function allows you to define a timing gap between each queried item that is animated and thus animates elements with a delay between them.
+La función `stagger()` permite definir un intervalo de tiempo entre cada elemento consultado que está animado y, por lo tanto, anima elementos con un retraso entre ellos.
 
-The Filter/Stagger tab in the live example shows a list of heroes with an introductory sequence. The entire list of heroes cascades in, with a slight delay from top to bottom.
+La pestaña Filter/Stagger en el ejemplo en vivo muestra una lista de héroes con una secuencia introductoria. La lista completa de héroes entra en cascada, con un ligero retraso de arriba a abajo.
 
-The following example demonstrates how to use `query()` and `stagger()` functions on the entry of an animated element.
+El siguiente ejemplo demuestra cómo utilizar las funciones `query()` y `stagger()` en la entrada de un elemento animado.
 
-* Use `query()` to look for an element entering the page that meets certain criteria.
+- Usa `query()` para buscar un elemento que ingrese a la página que cumpla con ciertos criterios.
 
-* For each of these elements, use `style()` to set the same initial style for the element. Make it invisible and use `transform` to move it out of position so that it can slide into place.
+- Para cada uno de estos elementos, usa `style()` para establecer el mismo estilo inicial para el elemento. Hazlo invisible y usa `transform` para moverlo fuera de su posición para que pueda deslizarse a su lugar.
 
-* Use `stagger()` to delay each animation by 30 milliseconds.
+- Usa `stagger()` para retrasar cada animación en 30 milisegundos.
 
-* Animate each element on screen for 0.5 seconds using a custom-defined easing curve, simultaneously fading it in and un-transforming it.
+- Anima cada elemento en la pantalla durante 0,5 segundos utilizando una curva de easing (suavizado) definida a medida, desvaneciéndolo y deshaciéndolo simultáneamente.
 
 <code-example path="animations/src/app/hero-list-page.component.ts" header="src/app/hero-list-page.component.ts" region="page-animations" language="typescript"></code-example>
 
-## Parallel animation using group() function
+## Animación paralela usando la función group()
 
-You've seen how to add a delay between each successive animation. But you may also want to configure animations that happen in parallel. For example, you may want to animate two CSS properties of the same element but use a different `easing` function for each one. For this, you can use the animation [`group()`](api/animations/group) function.
+Has visto cómo agregar un retraso entre cada animación sucesiva. Pero es posible que también quieras configurar animaciones que suceden en paralelo. Por ejemplo, es posible que quieras animar dos propiedades CSS del mismo elemento pero utilizar una función de `easing` diferente para cada una. Para ello, puedes utilizar la función de animación [`group()`](api/animations/group).
 
 <div class="alert is-helpful">
 
-**Note:** The [`group()`](api/animations/group) function is used to group animation *steps*, rather than animated elements.
+**Nota:** La función [`group()`](api/animations/group) se usa para agrupar _pasos_ de animación, en lugar de elementos animados.
+
 </div>
 
-In the following example, using groups on both `:enter` and `:leave` allow for two different timing configurations. They're applied to the same element in parallel, but run independently.
+En el siguiente ejemplo, el uso de grupos tanto en `:enter` como en `:leave` permite dos configuraciones de tiempo diferentes. Se aplican al mismo elemento en paralelo, pero se ejecutan de forma independiente.
 
 <code-example path="animations/src/app/hero-list-groups.component.ts" region="animationdef" header="src/app/hero-list-groups.component.ts (excerpt)" language="typescript"></code-example>
 
-## Sequential vs. parallel animations
+## Animaciones secuenciales vs paralelas
 
-Complex animations can have many things happening at once. But what if you want to create an animation involving several animations happening one after the other? Earlier we used [`group()`](api/animations/group) to run multiple animations all at the same time, in parallel.
+Las animaciones complejas pueden tener muchas cosas sucediendo a la vez. Pero, ¿qué sucede si quieres crear una animación que involucre varias animaciones sucediendo una tras otra? Anteriormente usamos [`group()`](api/animations/group) para ejecutar múltiples animaciones al mismo tiempo, en paralelo.
 
-A second function called `sequence()` lets you run those same animations one after the other. Within `sequence()`, the animation steps consist of either `style()` or `animate()` function calls.
+Una segunda función llamada `sequence()` permite ejecutar esas mismas animaciones una tras otra. Dentro de `sequence()`, los pasos de la animación consisten en llamadas de función `style()` o `animate()`
 
-* Use `style()` to apply the provided styling data immediately.
-* Use `animate()` to apply styling data over a given time interval.
+- Usa `style()` para aplicar los datos de estilo proporcionados inmediatamente.
+- Usa `animate()` para aplicar datos de estilo en un intervalo de tiempo determinado.
 
-## Filter animation example
+## Ejemplo de animación de filtro
 
-Let's take a look at another animation on the live example page. Under the Filter/Stagger tab, enter some text into the **Search Heroes** text box, such as `Magnet` or `tornado`.
+Echemos un vistazo a otra animación en la página de ejemplo. En la pestaña Filter/Stagger, ingresa un texto en el cuadro de texto **Search Heroes**, como `Magnet` o `tornado`.
 
-The filter works in real time as you type. Elements leave the page as you type each new letter and the filter gets progressively stricter. The heroes list gradually re-enters the page as you delete each letter in the filter box.
+El filtro funciona en tiempo real a medida que escribe. Los elementos abandonan la página a medida que escribe cada nueva letra y el filtro se vuelve progresivamente más estricto. La lista de héroes vuelve a entrar gradualmente en la página a medida que eliminas cada letra en la caja de filtro.
 
-The HTML template contains a trigger called `filterAnimation`.
+La plantilla HTML contiene un trigger llamado `filterAnimation`.
 
 <code-example path="animations/src/app/hero-list-page.component.html" header="src/app/hero-list-page.component.html" region="filter-animations"></code-example>
 
-The component file contains three transitions.
+El archivo del componente contiene tres transiciones.
 
 <code-example path="animations/src/app/hero-list-page.component.ts" header="src/app/hero-list-page.component.ts" region="filter-animations" language="typescript"></code-example>
 
-The animation does the following:
+La animación hace lo siguiente:
 
-* Ignores any animations that are performed when the user first opens or navigates to this page. The filter narrows what is already there, so it assumes that any HTML elements to be animated already exist in the DOM.
+- Ignora las animaciones que se realizan cuando el usuario abre o navega por primera vez a esta página. El filtro reduce lo que ya está allí, por lo que asume que los elementos HTML que se van a animar ya existen en el DOM.
 
-* Performs a filter match for matches.
+- Realiza un filtro de coincidencia.
 
-For each match:
+Para cada coincidencia:
 
-* Hides the element by making it completely transparent and infinitely narrow, by setting its opacity and width to 0.
+- Oculta el elemento haciéndolo completamente transparente e infinitamente estrecho, estableciendo su opacidad y ancho en 0.
 
-* Animates in the element over 300 milliseconds. During the animation, the element assumes its default width and opacity.
+- Anima el elemento más de 300 milisegundos. Durante la animación, el elemento asume su ancho y opacidad predeterminados.
 
-* If there are multiple matching elements, staggers in each element starting at the top of the page, with a 50-millisecond delay between each element.
+- Si hay varios elementos coincidentes, se escalona en cada elemento comenzando en la parte superior de la página, con un retraso de 50 milisegundos entre cada elemento.
 
-## Animation sequence summary
+## Resumen de la secuencia de animación
 
-Angular functions for animating multiple elements start with `query()` to find inner elements, for example gathering all images within a `<div>`. The remaining functions, `stagger()`, [`group()`](api/animations/group), and `sequence()`, apply cascades or allow you to control how multiple animation steps are applied.
+Las funciones Angular para animar múltiples elementos comienzan con `query()` para encontrar elementos internos, por ejemplo, reuniendo todas las imágenes dentro de un `<div>`. Las funciones restantes, `stagger()`, [`group()`](api/animations/group) y `sequence()`, aplican cascadas o te permiten controlar cómo se aplican múltiples pasos de animación.
 
-## More on Angular animations
+## Más sobre animaciones en Angular
 
-You may also be interested in the following:
+También puedes estar interesado en lo siguiente:
 
-* [Introduction to Angular animations](guide/animations)
-* [Transition and triggers](guide/transition-and-triggers)
-* [Reusable animations](guide/reusable-animations)
-* [Route transition animations](guide/route-animations)
+- [Introducción a animaciones Angular](guide/animations)
+- [Transición y triggers](guide/transition-and-triggers)
+- [Animaicones reusables](guide/reusable-animations)
+- [Animaciones en transición de ruta](guide/route-animations)

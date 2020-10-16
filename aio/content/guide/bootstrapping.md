@@ -1,18 +1,18 @@
-# Launching your app with a root module
+# Lanzando tu aplicación con un módulo raíz
 
-#### Prerequisites
+#### Pre-requisitos
 
-A basic understanding of the following:
+Una comprensión básica de lo siguiente:
 * [JavaScript Modules vs. NgModules](guide/ngmodule-vs-jsmodule).
 
 <hr />
 
-An NgModule describes how the application parts fit together.
-Every application has at least one Angular module, the _root_ module,
-which must be present for bootstrapping the application on launch.
-By convention and by default, this NgModule is named `AppModule`.
+Un NgModule describe cómo encajan las partes de la aplicación.
+Cada aplicación tiene al menos un módulo Angular, el módulo _root_,
+que debe estar presente para arrancar la aplicación en el lanzamiento inicial.
+Por convención y por defecto, este NgModule se llama `AppModule`.
 
-When you use the [Angular CLI](cli) command `ng new` to generate an app, the default `AppModule` is as follows.
+Cuando se usa el comando de [Angular CLI](cli) `ng new` para generar una aplicación, el `AppModule` predeterminado es el siguiente.
 
 ```typescript
 /* JavaScript imports */
@@ -40,43 +40,44 @@ export class AppModule { }
 
 ```
 
-After the import statements is a class with the
-**`@NgModule`** [decorator](guide/glossary#decorator '"Decorator" explained').
+Después de las declaraciones de importación hay una clase con
+[decorador](guide/glossary#decorator 'Explicando "Decorator"') **`@NgModule`**.
 
-The `@NgModule` decorator identifies `AppModule` as an `NgModule` class.
-`@NgModule` takes a metadata object that tells Angular how to compile and launch the application.
+El decorador `@NgModule` identifica `AppModule` como una clase `NgModule`.
+`@NgModule` toma un objeto de metadatos que le dice a Angular cómo compilar e iniciar la aplicación.
 
-* **_declarations_**&mdash;this application's lone component.
-* **_imports_**&mdash;import `BrowserModule` to have browser specific services such as DOM rendering, sanitization, and location.
-* **_providers_**&mdash;the service providers.
-* **_bootstrap_**&mdash;the _root_ component that Angular creates and inserts
-into the `index.html` host web page.
+* **_declarations_**&mdash; el único componente de esta aplicación..
+* **_imports_**&mdash; importar `BrowserModule` para tener servicios específicos del navegador como renderizado DOM, sanitization y ubicación.
+* **_providers_**&mdash; los proveedores de servicios.
+* **_bootstrap_**&mdash; el componente raíz que Angular crea e inserta
+en la página web de host `index.html`.
 
-The default application created by the Angular CLI only has one component, `AppComponent`, so it
-is in both the `declarations` and the `bootstrap` arrays.
+La aplicación predeterminada creada por Angular CLI solo tiene un componente, `AppComponent`, por lo que
+está en los arrays de `declarations` y `bootstrap`.
 
+{@a the-declarations-array}
 {@a declarations}
 
-## The `declarations` array
+## El array `declarations`
 
-The module's `declarations` array tells Angular which components belong to that module.
-As you create more components, add them to `declarations`.
+El array de `declarations` le dice a Angular qué componentes pertenecen a ese módulo.
+A medida que crees más componentes, agrégalos a las `declarations`.
 
-You must declare every component in exactly one `NgModule` class.
-If you use a component without declaring it, Angular returns an
-error message.
+Debe declarar cada componente en exactamente una clase `NgModule`.
+Si se usa un componente sin declararlo, Angular devuelve un
+mensaje de error.
 
-The `declarations` array only takes declarables. Declarables
-are components, [directives](guide/attribute-directives) and [pipes](guide/pipes).
-All of a module's declarables must be in the `declarations` array.
-Declarables must belong to exactly one module. The compiler emits
-an error if you try to declare the same class in more than one module.
+El array `declarations` solo acepta declarables. Declarables pueden ser
+componentes, [directivas](guide/attribute-directives) y [pipes](guide/pipes).
+Todos los declarables de un módulo deben estar en el array de `declarations`.
+Los declarables deben pertenecer exactamente a un módulo. El compilador emite
+un error si se intenta declarar la misma clase en más de un módulo.
 
-These declared classes are visible within the module but invisible
-to components in a different module unless they are exported from
-this module and the other module imports this one.
+Estas clases declaradas son visibles dentro del módulo pero invisibles
+a componentes en un módulo diferente, a menos que se exporten desde
+éste módulo y el otro módulo importe éste mismo módulo.
 
-An example of what goes into a declarations array follows:
+A continuación, se muestra un ejemplo de un array `declarations`:
 
 ```typescript
   declarations: [
@@ -86,89 +87,86 @@ An example of what goes into a declarations array follows:
   ],
 ```
 
-A declarable can only belong to one module, so only declare it in
-one `@NgModule`. When you need it elsewhere,
-import the module that has the declarable you need in it.
+Un declarable solo puede pertenecer a un módulo, por lo que solo debe ser declarado en
+un `@NgModule`. Cuando se necesite en otro lugar,
+importa el módulo que tiene el declarable que necesites.
 
-**Only `@NgModule` references** go in the `imports` array.
-
-
-### Using directives with `@NgModule`
-
-Use the `declarations` array for directives.
-To use a directive, component, or pipe in a module, you must do a few things:
-
-1. Export it from the file where you wrote it.
-2. Import it into the appropriate module.
-3. Declare it in the `@NgModule` `declarations` array.
+**Solo las referencias de `@NgModule`** van en el array `imports`.
 
 
-Those three steps look like the following. In the file where you create your directive, export it.
-The following example, named `ItemDirective` is the default directive structure that the CLI generates in its own file, `item.directive.ts`:
+### Usando directivas con `@NgModule`
+
+Usa el array `declarations` para las directivas.
+Para usar una directiva, un componente o un pipe en un módulo, hay que hacer algunas cosas:
+
+1. Exportarlo desde el archivo donde se escribió.
+2. Importarlo al módulo apropiado.
+3. Declararlo en el array `declarations` del `@NgModule`.
+
+
+Esos tres pasos se parecen a los siguientes. En el archivo donde se crea la directiva, expórtalo.
+El siguiente ejemplo, llamado `ItemDirective` es la estructura de directiva predeterminada que la CLI genera en su propio archivo, `item.directive.ts`:
 
 <code-example path="bootstrapping/src/app/item.directive.ts" region="directive" header="src/app/item.directive.ts"></code-example>
 
-The key point here is that you have to export it so you can import it elsewhere. Next, import it
-into the `NgModule`, in this example `app.module.ts`, with a JavaScript import statement:
+El punto clave aquí es que se debe exportar para poder importarlo en otro lugar. A continuación, importar
+en el `NgModule`, en este ejemplo, `app.module.ts` con una declaración de importación de JavaScript:
 
 <code-example path="bootstrapping/src/app/app.module.ts" region="directive-import" header="src/app/app.module.ts"></code-example>
 
-And in the same file, add it to the `@NgModule` `declarations` array:
+Y en el mismo archivo, agregarlo al array `declarations` del `@ NgModule`:
 
 <code-example path="bootstrapping/src/app/app.module.ts" region="declarations" header="src/app/app.module.ts"></code-example>
 
 
-Now you could use your `ItemDirective` in a component. This example uses `AppModule`, but you'd do it the same way for a feature module. For more about directives, see [Attribute Directives](guide/attribute-directives) and [Structural Directives](guide/structural-directives). You'd also use the same technique for [pipes](guide/pipes) and components.
+Ahora puedes usar tu `ItemDirective` en un componente. Este ejemplo usa `AppModule`, pero se haría de la misma manera para un módulo de funciones. Para obtener más información sobre las directivas, consulta [Directivas de atributos](guide/attribute-directives) y [Directivas estructurales](guide/structural-directives). También se usaría la misma técnica para [pipes](guide/pipes) y componentes.
 
-Remember, components, directives, and pipes belong to one module only. You only need to declare them once in your app because you share them by importing the necessary modules. This saves you time and helps keep your app lean.
-
-
+Recuerda, los componentes, directivas y pipes pertenecen a un solo módulo. Solo se necesita declararlos una vez en tu aplicación porque se comparten importando los módulos necesarios. Esto ahorra tiempo y ayuda a mantener la aplicación optimizada.
 
 
 {@a imports}
 
-## The `imports` array
+## El array de `imports`
 
-The module's `imports` array appears exclusively in the `@NgModule` metadata object.
-It tells Angular about other NgModules that this particular module needs to function properly.
+El array de `imports` del módulo aparece exclusivamente en el objeto de metadatos del `@NgModule`.
+Le dice a Angular sobre otros NgModules que este módulo en particular necesita para funcionar correctamente.
 
-This list of modules are those that export components, directives, or pipes
-that the component templates in this module reference. In this case, the component is
-`AppComponent`, which references components, directives, or pipes in `BrowserModule`,
-`FormsModule`, or  `HttpClientModule`.
-A component template can reference another component, directive,
-or pipe when the referenced class is declared in this module or
-the class was imported from another module.
+Esta lista de módulos son los que exportan componentes, directivas o pipes
+que las plantillas de componentes en este módulo hacen referencia. En este caso, el componente es
+`AppComponent`, que hace referencia a componentes, directivas o pipes en `BrowserModule`,
+`FormsModule`, o  `HttpClientModule`.
+Una plantilla de componente puede hacer referencia a otro componente, directiva,
+o pipe cuando la clase referenciada se declara en este módulo o
+la clase se importó de otro módulo.
 
 {@a bootstrap-array}
 
-## The `providers` array
+## El array `providers`
 
-The providers array is where you list the services the app needs. When
-you list services here, they are available app-wide. You can scope
-them when using feature modules and lazy loading. For more information, see
-[Providers](guide/providers).
+El array `providers` es donde se enumeran los servicios que necesita la aplicación. Cuando
+enumera los servicios, están disponibles en toda la aplicación. Puedes reducir el scope
+al usar módulos de funciones y carga diferida. Para más información, ver
+[Proveedores](guide/providers).
 
-## The `bootstrap` array
+## El array `bootstrap`
 
-The application launches by bootstrapping the root `AppModule`, which is
-also referred to as an `entryComponent`.
-Among other things, the bootstrapping process creates the component(s) listed in the `bootstrap` array
-and inserts each one into the browser DOM.
+La aplicación se inicia haciendo bootstraping desde la raíz `AppModule`, que es
+también conocido como `entryComponent`.
+Entre otras cosas, el proceso de carga crea los componentes enumerados en el array de `bootstrap`
+e inserta cada uno en el DOM del navegador.
 
-Each bootstrapped component is the base of its own tree of components.
-Inserting a bootstrapped component usually triggers a cascade of
-component creations that fill out that tree.
+Cada componente bootstrap es la base de su propio árbol de componentes.
+La inserción de un componente bootstrapped generalmente desencadena una cascada de
+creaciones de componentes que completan ese árbol.
 
-While you can put more than one component tree on a host web page,
-most applications have only one component tree and bootstrap a single root component.
+Si bien puedes colocar más de un árbol de componentes en una página web de host,
+la mayoría de las aplicaciones tienen solo un árbol de componentes y arrancan un solo componente raíz.
 
-This one root component is usually called `AppComponent` and is in the
-root module's `bootstrap` array.
+Este componente raíz se suele llamar `AppComponent` y se encuentra en el
+array `bootstrap` del módulo raíz.
 
 
+## Más sobre módulos Angular
 
-## More about Angular Modules
-
-For more on NgModules you're likely to see frequently in apps,
-see [Frequently Used Modules](guide/frequent-ngmodules).
+Para obtener más información sobre NgModules que probablemente veas con frecuencia en las aplicaciones,
+consulta [Módulos de uso frecuente](guide/frequent-ngmodules).

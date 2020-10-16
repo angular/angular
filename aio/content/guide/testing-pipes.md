@@ -1,41 +1,39 @@
-# Testing Pipes
+# Probando los Pipes
 
-You can test [pipes](guide/pipes) without the Angular testing utilities.
+Puedes probar los [pipes](guide/pipes) sin las utilidades para pruebas de Angular.
 
 <div class="alert is-helpful">
 
-  For the sample app that the testing guides describe, see the <live-example name="testing" embedded-style noDownload>sample app</live-example>.
+  Para la aplicación de muestra que indican las guías de prueba, visita <live-example name="testing" embedded-style noDownload>la aplicación de prueba</live-example>.
 
-  For the tests features in the testing guides, see <live-example name="testing" stackblitz="specs" noDownload>tests</live-example>.
+  Para las pruebas de funcionalidades en las guías de prueba, visita <live-example name="testing" stackblitz="specs" noDownload>pruebas</live-example>.
 
 </div>
 
-## Testing the `TitleCasePipe`
+## Probando el `TitleCasePipe`
 
-A pipe class has one method, `transform`, that manipulates the input
-value into a transformed output value.
-The `transform` implementation rarely interacts with the DOM.
-Most pipes have no dependence on Angular other than the `@Pipe`
-metadata and an interface.
+La clase de un pipe contiene un método, `transform`, que manipula el valor de entrada y lo transforma en un valor de salida.
+La implementación del `transform` rara vez interactúa con el DOM.
+La mayoría de los pipes no dependen de Angular más allá de los metadatos del `@Pipe` y una interfaz.
 
-Consider a `TitleCasePipe` that capitalizes the first letter of each word.
-Here's an implementation with a regular expression.
+Considera una `TitleCasePipe` que pone en mayúscula la primera letra de cada palabra.
+Aquí está una implementación con una expresión regular.
 
 <code-example path="testing/src/app/shared/title-case.pipe.ts" header="app/shared/title-case.pipe.ts"></code-example>
 
-Anything that uses a regular expression is worth testing thoroughly.
-Use simple Jasmine to explore the expected cases and the edge cases.
+Cualquier cosa que use una expresión regular vale la pena probarla a fondo.
+Simplemente usa Jasmine para explorar todos los casos esperados y todos los casos extremos.
 
 <code-example path="testing/src/app/shared/title-case.pipe.spec.ts" region="excerpt" header="app/shared/title-case.pipe.spec.ts"></code-example>
 
 {@a write-tests}
 
-## Writing DOM tests to support a pipe test
+## Escribiendo pruebas DOM para soportar una prueba de un pipe
 
-These are tests of the pipe _in isolation_.
-They can't tell if the `TitleCasePipe` is working properly as applied in the application components.
+Estas son pruebas de un pipe _en aislamiento_.
+No pueden decir si el `TitleCasePipe` está funcionando correctamente tal y como se aplica en los componentes de la aplicación.
 
-Consider adding component tests such as this one:
+Considera añadir pruebas de componente como por ejemplo esta:
 
 <code-example path="testing/src/app/hero/hero-detail.component.spec.ts" region="title-case-pipe" header="app/hero/hero-detail.component.spec.ts (pipe test)"></code-example>
 

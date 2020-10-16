@@ -1,65 +1,65 @@
-# Template statements
+# Declaraciones de plantilla
 
-A template **statement** responds to an **event** raised by a binding target
-such as an element, component, or directive.
+Una **declaración** de plantilla responde a un **evento** provocado por un enlace a un objetivo
+como un elemento, componente o directiva.
 
 <div class="alert is-helpful">
 
-See the <live-example name="template-syntax">Template syntax</live-example> for
-the syntax and code snippets in this guide.
+Mira la <live-example name="template-syntax">sintaxis de la plantilla</live-example> para
+la sintaxis y los fragmentos de código de esta guía.
 
 </div>
 
-The following template statement appears in quotes to the right of the `=`&nbsp;symbol as in `(event)="statement"`.
+La siguiente declaración de plantilla aparece entre comillas a la derecha del símbolo `=`&nbsp;como en `(event)="statement"`.
 
 <code-example path="template-syntax/src/app/app.component.html" region="context-component-statement" header="src/app/app.component.html"></code-example>
 
-A template statement *has a side effect*.
-That's the whole point of an event.
-It's how you update application state from user action.
+Una declaración de plantilla *tiene un efecto secundario*.
+Ese es el objetivo de un evento.
+Es la forma de actualizar el estado de la aplicación a partir de la acción del usuario.
 
-Responding to events is the other side of Angular's "unidirectional data flow".
-You're free to change anything, anywhere, during this turn of the event loop.
+Responder a los eventos es el otro lado del "flujo de datos unidireccional" de Angular.
+Eres libre de cambiar cualquier cosa, en cualquier lugar, durante este ciclo del evento.
 
-Like template expressions, template *statements* use a language that looks like JavaScript.
-The template statement parser differs from the template expression parser and
-specifically supports both basic assignment (`=`) and chaining expressions with <code>;</code>.
+Al igual que las expresiones de plantilla, las *declaraciones* de plantilla utilizan un lenguaje que se parece a JavaScript.
+El analizador de declaraciones de plantilla difiere del analizador de expresiones de plantilla y
+admite específicamente tanto la asignación básica (`=`) como el encadenamiento de expresiones con <code>;</code>.
 
-However, certain JavaScript and template expression syntax is not allowed:
+Sin embargo, no se permiten determinadas sintaxis de expresión de plantilla y JavaScript:
 
 * <code>new</code>
-* increment and decrement operators, `++` and `--`
-* operator assignment, such as `+=` and `-=`
-* the bitwise operators, such as `|` and `&`
-* the [pipe operator](guide/template-expression-operators#pipe)
+* Operadores de incremento y decremento, `++` y `--`
+* operador de asignación , como `+=` y `-=`
+* los operadores bit a bit, como `|` y `&`
+* el [operador pipe](guide/template-expression-operators#pipe)
 
-## Statement context
+## Contexto de la declaración
 
-As with expressions, statements can refer only to what's in the statement context
-such as an event handling method of the component instance.
+Al igual que con las expresiones, las declaraciones solo pueden ver lo que está en el contexto de la declaración
+como un método de manejo de eventos de la instancia del componente.
 
-The *statement context* is typically the component instance.
-The *deleteHero* in `(click)="deleteHero()"` is a method of the data-bound component.
+El *contexto de la declaración* es típicamente la instancia del componente.
+El *deleteHero* en `(click)="deleteHero()"` es un método del componente enlazado a datos.
 
 <code-example path="template-syntax/src/app/app.component.html" region="context-component-statement" header="src/app/app.component.html"></code-example>
 
-The statement context may also refer to properties of the template's own context.
-In the following examples, the template `$event` object,
-a [template input variable](guide/built-in-directives#template-input-variable) (`let hero`),
-and a [template reference variable](guide/template-reference-variables) (`#heroForm`)
-are passed to an event handling method of the component.
+El contexto de la declaración también puede ver las propiedades del propio contexto de la plantilla.
+En los siguientes ejemplos, el objeto de plantilla `$event`,
+una [variable de entrada de plantilla](guide/built-in-directives#template-input-variable) (`let hero`),
+y una [variable de referencia de plantilla](guide/template-reference-variables) (`#heroForm`)
+se pasan a un método de manejo de eventos del componente.
 
 <code-example path="template-syntax/src/app/app.component.html" region="context-var-statement" header="src/app/app.component.html"></code-example>
 
-Template context names take precedence over component context names.
-In `deleteHero(hero)` above, the `hero` is the template input variable,
-not the component's `hero` property.
+Los nombres de contexto de plantilla tienen prioridad sobre los nombres de contexto de componentes.
+En `deleteHero(hero)` anterior, el `hero` es la variable de entrada de la plantilla
+no la propiedad `hero` del componente.
 
-## Statement guidelines
+## Pautas de la declaración
 
-Template statements cannot refer to anything in the global namespace. They
-can't refer to `window` or `document`.
-They can't call `console.log` or `Math.max`.
+Las declaraciones de plantilla no pueden ver nada en el espacio de nombres global. No
+pueden ver `window` o `document`.
+No pueden llamar `console.log` o `Math.max`.
 
-As with expressions, avoid writing complex template statements.
-A method call or simple property assignment should be the norm.
+Al igual que con las expresiones, evita escribir declaraciones de plantilla complejas.
+Una llamada a un método o una simple asignación de propiedad debería ser la norma.
