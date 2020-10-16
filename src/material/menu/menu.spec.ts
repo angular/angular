@@ -626,10 +626,18 @@ describe('MatMenu', () => {
     expect(fixture.componentInstance.items.first.getLabel()).toBe('Item');
   });
 
-  it('should filter out non-text nodes when figuring out the label', () => {
+  it('should filter out icon nodes when figuring out the label', () => {
     const fixture = createComponent(SimpleMenu, [], [FakeIcon]);
     fixture.detectChanges();
-    expect(fixture.componentInstance.items.last.getLabel()).toBe('Item with an icon');
+    const items = fixture.componentInstance.items.toArray();
+    expect(items[2].getLabel()).toBe('Item with an icon');
+  });
+
+  it('should get the label of an item if the text is not in a direct descendant node', () => {
+    const fixture = createComponent(SimpleMenu, [], [FakeIcon]);
+    fixture.detectChanges();
+    const items = fixture.componentInstance.items.toArray();
+    expect(items[3].getLabel()).toBe('Item with text inside span');
   });
 
   it('should set the proper focus origin when opening by mouse', fakeAsync(() => {
@@ -2263,8 +2271,11 @@ describe('MatMenu default overrides', () => {
       <button mat-menu-item> Item </button>
       <button mat-menu-item disabled> Disabled </button>
       <button mat-menu-item disableRipple>
-        <fake-icon>unicorn</fake-icon>
+        <mat-icon>unicorn</mat-icon>
         Item with an icon
+      </button>
+      <button mat-menu-item>
+        <span>Item with text inside span</span>
       </button>
       <button *ngFor="let item of extraItems" mat-menu-item> {{item}} </button>
     </mat-menu>
@@ -2486,7 +2497,7 @@ class SubmenuDeclaredInsideParentMenu {
 
 
 @Component({
-  selector: 'fake-icon',
+  selector: 'mat-icon',
   template: '<ng-content></ng-content>'
 })
 class FakeIcon {}

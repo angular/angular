@@ -104,7 +104,8 @@ export declare class MatMenuItem extends _MatMenuItemMixinBase implements Focusa
     _parentMenu?: MatMenuPanel<MatMenuItem> | undefined;
     _triggersSubmenu: boolean;
     role: 'menuitem' | 'menuitemradio' | 'menuitemcheckbox';
-    constructor(_elementRef: ElementRef<HTMLElement>, document?: any, _focusMonitor?: FocusMonitor | undefined, _parentMenu?: MatMenuPanel<MatMenuItem> | undefined);
+    constructor(_elementRef: ElementRef<HTMLElement>,
+    _document?: any, _focusMonitor?: FocusMonitor | undefined, _parentMenu?: MatMenuPanel<MatMenuItem> | undefined);
     _checkDisabled(event: Event): void;
     _getHostElement(): HTMLElement;
     _getTabIndex(): string;
