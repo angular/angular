@@ -337,7 +337,7 @@ describe('TocComponent', () => {
 
       it('should re-apply the `active` class when the list elements change', () => {
         const getActiveTextContent = () =>
-            page.listItems.find(By.css('.active'))!.nativeElement.textContent.trim();
+            page.listItems.find(By.css('.active'))?.nativeElement.textContent.trim();
 
         tocComponent.activeIndex = 1;
         fixture.detectChanges();

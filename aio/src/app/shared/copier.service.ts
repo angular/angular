@@ -44,7 +44,7 @@ export class CopierService {
    * @return The temporary `<textarea>` element containing the specified text.
    */
   private createTextArea(text: string): HTMLTextAreaElement {
-    const docElem = document.documentElement!;
+    const docElem = document.documentElement;
     const isRTL = docElem.getAttribute('dir') === 'rtl';
 
     // Create a temporary element to hold the contents to copy.

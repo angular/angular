@@ -36,7 +36,7 @@ describe('site App', () => {
 
     // Test all headings (and sub-headings).
     expect(await navItemHeadings.count()).toBeGreaterThan(0);
-    await navItemHeadings.each(heading => testNavItemHeading(heading!, 1));
+    await navItemHeadings.each(heading => heading && testNavItemHeading(heading, 1));
 
     // Helpers
     async function expectToBeCollapsed(elementFinder: ElementFinder) {
@@ -63,7 +63,7 @@ describe('site App', () => {
       // Recursively test child-headings (while this heading is expanded).
       const nextLevel = level + 1;
       const childNavItemHeadings = page.getNavItemHeadings(children, nextLevel);
-      await childNavItemHeadings.each(childHeading => testNavItemHeading(childHeading!, nextLevel));
+      await childNavItemHeadings.each(childHeading => childHeading && testNavItemHeading(childHeading, nextLevel));
 
       // Ensure heading does not cause navigation when collapsing.
       await page.click(heading);
