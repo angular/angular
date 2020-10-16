@@ -6,12 +6,22 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {LanguageServiceAdapter} from '../language_service_adapter';
-import {setup, TEST_TEMPLATE} from './mock_host';
+import * as ts from 'typescript/lib/tsserverlibrary';
 
-const {project, service} = setup();
+import {LanguageServiceAdapter} from '../language_service_adapter';
+
+import {MockService, setup, TEST_TEMPLATE} from './mock_host';
 
 describe('Language service adapter', () => {
+  let project: ts.server.Project;
+  let service: MockService;
+
+  beforeAll(() => {
+    const {project: _project, service: _service} = setup();
+    project = _project;
+    service = _service;
+  });
+
   it('should mark template dirty if it has not seen the template before', () => {
     const adapter = new LanguageServiceAdapter(project);
     expect(adapter.isTemplateDirty(TEST_TEMPLATE)).toBeTrue();

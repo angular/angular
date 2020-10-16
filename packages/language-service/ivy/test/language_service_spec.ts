@@ -6,102 +6,113 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import * as ts from 'typescript/lib/tsserverlibrary';
+
 import {LanguageService, parseNgCompilerOptions} from '../language_service';
 
-import {setup, TEST_TEMPLATE} from './mock_host';
+import {MockService, setup, TEST_TEMPLATE} from './mock_host';
 
-const {project, tsLS, service} = setup();
+describe('language service adapter', () => {
+  let project: ts.server.Project;
+  let service: MockService;
+  let ngLS: LanguageService;
 
-describe('parseNgCompilerOptions', () => {
-  it('should read angularCompilerOptions in tsconfig.json', () => {
-    const options = parseNgCompilerOptions(project);
-    expect(options).toEqual(jasmine.objectContaining({
-      enableIvy: true,  // default for ivy is true
-      strictTemplates: true,
-      strictInjectionParameters: true,
-    }));
-  });
-});
-
-describe('last known program', () => {
-  const ngLS = new LanguageService(project, tsLS);
-
-  beforeEach(() => {
-    service.reset();
+  beforeAll(() => {
+    const {project: _project, tsLS, service: _service} = setup();
+    project = _project;
+    service = _service;
+    ngLS = new LanguageService(project, tsLS);
   });
 
-  it('should be set after getSemanticDiagnostics()', () => {
-    const d0 = ngLS.getSemanticDiagnostics(TEST_TEMPLATE);
-    expect(d0.length).toBe(0);
-    const p0 = getLastKnownProgram(ngLS);
-
-    const d1 = ngLS.getSemanticDiagnostics(TEST_TEMPLATE);
-    expect(d1.length).toBe(0);
-    const p1 = getLastKnownProgram(ngLS);
-    expect(p1).toBe(p0);  // last known program should not have changed
-
-    service.overwrite(TEST_TEMPLATE, `<test-c¦omp></test-comp>`);
-    const d2 = ngLS.getSemanticDiagnostics(TEST_TEMPLATE);
-    expect(d2.length).toBe(0);
-    const p2 = getLastKnownProgram(ngLS);
-    expect(p2).not.toBe(p1);  // last known program should have changed
+  describe('parseNgCompilerOptions', () => {
+    it('should read angularCompilerOptions in tsconfig.json', () => {
+      const options = parseNgCompilerOptions(project);
+      expect(options).toEqual(jasmine.objectContaining({
+        enableIvy: true,  // default for ivy is true
+        strictTemplates: true,
+        strictInjectionParameters: true,
+      }));
+    });
   });
 
-  it('should be set after getDefinitionAndBoundSpan()', () => {
-    const {position: pos0} = service.overwrite(TEST_TEMPLATE, `<test-c¦omp></test-comp>`);
+  describe('last known program', () => {
+    beforeEach(() => {
+      service.reset();
+    });
 
-    const d0 = ngLS.getDefinitionAndBoundSpan(TEST_TEMPLATE, pos0);
-    expect(d0).toBeDefined();
-    const p0 = getLastKnownProgram(ngLS);
+    it('should be set after getSemanticDiagnostics()', () => {
+      const d0 = ngLS.getSemanticDiagnostics(TEST_TEMPLATE);
+      expect(d0.length).toBe(0);
+      const p0 = getLastKnownProgram(ngLS);
 
-    const d1 = ngLS.getDefinitionAndBoundSpan(TEST_TEMPLATE, pos0);
-    expect(d1).toBeDefined();
-    const p1 = getLastKnownProgram(ngLS);
-    expect(p1).toBe(p0);  // last known program should not have changed
+      const d1 = ngLS.getSemanticDiagnostics(TEST_TEMPLATE);
+      expect(d1.length).toBe(0);
+      const p1 = getLastKnownProgram(ngLS);
+      expect(p1).toBe(p0);  // last known program should not have changed
 
-    const {position: pos1} = service.overwrite(TEST_TEMPLATE, `{{ ti¦tle }}`);
-    const d2 = ngLS.getDefinitionAndBoundSpan(TEST_TEMPLATE, pos1);
-    expect(d2).toBeDefined();
-    const p2 = getLastKnownProgram(ngLS);
-    expect(p2).not.toBe(p1);  // last known program should have changed
-  });
+      service.overwrite(TEST_TEMPLATE, `<test-c¦omp></test-comp>`);
+      const d2 = ngLS.getSemanticDiagnostics(TEST_TEMPLATE);
+      expect(d2.length).toBe(0);
+      const p2 = getLastKnownProgram(ngLS);
+      expect(p2).not.toBe(p1);  // last known program should have changed
+    });
 
-  it('should be set after getQuickInfoAtPosition()', () => {
-    const {position: pos0} = service.overwrite(TEST_TEMPLATE, `<test-c¦omp></test-comp>`);
+    it('should be set after getDefinitionAndBoundSpan()', () => {
+      const {position: pos0} = service.overwrite(TEST_TEMPLATE, `<test-c¦omp></test-comp>`);
 
-    const q0 = ngLS.getQuickInfoAtPosition(TEST_TEMPLATE, pos0);
-    expect(q0).toBeDefined();
-    const p0 = getLastKnownProgram(ngLS);
+      const d0 = ngLS.getDefinitionAndBoundSpan(TEST_TEMPLATE, pos0);
+      expect(d0).toBeDefined();
+      const p0 = getLastKnownProgram(ngLS);
 
-    const q1 = ngLS.getQuickInfoAtPosition(TEST_TEMPLATE, pos0);
-    expect(q1).toBeDefined();
-    const p1 = getLastKnownProgram(ngLS);
-    expect(p1).toBe(p0);  // last known program should not have changed
+      const d1 = ngLS.getDefinitionAndBoundSpan(TEST_TEMPLATE, pos0);
+      expect(d1).toBeDefined();
+      const p1 = getLastKnownProgram(ngLS);
+      expect(p1).toBe(p0);  // last known program should not have changed
 
-    const {position: pos1} = service.overwrite(TEST_TEMPLATE, `{{ ti¦tle }}`);
-    const q2 = ngLS.getQuickInfoAtPosition(TEST_TEMPLATE, pos1);
-    expect(q2).toBeDefined();
-    const p2 = getLastKnownProgram(ngLS);
-    expect(p2).not.toBe(p1);  // last known program should have changed
-  });
+      const {position: pos1} = service.overwrite(TEST_TEMPLATE, `{{ ti¦tle }}`);
+      const d2 = ngLS.getDefinitionAndBoundSpan(TEST_TEMPLATE, pos1);
+      expect(d2).toBeDefined();
+      const p2 = getLastKnownProgram(ngLS);
+      expect(p2).not.toBe(p1);  // last known program should have changed
+    });
 
-  it('should be set after getTypeDefinitionAtPosition()', () => {
-    const {position: pos0} = service.overwrite(TEST_TEMPLATE, `<test-c¦omp></test-comp>`);
+    it('should be set after getQuickInfoAtPosition()', () => {
+      const {position: pos0} = service.overwrite(TEST_TEMPLATE, `<test-c¦omp></test-comp>`);
 
-    const q0 = ngLS.getTypeDefinitionAtPosition(TEST_TEMPLATE, pos0);
-    expect(q0).toBeDefined();
-    const p0 = getLastKnownProgram(ngLS);
+      const q0 = ngLS.getQuickInfoAtPosition(TEST_TEMPLATE, pos0);
+      expect(q0).toBeDefined();
+      const p0 = getLastKnownProgram(ngLS);
 
-    const d1 = ngLS.getTypeDefinitionAtPosition(TEST_TEMPLATE, pos0);
-    expect(d1).toBeDefined();
-    const p1 = getLastKnownProgram(ngLS);
-    expect(p1).toBe(p0);  // last known program should not have changed
+      const q1 = ngLS.getQuickInfoAtPosition(TEST_TEMPLATE, pos0);
+      expect(q1).toBeDefined();
+      const p1 = getLastKnownProgram(ngLS);
+      expect(p1).toBe(p0);  // last known program should not have changed
 
-    const {position: pos1} = service.overwrite(TEST_TEMPLATE, `{{ ti¦tle }}`);
-    const d2 = ngLS.getTypeDefinitionAtPosition(TEST_TEMPLATE, pos1);
-    expect(d2).toBeDefined();
-    const p2 = getLastKnownProgram(ngLS);
-    expect(p2).not.toBe(p1);  // last known program should have changed
+      const {position: pos1} = service.overwrite(TEST_TEMPLATE, `{{ ti¦tle }}`);
+      const q2 = ngLS.getQuickInfoAtPosition(TEST_TEMPLATE, pos1);
+      expect(q2).toBeDefined();
+      const p2 = getLastKnownProgram(ngLS);
+      expect(p2).not.toBe(p1);  // last known program should have changed
+    });
+
+    it('should be set after getTypeDefinitionAtPosition()', () => {
+      const {position: pos0} = service.overwrite(TEST_TEMPLATE, `<test-c¦omp></test-comp>`);
+
+      const q0 = ngLS.getTypeDefinitionAtPosition(TEST_TEMPLATE, pos0);
+      expect(q0).toBeDefined();
+      const p0 = getLastKnownProgram(ngLS);
+
+      const d1 = ngLS.getTypeDefinitionAtPosition(TEST_TEMPLATE, pos0);
+      expect(d1).toBeDefined();
+      const p1 = getLastKnownProgram(ngLS);
+      expect(p1).toBe(p0);  // last known program should not have changed
+
+      const {position: pos1} = service.overwrite(TEST_TEMPLATE, `{{ ti¦tle }}`);
+      const d2 = ngLS.getTypeDefinitionAtPosition(TEST_TEMPLATE, pos1);
+      expect(d2).toBeDefined();
+      const p2 = getLastKnownProgram(ngLS);
+      expect(p2).not.toBe(p1);  // last known program should have changed
+    });
   });
 });
 

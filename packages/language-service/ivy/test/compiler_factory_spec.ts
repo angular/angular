@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {APP_COMPONENT, setup, TEST_TEMPLATE} from './mock_host';
+import * as ts from 'typescript/lib/tsserverlibrary';
 
-const {project, service} = setup();
+import {APP_COMPONENT, MockService, setup, TEST_TEMPLATE} from './mock_host';
 
 /**
  * The following specs do not directly test the CompilerFactory class, rather
@@ -17,6 +17,15 @@ const {project, service} = setup();
  */
 
 describe('tsserver', () => {
+  let project: ts.server.Project;
+  let service: MockService;
+
+  beforeAll(() => {
+    const {project: _project, service: _service} = setup();
+    project = _project;
+    service = _service;
+  });
+
   beforeEach(() => {
     service.reset();
   });

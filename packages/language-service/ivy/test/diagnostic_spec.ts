@@ -10,11 +10,17 @@ import * as ts from 'typescript/lib/tsserverlibrary';
 
 import {LanguageService} from '../language_service';
 
-import {APP_COMPONENT, setup, TEST_TEMPLATE} from './mock_host';
+import {APP_COMPONENT, MockService, setup, TEST_TEMPLATE} from './mock_host';
 
 describe('getSemanticDiagnostics', () => {
-  const {project, service, tsLS} = setup();
-  const ngLS = new LanguageService(project, tsLS);
+  let service: MockService;
+  let ngLS: LanguageService;
+
+  beforeAll(() => {
+    const {project, service: _service, tsLS} = setup();
+    service = _service;
+    ngLS = new LanguageService(project, tsLS);
+  });
 
   beforeEach(() => {
     service.reset();
