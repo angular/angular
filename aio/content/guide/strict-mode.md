@@ -1,5 +1,16 @@
 # Strict mode
 
+<div class="callout is-important">
+<header>Marked for archiving</header>
+
+This topic has been marked for archiving.
+A replacement topic is available here: [Angular CLI Strict Mode](https://blog.angular.io/angular-cli-strict-mode-c94ba5965f63).
+
+Topics marked for archiving are either out of date or may no longer be relevant.
+If you think this content should not be archived, please file a [GitHub issue](https://github.com/angular/angular/issues/new?template=3-docs-bug.md).
+
+</div>
+
 When you create a new workspace or an application you have an option to create them in a strict mode using the `--strict` flag.
 
 Enabling this flag initializes your new workspace or application with a few new settings that improve maintainability, help you catch bugs ahead of time.
