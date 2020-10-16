@@ -405,53 +405,79 @@ runInEachFileSystem(() => {
                 {scheme: 'webpack://', mappedPath: '/foo/src/index.ts'},
                 {scheme: 'missing://', mappedPath: '/src/index.ts'},
       ]) {
-        it(`should handle source paths that are protocol mapped [scheme:"${scheme}"]`, () => {
-          fs.ensureDir(_('/foo/src'));
+        it(`should handle source paths that are protocol mapped [scheme:"${
+               scheme}"] with inline content`,
+           () => {
+             fs.ensureDir(_('/foo/src'));
 
-          const indexSourceMap = createRawSourceMap({
-            file: 'index.js',
-            sources: [`${scheme}/src/index.ts`],
-            'sourcesContent': ['original content']
-          });
-          fs.writeFile(_('/foo/src/index.js.map'), JSON.stringify(indexSourceMap));
-          const sourceFile = registry.loadSourceFile(_('/foo/src/index.js'), 'generated content');
-          if (sourceFile === null) {
-            return fail('Expected source file to be defined');
-          }
-          const originalSource = sourceFile.sources[0];
-          if (originalSource === null) {
-            return fail('Expected source file to be defined');
-          }
-          expect(originalSource.contents).toEqual('original content');
-          expect(originalSource.sourcePath).toEqual(_(mappedPath));
-          expect(originalSource.rawMap).toBe(null);
-          expect(originalSource.sources).toEqual([]);
-        });
+             const indexSourceMap = createRawSourceMap({
+               file: 'index.js',
+               sources: [`${scheme}/src/index.ts`],
+               'sourcesContent': ['original content']
+             });
+             fs.writeFile(_('/foo/src/index.js.map'), JSON.stringify(indexSourceMap));
+             const sourceFile =
+                 registry.loadSourceFile(_('/foo/src/index.js'), 'generated content');
+             if (sourceFile === null) {
+               return fail('Expected source file to be defined');
+             }
+             const originalSource = sourceFile.sources[0];
+             if (originalSource === null) {
+               return fail('Expected source file to be defined');
+             }
+             expect(originalSource.contents).toEqual('original content');
+             expect(originalSource.sourcePath).toEqual(_(mappedPath));
+             expect(originalSource.rawMap).toBe(null);
+             expect(originalSource.sources).toEqual([]);
+           });
 
-        it(`should handle source roots that are protocol mapped [scheme:"${scheme}"]`, () => {
-          fs.ensureDir(_('/foo/src'));
+        it(`should handle source paths that are protocol mapped [scheme:"${
+               scheme}"] with external content`,
+           () => {
+             fs.ensureDir(_('/foo/src'));
+             fs.ensureDir(fs.dirname(_(mappedPath)));
+             fs.writeFile(_(mappedPath), 'original content');
 
-          const indexSourceMap = createRawSourceMap({
-            file: 'index.js',
-            sources: ['index.ts'],
-            'sourcesContent': ['original content'],
-            sourceRoot: `${scheme}/src`,
-          });
-          fs.writeFile(_('/foo/src/index.js.map'), JSON.stringify(indexSourceMap));
-          const sourceFile = registry.loadSourceFile(_('/foo/src/index.js'), 'generated content');
-          if (sourceFile === null) {
-            return fail('Expected source file to be defined');
-          }
-          const originalSource = sourceFile.sources[0];
-          if (originalSource === null) {
-            return fail('Expected source file to be defined');
-          }
-          expect(originalSource.contents).toEqual('original content');
-          expect(originalSource.sourcePath).toEqual(_(mappedPath));
-          expect(originalSource.rawMap).toBe(null);
-          expect(originalSource.sources).toEqual([]);
-        });
+             const indexSourceMap = createRawSourceMap({
+               file: 'index.js',
+               sources: [`${scheme}/src/index.ts`],
+             });
+             fs.writeFile(_('/foo/src/index.js.map'), JSON.stringify(indexSourceMap));
+             const sourceFile =
+                 registry.loadSourceFile(_('/foo/src/index.js'), 'generated content');
+             if (sourceFile === null) {
+               return fail('Expected source file to be defined');
+             }
+             const originalSource = sourceFile.sources[0];
+             if (originalSource === null) {
+               return fail('Expected source file to be defined');
+             }
+             expect(originalSource.contents).toEqual('original content');
+             expect(originalSource.sourcePath).toEqual(_(mappedPath));
+             expect(originalSource.rawMap).toEqual(null);
+             expect(originalSource.sources).toEqual([]);
+           });
       }
+
+      it('should use consistent source-file paths for inline sources', () => {
+        fs.ensureDir(_('/foo/src'));
+        const sourceMap = createRawSourceMap({
+          file: 'index.js',
+          sources: ['../../../../../bar.js'],
+          sourcesContent: ['bar contents']
+        });
+        fs.writeFile(_('/foo/src/index.js.map'), JSON.stringify(sourceMap));
+        const sourceFile = registry.loadSourceFile(_('/foo/src/index.js'), 'some content');
+        if (sourceFile === null) {
+          return fail('Expected source file to be defined');
+        }
+        if (sourceFile.rawMap === null) {
+          return fail('Expected source file source-map to be defined');
+        }
+        expect(sourceFile.rawMap.map).toEqual(sourceMap);
+        expect(sourceFile.sources.length).toEqual(1);
+        expect(sourceFile.sources[0]!.sourcePath).toEqual(_('/foo/src/bar.js'));
+      });
     });
   });
 });

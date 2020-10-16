@@ -193,8 +193,11 @@ export class SourceFileLoader {
     const sourceRoot = this.fs.resolve(
         this.fs.dirname(basePath), this.replaceSchemeWithPath(map.sourceRoot || ''));
     return map.sources.map((source, index) => {
-      const path = this.fs.resolve(sourceRoot, this.replaceSchemeWithPath(source));
       const content = map.sourcesContent && map.sourcesContent[index] || null;
+      const path = this.fs.resolve(
+          sourceRoot,
+          content !== null ? this.fs.basename(source) : this.replaceSchemeWithPath(source));
+
       // The origin of this source file is "inline" if we extracted it from the source-map's
       // `sourcesContent`, except when the source-map itself was "provided" in-memory.
       // An inline source file is treated as if it were from the file-system if the source-map that
