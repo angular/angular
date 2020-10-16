@@ -2035,9 +2035,14 @@ describe('CdkDrag', () => {
 
       const preview = document.querySelector('.cdk-drag-preview')! as HTMLElement;
       const previewRect = preview.getBoundingClientRect();
+      const zeroPxRegex = /^0(px)?$/;
 
       expect(item.parentNode).toBe(document.body, 'Expected element to be moved out into the body');
-      expect(item.style.display).toBe('none', 'Expected element to be hidden');
+      expect(item.style.position).toBe('fixed', 'Expected element to be removed from layout');
+      // Use a regex here since some browsers normalize 0 to 0px, but others don't.
+      expect(item.style.top).toMatch(zeroPxRegex, 'Expected element to be removed from layout');
+      expect(item.style.left).toBe('-999em', 'Expected element to be removed from layout');
+      expect(item.style.opacity).toBe('0', 'Expected element to be invisible');
       expect(preview).toBeTruthy('Expected preview to be in the DOM');
       expect(preview.textContent!.trim())
           .toContain('One', 'Expected preview content to match element');
@@ -2049,7 +2054,7 @@ describe('CdkDrag', () => {
           .toBe('none', 'Expected pointer events to be disabled on the preview');
       expect(preview.style.zIndex).toBe('1000', 'Expected preview to have a high default zIndex.');
       // Use a regex here since some browsers normalize 0 to 0px, but others don't.
-      expect(preview.style.margin).toMatch(/^0(px)?$/, 'Expected the preview margin to be reset.');
+      expect(preview.style.margin).toMatch(zeroPxRegex, 'Expected the preview margin to be reset.');
 
       dispatchMouseEvent(document, 'mouseup');
       fixture.detectChanges();
@@ -2057,7 +2062,10 @@ describe('CdkDrag', () => {
 
       expect(item.parentNode)
           .toBe(initialParent, 'Expected element to be moved back into its old parent');
-      expect(item.style.display).toBeFalsy('Expected element to be visible');
+      expect(item.style.position).toBeFalsy('Expected element to be within the layout');
+      expect(item.style.top).toBeFalsy('Expected element to be within the layout');
+      expect(item.style.left).toBeFalsy('Expected element to be within the layout');
+      expect(item.style.opacity).toBeFalsy('Expected element to be visible');
       expect(preview.parentNode).toBeFalsy('Expected preview to be removed from the DOM');
     }));
 

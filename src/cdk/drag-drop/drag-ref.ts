@@ -14,7 +14,7 @@ import {coerceBooleanProperty, coerceElement} from '@angular/cdk/coercion';
 import {Subscription, Subject, Observable} from 'rxjs';
 import {DropListRefInternal as DropListRef} from './drop-list-ref';
 import {DragDropRegistry} from './drag-drop-registry';
-import {extendStyles, toggleNativeDragInteractions} from './drag-styling';
+import {extendStyles, toggleNativeDragInteractions, toggleVisibility} from './drag-styling';
 import {getTransformTransitionDurationInMs} from './transition-duration';
 import {getMutableClientRect, adjustClientRect} from './client-rect';
 import {ParentPositionTracker} from './parent-position-tracker';
@@ -732,7 +732,7 @@ export class DragRef<T = any> {
       // We move the element out at the end of the body and we make it hidden, because keeping it in
       // place will throw off the consumer's `:last-child` selectors. We can't remove the element
       // from the DOM completely, because iOS will stop firing all subsequent events in the chain.
-      element.style.display = 'none';
+      toggleVisibility(element, false);
       this._document.body.appendChild(parent.replaceChild(placeholder, element));
       getPreviewInsertionPoint(this._document).appendChild(preview);
       this.started.next({source: this}); // Emit before notifying the container.
@@ -827,7 +827,7 @@ export class DragRef<T = any> {
     // It's important that we maintain the position, because moving the element around in the DOM
     // can throw off `NgFor` which does smart diffing and re-creates elements only when necessary,
     // while moving the existing elements in all other cases.
-    this._rootElement.style.display = '';
+    toggleVisibility(this._rootElement, true);
     this._anchor.parentNode!.replaceChild(this._rootElement, this._anchor);
 
     this._destroyPreview();
