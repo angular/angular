@@ -1,9 +1,18 @@
 import {BidiModule, Direction} from '@angular/cdk/bidi';
 import {dispatchFakeEvent} from '@angular/cdk/testing/private';
 import {Component} from '@angular/core';
-import {ComponentFixture, fakeAsync, flushMicrotasks, TestBed, tick} from '@angular/core/testing';
+import {
+  ComponentFixture,
+  fakeAsync,
+  flush,
+  flushMicrotasks,
+  inject,
+  TestBed,
+  tick,
+} from '@angular/core/testing';
 import {FormControl, FormsModule, NgModel, ReactiveFormsModule} from '@angular/forms';
 import {By} from '@angular/platform-browser';
+import {FocusMonitor} from '@angular/cdk/a11y';
 import {MatSlideToggle, MatSlideToggleChange, MatSlideToggleModule} from './index';
 import {MAT_SLIDE_TOGGLE_DEFAULT_OPTIONS} from './slide-toggle-config';
 
@@ -98,6 +107,24 @@ describe('MDC-based MatSlideToggle without forms', () => {
       expect(slideToggle.checked).toBe(true);
       expect(inputElement.getAttribute('aria-checked')).toBe('true');
     });
+
+    it('should not trigger the click event multiple times', fakeAsync(() => {
+      // By default, when clicking on a label element, a generated click will be dispatched
+      // on the associated input element.
+      // Since we're using a label element and a visual hidden input, this behavior can led
+      // to an issue, where the click events on the slide-toggle are getting executed twice.
+
+      expect(slideToggle.checked).toBe(false);
+      expect(slideToggleElement.classList).not.toContain('mat-mdc-slide-toggle-checked');
+
+      labelElement.click();
+      fixture.detectChanges();
+      tick();
+
+      expect(slideToggleElement.classList).toContain('mat-mdc-slide-toggle-checked');
+      expect(slideToggle.checked).toBe(true);
+      expect(testComponent.onSlideClick).toHaveBeenCalledTimes(1);
+    }));
 
     it('should trigger the change event properly', () => {
       expect(inputElement.checked).toBe(false);
@@ -261,6 +288,31 @@ describe('MDC-based MatSlideToggle without forms', () => {
       expect(document.activeElement).toBe(inputElement);
     });
 
+    it('should focus on underlying input element when the host is focused', fakeAsync(() => {
+      expect(document.activeElement).not.toBe(inputElement);
+
+      slideToggleElement.focus();
+      fixture.detectChanges();
+      tick();
+
+      expect(document.activeElement).toBe(inputElement);
+    }));
+
+    it('should not manually move focus to underlying input when focus comes from mouse or touch',
+      fakeAsync(inject([FocusMonitor], (focusMonitor: FocusMonitor) => {
+        expect(document.activeElement).not.toBe(inputElement);
+
+        focusMonitor.focusVia(slideToggleElement, 'mouse');
+        fixture.detectChanges();
+        flush();
+        expect(document.activeElement).not.toBe(inputElement);
+
+        focusMonitor.focusVia(slideToggleElement, 'touch');
+        fixture.detectChanges();
+        flush();
+        expect(document.activeElement).not.toBe(inputElement);
+      })));
+
     it('should set a element class if labelPosition is set to before', () => {
       const formField = slideToggleElement.querySelector('.mdc-form-field')!;
 
@@ -272,7 +324,7 @@ describe('MDC-based MatSlideToggle without forms', () => {
       expect(formField.classList).toContain('mdc-form-field--align-end');
     });
 
-    it('should show ripples on switch element', () => {
+    it('should show ripples', () => {
       const rippleSelector = '.mat-ripple-element';
       const switchElement = slideToggleElement.querySelector('.mdc-switch')!;
 
@@ -342,13 +394,13 @@ describe('MDC-based MatSlideToggle without forms', () => {
       expect(switchEl.classList).toContain('mdc-switch--checked');
     });
 
-    it('should remove the tabindex from the host element', fakeAsync(() => {
+    it('should set the tabindex of the host element to -1', fakeAsync(() => {
       const fixture = TestBed.createComponent(SlideToggleWithTabindexAttr);
 
       fixture.detectChanges();
 
       const slideToggle = fixture.debugElement.query(By.directive(MatSlideToggle))!.nativeElement;
-      expect(slideToggle.hasAttribute('tabindex')).toBe(false);
+      expect(slideToggle.getAttribute('tabindex')).toBe('-1');
     }));
 
     it('should remove the tabindex from the host element when disabled', fakeAsync(() => {

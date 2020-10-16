@@ -333,7 +333,7 @@ describe('MatSlideToggle without forms', () => {
       expect(slideToggleElement.classList).toContain('mat-slide-toggle-label-before');
     });
 
-    it('should show ripples on label mousedown', () => {
+    it('should show ripples', () => {
       const rippleSelector = '.mat-ripple-element:not(.mat-slide-toggle-persistent-ripple)';
 
       expect(slideToggleElement.querySelectorAll(rippleSelector).length).toBe(0);
@@ -408,7 +408,8 @@ describe('MatSlideToggle without forms', () => {
   });
 
   describe('custom action configuration', () => {
-    it('should not change value on click when click action is noop', () => {
+    it('should not change value on click when click action is noop when using custom a ' +
+      'action configuration', () => {
       TestBed
         .resetTestingModule()
         .configureTestingModule({

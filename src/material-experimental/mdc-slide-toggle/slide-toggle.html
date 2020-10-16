@@ -21,14 +21,12 @@
             [attr.aria-label]="ariaLabel"
             [attr.aria-labelledby]="ariaLabelledby"
             (change)="_onChangeEvent($event)"
-            (click)="_onInputClick($event)"
-            (blur)="_onBlur()"
-            (focus)="_focused = true">
+            (click)="_onInputClick($event)">
       </div>
     </div>
   </div>
 
-  <label [for]="inputId" (click)="$event.stopPropagation()">
+  <label [for]="inputId">
     <ng-content></ng-content>
   </label>
 </div>

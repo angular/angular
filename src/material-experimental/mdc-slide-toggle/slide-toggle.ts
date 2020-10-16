@@ -34,6 +34,7 @@ import {
 import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
 import {ThemePalette, RippleAnimationConfig} from '@angular/material-experimental/mdc-core';
 import {numbers} from '@material/ripple';
+import {FocusMonitor} from '@angular/cdk/a11y';
 import {
   MAT_SLIDE_TOGGLE_DEFAULT_OPTIONS,
   MatSlideToggleDefaultOptions,
@@ -71,7 +72,8 @@ export class MatSlideToggleChange {
   host: {
     'class': 'mat-mdc-slide-toggle',
     '[id]': 'id',
-    '[attr.tabindex]': 'null',
+    // Needs to be `-1` so it can still receive programmatic focus.
+    '[attr.tabindex]': 'disabled ? null : -1',
     '[attr.aria-label]': 'null',
     '[attr.aria-labelledby]': 'null',
     '[class.mat-primary]': 'color === "primary"',
@@ -80,7 +82,6 @@ export class MatSlideToggleChange {
     '[class.mat-mdc-slide-toggle-focused]': '_focused',
     '[class.mat-mdc-slide-toggle-checked]': 'checked',
     '[class._mat-animation-noopable]': '_animationMode === "NoopAnimations"',
-    '(focus)': '_inputElement.nativeElement.focus()',
   },
   exportAs: 'matSlideToggle',
   encapsulation: ViewEncapsulation.None,
@@ -194,7 +195,9 @@ export class MatSlideToggle implements ControlValueAccessor, AfterViewInit, OnDe
   /** Reference to the MDC switch element. */
   @ViewChild('switch') _switchElement: ElementRef<HTMLElement>;
 
-  constructor(private _changeDetectorRef: ChangeDetectorRef,
+  constructor(private _elementRef: ElementRef,
+              private _focusMonitor: FocusMonitor,
+              private _changeDetectorRef: ChangeDetectorRef,
               @Attribute('tabindex') tabIndex: string,
               @Inject(MAT_SLIDE_TOGGLE_DEFAULT_OPTIONS)
                   public defaults: MatSlideToggleDefaultOptions,
@@ -206,9 +209,35 @@ export class MatSlideToggle implements ControlValueAccessor, AfterViewInit, OnDe
     const foundation = this._foundation = new MDCSwitchFoundation(this._adapter);
     foundation.setDisabled(this.disabled);
     foundation.setChecked(this.checked);
+
+    this._focusMonitor
+      .monitor(this._elementRef, true)
+      .subscribe(focusOrigin => {
+        // Only forward focus manually when it was received programmatically or through the
+        // keyboard. We should not do this for mouse/touch focus for two reasons:
+        // 1. It can prevent clicks from landing in Chrome (see #18269).
+        // 2. They're already handled by the wrapping `label` element.
+        if (focusOrigin === 'keyboard' || focusOrigin === 'program') {
+          this._inputElement.nativeElement.focus();
+          this._focused = true;
+        } else if (!focusOrigin) {
+          // When a focused element becomes disabled, the browser *immediately* fires a blur event.
+          // Angular does not expect events to be raised during change detection, so any state
+          // change (such as a form control's ng-touched) will cause a changed-after-checked error.
+          // See https://github.com/angular/angular/issues/17793. To work around this, we defer
+          // telling the form control it has been touched until the next tick.
+          Promise.resolve().then(() => {
+            this._focused = false;
+            this._onTouched();
+            this._changeDetectorRef.markForCheck();
+          });
+        }
+    });
   }
 
   ngOnDestroy() {
+    this._focusMonitor.stopMonitoring(this._elementRef);
+
     if (this._foundation) {
       this._foundation.destroy();
     }
@@ -283,20 +312,6 @@ export class MatSlideToggle implements ControlValueAccessor, AfterViewInit, OnDe
   toggle(): void {
     this.checked = !this.checked;
     this._onChange(this.checked);
-  }
-
-  /** Handles blur events on the native input. */
-  _onBlur() {
-    // When a focused element becomes disabled, the browser *immediately* fires a blur event.
-    // Angular does not expect events to be raised during change detection, so any state change
-    // (such as a form control's 'ng-touched') will cause a changed-after-checked error.
-    // See https://github.com/angular/angular/issues/17793. To work around this, we defer
-    // telling the form control it has been touched until the next tick.
-    Promise.resolve().then(() => {
-      this._focused = false;
-      this._onTouched();
-      this._changeDetectorRef.markForCheck();
-    });
   }
 
   static ngAcceptInputType_tabIndex: NumberInput;
