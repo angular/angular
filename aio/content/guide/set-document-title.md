@@ -1,57 +1,54 @@
 {@a top}
 
-# Set the document title
+# Establecer el título del documento
 
-Your app should be able to make the browser title bar say whatever you want it to say.
-This cookbook explains how to do it.
+Tu aplicación debería poder hacer que el título de la barra del navegador diga lo que quieras que diga.
+Esta guía explica cómo hacerlo.
 
-See the <live-example name="set-document-title"></live-example>.
+Ve el <live-example name="set-document-title"></live-example>.
 
-## The problem with *&lt;title&gt;*
+## El problema con el *&lt;título&gt;*
 
-The obvious approach is to bind a property of the component to the HTML `<title>` like this:
+La manera mas obvia es enlazar una propiedad del componente al HTML `<title>` como este:
 
 <code-example format=''>
-  &lt;title&gt;{{This_Does_Not_Work}}&lt;/title&gt;
+  &lt;title&gt;{{Esto_No_Funciona}}&lt;/title&gt;
 </code-example>
 
-Sorry but that won't work.
-The root component of the application is an element contained within the `<body>` tag.
-The HTML `<title>` is in the document `<head>`, outside the body, making it inaccessible to Angular data binding.
+Lamentablemente eso no funcionará. El componente raíz de la aplicación es un elemento contenido en la etiqueta `<body>`. El `<title>` HTML está en el `<head>` del documento, fuera del `<body>`, lo que lo hace inaccesible para el enlace de datos de Angular.
 
-You could grab the browser `document` object and set the title manually.
-That's dirty and undermines your chances of running the app outside of a browser someday.
+Tu podrías tomar el objeto `document` del navegador y establecer el título manualmente.
+Eso no es ideal y socava tus posibilidades de ejecutar la aplicación fuera de un navegador algún día.
 
 <div class="alert is-helpful">
 
-  Running your app outside a browser means that you can take advantage of server-side
-  pre-rendering for near-instant first app render times and for SEO. It means you could run from
-  inside a Web Worker to improve your app's responsiveness by using multiple threads. And it
-  means that you could run your app inside Electron.js or Windows Universal to deliver it to the desktop.
+  Ejecutar tu aplicación fuera de un navegador significa que puedes aprovechar las ventajas del renderizado del lado del servidor
+  para tiempos del primer renderizado de la primera aplicación casi instantáneos y para SEO. Significa que puedes correr la aplicación
+  dentro de un Web Worker para mejorar la capacidad de respuesta de tu aplicación mediante el uso de varios subprocesos. Y también
+  significa que puedes ejecutar tu aplicación dentro de Electron.js o Windows Universal para enviarla al escritorio.
 
 </div>
 
-## Use the `Title` service
+## Utiliza el servicio `Title`
 
-Fortunately, Angular bridges the gap by providing a `Title` service as part of the *Browser platform*.
-The [Title](api/platform-browser/Title) service is a simple class that provides an API
-for getting and setting the current HTML document title:
+Afortunadamente, Angular reduce las diferencias al proporcionar un servicio `Title` como parte de la *plataforma del navegador*.
+El servicio [Title](api/platform-browser/Title) es una clase simple que proporciona un API
+para obtener y configurar el título del documento HTML actual:
 
-* `getTitle() : string`&mdash;Gets the title of the current HTML document.
-* `setTitle( newTitle : string )`&mdash;Sets the title of the current HTML document.
+* `getTitle() : string`&mdash;Obtiene el título del documento HTML actual.
+* `setTitle( newTitle : string )`&mdash;Establece el título del documento HTML actual.
 
-You can inject the `Title` service into the root `AppComponent` and expose a bindable `setTitle` method that calls it:
-
+Puedes inyectar el servicio `Title` en la raíz de `AppComponent` y exponer un método `setTitle` enlazable que lo llame:
 
 <code-example path="set-document-title/src/app/app.component.ts" region="class" header="src/app/app.component.ts (class)"></code-example>
 
-Bind that method to three anchor tags and voilà!
+¡Enlaza ese método a tres etiquetas de anclaje y listo!
 
 <div class="lightbox">
   <img src="generated/images/guide/set-document-title/set-title-anim.gif" alt="Set title">
 </div>
 
-Here's the complete solution:
+Aquí está la solución completa:
 
 <code-tabs>
   <code-pane header="src/main.ts" path="set-document-title/src/main.ts"></code-pane>
@@ -59,16 +56,16 @@ Here's the complete solution:
   <code-pane header="src/app/app.component.ts" path="set-document-title/src/app/app.component.ts"></code-pane>
 </code-tabs>
 
-## Why provide the `Title` service in `bootstrap`
+## ¿Por qué proporcionar el servicio `Title` en el `arranque`?
 
-Generally you want to provide application-wide services in the root application component, `AppComponent`.
+Por lo general, deseas proporcionar servicios para toda la aplicación en el componente de la aplicación raíz, `AppComponent`.
 
-This cookbook recommends registering the title service during bootstrapping,
-a location you reserve for configuring the runtime Angular environment.
+Esta guía recomienda registrar el servicio de títulos durante el arranque (boostrapping),
+una ubicación que se reserva para configurar el ambiente de ejecución de Angular.
 
-That's exactly what you're doing.
-The `Title` service is part of the Angular *browser platform*.
-If you bootstrap your application into a different platform,
-you'll have to provide a different `Title` service that understands
-the concept of a "document title" for that specific platform.
-Ideally, the application itself neither knows nor cares about the runtime environment.
+Eso es exactamente lo que está haciendo.
+El servicio `Title` es parte de la *plataforma del navegador* de Angular.
+Si inicias tu aplicación en una plataforma diferente,
+tendrás que proporcionar un servicio de `Title` diferente que comprenda
+el concepto de un "título de documento" para esa plataforma específica.
+Idealmente, la aplicación en sí no conoce ni se preocupa por el ambiente de ejecución.
