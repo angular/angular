@@ -427,11 +427,69 @@ export const enum PreOrderHookFlags {
 }
 
 /**
- * Set of instructions used to process host bindings efficiently.
+ * Stores a set of OpCodes to process `HostBindingsFunction` associated with a current view.
  *
- * See VIEW_DATA.md for more information.
+ * In order to invoke `HostBindingsFunction` we need:
+ * 1. 'elementIdx`: Index to the element associated with the `HostBindingsFunction`.
+ * 2. 'directiveIdx`: Index to the directive associated with the `HostBindingsFunction`. (This will
+ *    become the context for the `HostBindingsFunction` invocation.)
+ * 3. `bindingRootIdx`: Location where the bindings for the `HostBindingsFunction` start. Internally
+ *    `HostBindingsFunction` binding indexes start from `0` so we need to add `bindingRootIdx` to
+ *    it.
+ * 4. `HostBindingsFunction`: A host binding function to execute.
+ *
+ * The above information needs to be encoded into the `HostBindingOpCodes` in an efficient manner.
+ *
+ * 1. `elementIdx` is encoded into the `HostBindingOpCodes` as `~elementIdx` (so a negative number);
+ * 2. `directiveIdx`
+ * 3. `bindingRootIdx`
+ * 4. `HostBindingsFunction` is passed in as is.
+ *
+ * The `HostBindingOpCodes` array contains:
+ * - negative number to select the element index.
+ * - followed by 1 or more of:
+ *    - a number to select the directive index
+ *    - a number to select the bindingRoot index
+ *    - and a function to invoke.
+ *
+ * ## Example
+ *
+ * ```
+ * const hostBindingOpCodes = [
+ *   ~30,                               // Select element 30
+ *   40, 45, MyDir.ɵdir.hostBindings    // Invoke host bindings on MyDir on element 30;
+ *                                      // directiveIdx = 40; bindingRootIdx = 45;
+ *   50, 55, OtherDir.ɵdir.hostBindings // Invoke host bindings on OtherDire on element 30
+ *                                      // directiveIdx = 50; bindingRootIdx = 55;
+ * ]
+ * ```
+ *
+ * ## Pseudocode
+ * ```
+ * const hostBindingOpCodes = tView.hostBindingOpCodes;
+ * if (hostBindingOpCodes === null) return;
+ * for (let i = 0; i < hostBindingOpCodes.length; i++) {
+ *   const opCode = hostBindingOpCodes[i] as number;
+ *   if (opCode < 0) {
+ *     // Negative numbers are element indexes.
+ *     setSelectedIndex(~opCode);
+ *   } else {
+ *     // Positive numbers are NumberTuple which store bindingRootIndex and directiveIndex.
+ *     const directiveIdx = opCode;
+ *     const bindingRootIndx = hostBindingOpCodes[++i] as number;
+ *     const hostBindingFn = hostBindingOpCodes[++i] as HostBindingsFunction<any>;
+ *     setBindingRootForHostBindings(bindingRootIndx, directiveIdx);
+ *     const context = lView[directiveIdx];
+ *     hostBindingFn(RenderFlags.Update, context);
+ *   }
+ * }
+ * ```
+ *
  */
-export interface ExpandoInstructions extends Array<number|HostBindingsFunction<any>|null> {}
+export interface HostBindingOpCodes extends Array<number|HostBindingsFunction<any>> {
+  __brand__: 'HostBindingOpCodes';
+  debug?: string[];
+}
 
 /**
  * Explicitly marks `TView` as a specific type in `ngDevMode`
@@ -572,13 +630,11 @@ export interface TView {
   firstChild: TNode|null;
 
   /**
-   * Set of instructions used to process host bindings efficiently.
+   * Stores the OpCodes to be replayed during change-detection to process the `HostBindings`
    *
-   * See VIEW_DATA.md for more information.
+   * See `HostBindingOpCodes` for encoding details.
    */
-  // TODO(misko): `expandoInstructions` should be renamed to `hostBindingsInstructions` since they
-  // keep track of `hostBindings` which need to be executed.
-  expandoInstructions: ExpandoInstructions|null;
+  hostBindingOpCodes: HostBindingOpCodes|null;
 
   /**
    * Full registry of directives and components that may be found in this view.

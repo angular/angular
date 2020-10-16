@@ -699,13 +699,13 @@
     "name": "addComponentLogic"
   },
   {
-    "name": "addHostBindingsToExpandoInstructions"
-  },
-  {
     "name": "addToArray"
   },
   {
     "name": "addToViewTree"
+  },
+  {
+    "name": "allocExpando"
   },
   {
     "name": "allocLFrame"
@@ -733,9 +733,6 @@
   },
   {
     "name": "baseElement"
-  },
-  {
-    "name": "baseResolveDirective"
   },
   {
     "name": "bindingUpdated"
@@ -784,6 +781,9 @@
   },
   {
     "name": "config"
+  },
+  {
+    "name": "configureViewWithDirective"
   },
   {
     "name": "connectableObservableDescriptor"
@@ -942,9 +942,6 @@
     "name": "fromArray"
   },
   {
-    "name": "generateExpandoInstructionBlock"
-  },
-  {
     "name": "generateInitialInputs"
   },
   {
@@ -1081,9 +1078,6 @@
   },
   {
     "name": "getTView"
-  },
-  {
-    "name": "growHostVarsSpace"
   },
   {
     "name": "handleError"
@@ -1420,6 +1414,9 @@
   },
   {
     "name": "registerDestroyHooksIfSupported"
+  },
+  {
+    "name": "registerHostBindingOpCodes"
   },
   {
     "name": "registerPostOrderHooks"

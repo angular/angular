@@ -16,9 +16,9 @@ import {assertComponentType} from './assert';
 import {getComponentDef} from './definition';
 import {diPublicInInjector, getOrCreateNodeInjectorForNode} from './di';
 import {registerPostOrderHooks} from './hooks';
-import {addHostBindingsToExpandoInstructions, addToViewTree, CLEAN_PROMISE, createLView, createTView, getOrCreateTComponentView, getOrCreateTNode, growHostVarsSpace, initTNodeFlags, instantiateRootComponent, invokeHostBindingsInCreationMode, locateHostElement, markAsComponentHost, refreshView, renderView} from './instructions/shared';
+import {addToViewTree, CLEAN_PROMISE, createLView, createTView, getOrCreateTComponentView, getOrCreateTNode, initTNodeFlags, instantiateRootComponent, invokeHostBindingsInCreationMode, locateHostElement, markAsComponentHost, refreshView, registerHostBindingOpCodes, renderView} from './instructions/shared';
 import {ComponentDef, ComponentType, RenderFlags} from './interfaces/definition';
-import {TElementNode, TNode, TNodeType} from './interfaces/node';
+import {TElementNode, TNodeType} from './interfaces/node';
 import {PlayerHandler} from './interfaces/player';
 import {domRendererFactory3, RElement, Renderer3, RendererFactory3} from './interfaces/renderer';
 import {CONTEXT, HEADER_OFFSET, LView, LViewFlags, RootContext, RootContextFlags, TVIEW, TViewType} from './interfaces/view';
@@ -230,7 +230,9 @@ export function createRootComponent<T>(
   // We want to generate an empty QueryList for root content queries for backwards
   // compatibility with ViewEngine.
   if (componentDef.contentQueries) {
-    componentDef.contentQueries(RenderFlags.Create, component, rootLView.length - 1);
+    const tNode = getCurrentTNode()!;
+    ngDevMode && assertDefined(tNode, 'TNode expected');
+    componentDef.contentQueries(RenderFlags.Create, component, tNode.directiveStart);
   }
 
   const rootTNode = getCurrentTNode()!;
@@ -240,8 +242,9 @@ export function createRootComponent<T>(
     setSelectedIndex(rootTNode.index);
 
     const rootTView = rootLView[TVIEW];
-    addHostBindingsToExpandoInstructions(rootTView, componentDef);
-    growHostVarsSpace(rootTView, rootLView, componentDef.hostVars);
+    registerHostBindingOpCodes(
+        rootTView, rootTNode, rootLView, rootTNode.directiveStart, rootTNode.directiveEnd,
+        componentDef);
 
     invokeHostBindingsInCreationMode(componentDef, component);
   }
@@ -274,13 +277,12 @@ export function createRootContext(
  * ```
  */
 export function LifecycleHooksFeature(component: any, def: ComponentDef<any>): void {
-  const rootTView = readPatchedLView(component)![TVIEW];
-  const dirIndex = rootTView.data.length - 1;
-
-  // TODO(misko): replace `as TNode` with createTNode call. (needs refactoring to lose dep on
-  // LNode).
-  registerPostOrderHooks(
-      rootTView, {directiveStart: dirIndex, directiveEnd: dirIndex + 1} as TNode);
+  const lView = readPatchedLView(component)!;
+  ngDevMode && assertDefined(lView, 'LView is required');
+  const tView = lView[TVIEW];
+  const tNode = getCurrentTNode()!;
+  ngDevMode && assertDefined(tNode, 'TNode is required');
+  registerPostOrderHooks(tView, tNode);
 }
 
 /**
