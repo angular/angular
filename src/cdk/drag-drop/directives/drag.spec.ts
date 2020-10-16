@@ -5406,6 +5406,25 @@ describe('CdkDrag', () => {
       expect(console.warn).toHaveBeenCalledWith(`CdkDropList could not find connected drop ` +
                                                 `list with id "does-not-exist"`);
     }));
+
+    it('should not be able to start a drag sequence while a connected container is active',
+      fakeAsync(() => {
+        const fixture = createComponent(ConnectedDropZones);
+        fixture.detectChanges();
+        const item = fixture.componentInstance.groupedDragItems[0][0];
+        const itemInOtherList = fixture.componentInstance.groupedDragItems[1][0];
+
+        startDraggingViaMouse(fixture, item.element.nativeElement);
+
+        expect(document.querySelectorAll('.cdk-drag-dragging').length)
+            .toBe(1, 'Expected one item to be dragged initially.');
+
+        startDraggingViaMouse(fixture, itemInOtherList.element.nativeElement);
+
+        expect(document.querySelectorAll('.cdk-drag-dragging').length)
+            .toBe(1, 'Expected only one item to continue to be dragged.');
+      }));
+
   });
 
   describe('with nested drags', () => {
