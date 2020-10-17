@@ -117,7 +117,6 @@ runInEachFileSystem(() => {
       // Next, ask for a TCB from file2. This operation should clear data on TCBs generated for
       // file1.
       expect(templateTypeChecker.getTypeCheckBlock(cmpB)).not.toBeNull();
-      console.error(templateTypeChecker.getTypeCheckBlock(cmpB)?.getSourceFile().text);
 
       // This can be detected by asking for a TCB again from file1. Since no data should be
       // available for file1, this should cause another type-checking program step.
