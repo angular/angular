@@ -763,13 +763,13 @@ describe('type check blocks', () => {
 
       it('generates a references var when enabled', () => {
         const block = tcb(TEMPLATE, DIRECTIVES);
-        expect(block).toContain('var _t2 = (_t1 as any as core.TemplateRef<any>);');
+        expect(block).toContain('var _t1 = (_t2 as any as core.TemplateRef<any>);');
       });
 
       it('generates a reference var when disabled', () => {
         const DISABLED_CONFIG: TypeCheckingConfig = {...BASE_CONFIG, checkTemplateBodies: false};
         const block = tcb(TEMPLATE, DIRECTIVES, DISABLED_CONFIG);
-        expect(block).toContain('var _t2 = (_t1 as any as core.TemplateRef<any>);');
+        expect(block).toContain('var _t1 = (_t2 as any as core.TemplateRef<any>);');
       });
     });
 
@@ -913,8 +913,8 @@ describe('type check blocks', () => {
       it('should trace references to an <ng-template> when enabled', () => {
         const block = tcb(TEMPLATE, DIRECTIVES);
         expect(block).toContain(
-            'var _t4 = (_t3 as any as core.TemplateRef<any>); ' +
-            '"" + (((_t4).value2));');
+            'var _t3 = (_t4 as any as core.TemplateRef<any>); ' +
+            '"" + (((_t3).value2));');
       });
 
       it('should use any for reference types when disabled', () => {
