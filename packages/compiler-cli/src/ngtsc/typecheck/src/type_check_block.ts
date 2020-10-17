@@ -194,9 +194,8 @@ class TcbTemplateContextOp extends TcbOp {
     super();
   }
 
-  get optional() {
-    return false;
-  }
+  // The declaration of the context variable is only needed when the context is actually referenced.
+  readonly optional = true;
 
   execute(): ts.Identifier {
     // Allocate a template ctx variable and declare it with an 'any' type. The type of this variable
