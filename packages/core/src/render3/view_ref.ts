@@ -11,10 +11,10 @@ import {ChangeDetectorRef as viewEngine_ChangeDetectorRef} from '../change_detec
 import {ViewContainerRef as viewEngine_ViewContainerRef} from '../linker/view_container_ref';
 import {EmbeddedViewRef as viewEngine_EmbeddedViewRef, InternalViewRef as viewEngine_InternalViewRef} from '../linker/view_ref';
 import {assertDefined} from '../util/assert';
+import {icuContainerIterate} from './i18n/i18n_tree_shaking';
 
 import {checkNoChangesInRootView, checkNoChangesInternal, detectChangesInRootView, detectChangesInternal, markViewDirty, storeCleanupWithContext} from './instructions/shared';
 import {CONTAINER_HEADER_OFFSET} from './interfaces/container';
-import {icuContainerIterate} from './interfaces/i18n';
 import {TElementNode, TIcuContainerNode, TNode, TNodeType} from './interfaces/node';
 import {RNode} from './interfaces/renderer';
 import {isLContainer} from './interfaces/type_checks';

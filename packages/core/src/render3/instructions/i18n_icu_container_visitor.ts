@@ -9,7 +9,8 @@
 import {assertDomNode, assertNumber, assertNumberInRange} from '../../util/assert';
 import {assertTIcu, assertTNodeForLView} from '../assert';
 import {EMPTY_ARRAY} from '../empty';
-import {getCurrentICUCaseIndex, I18nRemoveOpCodes, TIcu} from '../interfaces/i18n';
+import {getCurrentICUCaseIndex} from '../i18n/i18n_util';
+import {I18nRemoveOpCodes, TIcu} from '../interfaces/i18n';
 import {TIcuContainerNode} from '../interfaces/node';
 import {RNode} from '../interfaces/renderer';
 import {LView, TVIEW} from '../interfaces/view';
