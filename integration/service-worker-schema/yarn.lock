@@ -22,4 +22,4 @@ tslib@^1.9.0:
   integrity sha512-qOebF53frne81cf0S9B41ByenJ3/IuH8yJKngAX35CmiZySA0khhkovshKK+jGCaMnVomla7gVlIcc3EvKPbTQ==
 
 "zone.js@file:../../dist/zone.js-dist/zone.js":
-  version "0.10.3"
+  version "0.11.3"
