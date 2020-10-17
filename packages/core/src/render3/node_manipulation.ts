@@ -13,9 +13,9 @@ import {assertDefined, assertDomNode, assertEqual, assertIndexInRange, assertStr
 
 import {assertLContainer, assertLView, assertTNodeForLView} from './assert';
 import {attachPatchData} from './context_discovery';
+import {icuContainerIterate} from './i18n/i18n_tree_shaking';
 import {CONTAINER_HEADER_OFFSET, HAS_TRANSPLANTED_VIEWS, LContainer, MOVED_VIEWS, NATIVE, unusedValueExportToPlacateAjd as unused1} from './interfaces/container';
 import {ComponentDef} from './interfaces/definition';
-import {icuContainerIterate} from './interfaces/i18n';
 import {NodeInjectorFactory} from './interfaces/injector';
 import {TElementNode, TIcuContainerNode, TNode, TNodeFlags, TNodeType, TProjectionNode, unusedValueExportToPlacateAjd as unused2} from './interfaces/node';
 import {unusedValueExportToPlacateAjd as unused3} from './interfaces/projection';

@@ -6,11 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {assertGreaterThan, assertGreaterThanOrEqual} from '../../util/assert';
-import {TIcuContainerNode} from './node';
-import {RNode} from './renderer';
 import {SanitizerFn} from './sanitization';
-import {LView} from './view';
 
 
 /**
@@ -156,27 +152,6 @@ export const enum I18nUpdateOpCode {
    * Instruction to update the current ICU case.
    */
   IcuUpdate = 0b11,
-}
-
-// FIXME(misko): These function are technically not interfaces, and so we may consider moving them
-// elsewhere.
-
-export function getParentFromIcuCreateOpCode(mergedCode: number): number {
-  return mergedCode >>> IcuCreateOpCode.SHIFT_PARENT;
-}
-
-export function getRefFromIcuCreateOpCode(mergedCode: number): number {
-  return (mergedCode & IcuCreateOpCode.MASK_REF) >>> IcuCreateOpCode.SHIFT_REF;
-}
-
-export function getInstructionFromIcuCreateOpCode(mergedCode: number): number {
-  return mergedCode & IcuCreateOpCode.MASK_INSTRUCTION;
-}
-
-export function icuCreateOpCode(opCode: IcuCreateOpCode, parentIdx: number, refIdx: number) {
-  ngDevMode && assertGreaterThanOrEqual(parentIdx, 0, 'Missing parent index');
-  ngDevMode && assertGreaterThan(refIdx, 0, 'Missing ref index');
-  return opCode | parentIdx << IcuCreateOpCode.SHIFT_PARENT | refIdx << IcuCreateOpCode.SHIFT_REF;
 }
 
 /**
@@ -436,41 +411,4 @@ export interface IcuExpression {
   mainBinding: number;
   cases: string[];
   values: (string|IcuExpression)[][];
-}
-
-let _icuContainerIterate: (tIcuContainerNode: TIcuContainerNode, lView: LView) =>
-    (() => RNode | null);
-
-/**
- * Iterator which provides ability to visit all of the `TIcuContainerNode` root `RNode`s.
- */
-export function icuContainerIterate(tIcuContainerNode: TIcuContainerNode, lView: LView): () =>
-    RNode | null {
-  return _icuContainerIterate(tIcuContainerNode, lView);
-}
-
-/**
- * Ensures that `IcuContainerVisitor`'s implementation is present.
- *
- * This function is invoked when i18n instruction comes across an ICU. The purpose is to allow the
- * bundler to tree shake ICU logic and only load it if ICU instruction is executed.
- */
-export function ensureIcuContainerVisitorLoaded(
-    loader: () => ((tIcuContainerNode: TIcuContainerNode, lView: LView) => (() => RNode | null))) {
-  if (_icuContainerIterate === undefined) {
-    // Do not inline this function. We want to keep `ensureIcuContainerVisitorLoaded` light, so it
-    // can be inlined into call-site.
-    _icuContainerIterate = loader();
-  }
-}
-
-
-/**
- * Returns current ICU case.
- *
- * We store negative numbers for cases which have just been switched. This function removes that.
- */
-export function getCurrentICUCaseIndex(tIcu: TIcu, lView: LView) {
-  const currentCase: number|null = lView[tIcu.currentCaseLViewIndex];
-  return currentCase === null ? currentCase : (currentCase < 0 ? ~currentCase : currentCase);
 }

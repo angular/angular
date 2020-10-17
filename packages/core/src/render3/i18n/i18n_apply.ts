@@ -11,7 +11,7 @@ import {assertDefined, assertDomNode, assertEqual, assertGreaterThan, assertInde
 import {assertIndexInExpandoRange, assertTIcu} from '../assert';
 import {attachPatchData} from '../context_discovery';
 import {elementPropertyInternal, setElementAttribute} from '../instructions/shared';
-import {ELEMENT_MARKER, getCurrentICUCaseIndex, getParentFromIcuCreateOpCode, getRefFromIcuCreateOpCode, I18nCreateOpCode, I18nCreateOpCodes, I18nUpdateOpCode, I18nUpdateOpCodes, ICU_MARKER, IcuCreateOpCode, IcuCreateOpCodes, IcuType, TI18n, TIcu} from '../interfaces/i18n';
+import {ELEMENT_MARKER, I18nCreateOpCode, I18nCreateOpCodes, I18nUpdateOpCode, I18nUpdateOpCodes, ICU_MARKER, IcuCreateOpCode, IcuCreateOpCodes, IcuType, TI18n, TIcu} from '../interfaces/i18n';
 import {TNode} from '../interfaces/node';
 import {RElement, RNode, RText} from '../interfaces/renderer';
 import {SanitizerFn} from '../interfaces/sanitization';
@@ -20,9 +20,8 @@ import {createCommentNode, createElementNode, createTextNode, nativeInsertBefore
 import {getBindingIndex} from '../state';
 import {renderStringify} from '../util/misc_utils';
 import {getNativeByIndex, unwrapRNode} from '../util/view_utils';
-
 import {getLocaleId} from './i18n_locale_id';
-import {getTIcu} from './i18n_util';
+import {getCurrentICUCaseIndex, getParentFromIcuCreateOpCode, getRefFromIcuCreateOpCode, getTIcu} from './i18n_util';
 
 
 

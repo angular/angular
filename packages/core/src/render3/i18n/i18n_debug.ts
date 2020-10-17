@@ -7,7 +7,9 @@
  */
 
 import {assertNumber, assertString} from '../../util/assert';
-import {ELEMENT_MARKER, getInstructionFromIcuCreateOpCode, getParentFromIcuCreateOpCode, getRefFromIcuCreateOpCode, I18nCreateOpCode, I18nCreateOpCodes, I18nRemoveOpCodes, I18nUpdateOpCode, I18nUpdateOpCodes, ICU_MARKER, IcuCreateOpCode, IcuCreateOpCodes} from '../interfaces/i18n';
+import {ELEMENT_MARKER, I18nCreateOpCode, I18nCreateOpCodes, I18nRemoveOpCodes, I18nUpdateOpCode, I18nUpdateOpCodes, ICU_MARKER, IcuCreateOpCode, IcuCreateOpCodes} from '../interfaces/i18n';
+
+import {getInstructionFromIcuCreateOpCode, getParentFromIcuCreateOpCode, getRefFromIcuCreateOpCode} from './i18n_util';
 
 
 /**

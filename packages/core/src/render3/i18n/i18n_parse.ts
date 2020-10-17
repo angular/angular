@@ -16,7 +16,7 @@ import {CharCode} from '../../util/char_code';
 import {loadIcuContainerVisitor} from '../instructions/i18n_icu_container_visitor';
 import {allocExpando, createTNodeAtIndex, elementAttributeInternal, setInputsForProperty, setNgReflectProperties} from '../instructions/shared';
 import {getDocument} from '../interfaces/document';
-import {ELEMENT_MARKER, ensureIcuContainerVisitorLoaded, I18nCreateOpCode, I18nCreateOpCodes, I18nRemoveOpCodes, I18nUpdateOpCode, I18nUpdateOpCodes, ICU_MARKER, icuCreateOpCode, IcuCreateOpCode, IcuCreateOpCodes, IcuExpression, IcuType, TI18n, TIcu} from '../interfaces/i18n';
+import {ELEMENT_MARKER, I18nCreateOpCode, I18nCreateOpCodes, I18nRemoveOpCodes, I18nUpdateOpCode, I18nUpdateOpCodes, ICU_MARKER, IcuCreateOpCode, IcuCreateOpCodes, IcuExpression, IcuType, TI18n, TIcu} from '../interfaces/i18n';
 import {TNode, TNodeType} from '../interfaces/node';
 import {RComment, RElement} from '../interfaces/renderer';
 import {SanitizerFn} from '../interfaces/sanitization';
@@ -27,7 +27,8 @@ import {getNativeByIndex, getTNode} from '../util/view_utils';
 
 import {i18nCreateOpCodesToString, i18nRemoveOpCodesToString, i18nUpdateOpCodesToString, icuCreateOpCodesToString} from './i18n_debug';
 import {addTNodeAndUpdateInsertBeforeIndex} from './i18n_insert_before_index';
-import {createTNodePlaceholder, setTIcu, setTNodeInsertBeforeIndex} from './i18n_util';
+import {ensureIcuContainerVisitorLoaded} from './i18n_tree_shaking';
+import {createTNodePlaceholder, icuCreateOpCode, setTIcu, setTNodeInsertBeforeIndex} from './i18n_util';
 
 
 
