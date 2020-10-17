@@ -1851,9 +1851,10 @@ export function markViewDirty(lView: LView): LView|null {
  */
 export function scheduleTick(rootContext: RootContext, flags: RootContextFlags) {
   const nothingScheduled = rootContext.flags === RootContextFlags.Empty;
-  rootContext.flags |= flags;
-
   if (nothingScheduled && rootContext.clean == _CLEAN_PROMISE) {
+    // https://github.com/angular/angular/issues/39296
+    // should only attach the flags when really scheduling a tick
+    rootContext.flags |= flags;
     let res: null|((val: null) => void);
     rootContext.clean = new Promise<null>((r) => res = r);
     rootContext.scheduler(() => {
