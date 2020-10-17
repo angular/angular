@@ -176,41 +176,67 @@ export class SymbolBuilder {
     }
 
     const consumer = this.templateData.boundTarget.getConsumerOfBinding(eventBinding);
-    if (consumer === null || consumer instanceof TmplAstTemplate ||
-        consumer instanceof TmplAstElement) {
-      // Bindings to element or template events produce `addEventListener` which
-      // we cannot get the field for.
-      return null;
-    }
-    const outputFieldAccess = TcbDirectiveOutputsOp.decodeOutputCallExpression(node);
-    if (outputFieldAccess === null) {
+    if (consumer === null) {
       return null;
     }
 
-    const tsSymbol =
-        this.getTypeChecker().getSymbolAtLocation(outputFieldAccess.argumentExpression);
-    if (tsSymbol === undefined) {
-      return null;
+    if (consumer instanceof TmplAstTemplate || consumer instanceof TmplAstElement) {
+      if (!ts.isPropertyAccessExpression(node.expression) ||
+          node.expression.name.text !== 'addEventListener') {
+        return null;
+      }
+
+      const addEventListener = node.expression.name;
+      const tsSymbol = this.getTypeChecker().getSymbolAtLocation(addEventListener);
+      const tsType = this.getTypeChecker().getTypeAtLocation(addEventListener);
+      const positionInShimFile = this.getShimPositionForNode(addEventListener);
+      const target = this.getSymbol(consumer);
+
+      if (target === null || tsSymbol === undefined) {
+        return null;
+      }
+
+      return {
+        kind: SymbolKind.Output,
+        bindings: [{
+          kind: SymbolKind.Binding,
+          tsSymbol,
+          tsType,
+          target,
+          shimLocation: {shimPath: this.shimPath, positionInShimFile},
+        }],
+      };
+    } else {
+      const outputFieldAccess = TcbDirectiveOutputsOp.decodeOutputCallExpression(node);
+      if (outputFieldAccess === null) {
+        return null;
+      }
+
+      const tsSymbol =
+          this.getTypeChecker().getSymbolAtLocation(outputFieldAccess.argumentExpression);
+      if (tsSymbol === undefined) {
+        return null;
+      }
+
+
+      const target = this.getDirectiveSymbolForAccessExpression(outputFieldAccess, consumer);
+      if (target === null) {
+        return null;
+      }
+
+      const positionInShimFile = this.getShimPositionForNode(outputFieldAccess);
+      const tsType = this.getTypeChecker().getTypeAtLocation(node);
+      return {
+        kind: SymbolKind.Output,
+        bindings: [{
+          kind: SymbolKind.Binding,
+          tsSymbol,
+          tsType,
+          target,
+          shimLocation: {shimPath: this.shimPath, positionInShimFile},
+        }],
+      };
     }
-
-
-    const target = this.getDirectiveSymbolForAccessExpression(outputFieldAccess, consumer);
-    if (target === null) {
-      return null;
-    }
-
-    const positionInShimFile = this.getShimPositionForNode(outputFieldAccess);
-    const tsType = this.getTypeChecker().getTypeAtLocation(node);
-    return {
-      kind: SymbolKind.Output,
-      bindings: [{
-        kind: SymbolKind.Binding,
-        tsSymbol,
-        tsType,
-        target,
-        shimLocation: {shimPath: this.shimPath, positionInShimFile},
-      }],
-    };
   }
 
   private getSymbolOfInputBinding(binding: TmplAstBoundAttribute|

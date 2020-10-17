@@ -309,6 +309,25 @@ describe('quick info', () => {
           expectedDisplayString: '(reference) chart: HTMLDivElement'
         });
       });
+
+      it('should work for $event from native element', () => {
+        expectQuickInfo({
+          templateOverride: `<div (click)="myClick($e¦vent)"></div>`,
+          expectedSpanText: '$event',
+          expectedDisplayString: '(parameter) $event: MouseEvent'
+        });
+      });
+
+      it('should work for click output from native element', () => {
+        expectQuickInfo({
+          templateOverride: `<div (cl¦ick)="myClick($event)"></div>`,
+          expectedSpanText: 'click',
+          expectedDisplayString:
+              '(event) HTMLDivElement.addEventListener<"click">(type: "click", ' +
+              'listener: (this: HTMLDivElement, ev: MouseEvent) => any, ' +
+              'options?: boolean | AddEventListenerOptions | undefined): void (+1 overload)'
+        });
+      });
     });
 
     describe('variables', () => {

@@ -1247,38 +1247,29 @@ runInEachFileSystem(() => {
             .toEqual('TestDir');
       });
 
-      it('returns empty list when binding does not match any directive output', () => {
-        const fileName = absoluteFrom('/main.ts');
-        const dirFile = absoluteFrom('/dir.ts');
-        const {program, templateTypeChecker} = setup([
-          {
-            fileName,
-            templates: {'Cmp': `<div dir (doesNotExist)="handle($event)"></div>`},
-            declarations: [
-              {
-                name: 'TestDir',
-                selector: '[dir]',
-                file: dirFile,
-                type: 'directive',
-                outputs: {outputA: 'outputA'},
-              },
-            ]
-          },
-          {
-            fileName: dirFile,
-            source: `export class TestDir {outputA!: EventEmitter<string>;}`,
-            templates: {},
-          }
-        ]);
-        const sf = getSourceFileOrError(program, fileName);
-        const cmp = getClass(sf, 'Cmp');
+      it('returns addEventListener binding to native element when no match to any directive output',
+         () => {
+           const fileName = absoluteFrom('/main.ts');
+           const {program, templateTypeChecker} = setup([
+             {
+               fileName,
+               templates: {'Cmp': `<div (click)="handle($event)"></div>`},
+             },
+           ]);
+           const sf = getSourceFileOrError(program, fileName);
+           const cmp = getClass(sf, 'Cmp');
 
-        const nodes = templateTypeChecker.getTemplate(cmp)!;
+           const nodes = templateTypeChecker.getTemplate(cmp)!;
 
-        const outputABinding = (nodes[0] as TmplAstElement).outputs[0];
-        const symbol = templateTypeChecker.getSymbolOfNode(outputABinding, cmp);
-        expect(symbol).toBeNull();
-      });
+           const outputABinding = (nodes[0] as TmplAstElement).outputs[0];
+           const symbol = templateTypeChecker.getSymbolOfNode(outputABinding, cmp)!;
+           assertOutputBindingSymbol(symbol);
+           expect(program.getTypeChecker().symbolToString(symbol.bindings[0].tsSymbol!))
+               .toEqual('addEventListener');
+
+           const eventSymbol = templateTypeChecker.getSymbolOfNode(outputABinding.handler, cmp)!;
+           assertExpressionSymbol(eventSymbol);
+         });
 
       it('returns empty list when checkTypeOfOutputEvents is false', () => {
         const fileName = absoluteFrom('/main.ts');
