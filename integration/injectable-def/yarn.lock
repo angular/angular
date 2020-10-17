@@ -2860,4 +2860,4 @@ yeast@0.1.2:
   resolved "https://registry.yarnpkg.com/yeast/-/yeast-0.1.2.tgz#008e06d8094320c372dbc2f8ed76a0ca6c8ac419"
 
 "zone.js@file:../../dist/zone.js-dist/zone.js":
-  version "0.10.3"
+  version "0.11.3"
