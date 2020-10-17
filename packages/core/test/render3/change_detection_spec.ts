@@ -8,18 +8,20 @@
 
 import {withBody} from '@angular/private/testing';
 
-import {ChangeDetectionStrategy, DoCheck} from '../../src/core';
+import {ChangeDetectionStrategy, DoCheck, OnInit} from '../../src/core';
 import {whenRendered} from '../../src/render3/component';
-import {getRenderedText, LifecycleHooksFeature, ɵɵadvance, ɵɵdefineComponent, ɵɵgetCurrentView, ɵɵproperty, ɵɵtextInterpolate1, ɵɵtextInterpolate2} from '../../src/render3/index';
-import {detectChanges, markDirty, tick, ɵɵelement, ɵɵelementEnd, ɵɵelementStart, ɵɵlistener, ɵɵtext, ɵɵtextInterpolate} from '../../src/render3/instructions/all';
+import {AttributeMarker, getRenderedText, LifecycleHooksFeature, ɵɵadvance, ɵɵdefineComponent, ɵɵgetCurrentView, ɵɵproperty, ɵɵtextInterpolate1, ɵɵtextInterpolate2} from '../../src/render3/index';
+import {detectChanges, markDirty, tick, ɵɵelement, ɵɵelementEnd, ɵɵelementStart, ɵɵlistener, ɵɵtemplate, ɵɵtext, ɵɵtextInterpolate} from '../../src/render3/instructions/all';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {Renderer3, RendererFactory3} from '../../src/render3/interfaces/renderer';
 import {FLAGS, LViewFlags} from '../../src/render3/interfaces/view';
 
+import {NgIf} from './common_with_def';
 import {containerEl, createComponent, renderComponent, requestAnimationFrame} from './render_util';
 
 describe('change detection', () => {
   describe('markDirty, detectChanges, whenRendered, getRenderedText', () => {
+    let mycompOninit: MyComponentWithOnInit;
     class MyComponent implements DoCheck {
       value: string = 'works';
       doCheckCount = 0;
@@ -48,6 +50,84 @@ describe('change detection', () => {
       });
     }
 
+    class MyComponentWithOnInit implements OnInit, DoCheck {
+      value: string = 'works';
+      doCheckCount = 0;
+
+      ngOnInit() {
+        markDirty(this);
+      }
+
+      ngDoCheck(): void {
+        this.doCheckCount++;
+      }
+
+      click() {
+        this.value = 'click works';
+        markDirty(this);
+      }
+
+      static ɵfac = () => mycompOninit = new MyComponentWithOnInit();
+      static ɵcmp = ɵɵdefineComponent({
+        type: MyComponentWithOnInit,
+        selectors: [['my-comp-oninit']],
+        decls: 2,
+        vars: 1,
+        template:
+            (rf: RenderFlags, ctx: MyComponentWithOnInit) => {
+              if (rf & RenderFlags.Create) {
+                ɵɵelementStart(0, 'span');
+                ɵɵtext(1);
+                ɵɵelementEnd();
+              }
+              if (rf & RenderFlags.Update) {
+                ɵɵadvance(1);
+                ɵɵtextInterpolate(ctx.value);
+              }
+            }
+      });
+    }
+
+    class MyParentComponent implements OnInit {
+      show = false;
+      value = 'parent';
+      mycomp: any = undefined;
+
+      ngOnInit() {}
+
+      click() {
+        this.show = true;
+        markDirty(this);
+      }
+
+      static ɵfac = () => new MyParentComponent();
+      static ɵcmp = ɵɵdefineComponent({
+        type: MyParentComponent,
+        selectors: [['my-parent-comp']],
+        decls: 2,
+        vars: 1,
+        directives: [NgIf, MyComponentWithOnInit],
+        consts: [[AttributeMarker.Template, 'ngIf']],
+        template:
+            (rf: RenderFlags, ctx: MyParentComponent) => {
+              if (rf & RenderFlags.Create) {
+                ɵɵtext(0, ' -->\n');
+                ɵɵtemplate(1, (rf, ctx) => {
+                  if (rf & RenderFlags.Create) {
+                    ɵɵelementStart(0, 'div');
+                    ɵɵelement(1, 'my-comp-oninit');
+                    ɵɵelementEnd();
+                  }
+                }, 2, 0, 'div', 0);
+              }
+              if (rf & RenderFlags.Update) {
+                ɵɵadvance(1);
+                ɵɵproperty('ngIf', ctx.show);
+              }
+            }
+      });
+    }
+
     it('should mark a component dirty and schedule change detection', withBody('my-comp', () => {
          const myComp = renderComponent(MyComponent, {hostFeatures: [LifecycleHooksFeature]});
          expect(getRenderedText(myComp)).toEqual('works');
@@ -64,6 +144,24 @@ describe('change detection', () => {
          myComp.value = 'updated';
          detectChanges(myComp);
          expect(getRenderedText(myComp)).toEqual('updated');
+       }));
+
+    it('should detectChanges after markDirty is called multiple times within ngOnInit',
+       withBody('my-comp-oninit', () => {
+         const myParentComp =
+             renderComponent(MyParentComponent, {hostFeatures: [LifecycleHooksFeature]});
+         expect(myParentComp.show).toBe(false);
+         myParentComp.click();
+         requestAnimationFrame.flush();
+         expect(myParentComp.show).toBe(true);
+         const myComp = mycompOninit;
+         expect(getRenderedText(myComp)).toEqual('works');
+         expect(myComp.doCheckCount).toBe(1);
+         myComp.click();
+         expect(getRenderedText(myComp)).toEqual('works');
+         requestAnimationFrame.flush();
+         expect(getRenderedText(myComp)).toEqual('click works');
+         expect(myComp.doCheckCount).toBe(2);
        }));
 
     it('should detectChanges only once if markDirty is called multiple times',
