@@ -228,6 +228,18 @@ describe('definitions', () => {
         expect(directiveDef.textSpan).toEqual('EventSelectorDirective');
         expect(directiveDef.contextSpan).toContain('export class EventSelectorDirective');
       });
+
+      it('should work for $event from native element', () => {
+        const definitions = getDefinitionsAndAssertBoundSpan({
+          templateOverride: `<div (cl¦ick)="myClick($event)"></div>`,
+          expectedSpanText: 'click',
+        });
+        expect(definitions!.length).toEqual(1);
+        expect(definitions[0].textSpan).toEqual('addEventListener');
+        expect(definitions[0].contextSpan)
+            .toContain('addEventListener<K extends keyof HTMLElementEventMap>');
+        expect(definitions[0].fileName).toContain('lib.dom.d.ts');
+      });
     });
   });
 
