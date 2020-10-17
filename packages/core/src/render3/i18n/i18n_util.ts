@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {assertEqual, throwError} from '../../util/assert';
+import {assertEqual, assertGreaterThan, assertGreaterThanOrEqual, throwError} from '../../util/assert';
 import {assertTIcu, assertTNode} from '../assert';
 import {createTNodeAtIndex} from '../instructions/shared';
-import {TIcu} from '../interfaces/i18n';
+import {IcuCreateOpCode, TIcu} from '../interfaces/i18n';
 import {TIcuContainerNode, TNode, TNodeType} from '../interfaces/node';
-import {TView} from '../interfaces/view';
+import {LView, TView} from '../interfaces/view';
 import {assertTNodeType} from '../node_assert';
 import {addTNodeAndUpdateInsertBeforeIndex} from './i18n_insert_before_index';
 
@@ -101,4 +101,36 @@ export function createTNodePlaceholder(
   const tNode = createTNodeAtIndex(tView, index, TNodeType.Placeholder, null, null);
   addTNodeAndUpdateInsertBeforeIndex(previousTNodes, tNode);
   return tNode;
+}
+
+
+/**
+ * Returns current ICU case.
+ *
+ * ICU cases are stored as index into the `TIcu.cases`.
+ * At times it is necessary to communicate that the ICU case just switched and that next ICU update
+ * should update all bindings regardless of the mask. In such a case the we store negative numbers
+ * for cases which have just been switched. This function removes the negative flag.
+ */
+export function getCurrentICUCaseIndex(tIcu: TIcu, lView: LView) {
+  const currentCase: number|null = lView[tIcu.currentCaseLViewIndex];
+  return currentCase === null ? currentCase : (currentCase < 0 ? ~currentCase : currentCase);
+}
+
+export function getParentFromIcuCreateOpCode(mergedCode: number): number {
+  return mergedCode >>> IcuCreateOpCode.SHIFT_PARENT;
+}
+
+export function getRefFromIcuCreateOpCode(mergedCode: number): number {
+  return (mergedCode & IcuCreateOpCode.MASK_REF) >>> IcuCreateOpCode.SHIFT_REF;
+}
+
+export function getInstructionFromIcuCreateOpCode(mergedCode: number): number {
+  return mergedCode & IcuCreateOpCode.MASK_INSTRUCTION;
+}
+
+export function icuCreateOpCode(opCode: IcuCreateOpCode, parentIdx: number, refIdx: number) {
+  ngDevMode && assertGreaterThanOrEqual(parentIdx, 0, 'Missing parent index');
+  ngDevMode && assertGreaterThan(refIdx, 0, 'Missing ref index');
+  return opCode | parentIdx << IcuCreateOpCode.SHIFT_PARENT | refIdx << IcuCreateOpCode.SHIFT_REF;
 }
