@@ -85,6 +85,12 @@ export class ImplicitReceiver extends AST {
   }
 }
 
+export class ThisImplicitReceiver extends ImplicitReceiver {
+  visit(visitor: AstVisitor, context: any = null): any {
+    return visitor.visitThisImplicitReceiver(this, context);
+  }
+}
+
 /**
  * Multiple expressions separated by a semicolon.
  */
@@ -416,6 +422,7 @@ export interface AstVisitor {
   visitChain(ast: Chain, context: any): any;
   visitConditional(ast: Conditional, context: any): any;
   visitFunctionCall(ast: FunctionCall, context: any): any;
+  visitThisImplicitReceiver(ast: ThisImplicitReceiver, context: any): any;
   visitImplicitReceiver(ast: ImplicitReceiver, context: any): any;
   visitInterpolation(ast: Interpolation, context: any): any;
   visitKeyedRead(ast: KeyedRead, context: any): any;
@@ -474,7 +481,8 @@ export class RecursiveAstVisitor implements AstVisitor {
     }
     this.visitAll(ast.args, context);
   }
-  visitImplicitReceiver(ast: ImplicitReceiver, context: any): any {}
+  visitImplicitReceiver(ast: ThisImplicitReceiver, context: any): any {}
+  visitThisImplicitReceiver(ast: ThisImplicitReceiver, context: any): any {}
   visitInterpolation(ast: Interpolation, context: any): any {
     this.visitAll(ast.expressions, context);
   }
@@ -529,6 +537,10 @@ export class RecursiveAstVisitor implements AstVisitor {
 
 export class AstTransformer implements AstVisitor {
   visitImplicitReceiver(ast: ImplicitReceiver, context: any): AST {
+    return ast;
+  }
+
+  visitThisImplicitReceiver(ast: ThisImplicitReceiver, context: any): AST {
     return ast;
   }
 
@@ -648,6 +660,10 @@ export class AstTransformer implements AstVisitor {
 // a change is made a child node.
 export class AstMemoryEfficientTransformer implements AstVisitor {
   visitImplicitReceiver(ast: ImplicitReceiver, context: any): AST {
+    return ast;
+  }
+
+  visitThisImplicitReceiver(ast: ThisImplicitReceiver, context: any): AST {
     return ast;
   }
 

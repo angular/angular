@@ -384,6 +384,20 @@ describe('acceptance integration tests', () => {
 
       expect(fixture.nativeElement.innerHTML).toEqual('');
     });
+
+    it('should be able to render the result of a function called $any by using this', () => {
+      @Component({template: '{{this.$any(1)}}'})
+      class App {
+        $any(value: number) {
+          return value * 2;
+        }
+      }
+
+      TestBed.configureTestingModule({declarations: [App]});
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toBe('2');
+    });
   });
 
   describe('ngNonBindable handling', () => {

@@ -447,4 +447,137 @@ describe('compiler compliance: listen()', () => {
     const result = compile(files, angularFiles);
     expectEmit(result.source, template, 'Incorrect host bindings');
   });
+
+  it('should assume $event is referring to the event variable in a listener by default', () => {
+    const files = {
+      app: {
+        'spec.ts': `
+          import {Component} from '@angular/core';
+
+          @Component({
+            template: '<div (click)="c($event)"></div>'
+          })
+          class Comp {
+            c(event: MouseEvent) {}
+          }
+        `
+      }
+    };
+
+    const template = `
+      …
+      i0.ɵɵlistener("click", function Comp_Template_div_click_0_listener($event) { return ctx.c($event); });
+    `;
+
+    const result = compile(files, angularFiles);
+    expectEmit(result.source, template, 'Incorrect event listener');
+  });
+
+  it('should preserve accesses to $event if it is done through `this` in a listener', () => {
+    const files = {
+      app: {
+        'spec.ts': `
+          import {Component} from '@angular/core';
+
+          @Component({
+            template: '<div (click)="c(this.$event)"></div>'
+          })
+          class Comp {
+            $event = {};
+            c(value: {}) {}
+          }
+        `
+      }
+    };
+
+    const template = `
+      …
+      i0.ɵɵlistener("click", function Comp_Template_div_click_0_listener() { return ctx.c(ctx.$event); });
+    `;
+
+    const result = compile(files, angularFiles);
+    expectEmit(result.source, template, 'Incorrect event listener');
+  });
+
+  it('should not assume that $event is referring to an event object inside a property', () => {
+    const files = {
+      app: {
+        'spec.ts': `
+          import {Component} from '@angular/core';
+
+          @Component({
+            template: '<div [event]="$event"></div>'
+          })
+          class Comp {
+            $event = 1;
+          }
+        `
+      }
+    };
+
+    const template = `
+      …
+      i0.ɵɵproperty("event", ctx.$event);
+    `;
+
+    const result = compile(files, angularFiles);
+    expectEmit(result.source, template, 'Incorrect property binding');
+  });
+
+  it('should assume $event is referring to the event variable in a listener by default inside a host binding',
+     () => {
+       const files = {
+         app: {
+           'spec.ts': `
+              import {Directive} from '@angular/core';
+
+              @Directive({
+                host: {
+                  '(click)': 'c($event)'
+                }
+              })
+              class Dir {
+                c(event: MouseEvent) {}
+              }
+            `
+         }
+       };
+
+       const template = `
+      …
+      i0.ɵɵlistener("click", function Dir_click_HostBindingHandler($event) { return ctx.c($event); });
+    `;
+
+       const result = compile(files, angularFiles);
+       expectEmit(result.source, template, 'Incorrect event listener');
+     });
+
+  it('should preserve accesses to $event if it is done through `this` in a listener inside a host binding',
+     () => {
+       const files = {
+         app: {
+           'spec.ts': `
+              import {Directive} from '@angular/core';
+
+              @Directive({
+                host: {
+                  '(click)': 'c(this.$event)'
+                }
+              })
+              class Dir {
+                $event = {};
+                c(value: {}) {}
+              }
+            `
+         }
+       };
+
+       const template = `
+      …
+      i0.ɵɵlistener("click", function Dir_click_HostBindingHandler() { return ctx.c(ctx.$event); });
+    `;
+
+       const result = compile(files, angularFiles);
+       expectEmit(result.source, template, 'Incorrect event listener');
+     });
 });

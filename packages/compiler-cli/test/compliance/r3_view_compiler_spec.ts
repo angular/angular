@@ -191,4 +191,57 @@ describe('r3_view_compiler', () => {
       expectEmit(result.source, template, 'Incorrect initialization attributes');
     });
   });
+
+  describe('$any', () => {
+    it('should strip out $any wrappers', () => {
+      const files = {
+        app: {
+          'spec.ts': `
+            import {Component} from '@angular/core';
+
+            @Component({
+              template: '<div [tabIndex]="$any(10)"></div>'
+            })
+            class Comp {
+            }
+          `
+        }
+      };
+
+      const template = `
+        …
+        i0.ɵɵproperty("tabIndex", 10);
+      `;
+
+      const result = compile(files, angularFiles);
+      expectEmit(result.source, template, 'Incorrect template');
+    });
+
+    it('should preserve $any if it is accessed through `this`', () => {
+      const files = {
+        app: {
+          'spec.ts': `
+            import {Component} from '@angular/core';
+
+            @Component({
+              template: '<div [tabIndex]="this.$any(null)"></div>'
+            })
+            class Comp {
+              $any(value: null): any {
+                return value as any;
+              }
+            }
+          `
+        }
+      };
+
+      const template = `
+        …
+        i0.ɵɵproperty("tabIndex", ctx.$any(null));
+      `;
+
+      const result = compile(files, angularFiles);
+      expectEmit(result.source, template, 'Incorrect template');
+    });
+  });
 });
