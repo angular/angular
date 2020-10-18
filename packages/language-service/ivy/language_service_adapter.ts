@@ -6,17 +6,19 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NgCompilerAdapter} from '@angular/compiler-cli/src/ngtsc/core/api';
+import {NgCompilerAdapter, ReadConfigurationHost} from '@angular/compiler-cli/src/ngtsc/core/api';
 import {absoluteFrom, AbsoluteFsPath} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {AdapterResourceLoader} from '@angular/compiler-cli/src/ngtsc/resource';
 import {isShim} from '@angular/compiler-cli/src/ngtsc/shims';
+import * as path from 'path';
 import * as ts from 'typescript/lib/tsserverlibrary';
 
 import {ResourceResolver} from '../common/definitions';
 
 import {isTypeScriptFile} from './utils';
 
-export class LanguageServiceAdapter implements NgCompilerAdapter, ResourceResolver {
+export class LanguageServiceAdapter implements NgCompilerAdapter, ResourceResolver,
+                                               ReadConfigurationHost {
   readonly entryPoint = null;
   readonly constructionDiagnostics: ts.Diagnostic[] = [];
   readonly ignoreForEmit: Set<ts.SourceFile> = new Set();
@@ -84,5 +86,23 @@ export class LanguageServiceAdapter implements NgCompilerAdapter, ResourceResolv
   resolve(file: string, basePath: string): string {
     const loader = new AdapterResourceLoader(this, this.project.getCompilationSettings());
     return loader.resolve(file, basePath);
+  }
+
+  calcProjectFileAndBasePath(projectPath: string) {
+    const host = this.project.projectService.host;
+    const absProject = host.resolvePath(projectPath);
+    const projectIsDir = host.directoryExists(absProject);
+    const projectFile = projectIsDir ? path.join(absProject, 'tsconfig.json') : absProject;
+    const projectDir = projectIsDir ? absProject : path.dirname(absProject);
+    const basePath = host.resolvePath(projectDir);
+    return {projectFile: projectFile as AbsoluteFsPath, basePath: basePath as AbsoluteFsPath};
+  }
+
+  resolveConfigFilePath(relativeTo: string, ...paths: string[]) {
+    const host = this.project.projectService.host;
+    const joined = path.join(path.dirname(relativeTo), ...paths);
+    const rawConfigFile = host.resolvePath(joined);
+    const configFile = path.extname(rawConfigFile) === '' ? `${rawConfigFile}.json` : rawConfigFile;
+    return configFile as AbsoluteFsPath;
   }
 }

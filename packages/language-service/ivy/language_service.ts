@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CompilerOptions, createNgCompilerOptions} from '@angular/compiler-cli';
+import {CompilerOptions, formatDiagnostics, readConfiguration} from '@angular/compiler-cli';
+import {ReadConfigurationHost} from '@angular/compiler-cli/src/ngtsc/core/api';
 import {absoluteFromSourceFile, AbsoluteFsPath} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {TypeCheckShimGenerator} from '@angular/compiler-cli/src/ngtsc/typecheck';
 import {OptimizeFor, TypeCheckingProgramStrategy} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
@@ -25,11 +26,15 @@ export class LanguageService {
   private readonly adapter: LanguageServiceAdapter;
 
   constructor(project: ts.server.Project, private readonly tsLS: ts.LanguageService) {
-    this.options = parseNgCompilerOptions(project);
-    this.strategy = createTypeCheckingProgramStrategy(project);
     this.adapter = new LanguageServiceAdapter(project);
+    this.options = parseNgCompilerOptions(project, this.adapter);
+    this.strategy = createTypeCheckingProgramStrategy(project);
     this.compilerFactory = new CompilerFactory(this.adapter, this.strategy);
     this.watchConfigFile(project);
+  }
+
+  getCompilerOptions(): CompilerOptions {
+    return this.options;
   }
 
   getSemanticDiagnostics(fileName: string): ts.Diagnostic[] {
@@ -92,24 +97,24 @@ export class LanguageService {
         project.getConfigFilePath(), (fileName: string, eventKind: ts.FileWatcherEventKind) => {
           project.log(`Config file changed: ${fileName}`);
           if (eventKind === ts.FileWatcherEventKind.Changed) {
-            this.options = parseNgCompilerOptions(project);
+            this.options = parseNgCompilerOptions(project, this.adapter);
           }
         });
   }
 }
 
-export function parseNgCompilerOptions(project: ts.server.Project): CompilerOptions {
-  let config = {};
-  if (project instanceof ts.server.ConfiguredProject) {
-    const configPath = project.getConfigFilePath();
-    const result = ts.readConfigFile(configPath, path => project.readFile(path));
-    if (result.error) {
-      project.error(ts.flattenDiagnosticMessageText(result.error.messageText, '\n'));
-    }
-    config = result.config || config;
+export function parseNgCompilerOptions(
+    project: ts.server.Project, readConfigHost: ReadConfigurationHost): CompilerOptions {
+  if (!(project instanceof ts.server.ConfiguredProject)) {
+    return {};
   }
-  const basePath = project.getCurrentDirectory();
-  return createNgCompilerOptions(basePath, config, project.getCompilationSettings());
+  const {options, errors} = readConfiguration(
+      project.getConfigFilePath(), /* existingOptions */ undefined, readConfigHost);
+  if (errors.length > 0) {
+    console.error(formatDiagnostics(errors));
+    project.error(formatDiagnostics(errors));
+  }
+  return options;
 }
 
 function createTypeCheckingProgramStrategy(project: ts.server.Project):

@@ -7,6 +7,7 @@
  */
 
 import * as ts from 'typescript';
+import {AbsoluteFsPath} from '../../../file_system';
 
 /**
  * A host backed by a build system which has a unified view of the module namespace.
@@ -62,4 +63,11 @@ export interface LazyRoute {
   route: string;
   module: {name: string, filePath: string};
   referencedModule: {name: string, filePath: string};
+}
+
+export interface ReadConfigurationHost extends
+    Pick<ExtendedTsCompilerHost, 'fileExists'|'readFile'> {
+  calcProjectFileAndBasePath(project: string):
+      {projectFile: AbsoluteFsPath, basePath: AbsoluteFsPath};
+  resolveConfigFilePath(relativeTo: string, ...paths: string[]): AbsoluteFsPath;
 }
