@@ -163,7 +163,8 @@ describe('parser', () => {
         });
 
         it('should recover on missing properties', () => {
-          checkActionWithError('a. = 1', 'a. = 1', 'Property access cannot be empty at column 2');
+          checkActionWithError(
+              'a. = 1', 'a. = 1', 'Expected identifier for property access at column 2');
         });
 
         it('should error on writes after a property write', () => {

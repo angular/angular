@@ -851,7 +851,7 @@ export class _ParseAST {
     const id = this.withContext(ParseContextFlags.Writable, () => {
       const id = this.expectIdentifierOrKeyword();
       if (id.length === 0) {
-        this.error(`Property access cannot be empty`, receiver.span.end);
+        this.error(`Expected identifier for property access`, receiver.span.end);
       }
       return id;
     });
