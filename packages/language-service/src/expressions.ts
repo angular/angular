@@ -69,6 +69,7 @@ export function getExpressionCompletions(
     visitConditional(_ast) {},
     visitFunctionCall(_ast) {},
     visitImplicitReceiver(_ast) {},
+    visitThisReceiver(_ast) {},
     visitInterpolation(_ast) {
       result = undefined;
     },
@@ -164,6 +165,7 @@ export function getExpressionSymbol(
     visitConditional(_ast) {},
     visitFunctionCall(_ast) {},
     visitImplicitReceiver(_ast) {},
+    visitThisReceiver(_ast) {},
     visitInterpolation(_ast) {},
     visitKeyedRead(_ast) {},
     visitKeyedWrite(_ast) {},

@@ -396,4 +396,33 @@ describe('event listeners', () => {
     button.click();
     expect(comp.counter).toBe(1);
   });
+
+  onlyInIvy('issue has only been resolved for Ivy')
+      .it('should be able to access a property called $event using `this`', () => {
+        let eventVariable: number|undefined;
+        let eventObject: MouseEvent|undefined;
+
+        @Component({
+          template: `
+        <button (click)="clicked(this.$event, $event)">Click me!</button>
+      `,
+        })
+        class MyComp {
+          $event = 10;
+
+          clicked(value: number, event: MouseEvent) {
+            eventVariable = value;
+            eventObject = event;
+          }
+        }
+
+        TestBed.configureTestingModule({declarations: [MyComp]});
+        const fixture = TestBed.createComponent(MyComp);
+        fixture.detectChanges();
+        fixture.nativeElement.querySelector('button').click();
+        fixture.detectChanges();
+
+        expect(eventVariable).toBe(10);
+        expect(eventObject?.type).toBe('click');
+      });
 });
