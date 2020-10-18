@@ -10,7 +10,7 @@ import {flatten, sanitizeIdentifier} from '../../compile_metadata';
 import {BindingForm, BuiltinFunctionCall, convertActionBinding, convertPropertyBinding, convertUpdateArguments, LocalResolver} from '../../compiler_util/expression_converter';
 import {ConstantPool} from '../../constant_pool';
 import * as core from '../../core';
-import {AST, AstMemoryEfficientTransformer, BindingPipe, BindingType, FunctionCall, ImplicitReceiver, Interpolation, LiteralArray, LiteralMap, LiteralPrimitive, ParsedEventType, PropertyRead} from '../../expression_parser/ast';
+import {AST, AstMemoryEfficientTransformer, BindingPipe, BindingType, FunctionCall, ImplicitReceiver, Interpolation, LiteralArray, LiteralMap, LiteralPrimitive, ParsedEventType, PropertyRead, ThisReceiver} from '../../expression_parser/ast';
 import {Lexer} from '../../expression_parser/lexer';
 import {IvyParser} from '../../expression_parser/parser';
 import * as i18n from '../../i18n/i18n_ast';
@@ -48,6 +48,9 @@ const NG_CONTENT_SELECT_ATTR = 'select';
 // Attribute name of `ngProjectAs`.
 const NG_PROJECT_AS_ATTR_NAME = 'ngProjectAs';
 
+// Global symbols available only inside event bindings.
+const EVENT_BINDING_SCOPE_GLOBALS = new Set<string>(['$event']);
+
 // List of supported global targets for event listeners
 const GLOBAL_TARGET_RESOLVERS = new Map<string, o.ExternalReference>(
     [['window', R3.resolveWindow], ['document', R3.resolveDocument], ['body', R3.resolveBody]]);
@@ -76,7 +79,7 @@ export function prepareEventListenerParameters(
       scope.getOrCreateSharedContextVar(0);
   const bindingExpr = convertActionBinding(
       scope, implicitReceiverExpr, handler, 'b', () => error('Unexpected interpolation'),
-      eventAst.handlerSpan, implicitReceiverAccesses);
+      eventAst.handlerSpan, implicitReceiverAccesses, EVENT_BINDING_SCOPE_GLOBALS);
   const statements = [];
   if (scope) {
     statements.push(...scope.restoreViewStatement());
@@ -1427,7 +1430,8 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
           prepareSyntheticListenerFunctionName(eventName, outputAst.phase!) :
           sanitizeIdentifier(eventName);
       const handlerName = `${this.templateName}_${tagName}_${bindingFnName}_${index}_listener`;
-      const scope = this._bindingScope.nestedScope(this._bindingScope.bindingLevel);
+      const scope = this._bindingScope.nestedScope(
+          this._bindingScope.bindingLevel, EVENT_BINDING_SCOPE_GLOBALS);
       return prepareEventListenerParameters(outputAst, handlerName, scope);
     };
   }
@@ -1625,10 +1629,18 @@ export class BindingScope implements LocalResolver {
   private referenceNameIndex = 0;
   private restoreViewVariable: o.ReadVarExpr|null = null;
   static createRootScope(): BindingScope {
-    return new BindingScope().set(0, '$event', o.variable('$event'));
+    return new BindingScope();
   }
 
-  private constructor(public bindingLevel: number = 0, private parent: BindingScope|null = null) {}
+  private constructor(
+      public bindingLevel: number = 0, private parent: BindingScope|null = null,
+      public globals?: Set<string>) {
+    if (globals !== undefined) {
+      for (const name of globals) {
+        this.set(0, name, o.variable(name));
+      }
+    }
+  }
 
   get(name: string): o.Expression|null {
     let current: BindingScope|null = this;
@@ -1715,8 +1727,8 @@ export class BindingScope implements LocalResolver {
     }
   }
 
-  nestedScope(level: number): BindingScope {
-    const newScope = new BindingScope(level, this);
+  nestedScope(level: number, globals?: Set<string>): BindingScope {
+    const newScope = new BindingScope(level, this, globals);
     if (level > 0) newScope.generateSharedContextVar(0);
     return newScope;
   }

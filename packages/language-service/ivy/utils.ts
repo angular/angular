@@ -279,7 +279,7 @@ export function filterAliasImports(displayParts: ts.SymbolDisplayPart[]): ts.Sym
 
 export function isDollarEvent(n: t.Node|e.AST): n is e.PropertyRead {
   return n instanceof e.PropertyRead && n.name === '$event' &&
-      n.receiver instanceof e.ImplicitReceiver;
+      n.receiver instanceof e.ImplicitReceiver && !(n.receiver instanceof e.ThisReceiver);
 }
 
 /**

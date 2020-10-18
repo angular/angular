@@ -86,6 +86,20 @@ export class ImplicitReceiver extends AST {
 }
 
 /**
+ * Receiver when something is accessed through `this` (e.g. `this.foo`). Note that this class
+ * inherits from `ImplicitReceiver`, because accessing something through `this` is treated the
+ * same as accessing it implicitly inside of an Angular template (e.g. `[attr.title]="this.title"`
+ * is the same as `[attr.title]="title"`.). Inheriting allows for the `this` accesses to be treated
+ * the same as implicit ones, except for a couple of exceptions like `$event` and `$any`.
+ * TODO: we should find a way for this class not to extend from `ImplicitReceiver` in the future.
+ */
+export class ThisReceiver extends ImplicitReceiver {
+  visit(visitor: AstVisitor, context: any = null): any {
+    return visitor.visitThisReceiver?.(this, context);
+  }
+}
+
+/**
  * Multiple expressions separated by a semicolon.
  */
 export class Chain extends AST {
@@ -416,6 +430,11 @@ export interface AstVisitor {
   visitChain(ast: Chain, context: any): any;
   visitConditional(ast: Conditional, context: any): any;
   visitFunctionCall(ast: FunctionCall, context: any): any;
+  /**
+   * The `visitThisReceiver` method is declared as optional for backwards compatibility.
+   * In an upcoming major release, this method will be made required.
+   */
+  visitThisReceiver?(ast: ThisReceiver, context: any): any;
   visitImplicitReceiver(ast: ImplicitReceiver, context: any): any;
   visitInterpolation(ast: Interpolation, context: any): any;
   visitKeyedRead(ast: KeyedRead, context: any): any;
@@ -474,7 +493,8 @@ export class RecursiveAstVisitor implements AstVisitor {
     }
     this.visitAll(ast.args, context);
   }
-  visitImplicitReceiver(ast: ImplicitReceiver, context: any): any {}
+  visitImplicitReceiver(ast: ThisReceiver, context: any): any {}
+  visitThisReceiver(ast: ThisReceiver, context: any): any {}
   visitInterpolation(ast: Interpolation, context: any): any {
     this.visitAll(ast.expressions, context);
   }
@@ -529,6 +549,10 @@ export class RecursiveAstVisitor implements AstVisitor {
 
 export class AstTransformer implements AstVisitor {
   visitImplicitReceiver(ast: ImplicitReceiver, context: any): AST {
+    return ast;
+  }
+
+  visitThisReceiver(ast: ThisReceiver, context: any): AST {
     return ast;
   }
 
@@ -648,6 +672,10 @@ export class AstTransformer implements AstVisitor {
 // a change is made a child node.
 export class AstMemoryEfficientTransformer implements AstVisitor {
   visitImplicitReceiver(ast: ImplicitReceiver, context: any): AST {
+    return ast;
+  }
+
+  visitThisReceiver(ast: ThisReceiver, context: any): AST {
     return ast;
   }
 

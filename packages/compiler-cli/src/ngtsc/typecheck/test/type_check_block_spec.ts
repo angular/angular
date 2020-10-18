@@ -584,6 +584,12 @@ describe('type check blocks', () => {
     expect(block).toContain('(((ctx).a) as any)');
   });
 
+  it('should handle $any accessed through `this`', () => {
+    const TEMPLATE = `{{this.$any(a)}}`;
+    const block = tcb(TEMPLATE);
+    expect(block).toContain('((ctx).$any(((ctx).a)))');
+  });
+
   describe('experimental DOM checking via lib.dom.d.ts', () => {
     it('should translate unclaimed bindings to their property equivalent', () => {
       const TEMPLATE = `<label [for]="'test'"></label>`;
@@ -683,6 +689,14 @@ describe('type check blocks', () => {
       const block = tcb(TEMPLATE);
       expect(block).toContain(
           '_t3.addEventListener("event", function ($event): any { (_t2 = 3); });');
+    });
+
+    it('should ignore accesses to $event through `this`', () => {
+      const TEMPLATE = `<div (event)="foo(this.$event)"></div>`;
+      const block = tcb(TEMPLATE);
+
+      expect(block).toContain(
+          '_t1.addEventListener("event", function ($event): any { (ctx).foo(((ctx).$event)); });');
     });
   });
 
