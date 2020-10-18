@@ -491,14 +491,14 @@ export class _ParseAST {
     this.error(`Missing expected operator ${operator}`);
   }
 
-  ppToken(tok: Token): string {
+  prettyPrintToken(tok: Token): string {
     return tok === EOF ? 'end of input' : `token ${tok}`;
   }
 
   expectIdentifierOrKeyword(): string {
     const n = this.next;
     if (!n.isIdentifier() && !n.isKeyword()) {
-      this.error(`Unexpected ${this.ppToken(n)}, expected identifier or keyword`);
+      this.error(`Unexpected ${this.prettyPrintToken(n)}, expected identifier or keyword`);
       return '';
     }
     this.advance();
@@ -508,7 +508,7 @@ export class _ParseAST {
   expectIdentifierOrKeywordOrString(): string {
     const n = this.next;
     if (!n.isIdentifier() && !n.isKeyword() && !n.isString()) {
-      this.error(`Unexpected ${this.ppToken(n)}, expected identifier, keyword, or string`);
+      this.error(`Unexpected ${this.prettyPrintToken(n)}, expected identifier, keyword, or string`);
       return '';
     }
     this.advance();
