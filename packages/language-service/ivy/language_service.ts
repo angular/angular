@@ -6,29 +6,36 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CompilerOptions, createNgCompilerOptions} from '@angular/compiler-cli';
+import {CompilerOptions, formatDiagnostics, readConfiguration} from '@angular/compiler-cli';
 import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
-import {NgCompilerAdapter} from '@angular/compiler-cli/src/ngtsc/core/api';
+import {NgCompilerAdapter, ReadConfigurationHost} from '@angular/compiler-cli/src/ngtsc/core/api';
 import {absoluteFrom, absoluteFromSourceFile, AbsoluteFsPath} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {PatchedProgramIncrementalBuildStrategy} from '@angular/compiler-cli/src/ngtsc/incremental';
 import {isShim} from '@angular/compiler-cli/src/ngtsc/shims';
 import {TypeCheckShimGenerator} from '@angular/compiler-cli/src/ngtsc/typecheck';
 import {OptimizeFor, TypeCheckingProgramStrategy} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
+import * as path from 'path';
 import * as ts from 'typescript/lib/tsserverlibrary';
 
 import {QuickInfoBuilder} from './quick_info';
+
+type LsCompilerAdapter = NgCompilerAdapter&ReadConfigurationHost;
 
 export class LanguageService {
   private options: CompilerOptions;
   private lastKnownProgram: ts.Program|null = null;
   private readonly strategy: TypeCheckingProgramStrategy;
-  private readonly adapter: NgCompilerAdapter;
+  private readonly adapter: LsCompilerAdapter;
 
   constructor(project: ts.server.Project, private readonly tsLS: ts.LanguageService) {
-    this.options = parseNgCompilerOptions(project);
+    this.adapter = createLsCompilerAdapter(project);
+    this.options = parseNgCompilerOptions(project, this.adapter);
     this.strategy = createTypeCheckingProgramStrategy(project);
-    this.adapter = createNgCompilerAdapter(project);
     this.watchConfigFile(project);
+  }
+
+  getCompilerOptions(): CompilerOptions {
+    return this.options;
   }
 
   getSemanticDiagnostics(fileName: string): ts.Diagnostic[] {
@@ -79,27 +86,26 @@ export class LanguageService {
         project.getConfigFilePath(), (fileName: string, eventKind: ts.FileWatcherEventKind) => {
           project.log(`Config file changed: ${fileName}`);
           if (eventKind === ts.FileWatcherEventKind.Changed) {
-            this.options = parseNgCompilerOptions(project);
+            this.options = parseNgCompilerOptions(project, this.adapter);
           }
         });
   }
 }
 
-export function parseNgCompilerOptions(project: ts.server.Project): CompilerOptions {
-  let config = {};
-  if (project instanceof ts.server.ConfiguredProject) {
-    const configPath = project.getConfigFilePath();
-    const result = ts.readConfigFile(configPath, path => project.readFile(path));
-    if (result.error) {
-      project.error(ts.flattenDiagnosticMessageText(result.error.messageText, '\n'));
-    }
-    config = result.config || config;
+export function parseNgCompilerOptions(
+    project: ts.server.Project, readConfigHost: ReadConfigurationHost): CompilerOptions {
+  if (!(project instanceof ts.server.ConfiguredProject)) {
+    return {};
   }
-  const basePath = project.getCurrentDirectory();
-  return createNgCompilerOptions(basePath, config, project.getCompilationSettings());
+  const {options, errors} = readConfiguration(
+      project.getConfigFilePath(), /* existingOptions */ undefined, readConfigHost);
+  if (errors.length > 0) {
+    project.error(formatDiagnostics(errors));
+  }
+  return options;
 }
 
-function createNgCompilerAdapter(project: ts.server.Project): NgCompilerAdapter {
+function createLsCompilerAdapter(project: ts.server.Project): LsCompilerAdapter {
   return {
     entryPoint: null,  // entry point is only needed if code is emitted
     constructionDiagnostics: [],
@@ -120,6 +126,22 @@ function createNgCompilerAdapter(project: ts.server.Project): NgCompilerAdapter 
     },
     getCanonicalFileName(fileName: string): string {
       return project.projectService.toCanonicalFileName(fileName);
+    },
+    calcProjectFileAndBasePath(projectPath: string) {
+      const host = project.projectService.host;
+      const absProject = host.resolvePath(projectPath);
+      const projectIsDir = host.directoryExists(absProject);
+      const projectFile = projectIsDir ? path.join(absProject, 'tsconfig.json') : absProject;
+      const projectDir = projectIsDir ? absProject : path.dirname(absProject);
+      const basePath = host.resolvePath(projectDir);
+      return {projectFile: projectFile as AbsoluteFsPath, basePath: basePath as AbsoluteFsPath};
+    },
+    resolveConfigFilePath(relativeTo: string, ...paths: string[]) {
+      const host = project.projectService.host;
+      const joined = path.join(path.dirname(relativeTo), ...paths);
+      let configFile = host.resolvePath(joined);
+      return (path.extname(configFile) === '' ? `${configFile}.json` : configFile) as
+          AbsoluteFsPath;
     },
   };
 }

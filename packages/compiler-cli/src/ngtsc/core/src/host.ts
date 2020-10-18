@@ -272,4 +272,8 @@ export class NgCompilerHost extends DelegatingCompilerHost implements
   get unifiedModulesHost(): UnifiedModulesHost|null {
     return this.fileNameToModuleName !== undefined ? this as UnifiedModulesHost : null;
   }
+
+  directoryExists = (path: string): boolean => {
+    return ts.sys.directoryExists(path);
+  };
 }

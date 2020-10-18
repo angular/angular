@@ -6,19 +6,45 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {parseNgCompilerOptions} from '../language_service';
+import {LanguageService} from '../language_service';
 
-import {setup} from './mock_host';
+import {setup, TSCONFIG} from './mock_host';
 
-const {project} = setup();
+describe('parse compiler options', () => {
+  const {project, tsLS, configFileFs} = setup();
+  let ngLs: LanguageService;
 
-describe('parseNgCompilerOptions', () => {
-  it('should read angularCompilerOptions in tsconfig.json', () => {
-    const options = parseNgCompilerOptions(project);
-    expect(options).toEqual(jasmine.objectContaining({
+  beforeEach(() => {
+    ngLs = new LanguageService(project, tsLS);
+  });
+
+  afterEach(() => {
+    configFileFs.clear();
+  });
+
+  it('should initialize with angularCompilerOptions from tsconfig.json', () => {
+    expect(ngLs.getCompilerOptions()).toEqual(jasmine.objectContaining({
       enableIvy: true,  // default for ivy is true
       strictTemplates: true,
       strictInjectionParameters: true,
+    }));
+  });
+
+  it('should reparse angularCompilerOptions on tsconfig.json change', () => {
+    expect(ngLs.getCompilerOptions()).toEqual(jasmine.objectContaining({
+      enableIvy: true,  // default for ivy is true
+      strictTemplates: true,
+      strictInjectionParameters: true,
+    }));
+
+    configFileFs.overwriteConfigFile(TSCONFIG, `{
+       "angularCompilerOptions": {
+         "strictTemplates": false
+       }
+     }`);
+
+    expect(ngLs.getCompilerOptions()).toEqual(jasmine.objectContaining({
+      strictTemplates: false,
     }));
   });
 });
