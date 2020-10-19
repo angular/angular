@@ -28,7 +28,7 @@ function _extractId(valueString: string): string {
 
 /**
  * @description
- * The `ControlValueAccessor` for writing select control values and listening to select control
+ * A `ControlValueAccessor` for writing select control values and listening to select control
  * changes. The value accessor is used by the `FormControlDirective`, `FormControlName`, and
  * `NgModel` directives.
  *
