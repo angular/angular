@@ -111,7 +111,6 @@ export function parseNgCompilerOptions(
   const {options, errors} = readConfiguration(
       project.getConfigFilePath(), /* existingOptions */ undefined, readConfigHost);
   if (errors.length > 0) {
-    console.error(formatDiagnostics(errors));
     project.error(formatDiagnostics(errors));
   }
   return options;

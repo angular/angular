@@ -65,7 +65,7 @@ class MockWatcher implements ts.FileWatcher {
  */
 export class MockConfigFileFs implements
     Pick<ts.server.ServerHost, 'readFile'|'fileExists'|'watchFile'> {
-  private configOverwrites: Map<string, string> = new Map();
+  private configOverwrites = new Map<string, string>();
   private configFileWatchers = new Map<string, MockWatcher>();
 
   overwriteConfigFile(configFile: string, contents: string) {

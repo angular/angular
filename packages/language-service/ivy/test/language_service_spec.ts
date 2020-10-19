@@ -26,9 +26,18 @@ describe('language service adapter', () => {
     ngLS = new LanguageService(project, tsLS);
   });
 
+  afterEach(() => {
+    configFileFs.clear();
+  });
+
   describe('parse compiler options', () => {
-    afterEach(() => {
-      configFileFs.clear();
+    beforeEach(() => {
+      // Need to reset project on each test to reinitialize file watchers.
+      const {project: _project, tsLS, service: _service, configFileFs: _configFileFs} = setup();
+      project = _project;
+      service = _service;
+      configFileFs = _configFileFs;
+      ngLS = new LanguageService(project, tsLS);
     });
 
     it('should initialize with angularCompilerOptions from tsconfig.json', () => {
