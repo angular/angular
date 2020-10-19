@@ -92,11 +92,11 @@ the `MatSnackBarConfig`.
 
 Focus is not, and should not be, moved to the snack-bar element. Moving the focus would be
 disruptive to a user in the middle of a workflow. It is recommended that, for any action offered
-in the snack-bar, the application offer the user an alternative way to perform the action.
+in the snack-bar, the application offers the user an alternative way to perform the action.
 Alternative interactions are typically keyboard shortcuts or menu options. When the action is
 performed in this way, the snack-bar should be dismissed.
 
-Snack-bars that have an action available should not be given a `duration`, as to accomodate
+Snack-bars that have an action available should not be given a `duration`, as to accommodate
 screen-reader users that want to navigate to the snack-bar element to activate the action. If the
 user has manually moved their focus within the snackbar, focus should be placed somewhere sensible
 based on the application context when the snack-bar is dismissed.

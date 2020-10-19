@@ -66,7 +66,7 @@ be targeted by your component styles unless you do one of the following:
 - Add the overriding style to your global stylesheet. Scope the selectors so that it only affects
 the specific elements you need it to.
 - Turn view encapsulation off on your component. If you do this, be sure to scope your styles
-appropriately, or else you may end up incidentally targeting other components elswhere in your
+appropriately, or else you may end up incidentally targeting other components elsewhere in your
 application.
 - Use a deprecated shadow-piercing descendant combinator to force styles to apply to all the child
 elements. Read more about this deprecated solution in the

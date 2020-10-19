@@ -61,7 +61,7 @@ of the card should follow standard practices for document content.
 
 #### Focus
 Depending on how cards are used, it may be appropriate to apply a `tabindex` to the `<mat-card>`
-element. If cards are a primary mechanism through which user interact with the application,
+element. If cards are a primary mechanism through which user interacts with the application,
 `tabindex="0"` is appropriate. If attention can be sent to the card, but it's not part of the
 document flow, `tabindex="-1"` is appropriate.
 
