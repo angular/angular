@@ -441,6 +441,7 @@ describe('MDC-based MatSlideToggle without forms', () => {
 
       labelElement.click();
       fixture.detectChanges();
+      tick();
 
       expect(slideToggle.checked).toBe(false, 'Expect slide toggle value not changed');
       expect(testComponent.toggleTriggered).toBe(1, 'Expect toggle once');
@@ -448,6 +449,7 @@ describe('MDC-based MatSlideToggle without forms', () => {
 
       inputElement.click();
       fixture.detectChanges();
+      tick();
 
       expect(slideToggle.checked).toBe(false, 'Expect slide toggle value not changed');
       expect(testComponent.toggleTriggered).toBe(2, 'Expect toggle twice');
@@ -557,6 +559,7 @@ describe('MDC-based MatSlideToggle with forms', () => {
         // Focus the input element because after disabling, the `blur` event should automatically
         // fire and not result in a changed after checked exception. Related: #12323
         inputElement.focus();
+        tick();
 
         fixture.componentInstance.isDisabled = true;
         fixture.detectChanges();
