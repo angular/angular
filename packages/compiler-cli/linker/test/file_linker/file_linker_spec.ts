@@ -100,6 +100,8 @@ describe('FileLinker', () => {
       const {fileLinker} = createFileLinker();
       spyOnLinkPartialDeclarationWithConstants(o.literal('REPLACEMENT'));
 
+      // Here we use the `core` idenfifier for `ngImport` to trigger the use of a shared scope for
+      // constant statements.
       const declarationArg = factory.createObjectLiteral([
         {propertyName: 'ngImport', quoted: false, value: factory.createIdentifier('core')},
         {propertyName: 'version', quoted: false, value: factory.createLiteral(1)},
@@ -111,28 +113,31 @@ describe('FileLinker', () => {
 
       const results = fileLinker.getConstantStatements();
       expect(results.length).toEqual(1);
-      const [scope, statements] = results[0];
-      expect(scope).toBe(MockConstantScopeRef.singleton);
+      const {constantScope, statements} = results[0];
+      expect(constantScope).toBe(MockConstantScopeRef.singleton);
       expect(statements.map(generate)).toEqual(['const _c0 = [1];']);
     });
 
-    it('should capture shared constant values', () => {
-      const {fileLinker} = createFileLinker();
-      spyOnLinkPartialDeclarationWithConstants(o.literal('REPLACEMENT'));
+    it('should be no shared constant statements to capture when they are emitted into the replacement IIFE',
+       () => {
+         const {fileLinker} = createFileLinker();
+         spyOnLinkPartialDeclarationWithConstants(o.literal('REPLACEMENT'));
 
-      const declarationArg = factory.createObjectLiteral([
-        {propertyName: 'ngImport', quoted: false, value: factory.createLiteral('not-a-module')},
-        {propertyName: 'version', quoted: false, value: factory.createLiteral(1)},
-      ]);
+         // Here we use a string literal `"not-a-module"` for `ngImport` to cause constant
+         // statements to be emitted in an IIFE rather than added to the shared constant scope.
+         const declarationArg = factory.createObjectLiteral([
+           {propertyName: 'ngImport', quoted: false, value: factory.createLiteral('not-a-module')},
+           {propertyName: 'version', quoted: false, value: factory.createLiteral(1)},
+         ]);
 
-      const replacement = fileLinker.linkPartialDeclaration(
-          '$ngDeclareDirective', [declarationArg], new MockDeclarationScope());
-      expect(generate(replacement))
-          .toEqual('function () { const _c0 = [1]; return "REPLACEMENT"; }()');
+         const replacement = fileLinker.linkPartialDeclaration(
+             '$ngDeclareDirective', [declarationArg], new MockDeclarationScope());
+         expect(generate(replacement))
+             .toEqual('function () { const _c0 = [1]; return "REPLACEMENT"; }()');
 
-      const results = fileLinker.getConstantStatements();
-      expect(results.length).toEqual(0);
-    });
+         const results = fileLinker.getConstantStatements();
+         expect(results.length).toEqual(0);
+       });
   });
 
   function createFileLinker(): {

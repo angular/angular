@@ -6,10 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 export {AstHost, Range} from './src/ast/ast_host';
-export {AstObject, AstValue} from './src/ast/ast_value';
 export {assert} from './src/ast/utils';
 export {FatalLinkerError, isFatalLinkerError} from './src/fatal_linker_error';
 export {DeclarationScope} from './src/file_linker/declaration_scope';
 export {FileLinker} from './src/file_linker/file_linker';
 export {LinkerEnvironment} from './src/file_linker/linker_environment';
-export {DEFAULT_LINKER_OPTIONS, LinkerOptions} from './src/file_linker/linker_options';
+export {LinkerOptions} from './src/file_linker/linker_options';

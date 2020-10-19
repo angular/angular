@@ -27,7 +27,7 @@ export class EmitScope<TStatement, TExpression> {
       protected readonly linkerEnvironment: LinkerEnvironment<TStatement, TExpression>) {}
 
   /**
-   * Translate the given Output AST definition expression into a generic TExpression.
+   * Translate the given Output AST definition expression into a generic `TExpression`.
    *
    * Use a `LinkerImportGenerator` to handle any imports in the definition.
    */

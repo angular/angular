@@ -10,14 +10,14 @@ import {NodePath, PluginObj, transformSync} from '@babel/core';
 import generate from '@babel/generator';
 import * as t from '@babel/types';
 
-import {DEFAULT_LINKER_OPTIONS, FileLinker} from '../../../linker';
+import {FileLinker} from '../../../linker';
 import {PartialDirectiveLinkerVersion1} from '../../src/file_linker/partial_linkers/partial_directive_linker_1';
 import {createEs2015LinkerPlugin} from '../src/es2015_linker_plugin';
 
 describe('createEs2015LinkerPlugin()', () => {
   it('should return a Babel plugin visitor that handles Program (enter/exit) and CallExpression nodes',
      () => {
-       const plugin = createEs2015LinkerPlugin(DEFAULT_LINKER_OPTIONS);
+       const plugin = createEs2015LinkerPlugin();
        expect(plugin.visitor).toEqual({
          Program: {
            enter: jasmine.any(Function),
@@ -37,7 +37,7 @@ describe('createEs2015LinkerPlugin()', () => {
              'spread(...x);'
            ].join('\n'),
            {
-             plugins: [createEs2015LinkerPlugin(DEFAULT_LINKER_OPTIONS)],
+             plugins: [createEs2015LinkerPlugin()],
              filename: '/test.js',
              parserOpts: {sourceType: 'unambiguous'},
            });
@@ -65,7 +65,7 @@ describe('createEs2015LinkerPlugin()', () => {
              'spread(...x);',
            ].join('\n'),
            {
-             plugins: [createEs2015LinkerPlugin(DEFAULT_LINKER_OPTIONS)],
+             plugins: [createEs2015LinkerPlugin()],
              filename: '/test.js',
              parserOpts: {sourceType: 'unambiguous'},
            });
@@ -95,7 +95,7 @@ describe('createEs2015LinkerPlugin()', () => {
              'spread(...x);',
            ].join('\n'),
            {
-             plugins: [createEs2015LinkerPlugin(DEFAULT_LINKER_OPTIONS)],
+             plugins: [createEs2015LinkerPlugin()],
              filename: '/test.js',
              parserOpts: {sourceType: 'unambiguous'},
              generatorOpts: {compact: true},
@@ -114,7 +114,7 @@ describe('createEs2015LinkerPlugin()', () => {
           `$ngDeclareDirective({version: 1, ngImport: core})`,
         ].join('\n'),
         {
-          plugins: [createEs2015LinkerPlugin(DEFAULT_LINKER_OPTIONS)],
+          plugins: [createEs2015LinkerPlugin()],
           filename: '/test.js',
           parserOpts: {sourceType: 'unambiguous'},
           generatorOpts: {compact: true},
@@ -124,7 +124,7 @@ describe('createEs2015LinkerPlugin()', () => {
             'import*as core from\'some-module\';import{id}from\'other-module\';const _c0=[1];const _c1=[2];const _c2=[3];"REPLACEMENT";"REPLACEMENT";"REPLACEMENT";');
   });
 
-  it('should return a Babel plugin that adds shared statements at the start of the program if there are no imports',
+  it('should return a Babel plugin that adds shared statements at the start of the program if it is an ECMAScript Module and there are no imports',
      () => {
        spyOnLinkPartialDeclarationWithConstants(o.literal('REPLACEMENT'));
        const result = transformSync(
@@ -135,8 +135,9 @@ describe('createEs2015LinkerPlugin()', () => {
              `$ngDeclareDirective({version: 1, ngImport: core})`,
            ].join('\n'),
            {
-             plugins: [createEs2015LinkerPlugin(DEFAULT_LINKER_OPTIONS)],
+             plugins: [createEs2015LinkerPlugin()],
              filename: '/test.js',
+             // We declare the file as a module because this cannot be inferred from the source
              parserOpts: {sourceType: 'module'},
              generatorOpts: {compact: true},
            });
@@ -155,7 +156,7 @@ describe('createEs2015LinkerPlugin()', () => {
              `  $ngDeclareDirective({version: 1, ngImport: core})`, '}'
            ].join('\n'),
            {
-             plugins: [createEs2015LinkerPlugin(DEFAULT_LINKER_OPTIONS)],
+             plugins: [createEs2015LinkerPlugin()],
              filename: '/test.js',
              parserOpts: {sourceType: 'unambiguous'},
              generatorOpts: {compact: true},
@@ -177,7 +178,7 @@ describe('createEs2015LinkerPlugin()', () => {
              '}',
            ].join('\n'),
            {
-             plugins: [createEs2015LinkerPlugin(DEFAULT_LINKER_OPTIONS)],
+             plugins: [createEs2015LinkerPlugin()],
              filename: '/test.js',
              parserOpts: {sourceType: 'unambiguous'},
              generatorOpts: {compact: true},
@@ -194,15 +195,13 @@ describe('createEs2015LinkerPlugin()', () => {
   it('should still execute other plugins that match AST nodes inside the result of the replacement',
      () => {
        spyOnLinkPartialDeclarationWithConstants(o.fn([], [], null, null, 'FOO'));
-       //  spyOn(FileLinker.prototype, 'linkPartialDeclaration')
-       //      .and.returnValue(t.arrayExpression([t.identifier('FOO')]));
        const result = transformSync(
            [
              `$ngDeclareDirective({version: 1, ngImport: core}); FOO;`,
            ].join('\n'),
            {
              plugins: [
-               createEs2015LinkerPlugin(DEFAULT_LINKER_OPTIONS),
+               createEs2015LinkerPlugin(),
                createIdentifierMapperPlugin('FOO', 'BAR'),
                createIdentifierMapperPlugin('_c0', 'x1'),
              ],

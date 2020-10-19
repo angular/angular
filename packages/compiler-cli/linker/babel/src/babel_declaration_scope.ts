@@ -15,12 +15,12 @@ export type ConstantScopePath = NodePath<t.Function|t.Program>;
 /**
  * This class represents the lexical scope of a partial declaration in Babel source code.
  *
- * It only responsibility is to compute a reference object for the scope of shared constant
+ * Its only responsibility is to compute a reference object for the scope of shared constant
  * statements that will be generated during partial linking.
  */
 export class BabelDeclarationScope implements DeclarationScope<ConstantScopePath, t.Expression> {
   /**
-   * Construct a new BabelDeclarationScope.
+   * Construct a new `BabelDeclarationScope`.
    *
    * @param declarationScope the Babel scope containing the declaration call expression.
    */
@@ -30,9 +30,9 @@ export class BabelDeclarationScope implements DeclarationScope<ConstantScopePath
    * Compute the Babel `NodePath` that can be used to reference the lexical scope where any
    * shared constant statements would be inserted.
    *
-   * There will only be shared constant scope if the expression is in an ECMAScript module, or a UMD
-   * module. Otherwise `null` is returned to indicate that constant statements must be emitted
-   * locally to the generated linked definition.
+   * There will only be a shared constant scope if the expression is in an ECMAScript module, or a
+   * UMD module. Otherwise `null` is returned to indicate that constant statements must be emitted
+   * locally to the generated linked definition, to avoid polluting the global scope.
    *
    * @param expression the expression that points to the Angular core framework import.
    */
@@ -55,7 +55,7 @@ export class BabelDeclarationScope implements DeclarationScope<ConstantScopePath
     }
 
     // We only support shared constant statements if the binding was in a UMD module (i.e. declared
-    // within a `t.Function`) or a ECMASCript module (i.e. declared at the top level of a
+    // within a `t.Function`) or an ECMASCript module (i.e. declared at the top level of a
     // `t.Program` that is marked as a module).
     const path = binding.scope.path;
     if (!path.isFunctionParent() && !(path.isProgram() && path.node.sourceType === 'module')) {

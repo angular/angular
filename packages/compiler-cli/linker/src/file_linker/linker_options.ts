@@ -12,10 +12,12 @@
 export interface LinkerOptions {
   /**
    * Whether to generate legacy i18n message ids.
+   * The default is `true`.
    */
   enableI18nLegacyMessageIdFormat: boolean;
   /**
    * Whether to convert all line-endings in ICU expressions to `\n` characters.
+   * The default is `false`.
    */
   i18nNormalizeLineEndingsInICUs: boolean;
 }

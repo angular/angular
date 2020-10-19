@@ -7,7 +7,7 @@ The partial declaration format allows library packages to be published to npm wi
 The tooling here allows application build tools (e.g. CLI) to produce fully compiled components, directives, etc at the point when the application is bundled.
 These linked files can be cached outside `node_modules` so it is much more efficient than ngcc and doesn't have the problems of mutating packages in `node_modules`.
 
-Generally this tooling will be wrapped in a transpiler specific plugin, such as the provided [babel plugin](./babel).
+Generally this tooling will be wrapped in a transpiler specific plugin, such as the provided [Babel plugin](./babel).
 
 ## Unit Testing
 

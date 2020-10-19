@@ -304,10 +304,14 @@ describe('AstValue', () => {
       const file = ts.createSourceFile(
           'test.ts', '// preamble\nx = \'moo\';', ts.ScriptTarget.ES2015,
           /* setParentNodes */ true);
+
+      // Grab the `'moo'` string literal from the generated AST
       const stmt = file.statements[0] as ts.ExpressionStatement;
-      const expr =
+      const mooString =
           (stmt.expression as ts.AssignmentExpression<ts.Token<ts.SyntaxKind.EqualsToken>>).right;
-      expect(new AstValue(expr, host).getRange())
+
+      // Check that this string literal has the expected range.
+      expect(new AstValue(mooString, host).getRange())
           .toEqual({startLine: 1, startCol: 4, startPos: 16, endPos: 21});
     });
   });

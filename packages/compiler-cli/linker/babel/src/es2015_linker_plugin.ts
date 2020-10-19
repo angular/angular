@@ -46,8 +46,8 @@ export function createEs2015LinkerPlugin(options: Partial<LinkerOptions> = {}): 
          */
         exit(): void {
           assertNotNull(fileLinker);
-          for (const [scope, statements] of fileLinker.getConstantStatements()) {
-            insertStatements(scope, statements);
+          for (const {constantScope, statements} of fileLinker.getConstantStatements()) {
+            insertStatements(constantScope, statements);
           }
           fileLinker = null;
         }
@@ -147,7 +147,7 @@ function assertNotNull<T>(obj: T|null): asserts obj is T {
 }
 
 /**
- * Create a string representation of an error that includes the code frame of the given
+ * Create a string representation of an error that includes the code frame of the `node`.
  */
 function buildCodeFrameError(file: BabelFile, message: string, node: t.Node): string {
   const filename = file.opts.filename || '(unknown file)';

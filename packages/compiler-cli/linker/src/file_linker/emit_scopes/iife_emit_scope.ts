@@ -15,7 +15,7 @@ import {EmitScope} from './emit_scope';
  */
 export class IifeEmitScope<TStatement, TExpression> extends EmitScope<TStatement, TExpression> {
   /**
-   * Translate the given Output AST definition expression into a generic TExpression.
+   * Translate the given Output AST definition expression into a generic `TExpression`.
    *
    * Wraps the output from `EmitScope.translateDefinition()` and `EmitScope.getConstantStatements()`
    * in an IIFE.

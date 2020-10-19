@@ -34,6 +34,14 @@ export class FileLinker<TConstantScope, TStatement, TExpression> {
 
   /**
    * Link the metadata extracted from the args of a call to a partial declaration function.
+   *
+   * The `declarationScope` is used to determine the scope and strategy of emission of the linked
+   * definition and any shared constant statements.
+   *
+   * @param declarationFn the name of the function used to declare the partial declaration - e.g.
+   *     `$ngDeclareDirective`.
+   * @param args the arguments passed to the declaration function.
+   * @param declarationScope the scope that contains this call to the declaration function.
    */
   linkPartialDeclaration(
       declarationFn: string, args: TExpression[],
@@ -56,11 +64,15 @@ export class FileLinker<TConstantScope, TStatement, TExpression> {
     return emitScope.translateDefinition(definition);
   }
 
-  getConstantStatements(): [TConstantScope, TStatement[]][] {
-    const results: [TConstantScope, TStatement[]][] = [];
+  /**
+   * Return all the shared constant statements and their associated constant scope references, so
+   * that they can be inserted into the source code.
+   */
+  getConstantStatements(): {constantScope: TConstantScope, statements: TStatement[]}[] {
+    const results: {constantScope: TConstantScope, statements: TStatement[]}[] = [];
     for (const [constantScope, emitScope] of this.emitScopes.entries()) {
       const statements = emitScope.getConstantStatements();
-      results.push([constantScope, statements]);
+      results.push({constantScope, statements});
     }
     return results;
   }
