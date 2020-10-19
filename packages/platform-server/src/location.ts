@@ -12,7 +12,6 @@ import {Subject} from 'rxjs';
 import * as url from 'url';
 import {INITIAL_CONFIG, PlatformConfig} from './tokens';
 
-
 function parseUrl(urlStr: string) {
   const parsedUrl = url.parse(urlStr);
   return {
@@ -43,15 +42,27 @@ export class ServerPlatformLocation implements PlatformLocation {
   constructor(
       @Inject(DOCUMENT) private _doc: any, @Optional() @Inject(INITIAL_CONFIG) _config: any) {
     const config = _config as PlatformConfig | null;
-    if (!!config && !!config.url) {
-      const parsedUrl = parseUrl(config.url);
-      this.hostname = parsedUrl.hostname;
-      this.protocol = parsedUrl.protocol;
-      this.port = parsedUrl.port;
-      this.pathname = parsedUrl.pathname;
-      this.search = parsedUrl.search;
-      this.hash = parsedUrl.hash;
+    if (!config) {
+      return;
+    }
+    if (config.url) {
+      const url = parseUrl(config.url);
+      this.protocol = url.protocol;
+      this.hostname = url.hostname;
+      this.port = url.port;
+      this.pathname = url.pathname;
+      this.search = url.search;
+      this.hash = url.hash;
       this.href = _doc.location.href;
+    }
+    if (config.useAbsoluteUrl) {
+      if (!config.baseUrl) {
+        throw new Error(`"PlatformConfig.baseUrl" must be set if "useAbsoluteUrl" is true`);
+      }
+      const url = parseUrl(config.baseUrl);
+      this.protocol = url.protocol;
+      this.hostname = url.hostname;
+      this.port = url.port;
     }
   }
 
