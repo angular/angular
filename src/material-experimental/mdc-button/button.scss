@@ -24,6 +24,12 @@
   }
 }
 
+@include cdk-high-contrast(active, off) {
+  .mat-mdc-button-base:focus {
+    outline: solid 3px;
+  }
+}
+
 // Since the stroked button has has an actual border that reduces the available space for
 // child elements such as the ripple container or focus overlay, an inherited border radius
 // for the absolute-positioned child elements does not work properly. This is because the

@@ -120,20 +120,6 @@
   ._mat-animation-noopable & {
     transition: none;
   }
-
-  @include cdk-high-contrast(active, off) {
-    // Note that IE will render this in the same way, no
-    // matter whether the theme is light or dark. This helps
-    // with the readability of focused buttons.
-    background-color: #fff;
-  }
-
-  @include cdk-high-contrast(black-on-white, off) {
-    // For the black-on-white high contrast mode, the browser will set this element
-    // to white, making it blend in with the background, hence why we need to set
-    // it explicitly to black.
-    background-color: #000;
-  }
 }
 
 // For round buttons, the ripple container should clip child ripples to a circle.
@@ -170,5 +156,11 @@
 @include cdk-high-contrast(active, off) {
   .mat-button, .mat-flat-button, .mat-raised-button, .mat-icon-button, .mat-fab, .mat-mini-fab {
     outline: solid 1px;
+  }
+
+  .mat-button-base {
+    &.cdk-keyboard-focused, &.cdk-program-focused {
+      outline: solid 3px;
+    }
   }
 }
