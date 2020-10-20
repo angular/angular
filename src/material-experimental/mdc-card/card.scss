@@ -1,6 +1,5 @@
 @import '@material/card/mixins.import';
 @import '../mdc-helpers/mdc-helpers';
-@import '../../cdk/a11y/a11y';
 
 // TODO(jelbourn): move header and title-group styles to their own files.
 
@@ -12,14 +11,6 @@ $mat-card-default-padding: 16px !default;
 
 // Include all MDC card styles except for color and typography.
 @include mdc-card-without-ripple($query: $mat-base-styles-query);
-
-// Add styles to the root card to have an outline in high-contrast mode.
-// TODO(jelbourn): file bug for MDC supporting high-contrast mode on `.mdc-card`.
-.mat-mdc-card {
-  @include cdk-high-contrast(active, off) {
-    outline: solid 1px;
-  }
-}
 
 // Title text and subtitles text within a card. MDC doesn't have pre-made title sections for cards.
 // Maintained here for backwards compatibility with the previous generation MatCard.
