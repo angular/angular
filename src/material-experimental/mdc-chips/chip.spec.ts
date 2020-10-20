@@ -39,7 +39,7 @@ describe('MDC-based MatChip', () => {
   }));
 
   describe('MatBasicChip', () => {
-    it('adds the `mat-mdc-basic-chip` class', () => {
+    it('adds a class to indicate that it is a basic chip', () => {
       fixture = TestBed.createComponent(BasicChip);
       fixture.detectChanges();
 
@@ -180,7 +180,7 @@ describe('MDC-based MatChip', () => {
       expect(chipNativeElement.getAttribute('aria-disabled')).toBe('true');
     });
 
-    it('should not be focusable', () => {
+    it('should make disabled chips non-focusable', () => {
       expect(chipNativeElement.getAttribute('tabindex')).toBeFalsy();
     });
 

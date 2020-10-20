@@ -37,7 +37,7 @@ describe('MDC-based Chip Remove', () => {
   }));
 
   describe('basic behavior', () => {
-    it('should apply the `mat-mdc-chip-remove` CSS class', () => {
+    it('should apply a CSS class to the remove icon', () => {
       let buttonElement = chipNativeElement.querySelector('button')!;
 
       expect(buttonElement.classList).toContain('mat-mdc-chip-remove');
@@ -67,7 +67,7 @@ describe('MDC-based Chip Remove', () => {
       expect(chipNativeElement.classList.contains('mdc-chip--exit')).toBe(true);
     });
 
-    it ('should emit (removed) event when exit animation is complete', () => {
+    it('should emit (removed) event when exit animation is complete', () => {
       let buttonElement = chipNativeElement.querySelector('button')!;
 
       testChip.removable = true;

@@ -89,7 +89,7 @@ describe('MDC-based MatChipInput', () => {
       expect(label.textContent).toContain('or don\'t');
     });
 
-    it('should become disabled if the chip grid is disabled', () => {
+    it('should become disabled if the list is disabled', () => {
       expect(inputNativeElement.hasAttribute('disabled')).toBe(false);
       expect(chipInputDirective.disabled).toBe(false);
 
@@ -100,7 +100,7 @@ describe('MDC-based MatChipInput', () => {
       expect(chipInputDirective.disabled).toBe(true);
     });
 
-    it('should be aria-required if the chip grid is required', () => {
+    it('should be aria-required if the list is required', () => {
       expect(inputNativeElement.hasAttribute('aria-required')).toBe(false);
 
       fixture.componentInstance.required = true;

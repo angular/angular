@@ -40,7 +40,7 @@ describe('MatChip', () => {
   }));
 
   describe('MatBasicChip', () => {
-    it('adds the `mat-basic-chip` class', () => {
+    it('adds a class to indicate that it is a basic chip', () => {
       fixture = TestBed.createComponent(BasicChip);
       fixture.detectChanges();
 

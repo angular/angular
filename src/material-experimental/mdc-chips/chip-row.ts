@@ -28,6 +28,10 @@ import {
   ViewEncapsulation
 } from '@angular/core';
 import {DOCUMENT} from '@angular/common';
+import {
+  MAT_RIPPLE_GLOBAL_OPTIONS,
+  RippleGlobalOptions,
+} from '@angular/material-experimental/mdc-core';
 import {MatChip, MatChipEvent} from './chip';
 import {MatChipEditInput} from './chip-edit-input';
 import {GridKeyManagerRow} from './grid-key-manager';
@@ -100,8 +104,10 @@ export class MatChipRow extends MatChip implements AfterContentInit, AfterViewIn
     changeDetectorRef: ChangeDetectorRef,
     elementRef: ElementRef, ngZone: NgZone,
     @Optional() dir: Directionality,
-    @Optional() @Inject(ANIMATION_MODULE_TYPE) animationMode?: string) {
-    super(changeDetectorRef, elementRef, ngZone, dir, animationMode);
+    @Optional() @Inject(ANIMATION_MODULE_TYPE) animationMode?: string,
+    @Optional() @Inject(MAT_RIPPLE_GLOBAL_OPTIONS)
+        globalRippleOptions?: RippleGlobalOptions) {
+    super(changeDetectorRef, elementRef, ngZone, dir, animationMode, globalRippleOptions);
   }
 
   ngAfterContentInit() {

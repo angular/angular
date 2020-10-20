@@ -37,10 +37,12 @@ import {
   HasTabIndex,
   HasTabIndexCtor,
   MatRipple,
+  MAT_RIPPLE_GLOBAL_OPTIONS,
   mixinColor,
   mixinDisableRipple,
   mixinTabIndex,
   RippleAnimationConfig,
+  RippleGlobalOptions,
 } from '@angular/material-experimental/mdc-core';
 import {MDCChipAdapter, MDCChipFoundation} from '@material/chips';
 import {numbers} from '@material/ripple';
@@ -352,7 +354,9 @@ export class MatChip extends _MatChipMixinBase implements AfterContentInit, Afte
       public _changeDetectorRef: ChangeDetectorRef,
       readonly _elementRef: ElementRef, protected _ngZone: NgZone,
       @Optional() private _dir: Directionality,
-      @Optional() @Inject(ANIMATION_MODULE_TYPE) animationMode?: string) {
+      @Optional() @Inject(ANIMATION_MODULE_TYPE) animationMode?: string,
+      @Optional() @Inject(MAT_RIPPLE_GLOBAL_OPTIONS)
+        private _globalRippleOptions?: RippleGlobalOptions) {
     super(_elementRef);
     this._chipFoundation = new MDCChipFoundation(this._chipAdapter);
     this._animationsDisabled = animationMode === 'NoopAnimations';
@@ -463,7 +467,8 @@ export class MatChip extends _MatChipMixinBase implements AfterContentInit, Afte
 
   /** Whether or not the ripple should be disabled. */
   _isRippleDisabled(): boolean {
-    return this.disabled || this.disableRipple || this._animationsDisabled || this._isBasicChip;
+    return this.disabled || this.disableRipple || this._animationsDisabled ||
+           this._isBasicChip || !!this._globalRippleOptions?.disabled;
   }
 
   _notifyInteraction() {

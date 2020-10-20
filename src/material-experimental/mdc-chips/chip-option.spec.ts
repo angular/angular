@@ -3,6 +3,10 @@ import {SPACE} from '@angular/cdk/keycodes';
 import {createKeyboardEvent, dispatchFakeEvent} from '@angular/cdk/testing/private';
 import {Component, DebugElement, ViewChild} from '@angular/core';
 import {waitForAsync, ComponentFixture, fakeAsync, flush, TestBed} from '@angular/core/testing';
+import {
+  MAT_RIPPLE_GLOBAL_OPTIONS,
+  RippleGlobalOptions,
+} from '@angular/material-experimental/mdc-core';
 import {By} from '@angular/platform-browser';
 import {chipCssClasses} from '@material/chips';
 import {Subject} from 'rxjs';
@@ -20,14 +24,16 @@ describe('MDC-based Option Chips', () => {
   let chipDebugElement: DebugElement;
   let chipNativeElement: HTMLElement;
   let chipInstance: MatChipOption;
-
+  let globalRippleOptions: RippleGlobalOptions;
   let dir = 'ltr';
 
   beforeEach(waitForAsync(() => {
+    globalRippleOptions = {};
     TestBed.configureTestingModule({
       imports: [MatChipsModule],
       declarations: [SingleChip],
       providers: [
+        {provide: MAT_RIPPLE_GLOBAL_OPTIONS, useFactory: () => globalRippleOptions},
         {provide: Directionality, useFactory: () => ({
           value: dir,
           change: new Subject()
@@ -167,6 +173,17 @@ describe('MDC-based Option Chips', () => {
         expect(spy).not.toHaveBeenCalled();
         subscription.unsubscribe();
       });
+
+      it('should be able to disable ripples through ripple global options at runtime', () => {
+        expect(chipInstance._isRippleDisabled())
+            .toBe(false, 'Expected chip ripples to be enabled.');
+
+        globalRippleOptions.disabled = true;
+
+        expect(chipInstance._isRippleDisabled())
+            .toBe(true, 'Expected chip ripples to be disabled.');
+      });
+
     });
 
     describe('keyboard behavior', () => {

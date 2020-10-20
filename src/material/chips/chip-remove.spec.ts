@@ -30,7 +30,7 @@ describe('Chip Remove', () => {
   }));
 
   describe('basic behavior', () => {
-    it('should apply the `mat-chip-remove` CSS class', () => {
+    it('should apply a CSS class to the remove icon', () => {
       let buttonElement = chipNativeElement.querySelector('button')!;
 
       expect(buttonElement.classList).toContain('mat-chip-remove');
@@ -48,7 +48,7 @@ describe('Chip Remove', () => {
       expect(buttonElement.hasAttribute('type')).toBe(false);
     });
 
-    it('should emits (removed) on click', () => {
+    it('should emit (removed) on click', () => {
       let buttonElement = chipNativeElement.querySelector('button')!;
 
       testChip.removable = true;
