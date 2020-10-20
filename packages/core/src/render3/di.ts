@@ -18,6 +18,7 @@ import {noSideEffects} from '../util/closure';
 
 import {assertDirectiveDef, assertNodeInjector, assertTNodeForLView} from './assert';
 import {getFactoryDef} from './definition';
+import {throwCyclicDependencyError, throwProviderNotFoundError} from './errors';
 import {NG_ELEMENT_ID, NG_FACTORY_DEF} from './fields';
 import {registerPreOrderHooks} from './hooks';
 import {DirectiveDef, FactoryFn} from './interfaces/definition';
@@ -373,7 +374,7 @@ export function getOrCreateInjectable<T>(
       try {
         const value = bloomHash();
         if (value == null && !(flags & InjectFlags.Optional)) {
-          throw new Error(`No provider for ${stringifyForError(token)}!`);
+          throwProviderNotFoundError(token);
         } else {
           return value;
         }
@@ -476,7 +477,7 @@ export function getOrCreateInjectable<T>(
   if (flags & InjectFlags.Optional) {
     return notFoundValue;
   } else {
-    throw new Error(`NodeInjector: NOT_FOUND [${stringifyForError(token)}]`);
+    throwProviderNotFoundError(token, 'NodeInjector');
   }
 }
 
@@ -575,7 +576,7 @@ export function getNodeInjectable(
   if (isFactory(value)) {
     const factory: NodeInjectorFactory = value;
     if (factory.resolving) {
-      throw new Error(`Circular dep for ${stringifyForError(tData[index])}`);
+      throwCyclicDependencyError(stringifyForError(tData[index]));
     }
     const previousIncludeViewProviders = setIncludeViewProviders(factory.canSeeViewProviders);
     factory.resolving = true;

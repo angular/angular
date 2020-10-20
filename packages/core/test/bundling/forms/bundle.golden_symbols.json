@@ -1569,6 +1569,9 @@
     "name": "syncPendingControls"
   },
   {
+    "name": "throwProviderNotFoundError"
+  },
+  {
     "name": "toObservable"
   },
   {

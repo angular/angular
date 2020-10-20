@@ -1932,6 +1932,9 @@
     "name": "throwIfEmpty"
   },
   {
+    "name": "throwProviderNotFoundError"
+  },
+  {
     "name": "toRefArray"
   },
   {

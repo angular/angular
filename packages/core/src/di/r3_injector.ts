@@ -291,8 +291,8 @@ export class R3Injector {
     // Check for circular dependencies.
     if (ngDevMode && parents.indexOf(defType) !== -1) {
       const defName = stringify(defType);
-      throw new Error(`Circular dependency in DI detected for type ${defName}. Dependency path: ${
-          parents.map(defType => stringify(defType)).join(' > ')} > ${defName}.`);
+      const path = parents.map(stringify);
+      throwCyclicDependencyError(defName, path);
     }
 
     // Check for multiple imports of the same module
