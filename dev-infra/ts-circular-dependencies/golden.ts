@@ -16,7 +16,7 @@ export type Golden = CircularDependency[];
 
 /**
  * Converts a list of reference chains to a JSON-compatible golden object. Reference chains
- * by default use TypeScript sourasdfce file objects. In order to make those chains printable,
+ * by default use TypeScript source file objects. In order to make those chains printable,
  * the source file objects are mapped to their relative file names.
  */
 export function convertReferenceChainToGolden(refs: ReferenceChain[], baseDir: string): Golden {

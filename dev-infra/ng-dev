@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 'use strict';
 
 function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
@@ -23,7 +22,7 @@ var yaml = require('yaml');
 var cliProgress = require('cli-progress');
 var os = require('os');
 var minimatch = require('minimatch');
-var Ora = require('ora');
+var ora = require('ora');
 var glob = require('glob');
 var ts = require('typescript');
 
@@ -420,14 +419,14 @@ function printToLogFile(logLevel) {
  * found in the LICENSE file at https://angular.io/license
  */
 /** URL to the Github page where personal access tokens can be managed. */
-var GITHUB_TOKEN_SETTINGS_URL = "https://github.com/settings/tokens";
+var GITHUB_TOKEN_SETTINGS_URL = 'https://github.com/settings/tokens';
 /** URL to the Github page where personal access tokens can be generated. */
-var GITHUB_TOKEN_GENERATE_URL = "https://github.com/settings/tokens/new";
+var GITHUB_TOKEN_GENERATE_URL = 'https://github.com/settings/tokens/new';
 /** Adds the provided token to the given Github HTTPs remote url. */
 function addTokenToGitHttpsUrl(githubHttpsUrl, token) {
     var url$1 = new url.URL(githubHttpsUrl);
     url$1.username = token;
-    return url$1.toString();
+    return url$1.href;
 }
 /** Gets the repository Git URL for the given github config. */
 function getRepositoryGitUrl(config, githubToken) {
@@ -440,7 +439,7 @@ function getRepositoryGitUrl(config, githubToken) {
     }
     return baseHttpUrl;
 }
-/** Gets a Github URL that refers to a lists of recent commits within a specified branch. */
+/** Gets a Github URL that refers to a list of recent commits within a specified branch. */
 function getListCommitsInBranchUrl(_a, branchName) {
     var remoteParams = _a.remoteParams;
     return "https://github.com/" + remoteParams.owner + "/" + remoteParams.repo + "/commits/" + branchName;
@@ -647,8 +646,8 @@ var GitClient = /** @class */ (function () {
     GitClient.prototype.runGraceful = function (args, options) {
         if (options === void 0) { options = {}; }
         // To improve the debugging experience in case something fails, we print all executed Git
-        // commands unless the `stdio` is explicitly to `ignore` (which is equivalent to silent).
-        // Note that we do not want to print the token if is contained in the command. It's common
+        // commands unless the `stdio` is explicitly set to `ignore` (which is equivalent to silent).
+        // Note that we do not want to print the token if it is contained in the command. It's common
         // to share errors with others if the tool failed, and we do not want to leak tokens.
         // TODO: Add support for configuring this on a per-client basis. Some tools do not want
         // to print the Git command messages to the console at all (e.g. to maintain clean output).
@@ -749,20 +748,16 @@ var GitClient = /** @class */ (function () {
      * Retrieve the OAuth scopes for the loaded Github token.
      **/
     GitClient.prototype.getAuthScopesForToken = function () {
-        return tslib.__awaiter(this, void 0, void 0, function () {
-            return tslib.__generator(this, function (_a) {
-                // If the OAuth scopes have already been loaded, return the Promise containing them.
-                if (this._cachedOauthScopes !== null) {
-                    return [2 /*return*/, this._cachedOauthScopes];
-                }
-                // OAuth scopes are loaded via the /rate_limit endpoint to prevent
-                // usage of a request against that rate_limit for this lookup.
-                return [2 /*return*/, this._cachedOauthScopes = this.github.rateLimit.get().then(function (_response) {
-                        var response = _response;
-                        var scopes = response.headers['x-oauth-scopes'] || '';
-                        return scopes.split(',').map(function (scope) { return scope.trim(); });
-                    })];
-            });
+        // If the OAuth scopes have already been loaded, return the Promise containing them.
+        if (this._cachedOauthScopes !== null) {
+            return this._cachedOauthScopes;
+        }
+        // OAuth scopes are loaded via the /rate_limit endpoint to prevent
+        // usage of a request against that rate_limit for this lookup.
+        return this._cachedOauthScopes = this.github.rateLimit.get().then(function (_response) {
+            var response = _response;
+            var scopes = response.headers['x-oauth-scopes'] || '';
+            return scopes.split(',').map(function (scope) { return scope.trim(); });
         });
     };
     return GitClient;
@@ -814,7 +809,7 @@ class ReleaseTrain {
  * found in the LICENSE file at https://angular.io/license
  */
 /** Regular expression that matches version-branches. */
-const versionBranchNameRegex = /(\d+)\.(\d+)\.x/;
+const versionBranchNameRegex = /^(\d+)\.(\d+)\.x$/;
 /** Gets the version of a given branch by reading the `package.json` upstream. */
 function getVersionOfBranch(repo, branchName) {
     return tslib.__awaiter(this, void 0, void 0, function* () {
@@ -839,8 +834,6 @@ function isVersionBranch(branchName) {
  * relevant but needed for parsing. SemVer does not allow `x` as patch digit.
  */
 function getVersionForVersionBranch(branchName) {
-    // Convert a given version-branch into a SemVer version that can be used
-    // with the SemVer utilities. i.e. to determine semantic order.
     return semver.parse(branchName.replace(versionBranchNameRegex, '$1.$2.0'));
 }
 /**
@@ -1021,12 +1014,11 @@ function getRepresentativeNpmPackage(config) {
 /** Fetches the specified NPM package from the NPM registry. */
 function fetchPackageInfoFromNpmRegistry(pkgName) {
     return tslib.__awaiter(this, void 0, void 0, function* () {
-        if (_npmPackageInfoCache[pkgName] !== undefined) {
-            return yield _npmPackageInfoCache[pkgName];
+        if (_npmPackageInfoCache[pkgName] === undefined) {
+            _npmPackageInfoCache[pkgName] =
+                fetch(`https://registry.npmjs.org/${pkgName}`).then(r => r.json());
         }
-        const result = _npmPackageInfoCache[pkgName] =
-            fetch(`https://registry.npmjs.org/${pkgName}`).then(r => r.json());
-        return yield result;
+        return yield _npmPackageInfoCache[pkgName];
     });
 }
 
@@ -1046,7 +1038,7 @@ const majorActiveSupportDuration = 6;
  * Number of months a major version has active long-term support. See:
  * https://angular.io/guide/releases#support-policy-and-schedule.
  */
-const majorActiveTermSupportDuration = 12;
+const majorLongTermSupportDuration = 12;
 /** Regular expression that matches LTS NPM dist tags. */
 const ltsNpmDistTagRegex = /^v(\d+)-lts$/;
 /** Finds all long-term support release trains from the specified NPM package. */
@@ -1057,7 +1049,7 @@ function fetchLongTermSupportBranchesFromNpm(config) {
         const active = [];
         const inactive = [];
         // Iterate through the NPM package information and determine active/inactive LTS versions with
-        // their corresponding branches. We assume that a LTS tagged version in NPM belongs to the
+        // their corresponding branches. We assume that an LTS tagged version in NPM belongs to the
         // last-minor branch of a given major (i.e. we assume there are no outdated LTS NPM dist tags).
         for (const npmDistTag in distTags) {
             if (ltsNpmDistTagRegex.test(npmDistTag)) {
@@ -1067,7 +1059,7 @@ function fetchLongTermSupportBranchesFromNpm(config) {
                 const ltsEndDate = computeLtsEndDateOfMajor(majorReleaseDate);
                 const ltsBranch = { name: branchName, version, npmDistTag };
                 // Depending on whether the LTS phase is still active, add the branch
-                // the list of active or inactive LTS branches.
+                // to the list of active or inactive LTS branches.
                 if (today <= ltsEndDate) {
                     active.push(ltsBranch);
                 }
@@ -1087,7 +1079,7 @@ function fetchLongTermSupportBranchesFromNpm(config) {
  * specified date.
  */
 function computeLtsEndDateOfMajor(majorReleaseDate) {
-    return new Date(majorReleaseDate.getFullYear(), majorReleaseDate.getMonth() + majorActiveSupportDuration + majorActiveTermSupportDuration, majorReleaseDate.getDate(), majorReleaseDate.getHours(), majorReleaseDate.getMinutes(), majorReleaseDate.getSeconds(), majorReleaseDate.getMilliseconds());
+    return new Date(majorReleaseDate.getFullYear(), majorReleaseDate.getMonth() + majorActiveSupportDuration + majorLongTermSupportDuration, majorReleaseDate.getDate(), majorReleaseDate.getHours(), majorReleaseDate.getMinutes(), majorReleaseDate.getSeconds(), majorReleaseDate.getMilliseconds());
 }
 /** Gets the long-term support NPM dist tag for a given major version. */
 function getLtsNpmDistTagOfMajor(major) {
@@ -1175,27 +1167,15 @@ function printG3Comparison(git) {
             debug('skipping.');
             return;
         }
-        /** Random prefix to create unique branch names. */
-        const randomPrefix = `prefix${Math.floor(Math.random() * 1000000)}`;
-        /** Ref name of the temporary master branch. */
-        const masterRef = `${randomPrefix}-master`;
-        /** Ref name of the temporary g3 branch. */
-        const g3Ref = `${randomPrefix}-g3`;
-        /** Url of the ref for fetching master and g3 branches. */
-        const refUrl = `https://github.com/${git.remoteConfig.owner}/${git.remoteConfig.name}.git`;
-        /** The result fo the fetch command. */
-        const fetchResult = git.runGraceful(['fetch', '-q', refUrl, `master:${masterRef}`, `g3:${g3Ref}`]);
-        // If the upstream repository does not have a g3 branch to compare to, skip the comparison.
-        if (fetchResult.status !== 0) {
-            if (fetchResult.stderr.includes(`couldn't find remote ref g3`)) {
-                return debug('No g3 branch exists on upstream, skipping.');
-            }
-            throw Error('Fetch of master and g3 branches for comparison failed.');
+        /** The latest sha for the g3 branch. */
+        const g3Ref = getShaForBranchLatest('g3');
+        /** The latest sha for the master branch. */
+        const masterRef = getShaForBranchLatest('master');
+        if (!g3Ref && !masterRef) {
+            return debug('Exiting early as either the g3 or master was unable to be retrieved');
         }
         /** The statistical information about the git diff between master and g3. */
-        const stats = getDiffStats(git);
-        // Delete the temporarily created mater and g3 branches.
-        git.runGraceful(['branch', '-D', masterRef, g3Ref]);
+        const stats = getDiffStats();
         info.group(bold('g3 branch check'));
         info(`${stats.commits} commits between g3 and master`);
         if (stats.files === 0) {
@@ -1206,11 +1186,25 @@ function printG3Comparison(git) {
         }
         info.groupEnd();
         info();
+        /** Fetch and retrieve the latest sha for a specific branch. */
+        function getShaForBranchLatest(branch) {
+            /** The result fo the fetch command. */
+            const fetchResult = git.runGraceful([
+                'fetch', '-q', `https://github.com/${git.remoteConfig.owner}/${git.remoteConfig.name}.git`,
+                branch
+            ]);
+            if (fetchResult.status !== 0 &&
+                fetchResult.stderr.includes(`couldn't find remote ref ${branch}`)) {
+                debug(`No '${branch}' branch exists on upstream, skipping.`);
+                return false;
+            }
+            return git.runGraceful(['rev-parse', 'FETCH_HEAD']).stdout.trim();
+        }
         /**
          * Get git diff stats between master and g3, for all files and filtered to only g3 affecting
          * files.
          */
-        function getDiffStats(git) {
+        function getDiffStats() {
             /** The diff stats to be returned. */
             const stats = {
                 insertions: 0,
@@ -1260,6 +1254,11 @@ function printG3Comparison(git) {
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+/**
+ * Cap the returned issues in the queries to an arbitrary 100. At that point, caretaker has a lot
+ * of work to do and showing more than that isn't really useful.
+ */
+const MAX_RETURNED_ISSUES = 20;
 /** Retrieve the number of matching issues for each github query. */
 function printGithubTasks(git, config) {
     var _a;
@@ -1268,7 +1267,7 @@ function printGithubTasks(git, config) {
             debug('No github queries defined in the configuration, skipping.');
             return;
         }
-        info.group(bold('Github Tasks'));
+        info.group(bold(`Github Tasks`));
         yield getGithubInfo(git, config);
         info.groupEnd();
         info();
@@ -1286,14 +1285,37 @@ function getGithubInfo(git, { githubQueries: queries = [] }) {
             const queryKey = typedGraphqlify.alias(name.replace(/ /g, ''), 'search');
             graphQlQuery[queryKey] = typedGraphqlify.params({
                 type: 'ISSUE',
+                first: MAX_RETURNED_ISSUES,
                 query: `"${repoFilter} ${query.replace(/"/g, '\\"')}"`,
-            }, { issueCount: typedGraphqlify.types.number });
+            }, {
+                issueCount: typedGraphqlify.types.number,
+                nodes: [Object.assign({}, typedGraphqlify.onUnion({
+                        PullRequest: {
+                            url: typedGraphqlify.types.string,
+                        },
+                        Issue: {
+                            url: typedGraphqlify.types.string,
+                        },
+                    }))],
+            });
         });
         /** The results of the generated github query. */
         const results = yield git.github.graphql.query(graphQlQuery);
         Object.values(results).forEach((result, i) => {
-            var _a;
+            var _a, _b;
             info(`${(_a = queries[i]) === null || _a === void 0 ? void 0 : _a.name.padEnd(25)} ${result.issueCount}`);
+            if (result.issueCount > 0) {
+                const { owner, name: repo } = git.remoteConfig;
+                const url = encodeURI(`https://github.com/${owner}/${repo}/issues?q=${(_b = queries[i]) === null || _b === void 0 ? void 0 : _b.query}`);
+                info.group(`${url}`);
+                if (result.nodes.length === MAX_RETURNED_ISSUES && result.nodes.length < result.issueCount) {
+                    info(`(first ${MAX_RETURNED_ISSUES})`);
+                }
+                for (const node of result.nodes) {
+                    info(`- ${node.url}`);
+                }
+                info.groupEnd();
+            }
         });
     });
 }
@@ -3088,7 +3110,11 @@ var PullRequestFailure = /** @class */ (function () {
  */
 function getCaretakerNotePromptMessage(pullRequest) {
     return red('Pull request has a caretaker note applied. Please make sure you read it.') +
-        ("\nQuick link to PR: " + pullRequest.url);
+        ("\nQuick link to PR: " + pullRequest.url + "\nDo you want to proceed merging?");
+}
+function getTargettedBranchesConfirmationPromptMessage(pullRequest) {
+    var targetBranchListAsString = pullRequest.targetBranches.map(function (b) { return " - " + b + "\n"; }).join('');
+    return "Pull request #" + pullRequest.prNumber + " will merge into:\n" + targetBranchListAsString + "\nDo you want to proceed merging?";
 }
 
 /**
@@ -3792,13 +3818,18 @@ var PullRequestMergeTask = /** @class */ (function () {
                         if (!isPullRequest(pullRequest)) {
                             return [2 /*return*/, { status: 3 /* FAILED */, failure: pullRequest }];
                         }
-                        _a = pullRequest.hasCaretakerNote;
-                        if (!_a) return [3 /*break*/, 4];
-                        return [4 /*yield*/, promptConfirm(getCaretakerNotePromptMessage(pullRequest) + "\nDo you want to proceed merging?")];
+                        return [4 /*yield*/, promptConfirm(getTargettedBranchesConfirmationPromptMessage(pullRequest))];
                     case 3:
-                        _a = !(_b.sent());
-                        _b.label = 4;
+                        if (!(_b.sent())) {
+                            return [2 /*return*/, { status: 4 /* USER_ABORTED */ }];
+                        }
+                        _a = pullRequest.hasCaretakerNote;
+                        if (!_a) return [3 /*break*/, 5];
+                        return [4 /*yield*/, promptConfirm(getCaretakerNotePromptMessage(pullRequest))];
                     case 4:
+                        _a = !(_b.sent());
+                        _b.label = 5;
+                    case 5:
                         // If the pull request has a caretaker note applied, raise awareness by prompting
                         // the caretaker. The caretaker can then decide to proceed or abort the merge.
                         if (_a) {
@@ -3808,17 +3839,17 @@ var PullRequestMergeTask = /** @class */ (function () {
                             new GithubApiMergeStrategy(this.git, this.config.githubApiMerge) :
                             new AutosquashMergeStrategy(this.git);
                         previousBranchOrRevision = null;
-                        _b.label = 5;
-                    case 5:
-                        _b.trys.push([5, 9, 10, 11]);
+                        _b.label = 6;
+                    case 6:
+                        _b.trys.push([6, 10, 11, 12]);
                         previousBranchOrRevision = this.git.getCurrentBranchOrRevision();
                         // Run preparations for the merge (e.g. fetching branches).
                         return [4 /*yield*/, strategy.prepare(pullRequest)];
-                    case 6:
+                    case 7:
                         // Run preparations for the merge (e.g. fetching branches).
                         _b.sent();
                         return [4 /*yield*/, strategy.merge(pullRequest)];
-                    case 7:
+                    case 8:
                         failure = _b.sent();
                         if (failure !== null) {
                             return [2 /*return*/, { status: 3 /* FAILED */, failure: failure }];
@@ -3827,11 +3858,11 @@ var PullRequestMergeTask = /** @class */ (function () {
                         // branches because we cannot delete branches which are currently checked out.
                         this.git.run(['checkout', '-f', previousBranchOrRevision]);
                         return [4 /*yield*/, strategy.cleanup(pullRequest)];
-                    case 8:
+                    case 9:
                         _b.sent();
                         // Return a successful merge status.
                         return [2 /*return*/, { status: 2 /* SUCCESS */ }];
-                    case 9:
+                    case 10:
                         e_1 = _b.sent();
                         // Catch all git command errors and return a merge result w/ git error status code.
                         // Other unknown errors which aren't caused by a git command are re-thrown.
@@ -3839,14 +3870,14 @@ var PullRequestMergeTask = /** @class */ (function () {
                             return [2 /*return*/, { status: 0 /* UNKNOWN_GIT_ERROR */ }];
                         }
                         throw e_1;
-                    case 10:
+                    case 11:
                         // Always try to restore the branch if possible. We don't want to leave
                         // the repository in a different state than before.
                         if (previousBranchOrRevision !== null) {
                             this.git.runGraceful(['checkout', '-f', previousBranchOrRevision]);
                         }
                         return [7 /*endfinally*/];
-                    case 11: return [2 /*return*/];
+                    case 12: return [2 /*return*/];
                 }
             });
         });
@@ -3989,7 +4020,7 @@ function mergePullRequest(prNumber, githubToken, projectRoot, config) {
             switch (_a.label) {
                 case 0:
                     // Set the environment variable to skip all git commit hooks triggered by husky. We are unable to
-                    // rely on `---no-verify` as some hooks still run, notably the `prepare-commit-msg` hook.
+                    // rely on `--no-verify` as some hooks still run, notably the `prepare-commit-msg` hook.
                     process.env['HUSKY_SKIP_HOOKS'] = '1';
                     return [4 /*yield*/, createPullRequestMergeTask(githubToken, projectRoot, config)];
                 case 1:
@@ -4777,13 +4808,13 @@ function printActiveReleaseTrains(active, config) {
             info(`   Version is currently set to "${bold(`v${next.version}`)}", but has not been ` +
                 `published yet.`);
         }
-        // If no release-train in release-candidate of feature-freeze phase is active,
+        // If no release-train in release-candidate or feature-freeze phase is active,
         // we print a message as last bullet point to make this clear.
         if (releaseCandidate === null) {
-            info(` • No release-candidate or feature-freeze branch currently active.`);
+            info(' • No release-candidate or feature-freeze branch currently active.');
         }
         info();
-        info(blue(`Current active LTS version branches:`));
+        info(blue('Current active LTS version branches:'));
         // Print all active LTS branches (each branch as own bullet point).
         if (ltsBranches.active.length !== 0) {
             for (const ltsBranch of ltsBranches.active) {
@@ -4868,7 +4899,7 @@ function spawnWithDebugOutput(command, args, options) {
         childProcess.stderr.on('data', function (message) {
             logOutput += message;
             // If console output is enabled, print the message directly to the stderr. Note that
-            // we intentionally print all output to stderr as stderr should not be polluted.
+            // we intentionally print all output to stderr as stdout should not be polluted.
             if (outputMode === undefined || outputMode === 'enabled') {
                 process.stderr.write(message);
             }
@@ -4877,7 +4908,7 @@ function spawnWithDebugOutput(command, args, options) {
             stdout += message;
             logOutput += message;
             // If console output is enabled, print the message directly to the stderr. Note that
-            // we intentionally print all output to stderr as stderr should not be polluted.
+            // we intentionally print all output to stderr as stdout should not be polluted.
             if (outputMode === undefined || outputMode === 'enabled') {
                 process.stderr.write(message);
             }
@@ -4885,7 +4916,7 @@ function spawnWithDebugOutput(command, args, options) {
         childProcess.on('exit', function (status, signal) {
             var exitDescription = status !== null ? "exit code \"" + status + "\"" : "signal \"" + signal + "\"";
             var printFn = outputMode === 'on-error' ? error : debug;
-            printFn("Command " + commandText + " completed with " + exitDescription + ".");
+            printFn("Command \"" + commandText + "\" completed with " + exitDescription + ".");
             printFn("Process output: \n" + logOutput);
             // On success, resolve the promise. Otherwise reject with the captured stderr
             // and stdout log output if the output mode was set to `silent`.
@@ -4985,11 +5016,11 @@ const waitForPullRequestInterval = 10000;
  * ###############################################################
  *
  * This file contains helpers for invoking external `ng-dev` commands. A subset of actions,
- * like building release output or setting a NPM dist tag for release packages, cannot be
+ * like building release output or setting aν NPM dist tag for release packages, cannot be
  * performed directly as part of the release tool and need to be delegated to external `ng-dev`
  * commands that exist across arbitrary version branches.
  *
- * In an concrete example: Consider a new patch version is released and that a new release
+ * In a concrete example: Consider a new patch version is released and that a new release
  * package has been added to the `next` branch. The patch branch will not contain the new
  * release package, so we could not build the release output for it. To work around this, we
  * call the ng-dev build command for the patch version branch and expect it to return a list
@@ -5010,7 +5041,7 @@ function invokeSetNpmDistCommand(npmDistTag, version) {
         }
         catch (e) {
             error(e);
-            error(red(`  ✘   An error occurred while setting the NPM dist tag for ${npmDistTag}.`));
+            error(red(`  ✘   An error occurred while setting the NPM dist tag for "${npmDistTag}".`));
             throw new FatalReleaseActionError();
         }
     });
@@ -5021,13 +5052,13 @@ function invokeSetNpmDistCommand(npmDistTag, version) {
  */
 function invokeReleaseBuildCommand() {
     return tslib.__awaiter(this, void 0, void 0, function* () {
-        const spinner = Ora.call(undefined).start('Building release output.');
+        const spinner = ora.call(undefined).start('Building release output.');
         try {
             // Since we expect JSON to be printed from the `ng-dev release build` command,
             // we spawn the process in silent mode. We have set up an Ora progress spinner.
             const { stdout } = yield spawnWithDebugOutput('yarn', ['--silent', 'ng-dev', 'release', 'build', '--json'], { mode: 'silent' });
             spinner.stop();
-            info(green(`  ✓   Built release output for all packages.`));
+            info(green('  ✓   Built release output for all packages.'));
             // The `ng-dev release build` command prints a JSON array to stdout
             // that represents the built release packages and their output paths.
             return JSON.parse(stdout.trim());
@@ -5035,7 +5066,7 @@ function invokeReleaseBuildCommand() {
         catch (e) {
             spinner.stop();
             error(e);
-            error(red(`  ✘   An error occurred while building the release packages.`));
+            error(red('  ✘   An error occurred while building the release packages.'));
             throw new FatalReleaseActionError();
         }
     });
@@ -5050,11 +5081,11 @@ function invokeYarnInstallCommand(projectDir) {
             // Note: No progress indicator needed as that is the responsibility of the command.
             // TODO: Consider using an Ora spinner instead to ensure minimal console output.
             yield spawnWithDebugOutput('yarn', ['install', '--frozen-lockfile', '--non-interactive'], { cwd: projectDir });
-            info(green(`  ✓   Installed project dependencies.`));
+            info(green('  ✓   Installed project dependencies.'));
         }
         catch (e) {
             error(e);
-            error(red(`  ✘   An error occurred while installing dependencies.`));
+            error(red('  ✘   An error occurred while installing dependencies.'));
             throw new FatalReleaseActionError();
         }
     });
@@ -5154,7 +5185,7 @@ function isCommitClosingPullRequest(api, sha, id) {
         const { data } = yield api.github.repos.getCommit(Object.assign(Object.assign({}, api.remoteParams), { ref: sha }));
         // Matches the closing keyword supported in commit messages. See:
         // https://docs.github.com/en/enterprise/2.16/user/github/managing-your-work-on-github/closing-issues-using-keywords.
-        return data.commit.message.match(new RegExp(`close[sd]? #${id}[^0-9]?`, 'i'));
+        return data.commit.message.match(new RegExp(`(?:close[sd]?|fix(?:e[sd]?)|resolve[sd]?):? #${id}(?!\\d)`, 'i'));
     });
 }
 
@@ -5232,22 +5263,20 @@ class ReleaseAction {
             const branchCommitsUrl = getListCommitsInBranchUrl(this.git, branchName);
             if (state === 'failure') {
                 error(red(`  ✘   Cannot stage release. Commit "${commitSha}" does not pass all github ` +
-                    `status checks. Please make sure this commit passes all checks before re-running.`));
+                    'status checks. Please make sure this commit passes all checks before re-running.'));
                 error(`      Please have a look at: ${branchCommitsUrl}`);
                 if (yield promptConfirm('Do you want to ignore the Github status and proceed?')) {
-                    info(yellow(`  ⚠   Upstream commit is failing CI checks, but status has been ` +
-                        `forcibly ignored.`));
+                    info(yellow('  ⚠   Upstream commit is failing CI checks, but status has been forcibly ignored.'));
                     return;
                 }
                 throw new UserAbortedReleaseActionError();
             }
             else if (state === 'pending') {
                 error(red(`  ✘   Commit "${commitSha}" still has pending github statuses that ` +
-                    `need to succeed before staging a release.`));
+                    'need to succeed before staging a release.'));
                 error(red(`      Please have a look at: ${branchCommitsUrl}`));
                 if (yield promptConfirm('Do you want to ignore the Github status and proceed?')) {
-                    info(yellow(`  ⚠   Upstream commit is pending CI, but status has been ` +
-                        `forcibly ignored.`));
+                    info(yellow('  ⚠   Upstream commit is pending CI, but status has been forcibly ignored.'));
                     return;
                 }
                 throw new UserAbortedReleaseActionError();
@@ -5277,9 +5306,9 @@ class ReleaseAction {
      */
     waitForEditsAndCreateReleaseCommit(newVersion) {
         return tslib.__awaiter(this, void 0, void 0, function* () {
-            info(yellow(`  ⚠   Please review the changelog and ensure that the log contains only changes ` +
-                `that apply to the public API surface. Manual changes can be made. When done, please ` +
-                `proceed with the prompt below.`));
+            info(yellow('  ⚠   Please review the changelog and ensure that the log contains only changes ' +
+                'that apply to the public API surface. Manual changes can be made. When done, please ' +
+                'proceed with the prompt below.'));
             if (!(yield promptConfirm('Do you want to proceed and commit the changes?'))) {
                 throw new UserAbortedReleaseActionError();
             }
@@ -5304,7 +5333,7 @@ class ReleaseAction {
             const result = yield this.git.github.graphql.query(findOwnedForksOfRepoQuery, { owner, name });
             const forks = result.repository.forks.nodes;
             if (forks.length === 0) {
-                error(red(`  ✘   Unable to find fork for currently authenticated user.`));
+                error(red('  ✘   Unable to find fork for currently authenticated user.'));
                 error(red(`      Please ensure you created a fork of: ${owner}/${name}.`));
                 throw new FatalReleaseActionError();
             }
@@ -5415,7 +5444,7 @@ class ReleaseAction {
         return tslib.__awaiter(this, void 0, void 0, function* () {
             return new Promise((resolve, reject) => {
                 debug(`Waiting for pull request #${id} to be merged.`);
-                const spinner = Ora.call(undefined).start(`Waiting for pull request #${id} to be merged.`);
+                const spinner = ora.call(undefined).start(`Waiting for pull request #${id} to be merged.`);
                 const intervalId = setInterval(() => tslib.__awaiter(this, void 0, void 0, function* () {
                     const prState = yield getPullRequestState(this.git, id);
                     if (prState === 'merged') {
@@ -5548,7 +5577,7 @@ class ReleaseAction {
             const { url } = yield this.pushChangesToForkAndCreatePullRequest(nextBranch, `changelog-cherry-pick-${newVersion}`, commitMessage, `Cherry-picks the changelog from the "${stagingBranch}" branch to the next ` +
                 `branch (${nextBranch}).`);
             info(green(`  ✓   Pull request for cherry-picking the changelog into "${nextBranch}" ` +
-                `has been created.`));
+                'has been created.'));
             info(yellow(`      Please ask team members to review: ${url}.`));
             return true;
         });
@@ -5577,7 +5606,7 @@ class ReleaseAction {
             const versionBumpCommitSha = yield this._getCommitOfBranch(publishBranch);
             if (!(yield this._isCommitForVersionStaging(newVersion, versionBumpCommitSha))) {
                 error(red(`  ✘   Latest commit in "${publishBranch}" branch is not a staging commit.`));
-                error(red(`      Please make sure the staging pull request has been merged.`));
+                error(red('      Please make sure the staging pull request has been merged.'));
                 throw new FatalReleaseActionError();
             }
             // Checkout the publish branch and build the release packages.
@@ -5596,14 +5625,14 @@ class ReleaseAction {
             for (const builtPackage of builtPackages) {
                 yield this._publishBuiltPackageToNpm(builtPackage, npmDistTag);
             }
-            info(green(`  ✓   Published all packages successfully`));
+            info(green('  ✓   Published all packages successfully'));
         });
     }
     /** Publishes the given built package to NPM with the specified NPM dist tag. */
     _publishBuiltPackageToNpm(pkg, npmDistTag) {
         return tslib.__awaiter(this, void 0, void 0, function* () {
             debug(`Starting publish of "${pkg.name}".`);
-            const spinner = Ora.call(undefined).start(`Publishing "${pkg.name}"`);
+            const spinner = ora.call(undefined).start(`Publishing "${pkg.name}"`);
             try {
                 yield runNpmPublish(pkg.outputPath, npmDistTag, this.config.publishRegistry);
                 spinner.stop();
@@ -5675,14 +5704,14 @@ class CutLongTermSupportPatchAction extends ReleaseAction {
                 {
                     name: 'activeLtsBranch',
                     type: 'list',
-                    message: 'Please select a version for which you want to cut a LTS patch',
+                    message: 'Please select a version for which you want to cut an LTS patch',
                     choices: activeBranchChoices,
                 },
                 {
                     name: 'inactiveLtsBranch',
                     type: 'list',
                     when: o => o.activeLtsBranch === null,
-                    message: 'Please select an inactive LTS version for which you want to cut a LTS patch',
+                    message: 'Please select an inactive LTS version for which you want to cut an LTS patch',
                     choices: inactive.map(branch => this._getChoiceForLtsBranch(branch)),
                 }
             ]);
@@ -6114,8 +6143,7 @@ class ReleaseTool {
                 // Only print the error message and stack if the error is not a known fatal release
                 // action error (for which we print the error gracefully to the console with colors).
                 if (!(e instanceof FatalReleaseActionError) && e instanceof Error) {
-                    console.error(e.message);
-                    console.error(e.stack);
+                    console.error(e);
                 }
                 return CompletionState.FATAL_ERROR;
             }
@@ -6136,7 +6164,7 @@ class ReleaseTool {
                     choices.push({ name: yield action.getDescription(), value: action });
                 }
             }
-            info(`Please select the type of release you want to perform.`);
+            info('Please select the type of release you want to perform.');
             const { releaseAction } = yield inquirer.prompt({
                 name: 'releaseAction',
                 message: 'Please select an action:',
@@ -6153,8 +6181,7 @@ class ReleaseTool {
     _verifyNoUncommittedChanges() {
         return tslib.__awaiter(this, void 0, void 0, function* () {
             if (this._git.hasUncommittedChanges()) {
-                error(red(`  ✘   There are changes which are not committed and should be ` +
-                    `discarded.`));
+                error(red('  ✘   There are changes which are not committed and should be discarded.'));
                 return false;
             }
             return true;
@@ -6169,7 +6196,7 @@ class ReleaseTool {
             const headSha = this._git.run(['rev-parse', 'HEAD']).stdout.trim();
             const { data } = yield this._git.github.repos.getBranch(Object.assign(Object.assign({}, this._git.remoteParams), { branch: nextBranchName }));
             if (headSha !== data.commit.sha) {
-                error(red(`  ✘   Running release tool from an outdated local branch.`));
+                error(red('  ✘   Running release tool from an outdated local branch.'));
                 error(red(`      Please make sure you are running from the "${nextBranchName}" branch.`));
                 return false;
             }
@@ -6246,10 +6273,10 @@ function handler$8(args) {
         const { npmPackages, publishRegistry } = getReleaseConfig();
         const version = semver.parse(rawVersion);
         if (version === null) {
-            error(red(`Invalid version specified. Unable to set NPM dist tag.`));
+            error(red(`Invalid version specified (${rawVersion}). Unable to set NPM dist tag.`));
             process.exit(1);
         }
-        const spinner = Ora.call(undefined).start();
+        const spinner = ora.call(undefined).start();
         debug(`Setting "${tagName}" NPM dist tag for release packages to v${version}.`);
         for (const pkgName of npmPackages) {
             spinner.text = `Setting NPM dist tag for "${pkgName}"`;
@@ -6270,7 +6297,7 @@ function handler$8(args) {
         info(green(`      ${bold(tagName)} will now point to ${bold(`v${version}`)}.`));
     });
 }
-/** CLI command module for setting a NPM dist tag. */
+/** CLI command module for setting an NPM dist tag. */
 const ReleaseSetDistTagCommand = {
     builder: builder$8,
     handler: handler$8,
@@ -6540,7 +6567,7 @@ function loadTestConfig(configPath) {
  */
 /**
  * Converts a list of reference chains to a JSON-compatible golden object. Reference chains
- * by default use TypeScript sourasdfce file objects. In order to make those chains printable,
+ * by default use TypeScript source file objects. In order to make those chains printable,
  * the source file objects are mapped to their relative file names.
  */
 function convertReferenceChainToGolden(refs, baseDir) {

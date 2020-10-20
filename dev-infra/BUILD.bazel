@@ -26,7 +26,6 @@ ts_library(
 
 rollup_bundle(
     name = "cli_rollup",
-    args = ["--banner=\"#!/usr/bin/env node\""],
     entry_point = ":cli.ts",
     format = "cjs",
     silent = True,
