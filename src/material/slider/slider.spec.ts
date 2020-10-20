@@ -507,6 +507,27 @@ describe('MatSlider', () => {
       expect(sliderInstance.value).toBe(0.3);
     });
 
+    it('should set the truncated value to the aria-valuetext', () => {
+      fixture.componentInstance.step = 0.1;
+      fixture.detectChanges();
+
+      dispatchSlideEventSequence(sliderNativeElement, 0, 0.333333);
+      fixture.detectChanges();
+
+      expect(sliderNativeElement.getAttribute('aria-valuetext')).toBe('33');
+    });
+
+    it('should be able to override the aria-valuetext', () => {
+      fixture.componentInstance.step = 0.1;
+      fixture.componentInstance.ariaValuetext = 'custom';
+      fixture.detectChanges();
+
+      dispatchSlideEventSequence(sliderNativeElement, 0, 0.333333);
+      fixture.detectChanges();
+
+      expect(sliderNativeElement.getAttribute('aria-valuetext')).toBe('custom');
+    });
+
   });
 
   describe('slider with auto ticks', () => {
@@ -1494,11 +1515,12 @@ class SliderWithMinAndMax {
 class SliderWithValue { }
 
 @Component({
-  template: `<mat-slider [step]="step"></mat-slider>`,
+  template: `<mat-slider [step]="step" [aria-valuetext]="ariaValuetext"></mat-slider>`,
   styles: [styles],
 })
 class SliderWithStep {
   step = 25;
+  ariaValuetext: string;
 }
 
 @Component({
