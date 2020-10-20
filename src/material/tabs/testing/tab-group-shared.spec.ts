@@ -7,7 +7,7 @@ import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {MatTabGroupHarness} from './tab-group-harness';
 
 /** Shared tests to run on both the original and MDC-based tab-group's. */
-export function runHarnessTests(
+export function runTabGroupHarnessTests(
     tabsModule: typeof MatTabsModule,
     tabGroupHarness: typeof MatTabGroupHarness) {
   let fixture: ComponentFixture<TabGroupHarnessTest>;

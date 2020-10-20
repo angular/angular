@@ -20,10 +20,34 @@ export declare class MatTabHarness extends ContentContainerComponentHarness<stri
     static with(options?: TabHarnessFilters): HarnessPredicate<MatTabHarness>;
 }
 
+export declare class MatTabLinkHarness extends ComponentHarness {
+    click(): Promise<void>;
+    getLabel(): Promise<string>;
+    isActive(): Promise<boolean>;
+    isDisabled(): Promise<boolean>;
+    static hostSelector: string;
+    static with(options?: TabLinkHarnessFilters): HarnessPredicate<MatTabLinkHarness>;
+}
+
+export declare class MatTabNavBarHarness extends ComponentHarness {
+    clickLink(filter?: TabLinkHarnessFilters): Promise<void>;
+    getActiveLink(): Promise<MatTabLinkHarness>;
+    getLinks(filter?: TabLinkHarnessFilters): Promise<MatTabLinkHarness[]>;
+    static hostSelector: string;
+    static with(options?: TabNavBarHarnessFilters): HarnessPredicate<MatTabNavBarHarness>;
+}
+
 export interface TabGroupHarnessFilters extends BaseHarnessFilters {
     selectedTabLabel?: string | RegExp;
 }
 
 export interface TabHarnessFilters extends BaseHarnessFilters {
     label?: string | RegExp;
+}
+
+export interface TabLinkHarnessFilters extends BaseHarnessFilters {
+    label?: string | RegExp;
+}
+
+export interface TabNavBarHarnessFilters extends BaseHarnessFilters {
 }
