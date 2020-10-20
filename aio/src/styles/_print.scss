@@ -112,4 +112,13 @@
     .feature-section img {
         max-width: 70px !important;
     }
+    
+    a::after {
+        content: " (https://angular.io/" attr(href) ") ";
+      }
+      
+      a[href^="http:"]::after,
+      a[href^="https:"]::after {
+        content: " (" attr(href) ") ";
+      }
 }
