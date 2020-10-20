@@ -1923,11 +1923,20 @@ export const locale_eu = [
       'urt.', 'ots.', 'mar.', 'api.', 'mai.', 'eka.', 'uzt.', 'abu.', 'ira.', 'urr.', 'aza.', 'abe.'
     ],
     [
+      'urtarrilak', 'otsailak', 'martxoak', 'apirilak', 'maiatzak', 'ekainak', 'uztailak',
+      'abuztuak', 'irailak', 'urriak', 'azaroak', 'abenduak'
+    ]
+  ],
+  [
+    ['U', 'O', 'M', 'A', 'M', 'E', 'U', 'A', 'I', 'U', 'A', 'A'],
+    [
+      'urt.', 'ots.', 'mar.', 'api.', 'mai.', 'eka.', 'uzt.', 'abu.', 'ira.', 'urr.', 'aza.', 'abe.'
+    ],
+    [
       'urtarrila', 'otsaila', 'martxoa', 'apirila', 'maiatza', 'ekaina', 'uztaila', 'abuztua',
       'iraila', 'urria', 'azaroa', 'abendua'
     ]
   ],
-  u,
   [['K.a.', 'K.o.'], u, ['K.a.', 'Kristo ondoren']],
   1,
   [6, 0],
@@ -4031,7 +4040,7 @@ export const locale_ne = [
   ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
   ['{1}, {0}', u, '{1} {0}', u],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '¤ #,##0.00', '#E0'],
+  ['#,##,##0.###', '#,##,##0%', '¤ #,##,##0.00', '#E0'],
   'NPR',
   'नेरू',
   'नेपाली रूपैयाँ',
