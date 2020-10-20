@@ -117,7 +117,7 @@
     "codelyzer": "^6.0.0-next.1",
     "conventional-changelog": "^3.0.5",
     "dgeni": "^0.4.11",
-    "dgeni-packages": "^0.27.1",
+    "dgeni-packages": "^0.28.4",
     "firebase-tools": "^7.5.0",
     "fs-extra": "^3.0.1",
     "glob": "^7.1.2",
