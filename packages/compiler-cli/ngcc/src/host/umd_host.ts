@@ -470,6 +470,27 @@ export class UmdReflectionHost extends Esm5ReflectionHost {
     return requireCall.arguments[0].text;
   }
 
+  /**
+   * If this is an IIFE then try to grab the outer and inner classes otherwise fallback on the super
+   * class.
+   */
+  protected getDeclarationOfExpression(expression: ts.Expression): Declaration|null {
+    const inner = getInnerClassDeclaration(expression);
+    if (inner !== null) {
+      const outer = getOuterNodeFromInnerDeclaration(inner);
+      if (outer !== null && isExportsAssignment(outer)) {
+        return {
+          kind: DeclarationKind.Inline,
+          node: outer.left,
+          implementation: inner,
+          known: null,
+          viaModule: null,
+        };
+      }
+    }
+    return super.getDeclarationOfExpression(expression);
+  }
+
   private resolveModuleName(moduleName: string, containingFile: ts.SourceFile): ts.SourceFile
       |undefined {
     if (this.compilerHost.resolveModuleNames) {
