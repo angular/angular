@@ -33,11 +33,7 @@ If you'd like to contribute, please follow our [contributing guidelines][contrib
 our [`help wanted`][help-wanted] label for a list of issues with good opportunities for
 contribution.
 
-## What we're working on now (Q3 2020):
-* Trying to get anything done at all during a global pandemic.
-* Visual refresh and updates to http://material.angular.io
-* Hosting summer interns working on cdk-experimental implementations for menu, listbox, & combobox.
-* Remaining test harnesses for Angular Material components.
+## What we're working on now (Q4 2020):
 * Continuing to create new, API-compatible versions of the Angular Material components backed by
 [MDC Web][] ([see @jelbourn's ng-conf talk](https://youtu.be/4EXQKP-Sihw?t=891)). Much of our effort
 is dedicated towards rolling out these new versions of the components across Angular apps
@@ -48,7 +44,8 @@ inside Google. This work will payoff with the following benefits:
   * Fix a number of longstanding accessibility bugs.
   * Increase number of people working to continuously improve the components on an on-going basis
     (both the Angular team and the Material Design team).
-* Initial work on virtual-scroll support for cdk/table.
+* Continue work on virtual-scroll support for cdk/table.
+* Switching to new Sass module system (`@use`)
 
 
 ## About the team
