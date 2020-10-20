@@ -208,6 +208,7 @@ foo.decorators = [
   { type: core.Directive, args: [{ selector: '[ignored]' },] }
 ];
 exports.directives = [foo];
+exports.Inline = (function() { function Inline() {} return Inline; })();
 `,
       };
 
@@ -2422,11 +2423,16 @@ exports.MissingClass2 = MissingClass2;
           const file = getSourceFileOrError(bundle.program, _('/inline_export.js'));
           const exportDeclarations = host.getExportsOfModule(file);
           expect(exportDeclarations).not.toBeNull();
-          const decl = exportDeclarations!.get('directives') as InlineDeclaration;
-          expect(decl).toBeDefined();
-          expect(decl.node.getText()).toEqual('exports.directives');
-          expect(decl.implementation!.getText()).toEqual('[foo]');
-          expect(decl.kind).toEqual(DeclarationKind.Inline);
+          const entries: [string, InlineDeclaration][] =
+              Array.from(exportDeclarations!.entries()) as any;
+          expect(
+              entries.map(
+                  ([name, decl]) =>
+                      [name, decl.node!.getText(), decl.implementation!.getText(), decl.viaModule]))
+              .toEqual([
+                ['directives', 'exports.directives', '[foo]', null],
+                ['Inline', 'exports.Inline', 'function Inline() {}', null],
+              ]);
         });
 
         it('should recognize declarations of known TypeScript helpers', () => {
