@@ -196,7 +196,7 @@ which *is* what parent means.
 
 2. Angular throws a cyclic dependency error if you omit the `@SkipSelf` decorator.
 
-  `Cannot instantiate cyclic dependency! (BethComponent -> Parent -> BethComponent)`
+  `Circular dependency in DI detected for BethComponent. Dependency path: BethComponent -> Parent -> BethComponent`
 
 Here's *Alice*, *Barry*, and family in action.
 

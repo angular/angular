@@ -615,7 +615,8 @@ describe('di', () => {
           }
 
           TestBed.configureTestingModule({declarations: [DirectiveA, DirectiveB, MyComp]});
-          expect(() => TestBed.createComponent(MyComp)).toThrowError(/Circular dep for/);
+          expect(() => TestBed.createComponent(MyComp))
+              .toThrowError('Circular dependency in DI detected for DirectiveA');
         });
 
     onlyInIvy('Ivy has different error message for circular dependency')
@@ -630,7 +631,8 @@ describe('di', () => {
           }
 
           TestBed.configureTestingModule({declarations: [DirectiveA, DirectiveB, MyComp]});
-          expect(() => TestBed.createComponent(MyComp)).toThrowError(/Circular dep for/);
+          expect(() => TestBed.createComponent(MyComp))
+              .toThrowError('Circular dependency in DI detected for DirectiveA');
         });
 
     describe('flags', () => {
@@ -734,7 +736,7 @@ describe('di', () => {
             }
             TestBed.configureTestingModule({declarations: [DirectiveA, DirectiveB, MyComp]});
             expect(() => TestBed.createComponent(MyComp))
-                .toThrowError(/NodeInjector: NOT_FOUND \[DirectiveB]/);
+                .toThrowError(/No provider for DirectiveB found in NodeInjector/);
           });
 
       describe('@Host', () => {
@@ -812,7 +814,7 @@ describe('di', () => {
 
               TestBed.configureTestingModule({declarations: [DirectiveString, MyComp, MyApp]});
               expect(() => TestBed.createComponent(MyApp))
-                  .toThrowError(/NodeInjector: NOT_FOUND \[String]/);
+                  .toThrowError('No provider for String found in NodeInjector');
             });
 
         onlyInIvy('Ivy has different error message when dependency is not found')
@@ -828,7 +830,7 @@ describe('di', () => {
               TestBed.configureTestingModule(
                   {declarations: [DirectiveA, DirectiveB, MyComp, MyApp]});
               expect(() => TestBed.createComponent(MyApp))
-                  .toThrowError(/NodeInjector: NOT_FOUND \[DirectiveB]/);
+                  .toThrowError(/No provider for DirectiveB found in NodeInjector/);
             });
 
         onlyInIvy('Ivy has different error message when dependency is not found')
@@ -853,7 +855,7 @@ describe('di', () => {
               expect(() => {
                 fixture.componentInstance.myComp.showing = true;
                 fixture.detectChanges();
-              }).toThrowError(/NodeInjector: NOT_FOUND \[DirectiveB]/);
+              }).toThrowError(/No provider for DirectiveB found in NodeInjector/);
             });
 
         it('should find providers across embedded views if not passing component boundary', () => {
@@ -892,7 +894,7 @@ describe('di', () => {
 
               TestBed.configureTestingModule({declarations: [DirectiveComp, MyComp, MyApp]});
               expect(() => TestBed.createComponent(MyApp))
-                  .toThrowError(/NodeInjector: NOT_FOUND \[MyApp]/);
+                  .toThrowError('No provider for MyApp found in NodeInjector');
             });
 
         describe('regression', () => {
