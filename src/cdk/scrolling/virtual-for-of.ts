@@ -105,9 +105,9 @@ export class CdkVirtualForOf<T> implements
     if (isDataSource(value)) {
       this._dataSourceChanges.next(value);
     } else {
-      // Slice the value if its an NgIterable to ensure we're working with an array.
+      // If value is an an NgIterable, convert it to an array.
       this._dataSourceChanges.next(new ArrayDataSource<T>(
-          isObservable(value) ? value : Array.prototype.slice.call(value || [])));
+          isObservable(value) ? value : Array.from(value || [])));
     }
   }
 

@@ -444,7 +444,7 @@ describe('CdkVirtualScrollViewport', () => {
           .toBe(0, 'should render from first item');
     }));
 
-    it('should handle dynamic item array keeping position when possibile', fakeAsync(() => {
+    it('should handle dynamic item array keeping position when possible', fakeAsync(() => {
       testComponent.items = Array(100).fill(0);
       finishInit(fixture);
       triggerScroll(viewport, testComponent.itemSize * 50);
@@ -514,6 +514,15 @@ describe('CdkVirtualScrollViewport', () => {
             .toBe((expectedRange.end - expectedRange.start) * testComponent.itemSize,
                 `rendered content size should match expected value at offset ${offset}`);
       }
+    }));
+
+    it('should work with a Set', fakeAsync(() => {
+      const data = new Set(['hello', 'world', 'how', 'are', 'you']);
+      testComponent.items = data as any;
+      finishInit(fixture);
+
+      expect(viewport.getRenderedRange())
+          .toEqual({start: 0, end: 4}, 'newly emitted items should be rendered');
     }));
 
     it('should work with an Observable', fakeAsync(() => {
