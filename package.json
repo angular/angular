@@ -88,7 +88,7 @@
     "@bazel/rollup": "^2.2.0",
     "@bazel/terser": "^2.2.0",
     "@bazel/typescript": "^2.2.0",
-    "@firebase/app-types": "^0.3.2",
+    "@firebase/app-types": "^0.6.1",
     "@octokit/rest": "16.28.7",
     "@schematics/angular": "^11.0.0-next.6",
     "@types/autoprefixer": "^9.7.2",
