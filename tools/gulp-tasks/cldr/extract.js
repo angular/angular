@@ -46,7 +46,7 @@ const HEADER = `/**
 
 // tslint:disable:no-console
 module.exports = (gulp, done) => {
-  const cldrData = require('cldr-data');
+  const cldrData = require('./cldr-data');
   const LOCALES = cldrData.availableLocales;
 
   console.log(`Loading CLDR data...`);
