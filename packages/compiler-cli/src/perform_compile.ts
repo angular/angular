@@ -9,7 +9,7 @@
 import {isSyntaxError, Position} from '@angular/compiler';
 import * as ts from 'typescript';
 
-import {AbsoluteFsPath, getFileSystem, relative, resolve} from '../src/ngtsc/file_system';
+import {absoluteFrom, AbsoluteFsPath, getFileSystem, relative, resolve} from '../src/ngtsc/file_system';
 import {ReadConfigurationHost} from './ngtsc/core/api';
 
 import {replaceTsWithNgInErrors} from './ngtsc/diagnostics';
@@ -143,10 +143,11 @@ const DEFAULT_READ_CONFIG_HOST: ReadConfigurationHost = {
     const basePath = fs.resolve(projectDir);
     return {projectFile, basePath};
   },
-  resolveConfigFilePath(relativeTo: string, ...paths: string[]) {
+  resolveExtendedConfigFilePath(baseConfigPath: string, extended: string) {
     const fs = getFileSystem();
-    let configFile = fs.resolve(fs.join(fs.dirname(relativeTo), ...paths));
-    return (fs.extname(configFile) === '' ? `${configFile}.json` : configFile) as AbsoluteFsPath;
+    let extendedConfigPath = fs.resolve(fs.dirname(baseConfigPath), extended);
+    return fs.extname(extendedConfigPath) ? extendedConfigPath :
+                                            absoluteFrom(`${extendedConfigPath}.json`);
   },
   fileExists(file: string) {
     const fs = getFileSystem();
@@ -154,8 +155,7 @@ const DEFAULT_READ_CONFIG_HOST: ReadConfigurationHost = {
     return fs.exists(resolved) && fs.lstat(fs.resolve(file)).isFile();
   },
   readFile(file: string) {
-    const fs = getFileSystem();
-    return fs.readFile(fs.resolve(file));
+    return ts.sys.readFile(file);
   }
 };
 
@@ -188,7 +188,7 @@ export function readConfiguration(
 
           if (config.extends) {
             const extendedConfigPath =
-                readConfigHost.resolveConfigFilePath(configFile, config.extends);
+                readConfigHost.resolveExtendedConfigFilePath(configFile, config.extends);
 
             if (readConfigHost.fileExists(extendedConfigPath)) {
               // Call read config recursively as TypeScript only merges CompilerOptions

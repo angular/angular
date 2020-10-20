@@ -69,5 +69,5 @@ export interface ReadConfigurationHost extends
     Pick<ExtendedTsCompilerHost, 'fileExists'|'readFile'> {
   calcProjectFileAndBasePath(project: string):
       {projectFile: AbsoluteFsPath, basePath: AbsoluteFsPath};
-  resolveConfigFilePath(relativeTo: string, ...paths: string[]): AbsoluteFsPath;
+  resolveExtendedConfigFilePath(baseConfigPath: string, extended: string): AbsoluteFsPath;
 }

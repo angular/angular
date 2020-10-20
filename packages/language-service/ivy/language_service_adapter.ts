@@ -98,9 +98,9 @@ export class LanguageServiceAdapter implements NgCompilerAdapter, ResourceResolv
     return {projectFile: projectFile as AbsoluteFsPath, basePath: basePath as AbsoluteFsPath};
   }
 
-  resolveConfigFilePath(relativeTo: string, ...paths: string[]) {
+  resolveExtendedConfigFilePath(baseConfigPath: string, extended: string) {
     const host = this.project.projectService.host;
-    const joined = path.join(path.dirname(relativeTo), ...paths);
+    const joined = path.join(path.dirname(baseConfigPath), extended);
     const rawConfigFile = host.resolvePath(joined);
     const configFile = path.extname(rawConfigFile) === '' ? `${rawConfigFile}.json` : rawConfigFile;
     return configFile as AbsoluteFsPath;
