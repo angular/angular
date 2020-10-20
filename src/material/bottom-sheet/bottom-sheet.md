@@ -45,7 +45,7 @@ import {MAT_BOTTOM_SHEET_DATA} from '@angular/material/bottom-sheet';
   template: 'passed in {{ data.names }}',
 })
 export class HobbitSheet {
-  constructor(@Inject(MAT_BOTTOM_SHEET_DATA) public data: any) { }
+  constructor(@Inject(MAT_BOTTOM_SHEET_DATA) public data: {names: string[]}) { }
 }
 ```
 
