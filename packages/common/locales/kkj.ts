@@ -33,7 +33,7 @@ export default [
     ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
     [
       'pamba', 'wanja', 'mbiyɔ mɛndoŋgɔ', 'Nyɔlɔmbɔŋgɔ', 'Mɔnɔ ŋgbanja', 'Nyaŋgwɛ ŋgbanja',
-      'kuŋgwɛ', 'fɛ', 'njapi', 'nyukul', '11', 'ɓulɓusɛ'
+      'kuŋgwɛ', 'fɛ', 'njapi', 'nyukul', 'M11', 'ɓulɓusɛ'
     ],
     u
   ],

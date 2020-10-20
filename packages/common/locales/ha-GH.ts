@@ -45,7 +45,7 @@ export default [
   ['#,##0.###', '#,##0%', '¤ #,##0.00', '#E0'],
   'GHS',
   'GH₵',
-  'GHS',
+  'Kudin Ghana',
   {'GHS': ['GH₵'], 'NGN': ['₦']},
   'ltr',
   plural

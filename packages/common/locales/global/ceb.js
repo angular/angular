@@ -22,7 +22,7 @@ global.ng.common.locales['ceb'] = [
   [['a', 'p'], ['AM', 'PM'], u],
   [['AM', 'PM'], u, u],
   [
-    ['D', 'L', 'M', 'M', 'H', 'B', 'S'], ['Dom', 'Lun', 'Mar', 'Mks', 'Hu', 'Bi', 'Sa'],
+    ['D', 'L', 'M', 'M', 'H', 'B', 'S'], ['Dom', 'Lun', 'Mar', 'Miy', 'Huw', 'Biy', 'Sab'],
     ['Domingo', 'Lunes', 'Martes', 'Miyerkules', 'Huwebes', 'Biyernes', 'Sabado'],
     ['Dom', 'Lun', 'Mar', 'Miy', 'Huw', 'Biy', 'Sab']
   ],
@@ -35,8 +35,15 @@ global.ng.common.locales['ceb'] = [
       'Oktubre', 'Nobyembre', 'Disyembre'
     ]
   ],
-  u,
-  [['WK', 'KP'], u, u],
+  [
+    ['E', 'P', 'M', 'A', 'M', 'H', 'H', 'A', 'S', 'O', 'N', 'D'],
+    ['Ene', 'Peb', 'Mar', 'Abr', 'May', 'Hun', 'Hul', 'Ago', 'Set', 'Okt', 'Nob', 'Dis'],
+    [
+      'Enero', 'Pebrero', 'Marso', 'Abril', 'Mayo', 'Hunyo', 'Hulyo', 'Agosto', 'Setyembre',
+      'Oktubre', 'Nobyembre', 'Disyembre'
+    ]
+  ],
+  [['BC', 'KP'], u, ['Sa Wala Pa Si Kristo', 'Anno Domini']],
   0,
   [6, 0],
   ['M/d/yy', 'MMM d, y', 'MMMM d, y', 'EEEE, MMMM d, y'],
