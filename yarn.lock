@@ -11,16 +11,14 @@
     rxjs "6.6.2"
 
 "@angular-devkit/architect@github:angular/angular-devkit-architect-builds#52f26af4e":
-  version "0.1100.0-next.6+13.52f26af"
-  uid "416858af85faa7b4e6f5c955dadd2e26609ae0fa"
+  version "0.1100.0-next.6"
   resolved "https://codeload.github.com/angular/angular-devkit-architect-builds/tar.gz/416858af85faa7b4e6f5c955dadd2e26609ae0fa"
   dependencies:
     "@angular-devkit/core" "github:angular/angular-devkit-core-builds#52f26af4e"
     rxjs "6.6.3"
 
 "@angular-devkit/build-angular@github:angular/angular-devkit-build-angular-builds#019029381e6d9b8e898f49ff3ad3f6b5b987ec1b":
-  version "0.1100.0-next.6+13.52f26af"
-  uid "019029381e6d9b8e898f49ff3ad3f6b5b987ec1b"
+  version "0.1100.0-next.6"
   resolved "https://codeload.github.com/angular/angular-devkit-build-angular-builds/tar.gz/019029381e6d9b8e898f49ff3ad3f6b5b987ec1b"
   dependencies:
     "@angular-devkit/architect" "github:angular/angular-devkit-architect-builds#52f26af4e"
@@ -102,8 +100,7 @@
     rxjs "6.6.2"
 
 "@angular-devkit/build-optimizer@github:angular/angular-devkit-build-optimizer-builds#52f26af4e":
-  version "0.1100.0-next.6+13.52f26af"
-  uid "6ebbb0cb50f66126b609c95b17ed414965de5dbe"
+  version "0.1100.0-next.6"
   resolved "https://codeload.github.com/angular/angular-devkit-build-optimizer-builds/tar.gz/6ebbb0cb50f66126b609c95b17ed414965de5dbe"
   dependencies:
     loader-utils "2.0.0"
@@ -113,8 +110,7 @@
     webpack-sources "2.0.1"
 
 "@angular-devkit/build-webpack@github:angular/angular-devkit-build-webpack-builds#52f26af4e":
-  version "0.1100.0-next.6+13.52f26af"
-  uid "3952cb30994c42149d279de87bac400a8c385ad2"
+  version "0.1100.0-next.6"
   resolved "https://codeload.github.com/angular/angular-devkit-build-webpack-builds/tar.gz/3952cb30994c42149d279de87bac400a8c385ad2"
   dependencies:
     "@angular-devkit/architect" "github:angular/angular-devkit-architect-builds#52f26af4e"
@@ -144,8 +140,7 @@
     source-map "0.7.3"
 
 "@angular-devkit/core@github:angular/angular-devkit-core-builds#52f26af4e":
-  version "11.0.0-next.6+13.52f26af"
-  uid da711fbc2e48abd9aa7b928496f6754fa8e7d75e
+  version "11.0.0-next.6"
   resolved "https://codeload.github.com/angular/angular-devkit-core-builds/tar.gz/da711fbc2e48abd9aa7b928496f6754fa8e7d75e"
   dependencies:
     ajv "6.12.5"
@@ -163,8 +158,7 @@
     rxjs "6.4.0"
 
 "@angular-devkit/schematics@github:angular/angular-devkit-schematics-builds#52f26af4e":
-  version "11.0.0-next.6+13.52f26af"
-  uid "0a51f51b7ca2adf348fe11d1fba36c472caef343"
+  version "11.0.0-next.6"
   resolved "https://codeload.github.com/angular/angular-devkit-schematics-builds/tar.gz/0a51f51b7ca2adf348fe11d1fba36c472caef343"
   dependencies:
     "@angular-devkit/core" "github:angular/angular-devkit-core-builds#52f26af4e"
@@ -172,8 +166,7 @@
     rxjs "6.6.3"
 
 "@angular/animations@github:angular/animations-builds#d50c2e0fa72916790814de0a6b8914dc49fedd25":
-  version "11.0.0-next.6+43.sha-79d67dc"
-  uid d50c2e0fa72916790814de0a6b8914dc49fedd25
+  version "11.0.0-next.6"
   resolved "https://codeload.github.com/angular/animations-builds/tar.gz/d50c2e0fa72916790814de0a6b8914dc49fedd25"
   dependencies:
     tslib "^2.0.0"
@@ -188,8 +181,7 @@
     parse5 "^5.0.0"
 
 "@angular/cli@github:angular/cli-builds#e0affcd964aacb54a7d8fb1818a4c6ff336e6699":
-  version "11.0.0-next.6+13.52f26af"
-  uid e0affcd964aacb54a7d8fb1818a4c6ff336e6699
+  version "11.0.0-next.6"
   resolved "https://codeload.github.com/angular/cli-builds/tar.gz/e0affcd964aacb54a7d8fb1818a4c6ff336e6699"
   dependencies:
     "@angular-devkit/architect" "github:angular/angular-devkit-architect-builds#52f26af4e"
@@ -214,15 +206,13 @@
     uuid "8.3.1"
 
 "@angular/common@github:angular/common-builds#adf5790398b0bbd749a517a90eb7988a93c5f30c":
-  version "11.0.0-next.6+43.sha-79d67dc"
-  uid adf5790398b0bbd749a517a90eb7988a93c5f30c
+  version "11.0.0-next.6"
   resolved "https://codeload.github.com/angular/common-builds/tar.gz/adf5790398b0bbd749a517a90eb7988a93c5f30c"
   dependencies:
     tslib "^2.0.0"
 
 "@angular/compiler-cli@github:angular/compiler-cli-builds#17d84cd3b49a1dd56abcd7d052557c17a8e205da":
-  version "11.0.0-next.6+43.sha-79d67dc"
-  uid "17d84cd3b49a1dd56abcd7d052557c17a8e205da"
+  version "11.0.0-next.6"
   resolved "https://codeload.github.com/angular/compiler-cli-builds/tar.gz/17d84cd3b49a1dd56abcd7d052557c17a8e205da"
   dependencies:
     "@babel/core" "^7.8.6"
@@ -247,8 +237,7 @@
   integrity sha512-ctjwuntPfZZT2mNj2NDIVu51t9cvbhl/16epc5xEwyzyDt76pX9UgwvY+MbXrf/C/FWwdtmNtfP698BKI+9leQ==
 
 "@angular/compiler@github:angular/compiler-builds#1dc564e3bce4043897b4b540961426901eb13930":
-  version "11.0.0-next.6+43.sha-79d67dc"
-  uid "1dc564e3bce4043897b4b540961426901eb13930"
+  version "11.0.0-next.6"
   resolved "https://codeload.github.com/angular/compiler-builds/tar.gz/1dc564e3bce4043897b4b540961426901eb13930"
   dependencies:
     tslib "^2.0.0"
@@ -259,29 +248,25 @@
   integrity sha512-6Pxgsrf0qF9iFFqmIcWmjJGkkCaCm6V5QNnxMy2KloO3SDq6QuMVRbN9RtC8Urmo25LP+eZ6ZgYqFYpdD8Hd9w==
 
 "@angular/core@github:angular/core-builds#05e7226a21d0584503199c28e475ab86c5dd503c":
-  version "11.0.0-next.6+43.sha-79d67dc"
-  uid "05e7226a21d0584503199c28e475ab86c5dd503c"
+  version "11.0.0-next.6"
   resolved "https://codeload.github.com/angular/core-builds/tar.gz/05e7226a21d0584503199c28e475ab86c5dd503c"
   dependencies:
     tslib "^2.0.0"
 
 "@angular/elements@github:angular/elements-builds#e7f1a1314e097994638c9efef4e9218d3379fc79":
-  version "11.0.0-next.6+43.sha-79d67dc"
-  uid e7f1a1314e097994638c9efef4e9218d3379fc79
+  version "11.0.0-next.6"
   resolved "https://codeload.github.com/angular/elements-builds/tar.gz/e7f1a1314e097994638c9efef4e9218d3379fc79"
   dependencies:
     tslib "^2.0.0"
 
 "@angular/forms@github:angular/forms-builds#f9563d8086de3db06af96c69e854a3569fcea85e":
-  version "11.0.0-next.6+43.sha-79d67dc"
-  uid f9563d8086de3db06af96c69e854a3569fcea85e
+  version "11.0.0-next.6"
   resolved "https://codeload.github.com/angular/forms-builds/tar.gz/f9563d8086de3db06af96c69e854a3569fcea85e"
   dependencies:
     tslib "^2.0.0"
 
 "@angular/language-service@github:angular/language-service-builds#65e36ff2db3e552748449b163c4d075f8ac54559":
-  version "11.0.0-next.6+43.sha-79d67dc"
-  uid "65e36ff2db3e552748449b163c4d075f8ac54559"
+  version "11.0.0-next.6"
   resolved "https://codeload.github.com/angular/language-service-builds/tar.gz/65e36ff2db3e552748449b163c4d075f8ac54559"
 
 "@angular/material@~10.2.0":
@@ -292,22 +277,19 @@
     tslib "^2.0.0"
 
 "@angular/platform-browser-dynamic@github:angular/platform-browser-dynamic-builds#6214f058c572df75382b0dbe661eabcda0b94a05":
-  version "11.0.0-next.6+43.sha-79d67dc"
-  uid "6214f058c572df75382b0dbe661eabcda0b94a05"
+  version "11.0.0-next.6"
   resolved "https://codeload.github.com/angular/platform-browser-dynamic-builds/tar.gz/6214f058c572df75382b0dbe661eabcda0b94a05"
   dependencies:
     tslib "^2.0.0"
 
 "@angular/platform-browser@github:angular/platform-browser-builds#4575a051aa56dd60b9d2a8e5d5da603a33d4eeb3":
-  version "11.0.0-next.6+43.sha-79d67dc"
-  uid "4575a051aa56dd60b9d2a8e5d5da603a33d4eeb3"
+  version "11.0.0-next.6"
   resolved "https://codeload.github.com/angular/platform-browser-builds/tar.gz/4575a051aa56dd60b9d2a8e5d5da603a33d4eeb3"
   dependencies:
     tslib "^2.0.0"
 
 "@angular/router@github:angular/router-builds#cb61f3ed862f7632fc0662ddc2baed32992c35b0":
-  version "11.0.0-next.6+43.sha-79d67dc"
-  uid cb61f3ed862f7632fc0662ddc2baed32992c35b0
+  version "11.0.0-next.6"
   resolved "https://codeload.github.com/angular/router-builds/tar.gz/cb61f3ed862f7632fc0662ddc2baed32992c35b0"
   dependencies:
     tslib "^2.0.0"
@@ -2071,8 +2053,7 @@
     schema-utils "^2.7.0"
 
 "@ngtools/webpack@github:angular/ngtools-webpack-builds#52f26af4e":
-  version "11.0.0-next.6+13.52f26af"
-  uid "358c2bac85d1fc003a4d7ff830ed1cb1efaba733"
+  version "11.0.0-next.6"
   resolved "https://codeload.github.com/angular/ngtools-webpack-builds/tar.gz/358c2bac85d1fc003a4d7ff830ed1cb1efaba733"
   dependencies:
     "@angular-devkit/core" "github:angular/angular-devkit-core-builds#52f26af4e"
@@ -2165,8 +2146,7 @@
     "@angular-devkit/schematics" "8.0.0"
 
 "@schematics/angular@github:angular/schematics-angular-builds#52f26af4e":
-  version "11.0.0-next.6+13.52f26af"
-  uid f74303b456f63db603eca3df032e154b7eb090f8
+  version "11.0.0-next.6"
   resolved "https://codeload.github.com/angular/schematics-angular-builds/tar.gz/f74303b456f63db603eca3df032e154b7eb090f8"
   dependencies:
     "@angular-devkit/core" "github:angular/angular-devkit-core-builds#52f26af4e"
@@ -2174,8 +2154,7 @@
     jsonc-parser "2.3.1"
 
 "@schematics/update@github:angular/schematics-update-builds#52f26af4e":
-  version "0.1100.0-next.6+13.52f26af"
-  uid f2bed98557f0dc5b291d37fe5ec684fe36978033
+  version "0.1100.0-next.6"
   resolved "https://codeload.github.com/angular/schematics-update-builds/tar.gz/f2bed98557f0dc5b291d37fe5ec684fe36978033"
   dependencies:
     "@angular-devkit/core" "github:angular/angular-devkit-core-builds#52f26af4e"
@@ -11489,15 +11468,10 @@ typedarray@^0.0.6:
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
   integrity sha1-hnrHTjhkGHsdPUfZlqeOxciDB3c=
 
-typescript@4.0.3:
+typescript@4.0.3, typescript@~4.0.0:
   version "4.0.3"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.0.3.tgz#153bbd468ef07725c1df9c77e8b453f8d36abba5"
   integrity sha512-tEu6DGxGgRJPb/mVPIZ48e69xCn2yRmCgYmDugAVwmJ6o+0u1RI18eO7E7WBTLYLaEVVOhwQmcdhQHweux/WPg==
-
-typescript@~3.9.2:
-  version "3.9.3"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.9.3.tgz#d3ac8883a97c26139e42df5e93eeece33d610b8a"
-  integrity sha512-D/wqnB2xzNFIcoBG9FG8cXRDjiqSTbG2wd8DMZeQyJlP1vfTkIxH4GKveWaEBYySKIg+USu+E+EDIR47SqnaMQ==
 
 ua-parser-js@0.7.21:
   version "0.7.21"
