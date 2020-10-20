@@ -625,7 +625,7 @@ export interface DownleveledEnum {
 export interface InlineDeclaration extends
     BaseDeclaration<Exclude<DeclarationNode, ts.Declaration>> {
   kind: DeclarationKind.Inline;
-  implementation?: ts.Expression;
+  implementation?: DeclarationNode;
 }
 
 /**
