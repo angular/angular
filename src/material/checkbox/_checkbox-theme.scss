@@ -77,7 +77,7 @@
   // Switch this to a solid color since we're using `opacity`
   // to control how opaque the ripple should be.
   .mat-checkbox .mat-ripple-element {
-    background-color: map_get(map-get($config, foreground), base);
+    background-color: map-get(map-get($config, foreground), base);
   }
 
   .mat-checkbox-checked:not(.mat-checkbox-disabled),

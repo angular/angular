@@ -219,8 +219,8 @@ describe('theming api', () => {
         $theme: mat-light-theme($mat-red, $mat-blue);
 
         // Updates the "icon" foreground color to "canary".
-        $theme: map_merge($theme,
-          (foreground: map_merge(map_get($theme, foreground), (icon: "canary"))));
+        $theme: map-merge($theme,
+          (foreground: map-merge(map-get($theme, foreground), (icon: "canary"))));
 
         @include angular-material-theme($theme);
       `);

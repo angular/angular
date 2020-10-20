@@ -47,8 +47,8 @@ $mat-ripple-color-opacity: 0.1;
 /* Colors for the ripple elements.*/
 @mixin mat-ripple-color($config-or-theme) {
   $config: mat-get-color-config($config-or-theme);
-  $foreground: map_get($config, foreground);
-  $foreground-base: map_get($foreground, base);
+  $foreground: map-get($config, foreground);
+  $foreground-base: map-get($foreground, base);
 
   .mat-ripple-element {
     // If the ripple color is resolves to a color *type*, we can use it directly, otherwise

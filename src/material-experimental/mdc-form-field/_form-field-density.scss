@@ -7,14 +7,14 @@
 // provided by MDC in order to support arbitrary form-field controls.
 @mixin _mat-mdc-form-field-infix-vertical-spacing-filled($with-label-padding, $no-label-padding) {
   .mat-mdc-text-field-wrapper:not(.mdc-text-field--outlined) .mat-mdc-form-field-infix {
-    padding-top: map_get($with-label-padding, top);
-    padding-bottom: map_get($with-label-padding, bottom);
+    padding-top: map-get($with-label-padding, top);
+    padding-bottom: map-get($with-label-padding, bottom);
   }
 
   .mdc-text-field--no-label:not(.mdc-text-field--outlined):not(.mdc-text-field--textarea)
   .mat-mdc-form-field-infix {
-    padding-top: map_get($no-label-padding, top);
-    padding-bottom: map_get($no-label-padding, bottom);
+    padding-top: map-get($no-label-padding, top);
+    padding-bottom: map-get($no-label-padding, bottom);
   }
 }
 
@@ -23,8 +23,8 @@
 // provided by MDC in order to support arbitrary form-field controls.
 @mixin _mat-mdc-form-field-infix-vertical-spacing-outlined($padding) {
   .mat-mdc-text-field-wrapper.mdc-text-field--outlined .mat-mdc-form-field-infix {
-    padding-top: map_get($padding, top);
-    padding-bottom: map_get($padding, bottom);
+    padding-top: map-get($padding, top);
+    padding-bottom: map-get($padding, bottom);
   }
 }
 

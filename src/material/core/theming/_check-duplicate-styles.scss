@@ -31,9 +31,9 @@ $_mat-theme-emitted-density: () !default;
   $density-config: mat-get-density-config($theme);
   $typography-config: mat-get-typography-config($theme);
   // Lists of previous `color`, `density` and `typography` configurations.
-  $previous-color: map_get($_mat-theme-emitted-color, $id) or ();
-  $previous-typography: map_get($_mat-theme-emitted-typography, $id) or ();
-  $previous-density: map_get($_mat-theme-emitted-density, $id) or ();
+  $previous-color: map-get($_mat-theme-emitted-color, $id) or ();
+  $previous-typography: map-get($_mat-theme-emitted-typography, $id) or ();
+  $previous-density: map-get($_mat-theme-emitted-density, $id) or ();
   // Whether duplicate legacy density styles would be generated.
   $duplicate-legacy-density: false;
 
@@ -74,11 +74,11 @@ $_mat-theme-emitted-density: () !default;
     $previous-density: append($previous-density, $density-config);
   }
 
-  $_mat-theme-emitted-color: map_merge(
+  $_mat-theme-emitted-color: map-merge(
       $_mat-theme-emitted-color, ($id: $previous-color)) !global;
-  $_mat-theme-emitted-density: map_merge(
+  $_mat-theme-emitted-density: map-merge(
       $_mat-theme-emitted-density, ($id: $previous-density)) !global;
-  $_mat-theme-emitted-typography: map_merge(
+  $_mat-theme-emitted-typography: map-merge(
       $_mat-theme-emitted-typography, ($id: $previous-typography)) !global;
 
   // Optionally, consumers of this mixin can wrap contents inside so that nested

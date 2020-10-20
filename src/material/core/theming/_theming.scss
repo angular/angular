@@ -17,7 +17,7 @@ $_mat-theme-generate-default-density: true !default;
 // @param $primary
 // @param $lighter
 @function mat-palette($base-palette, $default: 500, $lighter: 100, $darker: 700, $text: $default) {
-  $result: map_merge($base-palette, (
+  $result: map-merge($base-palette, (
     default: map-get($base-palette, $default),
     lighter: map-get($base-palette, $lighter),
     darker: map-get($base-palette, $darker),
@@ -30,7 +30,7 @@ $_mat-theme-generate-default-density: true !default;
 
   // For each hue in the palette, add a "-contrast" color to the map.
   @each $hue, $color in $base-palette {
-    $result: map_merge($result, (
+    $result: map-merge($result, (
       '#{$hue}-contrast': mat-contrast($base-palette, $hue)
     ));
   }
@@ -69,15 +69,15 @@ $_mat-theme-generate-default-density: true !default;
 // Validates the specified theme by ensuring that the optional color config defines
 // a primary, accent and warn palette. Returns the theme if no failures were found.
 @function _mat-validate-theme($theme) {
-  @if map_get($theme, color) {
-    $color: map_get($theme, color);
-    @if not map_get($color, primary) {
+  @if map-get($theme, color) {
+    $color: map-get($theme, color);
+    @if not map-get($color, primary) {
       @error 'Theme does not define a valid "primary" palette.';
     }
-    @else if not map_get($color, accent) {
+    @else if not map-get($color, accent) {
       @error 'Theme does not define a valid "accent" palette.';
     }
-    @else if not map_get($color, warn) {
+    @else if not map-get($color, warn) {
       @error 'Theme does not define a valid "warn" palette.';
     }
   }
@@ -94,7 +94,7 @@ $_mat-theme-generate-default-density: true !default;
 //
 //    @mixin my-custom-component-theme($theme) {
 //      .my-comp {
-//        background-color: mat-color(map_get($theme, primary));
+//        background-color: mat-color(map-get($theme, primary));
 //      }
 //    }
 //
@@ -102,11 +102,11 @@ $_mat-theme-generate-default-density: true !default;
 // is stored in `$theme.color` which contains a property for `primary`. This method copies
 // the map from `$theme.color` to `$theme` for backwards compatibility.
 @function _mat-create-backwards-compatibility-theme($theme) {
-  @if not map_get($theme, color) {
+  @if not map-get($theme, color) {
     @return $theme;
   }
-  $color: map_get($theme, color);
-  @return map_merge($theme, $color);
+  $color: map-get($theme, color);
+  @return map-merge($theme, $color);
 }
 
 // Creates a light-themed color configuration from the specified
@@ -162,12 +162,12 @@ $_mat-theme-generate-default-density: true !default;
   // parts of the theming system, but update the `color` configuration if set. As explained
   // above, the color shorthand will be expanded to an actual light-themed color configuration.
   $result: $primary;
-  @if map_get($primary, color) {
-    $color-settings: map_get($primary, color);
-    $primary: map_get($color-settings, primary);
-    $accent: map_get($color-settings, accent);
-    $warn: map_get($color-settings, warn);
-    $result: map_merge($result, (color: _mat-create-light-color-config($primary, $accent, $warn)));
+  @if map-get($primary, color) {
+    $color-settings: map-get($primary, color);
+    $primary: map-get($color-settings, primary);
+    $accent: map-get($color-settings, accent);
+    $warn: map-get($color-settings, warn);
+    $result: map-merge($result, (color: _mat-create-light-color-config($primary, $accent, $warn)));
   }
   @return _mat-create-backwards-compatibility-theme(_mat-validate-theme($result));
 }
@@ -199,12 +199,12 @@ $_mat-theme-generate-default-density: true !default;
   // parts of the theming system, but update the `color` configuration if set. As explained
   // above, the color shorthand will be expanded to an actual dark-themed color configuration.
   $result: $primary;
-  @if map_get($primary, color) {
-    $color-settings: map_get($primary, color);
-    $primary: map_get($color-settings, primary);
-    $accent: map_get($color-settings, accent);
-    $warn: map_get($color-settings, warn);
-    $result: map_merge($result, (color: _mat-create-dark-color-config($primary, $accent, $warn)));
+  @if map-get($primary, color) {
+    $color-settings: map-get($primary, color);
+    $primary: map-get($color-settings, primary);
+    $accent: map-get($color-settings, accent);
+    $warn: map-get($color-settings, warn);
+    $result: map-merge($result, (color: _mat-create-dark-color-config($primary, $accent, $warn)));
   }
   @return _mat-create-backwards-compatibility-theme(_mat-validate-theme($result));
 }
@@ -223,8 +223,8 @@ $_mat-theme-generate-default-density: true !default;
   @if _mat-is-legacy-constructed-theme($theme) {
     @return $theme;
   }
-  @if map_has_key($theme, color) {
-    @return map_get($theme, color);
+  @if map-has-key($theme, color) {
+    @return map-get($theme, color);
   }
   @return $default;
 }
@@ -237,8 +237,8 @@ $_mat-theme-generate-default-density: true !default;
   }
   // In case a theme has been passed, extract the configuration if present,
   // or fall back to the default density config.
-  @if map_has_key($theme-or-config, density) {
-    @return map_get($theme-or-config, density);
+  @if map-has-key($theme-or-config, density) {
+    @return map-get($theme-or-config, density);
   }
   @return $default;
 }
@@ -252,8 +252,8 @@ $_mat-theme-generate-default-density: true !default;
   }
   // In case a theme has been passed, extract the configuration if present,
   // or fall back to the default typography config.
-  @if (map_has_key($theme-or-config, typography)) {
-    @return map_get($theme-or-config, typography);
+  @if (map-has-key($theme-or-config, typography)) {
+    @return map-get($theme-or-config, typography);
   }
   @return $default;
 }
@@ -262,16 +262,16 @@ $_mat-theme-generate-default-density: true !default;
 // of type `map` and can optionally only specify `color`, `density` or `typography`.
 @function _mat-is-theme-object($value) {
   @return type-of($value) == 'map' and (
-    map_has_key($value, color) or
-    map_has_key($value, density) or
-    map_has_key($value, typography) or
+    map-has-key($value, color) or
+    map-has-key($value, density) or
+    map-has-key($value, typography) or
     length($value) == 0
   );
 }
 
 // Checks whether a given value corresponds to a legacy constructed theme.
 @function _mat-is-legacy-constructed-theme($value) {
-  @return type-of($value) == 'map' and map_get($value, '_is-legacy-theme');
+  @return type-of($value) == 'map' and map-get($value, '_is-legacy-theme');
 }
 
 // Gets the theme from the given value that is either already a theme, or a color configuration.

@@ -63,7 +63,7 @@
     // Switch this to a solid color since we're using `opacity`
     // to control how opaque the ripple should be.
     .mat-ripple-element {
-      background-color: map_get($foreground, base);
+      background-color: map-get($foreground, base);
     }
   }
 }

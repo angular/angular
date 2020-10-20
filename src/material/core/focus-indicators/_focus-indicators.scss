@@ -87,7 +87,7 @@
 
 @mixin mat-strong-focus-indicators-color($config-or-theme) {
   $config: mat-get-color-config($config-or-theme);
-  @include _mat-strong-focus-indicators-border-color(mat-color(map_get($config, primary)));
+  @include _mat-strong-focus-indicators-border-color(mat-color(map-get($config, primary)));
 }
 
 /// Mixin that sets the color of the focus indicators.

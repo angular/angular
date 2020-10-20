@@ -14,7 +14,7 @@
     }
 
     &.mdc-list-item--selected::before {
-      background: mat-color(map_get($config, primary));
+      background: mat-color(map-get($config, primary));
       opacity: map-get($state-opacities, selected);
     }
 

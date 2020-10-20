@@ -47,17 +47,17 @@ $_mat-density-generate-styles: true;
   }
 
   $value: null;
-  $property-scale-map: map_get($density-config, $property-name);
+  $property-scale-map: map-get($density-config, $property-name);
 
-  @if map_has_key($property-scale-map, $density-scale) {
-    $value: map_get($property-scale-map, $density-scale);
+  @if map-has-key($property-scale-map, $density-scale) {
+    $value: map-get($property-scale-map, $density-scale);
   }
   @else {
-    $value: map_get($property-scale-map, default) + $density-scale * $_mat-density-interval;
+    $value: map-get($property-scale-map, default) + $density-scale * $_mat-density-interval;
   }
 
-  $min-value: map_get($property-scale-map, $_mat-density-minimum-scale);
-  $max-value: map_get($property-scale-map, $_mat-density-maximum-scale);
+  $min-value: map-get($property-scale-map, $_mat-density-minimum-scale);
+  $max-value: map-get($property-scale-map, $_mat-density-maximum-scale);
 
   @if ($value < $min-value or $value > $max-value) {
     @error 'mat-density: #{$property-name} must be between #{$min-value} and ' +

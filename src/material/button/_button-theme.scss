@@ -113,7 +113,7 @@ $_mat-button-ripple-opacity: 0.1;
   }
 
   .mat-button-focus-overlay {
-    background: map_get($foreground, base);
+    background: map-get($foreground, base);
   }
 
   // Note: this needs a bit extra specificity, because we're not guaranteed the inclusion
