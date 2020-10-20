@@ -28,11 +28,7 @@ global.ng.common.locales['vai-latn'] = [
   u,
   [
     ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
-    [
-      'luukao kemã', 'ɓandaɓu', 'vɔɔ', 'fulu', 'goo', '6', '7', 'kɔnde', 'saah', 'galo',
-      'kenpkato ɓololɔ', 'luukao lɔma'
-    ],
-    u
+    ['M01', 'M02', 'M03', 'M04', 'M05', 'M06', 'M07', 'M08', 'M09', 'M10', 'M11', 'M12'], u
   ],
   u,
   [['BCE', 'CE'], u, u],
