@@ -68,6 +68,8 @@ export class MatChipListHarness extends ComponentHarness {
    * Selects a chip inside the chip list.
    * @param filter An optional filter to apply to the child chips.
    *    All the chips matching the filter will be selected.
+   * @deprecated Will be moved into separate selection-specific harness.
+   * @breaking-change 12.0.0
    */
   async selectChips(filter: ChipHarnessFilters = {}): Promise<void> {
     const chips = await this.getChips(filter);

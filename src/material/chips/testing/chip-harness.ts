@@ -36,7 +36,11 @@ export class MatChipHarness extends ComponentHarness {
     });
   }
 
-  /** Whether the chip is selected. */
+  /**
+   * Whether the chip is selected.
+   * @deprecated Will be moved into separate selection-specific harness.
+   * @breaking-change 12.0.0
+   */
   async isSelected(): Promise<boolean> {
     return (await this.host()).hasClass('mat-chip-selected');
   }
@@ -46,21 +50,33 @@ export class MatChipHarness extends ComponentHarness {
     return (await this.host()).hasClass('mat-chip-disabled');
   }
 
-  /** Selects the given chip. Only applies if it's selectable. */
+  /**
+   * Selects the given chip. Only applies if it's selectable.
+   * @deprecated Will be moved into separate selection-specific harness.
+   * @breaking-change 12.0.0
+   */
   async select(): Promise<void> {
     if (!(await this.isSelected())) {
       await this.toggle();
     }
   }
 
-  /** Deselects the given chip. Only applies if it's selectable. */
+  /**
+   * Deselects the given chip. Only applies if it's selectable.
+   * @deprecated Will be moved into separate selection-specific harness.
+   * @breaking-change 12.0.0
+   */
   async deselect(): Promise<void> {
     if (await this.isSelected()) {
       await this.toggle();
     }
   }
 
-  /** Toggles the selected state of the given chip. Only applies if it's selectable. */
+  /**
+   * Toggles the selected state of the given chip. Only applies if it's selectable.
+   * @deprecated Will be moved into separate selection-specific harness.
+   * @breaking-change 12.0.0
+   */
   async toggle(): Promise<void> {
     return (await this.host()).sendKeys(' ');
   }
