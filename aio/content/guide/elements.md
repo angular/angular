@@ -374,10 +374,10 @@ declare global {
 Now, TypeScript can infer the correct type the same way it does for built-in elements:
 
 ```ts
-document.createElement('div')               //--> HTMLDivElement (built-in element)
-document.querySelector('foo')               //--> Element        (unknown element)
-document.createElement('my-dialog')         //--> NgElement & WithProperties<{content: string}> (custom element)
-document.querySelector('my-other-element')  //--> NgElement & WithProperties<{foo: 'bar'}>      (custom element)
+document.createElement('div')               //--&gt; HTMLDivElement (built-in element)
+document.querySelector('foo')               //--&gt; Element        (unknown element)
+document.createElement('my-dialog')         //--&gt; NgElement & WithProperties<{content: string}> (custom element)
+document.querySelector('my-other-element')  //--&gt; NgElement & WithProperties<{foo: 'bar'}>      (custom element)
 ```
 
 -->
