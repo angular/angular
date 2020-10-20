@@ -118,6 +118,6 @@
     }
     a[href^="http:"]::after,
     a[href^="https:"]::after {
-    content: " (" attr(href) ") ";
+        content: " (" attr(href) ") ";
     }
 }
