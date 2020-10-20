@@ -107,7 +107,7 @@ describe('di', () => {
           (DirA as any)['__NG_ELEMENT_ID__'] = 1;
           (DirC as any)['__NG_ELEMENT_ID__'] = 257;
           new ComponentFixture(App);
-        }).toThrowError(/NodeInjector: NOT_FOUND \[DirB]/);
+        }).toThrowError('No provider for DirB found in NodeInjector');
       });
     });
   });

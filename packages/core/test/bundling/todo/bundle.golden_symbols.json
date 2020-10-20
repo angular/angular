@@ -693,6 +693,9 @@
     "name": "stringifyForError"
   },
   {
+    "name": "throwProviderNotFoundError"
+  },
+  {
     "name": "toTStylingRange"
   },
   {
