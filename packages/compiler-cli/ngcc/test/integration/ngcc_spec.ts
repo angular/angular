@@ -468,7 +468,7 @@ runInEachFileSystem(() => {
        });
 
     it('should support inline UMD/CommonJS exports declarations', () => {
-      // Setup an Angular entry-point in UMD module format has an inline exports declaration
+      // Setup an Angular entry-point in UMD module format that has an inline exports declaration
       // referenced by an NgModule.
       loadTestFiles([
         {
@@ -486,10 +486,12 @@ runInEachFileSystem(() => {
             exports.FooModule = /** @class */ (function () {
               function FooModule() {}
               FooModule = __decorate([
-                  core.NgModule({declarations: [exports.FooDirective]})
+                  core.NgModule({declarations: exports.declarations})
               ], FooModule);
               return FooModule;
             }());
+
+            exports.declarations = [exports.FooDirective];
 
             exports.FooDirective = /** @class */ (function () {
               function FooDirective() {}
@@ -517,6 +519,13 @@ runInEachFileSystem(() => {
                propertiesToConsider: ['main'],
              }))
           .not.toThrow();
+
+      const processedFile = fs.readFile(_('/node_modules/test-package/index.js'));
+      expect(processedFile)
+          .toContain('FooModule.ɵmod = ɵngcc0.ɵɵdefineNgModule({ type: FooModule });');
+      expect(processedFile)
+          .toContain(
+              'ɵngcc0.ɵɵsetNgModuleScope(FooModule, { declarations: function () { return [FooDirective]; } });');
     });
 
     it('should not be able to evaluate code in external packages when no .d.ts files are present',
