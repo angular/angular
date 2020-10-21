@@ -471,7 +471,7 @@ export class UmdReflectionHost extends Esm5ReflectionHost {
   }
 
   /**
-   * If this is an IFE then try to grab the outer and inner classes otherwise fallback on the super
+   * If this is an IIFE then try to grab the outer and inner classes otherwise fallback on the super
    * class.
    */
   protected getDeclarationOfExpression(expression: ts.Expression): Declaration|null {

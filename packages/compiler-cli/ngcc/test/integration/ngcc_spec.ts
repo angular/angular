@@ -525,7 +525,7 @@ runInEachFileSystem(() => {
           .toContain('FooModule.ɵmod = ɵngcc0.ɵɵdefineNgModule({ type: FooModule });');
       expect(processedFile)
           .toContain(
-              'ɵngcc0.ɵɵsetNgModuleScope(FooModule, { declarations: function () { return [FooDirective]; } });');
+              'ɵngcc0.ɵɵsetNgModuleScope(FooModule, { declarations: function () { return [exports.FooDirective]; } });');
     });
 
     it('should not be able to evaluate code in external packages when no .d.ts files are present',
