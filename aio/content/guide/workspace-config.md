@@ -149,7 +149,7 @@ See [Build target](#build-target) below for more information.
 
 * The `architect/lint` section configures defaults for options of the `ng lint` command, which performs code analysis on project source files. The default linting tool for Angular is [TSLint](https://palantir.github.io/tslint/).
 
-* The `architect/extract-i18n` section configures defaults for options of the `ng-xi18n` tool used by the `ng xi18n` command, which extracts marked message strings from source code and outputs translation files.
+* The `architect/extract-i18n` section configures defaults for options of the `ng extract-i18n` command, which extracts marked message strings from source code and outputs translation files.
 
 * The `architect/server` section configures defaults for creating a Universal app with server-side rendering, using the `ng run <project>:server` command.
 

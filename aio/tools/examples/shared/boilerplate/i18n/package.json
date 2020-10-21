@@ -12,7 +12,7 @@
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",
-    "extract": "ng xi18n --output-path=locale"
+    "extract": "ng extract-i18n --output-path=locale"
   },
   "private": true,
   "dependencies": {
