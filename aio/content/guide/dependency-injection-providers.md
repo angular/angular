@@ -481,7 +481,6 @@ A provider object can associate any of these injection tokens with one or more c
 
 * [APP_INITIALIZER](api/core/APP_INITIALIZER): Callback is invoked before an app is initialized. All registered initializers can optionally return a Promise. All initializer functions that return Promises must be resolved before the application is bootstrapped. If one of the initializers fails to resolves, the application is not bootstrapped.
 
-
 The provider object can have a third option, `multi: true`, which you can use with `APP_INITIALIZER`
 to register multiple handlers for the provide event.
 
@@ -504,7 +503,6 @@ The Router also makes use of multiple providers associated with a single token.
 When you provide multiple sets of routes using [RouterModule.forRoot](api/router/RouterModule#forroot)
 and [RouterModule.forChild](api/router/RouterModule#forchild) in a single module,
 the [ROUTES](api/router/ROUTES) token combines all the different provided sets of routes into a single value.
-
 
 <div class="alert is-helpful">
 
@@ -598,7 +596,6 @@ When providers are tree-shakable, the Angular compiler removes the associated
 services from the final output when it determines that your application doesn't use those services.
 This significantly reduces the size of your bundles.
 
-
 <div class="alert is-helpful">
 
 Ideally, if an application isn't injecting a service, Angular shouldn't include it in the final output.
@@ -609,7 +606,6 @@ so it has no choice but to include the service in the injector.
 Thus, services in the NgModule `providers` array or at component level are not tree-shakable.
 
 </div>
-
 
 The following example of non-tree-shakable providers in Angular configures a service provider for the injector of an NgModule.
 
@@ -669,7 +665,6 @@ The following example shows the tree-shakable equivalent to the `ServiceModule` 
 The service can be instantiated by configuring a factory function, as in the following example.
 
 <code-example path="dependency-injection/src/app/tree-shaking/service.0.ts"  header="src/app/tree-shaking/service.0.ts"></code-example>
-
 
 <div class="alert is-helpful">
 
