@@ -18,9 +18,9 @@ been translated (compile-time inlined).
 
 These translated apps are stored in `tmp/translations/(de|fr)`.
 
-### legacy
+### CLI
 
-The legacy `ng extract-i18n` tool extracts the messages from the Angular templates, into the XLIFF 1.2
+The CLI `ng extract-i18n` tool extracts the messages from the Angular templates, into the XLIFF 1.2
 format with legacy message ids (`tmp/legacy-locales/messages.legacy.xlf`).
 
 The translation file is modified to apply a simple translation.
