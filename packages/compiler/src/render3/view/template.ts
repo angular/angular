@@ -2064,7 +2064,7 @@ export function parseTemplate(
 
   // process i18n meta information (scan attributes, generate ids)
   // before we run whitespace removal process, because existing i18n
-  // extraction process (ng xi18n) relies on a raw content to generate
+  // extraction process (ng extract-i18n) relies on a raw content to generate
   // message ids
   const i18nMetaVisitor = new I18nMetaVisitor(
       interpolationConfig, /* keepI18nAttrs */ !preserveWhitespaces,
@@ -2077,7 +2077,7 @@ export function parseTemplate(
     // run i18n meta visitor again in case whitespaces are removed (because that might affect
     // generated i18n message content) and first pass indicated that i18n content is present in a
     // template. During this pass i18n IDs generated at the first pass will be preserved, so we can
-    // mimic existing extraction process (ng xi18n)
+    // mimic existing extraction process (ng extract-i18n)
     if (i18nMetaVisitor.hasI18nMeta) {
       rootNodes = html.visitAll(
           new I18nMetaVisitor(interpolationConfig, /* keepI18nAttrs */ false), rootNodes);
