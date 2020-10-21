@@ -8,14 +8,12 @@
 
 import {NgCompilerAdapter} from '@angular/compiler-cli/src/ngtsc/core/api';
 import {absoluteFrom, AbsoluteFsPath} from '@angular/compiler-cli/src/ngtsc/file_system';
-import {AdapterResourceLoader} from '@angular/compiler-cli/src/ngtsc/resource';
 import {isShim} from '@angular/compiler-cli/src/ngtsc/shims';
 import * as ts from 'typescript/lib/tsserverlibrary';
-import {ResourceResolver} from './definitions';
 
 import {isTypeScriptFile} from './utils';
 
-export class LanguageServiceAdapter implements NgCompilerAdapter, ResourceResolver {
+export class LanguageServiceAdapter implements NgCompilerAdapter {
   readonly entryPoint = null;
   readonly constructionDiagnostics: ts.Diagnostic[] = [];
   readonly ignoreForEmit: Set<ts.SourceFile> = new Set();
@@ -78,10 +76,5 @@ export class LanguageServiceAdapter implements NgCompilerAdapter, ResourceResolv
     const lastVersion = this.templateVersion.get(fileName);
     const latestVersion = this.project.getScriptVersion(fileName);
     return lastVersion !== latestVersion;
-  }
-
-  resolve(file: string, basePath: string): string {
-    const loader = new AdapterResourceLoader(this, this.project.getCompilationSettings());
-    return loader.resolve(file, basePath);
   }
 }
