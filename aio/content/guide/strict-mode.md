@@ -8,7 +8,7 @@ Additionally, applications that use these stricter settings are easier to static
 Specifically, the `strict` flag does the following:
 
 * Enables [`strict` mode in TypeScript](https://www.staging-typescript.org/tsconfig#strict), as well as other strictness flags recommended by the TypeScript team. Specifically, `forceConsistentCasingInFileNames`, `noImplicitReturns`,  `noFallthroughCasesInSwitch`.
-* Turns on strict Angular compiler flags [`strictTemplates`](guide/angular-compiler-options#stricttemplates), [`strictInjectionParameters`](guide/angular-compiler-options#strictinjectionparameters) and [`strictTemplates`](guide/angular-compiler-options#stricttemplates).
+* Turns on strict Angular compiler flags [`strictTemplates`](guide/angular-compiler-options#stricttemplates), [`strictInjectionParameters`](guide/angular-compiler-options#strictinjectionparameters) and [`strictInputAccessModifiers`](guide/template-typecheck#troubleshooting-template-errors).
 * [Bundle size budgets](guide/build#configuring-size-budgets) have been reduced by ~75%.
 
 You can apply these settings at the workspace and project level.
