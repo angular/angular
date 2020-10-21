@@ -248,7 +248,7 @@ Any line of the commit message cannot be longer than 100 characters.
   │                          upgrade|zone.js|packaging|changelog|dev-infra|docs-infra|migrations|
   │                          ngcc|ve
   │
-  └─⫸ Commit Type: build|ci|docs|feat|fix|perf|refactor|style|test
+  └─⫸ Commit Type: build|ci|docs|feat|fix|perf|refactor|test
 ```
 
 The `<type>` and `<summary>` fields are mandatory, the `(<scope>)` field is optional.
@@ -309,7 +309,7 @@ There are currently a few exceptions to the "use package name" rule:
 
 * `ve`: used for changes specific to ViewEngine (legacy compiler/renderer).
 
-* none/empty string: useful for `style`, `test` and `refactor` changes that are done across all packages (e.g. `style: add missing semicolons`) and for docs changes that are not related to a specific package (e.g. `docs: fix typo in tutorial`).
+* none/empty string: useful for `test` and `refactor` changes that are done across all packages (e.g. `test: add missing unit tests`) and for docs changes that are not related to a specific package (e.g. `docs: fix typo in tutorial`).
 
 
 ##### Summary
