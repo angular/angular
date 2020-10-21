@@ -15,7 +15,7 @@ import {absoluteFrom, relative, resolve} from '../../file_system';
 import {DefaultImportRecorder, ModuleResolver, Reference, ReferenceEmitter} from '../../imports';
 import {DependencyTracker} from '../../incremental/api';
 import {IndexingContext} from '../../indexer';
-import {ClassPropertyMapping, DirectiveMeta, DirectiveTypeCheckMeta, extractDirectiveTypeCheckMeta, InjectableClassRegistry, MetadataReader, MetadataRegistry, TemplateMapping} from '../../metadata';
+import {ClassPropertyMapping, ComponentResources, DirectiveMeta, DirectiveTypeCheckMeta, extractDirectiveTypeCheckMeta, InjectableClassRegistry, MetadataReader, MetadataRegistry, Resource, ResourceRegistry} from '../../metadata';
 import {EnumValue, PartialEvaluator} from '../../partial_evaluator';
 import {ClassDeclaration, DeclarationNode, Decorator, ReflectionHost, reflectObjectLiteral} from '../../reflection';
 import {ComponentScopeReader, LocalModuleScopeRegistry} from '../../scope';
@@ -70,6 +70,8 @@ export interface ComponentAnalysisData {
    * require an Angular factory definition at runtime.
    */
   viewProvidersRequiringFactory: Set<Reference<ClassDeclaration>>|null;
+
+  resources: ComponentResources;
 }
 
 export type ComponentResolutionData = Pick<R3ComponentMetadata, ComponentMetadataResolvedFields>;
@@ -83,7 +85,7 @@ export class ComponentDecoratorHandler implements
       private reflector: ReflectionHost, private evaluator: PartialEvaluator,
       private metaRegistry: MetadataRegistry, private metaReader: MetadataReader,
       private scopeReader: ComponentScopeReader, private scopeRegistry: LocalModuleScopeRegistry,
-      private templateMapping: TemplateMapping, private isCore: boolean,
+      private resourceRegistry: ResourceRegistry, private isCore: boolean,
       private resourceLoader: ResourceLoader, private rootDirs: ReadonlyArray<string>,
       private defaultPreserveWhitespaces: boolean, private i18nUseExternalIds: boolean,
       private enableI18nLegacyMessageIdFormat: boolean,
@@ -259,6 +261,9 @@ export class ComponentDecoratorHandler implements
         template = this._extractInlineTemplate(node, decorator, component, containingFile);
       }
     }
+    const templateResource = template.isInline ?
+        null :
+        {path: absoluteFrom(template.templateUrl), expression: template.sourceMapping.node};
 
     let diagnostics: ts.Diagnostic[]|undefined = undefined;
 
@@ -287,6 +292,7 @@ export class ComponentDecoratorHandler implements
     // component.
     let styles: string[]|null = null;
 
+    const styleResources = this._extractStyleResources(component, containingFile);
     const styleUrls = this._extractStyleUrls(component, template.styleUrls);
     if (styleUrls !== null) {
       if (styles === null) {
@@ -359,6 +365,10 @@ export class ComponentDecoratorHandler implements
         template,
         providersRequiringFactory,
         viewProvidersRequiringFactory,
+        resources: {
+          styles: styleResources,
+          template: templateResource,
+        },
       },
       diagnostics,
     };
@@ -385,10 +395,7 @@ export class ComponentDecoratorHandler implements
       ...analysis.typeCheckMeta,
     });
 
-    if (!analysis.template.isInline) {
-      this.templateMapping.register(resolve(analysis.template.templateUrl), node);
-    }
-
+    this.resourceRegistry.registerResources(analysis.resources, node);
     this.injectableRegistry.registerInjectable(node);
   }
 
@@ -655,6 +662,25 @@ export class ComponentDecoratorHandler implements
     }
     styleUrls.push(...extraUrls);
     return styleUrls as string[];
+  }
+
+  private _extractStyleResources(component: Map<string, ts.Expression>, containingFile: string):
+      ReadonlySet<Resource> {
+    const styleUrlsExpr = component.get('styleUrls');
+    // If styleUrls is a literal array of strings, process each resource url individually and
+    // register them. Otherwise, give up and return an empty set.
+    if (styleUrlsExpr === undefined || !ts.isArrayLiteralExpression(styleUrlsExpr) ||
+        !styleUrlsExpr.elements.every(e => ts.isStringLiteralLike(e))) {
+      return new Set();
+    }
+
+    const externalStyles = new Set<Resource>();
+    for (const expression of styleUrlsExpr.elements) {
+      const resourceUrl =
+          this.resourceLoader.resolve((expression as ts.StringLiteralLike).text, containingFile);
+      externalStyles.add({path: absoluteFrom(resourceUrl), expression});
+    }
+    return externalStyles;
   }
 
   private _preloadAndParseTemplate(

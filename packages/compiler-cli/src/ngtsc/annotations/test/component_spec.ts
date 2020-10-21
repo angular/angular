@@ -10,7 +10,7 @@ import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
 import {absoluteFrom} from '../../file_system';
 import {runInEachFileSystem} from '../../file_system/testing';
 import {ModuleResolver, NOOP_DEFAULT_IMPORT_RECORDER, ReferenceEmitter} from '../../imports';
-import {CompoundMetadataReader, DtsMetadataReader, InjectableClassRegistry, LocalMetadataRegistry, TemplateMapping} from '../../metadata';
+import {CompoundMetadataReader, DtsMetadataReader, InjectableClassRegistry, LocalMetadataRegistry, ResourceRegistry} from '../../metadata';
 import {PartialEvaluator} from '../../partial_evaluator';
 import {isNamedClassDeclaration, TypeScriptReflectionHost} from '../../reflection';
 import {LocalModuleScopeRegistry, MetadataDtsModuleScopeResolver} from '../../scope';
@@ -69,7 +69,7 @@ runInEachFileSystem(() => {
 
       const handler = new ComponentDecoratorHandler(
           reflectionHost, evaluator, metaRegistry, metaReader, scopeRegistry, scopeRegistry,
-          new TemplateMapping(),
+          new ResourceRegistry(),
           /* isCore */ false, new NoopResourceLoader(), /* rootDirs */[''],
           /* defaultPreserveWhitespaces */ false, /* i18nUseExternalIds */ true,
           /* enableI18nLegacyMessageIdFormat */ false,

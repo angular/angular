@@ -17,11 +17,11 @@ import {LogicalFileSystem, resolve} from '../../file_system';
 import {AbsoluteModuleStrategy, AliasingHost, AliasStrategy, DefaultImportTracker, ImportRewriter, LocalIdentifierStrategy, LogicalProjectStrategy, ModuleResolver, NoopImportRewriter, PrivateExportAliasingHost, R3SymbolsImportRewriter, Reference, ReferenceEmitStrategy, ReferenceEmitter, RelativePathStrategy, UnifiedModulesAliasingHost, UnifiedModulesStrategy} from '../../imports';
 import {IncrementalBuildStrategy, IncrementalDriver} from '../../incremental';
 import {generateAnalysis, IndexedComponent, IndexingContext} from '../../indexer';
-import {CompoundMetadataReader, CompoundMetadataRegistry, DtsMetadataReader, InjectableClassRegistry, LocalMetadataRegistry, MetadataReader, TemplateMapping} from '../../metadata';
+import {ComponentResources, CompoundMetadataReader, CompoundMetadataRegistry, DtsMetadataReader, InjectableClassRegistry, LocalMetadataRegistry, MetadataReader, ResourceRegistry} from '../../metadata';
 import {ModuleWithProvidersScanner} from '../../modulewithproviders';
 import {PartialEvaluator} from '../../partial_evaluator';
 import {NOOP_PERF_RECORDER, PerfRecorder} from '../../perf';
-import {DeclarationNode, TypeScriptReflectionHost} from '../../reflection';
+import {DeclarationNode, isNamedClassDeclaration, TypeScriptReflectionHost} from '../../reflection';
 import {AdapterResourceLoader} from '../../resource';
 import {entryPointKeyFor, NgModuleRouteAnalyzer} from '../../routing';
 import {ComponentScopeReader, LocalModuleScopeRegistry, MetadataDtsModuleScopeResolver} from '../../scope';
@@ -52,7 +52,7 @@ interface LazyCompilationState {
   aliasingHost: AliasingHost|null;
   refEmitter: ReferenceEmitter;
   templateTypeChecker: TemplateTypeChecker;
-  templateMapping: TemplateMapping;
+  resourceRegistry: ResourceRegistry;
 }
 
 /**
@@ -239,8 +239,30 @@ export class NgCompiler {
    * Retrieves the `ts.Declaration`s for any component(s) which use the given template file.
    */
   getComponentsWithTemplateFile(templateFilePath: string): ReadonlySet<DeclarationNode> {
-    const {templateMapping} = this.ensureAnalyzed();
-    return templateMapping.getComponentsWithTemplate(resolve(templateFilePath));
+    const {resourceRegistry} = this.ensureAnalyzed();
+    return resourceRegistry.getComponentsWithTemplate(resolve(templateFilePath));
+  }
+
+  /**
+   * Retrieves the `ts.Declaration`s for any component(s) which use the given template file.
+   */
+  getComponentsWithStyleFile(styleFilePath: string): ReadonlySet<DeclarationNode> {
+    const {resourceRegistry} = this.ensureAnalyzed();
+    return resourceRegistry.getComponentsWithStyle(resolve(styleFilePath));
+  }
+
+  /**
+   * Retrieves external resources for the given component.
+   */
+  getComponentResources(classDecl: DeclarationNode): ComponentResources|null {
+    if (!isNamedClassDeclaration(classDecl)) {
+      return null;
+    }
+    const {resourceRegistry} = this.ensureAnalyzed();
+    const styles = resourceRegistry.getStyles(classDecl);
+    const template = resourceRegistry.getTemplate(classDecl);
+
+    return {styles, template};
   }
 
   /**
@@ -734,13 +756,13 @@ export class NgCompiler {
     const isCore = isAngularCorePackage(this.tsProgram);
 
     const defaultImportTracker = new DefaultImportTracker();
-    const templateMapping = new TemplateMapping();
+    const resourceRegistry = new ResourceRegistry();
 
     // Set up the IvyCompilation, which manages state for the Ivy transformer.
     const handlers: DecoratorHandler<unknown, unknown, unknown>[] = [
       new ComponentDecoratorHandler(
           reflector, evaluator, metaRegistry, metaReader, scopeReader, scopeRegistry,
-          templateMapping, isCore, this.resourceManager, this.adapter.rootDirs,
+          resourceRegistry, isCore, this.resourceManager, this.adapter.rootDirs,
           this.options.preserveWhitespaces || false, this.options.i18nUseExternalIds !== false,
           this.options.enableI18nLegacyMessageIdFormat !== false,
           this.options.i18nNormalizeLineEndingsInICUs, this.moduleResolver, this.cycleAnalyzer,
@@ -797,7 +819,7 @@ export class NgCompiler {
       aliasingHost,
       refEmitter,
       templateTypeChecker,
-      templateMapping,
+      resourceRegistry,
     };
   }
 }
