@@ -1,3 +1,35 @@
+<a name="11.0.0-rc.0"></a>
+# 11.0.0-rc.0 (2020-10-21)
+
+
+### Bug Fixes
+
+* **common:** update locales using new CLDR data ([#39343](https://github.com/angular/angular/issues/39343)) ([3738233](https://github.com/angular/angular/commit/3738233))
+* **compiler:** promote constants in templates to Trusted Types ([#39211](https://github.com/angular/angular/issues/39211)) ([6e18d2d](https://github.com/angular/angular/commit/6e18d2d))
+* **core:** guard reading of global `ngDevMode` for undefined. ([#36055](https://github.com/angular/angular/issues/36055)) ([f541e5f](https://github.com/angular/angular/commit/f541e5f))
+* **language-service:** [Ivy] create compiler only when program changes ([#39231](https://github.com/angular/angular/issues/39231)) ([8f1317f](https://github.com/angular/angular/commit/8f1317f))
+* **ngcc:** ensure that "inline exports" can be interpreted correctly ([#39267](https://github.com/angular/angular/issues/39267)) ([822b838](https://github.com/angular/angular/commit/822b838))
+* **platform-server:** Resolve absolute URL from baseUrl ([#39334](https://github.com/angular/angular/issues/39334)) ([b4e8399](https://github.com/angular/angular/commit/b4e8399))
+* **router:** incorrect signature for createUrlTree ([#39347](https://github.com/angular/angular/issues/39347)) ([161b278](https://github.com/angular/angular/commit/161b278))
+
+
+### Code Refactoring
+
+* **compiler:** remove support for TypeScript 3.9 ([#39313](https://github.com/angular/angular/issues/39313)) ([736e064](https://github.com/angular/angular/commit/736e064))
+
+
+### BREAKING CHANGES
+
+* **platform-server:** If you use `useAbsoluteUrl` to setup `platform-server`, you now need to
+also specify `baseUrl`.
+We are intentionally making this a breaking change in a minor release,
+because if `useAbsoluteUrl` is set to `true` then the behavior of the
+application could be unpredictable, resulting in issues that are hard to
+discover but could be affecting production environments.
+* **compiler:** TypeScript 3.9 is no longer supported, please upgrade to TypeScript 4.0.
+
+
+
 <a name="10.2.0"></a>
 # 10.2.0 (2020-10-21)
 
