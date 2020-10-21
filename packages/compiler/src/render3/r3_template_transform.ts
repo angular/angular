@@ -15,13 +15,11 @@ import {ParseError, ParseErrorLevel, ParseSourceSpan} from '../parse_util';
 import {isStyleUrlResolvable} from '../style_url_resolver';
 import {BindingParser} from '../template_parser/binding_parser';
 import {PreparsedElementType, preparseElement} from '../template_parser/template_preparser';
-import {syntaxError} from '../util';
 
 import * as t from './r3_ast';
 import {I18N_ICU_VAR_PREFIX, isI18nRootNode} from './view/i18n/util';
 
-const BIND_NAME_REGEXP =
-    /^(?:(?:(?:(bind-)|(let-)|(ref-|#)|(on-)|(bindon-)|(@))(.*))|\[\(([^\)]+)\)\]|\[([^\]]+)\]|\(([^\)]+)\))$/;
+const BIND_NAME_REGEXP = /^(?:(?:(bind-)|(let-)|(ref-|#)|(on-)|(bindon-)|(@))(.*))$/;
 
 // Group 1 = "bind-"
 const KW_BIND_IDX = 1;
@@ -37,12 +35,6 @@ const KW_BINDON_IDX = 5;
 const KW_AT_IDX = 6;
 // Group 7 = the identifier after "bind-", "let-", "ref-/#", "on-", "bindon-" or "@"
 const IDENT_KW_IDX = 7;
-// Group 8 = identifier inside [()]
-const IDENT_BANANA_BOX_IDX = 8;
-// Group 9 = identifier inside []
-const IDENT_PROPERTY_IDX = 9;
-// Group 10 = identifier inside ()
-const IDENT_EVENT_IDX = 10;
 
 const TEMPLATE_ATTR_PREFIX = '*';
 
@@ -337,10 +329,8 @@ class HtmlAstToIvyAst implements html.Visitor {
     }
 
     const bindParts = name.match(BIND_NAME_REGEXP);
-    let hasBinding = false;
 
     if (bindParts) {
-      hasBinding = true;
       if (bindParts[KW_BIND_IDX] != null) {
         const identifier = bindParts[IDENT_KW_IDX];
         const keySpan = createKeySpan(srcSpan, bindParts[KW_BIND_IDX], identifier);
@@ -380,36 +370,58 @@ class HtmlAstToIvyAst implements html.Visitor {
         this.bindingParser.parseLiteralAttr(
             name, value, srcSpan, absoluteOffset, attribute.valueSpan, matchableAttributes,
             parsedProperties, keySpan);
-
-      } else if (bindParts[IDENT_BANANA_BOX_IDX]) {
-        const keySpan = createKeySpan(srcSpan, '[(', bindParts[IDENT_BANANA_BOX_IDX]);
-        this.bindingParser.parsePropertyBinding(
-            bindParts[IDENT_BANANA_BOX_IDX], value, false, srcSpan, absoluteOffset,
-            attribute.valueSpan, matchableAttributes, parsedProperties, keySpan);
-        this.parseAssignmentEvent(
-            bindParts[IDENT_BANANA_BOX_IDX], value, srcSpan, attribute.valueSpan,
-            matchableAttributes, boundEvents);
-
-      } else if (bindParts[IDENT_PROPERTY_IDX]) {
-        const keySpan = createKeySpan(srcSpan, '[', bindParts[IDENT_PROPERTY_IDX]);
-        this.bindingParser.parsePropertyBinding(
-            bindParts[IDENT_PROPERTY_IDX], value, false, srcSpan, absoluteOffset,
-            attribute.valueSpan, matchableAttributes, parsedProperties, keySpan);
-
-      } else if (bindParts[IDENT_EVENT_IDX]) {
-        const events: ParsedEvent[] = [];
-        this.bindingParser.parseEvent(
-            bindParts[IDENT_EVENT_IDX], value, srcSpan, attribute.valueSpan || srcSpan,
-            matchableAttributes, events);
-        addEvents(events, boundEvents);
       }
-    } else {
-      const keySpan = createKeySpan(srcSpan, '' /* prefix */, name);
-      hasBinding = this.bindingParser.parsePropertyInterpolation(
-          name, value, srcSpan, attribute.valueSpan, matchableAttributes, parsedProperties,
-          keySpan);
+      return true;
     }
 
+    // We didn't see a kw-prefixed property binding, but we have not yet checked
+    // for the []/()/[()] syntax.
+    const DELIMS = {
+      BANANA_BOX: {start: '[(', end: ')]'},
+      PROPERTY: {start: '[', end: ']'},
+      EVENT: {start: '(', end: ')'},
+    };
+    let delims: {start: string, end: string}|undefined;
+    if (name.startsWith(DELIMS.BANANA_BOX.start)) {
+      delims = DELIMS.BANANA_BOX;
+    } else if (name.startsWith(DELIMS.PROPERTY.start)) {
+      delims = DELIMS.PROPERTY;
+    } else if (name.startsWith(DELIMS.EVENT.start)) {
+      delims = DELIMS.EVENT;
+    }
+    if (delims &&
+        // NB: older versions of the parser would match a start/end delimited
+        // binding iff the property name was terminated by the ending delimiter
+        // and the identifier in the binding was non-empty.
+        // TODO(ayazhafiz): update this to handle malformed bindings.
+        name.endsWith(delims.end) && name.length > delims.start.length + delims.end.length) {
+      const ident = name.substring(delims.start.length, name.length - delims.end.length);
+      if (delims.start === DELIMS.BANANA_BOX.start) {
+        const keySpan = createKeySpan(srcSpan, delims.start, ident);
+        this.bindingParser.parsePropertyBinding(
+            ident, value, false, srcSpan, absoluteOffset, attribute.valueSpan, matchableAttributes,
+            parsedProperties, keySpan);
+        this.parseAssignmentEvent(
+            ident, value, srcSpan, attribute.valueSpan, matchableAttributes, boundEvents);
+      } else if (delims.start === DELIMS.PROPERTY.start) {
+        const keySpan = createKeySpan(srcSpan, delims.start, ident);
+        this.bindingParser.parsePropertyBinding(
+            ident, value, false, srcSpan, absoluteOffset, attribute.valueSpan, matchableAttributes,
+            parsedProperties, keySpan);
+      } else {
+        const events: ParsedEvent[] = [];
+        this.bindingParser.parseEvent(
+            ident, value, srcSpan, attribute.valueSpan || srcSpan, matchableAttributes, events);
+        addEvents(events, boundEvents);
+      }
+
+      return true;
+    }
+
+    // No explicit binding found.
+    const keySpan = createKeySpan(srcSpan, '' /* prefix */, name);
+    const hasBinding = this.bindingParser.parsePropertyInterpolation(
+        name, value, srcSpan, attribute.valueSpan, matchableAttributes, parsedProperties, keySpan);
     return hasBinding;
   }
 
