@@ -1,7 +1,9 @@
 # Settings in this file should be OS agnostic. Use the bazel.<OS>.rc files for OS specific settings.
 
+# TODO(josephperrott): Move back to not showing progress logs to once they are not preventing `too
+# long with no output` errors on CI
 # Don't be spammy in the logs
-build --noshow_progress
+# build --noshow_progress
 
 # Print all the options that apply to the build.
 # This helps us diagnose which options override others
