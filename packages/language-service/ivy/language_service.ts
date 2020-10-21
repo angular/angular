@@ -58,8 +58,8 @@ export class LanguageService {
   getDefinitionAndBoundSpan(fileName: string, position: number): ts.DefinitionInfoAndBoundSpan
       |undefined {
     const compiler = this.compilerFactory.getOrCreateWithChangedFile(fileName, this.options);
-    const results = new DefinitionBuilder(this.tsLS, compiler, this.adapter)
-                        .getDefinitionAndBoundSpan(fileName, position);
+    const results =
+        new DefinitionBuilder(this.tsLS, compiler).getDefinitionAndBoundSpan(fileName, position);
     this.compilerFactory.registerLastKnownProgram();
     return results;
   }
@@ -67,8 +67,8 @@ export class LanguageService {
   getTypeDefinitionAtPosition(fileName: string, position: number):
       readonly ts.DefinitionInfo[]|undefined {
     const compiler = this.compilerFactory.getOrCreateWithChangedFile(fileName, this.options);
-    const results = new DefinitionBuilder(this.tsLS, compiler, this.adapter)
-                        .getTypeDefinitionsAtPosition(fileName, position);
+    const results =
+        new DefinitionBuilder(this.tsLS, compiler).getTypeDefinitionsAtPosition(fileName, position);
     this.compilerFactory.registerLastKnownProgram();
     return results;
   }

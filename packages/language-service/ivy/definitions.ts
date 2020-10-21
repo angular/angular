@@ -8,108 +8,13 @@
 
 import {AST, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstElement, TmplAstNode, TmplAstTemplate, TmplAstTextAttribute} from '@angular/compiler';
 import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
+import {isExternalResource} from '@angular/compiler-cli/src/ngtsc/metadata';
 import {DirectiveSymbol, DomBindingSymbol, ElementSymbol, ShimLocation, Symbol, SymbolKind, TemplateSymbol} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
 import * as ts from 'typescript';
+
 import {getTargetAtPosition} from './template_target';
-
-import {findTightestNode, flatMap, getClassDeclFromDecoratorProp, getDirectiveMatchesForAttribute, getDirectiveMatchesForElementTag, getPropertyAssignmentFromValue, getTemplateInfoAtPosition, getTextSpanOfNode, isDollarEvent, isTypeScriptFile, TemplateInfo, toTextSpan} from './utils';
-
-
-export interface ResourceResolver {
-  /**
-   * Resolve the url of a resource relative to the file that contains the reference to it.
-   *
-   * @param file The, possibly relative, url of the resource.
-   * @param basePath The path to the file that contains the URL of the resource.
-   * @returns A resolved url of resource.
-   * @throws An error if the resource cannot be resolved.
-   */
-  resolve(file: string, basePath: string): string;
-}
-
-/**
- * Gets an Angular-specific definition in a TypeScript source file.
- */
-export function getTsDefinitionAndBoundSpan(
-    sf: ts.SourceFile, position: number,
-    resourceResolver: ResourceResolver): ts.DefinitionInfoAndBoundSpan|undefined {
-  const node = findTightestNode(sf, position);
-  if (!node) return;
-  switch (node.kind) {
-    case ts.SyntaxKind.StringLiteral:
-    case ts.SyntaxKind.NoSubstitutionTemplateLiteral:
-      // Attempt to extract definition of a URL in a property assignment.
-      return getUrlFromProperty(node as ts.StringLiteralLike, resourceResolver);
-    default:
-      return undefined;
-  }
-}
-
-/**
- * Attempts to get the definition of a file whose URL is specified in a property assignment in a
- * directive decorator.
- * Currently applies to `templateUrl` and `styleUrls` properties.
- */
-function getUrlFromProperty(urlNode: ts.StringLiteralLike, resourceResolver: ResourceResolver):
-    ts.DefinitionInfoAndBoundSpan|undefined {
-  // Get the property assignment node corresponding to the `templateUrl` or `styleUrls` assignment.
-  // These assignments are specified differently; `templateUrl` is a string, and `styleUrls` is
-  // an array of strings:
-  //   {
-  //        templateUrl: './template.ng.html',
-  //        styleUrls: ['./style.css', './other-style.css']
-  //   }
-  // `templateUrl`'s property assignment can be found from the string literal node;
-  // `styleUrls`'s property assignment can be found from the array (parent) node.
-  //
-  // First search for `templateUrl`.
-  let asgn = getPropertyAssignmentFromValue(urlNode, 'templateUrl');
-  if (!asgn) {
-    // `templateUrl` assignment not found; search for `styleUrls` array assignment.
-    asgn = getPropertyAssignmentFromValue(urlNode.parent, 'styleUrls');
-    if (!asgn) {
-      // Nothing found, bail.
-      return;
-    }
-  }
-
-  // If the property assignment is not a property of a class decorator, don't generate definitions
-  // for it.
-  if (!getClassDeclFromDecoratorProp(asgn)) {
-    return;
-  }
-
-  const sf = urlNode.getSourceFile();
-  let url: string;
-  try {
-    url = resourceResolver.resolve(urlNode.text, sf.fileName);
-  } catch {
-    // If the file does not exist, bail.
-    return;
-  }
-
-  const templateDefinitions: ts.DefinitionInfo[] = [{
-    kind: ts.ScriptElementKind.externalModuleName,
-    name: url,
-    containerKind: ts.ScriptElementKind.unknown,
-    containerName: '',
-    // Reading the template is expensive, so don't provide a preview.
-    // TODO(ayazhafiz): Consider providing an actual span:
-    //  1. We're likely to read the template anyway
-    //  2. We could show just the first 100 chars or so
-    textSpan: {start: 0, length: 0},
-    fileName: url,
-  }];
-
-  return {
-    definitions: templateDefinitions,
-    textSpan: {
-      // Exclude opening and closing quotes in the url span.
-      start: urlNode.getStart() + 1,
-      length: urlNode.getWidth() - 2,
-    },
-  };
-}
+import {findTightestNode, getParentClassDeclaration} from './ts_utils';
+import {flatMap, getDirectiveMatchesForAttribute, getDirectiveMatchesForElementTag, getTemplateInfoAtPosition, getTextSpanOfNode, isDollarEvent, isTypeScriptFile, TemplateInfo, toTextSpan} from './utils';
 
 interface DefinitionMeta {
   node: AST|TmplAstNode;
@@ -122,9 +27,7 @@ interface HasShimLocation {
 }
 
 export class DefinitionBuilder {
-  constructor(
-      private readonly tsLS: ts.LanguageService, private readonly compiler: NgCompiler,
-      private readonly resourceResolver: ResourceResolver) {}
+  constructor(private readonly tsLS: ts.LanguageService, private readonly compiler: NgCompiler) {}
 
   getDefinitionAndBoundSpan(fileName: string, position: number): ts.DefinitionInfoAndBoundSpan
       |undefined {
@@ -136,11 +39,7 @@ export class DefinitionBuilder {
       if (!isTypeScriptFile(fileName)) {
         return;
       }
-      const sf = this.compiler.getNextProgram().getSourceFile(fileName);
-      if (!sf) {
-        return;
-      }
-      return getTsDefinitionAndBoundSpan(sf, position, this.resourceResolver);
+      return getDefinitionForExpressionAtPosition(fileName, position, this.compiler);
     }
     const definitionMeta = this.getDefinitionMetaAtPosition(templateInfo, position);
     // The `$event` of event handlers would point to the $event parameter in the shim file, as in
@@ -314,4 +213,58 @@ export class DefinitionBuilder {
     }
     return {node, parent, symbol};
   }
+}
+
+/**
+ * Gets an Angular-specific definition in a TypeScript source file.
+ */
+function getDefinitionForExpressionAtPosition(
+    fileName: string, position: number, compiler: NgCompiler): ts.DefinitionInfoAndBoundSpan|
+    undefined {
+  const sf = compiler.getNextProgram().getSourceFile(fileName);
+  if (sf === undefined) {
+    return;
+  }
+
+  const expression = findTightestNode(sf, position);
+  if (expression === undefined) {
+    return;
+  }
+  const classDeclaration = getParentClassDeclaration(expression);
+  if (classDeclaration === undefined) {
+    return;
+  }
+  const componentResources = compiler.getComponentResources(classDeclaration);
+  if (componentResources === null) {
+    return;
+  }
+
+  const allResources = [...componentResources.styles, componentResources.template];
+
+  const resourceForExpression = allResources.find(resource => resource.expression === expression);
+  if (resourceForExpression === undefined || !isExternalResource(resourceForExpression)) {
+    return;
+  }
+
+  const templateDefinitions: ts.DefinitionInfo[] = [{
+    kind: ts.ScriptElementKind.externalModuleName,
+    name: resourceForExpression.path,
+    containerKind: ts.ScriptElementKind.unknown,
+    containerName: '',
+    // Reading the template is expensive, so don't provide a preview.
+    // TODO(ayazhafiz): Consider providing an actual span:
+    //  1. We're likely to read the template anyway
+    //  2. We could show just the first 100 chars or so
+    textSpan: {start: 0, length: 0},
+    fileName: resourceForExpression.path,
+  }];
+
+  return {
+    definitions: templateDefinitions,
+    textSpan: {
+      // Exclude opening and closing quotes in the url span.
+      start: expression.getStart() + 1,
+      length: expression.getWidth() - 2,
+    },
+  };
 }

@@ -7,6 +7,7 @@
  */
 import {AbsoluteSourceSpan, CssSelector, ParseSourceSpan, SelectorMatcher} from '@angular/compiler';
 import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
+import {isExternalResource} from '@angular/compiler-cli/src/ngtsc/metadata';
 import {DeclarationNode} from '@angular/compiler-cli/src/ngtsc/reflection';
 import {DirectiveSymbol} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
 import * as e from '@angular/compiler/src/expression_parser/ast';  // e for expression AST
@@ -14,87 +15,7 @@ import * as t from '@angular/compiler/src/render3/r3_ast';         // t for temp
 import * as ts from 'typescript';
 
 import {ALIAS_NAME, SYMBOL_PUNC} from './display_parts';
-
-
-
-/**
- * Return the node that most tightly encompass the specified `position`.
- * @param node
- * @param position
- */
-export function findTightestNode(node: ts.Node, position: number): ts.Node|undefined {
-  if (node.getStart() <= position && position < node.getEnd()) {
-    return node.forEachChild(c => findTightestNode(c, position)) || node;
-  }
-}
-
-/**
- * Returns a property assignment from the assignment value if the property name
- * matches the specified `key`, or `undefined` if there is no match.
- */
-export function getPropertyAssignmentFromValue(value: ts.Node, key: string): ts.PropertyAssignment|
-    undefined {
-  const propAssignment = value.parent;
-  if (!propAssignment || !ts.isPropertyAssignment(propAssignment) ||
-      propAssignment.name.getText() !== key) {
-    return;
-  }
-  return propAssignment;
-}
-
-/**
- * Given a decorator property assignment, return the ClassDeclaration node that corresponds to the
- * directive class the property applies to.
- * If the property assignment is not on a class decorator, no declaration is returned.
- *
- * For example,
- *
- * @Component({
- *   template: '<div></div>'
- *   ^^^^^^^^^^^^^^^^^^^^^^^---- property assignment
- * })
- * class AppComponent {}
- *           ^---- class declaration node
- *
- * @param propAsgnNode property assignment
- */
-export function getClassDeclFromDecoratorProp(propAsgnNode: ts.PropertyAssignment):
-    ts.ClassDeclaration|undefined {
-  if (!propAsgnNode.parent || !ts.isObjectLiteralExpression(propAsgnNode.parent)) {
-    return;
-  }
-  const objLitExprNode = propAsgnNode.parent;
-  if (!objLitExprNode.parent || !ts.isCallExpression(objLitExprNode.parent)) {
-    return;
-  }
-  const callExprNode = objLitExprNode.parent;
-  if (!callExprNode.parent || !ts.isDecorator(callExprNode.parent)) {
-    return;
-  }
-  const decorator = callExprNode.parent;
-  if (!decorator.parent || !ts.isClassDeclaration(decorator.parent)) {
-    return;
-  }
-  const classDeclNode = decorator.parent;
-  return classDeclNode;
-}
-
-/**
- * Given the node which is the string of the inline template for a component, returns the
- * `ts.ClassDeclaration` for the component.
- */
-export function getClassDeclOfInlineTemplateNode(templateStringNode: ts.Node): ts.ClassDeclaration|
-    undefined {
-  if (!ts.isStringLiteralLike(templateStringNode)) {
-    return;
-  }
-  const tmplAsgn = getPropertyAssignmentFromValue(templateStringNode, 'template');
-  if (!tmplAsgn) {
-    return;
-  }
-  return getClassDeclFromDecoratorProp(tmplAsgn);
-}
-
+import {findTightestNode, getParentClassDeclaration} from './ts_utils';
 
 export function getTextSpanOfNode(node: t.Node|e.AST): ts.TextSpan {
   if (isTemplateNodeWithKeyAndValue(node)) {
@@ -146,18 +67,49 @@ export interface TemplateInfo {
   component: ts.ClassDeclaration;
 }
 
+function getInlineTemplateInfoAtPosition(
+    sf: ts.SourceFile, position: number, compiler: NgCompiler): TemplateInfo|undefined {
+  const expression = findTightestNode(sf, position);
+  if (expression === undefined) {
+    return undefined;
+  }
+  const classDecl = getParentClassDeclaration(expression);
+  if (classDecl === undefined) {
+    return undefined;
+  }
+
+  // Return `undefined` if the position is not on the template expression or the template resource
+  // is not inline.
+  const resources = compiler.getComponentResources(classDecl);
+  if (resources === null || isExternalResource(resources.template) ||
+      expression !== resources.template.expression) {
+    return undefined;
+  }
+
+  const template = compiler.getTemplateTypeChecker().getTemplate(classDecl);
+  if (template === null) {
+    return undefined;
+  }
+
+  return {template, component: classDecl};
+}
+
 /**
  * Retrieves the `ts.ClassDeclaration` at a location along with its template nodes.
  */
 export function getTemplateInfoAtPosition(
     fileName: string, position: number, compiler: NgCompiler): TemplateInfo|undefined {
   if (isTypeScriptFile(fileName)) {
-    return getTemplateInfoFromClassMeta(fileName, position, compiler);
+    const sf = compiler.getNextProgram().getSourceFile(fileName);
+    if (sf === undefined) {
+      return undefined;
+    }
+
+    return getInlineTemplateInfoAtPosition(sf, position, compiler);
   } else {
     return getFirstComponentForTemplateFile(fileName, compiler);
   }
 }
-
 
 /**
  * First, attempt to sort component declarations by file name.
@@ -192,34 +144,6 @@ function getFirstComponentForTemplateFile(fileName: string, compiler: NgCompiler
   }
 
   return undefined;
-}
-
-/**
- * Retrieves the `ts.ClassDeclaration` at a location along with its template nodes.
- */
-function getTemplateInfoFromClassMeta(
-    fileName: string, position: number, compiler: NgCompiler): TemplateInfo|undefined {
-  const classDecl = getClassDeclForInlineTemplateAtPosition(fileName, position, compiler);
-  if (!classDecl || !classDecl.name) {  // Does not handle anonymous class
-    return;
-  }
-  const template = compiler.getTemplateTypeChecker().getTemplate(classDecl);
-  if (template === null) {
-    return;
-  }
-
-  return {template, component: classDecl};
-}
-
-function getClassDeclForInlineTemplateAtPosition(
-    fileName: string, position: number, compiler: NgCompiler): ts.ClassDeclaration|undefined {
-  const sourceFile = compiler.getNextProgram().getSourceFile(fileName);
-  if (!sourceFile) {
-    return undefined;
-  }
-  const node = findTightestNode(sourceFile, position);
-  if (!node) return;
-  return getClassDeclOfInlineTemplateNode(node);
 }
 
 /**
