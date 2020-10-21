@@ -37,7 +37,7 @@ rollup_bundle(
 
 generated_file_test(
     name = "local_ng_dev",
-    src = "ng-dev",
+    src = "ng-dev.js",
     generated = "cli_rollup",
 )
 
