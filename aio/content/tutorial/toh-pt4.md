@@ -1,87 +1,88 @@
-# Add services
+# Agregar servicios
 
-The Tour of Heroes `HeroesComponent` is currently getting and displaying fake data.
+El `HeroesComponent` de Tour de los  Heroes actualmente está obteniendo y mostrando datos simulados.
 
-After the refactoring in this tutorial, `HeroesComponent` will be lean and focused on supporting the view.
-It will also be easier to unit-test with a mock service.
+Después de la refactorización en este tutorial, `HeroesComponent` será sencillo y se centrará en apoyar la vista.
+También será más fácil realizar pruebas unitarias con un servicio simulado.
 
 <div class="alert is-helpful">
 
-  For the sample app that this page describes, see the <live-example></live-example>.
+  Para ver la aplicación de ejemplo que describe esta página, consulte el <live-example></live-example>.
 
 </div>
 
+## Por qué servicios
 
-## Why services
+Los componentes no deberían buscar ni guardar datos directamente y, desde luego, no deberían presentar a sabiendas datos simulados.
+Deben centrarse en presentar datos y delegar el acceso a los datos a un servicio.
 
-Components shouldn't fetch or save data directly and they certainly shouldn't knowingly present fake data.
-They should focus on presenting data and delegate data access to a service.
+En este tutorial, crearás un `HeroService` que todas las clases de aplicación pueden usar para obtener héroes.
+En lugar de crear ese servicio con la [palabra clave `new`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/new),
+confiará en la [*inyección de dependencia*](guide/dependency-injection) de Angular
+para inyectarlo en el constructor `HeroesComponent`.
 
-In this tutorial, you'll create a `HeroService` that all application classes can use to get heroes.
-Instead of creating that service with the [`new` keyword](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/new),
-you'll rely on Angular [*dependency injection*](guide/dependency-injection)
-to inject it into the `HeroesComponent` constructor.
+Los servicios son una excelente manera de compartir información entre clases que no se _conocen entre sí_.
+Creará un `MessageService` y lo inyectará en dos lugares.
 
-Services are a great way to share information among classes that _don't know each other_.
-You'll create a `MessageService` and inject it in two places.
-
-1. Inject in HeroService, which uses the service to send a message.
-2. Inject in MessagesComponent, which displays that message, and also displays the ID
-when the user clicks a hero.
+1. Inyecte en HeroService, que utiliza el servicio para enviar un mensaje.
+2. Inyecte en MessagesComponent, que muestra ese mensaje, y también muestra la ID
+cuando el usuario hace clic en un héroe.
 
 
-## Create the `HeroService`
+## Crear el `HeroService`
 
-Using the Angular CLI, create a service called `hero`.
+Usando la CLI Angular, cree un servicio llamado `hero`.
 
 <code-example language="sh" class="code-shell">
   ng generate service hero
 </code-example>
 
-The command generates a skeleton `HeroService` class in `src/app/hero.service.ts` as follows:
+Este comando generará un archivo base `HeroService` en `src/app/hero.service.ts` de la siguiente manera:
 
 <code-example path="toh-pt4/src/app/hero.service.1.ts" region="new"
  header="src/app/hero.service.ts (new service)"></code-example>
 
 
-### `@Injectable()` services
+### Servicio `@Injectable()`
 
-Notice that the new service imports the Angular `Injectable` symbol and annotates
-the class with the `@Injectable()` decorator. This marks the class as one that participates in the _dependency injection system_. The `HeroService` class is going to provide an injectable service, and it can also have its own injected dependencies.
-It doesn't have any dependencies yet, but [it will soon](#inject-message-service).
+Observe que el símbolo Inyectable de Angular se importa en el archivo generado, anotando la clase como decorador `@Injectable()`.
+Esto marca a la clase como participante en el sistema de inyección de dependencia. La clase `HeroService` proporcionará servicios inyectables y puede tener dependencias.
+Aún no hay dependencias, [estará pronto](#inject-message-service).
 
-The `@Injectable()` decorator accepts a metadata object for the service, the same way the `@Component()` decorator did for your component classes.
+El decorador `@Injectable()` acepta el objeto de metadatos de un servicio de la misma manera que el decorador `@Component()` para las clases de componentes.
 
-### Get hero data
+### Obtener datos del héroe
 
-The `HeroService` could get hero data from anywhere&mdash;a web service, local storage, or a mock data source.
 
-Removing data access from components means you can change your mind about the implementation anytime, without touching any components.
-They don't know how the service works.
+El `HeroService` podría obtener datos de héroes desde cualquier lugar&mdash; un servicio web, almacenamiento local o una fuente de datos simulada.
 
-The implementation in _this_ tutorial will continue to deliver _mock heroes_.
+ 
+Eliminar el acceso a datos de los componentes significa que puede cambiar de opinión acerca de la implementación en cualquier momento, sin tocar ningún componente.
+No saben cómo funciona el servicio.
 
-Import the `Hero` and `HEROES`.
+La implementación en este tutorial continuará entregando _héroes simulados_.
+
+Importar `Hero` and `HEROES`.
 
 <code-example path="toh-pt4/src/app/hero.service.ts" header="src/app/hero.service.ts" region="import-heroes">
 </code-example>
 
-Add a `getHeroes` method to return the _mock heroes_.
+Agregue el método `getHeroes` y devuelva los _héroes simulados_.
 
 <code-example path="toh-pt4/src/app/hero.service.1.ts" header="src/app/hero.service.ts" region="getHeroes">
 </code-example>
 
 {@a provide}
-## Provide the `HeroService`
+## Proporcionar el `HeroService`
 
-You must make the `HeroService` available to the dependency injection system
-before Angular can _inject_ it into the `HeroesComponent` by registering a _provider_. A provider is something that can create or deliver a service; in this case, it instantiates the `HeroService` class to provide the service.
+Debe poner el `HeroService` a disposición del sistema de inyección de dependencias.
+antes de que Angular pueda inyectarlo en el 'Componente de héroes' al registrar un proveedor. Un proveedor es algo que puede crear o prestar un servicio; en este caso, crea una instancia de la clase `HeroService` para proporcionar el servicio.
 
-To make sure that the `HeroService` can provide this service, register it
-with the _injector_, which is the object that is responsible for choosing
-and injecting the provider where the app requires it.
+Para asegurarse de que el `HeroService` pueda proporcionar este servicio, regístrelo
+con el _inyector_, que es el objeto responsable de elegir
+e inyectando el proveedor donde la aplicación lo requiere.
 
-By default, the Angular CLI command `ng generate service` registers a provider with the _root injector_ for your service by including provider metadata, that is `providedIn: 'root'` in the `@Injectable()` decorator.
+Por defecto, el comando Angular CLI `ng generate service` registra a un proveedor con el inyector raíz para su servicio al incluir los metadatos del proveedor, que se proporcionan en el decorador `@Injectable() `.
 
 ```
 @Injectable({
@@ -89,320 +90,323 @@ By default, the Angular CLI command `ng generate service` registers a provider w
 })
 ```
 
-When you provide the service at the root level, Angular creates a single, shared instance of `HeroService` and injects into any class that asks for it.
-Registering the provider in the `@Injectable` metadata also allows Angular to optimize an app by removing the service if it turns out not to be used after all.
+Cuando proporciona el servicio en el nivel raíz, Angular crea una única instancia compartida de `HeroService` e inyecta en cualquier clase que lo solicite.
+El registro del proveedor en los metadatos `@Injectable` también le permite a Angular optimizar una aplicación eliminando el servicio si resulta que no se usará después de todo.
 
 <div class="alert is-helpful">
 
-To learn more about providers, see the [Providers section](guide/providers).
-To learn more about injectors, see the [Dependency Injection guide](guide/dependency-injection).
+Para obtener más información sobre los proveedores, consulte la [Sección de proveedores](guide/providers).
+Para obtener más información sobre los inyectores, consulte la [Guía de inyección de dependencia](guide/dependency-injection).
 
 </div>
-
-The `HeroService` is now ready to plug into the `HeroesComponent`.
+El `HeroService` ahora está listo para conectarse al `HeroesComponent`.
 
 <div class="alert is-important">
 
-This is an interim code sample that will allow you to provide and use the `HeroService`. At this point, the code will differ from the `HeroService` in the ["final code review"](#final-code-review).
+Este es un ejemplo de código provisional que le permitirá proporcionar y usar el `HeroService`. En este punto, el código diferirá del `HeroService` en la [" revisión final del código "](#final-code-review).
 
 </div>
 
+<div class="alert is-helpful">
 
-## Update `HeroesComponent`
+Si desea obtener más información sobre _proveedores_, consulte [Proveedores](guide/providers).
 
-Open the `HeroesComponent` class file.
+</div>
 
-Delete the `HEROES` import, because you won't need that anymore.
-Import the `HeroService` instead.
+## Actualizar `HeroesComponent`
+
+Abra el archivo de clase `HeroesComponent`.
+
+Elimine la importación `HEROES`, porque ya no la necesitará.
+Importa el `HeroService` en su lugar.
 
 <code-example path="toh-pt4/src/app/heroes/heroes.component.ts" header="src/app/heroes/heroes.component.ts (import HeroService)" region="hero-service-import">
 </code-example>
 
-Replace the definition of the `heroes` property with a simple declaration.
+Reemplace la definición de la propiedad `heroes` con una simple declaración.
 
 <code-example path="toh-pt4/src/app/heroes/heroes.component.ts" header="src/app/heroes/heroes.component.ts" region="heroes">
 </code-example>
 
 {@a inject}
 
-### Inject the `HeroService`
+### Inyectar el `HeroService`
 
-Add a private `heroService` parameter of type `HeroService` to the constructor.
+Agregue un parámetro privado `heroService` de tipo `HeroService` al constructor.
 
 <code-example path="toh-pt4/src/app/heroes/heroes.component.1.ts" header="src/app/heroes/heroes.component.ts" region="ctor">
 </code-example>
 
-The parameter simultaneously defines a private `heroService` property and identifies it as a `HeroService` injection site.
+El parámetro define simultáneamente una propiedad privada `heroService` y la identifica como un sitio de inyección `HeroService`.
 
-When Angular creates a `HeroesComponent`, the [Dependency Injection](guide/dependency-injection) system
-sets the `heroService` parameter to the singleton instance of `HeroService`.
+Cuando Angular crea un `HeroesComponent`, el sistema [Inyección de dependencia](guide/dependency-injection) establece el parámetro `heroService` en la instancia única de `HeroService`.
 
-### Add `getHeroes()`
+### Añadir `getHeroes()`
 
-Create a method to retrieve the heroes from the service.
+Crea un método para recuperar a los héroes del servicio
 
 <code-example path="toh-pt4/src/app/heroes/heroes.component.1.ts" header="src/app/heroes/heroes.component.ts" region="getHeroes">
 </code-example>
 
 {@a oninit}
 
-### Call it in `ngOnInit()`
+### Llamarlo en `ngOnInit()`
 
-While you could call `getHeroes()` in the constructor, that's not the best practice.
+Si bien podría llamar a `getHeroes()` en el constructor, esa no es la mejor práctica.
 
-Reserve the constructor for simple initialization such as wiring constructor parameters to properties.
-The constructor shouldn't _do anything_.
-It certainly shouldn't call a function that makes HTTP requests to a remote server as a _real_ data service would.
+Reserve el constructor para una inicialización simple, como conectar los parámetros del constructor a las propiedades.
+El constructor no debe _hacer nada_.
+Ciertamente no debería llamar a una función que realiza solicitudes HTTP a un servidor remoto como lo haría un servicio de datos _real_.
 
-Instead, call `getHeroes()` inside the [*ngOnInit lifecycle hook*](guide/lifecycle-hooks) and
-let Angular call `ngOnInit()` at an appropriate time _after_ constructing a `HeroesComponent` instance.
+En su lugar, llame a `getHeroes()` dentro del [*ngOnInit lifecycle hook*](guide/lifecycle-hooks) (gancho del ciclo de vida) y
+deje que Angular llame a `ngOnInit()` en el momento apropiado _después_ de construir una instancia de `HeroesComponent`.
 
 <code-example path="toh-pt4/src/app/heroes/heroes.component.ts" header="src/app/heroes/heroes.component.ts" region="ng-on-init">
 </code-example>
 
-### See it run
+### Verlo correr
 
-After the browser refreshes, the app should run as before,
-showing a list of heroes and a hero detail view when you click on a hero name.
+Después de que el navegador se actualice, la aplicación debería ejecutarse como antes,
+mostrando una lista de héroes y una vista detallada de héroe cuando haces clic en el nombre de un héroe.
 
-## Observable data
+## Datos observables
 
-The `HeroService.getHeroes()` method has a _synchronous signature_,
-which implies that the `HeroService` can fetch heroes synchronously.
-The `HeroesComponent` consumes the `getHeroes()` result
-as if heroes could be fetched synchronously.
+El método `HeroService.getHeroes()` tiene una firma sincrónica,
+lo que implica que el `HeroService` puede buscar héroes sincrónicamente.
+El `HeroesComponent` consume el resultado `getHeroes()`
+como si los héroes pudieran ser recuperados sincrónicamente.
 
 <code-example path="toh-pt4/src/app/heroes/heroes.component.1.ts" header="src/app/heroes/heroes.component.ts" region="get-heroes">
 </code-example>
 
-This will not work in a real app.
-You're getting away with it now because the service currently returns _mock heroes_.
-But soon the app will fetch heroes from a remote server,
-which is an inherently _asynchronous_ operation.
+Esto no funcionará en una aplicación real.
+Ahora te saldrás con la tuya porque el servicio actualmente devuelve _héroes simulados_.
+Pero pronto la aplicación buscará héroes de un servidor remoto,
+que es una operación inherentemente _asincrónica_.
 
-The `HeroService` must wait for the server to respond,
-`getHeroes()` cannot return immediately with hero data,
-and the browser will not block while the service waits.
+El `HeroService` debe esperar a que el servidor responda,
+`getHeroes()` no puede regresar inmediatamente con los datos del héroe,
+y el navegador no se bloqueará mientras el servicio espere.
 
-`HeroService.getHeroes()` must have an _asynchronous signature_ of some kind.
+`HeroService.getHeroes()` debe tener una firma asíncrona de algún tipo.
 
-In this tutorial, `HeroService.getHeroes()` will return an `Observable`
-because it will eventually use the Angular `HttpClient.get` method to fetch the heroes
-and [`HttpClient.get()` returns an `Observable`](guide/http).
+En este tutorial, `HeroService.getHeroes()` devolverá un `Observable`
+porque eventualmente usará el método angular `HttpClient.get` para buscar a los héroes y [`HttpClient.get()` devuelve un `Observable`](guide/http).
 
 ### Observable `HeroService`
 
-`Observable` is one of the key classes in the [RxJS library](http://reactivex.io/rxjs/).
+`Observable` es una de las clases clave en la [biblioteca RxJS] (http://reactivex.io/rxjs/).
 
-In a [later tutorial on HTTP](tutorial/toh-pt6), you'll learn that Angular's `HttpClient` methods return RxJS `Observable`s.
-In this tutorial, you'll simulate getting data from the server with the RxJS `of()` function.
+En un [tutorial posterior sobre HTTP](tutorial/toh-pt6), aprenderá que los métodos `HttpClient` de Angular devuelven RxJS `Observable`s.
+En este tutorial, simulará obtener datos del servidor con la función RxJS `of()`.
 
-Open the `HeroService` file and import the `Observable` and `of` symbols from RxJS.
+Abra el archivo `HeroService` e importe los símbolos `Observable` y `of` de RxJS.
 
 <code-example path="toh-pt4/src/app/hero.service.ts" header="src/app/hero.service.ts (Observable imports)" region="import-observable">
 </code-example>
 
-Replace the `getHeroes()` method with the following:
+Reemplace el método `getHeroes()` con lo siguiente:
 
 <code-example path="toh-pt4/src/app/hero.service.ts" header="src/app/hero.service.ts" region="getHeroes-1"></code-example>
 
-`of(HEROES)` returns an `Observable<Hero[]>` that emits  _a single value_, the array of mock heroes.
+`of (HEROES)` devuelve un `Observable <Hero[]>` que emite _un valor único_, el conjunto de héroes simulados.
 
-<div class="alert is-helpful">
+<div class="l-sub-section">
 
-In the [HTTP tutorial](tutorial/toh-pt6), you'll call `HttpClient.get<Hero[]>()` which also returns an `Observable<Hero[]>` that emits  _a single value_, an array of heroes from the body of the HTTP response.
+En el [tutorial HTTP](tutorial/toh-pt6), llamará a `HttpClient.get <Hero[]>()` que también devuelve un `Observable <Hero[]>` que emite _un valor único_, una matriz de héroes del cuerpo de la respuesta HTTP.
 
 </div>
 
-### Subscribe in `HeroesComponent`
+### Suscríbirse en `HeroesComponent`
 
-The `HeroService.getHeroes` method used to return a `Hero[]`.
-Now it returns an `Observable<Hero[]>`.
+El método `HeroService.getHeroes` utilizado para devolver un `Hero[]`.
+Ahora devuelve un `Observable <Hero[]>`.
 
-You'll have to adjust to that difference in `HeroesComponent`.
+Tendrás que ajustarte a esa diferencia en `HeroesComponent`.
 
-Find the `getHeroes` method and replace it with the following code
-(shown side-by-side with the previous version for comparison)
+Encuentre el método `getHeroes` y reemplácelo con el siguiente código
+(Al lado de la versión anterior para comparar)
 
 <code-tabs>
 
-  <code-pane header="heroes.component.ts (Observable)"
+  <code-pane header="heroes.component.ts (Observable)" 
     path="toh-pt4/src/app/heroes/heroes.component.ts" region="getHeroes">
   </code-pane>
 
-  <code-pane header="heroes.component.ts (Original)"
+  <code-pane header="heroes.component.ts (Original)" 
     path="toh-pt4/src/app/heroes/heroes.component.1.ts" region="getHeroes">
   </code-pane>
 
 </code-tabs>
 
-`Observable.subscribe()` is the critical difference.
+`Observable.subscribe()` es la diferencia crítica.
 
-The previous version assigns an array of heroes to the component's `heroes` property.
-The assignment occurs _synchronously_, as if the server could return heroes instantly
-or the browser could freeze the UI while it waited for the server's response.
+La versión anterior asigna una variedad de héroes a la propiedad 'heroes' del componente.
+La asignación ocurre _sincrónicamente_, como si el servidor pudiera devolver héroes al instante
+o el navegador podría congelar la interfaz de usuario mientras esperaba la respuesta del servidor.
 
-That _won't work_ when the `HeroService` is actually making requests of a remote server.
+Eso _no funcionará_ cuando el `HeroService` realmente está haciendo solicitudes a un servidor remoto.
 
-The new version waits for the `Observable` to emit the array of heroes&mdash;which
-could happen now or several minutes from now.
-The `subscribe()` method passes the emitted array to the callback,
-which sets the component's `heroes` property.
+La nueva versión espera a que el 'Observable' emita una serie de héroes,&mdash;
+que podría suceder ahora o varios minutos a partir de ahora.
+El método `subscribe()` pasa el arreglo  emitida a la devolución de llamada,
+que establece la propiedad 'heroes' del componente.
 
-This asynchronous approach _will work_ when
-the `HeroService` requests heroes from the server.
+Este enfoque asincrónico funcionará cuando
+el `HeroService` solicite héroes del servidor.
 
-## Show messages
+## Mostrar mensajes
 
-This section guides you through the following:
+Esta sección lo guía a través de lo siguiente:
 
-* adding a `MessagesComponent` that displays app messages at the bottom of the screen
-* creating an injectable, app-wide `MessageService` for sending messages to be displayed
-* injecting `MessageService` into the `HeroService`
-* displaying a message when `HeroService` fetches heroes successfully
+* agregando un `MessagesComponent` que muestra los mensajes de la aplicación en la parte inferior de la pantalla
+* crear un `MessageService` inyectable para toda la aplicación para enviar mensajes que se mostrarán
+* inyectando `MessageService` en el `HeroService`
+* mostrando un mensaje cuando `HeroService` busca héroes con éxito
 
-### Create `MessagesComponent`
+### Crear `MessagesComponent`
 
-Use the CLI to create the `MessagesComponent`.
-
+Use la CLI para crear el `MessagesComponent`.
 <code-example language="sh" class="code-shell">
   ng generate component messages
 </code-example>
 
-The CLI creates the component files in the `src/app/messages` folder and declares the `MessagesComponent` in `AppModule`.
 
-Modify the `AppComponent` template to display the generated `MessagesComponent`.
+La CLI crea los archivos componentes en la carpeta `src/app/messages` y declara el `MessagesComponent` en `AppModule`.
+
+Modifique la plantilla `AppComponent` para mostrar el `MessagesComponent` generado.
 
 <code-example
   header = "src/app/app.component.html"
   path="toh-pt4/src/app/app.component.html">
 </code-example>
 
-You should see the default paragraph from `MessagesComponent` at the bottom of the page.
+Debería ver el párrafo predeterminado de `MessagesComponent` en la parte inferior de la página.
 
-### Create the `MessageService`
+### Crear el `MessageService`
 
-Use the CLI to create the `MessageService` in `src/app`.
+Use la CLI para crear el `MessageService` en `src/app`.
 
 <code-example language="sh" class="code-shell">
   ng generate service message
 </code-example>
 
-Open `MessageService` and replace its contents with the following.
+Abra `MessageService` y reemplace su contenido con lo siguiente.
 
 <code-example header = "src/app/message.service.ts" path="toh-pt4/src/app/message.service.ts">
 </code-example>
 
-The service exposes its cache of `messages` and two methods: one to `add()` a message to the cache and another to `clear()` the cache.
+El servicio expone su caché de `mensajes` y dos métodos: uno para `agregar()` un mensaje al caché y otro para `borrar()` el caché.
 
 {@a inject-message-service}
-### Inject it into the `HeroService`
+### Inyectar en el `HeroService`
 
-In `HeroService`, import the `MessageService`.
+En `HeroService`, importe el `MessageService`.
+
 
 <code-example
   header = "src/app/hero.service.ts (import MessageService)"
   path="toh-pt4/src/app/hero.service.ts" region="import-message-service">
 </code-example>
 
-Modify the constructor with a parameter that declares a private `messageService` property.
-Angular will inject the singleton `MessageService` into that property
-when it creates the `HeroService`.
+Modifique el constructor con un parámetro que declare una propiedad privada `messageService`.
+Angular inyectará el singleton `MessageService` en esa propiedad
+cuando crea el `HeroService`.
 
 <code-example
   path="toh-pt4/src/app/hero.service.ts" header="src/app/hero.service.ts" region="ctor">
 </code-example>
 
-<div class="alert is-helpful">
+<div class="l-sub-section">
 
-This is a typical "*service-in-service*" scenario:
-you inject the `MessageService` into the `HeroService` which is injected into the `HeroesComponent`.
+Este es un escenario típico de "*servicio en servicio*":
+inyecta el `MessageService` en el `HeroService` que se inyecta en el `HeroesComponent`.
 
 </div>
 
-### Send a message from `HeroService`
+### Enviar un mensaje desde `HeroService`
 
-Modify the `getHeroes()` method to send a message when the heroes are fetched.
+Modifique el método `getHeroes()` para enviar un mensaje cuando se busquen los héroes.
 
 <code-example path="toh-pt4/src/app/hero.service.ts" header="src/app/hero.service.ts" region="getHeroes">
 </code-example>
 
-### Display the message from `HeroService`
+### Mostrar el mensaje de `HeroService`
 
-The `MessagesComponent` should display all messages,
-including the message sent by the `HeroService` when it fetches heroes.
+El `MessagesComponent` debería mostrar todos los mensajes,
+incluido el mensaje enviado por el `HeroService` cuando busca héroes.
 
-Open `MessagesComponent` and import the `MessageService`.
+Abra `MessagesComponent` e importe el `MessageService`
 
 <code-example header="src/app/messages/messages.component.ts (import MessageService)" path="toh-pt4/src/app/messages/messages.component.ts" region="import-message-service">
 </code-example>
 
-Modify the constructor with a parameter that declares a **public** `messageService` property.
-Angular will inject the singleton `MessageService` into that property
-when it creates the `MessagesComponent`.
+Modifique el constructor con un parámetro que declare una propiedad  `messageService` **publica**.
+Angular inyectará el único `MessageService` en esa propiedad
+cuando crea el `MessagesComponent`.
 
 <code-example path="toh-pt4/src/app/messages/messages.component.ts" header="src/app/messages/messages.component.ts" region="ctor">
 </code-example>
 
-The `messageService` property **must be public** because you're going to bind to it in the template.
+La propiedad `messageService` **debe ser pública** porque la vinculará en la plantilla.
 
 <div class="alert is-important">
 
-Angular only binds to _public_ component properties.
+Angular solo se une a las propiedades _publicas_ del componente .
 
 </div>
 
-### Bind to the `MessageService`
+### Enlazar al `MessageService`
 
-Replace the CLI-generated `MessagesComponent` template with the following.
-
+Reemplace la plantilla `MessagesComponent` generada por CLI con lo siguiente.
+ 
 <code-example
   header = "src/app/messages/messages.component.html"
   path="toh-pt4/src/app/messages/messages.component.html">
 </code-example>
 
-This template binds directly to the component's `messageService`.
+Esta plantilla se une directamente al componente `messageService` del componente.
 
-* The `*ngIf` only displays the messages area if there are messages to show.
-
-
-* An `*ngFor` presents the list of messages in repeated `<div>` elements.
+* `*NgIf` solo muestra el área de mensajes si hay mensajes para mostrar.
 
 
-* An Angular [event binding](guide/event-binding) binds the button's click event
-to `MessageService.clear()`.
+* Un `*ngFor` presenta la lista de mensajes en elementos repetidos` <div> `.
 
-The messages will look better when you add the private CSS styles to `messages.component.css`
-as listed in one of the ["final code review"](#final-code-review) tabs below.
 
-## Add additional messages to hero service
+* Un [enlace de evento](guide/template-syntax) en angular une el evento de clic del botón
+a `MessageService.clear ()`.
 
-The following example shows how to send and display a message each time the user clicks on
-a hero, showing a history of the user's selections. This will be helpful when you get to the
-next section on [Routing](tutorial/toh-pt5).
+Los mensajes se verán mejor cuando agregue los estilos CSS privados a `messages.component.css`
+como se indica en una de las pestañas ["revisión de código final"](#final-code-review) a continuación.
+
+## Agregar mensajes adicionales al servicio de héroe
+
+El siguiente ejemplo muestra cómo enviar y mostrar un mensaje cada vez que el usuario hace clic en
+un héroe, que muestra un historial de las selecciones del usuario. Esto será útil cuando llegues a
+siguiente sección sobre [Enrutamiento](tutorial/toh-pt5).
 
 <code-example header="src/app/heroes/heroes.component.ts"
 path="toh-pt4/src/app/heroes/heroes.component.ts">
 </code-example>
 
-The browser refreshes and the page displays the list of heroes.
-Refresh the browser to see the list of heroes, and scroll to the bottom to see the
-messages from the HeroService. Each time you click a hero, a new message appears to record
-the selection. Use the "clear" button to clear the message history.
+El navegador se actualizará y la página mostrará la lista de héroes.
+Actualiza el navegador para ver la lista de héroes y desplázate hacia abajo para ver
+mensajes del HeroService. Cada vez que haces clic en un héroe, aparece un nuevo mensaje para grabar
+la selección. Use el botón "borrar" para borrar el historial de mensajes.
 
 {@a final-code-review}
 
-## Final code review
+## Revisión final del código
 
-Here are the code files discussed on this page.
+Aquí están los archivos de código discutidos en esta página.
 
 <code-tabs>
 
-  <code-pane header="src/app/hero.service.ts"
+  <code-pane header="src/app/hero.service.ts" 
   path="toh-pt4/src/app/hero.service.ts">
   </code-pane>
 
-  <code-pane header="src/app/message.service.ts"
+  <code-pane header="src/app/message.service.ts" 
   path="toh-pt4/src/app/message.service.ts">
   </code-pane>
 
@@ -432,15 +436,16 @@ Here are the code files discussed on this page.
 
 </code-tabs>
 
-## Summary
+## Resumen
 
-* You refactored data access to the `HeroService` class.
-* You registered the `HeroService` as the _provider_ of its service at the root level so that it can be injected anywhere in the app.
-* You used [Angular Dependency Injection](guide/dependency-injection) to inject it into a component.
-* You gave the `HeroService` _get data_ method an asynchronous signature.
-* You discovered `Observable` and the RxJS _Observable_ library.
-* You used RxJS `of()` to return an observable of mock heroes (`Observable<Hero[]>`).
-* The component's `ngOnInit` lifecycle hook calls the `HeroService` method, not the constructor.
-* You created a `MessageService` for loosely-coupled communication between classes.
-* The `HeroService` injected into a component is created with another injected service,
- `MessageService`.
+* Refactorizó el acceso a datos a la clase `HeroService`.
+* Registro el `HeroService` como el _proveedor_ de su servicio en el nivel raíz para que pueda inyectarse en cualquier lugar de la aplicación.
+* Usó la [Inyección de dependencia angular](guide/dependency-injection) para inyectarlo en un componente.
+* Le dio al `HeroService` el método _get data_ una firma asincrónica.
+* Descubrio `Observable` y la biblioteca RxJS _Observable_.
+* Usó RxJS `of ()` para devolver un observable de héroes simulados (`Observable <Hero []>`).
+* El lifecycle hook (gancho del ciclo de vida) `ngOnInit` del componente llama al método `HeroService`, no al constructor.
+* Creó un `MessageService` para una comunicación débilmente acoplada entre clases.
+* El `HeroService` inyectado en un componente se crea con otro servicio inyectado,
+  `MessageService`.
+  
