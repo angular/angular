@@ -441,6 +441,11 @@
             "rev": true,
             "title": "material-dayjs-adapter",
             "url": "https://www.npmjs.com/package/@tabuckner/material-dayjs-adapter"
+          },
+          "ngx-skeleton-loader": {
+            "desc": "NGX Skeleton Loader is a lightweight and A11Y friendly solution for blazing fast loading skeletons that automatically adapt to your Angular apps.",
+            "title": "NGX Skeleton Loader",
+            "url": "https://www.npmjs.com/package/ngx-skeleton-loader"
           }
         }
       }
