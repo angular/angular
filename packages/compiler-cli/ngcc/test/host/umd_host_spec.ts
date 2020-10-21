@@ -2734,7 +2734,7 @@ runInEachFileSystem(() => {
                 ['DirectiveX', `Directive: FnWithArg<(clazz: any) => any>`, '@angular/core'],
                 [
                   'SomeClass',
-                  `SomeClass = (function() {\n    function SomeClass() {}\n    return SomeClass;\n  }())`,
+                  'SomeClass = (function() {\n    function SomeClass() {}\n    return SomeClass;\n  }())',
                   null
                 ],
               ]);

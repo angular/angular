@@ -344,9 +344,10 @@ export class StaticInterpreter {
   private visitAmbiguousDeclaration(decl: Declaration, declContext: Context) {
     return decl.kind === DeclarationKind.Inline && decl.implementation !== undefined &&
             !isDeclaration(decl.implementation) ?
-        // Inline declarations with an `implementation` should be visited as expressions
+        // Inline declarations whose `implementation` is a `ts.Expression` should be visited as
+        // an expression.
         this.visitExpression(decl.implementation, declContext) :
-        // Otherwise just visit the declaration `node`
+        // Otherwise just visit the `node` as a declaration.
         this.visitDeclaration(decl.node, declContext);
   }
 
