@@ -40,8 +40,8 @@ using and results in smaller bundle sizes.
 Tree-shaking is especially useful for a library
 because the application which uses the library may not have
 a need to inject it. Read more
-about [tree-shakable providers](guide/dependency-injection-providers#tree-shakable-providers)
-in [DI Providers](guide/dependency-injection-providers).
+about [tree-shakable providers](guide/architecture-services#providing-services)
+in [Introduction to services and dependency injection](guide/architecture-services).
 
 </div>
 

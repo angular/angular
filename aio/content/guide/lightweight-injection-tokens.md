@@ -3,7 +3,7 @@
 This page provides a conceptual overview of a dependency injection technique that is recommended for library developers.
 Designing your library with *lightweight injection tokens* helps optimize the bundle size of client applications that use your library.
 
-You can manage the dependency structure among your components and injectable services to optimize bundle size by using [tree-shakable providers](guide/dependency-injection-providers#tree-shakable-providers).
+You can manage the dependency structure among your components and injectable services to optimize bundle size by using [tree-shakable providers](guide/architecture-services#introduction-to-services-and-dependency-injection).
 This normally ensures that if a provided component or service is never actually used by the app, the compiler can eliminate its code from the bundle.
 
 However, due to the way Angular stores injection tokens, it is possible that such an unused component or service can end up in the bundle anyway.
@@ -89,7 +89,7 @@ These effectively change `constructor(@Optional() other: OtherComponent)` to `co
 
 <div class="alert is helpful">
 
-For all services, a library should use [tree-shakable providers](guide/dependency-injection-providers#tree-shakable-providers), providing dependencies at the root level rather than in component constructors.
+For all services, a library should use [tree-shakable providers](guide/architecture-services#introduction-to-services-and-dependency-injection), providing dependencies at the root level rather than in component constructors.
 
 </div>
 
