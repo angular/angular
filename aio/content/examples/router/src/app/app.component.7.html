@@ -1,10 +1,10 @@
 <h1>Angular Router App</h1>
-<!-- This nav gives you links to click, which tells the router which route to use (defined in the routes constant in  AppRoutingModule) -->
+<!-- 아래 링크를 클릭하면 AppRoutingModule에 등록된 라우팅 규칙에 따라 화면을 전환합니다. -->
 <nav>
   <ul>
     <li><a routerLink="/first-component" routerLinkActive="active">First Component</a></li>
     <li><a routerLink="/second-component" routerLinkActive="active">Second Component</a></li>
   </ul>
 </nav>
-<!-- The routed views render in the <router-outlet>-->
+<!-- 라우팅된 화면은 <router-outlet> 위치에 표시됩니다. -->
 <router-outlet></router-outlet>

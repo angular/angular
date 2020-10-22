@@ -1,5 +1,9 @@
+<!--
 # In-app navigation: routing to views
+-->
+# 네비게이션: 화면 전환
 
+<!--
 In a single-page app, you change what the user sees by showing or hiding portions of the display that correspond to particular components, rather than going out to the server to get a new page.
 As users perform application tasks, they need to move between the different [views](guide/glossary#view "Definition of view") that you have defined.
 
@@ -7,9 +11,22 @@ To handle the navigation from one [view](guide/glossary#view) to the next, you u
 The **`Router`** enables navigation by interpreting a browser URL as an instruction to change the view.
 
 To explore a sample app featuring the router's primary features, see the <live-example></live-example>.
+-->
+단일 페이지 앱에서는 사용자가 보는 화면을 변경할 때 페이지 전체를 서버에서 새로 받아오는 것이 아니라 특정 영역을 표시하거나 감추는 방식으로 전환합니다.
+그래서 사용자가 작업을 수행하다 보면 사전에 정의해둔 [화면](guide/glossary#view "Definition of view")을 자주 전환하게 됩니다.
 
+어떤 [화면](guide/glossary#view)을 다른 화면으로 전환하려면 Angular가 제공하는 **`Router`**를 사용하면 됩니다.
+**`Router`**는 브라우저가 접속한 URL을 해석해서 적절한 화면을 표시하는 역할을 합니다.
+
+라우터의 주요 기능이 동작하는 것은 <live-example></live-example>에서 직접 확인하거나 다운받아 확인할 수 있습니다.
+
+
+<!--
 ## Prerequisites
+-->
+## 사전지식
 
+<!--
 Before creating a route, you should be familiar with the following:
 
 * [Basics of components](guide/architecture-components)
@@ -18,13 +35,28 @@ Before creating a route, you should be familiar with the following:
 
 For an introduction to Angular with a ready-made app, see [Getting Started](start).
 For a more in-depth experience of building an Angular app, see the [Tour of Heroes](tutorial) tutorial. Both guide you through using component classes and templates.
+-->
+라우팅 규칙(route)을 정의하기 전에 먼저 이런 내용을 알아두는 것이 좋습니다:
+
+* [컴포넌트 기본 지식](guide/architecture-components)
+* [템플릿 기본 지식](guide/glossary#template)
+* Angular 앱 &mdash; [Angular CLI](cli)를 활용하면 Angular 앱을 간단하게 생성할 수 있습니다.
+
+사전에 준비된 형태에서 Angular 개발을 시작하려면 [시작하기](start) 문서를 참고하세요.
+그리고 [히어로들의 여행](tutorial) 튜토리얼을 진행하면 Angular 앱을 개발하는 방법에 대해 좀 더 자세하게 학습할 수 있습니다.
+두 가이드 문서 모두 컴포넌트 클래스와 컴포넌트 템플릿에 대해 다룹니다.
 
 <hr />
 
+
 {@a basics}
 
+<!--
 ## Generate an app with routing enabled
+-->
+## 라우팅 가능한 상태로 앱 생성하기
 
+<!--
 The following command uses the Angular CLI to generate a basic Angular app with an app routing module, called `AppRoutingModule`, which is an NgModule where you can configure your routes.
 The app name in the following example is `routing-app`.
 
@@ -34,9 +66,25 @@ The app name in the following example is `routing-app`.
 
 When generating a new app, the CLI prompts you to select CSS or a CSS preprocessor.
 For this example, accept the default of `CSS`.
+-->
+Angular CLI로 다음과 같은 명령을 실행하면 Angular 앱을 생성하면서 `AppRoutingModule` 이라고 하는 라우팅 모듈을 함께 생성합니다.
+이 모듈은 애플리케이션의 라우팅 규칙을 관리하는 NgModule입니다.
+`routing-app` 이라는 이름으로 앱을 생성하는 명령은 이렇습니다.
 
+<code-example language="none" class="code-shell">
+  ng new routing-app --routing
+</code-example>
+
+애플리케이션을 생성하는 과정에 Angular CLI는 CSS 전처리기를 사용할 것인지 물어봅니다.
+이번 예제에서는 기본 `CSS`를 선택합니다.
+
+
+<!--
 ### Adding components for routing
+-->
+### 라우팅할 컴포넌트 생성하기
 
+<!--
 To use the Angular router, an app needs to have at least two components so that it can navigate from one to the other. To create a component using the CLI, enter the following at the command line where `first` is the name of your component:
 
 <code-example language="none" class="code-shell">
@@ -65,10 +113,45 @@ The CLI automatically appends `Component`, so if you were to write `first-compon
   </code-example>
 
 </div>
+-->
+Angular 라우터를 사용해서 화면을 전환하려면 컴포넌트가 적어도 2개는 있어야 합니다.
+다음 명령을 실행해서 `first` 라는 이름으로 컴포넌트를 생성합니다:
+
+<code-example language="none" class="code-shell">
+  ng generate component first
+</code-example>
+
+그리고 다른 이름으로 두 번째 컴포넌트를 생성합니다.
+이번에는 `seconds` 라는 이름으로 컴포넌트를 생성해 봅시다.
+
+<code-example language="none" class="code-shell">
+  ng generate component second
+</code-example>
+
+Angular CLI는 컴포넌트를 생성할 때 자동으로 접미사를 붙이기 때문에, 컴포넌트 이름을 `first-component` 라고 지정하면 실제 컴포넌트 클래스 이름은 `FirstComponentComponent`가 되니 주의하세요.
 
 
+{@a basics-base-href}
+
+<div class="alert is-helpful">
+
+#### `<base href>`
+
+이 가이드문서는 Angular CLI로 생성한 Angular 앱을 다룹니다.
+만약 Angular CLI를 사용하지 않는다면 index.html 파일의 `<head>` 태그에 `<base href="/">` 를 추가해야 합니다.
+이 태그를 추가하면 `app` 폴더를 애플리케이션 최상위 주소 `"/"` 와 연결합니다.
+
+</code-example>
+
+</div>
+
+
+<!--
 ### Importing your new components
+-->
+### 컴포넌트 로드하기
 
+<!--
 To use your new components, import them into `AppRoutingModule` at the top of the file, as follows:
 
 <code-example header="AppRoutingModule (excerpt)">
@@ -77,11 +160,25 @@ import { FirstComponent } from './first/first.component';
 import { SecondComponent } from './second/second.component';
 
 </code-example>
+-->
+새로 만든 컴포넌트를 사용하려면 `AppRoutingModule` 파일 제일 위쪽에서 이 컴포넌트들을 로드해야 합니다:
+
+<code-example header="AppRoutingModule (일부)">
+
+import { FirstComponent } from './first/first.component';
+import { SecondComponent } from './second/second.component';
+
+</code-example>
+
 
 {@a basic-route}
 
+<!--
 ## Defining a basic route
+-->
+## 기본 라우팅 규칙 정의하기
 
+<!--
 There are three fundamental building blocks to creating a route.
 
 Import the `AppRoutingModule` into `AppModule` and add it to the `imports` array.
@@ -123,19 +220,73 @@ The following is the default `AppModule` using the CLI with the `--routing` flag
   This element informs Angular to update the application view with the component for the selected route.
 
   <code-example path="router/src/app/app.component.7.html" header="Template with routerLink and router-outlet"></code-example>
+-->
+라우팅 규칙은 세가지 요소로 구성됩니다.
+
+`AppModule`이 정의된 파일에 `AppRoutingModule`을 로드하고 이 라우팅 모듈을 `AppModule` `imports` 배열에 추가합니다.
+
+Angular CLI로 앱을 생성했다면 이 과정은 이미 처리되어 있습니다.
+하지만 앱을 직접 생성했거나 이미 있는 앱을 기반으로 작업한다면 라우팅 모듈이 제대로 로드 되었는지, `imports` 배열에 추가되었는지 꼭 확인해야 합니다.
+아래 코드는 `--routing` 플래그를 붙여서 Angular CLI로 앱을 생성했을 때 자동으로 생성된 `AppModule` 코드입니다.
+
+  <code-example path="router/src/app/app.module.8.ts" header="Angular CLI가 자동으로 생성한 AppModule">
+  </code-example>
+
+  1. 라우팅 모듈이 정의된 파일에 `RouterModule`와 `Routes`를 로드합니다.
+
+  이 과정도 Angular CLI가 자동으로 처리했을 것입니다.
+  그리고 `Routes` 배열을 함께 생성하며 `@NgModule()`의 `imports` 배열과 `exports` 배열도 자동으로 구성합니다.
+
+  <code-example path="router/src/app/app-routing.module.7.ts" header="Angular CLI가 생성한 라우팅 모듈">
+  </code-example>
+
+1. 이제 라우팅 규칙을 `Routes` 배열에 등록합니다.
+
+  이 배열에는 라우팅 규칙(route)은 JavaScript 객체 형태로 등록하며, 이 객체는 프로퍼티가 2개 존재합니다.
+  첫번째로 `path` 프로퍼티는 라우팅 규칙에 해당하는 URL 주소를 지정합니다.
+  그리고 `component` 프로퍼티는 해당 URL 주소에 연결될 컴포넌트를 지정합니다.
+
+  <code-example path="router/src/app/app-routing.module.8.ts" region="routes" header="AppRoutingModule (일부)">
+
+  </code-example>
+
+  1. 라우팅 규칙을 애플리케이션에 등록합니다.
+
+  라우팅 규칙을 모두 정의했다면 이 규칙을 애플리케이션에 등록해야 합니다.
+  먼저 두 컴포넌트와 연결되는 링크를 추가합니다.
+  링크는 `<a>` 엘리먼트에 `routerLink` 어트리뷰트를 사용하는 방식으로 구현합니다.
+  이 어트리뷰트에는 사용자가 링크를 클릭했을 때 이동할 주소를 지정합니다.
+  그리고 컴포넌트 템플릿에 `<router-outlet>`을 추가합니다.
+  이 엘리먼트는 Angular가 애플리케이션 화면을 전환할 때 관련 컴포넌트가 표시될 위치를 지정하는 엘리먼트입니다.
+
+  <code-example path="router/src/app/app.component.7.html" header="routerLink와 router-outlet이 추가된 템플릿"></code-example>
+
 
 {@a route-order}
 
+<!--
 ### Route order
+-->
+### 라우팅 규칙 순서
 
+<!--
 The order of routes is important because the `Router` uses a first-match wins strategy when matching routes, so more specific routes should be placed above less specific routes.
 List routes with a static path first, followed by an empty path route, which matches the default route.
 The [wildcard route](guide/router#setting-up-wildcard-routes) comes last because it matches every URL and the `Router`  selects it only if no other routes match first.
+-->
+Angular `Router`는 라우팅 규칙 중 첫번째로 매칭되는 라우팅 규칙을 적용하기 때문에 라우티 규칙을 등록하는 순서가 중요한데, 구체적인 라우팅 규칙을 가장 먼저 등록하고 덜 구체적인 라우팅 규칙을 나중에 등록하는 것이 좋습니다.
+그래서 고정된 주소를 먼저 등록하며, 그 다음에 빈 주소를 등록하고, 마지막으로 기본 라우팅 규칙을 등록합니다.
+그리고 브라우저가 접속한 주소에 해당하는 라우팅 규칙이 하나도 없을 때 적용되는 [와일드카드 라우팅 규칙](guide/router#setting-up-wildcard-routes)은 가장 마지막에 작성합니다.
+
 
 {@a getting-route-information}
 
+<!--
 ## Getting route information
+-->
+## 라우팅 규칙으로 전달된 정보 참조하기
 
+<!--
 Often, as a user navigates your application, you want to pass information from one component to another.
 For example, consider an application that displays a shopping list of grocery items.
 Each item in the list has a unique `id`.
@@ -175,6 +326,47 @@ To get information from a route:
       </code-example>
 
     Note: The preceding example uses a variable, `name`, and assigns it the value based on the `name` parameter.
+
+{@a wildcard-route-how-to}
+-->
+때로는 사용자가 화면을 전환할 때 교체되는 컴포넌트 사이에 정보를 전달해야 할 때가 있습니다.
+애플리케이션에서 식료품 목록을 보여주고 있다고 합시다.
+목록으로 표시된 개별 식료품에는 고유한 `id` 값이 있습니다.
+사용자가 식료품 정보를 수정하기 위해 Edit 버튼을 클릭하면 `EditGroceryItem` 컴포넌트가 화면에 표시될 것입니다.
+이 때 새로 표시되는 컴포넌트는 사용자가 어떤 식료품을 선택했는지 알기 위해 해당 상품에 대한 `id` 값을 전달받아야 합니다.
+
+이런 데이터는 라우팅 규칙을 통해 전달할 수 있습니다.
+[ActivatedRoute](api/router/ActivatedRoute) 인터페이스를 활용하면 됩니다.
+
+라우팅 규칙으로 전달된 데이터를 참조해 봅시다:
+
+  1. 컴포넌트가 정의된 파일에 `ActivatedRoute`와 `ParamMap` 심볼을 로드합니다.
+
+    <code-example path="router/src/app/heroes/hero-detail/hero-detail.component.ts" region="imports-route-info" header="In the component class (일부)">
+    </code-example>
+
+    이 `import` 구문으로 로드한 클래스를 활용하면 컴포넌트에 필요한 정보를 참조할 수 있습니다.
+    각각에 대해 자세하게 알아보려면 개별 API 문서를 참고하세요:
+
+      * [`Router` API 문서](api/router)
+      * [`ActivatedRoute` API 문서](api/router/ActivatedRoute)
+      * [`ParamMap` API 문서](api/router/ParamMap)
+
+  1. 생성자에 `ActivatedRoute` 인스턴스를 의존성으로 주입합니다:
+
+    <code-example path="router/src/app/heroes/hero-detail/hero-detail.component.ts" region="activated-route" header="In the component class (일부)">
+    </code-example>
+
+  1. `ngOnInit()` 메소드에서 `ActivatedRoute` 객체 안에 있는 `id` 인자를 참조합니다:
+
+      <code-example header="컴포넌트 코드 (일부)">
+        ngOnInit() {
+          this.route.queryParams.subscribe(params => {
+            this.id = params['id'];
+          });
+        }
+      </code-example>
+
 
 {@a wildcard-route-how-to}
 
