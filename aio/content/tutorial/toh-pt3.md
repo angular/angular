@@ -59,7 +59,7 @@ Abre el archivo de clase `HeroDetailComponent` e importe el símbolo `Hero`.
 region="import-hero" header="src/app/hero-detail/hero-detail.component.ts (import Hero)">
 </code-example>
 
-La propiedad `hero` debe ser una [_propiedad de entrada_](guide/template-syntax#inputs-outputs " Input and Output properties"), anotada con el decorador `@Input()` porque el `HeroesComponent` _externo_ [se vinculará de esta manera.](#heroes-component-template)
+La propiedad `hero` debe ser una [_propiedad de entrada_](guide/inputs-outputs "Input and Output properties") -->, anotada con el decorador `@Input()` porque el `HeroesComponent` _externo_ [se vinculará de esta manera.](#heroes-component-template)
 
 <code-example path="toh-pt3/src/app/heroes/heroes.component.html" region="hero-detail-binding">
 </code-example>
@@ -102,7 +102,7 @@ Vincula `HeroesComponent.selectedHero` a la propiedad `hero` de este elemento de
 
 </code-example>
 
-`[hero]="selectedHero"` es el [enlace de propiedad](guide/template-syntax#property-binding). de Angular
+`[hero]="selectedHero"` es el [enlace de propiedad](guide/property-binding) de Angular.
 
 Este es un enlace de datos unidireccional de la propiedad `selectedHero`  `HeroesComponent` a la propiedad `hero` del elemento objetivo.
 Aquí se asigna la propiedad `hero` de `HeroDetailComponent`.
@@ -156,6 +156,6 @@ Los archivos de código descritos en esta página son:
 
 * Creaste un `HeroDetailComponent` independiente y reutilizable.
 
-* Usaste el [enlace de propiedad](guide/template-syntax#property-binding) para que el padre `HeroesComponent` pueda controlar al hijo `HeroDetailComponent`.
+* Usaste el [enlace de propiedad](guide/property-binding) para que el padre `HeroesComponent` pueda controlar al hijo `HeroDetailComponent`.
 
-* Usaste el [`decorador @Input`](guide/template-syntax#inputs-outputs) para hacer que la propiedad del heroe esté disponible para ser vinculada por el componente `HeroesComponent` externamente.
+* Usaste el [`decorador @Input`](guide/inputs-outputs) para hacer que la propiedad del héroe esté disponible para ser vinculada por el componente `HeroesComponent` externamente.
