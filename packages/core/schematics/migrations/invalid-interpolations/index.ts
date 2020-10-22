@@ -8,7 +8,7 @@
 
 import {logging, normalize} from '@angular-devkit/core';
 import {Rule, SchematicContext, SchematicsException, Tree} from '@angular-devkit/schematics';
-import {AbsoluteSourceSpan} from '@angular/compiler';
+import {AbsoluteSourceSpan, DEFAULT_INTERPOLATION_CONFIG} from '@angular/compiler';
 import {relative} from 'path';
 
 import {computeLineStartsMap, getLineAndCharacterFromPosition} from '../../utils/line_mappings';
@@ -110,6 +110,12 @@ function fixInvalidInterpolations(
 function getFixesByFile(templates: ResolvedTemplate[]): Map<string, FixedTemplate[]> {
   const fixesByFile = new Map<string, FixedTemplate[]>();
   for (const template of templates) {
+    if (template.interpolationConfig !== DEFAULT_INTERPOLATION_CONFIG) {
+      // This schematic is only concerned with the default interpolation config
+      // delimited by {{ / }}; do not attempt to fix custom interpolations.
+      continue;
+    }
+
     const templateFix = fixInterpolations(template);
     if (templateFix === null) {
       continue;

@@ -1,3 +1,4 @@
+import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from '@angular/compiler';
 /**
  * @license
  * Copyright Google LLC All Rights Reserved.
@@ -26,6 +27,8 @@ export interface ResolvedTemplate {
   inline: boolean;
   /** Path to the file that contains this template. */
   filePath: string;
+  /** The interpolation config of the template. */
+  interpolationConfig: InterpolationConfig;
   /**
    * Gets the character and line of a given position index in the template.
    * If the template is declared inline within a TypeScript source file, the line and
@@ -85,6 +88,8 @@ export class NgComponentTemplateVisitor {
 
     // Walk through all component metadata properties and determine the referenced
     // HTML templates (either external or inline)
+    let interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG;
+    let resolvedTemplate: Omit<ResolvedTemplate, 'interpolationConfig'>|undefined;
     componentMetadata.properties.forEach(property => {
       if (!ts.isPropertyAssignment(property)) {
         return;
@@ -99,17 +104,16 @@ export class NgComponentTemplateVisitor {
         // not part of the template content.
         const templateStartIdx = property.initializer.getStart() + 1;
         const filePath = resolve(sourceFileName);
-        this.resolvedTemplates.push({
+        resolvedTemplate = {
           filePath: filePath,
           container: node,
           content: property.initializer.text,
           inline: true,
           start: templateStartIdx,
           getCharacterAndLineOfPosition: pos =>
-              ts.getLineAndCharacterOfPosition(sourceFile, pos + templateStartIdx)
-        });
-      }
-      if (propertyName === 'templateUrl' && ts.isStringLiteralLike(property.initializer)) {
+              ts.getLineAndCharacterOfPosition(sourceFile, pos + templateStartIdx),
+        };
+      } else if (propertyName === 'templateUrl' && ts.isStringLiteralLike(property.initializer)) {
         const templatePath = resolve(dirname(sourceFileName), property.initializer.text);
 
         // In case the template does not exist in the file system, skip this
@@ -121,15 +125,28 @@ export class NgComponentTemplateVisitor {
         const fileContent = readFileSync(templatePath, 'utf8');
         const lineStartsMap = computeLineStartsMap(fileContent);
 
-        this.resolvedTemplates.push({
+        resolvedTemplate = {
           filePath: templatePath,
           container: node,
           content: fileContent,
           inline: false,
           start: 0,
           getCharacterAndLineOfPosition: pos => getLineAndCharacterFromPosition(lineStartsMap, pos),
-        });
+        };
+      } else if (
+          propertyName === 'interpolation' && ts.isArrayLiteralExpression(property.initializer) &&
+          property.initializer.elements.length === 2 &&
+          property.initializer.elements.every(ts.isStringLiteralLike)) {
+        const [start, end] = property.initializer.elements;
+        interpolationConfig = new InterpolationConfig(start.text, end.text);
       }
     });
+
+    if (resolvedTemplate) {
+      this.resolvedTemplates.push({
+        ...resolvedTemplate,
+        interpolationConfig,
+      });
+    }
   }
 }

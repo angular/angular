@@ -188,6 +188,26 @@ describe('invalid interpolation migration', () => {
     expect(tree.readContent('/index.ts')).toBe(contents);
   });
 
+  it('should not modify templates with custom interpolation config', async () => {
+    const contents = `
+      import {Component} from '@angular/core';
+
+      @Component({
+        template: \`
+          {{ 1 + 2 }
+          [[ 1 + 2 ]
+        \`,
+        interpolation: ['[[', ']]'],
+      })
+      class Test {}
+    `;
+    writeFile('/index.ts', contents);
+
+    await runMigration();
+
+    expect(tree.readContent('/index.ts')).toBe(contents);
+  });
+
   it('should fix invalid interpolations in external templates', async () => {
     writeFile('/index.ts', `
       import {Component} from '@angular/core';
