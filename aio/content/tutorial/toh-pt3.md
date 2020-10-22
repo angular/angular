@@ -1,148 +1,140 @@
-# Create a feature component
+# Crear un componente de características
 
-At the moment, the `HeroesComponent` displays both the list of heroes and the selected hero's details.
+Por el momento, el `HeroesComponent` muestra tanto la lista de héroes como los detalles de los héroes seleccionados.
 
-Keeping all features in one component as the application grows will not be maintainable.
-You'll want to split up large components into smaller sub-components, each focused on a specific task or workflow.
+Mantener toda la funcionalidad en un componente se vuelve menos sostenible a medida que la aplicación crece.
+Deberá dividir un componente grande en subcomponentes más pequeños que se centren en una tarea o flujo de trabajo en particular.
 
-In this page, you'll take the first step in that direction by moving the hero details into a separate, reusable `HeroDetailComponent`.
+Esta página da el primer paso en ese camino moviendo los detalles del héroe a otro `HeroDetailComponent` reutilizable.
 
-The `HeroesComponent` will only present the list of heroes.
-The `HeroDetailComponent` will present details of a selected hero.
+`HeroesComponent` solo muestra una lista de héroes.
+`HeroDetailComponent` muestra los detalles del héroe seleccionado. 
 
 <div class="alert is-helpful">
-
-  For the sample app that this page describes, see the <live-example></live-example>.
+Para ver la aplicación de ejemplo que describe esta página, consulte el <live-example></live-example>.
 
 </div>
 
-## Make the `HeroDetailComponent`
+## Crear `HeroDetailComponent`
 
-Use the Angular CLI to generate a new component named `hero-detail`.
+Usa el  CLI de Angular para generar un nuevo componente llamado `hero-detail`.
 
 <code-example language="sh" class="code-shell">
   ng generate component hero-detail
 </code-example>
 
-The command scaffolds the following:
+Este comando generará una plantilla para el archivo `HeroDetailComponent` y declarará este componente en el `AppModule`.
+Este comando produce la siguiente plantilla:
 
-* Creates a directory `src/app/hero-detail`.
+* Crear el directorio `src/app/hero-detail`
 
-Inside that directory four files are generated:
+Genera cuatro archivos en este directorio:
 
-* A CSS file for the component styles.
-* An HTML file for the component template.
-* A TypeScript file with a component class named `HeroDetailComponent`.
-* A test file for the `HeroDetailComponent` class.
+* Archivo CSS para estilo de componente
+* Archivo HTML para la plantilla el componente 
+* Archivo TypeScript de la clase de componente denominada `HeroDetailComponent`
+* Archivo de prueba de la clase `HeroDetailComponent`
 
-The command also adds the `HeroDetailComponent` as a declaration in the `@NgModule` decorator of the `src/app/app.module.ts` file.
+Este comando también agrega `HeroDetailComponent` como `declaraciones` en el decorador `@ NgModule` del archivo `src/app/app.module.ts`.
 
+### Escribir plantilla
 
-### Write the template
+Corta el HTML de detalles del héroe desde la parte inferior de la plantilla `HeroesComponent` y pégalo en la plantilla generada en las plantilla `HeroDetailComponent`.
 
-Cut the HTML for the hero detail from the bottom of the `HeroesComponent` template and paste it over the generated boilerplate in the `HeroDetailComponent` template.
+Las referencias HTML pegadas `selectedHero`.
+El nuevo `HeroDetailComponent` puede mostrar _cualquier_héroe, no solo el héroe seleccionado.
+Por lo tanto, reemplaza todos los "selectedHero" en la plantilla con "hero".
 
-The pasted HTML refers to a `selectedHero`.
-The new `HeroDetailComponent` can present _any_ hero, not just a selected hero.
-So replace "selectedHero" with "hero" everywhere in the template.
-
-When you're done, the `HeroDetailComponent` template should look like this:
+Cuando termines, las plantilla `HeroDetailComponent` deberían verse así:
 
 <code-example path="toh-pt3/src/app/hero-detail/hero-detail.component.html" header="src/app/hero-detail/hero-detail.component.html"></code-example>
 
-### Add the `@Input()` hero property
+### Añadir la propiedad `@Input()` al héroe 
 
-The `HeroDetailComponent` template binds to the component's `hero` property
-which is of type `Hero`.
+Las plantillas `HeroDetailComponent` están vinculadas a la propiedad `hero` de un componente que es del tipo `Hero`.
 
-Open the `HeroDetailComponent` class file and import the `Hero` symbol.
+Abre el archivo de clase `HeroDetailComponent` e importe el símbolo `Hero`.
 
-<code-example path="toh-pt3/src/app/hero-detail/hero-detail.component.ts"
+<code-example path="toh-pt3/src/app/hero-detail/hero-detail.component.ts" 
 region="import-hero" header="src/app/hero-detail/hero-detail.component.ts (import Hero)">
 </code-example>
 
-The `hero` property
-[must be an _Input_ property](guide/inputs-outputs "Input and Output properties"),
-annotated with the `@Input()` decorator,
-because the _external_ `HeroesComponent` [will bind to it](#heroes-component-template) like this.
+La propiedad `hero` debe ser una [_propiedad de entrada_](guide/template-syntax#inputs-outputs " Input and Output properties"), anotada con el decorador `@Input()` porque el `HeroesComponent` _externo_ [se vinculará de esta manera.](#heroes-component-template)
 
 <code-example path="toh-pt3/src/app/heroes/heroes.component.html" region="hero-detail-binding">
 </code-example>
 
-Amend the `@angular/core` import statement to include the `Input` symbol.
+Modifique la declaración de importación `@angular/core` para incluir el símbolo `Input`.
 
 <code-example path="toh-pt3/src/app/hero-detail/hero-detail.component.ts" region="import-input" header="src/app/hero-detail/hero-detail.component.ts (import Input)"></code-example>
 
-Add a `hero` property, preceded by the `@Input()` decorator.
+Agrega la propiedad `hero` antepuesta por el decorador `@Input()`.
 
 <code-example path="toh-pt3/src/app/hero-detail/hero-detail.component.ts" header="src/app/hero-detail/hero-detail.component.ts" region="input-hero"></code-example>
 
-That's the only change you should make to the `HeroDetailComponent` class.
-There are no more properties. There's no presentation logic.
-This component simply receives a hero object through its `hero` property and displays it.
+Este es el único cambio que debe realizar en la clase `HeroDetailComponent`.
+No se requieren más propiedades o lógica de visualización.
+Este componente solo toma un objeto héroe a través de la propiedad `hero` y lo muestra.
 
-## Show the `HeroDetailComponent`
+## Mostrar `HeroDetailComponent`
 
-The `HeroesComponent` is still a master/detail view.
+El `HeroesComponent` todavía está en la vista maestra/detalle.
 
-It used to display the hero details on its own, before you cut that portion of the template. Now it will delegate to the `HeroDetailComponent`.
+Hasta que eliminé los detalles del héroe de Plantillas, lo estaba mostrando en este componente. Ahora deleguemos a `HeroDetailComponent`.
 
-The two components will have a parent/child relationship.
-The parent `HeroesComponent` will control the child `HeroDetailComponent`
-by sending it a new hero to display whenever
-the user selects a hero from the list.
+Los dos componentes tienen una relación padre-hijo.
+Para mostrar un nuevo héroe cada vez que el usuario selecciona un héroe de la lista,
+El padre `HeroesComponent` controla al hijo `HeroDetailComponent` enviándolo.
 
-You won't change the `HeroesComponent` _class_ but you will change its _template_.
+No cambiarás la _clase_ de `HeroesComponent` pero cambiarás su _template_.
 
 {@a heroes-component-template}
 
-### Update the `HeroesComponent` template
+### Actualizar las plantillas `HeroesComponent`
 
-The `HeroDetailComponent` selector is `'app-hero-detail'`.
-Add an `<app-hero-detail>` element near the bottom of the `HeroesComponent` template, where the hero detail view used to be.
+El selector para `HeroDetailComponent` es `'app-hero-detail'`.
 
-Bind the `HeroesComponent.selectedHero` to the element's `hero` property like this.
+Agrega un elemento `<app-hero-detail>` a la parte inferior de las plantillas `HeroesComponent` donde la vista detallada de héroe existió una vez.
+
+Vincula `HeroesComponent.selectedHero` a la propiedad `hero` de este elemento de la siguiente manera:
 
 <code-example path="toh-pt3/src/app/heroes/heroes.component.html" region="hero-detail-binding" header="heroes.component.html (HeroDetail binding)">
 
 </code-example>
 
-`[hero]="selectedHero"` is an Angular [property binding](guide/property-binding).
+`[hero]="selectedHero"` es el [enlace de propiedad](guide/template-syntax#property-binding). de Angular
 
-It's a _one way_ data binding from
-the `selectedHero` property of the `HeroesComponent` to the `hero` property of the target element, which maps to the `hero` property of the `HeroDetailComponent`.
+Este es un enlace de datos unidireccional de la propiedad `selectedHero`  `HeroesComponent` a la propiedad `hero` del elemento objetivo.
+Aquí se asigna la propiedad `hero` de `HeroDetailComponent`.
 
-Now when the user clicks a hero in the list, the `selectedHero` changes.
-When the `selectedHero` changes, the _property binding_ updates `hero`
-and the `HeroDetailComponent` displays the new hero.
+Cuando el usuario hace clic en un héroe en la lista, el `selectedHero` cambia.
+Cuando `selectedHero` cambia,el _enlace de propiedad_ actualiza `hero` y
+  `HeroDetailComponent` muestra el nuevo héroe.
 
-The revised `HeroesComponent` template should look like this:
+La plantilla modificada de `HeroesComponent` se ve así:
 
 <code-example path="toh-pt3/src/app/heroes/heroes.component.html"
   header="heroes.component.html"></code-example>
 
-The browser refreshes and the app starts working again as it did before.
+Una vez que se actualiza el navegador, la aplicación comenzará a funcionar nuevamente como antes.
 
-## What changed?
+## ¿Que ha cambiado?
 
-As [before](tutorial/toh-pt2), whenever a user clicks on a hero name,
-the hero detail appears below the hero list.
-Now the `HeroDetailComponent` is presenting those details instead of the `HeroesComponent`.
+[Como antes](tutorial/toh-pt2), cada vez que un usuario hace clic en el nombre de un héroe, el detalle del héroe aparece debajo de la lista de héroes. Ahora HeroDetailComponent presenta esos detalles en lugar de HeroesComponent.
 
-Refactoring the original `HeroesComponent` into two components yields benefits, both now and in the future:
+Refactorizar el `HeroesComponent` original en dos componentes te beneficiará ahora y en el futuro.
 
-1. You simplified the `HeroesComponent` by reducing its responsibilities.
+1. Simplificado `HeroesComponent` al reducir su responsabilidad.
 
-1. You can evolve the `HeroDetailComponent` into a rich hero editor
-without touching the parent `HeroesComponent`.
+1. Puedes convertir un `HeroDetailComponent` en un editor enriquecido de héroes sin tocar el padre `HeroesComponent` principal.
 
-1. You can evolve the `HeroesComponent` without touching the hero detail view.
+1. Puedes evolucionar `HeroesComponent` sin tocar la vista de detalles del héroe.
 
-1. You can re-use the `HeroDetailComponent` in the template of some future component.
+1. Puedes reutilizar `HeroDetailComponent` en futuros componentes de Plantillas.
 
-## Final code review
+## Revisión final del código
 
-Here are the code files discussed on this page.
+Los archivos de código descritos en esta página son:
 
 <code-tabs>
 
@@ -160,14 +152,10 @@ Here are the code files discussed on this page.
 
 </code-tabs>
 
-## Summary
+## Resumen
 
-* You created a separate, reusable `HeroDetailComponent`.
+* Creaste un `HeroDetailComponent` independiente y reutilizable.
 
+* Usaste el [enlace de propiedad](guide/template-syntax#property-binding) para que el padre `HeroesComponent` pueda controlar al hijo `HeroDetailComponent`.
 
-* You used a [property binding](guide/property-binding) to give the parent `HeroesComponent` control over the child `HeroDetailComponent`.
-
-
-* You used the [`@Input` decorator](guide/inputs-outputs)
-to make the `hero` property available for binding
-by the external `HeroesComponent`.
+* Usaste el [`decorador @Input`](guide/template-syntax#inputs-outputs) para hacer que la propiedad del heroe esté disponible para ser vinculada por el componente `HeroesComponent` externamente.
