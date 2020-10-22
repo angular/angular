@@ -104,11 +104,21 @@ export class ReferenceEmitter {
  */
 export class LocalIdentifierStrategy implements ReferenceEmitStrategy {
   emit(ref: Reference<ts.Node>, context: ts.SourceFile, importFlags: ImportFlags): Expression|null {
+    const refSf = getSourceFile(ref.node);
+
     // If the emitter has specified ForceNewImport, then LocalIdentifierStrategy should not use a
     // local identifier at all, *except* in the source file where the node is actually declared.
-    if (importFlags & ImportFlags.ForceNewImport &&
-        getSourceFile(ref.node) !== getSourceFile(context)) {
+    if (importFlags & ImportFlags.ForceNewImport && refSf !== context) {
       return null;
+    }
+
+    // If referenced node is not an actual TS declaration (e.g. `class Foo` or `function foo() {}`,
+    // etc) and it is in the current file then just use it directly.
+    // This is important because the reference could be a property access (e.g. `exports.foo`). In
+    // such a case, the reference's `identities` property would be `[foo]`, which would result in an
+    // invalid emission of a free-standing `foo` identifier, rather than `exports.foo`.
+    if (!isDeclaration(ref.node) && refSf === context) {
+      return new WrappedNodeExpr(ref.node);
     }
 
     // A Reference can have multiple identities in different files, so it may already have an
