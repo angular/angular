@@ -19,7 +19,7 @@ import {PreparsedElementType, preparseElement} from '../template_parser/template
 import * as t from './r3_ast';
 import {I18N_ICU_VAR_PREFIX, isI18nRootNode} from './view/i18n/util';
 
-const BIND_NAME_REGEXP = /^(?:(?:(bind-)|(let-)|(ref-|#)|(on-)|(bindon-)|(@))(.*))$/;
+const BIND_NAME_REGEXP = /^(?:(bind-)|(let-)|(ref-|#)|(on-)|(bindon-)|(@))(.*)$/;
 
 // Group 1 = "bind-"
 const KW_BIND_IDX = 1;
@@ -390,28 +390,29 @@ class HtmlAstToIvyAst implements html.Visitor {
       delims = DELIMS.EVENT;
     }
     if (delims &&
-        // NB: older versions of the parser would match a start/end delimited
+        // NOTE: older versions of the parser would match a start/end delimited
         // binding iff the property name was terminated by the ending delimiter
         // and the identifier in the binding was non-empty.
         // TODO(ayazhafiz): update this to handle malformed bindings.
         name.endsWith(delims.end) && name.length > delims.start.length + delims.end.length) {
-      const ident = name.substring(delims.start.length, name.length - delims.end.length);
+      const identifier = name.substring(delims.start.length, name.length - delims.end.length);
       if (delims.start === DELIMS.BANANA_BOX.start) {
-        const keySpan = createKeySpan(srcSpan, delims.start, ident);
+        const keySpan = createKeySpan(srcSpan, delims.start, identifier);
         this.bindingParser.parsePropertyBinding(
-            ident, value, false, srcSpan, absoluteOffset, attribute.valueSpan, matchableAttributes,
-            parsedProperties, keySpan);
+            identifier, value, false, srcSpan, absoluteOffset, attribute.valueSpan,
+            matchableAttributes, parsedProperties, keySpan);
         this.parseAssignmentEvent(
-            ident, value, srcSpan, attribute.valueSpan, matchableAttributes, boundEvents);
+            identifier, value, srcSpan, attribute.valueSpan, matchableAttributes, boundEvents);
       } else if (delims.start === DELIMS.PROPERTY.start) {
-        const keySpan = createKeySpan(srcSpan, delims.start, ident);
+        const keySpan = createKeySpan(srcSpan, delims.start, identifier);
         this.bindingParser.parsePropertyBinding(
-            ident, value, false, srcSpan, absoluteOffset, attribute.valueSpan, matchableAttributes,
-            parsedProperties, keySpan);
+            identifier, value, false, srcSpan, absoluteOffset, attribute.valueSpan,
+            matchableAttributes, parsedProperties, keySpan);
       } else {
         const events: ParsedEvent[] = [];
         this.bindingParser.parseEvent(
-            ident, value, srcSpan, attribute.valueSpan || srcSpan, matchableAttributes, events);
+            identifier, value, srcSpan, attribute.valueSpan || srcSpan, matchableAttributes,
+            events);
         addEvents(events, boundEvents);
       }
 
