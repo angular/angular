@@ -1,90 +1,88 @@
-# Next steps: tools and techniques
+# Próximos Pasos: Herramientas y Técnicas
 
-After you understand the basic Angular building blocks, you can learn more
-about the features and tools that can help you develop and deliver Angular applications.
+Una vez que comprendas los conceptos básicos de Angular, puedes aprender más sobre las funcionalidades y herramientas que pueden ayudarte a desarrollar y entregar aplicaciones Angular.
 
-* Work through the [Tour of Heroes](tutorial) tutorial to get a feel for how to fit the basic building blocks together to create a well-designed application.
+* Realiza el tutorial [Tour de Héroes](tutorial) para familiarizarte con los conceptos básicos necesarios para crear una aplicación bien diseñada.
 
-* Check out the [Glossary](guide/glossary) to understand Angular-specific terms and usage.
+* Consulta el [Glosario](guide/glossary) para comprender los términos específicos de Angular y su correspondiente utilización.
 
-* Use the documentation to learn about key features in more depth, according to your stage of development and areas of interest.
+* Utiliza la documentación te permite conocer en detalle las funcionalidades claves, según tu etapa de desarrollo y tus áreas de interés.
 
-## Application architecture
+## Arquitectura de la aplicación
 
-* The [Components and templates](guide/displaying-data) guide explains how to connect the application data in your [components](guide/glossary#component) to your page-display [templates](guide/glossary#template), to create a complete interactive application.
+* La guía de [Componentes y Plantillas](guide/displaying-data) explica como conectar los datos de la aplicación de sus [componentes](guide/glossary#componente) con las [plantillas](guide/glossary#plantilla) de las pantallas, para crear una aplicación completamente interactiva.
 
-* The [NgModules](guide/ngmodules) guide provides in-depth information on the modular structure of an Angular application.
+* La guía de [NgModules](guide/ngmodules) proporciona información detallada sobre la estructura de módulos utilizada en una aplicación Angular.
 
-* The [Routing and navigation](guide/router) guide provides in-depth information on how to construct applications that allow a user to navigate to different [views](guide/glossary#view) within your single-page app.
+* La guía de [Enrutamiento y navigación](guide/router) describe como crear aplicaciones que permitan al usuario navegar entre las diferentes [vistas](guide/glossary#vistas) dentro de su aplicación de una sola página (SPA).
 
-* The [Dependency injection](guide/dependency-injection) guide provides in-depth information on how to construct an application such that each component class can acquire the services and objects it needs to perform its function.
+* La guía de [Injección de dependencias](guide/dependency-injection) brinda información detallada sobre cómo construir una aplicación de modo que cada clase de componente pueda adquirir los servicios y objetos que necesita para realizar su función.
 
-## Responsive programming
+## Programación responsive
 
-The **Components and Templates** guide provides guidance and details of the [template syntax](guide/template-syntax) that you use to display your component data when and where you want it within a view, and to collect input from users that you can respond to.
+La guía de **Componentes y Plantillas** brinda orientación y detalles de la [sintaxis de plantilla](guide/template-syntax) que se utilizan para mostrar la información de sus componentes, cuando y donde lo desees dentro de una vista y para obtener entradas (inputs) de los usuarios a las que puedas responder.   
 
-Additional pages and sections describe some basic programming techniques for Angular apps.
+Las páginas y secciones adicionales describen algunas técnicas básicas de programación para aplicaciones Angular.
 
-* [Lifecycle hooks](guide/lifecycle-hooks): Tap into key moments in the lifetime of a component, from its creation to its destruction, by implementing the lifecycle hook interfaces.
+* [Lifecycle Hooks](guide/lifecycle-hooks): Aprovecha los momentos claves de la vida de un componente, desde su creación hasta su destrucción, implementando las interfaces de los `lifecycle hooks`.
 
-* [Observables and event processing](guide/observables): How to use observables with components and services to publish and subscribe to messages of any type, such as user-interaction events and asynchronous operation results.
+* [Observables y procesamiento de eventos](guide/observables): Cómo utilizar observables con componentes y servicios para publicar y suscribirse a mensajes de cualquier tipo, tales como los eventos de interacción del usuario y los resultados de operaciones asincrónicas.
 
-* [Angular elements](guide/elements): How to package components as *custom elements* using Web Components, a web standard for defining new HTML elements in a framework-agnostic way.
+* [Elementos Angular](guide/elements): Cómo empaquetar componentes como *elementos personalizados* utilizando Web Components, un estándar web para definir nuevos elementos HTML de una manera agnóstica a cualquier framework.
 
-* [Forms](guide/forms-overview): Support complex data entry scenarios with HTML-based input validation.
+* [Formularios](guide/forms-overview): Soporta escenarios complejos de entrada de datos con validación de entradas (inputs) basadas en HTML.
 
-* [Animations](guide/animations): Use Angular's animation library to animate component behavior
-without deep knowledge of animation techniques or CSS.
+* [Animaciones](guide/animations): Utiliza la librería de animación de Angular para animar el comportamiento de los componentes sin necesidad de conocer en profundidad las técnicas de animación o CSS.
 
-## Client-server interaction
+## Interacción Cliente-Servidor
 
-Angular provides a framework for single-page apps, where most of the logic and data resides on the client.
-Most apps still need to access a server using the `HttpClient` to access and save data.
-For some platforms and applications, you might also want to use the PWA (Progressive Web App) model to improve the user experience.
+Angular ofrece un framework para aplicaciones de una sola página (SPA), donde la mayoría de la lógica y los datos se encuentran en el cliente.
+La mayoría de las aplicaciones todavía necesitan acceder a un servidor usando el `HttpClient` para acceder y guardar datos.
+Para algunas plataformas y aplicaciones, se puede también querer utilizar el modelo PWA (Aplicaciones Web Progresivas) para mejorar la experiencia de usuario. 
 
-* [HTTP](guide/http): Communicate with a server to get data, save data, and invoke server-side actions with an HTTP client.
+* [HTTP](guide/http): Comunícate con un servidor para obtener datos, guardarlos e invocar acciones del lado del servidor con un cliente HTTP.
 
-* [Server-side rendering](guide/universal): Angular Universal generates static application pages on the server through server-side rendering (SSR). This allows you to run your Angular app on the server in order to improve performance and show the first page quickly on mobile and low-powered devices, and also facilitate web crawlers.
+* [Renderizado del lado del servidor](guide/universal): Angular Universal genera páginas de aplicación estáticas en el servidor a través de la renderización del lado del servidor (SSR). Esto te permite ejecutar tu aplicación Angular en el servidor para mejorar el rendimiento y mostrar la primera página rápidamente en dispositivos móviles y de baja potencia, y también facilitar los rastreadores web.
 
-* [Service workers and PWA](guide/service-worker-intro): Use a service worker to reduce dependency on the network and significantly improve the user experience.
+* [Service workers y PWA](guide/service-worker-intro): Utiliza un service worker para reducir la dependencia de la red y mejorar significativamente la experiencia del usuario.
 
-* [Web workers](guide/web-worker): Learn how to run CPU-intensive computations in a background thread.
+* [Web workers](guide/web-worker): Aprende a ejecutar cálculos con uso intensivo de la CPU en un hilo en segundo plano.
 
-## Support for the development cycle
+## Soporte del Ciclo de Desarrollo
 
-The **Development Workflow** section describes the tools and processes you use to compile, test, and deploy Angular applications.
+La sección **Workflow de Desarrollo** detalla las herramientas y los procesos utilizados para compilar, probar y desplegar aplicaciones Angular.
 
-* [CLI Command Reference](cli): The Angular CLI is a command-line tool that you use to create projects, generate application and library code, and perform a variety of ongoing development tasks such as testing, bundling, and deployment.
+* [CLI Referencia de Comando](cli): La CLI de Angular es una interfaz de línea de comandos utilizada para crear proyectos, generar código de aplicaciones y librerías y realizar un conjunto de tareas de desarrollo tales como pruebas, empaquetamiento y despliegue de aplicaciones.
 
-* [Compilation](guide/aot-compiler): Angular provides just-in-time (JIT) compilation for the development environment, and ahead-of-time (AOT) compilation for the production environment.
+* [Compilación](guide/aot-compiler): Angular proporciona compilación `just-in-time` (JIT) para el entorno de desarrollo y compilación `ahead-of-time` (AOT) para el entorno de producción.
 
-* [Testing platform](guide/testing): Run unit tests on your application parts as they interact with the Angular framework.
+* [Plataforma de pruebas](guide/testing): Ejecuta pruebas unitarias sobre las distintas partes de tu aplicación a medida que interactúan con el framework de Angular.
 
-* [Deployment](guide/deployment): Learn techniques for deploying your Angular application to a remote server.
+* [Despliegue](guide/deployment): Aprende técnicas para desplegar tu aplicación Angular en un servidor remoto.
 
-* [Security guidelines](guide/security): Learn about Angular's built-in protections against common web-app vulnerabilities and attacks such as cross-site scripting attacks.
+* [Lineamientos de Seguridad](guide/security): Aprende sobre las protecciones integradas por Angular contra las vulnerabilidades y los ataques comunes a las aplicaciones web, como por ejemplo, ataques de cross-site scripting.
 
-* [Internationalization](guide/i18n): Make your app available in multiple languages with Angular's internationalization (i18n) tools.
+* [Internacionalización](guide/i18n): Haz que tu aplicación soporte múltiples lenguajes con las herramientas de internacionalización de Angular (i18n).
 
-* [Accessibility](guide/accessibility): Make your app accessible to all users.
+* [Accesibilidad](guide/accessibility): Haz que tu aplicación sea accesible a todos los usuarios.
 
 
-## File structure, configuration, and dependencies
+## Estructura de Archivos, Configuración y Dependencias
 
-* [Workspace and file structure](guide/file-structure): Understand the structure of Angular workspace and project folders.
+* [Espacio de trabajo y estructura de archivos](guide/file-structure): Comprende la estructura del espacio de trabajo y las carpetas de proyectos en Angular.
 
-* [Building and serving](guide/build): Learn to define different build and proxy server configurations for your project, such as development, staging, and production.
+* [Construcción y servicio](guide/build): Aprende a definir diferentes configuraciones de servidores proxy y construcción para tu proyecto, como por ejemplo desarrollo, staging y producción.
 
-* [npm packages](guide/npm-packages): The Angular Framework, Angular CLI, and components used by Angular applications are packaged as [npm](https://docs.npmjs.com/) packages and distributed via the npm registry. The Angular CLI creates a default `package.json` file, which specifies a starter set of packages that work well together and jointly support many common application scenarios.
+* [Paquetes npm](guide/npm-packages): El Framework de Angular, la CLI de Angular y los componentes usados por las aplicaciones Angular se empaquetan como paquetes [npm](https://docs.npmjs.com/) y se distribuyen a través del registro de `npm`. La CLI de Angular crea por defecto un archivo `package.json`, que especifica un conjunto inicial de paquetes que funcionan bien en conjunto y dan soporte a muchos escenarios de aplicaciones comunes.
 
-* [TypeScript configuration](guide/typescript-configuration): TypeScript is the primary language for Angular application development.
+* [Configuración de Typescript](guide/typescript-configuration): TypeScript es el lenguaje principal utilizado para el desarrollo de aplicaciones Angular.
 
-* [Browser support](guide/browser-support): Make your apps compatible across a wide range of browsers.
+* [Soporte de Navegadores](guide/browser-support): Haz que tus aplicaciones sean compatibles en una amplia gama de navegadores.
 
-## Extending Angular
+## Extendiendo Angular
 
-* [Angular libraries](guide/libraries): Learn about using and creating re-usable libraries.
+* [Librerías Angular](guide/libraries): Aprende a usar y crear librerías reutilizables.
 
-* [Schematics](guide/schematics): Learn about customizing and extending the CLI's generation capabilities.
+* [Esquemas](guide/schematics): Aprende como personalizar y extender las capacidades de generación de la CLI.
 
-* [CLI builders](guide/cli-builder): Learn about customizing and extending the CLI's ability to apply tools to perform complex tasks, such as building and testing applications.
+* [Constructores de la CLI](guide/cli-builder): Aprende a personalizar y extender la capacidad de la CLI de aplicar herramientas para realizar tareas complejas, como la construcción y pruebas de aplicaciones.
