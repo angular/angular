@@ -1,8 +1,8 @@
-<h1>Test Code Page</h1>
+<h1>Página de códigos de prueba </h1>
 
-<h2>&lt;code-tabs&gt;</h2>
+<h2>&lt;Pestañas de código&gt;</h2>
 
-<p>No linenums at code-tabs level</p>
+<p> No hay listas de linenums a nivel de etiquetas de código </p>
 <code-tabs>
   <code-pane header='TS code file' language='ts'>
   class {
@@ -26,7 +26,7 @@
 </code-tabs>
 <p></p>
 
-<p>No linenums at code-tabs level; linenums=true for second HTML pane</p>
+<p>Sin linenums a nivel de etiquetas de código; linenums = verdadero para el segundo panel HTML</p>
 <code-tabs >
   <code-pane header='TS code file' language='ts'>
   class {
@@ -40,10 +40,10 @@
 
 <h2>&lt;code-example&gt;</h2>
 
-<p>One line.</p>
+<p>Una línea.</p>
 <code-example>const foo = 'bar'</code-example>
 
-<p>Multi-line, linenums=true.</p>
+<p>Multi-línea, linenums=true.</p>
 <code-example linenums='true'>
 &lt;hero-details <em>nghost-pmm-5&gt;
   &lt;h2 </em>ngcontent-pmm-5&gt;Bah Dah Bing&lt;/h2&gt;
@@ -53,7 +53,7 @@
 &lt;/hero-details&gt;
 </code-example>
 
-<p>Default linenums (false).</p>
+<p>linenums por defecto (false).</p>
 <code-example>
 &lt;hero-details <em>nghost-pmm-5&gt;
   &lt;h2 </em>ngcontent-pmm-5&gt;Mister Fantastic&lt;/h2&gt;
@@ -63,7 +63,7 @@
 &lt;/hero-details&gt;
 </code-example>
 
-<p>Header on this one.</p>
+<p>Encabezado en este.</p>
 <code-example header="hero-details.component.ts (excerpt)">
   &lt;hero-details <em>nghost-pmm-5&gt;
     &lt;h2 </em>ngcontent-pmm-5&gt;Mister Fantastic&lt;/h2&gt;
@@ -73,55 +73,55 @@
   &lt;/hero-details&gt;
 </code-example>
 
-<p>An "avoid" header on this one.</p>
+<p>Un encabezado "evitar" en este.</p>
 <code-example class="avoid" header="hero-details.component.ts (Avoid)">
   &lt;hero-details <em>nghost-pmm-5&gt;
-    &lt;h2 </em>ngcontent-pmm-5&gt;Mister Fantastic&lt;/h2&gt;
+    &lt;h2 </em>ngcontent-pmm-5&gt;Señor fantástico&lt;/h2&gt;
     &lt;hero-team <em>ngcontent-pmm-5 </em>nghost-pmm-6&gt;
-      &lt;h3 _ngcontent-pmm-6&gt;Losing Team&lt;/h3&gt;
+      &lt;h3 _ngcontent-pmm-6&gt;Equipo Perdedor&lt;/h3&gt;
     &lt;/hero-team&gt;
   &lt;/hero-details&gt;
 </code-example>
 
-## Backticked code blocks
+## Bloques de código con tilde atrás
 
 ```html
   <hero-details>
-    <h2>Mister Fantastic</h2>
+    <h2>Señor fantástico</h2>
     <hero-team>
-      <h3>Losing Team</h3>
+      <h3>Equipo perdedor</h3>
     </hero-team>
   </hero-details>
 ```
 
-<h2>&lt;live-example&gt;</h2>
+<h2>&lt;ejemplo en vivo&gt;</h2>
 
-<p>Plain live-example</p>
-Try this <live-example></live-example>.
+<p>Ejemplo simple en vivo</p>
+Prueba esto <live-example></live-example>.
 
-<p>live-example with title atty</p>
+<p>ejemplo en vivo con título atty</p>
 <live-example title="Good Example"></live-example>
 
-<p>live-example with title body</p>
-<live-example title="Good Example">Try this great example</live-example>
+<p>ejemplo en vivo con el cuerpo del título</p>
+<live-example title="Good Example">Prueba este gran ejemplo</live-example>
 
-<p>live-example with name</p>
+<p>ejemplo en vivo con nombre</p>
 <live-example name="testy" title="Better Example"></live-example>
 
-<p>live-example with spacey name and stackblitz</p>
+<p>ejemplo en vivo con nombre espacial y stackblitz</p>
 <live-example name=" testy " stackblitz="super-stackblitz"></live-example>
 
-<p>live-example with name and stackblitz but no download</p>
+<p>ejemplo en vivo con nombre y stackblitz pero sin descarga</p>
 <live-example name="testy" stackblitz="super-stackblitz" noDownload></live-example>
 
-<p>live-example embedded with name and stackblitz</p>
+<p>ejemplo en vivo  incrustado con nombre y stackblitz</p>
 <live-example embedded name="testy" stackblitz="super-stackblitz"></live-example>
 
-<p>More text follows ...</p>
+<p>Sigue más texto ...</p>
 
-<p>Getting Started Widgets</p>
+<p>Widgets de introducción</p>
 
-<p>Interpolation</p>
+<p>Interpolación</p>
 <aio-gs-interpolation></aio-gs-interpolation>
 
 <p>Property Binding</p>
