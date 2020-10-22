@@ -26,7 +26,7 @@ interface FixedTemplate {
 
 interface InvalidInterpolation {
   original: string;
-  span: AbsoluteSourceSpan,
+  span: AbsoluteSourceSpan;
 }
 
 /** Entry point for the V8 template variable assignment schematic. */
@@ -68,7 +68,7 @@ function fixInvalidInterpolations(
     const origFileContent = tree.read(treeFilePath)?.toString();
     if (origFileContent === undefined) {
       logger.error(
-          'Failed to read file containing template; cannot apply fixes for invalid interpolations.')
+          'Failed to read file containing template; cannot apply fixes for invalid interpolations.');
       return;
     }
 

@@ -12,7 +12,7 @@ import {HostTree} from '@angular-devkit/schematics';
 import {SchematicTestRunner, UnitTestTree} from '@angular-devkit/schematics/testing';
 import * as shx from 'shelljs';
 
-fdescribe('invalid interpolation migration', () => {
+describe('invalid interpolation migration', () => {
   let runner: SchematicTestRunner;
   let host: TempScopedNodeJsSyncHost;
   let tree: UnitTestTree;
