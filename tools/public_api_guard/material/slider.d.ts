@@ -5,7 +5,6 @@ export declare class MatSlider extends _MatSliderMixinBase implements ControlVal
     protected _document: Document;
     _isActive: boolean;
     _isSliding: boolean;
-    ariaValuetext: string;
     readonly change: EventEmitter<MatSliderChange>;
     get displayValue(): string | number;
     displayWith: (value: number) => string | number;
@@ -72,7 +71,7 @@ export declare class MatSlider extends _MatSliderMixinBase implements ControlVal
     static ngAcceptInputType_tickInterval: NumberInput;
     static ngAcceptInputType_value: NumberInput;
     static ngAcceptInputType_vertical: BooleanInput;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatSlider, "mat-slider", ["matSlider"], { "disabled": "disabled"; "color": "color"; "tabIndex": "tabIndex"; "invert": "invert"; "max": "max"; "min": "min"; "step": "step"; "thumbLabel": "thumbLabel"; "tickInterval": "tickInterval"; "value": "value"; "displayWith": "displayWith"; "ariaValuetext": "aria-valuetext"; "vertical": "vertical"; }, { "change": "change"; "input": "input"; "valueChange": "valueChange"; }, never, never>;
+    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatSlider, "mat-slider", ["matSlider"], { "disabled": "disabled"; "color": "color"; "tabIndex": "tabIndex"; "invert": "invert"; "max": "max"; "min": "min"; "step": "step"; "thumbLabel": "thumbLabel"; "tickInterval": "tickInterval"; "value": "value"; "displayWith": "displayWith"; "vertical": "vertical"; }, { "change": "change"; "input": "input"; "valueChange": "valueChange"; }, never, never>;
     static ɵfac: i0.ɵɵFactoryDef<MatSlider, [null, null, null, { optional: true; }, { attribute: "tabindex"; }, null, null, { optional: true; }]>;
 }
 
