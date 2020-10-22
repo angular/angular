@@ -137,7 +137,7 @@ describe('site App', function() {
       expect(groupButtons.count()).toBe(3);
 
       const texts = groupButtons.map<string>(btn => btn && btn.getText());
-      expect(texts).toEqual(['ANGULAR', 'COLLABORATORS', 'GDE']);
+      expect(texts).toEqual(['ANGULAR', 'GDE', 'COLABORADORES']);
     });
 
     it('should have contributors listed in each group', () => {

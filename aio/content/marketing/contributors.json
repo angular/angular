@@ -272,7 +272,7 @@
     "website": "https://www.softwarearchitekt.at",
     "bio": "Trainer and Consultant with focus on Angular. Writes for O'Reilly, the German Java Magazine and Heise. Regularly speaks at conferences.",
     "mentor": "mgechev",
-    "groups": ["GDE", "Collaborators"]
+    "groups": ["GDE", "Colaboradores"]
   },
   "maximsalnikov": {
     "name": "Maxim Salnikov",
@@ -549,7 +549,7 @@
     "twitter": "samjulien",
     "website": "http://www.samjulien.com/",
     "bio": "Sam Julien builds software, articles, video courses, and campfires. A developer, speaker, writer, and GDE in the Pacific Northwest, Sam's favorite thing in the world is changing someone's life by teaching them to code.",
-    "groups": ["Collaborators", "GDE"],
+    "groups": ["Colaboradores", "GDE"],
     "mentor": "gkalpak"
   },
   "tracylee": {
@@ -562,7 +562,7 @@
   },
   "jiali": {
     "name": "Jia Li",
-    "groups": ["Collaborators"],
+    "groups": ["Colaboradores"],
     "mentor": "mhevery",
     "picture": "JiaLiPassion.jpg",
     "twitter": "Jialipassion",
@@ -572,32 +572,32 @@
   "cexbrayat": {
     "name": "Cédric Exbrayat",
     "mentor": "petebacondarwin",
-    "groups": ["Collaborators"],
+    "groups": ["Colaboradores"],
     "picture": "cexbrayat.jpg",
     "bio": "Author of `Become a ninja with Angular (2+)` https://books.ninja-squad.com/angular - Angular trainer and @Ninja-Squad co-founder"
   },
   "ajitsinghkaler": {
     "name": "Ajit Singh",
-    "groups": ["Collaborators"],
+    "groups": ["Colaboradores"],
     "picture": "ajitsinghkaler.jpg",
     "twitter": "ajitsinghkaler",
     "bio": "Software Engineer in Bangalore, India who loves to learn something new and is interested in front end technologies"
   },
   "CaerusKaru": {
     "name": "Adam Plumer",
-    "groups": ["Collaborators"],
+    "groups": ["Colaboradores"],
     "mentor": "vikerman",
     "picture": "CaerusKaru.jpg"
   },
   "jbedard": {
     "name": "Jason Bedard",
-    "groups": ["Collaborators"],
+    "groups": ["Colaboradores"],
     "mentor": "kyliau",
     "picture": "jbedard.jpg"
   },
   "JoostK": {
     "name": "Joost Koehoorn",
-    "groups": ["Collaborators"],
+    "groups": ["Colaboradores"],
     "mentor": "alxhub",
     "picture": "joostk.jpg",
     "twitter": "devjoost",
@@ -605,7 +605,7 @@
   },
   "sonukapoor": {
     "name": "Sonu Kapoor",
-    "groups": ["Collaborators"],
+    "groups": ["Colaboradores"],
     "picture": "sonukapoor.jpg",
     "website": "https://www.linkedin.com/in/sonu-kapoor/",
     "bio": "Sonu is a Software Engineer from Toronto, with a high interest in front-end technologies and algorithms."
@@ -702,7 +702,7 @@
   },
   "ayazhafiz": {
     "name": "Ayaz Hafiz",
-    "groups": ["Collaborators"],
+    "groups": ["Colaboradores"],
     "picture": "hafiz.jpg",
     "website": "https://github.com/ayazhafiz",
     "bio": "Ayaz is an undergraduate student with interests in free software."
