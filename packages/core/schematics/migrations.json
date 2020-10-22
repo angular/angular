@@ -79,6 +79,11 @@
       "version": "11.0.0-beta",
       "description": "Updates the `initialNavigation` property for `RouterModule.forRoot`.",
       "factory": "./migrations/initial-navigation/index"
+    },
+    "migration-v12-invalid-interpolations": {
+      "version": "12",
+      "description": "Fixes interpolation-like markup not accepted by the compiler parser.",
+      "factory": "./migrations/invalid-interpolations/index"
     }
   }
 }
