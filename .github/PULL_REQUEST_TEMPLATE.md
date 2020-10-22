@@ -1,12 +1,12 @@
 ## Lista de Verificación del PR
 Comprueba si tu PR cumple los siguientes requisitos:
 
-- [ ] El mensaje de commit esta conforme con [nuestras reglas](https://github.com/angular/angular/blob/master/CONTRIBUTING.md#commit)
+- [ ] El mensaje de commit esta conforme con [nuestras reglas](https://github.com/angular-hispano/angular/blob/master/CONTRIBUTING.md#-formato-para-el-mensaje-de-los-commits)
 - [ ] Probe los cambios que agregué (arreglo de bugs / funcionalidades)
 - [ ] Revisé previamente las traducciones o cambios de contenido
 - [ ] Consulté el [diccionario de términos](https://github.com/angular-hispano/angular/blob/master/aio/diccionario-de-términos.md) en español
 - [ ] He creado dos archivos con la extensión correspondiente(.en.md para el archivo en inglés y .md para el Archivo en español)
-- [ ] La PR fue enlazada con el issue correspondiente
+- [ ] He enlazado el commit con el issue correspondiente <!-- ejemplo Fixes #X  -->
 
 
 ## Tipo de PR
