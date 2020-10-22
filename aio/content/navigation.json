@@ -245,11 +245,6 @@
               "tooltip": "Angular's dependency injection system creates and delivers dependent services to Angular-created classes."
             },
             {
-              "url": "guide/hierarchical-dependency-injection",
-              "title": "Hierarchical Injectors",
-              "tooltip": "An injector tree parallels the component tree and supports nested dependencies."
-            },
-            {
               "url": "guide/dependency-injection-providers",
               "title": "DI Providers",
               "tooltip": "More about the different kinds of providers."
@@ -922,6 +917,11 @@
                   "tooltip": "How observables compare to promises and other message passing techniques."
                 }
               ]
+            },
+            {
+              "url": "guide/hierarchical-dependency-injection",
+              "title": "Hierarchical Injectors",
+              "tooltip": "An injector tree parallels the component tree and supports nested dependencies."
             }
           ]
         },
