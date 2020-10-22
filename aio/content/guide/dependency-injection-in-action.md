@@ -447,7 +447,7 @@ But they did neither.
 
 When you use a class this way, it's called a *class interface*.
 
-As mentioned in [DI Providers](guide/dependency-injection-providers#interface-not-valid-token),
+As mentioned in [DI Providers](guide/dependency-injection-providers#di-and-interfaces),
 an interface is not a valid DI token because it is a TypeScript artifact that doesn't exist at run time.
 Use this abstract class interface to get the strong typing of an interface,
 and also use it as a provider token in the way you would a normal class.

@@ -89,5 +89,5 @@ Register a provider with a component when you must limit a service instance to a
 You may also be interested in:
 * [Singleton Services](guide/singleton-services), which elaborates on the concepts covered on this page.
 * [Lazy Loading Modules](guide/lazy-loading-ngmodules).
-* [Tree-shakable Providers](guide/dependency-injection-providers#tree-shakable-providers).
+* [Dependency providers](guide/dependency-injection-providers).
 * [NgModule FAQ](guide/ngmodule-faq).
