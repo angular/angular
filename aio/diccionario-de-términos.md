@@ -47,3 +47,4 @@ A continuación algunas palabras las cuales hemos definido como traducción corr
 | Shell | Armazón/Carcaza |
 | Schematics | Esquemas |
 | Template HTML  | Plantilla HTML |
+| Cross Platform | Multiplataforma |
