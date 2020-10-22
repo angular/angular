@@ -230,6 +230,12 @@
             "title": "Angular Playground",
             "url": "https://angularplayground.it/"
           },
+          "angular-prerender": {
+            "desc": "A command line tool to prerender Angular Apps that uses Angular Universal but also supports Scully plugins.",
+            "logo": "https://repository-images.githubusercontent.com/142886533/bd323700-e8ff-11e9-9645-75bc009ee359",
+            "title": "angular-prerender",
+            "url": "https://github.com/chrisguttandin/angular-prerender"
+          },
           "nx": {
             "desc": "Nx (Nrwl Extensions for Angular) is an open source toolkit built on top of Angular CLI to help enterprise teams develop Angular at scale.",
             "title": "Nx",
