@@ -1,76 +1,76 @@
-# Two-way binding `[(...)]`
+# Enlace bidireccional `[(...)]`
 
-Two-way binding gives your app a way to share data between a component class and
-its template.
+El enlace bidireccional le brinda a su aplicación una forma de compartir datos entre una clase de componente y la plantilla.
 
 <div class="alert is-helpful">
 
-See the <live-example></live-example> for a working example containing the code snippets in this guide.
+Consulta el <live-example></live-example> para ver un ejemplo funcional que contiene los fragmentos de código de esta guía.
+
 
 </div>
 
-## Basics of two-way binding
+## Conceptos básicos del enlace bidireccional
 
-Two-way binding does two things:
+El enlace bidireccional hace dos cosas:
 
-1. Sets a specific element property.
-1. Listens for an element change event.
+1. Establece una propiedad de elemento específica.
+1. Escucha un evento de cambio de elemento.
 
-Angular offers a special _two-way data binding_ syntax for this purpose, `[()]`.
-The `[()]` syntax combines the brackets
-of property binding, `[]`, with the parentheses of event binding, `()`.
+Angular ofrece una sintaxis especial _enlace de datos bidireccional_ para este propósito, `[()]`.
+La sintaxis `[()]` combina los corchetes
+de enlace de propiedad, `[]`, con el paréntesis de vinculación de eventos, `()`.
 
 <div class="callout is-important">
 
 <header>
-  [( )] = banana in a box
+  [( )] = banana en una caja
 </header>
 
-Visualize a *banana in a box* to remember that the parentheses go _inside_ the brackets.
+Visualiza una *banana en una caja* para recordar que los paréntesis van _dentro_ de los corchetes.
 
 </div>
 
-The `[()]` syntax is easy to demonstrate when the element has a settable
-property called `x` and a corresponding event named `xChange`.
-Here's a `SizerComponent` that fits this pattern.
-It has a `size` value property and a companion `sizeChange` event:
+La sintaxis `[()]` es fácil de demostrar cuando el elemento tiene un valor configurable
+propiedad llamada `x` y un evento correspondiente llamado `xChange`.
+Aquí hay un `SizerComponent` que se ajusta a este patrón.
+Tiene una propiedad de valor `size` y un evento acompañante `sizeChange`:
 
 <code-example path="two-way-binding/src/app/sizer/sizer.component.ts" header="src/app/sizer.component.ts"></code-example>
 
 <code-example path="two-way-binding/src/app/sizer/sizer.component.html" header="src/app/sizer.component.html"></code-example>
 
-The initial `size` is an input value from a property binding.
-Clicking the buttons increases or decreases the `size`, within
-min/max value constraints,
-and then raises, or emits, the `sizeChange` event with the adjusted size.
+El `size` inicial es un valor de entrada de un enlace de propiedad.
+Al hacer clic en los botones, aumenta o disminuye el `size`, dentro de
+restricciones de valor mínimo/máximo,
+y luego genera, o emite, el evento `sizeChange` con el tamaño ajustado.
 
-Here's an example in which the `AppComponent.fontSizePx` is two-way bound to the `SizerComponent`:
+Aquí hay un ejemplo en el que `AppComponent.fontSizePx` está enlazado en dos direcciones al `SizerComponent`:
 
 <code-example path="two-way-binding/src/app/app.component.html" header="src/app/app.component.html (two-way-1)" region="two-way-1"></code-example>
 
-The `AppComponent.fontSizePx` establishes the initial `SizerComponent.size` value.
+El `AppComponent.fontSizePx` establece el valor inicial de `SizerComponent.size`.
 
 <code-example path="two-way-binding/src/app/app.component.ts" header="src/app/app.component.ts" region="font-size"></code-example>
 
-Clicking the buttons updates the `AppComponent.fontSizePx` via the two-way binding.
-The revised `AppComponent.fontSizePx` value flows through to the _style_ binding,
-making the displayed text bigger or smaller.
+Al hacer clic en los botones, se actualiza `AppComponent.fontSizePx` a través del enlace bidireccional.
+El valor revisado de `AppComponent.fontSizePx` fluye a través del enlace _style_,
+haciendo que el texto mostrado sea más grande o más pequeño.
 
-The two-way binding syntax is really just syntactic sugar for a _property_ binding and an _event_ binding.
-Angular desugars the `SizerComponent` binding into this:
+La sintaxis de enlace bidireccional es en realidad sólo azúcar sintáctica para un enlace _property_ y un enlace _event_.
+Angular quita el azúcar de el enlace `SizerComponent` en esto:
 
 <code-example path="two-way-binding/src/app/app.component.html" header="src/app/app.component.html (two-way-2)" region="two-way-2"></code-example>
 
-The `$event` variable contains the payload of the `SizerComponent.sizeChange` event.
-Angular assigns the `$event` value to the `AppComponent.fontSizePx` when the user clicks the buttons.
+La variable `$event` contiene la carga útil del evento `SizerComponent.sizeChange`.
+Angular asigna el valor `$event` al ʻAppComponent.fontSizePx` cuando el usuario hace clic en los botones.
 
-## Two-way binding in forms
+## Enlace bidireccional en formularios
 
-The two-way binding syntax is a great convenience compared to
-separate property and event bindings. It would be convenient to
-use two-way binding with HTML form elements like `<input>` and
-`<select>`. However, no native HTML element follows the `x`
-value and `xChange` event pattern.
+La sintaxis de enlace bidireccional es una gran comodidad en comparación con
+propiedades independientes y enlaces de eventos. Seria conveniente
+utilizar enlace bidireccional con elementos de formulario HTML como `<input>` y
+`<select>`. Sin embargo, ningún elemento HTML nativo sigue a el valor `x`
+ y el patrón de evento `xChange`.
 
-For more on how to use two-way binding in forms, see
+Para obtener más información sobre cómo utilizar la vinculación bidireccional en formularios, consulte
 Angular [NgModel](guide/built-in-directives#ngModel).
