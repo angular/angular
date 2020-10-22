@@ -14,7 +14,7 @@ Una vez que comprendas los conceptos básicos de Angular, puedes aprender más s
 
 * La guía de [NgModules](guide/ngmodules) proporciona información detallada sobre la estructura de módulos utilizada en una aplicación Angular.
 
-* La guía de [Enrutamiento y navigación](guide/router) describe como crear aplicaciones que permitan al usuario navegar entre las diferentes [vistas](guide/glossary#vistas) dentro de su aplicación de una sola página (SPA).
+* La guía de [Enrutamiento y navigación](guide/router) describe como crear aplicaciones que permitan al usuario navegar entre las diferentes [vistas](guide/glossary#vista) dentro de su aplicación de una sola página (SPA).
 
 * La guía de [Injección de dependencias](guide/dependency-injection) brinda información detallada sobre cómo construir una aplicación de modo que cada clase de componente pueda adquirir los servicios y objetos que necesita para realizar su función.
 
