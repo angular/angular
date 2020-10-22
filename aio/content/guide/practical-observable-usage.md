@@ -1,23 +1,23 @@
 # Practical observable usage
 
-Here are some examples of domains in which observables are particularly useful.
+Aquí tienes algunos ejemplos de dominios en los que las observables son particularmente útiles.
 
-## Type-ahead suggestions
+## Sugerencias de autocompletado
 
-Observables can simplify the implementation of type-ahead suggestions. Typically, a type-ahead has to do a series of separate tasks:
+Las observables pueden simplificar la implementación de las sugerencias del autocompletado. Normalmente, un autocompletado realiza una serie de tareas:
 
-* Listen for data from an input.
-* Trim the value (remove whitespace) and make sure it’s a minimum length.
-* Debounce (so as not to send off API requests for every keystroke, but instead wait for a break in keystrokes).
-* Don’t send a request if the value stays the same (rapidly hit a character, then backspace, for instance).
-* Cancel ongoing AJAX requests if their results will be invalidated by the updated results.
+* Recibe la información desde una entrada.
+* Recorta el valor (eliminando espacios) y se asegura de que tiene una longitud mínima.
+* Hacer debounce (no manda solicitudes a la API por cada tecla pulsada, sino que espera una parada entre letras).
+* No se manda una solicitud si el valor es el mismo (por ejemplo, teclear un caracter y, al momento, borrarlo)
+* Cancelar solicitudes AJAX activas si sus resultados van a ser invalidados por los resultados actualizados siguientes.
 
-Writing this in full JavaScript can be quite involved. With observables, you can use a simple series of RxJS operators:
+Escribir esto íntegramente en JavaScript puede ser bastante tedioso. Con las observables, puedes utilizar una serie de simples operadores RxJS:
 
 <code-example path="practical-observable-usage/src/typeahead.ts" header="Typeahead"></code-example>
 
-## Exponential backoff
+## Retroceso exponencial
 
-Exponential backoff is a technique in which you retry an API after failure, making the time in between retries longer after each consecutive failure, with a maximum number of retries after which the request is considered to have failed. This can be quite complex to implement with promises and other methods of tracking AJAX calls. With observables, it is very easy:
+El retroceso exponencial es una técnica en la cual vuelves a intentar la API después de un fracaso, haciendo que el tiempo entre intentos tras cada fracaso consecutivo sea cada vez más largo, con un número máximo de intentos hasta que consideras que la solicitud ha sido fallida. Esto puede ser bastante complejo de implementar con promesas y otros métodos de tracking que AJAX emplea. Con observables, es muy fácil:
 
 <code-example path="practical-observable-usage/src/backoff.ts" header="Exponential backoff"></code-example>
