@@ -6,15 +6,15 @@ import { Routes, RouterModule } from '@angular/router'; // CLI imports router
 const routes: Routes = [
   {
     path: 'first-component',
-    component: FirstComponent, // this is the component with the <router-outlet> in the template
+    component: FirstComponent, // 이 컴포넌트 템플릿에 <router-outlet>이 존재합니다.
     children: [
       {
-        path: 'child-a', // child route path
-        component: ChildAComponent, // child route component that the router renders
+        path: 'child-a', // 자식 라우팅 규칙과 연결되는 주소
+        component: ChildAComponent, // 라우터가 렌더링하는 자식 컴포넌트
       },
       {
         path: 'child-b',
-        component: ChildBComponent, // another child route component that the router renders
+        component: ChildBComponent, // 또다른 자식 컴포넌트
       },
     ],
   },

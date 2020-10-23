@@ -292,7 +292,10 @@ In this app, the router should select the route to the `HeroListComponent` only 
 
 <div class="callout is-helpful">
 
+  <!--
   <header>Spotlight on pathMatch</header>
+  -->
+  <header>pathMatch 자세하게 알아보기</header>
 
   Technically, `pathMatch = 'full'` results in a route hit when the *remaining*, unmatched  segments of the URL match `''`.
   In this example, the redirect is in a top level route so the *remaining* URL and the  *entire* URL are the same thing.

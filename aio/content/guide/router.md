@@ -267,7 +267,7 @@ Angular CLI로 앱을 생성했다면 이 과정은 이미 처리되어 있습�
 <!--
 ### Route order
 -->
-### 라우팅 규칙 순서
+### 라우팅 규칙 적용 순서
 
 <!--
 The order of routes is important because the `Router` uses a first-match wins strategy when matching routes, so more specific routes should be placed above less specific routes.
@@ -369,9 +369,14 @@ To get information from a route:
 
 
 {@a wildcard-route-how-to}
+{@a setting-up-wildcard-routes}
 
+<!--
 ## Setting up wildcard routes
+-->
+## 와일드카드(`*`) 라우팅 규칙 등록하기
 
+<!--
 A well-functioning application should gracefully handle when users attempt to navigate to a part of your application that does not exist.
 To add this functionality to your application, you set up a wildcard route.
 The Angular router selects this route any time the requested URL doesn't match any router paths.
@@ -390,12 +395,34 @@ For the component property, you can define any component in your application.
 Common choices include an application-specific `PageNotFoundComponent`, which you can define to [display a 404 page](guide/router#404-page-how-to) to your users; or a redirect to your application's main component.
 A wildcard route is the last route because it matches any URL.
 For more detail on why order matters for routes, see [Route order](guide/router#route-order).
+-->
+완성도 높은 애플리케이션이라면 애플리케이션이 허용하지 않는 주소로 사용자가 접근했을 때도 자연스럽게 처리해야 합니다.
+이 기능을 구현하려면 와일드카드 라우팅 규칙을 추가하면 됩니다.
+이 규칙을 등록하면 사용자가 등록되지 않은 URL로 화면을 이동하려고 할 때 와일드카드 라우팅 규칙이 적용됩니다.
+
+와일드카드 라우팅 규칙을 설정하려면 `routes` 배열에 다음 코드를 추가하면 됩니다.
+
+<code-example header="AppRoutingModule (일부)">
+
+  { path: '**', component: <component-name> }
+
+</code-example>
+
+별표(`*`, asterisk) 2개가 사용된 `**`는 Angular가 와일드카드 라우팅 규칙을 구분하기 위한 문자열입니다.
+그리고 `component`에는 와일드카드 라우팅 규칙이 적용될 때 화면에 표시할 컴포넌트를 지정합니다.
+일반적으로는 `PageNotFoundComponent`와 같은 컴포넌트를 만들어서 [404 에러 페이지](guide/router#404-page-how-to)를 표시하거나, 애플리케이션 최상위 주소로 리다이렉션하는 방법을 선택할 수 있습니다.
+와일드카드 라우팅 규칙은 모든 URL과 매칭되기 때문에 라우팅 규칙 중 가장 나중에 등록해야 합니다.
+라우팅 규칙의 순서에 대해 자세하게 알아보려면 [라우팅 규칙 적용 순서](guide/router#route-order) 문서를 참고하세요.
 
 
 {@a 404-page-how-to}
 
+<!--
 ## Displaying a 404 page
+-->
+## 404 에러 페이지 표시하기
 
+<!--
 To display a 404 page, set up a [wildcard route](guide/router#wildcard-route-how-to) with the `component` property set to the component you'd like to use for your 404 page as follows:
 
 <code-example path="router/src/app/app-routing.module.8.ts" region="routes-with-wildcard" header="AppRoutingModule (excerpt)">
@@ -404,9 +431,22 @@ To display a 404 page, set up a [wildcard route](guide/router#wildcard-route-how
 
 The last route with the `path` of `**` is a wildcard route.
 The router selects this route if the requested URL doesn't match any of the paths earlier in the list and sends the user to the `PageNotFoundComponent`.
+-->
+404 에러 페이지를 표시하려면 [와일드카드 라우팅 규칙](guide/router#wildcard-route-how-to)을 등록할 때 `component`에 원하는 컴포넌트를 지정하면 됩니다:
 
+<code-example path="router/src/app/app-routing.module.8.ts" region="routes-with-wildcard" header="AppRoutingModule (일부)">
+</code-example>
+
+마지막에 등록된 `path`가 `**`인 라우팅 규칙이 와일드카드 라우팅 규칙입니다.
+이제 접속하려는 URL과 매칭되는 라우팅 규칙을 발견하지 못하면 이 라우팅 규칙이 적용되면서 `PageNotFoundComponent`가 화면에 표시됩니다.
+
+
+<!--
 ## Setting up redirects
+-->
+## 리다이렉션 설정하기
 
+<!--
 To set up a redirect, configure a route with the `path` you want to redirect from, the `component` you want to redirect to, and a `pathMatch` value that tells the router how to match the URL.
 
 <code-example path="router/src/app/app-routing.module.8.ts" region="redirect" header="AppRoutingModule (excerpt)">
@@ -418,11 +458,27 @@ Notice that this redirect precedes the wildcard route.
 Here, `path: ''` means to use the initial relative URL (`''`).
 
 For more details on `pathMatch` see [Spotlight on `pathMatch`](guide/router-tutorial-toh#pathmatch).
+-->
+리다이렉션하는 라우팅 규칙을 등록하려면 `path`에 대상이 될 주소를 지정하고 `redirectTo`에 리다이렉션할 주소를 지정한 뒤에 `pathMatch`에 원하는 리다이렉현할 때 적용할 규칙을 지정합니다.
+
+<code-example path="router/src/app/app-routing.module.8.ts" region="redirect" header="AppRoutingModule (일부)">
+</code-example>
+
+이 예제에서 세번째 추가된 라우팅 규칙은 기본 주소로 접근했을 때 `first-component` 주소로 이동하도록 작성한 리다이렉션 라우팅 규칙입니다.
+이 규칙이 와일드카드 라우팅 앞에 온다는 것도 확인해 보세요.
+이 예제에서 작성한 `path: ''`는 애플리케이션을 접속하는 기본 URL(`''`)을 의미합니다.
+
+`pathMatch`에 대해 자세하게 알아보려면 [`pathMatch` 자세하게 알아보기](guide/router-tutorial-toh#pathmatch) 문서를 참고하세요.
+
 
 {@a nesting-routes}
 
+<!--
 ## Nesting routes
+-->
+## 중첩 라우팅 규칙
 
+<!--
 As your application grows more complex, you may want to create routes that are relative to a component other than your root component.
 These types of nested routes are called child routes.
 This means you're adding a second `<router-outlet>` to your app, because it is in addition to the `<router-outlet>` in `AppComponent`.
@@ -440,11 +496,33 @@ The one difference is that you place child routes in a `children` array within t
 <code-example path="router/src/app/app-routing.module.9.ts" region="child-routes" header="AppRoutingModule (excerpt)">
 
 </code-example>
+-->
+애플리케이션이 점점 복잡해지다 보면 특정 컴포넌트 안에서 동작하는 라우팅 규칙을 추가하고 싶은 경우도 있습니다.
+이렇게 중첩된 라우팅 규칙을 자식 라우팅 규칙(child route)이라고 합니다.
+라우팅 규칙을 중첩해서 적용하려면 컴포넌트에 `<router-outlet>`을 더 추가해야 합니다.
+왜냐하면 첫번째 계층에서 동작하는 라우팅 규칙은 `AppComponent`의 `<router-outlet>` 안에서 동작하기 때문입니다.
+
+아래 예제 코드에는 자식 컴포넌트가 `child-a`, `child-b` 2개 존재합니다.
+그리고 `FirstComponent`에는 `<nav>`가 존재하며 `AppComponent`에 있는 `<router-outlet>` 외에 또다른 `<router-outlet>`이 추가되어 있습니다.
+
+<code-example path="router/src/app/app.component.8.html" region="child-routes" header="In the template">
+</code-example>
+
+자식 라우팅 규칙도 일반 라우팅 규칙과 비슷하게 `path`, `component` 프로퍼티로 정의합니다.
+자식 라우팅 규칙은 부모 라우팅 규칙이 있고, 부모 라우팅 규칙의 `children` 배열에 정의한다는 점만 다릅니다.
+
+<code-example path="router/src/app/app-routing.module.9.ts" region="child-routes" header="AppRoutingModule (일부)">
+</code-example>
+
 
 {@a using-relative-paths}
 
+<!--
 ## Using relative paths
+-->
+## 상대주소 사용하기
 
+<!--
 Relative paths allow you to define paths that are relative to the current URL segment.
 The following example shows a relative route to another component, `second-component`.
 `FirstComponent` and `SecondComponent` are at the same level in the tree, however, the link to `SecondComponent` is situated within the `FirstComponent`, meaning that the router has to go up a level and then into the second directory to find the `SecondComponent`.
@@ -455,9 +533,25 @@ Rather than writing out the whole path to get to `SecondComponent`, you can use 
 </code-example>
 
 In addition to `../`, you can use `./` or no leading slash to specify the current level.
+-->
+상대주소를 사용하면 현재 URL에 상대적인 위치로 라우팅할 주소를 지정할 수 있습니다.
+아래 예제는 `second-component`로 이동하는 링크에 상대주소를 적용한 예제 코드입니다.
+`FirstComponent`와 `SecondComponent`는 라우팅 계층 트리에서 같은 계층에 있지만 이 링크는 `FirstComponent` 안에서 `SecondComponent`로 이동하는 기능을 제공하려고 합니다.
+결국 상위 계층으로 한단계 이동한 후에 `SecondComponent`를 찾아야 합니다.
+이 때 `SecondComponent`로 이동하는 전체 경로를 사용하는 대신 상대 주소를 가리키는 방식으로 `../` 라는 표현을 사용했습니다.
 
+<code-example path="router/src/app/app.component.8.html" region="relative-route" header="In the template">
+</code-example>
+
+`../`와 비슷하게 `./`, `.`를 사용하면 현재 라우팅 계층의 빈 주소를 가리킵니다.
+
+
+<!--
 ### Specifying a relative route
+-->
+### 상대 주소로 이동하기
 
+<!--
 To specify a relative route, use the `NavigationExtras` `relativeTo` property.
 In the component class, import `NavigationExtras` from the `@angular/router`.
 
@@ -471,9 +565,26 @@ The `navigate()` arguments configure the router to use the current route as a ba
 </code-example>
 
 The `goToItems()` method interprets the destination URI as relative to the activated route and navigates to the `items` route.
+-->
+상대 라우팅 규칙을 지정하려면 `NavigationExtras` 객체의 `relativeTo` 프로퍼티를 사용하면 됩니다.
+`NavigationExtras` 객체는 `@angular/router`에 정의되어 있는 객체입니다.
 
+화면을 이동할 때 `relativeTo` 옵션을 사용해 봅시다.
+아래 예제에서 `items`로 지정된 링크 인자 배열 뒤에 객체 옵션을 추가하고 이 객체에 `relativeTo` 프로퍼티로 `ActivatedRoute`를 지정합니다.
+이 예제의 경우에는 `this.route` 입니다.
+
+<code-example path="router/src/app/app.component.4.ts" region="relative-to" header="RelativeTo">
+</code-example>
+
+그러면 `navigate()` 함수가 실행되면서 `items` 주소로 이동할 떄 현재 라우팅 규칙에 대한 상대 주소로 이 주소를 처리합니다.
+
+
+<!--
 ## Accessing query parameters and fragments
+-->
+## 쿼리 인자, URL 조각 참고하기
 
+<!--
 Sometimes, a feature of your application requires accessing a part of a route, such as a query parameter or a fragment. The Tour of Heroes app at this stage in the tutorial uses a list view in which you can click on a hero to see details. The router uses an `id` to show the correct hero's details.
 
 First, import the following members in the component you want to navigate from.
@@ -545,18 +656,107 @@ Inject `ActivatedRoute` and `Router` in the constructor of the component class s
   }
 
 </code-example>
+-->
+때로는 쿼리 변수나 URL 조각 같은 라우팅 규칙 관련 정보에 접근해야 할 때가 있습니다.
+히어로들의 여행 앱에서도 사용자가 히어로를 클릭하면 상세정보 화면으로 이동하는데, 이 때 히어로의 `id`를 인자로 받아서 화면을 구성합니다.
+
+먼저, 아래 심볼들을 컴포넌트 파일에 로드합니다.
+
+<code-example header="Component import statements (일부)">
+
+import { ActivatedRoute } from '@angular/router';
+import { Observable } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
+
+</code-example>
+
+그리고 현재 활성화된 라우팅 규칙(`ActivatedRoute`)을 의존성으로 주입합니다:
+
+<code-example header="Component (일부)">
+constructor(private route: ActivatedRoute) {}
+</code-example>
+
+이제 컴포넌트 클래스 `ngOnInit()` 안에서 현재 활성화 된 라우팅 규칙으로 전달되는 `id` 필드를 컴포넌트 클래스의 옵저버블 프로퍼티 `heroes$`에 할당해 봅시다.
+이 때 히어로 목록은 배열로 존재하며, 관련 서비스가 이미 주입되어 있고, 화면을 표시하는 템플릿 코드도 이미 준비되어 있다는 것을 전제로 합니다.
+
+<code-example header="Component 1 (일부)">
+heroes$: Observable<Hero[]>;
+selectedId: number;
+heroes = HEROES;
+
+ngOnInit() {
+  this.heroes$ = this.route.paramMap.pipe(
+    switchMap(params => {
+      this.selectedId = Number(params.get('id'));
+      return this.service.getHeroes();
+    })
+  );
+}
+
+</code-example>
+
+다음에는 이동하려는 컴포넌트 파일에 이런 심볼들을 로드합니다:
+
+<code-example header="Component 2 (일부)">
+
+import { Router, ActivatedRoute, ParamMap } from '@angular/router';
+import { Observable } from 'rxjs';
+
+</code-example>
+
+컴포넌트 클래스의 생성자에 `ActivatedRoute`와 `Router`를 의존성으로 주입하면 라우터 관련 정보를 참조할 수 있습니다:
+
+<code-example header="Component 2 (일부)">
+
+  hero$: Observable<Hero>;
+
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router  ) {}
+
+  ngOnInit() {
+    const heroId = this.route.snapshot.paramMap.get('id');
+    this.hero$ = this.service.getHero(heroId);
+  }
+
+  gotoItems(hero: Hero) {
+    const heroId = hero ? hero.id : null;
+    // 히어로 객체가 전달되면 id를 가져옵니다.
+    // HeroList 컴포넌트로 이동합니다.
+    this.router.navigate(['/heroes', { id: heroId }]);
+  }
+
+</code-example>
+
 
 {@a lazy-loading}
 
+<!--
 ## Lazy loading
+-->
+## 지연 로딩
 
+<!--
 You can configure your routes to lazy load modules, which means that Angular only loads modules as needed, rather than loading all modules when the app launches.
 Additionally, you can preload parts of your app in the background to improve the user experience.
 
 For more information on lazy loading and preloading see the dedicated guide [Lazy loading NgModules](guide/lazy-loading-ngmodules).
+-->
+Angular 앱이 실행되는 시점에 로딩되지 않고 필요한 시점에 따로 로딩되는 모듈을 지연 로딩되는 모듈(lazy load module)이라고 합니다.
+모듈을 지연로딩하면 앱 초기 실행시간이 짧아지기 때문에 사용자에게 좀 더 나은 사용성을 제공할 수 있습니다.
+라우팅 규칙을 정의할 때 지연 로딩되는 모듈로 향하는 라우팅 규칙을 정의할 수 있습니다.
 
+자세한 내용은 지연 로딩과 사전 로딩에 대해 다루는 [지연 로딩되는 NgModule](guide/lazy-loading-ngmodules) 문서를 참고하세요.
+
+
+{@a preventing-unauthorized-access}
+
+<!--
 ## Preventing unauthorized access
+-->
+## 허가되지 않은 접근 차단하기
 
+<!--
 Use route guards to prevent users from navigating to parts of an app without authorization.
 The following route guards are available in Angular:
 
@@ -600,8 +800,55 @@ Here, `canActivate` tells the router to mediate navigation to this particular ro
 </code-example>
 
 For more information with a working example, see the [routing tutorial section on route guards](guide/router-tutorial-toh#milestone-5-route-guards).
+-->
+라우팅 가드를 사용하면 허가되지 않은 앱 영역으로 사용자가 이동하는 것을 방지할 수 있습니다.
+Angular는 다음과 같은 라우팅 가드를 제공합니다:
 
+* [`CanActivate`](api/router/CanActivate)
+* [`CanActivateChild`](api/router/CanActivateChild)
+* [`CanDeactivate`](api/router/CanDeactivate)
+* [`Resolve`](api/router/Resolve)
+* [`CanLoad`](api/router/CanLoad)
+
+라우팅 가드를 사용할 때는 컴포넌트가-없는(component-less) 라우팅 규칙을 따로 정의해서 자식 라우팅 규칙을 모두 보호하는 방법도 고려해볼만 합니다.
+
+Angular CLI로 가드를 생성하려면 이런 명령을 실행하면 됩니다:
+
+<code-example language="none" class="code-shell">
+  ng generate guard your-guard
+</code-example>
+
+가드 클래스는 가드가 동작하는 로직을 작성합니다.
+아래 예제는 `CanActivate`를 활용하는 가드 예제 코드입니다.
+
+<code-example header="Component (일부)">
+export class YourGuard implements CanActivate {
+  canActivate(
+    next: ActivatedRouteSnapshot,
+    state: RouterStateSnapshot): boolean {
+      // 인증 로직
+  }
+}
+</code-example>
+
+그리고 라우팅 모듈에서 `routes` 배열에 라우팅 가드가 동작할 프로퍼티를 지정하면 됩니다.
+이번 예제에서는 `canActivate` 프로퍼티를 사용해서 해당 라우팅 규칙을 보호하는 방식으로 구현했습니다.
+
+<code-example header="Routing module (일부)">
+{
+  path: '/your-path',
+  component: YourComponent,
+  canActivate: [YourGuard],
+}
+</code-example>
+
+더 자세한 내용은 [라우팅 튜토리얼의 라우팅 가드 섹션](guide/router-tutorial-toh#milestone-5-route-guards)을 참고하세요.
+
+
+<!--
 ## Link parameters array
+-->
+## 링크 변수 배열
 
 A link parameters array holds the following ingredients for router navigation:
 
