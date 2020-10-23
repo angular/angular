@@ -99,18 +99,18 @@ runInEachFileSystem(() => {
               `        <source>a<x id="PH" equiv-text="placeholder + 1"/>b<x id="PH_1"/>c</source>`,
               `      </trans-unit>`,
               `      <trans-unit id="67890" datatype="html">`,
-              `        <source>a<x id="START_TAG_SPAN"/><x id="CLOSE_TAG_SPAN"/>c</source>`,
+              `        <source>a<x id="START_TAG_SPAN" ctype="x-span"/><x id="CLOSE_TAG_SPAN" ctype="x-span"/>c</source>`,
               `        <note priority="1" from="description">some description</note>`,
               `      </trans-unit>`,
               `      <trans-unit id="38705" datatype="html">`,
-              `        <source>a<x id="START_TAG_SPAN"/><x id="CLOSE_TAG_SPAN"/>c</source>`,
+              `        <source>a<x id="START_TAG_SPAN" ctype="x-span"/><x id="CLOSE_TAG_SPAN" ctype="x-span"/>c</source>`,
               `        <context-group purpose="location">`,
               `          <context context-type="sourcefile">file.ts</context>`,
               `          <context context-type="linenumber">3,4</context>`,
               `        </context-group>`,
               `      </trans-unit>`,
               `      <trans-unit id="13579" datatype="html">`,
-              `        <source><x id="START_BOLD_TEXT"/>b<x id="CLOSE_BOLD_TEXT"/></source>`,
+              `        <source><x id="START_BOLD_TEXT" ctype="x-b"/>b<x id="CLOSE_BOLD_TEXT" ctype="x-b"/></source>`,
               `      </trans-unit>`,
               `      <trans-unit id="24680" datatype="html">`,
               `        <source>a</source>`,
@@ -128,7 +128,7 @@ runInEachFileSystem(() => {
               `        <source>pre-ICU {VAR_SELECT, select, a {a} b {<x id="INTERPOLATION"/>} c {pre <x id="INTERPOLATION_1"/> post}} post-ICU</source>`,
               `      </trans-unit>`,
               `      <trans-unit id="100001" datatype="html">`,
-              `        <source>{VAR_PLURAL, plural, one {<x id="START_BOLD_TEXT"/>something bold<x id="CLOSE_BOLD_TEXT"/>} other {pre <x id="START_TAG_SPAN"/>middle<x id="CLOSE_TAG_SPAN"/> post}}</source>`,
+              `        <source>{VAR_PLURAL, plural, one {<x id="START_BOLD_TEXT" ctype="x-b"/>something bold<x id="CLOSE_BOLD_TEXT" ctype="x-b"/>} other {pre <x id="START_TAG_SPAN" ctype="x-span"/>middle<x id="CLOSE_TAG_SPAN" ctype="x-span"/> post}}</source>`,
               `      </trans-unit>`,
               `    </body>`,
               `  </file>`,
@@ -229,6 +229,64 @@ runInEachFileSystem(() => {
               `  </file>`,
               `</xliff>\n`,
             ].join('\n'));
+          });
+
+          it('should render the "ctype" for line breaks', () => {
+            const serializer = new Xliff1TranslationSerializer(
+                'xx', absoluteFrom('/project'), useLegacyIds, options);
+            const output = serializer.serialize([mockMessage('1', ['a', 'b'], ['LINE_BREAK'], {})]);
+            expect(output).toContain(
+                '<source>a<x id="LINE_BREAK" ctype="lb"/>b</source>',
+            );
+          });
+
+          it('should render the "ctype" for images', () => {
+            const serializer = new Xliff1TranslationSerializer(
+                'xx', absoluteFrom('/project'), useLegacyIds, options);
+            const output = serializer.serialize([mockMessage('2', ['a', 'b'], ['TAG_IMG'], {})]);
+            expect(output).toContain(
+                '<source>a<x id="TAG_IMG" ctype="image"/>b</source>',
+            );
+          });
+
+          it('should render the "ctype" for bold elements', () => {
+            const serializer = new Xliff1TranslationSerializer(
+                'xx', absoluteFrom('/project'), useLegacyIds, options);
+            const output = serializer.serialize(
+                [mockMessage('3', ['a', 'b', 'c'], ['START_BOLD_TEXT', 'CLOSE_BOLD_TEXT'], {})]);
+            expect(output).toContain(
+                '<source>a<x id="START_BOLD_TEXT" ctype="x-b"/>b<x id="CLOSE_BOLD_TEXT" ctype="x-b"/>c</source>',
+            );
+          });
+
+          it('should render the "ctype" for headings', () => {
+            const serializer = new Xliff1TranslationSerializer(
+                'xx', absoluteFrom('/project'), useLegacyIds, options);
+            const output = serializer.serialize([mockMessage(
+                '4', ['a', 'b', 'c'], ['START_HEADING_LEVEL1', 'CLOSE_HEADING_LEVEL1'], {})]);
+            expect(output).toContain(
+                '<source>a<x id="START_HEADING_LEVEL1" ctype="x-h1"/>b<x id="CLOSE_HEADING_LEVEL1" ctype="x-h1"/>c</source>',
+            );
+          });
+
+          it('should render the "ctype" for span elements', () => {
+            const serializer = new Xliff1TranslationSerializer(
+                'xx', absoluteFrom('/project'), useLegacyIds, options);
+            const output = serializer.serialize(
+                [mockMessage('5', ['a', 'b', 'c'], ['START_TAG_SPAN', 'CLOSE_TAG_SPAN'], {})]);
+            expect(output).toContain(
+                '<source>a<x id="START_TAG_SPAN" ctype="x-span"/>b<x id="CLOSE_TAG_SPAN" ctype="x-span"/>c</source>',
+            );
+          });
+
+          it('should render the "ctype" for div elements', () => {
+            const serializer = new Xliff1TranslationSerializer(
+                'xx', absoluteFrom('/project'), useLegacyIds, options);
+            const output = serializer.serialize(
+                [mockMessage('6', ['a', 'b', 'c'], ['START_TAG_DIV', 'CLOSE_TAG_DIV'], {})]);
+            expect(output).toContain(
+                '<source>a<x id="START_TAG_DIV" ctype="x-div"/>b<x id="CLOSE_TAG_DIV" ctype="x-div"/>c</source>',
+            );
           });
         });
       });

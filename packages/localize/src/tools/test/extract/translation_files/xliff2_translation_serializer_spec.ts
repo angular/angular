@@ -108,7 +108,7 @@ runInEachFileSystem(() => {
               `        <note category="description">some description</note>`,
               `      </notes>`,
               `      <segment>`,
-              `        <source>a<pc id="0" equivStart="START_TAG_SPAN" equivEnd="CLOSE_TAG_SPAN"></pc>c</source>`,
+              `        <source>a<pc id="0" equivStart="START_TAG_SPAN" equivEnd="CLOSE_TAG_SPAN" type="other"></pc>c</source>`,
               `      </segment>`,
               `    </unit>`,
               `    <unit id="location-only">`,
@@ -116,12 +116,12 @@ runInEachFileSystem(() => {
               `        <note category="location">file.ts:3,4</note>`,
               `      </notes>`,
               `      <segment>`,
-              `        <source>a<pc id="0" equivStart="START_TAG_SPAN" equivEnd="CLOSE_TAG_SPAN"></pc>c</source>`,
+              `        <source>a<pc id="0" equivStart="START_TAG_SPAN" equivEnd="CLOSE_TAG_SPAN" type="other"></pc>c</source>`,
               `      </segment>`,
               `    </unit>`,
               `    <unit id="13579">`,
               `      <segment>`,
-              `        <source><pc id="0" equivStart="START_BOLD_TEXT" equivEnd="CLOSE_BOLD_TEXT">b</pc></source>`,
+              `        <source><pc id="0" equivStart="START_BOLD_TEXT" equivEnd="CLOSE_BOLD_TEXT" type="fmt">b</pc></source>`,
               `      </segment>`,
               `    </unit>`,
               `    <unit id="24680">`,
@@ -151,7 +151,7 @@ runInEachFileSystem(() => {
               `    </unit>`,
               `    <unit id="100001">`,
               `      <segment>`,
-              `        <source>{VAR_PLURAL, plural, one {<pc id="0" equivStart="START_BOLD_TEXT" equivEnd="CLOSE_BOLD_TEXT">something bold</pc>} other {pre <pc id="1" equivStart="START_TAG_SPAN" equivEnd="CLOSE_TAG_SPAN">middle</pc> post}}</source>`,
+              `        <source>{VAR_PLURAL, plural, one {<pc id="0" equivStart="START_BOLD_TEXT" equivEnd="CLOSE_BOLD_TEXT" type="fmt">something bold</pc>} other {pre <pc id="1" equivStart="START_TAG_SPAN" equivEnd="CLOSE_TAG_SPAN" type="other">middle</pc> post}}</source>`,
               `      </segment>`,
               `    </unit>`,
               `  </file>`,
@@ -242,6 +242,64 @@ runInEachFileSystem(() => {
               `  </file>`,
               `</xliff>\n`,
             ].join('\n'));
+          });
+
+          it('should render the "type" for line breaks', () => {
+            const serializer = new Xliff2TranslationSerializer(
+                'xx', absoluteFrom('/project'), useLegacyIds, options);
+            const output = serializer.serialize([mockMessage('1', ['a', 'b'], ['LINE_BREAK'], {})]);
+            expect(output).toContain(
+                '<source>a<ph id="0" equiv="LINE_BREAK" type="fmt"/>b</source>',
+            );
+          });
+
+          it('should render the "type" for images', () => {
+            const serializer = new Xliff2TranslationSerializer(
+                'xx', absoluteFrom('/project'), useLegacyIds, options);
+            const output = serializer.serialize([mockMessage('2', ['a', 'b'], ['TAG_IMG'], {})]);
+            expect(output).toContain(
+                '<source>a<ph id="0" equiv="TAG_IMG" type="image"/>b</source>',
+            );
+          });
+
+          it('should render the "type" for bold elements', () => {
+            const serializer = new Xliff2TranslationSerializer(
+                'xx', absoluteFrom('/project'), useLegacyIds, options);
+            const output = serializer.serialize(
+                [mockMessage('3', ['a', 'b', 'c'], ['START_BOLD_TEXT', 'CLOSE_BOLD_TEXT'], {})]);
+            expect(output).toContain(
+                '<source>a<pc id="0" equivStart="START_BOLD_TEXT" equivEnd="CLOSE_BOLD_TEXT" type="fmt">b</pc>c</source>',
+            );
+          });
+
+          it('should render the "type" for heading elements', () => {
+            const serializer = new Xliff2TranslationSerializer(
+                'xx', absoluteFrom('/project'), useLegacyIds, options);
+            const output = serializer.serialize([mockMessage(
+                '4', ['a', 'b', 'c'], ['START_HEADING_LEVEL1', 'CLOSE_HEADING_LEVEL1'], {})]);
+            expect(output).toContain(
+                '<source>a<pc id="0" equivStart="START_HEADING_LEVEL1" equivEnd="CLOSE_HEADING_LEVEL1" type="other">b</pc>c</source>',
+            );
+          });
+
+          it('should render the "type" for span elements', () => {
+            const serializer = new Xliff2TranslationSerializer(
+                'xx', absoluteFrom('/project'), useLegacyIds, options);
+            const output = serializer.serialize(
+                [mockMessage('5', ['a', 'b', 'c'], ['START_TAG_SPAN', 'CLOSE_TAG_SPAN'], {})]);
+            expect(output).toContain(
+                '<source>a<pc id="0" equivStart="START_TAG_SPAN" equivEnd="CLOSE_TAG_SPAN" type="other">b</pc>c</source>',
+            );
+          });
+
+          it('should render the "type" for div elements', () => {
+            const serializer = new Xliff2TranslationSerializer(
+                'xx', absoluteFrom('/project'), useLegacyIds, options);
+            const output = serializer.serialize(
+                [mockMessage('6', ['a', 'b', 'c'], ['START_TAG_DIV', 'CLOSE_TAG_DIV'], {})]);
+            expect(output).toContain(
+                '<source>a<pc id="0" equivStart="START_TAG_DIV" equivEnd="CLOSE_TAG_DIV" type="other">b</pc>c</source>',
+            );
           });
         });
       });

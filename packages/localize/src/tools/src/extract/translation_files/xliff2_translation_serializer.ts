@@ -119,6 +119,10 @@ export class Xliff2TranslationSerializer implements TranslationSerializer {
         equivStart: placeholderName,
         equivEnd: closingPlaceholderName,
       };
+      const type = getTypeForPlaceholder(placeholderName);
+      if (type !== null) {
+        attrs.type = type;
+      }
       if (text !== undefined) {
         attrs.dispStart = text;
       }
@@ -129,8 +133,14 @@ export class Xliff2TranslationSerializer implements TranslationSerializer {
     } else if (placeholderName.startsWith('CLOSE_')) {
       xml.endTag('pc');
     } else {
-      const attrs:
-          Record<string, string> = {id: `${this.currentPlaceholderId++}`, equiv: placeholderName};
+      const attrs: Record<string, string> = {
+        id: `${this.currentPlaceholderId++}`,
+        equiv: placeholderName,
+      };
+      const type = getTypeForPlaceholder(placeholderName);
+      if (type !== null) {
+        attrs.type = type;
+      }
       if (text !== undefined) {
         attrs.disp = text;
       }
@@ -164,5 +174,31 @@ export class Xliff2TranslationSerializer implements TranslationSerializer {
         message.legacyIds.find(
             id => id.length <= MAX_LEGACY_XLIFF_2_MESSAGE_LENGTH && !/[^0-9]/.test(id)) ||
         message.id;
+  }
+}
+
+/**
+ * Compute the value of the `type` attribute from the `placeholder` name.
+ *
+ * If the tag is not known but starts with `TAG_`, `START_TAG_` or `CLOSE_TAG_` then the type is
+ * `other`. Certain formatting tags (e.g. bold, italic, etc) have type `fmt`. Line-breaks, images
+ * and links are special cases.
+ */
+function getTypeForPlaceholder(placeholder: string): string|null {
+  const tag = placeholder.replace(/^(START_|CLOSE_)/, '');
+  switch (tag) {
+    case 'BOLD_TEXT':
+    case 'EMPHASISED_TEXT':
+    case 'ITALIC_TEXT':
+    case 'LINE_BREAK':
+    case 'STRIKETHROUGH_TEXT':
+    case 'UNDERLINED_TEXT':
+      return 'fmt';
+    case 'TAG_IMG':
+      return 'image';
+    case 'LINK':
+      return 'link';
+    default:
+      return /^(START_|CLOSE_)/.test(placeholder) ? 'other' : null;
   }
 }
