@@ -100,6 +100,10 @@ export class Xliff1TranslationSerializer implements TranslationSerializer {
 
   private serializePlaceholder(xml: XmlFile, id: string, text: string|undefined): void {
     const attrs: Record<string, string> = {id};
+    const ctype = getCtypeForPlaceholder(id);
+    if (ctype !== null) {
+      attrs.ctype = ctype;
+    }
     if (text !== undefined) {
       attrs['equiv-text'] = text;
     }
@@ -148,3 +152,68 @@ export class Xliff1TranslationSerializer implements TranslationSerializer {
         message.id;
   }
 }
+
+/**
+ * Compute the value of the `ctype` attribute from the `placeholder` name.
+ *
+ * The placeholder can take the following forms:
+ *
+ * - `START_BOLD_TEXT`/`END_BOLD_TEXT`
+ * - `TAG_<ELEMENT_NAME>`
+ * - `START_TAG_<ELEMENT_NAME>`
+ * - `CLOSE_TAG_<ELEMENT_NAME>`
+ *
+ * In these cases the element name of the tag is extracted from the placeholder name and returned as
+ * `x-<element_name>`.
+ *
+ * Line breaks and images are special cases.
+ */
+function getCtypeForPlaceholder(placeholder: string): string|null {
+  const tag = placeholder.replace(/^(START_|CLOSE_)/, '');
+  switch (tag) {
+    case 'LINE_BREAK':
+      return 'lb';
+    case 'TAG_IMG':
+      return 'image';
+    default:
+      const element = tag.startsWith('TAG_') ?
+          tag.replace(/^TAG_(.+)/, (_, tagName: string) => tagName.toLowerCase()) :
+          TAG_MAP[tag];
+      if (element === undefined) {
+        return null;
+      }
+      return `x-${element}`;
+  }
+}
+
+const TAG_MAP: Record<string, string> = {
+  'LINK': 'a',
+  'BOLD_TEXT': 'b',
+  'EMPHASISED_TEXT': 'em',
+  'HEADING_LEVEL1': 'h1',
+  'HEADING_LEVEL2': 'h2',
+  'HEADING_LEVEL3': 'h3',
+  'HEADING_LEVEL4': 'h4',
+  'HEADING_LEVEL5': 'h5',
+  'HEADING_LEVEL6': 'h6',
+  'HORIZONTAL_RULE': 'hr',
+  'ITALIC_TEXT': 'i',
+  'LIST_ITEM': 'li',
+  'MEDIA_LINK': 'link',
+  'ORDERED_LIST': 'ol',
+  'PARAGRAPH': 'p',
+  'QUOTATION': 'q',
+  'STRIKETHROUGH_TEXT': 's',
+  'SMALL_TEXT': 'small',
+  'SUBSTRIPT': 'sub',
+  'SUPERSCRIPT': 'sup',
+  'TABLE_BODY': 'tbody',
+  'TABLE_CELL': 'td',
+  'TABLE_FOOTER': 'tfoot',
+  'TABLE_HEADER_CELL': 'th',
+  'TABLE_HEADER': 'thead',
+  'TABLE_ROW': 'tr',
+  'MONOSPACED_TEXT': 'tt',
+  'UNDERLINED_TEXT': 'u',
+  'UNORDERED_LIST': 'ul',
+};
