@@ -80,7 +80,7 @@ Angular supports most recent browsers. This includes the following specific vers
     </td>
 
     <td>
-      X (10.0), Pie (9.0), Oreo (8.0), Nougat (7.0)
+      Q (10.0), Pie (9.0), Oreo (8.0), Nougat (7.0)
     </td>
   </tr>
 
