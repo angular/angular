@@ -119,7 +119,11 @@ export class NgZone {
   readonly onError: EventEmitter<any> = new EventEmitter(false);
 
 
-  constructor({enableLongStackTrace = false, shouldCoalesceEventChangeDetection = false}) {
+  constructor({
+    enableLongStackTrace = false,
+    shouldCoalesceEventChangeDetection = false,
+    shouldCoalesceRunChangeDetection = false
+  }) {
     if (typeof Zone == 'undefined') {
       throw new Error(`In this configuration Angular requires Zone.js`);
     }
@@ -137,8 +141,11 @@ export class NgZone {
     if (enableLongStackTrace && (Zone as any)['longStackTraceZoneSpec']) {
       self._inner = self._inner.fork((Zone as any)['longStackTraceZoneSpec']);
     }
-
-    self.shouldCoalesceEventChangeDetection = shouldCoalesceEventChangeDetection;
+    // if shouldCoalesceRunChangeDetection is true, all tasks including event tasks will be
+    // coalesced, so shouldCoalesceEventChangeDetection option is not necessary and can be skipped.
+    self.shouldCoalesceEventChangeDetection =
+        !shouldCoalesceRunChangeDetection && shouldCoalesceEventChangeDetection;
+    self.shouldCoalesceRunChangeDetection = shouldCoalesceRunChangeDetection;
     self.lastRequestAnimationFrameId = -1;
     self.nativeRequestAnimationFrame = getNativeRequestAnimationFrame().nativeRequestAnimationFrame;
     forkInnerZoneWithAngularBehavior(self);
@@ -237,11 +244,49 @@ interface NgZonePrivate extends NgZone {
   hasPendingMicrotasks: boolean;
   lastRequestAnimationFrameId: number;
   isStable: boolean;
+  /**
+   * Optionally specify coalescing event change detections or not.
+   * Consider the following case.
+   *
+   * <div (click)="doSomething()">
+   *   <button (click)="doSomethingElse()"></button>
+   * </div>
+   *
+   * When button is clicked, because of the event bubbling, both
+   * event handlers will be called and 2 change detections will be
+   * triggered. We can coalesce such kind of events to trigger
+   * change detection only once.
+   *
+   * By default, this option will be false. So the events will not be
+   * coalesced and the change detection will be triggered multiple times.
+   * And if this option be set to true, the change detection will be
+   * triggered async by scheduling it in an animation frame. So in the case above,
+   * the change detection will only be trigged once.
+   */
   shouldCoalesceEventChangeDetection: boolean;
+  /**
+   * Optionally specify if `NgZone#run()` method invocations should be coalesced
+   * into a single change detection.
+   *
+   * Consider the following case.
+   *
+   * for (let i = 0; i < 10; i ++) {
+   *   ngZone.run(() => {
+   *     // do something
+   *   });
+   * }
+   *
+   * This case triggers the change detection multiple times.
+   * With ngZoneRunCoalescing options, all change detections in an event loops trigger only once.
+   * In addition, the change detection executes in requestAnimation.
+   *
+   */
+  shouldCoalesceRunChangeDetection: boolean;
+
   nativeRequestAnimationFrame: (callback: FrameRequestCallback) => number;
 
-  // Cache of  "fake" top eventTask. This is done so that we don't need to schedule a new task every
-  // time we want to run a `checkStable`.
+  // Cache a  "fake" top eventTask so you don't need to schedule a new task every
+  // time you run a `checkStable`.
   fakeTopEventTask: Task;
 }
 
@@ -293,12 +338,9 @@ function forkInnerZoneWithAngularBehavior(zone: NgZonePrivate) {
   const delayChangeDetectionForEventsDelegate = () => {
     delayChangeDetectionForEvents(zone);
   };
-  const maybeDelayChangeDetection = !!zone.shouldCoalesceEventChangeDetection &&
-      zone.nativeRequestAnimationFrame && delayChangeDetectionForEventsDelegate;
   zone._inner = zone._inner.fork({
     name: 'angular',
-    properties:
-        <any>{'isAngularZone': true, 'maybeDelayChangeDetection': maybeDelayChangeDetection},
+    properties: <any>{'isAngularZone': true},
     onInvokeTask:
         (delegate: ZoneDelegate, current: Zone, target: Zone, task: Task, applyThis: any,
          applyArgs: any): any => {
@@ -306,13 +348,13 @@ function forkInnerZoneWithAngularBehavior(zone: NgZonePrivate) {
             onEnter(zone);
             return delegate.invokeTask(target, task, applyThis, applyArgs);
           } finally {
-            if (maybeDelayChangeDetection && task.type === 'eventTask') {
-              maybeDelayChangeDetection();
+            if ((zone.shouldCoalesceEventChangeDetection && task.type === 'eventTask') ||
+                zone.shouldCoalesceRunChangeDetection) {
+              delayChangeDetectionForEventsDelegate();
             }
             onLeave(zone);
           }
         },
-
 
     onInvoke:
         (delegate: ZoneDelegate, current: Zone, target: Zone, callback: Function, applyThis: any,
@@ -321,6 +363,9 @@ function forkInnerZoneWithAngularBehavior(zone: NgZonePrivate) {
             onEnter(zone);
             return delegate.invoke(target, callback, applyThis, applyArgs, source);
           } finally {
+            if (zone.shouldCoalesceRunChangeDetection) {
+              delayChangeDetectionForEventsDelegate();
+            }
             onLeave(zone);
           }
         },
@@ -351,7 +396,8 @@ function forkInnerZoneWithAngularBehavior(zone: NgZonePrivate) {
 
 function updateMicroTaskStatus(zone: NgZonePrivate) {
   if (zone._hasPendingMicrotasks ||
-      (zone.shouldCoalesceEventChangeDetection && zone.lastRequestAnimationFrameId !== -1)) {
+      ((zone.shouldCoalesceEventChangeDetection || zone.shouldCoalesceRunChangeDetection) &&
+       zone.lastRequestAnimationFrameId !== -1)) {
     zone.hasPendingMicrotasks = true;
   } else {
     zone.hasPendingMicrotasks = false;

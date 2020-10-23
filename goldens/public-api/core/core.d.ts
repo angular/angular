@@ -619,9 +619,10 @@ export declare class NgZone {
     readonly onMicrotaskEmpty: EventEmitter<any>;
     readonly onStable: EventEmitter<any>;
     readonly onUnstable: EventEmitter<any>;
-    constructor({ enableLongStackTrace, shouldCoalesceEventChangeDetection }: {
+    constructor({ enableLongStackTrace, shouldCoalesceEventChangeDetection, shouldCoalesceRunChangeDetection }: {
         enableLongStackTrace?: boolean | undefined;
         shouldCoalesceEventChangeDetection?: boolean | undefined;
+        shouldCoalesceRunChangeDetection?: boolean | undefined;
     });
     run<T>(fn: (...args: any[]) => T, applyThis?: any, applyArgs?: any[]): T;
     runGuarded<T>(fn: (...args: any[]) => T, applyThis?: any, applyArgs?: any[]): T;
