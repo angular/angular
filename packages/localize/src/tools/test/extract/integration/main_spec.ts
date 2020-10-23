@@ -202,9 +202,9 @@ runInEachFileSystem(() => {
                  `        </context-group>`,
                  `      </trans-unit>`,
                  `      <trans-unit id="2932901491976224757" datatype="html">`,
-                 `        <source>pre<x id="START_TAG_SPAN" equiv-text="&apos;&lt;span&gt;&apos;"/>` +
-                     `inner-pre<x id="START_BOLD_TEXT" equiv-text="&apos;&lt;b&gt;&apos;"/>bold<x id="CLOSE_BOLD_TEXT" equiv-text="&apos;&lt;/b&gt;&apos;"/>` +
-                     `inner-post<x id="CLOSE_TAG_SPAN" equiv-text="&apos;&lt;/span&gt;&apos;"/>post</source>`,
+                 `        <source>pre<x id="START_TAG_SPAN" ctype="x-span" equiv-text="&apos;&lt;span&gt;&apos;"/>` +
+                     `inner-pre<x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&apos;&lt;b&gt;&apos;"/>bold<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&apos;&lt;/b&gt;&apos;"/>` +
+                     `inner-post<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&apos;&lt;/span&gt;&apos;"/>post</source>`,
                  `        <context-group purpose="location">`,
                  `          <context context-type="sourcefile">test_files/test.js</context>`,
                  `          <context context-type="linenumber">9,10</context>`,
@@ -279,8 +279,8 @@ runInEachFileSystem(() => {
               `        <note category="location">test_files/test.js:9,10</note>`,
               `      </notes>`,
               `      <segment>`,
-              `        <source>pre<pc id="0" equivStart="START_TAG_SPAN" equivEnd="CLOSE_TAG_SPAN" dispStart="&apos;&lt;span&gt;&apos;" dispEnd="&apos;&lt;/span&gt;&apos;">` +
-                  `inner-pre<pc id="1" equivStart="START_BOLD_TEXT" equivEnd="CLOSE_BOLD_TEXT" dispStart="&apos;&lt;b&gt;&apos;" dispEnd="&apos;&lt;/b&gt;&apos;">bold</pc>` +
+              `        <source>pre<pc id="0" equivStart="START_TAG_SPAN" equivEnd="CLOSE_TAG_SPAN" type="other" dispStart="&apos;&lt;span&gt;&apos;" dispEnd="&apos;&lt;/span&gt;&apos;">` +
+                  `inner-pre<pc id="1" equivStart="START_BOLD_TEXT" equivEnd="CLOSE_BOLD_TEXT" type="fmt" dispStart="&apos;&lt;b&gt;&apos;" dispEnd="&apos;&lt;/b&gt;&apos;">bold</pc>` +
                   `inner-post</pc>post</source>`,
               `      </segment>`,
               `    </unit>`,
