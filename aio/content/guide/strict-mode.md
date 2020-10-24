@@ -28,3 +28,40 @@ To create a new application in the strict mode within an existing non-strict wor
 ng generate application [project-name] --strict
 
 </code-example>
+
+#### To enable strict mode for an *existing project*
+
+Edit your `angular.json` and add `@schematics/angular:application` with `"strict": true` to the `schematics` property:
+
+```
+  ...
+  "projects": {
+    "app": {
+      "projectType": "application",
+      "schematics": {
+        "@schematics/angular:application": {
+          "strict": true
+        }
+      }
+   ...
+ ```
+
+Edit `compilerOptions` in `tsconfig.json` to include:
+
+```
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+```
+
+Add a new property `angularCompilerOptions` to `tsconfig.json`:
+```
+  "angularCompilerOptions": {
+    "strictInjectionParameters": true,
+    "strictInputAccessModifiers": true,
+    "strictTemplates": true
+  }
+```
+
+Finally add `"no-any": true` to `rules` in `tslint.json`.
