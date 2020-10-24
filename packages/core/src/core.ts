@@ -38,7 +38,7 @@ export {Sanitizer} from './sanitization/sanitizer';
 export * from './codegen_private_exports';
 
 import {global} from './util/global';
-if (ngDevMode) {
+if (typeof ngDevMode !== 'undefined' && ngDevMode) {
   // This helper is to give a reasonable error message to people upgrading to v9 that have not yet
   // installed `@angular/localize` in their app.
   // tslint:disable-next-line: no-toplevel-property-access
