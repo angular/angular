@@ -94,7 +94,7 @@ To create a new component manually:
    For more information on defining a component's template, see [Defining a component's template](#defining-a-components-template).
 
 1. Select the styles for the component's template.
-   In most cases, you define the styles for you component's template in a separate file.
+   In most cases, you define the styles for your component's template in a separate file.
 
    <code-example
         path="component-overview/src/app/component-overview/component-overview.component.ts"
