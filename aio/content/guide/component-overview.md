@@ -94,7 +94,7 @@ To create a new component manually:
    For more information on defining a component's template, see [Defining a component's template](#defining-a-components-template).
 
 1. Select the styles for the component's template.
-   In most cases, you define the styles for you component's template in a separate file.
+   In most cases, you define the styles for your component's template in a separate file.
 
    <code-example
         path="component-overview/src/app/component-overview/component-overview.component.ts"
@@ -110,7 +110,7 @@ To create a new component manually:
 
 ## Specifying a component's CSS selector
 
-Every component requires a CSS _selector_. A selector instructs Angular to instantiate this component wherever it finds the corresponding tag in template HTML. For example, consider a component, `hello-world.component.ts` that defines its selector as `app-hello-world`. This selector instructs angular to instantiate this component any time the tag, `<app-hellow-world>` in a template.
+Every component requires a CSS _selector_. A selector instructs Angular to instantiate this component wherever it finds the corresponding tag in template HTML. For example, consider a component, `hello-world.component.ts` that defines its selector as `app-hello-world`. This selector instructs angular to instantiate this component any time the tag, `<app-hello-world>` in a template.
 
 To specify a component's selector, add a `selector` statement to the `@Component` decorator.
 
@@ -138,7 +138,7 @@ To define a template within the component, add a `template` property to the `@Co
     region="template">
 </code-example>
 
-If your want your template to span multiple lines, you can use backticks (<code> ` </code>).
+If you want your template to span multiple lines, you can use backticks (<code> ` </code>).
 For example:
 
 <code-example
@@ -175,7 +175,7 @@ The `styles` property takes an array of strings that contain the CSS rule declar
 
 ## Next steps
 
-* For an archictural overview of components, see [Introduction to components and templates](guide/architecture-components).
+* For an architectural overview of components, see [Introduction to components and templates](guide/architecture-components).
 * For additional options you can use when creating a component, see [Component](api/core/Component) in the API Reference.
 * For more information on styling components, see [Component styles](guide/component-styles).
 * For more information on templates, see [Template syntax](guide/template-syntax).
