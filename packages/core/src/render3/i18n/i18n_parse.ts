@@ -14,16 +14,14 @@ import {_sanitizeUrl, sanitizeSrcset} from '../../sanitization/url_sanitizer';
 import {assertDefined, assertEqual, assertGreaterThanOrEqual, assertOneOf, assertString} from '../../util/assert';
 import {CharCode} from '../../util/char_code';
 import {loadIcuContainerVisitor} from '../instructions/i18n_icu_container_visitor';
-import {allocExpando, createTNodeAtIndex, elementAttributeInternal, setInputsForProperty, setNgReflectProperties} from '../instructions/shared';
+import {allocExpando, createTNodeAtIndex} from '../instructions/shared';
 import {getDocument} from '../interfaces/document';
 import {ELEMENT_MARKER, I18nCreateOpCode, I18nCreateOpCodes, I18nRemoveOpCodes, I18nUpdateOpCode, I18nUpdateOpCodes, ICU_MARKER, IcuCreateOpCode, IcuCreateOpCodes, IcuExpression, IcuType, TI18n, TIcu} from '../interfaces/i18n';
 import {TNode, TNodeType} from '../interfaces/node';
-import {RComment, RElement} from '../interfaces/renderer';
 import {SanitizerFn} from '../interfaces/sanitization';
 import {HEADER_OFFSET, LView, TView} from '../interfaces/view';
 import {getCurrentParentTNode, getCurrentTNode, setCurrentTNode} from '../state';
 import {attachDebugGetter} from '../util/debug_utils';
-import {getNativeByIndex, getTNode} from '../util/view_utils';
 
 import {i18nCreateOpCodesToString, i18nRemoveOpCodesToString, i18nUpdateOpCodesToString, icuCreateOpCodesToString} from './i18n_debug';
 import {addTNodeAndUpdateInsertBeforeIndex} from './i18n_insert_before_index';
@@ -102,7 +100,10 @@ export function i18nStartFirstCreatePass(
           // Verify that ICU expression has the right shape. Translations might contain invalid
           // constructions (while original messages were correct), so ICU parsing at runtime may
           // not succeed (thus `icuExpression` remains a string).
-          if (ngDevMode && typeof icuExpression !== 'object') {
+          // Note: we intentionally retain the error here by not using `ngDevMode`, because
+          // the value can change based on the locale and users aren't guaranteed to hit
+          // an invalid string while they're developing.
+          if (typeof icuExpression !== 'object') {
             throw new Error(`Unable to parse ICU expression in "${message}" message.`);
           }
           const icuContainerTNode = createTNodeAndAddOpCode(
@@ -225,54 +226,34 @@ function i18nStartFirstCreatePassProcessTextNode(
 /**
  * See `i18nAttributes` above.
  */
-export function i18nAttributesFirstPass(
-    lView: LView, tView: TView, index: number, values: string[]) {
+export function i18nAttributesFirstPass(tView: TView, index: number, values: string[]) {
   const previousElement = getCurrentTNode()!;
   const previousElementIndex = previousElement.index;
   const updateOpCodes: I18nUpdateOpCodes = [] as any;
   if (ngDevMode) {
     attachDebugGetter(updateOpCodes, i18nUpdateOpCodesToString);
   }
-  for (let i = 0; i < values.length; i += 2) {
-    const attrName = values[i];
-    const message = values[i + 1];
-    const parts = message.split(ICU_REGEXP);
-    for (let j = 0; j < parts.length; j++) {
-      const value = parts[j];
+  if (tView.firstCreatePass && tView.data[index] === null) {
+    for (let i = 0; i < values.length; i += 2) {
+      const attrName = values[i];
+      const message = values[i + 1];
 
-      if (j & 1) {
-        // Odd indexes are ICU expressions
-        // TODO(ocombe): support ICU expressions in attributes
-        throw new Error('ICU expressions are not yet supported in attributes');
-      } else if (value !== '') {
-        // Even indexes are text (including bindings)
-        const hasBinding = !!value.match(BINDING_REGEXP);
-        if (hasBinding) {
-          if (tView.firstCreatePass && tView.data[index] === null) {
-            generateBindingUpdateOpCodes(updateOpCodes, value, previousElementIndex, attrName);
-          }
-        } else {
-          const tNode = getTNode(tView, previousElementIndex);
-          // Set attributes for Elements only, for other types (like ElementContainer),
-          // only set inputs below
-          if (tNode.type & TNodeType.AnyRNode) {
-            elementAttributeInternal(tNode, lView, attrName, value, null, null);
-          }
-          // Check if that attribute is a directive input
-          const dataValue = tNode.inputs !== null && tNode.inputs[attrName];
-          if (dataValue) {
-            setInputsForProperty(tView, lView, dataValue, attrName, value);
-            if (ngDevMode) {
-              const element = getNativeByIndex(previousElementIndex, lView) as RElement | RComment;
-              setNgReflectProperties(lView, element, tNode.type, dataValue, value);
-            }
-          }
+      if (message !== '') {
+        // Check if attribute value contains an ICU and throw an error if that's the case.
+        // ICUs in element attributes are not supported.
+        // Note: we intentionally retain the error here by not using `ngDevMode`, because
+        // the `value` can change based on the locale and users aren't guaranteed to hit
+        // an invalid string while they're developing.
+        if (ICU_REGEXP.test(message)) {
+          throw new Error(
+              `ICU expressions are not supported in attributes. Message: "${message}".`);
         }
+
+        // i18n attributes that hit this code path are guaranteed to have bindings, because
+        // the compiler treats static i18n attributes as regular attribute bindings.
+        generateBindingUpdateOpCodes(updateOpCodes, message, previousElementIndex, attrName);
       }
     }
-  }
-
-  if (tView.firstCreatePass && tView.data[index] === null) {
     tView.data[index] = updateOpCodes;
   }
 }
@@ -622,10 +603,10 @@ function walkIcuTree(
                   generateBindingUpdateOpCodes(update, attr.value, newIndex, attr.name);
                 }
               } else {
-                ngDevMode && console.warn(` WARNING:
-      ignoring unsafe attribute value ${lowerAttrName} on element $ {
-    tagName
-  } (see http://g.co/ng/security#xss)`);
+                ngDevMode &&
+                    console.warn(
+                        `WARNING: ignoring unsafe attribute value ` +
+                        `${lowerAttrName} on element ${tagName} (see http://g.co/ng/security#xss)`);
               }
             } else {
               addCreateAttribute(create, newIndex, attr);

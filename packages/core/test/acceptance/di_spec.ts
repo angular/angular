@@ -2054,6 +2054,26 @@ describe('di', () => {
       expect(directive.outputAttr).toBeNull();
       expect(directive.other).toBe('otherValue');
     });
+
+    it('should inject `null` for attributes with data bindings', () => {
+      @Directive({selector: '[dir]'})
+      class MyDir {
+        constructor(@Attribute('title') public attrValue: string) {}
+      }
+
+      @Component({template: '<div dir title="title {{ value }}"></div>'})
+      class MyComp {
+        @ViewChild(MyDir) directiveInstance!: MyDir;
+        value = 'value';
+      }
+
+      TestBed.configureTestingModule({declarations: [MyDir, MyComp]});
+      const fixture = TestBed.createComponent(MyComp);
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.directiveInstance.attrValue).toBeNull();
+      expect(fixture.nativeElement.querySelector('div').getAttribute('title')).toBe('title value');
+    });
   });
 
   it('should support dependencies in Pipes used inside ICUs', () => {

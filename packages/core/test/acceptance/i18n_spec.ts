@@ -13,7 +13,7 @@ import {CommonModule, DOCUMENT, registerLocaleData} from '@angular/common';
 import localeEs from '@angular/common/locales/es';
 import localeRo from '@angular/common/locales/ro';
 import {computeMsgId} from '@angular/compiler';
-import {Component, ContentChild, ContentChildren, Directive, ElementRef, HostBinding, Input, LOCALE_ID, NO_ERRORS_SCHEMA, Pipe, PipeTransform, QueryList, RendererFactory2, TemplateRef, Type, ViewChild, ViewContainerRef, ɵsetDocument} from '@angular/core';
+import {Attribute, Component, ContentChild, ContentChildren, Directive, ElementRef, HostBinding, Input, LOCALE_ID, NO_ERRORS_SCHEMA, Pipe, PipeTransform, QueryList, RendererFactory2, TemplateRef, Type, ViewChild, ViewContainerRef, ɵsetDocument} from '@angular/core';
 import {DebugNode, HEADER_OFFSET, TVIEW} from '@angular/core/src/render3/interfaces/view';
 import {getComponentLView} from '@angular/core/src/render3/util/discovery_utils';
 import {TestBed} from '@angular/core/testing';
@@ -642,9 +642,9 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
       // such a case a single `TIcuContainerNode` should be generated only.
       it('should create a single dynamic TNode for ICU', () => {
         const fixture = initWithTemplate(AppComp, `
-          {count, plural, 
-            =0 {just now} 
-            =1 {one minute ago} 
+          {count, plural,
+            =0 {just now}
+            =1 {one minute ago}
             other {{{count}} minutes ago}
           }
         `.trim());
@@ -662,13 +662,13 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
 
       it('should support multiple ICUs', () => {
         const fixture = initWithTemplate(AppComp, `
-          {count, plural, 
-            =0 {just now} 
-            =1 {one minute ago} 
+          {count, plural,
+            =0 {just now}
+            =1 {one minute ago}
             other {{{count}} minutes ago}
           }
-          {name, select, 
-            Angular {Mr. Angular} 
+          {name, select,
+            Angular {Mr. Angular}
             other {Sir}
           }
         `);
@@ -1843,40 +1843,6 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
       expect(fixture.nativeElement.firstChild.title).toEqual(`ANGULAR - value 1 - value 2 (fr)`);
     });
 
-    it('should create corresponding ng-reflect properties', () => {
-      @Component({
-        selector: 'welcome',
-        template: '{{ messageText }}',
-      })
-      class WelcomeComp {
-        @Input() messageText!: string;
-      }
-
-      @Component({
-        template: `
-          <welcome
-            messageText="Hello"
-            i18n-messageText="Welcome message description">
-          </welcome>
-        `
-      })
-      class App {
-      }
-
-      TestBed.configureTestingModule({
-        declarations: [App, WelcomeComp],
-      });
-      loadTranslations({
-        [computeMsgId('Hello')]: 'Bonjour',
-      });
-      const fixture = TestBed.createComponent(App);
-      fixture.detectChanges();
-
-      const comp = fixture.debugElement.query(By.css('welcome'));
-      expect(comp.attributes['messagetext']).toBe('Bonjour');
-      expect(comp.attributes['ng-reflect-message-text']).toBe('Bonjour');
-    });
-
     it('should support i18n attributes on <ng-container> elements', () => {
       loadTranslations({[computeMsgId('Hello', 'meaning')]: 'Bonjour'});
 
@@ -3023,6 +2989,50 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
     fixture.componentInstance.items = [2, 1];
     fixture.detectChanges();
     expect(fixture.nativeElement.textContent).toEqual(`two,one,`);
+  });
+
+  it('should be able to inject a static i18n attribute', () => {
+    loadTranslations({[computeMsgId('text')]: 'translatedText'});
+
+    @Directive({selector: '[injectTitle]'})
+    class InjectTitleDir {
+      constructor(@Attribute('title') public title: string) {}
+    }
+
+    @Component({template: `<div i18n-title title="text" injectTitle></div>`})
+    class App {
+      @ViewChild(InjectTitleDir) dir!: InjectTitleDir;
+    }
+
+    TestBed.configureTestingModule({declarations: [App, InjectTitleDir]});
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    expect(fixture.componentInstance.dir.title).toBe('translatedText');
+    expect(fixture.nativeElement.querySelector('div').getAttribute('title')).toBe('translatedText');
+  });
+
+  it('should inject `null` for an i18n attribute with an interpolation', () => {
+    loadTranslations({[computeMsgId('text {$INTERPOLATION}')]: 'translatedText {$INTERPOLATION}'});
+
+    @Directive({selector: '[injectTitle]'})
+    class InjectTitleDir {
+      constructor(@Attribute('title') public title: string) {}
+    }
+
+    @Component({template: `<div i18n-title title="text {{ value }}" injectTitle></div>`})
+    class App {
+      @ViewChild(InjectTitleDir) dir!: InjectTitleDir;
+      value = 'value';
+    }
+
+    TestBed.configureTestingModule({declarations: [App, InjectTitleDir]});
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    expect(fixture.componentInstance.dir.title).toBeNull();
+    expect(fixture.nativeElement.querySelector('div').getAttribute('title'))
+        .toBe('translatedText value');
   });
 });
 
