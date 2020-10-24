@@ -11,6 +11,7 @@ import {ɵParsedMessage, ɵSourceLocation} from '@angular/localize';
 import {FormatOptions, validateOptions} from './format_options';
 import {extractIcuPlaceholders} from './icu_parsing';
 import {TranslationSerializer} from './translation_serializer';
+import {consolidateMessages, hasLocation} from './utils';
 import {XmlFile} from './xml_file';
 
 /** This is the maximum number of characters that can appear in a legacy XLIFF 2.0 message id. */
@@ -33,7 +34,7 @@ export class Xliff2TranslationSerializer implements TranslationSerializer {
   }
 
   serialize(messages: ɵParsedMessage[]): string {
-    const ids = new Set<string>();
+    const messageMap = consolidateMessages(messages, message => this.getMessageId(message));
     const xml = new XmlFile();
     xml.startTag('xliff', {
       'version': '2.0',
@@ -48,24 +49,23 @@ export class Xliff2TranslationSerializer implements TranslationSerializer {
     // messages that come from a particular original file, and the translation file parsers may
     // not
     xml.startTag('file', {'id': 'ngi18n', 'original': 'ng.template', ...this.formatOptions});
-    for (const message of messages) {
-      const id = this.getMessageId(message);
-      if (ids.has(id)) {
-        // Do not render the same message more than once
-        continue;
-      }
-      ids.add(id);
+    for (const [id, duplicateMessages] of messageMap.entries()) {
+      const message = duplicateMessages[0];
+
       xml.startTag('unit', {id});
-      if (message.meaning || message.description || message.location) {
+      const messagesWithLocations = duplicateMessages.filter(hasLocation);
+      if (message.meaning || message.description || messagesWithLocations.length) {
         xml.startTag('notes');
-        if (message.location) {
-          const {file, start, end} = message.location;
+
+        // Write all the locations
+        for (const {location: {file, start, end}} of messagesWithLocations) {
           const endLineString =
               end !== undefined && end.line !== start.line ? `,${end.line + 1}` : '';
           this.serializeNote(
               xml, 'location',
               `${this.fs.relative(this.basePath, file)}:${start.line + 1}${endLineString}`);
         }
+
         if (message.description) {
           this.serializeNote(xml, 'description', message.description);
         }
