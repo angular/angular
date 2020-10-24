@@ -135,6 +135,101 @@ runInEachFileSystem(() => {
               `</xliff>\n`,
             ].join('\n'));
           });
+
+          it('should convert a set of parsed messages into an XML string', () => {
+            const messageLocation1: ɵSourceLocation = {
+              start: {line: 0, column: 5},
+              end: {line: 0, column: 10},
+              file: absoluteFrom('/project/file-1.ts'),
+              text: 'message text'
+            };
+
+            const messageLocation2: ɵSourceLocation = {
+              start: {line: 3, column: 2},
+              end: {line: 4, column: 7},
+              file: absoluteFrom('/project/file-2.ts'),
+              text: 'message text'
+            };
+
+            const messageLocation3: ɵSourceLocation = {
+              start: {line: 0, column: 5},
+              end: {line: 0, column: 10},
+              file: absoluteFrom('/project/file-3.ts'),
+              text: 'message text'
+            };
+
+            const messageLocation4: ɵSourceLocation = {
+              start: {line: 3, column: 2},
+              end: {line: 4, column: 7},
+              file: absoluteFrom('/project/file-4.ts'),
+              text: 'message text'
+            };
+
+            const messages: ɵParsedMessage[] = [
+              mockMessage('1234', ['message text'], [], {location: messageLocation1}),
+              mockMessage('1234', ['message text'], [], {location: messageLocation2}),
+              mockMessage('1234', ['message text'], [], {
+                location: messageLocation3,
+                legacyIds: ['87654321FEDCBA0987654321FEDCBA0987654321', '563965274788097516']
+              }),
+              mockMessage(
+                  '1234', ['message text'], [], {location: messageLocation4, customId: 'other'}),
+            ];
+            const serializer = new Xliff1TranslationSerializer(
+                'xx', absoluteFrom('/project'), useLegacyIds, options);
+            const output = serializer.serialize(messages);
+
+            // Note that in this test the third message will match the first two if legacyIds is
+            // false. Otherwise it will be a separate message on its own.
+
+            expect(output).toEqual([
+              `<?xml version="1.0" encoding="UTF-8" ?>`,
+              `<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">`,
+              `  <file source-language="xx" datatype="plaintext" original="ng2.template"${
+                  toAttributes(options)}>`,
+              `    <body>`,
+              `      <trans-unit id="1234" datatype="html">`,
+              `        <source>message text</source>`,
+              `        <context-group purpose="location">`,
+              `          <context context-type="sourcefile">file-1.ts</context>`,
+              `          <context context-type="linenumber">1</context>`,
+              `        </context-group>`,
+              `        <context-group purpose="location">`,
+              `          <context context-type="sourcefile">file-2.ts</context>`,
+              `          <context context-type="linenumber">4,5</context>`,
+              `        </context-group>`,
+              ...useLegacyIds ?
+                  [] :
+                  [
+                    `        <context-group purpose="location">`,
+                    `          <context context-type="sourcefile">file-3.ts</context>`,
+                    `          <context context-type="linenumber">1</context>`,
+                    `        </context-group>`,
+                  ],
+              `      </trans-unit>`,
+              ...useLegacyIds ?
+                  [
+                    `      <trans-unit id="87654321FEDCBA0987654321FEDCBA0987654321" datatype="html">`,
+                    `        <source>message text</source>`,
+                    `        <context-group purpose="location">`,
+                    `          <context context-type="sourcefile">file-3.ts</context>`,
+                    `          <context context-type="linenumber">1</context>`,
+                    `        </context-group>`,
+                    `      </trans-unit>`,
+                  ] :
+                  [],
+              `      <trans-unit id="other" datatype="html">`,
+              `        <source>message text</source>`,
+              `        <context-group purpose="location">`,
+              `          <context context-type="sourcefile">file-4.ts</context>`,
+              `          <context context-type="linenumber">4,5</context>`,
+              `        </context-group>`,
+              `      </trans-unit>`,
+              `    </body>`,
+              `  </file>`,
+              `</xliff>\n`,
+            ].join('\n'));
+          });
         });
       });
     });

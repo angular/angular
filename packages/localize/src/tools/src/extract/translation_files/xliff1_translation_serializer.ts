@@ -11,6 +11,7 @@ import {ɵParsedMessage, ɵSourceLocation} from '@angular/localize';
 import {FormatOptions, validateOptions} from './format_options';
 import {extractIcuPlaceholders} from './icu_parsing';
 import {TranslationSerializer} from './translation_serializer';
+import {consolidateMessages, hasLocation} from './utils';
 import {XmlFile} from './xml_file';
 
 /** This is the number of characters that a legacy Xliff 1.2 message id has. */
@@ -33,7 +34,7 @@ export class Xliff1TranslationSerializer implements TranslationSerializer {
   }
 
   serialize(messages: ɵParsedMessage[]): string {
-    const ids = new Set<string>();
+    const messageMap = consolidateMessages(messages, message => this.getMessageId(message));
     const xml = new XmlFile();
     xml.startTag('xliff', {'version': '1.2', 'xmlns': 'urn:oasis:names:tc:xliff:document:1.2'});
     // NOTE: the `original` property is set to the legacy `ng2.template` value for backward
@@ -50,21 +51,19 @@ export class Xliff1TranslationSerializer implements TranslationSerializer {
       ...this.formatOptions,
     });
     xml.startTag('body');
-    for (const message of messages) {
-      const id = this.getMessageId(message);
-      if (ids.has(id)) {
-        // Do not render the same message more than once
-        continue;
-      }
-      ids.add(id);
+    for (const [id, duplicateMessages] of messageMap.entries()) {
+      const message = duplicateMessages[0];
 
       xml.startTag('trans-unit', {id, datatype: 'html'});
       xml.startTag('source', {}, {preserveWhitespace: true});
       this.serializeMessage(xml, message);
       xml.endTag('source', {preserveWhitespace: false});
-      if (message.location) {
-        this.serializeLocation(xml, message.location);
+
+      // Write all the locations
+      for (const {location} of duplicateMessages.filter(hasLocation)) {
+        this.serializeLocation(xml, location);
       }
+
       if (message.description) {
         this.serializeNote(xml, 'description', message.description);
       }
