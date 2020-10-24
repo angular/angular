@@ -153,7 +153,14 @@ ${output}
   `);
 };
 
-const verify = (input: string, output: string, extra: any = {}): void => {
+const verify = (input: string, output: string, extra: {
+  inputArgs?: any,
+  compilerOptions?: any,
+  skipPathBasedCheck?: boolean,
+  skipIdBasedCheck?: boolean,
+  verbose?: boolean,
+  exceptions?: {}
+} = {}): void => {
   const files = getAppFilesWithTemplate(input, extra.inputArgs);
   const opts = (i18nUseExternalIds: boolean) =>
       ({i18nUseExternalIds, ...(extra.compilerOptions || {})});
@@ -161,7 +168,7 @@ const verify = (input: string, output: string, extra: any = {}): void => {
   // invoke with file-based prefix translation names
   if (!extra.skipPathBasedCheck) {
     const result = compile(files, angularFiles, opts(false));
-    maybePrint(result.source, extra.verbose);
+    maybePrint(result.source, !!extra.verbose);
     expect(verifyPlaceholdersIntegrity(result.source)).toBe(true);
     expect(verifyUniqueConsts(result.source)).toBe(true);
     expectEmit(result.source, output, 'Incorrect template');
@@ -170,7 +177,7 @@ const verify = (input: string, output: string, extra: any = {}): void => {
   // invoke with translation names based on external ids
   if (!extra.skipIdBasedCheck) {
     const result = compile(files, angularFiles, opts(true));
-    maybePrint(result.source, extra.verbose);
+    maybePrint(result.source, !!extra.verbose);
     const interpolationConfig = extra.inputArgs && extra.inputArgs.interpolation ?
         InterpolationConfig.fromArray(extra.inputArgs.interpolation) :
         undefined;
@@ -346,7 +353,6 @@ describe('i18n support in the template compiler', () => {
           ${i18n_7}
           return [
             $i18n_0$,
-            [${AttributeMarker.I18n}, "title"],
             ["title", $i18n_1$],
             ["title", $i18n_2$],
             ["title", $i18n_3$],
@@ -362,31 +368,25 @@ describe('i18n support in the template compiler', () => {
             $r3$.ɵɵi18n(1, 0);
             $r3$.ɵɵelementEnd();
             $r3$.ɵɵelementStart(2, "div", 1);
-            $r3$.ɵɵi18nAttributes(3, 2);
-            $r3$.ɵɵtext(4, "Content B");
+            $r3$.ɵɵtext(3, "Content B");
             $r3$.ɵɵelementEnd();
-            $r3$.ɵɵelementStart(5, "div", 1);
-            $r3$.ɵɵi18nAttributes(6, 3);
-            $r3$.ɵɵtext(7, "Content C");
+            $r3$.ɵɵelementStart(4, "div", 2);
+            $r3$.ɵɵtext(5, "Content C");
             $r3$.ɵɵelementEnd();
-            $r3$.ɵɵelementStart(8, "div", 1);
-            $r3$.ɵɵi18nAttributes(9, 4);
-            $r3$.ɵɵtext(10, "Content D");
+            $r3$.ɵɵelementStart(6, "div", 3);
+            $r3$.ɵɵtext(7, "Content D");
             $r3$.ɵɵelementEnd();
-            $r3$.ɵɵelementStart(11, "div", 1);
-            $r3$.ɵɵi18nAttributes(12, 5);
-            $r3$.ɵɵtext(13, "Content E");
+            $r3$.ɵɵelementStart(8, "div", 4);
+            $r3$.ɵɵtext(9, "Content E");
             $r3$.ɵɵelementEnd();
-            $r3$.ɵɵelementStart(14, "div", 1);
-            $r3$.ɵɵi18nAttributes(15, 6);
-            $r3$.ɵɵtext(16, "Content F");
+            $r3$.ɵɵelementStart(10, "div", 5);
+            $r3$.ɵɵtext(11, "Content F");
             $r3$.ɵɵelementEnd();
-            $r3$.ɵɵelementStart(17, "div", 1);
-            $r3$.ɵɵi18nAttributes(18, 7);
-            $r3$.ɵɵtext(19, "Content G");
+            $r3$.ɵɵelementStart(12, "div", 6);
+            $r3$.ɵɵtext(13, "Content G");
             $r3$.ɵɵelementEnd();
-            $r3$.ɵɵelementStart(20, "div");
-            $r3$.ɵɵi18n(21, 8);
+            $r3$.ɵɵelementStart(14, "div");
+            $r3$.ɵɵi18n(15, 7);
             $r3$.ɵɵelementEnd();
           }
         }
@@ -405,14 +405,12 @@ describe('i18n support in the template compiler', () => {
         consts: function () {
           ${i18n_0}
           return [
-            [${AttributeMarker.I18n}, "title"],
             ["title", $i18n_0$]
           ];
         },
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵtemplate(0, MyComponent_ng_template_0_Template, 0, 0, "ng-template", 0);
-            $r3$.ɵɵi18nAttributes(1, 1);
           }
         }
       `;
@@ -436,7 +434,6 @@ describe('i18n support in the template compiler', () => {
             function MyComponent_0_Template(rf, ctx) {
               if (rf & 1) {
                 $r3$.ɵɵtemplate(0, MyComponent_0_ng_template_0_Template, 1, 0, "ng-template", 1);
-                $r3$.ɵɵi18nAttributes(1, 2);
               }
             }
             …
@@ -444,13 +441,12 @@ describe('i18n support in the template compiler', () => {
               ${i18n_0}
               return [
                 [${AttributeMarker.Template}, "ngIf"],
-                [${AttributeMarker.I18n}, "title"],
                 ["title", $i18n_0$]
               ];
             },
             template: function MyComponent_Template(rf, ctx) {
               if (rf & 1) {
-                $r3$.ɵɵtemplate(0, MyComponent_0_Template, 2, 0, undefined, 0);
+                $r3$.ɵɵtemplate(0, MyComponent_0_Template, 1, 0, undefined, 0);
               }
               if (rf & 2) {
                 $r3$.ɵɵproperty("ngIf", ctx.visible);
@@ -584,15 +580,12 @@ describe('i18n support in the template compiler', () => {
         consts: function() {
           ${i18n_0}
           return [
-            ["id", "static", ${AttributeMarker.I18n}, "title"],
-            ["title", $i18n_0$]
+            ["id", "static", "title", $i18n_0$]
           ];
         },
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵɵelementStart(0, "div", 0);
-            $r3$.ɵɵi18nAttributes(1, 1);
-            $r3$.ɵɵelementEnd();
+            $r3$.ɵɵelement(0, "div", 0);
           }
         }
       `;
@@ -640,9 +633,9 @@ describe('i18n support in the template compiler', () => {
           ${i18n_3}
           ${i18n_4}
           return [
-            ["id", "dynamic-1", ${AttributeMarker.I18n}, "aria-roledescription",
-                                                                "title", "aria-label"],
-            ["aria-roledescription", $i18n_0$, "title", $i18n_1$, "aria-label", $i18n_2$],
+            ["id", "dynamic-1", "aria-roledescription",  $i18n_0$, ${AttributeMarker.I18n},
+              "title", "aria-label"],
+            ["title", $i18n_1$, "aria-label", $i18n_2$],
             ["id", "dynamic-2", ${AttributeMarker.I18n}, "title", "aria-roledescription"],
             ["title", $i18n_3$, "aria-roledescription", $i18n_4$]
           ];
@@ -830,9 +823,9 @@ describe('i18n support in the template compiler', () => {
           ${i18n_3}
           ${i18n_4}
           return [
-            ["id", "dynamic-1", ${AttributeMarker.I18n}, "aria-roledescription",
-                                                                "title", "aria-label"],
-            ["aria-roledescription", $i18n_0$, "title", $i18n_1$, "aria-label", $i18n_2$],
+            ["id", "dynamic-1", "aria-roledescription", $i18n_0$, ${AttributeMarker.I18n},
+                "title", "aria-label"],
+            ["title", $i18n_1$, "aria-label", $i18n_2$],
             ["id", "dynamic-2", ${AttributeMarker.I18n}, "title", "aria-roledescription"],
             ["title", $i18n_3$, "aria-roledescription", $i18n_4$]
           ];
@@ -925,7 +918,6 @@ describe('i18n support in the template compiler', () => {
           ${i18n_0}
           ${i18n_1}
           return [
-            [${AttributeMarker.I18n}, "title"],
             ["title", $i18n_0$],
             $i18n_1$
           ];
@@ -933,8 +925,7 @@ describe('i18n support in the template compiler', () => {
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵelementStart(0, "div", 0);
-            $r3$.ɵɵi18nAttributes(1, 1);
-            $r3$.ɵɵi18n(2, 2);
+            $r3$.ɵɵi18n(1, 1);
             $r3$.ɵɵelementEnd();
           }
         }
