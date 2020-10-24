@@ -2046,6 +2046,8 @@ export function parseTemplate(
       {leadingTriviaChars: LEADING_TRIVIA_CHARS, ...options, tokenizeExpansionForms: true});
 
   if (parseResult.errors && parseResult.errors.length > 0) {
+    // TODO(ayazhafiz): we may not always want to bail out at this point (e.g. in
+    // the context of a language service).
     return {
       interpolationConfig,
       preserveWhitespaces,
@@ -2084,23 +2086,11 @@ export function parseTemplate(
 
   const {nodes, errors, styleUrls, styles, ngContentSelectors} =
       htmlAstToRender3Ast(rootNodes, bindingParser);
-  if (errors && errors.length > 0) {
-    return {
-      interpolationConfig,
-      preserveWhitespaces,
-      template,
-      errors,
-      nodes: [],
-      styleUrls: [],
-      styles: [],
-      ngContentSelectors: []
-    };
-  }
 
   return {
     interpolationConfig,
     preserveWhitespaces,
-    errors: null,
+    errors: errors.length > 0 ? errors : null,
     template,
     nodes,
     styleUrls,
@@ -2265,6 +2255,8 @@ export interface ParsedTemplate {
 
   /**
    * Any errors from parsing the template the first time.
+   *
+   * `null` if there are no errors. Otherwise, the array of errors is guaranteed to be non-empty.
    */
   errors: ParseError[]|null;
 

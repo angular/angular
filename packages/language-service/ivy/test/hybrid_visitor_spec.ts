@@ -433,16 +433,17 @@ describe('findNodeAtPosition for expression AST', () => {
     expect(node).toBeInstanceOf(e.BindingPipe);
   });
 
-  it('should locate binding pipe without identifier',
-     () => {
-         // TODO: We are not able to locate pipe if identifier is missing because the
-         // parser throws an error. This case is important for autocomplete.
-         // const {errors, nodes, position} = parse(`{{ title | ¦ }}`);
-         // expect(errors).toBe(null);
-         // const node = findNodeAtPosition(nodes, position);
-         // expect(isExpressionNode(node!)).toBe(true);
-         // expect(node).toBeInstanceOf(e.BindingPipe);
-     });
+  it('should locate binding pipe without identifier', () => {
+    const {errors, nodes, position} = parse(`{{ title | ¦ }}`);
+    expect(errors?.length).toBe(1);
+    expect(errors![0].toString())
+        .toContain(
+            'Unexpected end of input, expected identifier or keyword at the end of the expression');
+    const node = findNodeAtPosition(nodes, position);
+    expect(isExpressionNode(node!)).toBe(true);
+    // TODO: We want this to be a BindingPipe.
+    expect(node).toBeInstanceOf(e.Interpolation);
+  });
 
   it('should locate method call', () => {
     const {errors, nodes, position} = parse(`{{ title.toString(¦) }}`);
