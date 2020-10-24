@@ -1,9 +1,9 @@
 ## Invalid interpolation-like markup
 
 This schematic fixes interpolation-like markup no longer accepted by
-the Anuglar compiler since invalidated by #39107.
+the Angular compiler since invalidated by [#39107](https://github.com/angular/angular/pull/39107).
 
-Previously, the angular parser would not match markup like
+Previously, the Angular parser would not match markup like
 `{{ 1 + 2 }` or `{{ 1 + 2 }<!-- -->}` to be partial (but malformed)
 interpolations, an implementation detail that some developers may have
 relied on to treat interpolation-like markup as text.

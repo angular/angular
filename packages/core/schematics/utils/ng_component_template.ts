@@ -1,4 +1,3 @@
-import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from '@angular/compiler';
 /**
  * @license
  * Copyright Google LLC All Rights Reserved.
@@ -7,6 +6,7 @@ import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from '@angular/compil
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from '@angular/compiler';
 import {existsSync, readFileSync} from 'fs';
 import {dirname, resolve} from 'path';
 import * as ts from 'typescript';
@@ -27,8 +27,12 @@ export interface ResolvedTemplate {
   inline: boolean;
   /** Path to the file that contains this template. */
   filePath: string;
-  /** The interpolation config of the template. */
-  interpolationConfig: InterpolationConfig;
+  /**
+   * The interpolation config of the template. If not explicitly specified, this
+   * is DEFAULT_INTERPOLATION_CONFIG. If the config is not a literal, this is
+   * 'unknown'.
+   */
+  interpolationConfig: InterpolationConfig|'unknown';
   /**
    * Gets the character and line of a given position index in the template.
    * If the template is declared inline within a TypeScript source file, the line and
@@ -88,7 +92,7 @@ export class NgComponentTemplateVisitor {
 
     // Walk through all component metadata properties and determine the referenced
     // HTML templates (either external or inline)
-    let interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG;
+    let interpolationConfig: InterpolationConfig|'unknown' = DEFAULT_INTERPOLATION_CONFIG;
     let resolvedTemplate: Omit<ResolvedTemplate, 'interpolationConfig'>|undefined;
     componentMetadata.properties.forEach(property => {
       if (!ts.isPropertyAssignment(property)) {
@@ -133,12 +137,15 @@ export class NgComponentTemplateVisitor {
           start: 0,
           getCharacterAndLineOfPosition: pos => getLineAndCharacterFromPosition(lineStartsMap, pos),
         };
-      } else if (
-          propertyName === 'interpolation' && ts.isArrayLiteralExpression(property.initializer) &&
-          property.initializer.elements.length === 2 &&
-          property.initializer.elements.every(ts.isStringLiteralLike)) {
-        const [start, end] = property.initializer.elements;
-        interpolationConfig = new InterpolationConfig(start.text, end.text);
+      } else if (propertyName === 'interpolation') {
+        if (ts.isArrayLiteralExpression(property.initializer) &&
+            property.initializer.elements.length === 2 &&
+            property.initializer.elements.every(ts.isStringLiteralLike)) {
+          const [start, end] = property.initializer.elements;
+          interpolationConfig = new InterpolationConfig(start.text, end.text);
+        } else {
+          interpolationConfig = 'unknown';
+        }
       }
     });
 

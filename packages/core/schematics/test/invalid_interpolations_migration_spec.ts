@@ -13,7 +13,7 @@ import {SchematicTestRunner, UnitTestTree} from '@angular-devkit/schematics/test
 import * as shx from 'shelljs';
 
 describe('invalid interpolation migration', () => {
-  let runner: SchematicTestRunner;
+  const runner = new SchematicTestRunner('test', require.resolve('../migrations.json'));
   let host: TempScopedNodeJsSyncHost;
   let tree: UnitTestTree;
   let tmpDirPath: string;
@@ -21,7 +21,6 @@ describe('invalid interpolation migration', () => {
   let logs: string[];
 
   beforeEach(() => {
-    runner = new SchematicTestRunner('test', require.resolve('../migrations.json'));
     host = new TempScopedNodeJsSyncHost();
     tree = new UnitTestTree(new HostTree(host));
 
@@ -206,6 +205,36 @@ describe('invalid interpolation migration', () => {
     await runMigration();
 
     expect(tree.readContent('/index.ts')).toBe(contents);
+  });
+
+  it('should fix templates with default interpolation config', async () => {
+    writeFile('/index.ts', `
+      import {Component} from '@angular/core';
+
+      @Component({
+        template: \`
+          {{ 1 + 2 }
+          [[ 1 + 2 ]
+        \`,
+        interpolation: ['{{', '}}'],
+      })
+      class Test {}
+    `);
+
+    await runMigration();
+
+    expect(tree.readContent('/index.ts')).toBe(`
+      import {Component} from '@angular/core';
+
+      @Component({
+        template: \`
+          {{ '{{' }} 1 + 2 {{ '}' }}
+          [[ 1 + 2 ]
+        \`,
+        interpolation: ['{{', '}}'],
+      })
+      class Test {}
+    `);
   });
 
   it('should fix invalid interpolations in external templates', async () => {

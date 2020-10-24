@@ -6,10 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {logging, normalize} from '@angular-devkit/core';
+import {logging, normalize, relative} from '@angular-devkit/core';
 import {Rule, SchematicContext, SchematicsException, Tree} from '@angular-devkit/schematics';
 import {AbsoluteSourceSpan, DEFAULT_INTERPOLATION_CONFIG} from '@angular/compiler';
-import {relative} from 'path';
 
 import {computeLineStartsMap, getLineAndCharacterFromPosition} from '../../utils/line_mappings';
 import {NgComponentTemplateVisitor, ResolvedTemplate} from '../../utils/ng_component_template';
@@ -19,7 +18,7 @@ import {createMigrationProgram} from '../../utils/typescript/compiler_host';
 type Logger = logging.LoggerApi;
 
 interface FixedTemplate {
-  origTemplate: ResolvedTemplate;
+  originalTemplate: ResolvedTemplate;
   newContent: string;
   invalidInterpolations: InvalidInterpolation[];
 }
@@ -29,7 +28,6 @@ interface InvalidInterpolation {
   span: AbsoluteSourceSpan;
 }
 
-/** Entry point for the V8 template variable assignment schematic. */
 export default function(): Rule {
   return (tree: Tree, context: SchematicContext) => {
     const {buildPaths, testPaths} = getProjectTsConfigPaths(tree);
@@ -57,41 +55,41 @@ function fixInvalidInterpolations(
   const typeChecker = program.getTypeChecker();
   const templateVisitor = new NgComponentTemplateVisitor(typeChecker);
   const sourceFiles = program.getSourceFiles().filter(
-      f => !f.isDeclarationFile && !program.isSourceFileFromExternalLibrary(f));
+      f => !f.isDeclarationFile && !program.isSourceFileFromExternalLibrary(f) &&
+          // Only include TS files that look like they might point to a template
+          // via a "template:" or "templateUrl:" key
+          f.text.includes('template'));
   sourceFiles.forEach(sourceFile => templateVisitor.visitNode(sourceFile));
 
   const collectedFixes: string[] = [];
   const fixesByFile = getFixesByFile(templateVisitor.resolvedTemplates);
 
-  fixesByFile.forEach((fixes, absFilePath) => {
-    const treeFilePath = normalize(relative(basePath, absFilePath));
-    const origFileContent = tree.read(treeFilePath)?.toString();
-    if (origFileContent === undefined) {
+  for (const [absFilePath, fixes] of fixesByFile.entries()) {
+    const treeFilePath = relative(normalize(basePath), normalize(absFilePath));
+    const originalFileContent = tree.read(treeFilePath)?.toString();
+    if (originalFileContent === undefined) {
       logger.error(
           'Failed to read file containing template; cannot apply fixes for invalid interpolations.');
       return;
     }
 
-    // Apply fixes for each template in the current file.
+    // Apply fixes for each template in the current file, and record messages
+    // about the detected malformed interpolation-like content.
+    const lineStartsMap = computeLineStartsMap(originalFileContent);
     const updater = tree.beginUpdate(treeFilePath);
     for (const fix of fixes) {
-      updater.remove(fix.origTemplate.start, fix.origTemplate.content.length);
-      updater.insertLeft(fix.origTemplate.start, fix.newContent);
-    }
-    tree.commitUpdate(updater);
+      updater.remove(fix.originalTemplate.start, fix.originalTemplate.content.length);
+      updater.insertLeft(fix.originalTemplate.start, fix.newContent);
 
-    // Record detected malformed interpolation-like content
-    const lineStartsMap = computeLineStartsMap(origFileContent);
-    for (const tmplFix of fixes) {
-      for (const {span, original} of tmplFix.invalidInterpolations) {
+      for (const {span, original} of fix.invalidInterpolations) {
         const {line, character} = getLineAndCharacterFromPosition(lineStartsMap, span.start);
         collectedFixes.push(`${treeFilePath}@${line + 1}:${character + 1}: ${original}`);
       }
     }
-  });
+    tree.commitUpdate(updater);
+  }
 
   if (collectedFixes.length > 0) {
-    logger.info('---- Invalid Interpolation schematic ----');
     logger.info('Malformed interpolation-like markup like "{{ 1 }" or "{{ 1 }<!-- -->}"');
     logger.info('are no longer valid. Interpolation delimiters should be escaped explicitly,');
     logger.info(`for example as in "{{ '{{' }} 1 {{ '}}' }}".`);
@@ -110,7 +108,9 @@ function fixInvalidInterpolations(
 function getFixesByFile(templates: ResolvedTemplate[]): Map<string, FixedTemplate[]> {
   const fixesByFile = new Map<string, FixedTemplate[]>();
   for (const template of templates) {
-    if (template.interpolationConfig !== DEFAULT_INTERPOLATION_CONFIG) {
+    if (template.interpolationConfig === 'unknown' ||
+        template.interpolationConfig.start !== DEFAULT_INTERPOLATION_CONFIG.start ||
+        template.interpolationConfig.end !== DEFAULT_INTERPOLATION_CONFIG.end) {
       // This schematic is only concerned with the default interpolation config
       // delimited by {{ / }}; do not attempt to fix custom interpolations.
       continue;
@@ -141,7 +141,7 @@ const RE_INTERPOLATIONS: ReadonlyArray<[RegExp, string]> = [
 
   // Replace "{{expr}<!-- cmt -->}" with "{{ '{{' }} expr {{ '}}' }}".
   // The former is a little-known pattern previously used to display an
-  // iterpolation literally, but that does not longer parse. The latter would
+  // interpolation literally, but that no longer parses. The latter would
   // still parse.
   [
     /{{((?:'[^']*?'|"[^"]*?"|[^}'"])*?)}<!--.*-->}/g,
@@ -163,7 +163,7 @@ function fixInterpolations(template: ResolvedTemplate): FixedTemplate|null {
   const invalidInterpolations: InvalidInterpolation[] = [];
   for (const [reInterpolation, replacement] of RE_INTERPOLATIONS) {
     // First detect invalid interpolations, then fix all of them.
-    let match;
+    let match: RegExpExecArray|null;
     while (match = reInterpolation.exec(newContent)) {
       const start = template.start + match.index;
       const end = start + match[0].length;
@@ -178,7 +178,7 @@ function fixInterpolations(template: ResolvedTemplate): FixedTemplate|null {
   }
 
   return {
-    origTemplate: template,
+    originalTemplate: template,
     newContent,
     invalidInterpolations,
   };
