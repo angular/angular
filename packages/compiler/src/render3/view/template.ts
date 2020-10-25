@@ -36,7 +36,7 @@ import {I18nContext} from './i18n/context';
 import {createGoogleGetMsgStatements} from './i18n/get_msg_utils';
 import {createLocalizeStatements} from './i18n/localize_utils';
 import {I18nMetaVisitor} from './i18n/meta';
-import {assembleBoundTextPlaceholders, assembleI18nBoundString, declareI18nVariable, getTranslationConstPrefix, hasI18nMeta, I18N_ICU_MAPPING_PREFIX, i18nFormatPlaceholderNames, icuFromI18nMessage, isI18nRootNode, isSingleI18nIcu, placeholdersToParams, TRANSLATION_VAR_PREFIX, wrapI18nPlaceholder} from './i18n/util';
+import {assembleBoundTextPlaceholders, assembleI18nBoundString, declareI18nVariable, getTranslationConstPrefix, hasI18nMeta, I18N_ICU_MAPPING_PREFIX, i18nFormatPlaceholderNames, icuFromI18nMessage, isBoundI18nAttribute, isI18nRootNode, isSingleI18nIcu, placeholdersToParams, TRANSLATION_VAR_PREFIX, wrapI18nPlaceholder} from './i18n/util';
 import {StylingBuilder, StylingInstruction} from './styling_builder';
 import {asLiteral, chainedInstruction, CONTEXT_NAME, getAttrsForDirectiveMatching, getInterpolationArgsLength, IMPLICIT_REFERENCE, invalid, NON_BINDABLE_ATTR, REFERENCE_PREFIX, RENDER_FLAGS, trimTrailingNulls, unsupported} from './util';
 
@@ -601,7 +601,9 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
         stylingBuilder.registerStyleAttr(value);
       } else if (name === 'class') {
         stylingBuilder.registerClassAttr(value);
-      } else if (attr.i18n && !(attr instanceof t.TextAttribute)) {
+      } else if (isBoundI18nAttribute(attr)) {
+        // Note that we don't collect static i18n attributes here, because
+        // they can be treated in the same way as regular attributes.
         boundI18nAttrs.push(attr);
       } else {
         outputAttrs.push(attr);
@@ -864,15 +866,8 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     this.matchDirectives(NG_TEMPLATE_TAG_NAME, template);
 
     // prepare attributes parameter (including attributes used for directive matching)
-    const boundI18nAttrs: t.BoundAttribute[] = [];
-    const attrs: t.TextAttribute[] = [];
-    for (const attr of template.attributes) {
-      if (attr.i18n && !(attr instanceof t.TextAttribute)) {
-        boundI18nAttrs.push(attr);
-      } else {
-        attrs.push(attr);
-      }
-    }
+    const [boundI18nAttrs, attrs] = partitionArray<t.BoundAttribute, t.TextAttribute>(
+        template.attributes, isBoundI18nAttribute);
     const attrsExprs: o.Expression[] = this.getAttributeExpressions(
         NG_TEMPLATE_TAG_NAME, attrs, template.inputs, template.outputs, undefined /* styles */,
         template.templateAttrs, boundI18nAttrs);
@@ -1305,6 +1300,8 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
         ngProjectAsAttr = attr;
       }
 
+      // Note that static i18n attributes aren't in the i18n array,
+      // because they're treated in the same way as regular attributes.
       if (attr.i18n) {
         attrExprs.push(o.literal(attr.name), this.i18nTranslate(attr.i18n as i18n.Message));
       } else {

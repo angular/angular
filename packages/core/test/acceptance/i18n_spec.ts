@@ -3011,6 +3011,29 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
     expect(fixture.componentInstance.dir.title).toBe('translatedText');
     expect(fixture.nativeElement.querySelector('div').getAttribute('title')).toBe('translatedText');
   });
+
+  it('should not be able to inject an i18n attribute with an interpolation', () => {
+    loadTranslations({[computeMsgId('text {$INTERPOLATION}')]: 'translatedText {$INTERPOLATION}'});
+
+    @Directive({selector: '[injectTitle]'})
+    class InjectTitleDir {
+      constructor(@Attribute('title') public title: string) {}
+    }
+
+    @Component({template: `<div i18n-title title="text {{ value }}" injectTitle></div>`})
+    class App {
+      @ViewChild(InjectTitleDir) dir!: InjectTitleDir;
+      value = 'value';
+    }
+
+    TestBed.configureTestingModule({declarations: [App, InjectTitleDir]});
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    expect(fixture.componentInstance.dir.title).toBeNull();
+    expect(fixture.nativeElement.querySelector('div').getAttribute('title'))
+        .toBe('translatedText value');
+  });
 });
 
 function initWithTemplate(compType: Type<any>, template: string) {

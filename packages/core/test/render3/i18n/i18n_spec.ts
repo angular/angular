@@ -416,30 +416,6 @@ describe('Runtime i18n', () => {
   });
 
   describe(`i18nAttribute`, () => {
-    it('for text', () => {
-      const message = `Hello world!`;
-      const attrs = ['title', message];
-      const nbDecls = 2;
-      const index = 1;
-      const fixture = new TemplateFixture({
-        create: () => {
-          ɵɵelementStart(0, 'div');
-          ɵɵi18nAttributes(index, 0);
-          ɵɵelementEnd();
-        },
-        decls: nbDecls,
-        vars: index,
-        consts: [attrs],
-      });
-      const tView = fixture.hostView[TVIEW];
-      const opCodes = tView.data[HEADER_OFFSET + index] as I18nUpdateOpCodes;
-
-      expect(opCodes).toEqual([]);
-      expect((getNativeByIndex(HEADER_OFFSET, fixture.hostView as LView) as any as Element)
-                 .getAttribute('title'))
-          .toEqual(message);
-    });
-
     it('for simple bindings', () => {
       const message = `Hello �0�!`;
       const attrs = ['title', message];
