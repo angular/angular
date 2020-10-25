@@ -121,16 +121,12 @@ export function assertIndexInDeclRange(lView: LView, index: number) {
 
 export function assertIndexInVarsRange(lView: LView, index: number) {
   const tView = lView[1];
-  assertBetween(
-      tView.bindingStartIndex,
-      (tView as any as {originalExpandoStartIndex: number}).originalExpandoStartIndex, index);
+  assertBetween(tView.bindingStartIndex, tView.expandoStartIndex, index);
 }
 
 export function assertIndexInExpandoRange(lView: LView, index: number) {
   const tView = lView[1];
-  assertBetween(
-      (tView as any as {originalExpandoStartIndex: number}).originalExpandoStartIndex, lView.length,
-      index);
+  assertBetween(tView.expandoStartIndex, lView.length, index);
 }
 
 export function assertBetween(lower: number, upper: number, index: number) {
