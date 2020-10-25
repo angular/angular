@@ -159,16 +159,6 @@ export const TViewConstructor = class TView implements ITView {
   get type_(): string {
     return TViewTypeAsString[this.type] || `TViewType.?${this.type}?`;
   }
-
-  /**
-   * Returns initial value of `expandoStartIndex`.
-   */
-  // FIXME(misko): `originalExpandoStartIndex` should not be needed because it should be the same as
-  // `expandoStartIndex`. However `expandoStartIndex` is misnamed as it changes as more items get
-  // allocated in expando.
-  get originalExpandoStartIndex(): number {
-    return HEADER_OFFSET + this._decls + this._vars;
-  }
 };
 
 class TNode implements ITNode {
@@ -515,18 +505,13 @@ export class LViewDebug implements ILViewDebug {
   }
 
   get vars(): LViewDebugRange {
-    const tView = this.tView;
     return toLViewRange(
-        tView, this._raw_lView, tView.bindingStartIndex,
-        (tView as any as {originalExpandoStartIndex: number}).originalExpandoStartIndex);
+        this.tView, this._raw_lView, this.tView.bindingStartIndex, this.tView.expandoStartIndex);
   }
 
   get expando(): LViewDebugRange {
-    const tView = this.tView as any as {_decls: number, _vars: number};
     return toLViewRange(
-        this.tView, this._raw_lView,
-        (tView as any as {originalExpandoStartIndex: number}).originalExpandoStartIndex,
-        this._raw_lView.length);
+        this.tView, this._raw_lView, this.tView.expandoStartIndex, this._raw_lView.length);
   }
 
   /**
