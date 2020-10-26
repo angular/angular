@@ -1153,7 +1153,7 @@ describe('Undecorated classes with DI migration', () => {
         export class MyModule {}
       `);
 
-         expect(() => runMigration()).not.toThrow();
+         await runMigration();
 
          expect(errorOutput.length).toBe(1);
          expect(errorOutput[0]).toMatch(/Could not resolve non-existent/);
