@@ -71,7 +71,6 @@ runInEachFileSystem(() => {
           }
           return lockFileContents;
         });
-        spyOn(process, 'kill').and.returnValue();
 
         const promise = locker.lock(async () => log.push('fn()'));
         // The lock is now waiting on the lock-file becoming free, so no `fn()` in the log.
@@ -81,54 +80,12 @@ runInEachFileSystem(() => {
           `(If you are sure no ngcc process is running then you should delete the lock-file at ${
               lockFile.path}.)`
         ]]);
-        expect(process.kill).toHaveBeenCalledWith(188, 0);
 
         lockFileContents = null;
         // The lock-file has been removed, so we can create our own lock-file, call `fn()` and then
         // remove the lock-file.
         await promise;
         expect(log).toEqual(['write()', 'read() => 188', 'write()', 'fn()', 'remove()']);
-      });
-
-      it('should fail fast when waiting on a dead process', async () => {
-        const fs = getFileSystem();
-        const log: string[] = [];
-        const lockFile = new MockLockFile(fs, log);
-        const logger = new MockLogger();
-        const locker = new AsyncLocker(lockFile, logger, 100, 10);
-
-        let lockFileContents: string|null = '188';
-        spyOn(lockFile, 'write').and.callFake(() => {
-          log.push('write()');
-          if (lockFileContents) {
-            throw {code: 'EEXIST'};
-          }
-        });
-        spyOn(lockFile, 'read').and.callFake(() => {
-          log.push('read() => ' + lockFileContents);
-          if (lockFileContents === null) {
-            throw {code: 'ENOENT'};
-          }
-          return lockFileContents;
-        });
-        spyOn(process, 'kill').and.callFake(() => {
-          throw {code: 'ESRCH'};
-        });
-
-        const promise = locker.lock(async () => log.push('fn()'));
-        // The lock has already failed so no `fn()` in the log.
-        expect(log).toEqual(['write()', 'read() => 188', 'write()', 'read() => 188']);
-        expect(logger.logs.info).toEqual([]);
-        expect(process.kill).toHaveBeenCalledWith(188, 0);
-        // Check that a missing process errors out.
-        let error: Error;
-        await promise.catch(e => error = e);
-        expect(log).toEqual(['write()', 'read() => 188', 'write()', 'read() => 188']);
-        expect(error!.message)
-            .toEqual(
-                `Lock found, but no process with PID 188 seems to be running.\n` +
-                `(If you are sure no ngcc process is running then you should delete the lock-file at ${
-                    lockFile.path}.)`);
       });
 
       it('should extend the retry timeout if the other process locking the file changes', async () => {
@@ -152,7 +109,6 @@ runInEachFileSystem(() => {
           }
           return lockFileContents;
         });
-        spyOn(process, 'kill').and.returnValue();
 
         const promise = locker.lock(async () => log.push('fn()'));
         // The lock is now waiting on the lock-file becoming free, so no `fn()` in the log.
@@ -162,7 +118,6 @@ runInEachFileSystem(() => {
           `(If you are sure no ngcc process is running then you should delete the lock-file at ${
               lockFile.path}.)`
         ]]);
-        expect(process.kill).toHaveBeenCalledWith(188, 0);
 
         lockFileContents = '444';
         // The lock-file has been taken over by another process - wait for the next attempt
@@ -176,7 +131,6 @@ runInEachFileSystem(() => {
            `(If you are sure no ngcc process is running then you should delete the lock-file at ${
                lockFile.path}.)`]
         ]);
-        expect(process.kill).toHaveBeenCalledWith(444, 0);
 
         lockFileContents = null;
         // The lock-file has been removed, so we can create our own lock-file, call `fn()` and
@@ -209,13 +163,11 @@ runInEachFileSystem(() => {
              }
              return lockFileContents;
            });
-           spyOn(process, 'kill').and.returnValue();
 
            const promise = locker.lock(async () => log.push('fn()'));
 
            // The lock is now waiting on the lock-file becoming free, so no `fn()` in the log.
            expect(log).toEqual(['write()', 'read() => 188']);
-           expect(process.kill).toHaveBeenCalledWith(188, 0);
            // Do not remove the lock-file and let the call to `lock()` timeout.
            let error: Error;
            await promise.catch(e => error = e);
