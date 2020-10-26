@@ -241,8 +241,16 @@ For example, the default asset paths can be represented in more detail using the
 <code-example language="json">
 
 "assets": [
-  { "glob": "**/*", "input": "src/assets/", "output": "/assets/" },
-  { "glob": "favicon.ico", "input": "src/", "output": "/" }
+  {
+    "glob": "**/*",
+    "input": "src/assets/",
+    "output": "/assets/"
+  },
+  {
+    "glob": "favicon.ico",
+    "input": "src/",
+    "output": "/"
+  }
 ]
 
 </code-example>
@@ -253,7 +261,11 @@ For example, the following configuration copies assets from a node package:
 <code-example language="json">
 
 "assets": [
- { "glob": "**/*", "input": "./node_modules/some-package/images", "output": "/some-package/" },
+ {
+   "glob": "**/*",
+   "input": "./node_modules/some-package/images",
+   "output": "/some-package/"
+ }
 ]
 
 </code-example>
@@ -265,7 +277,12 @@ The following example uses the `ignore` field to exclude certain files in the as
 <code-example language="json">
 
 "assets": [
- { "glob": "**/*", "input": "src/assets/", "ignore": ["**/*.svg"], "output": "/assets/" },
+ { 
+   "glob": "**/*",
+   "input": "src/assets/",
+   "ignore": ["**/*.svg"],
+   "output": "/assets/" 
+ }
 ]
 
 </code-example>
@@ -284,10 +301,18 @@ For example, the following object values create and name a bundle that contains 
 <code-example language="json">
 
    "styles": [
-     { "input": "src/external-module/styles.scss", "inject": false, "bundleName": "external-module" }
+     {
+       "input": "src/external-module/styles.scss",
+       "inject": false,
+       "bundleName": "external-module"
+     }
    ],
    "scripts": [
-     { "input": "src/external-module/main.js", "inject": false, "bundleName": "external-module" }
+     { 
+       "input": "src/external-module/main.js",
+       "inject": false,
+       "bundleName": "external-module"
+     }
    ]
 
 </code-example>
@@ -341,25 +366,38 @@ See also [Using runtime-global libraries inside your app](guide/using-libraries#
 
 ### Optimization and source map configuration
 
-The `optimization` and `sourceMap` command options are simple Boolean flags.
-You can supply an object as a configuration value for either of these to provide more detailed instruction.
+The `optimization` and `sourceMap` browser builder options can be either a Boolean or an Object for more fine-grained configuration.
+In this section we will explain how to fine tune these options.
 
-* The flag `--optimization="true"` applies to both scripts and styles. You can supply a value such as the following to apply optimization to one or the other:
+* The `optimization` option applies to scripts, styles and fonts. You can supply a value such as the following to apply optimization to one or the other:
 
 <code-example language="json">
 
-   "optimization": { "scripts": true, "styles": false }
+  "optimization": { 
+    "scripts": true,
+    "styles": false,
+    "fonts": true
+  }
 
 </code-example>
 
-* The flag `--sourceMap="true"` outputs source maps for both scripts and styles.
-You can configure the option to apply to one or the other.
-You can also choose to output hidden source maps, or resolve vendor package source maps.
-For example:
+<div class="alert is-important">
+
+  Fonts optimization requires internet access.
+  When enabled, render blocking requests will be reduced by inlining external Google fonts and icons in the application's HTML index file. 
+
+</div>
+
+* The `sourceMap` option applies for both scripts and styles. You can also choose to output hidden source maps, or resolve vendor package source maps:
 
 <code-example language="json">
 
-   "sourceMap": { "scripts": true, "styles": false, "hidden": true, "vendor": true }
+  "sourceMap": {
+    "scripts": true,
+    "styles": false,
+    "hidden": true,
+    "vendor": true
+  }
 
 </code-example>
 
