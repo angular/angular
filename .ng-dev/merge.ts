@@ -12,7 +12,7 @@ export const merge: DevInfraMergeConfig['merge'] = async api => {
     githubApiMerge: false,
     claSignedLabel: 'cla: yes',
     mergeReadyLabel: /^action: merge(-assistance)?/,
-    caretakerNoteLabel: 'action: merge-assistance',
+    caretakerNoteLabel: /^(action: merge-assistance)|(PullApprove: disable)/,
     commitMessageFixupLabel: 'commit message fixup',
     // We can pick any of the NPM packages as we are in a monorepo where all packages are
     // published together with the same version and branching.
