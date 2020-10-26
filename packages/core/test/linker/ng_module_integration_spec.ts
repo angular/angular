@@ -1024,7 +1024,7 @@ function declareTests(config?: {useJit: boolean}) {
       });
 
       it('should throw when trying to instantiate a cyclic dependency', () => {
-        let errorMessage = ivyEnabled ? /Circular dependency in DI detected for Car/g :
+        let errorMessage = ivyEnabled ? /NG0200: Circular dependency in DI detected for Car/g :
                                         /Cannot instantiate cyclic dependency! Car/g;
         expect(() => createInjector([Car, {provide: Engine, useClass: CyclicEngine}]).get(Car))
             .toThrowError(errorMessage);
