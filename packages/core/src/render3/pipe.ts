@@ -12,6 +12,7 @@ import {setInjectImplementation} from '../di/injector_compatibility';
 
 import {getFactoryDef} from './definition';
 import {setIncludeViewProviders} from './di';
+import {RuntimeError, RuntimeErrorCode} from './error_code';
 import {store, ɵɵdirectiveInject} from './instructions/all';
 import {PipeDef, PipeDefList} from './interfaces/definition';
 import {HEADER_OFFSET, LView, TVIEW} from './interfaces/view';
@@ -80,7 +81,7 @@ function getPipeDef(name: string, registry: PipeDefList|null): PipeDef<any> {
       }
     }
   }
-  throw new Error(`The pipe '${name}' could not be found!`);
+  throw new RuntimeError(RuntimeErrorCode.PIPE_NOT_FOUND, `The pipe '${name}' could not be found!`);
 }
 
 /**

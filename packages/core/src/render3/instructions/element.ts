@@ -9,6 +9,7 @@
 import {assertDefined, assertEqual, assertIndexInRange} from '../../util/assert';
 import {assertFirstCreatePass, assertHasParent} from '../assert';
 import {attachPatchData} from '../context_discovery';
+import {formatRuntimeError, RuntimeErrorCode} from '../error_code';
 import {registerPostOrderHooks} from '../hooks';
 import {hasClassInput, hasStyleInput, TAttributes, TElementNode, TNode, TNodeFlags, TNodeType} from '../interfaces/node';
 import {RElement} from '../interfaces/renderer';
@@ -216,7 +217,7 @@ function logUnknownElementError(
         message +=
             `2. To allow any element add 'NO_ERRORS_SCHEMA' to the '@NgModule.schemas' of this component.`;
       }
-      console.error(message);
+      console.error(formatRuntimeError(RuntimeErrorCode.UNKNOWN_ELEMENT, message));
     }
   }
 }

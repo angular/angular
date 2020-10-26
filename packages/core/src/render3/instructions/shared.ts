@@ -21,6 +21,7 @@ import {assertFirstCreatePass, assertFirstUpdatePass, assertLContainer, assertLV
 import {attachPatchData} from '../context_discovery';
 import {getFactoryDef} from '../definition';
 import {diPublicInInjector, getNodeInjectable, getOrCreateNodeInjectorForNode} from '../di';
+import {formatRuntimeError, RuntimeError, RuntimeErrorCode} from '../error_code';
 import {throwMultipleComponentError} from '../errors';
 import {executeCheckHooks, executeInitAndCheckHooks, incrementInitPhaseFlags} from '../hooks';
 import {CONTAINER_HEADER_OFFSET, HAS_TRANSPLANTED_VIEWS, LContainer, MOVED_VIEWS} from '../interfaces/container';
@@ -1096,7 +1097,8 @@ export function matchingSchemas(tView: TView, tagName: string|null): boolean {
  * @param tNode Node on which we encountered the property.
  */
 function logUnknownPropertyError(propName: string, tNode: TNode): void {
-  console.error(`Can't bind to '${propName}' since it isn't a known property of '${tNode.value}'.`);
+  let message = `Can't bind to '${propName}' since it isn't a known property of '${tNode.value}'.`;
+  console.error(formatRuntimeError(RuntimeErrorCode.UNKNOWN_BINDING, message));
 }
 
 /**
@@ -1388,7 +1390,9 @@ function cacheMatchingLocalNames(
     // in the template (for template queries).
     for (let i = 0; i < localRefs.length; i += 2) {
       const index = exportsMap[localRefs[i + 1]];
-      if (index == null) throw new Error(`Export of name '${localRefs[i + 1]}' not found!`);
+      if (index == null)
+        throw new RuntimeError(
+            RuntimeErrorCode.EXPORT_NOT_FOUND, `Export of name '${localRefs[i + 1]}' not found!`);
       localNames.push(localRefs[i], index);
     }
   }
