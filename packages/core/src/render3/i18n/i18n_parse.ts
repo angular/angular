@@ -100,7 +100,10 @@ export function i18nStartFirstCreatePass(
           // Verify that ICU expression has the right shape. Translations might contain invalid
           // constructions (while original messages were correct), so ICU parsing at runtime may
           // not succeed (thus `icuExpression` remains a string).
-          if (ngDevMode && typeof icuExpression !== 'object') {
+          // Note: we intentionally retain the error here by not using `ngDevMode`, because
+          // the value can change based on the locale and users aren't guaranteed to hit
+          // an invalid string while they're developing.
+          if (typeof icuExpression !== 'object') {
             throw new Error(`Unable to parse ICU expression in "${message}" message.`);
           }
           const icuContainerTNode = createTNodeAndAddOpCode(
@@ -235,22 +238,22 @@ export function i18nAttributesFirstPass(tView: TView, index: number, values: str
       const attrName = values[i];
       const message = values[i + 1];
 
-      // Check if attribute value contains an ICU and throw an error if that's the case.
-      // ICUs in element attributes are not supported.
-      if (ICU_REGEXP.test(message)) {
-        throw new Error('ICU expressions are not supported in attributes');
-      }
-
       if (message !== '') {
+        // Check if attribute value contains an ICU and throw an error if that's the case.
+        // ICUs in element attributes are not supported.
+        // Note: we intentionally retain the error here by not using `ngDevMode`, because
+        // the `value` can change based on the locale and users aren't guaranteed to hit
+        // an invalid string while they're developing.
+        if (ICU_REGEXP.test(message)) {
+          throw new Error(
+              `ICU expressions are not supported in attributes. Message: "${message}".`);
+        }
+
         // i18n attributes that hit this code path are guaranteed to have bindings, because
         // the compiler treats static i18n attributes as regular attribute bindings.
         generateBindingUpdateOpCodes(updateOpCodes, message, previousElementIndex, attrName);
       }
     }
-    tView.data[index] = updateOpCodes;
-  }
-
-  if (tView.firstCreatePass && tView.data[index] === null) {
     tView.data[index] = updateOpCodes;
   }
 }
