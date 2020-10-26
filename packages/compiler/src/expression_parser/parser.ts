@@ -1113,20 +1113,25 @@ export class _ParseAST {
   }
 
   /**
-   * Error recovery should skip tokens until it encounters a recovery point. skip() treats
-   * the end of input and a ';' as unconditionally a recovery point. It also treats ')',
-   * '}' and ']' as conditional recovery points if one of calling productions is expecting
-   * one of these symbols. This allows skip() to recover from errors such as '(a.) + 1' allowing
-   * more of the AST to be retained (it doesn't skip any tokens as the ')' is retained because
-   * of the '(' begins an '(' <expr> ')' production). The recovery points of grouping symbols
-   * must be conditional as they must be skipped if none of the calling productions are not
-   * expecting the closing token else we will never make progress in the case of an
-   * extraneous group closing symbol (such as a stray ')'). This is not the case for ';' because
-   * parseChain() is always the root production and it expects a ';'.
+   * Error recovery should skip tokens until it encounters a recovery point.
    *
-   * Furthermore, the presence of a stateful context can add more recovery points.
-   *   - in a `Writable` context, we are able to recover after seeing the `=` operator, which
-   *     signals the presence of an independent rvalue expression following the `=` operator.
+   * The following are treated as unconditional recovery points:
+   *   - end of input
+   *   - ';' (parseChain() is always the root production, and it expects a ';')
+   *   - '|' (since pipes may be chained and each pipe expression may be treated independently)
+   *
+   * The following are conditional recovery points:
+   *   - ')', '}', ']' if one of calling productions is expecting one of these symbols
+   *     - This allows skip() to recover from errors such as '(a.) + 1' allowing more of the AST to
+   *       be retained (it doesn't skip any tokens as the ')' is retained because of the '(' begins
+   *       an '(' <expr> ')' production).
+   *       The recovery points of grouping symbols must be conditional as they must be skipped if
+   *       none of the calling productions are not expecting the closing token else we will never
+   *       make progress in the case of an extraneous group closing symbol (such as a stray ')').
+   *       That is, we skip a closing symbol if we are not in a grouping production.
+   *   - '=' in a `Writable` context
+   *     - In this context, we are able to recover after seeing the `=` operator, which
+   *       signals the presence of an independent rvalue expression following the `=` operator.
    *
    * If a production expects one of these token it increments the corresponding nesting count,
    * and then decrements it just prior to checking if the token is in the input.
@@ -1134,7 +1139,7 @@ export class _ParseAST {
   private skip() {
     let n = this.next;
     while (this.index < this.tokens.length && !n.isCharacter(chars.$SEMICOLON) &&
-           (this.rparensExpected <= 0 || !n.isCharacter(chars.$RPAREN)) &&
+           !n.isOperator('|') && (this.rparensExpected <= 0 || !n.isCharacter(chars.$RPAREN)) &&
            (this.rbracesExpected <= 0 || !n.isCharacter(chars.$RBRACE)) &&
            (this.rbracketsExpected <= 0 || !n.isCharacter(chars.$RBRACKET)) &&
            (!(this.context & ParseContextFlags.Writable) || !n.isOperator('='))) {
