@@ -393,9 +393,52 @@ describe('parser', () => {
         checkBinding('a | b:(c | d)', '(a | b:(c | d))');
       });
 
-      it('should parse incomplete pipes', () => {
-        checkBinding('a | b | ', '((a | b) | )');
-        expectBindingError('a | b | ', 'Unexpected end of input, expected identifier or keyword');
+      describe('should parse incomplete pipes', () => {
+        const cases: Array<[string, string, string, string]> = [
+          [
+            'should parse missing pipe names: end',
+            'a | b | ',
+            '((a | b) | )',
+            'Unexpected end of input, expected identifier or keyword',
+          ],
+          [
+            'should parse missing pipe names: middle',
+            'a | | b',
+            '((a | ) | b)',
+            'Unexpected token |, expected identifier or keyword',
+          ],
+          [
+            'should parse missing pipe names: start',
+            ' | a | b',
+            '(( | a) | b)',
+            'Unexpected token |',
+          ],
+          [
+            'should parse missing pipe args: end',
+            'a | b | c: ',
+            '((a | b) | c:)',
+            'Unexpected end of expression',
+          ],
+          [
+            'should parse missing pipe args: middle',
+            'a | b: | c',
+            '((a | b:) | c)',
+            'Unexpected token |',
+          ],
+          [
+            'should parse incomplete pipe args',
+            'a | b: (a | ) + | c',
+            '((a | b:(a | ) + ) | c)',
+            'Unexpected token |',
+          ],
+        ];
+
+        for (const [name, input, output, err] of cases) {
+          it(name, () => {
+            checkBinding(input, output);
+            expectBindingError(input, err);
+          });
+        }
       });
 
       it('should only allow identifier or keyword as formatter names', () => {
