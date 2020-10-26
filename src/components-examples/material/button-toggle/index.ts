@@ -8,17 +8,20 @@ import {
   ButtonToggleExclusiveExample
 } from './button-toggle-exclusive/button-toggle-exclusive-example';
 import {ButtonToggleOverviewExample} from './button-toggle-overview/button-toggle-overview-example';
+import {ButtonToggleHarnessExample} from './button-toggle-harness/button-toggle-harness-example';
 
 export {
   ButtonToggleAppearanceExample,
   ButtonToggleExclusiveExample,
   ButtonToggleOverviewExample,
+  ButtonToggleHarnessExample,
 };
 
 const EXAMPLES = [
   ButtonToggleAppearanceExample,
   ButtonToggleExclusiveExample,
   ButtonToggleOverviewExample,
+  ButtonToggleHarnessExample,
 ];
 
 @NgModule({

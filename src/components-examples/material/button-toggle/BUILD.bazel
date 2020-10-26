@@ -11,8 +11,14 @@ ng_module(
     ]),
     module_name = "@angular/components-examples/material/button-toggle",
     deps = [
+        "//src/cdk/testing",
+        "//src/cdk/testing/testbed",
         "//src/material/button-toggle",
+        "//src/material/button-toggle/testing",
         "//src/material/icon",
+        "@npm//@angular/platform-browser",
+        "@npm//@angular/platform-browser-dynamic",
+        "@npm//@types/jasmine",
     ],
 )
 
