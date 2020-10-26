@@ -672,6 +672,9 @@
     "name": "RoutesRecognized"
   },
   {
+    "name": "RuntimeError"
+  },
+  {
     "name": "SAFE_URL_PATTERN"
   },
   {

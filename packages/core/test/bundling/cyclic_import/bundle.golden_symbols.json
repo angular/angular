@@ -39,6 +39,9 @@
     "name": "NodeInjectorFactory"
   },
   {
+    "name": "RuntimeError"
+  },
+  {
     "name": "SimpleChange"
   },
   {

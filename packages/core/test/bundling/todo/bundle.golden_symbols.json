@@ -90,6 +90,9 @@
     "name": "RecordViewTuple"
   },
   {
+    "name": "RuntimeError"
+  },
+  {
     "name": "SWITCH_ELEMENT_REF_FACTORY"
   },
   {
