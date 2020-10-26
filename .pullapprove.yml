@@ -103,6 +103,8 @@ meta:
 github_api_version: "shadow-cat-preview"
 
 pullapprove_conditions:
+  # For PRs which are still being worked on, either still in draft mode or indicated through WIP in
+  # title or label, PullApprove stays in a pending state until its ready for review.
   - condition: "'WIP' not in title"
     unmet_status: pending
     explanation: "Waiting to send reviews as PR is WIP"
@@ -112,6 +114,10 @@ pullapprove_conditions:
   - condition: "not draft"
     unmet_status: pending
     explanation: "Waiting to send reviews as PR is in draft"
+  # Disable PullApprove on specific PRs by adding the `PullApprove: disable` label
+  - condition: "'PullApprove: disable' not in labels"
+    unmet_status: success
+    explanation: "PullApprove skipped because of 'PullApprove: disable' label"
 
 
 groups:
