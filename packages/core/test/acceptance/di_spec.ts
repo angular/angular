@@ -2055,7 +2055,7 @@ describe('di', () => {
       expect(directive.other).toBe('otherValue');
     });
 
-    it('should not inject attributes with data bindings', () => {
+    it('should inject `null` for attributes with data bindings', () => {
       @Directive({selector: '[dir]'})
       class MyDir {
         constructor(@Attribute('title') public attrValue: string) {}

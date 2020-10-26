@@ -285,11 +285,7 @@ export function partitionArray<T, F = T>(
   const truthy: T[] = [];
   const falsy: F[] = [];
   for (const item of arr) {
-    if (conditionFn(item)) {
-      truthy.push(item as T);
-    } else {
-      falsy.push(item as F);
-    }
+    (conditionFn(item) ? truthy : falsy).push(item as any);
   }
   return [truthy, falsy];
 }

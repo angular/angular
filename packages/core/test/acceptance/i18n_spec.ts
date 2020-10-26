@@ -3012,7 +3012,7 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
     expect(fixture.nativeElement.querySelector('div').getAttribute('title')).toBe('translatedText');
   });
 
-  it('should not be able to inject an i18n attribute with an interpolation', () => {
+  it('should inject `null` for an i18n attribute with an interpolation', () => {
     loadTranslations({[computeMsgId('text {$INTERPOLATION}')]: 'translatedText {$INTERPOLATION}'});
 
     @Directive({selector: '[injectTitle]'})

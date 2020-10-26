@@ -230,23 +230,24 @@ export function i18nAttributesFirstPass(tView: TView, index: number, values: str
   if (ngDevMode) {
     attachDebugGetter(updateOpCodes, i18nUpdateOpCodesToString);
   }
-  for (let i = 0; i < values.length; i += 2) {
-    const attrName = values[i];
-    const message = values[i + 1];
-    const parts = message.split(ICU_REGEXP);
-    for (let j = 0; j < parts.length; j++) {
-      const value = parts[j];
+  if (tView.firstCreatePass && tView.data[index] === null) {
+    for (let i = 0; i < values.length; i += 2) {
+      const attrName = values[i];
+      const message = values[i + 1];
 
-      if (j & 1) {
-        // Odd indexes are ICU expressions
-        // TODO(ocombe): support ICU expressions in attributes
-        throw new Error('ICU expressions are not yet supported in attributes');
-      } else if (value !== '' && tView.firstCreatePass && tView.data[index] === null) {
+      // Check if attribute value contains an ICU and throw an error if that's the case.
+      // ICUs in element attributes are not supported.
+      if (ICU_REGEXP.test(message)) {
+        throw new Error('ICU expressions are not supported in attributes');
+      }
+
+      if (message !== '') {
         // i18n attributes that hit this code path are guaranteed to have bindings, because
         // the compiler treats static i18n attributes as regular attribute bindings.
-        generateBindingUpdateOpCodes(updateOpCodes, value, previousElementIndex, attrName);
+        generateBindingUpdateOpCodes(updateOpCodes, message, previousElementIndex, attrName);
       }
     }
+    tView.data[index] = updateOpCodes;
   }
 
   if (tView.firstCreatePass && tView.data[index] === null) {

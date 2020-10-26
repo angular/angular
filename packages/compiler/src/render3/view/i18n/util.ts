@@ -52,7 +52,7 @@ export function hasI18nMeta(node: t.Node&{i18n?: i18n.I18nMeta}): boolean {
 
 export function isBoundI18nAttribute(node: t.TextAttribute|
                                      t.BoundAttribute): node is t.BoundAttribute {
-  return node.i18n != null && !(node instanceof t.TextAttribute);
+  return node.i18n !== undefined && node instanceof t.BoundAttribute;
 }
 
 export function hasI18nAttrs(element: html.Element): boolean {
