@@ -37,7 +37,7 @@ Below is the full list of currently supported modules.
 |blocking|alert/prompt/confirm will be patched as Zone.run|__Zone_disable_blocking = true|
 |EventTarget|target.addEventListener will be patched as Zone aware EventTask|__Zone_disable_EventTarget = true|
 |MutationObserver|MutationObserver will be patched as Zone aware operation|__Zone_disable_MutationObserver = true|
-|IntersectionObserver|Intersection will be patched as Zone aware operation|__Zone_disable_Intersection = true|
+|IntersectionObserver|Intersection will be patched as Zone aware operation|__Zone_disable_IntersectionObserver = true|
 |FileReader|FileReader will be patched as Zone aware operation|__Zone_disable_FileReader = true|
 |canvas|HTMLCanvasElement.toBlob will be patched as Zone aware operation|__Zone_disable_canvas = true|
 |IE BrowserTools check|in IE, browser tool will not use zone patched eventListener|__Zone_disable_IE_check = true|
