@@ -60,12 +60,12 @@ describe('move-document migration', () => {
       expect(content).not.toContain(`import {DOCUMENT} from '@angular/platform-browser';`);
     });
 
-    it('should properly apply import replacement (BOM)', () => {
+    it('should properly apply import replacement (BOM)', async () => {
       writeFile('/index.ts', `\uFEFF
         import {DOCUMENT} from '@angular/platform-browser';
       `);
 
-      runMigration();
+      await runMigration();
 
       const content = tree.readContent('/index.ts');
 

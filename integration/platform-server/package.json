@@ -40,7 +40,7 @@
   },
   "scripts": {
     "build": "./build.sh",
-    "test": "npm run build && concurrently \"npm run serve\" \"npm run protractor\" --kill-others --success first",
+    "test": "yarn build && concurrently \"yarn serve\" \"yarn protractor\" --kill-others --success first",
     "serve": "node built/server-bundle.js",
     "preprotractor": "tsc -p e2e",
     "protractor": "protractor e2e/protractor.config.js"
