@@ -2081,7 +2081,7 @@ export function parseTemplate(
   return {
     interpolationConfig,
     preserveWhitespaces,
-    errors: errors && errors.length > 0 ? errors : null,
+    errors: errors.length > 0 ? errors : null,
     template,
     nodes,
     styleUrls,
