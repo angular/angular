@@ -984,6 +984,9 @@
     "name": "getDebugContext"
   },
   {
+    "name": "getDeclarationTNode"
+  },
+  {
     "name": "getFactoryDef"
   },
   {
@@ -1287,6 +1290,9 @@
     "name": "localeEn"
   },
   {
+    "name": "lookupTokenUsingModuleInjector"
+  },
+  {
     "name": "makeParamDecorator"
   },
   {
@@ -1378,6 +1384,9 @@
   },
   {
     "name": "normalizeValidators"
+  },
+  {
+    "name": "notFoundValueOrThrow"
   },
   {
     "name": "observable"
