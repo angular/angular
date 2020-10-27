@@ -186,13 +186,6 @@ function createPositionApplyingDoubleDots(
   return new Position(g, false, ci - dd);
 }
 
-function getPath(command: any): any {
-  if (isCommandWithOutlets(command)) {
-    return command.outlets[PRIMARY_OUTLET];
-  }
-  return `${command}`;
-}
-
 function getOutlets(commands: any[]): {[k: string]: any[]} {
   if (isCommandWithOutlets(commands[0])) {
     return commands[0].outlets;
@@ -259,7 +252,14 @@ function prefixedWith(segmentGroup: UrlSegmentGroup, startIndex: number, command
   while (currentPathIndex < segmentGroup.segments.length) {
     if (currentCommandIndex >= commands.length) return noMatch;
     const path = segmentGroup.segments[currentPathIndex];
-    const curr = getPath(commands[currentCommandIndex]);
+    const command = commands[currentCommandIndex];
+    // Do not try to consume command as part of the prefixing if it has outlets because it can
+    // contain outlets other than the one being processed. Consuming the outlets command would
+    // result in other outlets being ignored.
+    if (isCommandWithOutlets(command)) {
+      break;
+    }
+    const curr = `${command}`;
     const next =
         currentCommandIndex < commands.length - 1 ? commands[currentCommandIndex + 1] : null;
 
@@ -298,7 +298,7 @@ function createNewSegmentGroup(
       continue;
     }
 
-    const curr = getPath(command);
+    const curr = isCommandWithOutlets(command) ? command.outlets[PRIMARY_OUTLET] : `${command}`;
     const next = (i < commands.length - 1) ? commands[i + 1] : null;
     if (curr && next && isMatrixParams(next)) {
       paths.push(new UrlSegment(curr, stringify(next)));
