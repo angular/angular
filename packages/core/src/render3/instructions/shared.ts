@@ -897,7 +897,7 @@ function generatePropertyAliases(
 }
 
 /**
- * Initializes data structures required to work with directive outputs and outputs.
+ * Initializes data structures required to work with directive inputs and outputs.
  * Initialization is done for all directives matched on a given TNode.
  */
 function initializeInputAndOutputAliases(tView: TView, tNode: TNode): void {
