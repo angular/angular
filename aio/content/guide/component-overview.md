@@ -138,7 +138,7 @@ To define a template within the component, add a `template` property to the `@Co
     region="template">
 </code-example>
 
-If your want your template to span multiple lines, you can use backticks (<code> ` </code>).
+If you want your template to span multiple lines, you can use backticks (<code> ` </code>).
 For example:
 
 <code-example
@@ -175,7 +175,7 @@ The `styles` property takes an array of strings that contain the CSS rule declar
 
 ## Next steps
 
-* For an archictural overview of components, see [Introduction to components and templates](guide/architecture-components).
+* For an architectural overview of components, see [Introduction to components and templates](guide/architecture-components).
 * For additional options you can use when creating a component, see [Component](api/core/Component) in the API Reference.
 * For more information on styling components, see [Component styles](guide/component-styles).
 * For more information on templates, see [Template syntax](guide/template-syntax).
