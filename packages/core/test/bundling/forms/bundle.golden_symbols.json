@@ -1056,6 +1056,9 @@
     "name": "getParentInjectorView"
   },
   {
+    "name": "getParentTNodeAndLView"
+  },
+  {
     "name": "getPlatform"
   },
   {
@@ -1287,6 +1290,9 @@
     "name": "localeEn"
   },
   {
+    "name": "lookupTokenUsingModuleInjector"
+  },
+  {
     "name": "makeParamDecorator"
   },
   {
@@ -1378,6 +1384,9 @@
   },
   {
     "name": "normalizeValidators"
+  },
+  {
+    "name": "notFoundValueOrThrow"
   },
   {
     "name": "observable"
