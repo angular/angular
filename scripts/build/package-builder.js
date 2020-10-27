@@ -116,15 +116,17 @@ function buildTargetPackages(destPath, enableIvy, description) {
  *
  * @param {string} cmd The command to run.
  * @param {boolean} [captureStdout=false] Whether to return the output of the command.
+ * @param {import('child_process').ExecSyncOptions} [options] The options to pass to `execSync()`.
  * @return {string | undefined} The captured stdout output if `captureStdout: true` or `undefined`.
  */
-function exec(cmd, captureStdout) {
+function exec(cmd, captureStdout, options) {
   const output = execSync(cmd, {
     stdio: [
       /* stdin  */ 'inherit',
       /* stdout */ captureStdout ? 'pipe' : 'inherit',
       /* stderr */ 'inherit',
     ],
+    ...options,
   });
 
   if (captureStdout) {

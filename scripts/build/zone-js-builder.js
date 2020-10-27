@@ -48,7 +48,7 @@ function buildZoneJsPackage(destPath) {
 
   // Also create an archive so we can test the package itself.
   // Currently, the `npm_package.pack` rule does not work on Windows, so run `npm pack` directly.
-  exec(`npm pack ${buildOutputDir}`);
+  exec(`npm pack ${buildOutputDir}`, false, {cwd: baseDir});
 
   console.info(`# Copy npm_package artifacts to ${distTargetDir}`);
   rm('-rf', distTargetDir);
