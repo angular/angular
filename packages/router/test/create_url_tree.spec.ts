@@ -150,13 +150,13 @@ describe('createUrlTree', () => {
       expect(serializer.serialize(t)).toEqual('/parent/child');
     });
 
-    xit('should support updating secondary and primary outlets with prefix', () => {
+    it('should support updating secondary and primary outlets with prefix', () => {
       const p = serializer.parse('/parent/child');
       const t = createRoot(p, ['parent', {outlets: {primary: 'child', secondary: 'popup'}}]);
       expect(serializer.serialize(t)).toEqual('/parent/(child//secondary:popup)');
     });
 
-    xit('should support updating two outlets at the same time relative to non-root segment', () => {
+    it('should support updating two outlets at the same time relative to non-root segment', () => {
       const p = serializer.parse('/parent/child');
       const t = create(
           p.root.children[PRIMARY_OUTLET], 0 /* relativeTo: 'parent' */, p,
