@@ -112,6 +112,100 @@ describe('createUrlTree', () => {
     expect(serializer.serialize(t)).toEqual('/a/(b//right:d/11/e)');
   });
 
+  describe('', () => {
+    /**
+     * In this group of scenarios, imagine a config like:
+     * {
+     *   path: 'parent',
+     *   children: [
+     *     {
+     *       path: 'child',
+     *       component: AnyCmp
+     *     },
+     *     {
+     *       path: 'popup',
+     *       outlet: 'secondary',
+     *       component: AnyCmp
+     *     }
+     *   ]
+     * },
+     * {
+     *   path: 'other',
+     *   component: AnyCmp
+     * },
+     * {
+     *   path: 'rootPopup',
+     *   outlet: 'rootSecondary',
+     * }
+     */
+
+    it('should support removing secondary outlet with prefix', () => {
+      const p = serializer.parse('/parent/(child//secondary:popup)');
+      const t = createRoot(p, ['parent', {outlets: {secondary: null}}]);
+      // - Segment index 0:
+      //   * match and keep existing 'parent'
+      // - Segment index 1:
+      //   * 'secondary' outlet cleared with `null`
+      //   * 'primary' outlet not provided in the commands list, so the existing value is kept
+      expect(serializer.serialize(t)).toEqual('/parent/child');
+    });
+
+    xit('should support updating secondary and primary outlets with prefix', () => {
+      const p = serializer.parse('/parent/child');
+      const t = createRoot(p, ['parent', {outlets: {primary: 'child', secondary: 'popup'}}]);
+      expect(serializer.serialize(t)).toEqual('/parent/(child//secondary:popup)');
+    });
+
+    xit('should support updating two outlets at the same time relative to non-root segment', () => {
+      const p = serializer.parse('/parent/child');
+      const t = create(
+          p.root.children[PRIMARY_OUTLET], 0 /* relativeTo: 'parent' */, p,
+          [{outlets: {primary: 'child', secondary: 'popup'}}]);
+      expect(serializer.serialize(t)).toEqual('/parent/(child//secondary:popup)');
+    });
+
+    it('should support adding multiple outlets with prefix', () => {
+      const p = serializer.parse('');
+      const t = createRoot(p, ['parent', {outlets: {primary: 'child', secondary: 'popup'}}]);
+      expect(serializer.serialize(t)).toEqual('/parent/(child//secondary:popup)');
+    });
+
+    it('should support updating clearing primary and secondary with prefix', () => {
+      const p = serializer.parse('/parent/(child//secondary:popup)');
+      const t = createRoot(p, ['other']);
+      // Because we navigate away from the 'parent' route, the children of that route are cleared
+      // because they are note valid for the 'other' path.
+      expect(serializer.serialize(t)).toEqual('/other');
+    });
+
+    it('should not clear secondary outlet when at root and prefix is used', () => {
+      const p = serializer.parse('/other(rootSecondary:rootPopup)');
+      const t = createRoot(p, ['parent', {outlets: {primary: 'child', rootSecondary: null}}]);
+      // We prefixed the navigation with 'parent' so we cannot clear the "rootSecondary" outlet
+      // because once the outlets object is consumed, traversal is beyond the root segment.
+      expect(serializer.serialize(t)).toEqual('/parent/child(rootSecondary:rootPopup)');
+    });
+
+    it('should not clear non-root secondary outlet when command is targeting root', () => {
+      const p = serializer.parse('/parent/(child//secondary:popup)');
+      const t = createRoot(p, [{outlets: {secondary: null}}]);
+      // The start segment index for the command is at 0, but the outlet lives at index 1
+      // so we cannot clear the outlet from processing segment index 0.
+      expect(serializer.serialize(t)).toEqual('/parent/(child//secondary:popup)');
+    });
+
+    it('can clear an auxiliary outlet at the correct segment level', () => {
+      const p = serializer.parse('/parent/(child//secondary:popup)(rootSecondary:rootPopup)');
+      //                                       ^^^^^^^^^^^^^^^^^^^^^^
+      // The parens here show that 'child' and 'secondary:popup' appear at the same 'level' in the
+      // config, i.e. are part of the same children list. You can also imagine an implicit paren
+      // group around the whole URL to visualize how 'parent' and 'rootSecondary:rootPopup' are also
+      // defined at the same level.
+      const t = createRoot(p, ['parent', {outlets: {primary: 'child', secondary: null}}]);
+      expect(serializer.serialize(t)).toEqual('/parent/child(rootSecondary:rootPopup)');
+    });
+  });
+
   it('should throw when outlets is not the last command', () => {
     const p = serializer.parse('/a');
     expect(() => createRoot(p, ['a', {outlets: {right: ['c']}}, 'c']))
