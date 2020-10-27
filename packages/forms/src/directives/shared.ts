@@ -27,12 +27,20 @@ import {SelectControlValueAccessor} from './select_control_value_accessor';
 import {SelectMultipleControlValueAccessor} from './select_multiple_control_value_accessor';
 import {AsyncValidator, AsyncValidatorFn, Validator, ValidatorFn} from './validators';
 
+/**
+ * Sentinel to detect when a form control value has not yet been set. If it hasn't,
+ * writeValue(...) won't be called on the accessor.
+ *
+ * @internal
+ */
+export const INITIAL_CONTROL_VALUE = {};
 
 export function controlPath(name: string|null, parent: ControlContainer): string[] {
   return [...parent.path!, name!];
 }
 
-export function setUpControl(control: FormControl, dir: NgControl): void {
+export function setUpControl(
+    control: FormControl, dir: NgControl, opts?: {skipValueInitialization?: boolean}): void {
   if (typeof ngDevMode === 'undefined' || ngDevMode) {
     if (!control) _throwError(dir, 'Cannot find control with');
     if (!dir.valueAccessor) _throwError(dir, 'No value accessor for form control with');
@@ -40,7 +48,7 @@ export function setUpControl(control: FormControl, dir: NgControl): void {
 
   control.validator = Validators.compose([control.validator!, dir.validator]);
   control.asyncValidator = Validators.composeAsync([control.asyncValidator!, dir.asyncValidator]);
-  dir.valueAccessor!.writeValue(control.value);
+  if (!opts?.skipValueInitialization) dir.valueAccessor!.writeValue(control.value);
 
   setUpViewChangePipeline(control, dir);
   setUpModelChangePipeline(control, dir);
@@ -138,7 +146,7 @@ function _noControlError(dir: NgControl) {
   return _throwError(dir, 'There is no FormControl instance attached to form control element with');
 }
 
-function _throwError(dir: AbstractControlDirective, message: string): void {
+function _throwError(dir: AbstractControlDirective, message: string): never {
   let messageEnd: string;
   if (dir.path!.length > 1) {
     messageEnd = `path: '${dir.path!.join(' -> ')}'`;
