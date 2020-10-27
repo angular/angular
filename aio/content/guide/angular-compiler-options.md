@@ -77,6 +77,19 @@ When `false`, disables this rewriting, requiring the rewriting to be done manual
 
 When `true`, the compiler does not check the TypeScript version and does not report an error when an unsupported version of TypeScript is used. Not recommended, as unsupported versions of TypeScript might have undefined behavior. Default is `false`.
 
+### `enableI18nLegacyMessageIdFormat`
+
+Instructs the Angular template compiler to generate legacy ids for messages that are tagged in templates by the `i18n` attribute.
+See [Localizing your app](guide/i18n#mark-text-for-translations) for more information about marking messages for localization.
+
+Set this option to `false` unless your project relies upon translations that were previously generated using legacy ids. Default is `true`.
+
+The pre-Ivy message extraction tooling generated a variety of legacy formats for extracted message ids.
+These message formats have a number of issues, such as whitespace handling and reliance upon information inside the original HTML of a template.
+
+The new message format is more resilient to whitespace changes, is the same across all translation file formats, and can be generated directly from calls to `$localize`.
+This allows `$localize` messages in application code to use the same id as identical `i18n` messages in component templates.
+
 ### `enableIvy`
 
 Enables the [Ivy](guide/ivy) compilation and rendering pipeline. Default is `true`, as of version 9. In version 9, you can [opt out of Ivy](guide/ivy#opting-out-of-angular-ivy) to continue using the previous compiler, View Engine.
