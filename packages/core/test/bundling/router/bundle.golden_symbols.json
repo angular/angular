@@ -1293,6 +1293,9 @@
     "name": "getDebugContext"
   },
   {
+    "name": "getDeclarationTNode"
+  },
+  {
     "name": "getFactoryDef"
   },
   {
@@ -1608,6 +1611,9 @@
     "name": "locateDirectiveOrProvider"
   },
   {
+    "name": "lookupTokenUsingModuleInjector"
+  },
+  {
     "name": "makeParamDecorator"
   },
   {
@@ -1702,6 +1708,9 @@
   },
   {
     "name": "normalizeQueryParams"
+  },
+  {
+    "name": "notFoundValueOrThrow"
   },
   {
     "name": "observable"
