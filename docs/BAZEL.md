@@ -120,7 +120,7 @@ Apple+Shift+D on Mac) and click on the green play icon next to the configuration
 
 Open `external` directory which contains everything that bazel downloaded while executing the workspace file:
 ```sh
-open $(bazel info output_base)/external
+open $(yarn -s bazel info output_base)/external
 ```
 
 See subcommands that bazel executes (helpful for debugging):
@@ -130,7 +130,7 @@ yarn bazel build //packages/core:package -s
 
 To debug nodejs_binary executable paths uncomment `find . -name rollup 1>&2` (~ line 96) in
 ```sh
-open $(bazel info output_base)/external/build_bazel_rules_nodejs/internal/node_launcher.sh
+open $(yarn -s bazel info output_base)/external/build_bazel_rules_nodejs/internal/node_launcher.sh
 ```
 
 ## Stamping
