@@ -63,6 +63,7 @@ One of the easiest ways to get your site live is to host it using Firebase.
 1. Sign up for a firebase account on [Firebase](https://firebase.google.com/ "Firebase web site").
 1. Create a new project, giving it any name you like.
 1. Add the `@angular/fire` schematics that will handle your deployment using `ng add @angular/fire`.
+1. Install [Firebase CLI](https://firebase.google.com/docs/cli) globally using `npm install -g firebase-tools`.
 1. Connect your CLI to your Firebase account and initialize the connection to your project using `firebase login` and `firebase init`.
 1. Follow the prompts to select the `Firebase` project you are creating for hosting.
     - Select the `Hosting` option on the first prompt.
