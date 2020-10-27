@@ -37,6 +37,14 @@ function isMatrixParams(command: any): boolean {
   return typeof command === 'object' && command != null && !command.outlets && !command.segmentPath;
 }
 
+/**
+ * Determines if a given command has an `outlets` map. When we encounter a command
+ * with an outlets k/v map, we need to apply each outlet individually to the existing segment.
+ */
+function isCommandWithOutlets(command: any): command is {outlets: {[key: string]: any}} {
+  return typeof command === 'object' && command != null && command.outlets;
+}
+
 function tree(
     oldSegmentGroup: UrlSegmentGroup, newSegmentGroup: UrlSegmentGroup, urlTree: UrlTree,
     queryParams: Params, fragment: string): UrlTree {
@@ -75,7 +83,7 @@ class Navigation {
       throw new Error('Root segment cannot have matrix parameters');
     }
 
-    const cmdWithOutlet = commands.find(c => typeof c === 'object' && c != null && c.outlets);
+    const cmdWithOutlet = commands.find(isCommandWithOutlets);
     if (cmdWithOutlet && cmdWithOutlet !== last(commands)) {
       throw new Error('{outlets:{}} has to be the last command');
     }
@@ -179,14 +187,14 @@ function createPositionApplyingDoubleDots(
 }
 
 function getPath(command: any): any {
-  if (typeof command === 'object' && command != null && command.outlets) {
+  if (isCommandWithOutlets(command)) {
     return command.outlets[PRIMARY_OUTLET];
   }
   return `${command}`;
 }
 
 function getOutlets(commands: any[]): {[k: string]: any[]} {
-  if (typeof commands[0] === 'object' && commands[0] !== null && commands[0].outlets) {
+  if (isCommandWithOutlets(commands[0])) {
     return commands[0].outlets;
   }
 
@@ -276,9 +284,9 @@ function createNewSegmentGroup(
 
   let i = 0;
   while (i < commands.length) {
-    if (typeof commands[i] === 'object' && commands[i] !== null &&
-        commands[i].outlets !== undefined) {
-      const children = createNewSegmentChildren(commands[i].outlets);
+    const command = commands[i];
+    if (isCommandWithOutlets(command)) {
+      const children = createNewSegmentChildren(command.outlets);
       return new UrlSegmentGroup(paths, children);
     }
 
@@ -290,7 +298,7 @@ function createNewSegmentGroup(
       continue;
     }
 
-    const curr = getPath(commands[i]);
+    const curr = getPath(command);
     const next = (i < commands.length - 1) ? commands[i + 1] : null;
     if (curr && next && isMatrixParams(next)) {
       paths.push(new UrlSegment(curr, stringify(next)));
