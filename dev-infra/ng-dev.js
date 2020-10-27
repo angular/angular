@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 'use strict';
 
 function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
@@ -6777,13 +6778,6 @@ function convertReferenceChainToString(chain) {
     return chain.join(' → ');
 }
 
-/**
- * @license
- * Copyright Google LLC All Rights Reserved.
- *
- * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
- */
 yargs.scriptName('ng-dev')
     .middleware(captureLogOutputForCommand)
     .demandCommand()

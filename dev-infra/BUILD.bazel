@@ -26,12 +26,19 @@ ts_library(
 
 rollup_bundle(
     name = "cli_rollup",
+    args = [
+        "--plugin",
+        "rollup-plugin-hashbang",
+    ],
     entry_point = ":cli.ts",
     format = "cjs",
     silent = True,
     sourcemap = "false",
     deps = [
         ":cli",
+        # TODO(josephperrott): Determine if this plugin is the best method for ensuring the hashbang
+        # in both local and published use case.
+        "@npm//rollup-plugin-hashbang",
     ],
 )
 
