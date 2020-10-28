@@ -566,7 +566,7 @@ class TemplateParseVisitor implements html.Visitor {
 
     const directiveAsts = directives.map((directive) => {
       const sourceSpan = new ParseSourceSpan(
-          elementSourceSpan.start, elementSourceSpan.end,
+          elementSourceSpan.start, elementSourceSpan.end, elementSourceSpan.fullStart,
           `Directive ${identifierName(directive.type)}`);
 
       if (directive.isComponent) {

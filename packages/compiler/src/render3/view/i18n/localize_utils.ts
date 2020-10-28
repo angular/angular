@@ -90,7 +90,8 @@ function getSourceSpan(message: i18n.Message): ParseSourceSpan {
   const startNode = message.nodes[0];
   const endNode = message.nodes[message.nodes.length - 1];
   return new ParseSourceSpan(
-      startNode.sourceSpan.start, endNode.sourceSpan.end, startNode.sourceSpan.details);
+      startNode.sourceSpan.start, endNode.sourceSpan.end, startNode.sourceSpan.fullStart,
+      startNode.sourceSpan.details);
 }
 
 /**

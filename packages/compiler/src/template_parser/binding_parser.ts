@@ -585,5 +585,7 @@ function moveParseSourceSpan(
   // The difference of two absolute offsets provide the relative offset
   const startDiff = absoluteSpan.start - sourceSpan.start.offset;
   const endDiff = absoluteSpan.end - sourceSpan.end.offset;
-  return new ParseSourceSpan(sourceSpan.start.moveBy(startDiff), sourceSpan.end.moveBy(endDiff));
+  return new ParseSourceSpan(
+      sourceSpan.start.moveBy(startDiff), sourceSpan.end.moveBy(endDiff),
+      sourceSpan.fullStart.moveBy(startDiff), sourceSpan.details);
 }
