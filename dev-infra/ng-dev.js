@@ -502,7 +502,7 @@ var GithubApiRequestError = /** @class */ (function (_super) {
 var GithubClient = /** @class */ (function (_super) {
     tslib.__extends(GithubClient, _super);
     function GithubClient(token) {
-        var _this = 
+        var _this =
         // Pass in authentication token to base Octokit class.
         _super.call(this, { auth: token }) || this;
         /** The current user based on checking against the Github API. */
@@ -581,7 +581,7 @@ var GithubGraphqlClient = /** @class */ (function () {
 var GitCommandError = /** @class */ (function (_super) {
     tslib.__extends(GitCommandError, _super);
     function GitCommandError(client, args) {
-        var _this = 
+        var _this =
         // Errors are not guaranteed to be caught. To ensure that we don't
         // accidentally leak the Github token that might be used in a command,
         // we sanitize the command that will be part of the error message.
@@ -647,14 +647,13 @@ var GitClient = /** @class */ (function () {
     GitClient.prototype.runGraceful = function (args, options) {
         if (options === void 0) { options = {}; }
         // To improve the debugging experience in case something fails, we print all executed Git
-        // commands unless the `stdio` is explicitly set to `ignore` (which is equivalent to silent).
+        // commands to better understand the git actions occuring. Depending on the command being
+        // executed, this debugging information should be logged at different logging levels.
+        var printFn = (!GitClient.LOG_COMMANDS || options.stdio === 'ignore') ? debug : info;
         // Note that we do not want to print the token if it is contained in the command. It's common
         // to share errors with others if the tool failed, and we do not want to leak tokens.
-        // TODO: Add support for configuring this on a per-client basis. Some tools do not want
-        // to print the Git command messages to the console at all (e.g. to maintain clean output).
-        var printFn = options.stdio !== 'ignore' ? info : debug;
         printFn('Executing: git', this.omitGithubTokenFromMessage(args.join(' ')));
-        var result = child_process.spawnSync('git', args, tslib.__assign(tslib.__assign({ cwd: this._projectRoot, stdio: 'pipe' }, options), { 
+        var result = child_process.spawnSync('git', args, tslib.__assign(tslib.__assign({ cwd: this._projectRoot, stdio: 'pipe' }, options), {
             // Encoding is always `utf8` and not overridable. This ensures that this method
             // always returns `string` as output instead of buffers.
             encoding: 'utf8' }));
@@ -792,7 +791,7 @@ function getCaretakerConfig() {
 class ReleaseTrain {
     constructor(
     /** Name of the branch for this release-train. */
-    branchName, 
+    branchName,
     /** Most recent version for this release train. */
     version) {
         this.branchName = branchName;
@@ -3050,7 +3049,7 @@ function validateMergeConfig(config) {
 var PullRequestFailure = /** @class */ (function () {
     function PullRequestFailure(
     /** Human-readable message for the failure */
-    message, 
+    message,
     /** Whether the failure is non-fatal and can be forcibly ignored. */
     nonFatal) {
         if (nonFatal === void 0) { nonFatal = false; }
