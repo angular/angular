@@ -34,7 +34,8 @@ if (require.main === module) {
         `Build/deploy mode : ${deploymentInfo.deployEnv}\n` +
         `Firebase project  : ${deploymentInfo.projectId}\n` +
         `Firebase site     : ${deploymentInfo.siteId}\n` +
-        `Deployment URLs   : ${deploymentInfo.deployedUrl}\n`);
+        `Deployment URLs   : ${deploymentInfo.deployedUrl}\n` +
+        `                    https://${deploymentInfo.siteId}.web.app/`);
 
     if (!isDryRun) {
       deploy({...inputVars, ...deploymentInfo});
@@ -64,14 +65,11 @@ function computeDeploymentInfo(
 
   // The deployment mode is computed based on the branch we are building.
   const currentBranchMajorVersion = computeMajorVersion(currentBranch);
-  // Special-case v9, because it is piloting the Firebase hosting "multisites" setup.
-  // See https://angular-team.atlassian.net/browse/DEV-125 for more info.
-  const isV9 = currentBranchMajorVersion === 9;
   const deploymentInfoPerTarget = {
     next: {
       deployEnv: 'next',
-      projectId: 'aio-staging',
-      siteId: 'aio-staging',
+      projectId: 'angular-io',
+      siteId: 'next-angular-io-site',
       deployedUrl: 'https://next.angular.io/',
     },
     rc: {
@@ -83,13 +81,13 @@ function computeDeploymentInfo(
     stable: {
       deployEnv: 'stable',
       projectId: 'angular-io',
-      siteId: 'angular-io',
+      siteId: `v${currentBranchMajorVersion}-angular-io-site`,
       deployedUrl: 'https://angular.io/',
     },
     archive: {
       deployEnv: 'archive',
-      projectId: isV9 ? 'aio-staging' : `v${currentBranchMajorVersion}-angular-io`,
-      siteId: isV9 ? 'v9-angular-io' : `v${currentBranchMajorVersion}-angular-io`,
+      projectId: 'angular-io',
+      siteId: `v${currentBranchMajorVersion}-angular-io-site`,
       deployedUrl: `https://v${currentBranchMajorVersion}.angular.io/`,
     },
   };
