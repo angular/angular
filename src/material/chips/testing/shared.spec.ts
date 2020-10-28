@@ -9,12 +9,16 @@ import {MatChipListHarness} from './chip-list-harness';
 import {MatChipHarness} from './chip-harness';
 import {MatChipInputHarness} from './chip-input-harness';
 import {MatChipRemoveHarness} from './chip-remove-harness';
+import {MatChipOptionHarness} from './chip-option-harness';
+import {MatChipListboxHarness} from './chip-listbox-harness';
 
 /** Shared tests to run on both the original and MDC-based chips. */
 export function runHarnessTests(
     chipsModule: typeof MatChipsModule,
     chipListHarness: typeof MatChipListHarness,
+    listboxHarness: typeof MatChipListboxHarness,
     chipHarness: typeof MatChipHarness,
+    chipOptionHarness: typeof MatChipOptionHarness,
     chipInputHarness: typeof MatChipInputHarness,
     chipRemoveHarness: typeof MatChipRemoveHarness) {
   let fixture: ComponentFixture<ChipsHarnessTest>;
@@ -124,7 +128,7 @@ export function runHarnessTests(
   });
 
   it('should be able to get the selected chips in a list', async () => {
-    const chipList = await loader.getHarness(chipListHarness);
+    const chipList = await loader.getHarness(listboxHarness);
     const chips = await chipList.getChips();
 
     expect((await chipList.getChips({selected: true})).length).toBe(0);
@@ -135,7 +139,7 @@ export function runHarnessTests(
   });
 
   it('should be able to select chips based on a filter', async () => {
-    const chipList = await loader.getHarness(chipListHarness);
+    const chipList = await loader.getHarness(listboxHarness);
     fixture.componentInstance.isMultiple = true;
 
     expect((await chipList.getChips({selected: true})).length).toBe(0);
@@ -166,14 +170,14 @@ export function runHarnessTests(
   });
 
   it('should be able to select a chip', async () => {
-    const chip = await loader.getHarness(chipHarness);
+    const chip = await loader.getHarness(chipOptionHarness);
     expect(await chip.isSelected()).toBe(false);
     await chip.select();
     expect(await chip.isSelected()).toBe(true);
   });
 
   it('should be able to deselect a chip', async () => {
-    const chip = await loader.getHarness(chipHarness);
+    const chip = await loader.getHarness(chipOptionHarness);
     await chip.select();
     expect(await chip.isSelected()).toBe(true);
     await chip.deselect();
@@ -181,7 +185,7 @@ export function runHarnessTests(
   });
 
   it('should be able to toggle the selected state of a chip', async () => {
-    const chip = await loader.getHarness(chipHarness);
+    const chip = await loader.getHarness(chipOptionHarness);
     expect(await chip.isSelected()).toBe(false);
     await chip.toggle();
     expect(await chip.isSelected()).toBe(true);
@@ -202,7 +206,7 @@ export function runHarnessTests(
   });
 
   it('should get the selected text of a chip', async () => {
-    const chips = await loader.getAllHarnesses(chipHarness);
+    const chips = await loader.getAllHarnesses(chipOptionHarness);
     expect(await Promise.all(chips.map(chip => chip.isSelected()))).toEqual([
       false,
       false,

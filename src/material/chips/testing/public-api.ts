@@ -8,6 +8,8 @@
 
 export * from './chip-harness';
 export * from './chip-harness-filters';
-export * from './chip-list-harness';
+export {MatChipListHarness} from './chip-list-harness';
 export * from './chip-input-harness';
 export * from './chip-remove-harness';
+export * from './chip-option-harness';
+export * from './chip-listbox-harness';

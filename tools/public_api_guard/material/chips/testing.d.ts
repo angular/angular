@@ -8,7 +8,14 @@ export interface ChipInputHarnessFilters extends BaseHarnessFilters {
     value?: string | RegExp;
 }
 
+export interface ChipListboxHarnessFilters extends BaseHarnessFilters {
+}
+
 export interface ChipListHarnessFilters extends BaseHarnessFilters {
+}
+
+export interface ChipOptionHarnessFilters extends ChipHarnessFilters {
+    selected?: boolean;
 }
 
 export interface ChipRemoveHarnessFilters extends BaseHarnessFilters {
@@ -41,17 +48,28 @@ export declare class MatChipInputHarness extends ComponentHarness {
     static with(options?: ChipInputHarnessFilters): HarnessPredicate<MatChipInputHarness>;
 }
 
-export declare class MatChipListHarness extends ComponentHarness {
+export declare class MatChipListboxHarness extends _MatChipListHarnessBase {
+    getChips(filter?: ChipOptionHarnessFilters): Promise<MatChipOptionHarness[]>;
+    selectChips(filter?: ChipOptionHarnessFilters): Promise<void>;
+    static hostSelector: string;
+    static with(options?: ChipListboxHarnessFilters): HarnessPredicate<MatChipListboxHarness>;
+}
+
+export declare class MatChipListHarness extends _MatChipListHarnessBase {
     getChips(filter?: ChipHarnessFilters): Promise<MatChipHarness[]>;
     getInput(filter?: ChipInputHarnessFilters): Promise<MatChipInputHarness>;
-    getOrientation(): Promise<'horizontal' | 'vertical'>;
-    isDisabled(): Promise<boolean>;
-    isInvalid(): Promise<boolean>;
-    isMultiple(): Promise<boolean>;
-    isRequired(): Promise<boolean>;
     selectChips(filter?: ChipHarnessFilters): Promise<void>;
     static hostSelector: string;
     static with(options?: ChipListHarnessFilters): HarnessPredicate<MatChipListHarness>;
+}
+
+export declare class MatChipOptionHarness extends MatChipHarness {
+    deselect(): Promise<void>;
+    isSelected(): Promise<boolean>;
+    select(): Promise<void>;
+    toggle(): Promise<void>;
+    static hostSelector: string;
+    static with(options?: ChipOptionHarnessFilters): HarnessPredicate<MatChipOptionHarness>;
 }
 
 export declare class MatChipRemoveHarness extends ComponentHarness {

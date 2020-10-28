@@ -15,21 +15,8 @@ import {
   ChipInputHarnessFilters,
 } from './chip-harness-filters';
 
-/** Harness for interacting with a standard chip list in tests. */
-export class MatChipListHarness extends ComponentHarness {
-  /** The selector for the host element of a `MatChipList` instance. */
-  static hostSelector = '.mat-chip-list';
-
-  /**
-   * Gets a `HarnessPredicate` that can be used to search for a `MatChipListHarness` that meets
-   * certain criteria.
-   * @param options Options for filtering which chip list instances are considered a match.
-   * @return a `HarnessPredicate` configured with the given options.
-   */
-  static with(options: ChipListHarnessFilters = {}): HarnessPredicate<MatChipListHarness> {
-    return new HarnessPredicate(MatChipListHarness, options);
-  }
-
+/** Base class for chip list harnesses. */
+export abstract class _MatChipListHarnessBase extends ComponentHarness {
   /** Gets whether the chip list is disabled. */
   async isDisabled(): Promise<boolean> {
     return await (await this.host()).getAttribute('aria-disabled') === 'true';
@@ -55,6 +42,22 @@ export class MatChipListHarness extends ComponentHarness {
     const orientation = await (await this.host()).getAttribute('aria-orientation');
     return orientation === 'vertical' ? 'vertical' : 'horizontal';
   }
+}
+
+/** Harness for interacting with a standard chip list in tests. */
+export class MatChipListHarness extends _MatChipListHarnessBase {
+  /** The selector for the host element of a `MatChipList` instance. */
+  static hostSelector = '.mat-chip-list';
+
+  /**
+   * Gets a `HarnessPredicate` that can be used to search for a `MatChipListHarness` that meets
+   * certain criteria.
+   * @param options Options for filtering which chip list instances are considered a match.
+   * @return a `HarnessPredicate` configured with the given options.
+   */
+  static with(options: ChipListHarnessFilters = {}): HarnessPredicate<MatChipListHarness> {
+    return new HarnessPredicate(MatChipListHarness, options);
+  }
 
   /**
    * Gets the list of chips inside the chip list.
@@ -68,13 +71,13 @@ export class MatChipListHarness extends ComponentHarness {
    * Selects a chip inside the chip list.
    * @param filter An optional filter to apply to the child chips.
    *    All the chips matching the filter will be selected.
-   * @deprecated Will be moved into separate selection-specific harness.
+   * @deprecated Use `MatChipListboxHarness.selectChips` instead.
    * @breaking-change 12.0.0
    */
   async selectChips(filter: ChipHarnessFilters = {}): Promise<void> {
     const chips = await this.getChips(filter);
     if (!chips.length) {
-      throw Error(`Cannot find mat-chip matching filter ${JSON.stringify(filter)}`);
+      throw Error(`Cannot find chip matching filter ${JSON.stringify(filter)}`);
     }
     await Promise.all(chips.map(chip => chip.select()));
   }
