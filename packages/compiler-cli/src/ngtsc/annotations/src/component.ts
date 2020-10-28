@@ -262,7 +262,7 @@ export class ComponentDecoratorHandler implements
       }
     }
     const templateResource = template.isInline ?
-        null :
+        {path: null, expression: component.get('template')!} :
         {path: absoluteFrom(template.templateUrl), expression: template.sourceMapping.node};
 
     let diagnostics: ts.Diagnostic[]|undefined = undefined;
@@ -666,21 +666,30 @@ export class ComponentDecoratorHandler implements
 
   private _extractStyleResources(component: Map<string, ts.Expression>, containingFile: string):
       ReadonlySet<Resource> {
-    const styleUrlsExpr = component.get('styleUrls');
-    // If styleUrls is a literal array of strings, process each resource url individually and
-    // register them. Otherwise, give up and return an empty set.
-    if (styleUrlsExpr === undefined || !ts.isArrayLiteralExpression(styleUrlsExpr) ||
-        !styleUrlsExpr.elements.every(e => ts.isStringLiteralLike(e))) {
-      return new Set();
+    const styles = new Set<Resource>();
+    function stringLiteralElements(array: ts.ArrayLiteralExpression): ts.StringLiteralLike[] {
+      return array.elements.filter(
+          (e: ts.Expression): e is ts.StringLiteralLike => ts.isStringLiteralLike(e));
     }
 
-    const externalStyles = new Set<Resource>();
-    for (const expression of styleUrlsExpr.elements) {
-      const resourceUrl =
-          this.resourceLoader.resolve((expression as ts.StringLiteralLike).text, containingFile);
-      externalStyles.add({path: absoluteFrom(resourceUrl), expression});
+    // If styleUrls is a literal array, process each resource url individually and
+    // register ones that are string literals.
+    const styleUrlsExpr = component.get('styleUrls');
+    if (styleUrlsExpr !== undefined && ts.isArrayLiteralExpression(styleUrlsExpr)) {
+      for (const expression of stringLiteralElements(styleUrlsExpr)) {
+        const resourceUrl = this.resourceLoader.resolve(expression.text, containingFile);
+        styles.add({path: absoluteFrom(resourceUrl), expression});
+      }
     }
-    return externalStyles;
+
+    const stylesExpr = component.get('styles');
+    if (stylesExpr !== undefined && ts.isArrayLiteralExpression(stylesExpr)) {
+      for (const expression of stringLiteralElements(stylesExpr)) {
+        styles.add({path: null, expression});
+      }
+    }
+
+    return styles;
   }
 
   private _preloadAndParseTemplate(
