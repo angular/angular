@@ -468,7 +468,7 @@ export class Scroll {
  * phase of routing successfuly.
  * * [ChildActivationEnd](api/router/ChildActivationEnd): When the router finishes
  * activating a route's children.
- * * [ActivationEnd](api/router/ActivationStart): When the router finishes activating a route.
+ * * [ActivationEnd](api/router/ActivationEnd): When the router finishes activating a route.
  * * [NavigationEnd](api/router/NavigationEnd): When navigation ends successfully.
  * * [NavigationCancel](api/router/NavigationCancel): When navigation is canceled.
  * * [NavigationError](api/router/NavigationError): When navigation fails
