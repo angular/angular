@@ -99,3 +99,29 @@
     text-decoration: none;
   }
 }
+
+@mixin deployTheme($mainColor, $gradientTargetColor) {
+  .mat-toolbar.mat-primary, footer {
+    background: linear-gradient(145deg, $mainColor, $gradientTargetColor);
+  }
+
+  .vertical-menu-item {
+    &.selected, &:hover {
+      color: $mainColor;
+    }
+  }
+
+  .toc-inner ul.toc-list li {
+    &.active a {
+      color: $mainColor;
+
+      &:before {
+        background-color: $mainColor;
+      }
+    }
+
+    &:hover a {
+      color: $mainColor;
+    }
+  }
+}
