@@ -45,8 +45,8 @@ describe('deploy-to-firebase:', () => {
       CI_COMMIT: getLatestCommit('master'),
     }))).toEqual({
       deployEnv: 'next',
-      projectId: 'aio-staging',
-      siteId: 'aio-staging',
+      projectId: 'angular-io',
+      siteId: 'next-angular-io-site',
       deployedUrl: 'https://next.angular.io/',
     });
   });
@@ -77,7 +77,7 @@ describe('deploy-to-firebase:', () => {
     }))).toEqual({
       deployEnv: 'stable',
       projectId: 'angular-io',
-      siteId: 'angular-io',
+      siteId: 'v4-angular-io-site',
       deployedUrl: 'https://angular.io/',
     });
   });
@@ -108,13 +108,15 @@ describe('deploy-to-firebase:', () => {
       CI_COMMIT: getLatestCommit('2.4.x'),
     }))).toEqual({
       deployEnv: 'archive',
-      projectId: 'v2-angular-io',
-      siteId: 'v2-angular-io',
+      projectId: 'angular-io',
+      siteId: 'v2-angular-io-site',
       deployedUrl: 'https://v2.angular.io/',
     });
   });
 
-  it('archive - v9-angular-io multisite special case - deploy success', () => {
+  // v9 used to be special-cased, because it was piloting the Firebase hosting "multisites" setup.
+  // See https://angular-team.atlassian.net/browse/DEV-125 for more info.
+  it('archive - deploy success (no special case for v9)', () => {
     expect(computeDeploymentInfo(computeInputVars({
       CI_REPO_OWNER: 'angular',
       CI_REPO_NAME: 'angular',
@@ -124,8 +126,8 @@ describe('deploy-to-firebase:', () => {
       CI_COMMIT: getLatestCommit('9.1.x'),
     }))).toEqual({
       deployEnv: 'archive',
-      projectId: 'aio-staging',
-      siteId: 'v9-angular-io',
+      projectId: 'angular-io',
+      siteId: 'v9-angular-io-site',
       deployedUrl: 'https://v9.angular.io/',
     });
   });
