@@ -16,11 +16,13 @@ import {
   AutocompletePlainInputExample
 } from './autocomplete-plain-input/autocomplete-plain-input-example';
 import {AutocompleteSimpleExample} from './autocomplete-simple/autocomplete-simple-example';
+import {AutocompleteHarnessExample} from './autocomplete-harness/autocomplete-harness-example';
 
 export {
   AutocompleteAutoActiveFirstOptionExample,
   AutocompleteDisplayExample,
   AutocompleteFilterExample,
+  AutocompleteHarnessExample,
   AutocompleteOptgroupExample,
   AutocompleteOverviewExample,
   AutocompletePlainInputExample,
@@ -31,6 +33,7 @@ const EXAMPLES = [
   AutocompleteAutoActiveFirstOptionExample,
   AutocompleteDisplayExample,
   AutocompleteFilterExample,
+  AutocompleteHarnessExample,
   AutocompleteOptgroupExample,
   AutocompleteOverviewExample,
   AutocompletePlainInputExample,
