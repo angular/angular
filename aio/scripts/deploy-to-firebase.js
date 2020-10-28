@@ -9,7 +9,7 @@ const {cd, cp, exec: _exec, set} = require('shelljs');
 set('-e');
 
 
-// Arguments and environment variables
+// Arguments, environment variables and constants.
 const args = process.argv.slice(2);
 const dryRun = args[0] === '--dry-run';
 
@@ -24,9 +24,12 @@ const {
   CI_STABLE_BRANCH,
 } = process.env;
 
+const REPO_SLUG = 'angular/angular';
+const NG_REMOTE_URL = `https://github.com/${REPO_SLUG}.git`;
+
 // Do not deploy if we are running in a fork.
-if (`${CI_REPO_OWNER}/${CI_REPO_NAME}` !== 'angular/angular') {
-  console.log('Skipping deploy because this is not angular/angular.');
+if (`${CI_REPO_OWNER}/${CI_REPO_NAME}` !== REPO_SLUG) {
+  console.log(`Skipping deploy because this is not ${REPO_SLUG}.`);
   process.exit(0);
 }
 
@@ -37,7 +40,7 @@ if (CI_PULL_REQUEST !== 'false') {
 }
 
 // Do not deploy if the current commit is not the latest on its branch.
-const latestCommit = exec(`git ls-remote origin ${CI_BRANCH}`).slice(0, 40);
+const latestCommit = exec(`git ls-remote ${NG_REMOTE_URL} ${CI_BRANCH}`).slice(0, 40);
 if (CI_COMMIT !== latestCommit) {
   console.log(`Skipping deploy because ${CI_COMMIT} is not the latest commit (${latestCommit}).`);
   process.exit(0);
@@ -89,7 +92,7 @@ if (CI_BRANCH === 'master') {
   // Find the branch that has highest minor version for the given `currentBranchMajorVersion`.
   const mostRecentMinorVersion =
     // List the branches that start with the major version.
-    exec(`git ls-remote origin refs/heads/${currentBranchMajorVersion}.*.x`).split('\n')
+    exec(`git ls-remote ${NG_REMOTE_URL} refs/heads/${currentBranchMajorVersion}.*.x`).split('\n')
         // Extract the version number.
         .map(line => line.split('/')[2])
         // Sort by the minor version.
