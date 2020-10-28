@@ -142,7 +142,7 @@ describe('deploy-to-firebase:', () => {
         `(${getLatestCommitForBranch('2.4.x')}).`);
   });
 
-  it('archive - skip deploy - major version too high, lower minor', () => {
+  it('archive - skip deploy - major same as stable, minor less than stable', () => {
     expect(deployToFirebaseDryRun({
       CI_REPO_OWNER: 'angular',
       CI_REPO_NAME: 'angular',
@@ -153,26 +153,10 @@ describe('deploy-to-firebase:', () => {
       CI_SECRET_AIO_DEPLOY_FIREBASE_TOKEN: 'XXXXX',
     })).toBe(
         'Skipping deploy of branch "2.1.x" to Firebase.\n' +
-        'We only deploy archive branches with the major version less than the stable branch: ' +
-        '"2.2.x"');
+        'There is a more recent branch with the same major version: "2.4.x"');
   });
 
-  it('archive - skip deploy - major version too high, higher minor', () => {
-    expect(deployToFirebaseDryRun({
-      CI_REPO_OWNER: 'angular',
-      CI_REPO_NAME: 'angular',
-      CI_PULL_REQUEST: 'false',
-      CI_BRANCH: '2.4.x',
-      CI_STABLE_BRANCH: '2.2.x',
-      CI_COMMIT: getLatestCommitForBranch('2.4.x'),
-      CI_SECRET_AIO_DEPLOY_FIREBASE_TOKEN: 'XXXXX',
-    })).toBe(
-        'Skipping deploy of branch "2.4.x" to Firebase.\n' +
-        'We only deploy archive branches with the major version less than the stable branch: ' +
-        '"2.2.x"');
-  });
-
-  it('archive - skip deploy - minor version too low', () => {
+  it('archive - skip deploy - major lower than stable, minor not latest', () => {
     expect(deployToFirebaseDryRun({
       CI_REPO_OWNER: 'angular',
       CI_REPO_NAME: 'angular',
@@ -184,5 +168,81 @@ describe('deploy-to-firebase:', () => {
     })).toBe(
         'Skipping deploy of branch "2.1.x" to Firebase.\n' +
         'There is a more recent branch with the same major version: "2.4.x"');
+  });
+
+  it('rc - deploy success - major higher than stable', () => {
+    expect(deployToFirebaseDryRun({
+      CI_REPO_OWNER: 'angular',
+      CI_REPO_NAME: 'angular',
+      CI_PULL_REQUEST: 'false',
+      CI_BRANCH: '4.4.x',
+      CI_STABLE_BRANCH: '2.2.x',
+      CI_COMMIT: getLatestCommitForBranch('4.4.x'),
+      CI_SECRET_AIO_DEPLOY_FIREBASE_TOKEN: 'XXXXX',
+    })).toBe(
+        'Git branch        : 4.4.x\n' +
+        'Build/deploy mode : rc\n' +
+        'Firebase project  : angular-io\n' +
+        'Firebase site     : rc-angular-io-site\n' +
+        'Deployment URL    : https://rc.angular.io/');
+  });
+
+  it('rc - deploy success - major same as stable, minor higher', () => {
+    expect(deployToFirebaseDryRun({
+      CI_REPO_OWNER: 'angular',
+      CI_REPO_NAME: 'angular',
+      CI_PULL_REQUEST: 'false',
+      CI_BRANCH: '2.4.x',
+      CI_STABLE_BRANCH: '2.2.x',
+      CI_COMMIT: getLatestCommitForBranch('2.4.x'),
+      CI_SECRET_AIO_DEPLOY_FIREBASE_TOKEN: 'XXXXX',
+    })).toBe(
+        'Git branch        : 2.4.x\n' +
+        'Build/deploy mode : rc\n' +
+        'Firebase project  : angular-io\n' +
+        'Firebase site     : rc-angular-io-site\n' +
+        'Deployment URL    : https://rc.angular.io/');
+  });
+
+  it('rc - skip deploy - commit not HEAD', () => {
+    expect(deployToFirebaseDryRun({
+      CI_REPO_OWNER: 'angular',
+      CI_REPO_NAME: 'angular',
+      CI_PULL_REQUEST: 'false',
+      CI_BRANCH: '2.4.x',
+      CI_STABLE_BRANCH: '2.2.x',
+      CI_COMMIT: 'DUMMY_TEST_COMMIT',
+      CI_SECRET_AIO_DEPLOY_FIREBASE_TOKEN: 'XXXXX',
+    })).toBe(
+        'Skipping deploy because DUMMY_TEST_COMMIT is not the latest commit ' +
+        `(${getLatestCommitForBranch('2.4.x')}).`);
+  });
+
+  it('rc - skip deploy - major same as stable, minor not latest', () => {
+    expect(deployToFirebaseDryRun({
+      CI_REPO_OWNER: 'angular',
+      CI_REPO_NAME: 'angular',
+      CI_PULL_REQUEST: 'false',
+      CI_BRANCH: '2.1.x',
+      CI_STABLE_BRANCH: '2.0.x',
+      CI_COMMIT: getLatestCommitForBranch('2.1.x'),
+      CI_SECRET_AIO_DEPLOY_FIREBASE_TOKEN: 'XXXXX',
+    })).toBe(
+        'Skipping deploy of branch "2.1.x" to Firebase.\n' +
+        'There is a more recent branch with the same major version: "2.4.x"');
+  });
+
+  it('rc - skip deploy - major higher than stable, minor not latest', () => {
+    expect(deployToFirebaseDryRun({
+      CI_REPO_OWNER: 'angular',
+      CI_REPO_NAME: 'angular',
+      CI_PULL_REQUEST: 'false',
+      CI_BRANCH: '4.3.x',
+      CI_STABLE_BRANCH: '2.4.x',
+      CI_COMMIT: getLatestCommitForBranch('4.3.x'),
+      CI_SECRET_AIO_DEPLOY_FIREBASE_TOKEN: 'XXXXX',
+    })).toBe(
+        'Skipping deploy of branch "4.3.x" to Firebase.\n' +
+        'There is a more recent branch with the same major version: "4.4.x"');
   });
 });
