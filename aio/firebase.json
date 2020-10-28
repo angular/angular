@@ -3,6 +3,7 @@
     "rules": "database.rules.json"
   },
   "hosting": {
+    "target": "aio",
     "public": "dist",
     "cleanUrls": true,
     "redirects": [
