@@ -261,6 +261,9 @@ export class NgCompiler {
     const {resourceRegistry} = this.ensureAnalyzed();
     const styles = resourceRegistry.getStyles(classDecl);
     const template = resourceRegistry.getTemplate(classDecl);
+    if (template === null) {
+      return null;
+    }
 
     return {styles, template};
   }

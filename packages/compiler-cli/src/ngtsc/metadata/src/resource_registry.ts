@@ -12,23 +12,24 @@ import {AbsoluteFsPath} from '../../file_system';
 import {ClassDeclaration} from '../../reflection';
 
 /**
- * Represents an external resource for a component and contains the `AbsoluteFsPath`
+ * Represents an resource for a component and contains the `AbsoluteFsPath`
  * to the file which was resolved by evaluating the `ts.Expression` (generally, a relative or
  * absolute string path to the resource).
+ *
+ * If the resource is inline, the `path` will be `null`.
  */
 export interface Resource {
-  path: AbsoluteFsPath;
+  path: AbsoluteFsPath|null;
   expression: ts.Expression;
 }
 
 /**
- * Represents the external resources of a component.
+ * Represents the either inline or external resources of a component.
  *
- * If the component uses an inline template, the template resource will be `null`.
- * If the component does not have external styles, the `styles` `Set` will be empty.
+ * A resource with a `path` of `null` is considered inline.
  */
 export interface ComponentResources {
-  template: Resource|null;
+  template: Resource;
   styles: ReadonlySet<Resource>;
 }
 
@@ -40,17 +41,17 @@ export interface ComponentResources {
  * assistance.
  */
 export class ResourceRegistry {
-  private templateToComponentsMap = new Map<AbsoluteFsPath, Set<ClassDeclaration>>();
+  private externalTemplateToComponentsMap = new Map<AbsoluteFsPath, Set<ClassDeclaration>>();
   private componentToTemplateMap = new Map<ClassDeclaration, Resource>();
   private componentToStylesMap = new Map<ClassDeclaration, Set<Resource>>();
-  private styleToComponentsMap = new Map<AbsoluteFsPath, Set<ClassDeclaration>>();
+  private externalStyleToComponentsMap = new Map<AbsoluteFsPath, Set<ClassDeclaration>>();
 
   getComponentsWithTemplate(template: AbsoluteFsPath): ReadonlySet<ClassDeclaration> {
-    if (!this.templateToComponentsMap.has(template)) {
+    if (!this.externalTemplateToComponentsMap.has(template)) {
       return new Set();
     }
 
-    return this.templateToComponentsMap.get(template)!;
+    return this.externalTemplateToComponentsMap.get(template)!;
   }
 
   registerResources(resources: ComponentResources, component: ClassDeclaration) {
@@ -64,10 +65,12 @@ export class ResourceRegistry {
 
   registerTemplate(templateResource: Resource, component: ClassDeclaration): void {
     const {path} = templateResource;
-    if (!this.templateToComponentsMap.has(path)) {
-      this.templateToComponentsMap.set(path, new Set());
+    if (path !== null) {
+      if (!this.externalTemplateToComponentsMap.has(path)) {
+        this.externalTemplateToComponentsMap.set(path, new Set());
+      }
+      this.externalTemplateToComponentsMap.get(path)!.add(component);
     }
-    this.templateToComponentsMap.get(path)!.add(component);
     this.componentToTemplateMap.set(component, templateResource);
   }
 
@@ -83,10 +86,12 @@ export class ResourceRegistry {
     if (!this.componentToStylesMap.has(component)) {
       this.componentToStylesMap.set(component, new Set());
     }
-    if (!this.styleToComponentsMap.has(path)) {
-      this.styleToComponentsMap.set(path, new Set());
+    if (path !== null) {
+      if (!this.externalStyleToComponentsMap.has(path)) {
+        this.externalStyleToComponentsMap.set(path, new Set());
+      }
+      this.externalStyleToComponentsMap.get(path)!.add(component);
     }
-    this.styleToComponentsMap.get(path)!.add(component);
     this.componentToStylesMap.get(component)!.add(styleResource);
   }
 
@@ -98,10 +103,10 @@ export class ResourceRegistry {
   }
 
   getComponentsWithStyle(styleUrl: AbsoluteFsPath): ReadonlySet<ClassDeclaration> {
-    if (!this.styleToComponentsMap.has(styleUrl)) {
+    if (!this.externalStyleToComponentsMap.has(styleUrl)) {
       return new Set();
     }
 
-    return this.styleToComponentsMap.get(styleUrl)!;
+    return this.externalStyleToComponentsMap.get(styleUrl)!;
   }
 }
