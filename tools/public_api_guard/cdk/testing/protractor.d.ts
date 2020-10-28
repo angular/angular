@@ -4,7 +4,7 @@ export declare class ProtractorElement implements TestElement {
     blur(): Promise<void>;
     clear(): Promise<void>;
     click(...args: [] | ['center'] | [number, number]): Promise<void>;
-    dispatchEvent(name: string): Promise<void>;
+    dispatchEvent(name: string, data?: Record<string, EventData>): Promise<void>;
     focus(): Promise<void>;
     getAttribute(name: string): Promise<string | null>;
     getCssValue(property: string): Promise<string>;

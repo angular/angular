@@ -48,6 +48,10 @@ export interface ElementDimensions {
     width: number;
 }
 
+export declare type EventData = string | number | boolean | undefined | null | EventData[] | {
+    [key: string]: EventData;
+};
+
 export declare function handleAutoChangeDetectionStatus(handler: (status: AutoChangeDetectionStatus) => void): void;
 
 export declare abstract class HarnessEnvironment<E> implements HarnessLoader, LocatorFactory {
@@ -135,7 +139,7 @@ export interface TestElement {
     click(): Promise<void>;
     click(location: 'center'): Promise<void>;
     click(relativeX: number, relativeY: number): Promise<void>;
-    dispatchEvent?(name: string): Promise<void>;
+    dispatchEvent?(name: string, data?: Record<string, EventData>): Promise<void>;
     focus(): Promise<void>;
     getAttribute(name: string): Promise<string | null>;
     getCssValue(property: string): Promise<string>;

@@ -40,6 +40,7 @@ export class TestMainComponent implements OnDestroy {
   multiSelect: string[] = [];
   multiSelectChangeEventCount = 0;
   basicEvent = 0;
+  customEventData: string | null = null;
   _shadowDomSupported = _supportsShadowDom();
   clickResult = {x: -1, y: -1};
   rightClickResult = {x: -1, y: -1, button: -1};
@@ -95,6 +96,10 @@ export class TestMainComponent implements OnDestroy {
   onRightClick(event: MouseEvent) {
     this.rightClickResult.button = event.button;
     this._assignRelativeCoordinates(event, this.rightClickResult);
+  }
+
+  onCustomEvent(event: any) {
+    this.customEventData = JSON.stringify({message: event.message, value: event.value});
   }
 
   runTaskOutsideZone() {

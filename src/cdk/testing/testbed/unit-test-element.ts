@@ -13,10 +13,12 @@ import {
   ModifierKeys,
   TestElement,
   TestKey,
-  TextOptions
+  TextOptions,
+  EventData,
 } from '@angular/cdk/testing';
 import {
   clearElement,
+  createFakeEvent,
   dispatchFakeEvent,
   dispatchMouseEvent,
   dispatchPointerEvent,
@@ -24,6 +26,7 @@ import {
   triggerBlur,
   triggerFocus,
   typeInElement,
+  dispatchEvent,
 } from './fake-events';
 
 /** Maps `TestKey` constants to the `keyCode` and `key` values used by native browser events. */
@@ -188,8 +191,15 @@ export class UnitTestElement implements TestElement {
     return document.activeElement === this.element;
   }
 
-  async dispatchEvent(name: string): Promise<void> {
-    dispatchFakeEvent(this.element, name);
+  async dispatchEvent(name: string, data?: Record<string, EventData>): Promise<void> {
+    const event = createFakeEvent(name);
+
+    if (data) {
+      // tslint:disable-next-line:ban Have to use `Object.assign` to preserve the original object.
+      Object.assign(event, data);
+    }
+
+    dispatchEvent(this.element, event);
     await this._stabilize();
   }
 

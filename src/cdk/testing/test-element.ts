@@ -16,6 +16,10 @@ export interface ModifierKeys {
   meta?: boolean;
 }
 
+/** Data that can be attached to a custom event dispatched from a `TestElement`. */
+export type EventData =
+    string | number | boolean | undefined | null | EventData[] | {[key: string]: EventData};
+
 /** An enum of non-text keys that can be used with the `sendKeys` method. */
 // NOTE: This is a separate enum from `@angular/cdk/keycodes` because we don't necessarily want to
 // support every possible keyCode. We also can't rely on Protractor's `Key` because we don't want a
@@ -161,7 +165,7 @@ export interface TestElement {
    * @param name Name of the event to be dispatched.
    * @breaking-change 12.0.0 To be a required method.
    */
-  dispatchEvent?(name: string): Promise<void>;
+  dispatchEvent?(name: string, data?: Record<string, EventData>): Promise<void>;
 }
 
 export interface TextOptions {

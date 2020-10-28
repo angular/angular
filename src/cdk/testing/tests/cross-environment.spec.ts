@@ -468,6 +468,14 @@ export function crossEnvironmentSpecs(
       expect(await target.text()).toBe('Basic event: 1');
     });
 
+    it('should dispatch a custom event with attached data', async () => {
+      const target = await harness.customEventObject();
+
+      // @breaking-change 12.0.0 Remove non-null assertion once `dispatchEvent` is required.
+      await target.dispatchEvent!('myCustomEvent', {message: 'Hello', value: 1337});
+      expect(await target.text()).toBe('Event with object: {"message":"Hello","value":1337}');
+    });
+
     it('should get TestElements and ComponentHarnesses', async () => {
       const results = await harness.subcomponentHarnessesAndElements();
       expect(results.length).toBe(5);
