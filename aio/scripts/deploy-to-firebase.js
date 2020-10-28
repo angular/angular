@@ -58,6 +58,12 @@ const deployInfoPerTarget = {
     siteId: 'aio-staging',
     deployedUrl: 'https://next.angular.io/',
   },
+  rc: {
+    deployEnv: 'rc',
+    projectId: 'angular-io',
+    siteId: 'rc-angular-io-site',
+    deployedUrl: 'https://rc.angular.io/',
+  },
   stable: {
     deployEnv: 'stable',
     projectId: 'angular-io',
@@ -80,17 +86,8 @@ if (CI_BRANCH === 'master') {
 } else {
   const stableBranchMajorVersion = computeMajorVersion(CI_STABLE_BRANCH);
 
-  // Do not deploy if the major version is not less than the stable branch major version.
-  if (currentBranchMajorVersion >= stableBranchMajorVersion) {
-    console.log(
-        `Skipping deploy of branch "${CI_BRANCH}" to Firebase.\n` +
-        'We only deploy archive branches with the major version less than the stable branch: ' +
-        `"${CI_STABLE_BRANCH}"`);
-    process.exit(0);
-  }
-
   // Find the branch that has highest minor version for the given `currentBranchMajorVersion`.
-  const mostRecentMinorVersion =
+  const mostRecentMinorVersionBranch =
     // List the branches that start with the major version.
     exec(`git ls-remote ${NG_REMOTE_URL} refs/heads/${currentBranchMajorVersion}.*.x`).split('\n')
         // Extract the version number.
@@ -100,15 +97,24 @@ if (CI_BRANCH === 'master') {
         // Get the highest version.
         .pop();
 
-  // Do not deploy as it is not the latest branch for the given major version.
-  if (CI_BRANCH !== mostRecentMinorVersion) {
+  // Do not deploy if it is not the latest branch for the given major version.
+  // NOTE: At this point, we know the current branch is not the stable branch.
+  if (CI_BRANCH !== mostRecentMinorVersionBranch) {
     console.log(
         `Skipping deploy of branch "${CI_BRANCH}" to Firebase.\n` +
-        `There is a more recent branch with the same major version: "${mostRecentMinorVersion}"`);
+        'There is a more recent branch with the same major version: ' +
+        `"${mostRecentMinorVersionBranch}"`);
     process.exit(0);
   }
 
-  deployInfo = deployInfoPerTarget.archive;
+  deployInfo = (currentBranchMajorVersion < stableBranchMajorVersion) ?
+      // This is the latest minor version for a major that is less than the stable major version:
+      // Deploy as `archive`.
+      deployInfoPerTarget.archive :
+      // This is the latest minor version for a major that is equal or greater than the stable major
+      // version, but not the stable version itself:
+      // Deploy as `rc`.
+      deployInfoPerTarget.rc;
 }
 
 const {deployEnv, projectId, siteId, deployedUrl} = deployInfo;
