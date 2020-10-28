@@ -238,7 +238,7 @@ We'll be using [Headless Chrome](https://developers.google.com/web/updates/2017/
 
 * In the Karma configuration file, `karma.conf.js`, add a custom launcher called ChromeHeadlessCI below browsers:
 ```
-browsers: ['Chrome'],
+browsers: ['ChromeHeadlessCI'],
 customLaunchers: {
   ChromeHeadlessCI: {
     base: 'ChromeHeadless',
