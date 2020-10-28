@@ -430,6 +430,7 @@ groups:
         - atscott
         - ~kara  # do not request reviews from Kara, but allow her to approve PRs
         - mhevery
+        - jessicajaniuk
         # OOO as of 2020-09-28 - pkozlowski-opensource
 
 
