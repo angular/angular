@@ -11,8 +11,15 @@ ng_module(
     ]),
     module_name = "@angular/components-examples/material/card",
     deps = [
+        "//src/cdk/testing",
+        "//src/cdk/testing/testbed",
         "//src/material/button",
+        "//src/material/button/testing",
         "//src/material/card",
+        "//src/material/card/testing",
+        "@npm//@angular/platform-browser",
+        "@npm//@angular/platform-browser-dynamic",
+        "@npm//@types/jasmine",
     ],
 )
 
