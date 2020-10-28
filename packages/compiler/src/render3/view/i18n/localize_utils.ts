@@ -120,7 +120,7 @@ function processMessagePieces(pieces: o.MessagePiece[]):
       placeHolders.push(part);
       if (pieces[i - 1] instanceof o.PlaceholderPiece) {
         // There were two placeholders in a row, so we need to add an empty message part.
-        messageParts.push(createEmptyMessagePart(part.sourceSpan.end));
+        messageParts.push(createEmptyMessagePart(pieces[i - 1].sourceSpan.end));
       }
     }
   }
