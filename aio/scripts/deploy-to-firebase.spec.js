@@ -6,12 +6,13 @@ const {execSync} = require('child_process');
 
 describe('deploy-to-firebase:', () => {
   const deployToFirebaseCmd = `"${process.execPath}" "${__dirname}/deploy-to-firebase" --dry-run`;
+  const ngRemoteUrl = 'https://github.com/angular/angular.git';
 
   // Helpers
   const deployToFirebaseDryRun =
       env => execSync(deployToFirebaseCmd, {encoding: 'utf8', env}).toString().trim();
   const getLatestCommitForBranch =
-      branch => execSync(`git ls-remote origin ${branch}`).slice(0, 40);
+      branch => execSync(`git ls-remote ${ngRemoteUrl} ${branch}`).slice(0, 40);
 
   it('master - skip deploy - not angular', () => {
     expect(deployToFirebaseDryRun({
