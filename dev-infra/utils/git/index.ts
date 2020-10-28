@@ -42,6 +42,8 @@ export class GitCommandError extends Error {
  *     the dev-infra configuration is loaded with its Github configuration.
  **/
 export class GitClient {
+  /** Whether verbose logging of Git actions should be used. */
+  static LOG_COMMANDS = true;
   /** Short-hand for accessing the default remote configuration. */
   remoteConfig = this._config.github;
   /** Octokit request parameters object for targeting the configured remote. */
@@ -88,12 +90,11 @@ export class GitClient {
    */
   runGraceful(args: string[], options: SpawnSyncOptions = {}): SpawnSyncReturns<string> {
     // To improve the debugging experience in case something fails, we print all executed Git
-    // commands unless the `stdio` is explicitly set to `ignore` (which is equivalent to silent).
+    // commands to better understand the git actions occuring. Depending on the command being
+    // executed, this debugging information should be logged at different logging levels.
+    const printFn = (!GitClient.LOG_COMMANDS || options.stdio === 'ignore') ? debug : info;
     // Note that we do not want to print the token if it is contained in the command. It's common
     // to share errors with others if the tool failed, and we do not want to leak tokens.
-    // TODO: Add support for configuring this on a per-client basis. Some tools do not want
-    // to print the Git command messages to the console at all (e.g. to maintain clean output).
-    const printFn = options.stdio !== 'ignore' ? info : debug;
     printFn('Executing: git', this.omitGithubTokenFromMessage(args.join(' ')));
 
     const result = spawnSync('git', args, {
