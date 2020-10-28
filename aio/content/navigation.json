@@ -56,40 +56,17 @@
       "tooltip": "Set up your environment and learn basic concepts",
       "children": [
         {
-            "title": "Try it",
-            "tooltip": "Examine and work with a ready-made sample app, with no setup.",
-            "children": [
-              {
-                "url": "start",
-                "title": "Getting started",
-                "tooltip": "Take a look at Angular's component model, template syntax, and component communication."
-              },
-              {
-                "url": "start/start-routing",
-                "title": "Adding navigation",
-                "tooltip": "Navigate among different page views using the browser's URL."
-              },
-              {
-                "url": "start/start-data",
-                "title": "Managing Data",
-                "tooltip": "Use services and access external data via HTTP."
-              },
-              {
-                "url": "start/start-forms",
-                "title": "Using Forms for User Input",
-                "tooltip": "Learn about fetching and managing data from users with forms."
-              },
-              {
-                "url": "start/start-deployment",
-                "title": "Deploying an application",
-                "tooltip": "Move to local development, or deploy your application to Firebase or your own server."
-              }
-            ]
+          "url": "guide/setup-local",
+          "title": "Local setup",
+          "tooltip": "Setting up for local development with the Angular CLI."
         },
         {
-          "url": "guide/setup-local",
-          "title": "Setup",
-          "tooltip": "Setting up for local development with the Angular CLI."
+          "title": "Angular concepts",
+          "tooltip": "An overview of key Angular concepts."
+        },
+        {
+          "title": "Quickstarts",
+          "tooltip": "Tutorials designed to give you an overview of Angular's features and functions."
         }
       ]
     },
@@ -98,14 +75,48 @@
       "tooltip": "Learn the concepts essential to becoming a proficient Angular developer.",
       "children": [
         {
+          "url": "guide/component-overview",
           "title": "Components",
-          "tooltip": "Building dynamic views with data binding",
+          "tooltip": "Building dynamic views with data binding"
+        },
+        {
+          "title": "Templates",
+          "tooltip": "Syntax to use in templates for binding, expressions, and directives."
+        },
+        {
+          "title": "Directives",
+          "tooltip": "Control the behavior of elements and the layout of your pages with directives."
+        },
+        {
+          "url": "guide/architecture-services",
+          "title": "Dependency Injection",
+          "tooltip": "Dependency Injection: creating and injecting services"
+        },
+        {
+          "url": "guide/architecture-modules",
+          "title": "NgModules",
+          "tooltip": "About NgModules."
+        },
+        {
+          "url": "guide/router",
+          "title": "Routing",
+          "tooltip": "Build in-app navigation among views using the Angular Router."
+        },
+        {
+          "url": "guide/forms-overview",
+          "title": "Forms",
+          "tooltip": "An Angular form coordinates a set of data-bound user controls, tracks changes, validates input, and presents errors."
+        }
+      ]
+    },
+    {
+      "title": "Developer Guides",
+      "tooltip": "Learn how to add more of Angular's features and functionality to your applications.",
+      "children": [
+        {
+          "title": "Components",
+          "tooltip": "A developer guide to Angular components.",
           "children": [
-            {
-              "url": "guide/component-overview",
-              "title": "Overview",
-              "tooltip": "Overview of how to create Angular components."
-            },
             {
               "url": "guide/lifecycle-hooks",
               "title": "Component Lifecycle",
@@ -135,17 +146,12 @@
               "url": "guide/dynamic-component-loader",
               "title": "Dynamic Components",
               "tooltip": "Load components dynamically."
-            },
-            {
-              "url": "guide/elements",
-              "title": "Angular Elements",
-              "tooltip": "Convert components to Custom Elements."
             }
           ]
         },
         {
-          "title": "Templates",
-          "tooltip": "Syntax to use in templates for binding, expressions, and directives.",
+          "title": "Template syntax",
+          "tooltip": "Developer guide for Angular's template syntax.",
           "children": [
             {
               "url": "guide/template-syntax",
@@ -161,11 +167,6 @@
               "url": "guide/template-statements",
               "title": "Template statements",
               "tooltip": "Introductory guide to statements in templates that respond to events that components, directives, or elements raise."
-            },
-            {
-              "url": "guide/pipes",
-              "title": "Pipes",
-              "tooltip": "Pipes transform displayed values within a template."
             },
             {
               "url": "guide/binding-syntax",
@@ -206,211 +207,100 @@
         },
         {
           "title": "Directives",
-          "tooltip": "Control the behavior of elements and the layout of your pages with directives.",
-          "children": [
-            {
-              "url": "guide/built-in-directives",
-              "title": "Built-in directives",
-              "tooltip": "Introductory guide to some of the most popular built-in directives."
-            },
-            {
-              "url": "guide/attribute-directives",
-              "title": "Attribute Directives",
-              "tooltip": "Attribute directives attach behavior to elements."
-            },
-            {
-              "url": "guide/structural-directives",
-              "title": "Structural Directives",
-              "tooltip": "Structural directives manipulate the layout of the page."
-            }
-          ]
+          "tooltip": "Developer guide for Angular directives."
         },
-        {
+        { 
           "title": "Dependency Injection",
-          "tooltip": "Dependency Injection: creating and injecting services",
+          "tooltip": "Developer guide for Angular's dependency injection.",
           "children": [
             {
               "url": "guide/dependency-injection",
               "title": "Angular Dependency Injection",
-              "tooltip": "Angular's dependency injection system creates and delivers dependent services to Angular-created classes."
+              "tooltip": "Angular's dependency injection system creates and delivers dependent services to Angular classes."
             },
             {
               "url": "guide/dependency-injection-providers",
-              "title": "DI Providers",
-              "tooltip": "More about the different kinds of providers."
+              "title": "Dependency Injection Providers",
+              "tooltip": "More about different providers."
             },
             {
               "url": "guide/dependency-injection-in-action",
-              "title": "DI in Action",
+              "title": "Dependency Injection in Action",
               "tooltip": "Techniques for dependency injection."
             },
             {
-              "url": "guide/dependency-injection-navtree",
-              "title": "Navigate the Component Tree",
-              "tooltip": "Use the injection tree to find parent components."
+              "url": "guide/guide/dependency-injection-navtree",
+              "title": "Navigate the component tree with DI",
+              "tooltip": "Use the injection tree to find components." 
             }
+
           ]
-        }
-      ]
-    },
-    {
-      "title": "Built-in Features",
-      "tooltip": "Learn how to add Angular's built-in features to add functionality to your applications.",
-      "children": [
-        {
-          "url": "guide/router",
-          "title": "Routing & Navigation",
-          "tooltip": "Build in-app navigation among views using the Angular Router."
         },
         {
-          "title": "Forms",
-          "tooltip": "Forms creates a cohesive, effective, and compelling data entry experience.",
+          "title": "NgModules",
+          "tooltip": "NgModules.",
           "children": [
             {
-              "url": "guide/forms-overview",
-              "title": "Introduction",
-              "tooltip": "An Angular form coordinates a set of data-bound user controls, tracks changes, validates input, and presents errors."
+              "url": "guide/ngmodules",
+              "title": "NgModules Introduction",
+              "tooltip": "Use NgModules to make your apps efficient."
             },
             {
-              "url": "guide/reactive-forms",
-              "title": "Reactive Forms",
-              "tooltip": "Create a reactive form using FormBuilder, groups, and arrays."
+              "url": "guide/ngmodule-vs-jsmodule",
+              "title": "JS Modules vs NgModules",
+              "tooltip": "Differentiate between JavaScript modules and NgModules."
             },
             {
-              "url": "guide/form-validation",
-              "title": "Validate form input",
-              "tooltip": "Validate user's form entries."
+              "url": "guide/bootstrapping",
+              "title": "Launching Apps with a Root Module",
+              "tooltip": "Tell Angular how to construct and bootstrap the app in the root \"AppModule\"."
             },
             {
-              "url": "guide/dynamic-form",
-              "title": "Building Dynamic Forms",
-              "tooltip": "Create dynamic form templates using FormGroup."
+              "url": "guide/frequent-ngmodules",
+              "title": "Frequently Used NgModules",
+              "tooltip": "Introduction to the most frequently used NgModules."
+            },
+            {
+              "url": "guide/module-types",
+              "title": "Types of Feature Modules",
+              "tooltip": "Description of the different types of feature modules."
+            },
+            {
+              "url": "guide/entry-components",
+              "title": "Entry Components",
+              "tooltip": "All about entry components in Angular."
+            },
+            {
+              "url": "guide/feature-modules",
+              "title": "Feature Modules",
+              "tooltip": "Create feature modules to organize your code."
+            },
+            {
+              "url": "guide/providers",
+              "title": "Providing Dependencies",
+              "tooltip": "Providing dependencies to NgModules."
+            },
+            {
+              "url": "guide/singleton-services",
+              "title": "Singleton Services",
+              "tooltip": "Creating singleton services."
+            },
+            {
+              "url": "guide/sharing-ngmodules",
+              "title": "Sharing NgModules",
+              "tooltip": "Share NgModules to streamline your apps."
+            },
+            {
+              "url": "guide/ngmodule-api",
+              "title": "NgModule API",
+              "tooltip": "Understand the details of NgModules."
+            },
+            {
+              "url": "guide/ngmodule-faq",
+              "title": "NgModule FAQs",
+              "tooltip": "Answers to frequently asked questions about NgModules."
             }
           ]
-        },
-        {
-          "url": "guide/http",
-          "title": "HTTP Client",
-          "tooltip": "Use HTTP to talk to a remote server."
-        },
-        {
-          "url": "guide/i18n",
-          "title": "Internationalization (i18n)",
-          "tooltip": "Translate the app's template text into multiple languages."
-        },
-        {
-          "title": "Animations",
-          "tooltip": "Enhance the user experience with animation.",
-          "children": [
-            {
-              "url": "guide/animations",
-              "title": "Introduction",
-              "tooltip": "Basic techniques in Angular animations."
-            },
-            {
-              "url": "guide/transition-and-triggers",
-              "title": "Transition and Triggers",
-              "tooltip": "Advanced techniques in transition and triggers."
-            },
-            {
-              "url": "guide/complex-animation-sequences",
-              "title": "Complex Sequences",
-              "tooltip": "Complex Angular animation sequences."
-            },
-            {
-              "url": "guide/reusable-animations",
-              "title": "Reusable Animations",
-              "tooltip": "Creating reusable animations."
-            },
-            {
-              "url": "guide/route-animations",
-              "title": "Route Transition Animations",
-              "tooltip": "Animate route transitions."
-            }
-          ]
-        },
-        {
-          "title": "Schematics",
-          "tooltip": "Understanding schematics.",
-          "children": [
-            {
-              "url": "guide/schematics",
-              "title": "Schematics Overview",
-              "tooltip": "Extending CLI generation capabilities."
-            },
-            {
-              "url": "guide/schematics-authoring",
-              "title": "Authoring Schematics",
-              "tooltip": "Understand the structure of a schematic."
-            },
-            {
-              "url": "guide/schematics-for-libraries",
-              "title": "Schematics for Libraries",
-              "tooltip": "Use schematics to integrate your library with the Angular CLI."
-            }
-          ]
-        },
-        {
-          "title": "Service Workers & PWA",
-          "tooltip": "Angular service workers: Controlling caching of application resources.",
-          "children": [
-            {
-              "url": "guide/service-worker-intro",
-              "title": "Introduction",
-              "tooltip": "Angular's implementation of service workers improves user experience with slow or unreliable network connectivity."
-            },
-            {
-              "url": "guide/service-worker-getting-started",
-              "title": "Getting Started",
-              "tooltip": "Enabling the service worker in a CLI project and observing behavior in the browser."
-            },
-            {
-              "url": "guide/app-shell",
-              "title": "App Shell",
-              "tooltip": "Render a portion of your app quickly to improve the startup experience."
-            },
-            {
-              "url": "guide/service-worker-communications",
-              "title": "Service Worker Communication",
-              "tooltip": "Services that enable you to interact with an Angular service worker."
-            },
-            {
-              "url": "guide/service-worker-devops",
-              "title": "Service Worker in Production",
-              "tooltip": "Running apps with service workers, managing app update, debugging, and killing apps."
-            },
-            {
-              "url": "guide/service-worker-config",
-              "title": "Service Worker Configuration",
-              "tooltip": "Configuring service worker caching behavior."
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "title": "Best Practices",
-      "tooltip": "Learn how to build robust, scalable applications.",
-      "children": [
-        {
-          "url": "guide/security",
-          "title": "Security",
-          "tooltip": "Developing for content security in Angular applications."
-        },
-        {
-          "url": "guide/accessibility",
-          "title": "Accessibility",
-          "tooltip": "Design apps to be accessible to all users."
-        },
-        {
-          "url": "guide/updating",
-          "title": "Keeping Up-to-Date",
-          "tooltip": "Information about updating Angular applications and libraries to the latest version."
-        },
-        {
-          "url": "guide/property-binding-best-practices",
-          "title": "Property Binding Best Practices",
-          "tooltip": "Use property binding efficiently."
         },
         {
           "title": "Testing",
@@ -464,62 +354,112 @@
           ]
         },
         {
-          "title": "Dev Workflow",
-          "tooltip": "Build, and deployment information.",
+          "url": "guide/pipes",
+          "title": "Pipes",
+          "tooltip": "Pipes transform displayed values within a template."
+        },
+        {
+          "url": "guide/router",
+          "title": "Routing",
+          "tooltip": "More about routing."
+        },
+        {
+          "title": "Forms",
+          "tooltip": "Forms creates a cohesive, effective, and compelling data entry experience.",
           "children": [
             {
-              "url": "guide/deployment",
-              "title": "Deploying applications",
-              "tooltip": "Learn how to deploy your Angular app."
+              "url": "guide/reactive-forms",
+              "title": "Reactive Forms",
+              "tooltip": "Create a reactive form using FormBuilder, groups, and arrays."
             },
             {
-              "title": "AOT Compiler",
-              "tooltip": "Understanding ahead-of-time compilation.",
-              "children": [
-                {
-                  "url": "guide/aot-compiler",
-                  "title": "Ahead-of-Time Compilation",
-                  "tooltip": "Learn why and how to use the Ahead-of-Time (AOT) compiler."
-                },
-                {
-                  "url": "guide/angular-compiler-options",
-                  "title": "Angular Compiler Options",
-                  "tooltip": "Configuring AOT compilation."
-                },
-                {
-                  "url": "guide/aot-metadata-errors",
-                  "title": "AOT Metadata Errors",
-                  "tooltip": "Troubleshooting AOT compilation."
-                },
-                {
-                  "url": "guide/template-typecheck",
-                  "title": "Template Type-checking",
-                  "tooltip": "Template type-checking in Angular."
-                }
-              ]
+              "url": "guide/form-validation",
+              "title": "Validate form input",
+              "tooltip": "Validate user's form entries."
             },
             {
-              "url": "guide/build",
-              "title": "Building & Serving",
-              "tooltip": "Building and serving Angular apps."
+              "url": "guide/dynamic-form",
+              "title": "Building Dynamic Forms",
+              "tooltip": "Create dynamic form templates using FormGroup."
             }
           ]
         },
         {
-          "url": "guide/lightweight-injection-tokens",
-          "title": "Lightweight Injection Tokens for Libraries",
-          "tooltip": "Optimize client app size by designing library services with lightweight injection tokens."
-        }
-      ]
-    },
-    {
-      "title": "Angular Tools",
-      "tooltip": "Tools to help you build your Angular applications.",
-      "children": [
+          "url": "guide/http",
+          "title": "HTTP Client",
+          "tooltip": "Use HTTP to talk to a remote server."
+        },
         {
-          "url": "guide/cli-builder",
-          "title": "CLI Builders",
-          "tooltip": "Using builders to customize Angular CLI."
+          "title": "Animations",
+          "tooltip": "Enhance the user experience with animation.",
+          "children": [
+            {
+              "url": "guide/animations",
+              "title": "Introduction",
+              "tooltip": "Basic techniques in Angular animations."
+            },
+            {
+              "url": "guide/transition-and-triggers",
+              "title": "Transition and Triggers",
+              "tooltip": "Advanced techniques in transition and triggers."
+            },
+            {
+              "url": "guide/complex-animation-sequences",
+              "title": "Complex Sequences",
+              "tooltip": "Complex Angular animation sequences."
+            },
+            {
+              "url": "guide/reusable-animations",
+              "title": "Reusable Animations",
+              "tooltip": "Creating reusable animations."
+            },
+            {
+              "url": "guide/route-animations",
+              "title": "Route Transition Animations",
+              "tooltip": "Animate route transitions."
+            }
+          ]
+        },
+        {
+          "url": "guide/i18n",
+          "title": "Internationalization (i18n)",
+          "tooltip": "Translate the app's template text into multiple languages."
+        },
+        {
+          "title": "Service Workers & PWA",
+          "tooltip": "Angular service workers: Controlling caching of application resources.",
+          "children": [
+            {
+              "url": "guide/service-worker-intro",
+              "title": "Introduction",
+              "tooltip": "Angular's implementation of service workers improves user experience with slow or unreliable network connectivity."
+            },
+            {
+              "url": "guide/service-worker-getting-started",
+              "title": "Getting Started",
+              "tooltip": "Enabling the service worker in a CLI project and observing behavior in the browser."
+            },
+            {
+              "url": "guide/app-shell",
+              "title": "App Shell",
+              "tooltip": "Render a portion of your app quickly to improve the startup experience."
+            },
+            {
+              "url": "guide/service-worker-communications",
+              "title": "Service Worker Communication",
+              "tooltip": "Services that enable you to interact with an Angular service worker."
+            },
+            {
+              "url": "guide/service-worker-devops",
+              "title": "Service Worker in Production",
+              "tooltip": "Running apps with service workers, managing app update, debugging, and killing apps."
+            },
+            {
+              "url": "guide/service-worker-config",
+              "title": "Service Worker Configuration",
+              "tooltip": "Configuring service worker caching behavior."
+            }
+          ]
         },
         {
           "url": "guide/universal",
@@ -527,181 +467,35 @@
           "tooltip": "Render HTML server-side with Angular Universal."
         },
         {
-          "url": "guide/language-service",
-          "title": "Language Service",
-          "tooltip": "Use Angular Language Service to speed up dev time."
-        }
-      ]
-    },
-    {
-      "title": "Tutorials",
-      "tooltip": "End-to-end tutorials for learning Angular concepts and patterns.",
-      "children": [
+          "url": "guide/lazy-loading-ngmodules",
+          "title": "Lazy Loading",
+          "tooltip": "Lazy load modules to speed up your apps."
+        },
         {
-          "title": "Tutorial: Tour of Heroes",
-          "tooltip": "The Tour of Heroes app is used as a reference point in many Angular examples.",
+          "url": "guide/elements",
+          "title": "Angular Elements",
+          "tooltip": "Convert components to Custom Elements."
+        },
+        {
+          "title": "Schematics",
+          "tooltip": "Understanding schematics.",
           "children": [
             {
-              "url": "tutorial",
-              "title": "Introduction",
-              "tooltip": "Introduction to the Tour of Heroes app and tutorial"
+              "url": "guide/schematics",
+              "title": "Schematics Overview",
+              "tooltip": "Extending CLI generation capabilities."
             },
             {
-              "url": "tutorial/toh-pt0",
-              "title": "Create a Project",
-              "tooltip": "Creating the application shell"
+              "url": "guide/schematics-authoring",
+              "title": "Authoring Schematics",
+              "tooltip": "Understand the structure of a schematic."
             },
             {
-              "url": "tutorial/toh-pt1",
-              "title": "1. The Hero Editor",
-              "tooltip": "Part 1: Build a simple editor"
-            },
-            {
-              "url": "tutorial/toh-pt2",
-              "title": "2. Display a List",
-              "tooltip": "Part 2: Build a master/detail page with a list of heroes."
-            },
-            {
-              "url": "tutorial/toh-pt3",
-              "title": "3. Create a Feature Component",
-              "tooltip": "Part 3: Refactor the master/detail views into separate components."
-            },
-            {
-              "url": "tutorial/toh-pt4",
-              "title": "4. Add Services",
-              "tooltip": "Part 4: Create a reusable service to manage hero data."
-            },
-            {
-              "url": "tutorial/toh-pt5",
-              "title": "5. Add In-app Navigation",
-              "tooltip": "Part 5: Add the Angular router and navigate among the views."
-            },
-            {
-              "url": "tutorial/toh-pt6",
-              "title": "6. Get Data from a Server",
-              "tooltip": "Part 6: Use HTTP to retrieve and save hero data."
+              "url": "guide/schematics-for-libraries",
+              "title": "Schematics for Libraries",
+              "tooltip": "Use schematics to integrate your library with the Angular CLI."
             }
           ]
-        },
-        {
-          "title": "Routing",
-          "tooltip": "End-to-end tutorials for learning about Angular's router.",
-          "children": [
-            {
-              "url": "guide/router-tutorial",
-              "title": "Using Angular Routes in a Single-page Application",
-              "tooltip": "A tutorial that covers many patterns associated with Angular routing."
-            },
-            {
-              "url": "guide/router-tutorial-toh",
-              "title": "Router tutorial: tour of heroes",
-              "tooltip": "Explore how to use Angular's router. Based on the Tour of Heroes example."
-            }
-          ]
-        },
-        {
-          "url": "guide/forms",
-          "title": "Building a Template-driven Form",
-          "tooltip": "Create a template-driven form using directives and Angular template syntax."
-        },
-        {
-          "url": "guide/web-worker",
-          "title": "Web Workers",
-          "tooltip": "Using web workers for background processing."
-        },
-        {
-          "title": "Angular Libraries",
-          "tooltip": "Extending Angular with shared libraries.",
-          "children": [
-            {
-              "url": "guide/libraries",
-              "title": "Libraries Overview",
-              "tooltip": "Understand how and when to use or create libraries."
-            },
-            {
-              "url": "guide/using-libraries",
-              "title": "Using Published Libraries",
-              "tooltip": "Integrate published libraries into an app."
-            },
-            {
-              "url": "guide/creating-libraries",
-              "title": "Creating Libraries",
-              "tooltip": "Extend Angular by creating, publishing, and using your own libraries."
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "title": "Release Information",
-      "tooltip": "Angular release practices, updating, and upgrading.",
-      "children": [
-        {
-          "url": "guide/releases",
-          "title": "Release Practices",
-          "tooltip": "Angular versioning, release, support, and deprecation policies and practices."
-        },
-        {
-          "url": "guide/roadmap",
-          "title": "Roadmap",
-          "tooltip": "Roadmap of the Angular team."
-        },
-        {
-          "title": "Updating to Version 10",
-          "tooltip": "Support for updating your application from version 9 to 10.",
-          "children": [
-            {
-              "url": "guide/updating-to-version-10",
-              "title": "Overview",
-              "tooltip": "Everything you need to know for updating your application from version 9 to 10."
-            },
-            {
-              "url": "guide/ivy-compatibility",
-              "title": "Ivy Compatibility Guide",
-              "tooltip": "Details to help you make sure your application is compatible with Ivy."
-            },
-            {
-              "title": "Migrations",
-              "tooltip": "Migration details regarding updating to version 10.",
-              "children": [
-                {
-                  "url": "guide/migration-module-with-providers",
-                  "title": "Missing ModuleWithProviders Generic",
-                  "tooltip": "Migration to add a generic type to any ModuleWithProviders usages that are missing the generic."
-                },
-                {
-                  "url": "guide/migration-undecorated-classes",
-                  "title": "Missing @Directive() Decorators",
-                  "tooltip": "Migration to add missing @Directive()/@Component() decorators."
-                },
-                {
-                  "url": "guide/migration-injectable",
-                  "title": "Missing @Injectable() Decorators",
-                  "tooltip": "Migration to add missing @Injectable() decorators and incomplete provider definitions."
-                },
-                {
-                  "url": "guide/migration-update-libraries-tslib",
-                  "title": "`tslib` direct dependency",
-                  "tooltip": "Migration to a direct dependency on the `tslib` npm package."
-                },
-                {
-                  "url": "guide/migration-update-module-and-target-compiler-options",
-                  "title": "`module` and `target` compiler options",
-                  "tooltip": "Migration to update `module` and `target` compiler options."
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "url": "guide/deprecations",
-          "title": "Deprecations",
-          "tooltip": "Summary of Angular APIs and features that are deprecated."
-        },
-        {
-          "url": "guide/ivy",
-          "title": "Angular Ivy",
-          "tooltip": "About the Angular Ivy compilation and rendering pipeline."
         },
         {
           "title": "Upgrading from AngularJS",
@@ -726,6 +520,218 @@
               "url": "guide/ajs-quick-reference",
               "title": "AngularJS-Angular Concepts",
               "tooltip": "Learn how AngularJS concepts and techniques map to Angular."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Best Practices",
+      "tooltip": "Learn how to build robust, scalable applications.",
+      "children": [
+        {
+          "url": "guide/accessibility",
+          "title": "Accessibility",
+          "tooltip": "Design apps to be accessible to all users."
+        },
+        {
+          "url": "guide/security",
+          "title": "Security",
+          "tooltip": "Developing for content security in Angular applications."
+        },
+        {
+          "title": "Performance",
+          "tooltip": "Best practices for improving application performance."
+        },
+        {
+          "title": "Internationalization",
+          "tooltip": "Best practices for localizing Angular applications."
+        },
+        {
+          "url": "guide/property-binding-best-practices",
+          "title": "Property Binding Best Practices",
+          "tooltip": "Use property binding efficiently."
+        },
+        {
+          "title": "State Management",
+          "tooltip": "Best practices for state management."
+        },
+        {
+          "title": "Data access and persistence",
+          "tooltip": "Best practices for data access and persistence."
+        },
+        {
+          "url": "guide/updating",
+          "title": "Keeping Up-to-Date",
+          "tooltip": "Information about updating Angular applications and libraries to the latest version."
+        },
+        {
+          "title": "Angular Style and Usage",
+          "tooltip": "Summaries of Angular syntax, coding, and doc styles.",
+          "children": [
+            {
+              "url": "guide/cheatsheet",
+              "title": "Quick Reference",
+              "tooltip": "A quick guide to common Angular coding techniques."
+            },
+            {
+              "url": "guide/styleguide",
+              "title": "Coding Style Guide",
+              "tooltip": "Guidelines for writing Angular code."
+            },
+            {
+              "url": "guide/docs-style-guide",
+              "title": "Documentation Style Guide",
+              "tooltip": "Style guide for documentation authors."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "How Angular Works",
+      "tooltip": "Information about how Angular works.",
+      "children": [
+        {
+          "title": "AOT Compiler",
+          "tooltip": "Understanding ahead-of-time compilation.",
+          "children": [
+            {
+              "url": "guide/aot-compiler",
+              "title": "Ahead-of-Time Compilation",
+              "tooltip": "Learn why and how to use the Ahead-of-Time (AOT) compiler."
+            },
+            {
+              "url": "guide/angular-compiler-options",
+              "title": "Angular Compiler Options",
+              "tooltip": "Configuring AOT compilation."
+            },
+            {
+              "url": "guide/aot-metadata-errors",
+              "title": "AOT Metadata Errors",
+              "tooltip": "Troubleshooting AOT compilation."
+            },
+            {
+              "url": "guide/template-typecheck",
+              "title": "Template Type-checking",
+              "tooltip": "Template type-checking in Angular."
+            }
+          ]
+        },
+        {
+          "title": "Release Information",
+          "tooltip": "Angular release practices, updating, and upgrading.",
+          "children": [
+            {
+              "url": "guide/releases",
+              "title": "Release Practices",
+              "tooltip": "Angular versioning, release, support, and deprecation policies and practices."
+            },
+            {
+              "url": "guide/roadmap",
+              "title": "Roadmap",
+              "tooltip": "Roadmap of the Angular team."
+            },
+            {
+              "title": "Updating to Version 10",
+              "tooltip": "Support for updating your application from version 9 to 10.",
+              "children": [
+                {
+                  "url": "guide/updating-to-version-10",
+                  "title": "Overview",
+                  "tooltip": "Everything you need to know for updating your application from version 9 to 10."
+                },
+                {
+                  "url": "guide/ivy-compatibility",
+                  "title": "Ivy Compatibility Guide",
+                  "tooltip": "Details to help you make sure your application is compatible with Ivy."
+                },
+                {
+                  "title": "Migrations",
+                  "tooltip": "Migration details regarding updating to version 10.",
+                  "children": [
+                    {
+                      "url": "guide/migration-module-with-providers",
+                      "title": "Missing ModuleWithProviders Generic",
+                      "tooltip": "Migration to add a generic type to any ModuleWithProviders usages that are missing the generic."
+                    },
+                    {
+                      "url": "guide/migration-undecorated-classes",
+                      "title": "Missing @Directive() Decorators",
+                      "tooltip": "Migration to add missing @Directive()/@Component() decorators."
+                    },
+                    {
+                      "url": "guide/migration-injectable",
+                      "title": "Missing @Injectable() Decorators",
+                      "tooltip": "Migration to add missing @Injectable() decorators and incomplete provider definitions."
+                    },
+                    {
+                      "url": "guide/migration-update-libraries-tslib",
+                      "title": "`tslib` direct dependency",
+                      "tooltip": "Migration to a direct dependency on the `tslib` npm package."
+                    },
+                    {
+                      "url": "guide/migration-update-module-and-target-compiler-options",
+                      "title": "`module` and `target` compiler options",
+                      "tooltip": "Migration to update `module` and `target` compiler options."
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "url": "guide/deprecations",
+              "title": "Deprecations",
+              "tooltip": "Summary of Angular APIs and features that are deprecated."
+            },
+            {
+              "url": "guide/ivy",
+              "title": "Angular Ivy",
+              "tooltip": "About the Angular Ivy compilation and rendering pipeline."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "JUNK DRAWER",
+      "tooltip": "Don't publish this. We just don't know what to do with these topics yet.",
+      "children": [
+        {
+          "title": "Dev Workflow",
+          "tooltip": "Build, and deployment information.",
+          "children": [
+            {
+              "url": "guide/deployment",
+              "title": "Deploying applications",
+              "tooltip": "Learn how to deploy your Angular app."
+            },
+            
+            {
+              "url": "guide/build",
+              "title": "Building & Serving",
+              "tooltip": "Building and serving Angular apps."
+            },
+            {
+              "url": "guide/lightweight-injection-tokens",
+              "title": "Lightweight Injection Tokens for Libraries",
+              "tooltip": "Optimize client app size by designing library services with lightweight injection tokens."
+            }
+          ]
+        },
+        {
+          "title": "Angular Tools",
+          "tooltip": "Tools to help you build your Angular applications.",
+          "children": [
+            {
+              "url": "guide/cli-builder",
+              "title": "CLI Builders",
+              "tooltip": "Using builders to customize Angular CLI."
+            },
+            {
+              "url": "guide/language-service",
+              "title": "Language Service",
+              "tooltip": "Use Angular Language Service to speed up dev time."
             }
           ]
         }
@@ -817,77 +823,6 @@
               ]
             },
             {
-              "title": "NgModules",
-              "tooltip": "NgModules.",
-              "children": [
-                {
-                  "url": "guide/ngmodules",
-                  "title": "NgModules Introduction",
-                  "tooltip": "Use NgModules to make your apps efficient."
-                },
-                {
-                  "url": "guide/ngmodule-vs-jsmodule",
-                  "title": "JS Modules vs NgModules",
-                  "tooltip": "Differentiate between JavaScript modules and NgModules."
-                },
-                {
-                  "url": "guide/bootstrapping",
-                  "title": "Launching Apps with a Root Module",
-                  "tooltip": "Tell Angular how to construct and bootstrap the app in the root \"AppModule\"."
-                },
-                {
-                  "url": "guide/frequent-ngmodules",
-                  "title": "Frequently Used NgModules",
-                  "tooltip": "Introduction to the most frequently used NgModules."
-                },
-                {
-                  "url": "guide/module-types",
-                  "title": "Types of Feature Modules",
-                  "tooltip": "Description of the different types of feature modules."
-                },
-                {
-                  "url": "guide/entry-components",
-                  "title": "Entry Components",
-                  "tooltip": "All about entry components in Angular."
-                },
-                {
-                  "url": "guide/feature-modules",
-                  "title": "Feature Modules",
-                  "tooltip": "Create feature modules to organize your code."
-                },
-                {
-                  "url": "guide/providers",
-                  "title": "Providing Dependencies",
-                  "tooltip": "Providing dependencies to NgModules."
-                },
-                {
-                  "url": "guide/singleton-services",
-                  "title": "Singleton Services",
-                  "tooltip": "Creating singleton services."
-                },
-                {
-                  "url": "guide/lazy-loading-ngmodules",
-                  "title": "Lazy Loading Feature Modules",
-                  "tooltip": "Lazy load modules to speed up your apps."
-                },
-                {
-                  "url": "guide/sharing-ngmodules",
-                  "title": "Sharing NgModules",
-                  "tooltip": "Share NgModules to streamline your apps."
-                },
-                {
-                  "url": "guide/ngmodule-api",
-                  "title": "NgModule API",
-                  "tooltip": "Understand the details of NgModules."
-                },
-                {
-                  "url": "guide/ngmodule-faq",
-                  "title": "NgModule FAQs",
-                  "tooltip": "Answers to frequently asked questions about NgModules."
-                }
-              ]
-            },
-            {
               "title": "Observables & RxJS",
               "tooltip": "Using observables for message passing in Angular.",
               "children": [
@@ -950,27 +885,6 @@
           "url": "guide/glossary",
           "title": "Angular Glossary",
           "tooltip": "Brief definitions of the most important words in the Angular vocabulary."
-        },
-        {
-          "title": "Angular Style and Usage",
-          "tooltip": "Summaries of Angular syntax, coding, and doc styles.",
-          "children": [
-            {
-              "url": "guide/cheatsheet",
-              "title": "Quick Reference",
-              "tooltip": "A quick guide to common Angular coding techniques."
-            },
-            {
-              "url": "guide/styleguide",
-              "title": "Coding Style Guide",
-              "tooltip": "Guidelines for writing Angular code."
-            },
-            {
-              "url": "guide/docs-style-guide",
-              "title": "Documentation Style Guide",
-              "tooltip": "Style guide for documentation authors."
-            }
-          ]
         }
       ]
     }
