@@ -608,6 +608,11 @@
             "title": "Ultimate Angular",
             "url": "https://ultimateangular.com/"
           },
+          "angular-pro-screencast": {
+            "desc": "Youtube Channel. Online videos in English and Russian providing in-depth coverage of the Angular advanced topics.",
+            "title": "Angular Pro Screencast",
+            "url": "https://www.youtube.com/playlist?list=PLLf-VBOaoVk1E9fTBZdq1CfnRa2TtL_Kb"
+          },
           "willh-angular-zero": {
             "desc": "Online video course in Chinese for newbies who need to learning from the scratch in Chinese.  It's covering Angular, Angular CLI, TypeScript, VSCode, and some must known knowledge of Angular development.",
             "title": "Angular in Action: Start From Scratch (正體中文)",
