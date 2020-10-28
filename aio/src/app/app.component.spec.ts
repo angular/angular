@@ -835,6 +835,7 @@ describe('AppComponent', () => {
       const redirectionPerMode: {[mode: string]: boolean} = {
         archive: true,
         next: false,
+        rc: false,
         stable: false,
       };
 
