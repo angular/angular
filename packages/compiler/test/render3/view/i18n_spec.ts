@@ -489,13 +489,32 @@ describe('serializeI18nMessageForLocalize', () => {
        expect(placeHolders[3].sourceSpan.toString()).toEqual('</span>');
      });
 
+  it('should create the correct source-spans when there are two placeholders next to each other',
+     () => {
+       const {messageParts, placeHolders} = serialize('<b>{{value}}</b>');
+       expect(messageParts[0].text).toEqual('');
+       expect(humanizeSourceSpan(messageParts[0].sourceSpan)).toEqual('"" (10-10)');
+       expect(messageParts[1].text).toEqual('');
+       expect(humanizeSourceSpan(messageParts[1].sourceSpan)).toEqual('"" (13-13)');
+       expect(messageParts[2].text).toEqual('');
+       expect(humanizeSourceSpan(messageParts[2].sourceSpan)).toEqual('"" (22-22)');
+       expect(messageParts[3].text).toEqual('');
+       expect(humanizeSourceSpan(messageParts[3].sourceSpan)).toEqual('"" (26-26)');
+
+       expect(placeHolders[0].text).toEqual('START_BOLD_TEXT');
+       expect(humanizeSourceSpan(placeHolders[0].sourceSpan)).toEqual('"<b>" (10-13)');
+       expect(placeHolders[1].text).toEqual('INTERPOLATION');
+       expect(humanizeSourceSpan(placeHolders[1].sourceSpan)).toEqual('"{{value}}" (13-22)');
+       expect(placeHolders[2].text).toEqual('CLOSE_BOLD_TEXT');
+       expect(humanizeSourceSpan(placeHolders[2].sourceSpan)).toEqual('"</b>" (22-26)');
+     });
+
   it('should serialize simple ICU for `$localize()`', () => {
     expect(serialize('{age, plural, 10 {ten} other {other}}')).toEqual({
       messageParts: [literal('{VAR_PLURAL, plural, 10 {ten} other {other}}')],
       placeHolders: []
     });
   });
-
 
   it('should serialize nested ICUs for `$localize()`', () => {
     expect(serialize(
@@ -508,7 +527,6 @@ describe('serializeI18nMessageForLocalize', () => {
           placeHolders: []
         });
   });
-
 
   it('should serialize ICU with embedded HTML for `$localize()`', () => {
     expect(serialize('{age, plural, 10 {<b>ten</b>} other {<div class="A">other</div>}}')).toEqual({
@@ -594,4 +612,8 @@ function literal(text: string, span: any = jasmine.any(ParseSourceSpan)): o.Lite
 
 function placeholder(name: string, span: any = jasmine.any(ParseSourceSpan)): o.PlaceholderPiece {
   return new o.PlaceholderPiece(name, span);
+}
+
+function humanizeSourceSpan(span: ParseSourceSpan): string {
+  return `"${span.toString()}" (${span.start.offset}-${span.end.offset})`;
 }
