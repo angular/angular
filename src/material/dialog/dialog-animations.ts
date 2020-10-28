@@ -21,7 +21,7 @@ import {
 export const matDialogAnimations: {
   readonly dialogContainer: AnimationTriggerMetadata;
 } = {
-  /** Animation that is applied on the dialog container by defalt. */
+  /** Animation that is applied on the dialog container by default. */
   dialogContainer: trigger('dialogContainer', [
     // Note: The `enter` animation transitions to `transform: none`, because for some reason
     // specifying the transform explicitly, causes IE both to blur the dialog content and
