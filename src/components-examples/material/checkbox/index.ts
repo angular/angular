@@ -6,15 +6,18 @@ import {MatCheckboxModule} from '@angular/material/checkbox';
 import {MatRadioModule} from '@angular/material/radio';
 import {CheckboxConfigurableExample} from './checkbox-configurable/checkbox-configurable-example';
 import {CheckboxOverviewExample} from './checkbox-overview/checkbox-overview-example';
+import {CheckboxHarnessExample} from './checkbox-harness/checkbox-harness-example';
 
 export {
   CheckboxConfigurableExample,
   CheckboxOverviewExample,
+  CheckboxHarnessExample,
 };
 
 const EXAMPLES = [
   CheckboxConfigurableExample,
   CheckboxOverviewExample,
+  CheckboxHarnessExample,
 ];
 
 @NgModule({
