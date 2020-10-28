@@ -85,6 +85,11 @@
     tslib "^2.0.0"
     yargs "15.3.0"
 
+"@angular/compiler@9.0.0":
+  version "9.0.0"
+  resolved "https://registry.yarnpkg.com/@angular/compiler/-/compiler-9.0.0.tgz#87e0bef4c369b6cadae07e3a4295778fc93799d5"
+  integrity sha512-ctjwuntPfZZT2mNj2NDIVu51t9cvbhl/16epc5xEwyzyDt76pX9UgwvY+MbXrf/C/FWwdtmNtfP698BKI+9leQ==
+
 "@angular/compiler@^11.0.0-rc.0":
   version "11.0.0-rc.0"
   resolved "https://registry.yarnpkg.com/@angular/compiler/-/compiler-11.0.0-rc.0.tgz#e9fa385a9469fd6ee83202c5413492125fb9d928"
@@ -92,12 +97,10 @@
   dependencies:
     tslib "^2.0.0"
 
-"@angular/compiler@~8.2.14":
-  version "8.2.14"
-  resolved "https://registry.yarnpkg.com/@angular/compiler/-/compiler-8.2.14.tgz#46db7a9d1c17f236126518ff26480c160d5a6183"
-  integrity sha512-ABZO4E7eeFA1QyJ2trDezxeQM5ZFa1dXw1Mpl/+1vuXDKNjJgNyWYwKp/NwRkLmrsuV0yv4UDCDe4kJOGbPKnw==
-  dependencies:
-    tslib "^1.9.0"
+"@angular/core@9.0.0":
+  version "9.0.0"
+  resolved "https://registry.yarnpkg.com/@angular/core/-/core-9.0.0.tgz#227dc53e1ac81824f998c6e76000b7efc522641e"
+  integrity sha512-6Pxgsrf0qF9iFFqmIcWmjJGkkCaCm6V5QNnxMy2KloO3SDq6QuMVRbN9RtC8Urmo25LP+eZ6ZgYqFYpdD8Hd9w==
 
 "@angular/core@^10.0.0-0 || ^11.0.0":
   version "10.0.2"
@@ -112,13 +115,6 @@
   integrity sha512-h3woHlGzPVx3zcm76Gxwfrpzjzq5q0cEmF8wDJ8Tce1R2BoPsSP3MD44LFZZSwh6SO4Ga2wc3z6c+NpwQe7QEA==
   dependencies:
     tslib "^2.0.0"
-
-"@angular/core@~8.2.14":
-  version "8.2.14"
-  resolved "https://registry.yarnpkg.com/@angular/core/-/core-8.2.14.tgz#35566f5b19480369229477e7e0e0fde740bd5204"
-  integrity sha512-zeePkigi+hPh3rN7yoNENG/YUBUsIvUXdxx+AZq+QPaFeKEA2FBSrKn36ojHFrdJUjKzl0lPMEiGC2b6a6bo6g==
-  dependencies:
-    tslib "^1.9.0"
 
 "@angular/dev-infra-private@https://github.com/angular/dev-infra-private-builds.git#f8bc880d554d45ca8bf881b8a776f00f61b918fb":
   version "0.0.0"
@@ -2196,10 +2192,10 @@ app-module-path@^2.2.0:
   resolved "https://registry.yarnpkg.com/app-module-path/-/app-module-path-2.2.0.tgz#641aa55dfb7d6a6f0a8141c4b9c0aa50b6c24dd5"
   integrity sha1-ZBqlXft9am8KgUHEucCqULbCTdU=
 
-app-root-path@^2.2.1:
-  version "2.2.1"
-  resolved "https://registry.yarnpkg.com/app-root-path/-/app-root-path-2.2.1.tgz#d0df4a682ee408273583d43f6f79e9892624bc9a"
-  integrity sha512-91IFKeKk7FjfmezPKkwtaRvSpnUc4gDwPAjA1YZ9Gn0q0PPeW+vbeUsZuyDwjI7+QTHhcLen2v25fi/AmhvbJA==
+app-root-path@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/app-root-path/-/app-root-path-3.0.0.tgz#210b6f43873227e18a4b810a032283311555d5ad"
+  integrity sha512-qMcx+Gy2UZynHjOHOIXPNvpf+9cjvk3cWrBBK7zg4gH9+clobJRb9NGzcT7mQTcV/6Gm/1WelUtqxVXnNlrwcw==
 
 aproba@^1.0.3:
   version "1.2.0"
@@ -3435,22 +3431,24 @@ code-point-at@^1.0.0:
   integrity sha1-DQcLTQQ6W+ozovGkDi7bPZpMz3c=
 
 codelyzer@^6.0.0-next.1:
-  version "6.0.0-next.1"
-  resolved "https://registry.yarnpkg.com/codelyzer/-/codelyzer-6.0.0-next.1.tgz#f68ca751d28f57e7a0c83fe8939929fb77e6c32b"
-  integrity sha512-TMzAaJ6P7GEZOIAOvLthZ50MUhnmac/8nA7EFBWuy+ZUsJSqm749az1gy/NdV7FtoM7/kb/NoAdwFjmJA5Zniw==
+  version "6.0.1"
+  resolved "https://registry.yarnpkg.com/codelyzer/-/codelyzer-6.0.1.tgz#c0e9668e847255b37c759e68fb2700b11e277d0f"
+  integrity sha512-cOyGQgMdhnRYtW2xrJUNrNYDjEgwQ+BrE2y93Bwz3h4DJ6vJRLfupemU5N3pbYsUlBHJf0u1j1UGk+NLW4d97g==
   dependencies:
-    "@angular/compiler" "~8.2.14"
-    "@angular/core" "~8.2.14"
-    app-root-path "^2.2.1"
+    "@angular/compiler" "9.0.0"
+    "@angular/core" "9.0.0"
+    app-root-path "^3.0.0"
     aria-query "^3.0.0"
     axobject-query "2.0.2"
     css-selector-tokenizer "^0.7.1"
     cssauron "^1.4.0"
     damerau-levenshtein "^1.0.4"
+    rxjs "^6.5.3"
     semver-dsl "^1.0.1"
     source-map "^0.5.7"
     sprintf-js "^1.1.2"
-    zone.js "~0.9.1"
+    tslib "^1.10.0"
+    zone.js "~0.10.3"
 
 collapse-white-space@^1.0.2:
   version "1.0.5"
@@ -13380,8 +13378,3 @@ zone.js@~0.10.3:
   version "0.10.3"
   resolved "https://registry.yarnpkg.com/zone.js/-/zone.js-0.10.3.tgz#3e5e4da03c607c9dcd92e37dd35687a14a140c16"
   integrity sha512-LXVLVEq0NNOqK/fLJo3d0kfzd4sxwn2/h67/02pjCjfKDxgx1i9QqpvtHD8CrBnSSwMw5+dy11O7FRX5mkO7Cg==
-
-zone.js@~0.9.1:
-  version "0.9.1"
-  resolved "https://registry.yarnpkg.com/zone.js/-/zone.js-0.9.1.tgz#e37c6e5c54c13fae4de26b5ffe8d8e9212da6d9b"
-  integrity sha512-GkPiJL8jifSrKReKaTZ5jkhrMEgXbXYC+IPo1iquBjayRa0q86w3Dipjn8b415jpitMExe9lV8iTsv8tk3DGag==
