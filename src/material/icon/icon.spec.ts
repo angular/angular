@@ -5,11 +5,12 @@ import {
   HttpTestingController,
   TestRequest,
 } from '@angular/common/http/testing';
-import {Component, ErrorHandler} from '@angular/core';
+import {Component, ErrorHandler, ViewChild} from '@angular/core';
 import {MatIconModule, MAT_ICON_LOCATION} from './index';
 import {MatIconRegistry, getMatIconNoHttpProviderError} from './icon-registry';
 import {FAKE_SVGS} from './fake-svgs';
 import {wrappedErrorMessage} from '@angular/cdk/testing/private';
+import {MatIcon} from './icon';
 
 
 /** Returns the CSS classes assigned to an element as a sorted array. */
@@ -64,6 +65,7 @@ describe('MatIcon', () => {
         InlineIcon,
         SvgIconWithUserContent,
         IconWithLigatureAndSvgBinding,
+        BlankIcon,
       ],
       providers: [
         {
@@ -999,6 +1001,22 @@ describe('MatIcon', () => {
 
   });
 
+  it('should handle assigning an icon through the setter', fakeAsync(() => {
+    iconRegistry.addSvgIconLiteral('fido', trustHtml(FAKE_SVGS.dog));
+
+    const fixture = TestBed.createComponent(BlankIcon);
+    fixture.detectChanges();
+    let svgElement: SVGElement;
+    const testComponent = fixture.componentInstance;
+    const iconElement = fixture.debugElement.nativeElement.querySelector('mat-icon');
+
+    testComponent.icon.svgIcon = 'fido';
+    fixture.detectChanges();
+    svgElement = verifyAndGetSingleSvgChild(iconElement);
+    verifyPathChildElement(svgElement, 'woof');
+    tick();
+  }));
+
   /** Marks an SVG icon url as explicitly trusted. */
   function trustUrl(iconUrl: string): SafeResourceUrl {
     return sanitizer.bypassSecurityTrustResourceUrl(iconUrl);
@@ -1088,4 +1106,9 @@ class SvgIconWithUserContent {
 @Component({template: '<mat-icon [svgIcon]="iconName">house</mat-icon>'})
 class IconWithLigatureAndSvgBinding {
   iconName: string | undefined;
+}
+
+@Component({template: `<mat-icon></mat-icon>`})
+class BlankIcon {
+  @ViewChild(MatIcon) icon: MatIcon;
 }
