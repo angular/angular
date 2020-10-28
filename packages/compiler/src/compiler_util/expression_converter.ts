@@ -917,7 +917,8 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
     if (this.baseSourceSpan) {
       const start = this.baseSourceSpan.start.moveBy(span.start);
       const end = this.baseSourceSpan.start.moveBy(span.end);
-      return new ParseSourceSpan(start, end);
+      const fullStart = this.baseSourceSpan.fullStart.moveBy(span.start);
+      return new ParseSourceSpan(start, end, fullStart);
     } else {
       return null;
     }
