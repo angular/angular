@@ -54,14 +54,14 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
       });
 
       it('should skip over leading trivia for source-span start', () => {
-        expect(tokenizeAndHumanizeLineColumn(
-                   '<t>\n \t a</t>', {leadingTriviaChars: ['\n', ' ', '\t']}))
+        expect(
+            tokenizeAndHumanizeFullStart('<t>\n \t a</t>', {leadingTriviaChars: ['\n', ' ', '\t']}))
             .toEqual([
-              [lex.TokenType.TAG_OPEN_START, '0:0'],
-              [lex.TokenType.TAG_OPEN_END, '0:2'],
-              [lex.TokenType.TEXT, '1:3'],
-              [lex.TokenType.TAG_CLOSE, '1:4'],
-              [lex.TokenType.EOF, '1:8'],
+              [lex.TokenType.TAG_OPEN_START, '0:0', '0:0'],
+              [lex.TokenType.TAG_OPEN_END, '0:2', '0:2'],
+              [lex.TokenType.TEXT, '1:3', '0:3'],
+              [lex.TokenType.TAG_CLOSE, '1:4', '1:4'],
+              [lex.TokenType.EOF, '1:8', '1:8'],
             ]);
       });
     });
@@ -1558,6 +1558,14 @@ function humanizeLineColumn(location: ParseLocation): string {
 function tokenizeAndHumanizeLineColumn(input: string, options?: lex.TokenizeOptions): any[] {
   return tokenizeWithoutErrors(input, options)
       .tokens.map(token => [<any>token.type, humanizeLineColumn(token.sourceSpan.start)]);
+}
+
+function tokenizeAndHumanizeFullStart(input: string, options?: lex.TokenizeOptions): any[] {
+  return tokenizeWithoutErrors(input, options)
+      .tokens.map(
+          token =>
+              [<any>token.type, humanizeLineColumn(token.sourceSpan.start),
+               humanizeLineColumn(token.sourceSpan.fullStart)]);
 }
 
 function tokenizeAndHumanizeErrors(input: string, options?: lex.TokenizeOptions): any[] {
