@@ -229,7 +229,7 @@
               "tooltip": "Techniques for dependency injection."
             },
             {
-              "url": "guide/guide/dependency-injection-navtree",
+              "url": "guide/dependency-injection-navtree",
               "title": "Navigate the component tree with DI",
               "tooltip": "Use the injection tree to find components." 
             }
