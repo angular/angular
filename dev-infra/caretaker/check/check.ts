@@ -21,6 +21,8 @@ export async function checkServiceStatuses(githubToken: string) {
   const config = getCaretakerConfig();
   /** The GitClient for interacting with git and Github. */
   const git = new GitClient(githubToken, config);
+  // Prevent logging of the git commands being executed during the check.
+  GitClient.LOG_COMMANDS = false;
 
   // TODO(josephperrott): Allow these checks to be loaded in parallel.
   await printServiceStatuses();
