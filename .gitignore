@@ -41,3 +41,4 @@ testem.log
 /.bazelrc.user
 *.log
 .ng-dev.user*
+.husky/_
