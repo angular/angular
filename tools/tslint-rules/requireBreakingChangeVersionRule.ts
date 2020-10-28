@@ -8,6 +8,9 @@ const BREAKING_CHANGE = '@breaking-change';
 /** Name of the old doc tag that was being used to indicate a breaking change. */
 const DELETION_TARGET = '@deletion-target';
 
+/** Doc tag to indicate that something is deprecated. */
+const DEPRECATED = '@deprecated';
+
 /**
  * Rule that ensures that comments, indicating a deprecation
  * or a breaking change, have a valid version.
@@ -25,14 +28,28 @@ export class Rule extends Lint.Rules.AbstractRule {
           return;
         }
 
-        const hasBreakingChange = commentText.indexOf(BREAKING_CHANGE) > -1;
+        const breakingChangeIndex = commentText.indexOf(BREAKING_CHANGE);
+        const hasBreakingChange = breakingChangeIndex > -1;
+        const deprecatedIndex = commentText.indexOf(DEPRECATED);
+        const hasDeprecated = deprecatedIndex > -1;
 
-        if (!hasBreakingChange && commentText.indexOf('@deprecated') > -1) {
-          ctx.addFailure(pos, end, `@deprecated marker has to have a ${BREAKING_CHANGE}.`);
-        } if (hasBreakingChange && !/\d+\.\d+\.\d+/.test(commentText)) {
+        if (!hasBreakingChange && hasDeprecated) {
+          ctx.addFailure(pos, end, `${DEPRECATED} marker has to have a ${BREAKING_CHANGE}.`);
+        } else if (hasBreakingChange && !/\d+\.\d+\.\d+/.test(commentText)) {
           ctx.addFailure(pos, end, `${BREAKING_CHANGE} must have a version.`);
+        } else if (hasBreakingChange && !isCommentLineStart(commentText, breakingChangeIndex)) {
+          ctx.addFailure(pos, end, `${BREAKING_CHANGE} must be at the start of a comment line.`);
+        } else if (hasDeprecated && !isCommentLineStart(commentText, deprecatedIndex)) {
+          ctx.addFailure(pos, end, `${DEPRECATED} must be at the start of a comment line.`);
         }
       });
     });
   }
+}
+
+/** Checks whether a tag is at the start of a line in a comment. */
+function isCommentLineStart(comment: string, tagIndex: number): boolean {
+  return ['// ', ' * ', '/** ', '/* '].some(token => {
+    return comment.slice(tagIndex - token.length, tagIndex) === token;
+  });
 }
