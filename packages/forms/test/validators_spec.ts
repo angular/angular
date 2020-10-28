@@ -194,6 +194,10 @@ describe('Validators', () => {
 
     it('should not error on a non-empty array',
        () => expect(Validators.required(new FormControl([1, 2]))).toBeNull());
+
+    it('should not error on an object containing a length attribute that is zero', () => {
+      expect(Validators.required(new FormControl({id: 1, length: 0, width: 0}))).toBeNull();
+    });
   });
 
   describe('requiredTrue', () => {
