@@ -5,3 +5,7 @@ aio-shell.mode-archive {
 aio-shell.mode-next {
   @include deployTheme(#DD0031, #C3002F);
 }
+
+aio-shell.mode-rc {
+  @include deployTheme(#DDA302, #C3A300);
+}
