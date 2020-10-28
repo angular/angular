@@ -1660,9 +1660,9 @@
     "@types/node" "*"
 
 "@types/googlemaps@^3.39.3":
-  version "3.39.6"
-  resolved "https://registry.yarnpkg.com/@types/googlemaps/-/googlemaps-3.39.6.tgz#ca76df823fb4a8bd78bf47bd215fc70417a9ae51"
-  integrity sha512-O2joRmShgUcGBSyjp0pYFIP0Kv3y6jl8UXokEkcTI4D8FinTYsSt8OaHGQ/tI7WUF2eZTXKVJg6jQuEQS4d30w==
+  version "3.40.2"
+  resolved "https://registry.yarnpkg.com/@types/googlemaps/-/googlemaps-3.40.2.tgz#282fc5383ffdb035e1698f846c941cad501f02cb"
+  integrity sha512-LYlp497JZ/AjsjmGQMHcKmqO/MkUSLeUtsY++CQwy3VN8rqeotMacxnCF3xoGd8LphNqDdgQX7PL6qG0Pmh0Hw==
 
 "@types/gulp@*":
   version "4.0.5"
