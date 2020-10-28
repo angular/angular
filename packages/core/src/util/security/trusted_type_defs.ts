@@ -17,24 +17,25 @@
  * will keep Angular's public API surface free of references to Trusted Types.
  * For internal and semi-private APIs that need to reference Trusted Types, the
  * minimal type definitions for the Trusted Types API provided by this module
- * should be used instead.
+ * should be used instead. They are marked as "declare" to prevent them from
+ * being renamed by compiler optimization.
  *
  * Adapted from
  * https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/types/trusted-types/index.d.ts
  * but restricted to the API surface used within Angular.
  */
 
-export type TrustedHTML = {
-  __brand__: 'TrustedHTML'
-};
-export type TrustedScript = {
-  __brand__: 'TrustedScript'
-};
-export type TrustedScriptURL = {
-  __brand__: 'TrustedScriptURL'
-};
+export declare interface TrustedHTML {
+  __brand__: 'TrustedHTML';
+}
+export declare interface TrustedScript {
+  __brand__: 'TrustedScript';
+}
+export declare interface TrustedScriptURL {
+  __brand__: 'TrustedScriptURL';
+}
 
-export interface TrustedTypePolicyFactory {
+export declare interface TrustedTypePolicyFactory {
   createPolicy(policyName: string, policyOptions: {
     createHTML?: (input: string) => string,
     createScript?: (input: string) => string,
@@ -43,7 +44,7 @@ export interface TrustedTypePolicyFactory {
   getAttributeType(tagName: string, attribute: string): string|null;
 }
 
-export interface TrustedTypePolicy {
+export declare interface TrustedTypePolicy {
   createHTML(input: string): TrustedHTML;
   createScript(input: string): TrustedScript;
   createScriptURL(input: string): TrustedScriptURL;
