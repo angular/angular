@@ -15,6 +15,9 @@ import {
 } from '@angular/cdk/testing';
 import {BaseListItemHarnessFilters, SubheaderHarnessFilters} from './list-harness-filters';
 
+const iconSelector = '.mat-list-icon';
+const avatarSelector = '.mat-list-avatar';
+
 /**
  * Gets a `HarnessPredicate` that applies the given `BaseListItemHarnessFilters` to the given
  * list item harness.
@@ -58,12 +61,12 @@ export const enum MatListItemSection {
  */
 export class MatListItemHarnessBase extends ContentContainerComponentHarness<MatListItemSection> {
   private _lines = this.locatorForAll('.mat-line');
-  private _avatar = this.locatorForOptional('.mat-list-avatar');
-  private _icon = this.locatorForOptional('.mat-list-icon');
+  private _avatar = this.locatorForOptional(avatarSelector);
+  private _icon = this.locatorForOptional(iconSelector);
 
   /** Gets the full text content of the list item (including text from any font icons). */
   async getText(): Promise<string> {
-    return (await this.host()).text();
+    return (await this.host()).text({exclude: `${iconSelector}, ${avatarSelector}`});
   }
 
   /** Gets the lines of text (`mat-line` elements) in this nav list item. */
