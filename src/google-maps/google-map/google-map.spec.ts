@@ -181,6 +181,30 @@ describe('GoogleMap', () => {
     expect(mapConstructorSpy.calls.mostRecent()?.args[1].center).toBeTruthy();
   });
 
+  it('should set a default zoom level if the custom options do not provide one', () => {
+    const options = {};
+    mapSpy = createMapSpy(options);
+    mapConstructorSpy = createMapConstructorSpy(mapSpy).and.callThrough();
+
+    const fixture = TestBed.createComponent(TestApp);
+    fixture.componentInstance.options = options;
+    fixture.detectChanges();
+
+    expect(mapConstructorSpy.calls.mostRecent()?.args[1].zoom).toEqual(DEFAULT_OPTIONS.zoom);
+  });
+
+  it('should not set a default zoom level if the custom options provide "zoom: 0"', () => {
+    const options = {zoom: 0};
+    mapSpy = createMapSpy(options);
+    mapConstructorSpy = createMapConstructorSpy(mapSpy).and.callThrough();
+
+    const fixture = TestBed.createComponent(TestApp);
+    fixture.componentInstance.options = options;
+    fixture.detectChanges();
+
+    expect(mapConstructorSpy.calls.mostRecent()?.args[1].zoom).toEqual(0);
+  });
+
   it('gives precedence to center and zoom over options', () => {
     const inputOptions = {center: {lat: 3, lng: 5}, zoom: 7, heading: 170};
     const correctedOptions = {
