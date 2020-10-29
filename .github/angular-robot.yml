@@ -165,6 +165,12 @@ triage:
     -
       - "discussion"
       - "comp: *"
+    -
+      - "needs clarification"
+      - "comp: *"
+    -
+      - "needs reproduction"
+      - "comp: *"
 
 # options for the triage PR plugin
 triagePR:
