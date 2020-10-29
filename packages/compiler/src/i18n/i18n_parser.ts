@@ -203,7 +203,7 @@ class _I18nVisitor implements html.Visitor {
 
 function getOffsetSourceSpan(
     sourceSpan: ParseSourceSpan, {start, end}: {start: number, end: number}): ParseSourceSpan {
-  return new ParseSourceSpan(sourceSpan.start.moveBy(start), sourceSpan.start.moveBy(end));
+  return new ParseSourceSpan(sourceSpan.fullStart.moveBy(start), sourceSpan.fullStart.moveBy(end));
 }
 
 const _CUSTOM_PH_EXP =
