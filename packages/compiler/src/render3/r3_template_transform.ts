@@ -36,6 +36,12 @@ const KW_AT_IDX = 6;
 // Group 7 = the identifier after "bind-", "let-", "ref-/#", "on-", "bindon-" or "@"
 const IDENT_KW_IDX = 7;
 
+const BINDING_DELIMS = {
+  BANANA_BOX: {start: '[(', end: ')]'},
+  PROPERTY: {start: '[', end: ']'},
+  EVENT: {start: '(', end: ')'},
+};
+
 const TEMPLATE_ATTR_PREFIX = '*';
 
 // Result of the html AST to Ivy AST transformation
@@ -376,34 +382,29 @@ class HtmlAstToIvyAst implements html.Visitor {
 
     // We didn't see a kw-prefixed property binding, but we have not yet checked
     // for the []/()/[()] syntax.
-    const DELIMS = {
-      BANANA_BOX: {start: '[(', end: ')]'},
-      PROPERTY: {start: '[', end: ']'},
-      EVENT: {start: '(', end: ')'},
-    };
-    let delims: {start: string, end: string}|undefined;
-    if (name.startsWith(DELIMS.BANANA_BOX.start)) {
-      delims = DELIMS.BANANA_BOX;
-    } else if (name.startsWith(DELIMS.PROPERTY.start)) {
-      delims = DELIMS.PROPERTY;
-    } else if (name.startsWith(DELIMS.EVENT.start)) {
-      delims = DELIMS.EVENT;
+    let delims: {start: string, end: string}|null = null;
+    if (name.startsWith(BINDING_DELIMS.BANANA_BOX.start)) {
+      delims = BINDING_DELIMS.BANANA_BOX;
+    } else if (name.startsWith(BINDING_DELIMS.PROPERTY.start)) {
+      delims = BINDING_DELIMS.PROPERTY;
+    } else if (name.startsWith(BINDING_DELIMS.EVENT.start)) {
+      delims = BINDING_DELIMS.EVENT;
     }
-    if (delims &&
+    if (delims !== null &&
         // NOTE: older versions of the parser would match a start/end delimited
         // binding iff the property name was terminated by the ending delimiter
         // and the identifier in the binding was non-empty.
         // TODO(ayazhafiz): update this to handle malformed bindings.
         name.endsWith(delims.end) && name.length > delims.start.length + delims.end.length) {
       const identifier = name.substring(delims.start.length, name.length - delims.end.length);
-      if (delims.start === DELIMS.BANANA_BOX.start) {
+      if (delims.start === BINDING_DELIMS.BANANA_BOX.start) {
         const keySpan = createKeySpan(srcSpan, delims.start, identifier);
         this.bindingParser.parsePropertyBinding(
             identifier, value, false, srcSpan, absoluteOffset, attribute.valueSpan,
             matchableAttributes, parsedProperties, keySpan);
         this.parseAssignmentEvent(
             identifier, value, srcSpan, attribute.valueSpan, matchableAttributes, boundEvents);
-      } else if (delims.start === DELIMS.PROPERTY.start) {
+      } else if (delims.start === BINDING_DELIMS.PROPERTY.start) {
         const keySpan = createKeySpan(srcSpan, delims.start, identifier);
         this.bindingParser.parsePropertyBinding(
             identifier, value, false, srcSpan, absoluteOffset, attribute.valueSpan,
