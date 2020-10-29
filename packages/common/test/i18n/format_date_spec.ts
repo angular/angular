@@ -95,10 +95,10 @@ describe('Format date', () => {
         yy: '15',
         yyy: '2015',
         yyyy: '2015',
-        r: '2015',
-        rr: '15',
-        rrr: '2015',
-        rrrr: '2015',
+        Y: '2015',
+        YY: '15',
+        YYY: '2015',
+        YYYY: '2015',
         M: '6',
         MM: '06',
         MMM: 'Jun',
@@ -157,10 +157,10 @@ describe('Format date', () => {
         yy: '15',
         yyy: '2015',
         yyyy: '2015',
-        r: '2015',
-        rr: '15',
-        rrr: '2015',
-        rrrr: '2015',
+        Y: '2015',
+        YY: '15',
+        YYY: '2015',
+        YYYY: '2015',
         M: '1',
         MM: '01',
         MMM: 'Jan',
@@ -373,10 +373,10 @@ describe('Format date', () => {
     // https://github.com/angular/angular/issues/38739
     it('should return correct ISO 8601 week-numbering year for dates close to year end/beginning',
        () => {
-         expect(formatDate('2013-12-27', 'rrrr', 'en')).toEqual('2013');
-         expect(formatDate('2013-12-29', 'rrrr', 'en')).toEqual('2014');
-         expect(formatDate('2010-01-02', 'rrrr', 'en')).toEqual('2009');
-         expect(formatDate('2010-01-04', 'rrrr', 'en')).toEqual('2010');
+         expect(formatDate('2013-12-27', 'YYYY', 'en')).toEqual('2013');
+         expect(formatDate('2013-12-29', 'YYYY', 'en')).toEqual('2014');
+         expect(formatDate('2010-01-02', 'YYYY', 'en')).toEqual('2009');
+         expect(formatDate('2010-01-04', 'YYYY', 'en')).toEqual('2010');
        });
   });
 });
