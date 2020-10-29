@@ -2606,6 +2606,235 @@ function buildNgbotParser(localYargs) {
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+/** Loads and validates the merge configuration. */
+function loadAndValidateConfig(config, api) {
+    return tslib.__awaiter(this, void 0, void 0, function () {
+        var mergeConfig, errors;
+        return tslib.__generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    if (config.merge === undefined) {
+                        return [2 /*return*/, { errors: ['No merge configuration found. Set the `merge` configuration.'] }];
+                    }
+                    if (typeof config.merge !== 'function') {
+                        return [2 /*return*/, { errors: ['Expected merge configuration to be defined lazily through a function.'] }];
+                    }
+                    return [4 /*yield*/, config.merge(api)];
+                case 1:
+                    mergeConfig = _a.sent();
+                    errors = validateMergeConfig(mergeConfig);
+                    if (errors.length) {
+                        return [2 /*return*/, { errors: errors }];
+                    }
+                    return [2 /*return*/, { config: mergeConfig }];
+            }
+        });
+    });
+}
+/** Validates the specified configuration. Returns a list of failure messages. */
+function validateMergeConfig(config) {
+    var errors = [];
+    if (!config.labels) {
+        errors.push('No label configuration.');
+    }
+    else if (!Array.isArray(config.labels)) {
+        errors.push('Label configuration needs to be an array.');
+    }
+    if (!config.claSignedLabel) {
+        errors.push('No CLA signed label configured.');
+    }
+    if (!config.mergeReadyLabel) {
+        errors.push('No merge ready label configured.');
+    }
+    if (config.githubApiMerge === undefined) {
+        errors.push('No explicit choice of merge strategy. Please set `githubApiMerge`.');
+    }
+    return errors;
+}
+
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+/** Checks whether the specified value matches the given pattern. */
+function matchesPattern(value, pattern) {
+    return typeof pattern === 'string' ? value === pattern : pattern.test(value);
+}
+
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+/**
+ * Unique error that can be thrown in the merge configuration if an
+ * invalid branch is targeted.
+ */
+var InvalidTargetBranchError = /** @class */ (function () {
+    function InvalidTargetBranchError(failureMessage) {
+        this.failureMessage = failureMessage;
+    }
+    return InvalidTargetBranchError;
+}());
+/**
+ * Unique error that can be thrown in the merge configuration if an
+ * invalid label has been applied to a pull request.
+ */
+var InvalidTargetLabelError = /** @class */ (function () {
+    function InvalidTargetLabelError(failureMessage) {
+        this.failureMessage = failureMessage;
+    }
+    return InvalidTargetLabelError;
+}());
+/** Gets the target label from the specified pull request labels. */
+function getTargetLabelFromPullRequest(config, labels) {
+    var e_1, _a;
+    var _loop_1 = function (label) {
+        var match = config.labels.find(function (_a) {
+            var pattern = _a.pattern;
+            return matchesPattern(label, pattern);
+        });
+        if (match !== undefined) {
+            return { value: match };
+        }
+    };
+    try {
+        for (var labels_1 = tslib.__values(labels), labels_1_1 = labels_1.next(); !labels_1_1.done; labels_1_1 = labels_1.next()) {
+            var label = labels_1_1.value;
+            var state_1 = _loop_1(label);
+            if (typeof state_1 === "object")
+                return state_1.value;
+        }
+    }
+    catch (e_1_1) { e_1 = { error: e_1_1 }; }
+    finally {
+        try {
+            if (labels_1_1 && !labels_1_1.done && (_a = labels_1.return)) _a.call(labels_1);
+        }
+        finally { if (e_1) throw e_1.error; }
+    }
+    return null;
+}
+/**
+ * Gets the branches from the specified target label.
+ *
+ * @throws {InvalidTargetLabelError} Invalid label has been applied to pull request.
+ * @throws {InvalidTargetBranchError} Invalid Github target branch has been selected.
+ */
+function getBranchesFromTargetLabel(label, githubTargetBranch) {
+    return tslib.__awaiter(this, void 0, void 0, function () {
+        var _a;
+        return tslib.__generator(this, function (_b) {
+            switch (_b.label) {
+                case 0:
+                    if (!(typeof label.branches === 'function')) return [3 /*break*/, 2];
+                    return [4 /*yield*/, label.branches(githubTargetBranch)];
+                case 1:
+                    _a = _b.sent();
+                    return [3 /*break*/, 4];
+                case 2: return [4 /*yield*/, label.branches];
+                case 3:
+                    _a = _b.sent();
+                    _b.label = 4;
+                case 4: return [2 /*return*/, _a];
+            }
+        });
+    });
+}
+
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+function checkTargetBranchesForPr(prNumber, jsonOutput = false) {
+    return tslib.__awaiter(this, void 0, void 0, function* () {
+        /** The ng-dev configuration. */
+        const config = getConfig();
+        /** Repo owner and name for the github repository. */
+        const { owner, name: repo } = config.github;
+        /** The git client to get a Github API service instance. */
+        const git = new GitClient(undefined, config);
+        /** The validated merge config. */
+        const { config: mergeConfig, errors } = yield loadAndValidateConfig(config, git.github);
+        if (errors !== undefined) {
+            throw Error(`Invalid configuration found: ${errors}`);
+        }
+        /** The current state of the pull request from Github. */
+        const prData = (yield git.github.pulls.get({ owner, repo, pull_number: prNumber })).data;
+        /** The list of labels on the PR as strings. */
+        const labels = prData.labels.map(l => l.name);
+        /** The branch targetted via the Github UI. */
+        const githubTargetBranch = prData.base.ref;
+        /** The active label which is being used for targetting the PR. */
+        const targetLabel = getTargetLabelFromPullRequest(mergeConfig, labels);
+        if (targetLabel === null) {
+            error(red(`No target label was found on pr #${prNumber}`));
+            process.exitCode = 1;
+            return;
+        }
+        /** The target branches based on the target label and branch targetted in the Github UI. */
+        const targets = yield getBranchesFromTargetLabel(targetLabel, githubTargetBranch);
+        // When requested, print a json output to stdout, rather than using standard ng-dev logging.
+        if (jsonOutput) {
+            process.stdout.write(JSON.stringify(targets));
+            return;
+        }
+        info.group(`PR #${prNumber} will merge into:`);
+        targets.forEach(target => info(`- ${target}`));
+        info.groupEnd();
+    });
+}
+
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+/** Builds the command. */
+function builder$5(yargs) {
+    return yargs
+        .positional('pr', {
+        description: 'The pull request number',
+        type: 'number',
+        demandOption: true,
+    })
+        .option('json', {
+        type: 'boolean',
+        default: false,
+        description: 'Print response as json',
+    });
+}
+/** Handles the command. */
+function handler$5({ pr, json }) {
+    return tslib.__awaiter(this, void 0, void 0, function* () {
+        yield checkTargetBranchesForPr(pr, json);
+    });
+}
+/** yargs command module describing the command.  */
+const CheckTargetBranchesModule = {
+    handler: handler$5,
+    builder: builder$5,
+    command: 'check-target-branches <pr>',
+    describe: 'Check a PR to determine what branches it is currently targeting',
+};
+
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
 /** Get a PR from github  */
 function getPr(prSchema, prNumber, git) {
     return tslib.__awaiter(this, void 0, void 0, function () {
@@ -2799,11 +3028,11 @@ function checkOutPullRequestLocally(prNumber, githubToken, opts = {}) {
  * found in the LICENSE file at https://angular.io/license
  */
 /** Builds the checkout pull request command. */
-function builder$5(yargs) {
+function builder$6(yargs) {
     return addGithubTokenOption(yargs).positional('prNumber', { type: 'number', demandOption: true });
 }
 /** Handles the checkout pull request command. */
-function handler$5({ prNumber, githubToken }) {
+function handler$6({ prNumber, githubToken }) {
     return tslib.__awaiter(this, void 0, void 0, function* () {
         const prCheckoutOptions = { allowIfMaintainerCannotModify: true, branchName: `pr-${prNumber}` };
         yield checkOutPullRequestLocally(prNumber, githubToken, prCheckoutOptions);
@@ -2811,8 +3040,8 @@ function handler$5({ prNumber, githubToken }) {
 }
 /** yargs command module for checking out a PR  */
 const CheckoutCommandModule = {
-    handler: handler$5,
-    builder: builder$5,
+    handler: handler$6,
+    builder: builder$6,
     command: 'checkout <pr-number>',
     describe: 'Checkout a PR from the upstream repo',
 };
@@ -2992,59 +3221,6 @@ function getThirtyDaysAgoDate() {
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-/** Loads and validates the merge configuration. */
-function loadAndValidateConfig(config, api) {
-    return tslib.__awaiter(this, void 0, void 0, function () {
-        var mergeConfig, errors;
-        return tslib.__generator(this, function (_a) {
-            switch (_a.label) {
-                case 0:
-                    if (config.merge === undefined) {
-                        return [2 /*return*/, { errors: ['No merge configuration found. Set the `merge` configuration.'] }];
-                    }
-                    if (typeof config.merge !== 'function') {
-                        return [2 /*return*/, { errors: ['Expected merge configuration to be defined lazily through a function.'] }];
-                    }
-                    return [4 /*yield*/, config.merge(api)];
-                case 1:
-                    mergeConfig = _a.sent();
-                    errors = validateMergeConfig(mergeConfig);
-                    if (errors.length) {
-                        return [2 /*return*/, { errors: errors }];
-                    }
-                    return [2 /*return*/, { config: mergeConfig }];
-            }
-        });
-    });
-}
-/** Validates the specified configuration. Returns a list of failure messages. */
-function validateMergeConfig(config) {
-    var errors = [];
-    if (!config.labels) {
-        errors.push('No label configuration.');
-    }
-    else if (!Array.isArray(config.labels)) {
-        errors.push('Label configuration needs to be an array.');
-    }
-    if (!config.claSignedLabel) {
-        errors.push('No CLA signed label configured.');
-    }
-    if (!config.mergeReadyLabel) {
-        errors.push('No merge ready label configured.');
-    }
-    if (config.githubApiMerge === undefined) {
-        errors.push('No explicit choice of merge strategy. Please set `githubApiMerge`.');
-    }
-    return errors;
-}
-
-/**
- * @license
- * Copyright Google LLC All Rights Reserved.
- *
- * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
- */
 /**
  * Class that can be used to describe pull request failures. A failure
  * is described through a human-readable message and a flag indicating
@@ -3119,101 +3295,6 @@ function getCaretakerNotePromptMessage(pullRequest) {
 function getTargettedBranchesConfirmationPromptMessage(pullRequest) {
     var targetBranchListAsString = pullRequest.targetBranches.map(function (b) { return " - " + b + "\n"; }).join('');
     return "Pull request #" + pullRequest.prNumber + " will merge into:\n" + targetBranchListAsString + "\nDo you want to proceed merging?";
-}
-
-/**
- * @license
- * Copyright Google LLC All Rights Reserved.
- *
- * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
- */
-/** Checks whether the specified value matches the given pattern. */
-function matchesPattern(value, pattern) {
-    return typeof pattern === 'string' ? value === pattern : pattern.test(value);
-}
-
-/**
- * @license
- * Copyright Google LLC All Rights Reserved.
- *
- * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
- */
-/**
- * Unique error that can be thrown in the merge configuration if an
- * invalid branch is targeted.
- */
-var InvalidTargetBranchError = /** @class */ (function () {
-    function InvalidTargetBranchError(failureMessage) {
-        this.failureMessage = failureMessage;
-    }
-    return InvalidTargetBranchError;
-}());
-/**
- * Unique error that can be thrown in the merge configuration if an
- * invalid label has been applied to a pull request.
- */
-var InvalidTargetLabelError = /** @class */ (function () {
-    function InvalidTargetLabelError(failureMessage) {
-        this.failureMessage = failureMessage;
-    }
-    return InvalidTargetLabelError;
-}());
-/** Gets the target label from the specified pull request labels. */
-function getTargetLabelFromPullRequest(config, labels) {
-    var e_1, _a;
-    var _loop_1 = function (label) {
-        var match = config.labels.find(function (_a) {
-            var pattern = _a.pattern;
-            return matchesPattern(label, pattern);
-        });
-        if (match !== undefined) {
-            return { value: match };
-        }
-    };
-    try {
-        for (var labels_1 = tslib.__values(labels), labels_1_1 = labels_1.next(); !labels_1_1.done; labels_1_1 = labels_1.next()) {
-            var label = labels_1_1.value;
-            var state_1 = _loop_1(label);
-            if (typeof state_1 === "object")
-                return state_1.value;
-        }
-    }
-    catch (e_1_1) { e_1 = { error: e_1_1 }; }
-    finally {
-        try {
-            if (labels_1_1 && !labels_1_1.done && (_a = labels_1.return)) _a.call(labels_1);
-        }
-        finally { if (e_1) throw e_1.error; }
-    }
-    return null;
-}
-/**
- * Gets the branches from the specified target label.
- *
- * @throws {InvalidTargetLabelError} Invalid label has been applied to pull request.
- * @throws {InvalidTargetBranchError} Invalid Github target branch has been selected.
- */
-function getBranchesFromTargetLabel(label, githubTargetBranch) {
-    return tslib.__awaiter(this, void 0, void 0, function () {
-        var _a;
-        return tslib.__generator(this, function (_b) {
-            switch (_b.label) {
-                case 0:
-                    if (!(typeof label.branches === 'function')) return [3 /*break*/, 2];
-                    return [4 /*yield*/, label.branches(githubTargetBranch)];
-                case 1:
-                    _a = _b.sent();
-                    return [3 /*break*/, 4];
-                case 2: return [4 /*yield*/, label.branches];
-                case 3:
-                    _a = _b.sent();
-                    _b.label = 4;
-                case 4: return [2 /*return*/, _a];
-            }
-        });
-    });
 }
 
 /**
@@ -4251,7 +4332,8 @@ function buildPrParser(localYargs) {
         .command('merge <pr-number>', 'Merge pull requests', buildMergeCommand, handleMergeCommand)
         .command('discover-new-conflicts <pr-number>', 'Check if a pending PR causes new conflicts for other pending PRs', buildDiscoverNewConflictsCommand, handleDiscoverNewConflictsCommand)
         .command('rebase <pr-number>', 'Rebase a pending PR and push the rebased commits back to Github', buildRebaseCommand, handleRebaseCommand)
-        .command(CheckoutCommandModule);
+        .command(CheckoutCommandModule)
+        .command(CheckTargetBranchesModule);
 }
 
 /**
@@ -4718,7 +4800,7 @@ function buildReleaseOutput() {
  * found in the LICENSE file at https://angular.io/license
  */
 /** Yargs command builder for configuring the `ng-dev release build` command. */
-function builder$6(argv) {
+function builder$7(argv) {
     return argv.option('json', {
         type: 'boolean',
         description: 'Whether the built packages should be printed to stdout as JSON.',
@@ -4726,7 +4808,7 @@ function builder$6(argv) {
     });
 }
 /** Yargs command handler for building a release. */
-function handler$6(args) {
+function handler$7(args) {
     return tslib.__awaiter(this, void 0, void 0, function* () {
         const { npmPackages } = getReleaseConfig();
         let builtPackages = yield buildReleaseOutput();
@@ -4761,8 +4843,8 @@ function handler$6(args) {
 }
 /** CLI command module for building release output. */
 const ReleaseBuildCommandModule = {
-    builder: builder$6,
-    handler: handler$6,
+    builder: builder$7,
+    handler: handler$7,
     command: 'build',
     describe: 'Builds the release output for the current branch.',
 };
@@ -6217,11 +6299,11 @@ class ReleaseTool {
  * found in the LICENSE file at https://angular.io/license
  */
 /** Yargs command builder for configuring the `ng-dev release publish` command. */
-function builder$7(argv) {
+function builder$8(argv) {
     return addGithubTokenOption(argv);
 }
 /** Yargs command handler for staging a release. */
-function handler$7(args) {
+function handler$8(args) {
     return tslib.__awaiter(this, void 0, void 0, function* () {
         const config = getConfig();
         const releaseConfig = getReleaseConfig(config);
@@ -6244,8 +6326,8 @@ function handler$7(args) {
 }
 /** CLI command module for publishing a release. */
 const ReleasePublishCommandModule = {
-    builder: builder$7,
-    handler: handler$7,
+    builder: builder$8,
+    handler: handler$8,
     command: 'publish',
     describe: 'Publish new releases and configure version branches.',
 };
@@ -6257,7 +6339,7 @@ const ReleasePublishCommandModule = {
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-function builder$8(args) {
+function builder$9(args) {
     return args
         .positional('tagName', {
         type: 'string',
@@ -6271,7 +6353,7 @@ function builder$8(args) {
     });
 }
 /** Yargs command handler for building a release. */
-function handler$8(args) {
+function handler$9(args) {
     return tslib.__awaiter(this, void 0, void 0, function* () {
         const { targetVersion: rawVersion, tagName } = args;
         const { npmPackages, publishRegistry } = getReleaseConfig();
@@ -6303,8 +6385,8 @@ function handler$8(args) {
 }
 /** CLI command module for setting an NPM dist tag. */
 const ReleaseSetDistTagCommand = {
-    builder: builder$8,
-    handler: handler$8,
+    builder: builder$9,
+    handler: handler$9,
     command: 'set-dist-tag <tag-name> <target-version>',
     describe: 'Sets a given NPM dist tag for all release packages.',
 };
