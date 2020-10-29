@@ -6,6 +6,7 @@ ts_library(
     module_name = "@angular/dev-infra-private/pr",
     visibility = ["//dev-infra:__subpackages__"],
     deps = [
+        "//dev-infra/pr/check-target-branches",
         "//dev-infra/pr/checkout",
         "//dev-infra/pr/discover-new-conflicts",
         "//dev-infra/pr/merge",

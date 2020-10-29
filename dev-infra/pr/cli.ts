@@ -8,6 +8,7 @@
 
 import * as yargs from 'yargs';
 
+import {CheckTargetBranchesModule} from './check-target-branches/cli';
 import {CheckoutCommandModule} from './checkout/cli';
 import {buildDiscoverNewConflictsCommand, handleDiscoverNewConflictsCommand} from './discover-new-conflicts/cli';
 import {buildMergeCommand, handleMergeCommand} from './merge/cli';
@@ -26,5 +27,6 @@ export function buildPrParser(localYargs: yargs.Argv) {
       .command(
           'rebase <pr-number>', 'Rebase a pending PR and push the rebased commits back to Github',
           buildRebaseCommand, handleRebaseCommand)
-      .command(CheckoutCommandModule);
+      .command(CheckoutCommandModule)
+      .command(CheckTargetBranchesModule);
 }
