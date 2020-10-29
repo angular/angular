@@ -12,8 +12,8 @@
     "master": {
       "uncompressed": {
         "runtime-es2015": 1485,
-        "main-es2015": 17308,
-        "polyfills-es2015": 36789
+        "main-es2015": 17210,
+        "polyfills-es2015": 36709
       }
     }
   },
@@ -38,20 +38,20 @@
   "cli-hello-world-lazy": {
     "master": {
       "uncompressed": {
-        "runtime-es2015": 2289,
-        "main-es2015": 242687,
-        "polyfills-es2015": 36789,
-        "5-es2015": 747
+        "runtime-es2015": 2285,
+        "main-es2015": 241875,
+        "polyfills-es2015": 36709,
+        "5-es2015": 745
       }
     }
   },
   "cli-hello-world-lazy-rollup": {
     "master": {
       "uncompressed": {
-        "runtime-es2015": 2289,
-        "main-es2015": 222611,
-        "polyfills-es2015": 36789,
-        "5-es2015": 779
+        "runtime-es2015": 2285,
+        "main-es2015": 218340,
+        "polyfills-es2015": 36709,
+        "5-es2015": 777
       }
     }
   },
