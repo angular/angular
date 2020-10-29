@@ -663,7 +663,8 @@ export interface TView {
    * instance can be found in `LView`) and hook functions. TNode index is followed by the directive
    * index and a hook function. If there are multiple hooks for a given TNode, the TNode index is
    * not repeated and the next lifecycle hook information is stored right after the previous hook
-   * function.
+   * function. This is done so that at runtime the system can efficiently iterate over all of the
+   * functions to invoke without having to make any decisions/lookups.
    */
   preOrderHooks: HookData|null;
 
