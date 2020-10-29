@@ -7,7 +7,7 @@ jobs:
   build:
     docker:
       # specify the version you desire here
-      - image: circleci/node:13.12-browsers
+      - image: circleci/node:14.15.1-browsers
 
     working_directory: ~/repo
 
@@ -45,7 +45,7 @@ jobs:
       - run:
           name: 'Run Cypress tests'
           command: yarn cy:ci
-          no_output_timeout: '5m'
+          no_output_timeout: '10m'
 
     artifacts:
       when: always
