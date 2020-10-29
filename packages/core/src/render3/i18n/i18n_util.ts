@@ -137,3 +137,15 @@ export function icuCreateOpCode(opCode: IcuCreateOpCode, parentIdx: number, refI
   ngDevMode && assertGreaterThan(refIdx, 0, 'Missing ref index');
   return opCode | parentIdx << IcuCreateOpCode.SHIFT_PARENT | refIdx << IcuCreateOpCode.SHIFT_REF;
 }
+
+/**
+ * Angular Dart introduced &ngsp; as a placeholder for non-removable space, see:
+ * https://github.com/dart-lang/angular/blob/0bb611387d29d65b5af7f9d2515ab571fd3fbee4/_tests/test/compiler/preserve_whitespace_test.dart#L25-L32
+ * In Angular Dart &ngsp; is converted to the 0xE500 PUA (Private Use Areas) unicode character
+ * and later on replaced by a space. We are re-implementing the same idea here, since translations
+ * might contain this special character.
+ */
+const NGSP_UNICODE_REGEXP = /\uE500/g;
+export function replaceNgsp(value: string): string {
+  return value.replace(NGSP_UNICODE_REGEXP, ' ');
+}

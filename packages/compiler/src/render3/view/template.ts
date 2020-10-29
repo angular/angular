@@ -225,7 +225,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
          !(isSingleElementTemplate(nodes) && nodes[0].i18n === i18n));
     const selfClosingI18nInstruction = hasTextChildrenOnly(nodes);
     if (initI18nContext) {
-      this.i18nStart(null, i18n!, selfClosingI18nInstruction);
+      this.i18nStart(null, i18n!, selfClosingI18nInstruction, hasStaticTextOnly(nodes));
     }
 
     // This is the initial pass through the nodes of this template. In this pass, we
@@ -442,25 +442,38 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     }
   }
 
-  private i18nStart(span: ParseSourceSpan|null = null, meta: i18n.I18nMeta, selfClosing?: boolean):
-      void {
+  private i18nStart(
+      span: ParseSourceSpan|null = null, meta: i18n.I18nMeta, selfClosing: boolean,
+      staticTextOnly: boolean): void {
     const index = this.allocateDataSlot();
     this.i18n = this.i18nContext ?
         this.i18nContext.forkChildContext(index, this.templateIndex!, meta) :
         new I18nContext(index, this.i18nGenerateMainBlockVar(), 0, this.templateIndex, meta);
 
-    // generate i18nStart instruction
+    // Generate i18n instruction.
     const {id, ref} = this.i18n;
     const params: o.Expression[] = [o.literal(index), this.addToConsts(ref)];
-    if (id > 0) {
-      // do not push 3rd argument (sub-block id)
-      // into i18nStart call for top level i18n context
+
+    // Whether this i18n block is a nested one.
+    // (e.g. <div i18n><span *ngIf>Text</span></div>)
+    const isSubTemplate = id > 0;
+
+    if (isSubTemplate) {
+      // Do not push 3rd argument (sub-block id)
+      // into i18n instruction call for top level i18n context.
       params.push(o.literal(id));
     }
-    this.creationInstruction(span, selfClosing ? R3.i18n : R3.i18nStart, params);
+
+    // We can only generate `i18nStaticText` instruction for top level blocks (since some additional
+    // processing is needed at runtime to parse and retrieve sub-template). If the content is
+    // static, but it's inside a template (e.g. <div i18n><span *ngIf="...">Text</span></div>), fall
+    // back to regular i18n/i18nStart instructions.
+    const instructionFn = staticTextOnly && !isSubTemplate ? R3.i18nStaticText :
+                                                             (selfClosing ? R3.i18n : R3.i18nStart);
+    this.creationInstruction(span, instructionFn, params);
   }
 
-  private i18nEnd(span: ParseSourceSpan|null = null, selfClosing?: boolean): void {
+  private i18nEnd(span: ParseSourceSpan|null = null, selfClosing: boolean): void {
     if (!this.i18n) {
       throw new Error('i18nEnd is executed with no i18n context present');
     }
@@ -697,7 +710,9 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       // Note: it's important to keep i18n/i18nStart instructions after i18nAttributes and
       // listeners, to make sure i18nAttributes instruction targets current element at runtime.
       if (isI18nRootElement) {
-        this.i18nStart(element.startSourceSpan, element.i18n!, createSelfClosingI18nInstruction);
+        this.i18nStart(
+            element.startSourceSpan, element.i18n!, createSelfClosingI18nInstruction,
+            hasStaticTextOnly(element.children));
       }
     }
 
@@ -996,7 +1011,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     // to generate i18n context and the necessary instructions
     if (!this.i18n) {
       initWasInvoked = true;
-      this.i18nStart(null, icu.i18n!, true);
+      this.i18nStart(null, icu.i18n!, /* selfClosing */ true, /* staticTextOnly */ false);
     }
 
     const i18n = this.i18n!;
@@ -1032,7 +1047,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     }
 
     if (initWasInvoked) {
-      this.i18nEnd(null, true);
+      this.i18nEnd(null, /* selfClosing */ true);
     }
     return null;
   }
@@ -2154,6 +2169,10 @@ function isTextNode(node: t.Node): boolean {
 
 function hasTextChildrenOnly(children: t.Node[]): boolean {
   return children.every(isTextNode);
+}
+
+function hasStaticTextOnly(children: t.Node[]): boolean {
+  return children.length === 1 && children[0] instanceof t.Text;
 }
 
 interface ChainableBindingInstruction {

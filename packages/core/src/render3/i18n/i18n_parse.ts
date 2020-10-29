@@ -26,7 +26,7 @@ import {attachDebugGetter} from '../util/debug_utils';
 import {i18nCreateOpCodesToString, i18nRemoveOpCodesToString, i18nUpdateOpCodesToString, icuCreateOpCodesToString} from './i18n_debug';
 import {addTNodeAndUpdateInsertBeforeIndex} from './i18n_insert_before_index';
 import {ensureIcuContainerVisitorLoaded} from './i18n_tree_shaking';
-import {createTNodePlaceholder, icuCreateOpCode, setTIcu, setTNodeInsertBeforeIndex} from './i18n_util';
+import {createTNodePlaceholder, icuCreateOpCode, replaceNgsp, setTIcu, setTNodeInsertBeforeIndex} from './i18n_util';
 
 
 
@@ -38,18 +38,6 @@ const ICU_BLOCK_REGEXP = /^\s*(�\d+:?\d*�)\s*,\s*(select|plural)\s*,/;
 const MARKER = `�`;
 const SUBTEMPLATE_REGEXP = /�\/?\*(\d+:\d+)�/gi;
 const PH_REGEXP = /�(\/?[#*]\d+):?\d*�/gi;
-
-/**
- * Angular Dart introduced &ngsp; as a placeholder for non-removable space, see:
- * https://github.com/dart-lang/angular/blob/0bb611387d29d65b5af7f9d2515ab571fd3fbee4/_tests/test/compiler/preserve_whitespace_test.dart#L25-L32
- * In Angular Dart &ngsp; is converted to the 0xE500 PUA (Private Use Areas) unicode character
- * and later on replaced by a space. We are re-implementing the same idea here, since translations
- * might contain this special character.
- */
-const NGSP_UNICODE_REGEXP = /\uE500/g;
-function replaceNgsp(value: string): string {
-  return value.replace(NGSP_UNICODE_REGEXP, ' ');
-}
 
 /**
  * Create dynamic nodes from i18n translation block.

@@ -13,12 +13,15 @@ import {bindingUpdated} from '../bindings';
 import {applyCreateOpCodes, applyI18n, setMaskBit} from '../i18n/i18n_apply';
 import {i18nAttributesFirstPass, i18nStartFirstCreatePass} from '../i18n/i18n_parse';
 import {i18nPostprocess} from '../i18n/i18n_postprocess';
+import {replaceNgsp} from '../i18n/i18n_util';
 import {TI18n} from '../interfaces/i18n';
 import {TElementNode, TNodeType} from '../interfaces/node';
 import {HEADER_OFFSET, T_HOST} from '../interfaces/view';
 import {getClosestRElement} from '../node_manipulation';
 import {getCurrentParentTNode, getLView, getTView, nextBindingIndex, setInI18nBlock} from '../state';
 import {getConstant} from '../util/view_utils';
+
+import {ɵɵtext} from './text';
 
 /**
  * Marks a block of text as translatable.
@@ -70,8 +73,6 @@ export function ɵɵi18nStart(
   setInI18nBlock(true);
 }
 
-
-
 /**
  * Translates a translation block marked by `i18nStart` and `i18nEnd`. It inserts the text/ICU nodes
  * into the render tree, moves the placeholder nodes and removes the deleted nodes.
@@ -111,6 +112,28 @@ export function ɵɵi18nEnd(): void {
 export function ɵɵi18n(index: number, messageIndex: number, subTemplateIndex?: number): void {
   ɵɵi18nStart(index, messageIndex, subTemplateIndex);
   ɵɵi18nEnd();
+}
+
+/**
+ *
+ * Use this instruction to create a translation block that doesn't contain any placeholder.
+ * It calls both {@link i18nStart} and {@link i18nEnd} in one instruction.
+ *
+ * The translation `message` is the value which is locale specific. The translation string may
+ * contain placeholders which associate inner elements and sub-templates within the translation.
+ *
+ * @param index A unique index of the translation in the static block.
+ * @param messageIndex An index of the translation message from the `def.consts` array.
+ *
+ * @codeGenApi
+ */
+export function ɵɵi18nStaticText(index: number, messageIndex: number): void {
+  const tView = getTView();
+  ngDevMode && assertDefined(tView, `tView should be defined`);
+  const message = getConstant<string>(tView.consts, messageIndex)!;
+  // Static text in i18n block can be rendered as a regular static text,
+  // thus we reuse existing `ɵɵtext` instruction.
+  ɵɵtext(index, replaceNgsp(message));
 }
 
 /**

@@ -152,6 +152,7 @@ export {
   ɵɵi18nExp,
   ɵɵi18nPostprocess,
   ɵɵi18nStart,
+  ɵɵi18nStaticText,
   ɵɵInheritDefinitionFeature,
   ɵɵinjectAttribute,
   ɵɵinjectPipeChangeDetectorRef,

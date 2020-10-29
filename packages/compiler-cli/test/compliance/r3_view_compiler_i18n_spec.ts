@@ -365,7 +365,7 @@ describe('i18n support in the template compiler', () => {
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵelementStart(0, "div");
-            $r3$.ɵɵi18n(1, 0);
+            $r3$.ɵɵi18nStaticText(1, 0);
             $r3$.ɵɵelementEnd();
             $r3$.ɵɵelementStart(2, "div", 1);
             $r3$.ɵɵtext(3, "Content B");
@@ -386,7 +386,7 @@ describe('i18n support in the template compiler', () => {
             $r3$.ɵɵtext(13, "Content G");
             $r3$.ɵɵelementEnd();
             $r3$.ɵɵelementStart(14, "div");
-            $r3$.ɵɵi18n(15, 7);
+            $r3$.ɵɵi18nStaticText(15, 7);
             $r3$.ɵɵelementEnd();
           }
         }
@@ -855,7 +855,7 @@ describe('i18n support in the template compiler', () => {
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵelementStart(0, "div", 0);
-            $r3$.ɵɵi18n(1, 1);
+            $r3$.ɵɵi18nStaticText(1, 1);
             $r3$.ɵɵelementEnd();
           }
         }
@@ -997,19 +997,19 @@ describe('i18n support in the template compiler', () => {
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵelementStart(0, "div");
-            $r3$.ɵɵi18n(1, 0);
+            $r3$.ɵɵi18nStaticText(1, 0);
             $r3$.ɵɵelementEnd();
             $r3$.ɵɵelementStart(2, "div");
             $r3$.ɵɵtext(3, "My non-i18n block #1");
             $r3$.ɵɵelementEnd();
             $r3$.ɵɵelementStart(4, "div");
-            $r3$.ɵɵi18n(5, 1);
+            $r3$.ɵɵi18nStaticText(5, 1);
             $r3$.ɵɵelementEnd();
             $r3$.ɵɵelementStart(6, "div");
             $r3$.ɵɵtext(7, "My non-i18n block #2");
             $r3$.ɵɵelementEnd();
             $r3$.ɵɵelementStart(8, "div");
-            $r3$.ɵɵi18n(9, 2);
+            $r3$.ɵɵi18nStaticText(9, 2);
             $r3$.ɵɵelementEnd();
           }
         }
@@ -1695,7 +1695,7 @@ describe('i18n support in the template compiler', () => {
           if (rf & 1) {
             $r3$.ɵɵelementStart(0, "div", 0);
             $r3$.ɵɵlistener("click", function MyComponent_Template_div_click_0_listener() { return ctx.onClick(); });
-            $r3$.ɵɵi18n(1, 1);
+            $r3$.ɵɵi18nStaticText(1, 1);
             $r3$.ɵɵelementEnd();
           }
         }
@@ -1723,7 +1723,7 @@ describe('i18n support in the template compiler', () => {
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵelementStart(0, "div");
-            $r3$.ɵɵi18n(1, 0);
+            $r3$.ɵɵi18nStaticText(1, 0);
             $r3$.ɵɵelementEnd();
           }
         }
@@ -1779,7 +1779,7 @@ describe('i18n support in the template compiler', () => {
       const output = String.raw`
         function MyComponent_ng_template_0_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵɵi18n(0, 1);
+            $r3$.ɵɵi18nStaticText(0, 1);
           }
         }
         …
@@ -1795,7 +1795,7 @@ describe('i18n support in the template compiler', () => {
           if (rf & 1) {
             $r3$.ɵɵtemplate(0, MyComponent_ng_template_0_Template, 1, 0, "ng-template");
             $r3$.ɵɵelementContainerStart(1);
-            $r3$.ɵɵi18n(2, 0);
+            $r3$.ɵɵi18nStaticText(2, 0);
             $r3$.ɵɵelementContainerEnd();
           }
         }
@@ -1829,10 +1829,10 @@ describe('i18n support in the template compiler', () => {
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵelementStart(0, "span", 0);
-            $r3$.ɵɵi18n(1, 1);
+            $r3$.ɵɵi18nStaticText(1, 1);
             $r3$.ɵɵelementEnd();
             $r3$.ɵɵelementStart(2, "span", 2);
-            $r3$.ɵɵi18n(3, 3);
+            $r3$.ɵɵi18nStaticText(3, 3);
             $r3$.ɵɵelementEnd();
           }
         }
@@ -1843,6 +1843,47 @@ describe('i18n support in the template compiler', () => {
   });
 
   describe('ng-container and ng-template', () => {
+    it('should not produce i18nStaticText instruction for static content inside nested templates',
+       () => {
+         const input = `
+            <ng-container i18n>Top level<ng-template>Nested static text</ng-template></ng-container>
+          `;
+
+         const i18n_0 =
+             i18nMsg('Top level{$startTagNgTemplate}Nested static text{$closeTagNgTemplate}', [
+               ['startTagNgTemplate', String.raw`\uFFFD*2:1\uFFFD`],
+               ['closeTagNgTemplate', String.raw`\uFFFD/*2:1\uFFFD`]
+             ]);
+
+         const output = String.raw`
+            function MyComponent_ng_template_2_Template(rf, ctx) {
+              if (rf & 1) {
+                $r3$.ɵɵi18n(0, 0, 1);
+              }
+            }
+            …
+            decls: 3,
+            vars: 0,
+            consts: function() {
+              ${i18n_0}
+              return [
+                $i18n_0$
+              ];
+            },
+            template: function MyComponent_Template(rf, ctx) {
+              if (rf & 1) {
+                $r3$.ɵɵelementContainerStart(0);
+                $r3$.ɵɵi18nStart(1, 0);
+                $r3$.ɵɵtemplate(2, MyComponent_ng_template_2_Template, 1, 0, "ng-template");
+                $r3$.ɵɵi18nEnd();
+                $r3$.ɵɵelementContainerEnd();
+              }
+            }
+          `;
+
+         verify(input, output);
+       });
+
     it('should handle single translation message using <ng-container>', () => {
       const input = `
         <ng-container i18n>Some content: {{ valueA | uppercase }}</ng-container>
@@ -2352,7 +2393,7 @@ describe('i18n support in the template compiler', () => {
       const output = String.raw`
         function MyComponent_0_ng_template_0_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵɵi18n(0, 1);
+            $r3$.ɵɵi18nStaticText(0, 1);
           }
         }
         function MyComponent_0_Template(rf, ctx) {
@@ -2364,7 +2405,7 @@ describe('i18n support in the template compiler', () => {
         function MyComponent_ng_container_1_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵelementContainerStart(0);
-            $r3$.ɵɵi18n(1, 2);
+            $r3$.ɵɵi18nStaticText(1, 2);
             $r3$.ɵɵelementContainerEnd();
           }
         }

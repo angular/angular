@@ -154,6 +154,7 @@ export const angularCoreEnv: {[name: string]: Function} =
        'ɵɵi18nEnd': r3.ɵɵi18nEnd,
        'ɵɵi18nApply': r3.ɵɵi18nApply,
        'ɵɵi18nPostprocess': r3.ɵɵi18nPostprocess,
+       'ɵɵi18nStaticText': r3.ɵɵi18nStaticText,
        'ɵɵresolveWindow': r3.ɵɵresolveWindow,
        'ɵɵresolveDocument': r3.ɵɵresolveDocument,
        'ɵɵresolveBody': r3.ɵɵresolveBody,

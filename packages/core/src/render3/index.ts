@@ -127,7 +127,7 @@ export {
   ɵɵtextInterpolate8,
   ɵɵtextInterpolateV,
 } from './instructions/all';
-export {ɵɵi18n, ɵɵi18nApply, ɵɵi18nAttributes, ɵɵi18nEnd, ɵɵi18nExp,ɵɵi18nPostprocess, ɵɵi18nStart} from './instructions/i18n';
+export {ɵɵi18n, ɵɵi18nApply, ɵɵi18nAttributes, ɵɵi18nEnd, ɵɵi18nExp,ɵɵi18nPostprocess, ɵɵi18nStart, ɵɵi18nStaticText} from './instructions/i18n';
 export {RenderFlags} from './interfaces/definition';
 export {
   AttributeMarker
