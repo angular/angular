@@ -55,7 +55,7 @@ const EVENT_BINDING_SCOPE_GLOBALS = new Set<string>(['$event']);
 const GLOBAL_TARGET_RESOLVERS = new Map<string, o.ExternalReference>(
     [['window', R3.resolveWindow], ['document', R3.resolveDocument], ['body', R3.resolveBody]]);
 
-const LEADING_TRIVIA_CHARS = [' ', '\n', '\r', '\t'];
+export const LEADING_TRIVIA_CHARS = [' ', '\n', '\r', '\t'];
 
 //  if (rf & flags) { .. }
 export function renderFlagCheckIfStmt(
