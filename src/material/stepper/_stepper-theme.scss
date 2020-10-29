@@ -134,7 +134,7 @@
   }
 }
 
-@mixin _mat-stepper-density($config-or-theme) {
+@mixin mat-stepper-density($config-or-theme) {
   $density-scale: mat-get-density-config($config-or-theme);
   $height: _mat-density-prop-value($mat-stepper-density-config, $density-scale, height);
   $vertical-padding: ($height - $mat-stepper-label-header-height) / 2;
@@ -181,7 +181,7 @@
       @include mat-stepper-color($color);
     }
     @if $density != null {
-      @include _mat-stepper-density($density);
+      @include mat-stepper-density($density);
     }
     @if $typography != null {
       @include mat-stepper-typography($typography);

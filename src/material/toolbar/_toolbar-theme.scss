@@ -82,7 +82,7 @@
   }
 }
 
-@mixin _mat-toolbar-density($config-or-theme) {
+@mixin mat-toolbar-density($config-or-theme) {
   $density-scale: mat-get-density-config($config-or-theme);
   $height-desktop: _mat-density-prop-value(
       $mat-toolbar-desktop-density-config, $density-scale, height);
@@ -113,7 +113,7 @@
       @include mat-toolbar-color($color);
     }
     @if $density != null {
-      @include _mat-toolbar-density($density);
+      @include mat-toolbar-density($density);
     }
     @if $typography != null {
       @include mat-toolbar-typography($typography);

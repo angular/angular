@@ -104,6 +104,7 @@ export const commitMessage: CommitMessageConfig = {
     'material/table',
     'material/tabs',
     'material/testing',
+    'material/theming',
     'material/toolbar',
     'material/tooltip',
     'material/tree',
