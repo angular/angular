@@ -260,4 +260,37 @@ describe('invalid interpolation migration', () => {
       {{ '{{' }} 1 + 2 {{ '}' }}
     `);
   });
+
+  it('should correctly fix invalid interpolations in external templates shared between components',
+     async () => {
+       writeFile('/index.ts', `
+         import {Component} from '@angular/core';
+
+         @Component({
+           templateUrl: './template.html',
+         })
+         class Test {}
+       `);
+       writeFile('/index2.ts', `
+         import {Component} from '@angular/core';
+
+         @Component({
+           templateUrl: './template.html',
+         })
+         class Test2 {}
+       `);
+       writeFile('/template.html', `
+         <span>{{ 'Hello' }}</span>
+         {{ 1 + 2 }<!---->}
+         {{ 1 + 2 }
+       `);
+
+       await runMigration();
+
+       expect(tree.readContent('/template.html')).toBe(`
+         <span>{{ 'Hello' }}</span>
+         {{ '{{' }} 1 + 2 {{ '}}' }}
+         {{ '{{' }} 1 + 2 {{ '}' }}
+       `);
+     });
 });

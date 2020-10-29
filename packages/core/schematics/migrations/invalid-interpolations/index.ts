@@ -123,7 +123,13 @@ function getFixesByFile(templates: ResolvedTemplate[]): Map<string, FixedTemplat
 
     const file = template.filePath;
     if (fixesByFile.has(file)) {
-      fixesByFile.get(file)!.push(templateFix);
+      if (template.inline) {
+        // External templates may be referenced multiple times in the project
+        // (e.g. if shared between components), but we only want to record them
+        // once. On the other hand, an inline template resides in a TS file that
+        // may contain multiple inline templates.
+        fixesByFile.get(file)!.push(templateFix);
+      }
     } else {
       fixesByFile.set(file, [templateFix]);
     }
