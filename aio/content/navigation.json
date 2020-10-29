@@ -694,6 +694,136 @@
       ]
     },
     {
+      "title": "Tutorials",
+      "tooltip": "End-to-end tutorials for learning Angular concepts and patterns.",
+      "children": [
+        {
+          "title": "Try it",
+          "tooltip": "Examine and work with a ready-made sample app, with no setup.",
+          "children": [
+            {
+              "url": "start",
+              "title": "Getting started",
+              "tooltip": "Take a look at Angular's component model, template syntax, and component communication."
+            },
+            {
+              "url": "start/start-routing",
+              "title": "Adding navigation",
+              "tooltip": "Navigate among different page views using the browser's URL."
+            },
+            {
+              "url": "start/start-data",
+              "title": "Managing Data",
+              "tooltip": "Use services and access external data via HTTP."
+            },
+            {
+              "url": "start/start-forms",
+              "title": "Using Forms for User Input",
+              "tooltip": "Learn about fetching and managing data from users with forms."
+            },
+            {
+              "url": "start/start-deployment",
+              "title": "Deploying an application",
+              "tooltip": "Move to local development, or deploy your application to Firebase or your own server."
+            }
+          ]
+      },
+        {
+          "title": "Tutorial: Tour of Heroes",
+          "tooltip": "The Tour of Heroes app is used as a reference point in many Angular examples.",
+          "children": [
+            {
+              "url": "tutorial",
+              "title": "Introduction",
+              "tooltip": "Introduction to the Tour of Heroes app and tutorial"
+            },
+            {
+              "url": "tutorial/toh-pt0",
+              "title": "Create a Project",
+              "tooltip": "Creating the application shell"
+            },
+            {
+              "url": "tutorial/toh-pt1",
+              "title": "1. The Hero Editor",
+              "tooltip": "Part 1: Build a simple editor"
+            },
+            {
+              "url": "tutorial/toh-pt2",
+              "title": "2. Display a List",
+              "tooltip": "Part 2: Build a master/detail page with a list of heroes."
+            },
+            {
+              "url": "tutorial/toh-pt3",
+              "title": "3. Create a Feature Component",
+              "tooltip": "Part 3: Refactor the master/detail views into separate components."
+            },
+            {
+              "url": "tutorial/toh-pt4",
+              "title": "4. Add Services",
+              "tooltip": "Part 4: Create a reusable service to manage hero data."
+            },
+            {
+              "url": "tutorial/toh-pt5",
+              "title": "5. Add In-app Navigation",
+              "tooltip": "Part 5: Add the Angular router and navigate among the views."
+            },
+            {
+              "url": "tutorial/toh-pt6",
+              "title": "6. Get Data from a Server",
+              "tooltip": "Part 6: Use HTTP to retrieve and save hero data."
+            }
+          ]
+        },
+        {
+          "title": "Routing",
+          "tooltip": "End-to-end tutorials for learning about Angular's router.",
+          "children": [
+            {
+              "url": "guide/router-tutorial",
+              "title": "Using Angular Routes in a Single-page Application",
+              "tooltip": "A tutorial that covers many patterns associated with Angular routing."
+            },
+            {
+              "url": "guide/router-tutorial-toh",
+              "title": "Router tutorial: tour of heroes",
+              "tooltip": "Explore how to use Angular's router. Based on the Tour of Heroes example."
+            }
+          ]
+        },
+        {
+          "url": "guide/forms",
+          "title": "Building a Template-driven Form",
+          "tooltip": "Create a template-driven form using directives and Angular template syntax."
+        },
+        {
+          "url": "guide/web-worker",
+          "title": "Web Workers",
+          "tooltip": "Using web workers for background processing."
+        },
+        {
+          "title": "Angular Libraries",
+          "tooltip": "Extending Angular with shared libraries.",
+          "children": [
+            {
+              "url": "guide/libraries",
+              "title": "Libraries Overview",
+              "tooltip": "Understand how and when to use or create libraries."
+            },
+            {
+              "url": "guide/using-libraries",
+              "title": "Using Published Libraries",
+              "tooltip": "Integrate published libraries into an app."
+            },
+            {
+              "url": "guide/creating-libraries",
+              "title": "Creating Libraries",
+              "tooltip": "Extend Angular by creating, publishing, and using your own libraries."
+            }
+          ]
+        }
+      ]
+    },
+    {
       "title": "JUNK DRAWER",
       "tooltip": "Don't publish this. We just don't know what to do with these topics yet.",
       "children": [
