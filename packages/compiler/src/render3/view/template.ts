@@ -10,7 +10,7 @@ import {flatten, sanitizeIdentifier} from '../../compile_metadata';
 import {BindingForm, BuiltinFunctionCall, convertActionBinding, convertPropertyBinding, convertUpdateArguments, LocalResolver} from '../../compiler_util/expression_converter';
 import {ConstantPool} from '../../constant_pool';
 import * as core from '../../core';
-import {AST, AstMemoryEfficientTransformer, BindingPipe, BindingType, FunctionCall, ImplicitReceiver, Interpolation, LiteralArray, LiteralMap, LiteralPrimitive, ParsedEventType, PropertyRead, ThisImplicitReceiver} from '../../expression_parser/ast';
+import {AST, AstMemoryEfficientTransformer, BindingPipe, BindingType, FunctionCall, ImplicitReceiver, Interpolation, LiteralArray, LiteralMap, LiteralPrimitive, ParsedEventType, PropertyRead, ThisReceiver} from '../../expression_parser/ast';
 import {Lexer} from '../../expression_parser/lexer';
 import {IvyParser} from '../../expression_parser/parser';
 import * as i18n from '../../i18n/i18n_ast';
@@ -1644,7 +1644,9 @@ export class BindingScope implements LocalResolver {
       public bindingLevel: number = 0, private parent: BindingScope|null = null,
       public globals?: Set<string>) {
     if (globals !== undefined) {
-      globals.forEach(name => this.set(0, name, o.variable(name)));
+      for (const name of globals) {
+        this.set(0, name, o.variable(name));
+      }
     }
   }
 

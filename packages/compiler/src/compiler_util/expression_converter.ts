@@ -447,7 +447,7 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
     return this._implicitReceiver;
   }
 
-  visitThisImplicitReceiver(ast: cdAst.ThisImplicitReceiver, mode: _Mode): any {
+  visitThisReceiver(ast: cdAst.ThisReceiver, mode: _Mode): any {
     return this.visitImplicitReceiver(ast, mode);
   }
 
@@ -507,7 +507,7 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
   }
 
   private _getLocal(name: string, receiver: cdAst.AST): o.Expression|null {
-    if (this._localResolver.globals?.has(name) && receiver instanceof cdAst.ThisImplicitReceiver) {
+    if (this._localResolver.globals?.has(name) && receiver instanceof cdAst.ThisReceiver) {
       return null;
     }
 
@@ -516,7 +516,7 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
 
   visitMethodCall(ast: cdAst.MethodCall, mode: _Mode): any {
     if (ast.receiver instanceof cdAst.ImplicitReceiver &&
-        !(ast.receiver instanceof cdAst.ThisImplicitReceiver) && ast.name === '$any') {
+        !(ast.receiver instanceof cdAst.ThisReceiver) && ast.name === '$any') {
       const args = this.visitAll(ast.args, _Mode.Expression) as any[];
       if (args.length != 1) {
         throw new Error(
@@ -758,7 +758,7 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
       visitImplicitReceiver(ast: cdAst.ImplicitReceiver) {
         return null;
       },
-      visitThisImplicitReceiver(ast: cdAst.ThisImplicitReceiver) {
+      visitThisReceiver(ast: cdAst.ThisReceiver) {
         return null;
       },
       visitInterpolation(ast: cdAst.Interpolation) {
@@ -838,7 +838,7 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
       visitImplicitReceiver(ast: cdAst.ImplicitReceiver) {
         return false;
       },
-      visitThisImplicitReceiver(ast: cdAst.ThisImplicitReceiver) {
+      visitThisReceiver(ast: cdAst.ThisReceiver) {
         return false;
       },
       visitInterpolation(ast: cdAst.Interpolation) {

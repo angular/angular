@@ -386,10 +386,10 @@ describe('acceptance integration tests', () => {
     });
 
     it('should be able to render the result of a function called $any by using this', () => {
-      @Component({template: '{{this.$any(1)}}'})
+      @Component({template: '{{this.$any(1, 2)}}'})
       class App {
-        $any(value: number) {
-          return value * 2;
+        $any(value: number, multiplier: number) {
+          return value * multiplier;
         }
       }
 
