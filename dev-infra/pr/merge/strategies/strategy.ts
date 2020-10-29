@@ -124,7 +124,7 @@ export abstract class MergeStrategy {
     });
     // Fetch all target branches with a single command. We don't want to fetch them
     // individually as that could cause an unnecessary slow-down.
-    this.git.run(['fetch', '-f', this.git.repoGitUrl, ...fetchRefspecs, ...extraRefspecs]);
+    this.git.run(['fetch', '-q', '-f', this.git.repoGitUrl, ...fetchRefspecs, ...extraRefspecs]);
   }
 
   /** Pushes the given target branches upstream. */

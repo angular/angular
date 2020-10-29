@@ -2765,7 +2765,7 @@ function checkOutPullRequestLocally(prNumber, githubToken, opts = {}) {
         try {
             // Fetch the branch at the commit of the PR, and check it out in a detached state.
             info(`Checking out PR #${prNumber} from ${fullHeadRef}`);
-            git.run(['fetch', headRefUrl, headRefName]);
+            git.run(['fetch', '-q', headRefUrl, headRefName]);
             git.run(['checkout', '--detach', 'FETCH_HEAD']);
         }
         catch (e) {
@@ -3453,7 +3453,7 @@ var MergeStrategy = /** @class */ (function () {
         });
         // Fetch all target branches with a single command. We don't want to fetch them
         // individually as that could cause an unnecessary slow-down.
-        this.git.run(tslib.__spread(['fetch', '-f', this.git.repoGitUrl], fetchRefspecs, extraRefspecs));
+        this.git.run(tslib.__spread(['fetch', '-q', '-f', this.git.repoGitUrl], fetchRefspecs, extraRefspecs));
     };
     /** Pushes the given target branches upstream. */
     MergeStrategy.prototype.pushTargetBranchesUpstream = function (names) {
@@ -4174,11 +4174,11 @@ function rebasePr(prNumber, githubToken, config = getConfig()) {
         try {
             // Fetch the branch at the commit of the PR, and check it out in a detached state.
             info(`Checking out PR #${prNumber} from ${fullHeadRef}`);
-            git.run(['fetch', headRefUrl, headRefName]);
+            git.run(['fetch', '-q', headRefUrl, headRefName]);
             git.run(['checkout', '--detach', 'FETCH_HEAD']);
             // Fetch the PRs target branch and rebase onto it.
             info(`Fetching ${fullBaseRef} to rebase #${prNumber} on`);
-            git.run(['fetch', baseRefUrl, baseRefName]);
+            git.run(['fetch', '-q', baseRefUrl, baseRefName]);
             info(`Attempting to rebase PR #${prNumber} on ${fullBaseRef}`);
             const rebaseResult = git.runGraceful(['rebase', 'FETCH_HEAD']);
             // If the rebase was clean, push the rebased PR up to the authors fork.
@@ -5498,7 +5498,7 @@ class ReleaseAction {
     /** Checks out an upstream branch with a detached head. */
     checkoutUpstreamBranch(branchName) {
         return tslib.__awaiter(this, void 0, void 0, function* () {
-            this.git.run(['fetch', this.git.repoGitUrl, branchName]);
+            this.git.run(['fetch', '-q', this.git.repoGitUrl, branchName]);
             this.git.run(['checkout', 'FETCH_HEAD', '--detach']);
         });
     }

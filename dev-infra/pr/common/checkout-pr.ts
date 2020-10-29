@@ -102,7 +102,7 @@ export async function checkOutPullRequestLocally(
   try {
     // Fetch the branch at the commit of the PR, and check it out in a detached state.
     info(`Checking out PR #${prNumber} from ${fullHeadRef}`);
-    git.run(['fetch', headRefUrl, headRefName]);
+    git.run(['fetch', '-q', headRefUrl, headRefName]);
     git.run(['checkout', '--detach', 'FETCH_HEAD']);
   } catch (e) {
     git.checkout(previousBranchOrRevision, true);
