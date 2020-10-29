@@ -1377,9 +1377,6 @@
     "name": "getParentInjectorView"
   },
   {
-    "name": "getPath"
-  },
-  {
     "name": "getPathIndexShift"
   },
   {
@@ -1489,6 +1486,9 @@
   },
   {
     "name": "isArrayLike"
+  },
+  {
+    "name": "isCommandWithOutlets"
   },
   {
     "name": "isComponentDef"
