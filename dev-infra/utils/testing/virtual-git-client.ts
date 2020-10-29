@@ -105,7 +105,7 @@ export class VirtualGitClient extends GitClient {
 
   /** Handler for the `git fetch` command. */
   private _fetch(rawArgs: string[]) {
-    const args = parseArgs(rawArgs, {boolean: ['f', 'force']});
+    const args = parseArgs(rawArgs, {boolean: ['f', 'force', 'q', 'quiet']});
     const [repoUrl, refspec] = args._;
     const force = args['f'] || args['force'];
     const ref = this._unwrapRefspec(refspec);
