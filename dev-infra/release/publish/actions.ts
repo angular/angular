@@ -350,7 +350,7 @@ export abstract class ReleaseAction {
 
   /** Checks out an upstream branch with a detached head. */
   protected async checkoutUpstreamBranch(branchName: string) {
-    this.git.run(['fetch', this.git.repoGitUrl, branchName]);
+    this.git.run(['fetch', '-q', this.git.repoGitUrl, branchName]);
     this.git.run(['checkout', 'FETCH_HEAD', '--detach']);
   }
 

@@ -84,12 +84,12 @@ export async function rebasePr(
   try {
     // Fetch the branch at the commit of the PR, and check it out in a detached state.
     info(`Checking out PR #${prNumber} from ${fullHeadRef}`);
-    git.run(['fetch', headRefUrl, headRefName]);
+    git.run(['fetch', '-q', headRefUrl, headRefName]);
     git.run(['checkout', '--detach', 'FETCH_HEAD']);
 
     // Fetch the PRs target branch and rebase onto it.
     info(`Fetching ${fullBaseRef} to rebase #${prNumber} on`);
-    git.run(['fetch', baseRefUrl, baseRefName]);
+    git.run(['fetch', '-q', baseRefUrl, baseRefName]);
     info(`Attempting to rebase PR #${prNumber} on ${fullBaseRef}`);
     const rebaseResult = git.runGraceful(['rebase', 'FETCH_HEAD']);
 
