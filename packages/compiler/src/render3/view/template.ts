@@ -36,7 +36,7 @@ import {I18nContext} from './i18n/context';
 import {createGoogleGetMsgStatements} from './i18n/get_msg_utils';
 import {createLocalizeStatements} from './i18n/localize_utils';
 import {I18nMetaVisitor} from './i18n/meta';
-import {assembleBoundTextPlaceholders, assembleI18nBoundString, declareI18nVariable, getTranslationConstPrefix, hasI18nMeta, I18N_ICU_MAPPING_PREFIX, i18nFormatPlaceholderNames, icuFromI18nMessage, isBoundI18nAttribute, isI18nRootNode, isSingleI18nIcu, placeholdersToParams, TRANSLATION_VAR_PREFIX, wrapI18nPlaceholder} from './i18n/util';
+import {assembleBoundTextPlaceholders, assembleI18nBoundString, declareI18nVariable, getTranslationConstPrefix, hasI18nMeta, I18N_ICU_MAPPING_PREFIX, i18nFormatPlaceholderNames, icuFromI18nMessage, isI18nRootNode, isSingleI18nIcu, placeholdersToParams, TRANSLATION_VAR_PREFIX, wrapI18nPlaceholder} from './i18n/util';
 import {StylingBuilder, StylingInstruction} from './styling_builder';
 import {asLiteral, chainedInstruction, CONTEXT_NAME, getAttrsForDirectiveMatching, getInterpolationArgsLength, IMPLICIT_REFERENCE, invalid, NON_BINDABLE_ATTR, REFERENCE_PREFIX, RENDER_FLAGS, trimTrailingNulls, unsupported} from './util';
 
@@ -586,9 +586,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     const isI18nRootElement: boolean =
         isI18nRootNode(element.i18n) && !isSingleI18nIcu(element.i18n);
 
-    const boundI18nAttrs: t.BoundAttribute[] = [];
     const outputAttrs: t.TextAttribute[] = [];
-
     const [namespaceKey, elementName] = splitNsName(element.name);
     const isNgContainer = checkIsNgContainer(element.name);
 
@@ -601,10 +599,6 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
         stylingBuilder.registerStyleAttr(value);
       } else if (name === 'class') {
         stylingBuilder.registerClassAttr(value);
-      } else if (isBoundI18nAttribute(attr)) {
-        // Note that we don't collect static i18n attributes here, because
-        // they can be treated in the same way as regular attributes.
-        boundI18nAttrs.push(attr);
       } else {
         outputAttrs.push(attr);
       }
@@ -621,8 +615,9 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
     // Add the attributes
     const allOtherInputs: t.BoundAttribute[] = [];
+    const boundI18nAttrs: t.BoundAttribute[] = [];
 
-    element.inputs.forEach((input: t.BoundAttribute) => {
+    element.inputs.forEach(input => {
       const stylingInputWasSet = stylingBuilder.registerBoundInput(input);
       if (!stylingInputWasSet) {
         if (input.type === BindingType.Property && input.i18n) {
@@ -720,7 +715,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     const attributeBindings: ChainableBindingInstruction[] = [];
 
     // Generate element input bindings
-    allOtherInputs.forEach((input: t.BoundAttribute) => {
+    allOtherInputs.forEach(input => {
       const inputType = input.type;
       if (inputType === BindingType.Animation) {
         const value = input.value.visit(this._valueConverter);
@@ -866,11 +861,9 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     this.matchDirectives(NG_TEMPLATE_TAG_NAME, template);
 
     // prepare attributes parameter (including attributes used for directive matching)
-    const [boundI18nAttrs, attrs] = partitionArray<t.BoundAttribute, t.TextAttribute>(
-        template.attributes, isBoundI18nAttribute);
     const attrsExprs: o.Expression[] = this.getAttributeExpressions(
-        NG_TEMPLATE_TAG_NAME, attrs, template.inputs, template.outputs, undefined /* styles */,
-        template.templateAttrs, boundI18nAttrs);
+        NG_TEMPLATE_TAG_NAME, template.attributes, template.inputs, template.outputs,
+        undefined /* styles */, template.templateAttrs);
     parameters.push(this.addAttrsToConsts(attrsExprs));
 
     // local refs (ex.: <ng-template #foo>)
@@ -916,15 +909,14 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     if (template.tagName === NG_TEMPLATE_TAG_NAME) {
       const [i18nInputs, inputs] =
           partitionArray<t.BoundAttribute, t.BoundAttribute>(template.inputs, hasI18nMeta);
-      const i18nAttrs = [...boundI18nAttrs, ...i18nInputs];
 
       // Add i18n attributes that may act as inputs to directives. If such attributes are present,
       // generate `i18nAttributes` instruction. Note: we generate it only for explicit <ng-template>
       // elements, in case of inline templates, corresponding instructions will be generated in the
       // nested template function.
-      if (i18nAttrs.length > 0) {
+      if (i18nInputs.length > 0) {
         this.i18nAttributesInstruction(
-            templateIndex, i18nAttrs, template.startSourceSpan ?? template.sourceSpan);
+            templateIndex, i18nInputs, template.startSourceSpan ?? template.sourceSpan);
       }
 
       // Add the input bindings
