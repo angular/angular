@@ -78,11 +78,13 @@ export function toStringExpression(expr: e.AST): string {
 
 // Parse an html string to IVY specific info
 export function parseR3(
-    input: string, options: {preserveWhitespaces?: boolean} = {}): Render3ParseResult {
+    input: string, options: {preserveWhitespaces?: boolean, leadingTriviaChars?: string[]} = {}):
+    Render3ParseResult {
   const htmlParser = new HtmlParser();
 
-  const parseResult =
-      htmlParser.parse(input, 'path:://to/template', {tokenizeExpansionForms: true});
+  const parseResult = htmlParser.parse(
+      input, 'path:://to/template',
+      {tokenizeExpansionForms: true, leadingTriviaChars: options.leadingTriviaChars});
 
   if (parseResult.errors.length > 0) {
     const msg = parseResult.errors.map(e => e.toString()).join('\n');
