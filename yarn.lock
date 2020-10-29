@@ -6011,12 +6011,12 @@ gulp-cli@^2.0.1:
     yargs "^7.1.0"
 
 gulp-sass@^4.0.2:
-  version "4.0.2"
-  resolved "https://registry.yarnpkg.com/gulp-sass/-/gulp-sass-4.0.2.tgz#cfb1e3eff2bd9852431c7ce87f43880807d8d505"
-  integrity sha512-q8psj4+aDrblJMMtRxihNBdovfzGrXJp1l4JU0Sz4b/Mhsi2DPrKFYCGDwjIWRENs04ELVHxdOJQ7Vs98OFohg==
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/gulp-sass/-/gulp-sass-4.1.0.tgz#486d7443c32d42bf31a6b1573ebbdaa361de7427"
+  integrity sha512-xIiwp9nkBLcJDpmYHbEHdoWZv+j+WtYaKD6Zil/67F3nrAaZtWYN5mDwerdo7EvcdBenSAj7Xb2hx2DqURLGdA==
   dependencies:
     chalk "^2.3.0"
-    lodash.clonedeep "^4.3.2"
+    lodash "^4.17.11"
     node-sass "^4.8.3"
     plugin-error "^1.0.1"
     replace-ext "^1.0.0"
@@ -7732,11 +7732,6 @@ lodash._shimkeys@~2.4.1:
   integrity sha1-bpzJZm/wgfC1psl4uD4kLmlJ0gM=
   dependencies:
     lodash._objecttypes "~2.4.1"
-
-lodash.clonedeep@^4.3.2:
-  version "4.5.0"
-  resolved "https://registry.yarnpkg.com/lodash.clonedeep/-/lodash.clonedeep-4.5.0.tgz#e23f3f9c4f8fbdde872529c1071857a086e5ccef"
-  integrity sha1-4j8/nE+Pvd6HJSnBBxhXoIblzO8=
 
 lodash.debounce@^4.0.8:
   version "4.0.8"
