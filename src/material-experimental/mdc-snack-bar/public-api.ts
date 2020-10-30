@@ -14,6 +14,7 @@ export * from './module';
 
 export {
   MatSnackBarConfig,
+  MatSnackBarDismiss,
   MatSnackBarRef,
   SimpleSnackBar,
   MAT_SNACK_BAR_DATA,
