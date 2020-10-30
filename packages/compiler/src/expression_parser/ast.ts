@@ -95,7 +95,7 @@ export class ImplicitReceiver extends AST {
  */
 export class ThisReceiver extends ImplicitReceiver {
   visit(visitor: AstVisitor, context: any = null): any {
-    return visitor.visitThisReceiver(this, context);
+    return visitor.visitThisReceiver?.(this, context);
   }
 }
 
@@ -430,7 +430,11 @@ export interface AstVisitor {
   visitChain(ast: Chain, context: any): any;
   visitConditional(ast: Conditional, context: any): any;
   visitFunctionCall(ast: FunctionCall, context: any): any;
-  visitThisReceiver(ast: ThisReceiver, context: any): any;
+  /**
+   * The `visitThisReceiver` method is declared as optional for backwards compatibility.
+   * In an upcoming major release, this method will be made required.
+   */
+  visitThisReceiver?(ast: ThisReceiver, context: any): any;
   visitImplicitReceiver(ast: ImplicitReceiver, context: any): any;
   visitInterpolation(ast: Interpolation, context: any): any;
   visitKeyedRead(ast: KeyedRead, context: any): any;
