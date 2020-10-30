@@ -1089,58 +1089,17 @@ function getLtsNpmDistTagOfMajor(major) {
     return `v${major}-lts`;
 }
 
-/**
- * @license
- * Copyright Google LLC All Rights Reserved.
- *
- * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
- */
-/** Retrieve and log status of CI for the project. */
-function getCiStatusPrinter(git) {
-    return tslib.__awaiter(this, void 0, void 0, function* () {
-        const releaseTrains = yield fetchActiveReleaseTrains(Object.assign({ api: git.github }, git.remoteConfig));
-        const ciStatusResults = yield Promise.all(Object.entries(releaseTrains).map(([trainName, train]) => tslib.__awaiter(this, void 0, void 0, function* () {
-            return {
-                label: `${trainName.padEnd(6)} (${train.branchName})`,
-                status: yield getStatusOfBranch(git, train.branchName),
-            };
-        })));
-        return () => {
-            info.group(bold(`CI`));
-            ciStatusResults.forEach(result => printStatus(result.label, result.status));
-            info.groupEnd();
-        };
-    });
-}
-/** Log the status of CI for a given branch to the console. */
-function printStatus(label, status) {
-    return tslib.__awaiter(this, void 0, void 0, function* () {
-        const branchName = label.padEnd(16);
-        if (status === null) {
-            info(`${branchName} was not found on CircleCI`);
-        }
-        else if (status.status === 'success') {
-            info(`${branchName} ✅`);
-        }
-        else {
-            info(`${branchName} ❌`);
-        }
-    });
-}
-/** Get the CI status of a given branch from CircleCI. */
-function getStatusOfBranch(git, branch) {
-    return tslib.__awaiter(this, void 0, void 0, function* () {
-        const { owner, name } = git.remoteConfig;
-        const url = `https://circleci.com/gh/${owner}/${name}/tree/${branch}.svg?style=shield`;
-        const result = yield fetch(url).then(result => result.text());
-        if (result && !result.includes('no builds')) {
-            return {
-                status: result.includes('passing') ? 'success' : 'failed',
-            };
-        }
-        return null;
-    });
+/** The BaseModule to extend modules for caretaker checks from. */
+class BaseModule {
+    constructor(git, config) {
+        this.git = git;
+        this.config = config;
+        /** The data for the module. */
+        this.data = (new Promise((resolve) => {
+            this.resolve = resolve;
+        }));
+        this.retrieveData();
+    }
 }
 
 /**
@@ -1150,35 +1109,93 @@ function getStatusOfBranch(git, branch) {
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-/** Compare the upstream master to the upstream g3 branch, if it exists. */
-function getG3ComparisonPrinter(git) {
-    var _a, _b, _c, _d;
-    return tslib.__awaiter(this, void 0, void 0, function* () {
-        const angularRobotFilePath = path.join(getRepoBaseDir(), '.github/angular-robot.yml');
-        if (!fs.existsSync(angularRobotFilePath)) {
-            return debug('No angular robot configuration file exists, skipping.');
-        }
-        /** The configuration defined for the angular robot. */
-        const robotConfig = yaml.parse(fs.readFileSync(angularRobotFilePath).toString());
-        /** The files to be included in the g3 sync. */
-        const includeFiles = ((_b = (_a = robotConfig === null || robotConfig === void 0 ? void 0 : robotConfig.merge) === null || _a === void 0 ? void 0 : _a.g3Status) === null || _b === void 0 ? void 0 : _b.include) || [];
-        /** The files to be expected in the g3 sync. */
-        const excludeFiles = ((_d = (_c = robotConfig === null || robotConfig === void 0 ? void 0 : robotConfig.merge) === null || _c === void 0 ? void 0 : _c.g3Status) === null || _d === void 0 ? void 0 : _d.exclude) || [];
-        if (includeFiles.length === 0 && excludeFiles.length === 0) {
-            debug('No g3Status include or exclude lists are defined in the angular robot configuration,');
-            debug('skipping.');
-            return;
-        }
-        /** The latest sha for the g3 branch. */
-        const g3Ref = getShaForBranchLatest('g3');
-        /** The latest sha for the master branch. */
-        const masterRef = getShaForBranchLatest('master');
-        if (!g3Ref && !masterRef) {
-            return debug('Exiting early as either the g3 or master was unable to be retrieved');
-        }
-        /** The statistical information about the git diff between master and g3. */
-        const stats = getDiffStats();
-        return () => {
+class CiModule extends BaseModule {
+    retrieveData() {
+        return tslib.__awaiter(this, void 0, void 0, function* () {
+            const gitRepoWithApi = Object.assign({ api: this.git.github }, this.git.remoteConfig);
+            const releaseTrains = yield fetchActiveReleaseTrains(gitRepoWithApi);
+            const ciResultPromises = Object.entries(releaseTrains).map(([trainName, train]) => tslib.__awaiter(this, void 0, void 0, function* () {
+                if (train === null) {
+                    return {
+                        active: false,
+                        name: trainName,
+                        label: '',
+                        status: 'not found',
+                    };
+                }
+                return {
+                    active: true,
+                    name: train.branchName,
+                    label: `${trainName} (${train.branchName})`,
+                    status: yield this.getBranchStatusFromCi(train.branchName),
+                };
+            }));
+            this.resolve(yield Promise.all(ciResultPromises));
+        });
+    }
+    printToTerminal() {
+        return tslib.__awaiter(this, void 0, void 0, function* () {
+            const data = yield this.data;
+            const minLabelLength = Math.max(...data.map(result => result.label.length));
+            info.group(bold(`CI`));
+            data.forEach(result => {
+                if (result.active === false) {
+                    debug(`No active release train for ${result.name}`);
+                    return;
+                }
+                const label = result.label.padEnd(minLabelLength);
+                if (result.status === 'not found') {
+                    info(`${result.name} was not found on CircleCI`);
+                }
+                else if (result.status === 'success') {
+                    info(`${label} ✅`);
+                }
+                else {
+                    info(`${label} ❌`);
+                }
+            });
+            info.groupEnd();
+            info();
+        });
+    }
+    /** Get the CI status of a given branch from CircleCI. */
+    getBranchStatusFromCi(branch) {
+        return tslib.__awaiter(this, void 0, void 0, function* () {
+            const { owner, name } = this.git.remoteConfig;
+            const url = `https://circleci.com/gh/${owner}/${name}/tree/${branch}.svg?style=shield`;
+            const result = yield fetch(url).then(result => result.text());
+            if (result && !result.includes('no builds')) {
+                return result.includes('passing') ? 'success' : 'failed';
+            }
+            return 'not found';
+        });
+    }
+}
+
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+class G3Module extends BaseModule {
+    retrieveData() {
+        return tslib.__awaiter(this, void 0, void 0, function* () {
+            const toCopyToG3 = this.getG3FileIncludeAndExcludeLists();
+            const latestSha = this.getLatestShas();
+            if (toCopyToG3 === null || latestSha === null) {
+                return this.resolve();
+            }
+            this.resolve(this.getDiffStats(latestSha.g3, latestSha.master, toCopyToG3.include, toCopyToG3.exclude));
+        });
+    }
+    printToTerminal() {
+        return tslib.__awaiter(this, void 0, void 0, function* () {
+            const stats = yield this.data;
+            if (!stats) {
+                return;
+            }
             info.group(bold('g3 branch check'));
             if (stats.files === 0) {
                 info(`${stats.commits} commits between g3 and master`);
@@ -1189,66 +1206,95 @@ function getG3ComparisonPrinter(git) {
             }
             info.groupEnd();
             info();
+        });
+    }
+    /** Fetch and retrieve the latest sha for a specific branch. */
+    getShaForBranchLatest(branch) {
+        const { owner, name } = this.git.remoteConfig;
+        /** The result fo the fetch command. */
+        const fetchResult = this.git.runGraceful(['fetch', '-q', `https://github.com/${owner}/${name}.git`, branch]);
+        if (fetchResult.status !== 0 &&
+            fetchResult.stderr.includes(`couldn't find remote ref ${branch}`)) {
+            debug(`No '${branch}' branch exists on upstream, skipping.`);
+            return null;
+        }
+        return this.git.runGraceful(['rev-parse', 'FETCH_HEAD']).stdout.trim();
+    }
+    /**
+     * Get git diff stats between master and g3, for all files and filtered to only g3 affecting
+     * files.
+     */
+    getDiffStats(g3Ref, masterRef, includeFiles, excludeFiles) {
+        /** The diff stats to be returned. */
+        const stats = {
+            insertions: 0,
+            deletions: 0,
+            files: 0,
+            commits: 0,
         };
-        /** Fetch and retrieve the latest sha for a specific branch. */
-        function getShaForBranchLatest(branch) {
-            /** The result fo the fetch command. */
-            const fetchResult = git.runGraceful([
-                'fetch', '-q', `https://github.com/${git.remoteConfig.owner}/${git.remoteConfig.name}.git`,
-                branch
-            ]);
-            if (fetchResult.status !== 0 &&
-                fetchResult.stderr.includes(`couldn't find remote ref ${branch}`)) {
-                debug(`No '${branch}' branch exists on upstream, skipping.`);
-                return false;
+        // Determine the number of commits between master and g3 refs. */
+        stats.commits =
+            parseInt(this.git.run(['rev-list', '--count', `${g3Ref}..${masterRef}`]).stdout, 10);
+        // Get the numstat information between master and g3
+        this.git.run(['diff', `${g3Ref}...${masterRef}`, '--numstat'])
+            .stdout
+            // Remove the extra space after git's output.
+            .trim()
+            // Split each line of git output into array
+            .split('\n')
+            // Split each line from the git output into components parts: insertions,
+            // deletions and file name respectively
+            .map(line => line.trim().split('\t'))
+            // Parse number value from the insertions and deletions values
+            // Example raw line input:
+            //   10\t5\tsrc/file/name.ts
+            .map(line => [Number(line[0]), Number(line[1]), line[2]])
+            // Add each line's value to the diff stats, and conditionally to the g3
+            // stats as well if the file name is included in the files synced to g3.
+            .forEach(([insertions, deletions, fileName]) => {
+            if (this.checkMatchAgainstIncludeAndExclude(fileName, includeFiles, excludeFiles)) {
+                stats.insertions += insertions;
+                stats.deletions += deletions;
+                stats.files += 1;
             }
-            return git.runGraceful(['rev-parse', 'FETCH_HEAD']).stdout.trim();
+        });
+        return stats;
+    }
+    /** Determine whether the file name passes both include and exclude checks. */
+    checkMatchAgainstIncludeAndExclude(file, includes, excludes) {
+        return (multimatch.call(undefined, file, includes).length >= 1 &&
+            multimatch.call(undefined, file, excludes).length === 0);
+    }
+    getG3FileIncludeAndExcludeLists() {
+        var _a, _b, _c, _d;
+        const angularRobotFilePath = path.join(getRepoBaseDir(), '.github/angular-robot.yml');
+        if (!fs.existsSync(angularRobotFilePath)) {
+            debug('No angular robot configuration file exists, skipping.');
+            return null;
         }
-        /**
-         * Get git diff stats between master and g3, for all files and filtered to only g3 affecting
-         * files.
-         */
-        function getDiffStats() {
-            /** The diff stats to be returned. */
-            const stats = {
-                insertions: 0,
-                deletions: 0,
-                files: 0,
-                commits: 0,
-            };
-            // Determine the number of commits between master and g3 refs. */
-            stats.commits = parseInt(git.run(['rev-list', '--count', `${g3Ref}..${masterRef}`]).stdout, 10);
-            // Get the numstat information between master and g3
-            git.run(['diff', `${g3Ref}...${masterRef}`, '--numstat'])
-                .stdout
-                // Remove the extra space after git's output.
-                .trim()
-                // Split each line of git output into array
-                .split('\n')
-                // Split each line from the git output into components parts: insertions,
-                // deletions and file name respectively
-                .map(line => line.split('\t'))
-                // Parse number value from the insertions and deletions values
-                // Example raw line input:
-                //   10\t5\tsrc/file/name.ts
-                .map(line => [Number(line[0]), Number(line[1]), line[2]])
-                // Add each line's value to the diff stats, and conditionally to the g3
-                // stats as well if the file name is included in the files synced to g3.
-                .forEach(([insertions, deletions, fileName]) => {
-                if (checkMatchAgainstIncludeAndExclude(fileName, includeFiles, excludeFiles)) {
-                    stats.insertions += insertions;
-                    stats.deletions += deletions;
-                    stats.files += 1;
-                }
-            });
-            return stats;
+        /** The configuration defined for the angular robot. */
+        const robotConfig = yaml.parse(fs.readFileSync(angularRobotFilePath).toString());
+        /** The files to be included in the g3 sync. */
+        const include = ((_b = (_a = robotConfig === null || robotConfig === void 0 ? void 0 : robotConfig.merge) === null || _a === void 0 ? void 0 : _a.g3Status) === null || _b === void 0 ? void 0 : _b.include) || [];
+        /** The files to be expected in the g3 sync. */
+        const exclude = ((_d = (_c = robotConfig === null || robotConfig === void 0 ? void 0 : robotConfig.merge) === null || _c === void 0 ? void 0 : _c.g3Status) === null || _d === void 0 ? void 0 : _d.exclude) || [];
+        if (include.length === 0 && exclude.length === 0) {
+            debug('No g3Status include or exclude lists are defined in the angular robot configuration');
+            return null;
         }
-        /** Determine whether the file name passes both include and exclude checks. */
-        function checkMatchAgainstIncludeAndExclude(file, includes, excludes) {
-            return (multimatch.call(undefined, file, includes).length >= 1 &&
-                multimatch.call(undefined, file, excludes).length === 0);
+        return { include, exclude };
+    }
+    getLatestShas() {
+        /** The latest sha for the g3 branch. */
+        const g3 = this.getShaForBranchLatest('g3');
+        /** The latest sha for the master branch. */
+        const master = this.getShaForBranchLatest('master');
+        if (g3 === null || master === null) {
+            debug('Either the g3 or master was unable to be retrieved');
+            return null;
         }
-    });
+        return { g3, master };
+    }
 }
 
 /**
@@ -1258,34 +1304,51 @@ function getG3ComparisonPrinter(git) {
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+/** The fragment for a result from Github's api for a Github query. */
+const GithubQueryResultFragment = {
+    issueCount: typedGraphqlify.types.number,
+    nodes: [Object.assign({}, typedGraphqlify.onUnion({
+            PullRequest: {
+                url: typedGraphqlify.types.string,
+            },
+            Issue: {
+                url: typedGraphqlify.types.string,
+            },
+        }))],
+};
 /**
  * Cap the returned issues in the queries to an arbitrary 20. At that point, caretaker has a lot
  * of work to do and showing more than that isn't really useful.
  */
 const MAX_RETURNED_ISSUES = 20;
-/** Retrieve the number of matching issues for each github query. */
-function getGithubTaskPrinter(git, config) {
-    var _a;
-    return tslib.__awaiter(this, void 0, void 0, function* () {
-        if (!((_a = config === null || config === void 0 ? void 0 : config.githubQueries) === null || _a === void 0 ? void 0 : _a.length)) {
-            debug('No github queries defined in the configuration, skipping');
-            return;
-        }
-        const results = yield getGithubQueryResults(git, config);
-        return () => {
-            info.group(bold('Github Tasks'));
-            printGithubQueryResults(results);
-            info.groupEnd();
-            info();
-        };
-    });
-}
-/** Retrieve query match counts and log discovered counts to the console. */
-function getGithubQueryResults(git, { githubQueries: queries = [] }) {
-    return tslib.__awaiter(this, void 0, void 0, function* () {
-        const { owner, name: repo } = git.remoteConfig;
+class GithubQueriesModule extends BaseModule {
+    retrieveData() {
+        var _a;
+        return tslib.__awaiter(this, void 0, void 0, function* () {
+            let queries = (_a = this.config.caretaker) === null || _a === void 0 ? void 0 : _a.githubQueries;
+            if (queries === undefined || !(queries === null || queries === void 0 ? void 0 : queries.length)) {
+                debug('No github queries defined in the configuration, skipping');
+                return this.resolve();
+            }
+            /** The results of the generated github query. */
+            const queryResult = yield this.git.github.graphql.query(this.buildGraphqlQuery(queries));
+            const results = Object.values(queryResult);
+            const { owner, name: repo } = this.git.remoteConfig;
+            this.resolve(results.map((result, i) => {
+                return {
+                    queryName: queries[i].name,
+                    count: result.issueCount,
+                    queryUrl: encodeURI(`https://github.com/${owner}/${repo}/issues?q=${queries[i].query}`),
+                    matchedUrls: result.nodes.map(node => node.url)
+                };
+            }));
+        });
+    }
+    /** Build a Graphql query statement for the provided queries. */
+    buildGraphqlQuery(queries) {
         /** The query object for graphql. */
         const graphQlQuery = {};
+        const { owner, name: repo } = this.git.remoteConfig;
         /** The Github search filter for the configured repository. */
         const repoFilter = `repo:${owner}/${repo}`;
         queries.forEach(({ name, query }) => {
@@ -1295,43 +1358,32 @@ function getGithubQueryResults(git, { githubQueries: queries = [] }) {
                 type: 'ISSUE',
                 first: MAX_RETURNED_ISSUES,
                 query: `"${repoFilter} ${query.replace(/"/g, '\\"')}"`,
-            }, {
-                issueCount: typedGraphqlify.types.number,
-                nodes: [Object.assign({}, typedGraphqlify.onUnion({
-                        PullRequest: {
-                            url: typedGraphqlify.types.string,
-                        },
-                        Issue: {
-                            url: typedGraphqlify.types.string,
-                        },
-                    }))],
-            });
+            }, Object.assign({}, GithubQueryResultFragment));
         });
-        /** The results of the generated github query. */
-        const queryResult = yield git.github.graphql.query(graphQlQuery);
-        return Object.values(queryResult).map((result, i) => {
-            var _a;
-            return ({
-                queryName: queries[i].name,
-                count: result.issueCount,
-                queryUrl: encodeURI(`https://github.com/${owner}/${repo}/issues?q=${(_a = queries[i]) === null || _a === void 0 ? void 0 : _a.query}`),
-                matchedUrls: result.nodes.map(node => node.url)
-            });
-        });
-    });
-}
-function printGithubQueryResults(results) {
-    const minQueryNameLength = Math.max(...results.map(result => result.queryName.length));
-    for (const result of results) {
-        info(`${result.queryName.padEnd(minQueryNameLength)}  ${result.count}`);
-        if (result.count > 0) {
-            info.group(result.queryUrl);
-            result.matchedUrls.forEach(url => info(`- ${url}`));
-            if (result.count > MAX_RETURNED_ISSUES) {
-                info(`... ${result.count - MAX_RETURNED_ISSUES} additional matches`);
+        return graphQlQuery;
+    }
+    printToTerminal() {
+        return tslib.__awaiter(this, void 0, void 0, function* () {
+            const queryResults = yield this.data;
+            if (!queryResults) {
+                return;
+            }
+            info.group(bold('Github Tasks'));
+            const minQueryNameLength = Math.max(...queryResults.map(result => result.queryName.length));
+            for (const queryResult of queryResults) {
+                info(`${queryResult.queryName.padEnd(minQueryNameLength)}  ${queryResult.count}`);
+                if (queryResult.count > 0) {
+                    info.group(queryResult.queryUrl);
+                    queryResult.matchedUrls.forEach(url => info(`- ${url}`));
+                    if (queryResult.count > MAX_RETURNED_ISSUES) {
+                        info(`... ${queryResult.count - MAX_RETURNED_ISSUES} additional matches`);
+                    }
+                    info.groupEnd();
+                }
             }
             info.groupEnd();
-        }
+            info();
+        });
     }
 }
 
@@ -1342,79 +1394,64 @@ function printGithubQueryResults(results) {
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-/** The status levels for services. */
-var ServiceStatus;
-(function (ServiceStatus) {
-    ServiceStatus[ServiceStatus["GREEN"] = 0] = "GREEN";
-    ServiceStatus[ServiceStatus["RED"] = 1] = "RED";
-})(ServiceStatus || (ServiceStatus = {}));
-/** Retrieve and log stasuses for all of the services of concern. */
-function getServicesStatusPrinter() {
-    return tslib.__awaiter(this, void 0, void 0, function* () {
-        const [circleCi, github, npm, saucelabs] = yield Promise.all([
-            getCircleCiStatus(),
-            getGithubStatus(),
-            getNpmStatus(),
-            getSaucelabsStatus(),
-        ]);
-        return () => {
-            info.group(bold(`Service Statuses (checked: ${new Date().toLocaleString()})`));
-            logStatus('CircleCI', circleCi);
-            logStatus('Github', github);
-            logStatus('NPM', npm);
-            logStatus('Saucelabs', saucelabs);
+/** List of services Angular relies on. */
+const services = [
+    {
+        url: 'https://status.us-west-1.saucelabs.com/api/v2/status.json',
+        name: 'Saucelabs',
+    },
+    {
+        url: 'https://status.npmjs.org/api/v2/status.json',
+        name: 'Npm',
+    },
+    {
+        url: 'https://status.circleci.com/api/v2/status.json',
+        name: 'CircleCi',
+    },
+    {
+        url: 'https://www.githubstatus.com/api/v2/status.json',
+        name: 'Github',
+    },
+];
+class ServicesModule extends BaseModule {
+    retrieveData() {
+        return tslib.__awaiter(this, void 0, void 0, function* () {
+            this.resolve(yield Promise.all([...services.map(service => this.getStatusFromStandardApi(service))]));
+        });
+    }
+    printToTerminal() {
+        return tslib.__awaiter(this, void 0, void 0, function* () {
+            const data = yield this.data;
+            const serviceNameMinLength = Math.max(...data.map(service => service.name.length));
+            info.group(bold('Service Statuses'));
+            for (const service of data) {
+                const name = service.name.padEnd(serviceNameMinLength);
+                if (service.status === 'passing') {
+                    info(`${name} ✅`);
+                }
+                else {
+                    info.group(`${name} ❌ (Updated: ${service.lastUpdated.toLocaleString()})`);
+                    info(`  Details: ${service.description}`);
+                    info.groupEnd();
+                }
+            }
             info.groupEnd();
             info();
-        };
-    });
-}
-/** Log the status of the service to the console. */
-function logStatus(serviceName, status) {
-    serviceName = serviceName.padEnd(15);
-    if (status.status === ServiceStatus.GREEN) {
-        info(`${serviceName} ${green('✅')}`);
+        });
     }
-    else if (status.status === ServiceStatus.RED) {
-        info.group(`${serviceName} ${red('❌')} (Updated: ${status.lastUpdated.toLocaleString()})`);
-        info(`  Details: ${status.description}`);
-        info.groupEnd();
+    /** Retrieve the status information for a service which uses a standard API response. */
+    getStatusFromStandardApi(service) {
+        return tslib.__awaiter(this, void 0, void 0, function* () {
+            const result = yield fetch(service.url).then(result => result.json());
+            const status = result.status.indicator === 'none' ? 'passing' : 'failing';
+            return {
+                name: service.name,
+                status,
+                description: result.status.description,
+                lastUpdated: new Date(result.page.updated_at)
+            };
+        });
     }
-}
-/** Gets the service status information for Saucelabs. */
-function getSaucelabsStatus() {
-    return tslib.__awaiter(this, void 0, void 0, function* () {
-        return getStatusFromStandardApi('https://status.us-west-1.saucelabs.com/api/v2/status.json');
-    });
-}
-/** Gets the service status information for NPM. */
-function getNpmStatus() {
-    return tslib.__awaiter(this, void 0, void 0, function* () {
-        return getStatusFromStandardApi('https://status.npmjs.org/api/v2/status.json');
-    });
-}
-/** Gets the service status information for CircleCI. */
-function getCircleCiStatus() {
-    return tslib.__awaiter(this, void 0, void 0, function* () {
-        return getStatusFromStandardApi('https://status.circleci.com/api/v2/status.json');
-    });
-}
-/** Gets the service status information for Github. */
-function getGithubStatus() {
-    return tslib.__awaiter(this, void 0, void 0, function* () {
-        return getStatusFromStandardApi('https://www.githubstatus.com/api/v2/status.json');
-    });
-}
-/** Retrieve the status information for a service which uses a standard API response. */
-function getStatusFromStandardApi(url) {
-    return tslib.__awaiter(this, void 0, void 0, function* () {
-        const result = yield fetch(url).then(result => result.json());
-        const status = result.status.indicator === 'none' ? ServiceStatus.GREEN : ServiceStatus.RED;
-        return {
-            status,
-            description: result.status.description,
-            lastUpdated: new Date(result.page.updated_at)
-        };
-    });
 }
 
 /**
@@ -1424,6 +1461,13 @@ function getStatusFromStandardApi(url) {
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+/** List of modules checked for the caretaker check command. */
+const moduleList = [
+    GithubQueriesModule,
+    ServicesModule,
+    CiModule,
+    G3Module,
+];
 /** Check the status of services which Angular caretakers need to monitor. */
 function checkServiceStatuses(githubToken) {
     return tslib.__awaiter(this, void 0, void 0, function* () {
@@ -1433,13 +1477,13 @@ function checkServiceStatuses(githubToken) {
         const git = new GitClient(githubToken, config);
         // Prevent logging of the git commands being executed during the check.
         GitClient.LOG_COMMANDS = false;
-        const printers = yield Promise.all([
-            getServicesStatusPrinter(), getGithubTaskPrinter(git, config.caretaker),
-            getG3ComparisonPrinter(git), getCiStatusPrinter(git)
-        ]);
-        for (const printer of printers) {
-            printer && printer();
-        }
+        /** List of instances of Caretaker Check modules */
+        const caretakerCheckModules = moduleList.map(module => new module(git, config));
+        // Module's `data` is casted as Promise<unknown> because the data types of the `module`'s `data`
+        // promises do not match typings, however our usage here is only to determine when the promise
+        // resolves.
+        yield Promise.all(caretakerCheckModules.map(module => module.data));
+        caretakerCheckModules.forEach((module) => tslib.__awaiter(this, void 0, void 0, function* () { return yield module.printToTerminal(); }));
     });
 }
 

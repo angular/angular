@@ -8,80 +8,75 @@
 
 import fetch from 'node-fetch';
 
-import {bold, green, info, red} from '../../utils/console';
+import {bold, info} from '../../utils/console';
+import {BaseModule} from './base';
 
-/** The status levels for services. */
-enum ServiceStatus {
-  GREEN,
-  RED
+interface ServiceConfig {
+  name: string;
+  url: string;
 }
 
 /** The results of checking the status of a service */
 interface StatusCheckResult {
-  status: ServiceStatus;
+  name: string;
+  status: 'passing'|'failing';
   description: string;
   lastUpdated: Date;
 }
 
-/** Retrieve and log stasuses for all of the services of concern. */
-export async function getServicesStatusPrinter() {
-  const [circleCi, github, npm, saucelabs] = await Promise.all([
-    getCircleCiStatus(),
-    getGithubStatus(),
-    getNpmStatus(),
-    getSaucelabsStatus(),
-  ]);
-  return () => {
-    info.group(bold(`Service Statuses (checked: ${new Date().toLocaleString()})`));
-    logStatus('CircleCI', circleCi);
-    logStatus('Github', github);
-    logStatus('NPM', npm);
-    logStatus('Saucelabs', saucelabs);
+/** List of services Angular relies on. */
+export const services: ServiceConfig[] = [
+  {
+    url: 'https://status.us-west-1.saucelabs.com/api/v2/status.json',
+    name: 'Saucelabs',
+  },
+  {
+    url: 'https://status.npmjs.org/api/v2/status.json',
+    name: 'Npm',
+  },
+  {
+    url: 'https://status.circleci.com/api/v2/status.json',
+    name: 'CircleCi',
+  },
+  {
+    url: 'https://www.githubstatus.com/api/v2/status.json',
+    name: 'Github',
+  },
+];
+
+export class ServicesModule extends BaseModule<Array<StatusCheckResult>> {
+  async retrieveData() {
+    this.resolve(
+        await Promise.all([...services.map(service => this.getStatusFromStandardApi(service))]));
+  }
+
+  async printToTerminal() {
+    const data = await this.data;
+    const serviceNameMinLength = Math.max(...data.map(service => service.name.length));
+    info.group(bold('Service Statuses'));
+    for (const service of data) {
+      const name = service.name.padEnd(serviceNameMinLength);
+      if (service.status === 'passing') {
+        info(`${name} ✅`);
+      } else {
+        info.group(`${name} ❌ (Updated: ${service.lastUpdated.toLocaleString()})`);
+        info(`  Details: ${service.description}`);
+        info.groupEnd();
+      }
+    }
     info.groupEnd();
     info();
-  };
-}
-
-
-/** Log the status of the service to the console. */
-function logStatus(serviceName: string, status: StatusCheckResult) {
-  serviceName = serviceName.padEnd(15);
-  if (status.status === ServiceStatus.GREEN) {
-    info(`${serviceName} ${green('✅')}`);
-  } else if (status.status === ServiceStatus.RED) {
-    info.group(`${serviceName} ${red('❌')} (Updated: ${status.lastUpdated.toLocaleString()})`);
-    info(`  Details: ${status.description}`);
-    info.groupEnd();
   }
-}
 
-/** Gets the service status information for Saucelabs. */
-async function getSaucelabsStatus(): Promise<StatusCheckResult> {
-  return getStatusFromStandardApi('https://status.us-west-1.saucelabs.com/api/v2/status.json');
-}
-
-/** Gets the service status information for NPM. */
-async function getNpmStatus(): Promise<StatusCheckResult> {
-  return getStatusFromStandardApi('https://status.npmjs.org/api/v2/status.json');
-}
-
-/** Gets the service status information for CircleCI. */
-async function getCircleCiStatus(): Promise<StatusCheckResult> {
-  return getStatusFromStandardApi('https://status.circleci.com/api/v2/status.json');
-}
-
-/** Gets the service status information for Github. */
-async function getGithubStatus(): Promise<StatusCheckResult> {
-  return getStatusFromStandardApi('https://www.githubstatus.com/api/v2/status.json');
-}
-
-/** Retrieve the status information for a service which uses a standard API response. */
-async function getStatusFromStandardApi(url: string) {
-  const result = await fetch(url).then(result => result.json());
-  const status = result.status.indicator === 'none' ? ServiceStatus.GREEN : ServiceStatus.RED;
-  return {
-    status,
-    description: result.status.description,
-    lastUpdated: new Date(result.page.updated_at)
-  };
+  /** Retrieve the status information for a service which uses a standard API response. */
+  async getStatusFromStandardApi(service: ServiceConfig): Promise<StatusCheckResult> {
+    const result = await fetch(service.url).then(result => result.json());
+    const status = result.status.indicator === 'none' ? 'passing' : 'failing';
+    return {
+      name: service.name,
+      status,
+      description: result.status.description,
+      lastUpdated: new Date(result.page.updated_at)
+    };
+  }
 }

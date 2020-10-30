@@ -9,13 +9,34 @@
 import {alias, onUnion, params, types} from 'typed-graphqlify';
 
 import {bold, debug, info} from '../../utils/console';
-import {GitClient} from '../../utils/git/index';
 import {CaretakerConfig} from '../config';
+import {BaseModule} from './base';
 
 /** A list of generated results for a github query. */
 type GithubQueryResults = {
-  queryName: string; count: number; queryUrl: string; matchedUrls: string[];
+  queryName: string,
+  count: number,
+  queryUrl: string,
+  matchedUrls: string[],
 }[];
+
+/** The fragment for a result from Github's api for a Github query. */
+const GithubQueryResultFragment = {
+  issueCount: types.number,
+  nodes: [{...onUnion({
+    PullRequest: {
+      url: types.string,
+    },
+    Issue: {
+      url: types.string,
+    },
+  })}],
+};
+
+/** An object containing results of multiple queries.  */
+type GithubQueryResult = {
+  [key: string]: typeof GithubQueryResultFragment;
+};
 
 /**
  * Cap the returned issues in the queries to an arbitrary 20. At that point, caretaker has a lot
@@ -23,81 +44,74 @@ type GithubQueryResults = {
  */
 const MAX_RETURNED_ISSUES = 20;
 
-/** Retrieve the number of matching issues for each github query. */
-export async function getGithubTaskPrinter(git: GitClient, config?: CaretakerConfig) {
-  if (!config?.githubQueries?.length) {
-    debug('No github queries defined in the configuration, skipping');
-    return;
-  }
-  const results = await getGithubQueryResults(git, config);
+export class GithubQueriesModule extends BaseModule<GithubQueryResults|void> {
+  async retrieveData() {
+    let queries = this.config.caretaker?.githubQueries!;
+    if (queries === undefined || !queries?.length) {
+      debug('No github queries defined in the configuration, skipping');
+      return this.resolve();
+    }
 
-  return () => {
+    /** The results of the generated github query. */
+    const queryResult = await this.git.github.graphql.query(this.buildGraphqlQuery(queries));
+    const results = Object.values(queryResult);
+
+    const {owner, name: repo} = this.git.remoteConfig;
+
+    this.resolve(results.map((result, i) => {
+      return {
+        queryName: queries[i].name,
+        count: result.issueCount,
+        queryUrl: encodeURI(`https://github.com/${owner}/${repo}/issues?q=${queries[i].query}`),
+        matchedUrls: result.nodes.map(node => node.url)
+      };
+    }));
+  }
+
+  /** Build a Graphql query statement for the provided queries. */
+  private buildGraphqlQuery(queries: NonNullable<CaretakerConfig['githubQueries']>) {
+    /** The query object for graphql. */
+    const graphQlQuery: GithubQueryResult = {};
+    const {owner, name: repo} = this.git.remoteConfig;
+    /** The Github search filter for the configured repository. */
+    const repoFilter = `repo:${owner}/${repo}`;
+
+
+    queries.forEach(({name, query}) => {
+      /** The name of the query, with spaces removed to match GraphQL requirements. */
+      const queryKey = alias(name.replace(/ /g, ''), 'search');
+      graphQlQuery[queryKey] = params(
+          {
+            type: 'ISSUE',
+            first: MAX_RETURNED_ISSUES,
+            query: `"${repoFilter} ${query.replace(/"/g, '\\"')}"`,
+          },
+          {...GithubQueryResultFragment});
+    });
+
+    return graphQlQuery;
+  }
+
+  async printToTerminal() {
+    const queryResults = await this.data;
+    if (!queryResults) {
+      return;
+    }
     info.group(bold('Github Tasks'));
-    printGithubQueryResults(results);
+    const minQueryNameLength = Math.max(...queryResults.map(result => result.queryName.length));
+    for (const queryResult of queryResults) {
+      info(`${queryResult.queryName.padEnd(minQueryNameLength)}  ${queryResult.count}`);
+
+      if (queryResult.count > 0) {
+        info.group(queryResult.queryUrl);
+        queryResult.matchedUrls.forEach(url => info(`- ${url}`));
+        if (queryResult.count > MAX_RETURNED_ISSUES) {
+          info(`... ${queryResult.count - MAX_RETURNED_ISSUES} additional matches`);
+        }
+        info.groupEnd();
+      }
+    }
     info.groupEnd();
     info();
-  };
-}
-
-
-/** Retrieve query match counts and log discovered counts to the console. */
-async function getGithubQueryResults(
-    git: GitClient, {githubQueries: queries = []}: CaretakerConfig): Promise<GithubQueryResults> {
-  const {owner, name: repo} = git.remoteConfig;
-  /** The query object for graphql. */
-  const graphQlQuery: {
-    [key: string]: {
-      issueCount: number,
-      nodes: Array<{url: string}>,
-    }
-  } = {};
-  /** The Github search filter for the configured repository. */
-  const repoFilter = `repo:${owner}/${repo}`;
-  queries.forEach(({name, query}) => {
-    /** The name of the query, with spaces removed to match GraphQL requirements. */
-    const queryKey = alias(name.replace(/ /g, ''), 'search');
-    graphQlQuery[queryKey] = params(
-        {
-          type: 'ISSUE',
-          first: MAX_RETURNED_ISSUES,
-          query: `"${repoFilter} ${query.replace(/"/g, '\\"')}"`,
-        },
-        {
-          issueCount: types.number,
-          nodes: [{...onUnion({
-            PullRequest: {
-              url: types.string,
-            },
-            Issue: {
-              url: types.string,
-            },
-          })}],
-        },
-    );
-  });
-  /** The results of the generated github query. */
-  const queryResult = await git.github.graphql.query(graphQlQuery);
-  return Object.values(queryResult).map((result, i) => ({
-                                          queryName: queries[i].name,
-                                          count: result.issueCount,
-                                          queryUrl: encodeURI(`https://github.com/${owner}/${
-                                              repo}/issues?q=${queries[i]?.query}`),
-                                          matchedUrls: result.nodes.map(node => node.url)
-                                        }));
-}
-
-function printGithubQueryResults(results: GithubQueryResults) {
-  const minQueryNameLength = Math.max(...results.map(result => result.queryName.length));
-  for (const result of results) {
-    info(`${result.queryName.padEnd(minQueryNameLength)}  ${result.count}`);
-
-    if (result.count > 0) {
-      info.group(result.queryUrl);
-      result.matchedUrls.forEach(url => info(`- ${url}`));
-      if (result.count > MAX_RETURNED_ISSUES) {
-        info(`... ${result.count - MAX_RETURNED_ISSUES} additional matches`);
-      }
-      info.groupEnd();
-    }
   }
 }
