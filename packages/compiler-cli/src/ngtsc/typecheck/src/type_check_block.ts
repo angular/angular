@@ -512,6 +512,11 @@ class TcbDirectiveCtorOp extends TcbOp {
 
     const inputs = getBoundInputs(this.dir, this.node, this.tcb);
     for (const input of inputs) {
+      // Skip text attributes if configured to do so.
+      if (!this.tcb.env.config.checkTypeOfAttributes &&
+          input.attribute instanceof TmplAstTextAttribute) {
+        continue;
+      }
       for (const fieldName of input.fieldNames) {
         // Skip the field if an attribute has already been bound to it; we can't have a duplicate
         // key in the type constructor call.
@@ -654,6 +659,12 @@ class TcbDirectiveInputsOp extends TcbOp {
       }
 
       addParseSpanInfo(assignment, input.attribute.sourceSpan);
+      // Ignore diagnostics for text attributes if configured to do so.
+      if (!this.tcb.env.config.checkTypeOfAttributes &&
+          input.attribute instanceof TmplAstTextAttribute) {
+        markIgnoreDiagnostics(assignment);
+      }
+
       this.scope.addStatement(ts.createExpressionStatement(assignment));
     }
 
@@ -1729,11 +1740,6 @@ function getBoundInputs(
   const processAttribute = (attr: TmplAstBoundAttribute|TmplAstTextAttribute) => {
     // Skip non-property bindings.
     if (attr instanceof TmplAstBoundAttribute && attr.type !== BindingType.Property) {
-      return;
-    }
-
-    // Skip text attributes if configured to do so.
-    if (!tcb.env.config.checkTypeOfAttributes && attr instanceof TmplAstTextAttribute) {
       return;
     }
 
