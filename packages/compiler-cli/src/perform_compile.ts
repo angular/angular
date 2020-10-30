@@ -108,9 +108,10 @@ export function formatDiagnostics(
   }
 }
 
+/** Used to read configuration files. */
 // TODO(ayazhafiz): split FileSystem into a ReadonlyFileSystem and make this a
 // subset of that.
-export type ParseConfigurationHost =
+export type ConfigurationHost =
     Pick<FileSystem, 'readFile'|'exists'|'lstat'|'resolve'|'join'|'dirname'|'extname'|'pwd'>;
 
 export interface ParsedConfiguration {
@@ -119,11 +120,11 @@ export interface ParsedConfiguration {
   rootNames: string[];
   projectReferences?: readonly ts.ProjectReference[]|undefined;
   emitFlags: api.EmitFlags;
-  errors: Diagnostics;
+  errors: ts.Diagnostic[];
 }
 
 export function calcProjectFileAndBasePath(
-    project: string, host: ParseConfigurationHost = getFileSystem()):
+    project: string, host: ConfigurationHost = getFileSystem()):
     {projectFile: AbsoluteFsPath, basePath: AbsoluteFsPath} {
   const absProject = host.resolve(project);
   const projectIsDir = host.lstat(absProject).isDirectory();
@@ -145,7 +146,7 @@ export function createNgCompilerOptions(
 
 export function readConfiguration(
     project: string, existingOptions?: ts.CompilerOptions,
-    host: ParseConfigurationHost = getFileSystem()): ParsedConfiguration {
+    host: ConfigurationHost = getFileSystem()): ParsedConfiguration {
   try {
     const {projectFile, basePath} = calcProjectFileAndBasePath(project, host);
 
@@ -223,11 +224,14 @@ export function readConfiguration(
       emitFlags
     };
   } catch (e) {
-    const errors: Diagnostics = [{
+    const errors: ts.Diagnostic[] = [{
       category: ts.DiagnosticCategory.Error,
       messageText: e.stack,
-      source: api.SOURCE,
-      code: api.UNKNOWN_ERROR_CODE
+      file: undefined,
+      start: undefined,
+      length: undefined,
+      source: 'angular',
+      code: api.UNKNOWN_ERROR_CODE,
     }];
     return {project: '', errors, rootNames: [], options: {}, emitFlags: api.EmitFlags.Default};
   }
