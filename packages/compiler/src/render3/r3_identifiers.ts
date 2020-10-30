@@ -16,6 +16,8 @@ export class Identifiers {
   static TRANSFORM_METHOD = 'transform';
   static PATCH_DEPS = 'patchedDeps';
 
+  static core: o.ExternalReference = {name: null, moduleName: CORE};
+
   /* Instructions */
   static namespaceHTML: o.ExternalReference = {name: 'ɵɵnamespaceHTML', moduleName: CORE};
 
@@ -245,10 +247,8 @@ export class Identifiers {
     moduleName: CORE,
   };
 
-  static defineDirective: o.ExternalReference = {
-    name: 'ɵɵdefineDirective',
-    moduleName: CORE,
-  };
+  static defineDirective: o.ExternalReference = {name: 'ɵɵdefineDirective', moduleName: CORE};
+  static declareDirective: o.ExternalReference = {name: '$ngDeclareDirective', moduleName: CORE};
 
   static DirectiveDefWithMeta: o.ExternalReference = {
     name: 'ɵɵDirectiveDefWithMeta',

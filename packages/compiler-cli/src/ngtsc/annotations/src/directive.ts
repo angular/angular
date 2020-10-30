@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {compileDirectiveFromMetadata, ConstantPool, Expression, Identifiers, makeBindingParser, ParsedHostBindings, ParseError, parseHostBindings, R3DependencyMetadata, R3DirectiveMetadata, R3FactoryTarget, R3QueryMetadata, Statement, verifyHostBindings, WrappedNodeExpr} from '@angular/compiler';
+import {compileDeclareDirectiveFromMetadata, compileDirectiveFromMetadata, ConstantPool, Expression, Identifiers, makeBindingParser, ParsedHostBindings, ParseError, parseHostBindings, R3DependencyMetadata, R3DirectiveMetadata, R3FactoryTarget, R3QueryMetadata, Statement, verifyHostBindings, WrappedNodeExpr} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
@@ -156,6 +156,26 @@ export class DirectiveDecoratorHandler implements
       resolution: Readonly<unknown>, pool: ConstantPool): CompileResult[] {
     const meta = analysis.meta;
     const res = compileDirectiveFromMetadata(meta, pool, makeBindingParser());
+    const factoryRes = compileNgFactoryDefField(
+        {...meta, injectFn: Identifiers.directiveInject, target: R3FactoryTarget.Directive});
+    if (analysis.metadataStmt !== null) {
+      factoryRes.statements.push(analysis.metadataStmt);
+    }
+    return [
+      factoryRes, {
+        name: 'ɵdir',
+        initializer: res.expression,
+        statements: [],
+        type: res.type,
+      }
+    ];
+  }
+
+  compilePartial(
+      node: ClassDeclaration, analysis: Readonly<DirectiveHandlerData>,
+      resolution: Readonly<unknown>): CompileResult|CompileResult[] {
+    const meta = analysis.meta;
+    const res = compileDeclareDirectiveFromMetadata(meta);
     const factoryRes = compileNgFactoryDefField(
         {...meta, injectFn: Identifiers.directiveInject, target: R3FactoryTarget.Directive});
     if (analysis.metadataStmt !== null) {
