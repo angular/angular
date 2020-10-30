@@ -6,15 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CompilerOptions, formatDiagnostics, ParseConfigurationHost, readConfiguration} from '@angular/compiler-cli';
+import {CompilerOptions, ConfigurationHost, readConfiguration} from '@angular/compiler-cli';
 import {absoluteFromSourceFile, AbsoluteFsPath} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {TypeCheckShimGenerator} from '@angular/compiler-cli/src/ngtsc/typecheck';
 import {OptimizeFor, TypeCheckingProgramStrategy} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
 import * as ts from 'typescript/lib/tsserverlibrary';
 
+import {LanguageServiceAdapter, LSParseConfigHost} from './adapters';
 import {CompilerFactory} from './compiler_factory';
 import {DefinitionBuilder} from './definitions';
-import {LanguageServiceAdapter, LSParseConfigHost} from './language_service_adapter';
 import {QuickInfoBuilder} from './quick_info';
 import {getTargetAtPosition} from './template_target';
 import {getTemplateInfoAtPosition, isTypeScriptFile} from './utils';
@@ -27,7 +27,7 @@ export class LanguageService {
   private readonly parseConfigHost: LSParseConfigHost;
 
   constructor(project: ts.server.Project, private readonly tsLS: ts.LanguageService) {
-    this.parseConfigHost = new LSParseConfigHost(project);
+    this.parseConfigHost = new LSParseConfigHost(project.projectService.host);
     this.options = parseNgCompilerOptions(project, this.parseConfigHost);
     this.strategy = createTypeCheckingProgramStrategy(project);
     this.adapter = new LanguageServiceAdapter(project);
@@ -116,15 +116,15 @@ export class LanguageService {
   }
 }
 
-export function parseNgCompilerOptions(
-    project: ts.server.Project, host: ParseConfigurationHost): CompilerOptions {
+function parseNgCompilerOptions(
+    project: ts.server.Project, host: ConfigurationHost): CompilerOptions {
   if (!(project instanceof ts.server.ConfiguredProject)) {
     return {};
   }
   const {options, errors} =
       readConfiguration(project.getConfigFilePath(), /* existingOptions */ undefined, host);
   if (errors.length > 0) {
-    project.error(formatDiagnostics(errors));
+    project.setProjectErrors(errors);
   }
 
   return options;

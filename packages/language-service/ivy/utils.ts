@@ -10,6 +10,7 @@ import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
 import {isExternalResource} from '@angular/compiler-cli/src/ngtsc/metadata';
 import {DeclarationNode} from '@angular/compiler-cli/src/ngtsc/reflection';
 import {DirectiveSymbol} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
+import {Diagnostic as ngDiagnostic, isNgDiagnostic} from '@angular/compiler-cli/src/transformers/api';
 import * as e from '@angular/compiler/src/expression_parser/ast';  // e for expression AST
 import * as t from '@angular/compiler/src/render3/r3_ast';         // t for template AST
 import * as ts from 'typescript';

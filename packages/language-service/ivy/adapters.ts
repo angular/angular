@@ -6,7 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ParseConfigurationHost} from '@angular/compiler-cli';
+/** @fileoverview provides adapters for communicating with the ng compiler */
+
+import {ConfigurationHost} from '@angular/compiler-cli';
 import {NgCompilerAdapter} from '@angular/compiler-cli/src/ngtsc/core/api';
 import {absoluteFrom, AbsoluteFsPath, FileStats, PathSegment, PathString} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {isShim} from '@angular/compiler-cli/src/ngtsc/shims';
@@ -88,14 +90,13 @@ export class LanguageServiceAdapter implements NgCompilerAdapter {
  * because signatures of calls like `FileSystem#readFile` are a bit stricter
  * than those on the adapter.
  */
-export class LSParseConfigHost implements ParseConfigurationHost {
-  private readonly host: ts.server.ServerHost = this.project.projectService.host;
-  constructor(private readonly project: ts.server.Project) {}
+export class LSParseConfigHost implements ConfigurationHost {
+  constructor(private readonly serverHost: ts.server.ServerHost) {}
   exists(path: AbsoluteFsPath): boolean {
-    return this.project.fileExists(path) || this.project.directoryExists(path);
+    return this.serverHost.fileExists(path) || this.serverHost.directoryExists(path);
   }
   readFile(path: AbsoluteFsPath): string {
-    const content = this.project.readFile(path);
+    const content = this.serverHost.readFile(path);
     if (content === undefined) {
       throw new Error(`LanguageServiceFS#readFile called on unavailable file ${path}`);
     }
@@ -104,10 +105,10 @@ export class LSParseConfigHost implements ParseConfigurationHost {
   lstat(path: AbsoluteFsPath): FileStats {
     return {
       isFile: () => {
-        return this.project.fileExists(path);
+        return this.serverHost.fileExists(path);
       },
       isDirectory: () => {
-        return this.project.directoryExists(path);
+        return this.serverHost.directoryExists(path);
       },
       isSymbolicLink: () => {
         throw new Error(`LanguageServiceFS#lstat#isSymbolicLink not implemented`);
@@ -115,13 +116,13 @@ export class LSParseConfigHost implements ParseConfigurationHost {
     };
   }
   pwd(): AbsoluteFsPath {
-    return this.project.getCurrentDirectory() as AbsoluteFsPath;
+    return this.serverHost.getCurrentDirectory() as AbsoluteFsPath;
   }
   extname(path: AbsoluteFsPath|PathSegment): string {
     return p.extname(path);
   }
   resolve(...paths: string[]): AbsoluteFsPath {
-    return this.host.resolvePath(this.join(paths[0], ...paths.slice(1))) as AbsoluteFsPath;
+    return this.serverHost.resolvePath(this.join(paths[0], ...paths.slice(1))) as AbsoluteFsPath;
   }
   dirname<T extends PathString>(file: T): T {
     return p.dirname(file) as T;
