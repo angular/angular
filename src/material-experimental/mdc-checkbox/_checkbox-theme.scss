@@ -1,5 +1,3 @@
-@use '@material/checkbox/checkbox-theme' as checkbox-theme;
-
 @import '@material/checkbox/mixins.import';
 @import '@material/checkbox/variables.import';
 @import '@material/form-field/mixins.import';
@@ -10,19 +8,15 @@
 // Mixin that includes the checkbox theme styles with a given palette.
 // By default, the MDC checkbox always uses the `secondary` palette.
 @mixin _mdc-checkbox-styles-with-color($color) {
-  @include checkbox-theme.theme((
-    density-scale: null,
-    checkmark-color: mdc-theme-prop-value(on-#{$color}),
-    container-checked-color: $color,
-    container-checked-hover-color: null,
-    container-disabled-color: rgba(mdc-theme-prop-value(on-surface), 0.38),
-    outline-color: rgba(mdc-theme-prop-value(on-surface), 0.54),
-    outline-hover-color: null,
-    ripple-color: null,
-    ripple-opacity: null,
-    ripple-checked-color: null,
-    ripple-checked-opacity: null,
-  ));
+  $orig-mdc-checkbox-mark-color: $mdc-checkbox-mark-color;
+  $mdc-checkbox-mark-color: mdc-theme-prop-value(on-#{$color}) !global;
+  $orig-mdc-checkbox-baseline-theme-color: $mdc-checkbox-baseline-theme-color;
+  $mdc-checkbox-baseline-theme-color: $color !global;
+
+  @include mdc-checkbox-without-ripple($query: $mat-theme-styles-query);
+
+  $mdc-checkbox-mark-color: $orig-mdc-checkbox-mark-color !global;
+  $mdc-checkbox-baseline-theme-color: $orig-mdc-checkbox-baseline-theme-color !global;
 }
 
 @mixin mat-mdc-checkbox-color($config-or-theme) {
