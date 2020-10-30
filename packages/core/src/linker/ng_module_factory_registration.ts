@@ -8,8 +8,9 @@
 
 
 import {Type} from '../interface/type';
-import {autoRegisterModuleById} from '../render3/definition';
+import {autoRegisterModuleById, getNgModuleDef} from '../render3/definition';
 import {NgModuleType} from '../render3/ng_module_ref';
+import {maybeUnwrapFn} from '../render3/util/misc_utils';
 import {stringify} from '../util/stringify';
 
 import {NgModuleFactory} from './ng_module_factory';
@@ -39,20 +40,27 @@ function assertSameOrNotExisting(id: string, type: Type<any>|null, incoming: Typ
   }
 }
 
-export function registerNgModuleType(ngModuleType: NgModuleType) {
-  if (ngModuleType.ɵmod.id !== null) {
-    const id = ngModuleType.ɵmod.id;
-    const existing = modules.get(id) as NgModuleType | null;
-    assertSameOrNotExisting(id, existing, ngModuleType);
-    modules.set(id, ngModuleType);
-  }
+export function registerNgModuleType(ngModuleType: NgModuleType): void {
+  const visited = new Set<NgModuleType>();
+  recurse(ngModuleType);
+  function recurse(ngModuleType: NgModuleType): void {
+    // The imports array of an NgModule must refer to other NgModules,
+    // so an error is thrown if no module definition is available.
+    const def = getNgModuleDef(ngModuleType, /* throwNotFound */ true);
+    const id = def.id;
+    if (id !== null) {
+      const existing = modules.get(id) as NgModuleType | null;
+      assertSameOrNotExisting(id, existing, ngModuleType);
+      modules.set(id, ngModuleType);
+    }
 
-  let imports = ngModuleType.ɵmod.imports;
-  if (imports instanceof Function) {
-    imports = imports();
-  }
-  if (imports) {
-    imports.forEach(i => registerNgModuleType(i as NgModuleType));
+    const imports = maybeUnwrapFn(def.imports) as NgModuleType[];
+    for (const i of imports) {
+      if (!visited.has(i)) {
+        visited.add(i);
+        recurse(i);
+      }
+    }
   }
 }
 
