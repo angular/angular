@@ -22,6 +22,8 @@ ng_module(
     deps = [
         "//src/cdk/table",
         "//src/material-experimental/mdc-core",
+        "//src/material-experimental/mdc-paginator",
+        "//src/material/sort",
         "@npm//@angular/core",
         "@npm//material-components-web",
     ],

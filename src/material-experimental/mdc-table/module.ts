@@ -28,6 +28,7 @@ import {
   MatRowDef,
   MatNoDataRow
 } from './row';
+import {MatTextColumn} from './text-column';
 
 const EXPORTED_DECLARATIONS = [
   // Table
@@ -52,6 +53,8 @@ const EXPORTED_DECLARATIONS = [
   MatRow,
   MatFooterRow,
   MatNoDataRow,
+
+  MatTextColumn,
 ];
 
 @NgModule({
