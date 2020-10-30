@@ -15,8 +15,7 @@ import {PartialLinker} from './partial_linker';
 /**
  * A `PartialLinker` that is designed to process `$ngDeclareComponent()` call expressions.
  */
-export class PartialComponentLinkerVersion1<TStatement, TExpression> implements
-    PartialLinker<TStatement, TExpression> {
+export class PartialComponentLinkerVersion1<TExpression> implements PartialLinker<TExpression> {
   linkPartialDeclaration(
       sourceUrl: string, code: string, constantPool: ConstantPool,
       metaObj: AstObject<TExpression>): o.Expression {
