@@ -12,7 +12,7 @@ import {AstObject} from '../../ast/ast_value';
 /**
  * An interface for classes that can link partial declarations into full definitions.
  */
-export interface PartialLinker<TStatement, TExpression> {
+export interface PartialLinker<TExpression> {
   /**
    * Link the partial declaration `metaObj` information to generate a full definition expression.
    */

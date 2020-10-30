@@ -9,8 +9,8 @@ import {PartialComponentLinkerVersion1} from './partial_component_linker_1';
 import {PartialDirectiveLinkerVersion1} from './partial_directive_linker_1';
 import {PartialLinker} from './partial_linker';
 
-export class PartialLinkerSelector<TStatement, TExpression> {
-  private linkers: Record<string, Record<number, PartialLinker<TStatement, TExpression>>> = {
+export class PartialLinkerSelector<TExpression> {
+  private linkers: Record<string, Record<number, PartialLinker<TExpression>>> = {
     '$ngDeclareDirective': {
       1: new PartialDirectiveLinkerVersion1(),
     },
@@ -30,7 +30,7 @@ export class PartialLinkerSelector<TStatement, TExpression> {
    * Returns the `PartialLinker` that can handle functions with the given name and version.
    * Throws an error if there is none.
    */
-  getLinker(functionName: string, version: number): PartialLinker<TStatement, TExpression> {
+  getLinker(functionName: string, version: number): PartialLinker<TExpression> {
     const versions = this.linkers[functionName];
     if (versions === undefined) {
       throw new Error(`Unknown partial declaration function ${functionName}.`);
