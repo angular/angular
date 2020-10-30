@@ -10,6 +10,7 @@ import {ɵɵinject, ɵɵinvalidFactoryDep} from '../../di/injector_compatibility
 import {ɵɵdefineInjectable, ɵɵdefineInjector} from '../../di/interface/defs';
 import * as sanitization from '../../sanitization/sanitization';
 import * as r3 from '../index';
+import * as partial from './partial';
 
 
 
@@ -169,4 +170,6 @@ export const angularCoreEnv: {[name: string]: Function} =
        'ɵɵtrustConstantHtml': sanitization.ɵɵtrustConstantHtml,
        'ɵɵtrustConstantScript': sanitization.ɵɵtrustConstantScript,
        'ɵɵtrustConstantResourceUrl': sanitization.ɵɵtrustConstantResourceUrl,
+
+       '$ngDeclareDirective': partial.$ngDeclareDirective,
      }))();

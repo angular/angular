@@ -77,6 +77,8 @@ export {
   NG_PIPE_DEF as ɵNG_PIPE_DEF,
 } from './render3/fields';
 export {
+
+  $ngDeclareDirective,
   AttributeMarker as ɵAttributeMarker,
   ComponentDef as ɵComponentDef,
   ComponentFactory as ɵRender3ComponentFactory,

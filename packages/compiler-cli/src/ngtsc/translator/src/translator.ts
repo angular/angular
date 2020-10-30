@@ -249,7 +249,10 @@ export class ExpressionTranslatorVisitor<TStatement, TExpression> implements o.E
 
   visitExternalExpr(ast: o.ExternalExpr, _context: Context): TExpression {
     if (ast.value.name === null) {
-      throw new Error(`Import unknown module or symbol ${ast.value}`);
+      if (ast.value.moduleName === null) {
+        throw new Error('Invalid import without name nor moduleName');
+      }
+      return this.imports.generateNamespaceImport(ast.value.moduleName);
     }
     // If a moduleName is specified, this is a normal import. If there's no module name, it's a
     // reference to a global/ambient symbol.
