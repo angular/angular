@@ -141,9 +141,37 @@ describe('AstObject', () => {
       });
     });
   });
+
+  describe('toMap()', () => {
+    it('should convert the AstObject to a Map with each property mapped', () => {
+      expect(obj.toMap(value => value.getOpaque())).toEqual(new Map([
+        ['a', obj.getOpaque('a')],
+        ['b', obj.getOpaque('b')],
+        ['c', obj.getOpaque('c')],
+        ['d', obj.getOpaque('d')],
+        ['e', obj.getOpaque('e')],
+      ]));
+    });
+  });
 });
 
 describe('AstValue', () => {
+  describe('getSymbolName', () => {
+    it('should return the name of an identifier', () => {
+      expect(new AstValue(factory.createIdentifier('Foo'), host).getSymbolName()).toEqual('Foo');
+    });
+
+    it('should return the name of a property access', () => {
+      const propertyAccess = factory.createPropertyAccess(
+          factory.createIdentifier('Foo'), factory.createIdentifier('Bar'));
+      expect(new AstValue(propertyAccess, host).getSymbolName()).toEqual('Bar');
+    });
+
+    it('should return null if no symbol name is available', () => {
+      expect(new AstValue(factory.createLiteral('a'), host).getSymbolName()).toBeNull();
+    });
+  });
+
   describe('isNumber', () => {
     it('should return true if the value is a number', () => {
       expect(new AstValue(factory.createLiteral(42), host).isNumber()).toEqual(true);
