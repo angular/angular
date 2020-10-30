@@ -6,7 +6,15 @@ ts_library(
     srcs = ["bootstrap.ts"],
     deps = [
         "//packages:types",
+        "//packages/compiler-cli/linker/babel",
         "//packages/compiler-cli/test/compliance/mock_compile",
+        "@npm//@babel/core",
+        "@npm//@babel/generator",
+        "@npm//@babel/template",
+        "@npm//@babel/types",
+        "@npm//@types/babel__core",
+        "@npm//@types/babel__generator",
+        "@npm//@types/babel__template",
     ],
 )
 
