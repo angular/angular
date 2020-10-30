@@ -44,7 +44,9 @@ export function registerNgModuleType(ngModuleType: NgModuleType): void {
   const visited = new Set<NgModuleType>();
   recurse(ngModuleType);
   function recurse(ngModuleType: NgModuleType): void {
-    const def = getNgModuleDef(ngModuleType, true);
+    // The imports array of an NgModule must refer to other NgModules,
+    // so an error is thrown if no module definition is available.
+    const def = getNgModuleDef(ngModuleType, /* throwNotFound */ true);
     const id = def.id;
     if (id !== null) {
       const existing = modules.get(id) as NgModuleType | null;
