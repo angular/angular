@@ -50,6 +50,11 @@ export abstract class JsonpCallbackContext {
  */
 @Injectable()
 export class JsonpClientBackend implements HttpBackend {
+  /**
+   * A resolved promise that can be used to schedule microtasks in the event handlers.
+   */
+  private readonly resolvedPromise = Promise.resolve();
+
   constructor(private callbackMap: JsonpCallbackContext, @Inject(DOCUMENT) private document: any) {}
 
   /**
@@ -140,33 +145,38 @@ export class JsonpClientBackend implements HttpBackend {
           return;
         }
 
-        // Cleanup the page.
-        cleanup();
+        // We wrap it in an extra Promise, to ensure the microtask
+        // is scheduled after the loaded endpoint has executed any potential microtask itself,
+        // which is not guaranteed in Internet Explorer and EdgeHTML. See issue #39496
+        this.resolvedPromise.then(() => {
+          // Cleanup the page.
+          cleanup();
 
-        // Check whether the response callback has run.
-        if (!finished) {
-          // It hasn't, something went wrong with the request. Return an error via
-          // the Observable error path. All JSONP errors have status 0.
-          observer.error(new HttpErrorResponse({
+          // Check whether the response callback has run.
+          if (!finished) {
+            // It hasn't, something went wrong with the request. Return an error via
+            // the Observable error path. All JSONP errors have status 0.
+            observer.error(new HttpErrorResponse({
+              url,
+              status: 0,
+              statusText: 'JSONP Error',
+              error: new Error(JSONP_ERR_NO_CALLBACK),
+            }));
+            return;
+          }
+
+          // Success. body either contains the response body or null if none was
+          // returned.
+          observer.next(new HttpResponse({
+            body,
+            status: 200,
+            statusText: 'OK',
             url,
-            status: 0,
-            statusText: 'JSONP Error',
-            error: new Error(JSONP_ERR_NO_CALLBACK),
           }));
-          return;
-        }
 
-        // Success. body either contains the response body or null if none was
-        // returned.
-        observer.next(new HttpResponse({
-          body,
-          status: 200,
-          statusText: 'OK',
-          url,
-        }));
-
-        // Complete the stream, the response is over.
-        observer.complete();
+          // Complete the stream, the response is over.
+          observer.complete();
+        });
       };
 
       // onError() is the error callback, which runs if the script returned generates

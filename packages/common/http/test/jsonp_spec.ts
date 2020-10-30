@@ -45,6 +45,16 @@ const SAMPLE_REQ = new HttpRequest<never>('JSONP', '/test');
       runOnlyCallback(home, {data: 'This is a test'});
       document.mockLoad();
     });
+    // Issue #39496
+    it('handles a request with callback call wrapped in promise', done => {
+      backend.handle(SAMPLE_REQ).subscribe(() => {
+        done();
+      });
+      Promise.resolve().then(() => {
+        runOnlyCallback(home, {data: 'This is a test'});
+      });
+      document.mockLoad();
+    });
     it('handles an error response properly', done => {
       const error = new Error('This is a test error');
       backend.handle(SAMPLE_REQ).pipe(toArray()).subscribe(undefined, (err: HttpErrorResponse) => {
