@@ -13,9 +13,9 @@ import {TypeCheckShimGenerator} from '@angular/compiler-cli/src/ngtsc/typecheck'
 import {OptimizeFor, TypeCheckingProgramStrategy} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
 import * as ts from 'typescript/lib/tsserverlibrary';
 
+import {LanguageServiceAdapter, LanguageServiceFS} from './adapters';
 import {CompilerFactory} from './compiler_factory';
 import {DefinitionBuilder} from './definitions';
-import {LanguageServiceAdapter, LanguageServiceFS} from './language_service_adapter';
 import {QuickInfoBuilder} from './quick_info';
 import {getTargetAtPosition} from './template_target';
 import {getTemplateInfoAtPosition, isTypeScriptFile} from './utils';

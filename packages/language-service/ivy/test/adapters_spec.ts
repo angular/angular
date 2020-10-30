@@ -8,7 +8,7 @@
 
 import * as ts from 'typescript/lib/tsserverlibrary';
 
-import {LanguageServiceAdapter} from '../language_service_adapter';
+import {LanguageServiceAdapter} from '../adapters';
 
 import {MockService, setup, TEST_TEMPLATE} from './mock_host';
 
