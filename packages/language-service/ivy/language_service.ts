@@ -6,15 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CompilerOptions, createNgCompilerOptions} from '@angular/compiler-cli';
-import {absoluteFromSourceFile, AbsoluteFsPath} from '@angular/compiler-cli/src/ngtsc/file_system';
+import {CompilerOptions, formatDiagnostics, readConfiguration} from '@angular/compiler-cli';
+import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
+import {absoluteFromSourceFile, AbsoluteFsPath, FileSystem, setFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {TypeCheckShimGenerator} from '@angular/compiler-cli/src/ngtsc/typecheck';
 import {OptimizeFor, TypeCheckingProgramStrategy} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
 import * as ts from 'typescript/lib/tsserverlibrary';
 
 import {CompilerFactory} from './compiler_factory';
 import {DefinitionBuilder} from './definitions';
-import {LanguageServiceAdapter} from './language_service_adapter';
+import {LanguageServiceAdapter, LanguageServiceFS} from './language_service_adapter';
 import {QuickInfoBuilder} from './quick_info';
 import {getTargetAtPosition} from './template_target';
 import {getTemplateInfoAtPosition, isTypeScriptFile} from './utils';
@@ -24,17 +25,37 @@ export class LanguageService {
   private readonly compilerFactory: CompilerFactory;
   private readonly strategy: TypeCheckingProgramStrategy;
   private readonly adapter: LanguageServiceAdapter;
+  private readonly fs: LanguageServiceFS;
 
   constructor(project: ts.server.Project, private readonly tsLS: ts.LanguageService) {
-    this.options = parseNgCompilerOptions(project);
+    this.fs = new LanguageServiceFS(project);
+    this.options = parseNgCompilerOptions(project, this.fs);
     this.strategy = createTypeCheckingProgramStrategy(project);
     this.adapter = new LanguageServiceAdapter(project);
     this.compilerFactory = new CompilerFactory(this.adapter, this.strategy);
     this.watchConfigFile(project);
   }
 
+  getCompilerOptions(): CompilerOptions {
+    return this.options;
+  }
+
+  /**
+   * Before the LS processes a request, it needs to ensure the state of the
+   * compiler instance used to analyze the program:
+   *
+   * 1. The compiler should exist
+   * 2. The compiler should be provided all, if any, changes to the file the request is for
+   * 3. The compiler file system should be set to the one provided by the langauge
+   *    service adapter
+   */
+  private ensureCompiler(fileName: string): NgCompiler {
+    setFileSystem(this.fs);
+    return this.compilerFactory.getOrCreateWithChangedFile(fileName, this.options);
+  }
+
   getSemanticDiagnostics(fileName: string): ts.Diagnostic[] {
-    const compiler = this.compilerFactory.getOrCreateWithChangedFile(fileName, this.options);
+    const compiler = this.ensureCompiler(fileName);
     const ttc = compiler.getTemplateTypeChecker();
     const diagnostics: ts.Diagnostic[] = [];
     if (isTypeScriptFile(fileName)) {
@@ -57,7 +78,7 @@ export class LanguageService {
 
   getDefinitionAndBoundSpan(fileName: string, position: number): ts.DefinitionInfoAndBoundSpan
       |undefined {
-    const compiler = this.compilerFactory.getOrCreateWithChangedFile(fileName, this.options);
+    const compiler = this.ensureCompiler(fileName);
     const results = new DefinitionBuilder(this.tsLS, compiler, this.adapter)
                         .getDefinitionAndBoundSpan(fileName, position);
     this.compilerFactory.registerLastKnownProgram();
@@ -66,7 +87,7 @@ export class LanguageService {
 
   getTypeDefinitionAtPosition(fileName: string, position: number):
       readonly ts.DefinitionInfo[]|undefined {
-    const compiler = this.compilerFactory.getOrCreateWithChangedFile(fileName, this.options);
+    const compiler = this.ensureCompiler(fileName);
     const results = new DefinitionBuilder(this.tsLS, compiler, this.adapter)
                         .getTypeDefinitionsAtPosition(fileName, position);
     this.compilerFactory.registerLastKnownProgram();
@@ -104,24 +125,25 @@ export class LanguageService {
         project.getConfigFilePath(), (fileName: string, eventKind: ts.FileWatcherEventKind) => {
           project.log(`Config file changed: ${fileName}`);
           if (eventKind === ts.FileWatcherEventKind.Changed) {
-            this.options = parseNgCompilerOptions(project);
+            this.options = parseNgCompilerOptions(project, this.fs);
           }
         });
   }
 }
 
-export function parseNgCompilerOptions(project: ts.server.Project): CompilerOptions {
-  let config = {};
-  if (project instanceof ts.server.ConfiguredProject) {
-    const configPath = project.getConfigFilePath();
-    const result = ts.readConfigFile(configPath, path => project.readFile(path));
-    if (result.error) {
-      project.error(ts.flattenDiagnosticMessageText(result.error.messageText, '\n'));
-    }
-    config = result.config || config;
+export function parseNgCompilerOptions(
+    project: ts.server.Project, fs: FileSystem): CompilerOptions {
+  if (!(project instanceof ts.server.ConfiguredProject)) {
+    return {};
   }
-  const basePath = project.getCurrentDirectory();
-  return createNgCompilerOptions(basePath, config, project.getCompilationSettings());
+  setFileSystem(fs);
+  const {options, errors} =
+      readConfiguration(project.getConfigFilePath(), /* existingOptions */ undefined);
+  if (errors.length > 0) {
+    project.error(formatDiagnostics(errors));
+  }
+
+  return options;
 }
 
 function createTypeCheckingProgramStrategy(project: ts.server.Project):

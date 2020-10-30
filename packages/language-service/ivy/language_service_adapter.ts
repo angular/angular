@@ -7,9 +7,10 @@
  */
 
 import {NgCompilerAdapter} from '@angular/compiler-cli/src/ngtsc/core/api';
-import {absoluteFrom, AbsoluteFsPath} from '@angular/compiler-cli/src/ngtsc/file_system';
+import {absoluteFrom, AbsoluteFsPath, FileStats, FileSystem, PathSegment, PathString} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {AdapterResourceLoader} from '@angular/compiler-cli/src/ngtsc/resource';
 import {isShim} from '@angular/compiler-cli/src/ngtsc/shims';
+import * as p from 'path';
 import * as ts from 'typescript/lib/tsserverlibrary';
 import {ResourceResolver} from './definitions';
 
@@ -24,7 +25,7 @@ export class LanguageServiceAdapter implements NgCompilerAdapter, ResourceResolv
   readonly rootDirs: AbsoluteFsPath[];
   private readonly templateVersion = new Map<string, string>();
 
-  constructor(private readonly project: ts.server.Project) {
+  constructor(readonly project: ts.server.Project) {
     this.rootDirs = project.getCompilationSettings().rootDirs?.map(absoluteFrom) || [];
   }
 
@@ -36,7 +37,7 @@ export class LanguageServiceAdapter implements NgCompilerAdapter, ResourceResolv
     return this.project.fileExists(fileName);
   }
 
-  readFile(fileName: string): string|undefined {
+  readFile(fileName: AbsoluteFsPath): string|undefined {
     return this.project.readFile(fileName);
   }
 
@@ -83,5 +84,147 @@ export class LanguageServiceAdapter implements NgCompilerAdapter, ResourceResolv
   resolve(file: string, basePath: string): string {
     const loader = new AdapterResourceLoader(this, this.project.getCompilationSettings());
     return loader.resolve(file, basePath);
+  }
+}
+
+/**
+ * Provides a file system abstraction over the project a language service is
+ * associated with. This is consumed by some compiler APIs.
+ *
+ * This is independent of the language service adapter because signatures of
+ * calls like `FileSystem#readFile` are a bit stricter than those on the
+ * adapter.
+ *
+ * Note: file system APIs that would change the state of the native filesystem
+ * are disabled intentionally, as the language service should be read-only.
+ */
+export class LanguageServiceFS implements FileSystem {
+  private readonly host: ts.server.ServerHost = this.project.projectService.host;
+  constructor(private readonly project: ts.server.Project) {}
+  exists(path: AbsoluteFsPath): boolean {
+    return this.project.fileExists(path) || this.project.directoryExists(path);
+  }
+  readFile(path: AbsoluteFsPath): string {
+    const content = this.project.readFile(path);
+    if (content === undefined) {
+      throw new Error(`LanguageServiceFS#readFile called on unavailable file ${path}`);
+    }
+    return content;
+  }
+  readFileBuffer(_path: AbsoluteFsPath): Uint8Array {
+    // Note/TODO: Usages of the LanguageServiceFS should not require reading/writing byte arrays,
+    // encoding/decoding byte arrays ourselves is out of scope, and I would like to avoid
+    // introducing a dependency if we don't need to.
+    throw new Error('LanguageServiceFS#readFileBuffer not implemented');
+  }
+  writeFile(_path: AbsoluteFsPath, _data: string|Uint8Array, _exclusive?: boolean): void {
+    // Modifies FS
+    throw new Error('LanguageServiceFS#writeFile not implemented.');
+  }
+  removeFile(_path: AbsoluteFsPath): void {
+    // Modifies FS
+    throw new Error('LanguageServiceFS#removeFile not implemented');
+  }
+  symlink(_target: AbsoluteFsPath, _path: AbsoluteFsPath): void {
+    // Modifies FS
+    throw new Error('LanguageServiceFS#symlink not implemented');
+  }
+  readdir(path: AbsoluteFsPath): PathSegment[] {
+    return this.project.readDirectory(path) as PathSegment[];
+  }
+  lstat(path: AbsoluteFsPath): FileStats {
+    return {
+      isFile: () => {
+        return this.project.fileExists(path);
+      },
+      isDirectory: () => {
+        return this.project.directoryExists(path);
+      },
+      isSymbolicLink: () => {
+        // NB: this is kind of hack because TS does not expose APIs for
+        // determining if a file is a symlink.
+        return this.realpath(path) !== path;
+      },
+    };
+  }
+  stat(path: AbsoluteFsPath): FileStats {
+    return {
+      isFile: () => {
+        return this.project.fileExists(path);
+      },
+      isDirectory: () => {
+        return this.project.directoryExists(path);
+      },
+      isSymbolicLink: () => {
+        return false;
+      },
+    };
+  }
+  pwd(): AbsoluteFsPath {
+    return this.project.getCurrentDirectory() as AbsoluteFsPath;
+  }
+  chdir(path: AbsoluteFsPath): void {
+    process.chdir(path);
+  }
+  extname(path: AbsoluteFsPath|PathSegment): string {
+    return p.extname(path);
+  }
+  copyFile(_from: AbsoluteFsPath, _to: AbsoluteFsPath): void {
+    // Modifies FS
+    throw new Error('LanguageServiceFS#symlink not implemented');
+  }
+  moveFile(_from: AbsoluteFsPath, _to: AbsoluteFsPath): void {
+    // Modifies FS
+    throw new Error('LanguageServiceFS#symlink not implemented');
+  }
+  ensureDir(_path: AbsoluteFsPath): void {
+    // Modifies FS
+    throw new Error('LanguageServiceFS#symlink not implemented');
+  }
+  removeDeep(_path: AbsoluteFsPath): void {
+    // Modifies FS
+    throw new Error('LanguageServiceFS#symlink not implemented');
+  }
+  isCaseSensitive(): boolean {
+    return this.host.useCaseSensitiveFileNames;
+  }
+  isRoot(path: AbsoluteFsPath): boolean {
+    return this.dirname(path) === this.normalize(path);
+  }
+  isRooted(path: string): boolean {
+    return p.isAbsolute(path);
+  }
+  /**
+   * From path.join:
+   * The right-most parameter is considered {to}.  Other parameters are
+   * considered an array of {from}.
+   *
+   * Starting from leftmost {from} parameter, resolves {to} to an absolute path.
+   */
+  resolve(...paths: string[]): AbsoluteFsPath {
+    return this.host.resolvePath(this.join(paths[0], ...paths.slice(1))) as AbsoluteFsPath;
+  }
+  dirname<T extends PathString>(file: T): T {
+    return p.dirname(file) as T;
+  }
+  join<T extends PathString>(basePath: T, ...paths: string[]): T {
+    return p.join(basePath, ...paths) as T;
+  }
+  relative<T extends PathString>(from: T, to: T): PathSegment|AbsoluteFsPath {
+    return p.relative(from, to) as PathSegment | AbsoluteFsPath;
+  }
+  basename(filePath: string, extension?: string): PathSegment {
+    return p.basename(filePath, extension) as PathSegment;
+  }
+  realpath(filePath: AbsoluteFsPath): AbsoluteFsPath {
+    if (this.host.realpath) return this.host.realpath(filePath) as AbsoluteFsPath;
+    // TODO: consider falling back on path's utilities here.
+    throw new Error('LanguageServiceFS#realpath cannot determine file\'s real path');
+  }
+  getDefaultLibLocation(): AbsoluteFsPath {
+    return ts.getDefaultLibFilePath(this.project.getCompilerOptions()) as AbsoluteFsPath;
+  }
+  normalize<T extends PathString>(path: T): T {
+    return ts.server.toNormalizedPath(path) as string as T;
   }
 }

@@ -146,7 +146,8 @@ export function readConfiguration(
 
     const readExtendedConfigFile =
         (configFile: string, existingConfig?: any): {config?: any, error?: ts.Diagnostic} => {
-          const {config, error} = ts.readConfigFile(configFile, ts.sys.readFile);
+          const {config, error} =
+              ts.readConfigFile(configFile, (file) => fs.readFile(fs.resolve(file)));
 
           if (error) {
             return {error};
