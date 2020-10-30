@@ -366,10 +366,10 @@ See also [Using runtime-global libraries inside your app](guide/using-libraries#
 
 ### Optimization and source map configuration
 
-The `--optimization` and `--sourceMap` command options are simple Boolean flags.
-You can supply an object as a configuration value for either of these to provide more detailed instruction.
+The `optimization` and `sourceMap` browser builder options can be either a Boolean or an Object for more fine-grained configuration.
+In this section we will explain how to fine tune these options.
 
-* The flag `--optimization` applies to both scripts, styles and fonts. You can supply a value such as the following to apply optimization to one or the other:
+* The `optimization` option applies to scripts, styles and fonts. You can supply a value such as the following to apply optimization to one or the other:
 
 <code-example language="json">
 
@@ -388,10 +388,7 @@ You can supply an object as a configuration value for either of these to provide
 
 </div>
 
-* The flag `--sourceMap` outputs source maps for both scripts and styles.
-You can configure the option to apply to one or the other.
-You can also choose to output hidden source maps, or resolve vendor package source maps.
-For example:
+* The `sourceMap` option applies for both scripts and styles. You can also choose to output hidden source maps, or resolve vendor package source maps:
 
 <code-example language="json">
 
