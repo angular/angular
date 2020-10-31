@@ -158,17 +158,17 @@ describe('AstObject', () => {
 describe('AstValue', () => {
   describe('getSymbolName', () => {
     it('should return the name of an identifier', () => {
-      expect(new AstValue(t.identifier('Foo'), host).getSymbolName()).toEqual('Foo');
+      expect(new AstValue(factory.createIdentifier('Foo'), host).getSymbolName()).toEqual('Foo');
     });
 
-    it('should return the name of an member expression', () => {
-      expect(new AstValue(t.memberExpression(t.identifier('Foo'), t.identifier('Bar')), host)
-                 .getSymbolName())
-          .toEqual('Bar');
+    it('should return the name of a property access', () => {
+      const propertyAccess = factory.createPropertyAccess(
+          factory.createIdentifier('Foo'), factory.createIdentifier('Bar'));
+      expect(new AstValue(propertyAccess, host).getSymbolName()).toEqual('Bar');
     });
 
     it('should return null if no symbol name is available', () => {
-      expect(new AstValue(t.stringLiteral('a'), host).getSymbolName()).toBeNull();
+      expect(new AstValue(factory.createLiteral('a'), host).getSymbolName()).toBeNull();
     });
   });
 
