@@ -281,6 +281,14 @@
     "bio": "Raul works as a CEO and Front-end Architect at Byte Default for companies around the world helping them to build high-performance web apps. In his spare time he's usually working on Videogular, involved in local meetups, speaking at conferences and contributing to open source projects.",
     "groups": ["GDE"]
   },
+  "eliraneliassy": {
+    "name": "Eliran Eliassy",
+    "picture": "eliraneliassy.jpg",
+    "twitter": "eliraneliassy",
+    "website": "https://eliassy.dev",
+    "bio": "Eliran is an Experienced FE developer, located in Tel Aviv, Israel. He is a developer, trainer, and consultant with a focus on Angular and the eco-system around it. He gives talks and workshops on Angular, RXJS, NGRX, and related technologies. As an active part of the community, he is constantly involved in growing it and interacting with the members. Eliran is one of the Organisers of AngularUP Annual Conference in Tel Aviv and also an organizer and leading the Angular meetup & community in Israel. He often speaks at conferences and meetups and also writes for AngualrInDepth.com.",
+    "groups": ["GDE"]
+  },
   "eusoj": {
     "name": "Josue Gutierrez",
     "picture": "josue.jpg",
@@ -928,3 +936,4 @@
     "groups": ["GDE"]
   }
 }
+
