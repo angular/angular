@@ -36,10 +36,26 @@ const KW_AT_IDX = 6;
 // Group 7 = the identifier after "bind-", "let-", "ref-/#", "on-", "bindon-" or "@"
 const IDENT_KW_IDX = 7;
 
-const BINDING_DELIMS = {
-  BANANA_BOX: {start: '[(', end: ')]'},
-  PROPERTY: {start: '[', end: ']'},
-  EVENT: {start: '(', end: ')'},
+const BINDING_BANANA_BOX = {
+  start: '[(',
+  end: ')]',
+} as const;
+const BINDING_PROPERTY = {
+  start: '[',
+  end: ']',
+} as const;
+const BINDING_EVENT = {
+  start: '(',
+  end: ')',
+} as const;
+
+type BindingStart = '[('|'['|'(';
+type BindingEnd = ')]'|']'|')';
+
+const ComplementaryBinding: Readonly<Record<BindingStart, BindingEnd>> = {
+  [BINDING_BANANA_BOX.start]: BINDING_BANANA_BOX.end,
+  [BINDING_PROPERTY.start]: BINDING_PROPERTY.end,
+  [BINDING_EVENT.start]: BINDING_EVENT.end,
 };
 
 const TEMPLATE_ATTR_PREFIX = '*';
@@ -387,30 +403,33 @@ class HtmlAstToIvyAst implements html.Visitor {
 
     // We didn't see a kw-prefixed property binding, but we have not yet checked
     // for the []/()/[()] syntax.
-    let delims: {start: string, end: string}|null = null;
-    if (name.startsWith(BINDING_DELIMS.BANANA_BOX.start)) {
-      delims = BINDING_DELIMS.BANANA_BOX;
-    } else if (name.startsWith(BINDING_DELIMS.PROPERTY.start)) {
-      delims = BINDING_DELIMS.PROPERTY;
-    } else if (name.startsWith(BINDING_DELIMS.EVENT.start)) {
-      delims = BINDING_DELIMS.EVENT;
+    let start: BindingStart|null = null;
+    let end: BindingEnd|null = null;
+    for (const delim of [BINDING_BANANA_BOX, BINDING_PROPERTY, BINDING_EVENT]) {
+      if (start === null && name.startsWith(delim.start)) start = delim.start;
+      if (end === null && name.endsWith(delim.end)) end = delim.end;
     }
-    if (delims !== null &&
-        // NOTE: older versions of the parser would match a start/end delimited
-        // binding iff the property name was terminated by the ending delimiter
-        // and the identifier in the binding was non-empty.
-        // TODO(ayazhafiz): update this to handle malformed bindings.
-        name.endsWith(delims.end) && name.length > delims.start.length + delims.end.length) {
-      const identifier = name.substring(delims.start.length, name.length - delims.end.length);
-      const keySpan = createKeySpan(srcSpan, delims.start, identifier);
-      if (delims.start === BINDING_DELIMS.BANANA_BOX.start) {
+    if (start !== null) {
+      const identifier =
+          name.substring(start.length, name.length - (end === null ? 0 : end.length));
+
+      const expectedEnd = ComplementaryBinding[start];
+      if (end !== expectedEnd) {
+        const seenEnd = end === null ? 'nothing' : end;
+        this.reportError(
+            `Improperly terminated binding: expected ${expectedEnd}, saw ${seenEnd}`, srcSpan);
+      }
+
+
+      const keySpan = createKeySpan(srcSpan, start, identifier);
+      if (start === BINDING_BANANA_BOX.start) {
         this.bindingParser.parsePropertyBinding(
             identifier, value, false, srcSpan, absoluteOffset, attribute.valueSpan,
             matchableAttributes, parsedProperties, keySpan);
         this.parseAssignmentEvent(
             identifier, value, srcSpan, attribute.valueSpan, matchableAttributes, boundEvents,
             keySpan);
-      } else if (delims.start === BINDING_DELIMS.PROPERTY.start) {
+      } else if (start === BINDING_PROPERTY.start) {
         this.bindingParser.parsePropertyBinding(
             identifier, value, false, srcSpan, absoluteOffset, attribute.valueSpan,
             matchableAttributes, parsedProperties, keySpan);

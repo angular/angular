@@ -7,8 +7,10 @@
  */
 
 import {BindingType} from '../../src/expression_parser/ast';
+import {ParseError} from '../../src/parse_util';
 import * as t from '../../src/render3/r3_ast';
 import {unparse} from '../expression_parser/utils/unparser';
+
 import {parseR3 as parse} from './view/util';
 
 
@@ -234,6 +236,242 @@ describe('R3 template transform', () => {
         ['Element', 'div'],
         ['BoundAttribute', BindingType.Style, 'someStyle', 'v'],
       ]);
+    });
+  });
+
+  describe('binding recovery', () => {
+    function expectErrors(errors: ParseError[], expectedErrors: string[]) {
+      for (const error of expectedErrors) {
+        expect(errors.some(e => e.toString().includes(error))).toBeTrue();
+      }
+    }
+
+    it('empty property binding', () => {
+      const {nodes, errors} = parse('<div []="v"></div>', {ignoreError: true});
+      expectFromR3Nodes(nodes).toEqual([
+        ['Element', 'div'],
+        ['BoundAttribute', BindingType.Property, '', 'v'],
+      ]);
+      expectErrors(errors, ['Property name is missing in binding']);
+    });
+
+    it('unterminated property binding', () => {
+      const {nodes, errors} = parse('<div [prop="v"></div>', {ignoreError: true});
+      expectFromR3Nodes(nodes).toEqual([
+        ['Element', 'div'],
+        ['BoundAttribute', BindingType.Property, 'prop', 'v'],
+      ]);
+      expectErrors(errors, ['Improperly terminated binding: expected ], saw nothing']);
+    });
+
+    it('unterminated property binding with no value', () => {
+      const {nodes, errors} = parse('<div [prop></div>', {ignoreError: true});
+      expectFromR3Nodes(nodes).toEqual([
+        ['Element', 'div'],
+        ['BoundAttribute', BindingType.Property, 'prop', ''],
+      ]);
+      expectErrors(errors, ['Improperly terminated binding: expected ], saw nothing']);
+    });
+
+    it('unterminated property binding before another binding', () => {
+      const {nodes, errors} = parse('<div [prop [prop2]="v"></div>', {ignoreError: true});
+      expectFromR3Nodes(nodes).toEqual([
+        ['Element', 'div'],
+        ['BoundAttribute', BindingType.Property, 'prop', ''],
+        ['BoundAttribute', BindingType.Property, 'prop2', 'v'],
+      ]);
+      expectErrors(errors, ['Improperly terminated binding: expected ], saw nothing']);
+    });
+
+    it('unterminated empty property binding', () => {
+      const {nodes, errors} = parse('<div [="v"></div>', {ignoreError: true});
+      expectFromR3Nodes(nodes).toEqual([
+        ['Element', 'div'],
+        ['BoundAttribute', BindingType.Property, '', 'v'],
+      ]);
+      expectErrors(errors, [
+        'Property name is missing in binding',
+        'Improperly terminated binding: expected ], saw nothing',
+      ]);
+    });
+
+    it('improperly terminated property binding', () => {
+      const {nodes, errors} = parse('<div [prop)="v"></div>', {ignoreError: true});
+      expectFromR3Nodes(nodes).toEqual([
+        ['Element', 'div'],
+        ['BoundAttribute', BindingType.Property, 'prop', 'v'],
+      ]);
+      expectErrors(errors, ['Improperly terminated binding: expected ], saw )']);
+    });
+
+    it('empty event binding', () => {
+      const {nodes, errors} = parse('<div ()="v"></div>', {ignoreError: true});
+      expectFromR3Nodes(nodes).toEqual([
+        ['Element', 'div'],
+        ['BoundEvent', '', null, 'v'],
+      ]);
+      expectErrors(errors, ['Event name is missing in binding']);
+    });
+
+    it('unterminated event binding', () => {
+      const {nodes, errors} = parse('<div (event="v"></div>', {ignoreError: true});
+      expectFromR3Nodes(nodes).toEqual([
+        ['Element', 'div'],
+        ['BoundEvent', 'event', null, 'v'],
+      ]);
+      expectErrors(errors, ['Improperly terminated binding: expected ), saw nothing']);
+    });
+
+    it('unterminated event binding with no value', () => {
+      const {nodes, errors} = parse('<div (event></div>', {ignoreError: true});
+      expectFromR3Nodes(nodes).toEqual([
+        ['Element', 'div'],
+        ['BoundEvent', 'event', null, '"ERROR"'],
+      ]);
+      expectErrors(errors, ['Improperly terminated binding: expected ), saw nothing']);
+    });
+
+    it('unterminated event binding before another binding', () => {
+      const {nodes, errors} = parse('<div (event [prop2]="v"></div>', {ignoreError: true});
+      expectFromR3Nodes(nodes).toEqual([
+        ['Element', 'div'],
+        ['BoundAttribute', BindingType.Property, 'prop2', 'v'],
+        ['BoundEvent', 'event', null, '"ERROR"'],
+      ]);
+      expectErrors(errors, ['Improperly terminated binding: expected ), saw nothing']);
+    });
+
+    it('empty event binding', () => {
+      const {nodes, errors} = parse('<div ()="v"></div>', {ignoreError: true});
+      expectFromR3Nodes(nodes).toEqual([
+        ['Element', 'div'],
+        ['BoundEvent', '', null, 'v'],
+      ]);
+      expectErrors(errors, ['Event name is missing in binding']);
+    });
+
+    it('unterminated empty event binding', () => {
+      const {nodes, errors} = parse('<div (="v"></div>', {ignoreError: true});
+      expectFromR3Nodes(nodes).toEqual([
+        ['Element', 'div'],
+        ['BoundEvent', '', null, 'v'],
+      ]);
+      expectErrors(errors, [
+        'Event name is missing in binding',
+        'Improperly terminated binding: expected ), saw nothing',
+      ]);
+    });
+
+    it('improperly terminated event binding', () => {
+      const {nodes, errors} = parse('<div (event]="v"></div>', {ignoreError: true});
+      expectFromR3Nodes(nodes).toEqual([
+        ['Element', 'div'],
+        ['BoundEvent', 'event', null, 'v'],
+      ]);
+      expectErrors(errors, [
+        'Improperly terminated binding: expected ), saw ]',
+      ]);
+    });
+
+    it('empty banana-box binding', () => {
+      const {nodes, errors} = parse('<div [()]="v"></div>', {ignoreError: true});
+      expectFromR3Nodes(nodes).toEqual([
+        ['Element', 'div'],
+        ['BoundAttribute', BindingType.Property, '', 'v'],
+        ['BoundEvent', 'Change', null, 'v = $event'],
+      ]);
+      expectErrors(errors, ['Property name is missing in binding']);
+    });
+
+    it('unterminated banana-box binding', () => {
+      const {nodes, errors} = parse('<div [(prop="v"></div>', {ignoreError: true});
+      expectFromR3Nodes(nodes).toEqual([
+        ['Element', 'div'],
+        ['BoundAttribute', BindingType.Property, 'prop', 'v'],
+        ['BoundEvent', 'propChange', null, 'v = $event'],
+      ]);
+      expectErrors(errors, ['Improperly terminated binding: expected )], saw nothing']);
+    });
+
+    it('unterminated banana-box binding with no value', () => {
+      const {nodes, errors} = parse('<div [(prop></div>', {ignoreError: true});
+      expectFromR3Nodes(nodes).toEqual([
+        ['Element', 'div'],
+        ['BoundAttribute', BindingType.Property, 'prop', ''],
+        ['BoundEvent', 'propChange', null, '"ERROR"'],
+      ]);
+      expectErrors(errors, ['Improperly terminated binding: expected )], saw nothing']);
+    });
+
+    it('unterminated event binding before another binding', () => {
+      const {nodes, errors} = parse('<div [(prop [prop2]="v"></div>', {ignoreError: true});
+      expectFromR3Nodes(nodes).toEqual([
+        ['Element', 'div'],
+        ['BoundAttribute', BindingType.Property, 'prop', ''],
+        ['BoundAttribute', BindingType.Property, 'prop2', 'v'],
+        ['BoundEvent', 'propChange', null, '"ERROR"'],
+      ]);
+      expectErrors(errors, ['Improperly terminated binding: expected )], saw nothing']);
+    });
+
+    it('unterminated empty banana-box binding', () => {
+      const {nodes, errors} = parse('<div [(="v"></div>', {ignoreError: true});
+      expectFromR3Nodes(nodes).toEqual([
+        ['Element', 'div'],
+        ['BoundAttribute', BindingType.Property, '', 'v'],
+        ['BoundEvent', 'Change', null, 'v = $event'],
+      ]);
+      expectErrors(errors, [
+        'Property name is missing in binding',
+        'Improperly terminated binding: expected )], saw nothing',
+      ]);
+    });
+
+    it('improperly terminated banana-box binding', () => {
+      const {nodes, errors} = parse('<div [(prop)="v"></div>', {ignoreError: true});
+      expectFromR3Nodes(nodes).toEqual([
+        ['Element', 'div'],
+        ['BoundAttribute', BindingType.Property, 'prop', 'v'],
+        ['BoundEvent', 'propChange', null, 'v = $event'],
+      ]);
+      expectErrors(errors, ['Improperly terminated binding: expected )], saw )']);
+    });
+
+    it('terminated with extra', () => {
+      const {nodes, errors} = parse('<div [prop]asd="v"></div>', {ignoreError: true});
+      expectFromR3Nodes(nodes).toEqual([
+        ['Element', 'div'],
+        ['BoundAttribute', BindingType.Property, 'prop]asd', 'v'],
+      ]);
+      expectErrors(errors, ['Improperly terminated binding: expected ], saw nothing']);
+    });
+
+    it('missing binding name (bind- syntax)', () => {
+      const {nodes, errors} = parse('<div bind-="v"></div>', {ignoreError: true});
+      expectFromR3Nodes(nodes).toEqual([
+        ['Element', 'div'],
+        ['BoundAttribute', BindingType.Property, '', 'v'],
+      ]);
+      expectErrors(errors, ['Property name is missing in binding']);
+    });
+
+    it('missing event name (on- syntax)', () => {
+      const {nodes, errors} = parse('<div on-="v"></div>', {ignoreError: true});
+      expectFromR3Nodes(nodes).toEqual([
+        ['Element', 'div'],
+        ['BoundEvent', '', null, 'v'],
+      ]);
+      expectErrors(errors, ['Event name is missing in binding']);
+    });
+
+    it('missing two-way binding name (bindon- syntax)', () => {
+      const {nodes, errors} = parse('<div bindon-="v"></div>', {ignoreError: true});
+      expectFromR3Nodes(nodes).toEqual([
+        ['Element', 'div'],
+        ['BoundAttribute', BindingType.Property, '', 'v'],
+        ['BoundEvent', 'Change', null, 'v = $event'],
+      ]);
+      expectErrors(errors, ['Property name is missing in binding']);
     });
   });
 
