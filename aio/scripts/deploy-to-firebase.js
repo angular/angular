@@ -22,13 +22,23 @@ module.exports = {
 
 // Run
 if (require.main === module) {
+  const isDryRun = process.argv[2] === '--dry-run';
   const inputVars = computeInputVars(process.env);
   const deploymentInfo = computeDeploymentInfo(inputVars);
 
   if (deploymentInfo.skipped) {
     console.log(deploymentInfo.reason);
   } else {
-    deploy({...inputVars, ...deploymentInfo});
+    console.log(
+        `Git branch        : ${currentBranch}\n` +
+        `Build/deploy mode : ${deploymentInfo.deployEnv}\n` +
+        `Firebase project  : ${deploymentInfo.projectId}\n` +
+        `Firebase site     : ${deploymentInfo.siteId}\n` +
+        `Deployment URLs   : ${deploymentInfo.deployedUrl}\n`);
+
+    if (!isDryRun) {
+      deploy({...inputVars, ...deploymentInfo});
+    }
   }
 }
 
@@ -152,14 +162,7 @@ function computeMajorVersion(branchName) {
 }
 
 function deploy(
-    {currentBranch, currentCommit, deployedUrl, deployEnv, firebaseToken, minPwaScore, projectId, siteId}) {
-  console.log(
-      `Git branch        : ${currentBranch}\n` +
-      `Build/deploy mode : ${deployEnv}\n` +
-      `Firebase project  : ${projectId}\n` +
-      `Firebase site     : ${siteId}\n` +
-      `Deployment URL    : ${deployedUrl}\n`);
-
+    {currentCommit, deployedUrl, deployEnv, firebaseToken, minPwaScore, projectId, siteId}) {
   cd(`${__dirname}/..`);
 
   console.log('\n\n\n==== Build the AIO app. ====\n');
