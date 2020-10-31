@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {forwardRef, Inject, ReflectiveInjector, resolveForwardRef} from '@angular/core';
+import {forwardRef, Inject, Injector, resolveForwardRef} from '@angular/core';
 
 {
   describe('forwardRef examples', () => {
@@ -34,10 +34,11 @@ import {forwardRef, Inject, ReflectiveInjector, resolveForwardRef} from '@angula
       // Only at this point Lock is defined.
       class Lock {}
 
-      const injector = ReflectiveInjector.resolveAndCreate([Door, Lock]);
-      const door = injector.get(Door);
-      expect(door instanceof Door).toBeTruthy();
-      expect(door.lock instanceof Lock).toBeTruthy();
+      const injector =
+          Injector.create({providers: [{provide: Lock, deps: []}, {provide: Door, deps: [Lock]}]});
+
+      expect(injector.get(Door) instanceof Door).toBe(true);
+      expect(injector.get(Door).lock instanceof Lock).toBe(true);
       // #enddocregion
     });
 
