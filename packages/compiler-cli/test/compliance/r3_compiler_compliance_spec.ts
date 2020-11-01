@@ -8,6 +8,7 @@
 
 import {AttributeMarker} from '@angular/compiler/src/core';
 import {setup} from '@angular/compiler/test/aot/test_util';
+import * as ts from 'typescript';
 import {compile, expectEmit} from './mock_compile';
 
 
@@ -3313,5 +3314,46 @@ describe('compiler compliance', () => {
       const result = compile(files, angularFiles);
       expectEmit(result.source, MyAppDeclaration, 'Invalid component definition');
     });
+
+    it('should emit a valid setClassMetadata call in ES5 if a class with a custom decorator is referencing itself inside its own metadata',
+       () => {
+         const files = {
+           app: {
+             'spec.ts': `
+                import {Component, InjectionToken} from "@angular/core";
+
+                const token = new InjectionToken('token');
+
+                export function Custom() {
+                  return function(target: any) {};
+                }
+
+                @Custom()
+                @Component({
+                  template: '',
+                  providers: [{ provide: token, useExisting: Comp }],
+                })
+                export class Comp {}
+              `
+           }
+         };
+
+         // The setClassMetadata call should look like this.
+         const setClassMetadata = `
+            …
+            (function() {
+              i0.ɵsetClassMetadata(Comp, [{
+                type: Component,
+                args: [{
+                  template: '',
+                  providers: [{ provide: token, useExisting: Comp }],
+                }]
+              }], null, null);
+            })();
+          `;
+
+         const result = compile(files, angularFiles, {target: ts.ScriptTarget.ES5});
+         expectEmit(result.source, setClassMetadata, 'Incorrect setClassMetadata call');
+       });
   });
 });
