@@ -39,8 +39,13 @@ export function generateSetClassMetadataCall(
   }
   const ngClassDecorators =
       classDecorators.filter(dec => isAngularDecorator(dec, isCore))
-          .map(
-              (decorator: Decorator) => decoratorToMetadata(decorator, annotateForClosureCompiler));
+          .map(decorator => decoratorToMetadata(decorator, annotateForClosureCompiler))
+          // Since the `setClassMetadata` call is intended to be emitted after the class
+          // declaration, we have to strip references to the existing identifiers or
+          // TypeScript might generate invalid code when it emits to JS. In particular
+          // this can break when emitting a class to ES5 which has a custom decorator
+          // and is referenced inside of its own metadata (see #39509 for more information).
+          .map(decorator => removeIdentifierReferences(decorator, id.text));
   if (ngClassDecorators.length === 0) {
     return null;
   }
@@ -165,4 +170,20 @@ function decoratorToMetadata(
  */
 function isAngularDecorator(decorator: Decorator, isCore: boolean): boolean {
   return isCore || (decorator.import !== null && decorator.import.from === '@angular/core');
+}
+
+/**
+ * Recursively recreates all of the `Identifier` descendant nodes with a particular name inside
+ * of an AST node, thus removing any references to them. Useful if a particular node has to be t
+ * aken from one place any emitted to another one exactly as it has been written.
+ */
+function removeIdentifierReferences<T extends ts.Node>(node: T, name: string): T {
+  const result = ts.transform(
+      node, [context => root => ts.visitNode(root, function walk(current: ts.Node): ts.Node {
+        return ts.isIdentifier(current) && current.text === name ?
+            ts.createIdentifier(current.text) :
+            ts.visitEachChild(current, walk, context);
+      })]);
+
+  return result.transformed[0];
 }
