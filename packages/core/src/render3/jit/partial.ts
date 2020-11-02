@@ -6,6 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export function $ngDeclareDirective(decl: unknown): void {
-  throw new Error('Not implemented');
+/**
+ * Compiles a partial directive declaration object into a full directive definition object.
+ *
+ * @codeGenApi
+ */
+export function $ngDeclareDirective(decl: unknown): unknown {
+  throw new Error('Not yet implemented');
 }
