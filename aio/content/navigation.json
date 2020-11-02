@@ -413,6 +413,11 @@
           "tooltip": "Use property binding efficiently."
         },
         {
+          "url": "guide/lazy-loading-ngmodules",
+          "title": "Lazy Loading Feature Modules",
+          "tooltip": "Lazy load modules to speed up your apps."
+        },
+        {
           "title": "Testing",
           "tooltip": "Testing your Angular apps.",
           "children": [
@@ -864,11 +869,6 @@
                   "url": "guide/singleton-services",
                   "title": "Singleton Services",
                   "tooltip": "Creating singleton services."
-                },
-                {
-                  "url": "guide/lazy-loading-ngmodules",
-                  "title": "Lazy Loading Feature Modules",
-                  "tooltip": "Lazy load modules to speed up your apps."
                 },
                 {
                   "url": "guide/sharing-ngmodules",
