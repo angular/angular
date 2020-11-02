@@ -458,6 +458,11 @@
           "tooltip": "Use property binding efficiently."
         },
         {
+          "url": "guide/lazy-loading-ngmodules",
+          "title": "Lazy Loading Feature Modules",
+          "tooltip": "Lazy load modules to speed up your apps."
+        },
+        {
           "url": "guide/lightweight-injection-tokens",
           "title": "Lightweight Injection Tokens for Libraries",
           "tooltip": "Optimize client app size by designing library services with lightweight injection tokens."
@@ -832,11 +837,6 @@
                   "url": "guide/singleton-services",
                   "title": "Singleton Services",
                   "tooltip": "Creating singleton services."
-                },
-                {
-                  "url": "guide/lazy-loading-ngmodules",
-                  "title": "Lazy Loading Feature Modules",
-                  "tooltip": "Lazy load modules to speed up your apps."
                 },
                 {
                   "url": "guide/sharing-ngmodules",
