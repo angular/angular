@@ -286,17 +286,71 @@ describe('AriaDescriber', () => {
     ariaDescriber.describe(component.element1, 'My Message');
     expect(getMessagesContainer().getAttribute('aria-hidden')).toBe('false');
   });
+
+  it('should be able to register the same message with different roles', () => {
+    createFixture();
+    ariaDescriber.describe(component.element1, 'My Message', 'tooltip');
+    ariaDescriber.describe(component.element2, 'My Message', 'button');
+    ariaDescriber.describe(component.element3, 'My Message', 'presentation');
+    expectMessages(['tooltip/My Message', 'button/My Message', 'presentation/My Message']);
+    expectMessage(component.element1, 'tooltip/My Message');
+    expectMessage(component.element2, 'button/My Message');
+    expectMessage(component.element3, 'presentation/My Message');
+  });
+
+  it('should de-dupe a message if it has been registered with the same role', () => {
+    createFixture();
+    ariaDescriber.describe(component.element1, 'My Message', 'tooltip');
+    ariaDescriber.describe(component.element2, 'My Message', 'tooltip');
+    ariaDescriber.describe(component.element3, 'My Message', 'tooltip');
+    expectMessages(['tooltip/My Message']);
+    expectMessage(component.element1, 'tooltip/My Message');
+    expectMessage(component.element2, 'tooltip/My Message');
+    expectMessage(component.element3, 'tooltip/My Message');
+  });
+
+  it('should be able to unregister messages with a particular role', () => {
+    createFixture();
+    ariaDescriber.describe(component.element1, 'My Message', 'tooltip');
+    expectMessages(['tooltip/My Message']);
+
+    // Register again to check dedupe
+    ariaDescriber.describe(component.element2, 'My Message', 'tooltip');
+    expectMessages(['tooltip/My Message']);
+
+    // Unregister one message and make sure the message is still present in the container
+    ariaDescriber.removeDescription(component.element1, 'My Message', 'tooltip');
+    expect(component.element1.hasAttribute(CDK_DESCRIBEDBY_HOST_ATTRIBUTE)).toBeFalsy();
+    expectMessages(['tooltip/My Message']);
+
+    // Unregister the second message, message container should be gone
+    ariaDescriber.removeDescription(component.element2, 'My Message', 'tooltip');
+    expect(component.element2.hasAttribute(CDK_DESCRIBEDBY_HOST_ATTRIBUTE)).toBeFalsy();
+    expect(getMessagesContainer()).toBeNull();
+  });
+
+  it('should not remove element if it is registered with same text, but different role', () => {
+    createFixture();
+    ariaDescriber.describe(component.element1, 'My Message', 'tooltip');
+    ariaDescriber.describe(component.element2, 'My Message', 'button');
+    expectMessages(['tooltip/My Message', 'button/My Message']);
+    ariaDescriber.removeDescription(component.element2, 'My Message', 'button');
+    expectMessages(['tooltip/My Message']);
+    ariaDescriber.removeDescription(component.element1, 'My Message', 'tooltip');
+    expect(getMessageElements()).toBeNull();
+  });
+
 });
 
 function getMessagesContainer() {
   return document.querySelector(`#${MESSAGES_CONTAINER_ID}`)!;
 }
 
-function getMessageElements(): Node[] | null {
+function getMessageElements(): Element[] | null {
   const messagesContainer = getMessagesContainer();
   if (!messagesContainer) { return null; }
 
-  return messagesContainer ?  Array.prototype.slice.call(messagesContainer.children) : null;
+  return messagesContainer ? Array.prototype.slice.call(messagesContainer.children) : null;
 }
 
 /** Checks that the messages array matches the existing created message elements. */
@@ -306,7 +360,9 @@ function expectMessages(messages: string[]) {
 
   expect(messages.length).toBe(messageElements!.length);
   messages.forEach((message, i) => {
-    expect(messageElements![i].textContent).toBe(message);
+    const element = messageElements![i];
+    const role = element.getAttribute('role');
+    expect((role ? role + '/' : '') + element.textContent).toBe(message);
   });
 }
 
@@ -320,7 +376,9 @@ function expectMessage(el: Element, message: string) {
 
   const messages = ariaDescribedBy!.split(' ').map(referenceId => {
     const messageElement = document.querySelector(`#${referenceId}`);
-    return messageElement ? messageElement.textContent : '';
+    const role = messageElement?.getAttribute('role');
+    const prefix = role ? role + '/' : '';
+    return messageElement ? prefix + messageElement.textContent : '';
   });
 
   expect(messages).toContain(message);
