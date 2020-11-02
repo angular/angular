@@ -270,8 +270,7 @@ describe('deploy-to-firebase:', () => {
       CI_BRANCH: 'master',
       CI_COMMIT: getLatestCommit('master')
     };
-    const result = execSync(cmd, {encoding: 'utf8', env}).toString().trim();
-
+    const result = execSync(cmd, {encoding: 'utf8', env}).trim();
     expect(result).toBe(
         'Git branch        : master\n' +
         'Build/deploy mode : next\n' +
