@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 'use strict';
 
+const {execSync} = require('child_process');
 const {computeDeploymentInfo, computeInputVars, getLatestCommit} = require('./deploy-to-firebase');
 
 
@@ -258,5 +259,24 @@ describe('deploy-to-firebase:', () => {
           'Skipping deploy of branch "4.3.x" to Firebase.\n' +
           'There is a more recent branch with the same major version: "4.4.x"',
     });
+  });
+
+  it('integration - should run the main script without error', () => {
+    const cmd = `"${process.execPath}" "${__dirname}/deploy-to-firebase" --dry-run`;
+    const env = {
+      CI_REPO_OWNER: 'angular',
+      CI_REPO_NAME: 'angular',
+      CI_PULL_REQUEST: 'false',
+      CI_BRANCH: 'master',
+      CI_COMMIT: getLatestCommit('master')
+    };
+    const result = execSync(cmd, {encoding: 'utf8', env}).trim();
+    expect(result).toBe(
+        'Git branch        : master\n' +
+        'Build/deploy mode : next\n' +
+        'Firebase project  : angular-io\n' +
+        'Firebase site     : next-angular-io-site\n' +
+        'Deployment URLs   : https://next.angular.io/\n' +
+        '                    https://next-angular-io-site.web.app/');
   });
 });
