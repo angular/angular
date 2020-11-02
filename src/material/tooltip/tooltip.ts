@@ -207,7 +207,7 @@ export class MatTooltip implements OnDestroy, AfterViewInit {
   @Input('matTooltip')
   get message() { return this._message; }
   set message(value: string) {
-    this._ariaDescriber.removeDescription(this._elementRef.nativeElement, this._message);
+    this._ariaDescriber.removeDescription(this._elementRef.nativeElement, this._message, 'tooltip');
 
     // If the message is not a string (e.g. number), convert it to a string and trim it.
     // Must convert with `String(value)`, not `${value}`, otherwise Closure Compiler optimises
@@ -225,7 +225,7 @@ export class MatTooltip implements OnDestroy, AfterViewInit {
         // has a data-bound `aria-label` or when it'll be set for the first time. We can avoid the
         // issue by deferring the description by a tick so Angular has time to set the `aria-label`.
         Promise.resolve().then(() => {
-          this._ariaDescriber.describe(this._elementRef.nativeElement, this.message);
+          this._ariaDescriber.describe(this._elementRef.nativeElement, this.message, 'tooltip');
         });
       });
     }
@@ -332,7 +332,7 @@ export class MatTooltip implements OnDestroy, AfterViewInit {
     this._destroyed.next();
     this._destroyed.complete();
 
-    this._ariaDescriber.removeDescription(nativeElement, this.message);
+    this._ariaDescriber.removeDescription(nativeElement, this.message, 'tooltip');
     this._focusMonitor.stopMonitoring(nativeElement);
   }
 
