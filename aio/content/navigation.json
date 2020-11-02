@@ -243,11 +243,6 @@
               "url": "guide/dependency-injection-in-action",
               "title": "DI in Action",
               "tooltip": "Techniques for dependency injection."
-            },
-            {
-              "url": "guide/dependency-injection-navtree",
-              "title": "Navigate the Component Tree",
-              "tooltip": "Use the injection tree to find parent components."
             }
           ]
         }
