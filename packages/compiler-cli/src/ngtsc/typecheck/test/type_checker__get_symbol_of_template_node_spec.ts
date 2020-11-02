@@ -539,31 +539,57 @@ runInEachFileSystem(() => {
         expect(program.getTypeChecker().typeToString(bSymbol.tsType)).toEqual('number');
       });
 
-      it('should get symbol for local reference of an Element', () => {
-        const fileName = absoluteFrom('/main.ts');
-        const {templateTypeChecker, program} = setup([
-          {
-            fileName,
-            templates: {
-              'Cmp': `
+      describe('local reference of an Element', () => {
+        it('checkTypeOfDomReferences = true', () => {
+          const fileName = absoluteFrom('/main.ts');
+          const {templateTypeChecker, program} = setup([
+            {
+              fileName,
+              templates: {
+                'Cmp': `
                   <input #myRef>
                   <div [input]="myRef"></div>`
+              },
             },
-          },
-        ]);
-        const sf = getSourceFileOrError(program, fileName);
-        const cmp = getClass(sf, 'Cmp');
-        const nodes = getAstElements(templateTypeChecker, cmp);
+          ]);
+          const sf = getSourceFileOrError(program, fileName);
+          const cmp = getClass(sf, 'Cmp');
+          const nodes = getAstElements(templateTypeChecker, cmp);
 
-        const refSymbol = templateTypeChecker.getSymbolOfNode(nodes[0].references[0], cmp)!;
-        assertReferenceSymbol(refSymbol);
-        expect((refSymbol.target as TmplAstElement).name).toEqual('input');
-        expect((refSymbol.declaration as TmplAstReference).name).toEqual('myRef');
+          const refSymbol = templateTypeChecker.getSymbolOfNode(nodes[0].references[0], cmp)!;
+          assertReferenceSymbol(refSymbol);
+          expect((refSymbol.target as TmplAstElement).name).toEqual('input');
+          expect((refSymbol.declaration as TmplAstReference).name).toEqual('myRef');
 
-        const myRefUsage = templateTypeChecker.getSymbolOfNode(nodes[1].inputs[0].value, cmp)!;
-        assertReferenceSymbol(myRefUsage);
-        expect((myRefUsage.target as TmplAstElement).name).toEqual('input');
-        expect((myRefUsage.declaration as TmplAstReference).name).toEqual('myRef');
+          const myRefUsage = templateTypeChecker.getSymbolOfNode(nodes[1].inputs[0].value, cmp)!;
+          assertReferenceSymbol(myRefUsage);
+          expect((myRefUsage.target as TmplAstElement).name).toEqual('input');
+          expect((myRefUsage.declaration as TmplAstReference).name).toEqual('myRef');
+        });
+
+        it('checkTypeOfDomReferences = false', () => {
+          const fileName = absoluteFrom('/main.ts');
+          const {templateTypeChecker, program} = setup(
+              [
+                {
+                  fileName,
+                  templates: {
+                    'Cmp': `
+                  <input #myRef>
+                  <div [input]="myRef"></div>`
+                  },
+                },
+              ],
+              {checkTypeOfDomReferences: false});
+          const sf = getSourceFileOrError(program, fileName);
+          const cmp = getClass(sf, 'Cmp');
+          const nodes = getAstElements(templateTypeChecker, cmp);
+
+          const refSymbol = templateTypeChecker.getSymbolOfNode(nodes[0].references[0], cmp);
+          // Our desired behavior here is to honor the user's compiler settings and not produce a
+          // symbol for the reference when `checkTypeOfDomReferences` is false.
+          expect(refSymbol).toBeNull();
+        });
       });
 
       it('should get symbols for references which refer to directives', () => {
