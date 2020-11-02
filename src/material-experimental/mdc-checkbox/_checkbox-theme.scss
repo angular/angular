@@ -1,3 +1,6 @@
+@use '@material/checkbox/checkbox-theme' as checkbox-theme;
+@use '@material/ripple/ripple-theme' as ripple-theme;
+
 @import '@material/checkbox/mixins.import';
 @import '@material/checkbox/variables.import';
 @import '@material/form-field/mixins.import';
@@ -8,15 +11,19 @@
 // Mixin that includes the checkbox theme styles with a given palette.
 // By default, the MDC checkbox always uses the `secondary` palette.
 @mixin _mdc-checkbox-styles-with-color($color) {
-  $orig-mdc-checkbox-mark-color: $mdc-checkbox-mark-color;
-  $mdc-checkbox-mark-color: mdc-theme-prop-value(on-#{$color}) !global;
-  $orig-mdc-checkbox-baseline-theme-color: $mdc-checkbox-baseline-theme-color;
-  $mdc-checkbox-baseline-theme-color: $color !global;
-
-  @include mdc-checkbox-without-ripple($query: $mat-theme-styles-query);
-
-  $mdc-checkbox-mark-color: $orig-mdc-checkbox-mark-color !global;
-  $mdc-checkbox-baseline-theme-color: $orig-mdc-checkbox-baseline-theme-color !global;
+  @include checkbox-theme.theme((
+      density-scale: null,
+      checkmark-color: mdc-theme-prop-value(on-#{$color}),
+      container-checked-color: $color,
+      container-checked-hover-color: null,
+      container-disabled-color: rgba(mdc-theme-prop-value(on-surface), 0.38),
+      outline-color: rgba(mdc-theme-prop-value(on-surface), 0.54),
+      outline-hover-color: null,
+      ripple-color: mdc-theme-prop-value(on-surface),
+      ripple-opacity: ripple-theme.$dark-ink-opacities,
+      ripple-checked-color: $color,
+      ripple-checked-opacity: ripple-theme.$dark-ink-opacities,
+  ));
 }
 
 @mixin mat-mdc-checkbox-color($config-or-theme) {
@@ -34,8 +41,10 @@
     $mdc-checkbox-border-color: rgba(mdc-theme-prop-value(on-surface), 0.54) !global;
     $mdc-checkbox-disabled-color: rgba(mdc-theme-prop-value(on-surface), 0.26) !global;
 
-    @include _mdc-checkbox-styles-with-color(primary);
-    @include mdc-form-field-core-styles($query: $mat-theme-styles-query);
+    .mat-mdc-checkbox {
+      @include _mdc-checkbox-styles-with-color(primary);
+      @include mdc-form-field-core-styles($query: $mat-theme-styles-query);
+    }
 
     // MDC's checkbox doesn't support a `color` property. We add support for it by adding a CSS
     // class for accent and warn style, and applying the appropriate overrides below. Since we don't
