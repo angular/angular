@@ -32,12 +32,16 @@ export class PartialDirectiveLinkerVersion1<TExpression> implements PartialLinke
  */
 export function toR3DirectiveMeta<TExpression>(
     metaObj: AstObject<TExpression>, code: string, sourceUrl: string): R3DirectiveMetadata {
-  const typeName = metaObj.getValue('type').getSymbolName() ?? 'anonymous';
-  const range = metaObj.getValue('type').getRange();
+  const typeExpr = metaObj.getValue('type');
+  const typeName = typeExpr.getSymbolName();
+  if (typeName === null) {
+    throw new FatalLinkerError(
+        typeExpr.expression, 'Unsupported type, its name could not be determined');
+  }
 
   return {
-    typeSourceSpan: createSourceSpan(range, code, sourceUrl),
-    type: wrapReference(metaObj.getOpaque('type')),
+    typeSourceSpan: createSourceSpan(typeExpr.getRange(), code, sourceUrl),
+    type: wrapReference(typeExpr.getOpaque()),
     typeArgumentCount: 0,
     internalType: metaObj.getOpaque('type'),
     deps: null,
@@ -53,14 +57,16 @@ export function toR3DirectiveMeta<TExpression>(
         metaObj.getArray('viewQueries').map(entry => toQueryMetadata(entry.getObject())) :
         [],
     providers: metaObj.has('providers') ? metaObj.getOpaque('providers') : null,
-    fullInheritance: metaObj.getBoolean('fullInheritance'),
+    fullInheritance: false,
     selector: metaObj.has('selector') ? metaObj.getString('selector') : null,
     exportAs: metaObj.has('exportAs') ?
         metaObj.getArray('exportAs').map(entry => entry.getString()) :
         null,
-    lifecycle: {usesOnChanges: metaObj.getBoolean('usesOnChanges')},
+    lifecycle: {
+      usesOnChanges: metaObj.has('usesOnChanges') ? metaObj.getBoolean('usesOnChanges') : false,
+    },
     name: typeName,
-    usesInheritance: metaObj.getBoolean('usesInheritance'),
+    usesInheritance: metaObj.has('usesInheritance') ? metaObj.getBoolean('usesInheritance') : false,
   };
 }
 
@@ -74,7 +80,9 @@ function toInputMapping<TExpression>(value: AstValue<TExpression>): string|[stri
 
   const values = value.getArray().map(innerValue => innerValue.getString());
   if (values.length !== 2) {
-    throw new FatalLinkerError(value.expression, 'Unsupported input, expected exactly two strings');
+    throw new FatalLinkerError(
+        value.expression,
+        'Unsupported input, expected a string or an array containing exactly two strings');
   }
   return values as [string, string];
 }
