@@ -29,13 +29,14 @@ Before going further into reactive forms, you should have a basic understanding 
 
 </div>
 
-**Prerequisites**
 
-Before going further into reactive forms, you should have a basic understanding of the following:
+**사전지식**
 
-* TypeScript programming.
-* Angular app-design fundamentals, as described in [Angular Concepts](guide/architecture "Introduction to Angular concepts.").
-* The form-design concepts that are presented in [Introduction to Forms](guide/forms-overview "Overview of Angular forms.").
+반응형 폼에 대해 알아보기 전에 이런 내용을 미리 알아두는 것이 좋습니다:
+
+* TypeScript 프로그래밍
+* [Angular 개요](guide/architecture "Introduction to Angular concepts.") 문서에서 설명하는 Angular 앱 설계 개념
+* [폼 소개](guide/forms-overview "Overview of Angular forms.") 문서에서 설명하는 폼 구성 개념
 
 
 {@a intro}
@@ -54,14 +55,18 @@ Reactive forms differ from [template-driven forms](guide/forms "Template-driven 
 
 Template-driven forms allow direct access to modify data in your template, but are less explicit than reactive forms because they rely on directives embedded in the template, along with mutable data to track changes asynchronously. See the [Forms Overview](guide/forms-overview "Overview of Angular forms.") for detailed comparisons between the two paradigms.
 -->
-Reactive forms use an explicit and immutable approach to managing the state of a form at a given point in time. Each change to the form state returns a new state, which maintains the integrity of the model between changes. Reactive forms are built around [observable](guide/glossary#observable "Observable definition.") streams, where form inputs and values are provided as streams of input values, which can be accessed synchronously.
+반응형 폼이란 원하는 시점에 명시적으로 폼에 접근해서 상태를 참조하는 방식을 이야기합니다.
+반응형 폼에서 폼 상태가 변경되면 새로운 상태를 반환하기 때문에 전체 폼 모델 중 어느 부분이 변경되었는지 추적할 수 있습니다.
+반응형 폼은 [옵저버블](guide/glossary#observable "Observable definition.") 스트림을 기반으로 동작하기 때문에, 폼에 입력되는 값도 스트림 형태로 전달됩니다.
 
-반응형 폼을 사용하면 데이터가 의도한 대로만 변경되며, 현재 상태를 쉽게 예측할 수 있기 때문에 테스트하기도 편합니다.
-반응형 폼을 사용하면서 데이터를 변경하는 것도 좀 더 안전합니다.
+반응형 폼을 사용하면 개발자가 의도한 대로만 데이터가 변경되며, 현재 상태를 쉽게 예측할 수 있기 때문에 테스트하기도 편합니다.
+데이터가 변경되는 것을 감지하는 쪽에서 값을 받아 반응하는 것도 쉽습니다.
 
-Reactive forms differ from [template-driven forms](guide/forms "Template-driven forms guide") in distinct ways. Reactive forms provide more predictability with synchronous access to the data model, immutability with observable operators, and change tracking through observable streams.
+반응형 폼은 여러가지 면에서 [템플릿 기반 폼](guide/forms "Template-driven forms guide")과 다릅니다.
+반응형 폼은 데이터 모델에 동기 방식으로 접근할 수 있기 때문에 동작을 예측하기 쉬우며, 옵저버블 연산자를 활용해서 조작할 수 있고, 옵저버블 스트림을 추적하는 방식으로 변화를 감지할 수도 있습니다.
 
-Template-driven forms allow direct access to modify data in your template, but are less explicit than reactive forms because they rely on directives embedded in the template, along with mutable data to track changes asynchronously. See the [Forms Overview](guide/forms-overview "Overview of Angular forms.") for detailed comparisons between the two paradigms.
+반면에 템플릿 기반 폼은 템플릿 안에서만 동작하며 템플릿 안에 있는 디렉티브를 기반으로 동작하기 때문에 동작을 폼 모델에 직접 접근할 수 없으며 비동기 방식으로만 변화를 감지할 수 있습니다.
+두가지 방식이 어떻게 다른지 비교하려면 [폼 개요](guide/forms-overview "Overview of Angular forms.") 문서를 참고하세요.
 
 
 <!--
@@ -69,6 +74,7 @@ Template-driven forms allow direct access to modify data in your template, but a
 -->
 ## 기본 폼 컨트롤 추가하기
 
+<!--
 There are three steps to using form controls.
 
 1. Register the reactive forms module in your app. This module declares the reactive-form directives that you need to use reactive forms.
@@ -78,12 +84,31 @@ There are three steps to using form controls.
 You can then display the form by adding the component to the template.
 
 The following examples show how to add a single form control. In the example, the user enters their name into an input field, captures that input value, and displays the current value of the form control element.
+-->
+폼 컨트롤은 3단계를 거쳐 정의합니다.
 
+1. 앱에 반응형 폼 모듈을 로드합니다. 이 모듈은 반응형 폼에서 사용하는 디렉티브를 제공하는 모듈입니다.
+2. 컴포넌트에 `FormControl` 인스턴스를 정의합니다.
+3. 템플릿에 `FormControl`을 등록합니다.
+
+그러면 컴포넌트 템플릿에서 폼이 동작하는 것을 확인할 수 있습니다.
+
+아래 예제는 폼 컨트롤 하나를 정의하는 예제 코드입니다.
+이 예제 코드에서 사용자가 입력 필드에 이름을 입력하면 폼이 이벤트를 감지해서 현재 값을 화면에 표시합니다.
+
+
+<!--
 **Register the reactive forms module**
 
 To use reactive form controls, import `ReactiveFormsModule` from the `@angular/forms` package and add it to your NgModule's `imports` array.
 
 <code-example path="reactive-forms/src/app/app.module.ts" region="imports" header="src/app/app.module.ts (excerpt)"></code-example>
+-->
+**반응형 폼 모듈 로드하기**
+
+반응형 폼 컨트롤을 사용하려면 `@angular/forms` 패키지가 제공하는 `ReactiveFormsModule`을 로드해서 NgModule `imports` 배열에 추가하면 됩니다.
+
+<code-example path="reactive-forms/src/app/app.module.ts" region="imports" header="src/app/app.module.ts (일부)"></code-example>
 
 
 <!--
@@ -106,7 +131,7 @@ To register a single form control, import the `FormControl` class and create a n
 
 Use the constructor of `FormControl` to set its initial value, which in this case is an empty string. By creating these controls in your component class, you get immediate access to listen for, update, and validate the state of the form input.
 -->
-Use the [CLI command](cli "Using the Angular command-line interface.") `ng generate` to generate a component in your project to host the control.
+[Angular CLI 명령](cli "Using the Angular command-line interface.")  `ng generate`를 실행하면 프로젝트에 컴포넌트를 추가할 수 있습니다.
 
 <code-example language="sh" class="code-shell">
 
@@ -114,7 +139,7 @@ Use the [CLI command](cli "Using the Angular command-line interface.") `ng gener
 
 </code-example>
 
-To register a single form control, import the `FormControl` class and create a new instance of `FormControl` to save as a class property.
+그리고 폼 컨트롤을 하나 추가하려면 이 컴포넌트 파일에 `FormControl` 클래스를 로드하고 클래스 프로퍼티로 `FormControl`을 선언하면 됩니다.
 
 <code-example path="reactive-forms/src/app/name-editor/name-editor.component.ts" region="create-control" header="src/app/name-editor/name-editor.component.ts"></code-example>
 
@@ -312,10 +337,16 @@ To add a form group to this component, take the following steps.
 2. Associate the `FormGroup` model and view.
 3. Save the form data.
 -->
-Forms typically contain several related controls. Reactive forms provide two ways of grouping multiple related controls into a single input form.
+폼은 보통 몇개 폼이 연관되는 방식으로 구성됩니다.
+반응형 폼을 사용하면 두가지 방법으로 폼 컨트롤을 묶어서 관리할 수 있습니다.
 
-* A form *group* defines a form with a fixed set of controls that you can manage together. Form group basics are discussed in this section. You can also [nest form groups](#nested-groups "See more about nesting groups.") to create more complex forms.
-* A form *array* defines a dynamic form, where you can add and remove controls at run time. You can also nest form arrays to create more complex forms. For more about this option, see [Creating dynamic forms](#dynamic-forms "See more about form arrays.") below.
+* 관련된 폼 컨트롤을 그룹으로 정의할 수 있습니다.
+이번 섹션에서는 폼 그룹에 대해 이야기 해봅시다.
+폼이 복잡하다면 [중첩된 폼 그룹](#nested-groups "See more about nesting groups.")을 구성할 수도 있습니다.
+
+* 폼이 동적으로 변경된다면 폼 *배열*을 정의할 수 있습니다.
+그리고 이 경우에도 폼이 복잡하다면 폼 배열을 중첩할 수도 있습니다.
+자세한 내용은 [동적 폼 구성하기](#dynamic-forms "See more about form arrays.") 문서를 참고하세요.
 
 입력 필드 하나를 의미하는 폼 컨트롤 여러 개는 함께 묶어서 폼 그룹으로 처리할 수 있습니다.
 실제로 폼을 구성할 때도 개별 폼 컨트롤을 처리하지 않고 폼 그룹으로 한 번에 처리하는 것이 효율적이며, 폼 그룹에 포함된 폼 컨트롤은 이름으로 구분합니다.
@@ -333,11 +364,11 @@ Forms typically contain several related controls. Reactive forms provide two way
 
 </code-example>
 
-To add a form group to this component, take the following steps.
+폼 그룹은 다음과 같은 단계로 추가합니다.
 
-1. Create a `FormGroup` instance.
-2. Associate the `FormGroup` model and view.
-3. Save the form data.
+1. `FormGroup` 인스턴스를 추가합니다.
+2. `FormGroup` 모델과 화면을 연결합니다.
+3. 폼 데이터를 저장합니다.
 
 
 <!--
@@ -373,7 +404,7 @@ The individual form controls are now collected within a group. A `FormGroup` ins
 <!--
 **Associate the FormGroup model and view**
 -->
-##FormGroup 모델과 화면 연결하기**
+**FormGroup 모델과 화면 연결하기**
 
 <!--
 A form group tracks the status and changes for each of its controls, so if one of the controls changes, the parent control also emits a new status or value change. The model for the group is maintained from its members. After you define the model, you must update the template to reflect the model in the view.
@@ -397,7 +428,7 @@ Note that just as a form group contains a group of controls, the *profile form* 
 <!--
 **Save form data**
 -->
-##데이터 저장하기**
+**데이터 저장하기**
 
 <!--
 The `ProfileEditor` component accepts input from the user, but in a real scenario you want to capture the form value and make available for further processing outside the component. The `FormGroup` directive listens for the `submit` event emitted by the `form` element and emits an `ngSubmit` event that you can bind to a callback function.
@@ -472,7 +503,7 @@ To display the `ProfileEditor` component that contains the form, add it to a com
 -->
 `ProileEditor` 컴포넌트를 화면에 표시하기 위해 `AppComponent` 템플릿에 다음과 같이 컴포넌트를 추가합니다.
 
-<code-example path="reactive-forms/src/app/app.component.1.html" region="app-profile-editor" header="src/app/app.component.html (profile editor)"></code-example>
+<code-example path="reactive-forms/src/app/app.component.1.html" region="app-profile-editor" header="src/app/app.component.html (개인정보 수정 화면)"></code-example>
 
 그러면 `ProfileEditor` 컴포넌트가 화면에 표시되며, 이 컴포넌트에 정의된 폼 그룹 안에 있는 `firstName`과 `lastName` 폼 컨트롤도 화면에 함께 표시됩니다.
 
@@ -488,6 +519,7 @@ To display the `ProfileEditor` component that contains the form, add it to a com
 -->
 ### 중첩 폼 그룹(Nesting form groups) 만들기
 
+<!--
 Form groups can accept both individual form control instances and other form group instances as children. This makes composing complex form models easier to maintain and logically group together.
 
 When building complex forms, managing the different areas of information is easier in smaller sections. Using a nested form group instance allows you to break large forms groups into smaller, more manageable ones.
@@ -498,6 +530,20 @@ To make more complex forms, use the following steps.
 2. Group the nested form in the template.
 
 Some types of information naturally fall into the same group. A name and address are typical examples of such nested groups, and are used in the following examples.
+-->
+폼 그룹은 폼 그룹안에 있는 개별 폼 컨트롤 인스턴스에 직접 접근할 수 있으며 다른 폼 그룹도 자식 폼 컨트롤로 가질 수 있습니다.
+그래서 폼 그룹을 논리적으로 구성하면 폼 전체를 한 번에 관리하기도 편합니다.
+
+복잡한 폼을 구성할 때는 관련된 영역끼리 작게 묶어서 관리하는 것이 편합니다.
+결국 관련된 영역을 작게 묶는 것이 폼 그룹의 역할입니다.
+
+복잡한 폼을 구성할 때는 이렇게 구현해 보세요.
+
+1. 중첩된 그룹을 정의합니다.
+2. 템플릿에서도 중첩된 그룹을 묶어서 관리하세요.
+
+데이터들 중에는 같은 그룹으로 묶는 것이 자연스러운 경우가 있습니다.
+사용자의 이름과 주소가 그런 경우에 해당됩니다.
 
 
 <!--
@@ -512,7 +558,7 @@ To create a nested group in `profileForm`, add a nested `address` element to the
 
 In this example, `address group` combines the current `firstName` and `lastName` controls with the new `street`, `city`, `state`, and `zip` controls. Even though the `address` element in the form group is a child of the overall `profileForm` element in the form group, the same rules apply with value and status changes. Changes in status and value from the nested form group propagate to the parent form group, maintaining consistency with the overall model.
 -->
-To create a nested group in `profileForm`, add a nested `address` element to the form group instance.
+`profileForm` 폼 안에 중첩된 폼을 만들기 위해 `address` 그룹을 이렇게 구성해 봅시다.
 
 <code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.1.ts" region="nested-formgroup" header="src/app/profile-editor/profile-editor.component.ts (중첩된 폼 그룹)"></code-example>
 
@@ -607,7 +653,7 @@ When a user clicks the button, the `profileForm` model is updated with new value
 
 아래 예제는 `ProfileEditorComponent`에 선언된 `updateProfile` 메소드를 사용해서 사용자의 이름과 주소를 변경하는 예제 코드입니다.
 
-<code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.1.ts" region="patch-value" header="src/app/profile-editor/profile-editor.component.ts (일부 값 변경)">
+<code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.1.ts" region="patch-value" header="src/app/profile-editor/profile-editor.component.ts (일부 값 변경하기)">
 
 </code-example>
 
@@ -639,13 +685,13 @@ The following examples show how to refactor the `ProfileEditor` component to use
 폼 컨트롤을 매번 직접 생성해야 하는데, 이런 폼이 여러개라면 귀찮은 반복작업이 될 것입니다.
 이 때 `FormBuilder` 서비스를 사용하면 좀 더 편하게 폼을 구성할 수 있습니다.
 
-Use the following steps to take advantage of this service.
+`FormBuilder` 서비스는 이렇게 사용합니다.
 
-1. Import the `FormBuilder` class.
-2. Inject the `FormBuilder` service.
-3. Generate the form contents.
+1. `FormBuilder` 클래스를 로드합니다.
+2. `FormBuilder` 서비스를 의존성으로 주입합니다.
+3. `FormBuilder` 서비스로 폼을 구성합니다.
 
-The following examples show how to refactor the `ProfileEditor` component to use the form builder service to create form control and form group instances.
+아래 예제를 보면서 `ProfileEditor` 컴포넌트에서 폼을 정의하는 부분을 폼 빌더 서비스를 사용하는 방식으로 리팩토링하려면 어떻게 해야 하는지 확인해 보세요.
 
 
 <!--
@@ -758,9 +804,14 @@ Compare using the form builder to creating the instances manually.
 
 
 {@a basic-form-validation}
+{@a validating-form-input}
 
+<!--
 ## Validating form input
+-->
+## 폼 유효성 검사하기
 
+<!--
 _Form validation_ is used to ensure that user input is complete and correct. This section covers adding a single validator to a form control and displaying the overall form status. Form validation is covered more extensively in the [Form Validation](guide/form-validation "All about form validation.") guide.
 
 Use the following steps to add form validation.
@@ -770,6 +821,20 @@ Use the following steps to add form validation.
 3. Add logic to handle the validation status.
 
 The most common validation is making a field required. The following example shows how to add a required validation to the `firstName` control and display the result of validation.
+-->
+_폼 유효성 검사(Form validation)_ 는 사용자가 필수 항목을 모두 입력했는지, 입력한 내용이 올바른지 검증하는 것입니다.
+이 섹션에서는 폼 컨트롤에 유효성 검사기를 하나 붙여서 폼 상태를 화면에 표시해 봅시다.
+이보다 자세한 내용은 [폼 유효성 검사](guide/form-validation "All about form validation.") 문서에서 다룹니다.
+
+폼 유효성 검사기는 다음과 같은 과정으로 적용합니다.
+
+1. 폼 컴포넌트에 유효성 검사 함수를 로드합니다.
+2. 원하는 폼 필드에 유효성 검사기를 적용합니다.
+3. 폼 유효성 검사 결과에 따라 적절한 처리 로직을 추가합니다.
+
+가장 일반적인 유효성 검사는 필드를 필수 항목으로 만드는 것입니다.
+아래 예제를 보면서 `firstName` 폼 컨트롤에 필수항목 유효성 검사기를 추가하고 유효성 검사 결과를 화면에 표시하는 방법에 대해 알아보세요.
+
 
 <!--
 **Import a validator function**
@@ -790,7 +855,7 @@ Import the `Validators` class from the `@angular/forms` package.
 
 먼저, `@angular/forms` 패키지에서 `Validators` 클래스를 로드합니다.
 
-<code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.ts" region="validator-imports" header="src/app/profile-editor/profile-editor.component.ts (심볼 로드)">
+<code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.ts" region="validator-imports" header="src/app/profile-editor/profile-editor.component.ts (심볼 로드하기)">
 
 </code-example>
 
@@ -837,6 +902,8 @@ HTML5에서도 `required`나 `minlength`, `maxlength`와 같은 어트리뷰트�
 **주의:** HTML5 유효성 검사 어트리뷰트는 반드시 Angular 반응형 폼이 제공하는 관련 유효성 검사기와 _함께_ 사용해야 합니다.
 양쪽 기능을 함께 사용해야 해당 기능이 정상적으로 동작하며, 템플릿 검사를 마친 이후에 상태가 다시 변경되는 에러도 방지할 수 있습니다.
 
+</div>
+
 
 <!--
 **Display form status**
@@ -864,7 +931,7 @@ For more on form validation, visit the [Form Validation](guide/form-validation "
 
 `profileForm`의 상태를 표시하려면 다음과 같이 템플릿을 작성합니다.
 
-<code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.html" region="display-status" header="src/app/profile-editor/profile-editor.component.html (display status)"></code-example>
+<code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.html" region="display-status" header="src/app/profile-editor/profile-editor.component.html (상태 표시하기)"></code-example>
 
 <div class="lightbox">
   <img src="generated/images/guide/reactive-forms/profile-editor-3.png" alt="Profile Editor Validation">
@@ -877,9 +944,14 @@ For more on form validation, visit the [Form Validation](guide/form-validation "
 
 
 {@a dynamic-forms}
+{@a creating-dynamic-forms}
 
+<!--
 ## Creating dynamic forms
+-->
+## 동적 폼 구성하기
 
+<!--
 `FormArray` is an alternative to `FormGroup` for managing any number of unnamed controls. As with form group instances, you can dynamically insert and remove controls from form array instances, and the form array instance value and validation status is calculated from its child controls. However, you don't need to define a key for each control by name, so this is a great option if you don't know the number of child values in advance.
 
 To define a dynamic form, take the following steps.
@@ -890,6 +962,19 @@ To define a dynamic form, take the following steps.
 4. Display the form array in a template.
 
 The following example shows you how to manage an array of *aliases* in `ProfileEditor`.
+-->
+폼 컨트롤에 이름이 없고 폼 컨트롤 개수가 변한다면 `FormGroup` 대신 `FormArray`를 사용하는 방법도 고려해볼만 합니다.
+폼 그룹 인스턴스와 마찬가지로 폼 배열도 폼 컨트롤을 동적으로 추가하거나 제거할 수 있으며, 자식 폼 컨트롤을 모아 값이나 유효성 검사 결과를 한 번에 참조할 수도 있습니다.
+폼 배열은 이름을 지정하는 방식으로 정의하지 않는데, 자식 폼 컨트롤의 개수가 몇개인지 몰라도 된다는 점에서는 이 방식이 유리합니다.
+
+동적 폼은 이런 순서로 구현합니다.
+
+1. `FormArray` 클래스를 로드합니다.
+2. `FormArray` 컨트롤을 정의합니다.
+3. 게터 메서드를 사용해서 `FormArray` 컨트롤에 접근합니다.
+4. 템플릿에 폼 배열을 연결합니다.
+
+폼 배열을 어떻게 활용할 수 있는지 예제를 보면서 확인해 보세요.
 
 
 <!--
@@ -931,7 +1016,7 @@ The aliases control in the form group instance is now populated with a single co
 
 `FormBuilder`를 사용한다면 `array()` 메소드로 폼 배열을 정의할 수 있으며, `FormBuilder.control()` 메소드를 사용해서 기본 폼 컨트롤을 생성합니다.
 
-<code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.ts" region="aliases" header="src/app/profile-editor/profile-editor.component.ts (aliases 폼 배열">
+<code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.ts" region="aliases" header="src/app/profile-editor/profile-editor.component.ts (aliases 폼 배열)">
 
 </code-example>
 
@@ -1027,7 +1112,7 @@ Each time a new alias instance is added, the new form array instance is provided
 <!--
 **Add an alias**
 -->
-##별칭 추가하기**
+**별칭 추가하기**
 
 <!--
 Initially, the form contains one `Alias` field. To add another field, click the **Add Alias** button. You can also validate the array of aliases reported by the form model displayed by `Form Value` at the bottom of the template.
@@ -1054,8 +1139,13 @@ Initially, the form contains one `Alias` field. To add another field, click the 
 -->
 ## 반응형 폼 API
 
+<!--
 The following table lists the base classes and services used to create and manage reactive form controls.
 For complete syntax details, see the API reference documentation for the [Forms package](api/forms "API reference.").
+-->
+아래 표는 반응형 폼을 구현할 때 자주 사용하는 클래스와 서비스 목록을 나열한 것입니다.
+개별 사용방법에 대해 자세하게 알아보려면 [폼 패키지 API 문서](api/forms "API reference.")를 참고하세요.
+
 
 <!--
 #### Classes
