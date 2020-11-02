@@ -16,7 +16,7 @@ import {asLiteral, conditionallyCreateMapObjectLiteral, DefinitionMap} from '../
  * Compile a directive declaration defined by the `R3DirectiveMetadata`.
  */
 export function compileDeclareDirectiveFromMetadata(meta: R3DirectiveMetadata): R3DirectiveDef {
-  const definitionMap = baseDirectivePartialCompile(meta);
+  const definitionMap = createDirectiveDefinitionMap(meta);
 
   const expression = o.importExpr(R3.declareDirective).callFn([definitionMap.toLiteralMap()]);
 
@@ -30,7 +30,7 @@ export function compileDeclareDirectiveFromMetadata(meta: R3DirectiveMetadata): 
  * Gathers the declaration fields for a directive into a `DefinitionMap`. This allows for reusing
  * this logic for components, as they extend the directive metadata.
  */
-export function baseDirectivePartialCompile(meta: R3DirectiveMetadata): DefinitionMap {
+export function createDirectiveDefinitionMap(meta: R3DirectiveMetadata): DefinitionMap {
   const definitionMap = new DefinitionMap();
 
   definitionMap.set('version', o.literal(1));
@@ -61,9 +61,12 @@ export function baseDirectivePartialCompile(meta: R3DirectiveMetadata): Definiti
     definitionMap.set('exportAs', asLiteral(meta.exportAs));
   }
 
-  definitionMap.set('usesInheritance', o.literal(meta.usesInheritance));
-  definitionMap.set('fullInheritance', o.literal(meta.fullInheritance));
-  definitionMap.set('usesOnChanges', o.literal(meta.lifecycle.usesOnChanges));
+  if (meta.usesInheritance) {
+    definitionMap.set('usesInheritance', o.literal(true));
+  }
+  if (meta.lifecycle.usesOnChanges) {
+    definitionMap.set('usesOnChanges', o.literal(true));
+  }
 
   definitionMap.set('ngImport', o.importExpr(R3.core));
 
@@ -77,12 +80,18 @@ export function baseDirectivePartialCompile(meta: R3DirectiveMetadata): Definiti
 function compileQuery(query: R3QueryMetadata): o.LiteralMapExpr {
   const meta = new DefinitionMap();
   meta.set('propertyName', o.literal(query.propertyName));
-  meta.set('first', o.literal(query.first));
+  if (query.first) {
+    meta.set('first', o.literal(true));
+  }
   meta.set(
       'predicate', Array.isArray(query.predicate) ? asLiteral(query.predicate) : query.predicate);
-  meta.set('descendants', o.literal(query.descendants));
+  if (query.descendants) {
+    meta.set('descendants', o.literal(true));
+  }
   meta.set('read', query.read);
-  meta.set('static', o.literal(query.static));
+  if (query.static) {
+    meta.set('static', o.literal(true));
+  }
   return meta.toLiteralMap();
 }
 
@@ -92,29 +101,9 @@ function compileQuery(query: R3QueryMetadata): o.LiteralMapExpr {
  */
 function compileHostMetadata(meta: R3HostMetadata): o.LiteralMapExpr|null {
   const hostMetadata = new DefinitionMap();
-  const attributes = o.literalMap(Object.keys(meta.attributes).map(key => {
-    const value = meta.attributes[key];
-    return {key, value, quoted: true};
-  }));
-  if (attributes.entries.length > 0) {
-    hostMetadata.set('attributes', attributes);
-  }
-
-  const listeners = o.literalMap(Object.keys(meta.listeners).map(key => {
-    const value = meta.listeners[key];
-    return {key, value: o.literal(value), quoted: true};
-  }));
-  if (listeners.entries.length > 0) {
-    hostMetadata.set('listeners', listeners);
-  }
-
-  const properties = o.literalMap(Object.keys(meta.properties).map(key => {
-    const value = meta.properties[key];
-    return {key, value: o.literal(value), quoted: true};
-  }));
-  if (properties.entries.length > 0) {
-    hostMetadata.set('properties', properties);
-  }
+  hostMetadata.set('attributes', toOptionalLiteralMap(meta.attributes, expression => expression));
+  hostMetadata.set('listeners', toOptionalLiteralMap(meta.listeners, o.literal));
+  hostMetadata.set('properties', toOptionalLiteralMap(meta.properties, o.literal));
 
   if (meta.specialAttributes.styleAttr) {
     hostMetadata.set('styleAttribute', o.literal(meta.specialAttributes.styleAttr));
@@ -125,6 +114,29 @@ function compileHostMetadata(meta: R3HostMetadata): o.LiteralMapExpr|null {
 
   if (hostMetadata.values.length > 0) {
     return hostMetadata.toLiteralMap();
+  } else {
+    return null;
+  }
+}
+
+/**
+ * Creates an object literal expression from the given object, mapping all values to an expression
+ * using the provided mapping function. If the object has no keys, then null is returned.
+ *
+ * @param object The object to transfer into an object literal expression.
+ * @param mapper The logic to use for creating an expression for the object's values.
+ * @returns An object literal expression representing `object`, or null if `object` does not have
+ * any keys.
+ */
+function toOptionalLiteralMap<T>(
+    object: {[key: string]: T}, mapper: (value: T) => o.Expression): o.LiteralMapExpr|null {
+  const entries = Object.keys(object).map(key => {
+    const value = object[key];
+    return {key, value: mapper(value), quoted: true};
+  });
+
+  if (entries.length > 0) {
+    return o.literalMap(entries);
   } else {
     return null;
   }

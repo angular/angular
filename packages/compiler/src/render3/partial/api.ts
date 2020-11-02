@@ -14,24 +14,38 @@ import * as o from '../../output/output_ast';
  * partial declaration.
  */
 export interface R3DeclareDirectiveMetadata {
-  // Version number of the metadata format. This is used to evolve the metadata
-  // interface later - the linker will be able to detect which version a library
-  // is using and interpret its metadata accordingly.
+  /**
+   * Version number of the metadata format. This is used to evolve the metadata
+   * interface later - the linker will be able to detect which version a library
+   * is using and interpret its metadata accordingly.
+   */
   version: 1;
 
-  // Unparsed selector of the directive.
+  /**
+   * Unparsed selector of the directive.
+   */
   selector?: string;
 
-  // Reference to the directive class itself.
+  /**
+   * Reference to the directive class itself.
+   */
   type: o.Expression;
 
-  // Map of inputs, keyed by the name of the input field.
-  inputs?: {[fieldName: string]: string|[string, string]};
+  /**
+   * A mapping of inputs from class property names to binding property names, or to a tuple of
+   * binding property name and class property name if the names are different.
+   */
+  inputs?: {[classPropertyName: string]: string|[string, string]};
 
-  // Map of outputs, keyed by the name of the output field.
-  outputs?: {[fieldName: string]: string};
+  /**
+   * A mapping of outputs from class property names to binding property names, or to a tuple of
+   * binding property name and class property name if the names are different.
+   */
+  outputs?: {[classPropertyName: string]: string};
 
-  // Information about host bindings present on the component.
+  /**
+   * Information about host bindings present on the component.
+   */
   host?: {
     /**
      * A mapping of attribute names to their value expression.
@@ -82,15 +96,19 @@ export interface R3DeclareDirectiveMetadata {
   exportAs?: string[];
 
   /**
-   * Whether the component has an inheritance clause.
+   * Whether the directive has an inheritance clause. Defaults to false.
    */
-  usesInheritance: boolean;
-  fullInheritance: boolean;  // FIXME: this is only true for ad-hoc migrations in ngcc, so could
-                             // likely be dropped
-  usesOnChanges: boolean;
+  usesInheritance?: boolean;
 
-  // A reference to the `@angular/core` ES module, which allows access
-  // to all Angular exports, including Ivy instructions.
+  /**
+   * Whether the directive implements the `ngOnChanges` hook. Defaults to false.
+   */
+  usesOnChanges?: boolean;
+
+  /**
+   * A reference to the `@angular/core` ES module, which allows access
+   * to all Angular exports, including Ivy instructions.
+   */
   ngImport: o.Expression;
 }
 
@@ -101,9 +119,9 @@ export interface R3DeclareQueryMetadata {
   propertyName: string;
 
   /**
-   * Whether to read only the first matching result, or an array of results.
+   * Whether to read only the first matching result, or an array of results. Defaults to false.
    */
-  first: boolean;
+  first?: boolean;
 
   /**
    * Either an expression representing a type or `InjectionToken` for the query
@@ -112,9 +130,9 @@ export interface R3DeclareQueryMetadata {
   predicate: o.Expression|string[];
 
   /**
-   * Whether to include only direct children or all descendants.
+   * Whether to include only direct children or all descendants. Defaults to false.
    */
-  descendants: boolean;
+  descendants?: boolean;
 
   /**
    * An expression representing a type to read from each matched node, or null if the default value
@@ -123,7 +141,7 @@ export interface R3DeclareQueryMetadata {
   read?: o.Expression;
 
   /**
-   * Whether or not this query should collect only static results.
+   * Whether or not this query should collect only static results. Defaults to false.
    *
    * If static is true, the query's results will be set on the component after nodes are created,
    * but before change detection runs. This means that any results that relied upon change detection
@@ -135,5 +153,5 @@ export interface R3DeclareQueryMetadata {
    * the results will not be available in the ngOnInit hook (only in the ngAfterContentInit for
    * content hooks and ngAfterViewInit for view hooks).
    */
-  static: boolean;
+  static?: boolean;
 }
