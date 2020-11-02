@@ -8,7 +8,7 @@
 
 
 import {CommonModule} from '@angular/common';
-import {ApplicationRef, ChangeDetectionStrategy, ChangeDetectorRef, Component, ComponentFactoryResolver, ComponentRef, Directive, DoCheck, EmbeddedViewRef, ErrorHandler, Input, NgModule, OnInit, QueryList, TemplateRef, Type, ViewChild, ViewChildren, ViewContainerRef} from '@angular/core';
+import {ApplicationRef, ChangeDetectionStrategy, ChangeDetectorRef, Component, ComponentFactoryResolver, ComponentRef, Directive, DoCheck, EmbeddedViewRef, ErrorHandler, Injector, Input, NgModule, OnInit, QueryList, TemplateRef, Type, ViewChild, ViewChildren, ViewContainerRef} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {ivyEnabled} from '@angular/private/testing';
@@ -461,6 +461,133 @@ describe('change detection', () => {
       expect(comp.doCheckCount).toEqual(2);
       expect(fixture.nativeElement.textContent.trim()).toEqual('3 - 2 - Nancy');
     });
+  });
+
+  describe('OnPush dynamic', () => {
+    @Component({
+      selector: 'dynamic-comp',
+      changeDetection: ChangeDetectionStrategy.OnPush,
+      template: `{{ doCheckCount }} - {{ name }} <button (click)="onClick()"></button>`
+    })
+    class DynamicComponent implements DoCheck {
+      @Input() name = 'Nancy';
+      doCheckCount = 0;
+
+      ngDoCheck(): void {
+        this.doCheckCount++;
+      }
+
+      onClick() {}
+    }
+
+    @NgModule({declarations: [DynamicComponent], entryComponents: [DynamicComponent]})
+    class DynamicModule {
+    }
+
+    @Component({selector: 'my-app', template: '<ng-container #innerContainer></ng-container>'})
+    class MyApp {
+      @ViewChild('innerContainer', {read: ViewContainerRef}) innerContainer!: ViewContainerRef;
+
+      constructor(
+          public vcr: ViewContainerRef, public cfr: ComponentFactoryResolver,
+          public injector: Injector, public cdr: ChangeDetectorRef) {}
+    }
+
+    let fixture: ComponentFixture<MyApp>;
+    let appComp: MyApp;
+
+    beforeEach(() => {
+      TestBed.configureTestingModule({imports: [DynamicModule], declarations: [MyApp]});
+      fixture = TestBed.createComponent(MyApp);
+      fixture.detectChanges();
+      appComp = fixture.componentInstance;
+    });
+
+    describe('inserted into the ViewContainerRef of the parent component', () => {
+      it('should not trigger change detection from change detection of parent', () => {
+        const dynamicCompRef =
+            appComp.cfr.resolveComponentFactory(DynamicComponent).create(appComp.injector);
+        appComp.vcr.insert(dynamicCompRef.hostView);
+        appComp.cdr.detectChanges();
+        expect(dynamicCompRef.instance.doCheckCount).toBe(1);
+
+        dynamicCompRef.instance.name = 'dynamic name updated';
+        appComp.cdr.detectChanges();
+        // Dynamic component is OnPush, should not refresh from parent's change detection
+        // And the doCheckCount should not be updated either.
+        expect(dynamicCompRef.instance.doCheckCount).toBe(1);
+      });
+
+      it('should trigger change detection from change detection of self', () => {
+        const dynamicCompRef =
+            appComp.cfr.resolveComponentFactory(DynamicComponent).create(appComp.injector);
+        appComp.vcr.insert(dynamicCompRef.hostView);
+        appComp.cdr.detectChanges();
+        expect(dynamicCompRef.instance.doCheckCount).toBe(1);
+
+        dynamicCompRef.instance.name = 'dynamic name updated';
+        dynamicCompRef.changeDetectorRef.detectChanges();
+        expect(dynamicCompRef.instance.doCheckCount).toBe(2);
+      });
+
+      it('markForCheck should mark the component dirty', () => {
+        const dynamicCompRef =
+            appComp.cfr.resolveComponentFactory(DynamicComponent).create(appComp.injector);
+        appComp.vcr.insert(dynamicCompRef.hostView);
+        appComp.cdr.detectChanges();
+        expect(dynamicCompRef.instance.doCheckCount).toBe(1);
+
+        dynamicCompRef.instance.name = 'dynamic name updated';
+        dynamicCompRef.changeDetectorRef.markForCheck();
+        appComp.cdr.detectChanges();
+        // Dynamic component is OnPush and marked as dirty, should refresh from parent's change
+        // detection
+        expect(dynamicCompRef.instance.doCheckCount).toBe(2);
+      });
+    });
+
+    describe(
+        'inserted into the ViewContainerRef of the ng-container inside parent component', () => {
+          it('should not trigger change detection from change detection of parent', () => {
+            const dynamicCompRef =
+                appComp.cfr.resolveComponentFactory(DynamicComponent).create(appComp.injector);
+            appComp.innerContainer.insert(dynamicCompRef.hostView);
+            appComp.cdr.detectChanges();
+            expect(dynamicCompRef.instance.doCheckCount).toBe(1);
+
+            dynamicCompRef.instance.name = 'dynamic name updated';
+            appComp.cdr.detectChanges();
+            // Dynamic component is OnPush, should not refresh from parent's change detection
+            expect(dynamicCompRef.instance.doCheckCount).toBe(1);
+          });
+
+          it('should trigger change detection from change detection of self', () => {
+            const dynamicCompRef =
+                appComp.cfr.resolveComponentFactory(DynamicComponent).create(appComp.injector);
+            appComp.innerContainer.insert(dynamicCompRef.hostView);
+            appComp.cdr.detectChanges();
+            expect(dynamicCompRef.instance.doCheckCount).toBe(1);
+
+            dynamicCompRef.instance.name = 'dynamic name updated';
+            dynamicCompRef.changeDetectorRef.detectChanges();
+            expect(dynamicCompRef.instance.doCheckCount).toBe(2);
+          });
+
+          it('markForCheck should mark the component dirty', () => {
+            const dynamicCompRef =
+                appComp.cfr.resolveComponentFactory(DynamicComponent).create(appComp.injector);
+            appComp.innerContainer.insert(dynamicCompRef.hostView);
+            appComp.cdr.detectChanges();
+            expect(dynamicCompRef.instance.doCheckCount).toBe(1);
+
+            dynamicCompRef.instance.name = 'dynamic name updated';
+            dynamicCompRef.changeDetectorRef.markForCheck();
+            appComp.cdr.detectChanges();
+            // Dynamic component is OnPush and marked as dirty, should refresh from parent's change
+            // detection
+            expect(dynamicCompRef.instance.doCheckCount).toBe(2);
+          });
+        });
   });
 
   describe('ChangeDetectorRef', () => {

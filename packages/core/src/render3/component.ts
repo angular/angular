@@ -195,10 +195,11 @@ export function createRootComponentView(
   }
 
   const viewRenderer = rendererFactory.createRenderer(rNode, def);
+  // If the componentDef.onPush is true, we will set the flags to the host view,
+  // so the componentView[FLAGS] will always be LViewFlags.CheckAlways
   const componentView = createLView(
-      rootView, getOrCreateTComponentView(def), null,
-      def.onPush ? LViewFlags.Dirty : LViewFlags.CheckAlways, rootView[index], tNode,
-      rendererFactory, viewRenderer, sanitizer || null, null);
+      rootView, getOrCreateTComponentView(def), null, LViewFlags.CheckAlways, rootView[index],
+      tNode, rendererFactory, viewRenderer, sanitizer || null, null);
 
   if (tView.firstCreatePass) {
     diPublicInInjector(getOrCreateNodeInjectorForNode(tNode, rootView), tView, def.type);

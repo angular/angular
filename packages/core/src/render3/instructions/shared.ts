@@ -30,7 +30,7 @@ import {NodeInjectorFactory} from '../interfaces/injector';
 import {AttributeMarker, InitialInputData, InitialInputs, LocalRefExtractor, PropertyAliases, PropertyAliasValue, TAttributes, TConstantsOrFactory, TContainerNode, TDirectiveHostNode, TElementContainerNode, TElementNode, TIcuContainerNode, TNode, TNodeFlags, TNodeType, TProjectionNode} from '../interfaces/node';
 import {isProceduralRenderer, RComment, RElement, Renderer3, RendererFactory3, RNode, RText} from '../interfaces/renderer';
 import {SanitizerFn} from '../interfaces/sanitization';
-import {isComponentDef, isComponentHost, isContentQueryHost, isRootView} from '../interfaces/type_checks';
+import {isComponentDef, isComponentHost, isContentQueryHost, isLView, isRootView} from '../interfaces/type_checks';
 import {CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTEXT, DECLARATION_COMPONENT_VIEW, DECLARATION_VIEW, FLAGS, HEADER_OFFSET, HOST, HostBindingOpCodes, InitPhaseState, INJECTOR, LView, LViewFlags, NEXT, PARENT, RENDERER, RENDERER_FACTORY, RootContext, RootContextFlags, SANITIZER, T_HOST, TData, TRANSPLANTED_VIEWS_TO_REFRESH, TVIEW, TView, TViewType} from '../interfaces/view';
 import {assertPureTNodeType, assertTNodeType} from '../node_assert';
 import {updateTextNode} from '../node_manipulation';
@@ -1646,11 +1646,34 @@ function refreshEmbeddedViews(lView: LView) {
       const embeddedLView = lContainer[i];
       const embeddedTView = embeddedLView[TVIEW];
       ngDevMode && assertDefined(embeddedTView, 'TView must be allocated');
-      if (viewAttachedToChangeDetector(embeddedLView)) {
+      /**
+       * If the view is not attached, we skip the view,
+       * or the view is a root view (a host view of a dynamic/bootstrap component)
+       * and is not marked dirty, we skip the view.
+       */
+      if (viewAttachedToChangeDetector(embeddedLView) &&
+          !isLRootViewAndNoNeedToCheck(embeddedLView)) {
         refreshView(embeddedTView, embeddedLView, embeddedTView.template, embeddedLView[CONTEXT]!);
       }
     }
   }
+}
+
+/**
+ * Check whether the given view is the Root View and no need to execute change detection.
+ *
+ * `bootstrap` and `dynamic` component has a parent `host view` as a placeholder, and if the
+ * component is `OnPush`, we check the flags of the `host view` is dirty or not instead of checking
+ * the component.
+ *
+ * @param lView
+ */
+function isLRootViewAndNoNeedToCheck(lView: any): boolean {
+  if (!isLView(lView) || lView[TVIEW].type !== TViewType.Root) {
+    return false;
+  }
+
+  return !(lView[FLAGS] & (LViewFlags.CheckAlways | LViewFlags.Dirty));
 }
 
 /**
