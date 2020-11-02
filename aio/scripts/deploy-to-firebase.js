@@ -30,7 +30,7 @@ if (require.main === module) {
     console.log(deploymentInfo.reason);
   } else {
     console.log(
-        `Git branch        : ${currentBranch}\n` +
+        `Git branch        : ${inputVars.currentBranch}\n` +
         `Build/deploy mode : ${deploymentInfo.deployEnv}\n` +
         `Firebase project  : ${deploymentInfo.projectId}\n` +
         `Firebase site     : ${deploymentInfo.siteId}\n` +
