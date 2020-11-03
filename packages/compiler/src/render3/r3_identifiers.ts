@@ -248,7 +248,7 @@ export class Identifiers {
   };
 
   static defineDirective: o.ExternalReference = {name: 'ɵɵdefineDirective', moduleName: CORE};
-  static declareDirective: o.ExternalReference = {name: '$ngDeclareDirective', moduleName: CORE};
+  static declareDirective: o.ExternalReference = {name: 'ɵɵngDeclareDirective', moduleName: CORE};
 
   static DirectiveDefWithMeta: o.ExternalReference = {
     name: 'ɵɵDirectiveDefWithMeta',

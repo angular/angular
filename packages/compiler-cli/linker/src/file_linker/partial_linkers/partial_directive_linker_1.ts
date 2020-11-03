@@ -15,7 +15,7 @@ import {FatalLinkerError} from '../../fatal_linker_error';
 import {PartialLinker} from './partial_linker';
 
 /**
- * A `PartialLinker` that is designed to process `$ngDeclareDirective()` call expressions.
+ * A `PartialLinker` that is designed to process `ɵɵngDeclareDirective()` call expressions.
  */
 export class PartialDirectiveLinkerVersion1<TExpression> implements PartialLinker<TExpression> {
   linkPartialDeclaration(
