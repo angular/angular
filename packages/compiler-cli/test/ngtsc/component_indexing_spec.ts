@@ -10,7 +10,7 @@ import {runInEachFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/t
 import {AbsoluteSourceSpan, IdentifierKind, IndexedComponent, TopLevelIdentifier} from '@angular/compiler-cli/src/ngtsc/indexer';
 import {ParseSourceFile} from '@angular/compiler/src/compiler';
 
-import {NgtscTestEnvironment} from './env';
+import {NgtscTestEnvironment} from '../helpers/src/env';
 
 runInEachFileSystem(() => {
   describe('ngtsc component indexing', () => {

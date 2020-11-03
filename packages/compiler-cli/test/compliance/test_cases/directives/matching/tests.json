@@ -1,0 +1,25 @@
+[
+  {
+    "description": "should not match directives on i18n attribute",
+    "expectations": [
+      {
+        "failureMessage": "Incorrect ChildComponent.ɵcmp",
+        "files": [
+          {
+            "expected": "component.js",
+            "generated": "test.js"
+          }
+        ]
+      },
+      {
+        "failureMessage": "Incorrect ChildComponent.ɵfac",
+        "files": [
+          {
+            "expected": "factory.js",
+            "generated": "test.js"
+          }
+        ]
+      }
+    ]
+  }
+]

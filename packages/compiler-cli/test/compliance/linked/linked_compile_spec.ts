@@ -6,30 +6,32 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {PluginObj, transformSync} from '@babel/core';
-
 import {createEs2015LinkerPlugin} from '../../../linker/babel';
-import {compileFiles, CompileFn, setCompileFn} from '../mock_compile';
+import {checkExpectations, compileTest, getComplianceTests} from '../mock_compile/run_compliance_tests';
 
-/**
- * A function to compile the given code in two steps:
- *
- * - first compile the code in partial mode
- * - then compile the partially compiled code using the linker
- *
- * This should produce the same output as the full AOT compilation
- */
-const linkedCompile: CompileFn = (data, angularFiles, options) => {
-  const compiledFiles = compileFiles(data, angularFiles, {...options, compilationMode: 'partial'});
+describe('compliance tests (partial compile + link)', () => {
+  for (const test of getComplianceTests()) {
+    describe(`[${test.group}]`, () => {
+      const itFn = test.focusTest ? fit : test.excludeTest ? xit : it;
+      itFn(test.description, () => {
+        const {fs, env, generatedFiles} = compileTest(
+            test.testPath, test.inputFiles, test.compilerOptions,
+            {...test.angularCompilerOptions, compilationMode: 'partial'});
 
-  const linkerPlugin = createEs2015LinkerPlugin({
-    enableI18nLegacyMessageIdFormat: options?.enableI18nLegacyMessageIdFormat,
-    i18nNormalizeLineEndingsInICUs: options?.i18nNormalizeLineEndingsInICUs,
-  });
+        const linkerPlugin = createEs2015LinkerPlugin(test.angularCompilerOptions);
+        for (const fileName of generatedFiles) {
+          const source = fs.readFile(fileName);
+          const linkedSource = applyLinker({fileName, source}, linkerPlugin);
+          env.write(fileName, linkedSource);
+        }
 
-  const source = compiledFiles.map(file => applyLinker(file, linkerPlugin)).join('\n');
-
-  return {source};
-};
+        for (const expectation of test.expectations) {
+          checkExpectations(fs, env, expectation.failureMessage, expectation.files);
+        }
+      });
+    });
+  }
+});
 
 /**
  * Runs the provided code through the Babel linker plugin, if the file has the .js extension.
@@ -55,8 +57,3 @@ function applyLinker(file: {fileName: string; source: string}, linkerPlugin: Plu
   }
   return result.code;
 }
-
-// Update the function that will do the compiling with this specialised version that
-// runs the prelink and postlink parts of AOT compilation, to check it produces the
-// same result as a normal full AOT compile.
-setCompileFn(linkedCompile);

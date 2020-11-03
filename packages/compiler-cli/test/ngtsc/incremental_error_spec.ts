@@ -8,9 +8,8 @@
 
 import {absoluteFrom as _} from '../../src/ngtsc/file_system';
 import {runInEachFileSystem} from '../../src/ngtsc/file_system/testing';
+import {NgtscTestEnvironment} from '../helpers/src/env';
 import {loadStandardTestFiles} from '../helpers/src/mock_file_loading';
-
-import {NgtscTestEnvironment} from './env';
 
 const testFiles = loadStandardTestFiles();
 

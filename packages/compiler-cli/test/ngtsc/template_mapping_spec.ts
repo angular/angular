@@ -11,9 +11,9 @@ import {inspect} from 'util';
 
 import {runInEachFileSystem} from '../../src/ngtsc/file_system/testing';
 import {tsSourceMapBug29300Fixed} from '../../src/ngtsc/util/src/ts_source_map_bug_29300';
+import {NgtscTestEnvironment} from '../helpers/src/env';
 import {loadStandardTestFiles} from '../helpers/src/mock_file_loading';
 
-import {NgtscTestEnvironment} from './env';
 import {getMappedSegments, SegmentMapping} from './sourcemap_utils';
 
 const testFiles = loadStandardTestFiles();

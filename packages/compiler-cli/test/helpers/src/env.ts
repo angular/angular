@@ -10,16 +10,16 @@ import {CustomTransformers, defaultGatherDiagnostics, Program} from '@angular/co
 import * as api from '@angular/compiler-cli/src/transformers/api';
 import * as ts from 'typescript';
 
-import {createCompilerHost, createProgram} from '../../index';
-import {main, mainDiagnosticsForTest, readNgcCommandLineAndConfiguration} from '../../src/main';
-import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem, NgtscCompilerHost, relativeFrom} from '../../src/ngtsc/file_system';
-import {Folder, MockFileSystem} from '../../src/ngtsc/file_system/testing';
-import {IndexedComponent} from '../../src/ngtsc/indexer';
-import {NgtscProgram} from '../../src/ngtsc/program';
-import {DeclarationNode} from '../../src/ngtsc/reflection';
-import {LazyRoute} from '../../src/ngtsc/routing';
-import {setWrapHostForTest} from '../../src/transformers/compiler_host';
-import {getCachedSourceFile} from '../helpers';
+import {createCompilerHost, createProgram} from '../../../index';
+import {main, mainDiagnosticsForTest, readNgcCommandLineAndConfiguration} from '../../../src/main';
+import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem, NgtscCompilerHost, relativeFrom} from '../../../src/ngtsc/file_system';
+import {Folder, MockFileSystem} from '../../../src/ngtsc/file_system/testing';
+import {IndexedComponent} from '../../../src/ngtsc/indexer';
+import {NgtscProgram} from '../../../src/ngtsc/program';
+import {DeclarationNode} from '../../../src/ngtsc/reflection';
+import {LazyRoute} from '../../../src/ngtsc/routing';
+import {setWrapHostForTest} from '../../../src/transformers/compiler_host';
+import {getCachedSourceFile} from '../src/cached_source_files';
 
 
 /**
