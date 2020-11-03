@@ -181,7 +181,7 @@ function removeIdentifierReferences<T extends ts.Node>(node: T, name: string): T
   const result = ts.transform(
       node, [context => root => ts.visitNode(root, function walk(current: ts.Node): ts.Node {
         return ts.isIdentifier(current) && current.text === name ?
-            context.factory.createIdentifier(current.text) :
+            ts.createIdentifier(current.text) :
             ts.visitEachChild(current, walk, context);
       })]);
 
