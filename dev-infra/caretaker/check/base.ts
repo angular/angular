@@ -11,21 +11,14 @@ import {CaretakerConfig} from '../config';
 
 /** The BaseModule to extend modules for caretaker checks from. */
 export abstract class BaseModule<Data> {
-  /** A method to resole the promise with data for the module. */
-  protected resolve!: (data: Data) => void;
-
   /** The data for the module. */
-  readonly data = (new Promise<Data>((resolve) => {
-    this.resolve = resolve;
-  }));
+  readonly data = this.retrieveData();
 
   constructor(
-      protected git: GitClient, protected config: NgDevConfig<{caretaker: CaretakerConfig}>) {
-    this.retrieveData();
-  }
+      protected git: GitClient, protected config: NgDevConfig<{caretaker: CaretakerConfig}>) {}
 
   /** Asyncronously retrieve data for the module. */
-  abstract async retrieveData(): Promise<void>;
+  protected abstract async retrieveData(): Promise<Data>;
 
   /** Print the information discovered for the module to the terminal. */
   abstract async printToTerminal(): Promise<void>;

@@ -46,10 +46,13 @@ const MAX_RETURNED_ISSUES = 20;
 
 export class GithubQueriesModule extends BaseModule<GithubQueryResults|void> {
   async retrieveData() {
+    // Non-null assertion is used here as the check for undefined immediately follows to confirm the
+    // assertion.  Typescript's type filtering does not seem to work as needed to understand
+    // whether githubQueries is undefined or not.
     let queries = this.config.caretaker?.githubQueries!;
-    if (queries === undefined || !queries?.length) {
+    if (queries === undefined || queries.length === 0) {
       debug('No github queries defined in the configuration, skipping');
-      return this.resolve();
+      return;
     }
 
     /** The results of the generated github query. */
@@ -58,14 +61,14 @@ export class GithubQueriesModule extends BaseModule<GithubQueryResults|void> {
 
     const {owner, name: repo} = this.git.remoteConfig;
 
-    this.resolve(results.map((result, i) => {
+    return results.map((result, i) => {
       return {
         queryName: queries[i].name,
         count: result.issueCount,
         queryUrl: encodeURI(`https://github.com/${owner}/${repo}/issues?q=${queries[i].query}`),
         matchedUrls: result.nodes.map(node => node.url)
       };
-    }));
+    });
   }
 
   /** Build a Graphql query statement for the provided queries. */

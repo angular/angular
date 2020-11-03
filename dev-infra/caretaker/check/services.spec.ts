@@ -10,10 +10,7 @@
 import * as console from '../../utils/console';
 import {buildVirtualGitClient, mockNgDevConfig, VirtualGitClient} from '../../utils/testing';
 
-import * as servicesExports from './services';
-
-/** Convienence access to ServicesModule symbol. */
-const ServicesModule = servicesExports.ServicesModule;
+import {services, ServicesModule} from './services';
 
 describe('ServicesModule', () => {
   let getStatusFromStandardApiSpy: jasmine.Spy;
@@ -21,8 +18,7 @@ describe('ServicesModule', () => {
   let infoGroupSpy: jasmine.Spy;
   let virtualGitClient: VirtualGitClient;
 
-  servicesExports.services.splice(
-      0, Infinity, {url: 'fakeStatus.com/api.json', name: 'Service Name'});
+  services.splice(0, Infinity, {url: 'fakeStatus.com/api.json', name: 'Service Name'});
 
   beforeEach(() => {
     getStatusFromStandardApiSpy = spyOn(ServicesModule.prototype, 'getStatusFromStandardApi');
@@ -31,7 +27,7 @@ describe('ServicesModule', () => {
     infoSpy = spyOn(console, 'info');
   });
 
-  describe('gathers status', () => {
+  describe('gathering status', () => {
     it('for each of the services', async () => {
       new ServicesModule(virtualGitClient, {caretaker: {}, ...mockNgDevConfig});
 
@@ -40,33 +36,33 @@ describe('ServicesModule', () => {
     });
   });
 
-  describe('prints the data retrieved', () => {
+  describe('printing the data retrieved', () => {
     it('for each service ', async () => {
       const fakeData = Promise.resolve([
         {
           name: 'Service 1',
           status: 'passing',
           description: 'Everything is working great',
-          lastUpdated: new Date(0)
+          lastUpdated: new Date(0),
         },
         {
           name: 'Service 2',
           status: 'failing',
           description: 'Literally everything is broken',
-          lastUpdated: new Date(0)
+          lastUpdated: new Date(0),
         },
       ]);
 
 
       const module = new ServicesModule(virtualGitClient, {caretaker: {}, ...mockNgDevConfig});
       Object.defineProperty(module, 'data', {value: fakeData});
-
       await module.printToTerminal();
 
 
       expect(infoGroupSpy).toHaveBeenCalledWith('Service Statuses');
       expect(infoSpy).toHaveBeenCalledWith('Service 1 ✅');
-      expect(infoGroupSpy).toHaveBeenCalledWith('Service 2 ❌ (Updated: 1/1/1970, 12:00:00 AM)');
+      expect(infoGroupSpy)
+          .toHaveBeenCalledWith(`Service 2 ❌ (Updated: ${new Date(0).toLocaleString()})`);
       expect(infoSpy).toHaveBeenCalledWith('  Details: Literally everything is broken');
     });
   });

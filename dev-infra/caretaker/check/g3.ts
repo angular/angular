@@ -29,11 +29,11 @@ export class G3Module extends BaseModule<G3StatsData|void> {
     const latestSha = this.getLatestShas();
 
     if (toCopyToG3 === null || latestSha === null) {
-      return this.resolve();
+      return;
     }
 
-    this.resolve(
-        this.getDiffStats(latestSha.g3, latestSha.master, toCopyToG3.include, toCopyToG3.exclude));
+    return this.getDiffStats(
+        latestSha.g3, latestSha.master, toCopyToG3.include, toCopyToG3.exclude);
   }
 
   async printToTerminal() {
@@ -46,8 +46,9 @@ export class G3Module extends BaseModule<G3StatsData|void> {
       info(`${stats.commits} commits between g3 and master`);
       info('✅  No sync is needed at this time');
     } else {
-      info(`${stats.files} files changed, ${stats.insertions} insertions(+), ${
-          stats.deletions} deletions(-) will be included in the next sync`);
+      info(
+          `${stats.files} files changed, ${stats.insertions} insertions(+), ${stats.deletions} ` +
+          `deletions(-) from ${stats.commits} commits will be included in the next sync`);
     }
     info.groupEnd();
     info();

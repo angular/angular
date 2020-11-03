@@ -17,12 +17,12 @@ import {BaseModule} from './base';
 type CiBranchStatus = 'success'|'failed'|'not found';
 
 /** A list of results for checking CI branches. */
-type CiData = Array<{
+type CiData = {
   active: boolean,
   name: string,
   label: string,
   status: CiBranchStatus,
-}>;
+}[];
 
 export class CiModule extends BaseModule<CiData> {
   async retrieveData() {
@@ -49,7 +49,7 @@ export class CiModule extends BaseModule<CiData> {
       };
     });
 
-    this.resolve(await Promise.all(ciResultPromises));
+    return await Promise.all(ciResultPromises);
   }
 
   async printToTerminal() {

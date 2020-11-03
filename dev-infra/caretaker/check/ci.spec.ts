@@ -7,6 +7,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {SemVer} from 'semver';
+import {ReleaseTrain} from '../../release/versioning';
 
 import * as versioning from '../../release/versioning/active-release-trains';
 import * as console from '../../utils/console';
@@ -29,33 +30,34 @@ describe('CiModule', () => {
     debugSpy = spyOn(console, 'debug');
   });
 
-  describe('gets data for active trains', () => {
+  describe('getting data for active trains', () => {
     it('handles active rc train', async () => {
       const trains = buildMockActiveReleaseTrains(true);
-      fetchActiveReleaseTrainsSpy.and.returnValue(Promise.resolve(trains));
-      // Await the module, to allow the retrieveData method to call `resolve`.
-      await new CiModule(virtualGitClient, {caretaker: {}, ...mockNgDevConfig});
+      fetchActiveReleaseTrainsSpy.and.resolveTo(trains);
+      const module = new CiModule(virtualGitClient, {caretaker: {}, ...mockNgDevConfig});
+      await module.data;
 
-      expect(getBranchStatusFromCiSpy).toHaveBeenCalledWith(trains.releaseCandidate!.branchName);
+      expect(getBranchStatusFromCiSpy).toHaveBeenCalledWith(trains.releaseCandidate.branchName);
       expect(getBranchStatusFromCiSpy).toHaveBeenCalledWith(trains.latest.branchName);
       expect(getBranchStatusFromCiSpy).toHaveBeenCalledWith(trains.next.branchName);
+      expect(getBranchStatusFromCiSpy).toHaveBeenCalledTimes(3);
     });
 
     it('handles an inactive rc train', async () => {
       const trains = buildMockActiveReleaseTrains(false);
-      fetchActiveReleaseTrainsSpy.and.returnValue(Promise.resolve(trains));
-      // Await the module, to allow the retrieveData method to call `resolve`.
-      await new CiModule(virtualGitClient, {caretaker: {}, ...mockNgDevConfig});
+      fetchActiveReleaseTrainsSpy.and.resolveTo(trains);
+      const module = new CiModule(virtualGitClient, {caretaker: {}, ...mockNgDevConfig});
+      await module.data;
 
       expect(getBranchStatusFromCiSpy).toHaveBeenCalledWith(trains.latest.branchName);
       expect(getBranchStatusFromCiSpy).toHaveBeenCalledWith(trains.next.branchName);
+      expect(getBranchStatusFromCiSpy).toHaveBeenCalledTimes(2);
     });
 
     it('aggregates information into a useful structure', async () => {
       const trains = buildMockActiveReleaseTrains(false);
-      fetchActiveReleaseTrainsSpy.and.returnValue(Promise.resolve(trains));
+      fetchActiveReleaseTrainsSpy.and.resolveTo(trains);
       getBranchStatusFromCiSpy.and.returnValue('success');
-      // Await the module, to allow the retrieveData method to call `resolve`.
       const module = new CiModule(virtualGitClient, {caretaker: {}, ...mockNgDevConfig});
       const data = await module.data;
 
@@ -85,11 +87,8 @@ describe('CiModule', () => {
         status: 'failed',
       },
     ]);
-    const trains = buildMockActiveReleaseTrains(false);
-    fetchActiveReleaseTrainsSpy.and.returnValue(Promise.resolve(trains));
-    getBranchStatusFromCiSpy.and.returnValues('success', 'failed');
+    fetchActiveReleaseTrainsSpy.and.resolveTo([]);
 
-    // Await the module, to allow the retrieveData method to call `resolve`.
     const module = new CiModule(virtualGitClient, {caretaker: {}, ...mockNgDevConfig});
     Object.defineProperty(module, 'data', {value: fakeData});
 
@@ -101,8 +100,12 @@ describe('CiModule', () => {
 });
 
 
-/** Build a mock set of ActiveResultTrains.  */
-function buildMockActiveReleaseTrains(withRc: boolean) {
+/** Build a mock set of ActiveReleaseTrains.  */
+function buildMockActiveReleaseTrains(withRc: false): versioning.ActiveReleaseTrains&
+    {releaseCandidate: null};
+function buildMockActiveReleaseTrains(withRc: true): versioning.ActiveReleaseTrains&
+    {releaseCandidate: ReleaseTrain};
+function buildMockActiveReleaseTrains(withRc: boolean): versioning.ActiveReleaseTrains {
   const baseResult = {
     isMajor: false,
     version: new SemVer('0.0.0'),

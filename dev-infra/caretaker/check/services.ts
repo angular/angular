@@ -44,17 +44,16 @@ export const services: ServiceConfig[] = [
   },
 ];
 
-export class ServicesModule extends BaseModule<Array<StatusCheckResult>> {
+export class ServicesModule extends BaseModule<StatusCheckResult[]> {
   async retrieveData() {
-    this.resolve(
-        await Promise.all([...services.map(service => this.getStatusFromStandardApi(service))]));
+    return Promise.all(services.map(service => this.getStatusFromStandardApi(service)));
   }
 
   async printToTerminal() {
-    const data = await this.data;
-    const serviceNameMinLength = Math.max(...data.map(service => service.name.length));
+    const services = await this.data;
+    const serviceNameMinLength = Math.max(...services.map(service => service.name.length));
     info.group(bold('Service Statuses'));
-    for (const service of data) {
+    for (const service of services) {
       const name = service.name.padEnd(serviceNameMinLength);
       if (service.status === 'passing') {
         info(`${name} ✅`);

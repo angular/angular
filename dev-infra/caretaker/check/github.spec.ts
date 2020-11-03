@@ -27,7 +27,7 @@ describe('GithubQueriesModule', () => {
     infoSpy = spyOn(console, 'info');
   });
 
-  describe('gathers stats', () => {
+  describe('gathering stats', () => {
     it('unless githubQueries are `undefined`', async () => {
       const module = new GithubQueriesModule(
           virtualGitClient, {...mockNgDevConfig, caretaker: {githubQueries: undefined}});
@@ -60,8 +60,8 @@ describe('GithubQueriesModule', () => {
     });
   });
 
-  describe('prints the data retrieved', () => {
-    it('if there are no maches of the query', async () => {
+  describe('printing the data retrieved', () => {
+    it('if there are no matches of the query', async () => {
       const fakeData = Promise.resolve([
         {
           queryName: 'query1',

@@ -38,5 +38,7 @@ export async function checkServiceStatuses(githubToken: string) {
   // resolves.
   await Promise.all(caretakerCheckModules.map(module => module.data as Promise<unknown>));
 
-  caretakerCheckModules.forEach(async module => await module.printToTerminal());
+  for (const module of caretakerCheckModules) {
+    await module.printToTerminal();
+  };
 }

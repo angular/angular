@@ -29,7 +29,7 @@ describe('G3Module', () => {
     infoSpy = spyOn(console, 'info');
   });
 
-  describe('gathers stats', () => {
+  describe('gathering stats', () => {
     it('unless the g3 merge config is not defined in the angular robot file', async () => {
       getG3FileIncludeAndExcludeLists.and.returnValue(null);
       getLatestShas.and.returnValue({g3: 'abc123', master: 'zxy987'});
@@ -64,7 +64,6 @@ describe('G3Module', () => {
       });
 
       const module = new G3Module(virtualGitClient, {caretaker: {}, ...mockNgDevConfig});
-
       const {insertions, deletions, files, commits} = (await module.data) as G3StatsData;
 
       expect(insertions).toBe(12);
@@ -74,23 +73,21 @@ describe('G3Module', () => {
     });
   });
 
-  describe('prints the data retrieved', () => {
+  describe('printing the data retrieved', () => {
     it('if files are discovered needing to sync', async () => {
       const fakeData = Promise.resolve({
         insertions: 25,
         deletions: 10,
         files: 2,
-        commits: 1,
+        commits: 2,
       });
-
 
       const module = new G3Module(virtualGitClient, {caretaker: {}, ...mockNgDevConfig});
       Object.defineProperty(module, 'data', {value: fakeData});
-
       await module.printToTerminal();
 
       expect(infoSpy).toHaveBeenCalledWith(
-          '2 files changed, 25 insertions(+), 10 deletions(-) will be included in the next sync');
+          '2 files changed, 25 insertions(+), 10 deletions(-) from 2 commits will be included in the next sync');
     });
 
     it('if no files need to sync', async () => {
@@ -101,10 +98,8 @@ describe('G3Module', () => {
         commits: 25,
       });
 
-
       const module = new G3Module(virtualGitClient, {caretaker: {}, ...mockNgDevConfig});
       Object.defineProperty(module, 'data', {value: fakeData});
-
       await module.printToTerminal();
 
       expect(infoSpy).toHaveBeenCalledWith('25 commits between g3 and master');
