@@ -909,6 +909,21 @@ describe('MatCheckbox', () => {
       expect(secondId).toMatch(/mat-checkbox-\d+-input/);
       expect(firstId).not.toEqual(secondId);
     });
+
+    it('should not change focus origin if origin not specified', () => {
+      let [firstCheckboxDebugEl, secondCheckboxDebugEl] =
+             fixture.debugElement.queryAll(By.directive(MatCheckbox));
+      fixture.detectChanges();
+
+      const firstCheckboxInstance = firstCheckboxDebugEl.componentInstance as MatCheckbox;
+      const secondCheckboxInstance = secondCheckboxDebugEl.componentInstance as MatCheckbox;
+
+      firstCheckboxInstance.focus('mouse');
+      secondCheckboxInstance.focus();
+
+      expect(secondCheckboxDebugEl.nativeElement.classList).toContain('cdk-focused');
+      expect(secondCheckboxDebugEl.nativeElement.classList).toContain('cdk-mouse-focused');
+    });
   });
 
   describe('with ngModel', () => {
