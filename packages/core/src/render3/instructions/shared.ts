@@ -1651,8 +1651,7 @@ function refreshEmbeddedViews(lView: LView) {
        * or the view is a root view (a host view of a dynamic/bootstrap component)
        * and is not marked dirty, we skip the view.
        */
-      if (viewAttachedToChangeDetector(embeddedLView) &&
-          !isLRootViewAndNoNeedToCheck(embeddedLView)) {
+      if (viewAttachedToChangeDetector(embeddedLView) && isLRootViewAndNeedToCheck(embeddedLView)) {
         refreshView(embeddedTView, embeddedLView, embeddedTView.template, embeddedLView[CONTEXT]!);
       }
     }
@@ -1660,20 +1659,27 @@ function refreshEmbeddedViews(lView: LView) {
 }
 
 /**
- * Check whether the given view is the Root View and no need to execute change detection.
+ * Check whether the given view is the Root View and need to execute change detection.
  *
  * `bootstrap` and `dynamic` component has a parent `host view` as a placeholder, and if the
  * component is `OnPush`, we check the flags of the `host view` is dirty or not instead of checking
  * the component.
  *
+ * And if it is checkNoChanges mode, and the lView is `OnPush` root view, return false to
+ * skip the change detection to keep the current behavior.
+ * @TODO:JiaLiPassion, update this behavior since this is a bug.
+ *
  * @param lView
  */
-function isLRootViewAndNoNeedToCheck(lView: any): boolean {
+function isLRootViewAndNeedToCheck(lView: any): boolean {
   if (!isLView(lView) || lView[TVIEW].type !== TViewType.Root) {
+    return true;
+  }
+  if (!(lView[FLAGS] & LViewFlags.CheckAlways) && isInCheckNoChangesMode()) {
     return false;
   }
 
-  return !(lView[FLAGS] & (LViewFlags.CheckAlways | LViewFlags.Dirty));
+  return !!(lView[FLAGS] & (LViewFlags.CheckAlways | LViewFlags.Dirty));
 }
 
 /**
@@ -1934,6 +1940,12 @@ export function detectChangesInRootView(lView: LView): void {
 export function checkNoChangesInternal<T>(tView: TView, view: LView, context: T) {
   setIsInCheckNoChangesMode(true);
   try {
+    if (tView.type === TViewType.Root && !(view[FLAGS] & LViewFlags.CheckAlways)) {
+      // This is a root view of the OnPush component, we need to skip the change detection
+      // code path to keep the current behavior.
+      // TODO: @JiaLiPassion, need to fix this later since this is a bug.
+      return;
+    }
     detectChangesInternal(tView, view, context);
   } finally {
     setIsInCheckNoChangesMode(false);
@@ -1952,6 +1964,12 @@ export function checkNoChangesInternal<T>(tView: TView, view: LView, context: T)
 export function checkNoChangesInRootView(lView: LView): void {
   setIsInCheckNoChangesMode(true);
   try {
+    if (lView[TVIEW].type === TViewType.Root && !(lView[FLAGS] & LViewFlags.CheckAlways)) {
+      // This is a root view of the OnPush component, we need to skip the change detection
+      // code path to keep the current behavior.
+      // TODO: @JiaLiPassion, need to fix this later since this is a bug.
+      return;
+    }
     detectChangesInRootView(lView);
   } finally {
     setIsInCheckNoChangesMode(false);
