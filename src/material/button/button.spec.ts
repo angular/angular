@@ -84,6 +84,23 @@ describe('MatButton', () => {
     expect(buttonDebugEl.nativeElement.classList).toContain('cdk-touch-focused');
   });
 
+  it('should not change focus origin if origin not specified', () => {
+    const fixture = TestBed.createComponent(TestApp);
+    fixture.detectChanges();
+
+    const fabButtonDebugEl = fixture.debugElement.query(By.css('button[mat-fab]'))!;
+    const fabButtonInstance = fabButtonDebugEl.componentInstance as MatButton;
+    fabButtonInstance.focus('mouse');
+
+    const miniFabButtonDebugEl = fixture.debugElement.query(By.css('button[mat-mini-fab]'))!;
+    const miniFabButtonInstance = miniFabButtonDebugEl.componentInstance as MatButton;
+
+    miniFabButtonInstance.focus();
+
+    expect(miniFabButtonDebugEl.nativeElement.classList).toContain('cdk-focused');
+    expect(miniFabButtonDebugEl.nativeElement.classList).toContain('cdk-mouse-focused');
+  });
+
   describe('button[mat-fab]', () => {
     it('should have accent palette by default', () => {
       const fixture = TestBed.createComponent(TestApp);

@@ -127,8 +127,12 @@ export class MatButton extends _MatButtonMixinBase
   }
 
   /** Focuses the button. */
-  focus(origin: FocusOrigin = 'program', options?: FocusOptions): void {
-    this._focusMonitor.focusVia(this._getHostElement(), origin, options);
+  focus(origin?: FocusOrigin, options?: FocusOptions): void {
+    if (origin) {
+      this._focusMonitor.focusVia(this._getHostElement(), origin, options);
+    } else {
+      this._getHostElement().focus(options);
+    }
   }
 
   _getHostElement() {
