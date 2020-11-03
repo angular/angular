@@ -59,9 +59,9 @@ describe('createEs2015LinkerPlugin()', () => {
        transformSync(
            [
              'var core;',
-             `$ngDeclareDirective({version: 1, ngImport: core, x: 1});`,
-             `$ngDeclareComponent({version: 1, ngImport: core, foo: () => $ngDeclareDirective({version: 1, ngImport: core, x: 2})});`,
-             `x.qux(() => $ngDeclareDirective({version: 1, ngImport: core, x: 3}));`,
+             `ɵɵngDeclareDirective({version: 1, ngImport: core, x: 1});`,
+             `ɵɵngDeclareComponent({version: 1, ngImport: core, foo: () => ɵɵngDeclareDirective({version: 1, ngImport: core, x: 2})});`,
+             `x.qux(() => ɵɵngDeclareDirective({version: 1, ngImport: core, x: 3}));`,
              'spread(...x);',
            ].join('\n'),
            {
@@ -71,13 +71,13 @@ describe('createEs2015LinkerPlugin()', () => {
            });
 
        expect(humanizeLinkerCalls(linkSpy.calls)).toEqual([
-         ['$ngDeclareDirective', '{version:1,ngImport:core,x:1}'],
+         ['ɵɵngDeclareDirective', '{version:1,ngImport:core,x:1}'],
          [
-           '$ngDeclareComponent',
-           '{version:1,ngImport:core,foo:()=>$ngDeclareDirective({version:1,ngImport:core,x:2})}'
+           'ɵɵngDeclareComponent',
+           '{version:1,ngImport:core,foo:()=>ɵɵngDeclareDirective({version:1,ngImport:core,x:2})}'
          ],
          // Note we do not process `x:2` declaration since it is nested within another declaration
-         ['$ngDeclareDirective', '{version:1,ngImport:core,x:3}']
+         ['ɵɵngDeclareDirective', '{version:1,ngImport:core,x:3}']
        ]);
      });
 
@@ -89,8 +89,8 @@ describe('createEs2015LinkerPlugin()', () => {
        const result = transformSync(
            [
              'var core;',
-             '$ngDeclareDirective({version: 1, ngImport: core});',
-             '$ngDeclareDirective({version: 1, ngImport: core, foo: () => bar({})});',
+             'ɵɵngDeclareDirective({version: 1, ngImport: core});',
+             'ɵɵngDeclareDirective({version: 1, ngImport: core, foo: () => bar({})});',
              'x.qux();',
              'spread(...x);',
            ].join('\n'),
@@ -109,9 +109,9 @@ describe('createEs2015LinkerPlugin()', () => {
         [
           'import * as core from \'some-module\';',
           'import {id} from \'other-module\';',
-          `$ngDeclareDirective({version: 1, ngImport: core})`,
-          `$ngDeclareDirective({version: 1, ngImport: core})`,
-          `$ngDeclareDirective({version: 1, ngImport: core})`,
+          `ɵɵngDeclareDirective({version: 1, ngImport: core})`,
+          `ɵɵngDeclareDirective({version: 1, ngImport: core})`,
+          `ɵɵngDeclareDirective({version: 1, ngImport: core})`,
         ].join('\n'),
         {
           plugins: [createEs2015LinkerPlugin()],
@@ -130,9 +130,9 @@ describe('createEs2015LinkerPlugin()', () => {
        const result = transformSync(
            [
              'var core;',
-             `$ngDeclareDirective({version: 1, ngImport: core})`,
-             `$ngDeclareDirective({version: 1, ngImport: core})`,
-             `$ngDeclareDirective({version: 1, ngImport: core})`,
+             `ɵɵngDeclareDirective({version: 1, ngImport: core})`,
+             `ɵɵngDeclareDirective({version: 1, ngImport: core})`,
+             `ɵɵngDeclareDirective({version: 1, ngImport: core})`,
            ].join('\n'),
            {
              plugins: [createEs2015LinkerPlugin()],
@@ -151,9 +151,9 @@ describe('createEs2015LinkerPlugin()', () => {
        spyOnLinkPartialDeclarationWithConstants(o.literal('REPLACEMENT'));
        const result = transformSync(
            [
-             'function run(core) {', `  $ngDeclareDirective({version: 1, ngImport: core})`,
-             `  $ngDeclareDirective({version: 1, ngImport: core})`,
-             `  $ngDeclareDirective({version: 1, ngImport: core})`, '}'
+             'function run(core) {', `  ɵɵngDeclareDirective({version: 1, ngImport: core})`,
+             `  ɵɵngDeclareDirective({version: 1, ngImport: core})`,
+             `  ɵɵngDeclareDirective({version: 1, ngImport: core})`, '}'
            ].join('\n'),
            {
              plugins: [createEs2015LinkerPlugin()],
@@ -172,9 +172,9 @@ describe('createEs2015LinkerPlugin()', () => {
        const result = transformSync(
            [
              'function run() {',
-             `  $ngDeclareDirective({version: 1, ngImport: core})`,
-             `  $ngDeclareDirective({version: 1, ngImport: core})`,
-             `  $ngDeclareDirective({version: 1, ngImport: core})`,
+             `  ɵɵngDeclareDirective({version: 1, ngImport: core})`,
+             `  ɵɵngDeclareDirective({version: 1, ngImport: core})`,
+             `  ɵɵngDeclareDirective({version: 1, ngImport: core})`,
              '}',
            ].join('\n'),
            {
@@ -197,7 +197,7 @@ describe('createEs2015LinkerPlugin()', () => {
        spyOnLinkPartialDeclarationWithConstants(o.fn([], [], null, null, 'FOO'));
        const result = transformSync(
            [
-             `$ngDeclareDirective({version: 1, ngImport: core}); FOO;`,
+             `ɵɵngDeclareDirective({version: 1, ngImport: core}); FOO;`,
            ].join('\n'),
            {
              plugins: [

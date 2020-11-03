@@ -39,7 +39,7 @@ export class FileLinker<TConstantScope, TStatement, TExpression> {
    * definition and any shared constant statements.
    *
    * @param declarationFn the name of the function used to declare the partial declaration - e.g.
-   *     `$ngDeclareDirective`.
+   *     `ɵɵngDeclareDirective`.
    * @param args the arguments passed to the declaration function.
    * @param declarationScope the scope that contains this call to the declaration function.
    */

@@ -13,7 +13,7 @@ import {AstObject} from '../../ast/ast_value';
 import {PartialLinker} from './partial_linker';
 
 /**
- * A `PartialLinker` that is designed to process `$ngDeclareComponent()` call expressions.
+ * A `PartialLinker` that is designed to process `ɵɵngDeclareComponent()` call expressions.
  */
 export class PartialComponentLinkerVersion1<TExpression> implements PartialLinker<TExpression> {
   linkPartialDeclaration(

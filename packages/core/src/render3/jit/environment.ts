@@ -171,5 +171,5 @@ export const angularCoreEnv: {[name: string]: Function} =
        'ɵɵtrustConstantScript': sanitization.ɵɵtrustConstantScript,
        'ɵɵtrustConstantResourceUrl': sanitization.ɵɵtrustConstantResourceUrl,
 
-       '$ngDeclareDirective': partial.$ngDeclareDirective,
+       'ɵɵngDeclareDirective': partial.ɵɵngDeclareDirective,
      }))();

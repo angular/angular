@@ -11,10 +11,10 @@ import {PartialLinker} from './partial_linker';
 
 export class PartialLinkerSelector<TExpression> {
   private linkers: Record<string, Record<number, PartialLinker<TExpression>>> = {
-    '$ngDeclareDirective': {
+    'ɵɵngDeclareDirective': {
       1: new PartialDirectiveLinkerVersion1(),
     },
-    '$ngDeclareComponent': {
+    'ɵɵngDeclareComponent': {
       1: new PartialComponentLinkerVersion1(),
     },
   };

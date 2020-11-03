@@ -11,6 +11,6 @@
  *
  * @codeGenApi
  */
-export function $ngDeclareDirective(decl: unknown): unknown {
+export function ɵɵngDeclareDirective(decl: unknown): unknown {
   throw new Error('Not yet implemented');
 }

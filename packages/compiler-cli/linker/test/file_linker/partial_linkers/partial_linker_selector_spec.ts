@@ -15,8 +15,8 @@ describe('PartialLinkerSelector', () => {
     it('should return true if there is at least one linker that matches the given function name',
        () => {
          const selector = new PartialLinkerSelector();
-         expect(selector.supportsDeclaration('$ngDeclareDirective')).toBe(true);
-         expect(selector.supportsDeclaration('$ngDeclareComponent')).toBe(true);
+         expect(selector.supportsDeclaration('ɵɵngDeclareDirective')).toBe(true);
+         expect(selector.supportsDeclaration('ɵɵngDeclareComponent')).toBe(true);
          expect(selector.supportsDeclaration('$foo')).toBe(false);
        });
   });
@@ -24,9 +24,9 @@ describe('PartialLinkerSelector', () => {
   describe('getLinker()', () => {
     it('should return the linker that matches the name and version number', () => {
       const selector = new PartialLinkerSelector();
-      expect(selector.getLinker('$ngDeclareDirective', 1))
+      expect(selector.getLinker('ɵɵngDeclareDirective', 1))
           .toBeInstanceOf(PartialDirectiveLinkerVersion1);
-      expect(selector.getLinker('$ngDeclareComponent', 1))
+      expect(selector.getLinker('ɵɵngDeclareComponent', 1))
           .toBeInstanceOf(PartialComponentLinkerVersion1);
     });
 
@@ -34,8 +34,8 @@ describe('PartialLinkerSelector', () => {
       const selector = new PartialLinkerSelector();
       expect(() => selector.getLinker('$foo', 1))
           .toThrowError('Unknown partial declaration function $foo.');
-      expect(() => selector.getLinker('$ngDeclareDirective', 2))
-          .toThrowError('Unsupported partial declaration version 2 for $ngDeclareDirective.');
+      expect(() => selector.getLinker('ɵɵngDeclareDirective', 2))
+          .toThrowError('Unsupported partial declaration version 2 for ɵɵngDeclareDirective.');
     });
   });
 });

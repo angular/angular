@@ -1,6 +1,3 @@
-/** @codeGenApi */
-export declare function $ngDeclareDirective(decl: unknown): unknown;
-
 export declare interface AbstractType<T> extends Function {
     prototype: T;
 }
