@@ -7,8 +7,7 @@
  */
 
 import {CompilerOptions, formatDiagnostics, readConfiguration} from '@angular/compiler-cli';
-import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
-import {absoluteFromSourceFile, AbsoluteFsPath, FileSystem, setFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system';
+import {absoluteFromSourceFile, AbsoluteFsPath, FileSystem} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {TypeCheckShimGenerator} from '@angular/compiler-cli/src/ngtsc/typecheck';
 import {OptimizeFor, TypeCheckingProgramStrategy} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
 import * as ts from 'typescript/lib/tsserverlibrary';
@@ -40,22 +39,8 @@ export class LanguageService {
     return this.options;
   }
 
-  /**
-   * Before the LS processes a request, it needs to ensure the state of the
-   * compiler instance used to analyze the program:
-   *
-   * 1. The compiler should exist
-   * 2. The compiler should be provided all, if any, changes to the file the request is for
-   * 3. The compiler file system should be set to the one provided by the langauge
-   *    service adapter
-   */
-  private ensureCompiler(fileName: string): NgCompiler {
-    setFileSystem(this.fs);
-    return this.compilerFactory.getOrCreateWithChangedFile(fileName, this.options);
-  }
-
   getSemanticDiagnostics(fileName: string): ts.Diagnostic[] {
-    const compiler = this.ensureCompiler(fileName);
+    const compiler = this.compilerFactory.getOrCreateWithChangedFile(fileName, this.options);
     const ttc = compiler.getTemplateTypeChecker();
     const diagnostics: ts.Diagnostic[] = [];
     if (isTypeScriptFile(fileName)) {
@@ -78,7 +63,7 @@ export class LanguageService {
 
   getDefinitionAndBoundSpan(fileName: string, position: number): ts.DefinitionInfoAndBoundSpan
       |undefined {
-    const compiler = this.ensureCompiler(fileName);
+    const compiler = this.compilerFactory.getOrCreateWithChangedFile(fileName, this.options);
     const results = new DefinitionBuilder(this.tsLS, compiler, this.adapter)
                         .getDefinitionAndBoundSpan(fileName, position);
     this.compilerFactory.registerLastKnownProgram();
@@ -87,7 +72,7 @@ export class LanguageService {
 
   getTypeDefinitionAtPosition(fileName: string, position: number):
       readonly ts.DefinitionInfo[]|undefined {
-    const compiler = this.ensureCompiler(fileName);
+    const compiler = this.compilerFactory.getOrCreateWithChangedFile(fileName, this.options);
     const results = new DefinitionBuilder(this.tsLS, compiler, this.adapter)
                         .getTypeDefinitionsAtPosition(fileName, position);
     this.compilerFactory.registerLastKnownProgram();
@@ -136,9 +121,8 @@ export function parseNgCompilerOptions(
   if (!(project instanceof ts.server.ConfiguredProject)) {
     return {};
   }
-  setFileSystem(fs);
   const {options, errors} =
-      readConfiguration(project.getConfigFilePath(), /* existingOptions */ undefined);
+      readConfiguration(project.getConfigFilePath(), /* existingOptions */ undefined, fs);
   if (errors.length > 0) {
     project.error(formatDiagnostics(errors));
   }

@@ -9,7 +9,7 @@
 import {isSyntaxError, Position} from '@angular/compiler';
 import * as ts from 'typescript';
 
-import {absoluteFrom, AbsoluteFsPath, getFileSystem, relative, resolve} from '../src/ngtsc/file_system';
+import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem, relative, resolve} from '../src/ngtsc/file_system';
 
 import {replaceTsWithNgInErrors} from './ngtsc/diagnostics';
 import * as api from './transformers/api';
@@ -139,9 +139,11 @@ export function createNgCompilerOptions(
 }
 
 export function readConfiguration(
-    project: string, existingOptions?: ts.CompilerOptions): ParsedConfiguration {
+    project: string,
+    existingOptions?: ts.CompilerOptions,
+    fs: FileSystem = getFileSystem(),
+    ): ParsedConfiguration {
   try {
-    const fs = getFileSystem();
     const {projectFile, basePath} = calcProjectFileAndBasePath(project);
 
     const readExtendedConfigFile =

@@ -91,7 +91,7 @@ export class LanguageServiceAdapter implements NgCompilerAdapter, ResourceResolv
 
 /**
  * Provides a file system abstraction over the project a language service is
- * associated with. This is consumed by some compiler APIs.
+ * associated with. This is consumed by some Ivy compiler APIs.
  *
  * This is independent of the language service adapter because signatures of
  * calls like `FileSystem#readFile` are a bit stricter than those on the
@@ -143,9 +143,7 @@ export class LanguageServiceFS implements FileSystem {
         return this.project.directoryExists(path);
       },
       isSymbolicLink: () => {
-        // NB: this is kind of hack because TS does not expose APIs for
-        // determining if a file is a symlink.
-        return this.realpath(path) !== path;
+        throw new Error(`LanguageServiceFS#lstat#isSymbolicLink not implemented`);
       },
     };
   }
@@ -196,13 +194,6 @@ export class LanguageServiceFS implements FileSystem {
   isRooted(path: string): boolean {
     return p.isAbsolute(path);
   }
-  /**
-   * From path.join:
-   * The right-most parameter is considered {to}.  Other parameters are
-   * considered an array of {from}.
-   *
-   * Starting from leftmost {from} parameter, resolves {to} to an absolute path.
-   */
   resolve(...paths: string[]): AbsoluteFsPath {
     return this.host.resolvePath(this.join(paths[0], ...paths.slice(1))) as AbsoluteFsPath;
   }
@@ -221,12 +212,12 @@ export class LanguageServiceFS implements FileSystem {
   realpath(filePath: AbsoluteFsPath): AbsoluteFsPath {
     if (this.host.realpath) return this.host.realpath(filePath) as AbsoluteFsPath;
     // TODO: consider falling back on path's utilities here.
-    throw new Error('LanguageServiceFS#realpath cannot determine file\'s real path');
+    throw new Error(`LanguageServiceFS#realpath cannot determine file's real path`);
   }
   getDefaultLibLocation(): AbsoluteFsPath {
     return ts.getDefaultLibFilePath(this.project.getCompilerOptions()) as AbsoluteFsPath;
   }
   normalize<T extends PathString>(path: T): T {
-    return ts.server.toNormalizedPath(path) as string as T;
+    return p.normalize(path) as T;
   }
 }
