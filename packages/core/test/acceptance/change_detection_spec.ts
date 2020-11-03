@@ -92,24 +92,26 @@ describe('change detection', () => {
       const viewRef = vm.insertIntoVcRef();
       fixture.detectChanges();
 
-      expect(counters).toEqual({componentView: 1, embeddedView: 1});
+      // The componentView and the embeddedView will be updated twice
+      // since detectChanges() will also call checkNoChanges()
+      expect(counters).toEqual({componentView: 2, embeddedView: 2});
 
       button.click();
       fixture.detectChanges();
-      expect(counters).toEqual({componentView: 2, embeddedView: 2});
+      expect(counters).toEqual({componentView: 4, embeddedView: 4});
 
       viewRef.detach();
       button.click();
       fixture.detectChanges();
 
-      expect(counters).toEqual({componentView: 3, embeddedView: 2});
+      expect(counters).toEqual({componentView: 6, embeddedView: 4});
 
       // Re-attach the view to ensure that the process can be reversed.
       viewRef.reattach();
       button.click();
       fixture.detectChanges();
 
-      expect(counters).toEqual({componentView: 4, embeddedView: 3});
+      expect(counters).toEqual({componentView: 8, embeddedView: 6});
     });
 
     it('should not detect changes in child component views while they are detached', () => {
@@ -220,13 +222,8 @@ describe('change detection', () => {
       fixture.detectChanges(false);
       expect(fixture.nativeElement).toHaveText('0|dynamic');
 
-      // update model in the OnPush component - should not update UI
+      // update model in the OnPush component - should update UI
       fixture.componentInstance.counter = 1;
-      fixture.detectChanges(false);
-      expect(fixture.nativeElement).toHaveText('0|dynamic');
-
-      // now mark the dynamically inserted component as dirty
-      dynamicCmptRef.changeDetectorRef.markForCheck();
       fixture.detectChanges(false);
       expect(fixture.nativeElement).toHaveText('1|dynamic');
     });
@@ -484,9 +481,18 @@ describe('change detection', () => {
     class DynamicModule {
     }
 
-    @Component({selector: 'my-app', template: '<ng-container #innerContainer></ng-container>'})
-    class MyApp {
+    @Component({selector: 'child', template: '<ng-container #innerContainer></ng-container>'})
+    class Child {
       @ViewChild('innerContainer', {read: ViewContainerRef}) innerContainer!: ViewContainerRef;
+
+      constructor(
+          public vcr: ViewContainerRef, public cfr: ComponentFactoryResolver,
+          public injector: Injector, public cdr: ChangeDetectorRef) {}
+    }
+
+    @Component({selector: 'my-app', template: '<child></child>'})
+    class MyApp {
+      @ViewChild(Child) child!: Child;
 
       constructor(
           public vcr: ViewContainerRef, public cfr: ComponentFactoryResolver,
@@ -497,7 +503,7 @@ describe('change detection', () => {
     let appComp: MyApp;
 
     beforeEach(() => {
-      TestBed.configureTestingModule({imports: [DynamicModule], declarations: [MyApp]});
+      TestBed.configureTestingModule({imports: [DynamicModule], declarations: [MyApp, Child]});
       fixture = TestBed.createComponent(MyApp);
       fixture.detectChanges();
       appComp = fixture.componentInstance;
@@ -507,7 +513,7 @@ describe('change detection', () => {
       it('should not trigger change detection from change detection of parent', () => {
         const dynamicCompRef =
             appComp.cfr.resolveComponentFactory(DynamicComponent).create(appComp.injector);
-        appComp.vcr.insert(dynamicCompRef.hostView);
+        appComp.child.vcr.insert(dynamicCompRef.hostView);
         appComp.cdr.detectChanges();
         expect(dynamicCompRef.instance.doCheckCount).toBe(1);
 
@@ -521,7 +527,7 @@ describe('change detection', () => {
       it('should trigger change detection from change detection of self', () => {
         const dynamicCompRef =
             appComp.cfr.resolveComponentFactory(DynamicComponent).create(appComp.injector);
-        appComp.vcr.insert(dynamicCompRef.hostView);
+        appComp.child.vcr.insert(dynamicCompRef.hostView);
         appComp.cdr.detectChanges();
         expect(dynamicCompRef.instance.doCheckCount).toBe(1);
 
@@ -533,7 +539,7 @@ describe('change detection', () => {
       it('markForCheck should mark the component dirty', () => {
         const dynamicCompRef =
             appComp.cfr.resolveComponentFactory(DynamicComponent).create(appComp.injector);
-        appComp.vcr.insert(dynamicCompRef.hostView);
+        appComp.child.vcr.insert(dynamicCompRef.hostView);
         appComp.cdr.detectChanges();
         expect(dynamicCompRef.instance.doCheckCount).toBe(1);
 
@@ -551,7 +557,7 @@ describe('change detection', () => {
           it('should not trigger change detection from change detection of parent', () => {
             const dynamicCompRef =
                 appComp.cfr.resolveComponentFactory(DynamicComponent).create(appComp.injector);
-            appComp.innerContainer.insert(dynamicCompRef.hostView);
+            appComp.child.innerContainer.insert(dynamicCompRef.hostView);
             appComp.cdr.detectChanges();
             expect(dynamicCompRef.instance.doCheckCount).toBe(1);
 
@@ -564,7 +570,7 @@ describe('change detection', () => {
           it('should trigger change detection from change detection of self', () => {
             const dynamicCompRef =
                 appComp.cfr.resolveComponentFactory(DynamicComponent).create(appComp.injector);
-            appComp.innerContainer.insert(dynamicCompRef.hostView);
+            appComp.child.innerContainer.insert(dynamicCompRef.hostView);
             appComp.cdr.detectChanges();
             expect(dynamicCompRef.instance.doCheckCount).toBe(1);
 
@@ -576,7 +582,7 @@ describe('change detection', () => {
           it('markForCheck should mark the component dirty', () => {
             const dynamicCompRef =
                 appComp.cfr.resolveComponentFactory(DynamicComponent).create(appComp.injector);
-            appComp.innerContainer.insert(dynamicCompRef.hostView);
+            appComp.child.innerContainer.insert(dynamicCompRef.hostView);
             appComp.cdr.detectChanges();
             expect(dynamicCompRef.instance.doCheckCount).toBe(1);
 
@@ -1109,11 +1115,21 @@ describe('change detection', () => {
       }
 
       @Component({
+        selector: 'on-push-parent',
         template: '{{ value }} - <on-push-comp></on-push-comp>',
         changeDetection: ChangeDetectionStrategy.OnPush
       })
       class OnPushParent {
         @ViewChild(OnPushComp) comp!: OnPushComp;
+        value = 'one';
+      }
+
+      @Component({
+        template: '{{ value }} - <on-push-parent></on-push-parent>',
+        changeDetection: ChangeDetectionStrategy.OnPush
+      })
+      class OnPushAncestor {
+        @ViewChild(OnPushParent) comp!: OnPushParent;
         value = 'one';
       }
 
@@ -1153,19 +1169,19 @@ describe('change detection', () => {
       });
 
       it('should ensure ancestor OnPush components are checked', () => {
-        TestBed.configureTestingModule({declarations: [OnPushParent, OnPushComp]});
-        const fixture = TestBed.createComponent(OnPushParent);
+        TestBed.configureTestingModule({declarations: [OnPushAncestor, OnPushParent, OnPushComp]});
+        const fixture = TestBed.createComponent(OnPushAncestor);
         fixture.detectChanges();
 
-        expect(fixture.nativeElement.textContent).toEqual('one - one');
+        expect(fixture.nativeElement.textContent).toEqual('one - one - one');
 
-        fixture.componentInstance.value = 'two';
+        fixture.componentInstance.comp.value = 'two';
         fixture.detectChanges();
-        expect(fixture.nativeElement.textContent).toEqual('one - one');
+        expect(fixture.nativeElement.textContent).toEqual('one - one - one');
 
-        fixture.componentInstance.comp.cdr.markForCheck();
+        fixture.componentInstance.comp.comp.cdr.markForCheck();
         fixture.detectChanges();
-        expect(fixture.nativeElement.textContent).toEqual('two - one');
+        expect(fixture.nativeElement.textContent).toEqual('one - two - one');
       });
 
       it('should ensure OnPush components in embedded views are checked', () => {
@@ -1197,11 +1213,8 @@ describe('change detection', () => {
         fixture.detectChanges();
         expect(fixture.nativeElement.textContent).toEqual('one - two');
 
+        // Dynamic onPush component detectChanges() should update the component
         fixture.componentInstance.value = 'two';
-        fixture.detectChanges();
-        expect(fixture.nativeElement.textContent).toEqual('one - two');
-
-        fixture.componentInstance.comp.cdr.markForCheck();
         fixture.detectChanges();
         expect(fixture.nativeElement.textContent).toEqual('two - two');
       });
