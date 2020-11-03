@@ -14,6 +14,7 @@ import * as html from '../../../ml_parser/ast';
 import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from '../../../ml_parser/interpolation_config';
 import {ParseTreeResult} from '../../../ml_parser/parser';
 import * as o from '../../../output/output_ast';
+import {isTrustedTypesSink} from '../../../schema/trusted_types_sinks';
 
 import {hasI18nAttrs, I18N_ATTR, I18N_ATTR_PREFIX, icuFromI18nMessage} from './util';
 
@@ -90,9 +91,13 @@ export class I18nMetaVisitor implements html.Visitor {
 
         } else if (attr.name.startsWith(I18N_ATTR_PREFIX)) {
           // 'i18n-*' attributes
-          const key = attr.name.slice(I18N_ATTR_PREFIX.length);
-          attrsMeta[key] = attr.value;
-
+          const name = attr.name.slice(I18N_ATTR_PREFIX.length);
+          if (isTrustedTypesSink(element.name, name)) {
+            this._reportError(
+                attr, `Translating attribute '${name}' is disallowed for security reasons.`);
+          } else {
+            attrsMeta[name] = attr.value;
+          }
         } else {
           // non-i18n attributes
           attrs.push(attr);
