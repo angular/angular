@@ -50,6 +50,10 @@ $mat-dialog-button-margin: 8px !default;
   min-height: 52px;
   align-items: center;
 
+  // Explicitly set a box-sizing since people commonly set `border-box`
+  // on all elements which will break the height of the dialog actions.
+  box-sizing: content-box;
+
   // Pull the actions down to avoid their padding stacking with the dialog's padding.
   margin-bottom: -$mat-dialog-padding;
 
