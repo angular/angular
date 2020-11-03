@@ -235,20 +235,12 @@ jobs:
           # Yarn's requests sometimes take more than 10mins to complete.
           no_output_timeout: 45m
       - run: yarn --cwd aio install --frozen-lockfile --non-interactive
-      # Make the bazel directories and add a file to them if they don't exist already so that
-      # persist_to_workspace does not fail.
-      - run: |
-          if [ ! -d ~/bazel_repository_cache ]; then
-            mkdir ~/bazel_repository_cache
-            touch ~/bazel_repository_cache/MARKER
-          fi
       # Persist any changes at this point to be reused by further jobs.
       # **NOTE**: To add new content to the workspace, always persist on the same root.
       - persist_to_workspace:
           root: *workspace_location
           paths:
             - ./ng
-            - ./bazel_repository_cache
 
   lint:
     executor: default-executor
@@ -508,7 +500,6 @@ jobs:
           paths:
             - "node_modules"
             - "aio/node_modules"
-            - "~/bazel_repository_cache"
             - "~/.cache/bazelisk"
 
   # Build the ivy npm packages.
