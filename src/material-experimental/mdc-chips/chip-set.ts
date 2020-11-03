@@ -132,7 +132,19 @@ export class MatChipSet extends _MatChipSetMixinBase implements AfterContentInit
   get empty(): boolean { return this._chips.length === 0; }
 
   /** The ARIA role applied to the chip set. */
-  get role(): string | null { return this.empty ? null : 'presentation'; }
+  @Input()
+  get role(): string | null {
+    if (this._role) {
+      return this._role;
+    } else {
+      return this.empty ? null : 'presentation';
+    }
+  }
+
+  set role(value: string | null) {
+    this._role = value;
+  }
+  private _role: string|null = null;
 
   /** Whether any of the chips inside of this chip-set has focus. */
   get focused(): boolean { return this._hasFocusedChip(); }

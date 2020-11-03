@@ -67,8 +67,14 @@ describe('MDC-based MatChipSet', () => {
         expect(chips.toArray().every(chip => chip.disabled)).toBe(true);
       }));
 
-      it('should have role presentation', () => {
+      it('should have role presentation by default', () => {
         expect(chipSetNativeElement.getAttribute('role')).toBe('presentation');
+      });
+
+      it('should allow a custom role to be specified', () => {
+        chipSetInstance.role = 'list';
+        fixture.detectChanges();
+        expect(chipSetNativeElement.getAttribute('role')).toBe('list');
       });
     });
   });
