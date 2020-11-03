@@ -113,7 +113,8 @@ export declare class MapCircle implements OnInit, OnDestroy {
 }
 
 export declare class MapGroundOverlay implements OnInit, OnDestroy {
-    bounds: google.maps.LatLngBounds | google.maps.LatLngBoundsLiteral;
+    get bounds(): google.maps.LatLngBounds | google.maps.LatLngBoundsLiteral;
+    set bounds(bounds: google.maps.LatLngBounds | google.maps.LatLngBoundsLiteral);
     clickable: boolean;
     groundOverlay?: google.maps.GroundOverlay;
     mapClick: Observable<google.maps.MouseEvent>;

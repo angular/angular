@@ -55,13 +55,6 @@ describe('MapGroundOverlay', () => {
     expect(groundOverlaySpy.setMap).toHaveBeenCalledWith(mapSpy);
   });
 
-  it('has an error if required bounds are not provided', () => {
-    expect(() => {
-      const fixture = TestBed.createComponent(TestApp);
-      fixture.detectChanges();
-    }).toThrow(new Error('Image bounds are required'));
-  });
-
   it('exposes methods that provide information about the Ground Overlay', () => {
     const groundOverlaySpy = createGroundOverlaySpy(url, bounds, groundOverlayOptions);
     createGroundOverlayConstructorSpy(groundOverlaySpy).and.callThrough();
@@ -141,6 +134,22 @@ describe('MapGroundOverlay', () => {
     expect(groundOverlaySpy.setMap).toHaveBeenCalledTimes(2);
     expect(groundOverlaySpy.setMap).toHaveBeenCalledWith(null);
     expect(groundOverlaySpy.setMap).toHaveBeenCalledWith(mapSpy);
+  });
+
+  it('should recreate the ground overlay when the bounds change', () => {
+    const groundOverlaySpy = createGroundOverlaySpy(url, bounds, groundOverlayOptions);
+    createGroundOverlayConstructorSpy(groundOverlaySpy).and.callThrough();
+
+    const fixture = TestBed.createComponent(TestApp);
+    fixture.detectChanges();
+
+    const oldOverlay = fixture.componentInstance.groundOverlay.groundOverlay;
+    fixture.componentInstance.bounds = {...bounds};
+    fixture.detectChanges();
+
+    const newOverlay = fixture.componentInstance.groundOverlay.groundOverlay;
+    expect(newOverlay).toBeTruthy();
+    expect(newOverlay).not.toBe(oldOverlay);
   });
 
 });
