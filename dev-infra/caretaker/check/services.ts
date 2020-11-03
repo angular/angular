@@ -50,16 +50,16 @@ export class ServicesModule extends BaseModule<StatusCheckResult[]> {
   }
 
   async printToTerminal() {
-    const services = await this.data;
-    const serviceNameMinLength = Math.max(...services.map(service => service.name.length));
+    const statuses = await this.data;
+    const serviceNameMinLength = Math.max(...statuses.map(service => service.name.length));
     info.group(bold('Service Statuses'));
-    for (const service of services) {
-      const name = service.name.padEnd(serviceNameMinLength);
-      if (service.status === 'passing') {
+    for (const status of statuses) {
+      const name = status.name.padEnd(serviceNameMinLength);
+      if (status.status === 'passing') {
         info(`${name} ✅`);
       } else {
-        info.group(`${name} ❌ (Updated: ${service.lastUpdated.toLocaleString()})`);
-        info(`  Details: ${service.description}`);
+        info.group(`${name} ❌ (Updated: ${status.lastUpdated.toLocaleString()})`);
+        info(`  Details: ${status.description}`);
         info.groupEnd();
       }
     }

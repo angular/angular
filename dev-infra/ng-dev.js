@@ -1095,10 +1095,7 @@ class BaseModule {
         this.git = git;
         this.config = config;
         /** The data for the module. */
-        this.data = (new Promise((resolve) => {
-            this.resolve = resolve;
-        }));
-        this.retrieveData();
+        this.data = this.retrieveData();
     }
 }
 
@@ -1130,7 +1127,7 @@ class CiModule extends BaseModule {
                     status: yield this.getBranchStatusFromCi(train.branchName),
                 };
             }));
-            this.resolve(yield Promise.all(ciResultPromises));
+            return yield Promise.all(ciResultPromises);
         });
     }
     printToTerminal() {
@@ -1185,9 +1182,9 @@ class G3Module extends BaseModule {
             const toCopyToG3 = this.getG3FileIncludeAndExcludeLists();
             const latestSha = this.getLatestShas();
             if (toCopyToG3 === null || latestSha === null) {
-                return this.resolve();
+                return;
             }
-            this.resolve(this.getDiffStats(latestSha.g3, latestSha.master, toCopyToG3.include, toCopyToG3.exclude));
+            return this.getDiffStats(latestSha.g3, latestSha.master, toCopyToG3.include, toCopyToG3.exclude);
         });
     }
     printToTerminal() {
@@ -1202,7 +1199,8 @@ class G3Module extends BaseModule {
                 info('✅  No sync is needed at this time');
             }
             else {
-                info(`${stats.files} files changed, ${stats.insertions} insertions(+), ${stats.deletions} deletions(-) will be included in the next sync`);
+                info(`${stats.files} files changed, ${stats.insertions} insertions(+), ${stats.deletions} ` +
+                    `deletions(-) from ${stats.commits} commits will be included in the next sync`);
             }
             info.groupEnd();
             info();
@@ -1325,23 +1323,26 @@ class GithubQueriesModule extends BaseModule {
     retrieveData() {
         var _a;
         return tslib.__awaiter(this, void 0, void 0, function* () {
+            // Non-null assertion is used here as the check for undefined immediately follows to confirm the
+            // assertion.  Typescript's type filtering does not seem to work as needed to understand
+            // whether githubQueries is undefined or not.
             let queries = (_a = this.config.caretaker) === null || _a === void 0 ? void 0 : _a.githubQueries;
-            if (queries === undefined || !(queries === null || queries === void 0 ? void 0 : queries.length)) {
+            if (queries === undefined || queries.length === 0) {
                 debug('No github queries defined in the configuration, skipping');
-                return this.resolve();
+                return;
             }
             /** The results of the generated github query. */
             const queryResult = yield this.git.github.graphql.query(this.buildGraphqlQuery(queries));
             const results = Object.values(queryResult);
             const { owner, name: repo } = this.git.remoteConfig;
-            this.resolve(results.map((result, i) => {
+            return results.map((result, i) => {
                 return {
                     queryName: queries[i].name,
                     count: result.issueCount,
                     queryUrl: encodeURI(`https://github.com/${owner}/${repo}/issues?q=${queries[i].query}`),
                     matchedUrls: result.nodes.map(node => node.url)
                 };
-            }));
+            });
         });
     }
     /** Build a Graphql query statement for the provided queries. */
@@ -1416,22 +1417,22 @@ const services = [
 class ServicesModule extends BaseModule {
     retrieveData() {
         return tslib.__awaiter(this, void 0, void 0, function* () {
-            this.resolve(yield Promise.all([...services.map(service => this.getStatusFromStandardApi(service))]));
+            return Promise.all(services.map(service => this.getStatusFromStandardApi(service)));
         });
     }
     printToTerminal() {
         return tslib.__awaiter(this, void 0, void 0, function* () {
-            const data = yield this.data;
-            const serviceNameMinLength = Math.max(...data.map(service => service.name.length));
+            const statuses = yield this.data;
+            const serviceNameMinLength = Math.max(...statuses.map(service => service.name.length));
             info.group(bold('Service Statuses'));
-            for (const service of data) {
-                const name = service.name.padEnd(serviceNameMinLength);
-                if (service.status === 'passing') {
+            for (const status of statuses) {
+                const name = status.name.padEnd(serviceNameMinLength);
+                if (status.status === 'passing') {
                     info(`${name} ✅`);
                 }
                 else {
-                    info.group(`${name} ❌ (Updated: ${service.lastUpdated.toLocaleString()})`);
-                    info(`  Details: ${service.description}`);
+                    info.group(`${name} ❌ (Updated: ${status.lastUpdated.toLocaleString()})`);
+                    info(`  Details: ${status.description}`);
                     info.groupEnd();
                 }
             }
@@ -1483,7 +1484,9 @@ function checkServiceStatuses(githubToken) {
         // promises do not match typings, however our usage here is only to determine when the promise
         // resolves.
         yield Promise.all(caretakerCheckModules.map(module => module.data));
-        caretakerCheckModules.forEach((module) => tslib.__awaiter(this, void 0, void 0, function* () { return yield module.printToTerminal(); }));
+        for (const module of caretakerCheckModules) {
+            yield module.printToTerminal();
+        }
     });
 }
 

@@ -100,7 +100,7 @@ describe('CiModule', () => {
 });
 
 
-/** Build a mock set of ActiveReleaseTrains.  */
+/** Build a mock set of ActiveReleaseTrains. */
 function buildMockActiveReleaseTrains(withRc: false): versioning.ActiveReleaseTrains&
     {releaseCandidate: null};
 function buildMockActiveReleaseTrains(withRc: true): versioning.ActiveReleaseTrains&

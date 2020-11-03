@@ -40,5 +40,5 @@ export async function checkServiceStatuses(githubToken: string) {
 
   for (const module of caretakerCheckModules) {
     await module.printToTerminal();
-  };
+  }
 }
