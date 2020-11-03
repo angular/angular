@@ -9,8 +9,10 @@
 import {computeDecimalDigest, computeDigest, decimalDigest} from '../../../i18n/digest';
 import * as i18n from '../../../i18n/i18n_ast';
 import {createI18nMessageFactory, VisitNodeFn} from '../../../i18n/i18n_parser';
+import {I18nError} from '../../../i18n/parse_util';
 import * as html from '../../../ml_parser/ast';
 import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from '../../../ml_parser/interpolation_config';
+import {ParseTreeResult} from '../../../ml_parser/parser';
 import * as o from '../../../output/output_ast';
 
 import {hasI18nAttrs, I18N_ATTR, I18N_ATTR_PREFIX, icuFromI18nMessage} from './util';
@@ -46,6 +48,7 @@ const setI18nRefs: VisitNodeFn = (htmlNode, i18nNode) => {
 export class I18nMetaVisitor implements html.Visitor {
   // whether visited nodes contain i18n information
   public hasI18nMeta: boolean = false;
+  private _errors: I18nError[] = [];
 
   // i18n message generation factory
   private _createI18nMessage = createI18nMessageFactory(this.interpolationConfig);
@@ -62,6 +65,11 @@ export class I18nMetaVisitor implements html.Visitor {
     this._setMessageId(message, meta);
     this._setLegacyIds(message, meta);
     return message;
+  }
+
+  visitAllWithErrors(nodes: html.Node[]): ParseTreeResult {
+    const result = nodes.map(node => node.visit(this, null));
+    return new ParseTreeResult(result, this._errors);
   }
 
   visitElement(element: html.Element): any {
@@ -192,6 +200,10 @@ export class I18nMetaVisitor implements html.Visitor {
           meta instanceof i18n.IcuPlaceholder ? meta.previousMessage : undefined;
       message.legacyIds = previousMessage ? previousMessage.legacyIds : [];
     }
+  }
+
+  private _reportError(node: html.Node, msg: string): void {
+    this._errors.push(new I18nError(node.sourceSpan, msg));
   }
 }
 
