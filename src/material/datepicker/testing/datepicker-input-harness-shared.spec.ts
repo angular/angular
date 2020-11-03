@@ -141,6 +141,14 @@ export function runDatepickerInputHarnessTests(
     await input.openCalendar();
     expect(await input.getCalendar()).toBeInstanceOf(calendarHarness);
   });
+
+  it('should emit the `dateChange` event when the value is changed', async () => {
+    const input = await loader.getHarness(datepickerInputHarness.with({selector: '#basic'}));
+    expect(fixture.componentInstance.dateChangeCount).toBe(0);
+
+    await input.setValue('1/1/2020');
+    expect(fixture.componentInstance.dateChangeCount).toBe(1);
+  });
 }
 
 @Component({
@@ -149,6 +157,7 @@ export function runDatepickerInputHarnessTests(
       id="basic"
       matInput
       [matDatepicker]="picker"
+      (dateChange)="dateChangeCount = dateChangeCount + 1"
       [(ngModel)]="date"
       [min]="minDate"
       [max]="maxDate"
@@ -166,4 +175,5 @@ class DatepickerInputHarnessTest {
   touchUi = false;
   disabled = false;
   required = false;
+  dateChangeCount = 0;
 }

@@ -195,6 +195,19 @@ export function runDateRangeInputHarnessTests(
 
     expect(await Promise.all([start.getMax(), end.getMax()])).toEqual(['2020-01-01', '2020-01-01']);
   });
+
+  it('should dispatch the dateChange event when the inner input values have changed', async () => {
+    const input = await loader.getHarness(dateRangeInputHarness.with({selector: '[basic]'}));
+    const [start, end] = await Promise.all([input.getStartInput(), input.getEndInput()]);
+
+    expect(fixture.componentInstance.startDateChangeCount).toBe(0);
+    expect(fixture.componentInstance.endDateChangeCount).toBe(0);
+
+    await Promise.all([start.setValue('1/1/2020'), end.setValue('2/2/2020')]);
+
+    expect(fixture.componentInstance.startDateChangeCount).toBe(1);
+    expect(fixture.componentInstance.endDateChangeCount).toBe(1);
+  });
 }
 
 @Component({
@@ -209,12 +222,14 @@ export function runDateRangeInputHarnessTests(
       <input
         matStartDate
         [(ngModel)]="startDate"
+        (dateChange)="startDateChangeCount = startDateChangeCount + 1"
         [disabled]="subInputsDisabled"
         [required]="subInputsRequired"
         placeholder="Start date">
       <input
         matEndDate
         [(ngModel)]="endDate"
+        (dateChange)="endDateChangeCount = endDateChangeCount + 1"
         [disabled]="subInputsDisabled"
         [required]="subInputsRequired"
         placeholder="End date">
@@ -237,4 +252,6 @@ class DateRangeInputHarnessTest {
   required = false;
   subInputsDisabled = false;
   subInputsRequired = false;
+  startDateChangeCount = 0;
+  endDateChangeCount = 0;
 }

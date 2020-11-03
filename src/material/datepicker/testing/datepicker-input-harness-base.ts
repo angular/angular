@@ -59,6 +59,11 @@ export abstract class MatDatepickerInputHarnessBase extends ComponentHarness {
     if (newValue) {
       await inputEl.sendKeys(newValue);
     }
+
+    // @breaking-change 12.0.0 Remove null check once `dispatchEvent` is a required method.
+    if (inputEl.dispatchEvent) {
+      await inputEl.dispatchEvent('change');
+    }
   }
 
   /** Gets the placeholder of the input. */
