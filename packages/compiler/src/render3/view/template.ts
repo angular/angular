@@ -2073,7 +2073,22 @@ export function parseTemplate(
   const i18nMetaVisitor = new I18nMetaVisitor(
       interpolationConfig, /* keepI18nAttrs */ !preserveWhitespaces,
       enableI18nLegacyMessageIdFormat);
-  rootNodes = html.visitAll(i18nMetaVisitor, rootNodes);
+  const i18nMetaResult = i18nMetaVisitor.visitAllWithErrors(rootNodes);
+
+  if (i18nMetaResult.errors && i18nMetaResult.errors.length > 0) {
+    return {
+      interpolationConfig,
+      preserveWhitespaces,
+      template,
+      errors: i18nMetaResult.errors,
+      nodes: [],
+      styleUrls: [],
+      styles: [],
+      ngContentSelectors: []
+    };
+  }
+
+  rootNodes = i18nMetaResult.rootNodes;
 
   if (!preserveWhitespaces) {
     rootNodes = html.visitAll(new WhitespaceVisitor(), rootNodes);
