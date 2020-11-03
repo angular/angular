@@ -437,46 +437,27 @@ This section contains a complete list all of the currently deprecated CLI flags.
 
 | API/Option                      | May be removed in | Notes                                                                           |
 | ------------------------------- | ----------------- |-------------------------------------------------------------------------------- |
-| `i18nFile`                      | <!--v9--> v11     | Specified in the project locale configuration in version 9 and later.           |
-| `i18nFormat`                    | <!--v9--> v11     | Format is now automatically detected.                                           |
-| `i18nLocale`                    | <!--v9--> v11     | New [localization option](/guide/i18n#localize-config) in version 9 and later.  |
-| `lazyModules`                   | <!--v9--> v11     | Used with deprecated SystemJsNgModuleLoader.                                    |
-| `rebaseRootRelativeCssUrls`     | <!--v8--> v11     | Intended only to assist with specific migration issues.                         |
-| `scripts[].lazy`                | <!--v8--> v11     | Renamed to `scripts[].inject`.                                                  |
-| `styles[].lazy`                 | <!--v8--> v11     | Renamed to `styles[].inject`.                                                   |
-| `i18nFormat`                    | <!--v9--> v11     | Renamed to `format` to simplify the user experience.                            |
-| `i18nLocale`                    | <!--v9--> v11     | Redundant with project’s source locale.                                         |
-| `scripts[].lazy`                | <!--v8--> v11     | Renamed to `scripts[].inject`.                                                  |
-| `styles[].lazy`                 | <!--v8--> v11     | Renamed to `styles[].inject`.                                                   |
-| `i18nFile`                      | <!--v9--> v11     | Specified in the project locale configuration in version 9 and later.           |
-| `i18nFormat`                    | <!--v9--> v11     | Format is now automatically detected.                                           |
-| `i18nLocale`                    | <!--v9--> v11     | New [localization option](/guide/i18n#localize-config) in version 9 and later.  |
-| `lazyModules`                   | <!--v9--> v11     | Used with deprecated SystemJsNgModuleLoader.                                    |
-
-### @angular-devkit/core
-
-| API/Option                      | May be removed in | Notes                                                                           |
-| ------------------------------- | ----------------- |-------------------------------------------------------------------------------- |
-| `ModuleNotFoundException`       | <!--v8--> v10     | Not used within projects. Used with Tooling API only. Not Yarn PnP compatible and not used in the Angular CLI. Use Node.js [require.resolve](https://nodejs.org/api/modules.html#modules_require_resolve_request_options).|
-| `resolve`                       | <!--v8--> v10     | Not used within projects. Used with Tooling API only. Not Yarn PnP compatible and not used in the Angular CLI. Use Node.js [require.resolve](https://nodejs.org/api/modules.html#modules_require_resolve_request_options).|
-| `setResolveHook`                | <!--v8--> v10     | Not used within projects. Used with Tooling API only. Not Yarn PnP compatible and not used in the Angular CLI. Use Node.js [require.resolve](https://nodejs.org/api/modules.html#modules_require_resolve_request_options).|
-| `ResolveOptions`                | <!--v8--> v10     | Not used within projects. Used with Tooling API only. Not Yarn PnP compatible and not used in the Angular CLI. Use Node.js [require.resolve](https://nodejs.org/api/modules.html#modules_require_resolve_request_options).|
-| `terminal`                      | <!--v8--> v10     | Unused implementation of terminal codes (color).                                |
-| `isObservable`                  | <!--v8--> v10     | Not used within projects. Used with Tooling API only. Use `isObservable` function from the `rxjs` package.|
+| `extractCss`                    | <!--v11--> v13     | No longer required to disable CSS extraction during development.               | 
+| `i18nFormat`                    | <!--v9--> v12      | Format is now automatically detected.                                           |
+| `i18nLocale`                    | <!--v9--> v12      | New [localization option](/guide/i18n#localize-config) in version 9 and later.  |
+| `lazyModules`                   | <!--v9--> v12      | Used with deprecated SystemJsNgModuleLoader.                                    |
+| `hmrWarning`                    | <!--v11--> v13     | No longer has an effect.                                                       |
+| `servePathDefaultWarning`       | <!--v11--> v13     | No longer has an effect.                                                       |
 
 ### @ngtools/webpack
 
 | API/Option                      | May be removed in | Notes                                                                           |
 | ------------------------------- | ----------------- |-------------------------------------------------------------------------------- |
-| `discoverLazyRoutes`            | <!--v9--> TBD     | Used with deprecated SystemJsNgModuleLoader.                                    |
-| `additionalLazyModules`         | <!--v9--> TBD     | Used with deprecated SystemJsNgModuleLoader.                                    |
-| `additionalLazyModuleResources` | <!--v9--> TBD     | Used with deprecated SystemJsNgModuleLoader.                                    |
+| `discoverLazyRoutes`            | <!--v9--> v12     | Used with deprecated SystemJsNgModuleLoader.                                    |
+| `additionalLazyModules`         | <!--v9--> v12     | Used with deprecated SystemJsNgModuleLoader.                                    |
+| `additionalLazyModuleResources` | <!--v9--> v12     | Used with deprecated SystemJsNgModuleLoader.                                    |
 
 ### @schematics/angular
 
 | API/Option                      | May be removed in | Notes                                                                           |
 | ------------------------------- | ----------------- |-------------------------------------------------------------------------------- |
-| `entryComponent`                | <!--v9--> TBD     | No longer needed with Ivy.                                                      |
+| `entryComponent`                | <!--v9--> v12     | No longer needed with Ivy.                                                      |
+| `lintFix`                       | <!--v11--> v12    | Deprecated as part of TSLint deprecation.                                      |
 
 {@a removed}
 ## Removed APIs
