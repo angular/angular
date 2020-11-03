@@ -881,6 +881,19 @@ describe('MatStepper', () => {
       expect(headerRipples.every(ripple => ripple.disabled)).toBe(true);
     });
 
+    it('should be able to disable ripples', () => {
+      const fixture = createComponent(SimpleMatVerticalStepperApp);
+      fixture.detectChanges();
+
+      const stepHeaders = fixture.debugElement.queryAll(By.directive(MatStepHeader));
+
+      stepHeaders[0].componentInstance.focus('mouse');
+      stepHeaders[1].componentInstance.focus();
+
+      expect(stepHeaders[1].nativeElement.classList).toContain('cdk-focused');
+      expect(stepHeaders[1].nativeElement.classList).toContain('cdk-mouse-focused');
+    });
+
     it('should be able to set the theme for all steps', () => {
       const fixture = createComponent(SimpleMatVerticalStepperApp);
       fixture.detectChanges();

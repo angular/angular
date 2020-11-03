@@ -44,7 +44,7 @@ export declare class MatStepHeader extends _MatStepHeaderMixinBase implements Af
     _getIconContext(): MatStepperIconContext;
     _stringLabel(): string | null;
     _templateLabel(): MatStepLabel | null;
-    focus(): void;
+    focus(origin?: FocusOrigin, options?: FocusOptions): void;
     ngAfterViewInit(): void;
     ngOnDestroy(): void;
     static ɵcmp: i0.ɵɵComponentDefWithMeta<MatStepHeader, "mat-step-header", never, { "color": "color"; "state": "state"; "label": "label"; "errorMessage": "errorMessage"; "iconOverrides": "iconOverrides"; "index": "index"; "selected": "selected"; "active": "active"; "optional": "optional"; "disableRipple": "disableRipple"; }, {}, never, never>;

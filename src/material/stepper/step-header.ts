@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {FocusMonitor} from '@angular/cdk/a11y';
+import {FocusMonitor, FocusOrigin} from '@angular/cdk/a11y';
 import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
@@ -99,8 +99,12 @@ export class MatStepHeader extends _MatStepHeaderMixinBase implements AfterViewI
   }
 
   /** Focuses the step header. */
-  focus() {
-    this._focusMonitor.focusVia(this._elementRef, 'program');
+  focus(origin?: FocusOrigin, options?: FocusOptions) {
+    if (origin) {
+      this._focusMonitor.focusVia(this._elementRef, origin, options);
+    } else {
+      this._elementRef.nativeElement.focus(options);
+    }
   }
 
   /** Returns string label of given step if it is a text label. */
