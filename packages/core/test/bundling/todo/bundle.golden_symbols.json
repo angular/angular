@@ -498,6 +498,9 @@
     "name": "isLContainer"
   },
   {
+    "name": "isLRootViewAndNeedToCheck"
+  },
+  {
     "name": "isLView"
   },
   {

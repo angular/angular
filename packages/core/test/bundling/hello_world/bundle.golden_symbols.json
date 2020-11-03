@@ -168,6 +168,12 @@
     "name": "isInCheckNoChangesMode"
   },
   {
+    "name": "isLRootViewAndNeedToCheck"
+  },
+  {
+    "name": "isLView"
+  },
+  {
     "name": "isProceduralRenderer"
   },
   {

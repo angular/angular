@@ -249,6 +249,12 @@
     "name": "isInlineTemplate"
   },
   {
+    "name": "isLRootViewAndNeedToCheck"
+  },
+  {
+    "name": "isLView"
+  },
+  {
     "name": "isNodeMatchingSelector"
   },
   {

@@ -220,10 +220,10 @@ describe('change detection', () => {
       fixture.detectChanges(false);
       expect(fixture.nativeElement).toHaveText('0|dynamic');
 
-      // update model in the OnPush component - should update UI
+      // update model in the OnPush component - should update UI in Ivy
       fixture.componentInstance.counter = 1;
       fixture.detectChanges(false);
-      expect(fixture.nativeElement).toHaveText('1|dynamic');
+      expect(fixture.nativeElement).toHaveText(ivyEnabled ? '1|dynamic' : '0|dynamic');
     });
 
     it('should support re-enterant change detection', () => {
@@ -517,9 +517,9 @@ describe('change detection', () => {
 
         dynamicCompRef.instance.name = 'dynamic name updated';
         appComp.cdr.detectChanges();
-        // Dynamic component is OnPush, should not refresh from parent's change detection
+        // In Ivy, dynamic component is OnPush, should not refresh from parent's change detection
         // And the doCheckCount should not be updated either.
-        expect(dynamicCompRef.instance.doCheckCount).toBe(1);
+        expect(dynamicCompRef.instance.doCheckCount).toBe(ivyEnabled ? 1 : 2);
       });
 
       it('should trigger change detection from change detection of self', () => {
@@ -562,7 +562,7 @@ describe('change detection', () => {
             dynamicCompRef.instance.name = 'dynamic name updated';
             appComp.cdr.detectChanges();
             // Dynamic component is OnPush, should not refresh from parent's change detection
-            expect(dynamicCompRef.instance.doCheckCount).toBe(1);
+            expect(dynamicCompRef.instance.doCheckCount).toBe(ivyEnabled ? 1 : 2);
           });
 
           it('should trigger change detection from change detection of self', () => {
@@ -1219,7 +1219,7 @@ describe('change detection', () => {
         // Dynamic onPush component detectChanges() should update the component
         fixture.componentInstance.value = 'two';
         fixture.detectChanges();
-        expect(fixture.nativeElement.textContent).toEqual('two - two');
+        expect(fixture.nativeElement.textContent).toEqual(ivyEnabled ? 'two - two' : 'one - two');
       });
 
       it('async pipe should trigger CD for embedded views where the declaration and insertion views are different',
