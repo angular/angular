@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-/** @fileoverview provides adapters for communicating the ng compiler */
+/** @fileoverview provides adapters for communicating with the ng compiler */
 
 import {NgCompilerAdapter} from '@angular/compiler-cli/src/ngtsc/core/api';
 import {absoluteFrom, AbsoluteFsPath, FileStats, FileSystem, PathSegment, PathString} from '@angular/compiler-cli/src/ngtsc/file_system';
