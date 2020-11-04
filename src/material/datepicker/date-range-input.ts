@@ -33,10 +33,10 @@ import {
   MatDateRangeInputParent,
   MAT_DATE_RANGE_INPUT_PARENT,
 } from './date-range-input-parts';
-import {MatDatepickerControl} from './datepicker-base';
+import {MatDatepickerControl, MatDatepickerPanel} from './datepicker-base';
 import {createMissingDateImplError} from './datepicker-errors';
 import {DateFilterFn, dateInputsHaveChanged} from './datepicker-input-base';
-import {MatDateRangePicker, MatDateRangePickerInput} from './date-range-picker';
+import {MatDateRangePickerInput} from './date-range-picker';
 import {DateRange, MatDateSelectionModel} from './date-selection-model';
 
 let nextUniqueId = 0;
@@ -101,14 +101,14 @@ export class MatDateRangeInput<D> implements MatFormFieldControl<DateRange<D>>,
   /** The range picker that this input is associated with. */
   @Input()
   get rangePicker() { return this._rangePicker; }
-  set rangePicker(rangePicker: MatDateRangePicker<D>) {
+  set rangePicker(rangePicker: MatDatepickerPanel<MatDatepickerControl<D>, DateRange<D>, D>) {
     if (rangePicker) {
-      this._model = rangePicker._registerInput(this);
+      this._model = rangePicker.registerInput(this);
       this._rangePicker = rangePicker;
       this._registerModel(this._model!);
     }
   }
-  private _rangePicker: MatDateRangePicker<D>;
+  private _rangePicker: MatDatepickerPanel<MatDatepickerControl<D>, DateRange<D>, D>;
 
   /** Whether the input is required. */
   @Input()

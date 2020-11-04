@@ -25,7 +25,7 @@ import {
 import {MatButton} from '@angular/material/button';
 import {merge, of as observableOf, Subscription} from 'rxjs';
 import {MatDatepickerIntl} from './datepicker-intl';
-import {MatDatepickerBase, MatDatepickerControl} from './datepicker-base';
+import {MatDatepickerControl, MatDatepickerPanel} from './datepicker-base';
 
 
 /** Can be used to override the icon of a `matDatepickerToggle`. */
@@ -59,7 +59,7 @@ export class MatDatepickerToggle<D> implements AfterContentInit, OnChanges, OnDe
   private _stateChanges = Subscription.EMPTY;
 
   /** Datepicker instance that the button will toggle. */
-  @Input('for') datepicker: MatDatepickerBase<MatDatepickerControl<any>, D>;
+  @Input('for') datepicker: MatDatepickerPanel<MatDatepickerControl<any>, D>;
 
   /** Tabindex for the toggle. */
   @Input() tabIndex: number | null;
@@ -118,9 +118,9 @@ export class MatDatepickerToggle<D> implements AfterContentInit, OnChanges, OnDe
   }
 
   private _watchStateChanges() {
-    const datepickerStateChanged = this.datepicker ? this.datepicker._stateChanges : observableOf();
-    const inputStateChanged = this.datepicker && this.datepicker._datepickerInput ?
-        this.datepicker._datepickerInput.stateChanges : observableOf();
+    const datepickerStateChanged = this.datepicker ? this.datepicker.stateChanges : observableOf();
+    const inputStateChanged = this.datepicker && this.datepicker.datepickerInput ?
+        this.datepicker.datepickerInput.stateChanges : observableOf();
     const datepickerToggled = this.datepicker ?
         merge(this.datepicker.openedStream, this.datepicker.closedStream) :
         observableOf();

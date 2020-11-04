@@ -174,7 +174,7 @@ export class MatDatepickerContent<S, D = ExtractDateTypeFromSelection<S>>
   }
 
   ngAfterViewInit() {
-    this._subscriptions.add(this.datepicker._stateChanges.subscribe(() => {
+    this._subscriptions.add(this.datepicker.stateChanges.subscribe(() => {
       this._changeDetectorRef.markForCheck();
     }));
 
@@ -232,10 +232,36 @@ export interface MatDatepickerControl<D> {
   stateChanges: Observable<void>;
 }
 
+/** A datepicker that can be attached to a {@link MatDatepickerControl}. */
+export interface MatDatepickerPanel<C extends MatDatepickerControl<D>, S,
+    D = ExtractDateTypeFromSelection<S>> {
+  /** Stream that emits whenever the date picker is closed. */
+  closedStream: EventEmitter<void>;
+  /** Color palette to use on the datepicker's calendar. */
+  color: ThemePalette;
+  /** The input element the datepicker is associated with. */
+  datepickerInput: C;
+  /** Whether the datepicker pop-up should be disabled. */
+  disabled: boolean;
+  /** The id for the datepicker's calendar. */
+  id: string;
+  /** Whether the datepicker is open. */
+  opened: boolean;
+  /** Stream that emits whenever the date picker is opened. */
+  openedStream: EventEmitter<void>;
+  /** Emits when the datepicker's state changes. */
+  stateChanges: Subject<void>;
+  /** Opens the datepicker. */
+  open(): void;
+  /** Register an input with the datepicker. */
+  registerInput(input: C): MatDateSelectionModel<S, D>;
+}
+
 /** Base class for a datepicker. */
 @Directive()
 export abstract class MatDatepickerBase<C extends MatDatepickerControl<D>, S,
-  D = ExtractDateTypeFromSelection<S>> implements OnDestroy, OnChanges {
+  D = ExtractDateTypeFromSelection<S>> implements MatDatepickerPanel<C, S, D>, OnDestroy,
+    OnChanges {
   private _scrollStrategy: () => ScrollStrategy;
   private _inputStateChanges = Subscription.EMPTY;
 
@@ -247,7 +273,7 @@ export abstract class MatDatepickerBase<C extends MatDatepickerControl<D>, S,
   get startAt(): D | null {
     // If an explicit startAt is set we start there, otherwise we start at whatever the currently
     // selected value is.
-    return this._startAt || (this._datepickerInput ? this._datepickerInput.getStartValue() : null);
+    return this._startAt || (this.datepickerInput ? this.datepickerInput.getStartValue() : null);
   }
   set startAt(value: D | null) {
     this._startAt = this._dateAdapter.getValidDateOrNull(this._dateAdapter.deserialize(value));
@@ -261,7 +287,7 @@ export abstract class MatDatepickerBase<C extends MatDatepickerControl<D>, S,
   @Input()
   get color(): ThemePalette {
     return this._color ||
-        (this._datepickerInput ? this._datepickerInput.getThemePalette() : undefined);
+        (this.datepickerInput ? this.datepickerInput.getThemePalette() : undefined);
   }
   set color(value: ThemePalette) {
     this._color = value;
@@ -282,15 +308,15 @@ export abstract class MatDatepickerBase<C extends MatDatepickerControl<D>, S,
   /** Whether the datepicker pop-up should be disabled. */
   @Input()
   get disabled(): boolean {
-    return this._disabled === undefined && this._datepickerInput ?
-        this._datepickerInput.disabled : !!this._disabled;
+    return this._disabled === undefined && this.datepickerInput ?
+        this.datepickerInput.disabled : !!this._disabled;
   }
   set disabled(value: boolean) {
     const newValue = coerceBooleanProperty(value);
 
     if (newValue !== this._disabled) {
       this._disabled = newValue;
-      this._stateChanges.next(undefined);
+      this.stateChanges.next(undefined);
     }
   }
   private _disabled: boolean;
@@ -354,16 +380,16 @@ export abstract class MatDatepickerBase<C extends MatDatepickerControl<D>, S,
 
   /** The minimum selectable date. */
   _getMinDate(): D | null {
-    return this._datepickerInput && this._datepickerInput.min;
+    return this.datepickerInput && this.datepickerInput.min;
   }
 
   /** The maximum selectable date. */
   _getMaxDate(): D | null {
-    return this._datepickerInput && this._datepickerInput.max;
+    return this.datepickerInput && this.datepickerInput.max;
   }
 
   _getDateFilter(): DateFilterFn<D> {
-    return this._datepickerInput && this._datepickerInput.dateFilter;
+    return this.datepickerInput && this.datepickerInput.dateFilter;
   }
 
   /** A reference to the overlay when the calendar is opened as a popup. */
@@ -382,10 +408,10 @@ export abstract class MatDatepickerBase<C extends MatDatepickerControl<D>, S,
   private _backdropHarnessClass = `${this.id}-backdrop`;
 
   /** The input element this datepicker is associated with. */
-  _datepickerInput: C;
+  datepickerInput: C;
 
   /** Emits when the datepicker's state changes. */
-  readonly _stateChanges = new Subject<void>();
+  readonly stateChanges = new Subject<void>();
 
   constructor(private _dialog: MatDialog,
               private _overlay: Overlay,
@@ -415,14 +441,14 @@ export abstract class MatDatepickerBase<C extends MatDatepickerControl<D>, S,
       }
     }
 
-    this._stateChanges.next(undefined);
+    this.stateChanges.next(undefined);
   }
 
   ngOnDestroy() {
     this._destroyPopup();
     this.close();
     this._inputStateChanges.unsubscribe();
-    this._stateChanges.complete();
+    this.stateChanges.complete();
   }
 
   /** Selects the given date */
@@ -450,14 +476,14 @@ export abstract class MatDatepickerBase<C extends MatDatepickerControl<D>, S,
    * @param input The datepicker input to register with this datepicker.
    * @returns Selection model that the input should hook itself up to.
    */
-  _registerInput(input: C): MatDateSelectionModel<S, D> {
-    if (this._datepickerInput && (typeof ngDevMode === 'undefined' || ngDevMode)) {
+  registerInput(input: C): MatDateSelectionModel<S, D> {
+    if (this.datepickerInput && (typeof ngDevMode === 'undefined' || ngDevMode)) {
       throw Error('A MatDatepicker can only be associated with a single input.');
     }
     this._inputStateChanges.unsubscribe();
-    this._datepickerInput = input;
+    this.datepickerInput = input;
     this._inputStateChanges =
-        input.stateChanges.subscribe(() => this._stateChanges.next(undefined));
+        input.stateChanges.subscribe(() => this.stateChanges.next(undefined));
     return this._model;
   }
 
@@ -466,7 +492,7 @@ export abstract class MatDatepickerBase<C extends MatDatepickerControl<D>, S,
     if (this._opened || this.disabled) {
       return;
     }
-    if (!this._datepickerInput && (typeof ngDevMode === 'undefined' || ngDevMode)) {
+    if (!this.datepickerInput && (typeof ngDevMode === 'undefined' || ngDevMode)) {
       throw Error('Attempted to open an MatDatepicker with no associated input.');
     }
     if (this._document) {
@@ -584,7 +610,7 @@ export abstract class MatDatepickerBase<C extends MatDatepickerControl<D>, S,
   /** Create the popup. */
   private _createPopup(): void {
     const positionStrategy = this._overlay.position()
-      .flexibleConnectedTo(this._datepickerInput.getConnectedOverlayOrigin())
+      .flexibleConnectedTo(this.datepickerInput.getConnectedOverlayOrigin())
       .withTransformOriginOn('.mat-datepicker-content')
       .withFlexibleDimensions(false)
       .withViewportMargin(8)
@@ -607,7 +633,7 @@ export abstract class MatDatepickerBase<C extends MatDatepickerControl<D>, S,
       this._popupRef.detachments(),
       this._popupRef.keydownEvents().pipe(filter(event => {
         // Closing on alt + up is only valid when there's an input associated with the datepicker.
-        return (event.keyCode === ESCAPE && !hasModifierKey(event)) || (this._datepickerInput &&
+        return (event.keyCode === ESCAPE && !hasModifierKey(event)) || (this.datepickerInput &&
             hasModifierKey(event, 'altKey') && event.keyCode === UP_ARROW);
       }))
     ).subscribe(event => {

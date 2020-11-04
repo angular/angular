@@ -40,7 +40,7 @@ export class MatDateRangePicker<D> extends MatDatepickerBase<MatDateRangePickerI
   protected _forwardContentValues(instance: MatDatepickerContent<DateRange<D>, D>) {
     super._forwardContentValues(instance);
 
-    const input = this._datepickerInput;
+    const input = this.datepickerInput;
 
     if (input) {
       instance.comparisonStart = input.comparisonStart;

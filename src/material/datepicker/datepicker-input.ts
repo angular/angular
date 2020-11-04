@@ -28,9 +28,8 @@ import {
 } from '@angular/material/core';
 import {MatFormField, MAT_FORM_FIELD} from '@angular/material/form-field';
 import {MAT_INPUT_VALUE_ACCESSOR} from '@angular/material/input';
-import {MatDatepicker} from './datepicker';
 import {MatDatepickerInputBase, DateFilterFn} from './datepicker-input-base';
-import {MatDatepickerControl} from './datepicker-base';
+import {MatDatepickerControl, MatDatepickerPanel} from './datepicker-base';
 
 /** @docs-private */
 export const MAT_DATEPICKER_VALUE_ACCESSOR: any = {
@@ -75,13 +74,13 @@ export class MatDatepickerInput<D> extends MatDatepickerInputBase<D | null, D>
   implements MatDatepickerControl<D | null> {
   /** The datepicker that this input is associated with. */
   @Input()
-  set matDatepicker(datepicker: MatDatepicker<D>) {
+  set matDatepicker(datepicker: MatDatepickerPanel<MatDatepickerControl<D>, D | null, D>) {
     if (datepicker) {
       this._datepicker = datepicker;
-      this._registerModel(datepicker._registerInput(this));
+      this._registerModel(datepicker.registerInput(this));
     }
   }
-  _datepicker: MatDatepicker<D>;
+  _datepicker: MatDatepickerPanel<MatDatepickerControl<D>, D | null, D>;
 
   /** The minimum valid date. */
   @Input()
