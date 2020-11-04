@@ -1,3 +1,20 @@
+<a name="10.2.2"></a>
+## 10.2.2 (2020-11-04)
+
+
+### Bug Fixes
+
+* **compiler-cli:** report missing pipes when `fullTemplateTypeCheck` is disabled ([#39320](https://github.com/angular/angular/issues/39320)) ([71d0063](https://github.com/angular/angular/commit/71d0063)), closes [#38195](https://github.com/angular/angular/issues/38195)
+* **core:** markDirty() should only mark flags when really scheduling tick. ([#39316](https://github.com/angular/angular/issues/39316)) ([8c82106](https://github.com/angular/angular/commit/8c82106)), closes [#39296](https://github.com/angular/angular/issues/39296)
+* **router:** Ensure all outlets are used when commands have a prefix ([#39456](https://github.com/angular/angular/issues/39456)) ([85d5242](https://github.com/angular/angular/commit/85d5242))
+
+
+### Performance Improvements
+
+* **core:** do not recurse into modules that have already been registered ([#39514](https://github.com/angular/angular/issues/39514)) ([812355c](https://github.com/angular/angular/commit/812355c)), closes [#39487](https://github.com/angular/angular/issues/39487)
+
+
+
 <a name="11.0.0-rc.1"></a>
 # 11.0.0-rc.1 (2020-10-28)
 
