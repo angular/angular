@@ -8,7 +8,7 @@ import {
   dispatchEvent,
 } from '@angular/cdk/testing/private';
 import {SPACE, ENTER} from '@angular/cdk/keycodes';
-import {MatOption, MatOptionModule} from './index';
+import {MatOption, MatOptionModule, MAT_OPTION_PARENT_COMPONENT} from './index';
 
 describe('MatOption component', () => {
 
@@ -196,6 +196,37 @@ describe('MatOption component', () => {
     expect(optionNativeElement.classList.contains('mat-focus-indicator')).toBe(true);
   });
 
+  describe('inside inert group', () => {
+    let fixture: ComponentFixture<InsideGroup>;
+
+    beforeEach(waitForAsync(() => {
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({
+        imports: [MatOptionModule],
+        declarations: [InsideGroup],
+        providers: [{
+          provide: MAT_OPTION_PARENT_COMPONENT,
+          useValue: {inertGroups: true}
+        }]
+      }).compileComponents();
+
+      fixture = TestBed.createComponent(InsideGroup);
+      fixture.detectChanges();
+    }));
+
+    it('should remove all accessibility-related attributes from the group', () => {
+      const group: HTMLElement = fixture.nativeElement.querySelector('mat-optgroup');
+      expect(group.hasAttribute('role')).toBe(false);
+      expect(group.hasAttribute('aria-disabled')).toBe(false);
+      expect(group.hasAttribute('aria-labelledby')).toBe(false);
+    });
+
+    it('should mirror the group label inside the option', () => {
+      const option: HTMLElement = fixture.nativeElement.querySelector('mat-option');
+      expect(option.textContent?.trim()).toBe('Option(Group)');
+    });
+  });
+
 });
 
 @Component({
@@ -204,4 +235,14 @@ describe('MatOption component', () => {
 class BasicOption {
   disabled: boolean;
   id: string;
+}
+
+@Component({
+  template: `
+    <mat-optgroup label="Group">
+      <mat-option>Option</mat-option>
+    </mat-optgroup>
+  `
+})
+class InsideGroup {
 }

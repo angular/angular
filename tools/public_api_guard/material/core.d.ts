@@ -3,11 +3,13 @@ export declare function _countGroupLabelsBeforeOption(optionIndex: number, optio
 export declare function _getOptionScrollPosition(optionOffset: number, optionHeight: number, currentScrollPosition: number, panelHeight: number): number;
 
 export declare class _MatOptgroupBase extends _MatOptgroupMixinBase implements CanDisable {
+    _inert: boolean;
     _labelId: string;
     label: string;
+    constructor(parent?: MatOptionParentComponent);
     static ngAcceptInputType_disabled: BooleanInput;
     static ɵdir: i0.ɵɵDirectiveDefWithMeta<_MatOptgroupBase, never, never, { "label": "label"; }, {}, never>;
-    static ɵfac: i0.ɵɵFactoryDef<_MatOptgroupBase, never>;
+    static ɵfac: i0.ɵɵFactoryDef<_MatOptgroupBase, [{ optional: true; }]>;
 }
 
 export declare class _MatOptionBase implements FocusableOption, AfterViewChecked, OnDestroy {
@@ -216,6 +218,7 @@ export declare class MatOptionModule {
 
 export interface MatOptionParentComponent {
     disableRipple?: boolean;
+    inertGroups?: boolean;
     multiple?: boolean;
 }
 

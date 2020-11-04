@@ -12,6 +12,7 @@ export declare abstract class _MatAutocompleteBase extends _MatAutocompleteMixin
     readonly closed: EventEmitter<void>;
     displayWith: ((value: any) => string) | null;
     id: string;
+    readonly inertGroups: boolean;
     get isOpen(): boolean;
     readonly opened: EventEmitter<void>;
     readonly optionActivated: EventEmitter<MatAutocompleteActivatedEvent>;
@@ -22,7 +23,7 @@ export declare abstract class _MatAutocompleteBase extends _MatAutocompleteMixin
     panelWidth: string | number;
     showPanel: boolean;
     template: TemplateRef<any>;
-    constructor(_changeDetectorRef: ChangeDetectorRef, _elementRef: ElementRef<HTMLElement>, defaults: MatAutocompleteDefaultOptions);
+    constructor(_changeDetectorRef: ChangeDetectorRef, _elementRef: ElementRef<HTMLElement>, defaults: MatAutocompleteDefaultOptions, platform?: Platform);
     _emitSelectEvent(option: _MatOptionBase): void;
     _getScrollTop(): number;
     _setScrollTop(scrollTop: number): void;

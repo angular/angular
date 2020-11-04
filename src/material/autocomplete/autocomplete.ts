@@ -8,6 +8,7 @@
 
 import {ActiveDescendantKeyManager} from '@angular/cdk/a11y';
 import {BooleanInput, coerceBooleanProperty, coerceStringArray} from '@angular/cdk/coercion';
+import {Platform} from '@angular/cdk/platform';
 import {
   AfterContentInit,
   ChangeDetectionStrategy,
@@ -187,12 +188,24 @@ export abstract class _MatAutocompleteBase extends _MatAutocompleteMixinBase imp
   /** Unique ID to be used by autocomplete trigger's "aria-owns" property. */
   id: string = `mat-autocomplete-${_uniqueAutocompleteIdCounter++}`;
 
+  /**
+   * Tells any descendant `mat-optgroup` to use the inert a11y pattern.
+   * @docs-private
+   */
+  readonly inertGroups: boolean;
+
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _elementRef: ElementRef<HTMLElement>,
-    @Inject(MAT_AUTOCOMPLETE_DEFAULT_OPTIONS) defaults: MatAutocompleteDefaultOptions) {
+    @Inject(MAT_AUTOCOMPLETE_DEFAULT_OPTIONS) defaults: MatAutocompleteDefaultOptions,
+    platform?: Platform) {
     super();
 
+    // TODO(crisbeto): the problem that the `inertGroups` option resolves is only present on
+    // Safari using VoiceOver. We should occasionally check back to see whether the bug
+    // wasn't resolved in VoiceOver, and if it has, we can remove this and the `inertGroups`
+    // option altogether.
+    this.inertGroups = platform?.SAFARI || false;
     this._autoActiveFirstOption = !!defaults.autoActiveFirstOption;
   }
 

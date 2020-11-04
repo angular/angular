@@ -14,6 +14,9 @@ export class MatOptionHarness extends ComponentHarness {
   /** Selector used to locate option instances. */
   static hostSelector = '.mat-option';
 
+  /** Element containing the option's text. */
+  private _text = this.locatorFor('.mat-option-text');
+
   /**
    * Gets a `HarnessPredicate` that can be used to search for a `MatOptionsHarness` that meets
    * certain criteria.
@@ -37,7 +40,7 @@ export class MatOptionHarness extends ComponentHarness {
 
   /** Gets the option's label text. */
   async getText(): Promise<string> {
-    return (await this.host()).text();
+    return (await this._text()).text();
   }
 
   /** Gets whether the option is disabled. */

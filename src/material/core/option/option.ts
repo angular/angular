@@ -16,7 +16,6 @@ import {
   ElementRef,
   EventEmitter,
   Inject,
-  InjectionToken,
   Input,
   OnDestroy,
   Optional,
@@ -28,6 +27,7 @@ import {
 import {FocusOptions, FocusableOption, FocusOrigin} from '@angular/cdk/a11y';
 import {Subject} from 'rxjs';
 import {MatOptgroup, _MatOptgroupBase, MAT_OPTGROUP} from './optgroup';
+import {MatOptionParentComponent, MAT_OPTION_PARENT_COMPONENT} from './option-parent';
 
 /**
  * Option IDs need to be unique across components, so this counter exists outside of
@@ -43,23 +43,6 @@ export class MatOptionSelectionChange {
     /** Whether the change in the option's value was a result of a user action. */
     public isUserInput = false) { }
 }
-
-/**
- * Describes a parent component that manages a list of options.
- * Contains properties that the options can inherit.
- * @docs-private
- */
-export interface MatOptionParentComponent {
-  disableRipple?: boolean;
-  multiple?: boolean;
-}
-
-/**
- * Injection token used to provide the parent component to options.
- */
-export const MAT_OPTION_PARENT_COMPONENT =
-    new InjectionToken<MatOptionParentComponent>('MAT_OPTION_PARENT_COMPONENT');
-
 
 @Directive()
 export class _MatOptionBase implements FocusableOption, AfterViewChecked, OnDestroy {
