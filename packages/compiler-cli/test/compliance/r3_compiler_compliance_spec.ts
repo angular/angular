@@ -3340,16 +3340,13 @@ describe('compiler compliance', () => {
 
          // The setClassMetadata call should look like this.
          const setClassMetadata = `
-            …
-            (function() {
-              i0.ɵsetClassMetadata(Comp, [{
-                type: Component,
-                args: [{
-                  template: '',
-                  providers: [{ provide: token, useExisting: Comp }],
-                }]
-              }], null, null);
-            })();
+           …
+          (function() {
+            i0.ɵsetClassMetadata(Comp, [{
+              type: Component,
+              args: [{
+                template: '',
+                providers: [{ provide: token, useExisting: Comp }]
           `;
 
          const result = compile(files, angularFiles, {target: ts.ScriptTarget.ES5});
