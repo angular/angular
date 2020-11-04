@@ -70,13 +70,15 @@ export class ServerPlatformLocation implements PlatformLocation {
     return getDOM().getBaseHref(this._doc)!;
   }
 
-  onPopState(fn: LocationChangeListener): void {
+  onPopState(fn: LocationChangeListener): () => void {
     // No-op: a state stack is not implemented, so
     // no events will ever come.
+    return () => {};
   }
 
-  onHashChange(fn: LocationChangeListener): void {
+  onHashChange(fn: LocationChangeListener): () => void {
     this._hashUpdate.subscribe(fn);
+    return () => {};
   }
 
   get url(): string {

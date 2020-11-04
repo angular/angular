@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {APP_BASE_HREF, DOCUMENT, Location, ɵgetDOM as getDOM} from '@angular/common';
+import {APP_BASE_HREF, DOCUMENT, ɵgetDOM as getDOM} from '@angular/common';
 import {ApplicationRef, Component, CUSTOM_ELEMENTS_SCHEMA, destroyPlatform, NgModule} from '@angular/core';
 import {inject} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
@@ -367,6 +367,33 @@ describe('bootstrap', () => {
     expect(window.pageYOffset).toBeGreaterThanOrEqual(8900);
     expect(window.pageYOffset).toBeLessThan(9000);
     done();
+  });
+
+  it('should cleanup "popstate" and "hashchange" listeners', async () => {
+    @NgModule({
+      imports: [BrowserModule, RouterModule.forRoot([])],
+      declarations: [RootCmp],
+      bootstrap: [RootCmp],
+      providers: testProviders,
+    })
+    class TestModule {
+    }
+
+    spyOn(window, 'addEventListener').and.callThrough();
+    spyOn(window, 'removeEventListener').and.callThrough();
+
+    const ngModuleRef = await platformBrowserDynamic().bootstrapModule(TestModule);
+    ngModuleRef.destroy();
+
+    expect(window.addEventListener).toHaveBeenCalledTimes(2);
+
+    expect(window.addEventListener)
+        .toHaveBeenCalledWith('popstate', jasmine.any(Function), jasmine.any(Boolean));
+    expect(window.addEventListener)
+        .toHaveBeenCalledWith('hashchange', jasmine.any(Function), jasmine.any(Boolean));
+
+    expect(window.removeEventListener).toHaveBeenCalledWith('popstate', jasmine.any(Function));
+    expect(window.removeEventListener).toHaveBeenCalledWith('hashchange', jasmine.any(Function));
   });
 
   function waitForNavigationToComplete(router: Router): Promise<any> {

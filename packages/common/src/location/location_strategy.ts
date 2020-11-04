@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Inject, Injectable, InjectionToken, Optional, ɵɵinject} from '@angular/core';
+import {Inject, Injectable, InjectionToken, OnDestroy, Optional, ɵɵinject,} from '@angular/core';
 import {DOCUMENT} from '../dom_tokens';
 import {LocationChangeListener, PlatformLocation} from './platform_location';
 import {joinWithSlash, normalizeQueryParams} from './util';
@@ -44,9 +44,8 @@ export function provideLocationStrategy(platformLocation: PlatformLocation) {
   // See #23917
   const location = ɵɵinject(DOCUMENT).location;
   return new PathLocationStrategy(
-      ɵɵinject(PlatformLocation as any), location && location.origin || '');
+      ɵɵinject(PlatformLocation as any), (location && location.origin) || '');
 }
-
 
 /**
  * A predefined [DI token](guide/glossary#di-token) for the base href
@@ -105,8 +104,9 @@ export const APP_BASE_HREF = new InjectionToken<string>('appBaseHref');
  * @publicApi
  */
 @Injectable()
-export class PathLocationStrategy extends LocationStrategy {
+export class PathLocationStrategy extends LocationStrategy implements OnDestroy {
   private _baseHref: string;
+  private _removeListenerFns: (() => void)[] = [];
 
   constructor(
       private _platformLocation: PlatformLocation,
@@ -125,9 +125,15 @@ export class PathLocationStrategy extends LocationStrategy {
     this._baseHref = href;
   }
 
+  ngOnDestroy(): void {
+    while (this._removeListenerFns.length) {
+      this._removeListenerFns.pop()!();
+    }
+  }
+
   onPopState(fn: LocationChangeListener): void {
-    this._platformLocation.onPopState(fn);
-    this._platformLocation.onHashChange(fn);
+    this._removeListenerFns.push(
+        this._platformLocation.onPopState(fn), this._platformLocation.onHashChange(fn));
   }
 
   getBaseHref(): string {
