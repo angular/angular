@@ -34,7 +34,10 @@ let nextUniqueId = 0;
   selector: 'input[matChipInputFor]',
   exportAs: 'matChipInput, matChipInputFor',
   host: {
-    'class': 'mat-mdc-chip-input mat-input-element',
+    // TODO: eventually we should remove `mat-input-element` from here since it comes from the
+    // non-MDC version of the input. It's currently being kept for backwards compatibility, because
+    // the MDC chips were landed initially with it.
+    'class': 'mat-mdc-chip-input mat-mdc-input-element mdc-text-field__input mat-input-element',
     '(keydown)': '_keydown($event)',
     '(blur)': '_blur()',
     '(focus)': '_focus()',

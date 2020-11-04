@@ -108,7 +108,7 @@ $mat-mdc-chip-margin: 4px;
   margin: -$mat-mdc-chip-margin;
 
   // Keep the mat-chip-grid height the same even when there are no chips.
-  input.mat-input-element {
+  input.mat-mdc-chip-input {
     margin: $mat-mdc-chip-margin;
   }
 }

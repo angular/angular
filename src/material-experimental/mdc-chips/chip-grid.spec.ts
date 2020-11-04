@@ -33,8 +33,8 @@ import {
 } from '@angular/core';
 import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {FormControl, FormsModule, NgForm, ReactiveFormsModule, Validators} from '@angular/forms';
-import {MatFormFieldModule} from '@angular/material/form-field';
-import {MatInputModule} from '@angular/material/input';
+import {MatFormFieldModule} from '@angular/material-experimental/mdc-form-field';
+import {MatInputModule} from '@angular/material-experimental/mdc-input';
 import {By} from '@angular/platform-browser';
 import {BrowserAnimationsModule, NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {Subject} from 'rxjs';
@@ -668,7 +668,6 @@ describe('MDC-based MatChipGrid', () => {
         .toEqual(null, `Expected the control's value to be empty initially.`);
 
       const nativeInput = fixture.nativeElement.querySelector('input');
-      // tick();
       nativeInput.focus();
 
       typeInElement(nativeInput, '123');
@@ -750,20 +749,20 @@ describe('MDC-based MatChipGrid', () => {
     });
 
     it('should set an asterisk after the placeholder if the control is required', () => {
-      let requiredMarker = fixture.debugElement.query(By.css('.mat-form-field-required-marker'))!;
+      let requiredMarker = fixture.debugElement.query(By.css('.mdc-floating-label--required'))!;
       expect(requiredMarker)
         .toBeNull(`Expected placeholder not to have an asterisk, as control was not required.`);
 
       fixture.componentInstance.isRequired = true;
       fixture.detectChanges();
 
-      requiredMarker = fixture.debugElement.query(By.css('.mat-form-field-required-marker'))!;
+      requiredMarker = fixture.debugElement.query(By.css('.mdc-floating-label--required'))!;
       expect(requiredMarker)
         .not.toBeNull(`Expected placeholder to have an asterisk, as control was required.`);
     });
 
     it('should blur the form field when the active chip is blurred', fakeAsync(() => {
-      const formField: HTMLElement = fixture.nativeElement.querySelector('.mat-form-field');
+      const formField: HTMLElement = fixture.nativeElement.querySelector('.mat-mdc-form-field');
 
       dispatchFakeEvent(nativeChips[0], 'focusin');
       fixture.detectChanges();
@@ -926,8 +925,8 @@ describe('MDC-based MatChipGrid', () => {
     });
 
     it('sets the aria-describedby to reference errors when in error state', () => {
-      let hintId =
-          fixture.debugElement.query(By.css('.mat-hint'))!.nativeElement.getAttribute('id');
+      let hintId = fixture.debugElement.query(By.css('.mat-mdc-form-field-hint'))!.nativeElement
+          .getAttribute('id');
       let describedBy = chipGridEl.getAttribute('aria-describedby');
 
       expect(hintId).toBeTruthy('hint should be shown');
@@ -936,7 +935,7 @@ describe('MDC-based MatChipGrid', () => {
       fixture.componentInstance.formControl.markAsTouched();
       fixture.detectChanges();
 
-      let errorIds = fixture.debugElement.queryAll(By.css('.mat-error'))
+      let errorIds = fixture.debugElement.queryAll(By.css('.mat-mdc-form-field-error'))
         .map(el => el.nativeElement.getAttribute('id')).join(' ');
       describedBy = chipGridEl.getAttribute('aria-describedby');
 
@@ -1039,13 +1038,14 @@ class FormFieldChipGrid {
 @Component({
   template: `
     <mat-form-field>
+      <mat-label>New food...</mat-label>
       <mat-chip-grid #chipGrid
                     placeholder="Food" [formControl]="control" [required]="isRequired">
         <mat-chip-row *ngFor="let food of foods" [value]="food.value" (removed)="remove(food)">
           {{ food.viewValue }}
         </mat-chip-row>
       </mat-chip-grid>
-      <input placeholder="New food..."
+      <input
           [matChipInputFor]="chipGrid"
           [matChipInputSeparatorKeyCodes]="separatorKeyCodes"
           [matChipInputAddOnBlur]="addOnBlur"

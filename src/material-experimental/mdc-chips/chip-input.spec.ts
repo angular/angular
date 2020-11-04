@@ -4,7 +4,7 @@ import {PlatformModule} from '@angular/cdk/platform';
 import {dispatchKeyboardEvent} from '@angular/cdk/testing/private';
 import {Component, DebugElement, ViewChild} from '@angular/core';
 import {waitForAsync, ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
-import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatFormFieldModule} from '@angular/material-experimental/mdc-form-field';
 import {By} from '@angular/platform-browser';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {Subject} from 'rxjs';
@@ -17,6 +17,10 @@ import {
   MatChipsModule
 } from './index';
 
+
+// The following tests have been removed, because the use
+// cases are not support by the MDC-based components:
+// - should propagate the dynamic `placeholder` value to the form field
 
 describe('MDC-based MatChipInput', () => {
   let fixture: ComponentFixture<any>;
@@ -74,21 +78,6 @@ describe('MDC-based MatChipInput', () => {
       expect(inputNativeElement.getAttribute('placeholder')).toBe('bound placeholder');
     });
 
-    it('should propagate the dynamic `placeholder` value to the form field', () => {
-      fixture.componentInstance.placeholder = 'add a chip';
-      fixture.detectChanges();
-
-      const label: HTMLElement = fixture.nativeElement.querySelector('.mat-form-field-label');
-
-      expect(label).toBeTruthy();
-      expect(label.textContent).toContain('add a chip');
-
-      fixture.componentInstance.placeholder = 'or don\'t';
-      fixture.detectChanges();
-
-      expect(label.textContent).toContain('or don\'t');
-    });
-
     it('should become disabled if the list is disabled', () => {
       expect(inputNativeElement.hasAttribute('disabled')).toBe(false);
       expect(chipInputDirective.disabled).toBe(false);
@@ -142,6 +131,12 @@ describe('MDC-based MatChipInput', () => {
 
       expect(gridElement.getAttribute('tabindex')).toBe('0', 'Expected tabindex to remain 0');
     }));
+
+    it('should set input styling classes', () => {
+      expect(inputNativeElement.classList).toContain('mat-mdc-input-element');
+      expect(inputNativeElement.classList).toContain('mat-mdc-chip-input');
+      expect(inputNativeElement.classList).toContain('mdc-text-field__input');
+    });
 
   });
 

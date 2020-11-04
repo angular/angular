@@ -135,6 +135,7 @@
       <h4>Input is last child of chip grid</h4>
 
       <mat-form-field class="demo-has-chip-list">
+        <mat-label>New Contributor...</mat-label>
         <mat-chip-grid #chipGrid1 [(ngModel)]="selectedPeople" required [disabled]="disableInputs">
           <mat-chip-row *ngFor="let person of people"
                    [editable]="editable"
@@ -144,7 +145,6 @@
             <mat-icon matChipRemove>cancel</mat-icon>
           </mat-chip-row>
           <input [disabled]="disableInputs"
-                 placeholder="New Contributor..."
                  [matChipInputFor]="chipGrid1"
                  [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
                  [matChipInputAddOnBlur]="addOnBlur"
@@ -155,14 +155,14 @@
       <h4>Input is next sibling child of chip grid</h4>
 
       <mat-form-field>
+        <mat-label>New Contributor...</mat-label>
         <mat-chip-grid #chipGrid2 [(ngModel)]="selectedPeople" required [disabled]="disableInputs">
           <mat-chip-row *ngFor="let person of people" (removed)="remove(person)">
             {{person.name}}
             <mat-icon matChipRemove>cancel</mat-icon>
           </mat-chip-row>
         </mat-chip-grid>
-        <input placeholder="New Contributor..."
-               [matChipInputFor]="chipGrid2"
+        <input [matChipInputFor]="chipGrid2"
                [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
                [matChipInputAddOnBlur]="addOnBlur"
                (matChipInputTokenEnd)="add($event)" />

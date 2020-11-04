@@ -139,6 +139,11 @@ describe('MatChipInput', () => {
       expect(inputNativeElement.getAttribute('aria-required')).toBe('true');
     });
 
+    it('should set input styling classes', () => {
+      expect(inputNativeElement.classList).toContain('mat-input-element');
+      expect(inputNativeElement.classList).toContain('mat-chip-input');
+    });
+
   });
 
   describe('[addOnBlur]', () => {
