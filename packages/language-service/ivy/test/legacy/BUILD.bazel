@@ -1,7 +1,7 @@
 load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
 
 ts_library(
-    name = "test_lib",
+    name = "legacy_lib",
     testonly = True,
     srcs = glob(["*.ts"]),
     deps = [
@@ -12,7 +12,7 @@ ts_library(
 )
 
 jasmine_node_test(
-    name = "test",
+    name = "legacy",
     data = [
         # Note that we used to depend on the npm_package of common, core, and
         # forms, but this is no longer the case. We did it for View Engine
@@ -28,6 +28,6 @@ jasmine_node_test(
         "ivy-only",
     ],
     deps = [
-        ":test_lib",
+        ":legacy_lib",
     ],
 )
