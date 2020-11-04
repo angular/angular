@@ -1,8 +1,8 @@
 # Style Precedence
 
 When there are multiple bindings to the same class name or style attribute, Angular uses a set of precedence rules to determine which classes or styles to apply to the element.
-These rules specify an order for which style- and class-related bindings have priority.
-This styling precedence is as follows, from the most specific with the highest priority to least specific with the lowest priorty:
+These rules specify an order for which style and class related bindings have priority.
+This styling precedence is as follows, from the most specific with the highest priority to least specific with the lowest priority:
 
 1. Template bindings are the most specific because they apply to the element directly and exclusively, so they have the highest precedence.
   <table width="100%">
