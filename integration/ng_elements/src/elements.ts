@@ -1,10 +1,19 @@
-import {Component, Input, ViewEncapsulation} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input, ViewEncapsulation} from '@angular/core';
 
 @Component({
   selector: 'hello-world-el',
   template: 'Hello {{name}}!',
 })
 export class HelloWorldComponent {
+  @Input() name: string = 'World';
+}
+
+@Component({
+  selector: 'hello-world-onpush-el',
+  template: 'Hello {{name}}!',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+})
+export class HelloWorldOnpushComponent {
   @Input() name: string = 'World';
 }
 
