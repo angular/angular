@@ -1599,7 +1599,8 @@ class TcbExpressionTranslator {
         pipe = this.tcb.env.pipeInst(pipeRef);
       } else {
         // Use an 'any' value when not checking the type of the pipe.
-        pipe = NULL_AS_ANY;
+        pipe = ts.createAsExpression(
+            this.tcb.env.pipeInst(pipeRef), ts.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword));
       }
       const args = ast.args.map(arg => this.translate(arg));
       const methodAccess = ts.createPropertyAccess(pipe, 'transform');

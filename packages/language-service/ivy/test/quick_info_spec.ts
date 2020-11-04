@@ -507,6 +507,15 @@ describe('quick info', () => {
         expectedDisplayString: '(event) TestComponent.testEvent: EventEmitter<string>'
       });
     });
+
+    it('should work for pipes even if checkTypeOfPipes is false', () => {
+      initMockFileSystem('Native');
+      // checkTypeOfPipes is set to false when strict templates is false
+      env = LanguageServiceTestEnvironment.setup(quickInfoSkeleton(), {strictTemplates: false});
+      const templateOverride = `<p>The hero's birthday is {{birthday | da¦te: "MM/dd/yy"}}</p>`;
+      expectQuickInfo(
+          {templateOverride, expectedSpanText: 'date', expectedDisplayString: '(pipe) DatePipe'});
+    });
   });
 
   function expectQuickInfo(

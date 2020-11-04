@@ -67,6 +67,15 @@ export class DefinitionBuilder {
         // LS users to "go to definition" on an item in the template that maps to a class and be
         // taken to the directive or HTML class.
         return this.getTypeDefinitionsForTemplateInstance(symbol, node);
+      case SymbolKind.Pipe: {
+        if (symbol.tsSymbol !== null) {
+          return this.getDefinitionsForSymbols(symbol);
+        } else {
+          // If there is no `ts.Symbol` for the pipe transform, we want to return the
+          // type definition (the pipe class).
+          return this.getTypeDefinitionsForSymbols(symbol.classSymbol);
+        }
+      }
       case SymbolKind.Output:
       case SymbolKind.Input: {
         const bindingDefs = this.getDefinitionsForSymbols(...symbol.bindings);
@@ -134,6 +143,15 @@ export class DefinitionBuilder {
         const directiveDefs = this.getDirectiveTypeDefsForBindingNode(
             node, definitionMeta.parent, templateInfo.component);
         return [...bindingDefs, ...directiveDefs];
+      }
+      case SymbolKind.Pipe: {
+        if (symbol.tsSymbol !== null) {
+          return this.getTypeDefinitionsForSymbols(symbol);
+        } else {
+          // If there is no `ts.Symbol` for the pipe transform, we want to return the
+          // type definition (the pipe class).
+          return this.getTypeDefinitionsForSymbols(symbol.classSymbol);
+        }
       }
       case SymbolKind.Reference:
         return this.getTypeDefinitionsForSymbols({shimLocation: symbol.targetLocation});

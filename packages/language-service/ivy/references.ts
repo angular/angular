@@ -95,6 +95,7 @@ export class ReferenceBuilder {
         const {shimPath, positionInShimFile} = symbol.bindings[0].shimLocation;
         return this.getReferencesAtTypescriptPosition(shimPath, positionInShimFile);
       }
+      case SymbolKind.Pipe:
       case SymbolKind.Expression: {
         const {shimPath, positionInShimFile} = symbol.shimLocation;
         return this.getReferencesAtTypescriptPosition(shimPath, positionInShimFile);
