@@ -6,24 +6,107 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {absoluteFrom} from '@angular/compiler-cli/src/ngtsc/file_system';
+import {initMockFileSystem, TestFile} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
+
 import * as ts from 'typescript/lib/tsserverlibrary';
 
-import {LanguageService} from '../../language_service';
+import {LanguageServiceTestEnvironment} from './env';
 
-import {APP_COMPONENT, MockService, setup, TEST_TEMPLATE} from './mock_host';
+function quickInfoSkeleton(): TestFile[] {
+  return [
+    {
+      name: absoluteFrom('/app.ts'),
+      contents: `
+        import {Component, Directive, EventEmitter, Input, NgModule, Output, Pipe, PipeTransform} from '@angular/core';
+        import {CommonModule} from '@angular/common';
+
+        export interface Address {
+          streetName: string;
+        }
+
+        /** The most heroic being. */
+        export interface Hero {
+          id: number;
+          name: string;
+          address?: Address;
+        }
+
+        /**
+         * This Component provides the \`test-comp\` selector.
+         */
+        /*BeginTestComponent*/ @Component({
+          selector: 'test-comp',
+          template: '<div>Testing: {{name}}</div>',
+        })
+        export class TestComponent {
+          @Input('tcName') name!: string;
+          @Output('test') testEvent!: EventEmitter<string>;
+        } /*EndTestComponent*/
+
+        @Component({
+          selector: 'app-cmp',
+          templateUrl: './app.html',
+        })
+        export class AppCmp {
+          hero!: Hero;
+          heroes!: Hero[];
+          readonlyHeroes!: ReadonlyArray<Readonly<Hero>>;
+          /**
+           * This is the title of the \`AppCmp\` Component.
+           */
+          title!: string;
+          constNames!: [{readonly name: 'name'}];
+          birthday!: Date;
+          anyValue!: any;
+          myClick(event: any) {}
+          setTitle(newTitle: string) {}
+          trackByFn!: any;
+          name!: any;
+        }
+
+        @Directive({
+          selector: '[string-model]',
+          exportAs: 'stringModel',
+        })
+        export class StringModel {
+          @Input() model!: string;
+          @Output() modelChange!: EventEmitter<string>;
+        }
+
+        @Directive({selector: 'button[custom-button][compound]'})
+        export class CompoundCustomButtonDirective {
+          @Input() config?: {color?: string};
+        }
+
+        @NgModule({
+          declarations: [
+            AppCmp,
+            CompoundCustomButtonDirective,
+            StringModel,
+            TestComponent,
+          ],
+          imports: [
+            CommonModule,
+          ],
+        })
+        export class AppModule {}
+      `,
+      isRoot: true,
+    },
+    {
+      name: absoluteFrom('/app.html'),
+      contents: `Will be overridden`,
+    }
+  ];
+}
 
 describe('quick info', () => {
-  let service: MockService;
-  let ngLS: LanguageService;
-
-  beforeAll(() => {
-    const {project, service: _service, tsLS} = setup();
-    service = _service;
-    ngLS = new LanguageService(project, tsLS);
-  });
+  let env: LanguageServiceTestEnvironment;
 
   beforeEach(() => {
-    service.reset();
+    initMockFileSystem('Native');
+    env = LanguageServiceTestEnvironment.setup(quickInfoSkeleton());
   });
 
   describe('elements', () => {
@@ -78,24 +161,23 @@ describe('quick info', () => {
       const {documentation} = expectQuickInfo({
         templateOverride: `<div *¦ngFor="let item of heroes"></div>`,
         expectedSpanText: 'ngFor',
-        expectedDisplayString: '(directive) NgForOf<Hero, Array<Hero>>'
+        expectedDisplayString: '(directive) NgForOf<Hero, Hero[]>'
       });
-      expect(toText(documentation))
-          .toContain('A [structural directive](guide/structural-directives) that renders');
+      expect(toText(documentation)).toContain('A fake version of the NgFor directive.');
     });
 
     it('should work for directives with compound selectors, some of which are bindings', () => {
       expectQuickInfo({
-        templateOverride: `<ng-template ngF¦or let-hero [ngForOf]="heroes">{{item}}</ng-template>`,
+        templateOverride: `<ng-template ngF¦or let-hero [ngForOf]="heroes">{{hero}}</ng-template>`,
         expectedSpanText: 'ngFor',
-        expectedDisplayString: '(directive) NgForOf<Hero, Array<Hero>>'
+        expectedDisplayString: '(directive) NgForOf<Hero, Hero[]>'
       });
     });
 
     it('should work for data-let- syntax', () => {
       expectQuickInfo({
         templateOverride:
-            `<ng-template ngFor data-let-he¦ro [ngForOf]="heroes">{{item}}</ng-template>`,
+            `<ng-template ngFor data-let-he¦ro [ngForOf]="heroes">{{hero}}</ng-template>`,
         expectedSpanText: 'hero',
         expectedDisplayString: '(variable) hero: Hero'
       });
@@ -127,7 +209,7 @@ describe('quick info', () => {
 
       it('should work for structural directive inputs ngForTrackBy', () => {
         expectQuickInfo({
-          templateOverride: `<div *ngFor="let item of heroes; tr¦ackBy: test;"></div>`,
+          templateOverride: `<div *ngFor="let item of heroes; tr¦ackBy: trackByFn;"></div>`,
           expectedSpanText: 'trackBy',
           expectedDisplayString:
               '(property) NgForOf<Hero, Hero[]>.ngForTrackBy: TrackByFunction<Hero>'
@@ -136,7 +218,7 @@ describe('quick info', () => {
 
       it('should work for structural directive inputs ngForOf', () => {
         expectQuickInfo({
-          templateOverride: `<div *ngFor="let item o¦f heroes; trackBy: test;"></div>`,
+          templateOverride: `<div *ngFor="let item o¦f heroes; trackBy: trackByFn;"></div>`,
           expectedSpanText: 'of',
           expectedDisplayString:
               '(property) NgForOf<Hero, Hero[]>.ngForOf: Hero[] | (Hero[] & Iterable<Hero>) | null | undefined'
@@ -157,7 +239,7 @@ describe('quick info', () => {
         expectQuickInfo({
           templateOverride: `<test-comp (te¦st)="myClick($event)"></test-comp>`,
           expectedSpanText: 'test',
-          expectedDisplayString: '(event) TestComponent.testEvent: EventEmitter<any>'
+          expectedDisplayString: '(event) TestComponent.testEvent: EventEmitter<string>'
         });
       });
 
@@ -165,12 +247,12 @@ describe('quick info', () => {
         expectQuickInfo({
           templateOverride: `<test-comp on-te¦st="myClick($event)"></test-comp>`,
           expectedSpanText: 'test',
-          expectedDisplayString: '(event) TestComponent.testEvent: EventEmitter<any>'
+          expectedDisplayString: '(event) TestComponent.testEvent: EventEmitter<string>'
         });
         expectQuickInfo({
           templateOverride: `<test-comp data-on-te¦st="myClick($event)"></test-comp>`,
           expectedSpanText: 'test',
-          expectedDisplayString: '(event) TestComponent.testEvent: EventEmitter<any>'
+          expectedDisplayString: '(event) TestComponent.testEvent: EventEmitter<string>'
         });
       });
 
@@ -272,7 +354,7 @@ describe('quick info', () => {
       expectQuickInfo({
         templateOverride: `<div>{{ tit¦le }}</div>`,
         expectedSpanText: 'title',
-        expectedDisplayString: '(property) AppComponent.title: string'
+        expectedDisplayString: '(property) AppCmp.title: string'
       });
     });
 
@@ -288,7 +370,7 @@ describe('quick info', () => {
       expectQuickInfo({
         templateOverride: `<div string-model model="{{tit¦le}}"></div>`,
         expectedSpanText: 'title',
-        expectedDisplayString: '(property) AppComponent.title: string'
+        expectedDisplayString: '(property) AppCmp.title: string'
       });
     });
 
@@ -296,7 +378,7 @@ describe('quick info', () => {
       expectQuickInfo({
         templateOverride: `<test-comp [tcName]="ti¦tle"></test-comp>`,
         expectedSpanText: 'title',
-        expectedDisplayString: '(property) AppComponent.title: string'
+        expectedDisplayString: '(property) AppCmp.title: string'
       });
     });
 
@@ -312,7 +394,7 @@ describe('quick info', () => {
       expectQuickInfo({
         templateOverride: `<test-comp (test)="ti¦tle=$event"></test-comp>`,
         expectedSpanText: 'title',
-        expectedDisplayString: '(property) AppComponent.title: string'
+        expectedDisplayString: '(property) AppCmp.title: string'
       });
     });
 
@@ -320,7 +402,7 @@ describe('quick info', () => {
       expectQuickInfo({
         templateOverride: `<div (click)="setT¦itle('title')"></div>`,
         expectedSpanText: 'setTitle',
-        expectedDisplayString: '(method) AppComponent.setTitle(newTitle: string): void'
+        expectedDisplayString: '(method) AppCmp.setTitle(newTitle: string): void'
       });
     });
 
@@ -342,9 +424,9 @@ describe('quick info', () => {
 
     it('should find members of two-way binding', () => {
       expectQuickInfo({
-        templateOverride: `<input [(ngModel)]="ti¦tle" />`,
+        templateOverride: `<input string-model [(model)]="ti¦tle" />`,
         expectedSpanText: 'title',
-        expectedDisplayString: '(property) AppComponent.title: string'
+        expectedDisplayString: '(property) AppCmp.title: string'
       });
     });
 
@@ -352,15 +434,15 @@ describe('quick info', () => {
       expectQuickInfo({
         templateOverride: `<div *ngIf="anyV¦alue"></div>`,
         expectedSpanText: 'anyValue',
-        expectedDisplayString: '(property) AppComponent.anyValue: any'
+        expectedDisplayString: '(property) AppCmp.anyValue: any'
       });
     });
 
     it('should work for members in structural directives', () => {
       expectQuickInfo({
-        templateOverride: `<div *ngFor="let item of her¦oes; trackBy: test;"></div>`,
+        templateOverride: `<div *ngFor="let item of her¦oes; trackBy: trackByFn;"></div>`,
         expectedSpanText: 'heroes',
-        expectedDisplayString: '(property) AppComponent.heroes: Hero[]'
+        expectedDisplayString: '(property) AppCmp.heroes: Hero[]'
       });
     });
 
@@ -373,20 +455,11 @@ describe('quick info', () => {
     });
 
     it('should provide documentation', () => {
-      const {position} = service.overwriteInlineTemplate(APP_COMPONENT, `<div>{{¦title}}</div>`);
-      const quickInfo = ngLS.getQuickInfoAtPosition(APP_COMPONENT, position);
+      const {cursor} = env.overrideTemplateWithCursor(
+          absoluteFrom('/app.ts'), 'AppCmp', `<div>{{¦title}}</div>`);
+      const quickInfo = env.ngLS.getQuickInfoAtPosition(absoluteFrom('/app.html'), cursor);
       const documentation = toText(quickInfo!.documentation);
-      expect(documentation).toBe('This is the title of the `AppComponent` Component.');
-    });
-
-    it('works with external template', () => {
-      const {position, text} = service.overwrite(TEST_TEMPLATE, '<butt¦on></button>');
-      const quickInfo = ngLS.getQuickInfoAtPosition(TEST_TEMPLATE, position);
-      expect(quickInfo).toBeTruthy();
-      const {textSpan, displayParts} = quickInfo!;
-      expect(text.substring(textSpan.start, textSpan.start + textSpan.length))
-          .toEqual('<button></button>');
-      expect(toText(displayParts)).toEqual('(element) button: HTMLButtonElement');
+      expect(documentation).toBe('This is the title of the `AppCmp` Component.');
     });
   });
 
@@ -394,8 +467,11 @@ describe('quick info', () => {
       {templateOverride, expectedSpanText, expectedDisplayString}:
           {templateOverride: string, expectedSpanText: string, expectedDisplayString: string}):
       ts.QuickInfo {
-    const {position, text} = service.overwriteInlineTemplate(APP_COMPONENT, templateOverride);
-    const quickInfo = ngLS.getQuickInfoAtPosition(APP_COMPONENT, position);
+    const {cursor, text} =
+        env.overrideTemplateWithCursor(absoluteFrom('/app.ts'), 'AppCmp', templateOverride);
+    env.expectNoSourceDiagnostics();
+    env.expectNoTemplateDiagnostics(absoluteFrom('/app.ts'), 'AppCmp');
+    const quickInfo = env.ngLS.getQuickInfoAtPosition(absoluteFrom('/app.html'), cursor);
     expect(quickInfo).toBeTruthy();
     const {textSpan, displayParts} = quickInfo!;
     expect(text.substring(textSpan.start, textSpan.start + textSpan.length))

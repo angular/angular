@@ -15,6 +15,15 @@ import * as ts from 'typescript/lib/tsserverlibrary';
 import {LanguageServiceAdapter} from './language_service_adapter';
 import {isExternalTemplate} from './utils';
 
+/**
+ * Manages the `NgCompiler` instance which backs the language service, updating or replacing it as
+ * needed to produce an up-to-date understanding of the current program.
+ *
+ * TODO(alxhub): currently the options used for the compiler are specified at `CompilerFactory`
+ * construction, and are not changable. In a real project, users can update `tsconfig.json`. We need
+ * to properly handle a change in the compiler options, either by having an API to update the
+ * `CompilerFactory` to use new options, or by replacing it entirely.
+ */
 export class CompilerFactory {
   private readonly incrementalStrategy = new TrackedIncrementalBuildStrategy();
   private compiler: NgCompiler|null = null;
@@ -23,21 +32,15 @@ export class CompilerFactory {
   constructor(
       private readonly adapter: LanguageServiceAdapter,
       private readonly programStrategy: TypeCheckingProgramStrategy,
+      private readonly options: NgCompilerOptions,
   ) {}
 
-  /**
-   * Create a new instance of the Ivy compiler if the program has changed since
-   * the last time the compiler was instantiated. If the program has not changed,
-   * return the existing instance.
-   * @param fileName override the template if this is an external template file
-   * @param options angular compiler options
-   */
-  getOrCreateWithChangedFile(fileName: string, options: NgCompilerOptions): NgCompiler {
+  getOrCreate(): NgCompiler {
     const program = this.programStrategy.getProgram();
-    if (!this.compiler || program !== this.lastKnownProgram) {
+    if (this.compiler === null || program !== this.lastKnownProgram) {
       this.compiler = new NgCompiler(
           this.adapter,  // like compiler host
-          options,       // angular compiler options
+          this.options,  // angular compiler options
           program,
           this.programStrategy,
           this.incrementalStrategy,
@@ -47,10 +50,22 @@ export class CompilerFactory {
       );
       this.lastKnownProgram = program;
     }
-    if (isExternalTemplate(fileName)) {
-      this.overrideTemplate(fileName, this.compiler);
-    }
     return this.compiler;
+  }
+
+  /**
+   * Create a new instance of the Ivy compiler if the program has changed since
+   * the last time the compiler was instantiated. If the program has not changed,
+   * return the existing instance.
+   * @param fileName override the template if this is an external template file
+   * @param options angular compiler options
+   */
+  getOrCreateWithChangedFile(fileName: string): NgCompiler {
+    const compiler = this.getOrCreate();
+    if (isExternalTemplate(fileName)) {
+      this.overrideTemplate(fileName, compiler);
+    }
+    return compiler;
   }
 
   private overrideTemplate(fileName: string, compiler: NgCompiler) {

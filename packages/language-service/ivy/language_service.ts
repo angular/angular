@@ -21,7 +21,7 @@ import {getTemplateInfoAtPosition, isTypeScriptFile} from './utils';
 
 export class LanguageService {
   private options: CompilerOptions;
-  private readonly compilerFactory: CompilerFactory;
+  readonly compilerFactory: CompilerFactory;
   private readonly strategy: TypeCheckingProgramStrategy;
   private readonly adapter: LanguageServiceAdapter;
 
@@ -29,12 +29,12 @@ export class LanguageService {
     this.options = parseNgCompilerOptions(project);
     this.strategy = createTypeCheckingProgramStrategy(project);
     this.adapter = new LanguageServiceAdapter(project);
-    this.compilerFactory = new CompilerFactory(this.adapter, this.strategy);
+    this.compilerFactory = new CompilerFactory(this.adapter, this.strategy, this.options);
     this.watchConfigFile(project);
   }
 
   getSemanticDiagnostics(fileName: string): ts.Diagnostic[] {
-    const compiler = this.compilerFactory.getOrCreateWithChangedFile(fileName, this.options);
+    const compiler = this.compilerFactory.getOrCreateWithChangedFile(fileName);
     const ttc = compiler.getTemplateTypeChecker();
     const diagnostics: ts.Diagnostic[] = [];
     if (isTypeScriptFile(fileName)) {
@@ -57,7 +57,7 @@ export class LanguageService {
 
   getDefinitionAndBoundSpan(fileName: string, position: number): ts.DefinitionInfoAndBoundSpan
       |undefined {
-    const compiler = this.compilerFactory.getOrCreateWithChangedFile(fileName, this.options);
+    const compiler = this.compilerFactory.getOrCreateWithChangedFile(fileName);
     const results =
         new DefinitionBuilder(this.tsLS, compiler).getDefinitionAndBoundSpan(fileName, position);
     this.compilerFactory.registerLastKnownProgram();
@@ -66,7 +66,7 @@ export class LanguageService {
 
   getTypeDefinitionAtPosition(fileName: string, position: number):
       readonly ts.DefinitionInfo[]|undefined {
-    const compiler = this.compilerFactory.getOrCreateWithChangedFile(fileName, this.options);
+    const compiler = this.compilerFactory.getOrCreateWithChangedFile(fileName);
     const results =
         new DefinitionBuilder(this.tsLS, compiler).getTypeDefinitionsAtPosition(fileName, position);
     this.compilerFactory.registerLastKnownProgram();
@@ -75,7 +75,7 @@ export class LanguageService {
 
   getQuickInfoAtPosition(fileName: string, position: number): ts.QuickInfo|undefined {
     const program = this.strategy.getProgram();
-    const compiler = this.compilerFactory.getOrCreateWithChangedFile(fileName, this.options);
+    const compiler = this.compilerFactory.getOrCreateWithChangedFile(fileName);
     const templateInfo = getTemplateInfoAtPosition(fileName, position, compiler);
     if (templateInfo === undefined) {
       return undefined;
