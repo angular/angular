@@ -5,6 +5,12 @@ Angular is an application design framework and development platform for creating
 These Angular docs help you learn and use the Angular framework and development platform, from your first application to optimizing complex single-page apps for enterprises.
 Tutorials and guides include downloadable examples to accelerate your projects.
 
+<div class="alert is-helpful">
+
+According to [Wikipedia](https://en.wikipedia.org/wiki/Single-page_application), **a single-page application (SPA)** is a web application or website that only has one page. In a single-page application, all necessary resources are downloaded once at the initial load, then the application will be displayed as programmed bases on the data returned from the server (known as client-side rendering) instead of reload the entire page (known as server-side rendering).
+
+</div>
+
 
 <div class="card-container">
   <a href="guide/setup-local" class="docs-card"
