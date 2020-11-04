@@ -13,9 +13,8 @@ import {absoluteFrom, absoluteFromSourceFile, AbsoluteFsPath, getFileSystem, get
 import {runInEachFileSystem, TestFile} from '../../../src/ngtsc/file_system/testing';
 import {NoopImportRewriter} from '../../../src/ngtsc/imports';
 import {MockLogger} from '../../../src/ngtsc/logging/testing';
-import {getDeclaration} from '../../../src/ngtsc/testing';
+import {getDeclaration, loadTestFiles} from '../../../src/ngtsc/testing';
 import {ImportManager} from '../../../src/ngtsc/translator';
-import {loadTestFiles} from '../../../test/helpers';
 import {DecorationAnalyzer} from '../../src/analysis/decoration_analyzer';
 import {NgccReferencesRegistry} from '../../src/analysis/ngcc_references_registry';
 import {SwitchMarkerAnalyzer} from '../../src/analysis/switch_marker_analyzer';

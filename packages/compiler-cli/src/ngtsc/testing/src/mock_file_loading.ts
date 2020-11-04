@@ -10,9 +10,9 @@
 import {readdirSync, readFileSync, statSync} from 'fs';
 import {resolve} from 'path';
 
-import {getAngularPackagesFromRunfiles, resolveNpmTreeArtifact} from '..';
-import {AbsoluteFsPath, FileSystem, getFileSystem} from '../../../src/ngtsc/file_system';
-import {Folder, MockFileSystemPosix, TestFile} from '../../../src/ngtsc/file_system/testing';
+import {AbsoluteFsPath, FileSystem, getFileSystem} from '../../file_system';
+import {Folder, MockFileSystemPosix, TestFile} from '../../file_system/testing';
+import {getAngularPackagesFromRunfiles, resolveNpmTreeArtifact} from './runfile_helpers';
 
 export function loadTestFiles(files: TestFile[]) {
   const fs = getFileSystem();
@@ -71,7 +71,9 @@ export function loadTsLib(fs: FileSystem, basePath: string = '/') {
 
 export function loadFakeCore(fs: FileSystem, basePath: string = '/') {
   loadTestDirectory(
-      fs, resolveNpmTreeArtifact('angular/packages/compiler-cli/test/ngtsc/fake_core/npm_package'),
+      fs,
+      resolveNpmTreeArtifact(
+          'angular/packages/compiler-cli/src/ngtsc/testing/fake_core/npm_package'),
       fs.resolve(basePath, 'node_modules/@angular/core'));
 }
 

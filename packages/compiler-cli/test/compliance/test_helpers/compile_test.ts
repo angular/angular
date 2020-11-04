@@ -9,9 +9,9 @@ import * as ts from 'typescript';
 
 import {AbsoluteFsPath, FileSystem, NgtscCompilerHost} from '../../../src/ngtsc/file_system';
 import {initMockFileSystem} from '../../../src/ngtsc/file_system/testing';
+import {loadStandardTestFiles, loadTestDirectory} from '../../../src/ngtsc/testing';
 import {performCompilation} from '../../../src/perform_compile';
 import {CompilerOptions} from '../../../src/transformers/api';
-import {loadStandardTestFiles, loadTestDirectory} from '../../helpers';
 
 import {ConfigOptions} from './get_compliance_tests';
 

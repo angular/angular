@@ -8,7 +8,7 @@
 import {absoluteFrom, getSourceFileOrError} from '../../../src/ngtsc/file_system';
 import {runInEachFileSystem, TestFile} from '../../../src/ngtsc/file_system/testing';
 import {MockLogger} from '../../../src/ngtsc/logging/testing';
-import {loadTestFiles} from '../../../test/helpers';
+import {loadTestFiles} from '../../../src/ngtsc/testing';
 import {SwitchMarkerAnalyzer} from '../../src/analysis/switch_marker_analyzer';
 import {Esm2015ReflectionHost} from '../../src/host/esm2015_host';
 import {makeTestEntryPointBundle} from '../helpers/utils';

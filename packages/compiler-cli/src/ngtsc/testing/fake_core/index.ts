@@ -71,8 +71,7 @@ export interface SimpleChanges {
 }
 
 export type ɵɵNgModuleDefWithMeta<ModuleT, DeclarationsT, ImportsT, ExportsT> = any;
-export type ɵɵDirectiveDefWithMeta<
-    DirT, SelectorT, ExportAsT, InputsT, OutputsT, QueriesT, NgContentSelectorsT> = any;
+export type ɵɵDirectiveDefWithMeta<DirT, SelectorT, ExportAsT, InputsT, OutputsT, QueriesT> = any;
 export type ɵɵPipeDefWithMeta<PipeT, NameT> = any;
 
 export enum ViewEncapsulation {
@@ -103,3 +102,7 @@ export interface QueryList<T>/* implements Iterable<T> */ {
 export type NgIterable<T> = Array<T>|Iterable<T>;
 
 export class NgZone {}
+
+export interface PipeTransform {
+  transform(value: any, ...args: any[]): any;
+}

@@ -16,7 +16,6 @@ ts_library(
         "//packages/compiler-cli/src/ngtsc/testing",
         "//packages/compiler-cli/src/ngtsc/util",
         "//packages/compiler-cli/test:test_utils",
-        "//packages/compiler-cli/test/helpers",
         "@npm//source-map",
         "@npm//typescript",
     ],
@@ -27,7 +26,7 @@ jasmine_node_test(
     timeout = "long",
     bootstrap = ["//tools/testing:node_no_angular_es5"],
     data = [
-        "//packages/compiler-cli/test/ngtsc/fake_core:npm_package",
+        "//packages/compiler-cli/src/ngtsc/testing/fake_core:npm_package",
     ],
     shard_count = 4,
     deps = [

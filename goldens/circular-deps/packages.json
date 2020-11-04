@@ -42,10 +42,6 @@
     "packages/compiler-cli/src/ngtsc/scope/src/local.ts"
   ],
   [
-    "packages/compiler-cli/test/helpers/index.ts",
-    "packages/compiler-cli/test/helpers/src/mock_file_loading.ts"
-  ],
-  [
     "packages/compiler/src/compile_metadata.ts",
     "packages/compiler/src/lifecycle_reflector.ts",
     "packages/compiler/src/compile_reflector.ts",

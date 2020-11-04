@@ -9,7 +9,7 @@ import {createHash} from 'crypto';
 
 import {absoluteFrom, FileSystem, getFileSystem} from '../../../src/ngtsc/file_system';
 import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
-import {loadTestFiles} from '../../../test/helpers';
+import {loadTestFiles} from '../../../src/ngtsc/testing';
 import {DEFAULT_NGCC_CONFIG, NgccConfiguration, ProcessLockingConfiguration} from '../../src/packages/configuration';
 
 

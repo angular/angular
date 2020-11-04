@@ -11,8 +11,7 @@ import * as ts from 'typescript';
 import {ErrorCode, ngErrorCode} from '../../src/ngtsc/diagnostics';
 import {absoluteFrom as _, getFileSystem, getSourceFileOrError} from '../../src/ngtsc/file_system';
 import {runInEachFileSystem} from '../../src/ngtsc/file_system/testing';
-import {expectCompleteReuse} from '../../src/ngtsc/testing';
-import {loadStandardTestFiles} from '../helpers/src/mock_file_loading';
+import {expectCompleteReuse, loadStandardTestFiles} from '../../src/ngtsc/testing';
 
 import {NgtscTestEnvironment} from './env';
 

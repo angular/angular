@@ -18,7 +18,7 @@ ts_library(
         "//packages/compiler",
         "//packages/compiler-cli",
         "//packages/compiler-cli/src/ngtsc/file_system",
-        "//packages/compiler-cli/test/helpers",
+        "//packages/compiler-cli/src/ngtsc/testing",
         "@npm//typescript",
     ],
 )

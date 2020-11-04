@@ -7,7 +7,7 @@
  */
 import {absoluteFrom, getFileSystem} from '../../../src/ngtsc/file_system';
 import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
-import {loadTestFiles} from '../../../test/helpers';
+import {loadTestFiles} from '../../../src/ngtsc/testing';
 import {EntryPoint} from '../../src/packages/entry_point';
 import {makeEntryPointBundle} from '../../src/packages/entry_point_bundle';
 import {createModuleResolutionCache, SharedFileCache} from '../../src/packages/source_file_cache';

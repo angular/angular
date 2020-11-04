@@ -9,7 +9,7 @@ import * as ts from 'typescript';
 
 import {absoluteFrom, getFileSystem, relativeFrom} from '../../../src/ngtsc/file_system';
 import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
-import {loadTestFiles} from '../../../test/helpers';
+import {loadTestFiles} from '../../../src/ngtsc/testing';
 import {createDependencyInfo} from '../../src/dependencies/dependency_host';
 import {ModuleResolver} from '../../src/dependencies/module_resolver';
 import {UmdDependencyHost} from '../../src/dependencies/umd_dependency_host';

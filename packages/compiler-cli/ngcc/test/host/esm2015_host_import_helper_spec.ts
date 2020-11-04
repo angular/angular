@@ -12,8 +12,7 @@ import {absoluteFrom, getFileSystem, getSourceFileOrError} from '../../../src/ng
 import {runInEachFileSystem, TestFile} from '../../../src/ngtsc/file_system/testing';
 import {MockLogger} from '../../../src/ngtsc/logging/testing';
 import {ClassMemberKind, isNamedVariableDeclaration, TypeValueReferenceKind} from '../../../src/ngtsc/reflection';
-import {getDeclaration} from '../../../src/ngtsc/testing';
-import {loadFakeCore, loadTestFiles, loadTsLib} from '../../../test/helpers';
+import {getDeclaration, loadFakeCore, loadTestFiles, loadTsLib} from '../../../src/ngtsc/testing';
 import {Esm2015ReflectionHost} from '../../src/host/esm2015_host';
 import {convertToDirectTsLibImport, convertToInlineTsLib, makeTestBundleProgram} from '../helpers/utils';
 

@@ -8,7 +8,7 @@
 import {absoluteFrom, FileSystem, getFileSystem, join} from '../../../src/ngtsc/file_system';
 import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
 import {MockLogger} from '../../../src/ngtsc/logging/testing';
-import {loadTestFiles} from '../../../test/helpers';
+import {loadTestFiles} from '../../../src/ngtsc/testing';
 import {NgccConfiguration} from '../../src/packages/configuration';
 import {EntryPoint, EntryPointFormat, EntryPointJsonProperty, getEntryPointInfo, isEntryPoint} from '../../src/packages/entry_point';
 import {EntryPointBundle, makeEntryPointBundle} from '../../src/packages/entry_point_bundle';
