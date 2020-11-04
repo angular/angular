@@ -615,6 +615,25 @@ describe('MatMenu', () => {
     expect(items.every(item => item.getAttribute('role') === 'menuitemcheckbox')).toBe(true);
   });
 
+  it('should not change focus origin if origin not specified for menu items', () => {
+    const fixture = createComponent(MenuWithCheckboxItems);
+    fixture.detectChanges();
+    fixture.componentInstance.trigger.openMenu();
+    fixture.detectChanges();
+
+    let [firstMenuItemDebugEl, secondMenuItemDebugEl] =
+           fixture.debugElement.queryAll(By.css('.mat-menu-item'))!;
+
+    const firstMenuItemInstance = firstMenuItemDebugEl.componentInstance as MatMenuItem;
+    const secondMenuItemInstance = secondMenuItemDebugEl.componentInstance as MatMenuItem;
+
+    firstMenuItemInstance.focus('mouse');
+    secondMenuItemInstance.focus();
+
+    expect(secondMenuItemDebugEl.nativeElement.classList).toContain('cdk-focused');
+    expect(secondMenuItemDebugEl.nativeElement.classList).toContain('cdk-mouse-focused');
+  });
+
   it('should not throw an error on destroy', () => {
     const fixture = createComponent(SimpleMenu, [], [FakeIcon]);
     expect(fixture.destroy.bind(fixture)).not.toThrow();
@@ -2004,6 +2023,24 @@ describe('MatMenu', () => {
             .not.toContain('mat-elevation-z6', 'Expected menu not to maintain old elevation.');
         expect(lastMenu.classList)
             .toContain('mat-elevation-z4', 'Expected menu to have the proper updated elevation.');
+      }));
+
+        it('should not change focus origin if origin not specified for menu trigger',
+      fakeAsync(() => {
+        compileTestComponent();
+
+        instance.levelOneTrigger.openMenu();
+        instance.levelOneTrigger.focus('mouse');
+        fixture.detectChanges();
+
+        instance.levelTwoTrigger.focus();
+        fixture.detectChanges();
+        tick(500);
+
+        const levelTwoTrigger = overlay.querySelector('#level-two-trigger')! as HTMLElement;
+
+        expect(levelTwoTrigger.classList).toContain('cdk-focused');
+        expect(levelTwoTrigger.classList).toContain('cdk-mouse-focused');
       }));
 
     it('should not increase the elevation if the user specified a custom one', () => {
