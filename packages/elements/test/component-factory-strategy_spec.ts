@@ -14,7 +14,7 @@ import {ComponentNgElementStrategy, ComponentNgElementStrategyFactory} from '../
 import {NgElementStrategyEvent} from '../src/element-strategy';
 
 describe('ComponentFactoryNgElementStrategy', () => {
-  let factory: FakeComponentFactory;
+  let factory: FakeComponentFactory<typeof FakeComponent>;
   let strategy: ComponentNgElementStrategy;
 
   let injector: any;
@@ -25,7 +25,7 @@ describe('ComponentFactoryNgElementStrategy', () => {
   let injectables: Map<unknown, unknown>;
 
   beforeEach(() => {
-    factory = new FakeComponentFactory();
+    factory = new FakeComponentFactory(FakeComponent);
     componentRef = factory.componentRef;
 
     applicationRef = jasmine.createSpyObj('applicationRef', ['attachView']);
@@ -163,13 +163,6 @@ describe('ComponentFactoryNgElementStrategy', () => {
        }));
   });
 
-  it('should not call ngOnChanges if not present on the component', () => {
-    factory.componentRef.instance = new FakeComponentWithoutNgOnChanges();
-
-    // Should simply succeed without problems (did not try to call ngOnChanges)
-    strategy.connect(document.createElement('div'));
-  });
-
   describe('when inputs change and not connected', () => {
     it('should cache the value', () => {
       strategy.setInputValue('fooFoo', 'fooFoo-1');
@@ -252,6 +245,22 @@ describe('ComponentFactoryNgElementStrategy', () => {
            barBar: new SimpleChange('barBar-1', 'barBar-2', false)
          });
        }));
+
+    it('should not try to call ngOnChanges if not present on the component', fakeAsync(() => {
+         const factory2 = new FakeComponentFactory(FakeComponentWithoutNgOnChanges);
+         const strategy2 = new ComponentNgElementStrategy(factory2, injector);
+         const changeDetectorRef2 = factory2.componentRef.changeDetectorRef;
+
+         strategy2.connect(document.createElement('div'));
+         changeDetectorRef2.detectChanges.calls.reset();
+
+         strategy2.setInputValue('fooFoo', 'fooFoo-1');
+         expect(() => tick(16)).not.toThrow();  // scheduler waits 16ms if RAF is unavailable
+
+         // If the strategy would have tried to call `component.ngOnChanges()`, an error would have
+         // been thrown and `changeDetectorRef2.detectChanges()` would not have been called.
+         expect(changeDetectorRef2.detectChanges).toHaveBeenCalledTimes(1);
+       }));
   });
 
   describe('disconnect', () => {
@@ -327,7 +336,7 @@ export class FakeComponent {
   }
 }
 
-export class FakeComponentFactory extends ComponentFactory<any> {
+export class FakeComponentFactory<T extends Type<any>> extends ComponentFactory<T> {
   componentRef: any = jasmine.createSpyObj(
       'componentRef',
       // Method spies.
@@ -336,14 +345,14 @@ export class FakeComponentFactory extends ComponentFactory<any> {
       {
         changeDetectorRef: jasmine.createSpyObj('changeDetectorRef', ['detectChanges']),
         hostView: {},
-        instance: new FakeComponent(),
+        instance: new this.ComponentClass(),
       });
 
   get selector(): string {
     return 'fake-component';
   }
   get componentType(): Type<any> {
-    return FakeComponent;
+    return this.ComponentClass;
   }
   get ngContentSelectors(): string[] {
     return ['content-1', 'content-2'];
@@ -359,12 +368,15 @@ export class FakeComponentFactory extends ComponentFactory<any> {
       {propName: 'falsyZero', templateName: 'falsyZero'},
     ];
   }
-
   get outputs(): {propName: string; templateName: string}[] {
     return [
       {propName: 'output1', templateName: 'templateOutput1'},
       {propName: 'output2', templateName: 'templateOutput2'},
     ];
+  }
+
+  constructor(private ComponentClass: T) {
+    super();
   }
 
   create(
