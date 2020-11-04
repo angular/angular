@@ -48,12 +48,12 @@ the checkbox:
 ```
 
 5. Add the theme and typography mixins to your Sass. These align with the normal Angular Material
-mixins except that they are suffixed with `-mdc`. There is currently no pre-built CSS option for
-the experimental components. For example, using the checkbox:
+mixins except that they are suffixed with `-mdc`. Some experimental components may not yet
+be included in the pre-built CSS mixin and will need to be explicitly included.
 
 ```scss
   @import '~@angular/material/theming';
-  @import '~@angular/material-experimental/mdc-checkbox';
+  @import '~@angular/material-experimental/mdc-theming/all-theme';
   
   $my-primary: mat-palette($mat-indigo);
   $my-accent:  mat-palette($mat-pink, A200, A100, A400);
@@ -63,7 +63,7 @@ the experimental components. For example, using the checkbox:
       accent: $my-accent
     )
   ));
-  
-  @include mat-mdc-checkbox-theme($my-theme);
-  @include mat-mdc-checkbox-typography();
+
+  @include angular-material-mdc-theme($my-theme);
+  @include angular-material-mdc-typography();
 ```

@@ -62,7 +62,7 @@ component by following these steps:
 
    ```scss
    @import '~@angular/material/theming';
-   @import '~@angular/material-experimental/mdc-select';
+   @import '~@angular/material-experimental/mdc-select/select-theme';
 
    $my-primary: mat-palette($mat-indigo);
    $my-accent:  mat-palette($mat-pink, A200, A100, A400);
