@@ -14,6 +14,10 @@ $_mat-progress-spinner-default-circumference: $pi * $_mat-progress-spinner-defau
   display: block;
   position: relative;
 
+  // Prevents the animating circle from going outside the bounds of the host
+  // and potentially changing the surrounding layout. See #16894.
+  overflow: hidden;
+
   svg {
     position: absolute;
     transform: rotate(-90deg);
@@ -37,9 +41,11 @@ $_mat-progress-spinner-default-circumference: $pi * $_mat-progress-spinner-defau
   }
 
   &.mat-progress-spinner-indeterminate-animation[mode='indeterminate'] {
-    @include _noop-animation();
-    animation: mat-progress-spinner-linear-rotate $swift-ease-in-out-duration * 4
-        linear infinite;
+    svg {
+      @include _noop-animation();
+      animation: mat-progress-spinner-linear-rotate $swift-ease-in-out-duration * 4
+          linear infinite;
+    }
 
     circle {
       @include _noop-animation();
@@ -52,11 +58,13 @@ $_mat-progress-spinner-default-circumference: $pi * $_mat-progress-spinner-defau
   }
 
   &.mat-progress-spinner-indeterminate-fallback-animation[mode='indeterminate'] {
-    @include _noop-animation();
-    animation: mat-progress-spinner-stroke-rotate-fallback
-               $mat-progress-spinner-stroke-rotate-fallback-duration
-               $mat-progress-spinner-stroke-rotate-fallback-ease
-               infinite;
+    svg {
+      @include _noop-animation();
+      animation: mat-progress-spinner-stroke-rotate-fallback
+                 $mat-progress-spinner-stroke-rotate-fallback-duration
+                 $mat-progress-spinner-stroke-rotate-fallback-ease
+                 infinite;
+    }
 
     circle {
       @include _noop-animation();
