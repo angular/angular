@@ -257,7 +257,7 @@ export class TypeCheckContextImpl implements TypeCheckContext {
       boundTarget,
     });
 
-    const tcbRequiresInline = requiresInlineTypeCheckBlock(ref.node);
+    const tcbRequiresInline = requiresInlineTypeCheckBlock(ref.node, pipes);
 
     // If inlining is not supported, but is required for either the TCB or one of its directive
     // dependencies, then exit here with an error.

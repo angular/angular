@@ -973,7 +973,8 @@ describe('type check blocks', () => {
       it('should not check types of pipes when disabled', () => {
         const DISABLED_CONFIG: TypeCheckingConfig = {...BASE_CONFIG, checkTypeOfPipes: false};
         const block = tcb(TEMPLATE, PIPES, DISABLED_CONFIG);
-        expect(block).toContain('(null as any).transform(((ctx).a), ((ctx).b), ((ctx).c))');
+        expect(block).toContain(
+            '((null as TestPipe) as any).transform(((ctx).a), ((ctx).b), ((ctx).c))');
       });
     });
 

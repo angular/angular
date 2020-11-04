@@ -10,6 +10,8 @@ import {absoluteFrom as _} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {TestFile} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
 import {LanguageServiceTestEnvironment} from '@angular/language-service/ivy/test/env';
 
+import {MockServerHost} from './mock_host';
+
 export function getText(contents: string, textSpan: ts.TextSpan) {
   return contents.substr(textSpan.start, textSpan.length);
 }
@@ -50,4 +52,26 @@ export function createModuleWithDeclarations(
   const moduleFile = {name: _('/app-module.ts'), contents, isRoot: true};
   return LanguageServiceTestEnvironment.setup(
       [moduleFile, ...filesWithClassDeclarations, ...externalResourceFiles]);
+}
+
+export interface HumanizedDefinitionInfo {
+  fileName: string;
+  textSpan: string;
+  contextSpan: string|undefined;
+}
+
+export function humanizeDefinitionInfo(
+    def: ts.DefinitionInfo, host: MockServerHost,
+    overrides: Map<string, string> = new Map()): HumanizedDefinitionInfo {
+  const contents = (overrides.get(def.fileName) !== undefined ? overrides.get(def.fileName) :
+                                                                host.readFile(def.fileName)) ??
+      '';
+
+  return {
+    fileName: def.fileName,
+    textSpan: contents.substr(def.textSpan.start, def.textSpan.start + def.textSpan.length),
+    contextSpan: def.contextSpan ?
+        contents.substr(def.contextSpan.start, def.contextSpan.start + def.contextSpan.length) :
+        undefined,
+  };
 }

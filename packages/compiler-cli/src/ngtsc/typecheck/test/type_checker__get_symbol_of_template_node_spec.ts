@@ -12,7 +12,7 @@ import * as ts from 'typescript';
 import {absoluteFrom, AbsoluteFsPath, getSourceFileOrError} from '../../file_system';
 import {runInEachFileSystem} from '../../file_system/testing';
 import {ClassDeclaration} from '../../reflection';
-import {DirectiveSymbol, DomBindingSymbol, ElementSymbol, ExpressionSymbol, InputBindingSymbol, OutputBindingSymbol, ReferenceSymbol, Symbol, SymbolKind, TemplateSymbol, TemplateTypeChecker, TypeCheckingConfig, VariableSymbol} from '../api';
+import {DirectiveSymbol, DomBindingSymbol, ElementSymbol, ExpressionSymbol, InputBindingSymbol, OutputBindingSymbol, PipeSymbol, ReferenceSymbol, Symbol, SymbolKind, TemplateSymbol, TemplateTypeChecker, TypeCheckingConfig, VariableSymbol} from '../api';
 
 import {getClass, ngForDeclaration, ngForTypeCheckTarget, setup as baseTestSetup, TypeCheckingTarget} from './test_utils';
 
@@ -710,34 +710,35 @@ runInEachFileSystem(() => {
         });
       });
 
-
       describe('pipes', () => {
         let templateTypeChecker: TemplateTypeChecker;
         let cmp: ClassDeclaration<ts.ClassDeclaration>;
         let binding: BindingPipe;
         let program: ts.Program;
 
-        beforeEach(() => {
+        function setupPipesTest(checkTypeOfPipes = true) {
           const fileName = absoluteFrom('/main.ts');
           const templateString = `<div [inputA]="a | test:b:c"></div>`;
-          const testValues = setup([
-            {
-              fileName,
-              templates: {'Cmp': templateString},
-              source: `
+          const testValues = setup(
+              [
+                {
+                  fileName,
+                  templates: {'Cmp': templateString},
+                  source: `
             export class Cmp { a: string; b: number; c: boolean }
             export class TestPipe {
               transform(value: string, repeat: number, commaSeparate: boolean): string[] {
               }
             }
             `,
-              declarations: [{
-                type: 'pipe',
-                name: 'TestPipe',
-                pipeName: 'test',
-              }],
-            },
-          ]);
+                  declarations: [{
+                    type: 'pipe',
+                    name: 'TestPipe',
+                    pipeName: 'test',
+                  }],
+                },
+              ],
+              {checkTypeOfPipes});
           program = testValues.program;
           templateTypeChecker = testValues.templateTypeChecker;
           const sf = getSourceFileOrError(testValues.program, fileName);
@@ -745,38 +746,55 @@ runInEachFileSystem(() => {
           binding =
               (getAstElements(templateTypeChecker, cmp)[0].inputs[0].value as ASTWithSource).ast as
               BindingPipe;
-        });
+        }
 
         it('should get symbol for pipe', () => {
+          setupPipesTest();
           const pipeSymbol = templateTypeChecker.getSymbolOfNode(binding, cmp)!;
-          assertExpressionSymbol(pipeSymbol);
+          assertPipeSymbol(pipeSymbol);
           expect(program.getTypeChecker().symbolToString(pipeSymbol.tsSymbol!))
               .toEqual('transform');
-          expect(
-              (pipeSymbol.tsSymbol!.declarations[0].parent as ts.ClassDeclaration).name!.getText())
+          expect(program.getTypeChecker().symbolToString(pipeSymbol.classSymbol.tsSymbol))
               .toEqual('TestPipe');
-          expect(program.getTypeChecker().typeToString(pipeSymbol.tsType))
+          expect(program.getTypeChecker().typeToString(pipeSymbol.tsType!))
               .toEqual('(value: string, repeat: number, commaSeparate: boolean) => string[]');
         });
 
-        it('should get symbols for pipe expression and args', () => {
-          const aSymbol = templateTypeChecker.getSymbolOfNode(binding.exp, cmp)!;
-          assertExpressionSymbol(aSymbol);
-          expect(program.getTypeChecker().symbolToString(aSymbol.tsSymbol!)).toEqual('a');
-          expect(program.getTypeChecker().typeToString(aSymbol.tsType)).toEqual('string');
-
-          const bSymbol = templateTypeChecker.getSymbolOfNode(binding.args[0], cmp)!;
-          assertExpressionSymbol(bSymbol);
-          expect(program.getTypeChecker().symbolToString(bSymbol.tsSymbol!)).toEqual('b');
-          expect(program.getTypeChecker().typeToString(bSymbol.tsType)).toEqual('number');
-
-          const cSymbol = templateTypeChecker.getSymbolOfNode(binding.args[1], cmp)!;
-          assertExpressionSymbol(cSymbol);
-          expect(program.getTypeChecker().symbolToString(cSymbol.tsSymbol!)).toEqual('c');
-          expect(program.getTypeChecker().typeToString(cSymbol.tsType)).toEqual('boolean');
+        it('should get symbol for pipe, checkTypeOfPipes: false', () => {
+          setupPipesTest(false);
+          const pipeSymbol = templateTypeChecker.getSymbolOfNode(binding, cmp)!;
+          assertPipeSymbol(pipeSymbol);
+          expect(pipeSymbol.tsSymbol).toBeNull();
+          expect(program.getTypeChecker().typeToString(pipeSymbol.tsType!)).toEqual('any');
+          expect(program.getTypeChecker().symbolToString(pipeSymbol.classSymbol.tsSymbol))
+              .toEqual('TestPipe');
+          expect(program.getTypeChecker().typeToString(pipeSymbol.classSymbol.tsType))
+              .toEqual('TestPipe');
         });
-      });
 
+        for (const checkTypeOfPipes of [true, false]) {
+          describe(`checkTypeOfPipes: ${checkTypeOfPipes}`, () => {
+            // Because the args are property reads, we still need information about them.
+            it(`should get symbols for pipe expression and args`, () => {
+              setupPipesTest(checkTypeOfPipes);
+              const aSymbol = templateTypeChecker.getSymbolOfNode(binding.exp, cmp)!;
+              assertExpressionSymbol(aSymbol);
+              expect(program.getTypeChecker().symbolToString(aSymbol.tsSymbol!)).toEqual('a');
+              expect(program.getTypeChecker().typeToString(aSymbol.tsType)).toEqual('string');
+
+              const bSymbol = templateTypeChecker.getSymbolOfNode(binding.args[0], cmp)!;
+              assertExpressionSymbol(bSymbol);
+              expect(program.getTypeChecker().symbolToString(bSymbol.tsSymbol!)).toEqual('b');
+              expect(program.getTypeChecker().typeToString(bSymbol.tsType)).toEqual('number');
+
+              const cSymbol = templateTypeChecker.getSymbolOfNode(binding.args[1], cmp)!;
+              assertExpressionSymbol(cSymbol);
+              expect(program.getTypeChecker().symbolToString(cSymbol.tsSymbol!)).toEqual('c');
+              expect(program.getTypeChecker().typeToString(cSymbol.tsType)).toEqual('boolean');
+            });
+          });
+        }
+      });
 
       it('should get a symbol for PropertyWrite expressions', () => {
         const fileName = absoluteFrom('/main.ts');
@@ -1513,6 +1531,10 @@ function assertReferenceSymbol(tSymbol: Symbol): asserts tSymbol is ReferenceSym
 
 function assertExpressionSymbol(tSymbol: Symbol): asserts tSymbol is ExpressionSymbol {
   expect(tSymbol.kind).toEqual(SymbolKind.Expression);
+}
+
+function assertPipeSymbol(tSymbol: Symbol): asserts tSymbol is PipeSymbol {
+  expect(tSymbol.kind).toEqual(SymbolKind.Pipe);
 }
 
 function assertElementSymbol(tSymbol: Symbol): asserts tSymbol is ElementSymbol {

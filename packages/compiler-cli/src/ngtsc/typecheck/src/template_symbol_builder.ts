@@ -13,7 +13,7 @@ import {AbsoluteFsPath} from '../../file_system';
 import {ClassDeclaration} from '../../reflection';
 import {ComponentScopeReader} from '../../scope';
 import {isAssignment} from '../../util/src/typescript';
-import {DirectiveSymbol, DomBindingSymbol, ElementSymbol, ExpressionSymbol, InputBindingSymbol, OutputBindingSymbol, ReferenceSymbol, ShimLocation, Symbol, SymbolKind, TemplateSymbol, TsNodeSymbolInfo, TypeCheckableDirectiveMeta, VariableSymbol} from '../api';
+import {DirectiveSymbol, DomBindingSymbol, ElementSymbol, ExpressionSymbol, InputBindingSymbol, OutputBindingSymbol, PipeSymbol, ReferenceSymbol, ShimLocation, Symbol, SymbolKind, TemplateSymbol, TsNodeSymbolInfo, TypeCheckableDirectiveMeta, VariableSymbol} from '../api';
 
 import {ExpressionIdentifier, findAllMatchingNodes, findFirstMatchingNode, hasExpressionIdentifier} from './comments';
 import {TemplateData} from './context';
@@ -61,6 +61,8 @@ export class SymbolBuilder {
       symbol = this.getSymbolOfVariable(node);
     } else if (node instanceof TmplAstReference) {
       symbol = this.getSymbolOfReference(node);
+    } else if (node instanceof BindingPipe) {
+      symbol = this.getSymbolOfPipe(node);
     } else if (node instanceof AST) {
       symbol = this.getSymbolOfTemplateExpression(node);
     } else {
@@ -397,6 +399,45 @@ export class SymbolBuilder {
     }
   }
 
+  private getSymbolOfPipe(expression: BindingPipe): PipeSymbol|null {
+    const node = findFirstMatchingNode(
+        this.typeCheckBlock, {withSpan: expression.sourceSpan, filter: ts.isCallExpression});
+    if (node === null || !ts.isPropertyAccessExpression(node.expression)) {
+      return null;
+    }
+
+    const methodAccess = node.expression;
+    // Find the node for the pipe variable from the transform property access. This will be one of
+    // two forms: `_pipe1.transform` or `(_pipe1 as any).transform`.
+    const pipeVariableNode = ts.isParenthesizedExpression(methodAccess.expression) &&
+            ts.isAsExpression(methodAccess.expression.expression) ?
+        methodAccess.expression.expression.expression :
+        methodAccess.expression;
+    const pipeDeclaration = this.getTypeChecker().getSymbolAtLocation(pipeVariableNode);
+    if (pipeDeclaration === undefined || pipeDeclaration.valueDeclaration === undefined) {
+      return null;
+    }
+
+    const pipeInstance = this.getSymbolOfTsNode(pipeDeclaration.valueDeclaration);
+    if (pipeInstance === null || pipeInstance.tsSymbol === null) {
+      return null;
+    }
+
+    const symbolInfo = this.getSymbolOfTsNode(methodAccess);
+    if (symbolInfo === null) {
+      return null;
+    }
+
+    return {
+      kind: SymbolKind.Pipe,
+      ...symbolInfo,
+      classSymbol: {
+        ...pipeInstance,
+        tsSymbol: pipeInstance.tsSymbol,
+      },
+    };
+  }
+
   private getSymbolOfTemplateExpression(expression: AST): VariableSymbol|ReferenceSymbol
       |ExpressionSymbol|null {
     if (expression instanceof ASTWithSource) {
@@ -446,10 +487,6 @@ export class SymbolBuilder {
         // still get the type of the whole conditional expression to include `|undefined`.
         tsType: this.getTypeChecker().getTypeAtLocation(node)
       };
-    } else if (expression instanceof BindingPipe && ts.isCallExpression(node)) {
-      // TODO(atscott): Create a PipeSymbol to include symbol for the Pipe class
-      const symbolInfo = this.getSymbolOfTsNode(node.expression);
-      return symbolInfo === null ? null : {...symbolInfo, kind: SymbolKind.Expression};
     } else {
       const symbolInfo = this.getSymbolOfTsNode(node);
       return symbolInfo === null ? null : {...symbolInfo, kind: SymbolKind.Expression};

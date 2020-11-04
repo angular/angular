@@ -5,13 +5,13 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AST, BindingPipe, ImplicitReceiver, MethodCall, ThisReceiver, TmplAstBoundAttribute, TmplAstNode, TmplAstTextAttribute} from '@angular/compiler';
+import {AST, ImplicitReceiver, MethodCall, ThisReceiver, TmplAstBoundAttribute, TmplAstNode, TmplAstTextAttribute} from '@angular/compiler';
 import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
-import {DirectiveSymbol, DomBindingSymbol, ElementSymbol, ExpressionSymbol, InputBindingSymbol, OutputBindingSymbol, ReferenceSymbol, ShimLocation, Symbol, SymbolKind, VariableSymbol} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
+import {DirectiveSymbol, DomBindingSymbol, ElementSymbol, InputBindingSymbol, OutputBindingSymbol, PipeSymbol, ReferenceSymbol, ShimLocation, Symbol, SymbolKind, VariableSymbol} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
 import * as ts from 'typescript';
 
 import {createDisplayParts, DisplayInfoKind, SYMBOL_PUNC, SYMBOL_SPACE, SYMBOL_TEXT, unsafeCastDisplayInfoKindToScriptElementKind} from './display_parts';
-import {filterAliasImports, getDirectiveMatchesForAttribute, getDirectiveMatchesForElementTag, getTemplateInfoAtPosition, getTextSpanOfNode} from './utils';
+import {filterAliasImports, getDirectiveMatchesForAttribute, getDirectiveMatchesForElementTag, getTextSpanOfNode} from './utils';
 
 export class QuickInfoBuilder {
   private readonly typeChecker = this.compiler.getNextProgram().getTypeChecker();
@@ -47,10 +47,10 @@ export class QuickInfoBuilder {
         return this.getQuickInfoForDomBinding(symbol);
       case SymbolKind.Directive:
         return this.getQuickInfoAtShimLocation(symbol.shimLocation);
+      case SymbolKind.Pipe:
+        return this.getQuickInfoForPipeSymbol(symbol);
       case SymbolKind.Expression:
-        return this.node instanceof BindingPipe ?
-            this.getQuickInfoForPipeSymbol(symbol) :
-            this.getQuickInfoAtShimLocation(symbol.shimLocation);
+        return this.getQuickInfoAtShimLocation(symbol.shimLocation);
     }
   }
 
@@ -93,10 +93,16 @@ export class QuickInfoBuilder {
         undefined /* containerName */, this.typeChecker.typeToString(symbol.tsType), documentation);
   }
 
-  private getQuickInfoForPipeSymbol(symbol: ExpressionSymbol): ts.QuickInfo|undefined {
-    const quickInfo = this.getQuickInfoAtShimLocation(symbol.shimLocation);
-    return quickInfo === undefined ? undefined :
-                                     updateQuickInfoKind(quickInfo, DisplayInfoKind.PIPE);
+  private getQuickInfoForPipeSymbol(symbol: PipeSymbol): ts.QuickInfo|undefined {
+    if (symbol.tsSymbol !== null) {
+      const quickInfo = this.getQuickInfoAtShimLocation(symbol.shimLocation);
+      return quickInfo === undefined ? undefined :
+                                       updateQuickInfoKind(quickInfo, DisplayInfoKind.PIPE);
+    } else {
+      return createQuickInfo(
+          this.typeChecker.typeToString(symbol.classSymbol.tsType), DisplayInfoKind.PIPE,
+          getTextSpanOfNode(this.node));
+    }
   }
 
   private getQuickInfoForDomBinding(symbol: DomBindingSymbol) {
