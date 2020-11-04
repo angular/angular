@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ComponentHarness, HarnessPredicate} from '@angular/cdk/testing';
+import {ComponentHarness, HarnessPredicate, TestKey} from '@angular/cdk/testing';
 import {ChipHarnessFilters} from './chip-harness-filters';
 
 /** Harness for interacting with a mat-chip in tests. */
@@ -29,5 +29,12 @@ export class MatChipHarness extends ComponentHarness {
     return (await this.host()).text({
       exclude: '.mat-mdc-chip-avatar, .mat-mdc-chip-trailing-icon, .mat-icon'
     });
+  }
+
+  /** Delete a chip from the set. */
+  async remove(): Promise<void> {
+    const hostEl = await this.host();
+    await hostEl.sendKeys!(TestKey.DELETE);
+    await hostEl.dispatchEvent!('transitionend', {propertyName: 'width'});
   }
 }
