@@ -35,7 +35,7 @@ import {CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTEXT, DECLARATION_COMPONENT_VIEW, DE
 import {assertPureTNodeType, assertTNodeType} from '../node_assert';
 import {updateTextNode} from '../node_manipulation';
 import {isInlineTemplate, isNodeMatchingSelectorList} from '../node_selector_matcher';
-import {enterView, getBindingsEnabled, getCurrentDirectiveIndex, getCurrentParentTNode, getCurrentTNode, getCurrentTNodePlaceholderOk, getSelectedIndex, isCurrentTNodeParent, isInCheckNoChangesMode, isInI18nBlock, leaveView, setBindingIndex, setBindingRootForHostBindings, setCurrentDirectiveIndex, setCurrentQueryIndex, setCurrentTNode, setIsInCheckNoChangesMode, setSelectedIndex} from '../state';
+import {enterView, getBindingsEnabled, getCurrentDirectiveIndex, getCurrentParentTNode, getCurrentTNode, getCurrentTNodePlaceholderOk, getSelectedIndex, isCurrentTNodeParent, isInCheckNoChangesMode, isInI18nBlock, isOnPushCheckNoChangesEnabled, leaveView, setBindingIndex, setBindingRootForHostBindings, setCurrentDirectiveIndex, setCurrentQueryIndex, setCurrentTNode, setIsInCheckNoChangesMode, setSelectedIndex} from '../state';
 import {NO_CHANGE} from '../tokens';
 import {isAnimationProp, mergeHostAttrs} from '../util/attrs_utils';
 import {INTERPOLATION_DELIMITER, renderStringify, stringifyForError} from '../util/misc_utils';
@@ -1675,7 +1675,8 @@ function isLRootViewAndNeedToCheck(lView: any): boolean {
   if (!isLView(lView) || lView[TVIEW].type !== TViewType.Root) {
     return true;
   }
-  if (!(lView[FLAGS] & LViewFlags.CheckAlways) && isInCheckNoChangesMode()) {
+  if (!(lView[FLAGS] & LViewFlags.CheckAlways) && isInCheckNoChangesMode() &&
+      !isOnPushCheckNoChangesEnabled()) {
     return false;
   }
 
@@ -1940,7 +1941,8 @@ export function detectChangesInRootView(lView: LView): void {
 export function checkNoChangesInternal<T>(tView: TView, view: LView, context: T) {
   setIsInCheckNoChangesMode(true);
   try {
-    if (tView.type === TViewType.Root && !(view[FLAGS] & LViewFlags.CheckAlways)) {
+    if (tView.type === TViewType.Root && !(view[FLAGS] & LViewFlags.CheckAlways) &&
+        !isOnPushCheckNoChangesEnabled()) {
       // This is a root view of the OnPush component, we need to skip the change detection
       // code path to keep the current behavior.
       // TODO: @JiaLiPassion, need to fix this later since this is a bug.
@@ -1964,7 +1966,8 @@ export function checkNoChangesInternal<T>(tView: TView, view: LView, context: T)
 export function checkNoChangesInRootView(lView: LView): void {
   setIsInCheckNoChangesMode(true);
   try {
-    if (lView[TVIEW].type === TViewType.Root && !(lView[FLAGS] & LViewFlags.CheckAlways)) {
+    if (lView[TVIEW].type === TViewType.Root && !(lView[FLAGS] & LViewFlags.CheckAlways) &&
+        !isOnPushCheckNoChangesEnabled()) {
       // This is a root view of the OnPush component, we need to skip the change detection
       // code path to keep the current behavior.
       // TODO: @JiaLiPassion, need to fix this later since this is a bug.

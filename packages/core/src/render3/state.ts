@@ -181,12 +181,47 @@ interface InstructionState {
    * the change detector or its children.
    */
   isInCheckNoChangesMode: boolean;
+
+  /**
+   * Currently when running `detectChanges()` for OnPush component in dev mode,
+   * the `checkNoChanges()` will not be executed since the `Dirty` flag is cleared
+   * after the `detectChanges()` call. This issue can be fixed but becomes a breaking changes
+   * and impact a lot of applications which will throw `ExpressionChanged` error after
+   * the fix.
+   *
+   * @Component({
+   *    template: '{{message}}',
+   *    changeDetection: ChangeDetectionStrategy.OnPush
+   * })
+   * class OnPushCmp {
+   *   @Input() message = 'initial';
+   *   ngAfterViewInit() {
+   *     this.message = 'updated';
+   *   }
+   * }
+   * const comp = TestBed.configureTestingModule({declarations:
+   *   OnPushCmp]}).createComponent(OnPushCmp);
+   *
+   * Consider this case, the OnPushCmp should throw `ExpressionChanged` error since
+   * it update the data in `ngAfterViewInit` hook, but it didn't throw since `OnPush`
+   * component didn't run the `checkNoChange` code path. The behavior is not correct, but
+   * fix it will cause a big breaking change.
+   *
+   * So now the behavior is kept the same with before to avoid the breaking changes, and
+   * here we have a new flag `isOnPushCheckNoChangesEnabled` to enable the fix, so the
+   * `OnPush` component can enter the `checkNoChanges()` code path to verify there are unintended
+   * changes or not.
+   *
+   * By default the value is `false`.
+   */
+  isOnPushCheckNoChangesEnabled: boolean;
 }
 
 const instructionState: InstructionState = {
   lFrame: createLFrame(null),
   bindingsEnabled: true,
   isInCheckNoChangesMode: false,
+  isOnPushCheckNoChangesEnabled: false
 };
 
 /**
@@ -339,6 +374,14 @@ export function isInCheckNoChangesMode(): boolean {
 
 export function setIsInCheckNoChangesMode(mode: boolean): void {
   instructionState.isInCheckNoChangesMode = mode;
+}
+
+export function isOnPushCheckNoChangesEnabled(): boolean {
+  return instructionState.isOnPushCheckNoChangesEnabled;
+}
+
+export function setIsOnPushCheckNoChangesEnabled(mode: boolean): void {
+  instructionState.isOnPushCheckNoChangesEnabled = mode;
 }
 
 // top level variables should not be exported for performance reasons (PERF_NOTES.md)

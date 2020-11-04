@@ -36,6 +36,7 @@ import {ComponentFactory as R3ComponentFactory} from './render3/component_ref';
 import {setLocaleId} from './render3/i18n/i18n_locale_id';
 import {setJitOptions} from './render3/jit/jit_options';
 import {NgModuleFactory as R3NgModuleFactory} from './render3/ng_module_ref';
+import {setIsOnPushCheckNoChangesEnabled} from './render3/state';
 import {publishDefaultGlobalUtils as _publishDefaultGlobalUtils} from './render3/util/global_utils';
 import {Testability, TestabilityRegistry} from './testability/testability';
 import {isDevMode} from './util/is_dev_mode';
@@ -266,6 +267,22 @@ export interface BootstrapOptions {
    * the change detection will only be triggered once.
    */
   ngZoneEventCoalescing?: boolean;
+
+  /**
+   * Currently when running `detectChanges()` for OnPush component in dev mode,
+   * the `checkNoChanges()` will not be executed since the `Dirty` flag is cleared
+   * after the `detectChanges()` call. This issue can be fixed but becomes a breaking changes
+   * and impact a lot of applications which will throw `ExpressionChanged` error after
+   * the fix.
+   *
+   * So now the behavior is kept the same with before to avoid the breaking changes, and
+   * here we have a new flag `isOnPushCheckNoChangesEnabled` to enable the fix, so the
+   * `OnPush` component can enter the `checkNoChanges()` code path to verify there are unintended
+   * changes or not.
+   *
+   * By default the value is `false`.
+   */
+  isOnPushCheckNoChangesEnabled?: boolean;
 }
 
 /**
@@ -318,6 +335,8 @@ export class PlatformRef {
     const ngZoneEventCoalescing = (options && options.ngZoneEventCoalescing) || false;
     const ngZone = getNgZone(ngZoneOption, ngZoneEventCoalescing);
     const providers: StaticProvider[] = [{provide: NgZone, useValue: ngZone}];
+    setIsOnPushCheckNoChangesEnabled(
+        options && options.isOnPushCheckNoChangesEnabled ? true : false);
     // Attention: Don't use ApplicationRef.run here,
     // as we want to be sure that all possible constructor calls are inside `ngZone.run`!
     return ngZone.run(() => {
