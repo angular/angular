@@ -75,27 +75,27 @@ describe('MatProgressBar', () => {
         const progressElement = fixture.debugElement.query(By.css('mat-progress-bar'))!;
         const progressComponent = progressElement.componentInstance;
 
-        expect(progressComponent._primaryTransform()).toEqual({transform: 'scaleX(0)'});
+        expect(progressComponent._primaryTransform()).toEqual({transform: 'scale3d(0, 1, 1)'});
         expect(progressComponent._bufferTransform()).toBe(null);
 
         progressComponent.value = 40;
-        expect(progressComponent._primaryTransform()).toEqual({transform: 'scaleX(0.4)'});
+        expect(progressComponent._primaryTransform()).toEqual({transform: 'scale3d(0.4, 1, 1)'});
         expect(progressComponent._bufferTransform()).toBe(null);
 
         progressComponent.value = 35;
         progressComponent.bufferValue = 55;
-        expect(progressComponent._primaryTransform()).toEqual({transform: 'scaleX(0.35)'});
+        expect(progressComponent._primaryTransform()).toEqual({transform: 'scale3d(0.35, 1, 1)'});
         expect(progressComponent._bufferTransform()).toBe(null);
 
         progressComponent.mode = 'buffer';
-        expect(progressComponent._primaryTransform()).toEqual({transform: 'scaleX(0.35)'});
-        expect(progressComponent._bufferTransform()).toEqual({transform: 'scaleX(0.55)'});
+        expect(progressComponent._primaryTransform()).toEqual({transform: 'scale3d(0.35, 1, 1)'});
+        expect(progressComponent._bufferTransform()).toEqual({transform: 'scale3d(0.55, 1, 1)'});
 
 
         progressComponent.value = 60;
         progressComponent.bufferValue = 60;
-        expect(progressComponent._primaryTransform()).toEqual({transform: 'scaleX(0.6)'});
-        expect(progressComponent._bufferTransform()).toEqual({transform: 'scaleX(0.6)'});
+        expect(progressComponent._primaryTransform()).toEqual({transform: 'scale3d(0.6, 1, 1)'});
+        expect(progressComponent._bufferTransform()).toEqual({transform: 'scale3d(0.6, 1, 1)'});
       });
 
       it('should prefix SVG references with the current path', () => {
