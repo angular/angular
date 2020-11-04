@@ -9,7 +9,7 @@
 import {join} from 'path';
 import * as ts from 'typescript/lib/tsserverlibrary';
 
-import {isTypeScriptFile} from '../utils';
+import {isTypeScriptFile} from '../../utils';
 
 const logger: ts.server.Logger = {
   close(): void{},
@@ -147,7 +147,7 @@ export class MockService {
     return this.overwriteScriptInfo(scriptInfo, text);
   }
 
-  reset() {
+  reset(): void {
     if (this.overwritten.size === 0) {
       return;
     }

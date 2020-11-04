@@ -8,7 +8,7 @@
 
 import * as ts from 'typescript/lib/tsserverlibrary';
 
-import {LanguageService, parseNgCompilerOptions} from '../language_service';
+import {LanguageService, parseNgCompilerOptions} from '../../language_service';
 
 import {MockService, setup, TEST_TEMPLATE} from './mock_host';
 
