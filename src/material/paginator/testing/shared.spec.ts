@@ -1,9 +1,9 @@
 import {HarnessLoader} from '@angular/cdk/testing';
 import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
-import {Component, ViewChild} from '@angular/core';
+import {Component} from '@angular/core';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {MatPaginatorModule, PageEvent, MatPaginator} from '@angular/material/paginator';
+import {MatPaginatorModule, PageEvent} from '@angular/material/paginator';
 import {MatPaginatorHarness} from './paginator-harness';
 
 /** Shared tests to run on both the original and MDC-based paginator. */
@@ -128,7 +128,6 @@ export function runHarnessTests(
   `
 })
 class PaginatorHarnessTest {
-  @ViewChild(MatPaginator) paginator: MatPaginator;
   length = 500;
   pageSize = 10;
   pageIndex = 0;
