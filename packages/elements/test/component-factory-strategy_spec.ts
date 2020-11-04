@@ -329,14 +329,15 @@ export class FakeComponent {
 
 export class FakeComponentFactory extends ComponentFactory<any> {
   componentRef: any = jasmine.createSpyObj(
-      'componentRef', ['instance', 'changeDetectorRef', 'hostView', 'destroy']);
-
-  constructor() {
-    super();
-    this.componentRef.instance = new FakeComponent();
-    this.componentRef.changeDetectorRef =
-        jasmine.createSpyObj('changeDetectorRef', ['detectChanges']);
-  }
+      'componentRef',
+      // Method spies.
+      ['destroy'],
+      // Property spies.
+      {
+        changeDetectorRef: jasmine.createSpyObj('changeDetectorRef', ['detectChanges']),
+        hostView: {},
+        instance: new FakeComponent(),
+      });
 
   get selector(): string {
     return 'fake-component';
