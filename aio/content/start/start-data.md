@@ -80,9 +80,28 @@ This section walks you through using the cart service to add a product to the ca
         <code-example path="getting-started/src/app/product-details/product-details.component.ts" header="src/app/product-details/product-details.component.ts" region="inject-cart-service">
         </code-example>
 
-        <!--
-        To do: Consider defining "inject" and describing the concept of "dependency injection"
-        -->
+        
+        <div class="alert is-helpful">
+
+        As you can see, we haven't instantiated any components (like `new ProductDetailsComponent()`). Angular takes care of creating component instances for us. When Angular instantiates a component, it will look for all objects that the component is depended on (aka component's [dependencies](https://en.wikipedia.org/wiki/Dependency)) defined in the constructor and provide (aka **inject**) them to the component. The depencencies here are `ActivatedRoute` and `CartService` objects.
+
+        All things above are done by [Angular's Dependency Injection system](guide/glossary#dependency-injection-di "Dependency injection definition"). This system registers dependencies to Angular and when needed it will injects appropriate dependencies to necessary places (like in `ProductDetailsComponent`).
+
+        In `CartService`, the following code register this service with the Dependency Injection system:
+
+        ```typescript
+        // src/app/cart.service.ts
+        @Injectable({
+            providedIn: 'root'
+        })
+        ...
+        ```
+
+        *`ActivatedRoute` is Angular's built-in service.*
+
+        <div class="alert is-helpful">
+
+
 
 1. Define the `addToCart()` method, which adds the current product to the cart.
 
