@@ -18,8 +18,8 @@ import {IndexedComponent} from '../../src/ngtsc/indexer';
 import {NgtscProgram} from '../../src/ngtsc/program';
 import {DeclarationNode} from '../../src/ngtsc/reflection';
 import {LazyRoute} from '../../src/ngtsc/routing';
+import {getCachedSourceFile} from '../../src/ngtsc/testing';
 import {setWrapHostForTest} from '../../src/transformers/compiler_host';
-import {getCachedSourceFile} from '../helpers';
 
 
 /**

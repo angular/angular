@@ -7,7 +7,7 @@
  */
 
 import * as ts from 'typescript';
-import {basename} from '../../../src/ngtsc/file_system';
+import {basename} from '../../file_system';
 
 // A cache of source files that are typically used across tests and are expensive to parse.
 let sourceFileCache = new Map<string, ts.SourceFile>();

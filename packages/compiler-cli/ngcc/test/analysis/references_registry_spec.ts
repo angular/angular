@@ -12,8 +12,7 @@ import {runInEachFileSystem, TestFile} from '../../../src/ngtsc/file_system/test
 import {Reference} from '../../../src/ngtsc/imports';
 import {PartialEvaluator} from '../../../src/ngtsc/partial_evaluator';
 import {DeclarationNode, TypeScriptReflectionHost} from '../../../src/ngtsc/reflection';
-import {getDeclaration} from '../../../src/ngtsc/testing';
-import {loadTestFiles} from '../../../test/helpers';
+import {getDeclaration, loadTestFiles} from '../../../src/ngtsc/testing';
 import {NgccReferencesRegistry} from '../../src/analysis/ngcc_references_registry';
 import {makeTestBundleProgram} from '../helpers/utils';
 

@@ -13,7 +13,7 @@ def partial_compliance_golden(filePath):
         data = [
             "//packages/compiler-cli/test/compliance/partial:generate_golden_partial_lib",
             "//packages/compiler-cli/test/compliance/test_cases",
-            "//packages/compiler-cli/test/ngtsc/fake_core:npm_package",
+            "//packages/compiler-cli/src/ngtsc/testing/fake_core:npm_package",
         ],
         visibility = [":__pkg__"],
         entry_point = "//packages/compiler-cli/test/compliance/partial:cli.ts",
@@ -37,7 +37,7 @@ def partial_compliance_golden(filePath):
         data = [
             "//packages/compiler-cli/test/compliance/partial:generate_golden_partial_lib",
             "//packages/compiler-cli/test/compliance/test_cases",
-            "//packages/compiler-cli/test/ngtsc/fake_core:npm_package",
+            "//packages/compiler-cli/src/ngtsc/testing/fake_core:npm_package",
         ],
     )
 

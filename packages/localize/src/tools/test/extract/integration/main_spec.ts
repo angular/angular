@@ -9,7 +9,7 @@ import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem, setFileSystem} 
 import {InvalidFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/src/invalid_file_system';
 import {runInEachFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
 import {MockLogger} from '@angular/compiler-cli/src/ngtsc/logging/testing';
-import {loadTestDirectory} from '@angular/compiler-cli/test/helpers';
+import {loadTestDirectory} from '@angular/compiler-cli/src/ngtsc/testing';
 
 import {extractTranslations} from '../../../src/extract/main';
 import {FormatOptions} from '../../../src/extract/translation_files/format_options';

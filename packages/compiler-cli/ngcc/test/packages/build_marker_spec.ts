@@ -7,7 +7,7 @@
  */
 import {absoluteFrom, getFileSystem} from '../../../src/ngtsc/file_system';
 import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
-import {loadTestFiles} from '../../../test/helpers';
+import {loadTestFiles} from '../../../src/ngtsc/testing';
 import {cleanPackageJson, hasBeenProcessed, markAsProcessed, needsCleaning, NGCC_VERSION} from '../../src/packages/build_marker';
 import {EntryPointPackageJson} from '../../src/packages/entry_point';
 import {DirectPackageJsonUpdater} from '../../src/writing/package_json_updater';
