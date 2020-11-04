@@ -29,6 +29,7 @@ import {
   dispatchMouseEvent,
   createKeyboardEvent,
   dispatchEvent,
+  createFakeEvent,
 } from '@angular/cdk/testing/private';
 import {ESCAPE} from '@angular/cdk/keycodes';
 import {FocusMonitor} from '@angular/cdk/a11y';
@@ -48,13 +49,10 @@ describe('MatTooltip', () => {
   let overlayContainer: OverlayContainer;
   let overlayContainerElement: HTMLElement;
   let dir: {value: Direction};
-  let platform: {IOS: boolean, isBrowser: boolean, ANDROID: boolean};
+  let platform: Platform;
   let focusMonitor: FocusMonitor;
 
   beforeEach(waitForAsync(() => {
-    // Set the default Platform override that can be updated before component creation.
-    platform = {IOS: false, isBrowser: true, ANDROID: false};
-
     TestBed.configureTestingModule({
       imports: [MatTooltipModule, OverlayModule, NoopAnimationsModule],
       declarations: [
@@ -67,7 +65,6 @@ describe('MatTooltip', () => {
         DataBoundAriaLabelTooltip,
       ],
       providers: [
-        {provide: Platform, useFactory: () => platform},
         {provide: Directionality, useFactory: () => {
           return dir = {value: 'ltr'};
         }}
@@ -76,11 +73,13 @@ describe('MatTooltip', () => {
 
     TestBed.compileComponents();
 
-    inject([OverlayContainer, FocusMonitor], (oc: OverlayContainer, fm: FocusMonitor) => {
-      overlayContainer = oc;
-      overlayContainerElement = oc.getContainerElement();
-      focusMonitor = fm;
-    })();
+    inject([OverlayContainer, FocusMonitor, Platform],
+      (oc: OverlayContainer, fm: FocusMonitor, pl: Platform) => {
+        overlayContainer = oc;
+        overlayContainerElement = oc.getContainerElement();
+        focusMonitor = fm;
+        platform = pl;
+      })();
   }));
 
   afterEach(inject([OverlayContainer], (currentOverlayContainer: OverlayContainer) => {
@@ -886,6 +885,11 @@ describe('MatTooltip', () => {
     }));
 
     it('should have rendered the tooltip text on init', fakeAsync(() => {
+      // We don't bind mouse events on mobile devices.
+      if (platform.IOS || platform.ANDROID) {
+        return;
+      }
+
       dispatchFakeEvent(buttonElement, 'mouseenter');
       fixture.detectChanges();
       tick(0);
@@ -1087,6 +1091,75 @@ describe('MatTooltip', () => {
 
       assertTooltipInstance(fixture.componentInstance.tooltip, false);
     });
+  });
+
+  describe('mouse wheel handling', () => {
+    it('should close when a wheel event causes the cursor to leave the trigger', fakeAsync(() => {
+      // We don't bind wheel events on mobile devices.
+      if (platform.IOS || platform.ANDROID) {
+        return;
+      }
+
+      const fixture = TestBed.createComponent(BasicTooltipDemo);
+      fixture.detectChanges();
+      const button: HTMLButtonElement = fixture.nativeElement.querySelector('button');
+
+      dispatchFakeEvent(button, 'mouseenter');
+      fixture.detectChanges();
+      tick(500); // Finish the open delay.
+      fixture.detectChanges();
+      tick(500); // Finish the animation.
+      assertTooltipInstance(fixture.componentInstance.tooltip, true);
+
+      // Simulate the pointer at the bottom/right of the page.
+      const wheelEvent = createFakeEvent('wheel');
+      Object.defineProperties(wheelEvent, {
+        clientX: {get: () => window.innerWidth},
+        clientY: {get: () => window.innerHeight}
+      });
+
+      dispatchEvent(button, wheelEvent);
+      fixture.detectChanges();
+      tick(1500); // Finish the delay.
+      fixture.detectChanges();
+      tick(500); // Finish the exit animation.
+
+      assertTooltipInstance(fixture.componentInstance.tooltip, false);
+    }));
+
+    it('should not close if the cursor is over the trigger after a wheel event', fakeAsync(() => {
+      // We don't bind wheel events on mobile devices.
+      if (platform.IOS || platform.ANDROID) {
+        return;
+      }
+
+      const fixture = TestBed.createComponent(BasicTooltipDemo);
+      fixture.detectChanges();
+      const button: HTMLButtonElement = fixture.nativeElement.querySelector('button');
+
+      dispatchFakeEvent(button, 'mouseenter');
+      fixture.detectChanges();
+      tick(500); // Finish the open delay.
+      fixture.detectChanges();
+      tick(500); // Finish the animation.
+      assertTooltipInstance(fixture.componentInstance.tooltip, true);
+
+      // Simulate the pointer over the trigger.
+      const triggerRect = button.getBoundingClientRect();
+      const wheelEvent = createFakeEvent('wheel');
+      Object.defineProperties(wheelEvent, {
+        clientX: {get: () => triggerRect.left + 1},
+        clientY: {get: () => triggerRect.top + 1}
+      });
+
+      dispatchEvent(button, wheelEvent);
+      fixture.detectChanges();
+      tick(1500); // Finish the delay.
+      fixture.detectChanges();
+      tick(500); // Finish the exit animation.
+
+      assertTooltipInstance(fixture.componentInstance.tooltip, true);
+    }));
   });
 
 });

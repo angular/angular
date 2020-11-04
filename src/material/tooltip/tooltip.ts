@@ -40,6 +40,7 @@ import {
   ViewEncapsulation,
   AfterViewInit,
 } from '@angular/core';
+import {DOCUMENT} from '@angular/common';
 import {Observable, Subject} from 'rxjs';
 import {take, takeUntil} from 'rxjs/operators';
 
@@ -245,6 +246,12 @@ export class MatTooltip implements OnDestroy, AfterViewInit {
   private readonly _passiveListeners:
       (readonly [string, EventListenerOrEventListenerObject])[] = [];
 
+  /**
+   * Reference to the current document.
+   * @breaking-change 11.0.0 Remove `| null` typing for `document`.
+   */
+  private _document: Document | null;
+
   /** Timer started at the last `touchstart` event. */
   private _touchstartTimeout: number;
 
@@ -263,7 +270,10 @@ export class MatTooltip implements OnDestroy, AfterViewInit {
     @Inject(MAT_TOOLTIP_SCROLL_STRATEGY) scrollStrategy: any,
     @Optional() private _dir: Directionality,
     @Optional() @Inject(MAT_TOOLTIP_DEFAULT_OPTIONS)
-      private _defaultOptions: MatTooltipDefaultOptions) {
+      private _defaultOptions: MatTooltipDefaultOptions,
+
+    /** @breaking-change 11.0.0 _document argument to become required. */
+    @Inject(DOCUMENT) _document: any) {
 
     this._scrollStrategy = scrollStrategy;
 
@@ -590,7 +600,10 @@ export class MatTooltip implements OnDestroy, AfterViewInit {
 
     const exitListeners: (readonly [string, EventListenerOrEventListenerObject])[] = [];
     if (this._platformSupportsMouseEvents()) {
-      exitListeners.push(['mouseleave', () => this.hide()]);
+      exitListeners.push(
+        ['mouseleave', () => this.hide()],
+        ['wheel', event => this._wheelListener(event as WheelEvent)]
+      );
     } else if (this.touchGestures !== 'off') {
       this._disableNativeGesturesIfNecessary();
       const touchendListener = () => {
@@ -617,6 +630,24 @@ export class MatTooltip implements OnDestroy, AfterViewInit {
 
   private _platformSupportsMouseEvents() {
     return !this._platform.IOS && !this._platform.ANDROID;
+  }
+
+  /** Listener for the `wheel` event on the element. */
+  private _wheelListener(event: WheelEvent) {
+    if (this._isTooltipVisible()) {
+      // @breaking-change 11.0.0 Remove `|| document` once the document is a required param.
+      const doc = this._document || document;
+      const elementUnderPointer = doc.elementFromPoint(event.clientX, event.clientY);
+      const element = this._elementRef.nativeElement;
+
+      // On non-touch devices we depend on the `mouseleave` event to close the tooltip, but it
+      // won't fire if the user scrolls away using the wheel without moving their cursor. We
+      // work around it by finding the element under the user's cursor and closing the tooltip
+      // if it's not the trigger.
+      if (elementUnderPointer !== element && !element.contains(elementUnderPointer)) {
+        this.hide();
+      }
+    }
   }
 
   /** Disables the native browser gestures, based on how the tooltip has been configured. */
