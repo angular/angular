@@ -187,13 +187,9 @@ to resolve the type-check errors.
 * **forms:** Directives in the `@angular/forms` package used to have `any[]` as a type of `validators` and
 `asyncValidators` arguments in constructors. Now these arguments are properly typed, so if your
 code relies on directive constructor types it may require some updates to improve type safety.
-* **forms:** Type of AbstractFormControl.parent now includes null
-
-`null` is now included in the types of .parent. If you don't already have a check for this case,
+* **forms:** Type of AbstractFormControl.parent now includes null. `null` is now included in the types of .parent. If you don't already have a check for this case,
 the TypeScript compiler might complain. A v11 migration exists which adds the non-null assertion
-operator where necessary.
-
-In an unlikely case your code was testing the parent against undefined with strict equality,
+operator where necessary. In an unlikely case your code was testing the parent against undefined with strict equality,
 you'll need to change this to `=== null` instead, since the parent is now explicitly initialized
 with `null` instead of being left `undefined`.
 
@@ -397,9 +393,7 @@ then your code will not longer compile. If you need to mutate the array, you
 should now take a copy (e.g. by calling `slice()`) and mutate the copy.
 * **common:** When passing a date-time formatted string to the `DatePipe` in a format that contains
 fractions of a millisecond, the milliseconds will now always be rounded down rather than
-to the nearest millisecond.
-
-Most applications will not be affected by this change. If this is not the desired behaviour
+to the nearest millisecond. Most applications will not be affected by this change. If this is not the desired behaviour
 then consider pre-processing the string to round the millisecond part before passing
 it to the `DatePipe`.
 
