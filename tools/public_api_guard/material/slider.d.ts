@@ -26,6 +26,7 @@ export declare class MatSlider extends _MatSliderMixinBase implements ControlVal
     get value(): number | null;
     set value(v: number | null);
     readonly valueChange: EventEmitter<number | null>;
+    valueText: string;
     get vertical(): boolean;
     set vertical(value: boolean);
     constructor(elementRef: ElementRef, _focusMonitor: FocusMonitor, _changeDetectorRef: ChangeDetectorRef, _dir: Directionality, tabIndex: string, _ngZone: NgZone, _document: any, _animationMode?: string | undefined);
@@ -71,7 +72,7 @@ export declare class MatSlider extends _MatSliderMixinBase implements ControlVal
     static ngAcceptInputType_tickInterval: NumberInput;
     static ngAcceptInputType_value: NumberInput;
     static ngAcceptInputType_vertical: BooleanInput;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatSlider, "mat-slider", ["matSlider"], { "disabled": "disabled"; "color": "color"; "tabIndex": "tabIndex"; "invert": "invert"; "max": "max"; "min": "min"; "step": "step"; "thumbLabel": "thumbLabel"; "tickInterval": "tickInterval"; "value": "value"; "displayWith": "displayWith"; "vertical": "vertical"; }, { "change": "change"; "input": "input"; "valueChange": "valueChange"; }, never, never>;
+    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatSlider, "mat-slider", ["matSlider"], { "disabled": "disabled"; "color": "color"; "tabIndex": "tabIndex"; "invert": "invert"; "max": "max"; "min": "min"; "step": "step"; "thumbLabel": "thumbLabel"; "tickInterval": "tickInterval"; "value": "value"; "displayWith": "displayWith"; "valueText": "valueText"; "vertical": "vertical"; }, { "change": "change"; "input": "input"; "valueChange": "valueChange"; }, never, never>;
     static ɵfac: i0.ɵɵFactoryDef<MatSlider, [null, null, null, { optional: true; }, { attribute: "tabindex"; }, null, null, { optional: true; }]>;
 }
 
