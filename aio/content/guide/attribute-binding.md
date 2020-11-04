@@ -58,7 +58,7 @@ To use attribute binding with the `<td>` attribute `colspan`:
 1. Specify the `colspan` attribute by using the following syntax: `[attr.colspan]`.
 1. Set `[attr.colspan]` equal to an expression.
 
-In the following example, binds the `colspan` attribute to the expression `1 + 1`.
+In the following example, we bind the `colspan` attribute to the expression `1 + 1`.
 
 <code-example path="attribute-binding/src/app/app.component.html" region="colspan" header="src/app/app.component.html"></code-example>
 
@@ -177,7 +177,7 @@ You can write a style property name in either [dash-case](guide/glossary#dash-ca
 
 ### Binding to multiple styles
 
-To toggle multiple styles, bind to the `[style]` attribute&mdash;for example, `[style]="styleExpression"`).
+To toggle multiple styles, bind to the `[style]` attribute&mdash;for example, `[style]="styleExpression"`.
 The expression is often a string list of styles such as `"width: 100px; height: 100px;"`.
 
 You can also format the expression as an object with style names as the keys and style values as the values, such as `{width: '100px', height: '100px'}`.
