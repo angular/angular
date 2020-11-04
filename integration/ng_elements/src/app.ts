@@ -11,7 +11,7 @@ import {HelloWorldComponent, HelloWorldShadowComponent, TestCardComponent} from 
   imports: [BrowserModule],
 })
 export class AppModule {
-  constructor(private injector: Injector) {
+  constructor(injector: Injector) {
     customElements.define('hello-world-el', createCustomElement(HelloWorldComponent, {injector}));
     customElements.define(
         'hello-world-shadow-el', createCustomElement(HelloWorldShadowComponent, {injector}));
