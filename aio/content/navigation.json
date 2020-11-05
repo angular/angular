@@ -647,49 +647,18 @@
           "tooltip": "Roadmap of the Angular team."
         },
         {
-          "title": "Updating to Version 10",
+          "title": "Updating to Version 11",
           "tooltip": "Support for updating your application from version 9 to 10.",
           "children": [
             {
-              "url": "guide/updating-to-version-10",
+              "url": "guide/updating-to-version-11",
               "title": "Overview",
-              "tooltip": "Everything you need to know for updating your application from version 9 to 10."
+              "tooltip": "Everything you need to know for updating your application from version 10 to 11."
             },
             {
               "url": "guide/ivy-compatibility",
               "title": "Ivy Compatibility Guide",
               "tooltip": "Details to help you make sure your application is compatible with Ivy."
-            },
-            {
-              "title": "Migrations",
-              "tooltip": "Migration details regarding updating to version 10.",
-              "children": [
-                {
-                  "url": "guide/migration-module-with-providers",
-                  "title": "Missing ModuleWithProviders Generic",
-                  "tooltip": "Migration to add a generic type to any ModuleWithProviders usages that are missing the generic."
-                },
-                {
-                  "url": "guide/migration-undecorated-classes",
-                  "title": "Missing @Directive() Decorators",
-                  "tooltip": "Migration to add missing @Directive()/@Component() decorators."
-                },
-                {
-                  "url": "guide/migration-injectable",
-                  "title": "Missing @Injectable() Decorators",
-                  "tooltip": "Migration to add missing @Injectable() decorators and incomplete provider definitions."
-                },
-                {
-                  "url": "guide/migration-update-libraries-tslib",
-                  "title": "`tslib` direct dependency",
-                  "tooltip": "Migration to a direct dependency on the `tslib` npm package."
-                },
-                {
-                  "url": "guide/migration-update-module-and-target-compiler-options",
-                  "title": "`module` and `target` compiler options",
-                  "tooltip": "Migration to update `module` and `target` compiler options."
-                }
-              ]
             }
           ]
         },
