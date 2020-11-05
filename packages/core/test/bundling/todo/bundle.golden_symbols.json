@@ -354,6 +354,9 @@
     "name": "getDebugContext"
   },
   {
+    "name": "getDeclarationTNode"
+  },
+  {
     "name": "getFirstLContainer"
   },
   {
@@ -409,9 +412,6 @@
   },
   {
     "name": "getParentInjectorView"
-  },
-  {
-    "name": "getParentTNodeAndLView"
   },
   {
     "name": "getPreviousIndex"

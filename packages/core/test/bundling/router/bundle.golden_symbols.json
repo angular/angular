@@ -1293,6 +1293,9 @@
     "name": "getDebugContext"
   },
   {
+    "name": "getDeclarationTNode"
+  },
+  {
     "name": "getFactoryDef"
   },
   {
@@ -1375,9 +1378,6 @@
   },
   {
     "name": "getParentInjectorView"
-  },
-  {
-    "name": "getParentTNodeAndLView"
   },
   {
     "name": "getPathIndexShift"
