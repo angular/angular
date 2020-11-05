@@ -16,7 +16,7 @@ import {Type} from '../interface/type';
 import {assertDefined, assertEqual, assertIndexInRange} from '../util/assert';
 import {noSideEffects} from '../util/closure';
 
-import {assertDirectiveDef, assertNodeInjector, assertTNodeForLView, assertTNodeForTView} from './assert';
+import {assertDirectiveDef, assertNodeInjector, assertTNodeForLView} from './assert';
 import {getFactoryDef} from './definition';
 import {throwCyclicDependencyError, throwProviderNotFoundError} from './errors';
 import {NG_ELEMENT_ID, NG_FACTORY_DEF} from './fields';
@@ -27,7 +27,7 @@ import {AttributeMarker, TContainerNode, TDirectiveHostNode, TElementContainerNo
 import {isComponentDef, isComponentHost} from './interfaces/type_checks';
 import {DECLARATION_COMPONENT_VIEW, DECLARATION_VIEW, INJECTOR, LView, T_HOST, TData, TVIEW, TView, TViewType} from './interfaces/view';
 import {assertTNodeType} from './node_assert';
-import {enterDI, leaveDI} from './state';
+import {enterDI, getCurrentTNode, getLView, leaveDI} from './state';
 import {isNameOnlyAttributeMarker} from './util/attrs_utils';
 import {getParentInjectorIndex, getParentInjectorView, hasParentInjector} from './util/injector_utils';
 import {stringifyForError} from './util/misc_utils';
@@ -71,9 +71,6 @@ import {stringifyForError} from './util/misc_utils';
  * ```
  */
 let includeViewProviders = true;
-
-let currentTNode: TNode|null = null;
-let currentLView: LView|null = null;
 
 export function setIncludeViewProviders(v: boolean): boolean {
   const oldValue = includeViewProviders;
@@ -347,75 +344,6 @@ export function injectAttributeImpl(tNode: TNode, attrNameToInject: string): str
   return null;
 }
 
-/**
- * Returns a `TNode` of the location where the current `LView` is declared at.
- *
- * @param lView an `LView` that we want to find parent `TNode` for.
- */
-function getDeclarationTNode(lView: LView): TNode|null {
-  const tView = lView[TVIEW];
-
-  // Return the declaration parent for embedded views
-  if (tView.type === TViewType.Embedded) {
-    ngDevMode && assertDefined(tView.declTNode, 'Embedded TNodes should have declaration parents.');
-    return tView.declTNode;
-  }
-
-  // Components don't have `TView.declTNode` because each instance of component could be
-  // inserted in different location, hence `TView.declTNode` is meaningless.
-  // Falling back to `T_HOST` in case we cross component boundary.
-  if (tView.type === TViewType.Component) {
-    return lView[T_HOST];
-  }
-
-  // Remaining TNode type is `TViewType.Root` which doesn't have a parent TNode.
-  return null;
-}
-
-/**
- * Calculates the parent TNode and matching LView for a given TNode.
- *
- * Determines the node host or walks the declaration tree until it finds
- * the next valid parent node, if it exists, and sets that.
- *
- * @param tNode a `TNode` that we want to find the parent of.
- * @param lView an `LView` that corresponds to the tNode param.
- * @param flags an `InjectFlags` that we check to skip @Host.
- */
-function calculateParentTNodeAndLView(tNode: TNode, lView: LView, flags: InjectFlags): void {
-  ngDevMode && assertTNodeForTView(tNode, lView[TVIEW]);
-  let parentTNode = tNode as TNode | null;
-  let parentLView = lView;
-  let found = false;
-
-  while (!found) {
-    parentTNode = parentTNode!.parent as TNode | null;
-    if (parentTNode === null && !(flags & InjectFlags.Host)) {
-      parentTNode = getDeclarationTNode(parentLView);
-      if (!parentTNode) return;
-
-      // In this case, a parent exists and is definitely an element. So it will definitely
-      // have an existing lView as the declaration view, which is why we can assume it's defined.
-      ngDevMode && assertDefined(parentLView, 'Parent LView should be defined');
-      parentLView = parentLView[DECLARATION_VIEW]!;
-
-      // In Ivy there are Comment nodes that correspond to ngIf and NgFor embedded directives
-      // We want to skip those and look only at Elements and ElementContainers to ensure
-      // we're looking at true parent nodes, and not content or other types.
-      if (parentTNode.type & (TNodeType.Element | TNodeType.ElementContainer)) {
-        found = true;
-      }
-    } else {
-      found = true;
-    }
-  }
-  setCurrentTNodeAndLView(parentTNode, parentLView);
-}
-
-function setCurrentTNodeAndLView(tNode: TNode|null = null, lView: LView|null = null): void {
-  currentTNode = tNode;
-  currentLView = lView;
-}
 
 function notFoundValueOrThrow<T>(
     notFoundValue: T|null, token: Type<T>|InjectionToken<T>, flags: InjectFlags): T|null {
@@ -486,28 +414,10 @@ export function getOrCreateInjectable<T>(
     // If the ID stored here is a function, this is a special object like ElementRef or TemplateRef
     // so just call the factory function to create it.
     if (typeof bloomHash === 'function') {
-      if (flags & InjectFlags.SkipSelf) {
-        calculateParentTNodeAndLView(tNode, lView, flags);
-        if (currentTNode === null) {
-          return lookupTokenUsingModuleInjector<T>(lView, token, flags, notFoundValue);
-        }
-
-        // if we're skipping self and the parentTNode exists, there has to be corresponding
-        // view to the parentTNode. So we can be sure it's defined here, but the assert
-        // ensures we've covered our bases.
-        ngDevMode && assertDefined(currentLView, 'Expecting parent `LView` to be defined');
-        ngDevMode && assertTNodeForLView(currentTNode, currentLView!);
-
-        // Remove @SkipSelf flag before calling `getOrCreateInjectable` recursively.
-        const _flags = flags & ~InjectFlags.SkipSelf;
-        const injectable = getOrCreateInjectable(
-            currentTNode as TDirectiveHostNode, currentLView!, token, _flags, notFoundValue);
-        setCurrentTNodeAndLView(null, null);
-        return injectable;
+      if (!enterDI(lView, tNode, flags)) {
+        // Failed to enter DI use module injector instead.
+        return lookupTokenUsingModuleInjector<T>(lView, token, flags, notFoundValue);
       }
-
-      enterDI(lView, tNode);
-
       try {
         const value = bloomHash();
         if (value == null && !(flags & InjectFlags.Optional)) {
@@ -520,20 +430,18 @@ export function getOrCreateInjectable<T>(
       }
     } else if (typeof bloomHash === 'number') {
       if (bloomHash === SpecialId.InjectorElementId) {
-        if (flags & InjectFlags.SkipSelf) {
-          calculateParentTNodeAndLView(tNode, lView, flags);
-          if (currentTNode === null) {
-            // If a token is injected with the @Host flag, the module injector is not searched for
-            // that token in Ivy.
-            return (flags & InjectFlags.Host) ?
-                notFoundValueOrThrow<T>(notFoundValue, token, flags) :
-                lookupTokenUsingModuleInjector<T>(lView, token, flags, notFoundValue);
-          }
-          tNode = currentTNode as TDirectiveHostNode;
-          lView = currentLView!;
-          setCurrentTNodeAndLView(null, null);
+        if (!enterDI(lView, tNode, flags)) {
+          // If a token is injected with the @Host flag, the module injector is not searched for
+          // that token in Ivy.
+          return (flags & InjectFlags.Host) ?
+              notFoundValueOrThrow<T>(notFoundValue, token, flags) :
+              lookupTokenUsingModuleInjector<T>(lView, token, flags, notFoundValue);
         }
-        return new NodeInjector(tNode, lView) as any;
+        try {
+          return new NodeInjector(getCurrentTNode()! as TDirectiveHostNode, getLView()) as any;
+        } finally {
+          leaveDI();
+        }
       }
       // If the token has a bloom hash, then it is a token which could be in NodeInjector.
 
@@ -706,7 +614,11 @@ export function getNodeInjectable(
     factory.resolving = true;
     const previousInjectImplementation =
         factory.injectImpl ? setInjectImplementation(factory.injectImpl) : null;
-    enterDI(lView, tNode);
+    const success = enterDI(lView, tNode, InjectFlags.Default);
+    ngDevMode &&
+        assertEqual(
+            success, true,
+            'Because flags do not contain \`SkipSelf\' we expect this to always succeed.');
     try {
       value = lView[index] = factory.factory(undefined, tData, lView, tNode);
       // This code path is hit for both directives and providers.
