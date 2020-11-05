@@ -56,12 +56,12 @@ Add the following to `compilerOptions` in `tsconfig.json`.
 </code-example>
 
 Add a new property `angularCompilerOptions` to `tsconfig.json`:
-```
+<code-example header="tsconfig.json">
   "angularCompilerOptions": {
     "strictInjectionParameters": true,
     "strictInputAccessModifiers": true,
     "strictTemplates": true
   }
-```
+</code-example>
 
 Finally add `"no-any": true` to `rules` in `tslint.json`.
