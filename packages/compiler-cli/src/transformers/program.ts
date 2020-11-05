@@ -48,6 +48,17 @@ const LOWER_FIELDS = ['useValue', 'useFactory', 'data', 'id', 'loadChildren'];
  */
 const R3_LOWER_FIELDS = [...LOWER_FIELDS, 'providers', 'imports', 'exports'];
 
+/**
+ * Installs a handler for testing purposes to allow inspection of the temporary program.
+ */
+let tempProgramHandlerForTest: ((program: ts.Program) => void)|null = null;
+export function setTempProgramHandlerForTest(handler: (program: ts.Program) => void): void {
+  tempProgramHandlerForTest = handler;
+}
+export function resetTempProgramHandlerForTest(): void {
+  tempProgramHandlerForTest = null;
+}
+
 const emptyModules: NgAnalyzedModules = {
   ngModules: [],
   ngModuleByPipeOrDirective: new Map(),
@@ -618,6 +629,9 @@ class AngularCompilerProgram implements Program {
     }
 
     const tmpProgram = ts.createProgram(rootNames, this.options, this.hostAdapter, oldTsProgram);
+    if (tempProgramHandlerForTest !== null) {
+      tempProgramHandlerForTest(tmpProgram);
+    }
     const sourceFiles: string[] = [];
     const tsFiles: string[] = [];
     tmpProgram.getSourceFiles().forEach(sf => {

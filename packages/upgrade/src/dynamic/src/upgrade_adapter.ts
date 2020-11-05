@@ -396,7 +396,7 @@ export class UpgradeAdapter {
     this.ngZone.run(() => {
       bootstrap(element, [this.ng1Module.name], config!);
     });
-    const ng1BootstrapPromise = new Promise((resolve) => {
+    const ng1BootstrapPromise = new Promise<void>((resolve) => {
       if (windowAngular.resumeBootstrap) {
         const originalResumeBootstrap: () => void = windowAngular.resumeBootstrap;
         windowAngular.resumeBootstrap = function() {

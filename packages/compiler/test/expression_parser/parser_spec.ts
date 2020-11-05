@@ -1048,7 +1048,7 @@ function expectParseTemplateBindingsError(attribute: string, error: string) {
 function _parseTemplateBindings(attribute: string, templateUrl: string) {
   const match = attribute.match(/^\*(.+)="(.*)"$/);
   expect(match).toBeTruthy(`failed to extract key and value from ${attribute}`);
-  const [_, key, value] = match;
+  const [_, key, value] = match!;
   const absKeyOffset = 1;  // skip the * prefix
   const absValueOffset = attribute.indexOf('=') + '="'.length;
   const parser = createParser();

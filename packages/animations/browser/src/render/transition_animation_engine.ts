@@ -810,7 +810,7 @@ export class TransitionAnimationEngine {
   }
 
   whenRenderingDone(): Promise<any> {
-    return new Promise(resolve => {
+    return new Promise<void>(resolve => {
       if (this.players.length) {
         return optimizeGroupPlayer(this.players).onDone(() => resolve());
       } else {
