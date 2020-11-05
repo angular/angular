@@ -262,17 +262,19 @@ describe('deploy-to-firebase:', () => {
   });
 
   it('integration - should run the main script without error', () => {
+    const commit = getLatestCommit('master');
     const cmd = `"${process.execPath}" "${__dirname}/deploy-to-firebase" --dry-run`;
     const env = {
       CI_REPO_OWNER: 'angular',
       CI_REPO_NAME: 'angular',
       CI_PULL_REQUEST: 'false',
       CI_BRANCH: 'master',
-      CI_COMMIT: getLatestCommit('master')
+      CI_COMMIT: commit,
     };
     const result = execSync(cmd, {encoding: 'utf8', env}).trim();
     expect(result).toBe(
         'Git branch        : master\n' +
+        `Git commit        : ${commit}\n` +
         'Build/deploy mode : next\n' +
         'Firebase project  : angular-io\n' +
         'Firebase site     : next-angular-io-site\n' +
