@@ -29,7 +29,7 @@ ng generate application [project-name] --strict
 
 </code-example>
 
-#### To enable strict mode for an *existing project*
+#### Enabling strict mode for an existing project
 
 Edit your `angular.json` and add `@schematics/angular:application` with `"strict": true` to the `schematics` property:
 
