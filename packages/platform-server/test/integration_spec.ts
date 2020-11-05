@@ -53,7 +53,7 @@ function getMetaRenderHook(doc: any) {
 function getAsyncTitleRenderHook(doc: any) {
   return () => {
     // Async set the title as part of the render hook.
-    return new Promise(resolve => {
+    return new Promise<void>(resolve => {
       setTimeout(() => {
         doc.title = 'AsyncRenderHook';
         resolve();
@@ -64,7 +64,7 @@ function getAsyncTitleRenderHook(doc: any) {
 
 function asyncRejectRenderHook() {
   return () => {
-    return new Promise((_resolve, reject) => {
+    return new Promise<void>((_resolve, reject) => {
       setTimeout(() => {
         reject('reject');
       });

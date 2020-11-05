@@ -18,8 +18,8 @@ export abstract class BaseModule<Data> {
       protected git: GitClient, protected config: NgDevConfig<{caretaker: CaretakerConfig}>) {}
 
   /** Asyncronously retrieve data for the module. */
-  protected abstract async retrieveData(): Promise<Data>;
+  protected abstract retrieveData(): Promise<Data>;
 
   /** Print the information discovered for the module to the terminal. */
-  abstract async printToTerminal(): Promise<void>;
+  abstract printToTerminal(): Promise<void>;
 }

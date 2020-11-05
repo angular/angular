@@ -1028,7 +1028,7 @@ function parseBinding(text: string, location: any = null, offset: number = 0): A
 function parseTemplateBindings(attribute: string, templateUrl = 'foo.html'): TemplateBinding[] {
   const match = attribute.match(/^\*(.+)="(.*)"$/);
   expect(match).toBeTruthy(`failed to extract key and value from ${attribute}`);
-  const [_, key, value] = match;
+  const [_, key, value] = match!;
   const absKeyOffset = 1;  // skip the * prefix
   const absValueOffset = attribute.indexOf('=') + '="'.length;
   const parser = createParser();

@@ -44,7 +44,7 @@ runInEachFileSystem(() => {
       programStrategy.updateFiles(
           new Map([[typecheckPath, 'export const VERSION = 2;']]), UpdateMode.Complete);
 
-      expectCompleteReuse(program);
+      expectCompleteReuse(programStrategy.getProgram());
     });
 
     it('should have complete reuse if no structural changes are made to input files', () => {
@@ -56,7 +56,7 @@ runInEachFileSystem(() => {
       programStrategy.updateFiles(
           new Map([[mainPath, 'export const STILL_NOT_A_COMPONENT = true;']]), UpdateMode.Complete);
 
-      expectCompleteReuse(program);
+      expectCompleteReuse(programStrategy.getProgram());
     });
   });
 });

@@ -304,8 +304,9 @@ describe('ng program', () => {
             // and therefore changes the structure again
             const p1 = compile(undefined, undefined, undefined, host).program;
             const p2 = compile(p1, undefined, undefined, host).program;
-            compile(p2, undefined, undefined, host);
-            expect(tsStructureIsReused(p2.getTsProgram())).toBe(StructureIsReused.Completely);
+            const p3 = compile(p2, undefined, undefined, host).program;
+            // TS 4.1+ stores the reuse state in the new program
+            expect(tsStructureIsReused(p3.getTsProgram())).toBe(StructureIsReused.Completely);
           });
 
           it('should reuse the old ts program completely if a template or a ts file changed',
@@ -328,8 +329,9 @@ describe('ng program', () => {
                  'src/main.html': `Another template`,
                  'src/util.ts': `export const x = 2`,
                });
-               compile(p2, undefined, undefined, host);
-               expect(tsStructureIsReused(p2.getTsProgram())).toBe(StructureIsReused.Completely);
+               const p3 = compile(p2, undefined, undefined, host).program;
+               // TS 4.1+ stores the reuse state in the new program
+               expect(tsStructureIsReused(p3.getTsProgram())).toBe(StructureIsReused.Completely);
              });
 
           it('should not reuse the old ts program if an import changed', () => {
@@ -348,8 +350,9 @@ describe('ng program', () => {
             const p2 = compile(p1, undefined, undefined, host).program;
             testSupport.writeFiles(
                 {'src/util.ts': `import {Injectable} from '@angular/core'; export const x = 1;`});
-            compile(p2, undefined, undefined, host);
-            expect(tsStructureIsReused(p2.getTsProgram())).toBe(StructureIsReused.SafeModules);
+            const p3 = compile(p2, undefined, undefined, host).program;
+            // TS 4.1+ stores the reuse state in the new program
+            expect(tsStructureIsReused(p3.getTsProgram())).toBe(StructureIsReused.SafeModules);
           });
         });
   });
