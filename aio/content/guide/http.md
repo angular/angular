@@ -1,5 +1,9 @@
+<!--
 # Communicating with backend services using HTTP
+-->
+# 백엔드 서비스와 HTTP로 통신하기
 
+<!--
 Most front-end applications need to communicate with a server over the HTTP protocol, in order to download or upload data and access other back-end services.
 Angular provides a simplified client HTTP API for Angular applications, the `HttpClient` service class in `@angular/common/http`.
 
@@ -9,18 +13,46 @@ The HTTP client service offers the following major features.
 * Streamlined [error handling](#error-handling).
 * [Testability](#testing-requests) features.
 * Request and response [interception](#intercepting-requests-and-responses).
+-->
+프론트엔드 애플리케이션은 일반적으로 데이터를 받아오거나 업로드하기 위해 서버와 HTTP 프로토콜로 통신합니다.
+Angular는 이런 경우를 위해 클라이언트측 HTTP API를 제공합니다.
+`@angular/common/http` 패키지로 제공되는 `HttpClient` 서비스를 활용하면 됩니다.
 
+HTTP 클라이언트 서비스는 이런 기능을 제공합니다.
+
+* 요청을 보내고 응답을 받을 때 [응답 객체에 타입을 지정](#typed-response)할 수 있습니다.
+* [에러를 스트림으로 처리](#error-handling)할 수 있습니다.
+* [테스트](#testing-requests)를 적용하기 쉽습니다.
+* 요청과 응답을 [가로채서](#intercepting-requests-and-responses) 다른 작업을 할 수 있습니다.
+
+
+<!--
 ##### Prerequisites
+-->
+##### 사전지식
 
+<!--
 Before working with the `HTTPClientModule`, you should have a basic understanding of the following:
 
 * TypeScript programming
 * Usage of the HTTP protocol
 * Angular app-design fundamentals, as described in [Angular Concepts](guide/architecture)
 * Observable techniques and operators. See the [Observables](guide/observables) guide.
+-->
+`HTTPClientModule`에 대해 알아보기 전에 이런 내용을 먼저 이해하고 있는 것이 좋습니다:
 
+* TypeScript 사용방법
+* HTTP 프로토콜 사용방법
+* [Angular 개요](guide/architecture) 문서에서 설명하는 Angular 앱 설계 개념
+* 옵저버블과 옵저버블 연산자 사용방법. [옵저버블](guide/observables) 문서를 참고하세요.
+
+
+<!--
 ## Setup for server communication
+-->
+## 서버와 통신할 준비하기
 
+<!--
 Before you can use `HttpClient`, you need to import the Angular `HttpClientModule`.
 Most apps do so in the root `AppModule`.
 
@@ -59,12 +91,54 @@ The replacement service simulates the behavior of a REST-like backend.
 Look at the `AppModule` _imports_ to see how it is configured.
 
 </div>
+-->
+`HttpClient`를 사용하려면 먼저 Angular `HttpClientModule`을 로드해야 합니다.
+이 모듈은 보통 `AppModule`에 등록합니다.
+
+<code-example
+  path="http/src/app/app.module.ts"
+  region="sketch"
+  header="app/app.module.ts (일부)">
+</code-example>
+
+모듈을 등록하고 나면 애플리케이션 클래스에 `HttpClient` 서비스를 의존성으로 주입할 수 있습니다.
+`ConfigService`에 주입한다면 이렇게 구현하면 됩니다.
+
+<code-example
+  path="http/src/app/config/config.service.ts"
+  region="proto"
+  header="app/config/config.service.ts (일부)">
+</code-example>
+
+`HttpClient` 서비스는 모든 동작에 [옵저버블](guide/glossary#observable "Observable definition")을 활용합니다.
+그래서 이 문서에서 다루는 예제에도 RxJS 옵저버블과 옵저버블 연산자들을 자주 보게 될 것입니다.
+`ConfigService` 파일에서는 이렇게 로드했습니다.
+
+<code-example
+  path="http/src/app/config/config.service.ts"
+  region="rxjs-imports"
+  header="app/config/config.service.ts (RxJS 로드하기)">
+</code-example>
+
+<div class="alert is-helpful">
+
+이 문서에서 다루는 예제 앱은 <live-example></live-example>에서 직접 확인하거나 다운받아 확인할 수 있습니다.
+
+이 예제 앱이 동작할 때는 데이터 서버가 없어도 됩니다.
+예제에서는 _HttpClient_ 모듈의 `HttpBackend`를 대체하는 [Angular 인-메모리 web API](https://github.com/angular/in-memory-web-api/blob/master/README.md)를 활용합니다.
+그래서 REST API로 동작하는 백엔드와 비슷한 동작을 흉내낼 수 있습니다.
+
+설정방법은 `AppModule` _imports_ 배열을 참고하세요.
+
+</div>
+
 
 <!--
 ## Requesting data from a server
 -->
 ## 서버에서 데이터 받아오기
 
+<!--
 Use the [`HTTPClient.get()`](api/common/http/HttpClient#get) method to fetch data from a server.
 The asynchronous method sends an HTTP request, and returns an Observable that emits the requested data when the response is received.
 The return type varies based on the `observe` and `responseType` values that you pass to the call.
@@ -108,9 +182,53 @@ that specifies resource URLs.
 To fetch this kind of data, the `get()` call needs the following options: `{observe: 'body', responseType: 'json'}`.
 These are the default values for those options, so the following examples do not pass the options object.
 Later sections show some of the additional option possibilities.
+-->
+[`HTTPClient.get()`](api/common/http/HttpClient#get) 메서드를 사용하면 서버에서 데이터를 받아올 수 있습니다.
+이 함수는 HTTP 요청을 보내고 Observable로 HTTP 응답을 전달하는 비동기 메서드입니다.
+반환하는 타입은 메서드를 실행할 때 `observe`, `responseType` 필드에 명시적으로 지정할 수 있습니다.
+
+`get()` 메서드는 URL과 *옵션* 객체를 인자로 받습니다.
+
+```
+options: {
+    headers?: HttpHeaders | {[header: string]: string | string[]},
+    observe?: 'body' | 'events' | 'response',
+    params?: HttpParams|{[param: string]: string | string[]},
+    reportProgress?: boolean,
+    responseType?: 'arraybuffer'|'blob'|'json'|'text',
+    withCredentials?: boolean,
+  }
+```
+
+옵션 중에는 `observe`와 `responseType` 프로퍼티가 중요합니다.
+
+* `observe`: HTTP 응답을 어떤 범위까지 반환할지 반환합니다.
+* `responseType`: 응답으로 받는 데이터의 타입을 지정합니다.
+
+
+<div class="alert is-helpful">
+
+`options` 객체는 상황에 따라 다양하게 활용할 수 있습니다.
+HTTP 요청을 보낼 때 기본 헤더가 필요하다면 [헤더를 추가](#adding-headers)하기 위해 `headers` 옵션 프로퍼티를 사용할 수 있으며, [HTTP URL로 인자를 전달](#url-params)하기 위해 `params` 프로퍼티를 사용할 수 있고, 용량이 큰 데이터를 보내거나 받을 때  [진행률을 감지](#report-progress)하는 용도로 `reportProgress` 옵션을 사용할 수도 있씁니다.
+
+</div>
+
+애플리케이션은 보통 JSON 데이터를 응답으로 받습니다.
+그래서 `ConfigService` 예제에서도 서버에서 설정파일 `config.json`을 요청하는 식으로 구현했습니다.
+
+<code-example
+  path="http/src/assets/config.json"
+  header="assets/config.json">
+</code-example>
+
+JSON 데이터를 받아오려면 `get()` 메서드를 실행할 때 `{observe: 'body', responseType: 'json'}` 옵션을 사용하면 됩니다.
+그런데 이 옵션은 `get()` 메서드의 기본 옵션이기 때문에  따로 옵션을 지정하지 않으면 이 설정이 사용됩니다.
+다음 예제에서는 다른 형태로 옵션을 활용해 봅시다.
+
 
 {@a config-service}
 
+<!--
 The example conforms to the best practices for creating scalable solutions by defining a re-usable [injectable service](guide/glossary#service "service definition") to perform the data-handling functionality.
 In addition to fetching data, the service can post-process the data, add error handling, and add retry logic.
 
@@ -135,11 +253,40 @@ It copies the data fields into the component's `config` object, which is data-bo
   region="v1"
   header="app/config/config.component.ts (showConfig v.1)">
 </code-example>
+-->
+아래 예제는 [의존성으로 주입하는 서비스](guide/glossary#service "service definition")를 재사용할 수 있는 형태로 구현한 것입니다.
+HTTP 프로토콜로 데이터를 요청하는 서비스는 데이터를 리모트 서버로 보내거나, 에러를 처리하고, 실패했을 때 재시도하는 로직도 추가할 수 있습니다.
+
+`ConfigService`에서 `HttpClient.get()` 메서드로 파일을 불러오는 코드는 이렇습니다.
+
+<code-example
+  path="http/src/app/config/config.service.ts"
+  region="getConfig_1"
+  header="app/config/config.service.ts (getConfig() v.1)">
+</code-example>
+
+`ConfigComponent`는 `ConfigService`를 의존성으로 주입받으며 이 서비스에 정의된 `getConfig()` 메서드를 실행합니다.
+
+그런데 이 메서드는 `Observable` 형태로 데이터를 반환하기 때문에 컴포넌트가 데이터를 받으려면 메서드가 반환하는 옵저버블을 *구독*해야 합니다.
+컴포넌트에 정의한 구독 함수는 필요한 로직만 간단하게 실행합니다.
+이 함수는 서비스에서 가져온 데이터를 파싱해서 컴포넌트 `config` 객체에 할당합니다.
+
+
+<code-example
+  path="http/src/app/config/config.component.ts"
+  region="v1"
+  header="app/config/config.component.ts (showConfig() v.1)">
+</code-example>
+
 
 {@a typed-response}
 
+<!--
 ### Requesting a typed response
+-->
+### 응답 타입 지정하기
 
+<!--
 You can structure your `HttpClient` request to declare the type of the response object, to make consuming the output easier and more obvious.
 Specifying the response type acts as a type assertion at compile time.
 
@@ -190,9 +337,63 @@ For example, the following `subscribe` callback receives `data` as an Object, an
      textfile:  (data as any).textfile,
    });
 </code-example>
+-->
+`HttpClient`를 사용할 때 응답으로 받을 데이터의 타입을 지정하면 서버에서 받는 데이터를 좀 더 명확하게 처리할 수 있습니다.
+응답 타입을 지정하는 코드는 컴파일 시점에 타입을 검사하는 용도로도 활용됩니다.
+
+<div class="alert is-important">
+
+응답으로 받는 데이터의 타입을 지정하는 것은 TypeScript를 사용하는 관점에서 데이터 타입을 지정한 것 뿐이며, 서버가 보내는 데이터가 정말 이 타입인 것을 보장하는 것은 아닙니다.
+Angular 앱에서는 서버가 보낸 데이터의 타입을 예상하기만 할 뿐이고, 이 예상대로 동작하려면 서버 API가 보내는 데이터도 이 타입에 맞아야 합니다.
+
+</div>
+
+응답으로 받는 객체의 타입을 지정하려면 먼저 인터페이스를 정의해야 합니다.
+이 때 클래스보다는 인터페이스를 사용하는 것을 권장합니다.
+서버에서 받아온 데이터는 단순한 객체 형식이며 클래스로 자동 변환되지 않습니다.
+
+<code-example
+  path="http/src/app/config/config.service.ts"
+  region="config-interface">
+</code-example>
+
+그리고 `HttpClient.get()` 메서드를 실행할 때 제네릭으로 타입을 지정합니다.
+
+<code-example
+  path="http/src/app/config/config.service.ts"
+  region="getConfig_2"
+  header="app/config/config.service.ts (getConfig() v.2)">
+</code-example>
+
+<div class="alert is-helpful">
+
+`HttpClient.get()` 메서드에 인터페이스를 타입으로 지정하면 [RxJS `map` 연산자](guide/rx-library#operators)를 활용해서 화면에 사용하기 편한 형태로 데이터를 가공할 수 있습니다.
+그리고 템플릿에 [`Async` 파이프](api/common/AsyncPipe)를 사용하면 컴포넌트 클래스 코드를 거치지 않고 템플릿에 바로 활용할 수도 있습니다.
+
+</div>
+
+컴포넌트 메서드는 이제 데이터의 타입을 명확하게 지정할 수 있기 때문에 이후에 사용하기도 편합니다:
+
+<code-example
+  path="http/src/app/config/config.component.ts"
+  region="v2"
+  header="app/config/config.component.ts (showConfig() v.2)">
+</code-example>
+
+응답으로 받은 JSON 객체의 프로퍼티에 접근하려면 이 객체에 정확한 타입을 지정해야 합니다.
+컴포넌트의 구독 콜백 함수에 이 내용을 빠뜨리면 응답으로 받은 데이터를 명시적으로 `any` 타입으로 캐스팅해야 사용할 수 있습니다.
+
+<code-example>
+   .subscribe(data => this.config = {
+     heroesUrl: (data as any).heroesUrl,
+     textfile:  (data as any).textfile,
+   });
+</code-example>
+
 
 {@a string-union-types}
 
+<!--
 <div class="callout is-important">
 <header>*observe* and *response* types</header>
 
@@ -234,9 +435,59 @@ client.get('/foo', options);
 ```
 
 </div>
+-->
+<div class="callout is-important">
+<header>*observe*, *response*의 타입</header>
 
+`observe` 옵션과 `response` 옵션의 타입은 일반 문자열이 아니라 *문자열 유니언(string unions)* 입니다.
+
+```
+options: {
+    ...
+    observe?: 'body' | 'events' | 'response',
+    ...
+    responseType?: 'arraybuffer'|'blob'|'json'|'text',
+    ...
+  }
+```
+
+사용방법이 조금 헷갈릴 수 있습니다.
+예제를 봅시다:
+
+```typescript
+// 이 코드는 동작합니다.
+client.get('/foo', {responseType: 'text'})
+
+// 이 코드는 동작하지 않습니다.
+const options = {
+  responseType: 'text',
+};
+client.get('/foo', options)
+```
+
+두번째 예제 코드처럼 작성하면 TypeScript는 `options`의 타입을 `{responseType: string}`이라고 추론합니다.
+하지만 이 타입은 `HttpClient.get()` 메서드에 사용하기에는 충분하지 않습니다.
+`responseType`의 값은 `HttpClient`가 사전에 정의한 문자열 중 하나여야 하지만 `string` 타입은 그보다 범위가 넓기 때문입니다.
+`HttpClient`를 사용할 때는 정확한 타입을 지정해야 합니다.
+
+이 경우에는 `as const`를 사용해서 해당 문자열이 사전에 정의된 문자열이라고 지정해도 됩니다:
+
+```typescript
+const options = {
+  responseType: 'text' as const,
+};
+client.get('/foo', options);
+```
+
+</div>
+
+
+<!--
 ### Reading the full response
+-->
+### 응답 전체를 읽기
 
+<!--
 In the previous example, the call to `HttpClient.get()` did not specify any options. By default, it returned the JSON data contained in the response body.
 
 You might need more information about the transaction than is contained in the response body. Sometimes servers return special headers or status codes to indicate certain conditions that are important to the application workflow.
@@ -260,6 +511,32 @@ The component's `showConfigResponse()` method displays the response headers as w
 </code-example>
 
 As you can see, the response object has a `body` property of the correct type.
+-->
+이전 예제에서는 `HttpClient.get()`을 사용할 때 따로 옵션을 지정하지 않았습니다.
+이렇게 사용하면 `get()` 메서드는 응답의 바디를 JSON 타입으로 반환합니다.
+
+그런데 상황에 따라 전체 응답을 확인해야 하는 경우가 있습니다.
+응답으로 받은 헤더나 상태 코드를 활용해야 하는 경우가 그렇습니다.
+
+이 경우에는 `get()` 메서드를 실행할 때 `observe` 옵션을 사용하면 응답의 바디가 아니라 응답 전체를 받아올 수 있습니다:
+
+<code-example
+  path="http/src/app/config/config.service.ts"
+  region="getConfigResponse">
+</code-example>
+
+이렇게 구현하면 `HttpClient.get()` 메서드가 반환하는 `Observable`은 응답의 바디를 JSON 형식으로 전달하는게 아니라 응답 전체를 `HttpResponse` 타입으로 전달합니다.
+
+아래 코드는 이 응답을 처리하는 `showConfigResponse()` 메서드입니다:
+
+<code-example
+  path="http/src/app/config/config.component.ts"
+  region="showConfigResponse"
+  header="app/config/config.component.ts (showConfigResponse())"
+ >
+</code-example>
+
+코드에서 볼 수 있듯이, 응답으로 전달된 객체의 `body` 프로퍼티는 `Http.get()` 메서드에 제네릭으로 지정한 타입입니다.
 
 
 <!--
@@ -267,6 +544,7 @@ As you can see, the response object has a `body` property of the correct type.
 -->
 ### JSONP 요청 보내기
 
+<!--
 Apps can use the `HttpClient` to make [JSONP](https://en.wikipedia.org/wiki/JSONP) requests across domains when a server doesn't support [CORS protocol](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS).
 
 Angular JSONP requests return an `Observable`.
@@ -289,6 +567,29 @@ searchHeroes(term: string): Observable {
 
 This request passes the `heroesURL` as the first parameter and the callback function name as the second parameter.
 The response is wrapped in the callback function, which takes the observables returned by the JSONP method and pipes them through to the error handler.
+-->
+서버가 [CORS 프로토콜](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS)을 지원하지 않는다면 `HttpClient`로 다른 도메인에 [JSONP](https://en.wikipedia.org/wiki/JSONP) 요청을 보낼 수 있습니다.
+
+이 때도 Angular는 `Observable`을 반환합니다.
+따라서 `HttpClient` 메서드가 반환하는 옵저버블은 RxJS `map` 연산자를 활용해서 [`async` 파이프](api/common/AsyncPipe)에 사용하기 적합한 형태로 가공할 수 있습니다.
+
+Angular 애플리케이션에서 JSONP 요청을 보내려면 `NgModule`에 `HttpClientJsonpModule`을 로드해야 합니다.
+아래 예제에서 `searchHeroes()` 메서드는 이름에 특정 단어가 들어간 히어로 목록을 가져오기 위해 JSONP 요청을 보내는 메서드입니다.
+
+```ts
+/* 이름에 특정 단어가 들어간 히어로 목록을 가져옵니다. */
+searchHeroes(term: string): Observable {
+  term = term.trim();
+
+  const heroesURL = `${this.heroesURL}?${term}`;
+  return this.http.jsonp(heroesUrl, 'callback').pipe(
+      catchError(this.handleError('searchHeroes', [])) // 에러 처리
+    );
+}
+```
+
+이 메서드의 첫 번째 인자는 `heroesURL`이며 두 번째 인자는 콜백 함수의 이름을 지정했습니다.
+그러면 JSONP 요청으로 보낸 응답은 콜백 함수로 랩핑되어 옵저버블로 전달되기 때문에, `pipe`로 체이닝해서 옵저버블 형태로 에러를 처리할 수 있습니다.
 
 
 <!--
