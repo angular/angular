@@ -295,10 +295,3 @@ export function isFactory(obj: any): obj is NodeInjectorFactory {
 // Note: This hack is necessary so we don't erroneously get a circular dependency
 // failure based on types.
 export const unusedValueExportToPlacateAjd = 1;
-
-// These are IDs used to identify special NodeInjector types
-export const enum DIBloomFilterIds {
-  // This is a value used to identify __NG_ELEMENT_ID__
-  // `-1` is a special value used to identify `Injector` types in NodeInjector
-  InjectorElementId = -1,
-}

@@ -7,7 +7,6 @@
  */
 
 import {AbstractType, Type} from '../interface/type';
-import {DIBloomFilterIds} from '../render3/interfaces/injector';
 import {stringify} from '../util/stringify';
 
 import {resolveForwardRef} from './forward_ref';
@@ -114,7 +113,7 @@ export abstract class Injector {
    * @internal
    * @nocollapse
    */
-  static __NG_ELEMENT_ID__ = DIBloomFilterIds.InjectorElementId;
+  static __NG_ELEMENT_ID__ = -1;
 }
 
 

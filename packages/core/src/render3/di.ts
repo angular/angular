@@ -22,7 +22,7 @@ import {throwCyclicDependencyError, throwProviderNotFoundError} from './errors';
 import {NG_ELEMENT_ID, NG_FACTORY_DEF} from './fields';
 import {registerPreOrderHooks} from './hooks';
 import {DirectiveDef, FactoryFn} from './interfaces/definition';
-import {DIBloomFilterIds, isFactory, NO_PARENT_INJECTOR, NodeInjectorFactory, NodeInjectorOffset, RelativeInjectorLocation, RelativeInjectorLocationFlags} from './interfaces/injector';
+import {isFactory, NO_PARENT_INJECTOR, NodeInjectorFactory, NodeInjectorOffset, RelativeInjectorLocation, RelativeInjectorLocationFlags} from './interfaces/injector';
 import {AttributeMarker, TContainerNode, TDirectiveHostNode, TElementContainerNode, TElementNode, TNode, TNodeProviderIndexes, TNodeType} from './interfaces/node';
 import {isComponentDef, isComponentHost} from './interfaces/type_checks';
 import {DECLARATION_COMPONENT_VIEW, DECLARATION_VIEW, INJECTOR, LView, T_HOST, TData, TVIEW, TView, TViewType} from './interfaces/view';
@@ -429,15 +429,25 @@ export function getOrCreateInjectable<T>(
         leaveDI();
       }
     } else if (typeof bloomHash === 'number') {
-      if (bloomHash === DIBloomFilterIds.InjectorElementId) {
+      // This is a value used to identify __NG_ELEMENT_ID__
+      // `-1` is a special value used to identify `Injector` types in NodeInjector
+      // This is a workaround for the fact that if the `Injector.__NG_ELEMENT_ID__`
+      // would have a factory function (such as `ElementRef`) it would cause Ivy
+      // to be pulled into the ViewEngine, because they both share `Injector` type.
+      // This should be refactored to follow `ElementRef` pattern once ViewEngine is
+      // removed
+      if (bloomHash === -1) {
         if (!enterDI(lView, tNode, flags)) {
-          // If a token is injected with the @Host flag, the module injector is not searched for
-          // that token in Ivy.
+          // Failed to enter DI, try module injector instead. If a token is injected with the @Host
+          // flag, the module injector is not searched for that token in Ivy.
           return (flags & InjectFlags.Host) ?
               notFoundValueOrThrow<T>(notFoundValue, token, flags) :
               lookupTokenUsingModuleInjector<T>(lView, token, flags, notFoundValue);
         }
         try {
+          // Retrieving current `TNode` and `LView` from the state (rather than using `tNode` and
+          // `lView`), because entering DI (by calling `enterDI`) may cause these values to change
+          // (in case `@SkipSelf` flag is present).
           return new NodeInjector(getCurrentTNode()! as TDirectiveHostNode, getLView()) as any;
         } finally {
           leaveDI();
