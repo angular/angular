@@ -48,12 +48,12 @@ Edit your `angular.json` and add `@schematics/angular:application` with `"strict
 
 Add the following to `compilerOptions` in `tsconfig.json`.
 
-```
+<code-example header="tsconfig.json">
     "forceConsistentCasingInFileNames": true,
     "strict": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
-```
+</code-example>
 
 Add a new property `angularCompilerOptions` to `tsconfig.json`:
 ```
