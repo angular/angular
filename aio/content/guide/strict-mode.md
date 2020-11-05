@@ -33,7 +33,7 @@ ng generate application [project-name] --strict
 
 Edit your `angular.json` and add `@schematics/angular:application` with `"strict": true` to the `schematics` property:
 
-```
+<code-example header="angular.json">
   ...
   "projects": {
     "app": {
@@ -44,7 +44,7 @@ Edit your `angular.json` and add `@schematics/angular:application` with `"strict
         }
       }
    ...
- ```
+</code-example>
 
 Add the following to `compilerOptions` in `tsconfig.json`.
 
