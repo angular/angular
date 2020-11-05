@@ -46,7 +46,7 @@ Edit your `angular.json` and add `@schematics/angular:application` with `"strict
    ...
  ```
 
-Edit `compilerOptions` in `tsconfig.json` to include:
+Add the following to `compilerOptions` in `tsconfig.json`.
 
 ```
     "forceConsistentCasingInFileNames": true,
