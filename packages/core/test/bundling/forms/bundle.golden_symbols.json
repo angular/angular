@@ -1209,6 +1209,9 @@
     "name": "isEmptyInputValue"
   },
   {
+    "name": "isFactoryProvider"
+  },
+  {
     "name": "isForwardRef"
   },
   {
@@ -1387,6 +1390,9 @@
   },
   {
     "name": "ngOnChangesSetInput"
+  },
+  {
+    "name": "ngOnDestroyForFactoryProviders"
   },
   {
     "name": "noSideEffects"

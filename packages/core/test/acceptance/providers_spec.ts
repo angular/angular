@@ -7,7 +7,7 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {Component, Directive, forwardRef, Inject, Injectable, InjectionToken, Injector, NgModule, Optional} from '@angular/core';
+import {Component, Directive, ElementRef, forwardRef, Inject, Injectable, InjectionToken, Injector, NgModule, Optional} from '@angular/core';
 import {inject, TestBed, waitForAsync} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
@@ -507,6 +507,280 @@ describe('providers', () => {
 
           expect(destroyCalls).toBe(0);
         });
+
+    it('should invoke ngOnDestroy for useFactory providers provided in Component', () => {
+      const logs: string[] = [];
+
+      @Injectable()
+      class InjectableWithDestroyHook {
+        ngOnDestroy() {
+          logs.push('OnDestroy');
+        }
+      }
+
+      @Component({
+        template: '',
+        providers: [{
+          provide: InjectableWithDestroyHook,
+          useFactory: () => new InjectableWithDestroyHook(),
+        }],
+      })
+      class App {
+        constructor(public injectableWithDestroyHook: InjectableWithDestroyHook) {}
+      }
+
+      TestBed.configureTestingModule({declarations: [App]});
+
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+      fixture.destroy();
+
+      expect(logs).toEqual(['OnDestroy']);
+    });
+
+    it('should invoke ngOnDestroy for useFactory providers provided in Directive', () => {
+      const logs: string[] = [];
+
+      @Injectable()
+      class InjectableWithDestroyHook {
+        ngOnDestroy() {
+          logs.push('ngOnDestroy');
+        }
+      }
+
+      @Directive({
+        selector: '[dir]',
+        providers: [{
+          provide: InjectableWithDestroyHook,
+          useFactory: () => new InjectableWithDestroyHook(),
+        }],
+      })
+      class MyDirective {
+        constructor(
+            public elRef: ElementRef, public injectableWithDestroyHook: InjectableWithDestroyHook) {
+        }
+      }
+
+      @Component({
+        selector: 'my-comp',
+        template: '<div dir></div>',
+      })
+      class MyComponent {
+      }
+
+      TestBed.configureTestingModule({
+        declarations: [MyDirective, MyComponent],
+      });
+
+      const fixture = TestBed.createComponent(MyComponent);
+      fixture.detectChanges();
+      fixture.destroy();
+
+      expect(logs).toEqual(['ngOnDestroy']);
+    });
+
+    it('should invoke ngOnDestroy for useFactory providers deeply nested in a template', () => {
+      const logs: string[] = [];
+
+      @Injectable()
+      class InjectableWithDestroyHook {
+        ngOnDestroy() {
+          logs.push('OnDestroy');
+        }
+      }
+
+      @Component({
+        selector: 'deep-cmp',
+        template: '',
+        providers: [{
+          provide: InjectableWithDestroyHook,
+          useFactory: () => new InjectableWithDestroyHook(),
+        }],
+      })
+      class DeepCmp {
+        constructor(public injectableWithDestroyHook: InjectableWithDestroyHook) {}
+      }
+
+      @Component({
+        template: '<div><deep-cmp></deep-cmp></div>',
+      })
+      class App {
+      }
+
+      TestBed.configureTestingModule({declarations: [App, DeepCmp]});
+
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+      fixture.destroy();
+
+      expect(logs).toEqual(['OnDestroy']);
+    });
+
+    it('should not invoke ngOnDestroy for nullish useFactory providers even the first provided instance in non nullish and implements ngOnDestroy',
+       () => {
+         const logs: string[] = [];
+
+         abstract class Service {}
+
+         @Injectable()
+         class InjectableWithDestroyHook extends Service {
+           ngOnDestroy() {
+             logs.push('OnDestroy');
+           }
+         }
+
+         let first = true;
+
+         @Component({
+           selector: 'cmp',
+           template: '',
+           providers: [{
+             provide: Service,
+             useFactory: () => {
+               if (first) {
+                 first = false;
+                 return new InjectableWithDestroyHook();
+               } else {
+                 return null;
+               }
+             },
+           }],
+         })
+         class Cmp {
+           constructor(public service: Service) {}
+         }
+
+         @Component({
+           template: '<cmp></cmp>',
+         })
+         class App {
+         }
+
+         TestBed.configureTestingModule({declarations: [App, Cmp]});
+
+         const fixture1 = TestBed.createComponent(App);
+         fixture1.detectChanges();
+         fixture1.destroy();
+
+         const fixture2 = TestBed.createComponent(App);
+         fixture2.detectChanges();
+         fixture2.destroy();
+
+         expect(logs).toEqual(['OnDestroy']);
+       });
+
+    it('should not invoke ngOnDestroy for useFactory providers that don\'t implement it even the first provided instance does implement ngOnDestroy',
+       () => {
+         const logs: string[] = [];
+
+         abstract class Service {}
+
+         @Injectable()
+         class InjectableWithDestroyHook extends Service {
+           ngOnDestroy() {
+             logs.push('OnDestroy');
+           }
+         }
+
+         @Injectable()
+         class InjectableWithoutDestroyHook extends Service {
+         }
+
+         let first = true;
+
+         @Component({
+           selector: 'cmp',
+           template: '',
+           providers: [{
+             provide: Service,
+             useFactory: () => {
+               if (first) {
+                 first = false;
+                 return new InjectableWithDestroyHook();
+               } else {
+                 return new InjectableWithoutDestroyHook();
+               }
+             },
+           }],
+         })
+         class Cmp {
+           constructor(public service: Service) {}
+         }
+
+         @Component({
+           template: '<cmp></cmp>',
+         })
+         class App {
+         }
+
+         TestBed.configureTestingModule({declarations: [App, Cmp]});
+
+         const fixture1 = TestBed.createComponent(App);
+         fixture1.detectChanges();
+         fixture1.destroy();
+
+         const fixture2 = TestBed.createComponent(App);
+         fixture2.detectChanges();
+         fixture2.destroy();
+
+         expect(logs).toEqual(['OnDestroy']);
+       });
+
+    it('should invoke ngOnDestroy for useFactory providers even if initially provided implementation does not implement ngOnDestroy',
+       () => {
+         const logs: string[] = [];
+
+         abstract class Service {}
+
+         @Injectable()
+         class InjectableWithDestroyHook extends Service {
+           ngOnDestroy() {
+             logs.push('OnDestroy');
+           }
+         }
+         @Injectable()
+         class InjectableWithoutDestroyHook extends Service {
+         }
+
+         let first = true;
+
+         @Component({
+           selector: 'cmp',
+           template: '',
+           providers: [{
+             provide: Service,
+             useFactory: () => {
+               if (first) {
+                 first = false;
+                 return new InjectableWithoutDestroyHook();
+               } else {
+                 return new InjectableWithDestroyHook();
+               }
+             },
+           }],
+         })
+         class Cmp {
+           constructor(public service: Service) {}
+         }
+
+         @Component({
+           template: '<cmp></cmp>',
+         })
+         class App {
+         }
+
+         TestBed.configureTestingModule({declarations: [App, Cmp]});
+
+         const fixture1 = TestBed.createComponent(App);
+         fixture1.detectChanges();
+         fixture1.destroy();
+
+         const fixture2 = TestBed.createComponent(App);
+         fixture2.detectChanges();
+         fixture2.destroy();
+
+         expect(logs).toEqual(['OnDestroy']);
+       });
 
     it('should call ngOnDestroy if host component is destroyed', () => {
       const logs: string[] = [];

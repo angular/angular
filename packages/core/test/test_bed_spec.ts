@@ -290,6 +290,52 @@ describe('TestBed', () => {
     expect(hello.nativeElement).toHaveText('Hello injected World a second time!');
   });
 
+  it('should call ngOnDestroy for a service that was overridden with useFactory', () => {
+    const logs: string[] = [];
+
+    @Injectable()
+    class MyService {
+      public name = 'MyService';
+      ngOnDestroy() {
+        logs.push('MyService.ngOnDestroy');
+      }
+    }
+
+    class FakeService {
+      name = 'FakeService';
+      ngOnDestroy() {
+        logs.push('FakeService.ngOnDestroy');
+      }
+    }
+
+    @Component({
+      selector: 'my-comp',
+      template: `{{ myService.name }}`,
+      providers: [MyService],
+    })
+    class MyComponent {
+      constructor(public myService: MyService) {}
+    }
+
+    TestBed.configureTestingModule({
+      declarations: [MyComponent],
+    });
+
+    TestBed.overrideProvider(MyService, {
+      useFactory: () => new FakeService(),
+    });
+
+    const fixture = TestBed.createComponent(MyComponent);
+    fixture.detectChanges();
+
+    const service = fixture.componentInstance.myService;
+    expect(service.name).toBe('FakeService');
+
+    fixture.destroy();
+
+    expect(logs).toEqual(['FakeService.ngOnDestroy']);
+  });
+
   it('should not call ngOnDestroy for a service that was overridden', () => {
     SimpleService.ngOnDestroyCalls = 0;
 

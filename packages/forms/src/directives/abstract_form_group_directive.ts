@@ -33,8 +33,19 @@ export class AbstractFormGroupDirective extends ControlContainer implements OnIn
   // TODO(issue/24571): remove '!'.
   _parent!: ControlContainer;
 
+  /**
+   * @description
+   * Counts the number of references it has.
+   * Used for correctly cleanup on ngOnDestroy when useFactory returns the same instance multiple
+   * times.
+   *
+   * @internal
+   */
+  private _refCount: number = 0;
+
   /** @nodoc */
   ngOnInit(): void {
+    this._refCount++;
     this._checkParentType();
     // Register the group with its parent group.
     this.formDirective!.addFormGroup(this);
@@ -42,7 +53,8 @@ export class AbstractFormGroupDirective extends ControlContainer implements OnIn
 
   /** @nodoc */
   ngOnDestroy(): void {
-    if (this.formDirective) {
+    this._refCount--;
+    if (this.formDirective && this._refCount === 0) {
       // Remove the group from its parent group.
       this.formDirective.removeFormGroup(this);
     }
@@ -70,6 +82,22 @@ export class AbstractFormGroupDirective extends ControlContainer implements OnIn
    */
   get formDirective(): Form|null {
     return this._parent ? this._parent.formDirective : null;
+  }
+
+  /**
+   * @description
+   * Returns the current number of references to this directive.
+   */
+  get refCount() {
+    return this._refCount;
+  }
+
+  /**
+   * @description
+   * Adds a reference into the total reference count.
+   */
+  addRef() {
+    this._refCount++;
   }
 
   /** @internal */

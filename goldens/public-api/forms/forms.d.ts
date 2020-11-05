@@ -100,6 +100,8 @@ export declare class AbstractFormGroupDirective extends ControlContainer impleme
     get control(): FormGroup;
     get formDirective(): Form | null;
     get path(): string[];
+    get refCount(): number;
+    addRef(): void;
     ngOnDestroy(): void;
     ngOnInit(): void;
 }
