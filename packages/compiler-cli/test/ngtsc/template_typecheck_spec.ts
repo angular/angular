@@ -2302,7 +2302,7 @@ export declare class AnimationEvent {
         env.write('other.ts', `export const VERSION = 2;`);
         env.driveMain();
 
-        expectCompleteReuse(firstProgram);
+        expectCompleteReuse(env.getReuseTsProgram());
       });
     });
   });
