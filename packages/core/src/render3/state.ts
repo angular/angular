@@ -481,6 +481,7 @@ export function enterDI(lView: LView, tNode: TNode, flags: InjectFlags) {
     let parentLView = lView;
 
     while (true) {
+      ngDevMode && assertDefined(parentTNode, 'Parent TNode should be defined');
       parentTNode = parentTNode!.parent as TNode | null;
       if (parentTNode === null && !(flags & InjectFlags.Host)) {
         parentTNode = getDeclarationTNode(parentLView);

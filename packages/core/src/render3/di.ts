@@ -22,7 +22,7 @@ import {throwCyclicDependencyError, throwProviderNotFoundError} from './errors';
 import {NG_ELEMENT_ID, NG_FACTORY_DEF} from './fields';
 import {registerPreOrderHooks} from './hooks';
 import {DirectiveDef, FactoryFn} from './interfaces/definition';
-import {isFactory, NO_PARENT_INJECTOR, NodeInjectorFactory, NodeInjectorOffset, RelativeInjectorLocation, RelativeInjectorLocationFlags, SpecialId} from './interfaces/injector';
+import {DIBloomFilterIds, isFactory, NO_PARENT_INJECTOR, NodeInjectorFactory, NodeInjectorOffset, RelativeInjectorLocation, RelativeInjectorLocationFlags} from './interfaces/injector';
 import {AttributeMarker, TContainerNode, TDirectiveHostNode, TElementContainerNode, TElementNode, TNode, TNodeProviderIndexes, TNodeType} from './interfaces/node';
 import {isComponentDef, isComponentHost} from './interfaces/type_checks';
 import {DECLARATION_COMPONENT_VIEW, DECLARATION_VIEW, INJECTOR, LView, T_HOST, TData, TVIEW, TView, TViewType} from './interfaces/view';
@@ -429,7 +429,7 @@ export function getOrCreateInjectable<T>(
         leaveDI();
       }
     } else if (typeof bloomHash === 'number') {
-      if (bloomHash === SpecialId.InjectorElementId) {
+      if (bloomHash === DIBloomFilterIds.InjectorElementId) {
         if (!enterDI(lView, tNode, flags)) {
           // If a token is injected with the @Host flag, the module injector is not searched for
           // that token in Ivy.
