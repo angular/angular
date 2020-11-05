@@ -10,6 +10,7 @@ ts_library(
     module_name = "@angular/dev-infra-private",
     deps = [
         "//dev-infra/caretaker",
+        "//dev-infra/ci",
         "//dev-infra/commit-message",
         "//dev-infra/format",
         "//dev-infra/ngbot",

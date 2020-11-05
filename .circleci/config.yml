@@ -12,6 +12,9 @@
 # https://circleci.com/docs/2.0/reusing-config/#getting-started-with-config-reuse
 version: 2.1
 
+orbs:
+  slack: circleci/slack@4.1.1
+
 # We don't want to include the current branch name in the cache key because that would prevent
 # PRs from being able to restore the cache since the branch names are always different for PRs.
 # The cache key should only consist of dynamic values that change whenever something in the
@@ -254,10 +257,19 @@ jobs:
   burn_rate:
     executor: default-executor
     steps:
-      - custom_attach_workspace
-      - init_environment
+      - checkout
+      - run:
+          name: Running Yarn install
+          command: yarn install --frozen-lockfile --non-interactive
+          # Yarn's requests sometimes take more than 10mins to complete.
+          no_output_timeout: 45m
 
-      - run: yarn -s ng-dev ci check-burn-rate --token $CIRCLE_CI_TOKEN
+      - run: yarn -s ng-dev ci check-burn-rate --ciToken $CIRCLE_CI_TOKEN
+
+      - slack/notify:
+          message: yarn -s ng-dev ci check-burn-rate --ciToken $CIRCLE_CI_TOKEN
+          webhook: $SLACK_BURN_RATE_WEBHOOK_URL
+
   lint:
     executor: default-executor
     steps:

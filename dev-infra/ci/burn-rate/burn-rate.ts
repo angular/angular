@@ -70,7 +70,8 @@ function getUsageAndBurnRate(credits: number, days: number) {
   return {
     credits,
     // Formula: [credits] / [days of usage data] / [months in year] * [days in a year] /
-    burnRate: Math.round(credits / days / 12 * 365)};
+    burnRate: Math.round(credits / days / 12 * 365)
+  };
 }
 
 /** Retrieve the number of credits used for the project in a provided reporting window. */

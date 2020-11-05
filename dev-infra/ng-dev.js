@@ -213,6 +213,7 @@ var green = chalk.green;
 var yellow = chalk.yellow;
 var bold = chalk.bold;
 var blue = chalk.blue;
+var reset = chalk.reset;
 /** Prompts the user with a confirmation question and a specified message. */
 function promptConfirm(message, defaultValue) {
     if (defaultValue === void 0) { defaultValue = false; }
@@ -6933,6 +6934,94 @@ function convertReferenceChainToString(chain) {
     return chain.join(' → ');
 }
 
+/** Check the burn rate of CircleCI credit usage for the repository. */
+function checkBurnRate({ ciToken, json }) {
+    return tslib.__awaiter(this, void 0, void 0, function* () {
+        const usage = {
+            one: getUsageAndBurnRate(yield getCreditsUsed(ciToken, 'last-24-hours'), 1),
+            seven: getUsageAndBurnRate(yield getCreditsUsed(ciToken, 'last-7-days'), 7),
+            thirty: getUsageAndBurnRate(yield getCreditsUsed(ciToken, 'last-30-days'), 30),
+            ninety: getUsageAndBurnRate(yield getCreditsUsed(ciToken, 'last-90-days'), 90),
+        };
+        if (json === true) {
+            return JSON.stringify(usage);
+        }
+        info(`Credits used in last 24 hours: ${usage.one.credits} credits`);
+        info();
+        info.group(`Burn rate comparison (% change from 30 day rate):`);
+        info(`1 day:  ${usage.one.burnRate}/month  (${compareRates(usage.one.burnRate)})`);
+        info(`7 day:  ${usage.seven.burnRate}/month  (${compareRates(usage.seven.burnRate)})`);
+        info(`30 day: ${usage.thirty.burnRate}/month  ---`);
+        info(`90 day: ${usage.ninety.burnRate}/month  (${compareRates(usage.ninety.burnRate)})`);
+        info.groupEnd();
+        /** Compare two provided burn rates to determine the percentage change from the base rate. */
+        function compareRates(rate, base = usage.thirty.burnRate) {
+            if (rate === base) {
+                return '---';
+            }
+            const percentage = ((rate - base) / base * 100);
+            const color = percentage < 0 ? red : reset;
+            return color(`${percentage.toFixed(2)}%`);
+        }
+    });
+}
+/** Determine the credit usage and monthly burn rate for provide credit usage. */
+function getUsageAndBurnRate(credits, days) {
+    return {
+        credits,
+        // Formula: [credits] / [days of usage data] / [months in year] * [days in a year] /
+        burnRate: Math.round(credits / days / 12 * 365)
+    };
+}
+/** Retrieve the number of credits used for the project in a provided reporting window. */
+function getCreditsUsed(ciToken, window) {
+    return tslib.__awaiter(this, void 0, void 0, function* () {
+        const { owner, name } = getConfig().github;
+        const url = `https://circleci.com/api/v2/insights/gh/${owner}/${name}/workflows?reporting-window=${window}&circle-token=${ciToken}`;
+        const data = (yield fetch(url).then(r => r.json()));
+        if (data.message) {
+            error(`An error response was returned for the reporting window: ${window}`);
+            return Infinity;
+        }
+        return data.items.map(workflow => workflow.metrics.total_credits_used).reduce((a, b) => a + b);
+    });
+}
+
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+/** Builds the command. */
+function builder$a(yargs) {
+    return yargs.option('ciToken', { type: 'string', demandOption: true }).option('json', {
+        type: 'boolean',
+        default: false,
+    });
+}
+/** Handles the command. */
+function handler$a(args) {
+    return tslib.__awaiter(this, void 0, void 0, function* () {
+        yield checkBurnRate(args);
+    });
+}
+/** yargs command module describing the command.  */
+const BurnRateModule = {
+    handler: handler$a,
+    builder: builder$a,
+    command: 'check-burn-rate',
+    // Set describe to false to prevent the command from appearing in help menus as it is a hidden
+    // command.
+    describe: false,
+};
+
+/** Build the parser for the ci commands. */
+function buildCiParster(localYargs) {
+    return localYargs.help().strict().command(BurnRateModule);
+}
+
 yargs.scriptName('ng-dev')
     .middleware(captureLogOutputForCommand)
     .demandCommand()
@@ -6945,6 +7034,7 @@ yargs.scriptName('ng-dev')
     .command('ts-circular-deps <command>', '', tsCircularDependenciesBuilder)
     .command('caretaker <command>', '', buildCaretakerParser)
     .command('ngbot <command>', false, buildNgbotParser)
+    .command('ci <command>', false, buildCiParster)
     .wrap(120)
     .strict()
     .parse();
