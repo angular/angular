@@ -250,6 +250,14 @@ jobs:
             - ./ng
             - ./bazel_repository_cache
 
+
+  burn_rate:
+    executor: default-executor
+    steps:
+      - custom_attach_workspace
+      - init_environment
+
+      - run: yarn -s ng-dev ci check-burn-rate --token $CIRCLE_CI_TOKEN
   lint:
     executor: default-executor
     steps:
@@ -782,128 +790,140 @@ workflows:
           filters:
             branches:
               ignore: g3
-      - lint:
-          requires:
-            - setup
-      - test:
-          requires:
-            - setup
-      - test_ivy_aot:
-          requires:
-            - setup
-      - build-npm-packages:
-          requires:
-            - setup
-      - build-ivy-npm-packages:
-          requires:
-            - setup
-      - legacy-unit-tests-saucelabs:
-          requires:
-            - setup
-      - test_aio:
-          requires:
-            - setup
-      - deploy_aio:
-          requires:
-            - test_aio
-      - test_aio_local:
-          requires:
-            - build-npm-packages
-      - test_aio_local:
-          name: test_aio_local_viewengine
-          viewengine: true
-          requires:
-            - build-npm-packages
-      - test_aio_tools:
-          requires:
-            - build-npm-packages
-      - test_docs_examples:
-          requires:
-            - build-npm-packages
-      - test_docs_examples:
-          name: test_docs_examples_viewengine
-          viewengine: true
-          requires:
-            - build-npm-packages
-      - aio_preview:
-          # Only run on PR builds. (There can be no previews for non-PR builds.)
-          <<: *only_on_pull_requests
-          requires:
-            - setup
-      - test_aio_preview:
-          requires:
-            - aio_preview
-      - publish_packages_as_artifacts:
-          requires:
-            - build-npm-packages
-      - publish_snapshot:
-          # Note: no filters on this job because we want it to run for all upstream branches
-          # We'd really like to filter out pull requests here, but not yet available:
-          # https://discuss.circleci.com/t/workflows-pull-request-filter/14396/4
-          # Instead, the job just exits immediately at the first step.
-          requires:
-            # Only publish if tests and integration tests pass
-            - test
-            - test_ivy_aot
-            # Only publish if `aio`/`docs` tests using the locally built Angular packages pass
-            - test_aio_local
-            - test_aio_local_viewengine
-            - test_docs_examples
-            - test_docs_examples_viewengine
-            # Get the artifacts to publish from the build-packages-dist job
-            # since the publishing script expects the legacy outputs layout.
-            - build-npm-packages
-            - build-ivy-npm-packages
-            - legacy-unit-tests-saucelabs
-      # Temporarily disabled components-repo-unit-tests to update rules_nodejs to 2.0.0. Breaking changes in
-      # rules_nodejs create a dependency sandwich between angular/angular & angular/components that are very
-      # difficult and time consuming to resolve and involve patching @angular/bazel in components repo such
-      # as https://github.com/angular/components/commit/9e7ba251207df77164d73d66620e619bcbc4d2ad. It is simpler to
-      # 1) land angular/angular upgrade to rule_nodejs 2.0.0 which has breaking changes
-      # 2) land angular/components upgrade to rules_nodejs 2.0.0 using the @angular/bazel builds snapshot
-      # 3) update angular/angular to the landed components commit and re-enable these tests
-      # - components-repo-unit-tests:
-      #     requires:
-      #       - build-npm-packages
-      - test_zonejs:
-          requires:
-            - setup
-      - test_win:
-          requires:
-            - setup
-      - test_ivy_aot_win:
-          requires:
-            - setup
 
-  monitoring:
-    jobs:
-      - setup
-      - aio_monitoring_stable:
+      - burn_rate:
           requires:
             - setup
-      - aio_monitoring_next:
-          requires:
-            - setup
-      - saucelabs_ivy:
-          # Testing saucelabs via Bazel currently taking longer than the legacy saucelabs job as it
-          # each karma_web_test target is provisioning and tearing down browsers which is adding
-          # a lot of overhead. Running once daily on master only to avoid wasting resources and
-          # slowing down CI for PRs.
-          # TODO: Run this job on all branches (including PRs) once karma_web_test targets can
-          # share provisioned browsers and we can remove the legacy saucelabs job.
-          requires:
-            - setup
-      - saucelabs_view_engine:
-          # Testing saucelabs via Bazel currently taking longer than the legacy saucelabs job as it
-          # each karma_web_test target is provisioning and tearing down browsers which is adding
-          # a lot of overhead. Running once daily on master only to avoid wasting resources and
-          # slowing down CI for PRs.
-          # TODO: Run this job on all branches (including PRs) once karma_web_test targets can
-          # share provisioned browsers and we can remove the legacy saucelabs job.
-          requires:
-            - setup
-    triggers:
-      - schedule:
-          <<: *only_on_master
-          # Runs monitoring jobs at 10:00AM every day.
-          cron: "0 10 * * *"
+          context:
+            - burn-rate
+#      - lint:
+#          requires:
+#            - setup
+#      - test:
+#          requires:
+#            - setup
+#      - test_ivy_aot:
+#          requires:
+#            - setup
+#      - build-npm-packages:
+#          requires:
+#            - setup
+#      - build-ivy-npm-packages:
+#          requires:
+#            - setup
+#      - legacy-unit-tests-saucelabs:
+#          requires:
+#            - setup
+#      - test_aio:
+#          requires:
+#            - setup
+#      - deploy_aio:
+#          requires:
+#            - test_aio
+#      - test_aio_local:
+#          requires:
+#            - build-npm-packages
+#      - test_aio_local:
+#          name: test_aio_local_viewengine
+#          viewengine: true
+#          requires:
+#            - build-npm-packages
+#      - test_aio_tools:
+#          requires:
+#            - build-npm-packages
+#      - test_docs_examples:
+#          requires:
+#            - build-npm-packages
+#      - test_docs_examples:
+#          name: test_docs_examples_viewengine
+#          viewengine: true
+#          requires:
+#            - build-npm-packages
+#      - aio_preview:
+#          # Only run on PR builds. (There can be no previews for non-PR builds.)
+#          <<: *only_on_pull_requests
+#          requires:
+#            - setup
+#      - test_aio_preview:
+#          requires:
+#            - aio_preview
+#      - publish_packages_as_artifacts:
+#          requires:
+#            - build-npm-packages
+#      - publish_snapshot:
+#          # Note: no filters on this job because we want it to run for all upstream branches
+#          # We'd really like to filter out pull requests here, but not yet available:
+#          # https://discuss.circleci.com/t/workflows-pull-request-filter/14396/4
+#          # Instead, the job just exits immediately at the first step.
+#          requires:
+#            # Only publish if tests and integration tests pass
+#            - test
+#            - test_ivy_aot
+#            # Only publish if `aio`/`docs` tests using the locally built Angular packages pass
+#            - test_aio_local
+#            - test_aio_local_viewengine
+#            - test_docs_examples
+#            - test_docs_examples_viewengine
+#            # Get the artifacts to publish from the build-packages-dist job
+#            # since the publishing script expects the legacy outputs layout.
+#            - build-npm-packages
+#            - build-ivy-npm-packages
+#            - legacy-unit-tests-saucelabs
+#      # Temporarily disabled components-repo-unit-tests to update rules_nodejs to 2.0.0. Breaking changes in
+#      # rules_nodejs create a dependency sandwich between angular/angular & angular/components that are very
+#      # difficult and time consuming to resolve and involve patching @angular/bazel in components repo such
+#      # as https://github.com/angular/components/commit/9e7ba251207df77164d73d66620e619bcbc4d2ad. It is simpler to
+#      # 1) land angular/angular upgrade to rule_nodejs 2.0.0 which has breaking changes
+#      # 2) land angular/components upgrade to rules_nodejs 2.0.0 using the @angular/bazel builds snapshot
+#      # 3) update angular/angular to the landed components commit and re-enable these tests
+#      # - components-repo-unit-tests:
+#      #     requires:
+#      #       - build-npm-packages
+#      - test_zonejs:
+#          requires:
+#            - setup
+#      - test_win:
+#          requires:
+#            - setup
+#      - test_ivy_aot_win:
+#          requires:
+#            - setup
+#
+#  monitoring:
+#    jobs:
+#      - setup
+#      - burn_rate:
+#          requires:
+#            - setup
+#          context:
+#            - burn-rate
+#      - aio_monitoring_stable:
+#          requires:
+#            - setup
+#      - aio_monitoring_next:
+#          requires:
+#            - setup
+#      - saucelabs_ivy:
+#          # Testing saucelabs via Bazel currently taking longer than the legacy saucelabs job as it
+#          # each karma_web_test target is provisioning and tearing down browsers which is adding
+#          # a lot of overhead. Running once daily on master only to avoid wasting resources and
+#          # slowing down CI for PRs.
+#          # TODO: Run this job on all branches (including PRs) once karma_web_test targets can
+#          # share provisioned browsers and we can remove the legacy saucelabs job.
+#          requires:
+#            - setup
+#      - saucelabs_view_engine:
+#          # Testing saucelabs via Bazel currently taking longer than the legacy saucelabs job as it
+#          # each karma_web_test target is provisioning and tearing down browsers which is adding
+#          # a lot of overhead. Running once daily on master only to avoid wasting resources and
+#          # slowing down CI for PRs.
+#          # TODO: Run this job on all branches (including PRs) once karma_web_test targets can
+#          # share provisioned browsers and we can remove the legacy saucelabs job.
+#          requires:
+#            - setup
+#    triggers:
+#      - schedule:
+#          <<: *only_on_master
+#          # Runs monitoring jobs at 10:00AM every day.
+#          cron: "0 10 * * *"
+#
