@@ -21,6 +21,7 @@ export const green: typeof chalk = chalk.green;
 export const yellow: typeof chalk = chalk.yellow;
 export const bold: typeof chalk = chalk.bold;
 export const blue: typeof chalk = chalk.blue;
+export const reset: typeof chalk = chalk.reset;
 
 /** Prompts the user with a confirmation question and a specified message. */
 export async function promptConfirm(message: string, defaultValue = false): Promise<boolean> {

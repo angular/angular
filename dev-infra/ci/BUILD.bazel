@@ -1,0 +1,45 @@
+load("@npm//@bazel/typescript:index.bzl", "ts_library")
+load("//tools:defaults.bzl", "jasmine_node_test")
+
+ts_library(
+    name = "ci",
+    srcs = glob(
+        ["**/*.ts"],
+        exclude = ["**/*.spec.ts"],
+    ),
+    module_name = "@angular/dev-infra-private/ci",
+    visibility = ["//dev-infra:__subpackages__"],
+    deps = [
+        "//dev-infra/utils",
+        "@npm//@types/node",
+        "@npm//@types/node-fetch",
+        "@npm//@types/yargs",
+        "@npm//node-fetch",
+        "@npm//yargs",
+    ],
+)
+
+ts_library(
+    name = "test_lib",
+    testonly = True,
+    srcs = glob(["**/*.spec.ts"]),
+    deps = [
+        ":ci",
+        "//dev-infra/utils",
+        "//dev-infra/utils/testing",
+        "@npm//@types/jasmine",
+        "@npm//@types/node",
+        "@npm//@types/node-fetch",
+        "@npm//@types/semver",
+        "@npm//node-fetch",
+        "@npm//semver",
+    ],
+)
+
+jasmine_node_test(
+    name = "test",
+    bootstrap = ["//tools/testing:node_no_angular_es5"],
+    deps = [
+        ":test_lib",
+    ],
+)
