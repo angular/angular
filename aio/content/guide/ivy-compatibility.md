@@ -2,18 +2,15 @@
 
 The Angular team has worked hard to ensure Ivy is as backwards-compatible with the previous rendering engine ("View Engine") as possible.
 However, in rare cases, minor changes were necessary to ensure that the Angular's behavior was predictable and consistent, correcting issues in the View Engine implementation.
-In order to smooth the transition, we have provided [automated migrations](guide/updating-to-version-10#migrations) wherever possible so your application and library code is migrated automatically by the CLI.
+In order to smooth the transition, we have provided automated migrations wherever possible so your application and library code is migrated automatically by the CLI.
 That said, some applications will likely need to apply some manual updates.
 
 {@a debugging}
 ## How to debug errors with Ivy
 
-In version 10, [a few deprecated APIs have been removed](guide/updating-to-version-10#removals) and there are a [few breaking changes](guide/updating-to-version-10#breaking-changes) unrelated to Ivy.
-If you're seeing errors after updating to version 9, you'll first want to rule those changes out.
+If you're seeing errors, first temporarily [turn off Ivy](guide/ivy#opting-out-of-angular-ivy) in your `tsconfig.json` and re-start your app.
 
-To do so, temporarily [turn off Ivy](guide/ivy#opting-out-of-angular-ivy) in your `tsconfig.json` and re-start your app.
-
-If you're still seeing the errors, they are not specific to Ivy. In this case, you may want to consult the [general version 10 guide](guide/updating-to-version-10). If you've opted into any of the new, stricter type-checking settings, you may also want to check out the [template type-checking guide](guide/template-typecheck).
+If you're still seeing the errors, they are not specific to Ivy. In this case, you may want to consult the [general update guide](guide/updating-to-version-11). If you've opted into any of the new, stricter type-checking settings, you may also want to check out the [template type-checking guide](guide/template-typecheck).
 
 If the errors are gone, switch back to Ivy by removing the changes to the `tsconfig.json` and review the list of expected changes below.
 
