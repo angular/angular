@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {FocusMonitor} from '@angular/cdk/a11y';
+import {FocusMonitor, FocusOrigin} from '@angular/cdk/a11y';
 import {
   BooleanInput,
   coerceBooleanProperty,
@@ -516,8 +516,12 @@ export abstract class _MatRadioButtonBase extends _MatRadioButtonMixinBase imple
   }
 
   /** Focuses the radio button. */
-  focus(options?: FocusOptions): void {
-    this._focusMonitor.focusVia(this._inputElement, 'keyboard', options);
+  focus(options?: FocusOptions, origin?: FocusOrigin): void {
+    if (origin) {
+      this._focusMonitor.focusVia(this._inputElement, origin, options);
+    } else {
+      this._inputElement.nativeElement.focus(options);
+    }
   }
 
   /**

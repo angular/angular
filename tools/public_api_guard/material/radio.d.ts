@@ -28,7 +28,7 @@ export declare abstract class _MatRadioButtonBase extends _MatRadioButtonMixinBa
     _onInputChange(event: Event): void;
     _onInputClick(event: Event): void;
     protected _setDisabled(value: boolean): void;
-    focus(options?: FocusOptions): void;
+    focus(options?: FocusOptions, origin?: FocusOrigin): void;
     ngAfterViewInit(): void;
     ngOnDestroy(): void;
     ngOnInit(): void;
