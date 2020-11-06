@@ -43,7 +43,8 @@ const angularFolder = new CachedFolder(loadAngularFolder);
 const rxjsFolder = new CachedFolder(() => loadFolder(resolveNpmTreeArtifact('rxjs')));
 
 export function loadStandardTestFiles(
-    {fakeCore = true, rxjs = false}: {fakeCore?: boolean, rxjs?: boolean} = {}): Folder {
+    {fakeCore = true, fakeCommon = false, rxjs = false}:
+        {fakeCore?: boolean, fakeCommon?: boolean, rxjs?: boolean} = {}): Folder {
   const tmpFs = new MockFileSystemPosix(true);
   const basePath = '/' as AbsoluteFsPath;
 
@@ -55,6 +56,10 @@ export function loadStandardTestFiles(
     loadFakeCore(tmpFs, basePath);
   } else {
     tmpFs.mount(tmpFs.resolve('/node_modules/@angular'), angularFolder.get());
+  }
+
+  if (fakeCommon) {
+    loadFakeCommon(tmpFs, basePath);
   }
 
   if (rxjs) {
@@ -76,6 +81,15 @@ export function loadFakeCore(fs: FileSystem, basePath: string = '/') {
           'angular/packages/compiler-cli/src/ngtsc/testing/fake_core/npm_package'),
       fs.resolve(basePath, 'node_modules/@angular/core'));
 }
+
+export function loadFakeCommon(fs: FileSystem, basePath: string = '/') {
+  loadTestDirectory(
+      fs,
+      resolveNpmTreeArtifact(
+          'angular/packages/compiler-cli/src/ngtsc/testing/fake_common/npm_package'),
+      fs.resolve(basePath, 'node_modules/@angular/common'));
+}
+
 
 function loadFolder(path: string): Folder {
   const tmpFs = new MockFileSystemPosix(true);
