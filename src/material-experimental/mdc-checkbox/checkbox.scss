@@ -9,6 +9,10 @@
 @include mdc-form-field-core-styles($query: $mat-base-styles-query);
 
 .mat-mdc-checkbox {
+  // The host node defaults to `diplay: inline` so
+  // we have to change it in order for margins to work.
+  display: inline-block;
+
   // The MDC checkbox styles related to the hover state are intertwined with the MDC ripple styles.
   // We currently don't use the MDC ripple due to size concerns, therefore we need to add some
   // additional styles to restore the hover state.

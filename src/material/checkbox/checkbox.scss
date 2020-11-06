@@ -177,6 +177,10 @@ $_mat-checkbox-mark-stroke-size: 2 / 15 * $mat-checkbox-size !default;
 .mat-checkbox {
   @include mat-private-animation-noop();
 
+  // The host node defaults to `diplay: inline` so
+  // we have to change it in order for margins to work.
+  display: inline-block;
+
   // Animation
   transition: background $swift-ease-out-duration $swift-ease-out-timing-function,
               mat-elevation-transition-property-value();
