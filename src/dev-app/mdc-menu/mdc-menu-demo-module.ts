@@ -13,7 +13,7 @@ import {RouterModule} from '@angular/router';
 import {MatToolbarModule} from '@angular/material/toolbar';
 import {MatIconModule} from '@angular/material/icon';
 import {MatDividerModule} from '@angular/material/divider';
-import {MatButtonModule} from '@angular/material/button';
+import {MatButtonModule} from '@angular/material-experimental/mdc-button';
 import {MdcMenuDemo} from './mdc-menu-demo';
 
 @NgModule({

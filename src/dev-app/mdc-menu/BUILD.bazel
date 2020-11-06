@@ -10,8 +10,8 @@ ng_module(
         ":mdc_menu_demo_scss",
     ],
     deps = [
+        "//src/material-experimental/mdc-button",
         "//src/material-experimental/mdc-menu",
-        "//src/material/button",
         "//src/material/divider",
         "//src/material/icon",
         "//src/material/toolbar",

@@ -7,7 +7,7 @@
  */
 
 import {Component} from '@angular/core';
-import {ThemePalette} from '@angular/material/core';
+import {ThemePalette} from '@angular/material-experimental/mdc-core';
 
 @Component({
   selector: 'mdc-progress-bar-demo',

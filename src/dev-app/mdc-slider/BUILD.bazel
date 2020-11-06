@@ -10,7 +10,7 @@ ng_module(
     ],
     deps = [
         "//src/material-experimental/mdc-slider",
-        "//src/material/tabs",
+        "//src/material-experimental/mdc-tabs",
         "@npm//@angular/forms",
         "@npm//@angular/router",
     ],

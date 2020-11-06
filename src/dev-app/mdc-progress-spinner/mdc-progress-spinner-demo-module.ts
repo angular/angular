@@ -10,8 +10,8 @@ import {NgModule} from '@angular/core';
 import {MatProgressSpinnerModule} from '@angular/material-experimental/mdc-progress-spinner';
 import {RouterModule} from '@angular/router';
 import {MdcProgressSpinnerDemo} from './mdc-progress-spinner-demo';
-import {MatButtonModule} from '@angular/material/button';
-import {MatCheckboxModule} from '@angular/material/checkbox';
+import {MatButtonModule} from '@angular/material-experimental/mdc-button';
+import {MatCheckboxModule} from '@angular/material-experimental/mdc-checkbox';
 import {MatButtonToggleModule} from '@angular/material/button-toggle';
 import {FormsModule} from '@angular/forms';
 

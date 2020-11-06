@@ -12,7 +12,7 @@ import {
   FloatLabelType,
   MatFormFieldAppearance
 } from '@angular/material-experimental/mdc-form-field';
-import {ErrorStateMatcher, ThemePalette} from '@angular/material/core';
+import {ErrorStateMatcher, ThemePalette} from '@angular/material-experimental/mdc-core';
 
 let max = 5;
 
