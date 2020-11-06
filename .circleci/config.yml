@@ -220,7 +220,7 @@ jobs:
               git config user.name "angular-ci"
               git config user.email "angular-ci"
               # Rebase PR on top of target branch.
-              node tools/rebase-pr.js
+              node .circleci/rebase-pr.js
             else
               echo "This build is not over a PR, nothing to do."
             fi
