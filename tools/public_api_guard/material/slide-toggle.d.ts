@@ -31,7 +31,7 @@ export declare class MatSlideToggle extends _MatSlideToggleMixinBase implements 
     _onChangeEvent(event: Event): void;
     _onInputClick(event: Event): void;
     _onLabelTextChange(): void;
-    focus(options?: FocusOptions): void;
+    focus(options?: FocusOptions, origin?: FocusOrigin): void;
     ngAfterContentInit(): void;
     ngOnDestroy(): void;
     registerOnChange(fn: any): void;

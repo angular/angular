@@ -1,6 +1,6 @@
 import {MutationObserverFactory} from '@angular/cdk/observers';
 import {dispatchFakeEvent} from '@angular/cdk/testing/private';
-import {Component} from '@angular/core';
+import {Component, DebugElement} from '@angular/core';
 import {
   ComponentFixture,
   fakeAsync,
@@ -731,6 +731,7 @@ describe('MatSlideToggle with forms', () => {
     let fixture: ComponentFixture<SlideToggleWithFormControl>;
 
     let testComponent: SlideToggleWithFormControl;
+    let slideToggleDebug: DebugElement;
     let slideToggle: MatSlideToggle;
     let inputElement: HTMLInputElement;
 
@@ -738,8 +739,10 @@ describe('MatSlideToggle with forms', () => {
       fixture = TestBed.createComponent(SlideToggleWithFormControl);
       fixture.detectChanges();
 
+      slideToggleDebug = fixture.debugElement.query(By.directive(MatSlideToggle))!;
+
       testComponent = fixture.debugElement.componentInstance;
-      slideToggle = fixture.debugElement.query(By.directive(MatSlideToggle))!.componentInstance;
+      slideToggle = slideToggleDebug.componentInstance;
       inputElement = fixture.debugElement.query(By.css('input'))!.nativeElement;
     });
 
@@ -758,6 +761,15 @@ describe('MatSlideToggle with forms', () => {
 
       expect(slideToggle.disabled).toBe(false);
       expect(inputElement.disabled).toBe(false);
+    });
+
+    it('should not change focus origin if origin not specified', () => {
+      slideToggle.focus(undefined, 'mouse');
+      slideToggle.focus();
+      fixture.detectChanges();
+
+      expect(slideToggleDebug.nativeElement.classList).toContain('cdk-focused');
+      expect(slideToggleDebug.nativeElement.classList).toContain('cdk-mouse-focused');
     });
   });
 

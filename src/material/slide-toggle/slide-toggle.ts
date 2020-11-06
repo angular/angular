@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {FocusMonitor} from '@angular/cdk/a11y';
+import {FocusMonitor, FocusOrigin} from '@angular/cdk/a11y';
 import {BooleanInput, coerceBooleanProperty, NumberInput} from '@angular/cdk/coercion';
 import {
   AfterContentInit,
@@ -253,8 +253,12 @@ export class MatSlideToggle extends _MatSlideToggleMixinBase implements OnDestro
   }
 
   /** Focuses the slide-toggle. */
-  focus(options?: FocusOptions): void {
-    this._focusMonitor.focusVia(this._inputElement, 'keyboard', options);
+  focus(options?: FocusOptions, origin?: FocusOrigin): void {
+    if (origin) {
+      this._focusMonitor.focusVia(this._inputElement, origin, options);
+    } else {
+      this._inputElement.nativeElement.focus(options);
+    }
   }
 
   /** Toggles the checked state of the slide-toggle. */
