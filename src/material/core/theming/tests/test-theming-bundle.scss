@@ -22,6 +22,6 @@ $theme: mat-light-theme((
 @include angular-material-theme($theme);
 @include angular-material-typography();
 @include angular-material-color($theme);
-@include _angular-material-density($theme);
+@include angular-material-density($theme);
 @include mat-core-theme($theme);
 @include mat-button-theme($theme);

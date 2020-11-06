@@ -1,6 +1,6 @@
-@import '../core/style/elevation';
+@import '../core/style/private';
 @import '../core/theming/theming';
-@import '../core/theming/check-duplicate-styles';
+@import '../core/theming/private';
 
 @mixin mat-autocomplete-color($config-or-theme) {
   $config: mat-get-color-config($config-or-theme);
@@ -8,7 +8,7 @@
   $background: map-get($config, background);
 
   .mat-autocomplete-panel {
-    @include _mat-theme-overridable-elevation(4, $config);
+    @include mat-private-theme-overridable-elevation(4, $config);
     background: mat-color($background, card);
     color: mat-color($foreground, text);
 
@@ -32,8 +32,8 @@
 @mixin _mat-autocomplete-density($config-or-theme) {}
 
 @mixin mat-autocomplete-theme($theme-or-color-config) {
-  $theme: _mat-legacy-get-theme($theme-or-color-config);
-  @include _mat-check-duplicate-theme-styles($theme, 'mat-autocomplete') {
+  $theme: mat-private-legacy-get-theme($theme-or-color-config);
+  @include mat-private-check-duplicate-theme-styles($theme, 'mat-autocomplete') {
     $color: mat-get-color-config($theme);
     $density: mat-get-density-config($theme);
     $typography: mat-get-typography-config($theme);

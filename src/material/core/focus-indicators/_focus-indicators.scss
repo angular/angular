@@ -1,5 +1,5 @@
 @import '../theming/theming';
-@import '../theming/check-duplicate-styles';
+@import '../theming/private';
 @import '../style/layout-common';
 
 /// Mixin that turns on strong focus indicators.
@@ -111,8 +111,8 @@
     @include _mat-strong-focus-indicators-border-color($theme-or-color);
   }
   @else {
-    $theme: _mat-legacy-get-theme($theme-or-color);
-    @include _mat-check-duplicate-theme-styles($theme, 'mat-strong-focus-indicators') {
+    $theme: mat-private-legacy-get-theme($theme-or-color);
+    @include mat-private-check-duplicate-theme-styles($theme, 'mat-strong-focus-indicators') {
       $color: mat-get-color-config($theme);
       @if $color != null {
         @include mat-strong-focus-indicators-color($color);

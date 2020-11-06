@@ -1,8 +1,8 @@
-@import '../core/density/index';
+@import '../core/density/private';
 @import '../core/theming/palette';
 @import '../core/theming/theming';
-@import '../core/theming/check-duplicate-styles';
-@import '../core/style/elevation';
+@import '../core/theming/private';
+@import '../core/style/private';
 @import '../core/typography/typography-utils';
 @import './expansion-variables';
 
@@ -12,7 +12,7 @@
   $foreground: map-get($config, foreground);
 
   .mat-expansion-panel {
-    @include _mat-theme-overridable-elevation(2, $config);
+    @include mat-private-theme-overridable-elevation(2, $config);
     background: mat-color($background, card);
     color: mat-color($foreground, text);
   }
@@ -76,12 +76,12 @@
 
 @mixin mat-expansion-panel-density($config-or-theme) {
   $density-scale: mat-get-density-config($config-or-theme);
-  $expanded-height: _mat-density-prop-value(
+  $expanded-height: mat-private-density-prop-value(
         $mat-expansion-panel-header-density-config, $density-scale, expanded-height);
-  $collapsed-height: _mat-density-prop-value(
+  $collapsed-height: mat-private-density-prop-value(
       $mat-expansion-panel-header-density-config, $density-scale, collapsed-height);
 
-  @include _mat-density-legacy-compatibility() {
+  @include mat-private-density-legacy-compatibility() {
     .mat-expansion-panel-header {
       height: $collapsed-height;
 
@@ -93,8 +93,8 @@
 }
 
 @mixin mat-expansion-panel-theme($theme-or-color-config) {
-  $theme: _mat-legacy-get-theme($theme-or-color-config);
-  @include _mat-check-duplicate-theme-styles($theme, 'mat-expansion-panel') {
+  $theme: mat-private-legacy-get-theme($theme-or-color-config);
+  @include mat-private-check-duplicate-theme-styles($theme, 'mat-expansion-panel') {
     $color: mat-get-color-config($theme);
     $density: mat-get-density-config($theme);
     $typography: mat-get-typography-config($theme);

@@ -2,6 +2,6 @@
 // the `@angular/material` theming Sass bundle. See `//src/material:theming_bundle`.
 
 @import './core/color/all-color';
-@import './core/density/all-density';
+@import './core/density/private';
 @import './core/theming/all-theme';
 @import './core/typography/all-typography';

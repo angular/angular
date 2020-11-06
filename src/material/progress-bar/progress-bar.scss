@@ -1,6 +1,6 @@
 @import '../core/style/variables';
 @import '../core/style/vendor-prefixes';
-@import '../core/style/noop-animation';
+@import '../core/style/private';
 @import '../../cdk/a11y/a11y';
 
 $mat-progress-bar-height: 4px !default;
@@ -9,7 +9,7 @@ $mat-progress-bar-piece-animation-duration: 250ms !default;
 
 
 .mat-progress-bar {
-  @include _noop-animation();
+  @include mat-private-animation-noop();
   display: block;
   // Height is provided for mat-progress-bar to act as a default.
   height: $mat-progress-bar-height;

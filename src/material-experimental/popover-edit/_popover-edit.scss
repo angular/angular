@@ -1,6 +1,6 @@
 @import '../../cdk/a11y/a11y';
 @import '../../material/core/style/variables';
-@import '../../material/core/style/elevation';
+@import '../../material/core/style/private';
 @import '../../material/core/theming/palette';
 @import '../../material/core/theming/theming';
 @import '../../material/core/typography/typography-utils';
@@ -76,7 +76,7 @@
   }
 
   .mat-edit-pane {
-    @include _mat-theme-elevation(2, $config);
+    @include mat-private-theme-elevation(2, $config);
     background: $background-color;
     color: mat-color($foreground, text);
     display: block;
@@ -153,8 +153,8 @@
 @mixin mat-popover-edit-density($config-or-theme) {}
 
 @mixin mat-popover-edit-theme($theme-or-color-config) {
-  $theme: _mat-legacy-get-theme($theme-or-color-config);
-  @include _mat-check-duplicate-theme-styles($theme, 'mat-popover-edit') {
+  $theme: mat-private-legacy-get-theme($theme-or-color-config);
+  @include mat-private-check-duplicate-theme-styles($theme, 'mat-popover-edit') {
     $color: mat-get-color-config($theme);
     $density: mat-get-density-config($theme);
     $typography: mat-get-typography-config($theme);

@@ -1,10 +1,10 @@
 @import '../../cdk/a11y/a11y';
-@import '../core/style/elevation';
+@import '../core/style/private';
 @import '../core/theming/palette';
 @import '../core/theming/theming';
-@import '../core/theming/check-duplicate-styles';
+@import '../core/theming/private';
 @import '../core/typography/typography-utils';
-@import '../core/density/index';
+@import '../core/density/private';
 @import './button-toggle-variables';
 
 @mixin mat-button-toggle-color($config-or-theme) {
@@ -15,7 +15,7 @@
 
   .mat-button-toggle-standalone,
   .mat-button-toggle-group {
-    @include _mat-theme-elevation(2, $config);
+    @include mat-private-theme-elevation(2, $config);
   }
 
   .mat-button-toggle-standalone.mat-button-toggle-appearance-standard,
@@ -94,10 +94,10 @@
 
 @mixin _mat-button-toggle-density($config-or-theme) {
   $density-scale: mat-get-density-config($config-or-theme);
-  $standard-height: _mat-density-prop-value(
+  $standard-height: mat-private-density-prop-value(
       $mat-button-toggle-standard-density-config, $density-scale, height);
 
-  @include _mat-density-legacy-compatibility() {
+  @include mat-private-density-legacy-compatibility() {
     .mat-button-toggle-appearance-standard .mat-button-toggle-label-content {
       line-height: $standard-height;
     }
@@ -105,8 +105,8 @@
 }
 
 @mixin mat-button-toggle-theme($theme-or-color-config) {
-  $theme: _mat-legacy-get-theme($theme-or-color-config);
-  @include _mat-check-duplicate-theme-styles($theme, 'mat-button-toggle') {
+  $theme: mat-private-legacy-get-theme($theme-or-color-config);
+  @include mat-private-check-duplicate-theme-styles($theme, 'mat-button-toggle') {
     $color: mat-get-color-config($theme);
     $density: mat-get-density-config($theme);
     $typography: mat-get-typography-config($theme);

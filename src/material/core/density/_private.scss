@@ -1,3 +1,8 @@
+@import '../theming/private';
+
+// Note that this file is called `private`, because the APIs in it aren't public yet.
+// Once they're made available, the code should be moved out into an `index.scss`.
+
 // Taken from mat-density with small modifications to not rely on the new Sass module
 // system, and to support arbitrary properties in a density configuration.
 // https://github.com/material-components/material-components-web/blob/master/packages/mdc-density
@@ -10,15 +15,15 @@ $_mat-density-default-scale: 0 !default;
 
 // Whether density should be generated at root. This will be temporarily set to `true`
 // whenever density styles for legacy themes are generated.
-$_mat-density-generate-at-root: false;
+$mat-private-density-generate-at-root: false;
 // Whether density styles should be generated. This will be temporarily set to `false` if
 // duplicate density styles for a legacy theme would be generated. For legacy themes,
 // we always generate the default density **only once** at root.
-$_mat-density-generate-styles: true;
+$mat-private-density-generate-styles: true;
 
 // Mixin that can be used to wrap density styles of given components. The mixin will
-// move the density styles to root if the `$_mat-density-generate-at-root` global variable
-// is set. If `$_mat-density-generate-styles` is set to `false`, generation of density
+// move the density styles to root if the `$mat-private-density-generate-at-root` global variable
+// is set. If `$mat-private-density-generate-styles` is set to `false`, generation of density
 // styles wrapped in this mixin is skipped. This mixin exists to improve backwards compatibility
 // of the new theming API where density styles are included as part of themes. Previously,
 // density styles of components were part of their base styles. With the new API, they are
@@ -28,18 +33,18 @@ $_mat-density-generate-styles: true;
 // density styles. This is breaking as it increases specificity of density styles. This mixin
 // provides an API to control generation of density styles so that we can ensure they are only
 // created *once* and at root.
-@mixin _mat-density-legacy-compatibility() {
-  @if $_mat-density-generate-styles and $_mat-density-generate-at-root {
+@mixin mat-private-density-legacy-compatibility() {
+  @if $mat-private-density-generate-styles and $mat-private-density-generate-at-root {
     @at-root {
       @content;
     }
   }
-  @else if $_mat-density-generate-styles {
+  @else if $mat-private-density-generate-styles {
     @content;
   }
 }
 
-@function _mat-density-prop-value($density-config, $density-scale, $property-name) {
+@function mat-private-density-prop-value($density-config, $density-scale, $property-name) {
   @if (type-of($density-scale) == 'string' and
       index($list: $_mat-density-supported-scales, $value: $density-scale) == null) {
     @error 'mat-density: Supported density scales #{$_mat-density-supported-scales}, '  +
@@ -65,4 +70,23 @@ $_mat-density-generate-styles: true;
   }
 
   @return $value;
+}
+
+
+// Includes all of the density styles.
+@mixin angular-material-density($config-or-theme) {
+  // In case a theme object has been passed instead of a configuration for
+  // the density system, extract the density config from the theme object.
+  $config: if(mat-private-is-theme-object($config-or-theme),
+      mat-get-density-config($config-or-theme), $config-or-theme);
+
+  @if $config == null {
+    @error 'No density configuration specified.';
+  }
+
+  @include angular-material-theme((
+    color: null,
+    typography: null,
+    density: $config,
+  ));
 }

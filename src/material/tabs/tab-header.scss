@@ -1,4 +1,4 @@
-@import '../core/style/noop-animation';
+@import '../core/style/private';
 @import './tabs-common';
 
 @include paginated-tab-header;
@@ -16,7 +16,7 @@
 }
 
 .mat-tab-list {
-  @include _noop-animation();
+  @include mat-private-animation-noop();
 }
 
 // Wraps each tab label

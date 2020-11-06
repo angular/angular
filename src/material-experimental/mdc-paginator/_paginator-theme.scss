@@ -1,6 +1,6 @@
 @import '@material/theme/variables.import';
 @import '@material/typography/variables.import';
-@import '../../material/core/theming/check-duplicate-styles';
+@import '../../material/core/theming/private';
 @import './paginator-variables';
 
 @mixin mat-mdc-paginator-color($config-or-theme) {
@@ -55,9 +55,9 @@
 
 @mixin mat-mdc-paginator-density($config-or-theme) {
   $density-scale: mat-get-density-config($config-or-theme);
-  $height: _mat-density-prop-value($mat-paginator-density-config, $density-scale, height);
+  $height: mat-private-density-prop-value($mat-paginator-density-config, $density-scale, height);
 
-  @include _mat-density-legacy-compatibility() {
+  @include mat-private-density-legacy-compatibility() {
     .mat-mdc-paginator-container {
       min-height: $height;
     }
@@ -65,8 +65,8 @@
 }
 
 @mixin mat-mdc-paginator-theme($theme-or-color-config) {
-  $theme: _mat-legacy-get-theme($theme-or-color-config);
-  @include _mat-check-duplicate-theme-styles($theme, 'mat-mdc-paginator') {
+  $theme: mat-private-legacy-get-theme($theme-or-color-config);
+  @include mat-private-check-duplicate-theme-styles($theme, 'mat-mdc-paginator') {
     $color: mat-get-color-config($theme);
     $density: mat-get-density-config($theme);
     $typography: mat-get-typography-config($theme);

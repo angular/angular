@@ -19,10 +19,11 @@
 @import '../mdc-input/input-theme';
 @import '../mdc-form-field/form-field-theme';
 @import '../../material/core/core';
-@import '../../material/core/theming/check-duplicate-styles';
+@import '../../material/core/theming/private';
 
 @mixin angular-material-mdc-theme($theme-or-color-config) {
-  @include _mat-check-duplicate-theme-styles($theme-or-color-config, 'angular-material-mdc-theme') {
+  $dedupe-key: 'angular-material-mdc-theme';
+  @include mat-private-check-duplicate-theme-styles($theme-or-color-config, $dedupe-key) {
     @include mat-mdc-core-theme($theme-or-color-config);
     @include mat-mdc-autocomplete-theme($theme-or-color-config);
     @include mat-mdc-button-theme($theme-or-color-config);

@@ -1,6 +1,6 @@
 @import '../core/theming/palette';
 @import '../core/theming/theming';
-@import '../core/theming/check-duplicate-styles';
+@import '../core/theming/private';
 
 @mixin mat-divider-color($config-or-theme) {
   $config: mat-get-color-config($config-or-theme);
@@ -20,8 +20,8 @@
 @mixin _mat-divider-density($config-or-theme) {}
 
 @mixin mat-divider-theme($theme-or-color-config) {
-  $theme: _mat-legacy-get-theme($theme-or-color-config);
-  @include _mat-check-duplicate-theme-styles($theme, 'mat-divider') {
+  $theme: mat-private-legacy-get-theme($theme-or-color-config);
+  @include mat-private-check-duplicate-theme-styles($theme, 'mat-divider') {
     $color: mat-get-color-config($theme);
     $density: mat-get-density-config($theme);
     $typography: mat-get-typography-config($theme);

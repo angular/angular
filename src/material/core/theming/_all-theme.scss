@@ -34,11 +34,12 @@
 @import '../../tree/tree-theme';
 @import '../../snack-bar/snack-bar-theme';
 @import '../../form-field/form-field-theme';
-@import './check-duplicate-styles';
+@import './private';
 
 // Create a theme.
 @mixin angular-material-theme($theme-or-color-config) {
-  @include _mat-check-duplicate-theme-styles($theme-or-color-config, 'angular-material-theme') {
+  $dedupe-key: 'angular-material-theme';
+  @include mat-private-check-duplicate-theme-styles($theme-or-color-config, $dedupe-key) {
     @include mat-core-theme($theme-or-color-config);
     @include mat-autocomplete-theme($theme-or-color-config);
     @include mat-badge-theme($theme-or-color-config);

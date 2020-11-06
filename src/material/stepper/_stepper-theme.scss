@@ -1,8 +1,8 @@
 @import '../core/theming/palette';
 @import '../core/theming/theming';
-@import '../core/theming/check-duplicate-styles';
+@import '../core/theming/private';
 @import '../core/typography/typography-utils';
-@import '../core/density/index';
+@import '../core/density/private';
 @import './stepper-variables';
 
 @mixin mat-stepper-color($config-or-theme) {
@@ -136,10 +136,10 @@
 
 @mixin mat-stepper-density($config-or-theme) {
   $density-scale: mat-get-density-config($config-or-theme);
-  $height: _mat-density-prop-value($mat-stepper-density-config, $density-scale, height);
+  $height: mat-private-density-prop-value($mat-stepper-density-config, $density-scale, height);
   $vertical-padding: ($height - $mat-stepper-label-header-height) / 2;
 
-  @include _mat-density-legacy-compatibility() {
+  @include mat-private-density-legacy-compatibility() {
     .mat-horizontal-stepper-header {
       height: $height;
     }
@@ -171,8 +171,8 @@
 }
 
 @mixin mat-stepper-theme($theme-or-color-config) {
-  $theme: _mat-legacy-get-theme($theme-or-color-config);
-  @include _mat-check-duplicate-theme-styles($theme, 'mat-stepper') {
+  $theme: mat-private-legacy-get-theme($theme-or-color-config);
+  @include mat-private-check-duplicate-theme-styles($theme, 'mat-stepper') {
     $color: mat-get-color-config($theme);
     $density: mat-get-density-config($theme);
     $typography: mat-get-typography-config($theme);

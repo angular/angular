@@ -47,7 +47,7 @@ ALL_THEMING_FILES = [
     # on the `_all-typography` file.
     "_core.scss",
     "color/_all-color.scss",
-    "density/_all-density.scss",
+    "density/_private.scss",
     "theming/_all-theme.scss",
     "typography/_all-typography.scss",
 ]

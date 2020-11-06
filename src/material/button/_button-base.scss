@@ -1,7 +1,7 @@
 @import '../core/style/variables';
 @import '../core/style/elevation';
 @import '../core/style/button-common';
-@import '../core/style/noop-animation';
+@import '../core/style/private';
 
 
 // Flat and raised button standards
@@ -76,7 +76,7 @@ $mat-mini-fab-padding: 8px !default;
 // Applies styles to buttons with backgrounds: raised, fab, and mini-fab
 @mixin mat-raised-button {
   @include mat-button-base;
-  @include _noop-animation();
+  @include mat-private-animation-noop();
 
   // Force hardware acceleration.
   transform: translate3d(0, 0, 0);

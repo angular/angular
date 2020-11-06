@@ -4,7 +4,7 @@
 @import '../core/ripple/ripple';
 @import '../core/style/layout-common';
 @import '../core/style/vendor-prefixes';
-@import '../core/style/noop-animation';
+@import '../core/style/private';
 @import '../../cdk/a11y/a11y';
 
 // Manual calculation done on SVG
@@ -175,7 +175,7 @@ $_mat-checkbox-mark-stroke-size: 2 / 15 * $mat-checkbox-size !default;
 }
 
 .mat-checkbox {
-  @include _noop-animation();
+  @include mat-private-animation-noop();
 
   // Animation
   transition: background $swift-ease-out-duration $swift-ease-out-timing-function,

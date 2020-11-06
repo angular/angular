@@ -120,8 +120,8 @@
     @include _mat-mdc-strong-focus-indicators-border-color($theme-or-color);
   }
   @else {
-    $theme: _mat-legacy-get-theme($theme-or-color);
-    @include _mat-check-duplicate-theme-styles($theme, 'mat-mdc-strong-focus-indicators') {
+    $theme: mat-private-legacy-get-theme($theme-or-color);
+    @include mat-private-check-duplicate-theme-styles($theme, 'mat-mdc-strong-focus-indicators') {
       $color: mat-get-color-config($theme);
       @if $color != null {
         @include mat-mdc-strong-focus-indicators-color($color);

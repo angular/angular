@@ -12,7 +12,7 @@ describe('theming api', () => {
   // for legacy themes, or if they are properly scoped to a given selector.
   beforeAll(() => {
     knownDensitySelectors = new Map();
-    parse(transpile(`@include _angular-material-density(0);`)).each(node => {
+    parse(transpile(`@include angular-material-density(0);`)).each(node => {
       if (node.type === 'rule') {
         node.selectors.forEach(s => knownDensitySelectors.set(s, node));
       }
@@ -295,7 +295,7 @@ describe('theming api', () => {
              data: `
         @import '../_all-theme.scss';
         @import '../../color/_all-color.scss';
-        @import '../../density/_all-density.scss';
+        @import '../../density/_private.scss';
         @import '../../typography/_all-typography.scss';
         ${content}
       `,

@@ -1,7 +1,7 @@
 @import '../core/theming/theming';
-@import '../core/style/elevation';
+@import '../core/style/private';
 @import '../core/typography/typography-utils';
-@import '../core/theming/check-duplicate-styles';
+@import '../core/theming/private';
 
 $_mat-button-ripple-opacity: 0.1;
 
@@ -133,30 +133,30 @@ $_mat-button-ripple-opacity: 0.1;
   }
 
   .mat-stroked-button, .mat-flat-button {
-    @include _mat-theme-overridable-elevation(0, $config);
+    @include mat-private-theme-overridable-elevation(0, $config);
   }
 
   .mat-raised-button {
-    @include _mat-theme-overridable-elevation(2, $config);
+    @include mat-private-theme-overridable-elevation(2, $config);
 
     &:not(.mat-button-disabled):active {
-      @include _mat-theme-overridable-elevation(8, $config);
+      @include mat-private-theme-overridable-elevation(8, $config);
     }
 
     &.mat-button-disabled {
-      @include _mat-theme-overridable-elevation(0, $config);
+      @include mat-private-theme-overridable-elevation(0, $config);
     }
   }
 
   .mat-fab, .mat-mini-fab {
-    @include _mat-theme-overridable-elevation(6, $config);
+    @include mat-private-theme-overridable-elevation(6, $config);
 
     &:not(.mat-button-disabled):active {
-      @include _mat-theme-overridable-elevation(12, $config);
+      @include mat-private-theme-overridable-elevation(12, $config);
     }
 
     &.mat-button-disabled {
-      @include _mat-theme-overridable-elevation(0, $config);
+      @include mat-private-theme-overridable-elevation(0, $config);
     }
   }
 }
@@ -176,8 +176,8 @@ $_mat-button-ripple-opacity: 0.1;
 @mixin _mat-button-density($config-or-theme) {}
 
 @mixin mat-button-theme($theme-or-color-config) {
-  $theme: _mat-legacy-get-theme($theme-or-color-config);
-  @include _mat-check-duplicate-theme-styles($theme, 'mat-button') {
+  $theme: mat-private-legacy-get-theme($theme-or-color-config);
+  @include mat-private-check-duplicate-theme-styles($theme, 'mat-button') {
     $color: mat-get-color-config($theme);
     $density: mat-get-density-config($theme);
     $typography: mat-get-typography-config($theme);

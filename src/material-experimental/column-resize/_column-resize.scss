@@ -1,6 +1,6 @@
 @import '../../material/core/style/variables';
 @import '../../material/core/style/vendor-prefixes';
-@import '../../material/core/theming/check-duplicate-styles';
+@import '../../material/core/theming/private';
 @import '../../material/core/theming/palette';
 @import '../../material/core/theming/theming';
 
@@ -103,8 +103,8 @@
 @mixin mat-column-resize-density($config-or-theme) {}
 
 @mixin mat-column-resize-theme($theme-or-color-config) {
-  $theme: _mat-legacy-get-theme($theme-or-color-config);
-  @include _mat-check-duplicate-theme-styles($theme, 'mat-column-resize') {
+  $theme: mat-private-legacy-get-theme($theme-or-color-config);
+  @include mat-private-check-duplicate-theme-styles($theme, 'mat-column-resize') {
     $color: mat-get-color-config($theme);
     $density: mat-get-density-config($theme);
     $typography: mat-get-typography-config($theme);

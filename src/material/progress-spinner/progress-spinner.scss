@@ -1,5 +1,5 @@
 @import '../core/style/variables';
-@import '../core/style/noop-animation';
+@import '../core/style/private';
 @import '../../cdk/a11y/a11y';
 
 
@@ -28,7 +28,7 @@ $_mat-progress-spinner-default-circumference: $pi * $_mat-progress-spinner-defau
   }
 
   circle {
-    @include _noop-animation();
+    @include mat-private-animation-noop();
     fill: transparent;
     transform-origin: center;
     transition: stroke-dashoffset 225ms linear;
@@ -42,13 +42,13 @@ $_mat-progress-spinner-default-circumference: $pi * $_mat-progress-spinner-defau
 
   &.mat-progress-spinner-indeterminate-animation[mode='indeterminate'] {
     svg {
-      @include _noop-animation();
+      @include mat-private-animation-noop();
       animation: mat-progress-spinner-linear-rotate $swift-ease-in-out-duration * 4
           linear infinite;
     }
 
     circle {
-      @include _noop-animation();
+      @include mat-private-animation-noop();
       transition-property: stroke;
       // Note: we multiply the duration by 8, because the animation is spread out in 8 stages.
       animation-duration: $swift-ease-in-out-duration * 8;
@@ -59,7 +59,7 @@ $_mat-progress-spinner-default-circumference: $pi * $_mat-progress-spinner-defau
 
   &.mat-progress-spinner-indeterminate-fallback-animation[mode='indeterminate'] {
     svg {
-      @include _noop-animation();
+      @include mat-private-animation-noop();
       animation: mat-progress-spinner-stroke-rotate-fallback
                  $mat-progress-spinner-stroke-rotate-fallback-duration
                  $mat-progress-spinner-stroke-rotate-fallback-ease
@@ -67,7 +67,7 @@ $_mat-progress-spinner-default-circumference: $pi * $_mat-progress-spinner-defau
     }
 
     circle {
-      @include _noop-animation();
+      @include mat-private-animation-noop();
       transition-property: stroke;
     }
   }

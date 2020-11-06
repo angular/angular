@@ -6,7 +6,7 @@ const ruleName = 'material/theme-mixin-api';
 
 /** Regular expression that matches all theme mixins. */
 const themeMixinRegex =
-    /^(?:_(mat-.+)-(density)|(mat-.+)-(density|color|typography|theme))\((.*)\)$/;
+    /^(?:(mat-.+)-(density)|(mat-.+)-(density|color|typography|theme))\((.*)\)$/;
 
 /**
  * Stylelint plugin which ensures that theme mixins have a consistent API. Besides
@@ -62,9 +62,9 @@ const plugin = (isEnabled: boolean, _options: never, context: {fix: boolean}) =>
       }
 
       const themePropName = `$theme`;
-      const legacyColorExtractExpr = `_mat-legacy-get-theme($theme-or-color-config)`;
+      const legacyColorExtractExpr = `mat-private-legacy-get-theme($theme-or-color-config)`;
       const duplicateStylesCheckExpr =
-          `_mat-check-duplicate-theme-styles(${themePropName}, '${componentName}')`;
+          `mat-private-check-duplicate-theme-styles(${themePropName}, '${componentName}')`;
 
       let legacyConfigDecl: Declaration|null = null;
       let duplicateStylesCheck: AtRule|null = null;

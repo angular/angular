@@ -1,7 +1,7 @@
 @import '@material/tab/mixins.import';
 @import '@material/ripple/variables.import';
 @import '../../material/core/style/variables';
-@import '../../material/core/style/noop-animation';
+@import '../../material/core/style/private';
 @import '../mdc-helpers/mdc-helpers';
 @import './tabs-common';
 
@@ -39,7 +39,7 @@
 
 // The bottom section of the view; contains the tab bodies
 .mat-mdc-tab-body-wrapper {
-  @include _noop-animation();
+  @include mat-private-animation-noop();
   position: relative;
   overflow: hidden;
   display: flex;

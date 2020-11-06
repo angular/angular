@@ -1,7 +1,7 @@
-@import '../core/style/elevation';
+@import '../core/style/private';
 @import '../core/theming/palette';
 @import '../core/theming/theming';
-@import '../core/theming/check-duplicate-styles';
+@import '../core/theming/private';
 @import '../core/typography/typography-utils';
 
 @mixin _mat-slide-toggle-checked($palette, $thumb-checked-hue) {
@@ -64,7 +64,7 @@
   }
 
   .mat-slide-toggle-thumb {
-    @include _mat-theme-elevation(1, $config);
+    @include mat-private-theme-elevation(1, $config);
     background-color: mat-color($mat-grey, $thumb-unchecked-hue);
   }
 
@@ -83,8 +83,8 @@
 @mixin _mat-slide-toggle-density($config-or-theme) {}
 
 @mixin mat-slide-toggle-theme($theme-or-color-config) {
-  $theme: _mat-legacy-get-theme($theme-or-color-config);
-  @include _mat-check-duplicate-theme-styles($theme, 'mat-slide-toggle') {
+  $theme: mat-private-legacy-get-theme($theme-or-color-config);
+  @include mat-private-check-duplicate-theme-styles($theme, 'mat-slide-toggle') {
     $color: mat-get-color-config($theme);
     $density: mat-get-density-config($theme);
     $typography: mat-get-typography-config($theme);

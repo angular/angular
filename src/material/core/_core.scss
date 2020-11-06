@@ -3,7 +3,7 @@
 @import '../../cdk/text-field/text-field';
 
 // Core styles that can be used to apply material design treatments to any element.
-@import './style/elevation';
+@import './style/private';
 @import './ripple/ripple';
 @import './focus-indicators/focus-indicators';
 @import './option/option-theme';
@@ -40,8 +40,8 @@
   // `mat-elevation-z$zValue` where `$zValue` corresponds to the z-space to which the element is
   // elevated.
   @for $zValue from 0 through 24 {
-    .#{$_mat-elevation-prefix}#{$zValue} {
-      @include _mat-theme-elevation($zValue, $config);
+    .#{$mat-elevation-prefix}#{$zValue} {
+      @include mat-private-theme-elevation($zValue, $config);
     }
   }
 
@@ -55,11 +55,11 @@
 
 // Mixin that renders all of the core styles that depend on the theme.
 @mixin mat-core-theme($theme-or-color-config) {
-  $theme: _mat-legacy-get-theme($theme-or-color-config);
+  $theme: mat-private-legacy-get-theme($theme-or-color-config);
   // Wrap the sub-theme includes in the duplicate theme styles mixin. This ensures that
   // there won't be multiple warnings. e.g. if `mat-core-theme` reports a warning, then
   // the imported themes (such as `mat-ripple-theme`) should not report again.
-  @include _mat-check-duplicate-theme-styles($theme, 'mat-core') {
+  @include mat-private-check-duplicate-theme-styles($theme, 'mat-core') {
     @include mat-ripple-theme($theme);
     @include mat-option-theme($theme);
     @include mat-optgroup-theme($theme);

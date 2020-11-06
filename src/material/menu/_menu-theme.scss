@@ -1,7 +1,7 @@
-@import '../core/style/elevation';
+@import '../core/style/private';
 @import '../core/theming/palette';
 @import '../core/theming/theming';
-@import '../core/theming/check-duplicate-styles';
+@import '../core/theming/private';
 @import '../core/typography/typography-utils';
 
 
@@ -11,7 +11,7 @@
   $foreground: map-get($config, foreground);
 
   .mat-menu-panel {
-    @include _mat-theme-overridable-elevation(4, $config);
+    @include mat-private-theme-overridable-elevation(4, $config);
     background: mat-color($background, 'card');
   }
 
@@ -55,8 +55,8 @@
 @mixin _mat-menu-density($config-or-theme) {}
 
 @mixin mat-menu-theme($theme-or-color-config) {
-  $theme: _mat-legacy-get-theme($theme-or-color-config);
-  @include _mat-check-duplicate-theme-styles($theme, 'mat-menu') {
+  $theme: mat-private-legacy-get-theme($theme-or-color-config);
+  @include mat-private-check-duplicate-theme-styles($theme, 'mat-menu') {
     $color: mat-get-color-config($theme);
     $density: mat-get-density-config($theme);
     $typography: mat-get-typography-config($theme);

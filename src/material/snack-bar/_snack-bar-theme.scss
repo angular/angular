@@ -1,8 +1,8 @@
 @import '../core/typography/typography-utils';
 @import '../core/theming/theming';
-@import '../core/theming/check-duplicate-styles';
+@import '../core/theming/private';
 @import '../core/theming/palette';
-@import '../core/style/elevation';
+@import '../core/style/private';
 
 @mixin mat-snack-bar-color($config-or-theme) {
   $config: mat-get-color-config($config-or-theme);
@@ -15,7 +15,7 @@
     color: if($is-dark-theme, $dark-primary-text, $light-secondary-text);
     background: if($is-dark-theme, map-get($mat-grey, 50), #323232);
 
-    @include _mat-theme-elevation(6, $config);
+    @include mat-private-theme-elevation(6, $config);
   }
 
   .mat-simple-snackbar-action {
@@ -45,8 +45,8 @@
 @mixin _mat-snack-bar-density($config-or-theme) {}
 
 @mixin mat-snack-bar-theme($theme-or-color-config) {
-  $theme: _mat-legacy-get-theme($theme-or-color-config);
-  @include _mat-check-duplicate-theme-styles($theme, 'mat-snack-bar') {
+  $theme: mat-private-legacy-get-theme($theme-or-color-config);
+  @include mat-private-check-duplicate-theme-styles($theme, 'mat-snack-bar') {
     $color: mat-get-color-config($theme);
     $density: mat-get-density-config($theme);
     $typography: mat-get-typography-config($theme);

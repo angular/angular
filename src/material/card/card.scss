@@ -1,6 +1,6 @@
 @import '../core/style/variables';
 @import '../core/style/elevation';
-@import '../core/style/noop-animation';
+@import '../core/style/private';
 @import '../../cdk/a11y/a11y';
 
 
@@ -10,7 +10,7 @@ $mat-card-header-size: 40px !default;
 
 .mat-card {
   @include mat-elevation-transition;
-  @include _noop-animation();
+  @include mat-private-animation-noop();
   display: block;
   position: relative;
   padding: $mat-card-padding;

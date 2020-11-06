@@ -1,5 +1,5 @@
 @import '../../style/checkbox-common';
-@import '../../style/noop-animation';
+@import '../../style/private';
 
 // Padding inside of a pseudo checkbox.
 $_mat-pseudo-checkbox-padding: $mat-checkbox-border-width * 2;
@@ -36,7 +36,7 @@ $_mat-pseudo-checkmark-size: $mat-checkbox-size - (2 * $_mat-pseudo-checkbox-pad
     border-color: transparent;
   }
 
-  @include _noop-animation {
+  @include mat-private-animation-noop {
     &::after {
       transition: none;
     }

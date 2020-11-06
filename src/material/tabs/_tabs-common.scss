@@ -1,5 +1,5 @@
 @import '../core/style/variables';
-@import '../core/style/noop-animation';
+@import '../core/style/private';
 @import '../core/style/vendor-prefixes';
 @import '../../cdk/a11y/a11y';
 
@@ -58,7 +58,7 @@ $mat-tab-animation-duration: 500ms !default;
 @mixin ink-bar {
   $height: 2px;
 
-  @include _noop-animation();
+  @include mat-private-animation-noop();
   position: absolute;
   bottom: 0;
   height: $height;

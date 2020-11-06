@@ -2,7 +2,7 @@
 @import '@material/list/variables.import';
 @import '@material/theme/functions.import';
 @import '../../mdc-helpers/mdc-helpers';
-@import '../../../material/core/theming/check-duplicate-styles';
+@import '../../../material/core/theming/private';
 
 @mixin mat-mdc-option-color($config-or-theme) {
   $config: mat-get-color-config($config-or-theme);
@@ -49,8 +49,8 @@
 }
 
 @mixin mat-mdc-option-theme($theme-or-color-config) {
-  $theme: _mat-legacy-get-theme($theme-or-color-config);
-  @include _mat-check-duplicate-theme-styles($theme, 'mat-mdc-option') {
+  $theme: mat-private-legacy-get-theme($theme-or-color-config);
+  @include mat-private-check-duplicate-theme-styles($theme, 'mat-mdc-option') {
     $color: mat-get-color-config($theme);
     $density: mat-get-density-config($theme);
     $typography: mat-get-typography-config($theme);

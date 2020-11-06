@@ -1,6 +1,6 @@
 @import '../core/theming/palette';
 @import '../core/theming/theming';
-@import '../core/theming/check-duplicate-styles';
+@import '../core/theming/private';
 @import '../core/style/form-common';
 @import '../core/typography/typography-utils';
 
@@ -20,7 +20,7 @@
     }
 
     &.mat-form-field-disabled .mat-form-field-underline {
-      @include mat-control-disabled-underline($underline-color);
+      @include mat-private-control-disabled-underline($underline-color);
     }
   }
 }
@@ -30,8 +30,8 @@
 @mixin _mat-form-field-standard-density($config-or-theme) {}
 
 @mixin mat-form-field-standard-theme($theme-or-color-config) {
-  $theme: _mat-legacy-get-theme($theme-or-color-config);
-  @include _mat-check-duplicate-theme-styles($theme, 'mat-form-field-standard') {
+  $theme: mat-private-legacy-get-theme($theme-or-color-config);
+  @include mat-private-check-duplicate-theme-styles($theme, 'mat-form-field-standard') {
     $color: mat-get-color-config($theme);
     $density: mat-get-density-config($theme);
     $typography: mat-get-typography-config($theme);

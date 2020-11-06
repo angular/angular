@@ -1,4 +1,4 @@
-@import '../../density/all-density';
+@import '../../density/private';
 @import '../../color/all-color';
 @import '../../typography/all-typography';
 @import '../all-theme';
@@ -209,7 +209,7 @@ $dark-theme-only-typography: mat-dark-theme((typography: $typography-config));
 
 // Custom theme mixin used by the custom theme backwards compatibility test.
 @mixin _my-custom-theme-new-api($theme-or-color-config) {
-  $theme: _mat-legacy-get-theme($theme-or-color-config);
+  $theme: mat-private-legacy-get-theme($theme-or-color-config);
   $color: mat-get-color-config($theme);
   $density: mat-get-density-config($theme);
 
@@ -245,14 +245,14 @@ $dark-theme-only-typography: mat-dark-theme((typography: $typography-config));
   @each $theme in $test-themes {
     @include angular-material-typography($theme);
     @include angular-material-color($theme);
-    @include _angular-material-density($theme);
+    @include angular-material-density($theme);
   }
 
   @include angular-material-typography(map-get($light-theme-only-typography, typography));
   @include angular-material-typography($light-theme-only-typography);
 
-  @include _angular-material-density(map-get($light-theme-only-density, density));
-  @include _angular-material-density($light-theme-only-density);
+  @include angular-material-density(map-get($light-theme-only-density, density));
+  @include angular-material-density($light-theme-only-density);
 
   @include angular-material-color(map-get($new-api-dark-theme, color));
   @include angular-material-color($new-api-dark-theme);

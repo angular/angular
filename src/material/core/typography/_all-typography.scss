@@ -1,4 +1,5 @@
 @import './typography';
+@import '../theming/private';
 @import '../../autocomplete/autocomplete-theme';
 @import '../../badge/badge-theme';
 @import '../../bottom-sheet/bottom-sheet-theme';
@@ -39,7 +40,7 @@
 
 // Includes all of the typographic styles.
 @mixin angular-material-typography($config-or-theme: null) {
-  $config: if(_mat-is-theme-object($config-or-theme),
+  $config: if(mat-private-is-theme-object($config-or-theme),
       mat-get-typography-config($config-or-theme), $config-or-theme);
 
   // If no actual color configuration has been specified, create a default one.

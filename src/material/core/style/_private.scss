@@ -1,0 +1,40 @@
+@import './elevation';
+
+@mixin mat-private-theme-elevation($zValue, $config, $opacity: $mat-elevation-opacity) {
+  $foreground: map-get($config, foreground);
+  $elevation-color: map-get($foreground, elevation);
+  $elevation-color-or-default: if($elevation-color == null, $mat-elevation-color, $elevation-color);
+
+  @include mat-elevation($zValue, $elevation-color-or-default, $opacity);
+}
+
+@mixin mat-private-theme-overridable-elevation($zValue, $config, $opacity: $mat-elevation-opacity) {
+  $foreground: map-get($config, foreground);
+  $elevation-color: map-get($foreground, elevation);
+  $elevation-color-or-default: if($elevation-color == null, $mat-elevation-color, $elevation-color);
+
+  @include mat-overridable-elevation($zValue, $elevation-color-or-default, $opacity);
+}
+
+// If the mat-animation-noop class is present on the components root element,
+// prevent non css animations from running.
+// NOTE: Currently this mixin should only be used with components that do not
+// have any projected content.
+@mixin mat-private-animation-noop() {
+  // @at-root is used to steps outside of the hierarchy of the scss rules. This is
+  // done to allow a class to be added to be added to base of the scss nesting
+  // context.
+  // For example:
+  // .my-root {
+  //   .my-subclass {
+  //      @include mat-private-animation-noop();
+  //    }
+  // }
+  // results in:
+  // ._mat-animation-noopable.my-root .my-subclass { ... }
+  @at-root ._mat-animation-noopable#{&} {
+    transition: none;
+    animation: none;
+    @content;
+  }
+}
