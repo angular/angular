@@ -627,7 +627,9 @@ describe('MatMenu', () => {
     const firstMenuItemInstance = firstMenuItemDebugEl.componentInstance as MatMenuItem;
     const secondMenuItemInstance = secondMenuItemDebugEl.componentInstance as MatMenuItem;
 
+    firstMenuItemDebugEl.nativeElement.blur();
     firstMenuItemInstance.focus('mouse');
+    secondMenuItemDebugEl.nativeElement.blur();
     secondMenuItemInstance.focus();
 
     expect(secondMenuItemDebugEl.nativeElement.classList).toContain('cdk-focused');
@@ -2028,8 +2030,7 @@ describe('MatMenu', () => {
             .toContain('mat-elevation-z4', 'Expected menu to have the proper updated elevation.');
       }));
 
-        it('should not change focus origin if origin not specified for menu trigger',
-      fakeAsync(() => {
+      it('should not change focus origin if origin not specified for trigger', fakeAsync(() => {
         compileTestComponent();
 
         instance.levelOneTrigger.openMenu();
