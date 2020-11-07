@@ -16,16 +16,17 @@
     background: transparent;
     opacity: 1;
   }
+
+  // MDC expects the fab icon to contain this HTML content:
+  // ```html
+  //   <span class="mdc-fab__icon material-icons">favorite</span>
+  // ```
+  // However, Angular Material expects a `mat-icon` instead. The following
+  // will extend the `mdc-fab__icon` styling to the mat icon. Note that
+  // the extended styles inherently only match icons that nest themselves in
+  // a parent `mdc-fab`.
+  .mat-icon {
+    @extend .mdc-fab__icon;
+  }
 }
 
-// MDC expects the fab icon to contain this HTML content:
-// ```html
-//   <span class="mdc-fab__icon material-icons">favorite</span>
-// ```
-// However, Angular Material expects a `mat-icon` instead. The following
-// will extend the `mdc-fab__icon` styling to the mat icon. Note that
-// the extended styles inherently only match icons that nest themselves in
-// a parent `mdc-fab`.
-.mat-icon {
-  @extend .mdc-fab__icon;
-}
