@@ -261,8 +261,8 @@ export class MatTableDataSource<T> extends DataSource<T> {
     // If there is a filter string, filter out data that does not contain it.
     // Each data object is converted to a string using the function defined by filterTermAccessor.
     // May be overridden for customization.
-    this.filteredData =
-        !this.filter ? data : data.filter(obj => this.filterPredicate(obj, this.filter));
+    this.filteredData = (this.filter == null || this.filter === '') ? data :
+        data.filter(obj => this.filterPredicate(obj, this.filter));
 
     if (this.paginator) { this._updatePaginator(this.filteredData.length); }
 

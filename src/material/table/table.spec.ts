@@ -353,6 +353,14 @@ describe('MatTable', () => {
         ['a_2', 'b_2', 'c_2'],
         ['Footer A', 'Footer B', 'Footer C'],
       ]);
+
+      // Change the filter to a falsy value that might come in from the view.
+      dataSource.filter = 0 as any;
+      fixture.detectChanges();
+      expectTableToMatchContent(tableElement, [
+        ['Column A', 'Column B', 'Column C'],
+        ['Footer A', 'Footer B', 'Footer C'],
+      ]);
     }));
 
     it('should not match concatenated words', fakeAsync(() => {
