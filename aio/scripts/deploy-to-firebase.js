@@ -4,7 +4,7 @@
 //
 'use strict';
 
-const {cd, cp, exec: _exec, set} = require('shelljs');
+const {cd, cp, exec, set} = require('shelljs');
 
 set('-e');
 
@@ -187,13 +187,8 @@ function deploy(
   yarn(`test-pwa-score "${deployedUrl}" "${minPwaScore}"`);
 }
 
-function exec(cmd, opts) {
-  // Using `silent: true` to ensure no secret env variables are printed.
-  return _exec(cmd, {silent: true, ...opts}).trim();
-}
-
 function getRemoteRefs(refOrPattern, remote = NG_REMOTE_URL) {
-  return exec(`git ls-remote ${remote} ${refOrPattern}`).split('\n');
+  return exec(`git ls-remote ${remote} ${refOrPattern}`, {silent: true}).trim().split('\n');
 }
 
 function getLatestCommit(branchName, remote = undefined) {
@@ -206,5 +201,10 @@ function skipDeployment(reason) {
 
 function yarn(cmd) {
   // Using `--silent` to ensure no secret env variables are printed.
+  //
+  // NOTE:
+  // This is not strictly necessary, since CircleCI will mask secret environment variables in the
+  // output (see https://circleci.com/docs/2.0/env-vars/#secrets-masking), but is an extra
+  // precaution.
   return exec(`yarn --silent ${cmd}`);
 }
