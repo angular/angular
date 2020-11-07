@@ -825,9 +825,6 @@
     "name": "createPlatformFactory"
   },
   {
-    "name": "createTNode"
-  },
-  {
     "name": "createTView"
   },
   {
@@ -1243,9 +1240,6 @@
   },
   {
     "name": "isPropertyUpdated"
-  },
-  {
-    "name": "isRootView"
   },
   {
     "name": "isScheduler"

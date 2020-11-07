@@ -20,15 +20,15 @@ import {assertDefined, assertEqual, assertGreaterThan, assertLessThan} from '../
 
 import {assertLContainer, assertNodeInjector} from './assert';
 import {getParentInjectorLocation, NodeInjector} from './di';
-import {addToViewTree, createLContainer, createLView, createTNode, renderView} from './instructions/shared';
+import {addToViewTree, createLContainer, createLView, renderView} from './instructions/shared';
 import {CONTAINER_HEADER_OFFSET, LContainer, NATIVE, VIEW_REFS} from './interfaces/container';
 import {NodeInjectorOffset} from './interfaces/injector';
 import {TContainerNode, TDirectiveHostNode, TElementContainerNode, TElementNode, TNode, TNodeType} from './interfaces/node';
 import {isProceduralRenderer, RComment, RElement} from './interfaces/renderer';
-import {isComponentHost, isLContainer, isLView, isRootView} from './interfaces/type_checks';
+import {isComponentHost, isLContainer, isLView} from './interfaces/type_checks';
 import {DECLARATION_COMPONENT_VIEW, DECLARATION_LCONTAINER, LView, LViewFlags, PARENT, QUERIES, RENDERER, T_HOST, TVIEW, TView} from './interfaces/view';
 import {assertTNodeType} from './node_assert';
-import {addViewToContainer, appendChild, destroyLView, detachView, getBeforeNodeForView, insertView, nativeInsertBefore, nativeNextSibling, nativeParentNode} from './node_manipulation';
+import {addViewToContainer, destroyLView, detachView, getBeforeNodeForView, insertView, nativeInsertBefore, nativeNextSibling, nativeParentNode} from './node_manipulation';
 import {getCurrentTNode, getLView} from './state';
 import {getParentInjectorIndex, getParentInjectorView, hasParentInjector} from './util/injector_utils';
 import {getComponentLViewByIndex, getNativeByTNode, unwrapRNode, viewAttachedToContainer} from './util/view_utils';
@@ -373,28 +373,18 @@ export function createContainerRef(
     if (hostTNode.type & TNodeType.ElementContainer) {
       commentNode = unwrapRNode(slotValue) as RComment;
     } else {
+      // If the host is a regular element, we have to insert a comment node manually which will
+      // be used as an anchor when inserting elements. In this specific case we use low-level DOM
+      // manipulation to insert it.
+      const renderer = hostView[RENDERER];
       ngDevMode && ngDevMode.rendererCreateComment++;
-      commentNode = hostView[RENDERER].createComment(ngDevMode ? 'container' : '');
+      commentNode = renderer.createComment(ngDevMode ? 'container' : '');
 
-      // A `ViewContainerRef` can be injected by the root (topmost / bootstrapped) component. In
-      // this case we can't use TView / TNode data structures to insert container's marker node
-      // (both a parent of a comment node and the comment node itself are not part of any view). In
-      // this specific case we use low-level DOM manipulation to insert container's marker (comment)
-      // node.
-      if (isRootView(hostView)) {
-        const renderer = hostView[RENDERER];
-        const hostNative = getNativeByTNode(hostTNode, hostView)!;
-        const parentOfHostNative = nativeParentNode(renderer, hostNative);
-        nativeInsertBefore(
-            renderer, parentOfHostNative!, commentNode, nativeNextSibling(renderer, hostNative),
-            false);
-      } else {
-        // The TNode created here is bogus, in that it is not added to the TView. It is only created
-        // to allow us to create a dynamic Comment node.
-        const commentTNode =
-            createTNode(hostView[TVIEW], hostTNode.parent, TNodeType.Container, 0, null, null);
-        appendChild(hostView[TVIEW], hostView, commentNode, commentTNode);
-      }
+      const hostNative = getNativeByTNode(hostTNode, hostView)!;
+      const parentOfHostNative = nativeParentNode(renderer, hostNative);
+      nativeInsertBefore(
+          renderer, parentOfHostNative!, commentNode, nativeNextSibling(renderer, hostNative),
+          false);
     }
 
     hostView[hostTNode.index] = lContainer =
