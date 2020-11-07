@@ -270,6 +270,7 @@ describe('MatButtonToggle without forms', () => {
         ButtonToggleWithTabindex,
         ButtonToggleWithStaticName,
         ButtonToggleWithStaticChecked,
+        ButtonToggleWithStaticAriaAttributes,
       ],
     });
 
@@ -751,6 +752,16 @@ describe('MatButtonToggle without forms', () => {
       fixture.detectChanges();
       expect(buttonElement.getAttribute('aria-label')).toBe('Super effective');
     });
+
+    it('should clear the static aria from the host node', () => {
+      const fixture = TestBed.createComponent(ButtonToggleWithStaticAriaAttributes);
+      fixture.detectChanges();
+      const hostNode: HTMLElement = fixture.nativeElement.querySelector('mat-button-toggle');
+
+      expect(hostNode.hasAttribute('aria-label')).toBe(false);
+      expect(hostNode.hasAttribute('aria-labelledby')).toBe(false);
+    });
+
   });
 
   describe('with provided aria-labelledby ', () => {
@@ -1068,3 +1079,11 @@ class ButtonToggleWithStaticChecked {
   @ViewChild(MatButtonToggleGroup) group: MatButtonToggleGroup;
   @ViewChildren(MatButtonToggle) toggles: QueryList<MatButtonToggle>;
 }
+
+
+@Component({
+  template: `
+    <mat-button-toggle aria-label="Toggle me" aria-labelledby="something"></mat-button-toggle>
+  `
+})
+class ButtonToggleWithStaticAriaAttributes {}
