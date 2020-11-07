@@ -26,14 +26,6 @@ var_5: &job_defaults
   docker:
     - image: *docker_image
 
-# Job step for checking out the source code from GitHub. This also ensures that the source code
-# is rebased on top of master.
-var_6: &checkout_code
-  checkout:
-    # After checkout, rebase on top of master. By default, PRs are not rebased on top of master,
-    # which we want. See https://discuss.circleci.com/t/1662
-    post: git pull --ff-only origin "refs/pull/${CI_PULL_REQUEST//*pull\//}/merge"
-
 # Restores the cache that could be available for the current Yarn lock file. The cache usually
 # includes the node modules and the Bazel repository cache.
 var_7: &restore_cache
@@ -159,12 +151,34 @@ orbs:
   # push conflicts.
   queue: eddiewebb/queue@1.5.0
 
+
+commands:
+  checkout_and_rebase:
+    description: Checkout and rebase the repository
+    steps:
+      - checkout
+      - run:
+          name: Set up environment
+          environment:
+              CIRCLE_GIT_BASE_REVISION: << pipeline.git.base_revision >>
+              CIRCLE_GIT_REVISION: << pipeline.git.revision >>
+          command: ./.circleci/env.sh
+      - run:
+          name: Rebase PR on target branch
+          # After checkout, rebase on top of target branch.
+          command: |
+            if [ -n "$CIRCLE_PR_NUMBER" ]; then
+              # User is required for rebase.
+              git config user.name "angular-ci"
+              git config user.email "angular-ci"
+              node .circleci/rebase-pr.js
+            fi
+
 # -----------------------------------------------------------------------------------------
 # Job definitions. Jobs which are defined just here, will not run automatically. Each job
 # must be part of a workflow definition in order to run for PRs and push builds.
 # -----------------------------------------------------------------------------------------
 jobs:
-
   # -----------------------------------
   # Job to test that everything builds with Bazel
   # -----------------------------------
@@ -174,7 +188,7 @@ jobs:
     environment:
       GCP_DECRYPT_TOKEN: *gcp_decrypt_token
     steps:
-      - *checkout_code
+      - checkout_and_rebase
       - *restore_cache
       - *setup_bazel_ci_config
       - *setup_bazel_remote_execution
@@ -196,7 +210,7 @@ jobs:
     environment:
       GCP_DECRYPT_TOKEN: *gcp_decrypt_token
     steps:
-      - *checkout_code
+      - checkout_and_rebase
       - *restore_cache
       - *setup_bazel_ci_config
       - *setup_bazel_remote_execution
@@ -218,7 +232,7 @@ jobs:
     environment:
       GCP_DECRYPT_TOKEN: *gcp_decrypt_token
     steps:
-    - *checkout_code
+    - checkout_and_rebase
     - *restore_cache
     - *setup_bazel_ci_config
     - *setup_bazel_remote_execution
@@ -237,7 +251,7 @@ jobs:
     environment:
       GCP_DECRYPT_TOKEN: *gcp_decrypt_token
     steps:
-      - *checkout_code
+      - checkout_and_rebase
       - *restore_cache
       - *setup_bazel_ci_config
       - *setup_bazel_remote_execution
@@ -260,7 +274,7 @@ jobs:
     environment:
       GCP_DECRYPT_TOKEN: *gcp_decrypt_token
     steps:
-      - *checkout_code
+      - checkout_and_rebase
       - *restore_cache
       - *setup_bazel_ci_config
       - *setup_bazel_remote_execution
@@ -281,7 +295,7 @@ jobs:
       BROWSER_STACK_USERNAME: "angularteam1"
       BROWSER_STACK_ACCESS_KEY: "CaXMeMHD9pr5PHg8N7Jq"
     steps:
-      - *checkout_code
+      - checkout_and_rebase
       - *restore_cache
       - *setup_bazel_ci_config
       - *yarn_install
@@ -303,7 +317,7 @@ jobs:
       # a rate limit exception.
       KARMA_PARALLEL_BROWSERS: 2
     steps:
-    - *checkout_code
+    - checkout_and_rebase
     - *restore_cache
     - *setup_bazel_ci_config
     - *yarn_install
@@ -316,8 +330,11 @@ jobs:
   # ----------------------------------
   lint:
     <<: *job_defaults
+    environment:
+      CI_GIT_BASE_REVISION: << pipeline.git.base_revision >>
+      CI_GIT_REVISION: << pipeline.git.revision >>
     steps:
-      - *checkout_code
+      - checkout_and_rebase
       - *restore_cache
       - *setup_bazel_ci_config
       - *yarn_install
@@ -342,7 +359,7 @@ jobs:
           # much about any failures that have made it into the main branch.
           command: |
             if [ -n "$CIRCLE_PR_NUMBER" ]; then
-              yarn ng-dev commit-message validate-range --range << pipeline.git.base_revision >>...<<pipeline.git.revision>>
+              yarn ng-dev commit-message validate-range --range $CI_COMMIT_RANGE
             fi
       - run: yarn ownerslint
       - run: yarn stylelint
@@ -362,7 +379,7 @@ jobs:
     environment:
       GCP_DECRYPT_TOKEN: *gcp_decrypt_token
     steps:
-      - *checkout_code
+      - checkout_and_rebase
       - *restore_cache
       - *setup_bazel_ci_config
       - *setup_bazel_remote_execution
@@ -414,7 +431,7 @@ jobs:
   upload_release_packages:
     <<: *job_defaults
     steps:
-      - *checkout_code
+      - checkout_and_rebase
       - *restore_cache
       - *attach_release_output
       - *yarn_install
@@ -435,7 +452,7 @@ jobs:
     environment:
       GCP_DECRYPT_TOKEN: *gcp_decrypt_token
     steps:
-      - *checkout_code
+      - checkout_and_rebase
       - *restore_cache
       - *attach_release_output
       - *setup_bazel_ci_config
@@ -473,7 +490,7 @@ jobs:
     <<: *job_defaults
     resource_class: xlarge
     steps:
-      - *checkout_code
+      - checkout_and_rebase
       - *restore_cache
       - *attach_release_output
       - *yarn_install
@@ -497,7 +514,7 @@ jobs:
     <<: *job_defaults
     resource_class: xlarge
     steps:
-      - *checkout_code
+      - checkout_and_rebase
       - *restore_cache
       - *attach_release_output
       - *setup_snapshot_builds
@@ -524,7 +541,7 @@ jobs:
     environment:
       GCP_DECRYPT_TOKEN: *gcp_decrypt_token
     steps:
-    - *checkout_code
+    - checkout_and_rebase
     - *restore_cache
     - *setup_bazel_ci_config
     - *setup_bazel_remote_execution
@@ -545,7 +562,7 @@ jobs:
     environment:
       GCP_DECRYPT_TOKEN: *gcp_decrypt_token
     steps:
-      - *checkout_code
+      - checkout_and_rebase
       - *restore_cache
       - *setup_bazel_ci_config
       - *setup_bazel_remote_execution
@@ -565,7 +582,7 @@ jobs:
     environment:
       GCP_DECRYPT_TOKEN: *gcp_decrypt_token
     steps:
-      - *checkout_code
+      - checkout_and_rebase
       - *restore_cache
       - *setup_bazel_ci_config
       - *setup_bazel_remote_execution
@@ -586,7 +603,7 @@ jobs:
     environment:
       GCP_DECRYPT_TOKEN: *gcp_decrypt_token
     steps:
-      - *checkout_code
+      - checkout_and_rebase
       - *restore_cache
       - *setup_bazel_ci_config
       - *setup_bazel_remote_execution
@@ -612,7 +629,7 @@ jobs:
     environment:
       GCP_DECRYPT_TOKEN: *gcp_decrypt_token
     steps:
-      - *checkout_code
+      - checkout_and_rebase
       - *restore_cache
       - *setup_bazel_binary
       - *setup_bazel_ci_config
