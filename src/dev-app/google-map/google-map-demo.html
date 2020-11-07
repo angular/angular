@@ -7,15 +7,16 @@
               (mapMousemove)="handleMove($event)"
               (mapRightclick)="handleRightclick()"
               [mapTypeId]="mapTypeId">
-    <map-marker
-      #firstMarker="mapMarker"
-      [position]="center"
-      (mapClick)="clickMarker(firstMarker)"></map-marker>
-    <map-marker #marker="mapMarker"
-                *ngFor="let markerPosition of markerPositions"
-                [position]="markerPosition"
-                [options]="markerOptions"
-                (mapClick)="clickMarker(marker)"></map-marker>
+    <map-marker-clusterer [imagePath]="markerClustererImagePath">
+      <map-marker #firstMarker="mapMarker"
+                  [position]="center"
+                  (mapClick)="clickMarker(firstMarker)"></map-marker>
+      <map-marker #marker="mapMarker"
+                  *ngFor="let markerPosition of markerPositions"
+                  [position]="markerPosition"
+                  [options]="markerOptions"
+                  (mapClick)="clickMarker(marker)"></map-marker>
+    </map-marker-clusterer>
     <map-info-window>Testing 1 2 3</map-info-window>
     <map-polyline *ngIf="isPolylineDisplayed" [options]="polylineOptions"></map-polyline>
     <map-polygon *ngIf="isPolygonDisplayed" [options]="polygonOptions"></map-polygon>

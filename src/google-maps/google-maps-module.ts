@@ -16,6 +16,7 @@ import {MapGroundOverlay} from './map-ground-overlay/map-ground-overlay';
 import {MapInfoWindow} from './map-info-window/map-info-window';
 import {MapKmlLayer} from './map-kml-layer/map-kml-layer';
 import {MapMarker} from './map-marker/map-marker';
+import {MapMarkerClusterer} from './map-marker-clusterer/map-marker-clusterer';
 import {MapPolygon} from './map-polygon/map-polygon';
 import {MapPolyline} from './map-polyline/map-polyline';
 import {MapRectangle} from './map-rectangle/map-rectangle';
@@ -31,6 +32,7 @@ const COMPONENTS = [
   MapInfoWindow,
   MapKmlLayer,
   MapMarker,
+  MapMarkerClusterer,
   MapPolygon,
   MapPolyline,
   MapRectangle,

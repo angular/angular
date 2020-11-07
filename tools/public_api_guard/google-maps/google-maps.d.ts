@@ -52,7 +52,7 @@ export declare class GoogleMap implements OnChanges, OnInit, OnDestroy {
 
 export declare class GoogleMapsModule {
     static ɵinj: i0.ɵɵInjectorDef<GoogleMapsModule>;
-    static ɵmod: i0.ɵɵNgModuleDefWithMeta<GoogleMapsModule, [typeof i1.GoogleMap, typeof i2.MapBaseLayer, typeof i3.MapBicyclingLayer, typeof i4.MapCircle, typeof i5.MapGroundOverlay, typeof i6.MapInfoWindow, typeof i7.MapKmlLayer, typeof i8.MapMarker, typeof i9.MapPolygon, typeof i10.MapPolyline, typeof i11.MapRectangle, typeof i12.MapTrafficLayer, typeof i13.MapTransitLayer], never, [typeof i1.GoogleMap, typeof i2.MapBaseLayer, typeof i3.MapBicyclingLayer, typeof i4.MapCircle, typeof i5.MapGroundOverlay, typeof i6.MapInfoWindow, typeof i7.MapKmlLayer, typeof i8.MapMarker, typeof i9.MapPolygon, typeof i10.MapPolyline, typeof i11.MapRectangle, typeof i12.MapTrafficLayer, typeof i13.MapTransitLayer]>;
+    static ɵmod: i0.ɵɵNgModuleDefWithMeta<GoogleMapsModule, [typeof i1.GoogleMap, typeof i2.MapBaseLayer, typeof i3.MapBicyclingLayer, typeof i4.MapCircle, typeof i5.MapGroundOverlay, typeof i6.MapInfoWindow, typeof i7.MapKmlLayer, typeof i8.MapMarker, typeof i9.MapMarkerClusterer, typeof i10.MapPolygon, typeof i11.MapPolyline, typeof i12.MapRectangle, typeof i13.MapTrafficLayer, typeof i14.MapTransitLayer], never, [typeof i1.GoogleMap, typeof i2.MapBaseLayer, typeof i3.MapBicyclingLayer, typeof i4.MapCircle, typeof i5.MapGroundOverlay, typeof i6.MapInfoWindow, typeof i7.MapKmlLayer, typeof i8.MapMarker, typeof i9.MapMarkerClusterer, typeof i10.MapPolygon, typeof i11.MapPolyline, typeof i12.MapRectangle, typeof i13.MapTrafficLayer, typeof i14.MapTransitLayer]>;
 }
 
 export interface MapAnchorPoint {
@@ -217,6 +217,58 @@ export declare class MapMarker implements OnInit, OnDestroy, MapAnchorPoint {
     ngOnInit(): void;
     static ɵdir: i0.ɵɵDirectiveDefWithMeta<MapMarker, "map-marker", ["mapMarker"], { "options": "options"; "title": "title"; "position": "position"; "label": "label"; "clickable": "clickable"; }, { "animationChanged": "animationChanged"; "mapClick": "mapClick"; "clickableChanged": "clickableChanged"; "cursorChanged": "cursorChanged"; "mapDblclick": "mapDblclick"; "mapDrag": "mapDrag"; "mapDragend": "mapDragend"; "draggableChanged": "draggableChanged"; "mapDragstart": "mapDragstart"; "flatChanged": "flatChanged"; "iconChanged": "iconChanged"; "mapMousedown": "mapMousedown"; "mapMouseout": "mapMouseout"; "mapMouseover": "mapMouseover"; "mapMouseup": "mapMouseup"; "positionChanged": "positionChanged"; "mapRightclick": "mapRightclick"; "shapeChanged": "shapeChanged"; "titleChanged": "titleChanged"; "visibleChanged": "visibleChanged"; "zindexChanged": "zindexChanged"; }, never>;
     static ɵfac: i0.ɵɵFactoryDef<MapMarker, never>;
+}
+
+export declare class MapMarkerClusterer implements OnInit, AfterContentInit, OnDestroy {
+    _markers: QueryList<MapMarker>;
+    get ariaLabelFn(): AriaLabelFn;
+    set ariaLabelFn(ariaLabelFn: AriaLabelFn);
+    set averageCenter(averageCenter: boolean);
+    batchSize?: number;
+    set batchSizeIE(batchSizeIE: number);
+    set calculator(calculator: Calculator);
+    set clusterClass(clusterClass: string);
+    clusteringbegin: Observable<void>;
+    clusteringend: Observable<void>;
+    set enableRetinalIcons(enableRetinalIcons: boolean);
+    set gridSize(gridSize: number);
+    set ignoreHidden(ignoreHidden: boolean);
+    set imageExtension(imageExtension: string);
+    set imagePath(imagePath: string);
+    set imageSizes(imageSizes: number[]);
+    markerClusterer?: MarkerClusterer;
+    set maxZoom(maxZoom: number);
+    set minimumClusterSize(minimumClusterSize: number);
+    set styles(styles: ClusterIconStyle[]);
+    set title(title: string);
+    set zIndex(zIndex: number);
+    set zoomOnClick(zoomOnClick: boolean);
+    constructor(_googleMap: GoogleMap, _ngZone: NgZone);
+    fitMapToMarkers(padding: number | google.maps.Padding): void;
+    getAverageCenter(): boolean;
+    getBatchSizeIE(): number;
+    getCalculator(): Calculator;
+    getClusterClass(): string;
+    getClusters(): Cluster[];
+    getEnableRetinalIcons(): boolean;
+    getGridSize(): number;
+    getIgnoreHidden(): boolean;
+    getImageExtension(): string;
+    getImagePath(): string;
+    getImageSizes(): number[];
+    getMaxZoom(): number;
+    getMinimumClusterSize(): number;
+    getStyles(): ClusterIconStyle[];
+    getTitle(): string;
+    getTotalClusters(): number;
+    getTotalMarkers(): number;
+    getZIndex(): number;
+    getZoomOnClick(): boolean;
+    ngAfterContentInit(): void;
+    ngOnDestroy(): void;
+    ngOnInit(): void;
+    static ɵcmp: i0.ɵɵComponentDefWithMeta<MapMarkerClusterer, "map-marker-clusterer", ["mapMarkerClusterer"], { "ariaLabelFn": "ariaLabelFn"; "averageCenter": "averageCenter"; "batchSize": "batchSize"; "batchSizeIE": "batchSizeIE"; "calculator": "calculator"; "clusterClass": "clusterClass"; "enableRetinalIcons": "enableRetinalIcons"; "gridSize": "gridSize"; "ignoreHidden": "ignoreHidden"; "imageExtension": "imageExtension"; "imagePath": "imagePath"; "imageSizes": "imageSizes"; "maxZoom": "maxZoom"; "minimumClusterSize": "minimumClusterSize"; "styles": "styles"; "title": "title"; "zIndex": "zIndex"; "zoomOnClick": "zoomOnClick"; }, { "clusteringbegin": "clusteringbegin"; "clusteringend": "clusteringend"; }, ["_markers"], ["*"]>;
+    static ɵfac: i0.ɵɵFactoryDef<MapMarkerClusterer, never>;
 }
 
 export declare class MapPolygon implements OnInit, OnDestroy {

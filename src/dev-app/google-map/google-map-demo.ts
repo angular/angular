@@ -95,6 +95,9 @@ export class GoogleMapDemo {
     google.maps.MapTypeId.TERRAIN
   ];
 
+  markerClustererImagePath =
+      'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m';
+
   handleClick(event: google.maps.MouseEvent) {
     this.markerPositions.push(event.latLng.toJSON());
   }

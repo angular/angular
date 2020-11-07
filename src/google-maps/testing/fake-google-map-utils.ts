@@ -30,6 +30,7 @@ export interface TestingWindow extends Window {
       BicyclingLayer?: jasmine.Spy;
     };
   };
+  MarkerClusterer?: jasmine.Spy;
 }
 
 /** Creates a jasmine.SpyObj for a google.maps.Map. */
@@ -412,4 +413,34 @@ export function createBicyclingLayerConstructorSpy(
     };
   }
   return bicylingLayerConstructorSpy;
+}
+
+/** Creates a jasmine.SpyObj for a MarkerClusterer */
+export function createMarkerClustererSpy(): jasmine.SpyObj<MarkerClusterer> {
+  const markerClustererSpy = jasmine.createSpyObj('MarkerClusterer', ['addListener',
+    'addMarkers', 'fitMapToMarkers', 'getAverageCenter', 'getBatchSizeIE',
+    'getCalculator', 'getClusterClass', 'getClusters', 'getEnableRetinalIcons',
+    'getGridSize', 'getIgnoreHidden', 'getImageExtension', 'getImagePath',
+    'getImageSizes', 'getMaxZoom', 'getMinimumClusterSize', 'getStyles',
+    'getTitle', 'getTotalClusters', 'getTotalMarkers', 'getZIndex', 'getZoomOnClick',
+    'removeMarkers', 'repaint', 'setAverageCenter', 'setBatchSizeIE',
+    'setCalculator', 'setClusterClass', 'setEnableRetinalIcons', 'setGridSize',
+    'setIgnoreHidden', 'setImageExtension', 'setImagePath', 'setImageSizes', 'setMap',
+    'setMaxZoom', 'setMinimumClusterSize', 'setStyles', 'setTitle', 'setZIndex',
+    'setZoomOnClick',
+  ]);
+  markerClustererSpy.addListener.and.returnValue({ remove: () => { } });
+  return markerClustererSpy;
+}
+
+/** Creates a jasmine.Spy to watch for the constructor of a MarkerClusterer */
+export function createMarkerClustererConstructorSpy(
+  markerClustererSpy: jasmine.SpyObj<MarkerClusterer>): jasmine.Spy {
+  const markerClustererConstructorSpy = jasmine.createSpy('MarkerClusterer constructor',
+      () => {
+    return markerClustererSpy;
+  });
+  const testingWindow: TestingWindow = window;
+  testingWindow['MarkerClusterer'] = markerClustererConstructorSpy;
+  return markerClustererConstructorSpy;
 }
