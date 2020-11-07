@@ -308,13 +308,20 @@ export class FocusMonitor implements OnDestroy {
           options?: FocusOptions): void {
 
     const nativeElement = coerceElement(element);
+    const focusedElement = this._getDocument().activeElement;
 
-    this._setOriginForCurrentEventQueue(origin);
+    // If the element is focused already, calling `focus` again won't trigger the event listener
+    // which means that the focus classes won't be updated. If that's the case, update the classes
+    // directly without waiting for an event.
+    if (nativeElement === focusedElement && this._elementInfo.has(nativeElement)) {
+      this._originChanged(nativeElement, origin, this._elementInfo.get(nativeElement)!);
+    } else {
+      this._setOriginForCurrentEventQueue(origin);
 
-    // `focus` isn't available on the server
-    if (typeof nativeElement.focus === 'function') {
-      // Cast the element to `any`, because the TS typings don't have the `options` parameter yet.
-      (nativeElement as any).focus(options);
+      // `focus` isn't available on the server
+      if (typeof nativeElement.focus === 'function') {
+        nativeElement.focus(options);
+      }
     }
   }
 
@@ -438,10 +445,7 @@ export class FocusMonitor implements OnDestroy {
       return;
     }
 
-    const origin = this._getFocusOrigin(event);
-    this._setClasses(element, origin);
-    this._emitOrigin(elementInfo.subject, origin);
-    this._lastFocusOrigin = origin;
+    this._originChanged(element, this._getFocusOrigin(event), elementInfo);
   }
 
   /**
@@ -540,6 +544,14 @@ export class FocusMonitor implements OnDestroy {
       clearTimeout(this._touchTimeoutId);
       clearTimeout(this._originTimeoutId);
     }
+  }
+
+  /** Updates all the state on an element once its focus origin has changed. */
+  private _originChanged(element: HTMLElement, origin: FocusOrigin,
+                         elementInfo: MonitoredElementInfo) {
+    this._setClasses(element, origin);
+    this._emitOrigin(elementInfo.subject, origin);
+    this._lastFocusOrigin = origin;
   }
 }
 

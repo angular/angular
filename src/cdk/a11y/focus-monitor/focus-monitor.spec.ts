@@ -7,6 +7,7 @@ import {
   createMouseEvent,
   dispatchEvent,
 } from '@angular/cdk/testing/private';
+import {DOCUMENT} from '@angular/common';
 import {Component, NgZone} from '@angular/core';
 import {ComponentFixture, fakeAsync, flush, inject, TestBed, tick} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
@@ -25,13 +26,39 @@ describe('FocusMonitor', () => {
   let buttonElement: HTMLElement;
   let focusMonitor: FocusMonitor;
   let changeHandler: (origin: FocusOrigin) => void;
+  let fakeActiveElement: HTMLElement | null;
 
   beforeEach(() => {
+    fakeActiveElement = null;
+
     TestBed.configureTestingModule({
       imports: [A11yModule],
-      declarations: [
-        PlainButton,
-      ],
+      declarations: [PlainButton],
+      providers: [{
+        provide: DOCUMENT,
+        useFactory: () => {
+          // We have to stub out the `document` in order to be able to fake `activeElement`.
+          const fakeDocument = {body: document.body};
+
+          [
+            'createElement',
+            'dispatchEvent',
+            'querySelectorAll',
+            'addEventListener',
+            'removeEventListener'
+          ].forEach(method => {
+            (fakeDocument as any)[method] = function() {
+              return (document as any)[method].apply(document, arguments);
+            };
+          });
+
+          Object.defineProperty(fakeDocument, 'activeElement', {
+            get: () => fakeActiveElement || document.activeElement
+          });
+
+          return fakeDocument;
+        }
+      }]
     }).compileComponents();
   });
 
@@ -292,6 +319,37 @@ describe('FocusMonitor', () => {
 
     expect(parent.classList).toContain('cdk-focused');
     expect(parent.classList).toContain('cdk-mouse-focused');
+  }));
+
+  it('focusVia should change the focus origin when called on the focused node', fakeAsync(() => {
+    spyOn(buttonElement, 'focus').and.callThrough();
+    focusMonitor.focusVia(buttonElement, 'keyboard');
+    flush();
+    fakeActiveElement = buttonElement;
+
+    expect(buttonElement.classList.length)
+        .toBe(2, 'button should have exactly 2 focus classes');
+    expect(buttonElement.classList.contains('cdk-focused'))
+        .toBe(true, 'button should have cdk-focused class');
+    expect(buttonElement.classList.contains('cdk-keyboard-focused'))
+        .toBe(true, 'button should have cdk-keyboard-focused class');
+    expect(changeHandler).toHaveBeenCalledTimes(1);
+    expect(changeHandler).toHaveBeenCalledWith('keyboard');
+    expect(buttonElement.focus).toHaveBeenCalledTimes(1);
+
+    focusMonitor.focusVia(buttonElement, 'mouse');
+    flush();
+    fakeActiveElement = buttonElement;
+
+    expect(buttonElement.classList.length)
+        .toBe(2, 'button should have exactly 2 focus classes');
+    expect(buttonElement.classList.contains('cdk-focused'))
+        .toBe(true, 'button should have cdk-focused class');
+    expect(buttonElement.classList.contains('cdk-mouse-focused'))
+        .toBe(true, 'button should have cdk-mouse-focused class');
+    expect(changeHandler).toHaveBeenCalledTimes(2);
+    expect(changeHandler).toHaveBeenCalledWith('mouse');
+    expect(buttonElement.focus).toHaveBeenCalledTimes(1);
   }));
 
 });

@@ -821,6 +821,9 @@ describe('MatMenu', () => {
     fixture.componentInstance.trigger.openMenu();
     fixture.detectChanges();
 
+    // Reset the automatic focus when the menu is opened.
+    (document.activeElement as HTMLElement)?.blur();
+
     const panel = overlayContainerElement.querySelector('.mat-menu-panel')!;
     const items = Array.from(panel.querySelectorAll('.mat-menu-item')) as HTMLElement[];
     items.forEach(patchElementFocus);

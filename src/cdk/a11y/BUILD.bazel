@@ -52,6 +52,7 @@ ng_test_library(
         "//src/cdk/platform",
         "//src/cdk/portal",
         "//src/cdk/testing/private",
+        "@npm//@angular/common",
         "@npm//@angular/platform-browser",
         "@npm//rxjs",
     ],

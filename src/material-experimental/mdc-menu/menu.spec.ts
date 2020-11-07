@@ -804,6 +804,9 @@ describe('MDC-based MatMenu', () => {
     fixture.componentInstance.trigger.openMenu();
     fixture.detectChanges();
 
+    // Reset the automatic focus when the menu is opened.
+    (document.activeElement as HTMLElement)?.blur();
+
     const panel = overlayContainerElement.querySelector('.mat-mdc-menu-panel')!;
     const items = Array.from(panel.querySelectorAll('.mat-mdc-menu-item')) as HTMLElement[];
     items.forEach(patchElementFocus);
