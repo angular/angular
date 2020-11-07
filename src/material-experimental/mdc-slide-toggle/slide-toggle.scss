@@ -13,6 +13,9 @@
 .mat-mdc-slide-toggle {
   display: inline-block;
 
+  // Remove the native outline since we use the ripple for focus indication.
+  outline: 0;
+
   // The ripple needs extra specificity so the base ripple styling doesn't override its `position`.
   .mat-mdc-slide-toggle-ripple, .mdc-switch__thumb-underlay::after {
     @include mat-fill;
