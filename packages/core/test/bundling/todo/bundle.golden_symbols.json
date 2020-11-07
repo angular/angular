@@ -261,9 +261,6 @@
     "name": "createLView"
   },
   {
-    "name": "createTNode"
-  },
-  {
     "name": "createTView"
   },
   {
@@ -517,9 +514,6 @@
   },
   {
     "name": "isProceduralRenderer"
-  },
-  {
-    "name": "isRootView"
   },
   {
     "name": "isStylingMatch"

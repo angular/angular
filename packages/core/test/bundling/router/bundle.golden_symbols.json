@@ -1071,9 +1071,6 @@
     "name": "createRouterScroller"
   },
   {
-    "name": "createTNode"
-  },
-  {
     "name": "createTView"
   },
   {
@@ -1567,9 +1564,6 @@
   },
   {
     "name": "isPromise"
-  },
-  {
-    "name": "isRootView"
   },
   {
     "name": "isScheduler"
