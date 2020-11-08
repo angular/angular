@@ -9,15 +9,7 @@
 import * as ts from 'typescript';
 
 import {copyFileShimData, ShimReferenceTagger} from '../../shims';
-
-/**
- * Represents the `ts.CompilerHost` interface, with a transformation applied that turns all
- * methods (even optional ones) into required fields (which may be `undefined`, if the method was
- * optional).
- */
-export type RequiredCompilerHostDelegations = {
-  [M in keyof Required<ts.CompilerHost>]: ts.CompilerHost[M];
-};
+import {RequiredDelegations} from '../../util/src/typescript';
 
 /**
  * Delegates all methods of `ts.CompilerHost` to a delegate, with the exception of
@@ -27,7 +19,7 @@ export type RequiredCompilerHostDelegations = {
  * generated for this class.
  */
 export class DelegatingCompilerHost implements
-    Omit<RequiredCompilerHostDelegations, 'getSourceFile'|'fileExists'|'writeFile'> {
+    Omit<RequiredDelegations<ts.CompilerHost>, 'getSourceFile'|'fileExists'|'writeFile'> {
   constructor(protected delegate: ts.CompilerHost) {}
 
   private delegateMethod<M extends keyof ts.CompilerHost>(name: M): ts.CompilerHost[M] {
