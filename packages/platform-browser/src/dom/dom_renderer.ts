@@ -234,9 +234,8 @@ class DefaultDomRenderer2 implements Renderer2 {
   }
 
   setStyle(el: any, style: string, value: any, flags: RendererStyleFlags2): void {
-    if (flags & RendererStyleFlags2.DashCase) {
-      el.style.setProperty(
-          style, value, !!(flags & RendererStyleFlags2.Important) ? 'important' : '');
+    if (flags & (RendererStyleFlags2.DashCase | RendererStyleFlags2.Important)) {
+      el.style.setProperty(style, value, flags & RendererStyleFlags2.Important ? 'important' : '');
     } else {
       el.style[style] = value;
     }
