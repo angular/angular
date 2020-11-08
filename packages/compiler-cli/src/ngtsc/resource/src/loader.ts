@@ -11,8 +11,12 @@ import * as ts from 'typescript';
 import {ResourceLoader} from '../../annotations';
 import {NgCompilerAdapter} from '../../core/api';
 import {AbsoluteFsPath, join, PathSegment} from '../../file_system';
+import {RequiredDelegations} from '../../util/src/typescript';
 
 const CSS_PREPROCESSOR_EXT = /(\.scss|\.sass|\.less|\.styl)$/;
+
+const RESOURCE_MARKER = '.$ngresource$';
+const RESOURCE_MARKER_TS = RESOURCE_MARKER + '.ts';
 
 /**
  * `ResourceLoader` which delegates to an `NgCompilerAdapter`'s resource loading methods.
@@ -20,6 +24,7 @@ const CSS_PREPROCESSOR_EXT = /(\.scss|\.sass|\.less|\.styl)$/;
 export class AdapterResourceLoader implements ResourceLoader {
   private cache = new Map<string, string>();
   private fetching = new Map<string, Promise<void>>();
+  private lookupResolutionHost = createLookupResolutionHost(this.adapter);
 
   canPreload = !!this.adapter.readResource;
 
@@ -167,7 +172,7 @@ export class AdapterResourceLoader implements ResourceLoader {
         ts.ResolvedModuleWithFailedLookupLocations&{failedLookupLocations: ReadonlyArray<string>};
 
     // clang-format off
-    const failedLookup = ts.resolveModuleName(url + '.$ngresource$', fromFile, this.options, this.adapter) as ResolvedModuleWithFailedLookupLocations;
+    const failedLookup = ts.resolveModuleName(url + RESOURCE_MARKER, fromFile, this.options, this.lookupResolutionHost) as ResolvedModuleWithFailedLookupLocations;
     // clang-format on
     if (failedLookup.failedLookupLocations === undefined) {
       throw new Error(
@@ -176,7 +181,40 @@ export class AdapterResourceLoader implements ResourceLoader {
     }
 
     return failedLookup.failedLookupLocations
-        .filter(candidate => candidate.endsWith('.$ngresource$.ts'))
-        .map(candidate => candidate.replace(/\.\$ngresource\$\.ts$/, ''));
+        .filter(candidate => candidate.endsWith(RESOURCE_MARKER_TS))
+        .map(candidate => candidate.slice(0, -RESOURCE_MARKER_TS.length));
   }
+}
+
+/**
+ * Derives a `ts.ModuleResolutionHost` from a compiler adapter that recognizes the special resource
+ * marker and does not go to the filesystem for these requests, as they are known not to exist.
+ */
+function createLookupResolutionHost(adapter: NgCompilerAdapter):
+    RequiredDelegations<ts.ModuleResolutionHost> {
+  return {
+    directoryExists(directoryName: string): boolean {
+      if (directoryName.includes(RESOURCE_MARKER)) {
+        return false;
+      } else if (adapter.directoryExists !== undefined) {
+        return adapter.directoryExists(directoryName);
+      } else {
+        // TypeScript's module resolution logic assumes that the directory exists when no host
+        // implementation is available.
+        return true;
+      }
+    },
+    fileExists(fileName: string): boolean {
+      if (fileName.includes(RESOURCE_MARKER)) {
+        return false;
+      } else {
+        return adapter.fileExists(fileName);
+      }
+    },
+    readFile: adapter.readFile.bind(adapter),
+    getCurrentDirectory: adapter.getCurrentDirectory.bind(adapter),
+    getDirectories: adapter.getDirectories?.bind(adapter),
+    realpath: adapter.realpath?.bind(adapter),
+    trace: adapter.trace?.bind(adapter),
+  };
 }
