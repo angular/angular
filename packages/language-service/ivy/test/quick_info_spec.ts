@@ -156,7 +156,7 @@ describe('quick info', () => {
       it('should work for event providers', () => {
         expectQuickInfo({
           templateOverride: `<test-comp (te¦st)="myClick($event)"></test-comp>`,
-          expectedSpanText: '(test)="myClick($event)"',
+          expectedSpanText: 'test',
           expectedDisplayString: '(event) TestComponent.testEvent: EventEmitter<any>'
         });
       });
@@ -164,12 +164,12 @@ describe('quick info', () => {
       it('should work for on- syntax binding', () => {
         expectQuickInfo({
           templateOverride: `<test-comp on-te¦st="myClick($event)"></test-comp>`,
-          expectedSpanText: 'on-test="myClick($event)"',
+          expectedSpanText: 'test',
           expectedDisplayString: '(event) TestComponent.testEvent: EventEmitter<any>'
         });
         expectQuickInfo({
           templateOverride: `<test-comp data-on-te¦st="myClick($event)"></test-comp>`,
-          expectedSpanText: 'data-on-test="myClick($event)"',
+          expectedSpanText: 'test',
           expectedDisplayString: '(event) TestComponent.testEvent: EventEmitter<any>'
         });
       });
