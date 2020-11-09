@@ -10,10 +10,6 @@ The projects below are not associated with a particular Angular version. We'll r
 
 We are actively investing up to 50% of our engineering capacity on triaging issues and PRs until we have a clear understanding of broader community needs. After that, we'll commit up to 20% of our engineering capacity to keep up with new submissions promptly.
 
-### Support TypeScript 4.0
-
-We're working on adding support for TypeScript 4.0 ahead of its stable release. We always want Angular to stay up-to-date with the latest version of TypeScript so that developers get the best the language has to offer.
-
 ### Update our e2e testing strategy
 
 To ensure we provide a future-proof e2e testing strategy, we want to evaluate the state of Protractor, community innovations, e2e best practices, and explore novel opportunities.
