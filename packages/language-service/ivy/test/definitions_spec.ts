@@ -235,7 +235,7 @@ describe('definitions', () => {
     it('should work for element reference declarations', () => {
       const definitions = getDefinitionsAndAssertBoundSpan({
         templateOverride: `<div #cha¦rt></div>{{chart}}`,
-        expectedSpanText: '#chart',
+        expectedSpanText: 'chart',
       });
       // We're already at the definition, so nothing is returned
       expect(definitions).toEqual([]);
@@ -249,7 +249,7 @@ describe('definitions', () => {
       expect(definitions!.length).toEqual(1);
 
       const [varDef] = definitions;
-      expect(varDef.textSpan).toEqual('#chart');
+      expect(varDef.textSpan).toEqual('chart');
     });
   });
 

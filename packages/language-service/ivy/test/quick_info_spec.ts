@@ -196,7 +196,7 @@ describe('quick info', () => {
     it('should work for element reference declarations', () => {
       const {documentation} = expectQuickInfo({
         templateOverride: `<div #¦chart></div>`,
-        expectedSpanText: '#chart',
+        expectedSpanText: 'chart',
         expectedDisplayString: '(reference) chart: HTMLDivElement'
       });
       expect(toText(documentation))
@@ -205,15 +205,23 @@ describe('quick info', () => {
               'interface it also has available to it by inheritance) for manipulating <div> elements.');
     });
 
+    it('should work for directive references', () => {
+      expectQuickInfo({
+        templateOverride: `<div string-model #dir¦Ref="stringModel"></div>`,
+        expectedSpanText: 'dirRef',
+        expectedDisplayString: '(reference) dirRef: StringModel'
+      });
+    });
+
     it('should work for ref- syntax', () => {
       expectQuickInfo({
         templateOverride: `<div ref-ch¦art></div>`,
-        expectedSpanText: 'ref-chart',
+        expectedSpanText: 'chart',
         expectedDisplayString: '(reference) chart: HTMLDivElement'
       });
       expectQuickInfo({
         templateOverride: `<div data-ref-ch¦art></div>`,
-        expectedSpanText: 'data-ref-chart',
+        expectedSpanText: 'chart',
         expectedDisplayString: '(reference) chart: HTMLDivElement'
       });
     });

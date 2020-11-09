@@ -355,7 +355,8 @@ class HtmlAstToIvyAst implements html.Visitor {
 
       } else if (bindParts[KW_REF_IDX]) {
         const identifier = bindParts[IDENT_KW_IDX];
-        this.parseReference(identifier, value, srcSpan, attribute.valueSpan, references);
+        const keySpan = createKeySpan(srcSpan, bindParts[KW_REF_IDX], identifier);
+        this.parseReference(identifier, value, srcSpan, keySpan, attribute.valueSpan, references);
       } else if (bindParts[KW_ON_IDX]) {
         const events: ParsedEvent[] = [];
         const identifier = bindParts[IDENT_KW_IDX];
@@ -447,7 +448,7 @@ class HtmlAstToIvyAst implements html.Visitor {
   }
 
   private parseReference(
-      identifier: string, value: string, sourceSpan: ParseSourceSpan,
+      identifier: string, value: string, sourceSpan: ParseSourceSpan, keySpan: ParseSourceSpan,
       valueSpan: ParseSourceSpan|undefined, references: t.Reference[]) {
     if (identifier.indexOf('-') > -1) {
       this.reportError(`"-" is not allowed in reference names`, sourceSpan);
@@ -455,7 +456,7 @@ class HtmlAstToIvyAst implements html.Visitor {
       this.reportError(`Reference does not have a name`, sourceSpan);
     }
 
-    references.push(new t.Reference(identifier, value, sourceSpan, valueSpan));
+    references.push(new t.Reference(identifier, value, sourceSpan, keySpan, valueSpan));
   }
 
   private parseAssignmentEvent(
