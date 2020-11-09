@@ -78,8 +78,10 @@ class R3AstSourceSpans implements t.Visitor<void> {
   }
 
   visitBoundEvent(event: t.BoundEvent) {
-    this.result.push(
-        ['BoundEvent', humanizeSpan(event.sourceSpan), humanizeSpan(event.handlerSpan)]);
+    this.result.push([
+      'BoundEvent', humanizeSpan(event.sourceSpan), humanizeSpan(event.keySpan),
+      humanizeSpan(event.handlerSpan)
+    ]);
   }
 
   visitText(text: t.Text) {
@@ -356,21 +358,21 @@ describe('R3 AST source spans', () => {
     it('is correct for event names case sensitive', () => {
       expectFromHtml('<div (someEvent)="v"></div>').toEqual([
         ['Element', '<div (someEvent)="v"></div>', '<div (someEvent)="v">', '</div>'],
-        ['BoundEvent', '(someEvent)="v"', 'v'],
+        ['BoundEvent', '(someEvent)="v"', 'someEvent', 'v'],
       ]);
     });
 
     it('is correct for bound events via on-', () => {
       expectFromHtml('<div on-event="v"></div>').toEqual([
         ['Element', '<div on-event="v"></div>', '<div on-event="v">', '</div>'],
-        ['BoundEvent', 'on-event="v"', 'v'],
+        ['BoundEvent', 'on-event="v"', 'event', 'v'],
       ]);
     });
 
     it('is correct for bound events via data-on-', () => {
       expectFromHtml('<div data-on-event="v"></div>').toEqual([
         ['Element', '<div data-on-event="v"></div>', '<div data-on-event="v">', '</div>'],
-        ['BoundEvent', 'data-on-event="v"', 'v'],
+        ['BoundEvent', 'data-on-event="v"', 'event', 'v'],
       ]);
     });
 
@@ -378,7 +380,7 @@ describe('R3 AST source spans', () => {
       expectFromHtml('<div [(prop)]="v"></div>').toEqual([
         ['Element', '<div [(prop)]="v"></div>', '<div [(prop)]="v">', '</div>'],
         ['BoundAttribute', '[(prop)]="v"', 'prop', 'v'],
-        ['BoundEvent', '[(prop)]="v"', 'v'],
+        ['BoundEvent', '[(prop)]="v"', 'prop', 'v'],
       ]);
     });
 
@@ -386,7 +388,7 @@ describe('R3 AST source spans', () => {
       expectFromHtml('<div bindon-prop="v"></div>').toEqual([
         ['Element', '<div bindon-prop="v"></div>', '<div bindon-prop="v">', '</div>'],
         ['BoundAttribute', 'bindon-prop="v"', 'prop', 'v'],
-        ['BoundEvent', 'bindon-prop="v"', 'v'],
+        ['BoundEvent', 'bindon-prop="v"', 'prop', 'v'],
       ]);
     });
 
@@ -394,7 +396,7 @@ describe('R3 AST source spans', () => {
       expectFromHtml('<div data-bindon-prop="v"></div>').toEqual([
         ['Element', '<div data-bindon-prop="v"></div>', '<div data-bindon-prop="v">', '</div>'],
         ['BoundAttribute', 'data-bindon-prop="v"', 'prop', 'v'],
-        ['BoundEvent', 'data-bindon-prop="v"', 'v'],
+        ['BoundEvent', 'data-bindon-prop="v"', 'prop', 'v'],
       ]);
     });
   });

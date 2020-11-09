@@ -361,9 +361,10 @@ class HtmlAstToIvyAst implements html.Visitor {
       } else if (bindParts[KW_ON_IDX]) {
         const events: ParsedEvent[] = [];
         const identifier = bindParts[IDENT_KW_IDX];
+        const keySpan = createKeySpan(srcSpan, bindParts[KW_ON_IDX], identifier);
         this.bindingParser.parseEvent(
-            identifier, value, srcSpan, attribute.valueSpan || srcSpan, matchableAttributes,
-            events);
+            identifier, value, srcSpan, attribute.valueSpan || srcSpan, matchableAttributes, events,
+            keySpan);
         addEvents(events, boundEvents);
       } else if (bindParts[KW_BINDON_IDX]) {
         const identifier = bindParts[IDENT_KW_IDX];
@@ -372,7 +373,8 @@ class HtmlAstToIvyAst implements html.Visitor {
             identifier, value, false, srcSpan, absoluteOffset, attribute.valueSpan,
             matchableAttributes, parsedProperties, keySpan);
         this.parseAssignmentEvent(
-            identifier, value, srcSpan, attribute.valueSpan, matchableAttributes, boundEvents);
+            identifier, value, srcSpan, attribute.valueSpan, matchableAttributes, boundEvents,
+            keySpan);
       } else if (bindParts[KW_AT_IDX]) {
         const keySpan = createKeySpan(srcSpan, '', name);
         this.bindingParser.parseLiteralAttr(
@@ -399,23 +401,23 @@ class HtmlAstToIvyAst implements html.Visitor {
         // TODO(ayazhafiz): update this to handle malformed bindings.
         name.endsWith(delims.end) && name.length > delims.start.length + delims.end.length) {
       const identifier = name.substring(delims.start.length, name.length - delims.end.length);
+      const keySpan = createKeySpan(srcSpan, delims.start, identifier);
       if (delims.start === BINDING_DELIMS.BANANA_BOX.start) {
-        const keySpan = createKeySpan(srcSpan, delims.start, identifier);
         this.bindingParser.parsePropertyBinding(
             identifier, value, false, srcSpan, absoluteOffset, attribute.valueSpan,
             matchableAttributes, parsedProperties, keySpan);
         this.parseAssignmentEvent(
-            identifier, value, srcSpan, attribute.valueSpan, matchableAttributes, boundEvents);
+            identifier, value, srcSpan, attribute.valueSpan, matchableAttributes, boundEvents,
+            keySpan);
       } else if (delims.start === BINDING_DELIMS.PROPERTY.start) {
-        const keySpan = createKeySpan(srcSpan, delims.start, identifier);
         this.bindingParser.parsePropertyBinding(
             identifier, value, false, srcSpan, absoluteOffset, attribute.valueSpan,
             matchableAttributes, parsedProperties, keySpan);
       } else {
         const events: ParsedEvent[] = [];
         this.bindingParser.parseEvent(
-            identifier, value, srcSpan, attribute.valueSpan || srcSpan, matchableAttributes,
-            events);
+            identifier, value, srcSpan, attribute.valueSpan || srcSpan, matchableAttributes, events,
+            keySpan);
         addEvents(events, boundEvents);
       }
 
@@ -463,11 +465,11 @@ class HtmlAstToIvyAst implements html.Visitor {
   private parseAssignmentEvent(
       name: string, expression: string, sourceSpan: ParseSourceSpan,
       valueSpan: ParseSourceSpan|undefined, targetMatchableAttrs: string[][],
-      boundEvents: t.BoundEvent[]) {
+      boundEvents: t.BoundEvent[], keySpan: ParseSourceSpan) {
     const events: ParsedEvent[] = [];
     this.bindingParser.parseEvent(
         `${name}Change`, `${expression}=$event`, sourceSpan, valueSpan || sourceSpan,
-        targetMatchableAttrs, events);
+        targetMatchableAttrs, events, keySpan);
     addEvents(events, boundEvents);
   }
 

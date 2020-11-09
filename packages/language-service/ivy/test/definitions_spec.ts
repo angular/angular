@@ -199,7 +199,7 @@ describe('definitions', () => {
       it('should work for event providers', () => {
         const definitions = getDefinitionsAndAssertBoundSpan({
           templateOverride: `<test-comp (te¦st)="myClick($event)"></test-comp>`,
-          expectedSpanText: '(test)="myClick($event)"',
+          expectedSpanText: 'test',
         });
         expect(definitions!.length).toEqual(1);
 
@@ -218,7 +218,7 @@ describe('definitions', () => {
       it('should return the directive when the event is part of the selector', () => {
         const definitions = getDefinitionsAndAssertBoundSpan({
           templateOverride: `<div (eventSelect¦or)="title = ''"></div>`,
-          expectedSpanText: `(eventSelector)="title = ''"`,
+          expectedSpanText: `eventSelector`,
         });
         expect(definitions!.length).toEqual(2);
 
