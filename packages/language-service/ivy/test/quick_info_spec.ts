@@ -295,7 +295,7 @@ describe('quick info', () => {
     it('should find input binding on text attribute', () => {
       expectQuickInfo({
         templateOverride: `<test-comp tcN¦ame="title"></test-comp>`,
-        expectedSpanText: 'tcName="title"',
+        expectedSpanText: 'tcName',
         expectedDisplayString: '(property) TestComponent.name: string'
       });
     });

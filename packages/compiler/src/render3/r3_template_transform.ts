@@ -166,7 +166,7 @@ class HtmlAstToIvyAst implements html.Visitor {
 
       if (!hasBinding && !isTemplateBinding) {
         // don't include the bindings as attributes as well in the AST
-        attributes.push(this.visitAttribute(attribute) as t.TextAttribute);
+        attributes.push(this.visitAttribute(attribute));
       }
     }
 
@@ -238,7 +238,8 @@ class HtmlAstToIvyAst implements html.Visitor {
 
   visitAttribute(attribute: html.Attribute): t.TextAttribute {
     return new t.TextAttribute(
-        attribute.name, attribute.value, attribute.sourceSpan, attribute.valueSpan, attribute.i18n);
+        attribute.name, attribute.value, attribute.sourceSpan, attribute.keySpan,
+        attribute.valueSpan, attribute.i18n);
   }
 
   visitText(text: html.Text): t.Node {
@@ -301,7 +302,8 @@ class HtmlAstToIvyAst implements html.Visitor {
       const i18n = i18nPropsMeta[prop.name];
       if (prop.isLiteral) {
         literal.push(new t.TextAttribute(
-            prop.name, prop.expression.source || '', prop.sourceSpan, undefined, i18n));
+            prop.name, prop.expression.source || '', prop.sourceSpan, prop.keySpan, prop.valueSpan,
+            i18n));
       } else {
         // Note that validation is skipped and property mapping is disabled
         // due to the fact that we need to make sure a given prop is not an
@@ -501,7 +503,8 @@ class NonBindableVisitor implements html.Visitor {
 
   visitAttribute(attribute: html.Attribute): t.TextAttribute {
     return new t.TextAttribute(
-        attribute.name, attribute.value, attribute.sourceSpan, undefined, attribute.i18n);
+        attribute.name, attribute.value, attribute.sourceSpan, attribute.keySpan,
+        attribute.valueSpan, attribute.i18n);
   }
 
   visitText(text: html.Text): t.Text {
