@@ -407,7 +407,7 @@
         },
         {
           "url": "guide/http",
-          "title": "HTTP Client",
+          "title": "HTTP 클라이언트",
           "//tooltip": "Use HTTP to talk to a remote server.",
           "tooltip": "HTTP로 서버와 통신해보세요."
         },

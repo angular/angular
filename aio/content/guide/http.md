@@ -643,17 +643,32 @@ A `download()` method in the `DownloaderComponent` initiates the request by subs
 
 {@a error-handling}
 
+<!--
 ## Handling request errors
+-->
+## HTTP 에러 처리하기
 
+<!--
 If the request fails on the server, `HttpClient` returns an _error_ object instead of a successful response.
 
 The same service that performs your server transactions should also perform error inspection, interpretation, and resolution.
 
 When an error occurs, you can obtain details of what failed in order to inform your user. In some cases, you might also automatically [retry the request](#retry).
+-->
+서버로 보낸 요청이 실패하면 `HttpClient`는 성공 응답 대신 _에러_ 객체를 반환합니다.
+그리고 이 에러 객체를 분석하면 왜 에러가 발생했는지 자세한 정보를 확인할 수 있습니다.
+상황에 따라 [요청을 다시 보낼](#retry)수도 있습니다.
+
+서버로 요청을 보내는 서비스는 에러도 함께 처리하는 것이 좋습니다.
+
 
 {@a error-details}
+<!--
 ### Getting error details
+-->
+### 에러 원인 확인하기
 
+<!--
 An app should give the user useful feedback when data access fails.
 A raw error object is not particularly useful as feedback.
 In addition to detecting that an error has occurred, you need to get error details and use those details to compose a user-friendly response.
@@ -682,11 +697,46 @@ The following code updates the `getConfig()` method, using a [pipe](guide/pipes 
   region="getConfig_3"
   header="app/config/config.service.ts (getConfig v.3 with error handler)">
 </code-example>
+-->
+서버로 보낸 요청이 실패하면 이 요청이 왜 실패했는지 사용자에게 알려주는 것이 좋습니다.
+이 때 에러 객체 자체를 표시하는 것은 유용하지 않습니다.
+에러에 대한 세부정보를 확인한 후에 사용자가 이해하기 쉬운 형태로 안내하는 것이 좋습니다.
+
+에러는 보통 두 가지 이유로 발생합니다.
+
+* 백엔드 서버가 요청을 거부하면 HTTP 응답의 상태 코드가 404나 500이 됩니다.
+이 응답은 에러 _응답_ 입니다.
+
+* 네트워크 에러 등 클라이언트쪽에서 뭔가가 잘못되어 요청을 완료하지 못했거나 RxJS 연산자에서 에러가 발생한 경우입니다.
+이 상황에서는 JavaScript `ErrorEvent` 객체가 생성됩니다.
+
+`HttpClient`는 두 가지 에러를 모두 `HttpErrorResponse`로 처리하기 때문에, 서버로 보낸 요청이 왜 실패했는지 확인하려면 에러가 왜 발생했는지 파악해야 합니다.
+
+아래 코드는 이전 섹션에서 작성했던 [ConfigService](#config-service "ConfigService defined")를 활용해서 에러를 처리하는 예제 코드입니다.
+
+<code-example
+  path="http/src/app/config/config.service.ts"
+  region="handleError"
+  header="app/config/config.service.ts (handleError())">
+</code-example>
+
+이 핸들러 함수는 사용자가 이해할 수 있는 메시지를 담아 RxJS `ErrorObservable`을 보냅니다.
+아래 코드는 `HttpClient.get()` 함수 실행 결과를 [파이프](guide/pipes "Pipes guide")로 연결해서 에러 처리 함수로 보내는 `getConfig()` 메서드 코드입니다.
+
+<code-example
+  path="http/src/app/config/config.service.ts"
+  region="getConfig_3"
+  header="app/config/config.service.ts (에러 처리 기능이 추가된 getConfig() v.3)">
+</code-example>
 
 
 {@a retry}
+<!--
 ### Retrying a failed request
+-->
+### 요청 재시도하기
 
+<!--
 Sometimes the error is transient and goes away automatically if you try again.
 For example, network interruptions are common in mobile scenarios, and trying again
 can produce a successful result.
@@ -700,6 +750,21 @@ The following example shows how you can pipe a failed request to the `retry()` o
   path="http/src/app/config/config.service.ts"
   region="getConfig"
   header="app/config/config.service.ts (getConfig with retry)">
+</code-example>
+-->
+HTTP 요청을 보냈을 때 발생한 에러가 일시적인 원인 때문이라면 자동으로 재시도를 하는것도 좋습니다.
+모바일 디바이스인 경우에는 네트워크가 끊어지는 상황이 많기 때문에 이런 경우도 자연스럽게 처리하면 사용자가 더 편하게 앱을 사용할 수 있습니다.
+
+[RxJS 라이브러리](guide/rx-library)가 제공하는 연산자 중에서 요청을 재시도할 때 활용할 수 있는 것들이 몇가지 있습니다.
+이 중 `retry()` 연산자는 실패한 `Observable`를 정해진 횟수까지 자동으로 재구독하는 연산자입니다.
+`HttpClient` 메서드가 반환한 에러 옵저버블을 다시 구독하면 HTTP 요청도 다시 발생합니다.
+
+아래 코드는 HTTPClient 메서드 실행결과를 에러 처리 함수에 전달하기 전에 `retry()` 연산자를 활용하는 `getConfig()` 메서드 코드입니다.
+
+<code-example
+  path="http/src/app/config/config.service.ts"
+  region="getConfig"
+  header="app/config/config.service.ts (재시도 기능이 추가된 getConfig())">
 </code-example>
 
 
@@ -769,7 +834,7 @@ that hero to the displayed `heroes` list.
 * *hero* - POST 메소드일 때 요청으로 보낼 body 데이터를 지정합니다.
 * *httpOptions* - HTTP 요청에 대한 옵션을 지정합니다. [헤더 추가하기](#adding-headers)에서 지정한 옵션입니다.
 
-The example catches errors as [described above](#error-details).
+이 코드가 실행되면서 에러가 발생하면 [위에서 설명했던 것처럼](#error-details) 처리됩니다.
 
 이제 `HeroesComponent`가 옵저버블을 구독하면 POST 요청이 발생하며, 서버의 응답으로 받은 내용은 `Observable` 타입으로 전달됩니다.
 
@@ -920,6 +985,7 @@ req.subscribe();
 -->
 ### PUT 요청 보내기
 
+<!--
 An app can send PUT requests using the HTTP client service.
 The following `HeroesService` example, like the POST example, replaces a resource with updated data.
 
@@ -930,14 +996,39 @@ The following `HeroesService` example, like the POST example, replaces a resourc
 </code-example>
 
 As for any of the HTTP methods that return an observable, the caller, `HeroesComponent.update()` [must `subscribe()`](#always-subscribe "Why you must always subscribe.") to the observable returned from the `HttpClient.put()` in order to initiate the request.
+-->
+HTTP 클라이언트 서비스를 활용하면 PUT 요청을 보낼 수 있습니다.
+아래 코드는 `HeroService` 예제 중에서 POST 예제와 비슷하지만 히어로 데이터를 갱신하기 위한 용도로 사용하는 예제 코드입니다.
 
+<code-example
+  path="http/src/app/heroes/heroes.service.ts"
+  region="updateHero"
+  header="app/heroes/heroes.service.ts (updateHero())">
+</code-example>
+
+HTTPClient가 제공하는 메서드가 모두 그렇듯, `put()` 메서드도 옵저버블을 반환하기 때문에 `HeroesComponent.update()` 메서드는 [반드시 `subscribe()`로 구독](#always-subscribe "Why you must always subscribe.")을 시작해야 실제 요청을 보냅니다.
+
+
+<!--
 ### Adding and updating headers
+-->
+### 헤더 추가/수정하기
 
+<!--
 Many servers require extra headers for save operations.
 For example, a server might require an authorization token, or "Content-Type" header to explicitly declare the MIME type of the request body.
+-->
+서버가 저장 동작을 수행할 때 필요한 추가 정보를 헤더로 받는 경우가 있습니다.
+인증 토큰을 요구한다던가 요청으로 보낸 내용의 MIME 타입을 결정하기 위해 "Content-Type"을 지정해야 하는 경우가 그렇습니다.
 
+
+{@a adding-headers}
+<!--
 ##### Adding headers
+-->
+##### 헤더 추가하기
 
+<!--
 The `HeroesService` defines such headers in an `httpOptions` object that are passed
 to every `HttpClient` save method.
 
@@ -946,9 +1037,22 @@ to every `HttpClient` save method.
   region="http-options"
   header="app/heroes/heroes.service.ts (httpOptions)">
 </code-example>
+-->
+`HeroService`는 `HttpClient` 메서드를 실행할 때 헤더를 추가로 지정하기 위해 다음과 같은 `httpOptions` 객체를 사용합니다.
 
+<code-example
+  path="http/src/app/heroes/heroes.service.ts"
+  region="http-options"
+  header="app/heroes/heroes.service.ts (httpOptions)">
+</code-example>
+
+
+<!--
 ##### Updating headers
+-->
+##### 헤더 수정하기
 
+<!--
 You can't directly modify the existing headers within the previous options
 object because instances of the `HttpHeaders` class are immutable.
 Use the `set()` method instead, to return a clone of the current instance with the new changes applied.
@@ -959,11 +1063,26 @@ The following example shows how, when an old token has expired, you can update t
   path="http/src/app/heroes/heroes.service.ts"
    region="update-headers" linenums="false">
 </code-example>
+-->
+`HttpHeaders` 클래스의 인스턴스는 이뮤터블 객체이기 때문에 이미 존재하는 헤더를 직접 수정할 수 없습니다.
+그래서 헤더의 내용을 변경하려면 `set()` 메서드를 실행하고 새로 생성되는 인스턴스를 활용해야 합니다.
+
+아래 예제 코드는 이미 만료된 인증 토큰을 새로운 토큰으로 갱신하는 예제 코드입니다.
+
+<code-example
+  path="http/src/app/heroes/heroes.service.ts"
+   region="update-headers" linenums="false">
+</code-example>
+
 
 {@a url-params}
 
+<!--
 ## Configuring HTTP URL parameters
+-->
+## HTTP URL 변수 활용하기
 
+<!--
 Use the `HttpParams` class with the `params` request option to add URL query strings in your `HttpRequest`.
 
 The following example, the `searchHeroes()` method queries for heroes whose names contain the search term.
@@ -989,6 +1108,33 @@ You can also create HTTP parameters directly from a query string by using the `f
 <code-example hideCopy language="typescript">
 const params = new HttpParams({fromString: 'name=foo'});
 </code-example>
+-->
+`HttpRequest` 옵션 중 `params`에 `HttpParams` 클래스를 활용하면 URL 쿼리 스트링을 인자로 전달할 수 있습니다.
+
+아래 예제는 히어로 이름에 특정 단어가 들어간 히어로 목록을 조회하는 `searchHeroes()` 메서드입니다.
+
+먼저, `HttpParams` 클래스를 로드합니다.
+
+<code-example hideCopy language="typescript">
+import {HttpParams} from "@angular/common/http";
+</code-example>
+
+<code-example
+  path="http/src/app/heroes/heroes.service.ts"
+  region="searchHeroes" linenums="false">
+</code-example>
+
+이 코드는 검색어가 전달되면 HTML URL 인코딩된 형태로 옵션 객체를 생성합니다.
+그래서 "cat"이라는 검색어가 전달되면 GET 요청을 보내는 URL은 `api/heroes?name=cat`dl ehlqslek.
+
+`HttpParams` 객체는 이뮤터블 객체입니다.
+그래서 옵션 항목의 값을 변경하려면 `.set()` 메서드를 실행했을 때 생성되는 객체를 활용하면 됩니다.
+
+`fromString` 필드를 사용하면 쿼리 스트링을 `HttpParams` 객체로 직접 변환할 수도 있습니다:
+
+<code-example hideCopy language="typescript">
+const params = new HttpParams({fromString: 'name=foo'});
+</code-example>
 
 
 {@a intercepting-requests-and-responses}
@@ -1008,9 +1154,8 @@ Interceptors can perform a variety of  _implicit_ tasks, from authentication to 
 Without interception, developers would have to implement these tasks _explicitly_
 for each `HttpClient` method call.
 -->
-With interception, you declare _interceptors_ that inspect and transform HTTP requests from your application to a server.
-The same interceptors can also inspect and transform a server's responses on their way back to the application.
-인터셉터는 여러 개가 순서대로 실행되도록 체이닝할 수도 있습니다.
+인터셉터를 활용하면 서버로 보내는 HTTP 요청을 가로채거나 변환할 수 있습니다.
+HTTP 요청에 적용된 인터셉터는 HTTP 응답에도 다시 활용될 수 있으며, 여러 개가 순서대로 실행되도록 체이닝할 수도 있습니다.
 
 인터셉터는 다양한 기능을 수행할 수 있습니다. 일반적으로는 HTTP 요청/응답에 대해 사용자 인증 정보를 확인하고 로그를 출력하기 위해 사용합니다.
 
@@ -1216,8 +1361,12 @@ If you need to enable and disable an interceptor dynamically, you'll have to bui
 
 {@a interceptor-events}
 
+<!--
 ### Handling interceptor events
+-->
+### 인터셉터 이벤트 처리하기
 
+<!--
 Most `HttpClient` methods return observables of `HttpResponse<any>`.
 The `HttpResponse` class itself is actually an event, whose type is `HttpEventType.Response`.
 A single HTTP request can, however, generate multiple events of other types, including upload and download progress events.
@@ -1225,9 +1374,20 @@ The methods `HttpInterceptor.intercept()` and `HttpHandler.handle()` return obse
 
 Many interceptors are only concerned with the outgoing request and return the event stream from `next.handle()` without modifying it.
 Some interceptors, however, need to examine and modify the response from `next.handle()`; these operations can see all of these events in the stream.
+-->
+`HttpClient` 메서드는 대부분 `HttpResponse<any>`를 옵저버블로 반환합니다.
+이 때 `HttpResponse` 클래스는 `HttpEventType.Response`이 지정되어 있기 때문에 그 자체로도 이벤트 하나를 표현합니다.
+그런데 HTTP 요청 하나가 처리되는 동안 다른 타입값으로 여러번 이벤트가 발생할 수 있습니다.
+업로드하거나 다운로드할 때 전달되는 진행률 이벤트가 그렇습니다.
+`HttpInterceptor.intercept()`와 `HttpHandler.handle()` 메서드는 모두 `HttpEvent<any>`를 옵저버블로 반환합니다.
+
+일반적으로 인터셉터는 외부로 보내는 요청에만 적용하고 `next.handle()`로 받아오는 방식으로 사용합니다.
+그런데 `next.handle()`이 반환하는 옵저버블을 활용하면 스트림으로 전달되는 응답 이벤트의 형태를 변환할 수 있습니다.
+
 
 {@a immutability}
 
+<!--
 Although interceptors are capable of modifying requests and responses,
 the `HttpRequest` and `HttpResponse` instance properties are `readonly`,
 rendering them largely immutable.
@@ -1257,9 +1417,44 @@ You can clone and modify the request in a single step, as shown in the following
 </code-example>
 
 The `clone()` method's hash argument allows you to mutate specific properties of the request while copying the others.
+-->
+인터셉터가 요청이나 응답을 조작할 수는 있지만 `HttpRequest` 인스턴스와 `HttpResponse` 인스턴스의 프로퍼티는 `readonly`이기 때문에 이뮤터블입니다.
+이 프로퍼티들이 이뮤터블인 이유가 있습니다.
+앱에서 보낸 요청이 실패하면 재시도하는 경우가 있는데, 이 때마다 인터셉터가 체이닝되면 인터셉터가 같은 요청을 여러번 처리할 수 있습니다.
+그래서 인터셉터는 기존에 보냈던 요청은 그대로 두고 새로운 객체를 받아서 변환 작업을 하는 것이 안전합니다.
+결국 인터셉터가 요청으로 보내는 객체를 한 번만 처리하는 것을 보장하기 위해 이뮤터블이 사용됩니다.
 
+<div class="alert is-helpful">
+
+특별한 이유가 없다면 인터셉터가 변환하지 않는 이벤트 객체도 그대로 반환해야 합니다.
+
+</div>
+
+다음과 같이 `HttpRequest` 읽기 전용 프로퍼티를 변경하는 코드는 TypeScript가 막기 때문에 사용할 수 없습니다.
+
+```javascript
+  // req.url은 readonly 로 지정되었기 때문에 TypeScript 에러가 발생합니다.
+  req.url = req.url.replace('http://', 'https://');
+```
+
+그래서 요청을 조작하려면 먼저 이 요청을 복제한 후에 복제된 객체를 `next.handle()` 함수로 전달해야 합니다.
+요청으로 보내는 객체의 값은 한 번에 하나만 변경할 수 있습니다.
+
+<code-example
+  path="http/src/app/http-interceptors/ensure-https-interceptor.ts"
+  region="excerpt"
+  header="app/http-interceptors/ensure-https-interceptor.ts (일부)">
+</code-example>
+
+`clone()` 메서드는 해시 인자를 활용하기 때문에 특정 프로퍼티 값을 변경하더라도 나머지 프로퍼티 값은 그대로 사용할 수 있습니다.
+
+
+<!--
 #### Modifying a request body
+-->
+#### 요청 바디 변환하기
 
+<!--
 The `readonly` assignment guard can't prevent deep updates and, in particular,
 it can't prevent you from modifying a property of a request body object.
 
@@ -1278,9 +1473,32 @@ If you must modify the request body, follow these steps.
   region="excerpt"
   header="app/http-interceptors/trim-name-interceptor.ts (excerpt)">
 </code-example>
+-->
+`readonly` 가드는 특정 필드의 값이 변경되는 것을 방지하기 때문에, 다음과 같이 요청으로 보내는 필드의 값을 직접 변경할 수 없습니다.
 
+```javascript
+  req.body.name = req.body.name.trim(); // 이렇게 사용할 수 없습니다!
+```
+
+그래서 요청으로 보내는 바디를 조작해야 한다면 이렇게 해야 합니다.
+
+1. 요청 객체의 바디를 복사해서 원하는 대로 수정합니다.
+2. `clone()` 메서드를 실행해서 요청 객체를 복제합니다.
+3. 복제한 요청 객체의 바디를 수정한 바디로 교체합니다.
+
+<code-example
+  path="http/src/app/http-interceptors/trim-name-interceptor.ts"
+  region="excerpt"
+  header="app/http-interceptors/trim-name-interceptor.ts (일부)">
+</code-example>
+
+
+<!--
 #### Clearing the request body in a clone
+-->
+#### 요청으로 보내는 바디 비우기
 
+<!--
 Sometimes you need to clear the request body rather than replace it.
 To do this, set the cloned request body to `null`.
 
@@ -1295,6 +1513,22 @@ To do this, set the cloned request body to `null`.
   newReq = req.clone({ body: undefined }); // preserve original body
   newReq = req.clone({ body: null }); // clear the body
 ```
+-->
+어떤 경우에는 요청으로 보내는 바디를 교체하는 것이 아니라 비워야 할 떄가 있습니다.
+이 경우에는 요청으로 보내는 바디를 `null` 값으로 지정하면서 복제하면 됩니다.
+
+<div class="alert is-helpful">
+
+**팁**: 요청 바디를 `undefined` 값으로 지정하면 Angular는 이 바디를 비우지 않는 것으로 간주합니다.
+
+</div>
+
+```javascript
+  newReq = req.clone({ ... }); // 기존 바디를 유지합니다.
+  newReq = req.clone({ body: undefined }); // 기존 바디를 유지합니다.
+  newReq = req.clone({ body: null }); // 바디의 내용을 비웁니다.
+```
+
 
 <!--
 ### Setting default headers
@@ -1351,7 +1585,10 @@ An interceptor that alters headers can be used for a number of different operati
 * XSRF 보안
 
 
+<!--
 ### Using interceptors for logging
+-->
+### 인터셉터를 로그로 활용하기
 
 <!--
 Because interceptors can process the request and response _together_, they can perform tasks such as timing and logging an entire HTTP operation.
