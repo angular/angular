@@ -30,7 +30,8 @@
             "styles": [
               "src/styles.css"
             ],
-            "scripts": []
+            "scripts": [],
+            "progress": false
           },
           "configurations": {
             "production": {
@@ -70,6 +71,13 @@
           "configurations": {
             "production": {
               "browserTarget": "ivy-trusted-types:build:production"
+            },
+            "ci": {
+              "progress": false
+            },
+            "ci-production": {
+              "browserTarget": "ivy-trusted-types:build:production",
+              "progress": false
             }
           }
         },
@@ -93,7 +101,9 @@
             "styles": [
               "src/styles.css"
             ],
-            "scripts": []
+            "scripts": [],
+            "progress": false,
+            "watch": false
           }
         },
         "lint": {
@@ -113,11 +123,18 @@
           "builder": "@angular-devkit/build-angular:protractor",
           "options": {
             "protractorConfig": "e2e/protractor.conf.js",
-            "devServerTarget": "ivy-trusted-types:serve"
+            "devServerTarget": "ivy-trusted-types:serve",
+            "webdriverUpdate": false
           },
           "configurations": {
             "production": {
               "devServerTarget": "ivy-trusted-types:serve:production"
+            },
+            "ci": {
+              "devServerTarget": "ivy-trusted-types:serve:ci"
+            },
+            "ci-production": {
+              "devServerTarget": "ivy-trusted-types:serve:ci-production"
             }
           }
         }
