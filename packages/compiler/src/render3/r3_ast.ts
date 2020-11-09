@@ -139,7 +139,7 @@ export class Variable implements Node {
 export class Reference implements Node {
   constructor(
       public name: string, public value: string, public sourceSpan: ParseSourceSpan,
-      public valueSpan?: ParseSourceSpan) {}
+      readonly keySpan: ParseSourceSpan, public valueSpan?: ParseSourceSpan) {}
   visit<Result>(visitor: Visitor<Result>): Result {
     return visitor.visitReference(this);
   }

@@ -59,8 +59,10 @@ class R3AstSourceSpans implements t.Visitor<void> {
   }
 
   visitReference(reference: t.Reference) {
-    this.result.push(
-        ['Reference', humanizeSpan(reference.sourceSpan), humanizeSpan(reference.valueSpan)]);
+    this.result.push([
+      'Reference', humanizeSpan(reference.sourceSpan), humanizeSpan(reference.keySpan),
+      humanizeSpan(reference.valueSpan)
+    ]);
   }
 
   visitTextAttribute(attribute: t.TextAttribute) {
@@ -211,7 +213,7 @@ describe('R3 AST source spans', () => {
     it('is correct for reference via #...', () => {
       expectFromHtml('<ng-template #a></ng-template>').toEqual([
         ['Template', '<ng-template #a></ng-template>', '<ng-template #a>', '</ng-template>'],
-        ['Reference', '#a', '<empty>'],
+        ['Reference', '#a', 'a', '<empty>'],
       ]);
     });
 
@@ -220,14 +222,14 @@ describe('R3 AST source spans', () => {
         [
           'Template', '<ng-template #a="b"></ng-template>', '<ng-template #a="b">', '</ng-template>'
         ],
-        ['Reference', '#a="b"', 'b'],
+        ['Reference', '#a="b"', 'a', 'b'],
       ]);
     });
 
     it('is correct for reference via ref-...', () => {
       expectFromHtml('<ng-template ref-a></ng-template>').toEqual([
         ['Template', '<ng-template ref-a></ng-template>', '<ng-template ref-a>', '</ng-template>'],
-        ['Reference', 'ref-a', '<empty>'],
+        ['Reference', 'ref-a', 'a', '<empty>'],
       ]);
     });
 
@@ -237,7 +239,7 @@ describe('R3 AST source spans', () => {
           'Template', '<ng-template data-ref-a></ng-template>', '<ng-template data-ref-a>',
           '</ng-template>'
         ],
-        ['Reference', 'data-ref-a', '<empty>'],
+        ['Reference', 'data-ref-a', 'a', '<empty>'],
       ]);
     });
 
@@ -405,28 +407,28 @@ describe('R3 AST source spans', () => {
     it('is correct for references via #...', () => {
       expectFromHtml('<div #a></div>').toEqual([
         ['Element', '<div #a></div>', '<div #a>', '</div>'],
-        ['Reference', '#a', '<empty>'],
+        ['Reference', '#a', 'a', '<empty>'],
       ]);
     });
 
     it('is correct for references with name', () => {
       expectFromHtml('<div #a="b"></div>').toEqual([
         ['Element', '<div #a="b"></div>', '<div #a="b">', '</div>'],
-        ['Reference', '#a="b"', 'b'],
+        ['Reference', '#a="b"', 'a', 'b'],
       ]);
     });
 
     it('is correct for references via ref-', () => {
       expectFromHtml('<div ref-a></div>').toEqual([
         ['Element', '<div ref-a></div>', '<div ref-a>', '</div>'],
-        ['Reference', 'ref-a', '<empty>'],
+        ['Reference', 'ref-a', 'a', '<empty>'],
       ]);
     });
 
     it('is correct for references via data-ref-', () => {
       expectFromHtml('<div ref-a></div>').toEqual([
         ['Element', '<div ref-a></div>', '<div ref-a>', '</div>'],
-        ['Reference', 'ref-a', '<empty>'],
+        ['Reference', 'ref-a', 'a', '<empty>'],
       ]);
     });
   });
