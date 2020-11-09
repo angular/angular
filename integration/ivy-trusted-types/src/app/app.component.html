@@ -530,5 +530,18 @@
 <!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
 
 
+<div id="trusted-types">
+  <h1>Trusted Types tests</h1>
+
+  <div id="bound-html" [innerHTML]="html"></div>
+  <div id="bound-safehtml" [innerHTML]="safeHtml"></div>
+  <div id="outerhtml">
+    <span [outerHTML]="replace">Hello from first outerHTML</span>
+  </div>
+
+  <embed id="trusted-types-embed" src="data:text/html,&lt;body&gt;&lt;h1&gt;Hello from embed&lt;/h1&gt;&lt;/body&gt;" />
+  <iframe id="trusted-types-iframe" [srcdoc]="iframeHtml"></iframe>
+  <object id="trusted-types-object" [data]="safeResourceUrl" codebase="/"></object>
+</div>
 
 <router-outlet></router-outlet>
