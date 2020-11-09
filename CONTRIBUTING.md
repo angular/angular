@@ -119,6 +119,9 @@ Before you submit your Pull Request (PR) consider the following guidelines:
 
 11. In GitHub, send a pull request to `angular:master`.
 
+### Reviewing a Pull Request
+
+The Angular team reserves the right not to accept pull requests from community members who haven't been good citizens of the community. Such behavior includes not following the [Angular code of conduct](https://github.com/angular/code-of-conduct) and applies within or outside of Angular managed channels.
 
 #### Addressing review feedback
 
