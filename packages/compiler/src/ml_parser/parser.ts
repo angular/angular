@@ -351,9 +351,10 @@ class _TreeBuilder {
       const quoteToken = this._advance();
       end = quoteToken.sourceSpan.end;
     }
+    const keySpan = new ParseSourceSpan(attrName.sourceSpan.start, attrName.sourceSpan.end);
     return new html.Attribute(
         fullName, value,
-        new ParseSourceSpan(attrName.sourceSpan.start, end, attrName.sourceSpan.fullStart),
+        new ParseSourceSpan(attrName.sourceSpan.start, end, attrName.sourceSpan.fullStart), keySpan,
         valueSpan);
   }
 

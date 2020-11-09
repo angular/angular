@@ -135,7 +135,7 @@ describe('definitions', () => {
       it('should work for text inputs', () => {
         const definitions = getDefinitionsAndAssertBoundSpan({
           templateOverride: `<test-comp tcN¦ame="name"></test-comp>`,
-          expectedSpanText: 'tcName="name"',
+          expectedSpanText: 'tcName',
         });
         expect(definitions!.length).toEqual(1);
 

@@ -30,10 +30,17 @@ export class BoundText implements Node {
   }
 }
 
+/**
+ * Represents a text attribute in the template.
+ *
+ * `valueSpan` may not be present in cases where there is no value `<div a></div>`.
+ * `keySpan` may also not be present for synthetic attributes from ICU expansions.
+ */
 export class TextAttribute implements Node {
   constructor(
       public name: string, public value: string, public sourceSpan: ParseSourceSpan,
-      public valueSpan?: ParseSourceSpan, public i18n?: I18nMeta) {}
+      readonly keySpan: ParseSourceSpan|undefined, public valueSpan?: ParseSourceSpan,
+      public i18n?: I18nMeta) {}
   visit<Result>(visitor: Visitor<Result>): Result {
     return visitor.visitTextAttribute(this);
   }
