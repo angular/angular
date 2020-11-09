@@ -1,3 +1,18 @@
+<a name="11.0.0-rc.3"></a>
+# 11.0.0-rc.3 (2020-11-09)
+
+
+### Bug Fixes
+
+* **compiler:** ensure that i18n message-parts have the correct source-span ([#39486](https://github.com/angular/angular/issues/39486)) ([63f9e16](https://github.com/angular/angular/commit/63f9e16))
+* **compiler:** skipping leading whitespace should not break placeholder source-spans ([#39486](https://github.com/angular/angular/issues/39486)) ([b8e9b3d](https://github.com/angular/angular/commit/b8e9b3d)), closes [#39195](https://github.com/angular/angular/issues/39195)
+* **compiler-cli:** avoid duplicate diagnostics about unknown pipes ([#39517](https://github.com/angular/angular/issues/39517)) ([c68ca49](https://github.com/angular/angular/commit/c68ca49))
+* **compiler-cli:** do not drop non-Angular decorators when downleveling ([#39577](https://github.com/angular/angular/issues/39577)) ([f51cf29](https://github.com/angular/angular/commit/f51cf29)), closes [#39574](https://github.com/angular/angular/issues/39574)
+* **core:** Access injected parent values using SelfSkip ([#39464](https://github.com/angular/angular/issues/39464)) ([7cb9e19](https://github.com/angular/angular/commit/7cb9e19))
+* **elements:** update the view of an `OnPush` component when inputs change ([#39452](https://github.com/angular/angular/issues/39452)) ([dd28855](https://github.com/angular/angular/commit/dd28855)), closes [/github.com/angular/angular/blob/3236ae0ee118d0734c90fa9f3767435396213470/packages/upgrade/src/common/src/downgrade_component_adapter.ts#L146](https://github.com//github.com/angular/angular/blob/3236ae0ee118d0734c90fa9f3767435396213470/packages/upgrade/src/common/src/downgrade_component_adapter.ts/issues/L146) [#38948](https://github.com/angular/angular/issues/38948)
+
+
+
 <a name="10.2.3"></a>
 ## 10.2.3 (2020-11-09)
 
