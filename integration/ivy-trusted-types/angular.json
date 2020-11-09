@@ -66,7 +66,10 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "ivy-trusted-types:build"
+            "browserTarget": "ivy-trusted-types:build",
+            "headers": {
+              "Content-Security-Policy": "trusted-types angular angular#unsafe-bypass; require-trusted-types-for 'script';"
+            }
           },
           "configurations": {
             "production": {
