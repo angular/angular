@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ApplicationRef} from '../application_ref';
 import {ChangeDetectorRef} from '../change_detection/change_detection';
 import {Injector} from '../di/injector';
 import {InjectFlags} from '../di/interface/injector';
@@ -17,13 +16,13 @@ import {ElementRef} from '../linker/element_ref';
 import {InternalNgModuleRef, NgModuleRef} from '../linker/ng_module_factory';
 import {TemplateRef} from '../linker/template_ref';
 import {ViewContainerRef} from '../linker/view_container_ref';
-import {EmbeddedViewRef, InternalViewRef, ViewRef} from '../linker/view_ref';
+import {EmbeddedViewRef, InternalViewRef, ViewRef, ViewRefTracker} from '../linker/view_ref';
 import {stringify} from '../util/stringify';
 import {VERSION} from '../version';
 
 import {callNgModuleLifecycle, initNgModule, resolveNgModuleDep} from './ng_module';
 import {asElementData, asProviderData, asTextData, DepFlags, ElementData, NgModuleData, NgModuleDefinition, NodeDef, NodeFlags, Services, TemplateData, ViewContainerData, ViewData, ViewDefinitionFactory, ViewState} from './types';
-import {markParentViewsForCheck, resolveDefinition, rootRenderNodes, splitNamespace, tokenKey, viewParentEl} from './util';
+import {markParentViewsForCheck, resolveDefinition, rootRenderNodes, tokenKey, viewParentEl} from './util';
 import {attachEmbeddedView, detachEmbeddedView, moveEmbeddedView, renderDetachView} from './view_attach';
 
 const EMPTY_CONTEXT = {};
@@ -249,7 +248,7 @@ export class ViewRef_ implements EmbeddedViewRef<any>, InternalViewRef {
   /** @internal */
   _view: ViewData;
   private _viewContainerRef: ViewContainerRef|null;
-  private _appRef: ApplicationRef|null;
+  private _appRef: ViewRefTracker|null;
 
   constructor(_view: ViewData) {
     this._view = _view;
@@ -317,7 +316,7 @@ export class ViewRef_ implements EmbeddedViewRef<any>, InternalViewRef {
     Services.dirtyParentQueries(this._view);
   }
 
-  attachToAppRef(appRef: ApplicationRef) {
+  attachToAppRef(appRef: ViewRefTracker) {
     if (this._viewContainerRef) {
       throw new Error('This view is already attached to a ViewContainer!');
     }
