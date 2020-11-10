@@ -11,7 +11,7 @@
 
 import {InjectionToken} from '../di/injection_token';
 import {Type} from '../interface/type';
-import {ElementRef as ViewEngine_ElementRef} from '../linker/element_ref';
+import {createElementRef, ElementRef as ViewEngine_ElementRef} from '../linker/element_ref';
 import {QueryList} from '../linker/query_list';
 import {TemplateRef as ViewEngine_TemplateRef} from '../linker/template_ref';
 import {ViewContainerRef} from '../linker/view_container_ref';
@@ -30,7 +30,7 @@ import {DECLARATION_LCONTAINER, LView, PARENT, QUERIES, TVIEW, TView} from './in
 import {assertTNodeType} from './node_assert';
 import {getCurrentQueryIndex, getCurrentTNode, getLView, getTView, setCurrentQueryIndex} from './state';
 import {isCreationMode} from './util/view_utils';
-import {createContainerRef, createElementRef, createTemplateRef} from './view_engine_compatibility';
+import {createContainerRef, createTemplateRef} from './view_engine_compatibility';
 
 const unusedValueToPlacateAjd = unused1 + unused2 + unused3 + unused4;
 
@@ -300,9 +300,9 @@ function getIdxOfMatchingSelector(tNode: TNode, selector: string): number|null {
 
 function createResultByTNodeType(tNode: TNode, currentView: LView): any {
   if (tNode.type & (TNodeType.AnyRNode | TNodeType.ElementContainer)) {
-    return createElementRef(ViewEngine_ElementRef, tNode, currentView);
+    return createElementRef(tNode, currentView);
   } else if (tNode.type & TNodeType.Container) {
-    return createTemplateRef(ViewEngine_TemplateRef, ViewEngine_ElementRef, tNode, currentView);
+    return createTemplateRef(ViewEngine_TemplateRef, tNode, currentView);
   }
   return null;
 }
@@ -323,14 +323,13 @@ function createResultForNode(lView: LView, tNode: TNode, matchingIdx: number, re
 
 function createSpecialToken(lView: LView, tNode: TNode, read: any): any {
   if (read === ViewEngine_ElementRef) {
-    return createElementRef(ViewEngine_ElementRef, tNode, lView);
+    return createElementRef(tNode, lView);
   } else if (read === ViewEngine_TemplateRef) {
-    return createTemplateRef(ViewEngine_TemplateRef, ViewEngine_ElementRef, tNode, lView);
+    return createTemplateRef(ViewEngine_TemplateRef, tNode, lView);
   } else if (read === ViewContainerRef) {
     ngDevMode && assertTNodeType(tNode, TNodeType.AnyRNode | TNodeType.AnyContainer);
     return createContainerRef(
-        ViewContainerRef, ViewEngine_ElementRef,
-        tNode as TElementNode | TContainerNode | TElementContainerNode, lView);
+        ViewContainerRef, tNode as TElementNode | TContainerNode | TElementContainerNode, lView);
   } else {
     ngDevMode &&
         throwError(
