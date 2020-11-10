@@ -43,31 +43,97 @@ const NOOP_FILE_WATCHER: ts.FileWatcher = {
   close() {}
 };
 
-export const host: ts.server.ServerHost = {
-  ...ts.sys,
-  readFile(absPath: string, encoding?: string): string |
-      undefined {
-        return ts.sys.readFile(absPath, encoding);
-      },
-  watchFile(path: string, callback: ts.FileWatcherCallback): ts.FileWatcher {
-    return NOOP_FILE_WATCHER;
-  },
-  watchDirectory(path: string, callback: ts.DirectoryWatcherCallback): ts.FileWatcher {
-    return NOOP_FILE_WATCHER;
-  },
-  setTimeout() {
-    throw new Error('setTimeout is not implemented');
-  },
-  clearTimeout() {
-    throw new Error('clearTimeout is not implemented');
-  },
-  setImmediate() {
-    throw new Error('setImmediate is not implemented');
-  },
-  clearImmediate() {
-    throw new Error('clearImmediate is not implemented');
-  },
-};
+class MockWatcher implements ts.FileWatcher {
+  constructor(
+      private readonly fileName: string,
+      private readonly cb: ts.FileWatcherCallback,
+      readonly close: () => void,
+  ) {}
+
+  changed() {
+    this.cb(this.fileName, ts.FileWatcherEventKind.Changed);
+  }
+
+  deleted() {
+    this.cb(this.fileName, ts.FileWatcherEventKind.Deleted);
+  }
+}
+
+/**
+ * A mock file system impacting configuration files.
+ * Queries for all other files are deferred to the underlying filesystem.
+ */
+export class MockConfigFileFs implements
+    Pick<ts.server.ServerHost, 'readFile'|'fileExists'|'watchFile'> {
+  private configOverwrites = new Map<string, string>();
+  private configFileWatchers = new Map<string, MockWatcher>();
+
+  overwriteConfigFile(configFile: string, contents: string) {
+    if (!configFile.endsWith('.json')) {
+      throw new Error(`${configFile} is not a configuration file.`);
+    }
+    this.configOverwrites.set(configFile, contents);
+    this.configFileWatchers.get(configFile)?.changed();
+  }
+
+  readFile(file: string, encoding?: string): string|undefined {
+    const read = this.configOverwrites.get(file) ?? ts.sys.readFile(file, encoding);
+    return read;
+  }
+
+  fileExists(file: string): boolean {
+    return this.configOverwrites.has(file) || ts.sys.fileExists(file);
+  }
+
+  watchFile(path: string, callback: ts.FileWatcherCallback) {
+    if (!path.endsWith('.json')) {
+      // We only care about watching config files.
+      return NOOP_FILE_WATCHER;
+    }
+    const watcher = new MockWatcher(path, callback, () => {
+      this.configFileWatchers.delete(path);
+    });
+    this.configFileWatchers.set(path, watcher);
+    return watcher;
+  }
+
+  clear() {
+    this.configOverwrites.clear();
+    this.configFileWatchers.clear();
+  }
+}
+
+function createHost(configFileFs: MockConfigFileFs): ts.server.ServerHost {
+  return {
+    ...ts.sys,
+    fileExists(absPath: string): boolean {
+      return configFileFs.fileExists(absPath);
+    },
+    readFile(absPath: string, encoding?: string): string |
+        undefined {
+          return configFileFs.readFile(absPath, encoding);
+        },
+    watchFile(path: string, callback: ts.FileWatcherCallback): ts.FileWatcher {
+      return configFileFs.watchFile(path, callback);
+    },
+    watchDirectory(path: string, callback: ts.DirectoryWatcherCallback): ts.FileWatcher {
+      return NOOP_FILE_WATCHER;
+    },
+    setTimeout() {
+      throw new Error('setTimeout is not implemented');
+    },
+    clearTimeout() {
+      throw new Error('clearTimeout is not implemented');
+    },
+    setImmediate() {
+      throw new Error('setImmediate is not implemented');
+    },
+    clearImmediate() {
+      throw new Error('clearImmediate is not implemented');
+    },
+  };
+}
+
 
 /**
  * Create a ConfiguredProject and an actual program for the test project located
@@ -76,8 +142,9 @@ export const host: ts.server.ServerHost = {
  * and modify test files.
  */
 export function setup() {
+  const configFileFs = new MockConfigFileFs();
   const projectService = new ts.server.ProjectService({
-    host,
+    host: createHost(configFileFs),
     logger,
     cancellationToken: ts.server.nullCancellationToken,
     useSingleInferredProject: true,
@@ -97,6 +164,7 @@ export function setup() {
     service: new MockService(project, projectService),
     project,
     tsLS,
+    configFileFs,
   };
 }
 

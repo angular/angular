@@ -8,32 +8,65 @@
 
 import * as ts from 'typescript/lib/tsserverlibrary';
 
-import {LanguageService, parseNgCompilerOptions} from '../../language_service';
+import {LanguageService} from '../../language_service';
 
-import {MockService, setup, TEST_TEMPLATE} from './mock_host';
+import {MockConfigFileFs, MockService, setup, TEST_TEMPLATE, TSCONFIG} from './mock_host';
 
 describe('language service adapter', () => {
   let project: ts.server.Project;
   let service: MockService;
   let ngLS: LanguageService;
+  let configFileFs: MockConfigFileFs;
 
   beforeAll(() => {
-    const {project: _project, tsLS, service: _service} = setup();
+    const {project: _project, tsLS, service: _service, configFileFs: _configFileFs} = setup();
     project = _project;
     service = _service;
     ngLS = new LanguageService(project, tsLS);
+    configFileFs = _configFileFs;
   });
 
-  describe('parseNgCompilerOptions', () => {
-    it('should read angularCompilerOptions in tsconfig.json', () => {
-      const options = parseNgCompilerOptions(project);
-      expect(options).toEqual(jasmine.objectContaining({
+  afterEach(() => {
+    configFileFs.clear();
+  });
+
+  describe('parse compiler options', () => {
+    beforeEach(() => {
+      // Need to reset project on each test to reinitialize file watchers.
+      const {project: _project, tsLS, service: _service, configFileFs: _configFileFs} = setup();
+      project = _project;
+      service = _service;
+      configFileFs = _configFileFs;
+      ngLS = new LanguageService(project, tsLS);
+    });
+
+    it('should initialize with angularCompilerOptions from tsconfig.json', () => {
+      expect(ngLS.getCompilerOptions()).toEqual(jasmine.objectContaining({
         enableIvy: true,  // default for ivy is true
         strictTemplates: true,
         strictInjectionParameters: true,
       }));
     });
+
+    it('should reparse angularCompilerOptions on tsconfig.json change', () => {
+      expect(ngLS.getCompilerOptions()).toEqual(jasmine.objectContaining({
+        enableIvy: true,  // default for ivy is true
+        strictTemplates: true,
+        strictInjectionParameters: true,
+      }));
+
+      configFileFs.overwriteConfigFile(TSCONFIG, `{
+         "angularCompilerOptions": {
+           "strictTemplates": false
+         }
+       }`);
+
+      expect(ngLS.getCompilerOptions()).toEqual(jasmine.objectContaining({
+        strictTemplates: false,
+      }));
+    });
   });
+
 
   describe('last known program', () => {
     beforeEach(() => {
