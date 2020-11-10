@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NgModuleFactory as R3NgModuleFactory, NgModuleType} from '../render3/ng_module_ref';
+import {NgModuleType} from '../metadata/ng_module_def';
+import {NgModuleFactory as R3NgModuleFactory} from '../render3/ng_module_ref';
 
 import {NgModuleFactory} from './ng_module_factory';
 import {getRegisteredNgModuleType} from './ng_module_factory_registration';
