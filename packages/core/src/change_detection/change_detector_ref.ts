@@ -126,6 +126,14 @@ export abstract class ChangeDetectorRef {
    * @nocollapse
    */
   static __NG_ELEMENT_ID__: () => ChangeDetectorRef = SWITCH_CHANGE_DETECTOR_REF_FACTORY;
+
+  /**
+   * This marker is need so that the JIT compiler can correctly identify this class as special.
+   *
+   * @internal
+   * @nocollapse
+   */
+  static __ChangeDetectorRef__ = true;
 }
 
 
