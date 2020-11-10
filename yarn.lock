@@ -2,10 +2,10 @@
 # yarn lockfile v1
 
 
-"@angular-devkit/build-optimizer@^0.1100.0-rc.2":
-  version "0.1100.0-rc.2"
-  resolved "https://registry.yarnpkg.com/@angular-devkit/build-optimizer/-/build-optimizer-0.1100.0-rc.2.tgz#e90a7bda8e0c443aefb13b12808fe08438a26160"
-  integrity sha512-aysLYkNVk/4UQQmYCu0vOxtegA6D+HSq4VmIxO5n5P2sAHtgRAYFBiC41lIh/Q2NU/rZVEJRvh7yjcuBd+FSUg==
+"@angular-devkit/build-optimizer@^0.1100.0-rc.3":
+  version "0.1100.0-rc.3"
+  resolved "https://registry.yarnpkg.com/@angular-devkit/build-optimizer/-/build-optimizer-0.1100.0-rc.3.tgz#1db27c32b0380e7f8c5f393b387eb1ecc9eb5e50"
+  integrity sha512-vh7ZsSmUg7teh2edMwmT0SuqBH/zwmy/QtzgUY4g1A8QfF2c0EwQAzwBDZxiGgvJS8yfor7igxKz/vb66DXRXw==
   dependencies:
     loader-utils "2.0.0"
     source-map "0.7.3"

@@ -1,3 +1,9 @@
+# 11.0.0-rc.4 "angora-archipelago" (2020-11-10)
+11.0.0-rc.2 and 11.0.0-rc.3 had a regression in the sass bundle size. This has been fixed in 11.0.0-rc.4
+
+# 11.0.0-rc.3 "merino-meadow" (2020-11-10)
+There are no changes between 11.0.0-rc.2 and 11.0.0-rc.3.
+
 # 11.0.0-rc.2 "vicuna-valley" (2020-11-10)
 
 ### cdk

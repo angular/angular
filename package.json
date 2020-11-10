@@ -48,7 +48,7 @@
     "integration-tests:size-test": "bazel test //integration/size-test/...",
     "check-mdc-tests": "ts-node --project scripts/tsconfig.json scripts/check-mdc-tests.ts"
   },
-  "version": "11.0.0-rc.2",
+  "version": "11.0.0-rc.4",
   "dependencies": {
     "@angular/animations": "^11.0.0-rc.3",
     "@angular/common": "^11.0.0-rc.3",
@@ -69,7 +69,7 @@
     "zone.js": "~0.10.3"
   },
   "devDependencies": {
-    "@angular-devkit/build-optimizer": "^0.1100.0-rc.2",
+    "@angular-devkit/build-optimizer": "^0.1100.0-rc.3",
     "@angular-devkit/core": "^11.0.0-rc.3",
     "@angular-devkit/schematics": "^11.0.0-rc.3",
     "@angular/bazel": "^11.0.0-rc.3",
