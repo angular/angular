@@ -471,6 +471,9 @@
     "name": "R3TemplateRef"
   },
   {
+    "name": "R3ViewContainerRef"
+  },
+  {
     "name": "RADIO_VALUE_ACCESSOR"
   },
   {
@@ -625,6 +628,9 @@
   },
   {
     "name": "ViewEngineTemplateRef"
+  },
+  {
+    "name": "VE_ViewContainerRef"
   },
   {
     "name": "Validators"
