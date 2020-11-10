@@ -576,6 +576,9 @@
     "name": "R3TemplateRef"
   },
   {
+    "name": "R3ViewContainerRef"
+  },
+  {
     "name": "ROUTER_CONFIGURATION"
   },
   {
@@ -844,6 +847,9 @@
   },
   {
     "name": "ViewEngineTemplateRef"
+  },
+  {
+    "name": "VE_ViewContainerRef"
   },
   {
     "name": "Version"

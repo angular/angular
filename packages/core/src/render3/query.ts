@@ -14,10 +14,9 @@ import {Type} from '../interface/type';
 import {createElementRef, ElementRef as ViewEngine_ElementRef} from '../linker/element_ref';
 import {QueryList} from '../linker/query_list';
 import {createTemplateRef, TemplateRef as ViewEngine_TemplateRef} from '../linker/template_ref';
-import {ViewContainerRef} from '../linker/view_container_ref';
+import {createContainerRef, ViewContainerRef} from '../linker/view_container_ref';
 import {assertDefined, assertIndexInRange, throwError} from '../util/assert';
 import {stringify} from '../util/stringify';
-
 import {assertFirstCreatePass, assertLContainer} from './assert';
 import {getNodeInjectable, locateDirectiveOrProvider} from './di';
 import {storeCleanupWithContext} from './instructions/shared';
@@ -30,7 +29,6 @@ import {DECLARATION_LCONTAINER, LView, PARENT, QUERIES, TVIEW, TView} from './in
 import {assertTNodeType} from './node_assert';
 import {getCurrentQueryIndex, getCurrentTNode, getLView, getTView, setCurrentQueryIndex} from './state';
 import {isCreationMode} from './util/view_utils';
-import {createContainerRef} from './view_engine_compatibility';
 
 const unusedValueToPlacateAjd = unused1 + unused2 + unused3 + unused4;
 
@@ -329,7 +327,7 @@ function createSpecialToken(lView: LView, tNode: TNode, read: any): any {
   } else if (read === ViewContainerRef) {
     ngDevMode && assertTNodeType(tNode, TNodeType.AnyRNode | TNodeType.AnyContainer);
     return createContainerRef(
-        ViewContainerRef, tNode as TElementNode | TContainerNode | TElementContainerNode, lView);
+        tNode as TElementNode | TContainerNode | TElementContainerNode, lView);
   } else {
     ngDevMode &&
         throwError(
