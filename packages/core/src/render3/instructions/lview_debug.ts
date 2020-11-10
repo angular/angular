@@ -6,7 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injector, SchemaMetadata, Type} from '../../core';
+import {Injector} from '../../di/injector';
+import {Type} from '../../interface/type';
+import {SchemaMetadata} from '../../metadata/schema';
 import {Sanitizer} from '../../sanitization/sanitizer';
 import {KeyValueArray} from '../../util/array_utils';
 import {assertDefined} from '../../util/assert';
