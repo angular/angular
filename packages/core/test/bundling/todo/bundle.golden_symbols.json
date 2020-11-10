@@ -273,6 +273,9 @@
     "name": "createLView"
   },
   {
+    "name": "createNodeInjector"
+  },
+  {
     "name": "createTView"
   },
   {

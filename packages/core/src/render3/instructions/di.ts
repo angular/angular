@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {InjectFlags, InjectionToken, resolveForwardRef} from '../../di';
-import {assertInjectImplementationNot, ɵɵinject} from '../../di/injector_compatibility';
+import {assertInjectImplementationNotEqual} from '../../di/inject_switch';
+import {ɵɵinject} from '../../di/injector_compatibility';
 import {Type} from '../../interface/type';
 import {getOrCreateInjectable, injectAttributeImpl} from '../di';
 import {TDirectiveHostNode} from '../interfaces/node';
@@ -45,7 +46,7 @@ export function ɵɵdirectiveInject<T>(
   // if inject utilities are used before bootstrapping.
   if (lView === null) {
     // Verify that we will not get into infinite loop.
-    ngDevMode && assertInjectImplementationNot(ɵɵdirectiveInject);
+    ngDevMode && assertInjectImplementationNotEqual(ɵɵdirectiveInject);
     return ɵɵinject(token, flags);
   }
   const tNode = getCurrentTNode();
