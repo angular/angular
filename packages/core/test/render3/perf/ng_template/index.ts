@@ -5,15 +5,17 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {injectTemplateRef} from '@angular/core/src/linker/template_ref';
 import {TemplateRef, ViewContainerRef} from '../../../../src/linker';
 import {ɵɵdefineDirective, ɵɵdirectiveInject, ɵɵtemplate} from '../../../../src/render3/index';
 import {createLView, createTNode, createTView} from '../../../../src/render3/instructions/shared';
 import {RenderFlags} from '../../../../src/render3/interfaces/definition';
 import {TNodeType} from '../../../../src/render3/interfaces/node';
 import {LViewFlags, TViewType} from '../../../../src/render3/interfaces/view';
-import {injectTemplateRef, injectViewContainerRef} from '../../../../src/render3/view_engine_compatibility';
+import {injectViewContainerRef} from '../../../../src/render3/view_engine_compatibility';
 import {createBenchmark} from '../micro_bench';
 import {createAndRenderLView} from '../setup';
+
 
 class TemplateRefToken {
   /**
@@ -21,7 +23,7 @@ class TemplateRefToken {
    * @nocollapse
    */
   static __NG_ELEMENT_ID__(): TemplateRef<any>|null {
-    return injectTemplateRef(TemplateRef);
+    return injectTemplateRef();
   }
 }
 class ViewContainerRefToken {

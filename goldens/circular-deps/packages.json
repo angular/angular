@@ -273,57 +273,7 @@
     "packages/core/src/change_detection/change_detection.ts",
     "packages/core/src/change_detection/change_detector_ref.ts",
     "packages/core/src/render3/view_engine_compatibility.ts",
-    "packages/core/src/linker/view_container_ref.ts",
-    "packages/core/src/di/injector.ts",
-    "packages/core/src/di/r3_injector.ts",
-    "packages/core/src/render3/definition.ts",
-    "packages/core/src/metadata/ng_module.ts"
-  ],
-  [
-    "packages/core/src/application_ref.ts",
-    "packages/core/src/application_tokens.ts",
-    "packages/core/src/linker/component_factory.ts",
-    "packages/core/src/change_detection/change_detection.ts",
-    "packages/core/src/change_detection/change_detector_ref.ts",
-    "packages/core/src/render3/view_engine_compatibility.ts",
-    "packages/core/src/render3/di.ts",
-    "packages/core/src/di/injector_compatibility.ts",
-    "packages/core/src/di/injector.ts",
-    "packages/core/src/di/r3_injector.ts",
-    "packages/core/src/render3/definition.ts",
-    "packages/core/src/metadata/ng_module.ts"
-  ],
-  [
-    "packages/core/src/application_ref.ts",
-    "packages/core/src/application_tokens.ts",
-    "packages/core/src/linker/component_factory.ts",
-    "packages/core/src/change_detection/change_detection.ts",
-    "packages/core/src/change_detection/change_detector_ref.ts",
-    "packages/core/src/render3/view_engine_compatibility.ts",
-    "packages/core/src/render3/di.ts",
-    "packages/core/src/di/injector.ts",
-    "packages/core/src/di/r3_injector.ts",
-    "packages/core/src/render3/definition.ts",
-    "packages/core/src/metadata/ng_module.ts"
-  ],
-  [
-    "packages/core/src/application_ref.ts",
-    "packages/core/src/application_tokens.ts",
-    "packages/core/src/linker/component_factory.ts",
-    "packages/core/src/change_detection/change_detection.ts",
-    "packages/core/src/change_detection/change_detector_ref.ts",
-    "packages/core/src/render3/view_engine_compatibility.ts",
-    "packages/core/src/render3/di.ts",
-    "packages/core/src/render3/definition.ts",
-    "packages/core/src/metadata/ng_module.ts"
-  ],
-  [
-    "packages/core/src/application_ref.ts",
-    "packages/core/src/application_tokens.ts",
-    "packages/core/src/linker/component_factory.ts",
-    "packages/core/src/change_detection/change_detection.ts",
-    "packages/core/src/change_detection/change_detector_ref.ts",
-    "packages/core/src/render3/view_engine_compatibility.ts",
+    "packages/core/src/linker/template_ref.ts",
     "packages/core/src/render3/instructions/shared.ts",
     "packages/core/src/di.ts",
     "packages/core/src/di/index.ts",
@@ -343,6 +293,7 @@
     "packages/core/src/change_detection/change_detection.ts",
     "packages/core/src/change_detection/change_detector_ref.ts",
     "packages/core/src/render3/view_engine_compatibility.ts",
+    "packages/core/src/linker/template_ref.ts",
     "packages/core/src/render3/instructions/shared.ts",
     "packages/core/src/error_handler.ts",
     "packages/core/src/errors.ts",
@@ -365,6 +316,25 @@
     "packages/core/src/change_detection/change_detection.ts",
     "packages/core/src/change_detection/change_detector_ref.ts",
     "packages/core/src/render3/view_engine_compatibility.ts",
+    "packages/core/src/linker/template_ref.ts",
+    "packages/core/src/render3/instructions/shared.ts",
+    "packages/core/src/error_handler.ts",
+    "packages/core/src/errors.ts",
+    "packages/core/src/view/types.ts",
+    "packages/core/src/linker/view_container_ref.ts",
+    "packages/core/src/di/injector.ts",
+    "packages/core/src/di/r3_injector.ts",
+    "packages/core/src/render3/definition.ts",
+    "packages/core/src/metadata/ng_module.ts"
+  ],
+  [
+    "packages/core/src/application_ref.ts",
+    "packages/core/src/application_tokens.ts",
+    "packages/core/src/linker/component_factory.ts",
+    "packages/core/src/change_detection/change_detection.ts",
+    "packages/core/src/change_detection/change_detector_ref.ts",
+    "packages/core/src/render3/view_engine_compatibility.ts",
+    "packages/core/src/linker/template_ref.ts",
     "packages/core/src/render3/instructions/shared.ts",
     "packages/core/src/render3/definition.ts",
     "packages/core/src/metadata/ng_module.ts"
@@ -376,6 +346,51 @@
     "packages/core/src/change_detection/change_detection.ts",
     "packages/core/src/change_detection/change_detector_ref.ts",
     "packages/core/src/render3/view_engine_compatibility.ts",
+    "packages/core/src/linker/template_ref.ts",
+    "packages/core/src/render3/instructions/shared.ts",
+    "packages/core/src/render3/di.ts",
+    "packages/core/src/di/injector_compatibility.ts",
+    "packages/core/src/di/injector.ts",
+    "packages/core/src/di/r3_injector.ts",
+    "packages/core/src/render3/definition.ts",
+    "packages/core/src/metadata/ng_module.ts"
+  ],
+  [
+    "packages/core/src/application_ref.ts",
+    "packages/core/src/application_tokens.ts",
+    "packages/core/src/linker/component_factory.ts",
+    "packages/core/src/change_detection/change_detection.ts",
+    "packages/core/src/change_detection/change_detector_ref.ts",
+    "packages/core/src/render3/view_engine_compatibility.ts",
+    "packages/core/src/linker/template_ref.ts",
+    "packages/core/src/render3/instructions/shared.ts",
+    "packages/core/src/render3/di.ts",
+    "packages/core/src/di/injector.ts",
+    "packages/core/src/di/r3_injector.ts",
+    "packages/core/src/render3/definition.ts",
+    "packages/core/src/metadata/ng_module.ts"
+  ],
+  [
+    "packages/core/src/application_ref.ts",
+    "packages/core/src/application_tokens.ts",
+    "packages/core/src/linker/component_factory.ts",
+    "packages/core/src/change_detection/change_detection.ts",
+    "packages/core/src/change_detection/change_detector_ref.ts",
+    "packages/core/src/render3/view_engine_compatibility.ts",
+    "packages/core/src/linker/template_ref.ts",
+    "packages/core/src/render3/instructions/shared.ts",
+    "packages/core/src/render3/di.ts",
+    "packages/core/src/render3/definition.ts",
+    "packages/core/src/metadata/ng_module.ts"
+  ],
+  [
+    "packages/core/src/application_ref.ts",
+    "packages/core/src/application_tokens.ts",
+    "packages/core/src/linker/component_factory.ts",
+    "packages/core/src/change_detection/change_detection.ts",
+    "packages/core/src/change_detection/change_detector_ref.ts",
+    "packages/core/src/render3/view_engine_compatibility.ts",
+    "packages/core/src/linker/template_ref.ts",
     "packages/core/src/render3/instructions/shared.ts",
     "packages/core/src/render3/instructions/lview_debug.ts",
     "packages/core/src/core.ts",
@@ -398,6 +413,7 @@
     "packages/core/src/change_detection/change_detection.ts",
     "packages/core/src/change_detection/change_detector_ref.ts",
     "packages/core/src/render3/view_engine_compatibility.ts",
+    "packages/core/src/linker/template_ref.ts",
     "packages/core/src/render3/view_ref.ts"
   ],
   [
@@ -849,17 +865,23 @@
     "packages/core/src/change_detection/change_detection.ts",
     "packages/core/src/change_detection/change_detector_ref.ts",
     "packages/core/src/render3/view_engine_compatibility.ts",
-    "packages/core/src/linker/view_container_ref.ts",
+    "packages/core/src/linker/template_ref.ts",
+    "packages/core/src/render3/instructions/shared.ts",
+    "packages/core/src/error_handler.ts",
+    "packages/core/src/errors.ts",
+    "packages/core/src/view/types.ts",
     "packages/core/src/linker/component_factory.ts"
   ],
   [
     "packages/core/src/change_detection/change_detection.ts",
     "packages/core/src/change_detection/change_detector_ref.ts",
     "packages/core/src/render3/view_engine_compatibility.ts",
+    "packages/core/src/linker/template_ref.ts",
     "packages/core/src/render3/instructions/shared.ts",
     "packages/core/src/error_handler.ts",
     "packages/core/src/errors.ts",
     "packages/core/src/view/types.ts",
+    "packages/core/src/linker/view_container_ref.ts",
     "packages/core/src/linker/component_factory.ts"
   ],
   [
@@ -878,6 +900,7 @@
   [
     "packages/core/src/change_detection/change_detector_ref.ts",
     "packages/core/src/render3/view_engine_compatibility.ts",
+    "packages/core/src/linker/template_ref.ts",
     "packages/core/src/render3/view_ref.ts"
   ],
   [
@@ -929,6 +952,30 @@
     "packages/core/src/view/types.ts"
   ],
   [
+    "packages/core/src/error_handler.ts",
+    "packages/core/src/errors.ts",
+    "packages/core/src/view/types.ts",
+    "packages/core/src/linker/template_ref.ts",
+    "packages/core/src/render3/instructions/shared.ts"
+  ],
+  [
+    "packages/core/src/error_handler.ts",
+    "packages/core/src/errors.ts",
+    "packages/core/src/view/types.ts",
+    "packages/core/src/linker/view_container_ref.ts",
+    "packages/core/src/linker/template_ref.ts",
+    "packages/core/src/render3/instructions/shared.ts"
+  ],
+  [
+    "packages/core/src/error_handler.ts",
+    "packages/core/src/errors.ts",
+    "packages/core/src/view/types.ts",
+    "packages/core/src/linker/view_container_ref.ts",
+    "packages/core/src/render3/view_engine_compatibility.ts",
+    "packages/core/src/linker/template_ref.ts",
+    "packages/core/src/render3/instructions/shared.ts"
+  ],
+  [
     "packages/core/src/linker/component_factory_resolver.ts",
     "packages/core/src/linker/ng_module_factory.ts"
   ],
@@ -942,14 +989,6 @@
   [
     "packages/core/src/linker/ng_module_factory_registration.ts",
     "packages/core/src/render3/ng_module_ref.ts"
-  ],
-  [
-    "packages/core/src/linker/template_ref.ts",
-    "packages/core/src/render3/view_engine_compatibility.ts"
-  ],
-  [
-    "packages/core/src/linker/view_container_ref.ts",
-    "packages/core/src/render3/view_engine_compatibility.ts"
   ],
   [
     "packages/core/src/metadata/directives.ts",

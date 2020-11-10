@@ -468,6 +468,9 @@
     "name": "R3Injector"
   },
   {
+    "name": "R3TemplateRef"
+  },
+  {
     "name": "RADIO_VALUE_ACCESSOR"
   },
   {
@@ -619,6 +622,9 @@
   },
   {
     "name": "VERSION"
+  },
+  {
+    "name": "ViewEngineTemplateRef"
   },
   {
     "name": "Validators"
