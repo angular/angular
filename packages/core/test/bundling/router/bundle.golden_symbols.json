@@ -573,6 +573,9 @@
     "name": "R3Injector"
   },
   {
+    "name": "R3TemplateRef"
+  },
+  {
     "name": "ROUTER_CONFIGURATION"
   },
   {
@@ -838,6 +841,9 @@
   },
   {
     "name": "VERSION"
+  },
+  {
+    "name": "ViewEngineTemplateRef"
   },
   {
     "name": "Version"

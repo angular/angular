@@ -13,7 +13,7 @@ import {InjectionToken} from '../di/injection_token';
 import {Type} from '../interface/type';
 import {createElementRef, ElementRef as ViewEngine_ElementRef} from '../linker/element_ref';
 import {QueryList} from '../linker/query_list';
-import {TemplateRef as ViewEngine_TemplateRef} from '../linker/template_ref';
+import {createTemplateRef, TemplateRef as ViewEngine_TemplateRef} from '../linker/template_ref';
 import {ViewContainerRef} from '../linker/view_container_ref';
 import {assertDefined, assertIndexInRange, throwError} from '../util/assert';
 import {stringify} from '../util/stringify';
@@ -30,7 +30,7 @@ import {DECLARATION_LCONTAINER, LView, PARENT, QUERIES, TVIEW, TView} from './in
 import {assertTNodeType} from './node_assert';
 import {getCurrentQueryIndex, getCurrentTNode, getLView, getTView, setCurrentQueryIndex} from './state';
 import {isCreationMode} from './util/view_utils';
-import {createContainerRef, createTemplateRef} from './view_engine_compatibility';
+import {createContainerRef} from './view_engine_compatibility';
 
 const unusedValueToPlacateAjd = unused1 + unused2 + unused3 + unused4;
 
@@ -302,7 +302,7 @@ function createResultByTNodeType(tNode: TNode, currentView: LView): any {
   if (tNode.type & (TNodeType.AnyRNode | TNodeType.ElementContainer)) {
     return createElementRef(tNode, currentView);
   } else if (tNode.type & TNodeType.Container) {
-    return createTemplateRef(ViewEngine_TemplateRef, tNode, currentView);
+    return createTemplateRef(tNode, currentView);
   }
   return null;
 }
@@ -325,7 +325,7 @@ function createSpecialToken(lView: LView, tNode: TNode, read: any): any {
   if (read === ViewEngine_ElementRef) {
     return createElementRef(tNode, lView);
   } else if (read === ViewEngine_TemplateRef) {
-    return createTemplateRef(ViewEngine_TemplateRef, tNode, lView);
+    return createTemplateRef(tNode, lView);
   } else if (read === ViewContainerRef) {
     ngDevMode && assertTNodeType(tNode, TNodeType.AnyRNode | TNodeType.AnyContainer);
     return createContainerRef(

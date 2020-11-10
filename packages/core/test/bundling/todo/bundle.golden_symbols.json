@@ -87,6 +87,9 @@
     "name": "Optional"
   },
   {
+    "name": "R3TemplateRef"
+  },
+  {
     "name": "RecordViewTuple"
   },
   {
@@ -133,6 +136,9 @@
   },
   {
     "name": "TodoStore"
+  },
+  {
+    "name": "ViewEngineTemplateRef"
   },
   {
     "name": "ViewContainerRef"
