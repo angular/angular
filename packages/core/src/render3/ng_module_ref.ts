@@ -7,7 +7,7 @@
  */
 
 import {Injector} from '../di/injector';
-import {INJECTOR} from '../di/injector_compatibility';
+import {INJECTOR} from '../di/injector_token';
 import {InjectFlags} from '../di/interface/injector';
 import {createInjectorWithoutInjectorInstances, R3Injector} from '../di/r3_injector';
 import {Type} from '../interface/type';
