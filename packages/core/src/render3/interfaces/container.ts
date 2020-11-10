@@ -129,7 +129,7 @@ export interface LContainer extends Array<any> {
    * NOTE: This is stored as `any[]` because render3 should really not be aware of `ViewRef` and
    * doing so creates circular dependency.
    */
-  [VIEW_REFS]: any[]|null;
+  [VIEW_REFS]: unknown[]|null;
 }
 
 // Note: This hack is necessary so we don't erroneously get a circular dependency

@@ -364,11 +364,11 @@ const R3ViewContainerRef = class ViewContainerRef extends VE_ViewContainerRef {
 };
 
 function getViewRefs(lContainer: LContainer): ViewRef[]|null {
-  return lContainer[VIEW_REFS];
+  return lContainer[VIEW_REFS] as ViewRef[];
 }
 
 function getOrCreateViewRefs(lContainer: LContainer): ViewRef[] {
-  return lContainer[VIEW_REFS] || (lContainer[VIEW_REFS] = []);
+  return (lContainer[VIEW_REFS] || (lContainer[VIEW_REFS] = [])) as ViewRef[];
 }
 
 /**
