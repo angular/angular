@@ -7,14 +7,16 @@
  */
 
 import {DOCUMENT, isPlatformBrowser, ɵgetDOM as getDOM} from '@angular/common';
-import {APP_INITIALIZER, Compiler, Component, createPlatformFactory, CUSTOM_ELEMENTS_SCHEMA, Directive, ErrorHandler, Inject, Injector, Input, LOCALE_ID, NgModule, OnDestroy, Pipe, PLATFORM_ID, PLATFORM_INITIALIZER, Provider, Sanitizer, StaticProvider, Type, VERSION} from '@angular/core';
+import {APP_INITIALIZER, Compiler, Component, createPlatformFactory, CUSTOM_ELEMENTS_SCHEMA, Directive, DoBootstrap, ErrorHandler, Inject, Injectable, Injector, Input, LOCALE_ID, NgModule, OnDestroy, Pipe, PLATFORM_ID, PLATFORM_INITIALIZER, Provider, Sanitizer, StaticProvider, Type, VERSION} from '@angular/core';
 import {ApplicationRef, destroyPlatform} from '@angular/core/src/application_ref';
 import {Console} from '@angular/core/src/console';
 import {ComponentRef} from '@angular/core/src/linker/component_factory';
 import {Testability, TestabilityRegistry} from '@angular/core/src/testability/testability';
 import {afterEach, AsyncTestCompleter, beforeEach, beforeEachProviders, describe, inject, it, Log} from '@angular/core/testing/src/testing_internal';
-import {BrowserModule} from '@angular/platform-browser';
+import {BrowserModule, EventManager} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
+import {DomEventsPlugin} from '@angular/platform-browser/src/dom/events/dom_events';
+import {EVENT_MANAGER_PLUGINS} from '@angular/platform-browser/src/dom/events/event_manager';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {ivyEnabled, modifiedInIvy, onlyInIvy} from '@angular/private/testing';
 
@@ -79,11 +81,6 @@ class HelloOnDestroyTickCmp implements OnDestroy {
   ngOnDestroy(): void {
     this.appRef.tick();
   }
-}
-
-@Component({selector: 'hello-app', templateUrl: './sometemplate.html'})
-class HelloUrlCmp {
-  greeting = 'hello';
 }
 
 @Directive({selector: '[someDir]', host: {'[title]': 'someDir'}})
@@ -576,6 +573,38 @@ function bootstrap(
              async.done();
            });
          }));
+    });
+
+    describe('EventManager plugins ordering', () => {
+      it('should sort plugins so that `DomEventsPlugin` is at the very end', (done) => {
+        @Injectable()
+        class TestPlugin {
+          supports(): boolean {
+            return false;
+          }
+        }
+
+        @NgModule({
+          providers:
+              [TestPlugin, {provide: EVENT_MANAGER_PLUGINS, useExisting: TestPlugin, multi: true}]
+        })
+        class TestPluginModule {
+        }
+
+        @NgModule({
+          imports: [TestPluginModule, BrowserModule],
+        })
+        class TestModule implements DoBootstrap {
+          ngDoBootstrap(): void {}
+        }
+
+        platformBrowserDynamic().bootstrapModule(TestModule).then(ref => {
+          const eventManager = ref.injector.get(EventManager);
+          // Make sure `DomEventsPlugin` is at the very end because previously it was in the middle.
+          expect(eventManager['_plugins'].pop()).toBeAnInstanceOf(DomEventsPlugin);
+          done();
+        });
+      });
     });
   });
 }

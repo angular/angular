@@ -15,7 +15,7 @@ import {BrowserGetTestability} from './browser/testability';
 import {ELEMENT_PROBE_PROVIDERS} from './dom/debug/ng_probe';
 import {DomRendererFactory2} from './dom/dom_renderer';
 import {DomEventsPlugin} from './dom/events/dom_events';
-import {EVENT_MANAGER_PLUGINS, EventManager} from './dom/events/event_manager';
+import {EVENT_MANAGER_PLUGINS, EventManager, EventManagerPlugin} from './dom/events/event_manager';
 import {HAMMER_PROVIDERS} from './dom/events/hammer_gestures';
 import {KeyEventsPlugin} from './dom/events/key_events';
 import {DomSharedStylesHost, SharedStylesHost} from './dom/shared_styles_host';
@@ -87,9 +87,23 @@ export const BROWSER_MODULE_PROVIDERS: StaticProvider[] = [
   {provide: SharedStylesHost, useExisting: DomSharedStylesHost},
   {provide: DomSharedStylesHost, useClass: DomSharedStylesHost, deps: [DOCUMENT]},
   {provide: Testability, useClass: Testability, deps: [NgZone]},
-  {provide: EventManager, useClass: EventManager, deps: [EVENT_MANAGER_PLUGINS, NgZone]},
+  {provide: EventManager, useFactory: useEventManager, deps: [EVENT_MANAGER_PLUGINS, NgZone]},
   ELEMENT_PROBE_PROVIDERS,
 ];
+
+export function useEventManager(
+    plugins: ReadonlyArray<EventManagerPlugin>, ngZone: NgZone): EventManager {
+  // This sorting is done because `DomEventsPlugin` supports all events (since its `supports()`
+  // method returns `true`). If some plugin appears in the array after `DomEventsPlugin`, then the
+  // check in the` _findPluginFor` method will not reach it.
+  const domEventsPluginIndex = plugins.findIndex(plugin => plugin instanceof DomEventsPlugin);
+  // `sort` is not used because it's only guaranteed to provide stable sort since recently.
+  // `DomEventsPlugin` should be at the beginning because the `EventManager` uses
+  // `reverse()` thus `DomEventsPlugin` will appear at the end.
+  const sortedPlugins: EventManagerPlugin[] = [plugins[domEventsPluginIndex]].concat(
+      plugins.filter(plugin => !(plugin instanceof DomEventsPlugin)));
+  return new EventManager(sortedPlugins, ngZone);
+}
 
 /**
  * Exports required infrastructure for all Angular apps.
