@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChangeDetectorRef} from '../../change_detection/change_detector_ref';
 import {CompilerFacade, getCompilerFacade, R3DependencyMetadataFacade, R3ResolvedDependencyType} from '../../compiler/compiler_facade';
 import {Type} from '../../interface/type';
 import {ReflectionCapabilities} from '../../reflection/reflection_capabilities';
@@ -68,7 +67,7 @@ function reflectDependency(compiler: CompilerFacade, dep: any|any[]): R3Dependen
         }
         meta.token = param.attributeName;
         meta.resolved = compiler.R3ResolvedDependencyType.Attribute;
-      } else if (param === ChangeDetectorRef) {
+      } else if (param.__ChangeDetectorRef__ === true) {
         meta.token = param;
         meta.resolved = compiler.R3ResolvedDependencyType.ChangeDetectorRef;
       } else {
