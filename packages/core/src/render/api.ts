@@ -8,7 +8,11 @@
 
 import {InjectionToken} from '../di/injection_token';
 import {ViewEncapsulation} from '../metadata/view';
-import {injectRenderer2 as render3InjectRenderer2} from '../render3/view_engine_compatibility';
+import {isProceduralRenderer} from '../render3/interfaces/renderer';
+import {isLView} from '../render3/interfaces/type_checks';
+import {LView, RENDERER} from '../render3/interfaces/view';
+import {getCurrentTNode, getLView} from '../render3/state';
+import {getComponentLViewByIndex} from '../render3/util/view_utils';
 import {noop} from '../util/noop';
 
 
@@ -286,6 +290,25 @@ export abstract class Renderer2 {
 }
 
 
-export const SWITCH_RENDERER2_FACTORY__POST_R3__ = render3InjectRenderer2;
+export const SWITCH_RENDERER2_FACTORY__POST_R3__ = injectRenderer2;
 const SWITCH_RENDERER2_FACTORY__PRE_R3__ = noop;
-const SWITCH_RENDERER2_FACTORY: typeof render3InjectRenderer2 = SWITCH_RENDERER2_FACTORY__PRE_R3__;
+const SWITCH_RENDERER2_FACTORY: typeof injectRenderer2 = SWITCH_RENDERER2_FACTORY__PRE_R3__;
+
+/** Returns a Renderer2 (or throws when application was bootstrapped with Renderer3) */
+function getOrCreateRenderer2(lView: LView): Renderer2 {
+  const renderer = lView[RENDERER];
+  if (ngDevMode && !isProceduralRenderer(renderer)) {
+    throw new Error('Cannot inject Renderer2 when the application uses Renderer3!');
+  }
+  return renderer as Renderer2;
+}
+
+/** Injects a Renderer2 for the current component. */
+export function injectRenderer2(): Renderer2 {
+  // We need the Renderer to be based on the component that it's being injected into, however since
+  // DI happens before we've entered its view, `getLView` will return the parent view instead.
+  const lView = getLView();
+  const tNode = getCurrentTNode()!;
+  const nodeAtIndex = getComponentLViewByIndex(tNode.index, lView);
+  return getOrCreateRenderer2(isLView(nodeAtIndex) ? nodeAtIndex : lView);
+}
