@@ -8,7 +8,7 @@
 
 import {ChangeDetectionStrategy} from '../change_detection/constants';
 import {Mutable, Type} from '../interface/type';
-import {NgModuleDef} from '../metadata/ng_module';
+import {NgModuleDef, NgModuleType} from '../metadata/ng_module_def';
 import {SchemaMetadata} from '../metadata/schema';
 import {ViewEncapsulation} from '../metadata/view';
 import {noSideEffects} from '../util/closure';
@@ -20,7 +20,6 @@ import {NG_COMP_DEF, NG_DIR_DEF, NG_FACTORY_DEF, NG_LOC_ID_DEF, NG_MOD_DEF, NG_P
 import {ComponentDef, ComponentDefFeature, ComponentTemplate, ComponentType, ContentQueriesFunction, DirectiveDef, DirectiveDefFeature, DirectiveTypesOrFactory, FactoryFn, HostBindingsFunction, PipeDef, PipeType, PipeTypesOrFactory, ViewQueriesFunction} from './interfaces/definition';
 import {AttributeMarker, TAttributes, TConstantsOrFactory} from './interfaces/node';
 import {CssSelectorList, SelectorFlags} from './interfaces/projection';
-import {NgModuleType} from './ng_module_ref';
 
 let _renderCompCount = 0;
 
