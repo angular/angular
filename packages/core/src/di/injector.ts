@@ -8,14 +8,16 @@
 
 import {AbstractType, Type} from '../interface/type';
 import {stringify} from '../util/stringify';
-
 import {resolveForwardRef} from './forward_ref';
 import {InjectionToken} from './injection_token';
-import {catchInjectorError, formatError, INJECTOR, NG_TEMP_TOKEN_PATH, NullInjector, setCurrentInjector, THROW_IF_NOT_FOUND, USE_VALUE, ɵɵinject} from './injector_compatibility';
+import {catchInjectorError, formatError, NG_TEMP_TOKEN_PATH, setCurrentInjector, THROW_IF_NOT_FOUND, USE_VALUE, ɵɵinject} from './injector_compatibility';
+import {InjectorMarkers} from './injector_marker';
+import {INJECTOR} from './injector_token';
 import {getInjectableDef, ɵɵdefineInjectable} from './interface/defs';
 import {InjectFlags} from './interface/injector';
 import {ConstructorProvider, ExistingProvider, FactoryProvider, StaticClassProvider, StaticProvider, ValueProvider} from './interface/provider';
 import {Inject, Optional, Self, SkipSelf} from './metadata';
+import {NullInjector} from './null_injector';
 import {createInjector} from './r3_injector';
 import {INJECTOR_SCOPE} from './scope';
 
@@ -113,7 +115,7 @@ export abstract class Injector {
    * @internal
    * @nocollapse
    */
-  static __NG_ELEMENT_ID__ = -1;
+  static __NG_ELEMENT_ID__ = InjectorMarkers.Injector;
 }
 
 
