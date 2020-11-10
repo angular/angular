@@ -12,7 +12,7 @@ import {ChangeDetectionStrategy, Component, Injectable, NgModule, NgModuleFactor
 import {ComponentFixture, fakeAsync, inject, TestBed, tick} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
-import {ActivatedRoute, ActivatedRouteSnapshot, ActivationEnd, ActivationStart, CanActivate, CanDeactivate, ChildActivationEnd, ChildActivationStart, DefaultUrlSerializer, DetachedRouteHandle, Event, GuardsCheckEnd, GuardsCheckStart, Navigation, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, ParamMap, Params, PreloadAllModules, PreloadingStrategy, PRIMARY_OUTLET, Resolve, ResolveEnd, ResolveStart, RouteConfigLoadEnd, RouteConfigLoadStart, Router, RouteReuseStrategy, RouterEvent, RouterModule, RouterPreloader, RouterStateSnapshot, RoutesRecognized, RunGuardsAndResolvers, UrlHandlingStrategy, UrlSegmentGroup, UrlSerializer, UrlTree} from '@angular/router';
+import {ActivatedRoute, ActivatedRouteSnapshot, ActivationEnd, ActivationStart, CanActivate, CanDeactivate, ChildActivationEnd, ChildActivationStart, DefaultUrlSerializer, DetachedRouteHandle, Event, GuardsCheckEnd, GuardsCheckStart, Navigation, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, ParamMap, Params, PreloadAllModules, PreloadingStrategy, PRIMARY_OUTLET, Resolve, ResolveEnd, ResolveStart, RouteConfigLoadEnd, RouteConfigLoadStart, Router, RouteReuseStrategy, RouterEvent, RouterModule, RouterOutlet, RouterPreloader, RouterStateSnapshot, RoutesRecognized, RunGuardsAndResolvers, UrlHandlingStrategy, UrlSegmentGroup, UrlSerializer, UrlTree} from '@angular/router';
 import {EMPTY, Observable, Observer, of, Subscription} from 'rxjs';
 import {delay, filter, first, map, mapTo, tap} from 'rxjs/operators';
 
@@ -5620,6 +5620,84 @@ describe('Integration', () => {
          router.navigate([{outlets: {toolpanel: 'b'}}]);
          advance(fixture);
          expect(fixture).toContainComponent(Tool2Component, '(e)');
+       }));
+  });
+
+  describe('Route activation within Angular zone', () => {
+    const dezone = (ngZone: NgZone) => <T>(source: Observable<T>) =>
+        new Observable<T>(observer => ngZone.runOutsideAngular(() => source.subscribe(observer)));
+
+    let childComponentCreatedInsideAngularZone = false;
+
+    @Component({template: '<router-outlet></router-outlet>'})
+    class Parent {
+    }
+
+    @Component({template: 'child1'})
+    class Child1 {
+      constructor() {
+        childComponentCreatedInsideAngularZone = NgZone.isInAngularZone();
+      }
+    }
+
+    @NgModule({
+      imports: [RouterModule],
+      declarations: [Parent, Child1],
+      entryComponents: [Parent, Child1],
+    })
+    class TestModule {
+    }
+
+    beforeEach(() => {
+      childComponentCreatedInsideAngularZone = false;
+    });
+
+    it('should activate component inside Angular zone when guard leaves zone', fakeAsync(() => {
+         @Injectable()
+         class AsyncGuard implements CanActivate {
+           constructor(private ngZone: NgZone) {}
+
+           canActivate(): Observable<boolean> {
+             return of(true).pipe(dezone(this.ngZone));
+           }
+         }
+
+         TestBed.configureTestingModule({imports: [TestModule], providers: [AsyncGuard]});
+
+         const router = TestBed.inject(Router);
+
+         router.resetConfig([
+           {path: 'a', component: Child1, canActivate: [AsyncGuard]},
+         ]);
+
+         const fixture = createRoot(router, RootCmp);
+         router.navigateByUrl('/a');
+         advance(fixture);
+         expect(childComponentCreatedInsideAngularZone).toEqual(true);
+       }));
+
+    it('should activate component inside Angular zone when resolver leaves zone', fakeAsync(() => {
+         @Injectable()
+         class AsyncResolver implements Resolve<boolean> {
+           constructor(private ngZone: NgZone) {}
+
+           resolve(): Observable<boolean> {
+             return of(true).pipe(dezone(this.ngZone));
+           }
+         }
+
+         TestBed.configureTestingModule({imports: [TestModule], providers: [AsyncResolver]});
+
+         const router = TestBed.inject(Router);
+
+         router.resetConfig([
+           {path: 'a', component: Child1, resolve: [AsyncResolver]},
+         ]);
+
+         const fixture = createRoot(router, RootCmp);
+         router.navigateByUrl('/a');
+         advance(fixture);
+         expect(childComponentCreatedInsideAngularZone).toEqual(true);
        }));
   });
 });
