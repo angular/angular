@@ -1056,6 +1056,9 @@
     "name": "getOrCreateTNode"
   },
   {
+    "name": "getOrCreateViewRefs"
+  },
+  {
     "name": "getOriginalError"
   },
   {
@@ -1105,6 +1108,9 @@
   },
   {
     "name": "getTView"
+  },
+  {
+    "name": "getViewRefs"
   },
   {
     "name": "handleError"
