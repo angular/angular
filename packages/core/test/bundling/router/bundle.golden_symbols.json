@@ -1371,6 +1371,9 @@
     "name": "getOrCreateTNode"
   },
   {
+    "name": "getOrCreateViewRefs"
+  },
+  {
     "name": "getOriginalError"
   },
   {
@@ -1438,6 +1441,9 @@
   },
   {
     "name": "getToken"
+  },
+  {
+    "name": "getViewRefs"
   },
   {
     "name": "handleError"
