@@ -13,7 +13,7 @@ import {NG_ASYNC_VALIDATORS, NG_VALIDATORS} from '../../validators';
 import {ControlContainer} from '../control_container';
 import {Form} from '../form_interface';
 import {ReactiveErrors} from '../reactive_errors';
-import {cleanUpControl, cleanUpValidators, removeDir, setUpControl, setUpFormContainer, setUpValidators, syncPendingControls} from '../shared';
+import {cleanUpControl, cleanUpValidators, removeListItem, setUpControl, setUpFormContainer, setUpValidators, syncPendingControls} from '../shared';
 import {AsyncValidator, AsyncValidatorFn, Validator, ValidatorFn} from '../validators';
 
 import {FormControlName} from './form_control_name';
@@ -161,7 +161,7 @@ export class FormGroupDirective extends ControlContainer implements Form, OnChan
    * @param dir The `FormControlName` directive instance.
    */
   removeControl(dir: FormControlName): void {
-    removeDir<FormControlName>(this.directives, dir);
+    removeListItem(this.directives, dir);
   }
 
   /**

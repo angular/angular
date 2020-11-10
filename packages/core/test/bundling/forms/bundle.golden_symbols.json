@@ -1455,10 +1455,10 @@
     "name": "remove"
   },
   {
-    "name": "removeDir"
+    "name": "removeFromArray"
   },
   {
-    "name": "removeFromArray"
+    "name": "removeListItem"
   },
   {
     "name": "renderComponent"

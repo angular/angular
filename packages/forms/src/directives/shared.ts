@@ -47,11 +47,7 @@ export function setUpControl(control: FormControl, dir: NgControl): void {
 
   setUpBlurPipeline(control, dir);
 
-  if (dir.valueAccessor!.setDisabledState) {
-    control.registerOnDisabledChange((isDisabled: boolean) => {
-      dir.valueAccessor!.setDisabledState!(isDisabled);
-    });
-  }
+  setUpDisabledChangeHandler(control, dir);
 }
 
 export function cleanUpControl(control: FormControl|null, dir: NgControl) {
@@ -66,7 +62,10 @@ export function cleanUpControl(control: FormControl|null, dir: NgControl) {
 
   cleanUpValidators(control, dir, /* handleOnValidatorChange */ true);
 
-  if (control) control._clearChangeFns();
+  if (control) {
+    dir._invokeOnDestroyCallbacks();
+    control._registerOnCollectionChange(() => {});
+  }
 }
 
 function registerOnValidatorChange<V>(validators: (V|Validator)[], onChange: () => void): void {
@@ -74,6 +73,28 @@ function registerOnValidatorChange<V>(validators: (V|Validator)[], onChange: () 
     if ((<Validator>validator).registerOnValidatorChange)
       (<Validator>validator).registerOnValidatorChange!(onChange);
   });
+}
+
+/**
+ * Sets up disabled change handler function on a given form control if ControlValueAccessor
+ * associated with a given directive instance supports the `setDisabledState` call.
+ *
+ * @param control Form control where disabled change handler should be setup.
+ * @param dir Corresponding directive instance associated with this control.
+ */
+export function setUpDisabledChangeHandler(control: FormControl, dir: NgControl): void {
+  if (dir.valueAccessor!.setDisabledState) {
+    const onDisabledChange = (isDisabled: boolean) => {
+      dir.valueAccessor!.setDisabledState!(isDisabled);
+    };
+    control.registerOnDisabledChange(onDisabledChange);
+
+    // Register a callback function to cleanup disabled change handler
+    // from a control instance when a directive is destroyed.
+    dir._registerOnDestroy(() => {
+      control._unregisterOnDisabledChange(onDisabledChange);
+    });
+  }
 }
 
 /**
@@ -185,12 +206,19 @@ function updateControl(control: FormControl, dir: NgControl): void {
 }
 
 function setUpModelChangePipeline(control: FormControl, dir: NgControl): void {
-  control.registerOnChange((newValue: any, emitModelEvent: boolean) => {
+  const onChange = (newValue: any, emitModelEvent: boolean) => {
     // control -> view
     dir.valueAccessor!.writeValue(newValue);
 
     // control -> ngModel
     if (emitModelEvent) dir.viewToModelUpdate(newValue);
+  };
+  control.registerOnChange(onChange);
+
+  // Register a callback function to cleanup onChange handler
+  // from a control instance when a directive is destroyed.
+  dir._registerOnDestroy(() => {
+    control._unregisterOnChange(onChange);
   });
 }
 
@@ -287,7 +315,7 @@ export function selectValueAccessor(
   return null;
 }
 
-export function removeDir<T>(list: T[], el: T): void {
+export function removeListItem<T>(list: T[], el: T): void {
   const index = list.indexOf(el);
   if (index > -1) list.splice(index, 1);
 }

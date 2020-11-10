@@ -2594,7 +2594,7 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
         expectValidatorsToBeCalled(newValidatorSpy, newAsyncValidatorSpy, {ctx: control, count: 1});
       });
 
-      it('should cleanup validators on a control used for multiple `formControlName` directive',
+      it('should cleanup validators on a control used for multiple `formControlName` directives',
          () => {
            const fixture =
                initTest(NgForFormControlWithValidators, MyCustomValidator, MyCustomAsyncValidator);
@@ -2643,6 +2643,40 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
            // of controls (one for each element in the `logins` array).
            expectValidatorsToBeCalled(validatorSpy, asyncValidatorSpy, {ctx: newControl, count: 6});
          });
+
+      it('should cleanup directive-specific callbacks only', () => {
+        const fixture = initTest(MultipleFormControls, MyCustomValidator, MyCustomAsyncValidator);
+        fixture.detectChanges();
+
+        const sharedControl = fixture.componentInstance.control;
+
+        const validatorSpy = validatorSpyOn(MyCustomValidator);
+        const asyncValidatorSpy = validatorSpyOn(MyCustomAsyncValidator);
+
+        sharedControl.setValue('b');
+        fixture.detectChanges();
+
+        // Check that validators were called for each `formControlName` directive instance
+        // (2 times total).
+        expectValidatorsToBeCalled(validatorSpy, asyncValidatorSpy, {ctx: sharedControl, count: 2});
+
+        // Replace formA with a new instance. This will trigger destroy operation for the
+        // `formControlName` directive that is bound to the `control` FormControl instance.
+        const newFormA = new FormGroup({login: new FormControl('new-a')});
+        fixture.componentInstance.formA = newFormA;
+        fixture.detectChanges();
+
+        validatorSpy.calls.reset();
+        asyncValidatorSpy.calls.reset();
+
+        // Update control with a new value.
+        sharedControl.setValue('d');
+        fixture.detectChanges();
+
+        // We should still see an update to the second <input>.
+        expect(fixture.nativeElement.querySelector('#login').value).toBe('d');
+        expectValidatorsToBeCalled(validatorSpy, asyncValidatorSpy, {ctx: sharedControl, count: 1});
+      });
     });
   });
 }
@@ -2918,6 +2952,34 @@ class FormControlWithAsyncValidatorFn {
 })
 class FormControlWithValidators {
   form = new FormGroup({login: new FormControl('INITIAL')});
+}
+
+@Component({
+  selector: 'ngfor-form-controls-with-validators',
+  template: `
+    <div [formGroup]="formA">
+      <input
+        type="radio"
+        formControlName="login"
+        my-custom-validator
+        my-custom-async-validator
+      />
+    </div>
+    <div [formGroup]="formB">
+      <input
+        id="login"
+        type="text"
+        formControlName="login"
+        my-custom-validator
+        my-custom-async-validator
+      />
+    </div>
+  `
+})
+class MultipleFormControls {
+  control = new FormControl('a');
+  formA = new FormGroup({login: this.control});
+  formB = new FormGroup({login: this.control});
 }
 
 @Component({
