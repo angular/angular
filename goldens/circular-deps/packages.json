@@ -149,7 +149,6 @@
     "packages/core/src/render3/interfaces/node.ts",
     "packages/core/src/render3/interfaces/renderer.ts",
     "packages/core/src/render/api.ts",
-    "packages/core/src/render3/view_engine_compatibility.ts",
     "packages/core/src/render3/interfaces/type_checks.ts",
     "packages/core/src/render3/interfaces/container.ts",
     "packages/core/src/linker/view_ref.ts"
@@ -163,7 +162,6 @@
     "packages/core/src/render3/interfaces/node.ts",
     "packages/core/src/render3/interfaces/renderer.ts",
     "packages/core/src/render/api.ts",
-    "packages/core/src/render3/view_engine_compatibility.ts",
     "packages/core/src/render3/interfaces/type_checks.ts",
     "packages/core/src/render3/interfaces/container.ts",
     "packages/core/src/render3/interfaces/view.ts",
@@ -181,7 +179,6 @@
     "packages/core/src/render3/interfaces/node.ts",
     "packages/core/src/render3/interfaces/renderer.ts",
     "packages/core/src/render/api.ts",
-    "packages/core/src/render3/view_engine_compatibility.ts",
     "packages/core/src/render3/interfaces/type_checks.ts",
     "packages/core/src/render3/interfaces/container.ts",
     "packages/core/src/render3/interfaces/view.ts",
@@ -206,7 +203,6 @@
     "packages/core/src/render3/interfaces/node.ts",
     "packages/core/src/render3/interfaces/renderer.ts",
     "packages/core/src/render/api.ts",
-    "packages/core/src/render3/view_engine_compatibility.ts",
     "packages/core/src/render3/interfaces/type_checks.ts",
     "packages/core/src/render3/interfaces/container.ts",
     "packages/core/src/render3/interfaces/view.ts",
@@ -233,7 +229,6 @@
     "packages/core/src/render3/interfaces/node.ts",
     "packages/core/src/render3/interfaces/renderer.ts",
     "packages/core/src/render/api.ts",
-    "packages/core/src/render3/view_engine_compatibility.ts",
     "packages/core/src/render3/state.ts",
     "packages/core/src/render3/assert.ts",
     "packages/core/src/render3/definition.ts",
@@ -883,7 +878,6 @@
     "packages/core/src/render3/interfaces/node.ts",
     "packages/core/src/render3/interfaces/renderer.ts",
     "packages/core/src/render/api.ts",
-    "packages/core/src/render3/view_engine_compatibility.ts",
     "packages/core/src/render3/interfaces/type_checks.ts",
     "packages/core/src/render3/interfaces/container.ts",
     "packages/core/src/linker/view_ref.ts"
@@ -995,16 +989,10 @@
   ],
   [
     "packages/core/src/render/api.ts",
-    "packages/core/src/render3/view_engine_compatibility.ts"
-  ],
-  [
-    "packages/core/src/render/api.ts",
-    "packages/core/src/render3/view_engine_compatibility.ts",
     "packages/core/src/render3/interfaces/renderer.ts"
   ],
   [
     "packages/core/src/render/api.ts",
-    "packages/core/src/render3/view_engine_compatibility.ts",
     "packages/core/src/render3/interfaces/type_checks.ts",
     "packages/core/src/render3/interfaces/container.ts",
     "packages/core/src/render3/interfaces/node.ts",
@@ -1012,14 +1000,12 @@
   ],
   [
     "packages/core/src/render/api.ts",
-    "packages/core/src/render3/view_engine_compatibility.ts",
     "packages/core/src/render3/interfaces/type_checks.ts",
     "packages/core/src/render3/interfaces/container.ts",
     "packages/core/src/render3/interfaces/renderer.ts"
   ],
   [
     "packages/core/src/render/api.ts",
-    "packages/core/src/render3/view_engine_compatibility.ts",
     "packages/core/src/render3/interfaces/type_checks.ts",
     "packages/core/src/render3/interfaces/container.ts",
     "packages/core/src/render3/interfaces/view.ts",
@@ -1029,7 +1015,6 @@
   ],
   [
     "packages/core/src/render/api.ts",
-    "packages/core/src/render3/view_engine_compatibility.ts",
     "packages/core/src/render3/interfaces/type_checks.ts",
     "packages/core/src/render3/interfaces/container.ts",
     "packages/core/src/render3/interfaces/view.ts",
@@ -1038,7 +1023,6 @@
   ],
   [
     "packages/core/src/render/api.ts",
-    "packages/core/src/render3/view_engine_compatibility.ts",
     "packages/core/src/render3/interfaces/type_checks.ts",
     "packages/core/src/render3/interfaces/container.ts",
     "packages/core/src/render3/interfaces/view.ts",
@@ -1048,7 +1032,6 @@
   ],
   [
     "packages/core/src/render/api.ts",
-    "packages/core/src/render3/view_engine_compatibility.ts",
     "packages/core/src/render3/interfaces/type_checks.ts",
     "packages/core/src/render3/interfaces/container.ts",
     "packages/core/src/render3/interfaces/view.ts",
@@ -1056,20 +1039,17 @@
   ],
   [
     "packages/core/src/render/api.ts",
-    "packages/core/src/render3/view_engine_compatibility.ts",
     "packages/core/src/render3/interfaces/type_checks.ts",
     "packages/core/src/render3/interfaces/node.ts",
     "packages/core/src/render3/interfaces/renderer.ts"
   ],
   [
     "packages/core/src/render/api.ts",
-    "packages/core/src/render3/view_engine_compatibility.ts",
     "packages/core/src/render3/interfaces/type_checks.ts",
     "packages/core/src/render3/interfaces/renderer.ts"
   ],
   [
     "packages/core/src/render/api.ts",
-    "packages/core/src/render3/view_engine_compatibility.ts",
     "packages/core/src/render3/state.ts",
     "packages/core/src/render3/assert.ts",
     "packages/core/src/render3/interfaces/injector.ts",
@@ -1078,7 +1058,6 @@
   ],
   [
     "packages/core/src/render/api.ts",
-    "packages/core/src/render3/view_engine_compatibility.ts",
     "packages/core/src/render3/state.ts",
     "packages/core/src/render3/assert.ts",
     "packages/core/src/render3/interfaces/node.ts",
@@ -1086,14 +1065,12 @@
   ],
   [
     "packages/core/src/render/api.ts",
-    "packages/core/src/render3/view_engine_compatibility.ts",
     "packages/core/src/render3/state.ts",
     "packages/core/src/render3/interfaces/node.ts",
     "packages/core/src/render3/interfaces/renderer.ts"
   ],
   [
     "packages/core/src/render/api.ts",
-    "packages/core/src/render3/view_engine_compatibility.ts",
     "packages/core/src/render3/state.ts",
     "packages/core/src/render3/util/view_utils.ts",
     "packages/core/src/render3/interfaces/context.ts",
@@ -1101,7 +1078,6 @@
   ],
   [
     "packages/core/src/render/api.ts",
-    "packages/core/src/render3/view_engine_compatibility.ts",
     "packages/core/src/render3/state.ts",
     "packages/core/src/render3/util/view_utils.ts",
     "packages/core/src/render3/interfaces/node.ts",
@@ -1109,7 +1085,6 @@
   ],
   [
     "packages/core/src/render/api.ts",
-    "packages/core/src/render3/view_engine_compatibility.ts",
     "packages/core/src/render3/state.ts",
     "packages/core/src/render3/util/view_utils.ts",
     "packages/core/src/render3/interfaces/renderer.ts"
