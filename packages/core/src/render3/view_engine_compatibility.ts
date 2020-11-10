@@ -9,7 +9,7 @@
 import {ChangeDetectorRef as ViewEngine_ChangeDetectorRef} from '../change_detection/change_detector_ref';
 import {Injector} from '../di/injector';
 import {ComponentFactory as viewEngine_ComponentFactory, ComponentRef as viewEngine_ComponentRef} from '../linker/component_factory';
-import {ElementRef as ViewEngine_ElementRef} from '../linker/element_ref';
+import {createElementRef, ElementRef as ViewEngine_ElementRef} from '../linker/element_ref';
 import {NgModuleRef as viewEngine_NgModuleRef} from '../linker/ng_module_factory';
 import {TemplateRef as ViewEngine_TemplateRef} from '../linker/template_ref';
 import {ViewContainerRef as ViewEngine_ViewContainerRef} from '../linker/view_container_ref';
@@ -36,35 +36,6 @@ import {ViewRef} from './view_ref';
 
 
 
-/**
- * Creates an ElementRef from the most recent node.
- *
- * @returns The ElementRef instance to use
- */
-export function injectElementRef(ElementRefToken: typeof ViewEngine_ElementRef):
-    ViewEngine_ElementRef {
-  return createElementRef(ElementRefToken, getCurrentTNode()!, getLView());
-}
-
-let R3ElementRef: {new (native: RElement|RComment): ViewEngine_ElementRef};
-
-/**
- * Creates an ElementRef given a node.
- *
- * @param ElementRefToken The ElementRef type
- * @param tNode The node for which you'd like an ElementRef
- * @param view The view to which the node belongs
- * @returns The ElementRef instance to use
- */
-export function createElementRef(
-    ElementRefToken: typeof ViewEngine_ElementRef, tNode: TNode,
-    view: LView): ViewEngine_ElementRef {
-  if (!R3ElementRef) {
-    R3ElementRef = class ElementRef extends ElementRefToken {};
-  }
-  return new R3ElementRef(getNativeByTNode(tNode, view) as RElement);
-}
-
 let R3TemplateRef: {
   new (_declarationParentView: LView, hostTNode: TContainerNode, elementRef: ViewEngine_ElementRef):
       ViewEngine_TemplateRef<any>
@@ -75,10 +46,9 @@ let R3TemplateRef: {
  *
  * @returns The TemplateRef instance to use
  */
-export function injectTemplateRef<T>(
-    TemplateRefToken: typeof ViewEngine_TemplateRef,
-    ElementRefToken: typeof ViewEngine_ElementRef): ViewEngine_TemplateRef<T>|null {
-  return createTemplateRef<T>(TemplateRefToken, ElementRefToken, getCurrentTNode()!, getLView());
+export function injectTemplateRef<T>(TemplateRefToken: typeof ViewEngine_TemplateRef):
+    ViewEngine_TemplateRef<T>|null {
+  return createTemplateRef<T>(TemplateRefToken, getCurrentTNode()!, getLView());
 }
 
 /**
@@ -91,8 +61,8 @@ export function injectTemplateRef<T>(
  * @returns The TemplateRef instance or null if we can't create a TemplateRef on a given node type
  */
 export function createTemplateRef<T>(
-    TemplateRefToken: typeof ViewEngine_TemplateRef, ElementRefToken: typeof ViewEngine_ElementRef,
-    hostTNode: TNode, hostView: LView): ViewEngine_TemplateRef<T>|null {
+    TemplateRefToken: typeof ViewEngine_TemplateRef, hostTNode: TNode,
+    hostView: LView): ViewEngine_TemplateRef<T>|null {
   if (!R3TemplateRef) {
     R3TemplateRef = class TemplateRef<T> extends TemplateRefToken<T>{
       constructor(
@@ -126,8 +96,7 @@ export function createTemplateRef<T>(
   if (hostTNode.type & TNodeType.Container) {
     ngDevMode && assertDefined(hostTNode.tViews, 'TView must be allocated');
     return new R3TemplateRef(
-        hostView, hostTNode as TContainerNode,
-        createElementRef(ElementRefToken, hostTNode, hostView));
+        hostView, hostTNode as TContainerNode, createElementRef(hostTNode, hostView));
   } else {
     return null;
   }
@@ -145,11 +114,10 @@ let R3ViewContainerRef: {
  *
  * @returns The ViewContainerRef instance to use
  */
-export function injectViewContainerRef(
-    ViewContainerRefToken: typeof ViewEngine_ViewContainerRef,
-    ElementRefToken: typeof ViewEngine_ElementRef): ViewEngine_ViewContainerRef {
+export function injectViewContainerRef(ViewContainerRefToken: typeof ViewEngine_ViewContainerRef):
+    ViewEngine_ViewContainerRef {
   const previousTNode = getCurrentTNode() as TElementNode | TElementContainerNode | TContainerNode;
-  return createContainerRef(ViewContainerRefToken, ElementRefToken, previousTNode, getLView());
+  return createContainerRef(ViewContainerRefToken, previousTNode, getLView());
 }
 
 /**
@@ -163,7 +131,6 @@ export function injectViewContainerRef(
  */
 export function createContainerRef(
     ViewContainerRefToken: typeof ViewEngine_ViewContainerRef,
-    ElementRefToken: typeof ViewEngine_ElementRef,
     hostTNode: TElementNode|TContainerNode|TElementContainerNode,
     hostView: LView): ViewEngine_ViewContainerRef {
   if (!R3ViewContainerRef) {
@@ -176,7 +143,7 @@ export function createContainerRef(
       }
 
       get element(): ViewEngine_ElementRef {
-        return createElementRef(ElementRefToken, this._hostTNode, this._hostView);
+        return createElementRef(this._hostTNode, this._hostView);
       }
 
       get injector(): Injector {

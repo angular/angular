@@ -32,7 +32,7 @@ import {ComponentDef, ComponentTemplate, ComponentType, DirectiveDef, DirectiveT
 import {DirectiveDefList, DirectiveDefListOrFactory, DirectiveTypesOrFactory, HostBindingsFunction, PipeDef, PipeDefList, PipeDefListOrFactory, PipeTypesOrFactory} from '../../src/render3/interfaces/definition';
 import {PlayerHandler} from '../../src/render3/interfaces/player';
 import {domRendererFactory3, ProceduralRenderer3, RComment, RElement, Renderer3, RendererFactory3, RendererStyleFlags3, RNode, RText} from '../../src/render3/interfaces/renderer';
-import {HEADER_OFFSET, LView, LViewFlags, TVIEW, TViewType} from '../../src/render3/interfaces/view';
+import {LView, LViewFlags, TVIEW, TViewType} from '../../src/render3/interfaces/view';
 import {destroyLView} from '../../src/render3/node_manipulation';
 import {getRootView} from '../../src/render3/util/view_traversal_utils';
 import {Sanitizer} from '../../src/sanitization/sanitizer';
@@ -452,10 +452,9 @@ export const text: RText = null as any as Text;
  *  like injectElementRef() prematurely.
  */
 export function enableIvyInjectableFactories() {
-  (ElementRef as any)[NG_ELEMENT_ID] = () => R3_ELEMENT_REF_FACTORY(ElementRef);
-  (TemplateRef as any)[NG_ELEMENT_ID] = () => R3_TEMPLATE_REF_FACTORY(TemplateRef, ElementRef);
-  (ViewContainerRef as any)[NG_ELEMENT_ID] = () =>
-      R3_VIEW_CONTAINER_REF_FACTORY(ViewContainerRef, ElementRef);
+  (ElementRef as any)[NG_ELEMENT_ID] = () => R3_ELEMENT_REF_FACTORY();
+  (TemplateRef as any)[NG_ELEMENT_ID] = () => R3_TEMPLATE_REF_FACTORY(TemplateRef);
+  (ViewContainerRef as any)[NG_ELEMENT_ID] = () => R3_VIEW_CONTAINER_REF_FACTORY(ViewContainerRef);
   (ChangeDetectorRef as any)[NG_ELEMENT_ID] = () => R3_CHANGE_DETECTOR_REF_FACTORY();
   (Renderer2 as any)[NG_ELEMENT_ID] = () => R3_RENDERER2_FACTORY();
 }
