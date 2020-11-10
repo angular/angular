@@ -9,14 +9,11 @@
 
 import {ChangeDetectorRef} from '../change_detection/change_detector_ref';
 import {InjectFlags} from '../di/interface/injector';
-import {ElementRef as ViewEngine_ElementRef} from '../linker/element_ref';
 import {TemplateRef as ViewEngine_TemplateRef} from '../linker/template_ref';
 import {throwProviderNotFoundError} from './errors';
-
 import {TNode} from './interfaces/node';
 import {LView} from './interfaces/view';
 import {createTemplateRef, injectChangeDetectorRef} from './view_engine_compatibility';
-
 
 
 /**
@@ -26,7 +23,7 @@ import {createTemplateRef, injectChangeDetectorRef} from './view_engine_compatib
  * @codeGenApi
  */
 export function ɵɵtemplateRefExtractor(tNode: TNode, currentView: LView) {
-  return createTemplateRef(ViewEngine_TemplateRef, ViewEngine_ElementRef, tNode, currentView);
+  return createTemplateRef(ViewEngine_TemplateRef, tNode, currentView);
 }
 
 

@@ -149,7 +149,7 @@ export abstract class ViewContainerRef {
    * @nocollapse
    */
   static __NG_ELEMENT_ID__:
-      () => ViewContainerRef = () => SWITCH_VIEW_CONTAINER_REF_FACTORY(ViewContainerRef, ElementRef)
+      () => ViewContainerRef = () => SWITCH_VIEW_CONTAINER_REF_FACTORY(ViewContainerRef)
 }
 
 export const SWITCH_VIEW_CONTAINER_REF_FACTORY__POST_R3__ = render3InjectViewContainerRef;
