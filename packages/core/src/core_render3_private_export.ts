@@ -56,13 +56,15 @@ export {
   SWITCH_COMPILE_PIPE__POST_R3__ as ɵSWITCH_COMPILE_PIPE__POST_R3__,
 } from './metadata/directives';
 export {
-  NgModuleDef as ɵNgModuleDef,
-  NgModuleTransitiveScopes as ɵNgModuleTransitiveScopes,
   ɵɵNgModuleDefWithMeta,
 } from './metadata/ng_module';
 export {
   SWITCH_COMPILE_NGMODULE__POST_R3__ as ɵSWITCH_COMPILE_NGMODULE__POST_R3__,
 } from './metadata/ng_module';
+export {
+  NgModuleDef as ɵNgModuleDef,
+  NgModuleTransitiveScopes as ɵNgModuleTransitiveScopes,
+} from './metadata/ng_module_def';
 export {
   SWITCH_RENDERER2_FACTORY__POST_R3__ as ɵSWITCH_RENDERER2_FACTORY__POST_R3__,
 } from './render/api';
