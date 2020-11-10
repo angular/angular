@@ -7,9 +7,10 @@
  */
 
 import {isForwardRef, resolveForwardRef} from '../di/forward_ref';
+import {injectRootLimpMode, setInjectImplementation} from '../di/inject_switch';
 import {InjectionToken} from '../di/injection_token';
 import {Injector} from '../di/injector';
-import {injectRootLimpMode, setInjectImplementation} from '../di/injector_compatibility';
+import {InjectorMarkers} from '../di/injector_marker';
 import {getInjectorDef} from '../di/interface/defs';
 import {InjectFlags} from '../di/interface/injector';
 import {Type} from '../interface/type';
@@ -415,8 +416,11 @@ export function getOrCreateInjectable<T>(
     // so just call the factory function to create it.
     if (typeof bloomHash === 'function') {
       if (!enterDI(lView, tNode, flags)) {
-        // Failed to enter DI use module injector instead.
-        return lookupTokenUsingModuleInjector<T>(lView, token, flags, notFoundValue);
+        // Failed to enter DI, try module injector instead. If a token is injected with the @Host
+        // flag, the module injector is not searched for that token in Ivy.
+        return (flags & InjectFlags.Host) ?
+            notFoundValueOrThrow<T>(notFoundValue, token, flags) :
+            lookupTokenUsingModuleInjector<T>(lView, token, flags, notFoundValue);
       }
       try {
         const value = bloomHash();
@@ -429,32 +433,6 @@ export function getOrCreateInjectable<T>(
         leaveDI();
       }
     } else if (typeof bloomHash === 'number') {
-      // This is a value used to identify __NG_ELEMENT_ID__
-      // `-1` is a special value used to identify `Injector` types in NodeInjector
-      // This is a workaround for the fact that if the `Injector.__NG_ELEMENT_ID__`
-      // would have a factory function (such as `ElementRef`) it would cause Ivy
-      // to be pulled into the ViewEngine, because they both share `Injector` type.
-      // This should be refactored to follow `ElementRef` pattern once ViewEngine is
-      // removed
-      if (bloomHash === -1) {
-        if (!enterDI(lView, tNode, flags)) {
-          // Failed to enter DI, try module injector instead. If a token is injected with the @Host
-          // flag, the module injector is not searched for that token in Ivy.
-          return (flags & InjectFlags.Host) ?
-              notFoundValueOrThrow<T>(notFoundValue, token, flags) :
-              lookupTokenUsingModuleInjector<T>(lView, token, flags, notFoundValue);
-        }
-        try {
-          // Retrieving current `TNode` and `LView` from the state (rather than using `tNode` and
-          // `lView`), because entering DI (by calling `enterDI`) may cause these values to change
-          // (in case `@SkipSelf` flag is present).
-          return new NodeInjector(getCurrentTNode()! as TDirectiveHostNode, getLView()) as any;
-        } finally {
-          leaveDI();
-        }
-      }
-      // If the token has a bloom hash, then it is a token which could be in NodeInjector.
-
       // A reference to the previous injector TView that was found while climbing the element
       // injector tree. This is used to know if viewProviders can be accessed on the current
       // injector.
@@ -524,6 +502,10 @@ export function getOrCreateInjectable<T>(
 }
 
 const NOT_FOUND = {};
+
+export function createNodeInjector(): Injector {
+  return new NodeInjector(getCurrentTNode()! as TDirectiveHostNode, getLView()) as any;
+}
 
 function searchTokensOnInjector<T>(
     injectorIndex: number, lView: LView, token: Type<T>|InjectionToken<T>,
@@ -674,7 +656,17 @@ export function bloomHashBitOrFactory(token: Type<any>|InjectionToken<any>|strin
       // First check with `hasOwnProperty` so we don't get an inherited ID.
       token.hasOwnProperty(NG_ELEMENT_ID) ? (token as any)[NG_ELEMENT_ID] : undefined;
   // Negative token IDs are used for special objects such as `Injector`
-  return (typeof tokenId === 'number' && tokenId > 0) ? tokenId & BLOOM_MASK : tokenId;
+  if (typeof tokenId === 'number') {
+    if (tokenId >= 0) {
+      return tokenId & BLOOM_MASK;
+    } else {
+      ngDevMode &&
+          assertEqual(tokenId, InjectorMarkers.Injector, 'Expecting to get Special Injector Id');
+      return createNodeInjector;
+    }
+  } else {
+    return tokenId;
+  }
 }
 
 export function bloomHasToken(bloomHash: number, injectorIndex: number, injectorView: LView|TData) {

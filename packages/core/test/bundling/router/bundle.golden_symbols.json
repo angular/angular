@@ -1074,6 +1074,9 @@
     "name": "createNewSegmentGroup"
   },
   {
+    "name": "createNodeInjector"
+  },
+  {
     "name": "createPlatformFactory"
   },
   {

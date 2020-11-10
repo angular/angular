@@ -834,6 +834,9 @@
     "name": "createLView"
   },
   {
+    "name": "createNodeInjector"
+  },
+  {
     "name": "createPlatformFactory"
   },
   {
