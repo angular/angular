@@ -90,6 +90,9 @@
     "name": "R3TemplateRef"
   },
   {
+    "name": "R3ViewContainerRef"
+  },
+  {
     "name": "RecordViewTuple"
   },
   {
@@ -139,6 +142,9 @@
   },
   {
     "name": "ViewEngineTemplateRef"
+  },
+  {
+    "name": "VE_ViewContainerRef"
   },
   {
     "name": "ViewContainerRef"
