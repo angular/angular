@@ -373,6 +373,9 @@ export function createContainerRef(
     if (hostTNode.type & TNodeType.ElementContainer) {
       commentNode = unwrapRNode(slotValue) as RComment;
     } else {
+      // If the host is a regular element, we have to insert a comment node manually which will
+      // be used as an anchor when inserting elements. In this specific case we use low-level DOM
+      // manipulation to insert it.
       const renderer = hostView[RENDERER];
       ngDevMode && ngDevMode.rendererCreateComment++;
       commentNode = renderer.createComment(ngDevMode ? 'container' : '');

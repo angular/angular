@@ -102,7 +102,9 @@ describe('component', () => {
        class HelloComponent {
        }
 
-       // TODO: should be able to be removed once ViewEngine is removed.
+       // TODO: This module is only used to declare the `entryComponets` since
+       //  `configureTestingModule` doesn't support it. The module can be removed
+       // once ViewEngine is removed.
        @NgModule({
          declarations: [HelloComponent],
          exports: [HelloComponent],
