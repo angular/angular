@@ -146,8 +146,26 @@
     "packages/core/src/linker/component_factory.ts",
     "packages/core/src/change_detection/change_detection.ts",
     "packages/core/src/change_detection/change_detector_ref.ts",
-    "packages/core/src/render3/view_engine_compatibility.ts",
     "packages/core/src/render3/interfaces/node.ts",
+    "packages/core/src/render3/interfaces/renderer.ts",
+    "packages/core/src/render/api.ts",
+    "packages/core/src/render3/view_engine_compatibility.ts",
+    "packages/core/src/render3/interfaces/type_checks.ts",
+    "packages/core/src/render3/interfaces/container.ts",
+    "packages/core/src/linker/view_ref.ts"
+  ],
+  [
+    "packages/core/src/application_ref.ts",
+    "packages/core/src/application_tokens.ts",
+    "packages/core/src/linker/component_factory.ts",
+    "packages/core/src/change_detection/change_detection.ts",
+    "packages/core/src/change_detection/change_detector_ref.ts",
+    "packages/core/src/render3/interfaces/node.ts",
+    "packages/core/src/render3/interfaces/renderer.ts",
+    "packages/core/src/render/api.ts",
+    "packages/core/src/render3/view_engine_compatibility.ts",
+    "packages/core/src/render3/interfaces/type_checks.ts",
+    "packages/core/src/render3/interfaces/container.ts",
     "packages/core/src/render3/interfaces/view.ts",
     "packages/core/src/di/injector.ts",
     "packages/core/src/di/r3_injector.ts",
@@ -160,8 +178,12 @@
     "packages/core/src/linker/component_factory.ts",
     "packages/core/src/change_detection/change_detection.ts",
     "packages/core/src/change_detection/change_detector_ref.ts",
-    "packages/core/src/render3/view_engine_compatibility.ts",
     "packages/core/src/render3/interfaces/node.ts",
+    "packages/core/src/render3/interfaces/renderer.ts",
+    "packages/core/src/render/api.ts",
+    "packages/core/src/render3/view_engine_compatibility.ts",
+    "packages/core/src/render3/interfaces/type_checks.ts",
+    "packages/core/src/render3/interfaces/container.ts",
     "packages/core/src/render3/interfaces/view.ts",
     "packages/core/src/metadata.ts",
     "packages/core/src/di.ts",
@@ -181,20 +203,12 @@
     "packages/core/src/linker/component_factory.ts",
     "packages/core/src/change_detection/change_detection.ts",
     "packages/core/src/change_detection/change_detector_ref.ts",
-    "packages/core/src/render3/view_engine_compatibility.ts",
     "packages/core/src/render3/interfaces/node.ts",
-    "packages/core/src/render3/interfaces/view.ts",
+    "packages/core/src/render3/interfaces/renderer.ts",
+    "packages/core/src/render/api.ts",
+    "packages/core/src/render3/view_engine_compatibility.ts",
+    "packages/core/src/render3/interfaces/type_checks.ts",
     "packages/core/src/render3/interfaces/container.ts",
-    "packages/core/src/linker/view_ref.ts"
-  ],
-  [
-    "packages/core/src/application_ref.ts",
-    "packages/core/src/application_tokens.ts",
-    "packages/core/src/linker/component_factory.ts",
-    "packages/core/src/change_detection/change_detection.ts",
-    "packages/core/src/change_detection/change_detector_ref.ts",
-    "packages/core/src/render3/view_engine_compatibility.ts",
-    "packages/core/src/render3/interfaces/node.ts",
     "packages/core/src/render3/interfaces/view.ts",
     "packages/core/src/render3/interfaces/definition.ts",
     "packages/core/src/core.ts",
@@ -216,6 +230,9 @@
     "packages/core/src/linker/component_factory.ts",
     "packages/core/src/change_detection/change_detection.ts",
     "packages/core/src/change_detection/change_detector_ref.ts",
+    "packages/core/src/render3/interfaces/node.ts",
+    "packages/core/src/render3/interfaces/renderer.ts",
+    "packages/core/src/render/api.ts",
     "packages/core/src/render3/view_engine_compatibility.ts",
     "packages/core/src/render3/state.ts",
     "packages/core/src/render3/assert.ts",
@@ -228,7 +245,6 @@
     "packages/core/src/linker/component_factory.ts",
     "packages/core/src/change_detection/change_detection.ts",
     "packages/core/src/change_detection/change_detector_ref.ts",
-    "packages/core/src/render3/view_engine_compatibility.ts",
     "packages/core/src/render3/view_ref.ts"
   ],
   [
@@ -237,7 +253,6 @@
     "packages/core/src/linker/component_factory.ts",
     "packages/core/src/change_detection/change_detection.ts",
     "packages/core/src/change_detection/change_detector_ref.ts",
-    "packages/core/src/render3/view_engine_compatibility.ts",
     "packages/core/src/render3/view_ref.ts",
     "packages/core/src/linker/view_container_ref.ts",
     "packages/core/src/di/injector.ts",
@@ -251,7 +266,6 @@
     "packages/core/src/linker/component_factory.ts",
     "packages/core/src/change_detection/change_detection.ts",
     "packages/core/src/change_detection/change_detector_ref.ts",
-    "packages/core/src/render3/view_engine_compatibility.ts",
     "packages/core/src/render3/view_ref.ts",
     "packages/core/src/linker/view_container_ref.ts",
     "packages/core/src/render3/di.ts",
@@ -267,7 +281,6 @@
     "packages/core/src/linker/component_factory.ts",
     "packages/core/src/change_detection/change_detection.ts",
     "packages/core/src/change_detection/change_detector_ref.ts",
-    "packages/core/src/render3/view_engine_compatibility.ts",
     "packages/core/src/render3/view_ref.ts",
     "packages/core/src/linker/view_container_ref.ts",
     "packages/core/src/render3/di.ts",
@@ -282,7 +295,6 @@
     "packages/core/src/linker/component_factory.ts",
     "packages/core/src/change_detection/change_detection.ts",
     "packages/core/src/change_detection/change_detector_ref.ts",
-    "packages/core/src/render3/view_engine_compatibility.ts",
     "packages/core/src/render3/view_ref.ts",
     "packages/core/src/linker/view_container_ref.ts",
     "packages/core/src/render3/di.ts",
@@ -295,7 +307,6 @@
     "packages/core/src/linker/component_factory.ts",
     "packages/core/src/change_detection/change_detection.ts",
     "packages/core/src/change_detection/change_detector_ref.ts",
-    "packages/core/src/render3/view_engine_compatibility.ts",
     "packages/core/src/render3/view_ref.ts",
     "packages/core/src/linker/view_container_ref.ts",
     "packages/core/src/render3/instructions/shared.ts",
@@ -316,7 +327,6 @@
     "packages/core/src/linker/component_factory.ts",
     "packages/core/src/change_detection/change_detection.ts",
     "packages/core/src/change_detection/change_detector_ref.ts",
-    "packages/core/src/render3/view_engine_compatibility.ts",
     "packages/core/src/render3/view_ref.ts",
     "packages/core/src/linker/view_container_ref.ts",
     "packages/core/src/render3/instructions/shared.ts",
@@ -340,7 +350,6 @@
     "packages/core/src/linker/component_factory.ts",
     "packages/core/src/change_detection/change_detection.ts",
     "packages/core/src/change_detection/change_detector_ref.ts",
-    "packages/core/src/render3/view_engine_compatibility.ts",
     "packages/core/src/render3/view_ref.ts",
     "packages/core/src/linker/view_container_ref.ts",
     "packages/core/src/render3/instructions/shared.ts",
@@ -359,7 +368,6 @@
     "packages/core/src/linker/component_factory.ts",
     "packages/core/src/change_detection/change_detection.ts",
     "packages/core/src/change_detection/change_detector_ref.ts",
-    "packages/core/src/render3/view_engine_compatibility.ts",
     "packages/core/src/render3/view_ref.ts",
     "packages/core/src/linker/view_container_ref.ts",
     "packages/core/src/render3/instructions/shared.ts",
@@ -379,7 +387,6 @@
     "packages/core/src/linker/component_factory.ts",
     "packages/core/src/change_detection/change_detection.ts",
     "packages/core/src/change_detection/change_detector_ref.ts",
-    "packages/core/src/render3/view_engine_compatibility.ts",
     "packages/core/src/render3/view_ref.ts",
     "packages/core/src/linker/view_container_ref.ts",
     "packages/core/src/render3/instructions/shared.ts",
@@ -392,7 +399,6 @@
     "packages/core/src/linker/component_factory.ts",
     "packages/core/src/change_detection/change_detection.ts",
     "packages/core/src/change_detection/change_detector_ref.ts",
-    "packages/core/src/render3/view_engine_compatibility.ts",
     "packages/core/src/render3/view_ref.ts",
     "packages/core/src/linker/view_container_ref.ts",
     "packages/core/src/render3/instructions/shared.ts",
@@ -844,7 +850,6 @@
   [
     "packages/core/src/change_detection/change_detection.ts",
     "packages/core/src/change_detection/change_detector_ref.ts",
-    "packages/core/src/render3/view_engine_compatibility.ts",
     "packages/core/src/render3/view_ref.ts",
     "packages/core/src/linker/view_container_ref.ts",
     "packages/core/src/linker/component_factory.ts"
@@ -852,7 +857,6 @@
   [
     "packages/core/src/change_detection/change_detection.ts",
     "packages/core/src/change_detection/change_detector_ref.ts",
-    "packages/core/src/render3/view_engine_compatibility.ts",
     "packages/core/src/render3/view_ref.ts",
     "packages/core/src/linker/view_container_ref.ts",
     "packages/core/src/render3/instructions/shared.ts",
@@ -864,7 +868,6 @@
   [
     "packages/core/src/change_detection/change_detection.ts",
     "packages/core/src/change_detection/change_detector_ref.ts",
-    "packages/core/src/render3/view_engine_compatibility.ts",
     "packages/core/src/render3/view_ref.ts",
     "packages/core/src/linker/view_container_ref.ts",
     "packages/core/src/render3/instructions/shared.ts",
@@ -877,19 +880,16 @@
   ],
   [
     "packages/core/src/change_detection/change_detector_ref.ts",
-    "packages/core/src/render3/view_engine_compatibility.ts"
-  ],
-  [
-    "packages/core/src/change_detection/change_detector_ref.ts",
-    "packages/core/src/render3/view_engine_compatibility.ts",
     "packages/core/src/render3/interfaces/node.ts",
-    "packages/core/src/render3/interfaces/view.ts",
+    "packages/core/src/render3/interfaces/renderer.ts",
+    "packages/core/src/render/api.ts",
+    "packages/core/src/render3/view_engine_compatibility.ts",
+    "packages/core/src/render3/interfaces/type_checks.ts",
     "packages/core/src/render3/interfaces/container.ts",
     "packages/core/src/linker/view_ref.ts"
   ],
   [
     "packages/core/src/change_detection/change_detector_ref.ts",
-    "packages/core/src/render3/view_engine_compatibility.ts",
     "packages/core/src/render3/view_ref.ts"
   ],
   [
@@ -998,31 +998,129 @@
     "packages/core/src/render3/view_engine_compatibility.ts"
   ],
   [
+    "packages/core/src/render/api.ts",
+    "packages/core/src/render3/view_engine_compatibility.ts",
+    "packages/core/src/render3/interfaces/renderer.ts"
+  ],
+  [
+    "packages/core/src/render/api.ts",
+    "packages/core/src/render3/view_engine_compatibility.ts",
+    "packages/core/src/render3/interfaces/type_checks.ts",
     "packages/core/src/render3/interfaces/container.ts",
     "packages/core/src/render3/interfaces/node.ts",
-    "packages/core/src/render3/interfaces/view.ts"
+    "packages/core/src/render3/interfaces/renderer.ts"
   ],
   [
+    "packages/core/src/render/api.ts",
+    "packages/core/src/render3/view_engine_compatibility.ts",
+    "packages/core/src/render3/interfaces/type_checks.ts",
     "packages/core/src/render3/interfaces/container.ts",
-    "packages/core/src/render3/interfaces/view.ts"
+    "packages/core/src/render3/interfaces/renderer.ts"
   ],
   [
-    "packages/core/src/render3/interfaces/definition.ts",
-    "packages/core/src/render3/interfaces/node.ts",
-    "packages/core/src/render3/interfaces/view.ts"
-  ],
-  [
-    "packages/core/src/render3/interfaces/definition.ts",
-    "packages/core/src/render3/interfaces/view.ts"
-  ],
-  [
-    "packages/core/src/render3/interfaces/node.ts",
-    "packages/core/src/render3/interfaces/view.ts"
-  ],
-  [
-    "packages/core/src/render3/interfaces/node.ts",
+    "packages/core/src/render/api.ts",
+    "packages/core/src/render3/view_engine_compatibility.ts",
+    "packages/core/src/render3/interfaces/type_checks.ts",
+    "packages/core/src/render3/interfaces/container.ts",
     "packages/core/src/render3/interfaces/view.ts",
-    "packages/core/src/render3/interfaces/query.ts"
+    "packages/core/src/render3/interfaces/definition.ts",
+    "packages/core/src/render3/interfaces/node.ts",
+    "packages/core/src/render3/interfaces/renderer.ts"
+  ],
+  [
+    "packages/core/src/render/api.ts",
+    "packages/core/src/render3/view_engine_compatibility.ts",
+    "packages/core/src/render3/interfaces/type_checks.ts",
+    "packages/core/src/render3/interfaces/container.ts",
+    "packages/core/src/render3/interfaces/view.ts",
+    "packages/core/src/render3/interfaces/node.ts",
+    "packages/core/src/render3/interfaces/renderer.ts"
+  ],
+  [
+    "packages/core/src/render/api.ts",
+    "packages/core/src/render3/view_engine_compatibility.ts",
+    "packages/core/src/render3/interfaces/type_checks.ts",
+    "packages/core/src/render3/interfaces/container.ts",
+    "packages/core/src/render3/interfaces/view.ts",
+    "packages/core/src/render3/interfaces/query.ts",
+    "packages/core/src/render3/interfaces/node.ts",
+    "packages/core/src/render3/interfaces/renderer.ts"
+  ],
+  [
+    "packages/core/src/render/api.ts",
+    "packages/core/src/render3/view_engine_compatibility.ts",
+    "packages/core/src/render3/interfaces/type_checks.ts",
+    "packages/core/src/render3/interfaces/container.ts",
+    "packages/core/src/render3/interfaces/view.ts",
+    "packages/core/src/render3/interfaces/renderer.ts"
+  ],
+  [
+    "packages/core/src/render/api.ts",
+    "packages/core/src/render3/view_engine_compatibility.ts",
+    "packages/core/src/render3/interfaces/type_checks.ts",
+    "packages/core/src/render3/interfaces/node.ts",
+    "packages/core/src/render3/interfaces/renderer.ts"
+  ],
+  [
+    "packages/core/src/render/api.ts",
+    "packages/core/src/render3/view_engine_compatibility.ts",
+    "packages/core/src/render3/interfaces/type_checks.ts",
+    "packages/core/src/render3/interfaces/renderer.ts"
+  ],
+  [
+    "packages/core/src/render/api.ts",
+    "packages/core/src/render3/view_engine_compatibility.ts",
+    "packages/core/src/render3/state.ts",
+    "packages/core/src/render3/assert.ts",
+    "packages/core/src/render3/interfaces/injector.ts",
+    "packages/core/src/render3/interfaces/node.ts",
+    "packages/core/src/render3/interfaces/renderer.ts"
+  ],
+  [
+    "packages/core/src/render/api.ts",
+    "packages/core/src/render3/view_engine_compatibility.ts",
+    "packages/core/src/render3/state.ts",
+    "packages/core/src/render3/assert.ts",
+    "packages/core/src/render3/interfaces/node.ts",
+    "packages/core/src/render3/interfaces/renderer.ts"
+  ],
+  [
+    "packages/core/src/render/api.ts",
+    "packages/core/src/render3/view_engine_compatibility.ts",
+    "packages/core/src/render3/state.ts",
+    "packages/core/src/render3/interfaces/node.ts",
+    "packages/core/src/render3/interfaces/renderer.ts"
+  ],
+  [
+    "packages/core/src/render/api.ts",
+    "packages/core/src/render3/view_engine_compatibility.ts",
+    "packages/core/src/render3/state.ts",
+    "packages/core/src/render3/util/view_utils.ts",
+    "packages/core/src/render3/interfaces/context.ts",
+    "packages/core/src/render3/interfaces/renderer.ts"
+  ],
+  [
+    "packages/core/src/render/api.ts",
+    "packages/core/src/render3/view_engine_compatibility.ts",
+    "packages/core/src/render3/state.ts",
+    "packages/core/src/render3/util/view_utils.ts",
+    "packages/core/src/render3/interfaces/node.ts",
+    "packages/core/src/render3/interfaces/renderer.ts"
+  ],
+  [
+    "packages/core/src/render/api.ts",
+    "packages/core/src/render3/view_engine_compatibility.ts",
+    "packages/core/src/render3/state.ts",
+    "packages/core/src/render3/util/view_utils.ts",
+    "packages/core/src/render3/interfaces/renderer.ts"
+  ],
+  [
+    "packages/core/src/render3/interfaces/container.ts",
+    "packages/core/src/render3/interfaces/view.ts"
+  ],
+  [
+    "packages/core/src/render3/interfaces/definition.ts",
+    "packages/core/src/render3/interfaces/view.ts"
   ],
   [
     "packages/core/src/render3/interfaces/query.ts",
