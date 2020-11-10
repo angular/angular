@@ -1037,17 +1037,12 @@ export function applyStyling(
     } else {
       // A value is important if it ends with `!important`. The style
       // parser strips any semicolons at the end of the value.
-      const isImportant = typeof value === 'string' ? value.slice(-11) === ' !important' : value;
+      const isImportant = typeof value === 'string' ? value.endsWith('!important') : false;
 
       if (isImportant) {
         // !important has to be stripped from the value for it to be valid.
-        value = value.slice(0, -11);
-
-        if (flags === undefined) {
-          flags = TempRendererStyleFlags2.Important;
-        } else {
-          flags |= TempRendererStyleFlags2.Important;
-        }
+        value = value.slice(0, -10);
+        flags! |= TempRendererStyleFlags2.Important;
       }
 
       ngDevMode && ngDevMode.rendererSetStyle++;
