@@ -1,7 +1,7 @@
 <!--
 # Communicating with backend services using HTTP
 -->
-# 백엔드 서비스와 HTTP로 통신하기
+# 백엔드와 HTTP 통신하기
 
 <!--
 Most front-end applications need to communicate with a server over the HTTP protocol, in order to download or upload data and access other back-end services.
@@ -183,7 +183,7 @@ To fetch this kind of data, the `get()` call needs the following options: `{obse
 These are the default values for those options, so the following examples do not pass the options object.
 Later sections show some of the additional option possibilities.
 -->
-[`HTTPClient.get()`](api/common/http/HttpClient#get) 메서드를 사용하면 서버에서 데이터를 받아올 수 있습니다.
+[`HttpClient.get()`](api/common/http/HttpClient#get) 메서드를 사용하면 서버에서 데이터를 받아올 수 있습니다.
 이 함수는 HTTP 요청을 보내고 Observable로 HTTP 응답을 전달하는 비동기 메서드입니다.
 반환하는 타입은 메서드를 실행할 때 `observe`, `responseType` 필드에 명시적으로 지정할 수 있습니다.
 
@@ -209,7 +209,7 @@ options: {
 <div class="alert is-helpful">
 
 `options` 객체는 상황에 따라 다양하게 활용할 수 있습니다.
-HTTP 요청을 보낼 때 기본 헤더가 필요하다면 [헤더를 추가](#adding-headers)하기 위해 `headers` 옵션 프로퍼티를 사용할 수 있으며, [HTTP URL로 인자를 전달](#url-params)하기 위해 `params` 프로퍼티를 사용할 수 있고, 용량이 큰 데이터를 보내거나 받을 때  [진행률을 감지](#report-progress)하는 용도로 `reportProgress` 옵션을 사용할 수도 있씁니다.
+HTTP 요청을 보낼 때 기본 헤더가 필요하다면 [헤더를 추가](#adding-headers)하기 위해 `headers` 옵션 프로퍼티를 사용할 수 있으며, [HTTP URL로 인자를 전달](#url-params)하기 위해 `params` 프로퍼티를 사용할 수 있고, 용량이 큰 데이터를 보내거나 받을 때  [진행률을 감지](#report-progress)하는 용도로 `reportProgress` 옵션을 사용할 수도 있습니다.
 
 </div>
 
@@ -465,7 +465,7 @@ const options = {
 client.get('/foo', options)
 ```
 
-두번째 예제 코드처럼 작성하면 TypeScript는 `options`의 타입을 `{responseType: string}`이라고 추론합니다.
+두 번째 예제 코드처럼 작성하면 TypeScript는 `options`의 타입을 `{responseType: string}`이라고 추론합니다.
 하지만 이 타입은 `HttpClient.get()` 메서드에 사용하기에는 충분하지 않습니다.
 `responseType`의 값은 `HttpClient`가 사전에 정의한 문자열 중 하나여야 하지만 `string` 타입은 그보다 범위가 넓기 때문입니다.
 `HttpClient`를 사용할 때는 정확한 타입을 지정해야 합니다.
@@ -782,7 +782,7 @@ The following sections show examples of the data-update methods from the sample'
 -->
 `HttpClient`로 서버에 데이터를 요청할 때 사용하는 HTTP 메소드가 PUT, POST, DELETE라면 서버로 추가 데이터를 보낼 수 있습니다.
 
-이번 문단에서는 "히어로들의 여행" 튜토리얼에서 히어로의 목록을 가져오고 추가, 삭제, 수정했던 예제를 간단하게 다시 구현해 봅니다.
+이번 섹션에서는 "히어로들의 여행" 튜토리얼에서 히어로의 목록을 가져오고 추가, 삭제, 수정했던 예제를 간단하게 다시 구현해 봅시다.
 예제에서 다루는 코드는 `HeroesService`만 해당됩니다.
 
 
@@ -829,7 +829,7 @@ that hero to the displayed `heroes` list.
   header="app/heroes/heroes.service.ts (addHero())">
 </code-example>
 
-`HttpClient.post()` 메소드는 `get()`메소드와 비슷합니다. 서버로부터 받아올 데이터의 타입을 제네릭으로 지정하고, 첫번째 인자로 서버 API의 URL을 받는 것도 같습니다.
+`HttpClient.post()` 메소드는 `get()`메소드와 비슷합니다. 서버로부터 받아올 데이터의 타입을 제네릭으로 지정하고, 첫 번째 인자로 서버 API의 URL을 받는 것도 같습니다.
 
 * *hero* - POST 메소드일 때 요청으로 보낼 body 데이터를 지정합니다.
 * *httpOptions* - HTTP 요청에 대한 옵션을 지정합니다. [헤더 추가하기](#adding-headers)에서 지정한 옵션입니다.
@@ -883,7 +883,7 @@ You must call _subscribe()_ or nothing happens. Just calling `HeroesService.dele
 <code-example
   path="http/src/app/heroes/heroes.service.ts"
   region="deleteHero"
-  header="app/heroes/heroes.service.ts (deleteHero)">
+  header="app/heroes/heroes.service.ts (deleteHero())">
 </code-example>
 
 이 메소드도 `HeroesComponent`가 구독할 때 실행되기 시작하며, 메소드가 실행되면서 DELETE 요청도 시작됩니다.
@@ -892,7 +892,7 @@ You must call _subscribe()_ or nothing happens. Just calling `HeroesService.dele
 <code-example
   path="http/src/app/heroes/heroes.component.ts"
   region="delete-hero-subscribe"
-  header="app/heroes/heroes.component.ts (deleteHero)">
+  header="app/heroes/heroes.component.ts (deleteHero())">
 </code-example>
 
 컴포넌트는 삭제 동작의 결과값을 활용하지 않기 때문에 콜백함수 없이 구독을 시작했습니다.
@@ -1155,7 +1155,7 @@ Without interception, developers would have to implement these tasks _explicitly
 for each `HttpClient` method call.
 -->
 인터셉터를 활용하면 서버로 보내는 HTTP 요청을 가로채거나 변환할 수 있습니다.
-HTTP 요청에 적용된 인터셉터는 HTTP 응답에도 다시 활용될 수 있으며, 여러 개가 순서대로 실행되도록 체이닝할 수도 있습니다.
+HTTP 요청에 적용된 인터셉터는 HTTP 응답에도 다시 활용할 수 있으며, 인터셉터 여러개가 순서대로 실행되도록 체이닝할 수도 있습니다.
 
 인터셉터는 다양한 기능을 수행할 수 있습니다. 일반적으로는 HTTP 요청/응답에 대해 사용자 인증 정보를 확인하고 로그를 출력하기 위해 사용합니다.
 
@@ -1201,7 +1201,7 @@ This _no-op_ interceptor simply calls `next.handle()` with the original request 
 </code-example>
 
 `intercept` 메소드는 `Observable` 타입으로 HTTP 요청을 받아서 HTTP 응답을 반환합니다.
-이것만 봐도, 각각의 인터셉터는 HTTP 요청에 대해 모든 것을 조작할 수 있습니다.
+이것만 봐도 개별 인터셉터는 HTTP 요청에 대해 모든 것을 조작할 수 있습니다.
 
 일반적으로 인터셉터는 요청을 보내거나 응답을 받는 방향을 그대로 유지하기 위해, [`HttpHandler`](api/common/http/HttpHandler) 인터페이스로 받은 `next` 인자의 `handle()` 메소드를 호출합니다.
 
@@ -1233,7 +1233,7 @@ An interceptor _could_ skip calling `next.handle()`, short-circuit the chain, an
 This is a common middleware pattern found in frameworks such as Express.js.
 -->
 `next` 객체는 체이닝되는 인터셉터 중 다음으로 실행될 인터셉터를 의미합니다.
-그리고 인터셉터 체인 중 마지막 인터셉터가 받는 `next` 객체는 `HttpClient` 백엔드 핸들러이며, 이 핸들러가 실제로 HTTP 요청을 보내고 서버의 응답을 첫번째로 받는 핸들러입니다.
+그리고 인터셉터 체인 중 마지막 인터셉터가 받는 `next` 객체는 `HttpClient` 백엔드 핸들러이며, 이 핸들러가 실제로 HTTP 요청을 보내고 서버의 응답을 첫 번째로 받는 핸들러입니다.
 
 인터셉터는 대부분 HTTP 요청이 진행되는 흐름을 그대로 유지하기 위해 `next.handle()`를 실행하며, 최종적으로는 백엔드 핸들러가 실행됩니다.
 하지만 서버의 응답을 시뮬레이션하는 경우라면 `next.handle()`을 실행하지 않고 [바로 `Observable`](#caching)을 반환하면서 인터셉터 체인을 멈출 수도 있습니다.
@@ -1514,7 +1514,7 @@ To do this, set the cloned request body to `null`.
   newReq = req.clone({ body: null }); // clear the body
 ```
 -->
-어떤 경우에는 요청으로 보내는 바디를 교체하는 것이 아니라 비워야 할 떄가 있습니다.
+어떤 경우에는 요청으로 보내는 바디를 교체하는 것이 아니라 비워야 할 때가 있습니다.
 이 경우에는 요청으로 보내는 바디를 `null` 값으로 지정하면서 복제하면 됩니다.
 
 <div class="alert is-helpful">
@@ -1627,8 +1627,12 @@ RxJS가 제공하는 `tap` 연산자와 `finalize`는 HTTP 요청이 성공하�
 
 {@a caching}
 
+<!--
 ### Using interceptors for caching
+-->
+### 인터셉터를 캐시로 활용하기
 
+<!--
 Interceptors can handle requests by themselves, without forwarding to `next.handle()`.
 
 For example, you might decide to cache certain requests and responses to improve performance.
@@ -1654,8 +1658,37 @@ the cached response, by-passing the `next` handler (and all other interceptors d
 * If a cacheable request is not in cache, the code calls `sendRequest()`.
 This function creates a [request clone](#immutability) without headers, because the npm API forbids them.
 The function then forwards the clone of the request to `next.handle()` which ultimately calls the server and returns the server's response.
+-->
+인터셉터는 `next.handle()`을 실행하지 않는 방식으로도 활용할 수 있습니다.
+
+성능 향상을 위해 특정 요청과 응답은 캐싱한다고 합시다.
+이런 경우에 인터셉터를 활용하면 기존에 사용하던 데이터 서비스 코드를 수정하지 않아도 캐싱 기능을 구현할 수 있습니다.
+
+캐싱으로 사용하는 인터셉터는 이런식으로 정의합니다.
+
+<code-example
+  path="http/src/app/http-interceptors/caching-interceptor.ts"
+  region="v1"
+  header="app/http-interceptors/caching-interceptor.ts)">
+</code-example>
+
+* `isCacheable()` 함수는 해당 요청이 캐싱 대상인지 결정합니다.
+예제 코드에서는 npm 패키지를 검색하는 GET 요청이 대상입니다.
+
+* 캐싱 대상이 아닌 요청은 다음 체인에 있는 핸들러로 넘깁니다.
+
+* 캐싱 대상이고 캐시에 이미 저장된 요청은 `of()` 옵저버블로 캐싱된 데이터를 반환합니다.
+이 때 `next` 핸들러와 이후 인터셉터는 모두 생략합니다.
+
+* 캐싱 대상이고 캐시에 저장되어 있지 않은 요청은 `sendRequest()`로 실행합니다.
+이 함수는 헤더를 생략하면서 [요청을 복제](#immutability)합니다.
+헤더를 생략하는 이유는 npm API의 스펙을 따른 것입니다.
+`sendRequest()` 함수는 `next.handle()`을 실행한 최종 응답을 캐시에 저장합니다.
+
 
 {@a send-request}
+
+<!--
 <code-example
   path="http/src/app/http-interceptors/caching-interceptor.ts"
   region="send-request">
@@ -1669,10 +1702,28 @@ to the application caller.
 
 Data services, such as `PackageSearchService`, are unaware that
 some of their `HttpClient` requests actually return cached responses.
+-->
+<code-example
+  path="http/src/app/http-interceptors/caching-interceptor.ts"
+  region="send-request">
+</code-example>
+
+`sendRequest()` 함수는 응답이 애플리케이션으로 돌아가기 전 시점을 가로챕니다.
+그리고 `tap()` 연산자를 파이프로 연결해서 캐시에 응답을 저장합니다.
+
+리모트 서버로 보낸 원래 응답은 변경되지 않은 상태로 애플리케이션에 전달됩니다.
+
+이후에 `PackageSearchService`가 같은 조건으로 HTTP 요청을 보내면 실제 HTTP 요청이 발생하지 않고 캐시에 저장된 응답이 반환됩니다.
+
 
 {@a cache-refresh}
-### Using interceptors to request multiple values
 
+<!--
+### Using interceptors to request multiple values
+-->
+### 인터셉터로 데이터 여러번 요청하기
+
+<!--
 The `HttpClient.get()` method normally returns an observable that emits a single value, either the data or an error.
 An interceptor can change this to an observable that emits [multiple values](guide/observables).
 
@@ -1708,11 +1759,44 @@ The `results$` observable makes the request when subscribed.
 the cached response first (and immediately), followed later
 by the response from the server.
 Subscribers see a sequence of two responses.
+-->
+`HttpClient.get()` 메서드는 일반적으로 데이터나 에러를 하나만 반환합니다.
+이 때 인터셉터를 활용하면 이 옵저버블로 [데이터를 여러번](guide/observables) 보낼 수도 있습니다.
+
+아래 예제는 `CachingInterceptor`를 활용할 때 캐싱된 응답을 바로 반환하고, 그 이후에 npm 웹 API로 요청을 보낸 뒤 새로운 응답을 다시 한 번 반환하는 예제 코드입니다.
+
+<code-example
+  path="http/src/app/http-interceptors/caching-interceptor.ts"
+  region="intercept-refresh">
+</code-example>
+
+<div class="alert is-helpful">
+
+_캐싱된 데이터를 먼저 반환하고 나중에 갱신하는_ 동작은 `x-refresh` 헤더에 의해 결정됩니다.
+
+`PackageSearchComponent`에 있는 체크 박스는 `withRefresh` 플래그를 반환하며, 이 플래그는 `PackageSearchService.search()` 메서드에 인자로 사용됩니다.
+`search()` 메서드는 이 플래그 값에 따라 `x-refresh` 헤더를 추가하며, 이 헤더는 `HttpClient.get()` 메서드를 실행할 때 반영됩니다.
+
+</div>
+
+이렇게 수정하면 데이터가 인터셉터에 캐싱되었는지 여부와 관계없이 [`sendRequest()`](#send-request) 메서드를 실행해서 HTTP 요청을 보냅니다.
+`results$` 옵저버블을 구독해야 옵저버블이 시작된다는 것을 잊지 마세요.
+
+* 캐싱된 데이터가 없으면 인터셉터가 `results$`를 반환합니다.
+
+* 케싱된 데이터가 있으면 이 데이터를 `results$`에 파이프로 연결해서 옵저버블에 데이터를 두 번 보냅니다.
+이 때 첫 번째 데이터는 캐싱된 데이터이고, 두 번째로 오는 데이터는 서버에서 받은 응답입니다.
+구독하는 쪽에서는 응답을 두 번 받습니다.
+
 
 {@a report-progress}
 
+<!--
 ## Tracking and showing request progress
+-->
+## 진행상황 확인하기
 
+<!--
 Sometimes applications transfer large amounts of data and those transfers can take a long time.
 File uploads are a typical example.
 You can give the users a better experience by providing feedback on the progress of such transfers.
@@ -1760,9 +1844,58 @@ intercepts and short-circuits upload requests
 by returning an observable of simulated events.
 
 </div>
+-->
+애플리케이션이 리모트 서버에 보내는 데이터가 많다면 통신 시간도 오래 걸립니다.
+파일을 업로드하는 경우가 그렇습니다.
+이 경우에는 업로드가 진행되는 상황을 사용자에게 표시하면 더 나은 UX를 제공할 수 있습니다.
 
+요청을 보낼 때 진행률 이벤트를 활성화하려면 `HttpRequest` 인스턴스를 생성할 때 `reportProgress` 옵션의 값을 `true`로 지정하면 됩니다.
+
+<code-example
+  path="http/src/app/uploader/uploader.service.ts"
+  region="upload-request"
+  header="app/uploader/uploader.service.ts (업로드 요청)">
+</code-example>
+
+<div class="alert is-important">
+
+**팁**: 진행률 이벤트가 발생할 때마다 변화 감지 로직이 실행됩니다. 이 옵션은 진행상황을 UI에 반영할 때만 켜는 것이 좋습니다.
+
+[`HttpClient.request()`](api/common/http/HttpClient#request) 메서드를 실행할 때 [`observe: 'events'`](api/common/http/HttpClient#request) 옵션을 사용하면 진행률 이벤트를 포함한 모든 이벤트를 확인할 수 있습니다.
+
+</div>
+
+이제 `HttpClient.request()` 메서드에 요청 객체를 전달하면 이 메서드는 `Observable`로 `HttpEvents` 객체를 반환합니다.
+이 이벤트 객체는 [인터셉터](#interceptor-events)가 처리하던 이벤트와 같습니다.
+
+<code-example
+  path="http/src/app/uploader/uploader.service.ts"
+  region="upload-body"
+  header="app/uploader/uploader.service.ts (업로드 코드)">
+</code-example>
+
+`getEventMessage` 메서드는 이벤트 스트림으로 전달되는 `HttpEvent` 객체를 처리합니다.
+
+<code-example
+  path="http/src/app/uploader/uploader.service.ts"
+  region="getEventMessage"
+  header="app/uploader/uploader.service.ts (getEventMessage())">
+</code-example>
+
+<div class="alert is-helpful">
+
+예제로 다루는 앱에는 파일 업로드용 서버가 존재하지 않습니다.
+대신 `app/http-interceptors/upload-interceptor.ts` 파일에 정의한 `UploadInterceptor`가 서버의 응답을 대신하는 방식으로 구현했습니다.
+
+</div>
+
+
+<!--
 ## Optimizing server interaction with debouncing
+-->
+## 서버로 보내는 요청 최적화하기
 
+<!--
 If you need to make an HTTP request in response to user input, it's not efficient to send a request for every keystroke.
 It's better to wait until the user stops typing and then send a request.
 This technique is known as debouncing.
@@ -1809,9 +1942,58 @@ and displays search results as they arrive.
 See [Using interceptors to request multiple values](#cache-refresh) for more about the `withRefresh` option.
 
 </div>
+-->
+사용자가 입력한 내용으로 HTTP 요청을 보내야 한다고 합시다.
+그런데 이 때 키입력이 있을 때마다 HTTP 요청을 보내는 것은 비효율적입니다.
+이 방식보다는 사용자가 키입력을 멈출때까지 잠시 기다린 후에 요청을 보내는 것이 좋습니다.
+이런 테크닉을 디바운싱(debouncing)이라고 합니다.
 
+아래 템플릿 코드는 사용자가 입력한 검색어로 npm 패키지를 검색하는 코드입니다.
+사용자가 입력 필드에 npm 패키지 이름을 입력하면 `PackageSearchComponent`가 이 값으로 검색 요청을 보냅니다.
+
+<code-example
+  path="http/src/app/package-search/package-search.component.html"
+  region="search"
+  header="app/package-search/package-search.component.html (검색 컴포넌트 템플릿)">
+</code-example>
+
+이 코드를 보면 `keyup` 이벤트가 컴포넌트 `search()` 메서드와 바인딩되었기 때문에 키입력 이벤트가 발생할 때마다 `search()` 메서드가 실행됩니다.
+그리고 아래 코드는 RxJS 연산자로 입력값을 디바운싱하는 코드입니다.
+
+<code-example
+  path="http/src/app/package-search/package-search.component.ts"
+  region="debounce"
+  header="app/package-search/package-search.component.ts (일부)">
+</code-example>
+
+`searchText$`는 사용자가 입력 필드에 입력한 값이 순서대로 전달되는 옵저버블입니다.
+이 옵저버블은 RxJS `Subject` 타입이기 때문에 `next(값)`을 실행해서 데이터를 여러번 전달할 수 있습니다.
+
+그렇다면 `searchText` 값이 변경될 때마다 `PackageSearchService`로 요청을 보내기보다 `ngOnInit()`에 구현한 것처럼 파이프를 사용해서 이 동작을 적절히 조절하는 것이 좋습니다.
+이 코드에서는 사용자가 입력을 멈춘 시점에 값이 정말 변경되었을 때만 요청을 보내기 위해 연산자가 3개 사용되었습니다.
+
+* `debounceTime(500)` &mdash; 사용자가 입력을 멈출때까지 기다립니다.
+
+* `distinctUntilChanged()` &mdash; 값이 실제로 변경된 것을 감지합니다.
+
+* `switchMap()` &mdash; 서비스로 검색 요청을 보냅니다.
+
+연산자를 통과한 검색 결과는 `packages$` 옵저버블에 저장됩니다.
+그래서 템플릿에 [AsyncPipe](api/common/AsyncPipe)를 사용하면 검색 결과를 화면에서 확인할 수 있습니다.
+
+<div class="alert is-helpful">
+
+`withRefresh` 옵션에 대해 자세하게 알아보려면 [인터셉터로 데이터 여러번 요청하기](#cache-refresh) 섹션을 참고하세요.
+
+</div>
+
+
+<!--
 ### Using the *switchMap()* operator
+-->
+### *switchMap()* 연산자 활용하기
 
+<!--
 The `switchMap()` operator takes a function argument that returns an `Observable`.
 In the example, `PackageSearchService.search` returns an `Observable`, as other data service methods do.
 If a previous search request is still in-flight (as when the network connection is poor),
@@ -1825,6 +2007,19 @@ server returns them out of order.
 
 If you think you'll reuse this debouncing logic,
 consider moving it to a utility function or into the `PackageSearchService` itself.
+
+</div>
+-->
+`switchMap()` 연산자는 `Observable`을 반환하는 연산자입니다.
+위에서 살펴본 예제에서도 `PackageSearchService.search()` 함수는 `Observable`을 반환합니다.
+만약 이전에 보낸 요청이 아직 완료되지 않았다면 `switchMap()` 연산자는 이전 요청을 취소하고 새로운 요청을 보냅니다.
+
+그리고 `switchMap()` 연산자는 서버가 응답하는 순서와 관계없이 요청을 보냈던 순서대로 응답을 반환합니다.
+
+
+<div class="alert is-helpful">
+
+디바운싱 로직을 재사용하려면 이 로직을 유틸리티 함수로 옮기거나 `PackageSearchService` 안쪽으로 옮기는 것이 좋습니다.
 
 </div>
 
@@ -1878,7 +2073,7 @@ Angular 앱 여러개가 같은 도메인이나 서브도메인을 사용해서 
 
 *`HttpClient`에서 제공하는 XSRF 방어 동작은 클라이언트에만 적용되는 내용입니다.*
 백엔드에서도 페이지에 쿠키를 설정해야 하며, 클라이언트에서 발생하는 모든 요청이 유효한지 확인해야 합니다.
-Failing to do so renders Angular's default protection ineffective.
+백엔드에서 이 내용을 확인하지 않으면 Angular의 보안 로직이 제대로 동작하지 않습니다.
 
 </div>
 
@@ -1937,7 +2132,7 @@ Angular가 제공하는 HTTP 테스트 라이브러리를 사용할 때는 먼�
 
 <div class="alert is-helpful">
 
-이 문단에서 다루는 내용은 <live-example stackblitz="specs">샘플 테스트</live-example>를 직접 실행해서 결과를 확인할 수 있습니다.
+이 섹션에서 다루는 내용은 <live-example stackblitz="specs">샘플 테스트</live-example>를 직접 실행해서 결과를 확인할 수 있습니다.
 
 이 테스트들은 `src/testing/http-client.spec.ts` 파일에 작성되어 있으며, `HttpClient`를 사용하는 서비스를 테스트하는 코드는 `src/app/heroes/heroes.service.spec.ts` 파일에 작성되어 잇습니다.
 
