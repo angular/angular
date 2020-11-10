@@ -1,3 +1,145 @@
+# 11.0.0-rc.2 "vicuna-valley" (2020-11-10)
+
+### cdk
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **a11y:** allow for origin of already focused element to be changed ([#20966](https://github.com/angular/components/issues/20966)) ([da581a2](https://github.com/angular/components/commit/da581a2)), closes [#20965](https://github.com/angular/components/issues/20965) |
+| bug fix |  **layout:** decrease breakpoint upper bounds ([#20866](https://github.com/angular/components/issues/20866)) ([cf7267e](https://github.com/angular/components/commit/cf7267e)), closes [angular/components#20850](https://github.com/angular/components/issues/20850) |
+| bug fix |  **stepper:** error if out-of-bounds index is assigned before initialization ([#20766](https://github.com/angular/components/issues/20766)) ([793b62f](https://github.com/angular/components/commit/793b62f)), closes [#20735](https://github.com/angular/components/issues/20735) |
+
+### material
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **button-toggle:** clear static aria attributes from host nodes ([#17086](https://github.com/angular/components/issues/17086)) ([fab6880](https://github.com/angular/components/commit/fab6880)), closes [#16938](https://github.com/angular/components/issues/16938) |
+| bug fix |  **checkbox:** set display on host node ([#20961](https://github.com/angular/components/issues/20961)) ([d868717](https://github.com/angular/components/commit/d868717)), closes [#20954](https://github.com/angular/components/issues/20954) |
+| bug fix |  **datepicker:** input harness not dispatching dateChange event ([#20877](https://github.com/angular/components/issues/20877)) ([a2cd41b](https://github.com/angular/components/commit/a2cd41b)), closes [#20480](https://github.com/angular/components/issues/20480) |
+| bug fix |  **datepicker:** range input emitters not picked up by language service ([#20937](https://github.com/angular/components/issues/20937)) ([63d9364](https://github.com/angular/components/commit/63d9364)), closes [#20932](https://github.com/angular/components/issues/20932) |
+| bug fix |  **dialog:** incorrect action height if box-sizing is configured globally ([#20889](https://github.com/angular/components/issues/20889)) ([cc32c5d](https://github.com/angular/components/commit/cc32c5d)), closes [#20887](https://github.com/angular/components/issues/20887) |
+| bug fix |  **paginator:** remove unnecessary @ViewChild in harness test ([#20943](https://github.com/angular/components/issues/20943)) ([28c70d3](https://github.com/angular/components/commit/28c70d3)) |
+| bug fix |  **progress-bar:** buffer not rendering correctly on ios ([#19346](https://github.com/angular/components/issues/19346)) ([4eb5504](https://github.com/angular/components/commit/4eb5504)), closes [#19328](https://github.com/angular/components/issues/19328) |
+| bug fix |  **progress-spinner:** rotating circle changing surrounding layout ([#16930](https://github.com/angular/components/issues/16930)) ([87ccb98](https://github.com/angular/components/commit/87ccb98)), closes [#16894](https://github.com/angular/components/issues/16894) |
+| bug fix |  **slider:** some screen readers announcing long decimal values ([#20870](https://github.com/angular/components/issues/20870)) ([2291100](https://github.com/angular/components/commit/2291100)), closes [#20719](https://github.com/angular/components/issues/20719) |
+| bug fix |  **table:** filter predicate not called for falsy values ([#19094](https://github.com/angular/components/issues/19094)) ([acd8e74](https://github.com/angular/components/commit/acd8e74)), closes [#19092](https://github.com/angular/components/issues/19092) [#9967](https://github.com/angular/components/issues/9967) |
+
+### google-maps
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  allow ground overlay bounds to be changed ([#20873](https://github.com/angular/components/issues/20873)) ([19ef64a](https://github.com/angular/components/commit/19ef64a)), closes [#20865](https://github.com/angular/components/issues/20865) |
+
+### material-experimental
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **mdc-button:** narrow down overly-broad selector ([#20969](https://github.com/angular/components/issues/20969)) ([17ef700](https://github.com/angular/components/commit/17ef700)) |
+| bug fix |  **mdc-slide-toggle:** hide native focus outline ([#20964](https://github.com/angular/components/issues/20964)) ([8cb46a9](https://github.com/angular/components/commit/8cb46a9)) |
+| feature |  **mdc-chips:** Allow custom role for ChipSet ([#20829](https://github.com/angular/components/issues/20829)) ([c54a3ac](https://github.com/angular/components/commit/c54a3ac)) |
+
+
+# 11.0.0-rc.1 "tanzanite-cable" (2020-11-02)
+
+### material
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **icon:** not updating svg icon assigned through setter ([#20509](https://github.com/angular/components/issues/20509)) ([9f73933](https://github.com/angular/components/commit/9f73933)), closes [#20470](https://github.com/angular/components/issues/20470) |
+| bug fix |  **list:** exclude icons from harness getText result ([#20845](https://github.com/angular/components/issues/20845)) ([aec12b6](https://github.com/angular/components/commit/aec12b6)), closes [#20812](https://github.com/angular/components/issues/20812) |
+
+### google-maps
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  maintain subscriptions across event targets ([#20897](https://github.com/angular/components/issues/20897)) ([ca04bce](https://github.com/angular/components/commit/ca04bce)), closes [#20873](https://github.com/angular/components/issues/20873) [#20873](https://github.com/angular/components/issues/20873) |
+| bug fix |  rendering blank if custom options with no zoom are provided ([#20882](https://github.com/angular/components/issues/20882)) ([0b9160b](https://github.com/angular/components/commit/0b9160b)) |
+
+### material-experimental
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **mdc-checkbox:** fix broken dark theme ([#20940](https://github.com/angular/components/issues/20940)) ([f76578d](https://github.com/angular/components/commit/f76578d)) |
+| bug fix |  **mdc-snack-bar:** add missing exports ([#20928](https://github.com/angular/components/issues/20928)) ([6add7fe](https://github.com/angular/components/commit/6add7fe)) |
+
+
+# 11.0.0-rc.0 "thorium-flower" (2020-10-22)
+
+### cdk
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **drag-drop:** error if dragging starts from active sibling container ([#20704](https://github.com/angular/components/issues/20704)) ([6d86f0f](https://github.com/angular/components/commit/6d86f0f)), closes [#20623](https://github.com/angular/components/issues/20623) |
+| bug fix |  **drag-drop:** error when cloning file input with value ([#20793](https://github.com/angular/components/issues/20793)) ([5eb1035](https://github.com/angular/components/commit/5eb1035)), closes [#20783](https://github.com/angular/components/issues/20783) |
+| bug fix |  **drag-drop:** references to SVG not working inside preview ([#20742](https://github.com/angular/components/issues/20742)) ([06294d1](https://github.com/angular/components/commit/06294d1)), closes [#20720](https://github.com/angular/components/issues/20720) |
+| feature |  **scrolling:** update CdkVirtualForOf to work with sets. ([#20594](https://github.com/angular/components/issues/20594)) ([e15f82c](https://github.com/angular/components/commit/e15f82c)), closes [#20210](https://github.com/angular/components/issues/20210) |
+
+### material
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **button:** add more prominent focus indication in high contrast mode ([#20821](https://github.com/angular/components/issues/20821)) ([345ad70](https://github.com/angular/components/commit/345ad70)), closes [#20820](https://github.com/angular/components/issues/20820) |
+| bug fix |  **menu:** getLabel not working if text is inside indirect descendant node ([#20705](https://github.com/angular/components/issues/20705)) ([a461929](https://github.com/angular/components/commit/a461929)), closes [#20200](https://github.com/angular/components/issues/20200) |
+| feature |  **tabs:** add test harnesses for tab nav bar ([#20822](https://github.com/angular/components/issues/20822)) ([bb44f02](https://github.com/angular/components/commit/bb44f02)) |
+
+### material-experimental
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **mdc-card:** double outline in high contrast mode ([#20823](https://github.com/angular/components/issues/20823)) ([17de49c](https://github.com/angular/components/commit/17de49c)) |
+| bug fix |  **mdc-chips:** add missing functionality and align tests ([#20814](https://github.com/angular/components/issues/20814)) ([de542df](https://github.com/angular/components/commit/de542df)) |
+| bug fix |  **mdc-slide-toggle:** align focus behavior with standard version ([#20772](https://github.com/angular/components/issues/20772)) ([f854196](https://github.com/angular/components/commit/f854196)) |
+
+
+## 10.2.7 "carnelian mountain" (2020-11-02)
+
+### material
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **icon:** not updating svg icon assigned through setter ([#20509](https://github.com/angular/components/issues/20509)) ([6b13154](https://github.com/angular/components/commit/6b13154)), closes [#20470](https://github.com/angular/components/issues/20470) |
+| bug fix |  **list:** exclude icons from harness getText result ([#20845](https://github.com/angular/components/issues/20845)) ([8638456](https://github.com/angular/components/commit/8638456)), closes [#20812](https://github.com/angular/components/issues/20812) |
+
+### google-maps
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  maintain subscriptions across event targets ([#20897](https://github.com/angular/components/issues/20897)) ([38dc511](https://github.com/angular/components/commit/38dc511)), closes [#20873](https://github.com/angular/components/issues/20873) [#20873](https://github.com/angular/components/issues/20873) |
+| bug fix |  rendering blank if custom options with no zoom are provided ([#20882](https://github.com/angular/components/issues/20882)) ([c9700df](https://github.com/angular/components/commit/c9700df)) |
+
+### material-experimental
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **mdc-checkbox:** fix broken dark theme ([#20940](https://github.com/angular/components/issues/20940)) ([15e4802](https://github.com/angular/components/commit/15e4802)) |
+| bug fix |  **mdc-snack-bar:** add missing exports ([#20928](https://github.com/angular/components/issues/20928)) ([308dd24](https://github.com/angular/components/commit/308dd24)) |
+
+
+## 10.2.6 "aluminum-mums" (2020-10-27)
+
+### cdk
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **drag-drop:** error if dragging starts from active sibling container ([#20704](https://github.com/angular/components/issues/20704)) ([f85facf](https://github.com/angular/components/commit/f85facf)), closes [#20623](https://github.com/angular/components/issues/20623) |
+| bug fix |  **drag-drop:** error when cloning file input with value ([#20793](https://github.com/angular/components/issues/20793)) ([ff5d09f](https://github.com/angular/components/commit/ff5d09f)), closes [#20783](https://github.com/angular/components/issues/20783) |
+| bug fix |  **drag-drop:** references to SVG not working inside preview ([#20742](https://github.com/angular/components/issues/20742)) ([b371b51](https://github.com/angular/components/commit/b371b51)), closes [#20720](https://github.com/angular/components/issues/20720) |
+| feature |  **scrolling:** update CdkVirtualForOf to work with sets. ([#20594](https://github.com/angular/components/issues/20594)) ([9ea3d01](https://github.com/angular/components/commit/9ea3d01)), closes [#20210](https://github.com/angular/components/issues/20210) |
+
+### material
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **button:** add more prominent focus indication in high contrast mode ([#20821](https://github.com/angular/components/issues/20821)) ([1c39b72](https://github.com/angular/components/commit/1c39b72)), closes [#20820](https://github.com/angular/components/issues/20820) |
+| bug fix |  **menu:** getLabel not working if text is inside indirect descendant node ([#20705](https://github.com/angular/components/issues/20705)) ([37bf838](https://github.com/angular/components/commit/37bf838)), closes [#20200](https://github.com/angular/components/issues/20200) |
+| bug fix |  **slider:** some screen readers announcing long decimal values ([#20760](https://github.com/angular/components/issues/20760)) ([2226577](https://github.com/angular/components/commit/2226577)), closes [#20719](https://github.com/angular/components/issues/20719) |
+
+### material-experimental
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **mdc-slide-toggle:** align focus behavior with standard version ([#20772](https://github.com/angular/components/issues/20772)) ([77358cc](https://github.com/angular/components/commit/77358cc)) |
+
+
 # 11.0.0-next.2 "cashmere-cup" (2020-10-15)
 
 ### cdk
