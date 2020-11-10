@@ -14,6 +14,7 @@ import {ɵɵProvidersFeature} from './features/providers_feature';
 import {ComponentDef, ComponentTemplate, ComponentType, DirectiveDef, DirectiveType, PipeDef, ɵɵComponentDefWithMeta, ɵɵDirectiveDefWithMeta, ɵɵFactoryDef, ɵɵPipeDefWithMeta} from './interfaces/definition';
 import {getComponent, getDirectives, getHostElement, getRenderedText} from './util/discovery_utils';
 
+export {NgModuleType} from '../metadata/ng_module_def';
 export {ComponentFactory, ComponentFactoryResolver, ComponentRef, injectComponentFactoryResolver} from './component_ref';
 export {ɵɵgetFactoryOf, ɵɵgetInheritedFactory} from './di';
 export {getLocaleId, setLocaleId} from './i18n/i18n_locale_id';
@@ -139,7 +140,7 @@ export {
 export {
   setClassMetadata,
 } from './metadata';
-export {NgModuleFactory, NgModuleRef, NgModuleType} from './ng_module_ref';
+export {NgModuleFactory, NgModuleRef} from './ng_module_ref';
 export {
   ɵɵpipe,
   ɵɵpipeBind1,
