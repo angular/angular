@@ -6,10 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ApplicationRef} from '../application_ref';
 import {ChangeDetectorRef as viewEngine_ChangeDetectorRef} from '../change_detection/change_detector_ref';
 import {ViewContainerRef as viewEngine_ViewContainerRef} from '../linker/view_container_ref';
-import {EmbeddedViewRef as viewEngine_EmbeddedViewRef, InternalViewRef as viewEngine_InternalViewRef} from '../linker/view_ref';
+import {EmbeddedViewRef as viewEngine_EmbeddedViewRef, InternalViewRef as viewEngine_InternalViewRef, ViewRefTracker} from '../linker/view_ref';
 import {collectNativeNodes} from './collect_native_nodes';
 import {checkNoChangesInRootView, checkNoChangesInternal, detectChangesInRootView, detectChangesInternal, markViewDirty, storeCleanupWithContext} from './instructions/shared';
 import {CONTEXT, FLAGS, LView, LViewFlags, TVIEW} from './interfaces/view';
@@ -24,7 +23,7 @@ export interface viewEngine_ChangeDetectorRef_interface extends viewEngine_Chang
 
 export class ViewRef<T> implements viewEngine_EmbeddedViewRef<T>, viewEngine_InternalViewRef,
                                    viewEngine_ChangeDetectorRef_interface {
-  private _appRef: ApplicationRef|null = null;
+  private _appRef: ViewRefTracker|null = null;
   private _viewContainerRef: viewEngine_ViewContainerRef|null = null;
 
   get rootNodes(): any[] {
@@ -284,7 +283,7 @@ export class ViewRef<T> implements viewEngine_EmbeddedViewRef<T>, viewEngine_Int
     renderDetachView(this._lView[TVIEW], this._lView);
   }
 
-  attachToAppRef(appRef: ApplicationRef) {
+  attachToAppRef(appRef: ViewRefTracker) {
     if (this._viewContainerRef) {
       throw new Error('This view is already attached to a ViewContainer!');
     }
