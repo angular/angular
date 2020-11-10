@@ -222,7 +222,8 @@ const R3ViewContainerRef = class ViewContainerRef extends VE_ViewContainerRef {
   }
 
   get(index: number): ViewRef|null {
-    return this._lContainer[VIEW_REFS] !== null && this._lContainer[VIEW_REFS]![index] || null;
+    const viewRefs = getViewRefs(this._lContainer);
+    return viewRefs !== null && viewRefs[index] || null;
   }
 
   get length(): number {
@@ -264,8 +265,6 @@ const R3ViewContainerRef = class ViewContainerRef extends VE_ViewContainerRef {
     if (ngDevMode && viewRef.destroyed) {
       throw new Error('Cannot insert a destroyed View in a ViewContainer!');
     }
-
-    this.allocateContainerIfNeeded();
 
     if (viewAttachedToContainer(lView)) {
       // If view is already attached, detach it first so we clean up references appropriately.
@@ -309,7 +308,7 @@ const R3ViewContainerRef = class ViewContainerRef extends VE_ViewContainerRef {
     }
 
     (viewRef as R3ViewRef<any>).attachToViewContainerRef(this);
-    addToArray(lContainer[VIEW_REFS]!, adjustedIdx, viewRef);
+    addToArray(getOrCreateViewRefs(lContainer), adjustedIdx, viewRef);
 
     return viewRef;
   }
@@ -322,12 +321,11 @@ const R3ViewContainerRef = class ViewContainerRef extends VE_ViewContainerRef {
   }
 
   indexOf(viewRef: ViewRef): number {
-    const viewRefsArr = this._lContainer[VIEW_REFS];
+    const viewRefsArr = getViewRefs(this._lContainer);
     return viewRefsArr !== null ? viewRefsArr.indexOf(viewRef) : -1;
   }
 
   remove(index?: number): void {
-    this.allocateContainerIfNeeded();
     const adjustedIdx = this._adjustIndex(index, -1);
     const detachedView = detachView(this._lContainer, adjustedIdx);
 
@@ -338,17 +336,17 @@ const R3ViewContainerRef = class ViewContainerRef extends VE_ViewContainerRef {
       // rely on an accurate container length.
       // (e.g. a method on this view container being called by a child directive's OnDestroy
       // lifecycle hook)
-      removeFromArray(this._lContainer[VIEW_REFS]!, adjustedIdx);
+      removeFromArray(getOrCreateViewRefs(this._lContainer), adjustedIdx);
       destroyLView(detachedView[TVIEW], detachedView);
     }
   }
 
   detach(index?: number): ViewRef|null {
-    this.allocateContainerIfNeeded();
     const adjustedIdx = this._adjustIndex(index, -1);
     const view = detachView(this._lContainer, adjustedIdx);
 
-    const wasDetached = view && removeFromArray(this._lContainer[VIEW_REFS]!, adjustedIdx) != null;
+    const wasDetached =
+        view && removeFromArray(getOrCreateViewRefs(this._lContainer), adjustedIdx) != null;
     return wasDetached ? new R3ViewRef(view!) : null;
   }
 
@@ -363,13 +361,15 @@ const R3ViewContainerRef = class ViewContainerRef extends VE_ViewContainerRef {
     }
     return index;
   }
-
-  private allocateContainerIfNeeded(): void {
-    if (this._lContainer[VIEW_REFS] === null) {
-      this._lContainer[VIEW_REFS] = [];
-    }
-  }
 };
+
+function getViewRefs(lContainer: LContainer): ViewRef[]|null {
+  return lContainer[VIEW_REFS];
+}
+
+function getOrCreateViewRefs(lContainer: LContainer): ViewRef[] {
+  return lContainer[VIEW_REFS] || (lContainer[VIEW_REFS] = []);
+}
 
 /**
  * Creates a ViewContainerRef and stores it on the injector.
