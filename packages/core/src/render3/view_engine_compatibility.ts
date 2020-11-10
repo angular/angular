@@ -16,17 +16,17 @@ import {ViewContainerRef as ViewEngine_ViewContainerRef} from '../linker/view_co
 import {EmbeddedViewRef as viewEngine_EmbeddedViewRef, ViewRef as viewEngine_ViewRef} from '../linker/view_ref';
 import {Renderer2} from '../render/api';
 import {addToArray, removeFromArray} from '../util/array_utils';
-import {assertDefined, assertEqual, assertGreaterThan, assertLessThan} from '../util/assert';
+import {assertEqual, assertGreaterThan, assertLessThan} from '../util/assert';
 
-import {assertLContainer, assertNodeInjector} from './assert';
+import {assertNodeInjector} from './assert';
 import {getParentInjectorLocation, NodeInjector} from './di';
-import {addToViewTree, createLContainer, createLView, renderView} from './instructions/shared';
+import {addToViewTree, createLContainer} from './instructions/shared';
 import {CONTAINER_HEADER_OFFSET, LContainer, NATIVE, VIEW_REFS} from './interfaces/container';
 import {NodeInjectorOffset} from './interfaces/injector';
 import {TContainerNode, TDirectiveHostNode, TElementContainerNode, TElementNode, TNode, TNodeType} from './interfaces/node';
 import {isProceduralRenderer, RComment, RElement} from './interfaces/renderer';
 import {isComponentHost, isLContainer, isLView} from './interfaces/type_checks';
-import {DECLARATION_COMPONENT_VIEW, DECLARATION_LCONTAINER, LView, LViewFlags, PARENT, QUERIES, RENDERER, T_HOST, TVIEW, TView} from './interfaces/view';
+import {DECLARATION_COMPONENT_VIEW, LView, PARENT, RENDERER, T_HOST, TVIEW} from './interfaces/view';
 import {assertTNodeType} from './node_assert';
 import {addViewToContainer, destroyLView, detachView, getBeforeNodeForView, insertView, nativeInsertBefore, nativeNextSibling, nativeParentNode} from './node_manipulation';
 import {getCurrentTNode, getLView} from './state';
@@ -35,72 +35,6 @@ import {getComponentLViewByIndex, getNativeByTNode, unwrapRNode, viewAttachedToC
 import {ViewRef} from './view_ref';
 
 
-
-let R3TemplateRef: {
-  new (_declarationParentView: LView, hostTNode: TContainerNode, elementRef: ViewEngine_ElementRef):
-      ViewEngine_TemplateRef<any>
-};
-
-/**
- * Creates a TemplateRef given a node.
- *
- * @returns The TemplateRef instance to use
- */
-export function injectTemplateRef<T>(TemplateRefToken: typeof ViewEngine_TemplateRef):
-    ViewEngine_TemplateRef<T>|null {
-  return createTemplateRef<T>(TemplateRefToken, getCurrentTNode()!, getLView());
-}
-
-/**
- * Creates a TemplateRef and stores it on the injector.
- *
- * @param TemplateRefToken The TemplateRef type
- * @param ElementRefToken The ElementRef type
- * @param hostTNode The node on which a TemplateRef is requested
- * @param hostView The view to which the node belongs
- * @returns The TemplateRef instance or null if we can't create a TemplateRef on a given node type
- */
-export function createTemplateRef<T>(
-    TemplateRefToken: typeof ViewEngine_TemplateRef, hostTNode: TNode,
-    hostView: LView): ViewEngine_TemplateRef<T>|null {
-  if (!R3TemplateRef) {
-    R3TemplateRef = class TemplateRef<T> extends TemplateRefToken<T>{
-      constructor(
-          private _declarationView: LView, private _declarationTContainer: TContainerNode,
-          readonly elementRef: ViewEngine_ElementRef) {
-        super();
-      }
-
-      createEmbeddedView(context: T): viewEngine_EmbeddedViewRef<T> {
-        const embeddedTView = this._declarationTContainer.tViews as TView;
-        const embeddedLView = createLView(
-            this._declarationView, embeddedTView, context, LViewFlags.CheckAlways, null,
-            embeddedTView.declTNode, null, null, null, null);
-
-        const declarationLContainer = this._declarationView[this._declarationTContainer.index];
-        ngDevMode && assertLContainer(declarationLContainer);
-        embeddedLView[DECLARATION_LCONTAINER] = declarationLContainer;
-
-        const declarationViewLQueries = this._declarationView[QUERIES];
-        if (declarationViewLQueries !== null) {
-          embeddedLView[QUERIES] = declarationViewLQueries.createEmbeddedView(embeddedTView);
-        }
-
-        renderView(embeddedTView, embeddedLView, context);
-
-        return new ViewRef<T>(embeddedLView);
-      }
-    };
-  }
-
-  if (hostTNode.type & TNodeType.Container) {
-    ngDevMode && assertDefined(hostTNode.tViews, 'TView must be allocated');
-    return new R3TemplateRef(
-        hostView, hostTNode as TContainerNode, createElementRef(hostTNode, hostView));
-  } else {
-    return null;
-  }
-}
 
 let R3ViewContainerRef: {
   new (
