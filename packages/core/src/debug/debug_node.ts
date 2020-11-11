@@ -150,7 +150,10 @@ export class DebugElement__PRE_R3__ extends DebugNode__PRE_R3__ implements Debug
 
   query(predicate: Predicate<DebugElement>): DebugElement {
     const results = this.queryAll(predicate);
-    return results[0] || null;
+    if (results.length === 0) {
+      throw new Error('No elements found.');
+    }
+    return results[0];
   }
 
   queryAll(predicate: Predicate<DebugElement>): DebugElement[] {
@@ -406,6 +409,9 @@ class DebugElement__POST_R3__ extends DebugNode__POST_R3__ implements DebugEleme
 
   query(predicate: Predicate<DebugElement>): DebugElement {
     const results = this.queryAll(predicate);
+    if (results.length === 0) {
+      throw new Error('No elements found.');
+    }
     return results[0] || null;
   }
 

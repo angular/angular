@@ -180,8 +180,8 @@ function getButtonSymbol(): HTMLElement | null {
 }
 
 function getOptionContainer(): HTMLUListElement|null {
-  const de = element.query(By.css('ul'));
-  return de && de.nativeElement;
+  const de = element.queryAll(By.css('ul'));
+  return de[0] ? de[0].nativeElement : null;
 }
 
 function getOptions(): HTMLLIElement[] {

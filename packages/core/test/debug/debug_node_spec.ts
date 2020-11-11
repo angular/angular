@@ -260,6 +260,12 @@ class TestCmptWithPropBindings {
 class TestCmptWithPropInterpolation {
 }
 
+@Component({
+  template: ``,
+})
+class UnusedComp {
+}
+
 {
   describe('debug element', () => {
     let fixture: ComponentFixture<any>;
@@ -287,6 +293,7 @@ class TestCmptWithPropInterpolation {
           TestCmptWithPropInterpolation,
           TestCmptWithRenderer,
           WithTitleDir,
+          UnusedComp,
         ],
         providers: [Logger],
         schemas: [NO_ERRORS_SCHEMA],
@@ -435,6 +442,22 @@ class TestCmptWithPropInterpolation {
       expect(hasClass(childTestEls[1].nativeElement, 'parentnested')).toBe(true);
       expect(hasClass(childTestEls[2].nativeElement, 'child')).toBe(true);
       expect(hasClass(childTestEls[3].nativeElement, 'childnested')).toBe(true);
+    });
+
+    it('should throw an error when that css query matches no children', () => {
+      fixture = TestBed.createComponent(ParentComp);
+      fixture.detectChanges();
+
+      expect(() => fixture.debugElement.query(By.css('not-existing')))
+          .toThrowError('No elements found.');
+    });
+
+    it('should throw an error when that directive query matches no children', () => {
+      fixture = TestBed.createComponent(ParentComp);
+      fixture.detectChanges();
+
+      expect(() => fixture.debugElement.query(By.directive(UnusedComp)))
+          .toThrowError('No elements found.');
     });
 
     it('should query projected child elements by directive', () => {
@@ -664,7 +687,7 @@ class TestCmptWithPropInterpolation {
       });
     });
 
-    describe('DebugElement.query doesn\'t fail on elements outside Angular context', () => {
+    describe('DebugElement.queryAll doesn\'t fail on elements outside Angular context', () => {
       @Component({template: '<div></div>'})
       class NativeEl {
         constructor(private elementRef: ElementRef) {}
@@ -685,47 +708,47 @@ class TestCmptWithPropInterpolation {
       });
 
       it('when searching for elements by name', () => {
-        expect(() => el.query(e => e.name === 'any search text')).not.toThrow();
+        expect(() => el.queryAll(e => e.name === 'any search text')).not.toThrow();
       });
 
       it('when searching for elements by their attributes', () => {
-        expect(() => el.query(e => e.attributes!['name'] === 'any attribute')).not.toThrow();
+        expect(() => el.queryAll(e => e.attributes!['name'] === 'any attribute')).not.toThrow();
       });
 
       it('when searching for elements by their classes', () => {
-        expect(() => el.query(e => e.classes['any class'] === true)).not.toThrow();
+        expect(() => el.queryAll(e => e.classes['any class'] === true)).not.toThrow();
       });
 
       it('when searching for elements by their styles', () => {
-        expect(() => el.query(e => e.styles['any style'] === 'any value')).not.toThrow();
+        expect(() => el.queryAll(e => e.styles['any style'] === 'any value')).not.toThrow();
       });
 
       it('when searching for elements by their properties', () => {
-        expect(() => el.query(e => e.properties['any prop'] === 'any value')).not.toThrow();
+        expect(() => el.queryAll(e => e.properties['any prop'] === 'any value')).not.toThrow();
       });
 
       it('when searching by componentInstance', () => {
-        expect(() => el.query(e => e.componentInstance === null)).not.toThrow();
+        expect(() => el.queryAll(e => e.componentInstance === null)).not.toThrow();
       });
 
       it('when searching by context', () => {
-        expect(() => el.query(e => e.context === null)).not.toThrow();
+        expect(() => el.queryAll(e => e.context === null)).not.toThrow();
       });
 
       it('when searching by listeners', () => {
-        expect(() => el.query(e => e.listeners.length === 0)).not.toThrow();
+        expect(() => el.queryAll(e => e.listeners.length === 0)).not.toThrow();
       });
 
       it('when searching by references', () => {
-        expect(() => el.query(e => e.references === null)).not.toThrow();
+        expect(() => el.queryAll(e => e.references === null)).not.toThrow();
       });
 
       it('when searching by providerTokens', () => {
-        expect(() => el.query(e => e.providerTokens.length === 0)).not.toThrow();
+        expect(() => el.queryAll(e => e.providerTokens.length === 0)).not.toThrow();
       });
 
       it('when searching by injector', () => {
-        expect(() => el.query(e => e.injector === null)).not.toThrow();
+        expect(() => el.queryAll(e => e.injector === null)).not.toThrow();
       });
 
       onlyInIvy('VE does not match elements created outside Angular context')

@@ -205,8 +205,8 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
         fixture.componentInstance.form = newForm;
         fixture.detectChanges();
 
-        emailInput = fixture.debugElement.query(By.css('[formControlName="email"]'));
-        expect(emailInput as any).toBe(null);  // TODO: Review use of `any` here (#19904)
+        expect(() => fixture.debugElement.query(By.css('[formControlName="email"]')))
+            .toThrowError('No elements found.');
       });
 
       it('should strip array controls that are not found', () => {

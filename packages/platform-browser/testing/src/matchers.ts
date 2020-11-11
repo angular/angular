@@ -281,10 +281,12 @@ _global.beforeEach(function() {
             };
           }
 
-          const found = !!actualFixture.debugElement.query(By.directive(expectedComponentType));
-          return found ?
-              {pass: true} :
-              {pass: false, message: msgFn(`Expected ${expectedComponentType.name} to show`)};
+          try {
+            actualFixture.debugElement.query(By.directive(expectedComponentType));
+            return {pass: true};
+          } catch {
+            return {pass: false, message: msgFn(`Expected ${expectedComponentType.name} to show`)};
+          }
         }
       };
     }

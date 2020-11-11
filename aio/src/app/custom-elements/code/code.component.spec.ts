@@ -197,7 +197,7 @@ describe('CodeComponent', () => {
   describe('copy button', () => {
 
     function getButton() {
-      const btnDe = fixture.debugElement.query(By.css('button'));
+      const btnDe = fixture.debugElement.queryAll(By.css('button'))[0] ?? null;
       return btnDe ? btnDe.nativeElement : null;
     }
 

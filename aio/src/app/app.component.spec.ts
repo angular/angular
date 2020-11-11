@@ -1136,7 +1136,7 @@ describe('AppComponent', () => {
     describe('progress bar', () => {
       const SHOW_DELAY = 200;
       const HIDE_DELAY = 500;
-      const getProgressBar = () => fixture.debugElement.query(By.directive(MatProgressBar));
+      const getProgressBar = () => fixture.debugElement.queryAll(By.directive(MatProgressBar))[0] ?? null;
       const initializeAndCompleteNavigation = () => {
         initializeTest(false);
         triggerDocViewerEvent('docReady');
