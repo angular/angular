@@ -79,6 +79,7 @@ def karma_test(name, env_srcs, env_deps, env_entry_point, test_srcs, test_deps, 
             tags = ["zone_karma_test"],
             runtime_deps = [
                 "@npm//karma-browserstack-launcher",
+                "@npm//karma-sauce-launcher",
             ],
         )
 
@@ -110,5 +111,6 @@ def karma_test(name, env_srcs, env_deps, env_entry_point, test_srcs, test_deps, 
                 visibility = ["//:__pkg__"],
                 runtime_deps = [
                     "@npm//karma-browserstack-launcher",
+                    "@npm//karma-sauce-launcher",
                 ],
             )
