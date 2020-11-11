@@ -4,6 +4,7 @@ import { SwUpdate } from '@angular/service-worker';
 import { Subject } from 'rxjs';
 
 import { Logger } from 'app/shared/logger.service';
+import { MockLogger } from 'testing/logger.service';
 import { SwUpdatesService } from './sw-updates.service';
 
 
@@ -202,10 +203,6 @@ describe('SwUpdatesService', () => {
 // Mocks
 class MockApplicationRef {
   isStable = new Subject<boolean>();
-}
-
-class MockLogger {
-  log = jasmine.createSpy('MockLogger.log');
 }
 
 class MockSwUpdate {
