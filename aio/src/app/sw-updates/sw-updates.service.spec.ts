@@ -3,7 +3,9 @@ import { discardPeriodicTasks, fakeAsync, tick } from '@angular/core/testing';
 import { SwUpdate } from '@angular/service-worker';
 import { Subject } from 'rxjs';
 
+import { LocationService } from 'app/shared/location.service';
 import { Logger } from 'app/shared/logger.service';
+import { MockLocationService } from 'testing/location.service';
 import { MockLogger } from 'testing/logger.service';
 import { SwUpdatesService } from './sw-updates.service';
 
@@ -11,6 +13,7 @@ import { SwUpdatesService } from './sw-updates.service';
 describe('SwUpdatesService', () => {
   let injector: Injector;
   let appRef: MockApplicationRef;
+  let location: MockLocationService;
   let service: SwUpdatesService;
   let swu: MockSwUpdate;
   let checkInterval: number;
@@ -24,12 +27,14 @@ describe('SwUpdatesService', () => {
   const setup = (isSwUpdateEnabled: boolean) => {
     injector = Injector.create({providers: [
       { provide: ApplicationRef, useClass: MockApplicationRef, deps: [] },
+      { provide: LocationService, useFactory: () => new MockLocationService(''), deps: [] },
       { provide: Logger, useClass: MockLogger, deps: [] },
       { provide: SwUpdate, useFactory: () => new MockSwUpdate(isSwUpdateEnabled), deps: [] },
-      { provide: SwUpdatesService, deps: [ApplicationRef, Logger, SwUpdate] }
+      { provide: SwUpdatesService, deps: [ApplicationRef, LocationService, Logger, SwUpdate] }
     ]});
 
     appRef = injector.get(ApplicationRef) as unknown as MockApplicationRef;
+    location = injector.get(LocationService) as unknown as MockLocationService;
     service = injector.get(SwUpdatesService);
     swu = injector.get(SwUpdate) as unknown as MockSwUpdate;
     checkInterval = (service as any).checkInterval;
@@ -100,16 +105,18 @@ describe('SwUpdatesService', () => {
     discardPeriodicTasks();
   })));
 
-  it('should emit on `updateActivated` when an update has been activated', run(() => {
-    const activatedVersions: (string|undefined)[] = [];
-    service.updateActivated.subscribe(v => activatedVersions.push(v));
-
+  it('should request a full page navigation when an update has been activated', run(() => {
     swu.$$availableSubj.next({available: {hash: 'foo'}});
-    swu.$$activatedSubj.next({current: {hash: 'bar'}});
-    swu.$$availableSubj.next({available: {hash: 'baz'}});
-    swu.$$activatedSubj.next({current: {hash: 'qux'}});
+    expect(location.fullPageNavigationNeeded).toHaveBeenCalledTimes(0);
 
-    expect(activatedVersions).toEqual(['bar', 'qux']);
+    swu.$$activatedSubj.next({current: {hash: 'bar'}});
+    expect(location.fullPageNavigationNeeded).toHaveBeenCalledTimes(1);
+
+    swu.$$availableSubj.next({available: {hash: 'baz'}});
+    expect(location.fullPageNavigationNeeded).toHaveBeenCalledTimes(1);
+
+    swu.$$activatedSubj.next({current: {hash: 'qux'}});
+    expect(location.fullPageNavigationNeeded).toHaveBeenCalledTimes(2);
   }));
 
   describe('when `SwUpdate` is not enabled', () => {
@@ -135,16 +142,13 @@ describe('SwUpdatesService', () => {
       expect(swu.activateUpdate).not.toHaveBeenCalled();
     })));
 
-    it('should never emit on `updateActivated`', runDeactivated(() => {
-      const activatedVersions: (string|undefined)[] = [];
-      service.updateActivated.subscribe(v => activatedVersions.push(v));
-
+    it('should never request a full page navigation', runDeactivated(() => {
       swu.$$availableSubj.next({available: {hash: 'foo'}});
       swu.$$activatedSubj.next({current: {hash: 'bar'}});
       swu.$$availableSubj.next({available: {hash: 'baz'}});
       swu.$$activatedSubj.next({current: {hash: 'qux'}});
 
-      expect(activatedVersions).toEqual([]);
+      expect(location.fullPageNavigationNeeded).not.toHaveBeenCalled();
     }));
   });
 
@@ -185,17 +189,17 @@ describe('SwUpdatesService', () => {
       expect(swu.activateUpdate).not.toHaveBeenCalled();
     })));
 
-    it('should stop emitting on `updateActivated`', run(() => {
-      const activatedVersions: (string|undefined)[] = [];
-      service.updateActivated.subscribe(v => activatedVersions.push(v));
-
+    it('should stop requesting full page navigations when updates are activated', run(() => {
       swu.$$availableSubj.next({available: {hash: 'foo'}});
       swu.$$activatedSubj.next({current: {hash: 'bar'}});
+      expect(location.fullPageNavigationNeeded).toHaveBeenCalledTimes(1);
+
       service.ngOnDestroy();
+      location.fullPageNavigationNeeded.calls.reset();
+
       swu.$$availableSubj.next({available: {hash: 'baz'}});
       swu.$$activatedSubj.next({current: {hash: 'qux'}});
-
-      expect(activatedVersions).toEqual(['bar']);
+      expect(location.fullPageNavigationNeeded).not.toHaveBeenCalled();
     }));
   });
 });
