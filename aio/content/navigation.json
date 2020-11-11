@@ -413,7 +413,7 @@
         },
         {
           "url": "guide/i18n",
-          "title": "Internationalization (i18n)",
+          "title": "국제화 (i18n)",
           "//tooltip": "Translate the app's template text into multiple languages.",
           "tooltip": "템플릿에 있는 문구를 여러 언어로 번역해 보세요."
         },

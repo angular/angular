@@ -1,4 +1,7 @@
+<!--
 # Workspace npm dependencies
+-->
+# 워크스페이스 npm 패키지
 
 The Angular Framework, Angular CLI, and components used by Angular applications are packaged as [npm packages](https://docs.npmjs.com/getting-started/what-is-npm "What is npm?") and distributed via the [npm registry](https://docs.npmjs.com/).
 
