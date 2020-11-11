@@ -66,10 +66,11 @@ runInEachFileSystem.unix = (callback: (os: string) => void) =>
 runInEachFileSystem.windows = (callback: (os: string) => void) =>
     runInFileSystem(FS_WINDOWS, callback, true);
 
-export function initMockFileSystem(os: string, cwd?: AbsoluteFsPath): void {
+export function initMockFileSystem(os: string, cwd?: AbsoluteFsPath): MockFileSystem {
   const fs = createMockFileSystem(os, cwd);
   setFileSystem(fs);
   monkeyPatchTypeScript(os, fs);
+  return fs;
 }
 
 function createMockFileSystem(os: string, cwd?: AbsoluteFsPath): MockFileSystem {
