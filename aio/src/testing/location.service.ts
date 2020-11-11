@@ -8,6 +8,7 @@ export class MockLocationService {
   currentPath = this.currentUrl.pipe(map(url => url.match(/[^?#]*/)![0]));
   search = jasmine.createSpy('search').and.returnValue({});
   setSearch = jasmine.createSpy('setSearch');
+  fullPageNavigationNeeded = jasmine.createSpy('Location.fullPageNavigationNeeded');
   go = jasmine.createSpy('Location.go').and
               .callFake((url: string) => this.urlSubject.next(url));
   goExternal = jasmine.createSpy('Location.goExternal');
