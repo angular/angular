@@ -184,7 +184,7 @@ describe('type check blocks diagnostics', () => {
         }];
         const TEMPLATE = `<my-cmp [inputA]="''"></my-cmp>`;
         expect(tcbWithSpans(TEMPLATE, DIRECTIVES))
-            .toContain('_t1.inputA = ("" /*18,20*/) /*8,21*/;');
+            .toContain('_t1.inputA /*9,15*/ = ("" /*18,20*/) /*8,21*/;');
       });
     });
   });
