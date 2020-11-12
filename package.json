@@ -152,7 +152,7 @@
     "protractor": "^5.4.3",
     "requirejs": "^2.3.6",
     "rollup": "~1.25.0",
-    "rollup-plugin-alias": "^1.4.0",
+    "rollup-plugin-alias": "^2.2.0",
     "rollup-plugin-commonjs": "^10.1.0",
     "rollup-plugin-node-resolve": "^5.2.0",
     "rollup-plugin-sourcemaps": "^0.4.2",
