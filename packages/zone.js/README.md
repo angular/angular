@@ -21,36 +21,33 @@ Read up on [Zone Primer](https://docs.google.com/document/d/1F5Ug0jcrm031vhSMJEO
 
 Prior to `v0.11.1`, Zone.js provided two distribution bundle formats in the `dist` folder.
 They were (1) `ES5` bundle distributed as `zone.js` and (2) `ES2015` bundle distributed as `zone-evergreen.js`.
-These bundles are both in `UMD` format, and are used for Angular's differential-loading mechanism.
+Both of these bundles were in `UMD` format, and are used for Angular's differential-loading mechanism.
 
-Starting with `v0.11.1`, Zone.js follows the [Angular Package Format](https://docs.google.com/document/d/1CZC2rcpxffTDfRDs6p1cfbmKNLA6x5O-NtkJglDaBVs), so the folder structure of the Zone.js bundles is updated to match `Angular Package Format`. Now Zone.js provides the bundles in the following directories.
+Starting with `v0.11.1`, Zone.js follows the [Angular Package Format](https://docs.google.com/document/d/1CZC2rcpxffTDfRDs6p1cfbmKNLA6x5O-NtkJglDaBVs). Therefor the new Zone.js file layout is:
 
-- bundles: `ES5` bundle in `UMD` format.
-- fesm2015: `ES5` bundle in `ESM` format.
-- dist: `ES5` bundle in `UMD` format. This directory is for keeping the backward compatibility.
+- `bundles`: `ES5` bundle in `UMD` format.
+- `fesm2015`: `ES5` bundle in `ESM` format.
+- `dist`: `ES5` bundle in `UMD` format. This directory is present to keep backward compatibility.
 
-If you are using `Angular CLI`, the `polyfills.ts` looks like this.
+If you are using `Angular CLI`, the `polyfills.ts` file will contain:
 
 ```
 import 'zone.js/dist/zone';
 ```
 
-Since `Zone.js` 0.11.1+ still has the `dist` directory and provides the same format of bundles, nothing
-changes.
-
-But the code like this
+Starting with Zone.js `v0.11.1+` the import changes to:
 
 ```
 import 'zone.js';
 ```
 
-Prior to `v0.11.1` it would load the `ES5` bundle in `UMD` format from `dist/zone.js`.
-now it loads the `ES2015` bundle in `ESM` format instead.
+Prior to `v0.11.1` the import would load the `ES5` bundle in `UMD` format from `dist/zone.js`. 
+Starting with `v0.11.1` the import loads the `ES2015` bundle in `ESM` format instead.
 
 This is a breaking change for legacy browsers such as `IE11`.
 
 For backwards compatibility `zone.js` continues to distribute the same bundles under `dist`.
-To restore the old behavior just import from the `dist` directory directly.
+To restore the old behavior import from the `dist` directory instead like so:
 
 ```
 import 'zone.js/dist/zone';
