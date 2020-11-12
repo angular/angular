@@ -2,9 +2,9 @@
 <!-- TODO(mtlin): Evaluate trade-offs of using native radio vs. cost of additional bindings. -->
 <label [attr.for]="inputId" class="mat-radio-label" #label>
   <!-- The actual 'radio' part of the control. -->
-  <div class="mat-radio-container">
-    <div class="mat-radio-outer-circle"></div>
-    <div class="mat-radio-inner-circle"></div>
+  <span class="mat-radio-container">
+    <span class="mat-radio-outer-circle"></span>
+    <span class="mat-radio-inner-circle"></span>
     <input #input class="mat-radio-input cdk-visually-hidden" type="radio"
         [id]="inputId"
         [checked]="checked"
@@ -21,21 +21,21 @@
 
     <!-- The ripple comes after the input so that we can target it with a CSS
          sibling selector when the input is focused. -->
-    <div mat-ripple class="mat-radio-ripple mat-focus-indicator"
+    <span mat-ripple class="mat-radio-ripple mat-focus-indicator"
          [matRippleTrigger]="label"
          [matRippleDisabled]="_isRippleDisabled()"
          [matRippleCentered]="true"
          [matRippleRadius]="20"
          [matRippleAnimation]="{enterDuration: 150}">
 
-      <div class="mat-ripple-element mat-radio-persistent-ripple"></div>
-    </div>
-  </div>
+      <span class="mat-ripple-element mat-radio-persistent-ripple"></span>
+    </span>
+  </span>
 
   <!-- The label content for radio control. -->
-  <div class="mat-radio-label-content" [class.mat-radio-label-before]="labelPosition == 'before'">
+  <span class="mat-radio-label-content" [class.mat-radio-label-before]="labelPosition == 'before'">
     <!-- Add an invisible span so JAWS can read the label -->
     <span style="display:none">&nbsp;</span>
     <ng-content></ng-content>
-  </div>
+  </span>
 </label>

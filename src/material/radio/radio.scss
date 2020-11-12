@@ -46,6 +46,7 @@ $mat-radio-ripple-radius: 20px;
 // The outer circle for the radio, always present.
 .mat-radio-outer-circle {
   box-sizing: border-box;
+  display: block;
   height: $mat-radio-size;
   left: 0;
   position: absolute;
@@ -67,6 +68,7 @@ $mat-radio-ripple-radius: 20px;
 .mat-radio-inner-circle {
   border-radius: 50%;
   box-sizing: border-box;
+  display: block;
   height: $mat-radio-size;
   left: 0;
   position: absolute;
