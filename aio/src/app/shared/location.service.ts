@@ -70,6 +70,10 @@ export class LocationService {
     window.location.replace(url);
   }
 
+  reloadPage(): void {
+    window.location.reload();
+  }
+
   private stripSlashes(url: string) {
     return url.replace(/^\/+/, '').replace(/\/+(\?|#|$)/, '$1');
   }

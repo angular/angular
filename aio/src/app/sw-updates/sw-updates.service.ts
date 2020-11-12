@@ -51,6 +51,14 @@ export class SwUpdatesService implements OnDestroy {
             takeUntil(this.onDestroy),
         )
         .subscribe(() => location.fullPageNavigationNeeded());
+
+    // Request an immediate page reload once an unrecoverable state has been detected.
+    this.swu.unrecoverable
+        .pipe(
+            tap(evt => this.log(`Unrecoverable state: ${evt.reason}\nReloading...`)),
+            takeUntil(this.onDestroy),
+        )
+        .subscribe(() => location.reloadPage());
   }
 
   ngOnDestroy() {
