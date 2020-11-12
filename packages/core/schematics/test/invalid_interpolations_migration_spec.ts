@@ -56,7 +56,7 @@ describe('invalid interpolation migration', () => {
   }
 
   function runMigration() {
-    return runner.runSchematicAsync('migration-v12-invalid-interpolations', {}, tree).toPromise();
+    return runner.runSchematicAsync('migration-v11-1-invalid-interpolations', {}, tree).toPromise();
   }
 
   it('should fix interpolations with only one terminating brace', async () => {
