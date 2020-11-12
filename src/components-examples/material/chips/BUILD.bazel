@@ -12,11 +12,17 @@ ng_module(
     module_name = "@angular/components-examples/material/chips",
     deps = [
         "//src/cdk/drag-drop",
+        "//src/cdk/testing",
+        "//src/cdk/testing/testbed",
         "//src/material/autocomplete",
         "//src/material/chips",
+        "//src/material/chips/testing",
         "//src/material/form-field",
         "//src/material/icon",
         "@npm//@angular/forms",
+        "@npm//@angular/platform-browser",
+        "@npm//@angular/platform-browser-dynamic",
+        "@npm//@types/jasmine",
     ],
 )
 

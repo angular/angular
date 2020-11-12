@@ -1,0 +1,7 @@
+<mat-chip-list
+    [disabled]="isDisabled"
+    [aria-orientation]="'horizontal'">
+  <mat-chip (removed)="remove()">Chip 1</mat-chip>
+  <mat-chip (removed)="remove()">Chip 2 <span matChipRemove>remove_icon</span></mat-chip>
+  <mat-chip (removed)="remove()"><mat-chip-avatar>C</mat-chip-avatar>Chip 4</mat-chip>
+</mat-chip-list>
