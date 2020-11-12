@@ -9,7 +9,7 @@ import {PluginObj, transformSync} from '@babel/core';
 
 import {createEs2015LinkerPlugin} from '../../../linker/babel';
 import {AbsoluteFsPath, FileSystem} from '../../../src/ngtsc/file_system';
-import {getBuildOutputDirectory} from '../test_helpers/compile_test';
+import {CompileResult, getBuildOutputDirectory} from '../test_helpers/compile_test';
 import {ComplianceTest} from '../test_helpers/get_compliance_tests';
 import {parseGoldenPartial} from '../test_helpers/golden_partials';
 import {runTests} from '../test_helpers/test_runner';
@@ -22,9 +22,13 @@ runTests('partial compile + link', linkPartials);
  * @param fs The mock file-system to use for linking the partials.
  * @param test The compliance test whose partials will be linked.
  */
-function linkPartials(fs: FileSystem, test: ComplianceTest): void {
+function linkPartials(fs: FileSystem, test: ComplianceTest): CompileResult {
   const builtDirectory = getBuildOutputDirectory(fs);
-  const linkerPlugin = createEs2015LinkerPlugin(test.angularCompilerOptions);
+  const linkerPlugin = createEs2015LinkerPlugin({
+    // By default we don't render legacy message ids in compliance tests.
+    enableI18nLegacyMessageIdFormat: false,
+    ...test.angularCompilerOptions
+  });
   const goldenPartialPath = fs.resolve('/GOLDEN_PARTIAL.js');
   if (!fs.exists(goldenPartialPath)) {
     throw new Error(
@@ -40,6 +44,7 @@ function linkPartials(fs: FileSystem, test: ComplianceTest): void {
         applyLinker({fileName: partial.path, source: partial.content}, linkerPlugin);
     safeWrite(fs, fs.resolve(builtDirectory, partial.path), linkedSource);
   }
+  return {emittedFiles: [], errors: []};
 }
 
 /**

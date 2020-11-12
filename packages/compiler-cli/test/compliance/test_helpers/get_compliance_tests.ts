@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AbsoluteFsPath, NodeJSFileSystem, PathSegment} from '../../../src/ngtsc/file_system';
+import {AbsoluteFsPath, FileSystem, NodeJSFileSystem, PathSegment} from '../../../src/ngtsc/file_system';
 
 const fs = new NodeJSFileSystem();
 const basePath = fs.resolve(__dirname, '../test_cases');
@@ -31,7 +31,7 @@ export function* getAllComplianceTests(): Generator<ComplianceTest> {
 export function* getComplianceTests(testConfigPath: string): Generator<ComplianceTest> {
   const absTestConfigPath = fs.resolve(basePath, testConfigPath);
   const realTestPath = fs.dirname(absTestConfigPath);
-  const testConfigJSON = JSON.parse(fs.readFile(absTestConfigPath)).cases;
+  const testConfigJSON = loadTestCasesFile(fs, absTestConfigPath, basePath).cases;
   const testConfig = Array.isArray(testConfigJSON) ? testConfigJSON : [testConfigJSON];
   for (const test of testConfig) {
     const inputFiles = getStringArrayOrDefault(test, 'inputFiles', realTestPath, ['test.ts']);
@@ -40,12 +40,24 @@ export function* getComplianceTests(testConfigPath: string): Generator<Complianc
       realTestPath,
       description: getStringOrFail(test, 'description', realTestPath),
       inputFiles,
+      excludeFromPartialTests:
+          getBooleanOrDefault(test, 'excludeFromPartialTests', realTestPath, false),
       expectations: parseExpectations(test.expectations, realTestPath, inputFiles),
       compilerOptions: getConfigOptions(test, 'compilerOptions', realTestPath),
       angularCompilerOptions: getConfigOptions(test, 'angularCompilerOptions', realTestPath),
       focusTest: test.focusTest,
       excludeTest: test.excludeTest,
     };
+  }
+}
+
+function loadTestCasesFile(
+    fs: FileSystem, testCasesPath: AbsoluteFsPath, basePath: AbsoluteFsPath): any {
+  try {
+    return JSON.parse(fs.readFile(testCasesPath));
+  } catch (e) {
+    throw new Error(
+        `Failed to load test-cases at "${fs.relative(basePath, testCasesPath)}":\n ${e.message}`);
   }
 }
 
@@ -78,6 +90,20 @@ function getStringOrFail(container: any, property: string, testPath: AbsoluteFsP
   return value;
 }
 
+function getBooleanOrDefault(
+    container: any, property: string, testPath: AbsoluteFsPath, defaultValue: boolean): boolean {
+  const value = container[property];
+  if (typeof value === 'undefined') {
+    return defaultValue;
+  }
+  if (typeof value !== 'boolean') {
+    throw new Error(
+        `Test has invalid "${property}" property in TEST_CASES.json - expected boolean: ` +
+        testPath);
+  }
+  return value;
+}
+
 function getStringArrayOrDefault(
     container: any, property: string, testPath: AbsoluteFsPath, defaultValue: string[]): string[] {
   const value = container[property];
@@ -95,14 +121,19 @@ function getStringArrayOrDefault(
 function parseExpectations(
     value: any, testPath: AbsoluteFsPath, inputFiles: string[]): Expectation[] {
   const defaultFailureMessage = 'Incorrect generated output.';
-  const tsFiles = inputFiles.filter(f => /[^.][^d]\.ts$/.test(f));
+  const tsFiles = inputFiles.filter(f => f.endsWith('.ts') && !f.endsWith('.d.ts'));
   const defaultFiles = tsFiles.map(inputFile => {
     const outputFile = inputFile.replace(/\.ts$/, '.js');
     return {expected: outputFile, generated: outputFile};
   });
 
   if (typeof value === 'undefined') {
-    return [{failureMessage: defaultFailureMessage, files: defaultFiles}];
+    return [{
+      failureMessage: defaultFailureMessage,
+      files: defaultFiles,
+      expectedErrors: [],
+      extraChecks: []
+    }];
   }
 
   if (!Array.isArray(value)) {
@@ -116,10 +147,12 @@ function parseExpectations(
               testPath}`);
     }
 
-    const failureMessage = expectation.failureMessage ?? defaultFailureMessage;
+    const failureMessage: string = expectation.failureMessage ?? defaultFailureMessage;
+    const expectedErrors = parseExpectedErrors(expectation.expectedErrors, testPath);
+    const extraChecks = parseExtraChecks(expectation.extraChecks, testPath);
 
     if (typeof expectation.files === 'undefined') {
-      return {failureMessage, files: defaultFiles};
+      return {failureMessage, files: defaultFiles, expectedErrors, extraChecks};
     }
 
     if (!Array.isArray(expectation.files)) {
@@ -127,7 +160,7 @@ function parseExpectations(
           i}].files" property in TEST_CASES.json - expected array of "expected files": ${
           testPath}`);
     }
-    const files = expectation.files.map((file: any) => {
+    const files: ExpectedFile[] = expectation.files.map((file: any) => {
       if (typeof file === 'string') {
         return {expected: file, generated: file};
       }
@@ -140,8 +173,40 @@ function parseExpectations(
           testPath}`);
     });
 
-    return {failureMessage, files};
+    return {failureMessage, files, expectedErrors, extraChecks};
   });
+}
+
+function parseExpectedErrors(expectedErrors: any = [], testPath: AbsoluteFsPath): ExpectedError[] {
+  if (!Array.isArray(expectedErrors)) {
+    throw new Error(
+        'Test has invalid "expectedErrors" property in TEST_CASES.json - expected an array: ' +
+        testPath);
+  }
+
+  return expectedErrors.map(error => {
+    if (typeof error !== 'object' || typeof error.message !== 'string' ||
+        (error.location && typeof error.location !== 'string')) {
+      throw new Error(
+          `Test has invalid "expectedErrors" property in TEST_CASES.json - expected an array of ExpectedError objects: ` +
+          testPath);
+    }
+    return {message: parseRegExp(error.message), location: parseRegExp(error.location)};
+  });
+}
+
+function parseExtraChecks(extraChecks: any = [], testPath: AbsoluteFsPath): ExtraCheck[] {
+  if (!Array.isArray(extraChecks) ||
+      !extraChecks.every(i => typeof i === 'string' || Array.isArray(i))) {
+    throw new Error(
+        `Test has invalid "extraChecks" property in TEST_CASES.json - expected an array of strings or arrays: ` +
+        testPath);
+  }
+  return extraChecks;
+}
+
+function parseRegExp(str: string|undefined): RegExp {
+  return new RegExp(str || '');
 }
 
 function getConfigOptions(
@@ -178,6 +243,8 @@ export interface ComplianceTest {
   angularCompilerOptions?: ConfigOptions;
   /** A list of paths to source files that should be compiled for this test case. */
   inputFiles: string[];
+  /** If set to true then do not check expectations for this test-case in partial tests. */
+  excludeFromPartialTests: boolean;
   /** A list of expectations to check for this test case. */
   expectations: Expectation[];
   /** If set to `true`, then focus on this test (equivalent to jasmine's 'fit()`). */
@@ -191,6 +258,10 @@ export interface Expectation {
   failureMessage: string;
   /** A list of pairs of paths to expected and generated files to compare. */
   files: ExpectedFile[];
+  /** A collection of errors that should be reported when compiling the generated file. */
+  expectedErrors: ExpectedError[];
+  /** Additional checks to run against the generated code. */
+  extraChecks: ExtraCheck[];
 }
 
 /**
@@ -200,6 +271,20 @@ export interface ExpectedFile {
   expected: string;
   generated: string;
 }
+
+/**
+ * Regular expressions that should match an error message.
+ */
+export interface ExpectedError {
+  message: RegExp;
+  location: RegExp;
+}
+
+/**
+ * The name (or name and arguments) of a function to call to run additional checks against the
+ * generated code.
+ */
+export type ExtraCheck = (string|[string, ...any]);
 
 /**
  * Options to pass to configure the compiler.
