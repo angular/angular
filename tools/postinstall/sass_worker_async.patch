@@ -1,15 +1,21 @@
 diff --git sass/sass_wrapper.js sass/sass_wrapper.js
-index 21abb8f..9c750a3 100644
+index ad1f7a6..957d56e 100644
 --- sass/sass_wrapper.js
 +++ sass/sass_wrapper.js
-@@ -17,7 +17,11 @@ const fs = require('fs');
+@@ -17,7 +17,17 @@ const fs = require('fs');
  const args = process.argv.slice(2);
  if (runAsWorker(args)) {
    debug('Starting Sass compiler persistent worker...');
--  runWorkerLoop(args => sass.run_(args));
+-  runWorkerLoop(args => sass.cli_pkg_main_0_(args));
 +  runWorkerLoop(args => {
 +    return new Promise(resolve => {
-+      sass.run_(args)['then$1$2$onError'](() => resolve(true), () => resolve(false));
++      const result = sass.cli_pkg_main_0_(args);
++      const originalThen = result.then$1$2$onError;
++      let dynamicType;
++      result.then$1$2$onError = (receiver, done, error, type) => dynamicType = type;
++      result.then$1();
++      result.then$1$2$onError = originalThen;
++      result.then$1$2$onError(null, () => resolve(true), () => resolve(false), dynamicType);
 +    });
 +  });
    // Note: intentionally don't process.exit() here, because runWorkerLoop

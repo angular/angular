@@ -19,10 +19,10 @@ http_archive(
     # printed in worker mode: https://github.com/bazelbuild/rules_sass/issues/96.
     # TODO(devversion): remove this patch once the Sass Node entry-point returns a `Promise`.
     patches = ["//tools/postinstall:sass_worker_async.patch"],
-    sha256 = "c78be58f5e0a29a04686b628cf54faaee0094322ae0ac99da5a8a8afca59a647",
-    strip_prefix = "rules_sass-1.25.0",
+    sha256 = "cf28ff1bcfafb3c97f138bbc8ca9fe386e968ed3faaa9f8e6214abb5e88a2ecd",
+    strip_prefix = "rules_sass-1.29.0",
     urls = [
-        "https://github.com/bazelbuild/rules_sass/archive/1.25.0.zip",
+        "https://github.com/bazelbuild/rules_sass/archive/1.29.0.zip",
     ],
 )
 
