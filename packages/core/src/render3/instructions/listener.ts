@@ -7,8 +7,9 @@
  */
 
 
+import {isObservable} from 'rxjs';
+
 import {assertIndexInRange} from '../../util/assert';
-import {isObservable} from '../../util/lang';
 import {EMPTY_OBJ} from '../empty';
 import {PropertyAliasValue, TNode, TNodeFlags, TNodeType} from '../interfaces/node';
 import {GlobalTargetResolver, isProceduralRenderer, RElement, Renderer3} from '../interfaces/renderer';

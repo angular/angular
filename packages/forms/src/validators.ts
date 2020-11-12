@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {InjectionToken, ɵisObservable as isObservable, ɵisPromise as isPromise} from '@angular/core';
-import {forkJoin, from, Observable} from 'rxjs';
+import {InjectionToken, ɵisPromise as isPromise} from '@angular/core';
+import {forkJoin, from, isObservable, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 
 import {AsyncValidator, AsyncValidatorFn, ValidationErrors, Validator, ValidatorFn} from './directives/validators';
