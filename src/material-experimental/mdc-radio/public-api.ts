@@ -8,3 +8,8 @@
 
 export * from './radio';
 export * from './module';
+
+export {
+  MAT_RADIO_DEFAULT_OPTIONS_FACTORY,
+  MatRadioDefaultOptions,
+} from '@angular/material/radio';

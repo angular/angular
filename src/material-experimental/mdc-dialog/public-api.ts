@@ -19,4 +19,5 @@ export {
   throwMatDialogContentAlreadyAttachedError,
   DialogRole,
   DialogPosition,
+  MAT_DIALOG_SCROLL_STRATEGY_FACTORY
 } from '@angular/material/dialog';

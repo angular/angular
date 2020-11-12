@@ -29,6 +29,7 @@ ng_module(
         "//src/cdk/collections",
         "//src/material-experimental/mdc-core",
         "//src/material/divider",
+        "//src/material/list",
         "@npm//@angular/core",
         "@npm//@angular/forms",
         "@npm//@material/list",

@@ -366,6 +366,7 @@ jobs:
       - run: yarn stylelint
       - run: yarn tslint
       - run: yarn -s ts-circular-deps:check
+      - run: yarn check-mdc-exports
 
       - *slack_notify_on_failure
       - *save_cache

@@ -19,4 +19,9 @@ export {
   SimpleSnackBar,
   MAT_SNACK_BAR_DATA,
   MAT_SNACK_BAR_DEFAULT_OPTIONS,
+  MAT_SNACK_BAR_DEFAULT_OPTIONS_FACTORY,
+  MatSnackBarHorizontalPosition,
+  MatSnackBarVerticalPosition,
+  TextOnlySnackBar,
+  matSnackBarAnimations,
 } from '@angular/material/snack-bar';

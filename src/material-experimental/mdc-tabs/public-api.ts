@@ -7,7 +7,7 @@
  */
 
 export * from './module';
-export {MatTabBodyPortal} from './tab-body';
+export {MatTabBodyPortal, MatTabBody} from './tab-body';
 export {MatTabContent} from './tab-content';
 export {MatTabLabel} from './tab-label';
 export {MatTabLabelWrapper} from './tab-label-wrapper';
@@ -28,4 +28,5 @@ export {
   MatTabsConfig,
   MAT_TABS_CONFIG,
   MAT_TAB_GROUP,
+  ScrollDirection,
 } from '@angular/material/tabs';

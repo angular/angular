@@ -6,6 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export {getMatInputUnsupportedTypeError, MAT_INPUT_VALUE_ACCESSOR} from '@angular/material/input';
 export {MatInput} from './input';
 export {MatInputModule} from './module';
+
+export {
+  getMatInputUnsupportedTypeError,
+  MAT_INPUT_VALUE_ACCESSOR,
+} from '@angular/material/input';

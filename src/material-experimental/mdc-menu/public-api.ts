@@ -24,4 +24,5 @@ export {
   MenuPositionX,
   MenuPositionY,
   transformMenu,
+  MAT_MENU_CONTENT,
 } from '@angular/material/menu';
