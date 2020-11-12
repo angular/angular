@@ -18,10 +18,6 @@ import {
 } from './index';
 
 
-// The following tests have been removed, because the use
-// cases are not support by the MDC-based components:
-// - should propagate the dynamic `placeholder` value to the form field
-
 describe('MDC-based MatChipInput', () => {
   let fixture: ComponentFixture<any>;
   let testChipInput: TestChipInput;

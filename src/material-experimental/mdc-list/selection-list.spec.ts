@@ -266,31 +266,6 @@ describe('MDC-based MatSelectionList without forms', () => {
       expect(event.defaultPrevented).toBe(true);
     });
 
-    // MDC does not respect modifier keys, so this test always fails currently.
-    // Tracked with: https://github.com/material-components/material-components-web/issues/6365.
-    // tslint:disable-next-line:ban
-    xit('should not be able to toggle an item when pressing a modifier key', () => {
-      const testListItem = listOptions[1].nativeElement as HTMLElement;
-      const selectList =
-        selectionList.injector.get<MatSelectionList>(MatSelectionList).selectedOptions;
-
-      expect(selectList.selected.length).toBe(0);
-
-      [ENTER, SPACE].forEach(key => {
-        const event = createKeyboardEvent('keydown', key, undefined, {control: true});
-
-        testListItem.focus();
-        expect(getFocusIndex()).toBe(1);
-
-        dispatchKeyboardEvent(testListItem, 'keydown', key, undefined, {control: true});
-        fixture.detectChanges();
-
-        expect(event.defaultPrevented).toBe(false);
-      });
-
-      expect(selectList.selected.length).toBe(0);
-    });
-
     it('should not be able to toggle a disabled option using SPACE', () => {
       const testListItem = listOptions[1].nativeElement as HTMLElement;
       const selectionModel = selectionList.componentInstance.selectedOptions;
@@ -337,56 +312,6 @@ describe('MDC-based MatSelectionList without forms', () => {
       expect(getFocusIndex()).toEqual(1);
     });
 
-    // MDC does not support SHIFT + ARROW for item selection. Tracked as feature request:
-    // https://github.com/material-components/material-components-web/issues/6364.
-    // tslint:disable-next-line:ban
-    xit('should focus and toggle the next item when pressing SHIFT + UP_ARROW', () => {
-      listOptions[3].nativeElement.focus();
-      expect(getFocusIndex()).toBe(3);
-
-      expect(listOptions[1].componentInstance.selected).toBe(false);
-      expect(listOptions[2].componentInstance.selected).toBe(false);
-
-      dispatchKeyboardEvent(listOptions[3].nativeElement, 'keydown', UP_ARROW,
-          undefined, {shift: true});
-      fixture.detectChanges();
-
-      expect(listOptions[1].componentInstance.selected).toBe(false);
-      expect(listOptions[2].componentInstance.selected).toBe(true);
-
-      dispatchKeyboardEvent(listOptions[2].nativeElement, 'keydown', UP_ARROW,
-        undefined, {shift: true});
-      fixture.detectChanges();
-
-      expect(listOptions[1].componentInstance.selected).toBe(true);
-      expect(listOptions[2].componentInstance.selected).toBe(true);
-    });
-
-    // MDC does not support SHIFT + ARROW for item selection. Tracked as feature request:
-    // https://github.com/material-components/material-components-web/issues/6364.
-    // tslint:disable-next-line:ban
-    xit('should focus and toggle the next item when pressing SHIFT + DOWN_ARROW', () => {
-      listOptions[0].nativeElement.focus();
-      expect(getFocusIndex()).toBe(0);
-
-      expect(listOptions[1].componentInstance.selected).toBe(false);
-      expect(listOptions[2].componentInstance.selected).toBe(false);
-
-      dispatchKeyboardEvent(listOptions[0].nativeElement, 'keydown', DOWN_ARROW,
-          undefined, {shift: true});
-      fixture.detectChanges();
-
-      expect(listOptions[1].componentInstance.selected).toBe(true);
-      expect(listOptions[2].componentInstance.selected).toBe(false);
-
-      dispatchKeyboardEvent(listOptions[1].nativeElement, 'keydown', DOWN_ARROW,
-        undefined, {shift: true});
-      fixture.detectChanges();
-
-      expect(listOptions[1].componentInstance.selected).toBe(true);
-      expect(listOptions[2].componentInstance.selected).toBe(true);
-    });
-
     it('should focus next item when press DOWN ARROW', () => {
       listOptions[2].nativeElement.focus();
       expect(getFocusIndex()).toEqual(2);
@@ -408,22 +333,6 @@ describe('MDC-based MatSelectionList without forms', () => {
       expect(event.defaultPrevented).toBe(true);
     });
 
-    // MDC does not respect the modifier keys. Bug tracked with:
-    // https://github.com/material-components/material-components-web/issues/6365.
-    // tslint:disable-next-line:ban
-    xit('should not change focus when pressing HOME with a modifier key', () => {
-      listOptions[2].nativeElement.focus();
-      expect(getFocusIndex()).toBe(2);
-
-      const event = createKeyboardEvent('keydown', HOME, undefined, {shift: true});
-
-      dispatchEvent(listOptions[2].nativeElement, event);
-      fixture.detectChanges();
-
-      expect(getFocusIndex()).toBe(2);
-      expect(event.defaultPrevented).toBe(false);
-    });
-
     it('should focus the last item when pressing END', () => {
       listOptions[2].nativeElement.focus();
       expect(getFocusIndex()).toBe(2);
@@ -433,119 +342,6 @@ describe('MDC-based MatSelectionList without forms', () => {
 
       expect(getFocusIndex()).toBe(4);
       expect(event.defaultPrevented).toBe(true);
-    });
-
-    // MDC does not respect the modifier keys. Bug tracked with:
-    // https://github.com/material-components/material-components-web/issues/6365.
-    // tslint:disable-next-line:ban
-    xit('should not change focus when pressing END with a modifier key', () => {
-      listOptions[2].nativeElement.focus();
-      expect(getFocusIndex()).toBe(2);
-
-      const event = createKeyboardEvent('keydown', END, undefined, {shift: true});
-
-      dispatchEvent(listOptions[2].nativeElement, event);
-      fixture.detectChanges();
-
-      expect(getFocusIndex()).toBe(2);
-      expect(event.defaultPrevented).toBe(false);
-    });
-
-    // MDC does not support the common CTRL + A keyboard shortcut.
-    // Tracked with: https://github.com/material-components/material-components-web/issues/6366
-    // tslint:disable-next-line:ban
-    xit('should select all items using ctrl + a', () => {
-      listOptions[2].nativeElement.focus();
-      expect(getFocusIndex()).toBe(2);
-
-      listOptions.forEach(option => option.componentInstance.disabled = false);
-      const event = createKeyboardEvent('keydown', A, undefined, {control: true});
-
-      expect(listOptions.some(option => option.componentInstance.selected)).toBe(false);
-
-      dispatchEvent(listOptions[2].nativeElement, event);
-      fixture.detectChanges();
-
-      expect(listOptions.every(option => option.componentInstance.selected)).toBe(true);
-    });
-
-    // MDC does not support the common CTRL + A keyboard shortcut.
-    // Tracked with: https://github.com/material-components/material-components-web/issues/6366
-    // tslint:disable-next-line:ban
-    xit('should not select disabled items when pressing ctrl + a', () => {
-      listOptions[2].nativeElement.focus();
-      expect(getFocusIndex()).toBe(2);
-
-      const event = createKeyboardEvent('keydown', A, undefined, {control: true});
-
-      listOptions.slice(0, 2).forEach(option => option.componentInstance.disabled = true);
-      fixture.detectChanges();
-
-      expect(listOptions.map(option => option.componentInstance.selected))
-        .toEqual([false, false, false, false, false]);
-
-      dispatchEvent(listOptions[2].nativeElement, event);
-      fixture.detectChanges();
-
-      expect(listOptions.map(option => option.componentInstance.selected))
-        .toEqual([false, false, true, true, true]);
-    });
-
-    // MDC does not support the common CTRL + A keyboard shortcut.
-    // Tracked with: https://github.com/material-components/material-components-web/issues/6366
-    // tslint:disable-next-line:ban
-    xit('should select all items using ctrl + a if some items are selected', () => {
-      listOptions[2].nativeElement.focus();
-      expect(getFocusIndex()).toBe(2);
-
-      const event = createKeyboardEvent('keydown', A, undefined, {control: true});
-
-      listOptions.slice(0, 2).forEach(option => option.componentInstance.selected = true);
-      fixture.detectChanges();
-
-      expect(listOptions.some(option => option.componentInstance.selected)).toBe(true);
-
-      dispatchEvent(listOptions[2].nativeElement, event);
-      fixture.detectChanges();
-
-      expect(listOptions.every(option => option.componentInstance.selected)).toBe(true);
-    });
-
-    // MDC does not support the common CTRL + A keyboard shortcut.
-    // Tracked with: https://github.com/material-components/material-components-web/issues/6366
-    // tslint:disable-next-line:ban
-    xit('should deselect all with ctrl + a if all options are selected', () => {
-      listOptions[2].nativeElement.focus();
-      expect(getFocusIndex()).toBe(2);
-
-      const event = createKeyboardEvent('keydown', A, undefined, {control: true});
-
-      listOptions.forEach(option => option.componentInstance.selected = true);
-      fixture.detectChanges();
-
-      expect(listOptions.every(option => option.componentInstance.selected)).toBe(true);
-
-      dispatchEvent(listOptions[2].nativeElement, event);
-      fixture.detectChanges();
-
-      expect(listOptions.every(option => option.componentInstance.selected)).toBe(false);
-    });
-
-    // MDC does not support the common CTRL + A keyboard shortcut.
-    // Tracked with: https://github.com/material-components/material-components-web/issues/6366
-    // tslint:disable-next-line:ban
-    xit('should dispatch the selectionChange event when selecting via ctrl + a', () => {
-      const spy = spyOn(fixture.componentInstance, 'onSelectionChange');
-      listOptions.forEach(option => option.componentInstance.disabled = false);
-      const event = createKeyboardEvent('keydown', A, undefined, {control: true});
-
-      dispatchEvent(selectionList.nativeElement, event);
-      fixture.detectChanges();
-
-      expect(spy).toHaveBeenCalledTimes(1);
-      expect(spy).toHaveBeenCalledWith(jasmine.objectContaining({
-        options: listOptions.map(option => option.componentInstance)
-      }));
     });
 
     it('should be able to jump focus down to an item by typing', fakeAsync(() => {

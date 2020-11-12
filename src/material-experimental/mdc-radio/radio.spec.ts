@@ -604,6 +604,7 @@ describe('MDC-based MatRadio', () => {
     let seasonRadioInstances: MatRadioButton[];
     let weatherRadioInstances: MatRadioButton[];
     let fruitRadioInstances: MatRadioButton[];
+    let fruitRadioNativeElements: HTMLElement[];
     let fruitRadioNativeInputs: HTMLElement[];
     let testComponent: StandaloneRadioButtons;
 
@@ -623,8 +624,7 @@ describe('MDC-based MatRadio', () => {
       fruitRadioInstances = radioDebugElements
           .filter(debugEl => debugEl.componentInstance.name == 'fruit')
           .map(debugEl => debugEl.componentInstance);
-
-      const fruitRadioNativeElements = radioDebugElements
+      fruitRadioNativeElements = radioDebugElements
           .filter(debugEl => debugEl.componentInstance.name == 'fruit')
           .map(debugEl => debugEl.nativeElement);
 
@@ -736,6 +736,14 @@ describe('MDC-based MatRadio', () => {
 
         expect(document.activeElement).toBe(fruitRadioNativeInputs[i]);
       }
+    });
+
+    it('should not change focus origin if origin not specified', () => {
+      fruitRadioInstances[0].focus(undefined, 'mouse');
+      fruitRadioInstances[1].focus();
+
+      expect(fruitRadioNativeElements[1].classList).toContain('cdk-focused');
+      expect(fruitRadioNativeElements[1].classList).toContain('cdk-mouse-focused');
     });
 
     it('should not add the "name" attribute if it is not passed in', () => {

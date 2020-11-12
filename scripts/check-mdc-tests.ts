@@ -3,9 +3,11 @@ import {join, basename} from 'path';
 import {sync as glob} from 'glob';
 import chalk from 'chalk';
 import * as ts from 'typescript';
+import {config} from './check-mdc-tests-config';
 
 const srcDirectory = join(__dirname, '../src');
 const materialDirectories = readdirSync(join(srcDirectory, 'material'));
+let hasFailed = false;
 
 // Goes through all the unit tests and flags the ones that don't exist in the MDC components.
 readdirSync(join(srcDirectory, 'material-experimental'), {withFileTypes: true})
@@ -22,7 +24,12 @@ readdirSync(join(srcDirectory, 'material-experimental'), {withFileTypes: true})
     return matches;
   }, new Map<string, string>())
   .forEach((mdcPackage, materialPackage) => {
+    if (config.skippedPackages.includes(mdcPackage)) {
+      return;
+    }
+
     const mdcTestFiles = getUnitTestFiles(`material-experimental/${mdcPackage}`);
+    const skippedTests = config.skippedTests[mdcPackage] || [];
 
     // MDC entry points that don't have test files may not have been implemented yet.
     if (mdcTestFiles.length > 0) {
@@ -34,14 +41,29 @@ readdirSync(join(srcDirectory, 'material-experimental'), {withFileTypes: true})
       });
       const materialTests = getTestNames(materialTestFiles);
       const mdcTests = getTestNames(mdcTestFiles);
-      const missingTests = materialTests.filter(test => !mdcTests.includes(test));
+      const missingTests = materialTests
+          .filter(test => !mdcTests.includes(test) && !skippedTests.includes(test));
 
       if (missingTests.length > 0) {
-        console.log(chalk.redBright(`\nMissing tests for ${mdcPackage}:`));
+        const errorMessage = `\nTests from \`${materialPackage}\` missing in \`${mdcPackage}\`:`;
+        console.log(chalk.redBright(errorMessage));
         console.log(missingTests.join('\n'));
+        hasFailed = true;
       }
     }
   });
+
+if (hasFailed) {
+  console.log(chalk.redBright(
+    '\nDetected one or more MDC packages that have not implemented all tests from their ' +
+    'non-MDC counterpart.\nEither implement the missing tests or add them to the ' +
+    '`skippedTests` array inside `scripts/check-mdc-tests-config.ts`\n'
+    ));
+  process.exit(1);
+} else {
+  console.log(chalk.green('All MDC tests have been implemented.'));
+  process.exit(0);
+}
 
 /**
  * Gets all the names of all unit test files inside a
@@ -64,7 +86,7 @@ function getTestNames(files: string[]): string[] {
 
     sourceFile.forEachChild(function walk(node: ts.Node) {
       if (ts.isCallExpression(node) && ts.isIdentifier(node.expression) &&
-          (node.expression.text === 'it' || node.expression.text === 'xit')) {
+          node.expression.text === 'it') {
         // Note that this is a little naive since it'll take the literal text of the test
         // name expression which could include things like string concatenation. It's fine
         // for the limited use cases of the script.

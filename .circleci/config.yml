@@ -362,6 +362,7 @@ jobs:
               yarn ng-dev commit-message validate-range --range $CI_COMMIT_RANGE
             fi
       - run: yarn ownerslint
+      - run: yarn check-mdc-tests
       - run: yarn stylelint
       - run: yarn tslint
       - run: yarn -s ts-circular-deps:check

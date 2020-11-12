@@ -28,6 +28,8 @@ import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {MatSlider, MatSliderModule} from './index';
 
 // TODO: disabled until we implement the new MDC slider.
+// TODO: once the tests are re-enabled, we should remove `mdc-slider`
+// from the `skippedPackages` in `check-mdc-tests-config.ts`.
 describe('MDC-based MatSlider dummy' , () => it('', () => {}));
 
 // tslint:disable-next-line:ban

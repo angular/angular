@@ -78,40 +78,6 @@ import {
 /** Default debounce interval when typing letters to select an option. */
 const DEFAULT_TYPEAHEAD_DEBOUNCE_INTERVAL = 200;
 
-// The following tests from the existing `MatSelect` haven't
-// been ported over, because they're no longer relevant:
-// - should float the label when the panel is open and unselected
-// - should be able to disable the floating label
-// - should set the width of the overlay based on a larger trigger width
-// - should align the first option with trigger text if no option is selected
-// - should align a selected option too high to be centered with the trigger text
-// - should align a selected option in the middle with the trigger text
-// - should align a selected option at the scroll max with the trigger text
-// - should account for preceding label groups when aligning the option
-// - should account for indirect preceding label groups when aligning the option
-// - should adjust position of centered option if there is little space above
-// - should adjust position of centered option if there is little space below
-// - should fall back to "above" positioning if scroll adjustment will not help
-// - should fall back to "below" positioning if scroll adjustment won't help
-// - should stay within the viewport when overflowing on the left in ltr
-// - should stay within the viewport when overflowing on the left in rtl
-// - should stay within the viewport when overflowing on the right in ltr
-// - should stay within the viewport when overflowing on the right in rtl
-// - should keep the position within the viewport on repeat openings
-// - should align the first option properly when scrolled
-// - should align a centered option properly when scrolled
-// - should align a centered option properly when scrolling while the panel is open
-// - should fall back to "above" positioning properly when scrolled
-// - should fall back to "below" positioning properly when scrolled
-// - should align the trigger and the selected option on the x-axis in ltr
-// - should align the trigger and the selected option on the x-axis in rtl
-// - should adjust for the checkbox in ltr
-// - should adjust for the checkbox in rtl
-// - should adjust for the group padding in ltr
-// - should adjust for the group padding in rtl
-// - should not adjust if all options are within a group, except the selected one
-// - should align the first option to the trigger, if nothing is selected
-
 describe('MDC-based MatSelect', () => {
   let overlayContainer: OverlayContainer;
   let overlayContainerElement: HTMLElement;
