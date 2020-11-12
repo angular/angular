@@ -384,7 +384,7 @@ In this section we will explain how to fine tune these options.
 <div class="alert is-important">
 
   Fonts optimization requires internet access.
-  When enabled, render blocking requests will be reduced by inlining external Google fonts and icons in the application's HTML index file. 
+  When enabled, render blocking requests will be reduced by inlining external Google fonts and icons CSS definitions in the application's HTML index file. 
 
 </div>
 
