@@ -110,9 +110,9 @@ To create a new component manually:
 
 ## Specifying a component's CSS selector
 
-Every component requires a CSS _selector_. A selector instructs Angular to instantiate this component wherever it finds the corresponding tag in template HTML. For example, consider a component, `hello-world.component.ts` that defines its selector as `app-hello-world`. This selector instructs angular to instantiate this component any time the tag, `<app-hello-world>` in a template.
+Every component requires a CSS _selector_. A selector instructs Angular to instantiate this component wherever it finds the corresponding tag in template HTML. For example, consider a component `hello-world.component.ts` that defines its selector as `app-hello-world`. This selector instructs Angular to instantiate this component any time the tag `<app-hello-world>` appears in a template.
 
-To specify a component's selector, add a `selector` statement to the `@Component` decorator.
+Specify a component's selector by adding a `selector` statement to the `@Component` decorator.
 
 <code-example
     path="component-overview/src/app/component-overview/component-overview.component.ts"
