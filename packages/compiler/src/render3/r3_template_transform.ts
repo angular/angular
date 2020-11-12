@@ -331,7 +331,7 @@ class HtmlAstToIvyAst implements html.Visitor {
       const normalizationAdjustment = attribute.name.length - name.length;
       const keySpanStart = srcSpan.start.moveBy(prefix.length + normalizationAdjustment);
       const keySpanEnd = keySpanStart.moveBy(identifier.length);
-      return new ParseSourceSpan(keySpanStart, keySpanEnd, identifier);
+      return new ParseSourceSpan(keySpanStart, keySpanEnd, keySpanStart, identifier);
     }
 
     const bindParts = name.match(BIND_NAME_REGEXP);

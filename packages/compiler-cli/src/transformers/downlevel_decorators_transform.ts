@@ -141,14 +141,9 @@ function createCtorParametersClassPropertyType(): ts.TypeNode {
       ])),
       undefined));
 
-  // TODO(alan-agius4): Remove when we no longer support TS 3.9
-  const nullLiteral = ts.createNull() as any;
-  const nullType = ts.versionMajorMinor.charAt(0) === '4' ?
-      ts.createLiteralTypeNode(nullLiteral as any) :
-      nullLiteral;
   return ts.createFunctionTypeNode(undefined, [], ts.createArrayTypeNode(ts.createUnionTypeNode([
     ts.createTypeLiteralNode(typeElements),
-    nullType,
+    ts.createLiteralTypeNode(ts.createNull()),
   ])));
 }
 
@@ -293,13 +288,10 @@ function typeReferenceToExpression(
       // Ignore any generic types, just return the base type.
       return entityNameToExpression(typeRef.typeName);
     case ts.SyntaxKind.UnionType:
-      // TODO(alan-agius4): remove `t.kind !== ts.SyntaxKind.NullKeyword` when
-      // TS 3.9 support is dropped. In TS 4.0 NullKeyword is a child of LiteralType.
       const childTypeNodes =
           (node as ts.UnionTypeNode)
               .types.filter(
-                  t => t.kind !== ts.SyntaxKind.NullKeyword &&
-                      !(ts.isLiteralTypeNode(t) && t.literal.kind === ts.SyntaxKind.NullKeyword));
+                  t => !(ts.isLiteralTypeNode(t) && t.literal.kind === ts.SyntaxKind.NullKeyword));
       return childTypeNodes.length === 1 ?
           typeReferenceToExpression(entityNameToExpression, childTypeNodes[0]) :
           undefined;
@@ -538,12 +530,17 @@ export function getDownlevelDecoratorsTransform(
         }
         newMembers.push(ts.visitEachChild(member, decoratorDownlevelVisitor, context));
       }
-      const decorators = host.getDecoratorsOfDeclaration(classDecl) || [];
+
+      // The `ReflectionHost.getDecoratorsOfDeclaration()` method will not return certain kinds of
+      // decorators that will never be Angular decorators. So we cannot rely on it to capture all
+      // the decorators that should be kept. Instead we start off with a set of the raw decorators
+      // on the class, and only remove the ones that have been identified for downleveling.
+      const decoratorsToKeep = new Set<ts.Decorator>(classDecl.decorators);
+      const possibleAngularDecorators = host.getDecoratorsOfDeclaration(classDecl) || [];
 
       let hasAngularDecorator = false;
       const decoratorsToLower = [];
-      const decoratorsToKeep: ts.Decorator[] = [];
-      for (const decorator of decorators) {
+      for (const decorator of possibleAngularDecorators) {
         // We only deal with concrete nodes in TypeScript sources, so we don't
         // need to handle synthetically created decorators.
         const decoratorNode = decorator.node! as ts.Decorator;
@@ -557,8 +554,7 @@ export function getDownlevelDecoratorsTransform(
 
         if (isNgDecorator && !skipClassDecorators) {
           decoratorsToLower.push(extractMetadataFromSingleDecorator(decoratorNode, diagnostics));
-        } else {
-          decoratorsToKeep.push(decoratorNode);
+          decoratorsToKeep.delete(decoratorNode);
         }
       }
 
@@ -581,8 +577,9 @@ export function getDownlevelDecoratorsTransform(
           ts.createNodeArray(newMembers, classDecl.members.hasTrailingComma), classDecl.members);
 
       return ts.updateClassDeclaration(
-          classDecl, decoratorsToKeep.length ? decoratorsToKeep : undefined, classDecl.modifiers,
-          classDecl.name, classDecl.typeParameters, classDecl.heritageClauses, members);
+          classDecl, decoratorsToKeep.size ? Array.from(decoratorsToKeep) : undefined,
+          classDecl.modifiers, classDecl.name, classDecl.typeParameters, classDecl.heritageClauses,
+          members);
     }
 
     /**

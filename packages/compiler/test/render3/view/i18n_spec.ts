@@ -18,6 +18,7 @@ import {serializeIcuNode} from '../../../src/render3/view/i18n/icu_serializer';
 import {serializeI18nMessageForLocalize} from '../../../src/render3/view/i18n/localize_utils';
 import {I18nMeta, parseI18nMeta} from '../../../src/render3/view/i18n/meta';
 import {formatI18nPlaceholderName} from '../../../src/render3/view/i18n/util';
+import {LEADING_TRIVIA_CHARS} from '../../../src/render3/view/template';
 
 import {parseR3 as parse} from './util';
 
@@ -386,7 +387,7 @@ describe('serializeI18nMessageForGetMsg', () => {
 
 describe('serializeI18nMessageForLocalize', () => {
   const serialize = (input: string) => {
-    const tree = parse(`<div i18n>${input}</div>`);
+    const tree = parse(`<div i18n>${input}</div>`, {leadingTriviaChars: LEADING_TRIVIA_CHARS});
     const root = tree.nodes[0] as t.Element;
     return serializeI18nMessageForLocalize(root.i18n as i18n.Message);
   };
@@ -477,7 +478,7 @@ describe('serializeI18nMessageForLocalize', () => {
        expect(messageParts[3].text).toEqual('');
        expect(messageParts[3].sourceSpan.toString()).toEqual('');
        expect(messageParts[4].text).toEqual(' D');
-       expect(messageParts[4].sourceSpan.toString()).toEqual(' D');
+       expect(messageParts[4].sourceSpan.toString()).toEqual('D');
 
        expect(placeHolders[0].text).toEqual('START_TAG_SPAN');
        expect(placeHolders[0].sourceSpan.toString()).toEqual('<span>');
@@ -489,13 +490,52 @@ describe('serializeI18nMessageForLocalize', () => {
        expect(placeHolders[3].sourceSpan.toString()).toEqual('</span>');
      });
 
+  it('should create the correct source-spans when there are two placeholders next to each other',
+     () => {
+       const {messageParts, placeHolders} = serialize('<b>{{value}}</b>');
+       expect(messageParts[0].text).toEqual('');
+       expect(humanizeSourceSpan(messageParts[0].sourceSpan)).toEqual('"" (10-10)');
+       expect(messageParts[1].text).toEqual('');
+       expect(humanizeSourceSpan(messageParts[1].sourceSpan)).toEqual('"" (13-13)');
+       expect(messageParts[2].text).toEqual('');
+       expect(humanizeSourceSpan(messageParts[2].sourceSpan)).toEqual('"" (22-22)');
+       expect(messageParts[3].text).toEqual('');
+       expect(humanizeSourceSpan(messageParts[3].sourceSpan)).toEqual('"" (26-26)');
+
+       expect(placeHolders[0].text).toEqual('START_BOLD_TEXT');
+       expect(humanizeSourceSpan(placeHolders[0].sourceSpan)).toEqual('"<b>" (10-13)');
+       expect(placeHolders[1].text).toEqual('INTERPOLATION');
+       expect(humanizeSourceSpan(placeHolders[1].sourceSpan)).toEqual('"{{value}}" (13-22)');
+       expect(placeHolders[2].text).toEqual('CLOSE_BOLD_TEXT');
+       expect(humanizeSourceSpan(placeHolders[2].sourceSpan)).toEqual('"</b>" (22-26)');
+     });
+
+  it('should create the correct placeholder source-spans when there is skipped leading whitespace',
+     () => {
+       const {messageParts, placeHolders} = serialize('<b>   {{value}}</b>');
+       expect(messageParts[0].text).toEqual('');
+       expect(humanizeSourceSpan(messageParts[0].sourceSpan)).toEqual('"" (10-10)');
+       expect(messageParts[1].text).toEqual('   ');
+       expect(humanizeSourceSpan(messageParts[1].sourceSpan)).toEqual('"   " (13-16)');
+       expect(messageParts[2].text).toEqual('');
+       expect(humanizeSourceSpan(messageParts[2].sourceSpan)).toEqual('"" (25-25)');
+       expect(messageParts[3].text).toEqual('');
+       expect(humanizeSourceSpan(messageParts[3].sourceSpan)).toEqual('"" (29-29)');
+
+       expect(placeHolders[0].text).toEqual('START_BOLD_TEXT');
+       expect(humanizeSourceSpan(placeHolders[0].sourceSpan)).toEqual('"<b>   " (10-16)');
+       expect(placeHolders[1].text).toEqual('INTERPOLATION');
+       expect(humanizeSourceSpan(placeHolders[1].sourceSpan)).toEqual('"{{value}}" (16-25)');
+       expect(placeHolders[2].text).toEqual('CLOSE_BOLD_TEXT');
+       expect(humanizeSourceSpan(placeHolders[2].sourceSpan)).toEqual('"</b>" (25-29)');
+     });
+
   it('should serialize simple ICU for `$localize()`', () => {
     expect(serialize('{age, plural, 10 {ten} other {other}}')).toEqual({
       messageParts: [literal('{VAR_PLURAL, plural, 10 {ten} other {other}}')],
       placeHolders: []
     });
   });
-
 
   it('should serialize nested ICUs for `$localize()`', () => {
     expect(serialize(
@@ -508,7 +548,6 @@ describe('serializeI18nMessageForLocalize', () => {
           placeHolders: []
         });
   });
-
 
   it('should serialize ICU with embedded HTML for `$localize()`', () => {
     expect(serialize('{age, plural, 10 {<b>ten</b>} other {<div class="A">other</div>}}')).toEqual({
@@ -594,4 +633,8 @@ function literal(text: string, span: any = jasmine.any(ParseSourceSpan)): o.Lite
 
 function placeholder(name: string, span: any = jasmine.any(ParseSourceSpan)): o.PlaceholderPiece {
   return new o.PlaceholderPiece(name, span);
+}
+
+function humanizeSourceSpan(span: ParseSourceSpan): string {
+  return `"${span.toString()}" (${span.start.offset}-${span.end.offset})`;
 }

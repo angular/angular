@@ -162,6 +162,7 @@ export {
   ɵɵnamespaceMathML,
   ɵɵnamespaceSVG,
   ɵɵnextContext,
+  ɵɵngDeclareDirective,
   ɵɵNgOnChangesFeature,
   ɵɵpipe,
   ɵɵpipeBind1,

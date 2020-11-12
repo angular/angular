@@ -193,4 +193,5 @@ export interface ParseSourceSpan {
   start: any;
   end: any;
   details: any;
+  fullStart: any;
 }

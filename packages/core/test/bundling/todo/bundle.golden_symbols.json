@@ -354,6 +354,9 @@
     "name": "getDebugContext"
   },
   {
+    "name": "getDeclarationTNode"
+  },
+  {
     "name": "getFirstLContainer"
   },
   {
@@ -543,6 +546,9 @@
     "name": "leaveViewLight"
   },
   {
+    "name": "lookupTokenUsingModuleInjector"
+  },
+  {
     "name": "makeParamDecorator"
   },
   {
@@ -586,6 +592,9 @@
   },
   {
     "name": "noSideEffects"
+  },
+  {
+    "name": "notFoundValueOrThrow"
   },
   {
     "name": "readPatchedData"

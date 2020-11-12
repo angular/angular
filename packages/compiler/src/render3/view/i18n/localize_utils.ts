@@ -90,7 +90,8 @@ function getSourceSpan(message: i18n.Message): ParseSourceSpan {
   const startNode = message.nodes[0];
   const endNode = message.nodes[message.nodes.length - 1];
   return new ParseSourceSpan(
-      startNode.sourceSpan.start, endNode.sourceSpan.end, startNode.sourceSpan.details);
+      startNode.sourceSpan.start, endNode.sourceSpan.end, startNode.sourceSpan.fullStart,
+      startNode.sourceSpan.details);
 }
 
 /**
@@ -120,7 +121,7 @@ function processMessagePieces(pieces: o.MessagePiece[]):
       placeHolders.push(part);
       if (pieces[i - 1] instanceof o.PlaceholderPiece) {
         // There were two placeholders in a row, so we need to add an empty message part.
-        messageParts.push(createEmptyMessagePart(part.sourceSpan.end));
+        messageParts.push(createEmptyMessagePart(pieces[i - 1].sourceSpan.end));
       }
     }
   }

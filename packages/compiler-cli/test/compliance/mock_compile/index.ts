@@ -196,10 +196,10 @@ function buildMatcher(pieces: (string|RegExp)[]): {regexp: RegExp, groups: Map<s
   };
 }
 
-export function doCompile(
+export function compileFiles(
     data: MockDirectory, angularFiles: MockData, options: NgCompilerOptions = {}): {
-  source: string,
-} {
+  fileName: string; source: string,
+}[] {
   setFileSystem(new NodeJSFileSystem());
   const testFiles = toMockFileArray(data);
   const scripts = testFiles.map(entry => entry.fileName);
@@ -217,8 +217,18 @@ export function doCompile(
       },
       mockCompilerHost);
   program.emit();
-  const source =
-      scripts.map(script => mockCompilerHost.readFile(script.replace(/\.ts$/, '.js'))).join('\n');
+  return scripts.map(script => {
+    const fileName = script.replace(/\.ts$/, '.js');
+    const source = mockCompilerHost.readFile(fileName);
+    return {fileName, source};
+  });
+}
+
+function doCompile(data: MockDirectory, angularFiles: MockData, options: NgCompilerOptions = {}): {
+  source: string,
+} {
+  const scripts = compileFiles(data, angularFiles, options);
+  const source = scripts.map(script => script.source).join('\n');
 
   return {source};
 }

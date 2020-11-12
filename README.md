@@ -62,7 +62,7 @@ Get started with Angular, learn the fundamentals and explore advanced topics on 
 
 ### Setting Up a Project
 
-Intall the Angular CLI globally:
+Install the Angular CLI globally:
 
 ```
 npm install -g @angular/cli

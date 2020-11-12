@@ -134,6 +134,9 @@ export {
 } from './interfaces/node';
 export {CssSelectorList, ProjectionSlots} from './interfaces/projection';
 export {
+  ɵɵngDeclareDirective,
+} from './jit/partial';
+export {
   setClassMetadata,
 } from './metadata';
 export {NgModuleFactory, NgModuleRef, NgModuleType} from './ng_module_ref';

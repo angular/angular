@@ -756,6 +756,9 @@
     "name": "classIndexOf"
   },
   {
+    "name": "cleanUpValidators"
+  },
+  {
     "name": "cleanUpView"
   },
   {
@@ -963,6 +966,12 @@
     "name": "getConstant"
   },
   {
+    "name": "getControlAsyncValidators"
+  },
+  {
+    "name": "getControlValidators"
+  },
+  {
     "name": "getCurrentTNode"
   },
   {
@@ -973,6 +982,9 @@
   },
   {
     "name": "getDebugContext"
+  },
+  {
+    "name": "getDeclarationTNode"
   },
   {
     "name": "getFactoryDef"
@@ -1278,6 +1290,9 @@
     "name": "localeEn"
   },
   {
+    "name": "lookupTokenUsingModuleInjector"
+  },
+  {
     "name": "makeParamDecorator"
   },
   {
@@ -1315,6 +1330,9 @@
   },
   {
     "name": "mergeHostAttrs"
+  },
+  {
+    "name": "mergeValidators"
   },
   {
     "name": "modelGroupProvider"
@@ -1366,6 +1384,9 @@
   },
   {
     "name": "normalizeValidators"
+  },
+  {
+    "name": "notFoundValueOrThrow"
   },
   {
     "name": "observable"
@@ -1420,6 +1441,9 @@
   },
   {
     "name": "registerHostBindingOpCodes"
+  },
+  {
+    "name": "registerOnValidatorChange"
   },
   {
     "name": "registerPostOrderHooks"
@@ -1546,6 +1570,9 @@
   },
   {
     "name": "setUpFormContainer"
+  },
+  {
+    "name": "setUpValidators"
   },
   {
     "name": "shareSubjectFactory"

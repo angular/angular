@@ -122,6 +122,18 @@ export class AstObject<TExpression> {
     return result;
   }
 
+  /**
+   * Converts the AstObject to a JavaScript Map, mapping each property value (as an
+   * `AstValue`) to the generic type (`T`) via the `mapper` function.
+   */
+  toMap<T>(mapper: (value: AstValue<TExpression>) => T): Map<string, T> {
+    const result = new Map<string, T>();
+    for (const [key, expression] of this.obj) {
+      result.set(key, mapper(new AstValue(expression, this.host)));
+    }
+    return result;
+  }
+
   private getRequiredProperty(propertyName: string): TExpression {
     if (!this.obj.has(propertyName)) {
       throw new FatalLinkerError(
@@ -136,7 +148,15 @@ export class AstObject<TExpression> {
  * access to the underlying value of the wrapped expression.
  */
 export class AstValue<TExpression> {
-  constructor(private expression: TExpression, private host: AstHost<TExpression>) {}
+  constructor(readonly expression: TExpression, private host: AstHost<TExpression>) {}
+
+  /**
+   * Get the name of the symbol represented by the given expression node, or `null` if it is not a
+   * symbol.
+   */
+  getSymbolName(): string|null {
+    return this.host.getSymbolName(this.expression);
+  }
 
   /**
    * Is this value a number?

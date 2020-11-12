@@ -86,12 +86,14 @@ export interface R3DirectiveMetadata {
   };
 
   /**
-   * A mapping of input field names to the property names.
+   * A mapping of inputs from class property names to binding property names, or to a tuple of
+   * binding property name and class property name if the names are different.
    */
   inputs: {[field: string]: string|[string, string]};
 
   /**
-   * A mapping of output field names to the property names.
+   * A mapping of outputs from class property names to binding property names, or to a tuple of
+   * binding property name and class property name if the names are different.
    */
   outputs: {[field: string]: string};
 

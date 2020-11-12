@@ -25,8 +25,8 @@ describe('FileLinker', () => {
   describe('isPartialDeclaration()', () => {
     it('should return true if the callee is recognized', () => {
       const {fileLinker} = createFileLinker();
-      expect(fileLinker.isPartialDeclaration('$ngDeclareDirective')).toBe(true);
-      expect(fileLinker.isPartialDeclaration('$ngDeclareComponent')).toBe(true);
+      expect(fileLinker.isPartialDeclaration('ɵɵngDeclareDirective')).toBe(true);
+      expect(fileLinker.isPartialDeclaration('ɵɵngDeclareComponent')).toBe(true);
     });
 
     it('should return false if the callee is not recognized', () => {
@@ -58,7 +58,7 @@ describe('FileLinker', () => {
       ]);
       expect(
           () => fileLinker.linkPartialDeclaration(
-              '$ngDeclareDirective', [declarationArg], new MockDeclarationScope()))
+              'ɵɵngDeclareDirective', [declarationArg], new MockDeclarationScope()))
           .toThrowError(`Expected property 'version' to be present.`);
     });
 
@@ -70,7 +70,7 @@ describe('FileLinker', () => {
       ]);
       expect(
           () => fileLinker.linkPartialDeclaration(
-              '$ngDeclareDirective', [declarationArg], new MockDeclarationScope()))
+              'ɵɵngDeclareDirective', [declarationArg], new MockDeclarationScope()))
           .toThrowError(`Expected property 'ngImport' to be present.`);
     });
 
@@ -87,7 +87,7 @@ describe('FileLinker', () => {
       ]);
 
       const compilationResult = fileLinker.linkPartialDeclaration(
-          '$ngDeclareDirective', [declarationArg], new MockDeclarationScope());
+          'ɵɵngDeclareDirective', [declarationArg], new MockDeclarationScope());
 
       expect(compilationResult).toEqual(factory.createLiteral('compilation result'));
       expect(compileSpy).toHaveBeenCalled();
@@ -108,7 +108,7 @@ describe('FileLinker', () => {
       ]);
 
       const replacement = fileLinker.linkPartialDeclaration(
-          '$ngDeclareDirective', [declarationArg], new MockDeclarationScope());
+          'ɵɵngDeclareDirective', [declarationArg], new MockDeclarationScope());
       expect(generate(replacement)).toEqual('"REPLACEMENT"');
 
       const results = fileLinker.getConstantStatements();
@@ -131,7 +131,7 @@ describe('FileLinker', () => {
          ]);
 
          const replacement = fileLinker.linkPartialDeclaration(
-             '$ngDeclareDirective', [declarationArg], new MockDeclarationScope());
+             'ɵɵngDeclareDirective', [declarationArg], new MockDeclarationScope());
          expect(generate(replacement))
              .toEqual('function () { const _c0 = [1]; return "REPLACEMENT"; }()');
 

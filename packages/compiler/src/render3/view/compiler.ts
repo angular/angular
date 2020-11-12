@@ -492,7 +492,7 @@ function stringArrayAsType(arr: ReadonlyArray<string|null>): o.Type {
                           o.NONE_TYPE;
 }
 
-function createDirectiveTypeParams(meta: R3DirectiveMetadata): o.Type[] {
+export function createDirectiveTypeParams(meta: R3DirectiveMetadata): o.Type[] {
   // On the type side, remove newlines from the selector as it will need to fit into a TypeScript
   // string literal, which must be on one line.
   const selectorForType = meta.selector !== null ? meta.selector.replace(/\n/g, '') : null;

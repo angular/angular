@@ -18,7 +18,7 @@ export const NO_STATEMENTS: Readonly<any[]> = [] as const;
  * This class is responsible for linking all the partial declarations found in a single file.
  */
 export class FileLinker<TConstantScope, TStatement, TExpression> {
-  private linkerSelector = new PartialLinkerSelector<TStatement, TExpression>();
+  private linkerSelector = new PartialLinkerSelector<TExpression>();
   private emitScopes = new Map<TConstantScope, EmitScope<TStatement, TExpression>>();
 
   constructor(
@@ -39,7 +39,7 @@ export class FileLinker<TConstantScope, TStatement, TExpression> {
    * definition and any shared constant statements.
    *
    * @param declarationFn the name of the function used to declare the partial declaration - e.g.
-   *     `$ngDeclareDirective`.
+   *     `ɵɵngDeclareDirective`.
    * @param args the arguments passed to the declaration function.
    * @param declarationScope the scope that contains this call to the declaration function.
    */
