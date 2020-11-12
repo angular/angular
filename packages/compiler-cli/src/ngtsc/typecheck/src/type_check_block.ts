@@ -15,7 +15,7 @@ import {ClassDeclaration} from '../../reflection';
 import {TemplateId, TypeCheckableDirectiveMeta, TypeCheckBlockMetadata} from '../api';
 
 import {addExpressionIdentifier, ExpressionIdentifier, markIgnoreDiagnostics} from './comments';
-import {addParseSpanInfo, addTemplateId, wrapForDiagnostics} from './diagnostics';
+import {addParseSpanInfo, addTemplateId, wrapForDiagnostics, wrapForTypeChecker} from './diagnostics';
 import {DomSchemaChecker} from './dom';
 import {Environment} from './environment';
 import {astToTypescript, NULL_AS_ANY} from './expression';
@@ -176,10 +176,18 @@ class TcbVariableOp extends TcbOp {
     const initializer = ts.createPropertyAccess(
         /* expression */ ctx,
         /* name */ this.variable.value || '$implicit');
-    addParseSpanInfo(initializer, this.variable.sourceSpan);
+    addParseSpanInfo(id, this.variable.keySpan);
 
     // Declare the variable, and return its identifier.
-    this.scope.addStatement(tsCreateVariable(id, initializer));
+    let variable: ts.VariableStatement;
+    if (this.variable.valueSpan !== undefined) {
+      addParseSpanInfo(initializer, this.variable.valueSpan);
+      variable = tsCreateVariable(id, wrapForTypeChecker(initializer));
+    } else {
+      variable = tsCreateVariable(id, initializer);
+    }
+    addParseSpanInfo(variable.declarationList.declarations[0], this.variable.sourceSpan);
+    this.scope.addStatement(variable);
     return id;
   }
 }
@@ -443,6 +451,7 @@ class TcbReferenceOp extends TcbOp {
       initializer = ts.createParen(initializer);
     }
     addParseSpanInfo(initializer, this.node.sourceSpan);
+    addParseSpanInfo(id, this.node.keySpan);
 
     this.scope.addStatement(tsCreateVariable(id, initializer));
     return id;
@@ -617,6 +626,9 @@ class TcbDirectiveInputsOp extends TcbOp {
               ts.createPropertyAccess(dirId, ts.createIdentifier(fieldName));
         }
 
+        if (input.attribute.keySpan !== undefined) {
+          addParseSpanInfo(target, input.attribute.keySpan);
+        }
         // Finally the assignment is extended by assigning it into the target expression.
         assignment = ts.createBinary(target, ts.SyntaxKind.EqualsToken, assignment);
       }
@@ -839,6 +851,7 @@ export class TcbDirectiveOutputsOp extends TcbOp {
           dirId = this.scope.resolve(this.node, this.dir);
         }
         const outputField = ts.createElementAccess(dirId, ts.createStringLiteral(field));
+        addParseSpanInfo(outputField, output.keySpan);
         const outputHelper =
             ts.createCall(this.tcb.env.declareOutputHelper(), undefined, [outputField]);
         const subscribeFn = ts.createPropertyAccess(outputHelper, 'subscribe');
