@@ -184,7 +184,7 @@ if (_isNode || typeof Element !== 'undefined') {
     let results: any[] = [];
     if (multi) {
       const elems = element.querySelectorAll(selector);
-      for(let i = 0; i < elems.length; i++) {
+      for (let i = 0; i < elems.length; i++) {
         results.push(elems[i]);
       }
     } else {
