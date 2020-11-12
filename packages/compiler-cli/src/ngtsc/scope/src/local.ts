@@ -15,7 +15,7 @@ import {DirectiveMeta, MetadataReader, MetadataRegistry, NgModuleMeta, PipeMeta}
 import {ClassDeclaration, DeclarationNode} from '../../reflection';
 import {identifierOfNode, nodeNameForError} from '../../util/src/typescript';
 
-import {ExportScope, ScopeData} from './api';
+import {ExportScope, RemoteScope, ScopeData} from './api';
 import {ComponentScopeReader} from './component_scope';
 import {DtsModuleScopeResolver} from './dependency';
 
@@ -96,14 +96,14 @@ export class LocalModuleScopeRegistry implements MetadataRegistry, ComponentScop
   private cache = new Map<ClassDeclaration, LocalModuleScope|undefined|null>();
 
   /**
-   * Tracks whether a given component requires "remote scoping".
+   * Tracks the `RemoteScope` for components requiring "remote scoping".
    *
    * Remote scoping is when the set of directives which apply to a given component is set in the
    * NgModule's file instead of directly on the component def (which is sometimes needed to get
    * around cyclic import issues). This is not used in calculation of `LocalModuleScope`s, but is
    * tracked here for convenience.
    */
-  private remoteScoping = new Set<ClassDeclaration>();
+  private remoteScoping = new Map<ClassDeclaration, RemoteScope>();
 
   /**
    * Tracks errors accumulated in the processing of scopes for each module declaration.
@@ -452,15 +452,17 @@ export class LocalModuleScopeRegistry implements MetadataRegistry, ComponentScop
   /**
    * Check whether a component requires remote scoping.
    */
-  getRequiresRemoteScope(node: ClassDeclaration): boolean {
-    return this.remoteScoping.has(node);
+  getRemoteScope(node: ClassDeclaration): RemoteScope|null {
+    return this.remoteScoping.has(node) ? this.remoteScoping.get(node)! : null;
   }
 
   /**
-   * Set a component as requiring remote scoping.
+   * Set a component as requiring remote scoping, with the given directives and pipes to be
+   * registered remotely.
    */
-  setComponentAsRequiringRemoteScoping(node: ClassDeclaration): void {
-    this.remoteScoping.add(node);
+  setComponentRemoteScope(node: ClassDeclaration, directives: Reference[], pipes: Reference[]):
+      void {
+    this.remoteScoping.set(node, {directives, pipes});
   }
 
   /**

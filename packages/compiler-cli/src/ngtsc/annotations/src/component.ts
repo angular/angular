@@ -510,16 +510,18 @@ export class ComponentDecoratorHandler implements
         return {
           selector: directive.selector,
           expression: this.refEmitter.emit(directive.ref, context),
+          ref: directive.ref,
         };
       });
 
-      const usedPipes: {pipeName: string, expression: Expression}[] = [];
+      const usedPipes: {ref: Reference, pipeName: string, expression: Expression}[] = [];
       for (const pipeName of bound.getUsedPipes()) {
         if (!pipes.has(pipeName)) {
           continue;
         }
         const pipe = pipes.get(pipeName)!;
         usedPipes.push({
+          ref: pipe,
           pipeName,
           expression: this.refEmitter.emit(pipe, context),
         });
@@ -557,7 +559,8 @@ export class ComponentDecoratorHandler implements
         // Declaring the directiveDefs/pipeDefs arrays directly would require imports that would
         // create a cycle. Instead, mark this component as requiring remote scoping, so that the
         // NgModule file will take care of setting the directives for the component.
-        this.scopeRegistry.setComponentAsRequiringRemoteScoping(node);
+        this.scopeRegistry.setComponentRemoteScope(
+            node, usedDirectives.map(dir => dir.ref), usedPipes.map(pipe => pipe.ref));
       }
     }
 
