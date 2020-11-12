@@ -119,6 +119,16 @@ describe('SwUpdatesService', () => {
     expect(location.fullPageNavigationNeeded).toHaveBeenCalledTimes(2);
   }));
 
+  it('should request a page reload when an unrecoverable state has been detected', run(() => {
+    expect(location.reloadPage).toHaveBeenCalledTimes(0);
+
+    swu.$$unrecoverableSubj.next({reason: 'Something bad happened'});
+    expect(location.reloadPage).toHaveBeenCalledTimes(1);
+
+    swu.$$unrecoverableSubj.next({reason: 'Something worse happened'});
+    expect(location.reloadPage).toHaveBeenCalledTimes(2);
+  }));
+
   describe('when `SwUpdate` is not enabled', () => {
     const runDeactivated = (specFn: VoidFunction) => run(specFn, false);
 
@@ -149,6 +159,13 @@ describe('SwUpdatesService', () => {
       swu.$$activatedSubj.next({current: {hash: 'qux'}});
 
       expect(location.fullPageNavigationNeeded).not.toHaveBeenCalled();
+    }));
+
+    it('should never request a page reload', runDeactivated(() => {
+      swu.$$unrecoverableSubj.next({reason: 'Something bad happened'});
+      swu.$$unrecoverableSubj.next({reason: 'Something worse happened'});
+
+      expect(location.reloadPage).not.toHaveBeenCalled();
     }));
   });
 
@@ -201,6 +218,17 @@ describe('SwUpdatesService', () => {
       swu.$$activatedSubj.next({current: {hash: 'qux'}});
       expect(location.fullPageNavigationNeeded).not.toHaveBeenCalled();
     }));
+
+    it('should stop requesting page reloads when unrecoverable states are detected', run(() => {
+      swu.$$unrecoverableSubj.next({reason: 'Something bad happened'});
+      expect(location.reloadPage).toHaveBeenCalledTimes(1);
+
+      service.ngOnDestroy();
+      location.reloadPage.calls.reset();
+
+      swu.$$unrecoverableSubj.next({reason: 'Something worse happened'});
+      expect(location.reloadPage).not.toHaveBeenCalled();
+    }));
   });
 });
 
@@ -212,9 +240,11 @@ class MockApplicationRef {
 class MockSwUpdate {
   $$availableSubj = new Subject<{available: {hash: string}}>();
   $$activatedSubj = new Subject<{current: {hash: string}}>();
+  $$unrecoverableSubj = new Subject<{reason: string}>();
 
   available = this.$$availableSubj.asObservable();
   activated = this.$$activatedSubj.asObservable();
+  unrecoverable = this.$$unrecoverableSubj.asObservable();
 
   activateUpdate = jasmine.createSpy('MockSwUpdate.activateUpdate')
                           .and.callFake(() => Promise.resolve());
