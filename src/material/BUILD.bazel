@@ -28,6 +28,10 @@ scss_bundle(
     args = [
         "--entryFile=$(execpath :theming-bundle.scss)",
         "--outFile=$(execpath :_theming.scss)",
+
+        # The config file has to be passed in explicitly, otherwise the
+        # bundler will still run, but produce massive bundle files.
+        "--config=scss-bundle.config.json",
     ],
     data = CDK_SCSS_LIBS + MATERIAL_SCSS_LIBS + [
         "theming-bundle.scss",
