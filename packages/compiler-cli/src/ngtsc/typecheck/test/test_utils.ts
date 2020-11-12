@@ -418,7 +418,7 @@ export function setup(targets: TypeCheckingTarget[], overrides: {
   }
 
   const fakeScopeReader: ComponentScopeReader = {
-    getRequiresRemoteScope() {
+    getRemoteScope(): null {
       return null;
     },
     // If there is a module with [className] + 'Module' in the same source file, that will be
