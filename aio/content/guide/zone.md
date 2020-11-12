@@ -108,7 +108,7 @@ To understand how change detection works, first consider when the application ne
 
 <code-example path="user-input/src/app/click-me.component.ts" region="click-me-component" header="src/app/click-me.component.ts"></code-example>
 
-1. HTTP Data Request. You can also get data from a server through an HTTP request. For example:
+3. HTTP Data Request. You can also get data from a server through an HTTP request. For example:
 
 ```typescript
 @Component({
