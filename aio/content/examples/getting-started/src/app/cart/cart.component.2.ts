@@ -12,7 +12,7 @@ import { CartService } from '../cart.service';
 // #docregion inject-cart, items, submit
 export class CartComponent {
 // #enddocregion inject-cart
-  items;
+  items = this.cartService.getItems();
 // #docregion inject-cart
 
   constructor(
