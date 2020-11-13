@@ -13,7 +13,7 @@ import {ShadowCss} from './shadow_css';
 import {UrlResolver} from './url_resolver';
 import {OutputContext} from './util';
 
-const COMPONENT_VARIABLE = '%COMP%';
+const COMPONENT_VARIABLE = '%C%';
 export const HOST_ATTR = `_nghost-${COMPONENT_VARIABLE}`;
 export const CONTENT_ATTR = `_ngcontent-${COMPONENT_VARIABLE}`;
 

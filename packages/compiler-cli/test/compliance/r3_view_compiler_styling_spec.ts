@@ -40,7 +40,7 @@ describe('compiler compliance: styling', () => {
          };
 
          const template =
-             'styles: ["div.foo[_ngcontent-%COMP%] { color: red; }", "[_nghost-%COMP%]   p[_ngcontent-%COMP%]:nth-child(even) { --webkit-transition: 1s linear all; }"]';
+             'styles: ["div.foo[_ngcontent-%C%] { color: red; }", "[_nghost-%C%]   p[_ngcontent-%C%]:nth-child(even) { --webkit-transition: 1s linear all; }"]';
          const result = compile(files, angularFiles);
          expectEmit(result.source, template, 'Incorrect template');
        });
