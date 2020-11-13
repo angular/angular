@@ -19,9 +19,13 @@ export function isPromise<T = any>(obj: any): obj is Promise<T> {
 
 /**
  * Determine if the argument is an Observable
+ *
+ * Strictly this tests that the `obj` is `Subscribable`, since `Observable`
+ * types need additional methods, such as `lift()`. But it is adequate for our
+ * needs since within the Angular framework code we only ever need to use the
+ * `subscribe()` method, and RxJS has mechanisms to wrap `Subscribable` objects
+ * into `Observable` as needed.
  */
 export function isObservable(obj: any|Observable<any>): obj is Observable<any> {
-  // TODO: use isObservable once we update pass rxjs 6.1
-  // https://github.com/ReactiveX/rxjs/blob/master/CHANGELOG.md#610-2018-05-03
   return !!obj && typeof obj.subscribe === 'function';
 }
