@@ -611,7 +611,12 @@ export class NgCompiler {
         // remote scoping feature which is activated in the event of potential import cycles. Thus,
         // the module depends not only on the transitive dependencies of the component, but on its
         // resources as well.
-        depGraph.addTransitiveResources(ngModuleFile, file);
+        // Note, however, that the remote scoping feature is only needed for purposes of emit. This
+        // means we can safely elide such transient resource dependencies in cases where the
+        // component has been marked no-emit.
+        if (!this.adapter.neverEmit) {
+          depGraph.addTransitiveResources(ngModuleFile, file);
+        }
 
         // A change to any directive/pipe in the compilation scope should cause the component to be
         // invalidated.

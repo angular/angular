@@ -14,6 +14,7 @@ import * as ts from 'typescript/lib/tsserverlibrary';
 import {isTypeScriptFile} from './utils';
 
 export class LanguageServiceAdapter implements NgCompilerAdapter {
+  readonly neverEmit = true;
   readonly entryPoint = null;
   readonly constructionDiagnostics: ts.Diagnostic[] = [];
   readonly ignoreForEmit: Set<ts.SourceFile> = new Set();

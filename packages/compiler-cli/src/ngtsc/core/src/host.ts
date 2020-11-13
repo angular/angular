@@ -93,7 +93,8 @@ export class NgCompilerHost extends DelegatingCompilerHost implements
       delegate: ExtendedTsCompilerHost, inputFiles: ReadonlyArray<string>,
       rootDirs: ReadonlyArray<AbsoluteFsPath>, private shimAdapter: ShimAdapter,
       private shimTagger: ShimReferenceTagger, entryPoint: AbsoluteFsPath|null,
-      factoryTracker: FactoryTracker|null, diagnostics: ts.Diagnostic[]) {
+      factoryTracker: FactoryTracker|null, diagnostics: ts.Diagnostic[],
+      readonly neverEmit = false) {
     super(delegate);
 
     this.factoryTracker = factoryTracker;
@@ -134,7 +135,7 @@ export class NgCompilerHost extends DelegatingCompilerHost implements
    */
   static wrap(
       delegate: ts.CompilerHost, inputFiles: ReadonlyArray<string>, options: NgCompilerOptions,
-      oldProgram: ts.Program|null): NgCompilerHost {
+      oldProgram: ts.Program|null, neverEmit = false): NgCompilerHost {
     // TODO(alxhub): remove the fallback to allowEmptyCodegenFiles after verifying that the rest of
     // our build tooling is no longer relying on it.
     const allowEmptyCodegenFiles = options.allowEmptyCodegenFiles || false;
@@ -214,7 +215,7 @@ export class NgCompilerHost extends DelegatingCompilerHost implements
         new ShimReferenceTagger(perFileShimGenerators.map(gen => gen.extensionPrefix));
     return new NgCompilerHost(
         delegate, inputFiles, rootDirs, shimAdapter, shimTagger, entryPoint, factoryTracker,
-        diagnostics);
+        diagnostics, neverEmit);
   }
 
   /**

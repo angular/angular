@@ -260,6 +260,48 @@ runInEachFileSystem(() => {
         ]));
       });
     });
+
+    describe('ignore for emit', () => {
+      fit('modules should not depend on transient resource deps in neverEmit mode', () => {
+        const COMPONENT = _('/cmp.ts');
+        const MODULE = _('/mod.ts');
+        fs.writeFile(COMPONENT, `
+          import {Component} from '@angular/core';
+          @Component({
+            selector: 'test-cmp',
+            templateUrl: './template.html',
+            styleUrls: ['./style.css'],
+          })
+          export class Cmp {}
+        `);
+        fs.writeFile(MODULE, `
+          import {NgModule} from '@angular/core';
+          import {Cmp} from './cmp';
+          @NgModule({
+            declarations: [Cmp],
+          })
+          export class Mod {}
+        `);
+        fs.writeFile(_('/template.html'), `<h1>Resource</h1>`);
+        fs.writeFile(_('/style.css'), `h1 { }`);
+
+        const options: NgCompilerOptions = {
+          strictTemplates: true,
+        };
+        const baseHost = new NgtscCompilerHost(getFileSystem(), options);
+        const host = NgCompilerHost.wrap(
+            baseHost, [COMPONENT, MODULE], options, /* oldProgram */ null, /* neverEmit */ true);
+        const program = ts.createProgram({host, options, rootNames: host.inputFiles});
+
+        const compiler = new NgCompiler(
+            host, options, program, new ReusedProgramStrategy(program, host, options, []),
+            new NoopIncrementalBuildStrategy(), /** enableTemplateTypeChecker */ false);
+
+        const deps = compiler.getResourceDependencies(getSourceFileOrError(program, MODULE));
+        expect(deps.length).toBe(0);
+        expect(deps).toEqual(jasmine.arrayContaining([]));
+      });
+    });
   });
 });
 

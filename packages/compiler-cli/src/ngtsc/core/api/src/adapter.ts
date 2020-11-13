@@ -68,6 +68,16 @@ export interface NgCompilerAdapter extends
   readonly ignoreForEmit: Set<ts.SourceFile>;
 
   /**
+   * Whether the compiler is being run in a context where the consumer will never emit compilation
+   * results. Useful in contexts where only frontend analysis is needed, like an indexer or language
+   * service.
+   *
+   * This is stricter than `ignoreForEmit` and used to elide work that is otherwise needed for emit.
+   * Changing `neverEmit` between runs of the compiler is not sound.
+   */
+  readonly neverEmit: boolean;
+
+  /**
    * A tracker for usage of symbols in `.ngfactory` shims.
    *
    * This can be left `null` if such shims are not a part of the `ts.Program`.
