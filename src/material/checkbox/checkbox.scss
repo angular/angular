@@ -291,6 +291,7 @@ $_mat-checkbox-mark-stroke-size: 2 / 15 * $mat-checkbox-size !default;
 }
 
 .mat-checkbox-persistent-ripple {
+  display: block;
   width: 100%;
   height: 100%;
   transform: none;

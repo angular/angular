@@ -1,5 +1,5 @@
 <label [attr.for]="inputId" class="mat-checkbox-layout" #label>
-  <div class="mat-checkbox-inner-container"
+  <span class="mat-checkbox-inner-container"
        [class.mat-checkbox-inner-container-no-side-margin]="!checkboxLabel.textContent || !checkboxLabel.textContent.trim()">
     <input #input
            class="mat-checkbox-input cdk-visually-hidden" type="checkbox"
@@ -16,16 +16,16 @@
            [attr.aria-describedby]="ariaDescribedby"
            (change)="_onInteractionEvent($event)"
            (click)="_onInputClick($event)">
-    <div matRipple class="mat-checkbox-ripple mat-focus-indicator"
+    <span matRipple class="mat-checkbox-ripple mat-focus-indicator"
          [matRippleTrigger]="label"
          [matRippleDisabled]="_isRippleDisabled()"
          [matRippleRadius]="20"
          [matRippleCentered]="true"
          [matRippleAnimation]="{enterDuration: 150}">
-      <div class="mat-ripple-element mat-checkbox-persistent-ripple"></div>
-    </div>
-    <div class="mat-checkbox-frame"></div>
-    <div class="mat-checkbox-background">
+      <span class="mat-ripple-element mat-checkbox-persistent-ripple"></span>
+    </span>
+    <span class="mat-checkbox-frame"></span>
+    <span class="mat-checkbox-background">
       <svg version="1.1"
            focusable="false"
            class="mat-checkbox-checkmark"
@@ -37,9 +37,9 @@
               d="M4.1,12.7 9,17.6 20.3,6.3"/>
       </svg>
       <!-- Element for rendering the indeterminate state checkbox. -->
-      <div class="mat-checkbox-mixedmark"></div>
-    </div>
-  </div>
+      <span class="mat-checkbox-mixedmark"></span>
+    </span>
+  </span>
   <span class="mat-checkbox-label" #checkboxLabel (cdkObserveContent)="_onLabelTextChange()">
     <!-- Add an invisible span so JAWS can read the label -->
     <span style="display:none">&nbsp;</span>
