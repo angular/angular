@@ -106,6 +106,8 @@ For customers to see their cart, you can create the cart view in two steps:
 
     <code-example header="src/app/cart/cart.component.ts" path="getting-started/src/app/cart/cart.component.1.ts"></code-example>
 
+    StackBlitz also generates an `ngOnInit()` by default in components.  You can ignore the `CartComponent` `ngOnInit()` for this tutorial.
+
 1. Open `app.module.ts` and add a route for the component `CartComponent`, with a `path` of `cart`.
 
     <code-example header="src/app/app.module.ts" path="getting-started/src/app/app.module.ts" region="cart-route">
@@ -144,13 +146,8 @@ This section shows you how to use the cart service to display the products in th
     <code-example path="getting-started/src/app/cart/cart.component.2.ts" header="src/app/cart/cart.component.ts" region="items">
     </code-example>
 
-1. Set the items using the `CartService` `getItems()` method.
+    This code sets the items using the `CartService` `getItems()` method.
     You defined this method [when you created `cart.service.ts`](#generate-cart-service).
-    By using the `getItems()` method in Angular's `ngOnInit()`, Angular uses `getItems()` upon initialization of `CartComponent`.
-    The resulting `CartComponent` class is as follows.
-
-    <code-example path="getting-started/src/app/cart/cart.component.3.ts" header="src/app/cart/cart.component.ts" region="props-services">
-    </code-example>
 
 1. Update the cart template with a header, and use a `<div>` with an `*ngFor` to display each of the cart items with its name and price.
     The resulting `CartComponent` template is as follows.
@@ -251,17 +248,13 @@ This section guides you through modifying the `ShippingComponent` to retrieve sh
 
     <code-example header="src/app/shipping/shipping.component.ts" path="getting-started/src/app/shipping/shipping.component.ts" region="imports"></code-example>
 
-1. Define a `shippingCosts` property.
-
-    <code-example path="getting-started/src/app/shipping/shipping.component.ts" header="src/app/shipping/shipping.component.ts" region="props"></code-example>
-
 1. Inject the cart service in the `ShippingComponent` `constructor()`.
 
     <code-example path="getting-started/src/app/shipping/shipping.component.ts" header="src/app/shipping/shipping.component.ts" region="inject-cart-service"></code-example>
 
-1. Set the `shippingCosts` property using the `getShippingPrices()` method from the `CartService`.
+1. Define a `shippingCosts` property that sets the `shippingCosts` property using the `getShippingPrices()` method from the `CartService`.
 
-    <code-example path="getting-started/src/app/shipping/shipping.component.ts" header="src/app/shipping/shipping.component.ts" region="ctor"></code-example>
+    <code-example path="getting-started/src/app/shipping/shipping.component.ts" header="src/app/shipping/shipping.component.ts" region="props"></code-example>
 
 1. Update the `ShippingComponent` template to display the shipping types and prices using the `async` pipe.
 

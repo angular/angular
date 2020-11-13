@@ -17,7 +17,7 @@ export class CartComponent implements OnInit {
     private cartService: CartService
   ) { }
 
-  ngOnInit() {
+  ngOnInit(): void  {
     this.items = this.cartService.getItems();
   }
 }
