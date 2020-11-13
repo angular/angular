@@ -1823,9 +1823,9 @@
   integrity sha512-//oorEZjL6sbPcKUaCdIGlIUeH26mgzimjBB77G6XRgnDl/L5wOnpyBGRe/Mmf5CVW3PwEBE1NjiMZ/ssFh4wA==
 
 "@types/parse5@^5.0.0":
-  version "5.0.0"
-  resolved "https://registry.yarnpkg.com/@types/parse5/-/parse5-5.0.0.tgz#9ae2106efc443d7c1e26570aa8247828c9c80f11"
-  integrity sha512-J5D3z703XTDIGQFYXsnU9uRCW9e9mMEFO0Kpe6kykyiboqziru/RlZ0hM2P+PKTG4NHG1SjLrqae/NrV2iJApQ==
+  version "5.0.3"
+  resolved "https://registry.yarnpkg.com/@types/parse5/-/parse5-5.0.3.tgz#e7b5aebbac150f8b5fdd4a46e7f0bd8e65e19109"
+  integrity sha512-kUNnecmtkunAoQ3CnjmMkzNU/gtxG8guhi+Fk2U/kOpIKjIMKnXGp4IJCgQJrXSgMsWYimYG4TGjz/UzbGEBTw==
 
 "@types/q@*":
   version "1.5.1"
