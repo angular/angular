@@ -547,6 +547,11 @@
             "desc": "Practical journey with Angular framework, ES6, TypeScript, webpack and Angular CLI.",
             "title": "Developing with Angular",
             "url": "https://leanpub.com/developing-with-angular"
+          },
+          "reactive-state-for-angular-with-ngrx": {
+            "desc": "Learn how to build a Reactive Application with Ngrx and Angular",
+            "title": "Reactive State for Angular with NgRx",
+            "url": "https://bpbonline.com/products/reactive-state-for-angular-with-ngrx"
           }
         }
       },
