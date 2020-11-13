@@ -262,7 +262,7 @@ runInEachFileSystem(() => {
     });
 
     describe('ignore for emit', () => {
-      fit('modules should not depend on transient resource deps in neverEmit mode', () => {
+      it('modules should not depend on transient resource deps in neverEmit mode', () => {
         const COMPONENT = _('/cmp.ts');
         const MODULE = _('/mod.ts');
         fs.writeFile(COMPONENT, `
