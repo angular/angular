@@ -177,14 +177,16 @@ class TcbVariableOp extends TcbOp {
         /* expression */ ctx,
         /* name */ this.variable.value || '$implicit');
     addParseSpanInfo(id, this.variable.keySpan);
-    if (this.variable.valueSpan) {
-      addParseSpanInfo(initializer, this.variable.valueSpan);
-    }
-    const wrappedInitializer = wrapForTypeChecker(initializer);
-    addParseSpanInfo(wrappedInitializer, this.variable.sourceSpan);
 
     // Declare the variable, and return its identifier.
-    const variable = tsCreateVariable(id, wrappedInitializer);
+    let variable: ts.VariableStatement;
+    if (this.variable.valueSpan !== undefined) {
+      addParseSpanInfo(initializer, this.variable.valueSpan);
+      variable = tsCreateVariable(id, wrapForTypeChecker(initializer));
+    } else {
+      variable = tsCreateVariable(id, initializer);
+    }
+    addParseSpanInfo(variable.declarationList.declarations[0], this.variable.sourceSpan);
     this.scope.addStatement(variable);
     return id;
   }
