@@ -13,7 +13,6 @@ write_file(
 # List of TypeScript packages that we want to run the compatibility test against.
 # The list contains NPM module names that resolve to the desired TypeScript version.
 typescript_version_packages = [
-    "typescript-3.9",
     "typescript",
 ]
 

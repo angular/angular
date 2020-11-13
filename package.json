@@ -172,7 +172,6 @@
     "tslint": "^6.1.3",
     "tsutils": "^3.17.1",
     "typescript": "4.0.5",
-    "typescript-3.9": "npm:typescript@~3.9.7",
     "vrsource-tslint-rules": "5.1.1",
     "yaml": "^1.10.0"
   },

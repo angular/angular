@@ -11,10 +11,10 @@
   "main": "lib/index.js",
   "dependencies": {
     "firebase-admin": "^9.0.0",
-    "firebase-functions": "^3.8.0"
+    "firebase-functions": "^3.11.0"
   },
   "devDependencies": {
-    "typescript": "^3.9.7",
+    "typescript": "^4.0.2",
     "firebase-tools": "^8.6.0"
   },
   "private": true
