@@ -10,6 +10,21 @@
 .mat-mdc-button, .mat-mdc-unelevated-button, .mat-mdc-raised-button, .mat-mdc-outlined-button {
   @include _mat-button-interactive();
   @include _mat-button-disabled();
+
+  // MDC expects button icons to contain this HTML content:
+  // ```html
+  //   <span class="mdc-button__icon material-icons">favorite</span>
+  // ```
+  // However, Angular Material expects a `mat-icon` instead. The following
+  // will extend the `mdc-button__icon` styling to the mat icon. Note that
+  // the extended styles inherently only match icons that nest themselves in
+  // a parent `mdc-button`.
+  //
+  // TODO(mmalerba): Have MDC create a mixin for this so we don't have to rely on extending their
+  //  class.
+  .mat-icon {
+    @extend .mdc-button__icon;
+  }
 }
 
 // Add an outline to make buttons more visible in high contrast mode. Stroked buttons and FABs
