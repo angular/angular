@@ -417,6 +417,47 @@ runInEachFileSystem(() => {
          expect(env.getContents('/built/bar_component.js')).toMatch(/directives:\s*\[.+\.BarDir\]/);
        });
 
+    it('should not rebuild components transiently dependent on a changed template', () => {
+      env.write('foo_component.ts', `
+        import {Component} from '@angular/core';
+
+        @Component({selector: 'foo', templateUrl: './foo.html'})
+        export class FooCmp {}
+      `);
+      env.write('foo.html', '<div>123</div>');
+      env.write('bar_component.ts', `
+        import {Component} from '@angular/core';
+
+        @Component({selector: 'bar', template: '<foo></foo>'})
+        export class BarCmp {}
+      `);
+      env.write('foo_module.ts', `
+        import {NgModule} from '@angular/core';
+        import {FooCmp} from './foo_component';
+        import {BarCmp} from './bar_component';
+
+        @NgModule({
+          declarations: [FooCmp, BarCmp],
+        })
+        export class FooModule {}
+      `);
+      env.driveMain();
+      env.flushWrittenFileTracking();
+
+      // Note that since the template of BarCmp depends on FooCmp, BarCmp is
+      // transiently dependent on the value of an instance of FooCmp, but the
+      // emit of BarCmp has no need to change.
+      env.write('foo.html', '<div></div>');
+      env.driveMain();
+
+      const written = env.getFilesWrittenSinceLastFlush();
+      expect(written).toContain('/foo_component.js');
+      // /foo_module.js should also be re-emitted, because remote scoping of FooCmp might
+      // have been affected.
+      expect(written).toContain('/foo_module.js');
+      expect(written).not.toContain('/bar_component.js');
+    });
+
     it('should rebuild everything if a typings file changes', () => {
       setupFooBarProgram(env);
 
