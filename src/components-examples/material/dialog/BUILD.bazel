@@ -14,6 +14,7 @@ ng_module(
         "//src/material/button",
         "//src/material/dialog",
         "//src/material/input",
+        "//src/material/menu",
         "@npm//@angular/forms",
     ],
 )

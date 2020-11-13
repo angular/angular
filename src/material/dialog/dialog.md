@@ -173,6 +173,17 @@ be configured by setting the `cdkFocusInitial` attribute on another focusable el
 Tabbing through the elements of the dialog will keep focus inside of the dialog element,
 wrapping back to the first tabbable element when reaching the end of the tab sequence.
 
+#### Focus Restoration
+Upon closing, the dialog returns focus to the element that had focus when the dialog opened.
+In some cases, however, this previously focused element no longer exists in the DOM, such as
+menu items. To manually restore focus to an appropriate element in such cases, you can disable 
+`restoreFocus` in `MatDialogConfig` and pass it into the `open` method.
+Then you can return focus manually by subscribing to the `afterClosed` observable on `MatDialogRef`.
+
+<!-- example({"example":"dialog-from-menu",
+              "file":"dialog-from-menu-example.ts", 
+              "region":"focus-restoration"}) -->
+
 #### Keyboard interaction
 By default pressing the escape key will close the dialog. While this behavior can
 be turned off via the `disableClose` option, users should generally avoid doing so
