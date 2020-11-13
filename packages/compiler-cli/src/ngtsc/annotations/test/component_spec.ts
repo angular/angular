@@ -1,3 +1,4 @@
+import {NoopReferencesRegistry} from '..';
 /**
  * @license
  * Copyright Google LLC All Rights Reserved.
@@ -9,14 +10,15 @@ import {CycleAnalyzer, ImportGraph} from '../../cycles';
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
 import {absoluteFrom} from '../../file_system';
 import {runInEachFileSystem} from '../../file_system/testing';
-import {ModuleResolver, NOOP_DEFAULT_IMPORT_RECORDER, ReferenceEmitter} from '../../imports';
-import {CompoundMetadataReader, DtsMetadataReader, InjectableClassRegistry, LocalMetadataRegistry, ResourceRegistry} from '../../metadata';
+import {ModuleResolver, NOOP_DEFAULT_IMPORT_RECORDER, ReferenceEmitter, RelativePathStrategy} from '../../imports';
+import {CompoundMetadataReader, CompoundMetadataRegistry, DtsMetadataReader, InjectableClassRegistry, LocalMetadataRegistry, ResourceRegistry} from '../../metadata';
 import {PartialEvaluator} from '../../partial_evaluator';
 import {isNamedClassDeclaration, TypeScriptReflectionHost} from '../../reflection';
 import {LocalModuleScopeRegistry, MetadataDtsModuleScopeResolver} from '../../scope';
 import {getDeclaration, makeProgram} from '../../testing';
 import {ResourceLoader} from '../src/api';
 import {ComponentDecoratorHandler} from '../src/component';
+import {NgModuleDecoratorHandler} from '../src/ng_module';
 
 export class StubResourceLoader implements ResourceLoader {
   resolve(v: string): string {
@@ -39,13 +41,14 @@ function setup(program: ts.Program, options: ts.CompilerOptions, host: ts.Compil
       new ModuleResolver(program, options, host, /* moduleResolutionCache */ null);
   const importGraph = new ImportGraph(moduleResolver);
   const cycleAnalyzer = new CycleAnalyzer(importGraph);
-  const metaRegistry = new LocalMetadataRegistry();
+  const localRegistry = new LocalMetadataRegistry();
   const dtsReader = new DtsMetadataReader(checker, reflectionHost);
   const scopeRegistry = new LocalModuleScopeRegistry(
-      metaRegistry, new MetadataDtsModuleScopeResolver(dtsReader, null), new ReferenceEmitter([]),
+      localRegistry, new MetadataDtsModuleScopeResolver(dtsReader, null), new ReferenceEmitter([]),
       null);
-  const metaReader = new CompoundMetadataReader([metaRegistry, dtsReader]);
-  const refEmitter = new ReferenceEmitter([]);
+  const metaRegistry = new CompoundMetadataRegistry([localRegistry, scopeRegistry]);
+  const metaReader = new CompoundMetadataReader([localRegistry, dtsReader]);
+  const refEmitter = new ReferenceEmitter([new RelativePathStrategy(reflectionHost)]);
   const injectableRegistry = new InjectableClassRegistry(reflectionHost);
   const resourceRegistry = new ResourceRegistry();
 
@@ -58,7 +61,19 @@ function setup(program: ts.Program, options: ts.CompilerOptions, host: ts.Compil
       /* i18nNormalizeLineEndingsInICUs */ undefined, moduleResolver, cycleAnalyzer, refEmitter,
       NOOP_DEFAULT_IMPORT_RECORDER, /* depTracker */ null, injectableRegistry,
       /* annotateForClosureCompiler */ false);
-  return {reflectionHost, handler};
+
+  return {
+    handler,
+
+    reflectionHost,
+    cycleAnalyzer,
+    scopeRegistry,
+    metaReader,
+    evaluator,
+    metaRegistry,
+    refEmitter,
+    injectableRegistry
+  };
 }
 
 runInEachFileSystem(() => {
@@ -198,6 +213,135 @@ runInEachFileSystem(() => {
       }
       const {analysis} = handler.analyze(TestCmp, detected.metadata);
       expect(analysis?.resources.styles.size).toBe(3);
+    });
+
+    describe('remote scoping', () => {
+      it('should mark components that need remote scoping as such', () => {
+        const {
+          testModule,
+          simpleCmp,
+          triggerCmp,
+          ngModuleHandler,
+          componentHandler,
+          scopeRegistry
+        } = createTriggerProject();
+
+        const testModuleAnalysis =
+            ngModuleHandler.analyze(testModule.node, testModule.detected.metadata).analysis!;
+        ngModuleHandler.register(testModule.node, testModuleAnalysis);
+
+        const simpleCmpAnalysis =
+            componentHandler.analyze(simpleCmp.node, simpleCmp.detected.metadata).analysis!;
+        componentHandler.register(simpleCmp.node, simpleCmpAnalysis);
+
+        const triggerCmpAnalysis =
+            componentHandler.analyze(triggerCmp.node, triggerCmp.detected.metadata).analysis!;
+        componentHandler.register(triggerCmp.node, triggerCmpAnalysis);
+
+        ngModuleHandler.resolve(testModule.node, testModuleAnalysis);
+        componentHandler.resolve(simpleCmp.node, simpleCmpAnalysis);
+        componentHandler.resolve(triggerCmp.node, triggerCmpAnalysis);
+
+        // SimpleCmp does not introduce a cyclic import, but TriggerCmp does.
+        expect(scopeRegistry.getRequiresRemoteScope(simpleCmp.node)).toBeFalse();
+        expect(scopeRegistry.getRequiresRemoteScope(triggerCmp.node)).toBeTrue();
+      });
+
+      /**
+       * Creates a project where the "Trigger" component requires remote
+       * scoping.
+       */
+      function createTriggerProject() {
+        const {program, options, host} = makeProgram([
+          {
+            name: _('/node_modules/@angular/core/index.d.ts'),
+            contents: `
+              export const Component: any;
+              export const NgModule: any;
+            `,
+          },
+          {
+            name: _('/index.ts'),
+            contents: `
+              import {Component, NgModule} from '@angular/core';
+              import {Trigger} from './trigger';
+
+              @Component({
+                template: '<div></div>',
+                selector: 'app-cmp',
+              })
+              export class SimpleCmp {}
+
+              @NgModule({
+                declarations: [SimpleCmp, Trigger],
+              })
+              export class TestModule {}
+            `
+          },
+          {
+            name: _('/trigger.ts'),
+            // Note that Trigger would introduce a cyclic import - index.ts imports trigger.ts for
+            // the NgModule, but also Trigger uses SimpleCmp in its template which would be an
+            // import without remote scoping.
+            contents: `
+              import {Component} from '@angular/core';
+
+              @Component({
+                template: '<app-cmp></app-cmp>',
+              })
+              export class Trigger {}
+            `
+          },
+        ]);
+
+        const {
+          reflectionHost,
+          handler: componentHandler,
+          scopeRegistry,
+          evaluator,
+          metaReader,
+          metaRegistry,
+          refEmitter,
+          injectableRegistry
+        } = setup(program, options, host);
+        const ngModuleHandler = new NgModuleDecoratorHandler(
+            reflectionHost, evaluator, metaReader, metaRegistry, scopeRegistry,
+            new NoopReferencesRegistry(),
+            /* isCore */ false, /* routeAnalyzer */ null, refEmitter, /* factoryTracker */ null,
+            NOOP_DEFAULT_IMPORT_RECORDER,
+            /* annotateForClosureCompiler */ false, injectableRegistry);
+
+        const TestModule =
+            getDeclaration(program, _('/index.ts'), 'TestModule', isNamedClassDeclaration);
+        const SimpleCmp =
+            getDeclaration(program, _('/index.ts'), 'SimpleCmp', isNamedClassDeclaration);
+        const TriggerCmp =
+            getDeclaration(program, _('/trigger.ts'), 'Trigger', isNamedClassDeclaration);
+        const detectedTestModule = ngModuleHandler.detect(
+            TestModule, reflectionHost.getDecoratorsOfDeclaration(TestModule));
+        const detectedSimpleCmp = componentHandler.detect(
+            SimpleCmp, reflectionHost.getDecoratorsOfDeclaration(SimpleCmp));
+        const detectedTriggerCmp = componentHandler.detect(
+            TriggerCmp, reflectionHost.getDecoratorsOfDeclaration(TriggerCmp));
+        if (!detectedTestModule) {
+          throw new Error('Failed to recognize TestModule');
+        }
+        if (!detectedSimpleCmp) {
+          throw new Error('Failed to recognize SimpleCmp');
+        }
+        if (!detectedTriggerCmp) {
+          throw new Error('Failed to recognize Trigger');
+        }
+
+        return {
+          testModule: {node: TestModule, detected: detectedTestModule},
+          simpleCmp: {node: SimpleCmp, detected: detectedSimpleCmp},
+          triggerCmp: {node: TriggerCmp, detected: detectedTriggerCmp},
+          ngModuleHandler,
+          componentHandler,
+          scopeRegistry,
+        };
+      }
     });
   });
 
