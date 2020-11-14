@@ -8,6 +8,7 @@
 const path = require('path');
 const Package = require('dgeni').Package;
 
+const gitPackage = require('dgeni-packages/git');
 const jsdocPackage = require('dgeni-packages/jsdoc');
 const nunjucksPackage = require('dgeni-packages/nunjucks');
 const linksPackage = require('../links-package');
@@ -19,7 +20,7 @@ const postProcessPackage = require('dgeni-packages/post-process-html');
 const { PROJECT_ROOT, CONTENTS_PATH, OUTPUT_PATH, DOCS_OUTPUT_PATH, TEMPLATES_PATH, AIO_PATH, requireFolder } = require('../config');
 
 module.exports = new Package('angular-base', [
-  jsdocPackage, nunjucksPackage, linksPackage, examplesPackage, targetPackage, remarkPackage, postProcessPackage
+  gitPackage, jsdocPackage, nunjucksPackage, linksPackage, examplesPackage, targetPackage, remarkPackage, postProcessPackage
 ])
 
   // Register the processors
@@ -37,6 +38,7 @@ module.exports = new Package('angular-base', [
   .factory(require('./readers/json'))
   .factory(require('./services/copyFolder'))
   .factory(require('./services/getImageDimensions'))
+  .factory(require('./services/getPreviousMajorVersions'))
   .factory(require('./services/auto-link-filters/filterPipes'))
   .factory(require('./services/auto-link-filters/filterAmbiguousDirectiveAliases'))
   .factory(require('./services/auto-link-filters/ignoreHttpInUrls'))
