@@ -79,6 +79,23 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
 
         expect(form.value).toEqual({'login': 'updatedValue'});
       });
+
+      it('should update DOM correctly for shared FormGroups', () => {
+        const fixture = initTest(MultipleFormGroups);
+        fixture.detectChanges();
+
+        const sharedGroup = fixture.componentInstance.group;
+        const newControl = new FormControl('UPDATED VALUE');
+
+        // Replace existing control with a new one.
+        sharedGroup.setControl('login', newControl);
+        fixture.detectChanges();
+
+        // Verify that both inputs were updated with a new value.
+        const getValueFor = (id: string) => fixture.nativeElement.querySelector(id).value;
+        expect(getValueFor('#first')).toBe('UPDATED VALUE');
+        expect(getValueFor('#second')).toBe('UPDATED VALUE');
+      });
     });
 
     describe('re-bound form groups', () => {
@@ -2909,6 +2926,22 @@ class FormControlCheckboxRequiredValidator {
 class UniqLoginWrapper {
   // TODO(issue/24571): remove '!'.
   form!: FormGroup;
+}
+
+@Component({
+  selector: 'multiple-form-groups',
+  template: `
+    <div [formGroup]="group">
+      <input type="text" formControlName="login" id="first">
+    </div>
+    <div [formGroup]="group">
+      <input type="text" formControlName="login" id="second">
+    </div>
+  `
+})
+class MultipleFormGroups {
+  visible = true;
+  group = new FormGroup({login: new FormControl('INITIAL VALUE')});
 }
 
 @Component({

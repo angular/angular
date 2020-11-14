@@ -167,8 +167,18 @@ export abstract class AbstractControl {
   // TODO(issue/24571): remove '!'.
   _pendingTouched!: boolean;
 
-  /** @internal */
-  _onCollectionChange = () => {};
+  /**
+   * Set of callback functions to be called when control collection changes
+   * (when controls added or removed).
+   */
+  private _onCollectionChangeCallbacks: (() => void)[] = [];
+
+  /**
+   * Internal function that is invoked when control collection changes. Triggers all callbacks
+   * registered with a given collection parent.
+   * @internal
+   */
+  _onCollectionChange = () => this._onCollectionChangeCallbacks.forEach(cb => cb());
 
   /** @internal */
   // TODO(issue/24571): remove '!'.
@@ -999,9 +1009,35 @@ export abstract class AbstractControl {
         Object.keys(formState).length === 2 && 'value' in formState && 'disabled' in formState;
   }
 
-  /** @internal */
+  /**
+   * Registers a callback to be executed when control collection changes (controls added or
+   * removed). This function is useful to attach additional callbacks when FormGroup or FormArray
+   * instance is being linked to a directive instance. Since one control can be bound to multiple
+   * directive instances, we need a way to clear callbacks of a particular directive instance only
+   * while preserving the rest.
+   * @internal
+   */
   _registerOnCollectionChange(fn: () => void): void {
-    this._onCollectionChange = fn;
+    this._onCollectionChangeCallbacks.push(fn);
+  }
+
+  /**
+   * Removes a callback from the list of registered `onCollectionChange` functions.
+   * See more details in `_registerOnCollectionChange` function description.
+   * @internal
+   */
+  _unregisterOnCollectionChange(fn: () => void): void {
+    removeListItem(this._onCollectionChangeCallbacks, fn);
+  }
+
+  /**
+   * Clears all `onCollectionChange` callbacks.
+   * This function is useful when a control is removed directly from data model via FormGroup or
+   * FormArray APIs.
+   * @internal
+   */
+  _clearOnCollectionChange(): void {
+    this._onCollectionChangeCallbacks = [];
   }
 
   /** @internal */
@@ -1463,7 +1499,9 @@ export class FormGroup extends AbstractControl {
    * @param name The control name to remove from the collection
    */
   removeControl(name: string): void {
-    if (this.controls[name]) this.controls[name]._registerOnCollectionChange(() => {});
+    if (this.controls[name]) {
+      this.controls[name]._clearOnCollectionChange();
+    }
     delete (this.controls[name]);
     this.updateValueAndValidity();
     this._onCollectionChange();
@@ -1476,7 +1514,9 @@ export class FormGroup extends AbstractControl {
    * @param control Provides the control for the given name
    */
   setControl(name: string, control: AbstractControl): void {
-    if (this.controls[name]) this.controls[name]._registerOnCollectionChange(() => {});
+    if (this.controls[name]) {
+      this.controls[name]._clearOnCollectionChange();
+    }
     delete (this.controls[name]);
     if (control) this.registerControl(name, control);
     this.updateValueAndValidity();
@@ -1893,7 +1933,9 @@ export class FormArray extends AbstractControl {
    * @param index Index in the array to remove the control
    */
   removeAt(index: number): void {
-    if (this.controls[index]) this.controls[index]._registerOnCollectionChange(() => {});
+    if (this.controls[index]) {
+      this.controls[index]._clearOnCollectionChange();
+    }
     this.controls.splice(index, 1);
     this.updateValueAndValidity();
   }
@@ -1905,7 +1947,9 @@ export class FormArray extends AbstractControl {
    * @param control The `AbstractControl` control to replace the existing control
    */
   setControl(index: number, control: AbstractControl): void {
-    if (this.controls[index]) this.controls[index]._registerOnCollectionChange(() => {});
+    if (this.controls[index]) {
+      this.controls[index]._clearOnCollectionChange();
+    }
     this.controls.splice(index, 1);
 
     if (control) {
@@ -2110,7 +2154,7 @@ export class FormArray extends AbstractControl {
    */
   clear(): void {
     if (this.controls.length < 1) return;
-    this._forEachChild((control: AbstractControl) => control._registerOnCollectionChange(() => {}));
+    this._forEachChild((control: AbstractControl) => control._clearOnCollectionChange());
     this.controls.splice(0);
     this.updateValueAndValidity();
   }

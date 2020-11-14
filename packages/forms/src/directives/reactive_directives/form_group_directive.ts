@@ -67,6 +67,12 @@ export class FormGroupDirective extends ControlContainer implements Form, OnChan
   private _oldForm: FormGroup|undefined;
 
   /**
+   * Callback that should be invoked when controls in FormGroup or FormArray collection change
+   * (added or removed). This is needed to trigger corresponding DOM updates.
+   */
+  private _onCollectionChange = () => this._updateDomValue();
+
+  /**
    * @description
    * Tracks the list of added `FormControlName` instances
    */
@@ -282,9 +288,9 @@ export class FormGroupDirective extends ControlContainer implements Form, OnChan
   }
 
   private _updateRegistrations() {
-    this.form._registerOnCollectionChange(() => this._updateDomValue());
+    this.form._registerOnCollectionChange(this._onCollectionChange);
     if (this._oldForm) {
-      this._oldForm._registerOnCollectionChange(() => {});
+      this._oldForm._unregisterOnCollectionChange(this._onCollectionChange);
     }
   }
 

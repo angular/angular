@@ -64,7 +64,10 @@ export function cleanUpControl(control: FormControl|null, dir: NgControl) {
 
   if (control) {
     dir._invokeOnDestroyCallbacks();
-    control._registerOnCollectionChange(() => {});
+    // The logic below clears all `onCollectionChange` callbacks from a given form control, when
+    // technically we should only detach callbacks added by a given directive. Consider updating
+    // this logic in the future to do a more precise cleanup here.
+    control._clearOnCollectionChange();
   }
 }
 
