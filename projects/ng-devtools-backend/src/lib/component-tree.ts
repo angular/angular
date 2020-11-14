@@ -28,8 +28,14 @@ export interface ComponentTreeNode extends DevToolsNode<DirectiveInstanceType, C
   children: ComponentTreeNode[];
 }
 
-export const getLatestComponentState = (query: ComponentExplorerViewQuery): DirectivesProperties | undefined => {
-  const node = queryDirectiveForest(query.selectedElement, buildDirectiveForest());
+export const getLatestComponentState = (
+  query: ComponentExplorerViewQuery,
+  directiveForest?: ComponentTreeNode[]
+): DirectivesProperties | undefined => {
+  // if a directive forest is passed in we don't have to build the forest again.
+  directiveForest = directiveForest ?? buildDirectiveForest();
+
+  const node = queryDirectiveForest(query.selectedElement, directiveForest);
   if (!node) {
     return;
   }
