@@ -1,6 +1,6 @@
 import { unHighlight, highlight, findComponentAndHost } from '../highlighter';
 import { Type } from '@angular/core';
-import { buildDirectiveForest, ComponentTreeNode, findNodeInForest } from '../component-tree';
+import { ComponentTreeNode, findNodeInForest } from '../component-tree';
 import { ElementPosition } from 'protocol';
 import { initializeOrGetDirectiveForestHooks } from '../hooks';
 
@@ -80,7 +80,7 @@ export class ComponentInspector {
   }
 
   highlightByPosition(position: ElementPosition): void {
-    const forest: ComponentTreeNode[] = buildDirectiveForest();
+    const forest: ComponentTreeNode[] = initializeOrGetDirectiveForestHooks().getDirectiveForest();
     const elementToHighlight: HTMLElement | null = findNodeInForest(position, forest);
     if (elementToHighlight) {
       highlight(elementToHighlight);

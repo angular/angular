@@ -12,7 +12,7 @@ import {
 import { ComponentTreeNode, getLatestComponentState, queryDirectiveForest, updateState } from './component-tree';
 import { start as startProfiling, stop as stopProfiling } from './hooks/capture';
 import { serializeDirectiveState } from './state-serializer/state-serializer';
-import { ComponentInspector, ComponentInspectorOptions } from './component-inspector/component-inspector';
+import { ComponentInspector } from './component-inspector/component-inspector';
 import { setConsoleReference } from './set-console-reference';
 import { unHighlight } from './highlighter';
 import {
@@ -146,18 +146,17 @@ const checkForAngular = (messageBus: MessageBus<Events>, attempt = 0): void => {
 };
 
 const setupInspector = (messageBus: MessageBus<Events>) => {
-  const onComponentEnter = (id: number) => {
-    messageBus.emit('highlightComponent', [id]);
-  };
-  const onComponentLeave = () => {
-    messageBus.emit('removeComponentHighlight');
-  };
-  const onComponentSelect = (id: number) => {
-    messageBus.emit('selectComponent', [id]);
-  };
-
-  const inspectorOptions: ComponentInspectorOptions = { onComponentEnter, onComponentLeave, onComponentSelect };
-  const inspector = new ComponentInspector(inspectorOptions);
+  const inspector = new ComponentInspector({
+    onComponentEnter: (id: number) => {
+      messageBus.emit('highlightComponent', [id]);
+    },
+    onComponentLeave: () => {
+      messageBus.emit('removeComponentHighlight');
+    },
+    onComponentSelect: (id: number) => {
+      messageBus.emit('selectComponent', [id]);
+    },
+  });
 
   messageBus.on('inspectorStart', inspector.startInspecting);
   messageBus.on('inspectorEnd', inspector.stopInspecting);
