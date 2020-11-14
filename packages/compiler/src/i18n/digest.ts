@@ -7,6 +7,7 @@
  */
 
 import {newArray, utf8Encode} from '../util';
+import {BigIntExponentiation} from './big_integer';
 
 import * as i18n from './i18n_ast';
 
@@ -197,7 +198,7 @@ export function computeMsgId(msg: string, meaning: string = ''): string {
   const hi = msgFingerprint[0];
   const lo = msgFingerprint[1];
 
-  return byteStringToDecString(words32ToByteString([hi & 0x7fffffff, lo]));
+  return wordsToDecimalString(hi & 0x7fffffff, lo);
 }
 
 function hash32(str: string, c: number): number {
@@ -334,43 +335,31 @@ function byteStringToHexString(str: string): string {
   return hex.toLowerCase();
 }
 
-// based on http://www.danvk.org/hex2dec.html (JS can not handle more than 56b)
-function byteStringToDecString(str: string): string {
-  let decimal = '';
-  let toThePower = '1';
+/**
+ * Create a shared exponentiation pool for base-256 computations. This shared pool provides memoized
+ * power-of-256 results with memoized power-of-two computations for efficient multiplication.
+ *
+ * For our purposes, this can be safely stored as a global without memory concerns. The reason is
+ * that we encode two words, so only need the 0th (for the low word) and 4th (for the high word)
+ * exponent.
+ */
+const base256 = new BigIntExponentiation(256);
 
-  for (let i = str.length - 1; i >= 0; i--) {
-    decimal = addBigInt(decimal, numberTimesBigInt(byteAt(str, i), toThePower));
-    toThePower = numberTimesBigInt(256, toThePower);
-  }
+/**
+ * Represents two 32-bit words as a single decimal number. This requires a big integer storage
+ * model as JS numbers are not accurate enough to represent the 64-bit number.
+ *
+ * Based on http://www.danvk.org/hex2dec.html
+ */
+function wordsToDecimalString(hi: number, lo: number): string {
+  // Encode the four bytes in lo in the lower digits of the decimal number.
+  // Note: the multiplication results in lo itself but represented by a big integer using its
+  // decimal digits.
+  const decimal = base256.toThePowerOf(0).multiplyBy(lo);
 
-  return decimal.split('').reverse().join('');
-}
+  // Encode the four bytes in hi above the four lo bytes. lo is a maximum of (2^8)^4, which is why
+  // this multiplication factor is applied.
+  base256.toThePowerOf(4).multiplyByAndAddTo(hi, decimal);
 
-// x and y decimal, lowest significant digit first
-function addBigInt(x: string, y: string): string {
-  let sum = '';
-  const len = Math.max(x.length, y.length);
-  for (let i = 0, carry = 0; i < len || carry; i++) {
-    const tmpSum = carry + +(x[i] || 0) + +(y[i] || 0);
-    if (tmpSum >= 10) {
-      carry = 1;
-      sum += tmpSum - 10;
-    } else {
-      carry = 0;
-      sum += tmpSum;
-    }
-  }
-
-  return sum;
-}
-
-function numberTimesBigInt(num: number, b: string): string {
-  let product = '';
-  let bToThePower = b;
-  for (; num !== 0; num = num >>> 1) {
-    if (num & 1) product = addBigInt(product, bToThePower);
-    bToThePower = addBigInt(bToThePower, bToThePower);
-  }
-  return product;
+  return decimal.toString();
 }
