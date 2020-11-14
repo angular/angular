@@ -1,3 +1,4 @@
+import { ComponentTreeNode } from './../component-tree';
 import { ElementPosition, DevToolsNode } from 'protocol';
 import { buildDirectiveForest, DirectiveInstanceType, ComponentInstanceType } from '../component-tree';
 import { Type } from '@angular/core';
@@ -31,8 +32,14 @@ export class IdentityTracker {
     return this._currentDirectiveId.has(dir);
   }
 
-  index(): { newNodes: NodeArray; removedNodes: NodeArray; indexedForest: IndexedNode[] } {
-    const indexedForest = indexForest(buildDirectiveForest());
+  index(): {
+    newNodes: NodeArray;
+    removedNodes: NodeArray;
+    indexedForest: IndexedNode[];
+    directiveForest: ComponentTreeNode[];
+  } {
+    const directiveForest = buildDirectiveForest();
+    const indexedForest = indexForest(directiveForest);
     const newNodes: NodeArray = [];
     const removedNodes: NodeArray = [];
     const allNodes = new Set<any>();
@@ -46,7 +53,7 @@ export class IdentityTracker {
         // this._currentDirectivePosition.delete(dir);
       }
     });
-    return { newNodes, removedNodes, indexedForest };
+    return { newNodes, removedNodes, indexedForest, directiveForest };
   }
 
   private _index(

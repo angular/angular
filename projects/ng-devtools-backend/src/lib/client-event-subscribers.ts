@@ -71,19 +71,21 @@ const getLatestComponentExplorerViewCallback = (messageBus: MessageBus<Events>) 
 ) => {
   // We want to force re-indexing of the component tree.
   // Pressing the refresh button means the user saw stuck UI.
+
   initializeOrGetDirectiveForestHooks().indexForest();
+
   if (!query) {
     messageBus.emit('latestComponentExplorerView', [
       {
-        forest: prepareForestForSerialization(initializeOrGetDirectiveForestHooks().getDirectiveForest()),
+        forest: prepareForestForSerialization(initializeOrGetDirectiveForestHooks().getIndexedDirectiveForest()),
       },
     ]);
     return;
   }
   messageBus.emit('latestComponentExplorerView', [
     {
-      forest: prepareForestForSerialization(initializeOrGetDirectiveForestHooks().getDirectiveForest()),
-      properties: getLatestComponentState(query),
+      forest: prepareForestForSerialization(initializeOrGetDirectiveForestHooks().getIndexedDirectiveForest()),
+      properties: getLatestComponentState(query, initializeOrGetDirectiveForestHooks().getDirectiveForest()),
     },
   ]);
 };
@@ -100,7 +102,7 @@ const stopProfilingCallback = (messageBus: MessageBus<Events>) => () => {
 };
 
 const selectedComponentCallback = (position: ElementPosition) => {
-  const node = queryDirectiveForest(position, initializeOrGetDirectiveForestHooks().getDirectiveForest());
+  const node = queryDirectiveForest(position, initializeOrGetDirectiveForestHooks().getIndexedDirectiveForest());
   setConsoleReference({ node, position });
 };
 
@@ -109,7 +111,10 @@ const getNestedPropertiesCallback = (messageBus: MessageBus<Events>) => (
   propPath: string[]
 ) => {
   const emitEmpty = () => messageBus.emit('nestedProperties', [position, { props: {} }, propPath]);
-  const node = queryDirectiveForest(position.element, initializeOrGetDirectiveForestHooks().getDirectiveForest());
+  const node = queryDirectiveForest(
+    position.element,
+    initializeOrGetDirectiveForestHooks().getIndexedDirectiveForest()
+  );
   if (!node) {
     return emitEmpty();
   }

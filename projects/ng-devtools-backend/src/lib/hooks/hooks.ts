@@ -1,3 +1,4 @@
+import { ComponentTreeNode } from './../component-tree';
 import { ElementPosition, LifecycleProfile } from 'protocol';
 import { componentMetadata, runOutsideAngular } from '../utils';
 import { IdentityTracker, IndexedNode } from './identity-tracker';
@@ -109,7 +110,8 @@ export class DirectiveForestHooks {
   private _undoLifecyclePatch: (() => void)[] = [];
   private _lastChangeDetection = new Map<any, number>();
   private _tracker = new IdentityTracker();
-  private _forest: IndexedNode[] = [];
+  private _forest: ComponentTreeNode[] = [];
+  private _indexedForest: IndexedNode[] = [];
   private _inChangeDetection = false;
   private _changeDetection$ = new Subject<void>();
 
@@ -139,7 +141,11 @@ export class DirectiveForestHooks {
     return result;
   }
 
-  getDirectiveForest(): IndexedNode[] {
+  getIndexedDirectiveForest(): IndexedNode[] {
+    return this._indexedForest;
+  }
+
+  getDirectiveForest(): ComponentTreeNode[] {
     return this._forest;
   }
 
@@ -163,8 +169,9 @@ export class DirectiveForestHooks {
   }
 
   indexForest(): void {
-    const { newNodes, removedNodes, indexedForest } = this._tracker.index();
-    this._forest = indexedForest;
+    const { newNodes, removedNodes, indexedForest, directiveForest } = this._tracker.index();
+    this._indexedForest = indexedForest;
+    this._forest = directiveForest;
     newNodes.forEach((node) => {
       this._observeLifecycle(node.directive, node.isComponent);
       this._observeComponent(node.directive);

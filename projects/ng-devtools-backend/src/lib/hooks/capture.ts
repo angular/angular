@@ -197,7 +197,7 @@ const prepareInitialFrame = (source: string, duration: number) => {
     directives: [],
   };
   const directiveForestHooks = initializeOrGetDirectiveForestHooks();
-  const directiveForest = directiveForestHooks.getDirectiveForest();
+  const directiveForest = directiveForestHooks.getIndexedDirectiveForest();
   const traverse = (node: ComponentTreeNode, children = frame.directives) => {
     let position: ElementPosition | undefined;
     if (node.component) {
