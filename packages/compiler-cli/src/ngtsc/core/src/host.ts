@@ -101,6 +101,12 @@ export class NgCompilerHost extends DelegatingCompilerHost implements
     this.constructionDiagnostics = diagnostics;
     this.inputFiles = [...inputFiles, ...shimAdapter.extraInputFiles];
     this.rootDirs = rootDirs;
+
+    if (this.resolveModuleNames === undefined) {
+      // In order to reuse the module resolution cache during the creation of the type-check
+      // program, we'll need to provide `resolveModuleNames` if the delegate did not provide one.
+      this.resolveModuleNames = this.createCachedResolveModuleNamesFunction();
+    }
   }
 
   /**
@@ -262,5 +268,18 @@ export class NgCompilerHost extends DelegatingCompilerHost implements
 
   get unifiedModulesHost(): UnifiedModulesHost|null {
     return this.fileNameToModuleName !== undefined ? this as UnifiedModulesHost : null;
+  }
+
+  private createCachedResolveModuleNamesFunction(): ts.CompilerHost['resolveModuleNames'] {
+    const moduleResolutionCache = ts.createModuleResolutionCache(
+        this.getCurrentDirectory(), this.getCanonicalFileName.bind(this));
+
+    return (moduleNames, containingFile, reusedNames, redirectedReference, options) => {
+      return moduleNames.map(moduleName => {
+        const module = ts.resolveModuleName(
+            moduleName, containingFile, options, this, moduleResolutionCache, redirectedReference);
+        return module.resolvedModule;
+      });
+    };
   }
 }
