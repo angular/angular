@@ -151,15 +151,15 @@ export class SourceMapGenerator {
 
 export function toBase64String(value: string): string {
   let b64 = '';
-  value = utf8Encode(value);
-  for (let i = 0; i < value.length;) {
-    const i1 = value.charCodeAt(i++);
-    const i2 = value.charCodeAt(i++);
-    const i3 = value.charCodeAt(i++);
+  const encoded = utf8Encode(value);
+  for (let i = 0; i < encoded.length;) {
+    const i1 = encoded[i++];
+    const i2 = i < encoded.length ? encoded[i++] : null;
+    const i3 = i < encoded.length ? encoded[i++] : null;
     b64 += toBase64Digit(i1 >> 2);
-    b64 += toBase64Digit(((i1 & 3) << 4) | (isNaN(i2) ? 0 : i2 >> 4));
-    b64 += isNaN(i2) ? '=' : toBase64Digit(((i2 & 15) << 2) | (i3 >> 6));
-    b64 += isNaN(i2) || isNaN(i3) ? '=' : toBase64Digit(i3 & 63);
+    b64 += toBase64Digit(((i1 & 3) << 4) | (i2 === null ? 0 : i2 >> 4));
+    b64 += i2 === null ? '=' : toBase64Digit(((i2 & 15) << 2) | (i3 === null ? 0 : i3 >> 6));
+    b64 += i2 === null || i3 === null ? '=' : toBase64Digit(i3 & 63);
   }
 
   return b64;
