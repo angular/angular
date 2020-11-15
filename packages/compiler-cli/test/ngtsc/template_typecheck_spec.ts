@@ -1009,6 +1009,30 @@ export declare class AnimationEvent {
       expect(diags.length).toBe(0);
     });
 
+    it('should allow the implicit value of an NgFor to be invoked', () => {
+      env.tsconfig({fullTemplateTypeCheck: true, strictInputTypes: true});
+      env.write('test.ts', `
+        import {CommonModule} from '@angular/common';
+        import {Component, NgModule} from '@angular/core';
+
+        @Component({
+          selector: 'test',
+          template: '<div *ngFor="let fn of functions">{{fn()}}</div>',
+        })
+        class TestCmp {
+          functions = [() => 1, () => 2];
+        }
+
+        @NgModule({
+          declarations: [TestCmp],
+          imports: [CommonModule],
+        })
+        class Module {}
+    `);
+
+      env.driveMain();
+    });
+
     it('should infer the context of NgIf', () => {
       env.tsconfig({strictTemplates: true});
       env.write('test.ts', `
