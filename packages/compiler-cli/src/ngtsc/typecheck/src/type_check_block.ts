@@ -1609,7 +1609,7 @@ class TcbExpressionTranslator {
         return null;
       }
 
-      const method = ts.createPropertyAccess(wrapForDiagnostics(receiver), ast.name);
+      const method = wrapForDiagnostics(receiver);
       addParseSpanInfo(method, ast.nameSpan);
       const args = ast.args.map(arg => this.translate(arg));
       const node = ts.createCall(method, undefined, args);

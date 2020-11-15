@@ -71,7 +71,7 @@ describe('type check blocks diagnostics', () => {
       const TEMPLATE = `<ng-template let-method>{{ method(a, b) }}</ng-template>`;
       expect(tcbWithSpans(TEMPLATE))
           .toContain(
-              '(_t2 /*27,39*/).method /*27,33*/(((ctx).a /*34,35*/) /*34,35*/, ((ctx).b /*37,38*/) /*37,38*/) /*27,39*/');
+              '(_t2 /*27,39*/) /*27,33*/(((ctx).a /*34,35*/) /*34,35*/, ((ctx).b /*37,38*/) /*37,38*/) /*27,39*/');
     });
 
     it('should annotate function calls', () => {
