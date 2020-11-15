@@ -155,13 +155,13 @@ describe('big integers', () => {
     it('should multiply and add to an existing big integer', () => {
       const a = new BigIntForMultiplication(createBigInteger(1337));
       const result = createBigInteger(1_000_000);
-      a.multiplyByAddingTo(42, result);
+      a.multiplyByAndAddTo(42, result);
       expect(result.toString()).toEqual('1056154');
     });
   });
 
   describe('exponentiation', () => {
-    it('should be correct base-0', () => {
+    it('should be correct for base-0', () => {
       const base32 = new BigIntExponentiation(0);
       expect(base32.toThePowerOf(0).getValue().toString()).toEqual('1');
       expect(base32.toThePowerOf(1).getValue().toString()).toEqual('0');
@@ -171,7 +171,7 @@ describe('big integers', () => {
       expect(base32.toThePowerOf(12).getValue().toString()).toEqual('0');
     });
 
-    it('should be correct base-1', () => {
+    it('should be correct for base-1', () => {
       const base32 = new BigIntExponentiation(1);
       expect(base32.toThePowerOf(0).getValue().toString()).toEqual('1');
       expect(base32.toThePowerOf(1).getValue().toString()).toEqual('1');
@@ -181,7 +181,7 @@ describe('big integers', () => {
       expect(base32.toThePowerOf(12).getValue().toString()).toEqual('1');
     });
 
-    it('should be correct base-42', () => {
+    it('should be correct for base-42', () => {
       const base32 = new BigIntExponentiation(42);
       expect(base32.toThePowerOf(0).getValue().toString()).toEqual('1');
       expect(base32.toThePowerOf(1).getValue().toString()).toEqual('42');

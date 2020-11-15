@@ -89,7 +89,7 @@ export class BigInteger {
 
 /**
  * Represents a big integer which is optimized for multiplication operations, as its power-of-twos
- * are memoized. See `multiplyBy` for details on the multiplication algorithm.
+ * are memoized. See `multiplyBy()` for details on the multiplication algorithm.
  */
 export class BigIntForMultiplication {
   /**
@@ -136,15 +136,15 @@ export class BigIntForMultiplication {
    */
   multiplyBy(num: number): BigInteger {
     const product = BigInteger.zero();
-    this.multiplyByAddingTo(num, product);
+    this.multiplyByAndAddTo(num, product);
     return product;
   }
 
   /**
-   * See `multiplyBy` for details. This function allows for the computed product to be added
+   * See `multiplyBy()` for details. This function allows for the computed product to be added
    * directly to the provided result big integer.
    */
-  multiplyByAddingTo(num: number, result: BigInteger): void {
+  multiplyByAndAddTo(num: number, result: BigInteger): void {
     for (let exponent = 0; num !== 0; num = num >>> 1, exponent++) {
       if (num & 1) {
         const value = this.getMultipliedByPowerOfTwo(exponent);

@@ -359,7 +359,7 @@ function wordsToDecimalString(hi: number, lo: number): string {
 
   // Encode the four bytes in hi above the four lo bytes. lo is a maximum of (2^8)^4, which is why
   // this multiplication factor is applied.
-  base256.toThePowerOf(4).multiplyByAddingTo(hi, decimal);
+  base256.toThePowerOf(4).multiplyByAndAddTo(hi, decimal);
 
   return decimal.toString();
 }
