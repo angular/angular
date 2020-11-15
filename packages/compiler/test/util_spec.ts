@@ -73,7 +73,7 @@ import {escapeRegExp, partitionArray, splitAtColon, stringify, utf8Encode} from 
           ['\uDFFF', '\xED\xBF\xBF'],
         ];
         tests.forEach(([input, output]) => {
-          expect(utf8Encode(input)).toEqual(output);
+          expect(utf8Encode(input).map(byte => String.fromCharCode(byte)).join('')).toEqual(output);
         });
       });
     });

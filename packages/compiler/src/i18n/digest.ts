@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {newArray, utf8Encode} from '../util';
+import {Byte, newArray, utf8Encode} from '../util';
 import {BigIntExponentiation} from './big_integer';
 
 import * as i18n from './i18n_ast';
@@ -110,7 +110,7 @@ class _SerializerIgnoreIcuExpVisitor extends _SerializerVisitor {
  */
 export function sha1(str: string): string {
   const utf8 = utf8Encode(str);
-  const words32 = stringToWords32(utf8, Endian.Big);
+  const words32 = bytesToWords32(utf8, Endian.Big);
   const len = utf8.length * 8;
 
   const w = newArray(80);
@@ -146,7 +146,7 @@ export function sha1(str: string): string {
     e = add32(e, h4);
   }
 
-  return byteStringToHexString(words32ToByteString([a, b, c, d, e]));
+  return bytesToHexString(words32ToByteString([a, b, c, d, e]));
 }
 
 function fk(index: number, b: number, c: number, d: number): [number, number] {
@@ -201,25 +201,25 @@ export function computeMsgId(msg: string, meaning: string = ''): string {
   return wordsToDecimalString(hi & 0x7fffffff, lo);
 }
 
-function hash32(str: string, c: number): number {
+function hash32(bytes: Byte[], c: number): number {
   let a = 0x9e3779b9, b = 0x9e3779b9;
   let i: number;
 
-  const len = str.length;
+  const len = bytes.length;
 
   for (i = 0; i + 12 <= len; i += 12) {
-    a = add32(a, wordAt(str, i, Endian.Little));
-    b = add32(b, wordAt(str, i + 4, Endian.Little));
-    c = add32(c, wordAt(str, i + 8, Endian.Little));
+    a = add32(a, wordAt(bytes, i, Endian.Little));
+    b = add32(b, wordAt(bytes, i + 4, Endian.Little));
+    c = add32(c, wordAt(bytes, i + 8, Endian.Little));
     const res = mix(a, b, c);
     a = res[0], b = res[1], c = res[2];
   }
 
-  a = add32(a, wordAt(str, i, Endian.Little));
-  b = add32(b, wordAt(str, i + 4, Endian.Little));
+  a = add32(a, wordAt(bytes, i, Endian.Little));
+  b = add32(b, wordAt(bytes, i + 4, Endian.Little));
   // the first byte of c is reserved for the length
   c = add32(c, len);
-  c = add32(c, wordAt(str, i + 8, Endian.Little) << 8);
+  c = add32(c, wordAt(bytes, i + 8, Endian.Little) << 8);
 
   return mix(a, b, c)[2];
 }
@@ -285,51 +285,51 @@ function rol64(num: [number, number], count: number): [number, number] {
   return [h, l];
 }
 
-function stringToWords32(str: string, endian: Endian): number[] {
-  const size = (str.length + 3) >>> 2;
+function bytesToWords32(bytes: Byte[], endian: Endian): number[] {
+  const size = (bytes.length + 3) >>> 2;
   const words32 = [];
 
   for (let i = 0; i < size; i++) {
-    words32[i] = wordAt(str, i * 4, endian);
+    words32[i] = wordAt(bytes, i * 4, endian);
   }
 
   return words32;
 }
 
-function byteAt(str: string, index: number): number {
-  return index >= str.length ? 0 : str.charCodeAt(index) & 0xff;
+function byteAt(bytes: Byte[], index: number): Byte {
+  return index >= bytes.length ? 0 : bytes[index];
 }
 
-function wordAt(str: string, index: number, endian: Endian): number {
+function wordAt(bytes: Byte[], index: number, endian: Endian): number {
   let word = 0;
   if (endian === Endian.Big) {
     for (let i = 0; i < 4; i++) {
-      word += byteAt(str, index + i) << (24 - 8 * i);
+      word += byteAt(bytes, index + i) << (24 - 8 * i);
     }
   } else {
     for (let i = 0; i < 4; i++) {
-      word += byteAt(str, index + i) << 8 * i;
+      word += byteAt(bytes, index + i) << 8 * i;
     }
   }
   return word;
 }
 
-function words32ToByteString(words32: number[]): string {
-  return words32.reduce((str, word) => str + word32ToByteString(word), '');
+function words32ToByteString(words32: number[]): Byte[] {
+  return words32.reduce((bytes, word) => bytes.concat(word32ToByteString(word)), [] as Byte[]);
 }
 
-function word32ToByteString(word: number): string {
-  let str = '';
+function word32ToByteString(word: number): Byte[] {
+  let bytes: Byte[] = [];
   for (let i = 0; i < 4; i++) {
-    str += String.fromCharCode((word >>> 8 * (3 - i)) & 0xff);
+    bytes.push((word >>> 8 * (3 - i)) & 0xff);
   }
-  return str;
+  return bytes;
 }
 
-function byteStringToHexString(str: string): string {
+function bytesToHexString(bytes: Byte[]): string {
   let hex: string = '';
-  for (let i = 0; i < str.length; i++) {
-    const b = byteAt(str, i);
+  for (let i = 0; i < bytes.length; i++) {
+    const b = byteAt(bytes, i);
     hex += (b >>> 4).toString(16) + (b & 0x0f).toString(16);
   }
   return hex.toLowerCase();
