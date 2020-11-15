@@ -197,7 +197,7 @@ export function computeMsgId(msg: string, meaning: string = ''): string {
   const hi = msgFingerprint[0];
   const lo = msgFingerprint[1];
 
-  return byteStringToDecString(words32ToByteString([hi & 0x7fffffff, lo]));
+  return wordsToDecimalString(hi & 0x7fffffff, lo);
 }
 
 function hash32(str: string, c: number): number {
@@ -476,17 +476,26 @@ class BigIntExponentiation {
  * power-of-256 results with memoized power-of-two computations for efficient multiplication.
  *
  * For our purposes, this can be safely stored as a global without memory concerns. The reason is
- * that the maximum exponent is only 7, as the byte string only comprises 8 bytes.
+ * that we encode two words, so only need the 0th (for the low word) and 4th (for the high word)
+ * exponent.
  */
 const base256 = new BigIntExponentiation(256);
 
-// based on http://www.danvk.org/hex2dec.html (JS can not handle more than 56b)
-function byteStringToDecString(str: string): string {
-  const decimal = BigInteger.zero();
+/**
+ * Represents two 32-bit words as a single decimal number. This requires a big integer storage
+ * model as JS numbers are not accurate enough to represent the 64-bit number.
+ *
+ * Based on http://www.danvk.org/hex2dec.html
+ */
+function wordsToDecimalString(hi: number, lo: number): string {
+  // Encode the four bytes in lo in the lower digits of the decimal number.
+  // Note: the multiplication results in lo itself but represented by a big integer using its
+  // decimal digits.
+  const decimal = numberTimesBigInt(lo, base256.getExponent(0));
 
-  for (let i = str.length - 1, exponent = 0; i >= 0; i--, exponent++) {
-    decimal.addToSelf(numberTimesBigInt(byteAt(str, i), base256.getExponent(exponent)));
-  }
+  // Encode the four bytes in hi above the four lo bytes. lo is a maximum of (2^8)^4, which is why
+  // this multiplication factor is applied.
+  addNumberTimesBigInt(hi, base256.getExponent(4), decimal);
 
   return decimal.toString();
 }
@@ -519,11 +528,19 @@ function byteStringToDecString(str: string): string {
  */
 function numberTimesBigInt(num: number, b: BigIntForMultiplication): BigInteger {
   const product = BigInteger.zero();
+  addNumberTimesBigInt(num, b, product);
+  return product;
+}
+
+/**
+ * See `numberTimesBigInt` for details. This function allows for the result to be added directly to
+ * the provided result.
+ */
+function addNumberTimesBigInt(num: number, b: BigIntForMultiplication, result: BigInteger): void {
   for (let exponent = 0; num !== 0; num = num >>> 1, exponent++) {
     if (num & 1) {
       const value = b.getMultipliedByPowerOfTwo(exponent);
-      product.addToSelf(value);
+      result.addToSelf(value);
     }
   }
-  return product;
 }
