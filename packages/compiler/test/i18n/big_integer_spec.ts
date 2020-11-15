@@ -163,39 +163,39 @@ describe('big integers', () => {
   describe('exponentiation', () => {
     it('should be correct base-0', () => {
       const base32 = new BigIntExponentiation(0);
-      expect(base32.getExponent(0).getValue().toString()).toEqual('1');
-      expect(base32.getExponent(1).getValue().toString()).toEqual('0');
-      expect(base32.getExponent(2).getValue().toString()).toEqual('0');
-      expect(base32.getExponent(3).getValue().toString()).toEqual('0');
-      expect(base32.getExponent(8).getValue().toString()).toEqual('0');
-      expect(base32.getExponent(12).getValue().toString()).toEqual('0');
+      expect(base32.toThePowerOf(0).getValue().toString()).toEqual('1');
+      expect(base32.toThePowerOf(1).getValue().toString()).toEqual('0');
+      expect(base32.toThePowerOf(2).getValue().toString()).toEqual('0');
+      expect(base32.toThePowerOf(3).getValue().toString()).toEqual('0');
+      expect(base32.toThePowerOf(8).getValue().toString()).toEqual('0');
+      expect(base32.toThePowerOf(12).getValue().toString()).toEqual('0');
     });
 
     it('should be correct base-1', () => {
       const base32 = new BigIntExponentiation(1);
-      expect(base32.getExponent(0).getValue().toString()).toEqual('1');
-      expect(base32.getExponent(1).getValue().toString()).toEqual('1');
-      expect(base32.getExponent(2).getValue().toString()).toEqual('1');
-      expect(base32.getExponent(3).getValue().toString()).toEqual('1');
-      expect(base32.getExponent(8).getValue().toString()).toEqual('1');
-      expect(base32.getExponent(12).getValue().toString()).toEqual('1');
+      expect(base32.toThePowerOf(0).getValue().toString()).toEqual('1');
+      expect(base32.toThePowerOf(1).getValue().toString()).toEqual('1');
+      expect(base32.toThePowerOf(2).getValue().toString()).toEqual('1');
+      expect(base32.toThePowerOf(3).getValue().toString()).toEqual('1');
+      expect(base32.toThePowerOf(8).getValue().toString()).toEqual('1');
+      expect(base32.toThePowerOf(12).getValue().toString()).toEqual('1');
     });
 
     it('should be correct base-42', () => {
       const base32 = new BigIntExponentiation(42);
-      expect(base32.getExponent(0).getValue().toString()).toEqual('1');
-      expect(base32.getExponent(1).getValue().toString()).toEqual('42');
-      expect(base32.getExponent(2).getValue().toString()).toEqual('1764');
-      expect(base32.getExponent(3).getValue().toString()).toEqual('74088');
-      expect(base32.getExponent(8).getValue().toString()).toEqual('9682651996416');
-      expect(base32.getExponent(12).getValue().toString()).toEqual('30129469486639681536');
+      expect(base32.toThePowerOf(0).getValue().toString()).toEqual('1');
+      expect(base32.toThePowerOf(1).getValue().toString()).toEqual('42');
+      expect(base32.toThePowerOf(2).getValue().toString()).toEqual('1764');
+      expect(base32.toThePowerOf(3).getValue().toString()).toEqual('74088');
+      expect(base32.toThePowerOf(8).getValue().toString()).toEqual('9682651996416');
+      expect(base32.toThePowerOf(12).getValue().toString()).toEqual('30129469486639681536');
     });
 
     it('should cache the exponents', () => {
       const base32 = new BigIntExponentiation(32);
 
-      const a = base32.getExponent(4);
-      const b = base32.getExponent(4);
+      const a = base32.toThePowerOf(4);
+      const b = base32.toThePowerOf(4);
 
       expect(a).toBe(b);
     });

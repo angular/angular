@@ -89,7 +89,7 @@ export class BigInteger {
 
 /**
  * Represents a big integer which is optimized for multiplication operations, as its power-of-twos
- * are memoized. See `numberTimesBigInt` for details on the multiplication algorithm.
+ * are memoized. See `multiplyBy` for details on the multiplication algorithm.
  */
 export class BigIntForMultiplication {
   /**
@@ -141,7 +141,7 @@ export class BigIntForMultiplication {
   }
 
   /**
-   * See `numberTimesBigInt` for details. This function allows for the computed product to be added
+   * See `multiplyBy` for details. This function allows for the computed product to be added
    * directly to the provided result big integer.
    */
   multiplyByAddingTo(num: number, result: BigInteger): void {
@@ -183,7 +183,7 @@ export class BigIntExponentiation {
    * Compute the value for `this.base^exponent`, resulting in a big integer that is optimized for
    * further multiplication operations.
    */
-  getExponent(exponent: number): BigIntForMultiplication {
+  toThePowerOf(exponent: number): BigIntForMultiplication {
     // Compute the results up until the requested exponent, where every value is computed from its
     // predecessor. This is because `this.base^(exponent - 1)` only has to be multiplied by `base`
     // to reach `this.base^exponent`.

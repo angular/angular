@@ -355,11 +355,11 @@ function wordsToDecimalString(hi: number, lo: number): string {
   // Encode the four bytes in lo in the lower digits of the decimal number.
   // Note: the multiplication results in lo itself but represented by a big integer using its
   // decimal digits.
-  const decimal = base256.getExponent(0).multiplyBy(lo);
+  const decimal = base256.toThePowerOf(0).multiplyBy(lo);
 
   // Encode the four bytes in hi above the four lo bytes. lo is a maximum of (2^8)^4, which is why
   // this multiplication factor is applied.
-  base256.getExponent(4).multiplyByAddingTo(hi, decimal);
+  base256.toThePowerOf(4).multiplyByAddingTo(hi, decimal);
 
   return decimal.toString();
 }
