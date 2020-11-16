@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {PluginObj, transformSync} from '@babel/core';
+import * as ts from 'typescript';
 
 import {createEs2015LinkerPlugin} from '../../../linker/babel';
 import {compileFiles, CompileFn, setCompileFn} from '../mock_compile';
@@ -19,6 +20,12 @@ import {compileFiles, CompileFn, setCompileFn} from '../mock_compile';
  * This should produce the same output as the full AOT compilation
  */
 const linkedCompile: CompileFn = (data, angularFiles, options) => {
+  if (options !== undefined && options.target !== undefined &&
+      options.target < ts.ScriptTarget.ES2015) {
+    pending('ES5 is not supported in the partial compilation tests');
+    throw new Error('ES5 is not supported in the partial compilation tests');
+  }
+
   const compiledFiles = compileFiles(data, angularFiles, {...options, compilationMode: 'partial'});
 
   const linkerPlugin = createEs2015LinkerPlugin({

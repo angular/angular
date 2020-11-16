@@ -15,6 +15,7 @@ ts_library(
         "@npm//@types/babel__core",
         "@npm//@types/babel__generator",
         "@npm//@types/babel__template",
+        "@npm//typescript",
     ],
 )
 
