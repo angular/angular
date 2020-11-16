@@ -9,6 +9,7 @@
 import * as ts from 'typescript';
 
 import {ErrorCode, ngErrorCode} from '../../diagnostics';
+import {DeclarationNode} from '../../reflection';
 
 import {ReferenceGraph} from './reference_graph';
 
@@ -39,7 +40,7 @@ export function checkForPrivateExports(
   const diagnostics: ts.Diagnostic[] = [];
 
   // Firstly, compute the exports of the entry point. These are all the Exported classes.
-  const topLevelExports = new Set<ts.Declaration>();
+  const topLevelExports = new Set<DeclarationNode>();
 
   // Do this via `ts.TypeChecker.getExportsOfModule`.
   const moduleSymbol = checker.getSymbolAtLocation(entryPoint);
@@ -63,7 +64,7 @@ export function checkForPrivateExports(
   // Next, go through each exported class and expand it to the set of classes it makes Visible,
   // using the `ReferenceGraph`. For each Visible class, verify that it's also Exported, and queue
   // an error if it isn't. `checkedSet` ensures only one error is queued per class.
-  const checkedSet = new Set<ts.Declaration>();
+  const checkedSet = new Set<DeclarationNode>();
 
   // Loop through each Exported class.
   // TODO(alxhub): use proper iteration when the legacy build is removed. (#27762)
@@ -110,7 +111,7 @@ export function checkForPrivateExports(
   return diagnostics;
 }
 
-function getPosOfDeclaration(decl: ts.Declaration): {start: number, length: number} {
+function getPosOfDeclaration(decl: DeclarationNode): {start: number, length: number} {
   const node: ts.Node = getIdentifierOfDeclaration(decl) || decl;
   return {
     start: node.getStart(),
@@ -118,7 +119,7 @@ function getPosOfDeclaration(decl: ts.Declaration): {start: number, length: numb
   };
 }
 
-function getIdentifierOfDeclaration(decl: ts.Declaration): ts.Identifier|null {
+function getIdentifierOfDeclaration(decl: DeclarationNode): ts.Identifier|null {
   if ((ts.isClassDeclaration(decl) || ts.isVariableDeclaration(decl) ||
        ts.isFunctionDeclaration(decl)) &&
       decl.name !== undefined && ts.isIdentifier(decl.name)) {
@@ -128,12 +129,12 @@ function getIdentifierOfDeclaration(decl: ts.Declaration): ts.Identifier|null {
   }
 }
 
-function getNameOfDeclaration(decl: ts.Declaration): string {
+function getNameOfDeclaration(decl: DeclarationNode): string {
   const id = getIdentifierOfDeclaration(decl);
   return id !== null ? id.text : '(unnamed)';
 }
 
-function getDescriptorOfDeclaration(decl: ts.Declaration): string {
+function getDescriptorOfDeclaration(decl: DeclarationNode): string {
   switch (decl.kind) {
     case ts.SyntaxKind.ClassDeclaration:
       return 'class';

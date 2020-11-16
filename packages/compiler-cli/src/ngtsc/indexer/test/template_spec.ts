@@ -124,6 +124,20 @@ runInEachFileSystem(() => {
         });
       });
 
+      it('should handle bound attributes with no value', () => {
+        const template = '<div [bar]></div>';
+        const refs = getTemplateIdentifiers(bind(template));
+
+        const refArr = Array.from(refs);
+        expect(refArr).toEqual([{
+          name: 'div',
+          kind: IdentifierKind.Element,
+          span: new AbsoluteSourceSpan(1, 4),
+          attributes: new Set(),
+          usedDirectives: new Set(),
+        }]);
+      });
+
       it('should discover variables in bound attributes', () => {
         const template = '<div #div [value]="div.innerText"></div>';
         const refs = getTemplateIdentifiers(bind(template));
@@ -188,6 +202,33 @@ runInEachFileSystem(() => {
           span: new AbsoluteSourceSpan(24, 28),
           target: null,
         });
+      });
+
+      it('should discover properties in template expressions and resist collisions', () => {
+        const template = '<div *ngFor="let foo of (foos ? foos : foos)"></div>';
+        const refs = getTemplateIdentifiers(bind(template));
+
+        const refArr = Array.from(refs);
+        expect(refArr).toEqual(jasmine.arrayContaining([
+          {
+            name: 'foos',
+            kind: IdentifierKind.Property,
+            span: new AbsoluteSourceSpan(25, 29),
+            target: null,
+          },
+          {
+            name: 'foos',
+            kind: IdentifierKind.Property,
+            span: new AbsoluteSourceSpan(32, 36),
+            target: null,
+          },
+          {
+            name: 'foos',
+            kind: IdentifierKind.Property,
+            span: new AbsoluteSourceSpan(39, 43),
+            target: null,
+          },
+        ]));
       });
     });
 

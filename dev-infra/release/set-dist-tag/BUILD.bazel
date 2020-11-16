@@ -1,0 +1,44 @@
+load("@npm//@bazel/typescript:index.bzl", "ts_library")
+load("//tools:defaults.bzl", "jasmine_node_test")
+
+ts_library(
+    name = "set-dist-tag",
+    srcs = glob(
+        [
+            "**/*.ts",
+        ],
+        exclude = ["*.spec.ts"],
+    ),
+    module_name = "@angular/dev-infra-private/release/set-dist-tag",
+    visibility = ["//dev-infra:__subpackages__"],
+    deps = [
+        "//dev-infra/release/config",
+        "//dev-infra/release/versioning",
+        "//dev-infra/utils",
+        "@npm//@types/node",
+        "@npm//@types/semver",
+        "@npm//@types/yargs",
+        "@npm//ora",
+        "@npm//semver",
+    ],
+)
+
+ts_library(
+    name = "test_lib",
+    srcs = glob([
+        "*.spec.ts",
+    ]),
+    deps = [
+        ":set-dist-tag",
+        "//dev-infra/release/config",
+        "//dev-infra/release/versioning",
+        "//dev-infra/utils/testing",
+        "@npm//@types/jasmine",
+        "@npm//@types/node",
+    ],
+)
+
+jasmine_node_test(
+    name = "test",
+    deps = [":test_lib"],
+)

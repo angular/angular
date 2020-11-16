@@ -109,7 +109,7 @@ class I18nToHtmlVisitor implements i18n.Visitor {
     // TODO(vicb): Once all format switch to using expression placeholders
     // we should throw when the placeholder is not in the source message
     const exp = this._srcMsg.placeholders.hasOwnProperty(icu.expression) ?
-        this._srcMsg.placeholders[icu.expression] :
+        this._srcMsg.placeholders[icu.expression].text :
         icu.expression;
 
     return `{${exp}, ${icu.type}, ${cases.join(' ')}}`;
@@ -118,7 +118,7 @@ class I18nToHtmlVisitor implements i18n.Visitor {
   visitPlaceholder(ph: i18n.Placeholder, context?: any): string {
     const phName = this._mapper(ph.name);
     if (this._srcMsg.placeholders.hasOwnProperty(phName)) {
-      return this._srcMsg.placeholders[phName];
+      return this._srcMsg.placeholders[phName].text;
     }
 
     if (this._srcMsg.placeholderToMessage.hasOwnProperty(phName)) {

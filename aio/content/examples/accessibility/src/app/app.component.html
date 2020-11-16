@@ -3,7 +3,7 @@
 <label>
   Enter an example progress value
   <input type="number" min="0" max="100"
-      [value]="progress" (input)="progress = $event.target.value">
+      [value]="progress" (input)="setProgress($event)">
 </label>
 
 <!-- The user of the progressbar sets an aria-label to communicate what the progress means. -->

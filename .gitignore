@@ -40,8 +40,17 @@ yarn-error.log
 # User specific bazel settings
 .bazelrc.user
 
+# User specific ng-dev settings
+.ng-dev.user*
+
 .notes.md
 baseline.json
 
 # Ignore .history for the xyz.local-history VSCode extension
 .history
+
+# CLDR data
+tools/gulp-tasks/cldr/cldr-data/
+
+# Husky
+.husky/_

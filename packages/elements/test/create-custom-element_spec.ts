@@ -68,7 +68,7 @@ if (browserDetection.supportsCustomElements) {
       expect(strategy.getInputValue('barBar')).toBe('value-barbar');
     });
 
-    it('should work even if when the constructor is not called (due to polyfill)', () => {
+    it('should work even if the constructor is not called (due to polyfill)', () => {
       // Some polyfills (e.g. `document-register-element`) do not call the constructor of custom
       // elements. Currently, all the constructor does is initialize the `injector` property. This
       // test simulates not having called the constructor by "unsetting" the property.

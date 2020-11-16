@@ -9,7 +9,7 @@
 import {ExpressionType, ExternalExpr, Type, WrappedNodeExpr} from '@angular/compiler';
 import * as ts from 'typescript';
 
-import {ImportFlags, NOOP_DEFAULT_IMPORT_RECORDER, Reference, ReferenceEmitter} from '../../imports';
+import {ImportFlags, Reference, ReferenceEmitter} from '../../imports';
 import {ClassDeclaration, ReflectionHost} from '../../reflection';
 import {ImportManager, translateExpression, translateType} from '../../translator';
 import {TypeCheckableDirectiveMeta, TypeCheckingConfig, TypeCtorMetadata} from '../api';
@@ -79,8 +79,8 @@ export class Environment {
         fnName,
         body: true,
         fields: {
-          inputs: Object.keys(dir.inputs),
-          outputs: Object.keys(dir.outputs),
+          inputs: dir.inputs.classPropertyNames,
+          outputs: dir.outputs.classPropertyNames,
           // TODO: support queries
           queries: dir.queries,
         },
@@ -213,8 +213,7 @@ export class Environment {
     const ngExpr = this.refEmitter.emit(ref, this.contextFile, ImportFlags.NoAliasing);
 
     // Use `translateExpression` to convert the `Expression` into a `ts.Expression`.
-    return translateExpression(
-        ngExpr, this.importManager, NOOP_DEFAULT_IMPORT_RECORDER, ts.ScriptTarget.ES2015);
+    return translateExpression(ngExpr, this.importManager);
   }
 
   /**
@@ -245,7 +244,8 @@ export class Environment {
    */
   referenceExternalType(moduleName: string, name: string, typeParams?: Type[]): ts.TypeNode {
     const external = new ExternalExpr({moduleName, name});
-    return translateType(new ExpressionType(external, null, typeParams), this.importManager);
+    return translateType(
+        new ExpressionType(external, [/* modifiers */], typeParams), this.importManager);
   }
 
   getPreludeStatements(): ts.Statement[] {

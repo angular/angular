@@ -10,11 +10,14 @@ import * as chars from '../chars';
 import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from '../ml_parser/interpolation_config';
 import {escapeRegExp} from '../util';
 
-import {AbsoluteSourceSpan, AST, AstVisitor, ASTWithSource, Binary, BindingPipe, Chain, Conditional, EmptyExpr, ExpressionBinding, FunctionCall, ImplicitReceiver, Interpolation, KeyedRead, KeyedWrite, LiteralArray, LiteralMap, LiteralMapKey, LiteralPrimitive, MethodCall, NonNullAssert, ParserError, ParseSpan, PrefixNot, PropertyRead, PropertyWrite, Quote, RecursiveAstVisitor, SafeMethodCall, SafePropertyRead, TemplateBinding, TemplateBindingIdentifier, Unary, VariableBinding} from './ast';
+import {AbsoluteSourceSpan, AST, AstVisitor, ASTWithSource, Binary, BindingPipe, Chain, Conditional, EmptyExpr, ExpressionBinding, FunctionCall, ImplicitReceiver, Interpolation, KeyedRead, KeyedWrite, LiteralArray, LiteralMap, LiteralMapKey, LiteralPrimitive, MethodCall, NonNullAssert, ParserError, ParseSpan, PrefixNot, PropertyRead, PropertyWrite, Quote, RecursiveAstVisitor, SafeMethodCall, SafePropertyRead, TemplateBinding, TemplateBindingIdentifier, ThisReceiver, Unary, VariableBinding} from './ast';
 import {EOF, isIdentifier, isQuote, Lexer, Token, TokenType} from './lexer';
 
 export class SplitInterpolation {
-  constructor(public strings: string[], public expressions: string[], public offsets: number[]) {}
+  constructor(
+      public strings: string[], public stringSpans: {start: number, end: number}[],
+      public expressions: string[], public expressionsSpans: {start: number, end: number}[],
+      public offsets: number[]) {}
 }
 
 export class TemplateBindingParseResult {
@@ -176,46 +179,111 @@ export class Parser {
       expressions.push(ast);
     }
 
-    const span = new ParseSpan(0, input == null ? 0 : input.length);
-    return new ASTWithSource(
-        new Interpolation(span, span.toAbsolute(absoluteOffset), split.strings, expressions), input,
-        location, absoluteOffset, this.errors);
+    return this.createInterpolationAst(split.strings, expressions, input, location, absoluteOffset);
   }
 
+  /**
+   * Similar to `parseInterpolation`, but treats the provided string as a single expression
+   * element that would normally appear within the interpolation prefix and suffix (`{{` and `}}`).
+   * This is used for parsing the switch expression in ICUs.
+   */
+  parseInterpolationExpression(expression: string, location: any, absoluteOffset: number):
+      ASTWithSource {
+    const sourceToLex = this._stripComments(expression);
+    const tokens = this._lexer.tokenize(sourceToLex);
+    const ast = new _ParseAST(
+                    expression, location, absoluteOffset, tokens, sourceToLex.length,
+                    /* parseAction */ false, this.errors, 0)
+                    .parseChain();
+    const strings = ['', ''];  // The prefix and suffix strings are both empty
+    return this.createInterpolationAst(strings, [ast], expression, location, absoluteOffset);
+  }
+
+  private createInterpolationAst(
+      strings: string[], expressions: AST[], input: string, location: string,
+      absoluteOffset: number): ASTWithSource {
+    const span = new ParseSpan(0, input.length);
+    const interpolation =
+        new Interpolation(span, span.toAbsolute(absoluteOffset), strings, expressions);
+    return new ASTWithSource(interpolation, input, location, absoluteOffset, this.errors);
+  }
+
+  /**
+   * Splits a string of text into "raw" text segments and expressions present in interpolations in
+   * the string.
+   * Returns `null` if there are no interpolations, otherwise a
+   * `SplitInterpolation` with splits that look like
+   *   <raw text> <expression> <raw text> ... <raw text> <expression> <raw text>
+   */
   splitInterpolation(
       input: string, location: string,
       interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG): SplitInterpolation
       |null {
-    const regexp = _getInterpolateRegExp(interpolationConfig);
-    const parts = input.split(regexp);
-    if (parts.length <= 1) {
-      return null;
-    }
     const strings: string[] = [];
     const expressions: string[] = [];
     const offsets: number[] = [];
-    let offset = 0;
-    for (let i = 0; i < parts.length; i++) {
-      const part: string = parts[i];
-      if (i % 2 === 0) {
-        // fixed string
+    const stringSpans: {start: number, end: number}[] = [];
+    const expressionSpans: {start: number, end: number}[] = [];
+    let i = 0;
+    let atInterpolation = false;
+    let extendLastString = false;
+    let {start: interpStart, end: interpEnd} = interpolationConfig;
+    while (i < input.length) {
+      if (!atInterpolation) {
+        // parse until starting {{
+        const start = i;
+        i = input.indexOf(interpStart, i);
+        if (i === -1) {
+          i = input.length;
+        }
+        const part = input.substring(start, i);
         strings.push(part);
-        offset += part.length;
-      } else if (part.trim().length > 0) {
-        offset += interpolationConfig.start.length;
-        expressions.push(part);
-        offsets.push(offset);
-        offset += part.length + interpolationConfig.end.length;
+        stringSpans.push({start, end: i});
+
+        atInterpolation = true;
       } else {
-        this._reportError(
-            'Blank expressions are not allowed in interpolated strings', input,
-            `at column ${this._findInterpolationErrorColumn(parts, i, interpolationConfig)} in`,
-            location);
-        expressions.push('$implicit');
-        offsets.push(offset);
+        // parse from starting {{ to ending }}
+        const fullStart = i;
+        const exprStart = fullStart + interpStart.length;
+        const exprEnd = input.indexOf(interpEnd, exprStart);
+        if (exprEnd === -1) {
+          // Could not find the end of the interpolation; do not parse an expression.
+          // Instead we should extend the content on the last raw string.
+          atInterpolation = false;
+          extendLastString = true;
+          break;
+        }
+        const fullEnd = exprEnd + interpEnd.length;
+
+        const part = input.substring(exprStart, exprEnd);
+        if (part.trim().length > 0) {
+          expressions.push(part);
+        } else {
+          this._reportError(
+              'Blank expressions are not allowed in interpolated strings', input,
+              `at column ${i} in`, location);
+          expressions.push('$implicit');
+        }
+        offsets.push(exprStart);
+        expressionSpans.push({start: fullStart, end: fullEnd});
+
+        i = fullEnd;
+        atInterpolation = false;
       }
     }
-    return new SplitInterpolation(strings, expressions, offsets);
+    if (!atInterpolation) {
+      // If we are now at a text section, add the remaining content as a raw string.
+      if (extendLastString) {
+        strings[strings.length - 1] += input.substring(i);
+        stringSpans[stringSpans.length - 1].end = input.length;
+      } else {
+        strings.push(input.substring(i));
+        stringSpans.push({start: i, end: input.length});
+      }
+    }
+    return expressions.length === 0 ?
+        null :
+        new SplitInterpolation(strings, stringSpans, expressions, expressionSpans, offsets);
   }
 
   wrapLiteralPrimitive(input: string|null, location: any, absoluteOffset: number): ASTWithSource {
@@ -278,10 +346,24 @@ export class IvyParser extends Parser {
   simpleExpressionChecker = IvySimpleExpressionChecker;  //
 }
 
+/** Describes a stateful context an expression parser is in. */
+enum ParseContextFlags {
+  None = 0,
+  /**
+   * A Writable context is one in which a value may be written to an lvalue.
+   * For example, after we see a property access, we may expect a write to the
+   * property via the "=" operator.
+   *   prop
+   *        ^ possible "=" after
+   */
+  Writable = 1,
+}
+
 export class _ParseAST {
   private rparensExpected = 0;
   private rbracketsExpected = 0;
   private rbracesExpected = 0;
+  private context = ParseContextFlags.None;
 
   // Cache of expression start and input indeces to the absolute source span they map to, used to
   // prevent creating superfluous source spans in `sourceSpan`.
@@ -358,6 +440,16 @@ export class _ParseAST {
     this.index++;
   }
 
+  /**
+   * Executes a callback in the provided context.
+   */
+  private withContext<T>(context: ParseContextFlags, cb: () => T): T {
+    this.context |= context;
+    const ret = cb();
+    this.context ^= context;
+    return ret;
+  }
+
   consumeOptionalCharacter(code: number): boolean {
     if (this.next.isCharacter(code)) {
       this.advance();
@@ -374,6 +466,12 @@ export class _ParseAST {
     return this.next.isKeywordAs();
   }
 
+  /**
+   * Consumes an expected character, otherwise emits an error about the missing expected character
+   * and skips over the token stream until reaching a recoverable point.
+   *
+   * See `this.error` and `this.skip` for more details.
+   */
   expectCharacter(code: number) {
     if (this.consumeOptionalCharacter(code)) return;
     this.error(`Missing expected ${String.fromCharCode(code)}`);
@@ -393,10 +491,14 @@ export class _ParseAST {
     this.error(`Missing expected operator ${operator}`);
   }
 
+  prettyPrintToken(tok: Token): string {
+    return tok === EOF ? 'end of input' : `token ${tok}`;
+  }
+
   expectIdentifierOrKeyword(): string {
     const n = this.next;
     if (!n.isIdentifier() && !n.isKeyword()) {
-      this.error(`Unexpected token ${n}, expected identifier or keyword`);
+      this.error(`Unexpected ${this.prettyPrintToken(n)}, expected identifier or keyword`);
       return '';
     }
     this.advance();
@@ -406,7 +508,7 @@ export class _ParseAST {
   expectIdentifierOrKeywordOrString(): string {
     const n = this.next;
     if (!n.isIdentifier() && !n.isKeyword() && !n.isString()) {
-      this.error(`Unexpected token ${n}, expected identifier, keyword, or string`);
+      this.error(`Unexpected ${this.prettyPrintToken(n)}, expected identifier, keyword, or string`);
       return '';
     }
     this.advance();
@@ -621,18 +723,23 @@ export class _ParseAST {
         result = this.parseAccessMemberOrMethodCall(result, true);
 
       } else if (this.consumeOptionalCharacter(chars.$LBRACKET)) {
-        this.rbracketsExpected++;
-        const key = this.parsePipe();
-        this.rbracketsExpected--;
-        this.expectCharacter(chars.$RBRACKET);
-        if (this.consumeOptionalOperator('=')) {
-          const value = this.parseConditional();
-          result = new KeyedWrite(
-              this.span(resultStart), this.sourceSpan(resultStart), result, key, value);
-        } else {
-          result = new KeyedRead(this.span(resultStart), this.sourceSpan(resultStart), result, key);
-        }
-
+        this.withContext(ParseContextFlags.Writable, () => {
+          this.rbracketsExpected++;
+          const key = this.parsePipe();
+          if (key instanceof EmptyExpr) {
+            this.error(`Key access cannot be empty`);
+          }
+          this.rbracketsExpected--;
+          this.expectCharacter(chars.$RBRACKET);
+          if (this.consumeOptionalOperator('=')) {
+            const value = this.parseConditional();
+            result = new KeyedWrite(
+                this.span(resultStart), this.sourceSpan(resultStart), result, key, value);
+          } else {
+            result =
+                new KeyedRead(this.span(resultStart), this.sourceSpan(resultStart), result, key);
+          }
+        });
       } else if (this.consumeOptionalCharacter(chars.$LPAREN)) {
         this.rparensExpected++;
         const args = this.parseCallArguments();
@@ -677,8 +784,7 @@ export class _ParseAST {
 
     } else if (this.next.isKeywordThis()) {
       this.advance();
-      return new ImplicitReceiver(this.span(start), this.sourceSpan(start));
-
+      return new ThisReceiver(this.span(start), this.sourceSpan(start));
     } else if (this.consumeOptionalCharacter(chars.$LBRACKET)) {
       this.rbracketsExpected++;
       const elements = this.parseExpressionList(chars.$RBRACKET);
@@ -745,7 +851,13 @@ export class _ParseAST {
   parseAccessMemberOrMethodCall(receiver: AST, isSafe: boolean = false): AST {
     const start = receiver.span.start;
     const nameStart = this.inputIndex;
-    const id = this.expectIdentifierOrKeyword();
+    const id = this.withContext(ParseContextFlags.Writable, () => {
+      const id = this.expectIdentifierOrKeyword();
+      if (id.length === 0) {
+        this.error(`Expected identifier for property access`, receiver.span.end);
+      }
+      return id;
+    });
     const nameSpan = this.sourceSpan(nameStart);
 
     if (this.consumeOptionalCharacter(chars.$LPAREN)) {
@@ -984,6 +1096,10 @@ export class _ParseAST {
     this.consumeOptionalCharacter(chars.$SEMICOLON) || this.consumeOptionalCharacter(chars.$COMMA);
   }
 
+  /**
+   * Records an error and skips over the token stream until reaching a recoverable point. See
+   * `this.skip` for more details on token skipping.
+   */
   error(message: string, index: number|null = null) {
     this.errors.push(new ParserError(message, this.input, this.locationText(index), this.location));
     this.skip();
@@ -995,25 +1111,37 @@ export class _ParseAST {
                                           `at the end of the expression`;
   }
 
-  // Error recovery should skip tokens until it encounters a recovery point. skip() treats
-  // the end of input and a ';' as unconditionally a recovery point. It also treats ')',
-  // '}' and ']' as conditional recovery points if one of calling productions is expecting
-  // one of these symbols. This allows skip() to recover from errors such as '(a.) + 1' allowing
-  // more of the AST to be retained (it doesn't skip any tokens as the ')' is retained because
-  // of the '(' begins an '(' <expr> ')' production). The recovery points of grouping symbols
-  // must be conditional as they must be skipped if none of the calling productions are not
-  // expecting the closing token else we will never make progress in the case of an
-  // extraneous group closing symbol (such as a stray ')'). This is not the case for ';' because
-  // parseChain() is always the root production and it expects a ';'.
-
-  // If a production expects one of these token it increments the corresponding nesting count,
-  // and then decrements it just prior to checking if the token is in the input.
+  /**
+   * Error recovery should skip tokens until it encounters a recovery point.
+   *
+   * The following are treated as unconditional recovery points:
+   *   - end of input
+   *   - ';' (parseChain() is always the root production, and it expects a ';')
+   *   - '|' (since pipes may be chained and each pipe expression may be treated independently)
+   *
+   * The following are conditional recovery points:
+   *   - ')', '}', ']' if one of calling productions is expecting one of these symbols
+   *     - This allows skip() to recover from errors such as '(a.) + 1' allowing more of the AST to
+   *       be retained (it doesn't skip any tokens as the ')' is retained because of the '(' begins
+   *       an '(' <expr> ')' production).
+   *       The recovery points of grouping symbols must be conditional as they must be skipped if
+   *       none of the calling productions are not expecting the closing token else we will never
+   *       make progress in the case of an extraneous group closing symbol (such as a stray ')').
+   *       That is, we skip a closing symbol if we are not in a grouping production.
+   *   - '=' in a `Writable` context
+   *     - In this context, we are able to recover after seeing the `=` operator, which
+   *       signals the presence of an independent rvalue expression following the `=` operator.
+   *
+   * If a production expects one of these token it increments the corresponding nesting count,
+   * and then decrements it just prior to checking if the token is in the input.
+   */
   private skip() {
     let n = this.next;
     while (this.index < this.tokens.length && !n.isCharacter(chars.$SEMICOLON) &&
-           (this.rparensExpected <= 0 || !n.isCharacter(chars.$RPAREN)) &&
+           !n.isOperator('|') && (this.rparensExpected <= 0 || !n.isCharacter(chars.$RPAREN)) &&
            (this.rbracesExpected <= 0 || !n.isCharacter(chars.$RBRACE)) &&
-           (this.rbracketsExpected <= 0 || !n.isCharacter(chars.$RBRACKET))) {
+           (this.rbracketsExpected <= 0 || !n.isCharacter(chars.$RBRACKET)) &&
+           (!(this.context & ParseContextFlags.Writable) || !n.isOperator('='))) {
       if (this.next.isError()) {
         this.errors.push(
             new ParserError(this.next.toString()!, this.input, this.locationText(), this.location));
@@ -1028,6 +1156,8 @@ class SimpleExpressionChecker implements AstVisitor {
   errors: string[] = [];
 
   visitImplicitReceiver(ast: ImplicitReceiver, context: any) {}
+
+  visitThisReceiver(ast: ThisReceiver, context: any) {}
 
   visitInterpolation(ast: Interpolation, context: any) {}
 

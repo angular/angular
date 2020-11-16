@@ -15,6 +15,21 @@ import {ClassDeclaration, Decorator} from '../../reflection';
 import {ImportManager} from '../../translator';
 import {TypeCheckContext} from '../../typecheck/api';
 
+/**
+ * Specifies the compilation mode that is used for the compilation.
+ */
+export enum CompilationMode {
+  /**
+   * Generates fully AOT compiled code using Ivy instructions.
+   */
+  FULL,
+
+  /**
+   * Generates code using a stable, but intermediate format suitable to be published to NPM.
+   */
+  PARTIAL,
+}
+
 export enum HandlerPrecedence {
   /**
    * Handler with PRIMARY precedence cannot overlap - there can only be one on a given class.
@@ -147,10 +162,25 @@ export interface DecoratorHandler<D, A, R> {
   /**
    * Generate a description of the field which should be added to the class, including any
    * initialization code to be generated.
+   *
+   * If the compilation mode is configured as partial, and an implementation of `compilePartial` is
+   * provided, then this method is not called.
    */
-  compile(
+  compileFull(
       node: ClassDeclaration, analysis: Readonly<A>, resolution: Readonly<R>,
       constantPool: ConstantPool): CompileResult|CompileResult[];
+
+  /**
+   * Generates code for the decorator using a stable, but intermediate format suitable to be
+   * published to NPM. This code is meant to be processed by the linker to achieve the final AOT
+   * compiled code.
+   *
+   * If present, this method is used if the compilation mode is configured as partial, otherwise
+   * `compileFull` is.
+   */
+  compilePartial?
+      (node: ClassDeclaration, analysis: Readonly<A>, resolution: Readonly<R>): CompileResult
+      |CompileResult[];
 }
 
 /**

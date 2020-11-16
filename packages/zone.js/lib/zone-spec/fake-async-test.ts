@@ -45,16 +45,15 @@ function FakeDate() {
   }
 }
 
-FakeDate.now =
-    function(this: unknown) {
+FakeDate.now = function(this: unknown) {
   const fakeAsyncTestZoneSpec = Zone.current.get('FakeAsyncTestZoneSpec');
   if (fakeAsyncTestZoneSpec) {
-    return fakeAsyncTestZoneSpec.getCurrentRealTime() + fakeAsyncTestZoneSpec.getCurrentTime();
+    return fakeAsyncTestZoneSpec.getFakeSystemTime();
   }
   return OriginalDate.now.apply(this, arguments);
-}
+};
 
-    FakeDate.UTC = OriginalDate.UTC;
+FakeDate.UTC = OriginalDate.UTC;
 FakeDate.parse = OriginalDate.parse;
 
 // keep a reference for zone patched timer function
@@ -72,24 +71,28 @@ class Scheduler {
   // Scheduler queue with the tuple of end time and callback function - sorted by end time.
   private _schedulerQueue: ScheduledFunction[] = [];
   // Current simulated time in millis.
-  private _currentTime: number = 0;
-  // Current real time in millis.
-  private _currentRealTime: number = OriginalDate.now();
+  private _currentTickTime: number = 0;
+  // Current fake system base time in millis.
+  private _currentFakeBaseSystemTime: number = OriginalDate.now();
   // track requeuePeriodicTimer
   private _currentTickRequeuePeriodicEntries: any[] = [];
 
   constructor() {}
 
-  getCurrentTime() {
-    return this._currentTime;
+  getCurrentTickTime() {
+    return this._currentTickTime;
   }
 
-  getCurrentRealTime() {
-    return this._currentRealTime;
+  getFakeSystemTime() {
+    return this._currentFakeBaseSystemTime + this._currentTickTime;
   }
 
-  setCurrentRealTime(realTime: number) {
-    this._currentRealTime = realTime;
+  setFakeBaseSystemTime(fakeBaseSystemTime: number) {
+    this._currentFakeBaseSystemTime = fakeBaseSystemTime;
+  }
+
+  getRealSystemTime() {
+    return OriginalDate.now();
   }
 
   scheduleFunction(cb: Function, delay: number, options?: {
@@ -110,7 +113,7 @@ class Scheduler {
       ...options
     };
     let currentId = options.id! < 0 ? Scheduler.nextId++ : options.id!;
-    let endTime = this._currentTime + delay;
+    let endTime = this._currentTickTime + delay;
 
     // Insert so that scheduler queue remains sorted by end time.
     let newEntry: ScheduledFunction = {
@@ -145,10 +148,31 @@ class Scheduler {
     }
   }
 
+  removeAll(): void {
+    this._schedulerQueue = [];
+  }
+
+  getTimerCount(): number {
+    return this._schedulerQueue.length;
+  }
+
+  tickToNext(step: number = 1, doTick?: (elapsed: number) => void, tickOptions?: {
+    processNewMacroTasksSynchronously: boolean
+  }) {
+    if (this._schedulerQueue.length < step) {
+      return;
+    }
+    // Find the last task currently queued in the scheduler queue and tick
+    // till that time.
+    const startTime = this._currentTickTime;
+    const targetTask = this._schedulerQueue[step - 1];
+    this.tick(targetTask.endTime - startTime, doTick, tickOptions);
+  }
+
   tick(millis: number = 0, doTick?: (elapsed: number) => void, tickOptions?: {
     processNewMacroTasksSynchronously: boolean
   }): void {
-    let finalTime = this._currentTime + millis;
+    let finalTime = this._currentTickTime + millis;
     let lastCurrentTime = 0;
     tickOptions = Object.assign({processNewMacroTasksSynchronously: true}, tickOptions);
     // we need to copy the schedulerQueue so nested timeout
@@ -177,13 +201,13 @@ class Scheduler {
             this._schedulerQueue.splice(idx, 1);
           }
         }
-        lastCurrentTime = this._currentTime;
-        this._currentTime = current.endTime;
+        lastCurrentTime = this._currentTickTime;
+        this._currentTickTime = current.endTime;
         if (doTick) {
-          doTick(this._currentTime - lastCurrentTime);
+          doTick(this._currentTickTime - lastCurrentTime);
         }
         let retval = current.func.apply(
-            global, current.isRequestAnimationFrame ? [this._currentTime] : current.args);
+            global, current.isRequestAnimationFrame ? [this._currentTickTime] : current.args);
         if (!retval) {
           // Uncaught exception in the current scheduled function. Stop processing the queue.
           break;
@@ -205,11 +229,23 @@ class Scheduler {
         }
       }
     }
-    lastCurrentTime = this._currentTime;
-    this._currentTime = finalTime;
+    lastCurrentTime = this._currentTickTime;
+    this._currentTickTime = finalTime;
     if (doTick) {
-      doTick(this._currentTime - lastCurrentTime);
+      doTick(this._currentTickTime - lastCurrentTime);
     }
+  }
+
+  flushOnlyPendingTimers(doTick?: (elapsed: number) => void): number {
+    if (this._schedulerQueue.length === 0) {
+      return 0;
+    }
+    // Find the last task currently queued in the scheduler queue and tick
+    // till that time.
+    const startTime = this._currentTickTime;
+    const lastTask = this._schedulerQueue[this._schedulerQueue.length - 1];
+    this.tick(lastTask.endTime - startTime, doTick, {processNewMacroTasksSynchronously: false});
+    return this._currentTickTime - startTime;
   }
 
   flush(limit = 20, flushPeriodic = false, doTick?: (elapsed: number) => void): number {
@@ -226,14 +262,14 @@ class Scheduler {
     }
     // Find the last task currently queued in the scheduler queue and tick
     // till that time.
-    const startTime = this._currentTime;
+    const startTime = this._currentTickTime;
     const lastTask = this._schedulerQueue[this._schedulerQueue.length - 1];
     this.tick(lastTask.endTime - startTime, doTick);
-    return this._currentTime - startTime;
+    return this._currentTickTime - startTime;
   }
 
   private flushNonPeriodic(limit: number, doTick?: (elapsed: number) => void): number {
-    const startTime = this._currentTime;
+    const startTime = this._currentTickTime;
     let lastCurrentTime = 0;
     let count = 0;
     while (this._schedulerQueue.length > 0) {
@@ -252,11 +288,11 @@ class Scheduler {
       }
 
       const current = this._schedulerQueue.shift()!;
-      lastCurrentTime = this._currentTime;
-      this._currentTime = current.endTime;
+      lastCurrentTime = this._currentTickTime;
+      this._currentTickTime = current.endTime;
       if (doTick) {
         // Update any secondary schedulers like Jasmine mock Date.
-        doTick(this._currentTime - lastCurrentTime);
+        doTick(this._currentTickTime - lastCurrentTime);
       }
       const retval = current.func.apply(global, current.args);
       if (!retval) {
@@ -264,7 +300,7 @@ class Scheduler {
         break;
       }
     }
-    return this._currentTime - startTime;
+    return this._currentTickTime - startTime;
   }
 }
 
@@ -389,16 +425,20 @@ class FakeAsyncTestZoneSpec implements ZoneSpec {
     throw error;
   }
 
-  getCurrentTime() {
-    return this._scheduler.getCurrentTime();
+  getCurrentTickTime() {
+    return this._scheduler.getCurrentTickTime();
   }
 
-  getCurrentRealTime() {
-    return this._scheduler.getCurrentRealTime();
+  getFakeSystemTime() {
+    return this._scheduler.getFakeSystemTime();
   }
 
-  setCurrentRealTime(realTime: number) {
-    this._scheduler.setCurrentRealTime(realTime);
+  setFakeBaseSystemTime(realTime: number) {
+    this._scheduler.setFakeBaseSystemTime(realTime);
+  }
+
+  getRealSystemTime() {
+    return this._scheduler.getRealSystemTime();
   }
 
   static patchDate() {
@@ -450,6 +490,20 @@ class FakeAsyncTestZoneSpec implements ZoneSpec {
     FakeAsyncTestZoneSpec.resetDate();
   }
 
+  tickToNext(steps: number = 1, doTick?: (elapsed: number) => void, tickOptions: {
+    processNewMacroTasksSynchronously: boolean
+  } = {processNewMacroTasksSynchronously: true}): void {
+    if (steps <= 0) {
+      return;
+    }
+    FakeAsyncTestZoneSpec.assertInZone();
+    this.flushMicrotasks();
+    this._scheduler.tickToNext(steps, doTick, tickOptions);
+    if (this._lastError !== null) {
+      this._resetLastErrorAndThrow();
+    }
+  }
+
   tick(millis: number = 0, doTick?: (elapsed: number) => void, tickOptions: {
     processNewMacroTasksSynchronously: boolean
   } = {processNewMacroTasksSynchronously: true}): void {
@@ -484,6 +538,27 @@ class FakeAsyncTestZoneSpec implements ZoneSpec {
       this._resetLastErrorAndThrow();
     }
     return elapsed;
+  }
+
+  flushOnlyPendingTimers(doTick?: (elapsed: number) => void): number {
+    FakeAsyncTestZoneSpec.assertInZone();
+    this.flushMicrotasks();
+    const elapsed = this._scheduler.flushOnlyPendingTimers(doTick);
+    if (this._lastError !== null) {
+      this._resetLastErrorAndThrow();
+    }
+    return elapsed;
+  }
+
+  removeAllTimers() {
+    FakeAsyncTestZoneSpec.assertInZone();
+    this._scheduler.removeAll();
+    this.pendingPeriodicTimers = [];
+    this.pendingTimers = [];
+  }
+
+  getTimerCount() {
+    return this._scheduler.getTimerCount() + this._microtasks.length;
   }
 
   // ZoneSpec implementation below.

@@ -305,8 +305,14 @@ function elementText(n: any): string {
     return '';
   }
 
-  if (getDOM().isElementNode(n) && (n as Element).tagName == 'CONTENT') {
-    return elementText(Array.prototype.slice.apply((<any>n).getDistributedNodes()));
+  if (getDOM().isElementNode(n)) {
+    const tagName = (n as Element).tagName;
+
+    if (tagName === 'CONTENT') {
+      return elementText(Array.prototype.slice.apply((<any>n).getDistributedNodes()));
+    } else if (tagName === 'SLOT') {
+      return elementText(Array.prototype.slice.apply((<any>n).assignedNodes()));
+    }
   }
 
   if (hasShadowRoot(n)) {

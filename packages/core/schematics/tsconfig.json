@@ -4,7 +4,7 @@
     "noFallthroughCasesInSwitch": true,
     "strict": true,
     "lib": ["es2015"],
-    "types": [],
+    "types": ["jasmine"],
     "baseUrl": ".",
     "paths": {
       "@angular/core": ["../"],

@@ -11,6 +11,14 @@ import * as Octokit from '@octokit/rest';
 import {RequestParameters} from '@octokit/types';
 import {query, types} from 'typed-graphqlify';
 
+/** Interface describing a Github repository. */
+export interface GithubRepo {
+  /** Owner login of the repository. */
+  owner: string;
+  /** Name of the repository. */
+  name: string;
+}
+
 /** Error for failed Github API requests. */
 export class GithubApiRequestError extends Error {
   constructor(public status: number, message: string) {
@@ -61,18 +69,13 @@ export class GithubClient extends Octokit {
 }
 
 /**
- * An object representation of a GraphQL Query to be used as a response type and to generate
- * a GraphQL query string.
+ * An object representation of a GraphQL Query to be used as a response type and
+ * to generate a GraphQL query string.
  */
-type GraphQLQueryObject = Parameters<typeof query>[1];
+export type GraphQLQueryObject = Parameters<typeof query>[1];
 
-/**
- * A client for interacting with Github's GraphQL API.
- *
- * This class is intentionally not exported as it should always be access/used via a
- * _GithubClient instance.
- */
-class GithubGraphqlClient {
+/** A client for interacting with Github's GraphQL API. */
+export class GithubGraphqlClient {
   /** The Github GraphQL (v4) API. */
   private graqhql = graphql;
 
@@ -83,7 +86,6 @@ class GithubGraphqlClient {
       this.graqhql = this.graqhql.defaults({headers: {authorization: `token ${token}`}});
     }
   }
-
 
   /** Perform a query using Github's GraphQL API. */
   async query<T extends GraphQLQueryObject>(queryObject: T, params: RequestParameters = {}) {

@@ -95,7 +95,44 @@ describe('bootstrap', () => {
     });
   });
 
-  it('should NOT wait for resolvers to complete when initialNavigation = legacy_enabled',
+  it('should wait for resolvers to complete when initialNavigation = enabledBlocking', (done) => {
+    @Component({selector: 'test', template: 'test'})
+    class TestCmpEnabled {
+    }
+
+    @NgModule({
+      imports: [
+        BrowserModule,
+        RouterModule.forRoot(
+            [{path: '**', component: TestCmpEnabled, resolve: {test: TestResolver}}],
+            {useHash: true, initialNavigation: 'enabledBlocking'})
+      ],
+      declarations: [RootCmp, TestCmpEnabled],
+      bootstrap: [RootCmp],
+      providers: [...testProviders, TestResolver],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA]
+    })
+    class TestModule {
+      constructor(router: Router) {
+        log.push('TestModule');
+        router.events.subscribe(e => log.push(e.constructor.name));
+      }
+    }
+
+    platformBrowserDynamic([]).bootstrapModule(TestModule).then(res => {
+      const router = res.injector.get(Router);
+      const data = router.routerState.snapshot.root.firstChild!.data;
+      expect(data['test']).toEqual('test-data');
+      expect(log).toEqual([
+        'TestModule', 'NavigationStart', 'RoutesRecognized', 'GuardsCheckStart',
+        'ChildActivationStart', 'ActivationStart', 'GuardsCheckEnd', 'ResolveStart', 'ResolveEnd',
+        'RootCmp', 'ActivationEnd', 'ChildActivationEnd', 'NavigationEnd', 'Scroll'
+      ]);
+      done();
+    });
+  });
+
+  it('should NOT wait for resolvers to complete when initialNavigation = enabledNonBlocking',
      (done) => {
        @Component({selector: 'test', template: 'test'})
        class TestCmpLegacyEnabled {
@@ -106,7 +143,7 @@ describe('bootstrap', () => {
            BrowserModule,
            RouterModule.forRoot(
                [{path: '**', component: TestCmpLegacyEnabled, resolve: {test: TestResolver}}],
-               {useHash: true, initialNavigation: 'legacy_enabled'})
+               {useHash: true, initialNavigation: 'enabledNonBlocking'})
          ],
          declarations: [RootCmp, TestCmpLegacyEnabled],
          bootstrap: [RootCmp],
@@ -137,6 +174,47 @@ describe('bootstrap', () => {
        });
      });
 
+  it('should NOT wait for resolvers to complete when initialNavigation is not set', (done) => {
+    @Component({selector: 'test', template: 'test'})
+    class TestCmpLegacyEnabled {
+    }
+
+    @NgModule({
+      imports: [
+        BrowserModule,
+        RouterModule.forRoot(
+            [{path: '**', component: TestCmpLegacyEnabled, resolve: {test: TestResolver}}],
+            {useHash: true})
+      ],
+      declarations: [RootCmp, TestCmpLegacyEnabled],
+      bootstrap: [RootCmp],
+      providers: [...testProviders, TestResolver],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA]
+    })
+    class TestModule {
+      constructor(router: Router) {
+        log.push('TestModule');
+        router.events.subscribe(e => log.push(e.constructor.name));
+      }
+    }
+
+    platformBrowserDynamic([]).bootstrapModule(TestModule).then(res => {
+      const router: Router = res.injector.get(Router);
+      expect(router.routerState.snapshot.root.firstChild).toBeNull();
+      // ResolveEnd has not been emitted yet because bootstrap returned too early
+      expect(log).toEqual([
+        'TestModule', 'RootCmp', 'NavigationStart', 'RoutesRecognized', 'GuardsCheckStart',
+        'ChildActivationStart', 'ActivationStart', 'GuardsCheckEnd', 'ResolveStart'
+      ]);
+
+      router.events.subscribe((e) => {
+        if (e instanceof NavigationEnd) {
+          done();
+        }
+      });
+    });
+  });
+
   it('should not run navigation when initialNavigation = disabled', (done) => {
     @Component({selector: 'test', template: 'test'})
     class TestCmpDiabled {
@@ -150,37 +228,6 @@ describe('bootstrap', () => {
             {useHash: true, initialNavigation: 'disabled'})
       ],
       declarations: [RootCmp, TestCmpDiabled],
-      bootstrap: [RootCmp],
-      providers: [...testProviders, TestResolver],
-      schemas: [CUSTOM_ELEMENTS_SCHEMA]
-    })
-    class TestModule {
-      constructor(router: Router) {
-        log.push('TestModule');
-        router.events.subscribe(e => log.push(e.constructor.name));
-      }
-    }
-
-    platformBrowserDynamic([]).bootstrapModule(TestModule).then(res => {
-      const router = res.injector.get(Router);
-      expect(log).toEqual(['TestModule', 'RootCmp']);
-      done();
-    });
-  });
-
-  it('should not run navigation when initialNavigation = legacy_disabled', (done) => {
-    @Component({selector: 'test', template: 'test'})
-    class TestCmpLegacyDisabled {
-    }
-
-    @NgModule({
-      imports: [
-        BrowserModule,
-        RouterModule.forRoot(
-            [{path: '**', component: TestCmpLegacyDisabled, resolve: {test: TestResolver}}],
-            {useHash: true, initialNavigation: 'legacy_disabled'})
-      ],
-      declarations: [RootCmp, TestCmpLegacyDisabled],
       bootstrap: [RootCmp],
       providers: [...testProviders, TestResolver],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
@@ -301,7 +348,7 @@ describe('bootstrap', () => {
     await router.navigateByUrl('/aa');
     window.scrollTo(0, 5000);
 
-    // IE 9/10/11 use non-standard pageYOffset instead of scrollY
+    // IE 11 uses non-standard pageYOffset instead of scrollY
     const getScrollY = () => window.scrollY !== undefined ? window.scrollY : window.pageYOffset;
 
     await router.navigateByUrl('/fail');

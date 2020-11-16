@@ -7,12 +7,6 @@
  */
 import {ComponentFactoryResolver, Injector, Type} from '@angular/core';
 
-const matches = (() => {
-  const elProto = Element.prototype as any;
-  return elProto.matches || elProto.matchesSelector || elProto.mozMatchesSelector ||
-      elProto.msMatchesSelector || elProto.oMatchesSelector || elProto.webkitMatchesSelector;
-})();
-
 /**
  * Provide methods for scheduling the execution of a callback.
  */
@@ -65,7 +59,7 @@ export function createCustomEvent(doc: Document, name: string, detail: any): Cus
   const bubbles = false;
   const cancelable = false;
 
-  // On IE9-11, `CustomEvent` is not a constructor.
+  // On IE11, `CustomEvent` is not a constructor.
   if (typeof CustomEvent !== 'function') {
     const event = doc.createEvent('CustomEvent');
     event.initCustomEvent(name, bubbles, cancelable, detail);
@@ -96,11 +90,20 @@ export function kebabToCamelCase(input: string): string {
   return input.replace(/-([a-z\d])/g, (_, char) => char.toUpperCase());
 }
 
+let _matches: (this: any, selector: string) => boolean;
+
 /**
  * Check whether an `Element` matches a CSS selector.
+ * NOTE: this is duplicated from @angular/upgrade, and can
+ * be consolidated in the future
  */
-export function matchesSelector(element: Element, selector: string): boolean {
-  return matches.call(element, selector);
+export function matchesSelector(el: any, selector: string): boolean {
+  if (!_matches) {
+    const elProto = <any>Element.prototype;
+    _matches = elProto.matches || elProto.matchesSelector || elProto.mozMatchesSelector ||
+        elProto.msMatchesSelector || elProto.oMatchesSelector || elProto.webkitMatchesSelector;
+  }
+  return el.nodeType === Node.ELEMENT_NODE ? _matches.call(el, selector) : false;
 }
 
 /**

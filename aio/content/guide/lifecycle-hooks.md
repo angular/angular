@@ -62,6 +62,8 @@ Angular executes hook methods in the following sequence. You can use them to per
 
       Called before `ngOnInit()` and whenever one or more data-bound input properties change.
 
+      Note that if your component has no inputs or you use it without providing any inputs, the framework will not call `ngOnChanges()`.
+
     </td>
   </tr>
   <tr style='vertical-align:top'>
@@ -303,11 +305,6 @@ Use the `ngOnInit()` method to perform the following initialization tasks.
   An `ngOnInit()` is a good place for a component to fetch its initial data.
   For an example, see the [Tour of Heroes tutorial](tutorial/toh-pt4#oninit).
 
-  <div class="alert is-helpful">
-
-  In [Flaw: Constructor does Real Work](http://misko.hevery.com/code-reviewers-guide/flaw-constructor-does-real-work/), Misko Hevery, Angular team lead, explains why you should avoid complex constructor logic.
-
-  </div>
 
 * Set up the component after Angular sets the input properties.
   Constructors should do no more than set the initial local variables to simple values.

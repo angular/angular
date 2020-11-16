@@ -7,14 +7,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import * as yargs from 'yargs';
-import {tsCircularDependenciesBuilder} from './ts-circular-dependencies/index';
-import {buildPullapproveParser} from './pullapprove/cli';
+
+import {buildCaretakerParser} from './caretaker/cli';
 import {buildCommitMessageParser} from './commit-message/cli';
 import {buildFormatParser} from './format/cli';
-import {buildReleaseParser} from './release/cli';
+import {buildNgbotParser} from './ngbot/cli';
 import {buildPrParser} from './pr/cli';
+import {buildPullapproveParser} from './pullapprove/cli';
+import {buildReleaseParser} from './release/cli';
+import {tsCircularDependenciesBuilder} from './ts-circular-dependencies/index';
 import {captureLogOutputForCommand} from './utils/console';
-import {buildCaretakerParser} from './caretaker/cli';
 
 yargs.scriptName('ng-dev')
     .middleware(captureLogOutputForCommand)
@@ -27,6 +29,7 @@ yargs.scriptName('ng-dev')
     .command('release <command>', '', buildReleaseParser)
     .command('ts-circular-deps <command>', '', tsCircularDependenciesBuilder)
     .command('caretaker <command>', '', buildCaretakerParser)
+    .command('ngbot <command>', false, buildNgbotParser)
     .wrap(120)
     .strict()
     .parse();

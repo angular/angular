@@ -45,7 +45,7 @@ export class AngularProfiler {
   timeChangeDetection(config: any): ChangeDetectionPerfRecord {
     const record = config && config['record'];
     const profileName = 'Change Detection';
-    // Profiler is not available in Android browsers, nor in IE 9 without dev tools opened
+    // Profiler is not available in Android browsers without dev tools opened
     const isProfilerAvailable = window.console.profile != null;
     if (record && isProfilerAvailable) {
       window.console.profile(profileName);

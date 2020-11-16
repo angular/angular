@@ -317,7 +317,7 @@ class TemplateParseVisitor implements html.Visitor {
         const absoluteOffset = (attr.valueSpan || attr.sourceSpan).start.offset;
         this._bindingParser.parseInlineTemplateBinding(
             templateKey!, templateValue!, attr.sourceSpan, absoluteOffset, templateMatchableAttrs,
-            templateElementOrDirectiveProps, parsedVariables);
+            templateElementOrDirectiveProps, parsedVariables, false /* isIvyAst */);
         templateElementVars.push(...parsedVariables.map(v => t.VariableAst.fromParsedVariable(v)));
       }
 
@@ -566,7 +566,7 @@ class TemplateParseVisitor implements html.Visitor {
 
     const directiveAsts = directives.map((directive) => {
       const sourceSpan = new ParseSourceSpan(
-          elementSourceSpan.start, elementSourceSpan.end,
+          elementSourceSpan.start, elementSourceSpan.end, elementSourceSpan.fullStart,
           `Directive ${identifierName(directive.type)}`);
 
       if (directive.isComponent) {

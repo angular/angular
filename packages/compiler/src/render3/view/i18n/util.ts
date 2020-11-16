@@ -179,5 +179,5 @@ export function getTranslationConstPrefix(extra: string): string {
  */
 export function declareI18nVariable(variable: o.ReadVarExpr): o.Statement {
   return new o.DeclareVarStmt(
-      variable.name!, undefined, o.INFERRED_TYPE, null, variable.sourceSpan);
+      variable.name!, undefined, o.INFERRED_TYPE, undefined, variable.sourceSpan);
 }

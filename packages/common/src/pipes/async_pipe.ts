@@ -94,11 +94,10 @@ export class AsyncPipe implements OnDestroy, PipeTransform {
     }
   }
 
-  transform<T>(obj: null): null;
-  transform<T>(obj: undefined): undefined;
-  transform<T>(obj: Observable<T>|null|undefined): T|null;
-  transform<T>(obj: Promise<T>|null|undefined): T|null;
-  transform(obj: Observable<any>|Promise<any>|null|undefined): any {
+  transform<T>(obj: Observable<T>|Promise<T>): T|null;
+  transform<T>(obj: null|undefined): null;
+  transform<T>(obj: Observable<T>|Promise<T>|null|undefined): T|null;
+  transform<T>(obj: Observable<T>|Promise<T>|null|undefined): T|null {
     if (!this._obj) {
       if (obj) {
         this._subscribe(obj);
@@ -108,7 +107,7 @@ export class AsyncPipe implements OnDestroy, PipeTransform {
 
     if (obj !== this._obj) {
       this._dispose();
-      return this.transform(obj as any);
+      return this.transform(obj);
     }
 
     return this._latestValue;

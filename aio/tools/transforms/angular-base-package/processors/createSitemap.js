@@ -5,6 +5,7 @@ module.exports = function createSitemap() {
       'contributors-json',
       'navigation-json',
       'resources-json',
+      'events-json'
     ],
     ignoredPaths: [
       'file-not-found',

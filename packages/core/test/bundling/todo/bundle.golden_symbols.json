@@ -90,6 +90,9 @@
     "name": "RecordViewTuple"
   },
   {
+    "name": "RuntimeError"
+  },
+  {
     "name": "SWITCH_ELEMENT_REF_FACTORY"
   },
   {
@@ -177,16 +180,13 @@
     "name": "addComponentLogic"
   },
   {
-    "name": "addHostBindingsToExpandoInstructions"
-  },
-  {
-    "name": "addRemoveViewFromContainer"
-  },
-  {
     "name": "addToArray"
   },
   {
     "name": "addToViewTree"
+  },
+  {
+    "name": "allocExpando"
   },
   {
     "name": "allocLFrame"
@@ -211,9 +211,6 @@
   },
   {
     "name": "attachPatchData"
-  },
-  {
-    "name": "baseResolveDirective"
   },
   {
     "name": "bindingUpdated"
@@ -246,6 +243,9 @@
     "name": "concatStringsWithSpace"
   },
   {
+    "name": "configureViewWithDirective"
+  },
+  {
     "name": "createDirectivesInstances"
   },
   {
@@ -259,9 +259,6 @@
   },
   {
     "name": "createLView"
-  },
-  {
-    "name": "createTNode"
   },
   {
     "name": "createTView"
@@ -327,19 +324,10 @@
     "name": "forwardRef"
   },
   {
-    "name": "generateExpandoInstructionBlock"
-  },
-  {
     "name": "generateInitialInputs"
   },
   {
     "name": "generatePropertyAliases"
-  },
-  {
-    "name": "getBeforeNodeForView"
-  },
-  {
-    "name": "getCheckNoChangesMode"
   },
   {
     "name": "getClosureSafeProperty"
@@ -354,10 +342,16 @@
     "name": "getConstant"
   },
   {
-    "name": "getContainerRenderParent"
+    "name": "getCurrentTNode"
+  },
+  {
+    "name": "getCurrentTNodePlaceholderOk"
   },
   {
     "name": "getDebugContext"
+  },
+  {
+    "name": "getDeclarationTNode"
   },
   {
     "name": "getFirstLContainer"
@@ -366,13 +360,7 @@
     "name": "getInjectorIndex"
   },
   {
-    "name": "getIsParent"
-  },
-  {
     "name": "getLCleanup"
-  },
-  {
-    "name": "getLContainer"
   },
   {
     "name": "getLView"
@@ -423,16 +411,7 @@
     "name": "getParentInjectorView"
   },
   {
-    "name": "getParentInjectorViewOffset"
-  },
-  {
-    "name": "getParentState"
-  },
-  {
     "name": "getPreviousIndex"
-  },
-  {
-    "name": "getPreviousOrParentTNode"
   },
   {
     "name": "getSelectedIndex"
@@ -453,9 +432,6 @@
     "name": "getTView"
   },
   {
-    "name": "growHostVarsSpace"
-  },
-  {
     "name": "handleError"
   },
   {
@@ -463,6 +439,9 @@
   },
   {
     "name": "hasTagAndTypeMatch"
+  },
+  {
+    "name": "icuContainerIterate"
   },
   {
     "name": "includeViewProviders"
@@ -504,7 +483,13 @@
     "name": "isCssClassMatching"
   },
   {
+    "name": "isCurrentTNodeParent"
+  },
+  {
     "name": "isDirectiveHost"
+  },
+  {
+    "name": "isInCheckNoChangesMode"
   },
   {
     "name": "isInlineTemplate"
@@ -531,9 +516,6 @@
     "name": "isProceduralRenderer"
   },
   {
-    "name": "isRootView"
-  },
-  {
     "name": "isStylingMatch"
   },
   {
@@ -556,6 +538,9 @@
   },
   {
     "name": "leaveViewLight"
+  },
+  {
+    "name": "lookupTokenUsingModuleInjector"
   },
   {
     "name": "makeParamDecorator"
@@ -603,6 +588,9 @@
     "name": "noSideEffects"
   },
   {
+    "name": "notFoundValueOrThrow"
+  },
+  {
     "name": "readPatchedData"
   },
   {
@@ -616,6 +604,9 @@
   },
   {
     "name": "refreshView"
+  },
+  {
+    "name": "registerHostBindingOpCodes"
   },
   {
     "name": "registerPostOrderHooks"
@@ -663,13 +654,13 @@
     "name": "setBindingRootForHostBindings"
   },
   {
-    "name": "setCheckNoChangesMode"
-  },
-  {
     "name": "setCurrentDirectiveIndex"
   },
   {
     "name": "setCurrentQueryIndex"
+  },
+  {
+    "name": "setCurrentTNode"
   },
   {
     "name": "setDirectiveInputsWhichShadowsStyling"
@@ -687,7 +678,7 @@
     "name": "setInputsFromAttrs"
   },
   {
-    "name": "setPreviousOrParentTNode"
+    "name": "setIsInCheckNoChangesMode"
   },
   {
     "name": "setSelectedIndex"
@@ -714,7 +705,7 @@
     "name": "stringifyForError"
   },
   {
-    "name": "throwMultipleComponentError"
+    "name": "throwProviderNotFoundError"
   },
   {
     "name": "toTStylingRange"

@@ -27,28 +27,28 @@
     "body-parser": "^1.19.0",
     "delete-empty": "^3.0.0",
     "express": "^4.17.1",
-    "jasmine": "^3.5.0",
-    "nock": "^12.0.3",
-    "node-fetch": "^2.6.0",
+    "jasmine": "^3.6.1",
+    "nock": "^13.0.4",
+    "node-fetch": "^2.6.1",
     "shelljs": "^0.8.4",
     "source-map-support": "^0.5.19",
-    "tar-stream": "^2.1.2",
-    "tslib": "^1.11.1"
+    "tar-stream": "^2.1.3",
+    "tslib": "^2.0.1"
   },
   "devDependencies": {
     "@types/body-parser": "^1.19.0",
-    "@types/express": "^4.17.6",
-    "@types/jasmine": "^3.5.10",
+    "@types/express": "^4.17.8",
+    "@types/jasmine": "^3.5.14",
     "@types/nock": "^11.1.0",
-    "@types/node": "^13.13.2",
+    "@types/node": "^14.6.4",
     "@types/node-fetch": "^2.5.7",
-    "@types/shelljs": "^0.8.7",
-    "@types/supertest": "^2.0.8",
-    "nodemon": "^2.0.3",
+    "@types/shelljs": "^0.8.8",
+    "@types/supertest": "^2.0.10",
+    "nodemon": "^2.0.4",
     "npm-run-all": "^4.1.5",
     "supertest": "^4.0.2",
-    "tslint": "^6.1.1",
+    "tslint": "^6.1.3",
     "tslint-jasmine-noSkipOrFocus": "^1.0.9",
-    "typescript": "^3.8.3"
+    "typescript": "^4.0.2"
   }
 }

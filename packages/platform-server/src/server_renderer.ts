@@ -32,7 +32,6 @@ export class ServerRendererFactory2 implements RendererFactory2 {
       return this.defaultRenderer;
     }
     switch (type.encapsulation) {
-      case ViewEncapsulation.Native:
       case ViewEncapsulation.Emulated: {
         let renderer = this.rendererByCompId.get(type.id);
         if (!renderer) {
@@ -161,6 +160,9 @@ class DefaultServerRenderer2 implements Renderer2 {
   setStyle(el: any, style: string, value: any, flags: RendererStyleFlags2): void {
     style = style.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
     const styleMap = _readStyleAttribute(el);
+    if (flags & RendererStyleFlags2.Important) {
+      value += ' !important';
+    }
     styleMap[style] = value == null ? '' : value;
     _writeStyleAttribute(el, styleMap);
   }

@@ -19,19 +19,17 @@ import {RendererFactory2} from '../render/api';
 import {Sanitizer} from '../sanitization/sanitizer';
 import {VERSION} from '../version';
 import {NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR} from '../view/provider';
-
 import {assertComponentType} from './assert';
 import {createRootComponent, createRootComponentView, createRootContext, LifecycleHooksFeature} from './component';
 import {getComponentDef} from './definition';
 import {NodeInjector} from './di';
-import {assignTViewNodeToLView, createLView, createTView, elementCreate, locateHostElement, renderView} from './instructions/shared';
+import {createLView, createTView, locateHostElement, renderView} from './instructions/shared';
 import {ComponentDef} from './interfaces/definition';
-import {TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeType} from './interfaces/node';
+import {TContainerNode, TElementContainerNode, TElementNode, TNode} from './interfaces/node';
 import {domRendererFactory3, RendererFactory3, RNode} from './interfaces/renderer';
-import {LView, LViewFlags, TVIEW, TViewType} from './interfaces/view';
+import {HEADER_OFFSET, LView, LViewFlags, TViewType} from './interfaces/view';
 import {MATH_ML_NAMESPACE, SVG_NAMESPACE} from './namespaces';
-import {assertNodeOfPossibleTypes} from './node_assert';
-import {writeDirectClass} from './node_manipulation';
+import {createElementNode, writeDirectClass} from './node_manipulation';
 import {extractAttrsAndClassesFromSelector, stringifyCSSSelectorList} from './node_selector_matcher';
 import {enterView, leaveView} from './state';
 import {setUpAttributes} from './util/attrs_utils';
@@ -149,8 +147,8 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
     const elementName = this.componentDef.selectors[0][0] as string || 'div';
     const hostRNode = rootSelectorOrNode ?
         locateHostElement(hostRenderer, rootSelectorOrNode, this.componentDef.encapsulation) :
-        elementCreate(
-            elementName, rendererFactory.createRenderer(null, this.componentDef),
+        createElementNode(
+            rendererFactory.createRenderer(null, this.componentDef), elementName,
             getNamespace(elementName));
 
     const rootFlags = this.componentDef.onPush ? LViewFlags.Dirty | LViewFlags.IsRoot :
@@ -158,7 +156,7 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
     const rootContext = createRootContext();
 
     // Create the root view. Uses empty TView and ContentTemplate.
-    const rootTView = createTView(TViewType.Root, -1, null, 1, 0, null, null, null, null, null);
+    const rootTView = createTView(TViewType.Root, null, null, 1, 0, null, null, null, null, null);
     const rootLView = createLView(
         null, rootTView, rootContext, rootFlags, null, null, rendererFactory, hostRenderer,
         sanitizer, rootViewInjector);
@@ -168,7 +166,7 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
     // `renderView` does that. However as the code is written it is needed because
     // `createRootComponentView` and `createRootComponent` both read global state. Fixing those
     // issues would allow us to drop this.
-    enterView(rootLView, null);
+    enterView(rootLView);
 
     let component: T;
     let tElementNode: TElementNode;
@@ -194,7 +192,7 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
         }
       }
 
-      tElementNode = getTNode(rootTView, 0) as TElementNode;
+      tElementNode = getTNode(rootTView, HEADER_OFFSET) as TElementNode;
 
       if (projectableNodes !== undefined) {
         const projection: (TNode|RNode[]|null)[] = tElementNode.projection = [];
@@ -220,15 +218,9 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
       leaveView();
     }
 
-    const componentRef = new ComponentRef(
+    return new ComponentRef(
         this.componentType, component,
         createElementRef(viewEngine_ElementRef, tElementNode, rootLView), rootLView, tElementNode);
-
-    // The host element of the internal root view is attached to the component's host view node.
-    ngDevMode && assertNodeOfPossibleTypes(rootTView.node, [TNodeType.View]);
-    rootTView.node!.child = tElementNode;
-
-    return componentRef;
   }
 }
 
@@ -267,7 +259,6 @@ export class ComponentRef<T> extends viewEngine_ComponentRef<T> {
     super();
     this.instance = instance;
     this.hostView = this.changeDetectorRef = new RootViewRef<T>(_rootLView);
-    assignTViewNodeToLView(_rootLView[TVIEW], null, -1, _rootLView);
     this.componentType = componentType;
   }
 

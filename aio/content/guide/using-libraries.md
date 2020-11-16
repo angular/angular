@@ -32,7 +32,7 @@ To do this:
 
 1. Create a `typings.d.ts` file in your `src/` folder. This file is automatically included as global type definition.
 
-2. Add the following code in `src/typings.d.ts`.
+2. Add the following code in `src/typings.d.ts`:
 
 ```
 declare module 'host' {
@@ -45,7 +45,7 @@ declare module 'host' {
 }
 ```
 
-3. In the component or file that uses the library, add the following code.
+3. In the component or file that uses the library, add the following code:
 
 ```
 import * as host from 'host';
@@ -129,7 +129,7 @@ interface JQuery {
 }
 ```
 
-If don't add the interface for the script-defined extension, your IDE shows an error:
+If you don't add the interface for the script-defined extension, your IDE shows an error:
 
 ```
 [TS][Error] Property 'myPlugin' does not exist on type 'JQuery'

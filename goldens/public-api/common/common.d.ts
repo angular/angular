@@ -3,10 +3,9 @@ export declare const APP_BASE_HREF: InjectionToken<string>;
 export declare class AsyncPipe implements OnDestroy, PipeTransform {
     constructor(_ref: ChangeDetectorRef);
     ngOnDestroy(): void;
-    transform<T>(obj: null): null;
-    transform<T>(obj: undefined): undefined;
-    transform<T>(obj: Observable<T> | null | undefined): T | null;
-    transform<T>(obj: Promise<T> | null | undefined): T | null;
+    transform<T>(obj: Observable<T> | Promise<T>): T | null;
+    transform<T>(obj: null | undefined): null;
+    transform<T>(obj: Observable<T> | Promise<T> | null | undefined): T | null;
 }
 
 export declare class CommonModule {
@@ -14,17 +13,23 @@ export declare class CommonModule {
 
 export declare class CurrencyPipe implements PipeTransform {
     constructor(_locale: string, _defaultCurrencyCode?: string);
-    transform(value: any, currencyCode?: string, display?: 'code' | 'symbol' | 'symbol-narrow' | string | boolean, digitsInfo?: string, locale?: string): string | null;
+    transform(value: number | string, currencyCode?: string, display?: 'code' | 'symbol' | 'symbol-narrow' | string | boolean, digitsInfo?: string, locale?: string): string | null;
+    transform(value: null | undefined, currencyCode?: string, display?: 'code' | 'symbol' | 'symbol-narrow' | string | boolean, digitsInfo?: string, locale?: string): null;
+    transform(value: number | string | null | undefined, currencyCode?: string, display?: 'code' | 'symbol' | 'symbol-narrow' | string | boolean, digitsInfo?: string, locale?: string): string | null;
 }
 
 export declare class DatePipe implements PipeTransform {
     constructor(locale: string);
-    transform(value: any, format?: string, timezone?: string, locale?: string): string | null;
+    transform(value: Date | string | number, format?: string, timezone?: string, locale?: string): string | null;
+    transform(value: null | undefined, format?: string, timezone?: string, locale?: string): null;
+    transform(value: Date | string | number | null | undefined, format?: string, timezone?: string, locale?: string): string | null;
 }
 
 export declare class DecimalPipe implements PipeTransform {
     constructor(_locale: string);
-    transform(value: any, digitsInfo?: string, locale?: string): string | null;
+    transform(value: number | string, digitsInfo?: string, locale?: string): string | null;
+    transform(value: null | undefined, digitsInfo?: string, locale?: string): null;
+    transform(value: number | string | null | undefined, digitsInfo?: string, locale?: string): string | null;
 }
 
 export declare const DOCUMENT: InjectionToken<Document>;
@@ -61,13 +66,13 @@ export declare function getLocaleDateFormat(locale: string, width: FormatWidth):
 
 export declare function getLocaleDateTimeFormat(locale: string, width: FormatWidth): string;
 
-export declare function getLocaleDayNames(locale: string, formStyle: FormStyle, width: TranslationWidth): string[];
+export declare function getLocaleDayNames(locale: string, formStyle: FormStyle, width: TranslationWidth): ReadonlyArray<string>;
 
-export declare function getLocaleDayPeriods(locale: string, formStyle: FormStyle, width: TranslationWidth): [string, string];
+export declare function getLocaleDayPeriods(locale: string, formStyle: FormStyle, width: TranslationWidth): Readonly<[string, string]>;
 
 export declare function getLocaleDirection(locale: string): 'ltr' | 'rtl';
 
-export declare function getLocaleEraNames(locale: string, width: TranslationWidth): [string, string];
+export declare function getLocaleEraNames(locale: string, width: TranslationWidth): Readonly<[string, string]>;
 
 export declare function getLocaleExtraDayPeriodRules(locale: string): (Time | [Time, Time])[];
 
@@ -77,7 +82,7 @@ export declare function getLocaleFirstDayOfWeek(locale: string): WeekDay;
 
 export declare function getLocaleId(locale: string): string;
 
-export declare function getLocaleMonthNames(locale: string, formStyle: FormStyle, width: TranslationWidth): string[];
+export declare function getLocaleMonthNames(locale: string, formStyle: FormStyle, width: TranslationWidth): ReadonlyArray<string>;
 
 export declare function getLocaleNumberFormat(locale: string, type: NumberFormatStyle): string;
 
@@ -105,7 +110,7 @@ export declare class HashLocationStrategy extends LocationStrategy {
 
 export declare class I18nPluralPipe implements PipeTransform {
     constructor(_localization: NgLocalization);
-    transform(value: number, pluralMap: {
+    transform(value: number | null | undefined, pluralMap: {
         [count: string]: string;
     }, locale?: string): string;
 }
@@ -135,21 +140,13 @@ export declare interface KeyValue<K, V> {
 
 export declare class KeyValuePipe implements PipeTransform {
     constructor(differs: KeyValueDiffers);
-    transform<K, V>(input: null, compareFn?: (a: KeyValue<K, V>, b: KeyValue<K, V>) => number): null;
-    transform<V>(input: {
-        [key: string]: V;
-    } | ReadonlyMap<string, V>, compareFn?: (a: KeyValue<string, V>, b: KeyValue<string, V>) => number): Array<KeyValue<string, V>>;
-    transform<V>(input: {
-        [key: string]: V;
-    } | ReadonlyMap<string, V> | null, compareFn?: (a: KeyValue<string, V>, b: KeyValue<string, V>) => number): Array<KeyValue<string, V>> | null;
-    transform<V>(input: {
-        [key: number]: V;
-    } | ReadonlyMap<number, V>, compareFn?: (a: KeyValue<number, V>, b: KeyValue<number, V>) => number): Array<KeyValue<number, V>>;
-    transform<V>(input: {
-        [key: number]: V;
-    } | ReadonlyMap<number, V> | null, compareFn?: (a: KeyValue<number, V>, b: KeyValue<number, V>) => number): Array<KeyValue<number, V>> | null;
     transform<K, V>(input: ReadonlyMap<K, V>, compareFn?: (a: KeyValue<K, V>, b: KeyValue<K, V>) => number): Array<KeyValue<K, V>>;
-    transform<K, V>(input: ReadonlyMap<K, V> | null, compareFn?: (a: KeyValue<K, V>, b: KeyValue<K, V>) => number): Array<KeyValue<K, V>> | null;
+    transform<K extends number, V>(input: Record<K, V>, compareFn?: (a: KeyValue<string, V>, b: KeyValue<string, V>) => number): Array<KeyValue<string, V>>;
+    transform<K extends string, V>(input: Record<K, V> | ReadonlyMap<K, V>, compareFn?: (a: KeyValue<K, V>, b: KeyValue<K, V>) => number): Array<KeyValue<K, V>>;
+    transform(input: null | undefined, compareFn?: (a: KeyValue<unknown, unknown>, b: KeyValue<unknown, unknown>) => number): null;
+    transform<K, V>(input: ReadonlyMap<K, V> | null | undefined, compareFn?: (a: KeyValue<K, V>, b: KeyValue<K, V>) => number): Array<KeyValue<K, V>> | null;
+    transform<K extends number, V>(input: Record<K, V> | null | undefined, compareFn?: (a: KeyValue<string, V>, b: KeyValue<string, V>) => number): Array<KeyValue<string, V>> | null;
+    transform<K extends string, V>(input: Record<K, V> | ReadonlyMap<K, V> | null | undefined, compareFn?: (a: KeyValue<K, V>, b: KeyValue<K, V>) => number): Array<KeyValue<K, V>> | null;
 }
 
 export declare class Location {
@@ -194,6 +191,8 @@ export declare abstract class LocationStrategy {
 
 export declare class LowerCasePipe implements PipeTransform {
     transform(value: string): string;
+    transform(value: null | undefined): null;
+    transform(value: string | null | undefined): string | null;
 }
 
 export declare class NgClass implements DoCheck {
@@ -339,7 +338,9 @@ export declare class PathLocationStrategy extends LocationStrategy {
 
 export declare class PercentPipe implements PipeTransform {
     constructor(_locale: string);
-    transform(value: any, digitsInfo?: string, locale?: string): string | null;
+    transform(value: number | string, digitsInfo?: string, locale?: string): string | null;
+    transform(value: null | undefined, digitsInfo?: string, locale?: string): null;
+    transform(value: number | string | null | undefined, digitsInfo?: string, locale?: string): string | null;
 }
 
 export declare abstract class PlatformLocation {
@@ -380,9 +381,10 @@ export declare function registerLocaleData(data: any, localeId?: string | any, e
 
 export declare class SlicePipe implements PipeTransform {
     transform<T>(value: ReadonlyArray<T>, start: number, end?: number): Array<T>;
+    transform(value: null | undefined, start: number, end?: number): null;
+    transform<T>(value: ReadonlyArray<T> | null | undefined, start: number, end?: number): Array<T> | null;
     transform(value: string, start: number, end?: number): string;
-    transform(value: null, start: number, end?: number): null;
-    transform(value: undefined, start: number, end?: number): undefined;
+    transform(value: string | null | undefined, start: number, end?: number): string | null;
 }
 
 export declare type Time = {
@@ -392,6 +394,8 @@ export declare type Time = {
 
 export declare class TitleCasePipe implements PipeTransform {
     transform(value: string): string;
+    transform(value: null | undefined): null;
+    transform(value: string | null | undefined): string | null;
 }
 
 export declare enum TranslationWidth {
@@ -403,6 +407,8 @@ export declare enum TranslationWidth {
 
 export declare class UpperCasePipe implements PipeTransform {
     transform(value: string): string;
+    transform(value: null | undefined): null;
+    transform(value: string | null | undefined): string | null;
 }
 
 export declare const VERSION: Version;

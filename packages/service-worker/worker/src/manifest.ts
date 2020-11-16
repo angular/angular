@@ -18,6 +18,7 @@ export interface Manifest {
   assetGroups?: AssetGroupConfig[];
   dataGroups?: DataGroupConfig[];
   navigationUrls: {positive: boolean, regex: string}[];
+  navigationRequestStrategy: 'freshness'|'performance';
   hashTable: {[url: string]: string};
 }
 

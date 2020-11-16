@@ -23,27 +23,34 @@ const globalOptions = {
 
 const runner = createBenchpressRunner();
 
-export async function runBenchmark(config: {
+export async function runBenchmark({
+  id,
+  url = '',
+  params = [],
+  ignoreBrowserSynchronization = true,
+  microMetrics,
+  work,
+  prepare,
+  setup,
+}: {
   id: string,
-  url: string,
-  params: {name: string, value: any}[],
+  url?: string,
+  params?: {name: string, value: any}[],
   ignoreBrowserSynchronization?: boolean,
   microMetrics?: {[key: string]: string},
-  work?: () => void,
-  prepare?: () => void,
-  setup?: () => void
+  work?: (() => void)|(() => Promise<unknown>),
+  prepare?: (() => void)|(() => Promise<unknown>),
+  setup?: (() => void)|(() => Promise<unknown>),
 }): Promise<any> {
-  openBrowser(config);
-  if (config.setup) {
-    await config.setup();
+  openBrowser({url, params, ignoreBrowserSynchronization});
+  if (setup) {
+    await setup();
   }
-  const description: {[key: string]: any} = {};
-  config.params.forEach((param) => description[param.name] = param.value);
   return runner.sample({
-    id: config.id,
-    execute: config.work,
-    prepare: config.prepare,
-    microMetrics: config.microMetrics,
+    id,
+    execute: work,
+    prepare,
+    microMetrics,
     providers: [{provide: Options.SAMPLE_DESCRIPTION, useValue: {}}]
   });
 }

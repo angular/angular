@@ -7,7 +7,7 @@
  */
 
 import {ParseSourceFile} from '@angular/compiler';
-import * as ts from 'typescript';
+import {DeclarationNode} from '../../reflection';
 import {IndexedComponent} from './api';
 import {IndexingContext} from './context';
 import {getTemplateIdentifiers} from './template';
@@ -18,13 +18,13 @@ import {getTemplateIdentifiers} from './template';
  *
  * The context must be populated before `generateAnalysis` is called.
  */
-export function generateAnalysis(context: IndexingContext): Map<ts.Declaration, IndexedComponent> {
-  const analysis = new Map<ts.Declaration, IndexedComponent>();
+export function generateAnalysis(context: IndexingContext): Map<DeclarationNode, IndexedComponent> {
+  const analysis = new Map<DeclarationNode, IndexedComponent>();
 
   context.components.forEach(({declaration, selector, boundTemplate, templateMeta}) => {
     const name = declaration.name.getText();
 
-    const usedComponents = new Set<ts.Declaration>();
+    const usedComponents = new Set<DeclarationNode>();
     const usedDirs = boundTemplate.getUsedDirectives();
     usedDirs.forEach(dir => {
       if (dir.isComponent) {

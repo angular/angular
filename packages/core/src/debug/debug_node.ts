@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injector} from '../di';
+import {Injector} from '../di/injector';
+import {assertTNodeForLView} from '../render3/assert';
 import {CONTAINER_HEADER_OFFSET, LContainer, NATIVE} from '../render3/interfaces/container';
 import {TElementNode, TNode, TNodeFlags, TNodeType} from '../render3/interfaces/node';
 import {isComponentHost, isLContainer} from '../render3/interfaces/type_checks';
@@ -265,7 +266,7 @@ class DebugElement__POST_R3__ extends DebugNode__POST_R3__ implements DebugEleme
       const lView = context.lView;
       const tData = lView[TVIEW].data;
       const tNode = tData[context.nodeIndex] as TNode;
-      return tNode.tagName!;
+      return tNode.value!;
     } catch (e) {
       return this.nativeNode.nodeName;
     }
@@ -525,9 +526,10 @@ function _queryAllR3(
 function _queryNodeChildrenR3(
     tNode: TNode, lView: LView, predicate: Predicate<DebugElement>|Predicate<DebugNode>,
     matches: DebugElement[]|DebugNode[], elementsOnly: boolean, rootNativeNode: any) {
+  ngDevMode && assertTNodeForLView(tNode, lView);
   const nativeNode = getNativeByTNodeOrNull(tNode, lView);
   // For each type of TNode, specific logic is executed.
-  if (tNode.type === TNodeType.Element || tNode.type === TNodeType.ElementContainer) {
+  if (tNode.type & (TNodeType.AnyRNode | TNodeType.ElementContainer)) {
     // Case 1: the TNode is an element
     // The native node has to be checked.
     _addQueryMatchR3(nativeNode, predicate, matches, elementsOnly, rootNativeNode);
@@ -563,14 +565,14 @@ function _queryNodeChildrenR3(
       _queryNodeChildrenInContainerR3(
           nodeOrContainer, predicate, matches, elementsOnly, rootNativeNode);
     }
-  } else if (tNode.type === TNodeType.Container) {
+  } else if (tNode.type & TNodeType.Container) {
     // Case 2: the TNode is a container
     // The native node has to be checked.
     const lContainer = lView[tNode.index];
     _addQueryMatchR3(lContainer[NATIVE], predicate, matches, elementsOnly, rootNativeNode);
     // Each view inside the container has to be processed.
     _queryNodeChildrenInContainerR3(lContainer, predicate, matches, elementsOnly, rootNativeNode);
-  } else if (tNode.type === TNodeType.Projection) {
+  } else if (tNode.type & TNodeType.Projection) {
     // Case 3: the TNode is a projection insertion point (i.e. a <ng-content>).
     // The nodes projected at this location all need to be processed.
     const componentView = lView![DECLARATION_COMPONENT_VIEW];
@@ -616,9 +618,11 @@ function _queryNodeChildrenInContainerR3(
     lContainer: LContainer, predicate: Predicate<DebugElement>|Predicate<DebugNode>,
     matches: DebugElement[]|DebugNode[], elementsOnly: boolean, rootNativeNode: any) {
   for (let i = CONTAINER_HEADER_OFFSET; i < lContainer.length; i++) {
-    const childView = lContainer[i];
-    _queryNodeChildrenR3(
-        childView[TVIEW].node!, childView, predicate, matches, elementsOnly, rootNativeNode);
+    const childView = lContainer[i] as LView;
+    const firstChild = childView[TVIEW].firstChild;
+    if (firstChild) {
+      _queryNodeChildrenR3(firstChild, childView, predicate, matches, elementsOnly, rootNativeNode);
+    }
   }
 }
 
@@ -658,7 +662,7 @@ function _addQueryMatchR3(
  *
  * @param nativeNode the current native node
  * @param predicate the predicate to match
- * @param matches the list of positive matches
+ * @param matches the list where matches are stored
  * @param elementsOnly whether only elements should be searched
  */
 function _queryNativeNodeDescendants(

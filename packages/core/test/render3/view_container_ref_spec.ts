@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {HEADER_OFFSET} from '@angular/core/src/render3/interfaces/view';
 import {ChangeDetectorRef, Component as _Component, ComponentFactoryResolver, ElementRef, QueryList, TemplateRef, ViewContainerRef, ViewRef} from '../../src/core';
 import {ViewEncapsulation} from '../../src/metadata';
 import {injectComponentFactoryResolver, ɵɵdefineComponent, ɵɵdefineDirective, ɵɵlistener, ɵɵloadQuery, ɵɵqueryRefresh, ɵɵviewQuery} from '../../src/render3/index';
@@ -14,8 +15,8 @@ import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {RElement} from '../../src/render3/interfaces/renderer';
 import {getLView} from '../../src/render3/state';
 import {getNativeByIndex} from '../../src/render3/util/view_utils';
-
 import {ComponentFixture, createComponent, TemplateFixture} from './render_util';
+
 
 const Component: typeof _Component = function(...args: any[]): any {
   // In test we use @Component for documentation only so it's safe to mock out the implementation.
@@ -232,9 +233,12 @@ describe('ViewContainerRef', () => {
           ɵɵelement(1, 'footer');
         }
 
-        new TemplateFixture(
-            createTemplate, undefined, 2, 0, [DirectiveWithVCRef], null, null, undefined,
-            [['vcref', '']]);
+        new TemplateFixture({
+          create: createTemplate,
+          decls: 2,
+          directives: [DirectiveWithVCRef],
+          consts: [['vcref', '']]
+        });
 
         expect(directiveInstance!.vcref.element.nativeElement.tagName.toLowerCase())
             .toEqual('header');
@@ -253,9 +257,12 @@ describe('ViewContainerRef', () => {
           ɵɵelement(1, 'footer');
         }
 
-        new TemplateFixture(
-            createTemplate, undefined, 2, 0, [HeaderComponent, DirectiveWithVCRef], null, null,
-            undefined, [['vcref', '']]);
+        new TemplateFixture({
+          create: createTemplate,
+          decls: 2,
+          directives: [HeaderComponent, DirectiveWithVCRef],
+          consts: [['vcref', '']]
+        });
 
         expect(directiveInstance!.vcref.element.nativeElement.tagName.toLowerCase())
             .toEqual('header-cmp');
@@ -356,7 +363,7 @@ describe('ViewContainerRef', () => {
                   ɵɵelement(0, 'div', 1, 0);
                 }
                 // testing only
-                fooEl = getNativeByIndex(0, getLView()) as RElement;
+                fooEl = getNativeByIndex(HEADER_OFFSET, getLView()) as RElement;
               },
           viewQuery:
               function(rf: RenderFlags, ctx: any) {
@@ -430,10 +437,10 @@ describe('ViewContainerRef', () => {
       fixture.update();
 
       // Destroying the parent view will also destroy all of its children views and call their
-      // onDestroy hooks. Here, our child view attempts to destroy itself *again* in its onDestroy.
-      // This test exists to verify that no errors are thrown when doing this. We want the test
-      // component to destroy its own view in onDestroy because the destroy hooks happen as a
-      // *part of* view destruction. We also ensure that the test component has at least one
+      // onDestroy hooks. Here, our child view attempts to destroy itself *again* in its
+      // onDestroy. This test exists to verify that no errors are thrown when doing this. We want
+      // the test component to destroy its own view in onDestroy because the destroy hooks happen
+      // as a *part of* view destruction. We also ensure that the test component has at least one
       // listener so that it runs the event listener cleanup code path.
       fixture.destroy();
     });

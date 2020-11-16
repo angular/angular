@@ -230,7 +230,10 @@ export function getParentRenderElement(view: ViewData, renderHost: any, def: Nod
     if ((renderParent.flags & NodeFlags.TypeElement) === 0 ||
         (renderParent.flags & NodeFlags.ComponentView) === 0 ||
         (renderParent.element!.componentRendererType &&
-         renderParent.element!.componentRendererType!.encapsulation === ViewEncapsulation.Native)) {
+         (renderParent.element!.componentRendererType!.encapsulation ===
+              ViewEncapsulation.ShadowDom ||
+          // TODO(FW-2290): remove the `encapsulation === 1` fallback logic in v12.
+          renderParent.element!.componentRendererType!.encapsulation === 1))) {
       // only children of non components, or children of components with native encapsulation should
       // be attached.
       return asElementData(view, def.renderParent!.nodeIndex).renderElement;

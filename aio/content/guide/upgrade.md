@@ -479,6 +479,15 @@ using the `downgradeComponent()` method. The result is an AngularJS
 <code-example path="upgrade-module/src/app/downgrade-static/app.module.ts" region="downgradecomponent" header="app.module.ts">
 </code-example>
 
+<div class="alert is-helpful">
+
+By default, Angular change detection will also run on the component for every
+AngularJS `$digest` cycle. If you wish to only have change detection run when
+the inputs change, you can set `propagateDigest` to `false` when calling
+`downgradeComponent()`.
+
+</div>
+
 Because `HeroDetailComponent` is an Angular component, you must also add it to the
 `declarations` in the `AppModule`.
 

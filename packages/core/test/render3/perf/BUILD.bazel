@@ -227,7 +227,20 @@ ng_rollup_bundle(
 
 ng_benchmark(
     name = "host_binding",
-    bundle = ":host_binding",
+    bundle = ":host_binding_lib",
+)
+
+ng_rollup_bundle(
+    name = "i18n_lib",
+    entry_point = ":i18n/index.ts",
+    deps = [
+        ":perf_lib",
+    ],
+)
+
+ng_benchmark(
+    name = "i18n",
+    bundle = ":i18n_lib",
 )
 
 ng_rollup_bundle(

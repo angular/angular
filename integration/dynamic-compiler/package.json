@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "main": "index.js",
   "scripts": {
-    "build": "npm run clean && npm run ngc && npm run rollup && npm run rollup:lazy && npm run es5 && npm run es5:lazy",
+    "build": "yarn clean && yarn ngc && yarn rollup && yarn rollup:lazy && yarn es5 && yarn es5:lazy",
     "clean": "rm -rf dist",
     "//es5-note": "`--typeRoots ./dummy_folder_name/@types` is a workaround for https://github.com/Microsoft/TypeScript/issues/30845",
     "es5": "tsc --target es5 --skipLibCheck --allowJs dist/bundle.es2015.js --out dist/bundle.js --typeRoots ./dummy_folder_name/@types",
@@ -14,7 +14,7 @@
     "preprotractor": "tsc -p e2e",
     "protractor": "protractor e2e/protractor.config.js",
     "serve": "lite-server -c e2e/browser.config.json",
-    "test": "npm run build && concurrently \"yarn run serve\" \"yarn run protractor\" --kill-others --success first"
+    "test": "yarn build && concurrently \"yarn run serve\" \"yarn run protractor\" --kill-others --success first"
   },
   "license": "MIT",
   "devDependencies": {
@@ -41,7 +41,7 @@
     "core-js": "file:../../node_modules/core-js",
     "rxjs": "file:../../node_modules/rxjs",
     "systemjs": "file:../../node_modules/systemjs",
-    "zone.js": "file:../../dist/zone.js-dist/zone.js"
+    "zone.js": "file:../../dist/zone.js-dist/archive/zone.js.tgz"
   },
   "//resolutions-comment": "Ensure a single version of webdriver-manager which comes from root node_modules that has already run webdriver-manager update",
   "resolutions": {

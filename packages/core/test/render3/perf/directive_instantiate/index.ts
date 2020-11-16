@@ -5,12 +5,12 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {LViewFlags, TViewType} from '@angular/core/src/render3/interfaces/view';
 
 import {ɵɵdefineDirective, ɵɵelementEnd, ɵɵelementStart, ɵɵtext} from '../../../../src/render3/index';
 import {createLView, createTNode, createTView} from '../../../../src/render3/instructions/shared';
 import {RenderFlags} from '../../../../src/render3/interfaces/definition';
-import {TNodeType, TViewNode} from '../../../../src/render3/interfaces/node';
+import {TNodeType} from '../../../../src/render3/interfaces/node';
+import {LViewFlags, TViewType} from '../../../../src/render3/interfaces/view';
 import {createBenchmark} from '../micro_bench';
 import {createAndRenderLView} from '../setup';
 
@@ -75,12 +75,12 @@ function testTemplate(rf: RenderFlags, ctx: any) {
 }
 
 const rootLView = createLView(
-    null, createTView(TViewType.Root, -1, null, 0, 0, null, null, null, null, null), {},
-    LViewFlags.IsRoot, null, null);
+    null, createTView(TViewType.Root, null, null, 0, 0, null, null, null, null, null), {},
+    LViewFlags.IsRoot, null, null, null, null, null, null);
 
-const viewTNode = createTNode(null!, null, TNodeType.View, -1, null, null) as TViewNode;
+const viewTNode = createTNode(null!, null, TNodeType.Element, -1, null, null);
 const embeddedTView = createTView(
-    TViewType.Embedded, -1, testTemplate, 21, 10, [Tooltip.ɵdir], null, null, null,
+    TViewType.Embedded, null, testTemplate, 21, 10, [Tooltip.ɵdir], null, null, null,
     [['position', 'top', 3, 'tooltip']]);
 
 // create view once so we don't profile the first create pass

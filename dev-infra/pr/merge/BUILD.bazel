@@ -1,4 +1,4 @@
-load("@npm_bazel_typescript//:index.bzl", "ts_library")
+load("@npm//@bazel/typescript:index.bzl", "ts_library")
 load("//tools:defaults.bzl", "jasmine_node_test")
 
 ts_library(
@@ -8,9 +8,14 @@ ts_library(
         exclude = ["**/*.spec.ts"],
     ),
     module_name = "@angular/dev-infra-private/pr/merge",
+    # prodmode target must be set to es5 as the Ora class, which is extended is not a proper
+    # prototyped object.
+    prodmode_target = "es5",
     visibility = ["//dev-infra:__subpackages__"],
     deps = [
         "//dev-infra/commit-message",
+        "//dev-infra/release/config",
+        "//dev-infra/release/versioning",
         "//dev-infra/utils",
         "@npm//@octokit/rest",
         "@npm//@types/inquirer",
@@ -28,6 +33,8 @@ ts_library(
     srcs = glob(["**/*.spec.ts"]),
     deps = [
         ":merge",
+        "//dev-infra/release/config",
+        "//dev-infra/release/versioning",
         "//dev-infra/utils",
         "@npm//@types/jasmine",
         "@npm//@types/node",

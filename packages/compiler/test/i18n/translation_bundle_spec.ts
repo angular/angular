@@ -50,7 +50,7 @@ import {_extractMessages} from './i18n_parser_spec';
         ]
       };
       const phMap = {
-        ph1: '*phContent*',
+        ph1: createPlaceholder('*phContent*'),
       };
       const tb = new TranslationBundle(msgMap, null, (_) => 'foo');
       const msg = new i18n.Message([srcNode], phMap, {}, 'm', 'd', 'i');
@@ -160,7 +160,7 @@ import {_extractMessages} from './i18n_parser_spec';
           ]
         };
         const phMap = {
-          ph1: '</b>',
+          ph1: createPlaceholder('</b>'),
         };
         const tb = new TranslationBundle(msgMap, null, (_) => 'foo');
         const msg = new i18n.Message([srcNode], phMap, {}, 'm', 'd', 'i');
@@ -168,4 +168,14 @@ import {_extractMessages} from './i18n_parser_spec';
       });
     });
   });
+}
+
+function createPlaceholder(text: string): i18n.MessagePlaceholder {
+  const file = new ParseSourceFile(text, 'file://test');
+  const start = new ParseLocation(file, 0, 0, 0);
+  const end = new ParseLocation(file, text.length, 0, text.length);
+  return {
+    text,
+    sourceSpan: new ParseSourceSpan(start, end),
+  };
 }

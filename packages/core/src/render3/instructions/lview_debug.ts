@@ -6,22 +6,25 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AttributeMarker, ComponentTemplate} from '..';
-import {Injector, SchemaMetadata} from '../../core';
+import {Injector, SchemaMetadata, Type} from '../../core';
 import {Sanitizer} from '../../sanitization/sanitizer';
 import {KeyValueArray} from '../../util/array_utils';
 import {assertDefined} from '../../util/assert';
 import {createNamedArrayType} from '../../util/named_array_type';
 import {initNgDevMode} from '../../util/ng_dev_mode';
+import {assertNodeInjector} from '../assert';
+import {getInjectorIndex} from '../di';
 import {CONTAINER_HEADER_OFFSET, HAS_TRANSPLANTED_VIEWS, LContainer, MOVED_VIEWS, NATIVE} from '../interfaces/container';
-import {DirectiveDefList, PipeDefList, ViewQueriesFunction} from '../interfaces/definition';
-import {PropertyAliases, TConstants, TContainerNode, TElementNode, TNode as ITNode, TNodeFlags, TNodeProviderIndexes, TNodeType, TNodeTypeAsString, TViewNode} from '../interfaces/node';
+import {ComponentTemplate, DirectiveDef, DirectiveDefList, PipeDefList, ViewQueriesFunction} from '../interfaces/definition';
+import {NO_PARENT_INJECTOR, NodeInjectorOffset} from '../interfaces/injector';
+import {AttributeMarker, InsertBeforeIndex, PropertyAliases, TConstants, TContainerNode, TElementNode, TNode as ITNode, TNodeFlags, TNodeProviderIndexes, TNodeType, toTNodeTypeAsString} from '../interfaces/node';
 import {SelectorFlags} from '../interfaces/projection';
 import {LQueries, TQueries} from '../interfaces/query';
 import {RComment, RElement, Renderer3, RendererFactory3, RNode} from '../interfaces/renderer';
 import {getTStylingRangeNext, getTStylingRangeNextDuplicate, getTStylingRangePrev, getTStylingRangePrevDuplicate, TStylingKey, TStylingRange} from '../interfaces/styling';
-import {CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTEXT, DebugNode, DECLARATION_VIEW, DestroyHookData, ExpandoInstructions, FLAGS, HEADER_OFFSET, HookData, HOST, INJECTOR, LContainerDebug as ILContainerDebug, LView, LViewDebug as ILViewDebug, LViewDebugRange, LViewDebugRangeContent, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, RENDERER_FACTORY, SANITIZER, T_HOST, TData, TView as ITView, TVIEW, TView, TViewType} from '../interfaces/view';
+import {CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTEXT, DebugNode, DECLARATION_VIEW, DestroyHookData, FLAGS, HEADER_OFFSET, HookData, HOST, HostBindingOpCodes, INJECTOR, LContainerDebug as ILContainerDebug, LView, LViewDebug as ILViewDebug, LViewDebugRange, LViewDebugRangeContent, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, RENDERER_FACTORY, SANITIZER, T_HOST, TData, TView as ITView, TVIEW, TView, TViewType, TViewTypeAsString} from '../interfaces/view';
 import {attachDebugObject} from '../util/debug_utils';
+import {getParentInjectorIndex, getParentInjectorView} from '../util/injector_utils';
 import {unwrapRNode} from '../util/view_utils';
 
 const NG_DEV_MODE = ((typeof ngDevMode === 'undefined' || !!ngDevMode) && initNgDevMode());
@@ -112,39 +115,38 @@ function nameSuffix(text: string|null|undefined): string {
  */
 export const TViewConstructor = class TView implements ITView {
   constructor(
-      public type: TViewType,                                //
-      public id: number,                                     //
-      public blueprint: LView,                               //
-      public template: ComponentTemplate<{}>|null,           //
-      public queries: TQueries|null,                         //
-      public viewQuery: ViewQueriesFunction<{}>|null,        //
-      public node: TViewNode|TElementNode|null,              //
-      public data: TData,                                    //
-      public bindingStartIndex: number,                      //
-      public expandoStartIndex: number,                      //
-      public expandoInstructions: ExpandoInstructions|null,  //
-      public firstCreatePass: boolean,                       //
-      public firstUpdatePass: boolean,                       //
-      public staticViewQueries: boolean,                     //
-      public staticContentQueries: boolean,                  //
-      public preOrderHooks: HookData|null,                   //
-      public preOrderCheckHooks: HookData|null,              //
-      public contentHooks: HookData|null,                    //
-      public contentCheckHooks: HookData|null,               //
-      public viewHooks: HookData|null,                       //
-      public viewCheckHooks: HookData|null,                  //
-      public destroyHooks: DestroyHookData|null,             //
-      public cleanup: any[]|null,                            //
-      public contentQueries: number[]|null,                  //
-      public components: number[]|null,                      //
-      public directiveRegistry: DirectiveDefList|null,       //
-      public pipeRegistry: PipeDefList|null,                 //
-      public firstChild: ITNode|null,                        //
-      public schemas: SchemaMetadata[]|null,                 //
-      public consts: TConstants|null,                        //
-      public incompleteFirstPass: boolean,                   //
-      public _decls: number,                                 //
-      public _vars: number,                                  //
+      public type: TViewType,
+      public blueprint: LView,
+      public template: ComponentTemplate<{}>|null,
+      public queries: TQueries|null,
+      public viewQuery: ViewQueriesFunction<{}>|null,
+      public declTNode: ITNode|null,
+      public data: TData,
+      public bindingStartIndex: number,
+      public expandoStartIndex: number,
+      public hostBindingOpCodes: HostBindingOpCodes|null,
+      public firstCreatePass: boolean,
+      public firstUpdatePass: boolean,
+      public staticViewQueries: boolean,
+      public staticContentQueries: boolean,
+      public preOrderHooks: HookData|null,
+      public preOrderCheckHooks: HookData|null,
+      public contentHooks: HookData|null,
+      public contentCheckHooks: HookData|null,
+      public viewHooks: HookData|null,
+      public viewCheckHooks: HookData|null,
+      public destroyHooks: DestroyHookData|null,
+      public cleanup: any[]|null,
+      public contentQueries: number[]|null,
+      public components: number[]|null,
+      public directiveRegistry: DirectiveDefList|null,
+      public pipeRegistry: PipeDefList|null,
+      public firstChild: ITNode|null,
+      public schemas: SchemaMetadata[]|null,
+      public consts: TConstants|null,
+      public incompleteFirstPass: boolean,
+      public _decls: number,
+      public _vars: number,
 
   ) {}
 
@@ -153,6 +155,10 @@ export const TViewConstructor = class TView implements ITView {
     processTNodeChildren(this.firstChild, buf);
     return buf.join('');
   }
+
+  get type_(): string {
+    return TViewTypeAsString[this.type] || `TViewType.?${this.type}?`;
+  }
 };
 
 class TNode implements ITNode {
@@ -160,6 +166,7 @@ class TNode implements ITNode {
       public tView_: TView,                                                          //
       public type: TNodeType,                                                        //
       public index: number,                                                          //
+      public insertBeforeIndex: InsertBeforeIndex,                                   //
       public injectorIndex: number,                                                  //
       public directiveStart: number,                                                 //
       public directiveEnd: number,                                                   //
@@ -167,7 +174,7 @@ class TNode implements ITNode {
       public propertyBindings: number[]|null,                                        //
       public flags: TNodeFlags,                                                      //
       public providerIndexes: TNodeProviderIndexes,                                  //
-      public tagName: string|null,                                                   //
+      public value: string|null,                                                     //
       public attrs: (string|AttributeMarker|(string|SelectorFlags)[])[]|null,        //
       public mergedAttrs: (string|AttributeMarker|(string|SelectorFlags)[])[]|null,  //
       public localNames: (string|number)[]|null,                                     //
@@ -190,23 +197,39 @@ class TNode implements ITNode {
       public styleBindings: TStylingRange,                                           //
   ) {}
 
-  get type_(): string {
-    switch (this.type) {
-      case TNodeType.Container:
-        return 'TNodeType.Container';
-      case TNodeType.Element:
-        return 'TNodeType.Element';
-      case TNodeType.ElementContainer:
-        return 'TNodeType.ElementContainer';
-      case TNodeType.IcuContainer:
-        return 'TNodeType.IcuContainer';
-      case TNodeType.Projection:
-        return 'TNodeType.Projection';
-      case TNodeType.View:
-        return 'TNodeType.View';
-      default:
-        return 'TNodeType.???';
+  /**
+   * Return a human debug version of the set of `NodeInjector`s which will be consulted when
+   * resolving tokens from this `TNode`.
+   *
+   * When debugging applications, it is often difficult to determine which `NodeInjector`s will be
+   * consulted. This method shows a list of `DebugNode`s representing the `TNode`s which will be
+   * consulted in order when resolving a token starting at this `TNode`.
+   *
+   * The original data is stored in `LView` and `TView` with a lot of offset indexes, and so it is
+   * difficult to reason about.
+   *
+   * @param lView The `LView` instance for this `TNode`.
+   */
+  debugNodeInjectorPath(lView: LView): DebugNode[] {
+    const path: DebugNode[] = [];
+    let injectorIndex = getInjectorIndex(this, lView);
+    ngDevMode && assertNodeInjector(lView, injectorIndex);
+    while (injectorIndex !== -1) {
+      const tNode = lView[TVIEW].data[injectorIndex + NodeInjectorOffset.TNODE] as TNode;
+      path.push(buildDebugNode(tNode, lView));
+      const parentLocation = lView[injectorIndex + NodeInjectorOffset.PARENT];
+      if (parentLocation === NO_PARENT_INJECTOR) {
+        injectorIndex = -1;
+      } else {
+        injectorIndex = getParentInjectorIndex(parentLocation);
+        lView = getParentInjectorView(parentLocation, lView);
+      }
     }
+    return path;
+  }
+
+  get type_(): string {
+    return toTNodeTypeAsString(this.type) || `TNodeType.?${this.type}?`;
   }
 
   get flags_(): string {
@@ -223,8 +246,13 @@ class TNode implements ITNode {
   }
 
   get template_(): string {
+    if (this.type & TNodeType.Text) return this.value!;
     const buf: string[] = [];
-    buf.push('<', this.tagName || this.type_);
+    const tagName = typeof this.value === 'string' && this.value || this.type_;
+    buf.push('<', tagName);
+    if (this.flags) {
+      buf.push(' ', this.flags_);
+    }
     if (this.attrs) {
       for (let i = 0; i < this.attrs.length;) {
         const attrName = this.attrs[i++];
@@ -237,7 +265,7 @@ class TNode implements ITNode {
     }
     buf.push('>');
     processTNodeChildren(this.child, buf);
-    buf.push('</', this.tagName || this.type_, '>');
+    buf.push('</', tagName, '>');
     return buf.join('');
   }
 
@@ -246,6 +274,14 @@ class TNode implements ITNode {
   }
   get classBindings_(): DebugStyleBindings {
     return toDebugStyleBinding(this, true);
+  }
+
+  get providerIndexStart_(): number {
+    return this.providerIndexes & TNodeProviderIndexes.ProvidersStartIndexMask;
+  }
+  get providerIndexEnd_(): number {
+    return this.providerIndexStart_ +
+        (this.providerIndexes >>> TNodeProviderIndexes.CptViewProvidersCountShift);
   }
 }
 export const TNodeDebug = TNode;
@@ -410,7 +446,7 @@ export class LViewDebug implements ILViewDebug {
     return toHtml(this._raw_lView[HOST], true);
   }
   get html(): string {
-    return (this.nodes || []).map(node => toHtml(node.native, true)).join('');
+    return (this.nodes || []).map(mapToHTML).join('');
   }
   get context(): {}|null {
     return this._raw_lView[CONTEXT];
@@ -424,7 +460,9 @@ export class LViewDebug implements ILViewDebug {
     const tNode = lView[TVIEW].firstChild;
     return toDebugNodes(tNode, lView);
   }
-
+  get template(): string {
+    return (this.tView as any as {template_: string}).template_;
+  }
   get tView(): ITView {
     return this._raw_lView[TVIEW];
   }
@@ -458,30 +496,20 @@ export class LViewDebug implements ILViewDebug {
   get queries(): LQueries|null {
     return this._raw_lView[QUERIES];
   }
-  get tHost(): TViewNode|TElementNode|null {
+  get tHost(): ITNode|null {
     return this._raw_lView[T_HOST];
   }
 
   get decls(): LViewDebugRange {
-    const tView = this.tView as any as {_decls: number, _vars: number};
-    const start = HEADER_OFFSET;
-    return toLViewRange(this.tView, this._raw_lView, start, start + tView._decls);
+    return toLViewRange(this.tView, this._raw_lView, HEADER_OFFSET, this.tView.bindingStartIndex);
   }
 
   get vars(): LViewDebugRange {
-    const tView = this.tView as any as {_decls: number, _vars: number};
-    const start = HEADER_OFFSET + tView._decls;
-    return toLViewRange(this.tView, this._raw_lView, start, start + tView._vars);
-  }
-
-  get i18n(): LViewDebugRange {
-    const tView = this.tView as any as {_decls: number, _vars: number};
-    const start = HEADER_OFFSET + tView._decls + tView._vars;
-    return toLViewRange(this.tView, this._raw_lView, start, this.tView.expandoStartIndex);
+    return toLViewRange(
+        this.tView, this._raw_lView, this.tView.bindingStartIndex, this.tView.expandoStartIndex);
   }
 
   get expando(): LViewDebugRange {
-    const tView = this.tView as any as {_decls: number, _vars: number};
     return toLViewRange(
         this.tView, this._raw_lView, this.tView.expandoStartIndex, this._raw_lView.length);
   }
@@ -497,6 +525,16 @@ export class LViewDebug implements ILViewDebug {
       child = child.next;
     }
     return childViews;
+  }
+}
+
+function mapToHTML(node: DebugNode): string {
+  if (node.type === 'ElementContainer') {
+    return (node.children || []).map(mapToHTML).join('');
+  } else if (node.type === 'IcuContainer') {
+    throw new Error('Not implemented');
+  } else {
+    return toHtml(node.native, true) || '';
   }
 }
 
@@ -519,7 +557,7 @@ export function toDebugNodes(tNode: ITNode|null, lView: LView): DebugNode[] {
     const debugNodes: DebugNode[] = [];
     let tNodeCursor: ITNode|null = tNode;
     while (tNodeCursor) {
-      debugNodes.push(buildDebugNode(tNodeCursor, lView, tNodeCursor.index));
+      debugNodes.push(buildDebugNode(tNodeCursor, lView));
       tNodeCursor = tNodeCursor.next;
     }
     return debugNodes;
@@ -528,15 +566,73 @@ export function toDebugNodes(tNode: ITNode|null, lView: LView): DebugNode[] {
   }
 }
 
-export function buildDebugNode(tNode: ITNode, lView: LView, nodeIndex: number): DebugNode {
-  const rawValue = lView[nodeIndex];
+export function buildDebugNode(tNode: ITNode, lView: LView): DebugNode {
+  const rawValue = lView[tNode.index];
   const native = unwrapRNode(rawValue);
+  const factories: Type<any>[] = [];
+  const instances: any[] = [];
+  const tView = lView[TVIEW];
+  for (let i = tNode.directiveStart; i < tNode.directiveEnd; i++) {
+    const def = tView.data[i] as DirectiveDef<any>;
+    factories.push(def.type);
+    instances.push(lView[i]);
+  }
   return {
     html: toHtml(native),
-    type: TNodeTypeAsString[tNode.type],
+    type: toTNodeTypeAsString(tNode.type),
     native: native as any,
     children: toDebugNodes(tNode.child, lView),
+    factories,
+    instances,
+    injector: buildNodeInjectorDebug(tNode, tView, lView)
   };
+}
+
+function buildNodeInjectorDebug(tNode: ITNode, tView: ITView, lView: LView) {
+  const viewProviders: Type<any>[] = [];
+  for (let i = (tNode as TNode).providerIndexStart_; i < (tNode as TNode).providerIndexEnd_; i++) {
+    viewProviders.push(tView.data[i] as Type<any>);
+  }
+  const providers: Type<any>[] = [];
+  for (let i = (tNode as TNode).providerIndexEnd_; i < (tNode as TNode).directiveEnd; i++) {
+    providers.push(tView.data[i] as Type<any>);
+  }
+  const nodeInjectorDebug = {
+    bloom: toBloom(lView, tNode.injectorIndex),
+    cumulativeBloom: toBloom(tView.data, tNode.injectorIndex),
+    providers,
+    viewProviders,
+    parentInjectorIndex: lView[(tNode as TNode).providerIndexStart_ - 1],
+  };
+  return nodeInjectorDebug;
+}
+
+/**
+ * Convert a number at `idx` location in `array` into binary representation.
+ *
+ * @param array
+ * @param idx
+ */
+function binary(array: any[], idx: number): string {
+  const value = array[idx];
+  // If not a number we print 8 `?` to retain alignment but let user know that it was called on
+  // wrong type.
+  if (typeof value !== 'number') return '????????';
+  // We prefix 0s so that we have constant length number
+  const text = '00000000' + value.toString(2);
+  return text.substring(text.length - 8);
+}
+
+/**
+ * Convert a bloom filter at location `idx` in `array` into binary representation.
+ *
+ * @param array
+ * @param idx
+ */
+function toBloom(array: any[], idx: number): string {
+  return `${binary(array, idx + 7)}_${binary(array, idx + 6)}_${binary(array, idx + 5)}_${
+      binary(array, idx + 4)}_${binary(array, idx + 3)}_${binary(array, idx + 2)}_${
+      binary(array, idx + 1)}_${binary(array, idx + 0)}`;
 }
 
 export class LContainerDebug implements ILContainerDebug {
@@ -564,19 +660,4 @@ export class LContainerDebug implements ILContainerDebug {
   get next() {
     return toDebug(this._raw_lContainer[NEXT]);
   }
-}
-
-/**
- * Return an `LView` value if found.
- *
- * @param value `LView` if any
- */
-export function readLViewValue(value: any): LView|null {
-  while (Array.isArray(value)) {
-    // This check is not quite right, as it does not take into account `StylingContext`
-    // This is why it is in debug, not in util.ts
-    if (value.length >= HEADER_OFFSET - 1) return value as LView;
-    value = value[HOST];
-  }
-  return null;
 }

@@ -61,27 +61,27 @@
             "children": [
               {
                 "url": "start",
-                "title": "A Sample App",
+                "title": "Getting started",
                 "tooltip": "Take a look at Angular's component model, template syntax, and component communication."
               },
               {
                 "url": "start/start-routing",
-                "title": "In-app Navigation",
+                "title": "Adding navigation",
                 "tooltip": "Navigate among different page views using the browser's URL."
               },
               {
                 "url": "start/start-data",
-                "title": "Manage Data",
+                "title": "Managing Data",
                 "tooltip": "Use services and access external data via HTTP."
               },
               {
                 "url": "start/start-forms",
-                "title": "Forms for User Input",
+                "title": "Using Forms for User Input",
                 "tooltip": "Learn about fetching and managing data from users with forms."
               },
               {
                 "url": "start/start-deployment",
-                "title": "Deployment",
+                "title": "Deploying an application",
                 "tooltip": "Move to local development, or deploy your application to Firebase or your own server."
               }
             ]
@@ -102,24 +102,19 @@
           "tooltip": "Building dynamic views with data binding",
           "children": [
             {
-              "url": "guide/displaying-data",
-              "title": "Data binding",
-              "tooltip": "Property binding helps show app data in the UI."
-            },
-            {
-              "url": "guide/user-input",
-              "title": "User Input",
-              "tooltip": "User input triggers DOM events. Angular listens to those events with event bindings that funnel updated values back into your app's components and models."
-            },
-            {
-              "url": "guide/pipes",
-              "title": "Pipes",
-              "tooltip": "Pipes transform displayed values within a template."
+              "url": "guide/component-overview",
+              "title": "Overview",
+              "tooltip": "Overview of how to create Angular components."
             },
             {
               "url": "guide/lifecycle-hooks",
               "title": "Component Lifecycle",
               "tooltip": "Angular calls lifecycle hook methods on directives and components as it creates, changes, and destroys them."
+            },
+            {
+              "url": "guide/view-encapsulation",
+              "title": "View Encapsulation",
+              "tooltip": "Describes how component CSS styles are encapsulated into a component's view."
             },
             {
               "url": "guide/component-interaction",
@@ -130,6 +125,11 @@
               "url": "guide/component-styles",
               "title": "Component Styles",
               "tooltip": "Add CSS styles that are specific to a component."
+            },
+            {
+              "url": "guide/inputs-outputs",
+              "title": "Sharing data between child and parent directives and components",
+              "tooltip": "Introductory guide to sharing data between parent and child directives or components."
             },
             {
               "url": "guide/dynamic-component-loader",
@@ -163,6 +163,11 @@
               "tooltip": "Introductory guide to statements in templates that respond to events that components, directives, or elements raise."
             },
             {
+              "url": "guide/pipes",
+              "title": "Pipes",
+              "tooltip": "Pipes transform displayed values within a template."
+            },
+            {
               "url": "guide/binding-syntax",
               "title": "Binding syntax",
               "tooltip": "Introductory guide to coordinating app values."
@@ -186,16 +191,6 @@
               "url": "guide/two-way-binding",
               "title": "Two-way binding",
               "tooltip": "Introductory guide to sharing data between a class and a template."
-            },
-            {
-              "url": "guide/template-reference-variables",
-              "title": "Template reference variables",
-              "tooltip": "Introductory guide to referring to DOM elements within a template."
-            },
-            {
-              "url": "guide/inputs-outputs",
-              "title": "Inputs and Outputs",
-              "tooltip": "Introductory guide to sharing data between parent and child directives or components."
             },
             {
               "url": "guide/template-expression-operators",
@@ -240,11 +235,6 @@
               "tooltip": "Angular's dependency injection system creates and delivers dependent services to Angular-created classes."
             },
             {
-              "url": "guide/hierarchical-dependency-injection",
-              "title": "Hierarchical Injectors",
-              "tooltip": "An injector tree parallels the component tree and supports nested dependencies."
-            },
-            {
               "url": "guide/dependency-injection-providers",
               "title": "DI Providers",
               "tooltip": "More about the different kinds of providers."
@@ -253,11 +243,6 @@
               "url": "guide/dependency-injection-in-action",
               "title": "DI in Action",
               "tooltip": "Techniques for dependency injection."
-            },
-            {
-              "url": "guide/dependency-injection-navtree",
-              "title": "Navigate the Component Tree",
-              "tooltip": "Use the injection tree to find parent components."
             }
           ]
         }
@@ -418,6 +403,11 @@
           "tooltip": "Information about updating Angular applications and libraries to the latest version."
         },
         {
+          "url": "guide/property-binding-best-practices",
+          "title": "Property Binding Best Practices",
+          "tooltip": "Use property binding efficiently."
+        },
+        {
           "title": "Testing",
           "tooltip": "Testing your Angular apps.",
           "children": [
@@ -543,27 +533,6 @@
       "tooltip": "End-to-end tutorials for learning Angular concepts and patterns.",
       "children": [
         {
-          "title": "Routing",
-          "tooltip": "End-to-end tutorials for learning about Angular's router.",
-          "children": [
-            {
-              "url": "guide/router-tutorial",
-              "title": "Using Angular Routes in a Single-page Application",
-              "tooltip": "A tutorial that covers many patterns associated with Angular routing."
-            },
-            {
-              "url": "guide/router-tutorial-toh",
-              "title": "Router tutorial: tour of heroes",
-              "tooltip": "Explore how to use Angular's router. Based on the Tour of Heroes example."
-            }
-          ]
-        },
-        {
-          "url": "guide/forms",
-          "title": "Building a Template-driven Form",
-          "tooltip": "Create a template-driven form using directives and Angular template syntax."
-        },
-        {
           "title": "Tutorial: Tour of Heroes",
           "tooltip": "The Tour of Heroes app is used as a reference point in many Angular examples.",
           "children": [
@@ -610,6 +579,27 @@
           ]
         },
         {
+          "title": "Routing",
+          "tooltip": "End-to-end tutorials for learning about Angular's router.",
+          "children": [
+            {
+              "url": "guide/router-tutorial",
+              "title": "Using Angular Routes in a Single-page Application",
+              "tooltip": "A tutorial that covers many patterns associated with Angular routing."
+            },
+            {
+              "url": "guide/router-tutorial-toh",
+              "title": "Router tutorial: tour of heroes",
+              "tooltip": "Explore how to use Angular's router. Based on the Tour of Heroes example."
+            }
+          ]
+        },
+        {
+          "url": "guide/forms",
+          "title": "Building a Template-driven Form",
+          "tooltip": "Create a template-driven form using directives and Angular template syntax."
+        },
+        {
           "url": "guide/web-worker",
           "title": "Web Workers",
           "tooltip": "Using web workers for background processing."
@@ -652,49 +642,18 @@
           "tooltip": "Roadmap of the Angular team."
         },
         {
-          "title": "Updating to Version 10",
+          "title": "Updating to Version 11",
           "tooltip": "Support for updating your application from version 9 to 10.",
           "children": [
             {
-              "url": "guide/updating-to-version-10",
+              "url": "guide/updating-to-version-11",
               "title": "Overview",
-              "tooltip": "Everything you need to know for updating your application from version 9 to 10."
+              "tooltip": "Everything you need to know for updating your application from version 10 to 11."
             },
             {
               "url": "guide/ivy-compatibility",
               "title": "Ivy Compatibility Guide",
               "tooltip": "Details to help you make sure your application is compatible with Ivy."
-            },
-            {
-              "title": "Migrations",
-              "tooltip": "Migration details regarding updating to version 10.",
-              "children": [
-                {
-                  "url": "guide/migration-module-with-providers",
-                  "title": "Missing ModuleWithProviders Generic",
-                  "tooltip": "Migration to add a generic type to any ModuleWithProviders usages that are missing the generic."
-                },
-                {
-                  "url": "guide/migration-undecorated-classes",
-                  "title": "Missing @Directive() Decorators",
-                  "tooltip": "Migration to add missing @Directive()/@Component() decorators."
-                },
-                {
-                  "url": "guide/migration-injectable",
-                  "title": "Missing @Injectable() Decorators",
-                  "tooltip": "Migration to add missing @Injectable() decorators and incomplete provider definitions."
-                },
-                {
-                  "url": "guide/migration-update-libraries-tslib",
-                  "title": "`tslib` direct dependency",
-                  "tooltip": "Migration to a direct dependency on the `tslib` npm package."
-                },
-                {
-                  "url": "guide/migration-update-module-and-target-compiler-options",
-                  "title": "`module` and `target` compiler options",
-                  "tooltip": "Migration to update `module` and `target` compiler options."
-                }
-              ]
             }
           ]
         },
@@ -772,6 +731,16 @@
                   "url": "guide/architecture-next-steps",
                   "title": "Next Steps",
                   "tooltip": "Beyond the basics."
+                },
+                {
+                  "url": "guide/event-binding-concepts",
+                  "title": "How event binding works",
+                  "tooltip": "About event binding."
+                },
+                {
+                  "url": "guide/template-reference-variables",
+                  "title": "Template variables",
+                  "tooltip": "Introductory guide to referring to DOM elements within a template."
                 }
               ]
             },
@@ -912,6 +881,11 @@
                   "tooltip": "How observables compare to promises and other message passing techniques."
                 }
               ]
+            },
+            {
+              "url": "guide/hierarchical-dependency-injection",
+              "title": "Hierarchical Injectors",
+              "tooltip": "An injector tree parallels the component tree and supports nested dependencies."
             }
           ]
         },
@@ -937,6 +911,11 @@
           "url": "api"
         },
         {
+          "title": "Example applications",
+          "tooltip": "List of all of the example applications in the Angular documentation.",
+          "url": "guide/example-apps-list"
+        },
+        {
           "url": "guide/glossary",
           "title": "Angular Glossary",
           "tooltip": "Brief definitions of the most important words in the Angular vocabulary."
@@ -954,6 +933,11 @@
               "url": "guide/styleguide",
               "title": "Coding Style Guide",
               "tooltip": "Guidelines for writing Angular code."
+            },
+            {
+              "url": "guide/docs-style-guide",
+              "title": "Documentation Style Guide",
+              "tooltip": "Style guide for documentation authors."
             }
           ]
         }
@@ -998,6 +982,11 @@
           "url": "https://stackoverflow.com/questions/tagged/angular",
           "title": "Stack Overflow",
           "tooltip": "Stack Overflow: where the community answers your technical Angular questions."
+        },
+        {
+          "url": "https://discord.gg/angular",
+          "title": "Join Discord",
+          "tooltip": "Join the discussions at Angular Community Discord server."
         },
         {
           "url": "https://gitter.im/angular/angular",

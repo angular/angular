@@ -86,7 +86,7 @@ describe('NavigationService', () => {
     ];
 
     beforeEach(() => {
-      navService.navigationViews.subscribe(views => view = views['sideNav']);
+      navService.navigationViews.subscribe(views => view = views.sideNav);
       httpMock.expectOne({}).flush({sideNav});
     });
 
@@ -254,7 +254,7 @@ describe('NavigationService', () => {
         {...v, ...{ tooltip: v.title + '.'}})
       );
 
-      navService.navigationViews.subscribe(views => actualDocVersions = views['docVersions']);
+      navService.navigationViews.subscribe(views => actualDocVersions = views.docVersions);
     });
 
     it('should extract the docVersions', () => {

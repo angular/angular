@@ -105,6 +105,26 @@ describe('Google3 Renderer to Renderer2 TSLint rule', () => {
     expect(content).toContain('(renderer: Renderer2)');
   });
 
+  it('should not change Renderer imports if Renderer2 is already imported', () => {
+    writeFile('/index.ts', `
+        import { Renderer, Component, Renderer2 } from '@angular/core';
+
+        @Component({template: ''})
+        export class MyComp {
+          public renderer: Renderer;
+
+          constructor(renderer: Renderer) {
+            this.renderer = renderer;
+          }
+        }
+      `);
+
+    runTSLint(true);
+    const content = getFile('index.ts');
+
+    expect(content).toContain(`import { Renderer, Component, Renderer2 } from '@angular/core';`);
+  });
+
   it('should change Renderer inside single-line forwardRefs to Renderer2', () => {
     writeFile('/index.ts', `
       import { Renderer, Component, forwardRef, Inject } from '@angular/core';

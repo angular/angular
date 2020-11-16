@@ -21,6 +21,7 @@ import {isLocalize, TranslatePluginOptions} from '../../source_file_utils';
  *
  * @param locale The name of the locale to inline into the code.
  * @param options Additional options including the name of the `$localize` function.
+ * @publicApi used by CLI
  */
 export function makeLocalePlugin(
     locale: string, {localizeName = '$localize'}: TranslatePluginOptions = {}): PluginObj {

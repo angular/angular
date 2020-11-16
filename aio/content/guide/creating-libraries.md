@@ -26,7 +26,7 @@ The `ng generate` command creates the `projects/my-lib` folder in your workspace
 
 </div>
 
-When you generate a new library, the workspace configuration file, `angular.json`, is updated with a project of type 'library'.
+When you generate a new library, the workspace configuration file, `angular.json`, is updated with a project of type `library`.
 
 <code-example format="json">
 "projects": {
@@ -109,7 +109,7 @@ If you want a dropdown that would contain different passed-in values each time, 
 
 Suppose you want to read a configuration file and then generate a form based on that configuration.
 If that form will need additional customization by the developer who is using your library, it might work best as a schematic.
-However, if the forms will always be the same and not need much customization by developers, then you could create a dynamic component that takes the configuration and generates the form.
+However, if the form will always be the same and not need much customization by developers, then you could create a dynamic component that takes the configuration and generates the form.
 In general, the more complex the customization, the more useful the schematic approach.
 
 To learn more, see [Schematics Overview](guide/schematics) and [Schematics for Libraries](guide/schematics-for-libraries).
@@ -156,7 +156,7 @@ The library must be rebuilt on every change.
 When linking a library, make sure that the build step runs in watch mode, and that the library's `package.json` configuration points at the correct entry points.
 For example, `main` should point at a JavaScript file, not a TypeScript file.
 
-## Use TypeScript path mapping for peer dependencies
+### Use TypeScript path mapping for peer dependencies
 
 Angular libraries should list all `@angular/*` dependencies as peer dependencies.
 This ensures that when modules ask for Angular, they all get the exact same module.

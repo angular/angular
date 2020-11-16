@@ -86,12 +86,14 @@ export interface R3DirectiveMetadata {
   };
 
   /**
-   * A mapping of input field names to the property names.
+   * A mapping of inputs from class property names to binding property names, or to a tuple of
+   * binding property name and class property name if the names are different.
    */
   inputs: {[field: string]: string|[string, string]};
 
   /**
-   * A mapping of output field names to the property names.
+   * A mapping of outputs from class property names to binding property names, or to a tuple of
+   * binding property name and class property name if the names are different.
    */
   outputs: {[field: string]: string};
 
@@ -163,8 +165,6 @@ export interface R3ComponentMetadata extends R3DirectiveMetadata {
 
   /**
    * An encapsulation policy for the template and CSS styles. One of:
-   * - `ViewEncapsulation.Native`: Use shadow roots. This works only if natively available on the
-   *   platform (note that this is marked the as the "deprecated shadow DOM" as of Angular v6.1.
    * - `ViewEncapsulation.Emulated`: Use shimmed CSS that emulates the native behavior.
    * - `ViewEncapsulation.None`: Use global CSS without any encapsulation.
    * - `ViewEncapsulation.ShadowDom`: Use the latest ShadowDOM API to natively encapsulate styles

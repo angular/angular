@@ -34,11 +34,20 @@ global.ng.common.locales['eu'] = [
       'urt.', 'ots.', 'mar.', 'api.', 'mai.', 'eka.', 'uzt.', 'abu.', 'ira.', 'urr.', 'aza.', 'abe.'
     ],
     [
+      'urtarrilak', 'otsailak', 'martxoak', 'apirilak', 'maiatzak', 'ekainak', 'uztailak',
+      'abuztuak', 'irailak', 'urriak', 'azaroak', 'abenduak'
+    ]
+  ],
+  [
+    ['U', 'O', 'M', 'A', 'M', 'E', 'U', 'A', 'I', 'U', 'A', 'A'],
+    [
+      'urt.', 'ots.', 'mar.', 'api.', 'mai.', 'eka.', 'uzt.', 'abu.', 'ira.', 'urr.', 'aza.', 'abe.'
+    ],
+    [
       'urtarrila', 'otsaila', 'martxoa', 'apirila', 'maiatza', 'ekaina', 'uztaila', 'abuztua',
       'iraila', 'urria', 'azaroa', 'abendua'
     ]
   ],
-  u,
   [['K.a.', 'K.o.'], u, ['K.a.', 'Kristo ondoren']],
   1,
   [6, 0],

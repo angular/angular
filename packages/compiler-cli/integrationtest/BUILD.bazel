@@ -62,5 +62,10 @@ nodejs_test(
         "//packages/router:npm_package",
     ] + glob(["**/*"]),
     entry_point = "test.js",
-    tags = ["no-ivy-aot"],
+    tags = [
+        # TODO(josephperrott): reenable or remove test after investigating the cause of failures
+        # on windows CI runs.
+        "manual",
+        "no-ivy-aot",
+    ],
 )

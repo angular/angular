@@ -1,5 +1,17 @@
 # User input
 
+<div class="callout is-critical">
+<header>Marked for archiving</header>
+
+To ensure that you have the best experience possible, this topic is marked for archiving until we determine
+that it clearly conveys the most accurate information possible.
+
+In the meantime, this topic might be helpful: [Event binding](guide/event-binding).
+
+If you think this content should not be archived, please file a [GitHub issue](https://github.com/angular/angular/issues/new?template=3-docs-bug.md).
+
+</div>
+
 User actions such as clicking a link, pushing a button, and entering
 text raise DOM events.
 This page explains how to bind those events to component event handlers using the Angular
@@ -234,8 +246,8 @@ To fix this issue, listen to both the _Enter_ key and the _blur_ event.
 
 
 ## Put it all together
-The previous page showed how to [display data](guide/displaying-data).
-This page demonstrated event binding techniques.
+
+This page demonstrated several event binding techniques.
 
 Now, put it all together in a micro-app
 that can display a list of heroes and add new heroes to the list.
@@ -324,5 +336,5 @@ These techniques are useful for small-scale demonstrations, but they
 quickly become verbose and clumsy when handling large amounts of user input.
 Two-way data binding is a more elegant and compact way to move
 values between data entry fields and model properties.
-The next page, `Forms`, explains how to write
+The [`Forms`](guide/forms-overview) page explains how to write
 two-way bindings with `NgModel`.

@@ -272,19 +272,19 @@ class ImageExampleModule {
 
 @Component({
   selector: 'app',
-  template: 'Native works',
-  encapsulation: ViewEncapsulation.Native,
+  template: 'Shadow DOM works',
+  encapsulation: ViewEncapsulation.ShadowDom,
   styles: [':host { color: red; }']
 })
-class NativeEncapsulationApp {
+class ShadowDomEncapsulationApp {
 }
 
 @NgModule({
-  declarations: [NativeEncapsulationApp],
+  declarations: [ShadowDomEncapsulationApp],
   imports: [BrowserModule.withServerTransition({appId: 'test'}), ServerModule],
-  bootstrap: [NativeEncapsulationApp]
+  bootstrap: [ShadowDomEncapsulationApp]
 })
-class NativeExampleModule {
+class ShadowDomExampleModule {
 }
 
 @Component({selector: 'my-child', template: 'Works!'})
@@ -666,8 +666,8 @@ describe('platform-server integration', () => {
          });
        }));
 
-    it('should handle ViewEncapsulation.Native', waitForAsync(() => {
-         renderModule(NativeExampleModule, {document: doc}).then(output => {
+    it('should handle ViewEncapsulation.ShadowDom', waitForAsync(() => {
+         renderModule(ShadowDomExampleModule, {document: doc}).then(output => {
            expect(output).not.toBe('');
            expect(output).toContain('color: red');
            called = true;
@@ -794,10 +794,62 @@ describe('platform-server integration', () => {
        }));
 
     describe('relative requests', () => {
+      it('will throw if "useAbsoluteUrl" is true but "baseUrl" is not provided', async () => {
+        const platform = platformDynamicServer([{
+          provide: INITIAL_CONFIG,
+          useValue: {
+            document: '<app></app>',
+            url: 'http://localhost',
+            useAbsoluteUrl: true,
+          },
+        }]);
+        const appRef = await platform.bootstrapModule(HttpClientExampleModule);
+        expect(() => appRef.injector.get(PlatformLocation))
+            .toThrowError(/"PlatformConfig\.baseUrl" must be set if "useAbsoluteUrl" is true/);
+      });
+
+      it('will resolve absolute url using "baseUrl"', async () => {
+        const platform = platformDynamicServer([{
+          provide: INITIAL_CONFIG,
+          useValue: {
+            document: '<app></app>',
+            url: 'http://localhost',
+            useAbsoluteUrl: true,
+            baseUrl: 'https://angular.io:8080',
+          },
+        }]);
+        const appRef = await platform.bootstrapModule(HttpClientExampleModule);
+        const location = appRef.injector.get(PlatformLocation);
+        expect(location.protocol).toBe('https:');
+        expect(location.hostname).toBe('angular.io');
+        expect(location.port).toBe('8080');
+      });
+
+      it('"baseUrl" has no effect if "useAbsoluteUrl" is not enabled', async () => {
+        const platform = platformDynamicServer([{
+          provide: INITIAL_CONFIG,
+          useValue: {
+            document: '<app></app>',
+            url: 'http://localhost',
+            baseUrl: 'https://angular.io:8080',
+          },
+        }]);
+        const appRef = await platform.bootstrapModule(HttpClientExampleModule);
+        const location = appRef.injector.get(PlatformLocation);
+        expect(location.protocol).toBe('http:');
+        expect(location.hostname).toBe('localhost');
+        expect(location.port).toBe('');
+      });
+
       it('correctly maps to absolute URL request with base config', async () => {
         const platform = platformDynamicServer([{
           provide: INITIAL_CONFIG,
-          useValue: {document: '<app></app>', url: 'http://localhost', useAbsoluteUrl: true}
+          useValue: {
+            document: '<app></app>',
+            url: 'http://localhost',
+            baseUrl: 'http://localhost',
+            useAbsoluteUrl: true,
+          }
         }]);
         const ref = await platform.bootstrapModule(HttpClientExampleModule);
         const mock = ref.injector.get(HttpTestingController) as HttpTestingController;
@@ -831,7 +883,12 @@ describe('platform-server integration', () => {
       it('correctly maps to absolute URL request with port', async () => {
         const platform = platformDynamicServer([{
           provide: INITIAL_CONFIG,
-          useValue: {document: '<app></app>', url: 'http://localhost:5000', useAbsoluteUrl: true}
+          useValue: {
+            document: '<app></app>',
+            url: 'http://localhost:5000',
+            baseUrl: 'http://localhost',
+            useAbsoluteUrl: true,
+          }
         }]);
         const ref = await platform.bootstrapModule(HttpClientExampleModule);
         const mock = ref.injector.get(HttpTestingController) as HttpTestingController;
@@ -848,7 +905,12 @@ describe('platform-server integration', () => {
       it('correctly maps to absolute URL request with two slashes', async () => {
         const platform = platformDynamicServer([{
           provide: INITIAL_CONFIG,
-          useValue: {document: '<app></app>', url: 'http://localhost/', useAbsoluteUrl: true}
+          useValue: {
+            document: '<app></app>',
+            url: 'http://localhost/',
+            baseUrl: 'http://localhost',
+            useAbsoluteUrl: true,
+          }
         }]);
         const ref = await platform.bootstrapModule(HttpClientExampleModule);
         const mock = ref.injector.get(HttpTestingController) as HttpTestingController;
@@ -865,7 +927,12 @@ describe('platform-server integration', () => {
       it('correctly maps to absolute URL request with no slashes', async () => {
         const platform = platformDynamicServer([{
           provide: INITIAL_CONFIG,
-          useValue: {document: '<app></app>', url: 'http://localhost', useAbsoluteUrl: true}
+          useValue: {
+            document: '<app></app>',
+            url: 'http://localhost',
+            baseUrl: 'http://localhost',
+            useAbsoluteUrl: true,
+          }
         }]);
         const ref = await platform.bootstrapModule(HttpClientExampleModule);
         const mock = ref.injector.get(HttpTestingController) as HttpTestingController;
@@ -882,8 +949,12 @@ describe('platform-server integration', () => {
       it('correctly maps to absolute URL request with longer url and no slashes', async () => {
         const platform = platformDynamicServer([{
           provide: INITIAL_CONFIG,
-          useValue:
-              {document: '<app></app>', url: 'http://localhost/path/page', useAbsoluteUrl: true}
+          useValue: {
+            document: '<app></app>',
+            url: 'http://localhost/path/page',
+            baseUrl: 'http://localhost',
+            useAbsoluteUrl: true,
+          }
         }]);
         const ref = await platform.bootstrapModule(HttpClientExampleModule);
         const mock = ref.injector.get(HttpTestingController) as HttpTestingController;
@@ -900,8 +971,12 @@ describe('platform-server integration', () => {
       it('correctly maps to absolute URL request with longer url and slashes', async () => {
         const platform = platformDynamicServer([{
           provide: INITIAL_CONFIG,
-          useValue:
-              {document: '<app></app>', url: 'http://localhost/path/page', useAbsoluteUrl: true}
+          useValue: {
+            document: '<app></app>',
+            url: 'http://localhost/path/page',
+            baseUrl: 'http://localhost',
+            useAbsoluteUrl: true,
+          }
         }]);
         const ref = await platform.bootstrapModule(HttpClientExampleModule);
         const mock = ref.injector.get(HttpTestingController) as HttpTestingController;
@@ -922,7 +997,8 @@ describe('platform-server integration', () => {
              useValue: {
                document: '<base href="http://other"><app></app>',
                url: 'http://localhost/path/page',
-               useAbsoluteUrl: true
+               baseUrl: 'http://localhost',
+               useAbsoluteUrl: true,
              }
            }]);
            const ref = await platform.bootstrapModule(HttpClientExampleModule);

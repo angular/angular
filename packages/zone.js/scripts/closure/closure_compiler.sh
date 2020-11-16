@@ -1,10 +1,10 @@
 # compile closure test source file
 $(npm bin)/tsc -p .
 # Run the Google Closure compiler java runnable with zone externs
-java -jar node_modules/google-closure-compiler/compiler.jar --flagfile 'scripts/closure/closure_flagfile' --externs 'lib/closure/zone_externs.js'
+java -jar ./node_modules/google-closure-compiler-java/compiler.jar --flagfile './scripts/closure/closure_flagfile' --externs './lib/closure/zone_externs.js' --externs './node_modules/@externs/nodejs/v8/global.js' --process_common_js_modules
 
 # the names of Zone exposed API should be kept correctly with zone externs, test program should exit with 0.
-node build/closure/closure-bundle.js
+node build/closure/zone-closure-bundle.js
 
 if [ $? -eq 0 ]
 then
@@ -15,10 +15,9 @@ else
 fi
 
 # Run the Google Closure compiler java runnable without zone externs.
-java -jar node_modules/google-closure-compiler/compiler.jar --flagfile 'scripts/closure/closure_flagfile'
+java -jar node_modules/google-closure-compiler-java/compiler.jar --flagfile 'scripts/closure/closure_flagfile' --externs './node_modules/@externs/nodejs/v8/global.js' --process_common_js_modules
 
-# the names of Zone exposed API should be renamed and fail to be executed, test program should exit with 1.
-node build/closure/closure-bundle.js
+node build/closure/zone-closure-bundle.js
 
 if [ $? -eq 1 ]
 then

@@ -311,7 +311,7 @@ describe('EventManager', () => {
     expect(receivedEvents).toEqual([]);
   });
 
-  it('should run blackListedEvents handler outside of ngZone', () => {
+  it('should run unpatchedEvents handler outside of ngZone', () => {
     const Zone = (window as any)['Zone'];
     const element = el('<div><div></div></div>');
     doc.body.appendChild(element);

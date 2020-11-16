@@ -8,6 +8,8 @@
 import {ProceduralRenderer3, RComment, RElement, Renderer3, RendererFactory3, RendererStyleFlags3, RNode, RText} from '../../../src/render3/interfaces/renderer';
 
 export class MicroBenchmarkRenderNode implements RNode, RComment, RText {
+  tagName?: string;
+  nodeType?: number;
   textContent: string|null = null;
   parentNode: RNode|null = null;
   parentElement: RElement|null = null;
@@ -43,7 +45,7 @@ export class MicroBenchmarkRenderer implements ProceduralRenderer3 {
     throw new Error('Method not implemented.');
   }
   parentNode(node: RNode): RElement|null {
-    throw new Error('Method not implemented.');
+    return null;
   }
   nextSibling(node: RNode): RNode|null {
     throw new Error('Method not implemented.');

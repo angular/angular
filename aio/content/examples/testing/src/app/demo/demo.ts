@@ -4,7 +4,7 @@ import { Component, ContentChildren, Directive, EventEmitter,
          HostBinding, HostListener,
          OnInit, OnChanges, OnDestroy,
          Pipe, PipeTransform,
-         SimpleChange } from '@angular/core';
+         SimpleChanges } from '@angular/core';
 
 import { of } from 'rxjs';
 import { delay } from 'rxjs/operators';
@@ -309,7 +309,7 @@ export class MyIfChildComponent implements OnInit, OnChanges, OnDestroy {
     this.changeLog.push('ngOnDestroy called');
   }
 
-  ngOnChanges(changes: {[propertyName: string]: SimpleChange}) {
+  ngOnChanges(changes: SimpleChanges) {
     for (const propName in changes) {
       this.ngOnChangesCounter += 1;
       const prop = changes[propName];

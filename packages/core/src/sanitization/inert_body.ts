@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {trustedHTMLFromString} from '../util/security/trusted_types';
+
 /**
  * This helper is used to get hold of an inert tree of DOM elements containing dirty HTML
  * that needs sanitizing.
@@ -36,8 +38,9 @@ class DOMParserHelper implements InertBodyHelper {
     // in `html` from consuming the otherwise explicit `</body>` tag.
     html = '<body><remove></remove>' + html;
     try {
-      const body = new (window as any).DOMParser().parseFromString(html, 'text/html').body as
-          HTMLBodyElement;
+      const body = new window.DOMParser()
+                       .parseFromString(trustedHTMLFromString(html) as string, 'text/html')
+                       .body as HTMLBodyElement;
       body.removeChild(body.firstChild!);
       return body;
     } catch {
@@ -71,7 +74,7 @@ class InertDocumentHelper implements InertBodyHelper {
     // Prefer using <template> element if supported.
     const templateEl = this.inertDocument.createElement('template');
     if ('content' in templateEl) {
-      templateEl.innerHTML = html;
+      templateEl.innerHTML = trustedHTMLFromString(html) as string;
       return templateEl;
     }
 
@@ -83,9 +86,9 @@ class InertDocumentHelper implements InertBodyHelper {
     // down the line. This has been worked around by creating a new inert `body` and using it as
     // the root node in which we insert the HTML.
     const inertBody = this.inertDocument.createElement('body');
-    inertBody.innerHTML = html;
+    inertBody.innerHTML = trustedHTMLFromString(html) as string;
 
-    // Support: IE 9-11 only
+    // Support: IE 11 only
     // strip custom-namespaced attributes on IE<=11
     if ((this.defaultDoc as any).documentMode) {
       this.stripCustomNsAttrs(inertBody);
@@ -95,7 +98,7 @@ class InertDocumentHelper implements InertBodyHelper {
   }
 
   /**
-   * When IE9-11 comes across an unknown namespaced attribute e.g. 'xlink:foo' it adds 'xmlns:ns1'
+   * When IE11 comes across an unknown namespaced attribute e.g. 'xlink:foo' it adds 'xmlns:ns1'
    * attribute to declare ns1 namespace and prefixes the attribute with 'ns1' (e.g.
    * 'ns1:xlink:foo').
    *
@@ -129,7 +132,8 @@ class InertDocumentHelper implements InertBodyHelper {
  */
 export function isDOMParserAvailable() {
   try {
-    return !!new (window as any).DOMParser().parseFromString('', 'text/html');
+    return !!new window.DOMParser().parseFromString(
+        trustedHTMLFromString('') as string, 'text/html');
   } catch {
     return false;
   }

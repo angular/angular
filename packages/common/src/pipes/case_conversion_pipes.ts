@@ -29,8 +29,11 @@ export class LowerCasePipe implements PipeTransform {
   /**
    * @param value The string to transform to lower case.
    */
-  transform(value: string): string {
-    if (!value) return value;
+  transform(value: string): string;
+  transform(value: null|undefined): null;
+  transform(value: string|null|undefined): string|null;
+  transform(value: string|null|undefined): string|null {
+    if (value == null) return null;
     if (typeof value !== 'string') {
       throw invalidPipeArgumentError(LowerCasePipe, value);
     }
@@ -72,8 +75,11 @@ export class TitleCasePipe implements PipeTransform {
   /**
    * @param value The string to transform to title case.
    */
-  transform(value: string): string {
-    if (!value) return value;
+  transform(value: string): string;
+  transform(value: null|undefined): null;
+  transform(value: string|null|undefined): string|null;
+  transform(value: string|null|undefined): string|null {
+    if (value == null) return null;
     if (typeof value !== 'string') {
       throw invalidPipeArgumentError(TitleCasePipe, value);
     }
@@ -96,8 +102,11 @@ export class UpperCasePipe implements PipeTransform {
   /**
    * @param value The string to transform to upper case.
    */
-  transform(value: string): string {
-    if (!value) return value;
+  transform(value: string): string;
+  transform(value: null|undefined): null;
+  transform(value: string|null|undefined): string|null;
+  transform(value: string|null|undefined): string|null {
+    if (value == null) return null;
     if (typeof value !== 'string') {
       throw invalidPipeArgumentError(UpperCasePipe, value);
     }

@@ -101,7 +101,7 @@ function determineBaseClass(
   }
 
   const baseClass = host.evaluator.evaluate(baseClassExpr);
-  if (!(baseClass instanceof Reference) || !isClassDeclaration(baseClass.node as ts.Declaration)) {
+  if (!(baseClass instanceof Reference) || !isClassDeclaration(baseClass.node)) {
     return null;
   }
 

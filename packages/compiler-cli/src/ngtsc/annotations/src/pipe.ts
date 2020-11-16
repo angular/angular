@@ -133,7 +133,7 @@ export class PipeDecoratorHandler implements DecoratorHandler<Decorator, PipeHan
     return {};
   }
 
-  compile(node: ClassDeclaration, analysis: Readonly<PipeHandlerData>): CompileResult[] {
+  compileFull(node: ClassDeclaration, analysis: Readonly<PipeHandlerData>): CompileResult[] {
     const meta = analysis.meta;
     const res = compilePipeFromMetadata(meta);
     const factoryRes = compileNgFactoryDefField({

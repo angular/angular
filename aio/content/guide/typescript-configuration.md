@@ -20,6 +20,12 @@ that are important to Angular developers, including details about the following 
 A given Angular workspace contains several TypeScript configuration files.
 At the root `tsconfig.json` file specifies the base TypeScript and Angular compiler options that all projects in the workspace inherit.
 
+<div class="alert is-helpful">
+
+See the [Angular compiler options](guide/angular-compiler-options) guide for information about what Angular specific options are available.
+
+</div>
+
 The TypeScript and Angular have a wide range of options which can be used to configure type-checking features and generated output.
 For more information, see the [Configuration inheritance with extends](https://www.typescriptlang.org/docs/handbook/tsconfig-json.html#configuration-inheritance-with-extends) section of the TypeScript documentation.
 

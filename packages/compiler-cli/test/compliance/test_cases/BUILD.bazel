@@ -1,0 +1,14 @@
+load("@build_bazel_rules_nodejs//:index.bzl", "copy_to_bin")
+load("//packages/compiler-cli/test/compliance/partial:partial_compliance_goldens.bzl", "partial_compliance_golden")
+
+package(default_visibility = ["//packages/compiler-cli/test/compliance:__subpackages__"])
+
+# Normally we would use `file_group` here but this doesn't work on Windows because there
+# appears to be a bug with making the `runfiles` folder available.
+# See https://github.com/bazelbuild/rules_nodejs/issues/1689
+copy_to_bin(
+    name = "test_cases",
+    srcs = glob(["*/**"]),
+)
+
+[partial_compliance_golden(filePath = path) for path in glob(include = ["**/TEST_CASES.json"])]

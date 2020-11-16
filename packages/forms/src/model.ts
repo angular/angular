@@ -8,9 +8,10 @@
 
 import {EventEmitter} from '@angular/core';
 import {Observable} from 'rxjs';
-import {composeAsyncValidators, composeValidators} from './directives/shared';
+
+import {removeListItem} from './directives/shared';
 import {AsyncValidatorFn, ValidationErrors, ValidatorFn} from './directives/validators';
-import {toObservable} from './validators';
+import {composeAsyncValidators, composeValidators, toObservable} from './validators';
 
 /**
  * Reports that a FormControl is valid, meaning that no errors exist in the input value.
@@ -173,8 +174,7 @@ export abstract class AbstractControl {
   // TODO(issue/24571): remove '!'.
   _updateOn!: FormHooks;
 
-  // TODO(issue/24571): remove '!'.
-  private _parent!: FormGroup|FormArray;
+  private _parent: FormGroup|FormArray|null = null;
   private _asyncValidationSubscription: any;
 
   /**
@@ -267,7 +267,7 @@ export abstract class AbstractControl {
   /**
    * The parent control.
    */
-  get parent(): FormGroup|FormArray {
+  get parent(): FormGroup|FormArray|null {
     return this._parent;
   }
 
@@ -1018,7 +1018,7 @@ export abstract class AbstractControl {
    */
   private _parentMarkedDirty(onlySelf?: boolean): boolean {
     const parentDirty = this._parent && this._parent.dirty;
-    return !onlySelf && parentDirty && !this._parent._anyControlsDirty();
+    return !onlySelf && !!parentDirty && !this._parent!._anyControlsDirty();
   }
 }
 
@@ -1270,12 +1270,11 @@ export class FormControl extends AbstractControl {
   }
 
   /**
+   * Internal function to unregister a change events listener.
    * @internal
    */
-  _clearChangeFns(): void {
-    this._onChange = [];
-    this._onDisabledChange = [];
-    this._onCollectionChange = () => {};
+  _unregisterOnChange(fn: Function): void {
+    removeListItem(this._onChange, fn);
   }
 
   /**
@@ -1285,6 +1284,14 @@ export class FormControl extends AbstractControl {
    */
   registerOnDisabledChange(fn: (isDisabled: boolean) => void): void {
     this._onDisabledChange.push(fn);
+  }
+
+  /**
+   * Internal function to unregister a disabled event listener.
+   * @internal
+   */
+  _unregisterOnDisabledChange(fn: (isDisabled: boolean) => void): void {
+    removeListItem(this._onDisabledChange, fn);
   }
 
   /**
@@ -1579,7 +1586,7 @@ export class FormGroup extends AbstractControl {
   }
 
   /**
-   * Resets the `FormGroup`, marks all descendants are marked `pristine` and `untouched`, and
+   * Resets the `FormGroup`, marks all descendants `pristine` and `untouched` and sets
    * the value of all descendants to null.
    *
    * You reset to a specific form state by passing in a map of states

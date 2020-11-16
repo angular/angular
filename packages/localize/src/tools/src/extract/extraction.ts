@@ -23,6 +23,8 @@ export interface ExtractionOptions {
 /**
  * Extracts parsed messages from file contents, by parsing the contents as JavaScript
  * and looking for occurrences of `$localize` in the source code.
+ *
+ * @publicApi used by CLI
  */
 export class MessageExtractor {
   private basePath: AbsoluteFsPath;
@@ -50,8 +52,8 @@ export class MessageExtractor {
         sourceRoot: this.basePath,
         filename,
         plugins: [
-          makeEs2015ExtractPlugin(messages, this.localizeName),
-          makeEs5ExtractPlugin(messages, this.localizeName),
+          makeEs2015ExtractPlugin(this.fs, messages, this.localizeName),
+          makeEs5ExtractPlugin(this.fs, messages, this.localizeName),
         ],
         code: false,
         ast: false

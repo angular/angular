@@ -8,42 +8,61 @@
 
 import * as e from '../../../src/expression_parser/ast';
 import * as a from '../../../src/render3/r3_ast';
-import {DirectiveMeta} from '../../../src/render3/view/t2_api';
+import {DirectiveMeta, InputOutputPropertySet} from '../../../src/render3/view/t2_api';
 import {R3TargetBinder} from '../../../src/render3/view/t2_binder';
 import {parseTemplate} from '../../../src/render3/view/template';
 import {CssSelector, SelectorMatcher} from '../../../src/selector';
 
 import {findExpression} from './util';
 
+/**
+ * A `InputOutputPropertySet` which only uses an identity mapping for fields and properties.
+ */
+class IdentityInputMapping implements InputOutputPropertySet {
+  private names: Set<string>;
+
+  constructor(names: string[]) {
+    this.names = new Set(names);
+  }
+
+  hasBindingPropertyName(propertyName: string): boolean {
+    return this.names.has(propertyName);
+  }
+}
+
 function makeSelectorMatcher(): SelectorMatcher<DirectiveMeta> {
   const matcher = new SelectorMatcher<DirectiveMeta>();
   matcher.addSelectables(CssSelector.parse('[ngFor][ngForOf]'), {
     name: 'NgFor',
     exportAs: null,
-    inputs: {'ngForOf': 'ngForOf'},
-    outputs: {},
+    inputs: new IdentityInputMapping(['ngForOf']),
+    outputs: new IdentityInputMapping([]),
     isComponent: false,
+    selector: '[ngFor][ngForOf]',
   });
   matcher.addSelectables(CssSelector.parse('[dir]'), {
     name: 'Dir',
     exportAs: null,
-    inputs: {},
-    outputs: {},
+    inputs: new IdentityInputMapping([]),
+    outputs: new IdentityInputMapping([]),
     isComponent: false,
+    selector: '[dir]'
   });
   matcher.addSelectables(CssSelector.parse('[hasOutput]'), {
     name: 'HasOutput',
     exportAs: null,
-    inputs: {},
-    outputs: {'outputBinding': 'outputBinding'},
+    inputs: new IdentityInputMapping([]),
+    outputs: new IdentityInputMapping(['outputBinding']),
     isComponent: false,
+    selector: '[hasOutput]'
   });
   matcher.addSelectables(CssSelector.parse('[hasInput]'), {
     name: 'HasInput',
     exportAs: null,
-    inputs: {'inputBinding': 'inputBinding'},
-    outputs: {},
+    inputs: new IdentityInputMapping(['inputBinding']),
+    outputs: new IdentityInputMapping([]),
     isComponent: false,
+    selector: '[hasInput]'
   });
   return matcher;
 }
@@ -85,9 +104,10 @@ describe('t2 binding', () => {
     matcher.addSelectables(CssSelector.parse('text[dir]'), {
       name: 'Dir',
       exportAs: null,
-      inputs: {},
-      outputs: {},
+      inputs: new IdentityInputMapping([]),
+      outputs: new IdentityInputMapping([]),
       isComponent: false,
+      selector: 'text[dir]'
     });
     const binder = new R3TargetBinder(matcher);
     const res = binder.bind({template: template.nodes});
@@ -177,6 +197,40 @@ describe('t2 binding', () => {
       const attr = el.outputs[0];
       const consumer = res.getConsumerOfBinding(attr);
       expect(consumer).toEqual(el);
+    });
+  });
+
+  describe('used pipes', () => {
+    it('should record pipes used in interpolations', () => {
+      const template = parseTemplate('{{value|date}}', '', {});
+      const binder = new R3TargetBinder(makeSelectorMatcher());
+      const res = binder.bind({template: template.nodes});
+      expect(res.getUsedPipes()).toEqual(['date']);
+    });
+
+    it('should record pipes used in bound attributes', () => {
+      const template = parseTemplate('<person [age]="age|number"></person>', '', {});
+      const binder = new R3TargetBinder(makeSelectorMatcher());
+      const res = binder.bind({template: template.nodes});
+      expect(res.getUsedPipes()).toEqual(['number']);
+    });
+
+    it('should record pipes used in bound template attributes', () => {
+      const template = parseTemplate('<ng-template [ngIf]="obs|async"></ng-template>', '', {});
+      const binder = new R3TargetBinder(makeSelectorMatcher());
+      const res = binder.bind({template: template.nodes});
+      expect(res.getUsedPipes()).toEqual(['async']);
+    });
+
+    it('should record pipes used in ICUs', () => {
+      const template = parseTemplate(
+          `<span i18n>{count|number, plural,
+            =1 { {{value|date}} }
+          }</span>`,
+          '', {});
+      const binder = new R3TargetBinder(makeSelectorMatcher());
+      const res = binder.bind({template: template.nodes});
+      expect(res.getUsedPipes()).toEqual(['number', 'date']);
     });
   });
 });

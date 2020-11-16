@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {absoluteFrom} from '@angular/compiler-cli/src/ngtsc/file_system';
+import {absoluteFrom, FileSystem, getFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {runInEachFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
 import {ɵParsedMessage, ɵSourceLocation} from '@angular/localize';
 
@@ -14,6 +14,8 @@ import {XmbTranslationSerializer} from '../../../src/extract/translation_files/x
 import {mockMessage} from './mock_message';
 
 runInEachFileSystem(() => {
+  let fs: FileSystem;
+  beforeEach(() => fs = getFileSystem());
   describe('XmbTranslationSerializer', () => {
     [false, true].forEach(useLegacyIds => {
       describe(`renderFile() [using ${useLegacyIds ? 'legacy' : 'canonical'} ids]`, () => {
@@ -61,7 +63,8 @@ runInEachFileSystem(() => {
                 ],
                 [], {}),
           ];
-          const serializer = new XmbTranslationSerializer(absoluteFrom('/project'), useLegacyIds);
+          const serializer =
+              new XmbTranslationSerializer(absoluteFrom('/project'), useLegacyIds, fs);
           const output = serializer.serialize(messages);
           expect(output).toContain([
             `<messagebundle>`,

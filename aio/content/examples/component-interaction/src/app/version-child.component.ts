@@ -1,6 +1,6 @@
 /* tslint:disable:forin */
 // #docregion
-import { Component, Input, OnChanges, SimpleChange } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 
 @Component({
   selector: 'app-version-child',
@@ -17,7 +17,7 @@ export class VersionChildComponent implements OnChanges {
   @Input() minor: number;
   changeLog: string[] = [];
 
-  ngOnChanges(changes: {[propKey: string]: SimpleChange}) {
+  ngOnChanges(changes: SimpleChanges) {
     const log: string[] = [];
     for (const propName in changes) {
       const changedProp = changes[propName];

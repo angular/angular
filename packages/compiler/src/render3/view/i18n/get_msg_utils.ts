@@ -10,7 +10,7 @@ import {mapLiteral} from '../../../output/map_util';
 import * as o from '../../../output/output_ast';
 
 import {serializeIcuNode} from './icu_serializer';
-import {i18nMetaToDocStmt} from './meta';
+import {i18nMetaToJSDoc} from './meta';
 import {formatI18nPlaceholderName} from './util';
 
 /** Closure uses `goog.getMsg(message)` to lookup translations */
@@ -31,15 +31,13 @@ export function createGoogleGetMsgStatements(
   //  */
   // const MSG_... = goog.getMsg(..);
   // I18N_X = MSG_...;
-  const statements = [];
-  const jsdocComment = i18nMetaToDocStmt(message);
-  if (jsdocComment !== null) {
-    statements.push(jsdocComment);
+  const googGetMsgStmt = closureVar.set(o.variable(GOOG_GET_MSG).callFn(args)).toConstDecl();
+  const metaComment = i18nMetaToJSDoc(message);
+  if (metaComment !== null) {
+    googGetMsgStmt.addLeadingComment(metaComment);
   }
-  statements.push(closureVar.set(o.variable(GOOG_GET_MSG).callFn(args)).toConstDecl());
-  statements.push(new o.ExpressionStatement(variable.set(closureVar)));
-
-  return statements;
+  const i18nAssignmentStmt = new o.ExpressionStatement(variable.set(closureVar));
+  return [googGetMsgStmt, i18nAssignmentStmt];
 }
 
 /**

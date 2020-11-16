@@ -34,7 +34,7 @@ filegroup(
 filegroup(
     name = "angularjs_scripts",
     srcs = [
-        # We also declare the unminfied AngularJS files since these can be used for
+        # We also declare the unminified AngularJS files since these can be used for
         # local debugging (e.g. see: packages/upgrade/test/common/test_helpers.ts)
         "@npm//:node_modules/angular/angular.js",
         "@npm//:node_modules/angular/angular.min.js",
@@ -46,4 +46,10 @@ filegroup(
         "@npm//:node_modules/angular-mocks-1.5/angular-mocks.js",
         "@npm//:node_modules/angular-mocks-1.6/angular-mocks.js",
     ],
+)
+
+# Detect if the build is running under --stamp
+config_setting(
+    name = "stamp",
+    values = {"stamp": "true"},
 )

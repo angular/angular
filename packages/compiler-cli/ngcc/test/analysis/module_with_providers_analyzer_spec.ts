@@ -10,8 +10,8 @@ import * as ts from 'typescript';
 import {absoluteFrom, AbsoluteFsPath, getSourceFileOrError} from '../../../src/ngtsc/file_system';
 import {runInEachFileSystem, TestFile} from '../../../src/ngtsc/file_system/testing';
 import {MockLogger} from '../../../src/ngtsc/logging/testing';
-import {isNamedClassDeclaration, isNamedVariableDeclaration} from '../../../src/ngtsc/reflection';
-import {getDeclaration} from '../../../src/ngtsc/testing';
+import {DeclarationNode} from '../../../src/ngtsc/reflection';
+import {getDeclaration, isNamedDeclaration} from '../../../src/ngtsc/testing';
 import {loadTestFiles} from '../../../test/helpers';
 import {ModuleWithProvidersAnalyses, ModuleWithProvidersAnalyzer} from '../../src/analysis/module_with_providers_analyzer';
 import {NgccReferencesRegistry} from '../../src/analysis/ngcc_references_registry';
@@ -660,10 +660,8 @@ runInEachFileSystem(() => {
                           [];
       }
 
-      function getName(node: ts.Declaration|null): string {
-        return node && (isNamedVariableDeclaration(node) || isNamedClassDeclaration(node)) ?
-            `${node.name.text}.` :
-            '';
+      function getName(node: DeclarationNode|null): string {
+        return node && isNamedDeclaration(node) ? `${node.name.text}.` : '';
       }
     });
   });

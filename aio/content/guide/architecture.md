@@ -5,7 +5,7 @@ Angular is written in TypeScript.
 It implements core and optional functionality as a set of TypeScript libraries that you import into your apps.
 
 The architecture of an Angular application relies on certain fundamental concepts.
-The basic building blocks are *NgModules*, which provide a compilation context for *components*. NgModules collect related code into functional sets; an Angular app is defined by a set of NgModules. An app always has at least a *root module* that enables bootstrapping, and typically has many more *feature modules*.
+The basic building blocks of the Angular framework are Angular components that are organized into *NgModules*. NgModules collect related code into functional sets; an Angular app is defined by a set of NgModules. An app always has at least a *root module* that enables bootstrapping, and typically has many more *feature modules*.
 
 * Components define *views*, which are sets of screen elements that Angular can choose among and modify according to your program logic and data.
 

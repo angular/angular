@@ -12,12 +12,16 @@
   {% for option in doc.members %}
   <a id="{$ option.anchor $}"></a>
   <table class="is-full-width option-table">
-    <thead><tr><th>
-      <div class="with-github-links">
-        <h3>{$ option.name $}</h3>
-        {$ github.githubLinks(option, versionInfo) $}
-      </div>
-    </th></tr></thead>
+    <thead>
+      <tr>
+        <th>
+          <div class="with-github-links">
+            <h3>{$ option.name $}</h3>
+            {$ github.githubLinks(option, versionInfo) $}
+          </div>
+        </th>
+      </tr>
+    </thead>
     <tbody>
       <tr>
         <td>
@@ -26,8 +30,9 @@
       </tr>
       <tr>
         <td>
-          <code-example language="ts" hideCopy="true" class="no-box api-heading{% if option.deprecated %} deprecated-api-item{% endif %}">
-          {$ option.name $}: {$ option.type | escape $}
+          <code-example language="ts" hideCopy="true"
+            class="no-box api-heading{% if option.deprecated %} deprecated-api-item{% endif %}">
+            {$ option.name $}{%- if option.isOptional  %}?{% endif -%}: {$ option.type | escape $}
           </code-example>
         </td>
       </tr>

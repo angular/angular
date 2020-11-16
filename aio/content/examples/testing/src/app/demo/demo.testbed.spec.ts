@@ -28,7 +28,7 @@ import {
   ComponentFixture, fakeAsync, inject, TestBed, tick, waitForAsync
 } from '@angular/core/testing';
 
-import { addMatchers, newEvent, click } from '../../testing';
+import { addMatchers, click } from '../../testing';
 
 export class NotProvided extends ValueService { /* example below */ }
 beforeEach(addMatchers);
@@ -274,9 +274,11 @@ describe('demo (with TestBed):', () => {
         expect(comp.name).toBe(expectedOrigName,
           `comp.name should still be ${expectedOrigName} after value change, before binding happens`);
 
-        // dispatch a DOM event so that Angular learns of input value change.
+        // Dispatch a DOM event so that Angular learns of input value change.
         // then wait while ngModel pushes input.box value to comp.name
-        input.dispatchEvent(newEvent('input'));
+        // In older browsers, such as IE, you might need a CustomEvent instead. See
+        // https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent/CustomEvent#Polyfill
+        input.dispatchEvent(new Event('input'));
         return fixture.whenStable();
       })
         .then(() => {
@@ -312,9 +314,11 @@ describe('demo (with TestBed):', () => {
       expect(comp.name).toBe(expectedOrigName,
         `comp.name should still be ${expectedOrigName} after value change, before binding happens`);
 
-      // dispatch a DOM event so that Angular learns of input value change.
+      // Dispatch a DOM event so that Angular learns of input value change.
       // then wait a tick while ngModel pushes input.box value to comp.name
-      input.dispatchEvent(newEvent('input'));
+      // In older browsers, such as IE, you might need a CustomEvent instead. See
+      // https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent/CustomEvent#Polyfill
+      input.dispatchEvent(new Event('input'));
       tick();
       expect(comp.name).toBe(expectedNewName,
         `After ngModel updates the model, comp.name should be ${expectedNewName} `);
@@ -335,10 +339,12 @@ describe('demo (with TestBed):', () => {
       // simulate user entering new name in input
       input.value = inputText;
 
-      // dispatch a DOM event so that Angular learns of input value change.
+      // Dispatch a DOM event so that Angular learns of input value change.
       // then wait a tick while ngModel pushes input.box value to comp.text
       // and Angular updates the output span
-      input.dispatchEvent(newEvent('input'));
+      // In older browsers, such as IE, you might need a CustomEvent instead. See
+      // https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent/CustomEvent#Polyfill
+      input.dispatchEvent(new Event('input'));
       tick();
       fixture.detectChanges();
       expect(span.textContent).toBe(expectedText, 'output span');

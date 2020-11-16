@@ -283,6 +283,28 @@ import {normalizeCSS} from '@angular/platform-browser/testing/src/browser_util';
       expect(css).toEqual('@import url("a"); div[contenta] {}');
     });
 
+    it('should shim rules with quoted content after @import', () => {
+      const styleStr = '@import url("a"); div {background-image: url("a.jpg"); color: red;}';
+      const css = s(styleStr, 'contenta');
+      expect(css).toEqual(
+          '@import url("a"); div[contenta] {background-image:url("a.jpg"); color:red;}');
+    });
+
+    it('should pass through @import directives whose URL contains colons and semicolons', () => {
+      const styleStr =
+          '@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap");';
+      const css = s(styleStr, 'contenta');
+      expect(css).toEqual(styleStr);
+    });
+
+    it('should shim rules after @import with colons and semicolons', () => {
+      const styleStr =
+          '@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap"); div {}';
+      const css = s(styleStr, 'contenta');
+      expect(css).toEqual(
+          '@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap"); div[contenta] {}');
+    });
+
     it('should leave calc() unchanged', () => {
       const styleStr = 'div {height:calc(100% - 55px);}';
       const css = s(styleStr, 'contenta');
@@ -311,6 +333,24 @@ import {normalizeCSS} from '@angular/platform-browser/testing/src/browser_util';
     it('should keep sourceURL comments', () => {
       expect(s('/*# sourceMappingURL=data:x */b {c}/*# sourceURL=xxx */', 'contenta'))
           .toEqual('b[contenta] {c}/*# sourceMappingURL=data:x *//*# sourceURL=xxx */');
+    });
+
+    it('should shim rules with quoted content', () => {
+      const styleStr = 'div {background-image: url("a.jpg"); color: red;}';
+      const css = s(styleStr, 'contenta');
+      expect(css).toEqual('div[contenta] {background-image:url("a.jpg"); color:red;}');
+    });
+
+    it('should shim rules with an escaped quote inside quoted content', () => {
+      const styleStr = 'div::after { content: "\\"" }';
+      const css = s(styleStr, 'contenta');
+      expect(css).toEqual('div[contenta]::after { content:"\\""}');
+    });
+
+    it('should shim rules with curly braces inside quoted content', () => {
+      const styleStr = 'div::after { content: "{}" }';
+      const css = s(styleStr, 'contenta');
+      expect(css).toEqual('div[contenta]::after { content:"{}"}');
     });
   });
 

@@ -97,7 +97,7 @@ For the simplest deployment, create a production build and copy the output direc
   </code-example>
 
 
-2. Copy _everything_ within the output folder (`dist/` by default) to a folder on the server.
+2. Copy _everything_ within the output folder (`dist/project-name/` by default) to a folder on the server.
 
 3. Configure the server to redirect requests for missing files to `index.html`.
 Learn more about server-side redirects [below](#fallback).
@@ -211,11 +211,11 @@ modified to serve `index.html`:
   # .
   # -- server.rb
   # -- public
-  #    |-- dist
+  #    |-- project-name
   #        |-- index.html
 
   get '/' do
-      folderDir = settings.public_folder + '/dist'  # ng build output folder
+      folderDir = settings.public_folder + '/project-name'  # ng build output folder
       send_file File.join(folderDir, 'index.html')
   end
   ```
@@ -383,11 +383,11 @@ Build your app for production _including the source maps_
 
 </code-example>
 
-List the generated bundles in the `dist/` folder.
+List the generated bundles in the `dist/project-name/` folder.
 
 <code-example language="none" class="code-shell">
 
-  ls dist/*.bundle.js
+  ls dist/project-name/*.js
 
 </code-example>
 
@@ -396,7 +396,7 @@ The following example displays the graph for the _main_ bundle.
 
 <code-example language="none" class="code-shell">
 
-  node_modules/.bin/source-map-explorer dist/main.*.bundle.js
+  node_modules/.bin/source-map-explorer dist/project-name/main*
 
 </code-example>
 
@@ -511,9 +511,9 @@ Each script tag has a `type="module"` or `nomodule` attribute. Browsers with nat
 
 To include differential loading in your application builds, you must configure the Browserslist and TypeScript configuration files in your application project.
 
-The following examples show a `browserlistrc` and `tsconfig.json` file for a newly created Angular application. In this configuration, legacy browsers such as IE 9-11 are ignored, and the compilation target is ES2015.
+The following examples show a `.browserslistrc` and `tsconfig.json` file for a newly created Angular application. In this configuration, legacy browsers such as IE 9-11 are ignored, and the compilation target is ES2015.
 
-<code-example language="none" header="browserslistrc">
+<code-example language="none" header=".browserslistrc">
 # This file is used by the build system to adjust CSS and JS output to support the specified browsers below.
 # For additional information regarding the format and rule options, please see:
 # https://github.com/browserslist/browserslist#queries
@@ -527,10 +527,10 @@ The following examples show a `browserlistrc` and `tsconfig.json` file for a new
 last 1 Chrome version
 last 1 Firefox version
 last 2 Edge major versions
-last 2 Safari major version
+last 2 Safari major versions
 last 2 iOS major versions
 Firefox ESR
-not IE 9-11 # For IE 9-11 support, remove 'not'.
+not IE 11 # Angular supports IE 11 only as an opt-in. To opt-in, remove the 'not' prefix on this line.
 </code-example>
 
 <code-example language="json" header="tsconfig.json">

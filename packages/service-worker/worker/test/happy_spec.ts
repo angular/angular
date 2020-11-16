@@ -74,6 +74,7 @@ const brokenManifest: Manifest = {
   }],
   dataGroups: [],
   navigationUrls: processNavigationUrls(''),
+  navigationRequestStrategy: 'performance',
   hashTable: tmpHashTableForFs(brokenFs, {'/foo.txt': true}),
 };
 
@@ -105,6 +106,7 @@ const brokenLazyManifest: Manifest = {
   ],
   dataGroups: [],
   navigationUrls: processNavigationUrls(''),
+  navigationRequestStrategy: 'performance',
   hashTable: tmpHashTableForFs(brokenFs, {'/bar.txt': true}),
 };
 
@@ -198,6 +200,7 @@ const manifest: Manifest = {
     },
   ],
   navigationUrls: processNavigationUrls(''),
+  navigationRequestStrategy: 'performance',
   hashTable: tmpHashTableForFs(dist),
 };
 
@@ -256,6 +259,7 @@ const manifestUpdate: Manifest = {
         '!/ignored/file1',
         '!/ignored/dir/**',
       ]),
+  navigationRequestStrategy: 'performance',
   hashTable: tmpHashTableForFs(distUpdate),
 };
 
@@ -983,6 +987,7 @@ describe('Driver', () => {
         },
       ],
       navigationUrls: processNavigationUrls(baseHref),
+      navigationRequestStrategy: 'performance',
       hashTable: tmpHashTableForFs(distDir, {}, baseHref),
     });
 
@@ -1343,6 +1348,7 @@ describe('Driver', () => {
         }
       ],
       navigationUrls: processNavigationUrls('./'),
+      navigationRequestStrategy: 'performance',
       hashTable: tmpHashTableForFs(distDir, {}, './'),
     });
 
@@ -1754,6 +1760,7 @@ describe('Driver', () => {
           }],
           dataGroups: [],
           navigationUrls: processNavigationUrls(''),
+          navigationRequestStrategy: 'performance',
           hashTable: tmpHashTableForFs(fileSystem),
         };
 
@@ -1921,6 +1928,52 @@ describe('Driver', () => {
            expect(await driver.checkForUpdate()).toEqual(true);
          });
     });
+  });
+
+  describe('navigationRequestStrategy', () => {
+    it('doesn\'t create navigate request in performance mode', async () => {
+      await makeRequest(scope, '/foo.txt');
+      await driver.initialized;
+      await server.clearRequests();
+
+      // Create multiple navigation requests to prove no navigation request was made.
+      // By default the navigation request is not sent, it's replaced
+      // with the index request - thus, the `this is foo` value.
+      expect(await makeNavigationRequest(scope, '/', '')).toBe('this is foo');
+      expect(await makeNavigationRequest(scope, '/foo', '')).toBe('this is foo');
+      expect(await makeNavigationRequest(scope, '/foo/bar', '')).toBe('this is foo');
+
+      server.assertNoOtherRequests();
+    });
+
+    it('sends the request to the server in freshness mode', async () => {
+      const {server, scope, driver} = createSwForFreshnessStrategy();
+
+      await makeRequest(scope, '/foo.txt');
+      await driver.initialized;
+      await server.clearRequests();
+
+      // Create multiple navigation requests to prove the navigation request is constantly made.
+      // When enabled, the navigation request is made each time and not replaced
+      // with the index request - thus, the `null` value.
+      expect(await makeNavigationRequest(scope, '/', '')).toBe(null);
+      expect(await makeNavigationRequest(scope, '/foo', '')).toBe(null);
+      expect(await makeNavigationRequest(scope, '/foo/bar', '')).toBe(null);
+
+      server.assertSawRequestFor('/');
+      server.assertSawRequestFor('/foo');
+      server.assertSawRequestFor('/foo/bar');
+      server.assertNoOtherRequests();
+    });
+
+    function createSwForFreshnessStrategy() {
+      const freshnessManifest: Manifest = {...manifest, navigationRequestStrategy: 'freshness'};
+      const server = serverBuilderBase.withManifest(freshnessManifest).build();
+      const scope = new SwTestHarnessBuilder().withServerState(server).build();
+      const driver = new Driver(scope, scope, new CacheDatabase(scope, scope));
+
+      return {server, scope, driver};
+    }
   });
 });
 })();

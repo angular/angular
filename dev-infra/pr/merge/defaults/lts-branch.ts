@@ -6,40 +6,32 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import fetch from 'node-fetch';
 import * as semver from 'semver';
 
+import {ReleaseConfig} from '../../../release/config/index';
+import {computeLtsEndDateOfMajor, fetchProjectNpmPackageInfo, getLtsNpmDistTagOfMajor, getVersionOfBranch, GithubRepoWithApi} from '../../../release/versioning';
 import {promptConfirm, red, warn, yellow} from '../../../utils/console';
 import {InvalidTargetBranchError} from '../target-label';
 
-import {getVersionOfBranch, GithubRepo} from './branches';
-
-/**
- * Number of months a major version in Angular is actively supported. See:
- * https://angular.io/guide/releases#support-policy-and-schedule.
- */
-const majorActiveSupportDuration = 6;
-
-/**
- * Number of months a major version has active long-term support. See:
- * https://angular.io/guide/releases#support-policy-and-schedule.
- */
-const majorActiveTermSupportDuration = 12;
-
 /**
  * Asserts that the given branch corresponds to an active LTS version-branch that can receive
- * backported fixes. Throws an error if LTS expired or an invalid branch is selected.
- */
-export async function assertActiveLtsBranch(repo: GithubRepo, branchName: string) {
+ * backport fixes. Throws an error if LTS expired or an invalid branch is selected.
+ *
+ * @param repo Repository containing the given branch. Used for Github API queries.
+ * @param releaseConfig Configuration for releases. Used to query NPM about past publishes.
+ * @param branchName Branch that is checked to be an active LTS version-branch.
+ * */
+export async function assertActiveLtsBranch(
+    repo: GithubRepoWithApi, releaseConfig: ReleaseConfig, branchName: string) {
   const version = await getVersionOfBranch(repo, branchName);
-  const {'dist-tags': distTags, time} =
-      await (await fetch(`https://registry.npmjs.org/${repo.npmPackageName}`)).json();
+  const {'dist-tags': distTags, time} = await fetchProjectNpmPackageInfo(releaseConfig);
 
   // LTS versions should be tagged in NPM in the following format: `v{major}-lts`.
-  const ltsVersion = semver.parse(distTags[`v${version.major}-lts`]);
+  const ltsNpmTag = getLtsNpmDistTagOfMajor(version.major);
+  const ltsVersion = semver.parse(distTags[ltsNpmTag]);
 
-  // Ensure that there is a LTS version tagged for the given version-branch major. e.g.
-  // if the version branch is `9.2.x` then we want to make sure that there is a LTS
+  // Ensure that there is an LTS version tagged for the given version-branch major. e.g.
+  // if the version branch is `9.2.x` then we want to make sure that there is an LTS
   // version tagged in NPM for `v9`, following the `v{major}-lts` tag convention.
   if (ltsVersion === null) {
     throw new InvalidTargetBranchError(`No LTS version tagged for v${version.major} in NPM.`);
@@ -54,12 +46,8 @@ export async function assertActiveLtsBranch(repo: GithubRepo, branchName: string
   }
 
   const today = new Date();
-  const releaseDate = new Date(time[`${version.major}.0.0`]);
-  const ltsEndDate = new Date(
-      releaseDate.getFullYear(),
-      releaseDate.getMonth() + majorActiveSupportDuration + majorActiveTermSupportDuration,
-      releaseDate.getDate(), releaseDate.getHours(), releaseDate.getMinutes(),
-      releaseDate.getSeconds(), releaseDate.getMilliseconds());
+  const majorReleaseDate = new Date(time[`${version.major}.0.0`]);
+  const ltsEndDate = computeLtsEndDateOfMajor(majorReleaseDate);
 
   // Check if LTS has already expired for the targeted major version. If so, we do not
   // allow the merge as per our LTS guarantees. Can be forcibly overridden if desired.

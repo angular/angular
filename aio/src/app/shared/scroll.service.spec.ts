@@ -99,7 +99,7 @@ describe('ScrollService', () => {
       if (original !== undefined) {
         Object.defineProperty(window.history, 'scrollRestoration', original);
       } else {
-        delete window.history.scrollRestoration;
+        delete (window.history as any).scrollRestoration;
       }
     }
   });

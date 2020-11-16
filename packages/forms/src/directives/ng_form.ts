@@ -9,14 +9,15 @@
 import {AfterViewInit, Directive, EventEmitter, forwardRef, Inject, Input, Optional, Self} from '@angular/core';
 
 import {AbstractControl, FormControl, FormGroup, FormHooks} from '../model';
-import {NG_ASYNC_VALIDATORS, NG_VALIDATORS} from '../validators';
+import {composeAsyncValidators, composeValidators, NG_ASYNC_VALIDATORS, NG_VALIDATORS} from '../validators';
 
 import {ControlContainer} from './control_container';
 import {Form} from './form_interface';
 import {NgControl} from './ng_control';
 import {NgModel} from './ng_model';
 import {NgModelGroup} from './ng_model_group';
-import {composeAsyncValidators, composeValidators, removeDir, setUpControl, setUpFormContainer, syncPendingControls} from './shared';
+import {removeListItem, setUpControl, setUpFormContainer, syncPendingControls} from './shared';
+import {AsyncValidator, AsyncValidatorFn, Validator, ValidatorFn} from './validators';
 
 export const formDirectiveProvider: any = {
   provide: ControlContainer,
@@ -130,8 +131,9 @@ export class NgForm extends ControlContainer implements Form, AfterViewInit {
   @Input('ngFormOptions') options!: {updateOn?: FormHooks};
 
   constructor(
-      @Optional() @Self() @Inject(NG_VALIDATORS) validators: any[],
-      @Optional() @Self() @Inject(NG_ASYNC_VALIDATORS) asyncValidators: any[]) {
+      @Optional() @Self() @Inject(NG_VALIDATORS) validators: (Validator|ValidatorFn)[],
+      @Optional() @Self() @Inject(NG_ASYNC_VALIDATORS) asyncValidators:
+          (AsyncValidator|AsyncValidatorFn)[]) {
     super();
     this.form =
         new FormGroup({}, composeValidators(validators), composeAsyncValidators(asyncValidators));
@@ -215,7 +217,7 @@ export class NgForm extends ControlContainer implements Form, AfterViewInit {
       if (container) {
         container.removeControl(dir.name);
       }
-      removeDir<NgModel>(this._directives, dir);
+      removeListItem(this._directives, dir);
     });
   }
 

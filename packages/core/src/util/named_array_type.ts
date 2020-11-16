@@ -8,6 +8,7 @@
  */
 
 import './ng_dev_mode';
+import {newTrustedFunctionForDev} from './security/trusted_types';
 
 /**
  * THIS FILE CONTAINS CODE WHICH SHOULD BE TREE SHAKEN AND NEVER CALLED FROM PRODUCTION CODE!!!
@@ -27,9 +28,10 @@ export function createNamedArrayType(name: string): typeof Array {
   // This should never be called in prod mode, so let's verify that is the case.
   if (ngDevMode) {
     try {
-      // We need to do it this way so that TypeScript does not down-level the below code.
-      const FunctionConstructor: any = createNamedArrayType.constructor;
-      return (new FunctionConstructor('Array', `return class ${name} extends Array{}`))(Array);
+      // If this function were compromised the following could lead to arbitrary
+      // script execution. We bless it with Trusted Types anyway since this
+      // function is stripped out of production binaries.
+      return (newTrustedFunctionForDev('Array', `return class ${name} extends Array{}`))(Array);
     } catch (e) {
       // If it does not work just give up and fall back to regular Array.
       return Array;

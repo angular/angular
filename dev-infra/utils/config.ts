@@ -9,7 +9,7 @@
 import {existsSync} from 'fs';
 import {dirname, join} from 'path';
 
-import {error} from './console';
+import {debug, error} from './console';
 import {exec} from './shelljs';
 import {isTsNodeAvailable} from './ts-node';
 
@@ -49,7 +49,16 @@ export type NgDevConfig<T = {}> = CommonConfig&T;
 const CONFIG_FILE_PATH = '.ng-dev/config';
 
 /** The configuration for ng-dev. */
-let CONFIG: {}|null = null;
+let cachedConfig: NgDevConfig|null = null;
+
+/**
+ * The filename expected for local user config, without the file extension to allow a typescript,
+ * javascript or json file to be used.
+ */
+const USER_CONFIG_FILE_PATH = '.ng-dev.user';
+
+/** The local user configuration for ng-dev. */
+let userConfig: {[key: string]: any}|null = null;
 
 /**
  * Get the configuration from the file system, returning the already loaded
@@ -57,15 +66,15 @@ let CONFIG: {}|null = null;
  */
 export function getConfig(): NgDevConfig {
   // If the global config is not defined, load it from the file system.
-  if (CONFIG === null) {
+  if (cachedConfig === null) {
     // The full path to the configuration file.
     const configPath = join(getRepoBaseDir(), CONFIG_FILE_PATH);
-    // Set the global config object.
-    CONFIG = readConfigFile(configPath);
+    // Read the configuration and validate it before caching it for the future.
+    cachedConfig = validateCommonConfig(readConfigFile(configPath));
   }
-  // Return a clone of the global config to ensure that a new instance of the config is returned
-  // each time, preventing unexpected effects of modifications to the config object.
-  return validateCommonConfig({...CONFIG});
+  // Return a clone of the cached global config to ensure that a new instance of the config
+  // is returned each time, preventing unexpected effects of modifications to the config object.
+  return {...cachedConfig};
 }
 
 /** Validate the common configuration has been met for the ng-dev command. */
@@ -86,8 +95,11 @@ function validateCommonConfig(config: Partial<NgDevConfig>) {
   return config as NgDevConfig;
 }
 
-/** Resolves and reads the specified configuration file. */
-function readConfigFile(configPath: string): object {
+/**
+ * Resolves and reads the specified configuration file, optionally returning an empty object if the
+ * configuration file cannot be read.
+ */
+function readConfigFile(configPath: string, returnEmptyObjectOnError = false): object {
   // If the the `.ts` extension has not been set up already, and a TypeScript based
   // version of the given configuration seems to exist, set up `ts-node` if available.
   if (require.extensions['.ts'] === undefined && existsSync(`${configPath}.ts`) &&
@@ -103,7 +115,12 @@ function readConfigFile(configPath: string): object {
   try {
     return require(configPath);
   } catch (e) {
-    error('Could not read configuration file.');
+    if (returnEmptyObjectOnError) {
+      debug(`Could not read configuration file at ${configPath}, returning empty object instead.`);
+      debug(e);
+      return {};
+    }
+    error(`Could not read configuration file at ${configPath}.`);
     error(e);
     process.exit(1);
   }
@@ -134,4 +151,24 @@ export function getRepoBaseDir() {
         `ERROR:\n ${baseRepoDir.stderr}`);
   }
   return baseRepoDir.trim();
+}
+
+/**
+ * Get the local user configuration from the file system, returning the already loaded copy if it is
+ * defined.
+ *
+ * @returns The user configuration object, or an empty object if no user configuration file is
+ * present. The object is an untyped object as there are no required user configurations.
+ */
+export function getUserConfig() {
+  // If the global config is not defined, load it from the file system.
+  if (userConfig === null) {
+    // The full path to the configuration file.
+    const configPath = join(getRepoBaseDir(), USER_CONFIG_FILE_PATH);
+    // Set the global config object.
+    userConfig = readConfigFile(configPath, true);
+  }
+  // Return a clone of the user config to ensure that a new instance of the config is returned
+  // each time, preventing unexpected effects of modifications to the config object.
+  return {...userConfig};
 }

@@ -8,6 +8,18 @@
 
 import {ParseSourceSpan} from '../parse_util';
 
+/**
+ * Describes the text contents of a placeholder as it appears in an ICU expression, including its
+ * source span information.
+ */
+export interface MessagePlaceholder {
+  /** The text contents of the placeholder */
+  text: string;
+
+  /** The source span of the placeholder */
+  sourceSpan: ParseSourceSpan;
+}
+
 export class Message {
   sources: MessageSpan[];
   id: string = this.customId;
@@ -16,14 +28,14 @@ export class Message {
 
   /**
    * @param nodes message AST
-   * @param placeholders maps placeholder names to static content
+   * @param placeholders maps placeholder names to static content and their source spans
    * @param placeholderToMessage maps placeholder names to messages (used for nested ICU messages)
    * @param meaning
    * @param description
    * @param customId
    */
   constructor(
-      public nodes: Node[], public placeholders: {[phName: string]: string},
+      public nodes: Node[], public placeholders: {[phName: string]: MessagePlaceholder},
       public placeholderToMessage: {[phName: string]: Message}, public meaning: string,
       public description: string, public customId: string) {
     if (nodes.length) {
@@ -87,7 +99,9 @@ export class TagPlaceholder implements Node {
   constructor(
       public tag: string, public attrs: {[k: string]: string}, public startName: string,
       public closeName: string, public children: Node[], public isVoid: boolean,
-      public sourceSpan: ParseSourceSpan) {}
+      // TODO sourceSpan should cover all (we need a startSourceSpan and endSourceSpan)
+      public sourceSpan: ParseSourceSpan, public startSourceSpan: ParseSourceSpan|null,
+      public endSourceSpan: ParseSourceSpan|null) {}
 
   visit(visitor: Visitor, context?: any): any {
     return visitor.visitTagPlaceholder(this, context);
@@ -151,7 +165,8 @@ export class CloneVisitor implements Visitor {
   visitTagPlaceholder(ph: TagPlaceholder, context?: any): TagPlaceholder {
     const children = ph.children.map(n => n.visit(this, context));
     return new TagPlaceholder(
-        ph.tag, ph.attrs, ph.startName, ph.closeName, children, ph.isVoid, ph.sourceSpan);
+        ph.tag, ph.attrs, ph.startName, ph.closeName, children, ph.isVoid, ph.sourceSpan,
+        ph.startSourceSpan, ph.endSourceSpan);
   }
 
   visitPlaceholder(ph: Placeholder, context?: any): Placeholder {

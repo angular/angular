@@ -1,5 +1,17 @@
 # Navigate the component tree with DI
 
+<div class="callout is-critical">
+<header>Marked for archiving</header>
+
+To ensure that you have the best experience possible, this topic is marked for archiving until we determine
+that it clearly conveys the most accurate information possible.
+
+In the meantime, this topic might be helpful: [Hierarchical injectors](guide/hierarchical-dependency-injection).
+
+If you think this content should not be archived, please file a [GitHub issue](https://github.com/angular/angular/issues/new?template=3-docs-bug.md).
+
+</div>
+
 Application components often need to share information.
 You can often use loosely coupled techniques for sharing information,
 such as data binding and service sharing,
@@ -170,7 +182,7 @@ Here's *Barry*.
 
 
 *Barry*'s `providers` array looks just like [*Alex*'s](#alex-providers).
-If you're going to keep writing [*alias providers*](guide/dependency-injection-in-action#useexisting) like this you should create a [helper function](#provideparent).
+If you're going to keep writing [*alias providers*](guide/dependency-injection-in-action#useexisting) like this you should create a helper function.
 
 For now, focus on *Barry*'s constructor.
 
@@ -196,7 +208,7 @@ which *is* what parent means.
 
 2. Angular throws a cyclic dependency error if you omit the `@SkipSelf` decorator.
 
-  `Cannot instantiate cyclic dependency! (BethComponent -> Parent -> BethComponent)`
+  `NG0200: Circular dependency in DI detected for BethComponent. Dependency path: BethComponent -> Parent -> BethComponent`
 
 Here's *Alice*, *Barry*, and family in action.
 
@@ -244,36 +256,3 @@ It doesn't in this example *only* to demonstrate that the code will compile and 
 
 
 </div>
-
-
-
-{@a provideparent}
-
-
-### `provideParent()` helper function
-
-Writing variations of the same parent *alias provider* gets old quickly,
-especially this awful mouthful with a [*forwardRef*](guide/dependency-injection-in-action#forwardref).
-
-<code-example path="dependency-injection-in-action/src/app/parent-finder.component.ts" region="alex-providers" header="dependency-injection-in-action/src/app/parent-finder.component.ts"></code-example>
-
-You can extract that logic into a helper function like the following.
-
-<code-example path="dependency-injection-in-action/src/app/parent-finder.component.ts" region="provide-the-parent" header="dependency-injection-in-action/src/app/parent-finder.component.ts"></code-example>
-
-Now you can add a simpler, more meaningful parent provider to your components.
-
-<code-example path="dependency-injection-in-action/src/app/parent-finder.component.ts" region="alice-providers" header="dependency-injection-in-action/src/app/parent-finder.component.ts"></code-example>
-
-
-You can do better. The current version of the helper function can only alias the `Parent` class interface.
-The application might have a variety of parent types, each with its own class interface token.
-
-Here's a revised version that defaults to `parent` but also accepts an optional second parameter for a different parent class interface.
-
-<code-example path="dependency-injection-in-action/src/app/parent-finder.component.ts" region="provide-parent" header="dependency-injection-in-action/src/app/parent-finder.component.ts"></code-example>
-
-
-And here's how you could use it with a different parent type.
-
-<code-example path="dependency-injection-in-action/src/app/parent-finder.component.ts" region="beth-providers" header="dependency-injection-in-action/src/app/parent-finder.component.ts"></code-example>

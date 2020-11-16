@@ -94,3 +94,12 @@ export function ngToTsDiagnostic(ng: Diagnostic): ts.Diagnostic {
     length,
   };
 }
+
+/**
+ * Strip multiline comment start and end markers from the `commentText` string.
+ *
+ * This will also strip the JSDOC comment start marker (`/**`).
+ */
+export function stripComment(commentText: string): string {
+  return commentText.replace(/^\/\*\*?/, '').replace(/\*\/$/, '').trim();
+}

@@ -6,6 +6,7 @@ ts_library(
     srcs = glob(
         ["**/*.ts"],
     ),
+    visibility = ["//packages/localize/src/tools/test:__subpackages__"],
     deps = [
         "//packages:types",
         "//packages/compiler",

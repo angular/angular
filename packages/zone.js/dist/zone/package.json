@@ -1,7 +1,0 @@
-{
-  "name": "zone.js/zone",
-  "main": "../../bundles/zone.umd.js",
-  "fesm2015": "../../fesm2015/zone.js",
-  "es2015": "../../fesm2015/zone.js",
-  "module": "../../fesm2015/zone.js"
-}

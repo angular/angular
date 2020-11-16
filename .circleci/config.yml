@@ -22,18 +22,16 @@ version: 2.1
 # **NOTE 1 **: If you change the cache key prefix, also sync the cache_key_fallback to match.
 # **NOTE 2 **: Keep the static part of the cache key as prefix to enable correct fallbacks.
 # See https://circleci.com/docs/2.0/caching/#restoring-cache for how prefixes work in CircleCI.
-var_3: &cache_key v7-angular-node-12-{{ checksum ".bazelversion" }}-{{ checksum "yarn.lock" }}-{{ checksum "WORKSPACE" }}-{{ checksum "packages/bazel/package.bzl" }}-{{ checksum "aio/yarn.lock" }}
+var_3: &cache_key v1-angular-node-12-{{ checksum ".bazelversion" }}-{{ checksum "yarn.lock" }}-{{ checksum "WORKSPACE" }}-{{ checksum "packages/bazel/package.bzl" }}-{{ checksum "aio/yarn.lock" }}
 # We invalidate the cache if the Bazel version changes because otherwise the `bazelisk` cache
 # folder will contain all previously used versions and ultimately cause the cache restoring to
 # be slower due to its growing size.
-var_4: &cache_key_fallback v7-angular-node-12-{{ checksum ".bazelversion" }}
-var_3_win: &cache_key_win v7-angular-win-node-12-{{ checksum ".bazelversion" }}-{{ checksum "yarn.lock" }}-{{ checksum "WORKSPACE" }}-{{ checksum "packages/bazel/package.bzl" }}-{{ checksum "aio/yarn.lock" }}
-var_4_win: &cache_key_win_fallback v7-angular-win-node-12-{{ checksum ".bazelversion" }}
+var_4: &cache_key_fallback v1-angular-node-12-{{ checksum ".bazelversion" }}
 
 # Cache key for the `components-repo-unit-tests` job. **Note** when updating the SHA in the
 # cache keys also update the SHA for the "COMPONENTS_REPO_COMMIT" environment variable.
-var_5: &components_repo_unit_tests_cache_key v9-angular-components-09e68db8ed5b1253f2fe38ff954ef0df019fc25a
-var_6: &components_repo_unit_tests_cache_key_fallback v9-angular-components-
+var_5: &components_repo_unit_tests_cache_key v1-angular-components-09e68db8ed5b1253f2fe38ff954ef0df019fc25a
+var_6: &components_repo_unit_tests_cache_key_fallback v1-angular-components-
 
 # Workspace initially persisted by the `setup` job, and then enhanced by `build-npm-packages` and
 # `build-ivy-npm-packages`.
@@ -80,7 +78,7 @@ executors:
 
   windows-executor:
     working_directory: ~/ng
-    resource_class: windows.medium
+    resource_class: windows.2xlarge
     # CircleCI windows VMs do have the GitBash shell available:
     # https://github.com/CircleCI-Public/windows-preview-docs#shells
     # But in this specific case we really should not use it because Bazel must not be ran from
@@ -183,23 +181,12 @@ commands:
   setup_win:
     description: Setup windows node environment
     steps:
-      # Use the Linux workspace directly, as it already has checkout, rebased and node modules.
-      - custom_attach_workspace
+      - checkout
       # Install Bazel pre-requisites that aren't in the preconfigured CircleCI Windows VM.
       - run: ./.circleci/windows-env.ps1
       - run: node --version
       - run: yarn --version
-      - restore_cache:
-          keys:
-            - *cache_key_win
-            - *cache_key_win_fallback
-      # Reinstall to get windows binaries.
       - run: yarn install --frozen-lockfile --non-interactive
-      # Install @bazel/bazelisk globally and use that for the first run.
-      # Workaround for https://github.com/bazelbuild/rules_nodejs/issues/894
-      # NB: the issue was for @bazel/bazel but the same problem applies to @bazel/bazelisk
-      - run: yarn global add @bazel/bazelisk@$env:BAZELISK_VERSION
-      - run: bazelisk info
 
   notify_webhook_on_fail:
     description: Notify a webhook about failure
@@ -273,6 +260,7 @@ jobs:
       - run: yarn -s ng-dev format changed $CI_GIT_BASE_REVISION --check
       - run: yarn -s ts-circular-deps:check
       - run: yarn -s ng-dev pullapprove verify
+      - run: yarn -s ng-dev ngbot verify
       - run: yarn -s ng-dev commit-message validate-range --range $CI_COMMIT_RANGE
 
   test:
@@ -565,7 +553,8 @@ jobs:
       # Publish `zone.js` package.
       - run:
           name: Create artifacts for zone.js package
-          command: ./scripts/ci/create-package-archives.sh $CI_BRANCH $CI_COMMIT $ZONEJS_PACKAGES_DIR $ZONEJS_PACKAGES_ARCHIVES_DIR
+          # Need to remove the zone.js.tgz before archive
+          command: rm -rf $ZONEJS_PACKAGES_DIR/archive && ./scripts/ci/create-package-archives.sh $CI_BRANCH $CI_COMMIT $ZONEJS_PACKAGES_DIR $ZONEJS_PACKAGES_ARCHIVES_DIR
       - store_artifacts:
           path: *zonejs_packages_archives_dir
           destination: zone.js
@@ -653,8 +642,10 @@ jobs:
           name: Starting Saucelabs tunnel service
           command: ./tools/saucelabs/sauce-service.sh run
           background: true
-      - run: yarn tsc -p packages
-      - run: yarn tsc -p modules
+      # add module umd tsc compile option so the test can work
+      # properly in the legacy browsers
+      - run: yarn tsc -p packages --module UMD
+      - run: yarn tsc -p modules --module UMD
       - run: yarn bazel build //packages/zone.js:npm_package
       # Build test fixtures for a test that rely on Bazel-generated fixtures. Note that disabling
       # specific tests which are reliant on such generated fixtures is not an option as SystemJS
@@ -737,6 +728,7 @@ jobs:
     steps:
       - custom_attach_workspace
       - init_environment
+      - install_java
         # Install
       - run: yarn --cwd packages/zone.js install --frozen-lockfile --non-interactive
         # Run zone.js tools tests
@@ -745,8 +737,13 @@ jobs:
       - run: yarn bazel build //packages/zone.js:npm_package &&
              cp dist/bin/packages/zone.js/npm_package/bundles/zone-mix.umd.js ./packages/zone.js/test/extra/ &&
              cp dist/bin/packages/zone.js/npm_package/bundles/zone-patch-electron.umd.js ./packages/zone.js/test/extra/ &&
-             yarn --cwd packages/zone.js electrontest
-      - run: yarn --cwd packages/zone.js jesttest
+             cp dist/bin/packages/zone.js/npm_package/bundles/zone.umd.js ./packages/zone.js/build/test/closure/zone.js
+      - run: yarn --cwd packages/zone.js jest:test
+      - run: yarn --cwd packages/zone.js jest:nodetest
+      - run: yarn --cwd packages/zone.js electrontest
+      - run: yarn --cwd packages/zone.js closuretest
+      - run: yarn --cwd packages/zone.js/test/typings install --frozen-lockfile --non-interactive
+      - run: yarn --cwd packages/zone.js/test/typings test
 
   # Windows jobs
   # Docs: https://circleci.com/docs/2.0/hello-world-windows/
@@ -755,25 +752,26 @@ jobs:
     steps:
       - setup_win
       - run:
-          # Ran into a command parsing problem where `-browser:chromium-local` was converted to
-          # `-browser: chromium-local` (a space was added) in https://circleci.com/gh/angular/angular/357511.
-          # Probably a powershell command parsing thing. There's no problem using a yarn script though.
-          command: yarn circleci-win-ve
-          no_output_timeout: 45m
-      # Save bazel repository cache to use on subsequent runs.
-      # We don't save node_modules because it's faster to use the linux workspace and reinstall.
-      - save_cache:
-          key: *cache_key_win
-          paths:
-            - "C:/Users/circleci/bazel_repository_cache"
+          name: Build all windows CI targets
+          command: yarn bazel build --build_tag_filters=-ivy-only,-no-windows //packages/compiler-cli/... //tools/ts-api-guardian/...
+          no_output_timeout: 15m
+      - run:
+          name: Test all windows CI targets
+          command: yarn bazel test --build_tag_filters=-no-windows --test_tag_filters="-ivy-only,-no-windows,-browser:chromium-local" //packages/compiler-cli/... //tools/ts-api-guardian/...
+          no_output_timeout: 15m
 
   test_ivy_aot_win:
     executor: windows-executor
     steps:
       - setup_win
       - run:
-          command: yarn circleci-win-ivy
-          no_output_timeout: 45m
+          name: Build all windows CI targets
+          command: yarn bazel build --config=ivy --build_tag_filters=-no-ivy-aot,-no-windows,-fixme-ivy-aot //packages/compiler-cli/... //tools/ts-api-guardian/...
+          no_output_timeout: 15m
+      - run:
+          name: Test all windows CI targets
+          command: yarn bazel test --config=ivy --build_tag_filters=-no-windows --test_tag_filters="-no-ivy-aot,-no-windows,-fixme-ivy-aot,-browser:chromium-local" //packages/compiler-cli/... //tools/ts-api-guardian/...
+          no_output_timeout: 15m
 
 
 workflows:
@@ -857,26 +855,25 @@ workflows:
             - build-npm-packages
             - build-ivy-npm-packages
             - legacy-unit-tests-saucelabs
-      - components-repo-unit-tests:
-          requires:
-            - build-npm-packages
+      # Temporarily disabled components-repo-unit-tests to update rules_nodejs to 2.0.0. Breaking changes in
+      # rules_nodejs create a dependency sandwich between angular/angular & angular/components that are very
+      # difficult and time consuming to resolve and involve patching @angular/bazel in components repo such
+      # as https://github.com/angular/components/commit/9e7ba251207df77164d73d66620e619bcbc4d2ad. It is simpler to
+      # 1) land angular/angular upgrade to rule_nodejs 2.0.0 which has breaking changes
+      # 2) land angular/components upgrade to rules_nodejs 2.0.0 using the @angular/bazel builds snapshot
+      # 3) update angular/angular to the landed components commit and re-enable these tests
+      # - components-repo-unit-tests:
+      #     requires:
+      #       - build-npm-packages
       - test_zonejs:
           requires:
             - setup
-      # Windows Jobs
-      # These are very slow so we run them on non-PRs only for now.
-      # TODO: remove the filter when CircleCI makes Windows FS faster.
-      # The Windows jobs are only run after their non-windows counterparts finish successfully.
-      # This isn't strictly necessary as there is no artifact dependency, but helps economize
-      # CI resources by not attempting to build when we know should fail.
       - test_win:
-          <<: *skip_on_pull_requests
           requires:
-            - test
+            - setup
       - test_ivy_aot_win:
-          <<: *skip_on_pull_requests
           requires:
-            - test_ivy_aot
+            - setup
 
   monitoring:
     jobs:

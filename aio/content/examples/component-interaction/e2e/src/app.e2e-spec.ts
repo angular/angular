@@ -1,12 +1,8 @@
-import { browser, element, by } from 'protractor';
+import { browser, by, element } from 'protractor';
 
 describe('Component Communication Cookbook Tests', () => {
 
-  // Note: '?e2e' which app can read to know it is running in protractor
-  // e.g. `if (!/e2e/.test(location.search)) { ...`
-  beforeAll(() => {
-    browser.get('?e2e');
-  });
+  beforeEach(() => browser.get(browser.baseUrl));
 
   describe('Parent-to-child communication', () => {
     // #docregion parent-to-child
@@ -15,7 +11,7 @@ describe('Component Communication Cookbook Tests', () => {
     const masterName = 'Master';
 
     it('should pass properties to children properly', () => {
-      const parent = element.all(by.tagName('app-hero-parent')).get(0);
+      const parent = element(by.tagName('app-hero-parent'));
       const heroes = parent.all(by.tagName('app-hero-child'));
 
       for (let i = 0; i < heroNames.length; i++) {
@@ -35,7 +31,7 @@ describe('Component Communication Cookbook Tests', () => {
     it('should display trimmed, non-empty names', () => {
       const nonEmptyNameIndex = 0;
       const nonEmptyName = '"Dr IQ"';
-      const parent = element.all(by.tagName('app-name-parent')).get(0);
+      const parent = element(by.tagName('app-name-parent'));
       const hero = parent.all(by.tagName('app-name-child')).get(nonEmptyNameIndex);
 
       const displayName = hero.element(by.tagName('h3')).getText();
@@ -45,7 +41,7 @@ describe('Component Communication Cookbook Tests', () => {
     it('should replace empty name with default name', () => {
       const emptyNameIndex = 1;
       const defaultName = '"<no name set>"';
-      const parent = element.all(by.tagName('app-name-parent')).get(0);
+      const parent = element(by.tagName('app-name-parent'));
       const hero = parent.all(by.tagName('app-name-child')).get(emptyNameIndex);
 
       const displayName = hero.element(by.tagName('h3')).getText();
@@ -70,38 +66,36 @@ describe('Component Communication Cookbook Tests', () => {
       expect(actual.logs.get(0).getText()).toBe(initialLog);
     });
 
-    it('should set expected values after clicking \'Minor\' twice', () => {
+    it('should set expected values after clicking \'Minor\' twice', async () => {
       const repoTag = element(by.tagName('app-version-parent'));
       const newMinorButton = repoTag.all(by.tagName('button')).get(0);
 
-      newMinorButton.click().then(() => {
-        newMinorButton.click().then(() => {
-          const actual = getActual();
+      await newMinorButton.click();
+      await newMinorButton.click();
 
-          const labelAfter2Minor = 'Version 1.25';
-          const logAfter2Minor = 'minor changed from 24 to 25';
+      const actual = getActual();
 
-          expect(actual.label).toBe(labelAfter2Minor);
-          expect(actual.count).toBe(3);
-          expect(actual.logs.get(2).getText()).toBe(logAfter2Minor);
-        });
-      });
+      const labelAfter2Minor = 'Version 1.25';
+      const logAfter2Minor = 'minor changed from 24 to 25';
+
+      expect(actual.label).toBe(labelAfter2Minor);
+      expect(actual.count).toBe(3);
+      expect(actual.logs.get(2).getText()).toBe(logAfter2Minor);
     });
 
-    it('should set expected values after clicking \'Major\' once', () => {
+    it('should set expected values after clicking \'Major\' once', async () => {
       const repoTag = element(by.tagName('app-version-parent'));
       const newMajorButton = repoTag.all(by.tagName('button')).get(1);
 
-      newMajorButton.click().then(() => {
-        const actual = getActual();
+      await newMajorButton.click();
+      const actual = getActual();
 
-        const labelAfterMajor = 'Version 2.0';
-        const logAfterMajor = 'major changed from 1 to 2, minor changed from 25 to 0';
+      const labelAfterMajor = 'Version 2.0';
+      const logAfterMajor = 'major changed from 1 to 2, minor changed from 23 to 0';
 
-        expect(actual.label).toBe(labelAfterMajor);
-        expect(actual.count).toBe(4);
-        expect(actual.logs.get(3).getText()).toBe(logAfterMajor);
-      });
+      expect(actual.label).toBe(labelAfterMajor);
+      expect(actual.count).toBe(2);
+      expect(actual.logs.get(1).getText()).toBe(logAfterMajor);
     });
 
     function getActual() {
@@ -118,110 +112,125 @@ describe('Component Communication Cookbook Tests', () => {
     }
     // ...
     // #enddocregion parent-to-child-onchanges
-
   });
 
   describe('Child-to-parent communication', () => {
     // #docregion child-to-parent
     // ...
     it('should not emit the event initially', () => {
-      const voteLabel = element(by.tagName('app-vote-taker'))
-        .element(by.tagName('h3')).getText();
-      expect(voteLabel).toBe('Agree: 0, Disagree: 0');
+      const voteLabel = element(by.tagName('app-vote-taker')).element(by.tagName('h3'));
+      expect(voteLabel.getText()).toBe('Agree: 0, Disagree: 0');
     });
 
-    it('should process Agree vote', () => {
+    it('should process Agree vote', async () => {
+      const voteLabel = element(by.tagName('app-vote-taker')).element(by.tagName('h3'));
       const agreeButton1 = element.all(by.tagName('app-voter')).get(0)
         .all(by.tagName('button')).get(0);
-      agreeButton1.click().then(() => {
-        const voteLabel = element(by.tagName('app-vote-taker'))
-          .element(by.tagName('h3')).getText();
-        expect(voteLabel).toBe('Agree: 1, Disagree: 0');
-      });
+
+      await agreeButton1.click();
+
+      expect(voteLabel.getText()).toBe('Agree: 1, Disagree: 0');
     });
 
-    it('should process Disagree vote', () => {
+    it('should process Disagree vote', async () => {
+      const voteLabel = element(by.tagName('app-vote-taker')).element(by.tagName('h3'));
       const agreeButton1 = element.all(by.tagName('app-voter')).get(1)
         .all(by.tagName('button')).get(1);
-      agreeButton1.click().then(() => {
-        const voteLabel = element(by.tagName('app-vote-taker'))
-          .element(by.tagName('h3')).getText();
-        expect(voteLabel).toBe('Agree: 1, Disagree: 1');
-      });
+
+      await agreeButton1.click();
+
+      expect(voteLabel.getText()).toBe('Agree: 0, Disagree: 1');
     });
     // ...
     // #enddocregion child-to-parent
   });
 
-  // Can't run timer tests in protractor because
-  // interaction w/ zones causes all tests to freeze & timeout.
-  xdescribe('Parent calls child via local var', () => {
-    countDownTimerTests('countdown-parent-lv');
+  describe('Parent calls child via local var', () => {
+    countDownTimerTests('app-countdown-parent-lv');
   });
 
-  xdescribe('Parent calls ViewChild', () => {
-    countDownTimerTests('countdown-parent-vc');
+  describe('Parent calls ViewChild', () => {
+    countDownTimerTests('app-countdown-parent-vc');
   });
 
   function countDownTimerTests(parentTag: string) {
     // #docregion countdown-timer-tests
     // ...
-    it('timer and parent seconds should match', () => {
+    // The tests trigger periodic asynchronous operations (via `setInterval()`), which will prevent
+    // the app from stabilizing. See https://angular.io/api/core/ApplicationRef#is-stable-examples
+    // for more details.
+    // To allow the tests to complete, we will disable automatically waiting for the Angular app to
+    // stabilize.
+    beforeEach(() => browser.waitForAngularEnabled(false));
+    afterEach(() => browser.waitForAngularEnabled(true));
+
+    it('timer and parent seconds should match', async () => {
       const parent = element(by.tagName(parentTag));
-      const message = parent.element(by.tagName('app-countdown-timer')).getText();
-      browser.sleep(10); // give `seconds` a chance to catchup with `message`
-      const seconds = parent.element(by.className('seconds')).getText();
-      expect(message).toContain(seconds);
+      const startButton = parent.element(by.buttonText('Start'));
+      const seconds = parent.element(by.className('seconds'));
+      const timer = parent.element(by.tagName('app-countdown-timer'));
+
+      await startButton.click();
+
+      // Wait for `<app-countdown-timer>` to be populated with any text.
+      await browser.wait(() => timer.getText(), 2000);
+
+      expect(await timer.getText()).toContain(await seconds.getText());
     });
 
-    it('should stop the countdown', () => {
+    it('should stop the countdown', async () => {
       const parent = element(by.tagName(parentTag));
-      const stopButton = parent.all(by.tagName('button')).get(1);
+      const startButton = parent.element(by.buttonText('Start'));
+      const stopButton = parent.element(by.buttonText('Stop'));
+      const timer = parent.element(by.tagName('app-countdown-timer'));
 
-      stopButton.click().then(() => {
-        const message = parent.element(by.tagName('app-countdown-timer')).getText();
-        expect(message).toContain('Holding');
-      });
+      await startButton.click();
+      expect(await timer.getText()).not.toContain('Holding');
+
+      await stopButton.click();
+      expect(await timer.getText()).toContain('Holding');
     });
     // ...
     // #enddocregion countdown-timer-tests
   }
 
-
   describe('Parent and children communicate via a service', () => {
     // #docregion bidirectional-service
     // ...
-    it('should announce a mission', () => {
+    it('should announce a mission', async () => {
       const missionControl = element(by.tagName('app-mission-control'));
       const announceButton = missionControl.all(by.tagName('button')).get(0);
-      announceButton.click().then(() => {
-        const history = missionControl.all(by.tagName('li'));
-        expect(history.count()).toBe(1);
-        expect(history.get(0).getText()).toMatch(/Mission.* announced/);
-      });
+      const history = missionControl.all(by.tagName('li'));
+
+      await announceButton.click();
+
+      expect(history.count()).toBe(1);
+      expect(history.get(0).getText()).toMatch(/Mission.* announced/);
     });
 
-    it('should confirm the mission by Lovell', () => {
-      testConfirmMission(1, 2, 'Lovell');
+    it('should confirm the mission by Lovell', async () => {
+      await testConfirmMission(1, 'Lovell');
     });
 
-    it('should confirm the mission by Haise', () => {
-      testConfirmMission(3, 3, 'Haise');
+    it('should confirm the mission by Haise', async () => {
+      await testConfirmMission(3, 'Haise');
     });
 
-    it('should confirm the mission by Swigert', () => {
-      testConfirmMission(2, 4, 'Swigert');
+    it('should confirm the mission by Swigert', async () => {
+      await testConfirmMission(2, 'Swigert');
     });
 
-    function testConfirmMission(buttonIndex: number, expectedLogCount: number, astronaut: string) {
-      const confirmedLog = ' confirmed the mission';
+    async function testConfirmMission(buttonIndex: number, astronaut: string) {
       const missionControl = element(by.tagName('app-mission-control'));
+      const announceButton = missionControl.all(by.tagName('button')).get(0);
       const confirmButton = missionControl.all(by.tagName('button')).get(buttonIndex);
-      confirmButton.click().then(() => {
-        const history = missionControl.all(by.tagName('li'));
-        expect(history.count()).toBe(expectedLogCount);
-        expect(history.get(expectedLogCount - 1).getText()).toBe(astronaut + confirmedLog);
-      });
+      const history = missionControl.all(by.tagName('li'));
+
+      await announceButton.click();
+      await confirmButton.click();
+
+      expect(history.count()).toBe(2);
+      expect(history.get(1).getText()).toBe(`${astronaut} confirmed the mission`);
     }
     // ...
     // #enddocregion bidirectional-service

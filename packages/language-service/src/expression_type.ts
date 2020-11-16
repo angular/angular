@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, AstVisitor, ASTWithName, Binary, BindingPipe, Chain, Conditional, FunctionCall, ImplicitReceiver, Interpolation, KeyedRead, KeyedWrite, LiteralArray, LiteralMap, LiteralPrimitive, MethodCall, NonNullAssert, PrefixNot, PropertyRead, PropertyWrite, Quote, SafeMethodCall, SafePropertyRead, Unary} from '@angular/compiler';
+import {AST, AstVisitor, ASTWithName, Binary, BindingPipe, Chain, Conditional, FunctionCall, ImplicitReceiver, Interpolation, KeyedRead, KeyedWrite, LiteralArray, LiteralMap, LiteralPrimitive, MethodCall, NonNullAssert, PrefixNot, PropertyRead, PropertyWrite, Quote, SafeMethodCall, SafePropertyRead, ThisReceiver, Unary} from '@angular/compiler';
 
 import {createDiagnostic, Diagnostic} from './diagnostic_messages';
 import {BuiltinType, Signature, Symbol, SymbolQuery, SymbolTable} from './symbols';
@@ -256,6 +256,10 @@ export class AstType implements AstVisitor {
             return undefined;
           },
     };
+  }
+
+  visitThisReceiver(_ast: ThisReceiver): Symbol {
+    return this.visitImplicitReceiver(_ast);
   }
 
   visitInterpolation(ast: Interpolation): Symbol {

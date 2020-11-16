@@ -110,16 +110,20 @@ export function create(info: tss.server.PluginCreateInfo): tss.LanguageService {
     return ngLS.getDefinitionAndBoundSpan(fileName, position);
   }
 
-  const proxy: tss.LanguageService = Object.assign(
-      // First clone the original TS language service
-      {}, tsLS,
-      // Then override the methods supported by Angular language service
-      {
-        getCompletionsAtPosition,
-        getQuickInfoAtPosition,
-        getSemanticDiagnostics,
-        getDefinitionAtPosition,
-        getDefinitionAndBoundSpan,
-      });
-  return proxy;
+  function getTypeDefinitionAtPosition(fileName: string, position: number) {
+    // Not implemented in VE Language Service
+    return undefined;
+  }
+
+  return {
+    // First clone the original TS language service
+    ...tsLS,
+    // Then override the methods supported by Angular language service
+    getCompletionsAtPosition,
+    getQuickInfoAtPosition,
+    getSemanticDiagnostics,
+    getDefinitionAtPosition,
+    getDefinitionAndBoundSpan,
+    getTypeDefinitionAtPosition,
+  };
 }

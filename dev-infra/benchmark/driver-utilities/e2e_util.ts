@@ -13,7 +13,7 @@ import * as webdriver from 'selenium-webdriver';
 declare var expect: any;
 
 export function openBrowser(config: {
-  url: string,
+  url?: string,
   params?: {name: string, value: any}[],
   ignoreBrowserSynchronization?: boolean
 }) {

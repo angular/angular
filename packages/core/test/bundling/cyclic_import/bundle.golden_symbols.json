@@ -15,6 +15,9 @@
     "name": "EMPTY_OBJ"
   },
   {
+    "name": "InjectFlags"
+  },
+  {
     "name": "Module"
   },
   {
@@ -37,6 +40,9 @@
   },
   {
     "name": "NodeInjectorFactory"
+  },
+  {
+    "name": "RuntimeError"
   },
   {
     "name": "SimpleChange"
@@ -69,10 +75,10 @@
     "name": "addComponentLogic"
   },
   {
-    "name": "addHostBindingsToExpandoInstructions"
+    "name": "addToViewTree"
   },
   {
-    "name": "addToViewTree"
+    "name": "allocExpando"
   },
   {
     "name": "allocLFrame"
@@ -85,9 +91,6 @@
   },
   {
     "name": "autoRegisterModuleById"
-  },
-  {
-    "name": "baseResolveDirective"
   },
   {
     "name": "callHook"
@@ -103,6 +106,9 @@
   },
   {
     "name": "concatStringsWithSpace"
+  },
+  {
+    "name": "configureViewWithDirective"
   },
   {
     "name": "createLFrame"
@@ -147,16 +153,10 @@
     "name": "findAttrIndexInNode"
   },
   {
-    "name": "generateExpandoInstructionBlock"
-  },
-  {
     "name": "generateInitialInputs"
   },
   {
     "name": "generatePropertyAliases"
-  },
-  {
-    "name": "getCheckNoChangesMode"
   },
   {
     "name": "getClosureSafeProperty"
@@ -171,13 +171,16 @@
     "name": "getConstant"
   },
   {
+    "name": "getCurrentTNode"
+  },
+  {
+    "name": "getCurrentTNodePlaceholderOk"
+  },
+  {
+    "name": "getDeclarationTNode"
+  },
+  {
     "name": "getFirstLContainer"
-  },
-  {
-    "name": "getIsParent"
-  },
-  {
-    "name": "getLContainer"
   },
   {
     "name": "getLView"
@@ -204,16 +207,10 @@
     "name": "getOrCreateTNode"
   },
   {
-    "name": "getPreviousOrParentTNode"
-  },
-  {
     "name": "getSimpleChangesStore"
   },
   {
     "name": "getTView"
-  },
-  {
-    "name": "growHostVarsSpace"
   },
   {
     "name": "hasTagAndTypeMatch"
@@ -249,10 +246,13 @@
     "name": "isCssClassMatching"
   },
   {
-    "name": "isInlineTemplate"
+    "name": "isCurrentTNodeParent"
   },
   {
-    "name": "isLContainer"
+    "name": "isInCheckNoChangesMode"
+  },
+  {
+    "name": "isInlineTemplate"
   },
   {
     "name": "isNodeMatchingSelector"
@@ -306,6 +306,9 @@
     "name": "refreshView"
   },
   {
+    "name": "registerHostBindingOpCodes"
+  },
+  {
     "name": "rememberChangeHistoryAndInvokeOnChangesHook"
   },
   {
@@ -330,6 +333,9 @@
     "name": "setCurrentQueryIndex"
   },
   {
+    "name": "setCurrentTNode"
+  },
+  {
     "name": "setDirectiveInputsWhichShadowsStyling"
   },
   {
@@ -342,19 +348,10 @@
     "name": "setInputsFromAttrs"
   },
   {
-    "name": "setPreviousOrParentTNode"
-  },
-  {
     "name": "setSelectedIndex"
   },
   {
     "name": "setUpAttributes"
-  },
-  {
-    "name": "throwMultipleComponentError"
-  },
-  {
-    "name": "unwrapRNode"
   },
   {
     "name": "updateTransplantedViewCount"

@@ -87,7 +87,7 @@ export class InjectableDecoratorHandler implements
     this.injectableRegistry.registerInjectable(node);
   }
 
-  compile(node: ClassDeclaration, analysis: Readonly<InjectableHandlerData>): CompileResult[] {
+  compileFull(node: ClassDeclaration, analysis: Readonly<InjectableHandlerData>): CompileResult[] {
     const res = compileIvyInjectable(analysis.meta);
     const statements = res.statements;
     const results: CompileResult[] = [];

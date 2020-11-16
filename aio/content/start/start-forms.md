@@ -1,4 +1,4 @@
-# Try it: Use forms for user input
+# Using forms for user input
 
 At the end of [Managing Data](start/start-data "Try it: Managing Data"), the online store application has a product catalog and a shopping cart.
 

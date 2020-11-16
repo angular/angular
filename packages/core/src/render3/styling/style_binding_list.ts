@@ -391,7 +391,7 @@ function markDuplicates(
 /**
  * Determines if two `TStylingKey`s are a match.
  *
- * When computing weather a binding contains a duplicate, we need to compare if the instruction
+ * When computing whether a binding contains a duplicate, we need to compare if the instruction
  * `TStylingKey` has a match.
  *
  * Here are examples of `TStylingKey`s which match given `tStylingKeyCursor` is:

@@ -195,7 +195,7 @@ const EMPTY_FN = () => {};
     });
 
     it('should fire the onDone method when the matching animationend event is emitted', () => {
-      // IE10 and IE11 cannot create an instanceof AnimationEvent
+      // IE11 cannot create an instanceof AnimationEvent
       if (!supportsAnimationEventCreation()) return;
 
       const element = createElement();

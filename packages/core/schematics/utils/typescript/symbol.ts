@@ -18,3 +18,12 @@ export function getValueSymbolOfDeclaration(node: ts.Node, typeChecker: ts.TypeC
 
   return symbol;
 }
+
+/** Checks whether a node is referring to a specific import specifier. */
+export function isReferenceToImport(
+    typeChecker: ts.TypeChecker, node: ts.Node, importSpecifier: ts.ImportSpecifier): boolean {
+  const nodeSymbol = typeChecker.getTypeAtLocation(node).getSymbol();
+  const importSymbol = typeChecker.getTypeAtLocation(importSpecifier).getSymbol();
+  return !!(nodeSymbol && importSymbol) &&
+      nodeSymbol.valueDeclaration === importSymbol.valueDeclaration;
+}

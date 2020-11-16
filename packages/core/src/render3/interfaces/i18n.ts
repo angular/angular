@@ -8,6 +8,18 @@
 
 import {SanitizerFn} from './sanitization';
 
+
+/**
+ * Stores a list of nodes which need to be removed.
+ *
+ * Numbers are indexes into the `LView`
+ * - index > 0: `removeRNode(lView[0])`
+ * - index < 0: `removeICU(~lView[0])`
+ */
+export interface I18nRemoveOpCodes extends Array<number> {
+  __brand__: 'I18nRemoveOpCodes';
+}
+
 /**
  * `I18nMutateOpCode` defines OpCodes for `I18nMutateOpCodes` array.
  *
@@ -31,11 +43,11 @@ import {SanitizerFn} from './sanitization';
  *
  * See: `I18nCreateOpCodes` for example of usage.
  */
-export const enum I18nMutateOpCode {
+export const enum IcuCreateOpCode {
   /**
    * Stores shift amount for bits 17-3 that contain reference index.
    */
-  SHIFT_REF = 3,
+  SHIFT_REF = 1,
   /**
    * Stores shift amount for bits 31-17 that contain parent index.
    */
@@ -43,93 +55,24 @@ export const enum I18nMutateOpCode {
   /**
    * Mask for OpCode
    */
-  MASK_INSTRUCTION = 0b111,
+  MASK_INSTRUCTION = 0b1,
 
   /**
    * Mask for the Reference node (bits 16-3)
    */
-  // FIXME(misko): Why is this not used?
-  MASK_REF = 0b11111111111111000,
+  MASK_REF = 0b11111111111111110,
   //           11111110000000000
   //           65432109876543210
 
   /**
-   * Instruction to select a node. (next OpCode will contain the operation.)
-   */
-  Select = 0b000,
-
-  /**
    * Instruction to append the current node to `PARENT`.
    */
-  AppendChild = 0b001,
-
-  /**
-   * Instruction to remove the `REF` node from `PARENT`.
-   */
-  Remove = 0b011,
+  AppendChild = 0b0,
 
   /**
    * Instruction to set the attribute of a node.
    */
-  Attr = 0b100,
-
-  /**
-   * Instruction to simulate elementEnd()
-   */
-  ElementEnd = 0b101,
-
-  /**
-   * Instruction to removed the nested ICU.
-   */
-  RemoveNestedIcu = 0b110,
-}
-
-export function getParentFromI18nMutateOpCode(mergedCode: number): number {
-  return mergedCode >>> I18nMutateOpCode.SHIFT_PARENT;
-}
-
-export function getRefFromI18nMutateOpCode(mergedCode: number): number {
-  return (mergedCode & I18nMutateOpCode.MASK_REF) >>> I18nMutateOpCode.SHIFT_REF;
-}
-
-export function getInstructionFromI18nMutateOpCode(mergedCode: number): number {
-  return mergedCode & I18nMutateOpCode.MASK_INSTRUCTION;
-}
-
-/**
- * Marks that the next string is an element name.
- *
- * See `I18nMutateOpCodes` documentation.
- */
-export const ELEMENT_MARKER: ELEMENT_MARKER = {
-  marker: 'element'
-};
-export interface ELEMENT_MARKER {
-  marker: 'element';
-}
-
-/**
- * Marks that the next string is comment text.
- *
- * See `I18nMutateOpCodes` documentation.
- */
-export const COMMENT_MARKER: COMMENT_MARKER = {
-  marker: 'comment'
-};
-
-export interface COMMENT_MARKER {
-  marker: 'comment';
-}
-
-export interface I18nDebug {
-  /**
-   * Human readable representation of the OpCode arrays.
-   *
-   * NOTE: This property only exists if `ngDevMode` is set to `true` and it is not present in
-   * production. Its presence is purely to help debug issue in development, and should not be relied
-   * on in production application.
-   */
-  debug?: string[];
+  Attr = 0b1,
 }
 
 
@@ -155,7 +98,7 @@ export interface I18nDebug {
  *   // ---------------------
  *   // Equivalent to:
  *   //   lView[1].appendChild(lView[0] = document.createComment(''));
- *   COMMENT_MARKER, '', 0, 1 << SHIFT_PARENT | 0 << SHIFT_REF | AppendChild,
+ *   ICU_MARKER, '', 0, 1 << SHIFT_PARENT | 0 << SHIFT_REF | AppendChild,
  *
  *   // For moving existing nodes to a different location
  *   // --------------------------------------------------
@@ -177,11 +120,11 @@ export interface I18nDebug {
  *   1 << SHIFT_REF | Attr, 'attr', 'value'
  * ];
  * ```
- *
- * See: `applyI18nCreateOpCodes`;
  */
-export interface I18nMutateOpCodes extends Array<number|string|ELEMENT_MARKER|COMMENT_MARKER|null>,
-                                           I18nDebug {}
+export interface IcuCreateOpCodes extends Array<number|string|ELEMENT_MARKER|ICU_MARKER|null>,
+                                          I18nDebug {
+  __brand__: 'I18nCreateOpCodes';
+}
 
 export const enum I18nUpdateOpCode {
   /**
@@ -210,6 +153,101 @@ export const enum I18nUpdateOpCode {
    */
   IcuUpdate = 0b11,
 }
+
+/**
+ * Marks that the next string is an element name.
+ *
+ * See `I18nMutateOpCodes` documentation.
+ */
+export const ELEMENT_MARKER: ELEMENT_MARKER = {
+  marker: 'element'
+};
+export interface ELEMENT_MARKER {
+  marker: 'element';
+}
+
+/**
+ * Marks that the next string is comment text need for ICU.
+ *
+ * See `I18nMutateOpCodes` documentation.
+ */
+export const ICU_MARKER: ICU_MARKER = {
+  marker: 'ICU'
+};
+
+export interface ICU_MARKER {
+  marker: 'ICU';
+}
+
+export interface I18nDebug {
+  /**
+   * Human readable representation of the OpCode arrays.
+   *
+   * NOTE: This property only exists if `ngDevMode` is set to `true` and it is not present in
+   * production. Its presence is purely to help debug issue in development, and should not be relied
+   * on in production application.
+   */
+  debug?: string[];
+}
+
+/**
+ * Array storing OpCode for dynamically creating `i18n` translation DOM elements.
+ *
+ * This array creates a sequence of `Text` and `Comment` (as ICU anchor) DOM elements. It consists
+ * of a pair of `number` and `string` pairs which encode the operations for the creation of the
+ * translated block.
+ *
+ * The number is shifted and encoded according to `I18nCreateOpCode`
+ *
+ * Pseudocode:
+ * ```
+ * const i18nCreateOpCodes = [
+ *   10 << I18nCreateOpCode.SHIFT, "Text Node add to DOM",
+ *   11 << I18nCreateOpCode.SHIFT | I18nCreateOpCode.COMMENT, "Comment Node add to DOM",
+ *   12 << I18nCreateOpCode.SHIFT | I18nCreateOpCode.APPEND_LATER, "Text Node added later"
+ * ];
+ *
+ * for(var i=0; i<i18nCreateOpCodes.length; i++) {
+ *   const opcode = i18NCreateOpCodes[i++];
+ *   const index = opcode >> I18nCreateOpCode.SHIFT;
+ *   const text = i18NCreateOpCodes[i];
+ *   let node: Text|Comment;
+ *   if (opcode & I18nCreateOpCode.COMMENT === I18nCreateOpCode.COMMENT) {
+ *     node = lView[~index] = document.createComment(text);
+ *   } else {
+ *     node = lView[index] = document.createText(text);
+ *   }
+ *   if (opcode & I18nCreateOpCode.APPEND_EAGERLY !== I18nCreateOpCode.APPEND_EAGERLY) {
+ *     parentNode.appendChild(node);
+ *   }
+ * }
+ * ```
+ */
+export interface I18nCreateOpCodes extends Array<number|string>, I18nDebug {
+  __brand__: 'I18nCreateOpCodes';
+}
+
+/**
+ * See `I18nCreateOpCodes`
+ */
+export enum I18nCreateOpCode {
+  /**
+   * Number of bits to shift index so that it can be combined with the `APPEND_EAGERLY` and
+   * `COMMENT`.
+   */
+  SHIFT = 2,
+
+  /**
+   * Should the node be appended to parent imedditatly after creation.
+   */
+  APPEND_EAGERLY = 0b01,
+
+  /**
+   * If set the node should be comment (rather than a text) node.
+   */
+  COMMENT = 0b10,
+}
+
 
 /**
  * Stores DOM operations which need to be applied to update DOM render tree due to changes in
@@ -283,44 +321,26 @@ export const enum I18nUpdateOpCode {
  * ```
  *
  */
-export interface I18nUpdateOpCodes extends Array<string|number|SanitizerFn|null>, I18nDebug {}
+export interface I18nUpdateOpCodes extends Array<string|number|SanitizerFn|null>, I18nDebug {
+  __brand__: 'I18nUpdateOpCodes';
+}
 
 /**
  * Store information for the i18n translation block.
  */
 export interface TI18n {
   /**
-   * Number of slots to allocate in expando.
-   *
-   * This is the max number of DOM elements which will be created by this i18n + ICU blocks. When
-   * the DOM elements are being created they are stored in the EXPANDO, so that update OpCodes can
-   * write into them.
-   */
-  vars: number;
-
-  /**
    * A set of OpCodes which will create the Text Nodes and ICU anchors for the translation blocks.
    *
    * NOTE: The ICU anchors are filled in with ICU Update OpCode.
    */
-  create: I18nMutateOpCodes;
+  create: I18nCreateOpCodes;
 
   /**
    * A set of OpCodes which will be executed on each change detection to determine if any changes to
    * DOM are required.
    */
   update: I18nUpdateOpCodes;
-
-  /**
-   * A list of ICUs in a translation block (or `null` if block has no ICUs).
-   *
-   * Example:
-   * Given: `<div i18n>You have {count, plural, ...} and {state, switch, ...}</div>`
-   * There would be 2 ICUs in this array.
-   *   1. `{count, plural, ...}`
-   *   2. `{state, switch, ...}`
-   */
-  icus: TIcu[]|null;
 }
 
 /**
@@ -338,52 +358,23 @@ export interface TIcu {
   type: IcuType;
 
   /**
-   * Number of slots to allocate in expando for each case.
-   *
-   * This is the max number of DOM elements which will be created by this i18n + ICU blocks. When
-   * the DOM elements are being created they are stored in the EXPANDO, so that update OpCodes can
-   * write into them.
+   * Index in `LView` where the anchor node is stored. `<!-- ICU 0:0 -->`
    */
-  vars: number[];
+  anchorIdx: number;
 
   /**
    * Currently selected ICU case pointer.
    *
    * `lView[currentCaseLViewIndex]` stores the currently selected case. This is needed to know how
    * to clean up the current case when transitioning no the new case.
+   *
+   * If the value stored is:
+   * `null`: No current case selected.
+   *   `<0`: A flag which means that the ICU just switched and that `icuUpdate` must be executed
+   *         regardless of the `mask`. (After the execution the flag is cleared)
+   *   `>=0` A currently selected case index.
    */
   currentCaseLViewIndex: number;
-
-  /**
-   * An optional array of child/sub ICUs.
-   *
-   * In case of nested ICUs such as:
-   * ```
-   * {�0�, plural,
-   *   =0 {zero}
-   *   other {�0� {�1�, select,
-   *                     cat {cats}
-   *                     dog {dogs}
-   *                     other {animals}
-   *                   }!
-   *   }
-   * }
-   * ```
-   * When the parent ICU is changing it must clean up child ICUs as well. For this reason it needs
-   * to know which child ICUs to run clean up for as well.
-   *
-   * In the above example this would be:
-   * ```ts
-   * [
-   *   [],   // `=0` has no sub ICUs
-   *   [1],  // `other` has one subICU at `1`st index.
-   * ]
-   * ```
-   *
-   * The reason why it is Array of Arrays is because first array represents the case, and second
-   * represents the child ICUs to clean up. There may be more than one child ICUs per case.
-   */
-  childIcus: number[][];
 
   /**
    * A list of case values which the current ICU will try to match.
@@ -395,12 +386,12 @@ export interface TIcu {
   /**
    * A set of OpCodes to apply in order to build up the DOM render tree for the ICU
    */
-  create: I18nMutateOpCodes[];
+  create: IcuCreateOpCodes[];
 
   /**
    * A set of OpCodes to apply in order to destroy the DOM render tree for the ICU.
    */
-  remove: I18nMutateOpCodes[];
+  remove: I18nRemoveOpCodes[];
 
   /**
    * A set of OpCodes to apply in order to update the DOM render tree for the ICU bindings.
@@ -412,40 +403,12 @@ export interface TIcu {
 // failure based on types.
 export const unusedValueExportToPlacateAjd = 1;
 
+/**
+ * Parsed ICU expression
+ */
 export interface IcuExpression {
   type: IcuType;
   mainBinding: number;
   cases: string[];
   values: (string|IcuExpression)[][];
-}
-
-export interface IcuCase {
-  /**
-   * Number of slots to allocate in expando for this case.
-   *
-   * This is the max number of DOM elements which will be created by this i18n + ICU blocks. When
-   * the DOM elements are being created they are stored in the EXPANDO, so that update OpCodes can
-   * write into them.
-   */
-  vars: number;
-
-  /**
-   * An optional array of child/sub ICUs.
-   */
-  childIcus: number[];
-
-  /**
-   * A set of OpCodes to apply in order to build up the DOM render tree for the ICU
-   */
-  create: I18nMutateOpCodes;
-
-  /**
-   * A set of OpCodes to apply in order to destroy the DOM render tree for the ICU.
-   */
-  remove: I18nMutateOpCodes;
-
-  /**
-   * A set of OpCodes to apply in order to update the DOM render tree for the ICU bindings.
-   */
-  update: I18nUpdateOpCodes;
 }

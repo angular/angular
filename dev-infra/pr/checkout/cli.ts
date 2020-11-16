@@ -8,7 +8,7 @@
 
 import {Arguments, Argv, CommandModule} from 'yargs';
 
-import {addGithubTokenFlag} from '../../utils/yargs';
+import {addGithubTokenOption} from '../../utils/git/github-yargs';
 import {checkOutPullRequestLocally} from '../common/checkout-pr';
 
 export interface CheckoutOptions {
@@ -18,7 +18,7 @@ export interface CheckoutOptions {
 
 /** Builds the checkout pull request command. */
 function builder(yargs: Argv) {
-  return addGithubTokenFlag(yargs).positional('prNumber', {type: 'number', demandOption: true});
+  return addGithubTokenOption(yargs).positional('prNumber', {type: 'number', demandOption: true});
 }
 
 /** Handles the checkout pull request command. */

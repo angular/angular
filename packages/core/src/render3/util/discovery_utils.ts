@@ -7,6 +7,7 @@
  */
 
 import {Injector} from '../../di/injector';
+import {assertEqual} from '../../util/assert';
 import {assertLView} from '../assert';
 import {discoverLocalRefs, getComponentAtNodeIndex, getDirectivesAtNodeIndex, getLContext} from '../context_discovery';
 import {NodeInjector} from '../di';
@@ -15,7 +16,7 @@ import {LContext} from '../interfaces/context';
 import {DirectiveDef} from '../interfaces/definition';
 import {TElementNode, TNode, TNodeProviderIndexes} from '../interfaces/node';
 import {isLView} from '../interfaces/type_checks';
-import {CLEANUP, CONTEXT, DebugNode, FLAGS, HEADER_OFFSET, HOST, LView, LViewFlags, T_HOST, TVIEW} from '../interfaces/view';
+import {CLEANUP, CONTEXT, DebugNode, FLAGS, LView, LViewFlags, T_HOST, TVIEW, TViewType} from '../interfaces/view';
 
 import {stringifyForError} from './misc_utils';
 import {getLViewParent, getRootContext} from './view_traversal_utils';
@@ -101,8 +102,7 @@ export function getOwningComponent<T>(elementOrDir: Element|{}): T|null {
   let lView = context.lView;
   let parent: LView|null;
   ngDevMode && assertLView(lView);
-  while (lView[HOST] === null && (parent = getLViewParent(lView)!)) {
-    // As long as lView[HOST] is null we know we are part of sub-template such as `*ngIf`
+  while (lView[TVIEW].type === TViewType.Embedded && (parent = getLViewParent(lView)!)) {
     lView = parent;
   }
   return lView[FLAGS] & LViewFlags.IsRoot ? null : lView[CONTEXT] as T;
@@ -387,9 +387,11 @@ export function getDebugNode(element: Element): DebugNode|null {
     const valueInLView = lView[nodeIndex];
     // this means that value in the lView is a component with its own
     // data. In this situation the TNode is not accessed at the same spot.
-    const tNode = isLView(valueInLView) ? (valueInLView[T_HOST] as TNode) :
-                                          getTNode(lView[TVIEW], nodeIndex - HEADER_OFFSET);
-    debugNode = buildDebugNode(tNode, lView, nodeIndex);
+    const tNode =
+        isLView(valueInLView) ? (valueInLView[T_HOST] as TNode) : getTNode(lView[TVIEW], nodeIndex);
+    ngDevMode &&
+        assertEqual(tNode.index, nodeIndex, 'Expecting that TNode at index is same as index');
+    debugNode = buildDebugNode(tNode, lView);
   }
 
   return debugNode;

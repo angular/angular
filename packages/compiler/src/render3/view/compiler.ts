@@ -492,7 +492,7 @@ function stringArrayAsType(arr: ReadonlyArray<string|null>): o.Type {
                           o.NONE_TYPE;
 }
 
-function createDirectiveTypeParams(meta: R3DirectiveMetadata): o.Type[] {
+export function createDirectiveTypeParams(meta: R3DirectiveMetadata): o.Type[] {
   // On the type side, remove newlines from the selector as it will need to fit into a TypeScript
   // string literal, which must be on one line.
   const selectorForType = meta.selector !== null ? meta.selector.replace(/\n/g, '') : null;
@@ -582,9 +582,8 @@ function createHostBindingsFunction(
   // bindings with pipes. These calculates happen after this block.
   let totalHostVarsCount = 0;
   bindings && bindings.forEach((binding: ParsedProperty) => {
-    const name = binding.name;
-    const stylingInputWasSet =
-        styleBuilder.registerInputBasedOnName(name, binding.expression, binding.sourceSpan);
+    const stylingInputWasSet = styleBuilder.registerInputBasedOnName(
+        binding.name, binding.expression, hostBindingSourceSpan);
     if (stylingInputWasSet) {
       totalHostVarsCount += MIN_STYLING_BINDING_SLOTS_REQUIRED;
     } else {

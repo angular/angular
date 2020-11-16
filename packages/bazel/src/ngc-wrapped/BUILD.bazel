@@ -1,5 +1,6 @@
+# BEGIN-DEV-ONLY
 load("@build_bazel_rules_nodejs//:index.bzl", "nodejs_binary")
-load("@npm_bazel_typescript//:index.bzl", "ts_library")
+load("@npm//@bazel/typescript:index.bzl", "ts_library")
 
 ts_library(
     name = "ngc_lib",
@@ -15,11 +16,7 @@ ts_library(
         "//packages/bazel/test/ngc-wrapped:__subpackages__",
     ],
     deps = [
-        # BEGIN-INTERNAL
-        # Only needed when compiling within the Angular repo.
-        # Users will get this dependency from node_modules.
         "//packages/compiler-cli",
-        # END-INTERNAL
         "@npm//@bazel/typescript",
         "@npm//@types/node",
         "@npm//tsickle",
@@ -55,3 +52,4 @@ filegroup(
     srcs = ["BUILD.bazel"],
     visibility = ["//packages/bazel:__subpackages__"],
 )
+# END-DEV-ONLY

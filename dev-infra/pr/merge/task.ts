@@ -7,11 +7,11 @@
  */
 
 import {promptConfirm} from '../../utils/console';
-import {GitClient, GitCommandError} from '../../utils/git';
+import {GitClient, GitCommandError} from '../../utils/git/index';
 
-import {MergeConfig, MergeConfigWithRemote} from './config';
+import {MergeConfigWithRemote} from './config';
 import {PullRequestFailure} from './failures';
-import {getCaretakerNotePromptMessage} from './messages';
+import {getCaretakerNotePromptMessage, getTargettedBranchesConfirmationPromptMessage} from './messages';
 import {isPullRequest, loadAndValidatePullRequest,} from './pull-request';
 import {GithubApiMergeStrategy} from './strategies/api-merge';
 import {AutosquashMergeStrategy} from './strategies/autosquash-merge';
@@ -78,11 +78,16 @@ export class PullRequestMergeTask {
       return {status: MergeStatus.FAILED, failure: pullRequest};
     }
 
+
+    if (!await promptConfirm(getTargettedBranchesConfirmationPromptMessage(pullRequest))) {
+      return {status: MergeStatus.USER_ABORTED};
+    }
+
+
     // If the pull request has a caretaker note applied, raise awareness by prompting
     // the caretaker. The caretaker can then decide to proceed or abort the merge.
     if (pullRequest.hasCaretakerNote &&
-        !await promptConfirm(
-            getCaretakerNotePromptMessage(pullRequest) + `\nDo you want to proceed merging?`)) {
+        !await promptConfirm(getCaretakerNotePromptMessage(pullRequest))) {
       return {status: MergeStatus.USER_ABORTED};
     }
 

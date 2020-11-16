@@ -12,8 +12,8 @@ import * as ts from 'typescript';
 import {ErrorCode, FatalDiagnosticError, makeDiagnostic, makeRelatedInformation} from '../../diagnostics';
 import {DefaultImportRecorder, Reference, ReferenceEmitter} from '../../imports';
 import {InjectableClassRegistry, MetadataReader, MetadataRegistry} from '../../metadata';
-import {PartialEvaluator, ResolvedValue, ResolvedValueArray} from '../../partial_evaluator';
-import {ClassDeclaration, Decorator, ReflectionHost, reflectObjectLiteral, typeNodeToValueExpr} from '../../reflection';
+import {PartialEvaluator, ResolvedValue} from '../../partial_evaluator';
+import {ClassDeclaration, DeclarationNode, Decorator, isNamedClassDeclaration, ReflectionHost, reflectObjectLiteral, typeNodeToValueExpr} from '../../reflection';
 import {NgModuleRouteAnalyzer} from '../../routing';
 import {LocalModuleScopeRegistry, ScopeData} from '../../scope';
 import {FactoryTracker} from '../../shims/api';
@@ -371,7 +371,7 @@ export class NgModuleDecoratorHandler implements
     }
   }
 
-  compile(
+  compileFull(
       node: ClassDeclaration, analysis: Readonly<NgModuleAnalysis>,
       resolution: Readonly<NgModuleResolution>): CompileResult[] {
     //  Merge the injector imports (which are 'exports' that were later found to be NgModules)
@@ -387,15 +387,11 @@ export class NgModuleDecoratorHandler implements
     }
     const context = getSourceFile(node);
     for (const decl of analysis.declarations) {
-      if (this.scopeRegistry.getRequiresRemoteScope(decl.node)) {
-        const scope = this.scopeRegistry.getScopeOfModule(ts.getOriginalNode(node) as typeof node);
-        if (scope === null || scope === 'error') {
-          continue;
-        }
-
-        const directives = scope.compilation.directives.map(
-            directive => this.refEmitter.emit(directive.ref, context));
-        const pipes = scope.compilation.pipes.map(pipe => this.refEmitter.emit(pipe.ref, context));
+      const remoteScope = this.scopeRegistry.getRemoteScope(decl.node);
+      if (remoteScope !== null) {
+        const directives =
+            remoteScope.directives.map(directive => this.refEmitter.emit(directive, context));
+        const pipes = remoteScope.pipes.map(pipe => this.refEmitter.emit(pipe, context));
         const directiveArray = new LiteralArrayExpr(directives);
         const pipesArray = new LiteralArrayExpr(pipes);
         const declExpr = this.refEmitter.emit(decl, context)!;
@@ -434,14 +430,14 @@ export class NgModuleDecoratorHandler implements
   }
 
   private _toR3Reference(
-      valueRef: Reference<ts.Declaration>, valueContext: ts.SourceFile,
+      valueRef: Reference<ClassDeclaration>, valueContext: ts.SourceFile,
       typeContext: ts.SourceFile): R3Reference {
     if (valueRef.hasOwningModuleGuess) {
       return toR3Reference(valueRef, valueRef, valueContext, valueContext, this.refEmitter);
     } else {
       let typeRef = valueRef;
       let typeNode = this.reflector.getDtsDeclaration(typeRef.node);
-      if (typeNode !== null && ts.isClassDeclaration(typeNode)) {
+      if (typeNode !== null && isNamedClassDeclaration(typeNode)) {
         typeRef = new Reference(typeNode);
       }
       return toR3Reference(valueRef, typeRef, valueContext, typeContext, this.refEmitter);
@@ -539,9 +535,8 @@ export class NgModuleDecoratorHandler implements
     return null;
   }
 
-  // Verify that a `ts.Declaration` reference is a `ClassDeclaration` reference.
-  private isClassDeclarationReference(ref: Reference<ts.Declaration>):
-      ref is Reference<ClassDeclaration> {
+  // Verify that a "Declaration" reference is a `ClassDeclaration` reference.
+  private isClassDeclarationReference(ref: Reference): ref is Reference<ClassDeclaration> {
     return this.reflector.isClass(ref.node);
   }
 
@@ -568,7 +563,7 @@ export class NgModuleDecoratorHandler implements
       if (Array.isArray(entry)) {
         // Recurse into nested arrays.
         refList.push(...this.resolveTypeList(expr, entry, className, arrayName));
-      } else if (isDeclarationReference(entry)) {
+      } else if (entry instanceof Reference) {
         if (!this.isClassDeclarationReference(entry)) {
           throw createValueHasWrongTypeError(
               entry.node, entry,
@@ -592,10 +587,4 @@ export class NgModuleDecoratorHandler implements
 function isNgModule(node: ClassDeclaration, compilation: ScopeData): boolean {
   return !compilation.directives.some(directive => directive.ref.node === node) &&
       !compilation.pipes.some(pipe => pipe.ref.node === node);
-}
-
-function isDeclarationReference(ref: any): ref is Reference<ts.Declaration> {
-  return ref instanceof Reference &&
-      (ts.isClassDeclaration(ref.node) || ts.isFunctionDeclaration(ref.node) ||
-       ts.isVariableDeclaration(ref.node));
 }

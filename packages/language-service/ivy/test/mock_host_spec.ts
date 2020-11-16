@@ -8,10 +8,19 @@
 
 import * as ts from 'typescript/lib/tsserverlibrary';
 
-import {APP_COMPONENT, APP_MAIN, setup, TEST_SRCDIR} from './mock_host';
+import {APP_COMPONENT, APP_MAIN, MockService, setup, TEST_SRCDIR} from './mock_host';
 
 describe('mock host', () => {
-  const {project, service, tsLS} = setup();
+  let service: MockService;
+  let project: ts.server.Project;
+  let tsLS: ts.LanguageService;
+
+  beforeAll(() => {
+    const {project: _project, service: _service, tsLS: _tsLS} = setup();
+    project = _project;
+    service = _service;
+    tsLS = _tsLS;
+  });
 
   beforeEach(() => {
     service.reset();

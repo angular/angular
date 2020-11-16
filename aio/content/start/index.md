@@ -1,4 +1,4 @@
-# Part 1: Getting started with a basic Angular app
+# Getting started with a basic Angular app
 
 Welcome to Angular!
 

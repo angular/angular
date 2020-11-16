@@ -251,7 +251,7 @@ describe('definitions', () => {
     expect(textSpan).toEqual(marker);
 
     expect(definitions).toBeDefined();
-    expect(definitions!.length).toBe(4);
+    expect(definitions!.length).toBe(3);
 
     const refFileName = '/node_modules/@angular/common/common.d.ts';
     for (const def of definitions!) {
@@ -274,7 +274,7 @@ describe('definitions', () => {
     expect(textSpan).toEqual(marker);
 
     expect(definitions).toBeDefined();
-    expect(definitions!.length).toBe(1);
+    expect(definitions!.length).toBe(3);
 
     const refFileName = '/node_modules/@angular/common/common.d.ts';
     for (const def of definitions!) {

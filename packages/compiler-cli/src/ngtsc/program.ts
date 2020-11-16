@@ -17,6 +17,7 @@ import {NgCompilerOptions} from './core/api';
 import {TrackedIncrementalBuildStrategy} from './incremental';
 import {IndexedComponent} from './indexer';
 import {NOOP_PERF_RECORDER, PerfRecorder, PerfTracker} from './perf';
+import {DeclarationNode} from './reflection';
 import {retagAllTsFiles, untagAllTsFiles} from './shims';
 import {ReusedProgramStrategy} from './typecheck';
 
@@ -99,7 +100,7 @@ export class NgtscProgram implements api.Program {
     // Create the NgCompiler which will drive the rest of the compilation.
     this.compiler = new NgCompiler(
         this.host, options, this.tsProgram, reusedProgramStrategy, this.incrementalStrategy,
-        reuseProgram, this.perfRecorder);
+        /** enableTemplateTypeChecker */ false, reuseProgram, this.perfRecorder);
   }
 
   getTsProgram(): ts.Program {
@@ -276,7 +277,7 @@ export class NgtscProgram implements api.Program {
     return ((opts && opts.mergeEmitResultsCallback) || mergeEmitResults)(emitResults);
   }
 
-  getIndexedComponents(): Map<ts.Declaration, IndexedComponent> {
+  getIndexedComponents(): Map<DeclarationNode, IndexedComponent> {
     return this.compiler.getIndexedComponents();
   }
 

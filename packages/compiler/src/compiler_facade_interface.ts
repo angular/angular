@@ -173,7 +173,7 @@ export interface R3FactoryDefMetadataFacade {
 
 export enum ViewEncapsulation {
   Emulated = 0,
-  Native = 1,
+  // Historically the 1 value was for `Native` encapsulation which has been removed as of v11.
   None = 2,
   ShadowDom = 3
 }
@@ -193,4 +193,5 @@ export interface ParseSourceSpan {
   start: any;
   end: any;
   details: any;
+  fullStart: any;
 }

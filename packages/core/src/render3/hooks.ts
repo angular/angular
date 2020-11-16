@@ -7,13 +7,13 @@
  */
 
 import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, DoCheck, OnChanges, OnDestroy, OnInit} from '../interface/lifecycle_hooks';
-import {assertEqual, assertNotEqual} from '../util/assert';
+import {assertDefined, assertEqual, assertNotEqual} from '../util/assert';
 import {assertFirstCreatePass} from './assert';
 import {NgOnChangesFeatureImpl} from './features/ng_onchanges_feature';
 import {DirectiveDef} from './interfaces/definition';
 import {TNode} from './interfaces/node';
 import {FLAGS, HookData, InitPhaseState, LView, LViewFlags, PREORDER_HOOK_FLAGS, PreOrderHookFlags, TView} from './interfaces/view';
-import {getCheckNoChangesMode} from './state';
+import {isInCheckNoChangesMode} from './state';
 
 
 
@@ -77,6 +77,7 @@ export function registerPostOrderHooks(tView: TView, tNode: TNode): void {
   // hooks for projected components and directives must be called *before* their hosts.
   for (let i = tNode.directiveStart, end = tNode.directiveEnd; i < end; i++) {
     const directiveDef = tView.data[i] as DirectiveDef<any>;
+    ngDevMode && assertDefined(directiveDef, 'Expecting DirectiveDef');
     const lifecycleHooks: AfterContentInit&AfterContentChecked&AfterViewInit&AfterViewChecked&
         OnDestroy = directiveDef.type.prototype;
     const {
@@ -205,8 +206,8 @@ function callHooks(
     currentNodeIndex: number|null|undefined): void {
   ngDevMode &&
       assertEqual(
-          getCheckNoChangesMode(), false,
-          'Hooks should never be run in the check no changes mode.');
+          isInCheckNoChangesMode(), false,
+          'Hooks should never be run when in check no changes mode.');
   const startIndex = currentNodeIndex !== undefined ?
       (currentView[PREORDER_HOOK_FLAGS] & PreOrderHookFlags.IndexOfTheNextPreOrderHookMaskMask) :
       0;

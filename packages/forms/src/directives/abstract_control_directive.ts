@@ -7,8 +7,12 @@
  */
 
 import {Observable} from 'rxjs';
+
 import {AbstractControl} from '../model';
-import {ValidationErrors} from './validators';
+import {composeAsyncValidators, composeValidators} from '../validators';
+
+import {AsyncValidator, AsyncValidatorFn, ValidationErrors, Validator, ValidatorFn} from './validators';
+
 
 /**
  * @description
@@ -163,6 +167,91 @@ export abstract class AbstractControlDirective {
    */
   get path(): string[]|null {
     return null;
+  }
+
+  /**
+   * Contains the result of merging synchronous validators into a single validator function
+   * (combined using `Validators.compose`).
+   */
+  private _composedValidatorFn: ValidatorFn|null|undefined;
+
+  /**
+   * Contains the result of merging asynchronous validators into a single validator function
+   * (combined using `Validators.composeAsync`).
+   */
+  private _composedAsyncValidatorFn: AsyncValidatorFn|null|undefined;
+
+  /**
+   * Set of synchronous validators as they were provided while calling `setValidators` function.
+   * @internal
+   */
+  _rawValidators: Array<Validator|ValidatorFn> = [];
+
+  /**
+   * Set of asynchronous validators as they were provided while calling `setAsyncValidators`
+   * function.
+   * @internal
+   */
+  _rawAsyncValidators: Array<AsyncValidator|AsyncValidatorFn> = [];
+
+  /**
+   * Sets synchronous validators for this directive.
+   * @internal
+   */
+  _setValidators(validators: Array<Validator|ValidatorFn>|undefined): void {
+    this._rawValidators = validators || [];
+    this._composedValidatorFn = composeValidators(this._rawValidators);
+  }
+
+  /**
+   * Sets asynchronous validators for this directive.
+   * @internal
+   */
+  _setAsyncValidators(validators: Array<AsyncValidator|AsyncValidatorFn>|undefined): void {
+    this._rawAsyncValidators = validators || [];
+    this._composedAsyncValidatorFn = composeAsyncValidators(this._rawAsyncValidators);
+  }
+
+  /**
+   * @description
+   * Synchronous validator function composed of all the synchronous validators registered with this
+   * directive.
+   */
+  get validator(): ValidatorFn|null {
+    return this._composedValidatorFn || null;
+  }
+
+  /**
+   * @description
+   * Asynchronous validator function composed of all the asynchronous validators registered with
+   * this directive.
+   */
+  get asyncValidator(): AsyncValidatorFn|null {
+    return this._composedAsyncValidatorFn || null;
+  }
+
+  /*
+   * The set of callbacks to be invoked when directive instance is being destroyed.
+   */
+  private _onDestroyCallbacks: (() => void)[] = [];
+
+  /**
+   * Internal function to register callbacks that should be invoked
+   * when directive instance is being destroyed.
+   * @internal
+   */
+  _registerOnDestroy(fn: () => void): void {
+    this._onDestroyCallbacks.push(fn);
+  }
+
+  /**
+   * Internal function to invoke all registered "on destroy" callbacks.
+   * Note: calling this function also clears the list of callbacks.
+   * @internal
+   */
+  _invokeOnDestroyCallbacks(): void {
+    this._onDestroyCallbacks.forEach(fn => fn());
+    this._onDestroyCallbacks = [];
   }
 
   /**

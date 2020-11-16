@@ -3,8 +3,10 @@
 <h2>Attribute binding</h2>
 <!-- #docregion attrib-binding-colspan -->
 <table border=1>
+  <!-- #docregion colspan -->
   <!--  expression calculates colspan=2 -->
   <tr><td [attr.colspan]="1 + 1">One-Two</td></tr>
+  <!-- #enddocregion colspan -->
 
   <!-- ERROR: There is no `colspan` property to set!
     <tr><td colspan="{{1 + 1}}">Three-Four</td></tr>
@@ -32,31 +34,31 @@
 <!-- #docregion basic-specificity -->
 <h3>Basic specificity</h3>
 
-<!-- The `class.special` binding will override any value for the `special` class in `classExpr`.  -->
-<div [class.special]="isSpecial" [class]="classExpr">Some text.</div>
+<!-- The `class.special` binding overrides any value for the `special` class in `classExpression`.  -->
+<div [class.special]="isSpecial" [class]="classExpression">Some text.</div>
 
-<!-- The `style.color` binding will override any value for the `color` property in `styleExpr`.  -->
-<div [style.color]="color" [style]="styleExpr">Some text.</div>
+<!-- The `style.color` binding overrides any value for the `color` property in `styleExpression`.  -->
+<div [style.color]="color" [style]="styleExpression">Some text.</div>
 <!-- #enddocregion basic-specificity -->
 
 <!-- #docregion source-specificity -->
 <h3>Source specificity</h3>
 
-<!-- The `class.special` template binding will override any host binding to the `special` class set by `dirWithClassBinding` or `comp-with-host-binding`.-->
+<!-- The `class.special` template binding overrides any host binding to the `special` class set by `dirWithClassBinding` or `comp-with-host-binding`.-->
 <comp-with-host-binding [class.special]="isSpecial" dirWithClassBinding>Some text.</comp-with-host-binding>
 
-<!-- The `style.color` template binding will override any host binding to the `color` property set by `dirWithStyleBinding` or `comp-with-host-binding`. -->
+<!-- The `style.color` template binding overrides any host binding to the `color` property set by `dirWithStyleBinding` or `comp-with-host-binding`. -->
 <comp-with-host-binding [style.color]="color" dirWithStyleBinding>Some text.</comp-with-host-binding>
 <!-- #enddocregion source-specificity -->
 
 <!-- #docregion dynamic-priority -->
 <h3>Dynamic vs static</h3>
 
-<!-- If `classExpr` has a value for the `special` class, this value will override the `class="special"` below -->
-<div class="special" [class]="classExpr">Some text.</div>
+<!-- If `classExpression` has a value for the `special` class, this value overrides the `class="special"` below -->
+<div class="special" [class]="classExpression">Some text.</div>
 
-<!-- If `styleExpr` has a value for the `color` property, this value will override the `style="color: blue"` below -->
-<div style="color: blue" [style]="styleExpr">Some text.</div>
+<!-- If `styleExpression` has a value for the `color` property, this value overrides the `style="color: blue"` below -->
+<div style="color: blue" [style]="styleExpression">Some text.</div>
 
 <!-- #enddocregion dynamic-priority -->
 

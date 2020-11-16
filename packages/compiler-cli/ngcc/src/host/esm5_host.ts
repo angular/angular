@@ -8,10 +8,10 @@
 
 import * as ts from 'typescript';
 
-import {ClassDeclaration, ClassMember, ClassMemberKind, Declaration, Decorator, FunctionDefinition, KnownDeclaration, Parameter, reflectObjectLiteral} from '../../../src/ngtsc/reflection';
+import {ClassDeclaration, ClassMember, ClassMemberKind, Declaration, DeclarationKind, Decorator, FunctionDefinition, isNamedFunctionDeclaration, KnownDeclaration, Parameter, reflectObjectLiteral} from '../../../src/ngtsc/reflection';
 import {getTsHelperFnFromDeclaration, getTsHelperFnFromIdentifier, hasNameIdentifier} from '../utils';
 
-import {Esm2015ReflectionHost, getClassDeclarationFromInnerDeclaration, getPropertyValueFromSymbol, isAssignmentStatement, ParamInfo} from './esm2015_host';
+import {Esm2015ReflectionHost, getOuterNodeFromInnerDeclaration, getPropertyValueFromSymbol, isAssignmentStatement, ParamInfo} from './esm2015_host';
 import {NgccClassSymbol} from './ngcc_host';
 
 
@@ -82,9 +82,9 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
         // `importHelpers: false` (the default). This is, for example, the case with
         // `@nativescript/angular@9.0.0-next-2019-11-12-155500-01`.
         return {
-          expression: id,
+          kind: DeclarationKind.Inline,
+          node: id,
           known: nonEmittedNorImportedTsHelperDeclaration,
-          node: null,
           viaModule: null,
         };
       }
@@ -186,16 +186,16 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
       return classSymbol;
     }
 
-    if (!ts.isFunctionDeclaration(declaration) || !hasNameIdentifier(declaration)) {
+    if (!isNamedFunctionDeclaration(declaration)) {
       return undefined;
     }
 
-    const outerDeclaration = getClassDeclarationFromInnerDeclaration(declaration);
-    if (outerDeclaration === null || !hasNameIdentifier(outerDeclaration)) {
+    const outerNode = getOuterNodeFromInnerDeclaration(declaration);
+    if (outerNode === null || !hasNameIdentifier(outerNode)) {
       return undefined;
     }
 
-    return this.createClassSymbol(outerDeclaration, declaration);
+    return this.createClassSymbol(outerNode.name, declaration);
   }
 
   /**

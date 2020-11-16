@@ -1,50 +1,11 @@
-
 aio-shell.mode-archive {
-
-  .mat-toolbar.mat-primary, footer {
-    background: linear-gradient(145deg,#263238,#78909C);
-  }
-
-  .vertical-menu-item {
-    &.selected, &:hover {
-      color: #263238;
-    }
-  }
-
-  .toc-inner ul.toc-list li.active a {
-    color: #263238;
-
-    &:before {
-      background-color: #263238;
-    }
-  }
-
-  .toc-inner ul.toc-list li:hover a {
-    color: #263238;
-  }
+  @include deployTheme(#263238, #78909C);
 }
 
 aio-shell.mode-next {
+  @include deployTheme(#DD0031, #C3002F);
+}
 
-  .mat-toolbar.mat-primary, footer {
-    background: linear-gradient(145deg,#DD0031,#C3002F);
-  }
-
-  .vertical-menu-item {
-    &.selected, &:hover {
-      color: #DD0031;
-    }
-  }
-
-  .toc-inner ul.toc-list li.active a {
-    color: #DD0031;
-
-    &:before {
-      background-color: #DD0031;
-    }
-  }
-
-  .toc-inner ul.toc-list li:hover a {
-    color: #DD0031;
-  }
+aio-shell.mode-rc {
+  @include deployTheme(#DDA302, #C3A300);
 }

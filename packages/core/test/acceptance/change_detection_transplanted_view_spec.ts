@@ -7,7 +7,7 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, DoCheck, Input, TemplateRef, Type, ViewChild} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, DoCheck, Input, TemplateRef, Type, ViewChild, ViewContainerRef} from '@angular/core';
 import {AfterViewChecked} from '@angular/core/src/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
@@ -593,6 +593,40 @@ describe('change detection for transplanted views', () => {
         .toEqual(
             'SheldonSheldonSheldon',
             'Expected transplanted view to be refreshed even when insertion is not dirty');
+  });
+
+  it('should not fail when change detecting detached transplanted view', () => {
+    @Component({template: '<ng-template>{{incrementChecks()}}</ng-template>'})
+    class AppComponent {
+      @ViewChild(TemplateRef) templateRef!: TemplateRef<{}>;
+
+      constructor(readonly rootVref: ViewContainerRef, readonly cdr: ChangeDetectorRef) {}
+
+      checks = 0;
+      incrementChecks() {
+        this.checks++;
+      }
+    }
+
+    const fixture = TestBed.configureTestingModule({declarations: [AppComponent]})
+                        .createComponent(AppComponent);
+    const component = fixture.componentInstance;
+    fixture.detectChanges();
+
+    const viewRef = component.templateRef.createEmbeddedView({});
+    // This `ViewContainerRef` is for the root view
+    component.rootVref.insert(viewRef);
+    // `detectChanges` on this `ChangeDetectorRef` will refresh this view and children, not the root
+    // view that has the transplanted `viewRef` inserted.
+    component.cdr.detectChanges();
+    // The template should not have been refreshed because it was inserted "above" the component so
+    // `detectChanges` will not refresh it.
+    expect(component.checks).toEqual(0);
+
+    // Detach view, manually call `detectChanges`, and verify the template was refreshed
+    component.rootVref.detach();
+    viewRef.detectChanges();
+    expect(component.checks).toEqual(1);
   });
 });
 

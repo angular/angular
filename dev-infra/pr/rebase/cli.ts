@@ -8,7 +8,7 @@
 
 import {Arguments, Argv} from 'yargs';
 
-import {addGithubTokenFlag} from '../../utils/yargs';
+import {addGithubTokenOption} from '../../utils/git/github-yargs';
 
 import {rebasePr} from './index';
 
@@ -20,7 +20,7 @@ export interface RebaseCommandOptions {
 
 /** Builds the rebase pull request command. */
 export function buildRebaseCommand(yargs: Argv): Argv<RebaseCommandOptions> {
-  return addGithubTokenFlag(yargs).positional('prNumber', {type: 'number', demandOption: true});
+  return addGithubTokenOption(yargs).positional('prNumber', {type: 'number', demandOption: true});
 }
 
 /** Handles the rebase pull request command. */

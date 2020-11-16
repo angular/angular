@@ -7,8 +7,9 @@
  */
 
 import * as nock from 'nock';
-import * as nodeFetch from 'node-fetch';
 
+import {ReleaseConfig} from '../../../release/config/index';
+import {_npmPackageInfoCache, NpmPackageInfo} from '../../../release/versioning/npm-registry';
 import {GithubConfig} from '../../../utils/config';
 import * as console from '../../../utils/console';
 import {GithubClient} from '../../../utils/git/github';
@@ -21,13 +22,17 @@ const API_ENDPOINT = `https://api.github.com`;
 
 describe('default target labels', () => {
   let api: GithubClient;
-  let config: GithubConfig;
-  let npmPackageName: string;
+  let githubConfig: GithubConfig;
+  let releaseConfig: ReleaseConfig;
 
   beforeEach(() => {
     api = new GithubClient();
-    config = {owner: 'angular', name: 'dev-infra-test'};
-    npmPackageName = '@angular/dev-infra-test-pkg';
+    githubConfig = {owner: 'angular', name: 'dev-infra-test'};
+    releaseConfig = {
+      npmPackages: ['@angular/dev-infra-test-pkg'],
+      buildPackages: async () => [],
+      generateReleaseNotesForHead: async () => {},
+    };
 
     // The label determination will print warn messages. These should not be
     // printed to the console, so we turn `console.warn` into a spy.
@@ -37,11 +42,11 @@ describe('default target labels', () => {
   afterEach(() => nock.cleanAll());
 
   async function computeTargetLabels(): Promise<TargetLabel[]> {
-    return getDefaultTargetLabelConfiguration(api, config, npmPackageName);
+    return getDefaultTargetLabelConfiguration(api, githubConfig, releaseConfig);
   }
 
   function getRepoApiRequestUrl(): string {
-    return `${API_ENDPOINT}/repos/${config.owner}/${config.name}`;
+    return `${API_ENDPOINT}/repos/${githubConfig.owner}/${githubConfig.name}`;
   }
 
   /**
@@ -61,10 +66,9 @@ describe('default target labels', () => {
   }
 
   /** Fakes a NPM package query API request. */
-  function fakeNpmPackageQueryRequest(data: unknown) {
-    // Note: We only need to mock the `json` function for a `Response`. Types
-    // would expect us to mock more functions, so we need to cast to `any`.
-    spyOn(nodeFetch, 'default').and.resolveTo({json: async () => data} as any);
+  function fakeNpmPackageQueryRequest(data: Partial<NpmPackageInfo>) {
+    _npmPackageInfoCache[releaseConfig.npmPackages[0]] =
+        Promise.resolve({'dist-tags': {}, versions: {}, time: {}, ...data});
   }
 
   /**
@@ -167,7 +171,7 @@ describe('default target labels', () => {
       'time': {
         // v10 has been released at the given specified date. We pick a date that
         // guarantees that the version is no longer considered as active LTS version.
-        '10.0.0': new Date(1912, 5, 23),
+        '10.0.0': new Date(1912, 5, 23).toISOString(),
       }
     });
 
@@ -234,7 +238,7 @@ describe('default target labels', () => {
          'time': {
            // v10 has been released at the given specified date. We pick a date that
            // guarantees that the version is no longer considered as active LTS version.
-           '10.0.0': new Date(1912, 5, 23),
+           '10.0.0': new Date(1912, 5, 23).toISOString(),
          }
        });
 
@@ -247,16 +251,14 @@ describe('default target labels', () => {
     interceptBranchVersionRequest('10.5.x', '10.5.1');
     interceptBranchesListRequest(['10.5.x', '11.0.x']);
 
-    spyOn(require('node-fetch'), 'default').and.callFake(() => ({
-                                                           json: () => ({
-                                                             'dist-tags': {
-                                                               'v10-lts': '10.5.1',
-                                                             },
-                                                             'time': {
-                                                               '10.0.0': new Date().toISOString(),
-                                                             }
-                                                           }),
-                                                         }));
+    fakeNpmPackageQueryRequest({
+      'dist-tags': {
+        'v10-lts': '10.5.1',
+      },
+      'time': {
+        '10.0.0': new Date().toISOString(),
+      }
+    });
 
     expect(await getBranchesForLabel('target: lts', '10.5.x')).toEqual(['10.5.x']);
   });

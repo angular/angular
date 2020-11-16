@@ -11,7 +11,7 @@ import {absoluteFrom} from '../../../src/ngtsc/file_system';
 import {runInEachFileSystem, TestFile} from '../../../src/ngtsc/file_system/testing';
 import {Reference} from '../../../src/ngtsc/imports';
 import {PartialEvaluator} from '../../../src/ngtsc/partial_evaluator';
-import {TypeScriptReflectionHost} from '../../../src/ngtsc/reflection';
+import {DeclarationNode, TypeScriptReflectionHost} from '../../../src/ngtsc/reflection';
 import {getDeclaration} from '../../../src/ngtsc/testing';
 import {loadTestFiles} from '../../../test/helpers';
 import {NgccReferencesRegistry} from '../../src/analysis/ngcc_references_registry';
@@ -61,7 +61,7 @@ runInEachFileSystem(() => {
     });
   });
 
-  function isReference(ref: any): ref is Reference<ts.Declaration> {
+  function isReference(ref: any): ref is Reference<DeclarationNode> {
     return ref instanceof Reference;
   }
 });

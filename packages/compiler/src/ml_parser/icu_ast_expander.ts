@@ -102,10 +102,14 @@ function _expandPluralForm(ast: html.Expansion, errors: ParseError[]): html.Elem
     errors.push(...expansionResult.errors);
 
     return new html.Element(
-        `ng-template`, [new html.Attribute('ngPluralCase', `${c.value}`, c.valueSourceSpan)],
+        `ng-template`, [new html.Attribute(
+                           'ngPluralCase', `${c.value}`, c.valueSourceSpan, undefined /* keySpan */,
+                           undefined /* valueSpan */, undefined /* i18n */)],
         expansionResult.nodes, c.sourceSpan, c.sourceSpan, c.sourceSpan);
   });
-  const switchAttr = new html.Attribute('[ngPlural]', ast.switchValue, ast.switchValueSourceSpan);
+  const switchAttr = new html.Attribute(
+      '[ngPlural]', ast.switchValue, ast.switchValueSourceSpan, undefined /* keySpan */,
+      undefined /* valueSpan */, undefined /* i18n */);
   return new html.Element(
       'ng-container', [switchAttr], children, ast.sourceSpan, ast.sourceSpan, ast.sourceSpan);
 }
@@ -119,15 +123,21 @@ function _expandDefaultForm(ast: html.Expansion, errors: ParseError[]): html.Ele
     if (c.value === 'other') {
       // other is the default case when no values match
       return new html.Element(
-          `ng-template`, [new html.Attribute('ngSwitchDefault', '', c.valueSourceSpan)],
+          `ng-template`, [new html.Attribute(
+                             'ngSwitchDefault', '', c.valueSourceSpan, undefined /* keySpan */,
+                             undefined /* valueSpan */, undefined /* i18n */)],
           expansionResult.nodes, c.sourceSpan, c.sourceSpan, c.sourceSpan);
     }
 
     return new html.Element(
-        `ng-template`, [new html.Attribute('ngSwitchCase', `${c.value}`, c.valueSourceSpan)],
+        `ng-template`, [new html.Attribute(
+                           'ngSwitchCase', `${c.value}`, c.valueSourceSpan, undefined /* keySpan */,
+                           undefined /* valueSpan */, undefined /* i18n */)],
         expansionResult.nodes, c.sourceSpan, c.sourceSpan, c.sourceSpan);
   });
-  const switchAttr = new html.Attribute('[ngSwitch]', ast.switchValue, ast.switchValueSourceSpan);
+  const switchAttr = new html.Attribute(
+      '[ngSwitch]', ast.switchValue, ast.switchValueSourceSpan, undefined /* keySpan */,
+      undefined /* valueSpan */, undefined /* i18n */);
   return new html.Element(
       'ng-container', [switchAttr], children, ast.sourceSpan, ast.sourceSpan, ast.sourceSpan);
 }

@@ -268,6 +268,30 @@ describe('XMLHttpRequest', function() {
        });
      });
 
+  it('should close xhr request if error happened when connect', function(done) {
+    const logs: boolean[] = [];
+    Zone.current
+        .fork({
+          name: 'xhr',
+          onHasTask:
+              (delegate: ZoneDelegate, curr: Zone, target: Zone, taskState: HasTaskState) => {
+                if (taskState.change === 'macroTask') {
+                  logs.push(taskState.macroTask);
+                }
+                return delegate.hasTask(target, taskState);
+              }
+        })
+        .run(function() {
+          const req = new XMLHttpRequest();
+          req.open('get', 'http://notexists.url', true);
+          req.send();
+          req.addEventListener('error', () => {
+            expect(logs).toEqual([true, false]);
+            done();
+          });
+        });
+  });
+
   it('should trigger readystatechange if xhr request trigger cors error', (done) => {
     const req = new XMLHttpRequest();
     let err: any = null;

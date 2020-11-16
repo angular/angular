@@ -29,7 +29,7 @@ export class ContributorListComponent implements OnInit {
     private locationService: LocationService) { }
 
   ngOnInit() {
-    const groupName =  this.locationService.search()['group'] || '';
+    const groupName =  this.locationService.search().group || '';
     // no need to unsubscribe because `contributors` completes
     this.contributorService.contributors
       .subscribe(grps => {

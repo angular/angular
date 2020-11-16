@@ -22,6 +22,7 @@ import {addErrorsToBundle, addParseDiagnostic, addParseError, canParseXml, getAt
  * http://cldr.unicode.org/development/development-process/design-proposals/xmb
  *
  * @see XmbTranslationSerializer
+ * @publicApi used by CLI
  */
 export class XtbTranslationParser implements TranslationParser<XmlTranslationParserHint> {
   /**

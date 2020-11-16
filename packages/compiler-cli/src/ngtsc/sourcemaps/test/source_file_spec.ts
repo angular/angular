@@ -7,7 +7,7 @@
  */
 import {encode} from 'sourcemap-codec';
 
-import {absoluteFrom} from '../../file_system';
+import {absoluteFrom, FileSystem, getFileSystem} from '../../file_system';
 import {runInEachFileSystem} from '../../file_system/testing';
 import {RawSourceMap} from '../src/raw_source_map';
 import {SegmentMarker} from '../src/segment_marker';
@@ -15,9 +15,11 @@ import {computeStartOfLinePositions, ensureOriginalSegmentLinks, extractOriginal
 
 runInEachFileSystem(() => {
   describe('SourceFile and utilities', () => {
+    let fs: FileSystem;
     let _: typeof absoluteFrom;
 
     beforeEach(() => {
+      fs = getFileSystem();
       _ = absoluteFrom;
     });
 
@@ -40,7 +42,7 @@ runInEachFileSystem(() => {
           sources: ['a.js'],
           version: 3
         };
-        const originalSource = new SourceFile(_('/foo/src/a.js'), 'abcdefg', null, false, []);
+        const originalSource = new SourceFile(_('/foo/src/a.js'), 'abcdefg', null, false, [], fs);
         const mappings = parseMappings(rawSourceMap, [originalSource], [0, 8]);
         expect(mappings).toEqual([
           {
@@ -71,7 +73,8 @@ runInEachFileSystem(() => {
 
       it('should parse the segments in ascending order of original position from the raw source map',
          () => {
-           const originalSource = new SourceFile(_('/foo/src/a.js'), 'abcdefg', null, false, []);
+           const originalSource =
+               new SourceFile(_('/foo/src/a.js'), 'abcdefg', null, false, [], fs);
            const rawSourceMap: RawSourceMap = {
              mappings: encode([[[0, 0, 0, 0], [2, 0, 0, 3], [4, 0, 0, 2]]]),
              names: [],
@@ -88,8 +91,8 @@ runInEachFileSystem(() => {
          });
 
       it('should create separate arrays for each original source file', () => {
-        const sourceA = new SourceFile(_('/foo/src/a.js'), 'abcdefg', null, false, []);
-        const sourceB = new SourceFile(_('/foo/src/b.js'), '1234567', null, false, []);
+        const sourceA = new SourceFile(_('/foo/src/a.js'), 'abcdefg', null, false, [], fs);
+        const sourceB = new SourceFile(_('/foo/src/b.js'), '1234567', null, false, [], fs);
         const rawSourceMap: RawSourceMap = {
           mappings:
               encode([[[0, 0, 0, 0], [2, 1, 0, 3], [4, 0, 0, 2], [5, 1, 0, 5], [6, 1, 0, 2]]]),
@@ -313,8 +316,8 @@ runInEachFileSystem(() => {
     describe('ensureOriginalSegmentLinks', () => {
       it('should add `next` properties to each segment that point to the next segment in the same source file',
          () => {
-           const sourceA = new SourceFile(_('/foo/src/a.js'), 'abcdefg', null, false, []);
-           const sourceB = new SourceFile(_('/foo/src/b.js'), '1234567', null, false, []);
+           const sourceA = new SourceFile(_('/foo/src/a.js'), 'abcdefg', null, false, [], fs);
+           const sourceB = new SourceFile(_('/foo/src/b.js'), '1234567', null, false, [], fs);
            const rawSourceMap: RawSourceMap = {
              mappings:
                  encode([[[0, 0, 0, 0], [2, 1, 0, 3], [4, 0, 0, 2], [5, 1, 0, 5], [6, 1, 0, 2]]]),
@@ -336,14 +339,14 @@ runInEachFileSystem(() => {
       describe('flattenedMappings', () => {
         it('should be an empty array for source files with no source map', () => {
           const sourceFile =
-              new SourceFile(_('/foo/src/index.js'), 'index contents', null, false, []);
+              new SourceFile(_('/foo/src/index.js'), 'index contents', null, false, [], fs);
           expect(sourceFile.flattenedMappings).toEqual([]);
         });
 
         it('should be empty array for source files with no source map mappings', () => {
           const rawSourceMap: RawSourceMap = {mappings: '', names: [], sources: [], version: 3};
           const sourceFile =
-              new SourceFile(_('/foo/src/index.js'), 'index contents', rawSourceMap, false, []);
+              new SourceFile(_('/foo/src/index.js'), 'index contents', rawSourceMap, false, [], fs);
           expect(sourceFile.flattenedMappings).toEqual([]);
         });
 
@@ -355,16 +358,17 @@ runInEachFileSystem(() => {
                sources: ['a.js'],
                version: 3
              };
-             const originalSource = new SourceFile(_('/foo/src/a.js'), 'abcdefg', null, false, []);
+             const originalSource =
+                 new SourceFile(_('/foo/src/a.js'), 'abcdefg', null, false, [], fs);
              const sourceFile = new SourceFile(
-                 _('/foo/src/index.js'), 'abc123defg', rawSourceMap, false, [originalSource]);
+                 _('/foo/src/index.js'), 'abc123defg', rawSourceMap, false, [originalSource], fs);
              expect(removeOriginalSegmentLinks(sourceFile.flattenedMappings))
                  .toEqual(parseMappings(rawSourceMap, [originalSource], [0, 11]));
            });
 
         it('should merge mappings from flattened original source files', () => {
-          const cSource = new SourceFile(_('/foo/src/c.js'), 'bcd123', null, false, []);
-          const dSource = new SourceFile(_('/foo/src/d.js'), 'aef', null, false, []);
+          const cSource = new SourceFile(_('/foo/src/c.js'), 'bcd123', null, false, [], fs);
+          const dSource = new SourceFile(_('/foo/src/d.js'), 'aef', null, false, [], fs);
 
           const bSourceMap: RawSourceMap = {
             mappings: encode([[[0, 1, 0, 0], [1, 0, 0, 0], [4, 1, 0, 1]]]),
@@ -372,8 +376,8 @@ runInEachFileSystem(() => {
             sources: ['c.js', 'd.js'],
             version: 3
           };
-          const bSource =
-              new SourceFile(_('/foo/src/b.js'), 'abcdef', bSourceMap, false, [cSource, dSource]);
+          const bSource = new SourceFile(
+              _('/foo/src/b.js'), 'abcdef', bSourceMap, false, [cSource, dSource], fs);
 
           const aSourceMap: RawSourceMap = {
             mappings: encode([[[0, 0, 0, 0], [2, 0, 0, 3], [4, 0, 0, 2], [5, 0, 0, 5]]]),
@@ -382,7 +386,7 @@ runInEachFileSystem(() => {
             version: 3
           };
           const aSource =
-              new SourceFile(_('/foo/src/a.js'), 'abdecf', aSourceMap, false, [bSource]);
+              new SourceFile(_('/foo/src/a.js'), 'abdecf', aSourceMap, false, [bSource], fs);
 
           expect(removeOriginalSegmentLinks(aSource.flattenedMappings)).toEqual([
             {
@@ -431,7 +435,8 @@ runInEachFileSystem(() => {
             sources: ['c.js'],
             version: 3
           };
-          const bSource = new SourceFile(_('/foo/src/b.js'), 'abcdef', bSourceMap, false, [null]);
+          const bSource =
+              new SourceFile(_('/foo/src/b.js'), 'abcdef', bSourceMap, false, [null], fs);
           const aSourceMap: RawSourceMap = {
             mappings: encode([[[0, 0, 0, 0], [2, 0, 0, 3], [4, 0, 0, 2], [5, 0, 0, 5]]]),
             names: [],
@@ -439,7 +444,7 @@ runInEachFileSystem(() => {
             version: 3
           };
           const aSource =
-              new SourceFile(_('/foo/src/a.js'), 'abdecf', aSourceMap, false, [bSource]);
+              new SourceFile(_('/foo/src/a.js'), 'abdecf', aSourceMap, false, [bSource], fs);
 
           // These flattened mappings are just the mappings from a to b.
           // (The mappings to c are dropped since there is no source file to map to.)
@@ -462,7 +467,7 @@ runInEachFileSystem(() => {
 
       describe('renderFlattenedSourceMap()', () => {
         it('should convert the flattenedMappings into a raw source-map object', () => {
-          const cSource = new SourceFile(_('/foo/src/c.js'), 'bcd123e', null, false, []);
+          const cSource = new SourceFile(_('/foo/src/c.js'), 'bcd123e', null, false, [], fs);
           const bToCSourceMap: RawSourceMap = {
             mappings: encode([[[1, 0, 0, 0], [4, 0, 0, 3], [4, 0, 0, 6], [5, 0, 0, 7]]]),
             names: [],
@@ -470,7 +475,7 @@ runInEachFileSystem(() => {
             version: 3
           };
           const bSource =
-              new SourceFile(_('/foo/src/b.js'), 'abcdef', bToCSourceMap, false, [cSource]);
+              new SourceFile(_('/foo/src/b.js'), 'abcdef', bToCSourceMap, false, [cSource], fs);
           const aToBSourceMap: RawSourceMap = {
             mappings: encode([[[0, 0, 0, 0], [2, 0, 0, 3], [4, 0, 0, 2], [5, 0, 0, 5]]]),
             names: [],
@@ -478,7 +483,7 @@ runInEachFileSystem(() => {
             version: 3
           };
           const aSource =
-              new SourceFile(_('/foo/src/a.js'), 'abdecf', aToBSourceMap, false, [bSource]);
+              new SourceFile(_('/foo/src/a.js'), 'abdecf', aToBSourceMap, false, [bSource], fs);
 
           const aTocSourceMap = aSource.renderFlattenedSourceMap();
           expect(aTocSourceMap.version).toEqual(3);
@@ -493,7 +498,7 @@ runInEachFileSystem(() => {
         });
 
         it('should handle mappings that map from lines outside of the actual content lines', () => {
-          const bSource = new SourceFile(_('/foo/src/b.js'), 'abcdef', null, false, []);
+          const bSource = new SourceFile(_('/foo/src/b.js'), 'abcdef', null, false, [], fs);
           const aToBSourceMap: RawSourceMap = {
             mappings: encode([
               [[0, 0, 0, 0], [2, 0, 0, 3], [4, 0, 0, 2], [5, 0, 0, 5]],
@@ -506,7 +511,7 @@ runInEachFileSystem(() => {
             version: 3
           };
           const aSource =
-              new SourceFile(_('/foo/src/a.js'), 'abdecf', aToBSourceMap, false, [bSource]);
+              new SourceFile(_('/foo/src/a.js'), 'abdecf', aToBSourceMap, false, [bSource], fs);
 
           const aTocSourceMap = aSource.renderFlattenedSourceMap();
           expect(aTocSourceMap.version).toEqual(3);
@@ -522,13 +527,13 @@ runInEachFileSystem(() => {
       describe('getOriginalLocation()', () => {
         it('should return null for source files with no flattened mappings', () => {
           const sourceFile =
-              new SourceFile(_('/foo/src/index.js'), 'index contents', null, false, []);
+              new SourceFile(_('/foo/src/index.js'), 'index contents', null, false, [], fs);
           expect(sourceFile.getOriginalLocation(1, 1)).toEqual(null);
         });
 
         it('should return offset locations in multiple flattened original source files', () => {
-          const cSource = new SourceFile(_('/foo/src/c.js'), 'bcd123', null, false, []);
-          const dSource = new SourceFile(_('/foo/src/d.js'), 'aef', null, false, []);
+          const cSource = new SourceFile(_('/foo/src/c.js'), 'bcd123', null, false, [], fs);
+          const dSource = new SourceFile(_('/foo/src/d.js'), 'aef', null, false, [], fs);
 
           const bSourceMap: RawSourceMap = {
             mappings: encode([
@@ -542,8 +547,8 @@ runInEachFileSystem(() => {
             sources: ['c.js', 'd.js'],
             version: 3
           };
-          const bSource =
-              new SourceFile(_('/foo/src/b.js'), 'abcdef', bSourceMap, false, [cSource, dSource]);
+          const bSource = new SourceFile(
+              _('/foo/src/b.js'), 'abcdef', bSourceMap, false, [cSource, dSource], fs);
 
           const aSourceMap: RawSourceMap = {
             mappings: encode([
@@ -560,7 +565,7 @@ runInEachFileSystem(() => {
             version: 3
           };
           const aSource =
-              new SourceFile(_('/foo/src/a.js'), 'abde\n    cf', aSourceMap, false, [bSource]);
+              new SourceFile(_('/foo/src/a.js'), 'abde\n    cf', aSourceMap, false, [bSource], fs);
 
           // Line 0
           expect(aSource.getOriginalLocation(0, 0))  // a
@@ -592,8 +597,8 @@ runInEachFileSystem(() => {
         });
 
         it('should return offset locations across multiple lines', () => {
-          const originalSource =
-              new SourceFile(_('/foo/src/original.js'), 'abcdef\nghijk\nlmnop', null, false, []);
+          const originalSource = new SourceFile(
+              _('/foo/src/original.js'), 'abcdef\nghijk\nlmnop', null, false, [], fs);
           const generatedSourceMap: RawSourceMap = {
             mappings: encode([
               [
@@ -614,7 +619,7 @@ runInEachFileSystem(() => {
           };
           const generatedSource = new SourceFile(
               _('/foo/src/generated.js'), 'ABC\nGHIJDEFK\nLMNOP', generatedSourceMap, false,
-              [originalSource]);
+              [originalSource], fs);
 
           // Line 0
           expect(generatedSource.getOriginalLocation(0, 0))  // A

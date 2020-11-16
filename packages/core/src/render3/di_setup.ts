@@ -19,7 +19,7 @@ import {NodeInjectorFactory} from './interfaces/injector';
 import {TContainerNode, TDirectiveHostNode, TElementContainerNode, TElementNode, TNodeProviderIndexes} from './interfaces/node';
 import {isComponentDef} from './interfaces/type_checks';
 import {DestroyHookData, LView, TData, TVIEW, TView} from './interfaces/view';
-import {getLView, getPreviousOrParentTNode, getTView} from './state';
+import {getCurrentTNode, getLView, getTView} from './state';
 
 
 
@@ -76,7 +76,7 @@ function resolveProvider(
     let token: any = isTypeProvider(provider) ? provider : resolveForwardRef(provider.provide);
     let providerFactory: () => any = providerToFactory(provider);
 
-    const tNode = getPreviousOrParentTNode();
+    const tNode = getCurrentTNode()!;
     const beginIndex = tNode.providerIndexes & TNodeProviderIndexes.ProvidersStartIndexMask;
     const endIndex = tNode.directiveStart;
     const cptViewProvidersCount =

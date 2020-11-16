@@ -45,7 +45,7 @@ global.ng.common.locales['so'] = [
       'Oktoobar', 'Nofembar', 'Desembar'
     ]
   ],
-  [['CH', 'CD'], u, ['Ciise Hortii', 'Ciise Dabadii']],
+  [['B', 'A'], ['CH', 'CD'], ['Ciise Hortii', 'Ciise Dabadii']],
   1,
   [6, 0],
   ['dd/MM/yy', 'dd-MMM-y', 'dd MMMM y', 'EEEE, MMMM dd, y'],

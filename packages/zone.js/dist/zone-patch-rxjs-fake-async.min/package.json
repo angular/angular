@@ -1,7 +1,0 @@
-{
-  "name": "zone.js/zone-patch-rxjs-fake-async.min",
-  "main": "../../bundles/zone-patch-rxjs-fake-async.umd.min.js",
-  "fesm2015": "../../fesm2015/zone-patch-rxjs-fake-async.min.js",
-  "es2015": "../../fesm2015/zone-patch-rxjs-fake-async.min.js",
-  "module": "../../fesm2015/zone-patch-rxjs-fake-async.min.js"
-}

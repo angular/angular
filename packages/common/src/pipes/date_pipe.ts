@@ -65,6 +65,10 @@ import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
  *  |                    | yy          | Numeric: 2 digits + zero padded                               | 02, 20, 01, 17, 73                                         |
  *  |                    | yyy         | Numeric: 3 digits + zero padded                               | 002, 020, 201, 2017, 20173                                 |
  *  |                    | yyyy        | Numeric: 4 digits or more + zero padded                       | 0002, 0020, 0201, 2017, 20173                              |
+ *  | Week-numbering year| Y           | Numeric: minimum digits                                       | 2, 20, 201, 2017, 20173                                    |
+ *  |                    | YY          | Numeric: 2 digits + zero padded                               | 02, 20, 01, 17, 73                                         |
+ *  |                    | YYY         | Numeric: 3 digits + zero padded                               | 002, 020, 201, 2017, 20173                                 |
+ *  |                    | YYYY        | Numeric: 4 digits or more + zero padded                       | 0002, 0020, 0201, 2017, 20173                              |
  *  | Month              | M           | Numeric: 1 digit                                              | 9, 12                                                      |
  *  |                    | MM          | Numeric: 2 digits + zero padded                               | 09, 12                                                     |
  *  |                    | MMM         | Abbreviated                                                   | Sep                                                        |
@@ -167,7 +171,15 @@ export class DatePipe implements PipeTransform {
    * See [Setting your app locale](guide/i18n#setting-up-the-locale-of-your-app).
    * @returns A date string in the desired format.
    */
-  transform(value: any, format = 'mediumDate', timezone?: string, locale?: string): string|null {
+  transform(value: Date|string|number, format?: string, timezone?: string, locale?: string): string
+      |null;
+  transform(value: null|undefined, format?: string, timezone?: string, locale?: string): null;
+  transform(
+      value: Date|string|number|null|undefined, format?: string, timezone?: string,
+      locale?: string): string|null;
+  transform(
+      value: Date|string|number|null|undefined, format = 'mediumDate', timezone?: string,
+      locale?: string): string|null {
     if (value == null || value === '' || value !== value) return null;
 
     try {

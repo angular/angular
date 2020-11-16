@@ -41,7 +41,7 @@ export class SearchBoxComponent implements AfterViewInit {
    * When we first show this search box we trigger a search if there is a search query in the URL
    */
   ngAfterViewInit() {
-    const query = this.locationService.search()['search'];
+    const query = this.locationService.search().search;
     if (query) {
       this.query = this.decodeQuery(query);
       this.doSearch();

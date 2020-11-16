@@ -1656,7 +1656,7 @@ _before_ the `AppRoutingModule`:
 
 </code-tabs>
 
-Remove the initial crisis center route from the `app-routing.module.ts` because now the `HeroesModule` and the `CrisisCenter` modules provide teh feature routes.
+Remove the initial crisis center route from the `app-routing.module.ts` because now the `HeroesModule` and the `CrisisCenter` modules provide the feature routes.
 
 The `app-routing.module.ts` file retains the top-level application routes such as the default and wildcard routes.
 

@@ -214,23 +214,24 @@ describe('GithubApi', () => {
     });
 
 
-    it('should call \'https.request()\' with the correct options', () => {
+    it('should call \'https.request()\' with the correct options', async () => {
       const requestHandler = nock('https://api.github.com')
         .intercept('/path', 'method')
         .reply(200);
 
-      (api as any).request('method', '/path');
+      await (api as any).request('method', '/path');
       requestHandler.done();
     });
 
 
-    it('should add the \'Authorization\' header containing the \'githubToken\'', () => {
+    it('should add the \'Authorization\' header containing the \'githubToken\'', async () => {
       const requestHandler = nock('https://api.github.com')
         .intercept('/path', 'method', undefined, {
           reqheaders: {Authorization: 'token 12345'},
         })
         .reply(200);
-      (api as any).request('method', '/path');
+
+      await (api as any).request('method', '/path');
       requestHandler.done();
     });
 
@@ -244,12 +245,13 @@ describe('GithubApi', () => {
     });
 
 
-    it('should \'JSON.stringify\' and send the data along with the request', () => {
+    it('should \'JSON.stringify\' and send the data along with the request', async () => {
       const data = {key: 'value'};
       const requestHandler = nock('https://api.github.com')
         .intercept('/path', 'method', JSON.stringify(data))
         .reply(200);
-      (api as any).request('method', '/path', data);
+
+      await (api as any).request('method', '/path', data);
       requestHandler.done();
     });
 

@@ -1,3 +1,58 @@
+<a name="0.11.3"></a>
+## [0.11.3](https://github.com/angular/angular/compare/zone.js-0.11.2...zone.js-0.11.3) (2020-10-27)
+
+
+### Bug Fixes
+
+* **zone.js:** remove global declaration ([#37861](https://github.com/angular/angular/issues/37861)) ([90c0772](https://github.com/angular/angular/commit/90c0772)), closes [#37531](https://github.com/angular/angular/issues/37531)
+
+
+
+<a name="0.11.2"></a>
+## [0.11.2](https://github.com/angular/angular/compare/zone.js-0.11.0...zone.js-0.11.2) (2020-09-19)
+
+
+### Bug Fixes
+
+* **zone.js:** jest getRealSystemTime should return native time ([#39127](https://github.com/angular/angular/issues/39127)) ([ffc3332](https://github.com/angular/angular/commit/ffc3332))
+* **zone.js:** add missing types field in package.json ([#38585](https://github.com/angular/angular/issues/38585)) ([27cc56b](https://github.com/angular/angular/commit/27cc56b)), closes [#38584](https://github.com/angular/angular/issues/38584)
+* **zone.js:** defineProperty patch should not swallow error ([#37582](https://github.com/angular/angular/issues/37582)) ([45a73dd](https://github.com/angular/angular/commit/45a73dd)), closes [#37432](https://github.com/angular/angular/issues/37432)
+* **zone.js:** run tests in umd format ([#37582](https://github.com/angular/angular/issues/37582)) ([40096be](https://github.com/angular/angular/commit/40096be))
+* **zone.js:** should have better backward compatibilities ([#38797](https://github.com/angular/angular/issues/38797)) ([a33d630](https://github.com/angular/angular/commit/a33d630)), closes [#38561](https://github.com/angular/angular/issues/38561) [#38669](https://github.com/angular/angular/issues/38669)
+* **zone.js:** should invoke xhr send task when no response error occurs ([#38836](https://github.com/angular/angular/issues/38836)) ([d92a0dd](https://github.com/angular/angular/commit/d92a0dd)), closes [#38795](https://github.com/angular/angular/issues/38795)
+* **zone.js:** zone.js toString patch should check typeof Promise is function ([#38350](https://github.com/angular/angular/issues/38350)) ([18e474f](https://github.com/angular/angular/commit/18e474f)), closes [#38361](https://github.com/angular/angular/issues/38361)
+
+
+### Features
+
+* **zone.js:** add jest fakeTimers support ([#39016](https://github.com/angular/angular/issues/39016)) ([82d54fe](https://github.com/angular/angular/commit/82d54fe)), closes [#38851](https://github.com/angular/angular/issues/38851)
+
+
+### Refactor
+
+* **zone.js:** refactor(zone.js): rename several internal apis in fake async zone spec ([#39127](https://github.com/angular/angular/issues/39127)) ([8a68669](https://github.com/angular/angular/commit/8a68669))
+
+
+### Build
+
+* **zone.js:** build(zone.js): zone.js should output esm format for fesm2015 bundles ([#39203](https://github.com/angular/angular/issues/39203)) ([822b838](https://github.com/angular/angular/commit/822b838))
+
+
+### BREAKING CHANGES
+
+* **zone.js:** ZoneJS no longer swallows errors produced by `Object.defineProperty` calls.
+
+Prior to this change, ZoneJS monkey patched `Object.defineProperty` and if there is an error
+(such as the property is not configurable or not writable) the patched logic swallowed it
+and only console.log was produced. This behavior used to hide real errors,
+so the logic is now updated to trigger original errors (if any). One exception
+where the patch remains in place is `document.registerElement`
+(to allow smooth transition for code/polyfills that rely on old behavior in legacy browsers).
+If your code relies on the old behavior (where errors were not thrown before),
+you may need to update the logic to handle the errors that are no longer masked by ZoneJS patch.
+
+
+
 <a name="0.11.1"></a>
 ## [0.11.1](https://github.com/angular/angular/compare/zone.js-0.11.0...zone.js-0.11.1) (2020-08-19)
 
@@ -7,6 +62,35 @@
 * **zone.js:** zone.js package.json should not include files/directories field ([#38528](https://github.com/angular/angular/issues/38528)) ([6b662d1](https://github.com/angular/angular/commit/6b662d1)), closes [#38526](https://github.com/angular/angular/issues/38526) [#38516](https://github.com/angular/angular/issues/38516) [#38513](https://github.com/angular/angular/issues/38513)
 
 
+# BREAKING CHANGES since Zone.js v0.11.1
+
+Prior to `v0.11.1`, Zone.js provided two distribution bundle formats in the `dist` folder.
+They were (1) `ES5` bundle distributed as `zone.js` and (2) `ES2015` bundle distributed as `zone-evergreen.js`.
+These bundles are used for Angular's differential-loading mechanism.
+
+Prior to `v0.11.11` the following code
+
+```
+import 'zone.js';
+```
+would load the `ES5` bundle from `dist/zone.js`.
+
+Starting with `v0.11.1`, Zone.js follows the [Angular Package Format](https://docs.google.com/document/d/1CZC2rcpxffTDfRDs6p1cfbmKNLA6x5O-NtkJglDaBVs), so the folder structure of the Zone.js bundles is updated to match `Angular Package Format`.
+So the same code
+
+```
+import 'zone.js';
+```
+now loads the `ES2015` bundle instead.
+
+This is a breaking change for legacy browsers such as `IE11`.
+
+For backwards compatibility `zone.js` continues to distribute the same bundles under `dist`.
+To restore the old behavior change the `polyfills.ts` generated by `Angular CLI` to import like so:
+
+```
+import 'zone.js/dist/zone';
+```
 
 <a name="0.11.0"></a>
 # [0.11.0](https://github.com/angular/angular/compare/zone.js-0.10.3...zone.js-0.11.0) (2020-08-14)

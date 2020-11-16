@@ -9,7 +9,6 @@ import {Statement} from '@angular/compiler';
 import MagicString from 'magic-string';
 import * as ts from 'typescript';
 
-import {NOOP_DEFAULT_IMPORT_RECORDER} from '../../../src/ngtsc/imports';
 import {ImportManager, translateStatement} from '../../../src/ngtsc/translator';
 import {CompiledClass} from '../analysis/types';
 import {getContainingStatement} from '../host/esm2015_host';
@@ -65,8 +64,9 @@ export class Esm5RenderingFormatter extends EsmRenderingFormatter {
    * @return The JavaScript code corresponding to `stmt` (in the appropriate format).
    */
   printStatement(stmt: Statement, sourceFile: ts.SourceFile, importManager: ImportManager): string {
-    const node =
-        translateStatement(stmt, importManager, NOOP_DEFAULT_IMPORT_RECORDER, ts.ScriptTarget.ES5);
+    const node = translateStatement(
+        stmt, importManager,
+        {downlevelLocalizedStrings: true, downlevelVariableDeclarations: true});
     const code = this.printer.printNode(ts.EmitHint.Unspecified, node, sourceFile);
 
     return code;
