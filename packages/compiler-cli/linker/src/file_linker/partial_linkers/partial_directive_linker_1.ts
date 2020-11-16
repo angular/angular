@@ -137,11 +137,11 @@ function toQueryMetadata<TExpression>(obj: AstObject<TExpression>): R3QueryMetad
   }
   return {
     propertyName: obj.getString('propertyName'),
-    first: obj.getBoolean('first'),
+    first: obj.has('first') ? obj.getBoolean('first') : false,
     predicate,
-    descendants: obj.getBoolean('descendants'),
+    descendants: obj.has('descendants') ? obj.getBoolean('descendants') : false,
     read: obj.has('read') ? obj.getOpaque('read') : null,
-    static: obj.getBoolean('static'),
+    static: obj.has('static') ? obj.getBoolean('static') : false,
   };
 }
 
