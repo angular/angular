@@ -149,7 +149,7 @@ export interface R3ComponentMetadata extends R3DirectiveMetadata {
    * A list of directive selectors and an expression referencing the directive type which are in the
    * scope of the compilation.
    */
-  directives: {selector: string, expression: o.Expression}[];
+  directives: R3UsedDirectiveMetadata[];
 
   /**
    * Whether to wrap the 'directives' and/or `pipes` array, if one is generated, in a closure.
@@ -204,6 +204,37 @@ export interface R3ComponentMetadata extends R3DirectiveMetadata {
    * Strategy used for detecting changes in the component.
    */
   changeDetection?: ChangeDetectionStrategy;
+}
+
+/**
+ * Information about a directive that is used in a component template. Only the stable, public
+ * facing information of the directive is stored here.
+ */
+export interface R3UsedDirectiveMetadata {
+  /**
+   * The type of the directive as an expression.
+   */
+  type: o.Expression;
+
+  /**
+   * The selector of the directive.
+   */
+  selector: string;
+
+  /**
+   * The binding property names of the inputs of the directive.
+   */
+  inputs: string[];
+
+  /**
+   * The binding property names of the outputs of the directive.
+   */
+  outputs: string[];
+
+  /**
+   * Name under which the directive is exported, if any (exportAs in Angular). Null otherwise.
+   */
+  exportAs: string[]|null;
 }
 
 /**

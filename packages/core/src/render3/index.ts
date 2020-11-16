@@ -135,6 +135,7 @@ export {
 } from './interfaces/node';
 export {CssSelectorList, ProjectionSlots} from './interfaces/projection';
 export {
+  ɵɵngDeclareComponent,
   ɵɵngDeclareDirective,
 } from './jit/partial';
 export {

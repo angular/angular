@@ -9,11 +9,7 @@ export class MyApp {
     }
 }
 MyApp.ɵfac = function MyApp_Factory(t) { return new (t || MyApp)(); };
-MyApp.ɵcmp = i0.ɵɵdefineComponent({ type: MyApp, selectors: [["my-app"]], decls: 1, vars: 9, template: function MyApp_Template(rf, ctx) { if (rf & 1) {
-        i0.ɵɵtext(0);
-    } if (rf & 2) {
-        i0.ɵɵtextInterpolateV([" ", ctx.list[0], " ", ctx.list[1], " ", ctx.list[2], " ", ctx.list[3], " ", ctx.list[4], " ", ctx.list[5], " ", ctx.list[6], " ", ctx.list[7], " ", ctx.list[8], " "]);
-    } }, encapsulation: 2 });
+MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ version: 1, type: MyApp, selector: "my-app", ngImport: i0, template: { source: ' {{list[0]}} {{list[1]}} {{list[2]}} {{list[3]}} {{list[4]}} {{list[5]}} {{list[6]}} {{list[7]}} {{list[8]}} ', isInline: true } });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyApp, [{
         type: Component,
         args: [{

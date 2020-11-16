@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {compileComponentFromMetadata, ConstantPool, CssSelector, DEFAULT_INTERPOLATION_CONFIG, DomElementSchemaRegistry, Expression, ExternalExpr, Identifiers, InterpolationConfig, LexerRange, makeBindingParser, ParsedTemplate, ParseSourceFile, parseTemplate, R3ComponentMetadata, R3FactoryTarget, R3TargetBinder, SchemaMetadata, SelectorMatcher, Statement, TmplAstNode, WrappedNodeExpr} from '@angular/compiler';
+import {compileComponentFromMetadata, compileDeclareComponentFromMetadata, ConstantPool, CssSelector, DEFAULT_INTERPOLATION_CONFIG, DomElementSchemaRegistry, Expression, ExternalExpr, Identifiers, InterpolationConfig, LexerRange, makeBindingParser, ParsedTemplate, ParseSourceFile, parseTemplate, R3ComponentDef, R3ComponentMetadata, R3FactoryTarget, R3TargetBinder, R3UsedDirectiveMetadata, SelectorMatcher, Statement, TmplAstNode, WrappedNodeExpr} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {CycleAnalyzer} from '../../cycles';
@@ -506,11 +506,15 @@ export class ComponentDecoratorHandler implements
       const bound = binder.bind({template: metadata.template.nodes});
 
       // The BoundTarget knows which directives and pipes matched the template.
-      const usedDirectives = bound.getUsedDirectives().map(directive => {
+      type UsedDirective = R3UsedDirectiveMetadata&{ref: Reference};
+      const usedDirectives: UsedDirective[] = bound.getUsedDirectives().map(directive => {
         return {
-          selector: directive.selector,
-          expression: this.refEmitter.emit(directive.ref, context),
           ref: directive.ref,
+          type: this.refEmitter.emit(directive.ref, context),
+          selector: directive.selector,
+          inputs: directive.inputs.propertyNames,
+          outputs: directive.outputs.propertyNames,
+          exportAs: directive.exportAs,
         };
       });
 
@@ -529,15 +533,14 @@ export class ComponentDecoratorHandler implements
 
       // Scan through the directives/pipes actually used in the template and check whether any
       // import which needs to be generated would create a cycle.
-      const cycleDetected =
-          usedDirectives.some(dir => this._isCyclicImport(dir.expression, context)) ||
+      const cycleDetected = usedDirectives.some(dir => this._isCyclicImport(dir.type, context)) ||
           usedPipes.some(pipe => this._isCyclicImport(pipe.expression, context));
 
       if (!cycleDetected) {
         // No cycle was detected. Record the imports that need to be created in the cycle detector
         // so that future cyclic import checks consider their production.
-        for (const {expression} of usedDirectives) {
-          this._recordSyntheticImport(expression, context);
+        for (const {type} of usedDirectives) {
+          this._recordSyntheticImport(type, context);
         }
         for (const {expression} of usedPipes) {
           this._recordSyntheticImport(expression, context);
@@ -548,7 +551,7 @@ export class ComponentDecoratorHandler implements
         // declared after this component.
         const wrapDirectivesAndPipesInClosure =
             usedDirectives.some(
-                dir => isExpressionForwardReference(dir.expression, node.name, context)) ||
+                dir => isExpressionForwardReference(dir.type, node.name, context)) ||
             usedPipes.some(
                 pipe => isExpressionForwardReference(pipe.expression, node.name, context));
 
@@ -599,18 +602,35 @@ export class ComponentDecoratorHandler implements
       node: ClassDeclaration, analysis: Readonly<ComponentAnalysisData>,
       resolution: Readonly<ComponentResolutionData>, pool: ConstantPool): CompileResult[] {
     const meta: R3ComponentMetadata = {...analysis.meta, ...resolution};
-    const res = compileComponentFromMetadata(meta, pool, makeBindingParser());
-    const factoryRes = compileNgFactoryDefField(
-        {...meta, injectFn: Identifiers.directiveInject, target: R3FactoryTarget.Component});
+    const def = compileComponentFromMetadata(meta, pool, makeBindingParser());
+    return this.compileComponent(analysis, def);
+  }
+
+  compilePartial(
+      node: ClassDeclaration, analysis: Readonly<ComponentAnalysisData>,
+      resolution: Readonly<ComponentResolutionData>): CompileResult[] {
+    const meta: R3ComponentMetadata = {...analysis.meta, ...resolution};
+    const def = compileDeclareComponentFromMetadata(meta, analysis.template);
+    return this.compileComponent(analysis, def);
+  }
+
+  private compileComponent(
+      analysis: Readonly<ComponentAnalysisData>,
+      {expression: initializer, type}: R3ComponentDef): CompileResult[] {
+    const factoryRes = compileNgFactoryDefField({
+      ...analysis.meta,
+      injectFn: Identifiers.directiveInject,
+      target: R3FactoryTarget.Component,
+    });
     if (analysis.metadataStmt !== null) {
       factoryRes.statements.push(analysis.metadataStmt);
     }
     return [
       factoryRes, {
         name: 'ɵcmp',
-        initializer: res.expression,
+        initializer,
         statements: [],
-        type: res.type,
+        type,
       }
     ];
   }
@@ -737,7 +757,8 @@ export class ComponentDecoratorHandler implements
     }
 
     const template = this._parseTemplate(
-        component, templateStr, sourceMapUrl(resourceUrl), /* templateRange */ undefined,
+        component, templateStr, /* templateLiteral */ null, sourceMapUrl(resourceUrl),
+        /* templateRange */ undefined,
         /* escapedString */ false);
 
     return {
@@ -763,6 +784,7 @@ export class ComponentDecoratorHandler implements
     const templateExpr = component.get('template')!;
 
     let templateStr: string;
+    let templateLiteral: ts.Node|null = null;
     let templateUrl: string = '';
     let templateRange: LexerRange|undefined = undefined;
     let sourceMapping: TemplateSourceMapping;
@@ -774,6 +796,7 @@ export class ComponentDecoratorHandler implements
       // strip
       templateRange = getTemplateRange(templateExpr);
       templateStr = templateExpr.getSourceFile().text;
+      templateLiteral = templateExpr;
       templateUrl = containingFile;
       escapedString = true;
       sourceMapping = {
@@ -795,15 +818,16 @@ export class ComponentDecoratorHandler implements
       };
     }
 
-    const template =
-        this._parseTemplate(component, templateStr, templateUrl, templateRange, escapedString);
+    const template = this._parseTemplate(
+        component, templateStr, templateLiteral, templateUrl, templateRange, escapedString);
 
     return {...template, sourceMapping};
   }
 
   private _parseTemplate(
-      component: Map<string, ts.Expression>, templateStr: string, templateUrl: string,
-      templateRange: LexerRange|undefined, escapedString: boolean): ParsedComponentTemplate {
+      component: Map<string, ts.Expression>, templateStr: string, templateLiteral: ts.Node|null,
+      templateUrl: string, templateRange: LexerRange|undefined,
+      escapedString: boolean): ParsedComponentTemplate {
     let preserveWhitespaces: boolean = this.defaultPreserveWhitespaces;
     if (component.has('preserveWhitespaces')) {
       const expr = component.get('preserveWhitespaces')!;
@@ -829,6 +853,7 @@ export class ComponentDecoratorHandler implements
     // We always normalize line endings if the template has been escaped (i.e. is inline).
     const i18nNormalizeLineEndingsInICUs = escapedString || this.i18nNormalizeLineEndingsInICUs;
 
+    const isInline = component.has('template');
     const parsedTemplate = parseTemplate(templateStr, templateUrl, {
       preserveWhitespaces,
       interpolationConfig,
@@ -836,6 +861,7 @@ export class ComponentDecoratorHandler implements
       escapedString,
       enableI18nLegacyMessageIdFormat: this.enableI18nLegacyMessageIdFormat,
       i18nNormalizeLineEndingsInICUs,
+      isInline,
     });
 
     // Unfortunately, the primary parse of the template above may not contain accurate source map
@@ -859,14 +885,15 @@ export class ComponentDecoratorHandler implements
       enableI18nLegacyMessageIdFormat: this.enableI18nLegacyMessageIdFormat,
       i18nNormalizeLineEndingsInICUs,
       leadingTriviaChars: [],
+      isInline,
     });
 
     return {
       ...parsedTemplate,
       diagNodes,
-      template: templateStr,
+      template: templateLiteral !== null ? new WrappedNodeExpr(templateLiteral) : templateStr,
       templateUrl,
-      isInline: component.has('template'),
+      isInline,
       file: new ParseSourceFile(templateStr, templateUrl),
     };
   }

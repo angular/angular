@@ -6,18 +6,7 @@ import * as i0 from "@angular/core";
 export class MyComponent {
 }
 MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); };
-MyComponent.ɵcmp = i0.ɵɵdefineComponent({ type: MyComponent, selectors: [["my-component"]], decls: 5, vars: 0, consts: [["title", "Hello", 1, "my-app"], ["cx", "20", "cy", "30", "r", "50"]], template: function MyComponent_Template(rf, ctx) { if (rf & 1) {
-        i0.ɵɵelementStart(0, "div", 0);
-        i0.ɵɵnamespaceSVG();
-        i0.ɵɵelementStart(1, "svg");
-        i0.ɵɵelement(2, "circle", 1);
-        i0.ɵɵelementEnd();
-        i0.ɵɵnamespaceHTML();
-        i0.ɵɵelementStart(3, "p");
-        i0.ɵɵtext(4, "test");
-        i0.ɵɵelementEnd();
-        i0.ɵɵelementEnd();
-    } }, encapsulation: 2 });
+MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: 1, type: MyComponent, selector: "my-component", ngImport: i0, template: { source: '<div class="my-app" title="Hello"><svg><circle cx="20" cy="30" r="50"/></svg><p>test</p></div>', isInline: true } });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyComponent, [{
         type: Component,
         args: [{
@@ -56,18 +45,7 @@ import * as i0 from "@angular/core";
 export class MyComponent {
 }
 MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); };
-MyComponent.ɵcmp = i0.ɵɵdefineComponent({ type: MyComponent, selectors: [["my-component"]], decls: 5, vars: 0, consts: [["title", "Hello", 1, "my-app"]], template: function MyComponent_Template(rf, ctx) { if (rf & 1) {
-        i0.ɵɵelementStart(0, "div", 0);
-        i0.ɵɵnamespaceMathML();
-        i0.ɵɵelementStart(1, "math");
-        i0.ɵɵelement(2, "infinity");
-        i0.ɵɵelementEnd();
-        i0.ɵɵnamespaceHTML();
-        i0.ɵɵelementStart(3, "p");
-        i0.ɵɵtext(4, "test");
-        i0.ɵɵelementEnd();
-        i0.ɵɵelementEnd();
-    } }, encapsulation: 2 });
+MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: 1, type: MyComponent, selector: "my-component", ngImport: i0, template: { source: '<div class="my-app" title="Hello"><math><infinity/></math><p>test</p></div>', isInline: true } });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyComponent, [{
         type: Component,
         args: [{
@@ -106,15 +84,7 @@ import * as i0 from "@angular/core";
 export class MyComponent {
 }
 MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); };
-MyComponent.ɵcmp = i0.ɵɵdefineComponent({ type: MyComponent, selectors: [["my-component"]], decls: 5, vars: 0, consts: [["title", "Hello", 1, "my-app"]], template: function MyComponent_Template(rf, ctx) { if (rf & 1) {
-        i0.ɵɵelementStart(0, "div", 0);
-        i0.ɵɵtext(1, "Hello ");
-        i0.ɵɵelementStart(2, "b");
-        i0.ɵɵtext(3, "World");
-        i0.ɵɵelementEnd();
-        i0.ɵɵtext(4, "!");
-        i0.ɵɵelementEnd();
-    } }, encapsulation: 2 });
+MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: 1, type: MyComponent, selector: "my-component", ngImport: i0, template: { source: '<div class="my-app" title="Hello">Hello <b>World</b>!</div>', isInline: true } });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyComponent, [{
         type: Component,
         args: [{
@@ -153,15 +123,7 @@ import * as i0 from "@angular/core";
 export class MyComponent {
 }
 MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); };
-MyComponent.ɵcmp = i0.ɵɵdefineComponent({ type: MyComponent, selectors: [["my-component"]], decls: 5, vars: 0, consts: [[0, "xmlns", "foo", "http://someuri/foo", 0, "foo", "bar", "baz", "title", "Hello", 0, "foo", "qux", "quacks", 1, "my-app"]], template: function MyComponent_Template(rf, ctx) { if (rf & 1) {
-        i0.ɵɵelementStart(0, "div", 0);
-        i0.ɵɵtext(1, "Hello ");
-        i0.ɵɵelementStart(2, "b");
-        i0.ɵɵtext(3, "World");
-        i0.ɵɵelementEnd();
-        i0.ɵɵtext(4, "!");
-        i0.ɵɵelementEnd();
-    } }, encapsulation: 2 });
+MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: 1, type: MyComponent, selector: "my-component", ngImport: i0, template: { source: '<div xmlns:foo="http://someuri/foo" class="my-app" foo:bar="baz" title="Hello" foo:qux="quacks">Hello <b>World</b>!</div>', isInline: true } });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyComponent, [{
         type: Component,
         args: [{
@@ -200,14 +162,7 @@ import * as i0 from "@angular/core";
 export class MyComponent {
 }
 MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); };
-MyComponent.ɵcmp = i0.ɵɵdefineComponent({ type: MyComponent, selectors: [["my-component"]], decls: 4, vars: 0, template: function MyComponent_Template(rf, ctx) { if (rf & 1) {
-        i0.ɵɵelementContainerStart(0);
-        i0.ɵɵelementStart(1, "span");
-        i0.ɵɵtext(2, "in a ");
-        i0.ɵɵelementEnd();
-        i0.ɵɵtext(3, "container");
-        i0.ɵɵelementContainerEnd();
-    } }, encapsulation: 2 });
+MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: 1, type: MyComponent, selector: "my-component", ngImport: i0, template: { source: '<ng-container><span>in a </span>container</ng-container>', isInline: true } });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyComponent, [{
         type: Component,
         args: [{
@@ -246,9 +201,7 @@ import * as i0 from "@angular/core";
 export class MyComponent {
 }
 MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); };
-MyComponent.ɵcmp = i0.ɵɵdefineComponent({ type: MyComponent, selectors: [["my-component"]], decls: 1, vars: 0, template: function MyComponent_Template(rf, ctx) { if (rf & 1) {
-        i0.ɵɵelementContainer(0);
-    } }, encapsulation: 2 });
+MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: 1, type: MyComponent, selector: "my-component", ngImport: i0, template: { source: '<ng-container></ng-container>', isInline: true } });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyComponent, [{
         type: Component,
         args: [{ selector: 'my-component', template: '<ng-container></ng-container>' }]
@@ -287,11 +240,7 @@ export class MyComponent {
     }
 }
 MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); };
-MyComponent.ɵcmp = i0.ɵɵdefineComponent({ type: MyComponent, selectors: [["my-component"]], decls: 1, vars: 1, consts: [[3, "id"]], template: function MyComponent_Template(rf, ctx) { if (rf & 1) {
-        i0.ɵɵelement(0, "div", 0);
-    } if (rf & 2) {
-        i0.ɵɵproperty("id", ctx.id);
-    } }, encapsulation: 2 });
+MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: 1, type: MyComponent, selector: "my-component", ngImport: i0, template: { source: '<div [id]="id"></div>', isInline: true } });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyComponent, [{
         type: Component,
         args: [{ selector: 'my-component', template: '<div [id]="id"></div>' }]
@@ -325,20 +274,18 @@ export declare class MyModule {
  ****************************************************************************************************/
 import { Component, NgModule } from '@angular/core';
 import * as i0 from "@angular/core";
-const _c0 = function (a0) { return [a0]; };
-const _c1 = function () { return [0]; };
 export class MyComponent {
     constructor() {
         this.id = 'one';
     }
 }
 MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); };
-MyComponent.ɵcmp = i0.ɵɵdefineComponent({ type: MyComponent, selectors: [["my-component"]], decls: 2, vars: 15, consts: [[3, "ternary", "pipe", "and", "or"]], template: function MyComponent_Template(rf, ctx) { if (rf & 1) {
-        i0.ɵɵelement(0, "div", 0);
-        i0.ɵɵpipe(1, "pipe");
-    } if (rf & 2) {
-        i0.ɵɵproperty("ternary", ctx.cond ? i0.ɵɵpureFunction1(8, _c0, ctx.a) : i0.ɵɵpureFunction0(10, _c1))("pipe", i0.ɵɵpipeBind3(1, 4, ctx.value, 1, 2))("and", ctx.cond && i0.ɵɵpureFunction1(11, _c0, ctx.b))("or", ctx.cond || i0.ɵɵpureFunction1(13, _c0, ctx.c));
-    } }, encapsulation: 2 });
+MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: 1, type: MyComponent, selector: "my-component", ngImport: i0, template: { source: `<div
+    [ternary]="cond ? [a] : [0]"
+    [pipe]="value | pipe:1:2"
+    [and]="cond && [b]"
+    [or]="cond || [c]"
+  ></div>`, isInline: true } });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyComponent, [{
         type: Component,
         args: [{
@@ -380,20 +327,13 @@ export declare class MyModule {
  ****************************************************************************************************/
 import { Component, Input, NgModule } from '@angular/core';
 import * as i0 from "@angular/core";
-const _c0 = function (a0, a1) { return { collapsedHeight: a0, expandedHeight: a1 }; };
-const _c1 = function (a0, a1) { return { value: a0, params: a1 }; };
-const _c2 = function (a0, a1) { return { collapsedWidth: a0, expandedWidth: a1 }; };
 export class MyComponent {
     getExpandedState() {
         return 'expanded';
     }
 }
 MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); };
-MyComponent.ɵcmp = i0.ɵɵdefineComponent({ type: MyComponent, selectors: [["my-component"]], hostVars: 14, hostBindings: function MyComponent_HostBindings(rf, ctx) { if (rf & 2) {
-        i0.ɵɵsyntheticHostProperty("@expansionHeight", i0.ɵɵpureFunction2(5, _c1, ctx.getExpandedState(), i0.ɵɵpureFunction2(2, _c0, ctx.collapsedHeight, ctx.expandedHeight)))("@expansionWidth", i0.ɵɵpureFunction2(11, _c1, ctx.getExpandedState(), i0.ɵɵpureFunction2(8, _c2, ctx.collapsedWidth, ctx.expandedWidth)));
-    } }, inputs: { expandedHeight: "expandedHeight", collapsedHeight: "collapsedHeight", expandedWidth: "expandedWidth", collapsedWidth: "collapsedWidth" }, decls: 1, vars: 0, template: function MyComponent_Template(rf, ctx) { if (rf & 1) {
-        i0.ɵɵtext(0, "...");
-    } }, encapsulation: 2 });
+MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: 1, type: MyComponent, selector: "my-component", inputs: { expandedHeight: "expandedHeight", collapsedHeight: "collapsedHeight", expandedWidth: "expandedWidth", collapsedWidth: "collapsedWidth" }, host: { properties: { "@expansionHeight": "{\n        value: getExpandedState(),\n        params: {\n          collapsedHeight: collapsedHeight,\n          expandedHeight: expandedHeight\n        }\n    }", "@expansionWidth": "{\n      value: getExpandedState(),\n      params: {\n        collapsedWidth: collapsedWidth,\n        expandedWidth: expandedWidth\n      }\n    }" } }, ngImport: i0, template: { source: '...', isInline: true } });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyComponent, [{
         type: Component,
         args: [{
@@ -465,12 +405,7 @@ export class MyComponent {
     }
 }
 MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); };
-MyComponent.ɵcmp = i0.ɵɵdefineComponent({ type: MyComponent, selectors: [["my-component"]], decls: 1, vars: 4, template: function MyComponent_Template(rf, ctx) { if (rf & 1) {
-        i0.ɵɵelement(0, "div");
-    } if (rf & 2) {
-        i0.ɵɵstyleProp("background-color", ctx.color);
-        i0.ɵɵclassProp("error", ctx.error);
-    } }, encapsulation: 2 });
+MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: 1, type: MyComponent, selector: "my-component", ngImport: i0, template: { source: '<div [class.error]="error" [style.background-color]="color"></div>', isInline: true } });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyComponent, [{
         type: Component,
         args: [{
@@ -511,10 +446,10 @@ import * as i0 from "@angular/core";
 export class MyComponent {
 }
 MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); };
-MyComponent.ɵcmp = i0.ɵɵdefineComponent({ type: MyComponent, selectors: [["my-component"]], decls: 2, vars: 0, consts: [["title", "hi"]], template: function MyComponent_Template(rf, ctx) { if (rf & 1) {
-        i0.ɵɵelement(0, "div", 0);
-        i0.ɵɵelement(1, "span", 0);
-    } }, encapsulation: 2 });
+MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: 1, type: MyComponent, selector: "my-component", ngImport: i0, template: { source: `
+    <div title="hi"></div>
+    <span title="hi"></span>
+  `, isInline: true } });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyComponent, [{
         type: Component,
         args: [{

@@ -18,7 +18,7 @@ export const NO_STATEMENTS: Readonly<any[]> = [] as const;
  * This class is responsible for linking all the partial declarations found in a single file.
  */
 export class FileLinker<TConstantScope, TStatement, TExpression> {
-  private linkerSelector = new PartialLinkerSelector<TExpression>();
+  private linkerSelector = new PartialLinkerSelector<TExpression>(this.linkerEnvironment.options);
   private emitScopes = new Map<TConstantScope, EmitScope<TStatement, TExpression>>();
 
   constructor(

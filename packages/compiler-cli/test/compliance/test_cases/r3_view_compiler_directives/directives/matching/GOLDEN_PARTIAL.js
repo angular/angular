@@ -14,9 +14,7 @@ I18nDirective.ɵdir = i0.ɵɵngDeclareDirective({ version: 1, type: I18nDirectiv
 export class MyComponent {
 }
 MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); };
-MyComponent.ɵcmp = i0.ɵɵdefineComponent({ type: MyComponent, selectors: [["my-component"]], decls: 1, vars: 0, template: function MyComponent_Template(rf, ctx) { if (rf & 1) {
-        i0.ɵɵelement(0, "div");
-    } }, encapsulation: 2 });
+MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: 1, type: MyComponent, selector: "my-component", ngImport: i0, template: { source: '<div i18n></div>', isInline: true } });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyComponent, [{
         type: Component,
         args: [{ selector: 'my-component', template: '<div i18n></div>' }]
