@@ -29,8 +29,9 @@ const linkedCompile: CompileFn = (data, angularFiles, options) => {
   const compiledFiles = compileFiles(data, angularFiles, {...options, compilationMode: 'partial'});
 
   const linkerPlugin = createEs2015LinkerPlugin({
-    enableI18nLegacyMessageIdFormat: options?.enableI18nLegacyMessageIdFormat,
-    i18nNormalizeLineEndingsInICUs: options?.i18nNormalizeLineEndingsInICUs,
+    // enableI18nLegacyMessageIdFormat defaults to false in `compileFiles`.
+    enableI18nLegacyMessageIdFormat: false,
+    ...options,
   });
 
   const source = compiledFiles.map(file => applyLinker(file, linkerPlugin)).join('\n');
