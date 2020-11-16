@@ -1211,7 +1211,7 @@ The `name` string cannot use hyphens ("dash-case" or "kebab-case").
 
 
 
-**Why?** Provides pattern matching for [karma](http://karma-runner.github.io/) or other test runners.
+**Why?** Provides pattern matching for [karma](https://karma-runner.github.io/) or other test runners.
 
 
 </div>
@@ -3926,9 +3926,9 @@ Useful tools and tips for Angular.
 
 **Consider** using [snippets](https://atom.io/packages/angular-2-typescript-snippets) for [Atom](https://atom.io/) that follow these styles and guidelines.
 
-**Consider** using [snippets](https://github.com/orizens/sublime-angular2-snippets) for [Sublime Text](http://www.sublimetext.com/) that follow these styles and guidelines.
+**Consider** using [snippets](https://github.com/orizens/sublime-angular2-snippets) for [Sublime Text](https://www.sublimetext.com/) that follow these styles and guidelines.
 
-**Consider** using [snippets](https://github.com/mhartington/vim-angular2-snippets) for [Vim](http://www.vim.org/) that follow these styles and guidelines.
+**Consider** using [snippets](https://github.com/mhartington/vim-angular2-snippets) for [Vim](https://www.vim.org/) that follow these styles and guidelines.
 
 
 </div>

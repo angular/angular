@@ -58,7 +58,7 @@ For details, please refer the [changelog](./CHANGELOG.md) and the [PR](https://g
 ## What's a Zone?
 
 A Zone is an execution context that persists across async tasks.
-You can think of it as [thread-local storage](http://en.wikipedia.org/wiki/Thread-local_storage) for JavaScript VMs.
+You can think of it as [thread-local storage](https://en.wikipedia.org/wiki/Thread-local_storage) for JavaScript VMs.
 
 See this video from ng-conf 2014 for a detailed explanation:
 
@@ -66,7 +66,7 @@ See this video from ng-conf 2014 for a detailed explanation:
 
 ## See also
 * [async-listener](https://github.com/othiym23/async-listener) - a similar library for node
-* [Async stack traces in Chrome](http://www.html5rocks.com/en/tutorials/developertools/async-call-stack/)
+* [Async stack traces in Chrome](https://www.html5rocks.com/en/tutorials/developertools/async-call-stack/)
 * [strongloop/zone](https://github.com/strongloop/zone) (Deprecated)
 * [vizone](https://github.com/gilbox/vizone) - control flow visualizer that uses zone.js
 

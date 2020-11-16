@@ -17,7 +17,7 @@ import {addErrorsToBundle, addParseDiagnostic, addParseError, canParseXml, getAt
 /**
  * A translation parser that can load translations from XLIFF 2 files.
  *
- * http://docs.oasis-open.org/xliff/xliff-core/v2.0/os/xliff-core-v2.0-os.html
+ * https://docs.oasis-open.org/xliff/xliff-core/v2.0/os/xliff-core-v2.0-os.html
  *
  * @see Xliff2TranslationSerializer
  * @publicApi used by CLI

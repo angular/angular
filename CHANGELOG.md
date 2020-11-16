@@ -5313,7 +5313,7 @@ Note: 4.1.0-beta.0 release also contains all the changes present in the 4.0.1 re
 
 ### BREAKING CHANGES
 
-From 4.0.0 @angular/core uses a [`WeakMap`](https://github.com/angular/angular/commit/52b21275f4c2c26c46627f5648b41a33bb5c8283), a polyfill needs to be included for [browsers that do not support it natively](http://kangax.github.io/compat-table/es6/#test-WeakMap).
+From 4.0.0 @angular/core uses a [`WeakMap`](https://github.com/angular/angular/commit/52b21275f4c2c26c46627f5648b41a33bb5c8283), a polyfill needs to be included for [browsers that do not support it natively](https://kangax.github.io/compat-table/es6/#test-WeakMap).
 
 <a name="4.0.0-rc.6"></a>
 # [4.0.0-rc.6](https://github.com/angular/angular/compare/4.0.0-rc.5...4.0.0-rc.6) (2017-03-23)

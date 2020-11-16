@@ -67,7 +67,7 @@ class StackblitzBuilder {
   _buildCopyrightStrings() {
     const copyright = 'Copyright Google LLC. All Rights Reserved.\n' +
         'Use of this source code is governed by an MIT-style license that\n' +
-        'can be found in the LICENSE file at http://angular.io/license';
+        'can be found in the LICENSE file at https://angular.io/license';
     const pad = '\n\n';
 
     return {

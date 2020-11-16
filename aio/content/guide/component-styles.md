@@ -242,7 +242,7 @@ See the [CLI wiki](https://github.com/angular/angular-cli/wiki/stories-global-st
 ### Non-CSS style files
 
 If you're building with the CLI,
-you can write style files in [sass](http://sass-lang.com/), [less](http://lesscss.org/), or [stylus](http://stylus-lang.com/) and specify those files in the `@Component.styleUrls` metadata with the appropriate extensions (`.scss`, `.less`, `.styl`) as in the following example:
+you can write style files in [sass](https://sass-lang.com/), [less](http://lesscss.org/), or [stylus](https://stylus-lang.com/) and specify those files in the `@Component.styleUrls` metadata with the appropriate extensions (`.scss`, `.less`, `.styl`) as in the following example:
 
 <code-example>
 @Component({

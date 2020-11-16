@@ -54,7 +54,7 @@ export class HtmlTagDefinition implements TagDefinition {
 
 let _DEFAULT_TAG_DEFINITION!: HtmlTagDefinition;
 
-// see http://www.w3.org/TR/html51/syntax.html#optional-tags
+// see https://www.w3.org/TR/html51/syntax.html#optional-tags
 // This implementation does not fully conform to the HTML5 spec.
 let TAG_DEFINITIONS!: {[key: string]: HtmlTagDefinition};
 

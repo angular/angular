@@ -1,7 +1,7 @@
 // This file is used for internal testing with Karma only, it should not be used in real applications.
 
 // function.name (all IE)
-/*! @source http://stackoverflow.com/questions/6903762/function-name-not-supported-in-ie*/
+/*! @source https://stackoverflow.com/questions/6903762/function-name-not-supported-in-ie*/
 if (!Object.hasOwnProperty('name')) {
   Object.defineProperty(Function.prototype, 'name', {
     get: function() {

@@ -20,7 +20,7 @@ const DOM_KEY_LOCATION_NUMPAD = 3;
 // Map to convert some key or keyIdentifier values to what will be returned by getEventKey
 const _keyMap: {[k: string]: string} = {
   // The following values are here for cross-browser compatibility and to match the W3C standard
-  // cf http://www.w3.org/TR/DOM-Level-3-Events-key/
+  // cf https://www.w3.org/TR/DOM-Level-3-Events-key/
   '\b': 'Backspace',
   '\t': 'Tab',
   '\x7F': 'Delete',
@@ -199,7 +199,7 @@ function getEventKey(event: any): string {
     key = event.keyIdentifier;
     // keyIdentifier is defined in the old draft of DOM Level 3 Events implemented by Chrome and
     // Safari cf
-    // http://www.w3.org/TR/2007/WD-DOM-Level-3-Events-20071221/events.html#Events-KeyboardEvents-Interfaces
+    // https://www.w3.org/TR/2007/WD-DOM-Level-3-Events-20071221/events.html#Events-KeyboardEvents-Interfaces
     if (key == null) {
       return 'Unidentified';
     }

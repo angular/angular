@@ -114,7 +114,7 @@ For integration tests we use the puppeteer provisioned version of Chrome. For bo
 
 The sandbox needs to be disabled with the `--no-sandbox` flag for both Karma and Protractor tests, because it causes Chrome to crash on some environments.
 
-See: http://chromedriver.chromium.org/help/chrome-doesn-t-start
+See: https://chromedriver.chromium.org/help/chrome-doesn-t-start
 See: https://github.com/puppeteer/puppeteer/blob/v1.0.0/docs/troubleshooting.md#chrome-headless-fails-due-to-sandbox-issues
 
 ### Headless: --headless

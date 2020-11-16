@@ -30,7 +30,7 @@
     "name": "Pete Bacon Darwin",
     "picture": "pete.jpg",
     "twitter": "petebd",
-    "website": "http://www.bacondarwin.com",
+    "website": "https://www.bacondarwin.com/",
     "bio": "AngularJS for JS Team Lead. Pete has been working on the core team since 2012 and became the team lead for the AngularJS for JS branch in November 2014. He has co-authored a book on AngularJS and regularly talks about and teaches Angular.",
     "groups": ["Angular"],
     "lead": "igorminar"
@@ -125,7 +125,7 @@
     "name": "Filipe Silva",
     "picture": "filipe-silva.jpg",
     "twitter": "filipematossilv",
-    "website": "http://github.com/filipesilva",
+    "website": "https://github.com/filipesilva",
     "bio": "Filipe is a passion-driven developer that always strives for the most elegant solution for each problem. He is currently an author for Angular.io, a core contributor for Angular-CLI and senior front end engineer at KonnectAgain. When not busy going through PRs, you can find him scouring reddit for new dinner recipes to cook or enjoying a craft beer in Dublin.",
     "groups": ["Angular"],
     "lead": "alexeagle"
@@ -133,7 +133,7 @@
   "andrewseguin": {
     "name": "Andrew Seguin",
     "picture": "andrewseguin.jpg",
-    "website": "http://github.com/andrewseguin",
+    "website": "https://github.com/andrewseguin",
     "bio": "Andrew is an engineer on the Angular Material team working on bringing material components to the world. When he’s not obsessing over pixels and design, he is probably off somewhere having adventures with his wife and daughters.",
     "groups": ["Angular"],
     "lead": "jelbourn"
@@ -181,7 +181,7 @@
     "name": "Deborah Kurata",
     "picture": "deborah.jpg",
     "twitter": "deborahkurata",
-    "website": "http://blogs.msmvps.com/deborahk/",
+    "website": "https://blogs.msmvps.com/deborahk/",
     "bio": "Deborah is a software developer, author, and Google Developer Expert. She is author of several Pluralsight courses including: 'Angular 2: Getting Started' and ‘Angular Routing’",
     "groups": ["GDE"]
   },
@@ -279,7 +279,7 @@
     "name": "Minko Gechev",
     "picture": "minko.jpg",
     "twitter": "mgechev",
-    "website": "http://blog.mgechev.com",
+    "website": "https://blog.mgechev.com/",
     "bio": "Software engineer who enjoys theoretical computer science and its practical applications. Speaker, author of the book 'Switching to Angular', codelyzer, Guess.js, and the Go linter revive. Working for faster and more reliable software.",
     "groups": ["Angular"],
     "lead": "stephenfluin"
@@ -381,7 +381,7 @@
     "name": "Thierry Chatel",
     "picture": "thierrychatel.jpg",
     "twitter": "ThierryChatel",
-    "website": "http://www.methotic.com",
+    "website": "https://www.methotic.com/",
     "bio": "Thierry is a senior consultant and trainer, specialized on Angular, and a Google Developer Expert.",
     "groups": ["GDE"]
   },
@@ -405,7 +405,7 @@
     "name": "Alain Chautard",
     "picture": "alainchautard.png",
     "twitter": "AlainChautard",
-    "website": "http://www.angulartraining.com",
+    "website": "https://www.angulartraining.com/",
     "bio": "Alain Chautard is a Google Developer Expert in Web Technologies / Angular. He started working with Angular JS in 2011. Since then he has worked with all Angular versions on a daily basis, both as a developer and as a technical trainer. He is the organizer of the Sacramento Angular Meetup group, co-organizer of the Google Developer Group chapter in Sacramento, California, and published author of the Packt video course 'Getting Started with Angular'",
     "groups": ["GDE"]
   },
@@ -437,7 +437,7 @@
     "name": "Mashhood Rastgar",
     "picture": "mashhood.jpg",
     "twitter": "mashhoodr",
-    "website": "http://imars.info/",
+    "website": "https://imars.info/",
     "bio": "Mashhood is the principal technical consultant at Recurship and a Google Developer Expert. He  works with different startups in US and EU to helps them crawl through the technical maze and quickly build amazing products focused around the problems they are trying to solve. He specializes in using the latest web technologies available to execute the best possible solutions.",
     "groups": ["GDE"]
   },
@@ -532,7 +532,7 @@
     "name": "Sam Julien",
     "picture": "samjulien.jpg",
     "twitter": "samjulien",
-    "website": "http://www.samjulien.com/",
+    "website": "https://www.samjulien.com/",
     "bio": "Sam Julien builds software, articles, video courses, and campfires. A developer, speaker, writer, and GDE in the Pacific Northwest, Sam's favorite thing in the world is changing someone's life by teaching them to code.",
     "groups": ["Collaborators", "GDE"],
     "mentor": "gkalpak"
@@ -542,8 +542,8 @@
     "picture": "tracylee.jpg",
     "groups": ["GDE"],
     "twitter": "ladyleet",
-    "website": "https://www.thisdot.co/labs",
-    "bio": "Tracy is the Co-Founder of This Dot Labs, a consultancy focused on helping companies with digital transformations. She is also a Google Developer Expert, RxJS Core Team member, a Women Techmakers Lead, and a frequent keynote speaker at conferences. She heads up Community Relations for Node.js at OpenJS Foundation, is the host of the Modern Web podcast, organizer of This.JavaScript, Contributor Days, Google Developer Group Silicon Valley and Triangle, and RxWorkshop. You can find her on Twitter @ladyleet or at http://thisdot.co/labs."
+    "website": "https://labs.thisdot.co/",
+    "bio": "Tracy is the Co-Founder of This Dot Labs, a consultancy focused on helping companies with digital transformations. She is also a Google Developer Expert, RxJS Core Team member, a Women Techmakers Lead, and a frequent keynote speaker at conferences. She heads up Community Relations for Node.js at OpenJS Foundation, is the host of the Modern Web podcast, organizer of This.JavaScript, Contributor Days, Google Developer Group Silicon Valley and Triangle, and RxWorkshop. You can find her on Twitter @ladyleet or at https://labs.thisdot.co/."
   },
   "jiali": {
     "name": "Jia Li",
@@ -801,7 +801,7 @@
     "name": "Emma Twersky",
     "picture": "twerske.jpg",
     "twitter": "twerske",
-    "website": "http://twerske.github.io",
+    "website": "https://twerske.github.io/",
     "bio": "Emma is a Developer Advocate at Google. She is passionate about good user experiences and design.",
     "groups": ["Angular"],
     "lead": "mgechev"
@@ -859,7 +859,7 @@
     "name": "Carlos Caballero",
     "picture": "carloscaballero.jpg",
     "twitter": "Carlillo",
-    "website": "http://carloscaballero.io",
+    "website": "https://carloscaballero.io/",
     "bio": "Carlos Caballero is a computer science engineer and a PhD in Computer Science from the University of Málaga. He earned his masters in Software Engineering and Artificial Intelligence. He is a full-time teacher in vocational training. He has written several teaching books and more than a dozen research articles in the first international journals.",
     "groups": ["GDE"]
   }

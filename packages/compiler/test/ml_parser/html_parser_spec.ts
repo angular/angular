@@ -82,7 +82,7 @@ import {humanizeDom, humanizeDomSourceSpans, humanizeLineColumn, humanizeNodes} 
         });
 
         it('should not error on void elements from HTML5 spec',
-           () => {  // http://www.w3.org/TR/html-markup/syntax.html#syntax-elements without:
+           () => {  // https://html.spec.whatwg.org/multipage/syntax.html#syntax-elements without:
              // <base> - it can be present in head only
              // <meta> - it can be present in head only
              // <command> - obsolete

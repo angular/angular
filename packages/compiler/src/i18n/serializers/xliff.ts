@@ -31,8 +31,8 @@ const _UNIT_TAG = 'trans-unit';
 const _CONTEXT_GROUP_TAG = 'context-group';
 const _CONTEXT_TAG = 'context';
 
-// http://docs.oasis-open.org/xliff/v1.2/os/xliff-core.html
-// http://docs.oasis-open.org/xliff/v1.2/xliff-profile-html/xliff-profile-html-1.2.html
+// https://docs.oasis-open.org/xliff/v1.2/os/xliff-core.html
+// https://docs.oasis-open.org/xliff/v1.2/xliff-profile-html/xliff-profile-html-1.2.html
 export class Xliff extends Serializer {
   write(messages: i18n.Message[], locale: string|null): string {
     const visitor = new _WriteVisitor();
