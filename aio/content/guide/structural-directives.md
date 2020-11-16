@@ -164,7 +164,7 @@ You can [only apply one](guide/structural-directives#one-per-element) _structura
 
 
 {@a ngIf}
-
+{@a ngif-case-study}
 
 <!--
 ## NgIf case study
@@ -347,7 +347,7 @@ DOM에는 원래 엘리먼트 대신 변환된 엘리먼트가 적용됩니다.
 
 
 {@a ngFor}
-
+{@a inside-ngfor}
 
 <!--
 ## Inside _*ngFor_
@@ -881,7 +881,7 @@ You'll refer to the `<ng-template>` when you [write your own structural directiv
 
 
 {@a template}
-
+{@a the-ng-template}
 
 <!--
 ## The *&lt;ng-template&gt;*

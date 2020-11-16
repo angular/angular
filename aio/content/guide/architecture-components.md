@@ -351,8 +351,8 @@ Angular가 제공하는 구조 디렉티브를 템플릿에 사용하는 예제 
 
 <code-example path="architecture/src/app/hero-list.component.1.html" header="src/app/hero-list.component.html (구조 디렉티브)" region="structural"></code-example>
 
-* [`*ngFor`](guide/displaying-data#ngFor)는 배열을 순회합니다. 위 예제 코드에서는 `heroes` 배열에 있는 히어로마다 `<li>` 엘리먼트를 생성합니다.
-* [`*ngIf`](guide/displaying-data#ngIf)는 조건을 판단합니다. `HeroDetail` 컴포넌트는 히어로가 선택되었을 때만 표시됩니다.
+* [`*ngFor`](guide/structural-directives#inside-ngfor)는 배열을 순회합니다. 위 예제 코드에서는 `heroes` 배열에 있는 히어로마다 `<li>` 엘리먼트를 생성합니다.
+* [`*ngIf`](guide/structural-directives#ngif-case-study)는 조건을 판단합니다. `HeroDetail` 컴포넌트는 히어로가 선택되었을 때만 표시됩니다.
 
 <!--
 #### Attribute directives

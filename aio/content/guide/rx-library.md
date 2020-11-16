@@ -45,11 +45,11 @@ RxJS offers a number of functions that can be used to create new observables. Th
 -->
 RxJS offers a number of functions that can be used to create new observables. These functions can simplify the process of creating observables from things such as events, timers, promises, and so on. For example:
 
-<code-example path="rx-library/src/simple-creation.1ts" region="promise" header="Promise를 옵저버블로 변환하기"></code-example>
+<code-example path="rx-library/src/simple-creation.1.ts" region="promise" header="Promise를 옵저버블로 변환하기"></code-example>
 
-<code-example path="rx-library/src/simple-creation.2ts" region="interval" header="카운터를 옵저버블로 변환하기"></code-example>
+<code-example path="rx-library/src/simple-creation.2.ts" region="interval" header="카운터를 옵저버블로 변환하기"></code-example>
 
-<code-example path="rx-library/src/simple-creation.3ts" region="event" header="이벤트를 옵저버블로 변환하기"></code-example>
+<code-example path="rx-library/src/simple-creation.3.ts" region="event" header="이벤트를 옵저버블로 변환하기"></code-example>
 
 <code-example path="rx-library/src/simple-creation.ts" region="ajax" header="AJAX 요청을 옵저버블로 변환하기"></code-example>
 

@@ -53,6 +53,8 @@ Angular 이벤트 바인딩 문법은 소괄호(`(`, `)`) 안에 **대상이 되
 </div>
 
 
+{@a custom-events-with-eventemitter}
+
 <!--
 ## Custom events with `EventEmitter`
 -->

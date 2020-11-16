@@ -665,6 +665,8 @@ Understanding the idea of the `<#VIEW>` demarcation is especially significant wh
 컴포넌트 클래스에 등록되는 서비스 프로바이더가 어떤 범위까지 유효한지 `<#VIEW>`가 위치하는 곳을 기준으로 생각해 보세요.
 
 
+{@a providing-services-in-component}
+
 <!--
 ## Providing services in `@Component()`
 -->
@@ -1324,6 +1326,7 @@ if it is also within the `<#VIEW>`.
 
 
 {@a modify-visibility}
+{@a modifying-service-visibility}
 
 <!--
 ## Modifying service visibility
