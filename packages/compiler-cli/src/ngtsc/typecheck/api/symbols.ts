@@ -155,8 +155,24 @@ export interface ReferenceSymbol {
    */
   declaration: TmplAstReference;
 
-  /** The location in the shim file of a variable that holds the type of the local ref. */
-  shimLocation: ShimLocation;
+  /**
+   * The location in the shim file of a variable that holds the type of the local ref.
+   * For example, a reference declaration like the following:
+   * ```
+   * var _t1 = document.createElement('div');
+   * var _t2 = _t1; // This is the reference declaration
+   * ```
+   * This `targetLocation` is `[_t1 variable declaration].getStart()`.
+   */
+  targetLocation: ShimLocation;
+
+  /**
+   * The location in the TCB for the identifier node in the reference variable declaration.
+   * For example, given a variable declaration statement for a template reference:
+   * `var _t2 = _t1`, this location is `[_t2 node].getStart()`. This location can
+   * be used to find references to the variable within the template.
+   */
+  referenceVarLocation: ShimLocation;
 }
 
 /**
@@ -185,8 +201,16 @@ export interface VariableSymbol {
    */
   declaration: TmplAstVariable;
 
-  /** The location in the shim file of a variable that holds the type of the template variable. */
-  shimLocation: ShimLocation;
+  /**
+   * The location in the shim file for the identifier that was declared for the template variable.
+   */
+  localVarLocation: ShimLocation;
+
+  /**
+   * The location in the shim file for the initializer node of the variable that represents the
+   * template variable.
+   */
+  initializerLocation: ShimLocation;
 }
 
 /**

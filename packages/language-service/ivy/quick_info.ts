@@ -80,14 +80,14 @@ export class QuickInfoBuilder {
   }
 
   private getQuickInfoForVariableSymbol(symbol: VariableSymbol): ts.QuickInfo {
-    const documentation = this.getDocumentationFromTypeDefAtLocation(symbol.shimLocation);
+    const documentation = this.getDocumentationFromTypeDefAtLocation(symbol.initializerLocation);
     return createQuickInfo(
         symbol.declaration.name, DisplayInfoKind.VARIABLE, getTextSpanOfNode(this.node),
         undefined /* containerName */, this.typeChecker.typeToString(symbol.tsType), documentation);
   }
 
   private getQuickInfoForReferenceSymbol(symbol: ReferenceSymbol): ts.QuickInfo {
-    const documentation = this.getDocumentationFromTypeDefAtLocation(symbol.shimLocation);
+    const documentation = this.getDocumentationFromTypeDefAtLocation(symbol.targetLocation);
     return createQuickInfo(
         symbol.declaration.name, DisplayInfoKind.REFERENCE, getTextSpanOfNode(this.node),
         undefined /* containerName */, this.typeChecker.typeToString(symbol.tsType), documentation);
