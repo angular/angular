@@ -20,7 +20,8 @@ import {DomSchemaChecker, RegistryDomSchemaChecker} from './dom';
 import {Environment} from './environment';
 import {OutOfBandDiagnosticRecorder, OutOfBandDiagnosticRecorderImpl} from './oob';
 import {TemplateSourceManager} from './source';
-import {generateTypeCheckBlock, requiresInlineTypeCheckBlock} from './type_check_block';
+import {requiresInlineTypeCheckBlock} from './tcb_util';
+import {generateTypeCheckBlock} from './type_check_block';
 import {TypeCheckFile} from './type_check_file';
 import {generateInlineTypeCtor, requiresInlineTypeCtor} from './type_constructor';
 

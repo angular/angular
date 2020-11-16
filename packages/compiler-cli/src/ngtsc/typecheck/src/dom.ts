@@ -13,7 +13,7 @@ import {ErrorCode, ngErrorCode} from '../../diagnostics';
 import {TemplateId} from '../api';
 import {makeTemplateDiagnostic, TemplateDiagnostic} from '../diagnostics';
 
-import {TemplateSourceResolver} from './diagnostics';
+import {TemplateSourceResolver} from './tcb_util';
 
 const REGISTRY = new DomElementSchemaRegistry();
 const REMOVE_XHTML_REGEX = /^:xhtml:/;

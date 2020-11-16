@@ -12,8 +12,8 @@ import * as ts from 'typescript';
 import {TemplateId, TemplateSourceMapping} from '../api';
 import {getTemplateId} from '../diagnostics';
 
-import {TemplateSourceResolver} from './diagnostics';
 import {computeLineStartsMap, getLineAndCharacterFromPosition} from './line_mappings';
+import {TemplateSourceResolver} from './tcb_util';
 
 /**
  * Represents the source of a template that was processed during type-checking. This information is

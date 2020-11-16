@@ -21,7 +21,7 @@ import {Environment} from './environment';
 import {astToTypescript, NULL_AS_ANY} from './expression';
 import {OutOfBandDiagnosticRecorder} from './oob';
 import {ExpressionSemanticVisitor} from './template_semantics';
-import {checkIfClassIsExported, checkIfGenericTypesAreUnbound, tsCallMethod, tsCastToAny, tsCreateElement, tsCreateTypeQueryForCoercedInput, tsCreateVariable, tsDeclareVariable} from './ts_util';
+import {tsCallMethod, tsCastToAny, tsCreateElement, tsCreateTypeQueryForCoercedInput, tsCreateVariable, tsDeclareVariable} from './ts_util';
 
 /**
  * Given a `ts.ClassDeclaration` for a component, and metadata regarding that component, compose a
@@ -1865,20 +1865,5 @@ class TcbEventHandlerTranslator extends TcbExpressionTranslator {
     }
 
     return super.resolve(ast);
-  }
-}
-
-export function requiresInlineTypeCheckBlock(node: ClassDeclaration<ts.ClassDeclaration>): boolean {
-  // In order to qualify for a declared TCB (not inline) two conditions must be met:
-  // 1) the class must be exported
-  // 2) it must not have constrained generic types
-  if (!checkIfClassIsExported(node)) {
-    // Condition 1 is false, the class is not exported.
-    return true;
-  } else if (!checkIfGenericTypesAreUnbound(node)) {
-    // Condition 2 is false, the class has constrained generic types
-    return true;
-  } else {
-    return false;
   }
 }

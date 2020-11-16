@@ -14,7 +14,7 @@ import {ClassDeclaration} from '../../reflection';
 import {TemplateId} from '../api';
 import {makeTemplateDiagnostic, TemplateDiagnostic} from '../diagnostics';
 
-import {TemplateSourceResolver} from './diagnostics';
+import {TemplateSourceResolver} from './tcb_util';
 
 
 
