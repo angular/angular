@@ -8,11 +8,12 @@
 
 import {CommonModule, Location} from '@angular/common';
 import {SpyLocation} from '@angular/common/testing';
-import {ChangeDetectionStrategy, Component, Injectable, NgModule, NgModuleFactoryLoader, NgModuleRef, NgZone, OnDestroy, ɵConsole as Console, ɵNoopNgZone as NoopNgZone} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Injectable, NgModule, NgModuleFactoryLoader, NgModuleRef, NgZone, OnDestroy, ViewChild, ɵConsole as Console, ɵNoopNgZone as NoopNgZone} from '@angular/core';
 import {ComponentFixture, fakeAsync, inject, TestBed, tick} from '@angular/core/testing';
+import {describe} from '@angular/core/testing/src/testing_internal';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
-import {ActivatedRoute, ActivatedRouteSnapshot, ActivationEnd, ActivationStart, CanActivate, CanDeactivate, ChildActivationEnd, ChildActivationStart, DefaultUrlSerializer, DetachedRouteHandle, Event, GuardsCheckEnd, GuardsCheckStart, Navigation, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, ParamMap, Params, PreloadAllModules, PreloadingStrategy, PRIMARY_OUTLET, Resolve, ResolveEnd, ResolveStart, RouteConfigLoadEnd, RouteConfigLoadStart, Router, RouteReuseStrategy, RouterEvent, RouterModule, RouterPreloader, RouterStateSnapshot, RoutesRecognized, RunGuardsAndResolvers, UrlHandlingStrategy, UrlSegmentGroup, UrlSerializer, UrlTree} from '@angular/router';
+import {ActivatedRoute, ActivatedRouteSnapshot, ActivationEnd, ActivationStart, CanActivate, CanDeactivate, ChildActivationEnd, ChildActivationStart, DefaultUrlSerializer, DetachedRouteHandle, Event, GuardsCheckEnd, GuardsCheckStart, Navigation, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, ParamMap, Params, PreloadAllModules, PreloadingStrategy, PRIMARY_OUTLET, Resolve, ResolveEnd, ResolveStart, RouteConfigLoadEnd, RouteConfigLoadStart, Router, RouteReuseStrategy, RouterEvent, RouterLink, RouterLinkWithHref, RouterModule, RouterPreloader, RouterStateSnapshot, RoutesRecognized, RunGuardsAndResolvers, UrlHandlingStrategy, UrlSegmentGroup, UrlSerializer, UrlTree} from '@angular/router';
 import {EMPTY, Observable, Observer, of, Subscription} from 'rxjs';
 import {delay, filter, first, map, mapTo, tap} from 'rxjs/operators';
 
@@ -5381,6 +5382,53 @@ describe('Integration', () => {
            ]);
          })));
     });
+
+    it('can use `relativeTo` `route.parent` in `routerLink` to close secondary outlet',
+       fakeAsync(() => {
+         // Given
+         @Component({template: '<router-outlet name="secondary"></router-outlet>'})
+         class ChildRootCmp {
+         }
+
+         @Component({
+           selector: 'link-cmp',
+           template:
+               `<a [relativeTo]="route.parent" [routerLink]="[{outlets: {'secondary': null}}]">link</a>
+           <button [relativeTo]="route.parent" [routerLink]="[{outlets: {'secondary': null}}]">link</button>
+           `
+         })
+         class RelativeLinkCmp {
+           @ViewChild(RouterLink) buttonLink!: RouterLink;
+           @ViewChild(RouterLinkWithHref) aLink!: RouterLink;
+
+           constructor(readonly route: ActivatedRoute) {}
+         }
+         @NgModule({
+           declarations: [RelativeLinkCmp, ChildRootCmp],
+           imports: [RouterModule.forChild([{
+             path: 'childRoot',
+             component: ChildRootCmp,
+             children: [
+               {path: 'popup', outlet: 'secondary', component: RelativeLinkCmp},
+             ]
+           }])]
+         })
+         class LazyLoadedModule {
+         }
+         const router = TestBed.inject(Router);
+         router.resetConfig([{path: 'root', loadChildren: () => LazyLoadedModule}]);
+
+         // When
+         router.navigateByUrl('/root/childRoot/(secondary:popup)');
+         const fixture = createRoot(router, RootCmp);
+         advance(fixture);
+
+         // Then
+         const relativeLinkCmp =
+             fixture.debugElement.query(By.directive(RelativeLinkCmp)).componentInstance;
+         expect(relativeLinkCmp.aLink.urlTree.toString()).toEqual('/root/childRoot');
+         expect(relativeLinkCmp.buttonLink.urlTree.toString()).toEqual('/root/childRoot');
+       }));
 
     describe('relativeLinkResolution', () => {
       @Component({selector: 'link-cmp', template: `<a [routerLink]="['../simple']">link</a>`})
