@@ -427,6 +427,36 @@ runInEachFileSystem((os) => {
           });
         });
 
+        it('should correctly handle collapsed whitespace in placeholder source-mappings', () => {
+          const mappings = compileAndMap(
+              `<div i18n title="  pre-title {{title_value}}  post-title" i18n-title>  pre-body {{body_value}}  post-body</div>`);
+          expectMapping(mappings, {
+            source: '<div i18n title="  pre-title {{title_value}}  post-title" i18n-title>  ',
+            generated: 'i0.ɵɵelementStart(0, "div", 0)',
+            sourceUrl: '../test.ts',
+          });
+          expectMapping(mappings, {
+            source: '</div>',
+            generated: 'i0.ɵɵelementEnd()',
+            sourceUrl: '../test.ts',
+          });
+          expectMapping(mappings, {
+            source: '  pre-body ',
+            generated: '` pre-body ${',
+            sourceUrl: '../test.ts',
+          });
+          expectMapping(mappings, {
+            source: '{{body_value}}',
+            generated: '"\\uFFFD0\\uFFFD"',
+            sourceUrl: '../test.ts',
+          });
+          expectMapping(mappings, {
+            source: '  post-body',
+            generated: '}:INTERPOLATION: post-body`',
+            sourceUrl: '../test.ts',
+          });
+        });
+
         it('should create tag (container) placeholder source-mappings', () => {
           const mappings = compileAndMap(`<div i18n>Hello, <b>World</b>!</div>`);
           expectMapping(mappings, {
