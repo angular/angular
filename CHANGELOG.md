@@ -145,7 +145,7 @@ the TypeScript compiler might complain. A v11 migration exists which adds the no
 operator where necessary. In an unlikely case your code was testing the parent against `undefined` with strict equality,
 you'll need to change this to `=== null` instead, since the parent is now explicitly initialized
 with `null` instead of being left `undefined`.
-* **packaging:** In v10, IE 9, 10, and IE mobile support was deprecated. In v11, Angular framework removes IE 9,
+* **core:** In v10, IE 9, 10, and IE mobile support was deprecated. In v11, Angular framework removes IE 9,
 10, and IE mobile support completely.
 Supporting outdated browsers like these increases bundle size, code complexity, and test load,
 and also requires time and effort that could be spent on improvements to the framework.
