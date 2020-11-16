@@ -2,7 +2,7 @@
 
 const child = require('child_process');
 const semver = require('semver');
-const versionMatcher = /refs\/tags\/(\d+.+$)/mg;
+const versionMatcher = /refs\/tags\/(\d+.+)$/mg;
 
 /**
  * Get a collection of all the previous "last major" versions sorted by semantic version.
@@ -12,12 +12,11 @@ const versionMatcher = /refs\/tags\/(\d+.+$)/mg;
  * @returns an array of SemVer objects
  */
 module.exports = function getPreviousMajorVersions(packageInfo, versionInfo) {
-  return function() {
+  return () => {
     // always use the remote tags as the local clone might not contain all commits when cloned with
     // `git clone --depth=...`
-    const repo_url = packageInfo.repository.url;
-    const tagResults =
-        child.spawnSync('git', ['ls-remote', '--tags', repo_url], {encoding: 'utf8'});
+    const repoUrl = packageInfo.repository.url;
+    const tagResults = child.spawnSync('git', ['ls-remote', '--tags', repoUrl], {encoding: 'utf8'});
 
     if (tagResults.status !== 0) {
       return [];

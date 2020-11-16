@@ -24,7 +24,7 @@ module.exports = function processNavigationMap(versionInfo, getPreviousMajorVers
       }
 
       navigationDoc.data['docVersions'] = getPreviousMajorVersions().map(
-          v => ({title: `v${v.version}`, url: `https://v${v.major}.angular.io/`}));
+          v => ({title: `v${v.major}`, url: `https://v${v.major}.angular.io/`}));
 
       // Add in the version data in a "secret" field to be extracted in the docs app
       navigationDoc.data['__versionInfo'] = versionInfo.currentVersion;

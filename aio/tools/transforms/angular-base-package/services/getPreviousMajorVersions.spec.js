@@ -1,12 +1,13 @@
 const child = require('child_process');
-const semver = require('semver');
 const Dgeni = require('dgeni');
+const semver = require('semver');
+
 const basePackage = require('../index');
 
-describe('getPreviousMajorVersions', function() {
+describe('getPreviousMajorVersions', () => {
   let getPreviousMajorVersions;
 
-  beforeEach(function() {
+  beforeEach(() => {
     const mockPackage = new Dgeni.Package('mock-package', [basePackage])
                             .factory('versionInfo', mockVersionInfo)
                             .factory('packageInfo', mockPackageInfo);
@@ -15,7 +16,7 @@ describe('getPreviousMajorVersions', function() {
     getPreviousMajorVersions = injector.get('getPreviousMajorVersions');
   });
 
-  it('should span a child process to git', function() {
+  it('should spawn a child process to git', () => {
     spyOn(child, 'spawnSync').and.returnValue({status: 0, stdout: ''});
     getPreviousMajorVersions();
     expect(child.spawnSync).toHaveBeenCalledWith('git', ['ls-remote', '--tags', 'SOME_GIT_URL'], {
@@ -23,17 +24,17 @@ describe('getPreviousMajorVersions', function() {
     });
   });
 
-  it('should return an empty list for a failed git command', function() {
+  it('should return an empty list for a failed git command', () => {
     spyOn(child, 'spawnSync').and.returnValue({status: 1});
     expect(getPreviousMajorVersions()).toEqual([]);
   });
 
-  it('should return an empty list for no tags', function() {
-    spyOn(child, 'spawnSync').and.returnValue({});
+  it('should return an empty list for no tags', () => {
+    spyOn(child, 'spawnSync').and.returnValue({status: 0, stdout: ''});
     expect(getPreviousMajorVersions()).toEqual([]);
   });
 
-  it('should return an array of latest major versions with major greater than current', function() {
+  it('should return an array of latest major versions with major greater than current', () => {
     spyOn(child, 'spawnSync').and.returnValue({
       status: 0,
       stdout: `
