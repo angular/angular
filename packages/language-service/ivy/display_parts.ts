@@ -56,7 +56,9 @@ export function getDisplayInfo(
   const displayParts = createDisplayParts(
       symbol.declaration.name, kind, /* containerName */ undefined,
       typeChecker.typeToString(symbol.tsType));
-  const documentation = getDocumentationFromTypeDefAtLocation(tsLS, symbol.shimLocation);
+  const documentation = symbol.kind === SymbolKind.Reference ?
+      getDocumentationFromTypeDefAtLocation(tsLS, symbol.targetLocation) :
+      getDocumentationFromTypeDefAtLocation(tsLS, symbol.initializerLocation);
   return {
     kind,
     displayParts,

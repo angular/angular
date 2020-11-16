@@ -90,7 +90,8 @@ export class DefinitionBuilder {
           });
         }
         if (symbol.kind === SymbolKind.Variable) {
-          definitions.push(...this.getDefinitionsForSymbols(symbol));
+          definitions.push(
+              ...this.getDefinitionsForSymbols({shimLocation: symbol.initializerLocation}));
         }
         return definitions;
       }
@@ -135,9 +136,11 @@ export class DefinitionBuilder {
         return [...bindingDefs, ...directiveDefs];
       }
       case SymbolKind.Reference:
+        return this.getTypeDefinitionsForSymbols({shimLocation: symbol.targetLocation});
       case SymbolKind.Expression:
-      case SymbolKind.Variable:
         return this.getTypeDefinitionsForSymbols(symbol);
+      case SymbolKind.Variable:
+        return this.getTypeDefinitionsForSymbols({shimLocation: symbol.initializerLocation});
     }
   }
 
