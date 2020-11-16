@@ -105,12 +105,13 @@ class _I18nVisitor implements html.Visitor {
   }
 
   visitAttribute(attribute: html.Attribute, context: I18nMessageVisitorContext): i18n.Node {
-    const node = this._visitTextWithInterpolation(attribute.value, attribute.sourceSpan, context);
+    const node = this._visitTextWithInterpolation(
+        attribute.value, attribute.valueSpan || attribute.sourceSpan, context, attribute.i18n);
     return context.visitNodeFn(attribute, node);
   }
 
   visitText(text: html.Text, context: I18nMessageVisitorContext): i18n.Node {
-    const node = this._visitTextWithInterpolation(text.value, text.sourceSpan, context);
+    const node = this._visitTextWithInterpolation(text.value, text.sourceSpan, context, text.i18n);
     return context.visitNodeFn(text, node);
   }
 
@@ -156,7 +157,8 @@ class _I18nVisitor implements html.Visitor {
   }
 
   private _visitTextWithInterpolation(
-      text: string, sourceSpan: ParseSourceSpan, context: I18nMessageVisitorContext): i18n.Node {
+      text: string, sourceSpan: ParseSourceSpan, context: I18nMessageVisitorContext,
+      previousI18n: i18n.I18nMeta|undefined): i18n.Node {
     const splitInterpolation = this._expressionParser.splitInterpolation(
         text, sourceSpan.start.toString(), this._interpolationConfig);
 
@@ -197,7 +199,45 @@ class _I18nVisitor implements html.Visitor {
           getOffsetSourceSpan(sourceSpan, splitInterpolation.stringSpans[lastStringIdx]);
       nodes.push(new i18n.Text(splitInterpolation.strings[lastStringIdx], stringSpan));
     }
+
+    if (previousI18n instanceof i18n.Message) {
+      // The `previousI18n` is an i18n `Message`, so we are processing an `Attribute` with i18n
+      // metadata. The `Message` should consist only of a single `Container` that contains the
+      // parts (`Text` and `Placeholder`) to process.
+      assertSingleContainerMessage(previousI18n);
+      previousI18n = previousI18n.nodes[0];
+    }
+
+    if (previousI18n instanceof i18n.Container) {
+      // The `previousI18n` is a `Container`, which means that this is a second i18n extraction pass
+      // after whitespace has been removed from the AST ndoes.
+      assertEquivalentNodes(previousI18n.children, nodes);
+
+      // Reuse the source-spans from the first pass.
+      for (let i = 0; i < nodes.length; i++) {
+        nodes[i].sourceSpan = previousI18n.children[i].sourceSpan;
+      }
+    }
+
     return container;
+  }
+}
+
+function assertSingleContainerMessage(message: i18n.Message): void {
+  const nodes = message.nodes;
+  if (nodes.length !== 1 || !(nodes[0] instanceof i18n.Container)) {
+    throw new Error(
+        'Unexpected previous i18n message - expected it to consist of only a single `Container` node.');
+  }
+}
+
+function assertEquivalentNodes(previousNodes: i18n.Node[], nodes: i18n.Node[]): void {
+  if (previousNodes.length !== nodes.length) {
+    throw new Error('The number of i18n message children changed between first and second pass.');
+  }
+  if (previousNodes.some((node, i) => nodes[i].constructor !== node.constructor)) {
+    throw new Error(
+        'The types of the i18n message children changed between first and second pass.');
   }
 }
 

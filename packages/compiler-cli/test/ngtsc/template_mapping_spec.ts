@@ -427,6 +427,95 @@ runInEachFileSystem((os) => {
           });
         });
 
+        it('should correctly handle collapsed whitespace in interpolation placeholder source-mappings',
+           () => {
+             const mappings = compileAndMap(
+                 `<div i18n title="  pre-title {{title_value}}  post-title" i18n-title>  pre-body {{body_value}}  post-body</div>`);
+             expectMapping(mappings, {
+               source: '<div i18n title="  pre-title {{title_value}}  post-title" i18n-title>  ',
+               generated: 'i0.ɵɵelementStart(0, "div", 0)',
+               sourceUrl: '../test.ts',
+             });
+             expectMapping(mappings, {
+               source: '</div>',
+               generated: 'i0.ɵɵelementEnd()',
+               sourceUrl: '../test.ts',
+             });
+             expectMapping(mappings, {
+               source: '  pre-body ',
+               generated: '` pre-body ${',
+               sourceUrl: '../test.ts',
+             });
+             expectMapping(mappings, {
+               source: '{{body_value}}',
+               generated: '"\\uFFFD0\\uFFFD"',
+               sourceUrl: '../test.ts',
+             });
+             expectMapping(mappings, {
+               source: '  post-body',
+               generated: '}:INTERPOLATION: post-body`',
+               sourceUrl: '../test.ts',
+             });
+           });
+
+        it('should correctly handle collapsed whitespace in element placeholder source-mappings',
+           () => {
+             const mappings =
+                 compileAndMap(`<div i18n>\n  pre-p\n  <p>\n    in-p\n  </p>\n  post-p\n</div>`);
+             // $localize expressions
+             expectMapping(mappings, {
+               sourceUrl: '../test.ts',
+               source: 'pre-p\n  ',
+               generated: '` pre-p ${',
+             });
+             expectMapping(mappings, {
+               sourceUrl: '../test.ts',
+               source: '<p>\n    ',
+               generated: '"\\uFFFD#2\\uFFFD"',
+             });
+             expectMapping(mappings, {
+               sourceUrl: '../test.ts',
+               source: 'in-p\n  ',
+               generated: '}:START_PARAGRAPH: in-p ${',
+             });
+             expectMapping(mappings, {
+               sourceUrl: '../test.ts',
+               source: '</p>\n  ',
+               generated: '"\\uFFFD/#2\\uFFFD"',
+             });
+             expectMapping(mappings, {
+               sourceUrl: '../test.ts',
+               source: 'post-p\n',
+               generated: '}:CLOSE_PARAGRAPH: post-p\n`',
+             });
+             // ivy instructions
+             expectMapping(mappings, {
+               sourceUrl: '../test.ts',
+               source: '<div i18n>\n  ',
+               generated: 'i0.ɵɵelementStart(0, "div")',
+             });
+             expectMapping(mappings, {
+               sourceUrl: '../test.ts',
+               source: '<div i18n>\n  ',
+               generated: 'i0.ɵɵi18nStart(1, 0)',
+             });
+             expectMapping(mappings, {
+               sourceUrl: '../test.ts',
+               source: '<p>\n    in-p\n  </p>',
+               generated: 'i0.ɵɵelement(2, "p")',
+             });
+             expectMapping(mappings, {
+               sourceUrl: '../test.ts',
+               source: '</div>',
+               generated: 'i0.ɵɵi18nEnd()',
+             });
+             expectMapping(mappings, {
+               sourceUrl: '../test.ts',
+               source: '</div>',
+               generated: 'i0.ɵɵelementEnd()',
+             });
+           });
+
         it('should create tag (container) placeholder source-mappings', () => {
           const mappings = compileAndMap(`<div i18n>Hello, <b>World</b>!</div>`);
           expectMapping(mappings, {
