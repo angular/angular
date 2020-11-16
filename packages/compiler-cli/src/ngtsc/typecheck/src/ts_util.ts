@@ -172,3 +172,8 @@ export function checkIfGenericTypesAreUnbound(node: ClassDeclaration<ts.ClassDec
   }
   return node.typeParameters.every(param => param.constraint === undefined);
 }
+
+export function isAccessExpression(node: ts.Node): node is ts.ElementAccessExpression|
+    ts.PropertyAccessExpression {
+  return ts.isPropertyAccessExpression(node) || ts.isElementAccessExpression(node);
+}

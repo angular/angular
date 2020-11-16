@@ -10,7 +10,7 @@
     <tr class="option">
       <td>
         <a class="code-anchor" href="{$ doc.path $}#{$ option.anchor | urlencode $}">
-          <code>{$ option.name $}</code>
+          <code>{$ option.name $}{%- if option.isOptional  %}?{% endif -%}</code>
         </a>
       </td>
       <td>{$ option.shortDescription | marked $}</td>

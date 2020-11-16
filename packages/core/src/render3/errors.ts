@@ -8,21 +8,27 @@
  */
 import {InjectorType} from '../di/interface/defs';
 import {stringify} from '../util/stringify';
+import {RuntimeError, RuntimeErrorCode} from './error_code';
 
 import {TNode} from './interfaces/node';
 import {LView, TVIEW} from './interfaces/view';
-import {INTERPOLATION_DELIMITER} from './util/misc_utils';
+import {INTERPOLATION_DELIMITER, stringifyForError} from './util/misc_utils';
 
 
 
 /** Called when directives inject each other (creating a circular dependency) */
-export function throwCyclicDependencyError(token: any): never {
-  throw new Error(`Cannot instantiate cyclic dependency! ${token}`);
+export function throwCyclicDependencyError(token: string, path?: string[]): never {
+  const depPath = path ? `. Dependency path: ${path.join(' > ')} > ${token}` : '';
+  throw new RuntimeError(
+      RuntimeErrorCode.CYCLIC_DI_DEPENDENCY,
+      `Circular dependency in DI detected for ${token}${depPath}`);
 }
 
 /** Called when there are multiple component selectors that match a given node */
 export function throwMultipleComponentError(tNode: TNode): never {
-  throw new Error(`Multiple components match node with tagname ${tNode.tagName}`);
+  throw new RuntimeError(
+      RuntimeErrorCode.MULTIPLE_COMPONENTS_MATCH,
+      `Multiple components match node with tagname ${tNode.value}`);
 }
 
 export function throwMixedMultiProviderError() {
@@ -56,7 +62,7 @@ export function throwErrorIfNoChangesMode(
   }
   // TODO: include debug context, see `viewDebugError` function in
   // `packages/core/src/view/errors.ts` for reference.
-  throw new Error(msg);
+  throw new RuntimeError(RuntimeErrorCode.EXPRESSION_CHANGED_AFTER_CHECKED, msg);
 }
 
 function constructDetailsForInterpolation(
@@ -115,4 +121,12 @@ export function getExpressionChangedErrorDetails(
     }
   }
   return {propName: undefined, oldValue, newValue};
+}
+
+/** Throws an error when a token is not found in DI. */
+export function throwProviderNotFoundError(token: any, injectorName?: string): never {
+  const injectorDetails = injectorName ? ` in ${injectorName}` : '';
+  throw new RuntimeError(
+      RuntimeErrorCode.PROVIDER_NOT_FOUND,
+      `No provider for ${stringifyForError(token)} found${injectorDetails}`);
 }

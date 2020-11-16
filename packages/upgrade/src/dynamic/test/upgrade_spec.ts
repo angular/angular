@@ -2120,7 +2120,7 @@ withEachNg1Version(() => {
                }
              }
 
-             // On browsers that don't support `requestAnimationFrame` (IE 9, Android <= 4.3),
+             // On browsers that don't support `requestAnimationFrame` (Android <= 4.3),
              // `$animate` will use `setTimeout(..., 16.6)` instead. This timeout will still be
              // on
              // the queue at the end of the test, causing it to fail.
@@ -2217,7 +2217,7 @@ withEachNg1Version(() => {
                }
              }
 
-             // On browsers that don't support `requestAnimationFrame` (IE 9, Android <= 4.3),
+             // On browsers that don't support `requestAnimationFrame` (Android <= 4.3),
              // `$animate` will use `setTimeout(..., 16.6)` instead. This timeout will still be
              // on
              // the queue at the end of the test, causing it to fail.
@@ -2294,7 +2294,7 @@ withEachNg1Version(() => {
                }
              }
 
-             // On browsers that don't support `requestAnimationFrame` (IE 9, Android <= 4.3),
+             // On browsers that don't support `requestAnimationFrame` (Android <= 4.3),
              // `$animate` will use `setTimeout(..., 16.6)` instead. This timeout will still be
              // on
              // the queue at the end of the test, causing it to fail.
@@ -2342,10 +2342,9 @@ withEachNg1Version(() => {
                }
              }
 
-             // On browsers that don't support `requestAnimationFrame` (IE 9, Android <= 4.3),
+             // On browsers that don't support `requestAnimationFrame` (Android <= 4.3),
              // `$animate` will use `setTimeout(..., 16.6)` instead. This timeout will still be
-             // on
-             // the queue at the end of the test, causing it to fail.
+             // on the queue at the end of the test, causing it to fail.
              // Mocking animations (via `ngAnimateMock`) avoids the issue.
              angular.module_('ng1', ['ngAnimateMock'])
                  .component('ng1', {

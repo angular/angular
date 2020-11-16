@@ -59,6 +59,75 @@ runInEachFileSystem(() => {
         ]);
       });
 
+      it('should scan source files only once, even if they are referenced from multiple root files',
+         () => {
+           // https://github.com/angular/angular/issues/39240
+           // When scanning the program for imports to determine which entry-points to process, the
+           // root files as configured in the tsconfig file are used to start scanning from. This
+           // test asserts that a file is not scanned multiple times even if it is referenced from
+           // multiple root files.
+           loadTestFiles([
+             {
+               name: _Abs(`${projectPath}/package.json`),
+               contents: '',
+             },
+             {
+               name: _Abs(`${projectPath}/tsconfig.json`),
+               contents: `{
+                 "files": [
+                   "root-one.ts",
+                   "root-two.ts",
+                 ],
+                 "compilerOptions": {
+                   "baseUrl": ".",
+                   "paths": {
+                     "lib/*": ["lib/*"]
+                   }
+                 }
+               }`,
+             },
+             {
+               name: _Abs(`${projectPath}/root-one.ts`),
+               contents: `
+                 import './root-two';
+                 import './not-root';
+               `,
+             },
+             {
+               name: _Abs(`${projectPath}/root-two.ts`),
+               contents: `
+                 import './not-root';
+               `,
+             },
+             {
+               name: _Abs(`${projectPath}/not-root.ts`),
+               contents: `
+              import {Component} from '@angular/core';
+              `,
+             },
+             ...createPackage(angularNamespacePath, 'core'),
+           ]);
+
+           const extractImportsSpy =
+               spyOn(EsmDependencyHost.prototype, 'extractImports' as any).and.callThrough();
+
+           const finder = createFinder();
+           const {entryPoints} = finder.findEntryPoints();
+           expect(dumpEntryPointPaths(basePath, entryPoints)).toEqual([
+             ['@angular/core', '@angular/core'],
+           ]);
+
+           // Three `extractImports` calls should have been made corresponding with the three
+           // distinct source files in the project.
+           const extractImportFiles =
+               extractImportsSpy.calls.all().map((call: jasmine.CallInfo<any>) => call.args[0]);
+           expect(extractImportFiles).toEqual([
+             _Abs(`${projectPath}/root-one.ts`),
+             _Abs(`${projectPath}/root-two.ts`),
+             _Abs(`${projectPath}/not-root.ts`),
+           ]);
+         });
+
       function createFinder(): ProgramBasedEntryPointFinder {
         const tsConfig = readConfiguration(`${projectPath}/tsconfig.json`);
         const baseUrl = fs.resolve(projectPath, tsConfig.options.basePath!);

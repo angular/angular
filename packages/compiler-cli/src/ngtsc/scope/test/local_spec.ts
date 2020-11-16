@@ -9,7 +9,7 @@
 import * as ts from 'typescript';
 
 import {Reference, ReferenceEmitter} from '../../imports';
-import {CompoundMetadataRegistry, DirectiveMeta, LocalMetadataRegistry, MetadataRegistry, PipeMeta} from '../../metadata';
+import {ClassPropertyMapping, CompoundMetadataRegistry, DirectiveMeta, LocalMetadataRegistry, MetadataRegistry, PipeMeta} from '../../metadata';
 import {ClassDeclaration} from '../../reflection';
 import {ScopeData} from '../src/api';
 import {DtsModuleScopeResolver} from '../src/dependency';
@@ -236,8 +236,8 @@ function fakeDirective(ref: Reference<ClassDeclaration>): DirectiveMeta {
     name,
     selector: `[${ref.debugName}]`,
     isComponent: name.startsWith('Cmp'),
-    inputs: {},
-    outputs: {},
+    inputs: ClassPropertyMapping.fromMappedObject({}),
+    outputs: ClassPropertyMapping.fromMappedObject({}),
     exportAs: null,
     queries: [],
     hasNgTemplateContextGuard: false,

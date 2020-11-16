@@ -15,7 +15,6 @@ import {assembleBoundTextPlaceholders, getSeqNumberGenerator, updatePlaceholderM
 enum TagType {
   ELEMENT,
   TEMPLATE,
-  PROJECTION
 }
 
 /**
@@ -105,10 +104,12 @@ export class I18nContext {
     this.appendTag(TagType.ELEMENT, node as i18n.TagPlaceholder, index, closed);
   }
   appendProjection(node: i18n.I18nMeta, index: number) {
-    // add open and close tags at the same time,
-    // since we process projected content separately
-    this.appendTag(TagType.PROJECTION, node as i18n.TagPlaceholder, index, false);
-    this.appendTag(TagType.PROJECTION, node as i18n.TagPlaceholder, index, true);
+    // Add open and close tags at the same time, since `<ng-content>` has no content,
+    // so when we come across `<ng-content>` we can register both open and close tags.
+    // Note: runtime i18n logic doesn't distinguish `<ng-content>` tag placeholders and
+    // regular element tag placeholders, so we generate element placeholders for both types.
+    this.appendTag(TagType.ELEMENT, node as i18n.TagPlaceholder, index, false);
+    this.appendTag(TagType.ELEMENT, node as i18n.TagPlaceholder, index, true);
   }
 
   /**
@@ -214,9 +215,6 @@ function serializePlaceholderValue(value: any): string {
 
     case TagType.TEMPLATE:
       return template(value, value.closed);
-
-    case TagType.PROJECTION:
-      return projection(value, value.closed);
 
     default:
       return value;

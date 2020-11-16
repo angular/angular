@@ -2,8 +2,46 @@ package(default_visibility = ["//visibility:public"])
 
 load("@build_bazel_rules_nodejs//:index.bzl", "nodejs_binary")
 
+nodejs_binary(
+    name = "rollup_for_ng_package",
+    data = [
+        # BEGIN-DEV-ONLY
+        "@npm" +
+        # END-DEV-ONLY
+        "//rollup",
+        # BEGIN-DEV-ONLY
+        "@npm" +
+        # END-DEV-ONLY
+        "//rollup-plugin-commonjs",
+        # BEGIN-DEV-ONLY
+        "@npm" +
+        # END-DEV-ONLY
+        "//rollup-plugin-node-resolve",
+        # BEGIN-DEV-ONLY
+        "@npm" +
+        # END-DEV-ONLY
+        "//rollup-plugin-sourcemaps",
+        # BEGIN-DEV-ONLY
+        "@npm" +
+        # END-DEV-ONLY
+        "//typescript",
+    ],
+    entry_point = (
+        # BEGIN-DEV-ONLY
+        "@npm" +
+        # END-DEV-ONLY
+        "//:node_modules/rollup/dist/bin/rollup"
+    ),
+)
+
+exports_files([
+    "ng_package.bzl",
+    "rollup.config.js",
+    "terser_config.default.json",
+])
+
 # BEGIN-DEV-ONLY
-load("@npm_bazel_typescript//:index.bzl", "ts_library")
+load("@npm//@bazel/typescript:index.bzl", "ts_library")
 
 ts_library(
     name = "lib",
@@ -16,34 +54,6 @@ ts_library(
     ],
 )
 
-# END-DEV-ONLY
-nodejs_binary(
-    name = "packager",
-    data = [
-        "lib",
-        "@npm//shelljs",
-    ],
-    entry_point = ":packager.ts",
-)
-
-nodejs_binary(
-    name = "rollup_for_ng_package",
-    data = [
-        "@npm//rollup",
-        "@npm//rollup-plugin-commonjs",
-        "@npm//rollup-plugin-node-resolve",
-        "@npm//rollup-plugin-sourcemaps",
-        "@npm//typescript",
-    ],
-    entry_point = "@npm//:node_modules/rollup/dist/bin/rollup",
-)
-
-exports_files([
-    "ng_package.bzl",
-    "rollup.config.js",
-    "terser_config.default.json",
-])
-
 filegroup(
     name = "package_assets",
     srcs = glob(["*.bzl"]) + [
@@ -52,3 +62,13 @@ filegroup(
         "terser_config.default.json",
     ],
 )
+
+nodejs_binary(
+    name = "packager",
+    data = [
+        "lib",
+        "@npm//shelljs",
+    ],
+    entry_point = ":packager.ts",
+)
+# END-DEV-ONLY

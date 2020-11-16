@@ -38,6 +38,7 @@ merge:
       - "modules/benchmarks/**"
       - "modules/system.d.ts"
       - "packages/**"
+      - "dev-infra/benchmark/driver-utilities/**"
     # list of patterns to ignore for the files changed by the PR
     exclude:
       - "packages/*"
@@ -47,7 +48,10 @@ merge:
       - "packages/bazel/src/ng_package/**"
       - "packages/bazel/src/protractor/**"
       - "packages/bazel/src/schematics/**"
+      - "packages/compiler-cli/src/ngcc/**"
+      - "packages/compiler-cli/linker/**"
       - "packages/compiler-cli/ngcc/**"
+      - "packages/compiler-cli/src/ngtsc/sourcemaps/**"
       - "packages/docs/**"
       - "packages/elements/schematics/**"
       - "packages/examples/**"
@@ -55,6 +59,8 @@ merge:
       - "packages/localize/**"
       - "packages/private/**"
       - "packages/service-worker/**"
+      - "packages/common/locales/**"
+      - "packages/http/**"
       - "**/.gitignore"
       - "**/.gitkeep"
       - "**/yarn.lock"
@@ -68,6 +74,7 @@ merge:
       - "packages/**/integrationtest/**"
       - "packages/**/test/**"
       - "packages/zone.js/*"
+      - "packages/zone.js/dist/**"
       - "packages/zone.js/doc/**"
       - "packages/zone.js/example/**"
       - "packages/zone.js/scripts/**"
@@ -135,24 +142,34 @@ triage:
   # arrays of labels that determine if an issue has been fully triaged
   l2TriageLabels:
     -
-      - "type: bug/fix"
-      - "severity*"
-      - "freq*"
+      - "P0"
       - "comp: *"
     -
-      - "type: feature"
+      - "P1"
       - "comp: *"
     -
-      - "type: refactor"
+      - "P2"
       - "comp: *"
     -
-      - "type: RFC / Discussion / question"
+      - "P3"
       - "comp: *"
     -
-      - "type: confusing"
+      - "P4"
       - "comp: *"
     -
-      - "type: use-case"
+      - "P5"
+      - "comp: *"
+    -
+      - "feature"
+      - "comp: *"
+    -
+      - "discussion"
+      - "comp: *"
+    -
+      - "needs clarification"
+      - "comp: *"
+    -
+      - "needs reproduction"
       - "comp: *"
 
 # options for the triage PR plugin
@@ -170,7 +187,6 @@ triagePR:
   # arrays of labels that determine if a PR has been fully triaged
   l2TriageLabels:
     -
-      - "type: *"
       - "effort*"
       - "risk*"
       - "comp: *"

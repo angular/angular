@@ -12,10 +12,10 @@ import * as ts from 'typescript';
 import {ErrorCode, makeDiagnostic, makeRelatedInformation} from '../../diagnostics';
 import {AliasingHost, Reexport, Reference, ReferenceEmitter} from '../../imports';
 import {DirectiveMeta, MetadataReader, MetadataRegistry, NgModuleMeta, PipeMeta} from '../../metadata';
-import {ClassDeclaration} from '../../reflection';
+import {ClassDeclaration, DeclarationNode} from '../../reflection';
 import {identifierOfNode, nodeNameForError} from '../../util/src/typescript';
 
-import {ExportScope, ScopeData} from './api';
+import {ExportScope, RemoteScope, ScopeData} from './api';
 import {ComponentScopeReader} from './component_scope';
 import {DtsModuleScopeResolver} from './dependency';
 
@@ -26,6 +26,7 @@ export interface LocalNgModuleData {
 }
 
 export interface LocalModuleScope extends ExportScope {
+  ngModule: ClassDeclaration;
   compilation: ScopeData;
   reexports: Reexport[]|null;
   schemas: SchemaMetadata[];
@@ -95,14 +96,14 @@ export class LocalModuleScopeRegistry implements MetadataRegistry, ComponentScop
   private cache = new Map<ClassDeclaration, LocalModuleScope|undefined|null>();
 
   /**
-   * Tracks whether a given component requires "remote scoping".
+   * Tracks the `RemoteScope` for components requiring "remote scoping".
    *
    * Remote scoping is when the set of directives which apply to a given component is set in the
    * NgModule's file instead of directly on the component def (which is sometimes needed to get
    * around cyclic import issues). This is not used in calculation of `LocalModuleScope`s, but is
    * tracked here for convenience.
    */
-  private remoteScoping = new Set<ClassDeclaration>();
+  private remoteScoping = new Map<ClassDeclaration, RemoteScope>();
 
   /**
    * Tracks errors accumulated in the processing of scopes for each module declaration.
@@ -292,14 +293,14 @@ export class LocalModuleScopeRegistry implements MetadataRegistry, ComponentScop
     // - the directives and pipes which are exported to any NgModules which import this one.
 
     // Directives and pipes in the compilation scope.
-    const compilationDirectives = new Map<ts.Declaration, DirectiveMeta>();
-    const compilationPipes = new Map<ts.Declaration, PipeMeta>();
+    const compilationDirectives = new Map<DeclarationNode, DirectiveMeta>();
+    const compilationPipes = new Map<DeclarationNode, PipeMeta>();
 
-    const declared = new Set<ts.Declaration>();
+    const declared = new Set<DeclarationNode>();
 
     // Directives and pipes exported to any importing NgModules.
-    const exportDirectives = new Map<ts.Declaration, DirectiveMeta>();
-    const exportPipes = new Map<ts.Declaration, PipeMeta>();
+    const exportDirectives = new Map<DeclarationNode, DirectiveMeta>();
+    const exportPipes = new Map<DeclarationNode, PipeMeta>();
 
     // The algorithm is as follows:
     // 1) Add all of the directives/pipes from each NgModule imported into the current one to the
@@ -433,7 +434,8 @@ export class LocalModuleScopeRegistry implements MetadataRegistry, ComponentScop
     }
 
     // Finally, produce the `LocalModuleScope` with both the compilation and export scopes.
-    const scope = {
+    const scope: LocalModuleScope = {
+      ngModule: ngModule.ref.node,
       compilation: {
         directives: Array.from(compilationDirectives.values()),
         pipes: Array.from(compilationPipes.values()),
@@ -450,15 +452,17 @@ export class LocalModuleScopeRegistry implements MetadataRegistry, ComponentScop
   /**
    * Check whether a component requires remote scoping.
    */
-  getRequiresRemoteScope(node: ClassDeclaration): boolean {
-    return this.remoteScoping.has(node);
+  getRemoteScope(node: ClassDeclaration): RemoteScope|null {
+    return this.remoteScoping.has(node) ? this.remoteScoping.get(node)! : null;
   }
 
   /**
-   * Set a component as requiring remote scoping.
+   * Set a component as requiring remote scoping, with the given directives and pipes to be
+   * registered remotely.
    */
-  setComponentAsRequiringRemoteScoping(node: ClassDeclaration): void {
-    this.remoteScoping.add(node);
+  setComponentRemoteScope(node: ClassDeclaration, directives: Reference[], pipes: Reference[]):
+      void {
+    this.remoteScoping.set(node, {directives, pipes});
   }
 
   /**
@@ -475,7 +479,7 @@ export class LocalModuleScopeRegistry implements MetadataRegistry, ComponentScop
    */
   private getExportedScope(
       ref: Reference<ClassDeclaration>, diagnostics: ts.Diagnostic[],
-      ownerForErrors: ts.Declaration, type: 'import'|'export'): ExportScope|null|undefined {
+      ownerForErrors: DeclarationNode, type: 'import'|'export'): ExportScope|null|undefined {
     if (ref.node.getSourceFile().isDeclarationFile) {
       // The NgModule is declared in a .d.ts file. Resolve it with the `DependencyScopeReader`.
       if (!ts.isClassDeclaration(ref.node)) {
@@ -497,7 +501,7 @@ export class LocalModuleScopeRegistry implements MetadataRegistry, ComponentScop
   }
 
   private getReexports(
-      ngModule: NgModuleMeta, ref: Reference<ClassDeclaration>, declared: Set<ts.Declaration>,
+      ngModule: NgModuleMeta, ref: Reference<ClassDeclaration>, declared: Set<DeclarationNode>,
       exported: {directives: DirectiveMeta[], pipes: PipeMeta[]},
       diagnostics: ts.Diagnostic[]): Reexport[]|null {
     let reexports: Reexport[]|null = null;
@@ -567,7 +571,7 @@ export class LocalModuleScopeRegistry implements MetadataRegistry, ComponentScop
  * Produce a `ts.Diagnostic` for an invalid import or export from an NgModule.
  */
 function invalidRef(
-    clazz: ts.Declaration, decl: Reference<ts.Declaration>,
+    clazz: DeclarationNode, decl: Reference<DeclarationNode>,
     type: 'import'|'export'): ts.Diagnostic {
   const code =
       type === 'import' ? ErrorCode.NGMODULE_INVALID_IMPORT : ErrorCode.NGMODULE_INVALID_EXPORT;
@@ -605,7 +609,7 @@ function invalidRef(
  * Produce a `ts.Diagnostic` for an import or export which itself has errors.
  */
 function invalidTransitiveNgModuleRef(
-    clazz: ts.Declaration, decl: Reference<ts.Declaration>,
+    clazz: DeclarationNode, decl: Reference<DeclarationNode>,
     type: 'import'|'export'): ts.Diagnostic {
   const code =
       type === 'import' ? ErrorCode.NGMODULE_INVALID_IMPORT : ErrorCode.NGMODULE_INVALID_EXPORT;
@@ -618,7 +622,7 @@ function invalidTransitiveNgModuleRef(
  * Produce a `ts.Diagnostic` for an exported directive or pipe which was not declared or imported
  * by the NgModule in question.
  */
-function invalidReexport(clazz: ts.Declaration, decl: Reference<ts.Declaration>): ts.Diagnostic {
+function invalidReexport(clazz: DeclarationNode, decl: Reference<DeclarationNode>): ts.Diagnostic {
   return makeDiagnostic(
       ErrorCode.NGMODULE_INVALID_REEXPORT, identifierOfNode(decl.node) || decl.node,
       `Present in the NgModule.exports of ${

@@ -17,14 +17,13 @@ import {DirectiveDef} from '../interfaces/definition';
 import {AttributeMarker, TAttributes, TNode, TNodeFlags, TNodeType} from '../interfaces/node';
 import {RElement, Renderer3} from '../interfaces/renderer';
 import {getTStylingRangeNext, getTStylingRangeNextDuplicate, getTStylingRangePrev, getTStylingRangePrevDuplicate, TStylingKey, TStylingRange} from '../interfaces/styling';
-import {HEADER_OFFSET, LView, RENDERER, TData, TView} from '../interfaces/view';
+import {LView, RENDERER, TData, TView} from '../interfaces/view';
 import {applyStyling} from '../node_manipulation';
 import {getCurrentDirectiveDef, getLView, getSelectedIndex, getTView, incrementBindingIndex} from '../state';
 import {insertTStylingBinding} from '../styling/style_binding_list';
 import {getLastParsedKey, getLastParsedValue, parseClassName, parseClassNameNext, parseStyle, parseStyleNext} from '../styling/styling_parser';
 import {NO_CHANGE} from '../tokens';
 import {getNativeByIndex} from '../util/view_utils';
-
 import {setDirectiveInputsWhichShadowsStyling} from './property';
 
 
@@ -174,7 +173,7 @@ export function checkStylingProperty(
     stylingFirstUpdatePass(tView, prop, bindingIndex, isClassBased);
   }
   if (value !== NO_CHANGE && bindingUpdated(lView, bindingIndex, value)) {
-    const tNode = tView.data[getSelectedIndex() + HEADER_OFFSET] as TNode;
+    const tNode = tView.data[getSelectedIndex()] as TNode;
     updateStyling(
         tView, tNode, lView, lView[RENDERER], prop,
         lView[bindingIndex + 1] = normalizeSuffix(value, suffix), isClassBased, bindingIndex);
@@ -204,7 +203,7 @@ export function checkStylingMap(
   if (value !== NO_CHANGE && bindingUpdated(lView, bindingIndex, value)) {
     // `getSelectedIndex()` should be here (rather than in instruction) so that it is guarded by the
     // if so as not to read unnecessarily.
-    const tNode = tView.data[getSelectedIndex() + HEADER_OFFSET] as TNode;
+    const tNode = tView.data[getSelectedIndex()] as TNode;
     if (hasStylingInputShadow(tNode, isClassBased) && !isInHostBindings(tView, bindingIndex)) {
       if (ngDevMode) {
         // verify that if we are shadowing then `TData` is appropriately marked so that we skip
@@ -271,7 +270,8 @@ function stylingFirstUpdatePass(
     // itself to the list.
     // `getSelectedIndex()` should be here (rather than in instruction) so that it is guarded by the
     // if so as not to read unnecessarily.
-    const tNode = tData[getSelectedIndex() + HEADER_OFFSET] as TNode;
+    const tNode = tData[getSelectedIndex()] as TNode;
+    ngDevMode && assertDefined(tNode, 'TNode expected');
     const isHostBindings = isInHostBindings(tView, bindingIndex);
     if (hasStylingInputShadow(tNode, isClassBased) && tStylingKey === null && !isHostBindings) {
       // `tStylingKey === null` implies that we are either `[style]` or `[class]` binding.
@@ -705,7 +705,7 @@ function updateStylingMap(
 function updateStyling(
     tView: TView, tNode: TNode, lView: LView, renderer: Renderer3, prop: string,
     value: string|undefined|null|boolean, isClassBased: boolean, bindingIndex: number) {
-  if (tNode.type !== TNodeType.Element) {
+  if (!(tNode.type & TNodeType.AnyRNode)) {
     // It is possible to have styling on non-elements (such as ng-container).
     // This is rare, but it does happen. In such a case, just ignore the binding.
     return;

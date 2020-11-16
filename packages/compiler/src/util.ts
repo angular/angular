@@ -280,12 +280,12 @@ export function newArray<T>(size: number, value?: T): T[] {
  * @param conditionFn Condition function that is called for each item in a given array and returns a
  * boolean value.
  */
-export function partitionArray<T>(
-    arr: T[], conditionFn: <K extends T>(value: K) => boolean): [T[], T[]] {
+export function partitionArray<T, F = T>(
+    arr: (T|F)[], conditionFn: (value: T|F) => boolean): [T[], F[]] {
   const truthy: T[] = [];
-  const falsy: T[] = [];
-  arr.forEach(item => {
-    (conditionFn(item) ? truthy : falsy).push(item);
-  });
+  const falsy: F[] = [];
+  for (const item of arr) {
+    (conditionFn(item) ? truthy : falsy).push(item as any);
+  }
   return [truthy, falsy];
 }

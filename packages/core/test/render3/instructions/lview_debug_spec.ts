@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ɵɵdefineComponent, ɵɵdefineDirective, ɵɵdirectiveInject, ɵɵProvidersFeature} from '@angular/core/src/core';
+import {ɵɵelement, ɵɵelementEnd, ɵɵelementStart} from '@angular/core/src/render3/instructions/element';
 import {TNodeDebug} from '@angular/core/src/render3/instructions/lview_debug';
 import {createTNode, createTView} from '@angular/core/src/render3/instructions/shared';
 import {TNodeType} from '@angular/core/src/render3/interfaces/node';
@@ -13,18 +15,18 @@ import {LView, TView, TViewType} from '@angular/core/src/render3/interfaces/view
 import {enterView, leaveView} from '@angular/core/src/render3/state';
 import {insertTStylingBinding} from '@angular/core/src/render3/styling/style_binding_list';
 import {KeyValueArray} from '@angular/core/src/util/array_utils';
-
+import {TemplateFixture} from '../render_util';
 
 describe('lView_debug', () => {
   const mockFirstUpdatePassLView: LView = [null, {firstUpdatePass: true}] as any;
-  beforeEach(() => enterView(mockFirstUpdatePassLView, null));
+  beforeEach(() => enterView(mockFirstUpdatePassLView));
   afterEach(() => leaveView());
 
   describe('TNode', () => {
     let tNode!: TNodeDebug;
     let tView!: TView;
     beforeEach(() => {
-      tView = createTView(TViewType.Component, 0, null, 0, 0, null, null, null, null, null);
+      tView = createTView(TViewType.Component, null, null, 0, 0, null, null, null, null, null);
       tNode = createTNode(tView, null!, TNodeType.Element, 0, '', null) as TNodeDebug;
     });
     afterEach(() => tNode = tView = null!);
@@ -148,6 +150,92 @@ describe('lView_debug', () => {
           },
           ['STATIC', true] as KeyValueArray<any>
         ]);
+      });
+    });
+  });
+
+  describe('di', () => {
+    it('should show basic information', () => {
+      class DepA {
+        static ɵfac = () => new DepA();
+      }
+      class DepB {
+        static ɵfac = () => new DepB();
+      }
+
+      const instances: any[] = [];
+      class MyComponent {
+        constructor(public depA: DepA, public depB: DepB) {
+          instances.push(this);
+        }
+        static ɵfac = () => new MyComponent(ɵɵdirectiveInject(DepA), ɵɵdirectiveInject(DepB));
+        static ɵcmp = ɵɵdefineComponent({
+          type: MyComponent,
+          selectors: [['my-comp']],
+          decls: 1,
+          vars: 0,
+          template: function() {},
+          features: [ɵɵProvidersFeature(
+              [DepA, {provide: String, useValue: 'String'}],
+              [DepB, {provide: Number, useValue: 123}])]
+        });
+      }
+
+      let myChild!: MyChild;
+      class MyChild {
+        constructor() {
+          myChild = this;
+        }
+        static ɵfac = () => new MyChild();
+        static ɵdir = ɵɵdefineDirective({
+          type: MyChild,
+          selectors: [['my-child']],
+        });
+      }
+
+
+      class MyDirective {
+        constructor(public myComp: MyComponent) {
+          instances.push(this);
+        }
+        static ɵfac = () => new MyDirective(ɵɵdirectiveInject(MyComponent));
+        static ɵdir = ɵɵdefineDirective({
+          type: MyDirective,
+          selectors: [['', 'my-dir', '']],
+        });
+      }
+
+      const fixture = new TemplateFixture({
+        create: () => {
+          ɵɵelementStart(0, 'my-comp', 0);
+          ɵɵelement(1, 'my-child');
+          ɵɵelementEnd();
+        },
+        decls: 2,
+        directives: [MyComponent, MyDirective, MyChild],
+        consts: [['my-dir', '']]
+      });
+      const lView = fixture.hostView;
+      const lViewDebug = lView.debug!;
+      const myCompNode = lViewDebug.nodes[0];
+      expect(myCompNode.factories).toEqual([MyComponent, MyDirective]);
+      expect(myCompNode.instances).toEqual(instances);
+      expect(myCompNode.injector).toEqual({
+        bloom: jasmine.anything(),
+        cumulativeBloom: jasmine.anything(),
+        providers: [DepA, String, MyComponent.ɵcmp, MyDirective.ɵdir],
+        viewProviders: [DepB, Number],
+        parentInjectorIndex: -1,
+      });
+      const myChildNode = myCompNode.children[0];
+      expect(myChildNode.factories).toEqual([MyChild]);
+      expect(myChildNode.instances).toEqual([myChild]);
+      expect(myChildNode.injector).toEqual({
+        bloom: jasmine.anything(),
+        cumulativeBloom: jasmine.anything(),
+        providers: [MyChild.ɵdir],
+        viewProviders: [],
+        parentInjectorIndex: 22,
       });
     });
   });

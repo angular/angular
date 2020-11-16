@@ -13,6 +13,7 @@ import {ClassDeclaration, ClassMember, ClassMemberKind, isNamedClassDeclaration,
 import {nodeDebugInfo} from '../../util/src/typescript';
 
 import {DirectiveMeta, DirectiveTypeCheckMeta, MetadataReader, NgModuleMeta, PipeMeta, TemplateGuardMeta} from './api';
+import {ClassPropertyMapping, ClassPropertyName} from './property_mapping';
 
 export function extractReferencesFromType(
     checker: ts.TypeChecker, def: ts.TypeNode, ngModuleImportedFrom: string|null,
@@ -21,25 +22,22 @@ export function extractReferencesFromType(
     return [];
   }
 
-  // TODO(alan-agius4): remove `def.elementTypes` and casts when TS 3.9 support is dropped and G3 is
-  // using TS 4.0.
-  return (((def as any).elements || (def as any).elementTypes) as ts.NodeArray<ts.TypeNode>)
-      .map(element => {
-        if (!ts.isTypeQueryNode(element)) {
-          throw new Error(`Expected TypeQueryNode: ${nodeDebugInfo(element)}`);
-        }
-        const type = element.exprName;
-        const {node, from} = reflectTypeEntityToDeclaration(type, checker);
-        if (!isNamedClassDeclaration(node)) {
-          throw new Error(`Expected named ClassDeclaration: ${nodeDebugInfo(node)}`);
-        }
-        const specifier = (from !== null && !from.startsWith('.') ? from : ngModuleImportedFrom);
-        if (specifier !== null) {
-          return new Reference(node, {specifier, resolutionContext});
-        } else {
-          return new Reference(node);
-        }
-      });
+  return def.elements.map(element => {
+    if (!ts.isTypeQueryNode(element)) {
+      throw new Error(`Expected TypeQueryNode: ${nodeDebugInfo(element)}`);
+    }
+    const type = element.exprName;
+    const {node, from} = reflectTypeEntityToDeclaration(type, checker);
+    if (!isNamedClassDeclaration(node)) {
+      throw new Error(`Expected named ClassDeclaration: ${nodeDebugInfo(node)}`);
+    }
+    const specifier = (from !== null && !from.startsWith('.') ? from : ngModuleImportedFrom);
+    if (specifier !== null) {
+      return new Reference(node, {specifier, resolutionContext});
+    } else {
+      return new Reference(node);
+    }
+  });
 }
 
 export function readStringType(type: ts.TypeNode): string|null {
@@ -73,15 +71,12 @@ export function readStringArrayType(type: ts.TypeNode): string[] {
     return [];
   }
   const res: string[] = [];
-  // TODO(alan-agius4): remove `def.elementTypes` and casts when TS 3.9 support is dropped and G3 is
-  // using TS 4.0.
-  (((type as any).elements || (type as any).elementTypes) as ts.NodeArray<ts.TypeNode>)
-      .forEach(el => {
-        if (!ts.isLiteralTypeNode(el) || !ts.isStringLiteral(el.literal)) {
-          return;
-        }
-        res.push(el.literal.text);
-      });
+  type.elements.forEach(el => {
+    if (!ts.isLiteralTypeNode(el) || !ts.isStringLiteral(el.literal)) {
+      return;
+    }
+    res.push(el.literal.text);
+  });
   return res;
 }
 
@@ -91,7 +86,7 @@ export function readStringArrayType(type: ts.TypeNode): string[] {
  * making this metadata invariant to changes of inherited classes.
  */
 export function extractDirectiveTypeCheckMeta(
-    node: ClassDeclaration, inputs: {[fieldName: string]: string|[string, string]},
+    node: ClassDeclaration, inputs: ClassPropertyMapping,
     reflector: ReflectionHost): DirectiveTypeCheckMeta {
   const members = reflector.getMembersOfClass(node);
   const staticMembers = members.filter(member => member.isStatic);
@@ -102,23 +97,23 @@ export function extractDirectiveTypeCheckMeta(
 
   const coercedInputFields =
       new Set(staticMembers.map(extractCoercedInput)
-                  .filter((inputName): inputName is string => inputName !== null));
+                  .filter((inputName): inputName is ClassPropertyName => inputName !== null));
 
-  const restrictedInputFields = new Set<string>();
-  const stringLiteralInputFields = new Set<string>();
-  const undeclaredInputFields = new Set<string>();
+  const restrictedInputFields = new Set<ClassPropertyName>();
+  const stringLiteralInputFields = new Set<ClassPropertyName>();
+  const undeclaredInputFields = new Set<ClassPropertyName>();
 
-  for (const fieldName of Object.keys(inputs)) {
-    const field = members.find(member => member.name === fieldName);
+  for (const classPropertyName of inputs.classPropertyNames) {
+    const field = members.find(member => member.name === classPropertyName);
     if (field === undefined || field.node === null) {
-      undeclaredInputFields.add(fieldName);
+      undeclaredInputFields.add(classPropertyName);
       continue;
     }
     if (isRestricted(field.node)) {
-      restrictedInputFields.add(fieldName);
+      restrictedInputFields.add(classPropertyName);
     }
     if (field.nameNode !== null && ts.isStringLiteral(field.nameNode)) {
-      stringLiteralInputFields.add(fieldName);
+      stringLiteralInputFields.add(classPropertyName);
     }
   }
 

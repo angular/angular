@@ -6,5 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-process.env['errorpolicy'] = (global as any)['__Zone_Error_BlacklistedStackFrames_policy'] = 'lazy';
+process.env['errorpolicy'] = (global as any)['__Zone_Error_ZoneJsInternalStackFrames_policy'] =
+    'lazy';
 import './node_error_entry_point';

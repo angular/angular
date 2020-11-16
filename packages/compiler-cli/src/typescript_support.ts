@@ -11,13 +11,19 @@ import {compareVersions} from './diagnostics/typescript_version';
 /**
  * Minimum supported TypeScript version
  * ∀ supported typescript version v, v >= MIN_TS_VERSION
+ *
+ * Note: this check is disabled in g3, search for
+ * `angularCompilerOptions.disableTypeScriptVersionCheck` config param value in g3.
  */
-const MIN_TS_VERSION = '3.9.2';
+const MIN_TS_VERSION = '4.0.0';
 
 /**
  * Supremum of supported TypeScript versions
  * ∀ supported typescript version v, v < MAX_TS_VERSION
  * MAX_TS_VERSION is not considered as a supported TypeScript version
+ *
+ * Note: this check is disabled in g3, search for
+ * `angularCompilerOptions.disableTypeScriptVersionCheck` config param value in g3.
  */
 const MAX_TS_VERSION = '4.1.0';
 
@@ -36,9 +42,8 @@ export function restoreTypeScriptVersionForTesting(): void {
 }
 
 /**
- * Checks whether a given version ∈ [minVersion, maxVersion[
- * An error will be thrown if the following statements are simultaneously true:
- * - the given version ∉ [minVersion, maxVersion[,
+ * Checks whether a given version ∈ [minVersion, maxVersion[.
+ * An error will be thrown when the given version ∉ [minVersion, maxVersion[.
  *
  * @param version The version on which the check will be performed
  * @param minVersion The lower bound version. A valid version needs to be greater than minVersion

@@ -315,11 +315,6 @@ describe('Zone', function() {
           // TODO: JiaLiPassion, need to find out why the test bundle is not `use strict`.
           xit('event handler with null context should use event.target',
               ifEnvSupports(canPatchOnProperty(Document.prototype, 'onmousedown'), function() {
-                const ieVer = getIEVersion();
-                if (ieVer && ieVer === 9) {
-                  // in ie9, this is window object even we call func.apply(undefined)
-                  return;
-                }
                 const logs: string[] = [];
                 const EventTarget = (window as any)['EventTarget'];
                 let oriAddEventListener = EventTarget && EventTarget.prototype ?
@@ -1154,10 +1149,10 @@ describe('Zone', function() {
         it('should not be passive with global variable defined with passive false option', () => {
           testPassive('touchstart', 'defaultPrevented', {passive: false});
         });
-        it('should be passive with global variable defined and also blacklisted', () => {
+        it('should be passive with global variable defined and also unpatched', () => {
           testPassive('scroll', 'default will run', undefined);
         });
-        it('should not be passive without global variable defined and also blacklisted', () => {
+        it('should not be passive without global variable defined and also unpatched', () => {
           testPassive('wheel', 'defaultPrevented', undefined);
         });
       });
@@ -1376,7 +1371,7 @@ describe('Zone', function() {
            let hookSpy2 = jasmine.createSpy('spy2');
            let hookSpy3 = jasmine.createSpy('spy3');
            let logs: string[] = [];
-           const isBlacklistedEvent = function(source: string) {
+           const isUnpatchedEvent = function(source: string) {
              return source.lastIndexOf('click') !== -1;
            };
            const zone1 = Zone.current.fork({
@@ -1385,7 +1380,7 @@ describe('Zone', function() {
                  parentZoneDelegate: ZoneDelegate, currentZone: Zone, targetZone: Zone, task: Task):
                  any => {
                    if ((task.type === 'eventTask' || task.type === 'macroTask') &&
-                       isBlacklistedEvent(task.source)) {
+                       isUnpatchedEvent(task.source)) {
                      task.cancelScheduleRequest();
 
                      return zone2.scheduleTask(task);

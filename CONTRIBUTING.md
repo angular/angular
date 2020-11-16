@@ -32,7 +32,7 @@ Stack Overflow is a much better place to ask questions since:
 
 To save your and our time, we will systematically close all issues that are requests for general support and redirect people to Stack Overflow.
 
-If you would like to chat about the question in real-time, you can reach out via [our gitter channel][gitter].
+If you would like to chat about the question in real-time, you can reach out via [our Discord server][discord].
 
 
 ## <a name="issue"></a> Found a Bug?
@@ -107,7 +107,7 @@ Before you submit your Pull Request (PR) consider the following guidelines:
    Adherence to these conventions is necessary because release notes are automatically generated from these messages.
 
      ```shell
-     git commit -a
+     git commit --all
      ```
     Note: the optional commit `-a` command line option will automatically "add" and "rm" edited files.
 
@@ -119,18 +119,53 @@ Before you submit your Pull Request (PR) consider the following guidelines:
 
 11. In GitHub, send a pull request to `angular:master`.
 
-   If we ask for changes via code reviews then:
 
-   * Make the required updates.
-   * Re-run the Angular test suites to ensure tests are still passing.
-   * Rebase your branch and force push to your GitHub repository (this will update your Pull Request):
+#### Addressing review feedback
 
-      ```shell
-      git rebase master -i
-      git push -f
-      ```
+If we ask for changes via code reviews then:
+
+1. Make the required updates to the code.
+
+2. Re-run the Angular test suites to ensure tests are still passing.
+
+3. Create a fixup commit and push to your GitHub repository (this will update your Pull Request):
+
+    ```shell
+    git commit --all --fixup HEAD
+    git push
+    ```
+
+    For more info on working with fixup commits see [here](docs/FIXUP_COMMITS.md).
 
 That's it! Thank you for your contribution!
+
+
+##### Updating the commit message
+
+A reviewer might often suggest changes to a commit message (for example, to add more context for a change or adhere to our [commit message guidelines](#commit)).
+In order to update the commit message of the last commit on your branch:
+
+1. Check out your branch:
+
+    ```shell
+    git checkout my-fix-branch
+    ```
+
+2. Amend the last commit and modify the commit message:
+
+    ```shell
+    git commit --amend
+    ```
+
+3. Push to your GitHub repository:
+
+    ```shell
+    git push --force-with-lease
+    ```
+
+> NOTE:<br />
+> If you need to update the commit message of an earlier commit, you can use `git rebase` in interactive mode.
+> See the [git docs](https://git-scm.com/docs/git-rebase#_interactive_mode) for more details.
 
 
 #### After your pull request is merged
@@ -174,7 +209,7 @@ To ensure consistency throughout the source code, keep these rules in mind as yo
 
 ## <a name="commit"></a> Commit Message Format
 
-*This specification is inspired and supersedes the [AngularJS commit message format][commit-message-format].*
+*This specification is inspired by and supersedes the [AngularJS commit message format][commit-message-format].*
 
 We have very precise rules over how our Git commit messages must be formatted.
 This format leads to **easier to read commit history**.
@@ -209,11 +244,11 @@ Any line of the commit message cannot be longer than 100 characters.
   │       │
   │       └─⫸ Commit Scope: animations|bazel|benchpress|common|compiler|compiler-cli|core|
   │                          elements|forms|http|language-service|localize|platform-browser|
-  │                          platform-browser-dynamic|platform-server|platform-webworker|
-  │                          platform-webworker-dynamic|router|service-worker|upgrade|zone.js|
-  │                          packaging|changelog|dev-infra|docs-infra|migrations|ngcc|ve
+  │                          platform-browser-dynamic|platform-server|router|service-worker|
+  │                          upgrade|zone.js|packaging|changelog|dev-infra|docs-infra|migrations|
+  │                          ngcc|ve
   │
-  └─⫸ Commit Type: build|ci|docs|feat|fix|perf|refactor|style|test
+  └─⫸ Commit Type: build|ci|docs|feat|fix|perf|refactor|test
 ```
 
 The `<type>` and `<summary>` fields are mandatory, the `(<scope>)` field is optional.
@@ -253,8 +288,6 @@ The following is the list of supported scopes:
 * `platform-browser`
 * `platform-browser-dynamic`
 * `platform-server`
-* `platform-webworker`
-* `platform-webworker-dynamic`
 * `router`
 * `service-worker`
 * `upgrade`
@@ -276,7 +309,7 @@ There are currently a few exceptions to the "use package name" rule:
 
 * `ve`: used for changes specific to ViewEngine (legacy compiler/renderer).
 
-* none/empty string: useful for `style`, `test` and `refactor` changes that are done across all packages (e.g. `style: add missing semicolons`) and for docs changes that are not related to a specific package (e.g. `docs: fix typo in tutorial`).
+* none/empty string: useful for `test` and `refactor` changes that are done across all packages (e.g. `test: add missing unit tests`) and for docs changes that are not related to a specific package (e.g. `docs: fix typo in tutorial`).
 
 
 ##### Summary
@@ -349,7 +382,7 @@ The following documents can help you sort out issues with GitHub accounts and mu
 [corporate-cla]: http://code.google.com/legal/corporate-cla-v1.0.html
 [dev-doc]: https://github.com/angular/angular/blob/master/docs/DEVELOPER.md
 [github]: https://github.com/angular/angular
-[gitter]: https://gitter.im/angular/angular
+[discord]: https://discord.gg/angular
 [individual-cla]: http://code.google.com/legal/individual-cla-v1.0.html
 [js-style-guide]: https://google.github.io/styleguide/jsguide.html
 [jsfiddle]: http://jsfiddle.net

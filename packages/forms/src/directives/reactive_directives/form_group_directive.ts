@@ -9,11 +9,12 @@
 import {Directive, EventEmitter, forwardRef, Inject, Input, OnChanges, Optional, Output, Self, SimpleChanges} from '@angular/core';
 
 import {FormArray, FormControl, FormGroup} from '../../model';
-import {NG_ASYNC_VALIDATORS, NG_VALIDATORS, Validators} from '../../validators';
+import {NG_ASYNC_VALIDATORS, NG_VALIDATORS} from '../../validators';
 import {ControlContainer} from '../control_container';
 import {Form} from '../form_interface';
 import {ReactiveErrors} from '../reactive_errors';
-import {cleanUpControl, composeAsyncValidators, composeValidators, removeDir, setUpControl, setUpFormContainer, syncPendingControls} from '../shared';
+import {cleanUpControl, cleanUpValidators, removeListItem, setUpControl, setUpFormContainer, setUpValidators, syncPendingControls} from '../shared';
+import {AsyncValidator, AsyncValidatorFn, Validator, ValidatorFn} from '../validators';
 
 import {FormControlName} from './form_control_name';
 import {FormArrayName, FormGroupName} from './form_group_name';
@@ -59,8 +60,11 @@ export class FormGroupDirective extends ControlContainer implements Form, OnChan
    */
   public readonly submitted: boolean = false;
 
-  // TODO(issue/24571): remove '!'.
-  private _oldForm!: FormGroup;
+  /**
+   * Reference to an old form group input value, which is needed to cleanup old instance in case it
+   * was replaced with a new one.
+   */
+  private _oldForm: FormGroup|undefined;
 
   /**
    * @description
@@ -81,9 +85,12 @@ export class FormGroupDirective extends ControlContainer implements Form, OnChan
   @Output() ngSubmit = new EventEmitter();
 
   constructor(
-      @Optional() @Self() @Inject(NG_VALIDATORS) private _validators: any[],
-      @Optional() @Self() @Inject(NG_ASYNC_VALIDATORS) private _asyncValidators: any[]) {
+      @Optional() @Self() @Inject(NG_VALIDATORS) private validators: (Validator|ValidatorFn)[],
+      @Optional() @Self() @Inject(NG_ASYNC_VALIDATORS) private asyncValidators:
+          (AsyncValidator|AsyncValidatorFn)[]) {
     super();
+    this._setValidators(validators);
+    this._setAsyncValidators(asyncValidators);
   }
 
   /** @nodoc */
@@ -93,6 +100,7 @@ export class FormGroupDirective extends ControlContainer implements Form, OnChan
       this._updateValidators();
       this._updateDomValue();
       this._updateRegistrations();
+      this._oldForm = this.form;
     }
   }
 
@@ -153,7 +161,7 @@ export class FormGroupDirective extends ControlContainer implements Form, OnChan
    * @param dir The `FormControlName` directive instance.
    */
   removeControl(dir: FormControlName): void {
-    removeDir<FormControlName>(this.directives, dir);
+    removeListItem(this.directives, dir);
   }
 
   /**
@@ -262,7 +270,9 @@ export class FormGroupDirective extends ControlContainer implements Form, OnChan
     this.directives.forEach(dir => {
       const newCtrl: any = this.form.get(dir.path);
       if (dir.control !== newCtrl) {
-        cleanUpControl(dir.control, dir);
+        // Note: the value of the `dir.control` may not be defined, for example when it's a first
+        // `FormControl` that is added to a `FormGroup` instance (via `addControl` call).
+        cleanUpControl(dir.control || null, dir);
         if (newCtrl) setUpControl(newCtrl, dir);
         (dir as {control: FormControl}).control = newCtrl;
       }
@@ -273,16 +283,16 @@ export class FormGroupDirective extends ControlContainer implements Form, OnChan
 
   private _updateRegistrations() {
     this.form._registerOnCollectionChange(() => this._updateDomValue());
-    if (this._oldForm) this._oldForm._registerOnCollectionChange(() => {});
-    this._oldForm = this.form;
+    if (this._oldForm) {
+      this._oldForm._registerOnCollectionChange(() => {});
+    }
   }
 
   private _updateValidators() {
-    const sync = composeValidators(this._validators);
-    this.form.validator = Validators.compose([this.form.validator!, sync!]);
-
-    const async = composeAsyncValidators(this._asyncValidators);
-    this.form.asyncValidator = Validators.composeAsync([this.form.asyncValidator!, async!]);
+    setUpValidators(this.form, this, /* handleOnValidatorChange */ false);
+    if (this._oldForm) {
+      cleanUpValidators(this._oldForm, this, /* handleOnValidatorChange */ false);
+    }
   }
 
   private _checkFormPresent() {

@@ -176,7 +176,7 @@ This example from the `HeroListComponent` template uses three of these forms.
 
 <code-example path="architecture/src/app/hero-list.component.1.html" header="src/app/hero-list.component.html (binding)" region="binding"></code-example>
 
-* The `{{hero.name}}` [*interpolation*](guide/displaying-data#interpolation)
+* The `{{hero.name}}` [*interpolation*](guide/interpolation)
 displays the component's `hero.name` property value within the `<li>` element.
 
 * The `[hero]` [*property binding*](guide/property-binding) passes the value of
@@ -222,7 +222,7 @@ Angular에는 템플릿과 컴포넌트를 간편하게 연결하는 **데이터
 
 <code-example path="architecture/src/app/hero-list.component.1.html" header="src/app/hero-list.component.html (바인딩)" region="binding"></code-example>
 
-* `{{hero.name}}` 과 같이 [*문자열 바인딩*](guide/displaying-data#interpolation) 하면 컴포넌트의 `hero.name` 프로퍼티 값을 `<li>` 엘리먼트 안에 표시합니다.
+* `{{hero.name}}` 과 같이 [*문자열 바인딩*](guide/interpolation) 하면 컴포넌트의 `hero.name` 프로퍼티 값을 `<li>` 엘리먼트 안에 표시합니다.
 
 * `[hero]` 와 같이 [*프로퍼티 바인딩*](guide/property-binding) 하면 부모 컴포넌트 `HeroListComponent` 에 있는 `selectedHero` 값을 자식 컴포넌트 `HeroDetailComponent` 의 `hero` 프로퍼티로 전달합니다.
 
@@ -343,8 +343,8 @@ The example template uses two built-in structural directives to add application 
 
 <code-example path="architecture/src/app/hero-list.component.1.html" header="src/app/hero-list.component.html (structural)" region="structural"></code-example>
 
-* [`*ngFor`](guide/displaying-data#ngFor) is an iterative; it tells Angular to stamp out one `<li>` per hero in the `heroes` list.
-* [`*ngIf`](guide/displaying-data#ngIf) is a conditional; it includes the `HeroDetail` component only if a selected hero exists.
+* [`*ngFor`](guide/structural-directives#inside-ngfor) is an iterative; it tells Angular to stamp out one `<li>` per hero in the `heroes` list.
+* [`*ngIf`](guide/structural-directives#ngif-case-study) is a conditional; it includes the `HeroDetail` component only if a selected hero exists.
 -->
 구조 디렉티브는 DOM 엘리먼트를 추가하거나 제거, 치환하는 용도로 사용합니다.
 Angular가 제공하는 구조 디렉티브를 템플릿에 사용하는 예제 코드를 확인해 보세요:

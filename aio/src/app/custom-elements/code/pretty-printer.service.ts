@@ -20,13 +20,13 @@ export class PrettyPrinter {
   }
 
   private getPrettyPrintOne(): Promise<PrettyPrintOne> {
-    const ppo = (window as any)['prettyPrintOne'];
+    const ppo = (window as any).prettyPrintOne;
     return ppo ? Promise.resolve(ppo) :
       // `prettyPrintOne` is not on `window`, which means `prettify.js` has not been loaded yet.
       // Import it; ad a side-effect it will add `prettyPrintOne` on `window`.
       import('assets/js/prettify.js' as any)
         .then(
-          () => (window as any)['prettyPrintOne'],
+          () => (window as any).prettyPrintOne,
           err => {
             const msg = `Cannot get prettify.js from server: ${err.message}`;
             this.logger.error(new Error(msg));
@@ -37,9 +37,9 @@ export class PrettyPrinter {
 
   /**
    * Format code snippet as HTML
-   * @param {string} code - the code snippet to format; should already be HTML encoded
-   * @param {string} [language] - The language of the code to render (could be javascript, html, typescript, etc)
-   * @param {string|number} [linenums] - Whether to display line numbers:
+   * @param code - the code snippet to format; should already be HTML encoded
+   * @param [language] - The language of the code to render (could be javascript, html, typescript, etc)
+   * @param [linenums] - Whether to display line numbers:
    *  - false: don't display
    *  - true: do display
    *  - number: do display but start at the given number

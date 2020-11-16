@@ -1,5 +1,5 @@
 <!--
-# Try it: Use forms for user input
+# Using forms for user input
 -->
 # 폼으로 입력 받기
 

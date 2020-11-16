@@ -489,6 +489,12 @@ By default, these criteria are:
 
 1. The URL must not contain a file extension (i.e. a `.`) in the last path segment.
 2. The URL must not contain `__`.
+
+<div class="alert is-helpful">
+
+To configure whether navigation requests are sent through to the network or not, see the [navigationRequestStrategy](#navigation-request-strategy) section.
+
+</div>
 -->
 서비스 워커는 애셋이나 데이터 그룹에 해당되지 않는 URL을 모두 [인덱스 파일로](#index-file) 리다이렉트합니다. 이 때 이 요청이 다음과 같은 조건이라면 네비게이션 요청으로 간주합니다:
 
@@ -500,6 +506,13 @@ By default, these criteria are:
 
 1. 마지막 URL 세그먼트가 파일 확장자(`.`)를 포함하지 않는 경우
 2. URL에 `__`가 존재하지 않는 경우
+
+<div class="alert is-helpful">
+
+To configure whether navigation requests are sent through to the network or not, see the [navigationRequestStrategy](#navigation-request-strategy) section.
+
+</div>
+
 
 <!--
 ### Matching navigation request URLs
@@ -539,3 +552,33 @@ If the field is omitted, it defaults to:
   '!/**/*__*/**',  // 어디에라도 URL 세그먼트에 `__`를 포함하는 경우는 제외
 ]
 ```
+
+
+{@a navigation-request-strategy}
+
+## `navigationRequestStrategy`
+
+This optional property enables you to configure how the service worker handles navigation requests:
+
+```json
+{
+  "navigationRequestStrategy": "freshness"
+}
+```
+
+Possible values:
+
+- `'performance'`: The default setting. Serves the specified [index file](#index-file), which is typically cached.
+- `'freshness'`: Passes the requests through to the network and falls back to the `performance` behavior when offline.
+  This value is useful when the server redirects the navigation requests elsewhere using an HTTP redirect (3xx status code).
+  Reasons for using this value include:
+    - Redirecting to an authentication website when authentication is not handled by the application.
+    - Redirecting specific URLs to avoid breaking existing links/bookmarks after a website redesign.
+    - Redirecting to a different website, such as a server-status page, while a page is temporarily down.
+
+<div class="alert is-important">
+
+The `freshness` strategy usually results in more requests sent to the server, which can increase response latency.
+It is recommended that you use the default performance strategy whenever possible.
+
+</div>

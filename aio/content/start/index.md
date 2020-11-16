@@ -1,7 +1,7 @@
 <!--
-# Part 1: Getting started with a basic Angular app
+# Getting started with a basic Angular app
 -->
-# 1단계: Angular 앱 개발 시작하기
+# Angular 앱 개발 시작하기
 
 <!--
 Welcome to Angular!

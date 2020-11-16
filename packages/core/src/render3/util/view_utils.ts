@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {assertDefined, assertDomNode, assertGreaterThan, assertIndexInRange, assertLessThan} from '../../util/assert';
-import {assertTNodeForLView} from '../assert';
+import {assertDefined, assertDomNode, assertGreaterThan, assertGreaterThanOrEqual, assertIndexInRange, assertLessThan} from '../../util/assert';
+import {assertTNode, assertTNodeForLView} from '../assert';
 import {LContainer, TYPE} from '../interfaces/container';
 import {LContext, MONKEY_PATCH_KEY_NAME} from '../interfaces/context';
 import {TConstants, TNode} from '../interfaces/node';
@@ -78,7 +78,9 @@ export function unwrapLContainer(value: RNode|LView|LContainer): LContainer|null
  * from any containers, component views, or style contexts.
  */
 export function getNativeByIndex(index: number, lView: LView): RNode {
-  return unwrapRNode(lView[index + HEADER_OFFSET]);
+  ngDevMode && assertIndexInRange(lView, index);
+  ngDevMode && assertGreaterThanOrEqual(index, HEADER_OFFSET, 'Expected to be past HEADER_OFFSET');
+  return unwrapRNode(lView[index]);
 }
 
 /**
@@ -105,10 +107,10 @@ export function getNativeByTNode(tNode: TNode, lView: LView): RNode {
  * @param tNode
  * @param lView
  */
-export function getNativeByTNodeOrNull(tNode: TNode, lView: LView): RNode|null {
-  const index = tNode.index;
+export function getNativeByTNodeOrNull(tNode: TNode|null, lView: LView): RNode|null {
+  const index = tNode === null ? -1 : tNode.index;
   if (index !== -1) {
-    ngDevMode && assertTNodeForLView(tNode, lView);
+    ngDevMode && assertTNodeForLView(tNode!, lView);
     const node: RNode|null = unwrapRNode(lView[index]);
     ngDevMode && node !== null && !isProceduralRenderer(lView[RENDERER]) && assertDomNode(node);
     return node;
@@ -117,16 +119,19 @@ export function getNativeByTNodeOrNull(tNode: TNode, lView: LView): RNode|null {
 }
 
 
+// fixme(misko): The return Type should be `TNode|null`
 export function getTNode(tView: TView, index: number): TNode {
   ngDevMode && assertGreaterThan(index, -1, 'wrong index for TNode');
   ngDevMode && assertLessThan(index, tView.data.length, 'wrong index for TNode');
-  return tView.data[index + HEADER_OFFSET] as TNode;
+  const tNode = tView.data[index] as TNode;
+  ngDevMode && tNode !== null && assertTNode(tNode);
+  return tNode;
 }
 
 /** Retrieves a value from any `LView` or `TData`. */
 export function load<T>(view: LView|TData, index: number): T {
-  ngDevMode && assertIndexInRange(view, index + HEADER_OFFSET);
-  return view[index + HEADER_OFFSET];
+  ngDevMode && assertIndexInRange(view, index);
+  return view[index];
 }
 
 export function getComponentLViewByIndex(nodeIndex: number, hostView: LView): LView {
@@ -176,8 +181,13 @@ export function viewAttachedToContainer(view: LView): boolean {
 }
 
 /** Returns a constant from `TConstants` instance. */
+export function getConstant<T>(consts: TConstants|null, index: null|undefined): null;
+export function getConstant<T>(consts: TConstants, index: number): T|null;
+export function getConstant<T>(consts: TConstants|null, index: number|null|undefined): T|null;
 export function getConstant<T>(consts: TConstants|null, index: number|null|undefined): T|null {
-  return consts === null || index == null ? null : consts[index] as unknown as T;
+  if (index === null || index === undefined) return null;
+  ngDevMode && assertIndexInRange(consts!, index);
+  return consts![index] as unknown as T;
 }
 
 /**

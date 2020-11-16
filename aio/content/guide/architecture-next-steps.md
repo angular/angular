@@ -29,7 +29,7 @@ Angular의 기본 구성요소들에 대해 이해하고 나면 Angular 애플�
 ## 애플리케이션 아키텍처
 
 <!--
-* The [Components and templates](guide/displaying-data) guide explains how to connect the application data in your [components](guide/glossary#component) to your page-display [templates](guide/glossary#template), to create a complete interactive application.
+* The **Main Concepts** section located in the table of contents contains several topics that explain how to connect the application data in your [components](guide/glossary#component) to your page-display [templates](guide/glossary#template), to create a complete interactive application.
 
 * The [NgModules](guide/ngmodules) guide provides in-depth information on the modular structure of an Angular application.
 
@@ -37,7 +37,7 @@ Angular의 기본 구성요소들에 대해 이해하고 나면 Angular 애플�
 
 * The [Dependency injection](guide/dependency-injection) guide provides in-depth information on how to construct an application such that each component class can acquire the services and objects it needs to perform its function.
 -->
-* [컴포넌트와 템플릿](guide/displaying-data) 문서는 애플리케이션 데이터를 [컴포넌트](guide/glossary#component)와 어떻게 연결하는지, 이 데이터를 화면에 표시하려면 [템플릿](guide/glossary#template)을 어떻게 구성해야 하는지를 다룹니다. 
+* The **Main Concepts** section located in the table of contents contains several topics that explain how to connect the application data in your [components](guide/glossary#component) to your page-display [templates](guide/glossary#template), to create a complete interactive application. 
 
 * Angular 애플리케이션을 모듈 단위로 구성하는 방법에 대해 알아보려면 [NgModule](guide/ngmodules) 문서를 참고하세요.
 
@@ -51,7 +51,7 @@ Angular의 기본 구성요소들에 대해 이해하고 나면 Angular 애플�
 ## 반응형 프로그래밍
 
 <!--
-The **Components and Templates** guide provides guidance and details of the [template syntax](guide/template-syntax) that you use to display your component data when and where you want it within a view, and to collect input from users that you can respond to.
+The [template syntax](guide/template-syntax) and related topics contain details about how to display your component data when and where you want it within a view, and how to collect input from users that you can respond to.
 
 Additional pages and sections describe some basic programming techniques for Angular apps.
 
@@ -66,7 +66,7 @@ Additional pages and sections describe some basic programming techniques for Ang
 * [Animations](guide/animations): Use Angular's animation library to animate component behavior
 without deep knowledge of animation techniques or CSS.
 -->
-**컴포넌트와 템플릿** 가이드 문서는 화면에 컴포넌트 데이터를 표시하거나 사용자의 입력을 받을 때 사용하는 [템플릿 문법](guide/template-syntax)에 대해 자세하게 안내하고 있습니다.
+The [template syntax](guide/template-syntax) and related topics contain details about how to display your component data when and where you want it within a view, and how to collect input from users that you can respond to.
 
 이 문서 외에 Angular 앱을 개발하는 기본 테크닉에 대해서도 알아보세요.
 
@@ -117,8 +117,6 @@ Angular는 단일 페이지 애플리케이션을 만들때 사용하는 프레�
 ## 개발 단계에서 활용할 수 있는 팁
 
 <!--
-The **Development Workflow** section describes the tools and processes you use to compile, test, and deploy Angular applications.
-
 * [CLI Command Reference](cli): The Angular CLI is a command-line tool that you use to create projects, generate application and library code, and perform a variety of ongoing development tasks such as testing, bundling, and deployment.
 
 * [Compilation](guide/aot-compiler): Angular provides just-in-time (JIT) compilation for the development environment, and ahead-of-time (AOT) compilation for the production environment.
@@ -133,8 +131,6 @@ The **Development Workflow** section describes the tools and processes you use t
 
 * [Accessibility](guide/accessibility): Make your app accessible to all users.
 -->
-**개발 흐름** 섹션에서는 개발자가 앱을 컴파일하고 테스트하거나 배포하는 방법에 대해 안내합니다.
-
 * [CLI 커맨드](cli): Angular CLI는 프로젝트나 애플리케이션, 라이브러리를 생성하거나 앱 개발에 필요한 테스트, 번들링, 배포를 할 때 활용할 수 있습니다.
 
 * [컴파일](guide/aot-compiler): Angular는 AOT(ahead-of-time) 컴파일러를 사용합니다.

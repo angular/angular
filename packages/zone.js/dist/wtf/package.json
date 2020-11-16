@@ -1,7 +1,0 @@
-{
-  "name": "zone.js/wtf",
-  "main": "../../bundles/wtf.umd.js",
-  "fesm2015": "../../fesm2015/wtf.js",
-  "es2015": "../../fesm2015/wtf.js",
-  "module": "../../fesm2015/wtf.js"
-}

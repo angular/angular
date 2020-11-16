@@ -490,13 +490,13 @@ describe('projection', () => {
     expect(main.nativeElement).toHaveText('TREE(0:TREE2(1:TREE(2:)))');
   });
 
-  if (supportsNativeShadowDOM()) {
-    it('should support native content projection and isolate styles per component', () => {
-      TestBed.configureTestingModule({declarations: [SimpleNative1, SimpleNative2]});
+  if (supportsShadowDOM()) {
+    it('should support shadow dom content projection and isolate styles per component', () => {
+      TestBed.configureTestingModule({declarations: [SimpleShadowDom1, SimpleShadowDom2]});
       TestBed.overrideComponent(MainComp, {
         set: {
-          template: '<simple-native1><div>A</div></simple-native1>' +
-              '<simple-native2><div>B</div></simple-native2>'
+          template: '<simple-shadow-dom1><div>A</div></simple-shadow-dom1>' +
+              '<simple-shadow-dom2><div>B</div></simple-shadow-dom2>'
         }
       });
       const main = TestBed.createComponent(MainComp);
@@ -857,21 +857,21 @@ class Simple {
 }
 
 @Component({
-  selector: 'simple-native1',
-  template: 'SIMPLE1(<content></content>)',
-  encapsulation: ViewEncapsulation.Native,
+  selector: 'simple-shadow-dom1',
+  template: 'SIMPLE1(<slot></slot>)',
+  encapsulation: ViewEncapsulation.ShadowDom,
   styles: ['div {color: red}']
 })
-class SimpleNative1 {
+class SimpleShadowDom1 {
 }
 
 @Component({
-  selector: 'simple-native2',
-  template: 'SIMPLE2(<content></content>)',
-  encapsulation: ViewEncapsulation.Native,
+  selector: 'simple-shadow-dom2',
+  template: 'SIMPLE2(<slot></slot>)',
+  encapsulation: ViewEncapsulation.ShadowDom,
   styles: ['div {color: blue}']
 })
-class SimpleNative2 {
+class SimpleShadowDom2 {
 }
 
 @Component({selector: 'empty', template: ''})
@@ -1043,6 +1043,6 @@ class CmpA1 {
 class CmpA2 {
 }
 
-function supportsNativeShadowDOM(): boolean {
-  return typeof (<any>document.body).createShadowRoot === 'function';
+function supportsShadowDOM(): boolean {
+  return typeof (<any>document.body).attachShadow !== 'undefined';
 }

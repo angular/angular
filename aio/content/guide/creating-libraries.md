@@ -39,7 +39,7 @@ The `ng generate` command creates the `projects/my-lib` folder in your workspace
 
 </div>
 
-When you generate a new library, the workspace configuration file, `angular.json`, is updated with a project of type 'library'.
+When you generate a new library, the workspace configuration file, `angular.json`, is updated with a project of type `library`.
 
 <code-example format="json">
 "projects": {
@@ -227,7 +227,7 @@ If you want a dropdown that would contain different passed-in values each time, 
 
 Suppose you want to read a configuration file and then generate a form based on that configuration.
 If that form will need additional customization by the developer who is using your library, it might work best as a schematic.
-However, if the forms will always be the same and not need much customization by developers, then you could create a dynamic component that takes the configuration and generates the form.
+However, if the form will always be the same and not need much customization by developers, then you could create a dynamic component that takes the configuration and generates the form.
 In general, the more complex the customization, the more useful the schematic approach.
 
 To learn more, see [Schematics Overview](guide/schematics) and [Schematics for Libraries](guide/schematics-for-libraries).
@@ -252,7 +252,7 @@ If you want a dropdown that would contain different passed-in values each time, 
 
 Suppose you want to read a configuration file and then generate a form based on that configuration.
 If that form will need additional customization by the developer who is using your library, it might work best as a schematic.
-However, if the forms will always be the same and not need much customization by developers, then you could create a dynamic component that takes the configuration and generates the form.
+However, if the form will always be the same and not need much customization by developers, then you could create a dynamic component that takes the configuration and generates the form.
 In general, the more complex the customization, the more useful the schematic approach.
 
 더 자세한 내용은 [스키매틱 개요](guide/schematics) 문서나 [라이브러리용 스키매틱](guide/schematics-for-libraries) 문서를 참고하세요.
@@ -341,9 +341,9 @@ For example, `main` should point at a JavaScript file, not a TypeScript file.
 
 
 <!--
-## Use TypeScript path mapping for peer dependencies
+### Use TypeScript path mapping for peer dependencies
 -->
-## 의존 관계에 있는 라이브러리를 위해 TypeScript 경로 연결하기
+### 의존 관계에 있는 라이브러리를 위해 TypeScript 경로 연결하기
 
 <!--
 Angular libraries should list all `@angular/*` dependencies as peer dependencies.

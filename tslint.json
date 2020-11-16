@@ -92,13 +92,15 @@
       // Ignore special files
       "**/*.externs.js",
       // Ignore test files
+      "./packages/compiler-cli/test/compliance/test_cases/**/*",
       "./packages/localize/**/test_files/**/*",
       "./tools/ts-api-guardian/test/fixtures/**/*",
       "./tools/public_api_guard/**/*.d.ts",
       "./modules/benchmarks_external/**/*",
       // Ignore zone.js directory
       // TODO(JiaLiPassion): add zone.js back later
-      "./packages/zone.js/**/*"
+      "./packages/zone.js/**/*",
+      "./dev-infra/ng-dev.js"
     ]
   }
 }

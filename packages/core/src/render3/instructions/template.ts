@@ -9,14 +9,14 @@ import {assertFirstCreatePass} from '../assert';
 import {attachPatchData} from '../context_discovery';
 import {registerPostOrderHooks} from '../hooks';
 import {ComponentTemplate} from '../interfaces/definition';
-import {LocalRefExtractor, TAttributes, TContainerNode, TNodeType, TViewNode} from '../interfaces/node';
+import {LocalRefExtractor, TAttributes, TContainerNode, TNodeType} from '../interfaces/node';
 import {isDirectiveHost} from '../interfaces/type_checks';
-import {HEADER_OFFSET, LView, RENDERER, T_HOST, TView, TViewType} from '../interfaces/view';
+import {HEADER_OFFSET, LView, RENDERER, TView, TViewType} from '../interfaces/view';
 import {appendChild} from '../node_manipulation';
-import {getLView, getTView, setPreviousOrParentTNode} from '../state';
+import {getLView, getTView, setCurrentTNode} from '../state';
 import {getConstant} from '../util/view_utils';
+import {addToViewTree, createDirectivesInstances, createLContainer, createTView, getOrCreateTNode, resolveDirectives, saveResolvedLocalsInData} from './shared';
 
-import {addToViewTree, createDirectivesInstances, createLContainer, createTNode, createTView, getOrCreateTNode, resolveDirectives, saveResolvedLocalsInData} from './shared';
 
 
 function templateFirstCreatePass(
@@ -28,18 +28,15 @@ function templateFirstCreatePass(
   const tViewConsts = tView.consts;
   // TODO(pk): refactor getOrCreateTNode to have the "create" only version
   const tNode = getOrCreateTNode(
-      tView, lView[T_HOST], index, TNodeType.Container, tagName || null,
+      tView, index, TNodeType.Container, tagName || null,
       getConstant<TAttributes>(tViewConsts, attrsIndex));
 
   resolveDirectives(tView, lView, tNode, getConstant<string[]>(tViewConsts, localRefsIndex));
   registerPostOrderHooks(tView, tNode);
 
   const embeddedTView = tNode.tViews = createTView(
-      TViewType.Embedded, -1, templateFn, decls, vars, tView.directiveRegistry, tView.pipeRegistry,
-      null, tView.schemas, tViewConsts);
-  const embeddedTViewNode = createTNode(tView, null, TNodeType.View, -1, null, null) as TViewNode;
-  embeddedTViewNode.injectorIndex = tNode.injectorIndex;
-  embeddedTView.node = embeddedTViewNode;
+      TViewType.Embedded, tNode, templateFn, decls, vars, tView.directiveRegistry,
+      tView.pipeRegistry, null, tView.schemas, tViewConsts);
 
   if (tView.queries !== null) {
     tView.queries.template(tView, tNode);
@@ -76,11 +73,11 @@ export function ɵɵtemplate(
   const tView = getTView();
   const adjustedIndex = index + HEADER_OFFSET;
 
-  const tNode = tView.firstCreatePass ?
-      templateFirstCreatePass(
-          index, tView, lView, templateFn, decls, vars, tagName, attrsIndex, localRefsIndex) :
-      tView.data[adjustedIndex] as TContainerNode;
-  setPreviousOrParentTNode(tNode, false);
+  const tNode = tView.firstCreatePass ? templateFirstCreatePass(
+                                            adjustedIndex, tView, lView, templateFn, decls, vars,
+                                            tagName, attrsIndex, localRefsIndex) :
+                                        tView.data[adjustedIndex] as TContainerNode;
+  setCurrentTNode(tNode, false);
 
   const comment = lView[RENDERER].createComment(ngDevMode ? 'container' : '');
   appendChild(tView, lView, comment, tNode);

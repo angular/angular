@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import * as path from 'path';
 import * as tss from 'typescript/lib/tsserverlibrary';
 
 import {getTemplateCompletions} from './completions';
@@ -75,7 +76,6 @@ class LanguageServiceImpl implements ng.LanguageService {
     if (templateInfo) {
       return getDefinitionAndBoundSpan(templateInfo, position);
     }
-
     // Attempt to get Angular-specific definitions in a TypeScript file, like templates defined
     // in a `templateUrl` property.
     if (fileName.endsWith('.ts')) {

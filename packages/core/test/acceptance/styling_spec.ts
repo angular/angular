@@ -12,6 +12,7 @@ import {ngDevModeResetPerfCounters} from '@angular/core/src/util/ng_dev_mode';
 import {TestBed} from '@angular/core/testing';
 import {getElementClasses, getElementStyles, getSortedClassName, getSortedStyle} from '@angular/core/testing/src/styling';
 import {By, DomSanitizer, SafeStyle} from '@angular/platform-browser';
+import {browserDetection} from '@angular/platform-browser/testing/src/browser_util';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {ivyEnabled, modifiedInIvy, onlyInIvy} from '@angular/private/testing';
 
@@ -797,7 +798,155 @@ describe('styling', () => {
 
     onlyInIvy('perf counters').expectPerfCounters({
       rendererSetStyle: 1,
-      tNode: 3,
+      tNode: 2,
+    });
+  });
+
+  onlyInIvy('ViewEngine only supports !important when set through the `style` attribute')
+      .it('should set !important on a single property', () => {
+        // We go through `CSSStyleDeclaration.setProperty` to set `!important`. Values set through
+        // `setProperty` aren't propagated to the `style` attribute on IE11, even though the style
+        // is applied, so we have to skip the test there since we don't have a way of asserting.
+        if (browserDetection.isIE) {
+          return;
+        }
+
+        @Component({template: '<div [style.width]="width"></div>'})
+        class Cmp {
+          width!: string;
+        }
+
+        TestBed.configureTestingModule({declarations: [Cmp]});
+        const fixture = TestBed.createComponent(Cmp);
+        fixture.componentInstance.width = '50px !important';
+        fixture.detectChanges();
+        const html = fixture.nativeElement.innerHTML;
+
+        // We have to check the `style` attribute, because `element.style.prop` doesn't include
+        // `!important`. Use a regex, because the different renderers produce different whitespace.
+        expect(html).toMatch(/style=["|']width:\s*50px\s*!important/);
+
+        onlyInIvy('perf counters').expectPerfCounters({
+          rendererSetStyle: 1,
+          tNode: 2,
+        });
+      });
+
+  onlyInIvy('ViewEngine only supports !important when set through the `style` attribute')
+      .it('should set !important that is not preceded by a space', () => {
+        // We go through `CSSStyleDeclaration.setProperty` to set `!important`. Values set through
+        // `setProperty` aren't propagated to the `style` attribute on IE11, even though the style
+        // is applied, so we have to skip the test there since we don't have a way of asserting.
+        if (browserDetection.isIE) {
+          return;
+        }
+
+        @Component({template: '<div [style.width]="width"></div>'})
+        class Cmp {
+          width!: string;
+        }
+
+        TestBed.configureTestingModule({declarations: [Cmp]});
+        const fixture = TestBed.createComponent(Cmp);
+        fixture.componentInstance.width = '50px!important';
+        fixture.detectChanges();
+        const html = fixture.nativeElement.innerHTML;
+
+        // We have to check the `style` attribute, because `element.style.prop` doesn't include
+        // `!important`. Use a regex, because the different renderers produce different whitespace.
+        expect(html).toMatch(/style=["|']width:\s*50px\s*!important/);
+
+        onlyInIvy('perf counters').expectPerfCounters({
+          rendererSetStyle: 1,
+          tNode: 2,
+        });
+      });
+
+  onlyInIvy('ViewEngine only supports !important when set through the `style` attribute')
+      .it('should set !important on a dash-case property', () => {
+        // We go through `CSSStyleDeclaration.setProperty` to set `!important`. Values set through
+        // `setProperty` aren't propagated to the `style` attribute on IE11, even though the style
+        // is applied, so we have to skip the test there since we don't have a way of asserting.
+        if (browserDetection.isIE) {
+          return;
+        }
+
+        @Component({template: '<div [style.margin-right]="marginRight"></div>'})
+        class Cmp {
+          marginRight!: string;
+        }
+
+        TestBed.configureTestingModule({declarations: [Cmp]});
+        const fixture = TestBed.createComponent(Cmp);
+        fixture.componentInstance.marginRight = '5px !important';
+        fixture.detectChanges();
+        const html = fixture.nativeElement.innerHTML;
+
+        // We have to check the `style` attribute, because `element.style.prop` doesn't include
+        // `!important`. Use a regex, because the different renderers produce different whitespace.
+        expect(html).toMatch(/style=["|']margin-right:\s*5px\s*!important/);
+
+        onlyInIvy('perf counters').expectPerfCounters({
+          rendererSetStyle: 1,
+          tNode: 2,
+        });
+      });
+
+  it('should set !important on multiple properties', () => {
+    // We go through `CSSStyleDeclaration.setProperty` to set `!important`. Values set through
+    // `setProperty` aren't propagated to the `style` attribute on IE11, even though the style is
+    // applied, so we have to skip the test there since we don't have a way of asserting.
+    if (browserDetection.isIE) {
+      return;
+    }
+
+    @Component({template: '<div [style]="styles"></div>'})
+    class Cmp {
+      styles!: string;
+    }
+
+    TestBed.configureTestingModule({declarations: [Cmp]});
+    const fixture = TestBed.createComponent(Cmp);
+    fixture.componentInstance.styles = 'height: 25px !important; width: 50px !important;';
+    fixture.detectChanges();
+    const html = fixture.nativeElement.innerHTML;
+
+    // We have to check the `style` attribute, because `element.style.prop` doesn't include
+    // `!important`. Use a regex, because the different renderers produce different whitespace.
+    expect(html).toMatch(/style=["|']height:\s*25px\s*!important;\s*width:\s*50px\s*!important/);
+
+    onlyInIvy('perf counters').expectPerfCounters({
+      rendererSetStyle: 2,
+      tNode: 2,
+    });
+  });
+
+  it('should set !important if some properties are !important and other are not', () => {
+    // We go through `CSSStyleDeclaration.setProperty` to set `!important`. Values set through
+    // `setProperty` aren't propagated to the `style` attribute on IE11, even though the style is
+    // applied, so we have to skip the test there since we don't have a way of asserting.
+    if (browserDetection.isIE) {
+      return;
+    }
+
+    @Component({template: '<div [style]="styles"></div>'})
+    class Cmp {
+      styles!: string;
+    }
+
+    TestBed.configureTestingModule({declarations: [Cmp]});
+    const fixture = TestBed.createComponent(Cmp);
+    fixture.componentInstance.styles = 'height: 25px; width: 50px !important;';
+    fixture.detectChanges();
+    const html = fixture.nativeElement.innerHTML;
+
+    // We have to check the `style` attribute, because `element.style.prop` doesn't include
+    // `!important`. Use a regex, because the different renderers produce different whitespace.
+    expect(html).toMatch(/style=["|']height:\s*25px;\s*width:\s*50px\s*!important/);
+
+    onlyInIvy('perf counters').expectPerfCounters({
+      rendererSetStyle: 2,
+      tNode: 2,
     });
   });
 
@@ -3460,8 +3609,8 @@ describe('styling', () => {
       if (!ivyEnabled && !supportsWritingStringsToStyleProperty()) {
         // VE does not treat `[style]` as anything special, instead it simply writes to the
         // `style` property on the element like so `element.style=value`. This seems to work fine
-        // every where except ie10, where it throws an error and as a consequence this test fails in
-        // VE on ie10.
+        // every where except IE11, where it throws an error and as a consequence this test fails in
+        // VE on IE11.
         return;
       }
       @Component({template: `<div [style]="style"></div>`})
@@ -3479,7 +3628,7 @@ describe('styling', () => {
     /**
      * Tests to see if the current browser supports non standard way of writing into styles.
      *
-     * This is not the correct way to write to style and is not supported in ie10.
+     * This is not the correct way to write to style and is not supported in IE11.
      * ```
      * div.style = 'color: white';
      * ```
@@ -3490,7 +3639,7 @@ describe('styling', () => {
      * ```
      *
      * Even though writing to `div.style` is not officially supported, it works in all
-     * browsers except ie10.
+     * browsers except IE11.
      *
      * This function detects this condition and allows us to skip the test.
      */

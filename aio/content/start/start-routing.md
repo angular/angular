@@ -1,5 +1,5 @@
 <!--
-# In-app navigation
+# Adding navigation
 -->
 # 네비게이션
 
@@ -148,6 +148,12 @@ The product details component handles the display of each product. The Angular R
     <code-example header="src/app/product-details/product-details.component.html" path="getting-started/src/app/product-details/product-details.component.html" region="details">
     </code-example>
 
+    <div class="alert is-helpful">
+
+    The line, `<h4>{{ product.price | currency }}</h4>`, uses the `currency` pipe to transform `product.price` from a number to a currency string. A pipe is a way you can transform data in your HTML template. For more information about Angular pipes, see [Pipes](guide/pipes "Pipes").
+
+    </div>
+
 Now, when users click on a name in the product list, the router navigates them to the distinct URL for the product, swaps out the product list component for the product details component, and displays the product details.
 
 <div class="lightbox">
@@ -198,6 +204,14 @@ For more information about the Angular Router, see [Routing & Navigation](guide/
 
     <code-example header="src/app/product-details/product-details.component.html" path="getting-started/src/app/product-details/product-details.component.html" region="details">
     </code-example>
+    
+    <div class="alert is-helpful">
+
+    `<h4>{{ product.price | currency }}</h4>`라는 코드를 보면 `product.price`를 숫자 형태에서 통화 형식으로 변환하기 위해 `currency` 파이프를 사용했습니다.
+    파이프는 HTML 템플릿 안에서 데이터가 표시되는 형식을 변환하는 역할을 합니다.
+    자세한 내용은 [파이프](guide/pipes "Pipes") 문서를 참고하세요.
+
+    </div>
 
 이제 사용자가 상품 목록에서 상품 이름을 클릭하면 Angular 라우터가 해당 상품에 해당하는 주소로 이동하며 상품 목록 컴포넌트를 화면에서 제거하고 상품의 상세정보 컴포넌트를 화면에 표시합니다.
 

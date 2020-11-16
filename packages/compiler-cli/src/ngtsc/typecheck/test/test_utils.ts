@@ -6,14 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CssSelector, ParseSourceFile, ParseSourceSpan, parseTemplate, R3TargetBinder, SchemaMetadata, SelectorMatcher, TmplAstElement, TmplAstReference, Type} from '@angular/compiler';
+import {CssSelector, ParseSourceFile, ParseSourceSpan, parseTemplate, R3TargetBinder, SchemaMetadata, SelectorMatcher, TmplAstElement, Type} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {absoluteFrom, AbsoluteFsPath, getSourceFileOrError, LogicalFileSystem} from '../../file_system';
 import {TestFile} from '../../file_system/testing';
-import {AbsoluteModuleStrategy, LocalIdentifierStrategy, LogicalProjectStrategy, ModuleResolver, Reference, ReferenceEmitter} from '../../imports';
+import {AbsoluteModuleStrategy, LocalIdentifierStrategy, LogicalProjectStrategy, ModuleResolver, Reexport, Reference, ReferenceEmitter} from '../../imports';
 import {NOOP_INCREMENTAL_BUILD} from '../../incremental';
+import {ClassPropertyMapping} from '../../metadata';
 import {ClassDeclaration, isNamedClassDeclaration, TypeScriptReflectionHost} from '../../reflection';
+import {ComponentScopeReader, LocalModuleScope, ScopeData} from '../../scope';
 import {makeProgram} from '../../testing';
 import {getRootDirs} from '../../util/src/typescript';
 import {ProgramTypeCheckAdapter, TemplateTypeChecker, TypeCheckContext} from '../api';
@@ -152,10 +154,21 @@ export function ngForDts(): TestFile {
   };
 }
 
+export function ngForTypeCheckTarget(): TypeCheckingTarget {
+  const dts = ngForDts();
+  return {
+    ...dts,
+    fileName: dts.name,
+    source: dts.contents,
+    templates: {},
+  };
+}
+
 export const ALL_ENABLED_CONFIG: TypeCheckingConfig = {
   applyTemplateContextGuards: true,
   checkQueries: false,
   checkTemplateBodies: true,
+  alwaysCheckSchemaInTemplateBodies: true,
   checkTypeOfInputBindings: true,
   honorAccessModifiersForInputBindings: true,
   strictNullInputBindings: true,
@@ -172,6 +185,7 @@ export const ALL_ENABLED_CONFIG: TypeCheckingConfig = {
   strictSafeNavigationTypes: true,
   useContextGenericType: true,
   strictLiteralTypes: true,
+  enableTemplateTypeChecker: false,
 };
 
 // Remove 'ref' from TypeCheckableDirectiveMeta and add a 'selector' instead.
@@ -180,8 +194,9 @@ export type TestDirective = Partial<Pick<
     Exclude<
         keyof TypeCheckableDirectiveMeta,
         'ref'|'coercedInputFields'|'restrictedInputFields'|'stringLiteralInputFields'|
-        'undeclaredInputFields'>>>&{
+        'undeclaredInputFields'|'inputs'|'outputs'>>>&{
   selector: string, name: string, file?: AbsoluteFsPath, type: 'directive',
+      inputs?: {[fieldName: string]: string}, outputs?: {[fieldName: string]: string},
       coercedInputFields?: string[], restrictedInputFields?: string[],
       stringLiteralInputFields?: string[], undeclaredInputFields?: string[], isGeneric?: boolean;
 };
@@ -225,9 +240,11 @@ export function tcb(
     checkTypeOfNonDomReferences: true,
     checkTypeOfPipes: true,
     checkTemplateBodies: true,
+    alwaysCheckSchemaInTemplateBodies: true,
     strictSafeNavigationTypes: true,
     useContextGenericType: true,
     strictLiteralTypes: true,
+    enableTemplateTypeChecker: false,
   };
   options = options || {
     emitSpans: false,
@@ -338,6 +355,18 @@ export function setup(targets: TypeCheckingTarget[], overrides: {
   ]);
   const fullConfig = {...ALL_ENABLED_CONFIG, ...config};
 
+  // Map out the scope of each target component, which is needed for the ComponentScopeReader.
+  const scopeMap = new Map<ClassDeclaration, ScopeData>();
+  for (const target of targets) {
+    const sf = getSourceFileOrError(program, target.fileName);
+    const scope = makeScope(program, sf, target.declarations ?? []);
+
+    for (const className of Object.keys(target.templates)) {
+      const classDecl = getClass(sf, className);
+      scopeMap.set(classDecl, scope);
+    }
+  }
+
   const checkAdapter = createTypeCheckAdapter((sf, ctx) => {
     for (const target of targets) {
       if (getSourceFileOrError(program, target.fileName) !== sf) {
@@ -352,7 +381,7 @@ export function setup(targets: TypeCheckingTarget[], overrides: {
         const templateUrl = `${className}.html`;
         const templateFile = new ParseSourceFile(template, templateUrl);
         const {nodes, errors} = parseTemplate(template, templateUrl);
-        if (errors !== undefined) {
+        if (errors !== null) {
           throw new Error('Template parse errors: \n' + errors.join('\n'));
         }
 
@@ -388,9 +417,52 @@ export function setup(targets: TypeCheckingTarget[], overrides: {
     (programStrategy as any).supportsInlineOperations = overrides.inlining;
   }
 
+  const fakeScopeReader: ComponentScopeReader = {
+    getRemoteScope(): null {
+      return null;
+    },
+    // If there is a module with [className] + 'Module' in the same source file, that will be
+    // returned as the NgModule for the class.
+    getScopeForComponent(clazz: ClassDeclaration): LocalModuleScope |
+        null {
+          try {
+            const ngModule = getClass(clazz.getSourceFile(), `${clazz.name.getText()}Module`);
+
+            if (!scopeMap.has(clazz)) {
+              // This class wasn't part of the target set of components with templates, but is
+              // probably a declaration used in one of them. Return an empty scope.
+              const emptyScope: ScopeData = {
+                directives: [],
+                ngModules: [],
+                pipes: [],
+              };
+              return {
+                ngModule,
+                compilation: emptyScope,
+                reexports: [],
+                schemas: [],
+                exported: emptyScope,
+              };
+            }
+            const scope = scopeMap.get(clazz)!;
+
+            return {
+              ngModule,
+              compilation: scope,
+              reexports: [],
+              schemas: [],
+              exported: scope,
+            };
+          } catch (e) {
+            // No NgModule was found for this class, so it has no scope.
+            return null;
+          }
+        }
+  };
+
   const templateTypeChecker = new TemplateTypeCheckerImpl(
       program, programStrategy, checkAdapter, fullConfig, emitter, reflectionHost, host,
-      NOOP_INCREMENTAL_BUILD);
+      NOOP_INCREMENTAL_BUILD, fakeScopeReader);
   return {
     templateTypeChecker,
     program,
@@ -417,8 +489,9 @@ function prepareDeclarations(
       name: decl.name,
       ref: new Reference(resolveDeclaration(decl)),
       exportAs: decl.exportAs || null,
+      selector: decl.selector || null,
       hasNgTemplateContextGuard: decl.hasNgTemplateContextGuard || false,
-      inputs: decl.inputs || {},
+      inputs: ClassPropertyMapping.fromMappedObject(decl.inputs || {}),
       isComponent: decl.isComponent || false,
       ngTemplateGuards: decl.ngTemplateGuards || [],
       coercedInputFields: new Set<string>(decl.coercedInputFields || []),
@@ -426,7 +499,7 @@ function prepareDeclarations(
       stringLiteralInputFields: new Set<string>(decl.stringLiteralInputFields || []),
       undeclaredInputFields: new Set<string>(decl.undeclaredInputFields || []),
       isGeneric: decl.isGeneric ?? false,
-      outputs: decl.outputs || {},
+      outputs: ClassPropertyMapping.fromMappedObject(decl.outputs || {}),
       queries: decl.queries || [],
     };
     matcher.addSelectables(selector, meta);
@@ -449,6 +522,55 @@ export function getClass(sf: ts.SourceFile, name: string): ClassDeclaration<ts.C
     }
   }
   throw new Error(`Class ${name} not found in file: ${sf.fileName}: ${sf.text}`);
+}
+
+/**
+ * Synthesize `ScopeData` metadata from an array of `TestDeclaration`s.
+ */
+function makeScope(program: ts.Program, sf: ts.SourceFile, decls: TestDeclaration[]): ScopeData {
+  const scope: ScopeData = {
+    ngModules: [],
+    directives: [],
+    pipes: [],
+  };
+
+  for (const decl of decls) {
+    let declSf = sf;
+    if (decl.file !== undefined) {
+      declSf = getSourceFileOrError(program, decl.file);
+    }
+    const declClass = getClass(declSf, decl.name);
+
+    if (decl.type === 'directive') {
+      scope.directives.push({
+        ref: new Reference(declClass),
+        baseClass: null,
+        name: decl.name,
+        selector: decl.selector,
+        queries: [],
+        inputs: decl.inputs !== undefined ? ClassPropertyMapping.fromMappedObject(decl.inputs) :
+                                            ClassPropertyMapping.empty(),
+        outputs: decl.outputs !== undefined ? ClassPropertyMapping.fromMappedObject(decl.outputs) :
+                                              ClassPropertyMapping.empty(),
+        isComponent: decl.isComponent ?? false,
+        exportAs: decl.exportAs ?? null,
+        ngTemplateGuards: decl.ngTemplateGuards ?? [],
+        hasNgTemplateContextGuard: decl.hasNgTemplateContextGuard ?? false,
+        coercedInputFields: new Set(decl.coercedInputFields ?? []),
+        restrictedInputFields: new Set(decl.restrictedInputFields ?? []),
+        stringLiteralInputFields: new Set(decl.stringLiteralInputFields ?? []),
+        undeclaredInputFields: new Set(decl.undeclaredInputFields ?? []),
+        isGeneric: decl.isGeneric ?? false,
+      });
+    } else if (decl.type === 'pipe') {
+      scope.pipes.push({
+        ref: new Reference(declClass),
+        name: decl.pipeName,
+      });
+    }
+  }
+
+  return scope;
 }
 
 class FakeEnvironment /* implements Environment */ {

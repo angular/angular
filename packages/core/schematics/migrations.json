@@ -44,6 +44,41 @@
       "version": "10.0.0-beta",
       "description": "Undecorated classes with Angular features migration. In version 10, classes that use Angular features and do not have an Angular decorator are no longer supported. Read more about this here: https://v10.angular.io/guide/migration-undecorated-classes",
       "factory": "./migrations/undecorated-classes-with-decorated-fields/index"
+    },
+    "migration-v11-navigation-extras-omissions": {
+      "version": "11.0.0-beta",
+      "description": "NavigationExtras omissions migration. In version 11, some unsupported properties were omitted from the `extras` parameter of the `Router.navigateByUrl` and `Router.createUrlTree` methods.",
+      "factory": "./migrations/navigation-extras-omissions/index"
+    },
+    "migration-v11-router-relative-link-resolution-default": {
+      "version": "11.0.0-beta",
+      "description": "The default value for `relativeLinkResolution` is changing from 'legacy' to 'corrected'.\nThis migration updates `RouterModule` configurations that use the default value to \nnow specifically use 'legacy' to prevent breakages when updating.",
+      "factory": "./migrations/relative-link-resolution/index"
+    },
+    "migration-v11-abstract-control-parent": {
+      "version": "11.0.0-beta",
+      "description": "In Angular version 11, the type of `AbstractControl.parent` can be `null` to reflect the runtime value more accurately. This migration automatically adds non-null assertions to existing accesses of the `parent` property on types like `FormControl`, `FormArray` and `FormGroup`.",
+      "factory": "./migrations/abstract-control-parent/index"
+    },
+    "migration-v11-native-view-encapsulation": {
+      "version": "11.0.0-beta",
+      "description": "ViewEncapsulation.Native has been removed as of Angular version 11. This migration replaces any usages with ViewEncapsulation.ShadowDom.",
+      "factory": "./migrations/native-view-encapsulation/index"
+    },
+    "migration-v11-wait-for-async": {
+      "version": "11.0.0-beta",
+      "description": "`async` to `waitForAsync` migration. The `async` testing function has been renamed to `waitForAsync` to avoid confusion with the native `async` keyword.",
+      "factory": "./migrations/wait-for-async/index"
+    },
+    "migration-v11-router-preserve-query-params": {
+      "version": "11.0.0-beta",
+      "description": "NavigationExtras.preserveQueryParams has been removed as of Angular version 11.  This migration replaces any usages with the appropriate assignment of the queryParamsHandler key.",
+      "factory": "./migrations/router-preserve-query-params/index"
+    },
+    "migration-v11-router-initial-navigation-options": {
+      "version": "11.0.0-beta",
+      "description": "Updates the `initialNavigation` property for `RouterModule.forRoot`.",
+      "factory": "./migrations/initial-navigation/index"
     }
   }
 }

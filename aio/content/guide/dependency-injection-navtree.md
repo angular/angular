@@ -4,6 +4,18 @@
 # 컴포넌트 트리 참조하기
 
 <!--
+<div class="callout is-critical">
+<header>Marked for archiving</header>
+
+To ensure that you have the best experience possible, this topic is marked for archiving until we determine
+that it clearly conveys the most accurate information possible.
+
+In the meantime, this topic might be helpful: [Hierarchical injectors](guide/hierarchical-dependency-injection).
+
+If you think this content should not be archived, please file a [GitHub issue](https://github.com/angular/angular/issues/new?template=3-docs-bug.md).
+
+</div>
+
 Application components often need to share information.
 You can often use loosely coupled techniques for sharing information,
 such as data binding and service sharing,
@@ -31,6 +43,18 @@ you can use Angular dependency injection to reach a parent component.
 
 This section describes some techniques for doing that.
 -->
+<div class="callout is-critical">
+<header>Marked for archiving</header>
+
+To ensure that you have the best experience possible, this topic is marked for archiving until we determine
+that it clearly conveys the most accurate information possible.
+
+In the meantime, this topic might be helpful: [Hierarchical injectors](guide/hierarchical-dependency-injection).
+
+If you think this content should not be archived, please file a [GitHub issue](https://github.com/angular/angular/issues/new?template=3-docs-bug.md).
+
+</div>
+
 애플리케이션에 있는 컴포넌트들은 서로 데이터를 공유하기도 합니다.
 이 때 컴포넌트에 데이터를 바인딩하거나 서비스를 공유하면 컴포넌트간 결합도를 높이지 않으면서도 데이터를 공유할 수 있지만, 때로는 필요한 컴포넌트를 직접 값을 참조하거나 이 컴포넌트에 있는 함수를 실행하는 것이 편할 때도 있습니다.
 
@@ -282,7 +306,7 @@ Here's *Barry*.
 
 
 *Barry*'s `providers` array looks just like [*Alex*'s](#alex-providers).
-If you're going to keep writing [*alias providers*](guide/dependency-injection-in-action#useexisting) like this you should create a [helper function](#provideparent).
+If you're going to keep writing [*alias providers*](guide/dependency-injection-in-action#useexisting) like this you should create a helper function.
 
 For now, focus on *Barry*'s constructor.
 
@@ -308,7 +332,7 @@ which *is* what parent means.
 
 2. Angular throws a cyclic dependency error if you omit the `@SkipSelf` decorator.
 
-  `Cannot instantiate cyclic dependency! (BethComponent -> Parent -> BethComponent)`
+  `NG0200: Circular dependency in DI detected for BethComponent. Dependency path: BethComponent -> Parent -> BethComponent`
 
 Here's *Alice*, *Barry*, and family in action.
 
@@ -328,7 +352,7 @@ Here's *Alice*, *Barry*, and family in action.
 
 
 *Barry*의 `providers` 설정은 [*Alex*에 설정한 것](#alex-providers)과 같습니다.
-하지만 [*별칭 프로바이더*](guide/dependency-injection-in-action#useexisting)를 사용한다면 *Alex*와 *Barry*를 구별하기 위해 [헬퍼 함수](#provideparent)를 사용할 수 밖에 없습니다.
+하지만 [*별칭 프로바이더*](guide/dependency-injection-in-action#useexisting)를 사용한다면 *Alex*와 *Barry*를 구별하기 위해 헬퍼 함수를 사용할 수 밖에 없습니다.
 
 <code-tabs>
 
@@ -350,7 +374,7 @@ Here's *Alice*, *Barry*, and family in action.
 
 2. 순환 참조를 방지할 수 있습니다. `@SkipSelf` 데코레이터가 없으면 다음과 같은 에러가 발생합니다.
 
-  `Cannot instantiate cyclic dependency! (BethComponent -> Parent -> BethComponent)`
+  `NG0200: Circular dependency in DI detected for BethComponent. Dependency path: BethComponent -> Parent -> BethComponent`
 
 이제 *Alice*, *Barry*, *Barry*의 가족 컴포넌트들은 다음과 같이 동작합니다.
 
@@ -432,61 +456,3 @@ It doesn't in this example *only* to demonstrate that the code will compile and 
 이 코드에서는 설명을 하기 위해 이렇게 구현했지만, 인터페이스는 컴파일 된 이후 코드에 존재하지 않습니다.
 
 </div>
-
-
-{@a provideparent}
-
-<!--
-### `provideParent()` helper function
--->
-### `provideParent()` 헬퍼 함수
-
-<!--
-Writing variations of the same parent *alias provider* gets old quickly,
-especially this awful mouthful with a [*forwardRef*](guide/dependency-injection-in-action#forwardref).
-
-<code-example path="dependency-injection-in-action/src/app/parent-finder.component.ts" region="alex-providers" header="dependency-injection-in-action/src/app/parent-finder.component.ts"></code-example>
-
-You can extract that logic into a helper function like the following.
-
-<code-example path="dependency-injection-in-action/src/app/parent-finder.component.ts" region="provide-the-parent" header="dependency-injection-in-action/src/app/parent-finder.component.ts"></code-example>
-
-Now you can add a simpler, more meaningful parent provider to your components.
-
-<code-example path="dependency-injection-in-action/src/app/parent-finder.component.ts" region="alice-providers" header="dependency-injection-in-action/src/app/parent-finder.component.ts"></code-example>
-
-
-You can do better. The current version of the helper function can only alias the `Parent` class interface.
-The application might have a variety of parent types, each with its own class interface token.
-
-Here's a revised version that defaults to `parent` but also accepts an optional second parameter for a different parent class interface.
-
-<code-example path="dependency-injection-in-action/src/app/parent-finder.component.ts" region="provide-parent" header="dependency-injection-in-action/src/app/parent-finder.component.ts"></code-example>
-
-
-And here's how you could use it with a different parent type.
-
-<code-example path="dependency-injection-in-action/src/app/parent-finder.component.ts" region="beth-providers" header="dependency-injection-in-action/src/app/parent-finder.component.ts"></code-example>
--->
-같은 부모 클래스를 *별칭 프로바이더*로 구별하는 로직은 아주 간단하게 작성할 수 있으며, [*forwardRef*](guide/dependency-injection-in-action#forwardref)와 함께 사용하는 방법에 대해서도 알아봤습니다.
-
-<code-example path="dependency-injection-in-action/src/app/parent-finder.component.ts" region="alex-providers" header="dependency-injection-in-action/src/app/parent-finder.component.ts"></code-example>
-
-이 로직은 헬퍼 함수를 사용해서 다음과 같이 구현할 수도 있습니다.
-
-<code-example path="dependency-injection-in-action/src/app/parent-finder.component.ts" region="provide-the-parent" header="dependency-injection-in-action/src/app/parent-finder.component.ts"></code-example>
-
-이렇게 작성하면 프로바이더를 등록하는 코드가 좀 더 간단해지고, 프로바이더의 의미도 더 명확해집니다.
-
-<code-example path="dependency-injection-in-action/src/app/parent-finder.component.ts" region="alice-providers" header="dependency-injection-in-action/src/app/parent-finder.component.ts"></code-example>
-
-이 로직은 더 개선할 수 있습니다. 지금 구현한 헬퍼 함수는 `Parent` 클래스 인터페이스를 프로바이더로 등록할 때만 사용할 수 있습니다.
-하지만 애플리케이션에는 수많은 부모 타입이 있을 수 있으며, 이 경우라면 클래스 인터페이스 토큰도 모두 달라질 것입니다.
-
-그래서 부모 클래스 인터페이스가 전달되지 않으면 기본 타입으로 `Parent`를 사용하지만, 클래스 인터페이스가 전달되었을 때 해당 타입으로 프로바이더를 등록하려면 다음과 같이 개선할 수 있습니다.
-
-<code-example path="dependency-injection-in-action/src/app/parent-finder.component.ts" region="provide-parent" header="dependency-injection-in-action/src/app/parent-finder.component.ts"></code-example>
-
-이 프로바이더는 다음과 같이 등록합니다.
-
-<code-example path="dependency-injection-in-action/src/app/parent-finder.component.ts" region="beth-providers" header="dependency-injection-in-action/src/app/parent-finder.component.ts"></code-example>

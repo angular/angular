@@ -62,11 +62,13 @@ export class SlicePipe implements PipeTransform {
    *   - **if negative**: return all items before `end` index from the end of the list or string.
    */
   transform<T>(value: ReadonlyArray<T>, start: number, end?: number): Array<T>;
+  transform(value: null|undefined, start: number, end?: number): null;
+  transform<T>(value: ReadonlyArray<T>|null|undefined, start: number, end?: number): Array<T>|null;
   transform(value: string, start: number, end?: number): string;
-  transform(value: null, start: number, end?: number): null;
-  transform(value: undefined, start: number, end?: number): undefined;
-  transform(value: any, start: number, end?: number): any {
-    if (value == null) return value;
+  transform(value: string|null|undefined, start: number, end?: number): string|null;
+  transform<T>(value: ReadonlyArray<T>|string|null|undefined, start: number, end?: number):
+      Array<T>|string|null {
+    if (value == null) return null;
 
     if (!this.supports(value)) {
       throw invalidPipeArgumentError(SlicePipe, value);

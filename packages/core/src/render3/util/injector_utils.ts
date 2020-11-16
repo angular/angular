@@ -5,14 +5,26 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
+import {assertGreaterThan, assertNotEqual, assertNumber} from '../../util/assert';
 import {NO_PARENT_INJECTOR, RelativeInjectorLocation, RelativeInjectorLocationFlags} from '../interfaces/injector';
-import {DECLARATION_VIEW, LView} from '../interfaces/view';
+import {DECLARATION_VIEW, HEADER_OFFSET, LView} from '../interfaces/view';
+
+
 /// Parent Injector Utils ///////////////////////////////////////////////////////////////
 export function hasParentInjector(parentLocation: RelativeInjectorLocation): boolean {
   return parentLocation !== NO_PARENT_INJECTOR;
 }
 
 export function getParentInjectorIndex(parentLocation: RelativeInjectorLocation): number {
+  ngDevMode && assertNumber(parentLocation, 'Number expected');
+  ngDevMode && assertNotEqual(parentLocation as any, -1, 'Not a valid state.');
+  const parentInjectorIndex =
+      (parentLocation as any as number) & RelativeInjectorLocationFlags.InjectorIndexMask;
+  ngDevMode &&
+      assertGreaterThan(
+          parentInjectorIndex, HEADER_OFFSET,
+          'Parent injector must be pointing past HEADER_OFFSET.');
   return (parentLocation as any as number) & RelativeInjectorLocationFlags.InjectorIndexMask;
 }
 

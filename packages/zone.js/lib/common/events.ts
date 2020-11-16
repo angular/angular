@@ -351,7 +351,7 @@ export function patchEventTarget(
     const compare =
         (patchOptions && patchOptions.diff) ? patchOptions.diff : compareTaskCallbackVsDelegate;
 
-    const blackListedEvents: string[] = (Zone as any)[zoneSymbol('BLACK_LISTED_EVENTS')];
+    const unpatchedEvents: string[] = (Zone as any)[zoneSymbol('UNPATCHED_EVENTS')];
     const passiveEvents: string[] = _global[zoneSymbol('PASSIVE_EVENTS')];
 
     const makeAddListener = function(
@@ -391,10 +391,10 @@ export function patchEventTarget(
             passiveSupported && !!passiveEvents && passiveEvents.indexOf(eventName) !== -1;
         const options = buildEventListenerOptions(arguments[2], passive);
 
-        if (blackListedEvents) {
-          // check black list
-          for (let i = 0; i < blackListedEvents.length; i++) {
-            if (eventName === blackListedEvents[i]) {
+        if (unpatchedEvents) {
+          // check upatched list
+          for (let i = 0; i < unpatchedEvents.length; i++) {
+            if (eventName === unpatchedEvents[i]) {
               if (passive) {
                 return nativeListener.call(target, eventName, delegate, options);
               } else {

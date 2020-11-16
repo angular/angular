@@ -346,6 +346,7 @@ export class ConfigBuilder {
       index: '/index.html',
       assetGroups,
       navigationUrls: [],
+      navigationRequestStrategy: 'performance',
       hashTable,
     };
   }

@@ -1,5 +1,8 @@
 {
   "extends": "tslint:recommended",
+  "rulesDirectory": [
+    "codelyzer"
+  ],
   "rules": {
     "align": {
       "options": [
@@ -13,22 +16,6 @@
     "deprecation": {
       "severity": "warning"
     },
-    "component-class-suffix": true,
-    "component-selector": [
-      true,
-      "element",
-      // TODO: Fix the code and change the prefix to `"app"` (or whatever makes sense).
-      "",
-      "kebab-case"
-    ],
-    "contextual-lifecycle": true,
-    "directive-class-suffix": true,
-    "directive-selector": [
-      true,
-      "attribute",
-      ["app", "toh"],
-      "camelCase"
-    ],
     "eofline": true,
     "import-blacklist": [
       true,
@@ -56,6 +43,8 @@
         ]
       }
     ],
+    // TODO(gkalpak): Fix the code and enable this.
+    // "no-any": true,
     "no-console": [
       true,
       "debug",
@@ -95,6 +84,11 @@
         "named": "never"
       }
     },
+    // TODO(gkalpak): Fix the code and enable this.
+    // "typedef": [
+    //   true,
+    //   "call-signature"
+    // ],
     "typedef-whitespace": {
       "options": [
         {
@@ -130,6 +124,9 @@
         "check-typecast"
       ]
     },
+    "component-class-suffix": true,
+    "contextual-lifecycle": true,
+    "directive-class-suffix": true,
     "no-conflicting-lifecycle": true,
     "no-host-metadata-property": true,
     "no-input-rename": true,
@@ -141,9 +138,19 @@
     "template-banana-in-box": true,
     "template-no-negated-async": true,
     "use-lifecycle-interface": true,
-    "use-pipe-transform-interface": true
-  },
-  "rulesDirectory": [
-    "codelyzer"
-  ]
+    "use-pipe-transform-interface": true,
+    "directive-selector": [
+      true,
+      "attribute",
+      ["app", "toh"],
+      "camelCase"
+    ],
+    "component-selector": [
+      true,
+      "element",
+      // TODO: Fix the code and change the prefix to `"app"` (or whatever makes sense).
+      "",
+      "kebab-case"
+    ]
+  }
 }

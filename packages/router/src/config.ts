@@ -140,7 +140,7 @@ export type DeprecatedLoadChildren = string;
  * - `merge` : Merge new with current parameters.
  * - `preserve` : Preserve current parameters.
  *
- * @see `NavigationExtras#queryParamsHandling`
+ * @see `UrlCreationOptions#queryParamsHandling`
  * @see `RouterLink`
  * @publicApi
  */

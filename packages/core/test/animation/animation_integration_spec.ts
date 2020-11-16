@@ -2510,6 +2510,33 @@ describe('animation tests', function() {
     });
   });
 
+  it('should not animate i18n insertBefore', () => {
+    // I18n uses `insertBefore` API to insert nodes in correct order. Animation assumes that
+    // any `insertBefore` is a move and tries to animate it.
+    // NOTE: This test was extracted from `g3`
+    @Component({
+      template: `<div i18n>Hello <span>World</span>!</div>`,
+      animations: [
+        trigger(
+            'myAnimation',
+            [
+              transition('* => *', [animate(1000)]),
+            ]),
+      ]
+    })
+    class Cmp {
+    }
+
+    TestBed.configureTestingModule({declarations: [Cmp]});
+    const fixture = TestBed.createComponent(Cmp);
+    fixture.detectChanges();
+    const players = getLog();
+    const span = fixture.debugElement.nativeElement.querySelector('span');
+    expect(span.innerText).toEqual('World');
+    // We should not insert `ng-star-inserted` into the span class.
+    expect(span.className).not.toContain('ng-star-inserted');
+  });
+
   describe('animation listeners', () => {
     it('should trigger a `start` state change listener for when the animation changes state from void => state',
        fakeAsync(() => {

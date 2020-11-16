@@ -9,6 +9,7 @@
 import * as fs from 'fs';
 import * as ts from 'typescript';
 import {resolve} from '../../file_system';
+import {DeclarationNode} from '../../reflection';
 import {PerfRecorder} from './api';
 import {HrTime, mark, timeSinceInMicros} from './clock';
 
@@ -24,14 +25,12 @@ export class PerfTracker implements PerfRecorder {
     return new PerfTracker(mark());
   }
 
-  mark(name: string, node?: ts.SourceFile|ts.Declaration, category?: string, detail?: string):
-      void {
+  mark(name: string, node?: DeclarationNode, category?: string, detail?: string): void {
     const msg = this.makeLogMessage(PerfLogEventType.MARK, name, node, category, detail, undefined);
     this.log.push(msg);
   }
 
-  start(name: string, node?: ts.SourceFile|ts.Declaration, category?: string, detail?: string):
-      number {
+  start(name: string, node?: DeclarationNode, category?: string, detail?: string): number {
     const span = this.nextSpanId++;
     const msg = this.makeLogMessage(PerfLogEventType.SPAN_OPEN, name, node, category, detail, span);
     this.log.push(msg);
@@ -47,7 +46,7 @@ export class PerfTracker implements PerfRecorder {
   }
 
   private makeLogMessage(
-      type: PerfLogEventType, name: string, node: ts.SourceFile|ts.Declaration|undefined,
+      type: PerfLogEventType, name: string, node: DeclarationNode|undefined,
       category: string|undefined, detail: string|undefined, span: number|undefined): PerfLogEvent {
     const msg: PerfLogEvent = {
       type,

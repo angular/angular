@@ -174,7 +174,6 @@ Angular components, templates, and styles go here.
 | `app/app.component.css`     | Defines the base CSS stylesheet for the root `AppComponent`. |
 | `app/app.component.spec.ts` | Defines a unit test for the root `AppComponent`. |
 | `app/app.module.ts`         | Defines the root module, named `AppModule`, that tells Angular how to assemble the application. Initially declares only the `AppComponent`. As you add more components to the app, they must be declared here. |
-| `app/package.json`              | This file is generated only in applications created using `--strict` mode. This file is not used by package managers. It is used to tell the tools and bundlers whether the code under this directory is free of non-local [side-effects](guide/strict-mode#side-effect). |
 -->
 `src/` 폴더에는 애플리케이션을 실행하거나 테스트할 때 필요한 파일들이 존재합니다.
 그리고 이 폴더의 하위 폴더에는 해당 애플리케이션에만 적용되는 환경설정 파일이나 애플리케이션을 구성하는 파일이 존재합니다.
@@ -209,7 +208,6 @@ Angular 컴포넌트 코드와 템플릿, 스타일 파일도 `app/` 폴더 안�
 | `app/app.component.css`     | 최상위 컴포넌트 `AppComponent`의 CSS 스타일을 정의합니다. |
 | `app/app.component.spec.ts` | 최상위 컴포넌트 `AppComponent`의 유닛 테스트 스펙을 정의합니다. |
 | `app/app.module.ts`         | 애플리케이션 구성이 시작될 최상위 모듈 `AppModule`을 정의합니다. 프로젝트를 생성한 시점에는 `AppComponent`만 존재하지만, 앱이 커질수록 컴포넌트도 계속 늘어날 것입니다. |
-| `app/package.json`              | This file is generated only in applications created using `--strict` mode. This file is not used by package managers. It is used to tell the tools and bundlers whether the code under this directory is free of non-local [side-effects](guide/strict-mode#side-effect). |
 
 
 {@a application-configuration-files}

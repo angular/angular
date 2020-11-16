@@ -189,8 +189,49 @@ const externalModuleIdentifier = new o.ExternalReference(anotherModuleUrl, 'some
       ].join('\n'));
     });
 
-    it('should support comments', () => {
-      expect(emitStmt(new o.CommentStmt('a\nb'))).toEqual(['// a', '// b'].join('\n'));
+    describe('comments', () => {
+      it('should support a preamble', () => {
+        expect(emitStmt(o.variable('a').toStmt(), '/* SomePreamble */')).toBe([
+          '/* SomePreamble */', 'a;'
+        ].join('\n'));
+      });
+
+      it('should support singleline comments', () => {
+        expect(emitStmt(new o.ReturnStatement(o.literal(1), null, [o.leadingComment('a\nb')])))
+            .toBe('// a\n// b\nreturn 1;');
+      });
+
+      it('should support multiline comments', () => {
+        expect(emitStmt(new o.ReturnStatement(o.literal(1), null, [
+          o.leadingComment('Multiline comment', true)
+        ]))).toBe('/* Multiline comment */\nreturn 1;');
+        expect(emitStmt(new o.ReturnStatement(o.literal(1), null, [
+          o.leadingComment(`Multiline\ncomment`, true)
+        ]))).toBe(`/* Multiline\ncomment */\nreturn 1;`);
+      });
+
+      it('should support inline multiline comments', () => {
+        expect(emitStmt(new o.ReturnStatement(o.literal(1), null, [
+          o.leadingComment('inline comment', true, false)
+        ]))).toBe('/* inline comment */return 1;');
+      });
+
+      it('should support JSDoc comments', () => {
+        expect(emitStmt(new o.ReturnStatement(o.literal(1), null, [
+          o.jsDocComment([{text: 'Intro comment'}])
+        ]))).toBe(`/**\n * Intro comment\n */\nreturn 1;`);
+        expect(emitStmt(new o.ReturnStatement(o.literal(1), null, [
+          o.jsDocComment([{tagName: o.JSDocTagName.Desc, text: 'description'}])
+        ]))).toBe(`/**\n * @desc description\n */\nreturn 1;`);
+        expect(emitStmt(new o.ReturnStatement(
+                   o.literal(1), null, [o.jsDocComment([
+                     {text: 'Intro comment'},
+                     {tagName: o.JSDocTagName.Desc, text: 'description'},
+                     {tagName: o.JSDocTagName.Id, text: '{number} identifier 123'},
+                   ])])))
+            .toBe(
+                `/**\n * Intro comment\n * @desc description\n * @id {number} identifier 123\n */\nreturn 1;`);
+      });
     });
 
     it('should support if stmt', () => {
@@ -205,9 +246,12 @@ const externalModuleIdentifier = new o.ExternalReference(anotherModuleUrl, 'some
     });
 
     it('should support ES5 localized strings', () => {
-      expect(emitStmt(new o.ExpressionStatement(o.localizedString(
-                 {}, ['ab\\:c', 'd"e\'f'], ['ph1'],
-                 [o.literal(7, o.NUMBER_TYPE).plus(o.literal(8, o.NUMBER_TYPE))]))))
+      const messageParts =
+          [new o.LiteralPiece('ab\\:c', {} as any), new o.LiteralPiece('d"e\'f', {} as any)];
+      const placeholders = [new o.PlaceholderPiece('ph1', {} as any)];
+      const expressions = [o.literal(7, o.NUMBER_TYPE).plus(o.literal(8, o.NUMBER_TYPE))];
+      const localizedString = o.localizedString({}, messageParts, placeholders, expressions);
+      expect(emitStmt(new o.ExpressionStatement(localizedString)))
           .toEqual(
               String.raw
               `$localize((this&&this.__makeTemplateObject||function(e,t){return Object.defineProperty?Object.defineProperty(e,"raw",{value:t}):e.raw=t,e})(['ab\\:c', ':ph1:d"e\'f'], ['ab\\\\:c', ':ph1:d"e\'f']), (7 + 8));`);

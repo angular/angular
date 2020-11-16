@@ -535,6 +535,7 @@ export class TestBedViewEngine implements TestBed {
   overrideProvider(token: any, provider: {useValue: any;}): void;
   overrideProvider(token: any, provider: {useFactory?: Function, useValue?: any, deps?: any[]}):
       void {
+    this._assertNotInstantiated('overrideProvider', 'override provider');
     this.overrideProviderImpl(token, provider);
   }
 

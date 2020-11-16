@@ -137,10 +137,22 @@ All router components must be entry components. Because this would require you t
 ## `entryComponents` 배열
 
 <!--
+<div class="alert is-helpful">
+
+   Since 9.0.0 with Ivy, the `entryComponents` property is no longer necessary. See [deprecations guide](guide/deprecations#entryComponents).
+
+</div>
+
 Though the `@NgModule` decorator has an `entryComponents` array, most of the time
 you won't have to explicitly set any entry components because Angular adds components listed in `@NgModule.bootstrap` and those in route definitions to entry components automatically. Though these two mechanisms account for most entry components, if your app happens to bootstrap or dynamically load a component by type imperatively,
 you must add it to `entryComponents` explicitly.
 -->
+<div class="alert is-helpful">
+
+   Since 9.0.0 with Ivy, the `entryComponents` property is no longer necessary. See [deprecations guide](guide/deprecations#entryComponents).
+
+</div>
+
 `@NgModule` 데코레이터에는 `entryComponents` 배열이 있지만, 이 배열을 직접 수정하는 경우는 많지 않습니다. 왜냐하면 Angular는 `@NgModule.bootstrap`에 지정된 컴포넌트를 자동으로 인식하고 진입 컴포넌트로 등록하기 때문입니다.
 대부분의 경우라면 이대로 활용해도 좋지만, 모듈을 동적으로 로딩하는 경우라면 `entryComponents` 배열을 명시적으로 지정해야 합니다.
 

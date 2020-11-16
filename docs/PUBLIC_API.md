@@ -10,8 +10,6 @@ Our semver, timed-release cycle and deprecation policy currently applies to thes
 - `@angular/platform-browser`
 - `@angular/platform-browser-dynamic`
 - `@angular/platform-server`
-- `@angular/platform-webworker`
-- `@angular/platform-webworker-dynamic`
 - `@angular/upgrade`
 - `@angular/router`
 - `@angular/service-worker`
@@ -79,10 +77,10 @@ INFO: From Testing //packages/core:core_api:
      ngModule: Type<T>;
      providers?: Provider[];
  }
- 
+
 -export declare type NgIterable<T> = Array<T> | Iterable<T>;
 +export declare type NgIterable<T> = Iterable<T>;
- 
+
  export declare interface NgModule {
      bootstrap?: Array<Type<any> | any[]>;
      declarations?: Array<Type<any> | any[]>;

@@ -10,7 +10,7 @@ import {createLView, createTNode, createTView} from '@angular/core/src/render3/i
 import {TNodeType} from '@angular/core/src/render3/interfaces/node';
 import {domRendererFactory3} from '@angular/core/src/render3/interfaces/renderer';
 import {HEADER_OFFSET, LViewFlags, TVIEW, TViewType} from '@angular/core/src/render3/interfaces/view';
-import {enterView, getBindingRoot, getLView, setBindingIndex} from '@angular/core/src/render3/state';
+import {enterView, getBindingRoot, getLView, setBindingIndex, setSelectedIndex} from '@angular/core/src/render3/state';
 
 
 
@@ -36,16 +36,17 @@ export function enterViewWithOneDiv() {
   const vars = 60;  // Space for directive expando,  template, component + 3 directives if we assume
                     // that each consume 10 slots.
   const tView = createTView(
-      TViewType.Component, -1, emptyTemplate, consts, vars, null, null, null, null, null);
+      TViewType.Component, null, emptyTemplate, consts, vars, null, null, null, null, null);
   // Just assume that the expando starts after 10 initial bindings.
   tView.expandoStartIndex = HEADER_OFFSET + 10;
   const tNode = tView.firstChild = createTNode(tView, null!, TNodeType.Element, 0, 'div', null);
   const lView = createLView(
       null, tView, null, LViewFlags.CheckAlways, null, null, domRendererFactory3, renderer, null,
       null);
-  lView[0 + HEADER_OFFSET] = div;
-  tView.data[0 + HEADER_OFFSET] = tNode;
-  enterView(lView, tNode);
+  lView[HEADER_OFFSET] = div;
+  tView.data[HEADER_OFFSET] = tNode;
+  enterView(lView);
+  setSelectedIndex(HEADER_OFFSET);
 }
 
 export function clearFirstUpdatePass() {

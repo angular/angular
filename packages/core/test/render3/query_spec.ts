@@ -7,6 +7,7 @@
  */
 
 import {ElementRef, QueryList, TemplateRef, ViewContainerRef} from '@angular/core';
+import {HEADER_OFFSET} from '@angular/core/src/render3/interfaces/view';
 
 import {AttributeMarker, ɵɵdefineComponent, ɵɵdefineDirective, ɵɵProvidersFeature} from '../../src/render3/index';
 import {ɵɵdirectiveInject, ɵɵelement, ɵɵelementContainerEnd, ɵɵelementContainerStart, ɵɵelementEnd, ɵɵelementStart, ɵɵtemplate, ɵɵtext} from '../../src/render3/instructions/all';
@@ -72,8 +73,8 @@ describe('query', () => {
             ɵɵelementEnd();
           }
           if (rf & RenderFlags.Update) {
-            child1 = getDirectiveOnNode(0);
-            child2 = getDirectiveOnNode(1);
+            child1 = getDirectiveOnNode(HEADER_OFFSET);
+            child2 = getDirectiveOnNode(HEADER_OFFSET + 1);
           }
         },
         2, 0, [Child], [],
@@ -112,7 +113,7 @@ describe('query', () => {
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
                 ɵɵelement(0, 'div', 0);
-                elToQuery = getNativeByIndex(0, getLView());
+                elToQuery = getNativeByIndex(HEADER_OFFSET, getLView());
               }
             },
             1, 0, [Child], [],
@@ -150,7 +151,7 @@ describe('query', () => {
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
                 ɵɵelementStart(0, 'div', 0);
-                { otherChildInstance = getDirectiveOnNode(0, 1); }
+                { otherChildInstance = getDirectiveOnNode(HEADER_OFFSET, 1); }
                 ɵɵelementEnd();
               }
             },
@@ -345,7 +346,7 @@ describe('query', () => {
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
                 ɵɵelement(0, 'div', null, 0);
-                elToQuery = getNativeByIndex(0, getLView());
+                elToQuery = getNativeByIndex(HEADER_OFFSET, getLView());
                 ɵɵelement(2, 'div');
               }
             },
@@ -384,7 +385,7 @@ describe('query', () => {
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
                 ɵɵelement(0, 'div', null, 0);
-                elToQuery = getNativeByIndex(0, getLView());
+                elToQuery = getNativeByIndex(HEADER_OFFSET, getLView());
                 ɵɵelement(3, 'div');
               }
             },
@@ -431,10 +432,10 @@ describe('query', () => {
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
                 ɵɵelement(0, 'div', null, 0);
-                el1ToQuery = getNativeByIndex(0, getLView());
+                el1ToQuery = getNativeByIndex(HEADER_OFFSET, getLView());
                 ɵɵelement(2, 'div');
                 ɵɵelement(3, 'div', null, 1);
-                el2ToQuery = getNativeByIndex(3, getLView());
+                el2ToQuery = getNativeByIndex(HEADER_OFFSET + 3, getLView());
               }
             },
             5, 0, [], [],
@@ -471,7 +472,7 @@ describe('query', () => {
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
                 ɵɵelement(0, 'div', null, 0);
-                elToQuery = getNativeByIndex(0, getLView());
+                elToQuery = getNativeByIndex(HEADER_OFFSET, getLView());
                 ɵɵelement(2, 'div');
               }
             },
@@ -509,7 +510,7 @@ describe('query', () => {
                function(rf: RenderFlags, ctx: any) {
                  if (rf & RenderFlags.Create) {
                    ɵɵelementContainerStart(0, null, 0);
-                   elToQuery = getNativeByIndex(0, getLView());
+                   elToQuery = getNativeByIndex(HEADER_OFFSET, getLView());
                    ɵɵelementContainerEnd();
                  }
                },
@@ -546,7 +547,7 @@ describe('query', () => {
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
                 ɵɵelementContainerStart(0, null, 0);
-                elToQuery = getNativeByIndex(0, getLView());
+                elToQuery = getNativeByIndex(HEADER_OFFSET, getLView());
                 ɵɵelementContainerEnd();
               }
             },
@@ -756,7 +757,7 @@ describe('query', () => {
                 ɵɵelement(0, 'child', null, 0);
               }
               if (rf & RenderFlags.Update) {
-                childInstance = getDirectiveOnNode(0);
+                childInstance = getDirectiveOnNode(HEADER_OFFSET);
               }
             },
             2, 0, [Child], [],
@@ -843,7 +844,7 @@ describe('query', () => {
                    ɵɵelement(0, 'div', 0, 1);
                  }
                  if (rf & RenderFlags.Update) {
-                   childInstance = getDirectiveOnNode(0);
+                   childInstance = getDirectiveOnNode(HEADER_OFFSET);
                  }
                },
                2, 0, [Child], [],
@@ -883,8 +884,8 @@ describe('query', () => {
                 ɵɵelement(0, 'div', 0, 1);
               }
               if (rf & RenderFlags.Update) {
-                child1Instance = getDirectiveOnNode(0, 0);
-                child2Instance = getDirectiveOnNode(0, 1);
+                child1Instance = getDirectiveOnNode(HEADER_OFFSET, 0);
+                child2Instance = getDirectiveOnNode(HEADER_OFFSET, 1);
               }
             },
             3, 0, [Child1, Child2], [],
@@ -925,7 +926,7 @@ describe('query', () => {
                 ɵɵelement(0, 'div', 0, 1);
               }
               if (rf & RenderFlags.Update) {
-                childInstance = getDirectiveOnNode(0);
+                childInstance = getDirectiveOnNode(HEADER_OFFSET);
               }
             },
             3, 0, [Child], [],
@@ -970,7 +971,7 @@ describe('query', () => {
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
                 ɵɵelement(0, 'div', 0, 1);
-                div = getNativeByIndex(0, getLView());
+                div = getNativeByIndex(HEADER_OFFSET, getLView());
               }
             },
             2, 0, [Child], [],
@@ -1007,10 +1008,10 @@ describe('query', () => {
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
                 ɵɵelement(0, 'div', 0, 1);
-                div = getNativeByIndex(0, getLView());
+                div = getNativeByIndex(HEADER_OFFSET, getLView());
               }
               if (rf & RenderFlags.Update) {
-                childInstance = getDirectiveOnNode(0);
+                childInstance = getDirectiveOnNode(HEADER_OFFSET);
               }
             },
             3, 0, [Child], [],
@@ -1570,8 +1571,8 @@ describe('query', () => {
             }
             if (rf & RenderFlags.Update) {
               const lView = getLView();
-              outInstance = load<QueryDirective>(lView, 1);
-              inInstance = load<QueryDirective>(lView, 5);
+              outInstance = load<QueryDirective>(lView, HEADER_OFFSET + 1);
+              inInstance = load<QueryDirective>(lView, HEADER_OFFSET + 5);
             }
           },
           10, 0, [QueryDirective], [], null, [], [], undefined, [
@@ -1632,8 +1633,8 @@ describe('query', () => {
             }
             if (rf & RenderFlags.Update) {
               const lView = getLView();
-              outInstance = load<QueryDirective>(lView, 1);
-              inInstance = load<QueryDirective>(lView, 3);
+              outInstance = load<QueryDirective>(lView, HEADER_OFFSET + 1);
+              inInstance = load<QueryDirective>(lView, HEADER_OFFSET + 3);
             }
           },
           7, 0, [QueryDirective], [], null, [], [], undefined, [
@@ -1692,8 +1693,8 @@ describe('query', () => {
             }
             if (rf & RenderFlags.Update) {
               const lView = getLView();
-              outInstance = load<QueryDirective>(lView, 1);
-              inInstance = load<QueryDirective>(lView, 3);
+              outInstance = load<QueryDirective>(lView, HEADER_OFFSET + 1);
+              inInstance = load<QueryDirective>(lView, HEADER_OFFSET + 3);
             }
           },
           7, 0, [QueryDirective], [], null, [], [], undefined, [
@@ -1783,8 +1784,8 @@ describe('query', () => {
                }
                if (rf & RenderFlags.Update) {
                  const lView = getLView();
-                 shallowInstance = load<ShallowQueryDirective>(lView, 1);
-                 deepInstance = load<DeepQueryDirective>(lView, 2);
+                 shallowInstance = load<ShallowQueryDirective>(lView, HEADER_OFFSET + 1);
+                 deepInstance = load<DeepQueryDirective>(lView, HEADER_OFFSET + 2);
                }
              },
              8, 0, [ShallowQueryDirective, DeepQueryDirective], [], null, [], [], undefined, [

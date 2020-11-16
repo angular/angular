@@ -202,13 +202,34 @@ export class EmitterVisitorContext {
 export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.ExpressionVisitor {
   constructor(private _escapeDollarInStrings: boolean) {}
 
+  protected printLeadingComments(stmt: o.Statement, ctx: EmitterVisitorContext): void {
+    if (stmt.leadingComments === undefined) {
+      return;
+    }
+    for (const comment of stmt.leadingComments) {
+      if (comment instanceof o.JSDocComment) {
+        ctx.print(stmt, `/*${comment.toString()}*/`, comment.trailingNewline);
+      } else {
+        if (comment.multiline) {
+          ctx.print(stmt, `/* ${comment.text} */`, comment.trailingNewline);
+        } else {
+          comment.text.split('\n').forEach((line) => {
+            ctx.println(stmt, `// ${line}`);
+          });
+        }
+      }
+    }
+  }
+
   visitExpressionStmt(stmt: o.ExpressionStatement, ctx: EmitterVisitorContext): any {
+    this.printLeadingComments(stmt, ctx);
     stmt.expr.visitExpression(this, ctx);
     ctx.println(stmt, ';');
     return null;
   }
 
   visitReturnStmt(stmt: o.ReturnStatement, ctx: EmitterVisitorContext): any {
+    this.printLeadingComments(stmt, ctx);
     ctx.print(stmt, `return `);
     stmt.value.visitExpression(this, ctx);
     ctx.println(stmt, ';');
@@ -220,6 +241,7 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
   abstract visitDeclareClassStmt(stmt: o.ClassStmt, ctx: EmitterVisitorContext): any;
 
   visitIfStmt(stmt: o.IfStmt, ctx: EmitterVisitorContext): any {
+    this.printLeadingComments(stmt, ctx);
     ctx.print(stmt, `if (`);
     stmt.condition.visitExpression(this, ctx);
     ctx.print(stmt, `) {`);
@@ -248,23 +270,10 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
   abstract visitTryCatchStmt(stmt: o.TryCatchStmt, ctx: EmitterVisitorContext): any;
 
   visitThrowStmt(stmt: o.ThrowStmt, ctx: EmitterVisitorContext): any {
+    this.printLeadingComments(stmt, ctx);
     ctx.print(stmt, `throw `);
     stmt.error.visitExpression(this, ctx);
     ctx.println(stmt, `;`);
-    return null;
-  }
-  visitCommentStmt(stmt: o.CommentStmt, ctx: EmitterVisitorContext): any {
-    if (stmt.multiline) {
-      ctx.println(stmt, `/* ${stmt.comment} */`);
-    } else {
-      stmt.comment.split('\n').forEach((line) => {
-        ctx.println(stmt, `// ${line}`);
-      });
-    }
-    return null;
-  }
-  visitJSDocCommentStmt(stmt: o.JSDocCommentStmt, ctx: EmitterVisitorContext) {
-    ctx.println(stmt, `/*${stmt.toString()}*/`);
     return null;
   }
 

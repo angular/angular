@@ -467,6 +467,67 @@ runInEachFileSystem(() => {
              .not.toThrow();
        });
 
+    it('should support inline UMD/CommonJS exports declarations', () => {
+      // Setup an Angular entry-point in UMD module format that has an inline exports declaration
+      // referenced by an NgModule.
+      loadTestFiles([
+        {
+          name: _('/node_modules/test-package/package.json'),
+          contents: '{"name": "test-package", "main": "./index.js", "typings": "./index.d.ts"}'
+        },
+        {
+          name: _('/node_modules/test-package/index.js'),
+          contents: `
+          (function (global, factory) {
+            typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@angular/core')) :
+            typeof define === 'function' && define.amd ? define('test', ['exports', 'core'], factory) :
+            (factory(global.test, global.core));
+          }(this, (function (exports, core) { 'use strict';
+            exports.FooModule = /** @class */ (function () {
+              function FooModule() {}
+              FooModule = __decorate([
+                  core.NgModule({declarations: exports.declarations})
+              ], FooModule);
+              return FooModule;
+            }());
+
+            exports.declarations = [exports.FooDirective];
+
+            exports.FooDirective = /** @class */ (function () {
+              function FooDirective() {}
+              FooDirective = __decorate([
+                core.Directive({selector: '[foo]'})
+              ], FooDirective);
+              return FooDirective;
+            }());
+          })));
+          `
+        },
+        {
+          name: _('/node_modules/test-package/index.d.ts'),
+          contents: `
+          export declare class FooModule { }
+          export declare class FooDirective { }
+          `
+        },
+        {name: _('/node_modules/test-package/index.metadata.json'), contents: 'DUMMY DATA'},
+      ]);
+
+      expect(() => mainNgcc({
+               basePath: '/node_modules',
+               targetEntryPointPath: 'test-package',
+               propertiesToConsider: ['main'],
+             }))
+          .not.toThrow();
+
+      const processedFile = fs.readFile(_('/node_modules/test-package/index.js'));
+      expect(processedFile)
+          .toContain('FooModule.ɵmod = ɵngcc0.ɵɵdefineNgModule({ type: FooModule });');
+      expect(processedFile)
+          .toContain(
+              'ɵngcc0.ɵɵsetNgModuleScope(FooModule, { declarations: function () { return [exports.FooDirective]; } });');
+    });
+
     it('should not be able to evaluate code in external packages when no .d.ts files are present',
        () => {
          loadTestFiles([
@@ -574,6 +635,35 @@ runInEachFileSystem(() => {
               `TestClass.ɵfac = function TestClass_Factory(t) { return new (t || TestClass)(); };\n` +
               `TestClass.ɵpipe = ɵngcc0.ɵɵdefinePipe({ name: "myTestPipe", type: TestClass, pure: true });\n` +
               `TestClass.ɵprov = ɵngcc0.ɵɵdefineInjectable({`);
+    });
+
+    // https://github.com/angular/angular/issues/38883
+    it('should recognize ChangeDetectorRef as special symbol for pipes', () => {
+      compileIntoFlatEs2015Package('test-package', {
+        '/index.ts': `
+        import {ChangeDetectorRef, Pipe, PipeTransform} from '@angular/core';
+
+        @Pipe({
+          name: 'myTestPipe'
+        })
+        export class TestClass implements PipeTransform {
+          constructor(cdr: ChangeDetectorRef) {}
+          transform(value: any) { return value; }
+        }
+        `,
+      });
+
+      mainNgcc({
+        basePath: '/node_modules',
+        targetEntryPointPath: 'test-package',
+        propertiesToConsider: ['esm2015'],
+      });
+
+      const jsContents = fs.readFile(_(`/node_modules/test-package/index.js`));
+      expect(jsContents)
+          .toContain(
+              `TestClass.ɵfac = function TestClass_Factory(t) { ` +
+              `return new (t || TestClass)(ɵngcc0.ɵɵinjectPipeChangeDetectorRef()); };`);
     });
 
     it('should use the correct type name in typings files when an export has a different name in source files',
@@ -1663,12 +1753,12 @@ runInEachFileSystem(() => {
             JSON.stringify({angularCompilerOptions: {annotateForClosureCompiler: true}}));
         mainNgcc({basePath: '/dist', propertiesToConsider: ['es2015']});
         const jsContents = fs.readFile(_(`/dist/local-package/index.js`));
-        expect(jsContents).toContain('/** @nocollapse */ \nAppComponent.ɵcmp =');
+        expect(jsContents).toContain('/** @nocollapse */\nAppComponent.ɵcmp =');
       });
       it('should default to not give closure annotated output', () => {
         mainNgcc({basePath: '/dist', propertiesToConsider: ['es2015']});
         const jsContents = fs.readFile(_(`/dist/local-package/index.js`));
-        expect(jsContents).not.toContain('/** @nocollapse */');
+        expect(jsContents).not.toContain('@nocollapse');
       });
     });
 

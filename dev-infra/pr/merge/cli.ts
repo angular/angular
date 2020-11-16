@@ -8,7 +8,7 @@
 
 import {Arguments, Argv} from 'yargs';
 
-import {addGithubTokenFlag} from '../../utils/yargs';
+import {addGithubTokenOption} from '../../utils/git/github-yargs';
 
 import {mergePullRequest} from './index';
 
@@ -20,7 +20,7 @@ export interface MergeCommandOptions {
 
 /** Builds the options for the merge command. */
 export function buildMergeCommand(yargs: Argv): Argv<MergeCommandOptions> {
-  return addGithubTokenFlag(yargs).help().strict().positional(
+  return addGithubTokenOption(yargs).help().strict().positional(
       'pr-number', {demandOption: true, type: 'number'});
 }
 

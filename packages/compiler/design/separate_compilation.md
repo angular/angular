@@ -7,50 +7,50 @@ AUTHOR: chuckj@
 ### Angular 5 (Renderer2)
 
 In 5.0 and prior versions of Angular the compiler performs whole program
-analysis and generates template and injector definitions that are using
+analysis and generates template and injector definitions that use
 this global knowledge to flatten injector scope definitions, inline
 directives into the component, pre-calculate queries, pre-calculate
 content projection, etc. This global knowledge requires that module and
-component factories are generated as a final global step when compiling
-a module. If any of the transitive information changed then all factories
+component factories are generated as the final global step when compiling
+a module. If any of the transitive information changed, then all factories
 need to be regenerated.
 
 Separate component and module compilation is supported only at the module
-definition level and only from source. That is, npm packages must contain
-the metadata necessary to generate the factories, they cannot contain,
-themselves, the generated factories. This is because, if any of there
-dependencies change, their factories would be invalid preventing them from
+definition level and only from the source. That is, npm packages must contain
+the metadata necessary to generate the factories. They cannot contain,
+themselves, the generated factories. This is because if any of their
+dependencies change, their factories would be invalid, preventing them from
 using version ranges in their dependencies. To support producing factories
 from compiled source (already translated by TypeScript into JavaScript)
 libraries include metadata that describe the content of the Angular
 decorators.
 
-This document refers to this style of code generation as Renderer2 after the
-name of the renderer class it uses at runtime.
+This document refers to this style of code generation as Renderer2 (after the
+name of the renderer class it uses at runtime).
 
 ### Angular Ivy
 
 In Ivy, the runtime is crafted in a way that allows for separate compilation
 by performing at runtime much of what was previously pre-calculated by
-compiler. This allows the definition of components to change without
-requiring modules and components that depend on them being recompiled.
+the compiler. This allows the definition of components to change without
+requiring modules and components that depend on them to be recompiled.
 
-The mental model of Ivy is that the decorator is the compiler. That is
+The mental model of Ivy is that the decorator is the compiler. That is,
 the decorator can be thought of as parameters to a class transformer that
 transforms the class by generating definitions based on the decorator
-parameters. An `@Component` decorator transforms the class by adding
-a `ɵcmp` static property, `@Directive` adds `ɵdir`,
-`@Pipe` adds `ɵpipe`, etc. In most cases values supplied to the
-decorator is sufficient to generate the definition. However, in the case of
+parameters. A `@Component` decorator transforms the class by adding
+an `ɵcmp` static property, `@Directive` adds `ɵdir`,
+`@Pipe` adds `ɵpipe`, etc. In most cases the values supplied to the
+decorator are sufficient to generate the definition. However, in the case of
 interpreting the template, the compiler needs to know the selector defined for
-each component, directive and pipe that are in scope of the template. The
-purpose of this document is to define the information is needed by the
-compiler and how that information is serialized to be discovered and
+each component, directive and pipe that are in the scope of the template. The
+purpose of this document is to define the information that is needed by the
+compiler, and how that information is serialized to be discovered and
 used by subsequent calls to `ngc`.
 
-This document refers to this style of code generation as ivy after the code
-name of the project to create it. It would be more consistent to refer to it
-as Renderer3 that looks too similar to Renderer2.
+This document refers to this style of code generation as Ivy (after the code
+name of the project to create it). It would be more consistent to refer to it
+as Renderer3, but that looks too similar to Renderer2.
 
 ## Information needed
 
@@ -125,7 +125,7 @@ reexported from the index.
 ### Angular Ivy
 
 The metadata for a class in ivy is transformed to be what the metadata of the
-transformed .js file produced by the ivy compiler would be. For example, a
+transformed .js file produced by the Ivy compiler would be. For example, a
 component's `@Component` is removed by the compiler and replaced by a `ɵcmp`.
 The `.metadata.json` file is similarly transformed but the content of the
 value assigned is elided (e.g. `"ɵcmp": {}`). The compiler doesn't
@@ -183,8 +183,8 @@ export class MyComponent {
 ```
 
 Note that this is exactly what is produced if the transform had been done
-manually or by some other compiler before `ngc` compiler is invoked. That is
-this model has the advantage that there is no magic introduced by the compiler
+manually or by some other compiler before `ngc` compiler is invoked. That is why
+this model has the advantage that there is no magic introduced by the compiler,
 as it treats classes annotated by `@Component` identically to those produced
 manually.
 
@@ -420,20 +420,20 @@ the difference between manually and mechanically created module definitions.
 
 With this proposal, the compiler treats manually and mechanically generated
 Angular definitions identically. This allows flexibility not only in the future
-for how the declarations are mechanically produced it also allows alternative
-mechanism to generate declarations be easily explored without altering the
+for how the declarations are mechanically produced, it also allows an alternative
+mechanism to generate declarations that can be easily explored without altering the
 compiler or dependent tool chain. It also allows third-party code generators
-with possibly different component syntaxes to generate a component fully
+with possibly different component syntaxes to generate a component that is fully
 understood by the compiler.
 
-Unfortunately, however, manually generated modules contain references to
+Unfortunately, manually generated modules contain references to
 classes that might not be necessary at runtime. Manually or third-party
 components can get the same payload properties of an Angular generated
 component by annotating the `ngSelector` and `ngModuleScope` properties with
 `// @__BUILD_OPTIMIZER_REMOVE_` comment which will cause the build optimizer
 to remove the declaration.
 
-##### example
+##### Example
 
 For example the above manually created module would have better payload
 properties by including a `// @__BUILD_OPTIMIZER_REMOVE_` comment:
@@ -471,21 +471,21 @@ reusable library used in an application.
 
 ### Application output
 
-The output of the ivy compiler only optionally generates the factories
-generated by the Renderer2 style output of Angular 5.0. In ivy, the information
+The output of the Ivy compiler only optionally generates the factories
+generated by the Renderer2 style output of Angular 5.0. In Ivy, the information
 that was generated in factories is now generated in Angular as a definition
-that is generated as a static field on the Angular decorated class.
+that is generated as a static field in the Angular decorated class.
 
 Renderer2 requires that, when building the final application, all factories for
-all libraries also be generated. In ivy, the definitions are generated when
+all libraries also be generated. In Ivy, the definitions are generated when
 the library is compiled.
 
-The ivy compile can adapt Renderer2 target libraries by generating the factories
+The Ivy compile can adapt Renderer2 target libraries by generating the factories
 for them and back-patching, at runtime, the static property into the class.
 
 #### Back-patching module (`"renderer2BackPatching"`)
 
-When an application contains Renderer2 target libraries the ivy definitions
+When an application contains Renderer2 target libraries the Ivy definitions
 need to be back-patch onto the component, directive, module, pipe, and
 injectable classes.
 
@@ -547,7 +547,7 @@ recommended value and do not need to be explicitly set. Options marked
 
 ## Library output
 
-Building an ivy library with `ngc` differs from Renderer2 in that the
+Building an Ivy library with `ngc` differs from Renderer2 in that the
 declarations are included in the generated output and should be included in the
 package published to `npm`. The `.metadata.json` files still need to be
 included but they are transformed as described below.
@@ -558,7 +558,7 @@ As described above, when the compiler adds the declaration to the class it will
 also transform the `.metadata.json` file to reflect the new static fields added
 to the class.
 
-Once the static fields are added to the metadata, the ivy compiler no longer
+Once the static fields are added to the metadata, the Ivy compiler no longer
 needs the information in the decorator. When `"enableIvy"` is `true` this
 information is removed from the `.metadata.json` file.
 
@@ -641,7 +641,7 @@ The purpose of the "package" target is to produce a library package that will
 be an entry point for an npm package. Each entry point should be separately
 compiled using a "package" target.
 
-##### example - application
+##### Example - application
 
 To produce a Renderer2 application the options would look like,
 
@@ -659,7 +659,7 @@ To produce a Renderer2 application the options would look like,
 alternately, since the recommended `"application"` options are the default
 values, the `"angularCompilerOptions"` can be out.
 
-##### example - library
+##### Example - library
 
 To produce a Renderer2 library the options would look like,
 
@@ -674,7 +674,7 @@ To produce a Renderer2 library the options would look like,
 }
 ```
 
-##### example - package
+##### Example - package
 
 To produce a Renderer2 package the options would look like,
 
@@ -689,9 +689,9 @@ To produce a Renderer2 package the options would look like,
 }
 ```
 
-##### example - ivy application
+##### Example - Ivy application
 
-To produce an ivy application the options would look like,
+To produce an Ivy application the options would look like,
 
 ```json
 {
@@ -705,9 +705,9 @@ To produce an ivy application the options would look like,
 }
 ```
 
-##### example - ivy library
+##### Example - Ivy library
 
-To produce an ivy library the options would look like,
+To produce an Ivy library the options would look like,
 
 ```json
 {
@@ -721,11 +721,11 @@ To produce an ivy library the options would look like,
 }
 ```
 
-##### example - ivy package
+##### Example - Ivy package
 
 Ivy packages are not supported in Angular 6.0 as they are not recommended in
-npm packages as they would only be usable if in ivy application where an ivy
-application. Ivy application support Renderer2 libraries so npm packages
+npm packages as they would only be usable if inside Ivy applications. 
+Ivy applications support Renderer2 libraries so npm packages
 should all be Renderer2 libraries.
 
 ## `ng_module` output (Bazel)
@@ -755,9 +755,9 @@ The `ng_experimental_ivy_srcs` can be used as use to cause the ivy versions of
 files to be generated. It is intended the sole dependency of a `ts_dev_server`
 rule and the `ts_dev_server` sources move to `ng_experimental_iv_srcs`.
 
-#### `ng_module` ivy output
+#### `ng_module` Ivy output
 
-The `ng_module` is able to provide the ivy version of the `.js` files which
+The `ng_module` is able to provide the Ivy version of the `.js` files which
 will be generated with as `.ivy.js` for the development sources and `.ivy.mjs`
 for the production sources.
 
@@ -775,7 +775,7 @@ where `moduleName` is the name of the as it would appear in an import statement
 in a `.ts` file at the same relative location in the source tree. All the
 references in this file are also relative to this location.
 
-##### example
+##### Example
 
 The following is a typical Angular application build in bazel:
 
@@ -793,7 +793,7 @@ ts_dev_server(
 )
 ```
 
-To use produce an ivy version you would add:
+To use produce an Ivy version you would add:
 
 ```py
 ng_experimental_ivy_srcs(
@@ -813,13 +813,13 @@ To serve the Renderer2 version, you would run:
 bazel run :server
 ```
 
-to serve the ivy version you would run
+to serve the Ivy version you would run
 
 ```sh
 bazel run :server_ivy
 ```
 
-The `ng_experimental_ivy_srcs` rule is only needed when ivy is experimental. Once ivy
+The `ng_experimental_ivy_srcs` rule is only needed when Ivy is experimental. Once Ivy
 is released, the `ng_experimental_ivy_srcs` dependent rules can be removed.
 
 ---

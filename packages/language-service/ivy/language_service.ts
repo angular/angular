@@ -7,53 +7,88 @@
  */
 
 import {CompilerOptions, createNgCompilerOptions} from '@angular/compiler-cli';
-import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
-import {NgCompilerAdapter} from '@angular/compiler-cli/src/ngtsc/core/api';
-import {absoluteFrom, absoluteFromSourceFile, AbsoluteFsPath} from '@angular/compiler-cli/src/ngtsc/file_system';
-import {PatchedProgramIncrementalBuildStrategy} from '@angular/compiler-cli/src/ngtsc/incremental';
-import {isShim} from '@angular/compiler-cli/src/ngtsc/shims';
+import {absoluteFromSourceFile, AbsoluteFsPath} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {TypeCheckShimGenerator} from '@angular/compiler-cli/src/ngtsc/typecheck';
 import {OptimizeFor, TypeCheckingProgramStrategy} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
 import * as ts from 'typescript/lib/tsserverlibrary';
 
+import {CompilerFactory} from './compiler_factory';
+import {DefinitionBuilder} from './definitions';
+import {LanguageServiceAdapter} from './language_service_adapter';
+import {QuickInfoBuilder} from './quick_info';
+import {getTargetAtPosition} from './template_target';
+import {getTemplateInfoAtPosition, isTypeScriptFile} from './utils';
+
 export class LanguageService {
   private options: CompilerOptions;
-  private lastKnownProgram: ts.Program|null = null;
+  private readonly compilerFactory: CompilerFactory;
   private readonly strategy: TypeCheckingProgramStrategy;
-  private readonly adapter: NgCompilerAdapter;
+  private readonly adapter: LanguageServiceAdapter;
 
   constructor(project: ts.server.Project, private readonly tsLS: ts.LanguageService) {
     this.options = parseNgCompilerOptions(project);
     this.strategy = createTypeCheckingProgramStrategy(project);
-    this.adapter = createNgCompilerAdapter(project);
+    this.adapter = new LanguageServiceAdapter(project);
+    this.compilerFactory = new CompilerFactory(this.adapter, this.strategy);
     this.watchConfigFile(project);
   }
 
   getSemanticDiagnostics(fileName: string): ts.Diagnostic[] {
-    const program = this.strategy.getProgram();
-    const compiler = this.createCompiler(program);
-    if (fileName.endsWith('.ts')) {
+    const compiler = this.compilerFactory.getOrCreateWithChangedFile(fileName, this.options);
+    const ttc = compiler.getTemplateTypeChecker();
+    const diagnostics: ts.Diagnostic[] = [];
+    if (isTypeScriptFile(fileName)) {
+      const program = compiler.getNextProgram();
       const sourceFile = program.getSourceFile(fileName);
-      if (!sourceFile) {
-        return [];
+      if (sourceFile) {
+        diagnostics.push(...ttc.getDiagnosticsForFile(sourceFile, OptimizeFor.SingleFile));
       }
-      const ttc = compiler.getTemplateTypeChecker();
-      const diagnostics = ttc.getDiagnosticsForFile(sourceFile, OptimizeFor.SingleFile);
-      this.lastKnownProgram = compiler.getNextProgram();
-      return diagnostics;
+    } else {
+      const components = compiler.getComponentsWithTemplateFile(fileName);
+      for (const component of components) {
+        if (ts.isClassDeclaration(component)) {
+          diagnostics.push(...ttc.getDiagnosticsForComponent(component));
+        }
+      }
     }
-    throw new Error('Ivy LS currently does not support external template');
+    this.compilerFactory.registerLastKnownProgram();
+    return diagnostics;
   }
 
-  private createCompiler(program: ts.Program): NgCompiler {
-    return new NgCompiler(
-        this.adapter,
-        this.options,
-        program,
-        this.strategy,
-        new PatchedProgramIncrementalBuildStrategy(),
-        this.lastKnownProgram,
-    );
+  getDefinitionAndBoundSpan(fileName: string, position: number): ts.DefinitionInfoAndBoundSpan
+      |undefined {
+    const compiler = this.compilerFactory.getOrCreateWithChangedFile(fileName, this.options);
+    const results =
+        new DefinitionBuilder(this.tsLS, compiler).getDefinitionAndBoundSpan(fileName, position);
+    this.compilerFactory.registerLastKnownProgram();
+    return results;
+  }
+
+  getTypeDefinitionAtPosition(fileName: string, position: number):
+      readonly ts.DefinitionInfo[]|undefined {
+    const compiler = this.compilerFactory.getOrCreateWithChangedFile(fileName, this.options);
+    const results =
+        new DefinitionBuilder(this.tsLS, compiler).getTypeDefinitionsAtPosition(fileName, position);
+    this.compilerFactory.registerLastKnownProgram();
+    return results;
+  }
+
+  getQuickInfoAtPosition(fileName: string, position: number): ts.QuickInfo|undefined {
+    const program = this.strategy.getProgram();
+    const compiler = this.compilerFactory.getOrCreateWithChangedFile(fileName, this.options);
+    const templateInfo = getTemplateInfoAtPosition(fileName, position, compiler);
+    if (templateInfo === undefined) {
+      return undefined;
+    }
+    const positionDetails = getTargetAtPosition(templateInfo.template, position);
+    if (positionDetails === null) {
+      return undefined;
+    }
+    const results =
+        new QuickInfoBuilder(this.tsLS, compiler, templateInfo.component, positionDetails.node)
+            .get();
+    this.compilerFactory.registerLastKnownProgram();
+    return results;
   }
 
   private watchConfigFile(project: ts.server.Project) {
@@ -87,31 +122,6 @@ export function parseNgCompilerOptions(project: ts.server.Project): CompilerOpti
   }
   const basePath = project.getCurrentDirectory();
   return createNgCompilerOptions(basePath, config, project.getCompilationSettings());
-}
-
-function createNgCompilerAdapter(project: ts.server.Project): NgCompilerAdapter {
-  return {
-    entryPoint: null,  // entry point is only needed if code is emitted
-    constructionDiagnostics: [],
-    ignoreForEmit: new Set(),
-    factoryTracker: null,      // no .ngfactory shims
-    unifiedModulesHost: null,  // only used in Bazel
-    rootDirs: project.getCompilationSettings().rootDirs?.map(absoluteFrom) || [],
-    isShim,
-    fileExists(fileName: string): boolean {
-      return project.fileExists(fileName);
-    },
-    readFile(fileName: string): string |
-        undefined {
-          return project.readFile(fileName);
-        },
-    getCurrentDirectory(): string {
-      return project.getCurrentDirectory();
-    },
-    getCanonicalFileName(fileName: string): string {
-      return project.projectService.toCanonicalFileName(fileName);
-    },
-  };
 }
 
 function createTypeCheckingProgramStrategy(project: ts.server.Project):

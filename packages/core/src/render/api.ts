@@ -158,8 +158,13 @@ export abstract class Renderer2 {
    * @param parent The parent node.
    * @param newChild The new child nodes.
    * @param refChild The existing child node before which `newChild` is inserted.
+   * @param isMove Optional argument which signifies if the current `insertBefore` is a result of a
+   *     move. Animation uses this information to trigger move animations. In the past the Animation
+   *     would always assume that any `insertBefore` is a move. This is not strictly true because
+   *     with runtime i18n it is possible to invoke `insertBefore` as a result of i18n and it should
+   *     not trigger an animation move.
    */
-  abstract insertBefore(parent: any, newChild: any, refChild: any): void;
+  abstract insertBefore(parent: any, newChild: any, refChild: any, isMove?: boolean): void;
   /**
    * Implement this callback to remove a child node from the host element's DOM.
    * @param parent The parent node.

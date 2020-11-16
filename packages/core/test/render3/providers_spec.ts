@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component as _Component, ComponentFactoryResolver, ElementRef, Injectable as _Injectable, InjectFlags, InjectionToken, InjectorType, Provider, RendererFactory2, Type, ViewContainerRef, ɵNgModuleDef as NgModuleDef, ɵɵdefineInjectable, ɵɵdefineInjector, ɵɵinject} from '../../src/core';
+import {Component as _Component, ComponentFactoryResolver, ElementRef, Injectable as _Injectable, InjectFlags, InjectionToken, InjectorType, Provider, RendererFactory2, Type, ViewContainerRef, ɵɵdefineInjectable, ɵɵdefineInjector, ɵɵdefineNgModule, ɵɵinject} from '../../src/core';
 import {forwardRef} from '../../src/di/forward_ref';
 import {createInjector} from '../../src/di/r3_injector';
 import {injectComponentFactoryResolver, ɵɵdefineComponent, ɵɵdefineDirective, ɵɵdirectiveInject, ɵɵelement, ɵɵelementEnd, ɵɵelementStart, ɵɵgetInheritedFactory, ɵɵProvidersFeature, ɵɵtext, ɵɵtextInterpolate1} from '../../src/render3/index';
@@ -1092,7 +1092,7 @@ describe('providers', () => {
                    {provide: String, useValue: 'From module injector'}
                  ]
            });
-           static ɵmod: NgModuleDef<any> = {bootstrap: []} as any;
+           static ɵmod = ɵɵdefineNgModule({type: MyAppModule});
          }
          const myAppModuleFactory = new NgModuleFactory(MyAppModule);
          const ngModuleRef = myAppModuleFactory.create(null);
@@ -1290,13 +1290,6 @@ describe('providers', () => {
     function addFoo() {
       return (constructor: Type<any>): any => {
         const decoratedClass = class Extender extends constructor { foo = 'bar'; };
-
-        // On IE10 child classes don't inherit static properties by default. If we detect
-        // such a case, try to account for it so the tests are consistent between browsers.
-        if (Object.getPrototypeOf(decoratedClass) !== constructor) {
-          decoratedClass.prototype = constructor.prototype;
-        }
-
         return decoratedClass;
       };
     }

@@ -1,9 +1,8 @@
+# BEGIN-DEV-ONLY
 package(default_visibility = ["//packages:__subpackages__"])
 
-load("@build_bazel_rules_nodejs//:index.bzl", "nodejs_binary")
-
-# BEGIN-DEV-ONLY
 load("//tools:defaults.bzl", "ts_library")
+load("@build_bazel_rules_nodejs//:index.bzl", "nodejs_binary")
 
 ts_library(
     name = "lib",
@@ -17,7 +16,6 @@ ts_library(
     ],
 )
 
-# END-DEV-ONLY
 nodejs_binary(
     name = "api_extractor",
     data = [
@@ -33,3 +31,4 @@ filegroup(
     name = "package_assets",
     srcs = ["BUILD.bazel"],
 )
+# END-DEV-ONLY

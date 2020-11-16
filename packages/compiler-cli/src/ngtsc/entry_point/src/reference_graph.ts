@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as ts from 'typescript';
+import {DeclarationNode} from '../../reflection';
 
-export class ReferenceGraph<T = ts.Declaration> {
+export class ReferenceGraph<T = DeclarationNode> {
   private references = new Map<T, Set<T>>();
 
   add(from: T, to: T): void {

@@ -23,7 +23,7 @@ Angular는 비동기 로직을 처리할 때 옵저버블을 다양하게 사용
 ## 컴포넌트간 데이터 전달하기
 
 <!--
-Angular provides an `EventEmitter` class that is used when publishing values from a component through the [`@Output()` decorator](guide/inputs-outputs#how-to-use-output).
+Angular provides an `EventEmitter` class that is used when publishing values from a component through the [`@Output()` decorator](guide/inputs-outputs#output).
 `EventEmitter` extends [RxJS `Subject`](https://rxjs.dev/api/index/class/Subject), adding an `emit()` method so it can send arbitrary values.
 When you call `emit()`, it passes the emitted value to the `next()` method of any subscribed observer.
 
@@ -35,7 +35,7 @@ Here is the component definition:
 
 <code-example path="observables-in-angular/src/main.ts" header="EventEmitter" region="eventemitter"></code-example>
 -->
-컴포넌트 밖으로 데이터를 보내려면 [`@Output()` 데코레이터](guide/inputs-outputs#how-to-use-output)가 지정된 프로퍼티에 `EventEmitter` 인스턴스를 사용합니다.
+컴포넌트 밖으로 데이터를 보내려면 [`@Output()` 데코레이터](guide/inputs-outputs#output)가 지정된 프로퍼티에 `EventEmitter` 인스턴스를 사용합니다.
 `EventEmitter`는 [RxJS가 제공하는 `Subject`](https://rxjs.dev/api/index/class/Subject) 클래스를 확장한 클래스입니다.
 `Subject`에 있는 기능 외에 `EventEmitter`가 제공하는 `emit()` 메소드를 사용하면 데이터를 옵저버블에 실어 보낼 수 있습니다.
 그리고 이렇게 보낸 데이터는 이 옵저버블을 구독하는 옵저버의 `next()` 메소드가 받을 수 있습니다.

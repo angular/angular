@@ -2,8 +2,8 @@
 # https://docs.bazel.build/versions/master/install-windows.html
 # https://docs.bazel.build/versions/master/windows.html
 # Install MSYS2 and packages
-choco install msys2 --version 20180531.0.0 --no-progress --package-parameters "/NoUpdate"
-C:\tools\msys64\usr\bin\bash.exe -l -c "pacman --needed --noconfirm -S zip unzip patch diffutils git"
+choco install msys2 --version 20200903.0.0 --no-progress --package-parameters "/NoUpdate"
+C:\tools\msys64\usr\bin\bash.exe -l -c "pacman --needed --noconfirm -S zip unzip patch diffutils"
 
 # Add PATH modifications to the Powershell profile. This is the win equivalent of .bash_profile.
 # https://docs.microsoft.com/en-us/previous-versions//bb613488(v=vs.85)
@@ -41,7 +41,8 @@ copy .circleci\bazel.windows.rc ${Env:USERPROFILE}\.bazelrc
 ####################################################################################################
 # Install specific version of node.
 ####################################################################################################
-choco install nodejs --version 12.14.1 --no-progress
+nvm install 12.14.1
+nvm use 12.14.1
 
 # These Bazel prereqs aren't needed because the CircleCI image already includes them.
 # choco install yarn --version 1.16.0 --no-progress

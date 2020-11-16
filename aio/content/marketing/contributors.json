@@ -461,8 +461,8 @@
     "name": "Sajeetharan Sinnathurai",
     "picture": "sajee.jpg",
     "twitter": "kokkisajee",
-    "website": "https://sajeetharan.herokuapp.com/",
-    "bio": "Sajeetharan is a Developer, Top contributor on stackoverflow for #Angular, ng-SriLanka organizer. He makes use of his extensive knowledge over the past years to contribute to community to make the world a better place.",
+    "website": "https://sajeetharan.com/",
+    "bio": "Sajeetharan is a Cloud Architect, Top contributor on stackoverflow for #Angular, ng-SriLanka organizer. He makes use of his extensive knowledge over the past years to contribute to community to make the world a better place.",
     "groups": ["GDE"]
   },
   "lacolaco": {
@@ -821,5 +821,46 @@
     "twitter": "samvloeberghs",
     "website": "https://samvloeberghs.be",
     "bio": "Sam is a freelance software architect and Internet entrepreneur, currently focusing on frontend technologies. Co-organiser of the Belgian Angular conference NG-BE and Angular Belgium Meetup group."
+  },
+  "thekiba": {
+    "name": "Andrew Grekov",
+    "picture": "thekiba.jpg",
+    "twitter": "thekiba_io",
+    "website": "https://thekiba.io",
+    "bio": "Andrew is a software engineer using Angular and .NET. He spends most of his spare time staying up-to-date, helping other people, and experimenting with web tech.",
+    "groups": ["GDE"]
+  },
+  "fmalcher": {
+    "name": "Ferdinand Malcher",
+    "picture": "fmalcher.jpg",
+    "twitter": "fmalcher01",
+    "website": "https://angular.schule",
+    "bio": "Ferdinand is a developer, trainer, and international speaker from Leipzig, Germany. He is co-author of the German Angular book and loves to share knowledge – that's why he writes books and blog posts, speaks at meetups and conferences, does Angular training and works as a consultant in his company \"Angular.Schule\".",
+    "groups": ["GDE"]
+  },
+  "johanneshoppe": {
+    "name": "Johannes Hoppe",
+    "picture": "johanneshoppe.jpg",
+    "twitter": "johanneshoppe",
+    "website": "https://angular.schule",
+    "bio": "Johannes works as a software architect and consultant for Angular. He is co-author of the German Angular book and a passionate speaker. With his company \"Angular.Schule\" he offers public Angular training and consulting. Johannes is head of the Angular Meetup in Heidelberg, Germany, and is engaged in a couple of open source projects.",
+    "groups": ["GDE"]
+  },
+  "jessicajaniuk": {
+    "name": "Jessica Janiuk",
+    "picture": "jessicajaniuk.jpg",
+    "twitter": "thepunderwoman",
+    "website": "https://github.com/jessicajaniuk",
+    "bio": "Jessica is a software engineer at Google. In her free time she is a historical fencer, astromech droid builder, photographer, pun purveyor, occasional cosplayer, and full time cat mom.",
+    "groups": ["Angular"],
+    "lead": "jelbourn"
+  },
+  "caballerog": {
+    "name": "Carlos Caballero",
+    "picture": "carloscaballero.jpg",
+    "twitter": "Carlillo",
+    "website": "http://carloscaballero.io",
+    "bio": "Carlos Caballero is a computer science engineer and a PhD in Computer Science from the University of Málaga. He earned his masters in Software Engineering and Artificial Intelligence. He is a full-time teacher in vocational training. He has written several teaching books and more than a dozen research articles in the first international journals.",
+    "groups": ["GDE"]
   }
 }

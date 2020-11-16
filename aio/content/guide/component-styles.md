@@ -216,7 +216,7 @@ The `/deep/` combinator also has the aliases `>>>`, and `::ng-deep`.
 
 Use `/deep/`, `>>>` and `::ng-deep` only with *emulated* view encapsulation.
 Emulated is the default and most commonly used view encapsulation. For more information, see the
-[Controlling view encapsulation](guide/component-styles#view-encapsulation) section.
+[View Encapsulation](guide/view-encapsulation) section.
 
 </div>
 
@@ -243,7 +243,7 @@ Until then `::ng-deep` should be preferred for a broader compatibility with the 
 <div class="alert is-important">
 
 `/deep/`, `>>>`, `::ng-deep` 셀렉터는 *`Emulated`* 뷰 캡슐화 정책을 사용할 때만 사용하세요.
-이 정책은 뷰 캡슐화 정책의 기본값입니다. 좀 더 자세한 설명은 [뷰 캡슐화 정책](guide/component-styles#뷰-캡슐화) 문서를 참고하세요.
+이 정책은 뷰 캡슐화 정책의 기본값입니다. 좀 더 자세한 설명은 [뷰 캡슐화 정책](guide/view-encapsulation) 문서를 참고하세요.
 
 </div>
 
@@ -538,162 +538,3 @@ Angular CLI를 사용한다면 [sass](http://sass-lang.com/)나 [less](http://le
 `@Component.styles`에 문자열로 지정하는 스타일은 _반드시 CSS 문법으로_ 지정해야 합니다. Angular CLI는 인라인 스타일을 처리할 때 CSS 프리프로세서를 별도로 사용하지 않습니다.
 
 </div>
-
-
-{@a view-encapsulation}
-
-<!--
-## View encapsulation
--->
-## 뷰 캡슐화
-
-<!--
-As discussed earlier, component CSS styles are encapsulated into the component's view and don't
-affect the rest of the application.
-
-To control how this encapsulation happens on a *per
-component* basis, you can set the *view encapsulation mode* in the component metadata.
-Choose from the following modes:
-
-* `ShadowDom` view encapsulation uses the browser's native shadow DOM implementation (see
-  [Shadow DOM](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Shadow_DOM)
-  on the [MDN](https://developer.mozilla.org) site)
-  to attach a shadow DOM to the component's host element, and then puts the component
-  view inside that shadow DOM. The component's styles are included within the shadow DOM.
-
-* `Native` view encapsulation uses a now deprecated version of the browser's native shadow DOM implementation - [learn about the changes](https://hayato.io/2016/shadowdomv1/).
-
-* `Emulated` view encapsulation (the default) emulates the behavior of shadow DOM by preprocessing
-  (and renaming) the CSS code to effectively scope the CSS to the component's view.
-  For details, see [Inspecting generated CSS](guide/component-styles#inspect-generated-css) below.
-
-* `None` means that Angular does no view encapsulation.
-  Angular adds the CSS to the global styles.
-  The scoping rules, isolations, and protections discussed earlier don't apply.
-  This is essentially the same as pasting the component's styles into the HTML.
-
-To set the components encapsulation mode, use the `encapsulation` property in the component metadata:
-
-<code-example path="component-styles/src/app/quest-summary.component.ts" region="encapsulation.native" header="src/app/quest-summary.component.ts"></code-example>
-
-`ShadowDom` view encapsulation only works on browsers that have native support
-for shadow DOM (see [Shadow DOM v1](https://caniuse.com/#feat=shadowdomv1) on the
-[Can I use](http://caniuse.com) site). The support is still limited,
-which is why `Emulated` view encapsulation is the default mode and recommended
-in most cases.
--->
-이전에 언급했던 것처럼 컴포넌트의 CSS 스타일은 컴포넌트 뷰 안으로 캡슐화 되며 컴포넌트 외부의 영향을 받지 않습니다.
-
-이 정책은 컴포넌트 메타데이터에 *뷰 캡슐화 모드*를 지정해서 *컴포넌트별로* 변경할 수 있습니다.
-지정할 수 있는 뷰 캡슐화 정책은 다음과 같습니다:
-
-* `ShadowDom` 캡슐화 정책을 사용하면 브라우저의 네이티브 섀도우 DOM 구현 방식을 사용해서 컴포넌트의 호스트 엘리먼트를 구성합니다.
-컴포넌트 뷰는 이 섀도우 DOM 안에 들어가며, 이 때 컴포넌트의 스타일도 함께 섀도우 DOM에 포함됩니다.
-섀도우 DOM에 대한 자세한 내용은 [MDN](https://developer.mozilla.org) 사이트에서 제공하는 [Shadow DOM](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Shadow_DOM) 문서를 참고하세요.
-
-* `Native` 캡슐화 정책은 이전 버전(Shadow DOM v0)의 섀도우 DOM에 대한 것으로 변경되었습니다. [변경된 내용을 확인해 보세요](https://hayato.io/2016/shadowdomv1/).
-
-* 기본값인 `Emulated` 캡슐화 정책을 사용하면 Angular가 제공하는 섀도우 DOM을 사용하며, CSS 코드를 컴포넌트 뷰에 한정되도록 변경해서 적용합니다.
-좀 더 자세한 내용은 [생성된 css 코드 확인하기](guide/component-styles#생성된-css-코드-확인하기) 섹션을 참고하세요.
-
-* `None` 캡슐화 정책을 사용하면 Angular가 뷰를 캡슐화하지 않습니다. Angular에서 지정한 CSS 스타일은 전역 범위에 적용되며, 이전에 언급했던 스타일 적용 범위도 컴포넌트 안에만 제한되지 않습니다.
-이 특징 외에는 다른 캡슐화 정책과 비슷합니다.
-
-컴포넌트 캡슐화 모드는 컴포넌트 메타데이터의 `encapsulation` 프로퍼티로 지정합니다:
-
-<code-example path="component-styles/src/app/quest-summary.component.ts" region="encapsulation.native" header="src/app/quest-summary.component.ts"></code-example>
-
-`ShadowDom` 캡슐화 정책은 [Shadow DOM v0](http://caniuse.com/#feat=shadowdomv1)를 네이티브로 지원하는 브라우저에서만 유효하며, 지원 여부는 [Can I use](http://caniuse.com) 사이트에서 확인할 수 있습니다. 하지만 모든 브라우저가 이 표준을 지원하는 것은 아니기 때문에 Angular의 뷰 캡슐화 정책은 `Emulated`가 기본값이며, 대부분의 경우에 이 모드를 권장합니다.
-
-
-
-{@a inspect-generated-css}
-
-<!--
-## Inspecting generated CSS
--->
-## 생성된 CSS 코드 확인하기
-
-<!--
-When using emulated view encapsulation, Angular preprocesses
-all component styles so that they approximate the standard shadow CSS scoping rules.
-
-In the DOM of a running Angular application with emulated view
-encapsulation enabled, each DOM element has some extra attributes
-attached to it:
-
-<code-example format="">
-  &lt;hero-details _nghost-pmm-5>
-    &lt;h2 _ngcontent-pmm-5>Mister Fantastic&lt;/h2>
-    &lt;hero-team _ngcontent-pmm-5 _nghost-pmm-6>
-      &lt;h3 _ngcontent-pmm-6>Team&lt;/h3>
-    &lt;/hero-team>
-  &lt;/hero-detail>
-
-</code-example>
-
-There are two kinds of generated attributes:
-
-* An element that would be a shadow DOM host in native encapsulation has a
-  generated `_nghost` attribute. This is typically the case for component host elements.
-* An element within a component's view has a `_ngcontent` attribute
-that identifies to which host's emulated shadow DOM this element belongs.
-
-The exact values of these attributes aren't important. They are automatically
-generated and you never refer to them in application code. But they are targeted
-by the generated component styles, which are in the `<head>` section of the DOM:
-
-<code-example format="">
-  [_nghost-pmm-5] {
-    display: block;
-    border: 1px solid black;
-  }
-
-  h3[_ngcontent-pmm-6] {
-    background-color: white;
-    border: 1px solid #777;
-  }
-</code-example>
-
-These styles are post-processed so that each selector is augmented
-with `_nghost` or `_ngcontent` attribute selectors.
-These extra selectors enable the scoping rules described in this page.
--->
-`Emulated` 뷰 캡슐화 정책을 사용하면 표준 섀도우 CSS 적용범위에 맞게 Angular가 스타일 코드를 수정합니다.
-
-그래서 Angular가 처리한 코드를 확인해보면 다음과 같이 DOM 엘리먼트에 추가 어트리뷰트가 지정되는 것을 확인할 수 있습니다:
-
-<code-example format="">
-  &lt;hero-details _nghost-pmm-5>
-    &lt;h2 _ngcontent-pmm-5>Mister Fantastic&lt;/h2>
-    &lt;hero-team _ngcontent-pmm-5 _nghost-pmm-6>
-      &lt;h3 _ngcontent-pmm-6>Team&lt;/h3>
-    &lt;/hero-team>
-  &lt;/hero-detail>
-
-</code-example>
-
-이렇게 추가되는 어트리뷰트는 두 종류가 있습니다:
-
-* 섀도우 DOM 호스트에 해당하는 엘리먼트에는 `_nghost` 어트리뷰트가 추가됩니다.
-이 어트리뷰트가 붙은 엘리먼트는 컴포넌트의 호스트 엘리먼트로 볼 수 있습니다.
-
-* 컴포넌트 뷰 안에 있는 엘리먼트에는 `_ngcontent` 어트리뷰트가 추가되며, 호스트 엘리먼트가 어떤 엘리먼트인지 이 어트리뷰트를 사용해서 판단합니다.
-
-어트리뷰트가 정확히 어떤 문자열로 추가되는지는 중요하지 않습니다.
-이 어트리뷰트 이름은 자동으로 생성되는 값이며 애플리케이션 코드에서 사용하는 경우도 없습니다.
-이 어트리뷰트 이름은 다음과 같이 `<head>`에서 컴포넌트 스타일을 적용할 때 사용됩니다:
-
-<code-example format="">
-  [_nghost-pmm-5] {
-    display: block;
-    border: 1px solid black;
-  }
-
-  h3[_ngcontent-pmm-6] {
-    background-color: white;
-    border: 1px solid #777;
-  }
-</code-example>
-
-이 스타일들은 Angular가 생성한 `_nghost`, `_ngcontent` 어트리뷰트 셀렉터를 사용해서 DOM 엘리먼트에 적용됩니다.

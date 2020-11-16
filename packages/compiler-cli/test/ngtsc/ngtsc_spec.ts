@@ -390,6 +390,43 @@ runInEachFileSystem(os => {
           expect(jsContents).toContain('/** @nocollapse */ TestCmp.ɵcmp');
         });
 
+        it('should still perform schema checks in embedded views', () => {
+          env.tsconfig({
+            'fullTemplateTypeCheck': false,
+            'annotateForClosureCompiler': true,
+            'ivyTemplateTypeCheck': true,
+          });
+          env.write('test.ts', `
+            import {Component, Directive, NgModule} from '@angular/core';
+
+            @Component({
+              selector: 'test-cmp',
+              template: \`
+                <ng-template>
+                  <some-dir>Has a directive, should be okay</some-dir>
+                  <not-a-cmp>Should trigger a schema error</not-a-cmp>
+                </ng-template>
+              \`
+            })
+            export class TestCmp {}
+
+            @Directive({
+              selector: 'some-dir',
+            })
+            export class TestDir {}
+
+            @NgModule({
+              declarations: [TestCmp, TestDir],
+            })
+            export class TestModule {}
+          `);
+
+          const diags = env.driveDiagnostics();
+          expect(diags.length).toBe(1);
+          expect(diags[0].code).toBe(ngErrorCode(ErrorCode.SCHEMA_INVALID_ELEMENT));
+          expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '\n'))
+              .toContain('not-a-cmp');
+        });
         /**
          * The following set of tests verify that after Tsickle run we do not have cases
          * which trigger automatic semicolon insertion, which breaks the code. In order
@@ -2214,6 +2251,35 @@ runInEachFileSystem(os => {
           expect(diags[0].relatedInformation![1].messageText).toBe('The type is declared here.');
         });
 
+        it('should report an error when using a missing type as injection token', () => {
+          // This test replicates the situation where a symbol does not have any declarations at
+          // all, e.g. because it's imported from a missing module. This would result in a
+          // semantic TypeScript diagnostic which we ignore in this test to verify that ngtsc's
+          // analysis is able to operate in this situation.
+          env.tsconfig({strictInjectionParameters: true});
+          env.write(`test.ts`, `
+             import {Injectable} from '@angular/core';
+             // @ts-expect-error
+             import {Interface} from 'missing';
+
+             @Injectable()
+             export class MyService {
+               constructor(param: Interface) {}
+             }
+          `);
+
+          const diags = env.driveDiagnostics();
+          expect(diags.length).toBe(1);
+          expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '\n'))
+              .toBe(
+                  `No suitable injection token for parameter 'param' of ` +
+                  `class 'MyService'.\n` +
+                  `  Consider using the @Inject decorator to specify an injection token.`);
+          expect(diags[0].relatedInformation!.length).toBe(1);
+          expect(diags[0].relatedInformation![0].messageText)
+              .toBe('This type does not have a value, so it cannot be used as injection token.');
+        });
+
         it('should report an error when no type is present', () => {
           env.tsconfig({strictInjectionParameters: true, noImplicitAny: false});
           env.write(`test.ts`, `
@@ -2998,12 +3064,13 @@ runInEachFileSystem(os => {
     it('should generate queries for directives', () => {
       env.write(`test.ts`, `
         import {Directive, ContentChild, ContentChildren, TemplateRef, ViewChild} from '@angular/core';
+        import * as core from '@angular/core';
 
         @Directive({
           selector: '[test]',
           queries: {
             'mview': new ViewChild('test1'),
-            'mcontent': new ContentChild('test2'),
+            'mcontent': new core.ContentChild('test2'),
           }
         })
         class FooCmp {
@@ -4530,7 +4597,7 @@ runInEachFileSystem(os => {
         const jsContents = env.getContents('test.js');
         expect(jsContents)
             .toMatch(
-                /i\d\.ɵɵsetComponentScope\(NormalComponent,\s+\[NormalComponent,\s+CyclicComponent\],\s+\[\]\)/);
+                /i\d\.ɵɵsetComponentScope\(NormalComponent,\s+\[CyclicComponent\],\s+\[\]\)/);
         expect(jsContents).not.toContain('/*__PURE__*/ i0.ɵɵsetComponentScope');
       });
 
@@ -4598,6 +4665,49 @@ runInEachFileSystem(os => {
         env.driveMain();
         const jsContents = env.getContents('test.js');
         expect(jsContents).not.toContain('setComponentScope');
+      });
+
+      it('should only pass components actually used to setComponentScope', () => {
+        env.write('test.ts', `
+          import {Component, NgModule} from '@angular/core';
+          import {NormalComponent} from './cyclic';
+          import {OtherComponent} from './other';
+
+          @Component({
+            selector: 'cyclic-component',
+            template: 'Importing this causes a cycle',
+          })
+          export class CyclicComponent {}
+
+          @NgModule({
+            declarations: [NormalComponent, CyclicComponent, OtherComponent],
+          })
+          export class Module {}
+        `);
+
+        env.write('cyclic.ts', `
+          import {Component} from '@angular/core';
+
+          @Component({
+            selector: 'normal-component',
+            template: '<cyclic-component></cyclic-component>',
+          })
+          export class NormalComponent {}
+        `);
+
+        env.write('other.ts', `
+          import {Component} from '@angular/core';
+
+          @Component({
+            selector: 'other-component',
+            template: 'An unused other component',
+          })
+          export class OtherComponent {}
+        `);
+
+        env.driveMain();
+        const jsContents = env.getContents('test.js');
+        expect(jsContents).not.toMatch(/i\d\.ɵɵsetComponentScope\([^)]*OtherComponent[^)]*\)/);
       });
     });
 

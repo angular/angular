@@ -13,21 +13,21 @@ import {ComponentDecoratorHandler, DirectiveDecoratorHandler, InjectableDecorato
 import {CycleAnalyzer, ImportGraph} from '../../cycles';
 import {ErrorCode, ngErrorCode} from '../../diagnostics';
 import {checkForPrivateExports, ReferenceGraph} from '../../entry_point';
-import {LogicalFileSystem} from '../../file_system';
+import {LogicalFileSystem, resolve} from '../../file_system';
 import {AbsoluteModuleStrategy, AliasingHost, AliasStrategy, DefaultImportTracker, ImportRewriter, LocalIdentifierStrategy, LogicalProjectStrategy, ModuleResolver, NoopImportRewriter, PrivateExportAliasingHost, R3SymbolsImportRewriter, Reference, ReferenceEmitStrategy, ReferenceEmitter, RelativePathStrategy, UnifiedModulesAliasingHost, UnifiedModulesStrategy} from '../../imports';
 import {IncrementalBuildStrategy, IncrementalDriver} from '../../incremental';
 import {generateAnalysis, IndexedComponent, IndexingContext} from '../../indexer';
-import {CompoundMetadataReader, CompoundMetadataRegistry, DtsMetadataReader, InjectableClassRegistry, LocalMetadataRegistry, MetadataReader} from '../../metadata';
+import {ComponentResources, CompoundMetadataReader, CompoundMetadataRegistry, DtsMetadataReader, InjectableClassRegistry, LocalMetadataRegistry, MetadataReader, ResourceRegistry} from '../../metadata';
 import {ModuleWithProvidersScanner} from '../../modulewithproviders';
 import {PartialEvaluator} from '../../partial_evaluator';
 import {NOOP_PERF_RECORDER, PerfRecorder} from '../../perf';
-import {TypeScriptReflectionHost} from '../../reflection';
+import {DeclarationNode, isNamedClassDeclaration, TypeScriptReflectionHost} from '../../reflection';
 import {AdapterResourceLoader} from '../../resource';
 import {entryPointKeyFor, NgModuleRouteAnalyzer} from '../../routing';
 import {ComponentScopeReader, LocalModuleScopeRegistry, MetadataDtsModuleScopeResolver} from '../../scope';
 import {generatedFactoryTransform} from '../../shims';
 import {ivySwitchTransform} from '../../switch';
-import {aliasTransformFactory, declarationTransformFactory, DecoratorHandler, DtsTransformRegistry, ivyTransformFactory, TraitCompiler} from '../../transform';
+import {aliasTransformFactory, CompilationMode, declarationTransformFactory, DecoratorHandler, DtsTransformRegistry, ivyTransformFactory, TraitCompiler} from '../../transform';
 import {TemplateTypeCheckerImpl} from '../../typecheck';
 import {OptimizeFor, TemplateTypeChecker, TypeCheckingConfig, TypeCheckingProgramStrategy} from '../../typecheck/api';
 import {isTemplateDiagnostic} from '../../typecheck/diagnostics';
@@ -52,6 +52,7 @@ interface LazyCompilationState {
   aliasingHost: AliasingHost|null;
   refEmitter: ReferenceEmitter;
   templateTypeChecker: TemplateTypeChecker;
+  resourceRegistry: ResourceRegistry;
 }
 
 /**
@@ -99,11 +100,15 @@ export class NgCompiler {
   readonly ignoreForEmit: Set<ts.SourceFile>;
 
   constructor(
-      private adapter: NgCompilerAdapter, private options: NgCompilerOptions,
+      private adapter: NgCompilerAdapter,
+      private options: NgCompilerOptions,
       private tsProgram: ts.Program,
       private typeCheckingProgramStrategy: TypeCheckingProgramStrategy,
-      private incrementalStrategy: IncrementalBuildStrategy, oldProgram: ts.Program|null = null,
-      private perfRecorder: PerfRecorder = NOOP_PERF_RECORDER) {
+      private incrementalStrategy: IncrementalBuildStrategy,
+      private enableTemplateTypeChecker: boolean,
+      oldProgram: ts.Program|null = null,
+      private perfRecorder: PerfRecorder = NOOP_PERF_RECORDER,
+  ) {
     this.constructionDiagnostics.push(...this.adapter.constructionDiagnostics);
     const incompatibleTypeCheckOptionsDiagnostic = verifyCompatibleTypeCheckOptions(this.options);
     if (incompatibleTypeCheckOptionsDiagnostic !== null) {
@@ -155,6 +160,17 @@ export class NgCompiler {
         new Set(tsProgram.getSourceFiles().filter(sf => this.adapter.isShim(sf)));
 
     this.ignoreForEmit = this.adapter.ignoreForEmit;
+  }
+
+  /**
+   * Get the resource dependencies of a file.
+   *
+   * If the file is not part of the compilation, an empty array will be returned.
+   */
+  getResourceDependencies(file: ts.SourceFile): string[] {
+    this.ensureAnalyzed();
+
+    return this.incrementalDriver.depGraph.getResourceDependencies(file);
   }
 
   /**
@@ -212,7 +228,44 @@ export class NgCompiler {
   }
 
   getTemplateTypeChecker(): TemplateTypeChecker {
+    if (!this.enableTemplateTypeChecker) {
+      throw new Error(
+          'The `TemplateTypeChecker` does not work without `enableTemplateTypeChecker`.');
+    }
     return this.ensureAnalyzed().templateTypeChecker;
+  }
+
+  /**
+   * Retrieves the `ts.Declaration`s for any component(s) which use the given template file.
+   */
+  getComponentsWithTemplateFile(templateFilePath: string): ReadonlySet<DeclarationNode> {
+    const {resourceRegistry} = this.ensureAnalyzed();
+    return resourceRegistry.getComponentsWithTemplate(resolve(templateFilePath));
+  }
+
+  /**
+   * Retrieves the `ts.Declaration`s for any component(s) which use the given template file.
+   */
+  getComponentsWithStyleFile(styleFilePath: string): ReadonlySet<DeclarationNode> {
+    const {resourceRegistry} = this.ensureAnalyzed();
+    return resourceRegistry.getComponentsWithStyle(resolve(styleFilePath));
+  }
+
+  /**
+   * Retrieves external resources for the given component.
+   */
+  getComponentResources(classDecl: DeclarationNode): ComponentResources|null {
+    if (!isNamedClassDeclaration(classDecl)) {
+      return null;
+    }
+    const {resourceRegistry} = this.ensureAnalyzed();
+    const styles = resourceRegistry.getStyles(classDecl);
+    const template = resourceRegistry.getTemplate(classDecl);
+    if (template === null) {
+      return null;
+    }
+
+    return {styles, template};
   }
 
   /**
@@ -350,7 +403,7 @@ export class NgCompiler {
    *
    * See the `indexing` package for more details.
    */
-  getIndexedComponents(): Map<ts.Declaration, IndexedComponent> {
+  getIndexedComponents(): Map<DeclarationNode, IndexedComponent> {
     const compilation = this.ensureAnalyzed();
     const context = new IndexingContext();
     compilation.traitCompiler.index(context);
@@ -415,6 +468,7 @@ export class NgCompiler {
         applyTemplateContextGuards: strictTemplates,
         checkQueries: false,
         checkTemplateBodies: true,
+        alwaysCheckSchemaInTemplateBodies: true,
         checkTypeOfInputBindings: strictTemplates,
         honorAccessModifiersForInputBindings: false,
         strictNullInputBindings: strictTemplates,
@@ -436,12 +490,16 @@ export class NgCompiler {
         strictSafeNavigationTypes: strictTemplates,
         useContextGenericType: strictTemplates,
         strictLiteralTypes: true,
+        enableTemplateTypeChecker: this.enableTemplateTypeChecker,
       };
     } else {
       typeCheckingConfig = {
         applyTemplateContextGuards: false,
         checkQueries: false,
         checkTemplateBodies: false,
+        // Enable deep schema checking in "basic" template type-checking mode only if Closure
+        // compilation is requested, which is a good proxy for "only in google3".
+        alwaysCheckSchemaInTemplateBodies: this.closureCompilerEnabled,
         checkTypeOfInputBindings: false,
         strictNullInputBindings: false,
         honorAccessModifiersForInputBindings: false,
@@ -456,6 +514,7 @@ export class NgCompiler {
         strictSafeNavigationTypes: false,
         useContextGenericType: false,
         strictLiteralTypes: false,
+        enableTemplateTypeChecker: this.enableTemplateTypeChecker,
       };
     }
 
@@ -700,13 +759,14 @@ export class NgCompiler {
     const isCore = isAngularCorePackage(this.tsProgram);
 
     const defaultImportTracker = new DefaultImportTracker();
+    const resourceRegistry = new ResourceRegistry();
 
     // Set up the IvyCompilation, which manages state for the Ivy transformer.
     const handlers: DecoratorHandler<unknown, unknown, unknown>[] = [
       new ComponentDecoratorHandler(
-          reflector, evaluator, metaRegistry, metaReader, scopeReader, scopeRegistry, isCore,
-          this.resourceManager, this.adapter.rootDirs, this.options.preserveWhitespaces || false,
-          this.options.i18nUseExternalIds !== false,
+          reflector, evaluator, metaRegistry, metaReader, scopeReader, scopeRegistry,
+          resourceRegistry, isCore, this.resourceManager, this.adapter.rootDirs,
+          this.options.preserveWhitespaces || false, this.options.i18nUseExternalIds !== false,
           this.options.enableI18nLegacyMessageIdFormat !== false,
           this.options.i18nNormalizeLineEndingsInICUs, this.moduleResolver, this.cycleAnalyzer,
           refEmitter, defaultImportTracker, this.incrementalDriver.depGraph, injectableRegistry,
@@ -737,13 +797,16 @@ export class NgCompiler {
           this.closureCompilerEnabled, injectableRegistry, this.options.i18nInLocale),
     ];
 
+    const compilationMode =
+        this.options.compilationMode === 'partial' ? CompilationMode.PARTIAL : CompilationMode.FULL;
     const traitCompiler = new TraitCompiler(
         handlers, reflector, this.perfRecorder, this.incrementalDriver,
-        this.options.compileNonExportedClasses !== false, dtsTransforms);
+        this.options.compileNonExportedClasses !== false, compilationMode, dtsTransforms);
 
     const templateTypeChecker = new TemplateTypeCheckerImpl(
         this.tsProgram, this.typeCheckingProgramStrategy, traitCompiler,
-        this.getTypeCheckingConfig(), refEmitter, reflector, this.adapter, this.incrementalDriver);
+        this.getTypeCheckingConfig(), refEmitter, reflector, this.adapter, this.incrementalDriver,
+        scopeRegistry);
 
     return {
       isCore,
@@ -759,6 +822,7 @@ export class NgCompiler {
       aliasingHost,
       refEmitter,
       templateTypeChecker,
+      resourceRegistry,
     };
   }
 }
@@ -841,7 +905,7 @@ https://v9.angular.io/guide/template-typecheck#template-type-checking`,
 class ReferenceGraphAdapter implements ReferencesRegistry {
   constructor(private graph: ReferenceGraph) {}
 
-  add(source: ts.Declaration, ...references: Reference<ts.Declaration>[]): void {
+  add(source: DeclarationNode, ...references: Reference<DeclarationNode>[]): void {
     for (const {node} of references) {
       let sourceFile = node.getSourceFile();
       if (sourceFile === undefined) {

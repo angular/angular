@@ -8,7 +8,7 @@
 
 import {Arguments, Argv, CommandModule} from 'yargs';
 
-import {addGithubTokenFlag} from '../../utils/yargs';
+import {addGithubTokenOption} from '../../utils/git/github-yargs';
 
 import {checkServiceStatuses} from './check';
 
@@ -17,12 +17,9 @@ export interface CaretakerCheckOptions {
   githubToken: string;
 }
 
-/** URL to the Github page where personal access tokens can be generated. */
-export const GITHUB_TOKEN_GENERATE_URL = `https://github.com/settings/tokens`;
-
 /** Builds the command. */
 function builder(yargs: Argv) {
-  return addGithubTokenFlag(yargs);
+  return addGithubTokenOption(yargs);
 }
 
 /** Handles the command. */

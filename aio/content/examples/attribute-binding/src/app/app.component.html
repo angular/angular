@@ -3,8 +3,10 @@
 <h2>Attribute binding</h2>
 <!-- #docregion attrib-binding-colspan -->
 <table border=1>
+  <!-- #docregion colspan -->
   <!--  expression calculates colspan=2 -->
   <tr><td [attr.colspan]="1 + 1">One-Two</td></tr>
+  <!-- #enddocregion colspan -->
 
   <!-- ERROR: There is no `colspan` property to set!
     <tr><td colspan="{{1 + 1}}">Three-Four</td></tr>
@@ -32,10 +34,10 @@
 <!-- #docregion basic-specificity -->
 <h3>기본 순서</h3>
 
-<!-- `class.special`이 `class`보다 우선순위가 높습니다.  -->
+<!-- `class.special`이 `classExpression`로 지정되는 `class`보다 우선순위가 높습니다.  -->
 <div [class.special]="isSpecial" [class]="classExpr">Some text.</div>
 
-<!-- `style.color`가 `style`보다 우선순위가 높습니다.  -->
+<!-- `style.color`가 `styleExpression`로 지정되는 `style`보다 우선순위가 높습니다.  -->
 <div [style.color]="color" [style]="styleExpr">Some text.</div>
 <!-- #enddocregion basic-specificity -->
 
@@ -52,11 +54,11 @@
 <!-- #docregion dynamic-priority -->
 <h3>동적 vs 정적</h3>
 
-<!-- `classExpr`이 동적으로 처리되기 때문에 `class`보다 우선순위가 높습니다. -->
-<div class="special" [class]="classExpr">Some text.</div>
+<!-- `classExpression`이 동적으로 처리되기 때문에 `class`보다 우선순위가 높습니다. -->
+<div class="special" [class]="classExpression">Some text.</div>
 
-<!-- `styleExpr`이 동적으로 처리되기 때문에 `style`보다 우선순위가 높습니다. -->
-<div style="color: blue" [style]="styleExpr">Some text.</div>
+<!-- `styleExpression`이 동적으로 처리되기 때문에 `style`보다 우선순위가 높습니다. -->
+<div style="color: blue" [style]="styleExpression">Some text.</div>
 
 <!-- #enddocregion dynamic-priority -->
 

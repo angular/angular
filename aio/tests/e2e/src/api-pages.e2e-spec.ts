@@ -1,6 +1,6 @@
 import { ApiPage } from './api.po';
 
-describe('Api pages', function() {
+describe('Api pages', () => {
   it('should show direct subclasses of a class', () => {
     const page = new ApiPage('api/forms/AbstractControlDirective');
     expect(page.getDescendants('class', true)).toEqual(['ControlContainer', 'NgControl']);

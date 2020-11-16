@@ -39,11 +39,10 @@
             "url": "https://dev.to/t/angular",
             "title": "DEV Community"
           },
-          "angular-in-depth": {
-            "//desc": "The place where advanced Angular concepts are explained",
-            "desc": "Angular의 개념과 철학에 대해 깊이있게 분석하는 블로그입니다.",
-            "url": "https://blog.angularindepth.com",
-            "title": "Angular In Depth"
+          "indepth-dev": {
+            "desc": "Peer-reviewed Angular articles and tutorials.",
+            "url": "https://indepth.dev/angular/",
+            "title": "Angular inDepth"
           }
         }
       },
@@ -78,6 +77,12 @@
             "logo": "",
             "title": "NgRuAir",
             "url": "https://github.com/ngRuAir/ngruair"
+          },
+          "the-deep-dive": {
+            "desc": "The advanced web development podcast about Angular, RxJS, TypeScript and other technologies. English, audio only.",
+            "logo": "https://i.imgur.com/mmE5Feq.jpg",
+            "title": "The Deep Dive",
+            "url": "https://thedeepdive.simplecast.com"
           }
         }
       }
@@ -146,7 +151,7 @@
             "//desc": "Akita is a state management pattern, built on top of RxJS, which takes the idea of multiple data stores from Flux and the immutable updates from Redux, along with the concept of streaming data, to create the Observable Data Store model.",
             "desc": "Akita는 RxJS로 개발된 상태관리 패턴입니다. 이 라이브러리는 Flux의 다중 데이터 스토어 개념과 Redux의 이뮤터블 갱신 개념을 도입했습니다. 옵저버블 데이터 스토어 모델을 활용해서 데이터를 스트리밍하는 방식으로 사용합니다.",
             "title": "Akita",
-            "url": "https://netbasal.gitbook.io/akita/"
+            "url": "https://datorama.github.io/akita/docs/angular/architecture"
           },
           "ab": {
             "//desc": "The official library for Firebase and Angular",
@@ -534,10 +539,9 @@
         "order": 1,
         "resources": {
           "-KLIzGEp8Mh5W-FkiQnL": {
-            "//desc": "Your quick, no-nonsense guide to building real-world apps with Angular",
-            "desc": "Angular 애플리케이션을 만드는 방법을 쉽고 합리적으로 안내합니다.",
-            "title": "Learning Angular - Second Edition",
-            "url": "https://www.packtpub.com/web-development/learning-angular-second-edition"
+            "desc": "A no-nonsense beginner's guide to building web applications with Angular and TypeScript",
+            "title": "Learning Angular - Third Edition",
+            "url": "https://www.packtpub.com/product/learning-angular-third-edition/9781839210662"
           },
           "3ab": {
             "//desc": "More than 15 books from O'Reilly about Angular",

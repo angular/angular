@@ -69,7 +69,7 @@ B.decorators = [
   { type: OtherB },
   { type: Directive, args: [{ selector: '[b]' }] }
 ];
-var C_1;
+let C_1;
 let C = C_1 = class C {};
 C.decorators = [
   { type: Directive, args: [{ selector: '[c]' }] },
@@ -111,7 +111,7 @@ B.decorators = [
 ];
 return B;
 })();
-var C_1;
+let C_1;
 let C = C_1 = /** @class */ (() => {
 class C {}
 C.decorators = [
@@ -432,7 +432,7 @@ A.decorators = [
             name: _('/node_modules/test-package/some/file.js'),
             contents: `
 import * as tslib_1 from "tslib";
-var D_1;
+let D_1;
 /* A copyright notice */
 import { Directive } from '@angular/core';
 const OtherA = () => (node) => { };
@@ -681,9 +681,9 @@ export { D };
           const stmt3 = new DeclareVarStmt('baz', new LiteralExpr('qux'), undefined, []);
 
           expect(renderer.printStatement(stmt1, sourceFile, importManager)).toBe('const foo = 42;');
-          expect(renderer.printStatement(stmt2, sourceFile, importManager)).toBe('var bar = true;');
+          expect(renderer.printStatement(stmt2, sourceFile, importManager)).toBe('let bar = true;');
           expect(renderer.printStatement(stmt3, sourceFile, importManager))
-              .toBe('var baz = "qux";');
+              .toBe('let baz = "qux";');
         });
       });
     });

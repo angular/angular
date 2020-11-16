@@ -1,3 +1,4 @@
+// TODO: Add unit tests for this file.
 // tslint:disable: no-output-native
 // #docregion
 import { Component, Output, OnInit, EventEmitter, NgModule } from '@angular/core';

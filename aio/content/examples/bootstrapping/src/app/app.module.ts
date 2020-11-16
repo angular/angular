@@ -21,11 +21,13 @@ import { ItemDirective } from './item.directive';
     ItemDirective
   ],
   // #enddocregion declarations
+  // #docregion imports
   imports: [
     BrowserModule,
     FormsModule,
     HttpClientModule
   ],
+  // #enddocregion imports
   providers: [],
   bootstrap: [AppComponent]
 })

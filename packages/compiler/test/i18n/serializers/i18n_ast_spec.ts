@@ -41,7 +41,7 @@ import {_extractMessages} from '../i18n_parser_spec';
               new i18n.IcuPlaceholder(null!, '', null!),
             ],
             null!);
-        const tag = new i18n.TagPlaceholder('', {}, '', '', [container], false, null!);
+        const tag = new i18n.TagPlaceholder('', {}, '', '', [container], false, null!, null, null);
         const icu = new i18n.Icu('', '', {tag}, null!);
 
         icu.visit(visitor);

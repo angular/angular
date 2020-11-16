@@ -1,7 +1,7 @@
 <!--
-# Try it: Deployment
+# Deploying an application
 -->
-# 배포
+# 애플리케이션 배포하기
 
 <!--
 To deploy your application, you have to compile it, and then host the JavaScript, CSS, and HTML on a web server. Built Angular applications are very portable and can live in any environment or served by any technology, such as Node, Java, .NET, PHP, and many others.
@@ -141,6 +141,7 @@ One of the easiest ways to get your site live is to host it using Firebase.
 1. Sign up for a firebase account on [Firebase](https://firebase.google.com/ "Firebase web site").
 1. Create a new project, giving it any name you like.
 1. Add the `@angular/fire` schematics that will handle your deployment using `ng add @angular/fire`.
+1. Install [Firebase CLI](https://firebase.google.com/docs/cli) globally using `npm install -g firebase-tools`.
 1. Connect your CLI to your Firebase account and initialize the connection to your project using `firebase login` and `firebase init`.
 1. Follow the prompts to select the `Firebase` project you are creating for hosting.
     - Select the `Hosting` option on the first prompt.
@@ -154,6 +155,7 @@ One of the easiest ways to get your site live is to host it using Firebase.
 1. [Firebase](https://firebase.google.com/ "Firebase web site")에 가입합니다.
 1. 새로운 프로젝트를 생성합니다. 이름은 어느것이든 관계없습니다.
 1. Angular 프로젝트를 호스팅할 때 사용하는 `@angular/fire` 스키매틱을 설치합니다. `ng add @angular/fire` 명령을 실행하면 됩니다.
+1. npm 전역 패키지로 [Firebase CLI](https://firebase.google.com/docs/cli)를 설치합니다. `npm install -g firebase-tools` 명령을 실행하면 됩니다.
 1. Angualr CLI와 Firebase 계정을 연결합니다. 프로젝트에서 `firebase login`, `firebase init` 명령을 실행하면 됩니다.
 1. 프롬프트에서 안내하는 대로 호스팅 정보를 설정합니다.
     - 첫번째 항목에서 `Hosting` 옵션을 선택합니다.

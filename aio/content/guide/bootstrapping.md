@@ -24,8 +24,6 @@ When you use the [Angular CLI](cli) command `ng new` to generate an app, the def
 /* JavaScript imports */
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
 
 import { AppComponent } from './app.component';
 
@@ -35,9 +33,7 @@ import { AppComponent } from './app.component';
     AppComponent
   ],
   imports: [
-    BrowserModule,
-    FormsModule,
-    HttpClientModule
+    BrowserModule
   ],
   providers: [],
   bootstrap: [AppComponent]
@@ -62,8 +58,6 @@ NgModule은 애플리케이션을 구성하는 단위입니다.
 /* JavaScript 모듈 로드하기 */
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
 
 import { AppComponent } from './app.component';
 
@@ -73,9 +67,7 @@ import { AppComponent } from './app.component';
     AppComponent
   ],
   imports: [
-    BrowserModule,
-    FormsModule,
-    HttpClientModule
+    BrowserModule
   ],
   providers: [],
   bootstrap: [AppComponent]
@@ -251,6 +243,12 @@ Angular CLI로 디렉티브를 생성하면 디렉티브의 기본 구조가 다
 The module's `imports` array appears exclusively in the `@NgModule` metadata object.
 It tells Angular about other NgModules that this particular module needs to function properly.
 
+<code-example
+    path="bootstrapping/src/app/app.module.ts"
+    region="imports"
+    header="src/app/app.module.ts (excerpt)">
+</code-example>
+
 This list of modules are those that export components, directives, or pipes
 that component templates in this module reference. In this case, the component is
 `AppComponent`, which references components, directives, or pipes in `BrowserModule`,
@@ -260,6 +258,12 @@ or pipe when the referenced class is declared in this module or
 the class was imported from another module.
 -->
 `@NgModule`의 메타데이터 중 `imports` 배열은 이 모듈에서 필요한 기능을 다른 모듈에서 로드할 때 사용합니다.
+
+<code-example
+    path="bootstrapping/src/app/app.module.ts"
+    region="imports"
+    header="src/app/app.module.ts (일부)">
+</code-example>
 
 그리고 이렇게 불러온 모듈 안에서 `export` 키워드로 지정된 컴포넌트나 디렉티브, 파이프는 `imports` 배열을 지정한 현재 모듈안에서 자유롭게 사용할 수 있습니다.
 Angular CLI로 생성했던 `NgModule` 모듈로 설명하면, 모듈에 포함된다고 등록한 `AppComponent`에서는 앱 모듈에서 불러온 `BrowserModule`, `FormsModule`, `HttpModule` 안에 있는 컴포넌트, 디렉티브, 파이프 중 모듈 외부로 공개된 구성요소는 자유롭게 사용할 수 있습니다.

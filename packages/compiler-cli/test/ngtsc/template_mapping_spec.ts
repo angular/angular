@@ -24,7 +24,7 @@ runInEachFileSystem((os) => {
 
     beforeEach(() => {
       env = NgtscTestEnvironment.setup(testFiles);
-      env.tsconfig();
+      env.tsconfig({sourceMap: true, target: 'es2015', enableI18nLegacyMessageIdFormat: false});
     });
 
     describe('Inline templates', () => {
@@ -360,6 +360,90 @@ runInEachFileSystem((os) => {
         });
       });
 
+      describe('$localize', () => {
+        it('should create simple i18n message source-mapping', () => {
+          const mappings = compileAndMap(`<div i18n>Hello, World!</div>`);
+          expect(mappings).toContain({
+            source: '<div i18n>',
+            generated: 'i0.ɵɵelementStart(0, "div")',
+            sourceUrl: '../test.ts',
+          });
+          expect(mappings).toContain({
+            source: 'Hello, World!',
+            generated: '`Hello, World!`',
+            sourceUrl: '../test.ts',
+          });
+        });
+
+        it('should create placeholder source-mappings', () => {
+          const mappings = compileAndMap(`<div i18n>Hello, {{name}}!</div>`);
+          expect(mappings).toContain({
+            source: '<div i18n>',
+            generated: 'i0.ɵɵelementStart(0, "div")',
+            sourceUrl: '../test.ts',
+          });
+          expect(mappings).toContain({
+            source: '</div>',
+            generated: 'i0.ɵɵelementEnd()',
+            sourceUrl: '../test.ts',
+          });
+          expect(mappings).toContain({
+            source: 'Hello, ',
+            generated: '`Hello, ${',
+            sourceUrl: '../test.ts',
+          });
+          expect(mappings).toContain({
+            source: '{{name}}',
+            generated: '"\\uFFFD0\\uFFFD"',
+            sourceUrl: '../test.ts',
+          });
+          expect(mappings).toContain({
+            source: '!',
+            generated: '}:INTERPOLATION:!`',
+            sourceUrl: '../test.ts',
+          });
+        });
+
+        it('should create tag (container) placeholder source-mappings', () => {
+          const mappings = compileAndMap(`<div i18n>Hello, <b>World</b>!</div>`);
+          expect(mappings).toContain({
+            source: '<div i18n>',
+            generated: 'i0.ɵɵelementStart(0, "div")',
+            sourceUrl: '../test.ts',
+          });
+          expect(mappings).toContain({
+            source: '</div>',
+            generated: 'i0.ɵɵelementEnd()',
+            sourceUrl: '../test.ts',
+          });
+          expect(mappings).toContain({
+            source: 'Hello, ',
+            generated: '`Hello, ${',
+            sourceUrl: '../test.ts',
+          });
+          expect(mappings).toContain({
+            source: '<b>',
+            generated: '"\\uFFFD#2\\uFFFD"',
+            sourceUrl: '../test.ts',
+          });
+          expect(mappings).toContain({
+            source: 'World',
+            generated: '}:START_BOLD_TEXT:World${',
+            sourceUrl: '../test.ts',
+          });
+          expect(mappings).toContain({
+            source: '</b>',
+            generated: '"\\uFFFD/#2\\uFFFD"',
+            sourceUrl: '../test.ts',
+          });
+          expect(mappings).toContain({
+            source: '!',
+            generated: '}:CLOSE_BOLD_TEXT:!`',
+            sourceUrl: '../test.ts',
+          });
+        });
+      });
+
       it('should create (simple string) inline template source-mapping', () => {
         const mappings = compileAndMap('<div>this is a test</div><div>{{ 1 + 2 }}</div>');
 
@@ -520,7 +604,6 @@ runInEachFileSystem((os) => {
     function compileAndMap(template: string, templateUrl: string|null = null) {
       const templateConfig = templateUrl ? `templateUrl: '${templateUrl}'` :
                                            ('template: `' + template.replace(/`/g, '\\`') + '`');
-      env.tsconfig({sourceMap: true});
       env.write('test.ts', `
         import {Component} from '@angular/core';
 

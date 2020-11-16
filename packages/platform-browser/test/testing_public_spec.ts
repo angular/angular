@@ -774,18 +774,6 @@ const bTok = new InjectionToken<string>('b');
           expect(testDir!.test).toBe('some prop');
         });
 
-        it('should throw if the TestBed is already created', () => {
-          @Component({selector: 'comp', template: 'a'})
-          class MyComponent {
-          }
-
-          TestBed.inject(Injector);
-
-          expect(() => TestBed.overrideTemplateUsingTestingModule(MyComponent, 'b'))
-              .toThrowError(
-                  /Cannot override template when the test module has already been instantiated/);
-        });
-
         it('should reset overrides when the testing module is resetted', () => {
           @Component({selector: 'comp', template: 'a'})
           class MyComponent {
@@ -1070,6 +1058,70 @@ Did you run and wait for 'resolveComponentResources()'?` :
            componentFixture.detectChanges();
            expect(componentFixture.nativeElement).toHaveText('Parent(Mock)');
          }));
+    });
+
+    describe('calling override methods after TestBed initialization', () => {
+      const getExpectedErrorMessage = (methodName: string, methodDescription: string) => `Cannot ${
+          methodDescription} when the test module has already been instantiated. Make sure you are not using \`inject\` before \`${
+          methodName}\`.`;
+
+      it('should throw if TestBed.overrideProvider is called after TestBed initialization', () => {
+        TestBed.inject(Injector);
+
+        expect(() => TestBed.overrideProvider(aTok, {
+          useValue: 'mockValue'
+        })).toThrowError(getExpectedErrorMessage('overrideProvider', 'override provider'));
+      });
+
+      it('should throw if TestBed.overrideModule is called after TestBed initialization', () => {
+        @NgModule()
+        class MyModule {
+        }
+
+        TestBed.inject(Injector);
+
+        expect(() => TestBed.overrideModule(MyModule, {}))
+            .toThrowError(getExpectedErrorMessage('overrideModule', 'override module metadata'));
+      });
+
+      it('should throw if TestBed.overridePipe is called after TestBed initialization', () => {
+        @Pipe({name: 'myPipe'})
+        class MyPipe {
+          transform(value: any) {
+            return value;
+          }
+        }
+
+        TestBed.inject(Injector);
+
+        expect(() => TestBed.overridePipe(MyPipe, {}))
+            .toThrowError(getExpectedErrorMessage('overridePipe', 'override pipe metadata'));
+      });
+
+      it('should throw if TestBed.overrideDirective is called after TestBed initialization', () => {
+        @Directive()
+        class MyDirective {
+        }
+
+        TestBed.inject(Injector);
+
+        expect(() => TestBed.overrideDirective(MyDirective, {}))
+            .toThrowError(
+                getExpectedErrorMessage('overrideDirective', 'override directive metadata'));
+      });
+
+      it('should throw if TestBed.overrideTemplateUsingTestingModule is called after TestBed initialization',
+         () => {
+           @Component({selector: 'comp', template: 'a'})
+           class MyComponent {
+           }
+
+           TestBed.inject(Injector);
+
+           expect(() => TestBed.overrideTemplateUsingTestingModule(MyComponent, 'b'))
+               .toThrowError(
+                   /Cannot override template when the test module has already been instantiated/);
+         });
     });
   });
 }

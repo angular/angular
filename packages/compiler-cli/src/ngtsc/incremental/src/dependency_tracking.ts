@@ -53,6 +53,12 @@ export class FileDependencyGraph<T extends {fileName: string} = ts.SourceFile> i
     }
   }
 
+  getResourceDependencies(from: T): AbsoluteFsPath[] {
+    const node = this.nodes.get(from);
+
+    return node ? [...node.usesResources] : [];
+  }
+
   isStale(sf: T, changedTsPaths: Set<string>, changedResources: Set<AbsoluteFsPath>): boolean {
     return isLogicallyChanged(sf, this.nodeFor(sf), changedTsPaths, EMPTY_SET, changedResources);
   }

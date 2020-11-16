@@ -11,7 +11,7 @@ import {assertIndexInRange, assertLessThan, assertNotSame} from '../util/assert'
 
 import {getExpressionChangedErrorDetails, throwErrorIfNoChangesMode} from './errors';
 import {LView} from './interfaces/view';
-import {getCheckNoChangesMode} from './state';
+import {isInCheckNoChangesMode} from './state';
 import {NO_CHANGE} from './tokens';
 
 
@@ -52,7 +52,7 @@ export function bindingUpdated(lView: LView, bindingIndex: number, value: any): 
   if (Object.is(oldValue, value)) {
     return false;
   } else {
-    if (ngDevMode && getCheckNoChangesMode()) {
+    if (ngDevMode && isInCheckNoChangesMode()) {
       // View engine didn't report undefined values as changed on the first checkNoChanges pass
       // (before the change detection was run).
       const oldValueToCompare = oldValue !== NO_CHANGE ? oldValue : undefined;

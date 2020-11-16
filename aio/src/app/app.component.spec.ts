@@ -782,7 +782,7 @@ describe('AppComponent', () => {
         it('should grab focus when the / key is pressed', () => {
           const searchBox: SearchBoxComponent = fixture.debugElement.query(By.directive(SearchBoxComponent)).componentInstance;
           spyOn(searchBox, 'focus');
-          window.document.dispatchEvent(new KeyboardEvent('keyup', { 'key': '/' }));
+          window.document.dispatchEvent(new KeyboardEvent('keyup', { key: '/' }));
           fixture.detectChanges();
           expect(searchBox.focus).toHaveBeenCalled();
         });
@@ -791,7 +791,7 @@ describe('AppComponent', () => {
           const searchBox: SearchBoxComponent = fixture.debugElement.query(By.directive(SearchBoxComponent)).componentInstance;
           spyOn(searchBox, 'focus');
           component.showSearchResults = true;
-          window.document.dispatchEvent(new KeyboardEvent('keyup', { 'key': 'Escape' }));
+          window.document.dispatchEvent(new KeyboardEvent('keyup', { key: 'Escape' }));
           fixture.detectChanges();
           expect(searchBox.focus).toHaveBeenCalled();
         });
@@ -835,6 +835,7 @@ describe('AppComponent', () => {
       const redirectionPerMode: {[mode: string]: boolean} = {
         archive: true,
         next: false,
+        rc: false,
         stable: false,
       };
 
@@ -968,23 +969,23 @@ describe('AppComponent', () => {
 
         // Initially, `isTransitoning` is true.
         expect(component.isTransitioning).toBe(true);
-        expect(toolbar.classes['transitioning']).toBe(true);
+        expect(toolbar.classes.transitioning).toBe(true);
 
         triggerDocViewerEvent('docRendered');
         fixture.detectChanges();
         expect(component.isTransitioning).toBe(false);
-        expect(toolbar.classes['transitioning']).toBeFalsy();
+        expect(toolbar.classes.transitioning).toBeFalsy();
 
         // While a document is being rendered, `isTransitoning` is set to true.
         triggerDocViewerEvent('docReady');
         fixture.detectChanges();
         expect(component.isTransitioning).toBe(true);
-        expect(toolbar.classes['transitioning']).toBe(true);
+        expect(toolbar.classes.transitioning).toBe(true);
 
         triggerDocViewerEvent('docRendered');
         fixture.detectChanges();
         expect(component.isTransitioning).toBe(false);
-        expect(toolbar.classes['transitioning']).toBeFalsy();
+        expect(toolbar.classes.transitioning).toBeFalsy();
       });
 
       it('should update the sidenav state as soon as a new document is inserted (but not before)', () => {
@@ -1031,15 +1032,15 @@ describe('AppComponent', () => {
 
         navigateTo('guide/pipes');
         expect(component.pageId).toEqual('guide-pipes');
-        expect(container.properties['id']).toEqual('guide-pipes');
+        expect(container.properties.id).toEqual('guide-pipes');
 
         navigateTo('news');
         expect(component.pageId).toEqual('news');
-        expect(container.properties['id']).toEqual('news');
+        expect(container.properties.id).toEqual('news');
 
         navigateTo('');
         expect(component.pageId).toEqual('home');
-        expect(container.properties['id']).toEqual('home');
+        expect(container.properties.id).toEqual('home');
       });
 
       it('should not be affected by changes to the query', () => {
@@ -1050,7 +1051,7 @@ describe('AppComponent', () => {
         navigateTo('guide/other?search=http');
 
         expect(component.pageId).toEqual('guide-other');
-        expect(container.properties['id']).toEqual('guide-other');
+        expect(container.properties.id).toEqual('guide-other');
       });
     });
 
@@ -1125,7 +1126,7 @@ describe('AppComponent', () => {
 
       function checkHostClass(type: string, value: string) {
         const host = fixture.debugElement;
-        const classes: string = host.properties['className'];
+        const classes: string = host.properties.className;
         const classArray = classes.split(' ').filter(c => c.indexOf(`${type}-`) === 0);
         expect(classArray.length).toBeLessThanOrEqual(1, `"${classes}" should have only one class matching ${type}-*`);
         expect(classArray).toEqual([`${type}-${value}`], `"${classes}" should contain ${type}-${value}`);
@@ -1311,42 +1312,42 @@ class TestHttpClient {
 
   // tslint:disable:quotemark
   navJson = {
-    "TopBar": [
+    TopBar: [
       {
-        "url": "features",
-        "title": "Features"
+        url: 'features',
+        title: 'Features',
       },
       {
-        "url": "no-title",
-        "title": "No Title"
+        url: 'no-title',
+        title: 'No Title',
       },
     ],
-    "SideNav": [
+    SideNav: [
       {
-      "title": "Core",
-      "tooltip": "Learn the core capabilities of Angular",
-      "children": [
+        title: 'Core',
+        tooltip: 'Learn the core capabilities of Angular',
+        children: [
           {
-            "url": "guide/pipes",
-            "title": "Pipes",
-            "tooltip": "Pipes transform displayed values within a template."
+            url: 'guide/pipes',
+            title: 'Pipes',
+            tooltip: 'Pipes transform displayed values within a template.',
           },
           {
-            "url": "guide/bags",
-            "title": "Bags",
-            "tooltip": "Pack your bags for a code adventure."
-          }
-        ]
+            url: 'guide/bags',
+            title: 'Bags',
+            tooltip: 'Pack your bags for a code adventure.',
+          },
+        ],
       },
       {
-        "url": "api",
-        "title": "API",
-        "tooltip": "Details of the Angular classes and values."
-      }
+        url: 'api',
+        title: 'API',
+        tooltip: 'Details of the Angular classes and values.',
+      },
     ],
-    "docVersions": TestHttpClient.docVersions,
+    docVersions: TestHttpClient.docVersions,
 
-    "__versionInfo": TestHttpClient.versionInfo,
+    __versionInfo: TestHttpClient.versionInfo,
   };
 
   get(url: string) {

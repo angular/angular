@@ -77,35 +77,35 @@
             "children": [
               {
                 "url": "start",
-                "//title": "A Sample App",
-                "title": "샘플 앱",
+                "//title": "Getting started",
+                "title": "시작하기",
                 "//tooltip": "Take a look at Angular's component model, template syntax, and component communication.",
                 "tooltip": "Angular 컴포넌트 모델, 템플릿 문법, 컴포넌트 통신 방법에 대해 알아보세요."
               },
               {
                 "url": "start/start-routing",
-                "//title": "In-app Navigation",
+                "//title": "Adding navigation",
                 "title": "네비게이션",
                 "//tooltip": "Navigate among different page views using the browser's URL.",
                 "tooltip": "브라우저 주소표시줄에 URL을 입력하면 페이지를 전환할 수 있습니다."
               },
               {
                 "url": "start/start-data",
-                "//title": "Manage Data",
+                "//title": "Managing Data",
                 "title": "데이터 다루기",
                 "//tooltip": "Use services and access external data via HTTP.",
                 "tooltip": "서비스와 HTTP 모듈을 사용해서 외부 데이터를 가져와 봅시다."
               },
               {
                 "url": "start/start-forms",
-                "//title": "Forms for User Input",
+                "//title": "Using Forms for User Input",
                 "title": "폼으로 입력 받기",
                 "//tooltip": "Learn about fetching and managing data from users with forms.",
                 "tooltip": "폼을 사용해서 사용자가 입력하는 데이터를 관리해 봅시다."
               },
               {
                 "url": "start/start-deployment",
-                "//title": "Deployment",
+                "//title": "Deploying an application",
                 "title": "배포",
                 "//tooltip": "Move to local development, or deploy your application to Firebase or your own server.",
                 "tooltip": "로컬 개발환경을 벗어나서 Firebase에 애플리케이션을 배포해 봅시다."
@@ -134,25 +134,11 @@
           "tooltip": "데이터 바인딩을 활용해서 살아 움직이는 뷰 만들기",
           "children": [
             {
-              "url": "guide/displaying-data",
-              "//title": "Data binding",
-              "title": "데이터 바인딩",
-              "//tooltip": "Property binding helps show app data in the UI.",
-              "tooltip": "프로퍼티 바인딩을 활용하면 화면에 데이터를 표시할 수 있습니다."
-            },
-            {
-              "url": "guide/user-input",
-              "//title": "User Input",
-              "title": "사용자 입력",
-              "//tooltip": "User input triggers DOM events. Angular listens to those events with event bindings that funnel updated values back into your app's components and models.",
-              "tooltip": "사용자가 애플리케이션을 실행할 때 DOM 이벤트가 발생합니다. Angular는 이 이벤트를 사용해서 애플리케이션 컴포넌트와 모델을 갱신합니다."
-            },
-            {
-              "url": "guide/pipes",
-              "//title": "Pipes",
-              "title": "파이프",
-              "//tooltip": "Pipes transform displayed values within a template.",
-              "tooltip": "템플릿에 표시되는 데이터의 형식을 변환하려면 파이프를 사용하면 됩니다."
+              "url": "guide/component-overview",
+              "//title": "Overview",
+              "title": "개요",
+              "//tooltip": "Overview of how to create Angular components.",
+              "tooltip": "Angular 컴포넌트를 어떻게 만드는지 확인해 보세요."
             },
             {
               "url": "guide/lifecycle-hooks",
@@ -160,6 +146,11 @@
               "title": "컴포넌트 라이프싸이클",
               "//tooltip": "Angular calls lifecycle hook methods on directives and components as it creates, changes, and destroys them.",
               "tooltip": "Angular 디렉티브와 컴포넌트는 라이프싸이클 후킹 함수를 지원합니다."
+            },
+            {
+              "url": "guide/view-encapsulation",
+              "title": "View Encapsulation",
+              "tooltip": "Describes how component CSS styles are encapsulated into a component's view."
             },
             {
               "url": "guide/component-interaction",
@@ -174,6 +165,11 @@
               "title": "컴포넌트 스타일",
               "//tooltip": "Add CSS styles that are specific to a component.",
               "tooltip": "CSS 스타일을 추가해서 컴포넌트를 꾸밀 수 있습니다."
+            },
+            {
+              "url": "guide/inputs-outputs",
+              "title": "Sharing data between child and parent directives and components",
+              "tooltip": "Introductory guide to sharing data between parent and child directives or components."
             },
             {
               "url": "guide/dynamic-component-loader",
@@ -218,6 +214,11 @@
               "tooltip": "컴포넌트, 디렉티브, 엘리먼트에서 발생하는 이벤트에 반응하기 위해 템플릿 실행문을 사용하는 방법에 대해 알아봅시다."
             },
             {
+              "url": "guide/pipes",
+              "title": "Pipes",
+              "tooltip": "Pipes transform displayed values within a template."
+            },
+            {
               "url": "guide/binding-syntax",
               "//title": "Binding syntax",
               "title": "바인딩 문법",
@@ -251,20 +252,6 @@
               "title": "양방향 바인딩",
               "//tooltip": "Introductory guide to sharing data between a class and a template.",
               "tooltip": "클래스와 템플릿 양쪽에 데이터를 공유하는 방법에 대해 알아봅시다."
-            },
-            {
-              "url": "guide/template-reference-variables",
-              "//title": "Template reference variables",
-              "title": "템플릿 참조 변수",
-              "//tooltip": "Introductory guide to referring to DOM elements within a template.",
-              "tooltip": "템플릿에서 DOM 엘리먼트를 참조하는 방법에 대해 알아봅시다."
-            },
-            {
-              "url": "guide/inputs-outputs",
-              "//title": "Inputs and Outputs",
-              "title": "입출력 프로퍼티",
-              "//tooltip": "Introductory guide to sharing data between parent and child directives or components.",
-              "tooltip": "부모/자식 디렉티브/컴포넌트 사이에 데이터를 공유하는 방법에 대해 알아봅시다."
             },
             {
               "url": "guide/template-expression-operators",
@@ -325,13 +312,6 @@
               "tooltip": "Angular는 의존성으로 주입하는 클래스를 직접 만들어서 목표 클래스에 주입합니다."
             },
             {
-              "url": "guide/hierarchical-dependency-injection",
-              "//title": "Hierarchical Injectors",
-              "title": "인젝터 계층",
-              "tooltip": "An injector tree parallels the component tree and supports nested dependencies.",
-              "//tooltip": "인젝터는 컴포넌트 트리와 동일하게 트리 형태로 구성됩니다."
-            },
-            {
               "url": "guide/dependency-injection-providers",
               "//title": "DI Providers",
               "title": "의존성 주입 프로바이더",
@@ -344,13 +324,6 @@
               "title": "실전 의존성 주입",
               "//tooltip": "Techniques for dependency injection.",
               "tooltip": "의존성 주입 테크닉에 대해 알아보세요."
-            },
-            {
-              "url": "guide/dependency-injection-navtree",
-              "//title": "Navigate the Component Tree",
-              "title": "컴포넌트 트리 참조하기",
-              "//tooltip": "Use the injection tree to find parent components.",
-              "tooltip": "인젝터 트리를 활용하면 부모 컴포넌트를 참조할 수 있습니다."
             }
           ]
         }
@@ -569,6 +542,11 @@
           "tooltip": "Angular 프레임워크를 최신 버전으로 업데이트하는 방법을 안내합니다."
         },
         {
+          "url": "guide/property-binding-best-practices",
+          "title": "Property Binding Best Practices",
+          "tooltip": "Use property binding efficiently."
+        },
+        {
           "//title": "Testing",
           "title": "테스트",
           "//tooltip": "Testing your Angular apps.",
@@ -742,39 +720,10 @@
       "tooltip": "튜토리얼을 진행하면서 Angular의 개념과 개발 패턴에 대해 알아보세요.",
       "children": [
         {
-          "//title": "Routing",
-          "title": "라우팅",
-          "//tooltip": "End-to-end tutorials for learning about Angular's router.",
-          "tooltip": "튜토리얼을 진행하면서 Angular 라우터에 대해 알아보세요.",
-          "children": [
-            {
-              "url": "guide/router-tutorial",
-              "//title": "Using Angular Routes in a Single-page Application",
-              "title": "단일 페이지 애플리케이션에 라우터 활용하기",
-              "//tooltip": "A tutorial that covers many patterns associated with Angular routing.",
-              "tooltip": "Angular 앱에 라우터를 적용하는 방법을 다양하게 확인해 보세요.."
-            },
-            {
-              "url": "guide/router-tutorial-toh",
-              "//title": "Router tutorial: tour of heroes",
-              "title": "라우터 튜토리얼: 히어로들의 여행",
-              "//tooltip": "Explore how to use Angular's router. Based on the Tour of Heroes example.",
-              "tooltip": "히어로들의 여행 앱을 기반으로 Angular 라우터를 어떻게 활용하는지 확인해 보세요."
-            }
-          ]
-        },
-        {
-          "url": "guide/forms",
-          "//title": "Building a Template-driven Form",
-          "title": "템플릿 기반 폼",
-          "//tooltip": "Create a template-driven form using directives and Angular template syntax.",
-          "tooltip": "디렉티브와 템플릿 문법을 활용해서 템플릿 기반 폼을 만들어 보세요."
-        },
-        {
           "//title": "Tutorial: Tour of Heroes",
           "title": "튜토리얼: 히어로들의 여행",
           "//tooltip": "The Tour of Heroes app is used as a reference point in many Angular examples.",
-          "tooltip": "히어로들의 여행 앱을 살펴보면서 Angular의 다양한 기능을 알아봅시다.",
+          "tooltip": "히어로들의 여행 튜토리얼을 진행하면서 Angular가 제공하는 기능을 알아보세요.",
           "children": [
             {
               "url": "tutorial",
@@ -835,6 +784,33 @@
           ]
         },
         {
+          "//title": "Routing",
+          "title": "라우팅",
+          "//tooltip": "End-to-end tutorials for learning about Angular's router.",
+          "tooltip": "튜토리얼을 진행하면서 Angular 라우터에 대해 알아보세요.",
+          "children": [
+            {
+              "url": "guide/router-tutorial",
+              "//title": "Using Angular Routes in a Single-page Application",
+              "title": "단일 페이지 애플리케이션에 라우터 활용하기",
+              "//tooltip": "A tutorial that covers many patterns associated with Angular routing.",
+              "tooltip": "Angular 앱에 라우터를 적용하는 방법을 다양하게 확인해 보세요.."
+            },
+            {
+              "url": "guide/router-tutorial-toh",
+              "//title": "Router tutorial: tour of heroes",
+              "title": "라우터 튜토리얼: 히어로들의 여행",
+              "//tooltip": "Explore how to use Angular's router. Based on the Tour of Heroes example.",
+              "tooltip": "히어로들의 여행 앱을 기반으로 Angular 라우터를 어떻게 활용하는지 확인해 보세요."
+            }
+          ]
+        },
+        {
+          "url": "guide/forms",
+          "title": "Building a Template-driven Form",
+          "tooltip": "Create a template-driven form using directives and Angular template syntax."
+        },
+        {
           "url": "guide/web-worker",
           "//title": "Web Workers",
           "title": "웹 워커",
@@ -893,67 +869,24 @@
           "tooltip": "Angular 팀의 로드맵"
         },
         {
-          "//title": "Updating to Version 10",
-          "title": "10 버전으로 업데이트하기",
+          "//title": "Updating to Version 11",
+          "title": "11 버전으로 업데이트하기",
           "//tooltip": "Support for updating your application from version 9 to 10.",
-          "tooltip": "Angular 프레임워크를 9버전에서 10버전으로 업데이트하는 방법에 대해 안내합니다.",
+          "tooltip": "Angular 프레임워크를 10버전에서 11버전으로 업데이트하는 방법에 대해 안내합니다.",
           "children": [
             {
-              "url": "guide/updating-to-version-10",
+              "url": "guide/updating-to-version-11",
               "//title": "Overview",
               "title": "개요",
-              "//tooltip": "Everything you need to know for updating your application from version 9 to 10.",
-              "tooltip": "Angular 프레임워크 9버전에서 10버전으로 업데이트하기 위해 어떤 것을 알아둬야 하는지 확인해 보세요."
+              "//tooltip": "Everything you need to know for updating your application from version 10 to 11.",
+              "tooltip": "Angular 프레임워크 9버전에서 11버전으로 업데이트하기 위해 어떤 것을 알아둬야 하는지 확인해 보세요."
             },
             {
               "url": "guide/ivy-compatibility",
               "//title": "Ivy Compatibility Guide",
               "title": "Ivy 호환성 가이드",
               "//tooltip": "Details to help you make sure your application is compatible with Ivy.",
-              "tooltip": "Ivy와 호환성을 맞추려면 어떻게 해야 하는지 확인해 보세요."
-            },
-            {
-              "//title": "Migrations",
-              "title": "마이그레이션",
-              "//tooltip": "Migration details regarding updating to version 10.",
-              "tooltip": "Angular 프레임워크 10버전으로 업데이트하려면 어떻게 진행해야 하는지 확인해 보세요.",
-              "children": [
-                {
-                  "url": "guide/migration-module-with-providers",
-                  "//title": "Missing ModuleWithProviders Generic",
-                  "title": "ModuleWithProviders 제네릭이 없는 경우",
-                  "//tooltip": "Migration to add a generic type to any ModuleWithProviders usages that are missing the generic.",
-                  "tooltip": "ModuleWithProviders를 사용하는 곳에는 이제 제네릭 타입을 추가해야 합니다."
-                },
-                {
-                  "url": "guide/migration-undecorated-classes",
-                  "//title": "Missing @Directive() Decorators",
-                  "title": "@Directive() 데코레이터가 없는 경우",
-                  "//tooltip": "Migration to add missing @Directive()/@Component() decorators.",
-                  "tooltip": "@Directive()/@Component() 데코레이터가 없는 클래스에 데코레이터를 추가해야 합니다."
-                },
-                {
-                  "url": "guide/migration-injectable",
-                  "//title": "Missing @Injectable() Decorators",
-                  "title": "@Injectable() 데코레이터가 없는 경우",
-                  "//tooltip": "Migration to add missing @Injectable() decorators and incomplete provider definitions.",
-                  "tooltip": "@Injectable() 데코레이터가 필요한 코드에는 이 데코레이터를 추가해야 합니다."
-                },
-                {
-                  "url": "guide/migration-update-libraries-tslib",
-                  "//title": "`tslib` direct dependency",
-                  "title": "`tslib` 직접 의존 관계",
-                  "//tooltip": "Migration to a direct dependency on the `tslib` npm package.",
-                  "tooltip": "`tslib` npm 패키지와 직접 의존 관계에 있는 패키지를 처리하는 방법에 대해 알아봅시다."
-                },
-                {
-                  "url": "guide/migration-update-module-and-target-compiler-options",
-                  "//title": "`module` and `target` compiler options",
-                  "title": "`module`, `target` 컴파일러 옵션",
-                  "//tooltip": "Migration to update `module` and `target` compiler options.",
-                  "tooltip": "`module`, `target` 필드에 사용할 수 있는 컴파일러 옵션에 대해 알아봅시다."
-                }
-              ]
+              "tooltip": "애플리케이션이 Ivy와 호환되는지 확인해 보세요."
             }
           ]
         },
@@ -1060,6 +993,20 @@
                   "title": "다음 단계",
                   "//tooltip": "Beyond the basics.",
                   "tooltip": "더 나아가기"
+                },
+                {
+                  "url": "guide/event-binding-concepts",
+                  "//title": "How event binding works",
+                  "title": "이벤트 바인딩이 동작하는 방식",
+                  "//tooltip": "About event binding.",
+                  "tooltip": "이벤트 바인딩에 대해 알아보세요."
+                },
+                {
+                  "url": "guide/template-reference-variables",
+                  "//title": "Template variables",
+                  "title": "템플릿 변수",
+                  "//tooltip": "Introductory guide to referring to DOM elements within a template.",
+                  "tooltip": "템플릿에서 DOM 엘리먼트를 가리킬 때 사용하는 템플릿 변수에 대해 설명합니다."
                 }
               ]
             },
@@ -1253,6 +1200,13 @@
                   "tooltip": "프로미스와 같은 메시지 전달 테크닉이 옵저버블과 어떻게 다른지 확인해 보세요."
                 }
               ]
+            },
+            {
+              "url": "guide/hierarchical-dependency-injection",
+              "//title": "Hierarchical Injectors",
+              "title": "인젝터 계층",
+              "//tooltip": "An injector tree parallels the component tree and supports nested dependencies.",
+              "tooltip": "인젝터는 컴포넌트 트리와 동일하게 트리 형태로 구성됩니다."
             }
           ]
         },
@@ -1286,6 +1240,13 @@
           "url": "api"
         },
         {
+          "//title": "Example applications",
+          "title": "예제 애플리케이션",
+          "//tooltip": "List of all of the example applications in the Angular documentation.",
+          "tooltip": "Angular 문서에서 설명하는 모든 예제 애플리케이션 목록을 확인해 보세요.",
+          "url": "guide/example-apps-list"
+        },
+        {
           "url": "guide/glossary",
           "//title": "Angular Glossary",
           "title": "용어 사전",
@@ -1311,6 +1272,13 @@
               "title": "코딩 스타일 가이드",
               "//tooltip": "Guidelines for writing Angular code.",
               "tooltip": "Angular 코드를 작성할 때 참고할만한 권장사항에 대해 확인해 보세요."
+            },
+            {
+              "url": "guide/docs-style-guide",
+              "//title": "Documentation Style Guide",
+              "title": "문서 스타일 가이드",
+              "//tooltip": "Style guide for documentation authors.",
+              "tooltip": "문서를 작성할 때 참고할만한 권장사항에 대해 확인해 보세요."
             }
           ]
         }
@@ -1367,6 +1335,13 @@
           "title": "Stack Overflow",
           "//tooltip": "Stack Overflow: where the community answers your technical Angular questions.",
           "tooltip": "Stack Overflow: \"Angular\"가 태그된 질문은 Angular 커뮤니티에서 답변을 주기도 합니다."
+        },
+        {
+          "url": "https://discord.gg/angular",
+          "//title": "Join Discord",
+          "title": "디스코드 가입하기",
+          "//tooltip": "Join the discussions at Angular Community Discord server.",
+          "tooltip": "Angular 커뮤니티 디스코드 서버에서 이야기를 나눠보세요."
         },
         {
           "url": "https://gitter.im/angular/angular",

@@ -27,15 +27,15 @@ export class SourceFileTranslationHandler implements TranslationHandler {
       TranslatePluginOptions = {...this.translationOptions, missingTranslation: 'ignore'};
   constructor(private fs: FileSystem, private translationOptions: TranslatePluginOptions = {}) {}
 
-  canTranslate(relativeFilePath: PathSegment|AbsoluteFsPath, _contents: Buffer): boolean {
+  canTranslate(relativeFilePath: PathSegment|AbsoluteFsPath, _contents: Uint8Array): boolean {
     return this.fs.extname(relativeFilePath) === '.js';
   }
 
   translate(
       diagnostics: Diagnostics, sourceRoot: AbsoluteFsPath, relativeFilePath: PathSegment,
-      contents: Buffer, outputPathFn: OutputPathFn, translations: TranslationBundle[],
+      contents: Uint8Array, outputPathFn: OutputPathFn, translations: TranslationBundle[],
       sourceLocale?: string): void {
-    const sourceCode = contents.toString('utf8');
+    const sourceCode = Buffer.from(contents).toString('utf8');
     // A short-circuit check to avoid parsing the file into an AST if it does not contain any
     // `$localize` identifiers.
     if (!sourceCode.includes('$localize')) {
@@ -78,8 +78,8 @@ export class SourceFileTranslationHandler implements TranslationHandler {
       generatorOpts: {minified: true},
       plugins: [
         makeLocalePlugin(translationBundle.locale),
-        makeEs2015TranslatePlugin(diagnostics, translationBundle.translations, options),
-        makeEs5TranslatePlugin(diagnostics, translationBundle.translations, options),
+        makeEs2015TranslatePlugin(diagnostics, translationBundle.translations, options, this.fs),
+        makeEs5TranslatePlugin(diagnostics, translationBundle.translations, options, this.fs),
       ],
       filename,
     });
@@ -97,7 +97,7 @@ export class SourceFileTranslationHandler implements TranslationHandler {
 
   private writeSourceFile(
       diagnostics: Diagnostics, outputPathFn: OutputPathFn, locale: string,
-      relativeFilePath: PathSegment, contents: string|Buffer): void {
+      relativeFilePath: PathSegment, contents: string|Uint8Array): void {
     try {
       const outputPath = absoluteFrom(outputPathFn(locale, relativeFilePath));
       this.fs.ensureDir(this.fs.dirname(outputPath));

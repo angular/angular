@@ -11,6 +11,8 @@
     "ng-xi18n": "./src/extract_i18n.js"
   },
   "dependencies": {
+    "@babel/core": "^7.8.6",
+    "@babel/types": "^7.8.6",
     "reflect-metadata": "^0.1.2",
     "minimist": "^1.2.0",
     "canonical-path": "1.0.0",
@@ -27,7 +29,7 @@
   },
   "peerDependencies": {
     "@angular/compiler": "0.0.0-PLACEHOLDER",
-    "typescript": ">=3.9 <4.1"
+    "typescript": ">=4.0 <4.1"
   },
   "engines": {
     "node": ">=10.0"

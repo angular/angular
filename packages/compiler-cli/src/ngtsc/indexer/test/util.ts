@@ -11,6 +11,7 @@ import * as ts from 'typescript';
 
 import {absoluteFrom, AbsoluteFsPath} from '../../file_system';
 import {Reference} from '../../imports';
+import {ClassPropertyMapping} from '../../metadata';
 import {ClassDeclaration} from '../../reflection';
 import {getDeclaration, makeProgram} from '../../testing';
 import {ComponentMeta} from '../src/context';
@@ -28,7 +29,7 @@ export function getComponentDeclaration(componentStr: string, className: string)
 
   return getDeclaration(
       program.program, getTestFilePath(), className,
-      (value: ts.Declaration): value is ClassDeclaration => ts.isClassDeclaration(value));
+      (value: ts.Node): value is ClassDeclaration => ts.isClassDeclaration(value));
 }
 
 /**
@@ -50,8 +51,8 @@ export function getBoundTemplate(
       selector,
       name: declaration.name.getText(),
       isComponent: true,
-      inputs: {},
-      outputs: {},
+      inputs: ClassPropertyMapping.fromMappedObject({}),
+      outputs: ClassPropertyMapping.fromMappedObject({}),
       exportAs: null,
     });
   });

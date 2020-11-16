@@ -188,7 +188,7 @@ or in the `@NgModule()` or `@Component()` metadata
    그리고 `@Injectable()` 메타데이터를 사용해서 프로바이더를 등록하면, 애플리케이션 배포 단계에서 코드를 최적화하면서 이 서비스가 실제로 사용되는지 확인하고 사용되지 않으면 최종 결과물에서 제외시킬 수도 있습니다.
 
 <!--
-* When you register a provider with a [specific NgModule](guide/architecture-modules), the same instance of a service is available to all components in that NgModule. To register at this level, use the `providers` property of the `@NgModule()` decorator,
+* When you register a provider with a [specific NgModule](guide/architecture-modules), the same instance of a service is available to all components in that NgModule. To register at this level, use the `providers` property of the `@NgModule()` decorator.
 -->
 * 서비스 프로바이더를 [특정 NgModule](guide/architecture-modules)에 등록하면, 이 NgModule 범위에 있는 컴포넌트만 같은 서비스 인스턴스를 공유합니다. 이렇게 등록하려면 `@NgModule()` 데코레이터의 `providers` 프로퍼티를 다음과 같이 지정합니다.
 

@@ -7,7 +7,7 @@
  */
 
 import chalk from 'chalk';
-import {writeFileSync} from 'fs-extra';
+import {writeFileSync} from 'fs';
 import {createPromptModule, ListChoiceOptions, prompt} from 'inquirer';
 import * as inquirerAutocomplete from 'inquirer-autocomplete-prompt';
 import {join} from 'path';
@@ -20,6 +20,7 @@ export const red: typeof chalk = chalk.red;
 export const green: typeof chalk = chalk.green;
 export const yellow: typeof chalk = chalk.yellow;
 export const bold: typeof chalk = chalk.bold;
+export const blue: typeof chalk = chalk.blue;
 
 /** Prompts the user with a confirmation question and a specified message. */
 export async function promptConfirm(message: string, defaultValue = false): Promise<boolean> {
@@ -195,6 +196,9 @@ export function captureLogOutputForCommand(argv: Arguments) {
     LOGGED_TEXT += `Command ran in ${new Date().getTime() - now.getTime()}ms`;
     /** Path to the log file location. */
     const logFilePath = join(getRepoBaseDir(), '.ng-dev.log');
+
+    // Strip ANSI escape codes from log outputs.
+    LOGGED_TEXT = LOGGED_TEXT.replace(/\x1B\[([0-9]{1,3}(;[0-9]{1,2})?)?[mGK]/g, '');
 
     writeFileSync(logFilePath, LOGGED_TEXT);
 

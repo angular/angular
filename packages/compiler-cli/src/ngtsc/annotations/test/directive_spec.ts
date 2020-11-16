@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {CssSelector, DirectiveMeta as T2DirectiveMeta, parseTemplate, R3TargetBinder, SelectorMatcher, TmplAstElement} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {absoluteFrom} from '../../file_system';
@@ -72,6 +73,50 @@ runInEachFileSystem(() => {
       expect(span.toString()).toBe('TestDir');
       expect(span.start.toString()).toContain('/entry.ts@5:22');
       expect(span.end.toString()).toContain('/entry.ts@5:29');
+    });
+
+    it('should produce metadata compatible with template binding', () => {
+      const src = `
+        import {Directive, Input} from '@angular/core';
+
+        @Directive({selector: '[dir]'})
+        export class TestDir {
+          @Input('propName')
+          fieldName: string;
+        }
+      `;
+      const {program} = makeProgram([
+        {
+          name: _('/node_modules/@angular/core/index.d.ts'),
+          contents: 'export const Directive: any; export const Input: any;',
+        },
+        {
+          name: _('/entry.ts'),
+          contents: src,
+        },
+      ]);
+
+      const analysis = analyzeDirective(program, 'TestDir');
+      const matcher = new SelectorMatcher<T2DirectiveMeta>();
+      const dirMeta: T2DirectiveMeta = {
+        exportAs: null,
+        inputs: analysis.inputs,
+        outputs: analysis.outputs,
+        isComponent: false,
+        name: 'Dir',
+        selector: '[dir]',
+      };
+      matcher.addSelectables(CssSelector.parse('[dir]'), dirMeta);
+
+      const {nodes} = parseTemplate('<div dir [propName]="expr"></div>', 'unimportant.html');
+      const binder = new R3TargetBinder(matcher).bind({template: nodes});
+      const propBinding = (nodes[0] as TmplAstElement).inputs[0];
+      const propBindingConsumer = binder.getConsumerOfBinding(propBinding);
+
+      // Assert that the consumer of the binding is the directive, which means that the metadata
+      // fed into the SelectorMatcher was compatible with the binder, and did not confuse property
+      // and field names.
+      expect(propBindingConsumer).toBe(dirMeta);
     });
   });
 

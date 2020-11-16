@@ -118,7 +118,7 @@ Angular는 이 메타데이터에 지정된 내용을 바탕으로 애플리케�
 @Component({
   selector: 'app-typical',
   template: '<div>A typical component for {{data.name}}</div>'
-)}
+})
 export class TypicalComponent {
   @Input() data: TypicalData;
   constructor(private someService: SomeService) { ... }

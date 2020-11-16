@@ -130,7 +130,7 @@ When authoring Angular components, you should re-use these native elements direc
 For example, instead of creating a custom element for a new variety of button, you can create a component that uses an attribute selector with a native `<button>` element.
 This most commonly applies to `<button>` and `<a>`, but can be used with many other types of element.
 
-You can see examples of this pattern in Angular Material: [`MatButton`](https://github.com/angular/components/blob/master/src/material/button/button.ts#L66-L68), [`MatTabNav`](https://github.com/angular/components/blob/master/src/material/tabs/tab-nav-bar/tab-nav-bar.ts#L67), [`MatTable`](https://github.com/angular/components/blob/master/src/material/table/table.ts#L17).
+You can see examples of this pattern in Angular Material: [`MatButton`](https://github.com/angular/components/blob/50d3f29b6dc717b512dbd0234ce76f4ab7e9762a/src/material/button/button.ts#L67-L69), [`MatTabNav`](https://github.com/angular/components/blob/50d3f29b6dc717b512dbd0234ce76f4ab7e9762a/src/material/tabs/tab-nav-bar/tab-nav-bar.ts#L139), [`MatTable`](https://github.com/angular/components/blob/50d3f29b6dc717b512dbd0234ce76f4ab7e9762a/src/material/table/table.ts#L22).
 -->
 기본 HTML 엘리먼트는 접근성과 관련된 기능을 이미 많이 제공하고 있습니다.
 그래서 Angular 컴포넌트를 만들 때도 완전히 처음부터 시작하는 것보다는 기본 HTML 엘리먼트가 제공하는 기능을 활용하는 것이 편합니다.

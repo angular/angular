@@ -82,6 +82,15 @@
               ],
               "serviceWorker": true
             },
+            "rc": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.rc.ts"
+                }
+              ],
+              "serviceWorker": true
+            },
             "stable": {
               "fileReplacements": [
                 {
@@ -116,6 +125,9 @@
             },
             "next": {
               "browserTarget": "site:build:next"
+            },
+            "rc": {
+              "browserTarget": "site:build:rc"
             },
             "stable": {
               "browserTarget": "site:build:stable"

@@ -15,13 +15,11 @@ import {ParseError, ParseErrorLevel, ParseSourceSpan} from '../parse_util';
 import {isStyleUrlResolvable} from '../style_url_resolver';
 import {BindingParser} from '../template_parser/binding_parser';
 import {PreparsedElementType, preparseElement} from '../template_parser/template_preparser';
-import {syntaxError} from '../util';
 
 import * as t from './r3_ast';
 import {I18N_ICU_VAR_PREFIX, isI18nRootNode} from './view/i18n/util';
 
-const BIND_NAME_REGEXP =
-    /^(?:(?:(?:(bind-)|(let-)|(ref-|#)|(on-)|(bindon-)|(@))(.*))|\[\(([^\)]+)\)\]|\[([^\]]+)\]|\(([^\)]+)\))$/;
+const BIND_NAME_REGEXP = /^(?:(bind-)|(let-)|(ref-|#)|(on-)|(bindon-)|(@))(.*)$/;
 
 // Group 1 = "bind-"
 const KW_BIND_IDX = 1;
@@ -37,12 +35,12 @@ const KW_BINDON_IDX = 5;
 const KW_AT_IDX = 6;
 // Group 7 = the identifier after "bind-", "let-", "ref-/#", "on-", "bindon-" or "@"
 const IDENT_KW_IDX = 7;
-// Group 8 = identifier inside [()]
-const IDENT_BANANA_BOX_IDX = 8;
-// Group 9 = identifier inside []
-const IDENT_PROPERTY_IDX = 9;
-// Group 10 = identifier inside ()
-const IDENT_EVENT_IDX = 10;
+
+const BINDING_DELIMS = {
+  BANANA_BOX: {start: '[(', end: ')]'},
+  PROPERTY: {start: '[', end: ']'},
+  EVENT: {start: '(', end: ')'},
+};
 
 const TEMPLATE_ATTR_PREFIX = '*';
 
@@ -157,9 +155,9 @@ class HtmlAstToIvyAst implements html.Visitor {
 
         this.bindingParser.parseInlineTemplateBinding(
             templateKey, templateValue, attribute.sourceSpan, absoluteValueOffset, [],
-            templateParsedProperties, parsedVariables);
+            templateParsedProperties, parsedVariables, true /* isIvyAst */);
         templateVariables.push(...parsedVariables.map(
-            v => new t.Variable(v.name, v.value, v.sourceSpan, v.valueSpan)));
+            v => new t.Variable(v.name, v.value, v.sourceSpan, v.keySpan, v.valueSpan)));
       } else {
         // Check for variables, events, property bindings, interpolation
         hasBinding = this.parseAttribute(
@@ -168,7 +166,7 @@ class HtmlAstToIvyAst implements html.Visitor {
 
       if (!hasBinding && !isTemplateBinding) {
         // don't include the bindings as attributes as well in the AST
-        attributes.push(this.visitAttribute(attribute) as t.TextAttribute);
+        attributes.push(this.visitAttribute(attribute));
       }
     }
 
@@ -240,7 +238,8 @@ class HtmlAstToIvyAst implements html.Visitor {
 
   visitAttribute(attribute: html.Attribute): t.TextAttribute {
     return new t.TextAttribute(
-        attribute.name, attribute.value, attribute.sourceSpan, attribute.valueSpan, attribute.i18n);
+        attribute.name, attribute.value, attribute.sourceSpan, attribute.keySpan,
+        attribute.valueSpan, attribute.i18n);
   }
 
   visitText(text: html.Text): t.Node {
@@ -266,12 +265,6 @@ class HtmlAstToIvyAst implements html.Visitor {
     Object.keys(message.placeholders).forEach(key => {
       const value = message.placeholders[key];
       if (key.startsWith(I18N_ICU_VAR_PREFIX)) {
-        const config = this.bindingParser.interpolationConfig;
-
-        // ICU expression is a plain string, not wrapped into start
-        // and end tags, so we wrap it before passing to binding parser
-        const wrapped = `${config.start}${value}${config.end}`;
-
         // Currently when the `plural` or `select` keywords in an ICU contain trailing spaces (e.g.
         // `{count, select , ...}`), these spaces are also included into the key names in ICU vars
         // (e.g. "VAR_SELECT "). These trailing spaces are not desirable, since they will later be
@@ -279,10 +272,11 @@ class HtmlAstToIvyAst implements html.Visitor {
         // mismatches at runtime (i.e. placeholder will not be replaced with the correct value).
         const formattedKey = key.trim();
 
-        vars[formattedKey] =
-            this._visitTextWithInterpolation(wrapped, expansion.sourceSpan) as t.BoundText;
+        const ast = this.bindingParser.parseInterpolationExpression(value.text, value.sourceSpan);
+
+        vars[formattedKey] = new t.BoundText(ast, value.sourceSpan);
       } else {
-        placeholders[key] = this._visitTextWithInterpolation(value, expansion.sourceSpan);
+        placeholders[key] = this._visitTextWithInterpolation(value.text, value.sourceSpan);
       }
     });
     return new t.Icu(vars, placeholders, expansion.sourceSpan, message);
@@ -308,7 +302,8 @@ class HtmlAstToIvyAst implements html.Visitor {
       const i18n = i18nPropsMeta[prop.name];
       if (prop.isLiteral) {
         literal.push(new t.TextAttribute(
-            prop.name, prop.expression.source || '', prop.sourceSpan, undefined, i18n));
+            prop.name, prop.expression.source || '', prop.sourceSpan, prop.keySpan, prop.valueSpan,
+            i18n));
       } else {
         // Note that validation is skipped and property mapping is disabled
         // due to the fact that we need to make sure a given prop is not an
@@ -332,71 +327,108 @@ class HtmlAstToIvyAst implements html.Visitor {
     const absoluteOffset =
         attribute.valueSpan ? attribute.valueSpan.start.offset : srcSpan.start.offset;
 
+    function createKeySpan(srcSpan: ParseSourceSpan, prefix: string, identifier: string) {
+      // We need to adjust the start location for the keySpan to account for the removed 'data-'
+      // prefix from `normalizeAttributeName`.
+      const normalizationAdjustment = attribute.name.length - name.length;
+      const keySpanStart = srcSpan.start.moveBy(prefix.length + normalizationAdjustment);
+      const keySpanEnd = keySpanStart.moveBy(identifier.length);
+      return new ParseSourceSpan(keySpanStart, keySpanEnd, keySpanStart, identifier);
+    }
+
     const bindParts = name.match(BIND_NAME_REGEXP);
-    let hasBinding = false;
 
     if (bindParts) {
-      hasBinding = true;
       if (bindParts[KW_BIND_IDX] != null) {
+        const identifier = bindParts[IDENT_KW_IDX];
+        const keySpan = createKeySpan(srcSpan, bindParts[KW_BIND_IDX], identifier);
         this.bindingParser.parsePropertyBinding(
-            bindParts[IDENT_KW_IDX], value, false, srcSpan, absoluteOffset, attribute.valueSpan,
-            matchableAttributes, parsedProperties);
+            identifier, value, false, srcSpan, absoluteOffset, attribute.valueSpan,
+            matchableAttributes, parsedProperties, keySpan);
 
       } else if (bindParts[KW_LET_IDX]) {
         if (isTemplateElement) {
           const identifier = bindParts[IDENT_KW_IDX];
-          this.parseVariable(identifier, value, srcSpan, attribute.valueSpan, variables);
+          const keySpan = createKeySpan(srcSpan, bindParts[KW_LET_IDX], identifier);
+          this.parseVariable(identifier, value, srcSpan, keySpan, attribute.valueSpan, variables);
         } else {
           this.reportError(`"let-" is only supported on ng-template elements.`, srcSpan);
         }
 
       } else if (bindParts[KW_REF_IDX]) {
         const identifier = bindParts[IDENT_KW_IDX];
-        this.parseReference(identifier, value, srcSpan, attribute.valueSpan, references);
-
+        const keySpan = createKeySpan(srcSpan, bindParts[KW_REF_IDX], identifier);
+        this.parseReference(identifier, value, srcSpan, keySpan, attribute.valueSpan, references);
       } else if (bindParts[KW_ON_IDX]) {
         const events: ParsedEvent[] = [];
+        const identifier = bindParts[IDENT_KW_IDX];
+        const keySpan = createKeySpan(srcSpan, bindParts[KW_ON_IDX], identifier);
         this.bindingParser.parseEvent(
-            bindParts[IDENT_KW_IDX], value, srcSpan, attribute.valueSpan || srcSpan,
-            matchableAttributes, events);
+            identifier, value, srcSpan, attribute.valueSpan || srcSpan, matchableAttributes, events,
+            keySpan);
         addEvents(events, boundEvents);
       } else if (bindParts[KW_BINDON_IDX]) {
+        const identifier = bindParts[IDENT_KW_IDX];
+        const keySpan = createKeySpan(srcSpan, bindParts[KW_BINDON_IDX], identifier);
         this.bindingParser.parsePropertyBinding(
-            bindParts[IDENT_KW_IDX], value, false, srcSpan, absoluteOffset, attribute.valueSpan,
-            matchableAttributes, parsedProperties);
+            identifier, value, false, srcSpan, absoluteOffset, attribute.valueSpan,
+            matchableAttributes, parsedProperties, keySpan);
         this.parseAssignmentEvent(
-            bindParts[IDENT_KW_IDX], value, srcSpan, attribute.valueSpan, matchableAttributes,
-            boundEvents);
+            identifier, value, srcSpan, attribute.valueSpan, matchableAttributes, boundEvents,
+            keySpan);
       } else if (bindParts[KW_AT_IDX]) {
+        const keySpan = createKeySpan(srcSpan, '', name);
         this.bindingParser.parseLiteralAttr(
             name, value, srcSpan, absoluteOffset, attribute.valueSpan, matchableAttributes,
-            parsedProperties);
-
-      } else if (bindParts[IDENT_BANANA_BOX_IDX]) {
-        this.bindingParser.parsePropertyBinding(
-            bindParts[IDENT_BANANA_BOX_IDX], value, false, srcSpan, absoluteOffset,
-            attribute.valueSpan, matchableAttributes, parsedProperties);
-        this.parseAssignmentEvent(
-            bindParts[IDENT_BANANA_BOX_IDX], value, srcSpan, attribute.valueSpan,
-            matchableAttributes, boundEvents);
-
-      } else if (bindParts[IDENT_PROPERTY_IDX]) {
-        this.bindingParser.parsePropertyBinding(
-            bindParts[IDENT_PROPERTY_IDX], value, false, srcSpan, absoluteOffset,
-            attribute.valueSpan, matchableAttributes, parsedProperties);
-
-      } else if (bindParts[IDENT_EVENT_IDX]) {
-        const events: ParsedEvent[] = [];
-        this.bindingParser.parseEvent(
-            bindParts[IDENT_EVENT_IDX], value, srcSpan, attribute.valueSpan || srcSpan,
-            matchableAttributes, events);
-        addEvents(events, boundEvents);
+            parsedProperties, keySpan);
       }
-    } else {
-      hasBinding = this.bindingParser.parsePropertyInterpolation(
-          name, value, srcSpan, attribute.valueSpan, matchableAttributes, parsedProperties);
+      return true;
     }
 
+    // We didn't see a kw-prefixed property binding, but we have not yet checked
+    // for the []/()/[()] syntax.
+    let delims: {start: string, end: string}|null = null;
+    if (name.startsWith(BINDING_DELIMS.BANANA_BOX.start)) {
+      delims = BINDING_DELIMS.BANANA_BOX;
+    } else if (name.startsWith(BINDING_DELIMS.PROPERTY.start)) {
+      delims = BINDING_DELIMS.PROPERTY;
+    } else if (name.startsWith(BINDING_DELIMS.EVENT.start)) {
+      delims = BINDING_DELIMS.EVENT;
+    }
+    if (delims !== null &&
+        // NOTE: older versions of the parser would match a start/end delimited
+        // binding iff the property name was terminated by the ending delimiter
+        // and the identifier in the binding was non-empty.
+        // TODO(ayazhafiz): update this to handle malformed bindings.
+        name.endsWith(delims.end) && name.length > delims.start.length + delims.end.length) {
+      const identifier = name.substring(delims.start.length, name.length - delims.end.length);
+      const keySpan = createKeySpan(srcSpan, delims.start, identifier);
+      if (delims.start === BINDING_DELIMS.BANANA_BOX.start) {
+        this.bindingParser.parsePropertyBinding(
+            identifier, value, false, srcSpan, absoluteOffset, attribute.valueSpan,
+            matchableAttributes, parsedProperties, keySpan);
+        this.parseAssignmentEvent(
+            identifier, value, srcSpan, attribute.valueSpan, matchableAttributes, boundEvents,
+            keySpan);
+      } else if (delims.start === BINDING_DELIMS.PROPERTY.start) {
+        this.bindingParser.parsePropertyBinding(
+            identifier, value, false, srcSpan, absoluteOffset, attribute.valueSpan,
+            matchableAttributes, parsedProperties, keySpan);
+      } else {
+        const events: ParsedEvent[] = [];
+        this.bindingParser.parseEvent(
+            identifier, value, srcSpan, attribute.valueSpan || srcSpan, matchableAttributes, events,
+            keySpan);
+        addEvents(events, boundEvents);
+      }
+
+      return true;
+    }
+
+    // No explicit binding found.
+    const keySpan = createKeySpan(srcSpan, '' /* prefix */, name);
+    const hasBinding = this.bindingParser.parsePropertyInterpolation(
+        name, value, srcSpan, attribute.valueSpan, matchableAttributes, parsedProperties, keySpan);
     return hasBinding;
   }
 
@@ -408,7 +440,7 @@ class HtmlAstToIvyAst implements html.Visitor {
   }
 
   private parseVariable(
-      identifier: string, value: string, sourceSpan: ParseSourceSpan,
+      identifier: string, value: string, sourceSpan: ParseSourceSpan, keySpan: ParseSourceSpan,
       valueSpan: ParseSourceSpan|undefined, variables: t.Variable[]) {
     if (identifier.indexOf('-') > -1) {
       this.reportError(`"-" is not allowed in variable names`, sourceSpan);
@@ -416,11 +448,11 @@ class HtmlAstToIvyAst implements html.Visitor {
       this.reportError(`Variable does not have a name`, sourceSpan);
     }
 
-    variables.push(new t.Variable(identifier, value, sourceSpan, valueSpan));
+    variables.push(new t.Variable(identifier, value, sourceSpan, keySpan, valueSpan));
   }
 
   private parseReference(
-      identifier: string, value: string, sourceSpan: ParseSourceSpan,
+      identifier: string, value: string, sourceSpan: ParseSourceSpan, keySpan: ParseSourceSpan,
       valueSpan: ParseSourceSpan|undefined, references: t.Reference[]) {
     if (identifier.indexOf('-') > -1) {
       this.reportError(`"-" is not allowed in reference names`, sourceSpan);
@@ -428,17 +460,17 @@ class HtmlAstToIvyAst implements html.Visitor {
       this.reportError(`Reference does not have a name`, sourceSpan);
     }
 
-    references.push(new t.Reference(identifier, value, sourceSpan, valueSpan));
+    references.push(new t.Reference(identifier, value, sourceSpan, keySpan, valueSpan));
   }
 
   private parseAssignmentEvent(
       name: string, expression: string, sourceSpan: ParseSourceSpan,
       valueSpan: ParseSourceSpan|undefined, targetMatchableAttrs: string[][],
-      boundEvents: t.BoundEvent[]) {
+      boundEvents: t.BoundEvent[], keySpan: ParseSourceSpan) {
     const events: ParsedEvent[] = [];
     this.bindingParser.parseEvent(
         `${name}Change`, `${expression}=$event`, sourceSpan, valueSpan || sourceSpan,
-        targetMatchableAttrs, events);
+        targetMatchableAttrs, events, keySpan);
     addEvents(events, boundEvents);
   }
 
@@ -474,7 +506,8 @@ class NonBindableVisitor implements html.Visitor {
 
   visitAttribute(attribute: html.Attribute): t.TextAttribute {
     return new t.TextAttribute(
-        attribute.name, attribute.value, attribute.sourceSpan, undefined, attribute.i18n);
+        attribute.name, attribute.value, attribute.sourceSpan, attribute.keySpan,
+        attribute.valueSpan, attribute.i18n);
   }
 
   visitText(text: html.Text): t.Text {

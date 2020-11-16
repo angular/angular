@@ -5,11 +5,13 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AbsoluteFsPath, relative} from '@angular/compiler-cli/src/ngtsc/file_system';
+import {AbsoluteFsPath, FileSystem, getFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {ɵParsedMessage, ɵSourceLocation} from '@angular/localize';
 
+import {FormatOptions, validateOptions} from './format_options';
 import {extractIcuPlaceholders} from './icu_parsing';
 import {TranslationSerializer} from './translation_serializer';
+import {consolidateMessages, hasLocation} from './utils';
 import {XmlFile} from './xml_file';
 
 /** This is the number of characters that a legacy Xliff 1.2 message id has. */
@@ -22,14 +24,17 @@ const LEGACY_XLIFF_MESSAGE_LENGTH = 40;
  * http://docs.oasis-open.org/xliff/v1.2/xliff-profile-html/xliff-profile-html-1.2.html
  *
  * @see Xliff1TranslationParser
+ * @publicApi used by CLI
  */
 export class Xliff1TranslationSerializer implements TranslationSerializer {
   constructor(
-      private sourceLocale: string, private basePath: AbsoluteFsPath,
-      private useLegacyIds: boolean) {}
+      private sourceLocale: string, private basePath: AbsoluteFsPath, private useLegacyIds: boolean,
+      private formatOptions: FormatOptions = {}, private fs: FileSystem = getFileSystem()) {
+    validateOptions('Xliff1TranslationSerializer', [['xml:space', ['preserve']]], formatOptions);
+  }
 
   serialize(messages: ɵParsedMessage[]): string {
-    const ids = new Set<string>();
+    const messageMap = consolidateMessages(messages, message => this.getMessageId(message));
     const xml = new XmlFile();
     xml.startTag('xliff', {'version': '1.2', 'xmlns': 'urn:oasis:names:tc:xliff:document:1.2'});
     // NOTE: the `original` property is set to the legacy `ng2.template` value for backward
@@ -43,23 +48,22 @@ export class Xliff1TranslationSerializer implements TranslationSerializer {
       'source-language': this.sourceLocale,
       'datatype': 'plaintext',
       'original': 'ng2.template',
+      ...this.formatOptions,
     });
     xml.startTag('body');
-    for (const message of messages) {
-      const id = this.getMessageId(message);
-      if (ids.has(id)) {
-        // Do not render the same message more than once
-        continue;
-      }
-      ids.add(id);
+    for (const [id, duplicateMessages] of messageMap.entries()) {
+      const message = duplicateMessages[0];
 
       xml.startTag('trans-unit', {id, datatype: 'html'});
       xml.startTag('source', {}, {preserveWhitespace: true});
       this.serializeMessage(xml, message);
       xml.endTag('source', {preserveWhitespace: false});
-      if (message.location) {
-        this.serializeLocation(xml, message.location);
+
+      // Write all the locations
+      for (const {location} of duplicateMessages.filter(hasLocation)) {
+        this.serializeLocation(xml, location);
       }
+
       if (message.description) {
         this.serializeNote(xml, 'description', message.description);
       }
@@ -96,6 +100,10 @@ export class Xliff1TranslationSerializer implements TranslationSerializer {
 
   private serializePlaceholder(xml: XmlFile, id: string, text: string|undefined): void {
     const attrs: Record<string, string> = {id};
+    const ctype = getCtypeForPlaceholder(id);
+    if (ctype !== null) {
+      attrs.ctype = ctype;
+    }
     if (text !== undefined) {
       attrs['equiv-text'] = text;
     }
@@ -110,7 +118,7 @@ export class Xliff1TranslationSerializer implements TranslationSerializer {
 
   private serializeLocation(xml: XmlFile, location: ɵSourceLocation): void {
     xml.startTag('context-group', {purpose: 'location'});
-    this.renderContext(xml, 'sourcefile', relative(this.basePath, location.file));
+    this.renderContext(xml, 'sourcefile', this.fs.relative(this.basePath, location.file));
     const endLineString = location.end !== undefined && location.end.line !== location.start.line ?
         `,${location.end.line + 1}` :
         '';
@@ -144,3 +152,68 @@ export class Xliff1TranslationSerializer implements TranslationSerializer {
         message.id;
   }
 }
+
+/**
+ * Compute the value of the `ctype` attribute from the `placeholder` name.
+ *
+ * The placeholder can take the following forms:
+ *
+ * - `START_BOLD_TEXT`/`END_BOLD_TEXT`
+ * - `TAG_<ELEMENT_NAME>`
+ * - `START_TAG_<ELEMENT_NAME>`
+ * - `CLOSE_TAG_<ELEMENT_NAME>`
+ *
+ * In these cases the element name of the tag is extracted from the placeholder name and returned as
+ * `x-<element_name>`.
+ *
+ * Line breaks and images are special cases.
+ */
+function getCtypeForPlaceholder(placeholder: string): string|null {
+  const tag = placeholder.replace(/^(START_|CLOSE_)/, '');
+  switch (tag) {
+    case 'LINE_BREAK':
+      return 'lb';
+    case 'TAG_IMG':
+      return 'image';
+    default:
+      const element = tag.startsWith('TAG_') ?
+          tag.replace(/^TAG_(.+)/, (_, tagName: string) => tagName.toLowerCase()) :
+          TAG_MAP[tag];
+      if (element === undefined) {
+        return null;
+      }
+      return `x-${element}`;
+  }
+}
+
+const TAG_MAP: Record<string, string> = {
+  'LINK': 'a',
+  'BOLD_TEXT': 'b',
+  'EMPHASISED_TEXT': 'em',
+  'HEADING_LEVEL1': 'h1',
+  'HEADING_LEVEL2': 'h2',
+  'HEADING_LEVEL3': 'h3',
+  'HEADING_LEVEL4': 'h4',
+  'HEADING_LEVEL5': 'h5',
+  'HEADING_LEVEL6': 'h6',
+  'HORIZONTAL_RULE': 'hr',
+  'ITALIC_TEXT': 'i',
+  'LIST_ITEM': 'li',
+  'MEDIA_LINK': 'link',
+  'ORDERED_LIST': 'ol',
+  'PARAGRAPH': 'p',
+  'QUOTATION': 'q',
+  'STRIKETHROUGH_TEXT': 's',
+  'SMALL_TEXT': 'small',
+  'SUBSTRIPT': 'sub',
+  'SUPERSCRIPT': 'sup',
+  'TABLE_BODY': 'tbody',
+  'TABLE_CELL': 'td',
+  'TABLE_FOOTER': 'tfoot',
+  'TABLE_HEADER_CELL': 'th',
+  'TABLE_HEADER': 'thead',
+  'TABLE_ROW': 'tr',
+  'MONOSPACED_TEXT': 'tt',
+  'UNDERLINED_TEXT': 'u',
+  'UNORDERED_LIST': 'ul',
+};

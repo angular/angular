@@ -327,6 +327,7 @@ export class TestBedRender3 implements TestBed {
    */
   overrideProvider(token: any, provider: {useFactory?: Function, useValue?: any, deps?: any[]}):
       void {
+    this.assertNotInstantiated('overrideProvider', 'override provider');
     this.compiler.overrideProvider(token, provider);
   }
 

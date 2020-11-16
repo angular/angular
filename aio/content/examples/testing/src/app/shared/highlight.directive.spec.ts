@@ -3,7 +3,6 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 
 import { HighlightDirective } from './highlight.directive';
-import { newEvent } from '../../testing';
 
 // #docregion test-component
 @Component({
@@ -59,9 +58,12 @@ describe('HighlightDirective', () => {
     const input = des[2].nativeElement as HTMLInputElement;
     expect(input.style.backgroundColor).toBe('cyan', 'initial backgroundColor');
 
-    // 입력 필드의 값을 변경하고 DOM 이벤트를 보내면 Angular가 이 이벤트에 반응합니다.
     input.value = 'green';
-    input.dispatchEvent(newEvent('input'));
+
+    // 입력 필드의 값을 변경하고 DOM 이벤트를 보내면 Angular가 이 이벤트에 반응합니다.
+    // IE와 같이 오래된 브라우저에서는 CustomEvent 를 사용해야 합니다. 아래 문서를 참고하세요.
+    // https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent/CustomEvent#Polyfill
+    input.dispatchEvent(new Event('input'));
     fixture.detectChanges();
 
     expect(input.style.backgroundColor).toBe('green', 'changed backgroundColor');

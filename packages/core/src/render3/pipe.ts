@@ -12,6 +12,7 @@ import {setInjectImplementation} from '../di/injector_compatibility';
 
 import {getFactoryDef} from './definition';
 import {setIncludeViewProviders} from './di';
+import {RuntimeError, RuntimeErrorCode} from './error_code';
 import {store, ɵɵdirectiveInject} from './instructions/all';
 import {PipeDef, PipeDefList} from './interfaces/definition';
 import {HEADER_OFFSET, LView, TVIEW} from './interfaces/view';
@@ -48,15 +49,19 @@ export function ɵɵpipe(index: number, pipeName: string): any {
 
   const pipeFactory = pipeDef.factory || (pipeDef.factory = getFactoryDef(pipeDef.type, true));
   const previousInjectImplementation = setInjectImplementation(ɵɵdirectiveInject);
-
-  // DI for pipes is supposed to behave like directives when placed on a component
-  // host node, which means that we have to disable access to `viewProviders`.
-  const previousIncludeViewProviders = setIncludeViewProviders(false);
-  const pipeInstance = pipeFactory();
-  setIncludeViewProviders(previousIncludeViewProviders);
-  setInjectImplementation(previousInjectImplementation);
-  store(tView, getLView(), index, pipeInstance);
-  return pipeInstance;
+  try {
+    // DI for pipes is supposed to behave like directives when placed on a component
+    // host node, which means that we have to disable access to `viewProviders`.
+    const previousIncludeViewProviders = setIncludeViewProviders(false);
+    const pipeInstance = pipeFactory();
+    setIncludeViewProviders(previousIncludeViewProviders);
+    store(tView, getLView(), adjustedIndex, pipeInstance);
+    return pipeInstance;
+  } finally {
+    // we have to restore the injector implementation in finally, just in case the creation of the
+    // pipe throws an error.
+    setInjectImplementation(previousInjectImplementation);
+  }
 }
 
 /**
@@ -76,7 +81,7 @@ function getPipeDef(name: string, registry: PipeDefList|null): PipeDef<any> {
       }
     }
   }
-  throw new Error(`The pipe '${name}' could not be found!`);
+  throw new RuntimeError(RuntimeErrorCode.PIPE_NOT_FOUND, `The pipe '${name}' could not be found!`);
 }
 
 /**
@@ -92,11 +97,12 @@ function getPipeDef(name: string, registry: PipeDefList|null): PipeDef<any> {
  * @codeGenApi
  */
 export function ɵɵpipeBind1(index: number, slotOffset: number, v1: any): any {
+  const adjustedIndex = index + HEADER_OFFSET;
   const lView = getLView();
-  const pipeInstance = load<PipeTransform>(lView, index);
+  const pipeInstance = load<PipeTransform>(lView, adjustedIndex);
   return unwrapValue(
       lView,
-      isPure(lView, index) ?
+      isPure(lView, adjustedIndex) ?
           pureFunction1Internal(
               lView, getBindingRoot(), slotOffset, pipeInstance.transform, v1, pipeInstance) :
           pipeInstance.transform(v1));
@@ -116,11 +122,12 @@ export function ɵɵpipeBind1(index: number, slotOffset: number, v1: any): any {
  * @codeGenApi
  */
 export function ɵɵpipeBind2(index: number, slotOffset: number, v1: any, v2: any): any {
+  const adjustedIndex = index + HEADER_OFFSET;
   const lView = getLView();
-  const pipeInstance = load<PipeTransform>(lView, index);
+  const pipeInstance = load<PipeTransform>(lView, adjustedIndex);
   return unwrapValue(
       lView,
-      isPure(lView, index) ?
+      isPure(lView, adjustedIndex) ?
           pureFunction2Internal(
               lView, getBindingRoot(), slotOffset, pipeInstance.transform, v1, v2, pipeInstance) :
           pipeInstance.transform(v1, v2));
@@ -141,14 +148,15 @@ export function ɵɵpipeBind2(index: number, slotOffset: number, v1: any, v2: an
  * @codeGenApi
  */
 export function ɵɵpipeBind3(index: number, slotOffset: number, v1: any, v2: any, v3: any): any {
+  const adjustedIndex = index + HEADER_OFFSET;
   const lView = getLView();
-  const pipeInstance = load<PipeTransform>(lView, index);
+  const pipeInstance = load<PipeTransform>(lView, adjustedIndex);
   return unwrapValue(
       lView,
-      isPure(lView, index) ? pureFunction3Internal(
-                                 lView, getBindingRoot(), slotOffset, pipeInstance.transform, v1,
-                                 v2, v3, pipeInstance) :
-                             pipeInstance.transform(v1, v2, v3));
+      isPure(lView, adjustedIndex) ? pureFunction3Internal(
+                                         lView, getBindingRoot(), slotOffset,
+                                         pipeInstance.transform, v1, v2, v3, pipeInstance) :
+                                     pipeInstance.transform(v1, v2, v3));
 }
 
 /**
@@ -168,14 +176,15 @@ export function ɵɵpipeBind3(index: number, slotOffset: number, v1: any, v2: an
  */
 export function ɵɵpipeBind4(
     index: number, slotOffset: number, v1: any, v2: any, v3: any, v4: any): any {
+  const adjustedIndex = index + HEADER_OFFSET;
   const lView = getLView();
-  const pipeInstance = load<PipeTransform>(lView, index);
+  const pipeInstance = load<PipeTransform>(lView, adjustedIndex);
   return unwrapValue(
       lView,
-      isPure(lView, index) ? pureFunction4Internal(
-                                 lView, getBindingRoot(), slotOffset, pipeInstance.transform, v1,
-                                 v2, v3, v4, pipeInstance) :
-                             pipeInstance.transform(v1, v2, v3, v4));
+      isPure(lView, adjustedIndex) ? pureFunction4Internal(
+                                         lView, getBindingRoot(), slotOffset,
+                                         pipeInstance.transform, v1, v2, v3, v4, pipeInstance) :
+                                     pipeInstance.transform(v1, v2, v3, v4));
 }
 
 /**
@@ -191,18 +200,19 @@ export function ɵɵpipeBind4(
  * @codeGenApi
  */
 export function ɵɵpipeBindV(index: number, slotOffset: number, values: [any, ...any[]]): any {
+  const adjustedIndex = index + HEADER_OFFSET;
   const lView = getLView();
-  const pipeInstance = load<PipeTransform>(lView, index);
+  const pipeInstance = load<PipeTransform>(lView, adjustedIndex);
   return unwrapValue(
       lView,
-      isPure(lView, index) ?
+      isPure(lView, adjustedIndex) ?
           pureFunctionVInternal(
               lView, getBindingRoot(), slotOffset, pipeInstance.transform, values, pipeInstance) :
           pipeInstance.transform.apply(pipeInstance, values));
 }
 
 function isPure(lView: LView, index: number): boolean {
-  return (<PipeDef<any>>lView[TVIEW].data[index + HEADER_OFFSET]).pure;
+  return (<PipeDef<any>>lView[TVIEW].data[index]).pure;
 }
 
 /**

@@ -14,8 +14,8 @@ import {PropertyAliasValue, TNode, TNodeFlags, TNodeType} from '../interfaces/no
 import {GlobalTargetResolver, isProceduralRenderer, RElement, Renderer3} from '../interfaces/renderer';
 import {isDirectiveHost} from '../interfaces/type_checks';
 import {CLEANUP, FLAGS, LView, LViewFlags, RENDERER, TView} from '../interfaces/view';
-import {assertNodeOfPossibleTypes} from '../node_assert';
-import {getCurrentDirectiveDef, getLView, getPreviousOrParentTNode, getTView} from '../state';
+import {assertTNodeType} from '../node_assert';
+import {getCurrentDirectiveDef, getCurrentTNode, getLView, getTView} from '../state';
 import {getComponentLViewByIndex, getNativeByTNode, unwrapRNode} from '../util/view_utils';
 
 import {getLCleanup, handleError, loadComponentRenderer, markViewDirty} from './shared';
@@ -41,7 +41,7 @@ export function ɵɵlistener(
     eventTargetResolver?: GlobalTargetResolver): typeof ɵɵlistener {
   const lView = getLView();
   const tView = getTView();
-  const tNode = getPreviousOrParentTNode();
+  const tNode = getCurrentTNode()!;
   listenerInternal(
       tView, lView, lView[RENDERER], tNode, eventName, listenerFn, useCapture, eventTargetResolver);
   return ɵɵlistener;
@@ -71,7 +71,7 @@ export function ɵɵlistener(
 export function ɵɵsyntheticHostListener(
     eventName: string, listenerFn: (e?: any) => any, useCapture = false,
     eventTargetResolver?: GlobalTargetResolver): typeof ɵɵsyntheticHostListener {
-  const tNode = getPreviousOrParentTNode();
+  const tNode = getCurrentTNode()!;
   const lView = getLView();
   const tView = getTView();
   const currentDef = getCurrentDirectiveDef(tView.data);
@@ -126,14 +126,12 @@ function listenerInternal(
   // register a listener and store its cleanup function on LView.
   const lCleanup = getLCleanup(lView);
 
-  ngDevMode &&
-      assertNodeOfPossibleTypes(
-          tNode, [TNodeType.Element, TNodeType.Container, TNodeType.ElementContainer]);
+  ngDevMode && assertTNodeType(tNode, TNodeType.AnyRNode | TNodeType.AnyContainer);
 
   let processOutputs = true;
 
   // add native event listener - applicable to elements only
-  if (tNode.type === TNodeType.Element) {
+  if (tNode.type & TNodeType.AnyRNode) {
     const native = getNativeByTNode(tNode, lView) as RElement;
     const resolved = eventTargetResolver ? eventTargetResolver(native) : EMPTY_OBJ as any;
     const target = resolved.target || native;

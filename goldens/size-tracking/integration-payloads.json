@@ -3,8 +3,8 @@
     "master": {
       "uncompressed": {
         "runtime-es2015": 1485,
-        "main-es2015": 141151,
-        "polyfills-es2015": 36571
+        "main-es2015": 140899,
+        "polyfills-es2015": 36964
       }
     }
   },
@@ -12,8 +12,8 @@
     "master": {
       "uncompressed": {
         "runtime-es2015": 1485,
-        "main-es2015": 17362,
-        "polyfills-es2015": 36657
+        "main-es2015": 17597,
+        "polyfills-es2015": 36709
       }
     }
   },
@@ -21,8 +21,8 @@
     "master": {
       "uncompressed": {
         "runtime-es2015": 1485,
-        "main-es2015": 147573,
-        "polyfills-es2015": 36571
+        "main-es2015": 147252,
+        "polyfills-es2015": 36964
       }
     }
   },
@@ -30,28 +30,28 @@
     "master": {
       "uncompressed": {
         "runtime-es2015": 1485,
-        "main-es2015": 136168,
-        "polyfills-es2015": 37248
+        "main-es2015": 136703,
+        "polyfills-es2015": 37641
       }
     }
   },
   "cli-hello-world-lazy": {
     "master": {
       "uncompressed": {
-        "runtime-es2015": 2289,
-        "main-es2015": 245351,
-        "polyfills-es2015": 36938,
-        "5-es2015": 751
+        "runtime-es2015": 2285,
+        "main-es2015": 241875,
+        "polyfills-es2015": 36709,
+        "5-es2015": 745
       }
     }
   },
   "cli-hello-world-lazy-rollup": {
     "master": {
       "uncompressed": {
-        "runtime-es2015": 2289,
-        "main-es2015": 221939,
-        "polyfills-es2015": 36723,
-        "5-es2015": 781
+        "runtime-es2015": 2285,
+        "main-es2015": 218340,
+        "polyfills-es2015": 36709,
+        "5-es2015": 777
       }
     }
   },

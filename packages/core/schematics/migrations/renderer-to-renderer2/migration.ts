@@ -9,33 +9,9 @@
 import * as ts from 'typescript';
 
 import {HelperFunction} from './helpers';
-import {findImportSpecifier} from './util';
 
 /** A call expression that is based on a property access. */
 type PropertyAccessCallExpression = ts.CallExpression&{expression: ts.PropertyAccessExpression};
-
-/** Replaces an import inside an import statement with a different one. */
-export function replaceImport(node: ts.NamedImports, oldImport: string, newImport: string) {
-  const isAlreadyImported = findImportSpecifier(node.elements, newImport);
-
-  if (isAlreadyImported) {
-    return node;
-  }
-
-  const existingImport = findImportSpecifier(node.elements, oldImport);
-
-  if (!existingImport) {
-    throw new Error(`Could not find an import to replace using ${oldImport}.`);
-  }
-
-  return ts.updateNamedImports(node, [
-    ...node.elements.filter(current => current !== existingImport),
-    // Create a new import while trying to preserve the alias of the old one.
-    ts.createImportSpecifier(
-        existingImport.propertyName ? ts.createIdentifier(newImport) : undefined,
-        existingImport.propertyName ? existingImport.name : ts.createIdentifier(newImport))
-  ]);
-}
 
 /**
  * Migrates a function call expression from `Renderer` to `Renderer2`.

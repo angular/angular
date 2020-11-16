@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {TI18n} from '@angular/core/src/render3/interfaces/i18n';
+import {I18nDebug, IcuCreateOpCodes, TI18n, TIcu} from '@angular/core/src/render3/interfaces/i18n';
 import {TNode} from '@angular/core/src/render3/interfaces/node';
 import {TView} from '@angular/core/src/render3/interfaces/view';
 
-import {isDOMElement, isDOMText, isTI18n, isTNode, isTView} from './is_shape_of';
+import {isDOMElement, isDOMText, isTI18n, isTIcu, isTNode, isTView} from './is_shape_of';
 
 
 /**
@@ -37,22 +37,17 @@ export function matchObjectShape<T>(
     return true;
   };
   matcher.jasmineToString = function() {
-    return `${toString(_actual, false)} != ${toString(expected, true)})`;
+    let errors: string[] = [];
+    if (!_actual || typeof _actual !== 'object') {
+      return `Expecting ${jasmine.pp(expect)} got ${jasmine.pp(_actual)}`;
+    }
+    for (const key in expected) {
+      if (expected.hasOwnProperty(key) && !jasmine.matchersUtil.equals(_actual[key], expected[key]))
+        errors.push(`\n  property obj.${key} to equal ${expected[key]} but got ${_actual[key]}`);
+    }
+    return errors.join('\n');
   };
 
-  function toString(obj: any, isExpected: boolean) {
-    if (isExpected || shapePredicate(obj)) {
-      const props =
-          Object.keys(expected).map(key => `${key}: ${JSON.stringify((obj as any)[key])}`);
-      if (isExpected === false) {
-        // Push something to let the user know that there may be other ignored properties in actual
-        props.push('...');
-      }
-      return `${name}({${props.length === 0 ? '' : '\n  ' + props.join(',\n  ') + '\n'}})`;
-    } else {
-      return JSON.stringify(obj);
-    }
-  }
   return matcher;
 }
 
@@ -113,6 +108,26 @@ export function matchTNode(expected?: Partial<TNode>): jasmine.AsymmetricMatcher
  */
 export function matchTI18n(expected?: Partial<TI18n>): jasmine.AsymmetricMatcher<TI18n> {
   return matchObjectShape('TI18n', isTI18n, expected);
+}
+
+
+/**
+ * Asymmetric matcher which matches a `T1cu` of a given shape.
+ *
+ * Expected usage:
+ * ```
+ * expect(tNode).toEqual(matchTIcu({type: TIcuType.select}));
+ * expect({
+ *   type: TIcuType.select
+ * }).toEqual({
+ *   node: matchT18n({type: TIcuType.select})
+ * });
+ * ```
+ *
+ * @param expected optional properties which the `TIcu` must contain.
+ */
+export function matchTIcu(expected?: Partial<TIcu>): jasmine.AsymmetricMatcher<TIcu> {
+  return matchObjectShape('TIcu', isTIcu, expected);
 }
 
 
@@ -212,6 +227,28 @@ export function matchDomText(expectedText: string|undefined = undefined):
                                          JSON.stringify(_actual);
     let expectedStr = `#TEXT: ${JSON.stringify(expectedText)}`;
     return `[${actualStr} != ${expectedStr}]`;
+  };
+
+  return matcher;
+}
+
+export function matchI18nMutableOpCodes(expectedMutableOpCodes: string[]):
+    jasmine.AsymmetricMatcher<IcuCreateOpCodes> {
+  const matcher = function() {};
+  let _actual: any = null;
+
+  matcher.asymmetricMatch = function(actual: any) {
+    _actual = actual;
+    if (!Array.isArray(actual)) return false;
+    const debug = (actual as I18nDebug).debug as undefined | string[];
+    if (expectedMutableOpCodes && (!jasmine.matchersUtil.equals(debug, expectedMutableOpCodes))) {
+      return false;
+    }
+    return true;
+  };
+  matcher.jasmineToString = function() {
+    const debug = (_actual as I18nDebug).debug as undefined | string[];
+    return `[${JSON.stringify(debug)} != ${expectedMutableOpCodes}]`;
   };
 
   return matcher;

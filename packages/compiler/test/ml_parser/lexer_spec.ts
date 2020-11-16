@@ -54,14 +54,14 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
       });
 
       it('should skip over leading trivia for source-span start', () => {
-        expect(tokenizeAndHumanizeLineColumn(
-                   '<t>\n \t a</t>', {leadingTriviaChars: ['\n', ' ', '\t']}))
+        expect(
+            tokenizeAndHumanizeFullStart('<t>\n \t a</t>', {leadingTriviaChars: ['\n', ' ', '\t']}))
             .toEqual([
-              [lex.TokenType.TAG_OPEN_START, '0:0'],
-              [lex.TokenType.TAG_OPEN_END, '0:2'],
-              [lex.TokenType.TEXT, '1:3'],
-              [lex.TokenType.TAG_CLOSE, '1:4'],
-              [lex.TokenType.EOF, '1:8'],
+              [lex.TokenType.TAG_OPEN_START, '0:0', '0:0'],
+              [lex.TokenType.TAG_OPEN_END, '0:2', '0:2'],
+              [lex.TokenType.TEXT, '1:3', '0:3'],
+              [lex.TokenType.TAG_CLOSE, '1:4', '1:4'],
+              [lex.TokenType.EOF, '1:8', '1:8'],
             ]);
       });
     });
@@ -231,6 +231,45 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
           [lex.TokenType.TAG_OPEN_END, '>'],
           [lex.TokenType.EOF, ''],
         ]);
+      });
+
+      describe('tags', () => {
+        it('after tag name', () => {
+          expect(tokenizeAndHumanizeSourceSpans('<div<span><div</span>')).toEqual([
+            [lex.TokenType.INCOMPLETE_TAG_OPEN, '<div'],
+            [lex.TokenType.TAG_OPEN_START, '<span'],
+            [lex.TokenType.TAG_OPEN_END, '>'],
+            [lex.TokenType.INCOMPLETE_TAG_OPEN, '<div'],
+            [lex.TokenType.TAG_CLOSE, '</span>'],
+            [lex.TokenType.EOF, ''],
+          ]);
+        });
+
+        it('in attribute', () => {
+          expect(tokenizeAndHumanizeSourceSpans('<div class="hi" sty<span></span>')).toEqual([
+            [lex.TokenType.INCOMPLETE_TAG_OPEN, '<div'],
+            [lex.TokenType.ATTR_NAME, 'class'],
+            [lex.TokenType.ATTR_QUOTE, '"'],
+            [lex.TokenType.ATTR_VALUE, 'hi'],
+            [lex.TokenType.ATTR_QUOTE, '"'],
+            [lex.TokenType.ATTR_NAME, 'sty'],
+            [lex.TokenType.TAG_OPEN_START, '<span'],
+            [lex.TokenType.TAG_OPEN_END, '>'],
+            [lex.TokenType.TAG_CLOSE, '</span>'],
+            [lex.TokenType.EOF, ''],
+          ]);
+        });
+
+        it('after quote', () => {
+          expect(tokenizeAndHumanizeSourceSpans('<div "<span></span>')).toEqual([
+            [lex.TokenType.INCOMPLETE_TAG_OPEN, '<div'],
+            [lex.TokenType.TEXT, '"'],
+            [lex.TokenType.TAG_OPEN_START, '<span'],
+            [lex.TokenType.TAG_OPEN_END, '>'],
+            [lex.TokenType.TAG_CLOSE, '</span>'],
+            [lex.TokenType.EOF, ''],
+          ]);
+        });
       });
     });
 
@@ -554,7 +593,8 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
         expect(tokenizeAndHumanizeSourceSpans('<p>a<b</p>')).toEqual([
           [lex.TokenType.TAG_OPEN_START, '<p'],
           [lex.TokenType.TAG_OPEN_END, '>'],
-          [lex.TokenType.TEXT, 'a<b'],
+          [lex.TokenType.TEXT, 'a'],
+          [lex.TokenType.INCOMPLETE_TAG_OPEN, '<b'],
           [lex.TokenType.TAG_CLOSE, '</p>'],
           [lex.TokenType.EOF, ''],
         ]);
@@ -579,25 +619,41 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
 
       it('should parse start tags quotes in place of an attribute name as text', () => {
         expect(tokenizeAndHumanizeParts('<t ">')).toEqual([
-          [lex.TokenType.TEXT, '<t ">'],
+          [lex.TokenType.INCOMPLETE_TAG_OPEN, '', 't'],
+          [lex.TokenType.TEXT, '">'],
           [lex.TokenType.EOF],
         ]);
 
         expect(tokenizeAndHumanizeParts('<t \'>')).toEqual([
-          [lex.TokenType.TEXT, '<t \'>'],
+          [lex.TokenType.INCOMPLETE_TAG_OPEN, '', 't'],
+          [lex.TokenType.TEXT, '\'>'],
           [lex.TokenType.EOF],
         ]);
       });
 
-      it('should parse start tags quotes in place of an attribute name (after a valid attribute) as text',
+      it('should parse start tags quotes in place of an attribute name (after a valid attribute)',
          () => {
            expect(tokenizeAndHumanizeParts('<t a="b" ">')).toEqual([
-             [lex.TokenType.TEXT, '<t a="b" ">'],
+             [lex.TokenType.INCOMPLETE_TAG_OPEN, '', 't'],
+             [lex.TokenType.ATTR_NAME, '', 'a'],
+             [lex.TokenType.ATTR_QUOTE, '"'],
+             [lex.TokenType.ATTR_VALUE, 'b'],
+             [lex.TokenType.ATTR_QUOTE, '"'],
+             // TODO(ayazhafiz): the " symbol should be a synthetic attribute,
+             // allowing us to complete the opening tag correctly.
+             [lex.TokenType.TEXT, '">'],
              [lex.TokenType.EOF],
            ]);
 
            expect(tokenizeAndHumanizeParts('<t a=\'b\' \'>')).toEqual([
-             [lex.TokenType.TEXT, '<t a=\'b\' \'>'],
+             [lex.TokenType.INCOMPLETE_TAG_OPEN, '', 't'],
+             [lex.TokenType.ATTR_NAME, '', 'a'],
+             [lex.TokenType.ATTR_QUOTE, '\''],
+             [lex.TokenType.ATTR_VALUE, 'b'],
+             [lex.TokenType.ATTR_QUOTE, '\''],
+             // TODO(ayazhafiz): the ' symbol should be a synthetic attribute,
+             // allowing us to complete the opening tag correctly.
+             [lex.TokenType.TEXT, '\'>'],
              [lex.TokenType.EOF],
            ]);
          });
@@ -1502,6 +1558,14 @@ function humanizeLineColumn(location: ParseLocation): string {
 function tokenizeAndHumanizeLineColumn(input: string, options?: lex.TokenizeOptions): any[] {
   return tokenizeWithoutErrors(input, options)
       .tokens.map(token => [<any>token.type, humanizeLineColumn(token.sourceSpan.start)]);
+}
+
+function tokenizeAndHumanizeFullStart(input: string, options?: lex.TokenizeOptions): any[] {
+  return tokenizeWithoutErrors(input, options)
+      .tokens.map(
+          token =>
+              [<any>token.type, humanizeLineColumn(token.sourceSpan.start),
+               humanizeLineColumn(token.sourceSpan.fullStart)]);
 }
 
 function tokenizeAndHumanizeErrors(input: string, options?: lex.TokenizeOptions): any[] {

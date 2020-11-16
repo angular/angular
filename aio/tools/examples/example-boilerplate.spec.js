@@ -56,10 +56,10 @@ describe('example-boilerplate tool', () => {
 
       expect(exampleBoilerPlate.copyDirectoryContents).toHaveBeenCalledTimes(4);
       expect(exampleBoilerPlate.copyDirectoryContents.calls.allArgs()).toEqual([
-        [`${boilerplateDir}/systemjs`, 'a/b'],
-        [`${boilerplateDir}/common`, 'a/b'],
-        [`${boilerplateDir}/systemjs`, 'c/d'],
-        [`${boilerplateDir}/common`, 'c/d'],
+        [`${boilerplateDir}/systemjs`, 'a/b', jasmine.any(Function)],
+        [`${boilerplateDir}/common`, 'a/b', jasmine.any(Function)],
+        [`${boilerplateDir}/systemjs`, 'c/d', jasmine.any(Function)],
+        [`${boilerplateDir}/common`, 'c/d', jasmine.any(Function)],
       ]);
     });
 
@@ -71,10 +71,10 @@ describe('example-boilerplate tool', () => {
 
       expect(exampleBoilerPlate.copyDirectoryContents).toHaveBeenCalledTimes(4);
       expect(exampleBoilerPlate.copyDirectoryContents.calls.allArgs()).toEqual([
-        [`${boilerplateDir}/cli`, 'a/b'],
-        [`${boilerplateDir}/common`, 'a/b'],
-        [`${boilerplateDir}/cli`, 'c/d'],
-        [`${boilerplateDir}/common`, 'c/d'],
+        [`${boilerplateDir}/cli`, 'a/b', jasmine.any(Function)],
+        [`${boilerplateDir}/common`, 'a/b', jasmine.any(Function)],
+        [`${boilerplateDir}/cli`, 'c/d', jasmine.any(Function)],
+        [`${boilerplateDir}/common`, 'c/d', jasmine.any(Function)],
       ]);
     });
 
@@ -86,10 +86,10 @@ describe('example-boilerplate tool', () => {
 
       expect(exampleBoilerPlate.copyDirectoryContents).toHaveBeenCalledTimes(4);
       expect(exampleBoilerPlate.copyDirectoryContents.calls.allArgs()).toEqual([
-        [`${boilerplateDir}/cli`, 'a/b'],
-        [`${boilerplateDir}/common`, 'a/b'],
-        [`${boilerplateDir}/cli`, 'c/d'],
-        [`${boilerplateDir}/common`, 'c/d'],
+        [`${boilerplateDir}/cli`, 'a/b', jasmine.any(Function)],
+        [`${boilerplateDir}/common`, 'a/b', jasmine.any(Function)],
+        [`${boilerplateDir}/cli`, 'c/d', jasmine.any(Function)],
+        [`${boilerplateDir}/common`, 'c/d', jasmine.any(Function)],
       ]);
     });
 
@@ -101,12 +101,12 @@ describe('example-boilerplate tool', () => {
 
       expect(exampleBoilerPlate.copyDirectoryContents).toHaveBeenCalledTimes(6);
       expect(exampleBoilerPlate.copyDirectoryContents.calls.allArgs()).toEqual([
-        [`${boilerplateDir}/cli`, 'a/b'],
-        [`${boilerplateDir}/i18n`, 'a/b'],
-        [`${boilerplateDir}/common`, 'a/b'],
-        [`${boilerplateDir}/cli`, 'c/d'],
-        [`${boilerplateDir}/i18n`, 'c/d'],
-        [`${boilerplateDir}/common`, 'c/d'],
+        [`${boilerplateDir}/cli`, 'a/b', jasmine.any(Function)],
+        [`${boilerplateDir}/i18n`, 'a/b', jasmine.any(Function)],
+        [`${boilerplateDir}/common`, 'a/b', jasmine.any(Function)],
+        [`${boilerplateDir}/cli`, 'c/d', jasmine.any(Function)],
+        [`${boilerplateDir}/i18n`, 'c/d', jasmine.any(Function)],
+        [`${boilerplateDir}/common`, 'c/d', jasmine.any(Function)],
       ]);
     });
 
@@ -118,12 +118,12 @@ describe('example-boilerplate tool', () => {
 
       expect(exampleBoilerPlate.copyDirectoryContents).toHaveBeenCalledTimes(6);
       expect(exampleBoilerPlate.copyDirectoryContents.calls.allArgs()).toEqual([
-        [`${boilerplateDir}/cli`, 'a/b'],
-        [`${boilerplateDir}/universal`, 'a/b'],
-        [`${boilerplateDir}/common`, 'a/b'],
-        [`${boilerplateDir}/cli`, 'c/d'],
-        [`${boilerplateDir}/universal`, 'c/d'],
-        [`${boilerplateDir}/common`, 'c/d'],
+        [`${boilerplateDir}/cli`, 'a/b', jasmine.any(Function)],
+        [`${boilerplateDir}/universal`, 'a/b', jasmine.any(Function)],
+        [`${boilerplateDir}/common`, 'a/b', jasmine.any(Function)],
+        [`${boilerplateDir}/cli`, 'c/d', jasmine.any(Function)],
+        [`${boilerplateDir}/universal`, 'c/d', jasmine.any(Function)],
+        [`${boilerplateDir}/common`, 'c/d', jasmine.any(Function)],
       ]);
     });
 
@@ -148,12 +148,12 @@ describe('example-boilerplate tool', () => {
 
         expect(exampleBoilerPlate.copyDirectoryContents).toHaveBeenCalledTimes(6);
         expect(exampleBoilerPlate.copyDirectoryContents.calls.allArgs()).toEqual([
-          [`${boilerplateDir}/systemjs`, 'a/b'],
-          [`${boilerplateDir}/common`, 'a/b'],
-          [`${boilerplateDir}/viewengine/systemjs`, 'a/b'],
-          [`${boilerplateDir}/systemjs`, 'c/d'],
-          [`${boilerplateDir}/common`, 'c/d'],
-          [`${boilerplateDir}/viewengine/systemjs`, 'c/d'],
+          [`${boilerplateDir}/systemjs`, 'a/b', jasmine.any(Function)],
+          [`${boilerplateDir}/common`, 'a/b', jasmine.any(Function)],
+          [`${boilerplateDir}/viewengine/systemjs`, 'a/b', jasmine.any(Function)],
+          [`${boilerplateDir}/systemjs`, 'c/d', jasmine.any(Function)],
+          [`${boilerplateDir}/common`, 'c/d', jasmine.any(Function)],
+          [`${boilerplateDir}/viewengine/systemjs`, 'c/d', jasmine.any(Function)],
         ]);
       });
 
@@ -165,12 +165,12 @@ describe('example-boilerplate tool', () => {
 
         expect(exampleBoilerPlate.copyDirectoryContents).toHaveBeenCalledTimes(6);
         expect(exampleBoilerPlate.copyDirectoryContents.calls.allArgs()).toEqual([
-          [`${boilerplateDir}/cli`, 'a/b'],
-          [`${boilerplateDir}/common`, 'a/b'],
-          [`${boilerplateDir}/viewengine/cli`, 'a/b'],
-          [`${boilerplateDir}/cli`, 'c/d'],
-          [`${boilerplateDir}/common`, 'c/d'],
-          [`${boilerplateDir}/viewengine/cli`, 'c/d'],
+          [`${boilerplateDir}/cli`, 'a/b', jasmine.any(Function)],
+          [`${boilerplateDir}/common`, 'a/b', jasmine.any(Function)],
+          [`${boilerplateDir}/viewengine/cli`, 'a/b', jasmine.any(Function)],
+          [`${boilerplateDir}/cli`, 'c/d', jasmine.any(Function)],
+          [`${boilerplateDir}/common`, 'c/d', jasmine.any(Function)],
+          [`${boilerplateDir}/viewengine/cli`, 'c/d', jasmine.any(Function)],
         ]);
       });
 
@@ -182,14 +182,14 @@ describe('example-boilerplate tool', () => {
 
         expect(exampleBoilerPlate.copyDirectoryContents).toHaveBeenCalledTimes(8);
         expect(exampleBoilerPlate.copyDirectoryContents.calls.allArgs()).toEqual([
-          [`${boilerplateDir}/cli`, 'a/b'],
-          [`${boilerplateDir}/elements`, 'a/b'],
-          [`${boilerplateDir}/common`, 'a/b'],
-          [`${boilerplateDir}/viewengine/cli`, 'a/b'],
-          [`${boilerplateDir}/cli`, 'c/d'],
-          [`${boilerplateDir}/elements`, 'c/d'],
-          [`${boilerplateDir}/common`, 'c/d'],
-          [`${boilerplateDir}/viewengine/cli`, 'c/d'],
+          [`${boilerplateDir}/cli`, 'a/b', jasmine.any(Function)],
+          [`${boilerplateDir}/elements`, 'a/b', jasmine.any(Function)],
+          [`${boilerplateDir}/common`, 'a/b', jasmine.any(Function)],
+          [`${boilerplateDir}/viewengine/cli`, 'a/b', jasmine.any(Function)],
+          [`${boilerplateDir}/cli`, 'c/d', jasmine.any(Function)],
+          [`${boilerplateDir}/elements`, 'c/d', jasmine.any(Function)],
+          [`${boilerplateDir}/common`, 'c/d', jasmine.any(Function)],
+          [`${boilerplateDir}/viewengine/cli`, 'c/d', jasmine.any(Function)],
         ]);
       });
     });
@@ -214,10 +214,12 @@ describe('example-boilerplate tool', () => {
 
   describe('copyDirectoryContents', () => {
     const spyFnFor = fnName => (...args) => { callLog.push(`${fnName}(${args.join(', ')})`); };
+    let isPathIgnoredSpy;
     let callLog;
 
     beforeEach(() => {
       callLog = [];
+      isPathIgnoredSpy = jasmine.createSpy('isPathIgnored').and.returnValue(false);
       spyOn(shelljs, 'chmod').and.callFake(spyFnFor('chmod'));
       spyOn(shelljs, 'cp').and.callFake(spyFnFor('cp'));
       spyOn(shelljs, 'mkdir').and.callFake(spyFnFor('mkdir'));
@@ -226,23 +228,39 @@ describe('example-boilerplate tool', () => {
 
     it('should list all contents of a directory', () => {
       const lsSpy = spyOn(shelljs, 'ls').and.returnValue([]);
-      exampleBoilerPlate.copyDirectoryContents('source/dir', 'destination/dir');
+      exampleBoilerPlate.copyDirectoryContents('source/dir', 'destination/dir', isPathIgnoredSpy);
       expect(lsSpy).toHaveBeenCalledWith('-Al', 'source/dir');
     });
 
-    it('should use copy files and make them read-only', () => {
+    it('should copy files and make them read-only', () => {
       spyOn(shelljs, 'ls').and.returnValue([
         {name: 'file-1.txt', isDirectory: () => false},
         {name: 'file-2.txt', isDirectory: () => false},
       ]);
 
-      exampleBoilerPlate.copyDirectoryContents('source/dir', 'destination/dir');
+      exampleBoilerPlate.copyDirectoryContents('source/dir', 'destination/dir', isPathIgnoredSpy);
 
       expect(callLog).toEqual([
         `test(-f, ${path.resolve('destination/dir/file-1.txt')})`,
         `cp(${path.resolve('source/dir/file-1.txt')}, destination/dir)`,
         `chmod(444, ${path.resolve('destination/dir/file-1.txt')})`,
 
+        `test(-f, ${path.resolve('destination/dir/file-2.txt')})`,
+        `cp(${path.resolve('source/dir/file-2.txt')}, destination/dir)`,
+        `chmod(444, ${path.resolve('destination/dir/file-2.txt')})`,
+      ]);
+    });
+
+    it('should skip files that are ignored', () => {
+      spyOn(shelljs, 'ls').and.returnValue([
+        {name: 'file-1.txt', isDirectory: () => false},
+        {name: 'file-2.txt', isDirectory: () => false},
+      ]);
+      isPathIgnoredSpy.and.callFake(path => path.endsWith('file-1.txt'));
+
+      exampleBoilerPlate.copyDirectoryContents('source/dir', 'destination/dir', isPathIgnoredSpy);
+
+      expect(callLog).toEqual([
         `test(-f, ${path.resolve('destination/dir/file-2.txt')})`,
         `cp(${path.resolve('source/dir/file-2.txt')}, destination/dir)`,
         `chmod(444, ${path.resolve('destination/dir/file-2.txt')})`,
@@ -256,7 +274,7 @@ describe('example-boilerplate tool', () => {
       ]);
       shelljs.test.and.callFake((_, filePath) => filePath.endsWith('existing-file.txt'));
 
-      exampleBoilerPlate.copyDirectoryContents('source/dir', 'destination/dir');
+      exampleBoilerPlate.copyDirectoryContents('source/dir', 'destination/dir', isPathIgnoredSpy);
 
       expect(callLog).toEqual([
         `cp(${path.resolve('source/dir/new-file.txt')}, destination/dir)`,
@@ -283,7 +301,7 @@ describe('example-boilerplate tool', () => {
           {name: 'file-4.txt', isDirectory: () => false},
         ]);
 
-      exampleBoilerPlate.copyDirectoryContents('source/dir', 'destination/dir');
+      exampleBoilerPlate.copyDirectoryContents('source/dir', 'destination/dir', isPathIgnoredSpy);
 
       expect(callLog).toEqual([
         // Copy `file-1.txt`.
@@ -315,6 +333,33 @@ describe('example-boilerplate tool', () => {
         `test(-f, ${path.resolve('destination/dir/file-2.txt')})`,
         `cp(${path.resolve('source/dir/file-2.txt')}, destination/dir)`,
         `chmod(444, ${path.resolve('destination/dir/file-2.txt')})`,
+      ]);
+    });
+
+    it('should skip ignored directories', () => {
+      spyOn(shelljs, 'ls')
+        .withArgs('-Al', 'source/dir').and.returnValue([
+          {name: 'file-1.txt', isDirectory: () => false},
+          {name: 'sub-dir-1', isDirectory: () => true},
+        ])
+        .withArgs('-Al', path.resolve('source/dir/sub-dir-1')).and.returnValue([
+          {name: 'file-2.txt', isDirectory: () => false},
+          {name: 'sub-dir-2', isDirectory: () => true},
+        ])
+        .withArgs('-Al', path.resolve('source/dir/sub-dir-1/sub-dir-2')).and.returnValue([
+          {name: 'file-3.txt', isDirectory: () => false},
+        ]);
+      isPathIgnoredSpy.and.callFake(path => path.endsWith('sub-dir-1'));
+
+      exampleBoilerPlate.copyDirectoryContents('source/dir', 'destination/dir', isPathIgnoredSpy);
+
+      expect(callLog).toEqual([
+        // Copy `file-1.txt`.
+        `test(-f, ${path.resolve('destination/dir/file-1.txt')})`,
+        `cp(${path.resolve('source/dir/file-1.txt')}, destination/dir)`,
+        `chmod(444, ${path.resolve('destination/dir/file-1.txt')})`,
+
+        // Skip `sub-dir-1` and all its contents.
       ]);
     });
   });

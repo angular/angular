@@ -39,7 +39,8 @@ export class I18nPluralPipe implements PipeTransform {
    * @param locale a `string` defining the locale to use (uses the current {@link LOCALE_ID} by
    * default).
    */
-  transform(value: number, pluralMap: {[count: string]: string}, locale?: string): string {
+  transform(value: number|null|undefined, pluralMap: {[count: string]: string}, locale?: string):
+      string {
     if (value == null) return '';
 
     if (typeof pluralMap !== 'object' || pluralMap === null) {

@@ -16,6 +16,8 @@ export class Identifiers {
   static TRANSFORM_METHOD = 'transform';
   static PATCH_DEPS = 'patchedDeps';
 
+  static core: o.ExternalReference = {name: null, moduleName: CORE};
+
   /* Instructions */
   static namespaceHTML: o.ExternalReference = {name: 'ɵɵnamespaceHTML', moduleName: CORE};
 
@@ -29,7 +31,6 @@ export class Identifiers {
 
   static elementEnd: o.ExternalReference = {name: 'ɵɵelementEnd', moduleName: CORE};
 
-  static select: o.ExternalReference = {name: 'ɵɵselect', moduleName: CORE};
   static advance: o.ExternalReference = {name: 'ɵɵadvance', moduleName: CORE};
 
   static syntheticHostProperty:
@@ -246,10 +247,8 @@ export class Identifiers {
     moduleName: CORE,
   };
 
-  static defineDirective: o.ExternalReference = {
-    name: 'ɵɵdefineDirective',
-    moduleName: CORE,
-  };
+  static defineDirective: o.ExternalReference = {name: 'ɵɵdefineDirective', moduleName: CORE};
+  static declareDirective: o.ExternalReference = {name: 'ɵɵngDeclareDirective', moduleName: CORE};
 
   static DirectiveDefWithMeta: o.ExternalReference = {
     name: 'ɵɵDirectiveDefWithMeta',
@@ -321,4 +320,9 @@ export class Identifiers {
   static sanitizeUrl: o.ExternalReference = {name: 'ɵɵsanitizeUrl', moduleName: CORE};
   static sanitizeUrlOrResourceUrl:
       o.ExternalReference = {name: 'ɵɵsanitizeUrlOrResourceUrl', moduleName: CORE};
+  static trustConstantHtml: o.ExternalReference = {name: 'ɵɵtrustConstantHtml', moduleName: CORE};
+  static trustConstantScript:
+      o.ExternalReference = {name: 'ɵɵtrustConstantScript', moduleName: CORE};
+  static trustConstantResourceUrl:
+      o.ExternalReference = {name: 'ɵɵtrustConstantResourceUrl', moduleName: CORE};
 }

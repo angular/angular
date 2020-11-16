@@ -3,7 +3,7 @@ import { ComponentFixture, fakeAsync, inject, TestBed, tick, waitForAsync } from
 import { Router } from '@angular/router';
 
 import {
-  ActivatedRoute, ActivatedRouteStub, asyncData, click, newEvent
+  ActivatedRoute, ActivatedRouteStub, asyncData, click
 } from '../../testing';
 
 import { Hero } from '../model/hero';
@@ -99,7 +99,10 @@ function overrideSetup() {
        const newName = 'New Name';
 
        page.nameInput.value = newName;
-       page.nameInput.dispatchEvent(newEvent('input'));  // 값이 변경되었다는 이벤트를 보냅니다.
+
+       // IE와 같이 오래된 브라우저에서는 CustomEvent 를 사용해야 합니다. 아래 문서를 참고하세요.
+       // https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent/CustomEvent#Polyfill
+       page.nameInput.dispatchEvent(new Event('input')); // tell Angular
 
        expect(component.hero.name).toBe(newName, 'component hero has new name');
        expect(hdsSpy.testHero.name).toBe(origName, 'service hero unchanged before save');
@@ -198,8 +201,9 @@ function heroModuleSetup() {
       nameInput.value = 'quick BROWN  fOx';
 
       // 엘리먼트의 값이 변경되었다는 것을 Angular에게 알리기 위해 DOM 이벤트를 생성합니다.
-      // 이 때 브라우저 호환성을 위해 newEvent() 유틸리티 함수를 사용했습니다. (Angular가 제공하는 함수는 아닙니다.)
-      nameInput.dispatchEvent(newEvent('input'));
+      // IE와 같이 오래된 브라우저에서는 CustomEvent 를 사용해야 합니다. 아래 문서를 참고하세요.
+      // https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent/CustomEvent#Polyfill
+      nameInput.dispatchEvent(new Event('input'));
 
       // Angular가 화면을 갱신하도록 detectChanges() 함수를 실행합니다.
       fixture.detectChanges();

@@ -1,3 +1,4 @@
+# BEGIN-DEV-ONLY
 package(default_visibility = ["//packages/bazel:__subpackages__"])
 
 filegroup(
@@ -22,3 +23,4 @@ nodejs_binary(
     node_modules = ":empty_node_modules",
     visibility = ["//visibility:public"],
 )
+# END-DEV-ONLY

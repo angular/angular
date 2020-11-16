@@ -1,5 +1,5 @@
+// TODO: Add unit tests for this file.
 import { Observable } from 'rxjs';
-
 // #docregion
 
 // 구독자가 구독을 실행하면 새로운 Observable 인스턴스를 생성하고

@@ -1,0 +1,43 @@
+<p>Where we'll be presenting:</p>
+<table class="is-full-width">
+  <thead>
+    <tr>
+      <th>Event</th>
+      <th>Location</th>
+      <th>Date</th>
+    </tr>
+  </thead>
+  <tbody >
+    <tr *ngFor="let event of upcomingEvents">
+      <th><a href="{{event.linkUrl}}" title="{{event.tooltip}}">{{event.name}}</a></th>
+      <td>{{event.location}}</td>
+      <td>
+        <div>
+          {{getEventDates(event)}}
+        </div>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Where we already presented:</p>
+<table class="is-full-width">
+  <thead>
+    <tr>
+      <th>Event</th>
+      <th>Location</th>
+      <th>Date</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let event of pastEvents">
+      <th><a href="{{event.linkUrl}}" title="{{event.tooltip}}">{{event.name}}</a></th>
+      <td>{{event.location}}</td>
+      <td>
+        <div>
+          {{getEventDates(event)}}
+        </div>
+      </td>
+    </tr>
+  </tbody>
+</table>

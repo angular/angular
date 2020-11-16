@@ -383,6 +383,7 @@ interface UncaughtPromiseError extends Error {
   task: Task;
   promise: Promise<any>;
   rejection: any;
+  throwOriginal?: boolean;
 }
 
 /**
@@ -673,12 +674,6 @@ interface EventTask extends Task {
 type AmbientZone = Zone;
 /** @internal */
 type AmbientZoneDelegate = ZoneDelegate;
-
-// CommonJS / Node have global context exposed as "global" variable.
-// This code should run in a Browser, so we don't want to include the whole node.d.ts
-// typings for this compilation unit.
-// We'll just fake the global "global" var for now.
-declare var global: NodeJS.Global;
 
 const Zone: ZoneType = (function(global: any) {
   const performance: {mark(name: string): void; measure(name: string, label: string): void;} =

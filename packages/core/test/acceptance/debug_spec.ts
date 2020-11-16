@@ -54,7 +54,7 @@ onlyInIvy('Ivy specific').describe('Debug Representation', () => {
           end: HEADER_OFFSET + 2,
           length: 2,
           content: [
-            {index: HEADER_OFFSET + 0, t: matchTNode({tagName: 'div'}), l: matchDomElement('div')},
+            {index: HEADER_OFFSET + 0, t: matchTNode({value: 'div'}), l: matchDomElement('div')},
             {index: HEADER_OFFSET + 1, t: matchTI18n(), l: null},
           ]
         });
@@ -64,18 +64,16 @@ onlyInIvy('Ivy specific').describe('Debug Representation', () => {
           length: 1,
           content: [{index: HEADER_OFFSET + 2, t: null, l: 'World'}]
         });
-        expect(myComponentView.i18n).toEqual({
+        expect(myComponentView.expando).toEqual({
           start: HEADER_OFFSET + 3,
           end: HEADER_OFFSET + 4,
           length: 1,
           content: [{
             index: HEADER_OFFSET + 3,
-            t: matchTNode({type: TNodeType.Element, tagName: null}),
+            t: matchTNode({type: TNodeType.Text, value: '{{?}}'}),
             l: matchDomText('Hello World')
           }]
         });
-        expect(myComponentView.expando)
-            .toEqual({start: HEADER_OFFSET + 4, end: HEADER_OFFSET + 4, length: 0, content: []});
       });
     });
   });

@@ -7,7 +7,7 @@
  */
 
 import {Location, PopStateEvent} from '@angular/common';
-import {Compiler, Injectable, Injector, isDevMode, NgModuleFactoryLoader, NgModuleRef, NgZone, Type, ɵConsole as Console} from '@angular/core';
+import {Compiler, Injectable, Injector, NgModuleFactoryLoader, NgModuleRef, NgZone, Type, ɵConsole as Console} from '@angular/core';
 import {BehaviorSubject, EMPTY, Observable, of, Subject, SubscriptionLike} from 'rxjs';
 import {catchError, filter, finalize, map, switchMap, tap} from 'rxjs/operators';
 
@@ -33,21 +33,21 @@ import {Checks, getAllRouteGuards} from './utils/preactivation';
 import {isUrlTree} from './utils/type_guards';
 
 
+
 /**
  * @description
  *
- * Options that modify the `Router` navigation strategy.
+ * Options that modify the `Router` URL.
  * Supply an object containing any of these properties to a `Router` navigation function to
- * control how the target URL should be constructed or interpreted.
+ * control how the target URL should be constructed.
  *
  * @see [Router.navigate() method](api/router/Router#navigate)
- * @see [Router.navigateByUrl() method](api/router/Router#navigatebyurl)
  * @see [Router.createUrlTree() method](api/router/Router#createurltree)
  * @see [Routing and Navigation guide](guide/router)
  *
  * @publicApi
  */
-export interface NavigationExtras {
+export interface UrlCreationOptions {
   /**
    * Specifies a root URI to use for relative navigation.
    *
@@ -105,14 +105,6 @@ export interface NavigationExtras {
   fragment?: string;
 
   /**
-   * **DEPRECATED**: Use `queryParamsHandling: "preserve"` instead to preserve
-   * query parameters for the next navigation.
-   *
-   * @deprecated since v4
-   */
-  preserveQueryParams?: boolean;
-
-  /**
    * How to handle query parameters in the router link for the next navigation.
    * One of:
    * * `preserve` : Preserve current parameters.
@@ -135,6 +127,7 @@ export interface NavigationExtras {
    *
    */
   queryParamsHandling?: QueryParamsHandling|null;
+
   /**
    * When true, preserves the URL fragment for the next navigation
    *
@@ -144,6 +137,22 @@ export interface NavigationExtras {
    * ```
    */
   preserveFragment?: boolean;
+}
+
+/**
+ * @description
+ *
+ * Options that modify the `Router` navigation strategy.
+ * Supply an object containing any of these properties to a `Router` navigation function to
+ * control how the navigation should be handled.
+ *
+ * @see [Router.navigate() method](api/router/Router#navigate)
+ * @see [Router.navigateByUrl() method](api/router/Router#navigatebyurl)
+ * @see [Routing and Navigation guide](guide/router)
+ *
+ * @publicApi
+ */
+export interface NavigationBehaviorOptions {
   /**
    * When true, navigates without pushing a new state into history.
    *
@@ -153,6 +162,7 @@ export interface NavigationExtras {
    * ```
    */
   skipLocationChange?: boolean;
+
   /**
    * When true, navigates while replacing the current state in history.
    *
@@ -162,6 +172,7 @@ export interface NavigationExtras {
    * ```
    */
   replaceUrl?: boolean;
+
   /**
    * Developer-defined state that can be passed to any navigation.
    * Access this value through the `Navigation.extras` object
@@ -179,6 +190,24 @@ export interface NavigationExtras {
    */
   state?: {[k: string]: any};
 }
+
+/**
+ * @description
+ *
+ * Options that modify the `Router` navigation strategy.
+ * Supply an object containing any of these properties to a `Router` navigation function to
+ * control how the target URL should be constructed or interpreted.
+ *
+ * @see [Router.navigate() method](api/router/Router#navigate)
+ * @see [Router.navigateByUrl() method](api/router/Router#navigatebyurl)
+ * @see [Router.createUrlTree() method](api/router/Router#createurltree)
+ * @see [Routing and Navigation guide](guide/router)
+ * @see UrlCreationOptions
+ * @see NavigationBehaviorOptions
+ *
+ * @publicApi
+ */
+export interface NavigationExtras extends UrlCreationOptions, NavigationBehaviorOptions {}
 
 /**
  * Error handler that is invoked when a navigation error occurs.
@@ -443,7 +472,7 @@ export class Router {
    * Enables a bug fix that corrects relative link resolution in components with empty paths.
    * @see `RouterModule`
    */
-  relativeLinkResolution: 'legacy'|'corrected' = 'legacy';
+  relativeLinkResolution: 'legacy'|'corrected' = 'corrected';
 
   /**
    * Creates the router service.
@@ -1030,8 +1059,7 @@ export class Router {
    * segments, followed by the parameters for each segment.
    * The fragments are applied to the current URL tree or the one provided  in the `relativeTo`
    * property of the options object, if supplied.
-   * @param navigationExtras Options that control the navigation strategy. This function
-   * only uses properties in `NavigationExtras` that would change the provided URL.
+   * @param navigationExtras Options that control the navigation strategy.
    * @returns The new URL tree.
    *
    * @usageNotes
@@ -1068,34 +1096,21 @@ export class Router {
    * router.createUrlTree(['../../team/44/user/22'], {relativeTo: route});
    * ```
    */
-  createUrlTree(commands: any[], navigationExtras: NavigationExtras = {}): UrlTree {
-    const {
-      relativeTo,
-      queryParams,
-      fragment,
-      preserveQueryParams,
-      queryParamsHandling,
-      preserveFragment
-    } = navigationExtras;
-    if (isDevMode() && preserveQueryParams && <any>console && <any>console.warn) {
-      console.warn('preserveQueryParams is deprecated, use queryParamsHandling instead.');
-    }
+  createUrlTree(commands: any[], navigationExtras: UrlCreationOptions = {}): UrlTree {
+    const {relativeTo, queryParams, fragment, queryParamsHandling, preserveFragment} =
+        navigationExtras;
     const a = relativeTo || this.routerState.root;
     const f = preserveFragment ? this.currentUrlTree.fragment : fragment;
     let q: Params|null = null;
-    if (queryParamsHandling) {
-      switch (queryParamsHandling) {
-        case 'merge':
-          q = {...this.currentUrlTree.queryParams, ...queryParams};
-          break;
-        case 'preserve':
-          q = this.currentUrlTree.queryParams;
-          break;
-        default:
-          q = queryParams || null;
-      }
-    } else {
-      q = preserveQueryParams ? this.currentUrlTree.queryParams : queryParams || null;
+    switch (queryParamsHandling) {
+      case 'merge':
+        q = {...this.currentUrlTree.queryParams, ...queryParams};
+        break;
+      case 'preserve':
+        q = this.currentUrlTree.queryParams;
+        break;
+      default:
+        q = queryParams || null;
     }
     if (q !== null) {
       q = this.removeEmptyProps(q);
@@ -1109,8 +1124,6 @@ export class Router {
    * @param url An absolute path for a defined route. The function does not apply any delta to the
    *     current URL.
    * @param extras An object containing properties that modify the navigation strategy.
-   * The function ignores any properties in the `NavigationExtras` that would change the
-   * provided URL.
    *
    * @returns A Promise that resolves to 'true' when navigation succeeds,
    * to 'false' when navigation fails, or is rejected on error.
@@ -1129,9 +1142,11 @@ export class Router {
    * @see [Routing and Navigation guide](guide/router)
    *
    */
-  navigateByUrl(url: string|UrlTree, extras: NavigationExtras = {skipLocationChange: false}):
-      Promise<boolean> {
-    if (isDevMode() && this.isNgZoneEnabled && !NgZone.isInAngularZone()) {
+  navigateByUrl(url: string|UrlTree, extras: NavigationBehaviorOptions = {
+    skipLocationChange: false
+  }): Promise<boolean> {
+    if (typeof ngDevMode === 'undefined' ||
+        ngDevMode && this.isNgZoneEnabled && !NgZone.isInAngularZone()) {
       this.console.warn(
           `Navigation triggered outside Angular zone, did you forget to call 'ngZone.run()'?`);
     }

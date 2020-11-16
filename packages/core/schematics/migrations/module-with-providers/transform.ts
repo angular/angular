@@ -20,7 +20,7 @@ export interface AnalysisFailure {
   message: string;
 }
 
-const TODO_COMMENT = 'TODO: The following node requires a generic type for `ModuleWithProviders';
+const TODO_COMMENT = 'TODO: The following node requires a generic type for `ModuleWithProviders`';
 
 export class ModuleWithProvidersTransform {
   private printer = ts.createPrinter();

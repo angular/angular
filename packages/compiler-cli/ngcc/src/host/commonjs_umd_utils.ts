@@ -8,20 +8,11 @@
 
 import * as ts from 'typescript';
 import {Declaration} from '../../../src/ngtsc/reflection';
-
+import {isAssignment} from '../../../src/ngtsc/util/src/typescript';
 
 export interface ExportDeclaration {
   name: string;
   declaration: Declaration;
-}
-
-export interface ExportStatement extends ts.ExpressionStatement {
-  expression: ts.BinaryExpression&{
-    left: ts.PropertyAccessExpression &
-        {
-          expression: ts.Identifier
-        }
-  };
 }
 
 /**
@@ -59,6 +50,9 @@ export interface DefinePropertyReexportStatement extends ts.ExpressionStatement 
       {arguments: [ts.Identifier, ts.StringLiteral, ts.ObjectLiteralExpression]};
 }
 
+/**
+ * A call expression that has a string literal for its first argument.
+ */
 export interface RequireCall extends ts.CallExpression {
   arguments: ts.CallExpression['arguments']&[ts.StringLiteral];
 }
@@ -88,18 +82,6 @@ export function findRequireCallReference(id: ts.Identifier, checker: ts.TypeChec
   const initializer =
       declaration && ts.isVariableDeclaration(declaration) && declaration.initializer || null;
   return initializer && isRequireCall(initializer) ? initializer : null;
-}
-
-/**
- * Check whether the specified `ts.Statement` is an export statement, i.e. an expression statement
- * of the form: `exports.<foo> = <bar>`
- */
-export function isExportStatement(stmt: ts.Statement): stmt is ExportStatement {
-  return ts.isExpressionStatement(stmt) && ts.isBinaryExpression(stmt.expression) &&
-      (stmt.expression.operatorToken.kind === ts.SyntaxKind.EqualsToken) &&
-      ts.isPropertyAccessExpression(stmt.expression.left) &&
-      ts.isIdentifier(stmt.expression.left.expression) &&
-      stmt.expression.left.expression.text === 'exports';
 }
 
 /**
@@ -194,6 +176,12 @@ export function isDefinePropertyReexportStatement(stmt: ts.Statement):
       prop => prop.name !== undefined && ts.isIdentifier(prop.name) && prop.name.text === 'get'));
 }
 
+/**
+ * Extract the "value" of the getter in a `defineProperty` statement.
+ *
+ * This will return the `ts.Expression` value of a single `return` statement in the `get` method
+ * of the property definition object, or `null` if that is not possible.
+ */
 export function extractGetterFnExpression(statement: DefinePropertyReexportStatement):
     ts.Expression|null {
   const args = statement.expression.arguments;
@@ -220,6 +208,76 @@ export function isRequireCall(node: ts.Node): node is RequireCall {
       ts.isStringLiteral(node.arguments[0]);
 }
 
+/**
+ * Check whether the specified `path` is an "external" import.
+ * In other words, that it comes from a entry-point outside the current one.
+ */
 export function isExternalImport(path: string): boolean {
   return !/^\.\.?(\/|$)/.test(path);
+}
+
+/**
+ * A UMD/CommonJS style export declaration of the form `exports.<name>`.
+ */
+export interface ExportsDeclaration extends ts.PropertyAccessExpression {
+  name: ts.Identifier;
+  expression: ts.Identifier;
+  parent: ExportsAssignment;
+}
+
+/**
+ * Check whether the specified `node` is a property access expression of the form
+ * `exports.<foo>`.
+ */
+export function isExportsDeclaration(expr: ts.Node): expr is ExportsDeclaration {
+  return expr.parent && isExportsAssignment(expr.parent);
+}
+
+/**
+ * A UMD/CommonJS style export assignment of the form `exports.<foo> = <bar>`.
+ */
+export interface ExportsAssignment extends ts.BinaryExpression {
+  left: ExportsDeclaration;
+}
+
+/**
+ * Check whether the specified `node` is an assignment expression of the form
+ * `exports.<foo> = <bar>`.
+ */
+export function isExportsAssignment(expr: ts.Node): expr is ExportsAssignment {
+  return isAssignment(expr) && ts.isPropertyAccessExpression(expr.left) &&
+      ts.isIdentifier(expr.left.expression) && expr.left.expression.text === 'exports' &&
+      ts.isIdentifier(expr.left.name);
+}
+
+/**
+ * An expression statement of the form `exports.<foo> = <bar>;`.
+ */
+export interface ExportsStatement extends ts.ExpressionStatement {
+  expression: ExportsAssignment;
+}
+
+/**
+ * Check whether the specified `stmt` is an expression statement of the form
+ * `exports.<foo> = <bar>;`.
+ */
+export function isExportsStatement(stmt: ts.Node): stmt is ExportsStatement {
+  return ts.isExpressionStatement(stmt) && isExportsAssignment(stmt.expression);
+}
+
+/**
+ * Find the far right hand side of a sequence of aliased assignements of the form
+ *
+ * ```
+ * exports.MyClass = alias1 = alias2 = <<declaration>>
+ * ```
+ *
+ * @param node the expression to parse
+ * @returns the original `node` or the far right expression of a series of assignments.
+ */
+export function skipAliases(node: ts.Expression): ts.Expression {
+  while (isAssignment(node)) {
+    node = node.right;
+  }
+  return node;
 }

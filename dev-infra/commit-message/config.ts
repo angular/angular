@@ -8,6 +8,7 @@
 
 import {assertNoErrors, getConfig, NgDevConfig} from '../utils/config';
 
+/** Configuration for commit-message comands. */
 export interface CommitMessageConfig {
   maxLineLength: number;
   minBodyLength: number;
@@ -49,7 +50,7 @@ export const COMMIT_TYPES: {[key: string]: CommitType} = {
   build: {
     name: 'build',
     description: 'Changes to local repository build system and tooling',
-    scope: ScopeRequirement.Forbidden,
+    scope: ScopeRequirement.Optional,
   },
   ci: {
     name: 'ci',

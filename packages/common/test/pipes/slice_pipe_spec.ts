@@ -47,8 +47,8 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
         expect(pipe.transform(null, 1)).toBe(null);
       });
 
-      it('should return undefined if the value is undefined', () => {
-        expect(pipe.transform(undefined, 1)).toBe(undefined);
+      it('should return null if the value is undefined', () => {
+        expect(pipe.transform(undefined, 1)).toBe(null);
       });
 
       it('should return all items after START index when START is positive and END is omitted',

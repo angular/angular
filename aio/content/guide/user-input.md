@@ -3,6 +3,18 @@
 -->
 # 사용자 입력
 
+<div class="callout is-critical">
+<header>Marked for archiving</header>
+
+To ensure that you have the best experience possible, this topic is marked for archiving until we determine
+that it clearly conveys the most accurate information possible.
+
+In the meantime, this topic might be helpful: [Event binding](guide/event-binding).
+
+If you think this content should not be archived, please file a [GitHub issue](https://github.com/angular/angular/issues/new?template=3-docs-bug.md).
+
+</div>
+
 <!--
 User actions such as clicking a link, pushing a button, and entering
 text raise DOM events.
@@ -377,13 +389,6 @@ To fix this issue, listen to both the _Enter_ key and the _blur_ event.
 
 
 <code-example path="user-input/src/app/keyup.components.ts" region="key-up-component-4" header="src/app/keyup.components.ts (v4)"></code-example>
--->
-위에서 살펴본 예제에서는 사용자가 입력 필드 밖을 마우스로 클릭하면 _엔터 키_ 를 입력하지 않아도 포커스를 잃어버리며, `<p>` 엘리먼트의 값도 갱신되지 않습니다.
-이 예제는 _엔터 키_ 가 입력되었을 때만 `value` 프로퍼티를 갱신하기 때문입니다.
-
-이 문제를 해결하기 위해 _엔터 키_ 와 _blur_ 이벤트 모두 반응하는 방식으로 바꿔봅시다.
-
-<code-example path="user-input/src/app/keyup.components.ts" region="key-up-component-4" header="src/app/keyup.components.ts (v4)"></code-example>
 
 
 <!--
@@ -392,8 +397,7 @@ To fix this issue, listen to both the _Enter_ key and the _blur_ event.
 ## 모든 기능 활용해보기
 
 <!--
-The previous page showed how to [display data](guide/displaying-data).
-This page demonstrated event binding techniques.
+This page demonstrated several event binding techniques.
 
 Now, put it all together in a micro-app
 that can display a list of heroes and add new heroes to the list.
@@ -412,7 +416,6 @@ Below is the "Little Tour of Heroes"  component.
 
 <code-example path="user-input/src/app/little-tour.component.ts" region="little-tour" header="src/app/little-tour.component.ts"></code-example>
 -->
-이전 가이드에서는 [데이터를 어떻게 화면에 표시하는지](guide/displaying-data) 알아봤고,
 이 문서에서는 이벤트 바인딩 테크닉에 대해 알아봤습다.
 
 히어로의 목록을 표시하고, 이 목록에 히어로를 추가할 수 있는 앱을 간단하게 만들어 봅시다.
@@ -520,11 +523,11 @@ These techniques are useful for small-scale demonstrations, but they
 quickly become verbose and clumsy when handling large amounts of user input.
 Two-way data binding is a more elegant and compact way to move
 values between data entry fields and model properties.
-The next page, `Forms`, explains how to write
+The [`Forms`](guide/forms-overview) page explains how to write
 two-way bindings with `NgModel`.
 -->
 이 문서에서는 사용자 입력에 반응하는 방법을 간단하게 알아봤습니다.
 
 이 테크닉은 작은 앱에서는 물론이고, 복잡한 사용자 동작에 반응할 때도 계속 사용됩니다.
 그리고 복잡한 폼이나 모델을 다룬다면 양방향 데이터 바인딩을 사용하는 것이 좀 더 간단하고 자연스럽게 사용자 반응에 동작할 수 있는 방법이 될 수 있습니다.
-다음 가이드에서는 `NgModel`을 활용하는 양방향 바인딩에 대해 알아봅니다.
+다음 [폼](guide/forms-overview) 가이드 문서에서는 `NgModel`을 활용하는 양방향 바인딩에 대해 알아봅니다.

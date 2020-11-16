@@ -10,7 +10,7 @@ import MagicString from 'magic-string';
 import * as ts from 'typescript';
 
 import {absoluteFromSourceFile, AbsoluteFsPath, dirname, relative, toRelativeImport} from '../../../src/ngtsc/file_system';
-import {NOOP_DEFAULT_IMPORT_RECORDER, Reexport} from '../../../src/ngtsc/imports';
+import {Reexport} from '../../../src/ngtsc/imports';
 import {Import, ImportManager, translateStatement} from '../../../src/ngtsc/translator';
 import {isDtsPath} from '../../../src/ngtsc/util/src/typescript';
 import {ModuleWithProvidersInfo} from '../analysis/module_with_providers_analyzer';
@@ -247,8 +247,7 @@ export class EsmRenderingFormatter implements RenderingFormatter {
    * @return The JavaScript code corresponding to `stmt` (in the appropriate format).
    */
   printStatement(stmt: Statement, sourceFile: ts.SourceFile, importManager: ImportManager): string {
-    const node = translateStatement(
-        stmt, importManager, NOOP_DEFAULT_IMPORT_RECORDER, ts.ScriptTarget.ES2015);
+    const node = translateStatement(stmt, importManager);
     const code = this.printer.printNode(ts.EmitHint.Unspecified, node, sourceFile);
 
     return code;
@@ -263,8 +262,6 @@ export class EsmRenderingFormatter implements RenderingFormatter {
     }
     return 0;
   }
-
-
 
   /**
    * Check whether the given type is the core Angular `ModuleWithProviders` interface.
@@ -292,7 +289,8 @@ function findStatement(node: ts.Node): ts.Statement|undefined {
 function generateImportString(
     importManager: ImportManager, importPath: string|null, importName: string) {
   const importAs = importPath ? importManager.generateNamedImport(importPath, importName) : null;
-  return importAs ? `${importAs.moduleImport}.${importAs.symbol}` : `${importName}`;
+  return importAs && importAs.moduleImport ? `${importAs.moduleImport.text}.${importAs.symbol}` :
+                                             `${importName}`;
 }
 
 function getNextSiblingInArray<T extends ts.Node>(node: T, array: ts.NodeArray<T>): T|null {

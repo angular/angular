@@ -27,6 +27,16 @@ export interface Target {
 }
 
 /**
+ * A data structure which can indicate whether a given property name is present or not.
+ *
+ * This is used to represent the set of inputs or outputs present on a directive, and allows the
+ * binder to query for the presence of a mapping for property names.
+ */
+export interface InputOutputPropertySet {
+  hasBindingPropertyName(propertyName: string): boolean;
+}
+
+/**
  * Metadata regarding a directive that's needed to match it against template elements. This is
  * provided by a consumer of the t2 APIs.
  */
@@ -35,6 +45,9 @@ export interface DirectiveMeta {
    * Name of the directive class (used for debugging).
    */
   name: string;
+
+  /** The selector for the directive or `null` if there isn't one. */
+  selector: string|null;
 
   /**
    * Whether the directive is a component.
@@ -46,14 +59,14 @@ export interface DirectiveMeta {
    *
    * Goes from property names to field names.
    */
-  inputs: {[property: string]: string|[string, string]};
+  inputs: InputOutputPropertySet;
 
   /**
    * Set of outputs which this directive claims.
    *
    * Goes from property names to field names.
    */
-  outputs: {[property: string]: string};
+  outputs: InputOutputPropertySet;
 
   /**
    * Name under which the directive is exported, if any (exportAs in Angular).
@@ -135,6 +148,12 @@ export interface BoundTarget<DirectiveT extends DirectiveMeta> {
    * nested at deeper levels.
    */
   getNestingLevel(template: Template): number;
+
+  /**
+   * Get all `Reference`s and `Variables` visible within the given `Template` (or at the top level,
+   * if `null` is passed).
+   */
+  getEntitiesInTemplateScope(template: Template|null): ReadonlySet<Reference|Variable>;
 
   /**
    * Get a list of all the directives used by the target.

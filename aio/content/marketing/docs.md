@@ -89,7 +89,7 @@ Angular 코드는 일반적으로 최신 JavaScript 스펙을 바탕으로 [타�
 <!--
 <h3>You can sit with us!</h3>
 
-We want to hear from you. [Report problems or submit suggestions for future docs.](https://github.com/angular/angular/issues/new/choose "Angular GitHub repository new issue form")
+We want to hear from you. [Report problems or submit suggestions for future docs](https://github.com/angular/angular/issues/new/choose "Angular GitHub repository new issue form").
 
 Contribute to Angular docs by creating
 [pull requests](https://github.com/angular/angular/pulls "Angular Github pull requests")

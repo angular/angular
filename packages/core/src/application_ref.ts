@@ -15,7 +15,10 @@ import {ApplicationInitStatus} from './application_init';
 import {APP_BOOTSTRAP_LISTENER, PLATFORM_INITIALIZER} from './application_tokens';
 import {getCompilerFacade} from './compiler/compiler_facade';
 import {Console} from './console';
-import {Injectable, InjectionToken, Injector, StaticProvider} from './di';
+import {Injectable} from './di/injectable';
+import {InjectionToken} from './di/injection_token';
+import {Injector} from './di/injector';
+import {StaticProvider} from './di/interface/provider';
 import {INJECTOR_SCOPE} from './di/scope';
 import {ErrorHandler} from './error_handler';
 import {DEFAULT_LOCALE_ID} from './i18n/localization';
@@ -260,7 +263,7 @@ export interface BootstrapOptions {
    * coalesced and the change detection will be triggered multiple times.
    * And if this option be set to true, the change detection will be
    * triggered async by scheduling a animation frame. So in the case above,
-   * the change detection will only be trigged once.
+   * the change detection will only be triggered once.
    */
   ngZoneEventCoalescing?: boolean;
 }

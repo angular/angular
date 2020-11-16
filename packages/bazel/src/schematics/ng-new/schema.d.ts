@@ -107,7 +107,6 @@ export declare enum Style {
  */
 export declare enum ViewEncapsulation {
   Emulated = 'Emulated',
-  Native = 'Native',
   None = 'None',
   ShadowDom = 'ShadowDom'
 }

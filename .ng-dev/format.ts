@@ -16,6 +16,10 @@ export const format: FormatConfig = {
       '!.yarn/**',
       // Do not format d.ts files as they are generated
       '!**/*.d.ts',
+      // Do not format generated ng-dev script
+      '!dev-infra/ng-dev.js',
+      // Do not format compliance test-cases since they must match generated code
+      '!packages/compiler-cli/test/compliance/test_cases/**/*.js',
     ]
   },
   'buildifier': true

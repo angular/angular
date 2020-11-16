@@ -117,6 +117,7 @@ describe('Generator', () => {
         {positive: true, regex: '^http:\\/\\/example\\.com\\/included$'},
         {positive: false, regex: '^http:\\/\\/example\\.com\\/excluded$'},
       ],
+      navigationRequestStrategy: 'performance',
       hashTable: {
         '/test/foo/test.html': '18f6f8eb7b1c23d2bb61bff028b83d867a9e4643',
         '/test/index.html': 'a54d88e06612d820bc3be72877c74f257b561b19',
@@ -149,6 +150,7 @@ describe('Generator', () => {
         {positive: false, regex: '^\\/(?:.+\\/)?[^/]*__[^/]*$'},
         {positive: false, regex: '^\\/(?:.+\\/)?[^/]*__[^/]*\\/.*$'},
       ],
+      navigationRequestStrategy: 'performance',
       hashTable: {},
     });
   });
@@ -249,6 +251,7 @@ describe('Generator', () => {
         {positive: false, regex: '^\\/(?:.+\\/)?[^/]*__[^/]*$'},
         {positive: false, regex: '^\\/(?:.+\\/)?[^/]*__[^/]*\\/.*$'},
       ],
+      navigationRequestStrategy: 'performance',
       hashTable: {
         '/index.html': 'a54d88e06612d820bc3be72877c74f257b561b19',
         '/main.js': '41347a66676cdc0516934c76d9d13010df420f2c',

@@ -47,10 +47,6 @@
     "http/**",
     "language-service/test/project",
     "platform-server/integrationtest",
-    // The webworker packages have deprecated and are not made compatible with the
-    // strict flag. Until these packages are removed, we exclude them here.
-    "platform-webworker/**",
-    "platform-webworker-dynamic/**",
     "router/test/aot_ngsummary_test"
   ]
 }

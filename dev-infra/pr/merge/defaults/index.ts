@@ -7,5 +7,4 @@
  */
 
 export * from './labels';
-export * from './branches';
 export * from './lts-branch';

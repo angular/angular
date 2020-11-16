@@ -20,7 +20,7 @@ export class ResourceListComponent implements OnInit {
   }
 
   ngOnInit() {
-    const category =  this.locationService.search()['category'] || '';
+    const category =  this.locationService.search().category || '';
     // Not using async pipe because cats appear twice in template
     // No need to unsubscribe because categories observable completes.
     this.resourceService.categories.subscribe(cats => {

@@ -34,32 +34,13 @@ genrule(
 
 genrule(
     name = "zone_js_d_ts",
-    srcs = ["//packages/zone.js/lib:zone_d_ts"],
-    outs = ["zone.js.d.ts"],
-    cmd = "cp $< $@",
-)
-
-genrule(
-    name = "zone_extensions_d_ts",
-    srcs = ["//packages/zone.js/lib:zone.api.extensions.ts"],
-    outs = ["zone.api.extensions.ts"],
-    cmd = "cp $< $@",
-)
-
-genrule(
-    name = "zone_configurations_d_ts",
-    srcs = ["//packages/zone.js/lib:zone.configurations.api.ts"],
-    outs = ["zone.configurations.api.ts"],
-    cmd = "cp $< $@",
-)
-
-filegroup(
-    name = "zone_d_ts",
     srcs = [
-        ":zone_configurations_d_ts",
-        ":zone_extensions_d_ts",
-        ":zone_js_d_ts",
+        "//packages/zone.js/lib:zone_d_ts",
+        "//packages/zone.js/lib:zone.api.extensions.ts",
+        "//packages/zone.js/lib:zone.configurations.api.ts",
     ],
+    outs = ["zone.d.ts"],
+    cmd = "cat $(SRCS) > $@",
 )
 
 generate_rollup_bundle(
@@ -95,5 +76,5 @@ pkg_npm(
     ] + [
         "//packages/zone.js/fesm2015:" + b + "-es2015.min.dist"
         for b in BUNDLES_ENTRY_POINTS.keys()
-    ] + [":zone_d_ts"],
+    ] + [":zone_js_d_ts"],
 )

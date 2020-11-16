@@ -1,0 +1,36 @@
+load("@npm//@bazel/typescript:index.bzl", "ts_library")
+load("//tools:defaults.bzl", "jasmine_node_test")
+
+ts_library(
+    name = "test_lib",
+    srcs = glob([
+        "**/*.ts",
+    ]),
+    module_name = "@angular/dev-infra-private/release/test",
+    deps = [
+        "//dev-infra/release/config",
+        "//dev-infra/release/publish",
+        "//dev-infra/release/versioning",
+        "//dev-infra/utils",
+        "//dev-infra/utils/testing",
+        "@npm//@types/jasmine",
+        "@npm//@types/minimist",
+        "@npm//@types/node",
+        "@npm//@types/node-fetch",
+        "@npm//@types/semver",
+        "@npm//minimist",
+        "@npm//nock",
+        "@npm//node-fetch",
+        "@npm//semver",
+    ],
+)
+
+jasmine_node_test(
+    name = "test",
+    # Disable the Bazel patched module resolution. It always loads ".mjs" files first. This
+    # breaks NodeJS execution for "node-fetch" as it uses experimental modules which are not
+    # enabled in NodeJS. TODO: Remove this with rules_nodejs 3.x where patching is optional.
+    # https://github.com/bazelbuild/rules_nodejs/commit/7d070ffadf9c3b41711382a4737b995f987c14fa.
+    args = ["--nobazel_patch_module_resolver"],
+    deps = [":test_lib"],
+)

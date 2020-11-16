@@ -433,13 +433,39 @@ runInEachFileSystem(() => {
     });
 
     it('should compile incrementally with template type-checking turned on', () => {
-      env.tsconfig({ivyTemplateTypeCheck: true});
-      env.write('main.ts', 'export class Foo {}');
+      env.tsconfig({fullTemplateTypeCheck: true});
+      env.write('main.ts', `
+        import {Component} from '@angular/core';
+
+        @Component({template: ''})
+        export class MyComponent {}
+      `);
       env.driveMain();
       env.invalidateCachedFile('main.ts');
       env.driveMain();
       // If program reuse were configured incorrectly (as was responsible for
       // https://github.com/angular/angular/issues/30079), this would have crashed.
+    });
+
+    // https://github.com/angular/angular/issues/38979
+    it('should retain ambient types provided by auto-discovered @types', () => {
+      // This test verifies that ambient types declared in node_modules/@types are still available
+      // in incremental compilations. In the below code, the usage of `require` should be valid
+      // in the original program and the incremental program.
+      env.tsconfig({fullTemplateTypeCheck: true});
+      env.write('node_modules/@types/node/index.d.ts', 'declare var require: any;');
+      env.write('main.ts', `
+        import {Component} from '@angular/core';
+
+        require('path');
+
+        @Component({template: ''})
+        export class MyComponent {}
+      `);
+      env.driveMain();
+      env.invalidateCachedFile('main.ts');
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(0);
     });
 
     // https://github.com/angular/angular/pull/26036
@@ -461,8 +487,12 @@ runInEachFileSystem(() => {
       env.write('node_modules/b/index.js', `export {ServiceA as ServiceB} from 'a';`);
       env.write('node_modules/b/index.d.ts', `export {ServiceA as ServiceB} from 'a';`);
       env.write('test.ts', `
+        import {Component} from '@angular/core';
         import {ServiceA} from 'a';
         import {ServiceB} from 'b';
+
+        @Component({template: ''})
+        export class MyComponent {}
       `);
       env.driveMain();
       env.flushWrittenFileTracking();

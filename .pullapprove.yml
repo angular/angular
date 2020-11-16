@@ -103,6 +103,8 @@ meta:
 github_api_version: "shadow-cat-preview"
 
 pullapprove_conditions:
+  # For PRs which are still being worked on, either still in draft mode or indicated through WIP in
+  # title or label, PullApprove stays in a pending state until its ready for review.
   - condition: "'WIP' not in title"
     unmet_status: pending
     explanation: "Waiting to send reviews as PR is WIP"
@@ -112,6 +114,10 @@ pullapprove_conditions:
   - condition: "not draft"
     unmet_status: pending
     explanation: "Waiting to send reviews as PR is in draft"
+  # Disable PullApprove on specific PRs by adding the `PullApprove: disable` label
+  - condition: "'PullApprove: disable' not in labels"
+    unmet_status: success
+    explanation: "PullApprove skipped because of 'PullApprove: disable' label"
 
 
 groups:
@@ -186,6 +192,7 @@ groups:
          - IgorMinar               # Igor Minar
          - jbogarthyde             # Judy Bogart
          - jelbourn                # Jeremy Elbourn
+         - jessicajaniuk           # Jessica Janiuk
          - JiaLiPassion            # Jia Li
          - JoostK                  # Joost Koehoorn
          - josephperrott           # Joey Perrott
@@ -284,7 +291,7 @@ groups:
       users:
         - alxhub
         - crisbeto
-        - devversion
+        # OOO as of 2020-09-28 - devversion
 
 
   # =========================================================
@@ -303,8 +310,6 @@ groups:
           'packages/platform-browser/**',
           'packages/examples/platform-browser/**',
           'packages/platform-browser-dynamic/**',
-          'packages/platform-webworker/**',
-          'packages/platform-webworker-dynamic/**',
           'packages/examples/common/**',
           'packages/docs/**',
           'aio/content/guide/accessibility.md',
@@ -325,7 +330,10 @@ groups:
           'aio/content/guide/component-interaction.md',
           'aio/content/examples/component-interaction/**',
           'aio/content/images/guide/component-interaction/**',
+          'aio/content/guide/component-overview.md',
+          'aio/content/examples/component-overview/**',
           'aio/content/guide/component-styles.md',
+          'aio/content/guide/view-encapsulation.md',
           'aio/content/examples/component-styles/**',
           'aio/content/guide/dependency-injection.md',
           'aio/content/examples/dependency-injection/**',
@@ -342,6 +350,7 @@ groups:
           'aio/content/guide/dynamic-component-loader.md',
           'aio/content/examples/dynamic-component-loader/**',
           'aio/content/images/guide/dynamic-component-loader/**',
+          'aio/content/guide/example-apps-list.md',
           'aio/content/guide/entry-components.md',
           'aio/content/guide/feature-modules.md',
           'aio/content/examples/feature-modules/**',
@@ -369,6 +378,7 @@ groups:
           'aio/content/guide/built-in-template-functions.md',
           'aio/content/examples/built-in-template-functions/**',
           'aio/content/guide/event-binding.md',
+          'aio/content/guide/event-binding-concepts.md',
           'aio/content/examples/event-binding/**',
           'aio/content/guide/interpolation.md',
           'aio/content/examples/interpolation/**',
@@ -378,6 +388,7 @@ groups:
           'aio/content/examples/binding-syntax/**',
           'aio/content/guide/property-binding.md',
           'aio/content/examples/property-binding/**',
+          'aio/content/guide/property-binding-best-practices.md',
           'aio/content/guide/attribute-binding.md',
           'aio/content/examples/attribute-binding/**',
           'aio/content/guide/two-way-binding.md',
@@ -406,6 +417,7 @@ groups:
           'aio/content/guide/structural-directives.md',
           'aio/content/examples/structural-directives/**',
           'aio/content/guide/svg-in-templates.md',
+          'aio/content/guide/style-precedence.md',
           'aio/content/images/guide/structural-directives/**',
           'aio/content/guide/template-statements.md',
           'aio/content/guide/user-input.md',
@@ -419,7 +431,8 @@ groups:
         - atscott
         - ~kara  # do not request reviews from Kara, but allow her to approve PRs
         - mhevery
-        - pkozlowski-opensource
+        - jessicajaniuk
+        # OOO as of 2020-09-28 - pkozlowski-opensource
 
 
   # =========================================================
@@ -645,7 +658,7 @@ groups:
       - *can-be-global-docs-approved
       - >
         contains_any_globs(files.exclude('packages/compiler-cli/**'), [
-          '**/testing/**',
+          'packages/**/testing/**',
           'aio/content/guide/testing.md',
           'aio/content/guide/test-debugging.md',
           'aio/content/guide/testing-attribute-directives.md',
@@ -662,7 +675,7 @@ groups:
       users:
         - AndrewKushnir
         - IgorMinar
-        - pkozlowski-opensource
+        # OOO as of 2020-09-28 - pkozlowski-opensource
 
 
   # =========================================================
@@ -679,7 +692,7 @@ groups:
     reviewers:
       users:
         - IgorMinar
-        - pkozlowski-opensource
+        # OOO as of 2020-09-28 - pkozlowski-opensource
 
 
   # =========================================================
@@ -697,7 +710,7 @@ groups:
       users:
         - IgorMinar
         - jelbourn
-        - pkozlowski-opensource
+        # OOO as of 2020-09-28 - pkozlowski-opensource
 
 
   # =========================================================
@@ -723,7 +736,7 @@ groups:
         - IgorMinar
         - mhevery
         - jelbourn
-        - pkozlowski-opensource
+        # OOO as of 2020-09-28 - pkozlowski-opensource
     reviews:
       request: -1   # request reviews from everyone
       required: 2   # require at least 2 approvals
@@ -946,7 +959,7 @@ groups:
           'aio/content/guide/migration-localize.md',
           'aio/content/guide/migration-module-with-providers.md',
           'aio/content/guide/static-query-migration.md',
-          'aio/content/guide/updating-to-version-10.md',
+          'aio/content/guide/updating-to-version-11.md',
           'aio/content/guide/ivy-compatibility.md',
           'aio/content/guide/ivy-compatibility-examples.md'
           ])
@@ -1012,6 +1025,7 @@ groups:
           ])
     reviewers:
       users:
+        - alan-agius4
         - clydin
         - IgorMinar
         - mgechev
@@ -1115,11 +1129,13 @@ groups:
           'docs/DEBUG.md',
           'docs/DEBUG_COMPONENTS_REPO_IVY.md',
           'docs/DEVELOPER.md',
+          'docs/FIXUP_COMMITS.md',
           'docs/GITHUB_PROCESS.md',
           'docs/PR_REVIEW.md',
           'docs/SAVED_REPLIES.md',
           'docs/TOOLS.md',
           'docs/TRIAGE_AND_LABELS.md',
+          'docs/images/**',
           'goldens/*',
           'modules/*',
           'packages/*',
@@ -1150,7 +1166,7 @@ groups:
           ])
     reviewers:
       users:
-        - devversion
+        # OOO as of 2020-09-28 - devversion
         - filipesilva
         - gkalpak
         - IgorMinar
@@ -1184,7 +1200,7 @@ groups:
         - atscott
         - jelbourn
         - petebacondarwin
-        - pkozlowski-opensource
+        # OOO as of 2020-09-28 - pkozlowski-opensource
     reviews:
       request: 4 # Request reviews from four people
       required: 3 # Require that three people approve
@@ -1212,7 +1228,7 @@ groups:
         - atscott
         - jelbourn
         - petebacondarwin
-        - pkozlowski-opensource
+        # OOO as of 2020-09-28 - pkozlowski-opensource
     reviews:
       request: 4 # Request reviews from four people
       required: 2 # Require that two people approve
@@ -1240,7 +1256,7 @@ groups:
         - atscott
         - jelbourn
         - petebacondarwin
-        - pkozlowski-opensource
+        # OOO as of 2020-09-28 - pkozlowski-opensource
 
 
 ####################################################################################

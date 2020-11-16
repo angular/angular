@@ -752,7 +752,7 @@ export class DebugRenderer2 implements Renderer2 {
     this.delegate.appendChild(parent, newChild);
   }
 
-  insertBefore(parent: any, newChild: any, refChild: any): void {
+  insertBefore(parent: any, newChild: any, refChild: any, isMove?: boolean): void {
     const debugEl = getDebugNode(parent);
     const debugChildEl = getDebugNode(newChild);
     const debugRefEl = getDebugNode(refChild)!;
@@ -760,7 +760,7 @@ export class DebugRenderer2 implements Renderer2 {
       debugEl.insertBefore(debugRefEl, debugChildEl);
     }
 
-    this.delegate.insertBefore(parent, newChild, refChild);
+    this.delegate.insertBefore(parent, newChild, refChild, isMove);
   }
 
   removeChild(parent: any, oldChild: any): void {

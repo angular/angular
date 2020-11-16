@@ -10,7 +10,7 @@ import * as ts from 'typescript';
 import {ReferencesRegistry} from '../../../src/ngtsc/annotations';
 import {Reference} from '../../../src/ngtsc/imports';
 import {PartialEvaluator} from '../../../src/ngtsc/partial_evaluator';
-import {ClassDeclaration, isNamedClassDeclaration, isNamedVariableDeclaration} from '../../../src/ngtsc/reflection';
+import {ClassDeclaration, DeclarationNode, isNamedClassDeclaration, isNamedVariableDeclaration} from '../../../src/ngtsc/reflection';
 import {NgccReflectionHost} from '../host/ngcc_host';
 import {hasNameIdentifier, isDefined} from '../utils';
 
@@ -30,7 +30,7 @@ export interface ModuleWithProvidersInfo {
   /**
    * Declaration of the containing class (if this is a method)
    */
-  container: ts.Declaration|null;
+  container: DeclarationNode|null;
   /**
    * The declaration of the class that the `ngModule` property on the `ModuleWithProviders` object
    * refers to.
@@ -125,7 +125,7 @@ export class ModuleWithProvidersAnalyzer {
    */
   private parseForModuleWithProviders(
       name: string, node: ts.Node|null, implementation: ts.Node|null = node,
-      container: ts.Declaration|null = null): ModuleWithProvidersInfo|null {
+      container: DeclarationNode|null = null): ModuleWithProvidersInfo|null {
     if (implementation === null ||
         (!ts.isFunctionDeclaration(implementation) && !ts.isMethodDeclaration(implementation) &&
          !ts.isFunctionExpression(implementation))) {

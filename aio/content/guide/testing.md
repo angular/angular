@@ -426,7 +426,7 @@ We'll be using [Headless Chrome](https://developers.google.com/web/updates/2017/
 * Karma 환경설정 파일 `karma.conf.js`에 커스텀 런처를 ChromeHeadlessCI를 추가합니다:
 
 ```
-browsers: ['Chrome'],
+browsers: ['ChromeHeadlessCI'],
 customLaunchers: {
   ChromeHeadlessCI: {
     base: 'ChromeHeadless',

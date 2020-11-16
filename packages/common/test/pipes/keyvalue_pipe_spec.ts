@@ -17,12 +17,12 @@ describe('KeyValuePipe', () => {
   });
   it('should return null when given undefined', () => {
     const pipe = new KeyValuePipe(defaultKeyValueDiffers);
-    expect(pipe.transform(undefined as any)).toEqual(null);
+    expect(pipe.transform(undefined)).toEqual(null);
   });
   it('should return null for an unsupported type', () => {
     const pipe = new KeyValuePipe(defaultKeyValueDiffers);
     const fn = () => {};
-    expect(pipe.transform(fn as any)).toEqual(null);
+    expect(pipe.transform(fn as any as null)).toEqual(null);
   });
   describe('object dictionary', () => {
     it('should return empty array of an empty dictionary', () => {
@@ -98,8 +98,9 @@ describe('KeyValuePipe', () => {
     });
     it('should order by numerical and alpha', () => {
       const pipe = new KeyValuePipe(defaultKeyValueDiffers);
-      const input = [[2, 1], [1, 1], ['b', 1], [0, 1], [3, 1], ['a', 1]];
-      expect(pipe.transform(new Map(input as any))).toEqual([
+      const input =
+          [[2, 1], [1, 1], ['b', 1], [0, 1], [3, 1], ['a', 1]] as Array<[number | string, number]>;
+      expect(pipe.transform(new Map(input))).toEqual([
         {key: 0, value: 1}, {key: 1, value: 1}, {key: 2, value: 1}, {key: 3, value: 1},
         {key: 'a', value: 1}, {key: 'b', value: 1}
       ]);

@@ -8,7 +8,7 @@
 import * as ts from 'typescript';
 
 import {absoluteFrom, AbsoluteFsPath, FileSystem, isRooted} from '../../src/ngtsc/file_system';
-import {KnownDeclaration} from '../../src/ngtsc/reflection';
+import {DeclarationNode, KnownDeclaration} from '../../src/ngtsc/reflection';
 
 /**
  * A list (`Array`) of partially ordered `T` items.
@@ -71,9 +71,9 @@ export function findAll<T>(node: ts.Node, test: (node: ts.Node) => node is ts.No
  * @param declaration The declaration to test.
  * @returns true if the declaration has an identifier for a name.
  */
-export function hasNameIdentifier(declaration: ts.Declaration): declaration is ts.Declaration&
+export function hasNameIdentifier(declaration: ts.Node): declaration is DeclarationNode&
     {name: ts.Identifier} {
-  const namedDeclaration: ts.Declaration&{name?: ts.Node} = declaration;
+  const namedDeclaration: ts.Node&{name?: ts.Node} = declaration;
   return namedDeclaration.name !== undefined && ts.isIdentifier(namedDeclaration.name);
 }
 
@@ -136,7 +136,7 @@ export function resolveFileWithPostfixes(
  * Determine whether a function declaration corresponds with a TypeScript helper function, returning
  * its kind if so or null if the declaration does not seem to correspond with such a helper.
  */
-export function getTsHelperFnFromDeclaration(decl: ts.Declaration): KnownDeclaration|null {
+export function getTsHelperFnFromDeclaration(decl: DeclarationNode): KnownDeclaration|null {
   if (!ts.isFunctionDeclaration(decl) && !ts.isVariableDeclaration(decl)) {
     return null;
   }

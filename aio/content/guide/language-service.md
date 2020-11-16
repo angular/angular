@@ -129,60 +129,9 @@ In the marketplace, search for Angular Language Service extension, and click the
 
 ### WebStorm
 
-<!--
-In [WebStorm](https://www.jetbrains.com/webstorm/), you must install the language service package as a project dependency.
+In [WebStorm](https://www.jetbrains.com/webstorm/), enable the plugin [Angular and AngularJS](https://plugins.jetbrains.com/plugin/6971-angular-and-angularjs).
 
-1. Add the following to your `devDependencies` in your project's `package.json`
-
-<code-example language="json" header="package.json">
-devDependencies {
-  "@angular/language-service": "^6.0.0"
-}
-</code-example>
-
-2. In the terminal window at the root of your project, install the `devDependencies` with `npm` or `yarn`:
--->
-[WebStorm](https://www.jetbrains.com/webstorm/)에서는 프로젝트 의존성 패키지로 언어지원 서비스 패키지를 설치해야 합니다.
-
-1. 프로젝트 `package.json` 파일에 `devDependencies`를 다음과 같이 추가합니다.
-
-<code-example language="json" header="package.json">
-devDependencies {
-  "@angular/language-service": "^6.0.0"
-}
-</code-example>
-
-2. 프로젝트 루트 폴더에서 터미널을 열고 `npm`이나 `yarn`으로 `devDependencies`를 설치합니다:
-
-
-```sh
-npm install
-```
-<!--
-*OR*
--->
-*또는*
-
-```sh
-yarn
-```
-
-<!--
-*OR*
--->
-*또는*
-
-```sh
-yarn install
-```
-
-<!--
-When Angular sees this dev dependency, it provides the language service in the WebStorm environment.
-WebStorm then gives you colorization inside the template and autocomplete in addition to the Angular Language Service.
--->
-언어지원 서비스 패키지를 설치하고 나면 WebStorm 환경에도 자동으로 적용됩니다.
-템플릿에 사용된 코드를 분석해서 적절한 색상으로 구분할 수 있으며, 코드 자동완성 기능도 제공합니다.
-
+Since WebStorm 2019.1, the `@angular/language-service` is not required anymore and should be removed from your `package.json`.
 
 ### Sublime Text
 

@@ -12,6 +12,8 @@ import * as ts from 'typescript';
 import {Reference} from '../../imports';
 import {ClassDeclaration} from '../../reflection';
 
+import {ClassPropertyMapping, ClassPropertyName} from './property_mapping';
+
 
 /**
  * Metadata collected for an `NgModule`.
@@ -52,25 +54,25 @@ export interface DirectiveTypeCheckMeta {
    * Directive's class. This allows inputs to accept a wider range of types and coerce the input to
    * a narrower type with a getter/setter. See https://angular.io/guide/template-typecheck.
    */
-  coercedInputFields: Set<string>;
+  coercedInputFields: Set<ClassPropertyName>;
 
   /**
    * The set of input fields which map to `readonly`, `private`, or `protected` members in the
    * Directive's class.
    */
-  restrictedInputFields: Set<string>;
+  restrictedInputFields: Set<ClassPropertyName>;
 
   /**
    * The set of input fields which are declared as string literal members in the Directive's class.
    * We need to track these separately because these fields may not be valid JS identifiers so
    * we cannot use them with property access expressions when assigning inputs.
    */
-  stringLiteralInputFields: Set<string>;
+  stringLiteralInputFields: Set<ClassPropertyName>;
 
   /**
    * The set of input fields which do not have corresponding members in the Directive's class.
    */
-  undeclaredInputFields: Set<string>;
+  undeclaredInputFields: Set<ClassPropertyName>;
 
   /**
    * Whether the Directive's class is generic, i.e. `class MyDir<T> {...}`.
@@ -88,6 +90,16 @@ export interface DirectiveMeta extends T2DirectiveMeta, DirectiveTypeCheckMeta {
    */
   selector: string|null;
   queries: string[];
+
+  /**
+   * A mapping of input field names to the property names.
+   */
+  inputs: ClassPropertyMapping;
+
+  /**
+   * A mapping of output field names to the property names.
+   */
+  outputs: ClassPropertyMapping;
 
   /**
    * A `Reference` to the base class for the directive, if one was detected.

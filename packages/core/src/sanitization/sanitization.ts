@@ -10,6 +10,9 @@ import {getDocument} from '../render3/interfaces/document';
 import {SANITIZER} from '../render3/interfaces/view';
 import {getLView} from '../render3/state';
 import {renderStringify} from '../render3/util/misc_utils';
+import {TrustedHTML, TrustedScript, TrustedScriptURL} from '../util/security/trusted_type_defs';
+import {trustedHTMLFromString, trustedScriptFromString, trustedScriptURLFromString} from '../util/security/trusted_types';
+import {trustedHTMLFromStringBypass, trustedScriptFromStringBypass, trustedScriptURLFromStringBypass} from '../util/security/trusted_types_bypass';
 
 import {allowSanitizationBypassAndThrow, BypassType, unwrapSafeValue} from './bypass';
 import {_sanitizeHtml as _sanitizeHtml} from './html_sanitizer';
@@ -34,13 +37,13 @@ import {_sanitizeUrl as _sanitizeUrl} from './url_sanitizer';
  *
  * @codeGenApi
  */
-export function ɵɵsanitizeHtml(unsafeHtml: any): string {
+export function ɵɵsanitizeHtml(unsafeHtml: any): TrustedHTML|string {
   const sanitizer = getSanitizer();
   if (sanitizer) {
-    return sanitizer.sanitize(SecurityContext.HTML, unsafeHtml) || '';
+    return trustedHTMLFromStringBypass(sanitizer.sanitize(SecurityContext.HTML, unsafeHtml) || '');
   }
   if (allowSanitizationBypassAndThrow(unsafeHtml, BypassType.Html)) {
-    return unwrapSafeValue(unsafeHtml);
+    return trustedHTMLFromStringBypass(unwrapSafeValue(unsafeHtml));
   }
   return _sanitizeHtml(getDocument(), renderStringify(unsafeHtml));
 }
@@ -105,13 +108,14 @@ export function ɵɵsanitizeUrl(unsafeUrl: any): string {
  *
  * @codeGenApi
  */
-export function ɵɵsanitizeResourceUrl(unsafeResourceUrl: any): string {
+export function ɵɵsanitizeResourceUrl(unsafeResourceUrl: any): TrustedScriptURL|string {
   const sanitizer = getSanitizer();
   if (sanitizer) {
-    return sanitizer.sanitize(SecurityContext.RESOURCE_URL, unsafeResourceUrl) || '';
+    return trustedScriptURLFromStringBypass(
+        sanitizer.sanitize(SecurityContext.RESOURCE_URL, unsafeResourceUrl) || '');
   }
   if (allowSanitizationBypassAndThrow(unsafeResourceUrl, BypassType.ResourceUrl)) {
-    return unwrapSafeValue(unsafeResourceUrl);
+    return trustedScriptURLFromStringBypass(unwrapSafeValue(unsafeResourceUrl));
   }
   throw new Error('unsafe value used in a resource URL context (see http://g.co/ng/security#xss)');
 }
@@ -128,15 +132,61 @@ export function ɵɵsanitizeResourceUrl(unsafeResourceUrl: any): string {
  *
  * @codeGenApi
  */
-export function ɵɵsanitizeScript(unsafeScript: any): string {
+export function ɵɵsanitizeScript(unsafeScript: any): TrustedScript|string {
   const sanitizer = getSanitizer();
   if (sanitizer) {
-    return sanitizer.sanitize(SecurityContext.SCRIPT, unsafeScript) || '';
+    return trustedScriptFromStringBypass(
+        sanitizer.sanitize(SecurityContext.SCRIPT, unsafeScript) || '');
   }
   if (allowSanitizationBypassAndThrow(unsafeScript, BypassType.Script)) {
-    return unwrapSafeValue(unsafeScript);
+    return trustedScriptFromStringBypass(unwrapSafeValue(unsafeScript));
   }
   throw new Error('unsafe value used in a script context');
+}
+
+/**
+ * Promotes the given constant string to a TrustedHTML.
+ * @param html constant string containing trusted HTML.
+ * @returns TrustedHTML wrapping `html`.
+ *
+ * @security This is a security-sensitive function and should only be used to
+ * convert constant values of attributes and properties found in
+ * application-provided Angular templates to TrustedHTML.
+ *
+ * @codeGenApi
+ */
+export function ɵɵtrustConstantHtml(html: string): TrustedHTML|string {
+  return trustedHTMLFromString(html);
+}
+
+/**
+ * Promotes the given constant string to a TrustedScript.
+ * @param script constant string containing a trusted script.
+ * @returns TrustedScript wrapping `script`.
+ *
+ * @security This is a security-sensitive function and should only be used to
+ * convert constant values of attributes and properties found in
+ * application-provided Angular templates to TrustedScript.
+ *
+ * @codeGenApi
+ */
+export function ɵɵtrustConstantScript(script: string): TrustedScript|string {
+  return trustedScriptFromString(script);
+}
+
+/**
+ * Promotes the given constant string to a TrustedScriptURL.
+ * @param url constant string containing a trusted script URL.
+ * @returns TrustedScriptURL wrapping `url`.
+ *
+ * @security This is a security-sensitive function and should only be used to
+ * convert constant values of attributes and properties found in
+ * application-provided Angular templates to TrustedScriptURL.
+ *
+ * @codeGenApi
+ */
+export function ɵɵtrustConstantResourceUrl(url: string): TrustedScriptURL|string {
+  return trustedScriptURLFromString(url);
 }
 
 /**

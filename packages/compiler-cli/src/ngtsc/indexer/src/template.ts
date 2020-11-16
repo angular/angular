@@ -97,15 +97,12 @@ class ExpressionVisitor extends RecursiveAstVisitor {
       return;
     }
 
-    // Get the location of the identifier of real interest.
-    // The compiler's expression parser records the location of some expressions in a manner not
-    // useful to the indexer. For example, a `MethodCall` `foo(a, b)` will record the span of the
-    // entire method call, but the indexer is interested only in the method identifier.
-    const localExpression = this.expressionStr.substr(ast.span.start);
-    if (!localExpression.includes(ast.name)) {
-      throw new Error(`Impossible state: "${ast.name}" not found in "${localExpression}"`);
+    // The source span of the requested AST starts at a location that is offset from the expression.
+    const identifierStart = ast.sourceSpan.start - this.absoluteOffset;
+    if (!this.expressionStr.substring(identifierStart).startsWith(ast.name)) {
+      throw new Error(`Impossible state: "${ast.name}" not found in "${
+          this.expressionStr}" at location ${identifierStart}`);
     }
-    const identifierStart = ast.span.start + localExpression.indexOf(ast.name);
 
     // Join the relative position of the expression within a node with the absolute position
     // of the node to get the absolute position of the expression in the source code.
@@ -191,25 +188,14 @@ class TemplateVisitor extends TmplAstRecursiveVisitor {
     this.visitAll(template.references);
   }
   visitBoundAttribute(attribute: TmplAstBoundAttribute) {
-    // A BoundAttribute's value (the parent AST) may have subexpressions (children ASTs) that have
-    // recorded spans extending past the recorded span of the parent. The most common example of
-    // this is with `*ngFor`.
-    // To resolve this, use the information on the BoundAttribute Template AST, which is always
-    // correct, to determine locations of identifiers in the expression.
-    //
-    // TODO(ayazhafiz): Remove this when https://github.com/angular/angular/pull/31813 lands.
-    const attributeSrc = attribute.sourceSpan.toString();
-    const attributeAbsolutePosition = attribute.sourceSpan.start.offset;
-
-    // Skip the bytes of the attribute name so that there are no collisions between the attribute
-    // name and expression identifier names later.
-    const nameSkipOffet = attributeSrc.indexOf(attribute.name) + attribute.name.length;
-    const expressionSrc = attributeSrc.substring(nameSkipOffet);
-    const expressionAbsolutePosition = attributeAbsolutePosition + nameSkipOffet;
+    // If the bound attribute has no value, it cannot have any identifiers in the value expression.
+    if (attribute.valueSpan === undefined) {
+      return;
+    }
 
     const identifiers = ExpressionVisitor.getIdentifiers(
-        attribute.value, expressionSrc, expressionAbsolutePosition, this.boundTemplate,
-        this.targetToIdentifier.bind(this));
+        attribute.value, attribute.valueSpan.toString(), attribute.valueSpan.start.offset,
+        this.boundTemplate, this.targetToIdentifier.bind(this));
     identifiers.forEach(id => this.identifiers.add(id));
   }
   visitBoundEvent(attribute: TmplAstBoundEvent) {

@@ -13,11 +13,11 @@ import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
 import {IncrementalBuild} from '../../incremental/api';
 import {IndexingContext} from '../../indexer';
 import {PerfRecorder} from '../../perf';
-import {ClassDeclaration, Decorator, ReflectionHost} from '../../reflection';
+import {ClassDeclaration, DeclarationNode, Decorator, ReflectionHost} from '../../reflection';
 import {ProgramTypeCheckAdapter, TypeCheckContext} from '../../typecheck/api';
 import {getSourceFile, isExported} from '../../util/src/typescript';
 
-import {AnalysisOutput, CompileResult, DecoratorHandler, HandlerFlags, HandlerPrecedence, ResolveResult} from './api';
+import {AnalysisOutput, CompilationMode, CompileResult, DecoratorHandler, HandlerFlags, HandlerPrecedence, ResolveResult} from './api';
 import {DtsTransformRegistry} from './declaration';
 import {PendingTrait, Trait, TraitState} from './trait';
 
@@ -88,7 +88,8 @@ export class TraitCompiler implements ProgramTypeCheckAdapter {
       private handlers: DecoratorHandler<unknown, unknown, unknown>[],
       private reflector: ReflectionHost, private perf: PerfRecorder,
       private incrementalBuild: IncrementalBuild<ClassRecord, unknown>,
-      private compileNonExportedClasses: boolean, private dtsTransforms: DtsTransformRegistry) {
+      private compileNonExportedClasses: boolean, private compilationMode: CompilationMode,
+      private dtsTransforms: DtsTransformRegistry) {
     for (const handler of handlers) {
       this.handlersByName.set(handler.name, handler);
     }
@@ -462,7 +463,7 @@ export class TraitCompiler implements ProgramTypeCheckAdapter {
     }
   }
 
-  compile(clazz: ts.Declaration, constantPool: ConstantPool): CompileResult[]|null {
+  compile(clazz: DeclarationNode, constantPool: ConstantPool): CompileResult[]|null {
     const original = ts.getOriginalNode(clazz) as typeof clazz;
     if (!this.reflector.isClass(clazz) || !this.reflector.isClass(original) ||
         !this.classes.has(original)) {
@@ -479,8 +480,17 @@ export class TraitCompiler implements ProgramTypeCheckAdapter {
       }
 
       const compileSpan = this.perf.start('compileClass', original);
-      const compileMatchRes =
-          trait.handler.compile(clazz, trait.analysis, trait.resolution, constantPool);
+
+      let compileRes: CompileResult|CompileResult[];
+      if (this.compilationMode === CompilationMode.PARTIAL &&
+          trait.handler.compilePartial !== undefined) {
+        compileRes = trait.handler.compilePartial(clazz, trait.analysis, trait.resolution);
+      } else {
+        compileRes =
+            trait.handler.compileFull(clazz, trait.analysis, trait.resolution, constantPool);
+      }
+
+      const compileMatchRes = compileRes;
       this.perf.stop(compileSpan);
       if (Array.isArray(compileMatchRes)) {
         for (const result of compileMatchRes) {

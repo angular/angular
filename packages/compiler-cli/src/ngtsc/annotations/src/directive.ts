@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {compileDirectiveFromMetadata, ConstantPool, Expression, Identifiers, makeBindingParser, ParsedHostBindings, ParseError, parseHostBindings, R3DependencyMetadata, R3DirectiveMetadata, R3FactoryTarget, R3QueryMetadata, Statement, verifyHostBindings, WrappedNodeExpr} from '@angular/compiler';
+import {compileDeclareDirectiveFromMetadata, compileDirectiveFromMetadata, ConstantPool, Expression, Identifiers, makeBindingParser, ParsedHostBindings, ParseError, parseHostBindings, R3DependencyMetadata, R3DirectiveDef, R3DirectiveMetadata, R3FactoryTarget, R3QueryMetadata, Statement, verifyHostBindings, WrappedNodeExpr} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
 import {DefaultImportRecorder, Reference} from '../../imports';
-import {DirectiveTypeCheckMeta, InjectableClassRegistry, MetadataReader, MetadataRegistry} from '../../metadata';
+import {ClassPropertyMapping, DirectiveTypeCheckMeta, InjectableClassRegistry, MetadataReader, MetadataRegistry} from '../../metadata';
 import {extractDirectiveTypeCheckMeta} from '../../metadata/src/util';
 import {DynamicValue, EnumValue, PartialEvaluator} from '../../partial_evaluator';
 import {ClassDeclaration, ClassMember, ClassMemberKind, Decorator, filterToMembersWithDecorator, ReflectionHost, reflectObjectLiteral} from '../../reflection';
@@ -39,6 +39,8 @@ export interface DirectiveHandlerData {
   meta: R3DirectiveMetadata;
   metadataStmt: Statement|null;
   providersRequiringFactory: Set<Reference<ClassDeclaration>>|null;
+  inputs: ClassPropertyMapping;
+  outputs: ClassPropertyMapping;
 }
 
 export class DirectiveDecoratorHandler implements
@@ -83,11 +85,10 @@ export class DirectiveDecoratorHandler implements
     const directiveResult = extractDirectiveMetadata(
         node, decorator, this.reflector, this.evaluator, this.defaultImportRecorder, this.isCore,
         flags, this.annotateForClosureCompiler);
-    const analysis = directiveResult && directiveResult.metadata;
-
-    if (analysis === undefined) {
+    if (directiveResult === undefined) {
       return {};
     }
+    const analysis = directiveResult.metadata;
 
     let providersRequiringFactory: Set<Reference<ClassDeclaration>>|null = null;
     if (directiveResult !== undefined && directiveResult.decorator.has('providers')) {
@@ -97,12 +98,14 @@ export class DirectiveDecoratorHandler implements
 
     return {
       analysis: {
+        inputs: directiveResult.inputs,
+        outputs: directiveResult.outputs,
         meta: analysis,
         metadataStmt: generateSetClassMetadataCall(
             node, this.reflector, this.defaultImportRecorder, this.isCore,
             this.annotateForClosureCompiler),
         baseClass: readBaseClass(node, this.reflector, this.evaluator),
-        typeCheckMeta: extractDirectiveTypeCheckMeta(node, analysis.inputs, this.reflector),
+        typeCheckMeta: extractDirectiveTypeCheckMeta(node, directiveResult.inputs, this.reflector),
         providersRequiringFactory
       }
     };
@@ -117,8 +120,8 @@ export class DirectiveDecoratorHandler implements
       name: node.name.text,
       selector: analysis.meta.selector,
       exportAs: analysis.meta.exportAs,
-      inputs: analysis.meta.inputs,
-      outputs: analysis.meta.outputs,
+      inputs: analysis.inputs,
+      outputs: analysis.outputs,
       queries: analysis.meta.queries.map(query => query.propertyName),
       isComponent: false,
       baseClass: analysis.baseClass,
@@ -148,22 +151,37 @@ export class DirectiveDecoratorHandler implements
     return {diagnostics: diagnostics.length > 0 ? diagnostics : undefined};
   }
 
-  compile(
+  compileFull(
       node: ClassDeclaration, analysis: Readonly<DirectiveHandlerData>,
       resolution: Readonly<unknown>, pool: ConstantPool): CompileResult[] {
-    const meta = analysis.meta;
-    const res = compileDirectiveFromMetadata(meta, pool, makeBindingParser());
-    const factoryRes = compileNgFactoryDefField(
-        {...meta, injectFn: Identifiers.directiveInject, target: R3FactoryTarget.Directive});
+    const def = compileDirectiveFromMetadata(analysis.meta, pool, makeBindingParser());
+    return this.compileDirective(analysis, def);
+  }
+
+  compilePartial(
+      node: ClassDeclaration, analysis: Readonly<DirectiveHandlerData>,
+      resolution: Readonly<unknown>): CompileResult[] {
+    const def = compileDeclareDirectiveFromMetadata(analysis.meta);
+    return this.compileDirective(analysis, def);
+  }
+
+  private compileDirective(
+      analysis: Readonly<DirectiveHandlerData>,
+      {expression: initializer, type}: R3DirectiveDef): CompileResult[] {
+    const factoryRes = compileNgFactoryDefField({
+      ...analysis.meta,
+      injectFn: Identifiers.directiveInject,
+      target: R3FactoryTarget.Directive,
+    });
     if (analysis.metadataStmt !== null) {
       factoryRes.statements.push(analysis.metadataStmt);
     }
     return [
       factoryRes, {
         name: 'ɵdir',
-        initializer: res.expression,
+        initializer,
         statements: [],
-        type: res.type,
+        type,
       }
     ];
   }
@@ -199,8 +217,13 @@ export class DirectiveDecoratorHandler implements
 export function extractDirectiveMetadata(
     clazz: ClassDeclaration, decorator: Readonly<Decorator|null>, reflector: ReflectionHost,
     evaluator: PartialEvaluator, defaultImportRecorder: DefaultImportRecorder, isCore: boolean,
-    flags: HandlerFlags, annotateForClosureCompiler: boolean, defaultSelector: string|null = null):
-    {decorator: Map<string, ts.Expression>, metadata: R3DirectiveMetadata}|undefined {
+    flags: HandlerFlags, annotateForClosureCompiler: boolean,
+    defaultSelector: string|null = null): {
+  decorator: Map<string, ts.Expression>,
+  metadata: R3DirectiveMetadata,
+  inputs: ClassPropertyMapping,
+  outputs: ClassPropertyMapping,
+}|undefined {
   let directive: Map<string, ts.Expression>;
   if (decorator === null || decorator.args === null || decorator.args.length === 0) {
     directive = new Map<string, ts.Expression>();
@@ -331,6 +354,9 @@ export function extractDirectiveMetadata(
   const type = wrapTypeReference(reflector, clazz);
   const internalType = new WrappedNodeExpr(reflector.getInternalNameOfClass(clazz));
 
+  const inputs = ClassPropertyMapping.fromMappedObject({...inputsFromMeta, ...inputsFromFields});
+  const outputs = ClassPropertyMapping.fromMappedObject({...outputsFromMeta, ...outputsFromFields});
+
   const metadata: R3DirectiveMetadata = {
     name: clazz.name.text,
     deps: ctorDeps,
@@ -338,8 +364,8 @@ export function extractDirectiveMetadata(
     lifecycle: {
       usesOnChanges,
     },
-    inputs: {...inputsFromMeta, ...inputsFromFields},
-    outputs: {...outputsFromMeta, ...outputsFromFields},
+    inputs: inputs.toJointMappedObject(),
+    outputs: outputs.toDirectMappedObject(),
     queries,
     viewQueries,
     selector,
@@ -352,7 +378,12 @@ export function extractDirectiveMetadata(
     exportAs,
     providers
   };
-  return {decorator: directive, metadata};
+  return {
+    decorator: directive,
+    metadata,
+    inputs,
+    outputs,
+  };
 }
 
 export function extractQueryMetadata(
@@ -447,12 +478,20 @@ export function extractQueriesFromDecorator(
   }
   reflectObjectLiteral(queryData).forEach((queryExpr, propertyName) => {
     queryExpr = unwrapExpression(queryExpr);
-    if (!ts.isNewExpression(queryExpr) || !ts.isIdentifier(queryExpr.expression)) {
+    if (!ts.isNewExpression(queryExpr)) {
       throw new FatalDiagnosticError(
           ErrorCode.VALUE_HAS_WRONG_TYPE, queryData,
           'Decorator query metadata must be an instance of a query type');
     }
-    const type = reflector.getImportOfIdentifier(queryExpr.expression);
+    const queryType = ts.isPropertyAccessExpression(queryExpr.expression) ?
+        queryExpr.expression.name :
+        queryExpr.expression;
+    if (!ts.isIdentifier(queryType)) {
+      throw new FatalDiagnosticError(
+          ErrorCode.VALUE_HAS_WRONG_TYPE, queryData,
+          'Decorator query metadata must be an instance of a query type');
+    }
+    const type = reflector.getImportOfIdentifier(queryType);
     if (type === null || (!isCore && type.from !== '@angular/core') ||
         !QUERY_TYPES.has(type.name)) {
       throw new FatalDiagnosticError(

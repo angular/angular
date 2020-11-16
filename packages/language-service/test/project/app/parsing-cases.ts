@@ -12,6 +12,7 @@ import {Hero} from './app.component';
 
 @Directive({
   selector: '[string-model]',
+  exportAs: 'stringModel',
 })
 export class StringModel {
   @Input() model: string = 'model';
@@ -67,6 +68,16 @@ export class WithContextDirective {
       ctx is WithContextDirectiveContext {
     return true;
   }
+}
+
+@Directive({selector: 'button[custom-button][compound]'})
+export class CompoundCustomButtonDirective {
+  @Input() config?: {color?: string};
+}
+
+@Directive({selector: '[eventSelector]'})
+export class EventSelectorDirective {
+  @Output() eventSelector = new EventEmitter<void>();
 }
 
 @Pipe({

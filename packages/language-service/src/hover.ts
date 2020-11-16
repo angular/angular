@@ -8,15 +8,10 @@
 
 import {NgAnalyzedModules} from '@angular/compiler';
 import * as ts from 'typescript';
+
 import {locateSymbols} from './locate_symbol';
 import * as ng from './types';
 import {inSpan} from './utils';
-
-// Reverse mappings of enum would generate strings
-const SYMBOL_SPACE = ts.SymbolDisplayPartKind[ts.SymbolDisplayPartKind.space];
-const SYMBOL_PUNC = ts.SymbolDisplayPartKind[ts.SymbolDisplayPartKind.punctuation];
-const SYMBOL_TEXT = ts.SymbolDisplayPartKind[ts.SymbolDisplayPartKind.text];
-const SYMBOL_INTERFACE = ts.SymbolDisplayPartKind[ts.SymbolDisplayPartKind.interfaceName];
 
 /**
  * Traverse the template AST and look for the symbol located at `position`, then
@@ -70,6 +65,15 @@ export function getTsHover(
     }
   }
 }
+
+
+
+// Reverse mappings of enum would generate strings
+const ALIAS_NAME = ts.SymbolDisplayPartKind[ts.SymbolDisplayPartKind.aliasName];
+const SYMBOL_INTERFACE = ts.SymbolDisplayPartKind[ts.SymbolDisplayPartKind.interfaceName];
+const SYMBOL_PUNC = ts.SymbolDisplayPartKind[ts.SymbolDisplayPartKind.punctuation];
+const SYMBOL_SPACE = ts.SymbolDisplayPartKind[ts.SymbolDisplayPartKind.space];
+const SYMBOL_TEXT = ts.SymbolDisplayPartKind[ts.SymbolDisplayPartKind.text];
 
 /**
  * Construct a QuickInfo object taking into account its container and type.

@@ -94,7 +94,8 @@ class MapPlaceholderNames extends i18n.CloneVisitor {
     const closeName = ph.closeName ? mapper.toPublicName(ph.closeName)! : ph.closeName;
     const children = ph.children.map(n => n.visit(this, mapper));
     return new i18n.TagPlaceholder(
-        ph.tag, ph.attrs, startName, closeName, children, ph.isVoid, ph.sourceSpan);
+        ph.tag, ph.attrs, startName, closeName, children, ph.isVoid, ph.sourceSpan,
+        ph.startSourceSpan, ph.endSourceSpan);
   }
 
   visitPlaceholder(ph: i18n.Placeholder, mapper: PlaceholderMapper): i18n.Placeholder {

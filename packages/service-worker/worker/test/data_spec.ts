@@ -93,6 +93,7 @@ const manifest: Manifest = {
     },
   ],
   navigationUrls: [],
+  navigationRequestStrategy: 'performance',
   hashTable: tmpHashTableForFs(dist),
 };
 
