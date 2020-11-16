@@ -51,7 +51,6 @@
 * **common:** let case conversion pipes accept type unions with `null` ([#36259](https://github.com/angular/angular/issues/36259)) ([#37447](https://github.com/angular/angular/issues/37447)) ([c7d5555](https://github.com/angular/angular/commit/c7d5555))
 * **compiler-cli:** perform DOM schema checks even in basic mode in g3 ([#38943](https://github.com/angular/angular/issues/38943)) ([40975e0](https://github.com/angular/angular/commit/40975e0))
 * **language-service:** hybrid visitor returns parent node of `BoundAttribute` ([#38995](https://github.com/angular/angular/issues/38995)) ([323be39](https://github.com/angular/angular/commit/323be39))
-* **packaging:** remove polyfills needed to run tests on IE9 and IE 10 ([#38931](https://github.com/angular/angular/issues/38931)) ([4ca1c73](https://github.com/angular/angular/commit/4ca1c73))
 * **platform-webworker:** remove @angular/platform-webworker and @angular/platform-webworker-dynamic ([#38846](https://github.com/angular/angular/issues/38846)) ([93c3d8f](https://github.com/angular/angular/commit/93c3d8f))
 * **router:** set `relativeLinkResolution` to `corrected` by default ([#25609](https://github.com/angular/angular/issues/25609)) ([837889f](https://github.com/angular/angular/commit/837889f)), closes [#22394](https://github.com/angular/angular/issues/22394)
 * **common:** add `params` and `reportProgress` options to `HttpClient.put()` overload ([#37873](https://github.com/angular/angular/issues/37873)) ([dd8d8c8](https://github.com/angular/angular/commit/dd8d8c8)), closes [#23600](https://github.com/angular/angular/issues/23600)
@@ -146,7 +145,7 @@ the TypeScript compiler might complain. A v11 migration exists which adds the no
 operator where necessary. In an unlikely case your code was testing the parent against `undefined` with strict equality,
 you'll need to change this to `=== null` instead, since the parent is now explicitly initialized
 with `null` instead of being left `undefined`.
-* **packaging:** In v10, IE 9, 10, and IE mobile support was deprecated. In v11, Angular framework removes IE 9,
+* **core:** In v10, IE 9, 10, and IE mobile support was deprecated. In v11, Angular framework removes IE 9,
 10, and IE mobile support completely.
 Supporting outdated browsers like these increases bundle size, code complexity, and test load,
 and also requires time and effort that could be spent on improvements to the framework.
