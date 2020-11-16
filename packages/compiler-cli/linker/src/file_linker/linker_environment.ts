@@ -20,6 +20,12 @@ export class LinkerEnvironment<TStatement, TExpression> {
   static create<TStatement, TExpression>(
       host: AstHost<TExpression>, factory: AstFactory<TStatement, TExpression>,
       options: Partial<LinkerOptions>): LinkerEnvironment<TStatement, TExpression> {
-    return new LinkerEnvironment(host, factory, {...DEFAULT_LINKER_OPTIONS, ...options});
+    return new LinkerEnvironment(host, factory, {
+      enableI18nLegacyMessageIdFormat: options.enableI18nLegacyMessageIdFormat ??
+          DEFAULT_LINKER_OPTIONS.enableI18nLegacyMessageIdFormat,
+      i18nNormalizeLineEndingsInICUs: options.i18nNormalizeLineEndingsInICUs ??
+          DEFAULT_LINKER_OPTIONS.i18nNormalizeLineEndingsInICUs,
+      i18nUseExternalIds: options.i18nUseExternalIds ?? DEFAULT_LINKER_OPTIONS.i18nUseExternalIds,
+    });
   }
 }
