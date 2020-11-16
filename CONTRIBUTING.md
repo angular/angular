@@ -235,7 +235,7 @@ The `footer` is optional.
 Any line of the commit message cannot be longer than 100 characters.
 
 
-#### <a href="commit-header"></a>Commit Message Header
+#### <a name="commit-header"></a>Commit Message Header
 
 ```
 <type>(<scope>): <short summary>
