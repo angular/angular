@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {APP_BASE_HREF, CommonModule, Location, LOCATION_INITIALIZED, LocationStrategy, PlatformLocation} from '@angular/common';
+import {APP_BASE_HREF, CommonModule, HashLocationStrategy, Location, LOCATION_INITIALIZED, LocationStrategy, PlatformLocation} from '@angular/common';
 import {SpyLocation} from '@angular/common/testing';
 import {ChangeDetectionStrategy, Component, EventEmitter, Injectable, NgModule, NgModuleFactoryLoader, NgModuleRef, NgZone, OnDestroy, ViewChild, ɵConsole as Console, ɵNoopNgZone as NoopNgZone} from '@angular/core';
 import {ComponentFixture, fakeAsync, inject, TestBed, tick} from '@angular/core/testing';
@@ -1061,13 +1061,13 @@ describe('Integration', () => {
        location.back();
        advance(fixture);
        expect(location.path()).toEqual('/team/33/simple');
-       expect(event!.navigationTrigger).toEqual('hashchange');
+       expect(event!.navigationTrigger).toEqual('popstate');
        expect(event!.restoredState!.navigationId).toEqual(simpleNavStart.id);
 
        location.forward();
        advance(fixture);
        expect(location.path()).toEqual('/team/22/user/victor');
-       expect(event!.navigationTrigger).toEqual('hashchange');
+       expect(event!.navigationTrigger).toEqual('popstate');
        expect(event!.restoredState!.navigationId).toEqual(userVictorNavStart.id);
      })));
 
@@ -1226,7 +1226,6 @@ describe('Integration', () => {
          const recordedEvents = [] as Event[];
          router.events.forEach(e => onlyNavigationStartAndEnd(e) && recordedEvents.push(e));
 
-         location.simulateUrlPop('/blocked');
          location.simulateHashChange('/blocked');
 
          advance(fixture);
@@ -2634,8 +2633,11 @@ describe('Integration', () => {
          expect(router.serializeUrl(afterRedirectUrl as any)).toBe('/team/22');
        })));
 
-    it('should not break the back button when trigger by location change',
-       fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
+    it('should not break the back button when trigger by location change', fakeAsync(() => {
+         TestBed.configureTestingModule(
+             {providers: [{provide: LocationStrategy, useClass: HashLocationStrategy}]});
+         const router = TestBed.inject(Router);
+         const location = TestBed.inject(Location) as SpyLocation;
          const fixture = TestBed.createComponent(RootCmp);
          advance(fixture);
          router.resetConfig([
@@ -2656,8 +2658,7 @@ describe('Integration', () => {
          expect(location.path()).toEqual('/initial');
 
          // location change
-         (<any>location).go('/old/team/33');
-
+         location.simulateHashChange('/old/team/33');
 
          advance(fixture);
          expect(location.path()).toEqual('/team/33');
@@ -2665,7 +2666,7 @@ describe('Integration', () => {
          location.back();
          advance(fixture);
          expect(location.path()).toEqual('/initial');
-       })));
+       }));
   });
   describe('guards', () => {
     describe('CanActivate', () => {
@@ -2835,16 +2836,20 @@ describe('Integration', () => {
       describe('should reset the location when cancelling a navigation', () => {
         beforeEach(() => {
           TestBed.configureTestingModule({
-            providers: [{
-              provide: 'alwaysFalse',
-              useValue: (a: ActivatedRouteSnapshot, b: RouterStateSnapshot) => {
-                return false;
-              }
-            }]
+            providers: [
+              {
+                provide: 'alwaysFalse',
+                useValue: (a: ActivatedRouteSnapshot, b: RouterStateSnapshot) => {
+                  return false;
+                }
+              },
+              {provide: LocationStrategy, useClass: HashLocationStrategy}
+            ]
           });
         });
 
-        it('works', fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
+        it('works',
+           fakeAsync(inject([Router, Location], (router: Router, location: SpyLocation) => {
              const fixture = createRoot(router, RootCmp);
 
              router.resetConfig([
@@ -2856,7 +2861,7 @@ describe('Integration', () => {
              advance(fixture);
              expect(location.path()).toEqual('/one');
 
-             location.go('/two');
+             location.simulateHashChange('/two');
              advance(fixture);
              expect(location.path()).toEqual('/one');
            })));
@@ -5431,12 +5436,16 @@ describe('Integration', () => {
       }
 
       beforeEach(() => {
-        TestBed.configureTestingModule(
-            {providers: [{provide: UrlHandlingStrategy, useClass: CustomUrlHandlingStrategy}]});
+        TestBed.configureTestingModule({
+          providers: [
+            {provide: UrlHandlingStrategy, useClass: CustomUrlHandlingStrategy},
+            {provide: LocationStrategy, useClass: HashLocationStrategy}
+          ]
+        });
       });
 
       it('should work',
-         fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
+         fakeAsync(inject([Router, Location], (router: Router, location: SpyLocation) => {
            const fixture = createRoot(router, RootCmp);
 
            router.resetConfig([{
@@ -5477,14 +5486,14 @@ describe('Integration', () => {
            events.splice(0);
 
            // another unsupported URL
-           location.go('/exclude/two');
+           location.simulateHashChange('/exclude/two');
            advance(fixture);
 
            expect(location.path()).toEqual('/exclude/two');
            expectEvents(events, []);
 
            // back to a supported URL
-           location.go('/include/simple');
+           location.simulateHashChange('/include/simple');
            advance(fixture);
 
            expect(location.path()).toEqual('/include/simple');
@@ -5499,7 +5508,7 @@ describe('Integration', () => {
          })));
 
       it('should handle the case when the router takes only the primary url',
-         fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
+         fakeAsync(inject([Router, Location], (router: Router, location: SpyLocation) => {
            const fixture = createRoot(router, RootCmp);
 
            router.resetConfig([{
@@ -5512,7 +5521,7 @@ describe('Integration', () => {
            const events: any[] = [];
            router.events.subscribe(e => e instanceof RouterEvent && events.push(e));
 
-           location.go('/include/user/kate(aux:excluded)');
+           location.simulateHashChange('/include/user/kate(aux:excluded)');
            advance(fixture);
 
            expect(location.path()).toEqual('/include/user/kate(aux:excluded)');
@@ -5524,7 +5533,7 @@ describe('Integration', () => {
            ]);
            events.splice(0);
 
-           location.go('/include/user/kate(aux:excluded2)');
+           location.simulateHashChange('/include/user/kate(aux:excluded2)');
            advance(fixture);
            expectEvents(events, []);
 
