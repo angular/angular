@@ -496,7 +496,7 @@ It cancels and discards previous search observables, returning only the latest s
 
 <div class="alert is-helpful">
 
-  With the [switchMap operator](http://www.learnrxjs.io/operators/transformation/switchmap.html),
+  With the [switchMap operator](https://www.learnrxjs.io/learn-rxjs/operators/transformation/switchmap),
   every qualifying key event can trigger an `HttpClient.get()` method call.
   Even with a 300ms pause between requests, you could have multiple HTTP requests in flight
   and they may not return in the order sent.

@@ -67,7 +67,7 @@ If the problem still exists in your application, please [open a new issue](https
 
 ## Angular: Support Request (v1)
 ```
-Hello, we reviewed this issue and determined that it doesn't fall into the bug report or feature request category. This issue tracker is not suitable for support requests, please repost your issue on [StackOverflow](http://stackoverflow.com/) using tag `angular`.
+Hello, we reviewed this issue and determined that it doesn't fall into the bug report or feature request category. This issue tracker is not suitable for support requests, please repost your issue on [StackOverflow](https://stackoverflow.com/) using tag `angular`.
 
 If you are wondering why we don't resolve support issues via the issue tracker, please [check out this explanation](https://github.com/angular/angular/blob/master/CONTRIBUTING.md#-got-a-question-or-problem).
 ```

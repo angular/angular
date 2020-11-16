@@ -180,7 +180,7 @@ The following sections describe configurations for some of the most popular serv
 The list is by no means exhaustive, but should provide you with a good starting point.
 
 * [Apache](https://httpd.apache.org/): add a
-[rewrite rule](http://httpd.apache.org/docs/current/mod/mod_rewrite.html) to the `.htaccess` file as shown
+[rewrite rule](https://httpd.apache.org/docs/current/mod/mod_rewrite.html) to the `.htaccess` file as shown
   (https://ngmilk.rocks/2015/03/09/angularjs-html5-mode-or-pretty-urls-on-apache-using-htaccess/):
 
   <code-example>
@@ -194,7 +194,7 @@ The list is by no means exhaustive, but should provide you with a good starting 
   </code-example>
 
 
-* [Nginx](http://nginx.org/): use `try_files`, as described in
+* [Nginx](https://nginx.org/): use `try_files`, as described in
 [Front Controller Pattern Web Apps](https://www.nginx.com/resources/wiki/start/topics/tutorials/config_pitfalls/#front-controller-pattern-web-apps),
 modified to serve `index.html`:
 
@@ -222,7 +222,7 @@ modified to serve `index.html`:
 
 
 * [IIS](https://www.iis.net/): add a rewrite rule to `web.config`, similar to the one shown
-[here](http://stackoverflow.com/a/26152011/2116927):
+[here](https://stackoverflow.com/a/26152011):
 
   <code-example format='.' language="xml">
     &lt;system.webServer&gt;
@@ -276,7 +276,7 @@ Browsers forbid such requests unless the server permits them explicitly.
 There isn't anything the client application can do about these errors.
 The server must be configured to accept the application's requests.
 Read about how to enable CORS for specific servers at
-<a href="http://enable-cors.org/server.html" title="Enabling CORS server">enable-cors.org</a>.
+<a href="https://enable-cors.org/server.html" title="Enabling CORS server">enable-cors.org</a>.
 
 <hr>
 

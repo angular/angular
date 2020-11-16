@@ -27,8 +27,8 @@ To set the components encapsulation mode, use the `encapsulation` property in th
 <code-example path="component-styles/src/app/quest-summary.component.ts" region="encapsulation.shadow" header="src/app/quest-summary.component.ts"></code-example>
 
 `ShadowDom` view encapsulation only works on browsers that have native support
-for shadow DOM (see [Shadow DOM v1](https://caniuse.com/#feat=shadowdomv1) on the
-[Can I use](http://caniuse.com) site). The support is still limited,
+for shadow DOM (see [Shadow DOM v1](https://caniuse.com/shadowdomv1) on the
+[Can I use](https://caniuse.com/) site). The support is still limited,
 which is why `Emulated` view encapsulation is the default mode and recommended
 in most cases.
 

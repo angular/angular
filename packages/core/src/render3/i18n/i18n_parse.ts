@@ -606,7 +606,8 @@ function walkIcuTree(
                 ngDevMode &&
                     console.warn(
                         `WARNING: ignoring unsafe attribute value ` +
-                        `${lowerAttrName} on element ${tagName} (see http://g.co/ng/security#xss)`);
+                        `${lowerAttrName} on element ${tagName} ` +
+                        `(see https://g.co/ng/security#xss)`);
               }
             } else {
               addCreateAttribute(create, newIndex, attr);

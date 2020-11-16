@@ -115,7 +115,7 @@ export function ɵɵsanitizeResourceUrl(unsafeResourceUrl: any): string {
   if (allowSanitizationBypassAndThrow(unsafeResourceUrl, BypassType.ResourceUrl)) {
     return unwrapSafeValue(unsafeResourceUrl);
   }
-  throw new Error('unsafe value used in a resource URL context (see http://g.co/ng/security#xss)');
+  throw new Error('unsafe value used in a resource URL context (see https://g.co/ng/security#xss)');
 }
 
 /**

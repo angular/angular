@@ -103,7 +103,7 @@ class _SerializerIgnoreIcuExpVisitor extends _SerializerVisitor {
 /**
  * Compute the SHA1 of the given string
  *
- * see http://csrc.nist.gov/publications/fips/fips180-4/fips-180-4.pdf
+ * see https://csrc.nist.gov/publications/fips/fips180-4/fips-180-4.pdf
  *
  * WARNING: this function has not been designed not tested with security in mind.
  *          DO NOT USE IT IN A SECURITY SENSITIVE CONTEXT.
@@ -349,7 +349,7 @@ const base256 = new BigIntExponentiation(256);
  * Represents two 32-bit words as a single decimal number. This requires a big integer storage
  * model as JS numbers are not accurate enough to represent the 64-bit number.
  *
- * Based on http://www.danvk.org/hex2dec.html
+ * Based on https://www.danvk.org/hex2dec.html
  */
 function wordsToDecimalString(hi: number, lo: number): string {
   // Encode the four bytes in lo in the lower digits of the decimal number.

@@ -444,7 +444,7 @@ export class $locationShim {
   /**
    * Retrieves the full URL representation with all segments encoded according to
    * rules specified in
-   * [RFC 3986](http://www.ietf.org/rfc/rfc3986.txt).
+   * [RFC 3986](https://tools.ietf.org/html/rfc3986).
    *
    *
    * ```js

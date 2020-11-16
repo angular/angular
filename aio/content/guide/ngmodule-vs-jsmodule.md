@@ -11,7 +11,7 @@ JavaScript modules let you spread your work across multiple files.
 <div class="alert is-helpful">
 
 To learn more about JavaScript modules, see [ES6 In Depth: Modules](https://hacks.mozilla.org/2015/08/es6-in-depth-modules/).
-For the module specification, see the [6th Edition of the ECMAScript standard](http://www.ecma-international.org/ecma-262/6.0/#sec-modules).
+For the module specification, see the [6th Edition of the ECMAScript standard](https://www.ecma-international.org/ecma-262/6.0/#sec-modules).
 
 </div>
 

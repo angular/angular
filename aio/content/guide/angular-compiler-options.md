@@ -64,7 +64,7 @@ Modifies how Angular-specific annotations are emitted to improve tree-shaking. N
 
 ### `annotateForClosureCompiler`
 
-When `true`, use [Tsickle](https://github.com/angular/tsickle) to annotate the emitted JavaScript with [JSDoc](http://usejsdoc.org/) comments needed by the
+When `true`, use [Tsickle](https://github.com/angular/tsickle) to annotate the emitted JavaScript with [JSDoc](https://jsdoc.app/) comments needed by the
 [Closure Compiler](https://github.com/google/closure-compiler). Default is `false`.
 
 ### `disableExpressionLowering`

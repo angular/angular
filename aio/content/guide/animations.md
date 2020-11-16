@@ -118,7 +118,7 @@ The second argument, `delay`, has the same syntax as `duration`. For example:
 
 * Wait for 100ms and then run for 200ms: `'0.2s 100ms'`
 
-The third argument, `easing`, controls how the animation [accelerates and decelerates](http://easings.net/) during its runtime. For example, `ease-in` causes the animation to begin slowly, and to pick up speed as it progresses.
+The third argument, `easing`, controls how the animation [accelerates and decelerates](https://easings.net/) during its runtime. For example, `ease-in` causes the animation to begin slowly, and to pick up speed as it progresses.
 
 * Wait for 100ms, run for 200ms. Use a deceleration curve to start out fast and slowly decelerate to a resting point: `'0.2s 100ms ease-out'`
 
@@ -327,5 +327,5 @@ You may also be interested in the following:
 
 <div class="alert is-helpful">
 
-Check out this full animation [demo](http://animationsftw.in/#/) with accompanying [presentation](https://www.youtube.com/watch?v=JhNo3Wvj6UQ&feature=youtu.be&t=2h47m53s), shown at the AngularConnect conference in November 2017.
+Check out this [presentation](https://www.youtube.com/watch?v=rnTK9meY5us), shown at the AngularConnect conference in November 2017, and the accompanying [source code](https://github.com/matsko/animationsftw.in).
 </div>

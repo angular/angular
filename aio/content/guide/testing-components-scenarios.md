@@ -686,7 +686,7 @@ with overlapping sequences of values and errors.
 
 **RxJS marble testing** is a great way to test observable scenarios,
 both simple and complex.
-You've likely seen the [marble diagrams](http://rxmarbles.com/)
+You've likely seen the [marble diagrams](https://rxmarbles.com/)
 that illustrate how observables work.
 Marble testing uses a similar marble language to
 specify the observable streams and expectations in your tests.

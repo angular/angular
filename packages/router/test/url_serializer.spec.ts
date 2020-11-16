@@ -307,7 +307,7 @@ describe('url serializer', () => {
 
     // Test special characters in general
 
-    // From http://www.ietf.org/rfc/rfc3986.txt
+    // From https://tools.ietf.org/html/rfc3986
     const unreserved = `abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._~`;
 
     it('should encode a minimal set of special characters in queryParams', () => {

@@ -153,7 +153,7 @@ class _ControlFlowError {
   constructor(public error: TokenError) {}
 }
 
-// See http://www.w3.org/TR/html51/syntax.html#writing
+// See https://www.w3.org/TR/html51/syntax.html#writing-html-documents
 class _Tokenizer {
   private _cursor: CharacterCursor;
   private _tokenizeIcu: boolean;
@@ -200,7 +200,7 @@ class _Tokenizer {
     if (this._preserveLineEndings) {
       return content;
     }
-    // http://www.w3.org/TR/html5/syntax.html#preprocessing-the-input-stream
+    // https://www.w3.org/TR/html51/syntax.html#preprocessing-the-input-stream
     // In order to keep the original position in the source, we can not
     // pre-process it.
     // Instead CRs are processed right before instantiating the tokens.

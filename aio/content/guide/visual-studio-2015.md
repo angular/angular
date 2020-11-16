@@ -30,7 +30,7 @@ Visual Studio 2015, follow these steps:
 
 If you prefer a `File | New Project` experience and are using **ASP.NET Core**, 
 then consider the _experimental_
-<a href="http://blog.stevensanderson.com/2016/10/04/angular2-template-for-visual-studio/">ASP.NET Core + Angular template for Visual Studio 2015</a>.
+<a href="https://blog.stevensanderson.com/2016/10/04/angular2-template-for-visual-studio/">ASP.NET Core + Angular template for Visual Studio 2015</a>.
 Note that the resulting code does not map to the docs. Adjust accordingly.
 
 

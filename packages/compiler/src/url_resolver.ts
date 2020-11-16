@@ -31,7 +31,7 @@ export function createOfflineCompileUrlResolver(): UrlResolver {
  * @security  When compiling templates at runtime, you must
  * ensure that the entire template comes from a trusted source.
  * Attacker-controlled data introduced by a template could expose your
- * application to XSS risks. For more detail, see the [Security Guide](http://g.co/ng/security).
+ * application to XSS risks. For more detail, see the [Security Guide](https://g.co/ng/security).
  */
 export interface UrlResolver {
   resolve(baseUrl: string, url: string): string;
@@ -139,7 +139,7 @@ function _buildFromEncodedParts(
 /**
  * A regular expression for breaking a URI into its component parts.
  *
- * {@link http://www.gbiv.com/protocols/uri/rfc/rfc3986.html#RFC2234} says
+ * {@link https://tools.ietf.org/html/rfc3986#appendix-B} says
  * As the "first-match-wins" algorithm is identical to the "greedy"
  * disambiguation method used by POSIX regular expressions, it is natural and
  * commonplace to use a regular expression for parsing the potential five

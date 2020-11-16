@@ -28,7 +28,7 @@ export class ResourceLoaderImpl extends ResourceLoader {
       // by IE10)
       const response = xhr.response || xhr.responseText;
 
-      // normalize IE9 bug (http://bugs.jquery.com/ticket/1450)
+      // normalize IE9 bug (https://bugs.jquery.com/ticket/1450)
       let status = xhr.status === 1223 ? 204 : xhr.status;
 
       // fix status code when it is 0 (0 status is undocumented).

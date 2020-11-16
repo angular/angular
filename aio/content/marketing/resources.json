@@ -161,7 +161,7 @@
             "desc": "VS Code is a Free, Lightweight Tool for Editing and Debugging Web Apps.",
             "logo": "",
             "title": "Visual Studio Code",
-            "url": "http://code.visualstudio.com/"
+            "url": "https://code.visualstudio.com/"
           },
           "ab2": {
             "desc": "Lightweight yet powerful IDE, perfectly equipped for complex client-side development and server-side development with Node.js",
@@ -194,7 +194,7 @@
             "desc": "A Google Chrome Dev Tools extension for debugging Angular applications.",
             "logo": "https://augury.angular.io/images/augury-logo.svg",
             "title": "Augury",
-            "url": "http://augury.angular.io/"
+            "url": "https://augury.rangle.io/"
           },
           "b1": {
             "desc": "Server-side Rendering for Angular apps.",
@@ -228,7 +228,7 @@
           "angular-playground": {
             "desc": "UI development environment for building, testing, and documenting Angular applications.",
             "title": "Angular Playground",
-            "url": "http://www.angularplayground.it/"
+            "url": "https://angularplayground.it/"
           },
           "nx": {
             "desc": "Nx (Nrwl Extensions for Angular) is an open source toolkit built on top of Angular CLI to help enterprise teams develop Angular at scale.",
@@ -291,9 +291,9 @@
           },
           "4ab": {
             "desc": "Native Angular components & directives for Lightning Design System",
-            "logo": "http://ng-lightning.github.io/ng-lightning/img/shield.svg",
+            "logo": "https://ng-lightning.github.io/ng-lightning/assets/images/shield.svg",
             "title": "ng-lightning",
-            "url": "http://ng-lightning.github.io/ng-lightning/"
+            "url": "https://ng-lightning.github.io/ng-lightning/#/"
           },
           "7ab": {
             "desc": "UI components for hybrid mobile apps with bindings for both Angular & AngularJS.",
@@ -304,19 +304,19 @@
             "desc": "PrimeNG is a collection of rich UI components for Angular",
             "logo": "http://www.primefaces.org/primeng/showcase/resources/images/primeng.svg",
             "title": "Prime Faces",
-            "url": "http://www.primefaces.org/primeng/"
+            "url": "https://www.primefaces.org/primeng/"
           },
           "a3b": {
             "desc": "A professional grade library of Angular UI components written in TypeScript that includes our Data Grid, TreeView, Charts, Editors, DropDowns, DatePickers, and many more. Features include support for AOT compilation, Tree Shaking for high-performance, localization, and accessibility.",
             "logo": "",
             "title": "Kendo UI",
-            "url": "http://www.telerik.com/kendo-angular-ui/"
+            "url": "https://www.telerik.com/kendo-angular-ui"
           },
           "a5b": {
             "desc": "High-performance UI controls with the most complete Angular support available. Wijmo’s controls are all written in TypeScript and have zero dependencies. FlexGrid control includes full declarative markup, including cell templates.",
             "logo": "http://wijmocdn.azureedge.net/wijmositeblob/wijmo-theme/logos/wijmo-55.png",
             "title": "Wijmo",
-            "url": "http://wijmo.com/products/wijmo-5/"
+            "url": "https://www.grapecity.com/wijmo"
           },
           "a6b": {
             "desc": "Material design inspired UI components for building great web apps. For mobile and desktop.",
@@ -328,7 +328,7 @@
             "desc": "Native Angular directives for Bootstrap",
             "logo": "",
             "title": "ngx-bootstrap",
-            "url": "http://valor-software.com/ngx-bootstrap/#/"
+            "url": "https://valor-software.com/ngx-bootstrap/#/"
           },
           "ab": {
             "desc": "Material Design components for Angular",
@@ -386,7 +386,7 @@
           "amexio": {
             "desc": "Amexio is a rich set of Angular components powered by HTML5 & CSS3 for Responsive Web Design and 80+ built-in Material Design Themes. Amexio has 3 Editions, Standard, Enterprise and Creative. Std Edition consists of basic UI Components which include Grid, Tabs, Form Inputs and so on. While Enterprise Edition consists of components like Calendar, Tree Tabs, Social Media Logins (Facebook, GitHub, Twitter and so on) and Creative Edition is focused building elegant and beautiful websites. With more than 200+ components/features. All the editions are open-sourced and free, based on Apache 2 License.",
             "title": "Amexio - Angular Extensions",
-            "url": "http://www.amexio.tech/",
+            "url": "https://amexio.tech/",
             "logo": "http://www.amexio.org/amexio-logo.png"
           },
           "bm": {
@@ -403,7 +403,7 @@
           "trulyui": {
             "desc": "TrulyUI is an Angular UI Framework especially developed for Desktop Applications based on Web Components using the greatest technologies of the world.",
             "title": "Truly UI",
-            "url": "http://truly-ui.com"
+            "url": "https://truly-ui.com/"
           },
           "ngsqui": {
             "desc": "Simple Quality UI (SQ-UI) is a flexible and easily customizable UI-kit, aiming to provide maximum efficiency with as little overhead as possible. Driven by the idea that it should be strictly \"for developers by developers\", every new feature release includes functionalities demanded by the developers who are using it.",
@@ -543,7 +543,7 @@
           "-KLIzHwg-glQLXni1hvL": {
             "desc": "Spanish language Angular articles and information",
             "title": "Academia Binaria (español)",
-            "url": "http://academia-binaria.com/"
+            "url": "https://academia-binaria.com/"
           },
           "-KN3uNQvxifu26D6WKJW": {
             "category": "Education",
@@ -585,12 +585,12 @@
           "angular-love": {
             "desc": "Polish language Angular articles and information",
             "title": "angular.love (Polski)",
-            "url": "http://www.angular.love/"
+            "url": "https://www.angular.love/"
           },
           "learn-angular-fr": {
             "desc": "French language Angular content.",
             "title": "Learn Angular (francais)",
-            "url": "http://www.learn-angular.fr/"
+            "url": "https://www.learn-angular.fr/"
           },
           "upgrading-ajs": {
             "desc": "The world's most comprehensive, step-by-step course on using best practices and avoiding pitfalls while migrating from AngularJS to Angular.",
@@ -651,17 +651,17 @@
           "-KLIBoFWStce29UCwkvY": {
             "desc": "Private Angular Training and Mentoring",
             "title": "Chariot Solutions",
-            "url": "http://chariotsolutions.com/course/angular2-workshop-fundamentals-architecture/"
+            "url": "https://chariotsolutions.com/services/training/angular-workshop-fundamentals-architecture/"
           },
           "-KLIBoN0p9be3kwC6-ga": {
             "desc": "Angular Academy is a two day hands-on public course given in-person across Canada!",
             "title": "Angular Academy (Canada)",
-            "url": "http://www.angularacademy.ca"
+            "url": "https://www.angularacademy.ca/"
           },
           "at": {
             "desc": "Angular Training teaches Angular on-site all over the world. Also provides consulting and mentoring.",
             "title": "Angular Training",
-            "url": "http://www.angulartraining.com"
+            "url": "https://www.angulartraining.com/"
           },
           "-KLIBo_lm-WrK1Sjtt-2": {
             "desc": "Basic and Advanced training across Europe in German",
@@ -676,7 +676,7 @@
           "-KLIzIcRoDq3TzCJWnYc": {
             "desc": "Virtual and in-person training in Canada and the US",
             "title": "Web Age Solutions",
-            "url": "http://www.webagesolutions.com/courses/WA2533-angular-2-programming"
+            "url": "https://www.webagesolutions.com/courses/WA2533-introduction-to-angular-2-programming"
           },
           "500tech": {
             "desc": "Learn from 500Tech, an Angular consultancy in Israel.  This course was built by an expert developer, who lives and breathes Angular, and has practical experience  with real world large scale Angular apps.",
@@ -686,7 +686,7 @@
           "9ab": {
             "desc": "OnSite Training From the Authors of  \"Become A Ninja with Angular\"",
             "title": "Ninja Squad",
-            "url": "http://ninja-squad.com/formations/formation-angular2"
+            "url": "https://ninja-squad.com/formations/formation-angular"
           },
           "a2b": {
             "desc": "Angular Boot Camp covers introductory through advanced Angular topics. It includes extensive workshop sessions, with hands-on help from our experienced developer-trainers. We take developers or teams from the beginnings of Angular understanding through a working knowledge of all essential Angular features.",
@@ -698,7 +698,7 @@
             "desc": "Trainings & Code Reviews. We help people to get a deep understanding of different technologies through trainings and code reviews. Our services can be arranged online, making it possible to join in from anywhere in the world, or on-site to get the best experience possible.",
             "logo": "",
             "title": "Thoughtram",
-            "url": "http://thoughtram.io/"
+            "url": "https://thoughtram.io/"
           },
           "jsru": {
             "desc": "Complete Angular online course. Constantly updating. Real-time webinars with immediate feedback from the teacher.",

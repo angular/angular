@@ -123,7 +123,7 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
   }
   performanceNow(): number {
     // performance.now() is not available in all browsers, see
-    // http://caniuse.com/#search=performance.now
+    // https://caniuse.com/high-resolution-time
     return window.performance && window.performance.now ? window.performance.now() :
                                                           new Date().getTime();
   }
