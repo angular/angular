@@ -1,5 +1,5 @@
 {
-  "$schema": "../test_case_schema.json",
+  "$schema": "../../test_case_schema.json",
   "cases": [
     {
       "description": "should handle SVG",
