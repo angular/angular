@@ -22,7 +22,7 @@ import {CONTENT_ATTR, HOST_ATTR} from '../../style_compiler';
 import {BindingParser} from '../../template_parser/binding_parser';
 import {error, OutputContext} from '../../util';
 import {BoundEvent} from '../r3_ast';
-import {compileFactoryFunction, R3DependencyMetadata, R3FactoryTarget, R3ResolvedDependencyType} from '../r3_factory';
+import {compileFactoryFunction, R3FactoryTarget} from '../r3_factory';
 import {Identifiers as R3} from '../r3_identifiers';
 import {Render3ParseResult} from '../r3_template_transform';
 import {prepareSyntheticListenerFunctionName, prepareSyntheticPropertyName, typeWithParameters} from '../util';
@@ -123,9 +123,7 @@ export function compileDirectiveFromMetadata(
   const definitionMap = baseDirectiveFields(meta, constantPool, bindingParser);
   addFeatures(definitionMap, meta);
   const expression = o.importExpr(R3.defineDirective).callFn([definitionMap.toLiteralMap()]);
-
-  const typeParams = createDirectiveTypeParams(meta);
-  const type = o.expressionType(o.importExpr(R3.DirectiveDefWithMeta, typeParams));
+  const type = createDirectiveType(meta);
 
   return {expression, type};
 }
@@ -264,13 +262,19 @@ export function compileComponentFromMetadata(
   }
 
   const expression = o.importExpr(R3.defineComponent).callFn([definitionMap.toLiteralMap()]);
-
-
-  const typeParams = createDirectiveTypeParams(meta);
-  typeParams.push(stringArrayAsType(meta.template.ngContentSelectors));
-  const type = o.expressionType(o.importExpr(R3.ComponentDefWithMeta, typeParams));
+  const type = createComponentType(meta);
 
   return {expression, type};
+}
+
+/**
+ * Creates the type specification from the component meta. This type is inserted into .d.ts files
+ * to be consumed by upstream compilations.
+ */
+export function createComponentType(meta: R3ComponentMetadata): o.Type {
+  const typeParams = createDirectiveTypeParams(meta);
+  typeParams.push(stringArrayAsType(meta.template.ngContentSelectors));
+  return o.expressionType(o.importExpr(R3.ComponentDefWithMeta, typeParams));
 }
 
 /**
@@ -505,6 +509,15 @@ export function createDirectiveTypeParams(meta: R3DirectiveMetadata): o.Type[] {
     stringMapAsType(meta.outputs),
     stringArrayAsType(meta.queries.map(q => q.propertyName)),
   ];
+}
+
+/**
+ * Creates the type specification from the directive meta. This type is inserted into .d.ts files
+ * to be consumed by upstream compilations.
+ */
+export function createDirectiveType(meta: R3DirectiveMetadata): o.Type {
+  const typeParams = createDirectiveTypeParams(meta);
+  return o.expressionType(o.importExpr(R3.DirectiveDefWithMeta, typeParams));
 }
 
 // Define and update any view queries
