@@ -52,7 +52,7 @@ describe('sanitization', () => {
   });
 
   it('should sanitize resourceUrl', () => {
-    const ERROR = 'unsafe value used in a resource URL context (see http://g.co/ng/security#xss)';
+    const ERROR = 'unsafe value used in a resource URL context (see https://g.co/ng/security#xss)';
     expect(() => ɵɵsanitizeResourceUrl('http://server')).toThrowError(ERROR);
     expect(() => ɵɵsanitizeResourceUrl('javascript:true')).toThrowError(ERROR);
     expect(() => ɵɵsanitizeResourceUrl(bypassSanitizationTrustHtml('javascript:true')))

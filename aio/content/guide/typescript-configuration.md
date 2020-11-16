@@ -31,7 +31,7 @@ For more information, see the [Configuration inheritance with extends](https://w
 
 <div class="alert is-helpful">
 
-For more information TypeScript configuration files, see the official [TypeScript wiki](http://www.typescriptlang.org/docs/handbook/tsconfig-json.html)
+For more information TypeScript configuration files, see the official [TypeScript wiki](https://www.typescriptlang.org/docs/handbook/tsconfig-json.html)
 For details about configuration inheritance, see the [Configuration inheritance with extends](https://www.typescriptlang.org/docs/handbook/tsconfig-json.html#configuration-inheritance-with-extends) section.
 
 </div>
@@ -143,7 +143,7 @@ Fortunately, either their authors or community contributors have created separat
 published them in well-known locations.
 
 You can install these typings via `npm` using the
-[`@types/*` scoped package](http://www.typescriptlang.org/docs/handbook/declaration-files/consumption.html)
+[`@types/*` scoped package](https://www.typescriptlang.org/docs/handbook/declaration-files/consumption.html)
 and Typescript, starting at 2.0, automatically recognizes them.
 
 For instance, to install typings for `jasmine` you run `npm install @types/jasmine --save-dev`.

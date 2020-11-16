@@ -59,7 +59,7 @@ Having multiple classes in the same file can be confusing. We generally recommen
 If you do combine a component and service in the same file,
 it is important to define the service first, and then the component. If you define the component before the service, you get a run-time null reference error.
 
-It is possible to define the component first with the help of the `forwardRef()` method as explained in this [blog post](http://blog.thoughtram.io/angular/2015/09/03/forward-references-in-angular-2.html).
+It is possible to define the component first with the help of the `forwardRef()` method as explained in this [blog post](https://blog.thoughtram.io/angular/2015/09/03/forward-references-in-angular-2.html).
 
 You can also use forward references to break circular dependencies.
 See an example in the [DI Cookbook](guide/dependency-injection-in-action#forwardref).

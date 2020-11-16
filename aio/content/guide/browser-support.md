@@ -130,7 +130,7 @@ This file incorporates the mandatory and many of the optional polyfills as JavaS
 
 * If you need an _optional_ polyfill, you must install its npm package, then uncomment or create the corresponding import statement in the `src/polyfills.ts` configuration file.
 
-For example, if you need the optional [web animations polyfill](http://caniuse.com/#feat=web-animation), you could install it with `npm`, using the following command (or the `yarn` equivalent):
+For example, if you need the optional [web animations polyfill](https://caniuse.com/web-animation), you could install it with `npm`, using the following command (or the `yarn` equivalent):
 
 <code-example language="sh" class="code-shell">
   # install the optional web animations polyfill
@@ -143,7 +143,7 @@ For many polyfills, you can simply un-comment the corresponding `import` stateme
 <code-example header="src/polyfills.ts">
   /**
   * Required to support Web Animations `@angular/platform-browser/animations`.
-  * Needed for: All but Chrome, Firefox and Opera. http://caniuse.com/#feat=web-animation
+  * Needed for: All but Chrome, Firefox and Opera. https://caniuse.com/web-animation
   **/
   import 'web-animations-js';  // Run `npm install --save web-animations-js`.
 </code-example>
@@ -393,7 +393,7 @@ The following polyfills are used to test the framework itself. They are a good s
 
 
 \* Figures are for minified and gzipped code,
-computed with the <a href="http://closure-compiler.appspot.com/home">closure compiler</a>.
+computed with the <a href="https://closure-compiler.appspot.com/home">closure compiler</a>.
 
 {@a non-cli}
 

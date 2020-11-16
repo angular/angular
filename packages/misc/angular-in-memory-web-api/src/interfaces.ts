@@ -282,7 +282,7 @@ export interface ResponseOptions {
   headers?: HttpHeaders;
 
   /**
-   * Http {@link http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html status code}
+   * Http {@link https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html status code}
    * associated with the response.
    */
   status?: number;

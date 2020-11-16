@@ -1,6 +1,6 @@
 # NgZone
 
-A zone is an execution context that persists across async tasks. You can think of it as [thread-local storage](http://en.wikipedia.org/wiki/Thread-local_storage) for JavaScript VMs.
+A zone is an execution context that persists across async tasks. You can think of it as [thread-local storage](https://en.wikipedia.org/wiki/Thread-local_storage) for JavaScript VMs.
 This guide describes how to use Angular's NgZone to automatically detect changes in the component to update HTML.
 
 ## Fundamentals of change detection

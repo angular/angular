@@ -177,7 +177,7 @@ import {Injectable, InjectionToken, Injector, Optional, ReflectiveInjector} from
         const Hash = new InjectionToken('hash');
 
         const injector = Injector.create([
-          {provide: Location, useValue: 'http://angular.io/#someLocation'}, {
+          {provide: Location, useValue: 'https://angular.io/#someLocation'}, {
             provide: Hash,
             useFactory: (location: string) => location.split('#')[1],
             deps: [Location]

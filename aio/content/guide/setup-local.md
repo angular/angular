@@ -39,7 +39,7 @@ To install Angular on your local system, you need the following:
 
   </div>
 
-  For more information on installing Node.js, see [nodejs.org](http://nodejs.org "Nodejs.org").
+  For more information on installing Node.js, see [nodejs.org](https://nodejs.org "Nodejs.org").
   If you are unsure what version of Node.js runs on your system, run `node -v` in a terminal window.
 
 {@a npm}

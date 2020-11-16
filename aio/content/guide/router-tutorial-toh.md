@@ -311,7 +311,7 @@ In this app, the router should select the route to the `HeroListComponent` only 
   Remember to restore the redirect to `pathMatch = 'full'`.
 
   Learn more in Victor Savkin's
-  [post on redirects](http://vsavkin.tumblr.com/post/146722301646/angular-router-empty-paths-componentless-routes).
+  [post on redirects](https://vsavkin.tumblr.com/post/146722301646/angular-router-empty-paths-componentless-routes).
 
 </div>
 
@@ -1131,7 +1131,7 @@ This is matrix URL notation.
 
 <div class="alert is-helpful">
 
-Matrix URL notation is an idea first introduced in a [1996 proposal](http://www.w3.org/DesignIssues/MatrixURIs.html) by the founder of the web, Tim Berners-Lee.
+Matrix URL notation is an idea first introduced in a [1996 proposal](https://www.w3.org/DesignIssues/MatrixURIs.html) by the founder of the web, Tim Berners-Lee.
 
 Although matrix notation never made it into the HTML standard, it is legal and it became popular among browser routing systems as a way to isolate parameters belonging to parent and child routes.
 As such, the Router provides support for the matrix notation across browsers.

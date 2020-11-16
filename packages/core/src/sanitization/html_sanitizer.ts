@@ -29,15 +29,15 @@ function merge(...sets: {[k: string]: boolean}[]): {[k: string]: boolean} {
 }
 
 // Good source of info about elements and attributes
-// http://dev.w3.org/html5/spec/Overview.html#semantics
-// http://simon.html5.org/html-elements
+// https://html.spec.whatwg.org/#semantics
+// https://simon.html5.org/html-elements
 
 // Safe Void Elements - HTML5
-// http://dev.w3.org/html5/spec/Overview.html#void-elements
+// https://html.spec.whatwg.org/#void-elements
 const VOID_ELEMENTS = tagSet('area,br,col,hr,img,wbr');
 
 // Elements that you can, intentionally, leave open (and which close themselves)
-// http://dev.w3.org/html5/spec/Overview.html#optional-tags
+// https://html.spec.whatwg.org/#optional-tags
 const OPTIONAL_END_TAG_BLOCK_ELEMENTS = tagSet('colgroup,dd,dt,li,p,tbody,td,tfoot,th,thead,tr');
 const OPTIONAL_END_TAG_INLINE_ELEMENTS = tagSet('rp,rt');
 const OPTIONAL_END_TAG_ELEMENTS =
@@ -273,7 +273,7 @@ export function _sanitizeHtml(defaultDoc: any, unsafeHtmlInput: string): Trusted
         getTemplateContent(inertBodyElement!) as Element || inertBodyElement);
     if (isDevMode() && sanitizer.sanitizedSomething) {
       console.warn(
-          'WARNING: sanitizing HTML stripped some content, see http://g.co/ng/security#xss');
+          'WARNING: sanitizing HTML stripped some content, see https://g.co/ng/security#xss');
     }
 
     return trustedHTMLFromString(safeHtml);

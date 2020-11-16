@@ -754,7 +754,7 @@ describe('projection', () => {
 
     /**
      * Descending into projected content for selector-matching purposes is not supported
-     * today: http://plnkr.co/edit/MYQcNfHSTKp9KvbzJWVQ?p=preview
+     * today: https://plnkr.co/edit/MYQcNfHSTKp9KvbzJWVQ?p=preview
      */
     it('should not descend into re-projected content', () => {
       @Component({

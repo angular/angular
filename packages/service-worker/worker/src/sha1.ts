@@ -9,7 +9,7 @@
 /**
  * Compute the SHA1 of the given string
  *
- * see http://csrc.nist.gov/publications/fips/fips180-4/fips-180-4.pdf
+ * see https://csrc.nist.gov/publications/fips/fips180-4/fips-180-4.pdf
  *
  * WARNING: this function has not been designed not tested with security in mind.
  *          DO NOT USE IT IN A SECURITY SENSITIVE CONTEXT.
@@ -176,7 +176,7 @@ function byteStringToHexString(str: string): string {
   return hex.toLowerCase();
 }
 
-// based on http://www.danvk.org/hex2dec.html (JS can not handle more than 56b)
+// based on https://www.danvk.org/hex2dec.html (JS can not handle more than 56b)
 function byteStringToDecString(str: string): string {
   let decimal = '';
   let toThePower = '1';

@@ -95,11 +95,11 @@ export class AppComponent implements AfterViewInit, OnInit {
 
   heroIdIncrement = 1;
 
-  // heroImageUrl = 'http://www.wpclipart.com/cartoon/people/hero/hero_silhoutte_T.png';
-  // Public Domain terms of use: http://www.wpclipart.com/terms.html
+  // heroImageUrl = 'https://wpclipart.com/cartoon/people/hero/hero_silhoutte_T.png';
+  // Public Domain terms of use: https://wpclipart.com/terms.html
   heroImageUrl = 'assets/images/hero.png';
-  // villainImageUrl = 'http://www.clker.com/cliparts/u/s/y/L/x/9/villain-man-hi.png'
-  // Public Domain terms of use http://www.clker.com/disclaimer.html
+  // villainImageUrl = 'https://www.clker.com/cliparts/u/s/y/L/x/9/villain-man-hi.png'
+  // Public Domain terms of use https://www.clker.com/disclaimer.html
   villainImageUrl = 'assets/images/villain.png';
 
   iconUrl = 'assets/images/ng-logo.png';

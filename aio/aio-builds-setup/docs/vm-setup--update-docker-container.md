@@ -59,4 +59,4 @@ log its output to `update-preview-server.log` (assuming the user has the necessa
 Keep in mind that cron jobs run in non-interactive, non-login shells. This means that the execution
 context might be different compared to when running the same commands from an interactive, login
 shell. For example, `.bashrc` files are normally _not_ sourced automatically in cron jobs. See
-[here](http://www.gnu.org/software/bash/manual/html_node/Bash-Startup-Files.html) for more info.
+[here](https://www.gnu.org/software/bash/manual/html_node/Bash-Startup-Files.html) for more info.

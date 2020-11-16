@@ -158,7 +158,7 @@ export interface CompilerHost extends ts.CompilerHost, ExtendedTsCompilerHost {
    * Produce an AMD module name for the source file. Used in Bazel.
    *
    * An AMD module can have an arbitrary name, so that it is require'd by name
-   * rather than by path. See http://requirejs.org/docs/whyamd.html#namedmodules
+   * rather than by path. See https://requirejs.org/docs/whyamd.html#namedmodules
    */
   amdModuleName?(sf: ts.SourceFile): string|undefined;
 }
