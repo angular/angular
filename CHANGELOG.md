@@ -112,118 +112,104 @@
 
 ### BREAKING CHANGES
 
-* **common:** The locale data API has been marked as returning readonly arrays, rather
-than mutable arrays, since these arrays are shared across calls to the
-API. If you were mutating them (e.g. calling `sort()`, `push()`, `splice()`, etc.)
-then your code will no longer compile. If you need to mutate the array, you
-should now make a copy (e.g. by calling `slice()`) and mutate the copy.
-* **common:** When passing a date-time formatted string to the `DatePipe` in a format that contains
-fractions of a millisecond, the milliseconds will now always be rounded down rather than
-to the nearest millisecond. Most applications will not be affected by this change. If this is not the desired behaviour
-then consider pre-processing the string to round the millisecond part before passing
-it to the `DatePipe`.
-* **common:** The `slice` pipe now returns `null` for the `undefined` input value,
-which is consistent with the behavior of most pipes. If you rely on
-`undefined` being the result in that case, you now need to check for it
-explicitly.
-* **common:** The typing of the `keyvalue` pipe has been fixed to report that for
-input objects that have `number` keys, the result will contain the
-string representation of the keys. This was already the case and the
-types have simply been updated to reflect this. Please update the
-consumers of the pipe output if they were relying on the incorrect
-types. Note that this does not affect use cases where the input values
-are `Map`s, so if you need to preserve `number`s, this is an effective
-way.
-* **common:** The signatures of the number pipes now explicitly state which types are
-accepted. This should only cause issues in corner cases, as any other
-values would result in runtime exceptions.
-* **common:** The signature of the `date` pipe now explicitly states which types are
-accepted. This should only cause issues in corner cases, as any other
-values would result in runtime exceptions.
-* **common:** The `async` pipe no longer claims to return `undefined` for an input that
-was typed as `undefined`. Note that the code actually returned `null` on
-`undefined` inputs. In the unlikely case you were relying on this,
-please fix the typing of the consumers of the pipe output.
-* **common:** The case conversion pipes no longer let falsy values through. They now
-map both `null` and `undefined` to `null` and raise an exception on
-invalid input (`0`, `false`, `NaN`) just like most "common pipes". If
-your code required falsy values to pass through, you need to handle them
-explicitly.
-* **compiler:** TypeScript 3.9 is no longer supported, please upgrade to TypeScript 4.0.
-* **compiler-cli:** Expressions within ICUs are now type-checked again, fixing a regression
-in Ivy. This may cause compilation failures if errors are found in
-expressions that appear within an ICU. Please correct these expressions
-to resolve the type-check errors.
-* **core:** `CollectionChangeRecord` has been removed, use `IterableChangeRecord` instead.
-* **core:** If you call `TestBed.overrideProvider` after TestBed initialization, provider overrides are not applied. This
-behavior is consistent with other override methods (such as `TestBed.overrideDirective`, etc) but they
-throw an error to indicate that, when the check was missing in the `TestBed.overrideProvider` function.
-Now calling `TestBed.overrideProvider` after `TestBed` initialization also triggers an
-error, thus there is a chance that some tests (where `TestBed.overrideProvider` is
-called after `TestBed` initialization) will start to fail and require updates to move `TestBed.overrideProvider` calls
-before `TestBed` initialization is completed.
-* **core:** In v10, IE 9, 10, and IE mobile support was deprecated. In v11, Angular framework removes IE 9,
-10, and IE mobile support completely.
-Supporting outdated browsers like these increases bundle size, code complexity, and test load,
-and also requires time and effort that could be spent on improvements to the framework.
-For example, fixing issues can be more difficult, as a straightforward fix for modern browsers
-could break old ones that have quirks due to not receiving updates from vendors.
-* **core:** `ViewEncapsulation.Native` has been removed. Use `ViewEncapsulation.ShadowDom` instead. Existing
-usages will be updated automatically by `ng update`.
-* **forms:** Previously if `FormControl`, `FormGroup` and `FormArray` class instances had async validators
-defined at initialization time, the status change event was not emitted once async validators
-completed. After this change the status event is emitted into the `statusChanges` observable.
-If your code relies on the old behavior, you can filter/ignore this additional status change
-event.
-* **forms:** Directives in the `@angular/forms` package used to have `any[]` as a type of `validators` and
-`asyncValidators` arguments in constructors. Now these arguments are properly typed, so if your
-code relies on directive constructor types it may require some updates to improve type safety.
-* **forms:** Type of `AbstractFormControl.parent` now includes `null`. `null` is now included in the types of `.parent`. If you don't already have a check for this case,
-the TypeScript compiler might complain. A v11 migration exists which adds the non-null assertion
-operator where necessary. In an unlikely case your code was testing the parent against `undefined` with strict equality,
-you'll need to change this to `=== null` instead, since the parent is now explicitly initialized
-with `null` instead of being left `undefined`.
-* **platform-server:** If you use `useAbsoluteUrl` to setup `platform-server`, you now need to
-also specify `baseUrl`.
-We are intentionally making this a breaking change in a minor release,
-because if `useAbsoluteUrl` is set to `true` then the behavior of the
-application could be unpredictable, resulting in issues that are hard to
-discover but could be affecting production environments.
-* **platform-webworker:** @angular/platform-webworker and @angular/platform-webworker-dynamic
-have been removed as they were deprecated in v8.
-* **router:** This change corrects the argument order when calling
-`RouteReuseStrategy#shouldReuseRoute`. Previously, when evaluating child
-routes, they would be called with the future and current arguments would
-be swapped. If your `RouteReuseStrategy` relies specifically on only the future
-or current snapshot state, you may need to update the `shouldReuseRoute`
-implementation's use of "future" and "current" `ActivatedRouteSnapshot`s.
-* **router:** While the new parameter types allow a variable of type
-`NavigationExtras` to be passed in, they will not allow object literals,
-as they may only specify known properties. They will also not accept
-types that do not have properties in common with the ones in the `Pick`.
-To fix this error, only specify properties from the `NavigationExtras` which are
-actually used in the respective function calls or use a type assertion
-on the object or variable: `as NavigationExtras`.
-* **router:** This commit changes the default value of
-`relativeLinkResolution` from `'legacy'` to `'default'`. If your
-application previously used the default by not specifying a value in the
-`ExtraOptions` and uses relative links when navigating from children of
-empty path routes, you will need to update your `RouterModule` to
-specifically specify `'legacy'` for `relativeLinkResolution`.
-See https://angular.io/api/router/ExtraOptions#relativeLinkResolution
-for more details.
-* **router:** The `initialNavigation` property for the options in
-`RouterModule.forRoot` no longer supports `legacy_disabled`,
-`legacy_enabled`, `true`, or `false` as valid values.
-`legacy_enabled` (the old default) is instead `enabledNonBlocking`.
-* **router:** `enabled` is deprecated as a valid value for the
-`RouterModule.forRoot` `initialNavigation` option. `enabledBlocking`
-has been introduced to replace it.
-* **router:** `preserveQueryParams` has been removed, use
-`queryParamsHandling: "preserve"` instead.
-* **router:**  If you were accessing the `RouterLink` values of `queryParams`,
-`fragment` or `queryParamsHandling` you might need to relax the typing to also
-accept `undefined` and `null`. ([#39151](https://github.com/angular/angular/issues/39151))
+* **common:**
+  - **[6acea54](https://github.com/angular/angular/commit/6acea54f62fe7e62e9b36458b30d98501277236f):**
+    The locale data API has been marked as returning readonly arrays, rather than mutable arrays, since these arrays are shared across calls to the API.
+    If you were mutating them (e.g. calling `sort()`, `push()`, `splice()`, etc.) then your code will no longer compile.
+    If you need to mutate the array, you should now make a copy (e.g. by calling `slice()`) and mutate the copy.
+  - **[26f2820](https://github.com/angular/angular/commit/26f28200bf3a909024184c61111f4cd20ac41edd):**
+    When passing a date-time formatted string to the `DatePipe` in a format that contains fractions of a millisecond, the milliseconds will now always be rounded down rather than to the nearest millisecond.
+    Most applications will not be affected by this change.
+    If this is not the desired behaviour then consider pre-processing the string to round the millisecond part before passing it to the `DatePipe`.
+  - **[4744c22](https://github.com/angular/angular/commit/4744c229dbd372746a38ebbcdae2245f945ebcc4):**
+    The `slice` pipe now returns `null` for the `undefined` input value, which is consistent with the behavior of most pipes.
+    If you rely on `undefined` being the result in that case, you now need to check for it explicitly.
+  - **[4dfe0fa](https://github.com/angular/angular/commit/4dfe0fa068007c28ca3b4a1476ed4ba1d2d86064):**
+    The typing of the `keyvalue` pipe has been fixed to report that for input objects that have `number` keys, the result will contain the string representation of the keys.
+    This was already the case and the types have simply been updated to reflect this.
+    Please update the consumers of the pipe output if they were relying on the incorrect types.
+    Note that this does not affect use cases where the input values are `Map`s, so if you need to preserve `number`s, this is an effective way.
+  - **[7b2aac9](https://github.com/angular/angular/commit/7b2aac97df63717fd2dfbb81903d12221ae29ba1):**
+    The signatures of the number pipes now explicitly state which types are accepted.
+    This should only cause issues in corner cases, as any other values would result in runtime exceptions.
+  - **[daf8b7f](https://github.com/angular/angular/commit/daf8b7f10038c7ecf7ea78bc6fe39766c85224a6):**
+    The signature of the `date` pipe now explicitly states which types are accepted.
+    This should only cause issues in corner cases, as any other values would result in runtime exceptions.
+  - **[5f815c0](https://github.com/angular/angular/commit/5f815c05650c15e414fe72cddaa2b690a7962273):**
+    The `async` pipe no longer claims to return `undefined` for an input that was typed as `undefined`.
+    Note that the code actually returned `null` on `undefined` inputs.
+    In the unlikely case you were relying on this, please fix the typing of the consumers of the pipe output.
+  - **[c7d5555](https://github.com/angular/angular/commit/c7d5555dfb14f5deca4a2d947fe82a68453e5f09):**
+    The case conversion pipes no longer let falsy values through.
+    They now map both `null` and `undefined` to `null` and raise an exception on invalid input (`0`, `false`, `NaN`) just like most "common pipes".
+    If your code required falsy values to pass through, you need to handle them explicitly.
+* **compiler:**
+  - **[736e064](https://github.com/angular/angular/commit/736e0644b02bc4606a7ae0c974d1b06e993708f6):**
+    TypeScript 3.9 is no longer supported, please upgrade to TypeScript 4.0.
+* **compiler-cli:**
+  - **[0a16e60](https://github.com/angular/angular/commit/0a16e60afae27c7af023cf617de05297dddf5135):**
+    Expressions within ICUs are now type-checked again, fixing a regression in Ivy.
+    This may cause compilation failures if errors are found in expressions that appear within an ICU.
+    Please correct these expressions to resolve the type-check errors.
+* **core:**
+  - **[fdea180](https://github.com/angular/angular/commit/fdea1804d6d46d33c71640972ff45a8d5cc82f8b):**
+    `CollectionChangeRecord` has been removed, use `IterableChangeRecord` instead.
+  - **[c8f056b](https://github.com/angular/angular/commit/c8f056beb696d176530ee4e86f64964c3b834c9a):**
+    If you call `TestBed.overrideProvider` after TestBed initialization, provider overrides are not applied.
+    This behavior is consistent with other override methods (such as `TestBed.overrideDirective`, etc) but they throw an error to indicate that, when the check was missing in the `TestBed.overrideProvider` function.
+    Now calling `TestBed.overrideProvider` after `TestBed` initialization also triggers an error, thus there is a chance that some tests (where `TestBed.overrideProvider` is called after `TestBed` initialization) will start to fail and require updates to move `TestBed.overrideProvider` calls before `TestBed` initialization is completed.
+  - **[4ca1c73](https://github.com/angular/angular/commit/4ca1c736bb020de166b6a1fbfb9fe264602ccd5c):**
+    In v10, IE 9, 10, and IE mobile support was deprecated.
+    In v11, Angular framework removes IE 9, 10, and IE mobile support completely.
+    Supporting outdated browsers like these increases bundle size, code complexity, and test load, and also requires time and effort that could be spent on improvements to the framework.
+    For example, fixing issues can be more difficult, as a straightforward fix for modern browsers could break old ones that have quirks due to not receiving updates from vendors.
+  - **[4a1c12c](https://github.com/angular/angular/commit/4a1c12c773f14dbfc5db61087f415d56f60127cf):**
+    `ViewEncapsulation.Native` has been removed. Use `ViewEncapsulation.ShadowDom` instead.
+    Existing usages will be updated automatically by `ng update`.
+* **forms:**
+  - **[d9fea85](https://github.com/angular/angular/commit/d9fea857db0638149f200ca86c7852c01c9787f4):**
+    Previously if `FormControl`, `FormGroup` and `FormArray` class instances had async validators defined at initialization time, the status change event was not emitted once async validators completed.
+    After this change the status event is emitted into the `statusChanges` observable.
+    If your code relies on the old behavior, you can filter/ignore this additional status change event.
+  - **[246de9a](https://github.com/angular/angular/commit/246de9aaad2a85c39f4e624ba25e444d716fe486):**
+    Directives in the `@angular/forms` package used to have `any[]` as a type of `validators` and `asyncValidators` arguments in constructors.
+    Now these arguments are properly typed, so if your code relies on directive constructor types it may require some updates to improve type safety.
+  - **[f4f1bcc](https://github.com/angular/angular/commit/f4f1bcc99711be277205dcd8ef6fc5a1873cb227):**
+    Type of `AbstractFormControl.parent` now includes `null`.
+    `null` is now included in the types of `.parent`.
+    If you don't already have a check for this case, the TypeScript compiler might complain.
+    A v11 migration exists which adds the non-null assertion operator where necessary.
+    In an unlikely case your code was testing the parent against `undefined` with strict equality, you'll need to change this to `=== null` instead, since the parent is now explicitly initialized with `null` instead of being left `undefined`.
+* **platform-server:**
+  - **[b4e8399](https://github.com/angular/angular/commit/b4e8399144ae4b6d4f0da9ff2a8e1fa73643f766):**
+    If you use `useAbsoluteUrl` to setup `platform-server`, you now need to also specify `baseUrl`.
+    We are intentionally making this a breaking change in a minor release, because if `useAbsoluteUrl` is set to `true` then the behavior of the application could be unpredictable, resulting in issues that are hard to discover but could be affecting production environments.
+* **platform-webworker:**
+  - **[93c3d8f](https://github.com/angular/angular/commit/93c3d8f9fd79014bf700a1447503f5ee6f170bf9):**
+    @angular/platform-webworker and @angular/platform-webworker-dynamic have been removed as they were deprecated in v8.
+* **router:**
+  - **[3817e5f](https://github.com/angular/angular/commit/3817e5f1dfeb9de26fa2ea4068a37565f435214f):**
+    This change corrects the argument order when calling `RouteReuseStrategy#shouldReuseRoute`.
+    Previously, when evaluating child routes, they would be called with the future and current arguments would be swapped.
+    If your `RouteReuseStrategy` relies specifically on only the future or current snapshot state, you may need to update the `shouldReuseRoute` implementation's use of "future" and "current" `ActivatedRouteSnapshot`s.
+  - **[e4f4d18](https://github.com/angular/angular/commit/e4f4d18e7e73a7c755d3b79cf599e0e04270000d):**
+    While the new parameter types allow a variable of type `NavigationExtras` to be passed in, they will not allow object literals, as they may only specify known properties.
+    They will also not accept types that do not have properties in common with the ones in the `Pick`.
+    To fix this error, only specify properties from the `NavigationExtras` which are actually used in the respective function calls or use a type assertion on the object or variable: `as NavigationExtras`.
+  - **[837889f](https://github.com/angular/angular/commit/837889f0a47521d3de5c445ac3ffeedfe47fc109):**
+    This commit changes the default value of `relativeLinkResolution` from `'legacy'` to `'default'`.
+    If your application previously used the default by not specifying a value in the `ExtraOptions` and uses relative links when navigating from children of empty path routes, you will need to update your `RouterModule` to specifically specify `'legacy'` for `relativeLinkResolution`.
+    See https://angular.io/api/router/ExtraOptions#relativeLinkResolution for more details.
+  - **[c4becca](https://github.com/angular/angular/commit/c4becca0e4238640461c43567a6d3e16b8c5d3f3):**
+    The `initialNavigation` property for the options in `RouterModule.forRoot` no longer supports `legacy_disabled`, `legacy_enabled`, `true`, or `false` as valid values.
+    `legacy_enabled` (the old default) is instead `enabledNonBlocking`.
+  - **[c4becca](https://github.com/angular/angular/commit/c4becca0e4238640461c43567a6d3e16b8c5d3f3):**
+    `enabled` is deprecated as a valid value for the `RouterModule.forRoot` `initialNavigation` option.
+    `enabledBlocking` has been introduced to replace it.
+  - **[783a5bd](https://github.com/angular/angular/commit/783a5bd7bbae35562e21aaa27771c54091fb9812):**
+    `preserveQueryParams` has been removed, use `queryParamsHandling: "preserve"` instead.
+  - **[b0b4953](https://github.com/angular/angular/commit/b0b4953fd654aeda2f358b0af1ab32d20b368930):**
+    If you were accessing the `RouterLink` values of `queryParams`, `fragment` or `queryParamsHandling` you might need to relax the typing to also accept `undefined` and `null`.
 
 
 ### Code Refactoring
