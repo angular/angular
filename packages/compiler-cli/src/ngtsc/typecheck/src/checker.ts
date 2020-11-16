@@ -6,24 +6,24 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, ParseError, parseTemplate, TmplAstNode, TmplAstReference, TmplAstTemplate, TmplAstVariable} from '@angular/compiler';
+import {AST, ParseError, parseTemplate, TmplAstNode, TmplAstTemplate,} from '@angular/compiler';
 import * as ts from 'typescript';
 
-import {absoluteFromSourceFile, AbsoluteFsPath, getSourceFileOrError} from '../../file_system';
+import {absoluteFrom, absoluteFromSourceFile, AbsoluteFsPath, getSourceFileOrError} from '../../file_system';
 import {ReferenceEmitter} from '../../imports';
 import {IncrementalBuild} from '../../incremental/api';
 import {isNamedClassDeclaration, ReflectionHost} from '../../reflection';
 import {ComponentScopeReader} from '../../scope';
 import {isShim} from '../../shims';
 import {getSourceFileOrNull} from '../../util/src/typescript';
-import {CompletionKind, DirectiveInScope, GlobalCompletion, OptimizeFor, PipeInScope, ProgramTypeCheckAdapter, Symbol, TemplateId, TemplateTypeChecker, TypeCheckingConfig, TypeCheckingProgramStrategy, UpdateMode} from '../api';
+import {DirectiveInScope, FullTemplateMapping, GlobalCompletion, OptimizeFor, PipeInScope, ProgramTypeCheckAdapter, ShimLocation, Symbol, TemplateId, TemplateTypeChecker, TypeCheckingConfig, TypeCheckingProgramStrategy, UpdateMode} from '../api';
 import {TemplateDiagnostic} from '../diagnostics';
 
-import {ExpressionIdentifier, findFirstMatchingNode} from './comments';
 import {CompletionEngine} from './completion';
 import {InliningMode, ShimTypeCheckingData, TemplateData, TypeCheckContextImpl, TypeCheckingHost} from './context';
-import {findTypeCheckBlock, shouldReportDiagnostic, TemplateSourceResolver, translateDiagnostic} from './diagnostics';
+import {shouldReportDiagnostic, translateDiagnostic} from './diagnostics';
 import {TemplateSourceManager} from './source';
+import {findTypeCheckBlock, getTemplateMapping, TemplateSourceResolver} from './tcb_util';
 import {SymbolBuilder} from './template_symbol_builder';
 
 /**
@@ -170,6 +170,31 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
     this.symbolBuilderCache.delete(component);
 
     return {nodes};
+  }
+
+  private getFileAndShimRecordsForPath(shimPath: AbsoluteFsPath):
+      {fileRecord: FileTypeCheckingData, shimRecord: ShimTypeCheckingData}|null {
+    for (const fileRecord of this.state.values()) {
+      if (fileRecord.shimData.has(shimPath)) {
+        return {fileRecord, shimRecord: fileRecord.shimData.get(shimPath)!};
+      }
+    }
+    return null;
+  }
+
+  getTemplateMappingAtShimLocation({shimPath, positionInShimFile}: ShimLocation):
+      FullTemplateMapping|null {
+    const records = this.getFileAndShimRecordsForPath(absoluteFrom(shimPath));
+    if (records === null) {
+      return null;
+    }
+    const {fileRecord} = records;
+
+    const shimSf = this.typeCheckingStrategy.getProgram().getSourceFile(absoluteFrom(shimPath));
+    if (shimSf === undefined) {
+      return null;
+    }
+    return getTemplateMapping(shimSf, positionInShimFile, fileRecord.sourceManager);
   }
 
   /**
