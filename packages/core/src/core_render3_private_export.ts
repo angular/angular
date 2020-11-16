@@ -165,6 +165,7 @@ export {
   ɵɵnamespaceMathML,
   ɵɵnamespaceSVG,
   ɵɵnextContext,
+  ɵɵngDeclareComponent,
   ɵɵngDeclareDirective,
   ɵɵNgOnChangesFeature,
   ɵɵpipe,

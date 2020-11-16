@@ -159,8 +159,8 @@ export function compileComponentFromMetadata(
 
   if (meta.directives.length > 0) {
     const matcher = new SelectorMatcher();
-    for (const {selector, expression} of meta.directives) {
-      matcher.addSelectables(CssSelector.parse(selector), expression);
+    for (const {selector, type} of meta.directives) {
+      matcher.addSelectables(CssSelector.parse(selector), type);
     }
     directiveMatcher = matcher;
   }

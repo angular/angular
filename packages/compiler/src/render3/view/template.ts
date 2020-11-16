@@ -2032,6 +2032,11 @@ export interface ParseTemplateOptions {
    * The default is `false`, but this will be switched in a future major release.
    */
   i18nNormalizeLineEndingsInICUs?: boolean;
+
+  /**
+   * Whether the template was inline.
+   */
+  isInline?: boolean;
 }
 
 /**
@@ -2044,6 +2049,7 @@ export interface ParseTemplateOptions {
 export function parseTemplate(
     template: string, templateUrl: string, options: ParseTemplateOptions = {}): ParsedTemplate {
   const {interpolationConfig, preserveWhitespaces, enableI18nLegacyMessageIdFormat} = options;
+  const isInline = options.isInline ?? false;
   const bindingParser = makeBindingParser(interpolationConfig);
   const htmlParser = new HtmlParser();
   const parseResult = htmlParser.parse(
@@ -2057,6 +2063,7 @@ export function parseTemplate(
       interpolationConfig,
       preserveWhitespaces,
       template,
+      isInline,
       errors: parseResult.errors,
       nodes: [],
       styleUrls: [],
@@ -2081,6 +2088,7 @@ export function parseTemplate(
       interpolationConfig,
       preserveWhitespaces,
       template,
+      isInline,
       errors: i18nMetaResult.errors,
       nodes: [],
       styleUrls: [],
@@ -2112,6 +2120,7 @@ export function parseTemplate(
     preserveWhitespaces,
     errors: errors.length > 0 ? errors : null,
     template,
+    isInline,
     nodes,
     styleUrls,
     styles,
@@ -2269,12 +2278,18 @@ export interface ParsedTemplate {
   interpolationConfig?: InterpolationConfig;
 
   /**
-   * The string contents of the template.
+   * The string contents of the template, or an expression that represents the string/template
+   * literal as it occurs in the source.
    *
    * This is the "logical" template string, after expansion of any escaped characters (for inline
    * templates). This may differ from the actual template bytes as they appear in the .ts file.
    */
-  template: string;
+  template: string|o.Expression;
+
+  /**
+   * Whether the template was inline (using `template`) or external (using `templateUrl`).
+   */
+  isInline: boolean;
 
   /**
    * Any errors from parsing the template the first time.

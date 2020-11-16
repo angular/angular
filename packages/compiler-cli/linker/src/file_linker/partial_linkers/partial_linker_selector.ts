@@ -5,6 +5,8 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {LinkerOptions} from '../linker_options';
+
 import {PartialComponentLinkerVersion1} from './partial_component_linker_1';
 import {PartialDirectiveLinkerVersion1} from './partial_directive_linker_1';
 import {PartialLinker} from './partial_linker';
@@ -15,9 +17,11 @@ export class PartialLinkerSelector<TExpression> {
       1: new PartialDirectiveLinkerVersion1(),
     },
     'ɵɵngDeclareComponent': {
-      1: new PartialComponentLinkerVersion1(),
+      1: new PartialComponentLinkerVersion1(this.options),
     },
   };
+
+  constructor(private options: LinkerOptions) {}
 
   /**
    * Returns true if there are `PartialLinker` classes that can handle functions with this name.

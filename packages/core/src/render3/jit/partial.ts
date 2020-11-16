@@ -14,3 +14,12 @@
 export function ɵɵngDeclareDirective(decl: unknown): unknown {
   throw new Error('Not yet implemented');
 }
+
+/**
+ * Compiles a partial component declaration object into a full component definition object.
+ *
+ * @codeGenApi
+ */
+export function ɵɵngDeclareComponent(decl: unknown): unknown {
+  throw new Error('Not yet implemented');
+}
