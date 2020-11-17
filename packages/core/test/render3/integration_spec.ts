@@ -6,13 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {RendererType2} from '../../src/render/api';
+import {RElement} from '@angular/core/src/render3/interfaces/renderer_dom';
+import {RendererType2} from '../../src/render/api_flags';
 import {getLContext} from '../../src/render3/context_discovery';
 import {AttributeMarker, ɵɵadvance, ɵɵattribute, ɵɵdefineComponent, ɵɵdefineDirective, ɵɵhostProperty, ɵɵproperty} from '../../src/render3/index';
 import {ɵɵelement, ɵɵelementEnd, ɵɵelementStart, ɵɵprojection, ɵɵprojectionDef, ɵɵtemplate, ɵɵtext} from '../../src/render3/instructions/all';
 import {MONKEY_PATCH_KEY_NAME} from '../../src/render3/interfaces/context';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
-import {domRendererFactory3, RElement, Renderer3, RendererFactory3} from '../../src/render3/interfaces/renderer';
+import {domRendererFactory3, Renderer3, RendererFactory3} from '../../src/render3/interfaces/renderer';
 import {CONTEXT, HEADER_OFFSET} from '../../src/render3/interfaces/view';
 import {ɵɵsanitizeUrl} from '../../src/sanitization/sanitization';
 import {Sanitizer} from '../../src/sanitization/sanitizer';

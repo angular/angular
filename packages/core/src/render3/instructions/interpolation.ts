@@ -11,7 +11,7 @@ import {bindingUpdated, bindingUpdated2, bindingUpdated3, bindingUpdated4} from 
 import {LView} from '../interfaces/view';
 import {getBindingIndex, incrementBindingIndex, nextBindingIndex, setBindingIndex} from '../state';
 import {NO_CHANGE} from '../tokens';
-import {renderStringify} from '../util/misc_utils';
+import {renderStringify} from '../util/stringify_utils';
 
 
 

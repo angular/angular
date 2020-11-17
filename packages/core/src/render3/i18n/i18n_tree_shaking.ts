@@ -14,7 +14,7 @@
  */
 
 import {TIcuContainerNode} from '../interfaces/node';
-import {RNode} from '../interfaces/renderer';
+import {RNode} from '../interfaces/renderer_dom';
 import {LView} from '../interfaces/view';
 
 

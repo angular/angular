@@ -9,7 +9,7 @@
 import {devModeEqual, WrappedValue} from '../change_detection/change_detection';
 import {SOURCE} from '../di/injector_compatibility';
 import {ViewEncapsulation} from '../metadata/view';
-import {RendererType2} from '../render/api';
+import {RendererType2} from '../render/api_flags';
 import {stringify} from '../util/stringify';
 
 import {expressionChangedAfterItHasBeenCheckedError} from './errors';

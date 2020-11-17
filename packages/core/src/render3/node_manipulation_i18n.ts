@@ -7,8 +7,10 @@
  */
 
 import {assertDomNode, assertIndexInRange} from '../util/assert';
+
 import {TNode, TNodeFlags, TNodeType} from './interfaces/node';
-import {RElement, Renderer3, RNode} from './interfaces/renderer';
+import {Renderer3} from './interfaces/renderer';
+import {RElement, RNode} from './interfaces/renderer_dom';
 import {LView} from './interfaces/view';
 import {getInsertInFrontOfRNodeWithNoI18n, nativeInsertBefore} from './node_manipulation';
 import {unwrapRNode} from './util/view_utils';

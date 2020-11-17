@@ -9,10 +9,8 @@
 import '../util/ng_dev_mode';
 
 import {Type} from '../interface/type';
-import {assertNotEqual} from '../util/assert';
 import {getClosureSafeProperty} from '../util/property';
 import {stringify} from '../util/stringify';
-
 import {resolveForwardRef} from './forward_ref';
 import {getInjectImplementation, injectRootLimpMode} from './inject_switch';
 import {InjectionToken} from './injection_token';

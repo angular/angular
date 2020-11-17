@@ -8,9 +8,9 @@
 
 import {ViewEncapsulation} from '../metadata/view';
 import {Renderer2} from '../render/api';
+import {RendererStyleFlags2} from '../render/api_flags';
 import {addToArray, removeFromArray} from '../util/array_utils';
-import {assertDefined, assertDomNode, assertEqual, assertIndexInRange, assertString} from '../util/assert';
-
+import {assertDefined, assertDomNode, assertEqual, assertString} from '../util/assert';
 import {assertLContainer, assertLView, assertTNodeForLView} from './assert';
 import {attachPatchData} from './context_discovery';
 import {icuContainerIterate} from './i18n/i18n_tree_shaking';
@@ -19,7 +19,8 @@ import {ComponentDef} from './interfaces/definition';
 import {NodeInjectorFactory} from './interfaces/injector';
 import {TElementNode, TIcuContainerNode, TNode, TNodeFlags, TNodeType, TProjectionNode, unusedValueExportToPlacateAjd as unused2} from './interfaces/node';
 import {unusedValueExportToPlacateAjd as unused3} from './interfaces/projection';
-import {isProceduralRenderer, ProceduralRenderer3, RComment, RElement, Renderer3, RNode, RText, unusedValueExportToPlacateAjd as unused4} from './interfaces/renderer';
+import {isProceduralRenderer, ProceduralRenderer3, Renderer3, unusedValueExportToPlacateAjd as unused4} from './interfaces/renderer';
+import {RComment, RElement, RNode, RText} from './interfaces/renderer_dom';
 import {isLContainer, isLView} from './interfaces/type_checks';
 import {CHILD_HEAD, CLEANUP, DECLARATION_COMPONENT_VIEW, DECLARATION_LCONTAINER, DestroyHookData, FLAGS, HookData, HookFn, HOST, LView, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, T_HOST, TVIEW, TView, TViewType, unusedValueExportToPlacateAjd as unused5} from './interfaces/view';
 import {assertTNodeType} from './node_assert';
@@ -986,13 +987,6 @@ function applyContainer(
   }
 }
 
-// TODO(misko): Can't import RendererStyleFlags2.DashCase as it causes imports to be resolved
-// in different order which causes failures. Duplicating for now.
-const enum TempRendererStyleFlags2 {
-  Important = 1 << 0,
-  DashCase = 1 << 1
-}
-
 /**
  * Writes class/style to element.
  *
@@ -1025,7 +1019,7 @@ export function applyStyling(
       }
     }
   } else {
-    let flags = prop.indexOf('-') === -1 ? undefined : TempRendererStyleFlags2.DashCase as number;
+    let flags = prop.indexOf('-') === -1 ? undefined : RendererStyleFlags2.DashCase as number;
     if (value == null /** || value === undefined */) {
       ngDevMode && ngDevMode.rendererRemoveStyle++;
       if (isProcedural) {
@@ -1041,7 +1035,7 @@ export function applyStyling(
       if (isImportant) {
         // !important has to be stripped from the value for it to be valid.
         value = value.slice(0, -10);
-        flags! |= TempRendererStyleFlags2.Important;
+        flags! |= RendererStyleFlags2.Important;
       }
 
       ngDevMode && ngDevMode.rendererSetStyle++;
