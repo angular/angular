@@ -1,5 +1,3 @@
-@import '../theming/private';
-
 // Note that this file is called `private`, because the APIs in it aren't public yet.
 // Once they're made available, the code should be moved out into an `index.scss`.
 
@@ -70,23 +68,4 @@ $mat-private-density-generate-styles: true;
   }
 
   @return $value;
-}
-
-
-// Includes all of the density styles.
-@mixin angular-material-density($config-or-theme) {
-  // In case a theme object has been passed instead of a configuration for
-  // the density system, extract the density config from the theme object.
-  $config: if(mat-private-is-theme-object($config-or-theme),
-      mat-get-density-config($config-or-theme), $config-or-theme);
-
-  @if $config == null {
-    @error 'No density configuration specified.';
-  }
-
-  @include angular-material-theme((
-    color: null,
-    typography: null,
-    density: $config,
-  ));
 }

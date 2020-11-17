@@ -19,7 +19,7 @@
   @include cdk-overlay();
   @include cdk-text-field();
 
-  @include _mat-strong-focus-indicators-positioning();
+  @include mat-private-strong-focus-indicators-positioning();
   @include _mat-mdc-core();
 }
 

@@ -27,7 +27,7 @@
 
 @mixin mat-form-field-standard-typography($config-or-theme) {}
 
-@mixin _mat-form-field-standard-density($config-or-theme) {}
+@mixin mat-private-form-field-standard-density($config-or-theme) {}
 
 @mixin mat-form-field-standard-theme($theme-or-color-config) {
   $theme: mat-private-legacy-get-theme($theme-or-color-config);
@@ -40,7 +40,7 @@
       @include mat-form-field-standard-color($color);
     }
     @if $density != null {
-      @include _mat-form-field-standard-density($density);
+      @include mat-private-form-field-standard-density($density);
     }
     @if $typography != null {
       @include mat-form-field-standard-typography($typography);

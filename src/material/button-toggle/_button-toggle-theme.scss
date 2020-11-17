@@ -4,7 +4,7 @@
 @import '../core/theming/theming';
 @import '../core/theming/private';
 @import '../core/typography/typography-utils';
-@import '../core/density/private';
+@import '../core/density/private/all-density';
 @import './button-toggle-variables';
 
 @mixin mat-button-toggle-color($config-or-theme) {

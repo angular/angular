@@ -124,7 +124,7 @@
 // Mixin that ensures focus indicator host elements are positioned so that the focus indicator
 // pseudo element within is positioned relative to the host. Private mixin included within
 // `mat-core`.
-@mixin _mat-strong-focus-indicators-positioning() {
+@mixin mat-private-strong-focus-indicators-positioning() {
   .mat-focus-indicator {
     position: relative;
   }

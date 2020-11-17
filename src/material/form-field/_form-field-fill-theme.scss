@@ -102,7 +102,7 @@ $mat-form-field-fill-dedupe: 0;
   }
 }
 
-@mixin _mat-form-field-fill-density($config-or-theme) {}
+@mixin mat-private-form-field-fill-density($config-or-theme) {}
 
 @mixin mat-form-field-fill-theme($theme-or-color-config) {
   $theme: mat-private-legacy-get-theme($theme-or-color-config);
@@ -115,7 +115,7 @@ $mat-form-field-fill-dedupe: 0;
       @include mat-form-field-fill-color($color);
     }
     @if $density != null {
-      @include _mat-form-field-fill-density($density);
+      @include mat-private-form-field-fill-density($density);
     }
     @if $typography != null {
       @include mat-form-field-fill-typography($typography);

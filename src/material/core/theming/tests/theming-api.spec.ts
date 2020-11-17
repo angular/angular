@@ -295,7 +295,7 @@ describe('theming api', () => {
              data: `
         @import '../_all-theme.scss';
         @import '../../color/_all-color.scss';
-        @import '../../density/_private.scss';
+        @import '../../density/private/_all-density.scss';
         @import '../../typography/_all-typography.scss';
         ${content}
       `,

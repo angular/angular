@@ -2,7 +2,7 @@
 @import '../core/theming/theming';
 @import '../core/theming/private';
 @import '../core/typography/typography-utils';
-@import '../core/density/private';
+@import '../core/density/private/compatibility';
 @import './paginator-variables';
 
 @mixin mat-paginator-color($config-or-theme) {

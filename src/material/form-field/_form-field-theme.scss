@@ -240,10 +240,10 @@ $mat-form-field-dedupe: 0;
 
 @mixin _mat-form-field-density($config-or-theme) {
   $density-scale: mat-get-density-config($config-or-theme);
-  @include _mat-form-field-legacy-density($density-scale);
-  @include _mat-form-field-standard-density($density-scale);
-  @include _mat-form-field-fill-density($density-scale);
-  @include _mat-form-field-outline-density($density-scale);
+  @include mat-private-form-field-legacy-density($density-scale);
+  @include mat-private-form-field-standard-density($density-scale);
+  @include mat-private-form-field-fill-density($density-scale);
+  @include mat-private-form-field-outline-density($density-scale);
 }
 
 @mixin mat-form-field-theme($theme-or-color-config) {
