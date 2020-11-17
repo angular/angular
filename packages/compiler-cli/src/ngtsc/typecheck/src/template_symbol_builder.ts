@@ -18,7 +18,6 @@ import {DirectiveSymbol, DomBindingSymbol, ElementSymbol, ExpressionSymbol, Inpu
 import {ExpressionIdentifier, findAllMatchingNodes, findFirstMatchingNode, hasExpressionIdentifier} from './comments';
 import {TemplateData} from './context';
 import {isAccessExpression} from './ts_util';
-import {TcbDirectiveOutputsOp} from './type_check_block';
 
 /**
  * Generates and caches `Symbol`s for various template structures for a given component.
@@ -169,9 +168,9 @@ export class SymbolBuilder {
     // Outputs are a `ts.CallExpression` that look like one of the two:
     // * _outputHelper(_t1["outputField"]).subscribe(handler);
     // * _t1.addEventListener(handler);
-    const node = findFirstMatchingNode(
-        this.typeCheckBlock, {withSpan: eventBinding.sourceSpan, filter: ts.isCallExpression});
-    if (node === null) {
+    const outputFieldAccess = findFirstMatchingNode(
+        this.typeCheckBlock, {withSpan: eventBinding.keySpan, filter: isAccessExpression});
+    if (outputFieldAccess === null) {
       return null;
     }
 
@@ -181,12 +180,12 @@ export class SymbolBuilder {
     }
 
     if (consumer instanceof TmplAstTemplate || consumer instanceof TmplAstElement) {
-      if (!ts.isPropertyAccessExpression(node.expression) ||
-          node.expression.name.text !== 'addEventListener') {
+      if (!ts.isPropertyAccessExpression(outputFieldAccess) ||
+          outputFieldAccess.name.text !== 'addEventListener') {
         return null;
       }
 
-      const addEventListener = node.expression.name;
+      const addEventListener = outputFieldAccess.name;
       const tsSymbol = this.getTypeChecker().getSymbolAtLocation(addEventListener);
       const tsType = this.getTypeChecker().getTypeAtLocation(addEventListener);
       const positionInShimFile = this.getShimPositionForNode(addEventListener);
@@ -207,11 +206,9 @@ export class SymbolBuilder {
         }],
       };
     } else {
-      const outputFieldAccess = TcbDirectiveOutputsOp.decodeOutputCallExpression(node);
-      if (outputFieldAccess === null) {
+      if (!ts.isElementAccessExpression(outputFieldAccess)) {
         return null;
       }
-
       const tsSymbol =
           this.getTypeChecker().getSymbolAtLocation(outputFieldAccess.argumentExpression);
       if (tsSymbol === undefined) {
@@ -225,7 +222,7 @@ export class SymbolBuilder {
       }
 
       const positionInShimFile = this.getShimPositionForNode(outputFieldAccess);
-      const tsType = this.getTypeChecker().getTypeAtLocation(node);
+      const tsType = this.getTypeChecker().getTypeAtLocation(outputFieldAccess);
       return {
         kind: SymbolKind.Output,
         bindings: [{

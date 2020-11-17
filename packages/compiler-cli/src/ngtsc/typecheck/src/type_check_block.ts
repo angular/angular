@@ -902,39 +902,6 @@ export class TcbDirectiveOutputsOp extends TcbOp {
 
     return null;
   }
-
-  /**
-   * Outputs are a `ts.CallExpression` that look like one of the two:
-   *  - `_outputHelper(_t1["outputField"]).subscribe(handler);`
-   *  - `_t1.addEventListener(handler);`
-   * This method reverses the operations to create a call expression for a directive output.
-   * It unpacks the given call expression and returns the original element access (i.e.
-   * `_t1["outputField"]` in the example above). Returns `null` if the given call expression is not
-   * the expected structure of an output binding
-   */
-  static decodeOutputCallExpression(node: ts.CallExpression): ts.ElementAccessExpression|null {
-    // `node.expression` === `_outputHelper(_t1["outputField"]).subscribe` or `_t1.addEventListener`
-    if (!ts.isPropertyAccessExpression(node.expression) ||
-        node.expression.name.text === 'addEventListener') {
-      // `addEventListener` outputs do not have an `ElementAccessExpression` for the output field.
-      return null;
-    }
-
-    if (!ts.isCallExpression(node.expression.expression)) {
-      return null;
-    }
-
-    // `node.expression.expression` === `_outputHelper(_t1["outputField"])`
-    if (node.expression.expression.arguments.length === 0) {
-      return null;
-    }
-
-    const [outputFieldAccess] = node.expression.expression.arguments;
-    if (!ts.isElementAccessExpression(outputFieldAccess)) {
-      return null;
-    }
-    return outputFieldAccess;
-  }
 }
 
 /**
@@ -984,8 +951,10 @@ class TcbUnclaimedOutputsOp extends TcbOp {
         if (elId === null) {
           elId = this.scope.resolve(this.element);
         }
+        const propertyAccess = ts.createPropertyAccess(elId, 'addEventListener');
+        addParseSpanInfo(propertyAccess, output.keySpan);
         const call = ts.createCall(
-            /* expression */ ts.createPropertyAccess(elId, 'addEventListener'),
+            /* expression */ propertyAccess,
             /* typeArguments */ undefined,
             /* arguments */[ts.createStringLiteral(output.name), handler]);
         addParseSpanInfo(call, output.sourceSpan);
