@@ -619,9 +619,10 @@ export declare class NgZone {
     readonly onMicrotaskEmpty: EventEmitter<any>;
     readonly onStable: EventEmitter<any>;
     readonly onUnstable: EventEmitter<any>;
-    constructor({ enableLongStackTrace, shouldCoalesceEventChangeDetection }: {
+    constructor({ enableLongStackTrace, shouldCoalesceEventChangeDetection, shouldCoalesceRunChangeDetection }: {
         enableLongStackTrace?: boolean | undefined;
         shouldCoalesceEventChangeDetection?: boolean | undefined;
+        shouldCoalesceRunChangeDetection?: boolean | undefined;
     });
     run<T>(fn: (...args: any[]) => T, applyThis?: any, applyArgs?: any[]): T;
     runGuarded<T>(fn: (...args: any[]) => T, applyThis?: any, applyArgs?: any[]): T;
@@ -836,11 +837,11 @@ export declare interface RendererType2 {
 }
 
 export declare class ResolvedReflectiveFactory {
-    dependencies: ɵangular_packages_core_core_e[];
+    dependencies: ɵangular_packages_core_core_d[];
     factory: Function;
     constructor(
     factory: Function,
-    dependencies: ɵangular_packages_core_core_e[]);
+    dependencies: ɵangular_packages_core_core_d[]);
 }
 
 export declare interface ResolvedReflectiveProvider {

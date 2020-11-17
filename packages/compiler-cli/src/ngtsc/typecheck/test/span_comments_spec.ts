@@ -71,7 +71,7 @@ describe('type check blocks diagnostics', () => {
       const TEMPLATE = `<ng-template let-method>{{ method(a, b) }}</ng-template>`;
       expect(tcbWithSpans(TEMPLATE))
           .toContain(
-              '(_t2 /*27,39*/).method /*27,33*/(((ctx).a /*34,35*/) /*34,35*/, ((ctx).b /*37,38*/) /*37,38*/) /*27,39*/');
+              '(_t2 /*27,39*/) /*27,33*/(((ctx).a /*34,35*/) /*34,35*/, ((ctx).b /*37,38*/) /*37,38*/) /*27,39*/');
     });
 
     it('should annotate function calls', () => {
@@ -184,7 +184,7 @@ describe('type check blocks diagnostics', () => {
         }];
         const TEMPLATE = `<my-cmp [inputA]="''"></my-cmp>`;
         expect(tcbWithSpans(TEMPLATE, DIRECTIVES))
-            .toContain('_t1.inputA = ("" /*18,20*/) /*8,21*/;');
+            .toContain('_t1.inputA /*9,15*/ = ("" /*18,20*/) /*8,21*/;');
       });
     });
   });

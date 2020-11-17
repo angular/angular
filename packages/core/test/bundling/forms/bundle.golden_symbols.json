@@ -468,6 +468,12 @@
     "name": "R3Injector"
   },
   {
+    "name": "R3TemplateRef"
+  },
+  {
+    "name": "R3ViewContainerRef"
+  },
+  {
     "name": "RADIO_VALUE_ACCESSOR"
   },
   {
@@ -619,6 +625,12 @@
   },
   {
     "name": "VERSION"
+  },
+  {
+    "name": "ViewEngineTemplateRef"
+  },
+  {
+    "name": "VE_ViewContainerRef"
   },
   {
     "name": "Validators"
@@ -822,10 +834,10 @@
     "name": "createLView"
   },
   {
-    "name": "createPlatformFactory"
+    "name": "createNodeInjector"
   },
   {
-    "name": "createTNode"
+    "name": "createPlatformFactory"
   },
   {
     "name": "createTView"
@@ -1044,6 +1056,9 @@
     "name": "getOrCreateTNode"
   },
   {
+    "name": "getOrCreateViewRefs"
+  },
+  {
     "name": "getOriginalError"
   },
   {
@@ -1093,6 +1108,9 @@
   },
   {
     "name": "getTView"
+  },
+  {
+    "name": "getViewRefs"
   },
   {
     "name": "handleError"
@@ -1243,9 +1261,6 @@
   },
   {
     "name": "isPropertyUpdated"
-  },
-  {
-    "name": "isRootView"
   },
   {
     "name": "isScheduler"
@@ -1455,10 +1470,10 @@
     "name": "remove"
   },
   {
-    "name": "removeDir"
+    "name": "removeFromArray"
   },
   {
-    "name": "removeFromArray"
+    "name": "removeListItem"
   },
   {
     "name": "renderComponent"

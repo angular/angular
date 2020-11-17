@@ -135,7 +135,7 @@ describe('definitions', () => {
       it('should work for text inputs', () => {
         const definitions = getDefinitionsAndAssertBoundSpan({
           templateOverride: `<test-comp tcN¦ame="name"></test-comp>`,
-          expectedSpanText: 'tcName="name"',
+          expectedSpanText: 'tcName',
         });
         expect(definitions!.length).toEqual(1);
 
@@ -199,7 +199,7 @@ describe('definitions', () => {
       it('should work for event providers', () => {
         const definitions = getDefinitionsAndAssertBoundSpan({
           templateOverride: `<test-comp (te¦st)="myClick($event)"></test-comp>`,
-          expectedSpanText: '(test)="myClick($event)"',
+          expectedSpanText: 'test',
         });
         expect(definitions!.length).toEqual(1);
 
@@ -218,7 +218,7 @@ describe('definitions', () => {
       it('should return the directive when the event is part of the selector', () => {
         const definitions = getDefinitionsAndAssertBoundSpan({
           templateOverride: `<div (eventSelect¦or)="title = ''"></div>`,
-          expectedSpanText: `(eventSelector)="title = ''"`,
+          expectedSpanText: `eventSelector`,
         });
         expect(definitions!.length).toEqual(2);
 
@@ -235,7 +235,7 @@ describe('definitions', () => {
     it('should work for element reference declarations', () => {
       const definitions = getDefinitionsAndAssertBoundSpan({
         templateOverride: `<div #cha¦rt></div>{{chart}}`,
-        expectedSpanText: '#chart',
+        expectedSpanText: 'chart',
       });
       // We're already at the definition, so nothing is returned
       expect(definitions).toEqual([]);
@@ -249,7 +249,7 @@ describe('definitions', () => {
       expect(definitions!.length).toEqual(1);
 
       const [varDef] = definitions;
-      expect(varDef.textSpan).toEqual('#chart');
+      expect(varDef.textSpan).toEqual('chart');
     });
   });
 

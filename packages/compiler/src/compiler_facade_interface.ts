@@ -12,8 +12,8 @@
  * for late binding of `@angular/compiler` for JIT purposes.
  *
  * This file has two copies. Please ensure that they are in sync:
- *  - packages/compiler/src/compiler_facade_interface.ts             (master)
- *  - packages/core/src/compiler/compiler_facade_interface.ts     (copy)
+ *  - packages/compiler/src/compiler_facade_interface.ts          (main)
+ *  - packages/core/src/compiler/compiler_facade_interface.ts     (replica)
  *
  * Please ensure that the two files are in sync using this command:
  * ```

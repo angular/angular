@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {ClassDeclaration} from '../../reflection';
+import {RemoteScope} from './api';
 import {LocalModuleScope} from './local';
 
 /**
@@ -13,7 +14,14 @@ import {LocalModuleScope} from './local';
  */
 export interface ComponentScopeReader {
   getScopeForComponent(clazz: ClassDeclaration): LocalModuleScope|null|'error';
-  getRequiresRemoteScope(clazz: ClassDeclaration): boolean|null;
+
+  /**
+   * Get the `RemoteScope` required for this component, if any.
+   *
+   * If the component requires remote scoping, then retrieve the directives/pipes registered for
+   * that component. If remote scoping is not required (the common case), returns `null`.
+   */
+  getRemoteScope(clazz: ClassDeclaration): RemoteScope|null;
 }
 
 /**
@@ -36,11 +44,11 @@ export class CompoundComponentScopeReader implements ComponentScopeReader {
     return null;
   }
 
-  getRequiresRemoteScope(clazz: ClassDeclaration): boolean|null {
+  getRemoteScope(clazz: ClassDeclaration): RemoteScope|null {
     for (const reader of this.readers) {
-      const requiredScoping = reader.getRequiresRemoteScope(clazz);
-      if (requiredScoping !== null) {
-        return requiredScoping;
+      const remoteScope = reader.getRemoteScope(clazz);
+      if (remoteScope !== null) {
+        return remoteScope;
       }
     }
     return null;

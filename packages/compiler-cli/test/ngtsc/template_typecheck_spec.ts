@@ -1009,6 +1009,30 @@ export declare class AnimationEvent {
       expect(diags.length).toBe(0);
     });
 
+    it('should allow the implicit value of an NgFor to be invoked', () => {
+      env.tsconfig({fullTemplateTypeCheck: true, strictInputTypes: true});
+      env.write('test.ts', `
+        import {CommonModule} from '@angular/common';
+        import {Component, NgModule} from '@angular/core';
+
+        @Component({
+          selector: 'test',
+          template: '<div *ngFor="let fn of functions">{{fn()}}</div>',
+        })
+        class TestCmp {
+          functions = [() => 1, () => 2];
+        }
+
+        @NgModule({
+          declarations: [TestCmp],
+          imports: [CommonModule],
+        })
+        class Module {}
+    `);
+
+      env.driveMain();
+    });
+
     it('should infer the context of NgIf', () => {
       env.tsconfig({strictTemplates: true});
       env.write('test.ts', `
@@ -1267,11 +1291,11 @@ export declare class AnimationEvent {
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(3);
       expect(diags[0].messageText).toBe(`Type 'boolean' is not assignable to type 'number'.`);
-      expect(getSourceCodeForDiagnostic(diags[0])).toEqual('[fromAbstract]="true"');
+      expect(getSourceCodeForDiagnostic(diags[0])).toEqual('fromAbstract');
       expect(diags[1].messageText).toBe(`Type 'number' is not assignable to type 'string'.`);
-      expect(getSourceCodeForDiagnostic(diags[1])).toEqual('[fromBase]="3"');
+      expect(getSourceCodeForDiagnostic(diags[1])).toEqual('fromBase');
       expect(diags[2].messageText).toBe(`Type 'number' is not assignable to type 'boolean'.`);
-      expect(getSourceCodeForDiagnostic(diags[2])).toEqual('[fromChild]="4"');
+      expect(getSourceCodeForDiagnostic(diags[2])).toEqual('fromChild');
     });
 
     it('should properly type-check inherited directives from external libraries', () => {
@@ -1324,11 +1348,11 @@ export declare class AnimationEvent {
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(3);
       expect(diags[0].messageText).toBe(`Type 'boolean' is not assignable to type 'number'.`);
-      expect(getSourceCodeForDiagnostic(diags[0])).toEqual('[fromAbstract]="true"');
+      expect(getSourceCodeForDiagnostic(diags[0])).toEqual('fromAbstract');
       expect(diags[1].messageText).toBe(`Type 'number' is not assignable to type 'string'.`);
-      expect(getSourceCodeForDiagnostic(diags[1])).toEqual('[fromBase]="3"');
+      expect(getSourceCodeForDiagnostic(diags[1])).toEqual('fromBase');
       expect(diags[2].messageText).toBe(`Type 'number' is not assignable to type 'boolean'.`);
-      expect(getSourceCodeForDiagnostic(diags[2])).toEqual('[fromChild]="4"');
+      expect(getSourceCodeForDiagnostic(diags[2])).toEqual('fromChild');
     });
 
     it('should detect an illegal write to a template variable', () => {

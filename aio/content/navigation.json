@@ -128,7 +128,7 @@
             },
             {
               "url": "guide/inputs-outputs",
-              "title": "Inputs and Outputs",
+              "title": "Sharing data between child and parent directives and components",
               "tooltip": "Introductory guide to sharing data between parent and child directives or components."
             },
             {
@@ -243,11 +243,6 @@
               "url": "guide/dependency-injection-in-action",
               "title": "DI in Action",
               "tooltip": "Techniques for dependency injection."
-            },
-            {
-              "url": "guide/dependency-injection-navtree",
-              "title": "Navigate the Component Tree",
-              "tooltip": "Use the injection tree to find parent components."
             }
           ]
         }
@@ -914,6 +909,11 @@
           "title": "API Reference",
           "tooltip": "Details of the Angular packages, classes, interfaces, and other types.",
           "url": "api"
+        },
+        {
+          "title": "Example applications",
+          "tooltip": "List of all of the example applications in the Angular documentation.",
+          "url": "guide/example-apps-list"
         },
         {
           "url": "guide/glossary",

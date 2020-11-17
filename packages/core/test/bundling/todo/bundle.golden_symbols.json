@@ -87,6 +87,12 @@
     "name": "Optional"
   },
   {
+    "name": "R3TemplateRef"
+  },
+  {
+    "name": "R3ViewContainerRef"
+  },
+  {
     "name": "RecordViewTuple"
   },
   {
@@ -133,6 +139,12 @@
   },
   {
     "name": "TodoStore"
+  },
+  {
+    "name": "ViewEngineTemplateRef"
+  },
+  {
+    "name": "VE_ViewContainerRef"
   },
   {
     "name": "ViewContainerRef"
@@ -261,7 +273,7 @@
     "name": "createLView"
   },
   {
-    "name": "createTNode"
+    "name": "createNodeInjector"
   },
   {
     "name": "createTView"
@@ -399,6 +411,9 @@
     "name": "getOrCreateTNode"
   },
   {
+    "name": "getOrCreateViewRefs"
+  },
+  {
     "name": "getOriginalError"
   },
   {
@@ -433,6 +448,9 @@
   },
   {
     "name": "getTView"
+  },
+  {
+    "name": "getViewRefs"
   },
   {
     "name": "handleError"
@@ -517,9 +535,6 @@
   },
   {
     "name": "isProceduralRenderer"
-  },
-  {
-    "name": "isRootView"
   },
   {
     "name": "isStylingMatch"

@@ -7,14 +7,14 @@
  */
 
 import {Injector} from '../di/injector';
-import {INJECTOR} from '../di/injector_compatibility';
+import {INJECTOR} from '../di/injector_token';
 import {InjectFlags} from '../di/interface/injector';
 import {createInjectorWithoutInjectorInstances, R3Injector} from '../di/r3_injector';
 import {Type} from '../interface/type';
 import {ComponentFactoryResolver as viewEngine_ComponentFactoryResolver} from '../linker/component_factory_resolver';
 import {InternalNgModuleRef, NgModuleFactory as viewEngine_NgModuleFactory, NgModuleRef as viewEngine_NgModuleRef} from '../linker/ng_module_factory';
 import {registerNgModuleType} from '../linker/ng_module_factory_registration';
-import {NgModuleDef} from '../metadata/ng_module';
+import {NgModuleType} from '../metadata/ng_module_def';
 import {assertDefined} from '../util/assert';
 import {stringify} from '../util/stringify';
 
@@ -22,10 +22,6 @@ import {ComponentFactoryResolver} from './component_ref';
 import {getNgLocaleIdDef, getNgModuleDef} from './definition';
 import {setLocaleId} from './i18n/i18n_locale_id';
 import {maybeUnwrapFn} from './util/misc_utils';
-
-export interface NgModuleType<T = any> extends Type<T> {
-  ɵmod: NgModuleDef<T>;
-}
 
 export class NgModuleRef<T> extends viewEngine_NgModuleRef<T> implements InternalNgModuleRef<T> {
   // tslint:disable-next-line:require-internal-with-underscore

@@ -64,36 +64,9 @@ In the marketplace, search for Angular Language Service extension, and click the
 
 ### WebStorm
 
-In [WebStorm](https://www.jetbrains.com/webstorm/), you must install the language service package as a project dependency.
+In [WebStorm](https://www.jetbrains.com/webstorm/), enable the plugin [Angular and AngularJS](https://plugins.jetbrains.com/plugin/6971-angular-and-angularjs).
 
-1. Add the following to your `devDependencies` in your project's `package.json`
-
-<code-example language="json" header="package.json">
-devDependencies {
-  "@angular/language-service": "^6.0.0"
-}
-</code-example>
-
-2. In the terminal window at the root of your project, install the `devDependencies` with `npm` or `yarn`:
-
-```sh
-npm install
-```
-*OR*
-
-```sh
-yarn
-```
-
-*OR*
-
-```sh
-yarn install
-```
-
-When Angular sees this dev dependency, it provides the language service in the WebStorm environment.
-WebStorm then gives you colorization inside the template and autocomplete in addition to the Angular Language Service.
-
+Since WebStorm 2019.1, the `@angular/language-service` is not required anymore and should be removed from your `package.json`.
 
 ### Sublime Text
 

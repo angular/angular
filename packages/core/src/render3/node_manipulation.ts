@@ -557,9 +557,8 @@ export function getClosestRElement(tView: TView, tNode: TNode|null, lView: LView
     ngDevMode && assertTNodeType(parentTNode, TNodeType.AnyRNode | TNodeType.Container);
     if (parentTNode.flags & TNodeFlags.isComponentHost) {
       ngDevMode && assertTNodeForLView(parentTNode, lView);
-      const tData = tView.data;
-      const tNode = tData[parentTNode.index] as TNode;
-      const encapsulation = (tData[tNode.directiveStart] as ComponentDef<any>).encapsulation;
+      const encapsulation =
+          (tView.data[parentTNode.directiveStart] as ComponentDef<unknown>).encapsulation;
       // We've got a parent which is an element in the current view. We just need to verify if the
       // parent element is not a component. Component's content nodes are not inserted immediately
       // because they will be projected, and so doing insert at this point would be wasteful.
@@ -987,6 +986,13 @@ function applyContainer(
   }
 }
 
+// TODO(misko): Can't import RendererStyleFlags2.DashCase as it causes imports to be resolved
+// in different order which causes failures. Duplicating for now.
+const enum TempRendererStyleFlags2 {
+  Important = 1 << 0,
+  DashCase = 1 << 1
+}
+
 /**
  * Writes class/style to element.
  *
@@ -1019,9 +1025,7 @@ export function applyStyling(
       }
     }
   } else {
-    // TODO(misko): Can't import RendererStyleFlags2.DashCase as it causes imports to be resolved
-    // in different order which causes failures. Using direct constant as workaround for now.
-    const flags = prop.indexOf('-') == -1 ? undefined : 2 /* RendererStyleFlags2.DashCase */;
+    let flags = prop.indexOf('-') === -1 ? undefined : TempRendererStyleFlags2.DashCase as number;
     if (value == null /** || value === undefined */) {
       ngDevMode && ngDevMode.rendererRemoveStyle++;
       if (isProcedural) {
@@ -1030,12 +1034,22 @@ export function applyStyling(
         (rNode as HTMLElement).style.removeProperty(prop);
       }
     } else {
+      // A value is important if it ends with `!important`. The style
+      // parser strips any semicolons at the end of the value.
+      const isImportant = typeof value === 'string' ? value.endsWith('!important') : false;
+
+      if (isImportant) {
+        // !important has to be stripped from the value for it to be valid.
+        value = value.slice(0, -10);
+        flags! |= TempRendererStyleFlags2.Important;
+      }
+
       ngDevMode && ngDevMode.rendererSetStyle++;
       if (isProcedural) {
         (renderer as Renderer2).setStyle(rNode, prop, value, flags);
       } else {
         ngDevMode && assertDefined((rNode as HTMLElement).style, 'HTMLElement expected');
-        (rNode as HTMLElement).style.setProperty(prop, value);
+        (rNode as HTMLElement).style.setProperty(prop, value, isImportant ? 'important' : '');
       }
     }
   }

@@ -869,7 +869,7 @@ export class ParsedProperty {
 
   constructor(
       public name: string, public expression: ASTWithSource, public type: ParsedPropertyType,
-      // TODO(atscott): `keySpan` should really be required but allows `undefined` so VE does
+      // TODO(FW-2095): `keySpan` should really be required but allows `undefined` so VE does
       // not need to be updated. Make `keySpan` required when VE is removed.
       public sourceSpan: ParseSourceSpan, readonly keySpan: ParseSourceSpan|undefined,
       public valueSpan: ParseSourceSpan|undefined) {
@@ -897,7 +897,8 @@ export class ParsedEvent {
   constructor(
       public name: string, public targetOrPhase: string, public type: ParsedEventType,
       public handler: ASTWithSource, public sourceSpan: ParseSourceSpan,
-      public handlerSpan: ParseSourceSpan) {}
+      // TODO(FW-2095): keySpan should be required but was made optional to avoid changing VE
+      public handlerSpan: ParseSourceSpan, readonly keySpan: ParseSourceSpan|undefined) {}
 }
 
 /**

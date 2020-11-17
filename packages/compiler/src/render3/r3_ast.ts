@@ -30,10 +30,17 @@ export class BoundText implements Node {
   }
 }
 
+/**
+ * Represents a text attribute in the template.
+ *
+ * `valueSpan` may not be present in cases where there is no value `<div a></div>`.
+ * `keySpan` may also not be present for synthetic attributes from ICU expansions.
+ */
 export class TextAttribute implements Node {
   constructor(
       public name: string, public value: string, public sourceSpan: ParseSourceSpan,
-      public valueSpan?: ParseSourceSpan, public i18n?: I18nMeta) {}
+      readonly keySpan: ParseSourceSpan|undefined, public valueSpan?: ParseSourceSpan,
+      public i18n?: I18nMeta) {}
   visit<Result>(visitor: Visitor<Result>): Result {
     return visitor.visitTextAttribute(this);
   }
@@ -66,14 +73,19 @@ export class BoundEvent implements Node {
   constructor(
       public name: string, public type: ParsedEventType, public handler: AST,
       public target: string|null, public phase: string|null, public sourceSpan: ParseSourceSpan,
-      public handlerSpan: ParseSourceSpan) {}
+      public handlerSpan: ParseSourceSpan, readonly keySpan: ParseSourceSpan) {}
 
   static fromParsedEvent(event: ParsedEvent) {
     const target: string|null = event.type === ParsedEventType.Regular ? event.targetOrPhase : null;
     const phase: string|null =
         event.type === ParsedEventType.Animation ? event.targetOrPhase : null;
+    if (event.keySpan === undefined) {
+      throw new Error(`Unexpected state: keySpan must be defined for bound event but was not for ${
+          event.name}: ${event.sourceSpan}`);
+    }
     return new BoundEvent(
-        event.name, event.type, event.handler, target, phase, event.sourceSpan, event.handlerSpan);
+        event.name, event.type, event.handler, target, phase, event.sourceSpan, event.handlerSpan,
+        event.keySpan);
   }
 
   visit<Result>(visitor: Visitor<Result>): Result {
@@ -127,7 +139,7 @@ export class Variable implements Node {
 export class Reference implements Node {
   constructor(
       public name: string, public value: string, public sourceSpan: ParseSourceSpan,
-      public valueSpan?: ParseSourceSpan) {}
+      readonly keySpan: ParseSourceSpan, public valueSpan?: ParseSourceSpan) {}
   visit<Result>(visitor: Visitor<Result>): Result {
     return visitor.visitReference(this);
   }

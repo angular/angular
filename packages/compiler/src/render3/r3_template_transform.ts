@@ -166,7 +166,7 @@ class HtmlAstToIvyAst implements html.Visitor {
 
       if (!hasBinding && !isTemplateBinding) {
         // don't include the bindings as attributes as well in the AST
-        attributes.push(this.visitAttribute(attribute) as t.TextAttribute);
+        attributes.push(this.visitAttribute(attribute));
       }
     }
 
@@ -238,7 +238,8 @@ class HtmlAstToIvyAst implements html.Visitor {
 
   visitAttribute(attribute: html.Attribute): t.TextAttribute {
     return new t.TextAttribute(
-        attribute.name, attribute.value, attribute.sourceSpan, attribute.valueSpan, attribute.i18n);
+        attribute.name, attribute.value, attribute.sourceSpan, attribute.keySpan,
+        attribute.valueSpan, attribute.i18n);
   }
 
   visitText(text: html.Text): t.Node {
@@ -301,7 +302,8 @@ class HtmlAstToIvyAst implements html.Visitor {
       const i18n = i18nPropsMeta[prop.name];
       if (prop.isLiteral) {
         literal.push(new t.TextAttribute(
-            prop.name, prop.expression.source || '', prop.sourceSpan, undefined, i18n));
+            prop.name, prop.expression.source || '', prop.sourceSpan, prop.keySpan, prop.valueSpan,
+            i18n));
       } else {
         // Note that validation is skipped and property mapping is disabled
         // due to the fact that we need to make sure a given prop is not an
@@ -355,13 +357,15 @@ class HtmlAstToIvyAst implements html.Visitor {
 
       } else if (bindParts[KW_REF_IDX]) {
         const identifier = bindParts[IDENT_KW_IDX];
-        this.parseReference(identifier, value, srcSpan, attribute.valueSpan, references);
+        const keySpan = createKeySpan(srcSpan, bindParts[KW_REF_IDX], identifier);
+        this.parseReference(identifier, value, srcSpan, keySpan, attribute.valueSpan, references);
       } else if (bindParts[KW_ON_IDX]) {
         const events: ParsedEvent[] = [];
         const identifier = bindParts[IDENT_KW_IDX];
+        const keySpan = createKeySpan(srcSpan, bindParts[KW_ON_IDX], identifier);
         this.bindingParser.parseEvent(
-            identifier, value, srcSpan, attribute.valueSpan || srcSpan, matchableAttributes,
-            events);
+            identifier, value, srcSpan, attribute.valueSpan || srcSpan, matchableAttributes, events,
+            keySpan);
         addEvents(events, boundEvents);
       } else if (bindParts[KW_BINDON_IDX]) {
         const identifier = bindParts[IDENT_KW_IDX];
@@ -370,7 +374,8 @@ class HtmlAstToIvyAst implements html.Visitor {
             identifier, value, false, srcSpan, absoluteOffset, attribute.valueSpan,
             matchableAttributes, parsedProperties, keySpan);
         this.parseAssignmentEvent(
-            identifier, value, srcSpan, attribute.valueSpan, matchableAttributes, boundEvents);
+            identifier, value, srcSpan, attribute.valueSpan, matchableAttributes, boundEvents,
+            keySpan);
       } else if (bindParts[KW_AT_IDX]) {
         const keySpan = createKeySpan(srcSpan, '', name);
         this.bindingParser.parseLiteralAttr(
@@ -397,23 +402,23 @@ class HtmlAstToIvyAst implements html.Visitor {
         // TODO(ayazhafiz): update this to handle malformed bindings.
         name.endsWith(delims.end) && name.length > delims.start.length + delims.end.length) {
       const identifier = name.substring(delims.start.length, name.length - delims.end.length);
+      const keySpan = createKeySpan(srcSpan, delims.start, identifier);
       if (delims.start === BINDING_DELIMS.BANANA_BOX.start) {
-        const keySpan = createKeySpan(srcSpan, delims.start, identifier);
         this.bindingParser.parsePropertyBinding(
             identifier, value, false, srcSpan, absoluteOffset, attribute.valueSpan,
             matchableAttributes, parsedProperties, keySpan);
         this.parseAssignmentEvent(
-            identifier, value, srcSpan, attribute.valueSpan, matchableAttributes, boundEvents);
+            identifier, value, srcSpan, attribute.valueSpan, matchableAttributes, boundEvents,
+            keySpan);
       } else if (delims.start === BINDING_DELIMS.PROPERTY.start) {
-        const keySpan = createKeySpan(srcSpan, delims.start, identifier);
         this.bindingParser.parsePropertyBinding(
             identifier, value, false, srcSpan, absoluteOffset, attribute.valueSpan,
             matchableAttributes, parsedProperties, keySpan);
       } else {
         const events: ParsedEvent[] = [];
         this.bindingParser.parseEvent(
-            identifier, value, srcSpan, attribute.valueSpan || srcSpan, matchableAttributes,
-            events);
+            identifier, value, srcSpan, attribute.valueSpan || srcSpan, matchableAttributes, events,
+            keySpan);
         addEvents(events, boundEvents);
       }
 
@@ -447,7 +452,7 @@ class HtmlAstToIvyAst implements html.Visitor {
   }
 
   private parseReference(
-      identifier: string, value: string, sourceSpan: ParseSourceSpan,
+      identifier: string, value: string, sourceSpan: ParseSourceSpan, keySpan: ParseSourceSpan,
       valueSpan: ParseSourceSpan|undefined, references: t.Reference[]) {
     if (identifier.indexOf('-') > -1) {
       this.reportError(`"-" is not allowed in reference names`, sourceSpan);
@@ -455,17 +460,17 @@ class HtmlAstToIvyAst implements html.Visitor {
       this.reportError(`Reference does not have a name`, sourceSpan);
     }
 
-    references.push(new t.Reference(identifier, value, sourceSpan, valueSpan));
+    references.push(new t.Reference(identifier, value, sourceSpan, keySpan, valueSpan));
   }
 
   private parseAssignmentEvent(
       name: string, expression: string, sourceSpan: ParseSourceSpan,
       valueSpan: ParseSourceSpan|undefined, targetMatchableAttrs: string[][],
-      boundEvents: t.BoundEvent[]) {
+      boundEvents: t.BoundEvent[], keySpan: ParseSourceSpan) {
     const events: ParsedEvent[] = [];
     this.bindingParser.parseEvent(
         `${name}Change`, `${expression}=$event`, sourceSpan, valueSpan || sourceSpan,
-        targetMatchableAttrs, events);
+        targetMatchableAttrs, events, keySpan);
     addEvents(events, boundEvents);
   }
 
@@ -501,7 +506,8 @@ class NonBindableVisitor implements html.Visitor {
 
   visitAttribute(attribute: html.Attribute): t.TextAttribute {
     return new t.TextAttribute(
-        attribute.name, attribute.value, attribute.sourceSpan, undefined, attribute.i18n);
+        attribute.name, attribute.value, attribute.sourceSpan, attribute.keySpan,
+        attribute.valueSpan, attribute.i18n);
   }
 
   visitText(text: html.Text): t.Text {

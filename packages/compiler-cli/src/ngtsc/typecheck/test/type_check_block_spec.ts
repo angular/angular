@@ -106,12 +106,18 @@ describe('type check blocks', () => {
   it('should handle method calls of template variables', () => {
     const TEMPLATE = `<ng-template let-a>{{a(1)}}</ng-template>`;
     expect(tcb(TEMPLATE)).toContain('var _t2 = _t1.$implicit;');
-    expect(tcb(TEMPLATE)).toContain('(_t2).a(1)');
+    expect(tcb(TEMPLATE)).toContain('(_t2)(1)');
   });
 
   it('should handle implicit vars when using microsyntax', () => {
     const TEMPLATE = `<div *ngFor="let user of users"></div>`;
     expect(tcb(TEMPLATE)).toContain('var _t2 = _t1.$implicit;');
+  });
+
+  it('should handle direct calls of an implicit template variable', () => {
+    const TEMPLATE = `<div *ngFor="let a of letters">{{a(1)}}</div>`;
+    expect(tcb(TEMPLATE)).toContain('var _t2 = _t1.$implicit;');
+    expect(tcb(TEMPLATE)).toContain('(_t2)(1)');
   });
 
   describe('type constructors', () => {

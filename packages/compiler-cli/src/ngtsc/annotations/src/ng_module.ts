@@ -387,15 +387,11 @@ export class NgModuleDecoratorHandler implements
     }
     const context = getSourceFile(node);
     for (const decl of analysis.declarations) {
-      if (this.scopeRegistry.getRequiresRemoteScope(decl.node)) {
-        const scope = this.scopeRegistry.getScopeOfModule(ts.getOriginalNode(node) as typeof node);
-        if (scope === null || scope === 'error') {
-          continue;
-        }
-
-        const directives = scope.compilation.directives.map(
-            directive => this.refEmitter.emit(directive.ref, context));
-        const pipes = scope.compilation.pipes.map(pipe => this.refEmitter.emit(pipe.ref, context));
+      const remoteScope = this.scopeRegistry.getRemoteScope(decl.node);
+      if (remoteScope !== null) {
+        const directives =
+            remoteScope.directives.map(directive => this.refEmitter.emit(directive, context));
+        const pipes = remoteScope.pipes.map(pipe => this.refEmitter.emit(pipe, context));
         const directiveArray = new LiteralArrayExpr(directives);
         const pipesArray = new LiteralArrayExpr(pipes);
         const declExpr = this.refEmitter.emit(decl, context)!;

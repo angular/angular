@@ -8,8 +8,8 @@
 
 
 import {Type} from '../interface/type';
+import {NgModuleType} from '../metadata/ng_module_def';
 import {autoRegisterModuleById, getNgModuleDef} from '../render3/definition';
-import {NgModuleType} from '../render3/ng_module_ref';
 import {maybeUnwrapFn} from '../render3/util/misc_utils';
 import {stringify} from '../util/stringify';
 

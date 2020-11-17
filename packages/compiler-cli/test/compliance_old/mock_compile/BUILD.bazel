@@ -5,7 +5,7 @@ ts_library(
     testonly = True,
     srcs = ["index.ts"],
     visibility = [
-        "//packages/compiler-cli/test/compliance:__subpackages__",
+        "//packages/compiler-cli/test/compliance_old:__subpackages__",
     ],
     deps = [
         "//packages:types",

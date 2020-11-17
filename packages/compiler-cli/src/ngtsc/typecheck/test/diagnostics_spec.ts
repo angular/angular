@@ -36,7 +36,7 @@ runInEachFileSystem(() => {
           }]);
 
       expect(messages).toEqual(
-          [`TestComponent.html(1, 10): Type 'string' is not assignable to type 'number'.`]);
+          [`TestComponent.html(1, 11): Type 'string' is not assignable to type 'number'.`]);
     });
 
     it('infers type of template variables', () => {
