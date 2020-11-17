@@ -171,7 +171,8 @@ export class MatChip extends _MatChipMixinBase implements FocusableOption, OnDes
    * @docs-private
    */
   get rippleDisabled(): boolean {
-    return this.disabled || this.disableRipple || !!this.rippleConfig.disabled;
+    return this.disabled || this.disableRipple || this._animationsDisabled ||
+           !!this.rippleConfig.disabled;
   }
 
   /** Whether the chip has focus. */
