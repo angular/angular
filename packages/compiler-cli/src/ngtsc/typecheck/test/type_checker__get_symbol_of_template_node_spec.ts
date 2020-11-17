@@ -1271,7 +1271,7 @@ runInEachFileSystem(() => {
            assertExpressionSymbol(eventSymbol);
          });
 
-      it('returns empty list when checkTypeOfOutputEvents is false', () => {
+      it('still returns binding when checkTypeOfOutputEvents is false', () => {
         const fileName = absoluteFrom('/main.ts');
         const dirFile = absoluteFrom('/dir.ts');
         const {program, templateTypeChecker} = setup(
@@ -1302,9 +1302,14 @@ runInEachFileSystem(() => {
         const nodes = templateTypeChecker.getTemplate(cmp)!;
 
         const outputABinding = (nodes[0] as TmplAstElement).outputs[0];
-        const symbol = templateTypeChecker.getSymbolOfNode(outputABinding, cmp);
-        // TODO(atscott): should type checker still generate the subscription in this case?
-        expect(symbol).toBeNull();
+        const symbol = templateTypeChecker.getSymbolOfNode(outputABinding, cmp)!;
+        assertOutputBindingSymbol(symbol);
+        expect(
+            (symbol.bindings[0].tsSymbol!.declarations[0] as ts.PropertyDeclaration).name.getText())
+            .toEqual('outputA');
+        expect((symbol.bindings[0].tsSymbol!.declarations[0] as ts.PropertyDeclaration)
+                   .parent.name?.text)
+            .toEqual('TestDir');
       });
     });
 

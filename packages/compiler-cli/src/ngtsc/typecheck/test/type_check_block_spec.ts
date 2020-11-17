@@ -839,7 +839,7 @@ describe('type check blocks', () => {
         expect(block).toContain('function ($event: any): any { (ctx).foo($event); }');
         // Note that DOM events are still checked, that is controlled by `checkTypeOfDomEvents`
         expect(block).toContain(
-            '_t1.addEventListener("nonDirOutput", function ($event): any { (ctx).foo($event); });');
+            'addEventListener("nonDirOutput", function ($event): any { (ctx).foo($event); });');
       });
     });
 

@@ -496,6 +496,17 @@ describe('quick info', () => {
         expectedDisplayString: '(property) TestComponent.name: string'
       });
     });
+
+    it('can still get quick info when strictOutputEventTypes is false', () => {
+      initMockFileSystem('Native');
+      env = LanguageServiceTestEnvironment.setup(
+          quickInfoSkeleton(), {strictOutputEventTypes: false});
+      expectQuickInfo({
+        templateOverride: `<test-comp (te¦st)="myClick($event)"></test-comp>`,
+        expectedSpanText: 'test',
+        expectedDisplayString: '(event) TestComponent.testEvent: EventEmitter<string>'
+      });
+    });
   });
 
   function expectQuickInfo(
