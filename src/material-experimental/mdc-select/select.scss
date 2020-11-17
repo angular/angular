@@ -70,6 +70,7 @@ $mat-select-placeholder-arrow-space: 2 * ($mat-select-arrow-size + $mat-select-a
   width: 100%; // Ensures that the panel matches the overlay width.
   max-height: $mat-select-panel-max-height;
   position: static; // MDC uses `absolute` by default which will throw off our positioning.
+  outline: 0;
 
   // Note that we include this private mixin, because the public
   // one adds a bunch of styles that we aren't using for the menu.
