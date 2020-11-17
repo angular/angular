@@ -46,12 +46,16 @@ import {
 import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
 import {
   MAT_CHECKBOX_DEFAULT_OPTIONS,
-  MatCheckboxDefaultOptions
+  MatCheckboxDefaultOptions,
+  MAT_CHECKBOX_DEFAULT_OPTIONS_FACTORY,
 } from './checkbox-config';
 
 
 // Increasing integer for generating unique ids for checkbox components.
 let nextUniqueId = 0;
+
+// Default checkbox configuration.
+const defaults = MAT_CHECKBOX_DEFAULT_OPTIONS_FACTORY();
 
 /**
  * Provider Expression that allows mat-checkbox to register as a ControlValueAccessor.
@@ -204,12 +208,8 @@ export class MatCheckbox extends _MatCheckboxMixinBase implements ControlValueAc
               @Optional() @Inject(MAT_CHECKBOX_DEFAULT_OPTIONS)
                   private _options?: MatCheckboxDefaultOptions) {
     super(elementRef);
-    this._options = this._options || {};
-
-    if (this._options.color) {
-      this.color = this.defaultColor = this._options.color;
-    }
-
+    this._options = this._options || defaults;
+    this.color = this.defaultColor = this._options.color || defaults.color;
     this.tabIndex = parseInt(tabIndex) || 0;
   }
 

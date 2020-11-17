@@ -27,7 +27,7 @@ import {
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {
   MAT_CHECKBOX_DEFAULT_OPTIONS,
-  MatCheckboxDefaultOptions
+  MatCheckboxDefaultOptions, MAT_CHECKBOX_DEFAULT_OPTIONS_FACTORY
 } from '@angular/material/checkbox';
 import {
   ThemePalette,
@@ -45,6 +45,9 @@ import {MDCCheckboxAdapter, MDCCheckboxFoundation} from '@material/checkbox';
 import {numbers} from '@material/ripple';
 
 let nextUniqueId = 0;
+
+// Default checkbox configuration.
+const defaults = MAT_CHECKBOX_DEFAULT_OPTIONS_FACTORY();
 
 export const MAT_CHECKBOX_CONTROL_VALUE_ACCESSOR: any = {
   provide: NG_VALUE_ACCESSOR,
@@ -110,7 +113,7 @@ export class MatCheckbox extends _MatCheckboxMixinBase implements AfterViewInit,
   @Input('aria-describedby') ariaDescribedby: string;
 
   /** The color palette  for this checkbox ('primary', 'accent', or 'warn'). */
-  @Input() color: ThemePalette = 'accent';
+  @Input() color: ThemePalette;
 
   /** Whether the label should appear after or before the checkbox. Defaults to 'after'. */
   @Input() labelPosition: 'before'|'after' = 'after';
@@ -258,12 +261,8 @@ export class MatCheckbox extends _MatCheckboxMixinBase implements AfterViewInit,
     // ripple, which we do ourselves instead.
     this.tabIndex = parseInt(tabIndex) || 0;
     this._checkboxFoundation = new MDCCheckboxFoundation(this._checkboxAdapter);
-
-    this._options = this._options || {};
-
-    if (this._options.color) {
-      this.color = this.defaultColor = this._options.color;
-    }
+    this._options = this._options || defaults;
+    this.color = this.defaultColor = this._options!.color || defaults.color;
   }
 
   ngAfterViewInit() {

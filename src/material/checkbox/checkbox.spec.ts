@@ -17,6 +17,7 @@ import {
 } from './index';
 import {MutationObserverFactory} from '@angular/cdk/observers';
 import {ThemePalette} from '@angular/material/core';
+import {MatCheckboxDefaultOptions} from './checkbox-config';
 
 
 describe('MatCheckbox', () => {
@@ -1216,44 +1217,41 @@ describe('MatCheckbox', () => {
 
 describe('MatCheckboxDefaultOptions', () => {
   describe('when MAT_CHECKBOX_DEFAULT_OPTIONS overridden', () => {
-    beforeEach(() => {
+    function configure(defaults: MatCheckboxDefaultOptions) {
       TestBed.configureTestingModule({
         imports: [MatCheckboxModule, FormsModule],
         declarations: [SingleCheckbox, SimpleCheckbox],
-        providers: [{
-          provide: MAT_CHECKBOX_DEFAULT_OPTIONS,
-          useValue: {color: 'primary'},
-        }],
+        providers: [{provide: MAT_CHECKBOX_DEFAULT_OPTIONS, useValue: defaults}]
       });
 
       TestBed.compileComponents();
-    });
+    }
 
     it('should override default color in component', () => {
-      const fixture: ComponentFixture<SimpleCheckbox> =
-          TestBed.createComponent(SimpleCheckbox);
+      configure({color: 'primary'});
+      const fixture: ComponentFixture<SimpleCheckbox> = TestBed.createComponent(SimpleCheckbox);
       fixture.detectChanges();
-      const checkboxDebugElement: DebugElement =
-          fixture.debugElement.query(By.directive(MatCheckbox))!;
-      expect(
-          checkboxDebugElement.nativeElement.classList
-      ).toContain('mat-primary');
+      const checkboxDebugElement = fixture.debugElement.query(By.directive(MatCheckbox))!;
+      expect(checkboxDebugElement.nativeElement.classList).toContain('mat-primary');
     });
 
     it('should not override explicit input bindings', () => {
-      const fixture: ComponentFixture<SingleCheckbox> =
-          TestBed.createComponent(SingleCheckbox);
+      configure({color: 'primary'});
+      const fixture: ComponentFixture<SingleCheckbox> = TestBed.createComponent(SingleCheckbox);
       fixture.componentInstance.checkboxColor = 'warn';
       fixture.detectChanges();
-      const checkboxDebugElement: DebugElement =
-          fixture.debugElement.query(By.directive(MatCheckbox))!;
-      expect(
-          checkboxDebugElement.nativeElement.classList
-      ).not.toContain('mat-primary');
-      expect(
-          checkboxDebugElement.nativeElement.classList
-      ).toContain('mat-warn');
+      const checkboxDebugElement = fixture.debugElement.query(By.directive(MatCheckbox))!;
+      expect(checkboxDebugElement.nativeElement.classList).not.toContain('mat-primary');
       expect(checkboxDebugElement.nativeElement.classList).toContain('mat-warn');
+      expect(checkboxDebugElement.nativeElement.classList).toContain('mat-warn');
+    });
+
+    it('should default to accent if config does not specify color', () => {
+      configure({clickAction: 'noop'});
+      const fixture: ComponentFixture<SimpleCheckbox> = TestBed.createComponent(SimpleCheckbox);
+      fixture.detectChanges();
+      const checkboxDebugElement = fixture.debugElement.query(By.directive(MatCheckbox))!;
+      expect(checkboxDebugElement.nativeElement.classList).toContain('mat-accent');
     });
   });
 });
