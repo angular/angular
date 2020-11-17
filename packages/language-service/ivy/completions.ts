@@ -6,16 +6,18 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, EmptyExpr, ImplicitReceiver, LiteralPrimitive, MethodCall, PropertyRead, TmplAstNode, TmplAstReference, TmplAstTemplate, TmplAstVariable} from '@angular/compiler';
+import {AST, EmptyExpr, ImplicitReceiver, LiteralPrimitive, MethodCall, PropertyRead, PropertyWrite, SafeMethodCall, SafePropertyRead, TmplAstNode, TmplAstReference, TmplAstTemplate, TmplAstVariable} from '@angular/compiler';
 import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
 import {CompletionKind, TemplateDeclarationSymbol} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
 import {BoundEvent} from '@angular/compiler/src/render3/r3_ast';
 import * as ts from 'typescript';
 
 import {DisplayInfoKind, getDisplayInfo, unsafeCastDisplayInfoKindToScriptElementKind} from './display_parts';
+import {filterAliasImports} from './utils';
 
 type PropertyExpressionCompletionBuilder =
-    CompletionBuilder<PropertyRead|MethodCall|EmptyExpr|LiteralPrimitive>;
+    CompletionBuilder<PropertyRead|PropertyWrite|MethodCall|EmptyExpr|SafePropertyRead|
+                      SafeMethodCall>;
 
 /**
  * Performs autocompletion operations on a given node in the template.
@@ -84,7 +86,8 @@ export class CompletionBuilder<N extends TmplAstNode|AST> {
   private isPropertyExpressionCompletion(this: CompletionBuilder<TmplAstNode|AST>):
       this is PropertyExpressionCompletionBuilder {
     return this.node instanceof PropertyRead || this.node instanceof MethodCall ||
-        this.node instanceof EmptyExpr ||
+        this.node instanceof SafePropertyRead || this.node instanceof SafeMethodCall ||
+        this.node instanceof PropertyWrite || this.node instanceof EmptyExpr ||
         isBrokenEmptyBoundEventExpression(this.node, this.nodeParent);
   }
 
@@ -100,8 +103,30 @@ export class CompletionBuilder<N extends TmplAstNode|AST> {
         this.node.receiver instanceof ImplicitReceiver) {
       return this.getGlobalPropertyExpressionCompletion(options);
     } else {
-      // TODO(alxhub): implement completion of non-global expressions.
-      return undefined;
+      const location = this.compiler.getTemplateTypeChecker().getExpressionCompletionLocation(
+          this.node, this.component);
+      if (location === null) {
+        return undefined;
+      }
+      const tsResults = this.tsLS.getCompletionsAtPosition(
+          location.shimPath, location.positionInShimFile, options);
+      if (tsResults === undefined) {
+        return undefined;
+      }
+
+      const replacementSpan = makeReplacementSpan(this.node);
+
+      let ngResults: ts.CompletionEntry[] = [];
+      for (const result of tsResults.entries) {
+        ngResults.push({
+          ...result,
+          replacementSpan,
+        });
+      }
+      return {
+        ...tsResults,
+        entries: ngResults,
+      };
     }
   }
 
@@ -112,15 +137,26 @@ export class CompletionBuilder<N extends TmplAstNode|AST> {
       this: PropertyExpressionCompletionBuilder, entryName: string,
       formatOptions: ts.FormatCodeOptions|ts.FormatCodeSettings|undefined,
       preferences: ts.UserPreferences|undefined): ts.CompletionEntryDetails|undefined {
+    let details: ts.CompletionEntryDetails|undefined = undefined;
     if (this.node instanceof EmptyExpr ||
         isBrokenEmptyBoundEventExpression(this.node, this.nodeParent) ||
         this.node.receiver instanceof ImplicitReceiver) {
-      return this.getGlobalPropertyExpressionCompletionDetails(
-          entryName, formatOptions, preferences);
+      details =
+          this.getGlobalPropertyExpressionCompletionDetails(entryName, formatOptions, preferences);
     } else {
-      // TODO(alxhub): implement completion of non-global expressions.
-      return undefined;
+      const location = this.compiler.getTemplateTypeChecker().getExpressionCompletionLocation(
+          this.node, this.component);
+      if (location === null) {
+        return undefined;
+      }
+      details = this.tsLS.getCompletionEntryDetails(
+          location.shimPath, location.positionInShimFile, entryName, formatOptions,
+          /* source */ undefined, preferences);
     }
+    if (details !== undefined) {
+      details.displayParts = filterAliasImports(details.displayParts);
+    }
+    return details;
   }
 
   /**
@@ -132,8 +168,13 @@ export class CompletionBuilder<N extends TmplAstNode|AST> {
         this.node.receiver instanceof ImplicitReceiver) {
       return this.getGlobalPropertyExpressionCompletionSymbol(name);
     } else {
-      // TODO(alxhub): implement completion of non-global expressions.
-      return undefined;
+      const location = this.compiler.getTemplateTypeChecker().getExpressionCompletionLocation(
+          this.node, this.component);
+      if (location === null) {
+        return undefined;
+      }
+      return this.tsLS.getCompletionEntrySymbol(
+          location.shimPath, location.positionInShimFile, name, /* source */ undefined);
     }
   }
 
@@ -154,10 +195,7 @@ export class CompletionBuilder<N extends TmplAstNode|AST> {
     let replacementSpan: ts.TextSpan|undefined = undefined;
     // Non-empty nodes get replaced with the completion.
     if (!(this.node instanceof EmptyExpr || this.node instanceof LiteralPrimitive)) {
-      replacementSpan = {
-        start: this.node.nameSpan.start,
-        length: this.node.nameSpan.end - this.node.nameSpan.start,
-      };
+      replacementSpan = makeReplacementSpan(this.node);
     }
 
     // Merge TS completion results with results from the template scope.
@@ -284,4 +322,12 @@ function isBrokenEmptyBoundEventExpression(
     node: TmplAstNode|AST, parent: TmplAstNode|AST|null): node is LiteralPrimitive {
   return node instanceof LiteralPrimitive && parent !== null && parent instanceof BoundEvent &&
       node.value === 'ERROR';
+}
+
+function makeReplacementSpan(node: PropertyRead|PropertyWrite|MethodCall|SafePropertyRead|
+                             SafeMethodCall): ts.TextSpan {
+  return {
+    start: node.nameSpan.start,
+    length: node.nameSpan.end - node.nameSpan.start,
+  };
 }
