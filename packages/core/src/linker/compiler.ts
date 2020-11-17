@@ -11,7 +11,7 @@ import {InjectionToken} from '../di/injection_token';
 import {StaticProvider} from '../di/interface/provider';
 import {MissingTranslationStrategy} from '../i18n/tokens';
 import {Type} from '../interface/type';
-import {ViewEncapsulation} from '../metadata';
+import {ViewEncapsulation} from '../metadata/view';
 import {ComponentFactory as ComponentFactoryR3} from '../render3/component_ref';
 import {getComponentDef, getNgModuleDef} from '../render3/definition';
 import {NgModuleFactory as NgModuleFactoryR3} from '../render3/ng_module_ref';

@@ -7,9 +7,8 @@
  */
 
 import {stringify} from '../util/stringify';
-import {Injector} from '.';
+import {Injector} from './injector';
 import {THROW_IF_NOT_FOUND} from './injector_compatibility';
-
 
 export class NullInjector implements Injector {
   get(token: any, notFoundValue: any = THROW_IF_NOT_FOUND): any {

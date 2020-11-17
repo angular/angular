@@ -12,7 +12,7 @@ import {attachPatchData} from '../context_discovery';
 import {formatRuntimeError, RuntimeErrorCode} from '../error_code';
 import {registerPostOrderHooks} from '../hooks';
 import {hasClassInput, hasStyleInput, TAttributes, TElementNode, TNode, TNodeFlags, TNodeType} from '../interfaces/node';
-import {RElement} from '../interfaces/renderer';
+import {RElement} from '../interfaces/renderer_dom';
 import {isContentQueryHost, isDirectiveHost} from '../interfaces/type_checks';
 import {HEADER_OFFSET, LView, RENDERER, TView} from '../interfaces/view';
 import {assertTNodeType} from '../node_assert';

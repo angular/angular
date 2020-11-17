@@ -9,7 +9,7 @@
 import {LContainer, TYPE} from './container';
 import {ComponentDef, DirectiveDef} from './definition';
 import {TNode, TNodeFlags} from './node';
-import {RNode} from './renderer';
+import {RNode} from './renderer_dom';
 import {FLAGS, LView, LViewFlags} from './view';
 
 

@@ -16,7 +16,8 @@ import {ContentChild, ContentChildren, ViewChild, ViewChildren} from '@angular/c
 import {Component, Directive, HostBinding, HostListener, Input, Pipe} from '@angular/core/src/metadata/directives';
 import {NgModule} from '@angular/core/src/metadata/ng_module';
 import {NgModuleDef} from '@angular/core/src/metadata/ng_module_def';
-import {ComponentDef, FactoryFn, PipeDef} from '@angular/core/src/render3/interfaces/definition';
+import {FactoryFn} from '@angular/core/src/render3/definition_factory';
+import {ComponentDef, PipeDef} from '@angular/core/src/render3/interfaces/definition';
 
 
 

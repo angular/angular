@@ -12,7 +12,7 @@ import {EMPTY_ARRAY} from '../empty';
 import {getCurrentICUCaseIndex} from '../i18n/i18n_util';
 import {I18nRemoveOpCodes, TIcu} from '../interfaces/i18n';
 import {TIcuContainerNode} from '../interfaces/node';
-import {RNode} from '../interfaces/renderer';
+import {RNode} from '../interfaces/renderer_dom';
 import {LView, TVIEW} from '../interfaces/view';
 
 export function loadIcuContainerVisitor() {

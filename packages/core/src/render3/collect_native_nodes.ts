@@ -11,7 +11,7 @@ import {assertDefined} from '../util/assert';
 import {icuContainerIterate} from './i18n/i18n_tree_shaking';
 import {CONTAINER_HEADER_OFFSET} from './interfaces/container';
 import {TElementNode, TIcuContainerNode, TNode, TNodeType} from './interfaces/node';
-import {RNode} from './interfaces/renderer';
+import {RNode} from './interfaces/renderer_dom';
 import {isLContainer} from './interfaces/type_checks';
 import {DECLARATION_COMPONENT_VIEW, LView, T_HOST, TVIEW, TView} from './interfaces/view';
 import {assertTNodeType} from './node_assert';

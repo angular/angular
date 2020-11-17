@@ -12,7 +12,7 @@ import {ViewEncapsulation} from '../../src/metadata';
 import {injectComponentFactoryResolver, ɵɵdefineComponent, ɵɵdefineDirective, ɵɵlistener, ɵɵloadQuery, ɵɵqueryRefresh, ɵɵviewQuery} from '../../src/render3/index';
 import {ɵɵdirectiveInject, ɵɵelement, ɵɵelementEnd, ɵɵelementStart, ɵɵtemplate, ɵɵtext} from '../../src/render3/instructions/all';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
-import {RElement} from '../../src/render3/interfaces/renderer';
+import {RElement} from '../../src/render3/interfaces/renderer_dom';
 import {getLView} from '../../src/render3/state';
 import {getNativeByIndex} from '../../src/render3/util/view_utils';
 import {ComponentFixture, createComponent, TemplateFixture} from './render_util';

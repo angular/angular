@@ -10,9 +10,8 @@ import '../util/ng_dev_mode';
 
 import {OnDestroy} from '../interface/lifecycle_hooks';
 import {Type} from '../interface/type';
-import {getFactoryDef} from '../render3/definition';
-import {throwCyclicDependencyError, throwInvalidProviderError, throwMixedMultiProviderError} from '../render3/errors';
-import {FactoryFn} from '../render3/interfaces/definition';
+import {FactoryFn, getFactoryDef} from '../render3/definition_factory';
+import {throwCyclicDependencyError, throwInvalidProviderError, throwMixedMultiProviderError} from '../render3/errors_di';
 import {deepForEach, newArray} from '../util/array_utils';
 import {stringify} from '../util/stringify';
 
