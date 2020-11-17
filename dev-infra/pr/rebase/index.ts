@@ -7,6 +7,7 @@
  */
 
 import {types as graphQLTypes} from 'typed-graphqlify';
+import {parseCommitMessagesForRange, ParsedCommitMessage} from '../../commit-message/parse';
 
 import {getConfig, NgDevConfig} from '../../utils/config';
 import {error, info, promptConfirm} from '../../utils/console';
@@ -85,13 +86,34 @@ export async function rebasePr(
     // Fetch the branch at the commit of the PR, and check it out in a detached state.
     info(`Checking out PR #${prNumber} from ${fullHeadRef}`);
     git.run(['fetch', '-q', headRefUrl, headRefName]);
-    git.run(['checkout', '--detach', 'FETCH_HEAD']);
-
+    git.run(['checkout', '-q', '--detach', 'FETCH_HEAD']);
     // Fetch the PRs target branch and rebase onto it.
     info(`Fetching ${fullBaseRef} to rebase #${prNumber} on`);
     git.run(['fetch', '-q', baseRefUrl, baseRefName]);
+
+    const commonAncestorSha = git.run(['merge-base', 'HEAD', 'FETCH_HEAD']).stdout.trim();
+
+    const commits = parseCommitMessagesForRange(`${commonAncestorSha}..HEAD`);
+
+    let squashFixups =
+        commits.filter((commit: ParsedCommitMessage) => commit.isFixup).length === 0 ?
+        false :
+        await promptConfirm(
+            `PR #${prNumber} contains fixup commits, would you like to squash them during rebase?`,
+            true);
+
     info(`Attempting to rebase PR #${prNumber} on ${fullBaseRef}`);
-    const rebaseResult = git.runGraceful(['rebase', 'FETCH_HEAD']);
+
+    /**
+     * Tuple of flags to be added to the rebase command and env object to run the git command.
+     *
+     * Additional flags to perform the autosquashing are added when the user confirm squashing of
+     * fixup commits should occur.
+     */
+    const [flags, env] = squashFixups ?
+        [['--interactive', '--autosquash'], {...process.env, GIT_SEQUENCE_EDITOR: 'true'}] :
+        [[], undefined];
+    const rebaseResult = git.runGraceful(['rebase', ...flags, 'FETCH_HEAD'], {env: env});
 
     // If the rebase was clean, push the rebased PR up to the authors fork.
     if (rebaseResult.status === 0) {

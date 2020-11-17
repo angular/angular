@@ -1779,6 +1779,30 @@ function parseCommitMessage(commitMsg) {
         isRevert: REVERT_PREFIX_RE.test(commitMsg),
     };
 }
+/** Retrieve and parse each commit message in a provide range. */
+function parseCommitMessagesForRange(range) {
+    /** A random number used as a split point in the git log result. */
+    const randomValueSeparator = `${Math.random()}`;
+    /**
+     * Custom git log format that provides the commit header and body, separated as expected with the
+     * custom separator as the trailing value.
+     */
+    const gitLogFormat = `%s%n%n%b${randomValueSeparator}`;
+    // Retrieve the commits in the provided range.
+    const result = exec(`git log --reverse --format=${gitLogFormat} ${range}`);
+    if (result.code) {
+        throw new Error(`Failed to get all commits in the range:\n  ${result.stderr}`);
+    }
+    return result
+        // Separate the commits from a single string into individual commits.
+        .split(randomValueSeparator)
+        // Remove extra space before and after each commit message.
+        .map(l => l.trim())
+        // Remove any superfluous lines which remain from the split.
+        .filter(line => !!line)
+        // Parse each commit message.
+        .map(commit => parseCommitMessage(commit));
+}
 
 /**
  * @license
@@ -1979,38 +2003,6 @@ const ValidateFileModule = {
     command: 'pre-commit-validate',
     describe: 'Validate the most recent commit message',
 };
-
-/**
- * @license
- * Copyright Google LLC All Rights Reserved.
- *
- * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
- */
-/** Retrieve and parse each commit message in a provide range. */
-function parseCommitMessagesForRange(range) {
-    /** A random number used as a split point in the git log result. */
-    const randomValueSeparator = `${Math.random()}`;
-    /**
-     * Custom git log format that provides the commit header and body, separated as expected with the
-     * custom separator as the trailing value.
-     */
-    const gitLogFormat = `%s%n%n%b${randomValueSeparator}`;
-    // Retrieve the commits in the provided range.
-    const result = exec(`git log --reverse --format=${gitLogFormat} ${range}`);
-    if (result.code) {
-        throw new Error(`Failed to get all commits in the range:\n  ${result.stderr}`);
-    }
-    return result
-        // Separate the commits from a single string into individual commits.
-        .split(randomValueSeparator)
-        // Remove extra space before and after each commit message.
-        .map(l => l.trim())
-        // Remove any superfluous lines which remain from the split.
-        .filter(line => !!line)
-        // Parse each commit message.
-        .map(commit => parseCommitMessage(commit));
-}
 
 /**
  * @license
@@ -4352,12 +4344,26 @@ function rebasePr(prNumber, githubToken, config = getConfig()) {
             // Fetch the branch at the commit of the PR, and check it out in a detached state.
             info(`Checking out PR #${prNumber} from ${fullHeadRef}`);
             git.run(['fetch', '-q', headRefUrl, headRefName]);
-            git.run(['checkout', '--detach', 'FETCH_HEAD']);
+            git.run(['checkout', '-q', '--detach', 'FETCH_HEAD']);
             // Fetch the PRs target branch and rebase onto it.
             info(`Fetching ${fullBaseRef} to rebase #${prNumber} on`);
             git.run(['fetch', '-q', baseRefUrl, baseRefName]);
+            const commonAncestorSha = git.run(['merge-base', 'HEAD', 'FETCH_HEAD']).stdout.trim();
+            const commits = parseCommitMessagesForRange(`${commonAncestorSha}..HEAD`);
+            let squashFixups = commits.filter((commit) => commit.isFixup).length === 0 ?
+                false :
+                yield promptConfirm(`PR #${prNumber} contains fixup commits, would you like to squash them during rebase?`, true);
             info(`Attempting to rebase PR #${prNumber} on ${fullBaseRef}`);
-            const rebaseResult = git.runGraceful(['rebase', 'FETCH_HEAD']);
+            /**
+             * Tuple of flags to be added to the rebase command and env object to run the git command.
+             *
+             * Additional flags to perform the autosquashing are added when the user confirm squashing of
+             * fixup commits should occur.
+             */
+            const [flags, env] = squashFixups ?
+                [['--interactive', '--autosquash'], Object.assign(Object.assign({}, process.env), { GIT_SEQUENCE_EDITOR: 'true' })] :
+                [[], undefined];
+            const rebaseResult = git.runGraceful(['rebase', ...flags, 'FETCH_HEAD'], { env: env });
             // If the rebase was clean, push the rebased PR up to the authors fork.
             if (rebaseResult.status === 0) {
                 info(`Rebase was able to complete automatically without conflicts`);
