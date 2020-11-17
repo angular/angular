@@ -18,11 +18,11 @@ import {assertDefined, assertEqual, assertIndexInRange} from '../util/assert';
 import {noSideEffects} from '../util/closure';
 
 import {assertDirectiveDef, assertNodeInjector, assertTNodeForLView} from './assert';
-import {getFactoryDef} from './definition';
-import {throwCyclicDependencyError, throwProviderNotFoundError} from './errors';
+import {FactoryFn, getFactoryDef} from './definition_factory';
+import {throwCyclicDependencyError, throwProviderNotFoundError} from './errors_di';
 import {NG_ELEMENT_ID, NG_FACTORY_DEF} from './fields';
 import {registerPreOrderHooks} from './hooks';
-import {DirectiveDef, FactoryFn} from './interfaces/definition';
+import {DirectiveDef} from './interfaces/definition';
 import {isFactory, NO_PARENT_INJECTOR, NodeInjectorFactory, NodeInjectorOffset, RelativeInjectorLocation, RelativeInjectorLocationFlags} from './interfaces/injector';
 import {AttributeMarker, TContainerNode, TDirectiveHostNode, TElementContainerNode, TElementNode, TNode, TNodeProviderIndexes, TNodeType} from './interfaces/node';
 import {isComponentDef, isComponentHost} from './interfaces/type_checks';
@@ -31,7 +31,7 @@ import {assertTNodeType} from './node_assert';
 import {enterDI, getCurrentTNode, getLView, leaveDI} from './state';
 import {isNameOnlyAttributeMarker} from './util/attrs_utils';
 import {getParentInjectorIndex, getParentInjectorView, hasParentInjector} from './util/injector_utils';
-import {stringifyForError} from './util/misc_utils';
+import {stringifyForError} from './util/stringify_utils';
 
 
 

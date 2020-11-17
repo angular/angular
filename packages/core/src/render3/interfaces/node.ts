@@ -9,7 +9,7 @@ import {KeyValueArray} from '../../util/array_utils';
 import {TStylingRange} from '../interfaces/styling';
 import {TIcu} from './i18n';
 import {CssSelector} from './projection';
-import {RNode} from './renderer';
+import {RNode} from './renderer_dom';
 import {LView, TView} from './view';
 
 
