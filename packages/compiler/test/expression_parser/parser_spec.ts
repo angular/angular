@@ -855,8 +855,7 @@ describe('parser', () => {
 
     it('should support custom interpolation', () => {
       const parser = new Parser(new Lexer());
-      const ast =
-          parser.parseInterpolation('{% a %}', null, 0, {start: '{%', end: '%}'})!.ast as any;
+      const ast = parser.parseInterpolation('{% a %}', '', 0, {start: '{%', end: '%}'})!.ast as any;
       expect(ast.strings).toEqual(['', '']);
       expect(ast.expressions.length).toEqual(1);
       expect(ast.expressions[0].name).toEqual('a');
@@ -978,8 +977,7 @@ describe('parser', () => {
 
   describe('wrapLiteralPrimitive', () => {
     it('should wrap a literal primitive', () => {
-      expect(unparse(validate(createParser().wrapLiteralPrimitive('foo', null, 0))))
-          .toEqual('"foo"');
+      expect(unparse(validate(createParser().wrapLiteralPrimitive('foo', '', 0)))).toEqual('"foo"');
     });
   });
 
