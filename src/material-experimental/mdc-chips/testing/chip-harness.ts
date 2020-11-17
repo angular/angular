@@ -7,7 +7,8 @@
  */
 
 import {ComponentHarness, HarnessPredicate, TestKey} from '@angular/cdk/testing';
-import {ChipHarnessFilters} from './chip-harness-filters';
+import {ChipHarnessFilters, ChipRemoveHarnessFilters} from './chip-harness-filters';
+import {MatChipRemoveHarness} from './chip-remove-harness';
 
 /** Harness for interacting with a mat-chip in tests. */
 export class MatChipHarness extends ComponentHarness {
@@ -20,8 +21,10 @@ export class MatChipHarness extends ComponentHarness {
   // methods. See https://github.com/microsoft/TypeScript/issues/5863
   static with<T extends typeof MatChipHarness>(this: T, options: ChipHarnessFilters = {}):
       HarnessPredicate<InstanceType<T>> {
-    return new HarnessPredicate(MatChipHarness, options) as
-        unknown as HarnessPredicate<InstanceType<T>>;
+    return new HarnessPredicate(MatChipHarness, options)
+      .addOption('text', options.text, (harness, label) => {
+        return HarnessPredicate.stringMatches(harness.getText(), label);
+      }) as unknown as HarnessPredicate<InstanceType<T>>;
   }
 
   /** Gets a promise for the text content the option. */
@@ -31,10 +34,25 @@ export class MatChipHarness extends ComponentHarness {
     });
   }
 
+  /** Whether the chip is disabled. */
+  async isDisabled(): Promise<boolean> {
+    return (await this.host()).hasClass('mat-mdc-chip-disabled');
+  }
+
   /** Delete a chip from the set. */
   async remove(): Promise<void> {
     const hostEl = await this.host();
-    await hostEl.sendKeys!(TestKey.DELETE);
+    await hostEl.sendKeys(TestKey.DELETE);
+
+    // @breaking-change 12.0.0 Remove non-null assertion from `dispatchEvent`.
     await hostEl.dispatchEvent!('transitionend', {propertyName: 'width'});
+  }
+
+  /**
+   * Gets the remove button inside of a chip.
+   * @param filter Optionally filters which chips are included.
+   */
+  async getRemoveButton(filter: ChipRemoveHarnessFilters = {}): Promise<MatChipRemoveHarness> {
+    return this.locatorFor(MatChipRemoveHarness.with(filter))();
   }
 }

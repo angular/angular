@@ -5,10 +5,11 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {MatChipsModule} from '../index';
 import {MatChipOptionHarness} from './chip-option-harness';
 
-let fixture: ComponentFixture<ChipOptionHarnessTest>;
-let loader: HarnessLoader;
 
 describe('MatChipOptionHarness', () => {
+  let fixture: ComponentFixture<ChipOptionHarnessTest>;
+  let loader: HarnessLoader;
+
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [MatChipsModule],
@@ -45,6 +46,34 @@ describe('MatChipOptionHarness', () => {
     expect(await harnesses[2].getText()).toBe('Selected Chip Option');
     expect(await harnesses[3].getText()).toBe('Chip Option');
   });
+
+  it('should be able to select a chip', async () => {
+    const harness = await loader.getHarness(MatChipOptionHarness.with({selected: false}));
+    expect(await harness.isSelected()).toBe(false);
+
+    await harness.select();
+    expect(await harness.isSelected()).toBe(true);
+  });
+
+  it('should be able to deselect a chip', async () => {
+    const harness = await loader.getHarness(MatChipOptionHarness.with({selected: true}));
+    expect(await harness.isSelected()).toBe(true);
+
+    await harness.deselect();
+    expect(await harness.isSelected()).toBe(false);
+  });
+
+  it('should be able to toggle the selected state of a chip', async () => {
+    const harness = await loader.getHarness(MatChipOptionHarness.with({selected: false}));
+    expect(await harness.isSelected()).toBe(false);
+
+    await harness.toggle();
+    expect(await harness.isSelected()).toBe(true);
+
+    await harness.toggle();
+    expect(await harness.isSelected()).toBe(false);
+  });
+
 });
 
 @Component({

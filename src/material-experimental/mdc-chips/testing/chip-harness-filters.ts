@@ -8,17 +8,26 @@
 
 import {BaseHarnessFilters} from '@angular/cdk/testing';
 
-// TODO(mmalerba): Add additional options that make sense for each harness type.
+export interface ChipHarnessFilters extends BaseHarnessFilters {
+  /** Only find instances whose text matches the given value. */
+  text?: string | RegExp;
+}
 
-export interface ChipGridHarnessFilters extends BaseHarnessFilters {}
-
-export interface ChipHarnessFilters extends BaseHarnessFilters {}
-
-export interface ChipInputHarnessFilters extends BaseHarnessFilters {}
+export interface ChipInputHarnessFilters extends BaseHarnessFilters {
+  /** Filters based on the value of the input. */
+  value?: string | RegExp;
+  /** Filters based on the placeholder text of the input. */
+  placeholder?: string | RegExp;
+}
 
 export interface ChipListboxHarnessFilters extends BaseHarnessFilters {}
 
-export interface ChipOptionHarnessFilters extends ChipHarnessFilters {}
+export interface ChipOptionHarnessFilters extends ChipHarnessFilters {
+  /** Only find chip instances whose selected state matches the given value. */
+  selected?: boolean;
+}
+
+export interface ChipGridHarnessFilters extends BaseHarnessFilters {}
 
 export interface ChipRowHarnessFilters extends ChipHarnessFilters {}
 

@@ -5,10 +5,11 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {MatChipsModule} from '../index';
 import {MatChipRowHarness} from './chip-row-harness';
 
-let fixture: ComponentFixture<ChipRowHarnessTest>;
-let loader: HarnessLoader;
 
 describe('MatChipRowHarness', () => {
+  let fixture: ComponentFixture<ChipRowHarnessTest>;
+  let loader: HarnessLoader;
+
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [MatChipsModule],

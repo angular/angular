@@ -22,17 +22,35 @@ export class MatChipOptionHarness extends MatChipHarness {
   // methods. See https://github.com/microsoft/TypeScript/issues/5863
   static with<T extends typeof MatChipHarness>(
       this: T, options: ChipOptionHarnessFilters = {}): HarnessPredicate<InstanceType<T>> {
-    return new HarnessPredicate(MatChipOptionHarness, options) as
-        unknown as HarnessPredicate<InstanceType<T>>;
+    return new HarnessPredicate(MatChipOptionHarness, options)
+      .addOption('text', options.text,
+          (harness, label) => HarnessPredicate.stringMatches(harness.getText(), label))
+      .addOption('selected', options.selected,
+          async (harness, selected) => (await harness.isSelected()) === selected) as
+          unknown as HarnessPredicate<InstanceType<T>>;
   }
 
-  /** Gets a promise for the selected state. */
+  /** Whether the chip is selected. */
   async isSelected(): Promise<boolean> {
-    return await ((await this.host()).getAttribute('aria-selected')) === 'true';
+    return (await this.host()).hasClass('mat-mdc-chip-selected');
   }
 
-  /** Gets a promise for the disabled state. */
-  async isDisabled(): Promise<boolean> {
-    return await ((await this.host()).getAttribute('aria-disabled')) === 'true';
+  /** Selects the given chip. Only applies if it's selectable. */
+  async select(): Promise<void> {
+    if (!(await this.isSelected())) {
+      await this.toggle();
+    }
+  }
+
+  /** Deselects the given chip. Only applies if it's selectable. */
+  async deselect(): Promise<void> {
+    if (await this.isSelected()) {
+      await this.toggle();
+    }
+  }
+
+  /** Toggles the selected state of the given chip. */
+  async toggle(): Promise<void> {
+    return (await this.host()).sendKeys(' ');
   }
 }
