@@ -28,9 +28,10 @@ const COMMIT_BODY_URL_LINE_RE = /^https?:\/\/.*$/;
 
 /** Validate a commit message against using the local repo's config. */
 export function validateCommitMessage(
-    commitMsg: string, options: ValidateCommitMessageOptions = {}): ValidateCommitMessageResult {
+    commitMsg: string|ParsedCommitMessage,
+    options: ValidateCommitMessageOptions = {}): ValidateCommitMessageResult {
   const config = getCommitMessageConfig().commitMessage;
-  const commit = parseCommitMessage(commitMsg);
+  const commit = typeof commitMsg === 'string' ? parseCommitMessage(commitMsg) : commitMsg;
   const errors: string[] = [];
 
   /** Perform the validation checks against the parsed commit. */
