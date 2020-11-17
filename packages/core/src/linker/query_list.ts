@@ -64,7 +64,7 @@ export class QueryList<T> implements Iterable<T> {
   }
 
   /**
-   * Returns an item of the internal results.
+   * Returns the QueryList entry at `index`.
    */
   get(index: number): T|undefined {
     return this._results[index];
