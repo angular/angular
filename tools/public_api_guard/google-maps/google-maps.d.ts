@@ -171,7 +171,7 @@ export declare class MapKmlLayer implements OnInit, OnDestroy {
     static ɵfac: i0.ɵɵFactoryDef<MapKmlLayer, never>;
 }
 
-export declare class MapMarker implements OnInit, OnDestroy, MapAnchorPoint {
+export declare class MapMarker implements OnInit, OnChanges, OnDestroy, MapAnchorPoint {
     animationChanged: Observable<void>;
     set clickable(clickable: boolean);
     clickableChanged: Observable<void>;
@@ -213,9 +213,10 @@ export declare class MapMarker implements OnInit, OnDestroy, MapAnchorPoint {
     getTitle(): string | null;
     getVisible(): boolean;
     getZIndex(): number | null;
+    ngOnChanges(changes: SimpleChanges): void;
     ngOnDestroy(): void;
     ngOnInit(): void;
-    static ɵdir: i0.ɵɵDirectiveDefWithMeta<MapMarker, "map-marker", ["mapMarker"], { "options": "options"; "title": "title"; "position": "position"; "label": "label"; "clickable": "clickable"; }, { "animationChanged": "animationChanged"; "mapClick": "mapClick"; "clickableChanged": "clickableChanged"; "cursorChanged": "cursorChanged"; "mapDblclick": "mapDblclick"; "mapDrag": "mapDrag"; "mapDragend": "mapDragend"; "draggableChanged": "draggableChanged"; "mapDragstart": "mapDragstart"; "flatChanged": "flatChanged"; "iconChanged": "iconChanged"; "mapMousedown": "mapMousedown"; "mapMouseout": "mapMouseout"; "mapMouseover": "mapMouseover"; "mapMouseup": "mapMouseup"; "positionChanged": "positionChanged"; "mapRightclick": "mapRightclick"; "shapeChanged": "shapeChanged"; "titleChanged": "titleChanged"; "visibleChanged": "visibleChanged"; "zindexChanged": "zindexChanged"; }, never>;
+    static ɵdir: i0.ɵɵDirectiveDefWithMeta<MapMarker, "map-marker", ["mapMarker"], { "title": "title"; "position": "position"; "label": "label"; "clickable": "clickable"; "options": "options"; }, { "animationChanged": "animationChanged"; "mapClick": "mapClick"; "clickableChanged": "clickableChanged"; "cursorChanged": "cursorChanged"; "mapDblclick": "mapDblclick"; "mapDrag": "mapDrag"; "mapDragend": "mapDragend"; "draggableChanged": "draggableChanged"; "mapDragstart": "mapDragstart"; "flatChanged": "flatChanged"; "iconChanged": "iconChanged"; "mapMousedown": "mapMousedown"; "mapMouseout": "mapMouseout"; "mapMouseover": "mapMouseover"; "mapMouseup": "mapMouseup"; "positionChanged": "positionChanged"; "mapRightclick": "mapRightclick"; "shapeChanged": "shapeChanged"; "titleChanged": "titleChanged"; "visibleChanged": "visibleChanged"; "zindexChanged": "zindexChanged"; }, never>;
     static ɵfac: i0.ɵɵFactoryDef<MapMarker, never>;
 }
 

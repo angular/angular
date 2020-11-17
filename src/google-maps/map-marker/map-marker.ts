@@ -9,9 +9,17 @@
 // Workaround for: https://github.com/bazelbuild/rules_nodejs/issues/1265
 /// <reference types="googlemaps" />
 
-import {Input, OnDestroy, OnInit, Output, NgZone, Directive} from '@angular/core';
-import {BehaviorSubject, combineLatest, Observable, Subject} from 'rxjs';
-import {map, take, takeUntil} from 'rxjs/operators';
+import {
+  Input,
+  OnDestroy,
+  OnInit,
+  Output,
+  NgZone,
+  Directive,
+  OnChanges,
+  SimpleChanges,
+} from '@angular/core';
+import {Observable} from 'rxjs';
 
 import {GoogleMap} from '../google-map/google-map';
 import {MapEventManager} from '../map-event-manager';
@@ -34,42 +42,58 @@ export const DEFAULT_MARKER_OPTIONS = {
   selector: 'map-marker',
   exportAs: 'mapMarker',
 })
-export class MapMarker implements OnInit, OnDestroy, MapAnchorPoint {
+export class MapMarker implements OnInit, OnChanges, OnDestroy, MapAnchorPoint {
   private _eventManager = new MapEventManager(this._ngZone);
-  private readonly _options =
-      new BehaviorSubject<google.maps.MarkerOptions>(DEFAULT_MARKER_OPTIONS);
-  private readonly _title = new BehaviorSubject<string|undefined>(undefined);
-  private readonly _position =
-      new BehaviorSubject<google.maps.LatLngLiteral|google.maps.LatLng|undefined>(undefined);
-  private readonly _label =
-      new BehaviorSubject<string|google.maps.MarkerLabel|undefined>(undefined);
-  private readonly _clickable = new BehaviorSubject<boolean|undefined>(undefined);
-  private readonly _destroy = new Subject<void>();
 
-  @Input()
-  set options(options: google.maps.MarkerOptions) {
-    this._options.next(options || DEFAULT_MARKER_OPTIONS);
-  }
-
+  /**
+   * Title of the marker.
+   * See: developers.google.com/maps/documentation/javascript/reference/marker#MarkerOptions.title
+   */
   @Input()
   set title(title: string) {
-    this._title.next(title);
+    this._title = title;
   }
+  private _title: string;
 
+  /**
+   * Title of the marker. See:
+   * developers.google.com/maps/documentation/javascript/reference/marker#MarkerOptions.position
+   */
   @Input()
   set position(position: google.maps.LatLngLiteral|google.maps.LatLng) {
-    this._position.next(position);
+    this._position = position;
   }
+  private _position: google.maps.LatLngLiteral|google.maps.LatLng;
 
+  /**
+   * Label for the marker.
+   * See: developers.google.com/maps/documentation/javascript/reference/marker#MarkerOptions.label
+   */
   @Input()
   set label(label: string|google.maps.MarkerLabel) {
-    this._label.next(label);
+    this._label = label;
   }
+  private _label: string|google.maps.MarkerLabel;
 
+  /**
+   * Whether the marker is clickable. See:
+   * developers.google.com/maps/documentation/javascript/reference/marker#MarkerOptions.clickable
+   */
   @Input()
   set clickable(clickable: boolean) {
-    this._clickable.next(clickable);
+    this._clickable = clickable;
   }
+  private _clickable: boolean;
+
+  /**
+   * Options used to configure the marker.
+   * See: developers.google.com/maps/documentation/javascript/reference/marker#MarkerOptions
+   */
+  @Input()
+  set options(options: google.maps.MarkerOptions) {
+    this._options = options;
+  }
+  private _options: google.maps.MarkerOptions;
 
   /**
    * See
@@ -239,27 +263,45 @@ export class MapMarker implements OnInit, OnDestroy, MapAnchorPoint {
 
   ngOnInit() {
     if (this._googleMap._isBrowser) {
-      this._combineOptions().pipe(take(1)).subscribe(options => {
-        // Create the object outside the zone so its events don't trigger change detection.
-        // We'll bring it back in inside the `MapEventManager` only for the events that the
-        // user has subscribed to.
-        this._ngZone.runOutsideAngular(() => this.marker = new google.maps.Marker(options));
-        this._assertInitialized();
-        this.marker.setMap(this._googleMap.googleMap!);
-        this._eventManager.setTarget(this.marker);
+      // Create the object outside the zone so its events don't trigger change detection.
+      // We'll bring it back in inside the `MapEventManager` only for the events that the
+      // user has subscribed to.
+      this._ngZone.runOutsideAngular(() => {
+        this.marker = new google.maps.Marker(this._combineOptions());
       });
+      this._assertInitialized();
+      this.marker.setMap(this._googleMap.googleMap!);
+      this._eventManager.setTarget(this.marker);
+    }
+  }
 
-      this._watchForOptionsChanges();
-      this._watchForTitleChanges();
-      this._watchForPositionChanges();
-      this._watchForLabelChanges();
-      this._watchForClickableChanges();
+  ngOnChanges(changes: SimpleChanges) {
+    const {marker, _title, _position, _label, _clickable} = this;
+
+    if (marker) {
+      if (changes.options) {
+        marker.setOptions(this._combineOptions());
+      }
+
+      if (changes.title && _title !== undefined) {
+        marker.setTitle(_title);
+      }
+
+      if (changes.position && _position) {
+        marker.setPosition(_position);
+      }
+
+      if (changes.label && _label !== undefined) {
+        marker.setLabel(_label);
+      }
+
+      if (changes.clickable && _clickable !== undefined) {
+        marker.setClickable(_clickable);
+      }
     }
   }
 
   ngOnDestroy() {
-    this._destroy.next();
-    this._destroy.complete();
     this._eventManager.destroy();
     if (this.marker) {
       this.marker.setMap(null);
@@ -380,64 +422,17 @@ export class MapMarker implements OnInit, OnDestroy, MapAnchorPoint {
     return this.marker;
   }
 
-  private _combineOptions(): Observable<google.maps.MarkerOptions> {
-    return combineLatest([this._options, this._title, this._position, this._label, this._clickable])
-        .pipe(map(([options, title, position, label, clickable]) => {
-          const combinedOptions: google.maps.MarkerOptions = {
-            ...options,
-            title: title || options.title,
-            position: position || options.position,
-            label: label || options.label,
-            clickable: clickable !== undefined ? clickable : options.clickable,
-            map: this._googleMap.googleMap,
-          };
-          return combinedOptions;
-        }));
-  }
-
-  private _watchForOptionsChanges() {
-    this._options.pipe(takeUntil(this._destroy)).subscribe(options => {
-      if (this.marker) {
-        this._assertInitialized();
-        this.marker.setOptions(options);
-      }
-    });
-  }
-
-  private _watchForTitleChanges() {
-    this._title.pipe(takeUntil(this._destroy)).subscribe(title => {
-      if (this.marker && title !== undefined) {
-        this._assertInitialized();
-        this.marker.setTitle(title);
-      }
-    });
-  }
-
-  private _watchForPositionChanges() {
-    this._position.pipe(takeUntil(this._destroy)).subscribe(position => {
-      if (this.marker && position) {
-        this._assertInitialized();
-        this.marker.setPosition(position);
-      }
-    });
-  }
-
-  private _watchForLabelChanges() {
-    this._label.pipe(takeUntil(this._destroy)).subscribe(label => {
-      if (this.marker && label !== undefined) {
-        this._assertInitialized();
-        this.marker.setLabel(label);
-      }
-    });
-  }
-
-  private _watchForClickableChanges() {
-    this._clickable.pipe(takeUntil(this._destroy)).subscribe(clickable => {
-      if (this.marker && clickable !== undefined) {
-        this._assertInitialized();
-        this.marker.setClickable(clickable);
-      }
-    });
+  /** Creates a combined options object using the passed-in options and the individual inputs. */
+  private _combineOptions(): google.maps.MarkerOptions {
+    const options = this._options || DEFAULT_MARKER_OPTIONS;
+    return {
+      ...options,
+      title: this._title || options.title,
+      position: this._position || options.position,
+      label: this._label || options.label,
+      clickable: this._clickable !== undefined ? this._clickable : options.clickable,
+      map: this._googleMap.googleMap,
+    };
   }
 
   private _assertInitialized(): asserts this is {marker: google.maps.Marker} {
