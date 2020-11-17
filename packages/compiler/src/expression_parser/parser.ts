@@ -13,10 +13,14 @@ import {escapeRegExp} from '../util';
 import {AbsoluteSourceSpan, AST, AstVisitor, ASTWithSource, Binary, BindingPipe, Chain, Conditional, EmptyExpr, ExpressionBinding, FunctionCall, ImplicitReceiver, Interpolation, KeyedRead, KeyedWrite, LiteralArray, LiteralMap, LiteralMapKey, LiteralPrimitive, MethodCall, NonNullAssert, ParserError, ParseSpan, PrefixNot, PropertyRead, PropertyWrite, Quote, RecursiveAstVisitor, SafeMethodCall, SafePropertyRead, TemplateBinding, TemplateBindingIdentifier, ThisReceiver, Unary, VariableBinding} from './ast';
 import {EOF, isIdentifier, isQuote, Lexer, Token, TokenType} from './lexer';
 
+export interface InterpolationPiece {
+  text: string;
+  start: number;
+  end: number;
+}
 export class SplitInterpolation {
   constructor(
-      public strings: string[], public stringSpans: {start: number, end: number}[],
-      public expressions: string[], public expressionsSpans: {start: number, end: number}[],
+      public strings: InterpolationPiece[], public expressions: InterpolationPiece[],
       public offsets: number[]) {}
 }
 
@@ -48,7 +52,7 @@ export class Parser {
   simpleExpressionChecker = SimpleExpressionChecker;
 
   parseAction(
-      input: string, location: any, absoluteOffset: number,
+      input: string, location: string, absoluteOffset: number,
       interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG): ASTWithSource {
     this._checkNoInterpolation(input, location, interpolationConfig);
     const sourceToLex = this._stripComments(input);
@@ -61,7 +65,7 @@ export class Parser {
   }
 
   parseBinding(
-      input: string, location: any, absoluteOffset: number,
+      input: string, location: string, absoluteOffset: number,
       interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG): ASTWithSource {
     const ast = this._parseBindingAst(input, location, absoluteOffset, interpolationConfig);
     return new ASTWithSource(ast, input, location, absoluteOffset, this.errors);
@@ -85,7 +89,7 @@ export class Parser {
     return new ASTWithSource(ast, input, location, absoluteOffset, this.errors);
   }
 
-  private _reportError(message: string, input: string, errLocation: string, ctxLocation?: any) {
+  private _reportError(message: string, input: string, errLocation: string, ctxLocation?: string) {
     this.errors.push(new ParserError(message, input, errLocation, ctxLocation));
   }
 
@@ -109,7 +113,7 @@ export class Parser {
         .parseChain();
   }
 
-  private _parseQuote(input: string|null, location: any, absoluteOffset: number): AST|null {
+  private _parseQuote(input: string|null, location: string, absoluteOffset: number): AST|null {
     if (input == null) return null;
     const prefixSeparatorIndex = input.indexOf(':');
     if (prefixSeparatorIndex == -1) return null;
@@ -161,25 +165,27 @@ export class Parser {
   }
 
   parseInterpolation(
-      input: string, location: any, absoluteOffset: number,
+      input: string, location: string, absoluteOffset: number,
       interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG): ASTWithSource|null {
-    const split = this.splitInterpolation(input, location, interpolationConfig);
-    if (split == null) return null;
+    const {strings, expressions, offsets} =
+        this.splitInterpolation(input, location, interpolationConfig);
+    if (expressions.length === 0) return null;
 
-    const expressions: AST[] = [];
+    const expressionNodes: AST[] = [];
 
-    for (let i = 0; i < split.expressions.length; ++i) {
-      const expressionText = split.expressions[i];
+    for (let i = 0; i < expressions.length; ++i) {
+      const expressionText = expressions[i].text;
       const sourceToLex = this._stripComments(expressionText);
       const tokens = this._lexer.tokenize(sourceToLex);
       const ast = new _ParseAST(
                       input, location, absoluteOffset, tokens, sourceToLex.length, false,
-                      this.errors, split.offsets[i] + (expressionText.length - sourceToLex.length))
+                      this.errors, offsets[i] + (expressionText.length - sourceToLex.length))
                       .parseChain();
-      expressions.push(ast);
+      expressionNodes.push(ast);
     }
 
-    return this.createInterpolationAst(split.strings, expressions, input, location, absoluteOffset);
+    return this.createInterpolationAst(
+        strings.map(s => s.text), expressionNodes, input, location, absoluteOffset);
   }
 
   /**
@@ -187,7 +193,7 @@ export class Parser {
    * element that would normally appear within the interpolation prefix and suffix (`{{` and `}}`).
    * This is used for parsing the switch expression in ICUs.
    */
-  parseInterpolationExpression(expression: string, location: any, absoluteOffset: number):
+  parseInterpolationExpression(expression: string, location: string, absoluteOffset: number):
       ASTWithSource {
     const sourceToLex = this._stripComments(expression);
     const tokens = this._lexer.tokenize(sourceToLex);
@@ -217,13 +223,10 @@ export class Parser {
    */
   splitInterpolation(
       input: string, location: string,
-      interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG): SplitInterpolation
-      |null {
-    const strings: string[] = [];
-    const expressions: string[] = [];
+      interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG): SplitInterpolation {
+    const strings: InterpolationPiece[] = [];
+    const expressions: InterpolationPiece[] = [];
     const offsets: number[] = [];
-    const stringSpans: {start: number, end: number}[] = [];
-    const expressionSpans: {start: number, end: number}[] = [];
     let i = 0;
     let atInterpolation = false;
     let extendLastString = false;
@@ -236,9 +239,8 @@ export class Parser {
         if (i === -1) {
           i = input.length;
         }
-        const part = input.substring(start, i);
-        strings.push(part);
-        stringSpans.push({start, end: i});
+        const text = input.substring(start, i);
+        strings.push({text, start, end: i});
 
         atInterpolation = true;
       } else {
@@ -255,17 +257,16 @@ export class Parser {
         }
         const fullEnd = exprEnd + interpEnd.length;
 
-        const part = input.substring(exprStart, exprEnd);
-        if (part.trim().length > 0) {
-          expressions.push(part);
+        const text = input.substring(exprStart, exprEnd);
+        if (text.trim().length > 0) {
+          expressions.push({text, start: fullStart, end: fullEnd});
         } else {
           this._reportError(
               'Blank expressions are not allowed in interpolated strings', input,
               `at column ${i} in`, location);
-          expressions.push('$implicit');
+          expressions.push({text: '$implicit', start: fullStart, end: fullEnd});
         }
         offsets.push(exprStart);
-        expressionSpans.push({start: fullStart, end: fullEnd});
 
         i = fullEnd;
         atInterpolation = false;
@@ -274,19 +275,18 @@ export class Parser {
     if (!atInterpolation) {
       // If we are now at a text section, add the remaining content as a raw string.
       if (extendLastString) {
-        strings[strings.length - 1] += input.substring(i);
-        stringSpans[stringSpans.length - 1].end = input.length;
+        const piece = strings[strings.length - 1];
+        piece.text += input.substring(i);
+        piece.end = input.length;
       } else {
-        strings.push(input.substring(i));
-        stringSpans.push({start: i, end: input.length});
+        strings.push({text: input.substring(i), start: i, end: input.length});
       }
     }
-    return expressions.length === 0 ?
-        null :
-        new SplitInterpolation(strings, stringSpans, expressions, expressionSpans, offsets);
+    return new SplitInterpolation(strings, expressions, offsets);
   }
 
-  wrapLiteralPrimitive(input: string|null, location: any, absoluteOffset: number): ASTWithSource {
+  wrapLiteralPrimitive(input: string|null, location: string, absoluteOffset: number):
+      ASTWithSource {
     const span = new ParseSpan(0, input == null ? 0 : input.length);
     return new ASTWithSource(
         new LiteralPrimitive(span, span.toAbsolute(absoluteOffset), input), input, location,
@@ -316,7 +316,7 @@ export class Parser {
   }
 
   private _checkNoInterpolation(
-      input: string, location: any, interpolationConfig: InterpolationConfig): void {
+      input: string, location: string, interpolationConfig: InterpolationConfig): void {
     const regexp = _getInterpolateRegExp(interpolationConfig);
     const parts = input.split(regexp);
     if (parts.length > 1) {
@@ -374,7 +374,7 @@ export class _ParseAST {
   index: number = 0;
 
   constructor(
-      public input: string, public location: any, public absoluteOffset: number,
+      public input: string, public location: string, public absoluteOffset: number,
       public tokens: Token[], public inputLength: number, public parseAction: boolean,
       private errors: ParserError[], private offset: number) {}
 
