@@ -206,6 +206,13 @@ describe('createUrlTree', () => {
     });
   });
 
+  it('can navigate to nested route where commands is string', () => {
+    const p = serializer.parse('/');
+    const t = createRoot(
+        p, ['/', {outlets: {primary: ['child', {outlets: {primary: 'nested-primary'}}]}}]);
+    expect(serializer.serialize(t)).toEqual('/child/nested-primary');
+  });
+
   it('should throw when outlets is not the last command', () => {
     const p = serializer.parse('/a');
     expect(() => createRoot(p, ['a', {outlets: {right: ['c']}}, 'c']))
