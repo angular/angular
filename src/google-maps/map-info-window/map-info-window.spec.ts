@@ -205,6 +205,20 @@ describe('MapInfoWindow', () => {
     expect(addSpy).toHaveBeenCalledWith('zindex_changed', jasmine.any(Function));
     subscription.unsubscribe();
   });
+
+  it('should be able to open an info window without passing in an anchor', () => {
+    const infoWindowSpy = createInfoWindowSpy({});
+    createInfoWindowConstructorSpy(infoWindowSpy).and.callThrough();
+
+    const fixture = TestBed.createComponent(TestApp);
+    const infoWindowComponent = fixture.debugElement.query(By.directive(
+        MapInfoWindow))!.injector.get<MapInfoWindow>(MapInfoWindow);
+    fixture.detectChanges();
+
+    infoWindowComponent.open();
+    expect(infoWindowSpy.open).toHaveBeenCalledTimes(1);
+  });
+
 });
 
 @Component({
