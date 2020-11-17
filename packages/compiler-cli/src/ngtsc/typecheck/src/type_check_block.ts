@@ -865,6 +865,11 @@ export class TcbDirectiveOutputsOp extends TcbOp {
       // TODO(alxhub): consider supporting multiple fields with the same property name for outputs.
       const field = outputs.getByBindingPropertyName(output.name)![0].classPropertyName;
 
+      if (dirId === null) {
+        dirId = this.scope.resolve(this.node, this.dir);
+      }
+      const outputField = ts.createElementAccess(dirId, ts.createStringLiteral(field));
+      addParseSpanInfo(outputField, output.keySpan);
       if (this.tcb.env.config.checkTypeOfOutputEvents) {
         // For strict checking of directive events, generate a call to the `subscribe` method
         // on the directive's output field to let type information flow into the handler function's
@@ -877,12 +882,6 @@ export class TcbDirectiveOutputsOp extends TcbOp {
         // specially crafted set of signatures, to effectively cast `EventEmitter<T>` to something
         // that has a `subscribe` method that properly carries the `T` into the handler function.
         const handler = tcbCreateEventHandler(output, this.tcb, this.scope, EventParamType.Infer);
-
-        if (dirId === null) {
-          dirId = this.scope.resolve(this.node, this.dir);
-        }
-        const outputField = ts.createElementAccess(dirId, ts.createStringLiteral(field));
-        addParseSpanInfo(outputField, output.keySpan);
         const outputHelper =
             ts.createCall(this.tcb.env.declareOutputHelper(), undefined, [outputField]);
         const subscribeFn = ts.createPropertyAccess(outputHelper, 'subscribe');
@@ -890,8 +889,13 @@ export class TcbDirectiveOutputsOp extends TcbOp {
         addParseSpanInfo(call, output.sourceSpan);
         this.scope.addStatement(ts.createExpressionStatement(call));
       } else {
-        // If strict checking of directive events is disabled, emit a handler function where the
-        // `$event` parameter has an explicit `any` type.
+        // If strict checking of directive events is disabled:
+        //
+        // * We still generate the access to the output field as a statement in the TCB so consumers
+        //   of the `TemplateTypeChecker` can still find the node for the class member for the
+        //   output.
+        // * Emit a handler function where the `$event` parameter has an explicit `any` type.
+        this.scope.addStatement(ts.createExpressionStatement(outputField));
         const handler = tcbCreateEventHandler(output, this.tcb, this.scope, EventParamType.Any);
         this.scope.addStatement(ts.createExpressionStatement(handler));
       }
