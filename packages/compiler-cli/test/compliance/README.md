@@ -114,7 +114,6 @@ yarn test-ivy-aot //packages/compiler-cli/test/compliance/test_cases/...
 
 (The last command runs the partial compilation tests.)
 
-
 ## Updating a golden partial file
 
 There is one golden partial file per `TEST_CASES.json` file. So even if this file defines multiple
@@ -137,11 +136,22 @@ that contains the `GOLDEN_PARTIAL.js` to update.
 
 ## Debugging test-cases
 
-Compliance tests are basically `jasmine_node_test` rules. As such, they can be debugged
-just like any other `jasmine_node_test`.  The standard approach is to add `--config=debug`
+The full and linked compliance tests are basically `jasmine_node_test` rules. As such, they can be
+debugged just like any other `jasmine_node_test`.  The standard approach is to add `--config=debug`
 to the Bazel test command.
 
-It is useful when debugging to focus on a single test-case.
+For example:
+
+```sg
+yarn test-ivy-aot //packages/compiler-cli/test/compliance/full --config=debug
+yarn test-ivy-aot //packages/compiler-cli/test/compliance/linked --config=debug
+```
+
+To debug generating the partial golden output use the following form of Bazel command:
+
+```sh
+yarn bazel run //packages/compiler-cli/test/compliance/test_cases:generate_partial_for_<path/to/test_case>.debug
+```
 
 
 ### Focusing test-cases
@@ -154,4 +164,3 @@ This is equivalent to using jasmine `fit()`.
 
 You can exclude a test case by setting `"excludeTest": true` in the `TEST_CASES.json` file.
 This is equivalent to using jasmine `xit()`.
-
