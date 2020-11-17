@@ -385,6 +385,7 @@ export declare class MatEndDate<D> extends _MatDateRangeInputBase<D> implements 
 }
 
 export declare class MatMonthView<D> implements AfterContentInit, OnChanges, OnDestroy {
+    readonly _changeDetectorRef: ChangeDetectorRef;
     _comparisonRangeEnd: number | null;
     _comparisonRangeStart: number | null;
     _dateAdapter: DateAdapter<D>;
