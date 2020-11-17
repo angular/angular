@@ -727,6 +727,37 @@ describe('CdkDrag', () => {
       expect(styles.touchAction || (styles as any).webkitUserDrag).toBe('none');
     });
 
+    it('should enable native drag interactions on the drag handle if dragging is disabled', () => {
+      const fixture = createComponent(StandaloneDraggableWithHandle);
+      fixture.detectChanges();
+      fixture.componentInstance.draggingDisabled = true;
+      fixture.detectChanges();
+      const styles = fixture.componentInstance.handleElement.nativeElement.style;
+      expect(styles.touchAction || (styles as any).webkitUserDrag).toBeFalsy();
+    });
+
+    it('should enable native drag interactions on the drag handle if dragging is disabled ' +
+      'on init', () => {
+        const fixture = createComponent(StandaloneDraggableWithHandle);
+        fixture.componentInstance.draggingDisabled = true;
+        fixture.detectChanges();
+        const styles = fixture.componentInstance.handleElement.nativeElement.style;
+        expect(styles.touchAction || (styles as any).webkitUserDrag).toBeFalsy();
+      });
+
+    it('should toggle native drag interactions based on whether the handle is disabled', () => {
+      const fixture = createComponent(StandaloneDraggableWithHandle);
+      fixture.detectChanges();
+      fixture.componentInstance.handleInstance.disabled = true;
+      fixture.detectChanges();
+      const styles = fixture.componentInstance.handleElement.nativeElement.style;
+      expect(styles.touchAction || (styles as any).webkitUserDrag).toBeFalsy();
+
+      fixture.componentInstance.handleInstance.disabled = false;
+      fixture.detectChanges();
+      expect(styles.touchAction || (styles as any).webkitUserDrag).toBe('none');
+    });
+
     it('should be able to reset a freely-dragged item to its initial position', fakeAsync(() => {
       const fixture = createComponent(StandaloneDraggable);
       fixture.detectChanges();
@@ -5558,7 +5589,7 @@ class StandaloneDraggableSvgWithViewBox {
 
 @Component({
   template: `
-    <div #dragElement cdkDrag
+    <div #dragElement cdkDrag [cdkDragDisabled]="draggingDisabled"
       style="width: 100px; height: 100px; background: red; position: relative">
       <div #handleElement cdkDragHandle style="width: 10px; height: 10px; background: green;"></div>
     </div>
@@ -5569,6 +5600,7 @@ class StandaloneDraggableWithHandle {
   @ViewChild('handleElement') handleElement: ElementRef<HTMLElement>;
   @ViewChild(CdkDrag) dragInstance: CdkDrag;
   @ViewChild(CdkDragHandle) handleInstance: CdkDragHandle;
+  draggingDisabled = false;
 }
 
 @Component({
