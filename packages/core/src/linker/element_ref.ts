@@ -7,7 +7,7 @@
  */
 
 import {TNode} from '../render3/interfaces/node';
-import {RElement} from '../render3/interfaces/renderer';
+import {RElement} from '../render3/interfaces/renderer_dom';
 import {LView} from '../render3/interfaces/view';
 import {getCurrentTNode, getLView} from '../render3/state';
 import {getNativeByTNode} from '../render3/util/view_utils';

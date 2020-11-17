@@ -7,7 +7,7 @@
  */
 
 import {TNode} from './node';
-import {RComment, RElement} from './renderer';
+import {RComment, RElement} from './renderer_dom';
 import {HOST, LView, NEXT, PARENT, T_HOST, TRANSPLANTED_VIEWS_TO_REFRESH} from './view';
 
 

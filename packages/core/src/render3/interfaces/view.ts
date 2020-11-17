@@ -9,16 +9,16 @@
 import {InjectionToken} from '../../di/injection_token';
 import {Injector} from '../../di/injector';
 import {Type} from '../../interface/type';
-import {SchemaMetadata} from '../../metadata';
+import {SchemaMetadata} from '../../metadata/schema';
 import {Sanitizer} from '../../sanitization/sanitizer';
-
 import {LContainer} from './container';
 import {ComponentDef, ComponentTemplate, DirectiveDef, DirectiveDefList, HostBindingsFunction, PipeDef, PipeDefList, ViewQueriesFunction} from './definition';
 import {I18nUpdateOpCodes, TI18n, TIcu} from './i18n';
 import {TConstants, TNode} from './node';
 import {PlayerHandler} from './player';
 import {LQueries, TQueries} from './query';
-import {RComment, RElement, Renderer3, RendererFactory3} from './renderer';
+import {Renderer3, RendererFactory3} from './renderer';
+import {RComment, RElement} from './renderer_dom';
 import {TStylingKey, TStylingRange} from './styling';
 
 

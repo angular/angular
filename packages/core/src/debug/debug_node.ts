@@ -13,11 +13,11 @@ import {TElementNode, TNode, TNodeFlags, TNodeType} from '../render3/interfaces/
 import {isComponentHost, isLContainer} from '../render3/interfaces/type_checks';
 import {DECLARATION_COMPONENT_VIEW, LView, PARENT, T_HOST, TData, TVIEW} from '../render3/interfaces/view';
 import {getComponent, getContext, getInjectionTokens, getInjector, getListeners, getLocalRefs, getOwningComponent, loadLContext} from '../render3/util/discovery_utils';
-import {INTERPOLATION_DELIMITER, renderStringify} from '../render3/util/misc_utils';
+import {INTERPOLATION_DELIMITER} from '../render3/util/misc_utils';
+import {renderStringify} from '../render3/util/stringify_utils';
 import {getComponentLViewByIndex, getNativeByTNodeOrNull} from '../render3/util/view_utils';
 import {assertDomNode} from '../util/assert';
-import {DebugContext} from '../view/index';
-
+import {DebugContext} from '../view/types';
 
 
 /**

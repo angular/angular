@@ -7,7 +7,7 @@
  */
 
 import {ViewEncapsulation} from '../metadata/view';
-import {RendererType2} from '../render/api';
+import {RendererType2} from '../render/api_flags';
 import {SecurityContext} from '../sanitization/security';
 
 import {asElementData, BindingDef, BindingFlags, ElementData, ElementHandleEventFn, NodeDef, NodeFlags, OutputDef, OutputType, QueryValueType, ViewData, ViewDefinitionFactory} from './types';
