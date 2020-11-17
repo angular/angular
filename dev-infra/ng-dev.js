@@ -1783,7 +1783,7 @@ const COMMIT_BODY_URL_LINE_RE = /^https?:\/\/.*$/;
 /** Validate a commit message against using the local repo's config. */
 function validateCommitMessage(commitMsg, options = {}) {
     const config = getCommitMessageConfig().commitMessage;
-    const commit = parseCommitMessage(commitMsg);
+    const commit = typeof commitMsg === 'string' ? parseCommitMessage(commitMsg) : commitMsg;
     const errors = [];
     /** Perform the validation checks against the parsed commit. */
     function validateCommitAndCollectErrors() {
@@ -1978,44 +1978,61 @@ const ValidateFileModule = {
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-// Whether the provided commit is a fixup commit.
-const isNonFixup = (m) => !parseCommitMessage(m).isFixup;
-// Extracts commit header (first line of commit message).
-const extractCommitHeader = (m) => parseCommitMessage(m).header;
-/** Validate all commits in a provided git commit range. */
-function validateCommitRange(range) {
-    /**
-     * A random value is used as a string to allow for a definite split point in the git log result.
-     */
+/** Retrieve and parse each commit message in a provide range. */
+function parseCommitMessagesForRange(range) {
+    /** A random number used as a split point in the git log result. */
     const randomValueSeparator = `${Math.random()}`;
     /**
      * Custom git log format that provides the commit header and body, separated as expected with the
      * custom separator as the trailing value.
      */
     const gitLogFormat = `%s%n%n%b${randomValueSeparator}`;
-    /**
-     * A list of tuples containing a commit header string and the list of error messages for the
-     * commit.
-     */
-    const errors = [];
     // Retrieve the commits in the provided range.
     const result = exec(`git log --reverse --format=${gitLogFormat} ${range}`);
     if (result.code) {
-        throw new Error(`Failed to get all commits in the range: \n  ${result.stderr}`);
+        throw new Error(`Failed to get all commits in the range:\n  ${result.stderr}`);
     }
-    // Separate the commits from a single string into individual commits
-    const commits = result.split(randomValueSeparator).map(l => l.trim()).filter(line => !!line);
+    return result
+        // Separate the commits from a single string into individual commits.
+        .split(randomValueSeparator)
+        // Remove extra space before and after each commit message.
+        .map(l => l.trim())
+        // Remove any superfluous lines which remain from the split.
+        .filter(line => !!line)
+        // Parse each commit message.
+        .map(commit => parseCommitMessage(commit));
+}
+
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+// Whether the provided commit is a fixup commit.
+const isNonFixup = (commit) => !commit.isFixup;
+// Extracts commit header (first line of commit message).
+const extractCommitHeader = (commit) => commit.header;
+/** Validate all commits in a provided git commit range. */
+function validateCommitRange(range) {
+    /** A list of tuples of the commit header string and a list of error messages for the commit. */
+    const errors = [];
+    /** A list of parsed commit messages from the range. */
+    const commits = parseCommitMessagesForRange(range);
     info(`Examining ${commits.length} commit(s) in the provided range: ${range}`);
-    // Check each commit in the commit range.  Commits are allowed to be fixup commits for other
-    // commits in the provided commit range.
-    const allCommitsInRangeValid = commits.every((m, i) => {
+    /**
+     * Whether all commits in the range are valid, commits are allowed to be fixup commits for other
+     * commits in the provided commit range.
+     */
+    const allCommitsInRangeValid = commits.every((commit, i) => {
         const options = {
             disallowSquash: true,
-            nonFixupCommitHeaders: isNonFixup(m) ?
+            nonFixupCommitHeaders: isNonFixup(commit) ?
                 undefined :
                 commits.slice(0, i).filter(isNonFixup).map(extractCommitHeader)
         };
-        const { valid, errors: localErrors, commit } = validateCommitMessage(m, options);
+        const { valid, errors: localErrors } = validateCommitMessage(commit, options);
         if (localErrors.length) {
             errors.push([commit.header, localErrors]);
         }
