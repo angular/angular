@@ -7,10 +7,11 @@
  */
 
 import {TmplAstReference, TmplAstTemplate} from '@angular/compiler';
+import {MethodCall, PropertyRead, PropertyWrite, SafeMethodCall, SafePropertyRead} from '@angular/compiler/src/compiler';
 import * as ts from 'typescript';
 
 import {AbsoluteFsPath} from '../../file_system';
-import {CompletionKind, GlobalCompletion, ReferenceCompletion, VariableCompletion} from '../api';
+import {CompletionKind, GlobalCompletion, ReferenceCompletion, ShimLocation, VariableCompletion} from '../api';
 
 import {ExpressionIdentifier, findFirstMatchingNode} from './comments';
 import {TemplateData} from './context';
@@ -27,6 +28,9 @@ export class CompletionEngine {
    * (`null`).
    */
   private globalCompletionCache = new Map<TmplAstTemplate|null, GlobalCompletion>();
+
+  private expressionCompletionCache =
+      new Map<PropertyRead|SafePropertyRead|MethodCall|SafeMethodCall, ShimLocation>();
 
   constructor(private tcb: ts.Node, private data: TemplateData, private shimPath: AbsoluteFsPath) {}
 
@@ -78,5 +82,53 @@ export class CompletionEngine {
 
     this.globalCompletionCache.set(context, completion);
     return completion;
+  }
+
+  getExpressionCompletionLocation(expr: PropertyRead|PropertyWrite|MethodCall|
+                                  SafeMethodCall): ShimLocation|null {
+    if (this.expressionCompletionCache.has(expr)) {
+      return this.expressionCompletionCache.get(expr)!;
+    }
+
+    // Completion works inside property reads and method calls.
+    let tsExpr: ts.PropertyAccessExpression|null = null;
+    if (expr instanceof PropertyRead || expr instanceof MethodCall ||
+        expr instanceof PropertyWrite) {
+      // Non-safe navigation operations are trivial: `foo.bar` or `foo.bar()`
+      tsExpr = findFirstMatchingNode(this.tcb, {
+        filter: ts.isPropertyAccessExpression,
+        withSpan: expr.nameSpan,
+      });
+    } else if (expr instanceof SafePropertyRead || expr instanceof SafeMethodCall) {
+      // Safe navigation operations are a little more complex, and involve a ternary. Completion
+      // happens in the "true" case of the ternary.
+      const ternaryExpr = findFirstMatchingNode(this.tcb, {
+        filter: ts.isParenthesizedExpression,
+        withSpan: expr.sourceSpan,
+      });
+      if (ternaryExpr === null || !ts.isConditionalExpression(ternaryExpr.expression)) {
+        return null;
+      }
+      const whenTrue = ternaryExpr.expression.whenTrue;
+
+      if (expr instanceof SafePropertyRead && ts.isPropertyAccessExpression(whenTrue)) {
+        tsExpr = whenTrue;
+      } else if (
+          expr instanceof SafeMethodCall && ts.isCallExpression(whenTrue) &&
+          ts.isPropertyAccessExpression(whenTrue.expression)) {
+        tsExpr = whenTrue.expression;
+      }
+    }
+
+    if (tsExpr === null) {
+      return null;
+    }
+
+    const res: ShimLocation = {
+      shimPath: this.shimPath,
+      positionInShimFile: tsExpr.name.getEnd(),
+    };
+    this.expressionCompletionCache.set(expr, res);
+    return res;
   }
 }
