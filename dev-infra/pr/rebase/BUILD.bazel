@@ -9,6 +9,7 @@ ts_library(
     module_name = "@angular/dev-infra-private/pr/rebase",
     visibility = ["//dev-infra:__subpackages__"],
     deps = [
+        "//dev-infra/commit-message",
         "//dev-infra/utils",
         "@npm//@types/inquirer",
         "@npm//@types/node",
