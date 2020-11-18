@@ -296,7 +296,6 @@ export {
   ɵɵsanitizeUrlOrResourceUrl,
   ɵɵtrustConstantHtml,
   ɵɵtrustConstantResourceUrl,
-  ɵɵtrustConstantScript,
 } from './sanitization/sanitization';
 export {
   noSideEffects as ɵnoSideEffects,
