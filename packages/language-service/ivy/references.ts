@@ -38,7 +38,7 @@ export class ReferenceBuilder {
     }
 
     // Get the information about the TCB at the template position.
-    const symbol = this.ttc.getSymbolOfNode(positionDetails.node, component);
+    const symbol = this.ttc.getSymbolOfNode(positionDetails.nodeInContext.node, component);
     if (symbol === null) {
       return undefined;
     }
@@ -63,7 +63,7 @@ export class ReferenceBuilder {
       case SymbolKind.Variable: {
         const {positionInShimFile: initializerPosition, shimPath} = symbol.initializerLocation;
         const localVarPosition = symbol.localVarLocation.positionInShimFile;
-        const templateNode = positionDetails.node;
+        const templateNode = positionDetails.nodeInContext.node;
 
         if ((templateNode instanceof TmplAstVariable)) {
           if (templateNode.valueSpan !== undefined && isWithin(position, templateNode.valueSpan)) {
