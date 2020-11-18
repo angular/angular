@@ -6,9 +6,9 @@ import { SitePage } from './app.po';
 describe('onerror handler', () => {
   let page: SitePage;
 
-  beforeAll(() => {
+  beforeAll(async () => {
     page = new SitePage();
-    page.navigateTo('');
+    await page.navigateTo('');
   });
 
 
