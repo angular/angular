@@ -139,15 +139,11 @@ function parseEncapsulation<TExpression>(encapsulation: AstValue<TExpression>): 
     throw new FatalLinkerError(
         encapsulation.expression, 'Expected encapsulation to have a symbol name');
   }
-  switch (symbolName) {
-    case ViewEncapsulation[ViewEncapsulation.Emulated]:
-      return ViewEncapsulation.Emulated;
-    case ViewEncapsulation[ViewEncapsulation.None]:
-      return ViewEncapsulation.None;
-    case ViewEncapsulation[ViewEncapsulation.ShadowDom]:
-      return ViewEncapsulation.ShadowDom;
+  const enumValue = ViewEncapsulation[symbolName as keyof typeof ViewEncapsulation];
+  if (enumValue === undefined) {
+    throw new FatalLinkerError(encapsulation.expression, 'Unsupported encapsulation');
   }
-  throw new FatalLinkerError(encapsulation.expression, 'Unsupported encapsulation');
+  return enumValue;
 }
 
 /**
@@ -161,14 +157,12 @@ function parseChangeDetectionStrategy<TExpression>(changeDetectionStrategy: AstV
         changeDetectionStrategy.expression,
         'Expected change detection strategy to have a symbol name');
   }
-  switch (symbolName) {
-    case ChangeDetectionStrategy[ChangeDetectionStrategy.OnPush]:
-      return ChangeDetectionStrategy.OnPush;
-    case ChangeDetectionStrategy[ChangeDetectionStrategy.Default]:
-      return ChangeDetectionStrategy.Default;
+  const enumValue = ChangeDetectionStrategy[symbolName as keyof typeof ChangeDetectionStrategy];
+  if (enumValue === undefined) {
+    throw new FatalLinkerError(
+        changeDetectionStrategy.expression, 'Unsupported change detection strategy');
   }
-  throw new FatalLinkerError(
-      changeDetectionStrategy.expression, 'Unsupported change detection strategy');
+  return enumValue;
 }
 
 /**

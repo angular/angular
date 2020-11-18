@@ -9,7 +9,7 @@ import * as core from '../../core';
 import {DEFAULT_INTERPOLATION_CONFIG} from '../../ml_parser/interpolation_config';
 import * as o from '../../output/output_ast';
 import {Identifiers as R3} from '../r3_identifiers';
-import {R3ComponentMetadata, R3DirectiveDef} from '../view/api';
+import {R3ComponentDef, R3ComponentMetadata} from '../view/api';
 import {createComponentType} from '../view/compiler';
 import {ParsedTemplate} from '../view/template';
 import {DefinitionMap} from '../view/util';
@@ -19,10 +19,10 @@ import {toOptionalLiteralArray} from './util';
 
 
 /**
- * Compile a directive declaration defined by the `R3DirectiveMetadata`.
+ * Compile a component declaration defined by the `R3ComponentMetadata`.
  */
 export function compileDeclareComponentFromMetadata(
-    meta: R3ComponentMetadata, template: ParsedTemplate): R3DirectiveDef {
+    meta: R3ComponentMetadata, template: ParsedTemplate): R3ComponentDef {
   const definitionMap = createComponentDefinitionMap(meta, template);
 
   const expression = o.importExpr(R3.declareComponent).callFn([definitionMap.toLiteralMap()]);
@@ -38,13 +38,9 @@ export function createComponentDefinitionMap(
     meta: R3ComponentMetadata, template: ParsedTemplate): DefinitionMap {
   const definitionMap = createDirectiveDefinitionMap(meta);
 
-  const templateMap = new DefinitionMap();
-  templateMap.set(
-      'source',
-      typeof template.template === 'string' ? o.literal(template.template) : template.template);
-  templateMap.set('isInline', o.literal(template.isInline));
+  const templateMap = compileTemplateDefinition(template);
 
-  definitionMap.set('template', templateMap.toLiteralMap());
+  definitionMap.set('template', templateMap);
 
   definitionMap.set('styles', toOptionalLiteralArray(meta.styles, o.literal));
   definitionMap.set('directives', compileUsedDirectiveMetadata(meta));
@@ -76,6 +72,22 @@ export function createComponentDefinitionMap(
   return definitionMap;
 }
 
+/**
+ * Compiles the provided template into its partial definition.
+ */
+function compileTemplateDefinition(template: ParsedTemplate): o.LiteralMapExpr {
+  const templateMap = new DefinitionMap();
+  const templateExpr =
+      typeof template.template === 'string' ? o.literal(template.template) : template.template;
+  templateMap.set('source', templateExpr);
+  templateMap.set('isInline', o.literal(template.isInline));
+  return templateMap.toLiteralMap();
+}
+
+/**
+ * Compiles the directives as registered in the component metadata into an array literal of the
+ * individual directives. If the component does not use any directives, then null is returned.
+ */
 function compileUsedDirectiveMetadata(meta: R3ComponentMetadata): o.LiteralArrayExpr|null {
   const wrapType = meta.wrapDirectivesAndPipesInClosure ?
       (expr: o.Expression) => o.fn([], [new o.ReturnStatement(expr)]) :
@@ -92,6 +104,11 @@ function compileUsedDirectiveMetadata(meta: R3ComponentMetadata): o.LiteralArray
   });
 }
 
+/**
+ * Compiles the pipes as registered in the component metadata into an object literal, where the
+ * pipe's name is used as key and a reference to its type as value. If the component does not use
+ * any pipes, then null is returned.
+ */
 function compileUsedPipeMetadata(meta: R3ComponentMetadata): o.LiteralMapExpr|null {
   if (meta.pipes.size === 0) {
     return null;

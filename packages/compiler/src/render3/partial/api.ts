@@ -124,9 +124,12 @@ export interface R3DeclareComponentMetadata extends R3DeclareDirectiveMetadata {
    */
   template: {
     /**
-     * The component's unparsed template string;
+     * The component's unparsed template string as opaque expression. The template is represented
+     * using either a string literal or template literal without substitutions, but its value is
+     * not read directly. Instead, the template parser is given the full source file's text and
+     * the range of this expression to parse directly from source.
      */
-    source: string;
+    source: o.Expression;
 
     /**
      * Whether the template was inline (using `template`) or external (using `templateUrl`).
@@ -173,7 +176,8 @@ export interface R3DeclareComponentMetadata extends R3DeclareDirectiveMetadata {
   }[];
 
   /**
-   * A map of pipe names to an expression referencing the pipe type which are used in the template.
+   * A map of pipe names to an expression referencing the pipe type (possibly a forward reference)
+   * which are used in the template.
    */
   pipes?: {[pipeName: string]: o.Expression|(() => o.Expression)};
 
