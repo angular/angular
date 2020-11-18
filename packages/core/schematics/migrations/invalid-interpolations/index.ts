@@ -60,7 +60,7 @@ function fixInvalidInterpolations(
           // via a "template:" or "templateUrl:" key
           f.text.includes('template'));
   for (const sf of sourceFiles) {
-    templateVisitor.visitNode(sf)
+    templateVisitor.visitNode(sf);
   }
 
   const collectedFixes: string[] = [];
