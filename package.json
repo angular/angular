@@ -153,7 +153,7 @@
     "typescript": "~4.0.2",
     "xhr2": "0.2.0",
     "yaml": "^1.10.0",
-    "yargs": "^15.4.1"
+    "yargs": "^16.1.1"
   },
   "// 2": "devDependencies are not used under Bazel. Many can be removed after test.sh is deleted.",
   "devDependencies": {
