@@ -10,7 +10,7 @@ describe('workspace-project App', () => {
 
   it('should display welcome message', async () => {
     await page.navigateTo();
-    expect(await page.getTitleText()).toEqual('ivy-trusted-types app is running!');
+    expect(await page.getTitleText()).toEqual('trusted-types app is running!');
   });
 
   it('should sanitize and inject bound innerHTML', async () => {

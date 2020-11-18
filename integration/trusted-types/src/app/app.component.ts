@@ -7,7 +7,7 @@ import {DomSanitizer, SafeHtml, SafeResourceUrl} from '@angular/platform-browser
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  title = 'ivy-trusted-types';
+  title = 'trusted-types';
   html = `<span>Hello from bound HTML</span><iframe id="bound-html-iframe"></iframe>`;
   iframeHtml = `<h1>Hello from iframe</h1>`;
   replace = `<span>Hello from second outerHTML</span>`;
