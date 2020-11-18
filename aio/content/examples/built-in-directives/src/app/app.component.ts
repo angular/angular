@@ -21,7 +21,10 @@ export class AppComponent implements OnInit {
   item: Item; // defined to demonstrate template context precedence
   items: Item[];
 
+  // #docregion item
   currentItem: Item;
+  // #enddocregion item
+
 
 
   // trackBy change counting

@@ -22,7 +22,7 @@ Two examples are [NgFor](guide/built-in-directives#ngFor) and [NgIf](guide/built
 Learn about them in the [Structural Directives](guide/structural-directives) guide.
 
 *Attribute directives* are used as attributes of elements.
-The built-in [NgStyle](guide/built-in-directives#ngStyle) directive in the
+The built-in [NgStyle](guide/built-in-directives#ngstyle) directive in the
 [Built-in directives](guide/built-in-directives) guide, for example,
 can change several element styles at the same time.
 

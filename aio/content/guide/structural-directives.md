@@ -96,7 +96,7 @@ Technically it's a directive with a template.
 
 An [*attribute* directive](guide/attribute-directives) changes the appearance or behavior
 of an element, component, or another directive.
-For example, the built-in [`NgStyle`](guide/built-in-directives#ngStyle) directive
+For example, the built-in [`NgStyle`](guide/built-in-directives#ngstyle) directive
 changes several element styles at the same time.
 
 You can apply many _attribute_ directives to one host element.
