@@ -1,5 +1,5 @@
 {
-  "name": "ivy-trusted-types",
+  "name": "trusted-types",
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
