@@ -2156,8 +2156,7 @@ function trustedConstAttribute(tagName: string, attr: t.TextAttribute): o.Expres
     switch (elementRegistry.securityContext(tagName, attr.name, /* isAttribute */ true)) {
       case core.SecurityContext.HTML:
         return o.importExpr(R3.trustConstantHtml).callFn([value], attr.valueSpan);
-      case core.SecurityContext.SCRIPT:
-        return o.importExpr(R3.trustConstantScript).callFn([value], attr.valueSpan);
+      // NB: no SecurityContext.SCRIPT here, as the corresponding tags are stripped by the compiler.
       case core.SecurityContext.RESOURCE_URL:
         return o.importExpr(R3.trustConstantResourceUrl).callFn([value], attr.valueSpan);
       default:
