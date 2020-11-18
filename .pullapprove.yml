@@ -1118,6 +1118,7 @@ groups:
           '.circleci/**',
           '.devcontainer/**',
           '.github/**',
+          '.husky/**',
           '.ng-dev/**',
           '.vscode/**',
           '.yarn/**',
