@@ -82,6 +82,10 @@ export class MockConfigFileFs implements
     this.configFileWatchers.delete(configFile);
   }
 
+  isBeingWatched(configFile: string) {
+    return this.configFileWatchers.has(configFile);
+  }
+
   readFile(file: string, encoding?: string): string|undefined {
     const read = this.configOverwrites.get(file) ?? ts.sys.readFile(file, encoding);
     return read;

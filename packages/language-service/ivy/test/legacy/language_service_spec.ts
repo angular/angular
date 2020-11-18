@@ -153,6 +153,71 @@ describe('language service adapter', () => {
       }));
     });
 
+    it('should stop watching previously-extened tsconfig when removed from the project config chain',
+       () => {
+         const proj = assertConfiguredProject(project);
+         const derived = proj.getConfigFilePath();
+         const base = path.join(path.dirname(derived), 'tsconfig-base.json');
+         configFileFs.overwriteConfigFile(base, `{
+           "angularCompilerOptions": {
+             "strictTemplates": false,
+             "strictInjectionParameters": false
+           }
+         }`);
+         configFileFs.overwriteConfigFile(derived, `{
+           "extends": "./tsconfig-base.json",
+           "angularCompilerOptions": {
+             "strictTemplates": true
+           }
+         }`);
+         expect(ngLS.getCompilerOptions()).toEqual(jasmine.objectContaining({
+           strictTemplates: true,
+           strictInjectionParameters: false,
+         }));
+
+         // Remove base tsconfig
+         configFileFs.overwriteConfigFile(derived, `{
+           "angularCompilerOptions": {
+             "strictTemplates": true
+           }
+         }`);
+         expect(configFileFs.isBeingWatched(base)).toBeFalse();
+       });
+
+    it('should start watching tsconfig when added as an extended tsconfig', () => {
+      const proj = assertConfiguredProject(project);
+      const derived = proj.getConfigFilePath();
+      const base = path.join(path.dirname(derived), 'tsconfig-base.json');
+      configFileFs.overwriteConfigFile(base, `{
+        "angularCompilerOptions": {
+          "strictTemplates": false,
+          "strictInjectionParameters": false
+        }
+      }`);
+
+      // Not yet extending base tsconfig, but should be watching the project config file.
+      configFileFs.overwriteConfigFile(derived, `{
+        "angularCompilerOptions": {
+          "strictTemplates": true
+        }
+      }`);
+      expect(configFileFs.isBeingWatched(base)).toBeFalse();
+      expect(configFileFs.isBeingWatched(derived)).toBeTrue();
+
+      // Extend base tsconfig, should be watching it now.
+      configFileFs.overwriteConfigFile(derived, `{
+        "extends": "./tsconfig-base.json",
+        "angularCompilerOptions": {
+          "strictTemplates": true
+        }
+      }`);
+      expect(configFileFs.isBeingWatched(base)).toBeTrue();
+      expect(ngLS.getCompilerOptions()).toEqual(jasmine.objectContaining({
+        strictTemplates: true,
+        strictInjectionParameters: false,
+      }));
+    });
+
     it('should unset angularCompilerOptions when tsconfig is deleted', () => {
       const proj = assertConfiguredProject(project);
       const origOptions = {

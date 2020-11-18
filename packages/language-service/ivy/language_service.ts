@@ -97,7 +97,7 @@ export class LanguageService {
   }
 
   /**
-   * Attaches file watchers to the project config file and all transiently extended config files,
+   * Attaches file watchers to the project config file and all transitively extended config files,
    * updating the compiler options whenever any such file is changed.
    * Then, returns Angular compiler options configured for a project.
    *
@@ -105,10 +105,11 @@ export class LanguageService {
    * config file is changed, but tsserver
    *   (1) delays config update propogation (currently by 250ms, see
    *       https://sourcegraph.com/github.com/microsoft/TypeScript@66c877f57aa642ed953f1376e302ed5c88473ad7/-/blob/src/server/editorServices.ts#L1283-1291).
-   *   (2) does not watch extended `tsconfig`s for changes.
+   *   (2) does not watch extended `tsconfig`s for changes (may be fixed by
+   *       https://github.com/microsoft/TypeScript/pull/41493).
    * This means that the compiler options used by the Angular LS to provide language services may
-   * differ different from those of the tsLS, which independently provides language service requests
-   * that Angular cannot.
+   * differ from those of the tsLS, which independently provides language service requests that
+   * Angular cannot.
    */
   private watchProjectConfig(project: ts.server.Project): CompilerOptions {
     if (!(project instanceof ts.server.ConfiguredProject)) {
@@ -117,10 +118,10 @@ export class LanguageService {
     }
 
     const {host} = project.projectService;
-    const rootConfigFile = project.getConfigFilePath();
+    const rootProjectConfigFile = project.getConfigFilePath();
 
     const allConfigFileWatchers = new Map<string, ts.FileWatcher>();
-    const closeAllWatchers = function() {
+    const closeAllWatchers = () => {
       for (const watcher of allConfigFileWatchers.values()) {
         watcher.close();
       }
@@ -132,38 +133,48 @@ export class LanguageService {
      * watchers are missing. The latter is needed when a new extended config file is added.
      */
     const readProjectConfigAndUpdateExtendedWatchers = () => {
-      const {options, errors, allExtendedConfigs} =
-          readConfiguration(rootConfigFile, /* existingConfig */ undefined, this.parseConfigHost);
+      const {options, errors, allExtendedConfigs} = readConfiguration(
+          rootProjectConfigFile, /* existingConfig */ undefined, this.parseConfigHost);
       if (errors.length > 0) {
         project.setProjectErrors(errors);
       }
-      // Add newly-extended configs if we need to.
+
+      // At this point, we need to reconcile which config files to watch with the set of config
+      // files determined as dependencies for the project configuration we just parsed out.
+      //
+      // It's reasonable to assume that the number of extended config files is relatively small
+      // (~< 5) for most projects, so the easiest way to do this is just dump and reinitialize the
+      // set of config files to watch.
+      closeAllWatchers();
+      addConfigFileWatcher(rootProjectConfigFile);
       for (const file of allExtendedConfigs) {
-        if (allConfigFileWatchers.has(file)) {
-          continue;
-        }
-        addConfigFileWatcher(file, /* isRoot */ false);
+        addConfigFileWatcher(file);
       }
+
       return options;
     };
 
-    const addConfigFileWatcher = (file: string, isRoot: boolean) => {
-      if (allConfigFileWatchers.has(file)) {
-        throw new Error(`${file} is already being watched.`);
+    const addConfigFileWatcher = (configFile: string) => {
+      if (allConfigFileWatchers.has(configFile)) {
+        throw new Error(`${configFile} is already being watched.`);
       }
 
       const watcher =
-          host.watchFile(file, (fileName: string, eventKind: ts.FileWatcherEventKind) => {
+          host.watchFile(configFile, (fileName: string, eventKind: ts.FileWatcherEventKind) => {
             project.log(`Config file changed: ${fileName}`);
             if (eventKind === ts.FileWatcherEventKind.Changed) {
               // Re-parse the project compiler options, and add watchers for any new extended config
               // files we find.
               this.options = readProjectConfigAndUpdateExtendedWatchers();
             } else if (eventKind === ts.FileWatcherEventKind.Deleted) {
-              if (isRoot) {
+              if (configFile === rootProjectConfigFile) {
                 // If the root project config file is deleted, the project is no longer configured.
                 // Therefore there is no config for us to watch, and all existing watchers should be
                 // cleaned up.
+                // Futhermore, the owner of the `ts.Project` this language service instance is for
+                // should now delete the project, as it is no longer a `ConfiguredProject`. If at
+                // some point a new `ConfiguredProject` at the same file path is introduced, a new
+                // language service instance should be created for that project.
                 closeAllWatchers();
                 this.options = {};
               } else {
@@ -176,14 +187,14 @@ export class LanguageService {
             }
           });
 
-      allConfigFileWatchers.set(file, watcher);
+      allConfigFileWatchers.set(configFile, watcher);
     };
 
     // Now we kick off the work:
     //   1. add a file watcher for the root project config file
     //   2. read the root project config file to determine the project compiler options,
     //      in the process attaching watchers to all extended configs.
-    addConfigFileWatcher(rootConfigFile, /* isRoot */ true);
+    addConfigFileWatcher(rootProjectConfigFile);
     const options = readProjectConfigAndUpdateExtendedWatchers();
 
     return options;
