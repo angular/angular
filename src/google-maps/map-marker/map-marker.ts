@@ -279,23 +279,23 @@ export class MapMarker implements OnInit, OnChanges, OnDestroy, MapAnchorPoint {
     const {marker, _title, _position, _label, _clickable} = this;
 
     if (marker) {
-      if (changes.options) {
+      if (changes['options']) {
         marker.setOptions(this._combineOptions());
       }
 
-      if (changes.title && _title !== undefined) {
+      if (changes['title'] && _title !== undefined) {
         marker.setTitle(_title);
       }
 
-      if (changes.position && _position) {
+      if (changes['position'] && _position) {
         marker.setPosition(_position);
       }
 
-      if (changes.label && _label !== undefined) {
+      if (changes['label'] && _label !== undefined) {
         marker.setLabel(_label);
       }
 
-      if (changes.clickable && _clickable !== undefined) {
+      if (changes['clickable'] && _clickable !== undefined) {
         marker.setClickable(_clickable);
       }
     }
