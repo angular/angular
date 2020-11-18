@@ -111,8 +111,8 @@ describe('invalid interpolation migration', () => {
 
          @Component({
            template: \`
-             {{ '{{' }} 1 + 2 {{ '}}' }} is a literal
-             <span>{{ '{{' }} 3 {{ '}}' }}</span>
+             {{ '{{' }} 1 + 2 {{ '}}' }}<!----> is a literal
+             <span>{{ '{{' }} 3 {{ '}}' }}<!-- so is this one --></span>
            \`;
          })
          class Test {}
@@ -152,7 +152,7 @@ describe('invalid interpolation migration', () => {
 
       @Component({
         template: \`
-          {{ '{{' }} 1 + 2 {{ '}}' }}
+          {{ '{{' }} 1 + 2 {{ '}}' }}<!---->
           {{ '{{' }} 1 + 2 {{ '}' }}
         \`;
       })
@@ -160,7 +160,7 @@ describe('invalid interpolation migration', () => {
 
       @Component({
         template: \`
-          {{ '{{' }} 1 + 2 {{ '}}' }}
+          {{ '{{' }} 1 + 2 {{ '}}' }}<!---->
           {{ '{{' }} 1 + 2 {{ '}' }}
         \`;
       })
@@ -176,6 +176,10 @@ describe('invalid interpolation migration', () => {
         template: \`
           {{ 1 + 2 }}
           <span>{{ 3 }} or {{ '{' + "a" + '}' }}</span> or {{ "{{" + "b" + "}}" }}
+          or {{ '{{ b }' }}
+          or {{ '    {{ b }    ' }}
+          or {{ '{{ b }<!-- cmt -->' }}
+          or {{ '    {{ b }<!-- cmt -->    ' }}
         \`;
       })
       class Test {}
@@ -256,7 +260,7 @@ describe('invalid interpolation migration', () => {
 
     expect(tree.readContent('/template.html')).toBe(`
       <span>{{ 'Hello' }}</span>
-      {{ '{{' }} 1 + 2 {{ '}}' }}
+      {{ '{{' }} 1 + 2 {{ '}}' }}<!---->
       {{ '{{' }} 1 + 2 {{ '}' }}
     `);
   });
@@ -289,7 +293,7 @@ describe('invalid interpolation migration', () => {
 
        expect(tree.readContent('/template.html')).toBe(`
          <span>{{ 'Hello' }}</span>
-         {{ '{{' }} 1 + 2 {{ '}}' }}
+         {{ '{{' }} 1 + 2 {{ '}}' }}<!---->
          {{ '{{' }} 1 + 2 {{ '}' }}
        `);
      });

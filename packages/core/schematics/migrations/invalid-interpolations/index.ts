@@ -59,12 +59,14 @@ function fixInvalidInterpolations(
           // Only include TS files that look like they might point to a template
           // via a "template:" or "templateUrl:" key
           f.text.includes('template'));
-  sourceFiles.forEach(sourceFile => templateVisitor.visitNode(sourceFile));
+  for (const sf of sourceFiles) {
+    templateVisitor.visitNode(sf)
+  }
 
   const collectedFixes: string[] = [];
   const fixesByFile = getFixesByFile(templateVisitor.resolvedTemplates);
 
-  for (const [absFilePath, fixes] of fixesByFile.entries()) {
+  for (const [absFilePath, fixes] of fixesByFile) {
     const treeFilePath = relative(normalize(basePath), normalize(absFilePath));
     const originalFileContent = tree.read(treeFilePath)?.toString();
     if (originalFileContent === undefined) {
@@ -102,8 +104,7 @@ function fixInvalidInterpolations(
 }
 
 /**
- * Returns fixes for nodes in a template containing invalid interpolations,
- * grouped by file.
+ * Returns fixes for nodes in templates which may contain invalid interpolations, grouped by file.
  */
 function getFixesByFile(templates: ResolvedTemplate[]): Map<string, FixedTemplate[]> {
   const fixesByFile = new Map<string, FixedTemplate[]>();
@@ -141,22 +142,23 @@ function getFixesByFile(templates: ResolvedTemplate[]): Map<string, FixedTemplat
 const RE_INTERPOLATIONS: ReadonlyArray<[RegExp, string]> = [
   // Matching an interpolation:
   //
-  // {{((?:[^}'"]|'[^']*?'|"[^"]*?")*?)}
-  //        ^^^^^^                    match everything except a }, ", or '
-  //               ^^^^^^^^ ^^^^^^^^  or any quoted string
+  // (?<!["']\s*?){{((?:[^}'"]|'[^']*?'|"[^"]*?")*?)}
+  //                     ^^^^^^                    match everything except a }, ", or '
+  //                            ^^^^^^^^ ^^^^^^^^  or any quoted string
+  //  ^^^^^^^^^^^ or that is itself inside a quoted string
 
   // Replace "{{expr}<!-- cmt -->}" with "{{ '{{' }} expr {{ '}}' }}".
   // The former is a little-known pattern previously used to display an
   // interpolation literally, but that no longer parses. The latter would
   // still parse.
   [
-    /{{((?:'[^']*?'|"[^"]*?"|[^}'"])*?)}<!--.*-->}/g,
+    /(?<!["']\s*?){{((?:'[^']*?'|"[^"]*?"|[^}'"])*?)}<!--(.*?)-->}/g,
     //                                 ^^^^^^^^^^^ match a comment b/w braces
-    `{{ '{{' }}$1{{ '}}' }}`
+    `{{ '{{' }}$1{{ '}}' }}<!--$2-->`
   ],
 
   // Replace "{{expr}" with "{{ '{{' }} expr {{ '}' }}".
-  [/{{((?:'[^']*?'|"[^"]*?"|[^}'"])*?)}(?!})/g, `{{ '{{' }}$1{{ '}' }}`],
+  [/(?<!["']\s*?){{((?:'[^']*?'|"[^"]*?"|[^}'"])*?)}(?!})/g, `{{ '{{' }}$1{{ '}' }}`],
   //                                  ^^^^^^ match a singularly-terminated interpolation
 ];
 
