@@ -603,10 +603,9 @@ If your Browserslist configuration includes support for any legacy browsers, the
 
 ## Local development in older browsers
 
-In Angular CLI version 8 and higher, differential loading is enabled by default for the `ng build` command.
+Differential loading is not enabled by default for application projects that were generated with Angular CLI 10 and above.
 The `ng serve`, `ng test`, and `ng e2e` commands, however, generate a single ES2015 build which cannot run in older browsers that don't support the modules, such as IE 11.
 
-If you want to run ES5 code during development, you could disable differential loading completely.
 To maintain the benefits of differential loading, however, a better option is to define multiple configurations for `ng serve`, `ng e2e`, and `ng test`.
 
 {@a differential-serve}
