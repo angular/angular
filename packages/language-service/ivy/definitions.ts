@@ -226,13 +226,14 @@ export class DefinitionBuilder {
     if (target === null) {
       return undefined;
     }
-    const {node, parent} = target;
+    const {nodeInContext, parent} = target;
 
-    const symbol = this.compiler.getTemplateTypeChecker().getSymbolOfNode(node, component);
+    const symbol =
+        this.compiler.getTemplateTypeChecker().getSymbolOfNode(nodeInContext.node, component);
     if (symbol === null) {
       return undefined;
     }
-    return {node, parent, symbol};
+    return {node: nodeInContext.node, parent, symbol};
   }
 }
 

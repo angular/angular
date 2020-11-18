@@ -105,7 +105,8 @@ export class LanguageService {
       return undefined;
     }
     const results =
-        new QuickInfoBuilder(this.tsLS, compiler, templateInfo.component, positionDetails.node)
+        new QuickInfoBuilder(
+            this.tsLS, compiler, templateInfo.component, positionDetails.nodeInContext.node)
             .get();
     this.compilerFactory.registerLastKnownProgram();
     return results;
@@ -131,8 +132,8 @@ export class LanguageService {
       return null;
     }
     return new CompletionBuilder(
-        this.tsLS, compiler, templateInfo.component, positionDetails.node, positionDetails.parent,
-        positionDetails.context);
+        this.tsLS, compiler, templateInfo.component, positionDetails.nodeInContext.node,
+        positionDetails.parent, positionDetails.template);
   }
 
   getCompletionsAtPosition(

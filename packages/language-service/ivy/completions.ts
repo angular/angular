@@ -38,7 +38,7 @@ export class CompletionBuilder<N extends TmplAstNode|AST> {
       private readonly tsLS: ts.LanguageService, private readonly compiler: NgCompiler,
       private readonly component: ts.ClassDeclaration, private readonly node: N,
       private readonly nodeParent: TmplAstNode|AST|null,
-      private readonly context: TmplAstTemplate|null) {}
+      private readonly template: TmplAstTemplate|null) {}
 
   /**
    * Analogue for `ts.LanguageService.getCompletionsAtPosition`.
@@ -185,7 +185,8 @@ export class CompletionBuilder<N extends TmplAstNode|AST> {
       this: PropertyExpressionCompletionBuilder,
       options: ts.GetCompletionsAtPositionOptions|
       undefined): ts.WithMetadata<ts.CompletionInfo>|undefined {
-    const completions = this.templateTypeChecker.getGlobalCompletions(this.context, this.component);
+    const completions =
+        this.templateTypeChecker.getGlobalCompletions(this.template, this.component);
     if (completions === null) {
       return undefined;
     }
@@ -248,7 +249,8 @@ export class CompletionBuilder<N extends TmplAstNode|AST> {
       this: PropertyExpressionCompletionBuilder, entryName: string,
       formatOptions: ts.FormatCodeOptions|ts.FormatCodeSettings|undefined,
       preferences: ts.UserPreferences|undefined): ts.CompletionEntryDetails|undefined {
-    const completions = this.templateTypeChecker.getGlobalCompletions(this.context, this.component);
+    const completions =
+        this.templateTypeChecker.getGlobalCompletions(this.template, this.component);
     if (completions === null) {
       return undefined;
     }
@@ -288,7 +290,8 @@ export class CompletionBuilder<N extends TmplAstNode|AST> {
    */
   private getGlobalPropertyExpressionCompletionSymbol(
       this: PropertyExpressionCompletionBuilder, entryName: string): ts.Symbol|undefined {
-    const completions = this.templateTypeChecker.getGlobalCompletions(this.context, this.component);
+    const completions =
+        this.templateTypeChecker.getGlobalCompletions(this.template, this.component);
     if (completions === null) {
       return undefined;
     }
