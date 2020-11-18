@@ -141,7 +141,7 @@
     "jsdom": "^9.12.0",
     "json-schema-traverse": "^0.4.1",
     "json5": "^1.0.1",
-    "karma": "~5.2.3",
+    "karma": "~5.1.1",
     "karma-chrome-launcher": "^3.1.0",
     "karma-coverage": "~2.0.3",
     "karma-jasmine": "~4.0.0",
