@@ -37,8 +37,10 @@ export class ReferenceBuilder {
       return undefined;
     }
 
+    const node = positionDetails.nodeInContext.node;
+
     // Get the information about the TCB at the template position.
-    const symbol = this.ttc.getSymbolOfNode(positionDetails.node, component);
+    const symbol = this.ttc.getSymbolOfNode(node, component);
     if (symbol === null) {
       return undefined;
     }
@@ -56,12 +58,11 @@ export class ReferenceBuilder {
         // Dom bindings aren't currently type-checked (see `checkTypeOfDomBindings`) so they don't
         // have a shim location. This means we can't match dom bindings to their lib.dom reference,
         // but we can still see if they match to a directive.
-        if (!(positionDetails.node instanceof TmplAstTextAttribute) &&
-            !(positionDetails.node instanceof TmplAstBoundAttribute)) {
+        if (!(node instanceof TmplAstTextAttribute) && !(node instanceof TmplAstBoundAttribute)) {
           return undefined;
         }
         const directives = getDirectiveMatchesForAttribute(
-            positionDetails.node.name, symbol.host.templateNode, symbol.host.directives);
+            node.name, symbol.host.templateNode, symbol.host.directives);
         return this.getReferencesForDirectives(directives);
       }
       case SymbolKind.Reference: {
@@ -71,7 +72,7 @@ export class ReferenceBuilder {
       case SymbolKind.Variable: {
         const {positionInShimFile: initializerPosition, shimPath} = symbol.initializerLocation;
         const localVarPosition = symbol.localVarLocation.positionInShimFile;
-        const templateNode = positionDetails.node;
+        const templateNode = positionDetails.nodeInContext.node;
 
         if ((templateNode instanceof TmplAstVariable)) {
           if (templateNode.valueSpan !== undefined && isWithin(position, templateNode.valueSpan)) {

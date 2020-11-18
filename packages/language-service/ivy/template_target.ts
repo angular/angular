@@ -23,18 +23,72 @@ export interface TemplateTarget {
   /**
    * The template node (or AST expression) closest to the search position.
    */
-  node: t.Node|e.AST;
+  nodeInContext: TargetNode;
 
   /**
    * The `t.Template` which contains the found node or expression (or `null` if in the root
    * template).
    */
-  context: t.Template|null;
+  template: t.Template|null;
 
   /**
    * The immediate parent node of the targeted node.
    */
   parent: t.Node|e.AST|null;
+}
+
+/**
+ * A node targeted at a given position in the template, including potential contextual information
+ * about the specific aspect of the node being referenced.
+ *
+ * Some nodes have multiple interior contexts. For example, `t.Element` nodes have both a tag name
+ * as well as a body, and a given position definitively points to one or the other. `TargetNode`
+ * captures the node itself, as well as this additional contextual disambiguation.
+ */
+export type TargetNode = RawExpression|RawTemplateNode|ElementInBodyContext|ElementInTagContext;
+
+/**
+ * Differentiates the various kinds of `TargetNode`s.
+ */
+export enum TargetNodeKind {
+  RawExpression,
+  RawTemplateNode,
+  ElementInTagContext,
+  ElementInBodyContext,
+}
+
+/**
+ * An `e.AST` expression that's targeted at a given position, with no additional context.
+ */
+export interface RawExpression {
+  kind: TargetNodeKind.RawExpression;
+  node: e.AST;
+}
+
+/**
+ * A `t.Node` template node that's targeted at a given position, with no additional context.
+ */
+export interface RawTemplateNode {
+  kind: TargetNodeKind.RawTemplateNode;
+  node: t.Node;
+}
+
+/**
+ * A `t.Element` (or `t.Template`) element node that's targeted, where the given position is within
+ * the tag name.
+ */
+export interface ElementInTagContext {
+  kind: TargetNodeKind.ElementInTagContext;
+  node: t.Element|t.Template;
+}
+
+/**
+ * A `t.Element` (or `t.Template`) element node that's targeted, where the given position is within
+ * the element body.
+ */
+export interface ElementInBodyContext {
+  kind: TargetNodeKind.ElementInBodyContext;
+  node: t.Element|t.Template;
 }
 
 /**
@@ -77,7 +131,40 @@ export function getTargetAtPosition(template: t.Node[], position: number): Templ
     parent = path[path.length - 2];
   }
 
-  return {position, node: candidate, context, parent};
+  // Given the candidate node, determine the full targeted context.
+  let nodeInContext: TargetNode;
+  if (candidate instanceof e.AST) {
+    nodeInContext = {
+      kind: TargetNodeKind.RawExpression,
+      node: candidate,
+    };
+  } else if (candidate instanceof t.Element) {
+    // Elements have two contexts: the tag context (position is within the element tag) or the
+    // element body context (position is outside of the tag name, but still in the element).
+
+    // Calculate the end of the element tag name. Any position beyond this is in the element body.
+    const tagEndPos =
+        candidate.sourceSpan.start.offset + 1 /* '<' element open */ + candidate.name.length;
+    if (position > tagEndPos) {
+      // Position is within the element body
+      nodeInContext = {
+        kind: TargetNodeKind.ElementInBodyContext,
+        node: candidate,
+      };
+    } else {
+      nodeInContext = {
+        kind: TargetNodeKind.ElementInTagContext,
+        node: candidate,
+      };
+    }
+  } else {
+    nodeInContext = {
+      kind: TargetNodeKind.RawTemplateNode,
+      node: candidate,
+    };
+  }
+
+  return {position, nodeInContext, template: context, parent};
 }
 
 /**
