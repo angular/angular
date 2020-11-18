@@ -181,7 +181,7 @@ The `ngModel` directive, which implements two-way data binding, is an example of
 Angular has more pre-defined directives that either alter the layout structure
 (for example, [ngSwitch](guide/built-in-directives#ngSwitch))
 or modify aspects of DOM elements and components
-(for example, [ngStyle](guide/built-in-directives#ngStyle) and [ngClass](guide/built-in-directives#ngClass)).
+(for example, [ngStyle](guide/built-in-directives#ngstyle) and [ngClass](guide/built-in-directives#ngClass)).
 
 <div class="alert is-helpful">
 

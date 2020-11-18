@@ -140,8 +140,7 @@ The following table lists some of the key AngularJS template features with their
 
       Angular has true template input variables that are explicitly defined using the `let` keyword.
 
-      For more information, see the [ngFor micro-syntax](guide/built-in-directives#microsyntax)
-      section of the [Built-in Directives](guide/built-in-directives) page.
+      For more information, see the [Template input variables](guide/structural-directives#template-input-variable) section of [Structural Directives](guide/structural-directives).
     </td>
 
   </tr>
@@ -641,7 +640,7 @@ The following are some of the key AngularJS built-in directives and their equiva
       For more information on style binding, see the [Style binding](guide/attribute-binding#style-binding) section of the
       [Attribute binding](guide/attribute-binding) page.
 
-      For more information on the `ngStyle` directive, see the [NgStyle](guide/built-in-directives#ngStyle)
+      For more information on the `ngStyle` directive, see the [NgStyle](guide/built-in-directives#ngstyle)
       section of the [Built-in directives](guide/built-in-directives) page.
     </td>
 
