@@ -19,7 +19,7 @@ import {SecurityContext} from '../core';
 //
 // =================================================================================================
 
-/** Map from tagName|propertyName SecurityContext. Properties applying to all tags use '*'. */
+/** Map from tagName|propertyName to SecurityContext. Properties applying to all tags use '*'. */
 let _SECURITY_SCHEMA!: {[k: string]: SecurityContext};
 
 export function SECURITY_SCHEMA(): {[k: string]: SecurityContext} {
