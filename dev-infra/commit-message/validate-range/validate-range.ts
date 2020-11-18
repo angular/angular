@@ -7,8 +7,7 @@
  */
 import {error, info} from '../../utils/console';
 
-import {ParsedCommitMessage} from '../parse';
-import {parseCommitMessagesForRange} from '../utils';
+import {parseCommitMessagesForRange, ParsedCommitMessage} from '../parse';
 import {printValidationErrors, validateCommitMessage, ValidateCommitMessageOptions} from '../validate';
 
 // Whether the provided commit is a fixup commit.
