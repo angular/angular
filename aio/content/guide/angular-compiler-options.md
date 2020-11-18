@@ -203,7 +203,7 @@ When you use the CLI command `ng new --strict`, it is set to `true` in the gener
 
 ### `strictTemplates`
 
-When `true`, enables [strict template type checking](guide/template-typecheck#strict-mode) in Angular version 9. Strict mode is only available when using [Ivy](guide/ivy).
+When `true`, enables [strict template type checking](guide/template-typecheck#strict-mode). Strict mode is only available when using [Ivy](guide/ivy) (Angular version 9 and later).
 
 Additional strictness flags allow you to enable and disable specific types of strict template type checking. See [troubleshooting template errors](guide/template-typecheck#troubleshooting-template-errors).
 
