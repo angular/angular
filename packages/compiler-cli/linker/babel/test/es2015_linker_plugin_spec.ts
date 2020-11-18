@@ -220,10 +220,17 @@ describe('createEs2015LinkerPlugin()', () => {
                         // Insert a call expression into the constant pool. This is inserted into
                         // Babel's AST upon program exit, and will therefore be visited by Babel
                         // outside of an active linker context.
-                        constantPool.statements.push(o.fn([], []).callFn([]).toStmt());
+                        constantPool.statements.push(
+                            o.fn(/* params */[], /* body */[], /* type */ undefined,
+                                 /* sourceSpan */ undefined, /* name */ 'inserted')
+                                .callFn([])
+                                .toStmt());
 
                         return o.literal('REPLACEMENT');
                       }) as typeof PartialDirectiveLinkerVersion1.prototype.linkPartialDeclaration);
+
+    const isPartialDeclarationSpy =
+        spyOn(FileLinker.prototype, 'isPartialDeclaration').and.callThrough();
 
     const result = transformSync(
         [
@@ -237,7 +244,9 @@ describe('createEs2015LinkerPlugin()', () => {
           generatorOpts: {compact: true},
         });
     expect(result!.code)
-        .toEqual('import*as core from\'some-module\';(function(){})();"REPLACEMENT";');
+        .toEqual('import*as core from\'some-module\';(function inserted(){})();"REPLACEMENT";');
+
+    expect(isPartialDeclarationSpy.calls.allArgs()).toEqual([['ɵɵngDeclareDirective']]);
   });
 });
 
