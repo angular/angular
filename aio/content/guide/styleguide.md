@@ -1211,7 +1211,7 @@ The `name` string cannot use hyphens ("dash-case" or "kebab-case").
 
 
 
-**Why?** Provides pattern matching for [karma](https://karma-runner.github.io/latest/index.html) or other test runners.
+**Why?** Provides pattern matching for [karma](https://karma-runner.github.io/) or other test runners.
 
 
 </div>

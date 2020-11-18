@@ -142,7 +142,7 @@ as [described below](#bypass-security-apis).
 Content Security Policy (CSP) is a defense-in-depth
 technique to prevent XSS. To enable CSP, configure your web server to return an appropriate
 `Content-Security-Policy` HTTP header. Read more about content security policy at the 
-[Web Fundamentals page](https://developers.google.com/web/fundamentals/security/csp) on the
+[Web Fundamentals guide](https://developers.google.com/web/fundamentals/security/csp) on the
 Google Developers website.
 
 

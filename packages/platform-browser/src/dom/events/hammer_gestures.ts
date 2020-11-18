@@ -85,7 +85,7 @@ export interface HammerInstance {
 }
 
 /**
- * An injectable [HammerJS Manager](https://hammerjs.github.io/api/#hammer-manager)
+ * An injectable [HammerJS Manager](https://hammerjs.github.io/api/#hammermanager)
  * for gesture recognition. Configures specific event recognition.
  * @publicApi
  */
@@ -135,7 +135,7 @@ export class HammerGestureConfig {
   };
 
   /**
-   * Creates a [HammerJS Manager](https://hammerjs.github.io/api/#hammer-manager)
+   * Creates a [HammerJS Manager](https://hammerjs.github.io/api/#hammermanager)
    * and attaches it to a given HTML element.
    * @param element The element that will recognize gestures.
    * @returns A HammerJS event-manager object.

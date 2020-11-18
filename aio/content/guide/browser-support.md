@@ -89,8 +89,8 @@ Angular supports most recent browsers. This includes the following specific vers
 <div class="alert is-helpful">
 
 Angular's continuous integration process runs unit tests of the framework on all of these browsers for every pull request,
-using <a href="https://saucelabs.com/">SauceLabs</a> and
-<a href="https://www.browserstack.com">Browserstack</a>.
+using [Sauce Labs](https://saucelabs.com/) and
+[BrowserStack](https://www.browserstack.com/).
 
 </div>
 
@@ -393,7 +393,7 @@ The following polyfills are used to test the framework itself. They are a good s
 
 
 \* Figures are for minified and gzipped code,
-computed with the <a href="https://closure-compiler.appspot.com/home">closure compiler</a>.
+computed with the [closure compiler](https://closure-compiler.appspot.com/home).
 
 {@a non-cli}
 
