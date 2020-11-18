@@ -24,6 +24,7 @@ import {mapLiteral} from '../../output/map_util';
 import * as o from '../../output/output_ast';
 import {ParseError, ParseSourceSpan} from '../../parse_util';
 import {DomElementSchemaRegistry} from '../../schema/dom_element_schema_registry';
+import {isTrustedTypesSink} from '../../schema/trusted_types_sinks';
 import {CssSelector, SelectorMatcher} from '../../selector';
 import {BindingParser} from '../../template_parser/binding_parser';
 import {error, partitionArray} from '../../util';
@@ -2151,15 +2152,19 @@ export function resolveSanitizationFn(context: core.SecurityContext, isAttribute
 
 function trustedConstAttribute(tagName: string, attr: t.TextAttribute): o.Expression {
   const value = asLiteral(attr.value);
-  switch (elementRegistry.securityContext(tagName, attr.name, /* isAttribute */ true)) {
-    case core.SecurityContext.HTML:
-      return o.importExpr(R3.trustConstantHtml).callFn([value], attr.valueSpan);
-    case core.SecurityContext.SCRIPT:
-      return o.importExpr(R3.trustConstantScript).callFn([value], attr.valueSpan);
-    case core.SecurityContext.RESOURCE_URL:
-      return o.importExpr(R3.trustConstantResourceUrl).callFn([value], attr.valueSpan);
-    default:
-      return value;
+  if (isTrustedTypesSink(tagName, attr.name)) {
+    switch (elementRegistry.securityContext(tagName, attr.name, /* isAttribute */ true)) {
+      case core.SecurityContext.HTML:
+        return o.importExpr(R3.trustConstantHtml).callFn([value], attr.valueSpan);
+      case core.SecurityContext.SCRIPT:
+        return o.importExpr(R3.trustConstantScript).callFn([value], attr.valueSpan);
+      case core.SecurityContext.RESOURCE_URL:
+        return o.importExpr(R3.trustConstantResourceUrl).callFn([value], attr.valueSpan);
+      default:
+        return value;
+    }
+  } else {
+    return value;
   }
 }
 
