@@ -1604,33 +1604,42 @@ function restoreCommitMessage(filePath, source) {
  */
 /** Builds the command. */
 function builder$1(yargs) {
-    return yargs.option('file-env-variable', {
+    return yargs
+        .option('file-env-variable', {
         type: 'string',
-        array: true,
-        demandOption: true,
         description: 'The key for the environment variable which holds the arguments for the\n' +
             'prepare-commit-msg hook as described here:\n' +
-            'https://git-scm.com/docs/githooks#_prepare_commit_msg',
-        coerce: arg => {
-            const [file, source] = (process.env[arg] || '').split(' ');
-            if (!file) {
-                throw new Error(`Provided environment variable "${arg}" was not found.`);
-            }
-            return [file, source];
-        },
-    });
+            'https://git-scm.com/docs/githooks#_prepare_commit_msg'
+    })
+        .positional('file', { type: 'string' })
+        .positional('source', { type: 'string' });
 }
 /** Handles the command. */
-function handler$1({ fileEnvVariable }) {
+function handler$1({ fileEnvVariable, file, source }) {
     return tslib.__awaiter(this, void 0, void 0, function* () {
-        restoreCommitMessage(fileEnvVariable[0], fileEnvVariable[1]);
+        // File and source are provided as command line parameters
+        if (file !== undefined) {
+            restoreCommitMessage(file, source);
+            return;
+        }
+        // File and source are provided as values held in an environment variable.
+        if (fileEnvVariable !== undefined) {
+            const [fileFromEnv, sourceFromEnv] = (process.env[fileEnvVariable] || '').split(' ');
+            if (!fileFromEnv) {
+                throw new Error(`Provided environment variable "${fileEnvVariable}" was not found.`);
+            }
+            restoreCommitMessage(fileFromEnv, sourceFromEnv);
+            return;
+        }
+        throw new Error('No file path and commit message source provide.  Provide values via positional command ' +
+            'arguments, or via the --file-env-variable flag');
     });
 }
 /** yargs command module describing the command.  */
 const RestoreCommitMessageModule = {
     handler: handler$1,
     builder: builder$1,
-    command: 'restore-commit-message-draft',
+    command: 'restore-commit-message-draft [file] [source]',
     // Description: Restore a commit message draft if one has been saved from a failed commit attempt.
     // No describe is defiend to hide the command from the --help.
     describe: false,
