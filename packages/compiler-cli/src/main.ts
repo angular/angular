@@ -169,7 +169,8 @@ export function readCommandLineAndConfiguration(
       rootNames: [],
       options: cmdConfig.options,
       errors: cmdErrors,
-      emitFlags: api.EmitFlags.Default
+      emitFlags: api.EmitFlags.Default,
+      allExtendedConfigs: [],
     };
   }
   const config = readConfiguration(project, cmdConfig.options);
@@ -182,7 +183,8 @@ export function readCommandLineAndConfiguration(
     rootNames: config.rootNames,
     options,
     errors: config.errors,
-    emitFlags: config.emitFlags
+    emitFlags: config.emitFlags,
+    allExtendedConfigs: [],
   };
 }
 

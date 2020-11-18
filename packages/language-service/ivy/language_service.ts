@@ -28,11 +28,10 @@ export class LanguageService {
 
   constructor(project: ts.server.Project, private readonly tsLS: ts.LanguageService) {
     this.parseConfigHost = new LSParseConfigHost(project.projectService.host);
-    this.options = parseNgCompilerOptions(project, this.parseConfigHost);
+    this.options = this.watchProjectConfig(project);
     this.strategy = createTypeCheckingProgramStrategy(project);
     this.adapter = new LanguageServiceAdapter(project);
     this.compilerFactory = new CompilerFactory(this.adapter, this.strategy, this.options);
-    this.watchConfigFile(project);
   }
 
   getCompilerOptions(): CompilerOptions {
@@ -97,37 +96,98 @@ export class LanguageService {
     return results;
   }
 
-  private watchConfigFile(project: ts.server.Project) {
-    // TODO: Check the case when the project is disposed. An InferredProject
-    // could be disposed when a tsconfig.json is added to the workspace,
-    // in which case it becomes a ConfiguredProject (or vice-versa).
-    // We need to make sure that the FileWatcher is closed.
+  /**
+   * Attaches file watchers to the project config file and all transiently extended config files,
+   * updating the compiler options whenever any such file is changed.
+   * Then, returns Angular compiler options configured for a project.
+   *
+   * NOTE: The Angular language service will updates its known compiler options anytime a relevant
+   * config file is changed, but tsserver
+   *   (1) delays config update propogation (currently by 250ms, see
+   *       https://sourcegraph.com/github.com/microsoft/TypeScript@66c877f57aa642ed953f1376e302ed5c88473ad7/-/blob/src/server/editorServices.ts#L1283-1291).
+   *   (2) does not watch extended `tsconfig`s for changes.
+   * This means that the compiler options used by the Angular LS to provide language services may
+   * differ different from those of the tsLS, which independently provides language service requests
+   * that Angular cannot.
+   */
+  private watchProjectConfig(project: ts.server.Project): CompilerOptions {
     if (!(project instanceof ts.server.ConfiguredProject)) {
-      return;
+      // If the project does not have a config file, there are no Angular compiler options to find.
+      return {};
     }
+
     const {host} = project.projectService;
-    host.watchFile(
-        project.getConfigFilePath(), (fileName: string, eventKind: ts.FileWatcherEventKind) => {
-          project.log(`Config file changed: ${fileName}`);
-          if (eventKind === ts.FileWatcherEventKind.Changed) {
-            this.options = parseNgCompilerOptions(project, this.parseConfigHost);
-          }
-        });
-  }
-}
+    const rootConfigFile = project.getConfigFilePath();
 
-function parseNgCompilerOptions(
-    project: ts.server.Project, host: ConfigurationHost): CompilerOptions {
-  if (!(project instanceof ts.server.ConfiguredProject)) {
-    return {};
-  }
-  const {options, errors} =
-      readConfiguration(project.getConfigFilePath(), /* existingOptions */ undefined, host);
-  if (errors.length > 0) {
-    project.setProjectErrors(errors);
-  }
+    const allConfigFileWatchers = new Map<string, ts.FileWatcher>();
+    const closeAllWatchers = function() {
+      for (const watcher of allConfigFileWatchers.values()) {
+        watcher.close();
+      }
+      allConfigFileWatchers.clear();
+    };
 
-  return options;
+    /**
+     * Reads the project configuration and adds file watchers to extended config files for whom
+     * watchers are missing. The latter is needed when a new extended config file is added.
+     */
+    const readProjectConfigAndUpdateExtendedWatchers = () => {
+      const {options, errors, allExtendedConfigs} =
+          readConfiguration(rootConfigFile, /* existingConfig */ undefined, this.parseConfigHost);
+      if (errors.length > 0) {
+        project.setProjectErrors(errors);
+      }
+      // Add newly-extended configs if we need to.
+      for (const file of allExtendedConfigs) {
+        if (allConfigFileWatchers.has(file)) {
+          continue;
+        }
+        addConfigFileWatcher(file, /* isRoot */ false);
+      }
+      return options;
+    };
+
+    const addConfigFileWatcher = (file: string, isRoot: boolean) => {
+      if (allConfigFileWatchers.has(file)) {
+        throw new Error(`${file} is already being watched.`);
+      }
+
+      const watcher =
+          host.watchFile(file, (fileName: string, eventKind: ts.FileWatcherEventKind) => {
+            project.log(`Config file changed: ${fileName}`);
+            if (eventKind === ts.FileWatcherEventKind.Changed) {
+              // Re-parse the project compiler options, and add watchers for any new extended config
+              // files we find.
+              this.options = readProjectConfigAndUpdateExtendedWatchers();
+            } else if (eventKind === ts.FileWatcherEventKind.Deleted) {
+              if (isRoot) {
+                // If the root project config file is deleted, the project is no longer configured.
+                // Therefore there is no config for us to watch, and all existing watchers should be
+                // cleaned up.
+                closeAllWatchers();
+                this.options = {};
+              } else {
+                // If an extended config file was removed, remove its watcher and refresh the
+                // project config options.
+                watcher.close();
+                allConfigFileWatchers.delete(fileName);
+                this.options = readProjectConfigAndUpdateExtendedWatchers();
+              }
+            }
+          });
+
+      allConfigFileWatchers.set(file, watcher);
+    };
+
+    // Now we kick off the work:
+    //   1. add a file watcher for the root project config file
+    //   2. read the root project config file to determine the project compiler options,
+    //      in the process attaching watchers to all extended configs.
+    addConfigFileWatcher(rootConfigFile, /* isRoot */ true);
+    const options = readProjectConfigAndUpdateExtendedWatchers();
+
+    return options;
+  }
 }
 
 function createTypeCheckingProgramStrategy(project: ts.server.Project):

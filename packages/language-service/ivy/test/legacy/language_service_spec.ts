@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import * as path from 'path';
 import * as ts from 'typescript/lib/tsserverlibrary';
 
 import {LanguageService} from '../../language_service';
@@ -56,14 +57,113 @@ describe('language service adapter', () => {
       }));
 
       configFileFs.overwriteConfigFile(TSCONFIG, `{
-         "angularCompilerOptions": {
-           "strictTemplates": false
-         }
-       }`);
+        "angularCompilerOptions": {
+          "strictTemplates": false
+        }
+      }`);
 
       expect(ngLS.getCompilerOptions()).toEqual(jasmine.objectContaining({
         strictTemplates: false,
       }));
+    });
+
+    it('should parse extended angularCompilerOptions', () => {
+      const proj = assertConfiguredProject(project);
+      const derived = proj.getConfigFilePath();
+      const base = path.join(path.dirname(derived), 'tsconfig-base.json');
+      configFileFs.overwriteConfigFile(base, `{
+        "angularCompilerOptions": {
+          "strictTemplates": false,
+          "strictInjectionParameters": false
+        }
+      }`);
+      configFileFs.overwriteConfigFile(derived, `{
+        "extends": "./tsconfig-base.json",
+        "angularCompilerOptions": {
+          "strictTemplates": true
+        }
+      }`);
+      expect(ngLS.getCompilerOptions()).toEqual(jasmine.objectContaining({
+        strictTemplates: true,
+        strictInjectionParameters: false,
+      }));
+    });
+
+    it('should refresh angularCompilerOptions when extended tsconfig is changed', () => {
+      const proj = assertConfiguredProject(project);
+      const derived = proj.getConfigFilePath();
+      const base = path.join(path.dirname(derived), 'tsconfig-base.json');
+      configFileFs.overwriteConfigFile(base, `{
+        "angularCompilerOptions": {
+          "strictTemplates": false,
+          "strictInjectionParameters": false
+        }
+      }`);
+      configFileFs.overwriteConfigFile(derived, `{
+        "extends": "./tsconfig-base.json",
+        "angularCompilerOptions": {
+          "strictTemplates": true
+        }
+      }`);
+      expect(ngLS.getCompilerOptions()).toEqual(jasmine.objectContaining({
+        strictTemplates: true,
+        strictInjectionParameters: false,
+      }));
+
+      configFileFs.overwriteConfigFile(base, `{
+        "angularCompilerOptions": {
+          "strictInjectionParameters": true,
+          "fullTemplateTypeCheck": true
+        }
+      }`);
+      expect(ngLS.getCompilerOptions()).toEqual(jasmine.objectContaining({
+        strictTemplates: true,
+        strictInjectionParameters: true,
+        fullTemplateTypeCheck: true,
+      }));
+    });
+
+    it('should refresh angularCompilerOptions when extended tsconfig is deleted', () => {
+      const proj = assertConfiguredProject(project);
+      const derived = proj.getConfigFilePath();
+      const base = path.join(path.dirname(derived), 'tsconfig-base.json');
+      configFileFs.overwriteConfigFile(base, `{
+        "angularCompilerOptions": {
+          "strictTemplates": false,
+          "strictInjectionParameters": false
+        }
+      }`);
+      configFileFs.overwriteConfigFile(derived, `{
+        "extends": "./tsconfig-base.json",
+        "angularCompilerOptions": {
+          "strictTemplates": true
+        }
+      }`);
+      expect(ngLS.getCompilerOptions()).toEqual(jasmine.objectContaining({
+        strictTemplates: true,
+        strictInjectionParameters: false,
+      }));
+
+      configFileFs.deleteConfigFile(base);
+      expect(ngLS.getCompilerOptions()).toEqual(jasmine.objectContaining({
+        strictTemplates: true,
+      }));
+      expect(ngLS.getCompilerOptions()).not.toEqual(jasmine.objectContaining({
+        strictInjectionParameters: false,
+      }));
+    });
+
+    it('should unset angularCompilerOptions when tsconfig is deleted', () => {
+      const proj = assertConfiguredProject(project);
+      const origOptions = {
+        strictTemplates: true,
+        strictInjectionParameters: true,
+      };
+      // First verify options are present.
+      expect(ngLS.getCompilerOptions()).toEqual(jasmine.objectContaining(origOptions));
+      // Delete the config file and verify options are missing.
+      configFileFs.deleteConfigFile(proj.getConfigFilePath());
+      expect(ngLS.getCompilerOptions()).not.toEqual(jasmine.objectContaining(origOptions));
     });
   });
 
@@ -153,4 +253,11 @@ function getLastKnownProgram(ngLS: LanguageService): ts.Program {
   const program = ngLS['compilerFactory']['lastKnownProgram'];
   expect(program).toBeDefined();
   return program!;
+}
+
+function assertConfiguredProject(project: ts.server.Project): ts.server.ConfiguredProject {
+  if (!(project instanceof ts.server.ConfiguredProject)) {
+    throw new Error('Project is not a configured project.');
+  }
+  return project;
 }

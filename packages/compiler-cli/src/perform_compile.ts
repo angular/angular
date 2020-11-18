@@ -121,6 +121,8 @@ export interface ParsedConfiguration {
   projectReferences?: readonly ts.ProjectReference[]|undefined;
   emitFlags: api.EmitFlags;
   errors: ts.Diagnostic[];
+  /** File paths of all extended `tsconfig.json`s used in the configuration. */
+  allExtendedConfigs: string[];
 }
 
 export function calcProjectFileAndBasePath(
@@ -149,6 +151,7 @@ export function readConfiguration(
     host: ConfigurationHost = getFileSystem()): ParsedConfiguration {
   try {
     const {projectFile, basePath} = calcProjectFileAndBasePath(project, host);
+    const allExtendedConfigs: string[] = [];
 
     const readExtendedConfigFile =
         (configFile: string, existingConfig?: any): {config?: any, error?: ts.Diagnostic} => {
@@ -177,6 +180,7 @@ export function readConfiguration(
 
             if (host.exists(extendedConfigPath)) {
               // Call read config recursively as TypeScript only merges CompilerOptions
+              allExtendedConfigs.push(extendedConfigPath);
               return readExtendedConfigFile(extendedConfigPath, baseConfig);
             }
           }
@@ -192,7 +196,8 @@ export function readConfiguration(
         errors: [error],
         rootNames: [],
         options: {},
-        emitFlags: api.EmitFlags.Default
+        emitFlags: api.EmitFlags.Default,
+        allExtendedConfigs,
       };
     }
     const parseConfigHost = {
@@ -221,7 +226,8 @@ export function readConfiguration(
       projectReferences,
       options,
       errors: parsed.errors,
-      emitFlags
+      emitFlags,
+      allExtendedConfigs,
     };
   } catch (e) {
     const errors: ts.Diagnostic[] = [{
@@ -233,7 +239,14 @@ export function readConfiguration(
       source: 'angular',
       code: api.UNKNOWN_ERROR_CODE,
     }];
-    return {project: '', errors, rootNames: [], options: {}, emitFlags: api.EmitFlags.Default};
+    return {
+      project: '',
+      errors,
+      rootNames: [],
+      options: {},
+      emitFlags: api.EmitFlags.Default,
+      allExtendedConfigs: [],
+    };
   }
 }
 
