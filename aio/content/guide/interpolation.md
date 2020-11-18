@@ -86,7 +86,7 @@ In the following snippet, the expression `recommended` and the expression `itemI
 
 <code-example path="interpolation/src/app/app.component.html" region="component-context" header="src/app/app.component.html"></code-example>
 
-An expression can also refer to properties of the _template's_ context such as a [template input variable](guide/built-in-directives#template-input-variables) or a [template reference variable](guide/template-reference-variables).
+An expression can also refer to properties of the _template's_ context such as a [template input variable](guide/structural-directives#template-input-variables) or a [template reference variable](guide/template-reference-variables).
 
 The following example uses a template input variable of `customer`.
 

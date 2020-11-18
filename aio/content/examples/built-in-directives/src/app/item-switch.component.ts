@@ -5,9 +5,13 @@ import { Item } from './item';
   selector: 'app-stout-item',
   template: `I'm a little {{item.name}}, short and stout!`
 })
+
+// #docregion input
 export class StoutItemComponent {
   @Input() item: Item;
 }
+// #enddocregion input
+
 
 @Component({
   selector: 'app-best-item',
