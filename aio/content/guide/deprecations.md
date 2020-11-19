@@ -31,6 +31,8 @@ v7 - v10
 v8 - v11
 v9 - v12
 v10 - v13
+v11 - v14
+v12 - v15
 -->
 
 
@@ -54,7 +56,8 @@ v10 - v13
 | `@angular/core`               | [`ANALYZE_FOR_ENTRY_COMPONENTS`](api/core/ANALYZE_FOR_ENTRY_COMPONENTS)       | <!--v9--> v11 |
 | `@angular/router`             | [`loadChildren` string syntax](#loadChildren)                                 | <!--v9--> v11 |
 | `@angular/core/testing`       | [`TestBed.get`](#testing)                                                     | <!--v9--> v12 |
-| `@angular/core/testing`       | [`async`](#testing)                                                     | <!--v9--> v12 |
+| `@angular/core/testing`       | [`async`](#testing)                                                           | <!--v9--> v12 |
+| `@angular/forms`              | [`FormBuilder.group` legacy options parameter](api/forms/FormBuilder#group)   | <!--v11--> v14 |
 | `@angular/router`             | [`ActivatedRoute` params and `queryParams` properties](#activatedroute-props) | unspecified |
 | template syntax               | [`/deep/`, `>>>`, and `::ng-deep`](#deep-component-style-selector)            | <!--v7--> unspecified |
 
@@ -108,6 +111,7 @@ Tip: In the [API reference section](api) of this doc site, deprecated APIs are i
 | API | Replacement | Deprecation announced | Notes |
 | --- | ----------- | --------------------- | ----- |
 | [`ngModel` with reactive forms](#ngmodel-reactive) | [`FormControlDirective`](api/forms/FormControlDirective) | v6 | none |
+| [`FormBuilder.group` legacy options parameter](api/forms/FormBuilder#group) | [`AbstractControlOptions` parameter value](api/forms/AbstractControlOptions) | v11 | none |
 
 
 {@a upgrade}
@@ -434,7 +438,7 @@ This section contains a complete list all of the currently deprecated CLI flags.
 
 | API/Option                      | May be removed in | Notes                                                                           |
 | ------------------------------- | ----------------- |-------------------------------------------------------------------------------- |
-| `extractCss`                    | <!--v11--> v13     | No longer required to disable CSS extraction during development.               | 
+| `extractCss`                    | <!--v11--> v13     | No longer required to disable CSS extraction during development.               |
 | `i18nFormat`                    | <!--v9--> v12      | Format is now automatically detected.                                           |
 | `i18nLocale`                    | <!--v9--> v12      | New [localization option](/guide/i18n#localize-config) in version 9 and later.  |
 | `lazyModules`                   | <!--v9--> v12      | Used with deprecated SystemJsNgModuleLoader.                                    |
