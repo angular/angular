@@ -147,7 +147,7 @@ describe('type check blocks diagnostics', () => {
       }];
       const block = tcbWithSpans(TEMPLATE, PIPES);
       expect(block).toContain(
-          '((null as TestPipe).transform(((ctx).a /*3,4*/) /*3,4*/, ((ctx).b /*12,13*/) /*12,13*/) /*3,13*/);');
+          '((null as TestPipe).transform /*7,11*/(((ctx).a /*3,4*/) /*3,4*/, ((ctx).b /*12,13*/) /*12,13*/) /*3,13*/);');
     });
 
     describe('attaching multiple comments for multiple references', () => {
