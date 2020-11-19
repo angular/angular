@@ -26,10 +26,10 @@ describe('SwUpdatesService', () => {
   //   to call them inside each test's zone.
   const setup = (isSwUpdateEnabled: boolean) => {
     injector = Injector.create({providers: [
-      { provide: ApplicationRef, useClass: MockApplicationRef },
-      { provide: LocationService, useFactory: () => new MockLocationService('') },
-      { provide: Logger, useClass: MockLogger },
-      { provide: SwUpdate, useFactory: () => new MockSwUpdate(isSwUpdateEnabled) },
+      { provide: ApplicationRef, useClass: MockApplicationRef, deps: [] },
+      { provide: LocationService, useFactory: () => new MockLocationService(''), deps: [] },
+      { provide: Logger, useClass: MockLogger, deps: [] },
+      { provide: SwUpdate, useFactory: () => new MockSwUpdate(isSwUpdateEnabled), deps: [] },
       { provide: SwUpdatesService, deps: [ApplicationRef, LocationService, Logger, SwUpdate] }
     ]});
 
