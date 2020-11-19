@@ -1,3 +1,13 @@
+<a name="11.0.2"></a>
+## 11.0.2 (2020-11-19)
+
+
+### Bug Fixes
+
+* **router:** migration incorrectly replacing deprecated key ([#39763](https://github.com/angular/angular/issues/39763)) ([0237845](https://github.com/angular/angular/commit/0237845)), closes [#38762](https://github.com/angular/angular/issues/38762) [#39755](https://github.com/angular/angular/issues/39755)
+
+
+
 <a name="11.1.0-next.0"></a>
 # 11.1.0-next.0 (2020-11-18)
 
