@@ -71,7 +71,7 @@ describe('NavigationExtras preserveQueryParams migration', () => {
       await runMigration();
 
       const content = tree.readContent('/index.ts');
-      expect(content).toContain(`this._router.navigate('/', { queryParamsHandler: 'preserve' });`);
+      expect(content).toContain(`this._router.navigate('/', { queryParamsHandling: 'preserve' });`);
     });
 
     it('`createUrlTree` function', async () => {
@@ -114,7 +114,7 @@ describe('NavigationExtras preserveQueryParams migration', () => {
 
       const content = tree.readContent('/index.ts');
       expect(content).toContain(
-          `const config = { replaceUrl: true, fragment: 'foo', state: {}, queryParamsHandler: 'preserve' };`);
+          `const config = { replaceUrl: true, fragment: 'foo', state: {}, queryParamsHandling: 'preserve' };`);
     });
 
     it('should remove when the value is `false`', async () => {
@@ -178,7 +178,7 @@ describe('NavigationExtras preserveQueryParams migration', () => {
 
       const content = tree.readContent('/index.ts');
       expect(content).toContain(
-          `this._router.navigate('/', { replaceUrl: true, fragment: 'foo', state: {}, queryParamsHandler: 'preserve' });`);
+          `this._router.navigate('/', { replaceUrl: true, fragment: 'foo', state: {}, queryParamsHandling: 'preserve' });`);
     });
 
     it('should remove when the value is `false`', async () => {

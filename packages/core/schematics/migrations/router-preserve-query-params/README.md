@@ -2,7 +2,7 @@
 
 Previously the `NatigationExtras` property of `preserveQueryParams` defined what should be done with
 query parameters on navigation.  This migration updates the usages of `preserveQueryParams` to
-instead use the `queryParamsHandler` property.
+instead use the `queryParamsHandling` property.
 
 #### Before
 ```ts
@@ -29,7 +29,7 @@ export class MyComponent {
   constructor(private _router: Router) {}
 
   goHome() {
-    this._router.navigate('/', { queryParamsHandler: 'preserve', skipLocationChange: 'foo' });
+    this._router.navigate('/', { queryParamsHandling: 'preserve', skipLocationChange: 'foo' });
   }
 }
 ```

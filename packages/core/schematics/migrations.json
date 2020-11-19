@@ -72,7 +72,7 @@
     },
     "migration-v11-router-preserve-query-params": {
       "version": "11.0.0-beta",
-      "description": "NavigationExtras.preserveQueryParams has been removed as of Angular version 11.  This migration replaces any usages with the appropriate assignment of the queryParamsHandler key.",
+      "description": "NavigationExtras.preserveQueryParams has been removed as of Angular version 11.  This migration replaces any usages with the appropriate assignment of the queryParamsHandling key.",
       "factory": "./migrations/router-preserve-query-params/index"
     },
     "migration-v11-router-initial-navigation-options": {
