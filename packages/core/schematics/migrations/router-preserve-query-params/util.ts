@@ -56,7 +56,7 @@ export function migrateLiteral(
     return ts.updateObjectLiteral(
         node,
         propertiesToKeep.concat(
-            ts.createPropertyAssignment('queryParamsHandler', ts.createIdentifier(`'preserve'`))));
+            ts.createPropertyAssignment('queryParamsHandling', ts.createIdentifier(`'preserve'`))));
   }
 
   return ts.updateObjectLiteral(node, propertiesToKeep);
