@@ -79,7 +79,6 @@ export class MockConfigFileFs implements
   deleteConfigFile(configFile: string) {
     this.configOverwrites.delete(configFile);
     this.configFileWatchers.get(configFile)?.deleted();
-    this.configFileWatchers.delete(configFile);
   }
 
   isBeingWatched(configFile: string) {
