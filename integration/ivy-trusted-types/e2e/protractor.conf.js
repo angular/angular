@@ -13,12 +13,7 @@ exports.config = {
     './src/**/*.e2e-spec.ts'
   ],
   capabilities: {
-    browserName: 'chrome',
-    chromeOptions: {
-      binary: require('puppeteer').executablePath(),
-      // See /integration/README.md#browser-tests for more info on these args
-      args: ['--no-sandbox', '--headless', '--disable-gpu', '--disable-dev-shm-usage', '--hide-scrollbars', '--mute-audio']
-    },
+    browserName: 'chrome'
   },
   directConnect: true,
   SELENIUM_PROMISE_MANAGER: false,
