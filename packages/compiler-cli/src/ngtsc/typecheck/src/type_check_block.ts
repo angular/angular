@@ -1618,7 +1618,12 @@ class TcbExpressionTranslator {
         pipe = NULL_AS_ANY;
       }
       const args = ast.args.map(arg => this.translate(arg));
-      const result = tsCallMethod(pipe, 'transform', [expr, ...args]);
+      const methodAccess = ts.createPropertyAccess(pipe, 'transform');
+      addParseSpanInfo(methodAccess, ast.nameSpan);
+      const result = ts.createCall(
+          /* expression */ methodAccess,
+          /* typeArguments */ undefined,
+          /* argumentsArray */[expr, ...args]);
       addParseSpanInfo(result, ast.sourceSpan);
       return result;
     } else if (
