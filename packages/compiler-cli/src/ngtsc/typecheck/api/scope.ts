@@ -7,6 +7,7 @@
  */
 
 import * as ts from 'typescript';
+import {ClassDeclaration} from '../../reflection';
 
 /**
  * Metadata on a directive which is available in the scope of a template.
@@ -16,6 +17,11 @@ export interface DirectiveInScope {
    * The `ts.Symbol` for the directive class.
    */
   tsSymbol: ts.Symbol;
+
+  /**
+   * The module which declares the directive.
+   */
+  ngModule: ClassDeclaration|null;
 
   /**
    * The selector for the directive or component.

@@ -15,11 +15,11 @@ import * as ts from 'typescript/lib/tsserverlibrary';
 
 import {LanguageServiceAdapter, LSParseConfigHost} from './adapters';
 import {CompilerFactory} from './compiler_factory';
-import {CompletionBuilder} from './completions';
+import {CompletionBuilder, CompletionNodeContext} from './completions';
 import {DefinitionBuilder} from './definitions';
 import {QuickInfoBuilder} from './quick_info';
 import {ReferenceBuilder} from './references';
-import {getTargetAtPosition} from './template_target';
+import {getTargetAtPosition, TargetNode, TargetNodeKind} from './template_target';
 import {getTemplateInfoAtPosition, isTypeScriptFile} from './utils';
 
 export class LanguageService {
@@ -133,7 +133,8 @@ export class LanguageService {
     }
     return new CompletionBuilder(
         this.tsLS, compiler, templateInfo.component, positionDetails.nodeInContext.node,
-        positionDetails.parent, positionDetails.template);
+        nodeContextFromTarget(positionDetails.nodeInContext), positionDetails.parent,
+        positionDetails.template);
   }
 
   getCompletionsAtPosition(
@@ -161,12 +162,13 @@ export class LanguageService {
     return result;
   }
 
-  getCompletionEntrySymbol(fileName: string, position: number, name: string): ts.Symbol|undefined {
+  getCompletionEntrySymbol(fileName: string, position: number, entryName: string): ts.Symbol
+      |undefined {
     const builder = this.getCompletionBuilder(fileName, position);
     if (builder === null) {
       return undefined;
     }
-    const result = builder.getCompletionEntrySymbol(name);
+    const result = builder.getCompletionEntrySymbol(entryName);
     this.compilerFactory.registerLastKnownProgram();
     return result;
   }
@@ -254,4 +256,17 @@ function getOrCreateTypeCheckScriptInfo(
     project.addRoot(scriptInfo);
   }
   return scriptInfo;
+}
+
+function nodeContextFromTarget(target: TargetNode): CompletionNodeContext {
+  switch (target.kind) {
+    case TargetNodeKind.ElementInTagContext:
+      return CompletionNodeContext.ElementTag;
+    case TargetNodeKind.ElementInBodyContext:
+      // Completions in element bodies are for new attributes.
+      return CompletionNodeContext.ElementAttributeKey;
+    default:
+      // No special context is available.
+      return CompletionNodeContext.None;
+  }
 }

@@ -261,9 +261,6 @@ export interface DirectiveSymbol extends DirectiveInScope {
 
   /** The location in the shim file for the variable that holds the type of the directive. */
   shimLocation: ShimLocation;
-
-  /** The `NgModule` that this directive is declared in or `null` if it could not be determined. */
-  ngModule: ClassDeclaration|null;
 }
 
 /**
