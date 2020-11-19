@@ -8,6 +8,7 @@
 
 import {EventEmitter} from '../event_emitter';
 import {global} from '../util/global';
+import {noop} from '../util/noop';
 import {getNativeRequestAnimationFrame} from '../util/raf';
 
 
@@ -231,7 +232,6 @@ export class NgZone {
   }
 }
 
-function noop() {}
 const EMPTY_PAYLOAD = {};
 
 interface NgZonePrivate extends NgZone {
