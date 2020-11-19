@@ -10,7 +10,7 @@ import {TmplAstNode} from '@angular/compiler';
 import {absoluteFrom, AbsoluteFsPath} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {initMockFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
 import * as ts from 'typescript';
-import {DisplayInfoKind} from '../display_parts';
+import {DisplayInfoKind, unsafeCastDisplayInfoKindToScriptElementKind} from '../display_parts';
 import {LanguageService} from '../language_service';
 
 import {LanguageServiceTestEnvironment} from './env';
@@ -198,6 +198,61 @@ describe('completions', () => {
       });
     });
   });
+
+  describe('element tag scope', () => {
+    it('should return DOM completions', () => {
+      const {ngLS, fileName, cursor} = setup(`<div¦>`, '');
+      const completions = ngLS.getCompletionsAtPosition(fileName, cursor, /* options */ undefined);
+      expectContain(
+          completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.ELEMENT),
+          ['div', 'span']);
+    });
+
+    it('should return directive completions', () => {
+      const OTHER_DIR = {
+        'OtherDir': `
+            /** This is another directive. */
+            @Directive({selector: 'other-dir'})
+            export class OtherDir {}
+          `,
+      };
+      const {ngLS, fileName, cursor} = setup(`<div¦>`, '', OTHER_DIR);
+      const completions = ngLS.getCompletionsAtPosition(fileName, cursor, /* options */ undefined);
+      expectContain(
+          completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.DIRECTIVE),
+          ['other-dir']);
+
+      const details =
+          ngLS.getCompletionEntryDetails(fileName, cursor, 'other-dir', undefined, undefined)!;
+      expect(details).toBeDefined();
+      expect(ts.displayPartsToString(details.displayParts))
+          .toEqual('(directive) AppModule.OtherDir');
+      expect(ts.displayPartsToString(details.documentation!)).toEqual('This is another directive.');
+    });
+
+    it('should return component completions', () => {
+      const OTHER_CMP = {
+        'OtherCmp': `
+            /** This is another component. */
+            @Component({selector: 'other-cmp', template: 'unimportant'})
+            export class OtherCmp {}
+          `,
+      };
+      const {ngLS, fileName, cursor} = setup(`<div¦>`, '', OTHER_CMP);
+      const completions = ngLS.getCompletionsAtPosition(fileName, cursor, /* options */ undefined);
+      expectContain(
+          completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.COMPONENT),
+          ['other-cmp']);
+
+
+      const details =
+          ngLS.getCompletionEntryDetails(fileName, cursor, 'other-cmp', undefined, undefined)!;
+      expect(details).toBeDefined();
+      expect(ts.displayPartsToString(details.displayParts))
+          .toEqual('(component) AppModule.OtherCmp');
+      expect(ts.displayPartsToString(details.documentation!)).toEqual('This is another component.');
+    });
+  });
 });
 
 function expectContain(
@@ -223,7 +278,9 @@ function toText(displayParts?: ts.SymbolDisplayPart[]): string {
   return (displayParts ?? []).map(p => p.text).join('');
 }
 
-function setup(templateWithCursor: string, classContents: string): {
+function setup(
+    templateWithCursor: string, classContents: string,
+    otherDirectives: {[name: string]: string} = {}): {
   env: LanguageServiceTestEnvironment,
   fileName: AbsoluteFsPath,
   AppCmp: ts.ClassDeclaration,
@@ -233,11 +290,16 @@ function setup(templateWithCursor: string, classContents: string): {
 } {
   const codePath = absoluteFrom('/test.ts');
   const templatePath = absoluteFrom('/test.html');
+
+  const decls = ['AppCmp', ...Object.keys(otherDirectives)];
+
+  const otherDirectiveClassDecls = Object.values(otherDirectives).join('\n\n');
+
   const env = LanguageServiceTestEnvironment.setup([
     {
       name: codePath,
       contents: `
-        import {Component, NgModule} from '@angular/core';
+        import {Component, Directive, NgModule} from '@angular/core';
 
         @Component({
           templateUrl: './test.html',
@@ -247,8 +309,10 @@ function setup(templateWithCursor: string, classContents: string): {
           ${classContents}
         }
         
+        ${otherDirectiveClassDecls}
+
         @NgModule({
-          declarations: [AppCmp],
+          declarations: [${decls.join(', ')}],
         })
         export class AppModule {}
         `,
