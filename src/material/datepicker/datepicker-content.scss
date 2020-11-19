@@ -29,6 +29,15 @@ $mat-datepicker-touch-max-height: 788px;
     width: $mat-datepicker-non-touch-calendar-width;
     height: $mat-datepicker-non-touch-calendar-height;
   }
+
+  // Note that this selector doesn't technically have to be nested, but we want the slightly
+  // higher specificity, or it can be overridden based on the CSS insertion order (see #21043).
+  .mat-datepicker-close-button {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    margin-top: 8px;
+  }
 }
 
 .mat-datepicker-content-touch {
@@ -47,13 +56,6 @@ $mat-datepicker-touch-max-height: 788px;
     max-width: $mat-datepicker-touch-max-width;
     max-height: $mat-datepicker-touch-max-height;
   }
-}
-
-.mat-datepicker-close-button {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  margin-top: 8px;
 }
 
 @media all and (orientation: landscape) {
