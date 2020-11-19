@@ -123,7 +123,7 @@
     "fs-extra": "^3.0.1",
     "glob": "^7.1.2",
     "gulp": "^3.9.1",
-    "gulp-clean": "^0.3.2",
+    "gulp-clean": "^0.4.0",
     "gulp-cli": "^2.0.1",
     "gulp-sass": "^4.0.2",
     "highlight.js": "^9.11.0",
