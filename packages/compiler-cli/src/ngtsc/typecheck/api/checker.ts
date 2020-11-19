@@ -142,6 +142,13 @@ export interface TemplateTypeChecker {
    * Get basic metadata on the pipes which are in scope for the given component.
    */
   getPipesInScope(component: ts.ClassDeclaration): PipeInScope[]|null;
+
+  /**
+   * Retrieve a `Map` of potential template element tags, to either the `DirectiveInScope` that
+   * declares them (if the tag is from a directive/component), or `null` if the tag originates from
+   * the DOM schema.
+   */
+  getPotentialElementTags(component: ts.ClassDeclaration): Map<string, DirectiveInScope|null>;
 }
 
 /**
