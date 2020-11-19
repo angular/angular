@@ -81,6 +81,13 @@ export interface TemplateTypeChecker {
   getDiagnosticsForComponent(component: ts.ClassDeclaration): ts.Diagnostic[];
 
   /**
+   * Ensures shims for the whole program are generated. This type of operation would be required by
+   * operations like "find references" and "refactor/rename" because references may appear in type
+   * check blocks generated from templates anywhere in the program.
+   */
+  generateAllTypeCheckBlocks(): void;
+
+  /**
    * Retrieve the top-level node representing the TCB for the given component.
    *
    * This can return `null` if there is no TCB available for the component.

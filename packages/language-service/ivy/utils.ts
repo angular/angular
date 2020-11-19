@@ -306,3 +306,17 @@ export function isTypeScriptFile(fileName: string): boolean {
 export function isExternalTemplate(fileName: string): boolean {
   return !isTypeScriptFile(fileName);
 }
+
+export function isWithin(position: number, span: AbsoluteSourceSpan|ParseSourceSpan): boolean {
+  let start: number, end: number;
+  if (span instanceof ParseSourceSpan) {
+    start = span.start.offset;
+    end = span.end.offset;
+  } else {
+    start = span.start;
+    end = span.end;
+  }
+  // Note both start and end are inclusive because we want to match conditions
+  // like ¦start and end¦ where ¦ is the cursor.
+  return start <= position && position <= end;
+}

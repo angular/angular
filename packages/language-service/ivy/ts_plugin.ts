@@ -56,9 +56,9 @@ export function create(info: ts.server.PluginCreateInfo): ts.LanguageService {
     }
   }
 
-  function getReferencesAtPosition(fileName: string, position: number) {
-    // TODO(atscott): implement references
-    return undefined;
+  function getReferencesAtPosition(fileName: string, position: number): ts.ReferenceEntry[]|
+      undefined {
+    return ngLS.getReferencesAtPosition(fileName, position);
   }
 
   return {

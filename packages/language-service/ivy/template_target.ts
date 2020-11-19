@@ -6,11 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AbsoluteSourceSpan, ParseSourceSpan} from '@angular/compiler';
 import * as e from '@angular/compiler/src/expression_parser/ast';  // e for expression AST
 import * as t from '@angular/compiler/src/render3/r3_ast';         // t for template AST
 
-import {isTemplateNode, isTemplateNodeWithKeyAndValue} from './utils';
+import {isTemplateNode, isTemplateNodeWithKeyAndValue, isWithin} from './utils';
 
 /**
  * Contextual information for a target position within the template.
@@ -237,18 +236,4 @@ function getSpanIncludingEndTag(ast: t.Node) {
     result.end = ast.endSourceSpan.end.offset;
   }
   return result;
-}
-
-function isWithin(position: number, span: AbsoluteSourceSpan|ParseSourceSpan): boolean {
-  let start: number, end: number;
-  if (span instanceof ParseSourceSpan) {
-    start = span.start.offset;
-    end = span.end.offset;
-  } else {
-    start = span.start;
-    end = span.end;
-  }
-  // Note both start and end are inclusive because we want to match conditions
-  // like ¦start and end¦ where ¦ is the cursor.
-  return start <= position && position <= end;
 }

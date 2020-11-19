@@ -197,6 +197,10 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
     return getTemplateMapping(shimSf, positionInShimFile, fileRecord.sourceManager);
   }
 
+  generateAllTypeCheckBlocks() {
+    this.ensureAllShimsForAllFiles();
+  }
+
   /**
    * Retrieve type-checking diagnostics from the given `ts.SourceFile` using the most recent
    * type-checking program.
