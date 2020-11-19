@@ -18,6 +18,7 @@ import {TConstants, TNodeType} from '@angular/core/src/render3/interfaces/node';
 import {RComment, RElement, RNode, RText} from '@angular/core/src/render3/interfaces/renderer_dom';
 import {enterView, getLView} from '@angular/core/src/render3/state';
 import {EMPTY_ARRAY} from '@angular/core/src/util/empty';
+import {noop} from '@angular/core/src/util/noop';
 import {stringifyElement} from '@angular/platform-browser/testing/src/browser_util';
 
 import {SWITCH_CHANGE_DETECTOR_REF_FACTORY__POST_R3__ as R3_CHANGE_DETECTOR_REF_FACTORY} from '../../src/change_detection/change_detector_ref';
@@ -85,7 +86,6 @@ export abstract class BaseFixture {
   }
 }
 
-function noop() {}
 /**
  * Fixture for testing template functions in a convenient way.
  *
