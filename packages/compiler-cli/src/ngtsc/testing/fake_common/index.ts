@@ -11,6 +11,12 @@ import {NgIterable, TemplateRef, ɵɵDirectiveDefWithMeta, ɵɵNgModuleDefWithMe
 export interface NgForOfContext<T, U extends NgIterable<T>> {
   $implicit: T;
   ngForOf: U;
+  odd: boolean;
+  event: boolean;
+  first: boolean;
+  last: boolean;
+  count: number;
+  index: number;
 }
 
 export interface TrackByFunction<T> {
@@ -54,6 +60,19 @@ export declare class NgIf<T = unknown> {
       ctx is NgIfContext<Exclude<T, false|0|''|null|undefined>>;
 }
 
+export declare class NgTemplateOutlet {
+  ngTemplateOutlet: TemplateRef<any>|null;
+  ngTemplateOutletContext: Object|null;
+
+  static ɵdir: ɵɵDirectiveDefWithMeta < NgTemplateOutlet, '[ngTemplateOutlet]', never, {
+    'ngTemplateOutlet': 'ngTemplateOutlet';
+    'ngTemplateOutletContext': 'ngTemplateOutletContext';
+  }
+  , {}, never > ;
+  static ngTemplateContextGuard<T>(dir: NgIf<T>, ctx: any):
+      ctx is NgIfContext<Exclude<T, false|0|''|null|undefined>>;
+}
+
 export declare class DatePipe {
   transform(value: Date|string|number, format?: string, timezone?: string, locale?: string): string
       |null;
@@ -65,8 +84,7 @@ export declare class DatePipe {
 }
 
 export declare class CommonModule {
-  static ɵmod:
-      ɵɵNgModuleDefWithMeta<CommonModule, [typeof NgForOf, typeof NgIf, typeof DatePipe], never, [
-        typeof NgForOf, typeof NgIf, typeof DatePipe
-      ]>;
+  static ɵmod: ɵɵNgModuleDefWithMeta<
+      CommonModule, [typeof NgForOf, typeof NgIf, typeof DatePipe, typeof NgTemplateOutlet], never,
+      [typeof NgForOf, typeof NgIf, typeof DatePipe, typeof NgTemplateOutlet]>;
 }

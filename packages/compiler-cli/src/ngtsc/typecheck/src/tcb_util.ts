@@ -67,6 +67,8 @@ export function getTemplateMapping(
   if (span === null) {
     return null;
   }
+  // TODO(atscott): Consider adding a context span by walking up from `node` until we get a
+  // different span.
   return {sourceLocation, templateSourceMapping: mapping, span};
 }
 

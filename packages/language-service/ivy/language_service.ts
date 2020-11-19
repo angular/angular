@@ -10,6 +10,7 @@ import {CompilerOptions, ConfigurationHost, readConfiguration} from '@angular/co
 import {absoluteFromSourceFile, AbsoluteFsPath} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {TypeCheckShimGenerator} from '@angular/compiler-cli/src/ngtsc/typecheck';
 import {OptimizeFor, TypeCheckingProgramStrategy} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
+import {ReferenceBuilder} from '@angular/language-service/ivy/references';
 import * as ts from 'typescript/lib/tsserverlibrary';
 
 import {LanguageServiceAdapter, LSParseConfigHost} from './adapters';
@@ -80,7 +81,6 @@ export class LanguageService {
   }
 
   getQuickInfoAtPosition(fileName: string, position: number): ts.QuickInfo|undefined {
-    const program = this.strategy.getProgram();
     const compiler = this.compilerFactory.getOrCreateWithChangedFile(fileName);
     const templateInfo = getTemplateInfoAtPosition(fileName, position, compiler);
     if (templateInfo === undefined) {
@@ -93,6 +93,14 @@ export class LanguageService {
     const results =
         new QuickInfoBuilder(this.tsLS, compiler, templateInfo.component, positionDetails.node)
             .get();
+    this.compilerFactory.registerLastKnownProgram();
+    return results;
+  }
+
+  getReferencesAtPosition(fileName: string, position: number): ts.ReferenceEntry[]|undefined {
+    const compiler = this.compilerFactory.getOrCreateWithChangedFile(fileName);
+    const results =
+        new ReferenceBuilder(this.strategy, this.tsLS, compiler).get(fileName, position);
     this.compilerFactory.registerLastKnownProgram();
     return results;
   }
