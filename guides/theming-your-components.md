@@ -22,8 +22,8 @@ For example, if building a custom carousel component:
   // Define any styles affected by the theme.
   .candy-carousel {
     // Use mat-color to extract individual colors from a palette.
-    background-color: mat-color($config);
-    border-color: mat-color($config, A400);
+    background-color: mat-color($primary);
+    border-color: mat-color($accent, A400);
   }
 }
 ```
