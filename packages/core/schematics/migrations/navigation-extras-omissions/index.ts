@@ -11,7 +11,7 @@ import {relative} from 'path';
 import * as ts from 'typescript';
 
 import {getProjectTsConfigPaths} from '../../utils/project_tsconfig_paths';
-import {createMigrationProgram} from '../../utils/typescript/compiler_host';
+import {canMigrateFile, createMigrationProgram} from '../../utils/typescript/compiler_host';
 import {findLiteralsToMigrate, migrateLiteral} from './util';
 
 
@@ -38,8 +38,8 @@ function runNavigationExtrasOmissionsMigration(tree: Tree, tsconfigPath: string,
   const {program} = createMigrationProgram(tree, tsconfigPath, basePath);
   const typeChecker = program.getTypeChecker();
   const printer = ts.createPrinter();
-  const sourceFiles = program.getSourceFiles().filter(
-      f => !f.isDeclarationFile && !program.isSourceFileFromExternalLibrary(f));
+  const sourceFiles =
+      program.getSourceFiles().filter(sourceFile => canMigrateFile(basePath, sourceFile, program));
 
   sourceFiles.forEach(sourceFile => {
     const literalsToMigrate = findLiteralsToMigrate(sourceFile, typeChecker);

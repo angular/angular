@@ -10,7 +10,7 @@ import {Rule, SchematicsException, Tree} from '@angular-devkit/schematics';
 import {relative} from 'path';
 import * as ts from 'typescript';
 import {getProjectTsConfigPaths} from '../../utils/project_tsconfig_paths';
-import {createMigrationProgram} from '../../utils/typescript/compiler_host';
+import {canMigrateFile, createMigrationProgram} from '../../utils/typescript/compiler_host';
 import {InitialNavigationCollector} from './collector';
 import {InitialNavigationTransform} from './transform';
 import {UpdateRecorder} from './update_recorder';
@@ -36,14 +36,14 @@ function runInitialNavigationMigration(tree: Tree, tsconfigPath: string, basePat
   const {program} = createMigrationProgram(tree, tsconfigPath, basePath);
   const typeChecker = program.getTypeChecker();
   const initialNavigationCollector = new InitialNavigationCollector(typeChecker);
-  const sourceFiles = program.getSourceFiles().filter(
-      f => !f.isDeclarationFile && !program.isSourceFileFromExternalLibrary(f));
+  const sourceFiles =
+      program.getSourceFiles().filter(sourceFile => canMigrateFile(basePath, sourceFile, program));
 
   // Analyze source files by detecting all modules.
   sourceFiles.forEach(sourceFile => initialNavigationCollector.visitNode(sourceFile));
 
   const {assignments} = initialNavigationCollector;
-  const transformer = new InitialNavigationTransform(typeChecker, getUpdateRecorder);
+  const transformer = new InitialNavigationTransform(getUpdateRecorder);
   const updateRecorders = new Map<ts.SourceFile, UpdateRecorder>();
   transformer.migrateInitialNavigationAssignments(Array.from(assignments));
 

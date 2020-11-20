@@ -14,7 +14,7 @@ import * as ts from 'typescript';
 
 import {NgComponentTemplateVisitor} from '../../utils/ng_component_template';
 import {getProjectTsConfigPaths} from '../../utils/project_tsconfig_paths';
-import {createMigrationProgram} from '../../utils/typescript/compiler_host';
+import {canMigrateFile, createMigrationProgram} from '../../utils/typescript/compiler_host';
 
 import {NgQueryResolveVisitor} from './angular/ng_query_visitor';
 import {QueryTemplateStrategy} from './strategies/template_strategy/template_strategy';
@@ -123,8 +123,8 @@ function analyzeProject(
   }
 
   const typeChecker = program.getTypeChecker();
-  const sourceFiles = program.getSourceFiles().filter(
-      f => !f.isDeclarationFile && !program.isSourceFileFromExternalLibrary(f));
+  const sourceFiles =
+      program.getSourceFiles().filter(sourceFile => canMigrateFile(basePath, sourceFile, program));
   const queryVisitor = new NgQueryResolveVisitor(typeChecker);
 
   // Analyze all project source-files and collect all queries that

@@ -11,7 +11,7 @@ import {relative} from 'path';
 import * as ts from 'typescript';
 
 import {getProjectTsConfigPaths} from '../../utils/project_tsconfig_paths';
-import {createMigrationProgram} from '../../utils/typescript/compiler_host';
+import {canMigrateFile, createMigrationProgram} from '../../utils/typescript/compiler_host';
 import {getImportSpecifier, replaceImport} from '../../utils/typescript/imports';
 import {closestNode} from '../../utils/typescript/nodes';
 
@@ -54,8 +54,8 @@ function runWaitForAsyncMigration(tree: Tree, tsconfigPath: string, basePath: st
   }, [MODULE_AUGMENTATION_FILENAME]);
   const typeChecker = program.getTypeChecker();
   const printer = ts.createPrinter();
-  const sourceFiles = program.getSourceFiles().filter(
-      f => !f.isDeclarationFile && !program.isSourceFileFromExternalLibrary(f));
+  const sourceFiles =
+      program.getSourceFiles().filter(sourceFile => canMigrateFile(basePath, sourceFile, program));
   const deprecatedFunction = 'async';
   const newFunction = 'waitForAsync';
 

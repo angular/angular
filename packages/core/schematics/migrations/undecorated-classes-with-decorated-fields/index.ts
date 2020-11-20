@@ -11,7 +11,7 @@ import {relative} from 'path';
 import * as ts from 'typescript';
 
 import {getProjectTsConfigPaths} from '../../utils/project_tsconfig_paths';
-import {createMigrationProgram} from '../../utils/typescript/compiler_host';
+import {canMigrateFile, createMigrationProgram} from '../../utils/typescript/compiler_host';
 
 import {UndecoratedClassesWithDecoratedFieldsTransform} from './transform';
 import {UpdateRecorder} from './update_recorder';
@@ -49,8 +49,8 @@ function runUndecoratedClassesMigration(
   const failures: string[] = [];
   const {program} = createMigrationProgram(tree, tsconfigPath, basePath);
   const typeChecker = program.getTypeChecker();
-  const sourceFiles = program.getSourceFiles().filter(
-      file => !file.isDeclarationFile && !program.isSourceFileFromExternalLibrary(file));
+  const sourceFiles =
+      program.getSourceFiles().filter(sourceFile => canMigrateFile(basePath, sourceFile, program));
   const updateRecorders = new Map<ts.SourceFile, UpdateRecorder>();
   const transform =
       new UndecoratedClassesWithDecoratedFieldsTransform(typeChecker, getUpdateRecorder);
