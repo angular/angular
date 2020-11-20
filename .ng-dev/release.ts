@@ -2,41 +2,31 @@ import {join} from 'path';
 import {exec} from 'shelljs';
 import {ReleaseConfig} from '../dev-infra/release/config';
 
-
-const packages = [
-  'animations',
-  'bazel',
-  'common',
-  'compiler',
-  'compiler-cli',
-  'core',
-  'elements',
-  'forms',
-  'language-service',
-  'localize',
-  'platform-browser',
-  'platform-browser-dynamic',
-  'platform-server',
-  'router',
-  'service-worker',
-  'upgrade',
-];
-
 /** Configuration for the `ng-dev release` command. */
 export const release: ReleaseConfig = {
-  npmPackages: packages.map(pkg => `@angular/${pkg}`),
+  npmPackages: [
+    '@angular/animations',
+    '@angular/bazel',
+    '@angular/common',
+    '@angular/compiler',
+    '@angular/compiler-cli',
+    '@angular/core',
+    '@angular/elements',
+    '@angular/forms',
+    '@angular/language-service',
+    '@angular/localize',
+    '@angular/platform-browser',
+    '@angular/platform-browser-dynamic',
+    '@angular/platform-server',
+    '@angular/router',
+    '@angular/service-worker',
+    '@angular/upgrade',
+  ],
   buildPackages: async () => {
-    const packageTargets = packages.map(pkg => `//packages/${pkg}:npm_package`).join(' ');
-    const buildResult = exec(`yarn -s bazel build --stamp ${packageTargets}`);
-
-    if (buildResult.code !== 0) {
-      throw new Error(`Error occured while building packages:\n${buildResult.stderr}`);
-    }
-
-    return packages.map(pkg => ({
-                          name: `@angular/${pkg}`,
-                          outputPath: `dist/bin/packages/${pkg}/npm_package`,
-                        }))
+    // The buildTargetPackages function is loaded at runtime as the loading the script causes an
+    // invocation of bazel.
+    const {buildTargetPackages} = require(join(__dirname, '../scripts/build/package-builder'));
+    return buildTargetPackages('dist/release-output', false, 'Release');
   },
   // TODO: This can be removed once there is an org-wide tool for changelog generation.
   generateReleaseNotesForHead: async () => {
