@@ -23,7 +23,7 @@ runInEachFileSystem(() => {
     beforeEach(() => _ = absoluteFrom);
 
     it('should not run decoration handlers against declaration files', () => {
-      class FakeDecoratorHandler implements DecoratorHandler<{}|null, unknown, unknown> {
+      class FakeDecoratorHandler implements DecoratorHandler<{}|null, unknown, null, unknown> {
         name = 'FakeDecoratorHandler';
         precedence = HandlerPrecedence.PRIMARY;
 
@@ -32,6 +32,9 @@ runInEachFileSystem(() => {
         }
         analyze(): AnalysisOutput<unknown> {
           throw new Error('analyze should not have been called');
+        }
+        symbol(): null {
+          throw new Error('symbol should not have been called');
         }
         compileFull(): CompileResult {
           throw new Error('compile should not have been called');
@@ -46,7 +49,7 @@ runInEachFileSystem(() => {
       const reflectionHost = new TypeScriptReflectionHost(checker);
       const compiler = new TraitCompiler(
           [new FakeDecoratorHandler()], reflectionHost, NOOP_PERF_RECORDER, NOOP_INCREMENTAL_BUILD,
-          true, CompilationMode.FULL, new DtsTransformRegistry());
+          true, CompilationMode.FULL, new DtsTransformRegistry(), null);
       const sourceFile = program.getSourceFile('lib.d.ts')!;
       const analysis = compiler.analyzeSync(sourceFile);
 
@@ -55,7 +58,7 @@ runInEachFileSystem(() => {
     });
 
     describe('compilation mode', () => {
-      class PartialDecoratorHandler implements DecoratorHandler<{}, {}, unknown> {
+      class PartialDecoratorHandler implements DecoratorHandler<{}, {}, null, unknown> {
         name = 'PartialDecoratorHandler';
         precedence = HandlerPrecedence.PRIMARY;
 
@@ -68,6 +71,10 @@ runInEachFileSystem(() => {
 
         analyze(): AnalysisOutput<unknown> {
           return {analysis: {}};
+        }
+
+        symbol(): null {
+          return null;
         }
 
         compileFull(): CompileResult {
@@ -89,7 +96,7 @@ runInEachFileSystem(() => {
         }
       }
 
-      class FullDecoratorHandler implements DecoratorHandler<{}, {}, unknown> {
+      class FullDecoratorHandler implements DecoratorHandler<{}, {}, null, unknown> {
         name = 'FullDecoratorHandler';
         precedence = HandlerPrecedence.PRIMARY;
 
@@ -102,6 +109,10 @@ runInEachFileSystem(() => {
 
         analyze(): AnalysisOutput<unknown> {
           return {analysis: {}};
+        }
+
+        symbol(): null {
+          return null;
         }
 
         compileFull(): CompileResult {
@@ -127,7 +138,7 @@ runInEachFileSystem(() => {
         const compiler = new TraitCompiler(
             [new PartialDecoratorHandler(), new FullDecoratorHandler()], reflectionHost,
             NOOP_PERF_RECORDER, NOOP_INCREMENTAL_BUILD, true, CompilationMode.PARTIAL,
-            new DtsTransformRegistry());
+            new DtsTransformRegistry(), null);
         const sourceFile = program.getSourceFile('test.ts')!;
         compiler.analyzeSync(sourceFile);
         compiler.resolve();
@@ -157,7 +168,7 @@ runInEachFileSystem(() => {
         const compiler = new TraitCompiler(
             [new PartialDecoratorHandler(), new FullDecoratorHandler()], reflectionHost,
             NOOP_PERF_RECORDER, NOOP_INCREMENTAL_BUILD, true, CompilationMode.FULL,
-            new DtsTransformRegistry());
+            new DtsTransformRegistry(), null);
         const sourceFile = program.getSourceFile('test.ts')!;
         compiler.analyzeSync(sourceFile);
         compiler.resolve();

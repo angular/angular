@@ -9,9 +9,11 @@
 import * as ts from 'typescript';
 
 import {absoluteFrom, absoluteFromSourceFile, AbsoluteFsPath} from '../../file_system';
+import {ClassDeclaration} from '../../reflection';
 import {ClassRecord, TraitCompiler} from '../../transform';
 import {FileTypeCheckingData} from '../../typecheck/src/checker';
 import {IncrementalBuild} from '../api';
+import {SemanticDepGraph, SemanticDepGraphUpdater} from '../semantic_graph';
 
 import {FileDependencyGraph} from './dependency_tracking';
 
@@ -27,8 +29,8 @@ export class IncrementalDriver implements IncrementalBuild<ClassRecord, FileType
   private state: BuildState;
 
   private constructor(
-      state: PendingBuildState, private allTsFiles: Set<ts.SourceFile>,
-      readonly depGraph: FileDependencyGraph, private logicalChanges: Set<string>|null) {
+      state: PendingBuildState, readonly depGraph: FileDependencyGraph,
+      private logicalChanges: Set<string>|null) {
     this.state = state;
   }
 
@@ -49,6 +51,11 @@ export class IncrementalDriver implements IncrementalBuild<ClassRecord, FileType
       // this build.
       state = oldDriver.state;
     } else {
+      let priorGraph: SemanticDepGraph|null = null;
+      if (oldDriver.state.lastGood !== null) {
+        priorGraph = oldDriver.state.lastGood.semanticDepGraph;
+      }
+
       // The previous build was successfully analyzed. `pendingEmit` is the only state carried
       // forward into this build.
       state = {
@@ -57,6 +64,7 @@ export class IncrementalDriver implements IncrementalBuild<ClassRecord, FileType
         changedResourcePaths: new Set<AbsoluteFsPath>(),
         changedTsPaths: new Set<string>(),
         lastGood: oldDriver.state.lastGood,
+        semanticDepGraphUpdater: new SemanticDepGraphUpdater(priorGraph),
       };
     }
 
@@ -143,8 +151,7 @@ export class IncrementalDriver implements IncrementalBuild<ClassRecord, FileType
 
     // `state` now reflects the initial pending state of the current compilation.
 
-    return new IncrementalDriver(
-        state, new Set<ts.SourceFile>(tsOnlyFiles(newProgram)), depGraph, logicalChanges);
+    return new IncrementalDriver(state, depGraph, logicalChanges);
   }
 
   static fresh(program: ts.Program): IncrementalDriver {
@@ -158,10 +165,17 @@ export class IncrementalDriver implements IncrementalBuild<ClassRecord, FileType
       changedResourcePaths: new Set<AbsoluteFsPath>(),
       changedTsPaths: new Set<string>(),
       lastGood: null,
+      semanticDepGraphUpdater: new SemanticDepGraphUpdater(/* priorGraph */ null),
     };
 
-    return new IncrementalDriver(
-        state, new Set(tsFiles), new FileDependencyGraph(), /* logicalChanges */ null);
+    return new IncrementalDriver(state, new FileDependencyGraph(), /* logicalChanges */ null);
+  }
+
+  getSemanticDepGraphUpdater(): SemanticDepGraphUpdater {
+    if (this.state.kind !== BuildStateKind.Pending) {
+      throw new Error('Semantic dependency updater is only available when pending analysis');
+    }
+    return this.state.semanticDepGraphUpdater;
   }
 
   recordSuccessfulAnalysis(traitCompiler: TraitCompiler): void {
@@ -172,13 +186,9 @@ export class IncrementalDriver implements IncrementalBuild<ClassRecord, FileType
 
     const pendingEmit = this.state.pendingEmit;
 
-    const state: PendingBuildState = this.state;
-
-    for (const sf of this.allTsFiles) {
-      if (this.depGraph.isStale(sf, state.changedTsPaths, state.changedResourcePaths)) {
-        // Something has changed which requires this file be re-emitted.
-        pendingEmit.add(sf.fileName);
-      }
+    const {needsEmit, newGraph} = this.state.semanticDepGraphUpdater.finalize();
+    for (const path of needsEmit) {
+      pendingEmit.add(path);
     }
 
     // Update the state to an `AnalyzedBuildState`.
@@ -190,6 +200,7 @@ export class IncrementalDriver implements IncrementalBuild<ClassRecord, FileType
       // ones from the current compilation.
       lastGood: {
         depGraph: this.depGraph,
+        semanticDepGraph: newGraph,
         traitCompiler: traitCompiler,
         typeCheckingResults: null,
       },
@@ -233,7 +244,7 @@ export class IncrementalDriver implements IncrementalBuild<ClassRecord, FileType
       return null;
     }
 
-    if (this.logicalChanges.has(sf.fileName)) {
+    if (this.logicalChanges.has(sf.fileName) || this.state.pendingEmit.has(sf.fileName)) {
       return null;
     }
 
@@ -297,6 +308,14 @@ interface BaseBuildState {
     depGraph: FileDependencyGraph;
 
     /**
+     * The semantic dependency graph from the last successfully analyzed build.
+     *
+     * This is used to perform in-depth comparison of Angular decorated classes, to determine
+     * which files have to be re-emitted and/or re-type-checked.
+     */
+    semanticDepGraph: SemanticDepGraph;
+
+    /**
      * The `TraitCompiler` from the last successfully analyzed build.
      *
      * This is used to extract "prior work" which might be reusable in this compilation.
@@ -333,6 +352,12 @@ interface PendingBuildState extends BaseBuildState {
    * Set of resource file paths which have changed since the last successfully analyzed build.
    */
   changedResourcePaths: Set<AbsoluteFsPath>;
+
+  /**
+   * In a pending state, the semantic dependency graph is available to the compilation to register
+   * the incremental symbols into.
+   */
+  semanticDepGraphUpdater: SemanticDepGraphUpdater;
 }
 
 interface AnalyzedBuildState extends BaseBuildState {

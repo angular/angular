@@ -11,6 +11,7 @@ import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
 import {IncrementalBuild} from '../../incremental/api';
+import {SemanticDepGraphUpdater, SemanticSymbol} from '../../incremental/semantic_graph';
 import {IndexingContext} from '../../indexer';
 import {PerfRecorder} from '../../perf';
 import {ClassDeclaration, DeclarationNode, Decorator, ReflectionHost} from '../../reflection';
@@ -34,7 +35,7 @@ export interface ClassRecord {
   /**
    * All traits which matched on the class.
    */
-  traits: Trait<unknown, unknown, unknown>[];
+  traits: Trait<unknown, unknown, SemanticSymbol|null, unknown>[];
 
   /**
    * Meta-diagnostics about the class, which are usually related to whether certain combinations of
@@ -82,14 +83,16 @@ export class TraitCompiler implements ProgramTypeCheckAdapter {
 
   private reexportMap = new Map<string, Map<string, [string, string]>>();
 
-  private handlersByName = new Map<string, DecoratorHandler<unknown, unknown, unknown>>();
+  private handlersByName =
+      new Map<string, DecoratorHandler<unknown, unknown, SemanticSymbol|null, unknown>>();
 
   constructor(
-      private handlers: DecoratorHandler<unknown, unknown, unknown>[],
+      private handlers: DecoratorHandler<unknown, unknown, SemanticSymbol|null, unknown>[],
       private reflector: ReflectionHost, private perf: PerfRecorder,
       private incrementalBuild: IncrementalBuild<ClassRecord, unknown>,
       private compileNonExportedClasses: boolean, private compilationMode: CompilationMode,
-      private dtsTransforms: DtsTransformRegistry) {
+      private dtsTransforms: DtsTransformRegistry,
+      private semanticDepGraphUpdater: SemanticDepGraphUpdater|null) {
     for (const handler of handlers) {
       this.handlersByName.set(handler.name, handler);
     }
@@ -179,10 +182,12 @@ export class TraitCompiler implements ProgramTypeCheckAdapter {
 
     for (const priorTrait of priorRecord.traits) {
       const handler = this.handlersByName.get(priorTrait.handler.name)!;
-      let trait: Trait<unknown, unknown, unknown> = Trait.pending(handler, priorTrait.detected);
+      let trait: Trait<unknown, unknown, SemanticSymbol|null, unknown> =
+          Trait.pending(handler, priorTrait.detected);
 
       if (priorTrait.state === TraitState.Analyzed || priorTrait.state === TraitState.Resolved) {
-        trait = trait.toAnalyzed(priorTrait.analysis, priorTrait.analysisDiagnostics);
+        const symbol = this.makeSymbolForTrait(handler, record.node, priorTrait.analysis);
+        trait = trait.toAnalyzed(priorTrait.analysis, priorTrait.analysisDiagnostics, symbol);
         if (trait.analysis !== null && trait.handler.register !== undefined) {
           trait.handler.register(record.node, trait.analysis);
         }
@@ -202,7 +207,7 @@ export class TraitCompiler implements ProgramTypeCheckAdapter {
   }
 
   private scanClassForTraits(clazz: ClassDeclaration):
-      PendingTrait<unknown, unknown, unknown>[]|null {
+      PendingTrait<unknown, unknown, SemanticSymbol|null, unknown>[]|null {
     if (!this.compileNonExportedClasses && !isExported(clazz)) {
       return null;
     }
@@ -213,9 +218,9 @@ export class TraitCompiler implements ProgramTypeCheckAdapter {
   }
 
   protected detectTraits(clazz: ClassDeclaration, decorators: Decorator[]|null):
-      PendingTrait<unknown, unknown, unknown>[]|null {
+      PendingTrait<unknown, unknown, SemanticSymbol|null, unknown>[]|null {
     let record: ClassRecord|null = this.recordFor(clazz);
-    let foundTraits: PendingTrait<unknown, unknown, unknown>[] = [];
+    let foundTraits: PendingTrait<unknown, unknown, SemanticSymbol|null, unknown>[] = [];
 
     for (const handler of this.handlers) {
       const result = handler.detect(clazz, decorators);
@@ -293,6 +298,25 @@ export class TraitCompiler implements ProgramTypeCheckAdapter {
     return foundTraits.length > 0 ? foundTraits : null;
   }
 
+  private makeSymbolForTrait(
+      handler: DecoratorHandler<unknown, unknown, SemanticSymbol|null, unknown>,
+      decl: ClassDeclaration, analysis: Readonly<unknown>|null): SemanticSymbol|null {
+    if (analysis === null) {
+      return null;
+    }
+    const symbol = handler.symbol(decl, analysis);
+    if (symbol !== null && this.semanticDepGraphUpdater !== null) {
+      const isPrimary = handler.precedence === HandlerPrecedence.PRIMARY;
+      if (!isPrimary) {
+        throw new Error(
+            `AssertionError: ${handler.name} returned a symbol but is not a primary handler.`);
+      }
+      this.semanticDepGraphUpdater.registerSymbol(symbol);
+    }
+
+    return symbol;
+  }
+
   protected analyzeClass(clazz: ClassDeclaration, preanalyzeQueue: Promise<void>[]|null): void {
     const traits = this.scanClassForTraits(clazz);
 
@@ -312,7 +336,7 @@ export class TraitCompiler implements ProgramTypeCheckAdapter {
           preanalysis = trait.handler.preanalyze(clazz, trait.detected.metadata) || null;
         } catch (err) {
           if (err instanceof FatalDiagnosticError) {
-            trait.toAnalyzed(null, [err.toDiagnostic()]);
+            trait.toAnalyzed(null, [err.toDiagnostic()], null);
             return;
           } else {
             throw err;
@@ -328,7 +352,7 @@ export class TraitCompiler implements ProgramTypeCheckAdapter {
   }
 
   protected analyzeTrait(
-      clazz: ClassDeclaration, trait: Trait<unknown, unknown, unknown>,
+      clazz: ClassDeclaration, trait: Trait<unknown, unknown, SemanticSymbol|null, unknown>,
       flags?: HandlerFlags): void {
     if (trait.state !== TraitState.Pending) {
       throw new Error(`Attempt to analyze trait of ${clazz.name.text} in state ${
@@ -341,18 +365,18 @@ export class TraitCompiler implements ProgramTypeCheckAdapter {
       result = trait.handler.analyze(clazz, trait.detected.metadata, flags);
     } catch (err) {
       if (err instanceof FatalDiagnosticError) {
-        trait.toAnalyzed(null, [err.toDiagnostic()]);
+        trait.toAnalyzed(null, [err.toDiagnostic()], null);
         return;
       } else {
         throw err;
       }
     }
 
+    const symbol = this.makeSymbolForTrait(trait.handler, clazz, result.analysis ?? null);
     if (result.analysis !== undefined && trait.handler.register !== undefined) {
       trait.handler.register(clazz, result.analysis);
     }
-
-    trait = trait.toAnalyzed(result.analysis ?? null, result.diagnostics ?? null);
+    trait = trait.toAnalyzed(result.analysis ?? null, result.diagnostics ?? null, symbol);
   }
 
   resolve(): void {
@@ -384,7 +408,7 @@ export class TraitCompiler implements ProgramTypeCheckAdapter {
 
         let result: ResolveResult<unknown>;
         try {
-          result = handler.resolve(clazz, trait.analysis as Readonly<unknown>);
+          result = handler.resolve(clazz, trait.analysis as Readonly<unknown>, trait.symbol);
         } catch (err) {
           if (err instanceof FatalDiagnosticError) {
             trait = trait.toResolved(null, [err.toDiagnostic()]);

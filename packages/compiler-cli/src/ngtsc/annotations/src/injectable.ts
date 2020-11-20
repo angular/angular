@@ -30,7 +30,7 @@ export interface InjectableHandlerData {
  * Adapts the `compileIvyInjectable` compiler for `@Injectable` decorators to the Ivy compiler.
  */
 export class InjectableDecoratorHandler implements
-    DecoratorHandler<Decorator, InjectableHandlerData, unknown> {
+    DecoratorHandler<Decorator, InjectableHandlerData, null, unknown> {
   constructor(
       private reflector: ReflectionHost, private defaultImportRecorder: DefaultImportRecorder,
       private isCore: boolean, private strictCtorDeps: boolean,
@@ -81,6 +81,10 @@ export class InjectableDecoratorHandler implements
             decorators.every(current => !isAngularCore(current) || current.name === 'Injectable')
       },
     };
+  }
+
+  symbol(): null {
+    return null;
   }
 
   register(node: ClassDeclaration): void {
