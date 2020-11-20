@@ -116,7 +116,8 @@ describe('type check blocks diagnostics', () => {
     it('should annotate safe property access', () => {
       const TEMPLATE = `{{ a?.b }}`;
       expect(tcbWithSpans(TEMPLATE))
-          .toContain('((null as any) ? (((ctx).a /*3,4*/) /*3,4*/)!.b : undefined) /*3,7*/');
+          .toContain(
+              '((null as any) ? (((ctx).a /*3,4*/) /*3,4*/)!.b /*6,7*/ : undefined) /*3,7*/');
     });
 
     it('should annotate safe method calls', () => {
