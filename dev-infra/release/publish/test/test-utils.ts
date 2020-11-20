@@ -89,13 +89,17 @@ export function setupReleaseActionForTesting<T extends ReleaseAction>(
   spyOn(console, 'promptConfirm').and.resolveTo(true);
 
   // Fake all external commands for the release tool.
-  spyOn(npm, 'runNpmPublish').and.resolveTo(true);
+  spyOn(npm, 'runNpmPublish').and.resolveTo();
   spyOn(externalCommands, 'invokeSetNpmDistCommand').and.resolveTo();
   spyOn(externalCommands, 'invokeYarnInstallCommand').and.resolveTo();
   spyOn(externalCommands, 'invokeReleaseBuildCommand').and.resolveTo([
     {name: '@angular/pkg1', outputPath: `${testTmpDir}/dist/pkg1`},
     {name: '@angular/pkg2', outputPath: `${testTmpDir}/dist/pkg2`}
   ]);
+
+  // Fake checking the package versions since we don't actually create packages to check against in
+  // the publish tests.
+  spyOn(ReleaseAction.prototype, '_verifyPackageVersions' as any).and.resolveTo();
 
   // Create an empty changelog and a `package.json` file so that file system
   // interactions with the project directory do not cause exceptions.
