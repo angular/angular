@@ -7,6 +7,7 @@
  */
 
 import * as ts from 'typescript';
+import {SemanticSymbol} from '../../incremental/semantic_graph';
 import {DecoratorHandler, DetectResult} from './api';
 
 export enum TraitState {
@@ -44,22 +45,23 @@ export enum TraitState {
  * This not only simplifies the implementation, but ensures traits are monomorphic objects as
  * they're all just "views" in the type system of the same object (which never changes shape).
  */
-export type Trait<D, A, R> =
-    PendingTrait<D, A, R>|SkippedTrait<D, A, R>|AnalyzedTrait<D, A, R>|ResolvedTrait<D, A, R>;
+export type Trait<D, A, S extends SemanticSymbol|null, R> = PendingTrait<D, A, S, R>|
+    SkippedTrait<D, A, S, R>|AnalyzedTrait<D, A, S, R>|ResolvedTrait<D, A, S, R>;
 
 /**
  * The value side of `Trait` exposes a helper to create a `Trait` in a pending state (by delegating
  * to `TraitImpl`).
  */
 export const Trait = {
-  pending: <D, A, R>(handler: DecoratorHandler<D, A, R>, detected: DetectResult<D>):
-      PendingTrait<D, A, R> => TraitImpl.pending(handler, detected),
+  pending: <D, A, S extends SemanticSymbol|null, R>(
+      handler: DecoratorHandler<D, A, S, R>, detected: DetectResult<D>): PendingTrait<D, A, S, R> =>
+      TraitImpl.pending(handler, detected),
 };
 
 /**
  * The part of the `Trait` interface that's common to all trait states.
  */
-export interface TraitBase<D, A, R> {
+export interface TraitBase<D, A, S extends SemanticSymbol|null, R> {
   /**
    * Current state of the trait.
    *
@@ -70,7 +72,7 @@ export interface TraitBase<D, A, R> {
   /**
    * The `DecoratorHandler` which matched on the class to create this trait.
    */
-  handler: DecoratorHandler<D, A, R>;
+  handler: DecoratorHandler<D, A, S, R>;
 
   /**
    * The detection result (of `handler.detect`) which indicated that this trait applied to the
@@ -86,20 +88,22 @@ export interface TraitBase<D, A, R> {
  *
  * Pending traits have yet to be analyzed in any way.
  */
-export interface PendingTrait<D, A, R> extends TraitBase<D, A, R> {
+export interface PendingTrait<D, A, S extends SemanticSymbol|null, R> extends
+    TraitBase<D, A, S, R> {
   state: TraitState.Pending;
 
   /**
    * This pending trait has been successfully analyzed, and should transition to the "analyzed"
    * state.
    */
-  toAnalyzed(analysis: A|null, diagnostics: ts.Diagnostic[]|null): AnalyzedTrait<D, A, R>;
+  toAnalyzed(analysis: A|null, diagnostics: ts.Diagnostic[]|null, symbol: S):
+      AnalyzedTrait<D, A, S, R>;
 
   /**
    * During analysis it was determined that this trait is not eligible for compilation after all,
    * and should be transitioned to the "skipped" state.
    */
-  toSkipped(): SkippedTrait<D, A, R>;
+  toSkipped(): SkippedTrait<D, A, S, R>;
 }
 
 /**
@@ -109,7 +113,8 @@ export interface PendingTrait<D, A, R> extends TraitBase<D, A, R> {
  *
  * This is a terminal state.
  */
-export interface SkippedTrait<D, A, R> extends TraitBase<D, A, R> {
+export interface SkippedTrait<D, A, S extends SemanticSymbol|null, R> extends
+    TraitBase<D, A, S, R> {
   state: TraitState.Skipped;
 }
 
@@ -118,8 +123,10 @@ export interface SkippedTrait<D, A, R> extends TraitBase<D, A, R> {
  *
  * Analyzed traits have analysis results available, and are eligible for resolution.
  */
-export interface AnalyzedTrait<D, A, R> extends TraitBase<D, A, R> {
+export interface AnalyzedTrait<D, A, S extends SemanticSymbol|null, R> extends
+    TraitBase<D, A, S, R> {
   state: TraitState.Analyzed;
+  symbol: S;
 
   /**
    * Analysis results of the given trait (if able to be produced), or `null` if analysis failed
@@ -136,7 +143,7 @@ export interface AnalyzedTrait<D, A, R> extends TraitBase<D, A, R> {
    * This analyzed trait has been successfully resolved, and should be transitioned to the
    * "resolved" state.
    */
-  toResolved(resolution: R|null, diagnostics: ts.Diagnostic[]|null): ResolvedTrait<D, A, R>;
+  toResolved(resolution: R|null, diagnostics: ts.Diagnostic[]|null): ResolvedTrait<D, A, S, R>;
 }
 
 /**
@@ -147,8 +154,10 @@ export interface AnalyzedTrait<D, A, R> extends TraitBase<D, A, R> {
  *
  * This is a terminal state.
  */
-export interface ResolvedTrait<D, A, R> extends TraitBase<D, A, R> {
+export interface ResolvedTrait<D, A, S extends SemanticSymbol|null, R> extends
+    TraitBase<D, A, S, R> {
   state: TraitState.Resolved;
+  symbol: S;
 
   /**
    * Resolved traits must have produced valid analysis results.
@@ -176,30 +185,33 @@ export interface ResolvedTrait<D, A, R> extends TraitBase<D, A, R> {
  * An implementation of the `Trait` type which transitions safely between the various
  * `TraitState`s.
  */
-class TraitImpl<D, A, R> {
+class TraitImpl<D, A, S extends SemanticSymbol|null, R> {
   state: TraitState = TraitState.Pending;
-  handler: DecoratorHandler<D, A, R>;
+  handler: DecoratorHandler<D, A, S, R>;
   detected: DetectResult<D>;
   analysis: Readonly<A>|null = null;
+  symbol: S|null = null;
   resolution: Readonly<R>|null = null;
   analysisDiagnostics: ts.Diagnostic[]|null = null;
   resolveDiagnostics: ts.Diagnostic[]|null = null;
 
-  constructor(handler: DecoratorHandler<D, A, R>, detected: DetectResult<D>) {
+  constructor(handler: DecoratorHandler<D, A, S, R>, detected: DetectResult<D>) {
     this.handler = handler;
     this.detected = detected;
   }
 
-  toAnalyzed(analysis: A|null, diagnostics: ts.Diagnostic[]|null): AnalyzedTrait<D, A, R> {
+  toAnalyzed(analysis: A|null, diagnostics: ts.Diagnostic[]|null, symbol: S):
+      AnalyzedTrait<D, A, S, R> {
     // Only pending traits can be analyzed.
     this.assertTransitionLegal(TraitState.Pending, TraitState.Analyzed);
     this.analysis = analysis;
     this.analysisDiagnostics = diagnostics;
+    this.symbol = symbol;
     this.state = TraitState.Analyzed;
-    return this as AnalyzedTrait<D, A, R>;
+    return this as AnalyzedTrait<D, A, S, R>;
   }
 
-  toResolved(resolution: R|null, diagnostics: ts.Diagnostic[]|null): ResolvedTrait<D, A, R> {
+  toResolved(resolution: R|null, diagnostics: ts.Diagnostic[]|null): ResolvedTrait<D, A, S, R> {
     // Only analyzed traits can be resolved.
     this.assertTransitionLegal(TraitState.Analyzed, TraitState.Resolved);
     if (this.analysis === null) {
@@ -208,14 +220,14 @@ class TraitImpl<D, A, R> {
     this.resolution = resolution;
     this.state = TraitState.Resolved;
     this.resolveDiagnostics = diagnostics;
-    return this as ResolvedTrait<D, A, R>;
+    return this as ResolvedTrait<D, A, S, R>;
   }
 
-  toSkipped(): SkippedTrait<D, A, R> {
+  toSkipped(): SkippedTrait<D, A, S, R> {
     // Only pending traits can be skipped.
     this.assertTransitionLegal(TraitState.Pending, TraitState.Skipped);
     this.state = TraitState.Skipped;
-    return this as SkippedTrait<D, A, R>;
+    return this as SkippedTrait<D, A, S, R>;
   }
 
   /**
@@ -236,8 +248,8 @@ class TraitImpl<D, A, R> {
   /**
    * Construct a new `TraitImpl` in the pending state.
    */
-  static pending<D, A, R>(handler: DecoratorHandler<D, A, R>, detected: DetectResult<D>):
-      PendingTrait<D, A, R> {
-    return new TraitImpl(handler, detected) as PendingTrait<D, A, R>;
+  static pending<D, A, S extends SemanticSymbol|null, R>(
+      handler: DecoratorHandler<D, A, S, R>, detected: DetectResult<D>): PendingTrait<D, A, S, R> {
+    return new TraitImpl(handler, detected) as PendingTrait<D, A, S, R>;
   }
 }

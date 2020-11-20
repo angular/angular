@@ -989,7 +989,5 @@ runInEachFileSystem(() => {
 const fakeDepTracker: DependencyTracker = {
   addDependency: () => undefined,
   addResourceDependency: () => undefined,
-  addTransitiveDependency: () => undefined,
-  addTransitiveResources: () => undefined,
   recordDependencyAnalysisFailure: () => undefined,
 };

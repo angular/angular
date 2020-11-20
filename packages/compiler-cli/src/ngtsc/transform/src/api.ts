@@ -10,6 +10,7 @@ import {ConstantPool, Expression, Statement, Type} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {Reexport} from '../../imports';
+import {SemanticSymbol} from '../../incremental/semantic_graph';
 import {IndexingContext} from '../../indexer';
 import {ClassDeclaration, Decorator} from '../../reflection';
 import {ImportManager} from '../../translator';
@@ -87,7 +88,7 @@ export enum HandlerFlags {
  * @param `A` The type of analysis metadata produced by `analyze`.
  * @param `R` The type of resolution metadata produced by `resolve`.
  */
-export interface DecoratorHandler<D, A, R> {
+export interface DecoratorHandler<D, A, S extends SemanticSymbol|null, R> {
   readonly name: string;
 
   /**
@@ -135,6 +136,20 @@ export interface DecoratorHandler<D, A, R> {
   updateResources?(node: ClassDeclaration, analysis: A, resolution: R): void;
 
   /**
+   * Produces a `SemanticSymbol` that represents the class, which is registered into the semantic
+   * dependency graph. The symbol is used in incremental compilations to let the compiler determine
+   * how a change to the class affects prior emit results. See the `incremental` target's README for
+   * details on how this works.
+   *
+   * The symbol is passed in to `resolve`, where it can be extended with references into other parts
+   * of the compilation as needed.
+   *
+   * Only primary handlers are allowed to have symbols; handlers with `precedence` other than
+   * `HandlerPrecedence.PRIMARY` must return a `null` symbol.
+   */
+  symbol(node: ClassDeclaration, analysis: Readonly<A>): S;
+
+  /**
    * Post-process the analysis of a decorator/class combination and record any necessary information
    * in the larger compilation.
    *
@@ -159,7 +174,7 @@ export interface DecoratorHandler<D, A, R> {
    * `DecoratorHandler` a chance to leverage information from the whole compilation unit to enhance
    * the `analysis` before the emit phase.
    */
-  resolve?(node: ClassDeclaration, analysis: Readonly<A>): ResolveResult<R>;
+  resolve?(node: ClassDeclaration, analysis: Readonly<A>, symbol: S): ResolveResult<R>;
 
   typeCheck?
       (ctx: TypeCheckContext, node: ClassDeclaration, analysis: Readonly<A>,
