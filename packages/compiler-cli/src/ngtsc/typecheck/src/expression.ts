@@ -309,6 +309,7 @@ class AstTranslator implements AstVisitor {
       // "a?.b" becomes (null as any ? a!.b : undefined)
       // The type of this expression is (typeof a!.b) | undefined, which is exactly as desired.
       const expr = ts.createPropertyAccess(ts.createNonNullExpression(receiver), ast.name);
+      addParseSpanInfo(expr, ast.nameSpan);
       node = ts.createParen(ts.createConditional(NULL_AS_ANY, expr, UNDEFINED));
     } else if (VeSafeLhsInferenceBugDetector.veWillInferAnyFor(ast)) {
       // Emulate a View Engine bug where 'any' is inferred for the left-hand side of the safe
@@ -322,6 +323,7 @@ class AstTranslator implements AstVisitor {
       // result is still inferred as `any`.
       // "a?.b" becomes (a!.b as any)
       const expr = ts.createPropertyAccess(ts.createNonNullExpression(receiver), ast.name);
+      addParseSpanInfo(expr, ast.nameSpan);
       node = tsCastToAny(expr);
     }
     addParseSpanInfo(node, ast.sourceSpan);
