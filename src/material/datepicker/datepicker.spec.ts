@@ -1029,6 +1029,22 @@ describe('MatDatepicker', () => {
         expect(button.nativeElement.getAttribute('aria-haspopup')).toBe('dialog');
       });
 
+      it('should set a default `aria-label` on the toggle button', () => {
+        const button = fixture.debugElement.query(By.css('button'))!;
+
+        expect(button).toBeTruthy();
+        expect(button.nativeElement.getAttribute('aria-label')).toBe('Open calendar');
+      });
+
+      it('should be able to change the button `aria-label`', () => {
+        fixture.componentInstance.ariaLabel = 'Toggle the datepicker';
+        fixture.detectChanges();
+        const button = fixture.debugElement.query(By.css('button'))!;
+
+        expect(button).toBeTruthy();
+        expect(button.nativeElement.getAttribute('aria-label')).toBe('Toggle the datepicker');
+      });
+
       it('should open calendar when toggle clicked', () => {
         expect(document.querySelector('mat-dialog-container')).toBeNull();
 
@@ -2262,7 +2278,7 @@ class DatepickerWithFormControl {
 @Component({
   template: `
     <input [matDatepicker]="d">
-    <mat-datepicker-toggle [for]="d"></mat-datepicker-toggle>
+    <mat-datepicker-toggle [for]="d" [aria-label]="ariaLabel"></mat-datepicker-toggle>
     <mat-datepicker #d [touchUi]="touchUI"></mat-datepicker>
   `,
 })
@@ -2270,6 +2286,7 @@ class DatepickerWithToggle {
   @ViewChild('d') datepicker: MatDatepicker<Date>;
   @ViewChild(MatDatepickerInput) input: MatDatepickerInput<Date>;
   touchUI = true;
+  ariaLabel: string;
 }
 
 

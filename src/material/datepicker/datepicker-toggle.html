@@ -3,7 +3,7 @@
   mat-icon-button
   type="button"
   [attr.aria-haspopup]="datepicker ? 'dialog' : null"
-  [attr.aria-label]="_intl.openCalendarLabel"
+  [attr.aria-label]="ariaLabel || _intl.openCalendarLabel"
   [attr.tabindex]="disabled ? -1 : tabIndex"
   [disabled]="disabled"
   [disableRipple]="disableRipple"

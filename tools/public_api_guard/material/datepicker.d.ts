@@ -272,6 +272,7 @@ export declare class MatDatepickerToggle<D> implements AfterContentInit, OnChang
     _button: MatButton;
     _customIcon: MatDatepickerToggleIcon;
     _intl: MatDatepickerIntl;
+    ariaLabel: string;
     datepicker: MatDatepickerPanel<MatDatepickerControl<any>, D>;
     disableRipple: boolean;
     get disabled(): boolean;
@@ -283,7 +284,7 @@ export declare class MatDatepickerToggle<D> implements AfterContentInit, OnChang
     ngOnChanges(changes: SimpleChanges): void;
     ngOnDestroy(): void;
     static ngAcceptInputType_disabled: BooleanInput;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatDatepickerToggle<any>, "mat-datepicker-toggle", ["matDatepickerToggle"], { "datepicker": "for"; "tabIndex": "tabIndex"; "disabled": "disabled"; "disableRipple": "disableRipple"; }, {}, ["_customIcon"], ["[matDatepickerToggleIcon]"]>;
+    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatDatepickerToggle<any>, "mat-datepicker-toggle", ["matDatepickerToggle"], { "datepicker": "for"; "tabIndex": "tabIndex"; "ariaLabel": "aria-label"; "disabled": "disabled"; "disableRipple": "disableRipple"; }, {}, ["_customIcon"], ["[matDatepickerToggleIcon]"]>;
     static ɵfac: i0.ɵɵFactoryDef<MatDatepickerToggle<any>, [null, null, { attribute: "tabindex"; }]>;
 }
 
