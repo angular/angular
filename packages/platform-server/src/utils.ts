@@ -8,11 +8,12 @@
 
 import {ApplicationRef, NgModuleFactory, NgModuleRef, PlatformRef, StaticProvider, Type} from '@angular/core';
 import {ɵTRANSITION_ID} from '@angular/platform-browser';
-import {first} from 'rxjs/operators';
+import {first, mapTo} from 'rxjs/operators';
 
 import {PlatformState} from './platform_state';
 import {platformDynamicServer, platformServer} from './server';
-import {BEFORE_APP_SERIALIZED, INITIAL_CONFIG} from './tokens';
+import {BEFORE_APP_SERIALIZED, INITIAL_CONFIG, MAXIMUM_RENDER_DURATION} from './tokens';
+import {EMPTY, merge, Observable, timer} from "rxjs";
 
 interface PlatformOptions {
   document?: string;
@@ -40,7 +41,13 @@ function _render<T>(
 the server-rendered app can be properly bootstrapped into a client app.`);
     }
     const applicationRef: ApplicationRef = moduleRef.injector.get(ApplicationRef);
-    return applicationRef.isStable.pipe((first((isStable: boolean) => isStable)))
+
+    const duration = moduleRef.injector.get(MAXIMUM_RENDER_DURATION, null);
+    const forciblyEmittedStabilityEvent$: Observable<boolean> = duration
+      ? timer(duration).pipe(mapTo(true))
+      : EMPTY;
+
+    return merge(applicationRef.isStable, forciblyEmittedStabilityEvent$).pipe((first((isStable: boolean) => isStable)))
         .toPromise()
         .then(() => {
           const platformState = platform.injector.get(PlatformState);

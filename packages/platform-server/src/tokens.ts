@@ -33,3 +33,11 @@ export const INITIAL_CONFIG = new InjectionToken<PlatformConfig>('Server.INITIAL
  */
 export const BEFORE_APP_SERIALIZED =
     new InjectionToken<Array<() => void>>('Server.RENDER_MODULE_HOOK');
+
+/**
+ * The DI token for setting the maximum render duration
+ * If the application does not stabilize within the allotted time, HTML will be returned as is
+ *
+ * @experimental
+ */
+export const MAXIMUM_RENDER_DURATION = new InjectionToken<number>("Server. Maximum render duration in milliseconds");
