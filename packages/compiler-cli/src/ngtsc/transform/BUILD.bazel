@@ -13,6 +13,7 @@ ts_library(
         "//packages/compiler-cli/src/ngtsc/diagnostics",
         "//packages/compiler-cli/src/ngtsc/imports",
         "//packages/compiler-cli/src/ngtsc/incremental:api",
+        "//packages/compiler-cli/src/ngtsc/incremental/semantic_graph",
         "//packages/compiler-cli/src/ngtsc/indexer",
         "//packages/compiler-cli/src/ngtsc/modulewithproviders",
         "//packages/compiler-cli/src/ngtsc/perf",

@@ -161,7 +161,9 @@ export class NgtscTestEnvironment {
     const absFilePath = this.fs.resolve(this.basePath, fileName);
     if (this.multiCompileHostExt !== null) {
       this.multiCompileHostExt.invalidate(absFilePath);
-      this.changedResources!.add(absFilePath);
+      if (!fileName.endsWith('.ts')) {
+        this.changedResources!.add(absFilePath);
+      }
     }
     this.fs.ensureDir(this.fs.dirname(absFilePath));
     this.fs.writeFile(absFilePath, content);
@@ -173,6 +175,9 @@ export class NgtscTestEnvironment {
       throw new Error(`Not caching files - call enableMultipleCompilations()`);
     }
     this.multiCompileHostExt.invalidate(absFilePath);
+    if (!fileName.endsWith('.ts')) {
+      this.changedResources!.add(absFilePath);
+    }
   }
 
   tsconfig(

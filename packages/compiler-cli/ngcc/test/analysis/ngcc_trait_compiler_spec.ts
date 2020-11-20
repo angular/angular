@@ -9,6 +9,7 @@
 import {ErrorCode, makeDiagnostic, ngErrorCode} from '../../../src/ngtsc/diagnostics';
 import {absoluteFrom} from '../../../src/ngtsc/file_system';
 import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
+import {SemanticSymbol} from '../../../src/ngtsc/incremental/semantic_graph';
 import {MockLogger} from '../../../src/ngtsc/logging/testing';
 import {ClassDeclaration, Decorator, isNamedClassDeclaration} from '../../../src/ngtsc/reflection';
 import {getDeclaration, loadTestFiles} from '../../../src/ngtsc/testing';
@@ -39,7 +40,8 @@ runInEachFileSystem(() => {
     });
 
     function createCompiler({entryPoint, handlers}: {
-      entryPoint: EntryPointBundle; handlers: DecoratorHandler<unknown, unknown, unknown>[]
+      entryPoint: EntryPointBundle;
+      handlers: DecoratorHandler<unknown, unknown, SemanticSymbol|null, unknown>[]
     }) {
       const reflectionHost = new Esm2015ReflectionHost(new MockLogger(), false, entryPoint.src);
       return new NgccTraitCompiler(handlers, reflectionHost);
@@ -295,7 +297,7 @@ runInEachFileSystem(() => {
   });
 });
 
-class TestHandler implements DecoratorHandler<unknown, unknown, unknown> {
+class TestHandler implements DecoratorHandler<unknown, unknown, null, unknown> {
   constructor(readonly name: string, protected log: string[]) {}
 
   precedence = HandlerPrecedence.PRIMARY;
@@ -308,6 +310,10 @@ class TestHandler implements DecoratorHandler<unknown, unknown, unknown> {
   analyze(node: ClassDeclaration): AnalysisOutput<unknown> {
     this.log.push(this.name + ':analyze:' + node.name.text);
     return {};
+  }
+
+  symbol(node: ClassDeclaration, analysis: Readonly<unknown>): null {
+    return null;
   }
 
   compileFull(node: ClassDeclaration): CompileResult|CompileResult[] {

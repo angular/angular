@@ -11,8 +11,10 @@ import {emitDistinctChangesOnlyDefaultValue} from '@angular/compiler/src/core';
 import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
+import {absoluteFromSourceFile} from '../../file_system';
 import {DefaultImportRecorder, Reference} from '../../imports';
-import {ClassPropertyMapping, DirectiveTypeCheckMeta, InjectableClassRegistry, MetadataReader, MetadataRegistry} from '../../metadata';
+import {areTypeParametersEqual, extractSemanticTypeParameters, isArrayEqual, isSetEqual, isSymbolEqual, SemanticDepGraphUpdater, SemanticSymbol, SemanticTypeParameter} from '../../incremental/semantic_graph';
+import {BindingPropertyName, ClassPropertyMapping, ClassPropertyName, DirectiveTypeCheckMeta, InjectableClassRegistry, MetadataReader, MetadataRegistry, TemplateGuardMeta} from '../../metadata';
 import {extractDirectiveTypeCheckMeta} from '../../metadata/src/util';
 import {DynamicValue, EnumValue, PartialEvaluator} from '../../partial_evaluator';
 import {ClassDeclaration, ClassMember, ClassMemberKind, Decorator, filterToMembersWithDecorator, ReflectionHost, reflectObjectLiteral} from '../../reflection';
@@ -46,13 +48,138 @@ export interface DirectiveHandlerData {
   isStructural: boolean;
 }
 
+/**
+ * Represents an Angular directive. Components are represented by `ComponentSymbol`, which inherits
+ * from this symbol.
+ */
+export class DirectiveSymbol extends SemanticSymbol {
+  baseClass: SemanticSymbol|null = null;
+
+  constructor(
+      decl: ClassDeclaration, public readonly selector: string|null,
+      public readonly inputs: ClassPropertyMapping, public readonly outputs: ClassPropertyMapping,
+      public readonly exportAs: string[]|null,
+      public readonly typeCheckMeta: DirectiveTypeCheckMeta,
+      public readonly typeParameters: SemanticTypeParameter[]|null) {
+    super(decl);
+  }
+
+  isPublicApiAffected(previousSymbol: SemanticSymbol): boolean {
+    // Note: since components and directives have exactly the same items contributing to their
+    // public API, it is okay for a directive to change into a component and vice versa without
+    // the API being affected.
+    if (!(previousSymbol instanceof DirectiveSymbol)) {
+      return true;
+    }
+
+    // Directives and components have a public API of:
+    //  1. Their selector.
+    //  2. The binding names of their inputs and outputs; a change in ordering is also considered
+    //     to be a change in public API.
+    //  3. The list of exportAs names and its ordering.
+    return this.selector !== previousSymbol.selector ||
+        !isArrayEqual(this.inputs.propertyNames, previousSymbol.inputs.propertyNames) ||
+        !isArrayEqual(this.outputs.propertyNames, previousSymbol.outputs.propertyNames) ||
+        !isArrayEqual(this.exportAs, previousSymbol.exportAs);
+  }
+
+  isTypeCheckApiAffected(previousSymbol: SemanticSymbol): boolean {
+    // If the public API of the directive has changed, then so has its type-check API.
+    if (this.isPublicApiAffected(previousSymbol)) {
+      return true;
+    }
+
+    if (!(previousSymbol instanceof DirectiveSymbol)) {
+      return true;
+    }
+
+    // The type-check block also depends on the class property names, as writes property bindings
+    // directly into the backing fields.
+    if (!isArrayEqual(
+            Array.from(this.inputs), Array.from(previousSymbol.inputs), isInputMappingEqual) ||
+        !isArrayEqual(
+            Array.from(this.outputs), Array.from(previousSymbol.outputs), isInputMappingEqual)) {
+      return true;
+    }
+
+    // The type parameters of a directive are emitted into the type constructors in the type-check
+    // block of a component, so if the type parameters are not considered equal then consider the
+    // type-check API of this directive to be affected.
+    if (!areTypeParametersEqual(this.typeParameters, previousSymbol.typeParameters)) {
+      return true;
+    }
+
+    // The type-check metadata is used during TCB code generation, so any changes should invalidate
+    // prior type-check files.
+    if (!isTypeCheckMetaEqual(this.typeCheckMeta, previousSymbol.typeCheckMeta)) {
+      return true;
+    }
+
+    // Changing the base class of a directive means that its inputs/outputs etc may have changed,
+    // so the type-check block of components that use this directive needs to be regenerated.
+    if (!isBaseClassEqual(this.baseClass, previousSymbol.baseClass)) {
+      return true;
+    }
+
+    return false;
+  }
+}
+
+function isInputMappingEqual(
+    current: [ClassPropertyName, BindingPropertyName],
+    previous: [ClassPropertyName, BindingPropertyName]): boolean {
+  return current[0] === previous[0] && current[1] === previous[1];
+}
+
+function isTypeCheckMetaEqual(
+    current: DirectiveTypeCheckMeta, previous: DirectiveTypeCheckMeta): boolean {
+  if (current.hasNgTemplateContextGuard !== previous.hasNgTemplateContextGuard) {
+    return false;
+  }
+  if (current.isGeneric !== previous.isGeneric) {
+    // Note: changes in the number of type parameters is also considered in `areTypeParametersEqual`
+    // so this check is technically not needed; it is done anyway for completeness in terms of
+    // whether the `DirectiveTypeCheckMeta` struct itself compares equal or not.
+    return false;
+  }
+  if (!isArrayEqual(current.ngTemplateGuards, previous.ngTemplateGuards, isTemplateGuardEqual)) {
+    return false;
+  }
+  if (!isSetEqual(current.coercedInputFields, previous.coercedInputFields)) {
+    return false;
+  }
+  if (!isSetEqual(current.restrictedInputFields, previous.restrictedInputFields)) {
+    return false;
+  }
+  if (!isSetEqual(current.stringLiteralInputFields, previous.stringLiteralInputFields)) {
+    return false;
+  }
+  if (!isSetEqual(current.undeclaredInputFields, previous.undeclaredInputFields)) {
+    return false;
+  }
+  return true;
+}
+
+function isTemplateGuardEqual(current: TemplateGuardMeta, previous: TemplateGuardMeta): boolean {
+  return current.inputName === previous.inputName && current.type === previous.type;
+}
+
+function isBaseClassEqual(current: SemanticSymbol|null, previous: SemanticSymbol|null): boolean {
+  if (current === null || previous === null) {
+    return current === previous;
+  }
+
+  return isSymbolEqual(current, previous);
+}
+
 export class DirectiveDecoratorHandler implements
-    DecoratorHandler<Decorator|null, DirectiveHandlerData, unknown> {
+    DecoratorHandler<Decorator|null, DirectiveHandlerData, DirectiveSymbol, unknown> {
   constructor(
       private reflector: ReflectionHost, private evaluator: PartialEvaluator,
       private metaRegistry: MetadataRegistry, private scopeRegistry: LocalModuleScopeRegistry,
       private metaReader: MetadataReader, private defaultImportRecorder: DefaultImportRecorder,
       private injectableRegistry: InjectableClassRegistry, private isCore: boolean,
+      private semanticDepGraphUpdater: SemanticDepGraphUpdater|null,
       private annotateForClosureCompiler: boolean,
       private compileUndecoratedClassesWithAngularFeatures: boolean) {}
 
@@ -116,6 +243,14 @@ export class DirectiveDecoratorHandler implements
     };
   }
 
+  symbol(node: ClassDeclaration, analysis: Readonly<DirectiveHandlerData>): DirectiveSymbol {
+    const typeParameters = extractSemanticTypeParameters(node);
+
+    return new DirectiveSymbol(
+        node, analysis.meta.selector, analysis.inputs, analysis.outputs, analysis.meta.exportAs,
+        analysis.typeCheckMeta, typeParameters);
+  }
+
   register(node: ClassDeclaration, analysis: Readonly<DirectiveHandlerData>): void {
     // Register this directive's information with the `MetadataRegistry`. This ensures that
     // the information about the directive is available during the compile() phase.
@@ -138,9 +273,13 @@ export class DirectiveDecoratorHandler implements
     this.injectableRegistry.registerInjectable(node);
   }
 
-  resolve(node: ClassDeclaration, analysis: DirectiveHandlerData): ResolveResult<unknown> {
-    const diagnostics: ts.Diagnostic[] = [];
+  resolve(node: ClassDeclaration, analysis: DirectiveHandlerData, symbol: DirectiveSymbol):
+      ResolveResult<unknown> {
+    if (this.semanticDepGraphUpdater !== null && analysis.baseClass instanceof Reference) {
+      symbol.baseClass = this.semanticDepGraphUpdater.getSymbol(analysis.baseClass.node);
+    }
 
+    const diagnostics: ts.Diagnostic[] = [];
     if (analysis.providersRequiringFactory !== null &&
         analysis.meta.providers instanceof WrappedNodeExpr) {
       const providerDiagnostics = getProviderDiagnostics(
