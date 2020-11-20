@@ -44,8 +44,8 @@ import {SpyChangeDetectorRef} from '../spies';
       });
 
       describe('transform', () => {
-        it('should return null when subscribing to an observable', () => {
-          expect(pipe.transform(subscribable)).toBe(null);
+        it('should return undefined when subscribing to an observable', () => {
+          expect(pipe.transform(subscribable)).toBe(undefined);
         });
 
         it('should return the latest available value',
@@ -78,12 +78,12 @@ import {SpyChangeDetectorRef} from '../spies';
 
              const newEmitter = new EventEmitter();
              const newSubscribable = wrapSubscribable(newEmitter);
-             expect(pipe.transform(newSubscribable)).toBe(null);
+             expect(pipe.transform(newSubscribable)).toBe(undefined);
              emitter.emit(message);
 
              // this should not affect the pipe
              setTimeout(() => {
-               expect(pipe.transform(newSubscribable)).toBe(null);
+               expect(pipe.transform(newSubscribable)).toBe(undefined);
                async.done();
              }, 0);
            }));
@@ -122,7 +122,7 @@ import {SpyChangeDetectorRef} from '../spies';
              emitter.emit(message);
 
              setTimeout(() => {
-               expect(pipe.transform(subscribable)).toBe(null);
+               expect(pipe.transform(subscribable)).toBe(undefined);
                async.done();
              }, 0);
            }));
@@ -149,8 +149,8 @@ import {SpyChangeDetectorRef} from '../spies';
       });
 
       describe('transform', () => {
-        it('should return null when subscribing to a promise', () => {
-          expect(pipe.transform(promise)).toBe(null);
+        it('should return undefined when subscribing to a promise', () => {
+          expect(pipe.transform(promise)).toBe(undefined);
         });
 
         it('should return the latest available value',
@@ -182,12 +182,12 @@ import {SpyChangeDetectorRef} from '../spies';
              pipe.transform(promise);
 
              promise = new Promise<any>(() => {});
-             expect(pipe.transform(promise)).toBe(null);
+             expect(pipe.transform(promise)).toBe(undefined);
 
              resolve(message);
 
              setTimeout(() => {
-               expect(pipe.transform(promise)).toBe(null);
+               expect(pipe.transform(promise)).toBe(undefined);
                async.done();
              }, timer);
            }));
@@ -212,14 +212,14 @@ import {SpyChangeDetectorRef} from '../spies';
           it('should dispose of the existing source',
              inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
                pipe.transform(promise);
-               expect(pipe.transform(promise)).toBe(null);
+               expect(pipe.transform(promise)).toBe(undefined);
                resolve(message);
 
 
                setTimeout(() => {
                  expect(pipe.transform(promise)).toEqual(message);
                  pipe.ngOnDestroy();
-                 expect(pipe.transform(promise)).toBe(null);
+                 expect(pipe.transform(promise)).toBe(undefined);
                  async.done();
                }, timer);
              }));

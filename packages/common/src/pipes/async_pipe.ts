@@ -61,7 +61,7 @@ const _subscribableStrategy = new SubscribableStrategy();
  * The `async` pipe subscribes to an `Observable` or `Promise` and returns the latest value it has
  * emitted. When a new value is emitted, the `async` pipe marks the component to be checked for
  * changes. When the component gets destroyed, the `async` pipe unsubscribes automatically to avoid
- * potential memory leaks.
+ * potential memory leaks. Until the first value is emitted, the pipe returns undefined.
  *
  * @usageNotes
  *
@@ -81,7 +81,7 @@ const _subscribableStrategy = new SubscribableStrategy();
  */
 @Pipe({name: 'async', pure: false})
 export class AsyncPipe implements OnDestroy, PipeTransform {
-  private _latestValue: any = null;
+  private _latestValue: any = undefined;
 
   private _subscription: Unsubscribable|Promise<any>|null = null;
   private _obj: Subscribable<any>|Promise<any>|EventEmitter<any>|null = null;
@@ -95,23 +95,25 @@ export class AsyncPipe implements OnDestroy, PipeTransform {
     }
   }
 
-  transform<T>(obj: Subscribable<T>|Promise<T>): T|null;
+  transform<T>(obj: Subscribable<T>|Promise<T>): T|undefined;
   transform<T>(obj: null|undefined): null;
-  transform<T>(obj: Subscribable<T>|Promise<T>|null|undefined): T|null;
-  transform<T>(obj: Subscribable<T>|Promise<T>|null|undefined): T|null {
-    if (!this._obj) {
-      if (obj) {
+  transform<T>(obj: Subscribable<T>|Promise<T>|null|undefined): T|null|undefined;
+  transform<T>(obj: Subscribable<T>|Promise<T>|null|undefined): T|null|undefined {
+    if (obj) {
+      if (!this._obj) {
         this._subscribe(obj);
+        return this._latestValue;
       }
+
+      if (obj !== this._obj) {
+        this._dispose();
+        return this.transform(obj);
+      }
+
       return this._latestValue;
+    } else {
+      return null;
     }
-
-    if (obj !== this._obj) {
-      this._dispose();
-      return this.transform(obj);
-    }
-
-    return this._latestValue;
   }
 
   private _subscribe(obj: Subscribable<any>|Promise<any>|EventEmitter<any>): void {
@@ -135,7 +137,7 @@ export class AsyncPipe implements OnDestroy, PipeTransform {
 
   private _dispose(): void {
     this._strategy.dispose(this._subscription!);
-    this._latestValue = null;
+    this._latestValue = undefined;
     this._subscription = null;
     this._obj = null;
   }

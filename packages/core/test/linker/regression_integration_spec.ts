@@ -114,7 +114,7 @@ function declareTests(config?: {useJit: boolean}) {
            const dir = fixture.debugElement.query(By.directive(MyDir)).injector.get(MyDir) as MyDir;
 
            fixture.detectChanges();
-           expect(dir.setterCalls).toEqual({'a': null, 'b': 2});
+           expect(dir.setterCalls).toEqual({'a': undefined, 'b': 2});
            expect(Object.keys(dir.changes)).toEqual(['a', 'b']);
 
            dir.setterCalls = {};
