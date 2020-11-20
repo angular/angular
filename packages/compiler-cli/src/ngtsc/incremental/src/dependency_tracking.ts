@@ -35,32 +35,10 @@ export class FileDependencyGraph<T extends {fileName: string} = ts.SourceFile> i
     this.nodeFor(from).usesResources.add(resource);
   }
 
-  addTransitiveDependency(from: T, on: T): void {
-    const nodeFrom = this.nodeFor(from);
-    nodeFrom.dependsOn.add(on.fileName);
-
-    const nodeOn = this.nodeFor(on);
-    for (const dep of nodeOn.dependsOn) {
-      nodeFrom.dependsOn.add(dep);
-    }
-  }
-
-  addTransitiveResources(from: T, resourcesOf: T): void {
-    const nodeFrom = this.nodeFor(from);
-    const nodeOn = this.nodeFor(resourcesOf);
-    for (const dep of nodeOn.usesResources) {
-      nodeFrom.usesResources.add(dep);
-    }
-  }
-
   getResourceDependencies(from: T): AbsoluteFsPath[] {
     const node = this.nodes.get(from);
 
     return node ? [...node.usesResources] : [];
-  }
-
-  isStale(sf: T, changedTsPaths: Set<string>, changedResources: Set<AbsoluteFsPath>): boolean {
-    return isLogicallyChanged(sf, this.nodeFor(sf), changedTsPaths, EMPTY_SET, changedResources);
   }
 
   /**
@@ -147,5 +125,3 @@ interface FileNode {
   dependsOn: Set<string>;
   usesResources: Set<AbsoluteFsPath>;
 }
-
-const EMPTY_SET: ReadonlySet<any> = new Set<any>();

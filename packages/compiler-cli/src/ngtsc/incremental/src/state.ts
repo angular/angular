@@ -9,6 +9,8 @@
 import * as ts from 'typescript';
 
 import {absoluteFrom, absoluteFromSourceFile, AbsoluteFsPath} from '../../file_system';
+import {SemanticDepGraph, SemanticDepGraphUpdater} from '../../ngmodule_semantics';
+import {ClassDeclaration} from '../../reflection';
 import {ClassRecord, TraitCompiler} from '../../transform';
 import {FileTypeCheckingData} from '../../typecheck/src/checker';
 import {IncrementalBuild} from '../api';
@@ -27,8 +29,8 @@ export class IncrementalDriver implements IncrementalBuild<ClassRecord, FileType
   private state: BuildState;
 
   private constructor(
-      state: PendingBuildState, private allTsFiles: Set<ts.SourceFile>,
-      readonly depGraph: FileDependencyGraph, private logicalChanges: Set<string>|null) {
+      state: PendingBuildState, readonly depGraph: FileDependencyGraph,
+      private logicalChanges: Set<string>|null) {
     this.state = state;
   }
 
@@ -49,6 +51,11 @@ export class IncrementalDriver implements IncrementalBuild<ClassRecord, FileType
       // this build.
       state = oldDriver.state;
     } else {
+      let priorGraph: SemanticDepGraph|null = null;
+      if (oldDriver.state.lastGood !== null) {
+        priorGraph = oldDriver.state.lastGood.semanticDepGraph;
+      }
+
       // The previous build was successfully analyzed. `pendingEmit` is the only state carried
       // forward into this build.
       state = {
@@ -57,6 +64,7 @@ export class IncrementalDriver implements IncrementalBuild<ClassRecord, FileType
         changedResourcePaths: new Set<AbsoluteFsPath>(),
         changedTsPaths: new Set<string>(),
         lastGood: oldDriver.state.lastGood,
+        semanticDepGraphUpdater: new SemanticDepGraphUpdater(priorGraph),
       };
     }
 
@@ -143,8 +151,7 @@ export class IncrementalDriver implements IncrementalBuild<ClassRecord, FileType
 
     // `state` now reflects the initial pending state of the current compilation.
 
-    return new IncrementalDriver(
-        state, new Set<ts.SourceFile>(tsOnlyFiles(newProgram)), depGraph, logicalChanges);
+    return new IncrementalDriver(state, depGraph, logicalChanges);
   }
 
   static fresh(program: ts.Program): IncrementalDriver {
@@ -158,13 +165,21 @@ export class IncrementalDriver implements IncrementalBuild<ClassRecord, FileType
       changedResourcePaths: new Set<AbsoluteFsPath>(),
       changedTsPaths: new Set<string>(),
       lastGood: null,
+      semanticDepGraphUpdater: new SemanticDepGraphUpdater(/* priorGraph */ null),
     };
 
-    return new IncrementalDriver(
-        state, new Set(tsFiles), new FileDependencyGraph(), /* logicalChanges */ null);
+    return new IncrementalDriver(state, new FileDependencyGraph(), /* logicalChanges */ null);
   }
 
-  recordSuccessfulAnalysis(traitCompiler: TraitCompiler): void {
+  getSemanticDepGraphUpdater(): SemanticDepGraphUpdater {
+    if (this.state.kind !== BuildStateKind.Pending) {
+      throw new Error('Semantic dependency updater is only available when pending analysis');
+    }
+    return this.state.semanticDepGraphUpdater;
+  }
+
+  recordSuccessfulAnalysis(
+      traitCompiler: TraitCompiler, remoteScopes: ReadonlySet<ClassDeclaration>): void {
     if (this.state.kind !== BuildStateKind.Pending) {
       // Changes have already been incorporated.
       return;
@@ -172,24 +187,24 @@ export class IncrementalDriver implements IncrementalBuild<ClassRecord, FileType
 
     const pendingEmit = this.state.pendingEmit;
 
-    const state: PendingBuildState = this.state;
+    const {needsTypeCheck, needsEmit, newGraph} =
+        this.state.semanticDepGraphUpdater.finalize(remoteScopes);
 
-    for (const sf of this.allTsFiles) {
-      if (this.depGraph.isStale(sf, state.changedTsPaths, state.changedResourcePaths)) {
-        // Something has changed which requires this file be re-emitted.
-        pendingEmit.add(sf.fileName);
-      }
+    for (const path of needsEmit) {
+      pendingEmit.add(path);
     }
 
     // Update the state to an `AnalyzedBuildState`.
     this.state = {
       kind: BuildStateKind.Analyzed,
       pendingEmit,
+      pendingTypeCheck: new Set(needsTypeCheck),
 
       // Since this compilation was successfully analyzed, update the "last good" artifacts to the
       // ones from the current compilation.
       lastGood: {
         depGraph: this.depGraph,
+        semanticDepGraph: newGraph,
         traitCompiler: traitCompiler,
         typeCheckingResults: null,
       },
@@ -233,7 +248,7 @@ export class IncrementalDriver implements IncrementalBuild<ClassRecord, FileType
       return null;
     }
 
-    if (this.logicalChanges.has(sf.fileName)) {
+    if (this.logicalChanges.has(sf.fileName) || this.state.pendingTypeCheck.has(sf.fileName)) {
       return null;
     }
 
@@ -297,6 +312,14 @@ interface BaseBuildState {
     depGraph: FileDependencyGraph;
 
     /**
+     * The semantic dependency graph from the last successfully analyzed build.
+     *
+     * This is used to perform in-depth comparison of Angular decorated classes, to determine
+     * which files have to be re-emitted and/or re-type-checked.
+     */
+    semanticDepGraph: SemanticDepGraph;
+
+    /**
      * The `TraitCompiler` from the last successfully analyzed build.
      *
      * This is used to extract "prior work" which might be reusable in this compilation.
@@ -333,6 +356,12 @@ interface PendingBuildState extends BaseBuildState {
    * Set of resource file paths which have changed since the last successfully analyzed build.
    */
   changedResourcePaths: Set<AbsoluteFsPath>;
+
+  /**
+   * In a pending state, the semantic dependency graph is available to the compilation to register
+   * the incremental symbols into.
+   */
+  semanticDepGraphUpdater: SemanticDepGraphUpdater;
 }
 
 interface AnalyzedBuildState extends BaseBuildState {
@@ -346,6 +375,11 @@ interface AnalyzedBuildState extends BaseBuildState {
    * analyzed build.
    */
   pendingEmit: Set<string>;
+
+  /**
+   * The set of files for which a new type-check file needs to be created.
+   */
+  pendingTypeCheck: Set<string>;
 
   /**
    * Type checking results from the previous compilation, which can be reused in this one.

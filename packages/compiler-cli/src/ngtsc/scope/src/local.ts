@@ -33,16 +33,6 @@ export interface LocalModuleScope extends ExportScope {
 }
 
 /**
- * Information about the compilation scope of a registered declaration.
- */
-export interface CompilationScope extends ScopeData {
-  /** The declaration whose compilation scope is described here. */
-  declaration: ClassDeclaration;
-  /** The declaration of the NgModule that declares this `declaration`. */
-  ngModule: ClassDeclaration;
-}
-
-/**
  * A registry which collects information about NgModules, Directives, Components, and Pipes which
  * are local (declared in the ts.Program being compiled), and can produce `LocalModuleScope`s
  * which summarize the compilation scope of a component.
@@ -198,20 +188,6 @@ export class LocalModuleScopeRegistry implements MetadataRegistry, ComponentScop
     } else {
       return null;
     }
-  }
-
-  /**
-   * Returns a collection of the compilation scope for each registered declaration.
-   */
-  getCompilationScopes(): CompilationScope[] {
-    const scopes: CompilationScope[] = [];
-    this.declarationToModule.forEach((declData, declaration) => {
-      const scope = this.getScopeOfModule(declData.ngModule);
-      if (scope !== null && scope !== 'error') {
-        scopes.push({declaration, ngModule: declData.ngModule, ...scope.compilation});
-      }
-    });
-    return scopes;
   }
 
   private registerDeclarationOfModule(
@@ -447,6 +423,10 @@ export class LocalModuleScopeRegistry implements MetadataRegistry, ComponentScop
     };
     this.cache.set(ref.node, scope);
     return scope;
+  }
+
+  getComponentsWithRemoteScope(): ReadonlySet<ClassDeclaration> {
+    return new Set(this.remoteScoping.keys());
   }
 
   /**

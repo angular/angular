@@ -16,8 +16,6 @@ export function isWithinPackage(packagePath: AbsoluteFsPath, filePath: AbsoluteF
 class NoopDependencyTracker implements DependencyTracker {
   addDependency(): void {}
   addResourceDependency(): void {}
-  addTransitiveDependency(): void {}
-  addTransitiveResources(): void {}
 }
 
 export const NOOP_DEPENDENCY_TRACKER: DependencyTracker = new NoopDependencyTracker();

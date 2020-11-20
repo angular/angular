@@ -268,7 +268,7 @@ runInEachFileSystem(() => {
       env.write('test.ts', `
         import {Component} from '@angular/core';
 
-        @Component({selector: 'test-cmp', template: '...'})
+        @Component({selector: 'test-cmp-fixed', template: '...'})
         export class TestCmp {}
       `);
 
@@ -283,7 +283,7 @@ runInEachFileSystem(() => {
         '/module.js',
 
         // Because TargetCmp also belongs to the same module, it should be re-emitted since
-        // TestCmp's elector may have changed.
+        // TestCmp's selector was changed.
         '/target.js',
       ]);
     });
@@ -354,9 +354,13 @@ runInEachFileSystem(() => {
       })
       export class LibCmp {}
 
+      @NgModule({})
+      export class EmptyModule {}
+
       @NgModule({
         declarations: [LibCmp],
-        exports: [LibCmp],
+        imports: [EmptyModule],
+        exports: [LibCmp, EmptyModule],
       })
       export class LibModule // missing braces
       `);
@@ -375,9 +379,13 @@ runInEachFileSystem(() => {
       })
       export class LibCmp {}
 
+      @NgModule({})
+      export class EmptyModule {}
+
       @NgModule({
         declarations: [LibCmp],
-        exports: [LibCmp],
+        imports: [EmptyModule],
+        exports: [LibCmp, EmptyModule],
       })
       export class LibModule {}
       `);
@@ -385,7 +393,8 @@ runInEachFileSystem(() => {
       env.driveMain();
 
       expectToHaveWritten([
-        // Both CmpA and CmpB should be re-emitted.
+        // Both CmpA and CmpB should be re-emitted as `EmptyModule` was added since the successful
+        // emit.
         '/a.js',
         '/b.js',
 
@@ -480,7 +489,10 @@ runInEachFileSystem(() => {
           '/other.js',
 
           // Because a.html changed
-          '/a.js', '/module.js',
+          '/a.js',
+
+          // module.js should not be re-emitted, as it is not affected by the change and its remote
+          // scope is unaffected.
 
           // b.js and module.js should not be re-emitted, because specifically when tracking
           // resource dependencies, the compiler knows that a change to a resource file only affects
