@@ -16,7 +16,7 @@ import {relative} from 'path';
 import * as ts from 'typescript';
 
 import {getProjectTsConfigPaths} from '../../utils/project_tsconfig_paths';
-import {createMigrationCompilerHost} from '../../utils/typescript/compiler_host';
+import {canMigrateFile, createMigrationCompilerHost} from '../../utils/typescript/compiler_host';
 
 import {createNgcProgram} from './create_ngc_program';
 import {NgDeclarationCollector} from './ng_declaration_collector';
@@ -85,8 +85,8 @@ function runUndecoratedClassesMigration(
   const partialEvaluator = new PartialEvaluator(
       new TypeScriptReflectionHost(typeChecker), typeChecker, /* dependencyTracker */ null);
   const declarationCollector = new NgDeclarationCollector(typeChecker, partialEvaluator);
-  const sourceFiles = program.getSourceFiles().filter(
-      s => !s.isDeclarationFile && !program.isSourceFileFromExternalLibrary(s));
+  const sourceFiles =
+      program.getSourceFiles().filter(sourceFile => canMigrateFile(basePath, sourceFile, program));
 
   // Analyze source files by detecting all directives, components and providers.
   sourceFiles.forEach(sourceFile => declarationCollector.visitNode(sourceFile));

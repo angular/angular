@@ -11,7 +11,7 @@ import {relative} from 'path';
 import * as ts from 'typescript';
 
 import {getProjectTsConfigPaths} from '../../utils/project_tsconfig_paths';
-import {createMigrationProgram} from '../../utils/typescript/compiler_host';
+import {canMigrateFile, createMigrationProgram} from '../../utils/typescript/compiler_host';
 
 import {Collector} from './collector';
 import {AnalysisFailure, ModuleWithProvidersTransform} from './transform';
@@ -49,8 +49,8 @@ function runModuleWithProvidersMigration(tree: Tree, tsconfigPath: string, baseP
   const failures: string[] = [];
   const typeChecker = program.getTypeChecker();
   const collector = new Collector(typeChecker);
-  const sourceFiles = program.getSourceFiles().filter(
-      f => !f.isDeclarationFile && !program.isSourceFileFromExternalLibrary(f));
+  const sourceFiles =
+      program.getSourceFiles().filter(sourceFile => canMigrateFile(basePath, sourceFile, program));
 
   // Analyze source files by detecting all modules.
   sourceFiles.forEach(sourceFile => collector.visitNode(sourceFile));
