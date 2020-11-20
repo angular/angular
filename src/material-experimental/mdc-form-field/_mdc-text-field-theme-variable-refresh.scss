@@ -7,7 +7,7 @@
 // the base MDC theming variables have been explicitly updated, but the component specific
 // theming-based variables are still based on the old MDC base theming variables. The mixin
 // restores the previous values for the variables to avoid unexpected global side effects.
-@mixin _mdc-text-field-refresh-theme-variables() {
+@mixin mat-mdc-private-text-field-refresh-theme-variables() {
   $_mdc-text-field-disabled-border-border: $mdc-text-field-disabled-border-border;
   $mdc-text-field-disabled-border: rgba(theme-variables.prop-value(on-surface), 0.06) !global;
   $_mdc-text-field-bottom-line-hover: $mdc-text-field-bottom-line-hover;

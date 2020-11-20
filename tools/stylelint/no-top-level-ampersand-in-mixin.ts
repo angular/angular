@@ -32,12 +32,13 @@ const plugin = createPlugin(ruleName, (isEnabled: boolean, _options?) => {
 
     root.walkAtRules(node => {
       // Skip non-mixin atrules and internal mixins.
-      if (!node.nodes || node.name !== 'mixin' || node.params.indexOf('_') === 0) {
+      if (!node.nodes || node.name !== 'mixin' || node.params.startsWith('_') ||
+          node.params.startsWith('mat-private-') || node.params.startsWith('mat-mdc-private-')) {
         return;
       }
 
       node.nodes.forEach(childNode => {
-        if (childNode.type === 'rule' && childNode.selector.indexOf('&') === 0) {
+        if (childNode.type === 'rule' && childNode.selector.startsWith('&')) {
           utils.report({
             result,
             ruleName,

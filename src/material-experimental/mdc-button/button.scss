@@ -8,8 +8,8 @@
 @include mdc-button-without-ripple($query: $mat-base-styles-query);
 
 .mat-mdc-button, .mat-mdc-unelevated-button, .mat-mdc-raised-button, .mat-mdc-outlined-button {
-  @include _mat-button-interactive();
-  @include _mat-button-disabled();
+  @include mat-private-button-interactive();
+  @include mat-private-button-disabled();
 
   // MDC expects button icons to contain this HTML content:
   // ```html

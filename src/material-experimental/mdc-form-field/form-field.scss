@@ -14,13 +14,13 @@
 @include mdc-line-ripple-core-styles($query: $mat-base-styles-without-animation-query);
 
 // MDC text-field overwrites.
-@include _mat-mdc-text-field-textarea-overrides();
-@include _mat-mdc-text-field-structure-overrides();
+@include mat-mdc-private-text-field-textarea-overrides();
+@include mat-mdc-private-text-field-structure-overrides();
 
 // Include the subscript, focus-overlay and native select styles.
-@include _mat-mdc-form-field-subscript();
-@include _mat-mdc-form-field-focus-overlay();
-@include _mat-mdc-form-field-native-select();
+@include mat-mdc-private-form-field-subscript();
+@include mat-mdc-private-form-field-focus-overlay();
+@include mat-mdc-private-form-field-native-select();
 
 // Host element of the form-field. It contains the mdc-text-field wrapper
 // and the subscript wrapper.

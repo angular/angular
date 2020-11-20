@@ -5,7 +5,7 @@
 // Mixin that can be included to override the default MDC text-field
 // styles to fit our needs. See individual comments for context on why
 // certain MDC styles need to be modified.
-@mixin _mat-mdc-text-field-structure-overrides() {
+@mixin mat-mdc-private-text-field-structure-overrides() {
   // Unset the border set by MDC. We move the border (which serves as the Material Design
   // text-field bottom line) into its own element. This is necessary because we want the
   // bottom-line to span across the whole form-field (including prefixes and suffixes). Also

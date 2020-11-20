@@ -5,14 +5,14 @@
 @include mdc-icon-button-without-ripple($query: $mat-base-styles-query);
 
 .mat-mdc-icon-button {
-  @include _mat-button-interactive() {
+  @include mat-private-button-interactive() {
     border-radius: 50%;
   }
 
   // Border radius is inherited by ripple to know its shape. Set to 50% so the ripple is round.
   border-radius: 50%;
 
-  @include _mat-button-disabled();
+  @include mat-private-button-disabled();
 
   // MDC adds some styles to icon buttons that conflict with some of our focus indicator styles
   // and don't actually do anything. This undoes those conflicting styles.

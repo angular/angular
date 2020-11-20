@@ -28,6 +28,12 @@ const plugin = (isEnabled: boolean, _options: never, context: {fix: boolean}) =>
     }
 
     root.walkAtRules('mixin', node => {
+      if (node.params.startsWith('_') || node.params.startsWith('mat-private-') ||
+          node.params.startsWith('mat-mdc-private-')) {
+        // This is a private mixins that isn't intended to be consumed outside of our own code.
+        return;
+      }
+
       const matches = node.params.match(themeMixinRegex);
       if (matches === null) {
         return;

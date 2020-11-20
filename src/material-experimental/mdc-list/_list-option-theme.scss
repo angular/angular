@@ -7,9 +7,9 @@
 // Mixin that overrides the selected item and checkbox colors for list options. By
 // default, the MDC list uses the `primary` color for list items. The MDC checkbox
 // inside list options by default uses the `primary` color too.
-@mixin _mat-mdc-list-option-color-override($color) {
+@mixin mat-mdc-private-list-option-color-override($color) {
   & .mdc-list-item__meta, & .mdc-list-item__graphic {
-    @include _mdc-checkbox-styles-with-color($color);
+    @include mat-mdc-private-checkbox-styles-with-color($color);
   }
 
   &.mdc-list-item--selected {
@@ -22,7 +22,7 @@
   }
 }
 
-@mixin _mat-mdc-list-option-density-styles($density-scale) {
+@mixin mat-mdc-private-list-option-density-styles($density-scale) {
   .mat-mdc-list-option {
     .mdc-list-item__meta, .mdc-list-item__graphic {
       .mdc-checkbox {
@@ -32,7 +32,7 @@
   }
 }
 
-@mixin _mat-mdc-list-option-typography-styles() {
+@mixin mat-mdc-private-list-option-typography-styles() {
   .mat-mdc-list-option {
     .mdc-list-item__meta, .mdc-list-item__graphic {
       @include mdc-checkbox-without-ripple($query: $mat-typography-styles-query);

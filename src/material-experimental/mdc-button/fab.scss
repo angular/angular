@@ -7,8 +7,8 @@
 @include mdc-fab-without-ripple($query: $mat-base-styles-query);
 
 .mat-mdc-fab, .mat-mdc-mini-fab {
-  @include _mat-button-interactive();
-  @include _mat-button-disabled();
+  @include mat-private-button-interactive();
+  @include mat-private-button-disabled();
 
   // MDC adds some styles to fab and mini-fab that conflict with some of our focus indicator
   // styles and don't actually do anything. This undoes those conflicting styles.

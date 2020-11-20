@@ -10,7 +10,7 @@
 
 // Mixin that includes the checkbox theme styles with a given palette.
 // By default, the MDC checkbox always uses the `secondary` palette.
-@mixin _mdc-checkbox-styles-with-color($color) {
+@mixin mat-mdc-private-checkbox-styles-with-color($color) {
   @include checkbox-theme.theme((
       density-scale: null,
       checkmark-color: mdc-theme-prop-value(on-#{$color}),
@@ -42,7 +42,7 @@
     $mdc-checkbox-disabled-color: rgba(mdc-theme-prop-value(on-surface), 0.26) !global;
 
     .mat-mdc-checkbox {
-      @include _mdc-checkbox-styles-with-color(primary);
+      @include mat-mdc-private-checkbox-styles-with-color(primary);
       @include mdc-form-field-core-styles($query: $mat-theme-styles-query);
     }
 
@@ -60,7 +60,7 @@
       }
 
       &.mat-accent {
-        @include _mdc-checkbox-styles-with-color(secondary);
+        @include mat-mdc-private-checkbox-styles-with-color(secondary);
 
         .mdc-checkbox--selected ~ .mat-mdc-checkbox-ripple .mat-ripple-element {
           background: $accent;
@@ -68,7 +68,7 @@
       }
 
       &.mat-warn {
-        @include _mdc-checkbox-styles-with-color(error);
+        @include mat-mdc-private-checkbox-styles-with-color(error);
 
         .mdc-checkbox--selected ~ .mat-mdc-checkbox-ripple .mat-ripple-element {
           background: $warn;

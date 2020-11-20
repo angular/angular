@@ -9,7 +9,7 @@
 
 // Mixin that can be included to override the default MDC text-field styles
 // to properly support textareas.
-@mixin _mat-mdc-text-field-textarea-overrides() {
+@mixin mat-mdc-private-text-field-textarea-overrides() {
   // Ensures that textarea elements inside of the form-field have proper vertical spacing
   // to account for the floating label. Also ensures that there is no vertical text overflow.
   .mat-mdc-textarea-input {

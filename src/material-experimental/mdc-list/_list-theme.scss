@@ -15,19 +15,19 @@
 
   // MDC's state styles are tied in with their ripple. Since we don't use the MDC
   // ripple, we need to add the hover, focus and selected states manually.
-  @include _mat-mdc-interactive-list-item-state-colors($config);
+  @include mat-mdc-private-interactive-list-item-state-colors($config);
 
   @include mat-using-mdc-theme($config) {
     @include mdc-list-without-ripple($query: $mat-theme-styles-query);
 
     .mat-mdc-list-option {
-      @include _mat-mdc-list-option-color-override(primary);
+      @include mat-mdc-private-list-option-color-override(primary);
     }
     .mat-mdc-list-option.mat-accent {
-      @include _mat-mdc-list-option-color-override(secondary);
+      @include mat-mdc-private-list-option-color-override(secondary);
     }
     .mat-mdc-list-option.mat-warn {
-      @include _mat-mdc-list-option-color-override(error);
+      @include mat-mdc-private-list-option-color-override(error);
     }
   }
 }
@@ -48,14 +48,14 @@
     @include mdc-list-single-line-height($height);
   }
 
-  @include _mat-mdc-list-option-density-styles($density-scale);
+  @include mat-mdc-private-list-option-density-styles($density-scale);
 }
 
 @mixin mat-mdc-list-typography($config-or-theme) {
   $config: mat-get-typography-config($config-or-theme);
   @include mat-using-mdc-typography($config) {
     @include mdc-list-without-ripple($query: $mat-typography-styles-query);
-    @include _mat-mdc-list-option-typography-styles();
+    @include mat-mdc-private-list-option-typography-styles();
   }
 }
 

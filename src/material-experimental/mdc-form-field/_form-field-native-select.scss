@@ -10,7 +10,7 @@ $mat-form-field-select-arrow-height: 5px;
 $mat-form-field-select-horizontal-end-padding: $mat-form-field-select-arrow-width + 5px;
 
 // Mixin that creates styles for native select controls in a form-field.
-@mixin _mat-mdc-form-field-native-select() {
+@mixin mat-mdc-private-form-field-native-select() {
   // Remove the native select down arrow and ensure that the native appearance
   // does not conflict with the form-field. e.g. Focus indication of the native
   // select is undesired since we handle focus as part of the form-field.
@@ -90,7 +90,7 @@ $mat-form-field-select-horizontal-end-padding: $mat-form-field-select-arrow-widt
   }
 }
 
-@mixin _mat-mdc-form-field-native-select-color($config) {
+@mixin mat-mdc-private-form-field-native-select-color($config) {
   select.mat-mdc-input-element {
     // On dark themes we set the native `select` color to some shade of white,
     // however the color propagates to all of the `option` elements, which are

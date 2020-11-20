@@ -13,7 +13,7 @@
 
 // Mixin that overwrites the default MDC text-field color styles to be based on
 // the given theme palette. The MDC text-field is styled using `primary` by default.
-@mixin _mdc-text-field-color-styles($palette-name, $query: $mat-theme-styles-query) {
+@mixin _mat-mdc-text-field-color-styles($palette-name, $query: $mat-theme-styles-query) {
   $_mdc-text-field-focused-label-color: $mdc-text-field-focused-label-color;
   $mdc-text-field-focused-label-color: rgba(mdc-theme-prop-value($palette-name), 0.87) !global;
 
@@ -38,21 +38,21 @@
 @mixin mat-mdc-form-field-color($config-or-theme) {
   $config: mat-get-color-config($config-or-theme);
   @include mat-using-mdc-theme($config) {
-    @include _mdc-text-field-refresh-theme-variables() {
+    @include mat-mdc-private-text-field-refresh-theme-variables() {
       @include mdc-text-field-without-ripple($query: $mat-theme-styles-query);
       @include mdc-floating-label-core-styles($query: $mat-theme-styles-query);
       @include mdc-notched-outline-core-styles($query: $mat-theme-styles-query);
       @include mdc-line-ripple-core-styles($query: $mat-theme-styles-query);
-      @include _mat-mdc-form-field-subscript-color();
-      @include _mat-mdc-form-field-focus-overlay-color();
-      @include _mat-mdc-form-field-native-select-color($config);
+      @include mat-mdc-private-form-field-subscript-color();
+      @include mat-mdc-private-form-field-focus-overlay-color();
+      @include mat-mdc-private-form-field-native-select-color($config);
 
       .mat-mdc-form-field.mat-accent {
-        @include _mdc-text-field-color-styles(secondary);
+        @include _mat-mdc-text-field-color-styles(secondary);
       }
 
       .mat-mdc-form-field.mat-warn {
-        @include _mdc-text-field-color-styles(error);
+        @include _mat-mdc-text-field-color-styles(error);
       }
     }
   }
@@ -65,7 +65,7 @@
     @include mdc-floating-label-core-styles($query: $mat-typography-styles-query);
     @include mdc-notched-outline-core-styles($query: $mat-typography-styles-query);
     @include mdc-line-ripple-core-styles($query: $mat-typography-styles-query);
-    @include _mat-mdc-form-field-subscript-typography($config);
+    @include mat-mdc-private-form-field-subscript-typography($config);
 
     .mat-mdc-form-field {
       @include mat-typography-level-to-styles($config, input);
@@ -75,7 +75,7 @@
 
 @mixin mat-mdc-form-field-density($config-or-theme) {
   $density-scale: mat-get-density-config($config-or-theme);
-  @include _mat-mdc-form-field-density($density-scale);
+  @include mat-mdc-private-form-field-density($density-scale);
 }
 
 @mixin mat-mdc-form-field-theme($theme-or-color-config) {
