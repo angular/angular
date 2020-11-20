@@ -1,4 +1,4 @@
-import {ComponentHarness, HarnessLoader} from '@angular/cdk/testing';
+import {ComponentHarness, HarnessLoader, parallel} from '@angular/cdk/testing';
 import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
 import {Component} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
@@ -49,7 +49,7 @@ export function runHarnessTests(
 
   it('should get card text', async () => {
     const cards = await loader.getAllHarnesses(cardHarness);
-    expect(await Promise.all(cards.map(c => c.getText()))).toEqual([
+    expect(await parallel(() => cards.map(c => c.getText()))).toEqual([
        '',
        'Shiba InuDog Breed The Shiba Inu is the smallest of the six original and distinct spitz' +
        ' breeds of dog from Japan. A small, agile dog that copes very well with mountainous' +
@@ -59,7 +59,7 @@ export function runHarnessTests(
 
   it('should get title text', async () => {
     const cards = await loader.getAllHarnesses(cardHarness);
-    expect(await Promise.all(cards.map(c => c.getTitleText()))).toEqual([
+    expect(await parallel(() => cards.map(c => c.getTitleText()))).toEqual([
       '',
       'Shiba Inu'
     ]);
@@ -67,7 +67,7 @@ export function runHarnessTests(
 
   it('should get subtitle text', async () => {
     const cards = await loader.getAllHarnesses(cardHarness);
-    expect(await Promise.all(cards.map(c => c.getSubtitleText()))).toEqual([
+    expect(await parallel(() => cards.map(c => c.getSubtitleText()))).toEqual([
       '',
       'Dog Breed'
     ]);

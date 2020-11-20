@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {HarnessPredicate, TestKey} from '@angular/cdk/testing';
+import {HarnessPredicate, parallel, TestKey} from '@angular/cdk/testing';
 import {DatepickerInputHarnessFilters, CalendarHarnessFilters} from './datepicker-harness-filters';
 import {MatDatepickerInputHarnessBase, getInputPredicate} from './datepicker-input-harness-base';
 import {MatCalendarHarness} from './calendar-harness';
@@ -42,7 +42,7 @@ export class MatDatepickerInputHarness extends MatDatepickerInputHarnessBase imp
 
   /** Opens the calendar associated with the input. */
   async openCalendar(): Promise<void> {
-    const [isDisabled, hasCalendar] = await Promise.all([this.isDisabled(), this.hasCalendar()]);
+    const [isDisabled, hasCalendar] = await parallel(() => [this.isDisabled(), this.hasCalendar()]);
 
     if (!isDisabled && hasCalendar) {
       // Alt + down arrow is the combination for opening the calendar with the keyboard.

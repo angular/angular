@@ -1,4 +1,4 @@
-import {HarnessLoader} from '@angular/cdk/testing';
+import {HarnessLoader, parallel} from '@angular/cdk/testing';
 import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
 import {Component} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
@@ -42,20 +42,20 @@ export function runHarnessTests(
 
   it('should get the group label text', async () => {
     const groups = await loader.getAllHarnesses(optionGroupHarness);
-    const texts = await Promise.all(groups.map(group => group.getLabelText()));
+    const texts = await parallel(() => groups.map(group => group.getLabelText()));
     expect(texts).toEqual(['Plain group', 'Disabled group']);
   });
 
   it('should get the group disabled state', async () => {
     const groups = await loader.getAllHarnesses(optionGroupHarness);
-    const disabledStates = await Promise.all(groups.map(group => group.isDisabled()));
+    const disabledStates = await parallel(() => groups.map(group => group.isDisabled()));
     expect(disabledStates).toEqual([false, true]);
   });
 
   it('should get the options inside the groups', async () => {
     const group = await loader.getHarness(optionGroupHarness);
     const optionTexts = await group.getOptions().then(async options => {
-      return await Promise.all(options.map(option => option.getText()));
+      return await parallel(() => options.map(option => option.getText()));
     });
 
     expect(optionTexts).toEqual(['Option 1', 'Option 2']);

@@ -1,4 +1,4 @@
-import {HarnessLoader} from '@angular/cdk/testing';
+import {HarnessLoader, parallel} from '@angular/cdk/testing';
 import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
 import {Component} from '@angular/core';
 import {MatNativeDateModule} from '@angular/material/core';
@@ -42,7 +42,9 @@ export function runDatepickerToggleHarnessTests(
 
   it('should get whether the toggle has a calendar associated with it', async () => {
     const toggles = await loader.getAllHarnesses(datepickerToggleHarness);
-    expect(await Promise.all(toggles.map(toggle => toggle.hasCalendar()))).toEqual([true, false]);
+    expect(await parallel(() => {
+      return toggles.map(toggle => toggle.hasCalendar());
+    })).toEqual([true, false]);
   });
 
   it('should be able to open and close a calendar in popup mode', async () => {

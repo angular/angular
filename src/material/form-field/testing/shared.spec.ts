@@ -1,4 +1,4 @@
-import {ComponentHarness, HarnessLoader, HarnessPredicate} from '@angular/cdk/testing';
+import {ComponentHarness, HarnessLoader, HarnessPredicate, parallel} from '@angular/cdk/testing';
 import {
   createFakeEvent,
   dispatchFakeEvent,
@@ -190,13 +190,13 @@ export function runHarnessTests(
 
   it('should be able to get the prefix text of a form-field', async () => {
     const formFields = await loader.getAllHarnesses(formFieldHarness);
-    const prefixTexts = await Promise.all(formFields.map(f => f.getPrefixText()));
+    const prefixTexts = await parallel(() => formFields.map(f => f.getPrefixText()));
     expect(prefixTexts).toEqual(['prefix_textprefix_text_2', '', '', '', '']);
   });
 
   it('should be able to get the suffix text of a form-field', async () => {
     const formFields = await loader.getAllHarnesses(formFieldHarness);
-    const suffixTexts = await Promise.all(formFields.map(f => f.getSuffixText()));
+    const suffixTexts = await parallel(() => formFields.map(f => f.getSuffixText()));
     expect(suffixTexts).toEqual(['suffix_text', '', '', '', '']);
   });
 

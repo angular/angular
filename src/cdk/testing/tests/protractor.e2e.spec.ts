@@ -1,6 +1,7 @@
 import {HarnessLoader} from '@angular/cdk/testing';
 import {ProtractorHarnessEnvironment} from '@angular/cdk/testing/protractor';
 import {browser, by, element as protractorElement, ElementFinder} from 'protractor';
+import {parallel} from '../change-detection';
 import {crossEnvironmentSpecs} from './cross-environment.spec';
 import {MainComponentHarness} from './harnesses/main-component-harness';
 
@@ -70,7 +71,9 @@ describe('ProtractorHarnessEnvironment', () => {
         const harness = await ProtractorHarnessEnvironment.loader({queryFn: piercingQueryFn})
             .getHarness(MainComponentHarness);
         const shadows = await harness.shadows();
-        expect(await Promise.all(shadows.map(el => el.text()))).toEqual(['Shadow 1', 'Shadow 2']);
+        expect(await parallel(() => {
+          return shadows.map(el => el.text());
+        })).toEqual(['Shadow 1', 'Shadow 2']);
       });
 
       it('should allow querying across shadow boundary', async () => {

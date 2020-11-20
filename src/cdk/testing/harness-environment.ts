@@ -168,12 +168,12 @@ export abstract class HarnessEnvironment<E> implements HarnessLoader, LocatorFac
 
     const perElementMatches = await parallel(() => rawElements.map(async rawElement => {
       const testElement = this.createTestElement(rawElement);
-      const allResultsForElement = await Promise.all(
+      const allResultsForElement = await parallel(
           // For each query, get `null` if it doesn't match, or a `TestElement` or
           // `ComponentHarness` as appropriate if it does match. This gives us everything that
           // matches the current raw element, but it may contain duplicate entries (e.g.
           // multiple `TestElement` or multiple `ComponentHarness` of the same type).
-          allQueries.map(query => this._getQueryResultForElement(
+          () => allQueries.map(query => this._getQueryResultForElement(
               query, rawElement, testElement, skipSelectorCheck)));
       return _removeDuplicateQueryResults(allResultsForElement);
     }));

@@ -1,5 +1,5 @@
 import {OverlayContainer} from '@angular/cdk/overlay';
-import {HarnessLoader} from '@angular/cdk/testing';
+import {HarnessLoader, parallel} from '@angular/cdk/testing';
 import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
 import {Component} from '@angular/core';
 import {ComponentFixture, inject, TestBed} from '@angular/core/testing';
@@ -166,7 +166,7 @@ export function runHarnessTests(
     const groupedSelect = await loader.getHarness(selectHarness.with({selector: '#grouped'}));
     await groupedSelect.open();
 
-    const [singleOptions, groupedOptions] = await Promise.all([
+    const [singleOptions, groupedOptions] = await parallel(() => [
       singleSelect.getOptions(),
       groupedSelect.getOptions()
     ]);

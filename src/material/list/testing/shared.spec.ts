@@ -2,7 +2,8 @@ import {
   BaseHarnessFilters,
   ComponentHarness,
   ComponentHarnessConstructor,
-  HarnessPredicate
+  HarnessPredicate,
+  parallel
 } from '@angular/cdk/testing';
 import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
 import {Component, Type} from '@angular/core';
@@ -60,13 +61,13 @@ function runBaseListFunctionalityTests<
 
     it('should get all items', async () => {
       const items = await simpleListHarness.getItems();
-      expect(await Promise.all(items.map(i => i.getText())))
+      expect(await parallel(() => items.map(i => i.getText())))
           .toEqual(['Item 1', 'Item 2', 'Item 3']);
     });
 
     it('should get all items matching text', async () => {
       const items = await simpleListHarness.getItems({text: /[13]/});
-      expect(await Promise.all(items.map(i => i.getText()))).toEqual(['Item 1', 'Item 3']);
+      expect(await parallel(() => items.map(i => i.getText()))).toEqual(['Item 1', 'Item 3']);
     });
 
     it('should get all items of empty list', async () => {
@@ -77,9 +78,9 @@ function runBaseListFunctionalityTests<
       const sections = await simpleListHarness.getItemsGroupedBySubheader();
       expect(sections.length).toBe(3);
       expect(sections[0].heading).toBeUndefined();
-      expect(await Promise.all(sections[0].items.map(i => i.getText()))).toEqual(['Item 1']);
+      expect(await parallel(() => sections[0].items.map(i => i.getText()))).toEqual(['Item 1']);
       expect(sections[1].heading).toBe('Section 1');
-      expect(await Promise.all(sections[1].items.map(i => i.getText())))
+      expect(await parallel(() => sections[1].items.map(i => i.getText())))
           .toEqual(['Item 2', 'Item 3']);
       expect(sections[2].heading).toBe('Section 2');
       expect(sections[2].items.length).toEqual(0);
@@ -95,8 +96,8 @@ function runBaseListFunctionalityTests<
     it('should get items grouped by divider', async () => {
       const sections = await simpleListHarness.getItemsGroupedByDividers();
       expect(sections.length).toBe(3);
-      expect(await Promise.all(sections[0].map(i => i.getText()))).toEqual(['Item 1']);
-      expect(await Promise.all(sections[1].map(i => i.getText()))).toEqual(['Item 2', 'Item 3']);
+      expect(await parallel(() => sections[0].map(i => i.getText()))).toEqual(['Item 1']);
+      expect(await parallel(() => sections[1].map(i => i.getText()))).toEqual(['Item 2', 'Item 3']);
       expect(sections[2].length).toBe(0);
     });
 
@@ -136,11 +137,11 @@ function runBaseListFunctionalityTests<
           {item: false, divider: false});
       const dividers = await simpleListHarness.getItemsWithSubheadersAndDividers(
           {item: false, subheader: false});
-      expect(await Promise.all(items.map(i => i.getText())))
+      expect(await parallel(() => items.map(i => i.getText())))
           .toEqual(['Item 1', 'Item 2', 'Item 3']);
-      expect(await Promise.all(subheaders.map(s => s.getText())))
+      expect(await parallel(() => subheaders.map(s => s.getText())))
           .toEqual(['Section 1', 'Section 2']);
-      expect(await Promise.all(dividers.map(d => d.getOrientation())))
+      expect(await parallel(() => dividers.map(d => d.getOrientation())))
           .toEqual(['horizontal', 'horizontal']);
     });
 
@@ -289,7 +290,7 @@ export function runHarnessTests(
 
       it('should get href', async () => {
         const items = await harness.getItems();
-        expect(await Promise.all(items.map(i => i.getHref()))).toEqual([null, '', '/somestuff']);
+        expect(await parallel(() => items.map(i => i.getHref()))).toEqual([null, '', '/somestuff']);
       });
 
       it('should get item harness by href', async () => {
@@ -333,7 +334,7 @@ export function runHarnessTests(
       it('should get all selected options', async () => {
         expect((await harness.getItems({selected: true})).length).toBe(0);
         const items = await harness.getItems();
-        await Promise.all(items.map(item => item.select()));
+        await parallel(() => items.map(item => item.select()));
         expect((await harness.getItems({selected: true})).length).toBe(3);
       });
 
@@ -341,7 +342,7 @@ export function runHarnessTests(
         expect((await harness.getItems({selected: true})).length).toBe(0);
         await harness.selectItems({text: /1/}, {text: /3/});
         const selected = await harness.getItems({selected: true});
-        expect(await Promise.all(selected.map(item => item.getText())))
+        expect(await parallel(() => selected.map(item => item.getText())))
             .toEqual(['Item 1', 'Item 3']);
       });
 
@@ -350,7 +351,7 @@ export function runHarnessTests(
         expect((await harness.getItems({selected: true})).length).toBe(3);
         await harness.deselectItems({text: /1/}, {text: /3/});
         const selected = await harness.getItems({selected: true});
-        expect(await Promise.all(selected.map(item => item.getText()))).toEqual(['Item 2']);
+        expect(await parallel(() => selected.map(item => item.getText()))).toEqual(['Item 2']);
       });
 
       it('should get option checkbox position', async () => {

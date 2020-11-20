@@ -7,7 +7,7 @@
  */
 
 import {coerceBooleanProperty, coerceNumberProperty} from '@angular/cdk/coercion';
-import {ComponentHarness, HarnessPredicate} from '@angular/cdk/testing';
+import {ComponentHarness, HarnessPredicate, parallel} from '@angular/cdk/testing';
 import {SliderHarnessFilters} from '@angular/material/slider/testing';
 
 /** Harness for interacting with a MDC mat-slider in tests. */
@@ -95,7 +95,7 @@ export class MatSliderHarness extends ComponentHarness {
     await this.waitForTasksOutsideAngular();
 
     const [sliderEl, trackContainer] =
-        await Promise.all([this.host(), this._trackContainer()]);
+        await parallel(() => [this.host(), this._trackContainer()]);
     let percentage = await this._calculatePercentage(value);
     const {width} = await trackContainer.getDimensions();
 
@@ -133,7 +133,7 @@ export class MatSliderHarness extends ComponentHarness {
 
   /** Calculates the percentage of the given value. */
   private async _calculatePercentage(value: number) {
-    const [min, max] = await Promise.all([this.getMinValue(), this.getMaxValue()]);
+    const [min, max] = await parallel(() => [this.getMinValue(), this.getMaxValue()]);
     return (value - min) / (max - min);
   }
 }

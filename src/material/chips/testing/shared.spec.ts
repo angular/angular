@@ -1,6 +1,6 @@
 import {Component} from '@angular/core';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
-import {HarnessLoader, TestKey} from '@angular/cdk/testing';
+import {HarnessLoader, parallel, TestKey} from '@angular/cdk/testing';
 import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {MatFormFieldModule} from '@angular/material/form-field';
@@ -43,7 +43,7 @@ export function runHarnessTests(
   it('should get whether a chip list is disabled', async () => {
     const chipLists = await loader.getAllHarnesses(chipListHarness);
 
-    expect(await Promise.all(chipLists.map(list => list.isDisabled()))).toEqual([
+    expect(await parallel(() => chipLists.map(list => list.isDisabled()))).toEqual([
       false,
       false,
       false
@@ -52,7 +52,7 @@ export function runHarnessTests(
     fixture.componentInstance.isDisabled = true;
     fixture.detectChanges();
 
-    expect(await Promise.all(chipLists.map(list => list.isDisabled()))).toEqual([
+    expect(await parallel(() => chipLists.map(list => list.isDisabled()))).toEqual([
       true,
       false,
       false
@@ -62,7 +62,7 @@ export function runHarnessTests(
   it('should get whether a chip list is required', async () => {
     const chipLists = await loader.getAllHarnesses(chipListHarness);
 
-    expect(await Promise.all(chipLists.map(list => list.isRequired()))).toEqual([
+    expect(await parallel(() => chipLists.map(list => list.isRequired()))).toEqual([
       false,
       false,
       true
@@ -71,7 +71,7 @@ export function runHarnessTests(
     fixture.componentInstance.isRequired = true;
     fixture.detectChanges();
 
-    expect(await Promise.all(chipLists.map(list => list.isRequired()))).toEqual([
+    expect(await parallel(() => chipLists.map(list => list.isRequired()))).toEqual([
       true,
       false,
       true
@@ -81,7 +81,7 @@ export function runHarnessTests(
   it('should get whether a chip list is in multi selection mode', async () => {
     const chipLists = await loader.getAllHarnesses(chipListHarness);
 
-    expect(await Promise.all(chipLists.map(list => list.isMultiple()))).toEqual([
+    expect(await parallel(() => chipLists.map(list => list.isMultiple()))).toEqual([
       false,
       false,
       false
@@ -90,7 +90,7 @@ export function runHarnessTests(
     fixture.componentInstance.isMultiple = true;
     fixture.detectChanges();
 
-    expect(await Promise.all(chipLists.map(list => list.isMultiple()))).toEqual([
+    expect(await parallel(() => chipLists.map(list => list.isMultiple()))).toEqual([
       true,
       false,
       false
@@ -100,7 +100,7 @@ export function runHarnessTests(
   it('should get the orientation of a chip list', async () => {
     const chipLists = await loader.getAllHarnesses(chipListHarness);
 
-    expect(await Promise.all(chipLists.map(list => list.getOrientation()))).toEqual([
+    expect(await parallel(() => chipLists.map(list => list.getOrientation()))).toEqual([
       'horizontal',
       'horizontal',
       'horizontal'
@@ -109,7 +109,7 @@ export function runHarnessTests(
     fixture.componentInstance.orientation = 'vertical';
     fixture.detectChanges();
 
-    expect(await Promise.all(chipLists.map(list => list.getOrientation()))).toEqual([
+    expect(await parallel(() => chipLists.map(list => list.getOrientation()))).toEqual([
       'vertical',
       'horizontal',
       'horizontal'
@@ -118,7 +118,7 @@ export function runHarnessTests(
 
   it('should get the chips in a chip list', async () => {
     const chipLists = await loader.getAllHarnesses(chipListHarness);
-    const chips = await Promise.all(chipLists.map(list => list.getChips()));
+    const chips = await parallel(() => chipLists.map(list => list.getChips()));
     expect(chips.map(list => list.length)).toEqual([4, 0, 2]);
   });
 
@@ -135,7 +135,7 @@ export function runHarnessTests(
     await chips[1].select();
 
     const selectedChips = await chipList.getChips({selected: true});
-    expect(await Promise.all(selectedChips.map(chip => chip.getText()))).toEqual(['Chip 2']);
+    expect(await parallel(() => selectedChips.map(chip => chip.getText()))).toEqual(['Chip 2']);
   });
 
   it('should be able to select chips based on a filter', async () => {
@@ -146,7 +146,7 @@ export function runHarnessTests(
     await chipList.selectChips({text: /^Chip (2|4)$/});
 
     const selectedChips = await chipList.getChips({selected: true});
-    expect(await Promise.all(selectedChips.map(chip => chip.getText()))).toEqual([
+    expect(await parallel(() => selectedChips.map(chip => chip.getText()))).toEqual([
       'Chip 2',
       'Chip 4'
     ]);
@@ -159,7 +159,7 @@ export function runHarnessTests(
 
   it('should get the text of a chip', async () => {
     const chips = await loader.getAllHarnesses(chipHarness);
-    expect(await Promise.all(chips.map(chip => chip.getText()))).toEqual([
+    expect(await parallel(() => chips.map(chip => chip.getText()))).toEqual([
       'Chip 1',
       'Chip 2',
       'Chip 3',
@@ -195,7 +195,7 @@ export function runHarnessTests(
 
   it('should get the disabled text of a chip', async () => {
     const chips = await loader.getAllHarnesses(chipHarness);
-    expect(await Promise.all(chips.map(chip => chip.isDisabled()))).toEqual([
+    expect(await parallel(() => chips.map(chip => chip.isDisabled()))).toEqual([
       false,
       false,
       true,
@@ -207,7 +207,7 @@ export function runHarnessTests(
 
   it('should get the selected text of a chip', async () => {
     const chips = await loader.getAllHarnesses(chipOptionHarness);
-    expect(await Promise.all(chips.map(chip => chip.isSelected()))).toEqual([
+    expect(await parallel(() => chips.map(chip => chip.isSelected()))).toEqual([
       false,
       false,
       false,
@@ -218,7 +218,7 @@ export function runHarnessTests(
 
     await chips[1].select();
 
-    expect(await Promise.all(chips.map(chip => chip.isSelected()))).toEqual([
+    expect(await parallel(() => chips.map(chip => chip.isSelected()))).toEqual([
       false,
       true,
       false,

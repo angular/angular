@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ComponentHarness, HarnessPredicate} from '@angular/cdk/testing';
+import {ComponentHarness, HarnessPredicate, parallel} from '@angular/cdk/testing';
 import {ɵTileCoordinator as TileCoordinator} from '@angular/material/grid-list';
 import {GridListHarnessFilters, GridTileHarnessFilters} from './grid-list-harness-filters';
 import {MatGridTileHarness} from './grid-tile-harness';
@@ -50,9 +50,10 @@ export class MatGridListHarness extends ComponentHarness {
    */
   async getTileAtPosition({row, column}: {row: number, column: number}):
       Promise<MatGridTileHarness> {
-    const [tileHarnesses, columns] = await Promise.all([this.getTiles(), this.getColumns()]);
-    const tileSpans = tileHarnesses.map(t => Promise.all([t.getColspan(), t.getRowspan()]));
-    const tiles = (await Promise.all(tileSpans)).map(([colspan, rowspan]) => ({colspan, rowspan}));
+    const [tileHarnesses, columns] = await parallel(() => [this.getTiles(), this.getColumns()]);
+    const tileSpans = tileHarnesses.map(t => parallel(() => [t.getColspan(), t.getRowspan()]));
+    const tiles = (await parallel(() => tileSpans))
+        .map(([colspan, rowspan]) => ({colspan, rowspan}));
     // Update the tile coordinator to reflect the current column amount and
     // rendered tiles. We update upon every call of this method since we do not
     // know if tiles have been added, removed or updated (in terms of rowspan/colspan).

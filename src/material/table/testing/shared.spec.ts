@@ -1,4 +1,4 @@
-import {HarnessLoader} from '@angular/cdk/testing';
+import {HarnessLoader, parallel} from '@angular/cdk/testing';
 import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
 import {Component} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
@@ -43,11 +43,11 @@ export function runHarnessTests(
     const headerRows = await table.getHeaderRows();
     const footerRows = await table.getFooterRows();
     const rows = await table.getRows();
-    const headerCells = (await Promise.all(headerRows.map(row => row.getCells())))
+    const headerCells = (await parallel(() => headerRows.map(row => row.getCells())))
       .map(row => row.length);
-    const footerCells = (await Promise.all(footerRows.map(row => row.getCells())))
+    const footerCells = (await parallel(() => footerRows.map(row => row.getCells())))
       .map(row => row.length);
-    const cells = (await Promise.all(rows.map(row => row.getCells())))
+    const cells = (await parallel(() => rows.map(row => row.getCells())))
       .map(row => row.length);
 
     expect(headerCells).toEqual([4]);
@@ -59,7 +59,7 @@ export function runHarnessTests(
     const table = await loader.getHarness(tableHarness);
     const secondRow = (await table.getRows())[1];
     const cells = await secondRow.getCells();
-    const cellTexts = await Promise.all(cells.map(cell => cell.getText()));
+    const cellTexts = await parallel(() => cells.map(cell => cell.getText()));
     expect(cellTexts).toEqual(['2', 'Helium', '4.0026', 'He']);
   });
 
@@ -67,7 +67,7 @@ export function runHarnessTests(
     const table = await loader.getHarness(tableHarness);
     const fifthRow = (await table.getRows())[1];
     const cells = await fifthRow.getCells();
-    const cellColumnNames = await Promise.all(cells.map(cell => cell.getColumnName()));
+    const cellColumnNames = await parallel(() => cells.map(cell => cell.getColumnName()));
     expect(cellColumnNames).toEqual(['position', 'name', 'weight', 'symbol']);
   });
 
@@ -75,7 +75,7 @@ export function runHarnessTests(
     const table = await loader.getHarness(tableHarness);
     const firstRow = (await table.getRows())[0];
     const cells = await firstRow.getCells({text: '1.0079'});
-    const cellTexts = await Promise.all(cells.map(cell => cell.getText()));
+    const cellTexts = await parallel(() => cells.map(cell => cell.getText()));
     expect(cellTexts).toEqual(['1.0079']);
   });
 
@@ -83,7 +83,7 @@ export function runHarnessTests(
     const table = await loader.getHarness(tableHarness);
     const firstRow = (await table.getRows())[0];
     const cells = await firstRow.getCells({columnName: 'symbol'});
-    const cellTexts = await Promise.all(cells.map(cell => cell.getText()));
+    const cellTexts = await parallel(() => cells.map(cell => cell.getText()));
     expect(cellTexts).toEqual(['H']);
   });
 
@@ -91,7 +91,7 @@ export function runHarnessTests(
     const table = await loader.getHarness(tableHarness);
     const firstRow = (await table.getRows())[0];
     const cells = await firstRow.getCells({text: /^H/});
-    const cellTexts = await Promise.all(cells.map(cell => cell.getText()));
+    const cellTexts = await parallel(() => cells.map(cell => cell.getText()));
     expect(cellTexts).toEqual(['Hydrogen', 'H']);
   });
 

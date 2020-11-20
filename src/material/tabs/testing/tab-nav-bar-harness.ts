@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ComponentHarness, HarnessPredicate} from '@angular/cdk/testing';
+import {ComponentHarness, HarnessPredicate, parallel} from '@angular/cdk/testing';
 import {TabNavBarHarnessFilters, TabLinkHarnessFilters} from './tab-harness-filters';
 import {MatTabLinkHarness} from './tab-link-harness';
 
@@ -36,7 +36,7 @@ export class MatTabNavBarHarness extends ComponentHarness {
   /** Gets the active link in the nav bar. */
   async getActiveLink(): Promise<MatTabLinkHarness> {
     const links = await this.getLinks();
-    const isActive = await Promise.all(links.map(t => t.isActive()));
+    const isActive = await parallel(() => links.map(t => t.isActive()));
     for (let i = 0; i < links.length; i++) {
       if (isActive[i]) {
         return links[i];

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ContentContainerComponentHarness, HarnessPredicate} from '@angular/cdk/testing';
+import {ContentContainerComponentHarness, HarnessPredicate, parallel} from '@angular/cdk/testing';
 import {TableHarnessFilters, RowHarnessFilters} from './table-harness-filters';
 import {
   MatRowHarness,
@@ -56,22 +56,22 @@ export class MatTableHarness extends ContentContainerComponentHarness<string> {
   /** Gets the text inside the entire table organized by rows. */
   async getCellTextByIndex(): Promise<string[][]> {
     const rows = await this.getRows();
-    return Promise.all(rows.map(row => row.getCellTextByIndex()));
+    return parallel(() => rows.map(row => row.getCellTextByIndex()));
   }
 
   /** Gets the text inside the entire table organized by columns. */
   async getCellTextByColumnName(): Promise<MatTableHarnessColumnsText> {
-    const [headerRows, footerRows, dataRows] = await Promise.all([
+    const [headerRows, footerRows, dataRows] = await parallel(() => [
       this.getHeaderRows(),
       this.getFooterRows(),
       this.getRows()
     ]);
 
     const text: MatTableHarnessColumnsText = {};
-    const [headerData, footerData, rowsData] = await Promise.all([
-      Promise.all(headerRows.map(row => row.getCellTextByColumnName())),
-      Promise.all(footerRows.map(row => row.getCellTextByColumnName())),
-      Promise.all(dataRows.map(row => row.getCellTextByColumnName())),
+    const [headerData, footerData, rowsData] = await parallel(() => [
+      parallel(() => headerRows.map(row => row.getCellTextByColumnName())),
+      parallel(() => footerRows.map(row => row.getCellTextByColumnName())),
+      parallel(() => dataRows.map(row => row.getCellTextByColumnName())),
     ]);
 
     rowsData.forEach(data => {

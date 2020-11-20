@@ -11,6 +11,7 @@ import {
   ComponentHarnessConstructor,
   HarnessPredicate,
   HarnessQuery,
+  parallel,
   TestElement
 } from '@angular/cdk/testing';
 import {MatFormFieldControlHarness} from '@angular/material/form-field/testing/control';
@@ -90,7 +91,7 @@ export class MatFormFieldHarness extends ComponentHarness {
       return this.locatorForOptional(type)();
     }
     const hostEl = await this.host();
-    const [isInput, isSelect] = await Promise.all([
+    const [isInput, isSelect] = await parallel(() => [
       hostEl.hasClass('mat-form-field-type-mat-input'),
       hostEl.hasClass('mat-form-field-type-mat-select'),
     ]);
@@ -120,9 +121,10 @@ export class MatFormFieldHarness extends ComponentHarness {
 
   /** Whether the label is currently floating. */
   async isLabelFloating(): Promise<boolean> {
-    const [hasLabel, shouldFloat] = await Promise.all([
+    const host = await this.host();
+    const [hasLabel, shouldFloat] = await parallel(() => [
       this.hasLabel(),
-      (await this.host()).hasClass('mat-form-field-should-float'),
+      host.hasClass('mat-form-field-should-float'),
     ]);
     // If there is no label, the label conceptually can never float. The `should-float` class
     // is just always set regardless of whether the label is displayed or not.
@@ -142,8 +144,9 @@ export class MatFormFieldHarness extends ComponentHarness {
   /** Gets the theme color of the form-field. */
   async getThemeColor(): Promise<'primary'|'accent'|'warn'> {
     const hostEl = await this.host();
-    const [isAccent, isWarn] =
-        await Promise.all([hostEl.hasClass('mat-accent'), hostEl.hasClass('mat-warn')]);
+    const [isAccent, isWarn] = await parallel(() => {
+      return [hostEl.hasClass('mat-accent'), hostEl.hasClass('mat-warn')];
+    });
     if (isAccent) {
       return 'accent';
     } else if (isWarn) {
@@ -154,12 +157,14 @@ export class MatFormFieldHarness extends ComponentHarness {
 
   /** Gets error messages which are currently displayed in the form-field. */
   async getTextErrors(): Promise<string[]> {
-    return Promise.all((await this._errors()).map(e => e.text()));
+    const errors = await this._errors();
+    return parallel(() => errors.map(e => e.text()));
   }
 
   /** Gets hint messages which are currently displayed in the form-field. */
   async getTextHints(): Promise<string[]> {
-    return Promise.all((await this._hints()).map(e => e.text()));
+    const hints = await this._hints();
+    return parallel(() => hints.map(e => e.text()));
   }
 
   /**
@@ -245,7 +250,7 @@ export class MatFormFieldHarness extends ComponentHarness {
     // is not able to forward any control status classes. Therefore if either the
     // "ng-touched" or "ng-untouched" class is set, we know that it has a form control
     const [isTouched, isUntouched] =
-        await Promise.all([hostEl.hasClass('ng-touched'), hostEl.hasClass('ng-untouched')]);
+        await parallel(() => [hostEl.hasClass('ng-touched'), hostEl.hasClass('ng-untouched')]);
     return isTouched || isUntouched;
   }
 }

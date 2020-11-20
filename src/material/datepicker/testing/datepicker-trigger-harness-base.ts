@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ComponentHarness, LocatorFactory, TestElement} from '@angular/cdk/testing';
+import {ComponentHarness, LocatorFactory, parallel, TestElement} from '@angular/cdk/testing';
 import {CalendarHarnessFilters} from './datepicker-harness-filters';
 import {MatCalendarHarness} from './calendar-harness';
 
@@ -33,7 +33,7 @@ export abstract class DatepickerTriggerHarnessBase extends ComponentHarness impl
 
   /** Opens the calendar if the trigger is enabled and it has a calendar. */
   async openCalendar(): Promise<void> {
-    const [isDisabled, hasCalendar] = await Promise.all([this.isDisabled(), this.hasCalendar()]);
+    const [isDisabled, hasCalendar] = await parallel(() => [this.isDisabled(), this.hasCalendar()]);
 
     if (!isDisabled && hasCalendar) {
       return this._openCalendar();

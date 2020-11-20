@@ -129,7 +129,22 @@ export interface ModifierKeys {
     shift?: boolean;
 }
 
-export declare function parallel<T>(values: () => Iterable<T | PromiseLike<T>>): Promise<T[]>;
+export declare function parallel<T1, T2, T3, T4, T5>(values: () => [
+    T1 | PromiseLike<T1>,
+    T2 | PromiseLike<T2>,
+    T3 | PromiseLike<T3>,
+    T4 | PromiseLike<T4>,
+    T5 | PromiseLike<T5>
+]): Promise<[T1, T2, T3, T4, T5]>;
+export declare function parallel<T1, T2, T3, T4>(values: () => [
+    T1 | PromiseLike<T1>,
+    T2 | PromiseLike<T2>,
+    T3 | PromiseLike<T3>,
+    T4 | PromiseLike<T4>
+]): Promise<[T1, T2, T3, T4]>;
+export declare function parallel<T1, T2, T3>(values: () => [T1 | PromiseLike<T1>, T2 | PromiseLike<T2>, T3 | PromiseLike<T3>]): Promise<[T1, T2, T3]>;
+export declare function parallel<T1, T2>(values: () => [T1 | PromiseLike<T1>, T2 | PromiseLike<T2>]): Promise<[T1, T2]>;
+export declare function parallel<T>(values: () => (T | PromiseLike<T>)[]): Promise<T[]>;
 
 export declare function stopHandlingAutoChangeDetectionStatus(): void;
 

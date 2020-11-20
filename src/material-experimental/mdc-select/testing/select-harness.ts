@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {HarnessPredicate} from '@angular/cdk/testing';
+import {HarnessPredicate, parallel} from '@angular/cdk/testing';
 import {MatFormFieldControlHarness} from '@angular/material/form-field/testing/control';
 import {
   MatOptionHarness,
@@ -118,14 +118,15 @@ export class MatSelectHarness extends MatFormFieldControlHarness {
   async clickOptions(filter: OptionHarnessFilters = {}): Promise<void> {
     await this.open();
 
-    const [isMultiple, options] = await Promise.all([this.isMultiple(), this.getOptions(filter)]);
+    const [isMultiple, options] =
+        await parallel(() => [this.isMultiple(), this.getOptions(filter)]);
 
     if (options.length === 0) {
       throw Error('Select does not have options matching the specified filter');
     }
 
     if (isMultiple) {
-      await Promise.all(options.map(option => option.click()));
+      await parallel(() => options.map(option => option.click()));
     } else {
       await options[0].click();
     }

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ComponentHarness, HarnessPredicate} from '@angular/cdk/testing';
+import {ComponentHarness, HarnessPredicate, parallel} from '@angular/cdk/testing';
 import {TabGroupHarnessFilters, TabHarnessFilters} from './tab-harness-filters';
 import {MatTabHarness} from './tab-harness';
 
@@ -40,7 +40,7 @@ export class MatTabGroupHarness extends ComponentHarness {
   /** Gets the selected tab of the tab group. */
   async getSelectedTab(): Promise<MatTabHarness> {
     const tabs = await this.getTabs();
-    const isSelected = await Promise.all(tabs.map(t => t.isSelected()));
+    const isSelected = await parallel(() => tabs.map(t => t.isSelected()));
     for (let i = 0; i < tabs.length; i++) {
       if (isSelected[i]) {
         return tabs[i];

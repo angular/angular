@@ -1,4 +1,4 @@
-import {HarnessLoader} from '@angular/cdk/testing';
+import {HarnessLoader, parallel} from '@angular/cdk/testing';
 import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
 import {Component} from '@angular/core';
 import {MatNativeDateModule} from '@angular/material/core';
@@ -49,7 +49,7 @@ export function runDatepickerInputHarnessTests(
 
   it('should get whether the input has an associated calendar', async () => {
     const inputs = await loader.getAllHarnesses(datepickerInputHarness);
-    expect(await Promise.all(inputs.map(input => input.hasCalendar()))).toEqual([true, false]);
+    expect(await parallel(() => inputs.map(input => input.hasCalendar()))).toEqual([true, false]);
   });
 
   it('should get whether the input is disabled', async () => {
@@ -85,7 +85,7 @@ export function runDatepickerInputHarnessTests(
 
   it('should get the input placeholder', async () => {
     const inputs = await loader.getAllHarnesses(datepickerInputHarness);
-    expect(await Promise.all(inputs.map(input => {
+    expect(await parallel(() => inputs.map(input => {
       return input.getPlaceholder();
     }))).toEqual(['Type a date', '']);
   });
@@ -104,13 +104,13 @@ export function runDatepickerInputHarnessTests(
   it('should get the minimum date of the input', async () => {
     const inputs = await loader.getAllHarnesses(datepickerInputHarness);
     fixture.componentInstance.minDate = new Date(2020, 0, 1, 12, 0, 0);
-    expect(await Promise.all(inputs.map(input => input.getMin()))).toEqual(['2020-01-01', null]);
+    expect(await parallel(() => inputs.map(input => input.getMin()))).toEqual(['2020-01-01', null]);
   });
 
   it('should get the maximum date of the input', async () => {
     const inputs = await loader.getAllHarnesses(datepickerInputHarness);
     fixture.componentInstance.maxDate = new Date(2020, 0, 1, 12, 0, 0);
-    expect(await Promise.all(inputs.map(input => input.getMax()))).toEqual(['2020-01-01', null]);
+    expect(await parallel(() => inputs.map(input => input.getMax()))).toEqual(['2020-01-01', null]);
   });
 
   it('should be able to open and close a calendar in popup mode', async () => {

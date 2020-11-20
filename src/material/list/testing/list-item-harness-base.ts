@@ -12,6 +12,7 @@ import {
   HarnessLoader,
   HarnessPredicate,
   ContentContainerComponentHarness,
+  parallel,
 } from '@angular/cdk/testing';
 import {BaseListItemHarnessFilters, SubheaderHarnessFilters} from './list-harness-filters';
 
@@ -74,7 +75,8 @@ export abstract class MatListItemHarnessBase
 
   /** Gets the lines of text (`mat-line` elements) in this nav list item. */
   async getLinesText(): Promise<string[]> {
-    return Promise.all((await this._lines()).map(l => l.text()));
+    const lines = await this._lines();
+    return parallel(() => lines.map(l => l.text()));
   }
 
   /** Whether this list item has an avatar. */

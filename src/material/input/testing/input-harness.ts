@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {HarnessPredicate} from '@angular/cdk/testing';
+import {HarnessPredicate, parallel} from '@angular/cdk/testing';
 import {MatFormFieldControlHarness} from '@angular/material/form-field/testing/control';
 import {InputHarnessFilters} from './input-harness-filters';
 
@@ -72,7 +72,7 @@ export class MatInputHarness extends MatFormFieldControlHarness {
   /** Gets the placeholder of the input. */
   async getPlaceholder(): Promise<string> {
     const host = await this.host();
-    const [nativePlaceholder, fallback] = await Promise.all([
+    const [nativePlaceholder, fallback] = await parallel(() => [
       host.getProperty('placeholder'),
       host.getAttribute('data-placeholder')
     ]);

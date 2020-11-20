@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {HarnessPredicate} from '@angular/cdk/testing';
+import {HarnessPredicate, parallel} from '@angular/cdk/testing';
 import {MatFormFieldControlHarness} from '@angular/material/form-field/testing/control';
 import {MatNativeOptionHarness} from './native-option-harness';
 import {
@@ -82,15 +82,17 @@ export class MatNativeSelectHarness extends MatFormFieldControlHarness {
    * mode all options will be clicked, otherwise the harness will pick the first matching option.
    */
   async selectOptions(filter: NativeOptionHarnessFilters = {}): Promise<void> {
-    const [isMultiple, options] = await Promise.all([this.isMultiple(), this.getOptions(filter)]);
+    const [isMultiple, options] = await parallel(() => {
+      return [this.isMultiple(), this.getOptions(filter)];
+    });
 
     if (options.length === 0) {
       throw Error('Select does not have options matching the specified filter');
     }
 
-    const [host, optionIndexes] = await Promise.all([
+    const [host, optionIndexes] = await parallel(() => [
       this.host(),
-      Promise.all(options.slice(0, isMultiple ? undefined : 1).map(option => option.getIndex()))
+      parallel(() => options.slice(0, isMultiple ? undefined : 1).map(option => option.getIndex()))
     ]);
 
     // @breaking-change 12.0.0 Error can be removed once `selectOptions` is a required method.

@@ -9,7 +9,8 @@
 import {
   ComponentHarness,
   ComponentHarnessConstructor,
-  HarnessPredicate
+  HarnessPredicate,
+  parallel
 } from '@angular/cdk/testing';
 import {DividerHarnessFilters, MatDividerHarness} from '@angular/material/divider/testing';
 import {BaseListItemHarnessFilters, SubheaderHarnessFilters} from './list-harness-filters';
@@ -55,8 +56,9 @@ export abstract class MatListHarnessBase
    * @return The list of items matching the given filters, grouped into sections by subheader.
    */
   async getItemsGroupedBySubheader(filters?: F): Promise<ListSection<C>[]> {
-    const listSections = [];
-    let currentSection: {items: C[], heading?: Promise<string>} = {items: []};
+    type Section = {items: C[], heading?: Promise<string>};
+    const listSections: Section[] = [];
+    let currentSection: Section = {items: []};
     const itemsAndSubheaders =
         await this.getItemsWithSubheadersAndDividers({item: filters, divider: false});
     for (const itemOrSubheader of itemsAndSubheaders) {
@@ -75,7 +77,7 @@ export abstract class MatListHarnessBase
     }
 
     // Concurrently wait for all sections to resolve their heading if present.
-    return Promise.all(listSections.map(async (s) =>
+    return parallel(() => listSections.map(async (s) =>
       ({items: s.items, heading: await s.heading})));
   }
 

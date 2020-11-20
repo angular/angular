@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {HarnessPredicate, TestKey} from '@angular/cdk/testing';
+import {HarnessPredicate, parallel, TestKey} from '@angular/cdk/testing';
 import {MatDatepickerInputHarnessBase, getInputPredicate} from './datepicker-input-harness-base';
 import {DatepickerTriggerHarnessBase} from './datepicker-trigger-harness-base';
 import {
@@ -66,7 +66,7 @@ export class MatDateRangeInputHarness extends DatepickerTriggerHarnessBase {
 
   /** Gets the combined value of the start and end inputs, including the separator. */
   async getValue(): Promise<string> {
-    const [start, end, separator] = await Promise.all([
+    const [start, end, separator] = await parallel(() => [
       this.getStartInput().then(input => input.getValue()),
       this.getEndInput().then(input => input.getValue()),
       this.getSeparator()
@@ -95,7 +95,7 @@ export class MatDateRangeInputHarness extends DatepickerTriggerHarnessBase {
   /** Gets whether the range input is disabled. */
   async isDisabled(): Promise<boolean> {
     // We consider the input as disabled if both of the sub-inputs are disabled.
-    const [startDisabled, endDisabled] = await Promise.all([
+    const [startDisabled, endDisabled] = await parallel(() => [
       this.getStartInput().then(input => input.isDisabled()),
       this.getEndInput().then(input => input.isDisabled())
     ]);

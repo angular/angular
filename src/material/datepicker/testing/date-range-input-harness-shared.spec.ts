@@ -1,4 +1,4 @@
-import {HarnessLoader} from '@angular/cdk/testing';
+import {HarnessLoader, parallel} from '@angular/cdk/testing';
 import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
 import {Component} from '@angular/core';
 import {MatNativeDateModule} from '@angular/material/core';
@@ -71,7 +71,7 @@ export function runDateRangeInputHarnessTests(
 
   it('should get harnesses for the inner inputs', async () => {
     const input = await loader.getHarness(dateRangeInputHarness.with({selector: '[basic]'}));
-    const [start, end] = await Promise.all([input.getStartInput(), input.getEndInput()]);
+    const [start, end] = await parallel(() => [input.getStartInput(), input.getEndInput()]);
     expect(start).toBeInstanceOf(startInputHarness);
     expect(end).toBeInstanceOf(endInputHarness);
   });
@@ -105,54 +105,56 @@ export function runDateRangeInputHarnessTests(
     expect(await input.getCalendar()).toBeInstanceOf(calendarHarness);
   });
 
-  /////
-
   it('should get whether the inner inputs are disabled', async () => {
     const input = await loader.getHarness(dateRangeInputHarness.with({selector: '[basic]'}));
-    const [start, end] = await Promise.all([input.getStartInput(), input.getEndInput()]);
+    const [start, end] = await parallel(() => [input.getStartInput(), input.getEndInput()]);
 
-    expect(await Promise.all([start.isDisabled(), end.isDisabled()])).toEqual([false, false]);
+    expect(await parallel(() => [start.isDisabled(), end.isDisabled()])).toEqual([false, false]);
 
     fixture.componentInstance.subInputsDisabled = true;
-    expect(await Promise.all([start.isDisabled(), end.isDisabled()])).toEqual([true, true]);
+    expect(await parallel(() => [start.isDisabled(), end.isDisabled()])).toEqual([true, true]);
   });
 
   it('should get whether the inner inputs are required', async () => {
     const input = await loader.getHarness(dateRangeInputHarness.with({selector: '[basic]'}));
-    const [start, end] = await Promise.all([input.getStartInput(), input.getEndInput()]);
+    const [start, end] = await parallel(() => [input.getStartInput(), input.getEndInput()]);
 
-    expect(await Promise.all([start.isRequired(), end.isRequired()])).toEqual([false, false]);
+    expect(await parallel(() => [start.isRequired(), end.isRequired()])).toEqual([false, false]);
 
     fixture.componentInstance.subInputsRequired = true;
-    expect(await Promise.all([start.isRequired(), end.isRequired()])).toEqual([true, true]);
+    expect(await parallel(() => [start.isRequired(), end.isRequired()])).toEqual([true, true]);
   });
 
   it('should get the values of the inner inputs', async () => {
     const input = await loader.getHarness(dateRangeInputHarness.with({selector: '[basic]'}));
-    const [start, end] = await Promise.all([input.getStartInput(), input.getEndInput()]);
+    const [start, end] = await parallel(() => [input.getStartInput(), input.getEndInput()]);
 
     fixture.componentInstance.startDate = new Date(2020, 0, 1, 12, 0, 0);
     fixture.componentInstance.endDate = new Date(2020, 1, 2, 12, 0, 0);
 
-    expect(await Promise.all([start.getValue(), end.getValue()])).toEqual(['1/1/2020', '2/2/2020']);
+    expect(await parallel(() => {
+      return [start.getValue(), end.getValue()];
+    })).toEqual(['1/1/2020', '2/2/2020']);
   });
 
   it('should set the values of the inner inputs', async () => {
     const input = await loader.getHarness(dateRangeInputHarness.with({selector: '[basic]'}));
-    const [start, end] = await Promise.all([input.getStartInput(), input.getEndInput()]);
+    const [start, end] = await parallel(() => [input.getStartInput(), input.getEndInput()]);
 
-    expect(await Promise.all([start.getValue(), end.getValue()])).toEqual(['', '']);
+    expect(await parallel(() => [start.getValue(), end.getValue()])).toEqual(['', '']);
 
-    await Promise.all([start.setValue('1/1/2020'), end.setValue('2/2/2020')]);
+    await parallel(() => [start.setValue('1/1/2020'), end.setValue('2/2/2020')]);
 
-    expect(await Promise.all([start.getValue(), end.getValue()])).toEqual(['1/1/2020', '2/2/2020']);
+    expect(await parallel(() => {
+      return [start.getValue(), end.getValue()];
+    })).toEqual(['1/1/2020', '2/2/2020']);
   });
 
   it('should get the placeholders of the inner inputs', async () => {
     const input = await loader.getHarness(dateRangeInputHarness.with({selector: '[basic]'}));
-    const [start, end] = await Promise.all([input.getStartInput(), input.getEndInput()]);
+    const [start, end] = await parallel(() => [input.getStartInput(), input.getEndInput()]);
 
-    expect(await Promise.all([start.getPlaceholder(), end.getPlaceholder()])).toEqual([
+    expect(await parallel(() => [start.getPlaceholder(), end.getPlaceholder()])).toEqual([
       'Start date',
       'End date'
     ]);
@@ -160,7 +162,7 @@ export function runDateRangeInputHarnessTests(
 
   it('should be able to change the inner input focused state', async () => {
     const input = await loader.getHarness(dateRangeInputHarness.with({selector: '[basic]'}));
-    const [start, end] = await Promise.all([input.getStartInput(), input.getEndInput()]);
+    const [start, end] = await parallel(() => [input.getStartInput(), input.getEndInput()]);
 
     expect(await start.isFocused()).toBe(false);
     await start.focus();
@@ -177,33 +179,37 @@ export function runDateRangeInputHarnessTests(
 
   it('should get the minimum date of the inner inputs', async () => {
     const input = await loader.getHarness(dateRangeInputHarness.with({selector: '[basic]'}));
-    const [start, end] = await Promise.all([input.getStartInput(), input.getEndInput()]);
+    const [start, end] = await parallel(() => [input.getStartInput(), input.getEndInput()]);
 
-    expect(await Promise.all([start.getMin(), end.getMin()])).toEqual([null, null]);
+    expect(await parallel(() => [start.getMin(), end.getMin()])).toEqual([null, null]);
 
     fixture.componentInstance.minDate = new Date(2020, 0, 1, 12, 0, 0);
-    expect(await Promise.all([start.getMin(), end.getMin()])).toEqual(['2020-01-01', '2020-01-01']);
+    expect(await parallel(() => {
+      return [start.getMin(), end.getMin()];
+    })).toEqual(['2020-01-01', '2020-01-01']);
   });
 
   it('should get the maximum date of the inner inputs', async () => {
     const input = await loader.getHarness(dateRangeInputHarness.with({selector: '[basic]'}));
-    const [start, end] = await Promise.all([input.getStartInput(), input.getEndInput()]);
+    const [start, end] = await parallel(() => [input.getStartInput(), input.getEndInput()]);
 
-    expect(await Promise.all([start.getMax(), end.getMax()])).toEqual([null, null]);
+    expect(await parallel(() => [start.getMax(), end.getMax()])).toEqual([null, null]);
 
     fixture.componentInstance.maxDate = new Date(2020, 0, 1, 12, 0, 0);
 
-    expect(await Promise.all([start.getMax(), end.getMax()])).toEqual(['2020-01-01', '2020-01-01']);
+    expect(await parallel(() => {
+      return [start.getMax(), end.getMax()];
+    })).toEqual(['2020-01-01', '2020-01-01']);
   });
 
   it('should dispatch the dateChange event when the inner input values have changed', async () => {
     const input = await loader.getHarness(dateRangeInputHarness.with({selector: '[basic]'}));
-    const [start, end] = await Promise.all([input.getStartInput(), input.getEndInput()]);
+    const [start, end] = await parallel(() => [input.getStartInput(), input.getEndInput()]);
 
     expect(fixture.componentInstance.startDateChangeCount).toBe(0);
     expect(fixture.componentInstance.endDateChangeCount).toBe(0);
 
-    await Promise.all([start.setValue('1/1/2020'), end.setValue('2/2/2020')]);
+    await parallel(() => [start.setValue('1/1/2020'), end.setValue('2/2/2020')]);
 
     expect(fixture.componentInstance.startDateChangeCount).toBe(1);
     expect(fixture.componentInstance.endDateChangeCount).toBe(1);

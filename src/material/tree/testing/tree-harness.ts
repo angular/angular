@@ -80,7 +80,7 @@ export class MatTreeHarness extends ComponentHarness {
   async getTreeStructure(): Promise<TextTree> {
     const nodes = await this.getNodes();
     const nodeInformation = await parallel(() => nodes.map(node => {
-      return Promise.all([node.getLevel(), node.getText(), node.isExpanded()]);
+      return parallel(() => [node.getLevel(), node.getText(), node.isExpanded()]);
     }));
     return this._getTreeStructure(nodeInformation, 1, true);
   }

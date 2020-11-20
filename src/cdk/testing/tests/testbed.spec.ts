@@ -115,7 +115,7 @@ describe('TestbedHarnessEnvironment', () => {
         // promises.
         detectChangesSpy.calls.reset();
         expect(detectChangesSpy).toHaveBeenCalledTimes(0);
-        await parallel<unknown>(() => {
+        await parallel(() => {
           // Chain together our promises to ensure the before clause runs first and the after clause
           // runs last.
           const before =
@@ -153,7 +153,9 @@ describe('TestbedHarnessEnvironment', () => {
             fixture, MainComponentHarness, {queryFn: piercingQuerySelectorAll},
           );
           const shadows = await harness.shadows();
-          expect(await Promise.all(shadows.map(el => el.text()))).toEqual(['Shadow 1', 'Shadow 2']);
+          expect(await parallel(() => {
+            return shadows.map(el => el.text());
+          })).toEqual(['Shadow 1', 'Shadow 2']);
         });
 
         it('should allow querying across shadow boundary', async () => {

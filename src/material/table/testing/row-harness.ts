@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ComponentHarness, HarnessPredicate} from '@angular/cdk/testing';
+import {ComponentHarness, HarnessPredicate, parallel} from '@angular/cdk/testing';
 import {RowHarnessFilters, CellHarnessFilters} from './table-harness-filters';
 import {MatCellHarness, MatHeaderCellHarness, MatFooterCellHarness} from './cell-harness';
 
@@ -113,7 +113,7 @@ async function getCellTextByIndex(harness: {
   getCells: (filter?: CellHarnessFilters) => Promise<MatCellHarness[]>
 }, filter: CellHarnessFilters): Promise<string[]> {
   const cells = await harness.getCells(filter);
-  return Promise.all(cells.map(cell => cell.getText()));
+  return parallel(() => cells.map(cell => cell.getText()));
 }
 
 async function getCellTextByColumnName(harness: {
@@ -121,8 +121,8 @@ async function getCellTextByColumnName(harness: {
 }): Promise<MatRowHarnessColumnsText> {
   const output: MatRowHarnessColumnsText = {};
   const cells = await harness.getCells();
-  const cellsData = await Promise.all(cells.map(cell => {
-    return Promise.all([cell.getColumnName(), cell.getText()]);
+  const cellsData = await parallel(() => cells.map(cell => {
+    return parallel(() => [cell.getColumnName(), cell.getText()]);
   }));
   cellsData.forEach(([columnName, text]) => output[columnName] = text);
   return output;

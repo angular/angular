@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {HarnessPredicate} from '@angular/cdk/testing';
+import {HarnessPredicate, parallel} from '@angular/cdk/testing';
 import {MatListOptionCheckboxPosition} from '@angular/material-experimental/mdc-list';
 import {MatListHarnessBase} from './list-harness-base';
 import {
@@ -46,7 +46,7 @@ export class MatSelectionListHarness extends MatListHarnessBase<
    */
   async selectItems(...filters: ListOptionHarnessFilters[]): Promise<void> {
     const items = await this._getItems(filters);
-    await Promise.all(items.map(item => item.select()));
+    await parallel(() => items.map(item => item.select()));
   }
 
   /**
@@ -55,7 +55,7 @@ export class MatSelectionListHarness extends MatListHarnessBase<
    */
   async deselectItems(...filters: ListItemHarnessFilters[]): Promise<void> {
     const items = await this._getItems(filters);
-    await Promise.all(items.map(item => item.deselect()));
+    await parallel(() => items.map(item => item.deselect()));
   }
 
   /** Gets all items matching the given list of filters. */
@@ -63,7 +63,7 @@ export class MatSelectionListHarness extends MatListHarnessBase<
     if (!filters.length) {
       return this.getItems();
     }
-    const matches = await Promise.all(
+    const matches = await parallel(() =>
       filters.map(filter => this.locatorForAll(MatListOptionHarness.with(filter))()));
     return matches.reduce((result, current) => [...result, ...current], []);
   }

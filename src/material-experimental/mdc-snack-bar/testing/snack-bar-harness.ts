@@ -7,7 +7,7 @@
  */
 
 import {AriaLivePoliteness} from '@angular/cdk/a11y';
-import {ComponentHarness, HarnessPredicate} from '@angular/cdk/testing';
+import {ComponentHarness, HarnessPredicate, parallel} from '@angular/cdk/testing';
 import {SnackBarHarnessFilters} from './snack-bar-harness-filters';
 
 /** Harness for interacting with an MDC-based mat-snack-bar in tests. */
@@ -97,7 +97,7 @@ export class MatSnackBarHarness extends ComponentHarness {
     // element isn't in the DOM by seeing that its width and height are zero.
 
     const host = await this.host();
-    const [exit, dimensions] = await Promise.all([
+    const [exit, dimensions] = await parallel(() => [
       // The snackbar container is marked with the "exit" attribute after it has been dismissed
       // but before the animation has finished (after which it's removed from the DOM).
       host.getAttribute('mat-exit'),

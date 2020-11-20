@@ -1,4 +1,4 @@
-import {HarnessLoader} from '@angular/cdk/testing';
+import {HarnessLoader, parallel} from '@angular/cdk/testing';
 import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
 import {Component, ViewChildren, QueryList} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
@@ -60,13 +60,13 @@ export function runHarnessTests(
 
   it('should get the text of options', async () => {
     const options = await loader.getAllHarnesses(optionHarness);
-    const texts = await Promise.all(options.map(option => option.getText()));
+    const texts = await parallel(() => options.map(option => option.getText()));
     expect(texts).toEqual(['Plain option', 'Disabled option']);
   });
 
   it('should get whether an option is disabled', async () => {
     const options = await loader.getAllHarnesses(optionHarness);
-    const disabledStates = await Promise.all(options.map(option => option.isDisabled()));
+    const disabledStates = await parallel(() => options.map(option => option.isDisabled()));
     expect(disabledStates).toEqual([false, true]);
   });
 

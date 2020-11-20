@@ -1,4 +1,4 @@
-import {HarnessLoader} from '@angular/cdk/testing';
+import {HarnessLoader, parallel} from '@angular/cdk/testing';
 import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
 import {Component} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
@@ -37,7 +37,7 @@ export function runHarnessTests(
   });
 
   it('should filter icon harnesses based on their type', async () => {
-    const [svgIcons, fontIcons] = await Promise.all([
+    const [svgIcons, fontIcons] = await parallel(() => [
       loader.getAllHarnesses(iconHarness.with({type: IconType.SVG})),
       loader.getAllHarnesses(iconHarness.with({type: IconType.FONT}))
     ]);
@@ -47,7 +47,7 @@ export function runHarnessTests(
   });
 
   it('should filter icon harnesses based on their name', async () => {
-    const [regexFilterResults, stringFilterResults] = await Promise.all([
+    const [regexFilterResults, stringFilterResults] = await parallel(() => [
       loader.getAllHarnesses(iconHarness.with({name: /^font/})),
       loader.getAllHarnesses(iconHarness.with({name: 'fontIcon'}))
     ]);
@@ -57,7 +57,7 @@ export function runHarnessTests(
   });
 
   it('should filter icon harnesses based on their namespace', async () => {
-    const [regexFilterResults, stringFilterResults, nullFilterResults] = await Promise.all([
+    const [regexFilterResults, stringFilterResults, nullFilterResults] = await parallel(() => [
       loader.getAllHarnesses(iconHarness.with({namespace: /^font/})),
       loader.getAllHarnesses(iconHarness.with({namespace: 'svgIcons'})),
       loader.getAllHarnesses(iconHarness.with({namespace: null}))
@@ -70,25 +70,25 @@ export function runHarnessTests(
 
   it('should get the type of each icon', async () => {
     const icons = await loader.getAllHarnesses(iconHarness);
-    const types = await Promise.all(icons.map(icon => icon.getType()));
+    const types = await parallel(() => icons.map(icon => icon.getType()));
     expect(types).toEqual([IconType.FONT, IconType.SVG, IconType.FONT]);
   });
 
   it('should get the name of an icon', async () => {
     const icons = await loader.getAllHarnesses(iconHarness);
-    const names = await Promise.all(icons.map(icon => icon.getName()));
+    const names = await parallel(() => icons.map(icon => icon.getName()));
     expect(names).toEqual(['fontIcon', 'svgIcon', 'ligature_icon']);
   });
 
   it('should get the namespace of an icon', async () => {
     const icons = await loader.getAllHarnesses(iconHarness);
-    const namespaces = await Promise.all(icons.map(icon => icon.getNamespace()));
+    const namespaces = await parallel(() => icons.map(icon => icon.getNamespace()));
     expect(namespaces).toEqual(['fontIcons', 'svgIcons', null]);
   });
 
   it('should get whether an icon is inline', async () => {
     const icons = await loader.getAllHarnesses(iconHarness);
-    const inlineStates = await Promise.all(icons.map(icon => icon.isInline()));
+    const inlineStates = await parallel(() => icons.map(icon => icon.isInline()));
     expect(inlineStates).toEqual([false, false, true]);
   });
 

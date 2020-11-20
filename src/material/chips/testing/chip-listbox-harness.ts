@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {HarnessPredicate} from '@angular/cdk/testing';
+import {HarnessPredicate, parallel} from '@angular/cdk/testing';
 import {MatChipOptionHarness} from './chip-option-harness';
 import {
   ChipListboxHarnessFilters,
@@ -48,6 +48,6 @@ export class MatChipListboxHarness extends _MatChipListHarnessBase {
     if (!chips.length) {
       throw Error(`Cannot find chip matching filter ${JSON.stringify(filter)}`);
     }
-    await Promise.all(chips.map(chip => chip.select()));
+    await parallel(() => chips.map(chip => chip.select()));
   }
 }

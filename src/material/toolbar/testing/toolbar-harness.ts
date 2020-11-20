@@ -7,7 +7,7 @@
  */
 
 
-import {ContentContainerComponentHarness, HarnessPredicate} from '@angular/cdk/testing';
+import {ContentContainerComponentHarness, HarnessPredicate, parallel} from '@angular/cdk/testing';
 import {ToolbarHarnessFilters} from './toolbar-harness-filters';
 
 /** Selectors for different sections of the mat-toolbar that contain user content. */
@@ -46,6 +46,6 @@ export class MatToolbarHarness extends ContentContainerComponentHarness<MatToolb
   /** Gets the text of each row in the toolbar. */
   async getRowsAsText(): Promise<string[]> {
     const rows = await this._getRows();
-    return Promise.all(rows.length ? rows.map(r => r.text()) : [this._getText()]);
+    return parallel(() => rows.length ? rows.map(r => r.text()) : [this._getText()]);
   }
 }

@@ -1,4 +1,4 @@
-import {HarnessLoader} from '@angular/cdk/testing';
+import {HarnessLoader, parallel} from '@angular/cdk/testing';
 import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
 import {Component} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
@@ -139,10 +139,10 @@ export function runCalendarHarnessTests(
   it('should get the state of the cell within the main range', async () => {
     const calendar = await loader.getHarness(calendarHarness.with({selector: '#range'}));
     const allCells = await calendar.getCells();
-    const [initialStartStates, initialInRangeStates, initialEndStates] = await Promise.all([
-      Promise.all(allCells.map(cell => cell.isRangeStart())),
-      Promise.all(allCells.map(cell => cell.isInRange())),
-      Promise.all(allCells.map(cell => cell.isRangeEnd()))
+    const [initialStartStates, initialInRangeStates, initialEndStates] = await parallel(() => [
+      parallel(() => allCells.map(cell => cell.isRangeStart())),
+      parallel(() => allCells.map(cell => cell.isInRange())),
+      parallel(() => allCells.map(cell => cell.isRangeEnd()))
     ]);
 
     expect(initialStartStates.every(state => state === false)).toBe(true);
@@ -172,10 +172,10 @@ export function runCalendarHarnessTests(
   it('should get the state of the cell within the comparison range', async () => {
     const calendar = await loader.getHarness(calendarHarness.with({selector: '#range'}));
     const allCells = await calendar.getCells();
-    const [initialStartStates, initialInRangeStates, initialEndStates] = await Promise.all([
-      Promise.all(allCells.map(cell => cell.isComparisonRangeStart())),
-      Promise.all(allCells.map(cell => cell.isInComparisonRange())),
-      Promise.all(allCells.map(cell => cell.isComparisonRangeEnd()))
+    const [initialStartStates, initialInRangeStates, initialEndStates] = await parallel(() => [
+      parallel(() => allCells.map(cell => cell.isComparisonRangeStart())),
+      parallel(() => allCells.map(cell => cell.isInComparisonRange())),
+      parallel(() => allCells.map(cell => cell.isComparisonRangeEnd()))
     ]);
 
     expect(initialStartStates.every(state => state === false)).toBe(true);
@@ -207,10 +207,10 @@ export function runCalendarHarnessTests(
   it('should get the state of the cell within the preview range', async () => {
     const calendar = await loader.getHarness(calendarHarness.with({selector: '#range'}));
     const allCells = await calendar.getCells();
-    const [initialStartStates, initialInRangeStates, initialEndStates] = await Promise.all([
-      Promise.all(allCells.map(cell => cell.isPreviewRangeStart())),
-      Promise.all(allCells.map(cell => cell.isInPreviewRange())),
-      Promise.all(allCells.map(cell => cell.isPreviewRangeEnd()))
+    const [initialStartStates, initialInRangeStates, initialEndStates] = await parallel(() => [
+      parallel(() => allCells.map(cell => cell.isPreviewRangeStart())),
+      parallel(() => allCells.map(cell => cell.isInPreviewRange())),
+      parallel(() => allCells.map(cell => cell.isPreviewRangeEnd()))
     ]);
 
     expect(initialStartStates.every(state => state === false)).toBe(true);
@@ -240,7 +240,7 @@ export function runCalendarHarnessTests(
   it('should filter cells by their text', async () => {
     const calendar = await loader.getHarness(calendarHarness.with({selector: '#single'}));
     const cells = await calendar.getCells({text: /^3/});
-    expect(await Promise.all(cells.map(cell => cell.getText()))).toEqual(['3', '30', '31']);
+    expect(await parallel(() => cells.map(cell => cell.getText()))).toEqual(['3', '30', '31']);
   });
 
   it('should filter cells by their selected state', async () => {
@@ -250,13 +250,13 @@ export function runCalendarHarnessTests(
     await allCells[0].select();
 
     const selectedCells = await calendar.getCells({selected: true});
-    expect(await Promise.all(selectedCells.map(cell => cell.getText()))).toEqual(['1']);
+    expect(await parallel(() => selectedCells.map(cell => cell.getText()))).toEqual(['1']);
   });
 
   it('should filter cells by their active state', async () => {
     const calendar = await loader.getHarness(calendarHarness.with({selector: '#single'}));
     const cells = await calendar.getCells({active: true});
-    expect(await Promise.all(cells.map(cell => cell.getText()))).toEqual(['1']);
+    expect(await parallel(() => cells.map(cell => cell.getText()))).toEqual(['1']);
   });
 
   it('should filter cells by their disabled state', async () => {
@@ -265,7 +265,7 @@ export function runCalendarHarnessTests(
 
     const calendar = await loader.getHarness(calendarHarness.with({selector: '#single'}));
     const cells = await calendar.getCells({disabled: true});
-    expect(await Promise.all(cells.map(cell => cell.getText()))).toEqual(['1', '2']);
+    expect(await parallel(() => cells.map(cell => cell.getText()))).toEqual(['1', '2']);
   });
 
   it('should filter cells based on whether they are inside the comparison range', async () => {
@@ -277,7 +277,7 @@ export function runCalendarHarnessTests(
         new Date(calendarDate.getFullYear(), calendarDate.getMonth(), 8);
 
     const cells = await calendar.getCells({inComparisonRange: true});
-    expect(await Promise.all(cells.map(cell => cell.getText()))).toEqual(['5', '6', '7', '8']);
+    expect(await parallel(() => cells.map(cell => cell.getText()))).toEqual(['5', '6', '7', '8']);
   });
 
   it('should filter cells based on whether they are inside the preview range', async () => {
@@ -287,7 +287,7 @@ export function runCalendarHarnessTests(
     await (await calendar.getCells({text: '8'}))[0].hover();
 
     const cells = await calendar.getCells({inPreviewRange: true});
-    expect(await Promise.all(cells.map(cell => cell.getText()))).toEqual(['5', '6', '7', '8']);
+    expect(await parallel(() => cells.map(cell => cell.getText()))).toEqual(['5', '6', '7', '8']);
   });
 
 }

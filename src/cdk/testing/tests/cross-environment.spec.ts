@@ -10,6 +10,7 @@ import {
   ComponentHarness,
   ComponentHarnessConstructor,
   HarnessLoader,
+  parallel,
   TestElement,
 } from '@angular/cdk/testing';
 import {MainComponentHarness} from './harnesses/main-component-harness';
@@ -214,7 +215,7 @@ export function crossEnvironmentSpecs(
         });
 
     it('should load optional harness with ancestor selector restriction', async () => {
-      const [subcomp1, subcomp2] = await Promise.all([
+      const [subcomp1, subcomp2] = await parallel(() => [
         harness.optionalAncestorRestrictedSubcomponent(),
         harness.optionalAncestorRestrictedMissingSubcomponent()
       ]);
@@ -224,14 +225,14 @@ export function crossEnvironmentSpecs(
     });
 
     it('should load all harnesses with ancestor selector restriction', async () => {
-      const [subcomps1, subcomps2] = await Promise.all([
+      const [subcomps1, subcomps2] = await parallel(() => [
         harness.allAncestorRestrictedSubcomponent(),
         harness.allAncestorRestrictedMissingSubcomponent()
       ]);
       expect(subcomps1.length).toBe(2);
       expect(subcomps2.length).toBe(0);
       const [title1, title2] =
-          await Promise.all(subcomps1.map(async comp => (await comp.title()).text()));
+          await parallel(() => subcomps1.map(async comp => (await comp.title()).text()));
       expect(title1).toBe('List of other 1');
       expect(title2).toBe('List of other 2');
     });
@@ -421,7 +422,7 @@ export function crossEnvironmentSpecs(
     });
 
     it('should be able to set the value of a select in single selection mode', async () => {
-      const [select, value, changeEventCounter] = await Promise.all([
+      const [select, value, changeEventCounter] = await parallel(() => [
         harness.singleSelect(),
         harness.singleSelectValue(),
         harness.singleSelectChangeEventCounter()
@@ -434,7 +435,7 @@ export function crossEnvironmentSpecs(
     });
 
     it('should be able to set the value of a select in multi-selection mode', async () => {
-      const [select, value, changeEventCounter] = await Promise.all([
+      const [select, value, changeEventCounter] = await parallel(() => [
         harness.multiSelect(),
         harness.multiSelectValue(),
         harness.multiSelectChangeEventCounter()

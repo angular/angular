@@ -1,4 +1,4 @@
-import {HarnessLoader} from '@angular/cdk/testing';
+import {HarnessLoader, parallel} from '@angular/cdk/testing';
 import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
 import {Component} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
@@ -32,13 +32,13 @@ export function runNativeSelectHarnessTests(
 
   it('should get the id of a select', async () => {
     const selects = await loader.getAllHarnesses(selectHarness);
-    expect(await Promise.all(selects.map(select => select.getId()))).toEqual(['food', 'drink']);
+    expect(await parallel(() => selects.map(select => select.getId()))).toEqual(['food', 'drink']);
   });
 
   it('should get the name of a select', async () => {
     const selects = await loader.getAllHarnesses(selectHarness);
 
-    expect(await Promise.all(selects.map(select => select.getName()))).toEqual([
+    expect(await parallel(() => selects.map(select => select.getName()))).toEqual([
       'favorite-food',
       'favorite-drink'
     ]);
@@ -46,23 +46,27 @@ export function runNativeSelectHarnessTests(
 
   it('should get whether a select is disabled', async () => {
     const selects = await loader.getAllHarnesses(selectHarness);
-    expect(await Promise.all(selects.map(select => select.isDisabled()))).toEqual([false, false]);
+    expect(await parallel(() => {
+      return selects.map(select => select.isDisabled());
+    })).toEqual([false, false]);
 
     fixture.componentInstance.favoriteDrinkDisabled = true;
-    expect(await Promise.all(selects.map(select => select.isDisabled()))).toEqual([false, true]);
+    expect(await parallel(() => selects.map(select => select.isDisabled()))).toEqual([false, true]);
   });
 
   it('should get whether the select is in multi-selection mode', async () => {
     const selects = await loader.getAllHarnesses(selectHarness);
-    expect(await Promise.all(selects.map(select => select.isMultiple()))).toEqual([false, true]);
+    expect(await parallel(() => selects.map(select => select.isMultiple()))).toEqual([false, true]);
   });
 
   it('should get whether a select is required', async () => {
     const selects = await loader.getAllHarnesses(selectHarness);
-    expect(await Promise.all(selects.map(select => select.isRequired()))).toEqual([false, false]);
+    expect(await parallel(() => {
+      return selects.map(select => select.isRequired());
+    })).toEqual([false, false]);
 
     fixture.componentInstance.favoriteFoodRequired = true;
-    expect(await Promise.all(selects.map(select => select.isRequired()))).toEqual([true, false]);
+    expect(await parallel(() => selects.map(select => select.isRequired()))).toEqual([true, false]);
   });
 
   it('should be able to focus a select', async () => {
@@ -83,7 +87,7 @@ export function runNativeSelectHarnessTests(
 
   it('should get the options of a select', async () => {
     const selects = await loader.getAllHarnesses(selectHarness);
-    const options = await Promise.all(selects.map(select => select.getOptions()));
+    const options = await parallel(() => selects.map(select => select.getOptions()));
 
     expect(options.length).toBe(2);
     expect(options[0].length).toBe(3);
@@ -110,7 +114,7 @@ export function runNativeSelectHarnessTests(
     const select = await loader.getHarness(selectHarness.with({selector: '#drink'}));
     const options = await select.getOptions();
 
-    expect(await Promise.all(options.map(option => option.getText()))).toEqual([
+    expect(await parallel(() => options.map(option => option.getText()))).toEqual([
       'Water',
       'Soda',
       'Coffee',
@@ -122,14 +126,14 @@ export function runNativeSelectHarnessTests(
     const select = await loader.getHarness(selectHarness.with({selector: '#food'}));
     const options = await select.getOptions();
 
-    expect(await Promise.all(options.map(option => option.getIndex()))).toEqual([0, 1, 2]);
+    expect(await parallel(() => options.map(option => option.getIndex()))).toEqual([0, 1, 2]);
   });
 
   it('should get the disabled state of select options', async () => {
     const select = await loader.getHarness(selectHarness.with({selector: '#food'}));
     const options = await select.getOptions();
 
-    expect(await Promise.all(options.map(option => option.isDisabled()))).toEqual([
+    expect(await parallel(() => options.map(option => option.isDisabled()))).toEqual([
       false,
       false,
       false
@@ -137,7 +141,7 @@ export function runNativeSelectHarnessTests(
 
     fixture.componentInstance.pastaDisabled = true;
 
-    expect(await Promise.all(options.map(option => option.isDisabled()))).toEqual([
+    expect(await parallel(() => options.map(option => option.isDisabled()))).toEqual([
       false,
       true,
       false
@@ -148,7 +152,7 @@ export function runNativeSelectHarnessTests(
     const select = await loader.getHarness(selectHarness.with({selector: '#food'}));
     const options = await select.getOptions();
 
-    expect(await Promise.all(options.map(option => option.isSelected()))).toEqual([
+    expect(await parallel(() => options.map(option => option.isSelected()))).toEqual([
       false,
       false,
       false
@@ -156,7 +160,7 @@ export function runNativeSelectHarnessTests(
 
     await select.selectOptions({index: 2});
 
-    expect(await Promise.all(options.map(option => option.isSelected()))).toEqual([
+    expect(await parallel(() => options.map(option => option.isSelected()))).toEqual([
       false,
       false,
       true
@@ -167,7 +171,7 @@ export function runNativeSelectHarnessTests(
     const select = await loader.getHarness(selectHarness.with({selector: '#drink'}));
     const options = await select.getOptions();
 
-    expect(await Promise.all(options.map(option => option.isSelected()))).toEqual([
+    expect(await parallel(() => options.map(option => option.isSelected()))).toEqual([
       false,
       false,
       false,
@@ -176,7 +180,7 @@ export function runNativeSelectHarnessTests(
 
     await select.selectOptions({text: /Water|Coffee/});
 
-    expect(await Promise.all(options.map(option => option.isSelected()))).toEqual([
+    expect(await parallel(() => options.map(option => option.isSelected()))).toEqual([
       true,
       false,
       true,
