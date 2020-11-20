@@ -19,6 +19,7 @@ ts_library(
         "//packages/compiler-cli/src/ngtsc/file_system",
         "//packages/compiler-cli/src/ngtsc/imports",
         "//packages/compiler-cli/src/ngtsc/incremental:api",
+        "//packages/compiler-cli/src/ngtsc/incremental/semantic_graph",
         "//packages/compiler-cli/src/ngtsc/logging",
         "//packages/compiler-cli/src/ngtsc/metadata",
         "//packages/compiler-cli/src/ngtsc/partial_evaluator",

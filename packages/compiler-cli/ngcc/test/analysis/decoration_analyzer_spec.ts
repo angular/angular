@@ -10,6 +10,7 @@ import * as ts from 'typescript';
 import {FatalDiagnosticError, makeDiagnostic} from '../../../src/ngtsc/diagnostics';
 import {absoluteFrom, getFileSystem, getSourceFileOrError} from '../../../src/ngtsc/file_system';
 import {runInEachFileSystem, TestFile} from '../../../src/ngtsc/file_system/testing';
+import {SemanticSymbol} from '../../../src/ngtsc/incremental/semantic_graph';
 import {MockLogger} from '../../../src/ngtsc/logging/testing';
 import {ClassDeclaration, DeclarationNode, Decorator} from '../../../src/ngtsc/reflection';
 import {loadFakeCore, loadTestFiles} from '../../../src/ngtsc/testing';
@@ -21,8 +22,9 @@ import {Esm2015ReflectionHost} from '../../src/host/esm2015_host';
 import {Migration, MigrationHost} from '../../src/migrations/migration';
 import {getRootFiles, makeTestEntryPointBundle} from '../helpers/utils';
 
-type DecoratorHandlerWithResolve = DecoratorHandler<unknown, unknown, unknown>&{
-  resolve: NonNullable<DecoratorHandler<unknown, unknown, unknown>['resolve']>;
+type DecoratorHandlerWithResolve =
+    DecoratorHandler<unknown, unknown, SemanticSymbol|null, unknown>&{
+  resolve: NonNullable<DecoratorHandler<unknown, unknown, SemanticSymbol|null, unknown>['resolve']>;
 };
 
 runInEachFileSystem(() => {
@@ -46,6 +48,7 @@ runInEachFileSystem(() => {
         const handler = jasmine.createSpyObj<DecoratorHandlerWithResolve>('TestDecoratorHandler', [
           'detect',
           'analyze',
+          'symbol',
           'register',
           'resolve',
           'compileFull',
@@ -442,7 +445,7 @@ runInEachFileSystem(() => {
 
       describe('declaration files', () => {
         it('should not run decorator handlers against declaration files', () => {
-          class FakeDecoratorHandler implements DecoratorHandler<{}|null, unknown, unknown> {
+          class FakeDecoratorHandler implements DecoratorHandler<{}|null, unknown, null, unknown> {
             name = 'FakeDecoratorHandler';
             precedence = HandlerPrecedence.PRIMARY;
 
@@ -451,6 +454,9 @@ runInEachFileSystem(() => {
             }
             analyze(): AnalysisOutput<unknown> {
               throw new Error('analyze should not have been called');
+            }
+            symbol(): null {
+              throw new Error('symbol should not have been called');
             }
             compileFull(): CompileResult {
               throw new Error('compile should not have been called');

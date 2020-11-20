@@ -11,6 +11,7 @@ import * as ts from 'typescript';
 import {makeDiagnostic} from '../../../src/ngtsc/diagnostics';
 import {absoluteFrom} from '../../../src/ngtsc/file_system';
 import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
+import {SemanticSymbol} from '../../../src/ngtsc/incremental/semantic_graph';
 import {MockLogger} from '../../../src/ngtsc/logging/testing';
 import {ClassDeclaration, Decorator, isNamedClassDeclaration} from '../../../src/ngtsc/reflection';
 import {getDeclaration, loadTestFiles} from '../../../src/ngtsc/testing';
@@ -44,7 +45,8 @@ runInEachFileSystem(() => {
     });
 
     function createMigrationHost({entryPoint, handlers}: {
-      entryPoint: EntryPointBundle; handlers: DecoratorHandler<unknown, unknown, unknown>[]
+      entryPoint: EntryPointBundle;
+      handlers: DecoratorHandler<unknown, unknown, SemanticSymbol|null, unknown>[]
     }) {
       const reflectionHost = new Esm2015ReflectionHost(new MockLogger(), false, entryPoint.src);
       const compiler = new NgccTraitCompiler(handlers, reflectionHost);
@@ -190,7 +192,7 @@ runInEachFileSystem(() => {
   });
 });
 
-class DetectDecoratorHandler implements DecoratorHandler<unknown, unknown, unknown> {
+class DetectDecoratorHandler implements DecoratorHandler<unknown, unknown, null, unknown> {
   readonly name = DetectDecoratorHandler.name;
 
   constructor(private decorator: string, readonly precedence: HandlerPrecedence) {}
@@ -210,12 +212,16 @@ class DetectDecoratorHandler implements DecoratorHandler<unknown, unknown, unkno
     return {};
   }
 
+  symbol(node: ClassDeclaration, analysis: Readonly<unknown>): null {
+    return null;
+  }
+
   compileFull(node: ClassDeclaration): CompileResult|CompileResult[] {
     return [];
   }
 }
 
-class DiagnosticProducingHandler implements DecoratorHandler<unknown, unknown, unknown> {
+class DiagnosticProducingHandler implements DecoratorHandler<unknown, unknown, null, unknown> {
   readonly name = DiagnosticProducingHandler.name;
   readonly precedence = HandlerPrecedence.PRIMARY;
 
@@ -226,6 +232,10 @@ class DiagnosticProducingHandler implements DecoratorHandler<unknown, unknown, u
 
   analyze(node: ClassDeclaration): AnalysisOutput<any> {
     return {diagnostics: [makeDiagnostic(9999, node, 'test diagnostic')]};
+  }
+
+  symbol(node: ClassDeclaration, analysis: Readonly<unknown>): null {
+    return null;
   }
 
   compileFull(node: ClassDeclaration): CompileResult|CompileResult[] {

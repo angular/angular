@@ -154,14 +154,20 @@ runInEachFileSystem(() => {
       setupFooBarProgram(env);
 
       // Pretend a change was made to BarDir.
-      env.invalidateCachedFile('bar_directive.ts');
+      env.write('bar_directive.ts', `
+        import {Directive} from '@angular/core';
+
+        @Directive({selector: '[barr]'})
+        export class BarDir {}
+      `);
       env.driveMain();
 
       let written = env.getFilesWrittenSinceLastFlush();
       expect(written).toContain('/bar_directive.js');
       expect(written).toContain('/bar_component.js');
       expect(written).toContain('/bar_module.js');
-      expect(written).toContain('/foo_component.js');
+      expect(written).not.toContain('/foo_component.js');  // BarDir is not exported by BarModule,
+                                                           // so upstream NgModule is not affected
       expect(written).not.toContain('/foo_pipe.js');
       expect(written).not.toContain('/foo_module.js');
     });
@@ -178,7 +184,7 @@ runInEachFileSystem(() => {
       env.write('component2.ts', `
         import {Component} from '@angular/core';
 
-        @Component({selector: 'cmp2', template: 'cmp2'})
+        @Component({selector: 'cmp2', template: '<cmp></cmp>'})
         export class Cmp2 {}
       `);
       env.write('dep.ts', `
@@ -197,36 +203,43 @@ runInEachFileSystem(() => {
         export class MyPipe {}
       `);
       env.write('module.ts', `
-        import {NgModule} from '@angular/core';
+        import {NgModule, NO_ERRORS_SCHEMA} from '@angular/core';
         import {Cmp1} from './component1';
         import {Cmp2} from './component2';
         import {Dir} from './directive';
         import {MyPipe} from './pipe';
 
-        @NgModule({declarations: [Cmp1, Cmp2, Dir, MyPipe]})
+        @NgModule({declarations: [Cmp1, Cmp2, Dir, MyPipe], schemas: [NO_ERRORS_SCHEMA]})
         export class Mod {}
       `);
       env.driveMain();
 
-      // Pretend a change was made to 'dep'. Since this may affect the NgModule scope, like it does
-      // here if the selector is updated, all components in the module scope need to be recompiled.
+      // Pretend a change was made to 'dep'. Since the selector is updated this affects the NgModule
+      // scope, so all components in the module scope need to be recompiled.
       env.flushWrittenFileTracking();
-      env.invalidateCachedFile('dep.ts');
+      env.write('dep.ts', `
+        export const SELECTOR = 'cmp_updated';
+      `);
       env.driveMain();
       const written = env.getFilesWrittenSinceLastFlush();
       expect(written).not.toContain('/directive.js');
       expect(written).not.toContain('/pipe.js');
+      expect(written).not.toContain('/module.js');
       expect(written).toContain('/component1.js');
       expect(written).toContain('/component2.js');
       expect(written).toContain('/dep.js');
-      expect(written).toContain('/module.js');
     });
 
     it('should rebuild components where their NgModule declared dependencies have changed', () => {
       setupFooBarProgram(env);
 
-      // Pretend a change was made to FooPipe.
-      env.invalidateCachedFile('foo_pipe.ts');
+      // Rename the pipe so components that use it need to be recompiled.
+      env.write('foo_pipe.ts', `
+        import {Pipe} from '@angular/core';
+
+        @Pipe({name: 'foo_changed'})
+        export class FooPipe {}
+      `);
       env.driveMain();
       const written = env.getFilesWrittenSinceLastFlush();
       expect(written).not.toContain('/bar_directive.js');
@@ -240,15 +253,25 @@ runInEachFileSystem(() => {
     it('should rebuild components where their NgModule has changed', () => {
       setupFooBarProgram(env);
 
-      // Pretend a change was made to FooPipe.
-      env.invalidateCachedFile('foo_module.ts');
+      // Pretend a change was made to FooModule.
+      env.write('foo_module.ts', `
+        import {NgModule} from '@angular/core';
+        import {FooCmp} from './foo_component';
+        import {FooPipe} from './foo_pipe';
+        import {BarModule} from './bar_module';
+        @NgModule({
+          declarations: [FooCmp], // removed FooPipe
+          imports: [BarModule],
+        })
+        export class FooModule {}
+      `);
       env.driveMain();
       const written = env.getFilesWrittenSinceLastFlush();
       expect(written).not.toContain('/bar_directive.js');
       expect(written).not.toContain('/bar_component.js');
       expect(written).not.toContain('/bar_module.js');
+      expect(written).not.toContain('/foo_pipe.js');
       expect(written).toContain('/foo_component.js');
-      expect(written).toContain('/foo_pipe.js');
       expect(written).toContain('/foo_module.js');
     });
 
@@ -396,7 +419,7 @@ runInEachFileSystem(() => {
       expect(env.getContents('cmp.js')).not.toContain('DepDir');
     });
 
-    it('should rebuild only a Component (but with the correct CompilationScope) and its module if its template has changed',
+    it('should rebuild only a Component (but with the correct CompilationScope) if its template has changed',
        () => {
          setupFooBarProgram(env);
 
@@ -407,9 +430,7 @@ runInEachFileSystem(() => {
          const written = env.getFilesWrittenSinceLastFlush();
          expect(written).not.toContain('/bar_directive.js');
          expect(written).toContain('/bar_component.js');
-         // /bar_module.js should also be re-emitted, because remote scoping of BarComponent might
-         // have been affected.
-         expect(written).toContain('/bar_module.js');
+         expect(written).not.toContain('/bar_module.js');
          expect(written).not.toContain('/foo_component.js');
          expect(written).not.toContain('/foo_pipe.js');
          expect(written).not.toContain('/foo_module.js');
@@ -764,7 +785,10 @@ runInEachFileSystem(() => {
     import {Component} from '@angular/core';
     import {fooSelector} from './foo_selector';
 
-    @Component({selector: fooSelector, template: 'foo'})
+    @Component({
+      selector: fooSelector,
+      template: '{{ 1 | foo }}'
+    })
     export class FooCmp {}
   `);
     env.write('foo_pipe.ts', `
@@ -797,13 +821,20 @@ runInEachFileSystem(() => {
     @Directive({selector: '[bar]'})
     export class BarDir {}
   `);
+    env.write('bar_pipe.ts', `
+    import {Pipe} from '@angular/core';
+
+    @Pipe({name: 'foo'})
+    export class BarPipe {}
+  `);
     env.write('bar_module.ts', `
     import {NgModule} from '@angular/core';
     import {BarCmp} from './bar_component';
     import {BarDir} from './bar_directive';
+    import {BarPipe} from './bar_pipe';
     @NgModule({
-      declarations: [BarCmp, BarDir],
-      exports: [BarCmp],
+      declarations: [BarCmp, BarDir, BarPipe],
+      exports: [BarCmp, BarPipe],
     })
     export class BarModule {}
   `);
