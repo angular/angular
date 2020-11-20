@@ -57,3 +57,24 @@ export function createMigrationCompilerHost(
 
   return host;
 }
+
+/**
+ * Checks whether a file can be migrate by our automated migrations.
+ * @param basePath Absolute path to the project.
+ * @param sourceFile File being checked.
+ * @param program Program that includes the source file.
+ */
+export function canMigrateFile(
+    basePath: string, sourceFile: ts.SourceFile, program: ts.Program): boolean {
+  // We shouldn't migrate .d.ts files or files from an external library.
+  if (sourceFile.isDeclarationFile || program.isSourceFileFromExternalLibrary(sourceFile)) {
+    return false;
+  }
+
+  // Our migrations are set up to create a `Program` from the project's tsconfig and to migrate all
+  // the files within the program. This can include files that are outside of the Angular CLI
+  // project. We can't migrate files outside of the project, because our file system interactions
+  // go through the CLI's `Tree` which assumes that all files are within the project. See:
+  // https://github.com/angular/angular-cli/blob/0b0961c9c233a825b6e4bb59ab7f0790f9b14676/packages/angular_devkit/schematics/src/tree/host-tree.ts#L131
+  return !relative(basePath, sourceFile.fileName).startsWith('..');
+}

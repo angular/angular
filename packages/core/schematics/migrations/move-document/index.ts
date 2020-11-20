@@ -11,7 +11,7 @@ import {relative} from 'path';
 import * as ts from 'typescript';
 
 import {getProjectTsConfigPaths} from '../../utils/project_tsconfig_paths';
-import {createMigrationProgram} from '../../utils/typescript/compiler_host';
+import {canMigrateFile, createMigrationProgram} from '../../utils/typescript/compiler_host';
 
 import {COMMON_IMPORT, DOCUMENT_TOKEN_NAME, DocumentImportVisitor, ResolvedDocumentImport} from './document_import_visitor';
 import {addToImport, createImport, removeFromImport} from './move-import';
@@ -43,8 +43,8 @@ function runMoveDocumentMigration(tree: Tree, tsconfigPath: string, basePath: st
   const {program} = createMigrationProgram(tree, tsconfigPath, basePath);
   const typeChecker = program.getTypeChecker();
   const visitor = new DocumentImportVisitor(typeChecker);
-  const sourceFiles = program.getSourceFiles().filter(
-      f => !f.isDeclarationFile && !program.isSourceFileFromExternalLibrary(f));
+  const sourceFiles =
+      program.getSourceFiles().filter(sourceFile => canMigrateFile(basePath, sourceFile, program));
 
   // Analyze source files by finding imports.
   sourceFiles.forEach(sourceFile => visitor.visitNode(sourceFile));
