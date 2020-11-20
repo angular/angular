@@ -917,5 +917,13 @@
     "website": "https://github.com/phenomnomnominal",
     "bio": "Craig is a Software Engineer from New Zealand, working at Spotify in Stockholm. He loves building cool things that help teams build cool things! He also loves punk rock, Disney’s Frozen, and his cat Cosy.",
     "groups": ["GDE"]
+  },
+  "christianliebel":  {
+    "name": "Christian Liebel",
+    "picture": "christianliebel.jpg",
+    "twitter": "christianliebel",
+    "website": "https://christianliebel.com",
+    "bio": "Christian helps enterprises and independent software vendors to develop fast, modern, cross-platform business applications based on Angular. Being a Google GDE, Microsoft MVP and member of the W3C Web Applications working group, he speaks about Angular and Progressive Web Apps at user groups and conferences, both national and international.",
+    "groups": ["GDE"]
   }
 }
