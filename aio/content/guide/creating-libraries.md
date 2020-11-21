@@ -10,7 +10,7 @@ A simple example might be a button that sends users to your company website, tha
 Use the Angular CLI to generate a new library skeleton in a new workspace with the following commands.
 
 <code-example language="bash">
- ng new my-workspace --create-application=false
+ ng new my-workspace --createApplication=false
  cd my-workspace
  ng generate library my-lib
 </code-example>
