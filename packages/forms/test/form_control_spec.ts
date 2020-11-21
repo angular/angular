@@ -45,6 +45,12 @@ describe('FormControl', () => {
       expect(c.status).toBe('DISABLED');
     });
 
+    it('should honor disabled when value prop is missing', () => {
+      const c = new FormControl({disabled: true});
+      expect(c.value).toEqual({disabled: true});
+      expect(c.disabled).toBe(false);
+    });
+
     it('should honor boxed value with disabled control when validating', () => {
       const c = new FormControl({value: '', disabled: true}, Validators.required);
       expect(c.disabled).toBe(true);
