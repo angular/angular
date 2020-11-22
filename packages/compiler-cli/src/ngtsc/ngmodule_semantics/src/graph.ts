@@ -13,7 +13,7 @@ import {ClassDeclaration} from '../../reflection';
 import {getSourceFile} from '../../util/src/typescript';
 
 import {Affects, DistributionContext, InvalidationFlags, SemanticSymbol, SymbolResolver} from './api';
-import {DirectiveSymbol, NgModuleSymbol, PipeSymbol} from './symbols';
+import {ComponentSymbol, DirectiveSymbol, NgModuleSymbol, PipeSymbol} from './symbols';
 
 export interface InvalidatedFile {
   /**
@@ -145,9 +145,14 @@ export class SemanticDepGraphUpdater {
 
   addDirective(metadata: DirectiveMeta): void {
     this.newGraph.registerSymbol(metadata.ref.node, (path, decl, identifier) => {
+      if (metadata.isComponent) {
+        return new ComponentSymbol(
+            path, decl, identifier, metadata.selector, metadata.inputs.propertyNames,
+            metadata.outputs.propertyNames, metadata.exportAs);
+      }
       return new DirectiveSymbol(
-          path, decl, identifier, metadata.isComponent, metadata.selector,
-          metadata.inputs.propertyNames, metadata.outputs.propertyNames, metadata.exportAs);
+          path, decl, identifier, metadata.selector, metadata.inputs.propertyNames,
+          metadata.outputs.propertyNames, metadata.exportAs);
     });
   }
 
@@ -172,8 +177,10 @@ export class SemanticDepGraphUpdater {
       // we don't need to determine the semantic impact as everything is already considered
       // logically changed.
       return {
-        needsEmit: [], needsTypeCheck: [], newGraph: this.newGraph,
-      }
+        needsEmit: [],
+        needsTypeCheck: [],
+        newGraph: this.newGraph,
+      };
     }
 
     const invalidatedFiles = this.determineInvalidatedFiles(this.priorGraph);
@@ -240,30 +247,16 @@ export class SemanticDepGraphUpdater {
       // changed across rebuilds, so this is likely to find the symbol. Using the declaration also
       // allows to diff symbols for which no unique identifier could be determined.
       let previousSymbol = priorGraph.getSymbolByDecl(symbol.decl);
-      if (previousSymbol === null) {
+      if (previousSymbol === null && symbol.identifier !== null) {
         // The declaration could not be resolved to a symbol in a prior compilation, which may
         // happen because the file containing the declaration has changed. In that case we want to
         // lookup the symbol based on its unique identifier, as that allows us to still compare the
         // changed declaration to the prior compilation.
-
-        if (symbol.identifier === null) {
-          // If, however, the symbol does not have a unique identifier then we are unable to
-          // find it in the prior compilation, so we must assume it has fully changed.
-          affectedSymbols.push({symbol, affects: Affects.All});
-          continue;
-        }
-
         previousSymbol = priorGraph.getSymbolByName(symbol.path, symbol.identifier);
-        if (previousSymbol === null) {
-          // If we were unable to locate the symbol in the prior compilation based on its
-          // identifier, then we must also assume that it has fully changed.
-          affectedSymbols.push({symbol, affects: Affects.All});
-          continue;
-        }
       }
 
-      // Now that we have found the symbol from a prior compilation, we compute the semantic
-      // difference to find out how the changes, if any, affect the compilation.
+      // Now compute the semantic difference to find out how the changes, if any, affect the
+      // compilation.
       const affects = symbol.diff(previousSymbol);
       if (affects !== Affects.None) {
         affectedSymbols.push({symbol, affects});

@@ -231,54 +231,54 @@ runInEachFileSystem(() => {
       it('should re-emit a component and the scopes to which it is exported when its declaration is removed',
          () => {
            env.write('cmp-a.ts', `
-          import {Component} from '@angular/core';
+            import {Component} from '@angular/core';
 
-          @Component({
-            selector: 'test-cmp-a',
-            template: '',
-          })
-          export class CmpA {}
-        `);
+            @Component({
+              selector: 'test-cmp-a',
+              template: '',
+            })
+            export class CmpA {}
+          `);
            env.write('module-a.ts', `
-          import {NgModule} from '@angular/core';
-          import {CmpA} from './cmp-a';
+            import {NgModule} from '@angular/core';
+            import {CmpA} from './cmp-a';
 
-          @NgModule({
-            declarations: [CmpA],
-            exports: [CmpA],
-          })
-          export class ModuleA {}
-        `);
+            @NgModule({
+              declarations: [CmpA],
+              exports: [CmpA],
+            })
+            export class ModuleA {}
+          `);
            env.write('cmp-b.ts', `
-          import {Component} from '@angular/core';
+            import {Component} from '@angular/core';
 
-          @Component({
-            selector: 'test-cmp-b',
-            template: '',
-          })
-          export class CmpB {}
-        `);
+            @Component({
+              selector: 'test-cmp-b',
+              template: '',
+            })
+            export class CmpB {}
+          `);
            env.write('module-b.ts', `
-          import {NgModule} from '@angular/core';
-          import {CmpB} from './cmp-b';
-          import {ModuleA} from './module-a';
+            import {NgModule} from '@angular/core';
+            import {CmpB} from './cmp-b';
+            import {ModuleA} from './module-a';
 
-          @NgModule({
-            declarations: [CmpB],
-            imports: [ModuleA],
-          })
-          export class ModuleB {}
-        `);
+            @NgModule({
+              declarations: [CmpB],
+              imports: [ModuleA],
+            })
+            export class ModuleB {}
+          `);
 
            env.driveMain();
            env.flushWrittenFileTracking();
 
            env.write('module-a.ts', `
-          import {NgModule} from '@angular/core';
+            import {NgModule} from '@angular/core';
 
-          @NgModule()
-          export class ModuleA {}
-        `);
+            @NgModule()
+            export class ModuleA {}
+          `);
            env.driveMain();
 
            expectToHaveWritten(['/module-a.js', '/module-b.js', '/cmp-a.js', '/cmp-b.js']);
@@ -346,6 +346,267 @@ runInEachFileSystem(() => {
         env.driveMain();
 
         expectToHaveWritten(['/module-a.js']);
+      });
+    });
+
+    describe('symbolic changes', () => {
+      it('should re-emit all directives in scope when a declaration is renamed', () => {
+        env.write('pipe.ts', `
+          import {Pipe} from '@angular/core';
+
+          @Pipe({name: 'pipe'})
+          export class MyPipe {}
+        `);
+        env.write('cmp.ts', `
+          import {Component} from '@angular/core';
+
+          @Component({
+            selector: 'test-cmp',
+            template: '',
+          })
+          export class Cmp {}
+        `);
+        env.write('module.ts', `
+          import {NgModule} from '@angular/core';
+          import {Cmp} from './cmp';
+          import {MyPipe} from './pipe';
+
+          @NgModule({
+            declarations: [MyPipe, Cmp],
+          })
+          export class Module {}
+        `);
+
+        env.driveMain();
+        env.flushWrittenFileTracking();
+
+        env.write('pipe.ts', `
+          import {Pipe} from '@angular/core';
+
+          @Pipe({name: 'pipe'})
+          export class MyPipeRenamed {}
+        `);
+        env.write('module.ts', `
+          import {NgModule} from '@angular/core';
+          import {Cmp} from './cmp';
+          import {MyPipeRenamed} from './pipe';
+
+          @NgModule({
+            declarations: [MyPipeRenamed, Cmp],
+          })
+          export class Module {}
+        `);
+        env.driveMain();
+
+        expectToHaveWritten(['/module.js', '/pipe.js', '/cmp.js']);
+      });
+
+      it('should emit all component in scope when an NgModule is changed into a component', () => {
+        env.write('pipe.ts', `
+          import {Pipe} from '@angular/core';
+
+          @Pipe({name: 'pipe'})
+          export class MyPipe {}
+        `);
+        env.write('cmp.ts', `
+          import {Component} from '@angular/core';
+
+          @Component({
+            selector: 'test-cmp',
+            template: '',
+          })
+          export class Cmp {}
+        `);
+        env.write('module.ts', `
+          import {NgModule} from '@angular/core';
+          import {Cmp} from './cmp';
+          import {MyPipe} from './pipe';
+
+          @NgModule({
+            declarations: [MyPipe, Cmp],
+          })
+          export class Module {}
+        `);
+
+        env.driveMain();
+        env.flushWrittenFileTracking();
+
+        env.write('module.ts', `
+          import {Component} from '@angular/core';
+
+          @Component({
+            template: '...',
+          })
+          export class Module {}
+        `);
+        env.driveMain();
+
+        expectToHaveWritten(['/module.js', '/cmp.js']);
+      });
+
+      it('should emit all component in scope when a pipe is changed into a directive', () => {
+        env.write('pipe.ts', `
+          import {Pipe} from '@angular/core';
+
+          @Pipe({name: 'pipe'})
+          export class MyPipe {}
+        `);
+        env.write('cmp.ts', `
+          import {Component} from '@angular/core';
+
+          @Component({
+            selector: 'test-cmp',
+            template: '',
+          })
+          export class Cmp {}
+        `);
+        env.write('module.ts', `
+          import {NgModule} from '@angular/core';
+          import {Cmp} from './cmp';
+          import {MyPipe} from './pipe';
+
+          @NgModule({
+            declarations: [MyPipe, Cmp],
+          })
+          export class Module {}
+        `);
+
+        env.driveMain();
+        env.flushWrittenFileTracking();
+
+        env.write('pipe.ts', `
+          import {Component} from '@angular/core';
+
+          @Component({
+            template: '...',
+          })
+          export class MyPipe {}
+        `);
+        env.driveMain();
+
+        expectToHaveWritten(['/module.js', '/cmp.js', '/pipe.js']);
+      });
+
+      it('should not emit all component in scope when a directive is changed into a component without affecting its public API',
+         () => {
+           env.write('dir.ts', `
+          import {Directive} from '@angular/core';
+
+          @Directive({selector: '[dir]'})
+          export class Dir {}
+        `);
+           env.write('cmp.ts', `
+          import {Component} from '@angular/core';
+
+          @Component({
+            selector: 'test-cmp',
+            template: '',
+          })
+          export class Cmp {}
+        `);
+           env.write('module.ts', `
+          import {NgModule} from '@angular/core';
+          import {Cmp} from './cmp';
+          import {Dir} from './dir';
+
+          @NgModule({
+            declarations: [Dir, Cmp],
+          })
+          export class Module {}
+        `);
+
+           env.driveMain();
+           env.flushWrittenFileTracking();
+
+           env.write('dir.ts', `
+          import {Component} from '@angular/core';
+
+          @Component({selector: '[dir]', template: ''})
+          export class Dir {}
+        `);
+           env.driveMain();
+
+           expectToHaveWritten(['/module.js', '/dir.js']);
+         });
+
+      it('should emit all component in scope when a directive is changed into a component and its public API is affected',
+         () => {
+           env.write('dir.ts', `
+          import {Directive} from '@angular/core';
+
+          @Directive({selector: '[dir]'})
+          export class Dir {}
+        `);
+           env.write('cmp.ts', `
+          import {Component} from '@angular/core';
+
+          @Component({
+            selector: 'test-cmp',
+            template: '',
+          })
+          export class Cmp {}
+        `);
+           env.write('module.ts', `
+          import {NgModule} from '@angular/core';
+          import {Cmp} from './cmp';
+          import {Dir} from './dir';
+
+          @NgModule({
+            declarations: [Dir, Cmp],
+          })
+          export class Module {}
+        `);
+
+           env.driveMain();
+           env.flushWrittenFileTracking();
+
+           env.write('dir.ts', `
+          import {Component} from '@angular/core';
+
+          @Component({selector: '[changed]', template: ''})
+          export class Dir {}
+        `);
+           env.driveMain();
+
+           expectToHaveWritten(['/module.js', '/dir.js', '/cmp.js']);
+         });
+
+      it('should emit all component in scope when an NgModule is deleted', () => {
+        env.write('pipe.ts', `
+          import {Pipe} from '@angular/core';
+
+          @Pipe({name: 'pipe'})
+          export class MyPipe {}
+        `);
+        env.write('cmp.ts', `
+          import {Component} from '@angular/core';
+
+          @Component({
+            selector: 'test-cmp',
+            template: '',
+          })
+          export class Cmp {}
+        `);
+        env.write('module.ts', `
+          import {NgModule} from '@angular/core';
+          import {Cmp} from './cmp';
+          import {MyPipe} from './pipe';
+
+          @NgModule({
+            declarations: [MyPipe, Cmp],
+          })
+          export class Module {}
+        `);
+
+        env.driveMain();
+        env.flushWrittenFileTracking();
+
+        env.write('module.ts', `
+          export {}
+        `);
+        env.driveMain();
+
+        expectToHaveWritten(['/module.js', '/cmp.js']);
       });
     });
 

@@ -42,12 +42,6 @@ export enum Affects {
    * or deactivated.
    */
   RemoteScope = 1 << 2,
-
-  /**
-   * All aspects have changed. This is also used when symbol information from a prior compilation is
-   * missing, in which case it is assumed that all aspects are affected.
-   */
-  All = ModuleScope | ModuleExports | RemoteScope,
 }
 
 export enum InvalidationFlags {
@@ -102,7 +96,7 @@ export abstract class SemanticSymbol {
    *
    * @param previousSymbol The symbol from a prior compilation.
    */
-  abstract diff(previousSymbol: SemanticSymbol): Affects;
+  abstract diff(previousSymbol: SemanticSymbol|null): Affects;
 
   /**
    * After all symbols have determined how they affect this compilation, this method is called for

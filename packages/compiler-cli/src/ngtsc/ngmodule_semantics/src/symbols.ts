@@ -70,9 +70,9 @@ export class PipeSymbol extends DeclarationSymbol {
     super(path, decl, symbolName);
   }
 
-  diff(previousSymbol: SemanticSymbol): Affects {
+  diff(previousSymbol: SemanticSymbol|null): Affects {
     if (!(previousSymbol instanceof PipeSymbol)) {
-      return Affects.All;
+      return Affects.None;
     }
 
     let result = Affects.None;
@@ -87,26 +87,20 @@ export class PipeSymbol extends DeclarationSymbol {
 }
 
 /**
- * Represents both directives and components.
+ * Represents an Angular directive. Components are represented by `ComponentSymbol`, which inherits
+ * from this symbol.
  */
 export class DirectiveSymbol extends DeclarationSymbol {
-  private isRemoteScoped!: boolean;
-
   constructor(
       path: AbsoluteFsPath, decl: ClassDeclaration, symbolName: string|null,
-      public readonly isComponent: boolean, public readonly selector: string|null,
-      public readonly inputs: string[], public readonly outputs: string[],
-      public readonly exportAs: string[]|null) {
+      public readonly selector: string|null, public readonly inputs: string[],
+      public readonly outputs: string[], public readonly exportAs: string[]|null) {
     super(path, decl, symbolName);
   }
 
-  connect(resolve: SymbolResolver, remoteScoped: ReadonlySet<SemanticSymbol>): void {
-    this.isRemoteScoped = remoteScoped.has(this);
-  }
-
-  diff(previousSymbol: SemanticSymbol): Affects {
+  diff(previousSymbol: SemanticSymbol|null): Affects {
     if (!(previousSymbol instanceof DirectiveSymbol)) {
-      return Affects.All;
+      return Affects.ModuleScope;
     }
 
     let result = Affects.None;
@@ -119,17 +113,36 @@ export class DirectiveSymbol extends DeclarationSymbol {
       result |= Affects.ModuleScope;
     }
 
+    return result;
+  }
+}
+
+/**
+ * Represents an Angular component.
+ */
+export class ComponentSymbol extends DirectiveSymbol {
+  private isRemoteScoped!: boolean;
+
+  connect(resolve: SymbolResolver, remoteScoped: ReadonlySet<SemanticSymbol>): void {
+    this.isRemoteScoped = remoteScoped.has(this);
+  }
+
+  diff(previousSymbol: SemanticSymbol|null): Affects {
+    let result = super.diff(previousSymbol);
+    if (!(previousSymbol instanceof ComponentSymbol)) {
+      return result;
+    }
+
     // The remote scoping feature is affected if remote scoping was either activated or deactivated
-    // for this directive.
+    // for this component.
     if (this.isRemoteScoped !== previousSymbol.isRemoteScoped) {
       result |= Affects.RemoteScope;
     }
 
-    // When a declaration is removed from an NgModule we need to re-emit components as their
+    // When a component is removed from an NgModule we need to re-emit the component as its
     // compilation scope is affected, but there is no longer a dependency edge from the NgModule
     // to the component. As such, the component itself needs to identify this situation.
-    if (this.isComponent &&
-        !isSetEqual(this.declaredIn, previousSymbol.declaredIn, isSymbolEqual)) {
+    if (!isSetEqual(this.declaredIn, previousSymbol.declaredIn, isSymbolEqual)) {
       result |= Affects.ModuleScope;
     }
 
@@ -186,9 +199,9 @@ export class NgModuleSymbol extends SemanticSymbol {
     }
   }
 
-  diff(previousSymbol: SemanticSymbol): Affects {
+  diff(previousSymbol: SemanticSymbol|null): Affects {
     if (!(previousSymbol instanceof NgModuleSymbol)) {
-      return Affects.All;
+      return Affects.ModuleScope | Affects.ModuleExports;
     }
 
     let result = Affects.None;
@@ -218,7 +231,7 @@ export class NgModuleSymbol extends SemanticSymbol {
     if (affects & Affects.ModuleScope) {
       // Notify all components of the fact that the module scope is affected.
       for (const declaration of this.declarations) {
-        if (declaration instanceof DirectiveSymbol && declaration.isComponent) {
+        if (declaration instanceof ComponentSymbol) {
           context.distributeTo(declaration, affected, Affects.ModuleScope);
         }
       }
