@@ -9,7 +9,7 @@
 import {HttpRequest} from '@angular/common/http/src/request';
 import {HttpDownloadProgressEvent, HttpErrorResponse, HttpEvent, HttpEventType, HttpHeaderResponse, HttpResponse, HttpResponseBase, HttpStatusCode, HttpUploadProgressEvent} from '@angular/common/http/src/response';
 import {HttpXhrBackend} from '@angular/common/http/src/xhr';
-import {describe, it} from '@angular/core/testing/src/testing_internal';
+import {describe, expect, it} from '@angular/core/testing/src/testing_internal';
 import {Observable} from 'rxjs';
 import {toArray} from 'rxjs/operators';
 
@@ -150,6 +150,17 @@ const XSSI_PREFIX = ')]}\'\n';
         done();
       });
       factory.mock.mockErrorEvent(new Error('blah'));
+    });
+    it('emits timeout if the request times out', done => {
+      backend.handle(TEST_POST).subscribe({
+        error: (error: HttpErrorResponse) => {
+          expect(error instanceof HttpErrorResponse).toBeTrue();
+          expect(error.error instanceof Error).toBeTrue();
+          expect(error.url).toBe('/test');
+          done();
+        },
+      });
+      factory.mock.mockTimeoutEvent(new Error('timeout'));
     });
     it('avoids abort a request when fetch operation is completed', done => {
       const abort = jasmine.createSpy('abort');
