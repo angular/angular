@@ -459,6 +459,26 @@ class TcbReferenceOp extends TcbOp {
 }
 
 /**
+ * A `TcbOp` which is used when the target of a reference is missing. This operation generates a
+ * variable of type any for usages of the invalid reference to resolve to. The invalid reference
+ * itself is recorded out-of-band.
+ */
+class TcbInvalidReferenceOp extends TcbOp {
+  constructor(private readonly tcb: Context, private readonly scope: Scope) {
+    super();
+  }
+
+  // The declaration of a missing reference is only needed when the reference is resolved.
+  readonly optional = true;
+
+  execute(): ts.Identifier {
+    const id = this.tcb.allocateId();
+    this.scope.addStatement(tsCreateVariable(id, NULL_AS_ANY));
+    return id;
+  }
+}
+
+/**
  * A `TcbOp` which constructs an instance of a directive with types inferred from its inputs. The
  * inputs themselves are not checked here; checking of inputs is achieved in `TcbDirectiveInputsOp`.
  * Any errors reported in this statement are ignored, as the type constructor call is only present
@@ -1353,13 +1373,15 @@ class Scope {
   private checkAndAppendReferencesOfNode(node: TmplAstElement|TmplAstTemplate): void {
     for (const ref of node.references) {
       const target = this.tcb.boundTarget.getReferenceTarget(ref);
-      if (target === null) {
-        this.tcb.oobRecorder.missingReferenceTarget(this.tcb.id, ref);
-        continue;
-      }
 
       let ctxIndex: number;
-      if (target instanceof TmplAstTemplate || target instanceof TmplAstElement) {
+      if (target === null) {
+        // The reference is invalid if it doesn't have a target, so report it as an error.
+        this.tcb.oobRecorder.missingReferenceTarget(this.tcb.id, ref);
+
+        // Any usages of the invalid reference will be resolved to a variable of type any.
+        ctxIndex = this.opQueue.push(new TcbInvalidReferenceOp(this.tcb, this)) - 1;
+      } else if (target instanceof TmplAstTemplate || target instanceof TmplAstElement) {
         ctxIndex = this.opQueue.push(new TcbReferenceOp(this.tcb, this, ref, node, target)) - 1;
       } else {
         ctxIndex =
