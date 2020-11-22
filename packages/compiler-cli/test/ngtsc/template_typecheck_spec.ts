@@ -1080,6 +1080,29 @@ export declare class AnimationEvent {
       expect(getSourceCodeForDiagnostic(diags[0])).toBe('unknownTarget');
     });
 
+    it('should treat an unknown local ref target as type any', () => {
+      env.write('test.ts', `
+        import {Component, NgModule} from '@angular/core';
+
+        @Component({
+          selector: 'test',
+          template: '<div #ref="unknownTarget">{{ use(ref) }}</div>',
+        })
+        class TestCmp {
+          use(ref: string): string { return ref; }
+        }
+
+        @NgModule({
+          declarations: [TestCmp],
+        })
+        class Module {}
+      `);
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      expect(diags[0].messageText).toBe(`No directive found with exportAs 'unknownTarget'.`);
+      expect(getSourceCodeForDiagnostic(diags[0])).toBe('unknownTarget');
+    });
+
     it('should report an error with an unknown pipe', () => {
       env.write('test.ts', `
         import {Component, NgModule} from '@angular/core';
