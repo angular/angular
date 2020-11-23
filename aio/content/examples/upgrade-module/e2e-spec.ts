@@ -2,12 +2,6 @@ import { browser, element, by } from 'protractor';
 
 describe('Upgrade Tests', () => {
 
-  beforeAll(() => {
-    // Set protractor to hybrid mode.
-    browser.rootEl = 'body';
-    browser.ng12Hybrid = true;
-  });
-
   describe('AngularJS Auto-bootstrap', () => {
 
     beforeAll(() => {
