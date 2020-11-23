@@ -794,7 +794,7 @@ describe('Driver', () => {
     serverUpdate.assertNoOtherRequests();
   });
 
-  it('should bypass serviceworker on ngsw-bypass parameter', async () => {
+  it('bypasses the ServiceWorker on `ngsw-bypass` parameter', async () => {
     // NOTE:
     // Requests that bypass the SW are not handled at all in the mock implementation of `scope`,
     // therefore no requests reach the server.
@@ -1115,7 +1115,7 @@ describe('Driver', () => {
       server.assertNoOtherRequests();
     });
 
-    it(`doesn't error when 'Cache-Control' is 'no-cache'`, async () => {
+    it(`don't error when 'Cache-Control' is 'no-cache'`, async () => {
       expect(await makeRequest(scope, '/unhashed/b.txt')).toEqual('this is unhashed b');
       server.assertSawRequestFor('/unhashed/b.txt');
       expect(await makeRequest(scope, '/unhashed/b.txt')).toEqual('this is unhashed b');
@@ -1742,6 +1742,25 @@ describe('Driver', () => {
 
       expect(requestUrls2).not.toContain(httpRequestUrl);
       expect(requestUrls2).toContain(httpsRequestUrl);
+    });
+
+    it('does not enter degraded mode when offline while fetching an uncached asset', async () => {
+      // Trigger SW initialization and wait for it to complete.
+      expect(await makeRequest(scope, '/foo.txt')).toBe('this is foo');
+      await driver.initialized;
+
+      // Request an uncached asset while offline.
+      // The SW will not be able to get the content, but it should not enter a degraded mode either.
+      server.online = false;
+      await expectAsync(makeRequest(scope, '/baz.txt'))
+          .toBeRejectedWithError(
+              'Response not Ok (fetchAndCacheOnce): request for /baz.txt returned response 504 Gateway Timeout');
+      expect(driver.state).toBe(DriverReadyState.NORMAL);
+
+      // Once we are back online, everything should work as expected.
+      server.online = true;
+      expect(await makeRequest(scope, '/baz.txt')).toBe('this is baz');
+      expect(driver.state).toBe(DriverReadyState.NORMAL);
     });
 
     describe('unrecoverable state', () => {
