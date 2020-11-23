@@ -2088,6 +2088,7 @@ export function parseTemplate(
       interpolationConfig,
       preserveWhitespaces,
       template,
+      isInline,
       errors: i18nMetaResult.errors,
       nodes: [],
       styleUrls: [],
