@@ -1,4 +1,4 @@
-import { browser, element, by, ExpectedConditions as EC, logging, ElementFinder, ElementArrayFinder } from 'protractor';
+import { browser, element, by, ExpectedConditions as EC, logging } from 'protractor';
 
 describe('Getting Started', () => {
   const pageElements = {

@@ -2,9 +2,7 @@ import { browser, element, by } from 'protractor';
 
 describe('Dependency Injection Cookbook', () => {
 
-    beforeAll(() => {
-        browser.get('');
-    });
+    beforeAll(() => browser.get(''));
 
     it('should render Logged in User example', async () => {
       const loggedInUser = element(by.cssContainingText('h3', 'Logged in user'));
@@ -49,27 +47,27 @@ describe('Dependency Injection Cookbook', () => {
       expect(await magmaPhone.isPresent()).toBe(true);
     });
 
-    it('should render Hero-of-the-Month runner-ups', () => {
-      const runnersUp =  element(by.id('rups1')).getText();
+    it('should render Hero-of-the-Month runner-ups', async () => {
+      const runnersUp = await element(by.id('rups1')).getText();
       expect(runnersUp).toContain('RubberMan, Dr Nice');
     });
 
-    it('should render DateLogger log entry in Hero-of-the-Month', () => {
-      const logs =  element.all(by.id('logs')).get(0).getText();
+    it('should render DateLogger log entry in Hero-of-the-Month', async () => {
+      const logs = await element.all(by.id('logs')).get(0).getText();
       expect(logs).toContain('INFO: starting up at');
     });
 
-    it('should highlight Hero Bios and Contacts container when mouseover', () => {
+    it('should highlight Hero Bios and Contacts container when mouseover', async () => {
       const target = element(by.css('div[appHighlight="yellow"]'));
       const yellow = 'rgba(255, 255, 0, 1)';
 
-      expect(target.getCssValue('background-color')).not.toEqual(yellow);
+      expect(await target.getCssValue('background-color')).not.toEqual(yellow);
 
-      browser.actions().mouseMove(target).perform();
+      await browser.actions().mouseMove(target).perform();
 
       // Wait for up to 2s for the background color to be updated,
       // to account for slow environments (e.g. CI).
-      browser.wait(() => target.getCssValue('background-color').then(c => c === yellow), 2000);
+      await browser.wait(async () => await target.getCssValue('background-color') === yellow, 2000);
     });
 
     describe('in Parent Finder', () => {
@@ -78,20 +76,20 @@ describe('Dependency Injection Cookbook', () => {
       const carol1 = element(by.css('alex carol p'));
       const carol2 = element(by.css('barry carol p'));
 
-      it('"Cathy" should find "Alex" via the component class', () => {
-        expect(cathy1.getText()).toContain('Found Alex via the component');
+      it('"Cathy" should find "Alex" via the component class', async () => {
+        expect(await cathy1.getText()).toContain('Found Alex via the component');
       });
 
-      it('"Craig" should not find "Alex" via the base class', () => {
-        expect(craig1.getText()).toContain('Did not find Alex via the base');
+      it('"Craig" should not find "Alex" via the base class', async () => {
+        expect(await craig1.getText()).toContain('Did not find Alex via the base');
       });
 
-      it('"Carol" within "Alex" should have "Alex" parent', () => {
-        expect(carol1.getText()).toContain('Alex');
+      it('"Carol" within "Alex" should have "Alex" parent', async () => {
+        expect(await carol1.getText()).toContain('Alex');
       });
 
-      it('"Carol" within "Barry" should have "Barry" parent', () => {
-        expect(carol2.getText()).toContain('Barry');
+      it('"Carol" within "Barry" should have "Barry" parent', async () => {
+        expect(await carol2.getText()).toContain('Barry');
       });
     });
 });

@@ -2,55 +2,52 @@ import { browser, element, by } from 'protractor';
 
 describe('Structural Directives', () => {
 
-  beforeAll(() => {
-    browser.get('');
-  });
+  beforeAll(() => browser.get(''));
 
-  it('first div should show hero name with *ngIf', () => {
+  it('first div should show hero name with *ngIf', async () => {
     const allDivs = element.all(by.tagName('div'));
-    expect(allDivs.get(0).getText()).toEqual('Dr Nice');
+    expect(await allDivs.get(0).getText()).toEqual('Dr Nice');
   });
 
-  it('first li should show hero name with *ngFor', () => {
+  it('first li should show hero name with *ngFor', async () => {
     const allLis = element.all(by.tagName('li'));
-    expect(allLis.get(0).getText()).toEqual('Dr Nice');
+    expect(await allLis.get(0).getText()).toEqual('Dr Nice');
   });
 
-  it('ngSwitch have two <happy-hero> instances', () => {
+  it('ngSwitch have two <happy-hero> instances', async () => {
     const happyHeroEls = element.all(by.tagName('app-happy-hero'));
-    expect(happyHeroEls.count()).toEqual(2);
+    expect(await happyHeroEls.count()).toEqual(2);
   });
 
-  it('should toggle *ngIf="hero" with a button', () => {
+  it('should toggle *ngIf="hero" with a button', async () => {
     const toggleHeroButton = element.all(by.cssContainingText('button', 'Toggle hero')).get(0);
     const paragraph = element.all(by.cssContainingText('p', 'I turned the corner'));
-    expect(paragraph.get(0).getText()).toContain('I waved');
-    toggleHeroButton.click().then(() => {
-      expect(paragraph.get(0).getText()).not.toContain('I waved');
-    });
+    expect(await paragraph.get(0).getText()).toContain('I waved');
+    await toggleHeroButton.click();
+    expect(await paragraph.get(0).getText()).not.toContain('I waved');
   });
 
-  it('should have only one "Hip!" (the other is erased)', () => {
+  it('should have only one "Hip!" (the other is erased)', async () => {
     const paragraph = element.all(by.cssContainingText('p', 'Hip!'));
-    expect(paragraph.count()).toEqual(1);
+    expect(await paragraph.count()).toEqual(1);
   });
 
-  it('appUnless should show 3 paragraph (A)s and (B)s at the start', () => {
+  it('appUnless should show 3 paragraph (A)s and (B)s at the start', async () => {
     const paragraph = element.all(by.css('p.unless'));
-    expect(paragraph.count()).toEqual(3);
+    expect(await paragraph.count()).toEqual(3);
     for (let i = 0; i < 3; i++) {
-      expect(paragraph.get(i).getText()).toContain('(A)');
+      expect(await paragraph.get(i).getText()).toContain('(A)');
     }
   });
 
-  it('appUnless should show 1 paragraph (B) after toggling condition', () => {
+  it('appUnless should show 1 paragraph (B) after toggling condition', async () => {
     const toggleConditionButton = element.all(by.cssContainingText('button', 'Toggle condition')).get(0);
     const paragraph = element.all(by.css('p.unless'));
 
-    toggleConditionButton.click().then(() => {
-      expect(paragraph.count()).toEqual(1);
-      expect(paragraph.get(0).getText()).toContain('(B)');
-    });
+    await toggleConditionButton.click();
+
+    expect(await paragraph.count()).toEqual(1);
+    expect(await paragraph.get(0).getText()).toContain('(B)');
   });
 });
 

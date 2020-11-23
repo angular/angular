@@ -10,13 +10,13 @@ describe('Component Communication Cookbook Tests', () => {
     const heroNames = ['Dr IQ', 'Magneta', 'Bombasto'];
     const masterName = 'Master';
 
-    it('should pass properties to children properly', () => {
+    it('should pass properties to children properly', async () => {
       const parent = element(by.tagName('app-hero-parent'));
       const heroes = parent.all(by.tagName('app-hero-child'));
 
       for (let i = 0; i < heroNames.length; i++) {
-        const childTitle = heroes.get(i).element(by.tagName('h3')).getText();
-        const childDetail = heroes.get(i).element(by.tagName('p')).getText();
+        const childTitle = await heroes.get(i).element(by.tagName('h3')).getText();
+        const childDetail = await heroes.get(i).element(by.tagName('p')).getText();
         expect(childTitle).toEqual(heroNames[i] + ' says:');
         expect(childDetail).toContain(masterName);
       }
@@ -28,23 +28,23 @@ describe('Component Communication Cookbook Tests', () => {
   describe('Parent-to-child communication with setter', () => {
     // #docregion parent-to-child-setter
     // ...
-    it('should display trimmed, non-empty names', () => {
+    it('should display trimmed, non-empty names', async () => {
       const nonEmptyNameIndex = 0;
       const nonEmptyName = '"Dr IQ"';
       const parent = element(by.tagName('app-name-parent'));
       const hero = parent.all(by.tagName('app-name-child')).get(nonEmptyNameIndex);
 
-      const displayName = hero.element(by.tagName('h3')).getText();
+      const displayName = await hero.element(by.tagName('h3')).getText();
       expect(displayName).toEqual(nonEmptyName);
     });
 
-    it('should replace empty name with default name', () => {
+    it('should replace empty name with default name', async () => {
       const emptyNameIndex = 1;
       const defaultName = '"<no name set>"';
       const parent = element(by.tagName('app-name-parent'));
       const hero = parent.all(by.tagName('app-name-child')).get(emptyNameIndex);
 
-      const displayName = hero.element(by.tagName('h3')).getText();
+      const displayName = await hero.element(by.tagName('h3')).getText();
       expect(displayName).toEqual(defaultName);
     });
     // ...
@@ -55,15 +55,15 @@ describe('Component Communication Cookbook Tests', () => {
     // #docregion parent-to-child-onchanges
     // ...
     // Test must all execute in this exact order
-    it('should set expected initial values', () => {
-      const actual = getActual();
+    it('should set expected initial values', async () => {
+      const actual = await getActual();
 
       const initialLabel = 'Version 1.23';
       const initialLog = 'Initial value of major set to 1, Initial value of minor set to 23';
 
       expect(actual.label).toBe(initialLabel);
       expect(actual.count).toBe(1);
-      expect(actual.logs.get(0).getText()).toBe(initialLog);
+      expect(await actual.logs.get(0).getText()).toBe(initialLog);
     });
 
     it('should set expected values after clicking \'Minor\' twice', async () => {
@@ -73,14 +73,14 @@ describe('Component Communication Cookbook Tests', () => {
       await newMinorButton.click();
       await newMinorButton.click();
 
-      const actual = getActual();
+      const actual = await getActual();
 
       const labelAfter2Minor = 'Version 1.25';
       const logAfter2Minor = 'minor changed from 24 to 25';
 
       expect(actual.label).toBe(labelAfter2Minor);
       expect(actual.count).toBe(3);
-      expect(actual.logs.get(2).getText()).toBe(logAfter2Minor);
+      expect(await actual.logs.get(2).getText()).toBe(logAfter2Minor);
     });
 
     it('should set expected values after clicking \'Major\' once', async () => {
@@ -88,26 +88,26 @@ describe('Component Communication Cookbook Tests', () => {
       const newMajorButton = repoTag.all(by.tagName('button')).get(1);
 
       await newMajorButton.click();
-      const actual = getActual();
+      const actual = await getActual();
 
       const labelAfterMajor = 'Version 2.0';
       const logAfterMajor = 'major changed from 1 to 2, minor changed from 23 to 0';
 
       expect(actual.label).toBe(labelAfterMajor);
       expect(actual.count).toBe(2);
-      expect(actual.logs.get(1).getText()).toBe(logAfterMajor);
+      expect(await actual.logs.get(1).getText()).toBe(logAfterMajor);
     });
 
-    function getActual() {
+    async function getActual() {
       const versionTag = element(by.tagName('app-version-child'));
-      const label = versionTag.element(by.tagName('h3')).getText();
+      const label = await versionTag.element(by.tagName('h3')).getText();
       const ul = versionTag.element((by.tagName('ul')));
       const logs = ul.all(by.tagName('li'));
 
       return {
         label,
         logs,
-        count: logs.count()
+        count: await logs.count(),
       };
     }
     // ...
@@ -117,9 +117,9 @@ describe('Component Communication Cookbook Tests', () => {
   describe('Child-to-parent communication', () => {
     // #docregion child-to-parent
     // ...
-    it('should not emit the event initially', () => {
+    it('should not emit the event initially', async () => {
       const voteLabel = element(by.tagName('app-vote-taker')).element(by.tagName('h3'));
-      expect(voteLabel.getText()).toBe('Agree: 0, Disagree: 0');
+      expect(await voteLabel.getText()).toBe('Agree: 0, Disagree: 0');
     });
 
     it('should process Agree vote', async () => {
@@ -129,7 +129,7 @@ describe('Component Communication Cookbook Tests', () => {
 
       await agreeButton1.click();
 
-      expect(voteLabel.getText()).toBe('Agree: 1, Disagree: 0');
+      expect(await voteLabel.getText()).toBe('Agree: 1, Disagree: 0');
     });
 
     it('should process Disagree vote', async () => {
@@ -139,7 +139,7 @@ describe('Component Communication Cookbook Tests', () => {
 
       await agreeButton1.click();
 
-      expect(voteLabel.getText()).toBe('Agree: 0, Disagree: 1');
+      expect(await voteLabel.getText()).toBe('Agree: 0, Disagree: 1');
     });
     // ...
     // #enddocregion child-to-parent
@@ -204,8 +204,8 @@ describe('Component Communication Cookbook Tests', () => {
 
       await announceButton.click();
 
-      expect(history.count()).toBe(1);
-      expect(history.get(0).getText()).toMatch(/Mission.* announced/);
+      expect(await history.count()).toBe(1);
+      expect(await history.get(0).getText()).toMatch(/Mission.* announced/);
     });
 
     it('should confirm the mission by Lovell', async () => {
@@ -229,8 +229,8 @@ describe('Component Communication Cookbook Tests', () => {
       await announceButton.click();
       await confirmButton.click();
 
-      expect(history.count()).toBe(2);
-      expect(history.get(1).getText()).toBe(`${astronaut} confirmed the mission`);
+      expect(await history.count()).toBe(2);
+      expect(await history.get(1).getText()).toBe(`${astronaut} confirmed the mission`);
     }
     // ...
     // #enddocregion bidirectional-service
