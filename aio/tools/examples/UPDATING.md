@@ -30,8 +30,8 @@ Any necessary changes to boilerplate files will be done automatically through mi
   yarn install
 
   # Migrate project to new versions.
-  yarn ng update @angular/cli --migrate-only --from=<previous-cli-version>
-  yarn ng update @angular/core --migrate-only --from=<previous-core-version>
+  yarn ng update @angular/cli --allow-dirty --migrate-only --from=<previous-cli-version>
+  yarn ng update @angular/core --allow-dirty --migrate-only --from=<previous-core-version>
   ```
 
   > NOTE:

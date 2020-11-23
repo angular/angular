@@ -43,8 +43,6 @@
         ]
       }
     ],
-    // TODO(gkalpak): Fix the code and enable this.
-    // "no-any": true,
     "no-console": [
       true,
       "debug",
