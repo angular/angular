@@ -3,9 +3,7 @@ import { browser, element, by, protractor, ElementFinder, ElementArrayFinder } f
 // THESE TESTS ARE INCOMPLETE
 describe('Form Validation Tests', () => {
 
-  beforeAll(() => {
-    browser.get('');
-  });
+  beforeAll(() => browser.get(''));
 
   describe('Template-driven form', () => {
     beforeAll(() => {
@@ -71,178 +69,178 @@ function getPage(sectionTag: string) {
 
 function tests(title: string) {
 
-  it('should display correct title', () => {
-    expect(page.title.getText()).toContain(title);
+  it('should display correct title', async () => {
+    expect(await page.title.getText()).toContain(title);
   });
 
-  it('should not display submitted message before submit', () => {
-    expect(page.heroSubmitted.isElementPresent(by.css('p'))).toBe(false);
+  it('should not display submitted message before submit', async () => {
+    expect(await page.heroSubmitted.isElementPresent(by.css('p'))).toBe(false);
   });
 
-  it('should have form buttons', () => {
-    expect(page.heroFormButtons.count()).toEqual(2);
+  it('should have form buttons', async () => {
+    expect(await page.heroFormButtons.count()).toEqual(2);
   });
 
-  it('should have error at start', () => {
-    expectFormIsInvalid();
+  it('should have error at start', async () => {
+    await expectFormIsInvalid();
   });
 
   // it('showForm', () => {
   //   page.form.getInnerHtml().then(html => console.log(html));
   // });
 
-  it('should have disabled submit button', () => {
-    expect(page.heroFormButtons.get(0).isEnabled()).toBe(false);
+  it('should have disabled submit button', async () => {
+    expect(await page.heroFormButtons.get(0).isEnabled()).toBe(false);
   });
 
-  it('resetting name to valid name should clear errors', () => {
+  it('resetting name to valid name should clear errors', async () => {
     const ele = page.nameInput;
-    expect(ele.isPresent()).toBe(true, 'nameInput should exist');
-    ele.clear();
-    ele.sendKeys(testName);
-    expectFormIsValid();
+    expect(await ele.isPresent()).toBe(true, 'nameInput should exist');
+    await ele.clear();
+    await ele.sendKeys(testName);
+    await expectFormIsValid();
   });
 
-  it('should produce "required" error after clearing name', () => {
-    page.nameInput.clear();
-    // page.alterEgoInput.click(); // to blur ... didn't work
-    page.nameInput.sendKeys('x', protractor.Key.BACK_SPACE); // ugh!
-    expect(page.form.getAttribute('class')).toMatch('ng-invalid');
-    expect(page.errorMessages.get(0).getText()).toContain('required');
+  it('should produce "required" error after clearing name', async () => {
+    await page.nameInput.clear();
+    // await page.alterEgoInput.click(); // to blur ... didn't work
+    await page.nameInput.sendKeys('x', protractor.Key.BACK_SPACE); // ugh!
+    expect(await page.form.getAttribute('class')).toMatch('ng-invalid');
+    expect(await page.errorMessages.get(0).getText()).toContain('required');
   });
 
-  it('should produce "at least 4 characters" error when name="x"', () => {
-    page.nameInput.clear();
-    page.nameInput.sendKeys('x'); // too short
-    expectFormIsInvalid();
-    expect(page.errorMessages.get(0).getText()).toContain('at least 4 characters');
+  it('should produce "at least 4 characters" error when name="x"', async () => {
+    await page.nameInput.clear();
+    await page.nameInput.sendKeys('x'); // too short
+    await expectFormIsInvalid();
+    expect(await page.errorMessages.get(0).getText()).toContain('at least 4 characters');
   });
 
-  it('resetting name to valid name again should clear errors', () => {
-    page.nameInput.sendKeys(testName);
-    expectFormIsValid();
+  it('resetting name to valid name again should clear errors', async () => {
+    await page.nameInput.sendKeys(testName);
+    await expectFormIsValid();
   });
 
-  it('should have enabled submit button', () => {
+  it('should have enabled submit button', async () => {
     const submitBtn = page.heroFormButtons.get(0);
-    expect(submitBtn.isEnabled()).toBe(true);
+    expect(await submitBtn.isEnabled()).toBe(true);
   });
 
-  it('should hide form after submit', () => {
-    page.heroFormButtons.get(0).click();
-    expect(page.heroFormButtons.get(0).isDisplayed()).toBe(false);
+  it('should hide form after submit', async () => {
+    await page.heroFormButtons.get(0).click();
+    expect(await page.heroFormButtons.get(0).isDisplayed()).toBe(false);
   });
 
-  it('submitted form should be displayed', () => {
-    expect(page.heroSubmitted.isElementPresent(by.css('p'))).toBe(true);
+  it('submitted form should be displayed', async () => {
+    expect(await page.heroSubmitted.isElementPresent(by.css('p'))).toBe(true);
   });
 
-  it('submitted form should have new hero name', () => {
-    expect(page.heroSubmitted.getText()).toContain(testName);
+  it('submitted form should have new hero name', async () => {
+    expect(await page.heroSubmitted.getText()).toContain(testName);
   });
 
-  it('clicking edit button should reveal form again', () => {
+  it('clicking edit button should reveal form again', async () => {
     const newFormBtn = page.heroSubmitted.element(by.css('button'));
-    newFormBtn.click();
-    expect(page.heroSubmitted.isElementPresent(by.css('p')))
+    await newFormBtn.click();
+    expect(await page.heroSubmitted.isElementPresent(by.css('p')))
       .toBe(false, 'submitted hidden again');
-    expect(page.title.isDisplayed()).toBe(true, 'can see form title');
+    expect(await page.title.isDisplayed()).toBe(true, 'can see form title');
   });
 }
 
-function expectFormIsValid() {
-    expect(page.form.getAttribute('class')).toMatch('ng-valid');
+async function expectFormIsValid() {
+  expect(await page.form.getAttribute('class')).toMatch('ng-valid');
 }
 
-function expectFormIsInvalid() {
-    expect(page.form.getAttribute('class')).toMatch('ng-invalid');
+async function expectFormIsInvalid() {
+  expect(await page.form.getAttribute('class')).toMatch('ng-invalid');
 }
 
-function triggerAlterEgoValidation() {
+async function triggerAlterEgoValidation() {
   // alterEgo has updateOn set to 'blur', click outside of the input to trigger the blur event
-  element(by.css('app-root')).click();
+  await element(by.css('app-root')).click();
 }
 
-function waitForAlterEgoValidation() {
+async function waitForAlterEgoValidation() {
   // alterEgo async validation will be performed in 400ms
-  browser.sleep(400);
+  await browser.sleep(400);
 }
 
 function bobTests() {
   const emsg = 'Name cannot be Bob.';
 
-  it('should produce "no bob" error after setting name to "Bobby"', () => {
+  it('should produce "no bob" error after setting name to "Bobby"', async () => {
     // Re-populate select element
-    page.powerSelect.click();
-    page.powerOption.click();
+    await page.powerSelect.click();
+    await page.powerOption.click();
 
-    page.nameInput.clear();
-    page.nameInput.sendKeys('Bobby');
-    expectFormIsInvalid();
-    expect(page.errorMessages.get(0).getText()).toBe(emsg);
+    await page.nameInput.clear();
+    await page.nameInput.sendKeys('Bobby');
+    await expectFormIsInvalid();
+    expect(await page.errorMessages.get(0).getText()).toBe(emsg);
   });
 
-  it('should be ok again with valid name', () => {
-    page.nameInput.clear();
-    page.nameInput.sendKeys(testName);
-    expectFormIsValid();
+  it('should be ok again with valid name', async () => {
+    await page.nameInput.clear();
+    await page.nameInput.sendKeys(testName);
+    await expectFormIsValid();
   });
 }
 
 function asyncValidationTests() {
   const emsg = 'Alter ego is already taken.';
 
-  it(`should produce "${emsg}" error after setting alterEgo to Eric`, () => {
-    page.alterEgoInput.clear();
-    page.alterEgoInput.sendKeys('Eric');
+  it(`should produce "${emsg}" error after setting alterEgo to Eric`, async () => {
+    await page.alterEgoInput.clear();
+    await page.alterEgoInput.sendKeys('Eric');
 
-    triggerAlterEgoValidation();
-    waitForAlterEgoValidation();
+    await triggerAlterEgoValidation();
+    await waitForAlterEgoValidation();
 
-    expectFormIsInvalid();
-    expect(page.alterEgoErrors.getText()).toBe(emsg);
+    await expectFormIsInvalid();
+    expect(await page.alterEgoErrors.getText()).toBe(emsg);
   });
 
-  it('should be ok again with different values', () => {
-    page.alterEgoInput.clear();
-    page.alterEgoInput.sendKeys('John');
+  it('should be ok again with different values', async () => {
+    await page.alterEgoInput.clear();
+    await page.alterEgoInput.sendKeys('John');
 
-    triggerAlterEgoValidation();
-    waitForAlterEgoValidation();
+    await triggerAlterEgoValidation();
+    await waitForAlterEgoValidation();
 
-    expectFormIsValid();
-    expect(page.alterEgoErrors.isPresent()).toBe(false);
+    await expectFormIsValid();
+    expect(await page.alterEgoErrors.isPresent()).toBe(false);
   });
 }
 
 function crossValidationTests() {
   const emsg = 'Name cannot match alter ego.';
 
-  it(`should produce "${emsg}" error after setting name and alter ego to the same value`, () => {
-    page.nameInput.clear();
-    page.nameInput.sendKeys('Batman');
+  it(`should produce "${emsg}" error after setting name and alter ego to the same value`, async () => {
+    await page.nameInput.clear();
+    await page.nameInput.sendKeys('Batman');
 
-    page.alterEgoInput.clear();
-    page.alterEgoInput.sendKeys('Batman');
+    await page.alterEgoInput.clear();
+    await page.alterEgoInput.sendKeys('Batman');
 
-    triggerAlterEgoValidation();
-    waitForAlterEgoValidation();
+    await triggerAlterEgoValidation();
+    await waitForAlterEgoValidation();
 
-    expectFormIsInvalid();
-    expect(page.crossValidationErrorMessage.getText()).toBe(emsg);
+    await expectFormIsInvalid();
+    expect(await page.crossValidationErrorMessage.getText()).toBe(emsg);
   });
 
-  it('should be ok again with different values', () => {
-    page.nameInput.clear();
-    page.nameInput.sendKeys('Batman');
+  it('should be ok again with different values', async () => {
+    await page.nameInput.clear();
+    await page.nameInput.sendKeys('Batman');
 
-    page.alterEgoInput.clear();
-    page.alterEgoInput.sendKeys('Superman');
+    await page.alterEgoInput.clear();
+    await page.alterEgoInput.sendKeys('Superman');
 
-    triggerAlterEgoValidation();
-    waitForAlterEgoValidation();
+    await triggerAlterEgoValidation();
+    await waitForAlterEgoValidation();
 
-    expectFormIsValid();
-    expect(page.crossValidationErrorMessage.isPresent()).toBe(false);
+    await expectFormIsValid();
+    expect(await page.crossValidationErrorMessage.isPresent()).toBe(false);
   });
 }

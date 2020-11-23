@@ -1,26 +1,21 @@
-import { browser, element, by, ElementFinder } from 'protractor';
+import { browser, element, by } from 'protractor';
 
 describe('Set Document Title', () => {
 
-  beforeAll(() => browser.get(''));
+  beforeEach(() => browser.get(''));
 
-  it('should set the document title', () => {
-
+  it('should set the document title', async () => {
+    const elems = await element.all(by.css('ul li a'));
     const titles = [
       'Good morning!',
       'Good afternoon!',
-      'Good evening!'
+      'Good evening!',
     ];
 
-    element.all( by.css( 'ul li a' ) ).each(
-      function iterator( elem: ElementFinder, i: number ) {
-
-        elem.click();
-        expect( browser.getTitle() ).toEqual( titles[ i ] );
-
-      }
-    );
-
+    for (let i = 0; i < elems.length; i++) {
+      await elems[i].click();
+      expect(await browser.getTitle()).toEqual(titles[i]);
+    }
   });
 
 });

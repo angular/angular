@@ -56,116 +56,109 @@ describe('NgModule-example', () => {
   // tests
   function appTitleTests(color: string, name?: string) {
     return () => {
-      it('should have a gray header', () => {
+      it('should have a gray header', async () => {
         const commons = getCommonsSectionStruct();
-        expect(commons.title.getCssValue('backgroundColor')).toBe(color);
+        expect(await commons.title.getCssValue('backgroundColor')).toBe(color);
       });
 
-      it('should welcome us', () => {
+      it('should welcome us', async () => {
         const commons = getCommonsSectionStruct();
-        expect(commons.subtitle.getText()).toBe('Welcome, ' + (name ||  'Miss Marple'));
+        expect(await commons.subtitle.getText()).toBe(`Welcome, ${name || 'Miss Marple'}`);
       });
     };
   }
 
   function contactTests(color: string, name?: string) {
     return () => {
-      it('shows the contact\'s owner', () => {
+      it('shows the contact\'s owner', async () => {
         const contacts = getContactSectionStruct();
-        expect(contacts.header.getText()).toBe((name ||  'Miss Marple') + '\'s Contacts');
+        expect(await contacts.header.getText()).toBe(`${name || 'Miss Marple'}'s Contacts`);
       });
 
-      it('can cycle between contacts', () => {
+      it('can cycle between contacts', async () => {
         const contacts = getContactSectionStruct();
         const nextButton = contacts.nextContactButton;
-        expect(contacts.contactNameHeader.getText()).toBe('Awesome Yasha');
-        expect(contacts.contactNameHeader.getCssValue('backgroundColor')).toBe(color);
-        nextButton.click().then(() => {
-          expect(contacts.contactNameHeader.getText()).toBe('Awesome Iulia');
-          return nextButton.click();
-        }).then(() => {
-          expect(contacts.contactNameHeader.getText()).toBe('Awesome Karina');
-        });
+        expect(await contacts.contactNameHeader.getText()).toBe('Awesome Yasha');
+        expect(await contacts.contactNameHeader.getCssValue('backgroundColor')).toBe(color);
+
+        await nextButton.click();
+        expect(await contacts.contactNameHeader.getText()).toBe('Awesome Iulia');
+
+        await nextButton.click();
+        expect(await contacts.contactNameHeader.getText()).toBe('Awesome Karina');
       });
 
-      it('can create a new contact', () => {
+      it('can create a new contact', async () => {
         const contacts = getContactSectionStruct();
         const newContactButton = contacts.newContactButton;
         const nextButton = contacts.nextContactButton;
         const input = contacts.input;
         const saveButton = contacts.saveButton;
 
-        newContactButton.click().then(() => {
-          input.click();
-          nextButton.click();
-          expect(contacts.validationError.getText()).toBe('Name is required.');
-          input.click();
-          contacts.input.sendKeys('Watson');
-          saveButton.click();
-          expect(contacts.contactNameHeader.getText()).toBe('Awesome Watson');
+        await newContactButton.click();
+        await input.click();
+        await nextButton.click();
+        expect(await contacts.validationError.getText()).toBe('Name is required.');
 
-        });
+        await input.click();
+        await contacts.input.sendKeys('Watson');
+        await saveButton.click();
+        expect(await contacts.contactNameHeader.getText()).toBe('Awesome Watson');
       });
     };
   }
 
   describe('index.html', () => {
-    beforeEach(() => {
-      browser.get('');
-    });
+    beforeEach(() => browser.get(''));
 
     describe('app-title', appTitleTests(white, 'Miss Marple'));
 
     describe('contact', contactTests(lightgray, 'Miss Marple'));
 
     describe('item center', () => {
-      beforeEach(() => {
-        getCommonsSectionStruct().itemButton.click();
+      beforeEach(() => getCommonsSectionStruct().itemButton.click());
+
+      it('shows a list of items', async () => {
+        const item = getItemSectionStruct();
+        expect(await item.title.getText()).toBe('Items List');
+        expect(await item.items.count()).toBe(4);
+        expect(await item.items.get(0).getText()).toBe('1 - Sticky notes');
       });
 
-      it('shows a list of items', () => {
+      it('can navigate to one item details', async () => {
         const item = getItemSectionStruct();
-        expect(item.title.getText()).toBe('Items List');
-        expect(item.items.count()).toBe(4);
-        expect(item.items.get(0).getText()).toBe('1 - Sticky notes');
-      });
 
-      it('can navigate to one item details', () => {
-        const item = getItemSectionStruct();
-        item.items.get(0).click().then(() => {
-          expect(item.itemId.getText()).toBe('Item id: 1');
-          return item.listLink.click();
-        }).then(() => {
-          // We are back to the list
-          expect(item.items.count()).toBe(4);
-        });
+        await item.items.get(0).click();
+        expect(await item.itemId.getText()).toBe('Item id: 1');
+
+        await item.listLink.click();
+        // We are back to the list
+        expect(await item.items.count()).toBe(4);
       });
     });
 
     describe('customers', () => {
-      beforeEach(() => {
-        getCommonsSectionStruct().customersButton.click();
+      beforeEach(() => getCommonsSectionStruct().customersButton.click());
+
+      it('shows a list of customers', async () => {
+        const customers = getCustomersSectionStruct();
+        expect(await customers.header.getText()).toBe('Customers of Miss Marple times 2');
+        expect(await customers.title.getText()).toBe('Customer List');
+        expect(await customers.items.count()).toBe(6);
+        expect(await customers.items.get(0).getText()).toBe('11 - Julian');
       });
 
-      it('shows a list of customers', () => {
+      it('can navigate and edit one customer details', async () => {
         const customers = getCustomersSectionStruct();
-        expect(customers.header.getText()).toBe('Customers of Miss Marple times 2');
-        expect(customers.title.getText()).toBe('Customer List');
-        expect(customers.items.count()).toBe(6);
-        expect(customers.items.get(0).getText()).toBe('11 - Julian');
-      });
 
-      it('can navigate and edit one customer details', () => {
-        const customers = getCustomersSectionStruct();
-        customers.items.get(0).click().then(() => {
-          expect(customers.itemId.getText()).toBe('Id: 11');
-          customers.itemInput.sendKeys(' try');
-          return customers.listLink.click();
-        }).then(() => {
-          // We are back to the list
-          expect(customers.items.count()).toBe(6);
-          expect(customers.items.get(0).getText()).toBe('11 - Julian try');
-        });
+        await customers.items.get(0).click();
+        expect(await customers.itemId.getText()).toBe('Id: 11');
+
+        await customers.itemInput.sendKeys(' try');
+        await customers.listLink.click();
+        // We are back to the list
+        expect(await customers.items.count()).toBe(6);
+        expect(await customers.items.get(0).getText()).toBe('11 - Julian try');
       });
     });
   });

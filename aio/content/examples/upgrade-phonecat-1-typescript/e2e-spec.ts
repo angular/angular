@@ -11,41 +11,39 @@ describe('PhoneCat Application', () => {
     browser.rootEl = 'body';
   });
 
-  it('should redirect `index.html` to `index.html#!/phones', () => {
-    browser.get('index.html');
-    expect(browser.getLocationAbsUrl()).toBe('/phones');
+  it('should redirect `index.html` to `index.html#!/phones', async () => {
+    await browser.get('index.html');
+    expect(await browser.getLocationAbsUrl()).toBe('/phones');
   });
 
   describe('View: Phone list', () => {
 
     // Helpers
-    const waitForCount = (elems: ElementArrayFinder, count: number) => {
+    const waitForCount = async (elems: ElementArrayFinder, count: number) => {
       // Wait for the list to stabilize, which may take a while (e.g. due to animations).
-      browser.wait(() => elems.count().then(c => c === count), 5000);
+      await browser.wait(async () => await elems.count() === count, 5000);
     };
 
-    beforeEach(() => {
-      browser.get('index.html#!/phones');
-    });
+    beforeEach(() => browser.get('index.html#!/phones'));
 
-    it('should filter the phone list as a user types into the search box', () => {
+    it('should filter the phone list as a user types into the search box', async () => {
       const phoneList = element.all(by.repeater('phone in $ctrl.phones'));
       const query = element(by.model('$ctrl.query'));
 
-      waitForCount(phoneList, 20);
-      expect(phoneList.count()).toBe(20);
+      await waitForCount(phoneList, 20);
+      expect(await phoneList.count()).toBe(20);
 
-      query.sendKeys('nexus');
-      waitForCount(phoneList, 1);
-      expect(phoneList.count()).toBe(1);
+      await query.sendKeys('nexus');
+      await waitForCount(phoneList, 1);
+      expect(await phoneList.count()).toBe(1);
 
-      query.clear();
-      query.sendKeys('motorola');
-      waitForCount(phoneList, 8);
-      expect(phoneList.count()).toBe(8);
+      await query.clear();
+      await query.sendKeys('motorola');
+      await waitForCount(phoneList, 8);
+      expect(await phoneList.count()).toBe(8);
     });
 
-    it('should be possible to control phone order via the drop-down menu', () => {
+    it('should be possible to control phone order via the drop-down menu', async () => {
       const queryField = element(by.model('$ctrl.query'));
       const orderSelect = element(by.model('$ctrl.orderProp'));
       const nameOption = orderSelect.element(by.css('option[value="name"]'));
@@ -55,63 +53,61 @@ describe('PhoneCat Application', () => {
         return phoneNameColumn.map((elem: ElementFinder) => elem.getText());
       }
 
-      queryField.sendKeys('tablet');   // Let's narrow the dataset to make the assertions shorter
-      waitForCount(phoneNameColumn, 2);
+      await queryField.sendKeys('tablet');   // Let's narrow the dataset to make the assertions shorter
+      await waitForCount(phoneNameColumn, 2);
 
-      expect(getNames()).toEqual([
+      expect(await getNames()).toEqual([
         'Motorola XOOM\u2122 with Wi-Fi',
         'MOTOROLA XOOM\u2122'
       ]);
 
-      nameOption.click();
+      await nameOption.click();
 
-      expect(getNames()).toEqual([
+      expect(await getNames()).toEqual([
         'MOTOROLA XOOM\u2122',
         'Motorola XOOM\u2122 with Wi-Fi'
       ]);
     });
 
-    it('should render phone specific links', () => {
+    it('should render phone specific links', async () => {
       const phoneList = element.all(by.repeater('phone in $ctrl.phones'));
       const query = element(by.model('$ctrl.query'));
 
-      query.sendKeys('nexus');
-      waitForCount(phoneList, 1);
+      await query.sendKeys('nexus');
+      await waitForCount(phoneList, 1);
 
       const nexusPhone = phoneList.first();
       const detailLink = nexusPhone.all(by.css('a')).first();
 
-      detailLink.click();
-      expect(browser.getLocationAbsUrl()).toBe('/phones/nexus-s');
+      await detailLink.click();
+      expect(await browser.getLocationAbsUrl()).toBe('/phones/nexus-s');
     });
 
   });
 
   describe('View: Phone detail', () => {
 
-    beforeEach(() => {
-      browser.get('index.html#!/phones/nexus-s');
+    beforeEach(() => browser.get('index.html#!/phones/nexus-s'));
+
+    it('should display the `nexus-s` page', async () => {
+      expect(await element(by.binding('$ctrl.phone.name')).getText()).toBe('Nexus S');
     });
 
-    it('should display the `nexus-s` page', () => {
-      expect(element(by.binding('$ctrl.phone.name')).getText()).toBe('Nexus S');
-    });
-
-    it('should display the first phone image as the main phone image', () => {
+    it('should display the first phone image as the main phone image', async () => {
       const mainImage = element(by.css('img.phone.selected'));
 
-      expect(mainImage.getAttribute('src')).toMatch(/img\/phones\/nexus-s.0.jpg/);
+      expect(await mainImage.getAttribute('src')).toMatch(/img\/phones\/nexus-s.0.jpg/);
     });
 
-    it('should swap the main image when clicking on a thumbnail image', () => {
+    it('should swap the main image when clicking on a thumbnail image', async () => {
       const mainImage = element(by.css('img.phone.selected'));
       const thumbnails = element.all(by.css('.phone-thumbs img'));
 
-      thumbnails.get(2).click();
-      expect(mainImage.getAttribute('src')).toMatch(/img\/phones\/nexus-s.2.jpg/);
+      await thumbnails.get(2).click();
+      expect(await mainImage.getAttribute('src')).toMatch(/img\/phones\/nexus-s.2.jpg/);
 
-      thumbnails.get(0).click();
-      expect(mainImage.getAttribute('src')).toMatch(/img\/phones\/nexus-s.0.jpg/);
+      await thumbnails.get(0).click();
+      expect(await mainImage.getAttribute('src')).toMatch(/img\/phones\/nexus-s.0.jpg/);
     });
 
   });

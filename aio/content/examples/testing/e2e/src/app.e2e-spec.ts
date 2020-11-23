@@ -1,4 +1,4 @@
-import { browser, element, by, ElementFinder } from 'protractor';
+import { browser, element, by } from 'protractor';
 
 describe('Testing Example', () => {
   const expectedViewNames = ['Dashboard', 'Heroes', 'About'];
@@ -6,11 +6,8 @@ describe('Testing Example', () => {
   beforeAll(() => browser.get(''));
 
   function getPageElts() {
-    const navElts = element.all(by.css('app-root nav a'));
-
     return {
-      navElts,
-
+      navElts: element.all(by.css('app-root nav a')),
       appDashboard: element(by.css('app-root app-dashboard')),
     };
   }
@@ -20,14 +17,14 @@ describe('Testing Example', () => {
   });
 
   it(`has views ${expectedViewNames}`, async () => {
-    const viewNames = getPageElts().navElts.map(async (el: ElementFinder) => await el.getText());
+    const viewNames = await getPageElts().navElts.map(el => el.getText());
 
     expect(viewNames).toEqual(expectedViewNames);
   });
 
-  it('has dashboard as the active view', () => {
+  it('has dashboard as the active view', async () => {
     const page = getPageElts();
 
-    expect(page.appDashboard.isPresent()).toBeTruthy();
+    expect(await page.appDashboard.isPresent()).toBeTruthy();
   });
 });
