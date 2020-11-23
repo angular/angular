@@ -7,7 +7,6 @@
     "target": "es2018",
     "types": [
       "jasmine",
-      "jasminewd2",
       "node"
     ]
   }

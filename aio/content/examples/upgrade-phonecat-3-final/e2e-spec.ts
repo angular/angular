@@ -6,36 +6,33 @@ import { browser, element, by } from 'protractor';
 describe('PhoneCat Application', () => {
 
   // #docregion redirect
-  it('should redirect `index.html` to `index.html#!/phones', () => {
-    browser.get('index.html');
-    browser.waitForAngular();
-    browser.getCurrentUrl().then((url: string) => {
-      expect(url.endsWith('/phones')).toBe(true);
-    });
+  it('should redirect `index.html` to `index.html#!/phones', async () => {
+    await browser.get('index.html');
+    await browser.waitForAngular();
+    const url = await browser.getCurrentUrl();
+    expect(url.endsWith('/phones')).toBe(true);
   });
   // #enddocregion redirect
 
   describe('View: Phone list', () => {
 
-    beforeEach(() => {
-      browser.get('index.html#!/phones');
-    });
+    beforeEach(() => browser.get('index.html#!/phones'));
 
-    it('should filter the phone list as a user types into the search box', () => {
+    it('should filter the phone list as a user types into the search box', async () => {
       const phoneList = element.all(by.css('.phones li'));
       const query = element(by.css('input'));
 
-      expect(phoneList.count()).toBe(20);
+      expect(await phoneList.count()).toBe(20);
 
-      query.sendKeys('nexus');
-      expect(phoneList.count()).toBe(1);
+      await query.sendKeys('nexus');
+      expect(await phoneList.count()).toBe(1);
 
-      query.clear();
-      query.sendKeys('motorola');
-      expect(phoneList.count()).toBe(8);
+      await query.clear();
+      await query.sendKeys('motorola');
+      expect(await phoneList.count()).toBe(8);
     });
 
-    it('should be possible to control phone order via the drop-down menu', () => {
+    it('should be possible to control phone order via the drop-down menu', async () => {
       const queryField = element(by.css('input'));
       const orderSelect = element(by.css('select'));
       const nameOption = orderSelect.element(by.css('option[value="name"]'));
@@ -45,29 +42,28 @@ describe('PhoneCat Application', () => {
         return phoneNameColumn.map((elem) => elem.getText());
       }
 
-      queryField.sendKeys('tablet');   // Let's narrow the dataset to make the assertions shorter
+      await queryField.sendKeys('tablet');   // Let's narrow the dataset to make the assertions shorter
 
-      expect(getNames()).toEqual([
+      expect(await getNames()).toEqual([
         'Motorola XOOM\u2122 with Wi-Fi',
         'MOTOROLA XOOM\u2122'
       ]);
 
-      nameOption.click();
+      await nameOption.click();
 
-      expect(getNames()).toEqual([
+      expect(await getNames()).toEqual([
         'MOTOROLA XOOM\u2122',
         'Motorola XOOM\u2122 with Wi-Fi'
       ]);
     });
 
     // #docregion links
-    it('should render phone specific links', () => {
+    it('should render phone specific links', async () => {
       const query = element(by.css('input'));
-      query.sendKeys('nexus');
-      element.all(by.css('.phones li a')).first().click();
-      browser.getCurrentUrl().then((url: string) => {
-        expect(url.endsWith('/phones/nexus-s')).toBe(true);
-      });
+      await query.sendKeys('nexus');
+      await element.all(by.css('.phones li a')).first().click();
+      const url = await browser.getCurrentUrl();
+      expect(url.endsWith('/phones/nexus-s')).toBe(true);
     });
     // #enddocregion links
 
@@ -75,29 +71,27 @@ describe('PhoneCat Application', () => {
 
   describe('View: Phone detail', () => {
 
-    beforeEach(() => {
-      browser.get('index.html#!/phones/nexus-s');
+    beforeEach(() => browser.get('index.html#!/phones/nexus-s'));
+
+    it('should display the `nexus-s` page', async () => {
+      expect(await element(by.css('h1')).getText()).toBe('Nexus S');
     });
 
-    it('should display the `nexus-s` page', () => {
-      expect(element(by.css('h1')).getText()).toBe('Nexus S');
-    });
-
-    it('should display the first phone image as the main phone image', () => {
+    it('should display the first phone image as the main phone image', async () => {
       const mainImage = element(by.css('img.phone.selected'));
 
-      expect(mainImage.getAttribute('src')).toMatch(/img\/phones\/nexus-s.0.jpg/);
+      expect(await mainImage.getAttribute('src')).toMatch(/img\/phones\/nexus-s.0.jpg/);
     });
 
-    it('should swap the main image when clicking on a thumbnail image', () => {
+    it('should swap the main image when clicking on a thumbnail image', async () => {
       const mainImage = element(by.css('img.phone.selected'));
       const thumbnails = element.all(by.css('.phone-thumbs img'));
 
-      thumbnails.get(2).click();
-      expect(mainImage.getAttribute('src')).toMatch(/img\/phones\/nexus-s.2.jpg/);
+      await thumbnails.get(2).click();
+      expect(await mainImage.getAttribute('src')).toMatch(/img\/phones\/nexus-s.2.jpg/);
 
-      thumbnails.get(0).click();
-      expect(mainImage.getAttribute('src')).toMatch(/img\/phones\/nexus-s.0.jpg/);
+      await thumbnails.get(0).click();
+      expect(await mainImage.getAttribute('src')).toMatch(/img\/phones\/nexus-s.0.jpg/);
     });
 
   });

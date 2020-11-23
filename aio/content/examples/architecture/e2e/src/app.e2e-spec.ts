@@ -14,12 +14,12 @@ describe('Architecture', () => {
 
   beforeAll(() => browser.get(''));
 
-  it(`has title '${expectedTitle}'`, () => {
-    expect(browser.getTitle()).toEqual(expectedTitle);
+  it(`has title '${expectedTitle}'`, async () => {
+    expect(await browser.getTitle()).toEqual(expectedTitle);
   });
 
-  it(`has h2 '${expectedH2}'`, () => {
-    const h2 = element.all(by.css('h2')).map((elt: any) => elt.getText());
+  it(`has h2 '${expectedH2}'`, async () => {
+    const h2 = await element.all(by.css('h2')).map((elt: any) => elt.getText());
     expect(h2).toEqual(expectedH2);
   });
 
@@ -31,14 +31,14 @@ function heroTests() {
 
   const targetHero: Hero = { id: 2, name: 'Dr Nice' };
 
-  it('has the right number of heroes', () => {
+  it('has the right number of heroes', async () => {
     const page = getPageElts();
-    expect(page.heroes.count()).toEqual(3);
+    expect(await page.heroes.count()).toEqual(3);
   });
 
-  it('has no hero details initially', () => {
+  it('has no hero details initially', async () => {
     const page = getPageElts();
-    expect(page.heroDetail.isPresent()).toBeFalsy('no hero detail');
+    expect(await page.heroDetail.isPresent()).toBeFalsy('no hero detail');
   });
 
   it('shows selected hero details', async () => {
@@ -51,7 +51,7 @@ function heroTests() {
 
   it(`shows updated hero name in details`, async () => {
     const input = element.all(by.css('input')).first();
-    input.sendKeys(nameSuffix);
+    await input.sendKeys(nameSuffix);
     const page = getPageElts();
     const hero = await heroFromDetail(page.heroDetail);
     const newName = targetHero.name + nameSuffix;
@@ -61,15 +61,15 @@ function heroTests() {
 }
 
 function salesTaxTests() {
-  it('has no sales tax initially', () => {
+  it('has no sales tax initially', async () => {
     const page = getPageElts();
-    expect(page.salesTaxDetail.isPresent()).toBeFalsy('no sales tax info');
+    expect(await page.salesTaxDetail.isPresent()).toBeFalsy('no sales tax info');
   });
 
   it('shows sales tax', async () => {
     const page = getPageElts();
-    page.salesTaxAmountInput.sendKeys('10', protractor.Key.ENTER);
-    expect(page.salesTaxDetail.getText()).toEqual('The sales tax is $1.00');
+    await page.salesTaxAmountInput.sendKeys('10', protractor.Key.ENTER);
+    expect(await page.salesTaxDetail.getText()).toEqual('The sales tax is $1.00');
   });
 }
 

@@ -49,7 +49,6 @@
     "@types/angular-resource": "1.5.16",
     "@types/angular-route": "1.7.1",
     "@types/jasmine": "~3.6.0",
-    "@types/jasminewd2": "~2.0.3",
     "@types/node": "^12.11.1",
     "concurrently": "^5.0.1",
     "http-server": "^0.12.0",

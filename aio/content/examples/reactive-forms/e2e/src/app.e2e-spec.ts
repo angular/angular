@@ -6,9 +6,7 @@ describe('Reactive forms', () => {
   const nameEditorLink = element(by.cssContainingText('app-root > nav > a', 'Name Editor'));
   const profileEditorLink = element(by.cssContainingText('app-root > nav > a', 'Profile Editor'));
 
-  beforeAll(() => {
-    browser.get('');
-  });
+  beforeAll(() => browser.get(''));
 
   describe('Name Editor', () => {
     const nameInput = nameEditor.element(by.css('input'));
@@ -55,7 +53,6 @@ describe('Reactive forms', () => {
 
   describe('Profile Editor', () => {
     const firstNameInput = getInput('firstName');
-    const lastNameInput = getInput('lastName');
     const streetInput = getInput('street');
     const addAliasButton = element(by.buttonText('Add Alias'));
     const updateButton = profileEditor.element(by.buttonText('Update Profile'));
@@ -117,7 +114,7 @@ describe('Reactive forms', () => {
 
     it('should update the displayed form value when form inputs are updated', async () => {
       const aliasText = 'Johnny';
-      const inputs = await Promise.all(
+      await Promise.all(
         Object.keys(profile)
           .map(key =>
             getInput(key).sendKeys(`${profile[key]}`)

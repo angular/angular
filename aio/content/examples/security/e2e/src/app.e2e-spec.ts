@@ -3,33 +3,33 @@ import { browser, element, By } from 'protractor';
 describe('Security E2E Tests', () => {
   beforeAll(() => browser.get(''));
 
-  it('sanitizes innerHTML', () => {
+  it('sanitizes innerHTML', async () => {
     const interpolated = element(By.className('e2e-inner-html-interpolated'));
-    expect(interpolated.getText())
+    expect(await interpolated.getText())
         .toContain('Template <script>alert("0wned")</script> <b>Syntax</b>');
     const bound = element(By.className('e2e-inner-html-bound'));
-    expect(bound.getText()).toContain('Template Syntax');
+    expect(await bound.getText()).toContain('Template Syntax');
     const bold = element(By.css('.e2e-inner-html-bound b'));
-    expect(bold.getText()).toContain('Syntax');
+    expect(await bold.getText()).toContain('Syntax');
   });
 
-  it('escapes untrusted URLs', () => {
+  it('escapes untrusted URLs', async () => {
     const untrustedUrl = element(By.className('e2e-dangerous-url'));
-    expect(untrustedUrl.getAttribute('href')).toMatch(/^unsafe:javascript/);
+    expect(await untrustedUrl.getAttribute('href')).toMatch(/^unsafe:javascript/);
   });
 
-  it('binds trusted URLs', () => {
+  it('binds trusted URLs', async () => {
     const trustedUrl = element(By.className('e2e-trusted-url'));
-    expect(trustedUrl.getAttribute('href')).toMatch(/^javascript:alert/);
+    expect(await trustedUrl.getAttribute('href')).toMatch(/^javascript:alert/);
   });
 
-  it('escapes untrusted resource URLs', () => {
+  it('escapes untrusted resource URLs', async () => {
     const iframe = element(By.className('e2e-iframe-untrusted-src'));
-    expect(iframe.getAttribute('src')).toBe('');
+    expect(await iframe.getAttribute('src')).toBe('');
   });
 
-  it('binds trusted resource URLs', () => {
+  it('binds trusted resource URLs', async () => {
     const iframe = element(By.className('e2e-iframe-trusted-src'));
-    expect(iframe.getAttribute('src')).toMatch(/^https:\/\/www.youtube.com\//);
+    expect(await iframe.getAttribute('src')).toMatch(/^https:\/\/www.youtube.com\//);
   });
 });
