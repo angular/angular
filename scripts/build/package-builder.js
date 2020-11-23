@@ -62,7 +62,7 @@ module.exports = {
  * This path should either be absolute or relative to the project root.
  * @param {boolean} enableIvy True, if Ivy should be used.
  * @param {string} description Human-readable description of the build.
- * @returns {Array<{name: string, outputPath: string}} An list of packages built.
+ * @returns {Array<{name: string, outputPath: string}} A list of packages built.
  */
 function buildTargetPackages(destPath, enableIvy, description) {
   console.info('##################################');
