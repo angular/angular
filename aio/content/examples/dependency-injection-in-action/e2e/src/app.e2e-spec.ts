@@ -6,54 +6,47 @@ describe('Dependency Injection Cookbook', () => {
         browser.get('');
     });
 
-    it('should render Logged in User example', () => {
-      const loggedInUser = element.all(by.xpath('//h3[text()="Logged in user"]')).get(0);
-      expect(loggedInUser).toBeDefined();
+    it('should render Logged in User example', async () => {
+      const loggedInUser = element(by.cssContainingText('h3', 'Logged in user'));
+      expect(await loggedInUser.isPresent()).toBe(true);
     });
 
-    it('"Bombasto" should be the logged in user', () => {
-      const loggedInUser = element.all(by.xpath('//div[text()="Name: Bombasto"]')).get(0);
-      expect(loggedInUser).toBeDefined();
+    it('"Bombasto" should be the logged in user', async () => {
+      const loggedInUser = element(by.cssContainingText('div', 'Name: Bombasto'));
+      expect(await loggedInUser.isPresent()).toBe(true);
     });
 
-    it('should render sorted heroes', () => {
-      const sortedHeroes = element.all(by.xpath('//h3[text()="Sorted Heroes" and position()=1]')).get(0);
-      expect(sortedHeroes).toBeDefined();
+    it('should render sorted heroes', async () => {
+      const sortedHeroes = element(by.cssContainingText('h3', 'Sorted Heroes'));
+      expect(await sortedHeroes.isPresent()).toBe(true);
+
+      const sortedHeroElems = element.all(by.css('app-sorted-heroes div'));
+      const sortedHeroNames = await sortedHeroElems.map(elem => elem.getText());
+      expect(sortedHeroNames).toEqual(['Dr Nice', 'Magma', 'RubberMan']);
     });
 
-    it('Dr Nice should be in sorted heroes', () => {
-      const sortedHero = element.all(by.xpath('//sorted-heroes/[text()="Dr Nice" and position()=2]')).get(0);
-      expect(sortedHero).toBeDefined();
+    it('should render Hero of the Month', async () => {
+      const heroOfTheMonth = element(by.cssContainingText('h3', 'Hero of the Month'));
+      expect(await heroOfTheMonth.isPresent()).toBe(true);
     });
 
-    it('RubberMan should be in sorted heroes', () => {
-      const sortedHero = element.all(by.xpath('//sorted-heroes/[text()="RubberMan" and position()=3]')).get(0);
-      expect(sortedHero).toBeDefined();
+    it('should render Hero Bios', async () => {
+      const heroBios = element(by.cssContainingText('h3', 'Hero Bios'));
+      expect(await heroBios.isPresent()).toBe(true);
     });
 
-    it('Magma should be in sorted heroes', () => {
-      const sortedHero = element.all(by.xpath('//sorted-heroes/[text()="Magma"]')).get(0);
-      expect(sortedHero).toBeDefined();
+    it('should render Magma\'s description in Hero Bios', async () => {
+      const magmaBioElem = element.all(by.css('app-hero-bio')).get(1);
+      const magmaNameElem = magmaBioElem.element(by.css('h4'));
+      const magmaDescElem = magmaBioElem.element(by.css('textarea'));
+
+      expect(await magmaNameElem.getText()).toBe('Magma');
+      expect(await magmaDescElem.getAttribute('value')).toBe('Hero of all trades');
     });
 
-    it('should render Hero of the Month', () => {
-      const heroOfTheMonth = element.all(by.xpath('//h3[text()="Hero of the month"]')).get(0);
-      expect(heroOfTheMonth).toBeDefined();
-    });
-
-    it('should render Hero Bios', () => {
-      const heroBios = element.all(by.xpath('//h3[text()="Hero Bios"]')).get(0);
-      expect(heroBios).toBeDefined();
-    });
-
-    it('should render Magma\'s description in Hero Bios', () => {
-      const magmaText =  element.all(by.xpath('//textarea[text()="Hero of all trades"]')).get(0);
-      expect(magmaText).toBeDefined();
-    });
-
-    it('should render Magma\'s phone in Hero Bios and Contacts', () => {
-      const magmaPhone =  element.all(by.xpath('//div[text()="Phone #: 555-555-5555"]')).get(0);
-      expect(magmaPhone).toBeDefined();
+    it('should render Magma\'s phone in Hero Bios and Contacts', async () => {
+      const magmaPhone = element(by.cssContainingText('div', 'Phone #: 555-555-5555'));
+      expect(await magmaPhone.isPresent()).toBe(true);
     });
 
     it('should render Hero-of-the-Month runner-ups', () => {
