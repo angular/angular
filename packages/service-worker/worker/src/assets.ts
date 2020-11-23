@@ -390,9 +390,9 @@ export abstract class AssetGroup {
       // Fetch the resource from the network (possibly hitting the HTTP cache).
       let response = await this.safeFetch(req);
 
-      // Decide whether a cache-busted request is necessary. A cache-busted request is necessary iff
-      // the request was successful but the hash of the retrieved contents does not match the
-      // canonical hash from the manifest.
+      // Decide whether a cache-busted request is necessary. A cache-busted request is necessary
+      // only if the request was successful but the hash of the retrieved contents does not match
+      // the canonical hash from the manifest.
       let makeCacheBustedRequest = response.ok;
       if (makeCacheBustedRequest) {
         // The request was successful. A cache-busted request is only necessary if the hashes
