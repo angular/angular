@@ -35,7 +35,6 @@
     "@types/angular": "1.7.3",
     "@types/angular-route": "1.7.1",
     "@types/jasmine": "~3.6.0",
-    "@types/jasminewd2": "~2.0.3",
     "@types/node": "^12.11.1",
     "codelyzer": "^6.0.0",
     "jasmine-core": "~3.6.0",

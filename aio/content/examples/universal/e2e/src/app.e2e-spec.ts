@@ -52,74 +52,74 @@ describe('Universal', () => {
   describe('Initial page', () => {
     beforeAll(() => browser.get(''));
 
-    it(`has title '${expectedTitle}'`, () => {
-      expect(browser.getTitle()).toEqual(expectedTitle);
+    it(`has title '${expectedTitle}'`, async () => {
+      expect(await browser.getTitle()).toEqual(expectedTitle);
     });
 
-    it(`has h1 '${expectedH1}'`, () => {
-        expectHeading(1, expectedH1);
+    it(`has h1 '${expectedH1}'`, async () => {
+      await expectHeading(1, expectedH1);
     });
 
     const expectedViewNames = ['Dashboard', 'Heroes'];
-    it(`has views ${expectedViewNames}`, () => {
-      const viewNames = getPageElts().navElts.map((el: ElementFinder) => el.getText());
+    it(`has views ${expectedViewNames}`, async () => {
+      const viewNames = await getPageElts().navElts.map(el => el.getText());
       expect(viewNames).toEqual(expectedViewNames);
     });
 
-    it('has dashboard as the active view', () => {
+    it('has dashboard as the active view', async () => {
       const page = getPageElts();
-      expect(page.appDashboard.isPresent()).toBeTruthy();
+      expect(await page.appDashboard.isPresent()).toBeTruthy();
     });
   });
 
   describe('Dashboard tests', () => {
     beforeAll(() => browser.get(''));
 
-    it('has top heroes', () => {
+    it('has top heroes', async () => {
       const page = getPageElts();
-      expect(page.topHeroes.count()).toEqual(4);
+      expect(await page.topHeroes.count()).toEqual(4);
     });
 
     it(`selects and routes to ${targetHero.name} details`, dashboardSelectTargetHero);
 
     it(`updates hero name (${newHeroName}) in details view`, updateHeroNameInDetailView);
 
-    it(`cancels and shows ${targetHero.name} in Dashboard`, () => {
-      element(by.buttonText('go back')).click();
-      browser.waitForAngular(); // seems necessary to gets tests to pass for toh-pt6
+    it(`cancels and shows ${targetHero.name} in Dashboard`, async () => {
+      await element(by.buttonText('go back')).click();
+      await browser.waitForAngular(); // seems necessary to gets tests to pass for toh-pt6
 
       const targetHeroElt = getPageElts().topHeroes.get(targetHeroDashboardIndex);
-      expect(targetHeroElt.getText()).toEqual(targetHero.name);
+      expect(await targetHeroElt.getText()).toEqual(targetHero.name);
     });
 
     it(`selects and routes to ${targetHero.name} details`, dashboardSelectTargetHero);
 
     it(`updates hero name (${newHeroName}) in details view`, updateHeroNameInDetailView);
 
-    it(`saves and shows ${newHeroName} in Dashboard`, () => {
-      element(by.buttonText('save')).click();
-      browser.waitForAngular(); // seems necessary to gets tests to pass for toh-pt6
+    it(`saves and shows ${newHeroName} in Dashboard`, async () => {
+      await element(by.buttonText('save')).click();
+      await browser.waitForAngular(); // seems necessary to gets tests to pass for toh-pt6
 
       const targetHeroElt = getPageElts().topHeroes.get(targetHeroDashboardIndex);
-      expect(targetHeroElt.getText()).toEqual(newHeroName);
+      expect(await targetHeroElt.getText()).toEqual(newHeroName);
     });
   });
 
   describe('Heroes tests', () => {
     beforeAll(() => browser.get(''));
 
-    it('can switch to Heroes view', () => {
-      getPageElts().appHeroesHref.click();
+    it('can switch to Heroes view', async () => {
+      await getPageElts().appHeroesHref.click();
       const page = getPageElts();
-      expect(page.appHeroes.isPresent()).toBeTruthy();
-      expect(page.allHeroes.count()).toEqual(10, 'number of heroes');
+      expect(await page.appHeroes.isPresent()).toBeTruthy();
+      expect(await page.allHeroes.count()).toEqual(10, 'number of heroes');
     });
 
     it('can route to hero details', async () => {
-      getHeroLiEltById(targetHero.id).click();
+      await getHeroLiEltById(targetHero.id).click();
 
       const page = getPageElts();
-      expect(page.heroDetail.isPresent()).toBeTruthy('shows hero detail');
+      expect(await page.heroDetail.isPresent()).toBeTruthy('shows hero detail');
       const hero = await Hero.fromDetail(page.heroDetail);
       expect(hero.id).toEqual(targetHero.id);
       expect(hero.name).toEqual(targetHero.name.toUpperCase());
@@ -127,26 +127,26 @@ describe('Universal', () => {
 
     it(`updates hero name (${newHeroName}) in details view`, updateHeroNameInDetailView);
 
-    it(`shows ${newHeroName} in Heroes list`, () => {
-      element(by.buttonText('save')).click();
-      browser.waitForAngular();
+    it(`shows ${newHeroName} in Heroes list`, async () => {
+      await element(by.buttonText('save')).click();
+      await browser.waitForAngular();
       const expectedText = `${targetHero.id} ${newHeroName}`;
-      expect(getHeroAEltById(targetHero.id).getText()).toEqual(expectedText);
+      expect(await getHeroAEltById(targetHero.id).getText()).toEqual(expectedText);
     });
 
     it(`deletes ${newHeroName} from Heroes list`, async () => {
       const heroesBefore = await toHeroArray(getPageElts().allHeroes);
       const li = getHeroLiEltById(targetHero.id);
-      li.element(by.buttonText('x')).click();
+      await li.element(by.buttonText('x')).click();
 
       const page = getPageElts();
-      expect(page.appHeroes.isPresent()).toBeTruthy();
-      expect(page.allHeroes.count()).toEqual(9, 'number of heroes');
+      expect(await page.appHeroes.isPresent()).toBeTruthy();
+      expect(await page.allHeroes.count()).toEqual(9, 'number of heroes');
       const heroesAfter = await toHeroArray(page.allHeroes);
       // console.log(await Hero.fromLi(page.allHeroes[0]));
       const expectedHeroes =  heroesBefore.filter(h => h.name !== newHeroName);
       expect(heroesAfter).toEqual(expectedHeroes);
-      // expect(page.selectedHeroSubview.isPresent()).toBeFalsy();
+      // expect(await page.selectedHeroSubview.isPresent()).toBeFalsy();
     });
 
     it(`adds back ${targetHero.name}`, async () => {
@@ -154,8 +154,8 @@ describe('Universal', () => {
       const heroesBefore = await toHeroArray(getPageElts().allHeroes);
       const numHeroes = heroesBefore.length;
 
-      element(by.css('input')).sendKeys(updatedHeroName);
-      element(by.buttonText('add')).click();
+      await element(by.css('input')).sendKeys(updatedHeroName);
+      await element(by.buttonText('add')).click();
 
       const page = getPageElts();
       const heroesAfter = await toHeroArray(page.allHeroes);
@@ -168,25 +168,25 @@ describe('Universal', () => {
     });
 
     it('displays correctly styled buttons', async () => {
-      element.all(by.buttonText('x')).then(buttons => {
-        for (const button of buttons) {
-          // Inherited styles from styles.css
-          expect(button.getCssValue('font-family')).toBe('Arial');
-          expect(button.getCssValue('border')).toContain('none');
-          expect(button.getCssValue('padding')).toBe('5px 10px');
-          expect(button.getCssValue('border-radius')).toBe('4px');
-          // Styles defined in heroes.component.css
-          expect(button.getCssValue('left')).toBe('194px');
-          expect(button.getCssValue('top')).toBe('-32px');
-        }
-      });
+      const buttons = await element.all(by.buttonText('x'));
+
+      for (const button of buttons) {
+        // Inherited styles from styles.css
+        expect(await button.getCssValue('font-family')).toBe('Arial');
+        expect(await button.getCssValue('border')).toContain('none');
+        expect(await button.getCssValue('padding')).toBe('5px 10px');
+        expect(await button.getCssValue('border-radius')).toBe('4px');
+        // Styles defined in heroes.component.css
+        expect(await button.getCssValue('left')).toBe('194px');
+        expect(await button.getCssValue('top')).toBe('-32px');
+      }
 
       const addButton = element(by.buttonText('add'));
       // Inherited styles from styles.css
-      expect(addButton.getCssValue('font-family')).toBe('Arial');
-      expect(addButton.getCssValue('border')).toContain('none');
-      expect(addButton.getCssValue('padding')).toBe('5px 10px');
-      expect(addButton.getCssValue('border-radius')).toBe('4px');
+      expect(await addButton.getCssValue('font-family')).toBe('Arial');
+      expect(await addButton.getCssValue('border')).toContain('none');
+      expect(await addButton.getCssValue('padding')).toBe('5px 10px');
+      expect(await addButton.getCssValue('border-radius')).toBe('4px');
     });
   });
 
@@ -194,34 +194,34 @@ describe('Universal', () => {
     beforeAll(() => browser.get(''));
 
     it(`searches for 'Ma'`, async () => {
-      getPageElts().searchBox.sendKeys('Ma');
-      browser.sleep(1000);
+      await getPageElts().searchBox.sendKeys('Ma');
+      await browser.sleep(1000);
 
-      expect(getPageElts().searchResults.count()).toBe(4);
+      expect(await getPageElts().searchResults.count()).toBe(4);
     });
 
     it(`continues search with 'g'`, async () => {
-      getPageElts().searchBox.sendKeys('g');
-      browser.sleep(1000);
-      expect(getPageElts().searchResults.count()).toBe(2);
+      await getPageElts().searchBox.sendKeys('g');
+      await browser.sleep(1000);
+      expect(await getPageElts().searchResults.count()).toBe(2);
     });
 
     it(`continues search with 'e' and gets ${targetHero.name}`, async () => {
-      getPageElts().searchBox.sendKeys('n');
-      browser.sleep(1000);
+      await getPageElts().searchBox.sendKeys('n');
+      await browser.sleep(1000);
       const page = getPageElts();
-      expect(page.searchResults.count()).toBe(1);
+      expect(await page.searchResults.count()).toBe(1);
       const hero = page.searchResults.get(0);
-      expect(hero.getText()).toEqual(targetHero.name);
+      expect(await hero.getText()).toEqual(targetHero.name);
     });
 
     it(`navigates to ${targetHero.name} details view`, async () => {
       const hero = getPageElts().searchResults.get(0);
-      expect(hero.getText()).toEqual(targetHero.name);
-      hero.click();
+      expect(await hero.getText()).toEqual(targetHero.name);
+      await hero.click();
 
       const page = getPageElts();
-      expect(page.heroDetail.isPresent()).toBeTruthy('shows hero detail');
+      expect(await page.heroDetail.isPresent()).toBeTruthy('shows hero detail');
       const hero2 = await Hero.fromDetail(page.heroDetail);
       expect(hero2.id).toEqual(targetHero.id);
       expect(hero2.name).toEqual(targetHero.name.toUpperCase());
@@ -229,26 +229,26 @@ describe('Universal', () => {
   });
 
   // Helpers
-  function addToHeroName(text: string): Promise<void> {
-    return element(by.css('input')).sendKeys(text) as Promise<void>;
+  async function addToHeroName(text: string): Promise<void> {
+    await element(by.css('input')).sendKeys(text);
   }
 
   async function dashboardSelectTargetHero(): Promise<void> {
     const targetHeroElt = getPageElts().topHeroes.get(targetHeroDashboardIndex);
-    expect(targetHeroElt.getText()).toEqual(targetHero.name);
-    targetHeroElt.click();
-    browser.waitForAngular(); // seems necessary to gets tests to pass for toh-pt6
+    expect(await targetHeroElt.getText()).toEqual(targetHero.name);
+    await targetHeroElt.click();
+    await browser.waitForAngular(); // seems necessary to gets tests to pass for toh-pt6
 
     const page = getPageElts();
-    expect(page.heroDetail.isPresent()).toBeTruthy('shows hero detail');
+    expect(await page.heroDetail.isPresent()).toBeTruthy('shows hero detail');
     const hero = await Hero.fromDetail(page.heroDetail);
     expect(hero.id).toEqual(targetHero.id);
     expect(hero.name).toEqual(targetHero.name.toUpperCase());
   }
 
-  function expectHeading(hLevel: number, expectedText: string): void {
+  async function expectHeading(hLevel: number, expectedText: string): Promise<void> {
       const hTag = `h${hLevel}`;
-      const hText = element(by.css(hTag)).getText();
+      const hText = await element(by.css(hTag)).getText();
       expect(hText).toEqual(expectedText, hTag);
   }
 
@@ -290,7 +290,7 @@ describe('Universal', () => {
 
   async function updateHeroNameInDetailView(): Promise<void> {
     // Assumes that the current view is the hero details view.
-    addToHeroName(nameSuffix);
+    await addToHeroName(nameSuffix);
 
     const page = getPageElts();
     const hero = await Hero.fromDetail(page.heroDetail);
