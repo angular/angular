@@ -19,31 +19,18 @@
  * Use only features supported by the NodeJS versions used in the environment.
  */
 // tslint:disable:no-console
-const {execSync: execSync_} = require('child_process');
+const {execSync} = require('child_process');
 
 
 /** A regex to select a ref that matches our semver refs. */
 const semverRegex = /^(\d+)\.(\d+)\.x$/;
 
-/**
- * Synchronously executes the command.
- *
- * Return the trimmed stdout as a string, with an added attribute of the exit code.
- */
-function exec(command, allowStderr = true) {
-  let output = new String();
-  output.code = 0;
-  try {
-    output += execSync_(command, {stdio: ['pipe', 'pipe', 'pipe']}).toString().trim();
-  } catch (err) {
-    allowStderr && console.error(err.stderr.toString());
-    output.code = err.status;
-  }
-  return output;
-}
-
 // Run
-
+_main().catch(err => {
+  console.log('Failed to rebase on top of target branch.\n');
+  console.error(err);
+  process.exitCode = 1;
+});
 
 // Helpers
 async function _main() {
@@ -202,8 +189,19 @@ function getRefsAndShasForChange() {
 }
 
 
-_main().catch(err => {
-  console.log('Failed to rebase on top of target branch.\n');
-  console.error(err);
-  process.exitCode = 1;
-});
+/**
+ * Synchronously executes the command.
+ *
+ * Return the trimmed stdout as a string, with an added attribute of the exit code.
+ */
+function exec(command, allowStderr = true) {
+  let output = new String();
+  output.code = 0;
+  try {
+    output += execSync(command, {stdio: ['pipe', 'pipe', 'pipe']}).toString().trim();
+  } catch (err) {
+    allowStderr && console.error(err.stderr.toString());
+    output.code = err.status;
+  }
+  return output;
+}
