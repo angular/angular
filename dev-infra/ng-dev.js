@@ -5807,6 +5807,8 @@ class ReleaseAction {
             // so we cannot build and publish it.
             yield invokeYarnInstallCommand(this.projectDir);
             const builtPackages = yield invokeReleaseBuildCommand();
+            // Verify the packages built are the correct version.
+            yield this._verifyPackageVersions(newVersion, builtPackages);
             // Create a Github release for the new version.
             yield this._createGithubReleaseForVersion(newVersion, versionBumpCommitSha);
             // Walk through all built packages and publish them to NPM.
@@ -5839,6 +5841,20 @@ class ReleaseAction {
         return tslib.__awaiter(this, void 0, void 0, function* () {
             const { data } = yield this.git.github.repos.getCommit(Object.assign(Object.assign({}, this.git.remoteParams), { ref: commitSha }));
             return data.commit.message.startsWith(getCommitMessageForRelease(version));
+        });
+    }
+    /** Verify the version of each generated package exact matches the specified version. */
+    _verifyPackageVersions(version, packages) {
+        return tslib.__awaiter(this, void 0, void 0, function* () {
+            for (const pkg of packages) {
+                const { version: packageJsonVersion } = JSON.parse(yield fs.promises.readFile(path.join(pkg.outputPath, 'package.json'), 'utf8'));
+                if (version.compare(packageJsonVersion) !== 0) {
+                    error(red('The built package version does not match the version being released.'));
+                    error(`  Release Version:   ${version.version}`);
+                    error(`  Generated Version: ${packageJsonVersion}`);
+                    throw new FatalReleaseActionError();
+                }
+            }
         });
     }
 }

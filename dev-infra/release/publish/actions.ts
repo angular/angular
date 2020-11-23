@@ -549,7 +549,7 @@ export abstract class ReleaseAction {
       if (version.compare(packageJsonVersion) !== 0) {
         error(red('The built package version does not match the version being released.'));
         error(`  Release Version:   ${version.version}`);
-        error(`  Generated Version: ${version.version}`);
+        error(`  Generated Version: ${packageJsonVersion}`);
         throw new FatalReleaseActionError();
       }
     }
