@@ -59,7 +59,7 @@
     "@angular/forms": "^11.0.0",
     "@angular/platform-browser": "^11.0.0",
     "@types/googlemaps": "^3.39.3",
-    "@types/youtube": "^0.0.38",
+    "@types/youtube": "^0.0.40",
     "@webcomponents/custom-elements": "^1.1.0",
     "core-js": "^2.6.9",
     "material-components-web": "9.0.0-canary.30c11bfc2.0",
