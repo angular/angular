@@ -7,11 +7,11 @@
  */
 
 import {HarnessPredicate} from '@angular/cdk/testing';
-import {MatDrawerHarness} from './drawer-harness';
+import {MatDrawerHarnessBase} from './drawer-harness';
 import {DrawerHarnessFilters} from './drawer-harness-filters';
 
 /** Harness for interacting with a standard mat-sidenav in tests. */
-export class MatSidenavHarness extends MatDrawerHarness {
+export class MatSidenavHarness extends MatDrawerHarnessBase {
   /** The selector for the host element of a `MatSidenav` instance. */
   static hostSelector = '.mat-sidenav';
 
@@ -21,8 +21,8 @@ export class MatSidenavHarness extends MatDrawerHarness {
    * @param options Options for filtering which sidenav instances are considered a match.
    * @return a `HarnessPredicate` configured with the given options.
    */
-  static with(options: DrawerHarnessFilters = {}): HarnessPredicate<MatDrawerHarness> {
-    return new HarnessPredicate(MatDrawerHarness, options)
+  static with(options: DrawerHarnessFilters = {}): HarnessPredicate<MatSidenavHarness> {
+    return new HarnessPredicate(MatSidenavHarness, options)
         .addOption('position', options.position,
             async (harness, position) => (await harness.getPosition()) === position);
   }

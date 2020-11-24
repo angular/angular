@@ -1,17 +1,25 @@
-import {HarnessLoader} from '@angular/cdk/testing';
+import {HarnessLoader, parallel} from '@angular/cdk/testing';
 import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
 import {Component} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {MatSidenavModule} from '@angular/material/sidenav';
-import {MatSidenavHarness} from '@angular/material/sidenav/testing/sidenav-harness';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
+import {MatDrawerContainerHarness} from './drawer-container-harness';
+import {MatDrawerContentHarness} from './drawer-content-harness';
 import {MatDrawerHarness} from './drawer-harness';
+import {MatSidenavContainerHarness} from './sidenav-container-harness';
+import {MatSidenavContentHarness} from './sidenav-content-harness';
+import {MatSidenavHarness} from './sidenav-harness';
 
 /** Shared tests to run on both the original and MDC-based drawer & sidenav. */
 export function runHarnessTests(sidenavModule: typeof MatSidenavModule,
                                 drawerHarness: typeof MatDrawerHarness,
-                                sidenavHarness: typeof MatSidenavHarness) {
-  describe('MatDrawerHarness', () => {
+                                drawerContainerHarness: typeof MatDrawerContainerHarness,
+                                drawerContentHarness: typeof MatDrawerContentHarness,
+                                sidenavHarness: typeof MatSidenavHarness,
+                                sidenavContainerHarness: typeof MatSidenavContainerHarness,
+                                sidenavContentHarness: typeof MatSidenavContentHarness) {
+  describe('drawer', () => {
     let fixture: ComponentFixture<DrawerHarnessTest>;
     let loader: HarnessLoader;
 
@@ -67,9 +75,41 @@ export function runHarnessTests(sidenavModule: typeof MatSidenavModule,
       expect(await drawers[1].getMode()).toBe('side');
       expect(await drawers[2].getMode()).toBe('push');
     });
+
+    it('should load all drawer container harnesses', async () => {
+      const containers = await loader.getAllHarnesses(drawerContainerHarness);
+      expect(containers.length).toBe(2);
+    });
+
+    it('should get the drawers within a container', async () => {
+      const containers = await loader.getAllHarnesses(drawerContainerHarness);
+      const [firstContainerDrawers, secondContainerDrawers] = await parallel(() => {
+        return containers.map(container => container.getDrawers());
+      });
+
+      expect(await parallel(() => {
+        return firstContainerDrawers.map(async container => (await container.host()).text());
+      })).toEqual(['One', 'Two']);
+
+      expect(await parallel(() => {
+        return secondContainerDrawers.map(async container => (await container.host()).text());
+      })).toEqual(['Three']);
+    });
+
+    it('should get the content of a container', async () => {
+      const container = await loader.getHarness(drawerContainerHarness);
+      const content = await container.getContent();
+      expect(await (await content.host()).text()).toBe('Content');
+    });
+
+    it('should load all drawer content harnesses', async () => {
+      const contentElements = await loader.getAllHarnesses(drawerContentHarness);
+      expect(contentElements.length).toBe(2);
+    });
+
   });
 
-  describe('MatSidenavHarness', () => {
+  describe('sidenav', () => {
     let fixture: ComponentFixture<SidenavHarnessTest>;
     let loader: HarnessLoader;
 
@@ -91,6 +131,38 @@ export function runHarnessTests(sidenavModule: typeof MatSidenavModule,
       expect(await sidenavs[1].isFixedInViewport()).toBe(false);
       expect(await sidenavs[2].isFixedInViewport()).toBe(true);
     });
+
+    it('should load all sidenav container harnesses', async () => {
+      const containers = await loader.getAllHarnesses(sidenavContainerHarness);
+      expect(containers.length).toBe(2);
+    });
+
+    it('should get the sidenavs within a container', async () => {
+      const containers = await loader.getAllHarnesses(sidenavContainerHarness);
+      const [firstContainerSidenavs, secondContainerSidenavs] = await parallel(() => {
+        return containers.map(container => container.getSidenavs());
+      });
+
+      expect(await parallel(() => {
+        return firstContainerSidenavs.map(async container => (await container.host()).text());
+      })).toEqual(['One', 'Two']);
+
+      expect(await parallel(() => {
+        return secondContainerSidenavs.map(async container => (await container.host()).text());
+      })).toEqual(['Three']);
+    });
+
+    it('should get the content of a container', async () => {
+      const container = await loader.getHarness(sidenavContainerHarness);
+      const content = await container.getContent();
+      expect(await (await content.host()).text()).toBe('Content');
+    });
+
+    it('should load all sidenav content harnesses', async () => {
+      const contentElements = await loader.getAllHarnesses(sidenavContentHarness);
+      expect(contentElements.length).toBe(2);
+    });
+
   });
 }
 
