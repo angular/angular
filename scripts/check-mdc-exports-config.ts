@@ -60,6 +60,11 @@ export const config = {
       '_MatTabNavBase',
       '_MatTabLinkBase',
       '_MatTabGroupBase'
+    ],
+    'mdc-table': [
+      // Private symbols that are only exported for MDC.
+      '_MatTableDataSource',
+      '_MAT_TEXT_COLUMN_TEMPLATE'
     ]
   }
 };
