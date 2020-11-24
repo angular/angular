@@ -171,4 +171,18 @@ describe('text instructions', () => {
     // `Symbol(hello)_p.sc8s398cplk`, whereas the native one is `Symbol(hello)`.
     expect(fixture.nativeElement.textContent).toContain('Symbol(hello)');
   });
+
+  it('should handle binding syntax used inside quoted text', () => {
+    @Component({
+      template: `{{'Interpolations look like {{this}}'}}`,
+    })
+    class App {
+    }
+
+    TestBed.configureTestingModule({declarations: [App]});
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent).toBe('Interpolations look like {{this}}');
+  });
 });

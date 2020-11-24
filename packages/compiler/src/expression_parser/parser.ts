@@ -244,10 +244,10 @@ export class Parser {
 
         atInterpolation = true;
       } else {
-        // parse from starting {{ to ending }}
+        // parse from starting {{ to ending }} while ignoring content inside quotes.
         const fullStart = i;
         const exprStart = fullStart + interpStart.length;
-        const exprEnd = input.indexOf(interpEnd, exprStart);
+        const exprEnd = this._indexOfSkipQuoted(input, interpEnd, exprStart);
         if (exprEnd === -1) {
           // Could not find the end of the interpolation; do not parse an expression.
           // Instead we should extend the content on the last raw string.
@@ -340,10 +340,30 @@ export class Parser {
 
     return errLocation.length;
   }
+
+  /** Like `String.prototype.indexOf`, but skips content inside quotes. */
+  private _indexOfSkipQuoted(input: string, value: string, start: number): number {
+    const valueLength = value.length;
+    let currentQuote: string|null = null;
+    for (let i = start; i < input.length; i++) {
+      const char = input[i];
+      // Skip the characters inside quotes. Note that we only care about the
+      // outer-most  quotes matching up and we need to account for escape characters.
+      if (isQuote(input.charCodeAt(i)) && (currentQuote === null || currentQuote === char) &&
+          input[i - 1] !== '\\') {
+        currentQuote = currentQuote === null ? char : null;
+      } else if (
+          currentQuote === null && char === value[0] &&
+          (valueLength === 0 || input.substring(i, i + valueLength) === value)) {
+        return i;
+      }
+    }
+    return -1;
+  }
 }
 
 export class IvyParser extends Parser {
-  simpleExpressionChecker = IvySimpleExpressionChecker;  //
+  simpleExpressionChecker = IvySimpleExpressionChecker;
 }
 
 /** Describes a stateful context an expression parser is in. */
