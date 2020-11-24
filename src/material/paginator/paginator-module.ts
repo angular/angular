@@ -8,6 +8,7 @@
 
 import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
+import {MatCommonModule} from '@angular/material/core';
 import {MatButtonModule} from '@angular/material/button';
 import {MatSelectModule} from '@angular/material/select';
 import {MatTooltipModule} from '@angular/material/tooltip';
@@ -21,6 +22,7 @@ import {MAT_PAGINATOR_INTL_PROVIDER} from './paginator-intl';
     MatButtonModule,
     MatSelectModule,
     MatTooltipModule,
+    MatCommonModule,
   ],
   exports: [MatPaginator],
   declarations: [MatPaginator],

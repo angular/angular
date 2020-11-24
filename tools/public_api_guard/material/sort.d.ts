@@ -95,7 +95,7 @@ export declare class MatSortHeaderIntl {
 
 export declare class MatSortModule {
     static ɵinj: i0.ɵɵInjectorDef<MatSortModule>;
-    static ɵmod: i0.ɵɵNgModuleDefWithMeta<MatSortModule, [typeof i1.MatSort, typeof i2.MatSortHeader], [typeof i3.CommonModule], [typeof i1.MatSort, typeof i2.MatSortHeader]>;
+    static ɵmod: i0.ɵɵNgModuleDefWithMeta<MatSortModule, [typeof i1.MatSort, typeof i2.MatSortHeader], [typeof i3.CommonModule, typeof i4.MatCommonModule], [typeof i1.MatSort, typeof i2.MatSortHeader]>;
 }
 
 export interface Sort {

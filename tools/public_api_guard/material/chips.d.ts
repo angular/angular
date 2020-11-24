@@ -215,7 +215,7 @@ export declare class MatChipSelectionChange {
 
 export declare class MatChipsModule {
     static ɵinj: i0.ɵɵInjectorDef<MatChipsModule>;
-    static ɵmod: i0.ɵɵNgModuleDefWithMeta<MatChipsModule, [typeof i1.MatChipList, typeof i2.MatChip, typeof i3.MatChipInput, typeof i2.MatChipRemove, typeof i2.MatChipAvatar, typeof i2.MatChipTrailingIcon], never, [typeof i1.MatChipList, typeof i2.MatChip, typeof i3.MatChipInput, typeof i2.MatChipRemove, typeof i2.MatChipAvatar, typeof i2.MatChipTrailingIcon]>;
+    static ɵmod: i0.ɵɵNgModuleDefWithMeta<MatChipsModule, [typeof i1.MatChipList, typeof i2.MatChip, typeof i3.MatChipInput, typeof i2.MatChipRemove, typeof i2.MatChipAvatar, typeof i2.MatChipTrailingIcon], [typeof i4.MatCommonModule], [typeof i1.MatChipList, typeof i2.MatChip, typeof i3.MatChipInput, typeof i2.MatChipRemove, typeof i2.MatChipAvatar, typeof i2.MatChipTrailingIcon]>;
 }
 
 export declare class MatChipTrailingIcon {

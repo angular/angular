@@ -8,7 +8,7 @@
 
 import {TextFieldModule} from '@angular/cdk/text-field';
 import {NgModule} from '@angular/core';
-import {ErrorStateMatcher} from '@angular/material/core';
+import {ErrorStateMatcher, MatCommonModule} from '@angular/material/core';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatTextareaAutosize} from './autosize';
 import {MatInput} from './input';
@@ -18,6 +18,7 @@ import {MatInput} from './input';
   imports: [
     TextFieldModule,
     MatFormFieldModule,
+    MatCommonModule,
   ],
   exports: [
     TextFieldModule,

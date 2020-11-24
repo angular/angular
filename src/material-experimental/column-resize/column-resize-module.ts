@@ -7,6 +7,7 @@
  */
 
 import {NgModule} from '@angular/core';
+import {MatCommonModule} from '@angular/material/core';
 import {OverlayModule} from '@angular/cdk/overlay';
 
 import {MatColumnResize} from './column-resize-directives/column-resize';
@@ -33,6 +34,7 @@ const ENTRY_COMMON_COMPONENTS = [
 export class MatColumnResizeCommonModule {}
 
 const IMPORTS = [
+  MatCommonModule,
   OverlayModule,
   MatColumnResizeCommonModule,
 ];

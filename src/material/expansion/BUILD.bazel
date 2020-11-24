@@ -30,6 +30,7 @@ ng_module(
         "//src/cdk/collections",
         "//src/cdk/keycodes",
         "//src/cdk/portal",
+        "//src/material/core",
         "@npm//@angular/animations",
         "@npm//@angular/common",
         "@npm//@angular/core",

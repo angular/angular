@@ -8,9 +8,11 @@
 
 import {NgModule} from '@angular/core';
 import {MatPseudoCheckbox} from './pseudo-checkbox/pseudo-checkbox';
+import {MatCommonModule} from '../common-behaviors/common-module';
 
 
 @NgModule({
+  imports: [MatCommonModule],
   exports: [MatPseudoCheckbox],
   declarations: [MatPseudoCheckbox]
 })

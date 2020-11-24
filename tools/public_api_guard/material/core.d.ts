@@ -214,7 +214,7 @@ export declare class MatOption extends _MatOptionBase {
 
 export declare class MatOptionModule {
     static ɵinj: i0.ɵɵInjectorDef<MatOptionModule>;
-    static ɵmod: i0.ɵɵNgModuleDefWithMeta<MatOptionModule, [typeof i1.MatOption, typeof i2.MatOptgroup], [typeof i3.MatRippleModule, typeof i4.CommonModule, typeof i5.MatPseudoCheckboxModule], [typeof i1.MatOption, typeof i2.MatOptgroup]>;
+    static ɵmod: i0.ɵɵNgModuleDefWithMeta<MatOptionModule, [typeof i1.MatOption, typeof i2.MatOptgroup], [typeof i3.MatRippleModule, typeof i4.CommonModule, typeof i5.MatCommonModule, typeof i6.MatPseudoCheckboxModule], [typeof i1.MatOption, typeof i2.MatOptgroup]>;
 }
 
 export interface MatOptionParentComponent {
@@ -242,7 +242,7 @@ export declare class MatPseudoCheckbox {
 
 export declare class MatPseudoCheckboxModule {
     static ɵinj: i0.ɵɵInjectorDef<MatPseudoCheckboxModule>;
-    static ɵmod: i0.ɵɵNgModuleDefWithMeta<MatPseudoCheckboxModule, [typeof i1.MatPseudoCheckbox], never, [typeof i1.MatPseudoCheckbox]>;
+    static ɵmod: i0.ɵɵNgModuleDefWithMeta<MatPseudoCheckboxModule, [typeof i1.MatPseudoCheckbox], [typeof i2.MatCommonModule], [typeof i1.MatPseudoCheckbox]>;
 }
 
 export declare type MatPseudoCheckboxState = 'unchecked' | 'checked' | 'indeterminate';

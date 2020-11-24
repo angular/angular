@@ -17,6 +17,7 @@ ng_module(
     module_name = "@angular/material-experimental/popover-edit",
     deps = [
         "//src/cdk-experimental/popover-edit",
+        "//src/material/core",
         "@npm//@angular/core",
         "@npm//@angular/forms",
     ],

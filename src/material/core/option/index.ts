@@ -10,12 +10,13 @@ import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {MatRippleModule} from '../ripple/index';
 import {MatPseudoCheckboxModule} from '../selection/index';
+import {MatCommonModule} from '../common-behaviors/common-module';
 import {MatOption} from './option';
 import {MatOptgroup} from './optgroup';
 
 
 @NgModule({
-  imports: [MatRippleModule, CommonModule, MatPseudoCheckboxModule],
+  imports: [MatRippleModule, CommonModule, MatCommonModule, MatPseudoCheckboxModule],
   exports: [MatOption, MatOptgroup],
   declarations: [MatOption, MatOptgroup]
 })
