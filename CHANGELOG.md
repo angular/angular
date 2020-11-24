@@ -13,7 +13,9 @@
 | ---------- | --------------------- |
 | bug fix |  **checkbox:** no color assigned if defaults don't have a color ([#21042](https://github.com/angular/components/issues/21042)) ([c1a65c3](https://github.com/angular/components/commit/c1a65c3)), closes [#21031](https://github.com/angular/components/issues/21031) |
 | bug fix |  **chips:** ripple not disabled when animations are disabled ([#20982](https://github.com/angular/components/issues/20982)) ([42acf11](https://github.com/angular/components/commit/42acf11)), closes [#20981](https://github.com/angular/components/issues/20981) |
+| bug fix |  **datepicker:** don't invoke change handler when filter is swapped out if result is the same ([#20970](https://github.com/angular/components/issues/20970)) ([ee78609](https://github.com/angular/components/commit/ee78609)), closes [#20967](https://github.com/angular/components/issues/20967) |
 | bug fix |  **datepicker:** screen reader close button style specificity too low ([#21058](https://github.com/angular/components/issues/21058)) ([aba227a](https://github.com/angular/components/commit/aba227a)), closes [#21043](https://github.com/angular/components/issues/21043) |
+| bug fix |  **menu:** icons in menu not inheriting disabled color ([#20948](https://github.com/angular/components/issues/20948)) ([e629d65](https://github.com/angular/components/commit/e629d65)), closes [#20947](https://github.com/angular/components/issues/20947) |
 | bug fix |  **select:** remove focus outline on panel ([#21005](https://github.com/angular/components/issues/21005)) ([a5ab829](https://github.com/angular/components/commit/a5ab829)) |
 | feature |  **checkbox:** Avoid nested divs in labels by changing to span instead. ([#20990](https://github.com/angular/components/issues/20990)) ([c7153e1](https://github.com/angular/components/commit/c7153e1)) |
 | feature |  **radio:** Avoid nested divs in labels by changing to span instead. ([#20986](https://github.com/angular/components/issues/20986)) ([e001e70](https://github.com/angular/components/commit/e001e70)) |
@@ -30,6 +32,7 @@
 |            |                       |
 | ---------- | --------------------- |
 | bug fix |  **mdc-button:** fix positioning of icons in text buttons ([#20963](https://github.com/angular/components/issues/20963)) ([c287f5d](https://github.com/angular/components/commit/c287f5d)) |
+| bug fix |  **mdc-paginator:** buttons not visible in high contrast mode ([#21096](https://github.com/angular/components/issues/21096)) ([e7cabf1](https://github.com/angular/components/commit/e7cabf1)) |
 | bug fix |  **mdc-progress-spinner:** prevent animation from affecting surrounding layout ([#20962](https://github.com/angular/components/issues/20962)) ([c598fe2](https://github.com/angular/components/commit/c598fe2)), closes [#16930](https://github.com/angular/components/issues/16930) |
 
 
