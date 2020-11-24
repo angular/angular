@@ -22,7 +22,11 @@ The `ng add` command will install Angular Material, the [Component Dev Kit (CDK)
 
    You can choose from [prebuilt material design themes](https://material.angular.io/guide/theming#using-a-pre-built-theme) or set up an extensible [custom theme](https://material.angular.io/guide/theming#defining-a-custom-theme).
 
-2. Set up browser animations for Angular Material:
+2. Set up global Angular Material typography styles:
+
+   Whether to apply the global [typography](https://material.angular.io/guide/typography) styles to your application.
+
+3. Set up browser animations for Angular Material:
 
    Importing the [`BrowserAnimationsModule`](https://angular.io/api/platform-browser/animations/BrowserAnimationsModule) into your application enables Angular's [animation system](https://angular.io/guide/animations). Declining this will disable most of Angular Material's animations.
 
