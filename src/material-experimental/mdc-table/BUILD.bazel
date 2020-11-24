@@ -24,6 +24,7 @@ ng_module(
         "//src/material-experimental/mdc-core",
         "//src/material-experimental/mdc-paginator",
         "//src/material/sort",
+        "//src/material/table",
         "@npm//@angular/core",
         "@npm//material-components-web",
     ],

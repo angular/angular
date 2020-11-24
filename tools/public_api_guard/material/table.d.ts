@@ -1,3 +1,29 @@
+export declare const _MAT_TEXT_COLUMN_TEMPLATE = "\n  <ng-container matColumnDef>\n    <th mat-header-cell *matHeaderCellDef [style.text-align]=\"justify\">\n      {{headerText}}\n    </th>\n    <td mat-cell *matCellDef=\"let data\" [style.text-align]=\"justify\">\n      {{dataAccessor(data, name)}}\n    </td>\n  </ng-container>\n";
+
+export declare class _MatTableDataSource<T, P extends Paginator> extends DataSource<T> {
+    _renderChangesSubscription: Subscription;
+    get data(): T[];
+    set data(data: T[]);
+    get filter(): string;
+    set filter(filter: string);
+    filterPredicate: ((data: T, filter: string) => boolean);
+    filteredData: T[];
+    get paginator(): P | null;
+    set paginator(paginator: P | null);
+    get sort(): MatSort | null;
+    set sort(sort: MatSort | null);
+    sortData: ((data: T[], sort: MatSort) => T[]);
+    sortingDataAccessor: ((data: T, sortHeaderId: string) => string | number);
+    constructor(initialData?: T[]);
+    _filterData(data: T[]): T[];
+    _orderData(data: T[]): T[];
+    _pageData(data: T[]): T[];
+    _updateChangeSubscription(): void;
+    _updatePaginator(filteredDataLength: number): void;
+    connect(): BehaviorSubject<T[]>;
+    disconnect(): void;
+}
+
 export declare class MatCell extends CdkCell {
     static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatCell, "mat-cell, td[mat-cell]", never, {}, {}, never>;
     static ɵfac: i0.ɵɵFactoryDef<MatCell, never>;
@@ -81,28 +107,7 @@ export declare class MatTable<T> extends CdkTable<T> {
     static ɵfac: i0.ɵɵFactoryDef<MatTable<any>, never>;
 }
 
-export declare class MatTableDataSource<T> extends DataSource<T> {
-    _renderChangesSubscription: Subscription;
-    get data(): T[];
-    set data(data: T[]);
-    get filter(): string;
-    set filter(filter: string);
-    filterPredicate: ((data: T, filter: string) => boolean);
-    filteredData: T[];
-    get paginator(): MatPaginator | null;
-    set paginator(paginator: MatPaginator | null);
-    get sort(): MatSort | null;
-    set sort(sort: MatSort | null);
-    sortData: ((data: T[], sort: MatSort) => T[]);
-    sortingDataAccessor: ((data: T, sortHeaderId: string) => string | number);
-    constructor(initialData?: T[]);
-    _filterData(data: T[]): T[];
-    _orderData(data: T[]): T[];
-    _pageData(data: T[]): T[];
-    _updateChangeSubscription(): void;
-    _updatePaginator(filteredDataLength: number): void;
-    connect(): BehaviorSubject<T[]>;
-    disconnect(): void;
+export declare class MatTableDataSource<T> extends _MatTableDataSource<T, MatPaginator> {
 }
 
 export declare class MatTableModule {
