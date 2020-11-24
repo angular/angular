@@ -2,9 +2,11 @@ import {TestBed, ComponentFixture, waitForAsync} from '@angular/core/testing';
 import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
 import {MatButtonHarness} from '@angular/material/button/testing';
 import {MatCardHarness} from '@angular/material/card/testing';
-import {HarnessLoader} from '@angular/cdk/testing';
-import {BrowserDynamicTestingModule, platformBrowserDynamicTesting}
-  from '@angular/platform-browser-dynamic/testing';
+import {HarnessLoader, parallel} from '@angular/cdk/testing';
+import {
+  BrowserDynamicTestingModule,
+  platformBrowserDynamicTesting
+} from '@angular/platform-browser-dynamic/testing';
 import {MatCardModule} from '@angular/material/card';
 import {CardHarnessExample} from './card-harness-example';
 
@@ -36,7 +38,7 @@ describe('CardHarnessExample', () => {
 
   it('should get subtitle text', async () => {
     const cards = await loader.getAllHarnesses(MatCardHarness);
-    expect(await Promise.all(cards.map(c => c.getSubtitleText()))).toEqual([
+    expect(await parallel(() => cards.map(card => card.getSubtitleText()))).toEqual([
       '',
       'Dog Breed'
     ]);
