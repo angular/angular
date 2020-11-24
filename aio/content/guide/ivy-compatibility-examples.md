@@ -378,11 +378,12 @@ While this code would work correctly in the View Engine compiler, it would fail 
 In View Engine, the compiler would capture the source code of a library in `metadata.json` files when bundling the library, so that external consumers could "look inside" the source code of an external library.
 When AOT-compiling the application, the `metadata.json` files would be used to determine the value of `mySelector`.
 In Ivy, the `metadata.json` files are no longer used. Instead, the compiler extracts metadata for external libraries from the `.d.ts` files that TypeScript creates.
+This has several benefits such as better performance, much improved error reporting, and enables more build caching opportunities as there is no longer a dependency on library internals.
 
 Looking back at the previous example, the `mySelector` value would be represented in the `.d.ts` as follows:
 
 ```
-export declare let a: string;
+export declare let mySelector: string;
 ```
 
 Notice that the actual value of the selector is no longer present, so that the Ivy compiler is unable to use it during AOT compilations.
@@ -393,6 +394,12 @@ In the above example, a compilation error would occur when compiling `MyDirectiv
 
 ```
 error NG1010: selector must be a string
+  Value is a reference to 'mySelector'.
+
+    1  export declare let mySelector: string;
+                          ~~~~~~~~~~
+    Reference is declared here.
+
 ```
 
 ### Recommended fix
