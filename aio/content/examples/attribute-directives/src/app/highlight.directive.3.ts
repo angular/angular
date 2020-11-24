@@ -12,11 +12,9 @@ export class HighlightDirective {
 
   @Input('appHighlight') highlightColor: string;
 
-  // #docregion mouse-enter
   @HostListener('mouseenter') onMouseEnter() {
     this.highlight(this.highlightColor || 'red');
   }
-  // #enddocregion mouse-enter
 
   @HostListener('mouseleave') onMouseLeave() {
     this.highlight(null);
