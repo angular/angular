@@ -1,4 +1,5 @@
 @import '../mdc-form-field/form-field-theme';
+@import '../../cdk/a11y/a11y';
 
 $mat-mdc-paginator-padding: 0 8px;
 $mat-mdc-paginator-page-size-margin-right: 8px;
@@ -79,5 +80,17 @@ $mat-mdc-paginator-button-icon-size: 28px;
 
   [dir='rtl'] & {
     transform: rotate(180deg);
+  }
+}
+
+@include cdk-high-contrast(active, off) {
+  // The disabled button icon has to be set explicitly since the selector is too specific.
+  .mat-mdc-icon-button[disabled] .mat-mdc-paginator-icon,
+  .mat-mdc-paginator-icon {
+    fill: currentColor;
+  }
+
+  .mat-mdc-paginator-range-actions .mat-mdc-icon-button {
+    outline: solid 1px;
   }
 }
