@@ -838,6 +838,37 @@ describe('parser', () => {
       expect(ast.expressions[0].name).toEqual('a');
     });
 
+    it('should parse interpolation inside quotes', () => {
+      const ast = parseInterpolation('"{{a}}"')!.ast as Interpolation;
+      expect(ast.strings).toEqual(['"', '"']);
+      expect(ast.expressions.length).toEqual(1);
+      expect(ast.expressions[0].name).toEqual('a');
+    });
+
+    it('should parse interpolation with interpolation characters inside quotes', () => {
+      checkInterpolation('{{"{{a}}"}}', '{{ "{{a}}" }}');
+      checkInterpolation('{{"{{"}}', '{{ "{{" }}');
+      checkInterpolation('{{"}}"}}', '{{ "}}" }}');
+      checkInterpolation('{{"{"}}', '{{ "{" }}');
+      checkInterpolation('{{"}"}}', '{{ "}" }}');
+    });
+
+    it('should parse interpolation with escaped quotes', () => {
+      checkInterpolation(`{{'It\\'s just Angular'}}`, `{{ "It's just Angular" }}`);
+      checkInterpolation(`{{'It\\'s {{ just Angular'}}`, `{{ "It's {{ just Angular" }}`);
+      checkInterpolation(`{{'It\\'s }} just Angular'}}`, `{{ "It's }} just Angular" }}`);
+    });
+
+    it('should parse interpolation with escaped backslashes', () => {
+      checkInterpolation(`{{foo.split('\\\\')}}`, `{{ foo.split("\\") }}`);
+      checkInterpolation(`{{foo.split('\\\\\\\\')}}`, `{{ foo.split("\\\\") }}`);
+      checkInterpolation(`{{foo.split('\\\\\\\\\\\\')}}`, `{{ foo.split("\\\\\\") }}`);
+    });
+
+    it('should not parse interpolation with mismatching quotes', () => {
+      expect(parseInterpolation(`{{ "{{a}}' }}`)).toBeNull();
+    });
+
     it('should parse prefix/suffix with multiple interpolation', () => {
       const originalExp = 'before {{ a }} middle {{ b }} after';
       const ast = parseInterpolation(originalExp)!.ast;
@@ -894,6 +925,10 @@ describe('parser', () => {
 
       it('should retain // in nested, unterminated strings', () => {
         checkInterpolation(`{{ "a\'b\`" //comment}}`, `{{ "a\'b\`" }}`);
+      });
+
+      it('should ignore quotes inside a comment', () => {
+        checkInterpolation(`"{{name // " }}"`, `"{{ name }}"`);
       });
     });
   });
@@ -1075,8 +1110,11 @@ function parseSimpleBindingIvy(
 }
 
 function checkInterpolation(exp: string, expected?: string) {
-  const ast = parseInterpolation(exp)!;
+  const ast = parseInterpolation(exp);
   if (expected == null) expected = exp;
+  if (ast === null) {
+    throw Error(`Failed to parse expression "${exp}"`);
+  }
   expect(unparse(ast)).toEqual(expected);
   validate(ast);
 }

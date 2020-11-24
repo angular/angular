@@ -540,6 +540,54 @@ describe('TemplateParser', () => {
       expect(humanizeTplAst(parse('{{a}}', []))).toEqual([[BoundTextAst, '{{ a }}']]);
     });
 
+    it('should parse bound text nodes inside quotes', () => {
+      expect(humanizeTplAst(parse('"{{a}}"', []))).toEqual([[BoundTextAst, '"{{ a }}"']]);
+    });
+
+    it('should parse bound text nodes with interpolations inside quotes', () => {
+      expect(humanizeTplAst(parse('{{ "{{a}}" }}', []))).toEqual([[BoundTextAst, '{{ "{{a}}" }}']]);
+      expect(humanizeTplAst(parse('{{"{{"}}', []))).toEqual([[BoundTextAst, '{{ "{{" }}']]);
+      expect(humanizeTplAst(parse('{{"}}"}}', []))).toEqual([[BoundTextAst, '{{ "}}" }}']]);
+      expect(humanizeTplAst(parse('{{"{"}}', []))).toEqual([[BoundTextAst, '{{ "{" }}']]);
+      expect(humanizeTplAst(parse('{{"}"}}', []))).toEqual([[BoundTextAst, '{{ "}" }}']]);
+    });
+
+    it('should parse bound text nodes with escaped quotes', () => {
+      expect(humanizeTplAst(parse(`{{'It\\'s just Angular'}}`, []))).toEqual([
+        [BoundTextAst, `{{ "It's just Angular" }}`]
+      ]);
+
+      expect(humanizeTplAst(parse(`{{'It\\'s {{ just Angular'}}`, []))).toEqual([
+        [BoundTextAst, `{{ "It's {{ just Angular" }}`]
+      ]);
+
+      expect(humanizeTplAst(parse(`{{'It\\'s }} just Angular'}}`, []))).toEqual([
+        [BoundTextAst, `{{ "It's }} just Angular" }}`]
+      ]);
+    });
+
+    it('should not parse bound text nodes with mismatching quotes', () => {
+      expect(humanizeTplAst(parse(`{{ "{{a}}' }}`, []))).toEqual([[TextAst, `{{ "{{a}}' }}`]]);
+    });
+
+    it('should parse interpolation with escaped backslashes', () => {
+      expect(humanizeTplAst(parse(`{{foo.split('\\\\')}}`, []))).toEqual([
+        [BoundTextAst, `{{ foo.split("\\") }}`]
+      ]);
+      expect(humanizeTplAst(parse(`{{foo.split('\\\\\\\\')}}`, []))).toEqual([
+        [BoundTextAst, `{{ foo.split("\\\\") }}`]
+      ]);
+      expect(humanizeTplAst(parse(`{{foo.split('\\\\\\\\\\\\')}}`, []))).toEqual([
+        [BoundTextAst, `{{ foo.split("\\\\\\") }}`]
+      ]);
+    });
+
+    it('should ignore quotes inside a comment', () => {
+      expect(humanizeTplAst(parse(`"{{name // " }}"`, []))).toEqual([
+        [BoundTextAst, `"{{ name }}"`]
+      ]);
+    });
+
     it('should parse with custom interpolation config',
        inject([TemplateParser], (parser: TemplateParser) => {
          const component = CompileDirectiveMetadata.create({
