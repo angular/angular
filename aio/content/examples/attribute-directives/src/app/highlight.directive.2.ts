@@ -1,8 +1,8 @@
 /* tslint:disable:no-unused-variable member-ordering */
 // #docplaster
-// #docregion imports,
+// #docregion imports
 import { Directive, ElementRef, HostListener } from '@angular/core';
-// #enddocregion imports,
+// #enddocregion imports
 import { Input } from '@angular/core';
 // #docregion
 
@@ -10,9 +10,8 @@ import { Input } from '@angular/core';
   selector: '[appHighlight]'
 })
 export class HighlightDirective {
-  // #docregion ctor
+
   constructor(private el: ElementRef) { }
-  // #enddocregion ctor
 
   // #docregion mouse-methods
   @HostListener('mouseenter') onMouseEnter() {
@@ -26,16 +25,10 @@ export class HighlightDirective {
   private highlight(color: string) {
     this.el.nativeElement.style.backgroundColor = color;
   }
-  // #enddocregion mouse-methods,
-
-  // #docregion color
-  @Input() highlightColor: string;
-  // #enddocregion color
-
+  // #enddocregion mouse-methods
   // #docregion color-2
   @Input() appHighlight: string;
   // #enddocregion color-2
 
-// #docregion
 }
 // #enddocregion

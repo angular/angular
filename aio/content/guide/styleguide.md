@@ -1028,6 +1028,15 @@ For example, the prefix `toh` represents **T**our **o**f **H**eroes and the pref
 
 </div>
 
+<div class="s-rule avoid">
+
+
+
+**Don't** prefix a directive name with `ng` because that prefix is reserved for Angular and using it could cause bugs that are difficult to diagnose.
+
+
+</div>
+
 
 
 <div class="s-why">
