@@ -66,6 +66,9 @@ export class MapMarkerClusterer implements OnInit, AfterContentInit, OnDestroy {
   private readonly _eventManager = new MapEventManager(this._ngZone);
   private readonly _destroy = new Subject<void>();
 
+  /** Whether the clusterer is allowed to be initialized. */
+  private readonly _canInitialize: boolean;
+
   @Input()
   get ariaLabelFn(): AriaLabelFn {
     return this.markerClusterer ? this.markerClusterer.ariaLabelFn : () => '';
@@ -182,10 +185,12 @@ export class MapMarkerClusterer implements OnInit, AfterContentInit, OnDestroy {
    */
   markerClusterer?: MarkerClusterer;
 
-  constructor(private readonly _googleMap: GoogleMap, private readonly _ngZone: NgZone) {}
+  constructor(private readonly _googleMap: GoogleMap, private readonly _ngZone: NgZone) {
+    this._canInitialize = this._googleMap._isBrowser;
+  }
 
   ngOnInit() {
-    if (this._googleMap._isBrowser) {
+    if (this._canInitialize) {
       this._combineOptions().pipe(take(1)).subscribe(options => {
         // Create the object outside the zone so its events don't trigger change detection.
         // We'll bring it back in inside the `MapEventManager` only for the events that the
@@ -219,7 +224,9 @@ export class MapMarkerClusterer implements OnInit, AfterContentInit, OnDestroy {
   }
 
   ngAfterContentInit() {
-    this._watchForMarkerChanges();
+    if (this._canInitialize) {
+      this._watchForMarkerChanges();
+    }
   }
 
   ngOnDestroy() {
