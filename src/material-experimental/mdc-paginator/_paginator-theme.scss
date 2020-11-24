@@ -6,41 +6,41 @@
 
 @mixin mat-mdc-paginator-color($config-or-theme) {
   $config: mat-get-color-config($config-or-theme);
-  @include mat-using-mdc-theme($config) {
-    $icon-color: rgba(mdc-theme-prop-value(on-surface), 0.54);
-    $disabled-color: rgba(mdc-theme-prop-value(on-surface), 0.12);
+  $background: map-get($config, background);
+  $foreground: map-get($config, foreground);
+  $icon-color: rgba(mat-color($foreground, base), 0.54);
+  $disabled-color: rgba(mat-color($foreground, base), 0.12);
 
-    .mat-mdc-paginator {
-      background: mdc-theme-prop-value(surface);
-      color: rgba(mdc-theme-prop-value(on-surface), 0.87);
+  .mat-mdc-paginator {
+    background: mat-color($background, card);
+    color: rgba(mat-color($foreground, base), 0.87);
+  }
+
+  .mat-mdc-paginator-icon {
+    fill: $icon-color;
+  }
+
+  .mat-mdc-paginator-decrement,
+  .mat-mdc-paginator-increment {
+    border-top: 2px solid $icon-color;
+    border-right: 2px solid $icon-color;
+  }
+
+  .mat-mdc-paginator-first,
+  .mat-mdc-paginator-last {
+    border-top: 2px solid $icon-color;
+  }
+
+  .mat-mdc-icon-button[disabled] {
+    .mat-mdc-paginator-decrement,
+    .mat-mdc-paginator-increment,
+    .mat-mdc-paginator-first,
+    .mat-mdc-paginator-last {
+      border-color: $disabled-color;
     }
 
     .mat-mdc-paginator-icon {
-      fill: $icon-color;
-    }
-
-    .mat-mdc-paginator-decrement,
-    .mat-mdc-paginator-increment {
-      border-top: 2px solid $icon-color;
-      border-right: 2px solid $icon-color;
-    }
-
-    .mat-mdc-paginator-first,
-    .mat-mdc-paginator-last {
-      border-top: 2px solid $icon-color;
-    }
-
-    .mat-mdc-icon-button[disabled] {
-      .mat-mdc-paginator-decrement,
-      .mat-mdc-paginator-increment,
-      .mat-mdc-paginator-first,
-      .mat-mdc-paginator-last {
-        border-color: $disabled-color;
-      }
-
-      .mat-mdc-paginator-icon {
-        fill: $disabled-color;
-      }
+      fill: $disabled-color;
     }
   }
 }
