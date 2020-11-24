@@ -1,3 +1,38 @@
+## 11.0.1 "bismuth-cape" (2020-11-24)
+
+### cdk
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **drag-drop:** avoid retaining disabled handles after they've been destroyed ([#21015](https://github.com/angular/components/issues/21015)) ([7ab8a8e](https://github.com/angular/components/commit/7ab8a8e)), closes [#21009](https://github.com/angular/components/issues/21009) |
+| bug fix |  **drag-drop:** don't disable native dragging on inactive handles ([#20991](https://github.com/angular/components/issues/20991)) ([dcf870d](https://github.com/angular/components/commit/dcf870d)), closes [#20974](https://github.com/angular/components/issues/20974) |
+
+### material
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **checkbox:** no color assigned if defaults don't have a color ([#21042](https://github.com/angular/components/issues/21042)) ([c1a65c3](https://github.com/angular/components/commit/c1a65c3)), closes [#21031](https://github.com/angular/components/issues/21031) |
+| bug fix |  **chips:** ripple not disabled when animations are disabled ([#20982](https://github.com/angular/components/issues/20982)) ([42acf11](https://github.com/angular/components/commit/42acf11)), closes [#20981](https://github.com/angular/components/issues/20981) |
+| bug fix |  **datepicker:** screen reader close button style specificity too low ([#21058](https://github.com/angular/components/issues/21058)) ([aba227a](https://github.com/angular/components/commit/aba227a)), closes [#21043](https://github.com/angular/components/issues/21043) |
+| bug fix |  **select:** remove focus outline on panel ([#21005](https://github.com/angular/components/issues/21005)) ([a5ab829](https://github.com/angular/components/commit/a5ab829)) |
+| feature |  **checkbox:** Avoid nested divs in labels by changing to span instead. ([#20990](https://github.com/angular/components/issues/20990)) ([c7153e1](https://github.com/angular/components/commit/c7153e1)) |
+| feature |  **radio:** Avoid nested divs in labels by changing to span instead. ([#20986](https://github.com/angular/components/issues/20986)) ([e001e70](https://github.com/angular/components/commit/e001e70)) |
+
+### google-maps
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  avoid using dotted property access ([#21074](https://github.com/angular/components/issues/21074)) ([3ee3e30](https://github.com/angular/components/commit/3ee3e30)) |
+| bug fix |  info window not opening if no anchor is passed in ([#21014](https://github.com/angular/components/issues/21014)) ([36cb325](https://github.com/angular/components/commit/36cb325)), closes [#21013](https://github.com/angular/components/issues/21013) |
+
+### material-experimental
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **mdc-button:** fix positioning of icons in text buttons ([#20963](https://github.com/angular/components/issues/20963)) ([c287f5d](https://github.com/angular/components/commit/c287f5d)) |
+| bug fix |  **mdc-progress-spinner:** prevent animation from affecting surrounding layout ([#20962](https://github.com/angular/components/issues/20962)) ([c598fe2](https://github.com/angular/components/commit/c598fe2)), closes [#16930](https://github.com/angular/components/issues/16930) |
+
+
 # 11.0.0 "nitrite-trilobite" (2020-11-11)
 
 ### cdk
