@@ -56,11 +56,17 @@ export function create(info: ts.server.PluginCreateInfo): ts.LanguageService {
     }
   }
 
+  function getReferencesAtPosition(fileName: string, position: number) {
+    // TODO(atscott): implement references
+    return undefined;
+  }
+
   return {
     ...tsLS,
     getSemanticDiagnostics,
     getTypeDefinitionAtPosition,
     getQuickInfoAtPosition,
     getDefinitionAndBoundSpan,
+    getReferencesAtPosition,
   };
 }
