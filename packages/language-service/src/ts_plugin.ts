@@ -115,6 +115,11 @@ export function create(info: tss.server.PluginCreateInfo): tss.LanguageService {
     return undefined;
   }
 
+  function getReferencesAtPosition(fileName: string, position: number) {
+    // Not implemented in VE Language Service
+    return undefined;
+  }
+
   return {
     // First clone the original TS language service
     ...tsLS,
@@ -125,5 +130,6 @@ export function create(info: tss.server.PluginCreateInfo): tss.LanguageService {
     getDefinitionAtPosition,
     getDefinitionAndBoundSpan,
     getTypeDefinitionAtPosition,
+    getReferencesAtPosition,
   };
 }
