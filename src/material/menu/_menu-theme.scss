@@ -20,7 +20,9 @@
     color: mat-color($foreground, 'text');
 
     &[disabled] {
-      &, &::after {
+      &,
+      &::after,
+      .mat-icon-no-color {
         color: mat-color($foreground, 'disabled');
       }
     }

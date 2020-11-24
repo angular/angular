@@ -14,7 +14,9 @@
     // MDC doesn't appear to have disabled styling for menu
     // items so we have to grey them out ourselves.
     .mat-mdc-menu-item[disabled] {
-      &, &::after {
+      &,
+      &::after,
+      .mat-icon-no-color {
         @include mdc-theme-prop(color, text-disabled-on-background);
       }
     }
