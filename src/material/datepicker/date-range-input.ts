@@ -122,8 +122,19 @@ export class MatDateRangeInput<D> implements MatFormFieldControl<DateRange<D>>,
   @Input()
   get dateFilter() { return this._dateFilter; }
   set dateFilter(value: DateFilterFn<D>) {
+    const start = this._startInput;
+    const end = this._endInput;
+    const wasMatchingStart = start && start._matchesFilter(start.value);
+    const wasMatchingEnd = end && end._matchesFilter(start.value);
     this._dateFilter = value;
-    this._revalidate();
+
+    if (start && start._matchesFilter(start.value) !== wasMatchingStart) {
+      start._validatorOnChange();
+    }
+
+    if (end && end._matchesFilter(end.value) !== wasMatchingEnd) {
+      end._validatorOnChange();
+    }
   }
   private _dateFilter: DateFilterFn<D>;
 

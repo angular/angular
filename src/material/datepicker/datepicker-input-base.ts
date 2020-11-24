@@ -152,8 +152,7 @@ export abstract class MatDatepickerInputBase<S, D = ExtractDateTypeFromSelection
   private _filterValidator: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
     const controlValue = this._dateAdapter.getValidDateOrNull(
       this._dateAdapter.deserialize(control.value));
-    const dateFilter = this._getDateFilter();
-    return !dateFilter || !controlValue || dateFilter(controlValue) ?
+    return !controlValue || this._matchesFilter(controlValue) ?
         null : {'matDatepickerFilter': true};
   }
 
@@ -390,6 +389,12 @@ export abstract class MatDatepickerInputBase<S, D = ExtractDateTypeFromSelection
    */
   protected _parentDisabled() {
     return false;
+  }
+
+  /** Gets whether a value matches the current date filter. */
+  _matchesFilter(value: D | null): boolean {
+    const filter = this._getDateFilter();
+    return !filter || filter(value);
   }
 
   // Accept `any` to avoid conflicts with other directives on `<input>` that

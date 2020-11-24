@@ -20,6 +20,7 @@ import {BACKSPACE} from '@angular/cdk/keycodes';
 import {MatDateRangeInput} from './date-range-input';
 import {MatDateRangePicker} from './date-range-picker';
 import {MatStartDate, MatEndDate} from './date-range-input-parts';
+import {Subscription} from 'rxjs';
 
 describe('MatDateRangeInput', () => {
   function createComponent<T>(
@@ -316,6 +317,57 @@ describe('MatDateRangeInput', () => {
     expect(start.errors?.matDatepickerFilter).toBeTruthy();
     expect(end.errors?.matDatepickerFilter).toBeTruthy();
   });
+
+  it('should should revalidate when a new date filter function is assigned', () => {
+    const fixture = createComponent(StandardRangePicker);
+    fixture.detectChanges();
+    const {start, end} = fixture.componentInstance.range.controls;
+    const date = new Date(2020, 2, 2);
+    start.setValue(date);
+    end.setValue(date);
+    fixture.detectChanges();
+
+    const spy = jasmine.createSpy('change spy');
+    const subscription = new Subscription();
+    subscription.add(start.valueChanges.subscribe(spy));
+    subscription.add(end.valueChanges.subscribe(spy));
+
+    fixture.componentInstance.dateFilter = () => false;
+    fixture.detectChanges();
+    expect(spy).toHaveBeenCalledTimes(2);
+
+    fixture.componentInstance.dateFilter = () => true;
+    fixture.detectChanges();
+    expect(spy).toHaveBeenCalledTimes(4);
+
+    subscription.unsubscribe();
+  });
+
+  it('should not dispatch the change event if a new filter function with the same result ' +
+    'is assigned', () => {
+      const fixture = createComponent(StandardRangePicker);
+      fixture.detectChanges();
+      const {start, end} = fixture.componentInstance.range.controls;
+      const date = new Date(2020, 2, 2);
+      start.setValue(date);
+      end.setValue(date);
+      fixture.detectChanges();
+
+      const spy = jasmine.createSpy('change spy');
+      const subscription = new Subscription();
+      subscription.add(start.valueChanges.subscribe(spy));
+      subscription.add(end.valueChanges.subscribe(spy));
+
+      fixture.componentInstance.dateFilter = () => false;
+      fixture.detectChanges();
+      expect(spy).toHaveBeenCalledTimes(2);
+
+      fixture.componentInstance.dateFilter = () => false;
+      fixture.detectChanges();
+      expect(spy).toHaveBeenCalledTimes(2);
+
+      subscription.unsubscribe();
+    });
 
   it('should throw if there is no start input', () => {
     expect(() => {

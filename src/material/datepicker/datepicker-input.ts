@@ -112,8 +112,12 @@ export class MatDatepickerInput<D> extends MatDatepickerInputBase<D | null, D>
   @Input('matDatepickerFilter')
   get dateFilter() { return this._dateFilter; }
   set dateFilter(value: DateFilterFn<D | null>) {
+    const wasMatchingValue = this._matchesFilter(this.value);
     this._dateFilter = value;
-    this._validatorOnChange();
+
+    if (this._matchesFilter(this.value) !== wasMatchingValue) {
+      this._validatorOnChange();
+    }
   }
   private _dateFilter: DateFilterFn<D | null>;
 

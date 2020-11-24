@@ -1506,6 +1506,45 @@ describe('MatDatepicker', () => {
         expect(cells[0].classList).toContain('mat-calendar-body-disabled');
         expect(cells[1].classList).not.toContain('mat-calendar-body-disabled');
       });
+
+      it('should revalidate when a new function is assigned', fakeAsync(() => {
+        const classList = fixture.debugElement.query(By.css('input'))!.nativeElement.classList;
+        testComponent.date = new Date(2017, JAN, 1);
+        testComponent.filter = () => true;
+        fixture.detectChanges();
+        flush();
+        fixture.detectChanges();
+
+        expect(classList).not.toContain('ng-invalid');
+
+        testComponent.filter = () => false;
+        fixture.detectChanges();
+        flush();
+        fixture.detectChanges();
+
+        expect(classList).toContain('ng-invalid');
+      }));
+
+      it('should not dispatch the change event if a new function with the same result is assigned',
+        fakeAsync(() => {
+          const spy = jasmine.createSpy('change spy');
+          const subscription = fixture.componentInstance.model.valueChanges?.subscribe(spy);
+          testComponent.filter = () => false;
+          fixture.detectChanges();
+          flush();
+          fixture.detectChanges();
+
+          expect(spy).toHaveBeenCalledTimes(1);
+
+          testComponent.filter = () => false;
+          fixture.detectChanges();
+          flush();
+          fixture.detectChanges();
+
+          expect(spy).toHaveBeenCalledTimes(1);
+          subscription?.unsubscribe();
+        }));
+
     });
 
     describe('datepicker with change and input events', () => {
@@ -2342,8 +2381,9 @@ class DatepickerWithMinAndMaxValidation {
 })
 class DatepickerWithFilterAndValidation {
   @ViewChild('d') datepicker: MatDatepicker<Date>;
+  @ViewChild(NgModel) model: NgModel;
   date: Date;
-  filter = (date: Date) => date.getDate() != 1;
+  filter = (date: Date | null) => date?.getDate() != 1;
 }
 
 
