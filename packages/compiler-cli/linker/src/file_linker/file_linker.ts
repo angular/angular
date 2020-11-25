@@ -40,7 +40,8 @@ export class FileLinker<TConstantScope, TStatement, TExpression> {
    *
    * @param declarationFn the name of the function used to declare the partial declaration - e.g.
    *     `ɵɵngDeclareDirective`.
-   * @param args the arguments passed to the declaration function.
+   * @param args the arguments passed to the declaration function, should be a single object that
+   *     corresponds to the `R3DeclareDirectiveMetadata` or `R3DeclareComponentMetadata` interfaces.
    * @param declarationScope the scope that contains this call to the declaration function.
    */
   linkPartialDeclaration(
@@ -56,7 +57,7 @@ export class FileLinker<TConstantScope, TStatement, TExpression> {
     const ngImport = metaObj.getNode('ngImport');
     const emitScope = this.getEmitScope(ngImport, declarationScope);
 
-    const version = metaObj.getNumber('version');
+    const version = metaObj.getString('version');
     const linker = this.linkerSelector.getLinker(declarationFn, version);
     const definition =
         linker.linkPartialDeclaration(this.sourceUrl, this.code, emitScope.constantPool, metaObj);

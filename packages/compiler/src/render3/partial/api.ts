@@ -21,7 +21,7 @@ export interface R3DeclareDirectiveMetadata {
    * interface later - the linker will be able to detect which version a library
    * is using and interpret its metadata accordingly.
    */
-  version: 1;
+  version: string;
 
   /**
    * Unparsed selector of the directive.

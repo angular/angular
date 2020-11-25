@@ -7,7 +7,7 @@ export class MyComponent {
     onClick(event) { }
 }
 MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); };
-MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: 1, type: MyComponent, selector: "my-component", ngImport: i0, template: { source: `<div (click)="onClick($event); 1 == 2"></div>`, isInline: true } });
+MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "my-component", ngImport: i0, template: { source: `<div (click)="onClick($event); 1 == 2"></div>`, isInline: true } });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyComponent, [{
         type: Component,
         args: [{ selector: 'my-component', template: `<div (click)="onClick($event); 1 == 2"></div>` }]
@@ -44,7 +44,7 @@ import * as i0 from "@angular/core";
 export class MyApp {
 }
 MyApp.ɵfac = function MyApp_Factory(t) { return new (t || MyApp)(); };
-MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ version: 1, type: MyApp, selector: "my-app", ngImport: i0, template: { source: `<div>My App</div>`, isInline: true } });
+MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: MyApp, selector: "my-app", ngImport: i0, template: { source: `<div>My App</div>`, isInline: true } });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyApp, [{
         type: Component,
         args: [{ selector: 'my-app', template: `<div>My App</div>` }]
@@ -53,7 +53,7 @@ export class MyComponent {
     onClick(event) { }
 }
 MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); };
-MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: 1, type: MyComponent, selector: "my-component", ngImport: i0, template: { source: `<my-app (click)="onClick($event);"></my-app>`, isInline: true } });
+MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "my-component", ngImport: i0, template: { source: `<my-app (click)="onClick($event);"></my-app>`, isInline: true } });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyComponent, [{
         type: Component,
         args: [{ selector: 'my-component', template: `<my-app (click)="onClick($event);"></my-app>` }]
@@ -96,7 +96,7 @@ export class MyComponent {
     onClick2(name) { }
 }
 MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); };
-MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: 1, type: MyComponent, selector: "my-component", ngImport: i0, template: { source: `
+MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "my-component", ngImport: i0, template: { source: `
     <div *ngIf="showing">
       <div (click)="onClick(foo)"></div>
       <button (click)="onClick2(bar)"></button>
@@ -147,7 +147,7 @@ import * as i0 from "@angular/core";
 export class MyComponent {
 }
 MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); };
-MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: 1, type: MyComponent, selector: "my-component", ngImport: i0, template: { source: `
+MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "my-component", ngImport: i0, template: { source: `
     <button (click)="onClick(user.value)">Save</button>
     <input #user>
   `, isInline: true } });
@@ -192,7 +192,7 @@ import * as i0 from "@angular/core";
 export class MyComponent {
 }
 MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); };
-MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: 1, type: MyComponent, selector: "my-component", ngImport: i0, template: { source: `<div (click)="click()" (change)="change()"></div>`, isInline: true } });
+MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "my-component", ngImport: i0, template: { source: `<div (click)="click()" (change)="change()"></div>`, isInline: true } });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyComponent, [{
         type: Component,
         args: [{
@@ -231,7 +231,7 @@ import * as i0 from "@angular/core";
 export class MyComponent {
 }
 MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); };
-MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: 1, type: MyComponent, selector: "my-component", ngImport: i0, template: { source: `
+MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "my-component", ngImport: i0, template: { source: `
       <div (click)="click()" (change)="change()"></div>
       <some-comp (update)="update()" (delete)="delete()"></some-comp>
     `, isInline: true } });
@@ -276,7 +276,7 @@ import * as i0 from "@angular/core";
 export class MyComponent {
 }
 MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); };
-MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: 1, type: MyComponent, selector: "my-component", ngImport: i0, template: { source: `<ng-template (click)="click()" (change)="change()"></ng-template>`, isInline: true } });
+MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "my-component", ngImport: i0, template: { source: `<ng-template (click)="click()" (change)="change()"></ng-template>`, isInline: true } });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyComponent, [{
         type: Component,
         args: [{
@@ -316,7 +316,7 @@ export class MyComponent {
     onClick() { }
 }
 MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); };
-MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: 1, type: MyComponent, selector: "ng-component", ngImport: i0, template: { source: `<div (click)="onClick();"></div>`, isInline: true } });
+MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "ng-component", ngImport: i0, template: { source: `<div (click)="onClick();"></div>`, isInline: true } });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyComponent, [{
         type: Component,
         args: [{ template: `<div (click)="onClick();"></div>` }]
@@ -343,7 +343,7 @@ export class MyComponent {
     }
 }
 MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); };
-MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: 1, type: MyComponent, selector: "ng-component", host: { listeners: { "mousedown": "mousedown()", "click": "click()" } }, ngImport: i0, template: { source: '', isInline: true } });
+MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "ng-component", host: { listeners: { "mousedown": "mousedown()", "click": "click()" } }, ngImport: i0, template: { source: '', isInline: true } });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyComponent, [{
         type: Component,
         args: [{
@@ -378,7 +378,7 @@ export class MyComponent {
     }
 }
 MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); };
-MyComponent.ɵdir = i0.ɵɵngDeclareDirective({ version: 1, type: MyComponent, host: { listeners: { "click": "click($event.target)" } }, ngImport: i0 });
+MyComponent.ɵdir = i0.ɵɵngDeclareDirective({ version: "0.0.0-PLACEHOLDER", type: MyComponent, host: { listeners: { "click": "click($event.target)" } }, ngImport: i0 });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyComponent, [{
         type: Directive
     }], null, { click: [{
@@ -405,7 +405,7 @@ class Comp {
     c(event) { }
 }
 Comp.ɵfac = function Comp_Factory(t) { return new (t || Comp)(); };
-Comp.ɵcmp = i0.ɵɵngDeclareComponent({ version: 1, type: Comp, selector: "ng-component", ngImport: i0, template: { source: '<div (click)="c($event)"></div>', isInline: true } });
+Comp.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: Comp, selector: "ng-component", ngImport: i0, template: { source: '<div (click)="c($event)"></div>', isInline: true } });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(Comp, [{
         type: Component,
         args: [{ template: '<div (click)="c($event)"></div>' }]
@@ -428,7 +428,7 @@ class Comp {
     c(value) { }
 }
 Comp.ɵfac = function Comp_Factory(t) { return new (t || Comp)(); };
-Comp.ɵcmp = i0.ɵɵngDeclareComponent({ version: 1, type: Comp, selector: "ng-component", ngImport: i0, template: { source: '<div (click)="c(this.$event)"></div>', isInline: true } });
+Comp.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: Comp, selector: "ng-component", ngImport: i0, template: { source: '<div (click)="c(this.$event)"></div>', isInline: true } });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(Comp, [{
         type: Component,
         args: [{ template: '<div (click)="c(this.$event)"></div>' }]
@@ -450,7 +450,7 @@ class Comp {
     }
 }
 Comp.ɵfac = function Comp_Factory(t) { return new (t || Comp)(); };
-Comp.ɵcmp = i0.ɵɵngDeclareComponent({ version: 1, type: Comp, selector: "ng-component", ngImport: i0, template: { source: '<div [event]="$event"></div>', isInline: true } });
+Comp.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: Comp, selector: "ng-component", ngImport: i0, template: { source: '<div [event]="$event"></div>', isInline: true } });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(Comp, [{
         type: Component,
         args: [{ template: '<div [event]="$event"></div>' }]
@@ -470,7 +470,7 @@ class Dir {
     c(event) { }
 }
 Dir.ɵfac = function Dir_Factory(t) { return new (t || Dir)(); };
-Dir.ɵdir = i0.ɵɵngDeclareDirective({ version: 1, type: Dir, host: { listeners: { "click": "c($event)" } }, ngImport: i0 });
+Dir.ɵdir = i0.ɵɵngDeclareDirective({ version: "0.0.0-PLACEHOLDER", type: Dir, host: { listeners: { "click": "c($event)" } }, ngImport: i0 });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(Dir, [{
         type: Directive,
         args: [{ host: { '(click)': 'c($event)' } }]
@@ -493,7 +493,7 @@ class Dir {
     c(value) { }
 }
 Dir.ɵfac = function Dir_Factory(t) { return new (t || Dir)(); };
-Dir.ɵdir = i0.ɵɵngDeclareDirective({ version: 1, type: Dir, host: { listeners: { "click": "c(this.$event)" } }, ngImport: i0 });
+Dir.ɵdir = i0.ɵɵngDeclareDirective({ version: "0.0.0-PLACEHOLDER", type: Dir, host: { listeners: { "click": "c(this.$event)" } }, ngImport: i0 });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(Dir, [{
         type: Directive,
         args: [{

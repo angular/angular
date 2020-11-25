@@ -6,7 +6,7 @@ import * as i0 from "@angular/core";
 export class ChildComponent {
 }
 ChildComponent.ɵfac = function ChildComponent_Factory(t) { return new (t || ChildComponent)(); };
-ChildComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: 1, type: ChildComponent, selector: "child", ngImport: i0, template: { source: 'child-view', isInline: true } });
+ChildComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: ChildComponent, selector: "child", ngImport: i0, template: { source: 'child-view', isInline: true } });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(ChildComponent, [{
         type: Component,
         args: [{ selector: 'child', template: 'child-view' }]
@@ -14,7 +14,7 @@ ChildComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: 1, type: ChildCompon
 export class SomeDirective {
 }
 SomeDirective.ɵfac = function SomeDirective_Factory(t) { return new (t || SomeDirective)(); };
-SomeDirective.ɵdir = i0.ɵɵngDeclareDirective({ version: 1, type: SomeDirective, selector: "[some-directive]", ngImport: i0 });
+SomeDirective.ɵdir = i0.ɵɵngDeclareDirective({ version: "0.0.0-PLACEHOLDER", type: SomeDirective, selector: "[some-directive]", ngImport: i0 });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(SomeDirective, [{
         type: Directive,
         args: [{ selector: '[some-directive]' }]
@@ -22,7 +22,7 @@ SomeDirective.ɵdir = i0.ɵɵngDeclareDirective({ version: 1, type: SomeDirectiv
 export class MyComponent {
 }
 MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); };
-MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: 1, type: MyComponent, selector: "my-component", ngImport: i0, template: { source: '<child some-directive></child>!', isInline: true }, directives: [{ type: ChildComponent, selector: "child" }, { type: SomeDirective, selector: "[some-directive]" }] });
+MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "my-component", ngImport: i0, template: { source: '<child some-directive></child>!', isInline: true }, directives: [{ type: ChildComponent, selector: "child" }, { type: SomeDirective, selector: "[some-directive]" }] });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyComponent, [{
         type: Component,
         args: [{ selector: 'my-component', template: '<child some-directive></child>!' }]
@@ -66,7 +66,7 @@ import * as i0 from "@angular/core";
 export class SomeDirective {
 }
 SomeDirective.ɵfac = function SomeDirective_Factory(t) { return new (t || SomeDirective)(); };
-SomeDirective.ɵdir = i0.ɵɵngDeclareDirective({ version: 1, type: SomeDirective, selector: "div.foo[some-directive]:not([title]):not(.baz)", ngImport: i0 });
+SomeDirective.ɵdir = i0.ɵɵngDeclareDirective({ version: "0.0.0-PLACEHOLDER", type: SomeDirective, selector: "div.foo[some-directive]:not([title]):not(.baz)", ngImport: i0 });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(SomeDirective, [{
         type: Directive,
         args: [{ selector: 'div.foo[some-directive]:not([title]):not(.baz)' }]
@@ -74,7 +74,7 @@ SomeDirective.ɵdir = i0.ɵɵngDeclareDirective({ version: 1, type: SomeDirectiv
 export class OtherDirective {
 }
 OtherDirective.ɵfac = function OtherDirective_Factory(t) { return new (t || OtherDirective)(); };
-OtherDirective.ɵdir = i0.ɵɵngDeclareDirective({ version: 1, type: OtherDirective, selector: ":not(span[title]):not(.baz)", ngImport: i0 });
+OtherDirective.ɵdir = i0.ɵɵngDeclareDirective({ version: "0.0.0-PLACEHOLDER", type: OtherDirective, selector: ":not(span[title]):not(.baz)", ngImport: i0 });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(OtherDirective, [{
         type: Directive,
         args: [{ selector: ':not(span[title]):not(.baz)' }]
@@ -114,7 +114,7 @@ import * as i0 from "@angular/core";
 export class SomeComponent {
 }
 SomeComponent.ɵfac = function SomeComponent_Factory(t) { return new (t || SomeComponent)(); };
-SomeComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: 1, type: SomeComponent, selector: "#my-app", ngImport: i0, template: { source: '', isInline: true } });
+SomeComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: SomeComponent, selector: "#my-app", ngImport: i0, template: { source: '', isInline: true } });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(SomeComponent, [{
         type: Component,
         args: [{ selector: '#my-app', template: '' }]
@@ -150,7 +150,7 @@ import * as i0 from "@angular/core";
 export class EmptyOutletComponent {
 }
 EmptyOutletComponent.ɵfac = function EmptyOutletComponent_Factory(t) { return new (t || EmptyOutletComponent)(); };
-EmptyOutletComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: 1, type: EmptyOutletComponent, selector: "ng-component", ngImport: i0, template: { source: '<router-outlet></router-outlet>', isInline: true } });
+EmptyOutletComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: EmptyOutletComponent, selector: "ng-component", ngImport: i0, template: { source: '<router-outlet></router-outlet>', isInline: true } });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(EmptyOutletComponent, [{
         type: Component,
         args: [{ template: '<router-outlet></router-outlet>' }]
@@ -191,7 +191,7 @@ export class MyComponent {
     }
 }
 MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(i0.ɵɵdirectiveInject(i0.ElementRef), i0.ɵɵdirectiveInject(i0.ViewContainerRef), i0.ɵɵdirectiveInject(i0.ChangeDetectorRef)); };
-MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: 1, type: MyComponent, selector: "my-component", ngImport: i0, template: { source: '', isInline: true } });
+MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "my-component", ngImport: i0, template: { source: '', isInline: true } });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyComponent, [{
         type: Component,
         args: [{ selector: 'my-component', template: '' }]
@@ -233,7 +233,7 @@ export class IfDirective {
     constructor(template) { }
 }
 IfDirective.ɵfac = function IfDirective_Factory(t) { return new (t || IfDirective)(i0.ɵɵdirectiveInject(i0.TemplateRef)); };
-IfDirective.ɵdir = i0.ɵɵngDeclareDirective({ version: 1, type: IfDirective, selector: "[if]", ngImport: i0 });
+IfDirective.ɵdir = i0.ɵɵngDeclareDirective({ version: "0.0.0-PLACEHOLDER", type: IfDirective, selector: "[if]", ngImport: i0 });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(IfDirective, [{
         type: Directive,
         args: [{ selector: '[if]' }]
@@ -244,7 +244,7 @@ export class MyComponent {
     }
 }
 MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); };
-MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: 1, type: MyComponent, selector: "my-component", ngImport: i0, template: { source: '<ul #foo><li *if>{{salutation}} {{foo}}</li></ul>', isInline: true }, directives: [{ type: IfDirective, selector: "[if]" }] });
+MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "my-component", ngImport: i0, template: { source: '<ul #foo><li *if>{{salutation}} {{foo}}</li></ul>', isInline: true }, directives: [{ type: IfDirective, selector: "[if]" }] });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyComponent, [{
         type: Component,
         args: [{ selector: 'my-component', template: '<ul #foo><li *if>{{salutation}} {{foo}}</li></ul>' }]
@@ -287,7 +287,7 @@ import * as i0 from "@angular/core";
 export class MyComp {
 }
 MyComp.ɵfac = function MyComp_Factory(t) { return new (t || MyComp)(); };
-MyComp.ɵcmp = i0.ɵɵngDeclareComponent({ version: 1, type: MyComp, selector: "my-comp", inputs: { names: "names" }, ngImport: i0, template: { source: `
+MyComp.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: MyComp, selector: "my-comp", inputs: { names: "names" }, ngImport: i0, template: { source: `
     <p>{{ names[0] }}</p>
     <p>{{ names[1] }}</p>
   `, isInline: true } });
@@ -309,7 +309,7 @@ export class MyApp {
     }
 }
 MyApp.ɵfac = function MyApp_Factory(t) { return new (t || MyApp)(); };
-MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ version: 1, type: MyApp, selector: "my-app", ngImport: i0, template: { source: `
+MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: MyApp, selector: "my-app", ngImport: i0, template: { source: `
   <my-comp [names]="['Nancy', customName]"></my-comp>
 `, isInline: true }, directives: [{ type: MyComp, selector: "my-comp", inputs: ["names"] }] });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyApp, [{
@@ -358,7 +358,7 @@ import * as i0 from "@angular/core";
 export class MyComp {
 }
 MyComp.ɵfac = function MyComp_Factory(t) { return new (t || MyComp)(); };
-MyComp.ɵcmp = i0.ɵɵngDeclareComponent({ version: 1, type: MyComp, selector: "my-comp", inputs: { names: "names" }, ngImport: i0, template: { source: `
+MyComp.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: MyComp, selector: "my-comp", inputs: { names: "names" }, ngImport: i0, template: { source: `
     {{ names[0] }}
     {{ names[1] }}
     {{ names[3] }}
@@ -406,7 +406,7 @@ export class MyApp {
     }
 }
 MyApp.ɵfac = function MyApp_Factory(t) { return new (t || MyApp)(); };
-MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ version: 1, type: MyApp, selector: "my-app", ngImport: i0, template: { source: `
+MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: MyApp, selector: "my-app", ngImport: i0, template: { source: `
   <my-comp [names]="['start-', n0, n1, n2, n3, n4, '-middle-', n5, n6, n7, n8, '-end']">
   </my-comp>
 `, isInline: true }, directives: [{ type: MyComp, selector: "my-comp", inputs: ["names"] }] });
@@ -465,7 +465,7 @@ import * as i0 from "@angular/core";
 export class ObjectComp {
 }
 ObjectComp.ɵfac = function ObjectComp_Factory(t) { return new (t || ObjectComp)(); };
-ObjectComp.ɵcmp = i0.ɵɵngDeclareComponent({ version: 1, type: ObjectComp, selector: "object-comp", inputs: { config: "config" }, ngImport: i0, template: { source: `
+ObjectComp.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: ObjectComp, selector: "object-comp", inputs: { config: "config" }, ngImport: i0, template: { source: `
     <p> {{ config['duration'] }} </p>
     <p> {{ config.animation }} </p>
   `, isInline: true } });
@@ -487,7 +487,7 @@ export class MyApp {
     }
 }
 MyApp.ɵfac = function MyApp_Factory(t) { return new (t || MyApp)(); };
-MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ version: 1, type: MyApp, selector: "my-app", ngImport: i0, template: { source: `
+MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: MyApp, selector: "my-app", ngImport: i0, template: { source: `
   <object-comp [config]="{'duration': 500, animation: name}"></object-comp>
 `, isInline: true }, directives: [{ type: ObjectComp, selector: "object-comp", inputs: ["config"] }] });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyApp, [{
@@ -538,7 +538,7 @@ import * as i0 from "@angular/core";
 export class NestedComp {
 }
 NestedComp.ɵfac = function NestedComp_Factory(t) { return new (t || NestedComp)(); };
-NestedComp.ɵcmp = i0.ɵɵngDeclareComponent({ version: 1, type: NestedComp, selector: "nested-comp", inputs: { config: "config" }, ngImport: i0, template: { source: `
+NestedComp.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: NestedComp, selector: "nested-comp", inputs: { config: "config" }, ngImport: i0, template: { source: `
     <p> {{ config.animation }} </p>
     <p> {{config.actions[0].opacity }} </p>
     <p> {{config.actions[1].duration }} </p>
@@ -563,7 +563,7 @@ export class MyApp {
     }
 }
 MyApp.ɵfac = function MyApp_Factory(t) { return new (t || MyApp)(); };
-MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ version: 1, type: MyApp, selector: "my-app", ngImport: i0, template: { source: `
+MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: MyApp, selector: "my-app", ngImport: i0, template: { source: `
   <nested-comp [config]="{animation: name, actions: [{ opacity: 0, duration: 0}, {opacity: 1, duration: duration }]}">
   </nested-comp>
 `, isInline: true }, directives: [{ type: NestedComp, selector: "nested-comp", inputs: ["config"] }] });

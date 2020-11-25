@@ -11,7 +11,7 @@ export class ForOfDirective {
     ngOnChanges(simpleChanges) { }
 }
 ForOfDirective.ɵfac = function ForOfDirective_Factory(t) { return new (t || ForOfDirective)(i0.ɵɵdirectiveInject(i0.ViewContainerRef), i0.ɵɵdirectiveInject(i0.TemplateRef)); };
-ForOfDirective.ɵdir = i0.ɵɵngDeclareDirective({ version: 1, type: ForOfDirective, selector: "[forOf]", inputs: { forOf: "forOf" }, usesOnChanges: true, ngImport: i0 });
+ForOfDirective.ɵdir = i0.ɵɵngDeclareDirective({ version: "0.0.0-PLACEHOLDER", type: ForOfDirective, selector: "[forOf]", inputs: { forOf: "forOf" }, usesOnChanges: true, ngImport: i0 });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(ForOfDirective, [{
         type: Directive,
         args: [{ selector: '[forOf]' }]
@@ -53,7 +53,7 @@ export class MyComponent {
     }
 }
 MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); };
-MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: 1, type: MyComponent, selector: "my-component", ngImport: i0, template: { source: `<svg><g *for="let item of items"><circle></circle></g></svg>`, isInline: true }, directives: [{ type: function () { return ForOfDirective; }, selector: "[forOf]", inputs: ["forOf"] }] });
+MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "my-component", ngImport: i0, template: { source: `<svg><g *for="let item of items"><circle></circle></g></svg>`, isInline: true }, directives: [{ type: function () { return ForOfDirective; }, selector: "[forOf]", inputs: ["forOf"] }] });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyComponent, [{
         type: Component,
         args: [{
@@ -101,7 +101,7 @@ export class ForOfDirective {
     ngOnChanges(simpleChanges) { }
 }
 ForOfDirective.ɵfac = function ForOfDirective_Factory(t) { return new (t || ForOfDirective)(i0.ɵɵdirectiveInject(i0.ViewContainerRef), i0.ɵɵdirectiveInject(i0.TemplateRef)); };
-ForOfDirective.ɵdir = i0.ɵɵngDeclareDirective({ version: 1, type: ForOfDirective, selector: "[forOf]", inputs: { forOf: "forOf" }, usesOnChanges: true, ngImport: i0 });
+ForOfDirective.ɵdir = i0.ɵɵngDeclareDirective({ version: "0.0.0-PLACEHOLDER", type: ForOfDirective, selector: "[forOf]", inputs: { forOf: "forOf" }, usesOnChanges: true, ngImport: i0 });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(ForOfDirective, [{
         type: Directive,
         args: [{ selector: '[forOf]' }]
@@ -143,7 +143,7 @@ export class MyComponent {
     }
 }
 MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); };
-MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: 1, type: MyComponent, selector: "my-component", ngImport: i0, template: { source: `<ul><li *for="let item of items">{{item.name}}</li></ul>`, isInline: true }, directives: [{ type: function () { return ForOfDirective; }, selector: "[forOf]", inputs: ["forOf"] }] });
+MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "my-component", ngImport: i0, template: { source: `<ul><li *for="let item of items">{{item.name}}</li></ul>`, isInline: true }, directives: [{ type: function () { return ForOfDirective; }, selector: "[forOf]", inputs: ["forOf"] }] });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyComponent, [{
         type: Component,
         args: [{
@@ -191,7 +191,7 @@ export class ForOfDirective {
     ngOnChanges(simpleChanges) { }
 }
 ForOfDirective.ɵfac = function ForOfDirective_Factory(t) { return new (t || ForOfDirective)(i0.ɵɵdirectiveInject(i0.ViewContainerRef), i0.ɵɵdirectiveInject(i0.TemplateRef)); };
-ForOfDirective.ɵdir = i0.ɵɵngDeclareDirective({ version: 1, type: ForOfDirective, selector: "[forOf]", inputs: { forOf: "forOf" }, usesOnChanges: true, ngImport: i0 });
+ForOfDirective.ɵdir = i0.ɵɵngDeclareDirective({ version: "0.0.0-PLACEHOLDER", type: ForOfDirective, selector: "[forOf]", inputs: { forOf: "forOf" }, usesOnChanges: true, ngImport: i0 });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(ForOfDirective, [{
         type: Directive,
         args: [{ selector: '[forOf]' }]
@@ -236,7 +236,7 @@ export class MyComponent {
     }
 }
 MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); };
-MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: 1, type: MyComponent, selector: "my-component", ngImport: i0, template: { source: `
+MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "my-component", ngImport: i0, template: { source: `
   <ul>
     <li *for="let item of items">
       <div>{{item.name}}</div>
@@ -307,7 +307,7 @@ export class ForOfDirective {
     ngOnChanges(simpleChanges) { }
 }
 ForOfDirective.ɵfac = function ForOfDirective_Factory(t) { return new (t || ForOfDirective)(i0.ɵɵdirectiveInject(i0.ViewContainerRef), i0.ɵɵdirectiveInject(i0.TemplateRef)); };
-ForOfDirective.ɵdir = i0.ɵɵngDeclareDirective({ version: 1, type: ForOfDirective, selector: "[forOf]", inputs: { forOf: "forOf" }, usesOnChanges: true, ngImport: i0 });
+ForOfDirective.ɵdir = i0.ɵɵngDeclareDirective({ version: "0.0.0-PLACEHOLDER", type: ForOfDirective, selector: "[forOf]", inputs: { forOf: "forOf" }, usesOnChanges: true, ngImport: i0 });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(ForOfDirective, [{
         type: Directive,
         args: [{ selector: '[forOf]' }]

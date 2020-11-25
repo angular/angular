@@ -32,7 +32,7 @@ export function compileDeclareDirectiveFromMetadata(meta: R3DirectiveMetadata): 
 export function createDirectiveDefinitionMap(meta: R3DirectiveMetadata): DefinitionMap {
   const definitionMap = new DefinitionMap();
 
-  definitionMap.set('version', o.literal(1));
+  definitionMap.set('version', o.literal('0.0.0-PLACEHOLDER'));
 
   // e.g. `type: MyDirective`
   definitionMap.set('type', meta.internalType);

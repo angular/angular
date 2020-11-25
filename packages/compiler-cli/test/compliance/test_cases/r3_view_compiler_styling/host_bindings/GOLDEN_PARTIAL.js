@@ -12,7 +12,7 @@ export class MyComponent {
     }
 }
 MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); };
-MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: 1, type: MyComponent, selector: "my-component", host: { properties: { "style": "myStyle", "class": "myClass", "style.color": "myColorProp", "class.foo": "myFooClass" }, styleAttribute: "width:200px; height:500px", classAttribute: "foo baz" }, ngImport: i0, template: { source: '', isInline: true } });
+MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "my-component", host: { properties: { "style": "myStyle", "class": "myClass", "style.color": "myColorProp", "class.foo": "myFooClass" }, styleAttribute: "width:200px; height:500px", classAttribute: "foo baz" }, ngImport: i0, template: { source: '', isInline: true } });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyComponent, [{
         type: Component,
         args: [{
@@ -80,7 +80,7 @@ export class MyComponent {
     }
 }
 MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); };
-MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: 1, type: MyComponent, selector: "my-component", host: { properties: { "style.height.pt": "myHeightProp", "class.bar": "myBarClass", "style": "myStyle", "style.width": "myWidthProp", "class.foo": "myFooClass", "class": "myClasses" } }, ngImport: i0, template: { source: '', isInline: true } });
+MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "my-component", host: { properties: { "style.height.pt": "myHeightProp", "class.bar": "myBarClass", "style": "myStyle", "style.width": "myWidthProp", "class.foo": "myFooClass", "class": "myClasses" } }, ngImport: i0, template: { source: '', isInline: true } });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyComponent, [{
         type: Component,
         args: [{
@@ -149,7 +149,7 @@ export class MyComponent {
     }
 }
 MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); };
-MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: 1, type: MyComponent, selector: "my-component", host: { properties: { "style!important": "myStyleExp", "class!important": "myClassExp", "class.foo!important": "myFooClassExp", "style.width!important": "myWidthExp" } }, ngImport: i0, template: { source: `
+MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "my-component", host: { properties: { "style!important": "myStyleExp", "class!important": "myClassExp", "class.foo!important": "myFooClassExp", "style.width!important": "myWidthExp" } }, ngImport: i0, template: { source: `
     <div [style!important]="myStyleExp"
          [class!important]="myClassExp"
          [style.height!important]="myHeightExp"
@@ -222,7 +222,7 @@ export class MyComponent {
     }
 }
 MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); };
-MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: 1, type: MyComponent, selector: "my-component", ngImport: i0, template: { source: `
+MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "my-component", ngImport: i0, template: { source: `
     <div class="A{{p1}}B"></div>
     <div class="A{{p1}}B{{p2}}C"></div>
     <div class="A{{p1}}B{{p2}}C{{p3}}D"></div>
@@ -301,7 +301,7 @@ export class MyComponent {
     }
 }
 MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); };
-MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: 1, type: MyComponent, selector: "my-component", ngImport: i0, template: { source: `
+MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "my-component", ngImport: i0, template: { source: `
     <div style="p1:{{p1}};"></div>
     <div style="p1:{{p1}};p2:{{p2}};"></div>
     <div style="p1:{{p1}};p2:{{p2}};p3:{{p3}};"></div>
@@ -372,7 +372,7 @@ export class ClassDirective {
     }
 }
 ClassDirective.ɵfac = function ClassDirective_Factory(t) { return new (t || ClassDirective)(); };
-ClassDirective.ɵdir = i0.ɵɵngDeclareDirective({ version: 1, type: ClassDirective, selector: "[myClassDir]", host: { properties: { "class": "myClassMap" } }, ngImport: i0 });
+ClassDirective.ɵdir = i0.ɵɵngDeclareDirective({ version: "0.0.0-PLACEHOLDER", type: ClassDirective, selector: "[myClassDir]", host: { properties: { "class": "myClassMap" } }, ngImport: i0 });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(ClassDirective, [{
         type: Directive,
         args: [{ selector: '[myClassDir]' }]
@@ -387,7 +387,7 @@ export class WidthDirective {
     }
 }
 WidthDirective.ɵfac = function WidthDirective_Factory(t) { return new (t || WidthDirective)(); };
-WidthDirective.ɵdir = i0.ɵɵngDeclareDirective({ version: 1, type: WidthDirective, selector: "[myWidthDir]", host: { properties: { "style.width": "myWidth", "class.foo": "myFooClass" } }, ngImport: i0 });
+WidthDirective.ɵdir = i0.ɵɵngDeclareDirective({ version: "0.0.0-PLACEHOLDER", type: WidthDirective, selector: "[myWidthDir]", host: { properties: { "style.width": "myWidth", "class.foo": "myFooClass" } }, ngImport: i0 });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(WidthDirective, [{
         type: Directive,
         args: [{ selector: '[myWidthDir]' }]
@@ -405,7 +405,7 @@ export class HeightDirective {
     }
 }
 HeightDirective.ɵfac = function HeightDirective_Factory(t) { return new (t || HeightDirective)(); };
-HeightDirective.ɵdir = i0.ɵɵngDeclareDirective({ version: 1, type: HeightDirective, selector: "[myHeightDir]", host: { properties: { "style.height": "myHeight", "class.bar": "myBarClass" } }, ngImport: i0 });
+HeightDirective.ɵdir = i0.ɵɵngDeclareDirective({ version: "0.0.0-PLACEHOLDER", type: HeightDirective, selector: "[myHeightDir]", host: { properties: { "style.height": "myHeight", "class.bar": "myBarClass" } }, ngImport: i0 });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(HeightDirective, [{
         type: Directive,
         args: [{ selector: '[myHeightDir]' }]
@@ -419,7 +419,7 @@ HeightDirective.ɵdir = i0.ɵɵngDeclareDirective({ version: 1, type: HeightDire
 export class MyComponent {
 }
 MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); };
-MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: 1, type: MyComponent, selector: "my-component", ngImport: i0, template: { source: '<div myWidthDir myHeightDir myClassDir></div>', isInline: true }, directives: [{ type: WidthDirective, selector: "[myWidthDir]" }, { type: HeightDirective, selector: "[myHeightDir]" }, { type: ClassDirective, selector: "[myClassDir]" }] });
+MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "my-component", ngImport: i0, template: { source: '<div myWidthDir myHeightDir myClassDir></div>', isInline: true }, directives: [{ type: WidthDirective, selector: "[myWidthDir]" }, { type: HeightDirective, selector: "[myHeightDir]" }, { type: ClassDirective, selector: "[myClassDir]" }] });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyComponent, [{
         type: Component,
         args: [{

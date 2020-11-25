@@ -13,7 +13,7 @@ class GreeterEN {
 export class MyComponent {
 }
 MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); };
-MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: 1, type: MyComponent, selector: "my-component", providers: [GreeterEN, { provide: Greeter, useClass: GreeterEN }], ngImport: i0, template: { source: '<div></div>', isInline: true }, viewProviders: [GreeterEN] });
+MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "my-component", providers: [GreeterEN, { provide: Greeter, useClass: GreeterEN }], ngImport: i0, template: { source: '<div></div>', isInline: true }, viewProviders: [GreeterEN] });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyComponent, [{
         type: Component,
         args: [{

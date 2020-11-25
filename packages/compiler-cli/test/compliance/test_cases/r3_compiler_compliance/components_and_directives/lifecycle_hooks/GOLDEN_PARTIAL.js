@@ -6,7 +6,7 @@ import * as i0 from "@angular/core";
 export class MyComponent {
 }
 MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); };
-MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: 1, type: MyComponent, selector: "my-component", ngImport: i0, template: { source: '<input #user>Hello {{user.value}}!', isInline: true } });
+MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "my-component", ngImport: i0, template: { source: '<input #user>Hello {{user.value}}!', isInline: true } });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyComponent, [{
         type: Component,
         args: [{ selector: 'my-component', template: '<input #user>Hello {{user.value}}!' }]
@@ -43,7 +43,7 @@ export class IfDirective {
     constructor(template) { }
 }
 IfDirective.ɵfac = function IfDirective_Factory(t) { return new (t || IfDirective)(i0.ɵɵdirectiveInject(i0.TemplateRef)); };
-IfDirective.ɵdir = i0.ɵɵngDeclareDirective({ version: 1, type: IfDirective, selector: "[if]", ngImport: i0 });
+IfDirective.ɵdir = i0.ɵɵngDeclareDirective({ version: "0.0.0-PLACEHOLDER", type: IfDirective, selector: "[if]", ngImport: i0 });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(IfDirective, [{
         type: Directive,
         args: [{ selector: '[if]' }]
@@ -51,7 +51,7 @@ IfDirective.ɵdir = i0.ɵɵngDeclareDirective({ version: 1, type: IfDirective, s
 export class MyComponent {
 }
 MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); };
-MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: 1, type: MyComponent, selector: "my-component", ngImport: i0, template: { source: `
+MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "my-component", ngImport: i0, template: { source: `
     <div #foo></div>
     {{foo}}
     <div *if>
@@ -114,7 +114,7 @@ import * as i0 from "@angular/core";
 export class MyComponent {
 }
 MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); };
-MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: 1, type: MyComponent, selector: "my-component", ngImport: i0, template: { source: `
+MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "my-component", ngImport: i0, template: { source: `
     <div *ngFor="let item of items">
        <div #foo></div>
         <span *ngIf="showing">
@@ -190,7 +190,7 @@ export class LifecycleComp {
     }
 }
 LifecycleComp.ɵfac = function LifecycleComp_Factory(t) { return new (t || LifecycleComp)(); };
-LifecycleComp.ɵcmp = i0.ɵɵngDeclareComponent({ version: 1, type: LifecycleComp, selector: "lifecycle-comp", inputs: { nameMin: ["name", "nameMin"] }, usesOnChanges: true, ngImport: i0, template: { source: '', isInline: true } });
+LifecycleComp.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: LifecycleComp, selector: "lifecycle-comp", inputs: { nameMin: ["name", "nameMin"] }, usesOnChanges: true, ngImport: i0, template: { source: '', isInline: true } });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(LifecycleComp, [{
         type: Component,
         args: [{ selector: 'lifecycle-comp', template: '' }]
@@ -205,7 +205,7 @@ export class SimpleLayout {
     }
 }
 SimpleLayout.ɵfac = function SimpleLayout_Factory(t) { return new (t || SimpleLayout)(); };
-SimpleLayout.ɵcmp = i0.ɵɵngDeclareComponent({ version: 1, type: SimpleLayout, selector: "simple-layout", ngImport: i0, template: { source: `
+SimpleLayout.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: SimpleLayout, selector: "simple-layout", ngImport: i0, template: { source: `
     <lifecycle-comp [name]="name1"></lifecycle-comp>
     <lifecycle-comp [name]="name2"></lifecycle-comp>
   `, isInline: true }, directives: [{ type: LifecycleComp, selector: "lifecycle-comp", inputs: ["name"] }] });

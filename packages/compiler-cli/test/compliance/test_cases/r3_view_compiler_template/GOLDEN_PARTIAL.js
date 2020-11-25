@@ -11,7 +11,7 @@ export class MyComponent {
     onClick(outer, middle, inner) { }
 }
 MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); };
-MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: 1, type: MyComponent, selector: "my-component", ngImport: i0, template: { source: `
+MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "my-component", ngImport: i0, template: { source: `
     <ul *ngFor="let outer of items">
       <li *ngFor="let middle of outer.items">
         <div *ngFor="let inner of items"
@@ -77,7 +77,7 @@ export class MyComponent {
     _handleClick(d, i) { }
 }
 MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); };
-MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: 1, type: MyComponent, selector: "my-component", ngImport: i0, template: { source: `
+MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "my-component", ngImport: i0, template: { source: `
     <div *ngFor="let d of _data; let i = index" (click)="_handleClick(d, i)"></div>
   `, isInline: true } });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyComponent, [{
@@ -123,7 +123,7 @@ export class MyComponent {
     greet(val) { }
 }
 MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); };
-MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: 1, type: MyComponent, selector: "my-component", ngImport: i0, template: { source: `
+MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "my-component", ngImport: i0, template: { source: `
     <div *ngIf="true" (click)="greet(this)"></div>
     <div *ngIf="true" [id]="this"></div>
   `, isInline: true } });
@@ -169,7 +169,7 @@ import * as i0 from "@angular/core";
 export class MyComponent {
 }
 MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); };
-MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: 1, type: MyComponent, selector: "my-component", ngImport: i0, template: { source: `
+MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "my-component", ngImport: i0, template: { source: `
     <span *ngFor="let item of items; index as i">
       {{ i }} - {{ item }}
     </span>
@@ -216,7 +216,7 @@ import * as i0 from "@angular/core";
 export class MyComponent {
 }
 MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); };
-MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: 1, type: MyComponent, selector: "my-component", ngImport: i0, template: { source: `
+MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "my-component", ngImport: i0, template: { source: `
     <div *ngFor="let item of items; index as i">
         <span *ngIf="showing">
           {{ i }} - {{ item }}
@@ -265,7 +265,7 @@ import * as i0 from "@angular/core";
 export class MyComponent {
 }
 MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); };
-MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: 1, type: MyComponent, selector: "my-component", ngImport: i0, template: { source: `
+MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "my-component", ngImport: i0, template: { source: `
     <div *ngFor="let outer of items">
       <div *ngFor="let middle of outer.items">
         <div *ngFor="let inner of middle.items">
@@ -318,7 +318,7 @@ import * as i0 from "@angular/core";
 export class MyComponent {
 }
 MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); };
-MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: 1, type: MyComponent, selector: "my-component", ngImport: i0, template: { source: `
+MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "my-component", ngImport: i0, template: { source: `
     <ng-template [boundAttr]="b" attr="l">
       some-content
     </ng-template>`, isInline: true } });
@@ -363,7 +363,7 @@ import * as i0 from "@angular/core";
 export class MyComponent {
 }
 MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); };
-MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: 1, type: MyComponent, selector: "my-component", ngImport: i0, template: { source: '<ng-template #foo>some-content</ng-template>', isInline: true } });
+MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "my-component", ngImport: i0, template: { source: '<ng-template #foo>some-content</ng-template>', isInline: true } });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyComponent, [{
         type: Component,
         args: [{
@@ -402,7 +402,7 @@ import * as i0 from "@angular/core";
 export class MyComponent {
 }
 MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); };
-MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: 1, type: MyComponent, selector: "my-component", ngImport: i0, template: { source: '<ng-template (outDirective)="$event.doSth()"></ng-template>', isInline: true } });
+MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "my-component", ngImport: i0, template: { source: '<ng-template (outDirective)="$event.doSth()"></ng-template>', isInline: true } });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyComponent, [{
         type: Component,
         args: [{
@@ -444,7 +444,7 @@ class WithInput {
     }
 }
 WithInput.ɵfac = function WithInput_Factory(t) { return new (t || WithInput)(); };
-WithInput.ɵdir = i0.ɵɵngDeclareDirective({ version: 1, type: WithInput, selector: "[dir]", inputs: { dir: "dir" }, ngImport: i0 });
+WithInput.ɵdir = i0.ɵɵngDeclareDirective({ version: "0.0.0-PLACEHOLDER", type: WithInput, selector: "[dir]", inputs: { dir: "dir" }, ngImport: i0 });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(WithInput, [{
         type: Directive,
         args: [{ selector: '[dir]' }]
@@ -457,7 +457,7 @@ export class TestComp {
     }
 }
 TestComp.ɵfac = function TestComp_Factory(t) { return new (t || TestComp)(); };
-TestComp.ɵcmp = i0.ɵɵngDeclareComponent({ version: 1, type: TestComp, selector: "my-app", ngImport: i0, template: { source: '<ng-template dir="{{ message }}"></ng-template>', isInline: true } });
+TestComp.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: TestComp, selector: "my-app", ngImport: i0, template: { source: '<ng-template dir="{{ message }}"></ng-template>', isInline: true } });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(TestComp, [{
         type: Component,
         args: [{
@@ -487,7 +487,7 @@ class WithInput {
     }
 }
 WithInput.ɵfac = function WithInput_Factory(t) { return new (t || WithInput)(); };
-WithInput.ɵdir = i0.ɵɵngDeclareDirective({ version: 1, type: WithInput, selector: "[dir]", inputs: { dir: "dir" }, ngImport: i0 });
+WithInput.ɵdir = i0.ɵɵngDeclareDirective({ version: "0.0.0-PLACEHOLDER", type: WithInput, selector: "[dir]", inputs: { dir: "dir" }, ngImport: i0 });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(WithInput, [{
         type: Directive,
         args: [{ selector: '[dir]' }]
@@ -500,7 +500,7 @@ export class TestComp {
     }
 }
 TestComp.ɵfac = function TestComp_Factory(t) { return new (t || TestComp)(); };
-TestComp.ɵcmp = i0.ɵɵngDeclareComponent({ version: 1, type: TestComp, selector: "my-app", ngImport: i0, template: { source: '<ng-template *ngIf="true" dir="{{ message }}"></ng-template>', isInline: true } });
+TestComp.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: TestComp, selector: "my-app", ngImport: i0, template: { source: '<ng-template *ngIf="true" dir="{{ message }}"></ng-template>', isInline: true } });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(TestComp, [{
         type: Component,
         args: [{
@@ -530,7 +530,7 @@ export class AComponent {
     }
 }
 AComponent.ɵfac = function AComponent_Factory(t) { return new (t || AComponent)(); };
-AComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: 1, type: AComponent, selector: "a-component", ngImport: i0, template: { source: `
+AComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: AComponent, selector: "a-component", ngImport: i0, template: { source: `
     <div *ngFor="let item of items">
       <p *ngIf="item < 10">less than 10</p>
       <p *ngIf="item < 10">less than 10</p>
@@ -572,7 +572,7 @@ export class BComponent {
     }
 }
 BComponent.ɵfac = function BComponent_Factory(t) { return new (t || BComponent)(); };
-BComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: 1, type: BComponent, selector: "b-component", ngImport: i0, template: { source: `
+BComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: BComponent, selector: "b-component", ngImport: i0, template: { source: `
     <div *ngFor="let item of items">
       <ng-container *ngFor="let subitem of item.subitems">
         <p *ngIf="subitem < 10">less than 10</p>
@@ -656,7 +656,7 @@ export class AComponent {
     }
 }
 AComponent.ɵfac = function AComponent_Factory(t) { return new (t || AComponent)(); };
-AComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: 1, type: AComponent, selector: "a-component", ngImport: i0, template: { source: `
+AComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: AComponent, selector: "a-component", ngImport: i0, template: { source: `
     <ng-content *ngIf="show"></ng-content>
   `, isInline: true } });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(AComponent, [{
@@ -674,7 +674,7 @@ export class BComponent {
     }
 }
 BComponent.ɵfac = function BComponent_Factory(t) { return new (t || BComponent)(); };
-BComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: 1, type: BComponent, selector: "b-component", ngImport: i0, template: { source: `
+BComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: BComponent, selector: "b-component", ngImport: i0, template: { source: `
     <ng-content *ngIf="show"></ng-content>
   `, isInline: true } });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(BComponent, [{
@@ -726,7 +726,7 @@ export class MyComponent {
     }
 }
 MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); };
-MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: 1, type: MyComponent, selector: "my-component", ngImport: i0, template: { source: `
+MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "my-component", ngImport: i0, template: { source: `
     <div *ngFor="let item of items">
       <p (click)="$event">{{ item }}</p>
       <p (click)="$event">{{ item }}</p>
@@ -782,7 +782,7 @@ import * as i0 from "@angular/core";
 export class MyComponent {
 }
 MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); };
-MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: 1, type: MyComponent, selector: "my-component", ngImport: i0, template: { source: `<div *ngIf="val | pipe"></div>`, isInline: true } });
+MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "my-component", ngImport: i0, template: { source: `<div *ngIf="val | pipe"></div>`, isInline: true } });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyComponent, [{
         type: Component,
         args: [{
@@ -821,7 +821,7 @@ import * as i0 from "@angular/core";
 export class MyComponent {
 }
 MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); };
-MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: 1, type: MyComponent, selector: "my-component", ngImport: i0, template: { source: `
+MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "my-component", ngImport: i0, template: { source: `
     {{a?.b ? 1 : 2 }}`, isInline: true } });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyComponent, [{
         type: Component,

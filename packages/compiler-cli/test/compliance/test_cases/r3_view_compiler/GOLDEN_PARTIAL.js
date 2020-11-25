@@ -9,7 +9,7 @@ export class MyApp {
     }
 }
 MyApp.ɵfac = function MyApp_Factory(t) { return new (t || MyApp)(); };
-MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ version: 1, type: MyApp, selector: "my-app", ngImport: i0, template: { source: '<todo [data]="list"></todo>', isInline: true }, directives: [{ type: function () { return TodoComponent; }, selector: "todo", inputs: ["data"] }] });
+MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: MyApp, selector: "my-app", ngImport: i0, template: { source: '<todo [data]="list"></todo>', isInline: true }, directives: [{ type: function () { return TodoComponent; }, selector: "todo", inputs: ["data"] }] });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyApp, [{
         type: Component,
         args: [{ selector: 'my-app', template: '<todo [data]="list"></todo>' }]
@@ -20,7 +20,7 @@ export class TodoComponent {
     }
 }
 TodoComponent.ɵfac = function TodoComponent_Factory(t) { return new (t || TodoComponent)(); };
-TodoComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: 1, type: TodoComponent, selector: "todo", inputs: { data: "data" }, ngImport: i0, template: { source: '<ul class="list" [title]="myTitle"><li *ngFor="let item of data">{{data}}</li></ul>', isInline: true } });
+TodoComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: TodoComponent, selector: "todo", inputs: { data: "data" }, ngImport: i0, template: { source: '<ul class="list" [title]="myTitle"><li *ngFor="let item of data">{{data}}</li></ul>', isInline: true } });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(TodoComponent, [{
         type: Component,
         args: [{
