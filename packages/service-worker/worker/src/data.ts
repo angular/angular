@@ -422,11 +422,8 @@ export class DataGroup {
 
     const buffer = await response.arrayBuffer();
 
-    return new Response(buffer, {
-      status: response.status,
-      statusText: response.statusText,
-      headers: newHeaders
-    });
+    return new Response(
+        buffer, {status: response.status, statusText: response.statusText, headers: newHeaders});
   }
 
   private networkFetchWithTimeout(req: Request): [Promise<Response|undefined>, Promise<Response>] {
