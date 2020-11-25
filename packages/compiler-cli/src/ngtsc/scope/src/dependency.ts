@@ -132,6 +132,7 @@ export class MetadataDtsModuleScopeResolver implements DtsModuleScopeResolver {
         directives,
         pipes,
         ngModules: Array.from(ngModules),
+        isPoisoned: false,
       },
     };
     this.cache.set(clazz, exportScope);

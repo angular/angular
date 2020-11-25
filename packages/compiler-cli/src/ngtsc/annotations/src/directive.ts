@@ -41,6 +41,7 @@ export interface DirectiveHandlerData {
   providersRequiringFactory: Set<Reference<ClassDeclaration>>|null;
   inputs: ClassPropertyMapping;
   outputs: ClassPropertyMapping;
+  isPoisoned: boolean;
 }
 
 export class DirectiveDecoratorHandler implements
@@ -106,7 +107,8 @@ export class DirectiveDecoratorHandler implements
             this.annotateForClosureCompiler),
         baseClass: readBaseClass(node, this.reflector, this.evaluator),
         typeCheckMeta: extractDirectiveTypeCheckMeta(node, directiveResult.inputs, this.reflector),
-        providersRequiringFactory
+        providersRequiringFactory,
+        isPoisoned: false,
       }
     };
   }
@@ -126,6 +128,7 @@ export class DirectiveDecoratorHandler implements
       isComponent: false,
       baseClass: analysis.baseClass,
       ...analysis.typeCheckMeta,
+      isPoisoned: analysis.isPoisoned,
     });
 
     this.injectableRegistry.registerInjectable(node);

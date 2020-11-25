@@ -502,15 +502,16 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
       throw new Error(`AssertionError: components must have names`);
     }
 
+    const scope = this.componentScopeReader.getScopeForComponent(component);
+    if (scope === null) {
+      return null;
+    }
+
     const data: ScopeData = {
       directives: [],
       pipes: [],
+      isPoisoned: scope.compilation.isPoisoned,
     };
-
-    const scope = this.componentScopeReader.getScopeForComponent(component);
-    if (scope === null || scope === 'error') {
-      return null;
-    }
 
     const typeChecker = this.typeCheckingStrategy.getProgram().getTypeChecker();
     for (const dir of scope.exported.directives) {
@@ -739,4 +740,5 @@ class SingleShimTypeCheckingHost extends SingleFileTypeCheckingHost {
 interface ScopeData {
   directives: DirectiveInScope[];
   pipes: PipeInScope[];
+  isPoisoned: boolean;
 }

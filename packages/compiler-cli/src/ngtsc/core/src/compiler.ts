@@ -106,6 +106,7 @@ export class NgCompiler {
       private typeCheckingProgramStrategy: TypeCheckingProgramStrategy,
       private incrementalStrategy: IncrementalBuildStrategy,
       private enableTemplateTypeChecker: boolean,
+      private usePoisonedData: boolean,
       oldProgram: ts.Program|null = null,
       private perfRecorder: PerfRecorder = NOOP_PERF_RECORDER,
   ) {
@@ -767,7 +768,7 @@ export class NgCompiler {
           reflector, evaluator, metaRegistry, metaReader, scopeReader, scopeRegistry,
           resourceRegistry, isCore, this.resourceManager, this.adapter.rootDirs,
           this.options.preserveWhitespaces || false, this.options.i18nUseExternalIds !== false,
-          this.options.enableI18nLegacyMessageIdFormat !== false,
+          this.options.enableI18nLegacyMessageIdFormat !== false, this.usePoisonedData,
           this.options.i18nNormalizeLineEndingsInICUs, this.moduleResolver, this.cycleAnalyzer,
           refEmitter, defaultImportTracker, this.incrementalDriver.depGraph, injectableRegistry,
           this.closureCompilerEnabled),

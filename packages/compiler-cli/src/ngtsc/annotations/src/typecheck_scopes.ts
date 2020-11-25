@@ -33,6 +33,12 @@ export interface TypeCheckScope {
    * The schemas that are used in this scope.
    */
   schemas: SchemaMetadata[];
+
+  /**
+   * Whether the original compilation scope which produced this `TypeCheckScope` was itself poisoned
+   * (contained semantic errors during its production).
+   */
+  isPoisoned: boolean;
 }
 
 /**
@@ -57,15 +63,18 @@ export class TypeCheckScopes {
    * contains an error, then 'error' is returned. If the component is not declared in any NgModule,
    * an empty type-check scope is returned.
    */
-  getTypeCheckScope(node: ClassDeclaration): TypeCheckScope|'error' {
+  getTypeCheckScope(node: ClassDeclaration): TypeCheckScope {
     const matcher = new SelectorMatcher<DirectiveMeta>();
     const pipes = new Map<string, Reference<ClassDeclaration<ts.ClassDeclaration>>>();
 
     const scope = this.scopeReader.getScopeForComponent(node);
     if (scope === null) {
-      return {matcher, pipes, schemas: []};
-    } else if (scope === 'error') {
-      return scope;
+      return {
+        matcher,
+        pipes,
+        schemas: [],
+        isPoisoned: false,
+      };
     }
 
     if (this.scopeCache.has(scope.ngModule)) {
@@ -87,7 +96,12 @@ export class TypeCheckScopes {
       pipes.set(name, ref as Reference<ClassDeclaration<ts.ClassDeclaration>>);
     }
 
-    const typeCheckScope: TypeCheckScope = {matcher, pipes, schemas: scope.schemas};
+    const typeCheckScope: TypeCheckScope = {
+      matcher,
+      pipes,
+      schemas: scope.schemas,
+      isPoisoned: scope.compilation.isPoisoned || scope.exported.isPoisoned,
+    };
     this.scopeCache.set(scope.ngModule, typeCheckScope);
     return typeCheckScope;
   }

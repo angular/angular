@@ -97,6 +97,7 @@ export class DecorationAnalyzer {
         this.scopeRegistry, this.scopeRegistry, new ResourceRegistry(), this.isCore,
         this.resourceManager, this.rootDirs, !!this.compilerOptions.preserveWhitespaces,
         /* i18nUseExternalIds */ true, this.bundle.enableI18nLegacyMessageIdFormat,
+        /* usePoisonedData */ false,
         /* i18nNormalizeLineEndingsInICUs */ false, this.moduleResolver, this.cycleAnalyzer,
         this.refEmitter, NOOP_DEFAULT_IMPORT_RECORDER, NOOP_DEPENDENCY_TRACKER,
         this.injectableRegistry, !!this.compilerOptions.annotateForClosureCompiler),
