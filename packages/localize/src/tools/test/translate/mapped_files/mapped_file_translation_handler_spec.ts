@@ -41,26 +41,31 @@ runInEachFileSystem(() => {
       };
 
       it('should return false there are no mappings', () => {
-        const handler = new MappedFileTranslationHandler(fs, {mappings: []});
+        const handler =
+            new MappedFileTranslationHandler(fs, {mappings: [], missingTranslation: 'error'});
         expect(handler.canTranslate('relative/path', Buffer.from('contents'))).toBe(false);
       });
 
       it('should return true at least one configured `PathMatcher` returns true', () => {
-        const handler = new MappedFileTranslationHandler(
-            fs, {mappings: [falseMapping, falseMapping, trueMapping, falseMapping]});
+        const handler = new MappedFileTranslationHandler(fs, {
+          mappings: [falseMapping, falseMapping, trueMapping, falseMapping],
+          missingTranslation: 'error'
+        });
         expect(handler.canTranslate('relative/path', Buffer.from('contents'))).toBe(true);
       });
 
       it('should return false if all configured `PathMatcher`s return false', () => {
         const handler = new MappedFileTranslationHandler(
-            fs, {mappings: [falseMapping, falseMapping, falseMapping]});
+            fs,
+            {mappings: [falseMapping, falseMapping, falseMapping], missingTranslation: 'error'});
         expect(handler.canTranslate('relative/path', Buffer.from('contents'))).toBe(false);
       });
 
       it('should pass the source path and contents to each path matcher', () => {
         spyOn(falseMapping.matcher, 'matchesPath');
         const handler = new MappedFileTranslationHandler(
-            fs, {mappings: [falseMapping, falseMapping, falseMapping]});
+            fs,
+            {mappings: [falseMapping, falseMapping, falseMapping], missingTranslation: 'error'});
         handler.canTranslate('relative/path', Buffer.from('contents'));
         expect(falseMapping.matcher.matchesPath).toHaveBeenCalledTimes(3);
         expect(falseMapping.matcher.matchesPath).toHaveBeenCalledWith('relative/path');
@@ -73,8 +78,8 @@ runInEachFileSystem(() => {
         const mapping1 = new MockMapping('aaa', 'AAA');
         const mapping2 = new MockMapping('bbb', 'BBB');
         const mapping3 = new MockMapping('ccc', 'CCC');
-        const handler =
-            new MappedFileTranslationHandler(fs, {mappings: [mapping1, mapping2, mapping3]});
+        const handler = new MappedFileTranslationHandler(
+            fs, {mappings: [mapping1, mapping2, mapping3], missingTranslation: 'error'});
         const translations = [
           {locale: 'en', translations: {}},
           {locale: 'fr', translations: {}},
@@ -100,7 +105,7 @@ runInEachFileSystem(() => {
         beforeEach(() => {
           const diagnostics = new Diagnostics();
           const mappings = [new MockMapping('aaa', '/mapped/{{LOCALE}}/aaa')];
-          handler = new MappedFileTranslationHandler(fs, {mappings});
+          handler = new MappedFileTranslationHandler(fs, {mappings, missingTranslation: 'error'});
           const translations = [
             {locale: 'en', translations: {}},
             {locale: 'fr', translations: {}},
@@ -134,7 +139,8 @@ runInEachFileSystem(() => {
       it('should write the translated file to the "source locale", if provided', () => {
         const diagnostics = new Diagnostics();
         const mappings = [new MockMapping('relative/path', 'relative/path')];
-        const handler = new MappedFileTranslationHandler(fs, {mappings});
+        const handler =
+            new MappedFileTranslationHandler(fs, {mappings, missingTranslation: 'error'});
         const translations: TranslationBundle[] = [];
         const contents = Buffer.from('contents');
         const sourceLocale = 'en-US';

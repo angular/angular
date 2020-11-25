@@ -99,12 +99,15 @@ if (require.main === module) {
           .option('file-mapping', {
             array: true,
             describe:
-                'A string that configures the translator to replace a matched file with a translated file.\n' +
+                'A collection of strings that configure the translator to replace a matched file with a translated file.\n' +
                 'Source files that match are replaced rather than being translated via the source code translation.\n' +
-                'The format of string is "glob => regex => replacer", where:\n' +
+                'The format of each string is "glob => regex => replacer", where:\n' +
                 ' - `glob` is the pattern that is used to identify files to map.\n' +
                 ' - `regex` and `replacer` are used to map the source path to the path where the translated file will be.\n' +
-                '   This can include the expression "{{LOCALE}}" which will be replaced with the locale being translated.',
+                '   This can include the expression "{{LOCALE}}" which will be replaced with the locale being translated.\n' +
+                'E.g. `--file-mapping "**/*.txt => (.*/)([^/]+\\.txt$) => assets/{{LOCALE}}/$2"`\n' +
+                '     This will match all `.txt` files, and try to replace with files that have the equivalent relative path\n' +
+                '     below the `assets/{{LOCALE}}` directory.',
             type: 'string',
           })
 

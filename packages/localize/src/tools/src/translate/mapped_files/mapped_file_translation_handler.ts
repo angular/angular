@@ -18,7 +18,7 @@ export class MappedFileTranslationHandler implements TranslationHandler {
   private missingTranslation: DiagnosticHandlingStrategy;
   private mappings: FileMapping[];
   constructor(private fs: FileSystem, options: MappedFileOptions) {
-    this.missingTranslation = options.missingTranslation || 'error';
+    this.missingTranslation = options.missingTranslation;
     this.mappings = options.mappings;
   }
 
@@ -81,7 +81,7 @@ export class MappedFileTranslationHandler implements TranslationHandler {
 
 export interface MappedFileOptions {
   mappings: FileMapping[];
-  missingTranslation?: DiagnosticHandlingStrategy;
+  missingTranslation: DiagnosticHandlingStrategy;
 }
 
 
