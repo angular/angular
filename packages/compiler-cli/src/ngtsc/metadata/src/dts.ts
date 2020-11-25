@@ -92,6 +92,7 @@ export class DtsMetadataReader implements MetadataReader {
       queries: readStringArrayType(def.type.typeArguments[5]),
       ...extractDirectiveTypeCheckMeta(clazz, inputs, this.reflector),
       baseClass: readBaseClass(clazz, this.checker, this.reflector),
+      isPoisoned: false,
     };
   }
 

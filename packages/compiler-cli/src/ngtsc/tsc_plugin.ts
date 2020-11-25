@@ -103,7 +103,7 @@ export class NgTscPlugin implements TscPlugin {
     this._compiler = new NgCompiler(
         this.host, this.options, program, typeCheckStrategy,
         new PatchedProgramIncrementalBuildStrategy(), /** enableTemplateTypeChecker */ false,
-        oldProgram, NOOP_PERF_RECORDER);
+        /* usePoisonedData */ false, oldProgram, NOOP_PERF_RECORDER);
     return {
       ignoreForDiagnostics: this._compiler.ignoreForDiagnostics,
       ignoreForEmit: this._compiler.ignoreForEmit,
