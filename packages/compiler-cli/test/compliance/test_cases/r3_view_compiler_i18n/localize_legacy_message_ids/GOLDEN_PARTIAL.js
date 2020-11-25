@@ -6,17 +6,9 @@ import * as i0 from "@angular/core";
 export class MyComponent {
 }
 MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); };
-MyComponent.ɵcmp = i0.ɵɵdefineComponent({ type: MyComponent, selectors: [["my-component"]], decls: 2, vars: 0, consts: function () { let i18n_0; if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
-        const MSG_EXTERNAL_6795333002533525253$$LEGACY_ENABLED_TS_1 = goog.getMsg("Some Message");
-        i18n_0 = MSG_EXTERNAL_6795333002533525253$$LEGACY_ENABLED_TS_1;
-    }
-    else {
-        i18n_0 = $localize `:␟ec93160d6d6a8822214060dd7938bf821c22b226␟6795333002533525253:Some Message`;
-    } return [i18n_0]; }, template: function MyComponent_Template(rf, ctx) { if (rf & 1) {
-        i0.ɵɵelementStart(0, "div");
-        i0.ɵɵi18n(1, 0);
-        i0.ɵɵelementEnd();
-    } }, encapsulation: 2 });
+MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: 1, type: MyComponent, selector: "my-component", ngImport: i0, template: { source: `
+  <div i18n>Some Message</div>
+`, isInline: true } });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyComponent, [{
         type: Component,
         args: [{
@@ -57,17 +49,9 @@ import * as i0 from "@angular/core";
 export class MyComponent {
 }
 MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); };
-MyComponent.ɵcmp = i0.ɵɵdefineComponent({ type: MyComponent, selectors: [["my-component"]], decls: 2, vars: 0, consts: function () { let i18n_0; if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
-        const MSG_EXTERNAL_6795333002533525253$$LEGACY_DISABLED_TS_1 = goog.getMsg("Some Message");
-        i18n_0 = MSG_EXTERNAL_6795333002533525253$$LEGACY_DISABLED_TS_1;
-    }
-    else {
-        i18n_0 = $localize `Some Message`;
-    } return [i18n_0]; }, template: function MyComponent_Template(rf, ctx) { if (rf & 1) {
-        i0.ɵɵelementStart(0, "div");
-        i0.ɵɵi18n(1, 0);
-        i0.ɵɵelementEnd();
-    } }, encapsulation: 2 });
+MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: 1, type: MyComponent, selector: "my-component", ngImport: i0, template: { source: `
+  <div i18n>Some Message</div>
+`, isInline: true } });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyComponent, [{
         type: Component,
         args: [{

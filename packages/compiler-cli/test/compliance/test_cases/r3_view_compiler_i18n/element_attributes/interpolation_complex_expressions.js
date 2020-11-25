@@ -14,8 +14,8 @@ template: function MyComponent_Template(rf, ctx) {
     $r3$.ɵɵelementEnd();
   }
   if (rf & 2) {
-      let $tmp_0_0$ = null;
-      $r3$.ɵɵi18nExp(($tmp_0_0$ = ctx.valueA.getRawValue()) == null ? null : $tmp_0_0$.getTitle());
-      $r3$.ɵɵi18nApply(1);
+    let $tmp_0_0$ = null;
+    $r3$.ɵɵi18nExp(($tmp_0_0$ = ctx.valueA.getRawValue()) == null ? null : $tmp_0_0$.getTitle());
+    $r3$.ɵɵi18nApply(1);
   }
 }

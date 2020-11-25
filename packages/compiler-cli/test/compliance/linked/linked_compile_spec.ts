@@ -24,7 +24,11 @@ runTests('partial compile + link', linkPartials);
  */
 function linkPartials(fs: FileSystem, test: ComplianceTest): CompileResult {
   const builtDirectory = getBuildOutputDirectory(fs);
-  const linkerPlugin = createEs2015LinkerPlugin(test.angularCompilerOptions);
+  const linkerPlugin = createEs2015LinkerPlugin({
+    // By default we don't render legacy message ids in compliance tests.
+    enableI18nLegacyMessageIdFormat: false,
+    ...test.angularCompilerOptions
+  });
   const goldenPartialPath = fs.resolve('/GOLDEN_PARTIAL.js');
   if (!fs.exists(goldenPartialPath)) {
     throw new Error(

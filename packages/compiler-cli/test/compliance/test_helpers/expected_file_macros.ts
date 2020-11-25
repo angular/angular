@@ -10,21 +10,21 @@ import {i18nIcuMsg, i18nMsg, i18nMsgWithPostprocess, Placeholder} from './i18n_h
 
 const EXPECTED_FILE_MACROS: [RegExp, (...args: string[]) => string][] = [
   [
-    // E.g. `__i18nMsg__('message string', [ ['placeholder', 'pair] ], { meta: 'properties'})`
-    /__i18nMsg__\(\s*'([^']*)'\s*,\s*(\[.*\])\s*,\s*(\{[^}]*\})\s*\)/g,
+    // E.g. `__i18nMsg__('message string', [ ['placeholder', 'pair'] ], { meta: 'properties'})`
+    macroFn(/__i18nMsg__/, stringParam(), arrayParam(), objectParam()),
     (_match, message, placeholders, meta) =>
         i18nMsg(message, parsePlaceholders(placeholders), parseMetaProperties(meta)),
   ],
   [
-    // E.g. `__i18nMsgWithPostprocess__('message', [ ['placeholder', 'pair] ], { meta: 'props'})`
-    /__i18nMsgWithPostprocess__\(\s*'([^']*)'\s*,\s*(\[.*\])\s*,\s*(\{[^}]*\})\s*,\s*(\[.*\])\s*\)/g,
+    // E.g. `__i18nMsgWithPostprocess__('message', [ ['placeholder', 'pair'] ], { meta: 'props'})`
+    macroFn(/__i18nMsgWithPostprocess__/, stringParam(), arrayParam(), objectParam(), arrayParam()),
     (_match, message, placeholders, meta, postProcessPlaceholders) => i18nMsgWithPostprocess(
         message, parsePlaceholders(placeholders), parseMetaProperties(meta),
         parsePlaceholders(postProcessPlaceholders)),
   ],
   [
-    // E.g. `__i18nIcuMsg__('message string', [ ['placeholder', 'pair] ])`
-    /__i18nIcuMsg__\(\s*'([^']*)'\s*,\s*(\[.*\])\s*\)/g,
+    // E.g. `__i18nIcuMsg__('message string', [ ['placeholder', 'pair'] ])`
+    macroFn(/__i18nIcuMsg__/, stringParam(), arrayParam()),
     (_match, message, placeholders) => i18nIcuMsg(message, parsePlaceholders(placeholders)),
   ],
   [
@@ -40,8 +40,8 @@ const EXPECTED_FILE_MACROS: [RegExp, (...args: string[]) => string][] = [
  * @param expectedContent The content to process.
  */
 export function replaceMacros(expectedContent: string): string {
-  for (const macro of EXPECTED_FILE_MACROS) {
-    expectedContent = expectedContent.replace(macro[0], macro[1]);
+  for (const [regex, replacer] of EXPECTED_FILE_MACROS) {
+    expectedContent = expectedContent.replace(regex, replacer);
   }
   return expectedContent;
 }
@@ -60,7 +60,13 @@ function parsePlaceholders(str: string): Placeholder[] {
 function parseMetaProperties(str: string): Record<string, string> {
   const obj = eval(`(${str})`);
   if (typeof obj !== 'object') {
-    throw new Error('Expected an object of properties but got ' + str);
+    throw new Error(`Expected an object of properties but got:\n\n${str}.`);
+  }
+  for (const key in obj) {
+    if (typeof obj[key] !== 'string') {
+      throw new Error(`Expected an object whose values are strings, but property ${key} has type ${
+          typeof obj[key]}, when parsing:\n\n${str}`);
+    }
   }
   return obj;
 }
@@ -81,4 +87,21 @@ function getAttributeMarker(member: string): string {
     throw new Error('Unknown AttributeMarker: ' + member);
   }
   return `${marker}`;
+}
+
+function stringParam() {
+  return /'([^']*?[^\\])'/;
+}
+function arrayParam() {
+  return /(\[.*?\])/;
+}
+function objectParam() {
+  return /(\{[^}]*\})/;
+}
+
+function macroFn(fnName: RegExp, ...args: RegExp[]): RegExp {
+  const ws = /[\s\r\n]*/.source;
+  return new RegExp(
+      ws + fnName.source + '\\(' + args.map(r => `${ws}${r.source}${ws}`).join(',') + '\\)' + ws,
+      'g');
 }

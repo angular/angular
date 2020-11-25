@@ -59,7 +59,7 @@
                         ],
                         "properties": {
                           "expected": {
-                            "title": "A path (relative to the test case) where an file containing expected output can be found",
+                            "title": "A path (relative to the test case) where a file containing expected output can be found",
                             "type": "string"
                           },
                           "generated": {
@@ -136,3 +136,4 @@
       }
     }
   }
+}

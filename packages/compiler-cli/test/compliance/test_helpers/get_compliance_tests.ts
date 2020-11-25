@@ -258,7 +258,7 @@ export interface Expectation {
   failureMessage: string;
   /** A list of pairs of paths to expected and generated files to compare. */
   files: ExpectedFile[];
-  /** A collection of errors that should be created when compiling the generated file. */
+  /** A collection of errors that should be reported when compiling the generated file. */
   expectedErrors: ExpectedError[];
   /** Additional checks to run against the generated code. */
   extraChecks: ExtraCheck[];

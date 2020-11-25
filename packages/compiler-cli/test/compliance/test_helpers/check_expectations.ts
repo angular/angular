@@ -40,10 +40,15 @@ export function checkExpectations(
 
     const generatedPath = fs.resolve(builtDirectory, expectedFile.generated);
     if (!fs.exists(generatedPath)) {
-      throw new Error(
+      const error = new Error(
           `The generated file at ${generatedPath} does not exist.\n` +
           'Perhaps there is no matching input source file in the TEST_CASES.json file for this test case.\n' +
-          'Or maybe you need to regenerate the GOLDEN_PARTIAL.js file.');
+          'Or maybe you need to regenerate the GOLDEN_PARTIAL.js file by running:\n\n' +
+          `    bazel run //packages/compiler-cli/test/compliance/test_cases:${
+              testPath}.golden.update`);
+      // Clear the stack so that we get a nice error message
+      error.stack = '';
+      throw error;
     }
     const expected = replaceMacros(fs.readFile(expectedPath));
     const generated = fs.readFile(generatedPath);

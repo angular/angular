@@ -6,37 +6,17 @@ import * as i0 from "@angular/core";
 export class MyComponent {
 }
 MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); };
-MyComponent.ɵcmp = i0.ɵɵdefineComponent({ type: MyComponent, selectors: [["my-component"]], decls: 2, vars: 1, consts: function () { let i18n_0; if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
-        const MSG_EXTERNAL_7326958852138509669$$INLINE_TEMPLATE_NON_LEGACY_TS_1 = goog.getMsg("abc\ndef");
-        i18n_0 = MSG_EXTERNAL_7326958852138509669$$INLINE_TEMPLATE_NON_LEGACY_TS_1;
-    }
-    else {
-        i18n_0 = $localize `abc
-def`;
-    } let i18n_3; if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
-        const MSG_EXTERNAL_4863953183043480207$$INLINE_TEMPLATE_NON_LEGACY_TS_4 = goog.getMsg("{VAR_SELECT, select, =0 {zero\n  }}");
-        i18n_3 = MSG_EXTERNAL_4863953183043480207$$INLINE_TEMPLATE_NON_LEGACY_TS_4;
-    }
-    else {
-        i18n_3 = $localize `{VAR_SELECT, select, =0 {zero
-  }}`;
-    } i18n_3 = i0.ɵɵi18nPostprocess(i18n_3, { "VAR_SELECT": "\uFFFD0\uFFFD" }); let i18n_2; if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
-        const MSG_EXTERNAL_2773178924738647105$$INLINE_TEMPLATE_NON_LEGACY_TS_5 = goog.getMsg("\nSome Message\n{$icu}", { "icu": i18n_3 });
-        i18n_2 = MSG_EXTERNAL_2773178924738647105$$INLINE_TEMPLATE_NON_LEGACY_TS_5;
-    }
-    else {
-        i18n_2 = $localize `
+MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: 1, type: MyComponent, selector: "my-component", ngImport: i0, template: { source: `
+<div title="abc
+def" i18n-title i18n>
 Some Message
-${i18n_3}:ICU:`;
-    } return [["title", i18n_0], i18n_2]; }, template: function MyComponent_Template(rf, ctx) { if (rf & 1) {
-        i0.ɵɵelementStart(0, "div", 0);
-        i0.ɵɵi18n(1, 1);
-        i0.ɵɵelementEnd();
-    } if (rf & 2) {
-        i0.ɵɵadvance(1);
-        i0.ɵɵi18nExp(ctx.value);
-        i0.ɵɵi18nApply(1);
-    } }, encapsulation: 2 });
+{
+  value,
+  select,
+  =0 {
+    zero
+  }
+}</div>`, isInline: true } });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyComponent, [{
         type: Component,
         args: [{
@@ -87,37 +67,17 @@ import * as i0 from "@angular/core";
 export class MyComponent {
 }
 MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); };
-MyComponent.ɵcmp = i0.ɵɵdefineComponent({ type: MyComponent, selectors: [["my-component"]], decls: 2, vars: 1, consts: function () { let i18n_0; if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
-        const MSG_EXTERNAL_7326958852138509669$$INLINE_TEMPLATE_NON_LEGACY_TS_1 = goog.getMsg("abc\ndef");
-        i18n_0 = MSG_EXTERNAL_7326958852138509669$$INLINE_TEMPLATE_NON_LEGACY_TS_1;
-    }
-    else {
-        i18n_0 = $localize `abc
-def`;
-    } let i18n_3; if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
-        const MSG_EXTERNAL_4863953183043480207$$INLINE_TEMPLATE_NON_LEGACY_TS_4 = goog.getMsg("{VAR_SELECT, select, =0 {zero\n  }}");
-        i18n_3 = MSG_EXTERNAL_4863953183043480207$$INLINE_TEMPLATE_NON_LEGACY_TS_4;
-    }
-    else {
-        i18n_3 = $localize `{VAR_SELECT, select, =0 {zero
-  }}`;
-    } i18n_3 = i0.ɵɵi18nPostprocess(i18n_3, { "VAR_SELECT": "\uFFFD0\uFFFD" }); let i18n_2; if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
-        const MSG_EXTERNAL_2773178924738647105$$INLINE_TEMPLATE_NON_LEGACY_TS_5 = goog.getMsg("\nSome Message\n{$icu}", { "icu": i18n_3 });
-        i18n_2 = MSG_EXTERNAL_2773178924738647105$$INLINE_TEMPLATE_NON_LEGACY_TS_5;
-    }
-    else {
-        i18n_2 = $localize `
+MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: 1, type: MyComponent, selector: "my-component", ngImport: i0, template: { source: `
+<div title="abc
+def" i18n-title i18n>
 Some Message
-${i18n_3}:ICU:`;
-    } return [["title", i18n_0], i18n_2]; }, template: function MyComponent_Template(rf, ctx) { if (rf & 1) {
-        i0.ɵɵelementStart(0, "div", 0);
-        i0.ɵɵi18n(1, 1);
-        i0.ɵɵelementEnd();
-    } if (rf & 2) {
-        i0.ɵɵadvance(1);
-        i0.ɵɵi18nExp(ctx.value);
-        i0.ɵɵi18nApply(1);
-    } }, encapsulation: 2 });
+{
+  value,
+  select,
+  =0 {
+    zero
+  }
+}</div>`, isInline: true } });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyComponent, [{
         type: Component,
         args: [{
@@ -168,37 +128,7 @@ import * as i0 from "@angular/core";
 export class MyComponent {
 }
 MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); };
-MyComponent.ɵcmp = i0.ɵɵdefineComponent({ type: MyComponent, selectors: [["my-component"]], decls: 2, vars: 1, consts: function () { let i18n_0; if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
-        const MSG_EXTERNAL_7326958852138509669$$EXTERNAL_TEMPLATE_NON_LEGACY_TS_1 = goog.getMsg("abc\ndef");
-        i18n_0 = MSG_EXTERNAL_7326958852138509669$$EXTERNAL_TEMPLATE_NON_LEGACY_TS_1;
-    }
-    else {
-        i18n_0 = $localize `abc
-def`;
-    } let i18n_3; if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
-        const MSG_EXTERNAL_4863953183043480207$$EXTERNAL_TEMPLATE_NON_LEGACY_TS_4 = goog.getMsg("{VAR_SELECT, select, =0 {zero\n  }}");
-        i18n_3 = MSG_EXTERNAL_4863953183043480207$$EXTERNAL_TEMPLATE_NON_LEGACY_TS_4;
-    }
-    else {
-        i18n_3 = $localize `{VAR_SELECT, select, =0 {zero
-  }}`;
-    } i18n_3 = i0.ɵɵi18nPostprocess(i18n_3, { "VAR_SELECT": "\uFFFD0\uFFFD" }); let i18n_2; if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
-        const MSG_EXTERNAL_2773178924738647105$$EXTERNAL_TEMPLATE_NON_LEGACY_TS_5 = goog.getMsg("\nSome Message\n{$icu}", { "icu": i18n_3 });
-        i18n_2 = MSG_EXTERNAL_2773178924738647105$$EXTERNAL_TEMPLATE_NON_LEGACY_TS_5;
-    }
-    else {
-        i18n_2 = $localize `
-Some Message
-${i18n_3}:ICU:`;
-    } return [["title", i18n_0], i18n_2]; }, template: function MyComponent_Template(rf, ctx) { if (rf & 1) {
-        i0.ɵɵelementStart(0, "div", 0);
-        i0.ɵɵi18n(1, 1);
-        i0.ɵɵelementEnd();
-    } if (rf & 2) {
-        i0.ɵɵadvance(1);
-        i0.ɵɵi18nExp(ctx.value);
-        i0.ɵɵi18nApply(1);
-    } }, encapsulation: 2 });
+MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: 1, type: MyComponent, selector: "my-component", ngImport: i0, template: { source: "<!-- NOTE: This template has escaped `\\r\\n` line-endings markers that will be converted to real `\\r\\n` line-ending chars when loaded from the test file-system. -->\n<div title=\"abc\r\ndef\" i18n-title i18n>\r\nSome Message\r\n{\r\n  value,\r\n  select,\r\n  =0 {\r\n    zero\r\n  }\r\n}</div>", isInline: false } });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyComponent, [{
         type: Component,
         args: [{
@@ -239,37 +169,7 @@ import * as i0 from "@angular/core";
 export class MyComponent {
 }
 MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); };
-MyComponent.ɵcmp = i0.ɵɵdefineComponent({ type: MyComponent, selectors: [["my-component"]], decls: 2, vars: 1, consts: function () { let i18n_0; if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
-        const MSG_EXTERNAL_7326958852138509669$$EXTERNAL_TEMPLATE_NON_LEGACY_TS_1 = goog.getMsg("abc\ndef");
-        i18n_0 = MSG_EXTERNAL_7326958852138509669$$EXTERNAL_TEMPLATE_NON_LEGACY_TS_1;
-    }
-    else {
-        i18n_0 = $localize `abc
-def`;
-    } let i18n_3; if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
-        const MSG_EXTERNAL_4863953183043480207$$EXTERNAL_TEMPLATE_NON_LEGACY_TS_4 = goog.getMsg("{VAR_SELECT, select, =0 {zero\n  }}");
-        i18n_3 = MSG_EXTERNAL_4863953183043480207$$EXTERNAL_TEMPLATE_NON_LEGACY_TS_4;
-    }
-    else {
-        i18n_3 = $localize `{VAR_SELECT, select, =0 {zero
-  }}`;
-    } i18n_3 = i0.ɵɵi18nPostprocess(i18n_3, { "VAR_SELECT": "\uFFFD0\uFFFD" }); let i18n_2; if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
-        const MSG_EXTERNAL_2773178924738647105$$EXTERNAL_TEMPLATE_NON_LEGACY_TS_5 = goog.getMsg("\nSome Message\n{$icu}", { "icu": i18n_3 });
-        i18n_2 = MSG_EXTERNAL_2773178924738647105$$EXTERNAL_TEMPLATE_NON_LEGACY_TS_5;
-    }
-    else {
-        i18n_2 = $localize `
-Some Message
-${i18n_3}:ICU:`;
-    } return [["title", i18n_0], i18n_2]; }, template: function MyComponent_Template(rf, ctx) { if (rf & 1) {
-        i0.ɵɵelementStart(0, "div", 0);
-        i0.ɵɵi18n(1, 1);
-        i0.ɵɵelementEnd();
-    } if (rf & 2) {
-        i0.ɵɵadvance(1);
-        i0.ɵɵi18nExp(ctx.value);
-        i0.ɵɵi18nApply(1);
-    } }, encapsulation: 2 });
+MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: 1, type: MyComponent, selector: "my-component", ngImport: i0, template: { source: "<!-- NOTE: This template has escaped `\\r\\n` line-endings markers that will be converted to real `\\r\\n` line-ending chars when loaded from the test file-system. -->\n<div title=\"abc\r\ndef\" i18n-title i18n>\r\nSome Message\r\n{\r\n  value,\r\n  select,\r\n  =0 {\r\n    zero\r\n  }\r\n}</div>", isInline: false } });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyComponent, [{
         type: Component,
         args: [{
@@ -310,37 +210,17 @@ import * as i0 from "@angular/core";
 export class MyComponent {
 }
 MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); };
-MyComponent.ɵcmp = i0.ɵɵdefineComponent({ type: MyComponent, selectors: [["my-component"]], decls: 2, vars: 1, consts: function () { let i18n_0; if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
-        const MSG_EXTERNAL_7326958852138509669$$INLINE_TEMPLATE_LEGACY_TS_1 = goog.getMsg("abc\ndef");
-        i18n_0 = MSG_EXTERNAL_7326958852138509669$$INLINE_TEMPLATE_LEGACY_TS_1;
-    }
-    else {
-        i18n_0 = $localize `:␟4f9ce2c66b187afd9898b25f6336d1eb2be8b5dc␟7326958852138509669:abc
-def`;
-    } let i18n_3; if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
-        const MSG_EXTERNAL_4863953183043480207$$INLINE_TEMPLATE_LEGACY_TS_4 = goog.getMsg("{VAR_SELECT, select, =0 {zero\n  }}");
-        i18n_3 = MSG_EXTERNAL_4863953183043480207$$INLINE_TEMPLATE_LEGACY_TS_4;
-    }
-    else {
-        i18n_3 = $localize `:␟b5fe162f4e47ab5b3e534491d30b715e0dff0f52␟4863953183043480207:{VAR_SELECT, select, =0 {zero
-  }}`;
-    } i18n_3 = i0.ɵɵi18nPostprocess(i18n_3, { "VAR_SELECT": "\uFFFD0\uFFFD" }); let i18n_2; if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
-        const MSG_EXTERNAL_2773178924738647105$$INLINE_TEMPLATE_LEGACY_TS_5 = goog.getMsg("\nSome Message\n{$icu}", { "icu": i18n_3 });
-        i18n_2 = MSG_EXTERNAL_2773178924738647105$$INLINE_TEMPLATE_LEGACY_TS_5;
-    }
-    else {
-        i18n_2 = $localize `:␟e31c7bc4db2f2e56dc40f005958055a02fd43a2e␟2773178924738647105:
+MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: 1, type: MyComponent, selector: "my-component", ngImport: i0, template: { source: `
+<div title="abc
+def" i18n-title i18n>
 Some Message
-${i18n_3}:ICU:`;
-    } return [["title", i18n_0], i18n_2]; }, template: function MyComponent_Template(rf, ctx) { if (rf & 1) {
-        i0.ɵɵelementStart(0, "div", 0);
-        i0.ɵɵi18n(1, 1);
-        i0.ɵɵelementEnd();
-    } if (rf & 2) {
-        i0.ɵɵadvance(1);
-        i0.ɵɵi18nExp(ctx.value);
-        i0.ɵɵi18nApply(1);
-    } }, encapsulation: 2 });
+{
+  value,
+  select,
+  =0 {
+    zero
+  }
+}</div>`, isInline: true } });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyComponent, [{
         type: Component,
         args: [{
@@ -391,37 +271,17 @@ import * as i0 from "@angular/core";
 export class MyComponent {
 }
 MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); };
-MyComponent.ɵcmp = i0.ɵɵdefineComponent({ type: MyComponent, selectors: [["my-component"]], decls: 2, vars: 1, consts: function () { let i18n_0; if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
-        const MSG_EXTERNAL_7326958852138509669$$INLINE_TEMPLATE_LEGACY_TS_1 = goog.getMsg("abc\ndef");
-        i18n_0 = MSG_EXTERNAL_7326958852138509669$$INLINE_TEMPLATE_LEGACY_TS_1;
-    }
-    else {
-        i18n_0 = $localize `:␟4f9ce2c66b187afd9898b25f6336d1eb2be8b5dc␟7326958852138509669:abc
-def`;
-    } let i18n_3; if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
-        const MSG_EXTERNAL_4863953183043480207$$INLINE_TEMPLATE_LEGACY_TS_4 = goog.getMsg("{VAR_SELECT, select, =0 {zero\n  }}");
-        i18n_3 = MSG_EXTERNAL_4863953183043480207$$INLINE_TEMPLATE_LEGACY_TS_4;
-    }
-    else {
-        i18n_3 = $localize `:␟b5fe162f4e47ab5b3e534491d30b715e0dff0f52␟4863953183043480207:{VAR_SELECT, select, =0 {zero
-  }}`;
-    } i18n_3 = i0.ɵɵi18nPostprocess(i18n_3, { "VAR_SELECT": "\uFFFD0\uFFFD" }); let i18n_2; if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
-        const MSG_EXTERNAL_2773178924738647105$$INLINE_TEMPLATE_LEGACY_TS_5 = goog.getMsg("\nSome Message\n{$icu}", { "icu": i18n_3 });
-        i18n_2 = MSG_EXTERNAL_2773178924738647105$$INLINE_TEMPLATE_LEGACY_TS_5;
-    }
-    else {
-        i18n_2 = $localize `:␟e31c7bc4db2f2e56dc40f005958055a02fd43a2e␟2773178924738647105:
+MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: 1, type: MyComponent, selector: "my-component", ngImport: i0, template: { source: `
+<div title="abc
+def" i18n-title i18n>
 Some Message
-${i18n_3}:ICU:`;
-    } return [["title", i18n_0], i18n_2]; }, template: function MyComponent_Template(rf, ctx) { if (rf & 1) {
-        i0.ɵɵelementStart(0, "div", 0);
-        i0.ɵɵi18n(1, 1);
-        i0.ɵɵelementEnd();
-    } if (rf & 2) {
-        i0.ɵɵadvance(1);
-        i0.ɵɵi18nExp(ctx.value);
-        i0.ɵɵi18nApply(1);
-    } }, encapsulation: 2 });
+{
+  value,
+  select,
+  =0 {
+    zero
+  }
+}</div>`, isInline: true } });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyComponent, [{
         type: Component,
         args: [{
@@ -472,37 +332,7 @@ import * as i0 from "@angular/core";
 export class MyComponent {
 }
 MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); };
-MyComponent.ɵcmp = i0.ɵɵdefineComponent({ type: MyComponent, selectors: [["my-component"]], decls: 2, vars: 1, consts: function () { let i18n_0; if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
-        const MSG_EXTERNAL_7326958852138509669$$EXTERNAL_TEMPLATE_LEGACY_NORMALIZED_TS_1 = goog.getMsg("abc\ndef");
-        i18n_0 = MSG_EXTERNAL_7326958852138509669$$EXTERNAL_TEMPLATE_LEGACY_NORMALIZED_TS_1;
-    }
-    else {
-        i18n_0 = $localize `:␟4f9ce2c66b187afd9898b25f6336d1eb2be8b5dc␟7326958852138509669:abc
-def`;
-    } let i18n_3; if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
-        const MSG_EXTERNAL_4863953183043480207$$EXTERNAL_TEMPLATE_LEGACY_NORMALIZED_TS_4 = goog.getMsg("{VAR_SELECT, select, =0 {zero\n  }}");
-        i18n_3 = MSG_EXTERNAL_4863953183043480207$$EXTERNAL_TEMPLATE_LEGACY_NORMALIZED_TS_4;
-    }
-    else {
-        i18n_3 = $localize `:␟b5fe162f4e47ab5b3e534491d30b715e0dff0f52␟4863953183043480207:{VAR_SELECT, select, =0 {zero
-  }}`;
-    } i18n_3 = i0.ɵɵi18nPostprocess(i18n_3, { "VAR_SELECT": "\uFFFD0\uFFFD" }); let i18n_2; if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
-        const MSG_EXTERNAL_2773178924738647105$$EXTERNAL_TEMPLATE_LEGACY_NORMALIZED_TS_5 = goog.getMsg("\nSome Message\n{$icu}", { "icu": i18n_3 });
-        i18n_2 = MSG_EXTERNAL_2773178924738647105$$EXTERNAL_TEMPLATE_LEGACY_NORMALIZED_TS_5;
-    }
-    else {
-        i18n_2 = $localize `:␟e31c7bc4db2f2e56dc40f005958055a02fd43a2e␟2773178924738647105:
-Some Message
-${i18n_3}:ICU:`;
-    } return [["title", i18n_0], i18n_2]; }, template: function MyComponent_Template(rf, ctx) { if (rf & 1) {
-        i0.ɵɵelementStart(0, "div", 0);
-        i0.ɵɵi18n(1, 1);
-        i0.ɵɵelementEnd();
-    } if (rf & 2) {
-        i0.ɵɵadvance(1);
-        i0.ɵɵi18nExp(ctx.value);
-        i0.ɵɵi18nApply(1);
-    } }, encapsulation: 2 });
+MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: 1, type: MyComponent, selector: "my-component", ngImport: i0, template: { source: "<!-- NOTE: This template has escaped `\\r\\n` line-endings markers that will be converted to real `\\r\\n` line-ending chars when loaded from the test file-system. -->\n<div title=\"abc\r\ndef\" i18n-title i18n>\r\nSome Message\r\n{\r\n  value,\r\n  select,\r\n  =0 {\r\n    zero\r\n  }\r\n}</div>", isInline: false } });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyComponent, [{
         type: Component,
         args: [{
@@ -543,37 +373,7 @@ import * as i0 from "@angular/core";
 export class MyComponent {
 }
 MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); };
-MyComponent.ɵcmp = i0.ɵɵdefineComponent({ type: MyComponent, selectors: [["my-component"]], decls: 2, vars: 1, consts: function () { let i18n_0; if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
-        const MSG_EXTERNAL_7326958852138509669$$EXTERNAL_TEMPLATE_LEGACY_TS_1 = goog.getMsg("abc\ndef");
-        i18n_0 = MSG_EXTERNAL_7326958852138509669$$EXTERNAL_TEMPLATE_LEGACY_TS_1;
-    }
-    else {
-        i18n_0 = $localize `:␟4f9ce2c66b187afd9898b25f6336d1eb2be8b5dc␟7326958852138509669:abc
-def`;
-    } let i18n_3; if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
-        const MSG_EXTERNAL_4863953183043480207$$EXTERNAL_TEMPLATE_LEGACY_TS_4 = goog.getMsg("{VAR_SELECT, select, =0 {zero\n  }}");
-        i18n_3 = MSG_EXTERNAL_4863953183043480207$$EXTERNAL_TEMPLATE_LEGACY_TS_4;
-    }
-    else {
-        i18n_3 = $localize `:␟70a685282be2d956e4db234fa3d985970672faa0␟4863953183043480207:{VAR_SELECT, select, =0 {zero
-  }}`;
-    } i18n_3 = i0.ɵɵi18nPostprocess(i18n_3, { "VAR_SELECT": "\uFFFD0\uFFFD" }); let i18n_2; if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
-        const MSG_EXTERNAL_2773178924738647105$$EXTERNAL_TEMPLATE_LEGACY_TS_5 = goog.getMsg("\nSome Message\n{$icu}", { "icu": i18n_3 });
-        i18n_2 = MSG_EXTERNAL_2773178924738647105$$EXTERNAL_TEMPLATE_LEGACY_TS_5;
-    }
-    else {
-        i18n_2 = $localize `:␟6a55b51b9bcf8f84b1b868c585ae09949668a72b␟2773178924738647105:
-Some Message
-${i18n_3}:ICU:`;
-    } return [["title", i18n_0], i18n_2]; }, template: function MyComponent_Template(rf, ctx) { if (rf & 1) {
-        i0.ɵɵelementStart(0, "div", 0);
-        i0.ɵɵi18n(1, 1);
-        i0.ɵɵelementEnd();
-    } if (rf & 2) {
-        i0.ɵɵadvance(1);
-        i0.ɵɵi18nExp(ctx.value);
-        i0.ɵɵi18nApply(1);
-    } }, encapsulation: 2 });
+MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: 1, type: MyComponent, selector: "my-component", ngImport: i0, template: { source: "<!-- NOTE: This template has escaped `\\r\\n` line-endings markers that will be converted to real `\\r\\n` line-ending chars when loaded from the test file-system. -->\n<div title=\"abc\r\ndef\" i18n-title i18n>\r\nSome Message\r\n{\r\n  value,\r\n  select,\r\n  =0 {\r\n    zero\r\n  }\r\n}</div>", isInline: false } });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyComponent, [{
         type: Component,
         args: [{

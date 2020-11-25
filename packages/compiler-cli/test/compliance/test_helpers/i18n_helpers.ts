@@ -125,7 +125,7 @@ function i18nMsgLocalizeMeta(meta?: Meta): string {
  * Wrap a string into quotes if needed.
  *
  * Note: if `value` starts with `$` it is a special case in tests when ICU reference is used as a
- * placeholder value. This we should not wrap it in quotes.
+ * placeholder value. Such special cases should not be wrapped in quotes.
  */
 function quotedValue(value: string): string {
   return value.startsWith('$') ? value : `"${value}"`;

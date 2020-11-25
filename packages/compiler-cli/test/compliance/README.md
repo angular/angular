@@ -183,6 +183,18 @@ To debug generating the partial golden output use the following form of Bazel co
 yarn bazel run //packages/compiler-cli/test/compliance/test_cases:generate_partial_for_<path/to/test_case>.debug
 ```
 
+The `path/to/test_case` is relative to the `test_cases` directory. So for this `TEST_CASES.json` file at:
+
+```
+packages/compiler-cli/test/compliance/test_cases/r3_view_compiler_directives/directives/matching/TEST_CASES.json
+```
+
+The command to debug the test-cases would be:
+
+```
+yarn bazel run //packages/compiler-cli/test/compliance/test_cases:generate_partial_for_r3_view_compiler_directives/directives/matching.debug
+```
+
 
 ### Focusing test-cases
 

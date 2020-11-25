@@ -20,12 +20,14 @@ import {checkErrors} from './check_errors';
 export function runTests(
     type: 'partial compile + link'|'full compile',
     compileFn: (fs: FileSystem, test: ComplianceTest) => CompileResult) {
+  const isPartial = type === 'partial compile + link';
+
   describe(`compliance tests (${type})`, () => {
     for (const test of getAllComplianceTests()) {
-      const isPartial = type === 'partial compile + link';
       if (isPartial && test.excludeFromPartialTests) {
         continue;
       }
+
       describe(`[${test.relativePath}]`, () => {
         const itFn = test.focusTest ? fit : test.excludeTest ? xit : it;
         itFn(test.description, () => {
