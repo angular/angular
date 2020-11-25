@@ -91,7 +91,7 @@ describe('type check blocks diagnostics', () => {
       const TEMPLATE = `<div (click)='a.b.c = d'></div>`;
       expect(tcbWithSpans(TEMPLATE))
           .toContain(
-              '(((((((ctx).a /*14,15*/) /*14,15*/).b /*16,17*/) /*14,17*/).c /*18,19*/) /*14,23*/ = ((ctx).d /*22,23*/) /*22,23*/) /*14,23*/');
+              '(((((((ctx).a /*14,15*/) /*14,15*/).b /*16,17*/) /*14,17*/).c /*18,19*/) /*14,23*/ = (((ctx).d /*22,23*/) /*22,23*/)) /*14,23*/');
     });
 
     it('should $event property writes', () => {
@@ -110,7 +110,7 @@ describe('type check blocks diagnostics', () => {
       const TEMPLATE = `<div (click)="a[b] = c"></div>`;
       expect(tcbWithSpans(TEMPLATE))
           .toContain(
-              '((((ctx).a /*14,15*/) /*14,15*/)[((ctx).b /*16,17*/) /*16,17*/] = ((ctx).c /*21,22*/) /*21,22*/) /*14,22*/');
+              '((((ctx).a /*14,15*/) /*14,15*/)[((ctx).b /*16,17*/) /*16,17*/] = (((ctx).c /*21,22*/) /*21,22*/)) /*14,22*/');
     });
 
     it('should annotate safe property access', () => {
