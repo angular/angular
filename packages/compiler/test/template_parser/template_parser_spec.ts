@@ -546,11 +546,23 @@ describe('TemplateParser', () => {
 
     it('should parse bound text nodes with interpolations inside quotes', () => {
       expect(humanizeTplAst(parse('{{ "{{a}}" }}', []))).toEqual([[BoundTextAst, '{{ "{{a}}" }}']]);
+      expect(humanizeTplAst(parse('{{"{{"}}', []))).toEqual([[BoundTextAst, '{{ "{{" }}']]);
+      expect(humanizeTplAst(parse('{{"}}"}}', []))).toEqual([[BoundTextAst, '{{ "}}" }}']]);
+      expect(humanizeTplAst(parse('{{"{"}}', []))).toEqual([[BoundTextAst, '{{ "{" }}']]);
+      expect(humanizeTplAst(parse('{{"}"}}', []))).toEqual([[BoundTextAst, '{{ "}" }}']]);
     });
 
     it('should parse bound text nodes with escaped quotes', () => {
       expect(humanizeTplAst(parse(`{{'It\\'s just Angular'}}`, []))).toEqual([
         [BoundTextAst, `{{ "It's just Angular" }}`]
+      ]);
+
+      expect(humanizeTplAst(parse(`{{'It\\'s {{ just Angular'}}`, []))).toEqual([
+        [BoundTextAst, `{{ "It's {{ just Angular" }}`]
+      ]);
+
+      expect(humanizeTplAst(parse(`{{'It\\'s }} just Angular'}}`, []))).toEqual([
+        [BoundTextAst, `{{ "It's }} just Angular" }}`]
       ]);
     });
 

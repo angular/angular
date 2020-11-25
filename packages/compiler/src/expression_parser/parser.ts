@@ -348,13 +348,11 @@ export class Parser {
     for (let i = start; i < input.length; i++) {
       const char = input[i];
       // Skip the characters inside quotes. Note that we only care about the
-      // outer-most  quotes matching up and we need to account for escape characters.
+      // outer-most quotes matching up and we need to account for escape characters.
       if (isQuote(input.charCodeAt(i)) && (currentQuote === null || currentQuote === char) &&
           input[i - 1] !== '\\') {
         currentQuote = currentQuote === null ? char : null;
-      } else if (
-          currentQuote === null && char === value[0] &&
-          (valueLength === 0 || input.substring(i, i + valueLength) === value)) {
+      } else if (currentQuote === null && char === value[0] && input.startsWith(value, i)) {
         return i;
       }
     }
