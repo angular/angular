@@ -364,6 +364,30 @@ runInEachFileSystem(os => {
       expect(jsContents).toContain('Hello World');
     });
 
+    it('should not report that broken components in modules are not components', () => {
+      env.write('test.ts', `
+        import {Component, NgModule} from '@angular/core';
+
+        @Component({
+          selector: 'broken-cmp',
+          template: '{{ broken = "true" }}', // assignment not legal in this context
+        })
+        export class BrokenCmp {}
+
+        @NgModule({
+          declarations: [BrokenCmp],
+        })
+        export class Module {
+          broken = "false";
+        }
+      `);
+
+      const diags = env.driveDiagnostics();
+      if (diags.some(diag => diag.code === ngErrorCode(ErrorCode.NGMODULE_INVALID_DECLARATION))) {
+        fail('Should not produce a diagnostic that BrokenCmp is not a component');
+      }
+    });
+
     // This test triggers the Tsickle compiler which asserts that the file-paths
     // are valid for the real OS. When on non-Windows systems it doesn't like paths
     // that start with `C:`.

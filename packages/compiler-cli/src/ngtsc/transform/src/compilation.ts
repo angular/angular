@@ -181,15 +181,13 @@ export class TraitCompiler implements ProgramTypeCheckAdapter {
       const handler = this.handlersByName.get(priorTrait.handler.name)!;
       let trait: Trait<unknown, unknown, unknown> = Trait.pending(handler, priorTrait.detected);
 
-      if (priorTrait.state === TraitState.ANALYZED || priorTrait.state === TraitState.RESOLVED) {
-        trait = trait.toAnalyzed(priorTrait.analysis);
-        if (trait.handler.register !== undefined) {
+      if (priorTrait.state === TraitState.Analyzed || priorTrait.state === TraitState.Resolved) {
+        trait = trait.toAnalyzed(priorTrait.analysis, priorTrait.analysisDiagnostics);
+        if (trait.analysis !== null && trait.handler.register !== undefined) {
           trait.handler.register(record.node, trait.analysis);
         }
-      } else if (priorTrait.state === TraitState.SKIPPED) {
+      } else if (priorTrait.state === TraitState.Skipped) {
         trait = trait.toSkipped();
-      } else if (priorTrait.state === TraitState.ERRORED) {
-        trait = trait.toErrored(priorTrait.diagnostics);
       }
 
       record.traits.push(trait);
@@ -314,7 +312,7 @@ export class TraitCompiler implements ProgramTypeCheckAdapter {
           preanalysis = trait.handler.preanalyze(clazz, trait.detected.metadata) || null;
         } catch (err) {
           if (err instanceof FatalDiagnosticError) {
-            trait.toErrored([err.toDiagnostic()]);
+            trait.toAnalyzed(null, [err.toDiagnostic()]);
             return;
           } else {
             throw err;
@@ -332,7 +330,7 @@ export class TraitCompiler implements ProgramTypeCheckAdapter {
   protected analyzeTrait(
       clazz: ClassDeclaration, trait: Trait<unknown, unknown, unknown>,
       flags?: HandlerFlags): void {
-    if (trait.state !== TraitState.PENDING) {
+    if (trait.state !== TraitState.Pending) {
       throw new Error(`Attempt to analyze trait of ${clazz.name.text} in state ${
           TraitState[trait.state]} (expected DETECTED)`);
     }
@@ -343,26 +341,18 @@ export class TraitCompiler implements ProgramTypeCheckAdapter {
       result = trait.handler.analyze(clazz, trait.detected.metadata, flags);
     } catch (err) {
       if (err instanceof FatalDiagnosticError) {
-        trait = trait.toErrored([err.toDiagnostic()]);
+        trait.toAnalyzed(null, [err.toDiagnostic()]);
         return;
       } else {
         throw err;
       }
     }
 
-    if (result.diagnostics !== undefined) {
-      trait = trait.toErrored(result.diagnostics);
-    } else if (result.analysis !== undefined) {
-      // Analysis was successful. Trigger registration.
-      if (trait.handler.register !== undefined) {
-        trait.handler.register(clazz, result.analysis);
-      }
-
-      // Successfully analyzed and registered.
-      trait = trait.toAnalyzed(result.analysis);
-    } else {
-      trait = trait.toSkipped();
+    if (result.analysis !== undefined && trait.handler.register !== undefined) {
+      trait.handler.register(clazz, result.analysis);
     }
+
+    trait = trait.toAnalyzed(result.analysis ?? null, result.diagnostics ?? null);
   }
 
   resolve(): void {
@@ -372,19 +362,23 @@ export class TraitCompiler implements ProgramTypeCheckAdapter {
       for (let trait of record.traits) {
         const handler = trait.handler;
         switch (trait.state) {
-          case TraitState.SKIPPED:
-          case TraitState.ERRORED:
+          case TraitState.Skipped:
             continue;
-          case TraitState.PENDING:
+          case TraitState.Pending:
             throw new Error(`Resolving a trait that hasn't been analyzed: ${clazz.name.text} / ${
                 Object.getPrototypeOf(trait.handler).constructor.name}`);
-          case TraitState.RESOLVED:
+          case TraitState.Resolved:
             throw new Error(`Resolving an already resolved trait`);
+        }
+
+        if (trait.analysis === null) {
+          // No analysis results, cannot further process this trait.
+          continue;
         }
 
         if (handler.resolve === undefined) {
           // No resolution of this trait needed - it's considered successful by default.
-          trait = trait.toResolved(null);
+          trait = trait.toResolved(null, null);
           continue;
         }
 
@@ -393,22 +387,14 @@ export class TraitCompiler implements ProgramTypeCheckAdapter {
           result = handler.resolve(clazz, trait.analysis as Readonly<unknown>);
         } catch (err) {
           if (err instanceof FatalDiagnosticError) {
-            trait = trait.toErrored([err.toDiagnostic()]);
+            trait = trait.toResolved(null, [err.toDiagnostic()]);
             continue;
           } else {
             throw err;
           }
         }
 
-        if (result.diagnostics !== undefined && result.diagnostics.length > 0) {
-          trait = trait.toErrored(result.diagnostics);
-        } else {
-          if (result.data !== undefined) {
-            trait = trait.toResolved(result.data);
-          } else {
-            trait = trait.toResolved(null);
-          }
-        }
+        trait = trait.toResolved(result.data ?? null, result.diagnostics ?? null);
 
         if (result.reexports !== undefined) {
           const fileName = clazz.getSourceFile().fileName;
@@ -436,12 +422,14 @@ export class TraitCompiler implements ProgramTypeCheckAdapter {
     for (const clazz of this.fileToClasses.get(sf)!) {
       const record = this.classes.get(clazz)!;
       for (const trait of record.traits) {
-        if (trait.state !== TraitState.RESOLVED) {
+        if (trait.state !== TraitState.Resolved) {
           continue;
         } else if (trait.handler.typeCheck === undefined) {
           continue;
         }
-        trait.handler.typeCheck(ctx, clazz, trait.analysis, trait.resolution);
+        if (trait.resolution !== null) {
+          trait.handler.typeCheck(ctx, clazz, trait.analysis, trait.resolution);
+        }
       }
     }
   }
@@ -450,7 +438,7 @@ export class TraitCompiler implements ProgramTypeCheckAdapter {
     for (const clazz of this.classes.keys()) {
       const record = this.classes.get(clazz)!;
       for (const trait of record.traits) {
-        if (trait.state !== TraitState.RESOLVED) {
+        if (trait.state !== TraitState.Resolved) {
           // Skip traits that haven't been resolved successfully.
           continue;
         } else if (trait.handler.index === undefined) {
@@ -458,7 +446,9 @@ export class TraitCompiler implements ProgramTypeCheckAdapter {
           continue;
         }
 
-        trait.handler.index(ctx, clazz, trait.analysis, trait.resolution);
+        if (trait.resolution !== null) {
+          trait.handler.index(ctx, clazz, trait.analysis, trait.resolution);
+        }
       }
     }
   }
@@ -475,19 +465,26 @@ export class TraitCompiler implements ProgramTypeCheckAdapter {
     let res: CompileResult[] = [];
 
     for (const trait of record.traits) {
-      if (trait.state !== TraitState.RESOLVED) {
+      if (trait.state !== TraitState.Resolved || trait.analysisDiagnostics !== null ||
+          trait.resolveDiagnostics !== null) {
+        // Cannot compile a trait that is not resolved, or had any errors in its declaration.
         continue;
       }
 
       const compileSpan = this.perf.start('compileClass', original);
 
+
+      // `trait.resolution` is non-null asserted here because TypeScript does not recognize that
+      // `Readonly<unknown>` is nullable (as `unknown` itself is nullable) due to the way that
+      // `Readonly` works.
+
       let compileRes: CompileResult|CompileResult[];
       if (this.compilationMode === CompilationMode.PARTIAL &&
           trait.handler.compilePartial !== undefined) {
-        compileRes = trait.handler.compilePartial(clazz, trait.analysis, trait.resolution);
+        compileRes = trait.handler.compilePartial(clazz, trait.analysis, trait.resolution!);
       } else {
         compileRes =
-            trait.handler.compileFull(clazz, trait.analysis, trait.resolution, constantPool);
+            trait.handler.compileFull(clazz, trait.analysis, trait.resolution!, constantPool);
       }
 
       const compileMatchRes = compileRes;
@@ -522,7 +519,7 @@ export class TraitCompiler implements ProgramTypeCheckAdapter {
     const decorators: ts.Decorator[] = [];
 
     for (const trait of record.traits) {
-      if (trait.state !== TraitState.RESOLVED) {
+      if (trait.state !== TraitState.Resolved) {
         continue;
       }
 
@@ -542,8 +539,12 @@ export class TraitCompiler implements ProgramTypeCheckAdapter {
         diagnostics.push(...record.metaDiagnostics);
       }
       for (const trait of record.traits) {
-        if (trait.state === TraitState.ERRORED) {
-          diagnostics.push(...trait.diagnostics);
+        if ((trait.state === TraitState.Analyzed || trait.state === TraitState.Resolved) &&
+            trait.analysisDiagnostics !== null) {
+          diagnostics.push(...trait.analysisDiagnostics);
+        }
+        if (trait.state === TraitState.Resolved && trait.resolveDiagnostics !== null) {
+          diagnostics.push(...trait.resolveDiagnostics);
         }
       }
     }
