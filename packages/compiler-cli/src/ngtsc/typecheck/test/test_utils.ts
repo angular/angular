@@ -435,6 +435,7 @@ export function setup(targets: TypeCheckingTarget[], overrides: {
                 directives: [],
                 ngModules: [],
                 pipes: [],
+                isPoisoned: false,
               };
               return {
                 ngModule,
@@ -532,6 +533,7 @@ function makeScope(program: ts.Program, sf: ts.SourceFile, decls: TestDeclaratio
     ngModules: [],
     directives: [],
     pipes: [],
+    isPoisoned: false,
   };
 
   for (const decl of decls) {
@@ -561,6 +563,7 @@ function makeScope(program: ts.Program, sf: ts.SourceFile, decls: TestDeclaratio
         stringLiteralInputFields: new Set(decl.stringLiteralInputFields ?? []),
         undeclaredInputFields: new Set(decl.undeclaredInputFields ?? []),
         isGeneric: decl.isGeneric ?? false,
+        isPoisoned: false,
       });
     } else if (decl.type === 'pipe') {
       scope.pipes.push({

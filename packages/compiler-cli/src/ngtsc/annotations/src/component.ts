@@ -70,6 +70,8 @@ export interface ComponentAnalysisData {
    * require an Angular factory definition at runtime.
    */
   viewProvidersRequiringFactory: Set<Reference<ClassDeclaration>>|null;
+
+  isPoisoned: boolean;
 }
 
 export type ComponentResolutionData = Pick<R3ComponentMetadata, ComponentMetadataResolvedFields>;
@@ -86,7 +88,7 @@ export class ComponentDecoratorHandler implements
       private templateMapping: TemplateMapping, private isCore: boolean,
       private resourceLoader: ResourceLoader, private rootDirs: ReadonlyArray<string>,
       private defaultPreserveWhitespaces: boolean, private i18nUseExternalIds: boolean,
-      private enableI18nLegacyMessageIdFormat: boolean,
+      private enableI18nLegacyMessageIdFormat: boolean, private usePoisonedData: boolean,
       private i18nNormalizeLineEndingsInICUs: boolean|undefined,
       private moduleResolver: ModuleResolver, private cycleAnalyzer: CycleAnalyzer,
       private refEmitter: ReferenceEmitter, private defaultImportRecorder: DefaultImportRecorder,
@@ -359,6 +361,7 @@ export class ComponentDecoratorHandler implements
         template,
         providersRequiringFactory,
         viewProvidersRequiringFactory,
+        isPoisoned: diagnostics !== undefined && diagnostics.length > 0,
       },
       diagnostics,
     };
@@ -383,6 +386,7 @@ export class ComponentDecoratorHandler implements
       isComponent: true,
       baseClass: analysis.baseClass,
       ...analysis.typeCheckMeta,
+      isPoisoned: analysis.isPoisoned,
     });
 
     if (!analysis.template.isInline) {
@@ -394,15 +398,19 @@ export class ComponentDecoratorHandler implements
 
   index(
       context: IndexingContext, node: ClassDeclaration, analysis: Readonly<ComponentAnalysisData>) {
+    if (analysis.isPoisoned && !this.usePoisonedData) {
+      return null;
+    }
     const scope = this.scopeReader.getScopeForComponent(node);
     const selector = analysis.meta.selector;
     const matcher = new SelectorMatcher<DirectiveMeta>();
-    if (scope === 'error') {
-      // Don't bother indexing components which had erroneous scopes.
-      return null;
-    }
-
     if (scope !== null) {
+      if ((scope.compilation.isPoisoned || scope.exported.isPoisoned) && !this.usePoisonedData) {
+        // Don't bother indexing components which had erroneous scopes, unless specifically
+        // requested.
+        return null;
+      }
+
       for (const directive of scope.compilation.directives) {
         if (directive.selector !== null) {
           matcher.addSelectables(CssSelector.parse(directive.selector), directive);
@@ -429,9 +437,13 @@ export class ComponentDecoratorHandler implements
       return;
     }
 
+    if (meta.isPoisoned && !this.usePoisonedData) {
+      return;
+    }
+
     const scope = this.typeCheckScopes.getTypeCheckScope(node);
-    if (scope === 'error') {
-      // Don't type-check components that had errors in their scopes.
+    if (scope.isPoisoned && !this.usePoisonedData) {
+      // Don't type-check components that had errors in their scopes, unless requested.
       return;
     }
 
@@ -443,6 +455,10 @@ export class ComponentDecoratorHandler implements
 
   resolve(node: ClassDeclaration, analysis: Readonly<ComponentAnalysisData>):
       ResolveResult<ComponentResolutionData> {
+    if (analysis.isPoisoned && !this.usePoisonedData) {
+      return {};
+    }
+
     const context = node.getSourceFile();
     // Check whether this component was registered with an NgModule. If so, it should be compiled
     // under that module's compilation scope.
@@ -455,7 +471,7 @@ export class ComponentDecoratorHandler implements
       wrapDirectivesAndPipesInClosure: false,
     };
 
-    if (scope !== null && scope !== 'error') {
+    if (scope !== null && (!scope.compilation.isPoisoned || this.usePoisonedData)) {
       // Replace the empty components and directives from the analyze() step with a fully expanded
       // scope. This is possible now because during resolve() the whole compilation unit has been
       // fully analyzed.

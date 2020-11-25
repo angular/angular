@@ -73,6 +73,7 @@ runInEachFileSystem(() => {
           /* isCore */ false, new NoopResourceLoader(), /* rootDirs */[''],
           /* defaultPreserveWhitespaces */ false, /* i18nUseExternalIds */ true,
           /* enableI18nLegacyMessageIdFormat */ false,
+          /* usePoisonedData */ false,
           /* i18nNormalizeLineEndingsInICUs */ undefined, moduleResolver, cycleAnalyzer, refEmitter,
           NOOP_DEFAULT_IMPORT_RECORDER, /* depTracker */ null, injectableRegistry,
           /* annotateForClosureCompiler */ false);

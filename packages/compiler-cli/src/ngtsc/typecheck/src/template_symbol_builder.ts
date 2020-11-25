@@ -159,7 +159,7 @@ export class SymbolBuilder {
 
   private getDirectiveModule(declaration: ts.ClassDeclaration): ClassDeclaration|null {
     const scope = this.componentScopeReader.getScopeForComponent(declaration as ClassDeclaration);
-    if (scope === null || scope === 'error') {
+    if (scope === null) {
       return null;
     }
     return scope.ngModule;
