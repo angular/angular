@@ -79,7 +79,7 @@ runInEachFileSystem(() => {
         handler.analyze.and.callFake((decl: DeclarationNode, dec: Decorator) => {
           logs.push(`analyze: ${(decl as any).name.text}@${dec.name}`);
           return {
-            analysis: {decoratorName: dec.name},
+            analysis: !options.analyzeError ? {decoratorName: dec.name} : undefined,
             diagnostics: options.analyzeError ? [makeDiagnostic(9999, decl, 'analyze diagnostic')] :
                                                 undefined
           };
@@ -407,7 +407,7 @@ runInEachFileSystem(() => {
                 `,
                 },
               ],
-              {analyzeError: true, resolveError: true});
+              {analyzeError: true, resolveError: false});
           analyzer.analyzeProgram();
           expect(diagnosticLogs.length).toEqual(1);
           expect(diagnosticLogs[0]).toEqual(jasmine.objectContaining({code: -999999}));
