@@ -8,8 +8,8 @@
 
 
 import {CommonModule} from '@angular/common';
-import {ApplicationRef, ChangeDetectionStrategy, ChangeDetectorRef, Component, ComponentFactoryResolver, ComponentRef, Directive, DoCheck, EmbeddedViewRef, ErrorHandler, Input, NgModule, OnInit, QueryList, TemplateRef, Type, ViewChild, ViewChildren, ViewContainerRef} from '@angular/core';
-import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {ApplicationRef, ChangeDetectionStrategy, ChangeDetectorRef, Component, ComponentFactoryResolver, ComponentRef, Directive, DoCheck, EmbeddedViewRef, ErrorHandler, EventEmitter, Input, NgModule, OnInit, Output, QueryList, TemplateRef, Type, ViewChild, ViewChildren, ViewContainerRef} from '@angular/core';
+import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {ivyEnabled} from '@angular/private/testing';
 import {BehaviorSubject} from 'rxjs';
@@ -461,6 +461,41 @@ describe('change detection', () => {
       expect(comp.doCheckCount).toEqual(2);
       expect(fixture.nativeElement.textContent.trim()).toEqual('3 - 2 - Nancy');
     });
+
+    it('should check parent OnPush components when child directive on a template emits event',
+       fakeAsync(() => {
+         @Directive({
+           selector: '[emitter]',
+         })
+         class Emitter {
+           @Output() event = new EventEmitter<string>();
+
+           ngOnInit() {
+             setTimeout(() => {
+               this.event.emit('new message');
+             });
+           }
+         }
+
+
+         @Component({
+           selector: 'my-app',
+           template: '{{message}} <ng-template emitter (event)="message = $event"></ng-template>',
+           changeDetection: ChangeDetectionStrategy.OnPush
+         })
+         class MyApp {
+           message = 'initial message';
+         }
+
+         const fixture = TestBed.configureTestingModule({declarations: [MyApp, Emitter]})
+                             .createComponent(MyApp);
+         fixture.detectChanges();
+
+         expect(fixture.nativeElement.textContent.trim()).toEqual('initial message');
+         tick();
+         fixture.detectChanges();
+         expect(fixture.nativeElement.textContent.trim()).toEqual('new message');
+       }));
   });
 
   describe('ChangeDetectorRef', () => {

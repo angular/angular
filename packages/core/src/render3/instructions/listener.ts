@@ -193,6 +193,10 @@ function listenerInternal(
       lCleanup.push(listenerFn);
       tCleanup && tCleanup.push(eventName, idxOrTargetGetter, lCleanupIndex, useCapture);
     }
+  } else {
+    // Even if there is no native listener to add, we still need to wrap the listener so that OnPush
+    // ancestors are marked dirty when an event occurs.
+    listenerFn = wrapListener(tNode, lView, listenerFn, false /** preventDefault */);
   }
 
   // subscribe to directive outputs
