@@ -1,5 +1,4 @@
 @import '../core/theming/theming';
-@import '../core/theming/private';
 
 @mixin mat-icon-color($config-or-theme) {
   $config: mat-get-color-config($config-or-theme);

@@ -1,3 +1,4 @@
+@use '@material/density';
 @import '@material/menu-surface/mixins.import';
 @import '@material/list/mixins.import';
 @import '@material/list/variables.import';
@@ -29,7 +30,7 @@
 }
 
 .mat-mdc-menu-item {
-  $height: mdc-density-prop-value(
+  $height: density.prop-value(
     $density-config: $mdc-list-single-line-density-config,
     $density-scale: $mdc-list-single-line-density-scale,
     $property-name: height,

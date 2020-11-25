@@ -1,5 +1,6 @@
-@import '@material/density/functions.import';
+@use '@material/density';
 @import '@material/textfield/variables.import';
+@import '../../material/core/theming/theming';
 @import 'form-field-sizing';
 
 // Mixin that sets the vertical spacing for the infix container of filled form fields.
@@ -38,7 +39,7 @@
 @mixin mat-mdc-private-form-field-density($config-or-theme) {
   $density-scale: mat-get-density-config($config-or-theme);
   // Height of the form field that is based on the current density scale.
-  $height: mdc-density-prop-value(
+  $height: density.prop-value(
     $density-config: $mdc-text-field-density-config,
     $density-scale: $density-scale,
     $property-name: height,

@@ -1,7 +1,8 @@
 @import '@material/theme/variables.import';
-@import '@material/typography/variables.import';
-@import '../../material/core/theming/private';
+@import '@material/typography/mixins.import';
+@import '../../material/core/theming/theming';
 @import '../../material/core/density/private/compatibility';
+@import '../mdc-helpers/mdc-helpers';
 @import './paginator-variables';
 
 @mixin mat-mdc-paginator-color($config-or-theme) {

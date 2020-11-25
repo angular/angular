@@ -1,5 +1,4 @@
 @import '../core/theming/theming';
-@import '../core/theming/private';
 
 @mixin mat-sort-color($config-or-theme) {
   $config: mat-get-color-config($config-or-theme);

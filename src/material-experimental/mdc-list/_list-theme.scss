@@ -1,4 +1,4 @@
-@import '@material/density/functions.import';
+@use '@material/density';
 @import '@material/list/variables.import';
 @import '@material/list/mixins.import';
 
@@ -34,7 +34,7 @@
 
 @mixin mat-mdc-list-density($config-or-theme) {
   $density-scale: mat-get-density-config($config-or-theme);
-  $height: mdc-density-prop-value(
+  $height: density.prop-value(
     $density-config: $mdc-list-single-line-density-config,
     $density-scale: $density-scale,
     $property-name: height,

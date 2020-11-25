@@ -34,7 +34,7 @@
 @import '../../tree/tree-theme';
 @import '../../snack-bar/snack-bar-theme';
 @import '../../form-field/form-field-theme';
-@import './private';
+@import './theming';
 
 // Create a theme.
 @mixin angular-material-theme($theme-or-color-config) {

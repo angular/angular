@@ -1,6 +1,5 @@
 @import '../core/theming/palette';
 @import '../core/theming/theming';
-@import '../core/theming/private';
 @import '../core/style/form-common';
 @import '../core/typography/typography-utils';
 
@@ -238,7 +237,7 @@ $mat-form-field-dedupe: 0;
   @include mat-form-field-outline-typography($config);
 }
 
-@mixin _mat-form-field-density($config-or-theme) {
+@mixin mat-form-field-density($config-or-theme) {
   $density-scale: mat-get-density-config($config-or-theme);
   @include mat-private-form-field-legacy-density($density-scale);
   @include mat-private-form-field-standard-density($density-scale);
@@ -257,7 +256,7 @@ $mat-form-field-dedupe: 0;
       @include mat-form-field-color($color);
     }
     @if $density != null {
-      @include _mat-form-field-density($density);
+      @include mat-form-field-density($density);
     }
     @if $typography != null {
       @include mat-form-field-typography($typography);

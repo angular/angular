@@ -1,4 +1,11 @@
-@import '../../theming/private';
+@import '../../theming/theming';
+@import '../../../expansion/expansion-theme';
+@import '../../../stepper/stepper-theme';
+@import '../../../toolbar/toolbar-theme';
+@import '../../../tree/tree-theme';
+@import '../../../paginator/paginator-theme';
+@import '../../../form-field/form-field-theme';
+@import '../../../button-toggle/button-toggle-theme';
 
 // Includes all of the density styles.
 @mixin angular-material-density($config-or-theme) {
@@ -11,9 +18,17 @@
     @error 'No density configuration specified.';
   }
 
-  @include angular-material-theme((
-    color: null,
-    typography: null,
-    density: $config,
-  ));
+  // TODO: COMP-309: Do not use individual mixins. Instead, use the all-theme mixin and only
+  // specify a `density` config while setting `color` and `typography` to `null`. This is currently
+  // not possible as it would introduce a circular dependency for density because the `mat-core`
+  // mixin that is transitively loaded by the `all-theme` file, imports `all-density` which
+  // would then load `all-theme` again. This ultimately results a circular dependency.
+
+  @include mat-expansion-panel-density($config);
+  @include mat-stepper-density($config);
+  @include mat-toolbar-density($config);
+  @include mat-tree-density($config);
+  @include mat-paginator-density($config);
+  @include mat-form-field-density($config);
+  @include mat-button-toggle-density($config);
 }

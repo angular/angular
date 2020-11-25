@@ -1,8 +1,9 @@
 @import '@material/list/mixins.import';
 @import '@material/list/variables.import';
 @import '@material/theme/functions.import';
+@import '@material/theme/mixins.import';
 @import '../../mdc-helpers/mdc-helpers';
-@import '../../../material/core/theming/private';
+@import '../../../material/core/theming/theming';
 
 @mixin mat-mdc-optgroup-color($config-or-theme) {
   $config: mat-get-color-config($config-or-theme);

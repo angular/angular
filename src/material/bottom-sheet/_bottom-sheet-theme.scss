@@ -2,7 +2,6 @@
 @import '../core/typography/typography-utils';
 @import '../core/theming/palette';
 @import '../core/theming/theming';
-@import '../core/theming/private';
 
 @mixin mat-bottom-sheet-color($config-or-theme) {
   $config: mat-get-color-config($config-or-theme);

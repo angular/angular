@@ -1,6 +1,5 @@
 @import '../core/theming/palette';
 @import '../core/theming/theming';
-@import '../core/theming/private';
 @import '../core/typography/typography-utils';
 @import '../core/density/private/compatibility';
 @import './paginator-variables';
@@ -51,7 +50,7 @@
   }
 }
 
-@mixin _mat-paginator-density($config-or-theme) {
+@mixin mat-paginator-density($config-or-theme) {
   $density-scale: mat-get-density-config($config-or-theme);
   $height: mat-private-density-prop-value($mat-paginator-density-config, $density-scale, height);
 
@@ -73,7 +72,7 @@
       @include mat-paginator-color($color);
     }
     @if $density != null {
-      @include _mat-paginator-density($density);
+      @include mat-paginator-density($density);
     }
     @if $typography != null {
       @include mat-paginator-typography($typography);

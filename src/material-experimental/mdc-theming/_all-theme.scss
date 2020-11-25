@@ -19,7 +19,7 @@
 @import '../mdc-input/input-theme';
 @import '../mdc-form-field/form-field-theme';
 @import '../../material/core/core';
-@import '../../material/core/theming/private';
+@import '../../material/core/theming/theming';
 
 @mixin angular-material-mdc-theme($theme-or-color-config) {
   $dedupe-key: 'angular-material-mdc-theme';

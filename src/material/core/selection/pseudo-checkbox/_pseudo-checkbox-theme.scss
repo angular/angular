@@ -1,5 +1,4 @@
 @import '../../theming/theming';
-@import '../../theming/private';
 
 @mixin mat-pseudo-checkbox-color($config-or-theme) {
   $config: mat-get-color-config($config-or-theme);

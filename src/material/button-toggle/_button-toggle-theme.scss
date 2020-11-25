@@ -2,7 +2,6 @@
 @import '../core/style/private';
 @import '../core/theming/palette';
 @import '../core/theming/theming';
-@import '../core/theming/private';
 @import '../core/typography/typography-utils';
 @import '../core/density/private/compatibility';
 @import './button-toggle-variables';
@@ -92,7 +91,7 @@
   }
 }
 
-@mixin _mat-button-toggle-density($config-or-theme) {
+@mixin mat-button-toggle-density($config-or-theme) {
   $density-scale: mat-get-density-config($config-or-theme);
   $standard-height: mat-private-density-prop-value(
       $mat-button-toggle-standard-density-config, $density-scale, height);
@@ -115,7 +114,7 @@
       @include mat-button-toggle-color($color);
     }
     @if $density != null {
-      @include _mat-button-toggle-density($density);
+      @include mat-button-toggle-density($density);
     }
     @if $typography != null {
       @include mat-button-toggle-typography($typography);

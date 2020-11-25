@@ -1,4 +1,4 @@
-@import '../../material/core/theming/private';
+@import '../../material/core/theming/theming';
 
 @mixin mat-selection-theme($theme-or-color-config) {
   $theme: mat-private-legacy-get-theme($theme-or-color-config);

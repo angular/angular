@@ -3,6 +3,7 @@
 @import '@material/list/mixins.import';
 @import '@material/list/variables.import';
 @import '@material/theme/functions.import';
+@import '@material/theme/mixins.import';
 @import '../mdc-helpers/mdc-helpers';
 
 @mixin mat-mdc-menu-color($config-or-theme) {

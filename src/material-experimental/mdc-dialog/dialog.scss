@@ -12,7 +12,7 @@ $mat-dialog-content-max-height: 65vh !default;
 $mat-dialog-button-horizontal-margin: 8px !default;
 
 @include mdc-dialog-core-styles($query: $mat-base-styles-query);
-@include mat-mdc-private-dialog-structure-overrides();
+@include mat-mdc-private-dialog-structure-overrides($mat-dialog-content-max-height);
 
 // The dialog container is focusable. We remove the default outline shown in browsers.
 .mat-mdc-dialog-container {

@@ -86,7 +86,7 @@ $dark-theme: mat-dark-theme((
 // The classes are applied conditionally based on the selected density in the dev-app layout
 // component.
 $density-scales: (-1, -2, minimum, maximum);
-@each $density in$density-scales {
+@each $density in $density-scales {
   .demo-density-#{$density} {
     @include angular-material-density($density);
     @include angular-material-mdc-density($density);
