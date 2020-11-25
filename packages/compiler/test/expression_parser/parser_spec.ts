@@ -838,6 +838,31 @@ describe('parser', () => {
       expect(ast.expressions[0].name).toEqual('a');
     });
 
+    it('should parse interpolation inside quotes', () => {
+      const ast = parseInterpolation('"{{a}}"')!.ast as Interpolation;
+      expect(ast.strings).toEqual(['"', '"']);
+      expect(ast.expressions.length).toEqual(1);
+      expect(ast.expressions[0].name).toEqual('a');
+    });
+
+    it('should parse interpolation with interpolation characters inside quotes', () => {
+      checkInterpolation('{{"{{a}}"}}', '{{ "{{a}}" }}');
+      checkInterpolation('{{"{{"}}', '{{ "{{" }}');
+      checkInterpolation('{{"}}"}}', '{{ "}}" }}');
+      checkInterpolation('{{"{"}}', '{{ "{" }}');
+      checkInterpolation('{{"}"}}', '{{ "}" }}');
+    });
+
+    it('should parse interpolation with escaped quotes', () => {
+      checkInterpolation(`{{'It\\'s just Angular'}}`, `{{ "It's just Angular" }}`);
+      checkInterpolation(`{{'It\\'s {{ just Angular'}}`, `{{ "It's {{ just Angular" }}`);
+      checkInterpolation(`{{'It\\'s }} just Angular'}}`, `{{ "It's }} just Angular" }}`);
+    });
+
+    it('should not parse interpolation with mismatching quotes', () => {
+      expect(parseInterpolation(`{{ "{{a}}' }}`)).toBeNull();
+    });
+
     it('should parse prefix/suffix with multiple interpolation', () => {
       const originalExp = 'before {{ a }} middle {{ b }} after';
       const ast = parseInterpolation(originalExp)!.ast;
