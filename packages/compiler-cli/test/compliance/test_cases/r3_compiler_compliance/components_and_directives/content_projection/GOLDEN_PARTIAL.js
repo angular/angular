@@ -6,7 +6,7 @@ import * as i0 from "@angular/core";
 export class SimpleComponent {
 }
 SimpleComponent.ɵfac = function SimpleComponent_Factory(t) { return new (t || SimpleComponent)(); };
-SimpleComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: 1, type: SimpleComponent, selector: "simple", ngImport: i0, template: { source: '<div><ng-content></ng-content></div>', isInline: true } });
+SimpleComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: SimpleComponent, selector: "simple", ngImport: i0, template: { source: '<div><ng-content></ng-content></div>', isInline: true } });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(SimpleComponent, [{
         type: Component,
         args: [{ selector: 'simple', template: '<div><ng-content></ng-content></div>' }]
@@ -14,7 +14,7 @@ SimpleComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: 1, type: SimpleComp
 export class ComplexComponent {
 }
 ComplexComponent.ɵfac = function ComplexComponent_Factory(t) { return new (t || ComplexComponent)(); };
-ComplexComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: 1, type: ComplexComponent, selector: "complex", ngImport: i0, template: { source: `
+ComplexComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: ComplexComponent, selector: "complex", ngImport: i0, template: { source: `
     <div id="first"><ng-content select="span[title=toFirst]"></ng-content></div>
     <div id="second"><ng-content SELECT="span[title=toSecond]"></ng-content></div>`, isInline: true } });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(ComplexComponent, [{
@@ -38,7 +38,7 @@ MyModule.ɵinj = i0.ɵɵdefineInjector({ factory: function MyModule_Factory(t) {
 export class MyApp {
 }
 MyApp.ɵfac = function MyApp_Factory(t) { return new (t || MyApp)(); };
-MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ version: 1, type: MyApp, selector: "my-app", ngImport: i0, template: { source: '<simple>content</simple> <complex></complex>', isInline: true } });
+MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: MyApp, selector: "my-app", ngImport: i0, template: { source: '<simple>content</simple> <complex></complex>', isInline: true } });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyApp, [{
         type: Component,
         args: [{ selector: 'my-app', template: '<simple>content</simple> <complex></complex>' }]
@@ -73,7 +73,7 @@ import * as i0 from "@angular/core";
 class Cmp {
 }
 Cmp.ɵfac = function Cmp_Factory(t) { return new (t || Cmp)(); };
-Cmp.ɵcmp = i0.ɵɵngDeclareComponent({ version: 1, type: Cmp, selector: "ng-component", ngImport: i0, template: { source: `
+Cmp.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: Cmp, selector: "ng-component", ngImport: i0, template: { source: `
     <ng-content></ng-content>
     <ng-content select="[spacer]"></ng-content>
     <ng-content></ng-content>
@@ -111,7 +111,7 @@ import * as i0 from "@angular/core";
 class Cmp {
 }
 Cmp.ɵfac = function Cmp_Factory(t) { return new (t || Cmp)(); };
-Cmp.ɵcmp = i0.ɵɵngDeclareComponent({ version: 1, type: Cmp, selector: "ng-component", ngImport: i0, template: { source: `
+Cmp.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: Cmp, selector: "ng-component", ngImport: i0, template: { source: `
     <div id="second" *ngIf="visible">
       <ng-content SELECT="span[title=toFirst]"></ng-content>
     </div>
@@ -161,7 +161,7 @@ import * as i0 from "@angular/core";
 class Cmp {
 }
 Cmp.ɵfac = function Cmp_Factory(t) { return new (t || Cmp)(); };
-Cmp.ɵcmp = i0.ɵɵngDeclareComponent({ version: 1, type: Cmp, selector: "ng-component", ngImport: i0, template: { source: `
+Cmp.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: Cmp, selector: "ng-component", ngImport: i0, template: { source: `
     <ng-content select="[id=toMainBefore]"></ng-content>
     <ng-template>
       <ng-content select="[id=toTemplate]"></ng-content>
@@ -215,7 +215,7 @@ import * as i0 from "@angular/core";
 export class SimpleComponent {
 }
 SimpleComponent.ɵfac = function SimpleComponent_Factory(t) { return new (t || SimpleComponent)(); };
-SimpleComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: 1, type: SimpleComponent, selector: "simple", ngImport: i0, template: { source: '<div><ng-content select="[title]"></ng-content></div>', isInline: true } });
+SimpleComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: SimpleComponent, selector: "simple", ngImport: i0, template: { source: '<div><ng-content select="[title]"></ng-content></div>', isInline: true } });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(SimpleComponent, [{
         type: Component,
         args: [{ selector: 'simple', template: '<div><ng-content select="[title]"></ng-content></div>' }]
@@ -232,7 +232,7 @@ MyModule.ɵinj = i0.ɵɵdefineInjector({ factory: function MyModule_Factory(t) {
 export class MyApp {
 }
 MyApp.ɵfac = function MyApp_Factory(t) { return new (t || MyApp)(); };
-MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ version: 1, type: MyApp, selector: "my-app", ngImport: i0, template: { source: '<simple><h1 ngProjectAs="[title]"></h1></simple>', isInline: true } });
+MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: MyApp, selector: "my-app", ngImport: i0, template: { source: '<simple><h1 ngProjectAs="[title]"></h1></simple>', isInline: true } });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyApp, [{
         type: Component,
         args: [{ selector: 'my-app', template: '<simple><h1 ngProjectAs="[title]"></h1></simple>' }]
@@ -263,7 +263,7 @@ import * as i0 from "@angular/core";
 export class SimpleComponent {
 }
 SimpleComponent.ɵfac = function SimpleComponent_Factory(t) { return new (t || SimpleComponent)(); };
-SimpleComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: 1, type: SimpleComponent, selector: "simple", ngImport: i0, template: { source: '<div><ng-content select="[title]"></ng-content></div>', isInline: true } });
+SimpleComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: SimpleComponent, selector: "simple", ngImport: i0, template: { source: '<div><ng-content select="[title]"></ng-content></div>', isInline: true } });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(SimpleComponent, [{
         type: Component,
         args: [{ selector: 'simple', template: '<div><ng-content select="[title]"></ng-content></div>' }]
@@ -280,7 +280,7 @@ MyModule.ɵinj = i0.ɵɵdefineInjector({ factory: function MyModule_Factory(t) {
 export class MyApp {
 }
 MyApp.ɵfac = function MyApp_Factory(t) { return new (t || MyApp)(); };
-MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ version: 1, type: MyApp, selector: "my-app", ngImport: i0, template: { source: '<simple><h1 ngProjectAs="[title],[header]"></h1></simple>', isInline: true } });
+MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: MyApp, selector: "my-app", ngImport: i0, template: { source: '<simple><h1 ngProjectAs="[title],[header]"></h1></simple>', isInline: true } });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyApp, [{
         type: Component,
         args: [{ selector: 'my-app', template: '<simple><h1 ngProjectAs="[title],[header]"></h1></simple>' }]
@@ -314,7 +314,7 @@ export class MyApp {
     }
 }
 MyApp.ɵfac = function MyApp_Factory(t) { return new (t || MyApp)(); };
-MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ version: 1, type: MyApp, selector: "my-app", ngImport: i0, template: { source: '<div *ngIf="show" ngProjectAs=".someclass"></div>', isInline: true } });
+MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: MyApp, selector: "my-app", ngImport: i0, template: { source: '<div *ngIf="show" ngProjectAs=".someclass"></div>', isInline: true } });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyApp, [{
         type: Component,
         args: [{ selector: 'my-app', template: '<div *ngIf="show" ngProjectAs=".someclass"></div>' }]
@@ -338,7 +338,7 @@ import * as i0 from "@angular/core";
 export class SimpleComponent {
 }
 SimpleComponent.ɵfac = function SimpleComponent_Factory(t) { return new (t || SimpleComponent)(); };
-SimpleComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: 1, type: SimpleComponent, selector: "simple", ngImport: i0, template: { source: '<ng-content *ngIf="showContent"></ng-content>', isInline: true } });
+SimpleComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: SimpleComponent, selector: "simple", ngImport: i0, template: { source: '<ng-content *ngIf="showContent"></ng-content>', isInline: true } });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(SimpleComponent, [{
         type: Component,
         args: [{ selector: 'simple', template: '<ng-content *ngIf="showContent"></ng-content>' }]

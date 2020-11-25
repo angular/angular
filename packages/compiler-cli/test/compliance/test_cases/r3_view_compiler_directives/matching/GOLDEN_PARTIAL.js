@@ -6,7 +6,7 @@ import * as i0 from "@angular/core";
 export class I18nDirective {
 }
 I18nDirective.ɵfac = function I18nDirective_Factory(t) { return new (t || I18nDirective)(); };
-I18nDirective.ɵdir = i0.ɵɵngDeclareDirective({ version: 1, type: I18nDirective, selector: "[i18n]", ngImport: i0 });
+I18nDirective.ɵdir = i0.ɵɵngDeclareDirective({ version: "0.0.0-PLACEHOLDER", type: I18nDirective, selector: "[i18n]", ngImport: i0 });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(I18nDirective, [{
         type: Directive,
         args: [{ selector: '[i18n]' }]
@@ -14,7 +14,7 @@ I18nDirective.ɵdir = i0.ɵɵngDeclareDirective({ version: 1, type: I18nDirectiv
 export class MyComponent {
 }
 MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); };
-MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: 1, type: MyComponent, selector: "my-component", ngImport: i0, template: { source: '<div i18n></div>', isInline: true } });
+MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "my-component", ngImport: i0, template: { source: '<div i18n></div>', isInline: true } });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyComponent, [{
         type: Component,
         args: [{ selector: 'my-component', template: '<div i18n></div>' }]
@@ -54,7 +54,7 @@ import * as i0 from "@angular/core";
 export class I18nDirective {
 }
 I18nDirective.ɵfac = function I18nDirective_Factory(t) { return new (t || I18nDirective)(); };
-I18nDirective.ɵdir = i0.ɵɵngDeclareDirective({ version: 1, type: I18nDirective, selector: "[i18n]", ngImport: i0 });
+I18nDirective.ɵdir = i0.ɵɵngDeclareDirective({ version: "0.0.0-PLACEHOLDER", type: I18nDirective, selector: "[i18n]", ngImport: i0 });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(I18nDirective, [{
         type: Directive,
         args: [{ selector: '[i18n]' }]
@@ -62,7 +62,7 @@ I18nDirective.ɵdir = i0.ɵɵngDeclareDirective({ version: 1, type: I18nDirectiv
 export class I18nFooDirective {
 }
 I18nFooDirective.ɵfac = function I18nFooDirective_Factory(t) { return new (t || I18nFooDirective)(); };
-I18nFooDirective.ɵdir = i0.ɵɵngDeclareDirective({ version: 1, type: I18nFooDirective, selector: "[i18n-foo]", ngImport: i0 });
+I18nFooDirective.ɵdir = i0.ɵɵngDeclareDirective({ version: "0.0.0-PLACEHOLDER", type: I18nFooDirective, selector: "[i18n-foo]", ngImport: i0 });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(I18nFooDirective, [{
         type: Directive,
         args: [{ selector: '[i18n-foo]' }]
@@ -70,7 +70,7 @@ I18nFooDirective.ɵdir = i0.ɵɵngDeclareDirective({ version: 1, type: I18nFooDi
 export class FooDirective {
 }
 FooDirective.ɵfac = function FooDirective_Factory(t) { return new (t || FooDirective)(); };
-FooDirective.ɵdir = i0.ɵɵngDeclareDirective({ version: 1, type: FooDirective, selector: "[foo]", ngImport: i0 });
+FooDirective.ɵdir = i0.ɵɵngDeclareDirective({ version: "0.0.0-PLACEHOLDER", type: FooDirective, selector: "[foo]", ngImport: i0 });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(FooDirective, [{
         type: Directive,
         args: [{ selector: '[foo]' }]
@@ -78,7 +78,7 @@ FooDirective.ɵdir = i0.ɵɵngDeclareDirective({ version: 1, type: FooDirective,
 export class MyComponent {
 }
 MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); };
-MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: 1, type: MyComponent, selector: "my-component", ngImport: i0, template: { source: '<div i18n-foo></div>', isInline: true } });
+MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "my-component", ngImport: i0, template: { source: '<div i18n-foo></div>', isInline: true } });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyComponent, [{
         type: Component,
         args: [{ selector: 'my-component', template: '<div i18n-foo></div>' }]
@@ -126,7 +126,7 @@ import * as i0 from "@angular/core";
 export class SomeDirective {
 }
 SomeDirective.ɵfac = function SomeDirective_Factory(t) { return new (t || SomeDirective)(); };
-SomeDirective.ɵdir = i0.ɵɵngDeclareDirective({ version: 1, type: SomeDirective, selector: "[someDirective]", inputs: { someDirective: "someDirective" }, ngImport: i0 });
+SomeDirective.ɵdir = i0.ɵɵngDeclareDirective({ version: "0.0.0-PLACEHOLDER", type: SomeDirective, selector: "[someDirective]", inputs: { someDirective: "someDirective" }, ngImport: i0 });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(SomeDirective, [{
         type: Directive,
         args: [{ selector: '[someDirective]' }]
@@ -136,7 +136,7 @@ SomeDirective.ɵdir = i0.ɵɵngDeclareDirective({ version: 1, type: SomeDirectiv
 export class MyComponent {
 }
 MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); };
-MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: 1, type: MyComponent, selector: "my-component", ngImport: i0, template: { source: '<div [someDirective]="true"></div>', isInline: true }, directives: [{ type: SomeDirective, selector: "[someDirective]", inputs: ["someDirective"] }] });
+MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "my-component", ngImport: i0, template: { source: '<div [someDirective]="true"></div>', isInline: true }, directives: [{ type: SomeDirective, selector: "[someDirective]", inputs: ["someDirective"] }] });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyComponent, [{
         type: Component,
         args: [{ selector: 'my-component', template: '<div [someDirective]="true"></div>' }]
@@ -177,7 +177,7 @@ import * as i0 from "@angular/core";
 export class DirectiveA {
 }
 DirectiveA.ɵfac = function DirectiveA_Factory(t) { return new (t || DirectiveA)(); };
-DirectiveA.ɵdir = i0.ɵɵngDeclareDirective({ version: 1, type: DirectiveA, selector: "ng-template[directiveA]", ngImport: i0 });
+DirectiveA.ɵdir = i0.ɵɵngDeclareDirective({ version: "0.0.0-PLACEHOLDER", type: DirectiveA, selector: "ng-template[directiveA]", ngImport: i0 });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(DirectiveA, [{
         type: Directive,
         args: [{ selector: 'ng-template[directiveA]' }]
@@ -185,7 +185,7 @@ DirectiveA.ɵdir = i0.ɵɵngDeclareDirective({ version: 1, type: DirectiveA, sel
 export class MyComponent {
 }
 MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); };
-MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: 1, type: MyComponent, selector: "my-component", ngImport: i0, template: { source: `
+MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "my-component", ngImport: i0, template: { source: `
     <ng-template directiveA>Some content</ng-template>
   `, isInline: true }, directives: [{ type: DirectiveA, selector: "ng-template[directiveA]" }] });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyComponent, [{
@@ -232,7 +232,7 @@ import * as i0 from "@angular/core";
 export class DirectiveA {
 }
 DirectiveA.ɵfac = function DirectiveA_Factory(t) { return new (t || DirectiveA)(); };
-DirectiveA.ɵdir = i0.ɵɵngDeclareDirective({ version: 1, type: DirectiveA, selector: "ng-container[directiveA]", ngImport: i0 });
+DirectiveA.ɵdir = i0.ɵɵngDeclareDirective({ version: "0.0.0-PLACEHOLDER", type: DirectiveA, selector: "ng-container[directiveA]", ngImport: i0 });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(DirectiveA, [{
         type: Directive,
         args: [{ selector: 'ng-container[directiveA]' }]
@@ -240,7 +240,7 @@ DirectiveA.ɵdir = i0.ɵɵngDeclareDirective({ version: 1, type: DirectiveA, sel
 export class MyComponent {
 }
 MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); };
-MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: 1, type: MyComponent, selector: "my-component", ngImport: i0, template: { source: `
+MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "my-component", ngImport: i0, template: { source: `
     <ng-container *ngIf="showing" directiveA>Some content</ng-container>
   `, isInline: true }, directives: [{ type: DirectiveA, selector: "ng-container[directiveA]" }] });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyComponent, [{
@@ -287,7 +287,7 @@ import * as i0 from "@angular/core";
 export class SomeDirective {
 }
 SomeDirective.ɵfac = function SomeDirective_Factory(t) { return new (t || SomeDirective)(); };
-SomeDirective.ɵdir = i0.ɵɵngDeclareDirective({ version: 1, type: SomeDirective, selector: "[someDirective]", inputs: { someDirective: "someDirective" }, ngImport: i0 });
+SomeDirective.ɵdir = i0.ɵɵngDeclareDirective({ version: "0.0.0-PLACEHOLDER", type: SomeDirective, selector: "[someDirective]", inputs: { someDirective: "someDirective" }, ngImport: i0 });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(SomeDirective, [{
         type: Directive,
         args: [{ selector: '[someDirective]' }]
@@ -297,7 +297,7 @@ SomeDirective.ɵdir = i0.ɵɵngDeclareDirective({ version: 1, type: SomeDirectiv
 export class MyComponent {
 }
 MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); };
-MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: 1, type: MyComponent, selector: "my-component", ngImport: i0, template: { source: '<ng-template [someDirective]="true"></ng-template>', isInline: true }, directives: [{ type: SomeDirective, selector: "[someDirective]", inputs: ["someDirective"] }] });
+MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "my-component", ngImport: i0, template: { source: '<ng-template [someDirective]="true"></ng-template>', isInline: true }, directives: [{ type: SomeDirective, selector: "[someDirective]", inputs: ["someDirective"] }] });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyComponent, [{
         type: Component,
         args: [{
@@ -341,7 +341,7 @@ import * as i0 from "@angular/core";
 export class SomeDirective {
 }
 SomeDirective.ɵfac = function SomeDirective_Factory(t) { return new (t || SomeDirective)(); };
-SomeDirective.ɵdir = i0.ɵɵngDeclareDirective({ version: 1, type: SomeDirective, selector: "[someDirective]", inputs: { someDirective: "someDirective" }, ngImport: i0 });
+SomeDirective.ɵdir = i0.ɵɵngDeclareDirective({ version: "0.0.0-PLACEHOLDER", type: SomeDirective, selector: "[someDirective]", inputs: { someDirective: "someDirective" }, ngImport: i0 });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(SomeDirective, [{
         type: Directive,
         args: [{ selector: '[someDirective]' }]
@@ -351,7 +351,7 @@ SomeDirective.ɵdir = i0.ɵɵngDeclareDirective({ version: 1, type: SomeDirectiv
 export class MyComponent {
 }
 MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); };
-MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: 1, type: MyComponent, selector: "my-component", ngImport: i0, template: { source: '<div *someDirective></div>', isInline: true }, directives: [{ type: SomeDirective, selector: "[someDirective]", inputs: ["someDirective"] }] });
+MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "my-component", ngImport: i0, template: { source: '<div *someDirective></div>', isInline: true }, directives: [{ type: SomeDirective, selector: "[someDirective]", inputs: ["someDirective"] }] });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyComponent, [{
         type: Component,
         args: [{ selector: 'my-component', template: '<div *someDirective></div>' }]
@@ -395,7 +395,7 @@ export class SomeDirective {
     }
 }
 SomeDirective.ɵfac = function SomeDirective_Factory(t) { return new (t || SomeDirective)(); };
-SomeDirective.ɵdir = i0.ɵɵngDeclareDirective({ version: 1, type: SomeDirective, selector: "[someDirective]", outputs: { someDirective: "someDirective" }, ngImport: i0 });
+SomeDirective.ɵdir = i0.ɵɵngDeclareDirective({ version: "0.0.0-PLACEHOLDER", type: SomeDirective, selector: "[someDirective]", outputs: { someDirective: "someDirective" }, ngImport: i0 });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(SomeDirective, [{
         type: Directive,
         args: [{ selector: '[someDirective]' }]
@@ -406,7 +406,7 @@ export class MyComponent {
     noop() { }
 }
 MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); };
-MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: 1, type: MyComponent, selector: "my-component", ngImport: i0, template: { source: '<div (someDirective)="noop()"></div>', isInline: true }, directives: [{ type: SomeDirective, selector: "[someDirective]", outputs: ["someDirective"] }] });
+MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "my-component", ngImport: i0, template: { source: '<div (someDirective)="noop()"></div>', isInline: true }, directives: [{ type: SomeDirective, selector: "[someDirective]", outputs: ["someDirective"] }] });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyComponent, [{
         type: Component,
         args: [{ selector: 'my-component', template: '<div (someDirective)="noop()"></div>' }]

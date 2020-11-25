@@ -14,7 +14,7 @@ export class MyComponent {
     constructor(name, s1, s2, s4, s3, s5, s6) { }
 }
 MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(i0.ɵɵinjectAttribute('name'), i0.ɵɵdirectiveInject(MyService), i0.ɵɵdirectiveInject(MyService, 1), i0.ɵɵdirectiveInject(MyService, 2), i0.ɵɵdirectiveInject(MyService, 4), i0.ɵɵdirectiveInject(MyService, 8), i0.ɵɵdirectiveInject(MyService, 10)); };
-MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: 1, type: MyComponent, selector: "my-component", ngImport: i0, template: { source: ``, isInline: true } });
+MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "my-component", ngImport: i0, template: { source: ``, isInline: true } });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyComponent, [{
         type: Component,
         args: [{ selector: 'my-component', template: `` }]
@@ -323,7 +323,7 @@ MyOtherPipe.ɵprov = i0.ɵɵdefineInjectable({ token: MyOtherPipe, factory: MyOt
 export class MyApp {
 }
 MyApp.ɵfac = function MyApp_Factory(t) { return new (t || MyApp)(); };
-MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ version: 1, type: MyApp, selector: "my-app", ngImport: i0, template: { source: '{{0 | myPipe | myOtherPipe}}', isInline: true }, pipes: { "myOtherPipe": MyOtherPipe, "myPipe": MyPipe } });
+MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: MyApp, selector: "my-app", ngImport: i0, template: { source: '{{0 | myPipe | myOtherPipe}}', isInline: true }, pipes: { "myOtherPipe": MyOtherPipe, "myPipe": MyPipe } });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyApp, [{
         type: Component,
         args: [{ selector: 'my-app', template: '{{0 | myPipe | myOtherPipe}}' }]

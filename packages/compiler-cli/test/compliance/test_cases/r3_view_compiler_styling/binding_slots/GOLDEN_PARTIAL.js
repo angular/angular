@@ -13,7 +13,7 @@ export class MyComponent {
     }
 }
 MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); };
-MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: 1, type: MyComponent, selector: "my-component", inputs: { name: "name" }, host: { attributes: { "title": "foo title" }, properties: { "style": "myStyle", "class": "myClass", "id": "id", "title": "title" }, styleAttribute: "width:200px; height:500px", classAttribute: "foo baz" }, ngImport: i0, template: { source: '', isInline: true } });
+MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "my-component", inputs: { name: "name" }, host: { attributes: { "title": "foo title" }, properties: { "style": "myStyle", "class": "myClass", "id": "id", "title": "title" }, styleAttribute: "width:200px; height:500px", classAttribute: "foo baz" }, ngImport: i0, template: { source: '', isInline: true } });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyComponent, [{
         type: Component,
         args: [{
@@ -83,7 +83,7 @@ export class WidthDirective {
     }
 }
 WidthDirective.ɵfac = function WidthDirective_Factory(t) { return new (t || WidthDirective)(); };
-WidthDirective.ɵdir = i0.ɵɵngDeclareDirective({ version: 1, type: WidthDirective, selector: "[myWidthDir]", host: { properties: { "style.width": "myWidth", "class.foo": "myFooClass", "id": "id", "title": "title" } }, ngImport: i0 });
+WidthDirective.ɵdir = i0.ɵɵngDeclareDirective({ version: "0.0.0-PLACEHOLDER", type: WidthDirective, selector: "[myWidthDir]", host: { properties: { "style.width": "myWidth", "class.foo": "myFooClass", "id": "id", "title": "title" } }, ngImport: i0 });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(WidthDirective, [{
         type: Directive,
         args: [{ selector: '[myWidthDir]' }]
@@ -129,7 +129,7 @@ export class MyDir {
     }
 }
 MyDir.ɵfac = function MyDir_Factory(t) { return new (t || MyDir)(); };
-MyDir.ɵdir = i0.ɵɵngDeclareDirective({ version: 1, type: MyDir, selector: "[my-dir]", host: { properties: { "title": "title", "class.foo": "foo", "@anim": "{\n      value: _animValue,\n      params: {\n        param1: _animParam1,\n        param2: _animParam2\n      }\n    }" } }, ngImport: i0 });
+MyDir.ɵdir = i0.ɵɵngDeclareDirective({ version: "0.0.0-PLACEHOLDER", type: MyDir, selector: "[my-dir]", host: { properties: { "title": "title", "class.foo": "foo", "@anim": "{\n      value: _animValue,\n      params: {\n        param1: _animParam1,\n        param2: _animParam2\n      }\n    }" } }, ngImport: i0 });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyDir, [{
         type: Directive,
         args: [{
@@ -150,7 +150,7 @@ MyDir.ɵdir = i0.ɵɵngDeclareDirective({ version: 1, type: MyDir, selector: "[m
 export class MyAppComp {
 }
 MyAppComp.ɵfac = function MyAppComp_Factory(t) { return new (t || MyAppComp)(); };
-MyAppComp.ɵcmp = i0.ɵɵngDeclareComponent({ version: 1, type: MyAppComp, selector: "my-app", ngImport: i0, template: { source: `
+MyAppComp.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: MyAppComp, selector: "my-app", ngImport: i0, template: { source: `
     <div my-dir></div>
   `, isInline: true }, directives: [{ type: MyDir, selector: "[my-dir]" }] });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyAppComp, [{

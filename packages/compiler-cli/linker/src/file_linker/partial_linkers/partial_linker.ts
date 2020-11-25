@@ -15,6 +15,9 @@ import {AstObject} from '../../ast/ast_value';
 export interface PartialLinker<TExpression> {
   /**
    * Link the partial declaration `metaObj` information to generate a full definition expression.
+   *
+   * @param metaObj An object that fits one of the `R3DeclareDirectiveMetadata` or
+   *     `R3DeclareComponentMetadata` interfaces.
    */
   linkPartialDeclaration(
       sourceUrl: string, code: string, constantPool: ConstantPool,

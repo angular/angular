@@ -38,7 +38,7 @@ describe('FileLinker', () => {
   describe('linkPartialDeclaration()', () => {
     it('should throw an error if the function name is not recognised', () => {
       const {fileLinker} = createFileLinker();
-      const version = factory.createLiteral(1);
+      const version = factory.createLiteral('0.0.0-PLACEHOLDER');
       const ngImport = factory.createIdentifier('core');
       const declarationArg = factory.createObjectLiteral([
         {propertyName: 'version', quoted: false, value: version},
@@ -80,7 +80,7 @@ describe('FileLinker', () => {
                              .and.returnValue(o.literal('compilation result'));
 
       const ngImport = factory.createIdentifier('core');
-      const version = factory.createLiteral(1);
+      const version = factory.createLiteral('0.0.0-PLACEHOLDER');
       const declarationArg = factory.createObjectLiteral([
         {propertyName: 'ngImport', quoted: false, value: ngImport},
         {propertyName: 'version', quoted: false, value: version},
@@ -104,7 +104,7 @@ describe('FileLinker', () => {
       // constant statements.
       const declarationArg = factory.createObjectLiteral([
         {propertyName: 'ngImport', quoted: false, value: factory.createIdentifier('core')},
-        {propertyName: 'version', quoted: false, value: factory.createLiteral(1)},
+        {propertyName: 'version', quoted: false, value: factory.createLiteral('0.0.0-PLACEHOLDER')},
       ]);
 
       const replacement = fileLinker.linkPartialDeclaration(
@@ -127,7 +127,11 @@ describe('FileLinker', () => {
          // statements to be emitted in an IIFE rather than added to the shared constant scope.
          const declarationArg = factory.createObjectLiteral([
            {propertyName: 'ngImport', quoted: false, value: factory.createLiteral('not-a-module')},
-           {propertyName: 'version', quoted: false, value: factory.createLiteral(1)},
+           {
+             propertyName: 'version',
+             quoted: false,
+             value: factory.createLiteral('0.0.0-PLACEHOLDER')
+           },
          ]);
 
          const replacement = fileLinker.linkPartialDeclaration(

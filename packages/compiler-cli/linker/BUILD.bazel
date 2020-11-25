@@ -10,6 +10,8 @@ ts_library(
     deps = [
         "//packages/compiler",
         "//packages/compiler-cli/src/ngtsc/translator",
+        "@npm//@types/semver",
+        "@npm//semver",
         "@npm//typescript",
     ],
 )
