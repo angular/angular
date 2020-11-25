@@ -13,28 +13,22 @@ export enum TraitState {
   /**
    * Pending traits are freshly created and have never been analyzed.
    */
-  PENDING = 0x01,
+  Pending,
 
   /**
    * Analyzed traits have successfully been analyzed, but are pending resolution.
    */
-  ANALYZED = 0x02,
+  Analyzed,
 
   /**
    * Resolved traits have successfully been analyzed and resolved and are ready for compilation.
    */
-  RESOLVED = 0x04,
-
-  /**
-   * Errored traits have failed either analysis or resolution and as a result contain diagnostics
-   * describing the failure(s).
-   */
-  ERRORED = 0x08,
+  Resolved,
 
   /**
    * Skipped traits are no longer considered for compilation.
    */
-  SKIPPED = 0x10,
+  Skipped,
 }
 
 /**
@@ -50,8 +44,8 @@ export enum TraitState {
  * This not only simplifies the implementation, but ensures traits are monomorphic objects as
  * they're all just "views" in the type system of the same object (which never changes shape).
  */
-export type Trait<D, A, R> = PendingTrait<D, A, R>|SkippedTrait<D, A, R>|AnalyzedTrait<D, A, R>|
-    ResolvedTrait<D, A, R>|ErroredTrait<D, A, R>;
+export type Trait<D, A, R> =
+    PendingTrait<D, A, R>|SkippedTrait<D, A, R>|AnalyzedTrait<D, A, R>|ResolvedTrait<D, A, R>;
 
 /**
  * The value side of `Trait` exposes a helper to create a `Trait` in a pending state (by delegating
@@ -93,41 +87,19 @@ export interface TraitBase<D, A, R> {
  * Pending traits have yet to be analyzed in any way.
  */
 export interface PendingTrait<D, A, R> extends TraitBase<D, A, R> {
-  state: TraitState.PENDING;
+  state: TraitState.Pending;
 
   /**
    * This pending trait has been successfully analyzed, and should transition to the "analyzed"
    * state.
    */
-  toAnalyzed(analysis: A): AnalyzedTrait<D, A, R>;
-
-  /**
-   * This trait failed analysis, and should transition to the "errored" state with the resulting
-   * diagnostics.
-   */
-  toErrored(errors: ts.Diagnostic[]): ErroredTrait<D, A, R>;
+  toAnalyzed(analysis: A|null, diagnostics: ts.Diagnostic[]|null): AnalyzedTrait<D, A, R>;
 
   /**
    * During analysis it was determined that this trait is not eligible for compilation after all,
    * and should be transitioned to the "skipped" state.
    */
   toSkipped(): SkippedTrait<D, A, R>;
-}
-
-/**
- * A trait in the "errored" state.
- *
- * Errored traits contain `ts.Diagnostic`s indicating any problem(s) with the class.
- *
- * This is a terminal state.
- */
-export interface ErroredTrait<D, A, R> extends TraitBase<D, A, R> {
-  state: TraitState.ERRORED;
-
-  /**
-   * Diagnostics which were produced while attempting to analyze the trait.
-   */
-  diagnostics: ts.Diagnostic[];
 }
 
 /**
@@ -138,20 +110,7 @@ export interface ErroredTrait<D, A, R> extends TraitBase<D, A, R> {
  * This is a terminal state.
  */
 export interface SkippedTrait<D, A, R> extends TraitBase<D, A, R> {
-  state: TraitState.SKIPPED;
-}
-
-/**
- * The part of the `Trait` interface for any trait which has been successfully analyzed.
- *
- * Mainly, this is used to share the comment on the `analysis` field.
- */
-export interface TraitWithAnalysis<A> {
-  /**
-   * The results returned by a successful analysis of the given class/`DecoratorHandler`
-   * combination.
-   */
-  analysis: Readonly<A>;
+  state: TraitState.Skipped;
 }
 
 /**
@@ -159,20 +118,25 @@ export interface TraitWithAnalysis<A> {
  *
  * Analyzed traits have analysis results available, and are eligible for resolution.
  */
-export interface AnalyzedTrait<D, A, R> extends TraitBase<D, A, R>, TraitWithAnalysis<A> {
-  state: TraitState.ANALYZED;
+export interface AnalyzedTrait<D, A, R> extends TraitBase<D, A, R> {
+  state: TraitState.Analyzed;
+
+  /**
+   * Analysis results of the given trait (if able to be produced), or `null` if analysis failed
+   * completely.
+   */
+  analysis: Readonly<A>|null;
+
+  /**
+   * Any diagnostics that resulted from analysis, or `null` if none.
+   */
+  analysisDiagnostics: ts.Diagnostic[]|null;
 
   /**
    * This analyzed trait has been successfully resolved, and should be transitioned to the
    * "resolved" state.
    */
-  toResolved(resolution: R): ResolvedTrait<D, A, R>;
-
-  /**
-   * This trait failed resolution, and should transition to the "errored" state with the resulting
-   * diagnostics.
-   */
-  toErrored(errors: ts.Diagnostic[]): ErroredTrait<D, A, R>;
+  toResolved(resolution: R|null, diagnostics: ts.Diagnostic[]|null): ResolvedTrait<D, A, R>;
 }
 
 /**
@@ -183,14 +147,29 @@ export interface AnalyzedTrait<D, A, R> extends TraitBase<D, A, R>, TraitWithAna
  *
  * This is a terminal state.
  */
-export interface ResolvedTrait<D, A, R> extends TraitBase<D, A, R>, TraitWithAnalysis<A> {
-  state: TraitState.RESOLVED;
+export interface ResolvedTrait<D, A, R> extends TraitBase<D, A, R> {
+  state: TraitState.Resolved;
+
+  /**
+   * Resolved traits must have produced valid analysis results.
+   */
+  analysis: Readonly<A>;
+
+  /**
+   * Analysis may have still resulted in diagnostics.
+   */
+  analysisDiagnostics: ts.Diagnostic[]|null;
+
+  /**
+   * Diagnostics resulting from resolution are tracked separately from
+   */
+  resolveDiagnostics: ts.Diagnostic[]|null;
 
   /**
    * The results returned by a successful resolution of the given class/`DecoratorHandler`
    * combination.
    */
-  resolution: Readonly<R>;
+  resolution: Readonly<R>|null;
 }
 
 /**
@@ -198,48 +177,44 @@ export interface ResolvedTrait<D, A, R> extends TraitBase<D, A, R>, TraitWithAna
  * `TraitState`s.
  */
 class TraitImpl<D, A, R> {
-  state: TraitState = TraitState.PENDING;
+  state: TraitState = TraitState.Pending;
   handler: DecoratorHandler<D, A, R>;
   detected: DetectResult<D>;
   analysis: Readonly<A>|null = null;
   resolution: Readonly<R>|null = null;
-  diagnostics: ts.Diagnostic[]|null = null;
+  analysisDiagnostics: ts.Diagnostic[]|null = null;
+  resolveDiagnostics: ts.Diagnostic[]|null = null;
 
   constructor(handler: DecoratorHandler<D, A, R>, detected: DetectResult<D>) {
     this.handler = handler;
     this.detected = detected;
   }
 
-  toAnalyzed(analysis: A): AnalyzedTrait<D, A, R> {
+  toAnalyzed(analysis: A|null, diagnostics: ts.Diagnostic[]|null): AnalyzedTrait<D, A, R> {
     // Only pending traits can be analyzed.
-    this.assertTransitionLegal(TraitState.PENDING, TraitState.ANALYZED);
+    this.assertTransitionLegal(TraitState.Pending, TraitState.Analyzed);
     this.analysis = analysis;
-    this.state = TraitState.ANALYZED;
+    this.analysisDiagnostics = diagnostics;
+    this.state = TraitState.Analyzed;
     return this as AnalyzedTrait<D, A, R>;
   }
 
-  toErrored(diagnostics: ts.Diagnostic[]): ErroredTrait<D, A, R> {
-    // Pending traits (during analysis) or analyzed traits (during resolution) can produce
-    // diagnostics and enter an errored state.
-    this.assertTransitionLegal(TraitState.PENDING | TraitState.ANALYZED, TraitState.RESOLVED);
-    this.diagnostics = diagnostics;
-    this.analysis = null;
-    this.state = TraitState.ERRORED;
-    return this as ErroredTrait<D, A, R>;
-  }
-
-  toResolved(resolution: R): ResolvedTrait<D, A, R> {
+  toResolved(resolution: R|null, diagnostics: ts.Diagnostic[]|null): ResolvedTrait<D, A, R> {
     // Only analyzed traits can be resolved.
-    this.assertTransitionLegal(TraitState.ANALYZED, TraitState.RESOLVED);
+    this.assertTransitionLegal(TraitState.Analyzed, TraitState.Resolved);
+    if (this.analysis === null) {
+      throw new Error(`Cannot transition an Analyzed trait with a null analysis to Resolved`);
+    }
     this.resolution = resolution;
-    this.state = TraitState.RESOLVED;
+    this.state = TraitState.Resolved;
+    this.resolveDiagnostics = diagnostics;
     return this as ResolvedTrait<D, A, R>;
   }
 
   toSkipped(): SkippedTrait<D, A, R> {
     // Only pending traits can be skipped.
-    this.assertTransitionLegal(TraitState.PENDING, TraitState.SKIPPED);
-    this.state = TraitState.SKIPPED;
+    this.assertTransitionLegal(TraitState.Pending, TraitState.Skipped);
+    this.state = TraitState.Skipped;
     return this as SkippedTrait<D, A, R>;
   }
 
@@ -252,7 +227,7 @@ class TraitImpl<D, A, R> {
    * transitions to take place. Hence, this assertion provides a little extra runtime protection.
    */
   private assertTransitionLegal(allowedState: TraitState, transitionTo: TraitState): void {
-    if (!(this.state & allowedState)) {
+    if (!(this.state === allowedState)) {
       throw new Error(`Assertion failure: cannot transition from ${TraitState[this.state]} to ${
           TraitState[transitionTo]}.`);
     }
