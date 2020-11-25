@@ -32,9 +32,14 @@ export class DefaultMigrationHost implements MigrationHost {
     const migratedTraits = this.compiler.injectSyntheticDecorator(clazz, decorator, flags);
 
     for (const trait of migratedTraits) {
-      if (trait.state === TraitState.ERRORED) {
-        trait.diagnostics =
-            trait.diagnostics.map(diag => createMigrationDiagnostic(diag, clazz, decorator));
+      if ((trait.state === TraitState.Analyzed || trait.state === TraitState.Resolved) &&
+          trait.analysisDiagnostics !== null) {
+        trait.analysisDiagnostics = trait.analysisDiagnostics.map(
+            diag => createMigrationDiagnostic(diag, clazz, decorator));
+      }
+      if (trait.state === TraitState.Resolved && trait.resolveDiagnostics !== null) {
+        trait.resolveDiagnostics =
+            trait.resolveDiagnostics.map(diag => createMigrationDiagnostic(diag, clazz, decorator));
       }
     }
   }
