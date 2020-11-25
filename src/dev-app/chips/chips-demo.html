@@ -99,6 +99,7 @@
         Set tabIndex to {{tabIndex === 0 ? -1 : 0}}
       </button>
       <mat-form-field class="demo-has-chip-list">
+        <mat-label>Contributors</mat-label>
         <mat-chip-list [tabIndex]="tabIndex" #chipList1 [(ngModel)]="selectedPeople" required>
           <mat-chip  *ngFor="let person of people" [color]="color" [selectable]="selectable"
                    [removable]="removable" (removed)="remove(person)">
@@ -120,7 +121,8 @@
         With <code>matChipInput</code> the input work with chip-list
       </p>
 
-      <mat-form-field>
+      <mat-form-field class="demo-has-chip-list">
+        <mat-label>Contributors</mat-label>
         <mat-chip-list [tabIndex]="tabIndex"  #chipList2 [(ngModel)]="selectedPeople" required>
           <mat-chip *ngFor="let person of people" [color]="color" [selectable]="selectable"
                    [removable]="removable" (removed)="remove(person)">
@@ -141,6 +143,7 @@
 
 
       <mat-form-field class="demo-has-chip-list">
+        <mat-label>Contributors</mat-label>
         <mat-chip-list #chipList3>
           <mat-chip *ngFor="let person of people" [color]="color" [selectable]="selectable"
                    [removable]="removable" (removed)="remove(person)">
