@@ -231,11 +231,7 @@ export class MatSlider implements AfterViewInit, OnChanges, OnDestroy, ControlVa
     getAttribute: (_attribute: string) => null,
     addThumbClass: (_className: string, _thumb: Thumb) => {},
     removeThumbClass: (_className: string, _thumb: Thumb) => {},
-    getThumbAttribute: (_attribute: string, _thumb: Thumb) => null,
-    setThumbAttribute: (_attribute: string, _value: string, _thumb: Thumb) => {},
     getThumbKnobWidth: (_thumb: Thumb) => 0,
-    isThumbFocused: (_thumb: Thumb) => false,
-    focusThumb: (_thumb: Thumb) => {},
     getThumbBoundingClientRect: (_thumb: Thumb) => null!,
     getBoundingClientRect: () => null!,
     isRTL: () => false,
@@ -263,7 +259,11 @@ export class MatSlider implements AfterViewInit, OnChanges, OnDestroy, ControlVa
     setInputValue: (_value: string, _thumb: Thumb) => {},
     getInputAttribute: (_attribute: string, _thumb: Thumb) => null,
     setInputAttribute: (_attribute: string, _value: string) => {},
-    removeInputAttribute: (_attribute: string) => {}
+    removeInputAttribute: (_attribute: string) => {},
+    focusInput: () => {},
+    isInputFocused: (_thumb: Thumb) => false,
+    registerInputEventHandler: (_thumb: Thumb, _evtType: string, _handler: any) => {},
+    deregisterInputEventHandler: (_thumb: Thumb, _evtType: string, _handler: any) => {},
   };
 
   /** Instance of the MDC slider foundation for this slider. */
