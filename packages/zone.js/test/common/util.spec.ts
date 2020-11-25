@@ -77,6 +77,126 @@ describe('utils', function() {
       expect(desc!.writable).toBeTruthy();
       expect(!desc!.get).toBeTruthy();
     });
+
+    it('should patch target if it overrides a patched method', () => {
+      let args: any[]|undefined;
+      let childArgs: any[]|undefined;
+      let self: any;
+      let childSelf: any;
+      class Type {
+        method(..._args: any[]) {
+          args = _args;
+          self = this;
+          return 'OK';
+        }
+      }
+      class ChildType extends Type {
+        method(..._args: any[]) {
+          childArgs = _args;
+          childSelf = this;
+          return 'ChildOK';
+        }
+      }
+
+      const method = Type.prototype.method;
+      const childMethod = ChildType.prototype.method;
+      let delegateMethod: Function;
+      let delegateSymbol: string;
+      let childDelegateMethod: Function;
+      let childDelegateSymbol: string;
+
+      const typeInstance = new Type();
+      const childTypeInstance = new ChildType();
+      expect(patchMethod(
+                 Type.prototype, 'method',
+                 (delegate: Function, symbol: string, name: string) => {
+                   expect(name).toEqual('method');
+                   delegateMethod = delegate;
+                   delegateSymbol = symbol;
+                   return function(self, args) {
+                     return delegate.apply(self, ['patch', args[0]]);
+                   };
+                 }))
+          .toBe(delegateMethod!);
+
+      expect(patchMethod(
+                 ChildType.prototype, 'method',
+                 (delegate: Function, symbol: string, name: string) => {
+                   expect(name).toEqual('method');
+                   childDelegateMethod = delegate;
+                   childDelegateSymbol = symbol;
+                   return function(self, args) {
+                     return delegate.apply(self, ['child patch', args[0]]);
+                   };
+                 }))
+          .toBe(childDelegateMethod!);
+
+      expect(typeInstance.method('a0')).toEqual('OK');
+      expect(childTypeInstance.method('a0')).toEqual('ChildOK');
+      expect(args).toEqual(['patch', 'a0']);
+      expect(childArgs).toEqual(['child patch', 'a0']);
+      expect(self).toBe(typeInstance);
+      expect(childSelf).toBe(childTypeInstance);
+      expect(delegateMethod!).toBe(method);
+      expect(childDelegateMethod!).toBe(childMethod);
+      expect(delegateSymbol!).toEqual(zoneSymbol('method'));
+      expect(childDelegateSymbol!).toEqual(zoneSymbol('method'));
+      expect((Type.prototype as any)[delegateSymbol!]).toBe(method);
+      expect((ChildType.prototype as any)[delegateSymbol!]).toBe(childMethod);
+    });
+
+    it('should not patch target if does not override a patched method', () => {
+      let args: any[]|undefined;
+      let self: any;
+      class Type {
+        method(..._args: any[]) {
+          args = _args;
+          self = this;
+          return 'OK';
+        }
+      }
+      class ChildType extends Type {}
+      const method = Type.prototype.method;
+      let delegateMethod: Function;
+      let delegateSymbol: string;
+      let childPatched = false;
+
+      const typeInstance = new Type();
+      const childTypeInstance = new ChildType();
+      expect(patchMethod(
+                 Type.prototype, 'method',
+                 (delegate: Function, symbol: string, name: string) => {
+                   expect(name).toEqual('method');
+                   delegateMethod = delegate;
+                   delegateSymbol = symbol;
+                   return function(self, args) {
+                     return delegate.apply(self, ['patch', args[0]]);
+                   };
+                 }))
+          .toBe(delegateMethod!);
+
+      expect(patchMethod(
+                 ChildType.prototype, 'method',
+                 (delegate: Function, symbol: string, name: string) => {
+                   childPatched = true;
+                   return function(self, args) {
+                     return delegate.apply(self, ['child patch', args[0]]);
+                   };
+                 }))
+          .toBe(delegateMethod!);
+
+      expect(childPatched).toBe(false);
+      expect(typeInstance.method('a0')).toEqual('OK');
+      expect(args).toEqual(['patch', 'a0']);
+      expect(self).toBe(typeInstance);
+      expect(delegateMethod!).toBe(method);
+      expect(delegateSymbol!).toEqual(zoneSymbol('method'));
+      expect((Type.prototype as any)[delegateSymbol!]).toBe(method);
+      expect(childTypeInstance.method('a0')).toEqual('OK');
+      expect(args).toEqual(['patch', 'a0']);
+      expect(self).toBe(childTypeInstance);
+      expect((ChildType.prototype as any)[delegateSymbol!]).toBe(method);
+    });
   });
 
   describe('patchPrototype', () => {
