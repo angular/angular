@@ -51,7 +51,8 @@ runInEachFileSystem(() => {
       const program = ts.createProgram({host, options, rootNames: host.inputFiles});
       const compiler = new NgCompiler(
           host, options, program, new ReusedProgramStrategy(program, host, options, []),
-          new NoopIncrementalBuildStrategy(), /** enableTemplateTypeChecker */ false);
+          new NoopIncrementalBuildStrategy(), /** enableTemplateTypeChecker */ false,
+          /* usePoisonedData */ false);
 
       const diags = compiler.getDiagnostics(getSourceFileOrError(program, COMPONENT));
       expect(diags.length).toBe(1);
@@ -100,7 +101,8 @@ runInEachFileSystem(() => {
         const CmpC = getClass(getSourceFileOrError(program, cmpCFile), 'CmpC');
         const compiler = new NgCompiler(
             host, options, program, new ReusedProgramStrategy(program, host, options, []),
-            new NoopIncrementalBuildStrategy(), /** enableTemplateTypeChecker */ false);
+            new NoopIncrementalBuildStrategy(), /** enableTemplateTypeChecker */ false,
+            /* usePoisonedData */ false);
         const components = compiler.getComponentsWithTemplateFile(templateFile);
         expect(components).toEqual(new Set([CmpA, CmpC]));
       });
@@ -151,7 +153,8 @@ runInEachFileSystem(() => {
         const CmpC = getClass(getSourceFileOrError(program, cmpCFile), 'CmpC');
         const compiler = new NgCompiler(
             host, options, program, new ReusedProgramStrategy(program, host, options, []),
-            new NoopIncrementalBuildStrategy(), /** enableTemplateTypeChecker */ false);
+            new NoopIncrementalBuildStrategy(), /** enableTemplateTypeChecker */ false,
+            /* usePoisonedData */ false);
         const components = compiler.getComponentsWithStyleFile(styleFile);
         expect(components).toEqual(new Set([CmpA, CmpC]));
       });
@@ -184,7 +187,8 @@ runInEachFileSystem(() => {
         const CmpA = getClass(getSourceFileOrError(program, cmpAFile), 'CmpA');
         const compiler = new NgCompiler(
             host, options, program, new ReusedProgramStrategy(program, host, options, []),
-            new NoopIncrementalBuildStrategy(), /** enableTemplateTypeChecker */ false);
+            new NoopIncrementalBuildStrategy(), /** enableTemplateTypeChecker */ false,
+            /* usePoisonedData */ false);
         const resources = compiler.getComponentResources(CmpA);
         expect(resources).not.toBeNull();
         const {template, styles} = resources!;
@@ -219,7 +223,8 @@ runInEachFileSystem(() => {
         const CmpA = getClass(getSourceFileOrError(program, cmpAFile), 'CmpA');
         const compiler = new NgCompiler(
             host, options, program, new ReusedProgramStrategy(program, host, options, []),
-            new NoopIncrementalBuildStrategy(), /** enableTemplateTypeChecker */ false);
+            new NoopIncrementalBuildStrategy(), /** enableTemplateTypeChecker */ false,
+            /* usePoisonedData */ false);
         const resources = compiler.getComponentResources(CmpA);
         expect(resources).not.toBeNull();
         const {styles} = resources!;
@@ -250,7 +255,8 @@ runInEachFileSystem(() => {
         const program = ts.createProgram({host, options, rootNames: host.inputFiles});
         const compiler = new NgCompiler(
             host, options, program, new ReusedProgramStrategy(program, host, options, []),
-            new NoopIncrementalBuildStrategy(), /** enableTemplateTypeChecker */ false);
+            new NoopIncrementalBuildStrategy(), /** enableTemplateTypeChecker */ false,
+            /* usePoisonedData */ false);
 
         const deps = compiler.getResourceDependencies(getSourceFileOrError(program, COMPONENT));
         expect(deps.length).toBe(2);

@@ -45,6 +45,7 @@ export class CompilerFactory {
           this.programStrategy,
           this.incrementalStrategy,
           true,  // enableTemplateTypeChecker
+          true,  // usePoisonedData
           this.lastKnownProgram,
           undefined,  // perfRecorder (use default)
       );
