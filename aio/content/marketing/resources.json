@@ -552,6 +552,12 @@
             "desc": "Learn how to build a Reactive Application with Ngrx and Angular",
             "title": "Reactive State for Angular with NgRx",
             "url": "https://bpbonline.com/products/reactive-state-for-angular-with-ngrx"
+          },
+          "ngrx-reactive-state-management": {
+            "title": "NgRx: Reactive State Management for Angular",
+            "desc": "Comprehensive learning resource on building Angular apps with NgRx",
+            "url": "https://gumroad.com/l/angular-ngrx-book",
+            "logo": ""
           }
         }
       },
