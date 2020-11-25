@@ -288,6 +288,38 @@ runInEachFileSystem(() => {
       ]);
     });
 
+    it('should recover from an error in an external template', () => {
+      env.write('mod.ts', `
+        import {NgModule} from '@angular/core';
+        import {Cmp} from './cmp';
+
+        @NgModule({
+          declarations: [Cmp],
+        })
+        export class Mod {}
+      `);
+      env.write('cmp.html', '{{ error = "true" }} ');
+      env.write('cmp.ts', `
+        import {Component} from '@angular/core';
+
+        @Component({
+          templateUrl: './cmp.html',
+          selector: 'some-cmp',
+        })
+        export class Cmp {
+          error = 'false';
+        }
+      `);
+
+      // Diagnostics should show for the broken component template.
+      expect(env.driveDiagnostics().length).toBeGreaterThan(0);
+
+      env.write('cmp.html', '{{ error }} ');
+
+      // There should be no diagnostics.
+      env.driveMain();
+    });
+
     it('should recover from an error even across multiple NgModules', () => {
       // This test is a variation on the above. Two components (CmpA and CmpB) exist in an NgModule,
       // which indirectly imports a LibModule (via another NgModule in the middle). The test is
