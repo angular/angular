@@ -353,7 +353,7 @@ export class DataGroup {
     }
 
     if (res !== null) {
-      return res;
+      return await this.addServiceWorkerHeader(res);
     }
 
     // No match from the cache. Go to the network. Note that this is not an 'await'
@@ -398,6 +398,10 @@ export class DataGroup {
       // behavior of freshness.
       const fromCache = await this.loadFromCache(req, lru);
       res = (fromCache !== null) ? fromCache.res : null;
+
+      if (res !== null) {
+        res = await this.addServiceWorkerHeader(res);
+      }
     } else {
       await this.safeCacheResponse(req, res, lru, true);
     }
@@ -410,6 +414,19 @@ export class DataGroup {
 
     // No response in the cache. No choice but to fall back on the full network fetch.
     return networkFetch;
+  }
+
+  private async addServiceWorkerHeader(response: Response): Promise<Response> {
+    const newHeaders = new Headers(response.headers);
+    newHeaders.set('ngsw-service-worker', 'true');
+
+    const buffer = await response.arrayBuffer();
+
+    return new Response(buffer, {
+      status: response.status,
+      statusText: response.statusText,
+      headers: newHeaders
+    });
   }
 
   private networkFetchWithTimeout(req: Request): [Promise<Response|undefined>, Promise<Response>] {
