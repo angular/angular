@@ -68,7 +68,7 @@ The generated `src/app/highlight.directive.ts` is as follows:
 The imported `Directive` symbol provides Angular the `@Directive` decorator.
 
 The `@Directive` decorator's lone configuration property specifies the directive's
-[CSS attribute selector](https://developer.mozilla.org/en-US/docs/Web/CSS/Attribute_selectors), `[appHighlight]`.
+[CSS attribute selector](https://developer.mozilla.org/docs/Web/CSS/Attribute_selectors), `[appHighlight]`.
 
 It's the brackets (`[]`) that make it an attribute selector.
 Angular locates each element in the template that has an attribute named `appHighlight` and applies the logic of this directive to that element.
