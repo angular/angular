@@ -12,54 +12,62 @@ import {Observable, Observer, of} from 'rxjs';
 import {Data, ResolveData, Route, Routes} from './config';
 import {ActivatedRouteSnapshot, inheritedParamsDataResolve, ParamsInheritanceStrategy, RouterStateSnapshot} from './router_state';
 import {defaultUrlMatcher, PRIMARY_OUTLET} from './shared';
-import {mapChildrenIntoArray, UrlSegment, UrlSegmentGroup, UrlTree} from './url_tree';
+import {UrlSegment, UrlSegmentGroup, UrlTree} from './url_tree';
 import {forEach, last} from './utils/collection';
 import {getOutlet} from './utils/config';
 import {TreeNode} from './utils/tree';
 
 class NoMatch {}
 
+function newObservableError(e: unknown): Observable<RouterStateSnapshot> {
+  // TODO(atscott): This pattern is used throughout the router code and can be `throwError` instead.
+  return new Observable<RouterStateSnapshot>((obs: Observer<RouterStateSnapshot>) => obs.error(e));
+}
+
 export function recognize(
     rootComponentType: Type<any>|null, config: Routes, urlTree: UrlTree, url: string,
     paramsInheritanceStrategy: ParamsInheritanceStrategy = 'emptyOnly',
     relativeLinkResolution: 'legacy'|'corrected' = 'legacy'): Observable<RouterStateSnapshot> {
-  return new Recognizer(
-             rootComponentType, config, urlTree, url, paramsInheritanceStrategy,
-             relativeLinkResolution)
-      .recognize();
+  try {
+    const result = new Recognizer(
+                       rootComponentType, config, urlTree, url, paramsInheritanceStrategy,
+                       relativeLinkResolution)
+                       .recognize();
+    if (result === null) {
+      return newObservableError(new NoMatch());
+    } else {
+      return of(result);
+    }
+  } catch (e) {
+    // Catch the potential error from recognize due to duplicate outlet matches and return as an
+    // `Observable` error instead.
+    return newObservableError(e);
+  }
 }
 
-class Recognizer {
+export class Recognizer {
   constructor(
       private rootComponentType: Type<any>|null, private config: Routes, private urlTree: UrlTree,
       private url: string, private paramsInheritanceStrategy: ParamsInheritanceStrategy,
       private relativeLinkResolution: 'legacy'|'corrected') {}
 
-  recognize(): Observable<RouterStateSnapshot> {
-    try {
-      const rootSegmentGroup =
-          split(this.urlTree.root, [], [], this.config, this.relativeLinkResolution).segmentGroup;
+  recognize(): RouterStateSnapshot|null {
+    const rootSegmentGroup =
+        split(this.urlTree.root, [], [], this.config, this.relativeLinkResolution).segmentGroup;
 
-      const children = this.processSegmentGroup(this.config, rootSegmentGroup, PRIMARY_OUTLET);
-      if (children === null) {
-        return new Observable<RouterStateSnapshot>(
-            (obs: Observer<RouterStateSnapshot>) => obs.error(new NoMatch()));
-      }
-
-      const root = new ActivatedRouteSnapshot(
-          [], Object.freeze({}), Object.freeze({...this.urlTree.queryParams}),
-          this.urlTree.fragment!, {}, PRIMARY_OUTLET, this.rootComponentType, null,
-          this.urlTree.root, -1, {});
-
-      const rootNode = new TreeNode<ActivatedRouteSnapshot>(root, children);
-      const routeState = new RouterStateSnapshot(this.url, rootNode);
-      this.inheritParamsAndData(routeState._root);
-      return of(routeState);
-
-    } catch (e) {
-      return new Observable<RouterStateSnapshot>(
-          (obs: Observer<RouterStateSnapshot>) => obs.error(e));
+    const children = this.processSegmentGroup(this.config, rootSegmentGroup, PRIMARY_OUTLET);
+    if (children === null) {
+      return null;
     }
+
+    const root = new ActivatedRouteSnapshot(
+        [], Object.freeze({}), Object.freeze({...this.urlTree.queryParams}), this.urlTree.fragment!,
+        {}, PRIMARY_OUTLET, this.rootComponentType, null, this.urlTree.root, -1, {});
+
+    const rootNode = new TreeNode<ActivatedRouteSnapshot>(root, children);
+    const routeState = new RouterStateSnapshot(this.url, rootNode);
+    this.inheritParamsAndData(routeState._root);
+    return routeState;
   }
 
   inheritParamsAndData(routeNode: TreeNode<ActivatedRouteSnapshot>): void {
