@@ -22,3 +22,11 @@ export function checkErrors(
     }
   }
 }
+
+export function checkNoUnexpectedErrors(testPath: string, actualErrors: string[]): void {
+  if (actualErrors.length > 0) {
+    throw new Error(
+        `Unexpected errors occurred for test case at "${testPath}"\n` +
+        `Errors: ${inspect(actualErrors)}.`);
+  }
+}
