@@ -63,7 +63,7 @@ export type HttpObserve = 'body'|'events'|'response';
 
  *
  * @usageNotes
- * Sample HTTP requests for the [Tour of Heroes](/tutorial/toh-pt0) application.
+ * Sample Http requests for the [Tour of Heroes](/tutorial/toh-pt0) application.
  *
  * ### HTTP Request Example
  *
@@ -103,7 +103,7 @@ export class HttpClient {
   /**
    * Sends an `HTTPRequest` and returns a stream of `HTTPEvents`.
    *
-   * @return An `Observable` of the response, with the response body as a stream of `HTTPEvents`.
+   * @return An `Observable` of the response, with the response body as a stream of `HttpEvents`.
    */
   request<R>(req: HttpRequest<any>): Observable<HttpEvent<R>>;
 
