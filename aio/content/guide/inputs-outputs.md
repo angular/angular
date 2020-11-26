@@ -22,7 +22,7 @@ The `<parent-component>` serves as the context for the `<child-component>`.
 
 `@Input()` and `@Output()` give a child component a way to communicate with its parent component.
 `@Input()` allows a parent component to update data in the child component.
-Conversely, `@Output() allows the child to send data to a parent component.
+Conversely, `@Output()` allows the child to send data to a parent component.
 
 
 {@a input}
