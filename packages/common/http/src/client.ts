@@ -2498,7 +2498,7 @@ export class HttpClient {
    * @param body The resources to add/update.
    * @param options HTTP options
    *
-   * @return An `Observable` of the `HTTPResponse` for the request, with a response body of type
+   * @return An `Observable` of the `HttpResponse` for the request, with a response body of type
    *     string.
    */
   put(url: string, body: any|null, options: {
@@ -2516,7 +2516,7 @@ export class HttpClient {
    * @param body The resources to add/update.
    * @param options HTTP options
    *
-   * @return An `Observable` of the `HTTPResponse` for the request, with a response body
+   * @return An `Observable` of the `HttpResponse` for the request, with a response body
    * of type 'Object`.
    */
   put(url: string, body: any|null, options: {
