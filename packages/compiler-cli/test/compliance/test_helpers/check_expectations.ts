@@ -79,6 +79,10 @@ function runExtraChecks(
           `Unknown extra-check function: "${fnName}" in ${testPath}.\n` +
           `Possible choices are: ${Object.keys(EXTRA_CHECK_FUNCTIONS).map(f => `\n - ${f}`)}.`);
     }
-    expect(fn(generated, ...args)).toBe(true);
+    if (!fn(generated, ...args)) {
+      throw new Error(
+          `Extra check ${fnName}(${args.map(arg => JSON.stringify(arg)).join(',')}) in ${
+              testPath} failed for generated code:\n\n${generated}`);
+    }
   }
 }
