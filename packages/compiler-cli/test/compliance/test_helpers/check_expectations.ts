@@ -8,6 +8,7 @@
 import {FileSystem} from '../../../src/ngtsc/file_system';
 
 import {getBuildOutputDirectory, getRootDirectory} from './compile_test';
+import {verifyUniqueFactory} from './di_checks';
 import {expectEmit} from './expect_emit';
 import {replaceMacros} from './expected_file_macros';
 import {ExpectedFile, ExtraCheck} from './get_compliance_tests';
@@ -17,6 +18,7 @@ type ExtraCheckFunction = (generated: string, ...extraArgs: any[]) => boolean;
 const EXTRA_CHECK_FUNCTIONS: Record<string, ExtraCheckFunction> = {
   verifyPlaceholdersIntegrity,
   verifyUniqueConsts,
+  verifyUniqueFactory,
 };
 
 /**
