@@ -190,6 +190,7 @@ When you click delete, the child component raises an event, `deleteRequest`, whi
 The following diagram shows the different parts of the `@Input()` and `@Output()` on the `<app-input-output>` child component.
 
 <div class="lightbox">
+  <!--  TDODO **invert** the terms [target] and [source] furthest to the right on this diagram ! -->
   <img src="generated/images/guide/inputs-outputs/input-output-diagram.svg" alt="Input/Output diagram">
 </div>
 
