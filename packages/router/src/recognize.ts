@@ -41,6 +41,10 @@ class Recognizer {
           split(this.urlTree.root, [], [], this.config, this.relativeLinkResolution).segmentGroup;
 
       const children = this.processSegmentGroup(this.config, rootSegmentGroup, PRIMARY_OUTLET);
+      if (children === null) {
+        return new Observable<RouterStateSnapshot>(
+            (obs: Observer<RouterStateSnapshot>) => obs.error(new NoMatch()));
+      }
 
       const root = new ActivatedRouteSnapshot(
           [], Object.freeze({}), Object.freeze({...this.urlTree.queryParams}),
@@ -69,7 +73,7 @@ class Recognizer {
   }
 
   processSegmentGroup(config: Route[], segmentGroup: UrlSegmentGroup, outlet: string):
-      TreeNode<ActivatedRouteSnapshot>[] {
+      TreeNode<ActivatedRouteSnapshot>[]|null {
     if (segmentGroup.segments.length === 0 && segmentGroup.hasChildren()) {
       return this.processChildren(config, segmentGroup);
     }
@@ -78,11 +82,15 @@ class Recognizer {
   }
 
   processChildren(config: Route[], segmentGroup: UrlSegmentGroup):
-      TreeNode<ActivatedRouteSnapshot>[] {
+      TreeNode<ActivatedRouteSnapshot>[]|null {
     const children: Array<TreeNode<ActivatedRouteSnapshot>> = [];
     for (const childOutlet of Object.keys(segmentGroup.children)) {
       const child = segmentGroup.children[childOutlet];
-      children.push(...this.processSegmentGroup(config, child, childOutlet));
+      const outletChildren = this.processSegmentGroup(config, child, childOutlet);
+      if (outletChildren === null) {
+        return null;
+      }
+      children.push(...outletChildren);
     }
     checkOutletNameUniqueness(children);
     sortActivatedRouteSnapshots(children);
@@ -91,19 +99,18 @@ class Recognizer {
 
   processSegment(
       config: Route[], segmentGroup: UrlSegmentGroup, segments: UrlSegment[],
-      outlet: string): TreeNode<ActivatedRouteSnapshot>[] {
+      outlet: string): TreeNode<ActivatedRouteSnapshot>[]|null {
     for (const r of config) {
-      try {
-        return this.processSegmentAgainstRoute(r, segmentGroup, segments, outlet);
-      } catch (e) {
-        if (!(e instanceof NoMatch)) throw e;
+      const children = this.processSegmentAgainstRoute(r, segmentGroup, segments, outlet);
+      if (children !== null) {
+        return children;
       }
     }
     if (this.noLeftoversInUrl(segmentGroup, segments, outlet)) {
       return [];
     }
 
-    throw new NoMatch();
+    return null;
   }
 
   private noLeftoversInUrl(segmentGroup: UrlSegmentGroup, segments: UrlSegment[], outlet: string):
@@ -113,10 +120,10 @@ class Recognizer {
 
   processSegmentAgainstRoute(
       route: Route, rawSegment: UrlSegmentGroup, segments: UrlSegment[],
-      outlet: string): TreeNode<ActivatedRouteSnapshot>[] {
-    if (route.redirectTo) throw new NoMatch();
+      outlet: string): TreeNode<ActivatedRouteSnapshot>[]|null {
+    if (route.redirectTo) return null;
 
-    if ((route.outlet || PRIMARY_OUTLET) !== outlet) throw new NoMatch();
+    if ((route.outlet || PRIMARY_OUTLET) !== outlet) return null;
 
     let snapshot: ActivatedRouteSnapshot;
     let consumedSegments: UrlSegment[] = [];
@@ -129,7 +136,10 @@ class Recognizer {
           getData(route), outlet, route.component!, route, getSourceSegmentGroup(rawSegment),
           getPathIndexShift(rawSegment) + segments.length, getResolve(route));
     } else {
-      const result: MatchResult = match(rawSegment, route, segments);
+      const result: MatchResult|null = match(rawSegment, route, segments);
+      if (result === null) {
+        return null;
+      }
       consumedSegments = result.consumedSegments;
       rawSlicedSegments = segments.slice(result.lastChild);
 
@@ -147,6 +157,9 @@ class Recognizer {
 
     if (slicedSegments.length === 0 && segmentGroup.hasChildren()) {
       const children = this.processChildren(childConfig, segmentGroup);
+      if (children === null) {
+        return null;
+      }
       return [new TreeNode<ActivatedRouteSnapshot>(snapshot, children)];
     }
 
@@ -155,6 +168,9 @@ class Recognizer {
     }
 
     const children = this.processSegment(childConfig, segmentGroup, slicedSegments, PRIMARY_OUTLET);
+    if (children === null) {
+      return null;
+    }
     return [new TreeNode<ActivatedRouteSnapshot>(snapshot, children)];
   }
 }
@@ -185,10 +201,11 @@ interface MatchResult {
   parameters: any;
 }
 
-function match(segmentGroup: UrlSegmentGroup, route: Route, segments: UrlSegment[]): MatchResult {
+function match(segmentGroup: UrlSegmentGroup, route: Route, segments: UrlSegment[]): MatchResult|
+    null {
   if (route.path === '') {
     if (route.pathMatch === 'full' && (segmentGroup.hasChildren() || segments.length > 0)) {
-      throw new NoMatch();
+      return null;
     }
 
     return {consumedSegments: [], lastChild: 0, parameters: {}};
@@ -196,7 +213,7 @@ function match(segmentGroup: UrlSegmentGroup, route: Route, segments: UrlSegment
 
   const matcher = route.matcher || defaultUrlMatcher;
   const res = matcher(segments, segmentGroup, route);
-  if (!res) throw new NoMatch();
+  if (!res) return null;
 
   const posParams: {[n: string]: string} = {};
   forEach(res.posParams!, (v: UrlSegment, k: string) => {
