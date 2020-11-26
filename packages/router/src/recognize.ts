@@ -79,8 +79,11 @@ class Recognizer {
 
   processChildren(config: Route[], segmentGroup: UrlSegmentGroup):
       TreeNode<ActivatedRouteSnapshot>[] {
-    const children = mapChildrenIntoArray(
-        segmentGroup, (child, childOutlet) => this.processSegmentGroup(config, child, childOutlet));
+    const children: Array<TreeNode<ActivatedRouteSnapshot>> = [];
+    for (const childOutlet of Object.keys(segmentGroup.children)) {
+      const child = segmentGroup.children[childOutlet];
+      children.push(...this.processSegmentGroup(config, child, childOutlet));
+    }
     checkOutletNameUniqueness(children);
     sortActivatedRouteSnapshots(children);
     return children;
