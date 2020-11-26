@@ -1,7 +1,7 @@
 # Two-way binding
 
 Two-way binding gives components in your application a way to share data.
-Use two-way binding binding to listen for events and update values simultaneously between parent and child components.
+Use two-way binding to listen for events and update values simultaneously between parent and child components.
 
 <div class="alert is-helpful">
 
