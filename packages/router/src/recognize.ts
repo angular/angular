@@ -89,20 +89,42 @@ export class Recognizer {
     return this.processSegment(config, segmentGroup, segmentGroup.segments, outlet);
   }
 
+  /**
+   * Matches every child outlet in the `segmentGroup` to a `Route` in the config. Returns `null` if
+   * we cannot find a match for _any_ of the children.
+   *
+   * @param config - The `Routes` to match against
+   * @param segmentGroup - The `UrlSegmentGroup` whose children need to be matched against the
+   *     config.
+   */
   processChildren(config: Route[], segmentGroup: UrlSegmentGroup):
       TreeNode<ActivatedRouteSnapshot>[]|null {
     const children: Array<TreeNode<ActivatedRouteSnapshot>> = [];
     for (const childOutlet of Object.keys(segmentGroup.children)) {
       const child = segmentGroup.children[childOutlet];
-      const outletChildren = this.processSegmentGroup(config, child, childOutlet);
+      // Sort the config so that routes with outlets that match the one being activated appear
+      // first, followed by routes for other outlets, which might match if they have an empty path.
+      const sortedConfig = config.filter(r => getOutlet(r) === childOutlet);
+      sortedConfig.push(...config.filter(r => getOutlet(r) !== childOutlet));
+      const outletChildren = this.processSegmentGroup(sortedConfig, child, childOutlet);
       if (outletChildren === null) {
+        // Configs must match all segment children so because we did not find a match for this
+        // outlet, return `null`.
         return null;
       }
       children.push(...outletChildren);
     }
-    checkOutletNameUniqueness(children);
-    sortActivatedRouteSnapshots(children);
-    return children;
+    // Because we may have matched two outlets to the same empty path segment, we can have multiple
+    // activated results for the same outlet. We should merge the children of these results so the
+    // final return value is only one `TreeNode` per outlet.
+    const mergedChildren = mergeEmptyPathMatches(children);
+    if (typeof ngDevMode === 'undefined' || ngDevMode) {
+      // This should really never happen - we are only taking the first match for each outlet and
+      // merge the empty path matches.
+      checkOutletNameUniqueness(mergedChildren);
+    }
+    sortActivatedRouteSnapshots(mergedChildren);
+    return mergedChildren;
   }
 
   processSegment(
@@ -129,9 +151,7 @@ export class Recognizer {
   processSegmentAgainstRoute(
       route: Route, rawSegment: UrlSegmentGroup, segments: UrlSegment[],
       outlet: string): TreeNode<ActivatedRouteSnapshot>[]|null {
-    if (route.redirectTo) return null;
-
-    if ((route.outlet || PRIMARY_OUTLET) !== outlet) return null;
+    if (!isImmediateMatch(route, rawSegment, segments, outlet)) return null;
 
     let snapshot: ActivatedRouteSnapshot;
     let consumedSegments: UrlSegment[] = [];
@@ -141,8 +161,9 @@ export class Recognizer {
       const params = segments.length > 0 ? last(segments)!.parameters : {};
       snapshot = new ActivatedRouteSnapshot(
           segments, params, Object.freeze({...this.urlTree.queryParams}), this.urlTree.fragment!,
-          getData(route), outlet, route.component!, route, getSourceSegmentGroup(rawSegment),
-          getPathIndexShift(rawSegment) + segments.length, getResolve(route));
+          getData(route), getOutlet(route), route.component!, route,
+          getSourceSegmentGroup(rawSegment), getPathIndexShift(rawSegment) + segments.length,
+          getResolve(route));
     } else {
       const result: MatchResult|null = match(rawSegment, route, segments);
       if (result === null) {
@@ -153,7 +174,7 @@ export class Recognizer {
 
       snapshot = new ActivatedRouteSnapshot(
           consumedSegments, result.parameters, Object.freeze({...this.urlTree.queryParams}),
-          this.urlTree.fragment!, getData(route), outlet, route.component!, route,
+          this.urlTree.fragment!, getData(route), getOutlet(route), route.component!, route,
           getSourceSegmentGroup(rawSegment),
           getPathIndexShift(rawSegment) + consumedSegments.length, getResolve(route));
     }
@@ -175,7 +196,17 @@ export class Recognizer {
       return [new TreeNode<ActivatedRouteSnapshot>(snapshot, [])];
     }
 
-    const children = this.processSegment(childConfig, segmentGroup, slicedSegments, PRIMARY_OUTLET);
+    const matchedOnOutlet = getOutlet(route) === outlet;
+    // If we matched a config due to empty path match on a different outlet, we need to continue
+    // passing the current outlet for the segment rather than switch to PRIMARY.
+    // Note that we switch to primary when we have a match because outlet configs look like this:
+    // {path: 'a', outlet: 'a', children: [
+    //  {path: 'b', component: B},
+    //  {path: 'c', component: C},
+    // ]}
+    // Notice that the children of the named outlet are configured with the primary outlet
+    const children = this.processSegment(
+        childConfig, segmentGroup, slicedSegments, matchedOnOutlet ? PRIMARY_OUTLET : outlet);
     if (children === null) {
       return null;
     }
@@ -232,6 +263,37 @@ function match(segmentGroup: UrlSegmentGroup, route: Route, segments: UrlSegment
       posParams;
 
   return {consumedSegments: res.consumed, lastChild: res.consumed.length, parameters};
+}
+
+/**
+ * Finds `TreeNode`s with matching empty path route configs and merges them into `TreeNode` with the
+ * children from each duplicate. This is necessary because different outlets can match a single
+ * empty path route config and the results need to then be merged.
+ */
+function mergeEmptyPathMatches(nodes: Array<TreeNode<ActivatedRouteSnapshot>>):
+    Array<TreeNode<ActivatedRouteSnapshot>> {
+  const result: Array<TreeNode<ActivatedRouteSnapshot>> = [];
+
+  function hasEmptyConfig(node: TreeNode<ActivatedRouteSnapshot>) {
+    const config = node.value.routeConfig;
+    return config && config.path === '' && config.redirectTo === undefined;
+  }
+
+  for (const node of nodes) {
+    if (!hasEmptyConfig(node)) {
+      result.push(node);
+      continue;
+    }
+
+    const duplicateEmptyPathNode =
+        result.find(resultNode => node.value.routeConfig === resultNode.value.routeConfig);
+    if (duplicateEmptyPathNode !== undefined) {
+      duplicateEmptyPathNode.children.push(...node.children);
+    } else {
+      result.push(node);
+    }
+  }
+  return result;
 }
 
 function checkOutletNameUniqueness(nodes: TreeNode<ActivatedRouteSnapshot>[]): void {
@@ -363,4 +425,36 @@ function getData(route: Route): Data {
 
 function getResolve(route: Route): ResolveData {
   return route.resolve || {};
+}
+
+/**
+ * Determines if `route` is a path match for the `rawSegment`, `segments`, and `outlet` without
+ * verifying that its children are a full match for the remainder of the `rawSegment` children as
+ * well.
+ */
+function isImmediateMatch(
+    route: Route, rawSegment: UrlSegmentGroup, segments: UrlSegment[], outlet: string): boolean {
+  if (route.redirectTo) {
+    return false;
+  }
+  // We allow matches to empty paths when the outlets differ so we can match a url like `/(b:b)` to
+  // a config like
+  // * `{path: '', children: [{path: 'b', outlet: 'b'}]}`
+  // or even
+  // * `{path: '', outlet: 'a', children: [{path: 'b', outlet: 'b'}]`
+  //
+  // The exception here is when the segment outlet is for the primary outlet. This would
+  // result in a match inside the named outlet because all children there are written as primary
+  // outlets. So we need to prevent child named outlet matches in a url like `/b` in a config like
+  // * `{path: '', outlet: 'x' children: [{path: 'b'}]}`
+  // This should only match if the url is `/(x:b)`.
+  if (getOutlet(route) !== outlet &&
+      (outlet === PRIMARY_OUTLET || !emptyPathMatch(rawSegment, segments, route))) {
+    return false;
+  }
+  if (route.path === '**') {
+    return true;
+  } else {
+    return match(rawSegment, route, segments) !== null;
+  }
 }
