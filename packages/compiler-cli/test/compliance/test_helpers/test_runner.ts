@@ -9,7 +9,7 @@ import {FileSystem} from '../../../src/ngtsc/file_system';
 import {checkExpectations} from '../test_helpers/check_expectations';
 import {CompileResult, initMockTestFileSystem} from '../test_helpers/compile_test';
 import {ComplianceTest, getAllComplianceTests} from '../test_helpers/get_compliance_tests';
-import {checkErrors} from './check_errors';
+import {checkErrors, checkNoUnexpectedErrors} from './check_errors';
 
 /**
  * Set up jasmine specs for each of the compliance tests.
@@ -46,6 +46,7 @@ export function runTests(
                   test.relativePath, expectation.failureMessage, expectation.expectedErrors,
                   errors);
             } else {
+              checkNoUnexpectedErrors(test.relativePath, errors);
               checkExpectations(
                   fs, test.relativePath, expectation.failureMessage, expectation.files,
                   expectation.extraChecks);
