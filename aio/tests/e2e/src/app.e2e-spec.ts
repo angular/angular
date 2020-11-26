@@ -87,7 +87,7 @@ describe('site App', function() {
     // Tutorial folder should still be expanded because this test runs in wide mode
     // Navigate to the tutorial introduction via a link in the sidenav
     page.click(page.getNavItem(/El Editor de Héroe/i));
-    expect(page.getDocViewerText()).toMatch(/The hero editor/i);
+    expect(page.getDocViewerText()).toMatch(/El editor de Héroe/i);
   });
 
   it('should render `{@example}` dgeni tags as `<code-example>` elements with HTML escaped content', () => {
