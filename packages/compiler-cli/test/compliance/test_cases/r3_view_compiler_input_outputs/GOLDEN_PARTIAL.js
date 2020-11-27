@@ -97,3 +97,4 @@ export declare class MyModule {
     static ɵmod: i0.ɵɵNgModuleDefWithMeta<MyModule, [typeof MyDirective], never, never>;
     static ɵinj: i0.ɵɵInjectorDef<MyModule>;
 }
+
