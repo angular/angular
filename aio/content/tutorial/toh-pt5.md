@@ -1,32 +1,32 @@
-# Add in-app navigation with routing
+# Agregar navegación en la aplicación con enrutamiento
 
-There are new requirements for the Tour of Heroes app:
+Hay nuevos requisitos para la aplicación Tour of Heroes:
 
-* Add a *Dashboard* view.
-* Add the ability to navigate between the *Heroes* and *Dashboard* views.
-* When users click a hero name in either view, navigate to a detail view of the selected hero.
-* When users click a *deep link* in an email, open the detail view for a particular hero.
+* Agregar una vista de *Panel de control*.
+* Agregue la capacidad de navegar entre las vistas *Heroes* y *Dashboard*.
+* Cuando los usuarios hacen clic en el nombre de un héroe en cualquiera de las vistas, navega a una vista detallada del héroe seleccionado.
+* Cuando los usuarios hacen clic en un *enlace profundo* en un correo electrónico, abre la vista detallada de un héroe en particular.
 
 <div class="alert is-helpful">
 
-  For the sample app that this page describes, see the <live-example></live-example>.
+  Para ver la aplicación de ejemplo que describe esta página, consulte el<live-example></live-example>.
 
 </div>
 
-When you’re done, users will be able to navigate the app like this:
+Cuando haya terminado, los usuarios podrán navegar por la aplicación de esta manera:
 
 <div class="lightbox">
   <img src='generated/images/guide/toh/nav-diagram.png' alt="View navigations">
 </div>
 
-## Add the `AppRoutingModule`
+## Agregar el `AppRoutingModule`
 
-In Angular, the best practice is to load and configure the router in a separate, top-level module
-that is dedicated to routing and imported by the root `AppModule`.
+En Angular, la mejor práctica es cargar y configurar el enrutador en un módulo de nivel superior separado
+que está dedicado al enrutamiento e importado por la raíz `AppModule`.
 
-By convention, the module class name is `AppRoutingModule` and it belongs in the `app-routing.module.ts` in the `src/app` folder.
+Por convención, el nombre de la clase del módulo es `AppRoutingModule` y pertenece a `app-routing.module.ts` en la carpeta `src/app`.
 
-Use the CLI to generate it.
+Utiliza el CLI para generarlo.
 
 <code-example language="sh" class="code-shell">
   ng generate module app-routing --flat --module=app
@@ -34,52 +34,51 @@ Use the CLI to generate it.
 
 <div class="alert is-helpful">
 
-`--flat` puts the file in `src/app` instead of its own folder.<br>
-`--module=app` tells the CLI to register it in the `imports` array of the `AppModule`.
+`--flat` coloca el archivo en `src/app` en lugar de en su propia carpeta. <br>
+`--module=app` le dice a la CLI que lo registre en la matriz de `importaciones` del `AppModule`.
 </div>
 
-The generated file looks like this:
+El archivo generado se ve así:
 
 <code-example path="toh-pt5/src/app/app-routing.module.0.ts" header="src/app/app-routing.module.ts (generated)">
 </code-example>
 
-Replace it with the following:
+Reemplácelo con lo siguiente:
 
 <code-example path="toh-pt5/src/app/app-routing.module.1.ts" header="src/app/app-routing.module.ts (updated)">
 </code-example>
 
-First, `AppRoutingModule` imports `RouterModule` and `Routes` so the app can have routing functionality. The next import, `HeroesComponent`, will give the Router somewhere to go once you configure the routes.
+Primero, `AppRoutingModule` importa `RouterModule` y `Routes` para que la aplicación pueda tener funcionalidad de enrutamiento. La siguiente importación, `HeroesComponent`, le dará al enrutador un lugar adonde ir una vez que configure las rutas.
 
-Notice that the `CommonModule` references and `declarations` array are unnecessary, so are no
-longer part of `AppRoutingModule`. The following sections explain the rest of the `AppRoutingModule` in more detail.
+Ten en cuenta que las referencias de CommonModule y la matriz de declaraciones son innecesarias, por lo que no
+parte más larga de `AppRoutingModule`. Las siguientes secciones explican el resto del `AppRoutingModule` con más detalle.
 
+### Rutas
 
-### Routes
+La siguiente parte del archivo es donde configura sus rutas.
+*Rutas* le indican al enrutador qué vista mostrar cuando un usuario hace clic en un enlace o
+pega una URL en la barra de direcciones del navegador.
 
-The next part of the file is where you configure your routes.
-*Routes* tell the Router which view to display when a user clicks a link or
-pastes a URL into the browser address bar.
-
-Since `AppRoutingModule` already imports `HeroesComponent`, you can use it in the `routes` array:
+Como `AppRoutingModule` ya importa `HeroesComponent`, puedes usarlo en la matriz de `rutas`:
 
 <code-example path="toh-pt5/src/app/app-routing.module.ts" header="src/app/app-routing.module.ts"
   region="heroes-route">
 </code-example>
 
-A typical Angular `Route` has two properties:
+Una `Ruta` típica de Angular tiene dos propiedades:
 
-* `path`: a string that matches the URL in the browser address bar.
-* `component`: the component that the router should create when navigating to this route.
+* `path`: una cadena que coincide con la URL en la barra de direcciones del navegador.
+* `componet`: el componente que el enrutador debe crear al navegar a esta ruta.
 
-This tells the router to match that URL to `path: 'heroes'`
-and display the `HeroesComponent` when the URL is something like `localhost:4200/heroes`.
+Esto le dice al enrutador que haga coincidir esa URL con `path: 'héroes'`
+y mostrar el `HeroesComponent` cuando la URL sea algo como `localhost:4200/heroes`.
 
 ### `RouterModule.forRoot()`
 
-The `@NgModule` metadata initializes the router and starts it listening for browser location changes.
+Los metadatos `@NgModule` inicializan el enrutador y lo hacen escuchar los cambios de ubicación del navegador.
 
-The following line adds the `RouterModule` to the `AppRoutingModule` `imports` array and
-configures it with the `routes` in one step by calling
+La siguiente línea agrega el `RouterModule` a la matriz `AppRoutingModule` `importa` y
+lo configura con las `rutas` en un solo paso llamando
 `RouterModule.forRoot()`:
 
 <code-example path="toh-pt5/src/app/app-routing.module.ts" header="src/app/app-routing.module.ts" region="ngmodule-imports">
@@ -87,100 +86,99 @@ configures it with the `routes` in one step by calling
 
 <div class="alert is-helpful">
 
-  The method is called `forRoot()` because you configure the router at the application's root level.
-  The `forRoot()` method supplies the service providers and directives needed for routing,
-  and performs the initial navigation based on the current browser URL.
+  El método se llama `forRoot()` porque configura el  enrutador en el nivel raíz de la aplicación.
+   El método `forRoot()` proporciona los proveedores de servicios y las directivas necesarias para el enrutamiento,
+   y realiza la navegación inicial basada en la URL del navegador actual.
 
 </div>
 
-Next, `AppRoutingModule` exports `RouterModule` so it will be available throughout the app.
+A continuación, `AppRoutingModule` exporta `RouterModule` para que esté disponible en toda la aplicación.
 
 <code-example path="toh-pt5/src/app/app-routing.module.ts" header="src/app/app-routing.module.ts (exports array)" region="export-routermodule">
 </code-example>
 
-## Add `RouterOutlet`
+## Agregar `RouterOutlet`
 
-Open the `AppComponent` template and replace the `<app-heroes>` element with a `<router-outlet>` element.
+Abre la plantilla `AppComponent` y reemplaza el elemento `<app-heroes>` con un elemento `<router-outlet>`.
 
 <code-example path="toh-pt5/src/app/app.component.html" region="outlet" header="src/app/app.component.html (router-outlet)">
 </code-example>
 
-The `AppComponent` template no longer needs `<app-heroes>` because the app will only display the `HeroesComponent` when the user navigates to it.
+La plantilla `AppComponent` ya no necesita `<app-heroes>` porque la aplicación solo mostrará el `HeroesComponent` cuando el usuario navegue hacia él.
 
-The `<router-outlet>` tells the router where to display routed views.
+El `<router-outlet>` le dice al enrutador dónde mostrar las vistas enrutadas.
 
 <div class="alert is-helpful">
 
-The `RouterOutlet` is one of the router directives that became available to the `AppComponent`
-because `AppModule` imports `AppRoutingModule` which exported `RouterModule`. The `ng generate` command you ran at the start of this tutorial added this import because of the `--module=app` flag. If you manually created `app-routing.module.ts` or used a tool other than the CLI to do so, you'll need to import `AppRoutingModule` into `app.module.ts` and add it to the `imports` array of the `NgModule`.
+El `RouterOutlet` es una de las directivas del enrutador que estuvo disponible para el `AppComponent`
+porque `AppModule` importa `AppRoutingModule` que exportó `RouterModule`. El comando `ng generate` que ejecutó al comienzo de este tutorial agregó esta importación debido a la marca `--module=app`. Si creó manualmente `app-routing.module.ts` o usó una herramienta que no sea la CLI para hacerlo, deberá importar `AppRoutingModule` a `app.module.ts` y agregarlo a las `importaciones` matriz del `NgModule`.
 
 </div>
 
-#### Try it
+#### Pruébalo
 
-You should still be running with this CLI command.
+Debería seguir ejecutando este comando CLI.
 
 <code-example language="sh" class="code-shell">
   ng serve
 </code-example>
 
-The browser should refresh and display the app title but not the list of heroes.
+El navegador debería actualizar y mostrar el título de la aplicación, pero no la lista de héroes.
 
-Look at the browser's address bar.
-The URL ends in `/`.
-The route path to `HeroesComponent` is `/heroes`.
+Mira la barra de direcciones del navegador.
+La URL termina en `/`.
+La ruta de acceso a `HeroesComponent` es `/heroes`.
 
-Append `/heroes` to the URL in the browser address bar.
-You should see the familiar heroes master/detail view.
+Agrega `/heroes` a la URL en la barra de direcciones del navegador.
+Debería ver la vista maestra / detallada de héroes familiares.
 
 {@a routerlink}
 
-## Add a navigation link (`routerLink`)
+## Agregar un enlace de navegación (`routerLink`)
 
-Ideally, users should be able to click a link to navigate rather
-than pasting a route URL into the address bar.
+Idealmente, los usuarios deberían poder hacer clic en un enlace para navegar en lugar de
+que pegar una URL de ruta en la barra de direcciones.
 
-Add a `<nav>` element and, within that, an anchor element that, when clicked,
-triggers navigation to the `HeroesComponent`.
-The revised `AppComponent` template looks like this:
+Agrega un elemento `<nav>` y, dentro de él, un elemento de ancla que, al hacer clic,
+activa la navegación al `HeroesComponent`.
+La plantilla `AppComponent` revisada se ve así:
 
 <code-example path="toh-pt5/src/app/app.component.html" region="heroes" header="src/app/app.component.html (heroes RouterLink)">
 </code-example>
 
-A [`routerLink` attribute](#routerlink) is set to `"/heroes"`,
-the string that the router matches to the route to `HeroesComponent`.
-The `routerLink` is the selector for the [`RouterLink` directive](/api/router/RouterLink)
-that turns user clicks into router navigations.
-It's another of the public directives in the `RouterModule`.
+Un [atributo `routerLink`](#routerlink) se establece en `"/heroes"`,
+la cadena que el enrutador coincide con la ruta a `HeroesComponent`.
+El `routerLink` es el selector para la [directiva `RouterLink`](/api/router/RouterLink)
+que convierte los clics del usuario en navegaciones del enrutador.
+Es otra de las directivas públicas del `RouterModule`.
 
-The browser refreshes and displays the app title and heroes link,
-but not the heroes list.
+El navegador se actualiza y muestra el título de la aplicación y el enlace de héroes.
+pero no la lista de héroes.
 
-Click the link.
-The address bar updates to `/heroes` and the list of heroes appears.
+Haz clic en el enlace.
+La barra de direcciones se actualiza a `/heroes` y aparece la lista de héroes.
 
 <div class="alert is-helpful">
 
-Make this and future navigation links look better by adding private CSS styles to `app.component.css`
-as listed in the [final code review](#appcomponent) below.
+Hace que este y los enlaces de navegación futuros se vean mejor agregando estilos CSS privados a `app.component.css`
+como se indica en la [revisión final del código](#appcomponent) a continuación.
 
 </div>
 
+## Agregar una vista de panel
 
-## Add a dashboard view
+El enrutamiento tiene más sentido cuando hay varias vistas.
+Hasta ahora solo existe la vista de héroes.
 
-Routing makes more sense when there are multiple views.
-So far there's only the heroes view.
-
-Add a `DashboardComponent` using the CLI:
+Agrega un `DashboardComponent` usando la CLI:
 
 <code-example language="sh" class="code-shell">
   ng generate component dashboard
 </code-example>
 
-The CLI generates the files for the `DashboardComponent` and declares it in `AppModule`.
+La CLI genera los archivos para el `DashboardComponent` y lo declara en `AppModule`.
 
-Replace the default file content in these three files as follows:
+Reemplaza el contenido del archivo predeterminado en estos tres archivos de la siguiente manera:
 
 <code-tabs>
   <code-pane
@@ -196,121 +194,121 @@ Replace the default file content in these three files as follows:
   </code-pane>
 </code-tabs>
 
-The  _template_ presents a grid of hero name links.
+La _plantilla_ presenta una cuadrícula de enlaces de nombres de héroes.
 
-* The `*ngFor` repeater creates as many links as are in the component's `heroes` array.
-* The links are styled as colored blocks by the `dashboard.component.css`.
-* The links don't go anywhere yet but [they will shortly](#hero-details).
+* El repetidor `* ngFor` crea tantos enlaces como hay en en el arreglo `heroes` del componente.
+* Los enlaces están diseñados como bloques de colores por el `dashboard.component.css`.
+* Los enlaces no van a ninguna parte todavía, pero [lo harán en breve](#hero-details).
 
-The _class_ is similar to the `HeroesComponent` class.
-* It defines a `heroes` array property.
-* The constructor expects Angular to inject the `HeroService` into a private `heroService` property.
-* The `ngOnInit()` lifecycle hook calls `getHeroes()`.
+La _clase_ es similar a la clase `HeroesComponent`.
+* Define una propiedad de matriz de héroes.
+* El constructor espera que Angular inyecte el `HeroService` en una propiedad privada de `heroService`.
+* El gancho del ciclo de vida `ngOnInit()` llama a `getHeroes()`.
 
-This `getHeroes()` returns the sliced list of heroes at positions 1 and 5, returning only four of the Top Heroes (2nd, 3rd, 4th, and 5th).
+Este `getHeroes()` devuelve la lista dividida de héroes en las posiciones 1 y 5, devolviendo solo cuatro de los mejores héroes (segundo, tercero, cuarto y quinto).
 
 <code-example path="toh-pt5/src/app/dashboard/dashboard.component.ts" header="src/app/dashboard/dashboard.component.ts" region="getHeroes">
 </code-example>
 
-### Add the dashboard route
+### Agregar la ruta del tablero(dashboard)
 
-To navigate to the dashboard, the router needs an appropriate route.
+Para navegar hasta el tablero, el enrutador necesita una ruta adecuada.
 
-Import the `DashboardComponent` in the `AppRoutingModule`.
+Importa el `DashboardComponent` en el `AppRoutingModule`.
 
 <code-example path="toh-pt5/src/app/app-routing.module.ts" region="import-dashboard" header="src/app/app-routing.module.ts (import DashboardComponent)">
 </code-example>
 
-Add a route to the `AppRoutingModule.routes` array that matches a path to the `DashboardComponent`.
+Agrega una ruta a la matriz `AppRoutingModule.routes` que coincida con una ruta al `DashboardComponent`.
 
 <code-example path="toh-pt5/src/app/app-routing.module.ts" header="src/app/app-routing.module.ts" region="dashboard-route">
 </code-example>
 
-### Add a default route
+### Agregar una ruta predeterminada
 
-When the app starts, the browser's address bar points to the web site's root.
-That doesn't match any existing route so the router doesn't navigate anywhere.
-The space below the `<router-outlet>` is blank.
+Cuando se inicia la aplicación, la barra de direcciones del navegador apunta a la raíz del sitio web.
+Eso no coincide con ninguna ruta existente, por lo que el enrutador no navega a ninguna parte.
+El espacio debajo de `<router-outlet>` está en blanco.
 
-To make the app navigate to the dashboard automatically, add the following
-route to the `AppRoutingModule.Routes` array.
+Para que la aplicación navegue al panel de control automáticamente, agreaga la siguiente
+ruta a la matriz `AppRoutingModule.Routes`.
 
 <code-example path="toh-pt5/src/app/app-routing.module.ts" header="src/app/app-routing.module.ts" region="redirect-route">
 </code-example>
 
-This route redirects a URL that fully matches the empty path to the route whose path is `'/dashboard'`.
+Esta ruta redirige una URL que coincide completamente con la ruta vacía a la ruta cuya ruta es `'/dashboard'`.
 
-After the browser refreshes, the router loads the `DashboardComponent`
-and the browser address bar shows the `/dashboard` URL.
+Después de que el navegador se actualiza, el enrutador carga el `DashboardComponent`
+y la barra de direcciones del navegador muestra la URL `/dashboard`.
 
-### Add dashboard link to the shell
+### Agregar enlace del tablero al caparazón
 
-The user should be able to navigate back and forth between the
-`DashboardComponent` and the `HeroesComponent` by clicking links in the
-navigation area near the top of the page.
+El usuario debe poder navegar hacia adelante y hacia atrás entre
+`DashboardComponent` y `HeroesComponent` haciendo clic en los enlaces en el
+área de navegación cerca de la parte superior de la página.
 
-Add a dashboard navigation link to the `AppComponent` shell template, just above the *Heroes* link.
+Agrega un enlace de navegación del panel de control a la plantilla de caparazón `AppComponent`, justo encima del enlace *Heroes*.
 
 <code-example path="toh-pt5/src/app/app.component.html" header="src/app/app.component.html">
 </code-example>
 
-After the browser refreshes you can navigate freely between the two views by clicking the links.
+Después de que se actualice el navegador, puedes navegar libremente entre las dos vistas haciendo clic en los enlaces.
 
 {@a hero-details}
-## Navigating to hero details
+## Navegando a los detalles del héroe
 
-The `HeroDetailsComponent` displays details of a selected hero.
-At the moment the `HeroDetailsComponent` is only visible at the bottom of the `HeroesComponent`
+El `HeroDetailsComponent` muestra los detalles de un héroe seleccionado.
+Por el momento, el `HeroDetailsComponent` solo es visible en la parte inferior del `HeroesComponent`
 
-The user should be able to get to these details in three ways.
+El usuario debería poder acceder a estos detalles de tres formas.
 
-1. By clicking a hero in the dashboard.
-1. By clicking a hero in the heroes list.
-1. By pasting a "deep link" URL into the browser address bar that identifies the hero to display.
+1. Haciendo clic en un héroe en el tablero.
+1. Haciendo clic en un héroe de la lista de héroes.
+1. Pegando una URL de "enlace profundo" en la barra de direcciones del navegador que identifica al héroe a mostrar.
 
-In this section, you'll enable navigation to the `HeroDetailsComponent`
-and liberate it from the `HeroesComponent`.
+En esta sección, habilitará la navegación al `HeroDetailsComponent`
+y libérelo del `HeroesComponent`.
 
-### Delete _hero details_ from `HeroesComponent`
+### Eliminar _detalles de héroe_ de `HeroesComponent`
 
-When the user clicks a hero item in the `HeroesComponent`,
-the app should navigate to the `HeroDetailComponent`,
-replacing the heroes list view with the hero detail view.
-The heroes list view should no longer show hero details as it does now.
+Cuando el usuario hace clic en un elemento de héroe en el `HeroesComponent`,
+la aplicación debería navegar hasta el `HeroDetailComponent`,
+reemplazando la vista de lista de héroes con la vista de detalles de héroe.
+La vista de lista de héroes ya no debería mostrar los detalles de los héroes como lo hace ahora.
 
-Open the `HeroesComponent` template (`heroes/heroes.component.html`) and
-delete the `<app-hero-detail>` element from the bottom.
+Abre la plantilla `HeroesComponent` (`heroes/heroes.component.html`) y
+elimine el elemento `<app-hero-detail>` de la parte inferior.
 
-Clicking a hero item now does nothing.
-You'll [fix that shortly](#heroes-component-links) after you enable routing to the `HeroDetailComponent`.
+Hacer clic en un elemento de héroe ahora no hace nada.
+Lo [arreglará en breve](#heroes-component-links) después de habilitar el enrutamiento al `HeroDetailComponent`.
 
-### Add a _hero detail_ route
+### Agregar una ruta _detalle del héroe_
 
-A URL like `~/detail/11` would be a good URL for navigating to the *Hero Detail* view of the hero whose `id` is `11`.
+Una URL como `~/detail/11` sería una buena URL para navegar a la vista *Hero Detail* del héroe cuyo `id` es `11`.
 
-Open `AppRoutingModule` and import `HeroDetailComponent`.
+Abre `AppRoutingModule` e importe `HeroDetailComponent`.
 
 <code-example path="toh-pt5/src/app/app-routing.module.ts" region="import-herodetail" header="src/app/app-routing.module.ts (import HeroDetailComponent)">
 </code-example>
 
-Then add a _parameterized_ route to the `AppRoutingModule.routes` array that matches the path pattern to the _hero detail_ view.
+Luego, agrega una ruta _parametrizada_ a la matriz `AppRoutingModule.routes` que coincida con el patrón de ruta de la vista _detalle del héroe_.
 
 <code-example path="toh-pt5/src/app/app-routing.module.ts" header="src/app/app-routing.module.ts" region="detail-route">
 </code-example>
 
-The colon (:) in the `path` indicates that `:id` is a placeholder for a specific hero `id`.
+Los dos puntos (:) en el `path` indican que `: id` es un marcador de posición para un `id` de héroe específico.
 
-At this point, all application routes are in place.
+En este punto, todas las rutas de aplicación están en su lugar.
 
 <code-example path="toh-pt5/src/app/app-routing.module.ts" region="routes" header="src/app/app-routing.module.ts (all routes)">
 </code-example>
 
-### `DashboardComponent` hero links
+### Enlaces de héroe de `DashboardComponent`
 
-The `DashboardComponent` hero links do nothing at the moment.
+Los enlaces de héroe `DashboardComponent` no hacen nada en este momento.
 
-Now that the router has a route to `HeroDetailComponent`,
-fix the dashboard hero links to navigate via the _parameterized_ dashboard route.
+Ahora que el enrutador tiene una ruta a `HeroDetailComponent`,
+Corrige los enlaces del héroe del tablero para navegar a través de la ruta del tablero _parameterized_.
 
 <code-example
   path="toh-pt5/src/app/dashboard/dashboard.component.html"
@@ -318,161 +316,161 @@ fix the dashboard hero links to navigate via the _parameterized_ dashboard route
   header="src/app/dashboard/dashboard.component.html (hero links)">
 </code-example>
 
-You're using Angular [interpolation binding](guide/interpolation) within the `*ngFor` repeater
-to insert the current iteration's `hero.id` into each
-[`routerLink`](#routerlink).
+Estás usando el [enlace de interpolación](guide/interpolation) Angular dentro del repetidor `*ngFor`
+para insertar el `hero.id` de la iteración actual en cada
+[`enlace del enrutador`](#routerlink).
 
 {@a heroes-component-links}
-### `HeroesComponent` hero links
+### Enlaces de héroe de `HeroesComponent`
 
-The hero items in the `HeroesComponent` are `<li>` elements whose click events
-are bound to the component's `onSelect()` method.
+Los elementos de héroe en el `HeroesComponent` son elementos` <li> `cuyos eventos de clic
+están vinculados al método `onSelect()` del componente.
 
 <code-example path="toh-pt4/src/app/heroes/heroes.component.html" region="list" header="src/app/heroes/heroes.component.html (list with onSelect)">
 </code-example>
 
-Strip the `<li>` back to just its `*ngFor`,
-wrap the badge and name in an anchor element (`<a>`),
-and add a `routerLink` attribute to the anchor that
-is the same as in the dashboard template
+Quita el `<li>` de nuevo a su `* ngFor`,
+envuelve la insignia y el nombre en un elemento de anclaje (`<a>`),
+y agrega un atributo `routerLink` al ancla que
+es el mismo que en la plantilla del panel
 
 <code-example path="toh-pt5/src/app/heroes/heroes.component.html" region="list" header="src/app/heroes/heroes.component.html (list with links)">
 </code-example>
 
-You'll have to fix the private stylesheet (`heroes.component.css`) to make
-the list look as it did before.
-Revised styles are in the [final code review](#heroescomponent) at the bottom of this guide.
+Tendrás que arreglar la hoja de estilo privada (`heroes.component.css`) para hacer
+la lista tiene el mismo aspecto que antes.
+Los estilos revisados se encuentran en la [revisión final del código](#heroescomponent) al final de esta guía.
 
-#### Remove dead code (optional)
+#### Eliminar código muerto (opcional)
 
-While the `HeroesComponent` class still works,
-the `onSelect()` method and `selectedHero` property are no longer used.
+Si bien la clase `HeroesComponent` todavía funciona,
+el método `onSelect()` y la propiedad `selectedHero` ya no se utilizan.
 
-It's nice to tidy up and you'll be grateful to yourself later.
-Here's the class after pruning away the dead code.
+Es agradable poner en orden y te lo agradecerás más tarde.
+Aquí está la clase después de podar el código muerto.
 
 <code-example path="toh-pt5/src/app/heroes/heroes.component.ts" region="class" header="src/app/heroes/heroes.component.ts (cleaned up)">
 </code-example>
 
-## Routable `HeroDetailComponent`
+## `HeroDetailComponent` enrutable
 
-Previously, the parent `HeroesComponent` set the `HeroDetailComponent.hero`
-property and the `HeroDetailComponent` displayed the hero.
+Anteriormente, el padre `HeroesComponent` configuraba el `HeroDetailComponent.hero`
+propiedad y el `HeroDetailComponent` mostraba el héroe.
 
-`HeroesComponent` doesn't do that anymore.
-Now the router creates the `HeroDetailComponent` in response to a URL such as `~/detail/11`.
+`HeroesComponent` ya no hace eso.
+Ahora el enrutador crea el `HeroDetailComponent` en respuesta a una URL como `~/detail/11`.
 
-The `HeroDetailComponent` needs a new way to obtain the hero-to-display.
-This section explains the following:
+El `HeroDetailComponent` necesita una nueva forma de obtener el héroe a mostrar.
+Esta sección explica lo siguiente:
 
-* Get the route that created it
-* Extract the `id` from the route
-* Acquire the hero with that `id` from the server via the `HeroService`
+* Obtén la ruta que lo creó
+* Extrae el `id` de la ruta
+* Adquirir el héroe con ese "id" del servidor a través de "HeroService"
 
-Add the following imports:
+Agrega las siguientes importaciones:
 
 <code-example path="toh-pt5/src/app/hero-detail/hero-detail.component.ts" region="added-imports" header="src/app/hero-detail/hero-detail.component.ts">
 </code-example>
 
 {@a hero-detail-ctor}
 
-Inject the `ActivatedRoute`, `HeroService`, and `Location` services
-into the constructor, saving their values in private fields:
+Inyecta los servicios `ActivatedRoute`, `HeroService` y `Location`
+en el constructor, guardando sus valores en campos privados:
 
 <code-example path="toh-pt5/src/app/hero-detail/hero-detail.component.ts" header="src/app/hero-detail/hero-detail.component.ts" region="ctor">
 </code-example>
 
-The [`ActivatedRoute`](api/router/ActivatedRoute) holds information about the route to this instance of the `HeroDetailComponent`.
-This component is interested in the route's parameters extracted from the URL.
-The "id" parameter is the `id` of the hero to display.
+El [`ActivatedRoute`](api/router/ActivatedRoute) contiene información sobre la ruta a esta instancia del `HeroDetailComponent`.
+Este componente está interesado en los parámetros de la ruta extraídos de la URL.
+El parámetro "id" es el `id` del héroe que se mostrará.
 
-The [`HeroService`](tutorial/toh-pt4) gets hero data from the remote server
-and this component will use it to get the hero-to-display.
+El [`HeroService`](tutorial/toh-pt4) obtiene los datos del héroe del servidor remoto
+y este componente lo usará para mostrar el héroe.
 
-The [`location`](api/common/Location) is an Angular service for interacting with the browser.
-You'll use it [later](#goback) to navigate back to the view that navigated here.
+La [`ubicación`](api/common/Location) es un servicio Angular para interactuar con el navegador.
+Lo usarás [más tarde](#goback) para volver a la vista que navegó aquí.
 
-### Extract the `id` route parameter
+### Extrae el parámetro de ruta `id`
 
-In the `ngOnInit()` [lifecycle hook](guide/lifecycle-hooks#oninit)
-call `getHero()` and define it as follows.
+En el `ngOnInit()` [gancho del ciclo de vida](guide/lifecycle-hooks#oninit)
+llama a `getHero()` y defínalo de la siguiente manera.
 
 <code-example path="toh-pt5/src/app/hero-detail/hero-detail.component.ts" header="src/app/hero-detail/hero-detail.component.ts" region="ngOnInit">
 </code-example>
 
-The `route.snapshot` is a static image of the route information shortly after the component was created.
+`Route.snapshot` es una imagen estática de la información de la ruta poco después de que se creó el componente.
 
-The `paramMap` is a dictionary of route parameter values extracted from the URL.
-The `"id"` key returns the `id` of the hero to fetch.
+El `paramMap` es un diccionario de valores de parámetros de ruta extraídos de la URL.
+La clave `"id"` devuelve el `id` del héroe a buscar.
 
-Route parameters are always strings.
-The JavaScript (+) operator converts the string to a number,
-which is what a hero `id` should be.
+Los parámetros de ruta son siempre cadenas.
+El operador JavaScript (+) convierte la cadena en un número,
+que es lo que debería ser un "id" de héroe.
 
-The browser refreshes and the app crashes with a compiler error.
-`HeroService` doesn't have a `getHero()` method.
-Add it now.
+El navegador se actualiza y la aplicación se bloquea con un error del compilador.
+`HeroService` no tiene un método `getHero()`.
+Agréguelo ahora.
 
-### Add `HeroService.getHero()`
+### Agregar `HeroService.getHero ()`
 
-Open `HeroService` and add the following `getHero()` method with the `id` after the `getHeroes()` method:
+Abre `HeroService` y agrega el siguiente método `getHero()` con el `id` después del método `getHeroes ()`:
 
 <code-example path="toh-pt5/src/app/hero.service.ts" region="getHero" header="src/app/hero.service.ts (getHero)">
 </code-example>
 
 <div class="alert is-important">
 
-Note the backticks ( &#96; ) that define a JavaScript
-[_template literal_](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals) for embedding the `id`.
+Ten en cuenta las comillas invertidas (&#96;) que definen un JavaScript
+[_plantilla literal_](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals) para incrustar el `id`.
+
 </div>
 
-Like [`getHeroes()`](tutorial/toh-pt4#observable-heroservice),
-`getHero()` has an asynchronous signature.
-It returns a _mock hero_ as an `Observable`, using the RxJS `of()` function.
+Como [`getHeroes()`](tutorial/toh-pt4#observable-heroservice),
+`getHero()` tiene una firma asincrónica.
+Devuelve un _mock hero_ como un `Observable`, usando la función RxJS `of()`.
 
-You'll be able to re-implement `getHero()` as a real `Http` request
-without having to change the `HeroDetailComponent` that calls it.
+Podrá volver a implementar `getHero()` como una solicitud real de `Http`
+sin tener que cambiar el `HeroDetailComponent` que lo llama.
 
-#### Try it
+#### Pruébalo
 
-The browser refreshes and the app is working again.
-You can click a hero in the dashboard or in the heroes list and navigate to that hero's detail view.
+El navegador se actualiza y la aplicación vuelve a funcionar.
+Puedes hacer clic en un héroe en el tablero o en la lista de héroes y navegar hasta la vista de detalles de ese héroe.
 
-If you paste `localhost:4200/detail/11` in the browser address bar,
-the router navigates to the detail view for the hero with `id: 11`,  "Dr Nice".
+Si pega `localhost:4200/detail/11` en la barra de direcciones del navegador,
+el enrutador navega a la vista detallada del héroe con `id: 11`," Dr Nice ".
 
 {@a goback}
 
-### Find the way back
+### Encuentra el camino de regreso
 
-By clicking the browser's back button,
-you can go back to the hero list or dashboard view,
-depending upon which sent you to the detail view.
+Al hacer clic en el botón Atrás del navegador,
+puede volver a la lista de héroes o la vista del panel,
+dependiendo de cuál le envió a la vista detallada.
 
-It would be nice to have a button on the `HeroDetail` view that can do that.
+Sería bueno tener un botón en la vista `HeroDetail` que pueda hacer eso.
 
-Add a *go back* button to the bottom of the component template and bind it
-to the component's `goBack()` method.
+Agrega un botón *volver* en la parte inferior de la plantilla del componente y vincúlalo
+al método `goBack()` del componente.
 
 <code-example path="toh-pt5/src/app/hero-detail/hero-detail.component.html" region="back-button" header="src/app/hero-detail/hero-detail.component.html (back button)">
 </code-example>
 
-Add a `goBack()` _method_ to the component class that navigates backward one step
-in the browser's history stack
-using the `Location` service that you [injected previously](#hero-detail-ctor).
+Agrega un método `goBack()` a la clase de componente que navega hacia atrás un paso
+en la pila de historial del navegador
+usando el servicio `Location` que [inyectaste previamente](#hero-detail-ctor).
 
 <code-example path="toh-pt5/src/app/hero-detail/hero-detail.component.ts" region="goBack" header="src/app/hero-detail/hero-detail.component.ts (goBack)">
 
 </code-example>
 
+Actualiza el navegador y comience a hacer clic.
+Los usuarios pueden navegar por la aplicación, desde el panel hasta los detalles del héroe y viceversa,
+de la lista de héroes al mini detalle a los detalles del héroe y de regreso a los héroes nuevamente.
 
-Refresh the browser and start clicking.
-Users can navigate around the app, from the dashboard to hero details and back,
-from heroes list to the mini detail to the hero details and back to the heroes again.
+## Revisión final del código
 
-## Final code review
-
-Here are the code files discussed on this page.
+Aquí están los archivos de código discutidos en esta página.
 
 {@a approutingmodule}
 {@a appmodule}
@@ -561,13 +559,13 @@ Here are the code files discussed on this page.
   </code-pane>
 </code-tabs>
 
-## Summary
+## Resumen
 
-* You added the Angular router to navigate among different components.
-* You turned the `AppComponent` into a navigation shell with `<a>` links and a `<router-outlet>`.
-* You configured the router in an `AppRoutingModule`
-* You defined simple routes, a redirect route, and a parameterized route.
-* You used the `routerLink` directive in anchor elements.
-* You refactored a tightly-coupled master/detail view into a routed detail view.
-* You used router link parameters to navigate to the detail view of a user-selected hero.
-* You shared the `HeroService` among multiple components.
+* Agregó el enrutador Angular para navegar entre diferentes componentes.
+* Convirtió el `AppComponent` en un caparazón de navegación con enlaces `<a>`y un `<router-outlet>`.
+* Configuró el enrutador en un `AppRoutingModule`
+* Definió rutas simples, una ruta de redireccionamiento y una ruta parametrizada.
+* Usó la directiva `routerLink` en elementos de anclaje.
+* Refactorizó una vista maestra/detallada estrechamente acoplada en una vista de detalle enrutada.
+* Usó parámetros de enlace del enrutador para navegar a la vista detallada de un héroe seleccionado por el usuario.
+* Compartió el "HeroService" entre varios componentes.
