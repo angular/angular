@@ -6,6 +6,7 @@ import {
     BrowserDynamicTestingModule,
     platformBrowserDynamicTesting
 } from '@angular/platform-browser-dynamic/testing';
+import { ɵDomSharedStylesHost } from '@angular/platform-browser';
 
 declare const require: any;
 
@@ -14,6 +15,13 @@ getTestBed().initTestEnvironment(
     BrowserDynamicTestingModule,
     platformBrowserDynamicTesting()
 );
+
+// TODO: Remove this workaround once we update to an Angular version that includes a fix for
+// https://github.com/angular/angular/issues/31834
+afterEach(() => {
+  getTestBed().inject(ɵDomSharedStylesHost).ngOnDestroy();
+});
+
 // Then we find all the tests.
 const context = require.context('./', true, /\.spec\.ts$/);
 // And load the modules.
