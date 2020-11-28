@@ -255,3 +255,16 @@ ng_benchmark(
     name = "view_destroy_hook",
     bundle = ":view_destroy_hook_lib",
 )
+
+ng_rollup_bundle(
+    name = "render_stringify_lib",
+    entry_point = ":render_stringify/index.ts",
+    deps = [
+        ":perf_lib",
+    ],
+)
+
+ng_benchmark(
+    name = "render_stringify",
+    bundle = ":render_stringify_lib",
+)
