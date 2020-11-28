@@ -376,11 +376,11 @@ jobs:
       #   # Run unit tests
       # - run: yarn --cwd aio test --progress=false --watch=false
         # Run e2e tests
-      - run: yarn --cwd aio e2e --configuration=ci
-      - run: yarn --cwd aio e2e --configuration=ci
-      - run: yarn --cwd aio e2e --configuration=ci
-      - run: yarn --cwd aio e2e --configuration=ci
-      - run: yarn --cwd aio e2e --configuration=ci
+      - run: yarn --cwd aio e2e --configuration=ci || (yarn --cwd aio e2e --configuration=ci && echo "Passed on 2nd attempt.")
+      - run: yarn --cwd aio e2e --configuration=ci || (yarn --cwd aio e2e --configuration=ci && echo "Passed on 2nd attempt.")
+      - run: yarn --cwd aio e2e --configuration=ci || (yarn --cwd aio e2e --configuration=ci && echo "Passed on 2nd attempt.")
+      - run: yarn --cwd aio e2e --configuration=ci || (yarn --cwd aio e2e --configuration=ci && echo "Passed on 2nd attempt.")
+      - run: yarn --cwd aio e2e --configuration=ci || (yarn --cwd aio e2e --configuration=ci && echo "Passed on 2nd attempt.")
       #   # Run PWA-score tests
       # - run: yarn --cwd aio test-pwa-score-localhost $CI_AIO_MIN_PWA_SCORE
       #   # Run accessibility tests
