@@ -364,10 +364,7 @@ jobs:
           webhook_url_env_var: SLACK_DEV_INFRA_CI_FAILURES_WEBHOOK_URL
 
   test_aio:
-    # executor: default-executor
-    executor:
-      name: default-executor
-      resource_class: xlarge
+    executor: default-executor
     steps:
       - custom_attach_workspace
       - init_environment
