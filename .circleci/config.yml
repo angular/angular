@@ -372,19 +372,23 @@ jobs:
         # Build aio
       - run: yarn --cwd aio build --progress=false
         # Lint the code
-      - run: yarn --cwd aio lint
-        # Run unit tests
-      - run: yarn --cwd aio test --progress=false --watch=false
+      # - run: yarn --cwd aio lint
+      #   # Run unit tests
+      # - run: yarn --cwd aio test --progress=false --watch=false
         # Run e2e tests
       - run: yarn --cwd aio e2e --configuration=ci
-        # Run PWA-score tests
-      - run: yarn --cwd aio test-pwa-score-localhost $CI_AIO_MIN_PWA_SCORE
-        # Run accessibility tests
-      - run: yarn --cwd aio test-a11y-score-localhost
-        # Check the bundle sizes.
-      - run: yarn --cwd aio payload-size
-        # Run unit tests for Firebase redirects
-      - run: yarn --cwd aio redirects-test
+      - run: yarn --cwd aio e2e --configuration=ci
+      - run: yarn --cwd aio e2e --configuration=ci
+      - run: yarn --cwd aio e2e --configuration=ci
+      - run: yarn --cwd aio e2e --configuration=ci
+      #   # Run PWA-score tests
+      # - run: yarn --cwd aio test-pwa-score-localhost $CI_AIO_MIN_PWA_SCORE
+      #   # Run accessibility tests
+      # - run: yarn --cwd aio test-a11y-score-localhost
+      #   # Check the bundle sizes.
+      # - run: yarn --cwd aio payload-size
+      #   # Run unit tests for Firebase redirects
+      # - run: yarn --cwd aio redirects-test
 
   deploy_aio:
     executor: default-executor
@@ -782,98 +786,115 @@ workflows:
           filters:
             branches:
               ignore: g3
-      - lint:
-          requires:
-            - setup
-      - test:
-          requires:
-            - setup
-      - test_ivy_aot:
-          requires:
-            - setup
-      - build-npm-packages:
-          requires:
-            - setup
-      - build-ivy-npm-packages:
-          requires:
-            - setup
-      - legacy-unit-tests-saucelabs:
+      # - lint:
+      #     requires:
+      #       - setup
+      # - test:
+      #     requires:
+      #       - setup
+      # - test_ivy_aot:
+      #     requires:
+      #       - setup
+      # - build-npm-packages:
+      #     requires:
+      #       - setup
+      # - build-ivy-npm-packages:
+      #     requires:
+      #       - setup
+      # - legacy-unit-tests-saucelabs:
+      #     requires:
+      #       - setup
+      - test_aio:
+          name: test_aio_1
           requires:
             - setup
       - test_aio:
+          name: test_aio_2
           requires:
             - setup
-      - deploy_aio:
-          requires:
-            - test_aio
-      - test_aio_local:
-          requires:
-            - build-npm-packages
-      - test_aio_local:
-          name: test_aio_local_viewengine
-          viewengine: true
-          requires:
-            - build-npm-packages
-      - test_aio_tools:
-          requires:
-            - build-npm-packages
-      - test_docs_examples:
-          requires:
-            - build-npm-packages
-      - test_docs_examples:
-          name: test_docs_examples_viewengine
-          viewengine: true
-          requires:
-            - build-npm-packages
-      - aio_preview:
-          # Only run on PR builds. (There can be no previews for non-PR builds.)
-          <<: *only_on_pull_requests
+      - test_aio:
+          name: test_aio_3
           requires:
             - setup
-      - test_aio_preview:
+      - test_aio:
+          name: test_aio_4
           requires:
-            - aio_preview
-      - publish_packages_as_artifacts:
+            - setup
+      - test_aio:
+          name: test_aio_5
           requires:
-            - build-npm-packages
-      - publish_snapshot:
-          # Note: no filters on this job because we want it to run for all upstream branches
-          # We'd really like to filter out pull requests here, but not yet available:
-          # https://discuss.circleci.com/t/workflows-pull-request-filter/14396/4
-          # Instead, the job just exits immediately at the first step.
-          requires:
-            # Only publish if tests and integration tests pass
-            - test
-            - test_ivy_aot
-            # Only publish if `aio`/`docs` tests using the locally built Angular packages pass
-            - test_aio_local
-            - test_aio_local_viewengine
-            - test_docs_examples
-            - test_docs_examples_viewengine
-            # Get the artifacts to publish from the build-packages-dist job
-            # since the publishing script expects the legacy outputs layout.
-            - build-npm-packages
-            - build-ivy-npm-packages
-            - legacy-unit-tests-saucelabs
-      # Temporarily disabled components-repo-unit-tests to update rules_nodejs to 2.0.0. Breaking changes in
-      # rules_nodejs create a dependency sandwich between angular/angular & angular/components that are very
-      # difficult and time consuming to resolve and involve patching @angular/bazel in components repo such
-      # as https://github.com/angular/components/commit/9e7ba251207df77164d73d66620e619bcbc4d2ad. It is simpler to
-      # 1) land angular/angular upgrade to rule_nodejs 2.0.0 which has breaking changes
-      # 2) land angular/components upgrade to rules_nodejs 2.0.0 using the @angular/bazel builds snapshot
-      # 3) update angular/angular to the landed components commit and re-enable these tests
-      # - components-repo-unit-tests:
+            - setup
+      # - deploy_aio:
+      #     requires:
+      #       - test_aio
+      # - test_aio_local:
       #     requires:
       #       - build-npm-packages
-      - test_zonejs:
-          requires:
-            - setup
-      - test_win:
-          requires:
-            - setup
-      - test_ivy_aot_win:
-          requires:
-            - setup
+      # - test_aio_local:
+      #     name: test_aio_local_viewengine
+      #     viewengine: true
+      #     requires:
+      #       - build-npm-packages
+      # - test_aio_tools:
+      #     requires:
+      #       - build-npm-packages
+      # - test_docs_examples:
+      #     requires:
+      #       - build-npm-packages
+      # - test_docs_examples:
+      #     name: test_docs_examples_viewengine
+      #     viewengine: true
+      #     requires:
+      #       - build-npm-packages
+      # - aio_preview:
+      #     # Only run on PR builds. (There can be no previews for non-PR builds.)
+      #     <<: *only_on_pull_requests
+      #     requires:
+      #       - setup
+      # - test_aio_preview:
+      #     requires:
+      #       - aio_preview
+      # - publish_packages_as_artifacts:
+      #     requires:
+      #       - build-npm-packages
+      # - publish_snapshot:
+      #     # Note: no filters on this job because we want it to run for all upstream branches
+      #     # We'd really like to filter out pull requests here, but not yet available:
+      #     # https://discuss.circleci.com/t/workflows-pull-request-filter/14396/4
+      #     # Instead, the job just exits immediately at the first step.
+      #     requires:
+      #       # Only publish if tests and integration tests pass
+      #       - test
+      #       - test_ivy_aot
+      #       # Only publish if `aio`/`docs` tests using the locally built Angular packages pass
+      #       - test_aio_local
+      #       - test_aio_local_viewengine
+      #       - test_docs_examples
+      #       - test_docs_examples_viewengine
+      #       # Get the artifacts to publish from the build-packages-dist job
+      #       # since the publishing script expects the legacy outputs layout.
+      #       - build-npm-packages
+      #       - build-ivy-npm-packages
+      #       - legacy-unit-tests-saucelabs
+      # # Temporarily disabled components-repo-unit-tests to update rules_nodejs to 2.0.0. Breaking changes in
+      # # rules_nodejs create a dependency sandwich between angular/angular & angular/components that are very
+      # # difficult and time consuming to resolve and involve patching @angular/bazel in components repo such
+      # # as https://github.com/angular/components/commit/9e7ba251207df77164d73d66620e619bcbc4d2ad. It is simpler to
+      # # 1) land angular/angular upgrade to rule_nodejs 2.0.0 which has breaking changes
+      # # 2) land angular/components upgrade to rules_nodejs 2.0.0 using the @angular/bazel builds snapshot
+      # # 3) update angular/angular to the landed components commit and re-enable these tests
+      # # - components-repo-unit-tests:
+      # #     requires:
+      # #       - build-npm-packages
+      # - test_zonejs:
+      #     requires:
+      #       - setup
+      # - test_win:
+      #     requires:
+      #       - setup
+      # - test_ivy_aot_win:
+      #     requires:
+      #       - setup
 
   monitoring:
     jobs:
