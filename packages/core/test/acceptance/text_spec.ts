@@ -129,4 +129,46 @@ describe('text instructions', () => {
 
     expect(div.innerHTML).toBe('function foo() { }');
   });
+
+  it('should stringify an object using its toString method', () => {
+    class TestObject {
+      toString() {
+        return 'toString';
+      }
+      valueOf() {
+        return 'valueOf';
+      }
+    }
+
+    @Component({template: '{{object}}'})
+    class App {
+      object = new TestObject();
+    }
+
+    TestBed.configureTestingModule({declarations: [App]});
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent).toBe('toString');
+  });
+
+  it('should stringify a symbol', () => {
+    // This test is only valid on browsers that support Symbol.
+    if (typeof Symbol === 'undefined') {
+      return;
+    }
+
+    @Component({template: '{{symbol}}'})
+    class App {
+      symbol = Symbol('hello');
+    }
+
+    TestBed.configureTestingModule({declarations: [App]});
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    // Note that this uses `toContain`, because a polyfilled `Symbol` produces something like
+    // `Symbol(hello)_p.sc8s398cplk`, whereas the native one is `Symbol(hello)`.
+    expect(fixture.nativeElement.textContent).toContain('Symbol(hello)');
+  });
 });
