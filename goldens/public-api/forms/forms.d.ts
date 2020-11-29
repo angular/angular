@@ -406,7 +406,7 @@ export declare class NgModel extends NgControl implements OnChanges, OnDestroy {
     get path(): string[];
     update: EventEmitter<any>;
     viewModel: any;
-    constructor(parent: ControlContainer, validators: (Validator | ValidatorFn)[], asyncValidators: (AsyncValidator | AsyncValidatorFn)[], valueAccessors: ControlValueAccessor[]);
+    constructor(parent: ControlContainer, validators: (Validator | ValidatorFn)[], asyncValidators: (AsyncValidator | AsyncValidatorFn)[], valueAccessors: ControlValueAccessor[], _changeDetectorRef: ChangeDetectorRef | null);
     ngOnChanges(changes: SimpleChanges): void;
     ngOnDestroy(): void;
     viewToModelUpdate(newValue: any): void;
