@@ -248,7 +248,6 @@ export function injectComponentFactoryResolver(): viewEngine_ComponentFactoryRes
  *
  */
 export class ComponentRef<T> extends viewEngine_ComponentRef<T> {
-  destroyCbs: (() => void)[]|null = [];
   instance: T;
   hostView: ViewRef<T>;
   changeDetectorRef: ViewEngine_ChangeDetectorRef;
@@ -269,16 +268,10 @@ export class ComponentRef<T> extends viewEngine_ComponentRef<T> {
   }
 
   destroy(): void {
-    if (this.destroyCbs) {
-      this.destroyCbs.forEach(fn => fn());
-      this.destroyCbs = null;
-      !this.hostView.destroyed && this.hostView.destroy();
-    }
+    this.hostView.destroy();
   }
 
   onDestroy(callback: () => void): void {
-    if (this.destroyCbs) {
-      this.destroyCbs.push(callback);
-    }
+    this.hostView.onDestroy(callback);
   }
 }

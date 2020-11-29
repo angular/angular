@@ -10,7 +10,7 @@ import {ViewEncapsulation} from '../metadata/view';
 import {Renderer2} from '../render/api';
 import {RendererStyleFlags2} from '../render/api_flags';
 import {addToArray, removeFromArray} from '../util/array_utils';
-import {assertDefined, assertDomNode, assertEqual, assertString} from '../util/assert';
+import {assertDefined, assertDomNode, assertEqual, assertFunction, assertString} from '../util/assert';
 import {assertLContainer, assertLView, assertTNodeForLView} from './assert';
 import {attachPatchData} from './context_discovery';
 import {icuContainerIterate} from './i18n/i18n_tree_shaking';
@@ -418,7 +418,7 @@ function cleanUpView(tView: TView, lView: LView): void {
     lView[FLAGS] |= LViewFlags.Destroyed;
 
     executeOnDestroys(tView, lView);
-    removeListeners(tView, lView);
+    processCleanups(tView, lView);
     // For component views only, the local renderer is destroyed at clean up time.
     if (lView[TVIEW].type === TViewType.Component && isProceduralRenderer(lView[RENDERER])) {
       ngDevMode && ngDevMode.rendererDestroy++;
@@ -443,10 +443,14 @@ function cleanUpView(tView: TView, lView: LView): void {
 }
 
 /** Removes listeners and unsubscribes from output subscriptions */
-function removeListeners(tView: TView, lView: LView): void {
+function processCleanups(tView: TView, lView: LView): void {
   const tCleanup = tView.cleanup;
+  const lCleanup = lView[CLEANUP]!;
+  // `LCleanup` contains both share information with `TCleanup` as well as instance specific
+  // information appended at the end. We need to know where the end of the `TCleanup` information
+  // is, and we track this with `lastLCleanupIndex`.
+  let lastLCleanupIndex = -1;
   if (tCleanup !== null) {
-    const lCleanup = lView[CLEANUP]!;
     for (let i = 0; i < tCleanup.length - 1; i += 2) {
       if (typeof tCleanup[i] === 'string') {
         // This is a native DOM listener
@@ -454,7 +458,7 @@ function removeListeners(tView: TView, lView: LView): void {
         const target = typeof idxOrTargetGetter === 'function' ?
             idxOrTargetGetter(lView) :
             unwrapRNode(lView[idxOrTargetGetter]);
-        const listener = lCleanup[tCleanup[i + 2]];
+        const listener = lCleanup[lastLCleanupIndex = tCleanup[i + 2]];
         const useCaptureOrSubIdx = tCleanup[i + 3];
         if (typeof useCaptureOrSubIdx === 'boolean') {
           // native DOM listener registered with Renderer3
@@ -462,17 +466,24 @@ function removeListeners(tView: TView, lView: LView): void {
         } else {
           if (useCaptureOrSubIdx >= 0) {
             // unregister
-            lCleanup[useCaptureOrSubIdx]();
+            lCleanup[lastLCleanupIndex = useCaptureOrSubIdx]();
           } else {
             // Subscription
-            lCleanup[-useCaptureOrSubIdx].unsubscribe();
+            lCleanup[lastLCleanupIndex = -useCaptureOrSubIdx].unsubscribe();
           }
         }
         i += 2;
       } else {
         // This is a cleanup function that is grouped with the index of its context
-        const context = lCleanup[tCleanup[i + 1]];
+        const context = lCleanup[lastLCleanupIndex = tCleanup[i + 1]];
         tCleanup[i].call(context);
+      }
+    }
+    if (lCleanup !== null) {
+      for (let i = lastLCleanupIndex + 1; i < lCleanup.length; i++) {
+        const instanceCleanupFn = lCleanup[i];
+        ngDevMode && assertFunction(instanceCleanupFn, 'Expecting instance cleanup function.');
+        instanceCleanupFn();
       }
     }
     lView[CLEANUP] = null;
