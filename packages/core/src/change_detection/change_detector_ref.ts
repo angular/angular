@@ -6,7 +6,18 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {injectChangeDetectorRef as render3InjectChangeDetectorRef} from '../render3/view_engine_compatibility';
+import {TNode, TNodeType} from '../render3/interfaces/node';
+import {isComponentHost} from '../render3/interfaces/type_checks';
+import {DECLARATION_COMPONENT_VIEW, LView} from '../render3/interfaces/view';
+import {getCurrentTNode, getLView} from '../render3/state';
+import {getComponentLViewByIndex} from '../render3/util/view_utils';
+import {ViewRef as R3_ViewRef} from '../render3/view_ref';
+import {noop} from '../util/noop';
+
+export const SWITCH_CHANGE_DETECTOR_REF_FACTORY__POST_R3__ = injectChangeDetectorRef;
+const SWITCH_CHANGE_DETECTOR_REF_FACTORY__PRE_R3__ = noop;
+const SWITCH_CHANGE_DETECTOR_REF_FACTORY: typeof injectChangeDetectorRef =
+    SWITCH_CHANGE_DETECTOR_REF_FACTORY__PRE_R3__;
 
 /**
  * Base class that provides change detection functionality.
@@ -26,7 +37,7 @@ import {injectChangeDetectorRef as render3InjectChangeDetectorRef} from '../rend
  *
  * The following example sets the `OnPush` change-detection strategy for a component
  * (`CheckOnce`, rather than the default `CheckAlways`), then forces a second check
- * after an interval. See [live demo](http://plnkr.co/edit/GC512b?p=preview).
+ * after an interval. See [live demo](https://plnkr.co/edit/GC512b?p=preview).
  *
  * <code-example path="core/ts/change_detect/change-detection.ts"
  * region="mark-for-check"></code-example>
@@ -114,12 +125,46 @@ export abstract class ChangeDetectorRef {
    * @internal
    * @nocollapse
    */
-  static __NG_ELEMENT_ID__: () => ChangeDetectorRef = () => SWITCH_CHANGE_DETECTOR_REF_FACTORY();
+  static __NG_ELEMENT_ID__: () => ChangeDetectorRef = SWITCH_CHANGE_DETECTOR_REF_FACTORY;
+
+  /**
+   * This marker is need so that the JIT compiler can correctly identify this class as special.
+   *
+   * @internal
+   * @nocollapse
+   */
+  static __ChangeDetectorRef__ = true;
 }
 
 
 
-export const SWITCH_CHANGE_DETECTOR_REF_FACTORY__POST_R3__ = render3InjectChangeDetectorRef;
-const SWITCH_CHANGE_DETECTOR_REF_FACTORY__PRE_R3__ = (...args: any[]): any => {};
-const SWITCH_CHANGE_DETECTOR_REF_FACTORY: typeof render3InjectChangeDetectorRef =
-    SWITCH_CHANGE_DETECTOR_REF_FACTORY__PRE_R3__;
+/** Returns a ChangeDetectorRef (a.k.a. a ViewRef) */
+export function injectChangeDetectorRef(isPipe = false): ChangeDetectorRef {
+  return createViewRef(getCurrentTNode()!, getLView(), isPipe);
+}
+
+/**
+ * Creates a ViewRef and stores it on the injector as ChangeDetectorRef (public alias).
+ *
+ * @param tNode The node that is requesting a ChangeDetectorRef
+ * @param lView The view to which the node belongs
+ * @param isPipe Whether the view is being injected into a pipe.
+ * @returns The ChangeDetectorRef to use
+ */
+function createViewRef(tNode: TNode, lView: LView, isPipe: boolean): ChangeDetectorRef {
+  // `isComponentView` will be true for Component and Directives (but not for Pipes).
+  // See https://github.com/angular/angular/pull/33072 for proper fix
+  const isComponentView = !isPipe && isComponentHost(tNode);
+  if (isComponentView) {
+    // The LView represents the location where the component is declared.
+    // Instead we want the LView for the component View and so we need to look it up.
+    const componentView = getComponentLViewByIndex(tNode.index, lView);  // look down
+    return new R3_ViewRef(componentView, componentView);
+  } else if (tNode.type & (TNodeType.AnyRNode | TNodeType.AnyContainer | TNodeType.Icu)) {
+    // The LView represents the location where the injection is requested from.
+    // We need to locate the containing LView (in case where the `lView` is an embedded view)
+    const hostComponentView = lView[DECLARATION_COMPONENT_VIEW];  // look up
+    return new R3_ViewRef(hostComponentView, lView);
+  }
+  return null!;
+}

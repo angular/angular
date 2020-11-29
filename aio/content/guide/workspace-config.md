@@ -81,7 +81,7 @@ Individual schematics for the default Angular CLI `ng generate` sub-commands are
 Specify the schematic name for a subcommand in the format `schematic-package:schematic-name`;
 for example, the schematic for generating a component is `@angular:component`.
 
-The JSON schemas for the default schematics used by the CLI to generate projects and parts of projects are collected in the package [`@schematics/angular`](https://github.com/angular/angular-cli/blob/7.0.x/packages/schematics/angular/application/schema.json).
+The JSON schemas for the default schematics used by the CLI to generate projects and parts of projects are collected in the package [`@schematics/angular`](https://github.com/angular/angular-cli/blob/master/packages/schematics/angular/application/schema.json).
 The schema describes the options available to the CLI for each of the `ng generate` sub-commands, as shown in the `--help` output.
 
 The fields given in the schema correspond to the allowed argument values and defaults for the CLI sub-command options.
@@ -196,7 +196,7 @@ Some additional options can only be set through the configuration file, either b
 | OPTIONS PROPERTIES | DESCRIPTION |
 | :------------------------- | :---------------------------- |
 | `assets`                   | An object containing paths to static assets to add to the global context of the project. The default paths point to the project's icon file and its `assets` folder. See more in [Assets configuration](#asset-config) below. |
-| `styles`                   | An array of style files to add to the global context of the project. Angular CLI supports CSS imports and all major CSS preprocessors: [sass/scss](http://sass-lang.com/), [less](http://lesscss.org/), and [stylus](http://stylus-lang.com/). See more in [Styles and scripts configuration](#style-script-config) below. |
+| `styles`                   | An array of style files to add to the global context of the project. Angular CLI supports CSS imports and all major CSS preprocessors: [sass/scss](https://sass-lang.com/), [less](http://lesscss.org/), and [stylus](https://stylus-lang.com/). See more in [Styles and scripts configuration](#style-script-config) below. |
 | `stylePreprocessorOptions` | An object containing option-value pairs to pass to style preprocessors. See more in [Styles and scripts configuration](#style-script-config) below. |
 | `scripts`                  | An object containing JavaScript script files to add to the global context of the project. The scripts are loaded exactly as if you had added them in a `<script>` tag inside `index.html`. See more in [Styles and scripts configuration](#style-script-config) below. |
 | `budgets`                  | Default size-budget type and threshholds for all or parts of your app. You can configure the builder to report a warning or an error when the output reaches or exceeds a threshold size. See [Configure size budgets](guide/build#configure-size-budgets). (Not available in `test` section.) |
@@ -384,7 +384,7 @@ In this section we will explain how to fine tune these options.
 <div class="alert is-important">
 
   Fonts optimization requires internet access.
-  When enabled, render blocking requests will be reduced by inlining external Google fonts and icons in the application's HTML index file. 
+  When enabled, render blocking requests will be reduced by inlining external Google fonts and icons CSS definitions in the application's HTML index file. 
 
 </div>
 

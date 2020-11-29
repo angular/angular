@@ -48,7 +48,7 @@ export function _sanitizeUrl(url: string): string {
   if (url.match(SAFE_URL_PATTERN) || url.match(DATA_URL_PATTERN)) return url;
 
   if (isDevMode()) {
-    console.warn(`WARNING: sanitizing unsafe URL value ${url} (see http://g.co/ng/security#xss)`);
+    console.warn(`WARNING: sanitizing unsafe URL value ${url} (see https://g.co/ng/security#xss)`);
   }
 
   return 'unsafe:' + url;

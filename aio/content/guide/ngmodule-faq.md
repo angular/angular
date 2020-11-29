@@ -599,7 +599,7 @@ For more information, see [Feature Modules](guide/feature-modules) and
 In an Angular app, NgModules and JavaScript modules work together.
 
 In modern JavaScript, every file is a module
-(see the [Modules](http://exploringjs.com/es6/ch_modules.html) page of the Exploring ES6 website).
+(see the [Modules](https://exploringjs.com/es6/ch_modules.html) page of the Exploring ES6 website).
 Within each file you write an `export` statement to make parts of the module public.
 
 An Angular NgModule is a class with the `@NgModule` decorator&mdash;JavaScript modules

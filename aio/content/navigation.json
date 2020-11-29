@@ -128,7 +128,7 @@
             },
             {
               "url": "guide/inputs-outputs",
-              "title": "Inputs and Outputs",
+              "title": "Sharing data between child and parent directives and components",
               "tooltip": "Introductory guide to sharing data between parent and child directives or components."
             },
             {
@@ -193,9 +193,14 @@
               "tooltip": "Introductory guide to sharing data between a class and a template."
             },
             {
-              "url": "guide/template-expression-operators",
-              "title": "Template expression operators",
-              "tooltip": "Introductory guide to transforming data, ensuring safe navigation, and guarding against null variables in templates."
+              "url": "guide/template-reference-variables",
+              "title": "Template reference variables",
+              "tooltip": "Introductory guide to referring to DOM elements within a template."
+            },
+            {
+              "url": "guide/inputs-outputs",
+              "title": "Inputs and Outputs",
+              "tooltip": "Introductory guide to sharing data between parent and child directives or components."
             },
             {
               "url": "guide/svg-in-templates",
@@ -238,16 +243,6 @@
               "url": "guide/dependency-injection-providers",
               "title": "DI Providers",
               "tooltip": "More about the different kinds of providers."
-            },
-            {
-              "url": "guide/dependency-injection-in-action",
-              "title": "DI in Action",
-              "tooltip": "Techniques for dependency injection."
-            },
-            {
-              "url": "guide/dependency-injection-navtree",
-              "title": "Navigate the Component Tree",
-              "tooltip": "Use the injection tree to find parent components."
             }
           ]
         }
@@ -647,49 +642,18 @@
           "tooltip": "Roadmap of the Angular team."
         },
         {
-          "title": "Updating to Version 10",
+          "title": "Updating to Version 11",
           "tooltip": "Support for updating your application from version 9 to 10.",
           "children": [
             {
-              "url": "guide/updating-to-version-10",
+              "url": "guide/updating-to-version-11",
               "title": "Overview",
-              "tooltip": "Everything you need to know for updating your application from version 9 to 10."
+              "tooltip": "Everything you need to know for updating your application from version 10 to 11."
             },
             {
               "url": "guide/ivy-compatibility",
               "title": "Ivy Compatibility Guide",
               "tooltip": "Details to help you make sure your application is compatible with Ivy."
-            },
-            {
-              "title": "Migrations",
-              "tooltip": "Migration details regarding updating to version 10.",
-              "children": [
-                {
-                  "url": "guide/migration-module-with-providers",
-                  "title": "Missing ModuleWithProviders Generic",
-                  "tooltip": "Migration to add a generic type to any ModuleWithProviders usages that are missing the generic."
-                },
-                {
-                  "url": "guide/migration-undecorated-classes",
-                  "title": "Missing @Directive() Decorators",
-                  "tooltip": "Migration to add missing @Directive()/@Component() decorators."
-                },
-                {
-                  "url": "guide/migration-injectable",
-                  "title": "Missing @Injectable() Decorators",
-                  "tooltip": "Migration to add missing @Injectable() decorators and incomplete provider definitions."
-                },
-                {
-                  "url": "guide/migration-update-libraries-tslib",
-                  "title": "`tslib` direct dependency",
-                  "tooltip": "Migration to a direct dependency on the `tslib` npm package."
-                },
-                {
-                  "url": "guide/migration-update-module-and-target-compiler-options",
-                  "title": "`module` and `target` compiler options",
-                  "tooltip": "Migration to update `module` and `target` compiler options."
-                }
-              ]
             }
           ]
         },
@@ -919,9 +883,20 @@
               ]
             },
             {
-              "url": "guide/hierarchical-dependency-injection",
-              "title": "Hierarchical Injectors",
-              "tooltip": "An injector tree parallels the component tree and supports nested dependencies."
+              "title": "Dependency injection",
+              "tooltip": "Using dependency injection in Angular.",
+              "children": [
+                {
+                  "url": "guide/hierarchical-dependency-injection",
+                  "title": "Hierarchical Injectors",
+                  "tooltip": "An injector tree parallels the component tree and supports nested dependencies."
+                },
+                {
+                  "url": "guide/dependency-injection-in-action",
+                  "title": "DI in Action",
+                  "tooltip": "Techniques for dependency injection."
+                }
+              ]
             }
           ]
         },
@@ -945,6 +920,11 @@
           "title": "API Reference",
           "tooltip": "Details of the Angular packages, classes, interfaces, and other types.",
           "url": "api"
+        },
+        {
+          "title": "Example applications",
+          "tooltip": "List of all of the example applications in the Angular documentation.",
+          "url": "guide/example-apps-list"
         },
         {
           "url": "guide/glossary",
@@ -1045,7 +1025,7 @@
           "tooltip": "Angular events around the world."
         },
         {
-          "url": "http://www.meetup.com/topics/angularjs/",
+          "url": "https://www.meetup.com/topics/angularjs/",
           "title": "Meetups",
           "tooltip": "Attend a meetup and learn from fellow developers."
         },
@@ -1070,6 +1050,10 @@
       "title": "Languages",
       "children": [
         {
+          "title": "Español",
+          "url": "http://docs.angular.lat/"
+        },
+        {
           "title": "简体中文版",
           "url": "https://angular.cn/"
         },
@@ -1086,36 +1070,6 @@
           "url": "https://angular.kr/"
         }
       ]
-    }
-  ],
-  "docVersions": [
-    {
-      "title": "v9",
-      "url": "https://v9.angular.io/"
-    },
-    {
-      "title": "v8",
-      "url": "https://v8.angular.io/"
-    },
-    {
-      "title": "v7",
-      "url": "https://v7.angular.io/"
-    },
-    {
-      "title": "v6",
-      "url": "https://v6.angular.io/"
-    },
-    {
-      "title": "v5",
-      "url": "https://v5.angular.io/"
-    },
-    {
-      "title": "v4",
-      "url": "https://v4.angular.io/"
-    },
-    {
-      "title": "v2",
-      "url": "https://v2.angular.io/"
     }
   ]
 }

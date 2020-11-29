@@ -1,10 +1,14 @@
-import { browser, element, by } from 'protractor';
+import { AppPage } from './app.po';
 
-describe('Forms Overview Tests', () => {
+describe('forms-overvoew App', () => {
+  let page: AppPage;
 
   beforeEach(() => {
-    browser.get('');
+    page = new AppPage();
   });
 
+  it('should display a title', async () => {
+    await page.navigateTo();
+    expect(await page.getTitleText()).toEqual('Forms Overview');
+  });
 });
-

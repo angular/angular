@@ -14,7 +14,7 @@ import {ClassDeclaration} from '../../reflection';
 import {TemplateId} from '../api';
 import {makeTemplateDiagnostic, TemplateDiagnostic} from '../diagnostics';
 
-import {TemplateSourceResolver} from './diagnostics';
+import {TemplateSourceResolver} from './tcb_util';
 
 
 
@@ -73,6 +73,12 @@ export interface OutOfBandDiagnosticRecorder {
 export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecorder {
   private _diagnostics: TemplateDiagnostic[] = [];
 
+  /**
+   * Tracks which `BindingPipe` nodes have already been recorded as invalid, so only one diagnostic
+   * is ever produced per node.
+   */
+  private recordedPipes = new Set<BindingPipe>();
+
   constructor(private resolver: TemplateSourceResolver) {}
 
   get diagnostics(): ReadonlyArray<TemplateDiagnostic> {
@@ -90,6 +96,10 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
   }
 
   missingPipe(templateId: TemplateId, ast: BindingPipe): void {
+    if (this.recordedPipes.has(ast)) {
+      return;
+    }
+
     const mapping = this.resolver.getSourceMapping(templateId);
     const errorMsg = `No pipe found with name '${ast.name}'.`;
 
@@ -101,6 +111,7 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
     this._diagnostics.push(makeTemplateDiagnostic(
         templateId, mapping, sourceSpan, ts.DiagnosticCategory.Error,
         ngErrorCode(ErrorCode.MISSING_PIPE), errorMsg));
+    this.recordedPipes.add(ast);
   }
 
   illegalAssignmentToTemplateVar(

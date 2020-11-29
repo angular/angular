@@ -186,7 +186,7 @@ function createPositionApplyingDoubleDots(
   return new Position(g, false, ci - dd);
 }
 
-function getOutlets(commands: any[]): {[k: string]: any[]} {
+function getOutlets(commands: unknown[]): {[k: string]: unknown[]|string} {
   if (isCommandWithOutlets(commands[0])) {
     return commands[0].outlets;
   }
@@ -229,7 +229,10 @@ function updateSegmentGroupChildren(
     const outlets = getOutlets(commands);
     const children: {[key: string]: UrlSegmentGroup} = {};
 
-    forEach(outlets, (commands: any, outlet: string) => {
+    forEach(outlets, (commands, outlet) => {
+      if (typeof commands === 'string') {
+        commands = [commands];
+      }
       if (commands !== null) {
         children[outlet] = updateSegmentGroup(segmentGroup.children[outlet], startIndex, commands);
       }
@@ -311,9 +314,13 @@ function createNewSegmentGroup(
   return new UrlSegmentGroup(paths, {});
 }
 
-function createNewSegmentChildren(outlets: {[name: string]: any}): any {
-  const children: {[key: string]: UrlSegmentGroup} = {};
-  forEach(outlets, (commands: any, outlet: string) => {
+function createNewSegmentChildren(outlets: {[name: string]: unknown[]|string}):
+    {[outlet: string]: UrlSegmentGroup} {
+  const children: {[outlet: string]: UrlSegmentGroup} = {};
+  forEach(outlets, (commands, outlet) => {
+    if (typeof commands === 'string') {
+      commands = [commands];
+    }
     if (commands !== null) {
       children[outlet] = createNewSegmentGroup(new UrlSegmentGroup([], {}), 0, commands);
     }

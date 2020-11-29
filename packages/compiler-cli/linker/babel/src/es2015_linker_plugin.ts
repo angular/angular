@@ -58,9 +58,14 @@ export function createEs2015LinkerPlugin(options: Partial<LinkerOptions> = {}): 
        * with the results of linking the declaration.
        */
       CallExpression(call: NodePath<t.CallExpression>): void {
-        try {
-          assertNotNull(fileLinker);
+        if (fileLinker === null) {
+          // Any statements that are inserted upon program exit will be visited outside of an active
+          // linker context. These call expressions are known not to contain partial declarations,
+          // so it's safe to skip visiting those call expressions.
+          return;
+        }
 
+        try {
           const callee = call.node.callee;
           if (!t.isExpression(callee)) {
             return;

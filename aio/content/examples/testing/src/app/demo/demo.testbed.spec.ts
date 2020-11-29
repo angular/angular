@@ -144,7 +144,7 @@ describe('demo (with TestBed):', () => {
     );
   });
 
-  describe('using async(inject) within beforeEach', () => {
+  describe('using waitForAsync(inject) within beforeEach', () => {
     let serviceValue: string;
 
     beforeEach(() => {

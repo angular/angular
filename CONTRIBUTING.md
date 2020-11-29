@@ -119,6 +119,9 @@ Before you submit your Pull Request (PR) consider the following guidelines:
 
 11. In GitHub, send a pull request to `angular:master`.
 
+### Reviewing a Pull Request
+
+The Angular team reserves the right not to accept pull requests from community members who haven't been good citizens of the community. Such behavior includes not following the [Angular code of conduct](https://github.com/angular/code-of-conduct) and applies within or outside of Angular managed channels.
 
 #### Addressing review feedback
 
@@ -227,15 +230,15 @@ Each commit message consists of a **header**, a **body**, and a **footer**.
 
 The `header` is mandatory and must conform to the [Commit Message Header](#commit-header) format.
 
-The `body` is mandatory for all commits except for those of scope "docs".
-When the body is required it must be at least 20 characters long.
+The `body` is mandatory for all commits except for those of type "docs".
+When the body is present it must be at least 20 characters long and must conform to the [Commit Message Body](#commit-body) format.
 
-The `footer` is optional.
+The `footer` is optional. The [Commit Message Footer](#commit-footer) format describes what the footer is used for and the structure it must have.
 
 Any line of the commit message cannot be longer than 100 characters.
 
 
-#### <a href="commit-header"></a>Commit Message Header
+#### <a name="commit-header"></a>Commit Message Header
 
 ```
 <type>(<scope>): <short summary>
@@ -321,7 +324,7 @@ Use the summary field to provide a succinct description of the change:
 * no dot (.) at the end
 
 
-#### Commit Message Body
+#### <a name="commit-body"></a>Commit Message Body
 
 Just as in the summary, use the imperative, present tense: "fix" not "fixed" nor "fixes".
 
@@ -329,7 +332,7 @@ Explain the motivation for the change in the commit message body. This commit me
 You can include a comparison of the previous behavior with the new behavior in order to illustrate the impact of the change.
 
 
-#### Commit Message Footer
+#### <a name="commit-footer"></a>Commit Message Footer
 
 The footer can contain information about breaking changes and is also the place to reference GitHub issues, Jira tickets, and other PRs that this commit closes or is related to.
 
@@ -379,13 +382,13 @@ The following documents can help you sort out issues with GitHub accounts and mu
 [angular-group]: https://groups.google.com/forum/#!forum/angular
 [coc]: https://github.com/angular/code-of-conduct/blob/master/CODE_OF_CONDUCT.md
 [commit-message-format]: https://docs.google.com/document/d/1QrDFcIiPjSLDn3EL15IJygNPiHORgU1_OOAqWjiDU5Y/edit#
-[corporate-cla]: http://code.google.com/legal/corporate-cla-v1.0.html
+[corporate-cla]: https://cla.developers.google.com/about/google-corporate
 [dev-doc]: https://github.com/angular/angular/blob/master/docs/DEVELOPER.md
 [github]: https://github.com/angular/angular
 [discord]: https://discord.gg/angular
-[individual-cla]: http://code.google.com/legal/individual-cla-v1.0.html
+[individual-cla]: https://cla.developers.google.com/about/google-individual
 [js-style-guide]: https://google.github.io/styleguide/jsguide.html
-[jsfiddle]: http://jsfiddle.net
-[plunker]: http://plnkr.co/edit
-[runnable]: http://runnable.com
-[stackoverflow]: http://stackoverflow.com/questions/tagged/angular
+[jsfiddle]: https://jsfiddle.net/
+[plunker]: https://plnkr.co/edit
+[runnable]: https://runnable.com/
+[stackoverflow]: https://stackoverflow.com/questions/tagged/angular

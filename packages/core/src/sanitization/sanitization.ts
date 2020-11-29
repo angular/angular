@@ -9,9 +9,9 @@
 import {getDocument} from '../render3/interfaces/document';
 import {SANITIZER} from '../render3/interfaces/view';
 import {getLView} from '../render3/state';
-import {renderStringify} from '../render3/util/misc_utils';
+import {renderStringify} from '../render3/util/stringify_utils';
 import {TrustedHTML, TrustedScript, TrustedScriptURL} from '../util/security/trusted_type_defs';
-import {trustedHTMLFromString, trustedScriptFromString, trustedScriptURLFromString} from '../util/security/trusted_types';
+import {trustedHTMLFromString, trustedScriptURLFromString} from '../util/security/trusted_types';
 import {trustedHTMLFromStringBypass, trustedScriptFromStringBypass, trustedScriptURLFromStringBypass} from '../util/security/trusted_types_bypass';
 
 import {allowSanitizationBypassAndThrow, BypassType, unwrapSafeValue} from './bypass';
@@ -117,7 +117,7 @@ export function ɵɵsanitizeResourceUrl(unsafeResourceUrl: any): TrustedScriptUR
   if (allowSanitizationBypassAndThrow(unsafeResourceUrl, BypassType.ResourceUrl)) {
     return trustedScriptURLFromStringBypass(unwrapSafeValue(unsafeResourceUrl));
   }
-  throw new Error('unsafe value used in a resource URL context (see http://g.co/ng/security#xss)');
+  throw new Error('unsafe value used in a resource URL context (see https://g.co/ng/security#xss)');
 }
 
 /**
@@ -157,21 +157,6 @@ export function ɵɵsanitizeScript(unsafeScript: any): TrustedScript|string {
  */
 export function ɵɵtrustConstantHtml(html: string): TrustedHTML|string {
   return trustedHTMLFromString(html);
-}
-
-/**
- * Promotes the given constant string to a TrustedScript.
- * @param script constant string containing a trusted script.
- * @returns TrustedScript wrapping `script`.
- *
- * @security This is a security-sensitive function and should only be used to
- * convert constant values of attributes and properties found in
- * application-provided Angular templates to TrustedScript.
- *
- * @codeGenApi
- */
-export function ɵɵtrustConstantScript(script: string): TrustedScript|string {
-  return trustedScriptFromString(script);
 }
 
 /**

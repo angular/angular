@@ -477,13 +477,10 @@ export class Evaluator {
       case ts.SyntaxKind.UnionType:
         const unionType = <ts.UnionTypeNode>node;
         // Remove null and undefined from the list of unions.
-        // TODO(alan-agius4): remove `n.kind !== ts.SyntaxKind.NullKeyword` when
-        // TS 3.9 support is dropped. In TS 4.0 NullKeyword is a child of LiteralType.
         const references =
             unionType.types
                 .filter(
-                    n => n.kind !== ts.SyntaxKind.NullKeyword &&
-                        n.kind !== ts.SyntaxKind.UndefinedKeyword &&
+                    n => n.kind !== ts.SyntaxKind.UndefinedKeyword &&
                         !(ts.isLiteralTypeNode(n) && n.literal.kind === ts.SyntaxKind.NullKeyword))
                 .map(n => this.evaluateNode(n));
 

@@ -69,6 +69,7 @@ INTEGRATION_TESTS = {
     "i18n": {"tags": ["no-ivy-aot"]},
     "injectable-def": {"tags": ["no-ivy-aot"]},
     "ivy-i18n": {"tags": ["no-ivy-aot"]},
+    "trusted-types": {},
     "language_service_plugin": {},
     "ng_elements": {"tags": ["no-ivy-aot"]},
     "ng_elements_schematics": {"tags": ["no-ivy-aot"]},
@@ -79,15 +80,15 @@ INTEGRATION_TESTS = {
     "service-worker-schema": {},
     "side-effects": {"tags": ["no-ivy-aot"]},
     "terser": {},
-    "typings_test_ts39": {
-        # Special case for `typings_test_ts39` test as we want to pin
-        # `typescript` at version 3.9.x for that test and not link to the
-        # root @npm//typescript package.
-        "pinned_npm_packages": ["typescript"],
-    },
     "typings_test_ts40": {
         # Special case for `typings_test_ts40` test as we want to pin
         # `typescript` at version 4.0.x for that test and not link to the
+        # root @npm//typescript package.
+        "pinned_npm_packages": ["typescript"],
+    },
+    "typings_test_ts41": {
+        # Special case for `typings_test_ts41` test as we want to pin
+        # `typescript` at version 4.1.x for that test and not link to the
         # root @npm//typescript package.
         "pinned_npm_packages": ["typescript"],
     },

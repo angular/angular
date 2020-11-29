@@ -72,7 +72,7 @@ The rest of the articles in this section specifically address the Angular implem
 For more information about service workers in general, see [Service Workers: an Introduction](https://developers.google.com/web/fundamentals/primers/service-workers/).
 
 For more information about browser support, see the [browser support](https://developers.google.com/web/fundamentals/primers/service-workers/#browser_support) section of [Service Workers: an Introduction](https://developers.google.com/web/fundamentals/primers/service-workers/), Jake Archibald's [Is Serviceworker ready?](https://jakearchibald.github.io/isserviceworkerready/), and
-[Can I Use](http://caniuse.com/#feat=serviceworkers).
+[Can I Use](https://caniuse.com/serviceworkers).
 
 For additional recommendations and examples, see:
 

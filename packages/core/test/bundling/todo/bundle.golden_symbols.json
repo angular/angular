@@ -87,6 +87,12 @@
     "name": "Optional"
   },
   {
+    "name": "R3TemplateRef"
+  },
+  {
+    "name": "R3ViewContainerRef"
+  },
+  {
     "name": "RecordViewTuple"
   },
   {
@@ -135,10 +141,16 @@
     "name": "TodoStore"
   },
   {
+    "name": "VE_ViewContainerRef"
+  },
+  {
     "name": "ViewContainerRef"
   },
   {
     "name": "ViewEncapsulation"
+  },
+  {
+    "name": "ViewEngineTemplateRef"
   },
   {
     "name": "ViewRef"
@@ -261,7 +273,7 @@
     "name": "createLView"
   },
   {
-    "name": "createTNode"
+    "name": "createNodeInjector"
   },
   {
     "name": "createTView"
@@ -354,6 +366,9 @@
     "name": "getDebugContext"
   },
   {
+    "name": "getDeclarationTNode"
+  },
+  {
     "name": "getFirstLContainer"
   },
   {
@@ -396,6 +411,9 @@
     "name": "getOrCreateTNode"
   },
   {
+    "name": "getOrCreateViewRefs"
+  },
+  {
     "name": "getOriginalError"
   },
   {
@@ -430,6 +448,9 @@
   },
   {
     "name": "getTView"
+  },
+  {
+    "name": "getViewRefs"
   },
   {
     "name": "handleError"
@@ -516,9 +537,6 @@
     "name": "isProceduralRenderer"
   },
   {
-    "name": "isRootView"
-  },
-  {
     "name": "isStylingMatch"
   },
   {
@@ -541,6 +559,9 @@
   },
   {
     "name": "leaveViewLight"
+  },
+  {
+    "name": "lookupTokenUsingModuleInjector"
   },
   {
     "name": "makeParamDecorator"
@@ -586,6 +607,9 @@
   },
   {
     "name": "noSideEffects"
+  },
+  {
+    "name": "notFoundValueOrThrow"
   },
   {
     "name": "readPatchedData"

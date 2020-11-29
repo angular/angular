@@ -8,19 +8,18 @@
 
 import {ChangeDetectionStrategy} from '../change_detection/constants';
 import {Mutable, Type} from '../interface/type';
-import {NgModuleDef} from '../metadata/ng_module';
+import {NgModuleDef, NgModuleType} from '../metadata/ng_module_def';
 import {SchemaMetadata} from '../metadata/schema';
 import {ViewEncapsulation} from '../metadata/view';
 import {noSideEffects} from '../util/closure';
 import {initNgDevMode} from '../util/ng_dev_mode';
 import {stringify} from '../util/stringify';
-
 import {EMPTY_ARRAY, EMPTY_OBJ} from './empty';
-import {NG_COMP_DEF, NG_DIR_DEF, NG_FACTORY_DEF, NG_LOC_ID_DEF, NG_MOD_DEF, NG_PIPE_DEF} from './fields';
-import {ComponentDef, ComponentDefFeature, ComponentTemplate, ComponentType, ContentQueriesFunction, DirectiveDef, DirectiveDefFeature, DirectiveTypesOrFactory, FactoryFn, HostBindingsFunction, PipeDef, PipeType, PipeTypesOrFactory, ViewQueriesFunction} from './interfaces/definition';
+import {NG_COMP_DEF, NG_DIR_DEF, NG_LOC_ID_DEF, NG_MOD_DEF, NG_PIPE_DEF} from './fields';
+import {ComponentDef, ComponentDefFeature, ComponentTemplate, ComponentType, ContentQueriesFunction, DirectiveDef, DirectiveDefFeature, DirectiveTypesOrFactory, HostBindingsFunction, PipeDef, PipeTypesOrFactory, ViewQueriesFunction} from './interfaces/definition';
 import {AttributeMarker, TAttributes, TConstantsOrFactory} from './interfaces/node';
 import {CssSelectorList, SelectorFlags} from './interfaces/projection';
-import {NgModuleType} from './ng_module_ref';
+
 
 let _renderCompCount = 0;
 
@@ -352,6 +351,12 @@ export function ɵɵdefineComponent<T>(componentDefinition: {
 }
 
 /**
+ * Generated next to NgModules to monkey-patch directive and pipe references onto a component's
+ * definition, when generating a direct reference in the component file would otherwise create an
+ * import cycle.
+ *
+ * See [this explanation](https://hackmd.io/Odw80D0pR6yfsOjg_7XCJg?view) for more details.
+ *
  * @codeGenApi
  */
 export function ɵɵsetComponentScope(
@@ -723,7 +728,7 @@ export function ɵɵdefinePipe<T>(pipeDef: {
 }
 
 /**
- * The following getter methods retrieve the definition form the type. Currently the retrieval
+ * The following getter methods retrieve the definition from the type. Currently the retrieval
  * honors inheritance, but in the future we may change the rule to require that definitions are
  * explicit. This would require some sort of migration strategy.
  */
@@ -738,16 +743,6 @@ export function getDirectiveDef<T>(type: any): DirectiveDef<T>|null {
 
 export function getPipeDef<T>(type: any): PipeDef<T>|null {
   return type[NG_PIPE_DEF] || null;
-}
-
-export function getFactoryDef<T>(type: any, throwNotFound: true): FactoryFn<T>;
-export function getFactoryDef<T>(type: any): FactoryFn<T>|null;
-export function getFactoryDef<T>(type: any, throwNotFound?: boolean): FactoryFn<T>|null {
-  const hasFactoryDef = type.hasOwnProperty(NG_FACTORY_DEF);
-  if (!hasFactoryDef && throwNotFound === true && ngDevMode) {
-    throw new Error(`Type ${stringify(type)} does not have 'ɵfac' property.`);
-  }
-  return hasFactoryDef ? type[NG_FACTORY_DEF] : null;
 }
 
 export function getNgModuleDef<T>(type: any, throwNotFound: true): NgModuleDef<T>;

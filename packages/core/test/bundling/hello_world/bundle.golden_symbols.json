@@ -12,6 +12,9 @@
     "name": "EMPTY_OBJ"
   },
   {
+    "name": "InjectFlags"
+  },
+  {
     "name": "NG_COMP_DEF"
   },
   {
@@ -127,6 +130,9 @@
   },
   {
     "name": "getCurrentTNodePlaceholderOk"
+  },
+  {
+    "name": "getDeclarationTNode"
   },
   {
     "name": "getFirstLContainer"

@@ -779,6 +779,14 @@ describe('parser', () => {
         ]);
       });
 
+      it('should report unexpected token when encountering interpolation', () => {
+        const attr = '*ngIf="name && {{name}}"';
+
+        expectParseTemplateBindingsError(
+            attr,
+            'Parser Error: Unexpected token {, expected identifier, keyword, or string at column 10 in [name && {{name}}] in foo.html');
+      });
+
       it('should map variable declaration via "as"', () => {
         const attr =
             '*ngFor="let item; of items | slice:0:1 as collection, trackBy: func; index as i"';
@@ -855,8 +863,7 @@ describe('parser', () => {
 
     it('should support custom interpolation', () => {
       const parser = new Parser(new Lexer());
-      const ast =
-          parser.parseInterpolation('{% a %}', null, 0, {start: '{%', end: '%}'})!.ast as any;
+      const ast = parser.parseInterpolation('{% a %}', '', 0, {start: '{%', end: '%}'})!.ast as any;
       expect(ast.strings).toEqual(['', '']);
       expect(ast.expressions.length).toEqual(1);
       expect(ast.expressions[0].name).toEqual('a');
@@ -978,8 +985,7 @@ describe('parser', () => {
 
   describe('wrapLiteralPrimitive', () => {
     it('should wrap a literal primitive', () => {
-      expect(unparse(validate(createParser().wrapLiteralPrimitive('foo', null, 0))))
-          .toEqual('"foo"');
+      expect(unparse(validate(createParser().wrapLiteralPrimitive('foo', '', 0)))).toEqual('"foo"');
     });
   });
 
@@ -1028,17 +1034,25 @@ function parseBinding(text: string, location: any = null, offset: number = 0): A
 }
 
 function parseTemplateBindings(attribute: string, templateUrl = 'foo.html'): TemplateBinding[] {
-  const match = attribute.match(/^\*(.+)="(.*)"$/);
-  expect(match).toBeTruthy(`failed to extract key and value from ${attribute}`);
-  const [_, key, value] = match;
-  const absKeyOffset = 1;  // skip the * prefix
-  const absValueOffset = attribute.indexOf('=') + '="'.length;
-  const parser = createParser();
-  const result =
-      parser.parseTemplateBindings(key, value, templateUrl, absKeyOffset, absValueOffset);
+  const result = _parseTemplateBindings(attribute, templateUrl);
   expect(result.errors).toEqual([]);
   expect(result.warnings).toEqual([]);
   return result.templateBindings;
+}
+
+function expectParseTemplateBindingsError(attribute: string, error: string) {
+  const result = _parseTemplateBindings(attribute, 'foo.html');
+  expect(result.errors[0].message).toEqual(error);
+}
+
+function _parseTemplateBindings(attribute: string, templateUrl: string) {
+  const match = attribute.match(/^\*(.+)="(.*)"$/);
+  expect(match).toBeTruthy(`failed to extract key and value from ${attribute}`);
+  const [_, key, value] = match!;
+  const absKeyOffset = 1;  // skip the * prefix
+  const absValueOffset = attribute.indexOf('=') + '="'.length;
+  const parser = createParser();
+  return parser.parseTemplateBindings(key, value, templateUrl, absKeyOffset, absValueOffset);
 }
 
 function parseInterpolation(text: string, location: any = null, offset: number = 0): ASTWithSource|

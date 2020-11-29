@@ -15,6 +15,6 @@ export class AppComponent {
   constructor(private http: HttpClient) {}
 
   time$: Observable<string> =
-      this.http.get('http://worldtimeapi.org/api/timezone/America/Los_Angeles.json')
+      this.http.get('https://worldtimeapi.org/api/timezone/America/Los_Angeles.json')
           .pipe(map((result: any) => result.datetime), startWith(['...']));
 }

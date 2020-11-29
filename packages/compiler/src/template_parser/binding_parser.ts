@@ -97,8 +97,14 @@ export class BindingParser {
       Object.keys(dirMeta.hostListeners).forEach(propName => {
         const expression = dirMeta.hostListeners[propName];
         if (typeof expression === 'string') {
-          // TODO: pass a more accurate handlerSpan for this event.
-          this.parseEvent(propName, expression, sourceSpan, sourceSpan, [], targetEvents);
+          // Use the `sourceSpan` for  `keySpan` and `handlerSpan`. This isn't really accurate, but
+          // neither is the `sourceSpan`, as it represents the `sourceSpan` of the host itself
+          // rather than the source of the host binding (which doesn't exist in the template).
+          // Regardless, neither of these values are used in Ivy but are only here to satisfy the
+          // function signature. This should likely be refactored in the future so that `sourceSpan`
+          // isn't being used inaccurately.
+          this.parseEvent(
+              propName, expression, sourceSpan, sourceSpan, [], targetEvents, sourceSpan);
         } else {
           this._reportError(
               `Value of the host listener "${
@@ -408,19 +414,20 @@ export class BindingParser {
         boundProp.sourceSpan, boundProp.keySpan, boundProp.valueSpan);
   }
 
+  // TODO: keySpan should be required but was made optional to avoid changing VE parser.
   parseEvent(
       name: string, expression: string, sourceSpan: ParseSourceSpan, handlerSpan: ParseSourceSpan,
-      targetMatchableAttrs: string[][], targetEvents: ParsedEvent[]) {
+      targetMatchableAttrs: string[][], targetEvents: ParsedEvent[], keySpan?: ParseSourceSpan) {
     if (name.length === 0) {
       this._reportError(`Event name is missing in binding`, sourceSpan);
     }
 
     if (isAnimationLabel(name)) {
       name = name.substr(1);
-      this._parseAnimationEvent(name, expression, sourceSpan, handlerSpan, targetEvents);
+      this._parseAnimationEvent(name, expression, sourceSpan, handlerSpan, targetEvents, keySpan);
     } else {
       this._parseRegularEvent(
-          name, expression, sourceSpan, handlerSpan, targetMatchableAttrs, targetEvents);
+          name, expression, sourceSpan, handlerSpan, targetMatchableAttrs, targetEvents, keySpan);
     }
   }
 
@@ -432,7 +439,7 @@ export class BindingParser {
 
   private _parseAnimationEvent(
       name: string, expression: string, sourceSpan: ParseSourceSpan, handlerSpan: ParseSourceSpan,
-      targetEvents: ParsedEvent[]) {
+      targetEvents: ParsedEvent[], keySpan?: ParseSourceSpan) {
     const matches = splitAtPeriod(name, [name, '']);
     const eventName = matches[0];
     const phase = matches[1].toLowerCase();
@@ -442,7 +449,7 @@ export class BindingParser {
         case 'done':
           const ast = this._parseAction(expression, handlerSpan);
           targetEvents.push(new ParsedEvent(
-              eventName, phase, ParsedEventType.Animation, ast, sourceSpan, handlerSpan));
+              eventName, phase, ParsedEventType.Animation, ast, sourceSpan, handlerSpan, keySpan));
           break;
 
         default:
@@ -462,13 +469,13 @@ export class BindingParser {
 
   private _parseRegularEvent(
       name: string, expression: string, sourceSpan: ParseSourceSpan, handlerSpan: ParseSourceSpan,
-      targetMatchableAttrs: string[][], targetEvents: ParsedEvent[]) {
+      targetMatchableAttrs: string[][], targetEvents: ParsedEvent[], keySpan?: ParseSourceSpan) {
     // long format: 'target: eventName'
     const [target, eventName] = splitAtColon(name, [null!, name]);
     const ast = this._parseAction(expression, handlerSpan);
     targetMatchableAttrs.push([name!, ast.source!]);
-    targetEvents.push(
-        new ParsedEvent(eventName, target, ParsedEventType.Regular, ast, sourceSpan, handlerSpan));
+    targetEvents.push(new ParsedEvent(
+        eventName, target, ParsedEventType.Regular, ast, sourceSpan, handlerSpan, keySpan));
     // Don't detect directives for event names for now,
     // so don't add the event name to the matchableAttrs
   }
@@ -585,5 +592,7 @@ function moveParseSourceSpan(
   // The difference of two absolute offsets provide the relative offset
   const startDiff = absoluteSpan.start - sourceSpan.start.offset;
   const endDiff = absoluteSpan.end - sourceSpan.end.offset;
-  return new ParseSourceSpan(sourceSpan.start.moveBy(startDiff), sourceSpan.end.moveBy(endDiff));
+  return new ParseSourceSpan(
+      sourceSpan.start.moveBy(startDiff), sourceSpan.end.moveBy(endDiff),
+      sourceSpan.fullStart.moveBy(startDiff), sourceSpan.details);
 }

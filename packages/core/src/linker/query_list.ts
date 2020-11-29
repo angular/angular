@@ -64,6 +64,13 @@ export class QueryList<T> implements Iterable<T> {
   }
 
   /**
+   * Returns the QueryList entry at `index`.
+   */
+  get(index: number): T|undefined {
+    return this._results[index];
+  }
+
+  /**
    * See
    * [Array.map](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map)
    */

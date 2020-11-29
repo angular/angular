@@ -11,8 +11,7 @@ import {absoluteFrom, getFileSystem, getSourceFileOrError} from '../../../src/ng
 import {runInEachFileSystem, TestFile} from '../../../src/ngtsc/file_system/testing';
 import {MockLogger} from '../../../src/ngtsc/logging/testing';
 import {ClassMemberKind, isNamedFunctionDeclaration, isNamedVariableDeclaration, TypeValueReferenceKind} from '../../../src/ngtsc/reflection';
-import {getDeclaration} from '../../../src/ngtsc/testing';
-import {loadFakeCore, loadTestFiles, loadTsLib} from '../../../test/helpers';
+import {getDeclaration, loadFakeCore, loadTestFiles, loadTsLib} from '../../../src/ngtsc/testing';
 import {getIifeBody} from '../../src/host/esm2015_host';
 import {Esm5ReflectionHost} from '../../src/host/esm5_host';
 import {convertToDirectTsLibImport, convertToInlineTsLib, makeTestBundleProgram} from '../helpers/utils';

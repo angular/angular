@@ -62,6 +62,7 @@ module.exports = {
  * This path should either be absolute or relative to the project root.
  * @param {boolean} enableIvy True, if Ivy should be used.
  * @param {string} description Human-readable description of the build.
+ * @returns {Array<{name: string, outputPath: string}} A list of packages built.
  */
 function buildTargetPackages(destPath, enableIvy, description) {
   console.info('##################################');
@@ -70,6 +71,8 @@ function buildTargetPackages(destPath, enableIvy, description) {
   console.info(`  Mode: ${description}`);
   console.info('##################################');
 
+  /** The list of packages which were built. */
+  const builtPackages = [];
   // List of targets to build, e.g. core, common, compiler, etc. Note that we want to also remove
   // all carriage return (`\r`) characters form the query output, because otherwise the carriage
   // return is part of the bazel target name and bazel will complain.
@@ -97,10 +100,12 @@ function buildTargetPackages(destPath, enableIvy, description) {
       rm('-rf', destDir);
       cp('-R', srcDir, destDir);
       chmod('-R', 'u+w', destDir);
+      builtPackages.push({name: `@angular/${pkg}`, outputPath: destDir});
     }
   });
 
   console.info('');
+  return builtPackages;
 }
 
 /**

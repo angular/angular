@@ -7,7 +7,7 @@
  */
 
 import {Lexer as ExpressionLexer} from '../expression_parser/lexer';
-import {Parser as ExpressionParser} from '../expression_parser/parser';
+import {InterpolationPiece, Parser as ExpressionParser} from '../expression_parser/parser';
 import * as html from '../ml_parser/ast';
 import {getHtmlTagDefinition} from '../ml_parser/html_tags';
 import {InterpolationConfig} from '../ml_parser/interpolation_config';
@@ -105,12 +105,13 @@ class _I18nVisitor implements html.Visitor {
   }
 
   visitAttribute(attribute: html.Attribute, context: I18nMessageVisitorContext): i18n.Node {
-    const node = this._visitTextWithInterpolation(attribute.value, attribute.sourceSpan, context);
+    const node = this._visitTextWithInterpolation(
+        attribute.value, attribute.valueSpan || attribute.sourceSpan, context, attribute.i18n);
     return context.visitNodeFn(attribute, node);
   }
 
   visitText(text: html.Text, context: I18nMessageVisitorContext): i18n.Node {
-    const node = this._visitTextWithInterpolation(text.value, text.sourceSpan, context);
+    const node = this._visitTextWithInterpolation(text.value, text.sourceSpan, context, text.i18n);
     return context.visitNodeFn(text, node);
   }
 
@@ -155,60 +156,143 @@ class _I18nVisitor implements html.Visitor {
     throw new Error('Unreachable code');
   }
 
+  /**
+   * Split the, potentially interpolated, text up into text and placeholder pieces.
+   *
+   * @param text The potentially interpolated string to be split.
+   * @param sourceSpan The span of the whole of the `text` string.
+   * @param context The current context of the visitor, used to compute and store placeholders.
+   * @param previousI18n Any i18n metadata associated with this `text` from a previous pass.
+   */
   private _visitTextWithInterpolation(
-      text: string, sourceSpan: ParseSourceSpan, context: I18nMessageVisitorContext): i18n.Node {
-    const splitInterpolation = this._expressionParser.splitInterpolation(
+      text: string, sourceSpan: ParseSourceSpan, context: I18nMessageVisitorContext,
+      previousI18n: i18n.I18nMeta|undefined): i18n.Node {
+    const {strings, expressions} = this._expressionParser.splitInterpolation(
         text, sourceSpan.start.toString(), this._interpolationConfig);
 
-    if (!splitInterpolation) {
-      // No expression, return a single text
+    // No expressions, return a single text.
+    if (expressions.length === 0) {
       return new i18n.Text(text, sourceSpan);
     }
 
-    // Return a group of text + expressions
+    // Return a sequence of `Text` and `Placeholder` nodes grouped in a `Container`.
     const nodes: i18n.Node[] = [];
-    const container = new i18n.Container(nodes, sourceSpan);
-    const {start: sDelimiter, end: eDelimiter} = this._interpolationConfig;
-
-    for (let i = 0; i < splitInterpolation.strings.length - 1; i++) {
-      const expression = splitInterpolation.expressions[i];
-      const baseName = _extractPlaceholderName(expression) || 'INTERPOLATION';
-      const phName = context.placeholderRegistry.getPlaceholderName(baseName, expression);
-
-      if (splitInterpolation.strings[i].length) {
-        // No need to add empty strings
-        const stringSpan = getOffsetSourceSpan(sourceSpan, splitInterpolation.stringSpans[i]);
-        nodes.push(new i18n.Text(splitInterpolation.strings[i], stringSpan));
-      }
-
-      const expressionSpan =
-          getOffsetSourceSpan(sourceSpan, splitInterpolation.expressionsSpans[i]);
-      nodes.push(new i18n.Placeholder(expression, phName, expressionSpan));
-      context.placeholderToContent[phName] = {
-        text: sDelimiter + expression + eDelimiter,
-        sourceSpan: expressionSpan,
-      };
+    for (let i = 0; i < strings.length - 1; i++) {
+      this._addText(nodes, strings[i], sourceSpan);
+      this._addPlaceholder(nodes, context, expressions[i], sourceSpan);
     }
-
     // The last index contains no expression
-    const lastStringIdx = splitInterpolation.strings.length - 1;
-    if (splitInterpolation.strings[lastStringIdx].length) {
-      const stringSpan =
-          getOffsetSourceSpan(sourceSpan, splitInterpolation.stringSpans[lastStringIdx]);
-      nodes.push(new i18n.Text(splitInterpolation.strings[lastStringIdx], stringSpan));
+    this._addText(nodes, strings[strings.length - 1], sourceSpan);
+
+    // Whitespace removal may have invalidated the interpolation source-spans.
+    reusePreviousSourceSpans(nodes, previousI18n);
+
+    return new i18n.Container(nodes, sourceSpan);
+  }
+
+  /**
+   * Create a new `Text` node from the `textPiece` and add it to the `nodes` collection.
+   *
+   * @param nodes The nodes to which the created `Text` node should be added.
+   * @param textPiece The text and relative span information for this `Text` node.
+   * @param interpolationSpan The span of the whole interpolated text.
+   */
+  private _addText(
+      nodes: i18n.Node[], textPiece: InterpolationPiece, interpolationSpan: ParseSourceSpan): void {
+    if (textPiece.text.length > 0) {
+      // No need to add empty strings
+      const stringSpan = getOffsetSourceSpan(interpolationSpan, textPiece);
+      nodes.push(new i18n.Text(textPiece.text, stringSpan));
     }
-    return container;
+  }
+
+  /**
+   * Create a new `Placeholder` node from the `expression` and add it to the `nodes` collection.
+   *
+   * @param nodes The nodes to which the created `Text` node should be added.
+   * @param context The current context of the visitor, used to compute and store placeholders.
+   * @param expression The expression text and relative span information for this `Placeholder`
+   *     node.
+   * @param interpolationSpan The span of the whole interpolated text.
+   */
+  private _addPlaceholder(
+      nodes: i18n.Node[], context: I18nMessageVisitorContext, expression: InterpolationPiece,
+      interpolationSpan: ParseSourceSpan): void {
+    const sourceSpan = getOffsetSourceSpan(interpolationSpan, expression);
+    const baseName = extractPlaceholderName(expression.text) || 'INTERPOLATION';
+    const phName = context.placeholderRegistry.getPlaceholderName(baseName, expression.text);
+    const text = this._interpolationConfig.start + expression.text + this._interpolationConfig.end;
+    context.placeholderToContent[phName] = {text, sourceSpan};
+    nodes.push(new i18n.Placeholder(expression.text, phName, sourceSpan));
   }
 }
 
+/**
+ * Re-use the source-spans from `previousI18n` metadata for the `nodes`.
+ *
+ * Whitespace removal can invalidate the source-spans of interpolation nodes, so we
+ * reuse the source-span stored from a previous pass before the whitespace was removed.
+ *
+ * @param nodes The `Text` and `Placeholder` nodes to be processed.
+ * @param previousI18n Any i18n metadata for these `nodes` stored from a previous pass.
+ */
+function reusePreviousSourceSpans(nodes: i18n.Node[], previousI18n: i18n.I18nMeta|undefined): void {
+  if (previousI18n instanceof i18n.Message) {
+    // The `previousI18n` is an i18n `Message`, so we are processing an `Attribute` with i18n
+    // metadata. The `Message` should consist only of a single `Container` that contains the
+    // parts (`Text` and `Placeholder`) to process.
+    assertSingleContainerMessage(previousI18n);
+    previousI18n = previousI18n.nodes[0];
+  }
+
+  if (previousI18n instanceof i18n.Container) {
+    // The `previousI18n` is a `Container`, which means that this is a second i18n extraction pass
+    // after whitespace has been removed from the AST ndoes.
+    assertEquivalentNodes(previousI18n.children, nodes);
+
+    // Reuse the source-spans from the first pass.
+    for (let i = 0; i < nodes.length; i++) {
+      nodes[i].sourceSpan = previousI18n.children[i].sourceSpan;
+    }
+  }
+}
+
+/**
+ * Asserts that the `message` contains exactly one `Container` node.
+ */
+function assertSingleContainerMessage(message: i18n.Message): void {
+  const nodes = message.nodes;
+  if (nodes.length !== 1 || !(nodes[0] instanceof i18n.Container)) {
+    throw new Error(
+        'Unexpected previous i18n message - expected it to consist of only a single `Container` node.');
+  }
+}
+
+/**
+ * Asserts that the `previousNodes` and `node` collections have the same number of elements and
+ * corresponding elements have the same node type.
+ */
+function assertEquivalentNodes(previousNodes: i18n.Node[], nodes: i18n.Node[]): void {
+  if (previousNodes.length !== nodes.length) {
+    throw new Error('The number of i18n message children changed between first and second pass.');
+  }
+  if (previousNodes.some((node, i) => nodes[i].constructor !== node.constructor)) {
+    throw new Error(
+        'The types of the i18n message children changed between first and second pass.');
+  }
+}
+
+/**
+ * Create a new `ParseSourceSpan` from the `sourceSpan`, offset by the `start` and `end` values.
+ */
 function getOffsetSourceSpan(
-    sourceSpan: ParseSourceSpan, {start, end}: {start: number, end: number}): ParseSourceSpan {
-  return new ParseSourceSpan(sourceSpan.start.moveBy(start), sourceSpan.start.moveBy(end));
+    sourceSpan: ParseSourceSpan, {start, end}: InterpolationPiece): ParseSourceSpan {
+  return new ParseSourceSpan(sourceSpan.fullStart.moveBy(start), sourceSpan.fullStart.moveBy(end));
 }
 
 const _CUSTOM_PH_EXP =
     /\/\/[\s\S]*i18n[\s\S]*\([\s\S]*ph[\s\S]*=[\s\S]*("|')([\s\S]*?)\1[\s\S]*\)/g;
 
-function _extractPlaceholderName(input: string): string {
+function extractPlaceholderName(input: string): string {
   return input.split(_CUSTOM_PH_EXP)[2];
 }

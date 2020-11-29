@@ -207,9 +207,12 @@ export declare class FormBuilder {
     control(formState: any, validatorOrOpts?: ValidatorFn | ValidatorFn[] | AbstractControlOptions | null, asyncValidator?: AsyncValidatorFn | AsyncValidatorFn[] | null): FormControl;
     group(controlsConfig: {
         [key: string]: any;
-    }, options?: AbstractControlOptions | {
+    }, options?: AbstractControlOptions | null): FormGroup;
+    /** @deprecated */ group(controlsConfig: {
         [key: string]: any;
-    } | null): FormGroup;
+    }, options: {
+        [key: string]: any;
+    }): FormGroup;
 }
 
 export declare class FormControl extends AbstractControl {

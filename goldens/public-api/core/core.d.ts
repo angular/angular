@@ -445,7 +445,7 @@ export declare class InjectionToken<T> {
 }
 
 export declare abstract class Injector {
-    abstract get<T>(token: Type<T> | InjectionToken<T> | AbstractType<T>, notFoundValue?: T, flags?: InjectFlags): T;
+    abstract get<T>(token: Type<T> | AbstractType<T> | InjectionToken<T>, notFoundValue?: T, flags?: InjectFlags): T;
     /** @deprecated */ abstract get(token: any, notFoundValue?: any): any;
     static NULL: Injector;
     static THROW_IF_NOT_FOUND: {};
@@ -619,9 +619,10 @@ export declare class NgZone {
     readonly onMicrotaskEmpty: EventEmitter<any>;
     readonly onStable: EventEmitter<any>;
     readonly onUnstable: EventEmitter<any>;
-    constructor({ enableLongStackTrace, shouldCoalesceEventChangeDetection }: {
+    constructor({ enableLongStackTrace, shouldCoalesceEventChangeDetection, shouldCoalesceRunChangeDetection }: {
         enableLongStackTrace?: boolean | undefined;
         shouldCoalesceEventChangeDetection?: boolean | undefined;
+        shouldCoalesceRunChangeDetection?: boolean | undefined;
     });
     run<T>(fn: (...args: any[]) => T, applyThis?: any, applyArgs?: any[]): T;
     runGuarded<T>(fn: (...args: any[]) => T, applyThis?: any, applyArgs?: any[]): T;
@@ -675,8 +676,8 @@ export declare function ɵɵdefineInjectable<T>(opts: {
 }): never;
 
 /** @codeGenApi */
-export declare function ɵɵinject<T>(token: Type<T> | InjectionToken<T>): T;
-export declare function ɵɵinject<T>(token: Type<T> | InjectionToken<T>, flags?: InjectFlags): T | null;
+export declare function ɵɵinject<T>(token: Type<T> | AbstractType<T> | InjectionToken<T>): T;
+export declare function ɵɵinject<T>(token: Type<T> | AbstractType<T> | InjectionToken<T>, flags?: InjectFlags): T | null;
 
 /** @codeGenApi */
 export declare interface ɵɵInjectableDef<T> {
@@ -755,6 +756,7 @@ export declare class QueryList<T> implements Iterable<T> {
     filter(fn: (item: T, index: number, array: T[]) => boolean): T[];
     find(fn: (item: T, index: number, array: T[]) => boolean): T | undefined;
     forEach(fn: (item: T, index: number, array: T[]) => void): void;
+    get(index: number): T | undefined;
     map<U>(fn: (item: T, index: number, array: T[]) => U): U[];
     notifyOnChanges(): void;
     reduce<U>(fn: (prevValue: U, curValue: T, curIndex: number, array: T[]) => U, init: U): U;
@@ -836,11 +838,11 @@ export declare interface RendererType2 {
 }
 
 export declare class ResolvedReflectiveFactory {
-    dependencies: ɵangular_packages_core_core_e[];
+    dependencies: ɵangular_packages_core_core_d[];
     factory: Function;
     constructor(
     factory: Function,
-    dependencies: ɵangular_packages_core_core_e[]);
+    dependencies: ɵangular_packages_core_core_d[]);
 }
 
 export declare interface ResolvedReflectiveProvider {

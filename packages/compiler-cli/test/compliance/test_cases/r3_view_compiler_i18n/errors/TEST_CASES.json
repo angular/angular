@@ -1,0 +1,56 @@
+{
+  "$schema": "../../test_case_schema.json",
+  "cases": [
+    {
+      "description": "should throw on nested i18n sections",
+      "inputFiles": [
+        "nested_i18n_msg.ts"
+      ],
+      "excludeFromPartialTests": true,
+      "expectations": [
+        {
+          "expectedErrors": [
+            {
+              "message": "Cannot mark an element as translatable inside of a translatable section\\. Please remove the nested i18n marker\\.",
+              "location": "nested_i18n_msg\\.ts \\(7,5\\)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should throw on nested i18n sections with tags in between",
+      "inputFiles": [
+        "nested_i18n_msg_with_tags.ts"
+      ],
+      "excludeFromPartialTests": true,
+      "expectations": [
+        {
+          "expectedErrors": [
+            {
+              "message": "Cannot mark an element as translatable inside of a translatable section\\. Please remove the nested i18n marker\\.",
+              "location": "nested_i18n_msg_with_tags\\.ts \\(8,7\\)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should throw on nested i18n sections represented with <ng-container>s",
+      "inputFiles": [
+        "nested_i18n_msg_with_ng-containers.ts"
+      ],
+      "excludeFromPartialTests": true,
+      "expectations": [
+        {
+          "expectedErrors": [
+            {
+              "message": "Cannot mark an element as translatable inside of a translatable section\\. Please remove the nested i18n marker\\.",
+              "location": "nested_i18n_msg_with_ng-containers\\.ts \\(8,7\\)"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

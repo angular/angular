@@ -15,6 +15,9 @@
     "name": "EMPTY_OBJ"
   },
   {
+    "name": "InjectFlags"
+  },
+  {
     "name": "Module"
   },
   {
@@ -172,6 +175,9 @@
   },
   {
     "name": "getCurrentTNodePlaceholderOk"
+  },
+  {
+    "name": "getDeclarationTNode"
   },
   {
     "name": "getFirstLContainer"

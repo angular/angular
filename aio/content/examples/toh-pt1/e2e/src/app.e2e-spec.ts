@@ -1,5 +1,4 @@
 import { browser, element, by, ElementFinder } from 'protractor';
-import { promise } from 'selenium-webdriver';
 
 const expectedH1 = 'Tour of Heroes';
 const expectedTitle = `${expectedH1}`;
@@ -23,9 +22,9 @@ class Hero {
 }
 
 const nameSuffix = 'X';
-function addToHeroName(text: string): promise.Promise<void> {
+async function addToHeroName(text: string): Promise<void> {
   const input = element(by.css('input'));
-  return input.sendKeys(text);
+  await input.sendKeys(text);
 }
 
 describe('Tutorial part 1', () => {
@@ -34,12 +33,12 @@ describe('Tutorial part 1', () => {
 
   beforeAll(() => browser.get(''));
 
-  it(`has title '${expectedTitle}'`, () => {
-    expect(browser.getTitle()).toEqual(expectedTitle);
+  it(`has title '${expectedTitle}'`, async () => {
+    expect(await browser.getTitle()).toEqual(expectedTitle);
   });
 
-  it(`has h1 '${expectedH1}'`, () => {
-    const hText = element(by.css('h1')).getText();
+  it(`has h1 '${expectedH1}'`, async () => {
+    const hText = await element(by.css('h1')).getText();
     expect(hText).toEqual(expectedH1, 'h1');
   });
 
@@ -51,7 +50,7 @@ describe('Tutorial part 1', () => {
   });
 
   it(`shows updated hero name`, async () => {
-    addToHeroName(nameSuffix);
+    await addToHeroName(nameSuffix);
     const page = getPageElts();
     const hero = await Hero.fromDetail(page.heroDetail);
     const newName = expectedHero.name + nameSuffix;

@@ -1,8 +1,9 @@
 import { ApplicationRef, Injectable, OnDestroy } from '@angular/core';
 import { SwUpdate } from '@angular/service-worker';
-import { concat, interval, NEVER, Observable, Subject } from 'rxjs';
-import { first, map, takeUntil, tap } from 'rxjs/operators';
+import { concat, interval, Subject } from 'rxjs';
+import { first, takeUntil, tap } from 'rxjs/operators';
 
+import { LocationService } from 'app/shared/location.service';
 import { Logger } from 'app/shared/logger.service';
 
 
@@ -19,12 +20,10 @@ export class SwUpdatesService implements OnDestroy {
   private checkInterval = 1000 * 60 * 60 * 6;  // 6 hours
   private onDestroy = new Subject<void>();
 
-  /** Emit the version hash whenever an update is activated. */
-  updateActivated: Observable<string>;
-
-  constructor(appRef: ApplicationRef, private logger: Logger, private swu: SwUpdate) {
+  constructor(
+      appRef: ApplicationRef, location: LocationService, private logger: Logger,
+      private swu: SwUpdate) {
     if (!swu.isEnabled) {
-      this.updateActivated = NEVER.pipe(takeUntil(this.onDestroy));
       return;
     }
 
@@ -45,12 +44,21 @@ export class SwUpdatesService implements OnDestroy {
         )
         .subscribe(() => this.swu.activateUpdate());
 
-    // Notify about activated updates.
-    this.updateActivated = this.swu.activated.pipe(
-        tap(evt => this.log(`Update activated: ${JSON.stringify(evt)}`)),
-        map(evt => evt.current.hash),
-        takeUntil(this.onDestroy),
-    );
+    // Request a full page navigation once an update has been activated.
+    this.swu.activated
+        .pipe(
+            tap(evt => this.log(`Update activated: ${JSON.stringify(evt)}`)),
+            takeUntil(this.onDestroy),
+        )
+        .subscribe(() => location.fullPageNavigationNeeded());
+
+    // Request an immediate page reload once an unrecoverable state has been detected.
+    this.swu.unrecoverable
+        .pipe(
+            tap(evt => this.log(`Unrecoverable state: ${evt.reason}\nReloading...`)),
+            takeUntil(this.onDestroy),
+        )
+        .subscribe(() => location.reloadPage());
   }
 
   ngOnDestroy() {

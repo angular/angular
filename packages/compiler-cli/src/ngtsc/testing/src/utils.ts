@@ -126,9 +126,9 @@ enum TsStructureIsReused {
   Completely = 2,
 }
 
-export function expectCompleteReuse(oldProgram: ts.Program): void {
+export function expectCompleteReuse(program: ts.Program): void {
   // Assert complete reuse using TypeScript's private API.
-  expect((oldProgram as any).structureIsReused)
+  expect((program as any).structureIsReused)
       .toBe(TsStructureIsReused.Completely, COMPLETE_REUSE_FAILURE_MESSAGE);
 }
 

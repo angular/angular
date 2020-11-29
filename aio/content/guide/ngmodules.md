@@ -19,7 +19,7 @@ Modules are a great way to organize an application and extend it with capabiliti
 Angular libraries are NgModules, such as `FormsModule`, `HttpClientModule`, and `RouterModule`.
 Many third-party libraries are available as NgModules such as
 <a href="https://material.angular.io/">Material Design</a>,
-<a href="http://ionicframework.com/">Ionic</a>, and
+<a href="https://ionicframework.com/">Ionic</a>, and
 <a href="https://github.com/angular/angularfire2">AngularFire2</a>.
 
 NgModules consolidate components, directives, and pipes into

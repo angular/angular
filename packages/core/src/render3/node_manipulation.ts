@@ -8,9 +8,9 @@
 
 import {ViewEncapsulation} from '../metadata/view';
 import {Renderer2} from '../render/api';
+import {RendererStyleFlags2} from '../render/api_flags';
 import {addToArray, removeFromArray} from '../util/array_utils';
-import {assertDefined, assertDomNode, assertEqual, assertIndexInRange, assertString} from '../util/assert';
-
+import {assertDefined, assertDomNode, assertEqual, assertString} from '../util/assert';
 import {assertLContainer, assertLView, assertTNodeForLView} from './assert';
 import {attachPatchData} from './context_discovery';
 import {icuContainerIterate} from './i18n/i18n_tree_shaking';
@@ -19,7 +19,8 @@ import {ComponentDef} from './interfaces/definition';
 import {NodeInjectorFactory} from './interfaces/injector';
 import {TElementNode, TIcuContainerNode, TNode, TNodeFlags, TNodeType, TProjectionNode, unusedValueExportToPlacateAjd as unused2} from './interfaces/node';
 import {unusedValueExportToPlacateAjd as unused3} from './interfaces/projection';
-import {isProceduralRenderer, ProceduralRenderer3, RComment, RElement, Renderer3, RNode, RText, unusedValueExportToPlacateAjd as unused4} from './interfaces/renderer';
+import {isProceduralRenderer, ProceduralRenderer3, Renderer3, unusedValueExportToPlacateAjd as unused4} from './interfaces/renderer';
+import {RComment, RElement, RNode, RText} from './interfaces/renderer_dom';
 import {isLContainer, isLView} from './interfaces/type_checks';
 import {CHILD_HEAD, CLEANUP, DECLARATION_COMPONENT_VIEW, DECLARATION_LCONTAINER, DestroyHookData, FLAGS, HookData, HookFn, HOST, LView, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, T_HOST, TVIEW, TView, TViewType, unusedValueExportToPlacateAjd as unused5} from './interfaces/view';
 import {assertTNodeType} from './node_assert';
@@ -557,9 +558,8 @@ export function getClosestRElement(tView: TView, tNode: TNode|null, lView: LView
     ngDevMode && assertTNodeType(parentTNode, TNodeType.AnyRNode | TNodeType.Container);
     if (parentTNode.flags & TNodeFlags.isComponentHost) {
       ngDevMode && assertTNodeForLView(parentTNode, lView);
-      const tData = tView.data;
-      const tNode = tData[parentTNode.index] as TNode;
-      const encapsulation = (tData[tNode.directiveStart] as ComponentDef<any>).encapsulation;
+      const encapsulation =
+          (tView.data[parentTNode.directiveStart] as ComponentDef<unknown>).encapsulation;
       // We've got a parent which is an element in the current view. We just need to verify if the
       // parent element is not a component. Component's content nodes are not inserted immediately
       // because they will be projected, and so doing insert at this point would be wasteful.
@@ -1019,9 +1019,7 @@ export function applyStyling(
       }
     }
   } else {
-    // TODO(misko): Can't import RendererStyleFlags2.DashCase as it causes imports to be resolved
-    // in different order which causes failures. Using direct constant as workaround for now.
-    const flags = prop.indexOf('-') == -1 ? undefined : 2 /* RendererStyleFlags2.DashCase */;
+    let flags = prop.indexOf('-') === -1 ? undefined : RendererStyleFlags2.DashCase as number;
     if (value == null /** || value === undefined */) {
       ngDevMode && ngDevMode.rendererRemoveStyle++;
       if (isProcedural) {
@@ -1030,12 +1028,22 @@ export function applyStyling(
         (rNode as HTMLElement).style.removeProperty(prop);
       }
     } else {
+      // A value is important if it ends with `!important`. The style
+      // parser strips any semicolons at the end of the value.
+      const isImportant = typeof value === 'string' ? value.endsWith('!important') : false;
+
+      if (isImportant) {
+        // !important has to be stripped from the value for it to be valid.
+        value = value.slice(0, -10);
+        flags! |= RendererStyleFlags2.Important;
+      }
+
       ngDevMode && ngDevMode.rendererSetStyle++;
       if (isProcedural) {
         (renderer as Renderer2).setStyle(rNode, prop, value, flags);
       } else {
         ngDevMode && assertDefined((rNode as HTMLElement).style, 'HTMLElement expected');
-        (rNode as HTMLElement).style.setProperty(prop, value);
+        (rNode as HTMLElement).style.setProperty(prop, value, isImportant ? 'important' : '');
       }
     }
   }

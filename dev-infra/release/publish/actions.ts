@@ -503,6 +503,9 @@ export abstract class ReleaseAction {
     await invokeYarnInstallCommand(this.projectDir);
     const builtPackages = await invokeReleaseBuildCommand();
 
+    // Verify the packages built are the correct version.
+    await this._verifyPackageVersions(newVersion, builtPackages);
+
     // Create a Github release for the new version.
     await this._createGithubReleaseForVersion(newVersion, versionBumpCommitSha);
 
@@ -536,5 +539,19 @@ export abstract class ReleaseAction {
     const {data} =
         await this.git.github.repos.getCommit({...this.git.remoteParams, ref: commitSha});
     return data.commit.message.startsWith(getCommitMessageForRelease(version));
+  }
+
+  /** Verify the version of each generated package exact matches the specified version. */
+  private async _verifyPackageVersions(version: semver.SemVer, packages: BuiltPackage[]) {
+    for (const pkg of packages) {
+      const {version: packageJsonVersion} =
+          JSON.parse(await fs.readFile(join(pkg.outputPath, 'package.json'), 'utf8'));
+      if (version.compare(packageJsonVersion) !== 0) {
+        error(red('The built package version does not match the version being released.'));
+        error(`  Release Version:   ${version.version}`);
+        error(`  Generated Version: ${packageJsonVersion}`);
+        throw new FatalReleaseActionError();
+      }
+    }
   }
 }

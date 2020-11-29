@@ -5,7 +5,6 @@ import { ReplaySubject } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 
 import { GaService } from 'app/shared/ga.service';
-import { SwUpdatesService } from 'app/sw-updates/sw-updates.service';
 import { ScrollService } from './scroll.service';
 
 @Injectable()
@@ -13,7 +12,7 @@ export class LocationService {
 
   private readonly urlParser = document.createElement('a');
   private urlSubject = new ReplaySubject<string>(1);
-  private swUpdateActivated = false;
+  private fullPageNavigation = false;
 
   currentUrl = this.urlSubject
     .pipe(map(url => this.stripSlashes(url)));
@@ -27,16 +26,22 @@ export class LocationService {
     private gaService: GaService,
     private location: Location,
     private scrollService: ScrollService,
-    private platformLocation: PlatformLocation,
-    swUpdates: SwUpdatesService) {
+    private platformLocation: PlatformLocation) {
 
     this.urlSubject.next(location.path(true));
 
     this.location.subscribe(state => {
       return this.urlSubject.next(state.url || '');
     });
+  }
 
-    swUpdates.updateActivated.subscribe(() => this.swUpdateActivated = true);
+  /**
+   * Signify that a full page navigation is needed (instead of a regular in-app navigation).
+   *
+   * This will happen on the next user-initiated navigation.
+   */
+  fullPageNavigationNeeded(): void {
+    this.fullPageNavigation = true;
   }
 
   // TODO: ignore if url-without-hash-or-search matches current location?
@@ -46,9 +51,9 @@ export class LocationService {
     if (/^http/.test(url)) {
       // Has http protocol so leave the site
       this.goExternal(url);
-    } else if (this.swUpdateActivated) {
-      // (Do a "full page navigation" if a ServiceWorker update has been activated)
-      // We need to remove stored Position in order to be sure to scroll to the Top position
+    } else if (this.fullPageNavigation) {
+      // Do a "full page navigation".
+      // We need to remove the stored scroll position to ensure we scroll to the top.
       this.scrollService.removeStoredScrollInfo();
       this.goExternal(url);
     } else {
@@ -63,6 +68,10 @@ export class LocationService {
 
   replace(url: string) {
     window.location.replace(url);
+  }
+
+  reloadPage(): void {
+    window.location.reload();
   }
 
   private stripSlashes(url: string) {
@@ -118,7 +127,6 @@ export class LocationService {
    * `AppComponent`, whose element contains all the of the application and so captures all
    * link clicks both inside and outside the `DocViewerComponent`.
    */
-
   handleAnchorClick(anchor: HTMLAnchorElement, button = 0, ctrlKey = false, metaKey = false) {
 
     // Check for modifier keys and non-left-button, which indicate the user wants to control navigation

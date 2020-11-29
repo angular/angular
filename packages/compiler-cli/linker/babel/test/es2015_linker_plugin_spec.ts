@@ -213,6 +213,41 @@ describe('createEs2015LinkerPlugin()', () => {
          `(function(){const x1=[1];return function BAR(){};})();BAR;`,
        ].join(''));
      });
+
+  it('should not process call expressions within inserted functions', () => {
+    spyOn(PartialDirectiveLinkerVersion1.prototype, 'linkPartialDeclaration')
+        .and.callFake(((sourceUrl, code, constantPool) => {
+                        // Insert a call expression into the constant pool. This is inserted into
+                        // Babel's AST upon program exit, and will therefore be visited by Babel
+                        // outside of an active linker context.
+                        constantPool.statements.push(
+                            o.fn(/* params */[], /* body */[], /* type */ undefined,
+                                 /* sourceSpan */ undefined, /* name */ 'inserted')
+                                .callFn([])
+                                .toStmt());
+
+                        return o.literal('REPLACEMENT');
+                      }) as typeof PartialDirectiveLinkerVersion1.prototype.linkPartialDeclaration);
+
+    const isPartialDeclarationSpy =
+        spyOn(FileLinker.prototype, 'isPartialDeclaration').and.callThrough();
+
+    const result = transformSync(
+        [
+          'import * as core from \'some-module\';',
+          `ɵɵngDeclareDirective({version: 1, ngImport: core})`,
+        ].join('\n'),
+        {
+          plugins: [createEs2015LinkerPlugin()],
+          filename: '/test.js',
+          parserOpts: {sourceType: 'unambiguous'},
+          generatorOpts: {compact: true},
+        });
+    expect(result!.code)
+        .toEqual('import*as core from\'some-module\';(function inserted(){})();"REPLACEMENT";');
+
+    expect(isPartialDeclarationSpy.calls.allArgs()).toEqual([['ɵɵngDeclareDirective']]);
+  });
 });
 
 /**

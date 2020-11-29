@@ -234,8 +234,18 @@ export class Identifiers {
   static resolveBody: o.ExternalReference = {name: 'ɵɵresolveBody', moduleName: CORE};
 
   static defineComponent: o.ExternalReference = {name: 'ɵɵdefineComponent', moduleName: CORE};
+  static declareComponent: o.ExternalReference = {name: 'ɵɵngDeclareComponent', moduleName: CORE};
 
   static setComponentScope: o.ExternalReference = {name: 'ɵɵsetComponentScope', moduleName: CORE};
+
+  static ChangeDetectionStrategy: o.ExternalReference = {
+    name: 'ChangeDetectionStrategy',
+    moduleName: CORE,
+  };
+  static ViewEncapsulation: o.ExternalReference = {
+    name: 'ViewEncapsulation',
+    moduleName: CORE,
+  };
 
   static ComponentDefWithMeta: o.ExternalReference = {
     name: 'ɵɵComponentDefWithMeta',
@@ -321,8 +331,6 @@ export class Identifiers {
   static sanitizeUrlOrResourceUrl:
       o.ExternalReference = {name: 'ɵɵsanitizeUrlOrResourceUrl', moduleName: CORE};
   static trustConstantHtml: o.ExternalReference = {name: 'ɵɵtrustConstantHtml', moduleName: CORE};
-  static trustConstantScript:
-      o.ExternalReference = {name: 'ɵɵtrustConstantScript', moduleName: CORE};
   static trustConstantResourceUrl:
       o.ExternalReference = {name: 'ɵɵtrustConstantResourceUrl', moduleName: CORE};
 }

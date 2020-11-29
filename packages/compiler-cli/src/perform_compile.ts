@@ -9,7 +9,7 @@
 import {isSyntaxError, Position} from '@angular/compiler';
 import * as ts from 'typescript';
 
-import {absoluteFrom, AbsoluteFsPath, getFileSystem, relative, resolve} from '../src/ngtsc/file_system';
+import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem, relative, resolve} from '../src/ngtsc/file_system';
 
 import {replaceTsWithNgInErrors} from './ngtsc/diagnostics';
 import * as api from './transformers/api';
@@ -108,23 +108,29 @@ export function formatDiagnostics(
   }
 }
 
+/** Used to read configuration files. */
+// TODO(ayazhafiz): split FileSystem into a ReadonlyFileSystem and make this a
+// subset of that.
+export type ConfigurationHost =
+    Pick<FileSystem, 'readFile'|'exists'|'lstat'|'resolve'|'join'|'dirname'|'extname'|'pwd'>;
+
 export interface ParsedConfiguration {
   project: string;
   options: api.CompilerOptions;
   rootNames: string[];
   projectReferences?: readonly ts.ProjectReference[]|undefined;
   emitFlags: api.EmitFlags;
-  errors: Diagnostics;
+  errors: ts.Diagnostic[];
 }
 
-export function calcProjectFileAndBasePath(project: string):
+export function calcProjectFileAndBasePath(
+    project: string, host: ConfigurationHost = getFileSystem()):
     {projectFile: AbsoluteFsPath, basePath: AbsoluteFsPath} {
-  const fs = getFileSystem();
-  const absProject = fs.resolve(project);
-  const projectIsDir = fs.lstat(absProject).isDirectory();
-  const projectFile = projectIsDir ? fs.join(absProject, 'tsconfig.json') : absProject;
-  const projectDir = projectIsDir ? absProject : fs.dirname(absProject);
-  const basePath = fs.resolve(projectDir);
+  const absProject = host.resolve(project);
+  const projectIsDir = host.lstat(absProject).isDirectory();
+  const projectFile = projectIsDir ? host.join(absProject, 'tsconfig.json') : absProject;
+  const projectDir = projectIsDir ? absProject : host.dirname(absProject);
+  const basePath = host.resolve(projectDir);
   return {projectFile, basePath};
 }
 
@@ -139,14 +145,15 @@ export function createNgCompilerOptions(
 }
 
 export function readConfiguration(
-    project: string, existingOptions?: ts.CompilerOptions): ParsedConfiguration {
+    project: string, existingOptions?: ts.CompilerOptions,
+    host: ConfigurationHost = getFileSystem()): ParsedConfiguration {
   try {
-    const fs = getFileSystem();
-    const {projectFile, basePath} = calcProjectFileAndBasePath(project);
+    const {projectFile, basePath} = calcProjectFileAndBasePath(project, host);
 
     const readExtendedConfigFile =
         (configFile: string, existingConfig?: any): {config?: any, error?: ts.Diagnostic} => {
-          const {config, error} = ts.readConfigFile(configFile, ts.sys.readFile);
+          const {config, error} =
+              ts.readConfigFile(configFile, file => host.readFile(host.resolve(file)));
 
           if (error) {
             return {error};
@@ -163,12 +170,12 @@ export function readConfiguration(
           }
 
           if (config.extends) {
-            let extendedConfigPath = fs.resolve(fs.dirname(configFile), config.extends);
-            extendedConfigPath = fs.extname(extendedConfigPath) ?
+            let extendedConfigPath = host.resolve(host.dirname(configFile), config.extends);
+            extendedConfigPath = host.extname(extendedConfigPath) ?
                 extendedConfigPath :
                 absoluteFrom(`${extendedConfigPath}.json`);
 
-            if (fs.exists(extendedConfigPath)) {
+            if (host.exists(extendedConfigPath)) {
               // Call read config recursively as TypeScript only merges CompilerOptions
               return readExtendedConfigFile(extendedConfigPath, baseConfig);
             }
@@ -190,11 +197,11 @@ export function readConfiguration(
     }
     const parseConfigHost = {
       useCaseSensitiveFileNames: true,
-      fileExists: fs.exists.bind(fs),
+      fileExists: host.exists.bind(host),
       readDirectory: ts.sys.readDirectory,
       readFile: ts.sys.readFile
     };
-    const configFileName = fs.resolve(fs.pwd(), projectFile);
+    const configFileName = host.resolve(host.pwd(), projectFile);
     const parsed = ts.parseJsonConfigFileContent(
         config, parseConfigHost, basePath, existingOptions, configFileName);
     const rootNames = parsed.fileNames;
@@ -217,11 +224,14 @@ export function readConfiguration(
       emitFlags
     };
   } catch (e) {
-    const errors: Diagnostics = [{
+    const errors: ts.Diagnostic[] = [{
       category: ts.DiagnosticCategory.Error,
       messageText: e.stack,
-      source: api.SOURCE,
-      code: api.UNKNOWN_ERROR_CODE
+      file: undefined,
+      start: undefined,
+      length: undefined,
+      source: 'angular',
+      code: api.UNKNOWN_ERROR_CODE,
     }];
     return {project: '', errors, rootNames: [], options: {}, emitFlags: api.EmitFlags.Default};
   }

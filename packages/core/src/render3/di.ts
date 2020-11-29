@@ -7,30 +7,31 @@
  */
 
 import {isForwardRef, resolveForwardRef} from '../di/forward_ref';
+import {injectRootLimpMode, setInjectImplementation} from '../di/inject_switch';
 import {InjectionToken} from '../di/injection_token';
 import {Injector} from '../di/injector';
-import {injectRootLimpMode, setInjectImplementation} from '../di/injector_compatibility';
+import {InjectorMarkers} from '../di/injector_marker';
 import {getInjectorDef} from '../di/interface/defs';
 import {InjectFlags} from '../di/interface/injector';
-import {Type} from '../interface/type';
+import {AbstractType, Type} from '../interface/type';
 import {assertDefined, assertEqual, assertIndexInRange} from '../util/assert';
 import {noSideEffects} from '../util/closure';
 
 import {assertDirectiveDef, assertNodeInjector, assertTNodeForLView} from './assert';
-import {getFactoryDef} from './definition';
-import {throwCyclicDependencyError, throwProviderNotFoundError} from './errors';
+import {FactoryFn, getFactoryDef} from './definition_factory';
+import {throwCyclicDependencyError, throwProviderNotFoundError} from './errors_di';
 import {NG_ELEMENT_ID, NG_FACTORY_DEF} from './fields';
 import {registerPreOrderHooks} from './hooks';
-import {DirectiveDef, FactoryFn} from './interfaces/definition';
+import {DirectiveDef} from './interfaces/definition';
 import {isFactory, NO_PARENT_INJECTOR, NodeInjectorFactory, NodeInjectorOffset, RelativeInjectorLocation, RelativeInjectorLocationFlags} from './interfaces/injector';
 import {AttributeMarker, TContainerNode, TDirectiveHostNode, TElementContainerNode, TElementNode, TNode, TNodeProviderIndexes, TNodeType} from './interfaces/node';
 import {isComponentDef, isComponentHost} from './interfaces/type_checks';
 import {DECLARATION_COMPONENT_VIEW, DECLARATION_VIEW, INJECTOR, LView, T_HOST, TData, TVIEW, TView, TViewType} from './interfaces/view';
 import {assertTNodeType} from './node_assert';
-import {enterDI, leaveDI} from './state';
+import {enterDI, getCurrentTNode, getLView, leaveDI} from './state';
 import {isNameOnlyAttributeMarker} from './util/attrs_utils';
 import {getParentInjectorIndex, getParentInjectorView, hasParentInjector} from './util/injector_utils';
-import {stringifyForError} from './util/misc_utils';
+import {stringifyForError} from './util/stringify_utils';
 
 
 
@@ -345,6 +346,52 @@ export function injectAttributeImpl(tNode: TNode, attrNameToInject: string): str
 }
 
 
+function notFoundValueOrThrow<T>(
+    notFoundValue: T|null, token: Type<T>|AbstractType<T>|InjectionToken<T>, flags: InjectFlags): T|
+    null {
+  if (flags & InjectFlags.Optional) {
+    return notFoundValue;
+  } else {
+    throwProviderNotFoundError(token, 'NodeInjector');
+  }
+}
+
+/**
+ * Returns the value associated to the given token from the ModuleInjector or throws exception
+ *
+ * @param lView The `LView` that contains the `tNode`
+ * @param token The token to look for
+ * @param flags Injection flags
+ * @param notFoundValue The value to return when the injection flags is `InjectFlags.Optional`
+ * @returns the value from the injector or throws an exception
+ */
+function lookupTokenUsingModuleInjector<T>(
+    lView: LView, token: Type<T>|AbstractType<T>|InjectionToken<T>, flags: InjectFlags,
+    notFoundValue?: any): T|null {
+  if (flags & InjectFlags.Optional && notFoundValue === undefined) {
+    // This must be set or the NullInjector will throw for optional deps
+    notFoundValue = null;
+  }
+
+  if ((flags & (InjectFlags.Self | InjectFlags.Host)) === 0) {
+    const moduleInjector = lView[INJECTOR];
+    // switch to `injectInjectorOnly` implementation for module injector, since module injector
+    // should not have access to Component/Directive DI scope (that may happen through
+    // `directiveInject` implementation)
+    const previousInjectImplementation = setInjectImplementation(undefined);
+    try {
+      if (moduleInjector) {
+        return moduleInjector.get(token, notFoundValue, flags & InjectFlags.Optional);
+      } else {
+        return injectRootLimpMode(token, notFoundValue, flags & InjectFlags.Optional);
+      }
+    } finally {
+      setInjectImplementation(previousInjectImplementation);
+    }
+  }
+  return notFoundValueOrThrow<T>(notFoundValue, token, flags);
+}
+
 /**
  * Returns the value associated to the given token from the NodeInjectors => ModuleInjector.
  *
@@ -352,8 +399,7 @@ export function injectAttributeImpl(tNode: TNode, attrNameToInject: string): str
  * the module injector tree.
  *
  * This function patches `token` with `__NG_ELEMENT_ID__` which contains the id for the bloom
- * filter. Negative values are reserved for special objects.
- *   - `-1` is reserved for injecting `Injector` (implemented by `NodeInjector`)
+ * filter. `-1` is reserved for injecting `Injector` (implemented by `NodeInjector`)
  *
  * @param tNode The Node where the search for the injector should start
  * @param lView The `LView` that contains the `tNode`
@@ -363,14 +409,20 @@ export function injectAttributeImpl(tNode: TNode, attrNameToInject: string): str
  * @returns the value from the injector, `null` when not found, or `notFoundValue` if provided
  */
 export function getOrCreateInjectable<T>(
-    tNode: TDirectiveHostNode|null, lView: LView, token: Type<T>|InjectionToken<T>,
+    tNode: TDirectiveHostNode|null, lView: LView, token: Type<T>|AbstractType<T>|InjectionToken<T>,
     flags: InjectFlags = InjectFlags.Default, notFoundValue?: any): T|null {
   if (tNode !== null) {
     const bloomHash = bloomHashBitOrFactory(token);
     // If the ID stored here is a function, this is a special object like ElementRef or TemplateRef
     // so just call the factory function to create it.
     if (typeof bloomHash === 'function') {
-      enterDI(lView, tNode);
+      if (!enterDI(lView, tNode, flags)) {
+        // Failed to enter DI, try module injector instead. If a token is injected with the @Host
+        // flag, the module injector is not searched for that token in Ivy.
+        return (flags & InjectFlags.Host) ?
+            notFoundValueOrThrow<T>(notFoundValue, token, flags) :
+            lookupTokenUsingModuleInjector<T>(lView, token, flags, notFoundValue);
+      }
       try {
         const value = bloomHash();
         if (value == null && !(flags & InjectFlags.Optional)) {
@@ -381,13 +433,7 @@ export function getOrCreateInjectable<T>(
       } finally {
         leaveDI();
       }
-    } else if (typeof bloomHash == 'number') {
-      if (bloomHash === -1) {
-        // `-1` is a special value used to identify `Injector` types.
-        return new NodeInjector(tNode, lView) as any;
-      }
-      // If the token has a bloom hash, then it is a token which could be in NodeInjector.
-
+    } else if (typeof bloomHash === 'number') {
       // A reference to the previous injector TView that was found while climbing the element
       // injector tree. This is used to know if viewProviders can be accessed on the current
       // injector.
@@ -453,38 +499,17 @@ export function getOrCreateInjectable<T>(
     }
   }
 
-  if (flags & InjectFlags.Optional && notFoundValue === undefined) {
-    // This must be set or the NullInjector will throw for optional deps
-    notFoundValue = null;
-  }
-
-  if ((flags & (InjectFlags.Self | InjectFlags.Host)) === 0) {
-    const moduleInjector = lView[INJECTOR];
-    // switch to `injectInjectorOnly` implementation for module injector, since module injector
-    // should not have access to Component/Directive DI scope (that may happen through
-    // `directiveInject` implementation)
-    const previousInjectImplementation = setInjectImplementation(undefined);
-    try {
-      if (moduleInjector) {
-        return moduleInjector.get(token, notFoundValue, flags & InjectFlags.Optional);
-      } else {
-        return injectRootLimpMode(token, notFoundValue, flags & InjectFlags.Optional);
-      }
-    } finally {
-      setInjectImplementation(previousInjectImplementation);
-    }
-  }
-  if (flags & InjectFlags.Optional) {
-    return notFoundValue;
-  } else {
-    throwProviderNotFoundError(token, 'NodeInjector');
-  }
+  return lookupTokenUsingModuleInjector<T>(lView, token, flags, notFoundValue);
 }
 
 const NOT_FOUND = {};
 
+export function createNodeInjector(): Injector {
+  return new NodeInjector(getCurrentTNode()! as TDirectiveHostNode, getLView()) as any;
+}
+
 function searchTokensOnInjector<T>(
-    injectorIndex: number, lView: LView, token: Type<T>|InjectionToken<T>,
+    injectorIndex: number, lView: LView, token: Type<T>|AbstractType<T>|InjectionToken<T>,
     previousTView: TView|null, flags: InjectFlags, hostTElementNode: TNode|null) {
   const currentTView = lView[TVIEW];
   const tNode = currentTView.data[injectorIndex + NodeInjectorOffset.TNODE] as TNode;
@@ -531,7 +556,7 @@ function searchTokensOnInjector<T>(
  * @returns Index of a found directive or provider, or null when none found.
  */
 export function locateDirectiveOrProvider<T>(
-    tNode: TNode, tView: TView, token: Type<T>|InjectionToken<T>|string,
+    tNode: TNode, tView: TView, token: Type<T>|AbstractType<T>|InjectionToken<T>|string,
     canAccessViewProviders: boolean, isHostSpecialCase: boolean|number): number|null {
   const nodeProviderIndexes = tNode.providerIndexes;
   const tInjectables = tView.data;
@@ -582,7 +607,11 @@ export function getNodeInjectable(
     factory.resolving = true;
     const previousInjectImplementation =
         factory.injectImpl ? setInjectImplementation(factory.injectImpl) : null;
-    enterDI(lView, tNode);
+    const success = enterDI(lView, tNode, InjectFlags.Default);
+    ngDevMode &&
+        assertEqual(
+            success, true,
+            'Because flags do not contain \`SkipSelf\' we expect this to always succeed.');
     try {
       value = lView[index] = factory.factory(undefined, tData, lView, tNode);
       // This code path is hit for both directives and providers.
@@ -618,8 +647,8 @@ export function getNodeInjectable(
  * @returns the matching bit to check in the bloom filter or `null` if the token is not known.
  *   When the returned value is negative then it represents special values such as `Injector`.
  */
-export function bloomHashBitOrFactory(token: Type<any>|InjectionToken<any>|string): number|Function|
-    undefined {
+export function bloomHashBitOrFactory(token: Type<any>|AbstractType<any>|InjectionToken<any>|
+                                      string): number|Function|undefined {
   ngDevMode && assertDefined(token, 'token must be defined');
   if (typeof token === 'string') {
     return token.charCodeAt(0) || 0;
@@ -628,7 +657,17 @@ export function bloomHashBitOrFactory(token: Type<any>|InjectionToken<any>|strin
       // First check with `hasOwnProperty` so we don't get an inherited ID.
       token.hasOwnProperty(NG_ELEMENT_ID) ? (token as any)[NG_ELEMENT_ID] : undefined;
   // Negative token IDs are used for special objects such as `Injector`
-  return (typeof tokenId === 'number' && tokenId > 0) ? tokenId & BLOOM_MASK : tokenId;
+  if (typeof tokenId === 'number') {
+    if (tokenId >= 0) {
+      return tokenId & BLOOM_MASK;
+    } else {
+      ngDevMode &&
+          assertEqual(tokenId, InjectorMarkers.Injector, 'Expecting to get Special Injector Id');
+      return createNodeInjector;
+    }
+  } else {
+    return tokenId;
+  }
 }
 
 export function bloomHasToken(bloomHash: number, injectorIndex: number, injectorView: LView|TData) {

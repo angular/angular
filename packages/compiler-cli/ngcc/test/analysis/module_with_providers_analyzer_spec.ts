@@ -11,8 +11,7 @@ import {absoluteFrom, AbsoluteFsPath, getSourceFileOrError} from '../../../src/n
 import {runInEachFileSystem, TestFile} from '../../../src/ngtsc/file_system/testing';
 import {MockLogger} from '../../../src/ngtsc/logging/testing';
 import {DeclarationNode} from '../../../src/ngtsc/reflection';
-import {getDeclaration, isNamedDeclaration} from '../../../src/ngtsc/testing';
-import {loadTestFiles} from '../../../test/helpers';
+import {getDeclaration, isNamedDeclaration, loadTestFiles} from '../../../src/ngtsc/testing';
 import {ModuleWithProvidersAnalyses, ModuleWithProvidersAnalyzer} from '../../src/analysis/module_with_providers_analyzer';
 import {NgccReferencesRegistry} from '../../src/analysis/ngcc_references_registry';
 import {Esm2015ReflectionHost} from '../../src/host/esm2015_host';

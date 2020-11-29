@@ -10,8 +10,7 @@ import {absoluteFrom} from '../../../src/ngtsc/file_system';
 import {runInEachFileSystem, TestFile} from '../../../src/ngtsc/file_system/testing';
 import {MockLogger} from '../../../src/ngtsc/logging/testing';
 import {ClassMemberKind, isNamedVariableDeclaration} from '../../../src/ngtsc/reflection';
-import {getDeclaration} from '../../../src/ngtsc/testing';
-import {loadTestFiles} from '../../../test/helpers';
+import {getDeclaration, loadTestFiles} from '../../../src/ngtsc/testing';
 import {UmdReflectionHost} from '../../src/host/umd_host';
 import {makeTestBundleProgram} from '../helpers/utils';
 

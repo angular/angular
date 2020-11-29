@@ -8,8 +8,9 @@
 import * as o from '../../output/output_ast';
 import {Identifiers as R3} from '../r3_identifiers';
 import {R3DirectiveDef, R3DirectiveMetadata, R3HostMetadata, R3QueryMetadata} from '../view/api';
-import {createDirectiveTypeParams} from '../view/compiler';
+import {createDirectiveType} from '../view/compiler';
 import {asLiteral, conditionallyCreateMapObjectLiteral, DefinitionMap} from '../view/util';
+import {toOptionalLiteralMap} from './util';
 
 
 /**
@@ -19,9 +20,7 @@ export function compileDeclareDirectiveFromMetadata(meta: R3DirectiveMetadata): 
   const definitionMap = createDirectiveDefinitionMap(meta);
 
   const expression = o.importExpr(R3.declareDirective).callFn([definitionMap.toLiteralMap()]);
-
-  const typeParams = createDirectiveTypeParams(meta);
-  const type = o.expressionType(o.importExpr(R3.DirectiveDefWithMeta, typeParams));
+  const type = createDirectiveType(meta);
 
   return {expression, type};
 }
@@ -114,29 +113,6 @@ function compileHostMetadata(meta: R3HostMetadata): o.LiteralMapExpr|null {
 
   if (hostMetadata.values.length > 0) {
     return hostMetadata.toLiteralMap();
-  } else {
-    return null;
-  }
-}
-
-/**
- * Creates an object literal expression from the given object, mapping all values to an expression
- * using the provided mapping function. If the object has no keys, then null is returned.
- *
- * @param object The object to transfer into an object literal expression.
- * @param mapper The logic to use for creating an expression for the object's values.
- * @returns An object literal expression representing `object`, or null if `object` does not have
- * any keys.
- */
-function toOptionalLiteralMap<T>(
-    object: {[key: string]: T}, mapper: (value: T) => o.Expression): o.LiteralMapExpr|null {
-  const entries = Object.keys(object).map(key => {
-    const value = object[key];
-    return {key, value: mapper(value), quoted: true};
-  });
-
-  if (entries.length > 0) {
-    return o.literalMap(entries);
   } else {
     return null;
   }

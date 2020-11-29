@@ -7,6 +7,7 @@
  */
 
 import {Type} from '../interface/type';
+import {assertLessThan} from '../util/assert';
 
 import {ɵɵdefineInjectable} from './interface/defs';
 
@@ -61,9 +62,10 @@ export class InjectionToken<T> {
   }) {
     this.ɵprov = undefined;
     if (typeof options == 'number') {
+      (typeof ngDevMode === 'undefined' || ngDevMode) &&
+          assertLessThan(options, 0, 'Only negative numbers are supported here');
       // This is a special hack to assign __NG_ELEMENT_ID__ to this instance.
-      // __NG_ELEMENT_ID__ is Used by Ivy to determine bloom filter id.
-      // We are using it to assign `-1` which is used to identify `Injector`.
+      // See `InjectorMarkers`
       (this as any).__NG_ELEMENT_ID__ = options;
     } else if (options !== undefined) {
       this.ɵprov = ɵɵdefineInjectable({

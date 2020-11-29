@@ -643,7 +643,7 @@ A producer of multiple values, which it pushes to [subscribers](#subscriber). Us
 
 Observables can deliver single or multiple values of any type to subscribers, either synchronously (as a function delivers a value to its caller) or on a schedule. A subscriber receives notification of new values as they are produced and notification of either normal completion or error completion.
 
-Angular uses a third-party library called [Reactive Extensions (RxJS)](http://reactivex.io/rxjs/).
+Angular uses a third-party library called [Reactive Extensions (RxJS)](https://rxjs.dev/).
 
 To learn more, see [Observables](guide/observables).
 
@@ -987,7 +987,7 @@ code completion, refactoring, inline documentation, and intelligent search).
 Many code editors and IDEs support TypeScript either natively or with plug-ins.
 
 TypeScript is the preferred language for Angular development.
-Read more about TypeScript at [typescriptlang.org](http://www.typescriptlang.org/).
+Read more about TypeScript at [typescriptlang.org](https://www.typescriptlang.org/).
 
 ## TypeScript configuration file
 

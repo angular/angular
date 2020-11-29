@@ -10,8 +10,8 @@
 import {inspect} from 'util';
 
 import {runInEachFileSystem} from '../../src/ngtsc/file_system/testing';
+import {loadStandardTestFiles} from '../../src/ngtsc/testing';
 import {tsSourceMapBug29300Fixed} from '../../src/ngtsc/util/src/ts_source_map_bug_29300';
-import {loadStandardTestFiles} from '../helpers/src/mock_file_loading';
 
 import {NgtscTestEnvironment} from './env';
 import {getMappedSegments, SegmentMapping} from './sourcemap_utils';
@@ -31,20 +31,22 @@ runInEachFileSystem((os) => {
       describe('(element creation)', () => {
         it('should map simple element with content', () => {
           const mappings = compileAndMap('<h1>Heading 1</h1>');
-          expect(mappings).toContain(
+          expectMapping(
+              mappings,
               {source: '<h1>', generated: 'i0.ɵɵelementStart(0, "h1")', sourceUrl: '../test.ts'});
-          expect(mappings).toContain({
+          expectMapping(mappings, {
             source: 'Heading 1',
             generated: 'i0.ɵɵtext(1, "Heading 1")',
             sourceUrl: '../test.ts'
           });
-          expect(mappings).toContain(
-              {source: '</h1>', generated: 'i0.ɵɵelementEnd()', sourceUrl: '../test.ts'});
+          expectMapping(
+              mappings, {source: '</h1>', generated: 'i0.ɵɵelementEnd()', sourceUrl: '../test.ts'});
         });
 
         it('should map void element', () => {
           const mappings = compileAndMap('<hr>');
-          expect(mappings).toContain(
+          expectMapping(
+              mappings,
               {source: '<hr>', generated: 'i0.ɵɵelement(0, "hr")', sourceUrl: '../test.ts'});
         });
       });
@@ -52,38 +54,40 @@ runInEachFileSystem((os) => {
       describe('(interpolations)', () => {
         it('should map a mix of interpolated and static content', () => {
           const mappings = compileAndMap('<h3>Hello {{ name }}</h3>');
-          expect(mappings).toContain(
+          expectMapping(
+              mappings,
               {source: '<h3>', generated: 'i0.ɵɵelementStart(0, "h3")', sourceUrl: '../test.ts'});
-          expect(mappings).toContain({
+          expectMapping(mappings, {
             source: 'Hello {{ name }}',
             generated: 'i0.ɵɵtextInterpolate1("Hello ", ctx.name, "")',
             sourceUrl: '../test.ts'
           });
-          expect(mappings).toContain(
-              {source: '</h3>', generated: 'i0.ɵɵelementEnd()', sourceUrl: '../test.ts'});
+          expectMapping(
+              mappings, {source: '</h3>', generated: 'i0.ɵɵelementEnd()', sourceUrl: '../test.ts'});
         });
 
         it('should map a complex interpolated expression', () => {
           const mappings = compileAndMap('<h2>{{ greeting + " " + name }}</h2>');
-          expect(mappings).toContain(
+          expectMapping(
+              mappings,
               {source: '<h2>', generated: 'i0.ɵɵelementStart(0, "h2")', sourceUrl: '../test.ts'});
-          expect(mappings).toContain({
+          expectMapping(mappings, {
             source: '{{ greeting + " " + name }}',
             generated: 'i0.ɵɵtextInterpolate(ctx.greeting + " " + ctx.name)',
             sourceUrl: '../test.ts'
           });
-          expect(mappings).toContain(
-              {source: '</h2>', generated: 'i0.ɵɵelementEnd()', sourceUrl: '../test.ts'});
+          expectMapping(
+              mappings, {source: '</h2>', generated: 'i0.ɵɵelementEnd()', sourceUrl: '../test.ts'});
         });
 
         it('should map interpolated properties', () => {
           const mappings = compileAndMap('<div id="{{name}}"></div>');
-          expect(mappings).toContain({
+          expectMapping(mappings, {
             source: '<div id="{{name}}"></div>',
             generated: 'i0.ɵɵelement(0, "div", 0)',
             sourceUrl: '../test.ts'
           });
-          expect(mappings).toContain({
+          expectMapping(mappings, {
             source: 'id="{{name}}"',
             generated: 'i0.ɵɵpropertyInterpolate("id", ctx.name)',
             sourceUrl: '../test.ts'
@@ -92,14 +96,16 @@ runInEachFileSystem((os) => {
 
         it('should map interpolation with pipe', () => {
           const mappings = compileAndMap('<div>{{200.3 | percent : 2 }}</div>');
-          expect(mappings).toContain(
+          expectMapping(
+              mappings,
               {source: '<div>', generated: 'i0.ɵɵelementStart(0, "div")', sourceUrl: '../test.ts'});
-          expect(mappings).toContain({
+          expectMapping(mappings, {
             source: '{{200.3 | percent : 2 }}',
             generated: 'i0.ɵɵtextInterpolate(i0.ɵɵpipeBind2(2, 1, 200.3, 2))',
             sourceUrl: '../test.ts'
           });
-          expect(mappings).toContain(
+          expectMapping(
+              mappings,
               {source: '</div>', generated: 'i0.ɵɵelementEnd()', sourceUrl: '../test.ts'});
         });
       });
@@ -107,12 +113,12 @@ runInEachFileSystem((os) => {
       describe('(property bindings)', () => {
         it('should map a simple input binding expression', () => {
           const mappings = compileAndMap('<div [attr]="name"></div>');
-          expect(mappings).toContain({
+          expectMapping(mappings, {
             source: '<div [attr]="name"></div>',
             generated: 'i0.ɵɵelement(0, "div", 0)',
             sourceUrl: '../test.ts'
           });
-          expect(mappings).toContain({
+          expectMapping(mappings, {
             source: '[attr]="name"',
             generated: 'i0.ɵɵproperty("attr", ctx.name)',
             sourceUrl: '../test.ts'
@@ -122,12 +128,12 @@ runInEachFileSystem((os) => {
         it('should map a complex input binding expression', () => {
           const mappings = compileAndMap('<div [attr]="greeting + name"></div>');
 
-          expect(mappings).toContain({
+          expectMapping(mappings, {
             source: '<div [attr]="greeting + name"></div>',
             generated: 'i0.ɵɵelement(0, "div", 0)',
             sourceUrl: '../test.ts'
           });
-          expect(mappings).toContain({
+          expectMapping(mappings, {
             source: '[attr]="greeting + name"',
             generated: 'i0.ɵɵproperty("attr", ctx.greeting + ctx.name)',
             sourceUrl: '../test.ts'
@@ -136,12 +142,12 @@ runInEachFileSystem((os) => {
 
         it('should map a longhand input binding expression', () => {
           const mappings = compileAndMap('<div bind-attr="name"></div>');
-          expect(mappings).toContain({
+          expectMapping(mappings, {
             source: '<div bind-attr="name"></div>',
             generated: 'i0.ɵɵelement(0, "div", 0)',
             sourceUrl: '../test.ts'
           });
-          expect(mappings).toContain({
+          expectMapping(mappings, {
             source: 'bind-attr="name"',
             generated: 'i0.ɵɵproperty("attr", ctx.name)',
             sourceUrl: '../test.ts'
@@ -150,72 +156,80 @@ runInEachFileSystem((os) => {
 
         it('should map a simple output binding expression', () => {
           const mappings = compileAndMap('<button (click)="doSomething()">Do it</button>');
-          expect(mappings).toContain({
+          expectMapping(mappings, {
             source: '<button (click)="doSomething()">',
             generated: 'i0.ɵɵelementStart(0, "button", 0)',
             sourceUrl: '../test.ts'
           });
-          expect(mappings).toContain(
+          expectMapping(
+              mappings,
               {source: 'Do it', generated: 'i0.ɵɵtext(1, "Do it")', sourceUrl: '../test.ts'});
-          expect(mappings).toContain(
+          expectMapping(
+              mappings,
               {source: 'doSomething()', generated: 'ctx.doSomething()', sourceUrl: '../test.ts'});
-          expect(mappings).toContain(
+          expectMapping(
+              mappings,
               {source: '</button>', generated: 'i0.ɵɵelementEnd()', sourceUrl: '../test.ts'});
         });
 
         it('should map a complex output binding expression', () => {
           const mappings = compileAndMap(
               `<button (click)="items.push('item' + items.length)">Add Item</button>`);
-          expect(mappings).toContain({
+          expectMapping(mappings, {
             source: `<button (click)="items.push('item' + items.length)">`,
             generated: 'i0.ɵɵelementStart(0, "button", 0)',
             sourceUrl: '../test.ts'
           });
-          expect(mappings).toContain(
+          expectMapping(
+              mappings,
               {source: 'Add Item', generated: 'i0.ɵɵtext(1, "Add Item")', sourceUrl: '../test.ts'});
-          expect(mappings).toContain(
+          expectMapping(
+              mappings,
               {source: 'items.push(', generated: 'ctx.items.push(', sourceUrl: '../test.ts'});
-          expect(mappings).toContain(
-              {source: `'item'`, generated: `"item"`, sourceUrl: '../test.ts'});
-          expect(mappings).toContain({
+          expectMapping(mappings, {source: `'item'`, generated: `"item"`, sourceUrl: '../test.ts'});
+          expectMapping(mappings, {
             source: ' + items.length)',
             generated: ' + ctx.items.length)',
             sourceUrl: '../test.ts'
           });
-          expect(mappings).toContain(
+          expectMapping(
+              mappings,
               {source: '</button>', generated: 'i0.ɵɵelementEnd()', sourceUrl: '../test.ts'});
         });
 
         it('should map a longhand output binding expression', () => {
           const mappings = compileAndMap('<button on-click="doSomething()">Do it</button>');
-          expect(mappings).toContain({
+          expectMapping(mappings, {
             source: '<button on-click="doSomething()">',
             generated: 'i0.ɵɵelementStart(0, "button", 0)',
             sourceUrl: '../test.ts'
           });
-          expect(mappings).toContain(
+          expectMapping(
+              mappings,
               {source: 'Do it', generated: 'i0.ɵɵtext(1, "Do it")', sourceUrl: '../test.ts'});
-          expect(mappings).toContain(
+          expectMapping(
+              mappings,
               {source: 'doSomething()', generated: 'ctx.doSomething()', sourceUrl: '../test.ts'});
-          expect(mappings).toContain(
+          expectMapping(
+              mappings,
               {source: '</button>', generated: 'i0.ɵɵelementEnd()', sourceUrl: '../test.ts'});
         });
 
         it('should map a two-way binding expression', () => {
           const mappings = compileAndMap('Name: <input [(ngModel)]="name">');
-          expect(mappings).toContain({
+          expectMapping(mappings, {
             source: '<input [(ngModel)]="name">',
             generated: 'i0.ɵɵelementStart(1, "input", 0)',
             sourceUrl: '../test.ts'
           });
           // TODO: improve mappings here
-          expect(mappings).toContain({
+          expectMapping(mappings, {
             source: '[(ngModel)]="name"',
             generated:
                 'i0.ɵɵlistener("ngModelChange", function TestCmp_Template_input_ngModelChange_1_listener($event) { return ctx.name = $event; })',
             sourceUrl: '../test.ts'
           });
-          expect(mappings).toContain({
+          expectMapping(mappings, {
             source: '<input [(ngModel)]="name">',
             generated: 'i0.ɵɵelementEnd()',
             sourceUrl: '../test.ts'
@@ -224,19 +238,19 @@ runInEachFileSystem((os) => {
 
         it('should map a longhand two-way binding expression', () => {
           const mappings = compileAndMap('Name: <input bindon-ngModel="name">');
-          expect(mappings).toContain({
+          expectMapping(mappings, {
             source: '<input bindon-ngModel="name">',
             generated: 'i0.ɵɵelementStart(1, "input", 0)',
             sourceUrl: '../test.ts'
           });
           // TODO: improve mappings here
-          expect(mappings).toContain({
+          expectMapping(mappings, {
             source: 'bindon-ngModel="name"',
             generated:
                 'i0.ɵɵlistener("ngModelChange", function TestCmp_Template_input_ngModelChange_1_listener($event) { return ctx.name = $event; })',
             sourceUrl: '../test.ts'
           });
-          expect(mappings).toContain({
+          expectMapping(mappings, {
             source: '<input bindon-ngModel="name">',
             generated: 'i0.ɵɵelementEnd()',
             sourceUrl: '../test.ts'
@@ -245,7 +259,7 @@ runInEachFileSystem((os) => {
 
         it('should map a class input binding', () => {
           const mappings = compileAndMap('<div [class.initial]="isInitial">Message</div>');
-          expect(mappings).toContain({
+          expectMapping(mappings, {
             source: '<div [class.initial]="isInitial">',
             generated: 'i0.ɵɵelementStart(0, "div")',
             sourceUrl: '../test.ts'
@@ -253,10 +267,12 @@ runInEachFileSystem((os) => {
 
           // TODO: Add better mappings for binding
 
-          expect(mappings).toContain(
+          expectMapping(
+              mappings,
               {source: 'Message', generated: 'i0.ɵɵtext(1, "Message")', sourceUrl: '../test.ts'});
 
-          expect(mappings).toContain(
+          expectMapping(
+              mappings,
               {source: '</div>', generated: 'i0.ɵɵelementEnd()', sourceUrl: '../test.ts'});
         });
       });
@@ -265,7 +281,7 @@ runInEachFileSystem((os) => {
         it('should map *ngIf scenario', () => {
           const mappings = compileAndMap('<div *ngIf="showMessage()">{{ name }}</div>');
 
-          expect(mappings).toContain({
+          expectMapping(mappings, {
             source: '<div *ngIf="showMessage()">',
             generated: 'i0.ɵɵelementStart(0, "div")',
             sourceUrl: '../test.ts'
@@ -273,12 +289,13 @@ runInEachFileSystem((os) => {
 
           // TODO - map the bindings better
 
-          expect(mappings).toContain(
+          expectMapping(
+              mappings,
               {source: '</div>', generated: 'i0.ɵɵelementEnd()', sourceUrl: '../test.ts'});
 
           // TODO: the `ctx_r...` appears to be dependent upon previous tests!!!
 
-          // expect(mappings).toContain({
+          // expectMapping(mappings, {
           //   source: '{{ name }}',
           //   generated: 'i0.ɵɵtextInterpolate(ctx_r0.name)',
           //   sourceUrl: '../test.ts'
@@ -292,17 +309,19 @@ runInEachFileSystem((os) => {
               `  <hr>\n` +
               `</ng-template>`);
 
-          expect(mappings).toContain(
+          expectMapping(
+              mappings,
               {source: '<div>', generated: 'i0.ɵɵelementStart(0, "div")', sourceUrl: '../test.ts'});
 
           // TODO - map the bindings better
 
-          expect(mappings).toContain(
+          expectMapping(
+              mappings,
               {source: '</div>', generated: 'i0.ɵɵelementEnd()', sourceUrl: '../test.ts'});
 
           // TODO: the `ctx_r...` appears to be dependent upon previous tests!!!
 
-          // expect(mappings).toContain({
+          // expectMapping(mappings, {
           //   source: '{{ name }}',
           //   generated: 'i0.ɵɵtextInterpolate(ctx_r0.name)',
           //   sourceUrl: '../test.ts'
@@ -313,7 +332,7 @@ runInEachFileSystem((os) => {
           const mappings = compileAndMap(
               '<div *ngFor="let item of items; index as i; trackBy: trackByFn">{{ item }}</div>');
 
-          expect(mappings).toContain({
+          expectMapping(mappings, {
             source: '<div *ngFor="let item of items; index as i; trackBy: trackByFn">',
             generated: 'i0.ɵɵelementStart(0, "div")',
             sourceUrl: '../test.ts'
@@ -321,7 +340,8 @@ runInEachFileSystem((os) => {
 
           // TODO - map the bindings better
 
-          expect(mappings).toContain(
+          expectMapping(
+              mappings,
               {source: '</div>', generated: 'i0.ɵɵelementEnd()', sourceUrl: '../test.ts'});
         });
 
@@ -339,23 +359,26 @@ runInEachFileSystem((os) => {
               `<h3><ng-content select="title"></ng-content></h3>\n` +
               `<div><ng-content></ng-content></div>`);
 
-          expect(mappings).toContain(
+          expectMapping(
+              mappings,
               {source: '<h3>', generated: 'i0.ɵɵelementStart(0, "h3")', sourceUrl: '../test.ts'});
-          expect(mappings).toContain({
+          expectMapping(mappings, {
             source: '<ng-content select="title"></ng-content>',
             generated: 'i0.ɵɵprojection(1)',
             sourceUrl: '../test.ts'
           });
-          expect(mappings).toContain(
-              {source: '</h3>', generated: 'i0.ɵɵelementEnd()', sourceUrl: '../test.ts'});
-          expect(mappings).toContain(
+          expectMapping(
+              mappings, {source: '</h3>', generated: 'i0.ɵɵelementEnd()', sourceUrl: '../test.ts'});
+          expectMapping(
+              mappings,
               {source: '<div>', generated: 'i0.ɵɵelementStart(2, "div")', sourceUrl: '../test.ts'});
-          expect(mappings).toContain({
+          expectMapping(mappings, {
             source: '<ng-content></ng-content>',
             generated: 'i0.ɵɵprojection(3, 1)',
             sourceUrl: '../test.ts'
           });
-          expect(mappings).toContain(
+          expectMapping(
+              mappings,
               {source: '</div>', generated: 'i0.ɵɵelementEnd()', sourceUrl: '../test.ts'});
         });
       });
@@ -363,12 +386,12 @@ runInEachFileSystem((os) => {
       describe('$localize', () => {
         it('should create simple i18n message source-mapping', () => {
           const mappings = compileAndMap(`<div i18n>Hello, World!</div>`);
-          expect(mappings).toContain({
+          expectMapping(mappings, {
             source: '<div i18n>',
             generated: 'i0.ɵɵelementStart(0, "div")',
             sourceUrl: '../test.ts',
           });
-          expect(mappings).toContain({
+          expectMapping(mappings, {
             source: 'Hello, World!',
             generated: '`Hello, World!`',
             sourceUrl: '../test.ts',
@@ -377,66 +400,155 @@ runInEachFileSystem((os) => {
 
         it('should create placeholder source-mappings', () => {
           const mappings = compileAndMap(`<div i18n>Hello, {{name}}!</div>`);
-          expect(mappings).toContain({
+          expectMapping(mappings, {
             source: '<div i18n>',
             generated: 'i0.ɵɵelementStart(0, "div")',
             sourceUrl: '../test.ts',
           });
-          expect(mappings).toContain({
+          expectMapping(mappings, {
             source: '</div>',
             generated: 'i0.ɵɵelementEnd()',
             sourceUrl: '../test.ts',
           });
-          expect(mappings).toContain({
+          expectMapping(mappings, {
             source: 'Hello, ',
             generated: '`Hello, ${',
             sourceUrl: '../test.ts',
           });
-          expect(mappings).toContain({
+          expectMapping(mappings, {
             source: '{{name}}',
             generated: '"\\uFFFD0\\uFFFD"',
             sourceUrl: '../test.ts',
           });
-          expect(mappings).toContain({
+          expectMapping(mappings, {
             source: '!',
             generated: '}:INTERPOLATION:!`',
             sourceUrl: '../test.ts',
           });
         });
 
+        it('should correctly handle collapsed whitespace in interpolation placeholder source-mappings',
+           () => {
+             const mappings = compileAndMap(
+                 `<div i18n title="  pre-title {{title_value}}  post-title" i18n-title>  pre-body {{body_value}}  post-body</div>`);
+             expectMapping(mappings, {
+               source: '<div i18n title="  pre-title {{title_value}}  post-title" i18n-title>  ',
+               generated: 'i0.ɵɵelementStart(0, "div", 0)',
+               sourceUrl: '../test.ts',
+             });
+             expectMapping(mappings, {
+               source: '</div>',
+               generated: 'i0.ɵɵelementEnd()',
+               sourceUrl: '../test.ts',
+             });
+             expectMapping(mappings, {
+               source: '  pre-body ',
+               generated: '` pre-body ${',
+               sourceUrl: '../test.ts',
+             });
+             expectMapping(mappings, {
+               source: '{{body_value}}',
+               generated: '"\\uFFFD0\\uFFFD"',
+               sourceUrl: '../test.ts',
+             });
+             expectMapping(mappings, {
+               source: '  post-body',
+               generated: '}:INTERPOLATION: post-body`',
+               sourceUrl: '../test.ts',
+             });
+           });
+
+        it('should correctly handle collapsed whitespace in element placeholder source-mappings',
+           () => {
+             const mappings =
+                 compileAndMap(`<div i18n>\n  pre-p\n  <p>\n    in-p\n  </p>\n  post-p\n</div>`);
+             // $localize expressions
+             expectMapping(mappings, {
+               sourceUrl: '../test.ts',
+               source: 'pre-p\n  ',
+               generated: '` pre-p ${',
+             });
+             expectMapping(mappings, {
+               sourceUrl: '../test.ts',
+               source: '<p>\n    ',
+               generated: '"\\uFFFD#2\\uFFFD"',
+             });
+             expectMapping(mappings, {
+               sourceUrl: '../test.ts',
+               source: 'in-p\n  ',
+               generated: '}:START_PARAGRAPH: in-p ${',
+             });
+             expectMapping(mappings, {
+               sourceUrl: '../test.ts',
+               source: '</p>\n  ',
+               generated: '"\\uFFFD/#2\\uFFFD"',
+             });
+             expectMapping(mappings, {
+               sourceUrl: '../test.ts',
+               source: 'post-p\n',
+               generated: '}:CLOSE_PARAGRAPH: post-p\n`',
+             });
+             // ivy instructions
+             expectMapping(mappings, {
+               sourceUrl: '../test.ts',
+               source: '<div i18n>\n  ',
+               generated: 'i0.ɵɵelementStart(0, "div")',
+             });
+             expectMapping(mappings, {
+               sourceUrl: '../test.ts',
+               source: '<div i18n>\n  ',
+               generated: 'i0.ɵɵi18nStart(1, 0)',
+             });
+             expectMapping(mappings, {
+               sourceUrl: '../test.ts',
+               source: '<p>\n    in-p\n  </p>',
+               generated: 'i0.ɵɵelement(2, "p")',
+             });
+             expectMapping(mappings, {
+               sourceUrl: '../test.ts',
+               source: '</div>',
+               generated: 'i0.ɵɵi18nEnd()',
+             });
+             expectMapping(mappings, {
+               sourceUrl: '../test.ts',
+               source: '</div>',
+               generated: 'i0.ɵɵelementEnd()',
+             });
+           });
+
         it('should create tag (container) placeholder source-mappings', () => {
           const mappings = compileAndMap(`<div i18n>Hello, <b>World</b>!</div>`);
-          expect(mappings).toContain({
+          expectMapping(mappings, {
             source: '<div i18n>',
             generated: 'i0.ɵɵelementStart(0, "div")',
             sourceUrl: '../test.ts',
           });
-          expect(mappings).toContain({
+          expectMapping(mappings, {
             source: '</div>',
             generated: 'i0.ɵɵelementEnd()',
             sourceUrl: '../test.ts',
           });
-          expect(mappings).toContain({
+          expectMapping(mappings, {
             source: 'Hello, ',
             generated: '`Hello, ${',
             sourceUrl: '../test.ts',
           });
-          expect(mappings).toContain({
+          expectMapping(mappings, {
             source: '<b>',
             generated: '"\\uFFFD#2\\uFFFD"',
             sourceUrl: '../test.ts',
           });
-          expect(mappings).toContain({
+          expectMapping(mappings, {
             source: 'World',
             generated: '}:START_BOLD_TEXT:World${',
             sourceUrl: '../test.ts',
           });
-          expect(mappings).toContain({
+          expectMapping(mappings, {
             source: '</b>',
             generated: '"\\uFFFD/#2\\uFFFD"',
             sourceUrl: '../test.ts',
           });
-          expect(mappings).toContain({
+          expectMapping(mappings, {
             source: '!',
             generated: '}:CLOSE_BOLD_TEXT:!`',
             sourceUrl: '../test.ts',
@@ -448,24 +560,26 @@ runInEachFileSystem((os) => {
         const mappings = compileAndMap('<div>this is a test</div><div>{{ 1 + 2 }}</div>');
 
         // Creation mode
-        expect(mappings).toContain(
+        expectMapping(
+            mappings,
             {generated: 'i0.ɵɵelementStart(0, "div")', source: '<div>', sourceUrl: '../test.ts'});
-        expect(mappings).toContain({
+        expectMapping(mappings, {
           generated: 'i0.ɵɵtext(1, "this is a test")',
           source: 'this is a test',
           sourceUrl: '../test.ts'
         });
-        expect(mappings).toContain(
-            {generated: 'i0.ɵɵelementEnd()', source: '</div>', sourceUrl: '../test.ts'});
-        expect(mappings).toContain(
+        expectMapping(
+            mappings, {generated: 'i0.ɵɵelementEnd()', source: '</div>', sourceUrl: '../test.ts'});
+        expectMapping(
+            mappings,
             {generated: 'i0.ɵɵelementStart(2, "div")', source: '<div>', sourceUrl: '../test.ts'});
-        expect(mappings).toContain(
-            {generated: 'i0.ɵɵtext(3)', source: '{{ 1 + 2 }}', sourceUrl: '../test.ts'});
-        expect(mappings).toContain(
-            {generated: 'i0.ɵɵelementEnd()', source: '</div>', sourceUrl: '../test.ts'});
+        expectMapping(
+            mappings, {generated: 'i0.ɵɵtext(3)', source: '{{ 1 + 2 }}', sourceUrl: '../test.ts'});
+        expectMapping(
+            mappings, {generated: 'i0.ɵɵelementEnd()', source: '</div>', sourceUrl: '../test.ts'});
 
         // Update mode
-        expect(mappings).toContain({
+        expectMapping(mappings, {
           generated: 'i0.ɵɵtextInterpolate(1 + 2)',
           source: '{{ 1 + 2 }}',
           sourceUrl: '../test.ts'
@@ -476,25 +590,27 @@ runInEachFileSystem((os) => {
         const mappings = compileAndMap('<div>this is a test</div><div>{{ 1 + 2 }}</div>');
 
         // Creation mode
-        expect(mappings).toContain(
+        expectMapping(
+            mappings,
             {generated: 'i0.ɵɵelementStart(0, "div")', source: '<div>', sourceUrl: '../test.ts'});
-        expect(mappings).toContain({
+        expectMapping(mappings, {
           generated: 'i0.ɵɵtext(1, "this is a test")',
           source: 'this is a test',
           sourceUrl: '../test.ts'
         });
-        expect(mappings).toContain(
-            {generated: 'i0.ɵɵelementEnd()', source: '</div>', sourceUrl: '../test.ts'});
-        expect(mappings).toContain(
+        expectMapping(
+            mappings, {generated: 'i0.ɵɵelementEnd()', source: '</div>', sourceUrl: '../test.ts'});
+        expectMapping(
+            mappings,
             {generated: 'i0.ɵɵelementStart(2, "div")', source: '<div>', sourceUrl: '../test.ts'});
-        expect(mappings).toContain(
-            {generated: 'i0.ɵɵtext(3)', source: '{{ 1 + 2 }}', sourceUrl: '../test.ts'});
-        expect(mappings).toContain(
-            {generated: 'i0.ɵɵelementEnd()', source: '</div>', sourceUrl: '../test.ts'});
+        expectMapping(
+            mappings, {generated: 'i0.ɵɵtext(3)', source: '{{ 1 + 2 }}', sourceUrl: '../test.ts'});
+        expectMapping(
+            mappings, {generated: 'i0.ɵɵelementEnd()', source: '</div>', sourceUrl: '../test.ts'});
 
         // TODO(benlesh): We need to circle back and prevent the extra parens from being generated.
         // Update mode
-        expect(mappings).toContain({
+        expectMapping(mappings, {
           generated: 'i0.ɵɵtextInterpolate(1 + 2)',
           source: '{{ 1 + 2 }}',
           sourceUrl: '../test.ts'
@@ -506,7 +622,7 @@ runInEachFileSystem((os) => {
            // Note that the escaped double quotes, which need un-escaping to be parsed correctly.
            const mappings = compileAndMap('<div class=\\"some-class\\">this is a test</div>');
 
-           expect(mappings).toContain({
+           expectMapping(mappings, {
              generated: 'i0.ɵɵelementStart(0, "div", 0)',
              source: '<div class=\\"some-class\\">',
              sourceUrl: '../test.ts'
@@ -525,30 +641,33 @@ runInEachFileSystem((os) => {
               compileAndMap('<div>this is a test</div><div>{{ 1 + 2 }}</div>', './dir/test.html');
 
           // Creation mode
-          expect(mappings).toContain({
+          expectMapping(mappings, {
             generated: 'i0.ɵɵelementStart(0, "div")',
             source: '<div>',
             sourceUrl: '../dir/test.html'
           });
-          expect(mappings).toContain({
+          expectMapping(mappings, {
             generated: 'i0.ɵɵtext(1, "this is a test")',
             source: 'this is a test',
             sourceUrl: '../dir/test.html'
           });
-          expect(mappings).toContain(
+          expectMapping(
+              mappings,
               {generated: 'i0.ɵɵelementEnd()', source: '</div>', sourceUrl: '../dir/test.html'});
-          expect(mappings).toContain({
+          expectMapping(mappings, {
             generated: 'i0.ɵɵelementStart(2, "div")',
             source: '<div>',
             sourceUrl: '../dir/test.html'
           });
-          expect(mappings).toContain(
+          expectMapping(
+              mappings,
               {generated: 'i0.ɵɵtext(3)', source: '{{ 1 + 2 }}', sourceUrl: '../dir/test.html'});
-          expect(mappings).toContain(
+          expectMapping(
+              mappings,
               {generated: 'i0.ɵɵelementEnd()', source: '</div>', sourceUrl: '../dir/test.html'});
 
           // Update mode
-          expect(mappings).toContain({
+          expectMapping(mappings, {
             generated: 'i0.ɵɵtextInterpolate(1 + 2)',
             source: '{{ 1 + 2 }}',
             sourceUrl: '../dir/test.html'
@@ -560,39 +679,39 @@ runInEachFileSystem((os) => {
               '<div>this is a test</div><div>{{ 1 + 2 }}</div>', 'extraRootDir/test.html');
 
           // Creation mode
-          expect(mappings).toContain({
+          expectMapping(mappings, {
             generated: 'i0.ɵɵelementStart(0, "div")',
             source: '<div>',
             sourceUrl: '../extraRootDir/test.html'
           });
-          expect(mappings).toContain({
+          expectMapping(mappings, {
             generated: 'i0.ɵɵtext(1, "this is a test")',
             source: 'this is a test',
             sourceUrl: '../extraRootDir/test.html'
           });
-          expect(mappings).toContain({
+          expectMapping(mappings, {
             generated: 'i0.ɵɵelementEnd()',
             source: '</div>',
             sourceUrl: '../extraRootDir/test.html'
           });
-          expect(mappings).toContain({
+          expectMapping(mappings, {
             generated: 'i0.ɵɵelementStart(2, "div")',
             source: '<div>',
             sourceUrl: '../extraRootDir/test.html'
           });
-          expect(mappings).toContain({
+          expectMapping(mappings, {
             generated: 'i0.ɵɵtext(3)',
             source: '{{ 1 + 2 }}',
             sourceUrl: '../extraRootDir/test.html'
           });
-          expect(mappings).toContain({
+          expectMapping(mappings, {
             generated: 'i0.ɵɵelementEnd()',
             source: '</div>',
             sourceUrl: '../extraRootDir/test.html'
           });
 
           // Update mode
-          expect(mappings).toContain({
+          expectMapping(mappings, {
             generated: 'i0.ɵɵtextInterpolate(1 + 2)',
             source: '{{ 1 + 2 }}',
             sourceUrl: '../extraRootDir/test.html'
@@ -637,6 +756,43 @@ runInEachFileSystem((os) => {
                                              ' '.repeat(max - value.length);
         return value + padding;
       }
+    }
+
+    function expectMapping(mappings: SegmentMapping[], expected: SegmentMapping): void {
+      if (mappings.some(
+              m => m.generated === expected.generated && m.source === expected.source &&
+                  m.sourceUrl === expected.sourceUrl)) {
+        return;
+      }
+      const matchingGenerated = mappings.filter(m => m.generated === expected.generated);
+      const matchingSource = mappings.filter(m => m.source === expected.source);
+
+      const message = [
+        'Expected mappings to contain the following mapping',
+        prettyPrintMapping(expected),
+      ];
+      if (matchingGenerated.length > 0) {
+        message.push('');
+        message.push('There are the following mappings that match the generated text:');
+        matchingGenerated.forEach(m => message.push(prettyPrintMapping(m)));
+      }
+      if (matchingSource.length > 0) {
+        message.push('');
+        message.push('There are the following mappings that match the source text:');
+        matchingSource.forEach(m => message.push(prettyPrintMapping(m)));
+      }
+
+      fail(message.join('\n'));
+    }
+
+    function prettyPrintMapping(mapping: SegmentMapping): string {
+      return [
+        '{',
+        `  generated: ${JSON.stringify(mapping.generated)}`,
+        `  source:    ${JSON.stringify(mapping.source)}`,
+        `  sourceUrl: ${JSON.stringify(mapping.sourceUrl)}`,
+        '}',
+      ].join('\n');
     }
   });
 });

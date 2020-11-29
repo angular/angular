@@ -20,7 +20,7 @@ const MAX_LEGACY_XLIFF_2_MESSAGE_LENGTH = 20;
 /**
  * A translation serializer that can write translations in XLIFF 2 format.
  *
- * http://docs.oasis-open.org/xliff/xliff-core/v2.0/os/xliff-core-v2.0-os.html
+ * https://docs.oasis-open.org/xliff/xliff-core/v2.0/os/xliff-core-v2.0-os.html
  *
  * @see Xliff2TranslationParser
  * @publicApi used by CLI

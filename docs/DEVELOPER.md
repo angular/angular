@@ -21,11 +21,10 @@ if you'd like to contribute to Angular.
 Before you can build and test Angular, you must install and configure the
 following products on your development machine:
 
-* [Git](http://git-scm.com) and/or the **GitHub app** (for [Mac](http://mac.github.com) or
-  [Windows](http://windows.github.com)); [GitHub's Guide to Installing
-  Git](https://help.github.com/articles/set-up-git) is a good source of information.
+* [Git](https://git-scm.com/) and/or the [**GitHub app**](https://desktop.github.com/) (for Mac and Windows);
+  [GitHub's Guide to Installing Git](https://help.github.com/articles/set-up-git) is a good source of information.
 
-* [Node.js](http://nodejs.org), (version specified in the engines field of [`package.json`](../package.json)) which is used to run a development web server,
+* [Node.js](https://nodejs.org), (version specified in the engines field of [`package.json`](../package.json)) which is used to run a development web server,
   run tests, and generate distributable files.
 
 * [Yarn](https://yarnpkg.com) (version specified in the engines field of [`package.json`](../package.json)) which is used to install dependencies.
@@ -39,7 +38,7 @@ Fork and clone the Angular repository:
 
 1. Login to your GitHub account or create one by following the instructions given
    [here](https://github.com/signup/free).
-2. [Fork](http://help.github.com/forking) the [main Angular
+2. [Fork](https://help.github.com/forking) the [main Angular
    repository](https://github.com/angular/angular).
 3. Clone your fork of the Angular repository and define an `upstream` remote pointing back to
    the Angular repository that you forked in the first place.
@@ -96,7 +95,7 @@ merged if the code is formatted properly and all tests are passing.
 
 ## Formatting your source code
 
-Angular uses [clang-format](http://clang.llvm.org/docs/ClangFormat.html) to format the source code.
+Angular uses [clang-format](https://clang.llvm.org/docs/ClangFormat.html) to format the source code.
 If the source code is not properly formatted, the CI will fail and the PR cannot be merged.
 
 You can automatically format your code by running:

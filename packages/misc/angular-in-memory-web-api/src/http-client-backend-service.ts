@@ -19,7 +19,7 @@ import {InMemoryBackendConfig, InMemoryBackendConfigArgs, InMemoryDbService, Res
  * For Angular `HttpClient` simulate the behavior of a RESTy web api
  * backed by the simple in-memory data store provided by the injected `InMemoryDbService`.
  * Conforms mostly to behavior described here:
- * http://www.restapitutorial.com/lessons/httpmethods.html
+ * https://www.restapitutorial.com/lessons/httpmethods.html
  *
  * ### Usage
  *

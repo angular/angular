@@ -14,6 +14,7 @@ import {ActivatedRouteSnapshot, inheritedParamsDataResolve, ParamsInheritanceStr
 import {defaultUrlMatcher, PRIMARY_OUTLET} from './shared';
 import {mapChildrenIntoArray, UrlSegment, UrlSegmentGroup, UrlTree} from './url_tree';
 import {forEach, last} from './utils/collection';
+import {getOutlet} from './utils/config';
 import {TreeNode} from './utils/tree';
 
 class NoMatch {}
@@ -326,10 +327,6 @@ function emptyPathMatch(
   }
 
   return r.path === '' && r.redirectTo === undefined;
-}
-
-function getOutlet(route: Route): string {
-  return route.outlet || PRIMARY_OUTLET;
 }
 
 function getData(route: Route): Data {

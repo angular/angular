@@ -8,9 +8,8 @@
 
 import {WrappedValue} from '../change_detection/change_detection_util';
 import {PipeTransform} from '../change_detection/pipe_transform';
-import {setInjectImplementation} from '../di/injector_compatibility';
-
-import {getFactoryDef} from './definition';
+import {setInjectImplementation} from '../di/inject_switch';
+import {getFactoryDef} from './definition_factory';
 import {setIncludeViewProviders} from './di';
 import {RuntimeError, RuntimeErrorCode} from './error_code';
 import {store, ɵɵdirectiveInject} from './instructions/all';

@@ -129,7 +129,8 @@ class _TreeBuilder {
           TreeError.create(null, this._peek.sourceSpan, `Invalid ICU message. Missing '}'.`));
       return;
     }
-    const sourceSpan = new ParseSourceSpan(token.sourceSpan.start, this._peek.sourceSpan.end);
+    const sourceSpan = new ParseSourceSpan(
+        token.sourceSpan.start, this._peek.sourceSpan.end, token.sourceSpan.fullStart);
     this._addToParent(new html.Expansion(
         switchValue.parts[0], type.parts[0], cases, sourceSpan, switchValue.sourceSpan));
 
@@ -163,8 +164,10 @@ class _TreeBuilder {
       return null;
     }
 
-    const sourceSpan = new ParseSourceSpan(value.sourceSpan.start, end.sourceSpan.end);
-    const expSourceSpan = new ParseSourceSpan(start.sourceSpan.start, end.sourceSpan.end);
+    const sourceSpan =
+        new ParseSourceSpan(value.sourceSpan.start, end.sourceSpan.end, value.sourceSpan.fullStart);
+    const expSourceSpan =
+        new ParseSourceSpan(start.sourceSpan.start, end.sourceSpan.end, start.sourceSpan.fullStart);
     return new html.ExpansionCase(
         value.parts[0], expansionCaseParser.rootNodes, sourceSpan, value.sourceSpan, expSourceSpan);
   }
@@ -257,9 +260,11 @@ class _TreeBuilder {
       selfClosing = false;
     }
     const end = this._peek.sourceSpan.start;
-    const span = new ParseSourceSpan(startTagToken.sourceSpan.start, end);
+    const span = new ParseSourceSpan(
+        startTagToken.sourceSpan.start, end, startTagToken.sourceSpan.fullStart);
     // Create a separate `startSpan` because `span` will be modified when there is an `end` span.
-    const startSpan = new ParseSourceSpan(startTagToken.sourceSpan.start, end);
+    const startSpan = new ParseSourceSpan(
+        startTagToken.sourceSpan.start, end, startTagToken.sourceSpan.fullStart);
     const el = new html.Element(fullName, attrs, [], span, startSpan, undefined);
     this._pushElement(el);
     if (selfClosing) {
@@ -346,8 +351,11 @@ class _TreeBuilder {
       const quoteToken = this._advance();
       end = quoteToken.sourceSpan.end;
     }
+    const keySpan = new ParseSourceSpan(attrName.sourceSpan.start, attrName.sourceSpan.end);
     return new html.Attribute(
-        fullName, value, new ParseSourceSpan(attrName.sourceSpan.start, end), valueSpan);
+        fullName, value,
+        new ParseSourceSpan(attrName.sourceSpan.start, end, attrName.sourceSpan.fullStart), keySpan,
+        valueSpan);
   }
 
   private _getParentElement(): html.Element|null {

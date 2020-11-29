@@ -142,8 +142,6 @@ export function getQueryPredicate(
   }
 }
 
-export function noop() {}
-
 export class DefinitionMap {
   values: {key: string, quoted: boolean, value: o.Expression}[] = [];
 

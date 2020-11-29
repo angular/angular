@@ -3,9 +3,9 @@
 # Note: YAML anchors allow an object to be re-used, reducing duplication.
 # The ampersand declares an alias for an object, then later the `<<: *name`
 # syntax dereferences it.
-# See http://blog.daemonl.com/2016/02/yaml.html
+# See https://blog.daemonl.com/2016/02/yaml.html
 # To validate changes, use an online parser, eg.
-# http://yaml-online-parser.appspot.com/
+# https://yaml-online-parser.appspot.com/
 
 # CircleCI configuration version
 # Version 2.1 allows for extra config reuse features
@@ -220,7 +220,7 @@ jobs:
               git config user.name "angular-ci"
               git config user.email "angular-ci"
               # Rebase PR on top of target branch.
-              node tools/rebase-pr.js
+              node .circleci/rebase-pr.js
             else
               echo "This build is not over a PR, nothing to do."
             fi
@@ -753,11 +753,11 @@ jobs:
       - setup_win
       - run:
           name: Build all windows CI targets
-          command: yarn bazel build --build_tag_filters=-ivy-only //packages/compiler-cli/... //tools/ts-api-guardian/...
+          command: yarn bazel build --build_tag_filters=-ivy-only,-no-windows //packages/compiler-cli/... //tools/ts-api-guardian/...
           no_output_timeout: 15m
       - run:
           name: Test all windows CI targets
-          command: yarn bazel test --test_tag_filters="-ivy-only,-browser:chromium-local" //packages/compiler-cli/... //tools/ts-api-guardian/...
+          command: yarn bazel test --build_tag_filters=-no-windows --test_tag_filters="-ivy-only,-no-windows,-browser:chromium-local" //packages/compiler-cli/... //tools/ts-api-guardian/...
           no_output_timeout: 15m
 
   test_ivy_aot_win:
@@ -766,11 +766,11 @@ jobs:
       - setup_win
       - run:
           name: Build all windows CI targets
-          command: yarn bazel build --config=ivy --build_tag_filters=-no-ivy-aot,-fixme-ivy-aot //packages/compiler-cli/... //tools/ts-api-guardian/...
+          command: yarn bazel build --config=ivy --build_tag_filters=-no-ivy-aot,-no-windows,-fixme-ivy-aot //packages/compiler-cli/... //tools/ts-api-guardian/...
           no_output_timeout: 15m
       - run:
           name: Test all windows CI targets
-          command: yarn bazel test --config=ivy --test_tag_filters="-no-ivy-aot,-fixme-ivy-aot,-browser:chromium-local" //packages/compiler-cli/... //tools/ts-api-guardian/...
+          command: yarn bazel test --config=ivy --build_tag_filters=-no-windows --test_tag_filters="-no-ivy-aot,-no-windows,-fixme-ivy-aot,-browser:chromium-local" //packages/compiler-cli/... //tools/ts-api-guardian/...
           no_output_timeout: 15m
 
 

@@ -38,7 +38,10 @@ export class SimpleJsonTranslationParser implements TranslationParser<Object> {
 
   analyze(filePath: string, contents: string): ParseAnalysis<Object> {
     const diagnostics = new Diagnostics();
-    if (extname(filePath) !== '.json') {
+    // For this to be parsable, the extension must be `.json` and the contents must include "locale"
+    // and "translations" keys.
+    if (extname(filePath) !== '.json' ||
+        !(contents.includes('"locale"') && contents.includes('"translations"'))) {
       diagnostics.warn('File does not have .json extension.');
       return {canParse: false, diagnostics};
     }

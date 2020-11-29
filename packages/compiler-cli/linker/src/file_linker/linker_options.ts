@@ -20,6 +20,13 @@ export interface LinkerOptions {
    * The default is `false`.
    */
   i18nNormalizeLineEndingsInICUs: boolean;
+
+  /**
+   * Whether translation variable name should contain external message id
+   * (used by Closure Compiler's output of `goog.getMsg` for transition period)
+   * The default is `false`.
+   */
+  i18nUseExternalIds: boolean;
 }
 
 /**
@@ -28,4 +35,5 @@ export interface LinkerOptions {
 export const DEFAULT_LINKER_OPTIONS: LinkerOptions = {
   enableI18nLegacyMessageIdFormat: true,
   i18nNormalizeLineEndingsInICUs: false,
+  i18nUseExternalIds: false,
 };

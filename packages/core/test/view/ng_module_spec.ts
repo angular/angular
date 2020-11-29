@@ -9,7 +9,7 @@
 import {NgModuleRef, ɵINJECTOR_SCOPE as INJECTOR_SCOPE} from '@angular/core';
 import {inject, InjectFlags} from '@angular/core/src/di';
 import {Injector} from '@angular/core/src/di/injector';
-import {INJECTOR} from '@angular/core/src/di/injector_compatibility';
+import {INJECTOR} from '@angular/core/src/di/injector_token';
 import {ɵɵdefineInjectable, ɵɵInjectableDef} from '@angular/core/src/di/interface/defs';
 import {NgModuleDefinition, NgModuleProviderDef, NodeFlags} from '@angular/core/src/view';
 import {moduleDef} from '@angular/core/src/view/ng_module';

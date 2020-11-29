@@ -31,7 +31,7 @@ export class Rule extends Rules.TypedRule {
     sourceFiles.forEach(sourceFile => initialNavigationCollector.visitNode(sourceFile));
 
     const {assignments} = initialNavigationCollector;
-    const transformer = new InitialNavigationTransform(typeChecker, getUpdateRecorder);
+    const transformer = new InitialNavigationTransform(getUpdateRecorder);
     const updateRecorders = new Map<ts.SourceFile, TslintUpdateRecorder>();
 
     transformer.migrateInitialNavigationAssignments(Array.from(assignments));

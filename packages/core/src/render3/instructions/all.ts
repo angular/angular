@@ -31,6 +31,7 @@ export * from './change_detection';
 export * from './template';
 export * from './storage';
 export * from './di';
+export * from './di_attr';
 export * from './element';
 export * from './element_container';
 export * from './get_current_view';

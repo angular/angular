@@ -58,7 +58,7 @@ To add a new dependency, use the [`ng add`](cli/add) command.
 ### Angular packages
 
 The following Angular packages are included as dependencies in the default `package.json` file for a new Angular workspace.
-For a complete list of Angular packages, see the [API reference](http://angular.io/api?type=package).
+For a complete list of Angular packages, see the [API reference](https://angular.io/api?type=package).
 
 Package name                               | Description
 ----------------------------------------   | --------------------------------------------------

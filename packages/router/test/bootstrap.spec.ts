@@ -348,27 +348,24 @@ describe('bootstrap', () => {
     await router.navigateByUrl('/aa');
     window.scrollTo(0, 5000);
 
-    // IE 11 uses non-standard pageYOffset instead of scrollY
-    const getScrollY = () => window.scrollY !== undefined ? window.scrollY : window.pageYOffset;
-
     await router.navigateByUrl('/fail');
-    expect(getScrollY()).toEqual(5000);
+    expect(window.pageYOffset).toEqual(5000);
 
     await router.navigateByUrl('/bb');
     window.scrollTo(0, 3000);
 
-    expect(getScrollY()).toEqual(3000);
+    expect(window.pageYOffset).toEqual(3000);
 
     await router.navigateByUrl('/cc');
-    expect(getScrollY()).toEqual(0);
+    expect(window.pageYOffset).toEqual(0);
 
     await router.navigateByUrl('/aa#marker2');
-    expect(getScrollY()).toBeGreaterThanOrEqual(5900);
-    expect(getScrollY()).toBeLessThan(6000);  // offset
+    expect(window.pageYOffset).toBeGreaterThanOrEqual(5900);
+    expect(window.pageYOffset).toBeLessThan(6000);  // offset
 
     await router.navigateByUrl('/aa#marker3');
-    expect(getScrollY()).toBeGreaterThanOrEqual(8900);
-    expect(getScrollY()).toBeLessThan(9000);
+    expect(window.pageYOffset).toBeGreaterThanOrEqual(8900);
+    expect(window.pageYOffset).toBeLessThan(9000);
     done();
   });
 

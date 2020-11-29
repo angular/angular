@@ -153,7 +153,7 @@ class _ControlFlowError {
   constructor(public error: TokenError) {}
 }
 
-// See http://www.w3.org/TR/html51/syntax.html#writing
+// See https://www.w3.org/TR/html51/syntax.html#writing-html-documents
 class _Tokenizer {
   private _cursor: CharacterCursor;
   private _tokenizeIcu: boolean;
@@ -200,7 +200,7 @@ class _Tokenizer {
     if (this._preserveLineEndings) {
       return content;
     }
-    // http://www.w3.org/TR/html5/syntax.html#preprocessing-the-input-stream
+    // https://www.w3.org/TR/html51/syntax.html#preprocessing-the-input-stream
     // In order to keep the original position in the source, we can not
     // pre-process it.
     // Instead CRs are processed right before instantiating the tokens.
@@ -917,19 +917,20 @@ class PlainCharacterCursor implements CharacterCursor {
 
   getSpan(start?: this, leadingTriviaCodePoints?: number[]): ParseSourceSpan {
     start = start || this;
-    let cloned = false;
+    let fullStart = start;
     if (leadingTriviaCodePoints) {
       while (this.diff(start) > 0 && leadingTriviaCodePoints.indexOf(start.peek()) !== -1) {
-        if (!cloned) {
+        if (fullStart === start) {
           start = start.clone() as this;
-          cloned = true;
         }
         start.advance();
       }
     }
-    return new ParseSourceSpan(
-        new ParseLocation(start.file, start.state.offset, start.state.line, start.state.column),
-        new ParseLocation(this.file, this.state.offset, this.state.line, this.state.column));
+    const startLocation = this.locationFromCursor(start);
+    const endLocation = this.locationFromCursor(this);
+    const fullStartLocation =
+        fullStart !== start ? this.locationFromCursor(fullStart) : startLocation;
+    return new ParseSourceSpan(startLocation, endLocation, fullStartLocation);
   }
 
   getChars(start: this): string {
@@ -958,6 +959,11 @@ class PlainCharacterCursor implements CharacterCursor {
 
   protected updatePeek(state: CursorState): void {
     state.peek = state.offset >= this.end ? chars.$EOF : this.charAt(state.offset);
+  }
+
+  private locationFromCursor(cursor: this): ParseLocation {
+    return new ParseLocation(
+        cursor.file, cursor.state.offset, cursor.state.line, cursor.state.column);
   }
 }
 

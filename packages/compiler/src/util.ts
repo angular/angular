@@ -132,8 +132,10 @@ function isStrictStringMap(obj: any): boolean {
   return typeof obj === 'object' && obj !== null && Object.getPrototypeOf(obj) === STRING_MAP_PROTO;
 }
 
-export function utf8Encode(str: string): string {
-  let encoded = '';
+export type Byte = number;
+
+export function utf8Encode(str: string): Byte[] {
+  let encoded: Byte[] = [];
   for (let index = 0; index < str.length; index++) {
     let codePoint = str.charCodeAt(index);
 
@@ -148,14 +150,14 @@ export function utf8Encode(str: string): string {
     }
 
     if (codePoint <= 0x7f) {
-      encoded += String.fromCharCode(codePoint);
+      encoded.push(codePoint);
     } else if (codePoint <= 0x7ff) {
-      encoded += String.fromCharCode(((codePoint >> 6) & 0x1F) | 0xc0, (codePoint & 0x3f) | 0x80);
+      encoded.push(((codePoint >> 6) & 0x1F) | 0xc0, (codePoint & 0x3f) | 0x80);
     } else if (codePoint <= 0xffff) {
-      encoded += String.fromCharCode(
+      encoded.push(
           (codePoint >> 12) | 0xe0, ((codePoint >> 6) & 0x3f) | 0x80, (codePoint & 0x3f) | 0x80);
     } else if (codePoint <= 0x1fffff) {
-      encoded += String.fromCharCode(
+      encoded.push(
           ((codePoint >> 18) & 0x07) | 0xf0, ((codePoint >> 12) & 0x3f) | 0x80,
           ((codePoint >> 6) & 0x3f) | 0x80, (codePoint & 0x3f) | 0x80);
     }

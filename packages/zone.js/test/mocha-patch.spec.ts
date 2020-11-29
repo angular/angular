@@ -103,7 +103,7 @@ ifEnvSupports('Mocha', function() {
     });
 
     it('should wait for promise to resolve', () => {
-      return new Promise((res, _) => {
+      return new Promise<void>((res, _) => {
         setTimeout(() => {
           log.push('resolved');
           res();

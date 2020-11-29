@@ -13,7 +13,7 @@ import {AbsoluteFsPath} from '../../file_system';
 import {ClassDeclaration} from '../../reflection';
 import {ComponentScopeReader} from '../../scope';
 import {isAssignment} from '../../util/src/typescript';
-import {DirectiveSymbol, DomBindingSymbol, ElementSymbol, ExpressionSymbol, InputBindingSymbol, OutputBindingSymbol, ReferenceSymbol, Symbol, SymbolKind, TemplateSymbol, TsNodeSymbolInfo, TypeCheckableDirectiveMeta, VariableSymbol} from '../api';
+import {DirectiveSymbol, DomBindingSymbol, ElementSymbol, ExpressionSymbol, InputBindingSymbol, OutputBindingSymbol, ReferenceSymbol, ShimLocation, Symbol, SymbolKind, TemplateSymbol, TsNodeSymbolInfo, TypeCheckableDirectiveMeta, VariableSymbol} from '../api';
 
 import {ExpressionIdentifier, findAllMatchingNodes, findFirstMatchingNode, hasExpressionIdentifier} from './comments';
 import {TemplateData} from './context';
@@ -303,7 +303,17 @@ export class SymbolBuilder {
       return null;
     }
 
-    return {...expressionSymbol, kind: SymbolKind.Variable, declaration: variable};
+    return {
+      tsType: expressionSymbol.tsType,
+      tsSymbol: expressionSymbol.tsSymbol,
+      initializerLocation: expressionSymbol.shimLocation,
+      kind: SymbolKind.Variable,
+      declaration: variable,
+      localVarLocation: {
+        shimPath: this.shimPath,
+        positionInShimFile: this.getShimPositionForNode(node.name),
+      }
+    };
   }
 
   private getSymbolOfReference(ref: TmplAstReference): ReferenceSymbol|null {
@@ -331,13 +341,19 @@ export class SymbolBuilder {
       return null;
     }
 
+    const referenceVarShimLocation: ShimLocation = {
+      shimPath: this.shimPath,
+      positionInShimFile: this.getShimPositionForNode(node),
+    };
     if (target instanceof TmplAstTemplate || target instanceof TmplAstElement) {
       return {
-        ...symbol,
-        tsSymbol: symbol.tsSymbol,
         kind: SymbolKind.Reference,
+        tsSymbol: symbol.tsSymbol,
+        tsType: symbol.tsType,
         target,
         declaration: ref,
+        targetLocation: symbol.shimLocation,
+        referenceVarLocation: referenceVarShimLocation,
       };
     } else {
       if (!ts.isClassDeclaration(target.directive.ref.node)) {
@@ -345,11 +361,13 @@ export class SymbolBuilder {
       }
 
       return {
-        ...symbol,
         kind: SymbolKind.Reference,
         tsSymbol: symbol.tsSymbol,
+        tsType: symbol.tsType,
         declaration: ref,
         target: target.directive.ref.node,
+        targetLocation: symbol.shimLocation,
+        referenceVarLocation: referenceVarShimLocation,
       };
     }
   }

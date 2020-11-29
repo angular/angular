@@ -104,11 +104,7 @@ export class TypeTranslatorVisitor implements o.ExpressionVisitor, o.TypeVisitor
 
   visitLiteralExpr(ast: o.LiteralExpr, context: Context): ts.TypeNode {
     if (ast.value === null) {
-      // TODO(alan-agius4): Remove when we no longer support TS 3.9
-      // Use: return ts.createLiteralTypeNode(ts.createNull()) directly.
-      return ts.versionMajorMinor.charAt(0) === '4' ?
-          ts.createLiteralTypeNode(ts.createNull() as any) :
-          ts.createKeywordTypeNode(ts.SyntaxKind.NullKeyword as any);
+      return ts.createLiteralTypeNode(ts.createNull());
     } else if (ast.value === undefined) {
       return ts.createKeywordTypeNode(ts.SyntaxKind.UndefinedKeyword);
     } else if (typeof ast.value === 'boolean') {

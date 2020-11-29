@@ -350,6 +350,7 @@ groups:
           'aio/content/guide/dynamic-component-loader.md',
           'aio/content/examples/dynamic-component-loader/**',
           'aio/content/images/guide/dynamic-component-loader/**',
+          'aio/content/guide/example-apps-list.md',
           'aio/content/guide/entry-components.md',
           'aio/content/guide/feature-modules.md',
           'aio/content/examples/feature-modules/**',
@@ -958,7 +959,7 @@ groups:
           'aio/content/guide/migration-localize.md',
           'aio/content/guide/migration-module-with-providers.md',
           'aio/content/guide/static-query-migration.md',
-          'aio/content/guide/updating-to-version-10.md',
+          'aio/content/guide/updating-to-version-11.md',
           'aio/content/guide/ivy-compatibility.md',
           'aio/content/guide/ivy-compatibility-examples.md'
           ])
@@ -1117,6 +1118,7 @@ groups:
           '.circleci/**',
           '.devcontainer/**',
           '.github/**',
+          '.husky/**',
           '.ng-dev/**',
           '.vscode/**',
           '.yarn/**',

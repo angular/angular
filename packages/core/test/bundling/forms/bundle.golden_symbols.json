@@ -468,6 +468,12 @@
     "name": "R3Injector"
   },
   {
+    "name": "R3TemplateRef"
+  },
+  {
+    "name": "R3ViewContainerRef"
+  },
+  {
     "name": "RADIO_VALUE_ACCESSOR"
   },
   {
@@ -621,6 +627,9 @@
     "name": "VERSION"
   },
   {
+    "name": "VE_ViewContainerRef"
+  },
+  {
     "name": "Validators"
   },
   {
@@ -631,6 +640,9 @@
   },
   {
     "name": "ViewEncapsulation"
+  },
+  {
+    "name": "ViewEngineTemplateRef"
   },
   {
     "name": "ViewRef"
@@ -822,10 +834,10 @@
     "name": "createLView"
   },
   {
-    "name": "createPlatformFactory"
+    "name": "createNodeInjector"
   },
   {
-    "name": "createTNode"
+    "name": "createPlatformFactory"
   },
   {
     "name": "createTView"
@@ -984,6 +996,9 @@
     "name": "getDebugContext"
   },
   {
+    "name": "getDeclarationTNode"
+  },
+  {
     "name": "getFactoryDef"
   },
   {
@@ -1041,6 +1056,9 @@
     "name": "getOrCreateTNode"
   },
   {
+    "name": "getOrCreateViewRefs"
+  },
+  {
     "name": "getOriginalError"
   },
   {
@@ -1090,6 +1108,9 @@
   },
   {
     "name": "getTView"
+  },
+  {
+    "name": "getViewRefs"
   },
   {
     "name": "handleError"
@@ -1242,9 +1263,6 @@
     "name": "isPropertyUpdated"
   },
   {
-    "name": "isRootView"
-  },
-  {
     "name": "isScheduler"
   },
   {
@@ -1285,6 +1303,9 @@
   },
   {
     "name": "localeEn"
+  },
+  {
+    "name": "lookupTokenUsingModuleInjector"
   },
   {
     "name": "makeParamDecorator"
@@ -1380,6 +1401,9 @@
     "name": "normalizeValidators"
   },
   {
+    "name": "notFoundValueOrThrow"
+  },
+  {
     "name": "observable"
   },
   {
@@ -1446,10 +1470,10 @@
     "name": "remove"
   },
   {
-    "name": "removeDir"
+    "name": "removeFromArray"
   },
   {
-    "name": "removeFromArray"
+    "name": "removeListItem"
   },
   {
     "name": "renderComponent"

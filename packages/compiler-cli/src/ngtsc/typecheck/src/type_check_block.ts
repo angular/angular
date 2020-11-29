@@ -15,13 +15,13 @@ import {ClassDeclaration} from '../../reflection';
 import {TemplateId, TypeCheckableDirectiveMeta, TypeCheckBlockMetadata} from '../api';
 
 import {addExpressionIdentifier, ExpressionIdentifier, markIgnoreDiagnostics} from './comments';
-import {addParseSpanInfo, addTemplateId, wrapForDiagnostics} from './diagnostics';
+import {addParseSpanInfo, addTemplateId, wrapForDiagnostics, wrapForTypeChecker} from './diagnostics';
 import {DomSchemaChecker} from './dom';
 import {Environment} from './environment';
 import {astToTypescript, NULL_AS_ANY} from './expression';
 import {OutOfBandDiagnosticRecorder} from './oob';
 import {ExpressionSemanticVisitor} from './template_semantics';
-import {checkIfClassIsExported, checkIfGenericTypesAreUnbound, tsCallMethod, tsCastToAny, tsCreateElement, tsCreateTypeQueryForCoercedInput, tsCreateVariable, tsDeclareVariable} from './ts_util';
+import {tsCallMethod, tsCastToAny, tsCreateElement, tsCreateTypeQueryForCoercedInput, tsCreateVariable, tsDeclareVariable} from './ts_util';
 
 /**
  * Given a `ts.ClassDeclaration` for a component, and metadata regarding that component, compose a
@@ -176,10 +176,18 @@ class TcbVariableOp extends TcbOp {
     const initializer = ts.createPropertyAccess(
         /* expression */ ctx,
         /* name */ this.variable.value || '$implicit');
-    addParseSpanInfo(initializer, this.variable.sourceSpan);
+    addParseSpanInfo(id, this.variable.keySpan);
 
     // Declare the variable, and return its identifier.
-    this.scope.addStatement(tsCreateVariable(id, initializer));
+    let variable: ts.VariableStatement;
+    if (this.variable.valueSpan !== undefined) {
+      addParseSpanInfo(initializer, this.variable.valueSpan);
+      variable = tsCreateVariable(id, wrapForTypeChecker(initializer));
+    } else {
+      variable = tsCreateVariable(id, initializer);
+    }
+    addParseSpanInfo(variable.declarationList.declarations[0], this.variable.sourceSpan);
+    this.scope.addStatement(variable);
     return id;
   }
 }
@@ -443,8 +451,29 @@ class TcbReferenceOp extends TcbOp {
       initializer = ts.createParen(initializer);
     }
     addParseSpanInfo(initializer, this.node.sourceSpan);
+    addParseSpanInfo(id, this.node.keySpan);
 
     this.scope.addStatement(tsCreateVariable(id, initializer));
+    return id;
+  }
+}
+
+/**
+ * A `TcbOp` which is used when the target of a reference is missing. This operation generates a
+ * variable of type any for usages of the invalid reference to resolve to. The invalid reference
+ * itself is recorded out-of-band.
+ */
+class TcbInvalidReferenceOp extends TcbOp {
+  constructor(private readonly tcb: Context, private readonly scope: Scope) {
+    super();
+  }
+
+  // The declaration of a missing reference is only needed when the reference is resolved.
+  readonly optional = true;
+
+  execute(): ts.Identifier {
+    const id = this.tcb.allocateId();
+    this.scope.addStatement(tsCreateVariable(id, NULL_AS_ANY));
     return id;
   }
 }
@@ -617,6 +646,9 @@ class TcbDirectiveInputsOp extends TcbOp {
               ts.createPropertyAccess(dirId, ts.createIdentifier(fieldName));
         }
 
+        if (input.attribute.keySpan !== undefined) {
+          addParseSpanInfo(target, input.attribute.keySpan);
+        }
         // Finally the assignment is extended by assigning it into the target expression.
         assignment = ts.createBinary(target, ts.SyntaxKind.EqualsToken, assignment);
       }
@@ -839,6 +871,7 @@ export class TcbDirectiveOutputsOp extends TcbOp {
           dirId = this.scope.resolve(this.node, this.dir);
         }
         const outputField = ts.createElementAccess(dirId, ts.createStringLiteral(field));
+        addParseSpanInfo(outputField, output.keySpan);
         const outputHelper =
             ts.createCall(this.tcb.env.declareOutputHelper(), undefined, [outputField]);
         const subscribeFn = ts.createPropertyAccess(outputHelper, 'subscribe');
@@ -1340,13 +1373,15 @@ class Scope {
   private checkAndAppendReferencesOfNode(node: TmplAstElement|TmplAstTemplate): void {
     for (const ref of node.references) {
       const target = this.tcb.boundTarget.getReferenceTarget(ref);
-      if (target === null) {
-        this.tcb.oobRecorder.missingReferenceTarget(this.tcb.id, ref);
-        continue;
-      }
 
       let ctxIndex: number;
-      if (target instanceof TmplAstTemplate || target instanceof TmplAstElement) {
+      if (target === null) {
+        // The reference is invalid if it doesn't have a target, so report it as an error.
+        this.tcb.oobRecorder.missingReferenceTarget(this.tcb.id, ref);
+
+        // Any usages of the invalid reference will be resolved to a variable of type any.
+        ctxIndex = this.opQueue.push(new TcbInvalidReferenceOp(this.tcb, this)) - 1;
+      } else if (target instanceof TmplAstTemplate || target instanceof TmplAstElement) {
         ctxIndex = this.opQueue.push(new TcbReferenceOp(this.tcb, this, ref, node, target)) - 1;
       } else {
         ctxIndex =
@@ -1609,7 +1644,7 @@ class TcbExpressionTranslator {
         return null;
       }
 
-      const method = ts.createPropertyAccess(wrapForDiagnostics(receiver), ast.name);
+      const method = wrapForDiagnostics(receiver);
       addParseSpanInfo(method, ast.nameSpan);
       const args = ast.args.map(arg => this.translate(arg));
       const node = ts.createCall(method, undefined, args);
@@ -1852,20 +1887,5 @@ class TcbEventHandlerTranslator extends TcbExpressionTranslator {
     }
 
     return super.resolve(ast);
-  }
-}
-
-export function requiresInlineTypeCheckBlock(node: ClassDeclaration<ts.ClassDeclaration>): boolean {
-  // In order to qualify for a declared TCB (not inline) two conditions must be met:
-  // 1) the class must be exported
-  // 2) it must not have constrained generic types
-  if (!checkIfClassIsExported(node)) {
-    // Condition 1 is false, the class is not exported.
-    return true;
-  } else if (!checkIfGenericTypesAreUnbound(node)) {
-    // Condition 2 is false, the class has constrained generic types
-    return true;
-  } else {
-    return false;
   }
 }

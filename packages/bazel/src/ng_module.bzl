@@ -812,7 +812,7 @@ Run the Angular AOT template compiler.
 
 This rule extends the [ts_library] rule.
 
-[ts_library]: http://tsetse.info/api/build_defs.html#ts_library
+[ts_library]: https://bazelbuild.github.io/rules_nodejs/TypeScript.html#ts_library
 """
 
 def ng_module_macro(tsconfig = None, **kwargs):

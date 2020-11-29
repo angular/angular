@@ -10,7 +10,6 @@ import traverse, {NodePath} from '@babel/traverse';
 import * as t from '@babel/types';
 import {BabelDeclarationScope} from '../src/babel_declaration_scope';
 
-
 describe('BabelDeclarationScope', () => {
   describe('getConstantScopeRef()', () => {
     it('should return a path to the ES module where the expression was imported', () => {
@@ -83,11 +82,19 @@ describe('BabelDeclarationScope', () => {
   });
 });
 
+/**
+ * The type of a variable declarator that is known to have an initializer.
+ *
+ * Note: the `init` property is explicitly omitted to workaround a performance cliff in the
+ * TypeScript type checker.
+ */
+type InitializedVariableDeclarator = Omit<t.VariableDeclarator, 'init'>&{init: t.Expression};
+
 function findVarDeclaration(
-    file: t.File, varName: string): NodePath<t.VariableDeclarator&{init: t.Expression}> {
+    file: t.File, varName: string): NodePath<InitializedVariableDeclarator> {
   let varDecl: NodePath<t.VariableDeclarator>|undefined = undefined;
   traverse(file, {
-    VariableDeclarator: (path) => {
+    VariableDeclarator: (path: NodePath<t.VariableDeclarator>) => {
       const id = path.get('id');
       if (id.isIdentifier() && id.node.name === varName && path.get('init') !== null) {
         varDecl = path;

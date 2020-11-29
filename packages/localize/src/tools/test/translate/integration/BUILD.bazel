@@ -10,7 +10,7 @@ ts_library(
         "//packages:types",
         "//packages/compiler-cli/src/ngtsc/file_system",
         "//packages/compiler-cli/src/ngtsc/file_system/testing",
-        "//packages/compiler-cli/test/helpers",
+        "//packages/compiler-cli/src/ngtsc/testing",
         "//packages/localize/src/tools",
     ],
 )

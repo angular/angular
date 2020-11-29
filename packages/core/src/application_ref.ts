@@ -266,6 +266,25 @@ export interface BootstrapOptions {
    * the change detection will only be triggered once.
    */
   ngZoneEventCoalescing?: boolean;
+
+  /**
+   * Optionally specify if `NgZone#run()` method invocations should be coalesced
+   * into a single change detection.
+   *
+   * Consider the following case.
+   *
+   * for (let i = 0; i < 10; i ++) {
+   *   ngZone.run(() => {
+   *     // do something
+   *   });
+   * }
+   *
+   * This case triggers the change detection multiple times.
+   * With ngZoneRunCoalescing options, all change detections in an event loop trigger only once.
+   * In addition, the change detection executes in requestAnimation.
+   *
+   */
+  ngZoneRunCoalescing?: boolean;
 }
 
 /**
@@ -316,10 +335,13 @@ export class PlatformRef {
     // pass that as parent to the NgModuleFactory.
     const ngZoneOption = options ? options.ngZone : undefined;
     const ngZoneEventCoalescing = (options && options.ngZoneEventCoalescing) || false;
-    const ngZone = getNgZone(ngZoneOption, ngZoneEventCoalescing);
+    const ngZoneRunCoalescing = (options && options.ngZoneRunCoalescing) || false;
+    const ngZone = getNgZone(ngZoneOption, {ngZoneEventCoalescing, ngZoneRunCoalescing});
     const providers: StaticProvider[] = [{provide: NgZone, useValue: ngZone}];
-    // Attention: Don't use ApplicationRef.run here,
-    // as we want to be sure that all possible constructor calls are inside `ngZone.run`!
+    // Note: Create ngZoneInjector within ngZone.run so that all of the instantiated services are
+    // created within the Angular zone
+    // Do not try to replace ngZone.run with ApplicationRef#run because ApplicationRef would then be
+    // created outside of the Angular zone.
     return ngZone.run(() => {
       const ngZoneInjector = Injector.create(
           {providers: providers, parent: this.injector, name: moduleFactory.moduleType.name});
@@ -426,7 +448,8 @@ export class PlatformRef {
 }
 
 function getNgZone(
-    ngZoneOption: NgZone|'zone.js'|'noop'|undefined, ngZoneEventCoalescing: boolean): NgZone {
+    ngZoneOption: NgZone|'zone.js'|'noop'|undefined,
+    extra?: {ngZoneEventCoalescing: boolean, ngZoneRunCoalescing: boolean}): NgZone {
   let ngZone: NgZone;
 
   if (ngZoneOption === 'noop') {
@@ -434,7 +457,8 @@ function getNgZone(
   } else {
     ngZone = (ngZoneOption === 'zone.js' ? undefined : ngZoneOption) || new NgZone({
                enableLongStackTrace: isDevMode(),
-               shouldCoalesceEventChangeDetection: ngZoneEventCoalescing
+               shouldCoalesceEventChangeDetection: !!extra?.ngZoneEventCoalescing,
+               shouldCoalesceRunChangeDetection: !!extra?.ngZoneRunCoalescing
              });
   }
   return ngZone;

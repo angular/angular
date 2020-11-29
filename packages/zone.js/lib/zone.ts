@@ -313,7 +313,7 @@ interface ZoneType {
    * load patch for specified native module, allow user to
    * define their own patch, user can use this API after loading zone.js
    */
-  __load_patch(name: string, fn: _PatchFn): void;
+  __load_patch(name: string, fn: _PatchFn, ignoreDuplicate?: boolean): void;
 
   /**
    * Zone symbol API to generate a string with __zone_symbol__ prefix
@@ -745,9 +745,12 @@ const Zone: ZoneType = (function(global: any) {
     }
 
     // tslint:disable-next-line:require-internal-with-underscore
-    static __load_patch(name: string, fn: _PatchFn): void {
+    static __load_patch(name: string, fn: _PatchFn, ignoreDuplicate = false): void {
       if (patches.hasOwnProperty(name)) {
-        if (checkDuplicate) {
+        // `checkDuplicate` option is defined from global variable
+        // so it works for all modules.
+        // `ignoreDuplicate` can work for the specified module
+        if (!ignoreDuplicate && checkDuplicate) {
           throw Error('Already loaded patch: ' + name);
         }
       } else if (!global['__Zone_disable_' + name]) {

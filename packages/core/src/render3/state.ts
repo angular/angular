@@ -6,13 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {InjectFlags} from '../di/interface/injector';
 import {assertDefined, assertEqual, assertGreaterThanOrEqual, assertLessThan, assertNotEqual} from '../util/assert';
-import {assertLViewOrUndefined, assertTNodeForTView} from './assert';
+import {assertLViewOrUndefined, assertTNodeForLView, assertTNodeForTView} from './assert';
 import {DirectiveDef} from './interfaces/definition';
 import {TNode, TNodeType} from './interfaces/node';
-import {CONTEXT, DECLARATION_VIEW, HEADER_OFFSET, LView, OpaqueViewState, TData, TVIEW, TView} from './interfaces/view';
+import {CONTEXT, DECLARATION_VIEW, HEADER_OFFSET, LView, OpaqueViewState, T_HOST, TData, TVIEW, TView, TViewType} from './interfaces/view';
 import {MATH_ML_NAMESPACE, SVG_NAMESPACE} from './namespaces';
-import {assertTNodeType} from './node_assert';
 import {getTNode} from './util/view_utils';
 
 
@@ -434,16 +434,89 @@ export function setCurrentQueryIndex(value: number): void {
 }
 
 /**
- * This is a light weight version of the `enterView` which is needed by the DI system.
- * @param newView
- * @param tNode
+ * Returns a `TNode` of the location where the current `LView` is declared at.
+ *
+ * @param lView an `LView` that we want to find parent `TNode` for.
  */
-export function enterDI(newView: LView, tNode: TNode) {
-  ngDevMode && assertLViewOrUndefined(newView);
-  const newLFrame = allocLFrame();
-  instructionState.lFrame = newLFrame;
-  newLFrame.currentTNode = tNode!;
-  newLFrame.lView = newView;
+function getDeclarationTNode(lView: LView): TNode|null {
+  const tView = lView[TVIEW];
+
+  // Return the declaration parent for embedded views
+  if (tView.type === TViewType.Embedded) {
+    ngDevMode && assertDefined(tView.declTNode, 'Embedded TNodes should have declaration parents.');
+    return tView.declTNode;
+  }
+
+  // Components don't have `TView.declTNode` because each instance of component could be
+  // inserted in different location, hence `TView.declTNode` is meaningless.
+  // Falling back to `T_HOST` in case we cross component boundary.
+  if (tView.type === TViewType.Component) {
+    return lView[T_HOST];
+  }
+
+  // Remaining TNode type is `TViewType.Root` which doesn't have a parent TNode.
+  return null;
+}
+
+/**
+ * This is a light weight version of the `enterView` which is needed by the DI system.
+ *
+ * @param lView `LView` location of the DI context.
+ * @param tNode `TNode` for DI context
+ * @param flags DI context flags. if `SkipSelf` flag is set than we walk up the declaration
+ *     tree from `tNode`  until we find parent declared `TElementNode`.
+ * @returns `true` if we have successfully entered DI associated with `tNode` (or with declared
+ *     `TNode` if `flags` has  `SkipSelf`). Failing to enter DI implies that no associated
+ *     `NodeInjector` can be found and we should instead use `ModuleInjector`.
+ *     - If `true` than this call must be fallowed by `leaveDI`
+ *     - If `false` than this call failed and we should NOT call `leaveDI`
+ */
+export function enterDI(lView: LView, tNode: TNode, flags: InjectFlags) {
+  ngDevMode && assertLViewOrUndefined(lView);
+
+  if (flags & InjectFlags.SkipSelf) {
+    ngDevMode && assertTNodeForTView(tNode, lView[TVIEW]);
+
+    let parentTNode = tNode as TNode | null;
+    let parentLView = lView;
+
+    while (true) {
+      ngDevMode && assertDefined(parentTNode, 'Parent TNode should be defined');
+      parentTNode = parentTNode!.parent as TNode | null;
+      if (parentTNode === null && !(flags & InjectFlags.Host)) {
+        parentTNode = getDeclarationTNode(parentLView);
+        if (parentTNode === null) break;
+
+        // In this case, a parent exists and is definitely an element. So it will definitely
+        // have an existing lView as the declaration view, which is why we can assume it's defined.
+        ngDevMode && assertDefined(parentLView, 'Parent LView should be defined');
+        parentLView = parentLView[DECLARATION_VIEW]!;
+
+        // In Ivy there are Comment nodes that correspond to ngIf and NgFor embedded directives
+        // We want to skip those and look only at Elements and ElementContainers to ensure
+        // we're looking at true parent nodes, and not content or other types.
+        if (parentTNode.type & (TNodeType.Element | TNodeType.ElementContainer)) {
+          break;
+        }
+      } else {
+        break;
+      }
+    }
+    if (parentTNode === null) {
+      // If we failed to find a parent TNode this means that we should use module injector.
+      return false;
+    } else {
+      tNode = parentTNode;
+      lView = parentLView;
+    }
+  }
+
+  ngDevMode && assertTNodeForLView(tNode, lView);
+  const lFrame = instructionState.lFrame = allocLFrame();
+  lFrame.currentTNode = tNode;
+  lFrame.lView = lView;
+
+  return true;
 }
 
 /**

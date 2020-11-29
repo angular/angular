@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {newArray, utf8Encode} from '../util';
+import {Byte, newArray, utf8Encode} from '../util';
+import {BigIntExponentiation} from './big_integer';
 
 import * as i18n from './i18n_ast';
 
@@ -102,14 +103,14 @@ class _SerializerIgnoreIcuExpVisitor extends _SerializerVisitor {
 /**
  * Compute the SHA1 of the given string
  *
- * see http://csrc.nist.gov/publications/fips/fips180-4/fips-180-4.pdf
+ * see https://csrc.nist.gov/publications/fips/fips180-4/fips-180-4.pdf
  *
  * WARNING: this function has not been designed not tested with security in mind.
  *          DO NOT USE IT IN A SECURITY SENSITIVE CONTEXT.
  */
 export function sha1(str: string): string {
   const utf8 = utf8Encode(str);
-  const words32 = stringToWords32(utf8, Endian.Big);
+  const words32 = bytesToWords32(utf8, Endian.Big);
   const len = utf8.length * 8;
 
   const w = newArray(80);
@@ -145,7 +146,7 @@ export function sha1(str: string): string {
     e = add32(e, h4);
   }
 
-  return byteStringToHexString(words32ToByteString([a, b, c, d, e]));
+  return bytesToHexString(words32ToByteString([a, b, c, d, e]));
 }
 
 function fk(index: number, b: number, c: number, d: number): [number, number] {
@@ -197,28 +198,28 @@ export function computeMsgId(msg: string, meaning: string = ''): string {
   const hi = msgFingerprint[0];
   const lo = msgFingerprint[1];
 
-  return byteStringToDecString(words32ToByteString([hi & 0x7fffffff, lo]));
+  return wordsToDecimalString(hi & 0x7fffffff, lo);
 }
 
-function hash32(str: string, c: number): number {
+function hash32(bytes: Byte[], c: number): number {
   let a = 0x9e3779b9, b = 0x9e3779b9;
   let i: number;
 
-  const len = str.length;
+  const len = bytes.length;
 
   for (i = 0; i + 12 <= len; i += 12) {
-    a = add32(a, wordAt(str, i, Endian.Little));
-    b = add32(b, wordAt(str, i + 4, Endian.Little));
-    c = add32(c, wordAt(str, i + 8, Endian.Little));
+    a = add32(a, wordAt(bytes, i, Endian.Little));
+    b = add32(b, wordAt(bytes, i + 4, Endian.Little));
+    c = add32(c, wordAt(bytes, i + 8, Endian.Little));
     const res = mix(a, b, c);
     a = res[0], b = res[1], c = res[2];
   }
 
-  a = add32(a, wordAt(str, i, Endian.Little));
-  b = add32(b, wordAt(str, i + 4, Endian.Little));
+  a = add32(a, wordAt(bytes, i, Endian.Little));
+  b = add32(b, wordAt(bytes, i + 4, Endian.Little));
   // the first byte of c is reserved for the length
   c = add32(c, len);
-  c = add32(c, wordAt(str, i + 8, Endian.Little) << 8);
+  c = add32(c, wordAt(bytes, i + 8, Endian.Little) << 8);
 
   return mix(a, b, c)[2];
 }
@@ -284,93 +285,81 @@ function rol64(num: [number, number], count: number): [number, number] {
   return [h, l];
 }
 
-function stringToWords32(str: string, endian: Endian): number[] {
-  const size = (str.length + 3) >>> 2;
+function bytesToWords32(bytes: Byte[], endian: Endian): number[] {
+  const size = (bytes.length + 3) >>> 2;
   const words32 = [];
 
   for (let i = 0; i < size; i++) {
-    words32[i] = wordAt(str, i * 4, endian);
+    words32[i] = wordAt(bytes, i * 4, endian);
   }
 
   return words32;
 }
 
-function byteAt(str: string, index: number): number {
-  return index >= str.length ? 0 : str.charCodeAt(index) & 0xff;
+function byteAt(bytes: Byte[], index: number): Byte {
+  return index >= bytes.length ? 0 : bytes[index];
 }
 
-function wordAt(str: string, index: number, endian: Endian): number {
+function wordAt(bytes: Byte[], index: number, endian: Endian): number {
   let word = 0;
   if (endian === Endian.Big) {
     for (let i = 0; i < 4; i++) {
-      word += byteAt(str, index + i) << (24 - 8 * i);
+      word += byteAt(bytes, index + i) << (24 - 8 * i);
     }
   } else {
     for (let i = 0; i < 4; i++) {
-      word += byteAt(str, index + i) << 8 * i;
+      word += byteAt(bytes, index + i) << 8 * i;
     }
   }
   return word;
 }
 
-function words32ToByteString(words32: number[]): string {
-  return words32.reduce((str, word) => str + word32ToByteString(word), '');
+function words32ToByteString(words32: number[]): Byte[] {
+  return words32.reduce((bytes, word) => bytes.concat(word32ToByteString(word)), [] as Byte[]);
 }
 
-function word32ToByteString(word: number): string {
-  let str = '';
+function word32ToByteString(word: number): Byte[] {
+  let bytes: Byte[] = [];
   for (let i = 0; i < 4; i++) {
-    str += String.fromCharCode((word >>> 8 * (3 - i)) & 0xff);
+    bytes.push((word >>> 8 * (3 - i)) & 0xff);
   }
-  return str;
+  return bytes;
 }
 
-function byteStringToHexString(str: string): string {
+function bytesToHexString(bytes: Byte[]): string {
   let hex: string = '';
-  for (let i = 0; i < str.length; i++) {
-    const b = byteAt(str, i);
+  for (let i = 0; i < bytes.length; i++) {
+    const b = byteAt(bytes, i);
     hex += (b >>> 4).toString(16) + (b & 0x0f).toString(16);
   }
   return hex.toLowerCase();
 }
 
-// based on http://www.danvk.org/hex2dec.html (JS can not handle more than 56b)
-function byteStringToDecString(str: string): string {
-  let decimal = '';
-  let toThePower = '1';
+/**
+ * Create a shared exponentiation pool for base-256 computations. This shared pool provides memoized
+ * power-of-256 results with memoized power-of-two computations for efficient multiplication.
+ *
+ * For our purposes, this can be safely stored as a global without memory concerns. The reason is
+ * that we encode two words, so only need the 0th (for the low word) and 4th (for the high word)
+ * exponent.
+ */
+const base256 = new BigIntExponentiation(256);
 
-  for (let i = str.length - 1; i >= 0; i--) {
-    decimal = addBigInt(decimal, numberTimesBigInt(byteAt(str, i), toThePower));
-    toThePower = numberTimesBigInt(256, toThePower);
-  }
+/**
+ * Represents two 32-bit words as a single decimal number. This requires a big integer storage
+ * model as JS numbers are not accurate enough to represent the 64-bit number.
+ *
+ * Based on https://www.danvk.org/hex2dec.html
+ */
+function wordsToDecimalString(hi: number, lo: number): string {
+  // Encode the four bytes in lo in the lower digits of the decimal number.
+  // Note: the multiplication results in lo itself but represented by a big integer using its
+  // decimal digits.
+  const decimal = base256.toThePowerOf(0).multiplyBy(lo);
 
-  return decimal.split('').reverse().join('');
-}
+  // Encode the four bytes in hi above the four lo bytes. lo is a maximum of (2^8)^4, which is why
+  // this multiplication factor is applied.
+  base256.toThePowerOf(4).multiplyByAndAddTo(hi, decimal);
 
-// x and y decimal, lowest significant digit first
-function addBigInt(x: string, y: string): string {
-  let sum = '';
-  const len = Math.max(x.length, y.length);
-  for (let i = 0, carry = 0; i < len || carry; i++) {
-    const tmpSum = carry + +(x[i] || 0) + +(y[i] || 0);
-    if (tmpSum >= 10) {
-      carry = 1;
-      sum += tmpSum - 10;
-    } else {
-      carry = 0;
-      sum += tmpSum;
-    }
-  }
-
-  return sum;
-}
-
-function numberTimesBigInt(num: number, b: string): string {
-  let product = '';
-  let bToThePower = b;
-  for (; num !== 0; num = num >>> 1) {
-    if (num & 1) product = addBigInt(product, bToThePower);
-    bToThePower = addBigInt(bToThePower, bToThePower);
-  }
-  return product;
+  return decimal.toString();
 }

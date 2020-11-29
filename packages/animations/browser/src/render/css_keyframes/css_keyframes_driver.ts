@@ -122,7 +122,7 @@ export class CssKeyframesDriver implements AnimationDriver {
     if (!this._warningIssued) {
       console.warn(
           '@angular/animations: please load the web-animations.js polyfill to allow programmatic access...\n',
-          '  visit http://bit.ly/IWukam to learn more about using the web-animation-js polyfill.');
+          '  visit https://bit.ly/IWukam to learn more about using the web-animation-js polyfill.');
       this._warningIssued = true;
     }
   }

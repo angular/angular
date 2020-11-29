@@ -8,10 +8,12 @@ export class MockLocationService {
   currentPath = this.currentUrl.pipe(map(url => url.match(/[^?#]*/)![0]));
   search = jasmine.createSpy('search').and.returnValue({});
   setSearch = jasmine.createSpy('setSearch');
+  fullPageNavigationNeeded = jasmine.createSpy('Location.fullPageNavigationNeeded');
   go = jasmine.createSpy('Location.go').and
               .callFake((url: string) => this.urlSubject.next(url));
   goExternal = jasmine.createSpy('Location.goExternal');
   replace = jasmine.createSpy('Location.replace');
+  reloadPage = jasmine.createSpy('Location.reloadPage');
   handleAnchorClick = jasmine.createSpy('Location.handleAnchorClick')
       .and.returnValue(false); // prevent click from causing a browser navigation
 

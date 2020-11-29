@@ -6,6 +6,11 @@ ts_library(
     srcs = glob(["*.ts"]),
     deps = [
         "//packages/compiler",
+        "//packages/compiler-cli/src/ngtsc/core:api",
+        "//packages/compiler-cli/src/ngtsc/file_system",
+        "//packages/compiler-cli/src/ngtsc/file_system/testing",
+        "//packages/compiler-cli/src/ngtsc/testing",
+        "//packages/compiler-cli/src/ngtsc/typecheck/api",
         "//packages/language-service/ivy",
         "@npm//typescript",
     ],
@@ -14,15 +19,8 @@ ts_library(
 jasmine_node_test(
     name = "test",
     data = [
-        # Note that we used to depend on the npm_package of common, core, and
-        # forms, but this is no longer the case. We did it for View Engine
-        # because we wanted to load the flat dts, which is only available in the
-        # npm_package. Ivy does not currently produce flat dts, so we might
-        # as well just depend on the outputs of ng_module.
-        "//packages/common",
-        "//packages/core",
-        "//packages/forms",
-        "//packages/language-service/test:project",
+        "//packages/compiler-cli/src/ngtsc/testing/fake_common:npm_package",
+        "//packages/compiler-cli/src/ngtsc/testing/fake_core:npm_package",
     ],
     tags = [
         "ivy-only",

@@ -17,6 +17,7 @@ import {DiagnosticHandlingStrategy} from '../diagnostics';
 import {checkDuplicateMessages} from './duplicates';
 import {MessageExtractor} from './extraction';
 import {TranslationSerializer} from './translation_files/translation_serializer';
+import {ArbTranslationSerializer} from './translation_files/arb_translation_serializer';
 import {SimpleJsonTranslationSerializer} from './translation_files/json_translation_serializer';
 import {Xliff1TranslationSerializer} from './translation_files/xliff1_translation_serializer';
 import {Xliff2TranslationSerializer} from './translation_files/xliff2_translation_serializer';
@@ -229,6 +230,8 @@ export function getSerializer(
       return new XmbTranslationSerializer(rootPath, useLegacyIds, fs);
     case 'json':
       return new SimpleJsonTranslationSerializer(sourceLocale);
+    case 'arb':
+      return new ArbTranslationSerializer(sourceLocale, rootPath, fs);
   }
   throw new Error(`No translation serializer can handle the provided format: ${format}`);
 }

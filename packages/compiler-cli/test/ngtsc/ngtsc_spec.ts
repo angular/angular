@@ -13,8 +13,8 @@ import {ErrorCode, ngErrorCode} from '../../src/ngtsc/diagnostics';
 import {absoluteFrom} from '../../src/ngtsc/file_system';
 import {runInEachFileSystem} from '../../src/ngtsc/file_system/testing';
 import {LazyRoute} from '../../src/ngtsc/routing';
+import {loadStandardTestFiles} from '../../src/ngtsc/testing';
 import {restoreTypeScriptVersionForTesting, setTypeScriptVersionForTesting} from '../../src/typescript_support';
-import {loadStandardTestFiles} from '../helpers/src/mock_file_loading';
 
 import {NgtscTestEnvironment} from './env';
 
@@ -4597,7 +4597,7 @@ runInEachFileSystem(os => {
         const jsContents = env.getContents('test.js');
         expect(jsContents)
             .toMatch(
-                /i\d\.ɵɵsetComponentScope\(NormalComponent,\s+\[NormalComponent,\s+CyclicComponent\],\s+\[\]\)/);
+                /i\d\.ɵɵsetComponentScope\(NormalComponent,\s+\[CyclicComponent\],\s+\[\]\)/);
         expect(jsContents).not.toContain('/*__PURE__*/ i0.ɵɵsetComponentScope');
       });
 
@@ -4665,6 +4665,49 @@ runInEachFileSystem(os => {
         env.driveMain();
         const jsContents = env.getContents('test.js');
         expect(jsContents).not.toContain('setComponentScope');
+      });
+
+      it('should only pass components actually used to setComponentScope', () => {
+        env.write('test.ts', `
+          import {Component, NgModule} from '@angular/core';
+          import {NormalComponent} from './cyclic';
+          import {OtherComponent} from './other';
+
+          @Component({
+            selector: 'cyclic-component',
+            template: 'Importing this causes a cycle',
+          })
+          export class CyclicComponent {}
+
+          @NgModule({
+            declarations: [NormalComponent, CyclicComponent, OtherComponent],
+          })
+          export class Module {}
+        `);
+
+        env.write('cyclic.ts', `
+          import {Component} from '@angular/core';
+
+          @Component({
+            selector: 'normal-component',
+            template: '<cyclic-component></cyclic-component>',
+          })
+          export class NormalComponent {}
+        `);
+
+        env.write('other.ts', `
+          import {Component} from '@angular/core';
+
+          @Component({
+            selector: 'other-component',
+            template: 'An unused other component',
+          })
+          export class OtherComponent {}
+        `);
+
+        env.driveMain();
+        const jsContents = env.getContents('test.js');
+        expect(jsContents).not.toMatch(/i\d\.ɵɵsetComponentScope\([^)]*OtherComponent[^)]*\)/);
       });
     });
 

@@ -5,6 +5,8 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {ChangeDetectionStrategy, ViewEncapsulation} from '../../core';
+import {InterpolationConfig} from '../../ml_parser/interpolation_config';
 import * as o from '../../output/output_ast';
 
 /**
@@ -110,6 +112,106 @@ export interface R3DeclareDirectiveMetadata {
    * to all Angular exports, including Ivy instructions.
    */
   ngImport: o.Expression;
+}
+
+/**
+ * An extension of `R3DeclareDirectiveMetadata` that declares the shape of a partial declaration of
+ * a component.
+ */
+export interface R3DeclareComponentMetadata extends R3DeclareDirectiveMetadata {
+  /**
+   * Information about the component's template.
+   */
+  template: {
+    /**
+     * The component's unparsed template string as opaque expression. The template is represented
+     * using either a string literal or template literal without substitutions, but its value is
+     * not read directly. Instead, the template parser is given the full source file's text and
+     * the range of this expression to parse directly from source.
+     */
+    source: o.Expression;
+
+    /**
+     * Whether the template was inline (using `template`) or external (using `templateUrl`).
+     */
+    isInline: boolean;
+  };
+
+  /**
+   * CSS from inline styles and included styleUrls.
+   */
+  styles?: string[];
+
+  /**
+   * List of directives which matched in the template, including sufficient
+   * metadata for each directive to attribute bindings and references within
+   * the template to each directive specifically, if the runtime instructions
+   * support this.
+   */
+  directives?: {
+    /**
+     * Selector of the directive.
+     */
+    selector: string;
+
+    /**
+     * Reference to the directive class (possibly a forward reference).
+     */
+    type: o.Expression | (() => o.Expression);
+
+    /**
+     * Property names of the directive's inputs.
+     */
+    inputs?: string[];
+
+    /**
+     * Event names of the directive's outputs.
+     */
+    outputs?: string[];
+
+    /**
+     * Names by which this directive exports itself for references.
+     */
+    exportAs?: string[];
+  }[];
+
+  /**
+   * A map of pipe names to an expression referencing the pipe type (possibly a forward reference)
+   * which are used in the template.
+   */
+  pipes?: {[pipeName: string]: o.Expression|(() => o.Expression)};
+
+  /**
+   * The list of view providers defined in the component.
+   */
+  viewProviders?: o.Expression;
+
+  /**
+   * A collection of animation triggers that will be used in the component template.
+   */
+  animations?: o.Expression;
+
+  /**
+   * Strategy used for detecting changes in the component.
+   * Defaults to `ChangeDetectionStrategy.Default`.
+   */
+  changeDetection?: ChangeDetectionStrategy;
+
+  /**
+   * An encapsulation policy for the template and CSS styles.
+   * Defaults to `ViewEncapsulation.Emulated`.
+   */
+  encapsulation?: ViewEncapsulation;
+
+  /**
+   * Overrides the default interpolation start and end delimiters. Defaults to {{ and }}.
+   */
+  interpolation?: InterpolationConfig;
+
+  /**
+   * Whether whitespace in the template should be preserved. Defaults to false.
+   */
+  preserveWhitespaces?: boolean;
 }
 
 export interface R3DeclareQueryMetadata {

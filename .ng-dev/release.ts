@@ -18,14 +18,16 @@ export const release: ReleaseConfig = {
     '@angular/platform-browser',
     '@angular/platform-browser-dynamic',
     '@angular/platform-server',
-    '@angular/platform-webworker',
-    '@angular/platform-webworker-dynamic',
     '@angular/router',
     '@angular/service-worker',
     '@angular/upgrade',
   ],
-  // TODO: Implement release package building here.
-  buildPackages: async () => [],
+  buildPackages: async () => {
+    // The buildTargetPackages function is loaded at runtime as the loading the script causes an
+    // invocation of bazel.
+    const {buildTargetPackages} = require(join(__dirname, '../scripts/build/package-builder'));
+    return buildTargetPackages('dist/release-output', false, 'Release');
+  },
   // TODO: This can be removed once there is an org-wide tool for changelog generation.
   generateReleaseNotesForHead: async () => {
     exec('yarn -s gulp changelog', {cwd: join(__dirname, '../')});

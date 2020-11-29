@@ -573,6 +573,12 @@
     "name": "R3Injector"
   },
   {
+    "name": "R3TemplateRef"
+  },
+  {
+    "name": "R3ViewContainerRef"
+  },
+  {
     "name": "ROUTER_CONFIGURATION"
   },
   {
@@ -840,6 +846,9 @@
     "name": "VERSION"
   },
   {
+    "name": "VE_ViewContainerRef"
+  },
+  {
     "name": "Version"
   },
   {
@@ -847,6 +856,9 @@
   },
   {
     "name": "ViewEncapsulation"
+  },
+  {
+    "name": "ViewEngineTemplateRef"
   },
   {
     "name": "ViewRef"
@@ -1062,6 +1074,9 @@
     "name": "createNewSegmentGroup"
   },
   {
+    "name": "createNodeInjector"
+  },
+  {
     "name": "createPlatformFactory"
   },
   {
@@ -1069,9 +1084,6 @@
   },
   {
     "name": "createRouterScroller"
-  },
-  {
-    "name": "createTNode"
   },
   {
     "name": "createTView"
@@ -1293,6 +1305,9 @@
     "name": "getDebugContext"
   },
   {
+    "name": "getDeclarationTNode"
+  },
+  {
     "name": "getFactoryDef"
   },
   {
@@ -1356,10 +1371,10 @@
     "name": "getOrCreateTNode"
   },
   {
-    "name": "getOriginalError"
+    "name": "getOrCreateViewRefs"
   },
   {
-    "name": "getOutlet"
+    "name": "getOriginalError"
   },
   {
     "name": "getOutlet"
@@ -1423,6 +1438,9 @@
   },
   {
     "name": "getToken"
+  },
+  {
+    "name": "getViewRefs"
   },
   {
     "name": "handleError"
@@ -1566,9 +1584,6 @@
     "name": "isPromise"
   },
   {
-    "name": "isRootView"
-  },
-  {
     "name": "isScheduler"
   },
   {
@@ -1606,6 +1621,9 @@
   },
   {
     "name": "locateDirectiveOrProvider"
+  },
+  {
+    "name": "lookupTokenUsingModuleInjector"
   },
   {
     "name": "makeParamDecorator"
@@ -1702,6 +1720,9 @@
   },
   {
     "name": "normalizeQueryParams"
+  },
+  {
+    "name": "notFoundValueOrThrow"
   },
   {
     "name": "observable"

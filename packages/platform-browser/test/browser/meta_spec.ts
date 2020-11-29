@@ -126,6 +126,18 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
       metaService.removeTagElement(actual);
     });
 
+    it('should add httpEquiv meta tag as http-equiv', () => {
+      metaService.addTag({httpEquiv: 'refresh', content: '3;url=http://test'});
+
+      const actual = metaService.getTag('http-equiv')!;
+      expect(actual).not.toBeNull();
+      expect(actual.getAttribute('http-equiv')).toEqual('refresh');
+      expect(actual.getAttribute('content')).toEqual('3;url=http://test');
+
+      // clean up
+      metaService.removeTagElement(actual);
+    });
+
     it('should add multiple new meta tags', () => {
       const nameSelector = 'name="twitter:title"';
       const propertySelector = 'property="og:title"';

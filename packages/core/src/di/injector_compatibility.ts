@@ -8,33 +8,17 @@
 
 import '../util/ng_dev_mode';
 
-import {Type} from '../interface/type';
-import {assertNotEqual} from '../util/assert';
+import {AbstractType, Type} from '../interface/type';
 import {getClosureSafeProperty} from '../util/property';
 import {stringify} from '../util/stringify';
-
 import {resolveForwardRef} from './forward_ref';
+import {getInjectImplementation, injectRootLimpMode} from './inject_switch';
 import {InjectionToken} from './injection_token';
 import {Injector} from './injector';
-import {getInjectableDef, ɵɵInjectableDef} from './interface/defs';
 import {InjectFlags} from './interface/injector';
 import {ValueProvider} from './interface/provider';
 import {Inject, Optional, Self, SkipSelf} from './metadata';
 
-
-
-/**
- * An InjectionToken that gets the current `Injector` for `createInjector()`-style injectors.
- *
- * Requesting this token instead of `Injector` allows `StaticInjector` to be tree-shaken from a
- * project.
- *
- * @publicApi
- */
-export const INJECTOR = new InjectionToken<Injector>(
-    'INJECTOR',
-    -1 as any  // `-1` is used by Ivy DI system as special value to recognize it as `Injector`.
-);
 
 const _THROW_IF_NOT_FOUND = {};
 export const THROW_IF_NOT_FOUND = _THROW_IF_NOT_FOUND;
@@ -62,47 +46,11 @@ export function setCurrentInjector(injector: Injector|null|undefined): Injector|
   return former;
 }
 
-/**
- * Current implementation of inject.
- *
- * By default, it is `injectInjectorOnly`, which makes it `Injector`-only aware. It can be changed
- * to `directiveInject`, which brings in the `NodeInjector` system of ivy. It is designed this
- * way for two reasons:
- *  1. `Injector` should not depend on ivy logic.
- *  2. To maintain tree shake-ability we don't want to bring in unnecessary code.
- */
-let _injectImplementation: (<T>(token: Type<T>|InjectionToken<T>, flags?: InjectFlags) => T | null)|
-    undefined;
-
-/**
- * Sets the current inject implementation.
- */
-export function setInjectImplementation(
-    impl: (<T>(token: Type<T>|InjectionToken<T>, flags?: InjectFlags) => T | null)|
-    undefined): (<T>(token: Type<T>|InjectionToken<T>, flags?: InjectFlags) => T | null)|undefined {
-  const previous = _injectImplementation;
-  _injectImplementation = impl;
-  return previous;
-}
-
-/**
- * Assert that `_injectImplementation` is not `fn`.
- *
- * This is useful, to prevent infinite recursion.
- *
- * @param fn Function which it should not equal to
- */
-export function assertInjectImplementationNot(
-    fn: (<T>(token: Type<T>|InjectionToken<T>, flags?: InjectFlags) => T | null)) {
-  ngDevMode &&
-      assertNotEqual(_injectImplementation, fn, 'Calling ɵɵinject would cause infinite recursion');
-}
-
-export function injectInjectorOnly<T>(token: Type<T>|InjectionToken<T>): T;
-export function injectInjectorOnly<T>(token: Type<T>|InjectionToken<T>, flags?: InjectFlags): T|
-    null;
+export function injectInjectorOnly<T>(token: Type<T>|AbstractType<T>|InjectionToken<T>): T;
 export function injectInjectorOnly<T>(
-    token: Type<T>|InjectionToken<T>, flags = InjectFlags.Default): T|null {
+    token: Type<T>|AbstractType<T>|InjectionToken<T>, flags?: InjectFlags): T|null;
+export function injectInjectorOnly<T>(
+    token: Type<T>|AbstractType<T>|InjectionToken<T>, flags = InjectFlags.Default): T|null {
   if (_currentInjector === undefined) {
     throw new Error(`inject() must be called from an injection context`);
   } else if (_currentInjector === null) {
@@ -125,10 +73,12 @@ export function injectInjectorOnly<T>(
  * @codeGenApi
  * @publicApi This instruction has been emitted by ViewEngine for some time and is deployed to npm.
  */
-export function ɵɵinject<T>(token: Type<T>|InjectionToken<T>): T;
-export function ɵɵinject<T>(token: Type<T>|InjectionToken<T>, flags?: InjectFlags): T|null;
-export function ɵɵinject<T>(token: Type<T>|InjectionToken<T>, flags = InjectFlags.Default): T|null {
-  return (_injectImplementation || injectInjectorOnly)(resolveForwardRef(token), flags);
+export function ɵɵinject<T>(token: Type<T>|AbstractType<T>|InjectionToken<T>): T;
+export function ɵɵinject<T>(
+    token: Type<T>|AbstractType<T>|InjectionToken<T>, flags?: InjectFlags): T|null;
+export function ɵɵinject<T>(
+    token: Type<T>|AbstractType<T>|InjectionToken<T>, flags = InjectFlags.Default): T|null {
+  return (getInjectImplementation() || injectInjectorOnly)(resolveForwardRef(token), flags);
 }
 
 /**
@@ -181,25 +131,6 @@ Please check that 1) the type for the parameter at index ${
  */
 export const inject = ɵɵinject;
 
-/**
- * Injects `root` tokens in limp mode.
- *
- * If no injector exists, we can still inject tree-shakable providers which have `providedIn` set to
- * `"root"`. This is known as the limp mode injection. In such case the value is stored in the
- * `InjectableDef`.
- */
-export function injectRootLimpMode<T>(
-    token: Type<T>|InjectionToken<T>, notFoundValue: T|undefined, flags: InjectFlags): T|null {
-  const injectableDef: ɵɵInjectableDef<T>|null = getInjectableDef(token);
-  if (injectableDef && injectableDef.providedIn == 'root') {
-    return injectableDef.value === undefined ? injectableDef.value = injectableDef.factory() :
-                                               injectableDef.value;
-  }
-  if (flags & InjectFlags.Optional) return null;
-  if (notFoundValue !== undefined) return notFoundValue;
-  throw new Error(`Injector: NOT_FOUND [${stringify(token)}]`);
-}
-
 export function injectArgs(types: (Type<any>|InjectionToken<any>|any[])[]): any[] {
   const args: any[] = [];
   for (let i = 0; i < types.length; i++) {
@@ -233,22 +164,6 @@ export function injectArgs(types: (Type<any>|InjectionToken<any>|any[])[]): any[
     }
   }
   return args;
-}
-
-
-export class NullInjector implements Injector {
-  get(token: any, notFoundValue: any = THROW_IF_NOT_FOUND): any {
-    if (notFoundValue === THROW_IF_NOT_FOUND) {
-      // Intentionally left behind: With dev tools open the debugger will stop here. There is no
-      // reason why correctly written application should cause this exception.
-      // TODO(misko): uncomment the next line once `ngDevMode` works with closure.
-      // if (ngDevMode) debugger;
-      const error = new Error(`NullInjectorError: No provider for ${stringify(token)}!`);
-      error.name = 'NullInjectorError';
-      throw error;
-    }
-    return notFoundValue;
-  }
 }
 
 

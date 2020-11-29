@@ -52,10 +52,11 @@ const EVENT_NAMES = {
   'swipedown': true,
   // tap
   'tap': true,
+  'doubletap': true
 };
 
 /**
- * DI token for providing [HammerJS](http://hammerjs.github.io/) support to Angular.
+ * DI token for providing [HammerJS](https://hammerjs.github.io/) support to Angular.
  * @see `HammerGestureConfig`
  *
  * @ngModule HammerModule
@@ -85,7 +86,7 @@ export interface HammerInstance {
 }
 
 /**
- * An injectable [HammerJS Manager](http://hammerjs.github.io/api/#hammer.manager)
+ * An injectable [HammerJS Manager](https://hammerjs.github.io/api/#hammermanager)
  * for gesture recognition. Configures specific event recognition.
  * @publicApi
  */
@@ -94,7 +95,7 @@ export class HammerGestureConfig {
   /**
    * A set of supported event names for gestures to be used in Angular.
    * Angular supports all built-in recognizers, as listed in
-   * [HammerJS documentation](http://hammerjs.github.io/).
+   * [HammerJS documentation](https://hammerjs.github.io/).
    */
   events: string[] = [];
 
@@ -111,7 +112,7 @@ export class HammerGestureConfig {
    * Properties that are not present take the HammerJS default values.
    * For information about which properties are supported for which events,
    * and their allowed and default values, see
-   * [HammerJS documentation](http://hammerjs.github.io/).
+   * [HammerJS documentation](https://hammerjs.github.io/).
    *
    */
   overrides: {[key: string]: Object} = {};
@@ -121,7 +122,7 @@ export class HammerGestureConfig {
    * Different sets of properties apply to different events.
    * For information about which properties are supported for which events,
    * and their allowed and default values, see
-   * [HammerJS documentation](http://hammerjs.github.io/).
+   * [HammerJS documentation](https://hammerjs.github.io/).
    */
   options?: {
     cssProps?: any;
@@ -135,7 +136,7 @@ export class HammerGestureConfig {
   };
 
   /**
-   * Creates a [HammerJS Manager](http://hammerjs.github.io/api/#hammer.manager)
+   * Creates a [HammerJS Manager](https://hammerjs.github.io/api/#hammermanager)
    * and attaches it to a given HTML element.
    * @param element The element that will recognize gestures.
    * @returns A HammerJS event-manager object.

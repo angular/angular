@@ -6,9 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {InjectFlags, InjectionToken, resolveForwardRef} from '../../di';
-import {assertInjectImplementationNot, ɵɵinject} from '../../di/injector_compatibility';
-import {Type} from '../../interface/type';
-import {getOrCreateInjectable, injectAttributeImpl} from '../di';
+import {assertInjectImplementationNotEqual} from '../../di/inject_switch';
+import {ɵɵinject} from '../../di/injector_compatibility';
+import {AbstractType, Type} from '../../interface/type';
+import {getOrCreateInjectable} from '../di';
 import {TDirectiveHostNode} from '../interfaces/node';
 import {getCurrentTNode, getLView} from '../state';
 
@@ -36,30 +37,22 @@ import {getCurrentTNode, getLView} from '../state';
  *
  * @codeGenApi
  */
-export function ɵɵdirectiveInject<T>(token: Type<T>|InjectionToken<T>): T;
-export function ɵɵdirectiveInject<T>(token: Type<T>|InjectionToken<T>, flags: InjectFlags): T;
+export function ɵɵdirectiveInject<T>(token: Type<T>|AbstractType<T>|InjectionToken<T>): T;
 export function ɵɵdirectiveInject<T>(
-    token: Type<T>|InjectionToken<T>, flags = InjectFlags.Default): T|null {
+    token: Type<T>|AbstractType<T>|InjectionToken<T>, flags: InjectFlags): T;
+export function ɵɵdirectiveInject<T>(
+    token: Type<T>|AbstractType<T>|InjectionToken<T>, flags = InjectFlags.Default): T|null {
   const lView = getLView();
   // Fall back to inject() if view hasn't been created. This situation can happen in tests
   // if inject utilities are used before bootstrapping.
   if (lView === null) {
     // Verify that we will not get into infinite loop.
-    ngDevMode && assertInjectImplementationNot(ɵɵdirectiveInject);
+    ngDevMode && assertInjectImplementationNotEqual(ɵɵdirectiveInject);
     return ɵɵinject(token, flags);
   }
   const tNode = getCurrentTNode();
   return getOrCreateInjectable<T>(
       tNode as TDirectiveHostNode, lView, resolveForwardRef(token), flags);
-}
-
-/**
- * Facade for the attribute injection from DI.
- *
- * @codeGenApi
- */
-export function ɵɵinjectAttribute(attrNameToInject: string): string|null {
-  return injectAttributeImpl(getCurrentTNode()!, attrNameToInject);
 }
 
 /**

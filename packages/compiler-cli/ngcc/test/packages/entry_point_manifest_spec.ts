@@ -10,7 +10,7 @@ import {createHash} from 'crypto';
 import {absoluteFrom, FileSystem, getFileSystem, relativeFrom} from '../../../src/ngtsc/file_system';
 import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
 import {MockLogger} from '../../../src/ngtsc/logging/testing';
-import {loadTestFiles} from '../../../test/helpers';
+import {loadTestFiles} from '../../../src/ngtsc/testing';
 import {EntryPointWithDependencies} from '../../src/dependencies/dependency_host';
 import {NGCC_VERSION} from '../../src/packages/build_marker';
 import {NgccConfiguration, ProcessedNgccPackageConfig} from '../../src/packages/configuration';

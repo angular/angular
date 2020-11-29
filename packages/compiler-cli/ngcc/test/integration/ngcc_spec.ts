@@ -13,7 +13,7 @@ import * as os from 'os';
 import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem, join} from '../../../src/ngtsc/file_system';
 import {Folder, MockFileSystem, runInEachFileSystem, TestFile} from '../../../src/ngtsc/file_system/testing';
 import {MockLogger} from '../../../src/ngtsc/logging/testing';
-import {loadStandardTestFiles, loadTestFiles} from '../../../test/helpers';
+import {loadStandardTestFiles, loadTestFiles} from '../../../src/ngtsc/testing';
 import {getLockFilePath} from '../../src/locking/lock_file';
 import {mainNgcc} from '../../src/main';
 import {clearTsConfigCache} from '../../src/ngcc_options';

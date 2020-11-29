@@ -24,6 +24,7 @@ import {mapLiteral} from '../../output/map_util';
 import * as o from '../../output/output_ast';
 import {ParseError, ParseSourceSpan} from '../../parse_util';
 import {DomElementSchemaRegistry} from '../../schema/dom_element_schema_registry';
+import {isTrustedTypesSink} from '../../schema/trusted_types_sinks';
 import {CssSelector, SelectorMatcher} from '../../selector';
 import {BindingParser} from '../../template_parser/binding_parser';
 import {error, partitionArray} from '../../util';
@@ -55,7 +56,7 @@ const EVENT_BINDING_SCOPE_GLOBALS = new Set<string>(['$event']);
 const GLOBAL_TARGET_RESOLVERS = new Map<string, o.ExternalReference>(
     [['window', R3.resolveWindow], ['document', R3.resolveDocument], ['body', R3.resolveBody]]);
 
-const LEADING_TRIVIA_CHARS = [' ', '\n', '\r', '\t'];
+export const LEADING_TRIVIA_CHARS = [' ', '\n', '\r', '\t'];
 
 //  if (rf & flags) { .. }
 export function renderFlagCheckIfStmt(
@@ -2031,6 +2032,11 @@ export interface ParseTemplateOptions {
    * The default is `false`, but this will be switched in a future major release.
    */
   i18nNormalizeLineEndingsInICUs?: boolean;
+
+  /**
+   * Whether the template was inline.
+   */
+  isInline?: boolean;
 }
 
 /**
@@ -2043,6 +2049,7 @@ export interface ParseTemplateOptions {
 export function parseTemplate(
     template: string, templateUrl: string, options: ParseTemplateOptions = {}): ParsedTemplate {
   const {interpolationConfig, preserveWhitespaces, enableI18nLegacyMessageIdFormat} = options;
+  const isInline = options.isInline ?? false;
   const bindingParser = makeBindingParser(interpolationConfig);
   const htmlParser = new HtmlParser();
   const parseResult = htmlParser.parse(
@@ -2056,6 +2063,7 @@ export function parseTemplate(
       interpolationConfig,
       preserveWhitespaces,
       template,
+      isInline,
       errors: parseResult.errors,
       nodes: [],
       styleUrls: [],
@@ -2073,7 +2081,23 @@ export function parseTemplate(
   const i18nMetaVisitor = new I18nMetaVisitor(
       interpolationConfig, /* keepI18nAttrs */ !preserveWhitespaces,
       enableI18nLegacyMessageIdFormat);
-  rootNodes = html.visitAll(i18nMetaVisitor, rootNodes);
+  const i18nMetaResult = i18nMetaVisitor.visitAllWithErrors(rootNodes);
+
+  if (i18nMetaResult.errors && i18nMetaResult.errors.length > 0) {
+    return {
+      interpolationConfig,
+      preserveWhitespaces,
+      template,
+      isInline,
+      errors: i18nMetaResult.errors,
+      nodes: [],
+      styleUrls: [],
+      styles: [],
+      ngContentSelectors: []
+    };
+  }
+
+  rootNodes = i18nMetaResult.rootNodes;
 
   if (!preserveWhitespaces) {
     rootNodes = html.visitAll(new WhitespaceVisitor(), rootNodes);
@@ -2096,6 +2120,7 @@ export function parseTemplate(
     preserveWhitespaces,
     errors: errors.length > 0 ? errors : null,
     template,
+    isInline,
     nodes,
     styleUrls,
     styles,
@@ -2136,15 +2161,18 @@ export function resolveSanitizationFn(context: core.SecurityContext, isAttribute
 
 function trustedConstAttribute(tagName: string, attr: t.TextAttribute): o.Expression {
   const value = asLiteral(attr.value);
-  switch (elementRegistry.securityContext(tagName, attr.name, /* isAttribute */ true)) {
-    case core.SecurityContext.HTML:
-      return o.importExpr(R3.trustConstantHtml).callFn([value], attr.valueSpan);
-    case core.SecurityContext.SCRIPT:
-      return o.importExpr(R3.trustConstantScript).callFn([value], attr.valueSpan);
-    case core.SecurityContext.RESOURCE_URL:
-      return o.importExpr(R3.trustConstantResourceUrl).callFn([value], attr.valueSpan);
-    default:
-      return value;
+  if (isTrustedTypesSink(tagName, attr.name)) {
+    switch (elementRegistry.securityContext(tagName, attr.name, /* isAttribute */ true)) {
+      case core.SecurityContext.HTML:
+        return o.importExpr(R3.trustConstantHtml).callFn([value], attr.valueSpan);
+      // NB: no SecurityContext.SCRIPT here, as the corresponding tags are stripped by the compiler.
+      case core.SecurityContext.RESOURCE_URL:
+        return o.importExpr(R3.trustConstantResourceUrl).callFn([value], attr.valueSpan);
+      default:
+        return value;
+    }
+  } else {
+    return value;
   }
 }
 
@@ -2250,12 +2278,18 @@ export interface ParsedTemplate {
   interpolationConfig?: InterpolationConfig;
 
   /**
-   * The string contents of the template.
+   * The string contents of the template, or an expression that represents the string/template
+   * literal as it occurs in the source.
    *
    * This is the "logical" template string, after expansion of any escaped characters (for inline
    * templates). This may differ from the actual template bytes as they appear in the .ts file.
    */
-  template: string;
+  template: string|o.Expression;
+
+  /**
+   * Whether the template was inline (using `template`) or external (using `templateUrl`).
+   */
+  isInline: boolean;
 
   /**
    * Any errors from parsing the template the first time.

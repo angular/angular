@@ -68,7 +68,7 @@ The generated `src/app/highlight.directive.ts` is as follows:
 The imported `Directive` symbol provides Angular the `@Directive` decorator.
 
 The `@Directive` decorator's lone configuration property specifies the directive's
-[CSS attribute selector](https://developer.mozilla.org/en-US/docs/Web/CSS/Attribute_selectors), `[appHighlight]`.
+[CSS attribute selector](https://developer.mozilla.org/docs/Web/CSS/Attribute_selectors), `[appHighlight]`.
 
 It's the brackets (`[]`) that make it an attribute selector.
 Angular locates each element in the template that has an attribute named `appHighlight` and applies the logic of this directive to that element.
@@ -195,12 +195,12 @@ Add a `highlightColor` property to the directive class like this:
 
 {@a input}
 
-### Binding to an _@Input_ property
+### Binding to an `@Input()` property
 
-Notice the `@Input` decorator. It adds metadata to the class that makes the directive's `highlightColor` property available for binding.
+Notice the `@Input()` decorator. It adds metadata to the class that makes the directive's `highlightColor` property available for binding.
 
 It's called an *input* property because data flows from the binding expression _into_ the directive.
-Without that input metadata, Angular rejects the binding; see [below](guide/attribute-directives#why-input "Why add @Input?") for more about that.
+Without that `@Input()` metadata, Angular rejects the binding; see [below](guide/attribute-directives#why-input "Why add @Input?") for more information.
 
 Try it by adding the following directive binding variations to the `AppComponent` template:
 
@@ -235,7 +235,7 @@ This is disagreeable. The word, `appHighlight`, is a terrible property name and 
 
 Fortunately you can name the directive property whatever you want _and_ **_alias it_** for binding purposes.
 
-Restore the original property name and specify the selector as the alias in the argument to `@Input`.
+Restore the original property name and specify the selector as the alias in the argument to `@Input()`.
 
 <code-example path="attribute-directives/src/app/highlight.directive.ts" header="src/app/highlight.directive.ts (color property with alias)" region="color"></code-example>
 
@@ -303,13 +303,34 @@ and fall back to "violet" as the default color.
 <code-example path="attribute-directives/src/app/app.component.html" header="src/app/app.component.html (defaultColor)" region="defaultColor"></code-example>
 
 Angular knows that the `defaultColor` binding belongs to the `HighlightDirective`
-because you made it _public_ with the `@Input` decorator.
+because you made it _public_ with the `@Input()` decorator.
 
 Here's how the harness should work when you're done coding.
 
 <div class="lightbox">
   <img src="generated/images/guide/attribute-directives/highlight-directive-final-anim.gif" alt="Final Highlight">
 </div>
+
+<hr />
+
+{@a ngNonBindable}
+
+## `ngNonBindable`
+
+With the built-in template primitive `ngNonBindable`, Angular won't
+evaluate expressions in elements. For example:
+
+<code-example path="attribute-directives/src/app/app.component.html" linenums="false" header="src/app/app.component.html" region="ngNonBindable"></code-example>
+
+The expression `{{ 1 + 1 }}` will render just as it does in your code editor,
+and will not display `2`. This is helpful when you want to render code in the browser.
+
+When you apply `ngNonBindable` to an element, it stops any binding starting at that element, including child elements. However, `ngNonBindable` still allows
+directives to work to the element where you apply `ngNonBindable`. In the following example, the `appHighlight` directive will still be active but Angular will not evaluate the expression `{{ 1 + 1 }}`.
+
+<code-example path="attribute-directives/src/app/app.component.html" linenums="false" header="src/app/app.component.html" region="ngNonBindable-with-directive"></code-example>
+
+Additionally, if you apply `ngNonBindable` to a parent element, interpolation and binding of any sort, such as property binding, or event binding, is disabled for its children.
 
 ## Summary
 
@@ -319,6 +340,7 @@ This page covered how to:
 * [Apply the directive](guide/attribute-directives#apply-directive) to an element in a template.
 * [Respond to **events**](guide/attribute-directives#respond-to-user) that change the directive's behavior.
 * [**Bind** values to the directive](guide/attribute-directives#bindings).
+* [Prevent expression evaluation](guide/attribute-directives#ngNonBindable).
 
 The final source code follows:
 
@@ -337,9 +359,9 @@ You can also experience and download the <live-example title="Attribute Directiv
 
 {@a why-input}
 
-### Appendix: Why add _@Input_?
+### Appendix: Why add `@Input()`?
 
-In this demo, the `highlightColor` property is an ***input*** property of
+In this demo, the `highlightColor` property is an `@Input()` property of
 the `HighlightDirective`. You've seen it applied without an alias:
 
 <code-example path="attribute-directives/src/app/highlight.directive.2.ts" header="src/app/highlight.directive.ts (color)" region="color"></code-example>
@@ -348,33 +370,33 @@ You've seen it with an alias:
 
 <code-example path="attribute-directives/src/app/highlight.directive.ts" header="src/app/highlight.directive.ts (color)" region="color"></code-example>
 
-Either way, the `@Input` decorator tells Angular that this property is
+Either way, the `@Input()` decorator tells Angular that this property is
 _public_ and available for binding by a parent component.
-Without  `@Input`, Angular refuses to bind to the property.
+Without `@Input()`, Angular refuses to bind to the property.
 
-You've bound template HTML to component properties before and never used `@Input`.
+You've bound template HTML to component properties before and never used `@Input()`.
 What's different?
 
 The difference is a matter of trust.
 Angular treats a component's template as _belonging_ to the component.
 The component and its template trust each other implicitly.
 Therefore, the component's own template may bind to _any_ property of that component,
-with or without the `@Input` decorator.
+with or without the `@Input()` decorator.
 
 But a component or directive shouldn't blindly trust _other_ components and directives.
 The properties of a component or directive are hidden from binding by default.
 They are _private_ from an Angular binding perspective.
-When adorned with the `@Input` decorator, the property becomes _public_ from an Angular binding perspective.
+When adorned with the `@Input()` decorator, the property becomes _public_ from an Angular binding perspective.
 Only then can it be bound by some other component or directive.
 
-You can tell if `@Input` is needed by the position of the property name in a binding.
+You can tell if `@Input()` is needed by the position of the property name in a binding.
 
 * When it appears in the template expression to the ***right*** of the equals (=),
-  it belongs to the template's component and does not require the `@Input` decorator.
+  it belongs to the template's component and does not require the `@Input()` decorator.
 
 * When it appears in **square brackets** ([ ]) to the **left** of the equals (=),
   the property belongs to some _other_ component or directive;
-  that property must be adorned with the `@Input` decorator.
+  that property must be adorned with the `@Input()` decorator.
 
 Now apply that reasoning to the following example:
 
@@ -382,8 +404,8 @@ Now apply that reasoning to the following example:
 
 * The `color` property in the expression on the right belongs to the template's component.
   The template and its component trust each other.
-  The `color` property doesn't require the `@Input` decorator.
+  The `color` property doesn't require the `@Input()` decorator.
 
 * The `appHighlight` property on the left refers to an _aliased_ property of the `HighlightDirective`,
-  not a property of the template's component. There are trust issues.
-  Therefore, the directive property must carry the `@Input` decorator.
+  not a property of the template's component.
+  For security, the directive property must carry the `@Input()` decorator.

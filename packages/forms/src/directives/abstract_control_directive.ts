@@ -230,6 +230,30 @@ export abstract class AbstractControlDirective {
     return this._composedAsyncValidatorFn || null;
   }
 
+  /*
+   * The set of callbacks to be invoked when directive instance is being destroyed.
+   */
+  private _onDestroyCallbacks: (() => void)[] = [];
+
+  /**
+   * Internal function to register callbacks that should be invoked
+   * when directive instance is being destroyed.
+   * @internal
+   */
+  _registerOnDestroy(fn: () => void): void {
+    this._onDestroyCallbacks.push(fn);
+  }
+
+  /**
+   * Internal function to invoke all registered "on destroy" callbacks.
+   * Note: calling this function also clears the list of callbacks.
+   * @internal
+   */
+  _invokeOnDestroyCallbacks(): void {
+    this._onDestroyCallbacks.forEach(fn => fn());
+    this._onDestroyCallbacks = [];
+  }
+
   /**
    * @description
    * Resets the control with the provided value if the control is present.

@@ -12,8 +12,8 @@ import {absoluteFrom, getFileSystem, getSourceFileOrError} from '../../../src/ng
 import {runInEachFileSystem, TestFile} from '../../../src/ngtsc/file_system/testing';
 import {MockLogger} from '../../../src/ngtsc/logging/testing';
 import {ClassDeclaration, DeclarationNode, Decorator} from '../../../src/ngtsc/reflection';
+import {loadFakeCore, loadTestFiles} from '../../../src/ngtsc/testing';
 import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence} from '../../../src/ngtsc/transform';
-import {loadFakeCore, loadTestFiles} from '../../../test/helpers';
 import {DecorationAnalyzer} from '../../src/analysis/decoration_analyzer';
 import {NgccReferencesRegistry} from '../../src/analysis/ngcc_references_registry';
 import {CompiledClass, DecorationAnalyses} from '../../src/analysis/types';

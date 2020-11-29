@@ -12,8 +12,7 @@ import {absoluteFrom, getFileSystem, getSourceFileOrError} from '../../../src/ng
 import {runInEachFileSystem, TestFile} from '../../../src/ngtsc/file_system/testing';
 import {MockLogger} from '../../../src/ngtsc/logging/testing';
 import {ClassMemberKind, ConcreteDeclaration, CtorParameter, DeclarationKind, Decorator, DownleveledEnum, isNamedClassDeclaration, isNamedFunctionDeclaration, isNamedVariableDeclaration, KnownDeclaration, TypeScriptReflectionHost, TypeValueReferenceKind} from '../../../src/ngtsc/reflection';
-import {getDeclaration} from '../../../src/ngtsc/testing';
-import {loadFakeCore, loadTestFiles} from '../../../test/helpers';
+import {getDeclaration, loadFakeCore, loadTestFiles} from '../../../src/ngtsc/testing';
 import {DelegatingReflectionHost} from '../../src/host/delegating_host';
 import {Esm2015ReflectionHost, getIifeBody} from '../../src/host/esm2015_host';
 import {Esm5ReflectionHost} from '../../src/host/esm5_host';

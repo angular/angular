@@ -7,7 +7,7 @@
  */
 import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {runInEachFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
-import {loadTestDirectory} from '@angular/compiler-cli/test/helpers';
+import {loadTestDirectory} from '@angular/compiler-cli/src/ngtsc/testing';
 import {resolve as realResolve} from 'path';
 
 import {Diagnostics} from '../../../src/diagnostics';

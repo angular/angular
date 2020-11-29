@@ -192,7 +192,7 @@ and [`HttpClient.get()` returns an `Observable`](guide/http).
 
 ### Observable `HeroService`
 
-`Observable` is one of the key classes in the [RxJS library](http://reactivex.io/rxjs/).
+`Observable` is one of the key classes in the [RxJS library](https://rxjs.dev/).
 
 In a [later tutorial on HTTP](tutorial/toh-pt6), you'll learn that Angular's `HttpClient` methods return RxJS `Observable`s.
 In this tutorial, you'll simulate getting data from the server with the RxJS `of()` function.

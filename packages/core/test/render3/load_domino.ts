@@ -7,7 +7,6 @@
  */
 
 // Needed to run animation tests
-import 'zone.js/lib/node/rollup-main';
 import '@angular/compiler'; // For JIT mode. Must be in front of any other @angular/* imports.
 import {ɵgetDOM as getDOM} from '@angular/common';
 import {DominoAdapter} from '@angular/platform-server/src/domino_adapter';

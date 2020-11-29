@@ -65,7 +65,7 @@ abstract class SafeValueImpl implements SafeValue {
 
   toString() {
     return `SafeValue must use [property]=binding: ${this.changingThisBreaksApplicationSecurity}` +
-        ` (see http://g.co/ng/security#xss)`;
+        ` (see https://g.co/ng/security#xss)`;
   }
 }
 
@@ -119,7 +119,7 @@ export function allowSanitizationBypassAndThrow(value: any, type: BypassType): b
     // Allow ResourceURLs in URL contexts, they are strictly more trusted.
     if (actualType === BypassType.ResourceUrl && type === BypassType.Url) return true;
     throw new Error(
-        `Required a safe ${type}, got a ${actualType} (see http://g.co/ng/security#xss)`);
+        `Required a safe ${type}, got a ${actualType} (see https://g.co/ng/security#xss)`);
   }
   return actualType === type;
 }

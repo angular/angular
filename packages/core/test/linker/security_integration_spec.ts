@@ -283,5 +283,31 @@ function declareTests(config?: {useJit: boolean}) {
         expect(e.innerHTML).toEqual('also  evil');
       });
     });
+
+    onlyInIvy('Trusted Types are only supported in Ivy').describe('translation', () => {
+      it('should throw error on security-sensitive attributes with constant values', () => {
+        const template = `<iframe srcdoc="foo" i18n-srcdoc></iframe>`;
+        TestBed.overrideComponent(SecuredComponent, {set: {template}});
+
+        expect(() => TestBed.createComponent(SecuredComponent))
+            .toThrowError(/Translating attribute 'srcdoc' is disallowed for security reasons./);
+      });
+
+      it('should throw error on security-sensitive attributes with interpolated values', () => {
+        const template = `<object i18n-data data="foo{{bar}}baz"></object>`;
+        TestBed.overrideComponent(SecuredComponent, {set: {template}});
+
+        expect(() => TestBed.createComponent(SecuredComponent))
+            .toThrowError(/Translating attribute 'data' is disallowed for security reasons./);
+      });
+
+      it('should throw error on security-sensitive attributes with bound values', () => {
+        const template = `<div [innerHTML]="foo" i18n-innerHTML></div>`;
+        TestBed.overrideComponent(SecuredComponent, {set: {template}});
+
+        expect(() => TestBed.createComponent(SecuredComponent))
+            .toThrowError(/Translating attribute 'innerHTML' is disallowed for security reasons./);
+      });
+    });
   });
 }

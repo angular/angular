@@ -15,22 +15,13 @@ import {FactoryGenerator, isShim, ShimAdapter, ShimReferenceTagger, SummaryGener
 import {FactoryTracker, PerFileShimGenerator, TopLevelShimGenerator} from '../../shims/api';
 import {TypeCheckShimGenerator} from '../../typecheck';
 import {normalizeSeparators} from '../../util/src/path';
-import {getRootDirs, isDtsPath, isNonDeclarationTsPath} from '../../util/src/typescript';
+import {getRootDirs, isNonDeclarationTsPath, RequiredDelegations} from '../../util/src/typescript';
 import {ExtendedTsCompilerHost, NgCompilerAdapter, NgCompilerOptions, UnifiedModulesHost} from '../api';
 
 // A persistent source of bugs in CompilerHost delegation has been the addition by TS of new,
 // optional methods on ts.CompilerHost. Since these methods are optional, it's not a type error that
 // the delegating host doesn't implement or delegate them. This causes subtle runtime failures. No
 // more. This infrastructure ensures that failing to delegate a method is a compile-time error.
-
-/**
- * Represents the `ExtendedTsCompilerHost` interface, with a transformation applied that turns all
- * methods (even optional ones) into required fields (which may be `undefined`, if the method was
- * optional).
- */
-export type RequiredCompilerHostDelegations = {
-  [M in keyof Required<ExtendedTsCompilerHost>]: ExtendedTsCompilerHost[M];
-};
 
 /**
  * Delegates all methods of `ExtendedTsCompilerHost` to a delegate, with the exception of
@@ -40,7 +31,7 @@ export type RequiredCompilerHostDelegations = {
  * generated for this class.
  */
 export class DelegatingCompilerHost implements
-    Omit<RequiredCompilerHostDelegations, 'getSourceFile'|'fileExists'> {
+    Omit<RequiredDelegations<ExtendedTsCompilerHost>, 'getSourceFile'|'fileExists'> {
   constructor(protected delegate: ExtendedTsCompilerHost) {}
 
   private delegateMethod<M extends keyof ExtendedTsCompilerHost>(name: M):
@@ -89,7 +80,7 @@ export class DelegatingCompilerHost implements
  * `ExtendedTsCompilerHost` methods whenever present.
  */
 export class NgCompilerHost extends DelegatingCompilerHost implements
-    RequiredCompilerHostDelegations, ExtendedTsCompilerHost, NgCompilerAdapter {
+    RequiredDelegations<ExtendedTsCompilerHost>, ExtendedTsCompilerHost, NgCompilerAdapter {
   readonly factoryTracker: FactoryTracker|null = null;
   readonly entryPoint: AbsoluteFsPath|null = null;
   readonly constructionDiagnostics: ts.Diagnostic[];

@@ -36,7 +36,7 @@ runInEachFileSystem(() => {
           }]);
 
       expect(messages).toEqual(
-          [`TestComponent.html(1, 10): Type 'string' is not assignable to type 'number'.`]);
+          [`TestComponent.html(1, 11): Type 'string' is not assignable to type 'number'.`]);
     });
 
     it('infers type of template variables', () => {
@@ -208,6 +208,32 @@ runInEachFileSystem(() => {
       expect(messages).toEqual([
         `TestComponent.html(1, 28): Argument of type 'number' is not assignable to parameter of type 'string'.`,
       ]);
+    });
+
+    it('does not repeat diagnostics for missing pipes in directive inputs', () => {
+      // The directive here is structured so that a type constructor is used, which resuts in each
+      // input binding being processed twice. This results in the 'uppercase' pipe being resolved
+      // twice, and since it doesn't exist this operation will fail. The test is here to verify that
+      // failing to resolve the pipe twice only produces a single diagnostic (no duplicates).
+      const messages = diagnose(
+          '<div *dir="let x of name | uppercase"></div>', `
+            class Dir<T> {
+              dirOf: T;
+            }
+
+            class TestComponent {
+              name: string;
+            }`,
+          [{
+            type: 'directive',
+            name: 'Dir',
+            selector: '[dir]',
+            inputs: {'dirOf': 'dirOf'},
+            isGeneric: true,
+          }]);
+
+      expect(messages.length).toBe(1);
+      expect(messages[0]).toContain(`No pipe found with name 'uppercase'.`);
     });
 
     it('does not repeat diagnostics for errors within LHS of safe-navigation operator', () => {

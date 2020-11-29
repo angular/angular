@@ -12,7 +12,7 @@ import {relative} from 'path';
 
 import {NgComponentTemplateVisitor} from '../../utils/ng_component_template';
 import {getProjectTsConfigPaths} from '../../utils/project_tsconfig_paths';
-import {createMigrationProgram} from '../../utils/typescript/compiler_host';
+import {canMigrateFile, createMigrationProgram} from '../../utils/typescript/compiler_host';
 
 import {analyzeResolvedTemplate} from './analyze_template';
 
@@ -48,8 +48,8 @@ function runTemplateVariableAssignmentCheck(
   const {program} = createMigrationProgram(tree, tsconfigPath, basePath);
   const typeChecker = program.getTypeChecker();
   const templateVisitor = new NgComponentTemplateVisitor(typeChecker);
-  const sourceFiles = program.getSourceFiles().filter(
-      f => !f.isDeclarationFile && !program.isSourceFileFromExternalLibrary(f));
+  const sourceFiles =
+      program.getSourceFiles().filter(sourceFile => canMigrateFile(basePath, sourceFile, program));
 
   // Analyze source files by detecting HTML templates.
   sourceFiles.forEach(sourceFile => templateVisitor.visitNode(sourceFile));

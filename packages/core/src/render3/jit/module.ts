@@ -12,14 +12,15 @@ import {NG_INJ_DEF} from '../../di/interface/defs';
 import {reflectDependencies} from '../../di/jit/util';
 import {Type} from '../../interface/type';
 import {Component} from '../../metadata/directives';
-import {ModuleWithProviders, NgModule, NgModuleDef, NgModuleTransitiveScopes} from '../../metadata/ng_module';
+import {ModuleWithProviders, NgModule} from '../../metadata/ng_module';
+import {NgModuleDef, NgModuleTransitiveScopes, NgModuleType} from '../../metadata/ng_module_def';
 import {deepForEach, flatten} from '../../util/array_utils';
 import {assertDefined} from '../../util/assert';
 import {getComponentDef, getDirectiveDef, getNgModuleDef, getPipeDef} from '../definition';
 import {NG_COMP_DEF, NG_DIR_DEF, NG_MOD_DEF, NG_PIPE_DEF} from '../fields';
 import {ComponentDef} from '../interfaces/definition';
-import {NgModuleType} from '../ng_module_ref';
-import {maybeUnwrapFn, stringifyForError} from '../util/misc_utils';
+import {maybeUnwrapFn} from '../util/misc_utils';
+import {stringifyForError} from '../util/stringify_utils';
 
 import {angularCoreEnv} from './environment';
 

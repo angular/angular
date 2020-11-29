@@ -673,7 +673,7 @@ describe('query', () => {
          });
 
       it('should read TemplateRef from container nodes by default', () => {
-        // http://plnkr.co/edit/BVpORly8wped9I3xUYsX?p=preview
+        // https://plnkr.co/edit/BVpORly8wped9I3xUYsX?p=preview
         /**
          * <ng-template #foo></ng-template>
          * class Cmpt {

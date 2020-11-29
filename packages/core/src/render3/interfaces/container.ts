@@ -6,10 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ViewRef} from '../../linker/view_ref';
-
 import {TNode} from './node';
-import {RComment, RElement} from './renderer';
+import {RComment, RElement} from './renderer_dom';
 import {HOST, LView, NEXT, PARENT, T_HOST, TRANSPLANTED_VIEWS_TO_REFRESH} from './view';
 
 
@@ -127,8 +125,11 @@ export interface LContainer extends Array<any> {
    * Array of `ViewRef`s used by any `ViewContainerRef`s that point to this container.
    *
    * This is lazily initialized by `ViewContainerRef` when the first view is inserted.
+   *
+   * NOTE: This is stored as `any[]` because render3 should really not be aware of `ViewRef` and
+   * doing so creates circular dependency.
    */
-  [VIEW_REFS]: ViewRef[]|null;
+  [VIEW_REFS]: unknown[]|null;
 }
 
 // Note: This hack is necessary so we don't erroneously get a circular dependency
