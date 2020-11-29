@@ -6,6 +6,6 @@ function alternateFactory() {
   return new MyAlternateService();
 }
 
-@Injectable({useFactory: alternateFactory})
+@Injectable({providedIn: 'root', useFactory: alternateFactory})
 export class MyService {
 }

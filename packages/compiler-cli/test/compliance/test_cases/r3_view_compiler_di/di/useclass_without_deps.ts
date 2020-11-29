@@ -4,6 +4,6 @@ import {Injectable} from '@angular/core';
 class MyAlternateService {
 }
 
-@Injectable({useClass: MyAlternateService})
+@Injectable({providedIn: 'root', useClass: MyAlternateService})
 export class MyService {
 }

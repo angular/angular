@@ -8,5 +8,6 @@ MyService.ɵprov = $r3$.ɵɵdefineInjectable({
       r = new MyAlternateService($r3$.ɵɵinject(SomeDep));
     }
     return r;
-  }
+  },
+  providedIn: 'root'
 });

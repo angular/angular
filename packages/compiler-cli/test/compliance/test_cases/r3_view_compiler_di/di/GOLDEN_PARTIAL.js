@@ -137,10 +137,10 @@ function alternateFactory() {
 export class MyService {
 }
 MyService.ɵfac = function MyService_Factory(t) { return new (t || MyService)(); };
-MyService.ɵprov = i0.ɵɵdefineInjectable({ token: MyService, factory: function () { return alternateFactory(); } });
+MyService.ɵprov = i0.ɵɵdefineInjectable({ token: MyService, factory: function () { return alternateFactory(); }, providedIn: 'root' });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyService, [{
         type: Injectable,
-        args: [{ useFactory: alternateFactory }]
+        args: [{ providedIn: 'root', useFactory: alternateFactory }]
     }], null, null); })();
 
 /****************************************************************************************************
@@ -169,10 +169,10 @@ MyService.ɵprov = i0.ɵɵdefineInjectable({ token: MyService, factory: function
     }
     else {
         r = (() => new MyAlternateService())(i0.ɵɵinject(SomeDep));
-    } return r; } });
+    } return r; }, providedIn: 'root' });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyService, [{
         type: Injectable,
-        args: [{ useFactory: () => new MyAlternateService(), deps: [SomeDep] }]
+        args: [{ providedIn: 'root', useFactory: () => new MyAlternateService(), deps: [SomeDep] }]
     }], null, null); })();
 
 /****************************************************************************************************
@@ -199,10 +199,10 @@ MyAlternateService.ɵprov = i0.ɵɵdefineInjectable({ token: MyAlternateService,
 export class MyService {
 }
 MyService.ɵfac = function MyService_Factory(t) { return new (t || MyService)(); };
-MyService.ɵprov = i0.ɵɵdefineInjectable({ token: MyService, factory: function (t) { return MyAlternateService.ɵfac(t); } });
+MyService.ɵprov = i0.ɵɵdefineInjectable({ token: MyService, factory: function (t) { return MyAlternateService.ɵfac(t); }, providedIn: 'root' });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyService, [{
         type: Injectable,
-        args: [{ useClass: MyAlternateService }]
+        args: [{ providedIn: 'root', useClass: MyAlternateService }]
     }], null, null); })();
 
 /****************************************************************************************************
@@ -236,10 +236,10 @@ MyService.ɵprov = i0.ɵɵdefineInjectable({ token: MyService, factory: function
     }
     else {
         r = new MyAlternateService(i0.ɵɵinject(SomeDep));
-    } return r; } });
+    } return r; }, providedIn: 'root' });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyService, [{
         type: Injectable,
-        args: [{ useClass: MyAlternateService, deps: [SomeDep] }]
+        args: [{ providedIn: 'root', useClass: MyAlternateService, deps: [SomeDep] }]
     }], null, null); })();
 
 /****************************************************************************************************

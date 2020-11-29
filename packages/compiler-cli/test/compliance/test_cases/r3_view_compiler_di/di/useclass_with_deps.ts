@@ -6,6 +6,6 @@ class SomeDep {}
 class MyAlternateService {
 }
 
-@Injectable({useClass: MyAlternateService, deps: [SomeDep]})
+@Injectable({providedIn: 'root', useClass: MyAlternateService, deps: [SomeDep]})
 export class MyService {
 }
