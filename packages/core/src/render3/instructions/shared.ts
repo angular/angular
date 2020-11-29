@@ -752,14 +752,26 @@ export function locateHostElement(
  * On the first template pass, saves in TView:
  * - Cleanup function
  * - Index of context we just saved in LView.cleanupInstances
+ *
+ * This function can also be used to store instance specific cleanup fns. In that case the `context`
+ * is `null` and the function is store in `LView` (rather than it `TView`).
  */
 export function storeCleanupWithContext(
     tView: TView, lView: LView, context: any, cleanupFn: Function): void {
   const lCleanup = getLCleanup(lView);
-  lCleanup.push(context);
+  if (context === null) {
+    // If context is null that this is instance specific callback. These callbacks can only be
+    // inserted after template shared instances. For this reason in ngDevMode we freeze the TView.
+    if (ngDevMode) {
+      Object.freeze(getTViewCleanup(tView));
+    }
+    lCleanup.push(cleanupFn);
+  } else {
+    lCleanup.push(context);
 
-  if (tView.firstCreatePass) {
-    getTViewCleanup(tView).push(cleanupFn, lCleanup.length - 1);
+    if (tView.firstCreatePass) {
+      getTViewCleanup(tView).push(cleanupFn, lCleanup.length - 1);
+    }
   }
 }
 
@@ -1997,7 +2009,7 @@ export function getLCleanup(view: LView): any[] {
   return view[CLEANUP] || (view[CLEANUP] = ngDevMode ? new LCleanup() : []);
 }
 
-function getTViewCleanup(tView: TView): any[] {
+export function getTViewCleanup(tView: TView): any[] {
   return tView.cleanup || (tView.cleanup = ngDevMode ? new TCleanup() : []);
 }
 

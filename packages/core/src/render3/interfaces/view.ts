@@ -163,8 +163,11 @@ export interface LView extends Array<any> {
    *
    * These change per LView instance, so they cannot be stored on TView. Instead,
    * TView.cleanup saves an index to the necessary context in this array.
+   *
+   * After `LView` is created it is possible to attach additional instance specific functions at the
+   * end of the `lView[CLENUP]` because we know that no more `T` level cleanup functions will be
+   * addeded here.
    */
-  // TODO: flatten into LView[]
   [CLEANUP]: any[]|null;
 
   /**

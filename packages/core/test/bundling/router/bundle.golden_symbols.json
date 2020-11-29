@@ -1437,6 +1437,9 @@
     "name": "getTView"
   },
   {
+    "name": "getTViewCleanup"
+  },
+  {
     "name": "getToken"
   },
   {
