@@ -594,6 +594,7 @@ export class ApplicationRef {
   private _runningTick: boolean = false;
   private _enforceNoNewChanges: boolean = false;
   private _stable = true;
+  private _onMicrotaskEmptySubscription: Subscription;
 
   /**
    * Get a list of component types registered to this application.
@@ -622,7 +623,7 @@ export class ApplicationRef {
       private _initStatus: ApplicationInitStatus) {
     this._enforceNoNewChanges = isDevMode();
 
-    this._zone.onMicrotaskEmpty.subscribe({
+    this._onMicrotaskEmptySubscription = this._zone.onMicrotaskEmpty.subscribe({
       next: () => {
         this._zone.run(() => {
           this.tick();
@@ -715,15 +716,20 @@ export class ApplicationRef {
         isBoundToModule(componentFactory) ? undefined : this._injector.get(NgModuleRef);
     const selectorOrNode = rootSelectorOrNode || componentFactory.selector;
     const compRef = componentFactory.create(Injector.NULL, [], selectorOrNode, ngModule);
+    const nativeElement = compRef.location.nativeElement;
+    const testability = compRef.injector.get(Testability, null);
+    const testabilityRegistry = testability && compRef.injector.get(TestabilityRegistry);
+    if (testability && testabilityRegistry) {
+      testabilityRegistry.registerApplication(nativeElement, testability);
+    }
 
     compRef.onDestroy(() => {
-      this._unloadComponent(compRef);
+      this.detachView(compRef.hostView);
+      remove(this.components, compRef);
+      if (testabilityRegistry) {
+        testabilityRegistry.unregisterApplication(nativeElement);
+      }
     });
-    const testability = compRef.injector.get(Testability, null);
-    if (testability) {
-      compRef.injector.get(TestabilityRegistry)
-          .registerApplication(compRef.location.nativeElement, testability);
-    }
 
     this._loadComponent(compRef);
     if (isDevMode()) {
@@ -796,15 +802,11 @@ export class ApplicationRef {
     listeners.forEach((listener) => listener(componentRef));
   }
 
-  private _unloadComponent(componentRef: ComponentRef<any>): void {
-    this.detachView(componentRef.hostView);
-    remove(this.components, componentRef);
-  }
-
   /** @internal */
   ngOnDestroy() {
     // TODO(alxhub): Dispose of the NgZone.
     this._views.slice().forEach((view) => view.destroy());
+    this._onMicrotaskEmptySubscription.unsubscribe();
   }
 
   /**
