@@ -1,0 +1,75 @@
+{
+  "$schema": "../../test_case_schema.json",
+  "cases": [
+    {
+      "description": "should generate the proper update instructions for interpolated classes",
+      "inputFiles": [
+        "class_interpolations.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect handling of interpolated classes",
+          "files": [
+            "class_interpolations.js"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should generate the proper update instructions for interpolated style properties",
+      "inputFiles": [
+        "style_properties.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect handling of interpolated style properties",
+          "files": [
+            "style_properties.js"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should generate update instructions for interpolated style properties with a suffix",
+      "inputFiles": [
+        "style_binding_suffixed.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect handling of interpolated style properties",
+          "files": [
+            "style_binding_suffixed.js"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should generate update instructions for interpolated style properties with a sanitizer",
+      "inputFiles": [
+        "style_binding_sanitizer.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect handling of interpolated style properties",
+          "files": [
+            "style_binding_sanitizer.js"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should generate update instructions for interpolated style properties with !important",
+      "inputFiles": [
+        "style_binding_important.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect handling of interpolated style properties",
+          "files": [
+            "style_binding_important.js"
+          ]
+        }
+      ]
+    }
+  ]
+}
