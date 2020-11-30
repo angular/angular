@@ -1539,13 +1539,13 @@
     "name": "isDirectiveHost"
   },
   {
-    "name": "isEmptyPathRedirect"
-  },
-  {
     "name": "isFunction"
   },
   {
     "name": "isFunction"
+  },
+  {
+    "name": "isImmediateMatch"
   },
   {
     "name": "isInCheckNoChangesMode"
@@ -1644,9 +1644,6 @@
     "name": "map"
   },
   {
-    "name": "mapChildrenIntoArray"
-  },
-  {
     "name": "markAsComponentHost"
   },
   {
@@ -1680,9 +1677,6 @@
     "name": "mergeMap"
   },
   {
-    "name": "mergeTrivialChildren"
-  },
-  {
     "name": "modules"
   },
   {
@@ -1711,6 +1705,12 @@
   },
   {
     "name": "ngOnChangesSetInput"
+  },
+  {
+    "name": "noLeftoversInUrl"
+  },
+  {
+    "name": "noMatch"
   },
   {
     "name": "noMatch"
@@ -1836,6 +1836,9 @@
     "name": "saveNameToExportMap"
   },
   {
+    "name": "scan"
+  },
+  {
     "name": "scheduleArray"
   },
   {
@@ -1909,6 +1912,9 @@
   },
   {
     "name": "split"
+  },
+  {
+    "name": "squashSegmentGroup"
   },
   {
     "name": "standardizeConfig"

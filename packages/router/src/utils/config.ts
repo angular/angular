@@ -117,19 +117,6 @@ export function standardizeConfig(r: Route): Route {
   return c;
 }
 
-/** Returns of `Map` of outlet names to the `Route`s for that outlet. */
-export function groupRoutesByOutlet(routes: Route[]): Map<string, Route[]> {
-  return routes.reduce((map, route) => {
-    const routeOutlet = getOutlet(route);
-    if (map.has(routeOutlet)) {
-      map.get(routeOutlet)!.push(route);
-    } else {
-      map.set(routeOutlet, [route]);
-    }
-    return map;
-  }, new Map<string, Route[]>());
-}
-
 /** Returns the `route.outlet` or PRIMARY_OUTLET if none exists. */
 export function getOutlet(route: Route): string {
   return route.outlet || PRIMARY_OUTLET;
