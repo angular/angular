@@ -5,6 +5,7 @@ const {execSync} = require('child_process');
 const {
   computeDeploymentsInfo,
   computeInputVars,
+  computeMajorVersion,
   getLatestCommit,
   getMostRecentMinorBranch,
 } = require('./deploy-to-firebase');
@@ -104,7 +105,7 @@ describe('deploy-to-firebase:', () => {
     ]);
   });
 
-  it('stable - deploy success', () => {
+  it('stable - deploy success - active RC', () => {
     expect(getDeploymentsInfoFor({
       CI_REPO_OWNER: 'angular',
       CI_REPO_NAME: 'angular',
@@ -120,6 +121,34 @@ describe('deploy-to-firebase:', () => {
         deployedUrl: 'https://angular.io/',
         preDeployActions: ['function:build', 'function:checkPayloadSize'],
         postDeployActions: ['function:testPwaScore'],
+      },
+    ]);
+  });
+
+  it('stable - deploy success - no active RC', () => {
+    expect(getDeploymentsInfoFor({
+      CI_REPO_OWNER: 'angular',
+      CI_REPO_NAME: 'angular',
+      CI_PULL_REQUEST: 'false',
+      CI_BRANCH: mostRecentMinorBranch,
+      CI_STABLE_BRANCH: mostRecentMinorBranch,
+      CI_COMMIT: latestCommits[mostRecentMinorBranch],
+    })).toEqual([
+      {
+        deployEnv: 'stable',
+        projectId: 'angular-io',
+        siteId: `v${computeMajorVersion(mostRecentMinorBranch)}-angular-io-site`,
+        deployedUrl: 'https://angular.io/',
+        preDeployActions: ['function:build', 'function:checkPayloadSize'],
+        postDeployActions: ['function:testPwaScore'],
+      },
+      {
+        deployEnv: 'stable',
+        projectId: 'angular-io',
+        siteId: 'rc-angular-io-site',
+        deployedUrl: 'https://rc.angular.io/',
+        preDeployActions: ['function:removeServiceWorker', 'function:redirectToAngularIo'],
+        postDeployActions: ['function:testNoActiveRcDeployment'],
       },
     ]);
   });

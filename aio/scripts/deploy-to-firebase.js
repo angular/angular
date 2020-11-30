@@ -4,7 +4,7 @@
 //
 'use strict';
 
-const {cd, cp, exec, set} = require('shelljs');
+const {cd, cp, exec, mv, sed, set} = require('shelljs');
 
 set('-e');
 
@@ -17,6 +17,7 @@ const NG_REMOTE_URL = `https://github.com/${REPO_SLUG}.git`;
 module.exports = {
   computeDeploymentsInfo,
   computeInputVars,
+  computeMajorVersion,
   getLatestCommit,
   getMostRecentMinorBranch,
 };
@@ -122,6 +123,17 @@ function computeDeploymentsInfo(
       preDeployActions: [build, checkPayloadSize],
       postDeployActions: [testPwaScore],
     },
+    // Config for deploying the stable build to the RC Firebase site when there is no active RC.
+    // See https://github.com/angular/angular/issues/39760 for more info on the purpose of this
+    // special deployment.
+    noActiveRc: {
+      deployEnv: 'stable',
+      projectId: 'angular-io',
+      siteId: 'rc-angular-io-site',
+      deployedUrl: 'https://rc.angular.io/',
+      preDeployActions: [removeServiceWorker, redirectToAngularIo],
+      postDeployActions: [testNoActiveRcDeployment],
+    },
     archive: {
       deployEnv: 'archive',
       projectId: 'angular-io',
@@ -149,7 +161,17 @@ function computeDeploymentsInfo(
 
   // If the current branch is the stable branch, deploy as `stable`.
   if (currentBranch === stableBranch) {
-    return [deploymentInfoPerTarget.stable];
+    return (rcBranch !== null) ?
+      // There is an active RC version. Only deploy to the `stable` project/site.
+      [deploymentInfoPerTarget.stable] :
+      // There is no active RC version. In addition to deploying to the `stable` project/site,
+      // deploy to `rc` to ensure it redirects to `stable`.
+      // See https://github.com/angular/angular/issues/39760 for more info on the purpose of this
+      // special deployment.
+      [
+        deploymentInfoPerTarget.stable,
+        deploymentInfoPerTarget.noActiveRc,
+      ];
   }
 
   // If we get here, it means that the current branch is neither `master`, nor the RC or stable
@@ -263,12 +285,62 @@ function getLatestCommit(branchName, remote = undefined) {
   return getRemoteRefs(branchName, remote)[0].slice(0, 40);
 }
 
+function redirectToAngularIo() {
+  // Update the Firebase hosting configuration redirect all non-file requests (i.e. requests that do
+  // not contain a dot in their last path segment) to `angular.io`.
+  // See https://firebase.google.com/docs/hosting/full-config#redirects.
+  const redirectRule =
+      '{"type": 302, "regex": "^(.*/[^./]*)$", "destination": "https://angular.io:1"}';
+  sed('-i', /(\s*)"redirects": \[/, `$&\n$1  ${redirectRule},\n`, 'firebase.json');
+}
+
+function removeServiceWorker() {
+  // Rename the SW manifest (`ngsw.json`). This will cause the ServiceWorker to unregister itself.
+  // See https://angular.io/guide/service-worker-devops#fail-safe.
+  mv('dist/ngsw.json', 'dist/ngsw.json.bak');
+}
+
 function serializeActions(actions) {
   return actions.map(fn => fn.name).join(', ');
 }
 
 function skipDeployment(reason) {
   return {reason, skipped: true};
+}
+
+function testNoActiveRcDeployment({deployedUrl}) {
+  const deployedOrigin = deployedUrl.replace(/\/$/, '');
+
+  // Ensure a request for `ngsw.json` returns 404.
+  const ngswJsonUrl = `${deployedOrigin}/ngsw.json`;
+  const ngswJsonScript = `https.get('${ngswJsonUrl}', res => console.log(res.statusCode))`;
+  const ngswJsonActualStatusCode = exec(`node --eval "${ngswJsonScript}"`, {silent: true}).trim();
+  const ngswJsonExpectedStatusCode = '404';
+
+  if (ngswJsonActualStatusCode !== ngswJsonExpectedStatusCode) {
+    throw new Error(
+        `Expected '${ngswJsonUrl}' to return a status code of '${ngswJsonExpectedStatusCode}', ` +
+        `but it returned '${ngswJsonActualStatusCode}'.`);
+  }
+
+  // Ensure a request for `foo/bar` is redirected to `https://angular.io/foo/bar`.
+  const fooBarUrl = `${deployedOrigin}/foo/bar?baz=qux`;
+  const fooBarScript =
+      `https.get('${fooBarUrl}', res => console.log(res.statusCode, res.headers.location))`;
+  const [fooBarActualStatusCode, fooBarActualRedirectUrl] =
+      exec(`node --eval "${fooBarScript}"`, {silent: true}).trim().split(' ');
+  const fooBarExpectedStatusCode = '302';
+  const fooBarExpectedRedirectUrl = 'https://angular.io/foo/bar?baz=qux';
+
+  if (fooBarActualStatusCode !== fooBarExpectedStatusCode) {
+    throw new Error(
+        `Expected '${fooBarUrl}' to return a status code of '${fooBarExpectedStatusCode}', but ` +
+        `it returned '${fooBarActualStatusCode}'.`);
+  } else if (fooBarActualRedirectUrl !== fooBarExpectedRedirectUrl) {
+    throw new Error(
+        `Expected '${fooBarUrl}' to be redirected to '${fooBarExpectedRedirectUrl}', but it was ` +
+        `but it was redirected to '${fooBarActualRedirectUrl}'.`);
+  }
 }
 
 function testPwaScore({deployedUrl, minPwaScore}) {
