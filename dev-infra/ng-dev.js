@@ -2842,7 +2842,7 @@ function getBranchesFromTargetLabel(label, githubTargetBranch) {
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-function checkTargetBranchesForPr(prNumber, jsonOutput = false) {
+function getTargetBranchesForPr(prNumber) {
     return tslib.__awaiter(this, void 0, void 0, function* () {
         /** The ng-dev configuration. */
         const config = getConfig();
@@ -2869,10 +2869,13 @@ function checkTargetBranchesForPr(prNumber, jsonOutput = false) {
             return;
         }
         /** The target branches based on the target label and branch targetted in the Github UI. */
-        const targets = yield getBranchesFromTargetLabel(targetLabel, githubTargetBranch);
-        // When requested, print a json output to stdout, rather than using standard ng-dev logging.
-        if (jsonOutput) {
-            process.stdout.write(JSON.stringify(targets));
+        return yield getBranchesFromTargetLabel(targetLabel, githubTargetBranch);
+    });
+}
+function printTargetBranchesForPr(prNumber) {
+    return tslib.__awaiter(this, void 0, void 0, function* () {
+        const targets = yield getTargetBranchesForPr(prNumber);
+        if (targets === undefined) {
             return;
         }
         info.group(`PR #${prNumber} will merge into:`);
@@ -2890,22 +2893,16 @@ function checkTargetBranchesForPr(prNumber, jsonOutput = false) {
  */
 /** Builds the command. */
 function builder$5(yargs) {
-    return yargs
-        .positional('pr', {
+    return yargs.positional('pr', {
         description: 'The pull request number',
         type: 'number',
         demandOption: true,
-    })
-        .option('json', {
-        type: 'boolean',
-        default: false,
-        description: 'Print response as json',
     });
 }
 /** Handles the command. */
-function handler$5({ pr, json }) {
+function handler$5({ pr }) {
     return tslib.__awaiter(this, void 0, void 0, function* () {
-        yield checkTargetBranchesForPr(pr, json);
+        yield printTargetBranchesForPr(pr);
     });
 }
 /** yargs command module describing the command.  */
