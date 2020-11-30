@@ -231,7 +231,7 @@ describe('deploy-to-firebase:', () => {
     ]);
   });
 
-  it('archive - skip deploy - major same as stable, minor less than stable', () => {
+  it('archive - skip deploy - major same as stable, minor lower than stable', () => {
     expect(getDeploymentsInfoFor({
       CI_REPO_OWNER: 'angular',
       CI_REPO_NAME: 'angular',
@@ -249,7 +249,7 @@ describe('deploy-to-firebase:', () => {
     ]);
   });
 
-  it('archive - skip deploy - major lower than stable, minor not latest', () => {
+  it('archive - skip deploy - major lower than stable, minor not highest for major', () => {
     expect(getDeploymentsInfoFor({
       CI_REPO_OWNER: 'angular',
       CI_REPO_NAME: 'angular',
@@ -287,7 +287,7 @@ describe('deploy-to-firebase:', () => {
     ]);
   });
 
-  it('rc - deploy success - major same as stable, minor higher', () => {
+  it('rc - deploy success - major same as stable, minor highest for major', () => {
     // Create a stable branch name that has the same major and lower minor than
     // `mostRecentMinorBranch`.
     // NOTE: Since `mostRecentMinorBranch` can have a minor version of `0`, we may end up with `-1`
@@ -332,7 +332,7 @@ describe('deploy-to-firebase:', () => {
     ]);
   });
 
-  it('rc - skip deploy - major same as stable, minor not latest', () => {
+  it('rc - skip deploy - major same as stable, minor not highest for major', () => {
     expect(getDeploymentsInfoFor({
       CI_REPO_OWNER: 'angular',
       CI_REPO_NAME: 'angular',
@@ -350,7 +350,7 @@ describe('deploy-to-firebase:', () => {
     ]);
   });
 
-  it('rc - skip deploy - major higher than stable, minor not latest', () => {
+  it('rc - skip deploy - major higher than stable, minor not highest for major', () => {
     expect(getDeploymentsInfoFor({
       CI_REPO_OWNER: 'angular',
       CI_REPO_NAME: 'angular',
@@ -368,7 +368,7 @@ describe('deploy-to-firebase:', () => {
     ]);
   });
 
-  it('rc - skip deploy - major higher than stable but lower than most recent, minor latest', () => {
+  it('rc - skip deploy - major higher than stable but not highest, minor highest for major', () => {
     expect(getDeploymentsInfoFor({
       CI_REPO_OWNER: 'angular',
       CI_REPO_NAME: 'angular',
