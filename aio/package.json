@@ -173,5 +173,8 @@
     "watchr": "^3.0.1",
     "xregexp": "^4.0.0",
     "yargs": "^16.1.0"
+  },
+  "resolutions": {
+    "**/webdriver-manager": "12.0.6"
   }
 }
