@@ -12,7 +12,7 @@ import {LView} from '@angular/core/src/render3/interfaces/view';
 import {enterView, leaveView} from '@angular/core/src/render3/state';
 
 import {bypassSanitizationTrustHtml, bypassSanitizationTrustResourceUrl, bypassSanitizationTrustScript, bypassSanitizationTrustStyle, bypassSanitizationTrustUrl} from '../../src/sanitization/bypass';
-import {getUrlSanitizer, ɵɵsanitizeHtml, ɵɵsanitizeResourceUrl, ɵɵsanitizeScript, ɵɵsanitizeStyle, ɵɵsanitizeUrl, ɵɵsanitizeUrlOrResourceUrl} from '../../src/sanitization/sanitization';
+import {getUrlSanitizer, ɵɵsanitizeHtml, ɵɵsanitizeResourceUrl, ɵɵsanitizeScript, ɵɵsanitizeStyle, ɵɵsanitizeUrl, ɵɵsanitizeUrlOrResourceUrl, ɵɵtrustConstantHtml, ɵɵtrustConstantResourceUrl} from '../../src/sanitization/sanitization';
 import {SecurityContext} from '../../src/sanitization/security';
 
 function fakeLView(): LView {
@@ -133,5 +133,14 @@ describe('sanitization', () => {
         .toThrowError(/Required a safe URL, got a HTML/);
     expect(ɵɵsanitizeUrlOrResourceUrl(bypassSanitizationTrustUrl('javascript:true'), 'a', 'href'))
         .toEqual('javascript:true');
+  });
+
+  it('should only trust constant strings from template literal tags without interpolation', () => {
+    expect(ɵɵtrustConstantHtml`<h1>good</h1>`.toString()).toEqual('<h1>good</h1>');
+    expect(ɵɵtrustConstantResourceUrl`http://good.com`.toString()).toEqual('http://good.com');
+    expect(() => (ɵɵtrustConstantHtml as any) `<h1>${'evil'}</h1>`)
+        .toThrowError(/Unexpected interpolation in trusted HTML constant/);
+    expect(() => (ɵɵtrustConstantResourceUrl as any) `http://${'evil'}.com`)
+        .toThrowError(/Unexpected interpolation in trusted URL constant/);
   });
 });

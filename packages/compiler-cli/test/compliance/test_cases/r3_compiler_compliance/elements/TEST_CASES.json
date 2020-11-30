@@ -226,6 +226,17 @@
           "failureMessage": "Incorrect generated template."
         }
       ]
+    },
+    {
+      "description": "should specify security-sensitive constant attributes as template literals",
+      "inputFiles": [
+        "security_sensitive_constant_attributes.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect generated template."
+        }
+      ]
     }
   ]
 }

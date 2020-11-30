@@ -2193,10 +2193,16 @@ function trustedConstAttribute(tagName: string, attr: t.TextAttribute): o.Expres
   if (isTrustedTypesSink(tagName, attr.name)) {
     switch (elementRegistry.securityContext(tagName, attr.name, /* isAttribute */ true)) {
       case core.SecurityContext.HTML:
-        return o.importExpr(R3.trustConstantHtml).callFn([value], attr.valueSpan);
+        return o.taggedTemplate(
+            o.importExpr(R3.trustConstantHtml),
+            new o.TemplateLiteral([new o.TemplateLiteralElement(attr.value)], []), undefined,
+            attr.valueSpan);
       // NB: no SecurityContext.SCRIPT here, as the corresponding tags are stripped by the compiler.
       case core.SecurityContext.RESOURCE_URL:
-        return o.importExpr(R3.trustConstantResourceUrl).callFn([value], attr.valueSpan);
+        return o.taggedTemplate(
+            o.importExpr(R3.trustConstantResourceUrl),
+            new o.TemplateLiteral([new o.TemplateLiteralElement(attr.value)], []), undefined,
+            attr.valueSpan);
       default:
         return value;
     }
