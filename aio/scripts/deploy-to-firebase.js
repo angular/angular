@@ -15,7 +15,7 @@ const NG_REMOTE_URL = `https://github.com/${REPO_SLUG}.git`;
 
 // Exports
 module.exports = {
-  computeDeploymentInfo,
+  computeDeploymentsInfo,
   computeInputVars,
   getLatestCommit,
 };
@@ -24,26 +24,36 @@ module.exports = {
 if (require.main === module) {
   const isDryRun = process.argv[2] === '--dry-run';
   const inputVars = computeInputVars(process.env);
-  const deploymentInfo = computeDeploymentInfo(inputVars);
+  const deploymentsInfo = computeDeploymentsInfo(inputVars);
+  const totalDeployments = deploymentsInfo.length;
 
-  if (deploymentInfo.skipped) {
-    console.log(deploymentInfo.reason);
-  } else {
+  console.log(`Total deployments: ${totalDeployments}`);
+
+  deploymentsInfo.forEach((deploymentInfo, idx) => {
     console.log(
-        `Git branch          : ${inputVars.currentBranch}\n` +
-        `Git commit          : ${inputVars.currentCommit}\n` +
-        `Build/deploy mode   : ${deploymentInfo.deployEnv}\n` +
-        `Firebase project    : ${deploymentInfo.projectId}\n` +
-        `Firebase site       : ${deploymentInfo.siteId}\n` +
-        `Pre-deploy actions  : ${serializeActions(deploymentInfo.preDeployActions)}\n` +
-        `Post-deploy actions : ${serializeActions(deploymentInfo.postDeployActions)}\n` +
-        `Deployment URLs     : ${deploymentInfo.deployedUrl}\n` +
-        `                      https://${deploymentInfo.siteId}.web.app/`);
+        `\n\n\nDeployment ${idx + 1} of ${totalDeployments}\n` +
+        '-----------------');
 
-    if (!isDryRun) {
-      deploy({...inputVars, ...deploymentInfo});
+    if (deploymentInfo.skipped) {
+      console.log(deploymentInfo.reason);
+    } else {
+      console.log(
+          `Git branch          : ${inputVars.currentBranch}\n` +
+          `Git commit          : ${inputVars.currentCommit}\n` +
+          `Build/deploy mode   : ${deploymentInfo.deployEnv}\n` +
+          `Firebase project    : ${deploymentInfo.projectId}\n` +
+          `Firebase site       : ${deploymentInfo.siteId}\n` +
+          `Pre-deploy actions  : ${serializeActions(deploymentInfo.preDeployActions)}\n` +
+          `Post-deploy actions : ${serializeActions(deploymentInfo.postDeployActions)}\n` +
+          `Deployment URLs     : ${deploymentInfo.deployedUrl}\n` +
+          `                      https://${deploymentInfo.siteId}.web.app/`);
+
+      if (!isDryRun) {
+        deploy({...inputVars, ...deploymentInfo});
+      }
     }
-  }
+  });
+
 }
 
 // Helpers
@@ -63,23 +73,25 @@ function checkPayloadSize() {
   yarn('payload-size');
 }
 
-function computeDeploymentInfo(
+function computeDeploymentsInfo(
     {currentBranch, currentCommit, isPullRequest, repoName, repoOwner, stableBranch}) {
   // Do not deploy if we are running in a fork.
   if (`${repoOwner}/${repoName}` !== REPO_SLUG) {
-    return skipDeployment(`Skipping deploy because this is not ${REPO_SLUG}.`);
+    return [skipDeployment(`Skipping deploy because this is not ${REPO_SLUG}.`)];
   }
 
   // Do not deploy if this is a PR. PRs are deployed in the `aio_preview` CircleCI job.
   if (isPullRequest) {
-    return skipDeployment('Skipping deploy because this is a PR build.');
+    return [skipDeployment('Skipping deploy because this is a PR build.')];
   }
 
   // Do not deploy if the current commit is not the latest on its branch.
   const latestCommit = getLatestCommit(currentBranch);
   if (currentCommit !== latestCommit) {
-    return skipDeployment(
-        `Skipping deploy because ${currentCommit} is not the latest commit (${latestCommit}).`);
+    return [
+      skipDeployment(
+          `Skipping deploy because ${currentCommit} is not the latest commit (${latestCommit}).`),
+    ];
   }
 
   // The deployment mode is computed based on the branch we are building.
@@ -120,9 +132,9 @@ function computeDeploymentInfo(
   };
 
   if (currentBranch === 'master') {
-    return deploymentInfoPerTarget.next;
+    return [deploymentInfoPerTarget.next];
   } else if (currentBranch === stableBranch) {
-    return deploymentInfoPerTarget.stable;
+    return [deploymentInfoPerTarget.stable];
   } else {
     const stableBranchMajorVersion = computeMajorVersion(stableBranch);
 
@@ -140,20 +152,22 @@ function computeDeploymentInfo(
     // Do not deploy if it is not the latest branch for the given major version.
     // NOTE: At this point, we know the current branch is not the stable branch.
     if (currentBranch !== mostRecentMinorVersionBranch) {
-      return skipDeployment(
-          `Skipping deploy of branch "${currentBranch}" to Firebase.\n` +
-          'There is a more recent branch with the same major version: ' +
-          `"${mostRecentMinorVersionBranch}"`);
+      return [
+        skipDeployment(
+            `Skipping deploy of branch "${currentBranch}" to Firebase.\n` +
+            'There is a more recent branch with the same major version: ' +
+            `"${mostRecentMinorVersionBranch}"`),
+      ];
     }
 
     return (currentBranchMajorVersion < stableBranchMajorVersion) ?
         // This is the latest minor version for a major that is less than the stable major version:
         // Deploy as `archive`.
-        deploymentInfoPerTarget.archive :
+        [deploymentInfoPerTarget.archive] :
         // This is the latest minor version for a major that is equal or greater than the stable
         // major version, but not the stable version itself:
         // Deploy as `rc`.
-        deploymentInfoPerTarget.rc;
+        [deploymentInfoPerTarget.rc];
   }
 
   // We should never get here.
