@@ -18,6 +18,7 @@ module.exports = {
   computeDeploymentsInfo,
   computeInputVars,
   getLatestCommit,
+  getMostRecentMinorBranch,
 };
 
 // Run
@@ -131,47 +132,58 @@ function computeDeploymentsInfo(
     },
   };
 
+  // If the current branch is `master`, deploy as `next`.
   if (currentBranch === 'master') {
     return [deploymentInfoPerTarget.next];
-  } else if (currentBranch === stableBranch) {
-    return [deploymentInfoPerTarget.stable];
-  } else {
-    const stableBranchMajorVersion = computeMajorVersion(stableBranch);
-
-    // Find the branch that has highest minor version for the given `currentBranchMajorVersion`.
-    const mostRecentMinorVersionBranch =
-      // List the branches that start with the major version.
-      getRemoteRefs(`refs/heads/${currentBranchMajorVersion}.*.x`)
-          // Extract the version number.
-          .map(line => line.split('/')[2])
-          // Sort by the minor version.
-          .sort((a, b) => a.split('.')[1] - b.split('.')[1])
-          // Get the highest version.
-          .pop();
-
-    // Do not deploy if it is not the latest branch for the given major version.
-    // NOTE: At this point, we know the current branch is not the stable branch.
-    if (currentBranch !== mostRecentMinorVersionBranch) {
-      return [
-        skipDeployment(
-            `Skipping deploy of branch "${currentBranch}" to Firebase.\n` +
-            'There is a more recent branch with the same major version: ' +
-            `"${mostRecentMinorVersionBranch}"`),
-      ];
-    }
-
-    return (currentBranchMajorVersion < stableBranchMajorVersion) ?
-        // This is the latest minor version for a major that is less than the stable major version:
-        // Deploy as `archive`.
-        [deploymentInfoPerTarget.archive] :
-        // This is the latest minor version for a major that is equal or greater than the stable
-        // major version, but not the stable version itself:
-        // Deploy as `rc`.
-        [deploymentInfoPerTarget.rc];
   }
 
-  // We should never get here.
-  throw new Error('Failed to determine deployment info.');
+  // Determine if there is an active RC version by checking whether the most recent minor branch is
+  // the stable branch or not.
+  const mostRecentMinorBranch = getMostRecentMinorBranch();
+  const rcBranch = (mostRecentMinorBranch !== stableBranch) ? mostRecentMinorBranch : null;
+
+  // If the current branch is the RC branch, deploy as `rc`.
+  if (currentBranch === rcBranch) {
+    return [deploymentInfoPerTarget.rc];
+  }
+
+  // If the current branch is the stable branch, deploy as `stable`.
+  if (currentBranch === stableBranch) {
+    return [deploymentInfoPerTarget.stable];
+  }
+
+  // If we get here, it means that the current branch is neither `master`, nor the RC or stable
+  // branches. At this point, we may only deploy as `archive` and only if the following criteria are
+  // met:
+  //   1. The current branch must have the highest minor version among all branches with the same
+  //      major version.
+  //   2. The current branch must have a major version that is lower than the stable major version.
+
+  // Do not deploy if it is not the branch with the highest minor for the given major version.
+  const mostRecentMinorBranchForMajor = getMostRecentMinorBranch(currentBranchMajorVersion);
+  if (currentBranch !== mostRecentMinorBranchForMajor) {
+    return [
+      skipDeployment(
+          `Skipping deploy of branch "${currentBranch}" to Firebase.\n` +
+          'There is a more recent branch with the same major version: ' +
+          `"${mostRecentMinorBranchForMajor}"`),
+    ];
+  }
+
+  // Do not deploy if it does not have a lower major version than stable.
+  const stableBranchMajorVersion = computeMajorVersion(stableBranch);
+  if (currentBranchMajorVersion >= stableBranchMajorVersion) {
+    return [
+      skipDeployment(
+          `Skipping deploy of branch "${currentBranch}" to Firebase.\n` +
+          'This branch has an equal or higher major version than the stable branch ' +
+          `("${stableBranch}") and is not the most recent minor branch.`),
+    ];
+  }
+
+  // This is the highest minor version for a major that is lower than the stable major version:
+  // Deploy as `archive`.
+  return [deploymentInfoPerTarget.archive];
 }
 
 function computeInputVars({
@@ -228,6 +240,23 @@ function deploy(data) {
 
 function getRemoteRefs(refOrPattern, remote = NG_REMOTE_URL) {
   return exec(`git ls-remote ${remote} ${refOrPattern}`, {silent: true}).trim().split('\n');
+}
+
+function getMostRecentMinorBranch(major = '*') {
+  // List the branches that start with the given major version (or any major if none given).
+  return getRemoteRefs(`refs/heads/${major}.*.x`)
+      // Extract the branch name.
+      .map(line => line.split('/')[2])
+      // Filter out branches that are not of the format `<number>.<number>.x`.
+      .filter(name => /^\d+\.\d+\.x$/.test(name))
+      // Sort by version.
+      .sort((a, b) => {
+        const [majorA, minorA] = a.split('.');
+        const [majorB, minorB] = b.split('.');
+        return (majorA - majorB) || (minorA - minorB);
+      })
+      // Get the branch corresponding to the highest version.
+      .pop();
 }
 
 function getLatestCommit(branchName, remote = undefined) {

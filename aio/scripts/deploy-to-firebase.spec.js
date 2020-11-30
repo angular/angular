@@ -2,11 +2,17 @@
 'use strict';
 
 const {execSync} = require('child_process');
-const {computeDeploymentsInfo, computeInputVars, getLatestCommit} = require('./deploy-to-firebase');
+const {
+  computeDeploymentsInfo,
+  computeInputVars,
+  getLatestCommit,
+  getMostRecentMinorBranch,
+} = require('./deploy-to-firebase');
 
 
 describe('deploy-to-firebase:', () => {
-  // Pre-computed latest commits to avoid unnecessary re-computations.
+  // Pre-computed values to avoid unnecessary re-computations.
+  const mostRecentMinorBranch = getMostRecentMinorBranch();
   const latestCommits = {
     master: getLatestCommit('master'),
     '2.1.x': getLatestCommit('2.1.x'),
@@ -14,6 +20,7 @@ describe('deploy-to-firebase:', () => {
     '4.3.x': getLatestCommit('4.3.x'),
     '4.4.x': getLatestCommit('4.4.x'),
     '9.1.x': getLatestCommit('9.1.x'),
+    [mostRecentMinorBranch]: getLatestCommit(mostRecentMinorBranch),
   };
 
   // Helpers
@@ -236,9 +243,9 @@ describe('deploy-to-firebase:', () => {
       CI_REPO_OWNER: 'angular',
       CI_REPO_NAME: 'angular',
       CI_PULL_REQUEST: 'false',
-      CI_BRANCH: '4.4.x',
+      CI_BRANCH: mostRecentMinorBranch,
       CI_STABLE_BRANCH: '2.2.x',
-      CI_COMMIT: latestCommits['4.4.x'],
+      CI_COMMIT: latestCommits[mostRecentMinorBranch],
     })).toEqual([
       {
         deployEnv: 'rc',
@@ -252,13 +259,20 @@ describe('deploy-to-firebase:', () => {
   });
 
   it('rc - deploy success - major same as stable, minor higher', () => {
+    // Create a stable branch name that has the same major and lower minor than
+    // `mostRecentMinorBranch`.
+    // NOTE: Since `mostRecentMinorBranch` can have a minor version of `0`, we may end up with `-1`
+    //       as the minor version for stable. This is a hack, but it works ¯\_(ツ)_/¯
+    const stableBranch = mostRecentMinorBranch.replace(
+        /^(\d+)\.(\d+)\.x$/, (_, major, minor) => `${major}.${minor - 1}.x`);
+
     expect(getDeploymentsInfoFor({
       CI_REPO_OWNER: 'angular',
       CI_REPO_NAME: 'angular',
       CI_PULL_REQUEST: 'false',
-      CI_BRANCH: '2.4.x',
-      CI_STABLE_BRANCH: '2.2.x',
-      CI_COMMIT: latestCommits['2.4.x'],
+      CI_BRANCH: mostRecentMinorBranch,
+      CI_STABLE_BRANCH: stableBranch,
+      CI_COMMIT: latestCommits[mostRecentMinorBranch],
     })).toEqual([
       {
         deployEnv: 'rc',
@@ -276,7 +290,7 @@ describe('deploy-to-firebase:', () => {
       CI_REPO_OWNER: 'angular',
       CI_REPO_NAME: 'angular',
       CI_PULL_REQUEST: 'false',
-      CI_BRANCH: '2.4.x',
+      CI_BRANCH: mostRecentMinorBranch,
       CI_STABLE_BRANCH: '2.2.x',
       CI_COMMIT: 'DUMMY_TEST_COMMIT',
     })).toEqual([
@@ -284,7 +298,7 @@ describe('deploy-to-firebase:', () => {
         skipped: true,
         reason:
             'Skipping deploy because DUMMY_TEST_COMMIT is not the latest commit ' +
-            `(${latestCommits['2.4.x']}).`,
+            `(${latestCommits[mostRecentMinorBranch]}).`,
       },
     ]);
   });
@@ -321,6 +335,25 @@ describe('deploy-to-firebase:', () => {
         reason:
             'Skipping deploy of branch "4.3.x" to Firebase.\n' +
             'There is a more recent branch with the same major version: "4.4.x"',
+      },
+    ]);
+  });
+
+  it('rc - skip deploy - major higher than stable but lower than most recent, minor latest', () => {
+    expect(getDeploymentsInfoFor({
+      CI_REPO_OWNER: 'angular',
+      CI_REPO_NAME: 'angular',
+      CI_PULL_REQUEST: 'false',
+      CI_BRANCH: '4.4.x',
+      CI_STABLE_BRANCH: '2.4.x',
+      CI_COMMIT: latestCommits['4.4.x'],
+    })).toEqual([
+      {
+        skipped: true,
+        reason:
+            'Skipping deploy of branch "4.4.x" to Firebase.\n' +
+            'This branch has an equal or higher major version than the stable branch ("2.4.x") ' +
+            'and is not the most recent minor branch.',
       },
     ]);
   });
