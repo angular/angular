@@ -1,5 +1,15 @@
 # SVG in templates
 
+<div class="callout is-critical">
+
+<header>Marked for archiving</header>
+
+To ensure that you have the best experience possible, this topic is marked for archiving until we determine that it clearly conveys the most accurate information possible.
+
+If you think this content should not be archived, please file a [GitHub issue](https://github.com/angular/angular/issues/new?template=3-docs-bug.md).
+
+</div>
+
 It is possible to use SVG as valid templates in Angular. All of the template syntax below is
 applicable to both SVG and HTML. Learn more in the SVG [1.1](https://www.w3.org/TR/SVG11/) and
 [2.0](https://www.w3.org/TR/SVG2/) specifications.
