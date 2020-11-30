@@ -371,9 +371,6 @@ jobs:
       - install_chrome_libs
         # Build aio
       - run: yarn --cwd aio build --progress=false
-      - run: rm -rf aio/node_modules/webdriver-manager/
-      - run: yarn --cwd aio install
-      - run: yarn --cwd aio update-webdriver
         # Lint the code
       # - run: yarn --cwd aio lint
       #   # Run unit tests
