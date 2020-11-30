@@ -352,7 +352,8 @@ describe('deploy-to-firebase:', () => {
         skipped: true,
         reason:
             'Skipping deploy of branch "4.4.x" to Firebase.\n' +
-            'This branch has an equal or higher major version than the stable branch ("2.4.x").',
+            'This branch has an equal or higher major version than the stable branch ("2.4.x") ' +
+            'and is not the most recent minor branch.',
       },
     ]);
   });
