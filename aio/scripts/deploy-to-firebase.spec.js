@@ -6,6 +6,16 @@ const {computeDeploymentsInfo, computeInputVars, getLatestCommit} = require('./d
 
 
 describe('deploy-to-firebase:', () => {
+  // Pre-computed latest commits to avoid unnecessary re-computations.
+  const latestCommits = {
+    master: getLatestCommit('master'),
+    '2.1.x': getLatestCommit('2.1.x'),
+    '2.4.x': getLatestCommit('2.4.x'),
+    '4.3.x': getLatestCommit('4.3.x'),
+    '4.4.x': getLatestCommit('4.4.x'),
+    '9.1.x': getLatestCommit('9.1.x'),
+  };
+
   // Helpers
   const jsonFunctionReplacer = (_key, val) =>
     (typeof val === 'function') ? `function:${val.name}` : val;
@@ -57,7 +67,7 @@ describe('deploy-to-firebase:', () => {
       CI_REPO_NAME: 'angular',
       CI_PULL_REQUEST: 'false',
       CI_BRANCH: 'master',
-      CI_COMMIT: getLatestCommit('master'),
+      CI_COMMIT: latestCommits.master,
     })).toEqual([
       {
         deployEnv: 'next',
@@ -82,7 +92,7 @@ describe('deploy-to-firebase:', () => {
         skipped: true,
         reason:
             'Skipping deploy because DUMMY_TEST_COMMIT is not the latest commit ' +
-            `(${getLatestCommit('master')}).`,
+            `(${latestCommits.master}).`,
       },
     ]);
   });
@@ -94,7 +104,7 @@ describe('deploy-to-firebase:', () => {
       CI_PULL_REQUEST: 'false',
       CI_BRANCH: '4.3.x',
       CI_STABLE_BRANCH: '4.3.x',
-      CI_COMMIT: getLatestCommit('4.3.x'),
+      CI_COMMIT: latestCommits['4.3.x'],
     })).toEqual([
       {
         deployEnv: 'stable',
@@ -120,7 +130,7 @@ describe('deploy-to-firebase:', () => {
         skipped: true,
         reason:
             'Skipping deploy because DUMMY_TEST_COMMIT is not the latest commit ' +
-            `(${getLatestCommit('4.3.x')}).`,
+            `(${latestCommits['4.3.x']}).`,
       },
     ]);
   });
@@ -132,7 +142,7 @@ describe('deploy-to-firebase:', () => {
       CI_PULL_REQUEST: 'false',
       CI_BRANCH: '2.4.x',
       CI_STABLE_BRANCH: '4.3.x',
-      CI_COMMIT: getLatestCommit('2.4.x'),
+      CI_COMMIT: latestCommits['2.4.x'],
     })).toEqual([
       {
         deployEnv: 'archive',
@@ -154,7 +164,7 @@ describe('deploy-to-firebase:', () => {
       CI_PULL_REQUEST: 'false',
       CI_BRANCH: '9.1.x',
       CI_STABLE_BRANCH: '10.0.x',
-      CI_COMMIT: getLatestCommit('9.1.x'),
+      CI_COMMIT: latestCommits['9.1.x'],
     })).toEqual([
       {
         deployEnv: 'archive',
@@ -180,7 +190,7 @@ describe('deploy-to-firebase:', () => {
         skipped: true,
         reason:
             'Skipping deploy because DUMMY_TEST_COMMIT is not the latest commit ' +
-            `(${getLatestCommit('2.4.x')}).`,
+            `(${latestCommits['2.4.x']}).`,
       },
     ]);
   });
@@ -192,7 +202,7 @@ describe('deploy-to-firebase:', () => {
       CI_PULL_REQUEST: 'false',
       CI_BRANCH: '2.1.x',
       CI_STABLE_BRANCH: '2.2.x',
-      CI_COMMIT: getLatestCommit('2.1.x'),
+      CI_COMMIT: latestCommits['2.1.x'],
     })).toEqual([
       {
         skipped: true,
@@ -210,7 +220,7 @@ describe('deploy-to-firebase:', () => {
       CI_PULL_REQUEST: 'false',
       CI_BRANCH: '2.1.x',
       CI_STABLE_BRANCH: '4.3.x',
-      CI_COMMIT: getLatestCommit('2.1.x'),
+      CI_COMMIT: latestCommits['2.1.x'],
     })).toEqual([
       {
         skipped: true,
@@ -228,7 +238,7 @@ describe('deploy-to-firebase:', () => {
       CI_PULL_REQUEST: 'false',
       CI_BRANCH: '4.4.x',
       CI_STABLE_BRANCH: '2.2.x',
-      CI_COMMIT: getLatestCommit('4.4.x'),
+      CI_COMMIT: latestCommits['4.4.x'],
     })).toEqual([
       {
         deployEnv: 'rc',
@@ -248,7 +258,7 @@ describe('deploy-to-firebase:', () => {
       CI_PULL_REQUEST: 'false',
       CI_BRANCH: '2.4.x',
       CI_STABLE_BRANCH: '2.2.x',
-      CI_COMMIT: getLatestCommit('2.4.x'),
+      CI_COMMIT: latestCommits['2.4.x'],
     })).toEqual([
       {
         deployEnv: 'rc',
@@ -274,7 +284,7 @@ describe('deploy-to-firebase:', () => {
         skipped: true,
         reason:
             'Skipping deploy because DUMMY_TEST_COMMIT is not the latest commit ' +
-            `(${getLatestCommit('2.4.x')}).`,
+            `(${latestCommits['2.4.x']}).`,
       },
     ]);
   });
@@ -286,7 +296,7 @@ describe('deploy-to-firebase:', () => {
       CI_PULL_REQUEST: 'false',
       CI_BRANCH: '2.1.x',
       CI_STABLE_BRANCH: '2.0.x',
-      CI_COMMIT: getLatestCommit('2.1.x'),
+      CI_COMMIT: latestCommits['2.1.x'],
     })).toEqual([
       {
         skipped: true,
@@ -304,7 +314,7 @@ describe('deploy-to-firebase:', () => {
       CI_PULL_REQUEST: 'false',
       CI_BRANCH: '4.3.x',
       CI_STABLE_BRANCH: '2.4.x',
-      CI_COMMIT: getLatestCommit('4.3.x'),
+      CI_COMMIT: latestCommits['4.3.x'],
     })).toEqual([
       {
         skipped: true,
@@ -316,14 +326,13 @@ describe('deploy-to-firebase:', () => {
   });
 
   it('integration - should run the main script without error', () => {
-    const commit = getLatestCommit('master');
     const cmd = `"${process.execPath}" "${__dirname}/deploy-to-firebase" --dry-run`;
     const env = {
       CI_REPO_OWNER: 'angular',
       CI_REPO_NAME: 'angular',
       CI_PULL_REQUEST: 'false',
       CI_BRANCH: 'master',
-      CI_COMMIT: commit,
+      CI_COMMIT: latestCommits.master,
     };
     const result = execSync(cmd, {encoding: 'utf8', env}).trim();
     expect(result).toBe(
@@ -334,7 +343,7 @@ describe('deploy-to-firebase:', () => {
         'Deployment 1 of 1\n' +
         '-----------------\n' +
         'Git branch          : master\n' +
-        `Git commit          : ${commit}\n` +
+        `Git commit          : ${latestCommits.master}\n` +
         'Build/deploy mode   : next\n' +
         'Firebase project    : angular-io\n' +
         'Firebase site       : next-angular-io-site\n' +
