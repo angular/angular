@@ -5,12 +5,11 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-
 import {absoluteFrom as _} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {TestFile} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
-import {LanguageServiceTestEnvironment} from '@angular/language-service/ivy/test/env';
+import {LanguageServiceTestEnvironment, TestableOptions} from '@angular/language-service/ivy/test/env';
+import * as ts from 'typescript/lib/tsserverlibrary';
 
-import {MockServerHost} from './mock_host';
 
 export function getText(contents: string, textSpan: ts.TextSpan) {
   return contents.substr(textSpan.start, textSpan.length);
@@ -29,8 +28,8 @@ function getFirstClassDeclaration(declaration: string) {
 }
 
 export function createModuleWithDeclarations(
-    filesWithClassDeclarations: TestFile[],
-    externalResourceFiles: TestFile[] = []): LanguageServiceTestEnvironment {
+    filesWithClassDeclarations: TestFile[], externalResourceFiles: TestFile[] = [],
+    options: TestableOptions = {}): LanguageServiceTestEnvironment {
   const externalClasses =
       filesWithClassDeclarations.map(file => getFirstClassDeclaration(file.contents));
   const externalImports = filesWithClassDeclarations.map(file => {
@@ -51,30 +50,31 @@ export function createModuleWithDeclarations(
       `;
   const moduleFile = {name: _('/app-module.ts'), contents, isRoot: true};
   return LanguageServiceTestEnvironment.setup(
-      [moduleFile, ...filesWithClassDeclarations, ...externalResourceFiles]);
+      [moduleFile, ...filesWithClassDeclarations, ...externalResourceFiles], options);
 }
 
-export interface HumanizedDefinitionInfo {
-  fileName: string;
-  textSpan: string;
-  contextSpan: string|undefined;
-}
-
-export function humanizeDefinitionInfo(
-    def: ts.DefinitionInfo, host: MockServerHost,
-    overrides: Map<string, string> = new Map()): HumanizedDefinitionInfo {
-  const contents = (overrides.get(def.fileName) !== undefined ? overrides.get(def.fileName) :
-                                                                host.readFile(def.fileName)) ??
+export function humanizeDocumentSpanLike<T extends ts.DocumentSpan>(
+    item: T, env: LanguageServiceTestEnvironment, overrides: Map<string, string> = new Map()): T&
+    Stringy<ts.DocumentSpan> {
+  const fileContents = (overrides.has(item.fileName) ? overrides.get(item.fileName) :
+                                                       env.host.readFile(item.fileName)) ??
       '';
-
+  if (!fileContents) {
+    throw new Error('Could not read file ${entry.fileName}');
+  }
   return {
-    fileName: def.fileName,
-    textSpan: contents.substr(def.textSpan.start, def.textSpan.start + def.textSpan.length),
-    contextSpan: def.contextSpan ?
-        contents.substr(def.contextSpan.start, def.contextSpan.start + def.contextSpan.length) :
-        undefined,
+    ...item,
+    textSpan: getText(fileContents, item.textSpan),
+    contextSpan: item.contextSpan ? getText(fileContents, item.contextSpan) : undefined,
+    originalTextSpan: item.originalTextSpan ? getText(fileContents, item.originalTextSpan) :
+                                              undefined,
+    originalContextSpan:
+        item.originalContextSpan ? getText(fileContents, item.originalContextSpan) : undefined,
   };
 }
+type Stringy<T> = {
+  [P in keyof T]: string;
+};
 
 export function assertFileNames(refs: Array<{fileName: string}>, expectedFileNames: string[]) {
   const actualPaths = refs.map(r => r.fileName);

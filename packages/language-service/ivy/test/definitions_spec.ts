@@ -10,7 +10,7 @@ import {absoluteFrom, AbsoluteFsPath} from '@angular/compiler-cli/src/ngtsc/file
 import {initMockFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
 
 import {extractCursorInfo, LanguageServiceTestEnvironment} from './env';
-import {assertFileNames, createModuleWithDeclarations, humanizeDefinitionInfo} from './test_utils';
+import {assertFileNames, createModuleWithDeclarations, humanizeDocumentSpanLike} from './test_utils';
 
 describe('definitions', () => {
   it('returns the pipe class as definition when checkTypeOfPipes is false', () => {
@@ -27,8 +27,8 @@ describe('definitions', () => {
         export class AppCmp {}
       `,
     };
-    const env = createModuleWithDeclarations([appFile], [templateFile]);
     // checkTypeOfPipes is set to false when strict templates is false
+    const env = createModuleWithDeclarations([appFile], [templateFile], {strictTemplates: false});
     const {textSpan, definitions} =
         getDefinitionsAndAssertBoundSpan(env, absoluteFrom('/app.html'), cursor);
     expect(text.substr(textSpan.start, textSpan.length)).toEqual('date');
@@ -143,6 +143,6 @@ describe('definitions', () => {
     const definitionAndBoundSpan = env.ngLS.getDefinitionAndBoundSpan(fileName, cursor);
     const {textSpan, definitions} = definitionAndBoundSpan!;
     expect(definitions).toBeTruthy();
-    return {textSpan, definitions: definitions!.map(d => humanizeDefinitionInfo(d, env.host))};
+    return {textSpan, definitions: definitions!.map(d => humanizeDocumentSpanLike(d, env))};
   }
 });

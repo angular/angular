@@ -18,7 +18,7 @@ import {CompilerFactory} from './compiler_factory';
 import {CompletionBuilder, CompletionNodeContext} from './completions';
 import {DefinitionBuilder} from './definitions';
 import {QuickInfoBuilder} from './quick_info';
-import {ReferenceBuilder} from './references';
+import {ReferencesAndRenameBuilder} from './references';
 import {getTargetAtPosition, TargetContext, TargetNodeKind} from './template_target';
 import {getTemplateInfoAtPosition, isTypeScriptFile} from './utils';
 
@@ -107,8 +107,16 @@ export class LanguageService {
 
   getReferencesAtPosition(fileName: string, position: number): ts.ReferenceEntry[]|undefined {
     const compiler = this.compilerFactory.getOrCreateWithChangedFile(fileName);
-    const results =
-        new ReferenceBuilder(this.strategy, this.tsLS, compiler).get(fileName, position);
+    const results = new ReferencesAndRenameBuilder(this.strategy, this.tsLS, compiler)
+                        .getReferencesAtPosition(fileName, position);
+    this.compilerFactory.registerLastKnownProgram();
+    return results;
+  }
+
+  findRenameLocations(fileName: string, position: number): readonly ts.RenameLocation[]|undefined {
+    const compiler = this.compilerFactory.getOrCreateWithChangedFile(fileName);
+    const results = new ReferencesAndRenameBuilder(this.strategy, this.tsLS, compiler)
+                        .findRenameLocations(fileName, position);
     this.compilerFactory.registerLastKnownProgram();
     return results;
   }

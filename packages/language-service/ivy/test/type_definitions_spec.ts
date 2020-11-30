@@ -10,7 +10,7 @@ import {absoluteFrom} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {initMockFileSystem, TestFile} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
 
 import {LanguageServiceTestEnvironment} from './env';
-import {HumanizedDefinitionInfo, humanizeDefinitionInfo} from './test_utils';
+import {humanizeDocumentSpanLike} from './test_utils';
 
 describe('type definitions', () => {
   let env: LanguageServiceTestEnvironment;
@@ -48,8 +48,7 @@ describe('type definitions', () => {
     expect(def.contextSpan).toContain('DatePipe');
   });
 
-  function getTypeDefinitionsAndAssertBoundSpan({templateOverride}: {templateOverride: string}):
-      HumanizedDefinitionInfo[] {
+  function getTypeDefinitionsAndAssertBoundSpan({templateOverride}: {templateOverride: string}) {
     const {cursor, text} =
         env.overrideTemplateWithCursor(absoluteFrom('/app.ts'), 'AppCmp', templateOverride);
     env.expectNoSourceDiagnostics();
@@ -58,6 +57,6 @@ describe('type definitions', () => {
     expect(defs).toBeTruthy();
     const overrides = new Map<string, string>();
     overrides.set(absoluteFrom('/app.html'), text);
-    return defs!.map(d => humanizeDefinitionInfo(d, env.host, overrides));
+    return defs!.map(d => humanizeDocumentSpanLike(d, env, overrides));
   }
 });
