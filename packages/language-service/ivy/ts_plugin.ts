@@ -64,8 +64,7 @@ export function create(info: ts.server.PluginCreateInfo): ts.LanguageService {
   function findRenameLocations(
       fileName: string, position: number, findInStrings: boolean, findInComments: boolean,
       providePrefixAndSuffixTextForRename?: boolean): readonly ts.RenameLocation[]|undefined {
-    // TODO(atscott): implement
-    return undefined;
+    return ngLS.findRenameLocations(fileName, position);
   }
 
   function getCompletionsAtPosition(
