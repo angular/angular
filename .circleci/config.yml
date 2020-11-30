@@ -447,7 +447,7 @@ jobs:
         # Run examples tests. The "CIRCLE_NODE_INDEX" will be set if "parallelism" is enabled.
         # Since the parallelism is set to "5", there will be five parallel CircleCI containers.
         # with either "0", "1", etc as node index. This can be passed to the "--shard" argument.
-      - run: yarn --cwd aio example-e2e --setup --local <<# parameters.viewengine >>--viewengine<</ parameters.viewengine >> --cliSpecsConcurrency=5 --shard=${CIRCLE_NODE_INDEX}/${CIRCLE_NODE_TOTAL} --retry 2
+      - run: yarn --cwd aio example-e2e --setup --local <<# parameters.viewengine >>--viewengine<</ parameters.viewengine >> --cliSpecsConcurrency=5 --shard=${CIRCLE_NODE_INDEX}/${CIRCLE_NODE_TOTAL}
 
   # This job should only be run on PR builds, where `CI_PULL_REQUEST` is not `false`.
   aio_preview:
