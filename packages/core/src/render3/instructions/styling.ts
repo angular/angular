@@ -8,7 +8,7 @@
 
 import {SafeValue, unwrapSafeValue} from '../../sanitization/bypass';
 import {KeyValueArray, keyValueArrayGet, keyValueArraySet} from '../../util/array_utils';
-import {assertDefined, assertEqual, assertLessThan, assertNotEqual, throwError} from '../../util/assert';
+import {assertDefined, assertEqual, assertLessThan, assertNotEqual, assertString, throwError} from '../../util/assert';
 import {EMPTY_ARRAY} from '../../util/empty';
 import {concatStringsWithSpace, stringify} from '../../util/stringify';
 import {assertFirstUpdatePass} from '../assert';
@@ -133,8 +133,20 @@ export function styleStringParser(keyValueArray: KeyValueArray<any>, text: strin
  *
  * @codeGenApi
  */
-export function ɵɵclassMap(classes: {[className: string]: boolean|undefined|null}|string|undefined|
-                           null): void {
+export function ɵɵclassMap(classes: {[className: string]: boolean|undefined|null}|string|string[]|
+                           undefined|null): void {
+  if (ngDevMode && Array.isArray(classes) && classes.length > 0) {
+    // When a set of classes is represented by an array (e.g. `<div [class]="['a', 'b']">`),
+    // verify that all items in that array are non-empty strings.
+    for (let i = 0; i < classes.length; i++) {
+      const klass: string = classes[i];
+      assertString(
+          klass, `Expected class array item to have 'string' type, but got '${typeof klass}'.`);
+      assertNotEqual(
+          klass.trim().length, 0,
+          `Expected class array item to be a non-empty string (in ${JSON.stringify(classes)}).`);
+    }
+  }
   checkStylingMap(keyValueArraySet, classStringParser, classes, true);
 }
 
@@ -585,7 +597,8 @@ export function toStylingKeyValueArray(
   const unwrappedValue = unwrapSafeValue(value) as string | string[] | {[key: string]: any};
   if (Array.isArray(unwrappedValue)) {
     for (let i = 0; i < unwrappedValue.length; i++) {
-      keyValueArraySet(styleKeyValueArray, unwrappedValue[i], true);
+      ngDevMode && assertString(unwrappedValue[i], '\'unwrappedValue\' should be a string');
+      keyValueArraySet(styleKeyValueArray, unwrappedValue[i].trim(), true);
     }
   } else if (typeof unwrappedValue === 'object') {
     for (const key in unwrappedValue) {

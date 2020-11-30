@@ -3733,6 +3733,80 @@ describe('styling', () => {
       expect(fixture.nativeElement.textContent).toEqual('className = unbound');
     });
   });
+
+  onlyInIvy('[class] logic is slightly different in Ivy')
+      .describe('handling of invalid input', () => {
+        it('should throw if empty class names are present in `[class]` arrays', () => {
+          @Component({
+            selector: 'comp',
+            template: `<div [class]="['a', '']"></div>`,
+          })
+          class App {
+          }
+
+          TestBed.configureTestingModule({declarations: [App]});
+          expect(() => {
+            const fixture = TestBed.createComponent(App);
+            fixture.detectChanges();
+          }).toThrowError(/Expected class array item to be a non-empty string \(in \["a",""\]\)/)
+        });
+
+        it('should throw if empty class names are present in `[class]` arrays in host bindings',
+           () => {
+             @Component({
+               selector: 'comp',
+               template: '...',
+               host: {'[class]': `['a', '']`},
+             })
+             class App {
+             }
+
+             TestBed.configureTestingModule({declarations: [App]});
+             expect(() => {
+               const fixture = TestBed.createComponent(App);
+               fixture.detectChanges();
+             }).toThrowError(/Expected class array item to be a non-empty string \(in \["a",""\]\)/)
+           });
+
+        [true, false, 0, null, undefined, {}, []].forEach(input => {
+          it(`should throw if ${input} is used inside \`[class]\` arrays`, () => {
+            @Component({
+              selector: 'comp',
+              template: `<div [class]="[klass]"></div>`,
+            })
+            class App {
+              klass = input;
+            }
+
+            TestBed.configureTestingModule({declarations: [App]});
+            expect(() => {
+              const fixture = TestBed.createComponent(App);
+              fixture.detectChanges();
+            })
+                .toThrowError(new RegExp(
+                    `Expected class array item to have 'string' type, but got '${typeof input}'`));
+          });
+
+          it(`should throw if ${input} is used inside \`[class]\` arrays in host bindings`, () => {
+            @Component({
+              selector: 'comp',
+              template: '...',
+              host: {'[class]': '[klass]'},
+            })
+            class App {
+              klass = input;
+            }
+
+            TestBed.configureTestingModule({declarations: [App]});
+            expect(() => {
+              const fixture = TestBed.createComponent(App);
+              fixture.detectChanges();
+            })
+                .toThrowError(new RegExp(
+                    `Expected class array item to have 'string' type, but got '${typeof input}'`));
+          });
+        });
+      });
 });
 
 function assertStyleCounters(countForSet: number, countForRemove: number) {
