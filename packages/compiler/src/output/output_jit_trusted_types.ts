@@ -82,17 +82,6 @@ function getPolicy(): TrustedTypePolicy|null {
 }
 
 /**
- * Unsafely promote a string to a TrustedScript, falling back to strings when
- * Trusted Types are not available.
- * @security In particular, it must be assured that the provided string will
- * never cause an XSS vulnerability if used in a context that will be
- * interpreted and executed as a script by a browser, e.g. when calling eval.
- */
-function trustedScriptFromString(script: string): TrustedScript|string {
-  return getPolicy()?.createScript(script) || script;
-}
-
-/**
  * Unsafely call the Function constructor with the given string arguments. It
  * is only available in development mode, and should be stripped out of
  * production code.
@@ -118,10 +107,12 @@ export function newTrustedFunctionForJIT(...args: string[]): Function {
 ) { ${fnBody}
 })`;
 
+  const safeScript = getPolicy()?.createScript(body) || body;
+
   // Using eval directly confuses the compiler and prevents this module from
   // being stripped out of JS binaries even if not used. The global['eval']
   // indirection fixes that.
-  const fn = global['eval'](trustedScriptFromString(body) as string) as Function;
+  const fn = global['eval'](safeScript as string) as Function;
 
   // To completely mimic the behavior of calling "new Function", two more
   // things need to happen:
