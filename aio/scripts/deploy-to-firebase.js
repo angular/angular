@@ -155,22 +155,11 @@ function computeDeploymentsInfo(
   // If we get here, it means that the current branch is neither `master`, nor the RC or stable
   // branches. At this point, we may only deploy as `archive` and only if the following criteria are
   // met:
-  //   1. The current branch must have a major version that is lower than the stable major version.
-  //   2. The current branch must have the highest minor version among all branches with the same
+  //   1. The current branch must have the highest minor version among all branches with the same
   //      major version.
+  //   2. The current branch must have a major version that is lower than the stable major version.
 
-  // Do not deploy if it does not have a lower major version than stable.
-  const stableBranchMajorVersion = computeMajorVersion(stableBranch);
-  if (currentBranchMajorVersion >= stableBranchMajorVersion) {
-    return [
-      skipDeployment(
-          `Skipping deploy of branch "${currentBranch}" to Firebase.\n` +
-          'This branch has an equal or higher major version than the stable branch ' +
-          `("${stableBranch}").`),
-    ];
-  }
-
-  // Do not deploy if it is not the latest branch for the given major version.
+  // Do not deploy if it is not the branch with the highest minor for the given major version.
   const mostRecentMinorBranchForMajor = getMostRecentMinorBranch(currentBranchMajorVersion);
   if (currentBranch !== mostRecentMinorBranchForMajor) {
     return [
@@ -181,7 +170,18 @@ function computeDeploymentsInfo(
     ];
   }
 
-  // This is the latest minor version for a major that is less than the stable major version:
+  // Do not deploy if it does not have a lower major version than stable.
+  const stableBranchMajorVersion = computeMajorVersion(stableBranch);
+  if (currentBranchMajorVersion >= stableBranchMajorVersion) {
+    return [
+      skipDeployment(
+          `Skipping deploy of branch "${currentBranch}" to Firebase.\n` +
+          'This branch has an equal or higher major version than the stable branch ' +
+          `("${stableBranch}") and is not the most recent minor branch.`),
+    ];
+  }
+
+  // This is the highest minor version for a major that is lower than the stable major version:
   // Deploy as `archive`.
   return [deploymentInfoPerTarget.archive];
 }

@@ -215,7 +215,7 @@ describe('deploy-to-firebase:', () => {
         skipped: true,
         reason:
             'Skipping deploy of branch "2.1.x" to Firebase.\n' +
-            'This branch has an equal or higher major version than the stable branch ("2.2.x").',
+            'There is a more recent branch with the same major version: "2.4.x"',
       },
     ]);
   });
@@ -316,7 +316,7 @@ describe('deploy-to-firebase:', () => {
         skipped: true,
         reason:
             'Skipping deploy of branch "2.1.x" to Firebase.\n' +
-            'This branch has an equal or higher major version than the stable branch ("2.0.x").',
+            'There is a more recent branch with the same major version: "2.4.x"',
       },
     ]);
   });
@@ -334,7 +334,7 @@ describe('deploy-to-firebase:', () => {
         skipped: true,
         reason:
             'Skipping deploy of branch "4.3.x" to Firebase.\n' +
-            'This branch has an equal or higher major version than the stable branch ("2.4.x").',
+            'There is a more recent branch with the same major version: "4.4.x"',
       },
     ]);
   });
