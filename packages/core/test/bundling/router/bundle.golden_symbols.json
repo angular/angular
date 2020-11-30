@@ -1452,6 +1452,9 @@
     "name": "handleError"
   },
   {
+    "name": "hasEmptyPathConfig"
+  },
+  {
     "name": "hasParentInjector"
   },
   {
@@ -1536,13 +1539,13 @@
     "name": "isDirectiveHost"
   },
   {
-    "name": "isEmptyPathRedirect"
-  },
-  {
     "name": "isFunction"
   },
   {
     "name": "isFunction"
+  },
+  {
+    "name": "isImmediateMatch"
   },
   {
     "name": "isInCheckNoChangesMode"
@@ -1641,9 +1644,6 @@
     "name": "map"
   },
   {
-    "name": "mapChildrenIntoArray"
-  },
-  {
     "name": "markAsComponentHost"
   },
   {
@@ -1677,9 +1677,6 @@
     "name": "mergeMap"
   },
   {
-    "name": "mergeTrivialChildren"
-  },
-  {
     "name": "modules"
   },
   {
@@ -1701,6 +1698,9 @@
     "name": "navigationCancelingError"
   },
   {
+    "name": "newObservableError"
+  },
+  {
     "name": "nextBindingIndex"
   },
   {
@@ -1708,6 +1708,12 @@
   },
   {
     "name": "ngOnChangesSetInput"
+  },
+  {
+    "name": "noLeftoversInUrl"
+  },
+  {
+    "name": "noMatch"
   },
   {
     "name": "noMatch"
@@ -1833,6 +1839,9 @@
     "name": "saveNameToExportMap"
   },
   {
+    "name": "scan"
+  },
+  {
     "name": "scheduleArray"
   },
   {
@@ -1905,7 +1914,13 @@
     "name": "shouldSearchParent"
   },
   {
+    "name": "sortByMatchingOutlets"
+  },
+  {
     "name": "split"
+  },
+  {
+    "name": "squashSegmentGroup"
   },
   {
     "name": "standardizeConfig"
