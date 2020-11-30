@@ -12,7 +12,7 @@ import {GitClient} from '../../utils/git/index';
 import {loadAndValidateConfig} from '../merge/config';
 import {getBranchesFromTargetLabel, getTargetLabelFromPullRequest} from '../merge/target-label';
 
-export async function checkTargetBranchesForPr(prNumber: number, jsonOutput = false) {
+export async function getTargetBranchesForPr(prNumber: number) {
   /** The ng-dev configuration. */
   const config = getConfig();
   /** Repo owner and name for the github repository. */
@@ -38,14 +38,15 @@ export async function checkTargetBranchesForPr(prNumber: number, jsonOutput = fa
     return;
   }
   /** The target branches based on the target label and branch targetted in the Github UI. */
-  const targets = await getBranchesFromTargetLabel(targetLabel, githubTargetBranch);
+  return await getBranchesFromTargetLabel(targetLabel, githubTargetBranch);
+}
 
-  // When requested, print a json output to stdout, rather than using standard ng-dev logging.
-  if (jsonOutput) {
-    process.stdout.write(JSON.stringify(targets));
+
+export async function printTargetBranchesForPr(prNumber: number) {
+  const targets = await getTargetBranchesForPr(prNumber);
+  if (targets === undefined) {
     return;
   }
-
   info.group(`PR #${prNumber} will merge into:`);
   targets.forEach(target => info(`- ${target}`));
   info.groupEnd();

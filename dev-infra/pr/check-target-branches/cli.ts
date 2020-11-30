@@ -8,31 +8,24 @@
 
 import {Arguments, Argv, CommandModule} from 'yargs';
 
-import {checkTargetBranchesForPr} from './check-target-branches';
+import {printTargetBranchesForPr} from './check-target-branches';
 
 export interface CheckTargetBranchesOptions {
   pr: number;
-  json: boolean;
 }
 
 /** Builds the command. */
 function builder(yargs: Argv) {
-  return yargs
-      .positional('pr', {
-        description: 'The pull request number',
-        type: 'number',
-        demandOption: true,
-      })
-      .option('json', {
-        type: 'boolean',
-        default: false,
-        description: 'Print response as json',
-      });
+  return yargs.positional('pr', {
+    description: 'The pull request number',
+    type: 'number',
+    demandOption: true,
+  });
 }
 
 /** Handles the command. */
-async function handler({pr, json}: Arguments<CheckTargetBranchesOptions>) {
-  await checkTargetBranchesForPr(pr, json);
+async function handler({pr}: Arguments<CheckTargetBranchesOptions>) {
+  await printTargetBranchesForPr(pr);
 }
 
 /** yargs command module describing the command.  */
