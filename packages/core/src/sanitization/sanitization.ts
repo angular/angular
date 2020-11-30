@@ -10,9 +10,9 @@ import {getDocument} from '../render3/interfaces/document';
 import {SANITIZER} from '../render3/interfaces/view';
 import {getLView} from '../render3/state';
 import {renderStringify} from '../render3/util/stringify_utils';
-import {TrustedHTML, TrustedScript, TrustedScriptURL} from '../util/security/trusted_type_defs';
+import {global} from '../util/global';
+import {TrustedHTML, TrustedScript, TrustedScriptURL, TrustedTypePolicy, TrustedTypePolicyFactory} from '../util/security/trusted_type_defs';
 import {trustedHTMLFromString, trustedScriptURLFromString} from '../util/security/trusted_types';
-import {trustedHTMLFromStringBypass, trustedScriptFromStringBypass, trustedScriptURLFromStringBypass} from '../util/security/trusted_types_bypass';
 
 import {allowSanitizationBypassAndThrow, BypassType, unwrapSafeValue} from './bypass';
 import {_sanitizeHtml as _sanitizeHtml} from './html_sanitizer';
@@ -20,7 +20,40 @@ import {Sanitizer} from './sanitizer';
 import {SecurityContext} from './security';
 import {_sanitizeUrl as _sanitizeUrl} from './url_sanitizer';
 
+/**
+ * A Trusted Types policy for values that are not necessarily safe from
+ * Angular's point of view, e.g. values passed through a custom sanitizer or
+ * one of the bypassSecurityTrust* functions. null if Trusted Types are not
+ * enabled/supported, or undefined if the policy has not been created yet.
+ */
+let unsafeBypassPolicy: TrustedTypePolicy|null|undefined;
 
+/**
+ * Returns thea unsafe-bypass Trusted Types policy, or null if Trusted Types
+ * are not enabled/supported. The first call to this function will create the
+ * policy.
+ */
+function getUnsafeBypassPolicy(): TrustedTypePolicy|null {
+  if (unsafeBypassPolicy === undefined) {
+    unsafeBypassPolicy = null;
+    if (global.trustedTypes) {
+      try {
+        unsafeBypassPolicy = (global.trustedTypes as TrustedTypePolicyFactory)
+                                 .createPolicy('angular#unsafe-bypass', {
+                                   createHTML: (s: string) => s,
+                                   createScript: (s: string) => s,
+                                   createScriptURL: (s: string) => s,
+                                 });
+      } catch {
+        // trustedTypes.createPolicy throws if called with a name that is
+        // already registered, even in report-only mode. Until the API changes,
+        // catch the error not to break the applications functionally. In such
+        // cases, the code will fall back to using strings.
+      }
+    }
+  }
+  return unsafeBypassPolicy;
+}
 
 /**
  * An `html` sanitizer which converts untrusted `html` **string** into trusted string by removing
@@ -40,10 +73,12 @@ import {_sanitizeUrl as _sanitizeUrl} from './url_sanitizer';
 export function ɵɵsanitizeHtml(unsafeHtml: any): TrustedHTML|string {
   const sanitizer = getSanitizer();
   if (sanitizer) {
-    return trustedHTMLFromStringBypass(sanitizer.sanitize(SecurityContext.HTML, unsafeHtml) || '');
+    const value = sanitizer.sanitize(SecurityContext.HTML, unsafeHtml) || '';
+    return getUnsafeBypassPolicy()?.createHTML(value) || value;
   }
   if (allowSanitizationBypassAndThrow(unsafeHtml, BypassType.Html)) {
-    return trustedHTMLFromStringBypass(unwrapSafeValue(unsafeHtml));
+    const value = unwrapSafeValue(unsafeHtml);
+    return getUnsafeBypassPolicy()?.createHTML(value) || value;
   }
   return _sanitizeHtml(getDocument(), renderStringify(unsafeHtml));
 }
@@ -111,11 +146,12 @@ export function ɵɵsanitizeUrl(unsafeUrl: any): string {
 export function ɵɵsanitizeResourceUrl(unsafeResourceUrl: any): TrustedScriptURL|string {
   const sanitizer = getSanitizer();
   if (sanitizer) {
-    return trustedScriptURLFromStringBypass(
-        sanitizer.sanitize(SecurityContext.RESOURCE_URL, unsafeResourceUrl) || '');
+    const value = sanitizer.sanitize(SecurityContext.RESOURCE_URL, unsafeResourceUrl) || '';
+    return getUnsafeBypassPolicy()?.createScriptURL(value) || value;
   }
   if (allowSanitizationBypassAndThrow(unsafeResourceUrl, BypassType.ResourceUrl)) {
-    return trustedScriptURLFromStringBypass(unwrapSafeValue(unsafeResourceUrl));
+    const value = unwrapSafeValue(unsafeResourceUrl);
+    return getUnsafeBypassPolicy()?.createScriptURL(value) || value;
   }
   throw new Error('unsafe value used in a resource URL context (see https://g.co/ng/security#xss)');
 }
@@ -135,11 +171,12 @@ export function ɵɵsanitizeResourceUrl(unsafeResourceUrl: any): TrustedScriptUR
 export function ɵɵsanitizeScript(unsafeScript: any): TrustedScript|string {
   const sanitizer = getSanitizer();
   if (sanitizer) {
-    return trustedScriptFromStringBypass(
-        sanitizer.sanitize(SecurityContext.SCRIPT, unsafeScript) || '');
+    const value = sanitizer.sanitize(SecurityContext.SCRIPT, unsafeScript) || '';
+    return getUnsafeBypassPolicy()?.createScript(value) || value;
   }
   if (allowSanitizationBypassAndThrow(unsafeScript, BypassType.Script)) {
-    return trustedScriptFromStringBypass(unwrapSafeValue(unsafeScript));
+    const value = unwrapSafeValue(unsafeScript);
+    return getUnsafeBypassPolicy()?.createScript(value) || value;
   }
   throw new Error('unsafe value used in a script context');
 }
