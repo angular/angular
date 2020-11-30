@@ -30,13 +30,15 @@ if (require.main === module) {
     console.log(deploymentInfo.reason);
   } else {
     console.log(
-        `Git branch        : ${inputVars.currentBranch}\n` +
-        `Git commit        : ${inputVars.currentCommit}\n` +
-        `Build/deploy mode : ${deploymentInfo.deployEnv}\n` +
-        `Firebase project  : ${deploymentInfo.projectId}\n` +
-        `Firebase site     : ${deploymentInfo.siteId}\n` +
-        `Deployment URLs   : ${deploymentInfo.deployedUrl}\n` +
-        `                    https://${deploymentInfo.siteId}.web.app/`);
+        `Git branch          : ${inputVars.currentBranch}\n` +
+        `Git commit          : ${inputVars.currentCommit}\n` +
+        `Build/deploy mode   : ${deploymentInfo.deployEnv}\n` +
+        `Firebase project    : ${deploymentInfo.projectId}\n` +
+        `Firebase site       : ${deploymentInfo.siteId}\n` +
+        `Pre-deploy actions  : ${serializeActions(deploymentInfo.preDeployActions)}\n` +
+        `Post-deploy actions : ${serializeActions(deploymentInfo.postDeployActions)}\n` +
+        `Deployment URLs     : ${deploymentInfo.deployedUrl}\n` +
+        `                      https://${deploymentInfo.siteId}.web.app/`);
 
     if (!isDryRun) {
       deploy({...inputVars, ...deploymentInfo});
@@ -45,6 +47,22 @@ if (require.main === module) {
 }
 
 // Helpers
+function build({deployedUrl, deployEnv}) {
+  console.log('\n\n\n==== Build the AIO app. ====\n');
+  yarn(`build --configuration=${deployEnv} --progress=false`);
+
+  console.log('\n\n\n==== Add any mode-specific files into the AIO distribution. ====\n');
+  cp('-rf', `src/extra-files/${deployEnv}/.`, 'dist/');
+
+  console.log('\n\n\n==== Update opensearch descriptor for AIO with `deployedUrl`. ====\n');
+  yarn(`set-opensearch-url ${deployedUrl.replace(/[^/]$/, '$&/')}`);  // The URL must end with `/`.
+}
+
+function checkPayloadSize() {
+  console.log('\n\n\n==== Check payload size and upload the numbers to Firebase DB. ====\n');
+  yarn('payload-size');
+}
+
 function computeDeploymentInfo(
     {currentBranch, currentCommit, isPullRequest, repoName, repoOwner, stableBranch}) {
   // Do not deploy if we are running in a fork.
@@ -72,24 +90,32 @@ function computeDeploymentInfo(
       projectId: 'angular-io',
       siteId: 'next-angular-io-site',
       deployedUrl: 'https://next.angular.io/',
+      preDeployActions: [build, checkPayloadSize],
+      postDeployActions: [testPwaScore],
     },
     rc: {
       deployEnv: 'rc',
       projectId: 'angular-io',
       siteId: 'rc-angular-io-site',
       deployedUrl: 'https://rc.angular.io/',
+      preDeployActions: [build, checkPayloadSize],
+      postDeployActions: [testPwaScore],
     },
     stable: {
       deployEnv: 'stable',
       projectId: 'angular-io',
       siteId: `v${currentBranchMajorVersion}-angular-io-site`,
       deployedUrl: 'https://angular.io/',
+      preDeployActions: [build, checkPayloadSize],
+      postDeployActions: [testPwaScore],
     },
     archive: {
       deployEnv: 'archive',
       projectId: 'angular-io',
       siteId: `v${currentBranchMajorVersion}-angular-io-site`,
       deployedUrl: `https://v${currentBranchMajorVersion}.angular.io/`,
+      preDeployActions: [build, checkPayloadSize],
+      postDeployActions: [testPwaScore],
     },
   };
 
@@ -160,21 +186,20 @@ function computeMajorVersion(branchName) {
   return +branchName.split('.', 1)[0];
 }
 
-function deploy(
-    {currentCommit, deployedUrl, deployEnv, firebaseToken, minPwaScore, projectId, siteId}) {
+function deploy(data) {
+  const {
+    currentCommit,
+    firebaseToken,
+    postDeployActions,
+    preDeployActions,
+    projectId,
+    siteId,
+  } = data;
+
   cd(`${__dirname}/..`);
 
-  console.log('\n\n\n==== Build the AIO app. ====\n');
-  yarn(`build --configuration=${deployEnv} --progress=false`);
-
-  console.log('\n\n\n==== Add any mode-specific files into the AIO distribution. ====\n');
-  cp('-rf', `src/extra-files/${deployEnv}/.`, 'dist/');
-
-  console.log('\n\n\n==== Update opensearch descriptor for AIO with `deployedUrl`. ====\n');
-  yarn(`set-opensearch-url ${deployedUrl.replace(/[^/]$/, '$&/')}`);  // The URL must end with `/`.
-
-  console.log('\n\n\n==== Check payload size and upload the numbers to Firebase DB. ====\n');
-  yarn('payload-size');
+  console.log('\n\n\n==== Run pre-deploy actions. ====\n');
+  preDeployActions.forEach(fn => fn(data));
 
   console.log('\n\n\n==== Deploy AIO to Firebase hosting. ====\n');
   yarn(`firebase use "${projectId}" --token "${firebaseToken}"`);
@@ -183,8 +208,8 @@ function deploy(
       `firebase deploy --only hosting:aio --message "Commit: ${currentCommit}" --non-interactive ` +
       `--token "${firebaseToken}"`);
 
-  console.log('\n\n\n==== Run PWA-score tests. ====\n');
-  yarn(`test-pwa-score "${deployedUrl}" "${minPwaScore}"`);
+  console.log('\n\n\n==== Run post-deploy actions. ====\n');
+  postDeployActions.forEach(fn => fn(data));
 }
 
 function getRemoteRefs(refOrPattern, remote = NG_REMOTE_URL) {
@@ -195,8 +220,17 @@ function getLatestCommit(branchName, remote = undefined) {
   return getRemoteRefs(branchName, remote)[0].slice(0, 40);
 }
 
+function serializeActions(actions) {
+  return actions.map(fn => fn.name).join(', ');
+}
+
 function skipDeployment(reason) {
   return {reason, skipped: true};
+}
+
+function testPwaScore({deployedUrl, minPwaScore}) {
+  console.log('\n\n\n==== Run PWA-score tests. ====\n');
+  yarn(`test-pwa-score "${deployedUrl}" "${minPwaScore}"`);
 }
 
 function yarn(cmd) {
