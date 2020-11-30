@@ -297,7 +297,7 @@ function redirectToAngularIo() {
 function removeServiceWorker() {
   // Rename the SW manifest (`ngsw.json`). This will cause the ServiceWorker to unregister itself.
   // See https://angular.io/guide/service-worker-devops#fail-safe.
-  mv('dist/ngsw.json', 'dist/ngsw.json.bck');
+  mv('dist/ngsw.json', 'dist/ngsw.json.bak');
 }
 
 function serializeActions(actions) {
