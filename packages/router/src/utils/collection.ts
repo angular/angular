@@ -83,32 +83,6 @@ export function forEach<K, V>(map: {[key: string]: V}, callback: (v: V, k: strin
   }
 }
 
-export function waitForMap<A, B>(
-    obj: {[k: string]: A}, fn: (k: string, a: A) => Observable<B>): Observable<{[k: string]: B}> {
-  if (Object.keys(obj).length === 0) {
-    return of({});
-  }
-
-  const waitHead: Observable<B>[] = [];
-  const waitTail: Observable<B>[] = [];
-  const res: {[k: string]: B} = {};
-
-  forEach(obj, (a: A, k: string) => {
-    const mapped = fn(k, a).pipe(map((r: B) => res[k] = r));
-    if (k === PRIMARY_OUTLET) {
-      waitHead.push(mapped);
-    } else {
-      waitTail.push(mapped);
-    }
-  });
-
-  // Closure compiler has problem with using spread operator here. So we use "Array.concat".
-  // Note that we also need to cast the new promise because TypeScript cannot infer the type
-  // when calling the "of" function through "Function.apply"
-  return (of.apply(null, waitHead.concat(waitTail)) as Observable<Observable<B>>)
-      .pipe(concatAll(), lastValue(), map(() => res));
-}
-
 export function wrapIntoObservable<T>(value: T|Promise<T>|Observable<T>): Observable<T> {
   if (isObservable(value)) {
     return value;

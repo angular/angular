@@ -14,7 +14,7 @@ import {ActivatedRouteSnapshot, inheritedParamsDataResolve, ParamsInheritanceStr
 import {PRIMARY_OUTLET} from './shared';
 import {UrlSegment, UrlSegmentGroup, UrlTree} from './url_tree';
 import {last} from './utils/collection';
-import {getOutlet} from './utils/config';
+import {getOutlet, sortByMatchingOutlets} from './utils/config';
 import {isImmediateMatch, match, noLeftoversInUrl, split} from './utils/config_matching';
 import {TreeNode} from './utils/tree';
 
@@ -64,6 +64,8 @@ export class Recognizer {
       return null;
     }
 
+    // Use Object.freeze to prevent readers of the Router state from modifying it outside of a
+    // navigation, resulting in the router being out of sync with the browser.
     const root = new ActivatedRouteSnapshot(
         [], Object.freeze({}), Object.freeze({...this.urlTree.queryParams}), this.urlTree.fragment!,
         {}, PRIMARY_OUTLET, this.rootComponentType, null, this.urlTree.root, -1, {});
@@ -108,8 +110,7 @@ export class Recognizer {
       const child = segmentGroup.children[childOutlet];
       // Sort the config so that routes with outlets that match the one being activated appear
       // first, followed by routes for other outlets, which might match if they have an empty path.
-      const sortedConfig = config.filter(r => getOutlet(r) === childOutlet);
-      sortedConfig.push(...config.filter(r => getOutlet(r) !== childOutlet));
+      const sortedConfig = sortByMatchingOutlets(config, childOutlet);
       const outletChildren = this.processSegmentGroup(sortedConfig, child, childOutlet);
       if (outletChildren === null) {
         // Configs must match all segment children so because we did not find a match for this
@@ -182,6 +183,9 @@ export class Recognizer {
 
     const {segmentGroup, slicedSegments} = split(
         rawSegment, consumedSegments, rawSlicedSegments,
+        // Filter out routes with redirectTo because we are trying to create activated route
+        // snapshots and don't handle redirects here. That should have been done in
+        // `applyRedirects`.
         childConfig.filter(c => c.redirectTo === undefined), this.relativeLinkResolution);
 
     if (slicedSegments.length === 0 && segmentGroup.hasChildren()) {
@@ -234,6 +238,11 @@ function getChildConfig(route: Route): Route[] {
   return [];
 }
 
+function hasEmptyPathConfig(node: TreeNode<ActivatedRouteSnapshot>) {
+  const config = node.value.routeConfig;
+  return config && config.path === '' && config.redirectTo === undefined;
+}
+
 /**
  * Finds `TreeNode`s with matching empty path route configs and merges them into `TreeNode` with the
  * children from each duplicate. This is necessary because different outlets can match a single
@@ -243,13 +252,8 @@ function mergeEmptyPathMatches(nodes: Array<TreeNode<ActivatedRouteSnapshot>>):
     Array<TreeNode<ActivatedRouteSnapshot>> {
   const result: Array<TreeNode<ActivatedRouteSnapshot>> = [];
 
-  function hasEmptyConfig(node: TreeNode<ActivatedRouteSnapshot>) {
-    const config = node.value.routeConfig;
-    return config && config.path === '' && config.redirectTo === undefined;
-  }
-
   for (const node of nodes) {
-    if (!hasEmptyConfig(node)) {
+    if (!hasEmptyPathConfig(node)) {
       result.push(node);
       continue;
     }
