@@ -155,8 +155,11 @@ export function ɵɵsanitizeScript(unsafeScript: any): TrustedScript|string {
  *
  * @codeGenApi
  */
-export function ɵɵtrustConstantHtml(html: string): TrustedHTML|string {
-  return trustedHTMLFromString(html);
+export function ɵɵtrustConstantHtml(html: TemplateStringsArray): TrustedHTML|string {
+  if (html.length !== 1) {
+    throw new Error('unexpected interpolation in trusted HTML constant');
+  }
+  return trustedHTMLFromString(html[0]);
 }
 
 /**
@@ -170,8 +173,11 @@ export function ɵɵtrustConstantHtml(html: string): TrustedHTML|string {
  *
  * @codeGenApi
  */
-export function ɵɵtrustConstantResourceUrl(url: string): TrustedScriptURL|string {
-  return trustedScriptURLFromString(url);
+export function ɵɵtrustConstantResourceUrl(url: TemplateStringsArray): TrustedScriptURL|string {
+  if (url.length !== 1) {
+    throw new Error('unexpected interpolation in trusted URL constant');
+  }
+  return trustedScriptURLFromString(url[0]);
 }
 
 /**
