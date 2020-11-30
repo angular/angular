@@ -123,20 +123,17 @@ export function standardizeConfig(r: Route): Route {
   return c;
 }
 
-/** Returns of `Map` of outlet names to the `Route`s for that outlet. */
-export function groupRoutesByOutlet(routes: Route[]): Map<string, Route[]> {
-  return routes.reduce((map, route) => {
-    const routeOutlet = getOutlet(route);
-    if (map.has(routeOutlet)) {
-      map.get(routeOutlet)!.push(route);
-    } else {
-      map.set(routeOutlet, [route]);
-    }
-    return map;
-  }, new Map<string, Route[]>());
-}
-
 /** Returns the `route.outlet` or PRIMARY_OUTLET if none exists. */
 export function getOutlet(route: Route): string {
   return route.outlet || PRIMARY_OUTLET;
+}
+
+/**
+ * Sorts the `routes` such that the ones with an outlet matching `outletName` come first.
+ * The order of the configs is otherwise preserved.
+ */
+export function sortByMatchingOutlets(routes: Routes, outletName: string): Routes {
+  const sortedConfig = routes.filter(r => getOutlet(r) === outletName);
+  sortedConfig.push(...routes.filter(r => getOutlet(r) !== outletName));
+  return sortedConfig;
 }

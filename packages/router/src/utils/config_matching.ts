@@ -21,7 +21,7 @@ export interface MatchResult {
   positionalParamSegments: {[k: string]: UrlSegment};
 }
 
-const noMatch = {
+const noMatch: MatchResult = {
   matched: false,
   consumedSegments: [],
   lastChild: 0,
@@ -183,9 +183,8 @@ export function isImmediateMatch(
   }
   if (route.path === '**') {
     return true;
-  } else {
-    return match(rawSegment, route, segments).matched;
   }
+  return match(rawSegment, route, segments).matched;
 }
 
 export function noLeftoversInUrl(

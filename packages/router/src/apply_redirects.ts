@@ -8,7 +8,7 @@
 
 import {Injector, NgModuleRef} from '@angular/core';
 import {EmptyError, from, Observable, Observer, of} from 'rxjs';
-import {catchError, combineAll, concatMap, first, map, mergeMap, tap} from 'rxjs/operators';
+import {catchError, concatMap, first, last, map, mergeMap, scan, tap} from 'rxjs/operators';
 
 import {LoadedRouterConfig, Route, Routes} from './config';
 import {CanLoadFn} from './interfaces';
@@ -16,9 +16,9 @@ import {prioritizedGuardValue} from './operators/prioritized_guard_value';
 import {RouterConfigLoader} from './router_config_loader';
 import {navigationCancelingError, Params, PRIMARY_OUTLET} from './shared';
 import {UrlSegment, UrlSegmentGroup, UrlSerializer, UrlTree} from './url_tree';
-import {forEach, waitForMap, wrapIntoObservable} from './utils/collection';
-import {getOutlet, groupRoutesByOutlet} from './utils/config';
-import {match, noLeftoversInUrl, split} from './utils/config_matching';
+import {forEach, wrapIntoObservable} from './utils/collection';
+import {getOutlet, sortByMatchingOutlets} from './utils/config';
+import {isImmediateMatch, match, noLeftoversInUrl, split} from './utils/config_matching';
 import {isCanLoad, isFunction, isUrlTree} from './utils/type_guards';
 
 class NoMatch {
@@ -78,8 +78,17 @@ class ApplyRedirects {
   }
 
   apply(): Observable<UrlTree> {
+    const splitGroup = split(this.urlTree.root, [], [], this.config).segmentGroup;
+    // TODO(atscott): creating a new segment removes the _sourceSegment _segmentIndexShift, which is
+    // only necessary to prevent failures in tests which assert exact object matches. The `split` is
+    // now shared between `applyRedirects` and `recognize` but only the `recognize` step needs these
+    // properties. Before the implementations were merged, the `applyRedirects` would not assign
+    // them. We should be able to remove this logic as a "breaking change" but should do some more
+    // investigation into the failures first.
+    const rootSegmentGroup = new UrlSegmentGroup(splitGroup.segments, splitGroup.children);
+
     const expanded$ =
-        this.expandSegmentGroup(this.ngModule, this.config, this.urlTree.root, PRIMARY_OUTLET);
+        this.expandSegmentGroup(this.ngModule, this.config, rootSegmentGroup, PRIMARY_OUTLET);
     const urlTrees$ = expanded$.pipe(map((rootSegmentGroup: UrlSegmentGroup) => {
       return this.createUrlTree(
           squashSegmentGroup(rootSegmentGroup), this.urlTree.queryParams, this.urlTree.fragment!);
@@ -143,74 +152,73 @@ class ApplyRedirects {
   private expandChildren(
       ngModule: NgModuleRef<any>, routes: Route[],
       segmentGroup: UrlSegmentGroup): Observable<{[name: string]: UrlSegmentGroup}> {
-    return waitForMap(
-        segmentGroup.children,
-        (childOutlet, child) => this.expandSegmentGroup(ngModule, routes, child, childOutlet));
+    // Expand outlets one at a time, starting with the primary outlet. We need to do it this way
+    // because an absolute redirect from the primary outlet takes precedence.
+    const childOutlets: string[] = [];
+    for (const child of Object.keys(segmentGroup.children)) {
+      if (child === 'primary') {
+        childOutlets.unshift(child);
+      } else {
+        childOutlets.push(child);
+      }
+    }
+
+    return from(childOutlets)
+        .pipe(
+            concatMap(childOutlet => {
+              const child = segmentGroup.children[childOutlet];
+              // Sort the routes so routes with outlets that match the the segment appear
+              // first, followed by routes for other outlets, which might match if they have an
+              // empty path.
+              const sortedRoutes = sortByMatchingOutlets(routes, childOutlet);
+              return this.expandSegmentGroup(ngModule, sortedRoutes, child, childOutlet)
+                  .pipe(map(s => ({segment: s, outlet: childOutlet})));
+            }),
+            scan(
+                (children, expandedChild) => {
+                  children[expandedChild.outlet] = expandedChild.segment;
+                  return children;
+                },
+                {} as {[outlet: string]: UrlSegmentGroup}),
+            last(),
+        );
   }
 
   private expandSegment(
       ngModule: NgModuleRef<any>, segmentGroup: UrlSegmentGroup, routes: Route[],
       segments: UrlSegment[], outlet: string,
       allowRedirects: boolean): Observable<UrlSegmentGroup> {
-    // We need to expand each outlet group independently to ensure that we not only load modules
-    // for routes matching the given `outlet`, but also those which will be activated because
-    // their path is empty string. This can result in multiple outlets being activated at once.
-    const routesByOutlet: Map<string, Route[]> = groupRoutesByOutlet(routes);
-    if (!routesByOutlet.has(outlet)) {
-      routesByOutlet.set(outlet, []);
-    }
-
-    const expandRoutes = (routes: Route[]) => {
-      return from(routes).pipe(
-          concatMap((r: Route) => {
-            const expanded$ = this.expandSegmentAgainstRoute(
-                ngModule, segmentGroup, routes, r, segments, outlet, allowRedirects);
-            return expanded$.pipe(catchError(e => {
-              if (e instanceof NoMatch) {
-                return of(null);
-              }
-              throw e;
-            }));
-          }),
-          first((s: UrlSegmentGroup|null): s is UrlSegmentGroup => s !== null),
-          catchError(e => {
-            if (e instanceof EmptyError || e.name === 'EmptyError') {
-              if (noLeftoversInUrl(segmentGroup, segments, outlet)) {
-                return of(new UrlSegmentGroup([], {}));
-              }
-              throw new NoMatch(segmentGroup);
+    return from(routes).pipe(
+        concatMap((r: any) => {
+          const expanded$ = this.expandSegmentAgainstRoute(
+              ngModule, segmentGroup, routes, r, segments, outlet, allowRedirects);
+          return expanded$.pipe(catchError((e: any) => {
+            if (e instanceof NoMatch) {
+              return of(null);
             }
             throw e;
-          }),
-      );
-    };
-
-    const expansions = Array.from(routesByOutlet.entries()).map(([routeOutlet, routes]) => {
-      const expanded = expandRoutes(routes);
-      // Map all results from outlets we aren't activating to `null` so they can be ignored later
-      return routeOutlet === outlet ? expanded :
-                                      expanded.pipe(map(() => null), catchError(() => of(null)));
-    });
-    return from(expansions)
-        .pipe(
-            combineAll(),
-            first(),
-            // Return only the expansion for the route outlet we are trying to activate.
-            map(results => results.find(result => result !== null)!),
-        );
+          }));
+        }),
+        first((s): s is UrlSegmentGroup => !!s), catchError((e: any, _: any) => {
+          if (e instanceof EmptyError || e.name === 'EmptyError') {
+            if (noLeftoversInUrl(segmentGroup, segments, outlet)) {
+              return of(new UrlSegmentGroup([], {}));
+            }
+            throw new NoMatch(segmentGroup);
+          }
+          throw e;
+        }));
   }
 
   private expandSegmentAgainstRoute(
       ngModule: NgModuleRef<any>, segmentGroup: UrlSegmentGroup, routes: Route[], route: Route,
       paths: UrlSegment[], outlet: string, allowRedirects: boolean): Observable<UrlSegmentGroup> {
-    // Empty string segments are special because multiple outlets can match a single path, i.e.
-    // `[{path: '', component: B}, {path: '', loadChildren: () => {}, outlet: "about"}]`
-    if (getOutlet(route) !== outlet && route.path !== '') {
+    if (!isImmediateMatch(route, segmentGroup, paths, outlet)) {
       return noMatch(segmentGroup);
     }
 
     if (route.redirectTo === undefined) {
-      return this.matchSegmentAgainstRoute(ngModule, segmentGroup, route, paths);
+      return this.matchSegmentAgainstRoute(ngModule, segmentGroup, route, paths, outlet);
     }
 
     if (allowRedirects && this.allowRedirects) {
@@ -269,7 +277,7 @@ class ApplyRedirects {
 
   private matchSegmentAgainstRoute(
       ngModule: NgModuleRef<any>, rawSegmentGroup: UrlSegmentGroup, route: Route,
-      segments: UrlSegment[]): Observable<UrlSegmentGroup> {
+      segments: UrlSegment[], outlet: string): Observable<UrlSegmentGroup> {
     if (route.path === '**') {
       if (route.loadChildren) {
         return this.configLoader.load(ngModule.injector, route)
@@ -292,16 +300,11 @@ class ApplyRedirects {
       const childModule = routerConfig.module;
       const childConfig = routerConfig.routes;
 
-      const {segmentGroup, slicedSegments} =
+      const {segmentGroup: splitSegmentGroup, slicedSegments} =
           split(rawSegmentGroup, consumedSegments, rawSlicedSegments, childConfig);
-      // TODO(atscott): clearing the source segment and segment index shift is only necessary to
-      // prevent failures in tests which assert exact object matches. The `split` is now shared
-      // between applyRedirects and recognize and only the `recognize` step needs these properties.
-      // Before the implementations were merged, the applyRedirects would not assign them.
-      // We should be able to remove this logic as a "breaking change" but should do some more
-      // investigation into the failures first.
-      segmentGroup._sourceSegment = undefined;
-      segmentGroup._segmentIndexShift = undefined;
+      // See comment on the other call to `split` about why this is necessary.
+      const segmentGroup =
+          new UrlSegmentGroup(splitSegmentGroup.segments, splitSegmentGroup.children);
 
       if (slicedSegments.length === 0 && segmentGroup.hasChildren()) {
         const expanded$ = this.expandChildren(childModule, childConfig, segmentGroup);
@@ -313,8 +316,10 @@ class ApplyRedirects {
         return of(new UrlSegmentGroup(consumedSegments, {}));
       }
 
+      const matchedOnOutlet = getOutlet(route) === outlet;
       const expanded$ = this.expandSegment(
-          childModule, segmentGroup, childConfig, slicedSegments, PRIMARY_OUTLET, true);
+          childModule, segmentGroup, childConfig, slicedSegments,
+          matchedOnOutlet ? PRIMARY_OUTLET : outlet, true);
       return expanded$.pipe(
           map((cs: UrlSegmentGroup) =>
                   new UrlSegmentGroup(consumedSegments.concat(cs.segments), cs.children)));
@@ -472,7 +477,6 @@ class ApplyRedirects {
     return redirectToUrlSegment;
   }
 }
-
 
 /**
  * When possible, merges the primary outlet child into the parent `UrlSegmentGroup`.

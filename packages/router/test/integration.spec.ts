@@ -1095,6 +1095,22 @@ describe('Integration', () => {
        expect(fixture.nativeElement).toHaveText('team 22 [ user victor, right: simple ]');
      })));
 
+  it('should support secondary routes as child of empty path parent',
+     fakeAsync(inject([Router], (router: Router) => {
+       const fixture = createRoot(router, RootCmp);
+
+       router.resetConfig([{
+         path: '',
+         component: TeamCmp,
+         children: [{path: 'simple', component: SimpleCmp, outlet: 'right'}]
+       }]);
+
+       router.navigateByUrl('/(right:simple)');
+       advance(fixture);
+
+       expect(fixture.nativeElement).toHaveText('team  [ , right: simple ]');
+     })));
+
   it('should deactivate outlets', fakeAsync(inject([Router], (router: Router) => {
        const fixture = createRoot(router, RootCmp);
 
@@ -1688,13 +1704,14 @@ describe('Integration', () => {
            data: {one: 1},
            resolve: {two: 'resolveTwo'},
            children: [
-             {path: '', data: {three: 3}, resolve: {four: 'resolveFour'}, component: RouteCmp}, {
+             {path: '', data: {three: 3}, resolve: {four: 'resolveFour'}, component: RouteCmp},
+             {
                path: '',
                data: {five: 5},
                resolve: {six: 'resolveSix'},
                component: RouteCmp,
                outlet: 'right'
-             }
+             },
            ]
          }]);
 
