@@ -120,6 +120,13 @@ export function create(info: tss.server.PluginCreateInfo): tss.LanguageService {
     return undefined;
   }
 
+  function findRenameLocations(
+      fileName: string, position: number, findInStrings: boolean, findInComments: boolean,
+      providePrefixAndSuffixTextForRename?: boolean): readonly ts.RenameLocation[]|undefined {
+    // not implemented in VE Language Service
+    return undefined;
+  }
+
   return {
     // First clone the original TS language service
     ...tsLS,
@@ -131,5 +138,6 @@ export function create(info: tss.server.PluginCreateInfo): tss.LanguageService {
     getDefinitionAndBoundSpan,
     getTypeDefinitionAtPosition,
     getReferencesAtPosition,
+    findRenameLocations,
   };
 }
