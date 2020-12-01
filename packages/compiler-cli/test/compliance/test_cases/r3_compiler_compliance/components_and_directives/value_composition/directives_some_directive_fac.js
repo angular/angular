@@ -1,0 +1,1 @@
+SomeDirective.ɵfac = function SomeDirective_Factory(t) {return new (t || SomeDirective)(); };

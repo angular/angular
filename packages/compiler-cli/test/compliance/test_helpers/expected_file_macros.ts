@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AttributeMarker} from '@angular/compiler/src/core';
+import {AttributeMarker, SelectorFlags} from '@angular/compiler/src/core';
 import {i18nIcuMsg, i18nMsg, i18nMsgWithPostprocess, Placeholder} from './i18n_helpers';
 
 const EXPECTED_FILE_MACROS: [RegExp, (...args: string[]) => string][] = [
@@ -32,6 +32,9 @@ const EXPECTED_FILE_MACROS: [RegExp, (...args: string[]) => string][] = [
     /__AttributeMarker\.([^_]+)__/g,
     (_match, member) => getAttributeMarker(member),
   ],
+
+  // E.g. `__SelectorFlags.ELEMENT__`
+  flagUnion(/__SelectorFlags\.([^_]+)__/, (_match, member) => getSelectorFlag(member)),
 ];
 
 /**
@@ -89,6 +92,21 @@ function getAttributeMarker(member: string): string {
   return `${marker}`;
 }
 
+const SelectorFlagsMap: Record<string, SelectorFlags> = {
+  NOT: SelectorFlags.NOT,
+  ATTRIBUTE: SelectorFlags.ATTRIBUTE,
+  ELEMENT: SelectorFlags.ELEMENT,
+  CLASS: SelectorFlags.CLASS,
+};
+
+function getSelectorFlag(member: string): number {
+  const marker = SelectorFlagsMap[member];
+  if (typeof marker !== 'number') {
+    throw new Error('Unknown SelectorFlag: ' + member);
+  }
+  return marker;
+}
+
 function stringParam() {
   return /'([^']*?[^\\])'/;
 }
@@ -104,4 +122,25 @@ function macroFn(fnName: RegExp, ...args: RegExp[]): RegExp {
   return new RegExp(
       ws + fnName.source + '\\(' + args.map(r => `${ws}${r.source}${ws}`).join(',') + '\\)' + ws,
       'g');
+}
+
+/**
+ * Creates a macro to replace a union of flags with its numeric constant value.
+ *
+ * @param pattern The regex to match a single occurrence of the flag.
+ * @param getFlagValue A function to extract the numeric flag value from the pattern.
+ */
+function flagUnion(pattern: RegExp, getFlagValue: (...match: string[]) => number):
+    typeof EXPECTED_FILE_MACROS[number] {
+  return [
+    // Match at least one occurrence of the pattern, optionally followed by more occurrences
+    // separated by a pipe.
+    new RegExp(pattern.source + '(?:\s*\\\|\s*' + pattern.source + ')*', 'g'),
+    (match: string) => {
+      // Replace all matches with the union of the individually matched flags.
+      return String(match.split('|')
+                        .map(flag => getFlagValue(...flag.trim().match(pattern)!))
+                        .reduce((accumulator, flagValue) => accumulator | flagValue, 0));
+    },
+  ];
 }
