@@ -804,7 +804,6 @@ export class ApplicationRef {
 
   /** @internal */
   ngOnDestroy() {
-    // TODO(alxhub): Dispose of the NgZone.
     this._views.slice().forEach((view) => view.destroy());
     this._onMicrotaskEmptySubscription.unsubscribe();
   }
