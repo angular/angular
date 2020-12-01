@@ -106,3 +106,7 @@ export class NgZone {}
 export interface PipeTransform {
   transform(value: any, ...args: any[]): any;
 }
+
+export interface OnDestroy {
+  ngOnDestroy(): void;
+}
