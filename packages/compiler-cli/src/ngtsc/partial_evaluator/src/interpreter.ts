@@ -220,6 +220,15 @@ export class StaticInterpreter {
       if (node.originalKeywordKind === ts.SyntaxKind.UndefinedKeyword) {
         return undefined;
       } else {
+        // Check if the symbol here is imported.
+        if (this.dependencyTracker !== null && this.host.getImportOfIdentifier(node) !== null) {
+          // It was, but no declaration for the node could be found. This means that the dependency
+          // graph for the current file cannot be properly updated to account for this (broken)
+          // import. Instead, the originating file is reported as failing dependency analysis,
+          // ensuring that future compilations will always attempt to re-resolve the previously
+          // broken identifier.
+          this.dependencyTracker.recordDependencyAnalysisFailure(context.originatingFile);
+        }
         return DynamicValue.fromUnknownIdentifier(node);
       }
     }

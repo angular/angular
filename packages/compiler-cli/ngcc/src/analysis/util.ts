@@ -18,6 +18,7 @@ class NoopDependencyTracker implements DependencyTracker {
   addResourceDependency(): void {}
   addTransitiveDependency(): void {}
   addTransitiveResources(): void {}
+  recordDependencyAnalysisFailure(): void {}
 }
 
 export const NOOP_DEPENDENCY_TRACKER: DependencyTracker = new NoopDependencyTracker();
