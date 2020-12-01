@@ -55,8 +55,8 @@ export interface TemplateOverwriteResult {
 
 export class LanguageServiceTestEnvironment {
   private constructor(
-      private tsLS: ts.LanguageService, readonly ngLS: LanguageService,
-      readonly host: MockServerHost) {}
+      readonly tsLS: ts.LanguageService, readonly ngLS: LanguageService,
+      readonly projectService: ts.server.ProjectService, readonly host: MockServerHost) {}
 
   static setup(files: TestFile[], options: TestableOptions = {}): LanguageServiceTestEnvironment {
     const fs = getFileSystem();
@@ -106,7 +106,7 @@ export class LanguageServiceTestEnvironment {
     const tsLS = project.getLanguageService();
 
     const ngLS = new LanguageService(project, tsLS);
-    return new LanguageServiceTestEnvironment(tsLS, ngLS, host);
+    return new LanguageServiceTestEnvironment(tsLS, ngLS, projectService, host);
   }
 
   getClass(fileName: AbsoluteFsPath, className: string): ts.ClassDeclaration {
@@ -134,6 +134,17 @@ export class LanguageServiceTestEnvironment {
 
     const {nodes} = templateTypeChecker.overrideComponentTemplate(component, text);
     return {cursor, nodes, component, text};
+  }
+
+  updateFile(fileName: AbsoluteFsPath, contents: string): void {
+    const scriptInfo = this.projectService.getScriptInfo(fileName);
+    if (scriptInfo === undefined) {
+      throw new Error(`Could not find a file named ${fileName}`);
+    }
+
+    // Get the current contents to find the length
+    const len = scriptInfo.getSnapshot().getLength();
+    scriptInfo.editContent(0, len, contents);
   }
 
   expectNoSourceDiagnostics(): void {
