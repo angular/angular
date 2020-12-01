@@ -945,19 +945,16 @@ A TypeScript-like syntax that Angular evaluates within a [data binding](#data-bi
 
 Read about how to write template expressions in the [template expressions](guide/interpolation#template-expressions) section of the [Interpolation](guide/interpolation) guide.
 
-{@a template-input-variables}
+{@a template-input-variable}
 
 ## template input variable
 
 A _template input variable_ is a variable whose value you can reference _within_ a single instance of the template.
-It is preceded by the keyword `let` and used to provide an input in the template of a [structural directive](guide/structural-directives) (this would be the template of the HTML tag or component that the structural directive is attached to).
+You declare a _template input variable_ using the `let` keyword (`let hero`). 
 
-You declare a _template input variable_ using the `let` keyword (`let hero`).
+It is used to provide an input in the template of a [structural directive](guide/structural-directives). This would be the template of the HTML tag or component that the structural directive is attached to. This template also defines the boundaries of the scope of the _template input variable_: you may reuse the same variable name again in the definition of other structural directives, as long as they have no overlap with the template of the initial one.
 
-You can use the same variable name again in the definition of other structural directives.
-
-Template _input_ and [_reference_](#template-reference-variable) variable names have their own namespaces. The `hero` in `let hero` is never the same
-variable as the `hero` declared as `#hero`.
+Note: template _input_ and [_reference_](#template-reference-variable) variable names have separate namespaces. The `hero` in `let hero` is never the same variable as the `hero` declared as `#hero`.
 
 Read more about _template input variable_ in the [Template input variables](guide/built-in-directives#template-input-variables) section of the [Built-in directives](guide/built-in-directives) guide.
 
