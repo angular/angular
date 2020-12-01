@@ -190,7 +190,7 @@ export class HttpClient {
    * @param url     The endpoint URL.
    * @param options The HTTP options to send with the request.
    *
-   * @return An `Observable` of of all `HttpEvent`s for the request,
+   * @return An `Observable` of all `HttpEvent`s for the request,
    * with the response body of type `Blob`.
    */
   request(method: string, url: string, options: {
@@ -209,7 +209,7 @@ export class HttpClient {
    * @param url     The endpoint URL.
    * @param options The HTTP options to send with the request.
    *
-   * @return An `Observable` of all `HttpEvent`s for the reques,
+   * @return An `Observable` of all `HttpEvent`s for the request,
    * with the response body of type string.
    */
   request(method: string, url: string, options: {
@@ -1166,7 +1166,7 @@ export class HttpClient {
    * @param url     The endpoint URL.
    * @param options The HTTP options to send with the request.
    *
-   * @return An `Observable` of tall `HttpEvent`s for the request,
+   * @return An `Observable` of all `HttpEvent`s for the request,
    * with the response body as an `ArrayBuffer`.
    */
   head(url: string, options: {
@@ -1200,7 +1200,7 @@ export class HttpClient {
    * @param url     The endpoint URL.
    * @param options The HTTP options to send with the request.
    *
-   * @return An `Observable` of all HttpEvent for the request, with the response body of type
+   * @return An `Observable` of all `HttpEvent` for the request, with the response body of type
    * string.
    */
   head(url: string, options: {
@@ -1232,8 +1232,8 @@ export class HttpClient {
    * Constructs a `HEAD` request that interprets the body as a JSON object and
    * returns the full event stream.
    *
-   * @return An `Observable` of all the `HttpEvent`s for the request
-   * , with a response body in the requested type.
+   * @return An `Observable` of all the `HttpEvent`s for the request,
+   * with a response body in the requested type.
    *
    * @param url     The endpoint URL.
    * @param options The HTTP options to send with the request.
@@ -2403,7 +2403,7 @@ export class HttpClient {
    * @param body The resources to add/update.
    * @param options HTTP options
    *
-   * @return An `Observable` of all HttpEvent for the request, with a response body
+   * @return An `Observable` of all `HttpEvent` for the request, with a response body
    * of type string.
    */
   put(url: string, body: any|null, options: {
