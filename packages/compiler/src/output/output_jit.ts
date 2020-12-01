@@ -8,11 +8,86 @@
 
 import {identifierName} from '../compile_metadata';
 import {CompileReflector} from '../compile_reflector';
+import {TrustedTypePolicy, TrustedTypePolicyFactory} from '../jit/trusted_type_defs';
+import {global} from '../util';
 
 import {EmitterVisitorContext} from './abstract_emitter';
 import {AbstractJsEmitterVisitor} from './abstract_js_emitter';
 import * as o from './output_ast';
-import {newTrustedFunctionForJIT} from './output_jit_trusted_types';
+
+/**
+ * A Trusted Types policy for evaluating arbitrary code in the JIT compiler.
+ * null if Trusted Types are not enabled/supported, or undefined if the policy
+ * has not been created yet.
+ */
+let unsafeJitPolicy: TrustedTypePolicy|null|undefined;
+
+/**
+ * Returns the Trusted Types policy, or null if Trusted Types are not
+ * enabled/supported. The first call to this function will create the policy.
+ */
+function getUnsafeJitPolicy(): TrustedTypePolicy|null {
+  if (unsafeJitPolicy === undefined) {
+    unsafeJitPolicy = null;
+    if (global.trustedTypes) {
+      try {
+        unsafeJitPolicy =
+            (global.trustedTypes as TrustedTypePolicyFactory).createPolicy('angular#unsafe-jit', {
+              createScript: (s: string) => s,
+            });
+      } catch {
+        // trustedTypes.createPolicy throws if called with a name that is
+        // already registered, even in report-only mode. Until the API changes,
+        // catch the error not to break the applications functionally. In such
+        // cases, the code will fall back to using strings.
+      }
+    }
+  }
+  return unsafeJitPolicy;
+}
+
+/**
+ * Unsafely call the Function constructor with the given string arguments.
+ * @security This is a security-sensitive function; any use of this function
+ * must go through security review. In particular, it must be assured that it
+ * is only called from the JIT compiler, as use in other code can lead to XSS
+ * vulnerabilities.
+ */
+function newTrustedFunction(...args: string[]): Function {
+  if (!global.trustedTypes) {
+    // In environments that don't support Trusted Types, fall back to the most
+    // straightforward implementation:
+    return new Function(...args);
+  }
+
+  // Chrome currently does not support passing TrustedScript to the Function
+  // constructor. The following implements the workaround proposed on the page
+  // below, where the Chromium bug is also referenced:
+  // https://github.com/w3c/webappsec-trusted-types/wiki/Trusted-Types-for-function-constructor
+  const fnArgs = args.slice(0, -1).join(',');
+  const fnBody = args.pop()!.toString();
+  const body = `(function anonymous(${fnArgs}
+) { ${fnBody}
+})`;
+
+  const safeScript = getUnsafeJitPolicy()?.createScript(body) || body;
+
+  // Using eval directly confuses the compiler and prevents this module from
+  // being stripped out of JS binaries even if not used. The global['eval']
+  // indirection fixes that.
+  const fn = global['eval'](safeScript as string) as Function;
+
+  // To completely mimic the behavior of calling "new Function", two more
+  // things need to happen:
+  // 1. Stringifying the resulting function should return its source code
+  fn.toString = () => body;
+  // 2. When calling the resulting function, `this` should refer to `global`
+  return fn.bind(global);
+
+  // When Trusted Types support in Function constructors is widely available,
+  // the implementation of this function can be simplified to:
+  // return new Function(...args.map(a => trustedScriptFromString(a)));
+}
 
 /**
  * A helper class to manage the evaluation of JIT generated code.
@@ -70,11 +145,11 @@ export class JitEvaluator {
       // function anonymous(a,b,c
       // /**/) { ... }```
       // We don't want to hard code this fact, so we auto detect it via an empty function first.
-      const emptyFn = newTrustedFunctionForJIT(...fnArgNames.concat('return null;')).toString();
+      const emptyFn = newTrustedFunction(...fnArgNames.concat('return null;')).toString();
       const headerLines = emptyFn.slice(0, emptyFn.indexOf('return null;')).split('\n').length - 1;
       fnBody += `\n${ctx.toSourceMapGenerator(sourceUrl, headerLines).toJsComment()}`;
     }
-    const fn = newTrustedFunctionForJIT(...fnArgNames.concat(fnBody));
+    const fn = newTrustedFunction(...fnArgNames.concat(fnBody));
     return this.executeFunction(fn, fnArgValues);
   }
 
