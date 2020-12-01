@@ -299,6 +299,9 @@ The functions created with the locator methods described above all return `TestE
 | `getDimensions(): Promise<ElementDimensions>` | Gets the dimensions of the element. |
 | `getProperty(name: string): Promise<any>` | Gets the value of the given JS property for the element. |
 | `matchesSelector(selector: string): Promise<boolean>` | Checks whether the element matches the given CSS selector. |
+| `setInputValue(value: string): Promise<void>;` | Sets the value of a property of an input. |
+| `selectOptions(...optionIndexes: number[]): Promise<void>;` | Selects the options at the specified indexes inside of a native `select` element. |
+| `dispatchEvent(name: string, data?: Record<string, EventData>): Promise<void>;` | Dispatches an event with a particular name. |
 
 `TestElement` is an abstraction designed to work across different test environments (Karma,
 Protractor, etc). When using harnesses, you should perform all DOM interaction via this interface.
@@ -599,6 +602,9 @@ result of the operation.
 | `getDimensions(): Promise<ElementDimensions>` | Gets the dimensions of the element. |
 | `getProperty(name: string): Promise<any>` | Gets the value of the given property for the element. |
 | `matchesSelector(selector: string): Promise<boolean>` | Checks whether the given selector matches the element. |
+| `setInputValue(value: string): Promise<void>;` | Sets the value of a property of an input. |
+| `selectOptions(...optionIndexes: number[]): Promise<void>;` | Selects the options at the specified indexes inside of a native `select` element. |
+| `dispatchEvent(name: string, data?: Record<string, EventData>): Promise<void>;` | Dispatches an event with a particular name. |
 
 The `TestElement` interface consists largely of methods that resemble methods
 available on `HTMLElement`; similar methods exist in most test environments, which makes
