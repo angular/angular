@@ -7,6 +7,7 @@
   <span class="example-list-section">
     <mat-checkbox class="example-margin"
                   [checked]="allComplete"
+                  [color]="task.color"
                   [indeterminate]="someComplete()"
                   (change)="setAll($event.checked)">
       {{task.name}}
