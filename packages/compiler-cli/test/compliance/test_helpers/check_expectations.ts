@@ -11,6 +11,7 @@ import {getBuildOutputDirectory, getRootDirectory} from './compile_test';
 import {verifyUniqueFactory} from './di_checks';
 import {expectEmit} from './expect_emit';
 import {replaceMacros} from './expected_file_macros';
+import {verifyUniqueFunctions} from './function_checks';
 import {ExpectedFile, ExtraCheck} from './get_compliance_tests';
 import {verifyPlaceholdersIntegrity, verifyUniqueConsts} from './i18n_checks';
 
@@ -19,6 +20,7 @@ const EXTRA_CHECK_FUNCTIONS: Record<string, ExtraCheckFunction> = {
   verifyPlaceholdersIntegrity,
   verifyUniqueConsts,
   verifyUniqueFactory,
+  verifyUniqueFunctions,
 };
 
 /**
