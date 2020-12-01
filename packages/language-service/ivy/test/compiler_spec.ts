@@ -60,4 +60,72 @@ describe('language-service/compiler integration', () => {
     expect(diags.map(diag => diag.messageText))
         .toContain(`Type 'number' is not assignable to type 'string'.`);
   });
+
+  it('should handle broken imports during incremental build steps', () => {
+    // This test validates that the compiler's incremental APIs correctly handle a broken import
+    // when invoked via the Language Service. Testing this via the LS is important as only the LS
+    // requests Angular analysis in the presence of TypeScript-level errors. In the case of broken
+    // imports this distinction is especially important: Angular's incremental analysis is
+    // built on the the compiler's dependency graph, and this graph must be able to function even
+    // with broken imports.
+    //
+    // The test works by creating a component/module pair where the module imports and declares a
+    // component from a separate file. That component is initially not exported, meaning the
+    // module's import is broken. Angular will correctly complain that the NgModule is declaring a
+    // value which is not statically analyzable.
+    //
+    // Then, the component file is fixed to properly export the component class, and an incremental
+    // build step is performed. The compiler should recognize that the module's previous analysis
+    // is stale, even though it was not able to fully understand the import during the first pass.
+
+    const moduleFile = absoluteFrom('/mod.ts');
+    const componentFile = absoluteFrom('/cmp.ts');
+
+    const componentSource = (isExported: boolean): string => `
+      import {Component} from '@angular/core';
+
+      @Component({
+        selector: 'some-cmp',
+        template: 'Not important',
+      })
+      ${isExported ? 'export' : ''} class Cmp {}
+    `;
+
+    const env = LanguageServiceTestEnvironment.setup([
+      {
+        name: moduleFile,
+        contents: `
+          import {NgModule} from '@angular/core';
+    
+          import {Cmp} from './cmp';
+    
+          @NgModule({
+            declarations: [Cmp],
+          })
+          export class Mod {}
+        `,
+        isRoot: true,
+      },
+      {
+        name: componentFile,
+        contents: componentSource(/* start with component not exported */ false),
+        isRoot: true,
+      }
+    ]);
+
+    // Angular should be complaining about the module not being understandable.
+    const programBefore = env.tsLS.getProgram()!;
+    const moduleSfBefore = programBefore.getSourceFile(moduleFile)!;
+    const ngDiagsBefore = env.ngLS.compilerFactory.getOrCreate().getDiagnostics(moduleSfBefore);
+    expect(ngDiagsBefore.length).toBe(1);
+
+    // Fix the import.
+    env.updateFile(componentFile, componentSource(/* properly export the component */ true));
+
+    // Angular should stop complaining about the NgModule.
+    const programAfter = env.tsLS.getProgram()!;
+    const moduleSfAfter = programAfter.getSourceFile(moduleFile)!;
+    const ngDiagsAfter = env.ngLS.compilerFactory.getOrCreate().getDiagnostics(moduleSfAfter);
+    expect(ngDiagsAfter.length).toBe(0);
+  });
 });

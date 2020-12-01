@@ -53,6 +53,10 @@ export class FileDependencyGraph<T extends {fileName: string} = ts.SourceFile> i
     }
   }
 
+  recordDependencyAnalysisFailure(file: T): void {
+    this.nodeFor(file).failedAnalysis = true;
+  }
+
   getResourceDependencies(from: T): AbsoluteFsPath[] {
     const node = this.nodes.get(from);
 
@@ -97,6 +101,7 @@ export class FileDependencyGraph<T extends {fileName: string} = ts.SourceFile> i
         this.nodes.set(sf, {
           dependsOn: new Set(node.dependsOn),
           usesResources: new Set(node.usesResources),
+          failedAnalysis: false,
         });
       }
     }
@@ -109,6 +114,7 @@ export class FileDependencyGraph<T extends {fileName: string} = ts.SourceFile> i
       this.nodes.set(sf, {
         dependsOn: new Set<string>(),
         usesResources: new Set<AbsoluteFsPath>(),
+        failedAnalysis: false,
       });
     }
     return this.nodes.get(sf)!;
@@ -122,6 +128,12 @@ export class FileDependencyGraph<T extends {fileName: string} = ts.SourceFile> i
 function isLogicallyChanged<T extends {fileName: string}>(
     sf: T, node: FileNode, changedTsPaths: ReadonlySet<string>, deletedTsPaths: ReadonlySet<string>,
     changedResources: ReadonlySet<AbsoluteFsPath>): boolean {
+  // A file is assumed to have logically changed if its dependencies could not be determined
+  // accurately.
+  if (node.failedAnalysis) {
+    return true;
+  }
+
   // A file is logically changed if it has physically changed itself (including being deleted).
   if (changedTsPaths.has(sf.fileName) || deletedTsPaths.has(sf.fileName)) {
     return true;
@@ -146,6 +158,7 @@ function isLogicallyChanged<T extends {fileName: string}>(
 interface FileNode {
   dependsOn: Set<string>;
   usesResources: Set<AbsoluteFsPath>;
+  failedAnalysis: boolean;
 }
 
 const EMPTY_SET: ReadonlySet<any> = new Set<any>();
