@@ -99,9 +99,9 @@ export class HttpClient {
   constructor(private handler: HttpHandler) {}
 
   /**
-   * Sends an `HTTPRequest` and returns a stream of `HTTPEvents`.
+   * Sends an `HttpRequest` and returns a stream of `HttpEvents`.
    *
-   * @return An `Observable` of the response, with the response body as a stream of `HTTPEvents`.
+   * @return An `Observable` of the response, with the response body as a stream of `HttpEvents`.
    */
   request<R>(req: HttpRequest<any>): Observable<HttpEvent<R>>;
 
@@ -171,7 +171,7 @@ export class HttpClient {
    * @param url     The endpoint URL.
    * @param options The HTTP options to send with the request.
    *
-   * @return An `Observable` of the response, with the response body as an array of `HTTPEvents` for
+   * @return An `Observable` of the response, with the response body as an array of `HttpEvents` for
    *     the
    * request.
    */
@@ -613,7 +613,7 @@ export class HttpClient {
    * @param url     The endpoint URL.
    * @param options The HTTP options to send with the request.
    *
-   * @return An `Observable` of all `HTTPEvents` for the request,
+   * @return An `Observable` of all `HttpEvents` for the request,
    * with response body as an `ArrayBuffer`.
    */
   delete(url: string, options: {
@@ -630,7 +630,7 @@ export class HttpClient {
    * @param url     The endpoint URL.
    * @param options The HTTP options to send with the request.
    *
-   * @return An `Observable` of all the `HTTPEvents` for the request, with the response body as a
+   * @return An `Observable` of all the `HttpEvents` for the request, with the response body as a
    * `Blob`.
    */
   delete(url: string, options: {
@@ -647,7 +647,7 @@ export class HttpClient {
    * @param url     The endpoint URL.
    * @param options The HTTP options to send with the request.
    *
-   * @return An `Observable` of all `HTTPEvents` for the request, with the response
+   * @return An `Observable` of all `HttpEvents` for the request, with the response
    *  body of type string.
    */
   delete(url: string, options: {
@@ -664,7 +664,7 @@ export class HttpClient {
    * @param url     The endpoint URL.
    * @param options The HTTP options to send with the request.
    *
-   * @return An `Observable` of all `HTTPEvents` for the request, with response body of
+   * @return An `Observable` of all `HttpEvents` for the request, with response body of
    * type `Object`.
    */
   delete(url: string, options: {
@@ -682,7 +682,7 @@ export class HttpClient {
    * @param url     The endpoint URL.
    * @param options The HTTP options to send with the request.
    *
-   * @return An `Observable` of all the `HTTPEvents` for the request, with a response
+   * @return An `Observable` of all the `HttpEvents` for the request, with a response
    * body in the requested type.
    */
   delete<T>(url: string, options: {
@@ -1218,7 +1218,7 @@ export class HttpClient {
    * @param url     The endpoint URL.
    * @param options The HTTP options to send with the request.
    *
-   * @return An `Observable` of all `HTTPEvents` for the request, with a response body of
+   * @return An `Observable` of all `HttpEvents` for the request, with a response body of
    * type `Object`.
    */
   head(url: string, options: {
@@ -1233,7 +1233,7 @@ export class HttpClient {
    * Constructs a `HEAD` request that interprets the body as a JSON object and
    * returns the full event stream.
    *
-   * @return An `Observable` of all the `HTTPEvents` for the request
+   * @return An `Observable` of all the `HttpEvents` for the request
    * , with a response body in the requested type.
    *
    * @param url     The endpoint URL.
@@ -1531,7 +1531,7 @@ export class HttpClient {
    * @param url The endpoint URL.
    * @param options HTTP options.
    *
-   * @return An `Observable` of all the `HTTPEvents` for the request,
+   * @return An `Observable` of all the `HttpEvents` for the request,
    * with the response body of type string.
    */
   options(url: string, options: {
@@ -1780,7 +1780,7 @@ export class HttpClient {
    * @param body The resources to edit.
    * @param options HTTP options.
    *
-   * @return An `Observable` of all the `HTTPevents` for the request,
+   * @return An `Observable` of all the `HttpEvents` for the request,
    * with the response body as an `ArrayBuffer`.
    */
 
@@ -1799,7 +1799,7 @@ export class HttpClient {
    * @param body The resources to edit.
    * @param options HTTP options.
    *
-   * @return An `Observable` of all the `HTTPevents` for the request, with the
+   * @return An `Observable` of all the `HttpEvents` for the request, with the
    * response body as `Blob`.
    */
   patch(url: string, body: any|null, options: {
@@ -1817,7 +1817,7 @@ export class HttpClient {
    * @param body The resources to edit.
    * @param options HTTP options.
    *
-   * @return An `Observable` of all the `HTTPevents`for the request, with a
+   * @return An `Observable` of all the `HttpEvents`for the request, with a
    * response body of type string.
    */
   patch(url: string, body: any|null, options: {
@@ -1835,7 +1835,7 @@ export class HttpClient {
    * @param body The resources to edit.
    * @param options HTTP options.
    *
-   * @return An `Observable` of all the `HTTPevents` for the request,
+   * @return An `Observable` of all the `HttpEvents` for the request,
    * with a response body of type `Object`.
    */
   patch(url: string, body: any|null, options: {
@@ -1854,7 +1854,7 @@ export class HttpClient {
    * @param body The resources to edit.
    * @param options HTTP options.
    *
-   * @return An `Observable` of all the `HTTPevents` for the request,
+   * @return An `Observable` of all the `HttpEvents` for the request,
    *  with a response body in the requested type.
    */
   patch<T>(url: string, body: any|null, options: {
@@ -2159,7 +2159,7 @@ export class HttpClient {
 
   /**
    * Constructs a POST request that interprets the body as an `ArrayBuffer`
-   *  and returns the full `HTTPresponse`.
+   *  and returns the full `HttpResponse`.
    *
    * @param url The endpoint URL.
    * @param body The content to replace with.
