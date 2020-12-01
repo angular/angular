@@ -8,7 +8,7 @@
 
 import {AST, TmplAstBoundEvent, TmplAstNode} from '@angular/compiler';
 import {CompilerOptions, ConfigurationHost, readConfiguration} from '@angular/compiler-cli';
-import {absoluteFromSourceFile, AbsoluteFsPath} from '@angular/compiler-cli/src/ngtsc/file_system';
+import {absoluteFrom, absoluteFromSourceFile, AbsoluteFsPath} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {TypeCheckShimGenerator} from '@angular/compiler-cli/src/ngtsc/typecheck';
 import {OptimizeFor, TypeCheckingProgramStrategy} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
 import * as ts from 'typescript/lib/tsserverlibrary';
@@ -111,6 +111,22 @@ export class LanguageService {
                         .getReferencesAtPosition(fileName, position);
     this.compilerFactory.registerLastKnownProgram();
     return results;
+  }
+
+  getRenameInfo(fileName: string, position: number): ts.RenameInfo {
+    const compiler = this.compilerFactory.getOrCreateWithChangedFile(fileName);
+    const renameInfo = new ReferencesAndRenameBuilder(this.strategy, this.tsLS, compiler)
+                           .getRenameInfo(absoluteFrom(fileName), position);
+    if (!renameInfo.canRename) {
+      return renameInfo;
+    }
+
+    const quickInfo = this.getQuickInfoAtPosition(fileName, position) ??
+        this.tsLS.getQuickInfoAtPosition(fileName, position);
+    const unknown = 'unknown' as ts.ScriptElementKind;
+    const kind = quickInfo?.kind ?? unknown;
+    const kindModifiers = quickInfo?.kindModifiers ?? unknown;
+    return {...renameInfo, kind, kindModifiers};
   }
 
   findRenameLocations(fileName: string, position: number): readonly ts.RenameLocation[]|undefined {
