@@ -1,0 +1,274 @@
+{
+  "$schema": "../test_case_schema.json",
+  "cases": [
+    {
+      "description": "should correctly bind to context in nested template",
+      "inputFiles": [
+        "nested_template_context.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "nested_template_context_template.js",
+              "generated": "nested_template_context.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should correctly bind to context in nested template with many bindings",
+      "inputFiles": [
+        "nested_template_context_many_bindings.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "nested_template_context_many_bindings_template.js",
+              "generated": "nested_template_context_many_bindings.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should correctly bind to implicit receiver in template",
+      "inputFiles": [
+        "implicit_receiver.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "implicit_receiver_template.js",
+              "generated": "implicit_receiver.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should support ngFor context variables",
+      "inputFiles": [
+        "ng_for_context_variables.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "ng_for_context_variables_template.js",
+              "generated": "ng_for_context_variables.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should support ngFor context variables in parent views",
+      "inputFiles": [
+        "ng_for_parent_context_variables.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "ng_for_parent_context_variables_template.js",
+              "generated": "ng_for_parent_context_variables.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should correctly skip contexts as needed",
+      "inputFiles": [
+        "template_context_skip.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "template_context_skip_template.js",
+              "generated": "template_context_skip.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should support <ng-template>",
+      "inputFiles": [
+        "ng_template.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "ng_template_template.js",
+              "generated": "ng_template.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should support local refs on <ng-template>",
+      "inputFiles": [
+        "ng_template_local_ref.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "ng_template_local_ref_template.js",
+              "generated": "ng_template_local_ref.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should support directive outputs on <ng-template>",
+      "inputFiles": [
+        "ng_template_output.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "ng_template_output_template.js",
+              "generated": "ng_template_output.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should allow directive inputs as an interpolated prop on <ng-template>",
+      "inputFiles": [
+        "ng_template_interpolated_prop.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "ng_template_interpolated_prop_template.js",
+              "generated": "ng_template_interpolated_prop.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should allow directive inputs as an interpolated prop on <ng-template> (with structural directives)",
+      "inputFiles": [
+        "ng_template_interpolated_prop_with_structural_directive.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "ng_template_interpolated_prop_with_structural_directive_inner_template.js",
+              "generated": "ng_template_interpolated_prop_with_structural_directive.js"
+            }
+          ],
+          "failureMessage": "Incorrect inner template"
+        },
+        {
+          "files": [
+            {
+              "expected": "ng_template_interpolated_prop_with_structural_directive_outer_template.js",
+              "generated": "ng_template_interpolated_prop_with_structural_directive.js"
+            }
+          ],
+          "failureMessage": "Incorrect outer template"
+        }
+      ]
+    },
+    {
+      "description": "should create unique template function names even for similar nested template structures",
+      "inputFiles": [
+        "unique_template_function_names.ts"
+      ],
+      "expectations": [
+        {
+          "extraChecks": [
+            ["verifyUniqueFunctions", "Template", 16]
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should create unique template function names for ng-content templates",
+      "inputFiles": [
+        "unique_template_function_names_ng_content.ts"
+      ],
+      "expectations": [
+        {
+          "extraChecks": [
+            ["verifyUniqueFunctions", "Template", 4]
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should create unique listener function names even for similar nested template structures",
+      "inputFiles": [
+        "unique_listener_function_names.ts"
+      ],
+      "expectations": [
+        {
+          "extraChecks": [
+            ["verifyUniqueFunctions", "listener", 3]
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should support pipes in template bindings",
+      "inputFiles": [
+        "template_binding_pipe.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "template_binding_pipe_template.js",
+              "generated": "template_binding_pipe.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should safely nest ternary operations",
+      "inputFiles": [
+        "nested_ternary_operation.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "nested_ternary_operation_template.js",
+              "generated": "nested_ternary_operation.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    }
+  ]
+}
