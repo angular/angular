@@ -376,6 +376,7 @@ export declare class RouterEvent {
 }
 
 export declare class RouterLink implements OnChanges {
+    disableNavigation?: boolean;
     fragment?: string;
     preserveFragment: boolean;
     queryParams?: Params | null;
@@ -407,6 +408,7 @@ export declare class RouterLinkActive implements OnChanges, OnDestroy, AfterCont
 }
 
 export declare class RouterLinkWithHref implements OnChanges, OnDestroy {
+    disableNavigation?: boolean;
     fragment?: string;
     href: string;
     preserveFragment: boolean;

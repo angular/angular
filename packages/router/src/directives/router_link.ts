@@ -6,17 +6,27 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {LocationStrategy} from '@angular/common';
-import {Attribute, Directive, ElementRef, HostBinding, HostListener, Input, OnChanges, OnDestroy, Renderer2, SimpleChanges} from '@angular/core';
-import {Subject, Subscription} from 'rxjs';
+import { LocationStrategy } from "@angular/common";
+import {
+  Attribute,
+  Directive,
+  ElementRef,
+  HostBinding,
+  HostListener,
+  Input,
+  OnChanges,
+  OnDestroy,
+  Renderer2,
+  SimpleChanges,
+} from "@angular/core";
+import { Subject, Subscription } from "rxjs";
 
-import {QueryParamsHandling} from '../config';
-import {Event, NavigationEnd} from '../events';
-import {Router} from '../router';
-import {ActivatedRoute} from '../router_state';
-import {Params} from '../shared';
-import {UrlTree} from '../url_tree';
-
+import { QueryParamsHandling } from "../config";
+import { Event, NavigationEnd } from "../events";
+import { Router } from "../router";
+import { ActivatedRoute } from "../router_state";
+import { Params } from "../shared";
+import { UrlTree } from "../url_tree";
 
 /**
  * @description
@@ -115,7 +125,7 @@ import {UrlTree} from '../url_tree';
  *
  * @publicApi
  */
-@Directive({selector: ':not(a):not(area)[routerLink]'})
+@Directive({ selector: ":not(a):not(area)[routerLink]" })
 export class RouterLink implements OnChanges {
   /**
    * Passed to {@link Router#createUrlTree Router#createUrlTree} as part of the
@@ -123,7 +133,7 @@ export class RouterLink implements OnChanges {
    * @see {@link UrlCreationOptions#queryParams UrlCreationOptions#queryParams}
    * @see {@link Router#createUrlTree Router#createUrlTree}
    */
-  @Input() queryParams?: Params|null;
+  @Input() queryParams?: Params | null;
   /**
    * Passed to {@link Router#createUrlTree Router#createUrlTree} as part of the
    * `UrlCreationOptions`.
@@ -137,7 +147,7 @@ export class RouterLink implements OnChanges {
    * @see {@link UrlCreationOptions#queryParamsHandling UrlCreationOptions#queryParamsHandling}
    * @see {@link Router#createUrlTree Router#createUrlTree}
    */
-  @Input() queryParamsHandling?: QueryParamsHandling|null;
+  @Input() queryParamsHandling?: QueryParamsHandling | null;
   /**
    * Passed to {@link Router#createUrlTree Router#createUrlTree} as part of the
    * `UrlCreationOptions`.
@@ -168,7 +178,14 @@ export class RouterLink implements OnChanges {
    * @see {@link NavigationBehaviorOptions#state NavigationBehaviorOptions#state}
    * @see {@link Router#navigateByUrl Router#navigateByUrl}
    */
-  @Input() state?: {[k: string]: any};
+  @Input() disableNavigation?: boolean;
+  /**
+   * Passed to {@link Router#disableNavigation Router#disableNavigation} as part of the
+   * `NavigationBehaviorOptions`.
+   * @see {@link NavigationBehaviorOptions#disableNavigation NavigationBehaviorOptions#disableNavigation}
+   * @see {@link Router#disableNavigation Router#disableNavigation}
+   */
+  @Input() state?: { [k: string]: any };
   private commands: any[] = [];
   private preserve!: boolean;
 
@@ -176,10 +193,14 @@ export class RouterLink implements OnChanges {
   onChanges = new Subject<RouterLink>();
 
   constructor(
-      private router: Router, private route: ActivatedRoute,
-      @Attribute('tabindex') tabIndex: string, renderer: Renderer2, el: ElementRef) {
+    private router: Router,
+    private route: ActivatedRoute,
+    @Attribute("tabindex") tabIndex: string,
+    renderer: Renderer2,
+    el: ElementRef
+  ) {
     if (tabIndex == null) {
-      renderer.setAttribute(el.nativeElement, 'tabindex', '0');
+      renderer.setAttribute(el.nativeElement, "tabindex", "0");
     }
   }
 
@@ -198,7 +219,7 @@ export class RouterLink implements OnChanges {
    * @see {@link Router#createUrlTree Router#createUrlTree}
    */
   @Input()
-  set routerLink(commands: any[]|string|null|undefined) {
+  set routerLink(commands: any[] | string | null | undefined) {
     if (commands != null) {
       this.commands = Array.isArray(commands) ? commands : [commands];
     } else {
@@ -207,8 +228,12 @@ export class RouterLink implements OnChanges {
   }
 
   /** @nodoc */
-  @HostListener('click')
+  @HostListener("click")
   onClick(): boolean {
+    if (attrBoolValue(this.disableNavigation)) {
+      return true;
+    }
+
     const extras = {
       skipLocationChange: attrBoolValue(this.skipLocationChange),
       replaceUrl: attrBoolValue(this.replaceUrl),
@@ -240,17 +265,17 @@ export class RouterLink implements OnChanges {
  *
  * @publicApi
  */
-@Directive({selector: 'a[routerLink],area[routerLink]'})
+@Directive({ selector: "a[routerLink],area[routerLink]" })
 export class RouterLinkWithHref implements OnChanges, OnDestroy {
   // TODO(issue/24571): remove '!'.
-  @HostBinding('attr.target') @Input() target!: string;
+  @HostBinding("attr.target") @Input() target!: string;
   /**
    * Passed to {@link Router#createUrlTree Router#createUrlTree} as part of the
    * `UrlCreationOptions`.
    * @see {@link UrlCreationOptions#queryParams UrlCreationOptions#queryParams}
    * @see {@link Router#createUrlTree Router#createUrlTree}
    */
-  @Input() queryParams?: Params|null;
+  @Input() queryParams?: Params | null;
   /**
    * Passed to {@link Router#createUrlTree Router#createUrlTree} as part of the
    * `UrlCreationOptions`.
@@ -264,7 +289,7 @@ export class RouterLinkWithHref implements OnChanges, OnDestroy {
    * @see {@link UrlCreationOptions#queryParamsHandling UrlCreationOptions#queryParamsHandling}
    * @see {@link Router#createUrlTree Router#createUrlTree}
    */
-  @Input() queryParamsHandling?: QueryParamsHandling|null;
+  @Input() queryParamsHandling?: QueryParamsHandling | null;
   /**
    * Passed to {@link Router#createUrlTree Router#createUrlTree} as part of the
    * `UrlCreationOptions`.
@@ -295,7 +320,14 @@ export class RouterLinkWithHref implements OnChanges, OnDestroy {
    * @see {@link NavigationBehaviorOptions#state NavigationBehaviorOptions#state}
    * @see {@link Router#navigateByUrl Router#navigateByUrl}
    */
-  @Input() state?: {[k: string]: any};
+  @Input() disableNavigation?: boolean;
+  /**
+   * Passed to {@link Router#navigateByUrl Router#navigateByUrl} as part of the
+   * `NavigationBehaviorOptions`.
+   * @see {@link NavigationBehaviorOptions#replaceUrl NavigationBehaviorOptions#replaceUrl}
+   * @see {@link Router#navigateByUrl Router#navigateByUrl}
+   */
+  @Input() state?: { [k: string]: any };
   private commands: any[] = [];
   private subscription: Subscription;
   // TODO(issue/24571): remove '!'.
@@ -309,8 +341,10 @@ export class RouterLinkWithHref implements OnChanges, OnDestroy {
   onChanges = new Subject<RouterLinkWithHref>();
 
   constructor(
-      private router: Router, private route: ActivatedRoute,
-      private locationStrategy: LocationStrategy) {
+    private router: Router,
+    private route: ActivatedRoute,
+    private locationStrategy: LocationStrategy
+  ) {
     this.subscription = router.events.subscribe((s: Event) => {
       if (s instanceof NavigationEnd) {
         this.updateTargetUrlAndHref();
@@ -326,7 +360,7 @@ export class RouterLinkWithHref implements OnChanges, OnDestroy {
    * @see {@link Router#createUrlTree Router#createUrlTree}
    */
   @Input()
-  set routerLink(commands: any[]|string|null|undefined) {
+  set routerLink(commands: any[] | string | null | undefined) {
     if (commands != null) {
       this.commands = Array.isArray(commands) ? commands : [commands];
     } else {
@@ -345,30 +379,45 @@ export class RouterLinkWithHref implements OnChanges, OnDestroy {
   }
 
   /** @nodoc */
-  @HostListener(
-      'click',
-      ['$event.button', '$event.ctrlKey', '$event.shiftKey', '$event.altKey', '$event.metaKey'])
-  onClick(button: number, ctrlKey: boolean, shiftKey: boolean, altKey: boolean, metaKey: boolean):
-      boolean {
+  @HostListener("click", [
+    "$event.button",
+    "$event.ctrlKey",
+    "$event.shiftKey",
+    "$event.altKey",
+    "$event.metaKey",
+  ])
+  onClick(
+    button: number,
+    ctrlKey: boolean,
+    shiftKey: boolean,
+    altKey: boolean,
+    metaKey: boolean
+  ): boolean {
+    if (attrBoolValue(this.disableNavigation)) {
+      return false;
+    }
+
     if (button !== 0 || ctrlKey || shiftKey || altKey || metaKey) {
       return true;
     }
 
-    if (typeof this.target === 'string' && this.target != '_self') {
+    if (typeof this.target === "string" && this.target != "_self") {
       return true;
     }
 
     const extras = {
       skipLocationChange: attrBoolValue(this.skipLocationChange),
       replaceUrl: attrBoolValue(this.replaceUrl),
-      state: this.state
+      state: this.state,
     };
     this.router.navigateByUrl(this.urlTree, extras);
     return false;
   }
 
   private updateTargetUrlAndHref(): void {
-    this.href = this.locationStrategy.prepareExternalUrl(this.router.serializeUrl(this.urlTree));
+    this.href = this.locationStrategy.prepareExternalUrl(
+      this.router.serializeUrl(this.urlTree)
+    );
   }
 
   get urlTree(): UrlTree {
@@ -383,5 +432,5 @@ export class RouterLinkWithHref implements OnChanges, OnDestroy {
 }
 
 function attrBoolValue(s: any): boolean {
-  return s === '' || !!s;
+  return s === "" || !!s;
 }
