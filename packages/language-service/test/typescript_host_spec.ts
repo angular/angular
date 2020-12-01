@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as ngc from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {TypeScriptServiceHost} from '../src/typescript_host';
@@ -107,6 +106,15 @@ describe('TypeScriptServiceHost', () => {
     expect(templates.length).toBe(1);
     const template = templates[0];
     expect(template.source).toContain('<h2>{{hero.name}} details!</h2>');
+  });
+
+  // https://github.com/angular/vscode-ng-language-service/issues/892
+  it('should resolve external templates with `#` in the path', () => {
+    const tsLSHost = new MockTypescriptHost(['/app/main.ts']);
+    const tsLS = ts.createLanguageService(tsLSHost);
+    const ngLSHost = new TypeScriptServiceHost(tsLSHost, tsLS);
+    ngLSHost.getAnalyzedModules();
+    expect(ngLSHost.getExternalTemplates()).toContain('/app/#inner/inner.html');
   });
 
   // https://github.com/angular/angular/issues/32301
