@@ -6,8 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {analyzeNgModules, AotSummaryResolver, CompileDirectiveSummary, CompileMetadataResolver, CompileNgModuleMetadata, CompilePipeSummary, CompilerConfig, createOfflineCompileUrlResolver, DirectiveNormalizer, DirectiveResolver, DomElementSchemaRegistry, FormattedError, FormattedMessageChain, HtmlParser, isFormattedError, JitSummaryResolver, Lexer, NgAnalyzedModules, NgModuleResolver, Parser, ParseTreeResult, PipeResolver, ResourceLoader, StaticReflector, StaticSymbol, StaticSymbolCache, StaticSymbolResolver, TemplateParser} from '@angular/compiler';
+import {analyzeNgModules, AotSummaryResolver, CompileDirectiveSummary, CompileMetadataResolver, CompileNgModuleMetadata, CompilePipeSummary, CompilerConfig, DirectiveNormalizer, DirectiveResolver, DomElementSchemaRegistry, FormattedError, FormattedMessageChain, HtmlParser, isFormattedError, JitSummaryResolver, Lexer, NgAnalyzedModules, NgModuleResolver, Parser, ParseTreeResult, PipeResolver, ResourceLoader, StaticReflector, StaticSymbol, StaticSymbolCache, StaticSymbolResolver, TemplateParser, UrlResolver} from '@angular/compiler';
 import {SchemaMetadata, ViewEncapsulation, ɵConsole as Console} from '@angular/core';
+import * as path from 'path';
 import * as tss from 'typescript/lib/tsserverlibrary';
 
 import {createLanguageService} from './language_service';
@@ -64,6 +65,7 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
   private readonly fileToComponent = new Map<string, StaticSymbol>();
   private readonly collectedErrors = new Map<string, any[]>();
   private readonly fileVersions = new Map<string, string>();
+  private readonly urlResolver: UrlResolver;
 
   private lastProgram: tss.Program|undefined = undefined;
   private analyzedModules: NgAnalyzedModules = {
@@ -93,6 +95,16 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
     this.staticSymbolResolver = new StaticSymbolResolver(
         this.reflectorHost, this.staticSymbolCache, this.summaryResolver,
         (e, filePath) => this.collectError(e, filePath));
+    this.urlResolver = {
+      resolve: (baseUrl: string, url: string) => {
+        // In practice, `directoryExists` is always defined.
+        // https://github.com/microsoft/TypeScript/blob/0b6c9254a850dd07056259d4eefca7721745af75/src/server/project.ts#L1608-L1614
+        if (tsLsHost.directoryExists!(baseUrl)) {
+          return path.resolve(baseUrl, url);
+        }
+        return path.resolve(path.dirname(baseUrl), url);
+      }
+    };
   }
 
   // The resolver is instantiated lazily and should not be accessed directly.
@@ -125,7 +137,6 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
     const pipeResolver = new PipeResolver(staticReflector);
     const elementSchemaRegistry = new DomElementSchemaRegistry();
     const resourceLoader = new DummyResourceLoader();
-    const urlResolver = createOfflineCompileUrlResolver();
     const htmlParser = new DummyHtmlParser();
     // This tracks the CompileConfig in codegen.ts. Currently these options
     // are hard-coded.
@@ -134,7 +145,7 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
       useJit: false,
     });
     const directiveNormalizer =
-        new DirectiveNormalizer(resourceLoader, urlResolver, htmlParser, config);
+        new DirectiveNormalizer(resourceLoader, this.urlResolver, htmlParser, config);
     this._resolver = new CompileMetadataResolver(
         config, htmlParser, moduleResolver, directiveResolver, pipeResolver,
         new JitSummaryResolver(), elementSchemaRegistry, directiveNormalizer, new Console(),
@@ -192,12 +203,11 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
     }
 
     // update template references and fileToComponent
-    const urlResolver = createOfflineCompileUrlResolver();
     for (const ngModule of this.analyzedModules.ngModules) {
       for (const directive of ngModule.declaredDirectives) {
         const {metadata} = this.resolver.getNonNormalizedDirectiveMetadata(directive.reference)!;
         if (metadata.isComponent && metadata.template && metadata.template.templateUrl) {
-          const templateName = urlResolver.resolve(
+          const templateName = this.urlResolver.resolve(
               this.reflector.componentModuleUrl(directive.reference),
               metadata.template.templateUrl);
           this.fileToComponent.set(templateName, directive.reference);
