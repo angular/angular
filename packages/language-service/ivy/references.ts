@@ -103,9 +103,7 @@ export class ReferenceBuilder {
 
     const entries: ts.ReferenceEntry[] = [];
     for (const ref of refs) {
-      // TODO(atscott): Determine if a file is a shim file in a more robust way and make the API
-      // available in an appropriate location.
-      if (ref.fileName.endsWith('ngtypecheck.ts')) {
+      if (this.ttc.isTrackedTypeCheckFile(absoluteFrom(ref.fileName))) {
         const entry = convertToTemplateReferenceEntry(ref, this.ttc);
         if (entry !== null) {
           entries.push(entry);
