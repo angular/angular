@@ -21,6 +21,7 @@ const mockProject = {
     },
   },
   hasRoots: () => true,
+  fileExists: () => true,
 } as any;
 
 describe('plugin', () => {
@@ -135,6 +136,12 @@ describe('plugin', () => {
     expect(externalTemplates).toEqual([
       '/app/test.ng',
     ]);
+  });
+
+  it('should not return external template that does not exist', () => {
+    spyOn(mockProject, 'fileExists').and.returnValue(false);
+    const externalTemplates = getExternalFiles(mockProject);
+    expect(externalTemplates.length).toBe(0);
   });
 });
 
