@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {normalize, Path, PathIsDirectoryException} from '@angular-devkit/core';
+import {basename, dirname, normalize, NormalizedRoot, Path} from '@angular-devkit/core';
 import {Tree, UpdateRecorder} from '@angular-devkit/schematics';
 import {DirectoryEntry, FileSystem} from '../update-tool/file-system';
 import * as path from 'path';
@@ -43,17 +43,9 @@ export class DevkitFileSystem extends FileSystem {
   }
 
   exists(fileOrDirPath: Path) {
-    // The devkit tree does not expose an API for checking whether a given
-    // directory exists. It throws a specific error though if a directory
-    // is being read as a file. We use that to check if a directory exists.
-    try {
-      return this._tree.get(fileOrDirPath) !== null;
-    } catch (e) {
-      if (e instanceof PathIsDirectoryException) {
-        return true;
-      }
-    }
-    return false;
+    // We need to check for both file or directory existence, in order
+    // to comply with the expectation from the TypeScript compiler.
+    return this._tree.exists(fileOrDirPath) || this._isExistingDirectory(fileOrDirPath);
   }
 
   overwrite(filePath: Path, content: string) {
@@ -76,5 +68,24 @@ export class DevkitFileSystem extends FileSystem {
   readDirectory(dirPath: Path): DirectoryEntry {
     const {subdirs: directories, subfiles: files} = this._tree.getDir(dirPath);
     return {directories, files};
+  }
+
+  private _isExistingDirectory(dirPath: Path) {
+    if (dirPath === NormalizedRoot) {
+      return true;
+    }
+
+    const parent = dirname(dirPath);
+    const dirName = basename(dirPath);
+    // TypeScript also checks potential entry points, so e.g. importing
+    // package.json will result in a lookup of /package.json/package.json
+    // and /package.json/index.ts. In order to avoid failure, we check if
+    // the parent is an existing file and return false, if that is the case.
+    if (this._tree.exists(parent)) {
+      return false;
+    }
+
+    const dir = this._tree.getDir(parent);
+    return dir.subdirs.indexOf(dirName) !== -1;
   }
 }
