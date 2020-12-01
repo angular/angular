@@ -1369,6 +1369,81 @@ describe('find references and rename locations', () => {
     });
   });
 
+  describe('get rename info', () => {
+    it('indicates inability to rename when cursor is outside template and in a string literal',
+       () => {
+         const {cursor, text} = extractCursorInfo(`
+            import {Component} from '@angular/core';
+
+            @Component({selector: 'my-comp', template: ''})
+            export class MyComp {
+              myProp = 'cannot rena¦me me';
+            }`);
+         env = createModuleWithDeclarations([{name: _('/my-comp.ts'), contents: text}]);
+         env.expectNoSourceDiagnostics();
+         const result = env.ngLS.getRenameInfo(_('/my-comp.ts'), cursor);
+         expect(result.canRename).toEqual(false);
+       });
+
+    it('gets rename info when cursor is outside template', () => {
+      const {cursor, text} = extractCursorInfo(`
+            import {Component, Input} from '@angular/core';
+
+            @Component({name: 'my-comp', template: ''})
+            export class MyComp {
+              @Input() m¦yProp!: string;
+            }`);
+      env = createModuleWithDeclarations([{name: _('/my-comp.ts'), contents: text}]);
+      env.expectNoSourceDiagnostics();
+      const result = env.ngLS.getRenameInfo(_('/my-comp.ts'), cursor) as ts.RenameInfoSuccess;
+      expect(result.canRename).toEqual(true);
+      expect(result.displayName).toEqual('myProp');
+      expect(result.kind).toEqual('property');
+    });
+
+    it('gets rename info on keyed read', () => {
+      const {cursor, text} = extractCursorInfo(`
+            import {Component} from '@angular/core';
+
+            @Component({name: 'my-comp', template: '{{ myObj["my¦Prop"] }}'})
+            export class MyComp {
+              readonly myObj = {'myProp': 'hello world'};
+            }`);
+      env = createModuleWithDeclarations([{name: _('/my-comp.ts'), contents: text}]);
+      env.expectNoSourceDiagnostics();
+      const result = env.ngLS.getRenameInfo(_('/my-comp.ts'), cursor) as ts.RenameInfoSuccess;
+      expect(result.canRename).toEqual(true);
+      expect(result.displayName).toEqual('myProp');
+      expect(result.kind).toEqual('property');
+      expect(result.triggerSpan.length).toEqual('myProp'.length);
+    });
+
+    it('gets rename info when cursor is on a directive input in a template', () => {
+      const dirFile = {
+        name: _('/dir.ts'),
+        contents: `
+        import {Directive, Input} from '@angular/core';
+        @Directive({selector: '[dir]'})
+        export class MyDir {
+          @Input() dir!: any;
+        }`
+      };
+      const {cursor, text} = extractCursorInfo(`
+            import {Component, Input} from '@angular/core';
+
+            @Component({name: 'my-comp', template: '<div di¦r="something"></div>'})
+            export class MyComp {
+              @Input() myProp!: string;
+            }`);
+      env = createModuleWithDeclarations([{name: _('/my-comp.ts'), contents: text}, dirFile]);
+      env.expectNoSourceDiagnostics();
+      const result = env.ngLS.getRenameInfo(_('/my-comp.ts'), cursor) as ts.RenameInfoSuccess;
+      expect(result.canRename).toEqual(true);
+      expect(result.displayName).toEqual('dir');
+      expect(result.kind).toEqual('property');
+    });
+  });
+
   function getReferencesAtPosition(fileName: string, position: number) {
     env.expectNoSourceDiagnostics();
     const result = env.ngLS.getReferencesAtPosition(fileName, position);

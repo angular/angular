@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AST, BindingPipe, LiteralPrimitive, MethodCall, PropertyRead, PropertyWrite, SafeMethodCall, SafePropertyRead, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstNode, TmplAstReference, TmplAstTextAttribute, TmplAstVariable} from '@angular/compiler';
+import {AbsoluteSourceSpan, AST, BindingPipe, LiteralPrimitive, MethodCall, ParseSourceSpan, PropertyRead, PropertyWrite, SafeMethodCall, SafePropertyRead, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstNode, TmplAstReference, TmplAstTextAttribute, TmplAstVariable} from '@angular/compiler';
 import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
 import {absoluteFrom, absoluteFromSourceFile, AbsoluteFsPath} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {DirectiveSymbol, ShimLocation, SymbolKind, TemplateTypeChecker, TypeCheckingProgramStrategy} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
@@ -14,7 +14,7 @@ import * as ts from 'typescript';
 
 import {getTargetAtPosition, TargetNodeKind} from './template_target';
 import {findTightestNode} from './ts_utils';
-import {getDirectiveMatchesForAttribute, getDirectiveMatchesForElementTag, getTemplateInfoAtPosition, isTemplateNode, isWithin, TemplateInfo, toTextSpan} from './utils';
+import {getDirectiveMatchesForAttribute, getDirectiveMatchesForElementTag, getTemplateInfoAtPosition, isWithin, TemplateInfo, toTextSpan} from './utils';
 
 interface FilePosition {
   fileName: string;
@@ -64,10 +64,37 @@ export class ReferencesAndRenameBuilder {
       private readonly strategy: TypeCheckingProgramStrategy,
       private readonly tsLS: ts.LanguageService, private readonly compiler: NgCompiler) {}
 
+  getRenameInfo(filePath: string, position: number):
+      Omit<ts.RenameInfoSuccess, 'kind'|'kindModifiers'>|ts.RenameInfoFailure {
+    const templateInfo = getTemplateInfoAtPosition(filePath, position, this.compiler);
+    // We could not get a template at position so we assume the request came from outside the
+    // template.
+    if (templateInfo === undefined) {
+      return this.tsLS.getRenameInfo(filePath, position);
+    }
+
+    const allTargetDetails = this.getTargetDetailsAtTemplatePosition(templateInfo, position);
+    if (allTargetDetails === null) {
+      return {canRename: false, localizedErrorMessage: 'Could not find template node at position.'};
+    }
+    const {templateTarget} = allTargetDetails[0];
+    const templateTextAndSpan = getRenameTextAndSpanAtPosition(templateTarget, position);
+    if (templateTextAndSpan === null) {
+      return {canRename: false, localizedErrorMessage: 'Could not determine template node text.'};
+    }
+    const {text, span} = templateTextAndSpan;
+    return {
+      canRename: true,
+      displayName: text,
+      fullDisplayName: text,
+      triggerSpan: toTextSpan(span),
+    };
+  }
+
   findRenameLocations(filePath: string, position: number): readonly ts.RenameLocation[]|undefined {
     this.ttc.generateAllTypeCheckBlocks();
     const templateInfo = getTemplateInfoAtPosition(filePath, position, this.compiler);
-    // We could not get a template at position so we assume the request is came from outside the
+    // We could not get a template at position so we assume the request came from outside the
     // template.
     if (templateInfo === undefined) {
       const requestNode = this.getTsNodeAtPosition(filePath, position);
@@ -126,11 +153,11 @@ export class ReferencesAndRenameBuilder {
       originalNodeText = requestOrigin.requestNode.getText();
     } else {
       const templateNodeText =
-          getTemplateNodeRenameTextAtPosition(requestOrigin.requestNode, requestOrigin.position);
+          getRenameTextAndSpanAtPosition(requestOrigin.requestNode, requestOrigin.position);
       if (templateNodeText === null) {
         return undefined;
       }
-      originalNodeText = templateNodeText;
+      originalNodeText = templateNodeText.text;
     }
 
     const locations = this.tsLS.findRenameLocations(
@@ -207,11 +234,11 @@ export class ReferencesAndRenameBuilder {
     for (const node of nodes) {
       // Get the information about the TCB at the template position.
       const symbol = this.ttc.getSymbolOfNode(node, component);
-      const templateTarget = node;
-
       if (symbol === null) {
         continue;
       }
+
+      const templateTarget = node;
       switch (symbol.kind) {
         case SymbolKind.Directive:
         case SymbolKind.Template:
@@ -233,13 +260,17 @@ export class ReferencesAndRenameBuilder {
           }
           const directives = getDirectiveMatchesForAttribute(
               node.name, symbol.host.templateNode, symbol.host.directives);
-          details.push(
-              {typescriptLocations: this.getPositionsForDirectives(directives), templateTarget});
+          details.push({
+            typescriptLocations: this.getPositionsForDirectives(directives),
+            templateTarget,
+          });
           break;
         }
         case SymbolKind.Reference: {
-          details.push(
-              {typescriptLocations: [toFilePosition(symbol.referenceVarLocation)], templateTarget});
+          details.push({
+            typescriptLocations: [toFilePosition(symbol.referenceVarLocation)],
+            templateTarget,
+          });
           break;
         }
         case SymbolKind.Variable: {
@@ -253,14 +284,18 @@ export class ReferencesAndRenameBuilder {
               });
             } else if (isWithin(position, templateTarget.keySpan)) {
               // In the keySpan of the variable, we want to get the reference of the local variable.
-              details.push(
-                  {typescriptLocations: [toFilePosition(symbol.localVarLocation)], templateTarget});
+              details.push({
+                typescriptLocations: [toFilePosition(symbol.localVarLocation)],
+                templateTarget,
+              });
             }
           } else {
             // If the templateNode is not the `TmplAstVariable`, it must be a usage of the
             // variable somewhere in the template.
-            details.push(
-                {typescriptLocations: [toFilePosition(symbol.localVarLocation)], templateTarget});
+            details.push({
+              typescriptLocations: [toFilePosition(symbol.localVarLocation)],
+              templateTarget,
+            });
           }
           break;
         }
@@ -374,15 +409,19 @@ export class ReferencesAndRenameBuilder {
   }
 }
 
-function getTemplateNodeRenameTextAtPosition(node: TmplAstNode|AST, position: number): string|null {
+function getRenameTextAndSpanAtPosition(node: TmplAstNode|AST, position: number):
+    {text: string, span: ParseSourceSpan|AbsoluteSourceSpan}|null {
   if (node instanceof TmplAstBoundAttribute || node instanceof TmplAstTextAttribute ||
       node instanceof TmplAstBoundEvent) {
-    return node.name;
+    if (node.keySpan === undefined) {
+      return null;
+    }
+    return {text: node.name, span: node.keySpan};
   } else if (node instanceof TmplAstVariable || node instanceof TmplAstReference) {
     if (isWithin(position, node.keySpan)) {
-      return node.keySpan.toString();
+      return {text: node.keySpan.toString(), span: node.keySpan};
     } else if (node.valueSpan && isWithin(position, node.valueSpan)) {
-      return node.valueSpan.toString();
+      return {text: node.valueSpan.toString(), span: node.valueSpan};
     }
   }
 
@@ -392,9 +431,16 @@ function getTemplateNodeRenameTextAtPosition(node: TmplAstNode|AST, position: nu
   }
   if (node instanceof PropertyRead || node instanceof MethodCall || node instanceof PropertyWrite ||
       node instanceof SafePropertyRead || node instanceof SafeMethodCall) {
-    return node.name;
+    return {text: node.name, span: node.nameSpan};
   } else if (node instanceof LiteralPrimitive) {
-    return node.value;
+    const span = node.span;
+    const text = node.value;
+    if (typeof text === 'string') {
+      // The span of a string literal includes the quotes but they should be removed for renaming.
+      span.start += 1;
+      span.end -= 1;
+    }
+    return {text, span};
   }
 
   return null;

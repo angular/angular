@@ -10,7 +10,6 @@ import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
 import {isExternalResource} from '@angular/compiler-cli/src/ngtsc/metadata';
 import {DeclarationNode} from '@angular/compiler-cli/src/ngtsc/reflection';
 import {DirectiveSymbol} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
-import {Diagnostic as ngDiagnostic, isNgDiagnostic} from '@angular/compiler-cli/src/transformers/api';
 import * as e from '@angular/compiler/src/expression_parser/ast';  // e for expression AST
 import * as t from '@angular/compiler/src/render3/r3_ast';         // t for template AST
 import * as ts from 'typescript';
@@ -33,9 +32,9 @@ export function getTextSpanOfNode(node: t.Node|e.AST): ts.TextSpan {
   }
 }
 
-export function toTextSpan(span: AbsoluteSourceSpan|ParseSourceSpan): ts.TextSpan {
+export function toTextSpan(span: AbsoluteSourceSpan|ParseSourceSpan|e.ParseSpan): ts.TextSpan {
   let start: number, end: number;
-  if (span instanceof AbsoluteSourceSpan) {
+  if (span instanceof AbsoluteSourceSpan || span instanceof e.ParseSpan) {
     start = span.start;
     end = span.end;
   } else {

@@ -71,6 +71,12 @@ export function create(info: ts.server.PluginCreateInfo): ts.LanguageService {
     return ngLS.findRenameLocations(fileName, position);
   }
 
+  function getRenameInfo(fileName: string, position: number): ts.RenameInfo {
+    // See the comment in `findRenameLocations` explaining why we don't check the `angularOnly`
+    // flag.
+    return ngLS.getRenameInfo(fileName, position);
+  }
+
   function getCompletionsAtPosition(
       fileName: string, position: number,
       options: ts.GetCompletionsAtPositionOptions): ts.WithMetadata<ts.CompletionInfo>|undefined {
@@ -118,6 +124,7 @@ export function create(info: ts.server.PluginCreateInfo): ts.LanguageService {
     getDefinitionAndBoundSpan,
     getReferencesAtPosition,
     findRenameLocations,
+    getRenameInfo,
     getCompletionsAtPosition,
     getCompletionEntryDetails,
     getCompletionEntrySymbol,
