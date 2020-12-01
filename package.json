@@ -126,7 +126,7 @@
     "gulp-clean": "^0.4.0",
     "gulp-cli": "^2.0.1",
     "gulp-sass": "^4.0.2",
-    "highlight.js": "^9.11.0",
+    "highlight.js": "^10.4.0",
     "husky": "^4.3.0",
     "inquirer": "^7.1.0",
     "jasmine": "^3.5.0",
