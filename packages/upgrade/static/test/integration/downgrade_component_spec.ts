@@ -8,6 +8,7 @@
 
 import {ChangeDetectionStrategy, Compiler, Component, destroyPlatform, Directive, ElementRef, EventEmitter, Injector, Input, NgModule, NgModuleRef, OnChanges, OnDestroy, Output, SimpleChanges} from '@angular/core';
 import {fakeAsync, tick, waitForAsync} from '@angular/core/testing';
+import {expect} from '@angular/core/testing/src/testing_internal';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import {downgradeComponent, UpgradeComponent, UpgradeModule} from '@angular/upgrade/static';
@@ -624,6 +625,72 @@ withEachNg1Version(() => {
 
            expect(element.textContent).toBe('');
            expect(destroyed).toBe(true);
+         });
+       }));
+
+    it('should remove the data from the element', waitForAsync(() => {
+         @Component({selector: 'ng2', template: ''})
+         class Ng2Component {
+         }
+
+         @NgModule({
+           declarations: [Ng2Component],
+           entryComponents: [Ng2Component],
+           imports: [BrowserModule, UpgradeModule],
+         })
+         class Ng2Module {
+           ngDoBootstrap() {}
+         }
+
+         const ng1Module = angular.module_('ng1', []).directive(
+             'ng2', downgradeComponent({component: Ng2Component}));
+
+         const element = html('<ng2></n2>');
+
+         bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(upgrade => {
+           const ng2Element = angular.element(element);
+           expect(ng2Element.data!('$$$angularInjectorController')).toBeTruthy();
+
+           const $rootScope = upgrade.$injector.get('$rootScope') as angular.IRootScopeService;
+           $rootScope.$destroy();
+
+           expect(ng2Element.data!('$$$angularInjectorController')).toBeUndefined();
+         });
+       }));
+
+    it('should cleanup $$watchers and $$listeners on the scope', waitForAsync(() => {
+         @Component({selector: 'ng2', template: ''})
+         class Ng2Component {
+         }
+
+         @NgModule({
+           declarations: [Ng2Component],
+           entryComponents: [Ng2Component],
+           imports: [BrowserModule, UpgradeModule],
+         })
+         class Ng2Module {
+           ngDoBootstrap() {}
+         }
+
+         const ng1Module = angular.module_('ng1', []).directive(
+             'ng2', downgradeComponent({component: Ng2Component}));
+
+         const element = html('<ng2></n2>');
+
+         bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(upgrade => {
+           const scope = angular.element(element).scope!();
+
+           // We don't know how many watchers there can be, but let's ensure
+           // that there is at least 1 watcher.
+           expect(scope.$$watchersCount).toBeGreaterThan(0);
+           // The same thing with listeners.
+           expect(Object.keys(scope.$$listenerCount).length).toBeGreaterThan(0);
+
+           const $rootScope = upgrade.$injector.get('$rootScope') as angular.IRootScopeService;
+           $rootScope.$destroy();
+
+           expect(scope.$$watchersCount).toEqual(0);
+           expect(Object.keys(scope.$$listenerCount).length).toEqual(0);
          });
        }));
 

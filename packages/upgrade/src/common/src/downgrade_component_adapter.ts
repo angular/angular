@@ -10,8 +10,8 @@ import {ApplicationRef, ChangeDetectorRef, ComponentFactory, ComponentRef, Event
 
 import {IAttributes, IAugmentedJQuery, ICompileService, IInjectorService, INgModelController, IParseService, IScope} from './angular1';
 import {PropertyBinding} from './component_info';
-import {$SCOPE} from './constants';
-import {getTypeName, hookupNgModel, strictEquals} from './util';
+import {$SCOPE, INJECTOR_KEY} from './constants';
+import {controllerKey, getTypeName, hookupNgModel, strictEquals} from './util';
 
 const INITIAL_VALUE = {
   __UNINITIALIZED__: true
@@ -29,6 +29,7 @@ export class DowngradeComponentAdapter {
   private changeDetector!: ChangeDetectorRef;
   // TODO(issue/24571): remove '!'.
   private viewChangeDetector!: ChangeDetectorRef;
+  private unwatchFns: Function[] = [];
 
   constructor(
       private element: IAugmentedJQuery, private attrs: IAttributes, private scope: IScope,
@@ -126,7 +127,8 @@ export class DowngradeComponentAdapter {
         const watchFn =
             (prop => (currValue: any, prevValue: any) =>
                  this.updateInput(prop, prevValue, currValue))(input.prop);
-        this.componentScope.$watch(expr, watchFn);
+        const unwatch = this.componentScope.$watch(expr, watchFn);
+        this.unwatchFns.push(unwatch);
       }
     }
 
@@ -135,25 +137,28 @@ export class DowngradeComponentAdapter {
     const prototype = this.componentFactory.componentType.prototype;
     this.implementsOnChanges = !!(prototype && (<OnChanges>prototype).ngOnChanges);
 
-    this.componentScope.$watch(() => this.inputChangeCount, this.wrapCallback(() => {
-      // Invoke `ngOnChanges()`
-      if (this.implementsOnChanges) {
-        const inputChanges = this.inputChanges;
-        this.inputChanges = {};
-        (<OnChanges>this.component).ngOnChanges(inputChanges!);
-      }
+    const unwatch =
+        this.componentScope.$watch(() => this.inputChangeCount, this.wrapCallback(() => {
+          // Invoke `ngOnChanges()`
+          if (this.implementsOnChanges) {
+            const inputChanges = this.inputChanges;
+            this.inputChanges = {};
+            (<OnChanges>this.component).ngOnChanges(inputChanges!);
+          }
 
-      this.viewChangeDetector.markForCheck();
+          this.viewChangeDetector.markForCheck();
 
-      // If opted out of propagating digests, invoke change detection when inputs change.
-      if (!propagateDigest) {
-        detectChanges();
-      }
-    }));
+          // If opted out of propagating digests, invoke change detection when inputs change.
+          if (!propagateDigest) {
+            detectChanges();
+          }
+        }));
+    this.unwatchFns.push(unwatch);
 
     // If not opted out of propagating digests, invoke change detection on every digest
     if (propagateDigest) {
-      this.componentScope.$watch(this.wrapCallback(detectChanges));
+      const unwatch = this.componentScope.$watch(this.wrapCallback(detectChanges));
+      this.unwatchFns.push(unwatch);
     }
 
     // If necessary, attach the view so that it will be dirty-checked.
@@ -217,11 +222,29 @@ export class DowngradeComponentAdapter {
     let destroyed = false;
 
     this.element.on!('$destroy', () => this.componentScope.$destroy());
-    this.componentScope.$on('$destroy', () => {
+    const removeOnDestroyListenerFn = this.componentScope.$on('$destroy', () => {
       if (!destroyed) {
         destroyed = true;
         testabilityRegistry.unregisterApplication(this.componentRef.location.nativeElement);
         destroyComponentRef();
+        // We're storing the real injector on the element inside the `ParentInjectorPromise`
+        // and its `resolve()` method. This causes a memory leak if we don't
+        // remove the reference when the component is destroyed.
+        this.element.removeData!(controllerKey(INJECTOR_KEY));
+        // We can't call `element.remove()` during the digest cycle since it will throw
+        // a runtime error, but we have to de-register the `$destroy` listener.
+        // The `$destroy` listener that we added previously on the element captures `this`,
+        // as long as there is a reference to `() => this.componentScope.$destroy()`,
+        // `this` will not be GC'd.
+        this.element.off!('$destroy');
+        // We also have captured `this` in that callback and it's not removed automatically
+        // by the `componentScope`.
+        removeOnDestroyListenerFn();
+        // This will clear all watchers inside the `$$watchers` property since all those watchers
+        // capture `this` inside their callbacks.
+        while (this.unwatchFns.length) {
+          this.unwatchFns.pop()!();
+        }
       }
     });
   }

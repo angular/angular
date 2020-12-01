@@ -123,6 +123,7 @@ export interface ICloneAttachFunction {
 }
 export type IAugmentedJQuery = Node[]&{
   on?: (name: string, fn: () => void) => void;
+  off?: (name: string) => void;
   data?: (name: string, value?: any) => any;
   text?: () => string;
   inheritedData?: (name: string, value?: any) => any;
@@ -135,7 +136,8 @@ export type IAugmentedJQuery = Node[]&{
   injector?: () => IInjectorService;
   triggerHandler?: (eventTypeOrObject: string|Event, extraParameters?: any[]) => IAugmentedJQuery;
   remove?: () => void;
-  removeData?: () => void;
+  removeData?: (name: string) => void;
+  scope?: () => IScope;
 };
 export interface IProvider {
   $get: IInjectable;
