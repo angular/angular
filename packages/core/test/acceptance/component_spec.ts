@@ -303,6 +303,57 @@ describe('component', () => {
        expect(wrapperEls.length).toBe(2);  // other elements are preserved
      });
 
+  it('should invoke `onDestroy` callbacks of dynamically created component', () => {
+    let wasOnDestroyCalled = false;
+    @Component({
+      selector: '[comp]',
+      template: 'comp content',
+    })
+    class DynamicComponent {
+    }
+
+    @NgModule({
+      declarations: [DynamicComponent],
+      entryComponents: [DynamicComponent],  // needed only for ViewEngine
+    })
+    class TestModule {
+    }
+
+    @Component({
+      selector: 'button',
+      template: '<div id="app-root" #anchor></div>',
+    })
+    class App {
+      @ViewChild('anchor', {read: ViewContainerRef}) anchor!: ViewContainerRef;
+
+      constructor(private cfr: ComponentFactoryResolver, private injector: Injector) {}
+
+      create() {
+        const factory = this.cfr.resolveComponentFactory(DynamicComponent);
+        const componentRef = factory.create(this.injector);
+        componentRef.onDestroy(() => {
+          wasOnDestroyCalled = true;
+        });
+        this.anchor.insert(componentRef.hostView);
+      }
+
+      clear() {
+        this.anchor.clear();
+      }
+    }
+
+    TestBed.configureTestingModule({imports: [TestModule], declarations: [App]});
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    // Add ComponentRef to ViewContainerRef instance.
+    fixture.componentInstance.create();
+    // Clear ViewContainerRef to invoke `onDestroy` callbacks on ComponentRef.
+    fixture.componentInstance.clear();
+
+    expect(wasOnDestroyCalled).toBeTrue();
+  });
+
   describe('invalid host element', () => {
     it('should throw when <ng-container> is used as a host element for a Component', () => {
       @Component({
