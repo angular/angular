@@ -187,8 +187,6 @@ triagePR:
   # arrays of labels that determine if a PR has been fully triaged
   l2TriageLabels:
     -
-      - "effort*"
-      - "risk*"
       - "comp: *"
 
 # options for rerunning CI
