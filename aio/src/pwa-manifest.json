@@ -11,6 +11,12 @@
       "src": "assets/images/favicons/favicon-144x144.png",
       "sizes": "144x144",
       "type": "image/png"
+    },
+    {
+      "src": "assets/images/favicons/favicon-144x144-maskable.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ],
   "start_url": "/?utm_source=homescreen",
