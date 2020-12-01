@@ -31,6 +31,11 @@
       "description": "Updates the Angular CDK to v11",
       "factory": "./ng-update/index#updateToV11"
     },
+    "migration-v12": {
+      "version": "12.0.0-0",
+      "description": "Updates the Angular CDK to v12",
+      "factory": "./ng-update/index#updateToV12"
+    },
     "ng-post-update": {
       "description": "Prints out results after ng-update.",
       "factory": "./ng-update/index#postUpdate",

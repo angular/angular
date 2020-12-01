@@ -41,6 +41,11 @@ export function updateToV11(): Rule {
   return createMigrationSchematicRule(TargetVersion.V11, [], cdkUpgradeData, onMigrationComplete);
 }
 
+/** Entry point for the migration schematics with target of Angular CDK 12.0.0 */
+export function updateToV12(): Rule {
+  return createMigrationSchematicRule(TargetVersion.V12, [], cdkUpgradeData, onMigrationComplete);
+}
+
 /** Function that will be called when the migration completed. */
 function onMigrationComplete(context: SchematicContext, targetVersion: TargetVersion,
                              hasFailures: boolean) {
