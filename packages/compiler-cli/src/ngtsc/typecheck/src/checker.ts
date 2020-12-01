@@ -172,6 +172,10 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
     return {nodes};
   }
 
+  isTrackedTypeCheckFile(filePath: AbsoluteFsPath): boolean {
+    return this.getFileAndShimRecordsForPath(filePath) !== null;
+  }
+
   private getFileAndShimRecordsForPath(shimPath: AbsoluteFsPath):
       {fileRecord: FileTypeCheckingData, shimRecord: ShimTypeCheckingData}|null {
     for (const fileRecord of this.state.values()) {
