@@ -3748,7 +3748,7 @@ describe('styling', () => {
           expect(() => {
             const fixture = TestBed.createComponent(App);
             fixture.detectChanges();
-          }).toThrowError(/Expected class array item to be a non-empty string \(in \["a",""\]\)/)
+          }).toThrowError(/Expected class array item to be a non-empty string \(in \["a",""\]\)/);
         });
 
         it('should throw if empty class names are present in `[class]` arrays in host bindings',
@@ -3765,10 +3765,18 @@ describe('styling', () => {
              expect(() => {
                const fixture = TestBed.createComponent(App);
                fixture.detectChanges();
-             }).toThrowError(/Expected class array item to be a non-empty string \(in \["a",""\]\)/)
+             })
+                 .toThrowError(
+                     /Expected class array item to be a non-empty string \(in \["a",""\]\)/);
            });
 
-        [true, false, 0, null, undefined, {}, []].forEach(input => {
+        // TODO: add a test for '  c  '
+        // TODO: add a note on how this used to work in VE
+        // TODO: add a comment for `.trim()`
+        // TODO: enable some of the tests for VE (that throw)?
+
+        const INVALID_CLASS_ARRAY_INPUTS = [true, false, 0, null, undefined, {}, []];
+        INVALID_CLASS_ARRAY_INPUTS.forEach(input => {
           it(`should throw if ${input} is used inside \`[class]\` arrays`, () => {
             @Component({
               selector: 'comp',
