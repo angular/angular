@@ -38,7 +38,7 @@ Each test-case can specify:
 * A `description` of the test.
 * The `inputFiles` that will be compiled.
 * Additional `compilerOptions` and `angularCompilerOptions` that are passed to the compiler.
-* Whether to exclude this test-case from partial compilation tests (`excludeFromPartialTests`).
+* Whether to exclude this test-case from certain tests running under certain compilation modes (`compilationModeFilter`).
 * A collection of `expectations` definitions that will be checked against the generated files.
 
 Note that there is a JSON schema for the `TEST_CASES.json` file stored at `test_cases/test_case_schema.json`.

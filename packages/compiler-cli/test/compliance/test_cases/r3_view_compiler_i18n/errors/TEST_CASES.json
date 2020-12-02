@@ -6,7 +6,9 @@
       "inputFiles": [
         "nested_i18n_msg.ts"
       ],
-      "excludeFromPartialTests": true,
+      "compilationModeFilter": [
+        "full compile"
+      ],
       "expectations": [
         {
           "expectedErrors": [
@@ -23,7 +25,9 @@
       "inputFiles": [
         "nested_i18n_msg_with_tags.ts"
       ],
-      "excludeFromPartialTests": true,
+      "compilationModeFilter": [
+        "full compile"
+      ],
       "expectations": [
         {
           "expectedErrors": [
@@ -40,7 +44,9 @@
       "inputFiles": [
         "nested_i18n_msg_with_ng-containers.ts"
       ],
-      "excludeFromPartialTests": true,
+      "compilationModeFilter": [
+        "full compile"
+      ],
       "expectations": [
         {
           "expectedErrors": [

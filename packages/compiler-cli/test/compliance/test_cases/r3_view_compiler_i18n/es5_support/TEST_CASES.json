@@ -6,7 +6,9 @@
       "compilerOptions": {
         "target": "ES5"
       },
-      "excludeFromPartialTests": true,
+      "compilationModeFilter": [
+        "full compile"
+      ],
       "expectations": [
         {
           "extraChecks": [
