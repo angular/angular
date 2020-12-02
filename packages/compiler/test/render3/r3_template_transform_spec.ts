@@ -92,8 +92,8 @@ class R3AstHumanizer implements t.Visitor<void> {
   }
 }
 
-function expectFromHtml(html: string) {
-  const res = parse(html);
+function expectFromHtml(html: string, ignoreError = false) {
+  const res = parse(html, {ignoreError});
   return expectFromR3Nodes(res.nodes);
 }
 
@@ -398,6 +398,27 @@ describe('R3 template transform', () => {
     it('should report an error on empty expression', () => {
       expect(() => parse('<div (event)="">')).toThrowError(/Empty expressions are not allowed/);
       expect(() => parse('<div (event)="   ">')).toThrowError(/Empty expressions are not allowed/);
+    });
+
+    it('should parse bound animation events when event name is empty', () => {
+      expectFromHtml('<div (@)="onAnimationEvent($event)"></div>', true).toEqual([
+        ['Element', 'div'],
+        ['BoundEvent', '', null, 'onAnimationEvent($event)'],
+      ]);
+      expect(() => parse('<div (@)></div>'))
+          .toThrowError(/Animation event name is missing in binding/);
+    });
+
+    it('should report invalid phase value of animation event', () => {
+      expect(() => parse('<div (@event.invalidPhase)></div>'))
+          .toThrowError(
+              /The provided animation output phase value "invalidphase" for "@event" is not supported \(use start or done\)/);
+      expect(() => parse('<div (@event.)></div>'))
+          .toThrowError(
+              /The animation trigger output event \(@event\) is missing its phase value name \(start or done are currently supported\)/);
+      expect(() => parse('<div (@event)></div>'))
+          .toThrowError(
+              /The animation trigger output event \(@event\) is missing its phase value name \(start or done are currently supported\)/);
     });
   });
 
