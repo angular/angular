@@ -111,7 +111,7 @@ describe('compiler compliance: directives', () => {
       expectEmit(source, MyComponentFactory, 'Incorrect ChildComponent.ɵfac');
     });
 
-    it('should match directives on element bindings', () => {
+    it('should match directives on property bindings', () => {
       const files = {
         app: {
           'spec.ts': `
