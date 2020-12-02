@@ -126,6 +126,28 @@ are intelligently matched to check whether they are equivalent.
     `__i18nMsg__('message string', [ ['placeholder', 'pair] ], { meta: 'properties'})`.
   * Attribute markers - for example: `__AttributeMarker.Bindings__`.
 
+### Source-map checks
+
+To check a mapping, add a `// SOURCE:` comment to the end of a line in an expectation file:
+
+```
+<generated code> // SOURCE: "<source-url>" <source code>
+```
+
+The generated code, stripped of the `// SOURCE: ` comment, will still be checked as normal by the
+`expectEmit()` helper. But, prior to that, the source-map segments are checked to ensure that there
+is a mapping from `<generated code>` to `<source code>` found in the file at `<source-url>`.
+
+Note:
+
+* The source-url should be absolute, with the directory containing the TEST_CASES.json file assumed
+  to be `/`.
+* Whitespace is important and will be included when comparing the segments.
+* There is a single space character between each part of the line.
+* Newlines within a mapping must be escaped since the mapping and comment must all appear on a
+  single line of this file.
+
+
 ## Running tests
 
 The simplest way to run all the compliance tests is:

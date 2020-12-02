@@ -9,6 +9,8 @@ import {PluginObj, transformSync} from '@babel/core';
 
 import {createEs2015LinkerPlugin} from '../../../linker/babel';
 import {AbsoluteFsPath, FileSystem} from '../../../src/ngtsc/file_system';
+import {ConsoleLogger, LogLevel} from '../../../src/ngtsc/logging';
+import {MapAndPath, RawSourceMap, SourceFileLoader} from '../../../src/ngtsc/sourcemaps';
 import {CompileResult, getBuildOutputDirectory} from '../test_helpers/compile_test';
 import {ComplianceTest} from '../test_helpers/get_compliance_tests';
 import {parseGoldenPartial} from '../test_helpers/golden_partials';
@@ -23,6 +25,8 @@ runTests('linked compile', linkPartials);
  * @param test The compliance test whose partials will be linked.
  */
 function linkPartials(fs: FileSystem, test: ComplianceTest): CompileResult {
+  const logger = new ConsoleLogger(LogLevel.debug);
+  const loader = new SourceFileLoader(fs, logger, {});
   const builtDirectory = getBuildOutputDirectory(fs);
   const linkerPlugin = createEs2015LinkerPlugin({
     // By default we don't render legacy message ids in compliance tests.
@@ -38,11 +42,30 @@ function linkPartials(fs: FileSystem, test: ComplianceTest): CompileResult {
             test.relativePath}.golden.update`);
   }
   const partialFile = fs.readFile(goldenPartialPath);
-  const partials = parseGoldenPartial(partialFile).filter(f => f.path.endsWith('.js'));
-  for (const partial of partials) {
-    const linkedSource =
-        applyLinker({fileName: partial.path, source: partial.content}, linkerPlugin);
-    safeWrite(fs, fs.resolve(builtDirectory, partial.path), linkedSource);
+  const partialFiles = parseGoldenPartial(partialFile);
+
+  partialFiles.forEach(f => safeWrite(fs, fs.resolve(builtDirectory, f.path), f.content));
+
+  for (const expectation of test.expectations) {
+    for (const {generated: fileName} of expectation.files) {
+      const partialPath = fs.resolve(builtDirectory, fileName);
+      if (!fs.exists(partialPath)) {
+        continue;
+      }
+      const source = fs.readFile(partialPath);
+      const sourceMapPath = fs.resolve(partialPath + '.map');
+      const sourceMap =
+          fs.exists(sourceMapPath) ? JSON.parse(fs.readFile(sourceMapPath)) : undefined;
+      const {linkedSource, linkedSourceMap} =
+          applyLinker({fileName, source, sourceMap}, linkerPlugin);
+
+      if (linkedSourceMap !== undefined) {
+        const mapAndPath: MapAndPath = {map: linkedSourceMap, mapPath: sourceMapPath};
+        const sourceFile = loader.loadSourceFile(partialPath, linkedSource, mapAndPath);
+        safeWrite(fs, sourceMapPath, JSON.stringify(sourceFile.renderFlattenedSourceMap()));
+      }
+      safeWrite(fs, partialPath, linkedSource);
+    }
   }
   return {emittedFiles: [], errors: []};
 }
@@ -56,12 +79,15 @@ function linkPartials(fs: FileSystem, test: ComplianceTest): CompileResult {
  * @param linkerPlugin The linker plugin to apply.
  * @returns The file's source content, which has been transformed using the linker if necessary.
  */
-function applyLinker(file: {fileName: string; source: string}, linkerPlugin: PluginObj): string {
+function applyLinker(
+    file: {fileName: string; source: string, sourceMap: RawSourceMap | undefined},
+    linkerPlugin: PluginObj): {linkedSource: string, linkedSourceMap: RawSourceMap|undefined} {
   if (!file.fileName.endsWith('.js')) {
-    return file.source;
+    return {linkedSource: file.source, linkedSourceMap: file.sourceMap};
   }
   const result = transformSync(file.source, {
     filename: file.fileName,
+    sourceMaps: !!file.sourceMap,
     plugins: [linkerPlugin],
     parserOpts: {sourceType: 'unambiguous'},
   });
@@ -71,7 +97,7 @@ function applyLinker(file: {fileName: string; source: string}, linkerPlugin: Plu
   if (result.code == null) {
     throw fail('Babel transform result does not have any code');
   }
-  return result.code;
+  return {linkedSource: result.code, linkedSourceMap: result.map || undefined};
 }
 
 /**
