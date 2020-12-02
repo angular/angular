@@ -340,6 +340,12 @@ Angular supplies a number of built-in directives that begin with the `ng` prefix
 You can also create new directives to implement your own functionality.
 You associate a *selector* (an HTML tag such as `<my-directive>`) with a custom directive, thereby extending the [template syntax](guide/template-syntax) that you can use in your apps.
 
+**UpperCamelCase**, such as `NgIf`, refers to a directive class.
+You can use **UpperCamelCase** when describing properties and directive behavior.
+
+**lowerCamelCase**, such as `ngIf` refers to a directive's attribute name.
+You can use **lowerCamelCase** when describing how to apply the directive to an element in the HTML template.
+
 {@a dom}
 
 ## domain-specific language (DSL)

@@ -5,27 +5,21 @@
 <p>Conditional display of hero</p>
 
 <blockquote>
-<!-- #docregion built-in, asterisk, ngif -->
+<!-- #docregion asterisk -->
 <div *ngIf="hero" class="name">{{hero.name}}</div>
-<!-- #enddocregion built-in, asterisk, ngif -->
+<!-- #enddocregion asterisk -->
 </blockquote>
 
 <p>List of heroes</p>
-<!-- #docregion built-in -->
 
 <ul>
-  <!-- #docregion ngfor-li -->
   <li *ngFor="let hero of heroes">{{hero.name}}</li>
-  <!-- #enddocregion ngfor-li -->
 </ul>
-
-<!-- #enddocregion built-in -->
 
 <hr>
 
 <h2 id="ngIf">NgIf</h2>
 
-<!-- #docregion ngif-true -->
 <p *ngIf="true">
   Expression is true and ngIf is true.
   This paragraph is in the DOM.
@@ -34,9 +28,7 @@
   Expression is false and ngIf is false.
   This paragraph is not in the DOM.
 </p>
-<!-- #enddocregion ngif-true -->
 
-<!-- #docregion display-none -->
 <p [style.display]="'block'">
   Expression sets display to "block".
   This paragraph is visible.
@@ -45,7 +37,6 @@
   Expression sets display to "none".
   This paragraph is hidden but still in the DOM.
 </p>
-<!-- #enddocregion display-none -->
 
 <h4>NgIf with template</h4>
 <p>&lt;ng-template&gt; element</p>
@@ -72,7 +63,7 @@
   and continued on my way.
 </p>
 <!-- #enddocregion ngif-ngcontainer -->
-<!-- #docregion ngif-span -->
+
 <p>
   I turned the corner
   <span *ngIf="hero">
@@ -80,10 +71,9 @@
   </span>
   and continued on my way.
 </p>
-<!-- #enddocregion ngif-span -->
 
 <p><i>&lt;select&gt; with &lt;span&gt;</i></p>
-<!-- #docregion select-span -->
+
 <div>
   Pick your favorite hero
   (<label><input type="checkbox" checked (change)="showSad = !showSad">show sad</label>)
@@ -95,7 +85,6 @@
     </span>
   </span>
 </select>
-<!-- #enddocregion select-span -->
 
 <p><i>&lt;select&gt; with &lt;ng-container&gt;</i></p>
 <!-- #docregion select-ngcontainer -->
@@ -148,17 +137,14 @@
 
 <h4>NgSwitch</h4>
 
-<!-- #docregion built-in , ngswitch -->
 <div [ngSwitch]="hero?.emotion">
   <app-happy-hero    *ngSwitchCase="'happy'"    [hero]="hero"></app-happy-hero>
   <app-sad-hero      *ngSwitchCase="'sad'"      [hero]="hero"></app-sad-hero>
   <app-confused-hero *ngSwitchCase="'confused'" [hero]="hero"></app-confused-hero>
   <app-unknown-hero  *ngSwitchDefault           [hero]="hero"></app-unknown-hero>
 </div>
-<!-- #enddocregion built-in, ngswitch -->
 
 <h4>NgSwitch with &lt;ng-template&gt;</h4>
-<!-- #docregion ngswitch-template -->
 <div [ngSwitch]="hero?.emotion">
   <ng-template [ngSwitchCase]="'happy'">
     <app-happy-hero [hero]="hero"></app-happy-hero>
@@ -173,7 +159,6 @@
     <app-unknown-hero [hero]="hero"></app-unknown-hero>
   </ng-template>
 </div>
-<!-- #enddocregion ngswitch-template -->
 
 <hr>
 
@@ -189,6 +174,7 @@
 <hr>
 
 <h2 id="appUnless">UnlessDirective</h2>
+<!-- #docregion toggle-info -->
 <p>
   The condition is currently
   <span [ngClass]="{ 'a': !condition, 'b': condition, 'unless': true }">{{condition}}</span>.
@@ -198,6 +184,8 @@
     Toggle condition to {{condition ? 'false' : 'true'}}
   </button>
 </p>
+<!-- #enddocregion toggle-info -->
+
 <!-- #docregion appUnless-->
 <p *appUnless="condition" class="unless a">
   (A) This paragraph is displayed because the condition is false.

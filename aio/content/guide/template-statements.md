@@ -50,7 +50,7 @@ For example, `deleteHero()` of `(click)="deleteHero()"` is a method of the compo
 
 The statement context may also refer to properties of the template's own context.
 In the following example, the component's event handling method, `onSave()` takes the template's own `$event` object as an argument.
-On the next two lines, the `deleteHero()` method takes a [template input variable](guide/structural-directives#template-input-variable), `hero`, and `onSubmit()` takes a [template reference variable](guide/template-reference-variables), `#heroForm`.
+On the next two lines, the `deleteHero()` method takes a [template input variable](guide/structural-directives#shorthand), `hero`, and `onSubmit()` takes a [template reference variable](guide/template-reference-variables), `#heroForm`.
 
 <code-example path="template-syntax/src/app/app.component.html" region="context-var-statement" header="src/app/app.component.html"></code-example>
 

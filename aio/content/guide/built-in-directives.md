@@ -198,7 +198,7 @@ The string `"let item of items"` instructs Angular to do the following:
   * Translate `"let item of items"` into an `<ng-template>` around the host element
   * Repeat the `<ng-template>` for each `item` in the list
 
-For more information see the [`<ng-template>` section](guide/structural-directives#the-ng-template) of [Structural directives](guide/structural-directives).
+For more information see the [Structural directive shorthand](guide/structural-directives#shorthand) section of [Structural directives](guide/structural-directives).
 ### Repeating a component view
 
 To repeat a component element, apply `*ngFor` to the selector.
@@ -215,7 +215,7 @@ The following example references `item` first in an interpolation and then passe
 
 <code-example path="built-in-directives/src/app/app.component.html" region="NgFor-1-2" header="src/app/app.component.html"></code-example>
 
-For more information about template input variables, see [Structural Directives](guide/structural-directives#template-input-variable).
+For more information about template input variables, see [Structural directive shorthand](guide/structural-directives#shorthand).
 
 ### Getting the `index` of `*ngFor`
 
@@ -228,8 +228,12 @@ The following example gets the `index` in a variable named `i` and displays it w
 
 The index property of the `NgFor` directive context returns the zero-based index of the item in each iteration.
 
-{@a one-per-element}
+Angular translates this instruction into an `<ng-template>` around the host element,
+then uses this template repeatedly to create a new set of elements and bindings for each `item`
+in the list.
+For more information about shorthand, see the [Structural Directives](guide/structural-directives#shorthand) guide.
 
+{@a one-per-element}
 ## Repeating elements when a condition is true
 
 To repeat a block of HTML when a particular condition is true, put the `*ngIf` on a container element that wraps an `*ngFor` element.
@@ -278,7 +282,7 @@ They do not have special access to any private APIs that other directives can't 
 
 The Angular `<ng-container>` is a grouping element that doesn't interfere with styles or layout because Angular doesn't put it in the DOM.
 
-You can use [`<ng-container>`](guide/structural-directives#ngcontainer) when there's no single element to host the directive.
+You can use `<ng-container>` when there's no single element to host the directive.
 
 Here's a conditional paragraph using `<ng-container>`.
 
@@ -338,8 +342,6 @@ Switch directives also work with native HTML elements and web components.
 For example, you could replace the `<app-best-item>` switch case with a `<div>` as follows.
 
 <code-example path="built-in-directives/src/app/app.component.html" region="NgSwitch-div" header="src/app/app.component.html"></code-example>
-
-<hr />
 
 ## What's next
 
