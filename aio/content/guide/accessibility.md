@@ -38,8 +38,6 @@ Static ARIA attributes require no extra syntax.
 <button aria-label="Save document">...</button>
 ```
 
-NOTE:
-
 <div class="alert is-helpful">
 
    By convention, HTML attributes use lowercase names (`tabindex`), while properties use camelCase names (`tabIndex`).
