@@ -14,6 +14,7 @@ import {replaceMacros} from './expected_file_macros';
 import {verifyUniqueFunctions} from './function_checks';
 import {ExpectedFile, ExtraCheck} from './get_compliance_tests';
 import {verifyPlaceholdersIntegrity, verifyUniqueConsts} from './i18n_checks';
+import {checkMappings} from './sourcemap_helpers';
 
 type ExtraCheckFunction = (generated: string, ...extraArgs: any[]) => boolean;
 const EXTRA_CHECK_FUNCTIONS: Record<string, ExtraCheckFunction> = {
@@ -54,8 +55,10 @@ export function checkExpectations(
       error.stack = '';
       throw error;
     }
-    const expected = replaceMacros(fs.readFile(expectedPath));
     const generated = fs.readFile(generatedPath);
+    let expected = fs.readFile(expectedPath);
+    expected = replaceMacros(expected);
+    expected = checkMappings(fs, generated, generatedPath, expected);
 
     expectEmit(
         generated, expected,
