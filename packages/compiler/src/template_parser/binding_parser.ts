@@ -443,21 +443,19 @@ export class BindingParser {
     const matches = splitAtPeriod(name, [name, '']);
     const eventName = matches[0];
     const phase = matches[1].toLowerCase();
-    if (phase) {
-      switch (phase) {
-        case 'start':
-        case 'done':
-          const ast = this._parseAction(expression, handlerSpan);
-          targetEvents.push(new ParsedEvent(
-              eventName, phase, ParsedEventType.Animation, ast, sourceSpan, handlerSpan, keySpan));
-          break;
+    const ast = this._parseAction(expression, handlerSpan);
+    targetEvents.push(new ParsedEvent(
+        eventName, phase, ParsedEventType.Animation, ast, sourceSpan, handlerSpan, keySpan));
 
-        default:
-          this._reportError(
-              `The provided animation output phase value "${phase}" for "@${
-                  eventName}" is not supported (use start or done)`,
-              sourceSpan);
-          break;
+    if (eventName.length === 0) {
+      this._reportError(`Animation event name is missing in binding`, sourceSpan);
+    }
+    if (phase) {
+      if (phase !== 'start' && phase !== 'done') {
+        this._reportError(
+            `The provided animation output phase value "${phase}" for "@${
+                eventName}" is not supported (use start or done)`,
+            sourceSpan);
       }
     } else {
       this._reportError(
