@@ -653,8 +653,20 @@ There are many more interceptors in the complete sample code.
 ### Interceptor order
 
 Angular applies interceptors in the order that you provide them.
-If you provide interceptors _A_, then _B_, then _C_,  requests flow in _A->B->C_ and
-responses flow out _C->B->A_.
+For example, consider a situation in which you want to handle the authentication of your HTTP requests and log them before sending them to a server. To accomplish this task, you could provide an `AuthInterceptor` service and then a `LoggingInterceptor` service.
+Outgoing requests would flow from the `AuthInterceptor` to the `LoggingInterceptor`.
+Responses from these requests would flow in the other direction, from `LoggingInterceptor` back to `AuthInterceptor`.
+The following is a visual representation of the process:
+
+<div class="lightbox">
+  <img src="generated/images/guide/http/interceptor-order.svg" alt="Interceptor order">
+</div>
+
+<div class="alert is-helpful">
+
+   The last interceptor in the process is always the `HttpBackend` that handles communication with the server.
+
+</div>
 
 You cannot change the order or remove interceptors later.
 If you need to enable and disable an interceptor dynamically, you'll have to build that capability into the interceptor itself.
