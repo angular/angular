@@ -35,13 +35,16 @@ export function* getComplianceTests(testConfigPath: string): Generator<Complianc
   const testConfig = Array.isArray(testConfigJSON) ? testConfigJSON : [testConfigJSON];
   for (const test of testConfig) {
     const inputFiles = getStringArrayOrDefault(test, 'inputFiles', realTestPath, ['test.ts']);
+    const compilationModeFilter = getStringArrayOrDefault(
+                                      test, 'compilationModeFilter', realTestPath,
+                                      ['linked compile', 'full compile']) as CompilationMode[];
+
     yield {
       relativePath: fs.relative(basePath, realTestPath),
       realTestPath,
       description: getStringOrFail(test, 'description', realTestPath),
       inputFiles,
-      excludeFromPartialTests:
-          getBooleanOrDefault(test, 'excludeFromPartialTests', realTestPath, false),
+      compilationModeFilter,
       expectations: parseExpectations(test.expectations, realTestPath, inputFiles),
       compilerOptions: getConfigOptions(test, 'compilerOptions', realTestPath),
       angularCompilerOptions: getConfigOptions(test, 'angularCompilerOptions', realTestPath),
@@ -243,8 +246,11 @@ export interface ComplianceTest {
   angularCompilerOptions?: ConfigOptions;
   /** A list of paths to source files that should be compiled for this test case. */
   inputFiles: string[];
-  /** If set to true then do not check expectations for this test-case in partial tests. */
-  excludeFromPartialTests: boolean;
+  /**
+   * Only run this test when the input files are compiled using the given compilation
+   * modes. The default is to run for all modes.
+   */
+  compilationModeFilter: CompilationMode[];
   /** A list of expectations to check for this test case. */
   expectations: Expectation[];
   /** If set to `true`, then focus on this test (equivalent to jasmine's 'fit()`). */
@@ -252,6 +258,8 @@ export interface ComplianceTest {
   /** If set to `true`, then exclude this test (equivalent to jasmine's 'xit()`). */
   excludeTest?: boolean;
 }
+
+export type CompilationMode = 'linked compile'|'full compile';
 
 export interface Expectation {
   /** The message to display if this expectation fails. */

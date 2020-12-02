@@ -20,10 +20,20 @@
             "description": "This will be used as the message in an `it()` clause.",
             "type": "string"
           },
-          "excludeFromPartialTests": {
-            "title": "If set to true then do not check this test-case expectations in partial tests.",
-            "type": "boolean",
-            "default": false
+          "compilationModeFilter": {
+            "title": "An array of compilation modes under which this test-case should be run.",
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "full compile",
+                "linked compile"
+              ]
+            },
+            "default": [
+              "full compile",
+              "linked compile"
+            ]
           },
           "inputFiles": {
             "title": "A collection of source files to compile",

@@ -14,7 +14,7 @@ import {ComplianceTest} from '../test_helpers/get_compliance_tests';
 import {parseGoldenPartial} from '../test_helpers/golden_partials';
 import {runTests} from '../test_helpers/test_runner';
 
-runTests('partial compile + link', linkPartials);
+runTests('linked compile', linkPartials);
 
 /**
  * Link all the partials specified in the given `test`.

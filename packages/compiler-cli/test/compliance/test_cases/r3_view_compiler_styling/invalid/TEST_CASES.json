@@ -15,7 +15,9 @@
           ]
         }
       ],
-      "excludeFromPartialTests": true
+      "compilationModeFilter": [
+        "full compile"
+      ]
     }
   ]
 }
