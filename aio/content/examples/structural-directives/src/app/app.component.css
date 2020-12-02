@@ -42,9 +42,7 @@ td, th {
   vertical-align: top;
 }
 
-/* #docregion p-span */
 p span { color: red; font-size: 70%; }
-/* #enddocregion p-span */
 
 .unless {
   border: 2px solid;

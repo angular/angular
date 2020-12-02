@@ -36,7 +36,7 @@ Angular assigns a template variable a value based on where you declare the varia
 * If you declare the variable on a component, the variable refers to the component instance.
 * If you declare the variable on a standard HTML tag, the variable refers to the element.
 * If you declare the variable on an `<ng-template>` element, the variable refers to a `TemplateRef` instance, which represents the template.
-  For more information on `<ng-template>`, see the [ng-template](guide/structural-directives#the-ng-template) section of [Structural directives](guide/structural-directives).
+  For more information on `<ng-template>`, see [How Angular uses the asterisk, `*`, syntax](guide/structural-directives#asterisk) in [Structural directives](guide/structural-directives).
 * If the variable specifies a name on the right-hand side, such as `#var="ngModel"`, the variable refers to the directive or component on the element with a matching `exportAs` name.
 <!-- What does the second half of this mean?^^ Can we explain this more fully? Could I see a working example? -kw -->
 
@@ -152,3 +152,21 @@ name: "TemplateRef"
 __proto__: Function
 
 </code-example>
+
+{@a template-input-variable}
+{@a template-input-variables}
+## Template input variable
+
+A _template input variable_ is a variable you can reference within a single instance of the template.
+You declare a template input variable using the `let` keyword as in `let hero`.
+
+There are several such variables in this example: `hero`, `i`, and `odd`.
+
+The variable's scope is limited to a single instance of the repeated template.
+You can use the same variable name again in the definition of other structural directives.
+
+In contrast, you declare a template variable by prefixing the variable name with `#`, as in `#var`.
+A template variable refers to its attached element, component, or directive.
+
+Template input variables and template variables names have their own namespaces.
+The template input variable `hero` in `let hero` is distinct from the template variable `hero` in `#hero`.
