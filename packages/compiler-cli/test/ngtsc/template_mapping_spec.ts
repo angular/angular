@@ -586,37 +586,6 @@ runInEachFileSystem((os) => {
         });
       });
 
-      it('should create (simple backtick string) inline template source-mapping', () => {
-        const mappings = compileAndMap('<div>this is a test</div><div>{{ 1 + 2 }}</div>');
-
-        // Creation mode
-        expectMapping(
-            mappings,
-            {generated: 'i0.ɵɵelementStart(0, "div")', source: '<div>', sourceUrl: '../test.ts'});
-        expectMapping(mappings, {
-          generated: 'i0.ɵɵtext(1, "this is a test")',
-          source: 'this is a test',
-          sourceUrl: '../test.ts'
-        });
-        expectMapping(
-            mappings, {generated: 'i0.ɵɵelementEnd()', source: '</div>', sourceUrl: '../test.ts'});
-        expectMapping(
-            mappings,
-            {generated: 'i0.ɵɵelementStart(2, "div")', source: '<div>', sourceUrl: '../test.ts'});
-        expectMapping(
-            mappings, {generated: 'i0.ɵɵtext(3)', source: '{{ 1 + 2 }}', sourceUrl: '../test.ts'});
-        expectMapping(
-            mappings, {generated: 'i0.ɵɵelementEnd()', source: '</div>', sourceUrl: '../test.ts'});
-
-        // TODO(benlesh): We need to circle back and prevent the extra parens from being generated.
-        // Update mode
-        expectMapping(mappings, {
-          generated: 'i0.ɵɵtextInterpolate(1 + 2)',
-          source: '{{ 1 + 2 }}',
-          sourceUrl: '../test.ts'
-        });
-      });
-
       it('should create correct inline template source-mapping when the source contains escape sequences',
          () => {
            // Note that the escaped double quotes, which need un-escaping to be parsed correctly.
