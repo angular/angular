@@ -180,7 +180,7 @@ For more information, see [Template reference variables](guide/template-referenc
 <live-example name="ngcontainer"></live-example>
 
 Demonstrates `<ngcontainer>`.
-For more information, see the [ngtemplate section](guide/structural-directives#ngcontainer) of [Structural directives](guide/structural-directives) .
+For more information, see the [ng-container section](guide/built-in-directives#ngcontainer) of [Built-in directives](guide/structural-directives) .
 
 ### Pipes
 

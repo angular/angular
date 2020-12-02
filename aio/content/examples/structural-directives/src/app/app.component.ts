@@ -10,8 +10,9 @@ import { Hero, heroes } from './hero';
 export class AppComponent {
   heroes = heroes;
   hero = this.heroes[0];
-
+  // #docregion condition
   condition = false;
+  // #enddocregion condition
   logs: string[] = [];
   showSad = true;
   status = 'ready';

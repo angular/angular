@@ -140,7 +140,7 @@ The following table lists some of the key AngularJS template features with their
 
       Angular has true template input variables that are explicitly defined using the `let` keyword.
 
-      For more information, see the [Template input variables](guide/structural-directives#template-input-variable) section of [Structural Directives](guide/structural-directives).
+      For more information, see the [Structural directive shorthand](guide/structural-directives#shorthand) section of [Structural Directives](guide/structural-directives).
     </td>
 
   </tr>

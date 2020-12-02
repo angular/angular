@@ -38,7 +38,7 @@ export class NgForOfContext<T, U extends NgIterable<T> = NgIterable<T>> {
  * of the cloned templates.
  *
  * The `ngForOf` directive is generally used in the
- * [shorthand form](guide/structural-directives#the-asterisk--prefix) `*ngFor`.
+ * [shorthand form](guide/structural-directives#asterisk) `*ngFor`.
  * In this form, the template to be rendered for each iteration is the content
  * of an anchor element containing the directive.
  *
@@ -67,11 +67,11 @@ export class NgForOfContext<T, U extends NgIterable<T> = NgIterable<T>> {
  * context according to its lexical position.
  *
  * When using the shorthand syntax, Angular allows only [one structural directive
- * on an element](guide/structural-directives#one-structural-directive-per-host-element).
+ * on an element](guide/built-in-directives#one-per-element).
  * If you want to iterate conditionally, for example,
  * put the `*ngIf` on a container element that wraps the `*ngFor` element.
  * For futher discussion, see
- * [Structural Directives](guide/structural-directives#one-per-element).
+ * [Structural Directives](guide/built-in-directives#one-per-element).
  *
  * @usageNotes
  *
@@ -133,7 +133,7 @@ export class NgForOfContext<T, U extends NgIterable<T> = NgIterable<T>> {
 export class NgForOf<T, U extends NgIterable<T> = NgIterable<T>> implements DoCheck {
   /**
    * The value of the iterable expression, which can be used as a
-   * [template input variable](guide/structural-directives#template-input-variable).
+   * [template input variable](guide/structural-directives#shorthand).
    */
   @Input()
   set ngForOf(ngForOf: U&NgIterable<T>|undefined|null) {
