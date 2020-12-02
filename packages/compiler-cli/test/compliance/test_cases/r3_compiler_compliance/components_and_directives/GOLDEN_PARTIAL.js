@@ -386,3 +386,39 @@ export declare class Comp {
     static ɵcmp: i0.ɵɵComponentDefWithMeta<Comp, "ng-component", never, {}, {}, never, never>;
 }
 
+/****************************************************************************************************
+ * PARTIAL FILE: ng_template_empty_binding.js
+ ****************************************************************************************************/
+import { Component, NgModule } from '@angular/core';
+import * as i0 from "@angular/core";
+export class MyComponent {
+}
+MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); };
+MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: 1, type: MyComponent, selector: "my-app", ngImport: i0, template: { source: '<ng-template [id]=""></ng-template>', isInline: true } });
+/*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyComponent, [{
+        type: Component,
+        args: [{ selector: 'my-app', template: '<ng-template [id]=""></ng-template>' }]
+    }], null, null); })();
+export class MyModule {
+}
+MyModule.ɵmod = i0.ɵɵdefineNgModule({ type: MyModule });
+MyModule.ɵinj = i0.ɵɵdefineInjector({ factory: function MyModule_Factory(t) { return new (t || MyModule)(); } });
+(function () { (typeof ngJitMode === "undefined" || ngJitMode) && i0.ɵɵsetNgModuleScope(MyModule, { declarations: [MyComponent] }); })();
+/*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyModule, [{
+        type: NgModule,
+        args: [{ declarations: [MyComponent] }]
+    }], null, null); })();
+
+/****************************************************************************************************
+ * PARTIAL FILE: ng_template_empty_binding.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class MyComponent {
+    static ɵfac: i0.ɵɵFactoryDef<MyComponent, never>;
+    static ɵcmp: i0.ɵɵComponentDefWithMeta<MyComponent, "my-app", never, {}, {}, never, never>;
+}
+export declare class MyModule {
+    static ɵmod: i0.ɵɵNgModuleDefWithMeta<MyModule, [typeof MyComponent], never, never>;
+    static ɵinj: i0.ɵɵInjectorDef<MyModule>;
+}
+

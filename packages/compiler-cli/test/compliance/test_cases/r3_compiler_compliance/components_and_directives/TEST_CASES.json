@@ -144,6 +144,20 @@
           ]
         }
       ]
+    },
+    {
+      "description": "should support empty property bindings on ng-template",
+      "inputFiles": [
+        "ng_template_empty_binding.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect template",
+          "files": [
+            "ng_template_empty_binding.js"
+          ]
+        }
+      ]
     }
   ]
 }
