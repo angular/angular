@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ApplicationRef, COMPILER_OPTIONS, Component, destroyPlatform, NgModule, TestabilityRegistry, ViewEncapsulation} from '@angular/core';
+import {ApplicationRef, COMPILER_OPTIONS, Component, destroyPlatform, NgModule, NgZone, TestabilityRegistry, ViewEncapsulation} from '@angular/core';
 import {expect} from '@angular/core/testing/src/testing_internal';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
@@ -224,6 +224,22 @@ describe('bootstrap', () => {
 
            expect(appRef.components.length).toBe(0);
            expect(testabilityRegistry.getAllRootElements().length).toBe(0);
+         }));
+    });
+
+    describe('PlatformRef cleanup', () => {
+      it('should unsubscribe from `onError` when Injector is destroyed',
+         withBody('<my-app></my-app>', async () => {
+           const TestModule = createComponentAndModule();
+
+           const ngModuleRef = await platformBrowserDynamic().bootstrapModule(TestModule);
+           const ngZone = ngModuleRef.injector.get(NgZone);
+
+           expect(ngZone.onError.observers.length).toBe(1);
+
+           ngModuleRef.destroy();
+
+           expect(ngZone.onError.observers.length).toBe(0);
          }));
     });
 
