@@ -69,6 +69,34 @@
   @return map-merge($config, (font-family: $font-family));
 }
 
+// Whether a config is for the Material Design 2018 typography system.
+@function mat-private-typography-is-2018-config($config) {
+  @return map-get($config, headline-1) != null;
+}
+
+// Given a config for either the 2014 or 2018 Material Design typography system,
+// produces a normalized typography config for the 2014 Material Design typography system.
+// 2014 - https://material.io/archive/guidelines/style/typography.html#typography-styles
+// 2018 - https://material.io/design/typography/the-type-system.html#type-scale
+@function mat-typography-normalized-config($config) {
+  @if mat-private-typography-is-2018-config($config) {
+    @return mat-typography-config(
+        $display-3: map-get($config, display-1),
+        $display-2: map-get($config, display-2),
+        $display-1: map-get($config, display-3),
+        $headline: map-get($config, headline-4),
+        $title: map-get($config, subtitle-1),
+        $subheading-2: map-get($config, subhead-1),
+        $subheading-1: map-get($config, subhead-2),
+        $body-2: map-get($config, body-1),
+        $body-1: map-get($config, body-2),
+        $caption: map-get($config, caption),
+        $button: map-get($config, button),
+    );
+  }
+  @return $config;
+}
+
 // Adds the base typography styles, based on a config.
 /* stylelint-disable-next-line material/theme-mixin-api */
 @mixin mat-base-typography($config, $selector: '.mat-typography') {
