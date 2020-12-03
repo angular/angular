@@ -10,7 +10,8 @@ import {
   coerceBooleanProperty,
   coerceNumberProperty,
   coerceElement,
-  BooleanInput
+  BooleanInput,
+  NumberInput
 } from '@angular/cdk/coercion';
 import {
   AfterContentInit,
@@ -194,13 +195,11 @@ export class CdkObserveContent implements AfterContentInit, OnDestroy {
   }
 
   private _unsubscribe() {
-    if (this._currentSubscription) {
-      this._currentSubscription.unsubscribe();
-    }
+    this._currentSubscription?.unsubscribe();
   }
 
   static ngAcceptInputType_disabled: BooleanInput;
-  static ngAcceptInputType_debounce: BooleanInput;
+  static ngAcceptInputType_debounce: NumberInput;
 }
 
 
