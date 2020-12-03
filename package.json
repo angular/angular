@@ -148,7 +148,7 @@
     "minimist": "^1.2.0",
     "moment": "^2.18.1",
     "node-fetch": "^2.6.0",
-    "parse5": "^5.0.0",
+    "parse5": "^6.0.1",
     "postcss": "^7.0.27",
     "protractor": "^7.0.0",
     "requirejs": "^2.3.6",
