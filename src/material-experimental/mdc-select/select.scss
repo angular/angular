@@ -8,6 +8,8 @@ $mat-select-arrow-size: 5px !default;
 $mat-select-arrow-margin: 4px !default;
 $mat-select-panel-max-height: 256px !default;
 $mat-select-placeholder-arrow-space: 2 * ($mat-select-arrow-size + $mat-select-arrow-margin);
+$leading-width: 12px !default;
+$scale: 0.75 !default;
 
 // We base the select panel styling on top of MDC's menu styles and we
 // implement the trigger ourselves since MDC doesn't provide an equivalent.
@@ -114,5 +116,29 @@ $mat-select-placeholder-arrow-space: 2 * ($mat-select-arrow-size + $mat-select-a
     transition: none;
     // Prevents the '...' from showing on the parent element.
     display: block;
+  }
+}
+
+// Our MDC form field implementation is based on the MDC text field which doesn't include styles
+// for select. The select specific styles are not present as they don't use their text field as a
+// container. Below are the styles to account for the select arrow icon at the end.
+.mat-mdc-form-field-type-mat-select {
+  &.mat-form-field-appearance-fill {
+    .mdc-floating-label {
+      max-width: calc(100% - #{$mat-select-placeholder-arrow-space});
+    }
+
+    .mdc-floating-label--float-above {
+      max-width: calc(100% / #{$scale} - #{$mat-select-placeholder-arrow-space / $scale});
+    }
+  }
+  &.mat-form-field-appearance-outline {
+    .mdc-notched-outline__notch {
+      max-width: calc(100% - #{2 * ($mat-select-placeholder-arrow-space + $leading-width)});
+    }
+
+    .mdc-text-field--label-floating .mdc-notched-outline__notch {
+      max-width: calc(100% - #{$leading-width * 2});
+    }
   }
 }
