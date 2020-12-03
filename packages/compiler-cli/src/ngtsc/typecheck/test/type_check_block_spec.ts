@@ -717,6 +717,7 @@ describe('type check blocks', () => {
       hasNgTemplateContextGuard: true,
     }];
     const BASE_CONFIG: TypeCheckingConfig = {
+      parseErrorsOnly: false,
       applyTemplateContextGuards: true,
       checkQueries: false,
       checkTemplateBodies: true,

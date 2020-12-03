@@ -466,6 +466,7 @@ export class NgCompiler {
     let typeCheckingConfig: TypeCheckingConfig;
     if (this.fullTemplateTypeCheck) {
       typeCheckingConfig = {
+        parseErrorsOnly: false,
         applyTemplateContextGuards: strictTemplates,
         checkQueries: false,
         checkTemplateBodies: true,
@@ -495,6 +496,7 @@ export class NgCompiler {
       };
     } else {
       typeCheckingConfig = {
+        parseErrorsOnly: !this.options.ivyTemplateTypeCheck,
         applyTemplateContextGuards: false,
         checkQueries: false,
         checkTemplateBodies: false,
@@ -559,11 +561,6 @@ export class NgCompiler {
   }
 
   private getTemplateDiagnostics(): ReadonlyArray<ts.Diagnostic> {
-    // Skip template type-checking if it's disabled.
-    if (this.options.ivyTemplateTypeCheck === false && !this.fullTemplateTypeCheck) {
-      return [];
-    }
-
     const compilation = this.ensureAnalyzed();
 
     // Get the diagnostics.

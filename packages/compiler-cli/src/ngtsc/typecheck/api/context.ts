@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ParseSourceFile, R3TargetBinder, SchemaMetadata, TmplAstNode} from '@angular/compiler';
+import {ParseError, ParseSourceFile, R3TargetBinder, SchemaMetadata, TmplAstNode} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {Reference} from '../../imports';
@@ -40,7 +40,8 @@ export interface TypeCheckContext {
       ref: Reference<ClassDeclaration<ts.ClassDeclaration>>,
       binder: R3TargetBinder<TypeCheckableDirectiveMeta>, template: TmplAstNode[],
       pipes: Map<string, Reference<ClassDeclaration<ts.ClassDeclaration>>>,
-      schemas: SchemaMetadata[], sourceMapping: TemplateSourceMapping, file: ParseSourceFile): void;
+      schemas: SchemaMetadata[], sourceMapping: TemplateSourceMapping, file: ParseSourceFile,
+      parseErrors: ParseError[]|null): void;
 }
 
 /**

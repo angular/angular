@@ -165,6 +165,7 @@ export function ngForTypeCheckTarget(): TypeCheckingTarget {
 }
 
 export const ALL_ENABLED_CONFIG: TypeCheckingConfig = {
+  parseErrorsOnly: false,
   applyTemplateContextGuards: true,
   checkQueries: false,
   checkTemplateBodies: true,
@@ -407,7 +408,7 @@ export function setup(targets: TypeCheckingTarget[], overrides: {
           node: classRef.node.name,
         };
 
-        ctx.addTemplate(classRef, binder, nodes, pipes, [], sourceMapping, templateFile);
+        ctx.addTemplate(classRef, binder, nodes, pipes, [], sourceMapping, templateFile, errors);
       }
     }
   });

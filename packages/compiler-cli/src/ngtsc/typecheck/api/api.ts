@@ -80,6 +80,12 @@ export interface TypeCtorMetadata {
 
 export interface TypeCheckingConfig {
   /**
+   * Supersedes all other options. If true, only produces diagnostics from template parse errors.
+   * Otherwise, proceeds with template type checking as configured.
+   */
+  parseErrorsOnly: boolean;
+
+  /**
    * Whether to check the left-hand side type of binding operations.
    *
    * For example, if this is `false` then the expression `[input]="expr"` will have `expr` type-

@@ -202,8 +202,8 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
   }
 
   /**
-   * Retrieve type-checking diagnostics from the given `ts.SourceFile` using the most recent
-   * type-checking program.
+   * Retrieve type-checking and template parse diagnostics from the given `ts.SourceFile` using the
+   * most recent type-checking program.
    */
   getDiagnosticsForFile(sf: ts.SourceFile, optimizeFor: OptimizeFor): ts.Diagnostic[] {
     switch (optimizeFor) {

@@ -13,8 +13,6 @@ import * as ts from 'typescript';
 import {createModuleWithDeclarations} from './test_utils';
 
 describe('getSemanticDiagnostics', () => {
-  let env: LanguageServiceTestEnvironment;
-
   beforeEach(() => {
     initMockFileSystem('Native');
   });
@@ -31,7 +29,7 @@ describe('getSemanticDiagnostics', () => {
       export class AppComponent {}
     `
     };
-    env = createModuleWithDeclarations([appFile]);
+    const env = createModuleWithDeclarations([appFile]);
 
     const diags = env.ngLS.getSemanticDiagnostics(absoluteFrom('/app.ts'));
     expect(diags.length).toEqual(0);
@@ -49,7 +47,7 @@ describe('getSemanticDiagnostics', () => {
       export class AppComponent {}
     `
     };
-    env = createModuleWithDeclarations([appFile]);
+    const env = createModuleWithDeclarations([appFile]);
 
     const diags = env.ngLS.getSemanticDiagnostics(absoluteFrom('/app.ts'));
     expect(diags.length).toBe(1);
@@ -78,7 +76,7 @@ describe('getSemanticDiagnostics', () => {
     `
     };
 
-    env = createModuleWithDeclarations([appFile], [templateFile]);
+    const env = createModuleWithDeclarations([appFile], [templateFile]);
     const diags = env.ngLS.getSemanticDiagnostics(absoluteFrom('/app.html'));
     expect(diags).toEqual([]);
   });
@@ -97,12 +95,40 @@ describe('getSemanticDiagnostics', () => {
     };
     const templateFile = {name: absoluteFrom('/app.html'), contents: `{{nope}}`};
 
-    env = createModuleWithDeclarations([appFile], [templateFile]);
+    const env = createModuleWithDeclarations([appFile], [templateFile]);
     const diags = env.ngLS.getSemanticDiagnostics(absoluteFrom('/app.html'));
     expect(diags.length).toBe(1);
     const {category, file, start, length, messageText} = diags[0];
     expect(category).toBe(ts.DiagnosticCategory.Error);
     expect(file?.fileName).toBe('/app.html');
     expect(messageText).toBe(`Property 'nope' does not exist on type 'AppComponent'.`);
+  });
+
+  it('should report a parse error in external template', () => {
+    const appFile = {
+      name: absoluteFrom('/app.ts'),
+      contents: `
+      import {Component, NgModule} from '@angular/core';
+
+      @Component({
+        templateUrl: './app.html'
+      })
+      export class AppComponent {
+        nope = false;
+      }
+    `
+    };
+    const templateFile = {name: absoluteFrom('/app.html'), contents: `{{nope = true}}`};
+
+    const env = createModuleWithDeclarations([appFile], [templateFile]);
+    const diags = env.ngLS.getSemanticDiagnostics(absoluteFrom('/app.html'));
+    expect(diags.length).toBe(1);
+
+    const {category, file, messageText} = diags[0];
+    expect(category).toBe(ts.DiagnosticCategory.Error);
+    expect(file?.fileName).toBe('/app.html');
+    expect(messageText)
+        .toBe(
+            `Parser Error: Bindings cannot contain assignments at column 8 in [{{nope = true}}] in /app.html@0:0`);
   });
 });
