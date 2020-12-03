@@ -407,7 +407,7 @@ export function setup(targets: TypeCheckingTarget[], overrides: {
           node: classRef.node.name,
         };
 
-        ctx.addTemplate(classRef, binder, nodes, pipes, [], sourceMapping, templateFile);
+        ctx.addTemplate(classRef, binder, nodes, pipes, [], sourceMapping, templateFile, errors);
       }
     }
   });
