@@ -120,7 +120,7 @@
     "dgeni": "^0.4.11",
     "dgeni-packages": "^0.28.4",
     "firebase-tools": "^8.16.1",
-    "fs-extra": "^3.0.1",
+    "fs-extra": "^9.0.1",
     "glob": "^7.1.2",
     "gulp": "^3.9.1",
     "gulp-clean": "^0.4.0",
