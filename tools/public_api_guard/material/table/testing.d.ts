@@ -3,7 +3,7 @@ export interface CellHarnessFilters extends BaseHarnessFilters {
     text?: string | RegExp;
 }
 
-export declare class MatCellHarness extends ComponentHarness {
+export declare class MatCellHarness extends ContentContainerComponentHarness {
     getColumnName(): Promise<string>;
     getText(): Promise<string>;
     static hostSelector: string;
