@@ -10,6 +10,7 @@ import {Identifiers as R3} from '../r3_identifiers';
 import {R3DirectiveDef, R3DirectiveMetadata, R3HostMetadata, R3QueryMetadata} from '../view/api';
 import {createDirectiveType} from '../view/compiler';
 import {asLiteral, conditionallyCreateMapObjectLiteral, DefinitionMap} from '../view/util';
+import {R3DeclareDirectiveMetadata, R3DeclareQueryMetadata} from './api';
 import {toOptionalLiteralMap} from './util';
 
 
@@ -29,8 +30,9 @@ export function compileDeclareDirectiveFromMetadata(meta: R3DirectiveMetadata): 
  * Gathers the declaration fields for a directive into a `DefinitionMap`. This allows for reusing
  * this logic for components, as they extend the directive metadata.
  */
-export function createDirectiveDefinitionMap(meta: R3DirectiveMetadata): DefinitionMap {
-  const definitionMap = new DefinitionMap();
+export function createDirectiveDefinitionMap(meta: R3DirectiveMetadata):
+    DefinitionMap<R3DeclareDirectiveMetadata> {
+  const definitionMap = new DefinitionMap<R3DeclareDirectiveMetadata>();
 
   definitionMap.set('version', o.literal('0.0.0-PLACEHOLDER'));
 
@@ -77,7 +79,7 @@ export function createDirectiveDefinitionMap(meta: R3DirectiveMetadata): Definit
  * by `R3DeclareQueryMetadata`.
  */
 function compileQuery(query: R3QueryMetadata): o.LiteralMapExpr {
-  const meta = new DefinitionMap();
+  const meta = new DefinitionMap<R3DeclareQueryMetadata>();
   meta.set('propertyName', o.literal(query.propertyName));
   if (query.first) {
     meta.set('first', o.literal(true));
@@ -99,7 +101,7 @@ function compileQuery(query: R3QueryMetadata): o.LiteralMapExpr {
  * in `R3DeclareDirectiveMetadata['host']`
  */
 function compileHostMetadata(meta: R3HostMetadata): o.LiteralMapExpr|null {
-  const hostMetadata = new DefinitionMap();
+  const hostMetadata = new DefinitionMap<NonNullable<R3DeclareDirectiveMetadata['host']>>();
   hostMetadata.set('attributes', toOptionalLiteralMap(meta.attributes, expression => expression));
   hostMetadata.set('listeners', toOptionalLiteralMap(meta.listeners, o.literal));
   hostMetadata.set('properties', toOptionalLiteralMap(meta.properties, o.literal));

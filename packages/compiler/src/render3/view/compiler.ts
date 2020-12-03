@@ -40,8 +40,8 @@ const ATTR_REGEX = /attr\.([^\]]+)/;
 
 function baseDirectiveFields(
     meta: R3DirectiveMetadata, constantPool: ConstantPool,
-    bindingParser: BindingParser): DefinitionMap {
-  const definitionMap = new DefinitionMap();
+    bindingParser: BindingParser): DefinitionMap<any> {
+  const definitionMap = new DefinitionMap<any>();
   const selectors = core.parseSelectorToR3Selector(meta.selector);
 
   // e.g. `type: MyDirective`
@@ -86,7 +86,8 @@ function baseDirectiveFields(
 /**
  * Add features to the definition map.
  */
-function addFeatures(definitionMap: DefinitionMap, meta: R3DirectiveMetadata|R3ComponentMetadata) {
+function addFeatures(
+    definitionMap: DefinitionMap<any>, meta: R3DirectiveMetadata|R3ComponentMetadata) {
   // e.g. `features: [NgOnChangesFeature]`
   const features: o.Expression[] = [];
 
@@ -559,7 +560,7 @@ function createViewQueriesFunction(
 function createHostBindingsFunction(
     hostBindingsMetadata: R3HostMetadata, typeSourceSpan: ParseSourceSpan,
     bindingParser: BindingParser, constantPool: ConstantPool, selector: string, name: string,
-    definitionMap: DefinitionMap): o.Expression|null {
+    definitionMap: DefinitionMap<any>): o.Expression|null {
   const bindingContext = o.variable(CONTEXT_NAME);
   const styleBuilder = new StylingBuilder(bindingContext);
 
