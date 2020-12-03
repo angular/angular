@@ -7,9 +7,9 @@
  */
 import * as ts from 'typescript';
 
-import {AbsoluteFsPath, FileSystem, NgtscCompilerHost} from '../../../src/ngtsc/file_system';
+import {AbsoluteFsPath, FileSystem} from '../../../src/ngtsc/file_system';
 import {initMockFileSystem} from '../../../src/ngtsc/file_system/testing';
-import {loadStandardTestFiles, loadTestDirectory} from '../../../src/ngtsc/testing';
+import {loadStandardTestFiles, loadTestDirectory, NgtscTestCompilerHost} from '../../../src/ngtsc/testing';
 import {Diagnostics, performCompilation} from '../../../src/perform_compile';
 import {CompilerOptions} from '../../../src/transformers/api';
 
@@ -52,7 +52,7 @@ export function compileTest(
   const outDir = getBuildOutputDirectory(fs);
   const options = getOptions(rootDir, outDir, compilerOptions, angularCompilerOptions);
   const rootNames = files.map(f => fs.resolve(f));
-  const host = new NgtscCompilerHost(fs, options);
+  const host = new NgtscTestCompilerHost(fs, options);
   const {diagnostics, emitResult} = performCompilation({rootNames, host, options});
   const emittedFiles = emitResult ? emitResult.emittedFiles!.map(p => fs.resolve(rootDir, p)) : [];
   const errors = parseDiagnostics(diagnostics);
