@@ -131,6 +131,12 @@ export abstract class _MatAutocompleteBase extends _MatAutocompleteMixinBase imp
   /** @docs-private */
   abstract optionGroups: QueryList<_MatOptgroupBase>;
 
+  /** Aria label of the select. If not specified, the placeholder will be used as label. */
+  @Input('aria-label') ariaLabel: string;
+
+  /** Input that can be used to specify the `aria-labelledby` attribute. */
+  @Input('aria-labelledby') ariaLabelledby: string;
+
   /** Function that maps an option's control value to its display value in the trigger. */
   @Input() displayWith: ((value: any) => string) | null = null;
 
@@ -250,6 +256,16 @@ export abstract class _MatAutocompleteBase extends _MatAutocompleteMixinBase imp
     const event = new MatAutocompleteSelectedEvent(this, option);
     this.optionSelected.emit(event);
   }
+
+  /** Gets the aria-labelledby for the autocomplete panel. */
+  _getPanelAriaLabelledby(labelId: string): string | null {
+    if (this.ariaLabel) {
+      return null;
+    }
+
+    return this.ariaLabelledby ? labelId + ' ' + this.ariaLabelledby : labelId;
+  }
+
 
   /** Sets the autocomplete visibility classes on a classlist based on the panel is visible. */
   private _setVisibilityClasses(classList: {[key: string]: boolean}) {

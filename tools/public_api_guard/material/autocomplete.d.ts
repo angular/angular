@@ -6,6 +6,8 @@ export declare abstract class _MatAutocompleteBase extends _MatAutocompleteMixin
     _isOpen: boolean;
     _keyManager: ActiveDescendantKeyManager<_MatOptionBase>;
     protected abstract _visibleClass: string;
+    ariaLabel: string;
+    ariaLabelledby: string;
     get autoActiveFirstOption(): boolean;
     set autoActiveFirstOption(value: boolean);
     set classList(value: string | string[]);
@@ -25,6 +27,7 @@ export declare abstract class _MatAutocompleteBase extends _MatAutocompleteMixin
     template: TemplateRef<any>;
     constructor(_changeDetectorRef: ChangeDetectorRef, _elementRef: ElementRef<HTMLElement>, defaults: MatAutocompleteDefaultOptions, platform?: Platform);
     _emitSelectEvent(option: _MatOptionBase): void;
+    _getPanelAriaLabelledby(labelId: string): string | null;
     _getScrollTop(): number;
     _setScrollTop(scrollTop: number): void;
     _setVisibility(): void;
@@ -32,7 +35,7 @@ export declare abstract class _MatAutocompleteBase extends _MatAutocompleteMixin
     ngOnDestroy(): void;
     static ngAcceptInputType_autoActiveFirstOption: BooleanInput;
     static ngAcceptInputType_disableRipple: BooleanInput;
-    static ɵdir: i0.ɵɵDirectiveDefWithMeta<_MatAutocompleteBase, never, never, { "displayWith": "displayWith"; "autoActiveFirstOption": "autoActiveFirstOption"; "panelWidth": "panelWidth"; "classList": "class"; }, { "optionSelected": "optionSelected"; "opened": "opened"; "closed": "closed"; "optionActivated": "optionActivated"; }, never>;
+    static ɵdir: i0.ɵɵDirectiveDefWithMeta<_MatAutocompleteBase, never, never, { "ariaLabel": "aria-label"; "ariaLabelledby": "aria-labelledby"; "displayWith": "displayWith"; "autoActiveFirstOption": "autoActiveFirstOption"; "panelWidth": "panelWidth"; "classList": "class"; }, { "optionSelected": "optionSelected"; "opened": "opened"; "closed": "closed"; "optionActivated": "optionActivated"; }, never>;
     static ɵfac: i0.ɵɵFactoryDef<_MatAutocompleteBase, never>;
 }
 

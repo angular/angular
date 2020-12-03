@@ -1471,6 +1471,52 @@ describe('MDC-based MatAutocomplete', () => {
           .toEqual('listbox', 'Expected role of the panel to be listbox.');
     });
 
+    it('should point the aria-labelledby of the panel to the field label', () => {
+      fixture.componentInstance.trigger.openPanel();
+      fixture.detectChanges();
+
+      const panel =
+        fixture.debugElement.query(By.css('.mat-mdc-autocomplete-panel'))!.nativeElement;
+      const labelId = fixture.nativeElement.querySelector('label').id;
+      expect(panel.getAttribute('aria-labelledby')).toBe(labelId);
+      expect(panel.hasAttribute('aria-label')).toBe(false);
+    });
+
+    it('should add a custom aria-labelledby to the panel', () => {
+      fixture.componentInstance.ariaLabelledby = 'myLabelId';
+      fixture.componentInstance.trigger.openPanel();
+      fixture.detectChanges();
+
+      const panel =
+        fixture.debugElement.query(By.css('.mat-mdc-autocomplete-panel'))!.nativeElement;
+      const labelId = fixture.nativeElement.querySelector('label').id;
+      expect(panel.getAttribute('aria-labelledby')).toBe(`${labelId} myLabelId`);
+      expect(panel.hasAttribute('aria-label')).toBe(false);
+    });
+
+    it('should clear aria-labelledby from the panel if an aria-label is set', () => {
+      fixture.componentInstance.ariaLabel = 'My label';
+      fixture.componentInstance.trigger.openPanel();
+      fixture.detectChanges();
+
+      const panel =
+        fixture.debugElement.query(By.css('.mat-mdc-autocomplete-panel'))!.nativeElement;
+      expect(panel.getAttribute('aria-label')).toBe('My label');
+      expect(panel.hasAttribute('aria-labelledby')).toBe(false);
+    });
+
+    it('should support setting a custom aria-label', () => {
+      fixture.componentInstance.ariaLabel = 'Custom Label';
+      fixture.componentInstance.trigger.openPanel();
+      fixture.detectChanges();
+
+      const panel =
+        fixture.debugElement.query(By.css('.mat-mdc-autocomplete-panel'))!.nativeElement;
+
+      expect(panel.getAttribute('aria-label')).toEqual('Custom Label');
+      expect(panel.hasAttribute('aria-labelledby')).toBe(false);
+    });
+
     it('should set aria-autocomplete to list', () => {
       expect(input.getAttribute('aria-autocomplete'))
           .toEqual('list', 'Expected aria-autocomplete attribute to equal list.');
@@ -2682,6 +2728,7 @@ describe('MDC-based MatAutocomplete', () => {
 
 const SIMPLE_AUTOCOMPLETE_TEMPLATE = `
   <mat-form-field [floatLabel]="floatLabel" [style.width.px]="width">
+    <mat-label>State</mat-label>
     <input
       matInput
       placeholder="State"
@@ -2692,7 +2739,8 @@ const SIMPLE_AUTOCOMPLETE_TEMPLATE = `
   </mat-form-field>
 
   <mat-autocomplete [class]="panelClass" #auto="matAutocomplete" [displayWith]="displayFn"
-    [disableRipple]="disableRipple" (opened)="openedSpy()" (closed)="closedSpy()">
+    [disableRipple]="disableRipple" [aria-label]="ariaLabel" [aria-labelledby]="ariaLabelledby"
+    (opened)="openedSpy()" (closed)="closedSpy()">
     <mat-option
       *ngFor="let state of filteredStates"
       [value]="state"
@@ -2712,6 +2760,8 @@ class SimpleAutocomplete implements OnDestroy {
   width: number;
   disableRipple = false;
   autocompleteDisabled = false;
+  ariaLabel: string;
+  ariaLabelledby: string;
   panelClass = 'class-one class-two';
   openedSpy = jasmine.createSpy('autocomplete opened spy');
   closedSpy = jasmine.createSpy('autocomplete closed spy');
