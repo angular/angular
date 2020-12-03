@@ -12,7 +12,8 @@ import * as ts from 'typescript';
 import {Reference} from '../../imports';
 import {DirectiveMeta, flattenInheritedDirectiveMetadata, MetadataReader} from '../../metadata';
 import {ClassDeclaration} from '../../reflection';
-import {ComponentScopeReader} from '../../scope';
+
+import {ComponentScopeReader} from './component_scope';
 
 /**
  * The scope that is used for type-check code generation of a component template.
@@ -23,6 +24,11 @@ export interface TypeCheckScope {
    * that are in the compilation scope of the declaring NgModule.
    */
   matcher: SelectorMatcher<DirectiveMeta>;
+
+  /**
+   * All of the directives available in the compilation scope of the declaring NgModule.
+   */
+  directives: DirectiveMeta[];
 
   /**
    * The pipes that are available in the compilation scope.
@@ -44,7 +50,7 @@ export interface TypeCheckScope {
 /**
  * Computes scope information to be used in template type checking.
  */
-export class TypeCheckScopes {
+export class TypeCheckScopeRegistry {
   /**
    * Cache of flattened directive metadata. Because flattened metadata is scope-invariant it's
    * cached individually, such that all scopes refer to the same flattened metadata.
@@ -65,12 +71,14 @@ export class TypeCheckScopes {
    */
   getTypeCheckScope(node: ClassDeclaration): TypeCheckScope {
     const matcher = new SelectorMatcher<DirectiveMeta>();
+    const directives: DirectiveMeta[] = [];
     const pipes = new Map<string, Reference<ClassDeclaration<ts.ClassDeclaration>>>();
 
     const scope = this.scopeReader.getScopeForComponent(node);
     if (scope === null) {
       return {
         matcher,
+        directives,
         pipes,
         schemas: [],
         isPoisoned: false,
@@ -83,8 +91,9 @@ export class TypeCheckScopes {
 
     for (const meta of scope.compilation.directives) {
       if (meta.selector !== null) {
-        const extMeta = this.getInheritedDirectiveMetadata(meta.ref);
+        const extMeta = this.getTypeCheckDirectiveMetadata(meta.ref);
         matcher.addSelectables(CssSelector.parse(meta.selector), extMeta);
+        directives.push(extMeta);
       }
     }
 
@@ -98,6 +107,7 @@ export class TypeCheckScopes {
 
     const typeCheckScope: TypeCheckScope = {
       matcher,
+      directives,
       pipes,
       schemas: scope.schemas,
       isPoisoned: scope.compilation.isPoisoned || scope.exported.isPoisoned,
@@ -106,7 +116,7 @@ export class TypeCheckScopes {
     return typeCheckScope;
   }
 
-  private getInheritedDirectiveMetadata(ref: Reference<ClassDeclaration>): DirectiveMeta {
+  getTypeCheckDirectiveMetadata(ref: Reference<ClassDeclaration>): DirectiveMeta {
     const clazz = ref.node;
     if (this.flattenedDirectiveMetaCache.has(clazz)) {
       return this.flattenedDirectiveMetaCache.get(clazz)!;

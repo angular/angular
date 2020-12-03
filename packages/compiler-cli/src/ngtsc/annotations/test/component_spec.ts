@@ -5,6 +5,9 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
+import * as ts from 'typescript';
+
 import {CycleAnalyzer, ImportGraph} from '../../cycles';
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
 import {absoluteFrom} from '../../file_system';
@@ -13,7 +16,7 @@ import {ModuleResolver, NOOP_DEFAULT_IMPORT_RECORDER, ReferenceEmitter} from '..
 import {CompoundMetadataReader, DtsMetadataReader, InjectableClassRegistry, LocalMetadataRegistry, ResourceRegistry} from '../../metadata';
 import {PartialEvaluator} from '../../partial_evaluator';
 import {isNamedClassDeclaration, TypeScriptReflectionHost} from '../../reflection';
-import {LocalModuleScopeRegistry, MetadataDtsModuleScopeResolver} from '../../scope';
+import {LocalModuleScopeRegistry, MetadataDtsModuleScopeResolver, TypeCheckScopeRegistry} from '../../scope';
 import {getDeclaration, makeProgram} from '../../testing';
 import {ResourceLoader} from '../src/api';
 import {ComponentDecoratorHandler} from '../src/component';
@@ -48,17 +51,33 @@ function setup(program: ts.Program, options: ts.CompilerOptions, host: ts.Compil
   const refEmitter = new ReferenceEmitter([]);
   const injectableRegistry = new InjectableClassRegistry(reflectionHost);
   const resourceRegistry = new ResourceRegistry();
+  const typeCheckScopeRegistry = new TypeCheckScopeRegistry(scopeRegistry, metaReader);
 
   const handler = new ComponentDecoratorHandler(
-      reflectionHost, evaluator, metaRegistry, metaReader, scopeRegistry, scopeRegistry,
+      reflectionHost,
+      evaluator,
+      metaRegistry,
+      metaReader,
+      scopeRegistry,
+      scopeRegistry,
+      typeCheckScopeRegistry,
       resourceRegistry,
-      /* isCore */ false, new StubResourceLoader(), /* rootDirs */['/'],
-      /* defaultPreserveWhitespaces */ false, /* i18nUseExternalIds */ true,
+      /* isCore */ false,
+      new StubResourceLoader(),
+      /* rootDirs */['/'],
+      /* defaultPreserveWhitespaces */ false,
+      /* i18nUseExternalIds */ true,
       /* enableI18nLegacyMessageIdFormat */ false,
       /* usePoisonedData */ false,
-      /* i18nNormalizeLineEndingsInICUs */ undefined, moduleResolver, cycleAnalyzer, refEmitter,
-      NOOP_DEFAULT_IMPORT_RECORDER, /* depTracker */ null, injectableRegistry,
-      /* annotateForClosureCompiler */ false);
+      /* i18nNormalizeLineEndingsInICUs */ undefined,
+      moduleResolver,
+      cycleAnalyzer,
+      refEmitter,
+      NOOP_DEFAULT_IMPORT_RECORDER,
+      /* depTracker */ null,
+      injectableRegistry,
+      /* annotateForClosureCompiler */ false,
+  );
   return {reflectionHost, handler};
 }
 
