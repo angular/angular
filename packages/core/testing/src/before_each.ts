@@ -12,7 +12,6 @@
  * allows tests to be asynchronous by either returning a promise or using a 'done' parameter.
  */
 
-import {resetFakeAsyncZone} from './fake_async';
 import {TestBed} from './test_bed';
 
 declare var global: any;
@@ -23,7 +22,6 @@ const _global = <any>(typeof window === 'undefined' ? global : window);
 if (_global.beforeEach) {
   _global.beforeEach(() => {
     TestBed.resetTestingModule();
-    resetFakeAsyncZone();
   });
 }
 
