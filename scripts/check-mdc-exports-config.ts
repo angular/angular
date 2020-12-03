@@ -24,10 +24,6 @@ export const config = {
       '_MatDialogContainerBase',
       '_closeDialogVia',
     ],
-    'mdc-input': [
-      // TODO: an MDC version of this directive has to be implemented.
-      'MatTextareaAutosize'
-    ],
     'mdc-menu': [
       // Private base class that is only exported for MDC.
       '_MatMenuBase'

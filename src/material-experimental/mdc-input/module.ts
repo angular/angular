@@ -10,11 +10,12 @@ import {TextFieldModule} from '@angular/cdk/text-field';
 import {NgModule} from '@angular/core';
 import {MatCommonModule} from '@angular/material-experimental/mdc-core';
 import {MatFormFieldModule} from '@angular/material-experimental/mdc-form-field';
+import {MatTextareaAutosize} from './autosize';
 import {MatInput} from './input';
 
 @NgModule({
   imports: [MatCommonModule, MatFormFieldModule],
-  exports: [MatInput, MatFormFieldModule, TextFieldModule, MatCommonModule],
-  declarations: [MatInput],
+  exports: [MatInput, MatTextareaAutosize, MatFormFieldModule, TextFieldModule, MatCommonModule],
+  declarations: [MatInput, MatTextareaAutosize],
 })
 export class MatInputModule {}
