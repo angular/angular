@@ -5,12 +5,15 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-const _Zone: any = typeof Zone !== 'undefined' ? Zone : null;
-const fakeAsyncTestModule = _Zone && _Zone[_Zone.__symbol__('fakeAsyncTest')];
 
 const fakeAsyncTestModuleNotLoadedErrorMessage =
     `zone-testing.js is needed for the fakeAsync() test helper but could not be found.
         Please make sure that your environment includes zone.js/testing`;
+
+function getFakeAsyncTestModule() {
+  const _Zone: any = typeof Zone !== 'undefined' ? Zone : null;
+  return _Zone && _Zone[_Zone.__symbol__('fakeAsyncTest')];
+}
 
 /**
  * Clears out the shared fake async zone for a test.
@@ -19,6 +22,7 @@ const fakeAsyncTestModuleNotLoadedErrorMessage =
  * @publicApi
  */
 export function resetFakeAsyncZone(): void {
+  const fakeAsyncTestModule = getFakeAsyncTestModule();
   if (fakeAsyncTestModule) {
     return fakeAsyncTestModule.resetFakeAsyncZone();
   }
@@ -49,6 +53,7 @@ export function resetFakeAsyncZone(): void {
  * @publicApi
  */
 export function fakeAsync(fn: Function): (...args: any[]) => any {
+  const fakeAsyncTestModule = getFakeAsyncTestModule();
   if (fakeAsyncTestModule) {
     return fakeAsyncTestModule.fakeAsync(fn);
   }
@@ -123,6 +128,7 @@ export function tick(
     millis: number = 0, tickOptions: {processNewMacroTasksSynchronously: boolean} = {
       processNewMacroTasksSynchronously: true
     }): void {
+  const fakeAsyncTestModule = getFakeAsyncTestModule();
   if (fakeAsyncTestModule) {
     return fakeAsyncTestModule.tick(millis, tickOptions);
   }
@@ -141,6 +147,7 @@ export function tick(
  * @publicApi
  */
 export function flush(maxTurns?: number): number {
+  const fakeAsyncTestModule = getFakeAsyncTestModule();
   if (fakeAsyncTestModule) {
     return fakeAsyncTestModule.flush(maxTurns);
   }
@@ -153,6 +160,7 @@ export function flush(maxTurns?: number): number {
  * @publicApi
  */
 export function discardPeriodicTasks(): void {
+  const fakeAsyncTestModule = getFakeAsyncTestModule();
   if (fakeAsyncTestModule) {
     return fakeAsyncTestModule.discardPeriodicTasks();
   }
@@ -165,6 +173,7 @@ export function discardPeriodicTasks(): void {
  * @publicApi
  */
 export function flushMicrotasks(): void {
+  const fakeAsyncTestModule = getFakeAsyncTestModule();
   if (fakeAsyncTestModule) {
     return fakeAsyncTestModule.flushMicrotasks();
   }
