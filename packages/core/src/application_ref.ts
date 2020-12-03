@@ -573,7 +573,6 @@ export class ApplicationRef {
   private _bootstrapListeners: ((compRef: ComponentRef<any>) => void)[] = [];
   private _views: InternalViewRef[] = [];
   private _runningTick: boolean = false;
-  private _enforceNoNewChanges: boolean = false;
   private _stable = true;
   private _onMicrotaskEmptySubscription: Subscription;
 
@@ -602,8 +601,6 @@ export class ApplicationRef {
       private _exceptionHandler: ErrorHandler,
       private _componentFactoryResolver: ComponentFactoryResolver,
       private _initStatus: ApplicationInitStatus) {
-    this._enforceNoNewChanges = isDevMode();
-
     this._onMicrotaskEmptySubscription = this._zone.onMicrotaskEmpty.subscribe({
       next: () => {
         this._zone.run(() => {
@@ -740,7 +737,9 @@ export class ApplicationRef {
       for (let view of this._views) {
         view.detectChanges();
       }
-      if (this._enforceNoNewChanges) {
+      // Note that we have still left the `isDevMode()` condition in order to avoid
+      // creating a breaking change for projects that still use the View Engine.
+      if ((typeof ngDevMode === 'undefined' || ngDevMode) && isDevMode()) {
         for (let view of this._views) {
           view.checkNoChanges();
         }
