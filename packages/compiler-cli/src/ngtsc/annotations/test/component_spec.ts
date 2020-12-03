@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ConstantPool} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {CycleAnalyzer, ImportGraph} from '../../cycles';
@@ -218,6 +219,38 @@ runInEachFileSystem(() => {
       }
       const {analysis} = handler.analyze(TestCmp, detected.metadata);
       expect(analysis?.resources.styles.size).toBe(3);
+    });
+
+    it('does not emit a program with template parse errors', () => {
+      const template = '{{x ? y }}';
+      const {program, options, host} = makeProgram([
+        {
+          name: _('/node_modules/@angular/core/index.d.ts'),
+          contents: 'export const Component: any;',
+        },
+        {
+          name: _('/entry.ts'),
+          contents: `
+          import {Component} from '@angular/core';
+          @Component({
+            template: '${template}',
+          }) class TestCmp {}
+      `
+        },
+      ]);
+
+      const {reflectionHost, handler} = setup(program, options, host);
+      const TestCmp = getDeclaration(program, _('/entry.ts'), 'TestCmp', isNamedClassDeclaration);
+      const detected = handler.detect(TestCmp, reflectionHost.getDecoratorsOfDeclaration(TestCmp));
+      if (detected === undefined) {
+        return fail('Failed to recognize @Component');
+      }
+      const {analysis} = handler.analyze(TestCmp, detected.metadata);
+      const resolution = handler.resolve(TestCmp, analysis!);
+
+      const compileResult =
+          handler.compileFull(TestCmp, analysis!, resolution.data!, new ConstantPool());
+      expect(compileResult).toEqual([]);
     });
   });
 

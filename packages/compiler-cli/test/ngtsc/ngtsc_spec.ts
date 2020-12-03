@@ -7577,10 +7577,13 @@ export const Foo = Foo__PRE_R3__;
           env.write('test.ts', `
             import {Component} from '@angular/core';
             @Component({
-              template: '<cmp [input]="x ? y">',
+              template: '<input [value]="x ? y"/>',
               selector: 'test-cmp',
             })
-            export class TestCmp {}
+            export class TestCmp {
+                x = null;
+                y = null;
+            }
           `);
           const diags = env.driveDiagnostics();
           expect(diags.length).toBe(1);
@@ -7591,19 +7594,41 @@ export const Foo = Foo__PRE_R3__;
           env.write('test.ts', `
               import {Component} from '@angular/core';
               @Component({
-                template: '<cmp [input]="x>',
+                template: '<input [value]="x/>',
                 selector: 'test-cmp',
               })
-              export class TestCmp {}
+              export class TestCmp {
+                x = null;
+              }
             `);
           const diags = env.driveDiagnostics();
           expect(diags.length).toBe(1);
           expect(getDiagnosticSourceCode(diags[0])).toBe('\'');
         });
+
+        it('should emit both type-check diagnostics and parse error diagnostics', () => {
+          env.write('test.ts', `
+              import {Component} from '@angular/core';
+              @Component({
+                template: \`<input (click)="x = 'invalid'"/> {{x = 2}}\`,
+                selector: 'test-cmp',
+              })
+              export class TestCmp {
+                x: number = 1;
+              }
+            `);
+          const diags = env.driveDiagnostics();
+
+          expect(diags.length).toBe(2);
+          expect(diags[0].messageText).toEqual(`Type 'string' is not assignable to type 'number'.`);
+          expect(diags[1].messageText)
+              .toContain(
+                  'Parser Error: Bindings cannot contain assignments at column 5 in [ {{x = 2}}]');
+        });
       });
 
       describe('i18n errors', () => {
-        it('should report helpful error message on nested i18n sections', () => {
+        it('reports a diagnostics on nested i18n sections', () => {
           env.write('test.ts', `
             import {Component} from '@angular/core';
             @Component({
@@ -7625,7 +7650,7 @@ export const Foo = Foo__PRE_R3__;
               .toEqual('<div i18n>Content</div>');
         });
 
-        it('report a diagnostic on nested i18n sections with tags in between', () => {
+        it('reports a diagnostic on nested i18n sections with tags in between', () => {
           env.write('test.ts', `
             import {Component} from '@angular/core';
             @Component({
@@ -7647,7 +7672,7 @@ export const Foo = Foo__PRE_R3__;
               .toEqual('<div i18n>Content</div>');
         });
 
-        it('report a diagnostic on nested i18n sections represented with <ng-continers>s', () => {
+        it('reports a diagnostic on nested i18n sections represented with <ng-continers>s', () => {
           env.write('test.ts', `
             import {Component} from '@angular/core';
             @Component({

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {compileComponentFromMetadata, compileDeclareComponentFromMetadata, ConstantPool, CssSelector, DEFAULT_INTERPOLATION_CONFIG, DomElementSchemaRegistry, Expression, ExternalExpr, Identifiers, InterpolationConfig, LexerRange, makeBindingParser, ParsedTemplate, ParseSourceFile, parseTemplate, R3ComponentDef, R3ComponentMetadata, R3FactoryTarget, R3TargetBinder, R3UsedDirectiveMetadata, SelectorMatcher, Statement, TmplAstNode, WrappedNodeExpr} from '@angular/compiler';
+import {compileComponentFromMetadata, compileDeclareComponentFromMetadata, ConstantPool, CssSelector, DEFAULT_INTERPOLATION_CONFIG, DomElementSchemaRegistry, Expression, ExternalExpr, Identifiers, InterpolationConfig, LexerRange, makeBindingParser, ParsedTemplate, ParseSourceFile, parseTemplate, R3ComponentDef, R3ComponentMetadata, R3FactoryTarget, R3TargetBinder, R3UsedDirectiveMetadata, SelectorMatcher, Statement, syntaxError, TmplAstNode, WrappedNodeExpr} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {CycleAnalyzer} from '../../cycles';
@@ -266,28 +266,6 @@ export class ComponentDecoratorHandler implements
         {path: null, expression: component.get('template')!} :
         {path: absoluteFrom(template.templateUrl), expression: template.sourceMapping.node};
 
-    let diagnostics: ts.Diagnostic[]|undefined = undefined;
-
-    if (template.errors !== null) {
-      // If there are any template parsing errors, convert them to `ts.Diagnostic`s for display.
-      const id = getTemplateId(node);
-      diagnostics = template.errors.map(error => {
-        const span = error.span;
-
-        if (span.start.offset === span.end.offset) {
-          // Template errors can contain zero-length spans, if the error occurs at a single point.
-          // However, TypeScript does not handle displaying a zero-length diagnostic very well, so
-          // increase the ending offset by 1 for such errors, to ensure the position is shown in the
-          // diagnostic.
-          span.end.offset++;
-        }
-
-        return makeTemplateDiagnostic(
-            id, template.sourceMapping, span, ts.DiagnosticCategory.Error,
-            ngErrorCode(ErrorCode.TEMPLATE_PARSE_ERROR), error.msg);
-      });
-    }
-
     // Figure out the set of styles. The ordering here is important: external resources (styleUrls)
     // precede inline styles, and styles defined in the template override styles defined in the
     // component.
@@ -370,9 +348,8 @@ export class ComponentDecoratorHandler implements
           styles: styleResources,
           template: templateResource,
         },
-        isPoisoned: diagnostics !== undefined && diagnostics.length > 0,
+        isPoisoned: false,
       },
-      diagnostics,
     };
     if (changeDetection !== null) {
       output.analysis!.meta.changeDetection = changeDetection;
@@ -456,7 +433,7 @@ export class ComponentDecoratorHandler implements
     const binder = new R3TargetBinder(scope.matcher);
     ctx.addTemplate(
         new Reference(node), binder, meta.template.diagNodes, scope.pipes, scope.schemas,
-        meta.template.sourceMapping, meta.template.file);
+        meta.template.sourceMapping, meta.template.file, meta.template.errors);
   }
 
   resolve(node: ClassDeclaration, analysis: Readonly<ComponentAnalysisData>):
@@ -616,6 +593,9 @@ export class ComponentDecoratorHandler implements
   compileFull(
       node: ClassDeclaration, analysis: Readonly<ComponentAnalysisData>,
       resolution: Readonly<ComponentResolutionData>, pool: ConstantPool): CompileResult[] {
+    if (analysis.template.errors !== null && analysis.template.errors.length > 0) {
+      return [];
+    }
     const meta: R3ComponentMetadata = {...analysis.meta, ...resolution};
     const def = compileComponentFromMetadata(meta, pool, makeBindingParser());
     return this.compileComponent(analysis, def);
@@ -624,6 +604,9 @@ export class ComponentDecoratorHandler implements
   compilePartial(
       node: ClassDeclaration, analysis: Readonly<ComponentAnalysisData>,
       resolution: Readonly<ComponentResolutionData>): CompileResult[] {
+    if (analysis.template.errors !== null && analysis.template.errors.length > 0) {
+      return [];
+    }
     const meta: R3ComponentMetadata = {...analysis.meta, ...resolution};
     const def = compileDeclareComponentFromMetadata(meta, analysis.template);
     return this.compileComponent(analysis, def);
