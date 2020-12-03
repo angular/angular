@@ -11,7 +11,7 @@ import {initMockFileSystem, TestFile} from '@angular/compiler-cli/src/ngtsc/file
 import * as ts from 'typescript/lib/tsserverlibrary';
 
 import {extractCursorInfo, LanguageServiceTestEnvironment} from './env';
-import {getText} from './test_utils';
+import {createModuleWithDeclarations, getText} from './test_utils';
 
 describe('find references', () => {
   let env: LanguageServiceTestEnvironment;
@@ -30,7 +30,7 @@ describe('find references', () => {
           }`);
     const appFile = {name: _('/app.ts'), contents: text};
     const templateFile = {name: _('/app.html'), contents: '{{myProp}}'};
-    createModuleWithDeclarations([appFile], [templateFile]);
+    env = createModuleWithDeclarations([appFile], [templateFile]);
     const refs = getReferencesAtPosition(_('/app.ts'), cursor)!;
     expect(refs.length).toBe(2);
     assertFileNames(refs, ['app.html', 'app.ts']);
@@ -46,7 +46,7 @@ describe('find references', () => {
             myP¦rop!: string;
           }`);
     const appFile = {name: _('/app.ts'), contents: text};
-    createModuleWithDeclarations([appFile]);
+    env = createModuleWithDeclarations([appFile]);
     const refs = getReferencesAtPosition(_('/app.ts'), cursor)!;
     expect(refs.length).toBe(2);
     assertFileNames(refs, ['app.ts']);
@@ -66,7 +66,7 @@ describe('find references', () => {
     };
     const {text, cursor} = extractCursorInfo('{{myP¦rop}}');
     const templateFile = {name: _('/app.html'), contents: text};
-    createModuleWithDeclarations([appFile], [templateFile]);
+    env = createModuleWithDeclarations([appFile], [templateFile]);
     const refs = getReferencesAtPosition(_('/app.html'), cursor)!;
     expect(refs.length).toBe(2);
     assertFileNames(refs, ['app.html', 'app.ts']);
@@ -82,7 +82,7 @@ describe('find references', () => {
             setTitle(s: number) {}
           }`);
     const appFile = {name: _('/app.ts'), contents: text};
-    createModuleWithDeclarations([appFile]);
+    env = createModuleWithDeclarations([appFile]);
     const refs = getReferencesAtPosition(_('/app.ts'), cursor)!;
     expect(refs.length).toBe(2);
 
@@ -100,7 +100,7 @@ describe('find references', () => {
             setTitle(s: string) {}
           }`);
     const appFile = {name: _('/app.ts'), contents: text};
-    createModuleWithDeclarations([appFile]);
+    env = createModuleWithDeclarations([appFile]);
     const refs = getReferencesAtPosition(_('/app.ts'), cursor)!;
     expect(refs.length).toBe(2);
 
@@ -121,7 +121,7 @@ describe('find references', () => {
     const templateFileWithCursor = `<div (click)="ti¦tle = 'newtitle'"></div>`;
     const {text, cursor} = extractCursorInfo(templateFileWithCursor);
     const templateFile = {name: _('/app.html'), contents: text};
-    createModuleWithDeclarations([appFile], [templateFile]);
+    env = createModuleWithDeclarations([appFile], [templateFile]);
     const refs = getReferencesAtPosition(_('/app.html'), cursor)!;
     expect(refs.length).toBe(2);
 
@@ -142,7 +142,7 @@ describe('find references', () => {
       name: _('/app.ts'),
       contents: text,
     };
-    createModuleWithDeclarations([appFile]);
+    env = createModuleWithDeclarations([appFile]);
     const refs = getReferencesAtPosition(_('/app.ts'), cursor)!;
     expect(refs.length).toBe(2);
 
@@ -162,7 +162,7 @@ describe('find references', () => {
       name: _('/app.ts'),
       contents: text,
     };
-    createModuleWithDeclarations([appFile]);
+    env = createModuleWithDeclarations([appFile]);
     const refs = getReferencesAtPosition(_('/app.ts'), cursor)!;
     // 3 references: the type definition, the value assignment, and the read in the template
     expect(refs.length).toBe(3);
@@ -191,7 +191,7 @@ describe('find references', () => {
     const templateFileWithCursor = `<div (click)="hero['name'] = bat¦man"></div>`;
     const {text, cursor} = extractCursorInfo(templateFileWithCursor);
     const templateFile = {name: _('/app.html'), contents: text};
-    createModuleWithDeclarations([appFile], [templateFile]);
+    env = createModuleWithDeclarations([appFile], [templateFile]);
     const refs = getReferencesAtPosition(_('/app.html'), cursor)!;
     expect(refs.length).toBe(2);
 
@@ -209,7 +209,7 @@ describe('find references', () => {
             title = '';
           }`);
       const appFile = {name: _('/app.ts'), contents: text};
-      createModuleWithDeclarations([appFile]);
+      env = createModuleWithDeclarations([appFile]);
       const refs = getReferencesAtPosition(_('/app.ts'), cursor)!;
       expect(refs.length).toBe(2);
       assertTextSpans(refs, ['myInput']);
@@ -236,7 +236,7 @@ describe('find references', () => {
       };
       const {text, cursor} = extractCursorInfo(templateWithCursor);
       const templateFile = {name: _('/app.html'), contents: text};
-      createModuleWithDeclarations([appFile], [templateFile]);
+      env = createModuleWithDeclarations([appFile], [templateFile]);
       const refs = getReferencesAtPosition(_('/app.html'), cursor)!;
       expect(refs.length).toBe(2);
       assertTextSpans(refs, ['myTemplate']);
@@ -274,7 +274,7 @@ describe('find references', () => {
         const templateWithCursor = '<div [dir] #dirRef="myDir"></div> {{ dirR¦ef }}';
         const {text, cursor} = extractCursorInfo(templateWithCursor);
         const templateFile = {name: _('/app.html'), contents: text};
-        createModuleWithDeclarations([appFile, dirFile], [templateFile]);
+        env = createModuleWithDeclarations([appFile, dirFile], [templateFile]);
         const refs = getReferencesAtPosition(_('/app.html'), cursor)!;
         expect(refs.length).toBe(2);
         assertFileNames(refs, ['app.html']);
@@ -285,7 +285,7 @@ describe('find references', () => {
         const fileWithCursor = '<div [dir] #dirRef="myDir"></div> {{ dirRef.dirV¦alue }}';
         const {text, cursor} = extractCursorInfo(fileWithCursor);
         const templateFile = {name: _('/app.html'), contents: text};
-        createModuleWithDeclarations([appFile, dirFile], [templateFile]);
+        env = createModuleWithDeclarations([appFile, dirFile], [templateFile]);
         const refs = getReferencesAtPosition(_('/app.html'), cursor)!;
         expect(refs.length).toBe(2);
         assertFileNames(refs, ['dir.ts', 'app.html']);
@@ -296,7 +296,7 @@ describe('find references', () => {
         const fileWithCursor = '<div [dir] #dirRef="myDir"></div> {{ dirRef?.dirV¦alue }}';
         const {text, cursor} = extractCursorInfo(fileWithCursor);
         const templateFile = {name: _('/app.html'), contents: text};
-        createModuleWithDeclarations([appFile, dirFile], [templateFile]);
+        env = createModuleWithDeclarations([appFile, dirFile], [templateFile]);
         const refs = getReferencesAtPosition(_('/app.html'), cursor)!;
         expect(refs.length).toBe(2);
         assertFileNames(refs, ['dir.ts', 'app.html']);
@@ -307,7 +307,7 @@ describe('find references', () => {
         const fileWithCursor = '<div [dir] #dirRef="myDir"></div> {{ dirRef?.doSometh¦ing() }}';
         const {text, cursor} = extractCursorInfo(fileWithCursor);
         const templateFile = {name: _('/app.html'), contents: text};
-        createModuleWithDeclarations([appFile, dirFile], [templateFile]);
+        env = createModuleWithDeclarations([appFile, dirFile], [templateFile]);
         const refs = getReferencesAtPosition(_('/app.html'), cursor)!;
         expect(refs.length).toBe(2);
         assertFileNames(refs, ['dir.ts', 'app.html']);
@@ -326,7 +326,7 @@ describe('find references', () => {
             heroes: string[] = [];
           }`);
       const appFile = {name: _('/app.ts'), contents: text};
-      createModuleWithDeclarations([appFile]);
+      env = createModuleWithDeclarations([appFile]);
       const refs = getReferencesAtPosition(_('/app.ts'), cursor)!;
       expect(refs.length).toBe(2);
       assertFileNames(refs, ['app.ts']);
@@ -347,7 +347,7 @@ describe('find references', () => {
             heroes: string[] = [];
           }`);
       const appFile = {name: _('/app.ts'), contents: text};
-      createModuleWithDeclarations([appFile]);
+      env = createModuleWithDeclarations([appFile]);
       const refs = getReferencesAtPosition(_('/app.ts'), cursor)!;
       expect(refs.length).toBe(2);
       assertFileNames(refs, ['app.ts']);
@@ -408,7 +408,7 @@ describe('find references', () => {
               heroes: Array<{name: string}> = [];
             }`);
       const appFile = {name: _('/app.ts'), contents: text};
-      createModuleWithDeclarations([appFile]);
+      env = createModuleWithDeclarations([appFile]);
       const refs = getReferencesAtPosition(_('/app.ts'), cursor)!;
       expect(refs.length).toBe(2);
       assertFileNames(refs, ['app.ts']);
@@ -444,7 +444,7 @@ describe('find references', () => {
       `;
       const {text, cursor} = extractCursorInfo(appContentsWithCursor);
       const appFile = {name: _('/app.ts'), contents: text};
-      createModuleWithDeclarations([appFile, prefixPipeFile]);
+      env = createModuleWithDeclarations([appFile, prefixPipeFile]);
       const refs = getReferencesAtPosition(_('/app.ts'), cursor)!;
       expect(refs.length).toBe(5);
       assertFileNames(refs, ['index.d.ts', 'prefix-pipe.ts', 'app.ts']);
@@ -463,7 +463,7 @@ describe('find references', () => {
       `;
       const {text, cursor} = extractCursorInfo(appContentsWithCursor);
       const appFile = {name: _('/app.ts'), contents: text};
-      createModuleWithDeclarations([appFile, prefixPipeFile]);
+      env = createModuleWithDeclarations([appFile, prefixPipeFile]);
       const refs = getReferencesAtPosition(_('/app.ts'), cursor)!;
       expect(refs.length).toBe(2);
       assertFileNames(refs, ['app.ts']);
@@ -490,7 +490,7 @@ describe('find references', () => {
           title = 'title';
         }`);
       const appFile = {name: _('/app.ts'), contents: text};
-      createModuleWithDeclarations([appFile, stringModelTestFile]);
+      env = createModuleWithDeclarations([appFile, stringModelTestFile]);
       const refs = getReferencesAtPosition(_('/app.ts'), cursor)!;
       expect(refs.length).toEqual(2);
       assertFileNames(refs, ['string-model.ts', 'app.ts']);
@@ -507,7 +507,7 @@ describe('find references', () => {
           title = 'title';
         }`);
       const appFile = {name: _('/app.ts'), contents: text};
-      createModuleWithDeclarations([appFile, stringModelTestFile]);
+      env = createModuleWithDeclarations([appFile, stringModelTestFile]);
       const refs = getReferencesAtPosition(_('/app.ts'), cursor)!;
       expect(refs.length).toEqual(2);
       assertFileNames(refs, ['string-model.ts', 'app.ts']);
@@ -534,7 +534,7 @@ describe('find references', () => {
           title = 'title';
         }`,
       };
-      createModuleWithDeclarations([appFile, stringModelTestFile]);
+      env = createModuleWithDeclarations([appFile, stringModelTestFile]);
       const refs = getReferencesAtPosition(_('/string-model.ts'), cursor)!;
       expect(refs.length).toEqual(2);
       assertFileNames(refs, ['app.ts', 'string-model.ts']);
@@ -576,7 +576,7 @@ describe('find references', () => {
           title = 'title';
         }`,
       };
-      createModuleWithDeclarations([appFile, stringModelTestFile, otherDirFile]);
+      env = createModuleWithDeclarations([appFile, stringModelTestFile, otherDirFile]);
       const refs = getReferencesAtPosition(_('/other-dir.ts'), cursor)!;
       expect(refs.length).toEqual(3);
       assertFileNames(refs, ['app.ts', 'string-model.ts', 'other-dir.ts']);
@@ -593,7 +593,7 @@ describe('find references', () => {
           title = 'title';
         }`);
       const appFile = {name: _('/app.ts'), contents: text};
-      createModuleWithDeclarations([appFile, stringModelTestFile]);
+      env = createModuleWithDeclarations([appFile, stringModelTestFile]);
       const refs = getReferencesAtPosition(_('/app.ts'), cursor)!;
       expect(refs.length).toEqual(2);
       assertFileNames(refs, ['string-model.ts', 'app.ts']);
@@ -702,39 +702,6 @@ describe('find references', () => {
       originalContextSpan:
           entry.originalContextSpan ? getText(fileContents, entry.originalContextSpan) : undefined,
     };
-  }
-
-  function getFirstClassDeclaration(declaration: string) {
-    const matches = declaration.match(/(?:export class )(\w+)(?:\s|\{)/);
-    if (matches === null || matches.length !== 2) {
-      throw new Error(`Did not find exactly one exported class in: ${declaration}`);
-    }
-    return matches[1].trim();
-  }
-
-  function createModuleWithDeclarations(
-      filesWithClassDeclarations: TestFile[], externalResourceFiles: TestFile[] = []): void {
-    const externalClasses =
-        filesWithClassDeclarations.map(file => getFirstClassDeclaration(file.contents));
-    const externalImports = filesWithClassDeclarations.map(file => {
-      const className = getFirstClassDeclaration(file.contents);
-      const fileName = last(file.name.split('/')).replace('.ts', '');
-      return `import {${className}} from './${fileName}';`;
-    });
-    const contents = `
-        import {NgModule} from '@angular/core';
-        import {CommonModule} from '@angular/common';
-        ${externalImports.join('\n')}
-
-        @NgModule({
-          declarations: [${externalClasses.join(',')}],
-          imports: [CommonModule],
-        })
-        export class AppModule {}
-      `;
-    const moduleFile = {name: _('/app-module.ts'), contents, isRoot: true};
-    env = LanguageServiceTestEnvironment.setup(
-        [moduleFile, ...filesWithClassDeclarations, ...externalResourceFiles]);
   }
 });
 
