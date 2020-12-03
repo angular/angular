@@ -331,7 +331,7 @@ This property allows us to specify a unique string for the type of control in fo
 `<mat-form-field>` will add an additional class based on this type that can be used to easily apply
 special styles to a `<mat-form-field>` that contains a specific type of control. In this example
 we'll use `example-tel-input` as our control type which will result in the form field adding the
-class `mat-form-field-example-tel-input`.
+class `mat-form-field-type-example-tel-input`.
 
 ```ts
 controlType = 'example-tel-input';
