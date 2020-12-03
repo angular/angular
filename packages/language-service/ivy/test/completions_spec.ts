@@ -51,6 +51,19 @@ const DIR_WITH_SELECTED_INPUT = {
   `
 };
 
+const SOME_PIPE = {
+  'SomePipe': `
+    @Pipe({
+      name: 'somePipe',
+    })
+    export class SomePipe {
+      transform(value: string): string {
+        return value;
+      }
+    }
+   `
+};
+
 describe('completions', () => {
   beforeEach(() => {
     initMockFileSystem('Native');
@@ -445,6 +458,37 @@ describe('completions', () => {
       });
     });
   });
+
+  describe('pipe scope', () => {
+    it('should complete a pipe binding', () => {
+      const {ngLS, fileName, cursor, text} = setup(`{{ foo | some¦ }}`, '', SOME_PIPE);
+      const completions = ngLS.getCompletionsAtPosition(fileName, cursor, /* options */ undefined);
+      expectContain(
+          completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.PIPE),
+          ['somePipe']);
+      expectReplacementText(completions, text, 'some');
+    });
+
+    // TODO(alxhub): currently disabled as the template targeting system identifies the cursor
+    // position as the entire Interpolation node, not the BindingPipe node. This happens because the
+    // BindingPipe node's span ends at the '|' character. To make this case work, the targeting
+    // system will need to artificially expand the BindingPipe's span to encompass any trailing
+    // spaces, which will be done in a future PR.
+    xit('should complete an empty pipe binding', () => {
+      const {ngLS, fileName, cursor, text} = setup(`{{ foo | ¦ }}`, '', SOME_PIPE);
+      const completions = ngLS.getCompletionsAtPosition(fileName, cursor, /* options */ undefined);
+      expectContain(
+          completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.PIPE),
+          ['somePipe']);
+      expectReplacementText(completions, text, 'some');
+    });
+
+    it('should not return extraneous completions', () => {
+      const {ngLS, fileName, cursor, text} = setup(`{{ foo | some¦ }}`, '');
+      const completions = ngLS.getCompletionsAtPosition(fileName, cursor, /* options */ undefined);
+      expect(completions?.entries.length).toBe(0);
+    });
+  });
 });
 
 function expectContain(
@@ -495,7 +539,7 @@ function toText(displayParts?: ts.SymbolDisplayPart[]): string {
 
 function setup(
     templateWithCursor: string, classContents: string,
-    otherDirectives: {[name: string]: string} = {}): {
+    otherDeclarations: {[name: string]: string} = {}): {
   env: LanguageServiceTestEnvironment,
   fileName: AbsoluteFsPath,
   AppCmp: ts.ClassDeclaration,
@@ -507,15 +551,15 @@ function setup(
   const codePath = absoluteFrom('/test.ts');
   const templatePath = absoluteFrom('/test.html');
 
-  const decls = ['AppCmp', ...Object.keys(otherDirectives)];
+  const decls = ['AppCmp', ...Object.keys(otherDeclarations)];
 
-  const otherDirectiveClassDecls = Object.values(otherDirectives).join('\n\n');
+  const otherDirectiveClassDecls = Object.values(otherDeclarations).join('\n\n');
 
   const env = LanguageServiceTestEnvironment.setup([
     {
       name: codePath,
       contents: `
-        import {Component, Directive, NgModule} from '@angular/core';
+        import {Component, Directive, NgModule, Pipe} from '@angular/core';
 
         @Component({
           templateUrl: './test.html',
