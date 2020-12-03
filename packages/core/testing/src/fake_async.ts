@@ -18,6 +18,23 @@ function getFakeAsyncTestModule() {
 /**
  * Clears out the shared fake async zone for a test.
  * To be called in a global `beforeEach`.
+ * There are several patterns of bundles loading
+ * (`zone-testing` and `@angular/core/testing`) order here.
+
+ * 1. loading `zone-testing` before `@angular/core/testing`.
+ * This is the default pattern, and Angular CLI generated `test.ts` does
+ * in this way, the `beforeEach` will be patched by `zone-testing`, and
+ * `resetFakeAsyncZone` also use the logic from `zone-testing`.
+
+ * 2. loading `zone-testing` after `@angular/core/testing`, and using older version
+ * of `zone-testing`. the `beforeEach` will not be patched by `zone-testing` when
+ * `@angular/core/testing` is loaded, so the logic in `before_each.ts` to set a
+ * global `beforeEach` to reset ProxyZoneSpec will not work, so we need to throw
+ * error to let the user load `zone-testing` first.
+ *
+ * 3. loading `zone-testing` after `@angular/core/testing`, and using newer version
+ * of `zone-testing` (0.11.4+). In this case, the logic to reset ProxyZoneSpec delegate
+ * is implemented in the `zone-testing` bundle. Everything should work fine.
  *
  * @publicApi
  */

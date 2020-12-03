@@ -33,7 +33,13 @@ Zone.__load_patch('jasmine', (global: any, Zone: ZoneType, api: _ZonePrivate) =>
   (jasmine as any)['__zone_patch__'] = true;
 
   const SyncTestZoneSpec: {new (name: string): ZoneSpec} = (Zone as any)['SyncTestZoneSpec'];
-  const ProxyZoneSpec: {new (): ZoneSpec} = (Zone as any)['ProxyZoneSpec'];
+  const ProxyZoneSpec: {
+    new (): ZoneSpec,
+    get:
+        () => {
+          resetDelegate: () => void
+        }
+  } = (Zone as any)['ProxyZoneSpec'];
   if (!SyncTestZoneSpec) throw new Error('Missing: SyncTestZoneSpec');
   if (!ProxyZoneSpec) throw new Error('Missing: ProxyZoneSpec');
 
@@ -117,6 +123,14 @@ Zone.__load_patch('jasmine', (global: any, Zone: ZoneType, api: _ZonePrivate) =>
       return originalJasmineFn.apply(this, arguments);
     };
   });
+
+  const beforeEach = jasmineEnv['beforeEach'];
+  if (beforeEach) {
+    beforeEach(() => {
+      const proxyZoneSpec = ProxyZoneSpec.get();
+      proxyZoneSpec && proxyZoneSpec.resetDelegate();
+    });
+  }
 
   if (!disablePatchingJasmineClock) {
     // need to patch jasmine.clock().mockDate and jasmine.clock().tick() so
