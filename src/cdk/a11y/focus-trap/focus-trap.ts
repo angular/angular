@@ -130,7 +130,7 @@ export class FocusTrap {
    * Waits for the zone to stabilize, then either focuses the first element that the
    * user specified, or the first tabbable element.
    * @returns Returns a promise that resolves with a boolean, depending
-   * on whether focus was moved successfuly.
+   * on whether focus was moved successfully.
    */
   focusInitialElementWhenReady(): Promise<boolean> {
     return new Promise<boolean>(resolve => {
@@ -142,7 +142,7 @@ export class FocusTrap {
    * Waits for the zone to stabilize, then focuses
    * the first tabbable element within the focus trap region.
    * @returns Returns a promise that resolves with a boolean, depending
-   * on whether focus was moved successfuly.
+   * on whether focus was moved successfully.
    */
   focusFirstTabbableElementWhenReady(): Promise<boolean> {
     return new Promise<boolean>(resolve => {
@@ -154,7 +154,7 @@ export class FocusTrap {
    * Waits for the zone to stabilize, then focuses
    * the last tabbable element within the focus trap region.
    * @returns Returns a promise that resolves with a boolean, depending
-   * on whether focus was moved successfuly.
+   * on whether focus was moved successfully.
    */
   focusLastTabbableElementWhenReady(): Promise<boolean> {
     return new Promise<boolean>(resolve => {
@@ -195,7 +195,7 @@ export class FocusTrap {
 
   /**
    * Focuses the element that should be focused when the focus trap is initialized.
-   * @returns Whether focus was moved successfuly.
+   * @returns Whether focus was moved successfully.
    */
   focusInitialElement(): boolean {
     // Contains the deprecated version of selector, for temporary backwards comparability.
@@ -217,6 +217,12 @@ export class FocusTrap {
         console.warn(`Element matching '[cdkFocusInitial]' is not focusable.`, redirectToElement);
       }
 
+      if (!this._checker.isFocusable(redirectToElement)) {
+        const focusableChild = this._getFirstTabbableElement(redirectToElement) as HTMLElement;
+        focusableChild?.focus();
+        return !!focusableChild;
+      }
+
       redirectToElement.focus();
       return true;
     }
@@ -226,7 +232,7 @@ export class FocusTrap {
 
   /**
    * Focuses the first tabbable element within the focus trap region.
-   * @returns Whether focus was moved successfuly.
+   * @returns Whether focus was moved successfully.
    */
   focusFirstTabbableElement(): boolean {
     const redirectToElement = this._getRegionBoundary('start');
@@ -240,7 +246,7 @@ export class FocusTrap {
 
   /**
    * Focuses the last tabbable element within the focus trap region.
-   * @returns Whether focus was moved successfuly.
+   * @returns Whether focus was moved successfully.
    */
   focusLastTabbableElement(): boolean {
     const redirectToElement = this._getRegionBoundary('end');
@@ -253,7 +259,7 @@ export class FocusTrap {
   }
 
   /**
-   * Checks whether the focus trap has successfuly been attached.
+   * Checks whether the focus trap has successfully been attached.
    */
   hasAttached(): boolean {
     return this._hasAttached;
@@ -396,7 +402,7 @@ export class CdkTrapFocus implements OnDestroy, AfterContentInit, OnChanges, DoC
   set enabled(value: boolean) { this.focusTrap.enabled = coerceBooleanProperty(value); }
 
   /**
-   * Whether the directive should automatially move focus into the trapped region upon
+   * Whether the directive should automatically move focus into the trapped region upon
    * initialization and return focus to the previous activeElement upon destruction.
    */
   @Input('cdkTrapFocusAutoCapture')

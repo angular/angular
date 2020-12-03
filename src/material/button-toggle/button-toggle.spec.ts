@@ -800,13 +800,13 @@ describe('MatButtonToggle without forms', () => {
       expect(button.getAttribute('tabindex')).toBe('3');
     });
 
-    it('should clear the tabindex from the host element', () => {
+    it('should have role "presentation"', () => {
       const fixture = TestBed.createComponent(ButtonToggleWithTabindex);
       fixture.detectChanges();
 
       const host = fixture.nativeElement.querySelector('.mat-button-toggle');
 
-      expect(host.getAttribute('tabindex')).toBe('-1');
+      expect(host.getAttribute('role')).toBe('presentation');
     });
 
     it('should forward focus to the underlying button when the host is focused', () => {
