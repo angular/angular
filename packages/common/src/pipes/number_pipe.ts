@@ -241,7 +241,7 @@ export class CurrencyPipe implements PipeTransform {
     locale = locale || this._locale;
 
     if (typeof display === 'boolean') {
-      if (<any>console && <any>console.warn) {
+      if ((typeof ngDevMode === 'undefined' || ngDevMode) && <any>console && <any>console.warn) {
         console.warn(
             `Warning: the currency pipe has been changed in Angular v5. The symbolDisplay option (third parameter) is now a string instead of a boolean. The accepted values are "code", "symbol" or "symbol-narrow".`);
       }
