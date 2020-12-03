@@ -878,5 +878,13 @@
     "website": "https://wesleygrimes.com",
     "bio": "Wes is a Senior Engineer at Nrwl, Core Team Member of NgRx, active open source contributor, speaker, writer, and mentor. Wes has well over a decade of experience in the insurance and disaster relief industries architecting and building full-stack enterprise software solutions. He has served in roles from tech support to business analysis, project management, and software development. Wes hails from sunny Central Florida and in his free time, he loves taking in sunsets, cooking BBQ, and spending time with his wife and 3 children.",
     "groups": ["GDE"]
+  },
+  "alvarocamillont": {
+    "name": "Alvaro Camillo Neto",
+    "picture": "alvarocamillont.png",
+    "twitter": "alvarocamillont",
+    "website": "https://alvarocamillont.dev/",
+    "bio": "Alvaro is a software engineer, speaker, and instructor in Brazil. He has worked in the technology industry for over 10 years and is dedicated to the development of enterprise business solutions.",
+    "groups": ["GDE"]
   }
 }
