@@ -20,7 +20,7 @@ export class SearchResultsComponent implements OnChanges {
    * The results to display
    */
   @Input()
-  searchResults: SearchResults | null = null;
+  searchResults: SearchResults | null | undefined = null;
 
   /**
    * Emitted when the user selects a search result
@@ -34,7 +34,7 @@ export class SearchResultsComponent implements OnChanges {
   searchAreas: SearchArea[] = [];
 
   ngOnChanges() {
-    if (this.searchResults === null) {
+    if (this.searchResults === undefined || this.searchResults === null) {
       this.searchState = SearchState.InProgress;
     } else if (this.searchResults.results.length) {
       this.searchState = SearchState.ResultsFound;
@@ -52,7 +52,7 @@ export class SearchResultsComponent implements OnChanges {
   }
 
   // Map the search results into groups by area
-  private processSearchResults(search: SearchResults | null) {
+  private processSearchResults(search: SearchResults | null | undefined) {
     if (!search) {
       return [];
     }

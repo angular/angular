@@ -37,7 +37,7 @@ describe('FileNotFoundSearchComponent', () => {
 
   it('should pass through any results to the `aio-search-results` component', () => {
     const searchResultsComponent = fixture.debugElement.query(By.directive(SearchResultsComponent)).componentInstance;
-    expect(searchResultsComponent.searchResults).toBe(null);
+    expect(searchResultsComponent.searchResults).toBeFalsy();
 
     const results = { query: 'base initial url', results: []};
     searchResultSubject.next(results);

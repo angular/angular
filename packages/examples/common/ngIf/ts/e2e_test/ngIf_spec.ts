@@ -67,7 +67,7 @@ describe('ngIf', () => {
       browser.get(URL);
       waitForElement(comp);
       expect(element.all(by.css(comp)).get(0).getText())
-          .toEqual('Next User\nWaiting... (user is null)');
+          .toEqual('Next User\nWaiting... (user is )');
       element(by.css(comp + ' button')).click();
       expect(element.all(by.css(comp)).get(0).getText()).toEqual('Next User\nHello Smith, John!');
     });
