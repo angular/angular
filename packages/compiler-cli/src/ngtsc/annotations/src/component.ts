@@ -18,7 +18,7 @@ import {IndexingContext} from '../../indexer';
 import {ClassPropertyMapping, ComponentResources, DirectiveMeta, DirectiveTypeCheckMeta, extractDirectiveTypeCheckMeta, InjectableClassRegistry, MetadataReader, MetadataRegistry, Resource, ResourceRegistry} from '../../metadata';
 import {EnumValue, PartialEvaluator} from '../../partial_evaluator';
 import {ClassDeclaration, DeclarationNode, Decorator, ReflectionHost, reflectObjectLiteral} from '../../reflection';
-import {ComponentScopeReader, LocalModuleScopeRegistry} from '../../scope';
+import {ComponentScopeReader, LocalModuleScopeRegistry, TypeCheckScopeRegistry} from '../../scope';
 import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerFlags, HandlerPrecedence, ResolveResult} from '../../transform';
 import {TemplateSourceMapping, TypeCheckContext} from '../../typecheck/api';
 import {getTemplateId, makeTemplateDiagnostic} from '../../typecheck/diagnostics';
@@ -30,7 +30,6 @@ import {createValueHasWrongTypeError, getDirectiveDiagnostics, getProviderDiagno
 import {extractDirectiveMetadata, parseFieldArrayValue} from './directive';
 import {compileNgFactoryDefField} from './factory';
 import {generateSetClassMetadataCall} from './metadata';
-import {TypeCheckScopes} from './typecheck_scopes';
 import {findAngularDecorator, isAngularCoreReference, isExpressionForwardReference, readBaseClass, resolveProvidersRequiringFactory, unwrapExpression, wrapFunctionExpressionsInParens} from './util';
 
 const EMPTY_MAP = new Map<string, Expression>();
@@ -87,6 +86,7 @@ export class ComponentDecoratorHandler implements
       private reflector: ReflectionHost, private evaluator: PartialEvaluator,
       private metaRegistry: MetadataRegistry, private metaReader: MetadataReader,
       private scopeReader: ComponentScopeReader, private scopeRegistry: LocalModuleScopeRegistry,
+      private typeCheckScopeRegistry: TypeCheckScopeRegistry,
       private resourceRegistry: ResourceRegistry, private isCore: boolean,
       private resourceLoader: ResourceLoader, private rootDirs: ReadonlyArray<string>,
       private defaultPreserveWhitespaces: boolean, private i18nUseExternalIds: boolean,
@@ -100,7 +100,6 @@ export class ComponentDecoratorHandler implements
 
   private literalCache = new Map<Decorator, ts.ObjectLiteralExpression>();
   private elementSchemaRegistry = new DomElementSchemaRegistry();
-  private typeCheckScopes = new TypeCheckScopes(this.scopeReader, this.metaReader);
 
   /**
    * During the asynchronous preanalyze phase, it's necessary to parse the template to extract
@@ -440,15 +439,14 @@ export class ComponentDecoratorHandler implements
 
   typeCheck(ctx: TypeCheckContext, node: ClassDeclaration, meta: Readonly<ComponentAnalysisData>):
       void {
-    if (!ts.isClassDeclaration(node)) {
+    if (this.typeCheckScopeRegistry === null || !ts.isClassDeclaration(node)) {
       return;
     }
 
     if (meta.isPoisoned && !this.usePoisonedData) {
       return;
     }
-
-    const scope = this.typeCheckScopes.getTypeCheckScope(node);
+    const scope = this.typeCheckScopeRegistry.getTypeCheckScope(node);
     if (scope.isPoisoned && !this.usePoisonedData) {
       // Don't type-check components that had errors in their scopes, unless requested.
       return;
@@ -492,17 +490,17 @@ export class ComponentDecoratorHandler implements
       // Determining this is challenging, because the TemplateDefinitionBuilder is responsible for
       // matching directives and pipes in the template; however, that doesn't run until the actual
       // compile() step. It's not possible to run template compilation sooner as it requires the
-      // ConstantPool for the overall file being compiled (which isn't available until the transform
-      // step).
+      // ConstantPool for the overall file being compiled (which isn't available until the
+      // transform step).
       //
-      // Instead, directives/pipes are matched independently here, using the R3TargetBinder. This is
-      // an alternative implementation of template matching which is used for template type-checking
-      // and will eventually replace matching in the TemplateDefinitionBuilder.
+      // Instead, directives/pipes are matched independently here, using the R3TargetBinder. This
+      // is an alternative implementation of template matching which is used for template
+      // type-checking and will eventually replace matching in the TemplateDefinitionBuilder.
 
 
-      // Set up the R3TargetBinder, as well as a 'directives' array and a 'pipes' map that are later
-      // fed to the TemplateDefinitionBuilder. First, a SelectorMatcher is constructed to match
-      // directives that are in scope.
+      // Set up the R3TargetBinder, as well as a 'directives' array and a 'pipes' map that are
+      // later fed to the TemplateDefinitionBuilder. First, a SelectorMatcher is constructed to
+      // match directives that are in scope.
       type MatchedDirective = DirectiveMeta&{selector: string};
       const matcher = new SelectorMatcher<MatchedDirective>();
 
@@ -563,8 +561,8 @@ export class ComponentDecoratorHandler implements
         }
 
         // Check whether the directive/pipe arrays in ɵcmp need to be wrapped in closures.
-        // This is required if any directive/pipe reference is to a declaration in the same file but
-        // declared after this component.
+        // This is required if any directive/pipe reference is to a declaration in the same file
+        // but declared after this component.
         const wrapDirectivesAndPipesInClosure =
             usedDirectives.some(
                 dir => isExpressionForwardReference(dir.type, node.name, context)) ||
@@ -890,8 +888,8 @@ export class ComponentDecoratorHandler implements
     // 2. By default, the template parser strips leading trivia characters (like spaces, tabs, and
     //    newlines). This also destroys source mapping information.
     //
-    // In order to guarantee the correctness of diagnostics, templates are parsed a second time with
-    // the above options set to preserve source mappings.
+    // In order to guarantee the correctness of diagnostics, templates are parsed a second time
+    // with the above options set to preserve source mappings.
 
     const {nodes: diagNodes} = parseTemplate(templateStr, templateUrl, {
       preserveWhitespaces: true,

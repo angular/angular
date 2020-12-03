@@ -24,7 +24,7 @@ import {NOOP_PERF_RECORDER, PerfRecorder} from '../../perf';
 import {DeclarationNode, isNamedClassDeclaration, TypeScriptReflectionHost} from '../../reflection';
 import {AdapterResourceLoader} from '../../resource';
 import {entryPointKeyFor, NgModuleRouteAnalyzer} from '../../routing';
-import {ComponentScopeReader, LocalModuleScopeRegistry, MetadataDtsModuleScopeResolver} from '../../scope';
+import {ComponentScopeReader, LocalModuleScopeRegistry, MetadataDtsModuleScopeResolver, TypeCheckScopeRegistry} from '../../scope';
 import {generatedFactoryTransform} from '../../shims';
 import {ivySwitchTransform} from '../../switch';
 import {aliasTransformFactory, CompilationMode, declarationTransformFactory, DecoratorHandler, DtsTransformRegistry, ivyTransformFactory, TraitCompiler} from '../../transform';
@@ -44,6 +44,7 @@ interface LazyCompilationState {
   reflector: TypeScriptReflectionHost;
   metaReader: MetadataReader;
   scopeRegistry: LocalModuleScopeRegistry;
+  typeCheckScopeRegistry: TypeCheckScopeRegistry;
   exportReferenceGraph: ReferenceGraph|null;
   routeAnalyzer: NgModuleRouteAnalyzer;
   dtsTransforms: DtsTransformRegistry;
@@ -732,6 +733,7 @@ export class NgCompiler {
     const injectableRegistry = new InjectableClassRegistry(reflector);
 
     const metaReader = new CompoundMetadataReader([localMetaReader, dtsReader]);
+    const typeCheckScopeRegistry = new TypeCheckScopeRegistry(scopeReader, metaReader);
 
 
     // If a flat module entrypoint was specified, then track references via a `ReferenceGraph` in
@@ -761,8 +763,9 @@ export class NgCompiler {
     const handlers: DecoratorHandler<unknown, unknown, unknown>[] = [
       new ComponentDecoratorHandler(
           reflector, evaluator, metaRegistry, metaReader, scopeReader, scopeRegistry,
-          resourceRegistry, isCore, this.resourceManager, this.adapter.rootDirs,
-          this.options.preserveWhitespaces || false, this.options.i18nUseExternalIds !== false,
+          typeCheckScopeRegistry, resourceRegistry, isCore, this.resourceManager,
+          this.adapter.rootDirs, this.options.preserveWhitespaces || false,
+          this.options.i18nUseExternalIds !== false,
           this.options.enableI18nLegacyMessageIdFormat !== false, this.usePoisonedData,
           this.options.i18nNormalizeLineEndingsInICUs, this.moduleResolver, this.cycleAnalyzer,
           refEmitter, defaultImportTracker, this.incrementalDriver.depGraph, injectableRegistry,
@@ -814,6 +817,7 @@ export class NgCompiler {
       routeAnalyzer,
       mwpScanner,
       metaReader,
+      typeCheckScopeRegistry,
       defaultImportTracker,
       aliasingHost,
       refEmitter,

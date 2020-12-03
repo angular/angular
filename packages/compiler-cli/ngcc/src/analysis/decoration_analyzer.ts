@@ -16,7 +16,7 @@ import {absoluteFrom, absoluteFromSourceFile, dirname, FileSystem, LogicalFileSy
 import {AbsoluteModuleStrategy, LocalIdentifierStrategy, LogicalProjectStrategy, ModuleResolver, NOOP_DEFAULT_IMPORT_RECORDER, PrivateExportAliasingHost, Reexport, ReferenceEmitter} from '../../../src/ngtsc/imports';
 import {CompoundMetadataReader, CompoundMetadataRegistry, DtsMetadataReader, InjectableClassRegistry, LocalMetadataRegistry, ResourceRegistry} from '../../../src/ngtsc/metadata';
 import {PartialEvaluator} from '../../../src/ngtsc/partial_evaluator';
-import {LocalModuleScopeRegistry, MetadataDtsModuleScopeResolver} from '../../../src/ngtsc/scope';
+import {LocalModuleScopeRegistry, MetadataDtsModuleScopeResolver, TypeCheckScopeRegistry} from '../../../src/ngtsc/scope';
 import {DecoratorHandler} from '../../../src/ngtsc/transform';
 import {NgccReflectionHost} from '../host/ngcc_host';
 import {Migration} from '../migrations/migration';
@@ -91,11 +91,13 @@ export class DecorationAnalyzer {
   importGraph = new ImportGraph(this.moduleResolver);
   cycleAnalyzer = new CycleAnalyzer(this.importGraph);
   injectableRegistry = new InjectableClassRegistry(this.reflectionHost);
+  typeCheckScopeRegistry = new TypeCheckScopeRegistry(this.scopeRegistry, this.fullMetaReader);
   handlers: DecoratorHandler<unknown, unknown, unknown>[] = [
     new ComponentDecoratorHandler(
         this.reflectionHost, this.evaluator, this.fullRegistry, this.fullMetaReader,
-        this.scopeRegistry, this.scopeRegistry, new ResourceRegistry(), this.isCore,
-        this.resourceManager, this.rootDirs, !!this.compilerOptions.preserveWhitespaces,
+        this.scopeRegistry, this.scopeRegistry, this.typeCheckScopeRegistry, new ResourceRegistry(),
+        this.isCore, this.resourceManager, this.rootDirs,
+        !!this.compilerOptions.preserveWhitespaces,
         /* i18nUseExternalIds */ true, this.bundle.enableI18nLegacyMessageIdFormat,
         /* usePoisonedData */ false,
         /* i18nNormalizeLineEndingsInICUs */ false, this.moduleResolver, this.cycleAnalyzer,
