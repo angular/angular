@@ -54,8 +54,14 @@ export class FormBuilder {
    * @description
    * Construct a new `FormGroup` instance.
    *
-   * @deprecated This api is not typesafe and can result in issues with Closure Compiler renaming.
-   *  Use the `FormBuilder#group` overload with `AbstractControlOptions` instead.
+   * @deprecated This API is not typesafe and can result in issues with Closure Compiler renaming.
+   * Use the `FormBuilder#group` overload with `AbstractControlOptions` instead.
+   * Note that `AbstractControlOptions` expects `validators` and `asyncValidators` to be valid
+   * validators. If you have custom validators, make sure their validation function parameter is
+   * `AbstractControl` and not a sub-class, such as `FormGroup`. These functions will be called with
+   * an object of type `AbstractControl` and that cannot be automatically downcast to a subclass, so
+   * TypeScript sees this as an error. For example, change the `(group: FormGroup) =>
+   * ValidationErrors|null` signature to be `(group: AbstractControl) => ValidationErrors|null`.
    *
    * @param controlsConfig A collection of child controls. The key for each child is the name
    * under which it is registered.
