@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, EmptyExpr, ImplicitReceiver, LiteralPrimitive, MethodCall, ParseSourceSpan, PropertyRead, PropertyWrite, SafeMethodCall, SafePropertyRead, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstElement, TmplAstNode, TmplAstReference, TmplAstTemplate, TmplAstTextAttribute, TmplAstVariable} from '@angular/compiler';
+import {AST, BindingPipe, EmptyExpr, ImplicitReceiver, LiteralPrimitive, MethodCall, ParseSourceSpan, PropertyRead, PropertyWrite, SafeMethodCall, SafePropertyRead, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstElement, TmplAstNode, TmplAstReference, TmplAstTemplate, TmplAstTextAttribute, TmplAstVariable} from '@angular/compiler';
 import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
 import {CompletionKind, DirectiveInScope, TemplateDeclarationSymbol} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
 import {BoundEvent} from '@angular/compiler/src/render3/r3_ast';
@@ -23,6 +23,7 @@ type PropertyExpressionCompletionBuilder =
 type ElementAttributeCompletionBuilder =
     CompletionBuilder<TmplAstElement|TmplAstBoundAttribute|TmplAstTextAttribute|TmplAstBoundEvent>;
 
+type PipeCompletionBuilder = CompletionBuilder<BindingPipe>;
 
 export enum CompletionNodeContext {
   None,
@@ -65,6 +66,8 @@ export class CompletionBuilder<N extends TmplAstNode|AST> {
       return this.getElementTagCompletion();
     } else if (this.isElementAttributeCompletion()) {
       return this.getElementAttributeCompletions();
+    } else if (this.isPipeCompletion()) {
+      return this.getPipeCompletions();
     } else {
       return undefined;
     }
@@ -577,6 +580,34 @@ export class CompletionBuilder<N extends TmplAstNode|AST> {
     const completion = attrTable.get(name)!;
     return getAttributeCompletionSymbol(completion, this.typeChecker) ?? undefined;
   }
+
+  private isPipeCompletion(): this is PipeCompletionBuilder {
+    return this.node instanceof BindingPipe;
+  }
+
+  private getPipeCompletions(this: PipeCompletionBuilder):
+      ts.WithMetadata<ts.CompletionInfo>|undefined {
+    const pipes = this.templateTypeChecker.getPipesInScope(this.component);
+    if (pipes === null) {
+      return undefined;
+    }
+
+    const replacementSpan = makeReplacementSpanFromAst(this.node);
+
+    const entries: ts.CompletionEntry[] =
+        pipes.map(pipe => ({
+                    name: pipe.name,
+                    sortText: pipe.name,
+                    kind: unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.PIPE),
+                    replacementSpan,
+                  }));
+    return {
+      entries,
+      isGlobalCompletion: false,
+      isMemberCompletion: false,
+      isNewIdentifierLocation: false,
+    };
+  }
 }
 
 function makeReplacementSpanFromParseSourceSpan(span: ParseSourceSpan): ts.TextSpan {
@@ -587,7 +618,7 @@ function makeReplacementSpanFromParseSourceSpan(span: ParseSourceSpan): ts.TextS
 }
 
 function makeReplacementSpanFromAst(node: PropertyRead|PropertyWrite|MethodCall|SafePropertyRead|
-                                    SafeMethodCall): ts.TextSpan {
+                                    SafeMethodCall|BindingPipe): ts.TextSpan {
   return {
     start: node.nameSpan.start,
     length: node.nameSpan.end - node.nameSpan.start,
