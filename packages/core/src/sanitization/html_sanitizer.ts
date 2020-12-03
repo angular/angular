@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {isDevMode} from '../util/is_dev_mode';
 import {getInertBodyHelper, InertBodyHelper} from './inert_body';
 import {_sanitizeUrl, sanitizeSrcset} from './url_sanitizer';
 
@@ -269,7 +268,7 @@ export function _sanitizeHtml(defaultDoc: any, unsafeHtmlInput: string): string 
     const sanitizer = new SanitizingHtmlSerializer();
     const safeHtml = sanitizer.sanitizeChildren(
         getTemplateContent(inertBodyElement!) as Element || inertBodyElement);
-    if (isDevMode() && sanitizer.sanitizedSomething) {
+    if ((typeof ngDevMode === 'undefined' || ngDevMode) && sanitizer.sanitizedSomething) {
       console.warn(
           'WARNING: sanitizing HTML stripped some content, see https://g.co/ng/security#xss');
     }
