@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {compileComponentFromMetadata, ConstantPool, DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig, makeBindingParser, parseTemplate, R3ComponentMetadata, R3UsedDirectiveMetadata} from '@angular/compiler';
+import {compileComponentFromMetadata, ConstantPool, DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig, makeBindingParser, parseTemplate, R3ComponentMetadata, R3DeclareComponentMetadata, R3PartialDeclaration, R3UsedDirectiveMetadata} from '@angular/compiler';
 import {ChangeDetectionStrategy, ViewEncapsulation} from '@angular/compiler/src/core';
 import * as o from '@angular/compiler/src/output/output_ast';
 
@@ -25,7 +25,7 @@ export class PartialComponentLinkerVersion1<TExpression> implements PartialLinke
 
   linkPartialDeclaration(
       sourceUrl: string, code: string, constantPool: ConstantPool,
-      metaObj: AstObject<TExpression>): o.Expression {
+      metaObj: AstObject<R3PartialDeclaration, TExpression>): o.Expression {
     const meta = toR3ComponentMeta(metaObj, code, sourceUrl, this.options);
     const def = compileComponentFromMetadata(meta, constantPool, makeBindingParser());
     return def.expression;
@@ -36,7 +36,7 @@ export class PartialComponentLinkerVersion1<TExpression> implements PartialLinke
  * This function derives the `R3ComponentMetadata` from the provided AST object.
  */
 export function toR3ComponentMeta<TExpression>(
-    metaObj: AstObject<TExpression>, code: string, sourceUrl: string,
+    metaObj: AstObject<R3DeclareComponentMetadata, TExpression>, code: string, sourceUrl: string,
     options: LinkerOptions): R3ComponentMetadata {
   let interpolation = DEFAULT_INTERPOLATION_CONFIG;
   if (metaObj.has('interpolation')) {
@@ -133,7 +133,8 @@ export function toR3ComponentMeta<TExpression>(
 /**
  * Determines the `ViewEncapsulation` mode from the AST value's symbol name.
  */
-function parseEncapsulation<TExpression>(encapsulation: AstValue<TExpression>): ViewEncapsulation {
+function parseEncapsulation<TExpression>(encapsulation: AstValue<ViewEncapsulation, TExpression>):
+    ViewEncapsulation {
   const symbolName = encapsulation.getSymbolName();
   if (symbolName === null) {
     throw new FatalLinkerError(
@@ -149,7 +150,8 @@ function parseEncapsulation<TExpression>(encapsulation: AstValue<TExpression>): 
 /**
  * Determines the `ChangeDetectionStrategy` from the AST value's symbol name.
  */
-function parseChangeDetectionStrategy<TExpression>(changeDetectionStrategy: AstValue<TExpression>):
+function parseChangeDetectionStrategy<TExpression>(
+    changeDetectionStrategy: AstValue<ChangeDetectionStrategy, TExpression>):
     ChangeDetectionStrategy {
   const symbolName = changeDetectionStrategy.getSymbolName();
   if (symbolName === null) {
@@ -168,7 +170,8 @@ function parseChangeDetectionStrategy<TExpression>(changeDetectionStrategy: AstV
 /**
  * Update the range to remove the start and end chars, which should be quotes around the template.
  */
-function getTemplateRange<TExpression>(templateNode: AstValue<TExpression>, code: string): Range {
+function getTemplateRange<TExpression>(
+    templateNode: AstValue<unknown, TExpression>, code: string): Range {
   const {startPos, endPos, startLine, startCol} = templateNode.getRange();
 
   if (!/["'`]/.test(code[startPos]) || code[startPos] !== code[endPos - 1]) {

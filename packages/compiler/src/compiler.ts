@@ -91,6 +91,7 @@ export {ViewCompiler} from './view_compiler/view_compiler';
 export {getParseErrors, isSyntaxError, syntaxError, Version} from './util';
 export {SourceMap} from './output/source_map';
 export * from './injectable_compiler_2';
+export * from './render3/partial/api';
 export * from './render3/view/api';
 export {BoundAttribute as TmplAstBoundAttribute, BoundEvent as TmplAstBoundEvent, BoundText as TmplAstBoundText, Content as TmplAstContent, Element as TmplAstElement, Icu as TmplAstIcu, Node as TmplAstNode, RecursiveVisitor as TmplAstRecursiveVisitor, Reference as TmplAstReference, Template as TmplAstTemplate, Text as TmplAstText, TextAttribute as TmplAstTextAttribute, Variable as TmplAstVariable} from './render3/r3_ast';
 export * from './render3/view/t2_api';

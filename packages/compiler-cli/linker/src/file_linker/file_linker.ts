@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {R3PartialDeclaration} from '@angular/compiler';
 import {AstObject} from '../ast/ast_value';
 import {DeclarationScope} from './declaration_scope';
 import {EmitScope} from './emit_scopes/emit_scope';
@@ -53,7 +54,8 @@ export class FileLinker<TConstantScope, TStatement, TExpression> {
               args.length}.`);
     }
 
-    const metaObj = AstObject.parse(args[0], this.linkerEnvironment.host);
+    const metaObj =
+        AstObject.parse<R3PartialDeclaration, TExpression>(args[0], this.linkerEnvironment.host);
     const ngImport = metaObj.getNode('ngImport');
     const emitScope = this.getEmitScope(ngImport, declarationScope);
 
