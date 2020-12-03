@@ -140,11 +140,9 @@ export class UrlTree {
  */
 export class UrlSegmentGroup {
   /** @internal */
-  // TODO(issue/24571): remove '!'.
-  _sourceSegment!: UrlSegmentGroup;
+  _sourceSegment?: UrlSegmentGroup;
   /** @internal */
-  // TODO(issue/24571): remove '!'.
-  _segmentIndexShift!: number;
+  _segmentIndexShift?: number;
   /** The parent node in the url tree */
   parent: UrlSegmentGroup|null = null;
 
