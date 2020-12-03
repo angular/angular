@@ -49,7 +49,7 @@ This gives users a meaningful first paint of your application that appears quick
 
 Learn more in [The App Shell Model](https://developers.google.com/web/fundamentals/architecture/app-shell).
 
-You can use the Angular CLI to [generate](cli/generate#appshell) an app shell.
+You can use the Angular CLI to [generate](cli/generate#app-shell) an app shell.
 This can improve the user experience by quickly launching a static rendered page (a skeleton common to all pages) while the browser downloads the full client version and switches to it automatically after the code loads.
 
 See also [Service Worker and PWA](guide/service-worker-intro).
