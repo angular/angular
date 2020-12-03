@@ -12,13 +12,13 @@ import * as ts from 'typescript';
 
 import {createCompilerHost, createProgram} from '../../index';
 import {main, mainDiagnosticsForTest, readNgcCommandLineAndConfiguration} from '../../src/main';
-import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem, NgtscCompilerHost, relativeFrom} from '../../src/ngtsc/file_system';
+import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem, relativeFrom} from '../../src/ngtsc/file_system';
 import {Folder, MockFileSystem} from '../../src/ngtsc/file_system/testing';
 import {IndexedComponent} from '../../src/ngtsc/indexer';
 import {NgtscProgram} from '../../src/ngtsc/program';
 import {DeclarationNode} from '../../src/ngtsc/reflection';
 import {LazyRoute} from '../../src/ngtsc/routing';
-import {getCachedSourceFile} from '../../src/ngtsc/testing';
+import {NgtscTestCompilerHost} from '../../src/ngtsc/testing';
 import {setWrapHostForTest} from '../../src/transformers/compiler_host';
 
 
@@ -265,16 +265,6 @@ export class NgtscTestEnvironment {
     const host = createCompilerHost({options});
     const program = createProgram({rootNames, host, options});
     return (program as NgtscProgram).getIndexedComponents();
-  }
-}
-
-class NgtscTestCompilerHost extends NgtscCompilerHost {
-  getSourceFile(fileName: string, languageVersion: ts.ScriptTarget): ts.SourceFile|undefined {
-    const cachedSf = getCachedSourceFile(fileName, () => this.readFile(fileName));
-    if (cachedSf !== null) {
-      return cachedSf;
-    }
-    return super.getSourceFile(fileName, languageVersion);
   }
 }
 
