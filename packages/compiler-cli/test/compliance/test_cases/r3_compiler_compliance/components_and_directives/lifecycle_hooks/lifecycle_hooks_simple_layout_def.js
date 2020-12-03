@@ -3,7 +3,7 @@ SimpleLayout.ɵcmp = $r3$.ɵɵdefineComponent({
   selectors: [["simple-layout"]],
   decls: 2,
   vars: 2,
-  consts: [[3, "name"]],
+  consts: [[__AttributeMarker.Bindings__, "name"]],
   template:  function SimpleLayout_Template(rf, ctx) {
     if (rf & 1) {
       $r3$.ɵɵelement(0, "lifecycle-comp", 0);

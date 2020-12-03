@@ -4,7 +4,7 @@ SimpleComponent.ɵcmp = $r3$.ɵɵdefineComponent({
   ngContentSelectors: $c0$,
   decls: 1,
   vars: 1,
-  consts: [[4, "ngIf"]],
+  consts: [[__AttributeMarker.Template__, "ngIf"]],
   template:  function SimpleComponent_Template(rf, ctx) {
     if (rf & 1) {
       i0.ɵɵprojectionDef();
