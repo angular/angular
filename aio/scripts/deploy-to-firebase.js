@@ -250,11 +250,11 @@ function deploy(data) {
   preDeployActions.forEach(fn => fn(data));
 
   console.log('\n\n\n==== Deploy AIO to Firebase hosting. ====\n');
-  yarn(`firebase use "${projectId}" --token "${firebaseToken}"`);
-  yarn(`firebase target:apply hosting aio "${siteId}" --token "${firebaseToken}"`);
-  yarn(
-      `firebase deploy --only hosting:aio --message "Commit: ${currentCommit}" --non-interactive ` +
-      `--token "${firebaseToken}"`);
+  const firebase = cmd => yarn(`firebase ${cmd} --token "${firebaseToken}"`);
+  firebase(`use "${projectId}"`);
+  firebase('target:clear hosting aio');
+  firebase(`target:apply hosting aio "${siteId}"`);
+  firebase(`deploy --only hosting:aio --message "Commit: ${currentCommit}" --non-interactive`);
 
   console.log('\n\n\n==== Run post-deploy actions. ====\n');
   postDeployActions.forEach(fn => fn(data));
