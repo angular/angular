@@ -42,9 +42,12 @@ filegroup(
         "@npm//:node_modules/angular-1.5/angular.min.js",
         "@npm//:node_modules/angular-1.6/angular.js",
         "@npm//:node_modules/angular-1.6/angular.min.js",
+        "@npm//:node_modules/angular-1.7/angular.js",
+        "@npm//:node_modules/angular-1.7/angular.min.js",
         "@npm//:node_modules/angular-mocks/angular-mocks.js",
         "@npm//:node_modules/angular-mocks-1.5/angular-mocks.js",
         "@npm//:node_modules/angular-mocks-1.6/angular-mocks.js",
+        "@npm//:node_modules/angular-mocks-1.7/angular-mocks.js",
     ],
 )
 
