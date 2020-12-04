@@ -67,6 +67,8 @@ import {HammerGestureConfig, HammerGesturesPlugin,} from '@angular/platform-brow
         ngZone = z;
       }));
 
+      let loaderCalled = 0;
+
       beforeEach(() => {
         originalHammerGlobal = (window as any).Hammer;
         (window as any).Hammer = undefined;
@@ -76,10 +78,13 @@ import {HammerGestureConfig, HammerGesturesPlugin,} from '@angular/platform-brow
           off: jasmine.createSpy('mc.off'),
         };
 
-        loader = () => new Promise((resolve, reject) => {
-          resolveLoader = resolve;
-          failLoader = reject;
-        });
+        loader = () => {
+          loaderCalled++;
+          return new Promise((resolve, reject) => {
+            resolveLoader = resolve;
+            failLoader = reject;
+          });
+        };
 
         // Make the hammer config return a fake hammer instance
         const hammerConfig = new HammerGestureConfig();
@@ -95,7 +100,17 @@ import {HammerGestureConfig, HammerGesturesPlugin,} from '@angular/platform-brow
       });
 
       afterEach(() => {
+        loaderCalled = 0;
         (window as any).Hammer = originalHammerGlobal;
+      });
+
+      it('should call the loader provider only once', () => {
+        plugin.addEventListener(someElement, 'swipe', () => {});
+        plugin.addEventListener(someElement, 'panleft', () => {});
+        plugin.addEventListener(someElement, 'panright', () => {});
+        // Ensure that the loader is called only once, because previouly
+        // it was called the same number of times as `addEventListener` was called.
+        expect(loaderCalled).toEqual(1);
       });
 
       it('should not log a warning when HammerJS is not loaded', () => {
