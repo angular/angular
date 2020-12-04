@@ -391,6 +391,29 @@ describe('MatSlider', () => {
       expect(ticksElement.style.transform).toContain('translateX(25%)');
       expect(ticksContainerElement.style.transform).toBe('translateX(-25%)');
     });
+
+    it('should be able to set the min and max values when they are more precise ' +
+      'than the step', () => {
+      // Note that we assign min/max with more decimals than the
+      // step to ensure that the value doesn't get rounded up.
+      testComponent.step = 0.5;
+      testComponent.min = 10.15;
+      testComponent.max = 50.15;
+      fixture.detectChanges();
+
+      dispatchSlideEventSequence(sliderNativeElement, 0.5, 0);
+      fixture.detectChanges();
+
+      expect(sliderInstance.value).toBe(10.15);
+      expect(sliderInstance.percent).toBe(0);
+
+      dispatchSlideEventSequence(sliderNativeElement, 0.5, 1);
+      fixture.detectChanges();
+
+      expect(sliderInstance.value).toBe(50.15);
+      expect(sliderInstance.percent).toBe(1);
+    });
+
   });
 
   describe('slider with set value', () => {
@@ -1510,12 +1533,13 @@ class StandardSlider { }
 class DisabledSlider { }
 
 @Component({
-  template: `<mat-slider [min]="min" [max]="max" tickInterval="6"></mat-slider>`,
+  template: `<mat-slider [min]="min" [max]="max" [step]="step" tickInterval="6"></mat-slider>`,
   styles: [styles],
 })
 class SliderWithMinAndMax {
   min = 4;
   max = 6;
+  step = 1;
 }
 
 @Component({
