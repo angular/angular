@@ -761,7 +761,7 @@ export class ApplicationRef {
       for (let view of this._views) {
         view.detectChanges();
       }
-      if (typeof ngDevMode === 'undefined' || ngDevMode) {
+      if ((typeof ngDevMode === 'undefined' || ngDevMode) && isDevMode()) {
         for (let view of this._views) {
           view.checkNoChanges();
         }
