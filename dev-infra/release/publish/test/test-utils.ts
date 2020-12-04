@@ -92,7 +92,7 @@ export function setupReleaseActionForTesting<T extends ReleaseAction>(
   spyOn(npm, 'runNpmPublish').and.resolveTo();
   spyOn(externalCommands, 'invokeSetNpmDistCommand').and.resolveTo();
   spyOn(externalCommands, 'invokeYarnInstallCommand').and.resolveTo();
-  spyOn(externalCommands, 'invokeReleaseBuildCommand').and.resolveTo([
+  spyOn(ReleaseAction.prototype, 'invokeReleaseBuildCommand' as any).and.resolveTo([
     {name: '@angular/pkg1', outputPath: `${testTmpDir}/dist/pkg1`},
     {name: '@angular/pkg2', outputPath: `${testTmpDir}/dist/pkg2`}
   ]);
@@ -164,7 +164,7 @@ export async function expectStagingAndPublishWithoutCherryPick(
           }),
           'Expected release staging branch to be created in fork.');
 
-  expect(externalCommands.invokeReleaseBuildCommand).toHaveBeenCalledTimes(1);
+  expect((action.instance as any).invokeReleaseBuildCommand).toHaveBeenCalledTimes(1);
   expect(releaseConfig.generateReleaseNotesForHead).toHaveBeenCalledTimes(1);
   expect(npm.runNpmPublish).toHaveBeenCalledTimes(2);
   expect(npm.runNpmPublish)
@@ -232,7 +232,7 @@ export async function expectStagingAndPublishWithCherryPick(
           }),
           'Expected cherry-pick branch to be created in fork.');
 
-  expect(externalCommands.invokeReleaseBuildCommand).toHaveBeenCalledTimes(1);
+  expect((action.instance as any).invokeReleaseBuildCommand).toHaveBeenCalledTimes(1);
   expect(releaseConfig.generateReleaseNotesForHead).toHaveBeenCalledTimes(1);
   expect(npm.runNpmPublish).toHaveBeenCalledTimes(2);
   expect(npm.runNpmPublish)

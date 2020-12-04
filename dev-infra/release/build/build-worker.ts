@@ -7,10 +7,9 @@
  */
 
 /*
- * This file will be spawned as a separate process when the `ng-dev release build` command is
- * invoked. A separate process allows us to hide any superfluous stdout output from arbitrary
- * build commands that we cannot control. This is necessary as the `ng-dev release build` command
- * supports stdout JSON output that should be parsable and not polluted from other stdout messages.
+ * This file will be spawned as a separate process when the `buildReleaseOutput` function from
+ * `./build.ts` is invoked. A separate process allows us to hide any superfluous stdout output from
+ * arbitrary build commands that we cannot control.
  */
 
 import {getReleaseConfig} from '../config/index';

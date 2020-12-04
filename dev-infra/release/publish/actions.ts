@@ -14,6 +14,7 @@ import * as semver from 'semver';
 import {debug, error, green, info, promptConfirm, red, warn, yellow} from '../../utils/console';
 import {getListCommitsInBranchUrl, getRepositoryGitUrl} from '../../utils/git/github-urls';
 import {GitClient} from '../../utils/git/index';
+import {buildReleaseOutput} from '../build/build';
 import {BuiltPackage, ReleaseConfig} from '../config';
 import {ActiveReleaseTrains} from '../versioning/active-release-trains';
 import {runNpmPublish} from '../versioning/npm-publish';
@@ -21,7 +22,7 @@ import {runNpmPublish} from '../versioning/npm-publish';
 import {FatalReleaseActionError, UserAbortedReleaseActionError} from './actions-error';
 import {getCommitMessageForRelease, getReleaseNoteCherryPickCommitMessage} from './commit-message';
 import {changelogPath, packageJsonPath, waitForPullRequestInterval} from './constants';
-import {invokeReleaseBuildCommand, invokeYarnInstallCommand} from './external-commands';
+import {invokeYarnInstallCommand} from './external-commands';
 import {findOwnedForksOfRepoQuery} from './graphql-queries';
 import {getPullRequestState} from './pull-request-state';
 import {getDefaultExtractReleaseNotesPattern, getLocalChangelogFilePath} from './release-notes';
@@ -501,7 +502,7 @@ export abstract class ReleaseAction {
     // created in the `next` branch. The new package would not be part of the patch branch,
     // so we cannot build and publish it.
     await invokeYarnInstallCommand(this.projectDir);
-    const builtPackages = await invokeReleaseBuildCommand();
+    const builtPackages = await this.invokeReleaseBuildCommand();
 
     // Verify the packages built are the correct version.
     await this._verifyPackageVersions(newVersion, builtPackages);
@@ -552,6 +553,48 @@ export abstract class ReleaseAction {
         error(`  Generated Version: ${packageJsonVersion}`);
         throw new FatalReleaseActionError();
       }
+    }
+  }
+
+  private async invokeReleaseBuildCommand(): Promise<BuiltPackage[]> {
+    const spinner = ora.call(undefined).start('Building release output.');
+    try {
+      const {npmPackages} = this.config;
+      const builtPackages = await buildReleaseOutput();
+      // If package building failed, throw an error message.
+      if (builtPackages === null) {
+        throw red(`  ✘   Could not build release output. Please check output above.`);
+      }
+
+      // If no packages have been built, we assume that this is never correct throw an error
+      // message.
+      if (builtPackages.length === 0) {
+        throw red(
+            `  ✘   No release packages have been built. Please ensure that the build script is configured correctly in ".ng-dev".`);
+      }
+
+      const missingPackages =
+          npmPackages.filter(pkgName => !builtPackages!.find(b => b.name === pkgName));
+
+      // Check for configured release packages which have not been built. If any expected packages
+      // are missing, throw an error message.
+      if (missingPackages.length > 0) {
+        throw red(`  ✘   Release output missing for the following packages:\n${
+            missingPackages.map(pkgName => `      - ${pkgName}`).join('\n')}`);
+      }
+
+      spinner.stop();
+
+      info(green('  ✓   Built release packages.'));
+      builtPackages.forEach(({name}) => info(green(`      - ${name}`)));
+
+      return builtPackages;
+    } catch (e) {
+      e = e instanceof Error ? e.message : e;
+      spinner.stop();
+      error(e);
+      error(red('  ✘   An error occurred while building the release packages.'));
+      throw new FatalReleaseActionError();
     }
   }
 }

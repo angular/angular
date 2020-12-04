@@ -139,7 +139,7 @@ describe('move next into feature-freeze action', () => {
             }),
             'Expected next release-train update branch be created in fork.');
 
-    expect(externalCommands.invokeReleaseBuildCommand).toHaveBeenCalledTimes(1);
+    expect((instance as any).invokeReleaseBuildCommand).toHaveBeenCalledTimes(1);
     expect(releaseConfig.generateReleaseNotesForHead).toHaveBeenCalledTimes(1);
     expect(npm.runNpmPublish).toHaveBeenCalledTimes(2);
     expect(npm.runNpmPublish).toHaveBeenCalledWith(`${testTmpDir}/dist/pkg1`, 'next', undefined);

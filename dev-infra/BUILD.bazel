@@ -48,6 +48,23 @@ generated_file_test(
     generated = "cli_rollup",
 )
 
+rollup_bundle(
+    name = "build-worker_bundle",
+    entry_point = "//dev-infra/release/build:build-worker.ts",
+    format = "cjs",
+    silent = True,
+    sourcemap = "false",
+    deps = [
+        "//dev-infra/release/build",
+    ],
+)
+
+generated_file_test(
+    name = "build-worker",
+    src = "build-worker.js",
+    generated = "build-worker_bundle",
+)
+
 genrule(
     name = "package-json",
     srcs = [

@@ -24,6 +24,7 @@ var cliProgress = require('cli-progress');
 var os = require('os');
 var minimatch = require('minimatch');
 var ora = require('ora');
+var stream = require('stream');
 var glob = require('glob');
 var ts = require('typescript');
 
@@ -4869,96 +4870,6 @@ function getReleaseConfig(config = getConfig()) {
  * found in the LICENSE file at https://angular.io/license
  */
 /**
- * Builds the release output without polluting the process stdout. Build scripts commonly
- * print messages to stderr or stdout. This is fine in most cases, but sometimes other tooling
- * reserves stdout for data transfer (e.g. when `ng release build --json` is invoked). To not
- * pollute the stdout in such cases, we launch a child process for building the release packages
- * and redirect all stdout output to the stderr channel (which can be read in the terminal).
- */
-function buildReleaseOutput() {
-    return tslib.__awaiter(this, void 0, void 0, function* () {
-        return new Promise(resolve => {
-            const buildProcess = child_process.fork(require.resolve('./build-worker'), [], {
-                // The stdio option is set to redirect any "stdout" output directly to the "stderr" file
-                // descriptor. An additional "ipc" file descriptor is created to support communication with
-                // the build process. https://nodejs.org/api/child_process.html#child_process_options_stdio.
-                stdio: ['inherit', 2, 2, 'ipc'],
-            });
-            let builtPackages = null;
-            // The child process will pass the `buildPackages()` output through the
-            // IPC channel. We keep track of it so that we can use it as resolve value.
-            buildProcess.on('message', buildResponse => builtPackages = buildResponse);
-            // On child process exit, resolve the promise with the received output.
-            buildProcess.on('exit', () => resolve(builtPackages));
-        });
-    });
-}
-
-/**
- * @license
- * Copyright Google LLC All Rights Reserved.
- *
- * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
- */
-/** Yargs command builder for configuring the `ng-dev release build` command. */
-function builder$7(argv) {
-    return argv.option('json', {
-        type: 'boolean',
-        description: 'Whether the built packages should be printed to stdout as JSON.',
-        default: false,
-    });
-}
-/** Yargs command handler for building a release. */
-function handler$7(args) {
-    return tslib.__awaiter(this, void 0, void 0, function* () {
-        const { npmPackages } = getReleaseConfig();
-        let builtPackages = yield buildReleaseOutput();
-        // If package building failed, print an error and exit with an error code.
-        if (builtPackages === null) {
-            error(red(`  ✘   Could not build release output. Please check output above.`));
-            process.exit(1);
-        }
-        // If no packages have been built, we assume that this is never correct
-        // and exit with an error code.
-        if (builtPackages.length === 0) {
-            error(red(`  ✘   No release packages have been built. Please ensure that the`));
-            error(red(`      build script is configured correctly in ".ng-dev".`));
-            process.exit(1);
-        }
-        const missingPackages = npmPackages.filter(pkgName => !builtPackages.find(b => b.name === pkgName));
-        // Check for configured release packages which have not been built. We want to
-        // error and exit if any configured package has not been built.
-        if (missingPackages.length > 0) {
-            error(red(`  ✘   Release output missing for the following packages:`));
-            missingPackages.forEach(pkgName => error(red(`      - ${pkgName}`)));
-            process.exit(1);
-        }
-        if (args.json) {
-            process.stdout.write(JSON.stringify(builtPackages, null, 2));
-        }
-        else {
-            info(green('  ✓   Built release packages.'));
-            builtPackages.forEach(({ name }) => info(green(`      - ${name}`)));
-        }
-    });
-}
-/** CLI command module for building release output. */
-const ReleaseBuildCommandModule = {
-    builder: builder$7,
-    handler: handler$7,
-    command: 'build',
-    describe: 'Builds the release output for the current branch.',
-};
-
-/**
- * @license
- * Copyright Google LLC All Rights Reserved.
- *
- * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
- */
-/**
  * Prints the active release trains to the console.
  * @params active Active release trains that should be printed.
  * @params config Release configuration used for querying NPM on published versions.
@@ -5056,6 +4967,52 @@ class FatalReleaseActionError extends Error {
 function semverInc(version, release, identifier) {
     const clone = new semver.SemVer(version.version);
     return clone.inc(release, identifier);
+}
+
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+/**
+ * Builds the release output without polluting the process stdout. Build scripts commonly
+ * print messages to stderr or stdout. This is fine in most cases, but sometimes other tooling
+ * reserves stdout for data transfer. To not pollute the stdout in such cases, we launch a child
+ * process for building the release packages and capture all stdout and stderr output to be used
+ * if the child process exits with a non-zero exit code.
+ */
+function buildReleaseOutput() {
+    return tslib.__awaiter(this, void 0, void 0, function* () {
+        return new Promise((resolve, reject) => {
+            /** A pass through stream to hold the combined content of the stderr and stdout `Readable`s. */
+            const buildProcessTerminalOutput = new stream.PassThrough();
+            const buildProcess = child_process.fork(require.resolve('./build-worker'), [], {
+                // The stdio option is set to redirect any "stdout" output directly to the "stderr" file
+                // descriptor. An additional "ipc" file descriptor is created to support communication with
+                // the build process. https://nodejs.org/api/child_process.html#child_process_options_stdio.
+                stdio: ['inherit', 'pipe', 'pipe', 'ipc'],
+            });
+            let builtPackages = null;
+            // The child process will pass the `buildPackages()` output through the
+            // IPC channel. We keep track of it so that we can use it as resolve value.
+            buildProcess.on('message', buildResponse => builtPackages = buildResponse);
+            // Pipe both the stderr and stdout streams into the pass through stream.  Both can be asserted
+            // non-null as the stdio value used in fork for stdout and stderr is 'pipe' so they will be
+            // defined.
+            buildProcess.stdout.pipe(buildProcess.stderr.pipe(buildProcessTerminalOutput));
+            // On child process exit, resolve the promise with the received output.
+            buildProcess.on('exit', exitCode => {
+                if (exitCode === 0) {
+                    resolve(builtPackages);
+                }
+                else {
+                    reject((buildProcessTerminalOutput.read() || '').toString());
+                }
+            });
+        });
+    });
 }
 
 /**
@@ -5230,31 +5187,6 @@ function invokeSetNpmDistCommand(npmDistTag, version) {
         catch (e) {
             error(e);
             error(red(`  ✘   An error occurred while setting the NPM dist tag for "${npmDistTag}".`));
-            throw new FatalReleaseActionError();
-        }
-    });
-}
-/**
- * Invokes the `ng-dev release build` command in order to build the release
- * packages for the currently checked out branch.
- */
-function invokeReleaseBuildCommand() {
-    return tslib.__awaiter(this, void 0, void 0, function* () {
-        const spinner = ora.call(undefined).start('Building release output.');
-        try {
-            // Since we expect JSON to be printed from the `ng-dev release build` command,
-            // we spawn the process in silent mode. We have set up an Ora progress spinner.
-            const { stdout } = yield spawnWithDebugOutput('yarn', ['--silent', 'ng-dev', 'release', 'build', '--json'], { mode: 'silent' });
-            spinner.stop();
-            info(green('  ✓   Built release output for all packages.'));
-            // The `ng-dev release build` command prints a JSON array to stdout
-            // that represents the built release packages and their output paths.
-            return JSON.parse(stdout.trim());
-        }
-        catch (e) {
-            spinner.stop();
-            error(e);
-            error(red('  ✘   An error occurred while building the release packages.'));
             throw new FatalReleaseActionError();
         }
     });
@@ -5806,7 +5738,7 @@ class ReleaseAction {
             // created in the `next` branch. The new package would not be part of the patch branch,
             // so we cannot build and publish it.
             yield invokeYarnInstallCommand(this.projectDir);
-            const builtPackages = yield invokeReleaseBuildCommand();
+            const builtPackages = yield this.invokeReleaseBuildCommand();
             // Verify the packages built are the correct version.
             yield this._verifyPackageVersions(newVersion, builtPackages);
             // Create a Github release for the new version.
@@ -5854,6 +5786,41 @@ class ReleaseAction {
                     error(`  Generated Version: ${packageJsonVersion}`);
                     throw new FatalReleaseActionError();
                 }
+            }
+        });
+    }
+    invokeReleaseBuildCommand() {
+        return tslib.__awaiter(this, void 0, void 0, function* () {
+            const spinner = ora.call(undefined).start('Building release output.');
+            try {
+                const { npmPackages } = this.config;
+                const builtPackages = yield buildReleaseOutput();
+                // If package building failed, throw an error message.
+                if (builtPackages === null) {
+                    throw red(`  ✘   Could not build release output. Please check output above.`);
+                }
+                // If no packages have been built, we assume that this is never correct throw an error
+                // message.
+                if (builtPackages.length === 0) {
+                    throw red(`  ✘   No release packages have been built. Please ensure that the build script is configured correctly in ".ng-dev".`);
+                }
+                const missingPackages = npmPackages.filter(pkgName => !builtPackages.find(b => b.name === pkgName));
+                // Check for configured release packages which have not been built. If any expected packages
+                // are missing, throw an error message.
+                if (missingPackages.length > 0) {
+                    throw red(`  ✘   Release output missing for the following packages:\n${missingPackages.map(pkgName => `      - ${pkgName}`).join('\n')}`);
+                }
+                spinner.stop();
+                info(green('  ✓   Built release packages.'));
+                builtPackages.forEach(({ name }) => info(green(`      - ${name}`)));
+                return builtPackages;
+            }
+            catch (e) {
+                e = e instanceof Error ? e.message : e;
+                spinner.stop();
+                error(e);
+                error(red('  ✘   An error occurred while building the release packages.'));
+                throw new FatalReleaseActionError();
             }
         });
     }
@@ -6417,11 +6384,11 @@ class ReleaseTool {
  * found in the LICENSE file at https://angular.io/license
  */
 /** Yargs command builder for configuring the `ng-dev release publish` command. */
-function builder$8(argv) {
+function builder$7(argv) {
     return addGithubTokenOption(argv);
 }
 /** Yargs command handler for staging a release. */
-function handler$8(args) {
+function handler$7(args) {
     return tslib.__awaiter(this, void 0, void 0, function* () {
         const config = getConfig();
         const releaseConfig = getReleaseConfig(config);
@@ -6444,8 +6411,8 @@ function handler$8(args) {
 }
 /** CLI command module for publishing a release. */
 const ReleasePublishCommandModule = {
-    builder: builder$8,
-    handler: handler$8,
+    builder: builder$7,
+    handler: handler$7,
     command: 'publish',
     describe: 'Publish new releases and configure version branches.',
 };
@@ -6457,7 +6424,7 @@ const ReleasePublishCommandModule = {
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-function builder$9(args) {
+function builder$8(args) {
     return args
         .positional('tagName', {
         type: 'string',
@@ -6471,7 +6438,7 @@ function builder$9(args) {
     });
 }
 /** Yargs command handler for building a release. */
-function handler$9(args) {
+function handler$8(args) {
     return tslib.__awaiter(this, void 0, void 0, function* () {
         const { targetVersion: rawVersion, tagName } = args;
         const { npmPackages, publishRegistry } = getReleaseConfig();
@@ -6503,8 +6470,8 @@ function handler$9(args) {
 }
 /** CLI command module for setting an NPM dist tag. */
 const ReleaseSetDistTagCommand = {
-    builder: builder$9,
-    handler: handler$9,
+    builder: builder$8,
+    handler: handler$8,
     command: 'set-dist-tag <tag-name> <target-version>',
     describe: 'Sets a given NPM dist tag for all release packages.',
 };
@@ -6569,7 +6536,6 @@ function buildReleaseParser(localYargs) {
         .strict()
         .demandCommand()
         .command(ReleasePublishCommandModule)
-        .command(ReleaseBuildCommandModule)
         .command(ReleaseSetDistTagCommand)
         .command('build-env-stamp', 'Build the environment stamping information', {}, () => buildEnvStamp());
 }
