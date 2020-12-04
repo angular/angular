@@ -7,6 +7,7 @@
  */
 
 import {ASTWithSource, Binary, BindingPipe, Conditional, Interpolation, PropertyRead, TmplAstBoundAttribute, TmplAstBoundText, TmplAstElement, TmplAstNode, TmplAstReference, TmplAstTemplate} from '@angular/compiler';
+import {AST, LiteralArray, LiteralMap} from '@angular/compiler/src/compiler';
 import * as ts from 'typescript';
 
 import {absoluteFrom, AbsoluteFsPath, getSourceFileOrError} from '../../file_system';
@@ -693,7 +694,7 @@ runInEachFileSystem(() => {
         });
 
         it('literal array', () => {
-          const literalArray = interpolation.expressions[0];
+          const literalArray = interpolation.expressions[0] as LiteralArray;
           const symbol = templateTypeChecker.getSymbolOfNode(literalArray, cmp)!;
           assertExpressionSymbol(symbol);
           expect(program.getTypeChecker().symbolToString(symbol.tsSymbol!)).toEqual('Array');
@@ -701,7 +702,7 @@ runInEachFileSystem(() => {
         });
 
         it('literal map', () => {
-          const literalMap = interpolation.expressions[1];
+          const literalMap = interpolation.expressions[1] as LiteralMap;
           const symbol = templateTypeChecker.getSymbolOfNode(literalMap, cmp)!;
           assertExpressionSymbol(symbol);
           expect(program.getTypeChecker().symbolToString(symbol.tsSymbol!)).toEqual('__object');
@@ -765,12 +766,12 @@ runInEachFileSystem(() => {
           expect(program.getTypeChecker().symbolToString(aSymbol.tsSymbol!)).toEqual('a');
           expect(program.getTypeChecker().typeToString(aSymbol.tsType)).toEqual('string');
 
-          const bSymbol = templateTypeChecker.getSymbolOfNode(binding.args[0], cmp)!;
+          const bSymbol = templateTypeChecker.getSymbolOfNode(binding.args[0] as AST, cmp)!;
           assertExpressionSymbol(bSymbol);
           expect(program.getTypeChecker().symbolToString(bSymbol.tsSymbol!)).toEqual('b');
           expect(program.getTypeChecker().typeToString(bSymbol.tsType)).toEqual('number');
 
-          const cSymbol = templateTypeChecker.getSymbolOfNode(binding.args[1], cmp)!;
+          const cSymbol = templateTypeChecker.getSymbolOfNode(binding.args[1] as AST, cmp)!;
           assertExpressionSymbol(cSymbol);
           expect(program.getTypeChecker().symbolToString(cSymbol.tsSymbol!)).toEqual('c');
           expect(program.getTypeChecker().typeToString(cSymbol.tsType)).toEqual('boolean');
