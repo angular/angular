@@ -7,12 +7,14 @@
  */
 
 import {NgModule} from '@angular/core';
+import {MatIconModule} from '@angular/material/icon';
 import {MatTableModule} from '@angular/material-experimental/mdc-table';
 import {RouterModule} from '@angular/router';
 import {MdcTableDemo} from './mdc-table-demo';
 
 @NgModule({
   imports: [
+    MatIconModule,
     MatTableModule,
     RouterModule.forChild([{path: '', component: MdcTableDemo}]),
   ],

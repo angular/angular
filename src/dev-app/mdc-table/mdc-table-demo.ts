@@ -34,6 +34,8 @@ const ELEMENT_DATA: PeriodicElement[] = [
   styleUrls: ['mdc-table-demo.css'],
 })
 export class MdcTableDemo {
-  displayedColumns: string[] = ['position', 'name', 'weight', 'symbol'];
-  dataSource = ELEMENT_DATA;
+  readonly displayedColumns: string[] = ['position', 'name', 'weight', 'symbol'];
+  readonly displayedColumns2 =
+      ['name', 'position', 'weight', 'symbol', 'position', 'weight', 'symbol', 'star'];
+  readonly dataSource = ELEMENT_DATA;
 }

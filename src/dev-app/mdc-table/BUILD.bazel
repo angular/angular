@@ -12,6 +12,7 @@ ng_module(
     ],
     deps = [
         "//src/material-experimental/mdc-table",
+        "//src/material/icon",
         "@npm//@angular/router",
     ],
 )
