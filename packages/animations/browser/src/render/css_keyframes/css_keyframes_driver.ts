@@ -21,7 +21,6 @@ const TAB_SPACE = ' ';
 export class CssKeyframesDriver implements AnimationDriver {
   private _count = 0;
   private readonly _head: any = document.querySelector('head');
-  private _warningIssued = false;
 
   validateStyleProperty(prop: string): boolean {
     return validateStyleProperty(prop);
@@ -79,8 +78,8 @@ export class CssKeyframesDriver implements AnimationDriver {
   animate(
       element: any, keyframes: ɵStyleData[], duration: number, delay: number, easing: string,
       previousPlayers: AnimationPlayer[] = [], scrubberAccessRequested?: boolean): AnimationPlayer {
-    if (scrubberAccessRequested) {
-      this._notifyFaultyScrubber();
+    if ((typeof ngDevMode === 'undefined' || ngDevMode) && scrubberAccessRequested) {
+      notifyFaultyScrubber();
     }
 
     const previousCssKeyframePlayers = <CssKeyframesPlayer[]>previousPlayers.filter(
@@ -117,15 +116,6 @@ export class CssKeyframesDriver implements AnimationDriver {
     player.onDestroy(() => removeElement(kfElm));
     return player;
   }
-
-  private _notifyFaultyScrubber() {
-    if (!this._warningIssued) {
-      console.warn(
-          '@angular/animations: please load the web-animations.js polyfill to allow programmatic access...\n',
-          '  visit https://bit.ly/IWukam to learn more about using the web-animation-js polyfill.');
-      this._warningIssued = true;
-    }
-  }
 }
 
 function flattenKeyframesIntoStyles(keyframes: null|{[key: string]: any}|
@@ -145,4 +135,13 @@ function flattenKeyframesIntoStyles(keyframes: null|{[key: string]: any}|
 
 function removeElement(node: any) {
   node.parentNode.removeChild(node);
+}
+
+let warningIssued = false;
+function notifyFaultyScrubber(): void {
+  if (warningIssued) return;
+  console.warn(
+      '@angular/animations: please load the web-animations.js polyfill to allow programmatic access...\n',
+      '  visit https://bit.ly/IWukam to learn more about using the web-animation-js polyfill.');
+  warningIssued = true;
 }
