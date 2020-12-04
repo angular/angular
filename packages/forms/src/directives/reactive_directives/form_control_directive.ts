@@ -125,7 +125,9 @@ export class FormControlDirective extends NgControl implements OnChanges {
       this.form.updateValueAndValidity({emitEvent: false});
     }
     if (isPropertyUpdated(changes, this.viewModel)) {
-      _ngModelWarning('formControl', FormControlDirective, this, this._ngModelWarningConfig);
+      if (typeof ngDevMode === 'undefined' || ngDevMode) {
+        _ngModelWarning('formControl', FormControlDirective, this, this._ngModelWarningConfig);
+      }
       this.form.setValue(this.model);
       this.viewModel = this.model;
     }

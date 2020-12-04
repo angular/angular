@@ -6,8 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {isDevMode} from '@angular/core';
-
 import {AbstractControl, FormArray, FormControl, FormGroup} from '../model';
 import {getControlAsyncValidators, getControlValidators, mergeValidators} from '../validators';
 
@@ -324,13 +322,11 @@ export function removeListItem<T>(list: T[], el: T): void {
 export function _ngModelWarning(
     name: string, type: {_ngModelWarningSentOnce: boolean},
     instance: {_ngModelWarningSent: boolean}, warningConfig: string|null) {
-  if (!isDevMode() || warningConfig === 'never') return;
+  if (warningConfig === 'never') return;
 
   if (((warningConfig === null || warningConfig === 'once') && !type._ngModelWarningSentOnce) ||
       (warningConfig === 'always' && !instance._ngModelWarningSent)) {
-    if (typeof ngDevMode === 'undefined' || ngDevMode) {
-      ReactiveErrors.ngModelWarning(name);
-    }
+    ReactiveErrors.ngModelWarning(name);
     type._ngModelWarningSentOnce = true;
     instance._ngModelWarningSent = true;
   }
