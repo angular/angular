@@ -761,6 +761,8 @@ export class ApplicationRef {
       for (let view of this._views) {
         view.detectChanges();
       }
+      // Note that we have still left the `isDevMode()` condition in order to avoid
+      // creating a breaking change for projects that still use the View Engine.
       if ((typeof ngDevMode === 'undefined' || ngDevMode) && isDevMode()) {
         for (let view of this._views) {
           view.checkNoChanges();
