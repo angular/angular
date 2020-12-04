@@ -32,7 +32,8 @@ export class AutosquashMergeStrategy extends MergeStrategy {
    * @returns A pull request failure or null in case of success.
    */
   async merge(pullRequest: PullRequest): Promise<PullRequestFailure|null> {
-    const {prNumber, targetBranches, requiredBaseSha, needsCommitMessageFixup} = pullRequest;
+    const {prNumber, targetBranches, requiredBaseSha, needsCommitMessageFixup, githubTargetBranch} =
+        pullRequest;
     // In case a required base is specified for this pull request, check if the pull
     // request contains the given commit. If not, return a pull request failure. This
     // check is useful for enforcing that PRs are rebased on top of a given commit. e.g.
@@ -83,6 +84,30 @@ export class AutosquashMergeStrategy extends MergeStrategy {
     }
 
     this.pushTargetBranchesUpstream(targetBranches);
+
+    // For PRs which do not target the `master` branch on Github, Github does not automatically
+    // close the PR when its commit is pushed into the repository.  To ensure these PRs are
+    // correctly marked as closed, we must detect this situation and close the PR via the API after
+    // the upstream pushes are completed.
+    if (githubTargetBranch !== 'master') {
+      /** The local branch name of the github targeted branch. */
+      const localBranch = this.getLocalTargetBranchName(githubTargetBranch);
+      /** The SHA of the commit pushed to github which represents closing the PR. */
+      const sha = this.git.run(['rev-parse', localBranch]).stdout.trim();
+      // Create a comment saying the PR was closed by the SHA.
+      await this.git.github.issues.createComment({
+        ...this.git.remoteParams,
+        issue_number: pullRequest.prNumber,
+        body: `Closed by commit ${sha}`
+      });
+      // Actually close the PR.
+      await this.git.github.pulls.update({
+        ...this.git.remoteParams,
+        pull_number: pullRequest.prNumber,
+        state: 'closed',
+      });
+    }
+
     return null;
   }
 }
