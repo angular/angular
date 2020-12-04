@@ -9,7 +9,7 @@
 import {EmbeddedViewRef, ElementRef, NgZone, ViewContainerRef, TemplateRef} from '@angular/core';
 import {ViewportRuler} from '@angular/cdk/scrolling';
 import {Direction} from '@angular/cdk/bidi';
-import {normalizePassiveListenerOptions} from '@angular/cdk/platform';
+import {normalizePassiveListenerOptions, _getShadowRoot} from '@angular/cdk/platform';
 import {coerceBooleanProperty, coerceElement} from '@angular/cdk/coercion';
 import {Subscription, Subject, Observable} from 'rxjs';
 import {DropListRefInternal as DropListRef} from './drop-list-ref';
@@ -226,6 +226,13 @@ export class DragRef<T = any> {
 
   /** Layout direction of the item. */
   private _direction: Direction = 'ltr';
+
+  /**
+   * Cached shadow root that the element is placed in. `null` means that the element isn't in
+   * the shadow DOM and `undefined` means that it hasn't been resolved yet. Should be read via
+   * `_getShadowRoot`, not directly.
+   */
+  private _cachedShadowRoot: ShadowRoot | null | undefined;
 
   /** Axis along which dragging is locked. */
   lockAxis: 'x' | 'y';
@@ -743,6 +750,9 @@ export class DragRef<T = any> {
       const placeholder = this._placeholder = this._createPlaceholderElement();
       const anchor = this._anchor = this._anchor || this._document.createComment('');
 
+      // Needs to happen before the root element is moved.
+      const shadowRoot = this._getShadowRoot();
+
       // Insert an anchor node so that we can restore the element's position in the DOM.
       parent.insertBefore(anchor, element);
 
@@ -751,7 +761,7 @@ export class DragRef<T = any> {
       // from the DOM completely, because iOS will stop firing all subsequent events in the chain.
       toggleVisibility(element, false);
       this._document.body.appendChild(parent.replaceChild(placeholder, element));
-      getPreviewInsertionPoint(this._document).appendChild(preview);
+      getPreviewInsertionPoint(this._document, shadowRoot).appendChild(preview);
       this.started.next({source: this}); // Emit before notifying the container.
       dropContainer.start();
       this._initialContainer = dropContainer;
@@ -1319,6 +1329,20 @@ export class DragRef<T = any> {
     return cachedPosition ? cachedPosition.scrollPosition :
         this._viewportRuler.getViewportScrollPosition();
   }
+
+  /**
+   * Lazily resolves and returns the shadow root of the element. We do this in a function, rather
+   * than saving it in property directly on init, because we want to resolve it as late as possible
+   * in order to ensure that the element has been moved into the shadow DOM. Doing it inside the
+   * constructor might be too early if the element is inside of something like `ngFor` or `ngIf`.
+   */
+  private _getShadowRoot(): ShadowRoot | null {
+    if (this._cachedShadowRoot === undefined) {
+      this._cachedShadowRoot = _getShadowRoot(this._rootElement) as ShadowRoot | null;
+    }
+
+    return this._cachedShadowRoot;
+  }
 }
 
 /**
@@ -1356,11 +1380,12 @@ function isTouchEvent(event: MouseEvent | TouchEvent): event is TouchEvent {
 }
 
 /** Gets the element into which the drag preview should be inserted. */
-function getPreviewInsertionPoint(documentRef: any): HTMLElement {
+function getPreviewInsertionPoint(documentRef: any, shadowRoot: ShadowRoot | null): HTMLElement {
   // We can't use the body if the user is in fullscreen mode,
   // because the preview will render under the fullscreen element.
   // TODO(crisbeto): dedupe this with the `FullscreenOverlayContainer` eventually.
-  return documentRef.fullscreenElement ||
+  return shadowRoot ||
+         documentRef.fullscreenElement ||
          documentRef.webkitFullscreenElement ||
          documentRef.mozFullScreenElement ||
          documentRef.msFullscreenElement ||

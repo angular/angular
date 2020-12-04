@@ -5464,6 +5464,24 @@ describe('CdkDrag', () => {
             .toBe(1, 'Expected only one item to continue to be dragged.');
       }));
 
+    it('should insert the preview inside the shadow root by default', fakeAsync(() => {
+      // This test is only relevant for Shadow DOM-supporting browsers.
+      if (!_supportsShadowDom()) {
+        return;
+      }
+
+      const fixture = createComponent(ConnectedDropZonesInsideShadowRoot);
+      fixture.detectChanges();
+      const item = fixture.componentInstance.groupedDragItems[0][1];
+
+      startDraggingViaMouse(fixture, item.element.nativeElement);
+      fixture.detectChanges();
+
+      // `querySelector` doesn't descend into the shadow DOM so we can assert that the preview
+      // isn't at its default location by searching for it at the `document` level.
+      expect(document.querySelector('.cdk-drag-preview')).toBeFalsy();
+    }));
+
   });
 
   describe('with nested drags', () => {
