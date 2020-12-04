@@ -23,7 +23,6 @@
     "/ ": "",
     "preinstall": "node tools/yarn/check-yarn.js",
     "postinstall": "husky install && node scripts/webdriver-manager-update.js && node --preserve-symlinks --preserve-symlinks-main ./tools/postinstall-patches.js",
-    "check-env": "gulp check-env",
     "test-ivy-aot": "bazelisk test --config=ivy --build_tag_filters=-no-ivy-aot,-fixme-ivy-aot --test_tag_filters=-no-ivy-aot,-fixme-ivy-aot",
     "test-non-ivy": "bazelisk test --build_tag_filters=-ivy-only --test_tag_filters=-ivy-only",
     "test-fixme-ivy-aot": "bazelisk test --config=ivy --build_tag_filters=-no-ivy-aot --test_tag_filters=-no-ivy-aot",
