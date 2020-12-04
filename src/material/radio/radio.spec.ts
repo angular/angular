@@ -531,32 +531,29 @@ describe('MatRadio', () => {
   });
 
   describe('group with FormControl', () => {
-    let fixture: ComponentFixture<RadioGroupWithFormControl>;
-    let groupDebugElement: DebugElement;
-    let groupInstance: MatRadioGroup;
-    let testComponent: RadioGroupWithFormControl;
-
-    beforeEach(() => {
-      fixture = TestBed.createComponent(RadioGroupWithFormControl);
+    it('should toggle the disabled state', () => {
+      const fixture = TestBed.createComponent(RadioGroupWithFormControl);
       fixture.detectChanges();
 
-      testComponent = fixture.debugElement.componentInstance;
-      groupDebugElement = fixture.debugElement.query(By.directive(MatRadioGroup))!;
-      groupInstance = groupDebugElement.injector.get<MatRadioGroup>(MatRadioGroup);
+      expect(fixture.componentInstance.group.disabled).toBeFalsy();
+
+      fixture.componentInstance.formControl.disable();
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.group.disabled).toBeTruthy();
+
+      fixture.componentInstance.formControl.enable();
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.group.disabled).toBeFalsy();
     });
 
-    it('should toggle the disabled state', () => {
-      expect(groupInstance.disabled).toBeFalsy();
-
-      testComponent.formControl.disable();
+    it('should have a selected button when one matches the initial value', () => {
+      const fixture = TestBed.createComponent(RadioGroupWithFormControl);
+      fixture.componentInstance.formControl.setValue('2');
       fixture.detectChanges();
 
-      expect(groupInstance.disabled).toBeTruthy();
-
-      testComponent.formControl.enable();
-      fixture.detectChanges();
-
-      expect(groupInstance.disabled).toBeFalsy();
+      expect(fixture.componentInstance.group.selected?.value).toBe('2');
     });
   });
 
@@ -974,12 +971,14 @@ class DisableableRadioButton {
 
 @Component({
   template: `
-  <mat-radio-group [formControl]="formControl">
-    <mat-radio-button value="1">One</mat-radio-button>
-  </mat-radio-group>
+    <mat-radio-group [formControl]="formControl">
+      <mat-radio-button value="1">One</mat-radio-button>
+      <mat-radio-button value="2">Two</mat-radio-button>
+    </mat-radio-group>
   `
 })
 class RadioGroupWithFormControl {
+  @ViewChild(MatRadioGroup) group: MatRadioGroup;
   formControl = new FormControl();
 }
 
