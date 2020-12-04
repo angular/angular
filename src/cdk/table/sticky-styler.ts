@@ -28,6 +28,7 @@ export const STICKY_DIRECTIONS: StickyDirection[] = ['top', 'bottom', 'left', 'r
  */
 export class StickyStyler {
   private _cachedCellWidths: number[] = [];
+  private readonly _borderCellCss: Readonly<{[d in StickyDirection]: string}>;
 
   /**
    * @param _isNativeHtmlTable Whether the sticky logic should be based on a table
@@ -50,7 +51,14 @@ export class StickyStyler {
                */
               private _coalescedStyleScheduler?: _CoalescedStyleScheduler,
               private _isBrowser = true,
-              private readonly _needsPositionStickyOnElement = true) { }
+              private readonly _needsPositionStickyOnElement = true) {
+    this._borderCellCss = {
+      'top': `${_stickCellCss}-border-elem-top`,
+      'bottom': `${_stickCellCss}-border-elem-bottom`,
+      'left': `${_stickCellCss}-border-elem-left`,
+      'right': `${_stickCellCss}-border-elem-right`,
+    };
+  }
 
   /**
    * Clears the sticky positioning styles from the row and its cells by resetting the `position`
@@ -107,6 +115,9 @@ export class StickyStyler {
     const startPositions = this._getStickyStartColumnPositions(cellWidths, stickyStartStates);
     const endPositions = this._getStickyEndColumnPositions(cellWidths, stickyEndStates);
 
+    const lastStickyStart = stickyStartStates.lastIndexOf(true);
+    const firstStickyEnd = stickyEndStates.indexOf(true);
+
     // Coalesce with sticky row updates (and potentially other changes like column resize).
     this._scheduleStyleChanges(() => {
       const isRtl = this.direction === 'rtl';
@@ -117,11 +128,11 @@ export class StickyStyler {
         for (let i = 0; i < numCells; i++) {
           const cell = row.children[i] as HTMLElement;
           if (stickyStartStates[i]) {
-            this._addStickyStyle(cell, start, startPositions[i]);
+            this._addStickyStyle(cell, start, startPositions[i], i === lastStickyStart);
           }
 
           if (stickyEndStates[i]) {
-            this._addStickyStyle(cell, end, endPositions[i]);
+            this._addStickyStyle(cell, end, endPositions[i], i === firstStickyEnd);
           }
         }
       }
@@ -170,6 +181,8 @@ export class StickyStyler {
       }
     }
 
+    const borderedRowIndex = states.lastIndexOf(true);
+
     // Coalesce with other sticky row updates (top/bottom), sticky columns updates
     // (and potentially other changes like column resize).
     this._scheduleStyleChanges(() => {
@@ -179,8 +192,9 @@ export class StickyStyler {
         }
 
         const height = stickyHeights[rowIndex];
+        const isBorderedRowIndex = rowIndex === borderedRowIndex;
         for (const element of elementsToStick[rowIndex]) {
-          this._addStickyStyle(element, position, height);
+          this._addStickyStyle(element, position, height, isBorderedRowIndex);
         }
       }
     });
@@ -204,7 +218,7 @@ export class StickyStyler {
       if (stickyStates.some(state => !state)) {
         this._removeStickyStyle(tfoot, ['bottom']);
       } else {
-        this._addStickyStyle(tfoot, 'bottom', 0);
+        this._addStickyStyle(tfoot, 'bottom', 0, false);
       }
     });
   }
@@ -217,6 +231,7 @@ export class StickyStyler {
   _removeStickyStyle(element: HTMLElement, stickyDirections: StickyDirection[]) {
     for (const dir of stickyDirections) {
       element.style[dir] = '';
+      element.classList.remove(this._borderCellCss[dir]);
     }
 
     // If the element no longer has any more sticky directions, remove sticky positioning and
@@ -242,8 +257,12 @@ export class StickyStyler {
    * to be sticky (and -webkit-sticky), setting the appropriate zIndex, and adding a sticky
    * direction and value.
    */
-  _addStickyStyle(element: HTMLElement, dir: StickyDirection, dirValue: number) {
+  _addStickyStyle(element: HTMLElement, dir: StickyDirection, dirValue: number,
+      isBorderElement: boolean) {
     element.classList.add(this._stickCellCss);
+    if (isBorderElement) {
+      element.classList.add(this._borderCellCss[dir]);
+    }
     element.style[dir] = `${dirValue}px`;
     element.style.zIndex = this._getCalculatedZIndex(element);
     if (this._needsPositionStickyOnElement) {

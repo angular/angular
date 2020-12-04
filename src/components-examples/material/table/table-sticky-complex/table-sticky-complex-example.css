@@ -22,3 +22,19 @@
   min-width: 80px;
   box-sizing: border-box;
 }
+
+.mat-table-sticky-border-elem-top {
+  border-bottom: 2px solid midnightblue;
+}
+
+.mat-table-sticky-border-elem-right {
+  border-left: 2px solid midnightblue;
+}
+
+.mat-table-sticky-border-elem-bottom {
+  border-top: 2px solid midnightblue;
+}
+
+.mat-table-sticky-border-elem-left {
+  border-right: 2px solid midnightblue;
+}

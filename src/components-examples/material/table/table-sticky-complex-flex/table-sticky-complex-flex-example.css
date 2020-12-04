@@ -26,3 +26,19 @@
 .mat-header-row, .mat-footer-row, .mat-row {
   min-width: 1920px; /* 24 columns, 80px each */
 }
+
+.mat-table-sticky-border-elem-top {
+  border-bottom: 2px solid midnightblue;
+}
+
+.mat-table-sticky-border-elem-right {
+  border-left: 2px solid midnightblue;
+}
+
+.mat-table-sticky-border-elem-bottom {
+  border-top: 2px solid midnightblue;
+}
+
+.mat-table-sticky-border-elem-left {
+  border-right: 2px solid midnightblue;
+}

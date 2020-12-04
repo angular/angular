@@ -328,7 +328,7 @@ export declare class StickyStyler {
     direction: Direction;
     constructor(_isNativeHtmlTable: boolean, _stickCellCss: string, direction: Direction,
     _coalescedStyleScheduler?: _CoalescedStyleScheduler | undefined, _isBrowser?: boolean, _needsPositionStickyOnElement?: boolean);
-    _addStickyStyle(element: HTMLElement, dir: StickyDirection, dirValue: number): void;
+    _addStickyStyle(element: HTMLElement, dir: StickyDirection, dirValue: number, isBorderElement: boolean): void;
     _getCalculatedZIndex(element: HTMLElement): string;
     _getCellWidths(row: HTMLElement, recalculateCellWidths?: boolean): number[];
     _getStickyEndColumnPositions(widths: number[], stickyStates: boolean[]): number[];

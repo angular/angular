@@ -840,6 +840,7 @@ describe('CdkTable', () => {
     function expectNoStickyStyles(elements: any[]) {
       elements.forEach(element => {
         expect(element.classList.contains('cdk-table-sticky')).toBe(false);
+        expectStickyBorderClass(element);
         expect(element.style.position).toBe('');
         expect(element.style.zIndex || '0').toBe('0');
         ['top', 'bottom', 'left', 'right'].forEach(d => {
@@ -874,6 +875,18 @@ describe('CdkTable', () => {
       });
     }
 
+    function expectStickyBorderClass(element: any, directions: {[key: string]: boolean} = {}) {
+      ['top', 'bottom', 'left', 'right'].forEach(d => {
+        const stickyClass = `cdk-table-sticky-border-elem-${d}`;
+
+        if (directions[d]) {
+          expect(element.classList).toContain(stickyClass);
+        } else {
+          expect(element.classList).not.toContain(stickyClass);
+        }
+      });
+    }
+
     describe('on "display: flex" table style', () => {
       let dataRows: Element[];
       let headerRows: Element[];
@@ -893,9 +906,11 @@ describe('CdkTable', () => {
         flushMicrotasks();
 
         expectStickyStyles(headerRows[0], '100', {top: '0px'});
+        expectStickyBorderClass(headerRows[0]);
         expectNoStickyStyles([headerRows[1]]);
         expectStickyStyles(
             headerRows[2], '100', {top: headerRows[0].getBoundingClientRect().height + 'px'});
+        expectStickyBorderClass(headerRows[2], {top: true});
 
         component.stickyHeaders = [];
         fixture.detectChanges();
@@ -910,8 +925,10 @@ describe('CdkTable', () => {
 
         expectStickyStyles(
             footerRows[0], '10', {bottom: footerRows[1].getBoundingClientRect().height + 'px'});
+        expectStickyBorderClass(footerRows[0], {bottom: true});
         expectNoStickyStyles([footerRows[1]]);
         expectStickyStyles(footerRows[2], '10', {bottom: '0px'});
+        expectStickyBorderClass(footerRows[2]);
 
         component.stickyFooters = [];
         fixture.detectChanges();
@@ -925,6 +942,7 @@ describe('CdkTable', () => {
         flushMicrotasks();
 
         expectStickyStyles(footerRows[2], '10', {bottom: '0px'});
+        expectStickyBorderClass(footerRows[2], {bottom: true});
         expectNoStickyStyles([footerRows[0], footerRows[1]]);
       }));
 
@@ -936,19 +954,25 @@ describe('CdkTable', () => {
         headerRows.forEach(row => {
           let cells = getHeaderCells(row);
           expectStickyStyles(cells[0], '1', {left: '0px'});
+          expectStickyBorderClass(cells[0]);
           expectStickyStyles(cells[2], '1', {left: '20px'});
+          expectStickyBorderClass(cells[2], {left: true});
           expectNoStickyStyles([cells[1], cells[3], cells[4], cells[5]]);
         });
         dataRows.forEach(row => {
           let cells = getCells(row);
           expectStickyStyles(cells[0], '1', {left: '0px'});
+          expectStickyBorderClass(cells[0]);
           expectStickyStyles(cells[2], '1', {left: '20px'});
+          expectStickyBorderClass(cells[2], {left: true});
           expectNoStickyStyles([cells[1], cells[3], cells[4], cells[5]]);
         });
         footerRows.forEach(row => {
           let cells = getFooterCells(row);
           expectStickyStyles(cells[0], '1', {left: '0px'});
+          expectStickyBorderClass(cells[0]);
           expectStickyStyles(cells[2], '1', {left: '20px'});
+          expectStickyBorderClass(cells[2], {left: true});
           expectNoStickyStyles([cells[1], cells[3], cells[4], cells[5]]);
         });
 
@@ -968,19 +992,25 @@ describe('CdkTable', () => {
         headerRows.forEach(row => {
           let cells = getHeaderCells(row);
           expectStickyStyles(cells[5], '1', {right: '0px'});
+          expectStickyBorderClass(cells[5]);
           expectStickyStyles(cells[3], '1', {right: '20px'});
+          expectStickyBorderClass(cells[3], {right: true});
           expectNoStickyStyles([cells[0], cells[1], cells[2], cells[4]]);
         });
         dataRows.forEach(row => {
           let cells = getCells(row);
           expectStickyStyles(cells[5], '1', {right: '0px'});
+          expectStickyBorderClass(cells[5]);
           expectStickyStyles(cells[3], '1', {right: '20px'});
+          expectStickyBorderClass(cells[3], {right: true});
           expectNoStickyStyles([cells[0], cells[1], cells[2], cells[4]]);
         });
         footerRows.forEach(row => {
           let cells = getFooterCells(row);
           expectStickyStyles(cells[5], '1', {right: '0px'});
+          expectStickyBorderClass(cells[5]);
           expectStickyStyles(cells[3], '1', {right: '20px'});
+          expectStickyBorderClass(cells[3], {right: true});
           expectNoStickyStyles([cells[0], cells[1], cells[2], cells[4]]);
         });
 
@@ -1004,23 +1034,35 @@ describe('CdkTable', () => {
 
         let headerCells = getHeaderCells(headerRows[0]);
         expectStickyStyles(headerCells[0], '1', {right: '0px'});
+        expectStickyBorderClass(headerCells[0]);
         expectStickyStyles(headerCells[1], '1', {right: `${firstColumnWidth}px`});
+        expectStickyBorderClass(headerCells[1], {right: true});
         expectStickyStyles(headerCells[4], '1', {left: `${lastColumnWidth}px`});
+        expectStickyBorderClass(headerCells[4], {left: true});
         expectStickyStyles(headerCells[5], '1', {left: '0px'});
+        expectStickyBorderClass(headerCells[5]);
 
         dataRows.forEach(row => {
           let cells = getCells(row);
           expectStickyStyles(cells[0], '1', {right: '0px'});
+          expectStickyBorderClass(cells[0]);
           expectStickyStyles(cells[1], '1', {right: `${firstColumnWidth}px`});
+          expectStickyBorderClass(cells[1], {right: true});
           expectStickyStyles(cells[4], '1', {left: `${lastColumnWidth}px`});
+          expectStickyBorderClass(cells[4], {left: true});
           expectStickyStyles(cells[5], '1', {left: '0px'});
+          expectStickyBorderClass(cells[5]);
         });
 
         let footerCells = getFooterCells(footerRows[0]);
         expectStickyStyles(footerCells[0], '1', {right: '0px'});
+        expectStickyBorderClass(footerCells[0]);
         expectStickyStyles(footerCells[1], '1', {right: `${firstColumnWidth}px`});
+        expectStickyBorderClass(footerCells[1], {right: true});
         expectStickyStyles(footerCells[4], '1', {left: `${lastColumnWidth}px`});
+        expectStickyBorderClass(footerCells[4], {left: true});
         expectStickyStyles(footerCells[5], '1', {left: '0px'});
+        expectStickyBorderClass(footerCells[5]);
       }));
 
       it('should stick and unstick combination of sticky header, footer, and columns',
@@ -1034,22 +1076,30 @@ describe('CdkTable', () => {
 
         let headerCells = getHeaderCells(headerRows[0]);
         expectStickyStyles(headerRows[0], '100', {top: '0px'});
+        expectStickyBorderClass(headerRows[0], {top: true});
         expectStickyStyles(headerCells[0], '1', {left: '0px'});
+        expectStickyBorderClass(headerCells[0], {left: true});
         expectStickyStyles(headerCells[5], '1', {right: '0px'});
+        expectStickyBorderClass(headerCells[5], {right: true});
         expectNoStickyStyles([headerCells[1], headerCells[2], headerCells[3], headerCells[4]]);
         expectNoStickyStyles([headerRows[1], headerRows[2]]);
 
         dataRows.forEach(row => {
           let cells = getCells(row);
           expectStickyStyles(cells[0], '1', {left: '0px'});
+          expectStickyBorderClass(cells[0], {left: true});
           expectStickyStyles(cells[5], '1', {right: '0px'});
+          expectStickyBorderClass(cells[5], {right: true});
           expectNoStickyStyles([cells[1], cells[2], cells[3], cells[4]]);
         });
 
         let footerCells = getFooterCells(footerRows[0]);
         expectStickyStyles(footerRows[2], '10', {bottom: '0px'});
+        expectStickyBorderClass(footerRows[2], {bottom: true});
         expectStickyStyles(footerCells[0], '1', {left: '0px'});
+        expectStickyBorderClass(footerCells[0], {left: true});
         expectStickyStyles(footerCells[5], '1', {right: '0px'});
+        expectStickyBorderClass(footerCells[5], {right: true});
         expectNoStickyStyles([footerCells[1], footerCells[2], footerCells[3], footerCells[4]]);
         expectNoStickyStyles([footerRows[0], footerRows[1]]);
 
@@ -1086,10 +1136,12 @@ describe('CdkTable', () => {
 
         getHeaderCells(headerRows[0]).forEach(cell => {
           expectStickyStyles(cell, '100', {top: '0px'});
+          expectStickyBorderClass(cell);
         });
         const firstHeaderHeight = headerRows[0].getBoundingClientRect().height;
         getHeaderCells(headerRows[2]).forEach(cell => {
           expectStickyStyles(cell, '100', {top: firstHeaderHeight + 'px'});
+          expectStickyBorderClass(cell, {top: true});
         });
         expectNoStickyStyles(getHeaderCells(headerRows[1]));
         expectNoStickyStyles(headerRows);  // No sticky styles on rows for native table
@@ -1108,10 +1160,12 @@ describe('CdkTable', () => {
 
         getFooterCells(footerRows[2]).forEach(cell => {
           expectStickyStyles(cell, '10', {bottom: '0px'});
+          expectStickyBorderClass(cell);
         });
         const thirdFooterHeight = footerRows[2].getBoundingClientRect().height;
         getFooterCells(footerRows[0]).forEach(cell => {
           expectStickyStyles(cell, '10', {bottom: thirdFooterHeight + 'px'});
+          expectStickyBorderClass(cell, {bottom: true});
         });
         expectNoStickyStyles(getFooterCells(footerRows[1]));
         expectNoStickyStyles(footerRows);  // No sticky styles on rows for native table
@@ -1134,6 +1188,7 @@ describe('CdkTable', () => {
         fixture.detectChanges();
         flushMicrotasks();
         expectStickyStyles(tfoot, '10', {bottom: '0px'});
+        expectStickyBorderClass(tfoot);
 
         component.stickyFooters = ['footer-1', 'footer-2'];
         fixture.detectChanges();
@@ -1149,19 +1204,25 @@ describe('CdkTable', () => {
         headerRows.forEach(row => {
           let cells = getHeaderCells(row);
           expectStickyStyles(cells[0], '1', {left: '0px'});
+          expectStickyBorderClass(cells[0]);
           expectStickyStyles(cells[2], '1', {left: '20px'});
+          expectStickyBorderClass(cells[2], {left: true});
           expectNoStickyStyles([cells[1], cells[3], cells[4], cells[5]]);
         });
         dataRows.forEach(row => {
           let cells = getCells(row);
           expectStickyStyles(cells[0], '1', {left: '0px'});
+          expectStickyBorderClass(cells[0]);
           expectStickyStyles(cells[2], '1', {left: '20px'});
+          expectStickyBorderClass(cells[2], {left: true});
           expectNoStickyStyles([cells[1], cells[3], cells[4], cells[5]]);
         });
         footerRows.forEach(row => {
           let cells = getFooterCells(row);
           expectStickyStyles(cells[0], '1', {left: '0px'});
+          expectStickyBorderClass(cells[0]);
           expectStickyStyles(cells[2], '1', {left: '20px'});
+          expectStickyBorderClass(cells[2], {left: true});
           expectNoStickyStyles([cells[1], cells[3], cells[4], cells[5]]);
         });
 
@@ -1181,19 +1242,25 @@ describe('CdkTable', () => {
         headerRows.forEach(row => {
           let cells = getHeaderCells(row);
           expectStickyStyles(cells[5], '1', {right: '0px'});
+          expectStickyBorderClass(cells[5]);
           expectStickyStyles(cells[3], '1', {right: '20px'});
+          expectStickyBorderClass(cells[3], {right: true});
           expectNoStickyStyles([cells[0], cells[1], cells[2], cells[4]]);
         });
         dataRows.forEach(row => {
           let cells = getCells(row);
           expectStickyStyles(cells[5], '1', {right: '0px'});
+          expectStickyBorderClass(cells[5]);
           expectStickyStyles(cells[3], '1', {right: '20px'});
+          expectStickyBorderClass(cells[3], {right: true});
           expectNoStickyStyles([cells[0], cells[1], cells[2], cells[4]]);
         });
         footerRows.forEach(row => {
           let cells = getFooterCells(row);
           expectStickyStyles(cells[5], '1', {right: '0px'});
+          expectStickyBorderClass(cells[5]);
           expectStickyStyles(cells[3], '1', {right: '20px'});
+          expectStickyBorderClass(cells[3], {right: true});
           expectNoStickyStyles([cells[0], cells[1], cells[2], cells[4]]);
         });
 
@@ -1216,27 +1283,41 @@ describe('CdkTable', () => {
 
         const headerCells = getHeaderCells(headerRows[0]);
         expectStickyStyles(headerCells[0], '101', {top: '0px', left: '0px'});
+        expectStickyBorderClass(headerCells[0], {top: true, left: true});
         expectStickyStyles(headerCells[1], '100', {top: '0px'});
+        expectStickyBorderClass(headerCells[1], {top: true});
         expectStickyStyles(headerCells[2], '100', {top: '0px'});
+        expectStickyBorderClass(headerCells[2], {top: true});
         expectStickyStyles(headerCells[3], '100', {top: '0px'});
+        expectStickyBorderClass(headerCells[3], {top: true});
         expectStickyStyles(headerCells[4], '100', {top: '0px'});
+        expectStickyBorderClass(headerCells[4], {top: true});
         expectStickyStyles(headerCells[5], '101', {top: '0px', right: '0px'});
+        expectStickyBorderClass(headerCells[5], {top: true, right: true});
         expectNoStickyStyles(headerRows);
 
         dataRows.forEach(row => {
           let cells = getCells(row);
           expectStickyStyles(cells[0], '1', {left: '0px'});
+          expectStickyBorderClass(cells[0], {left: true});
           expectStickyStyles(cells[5], '1', {right: '0px'});
+          expectStickyBorderClass(cells[5], {right: true});
           expectNoStickyStyles([cells[1], cells[2], cells[3], cells[4]]);
         });
 
         const footerCells = getFooterCells(footerRows[2]);
         expectStickyStyles(footerCells[0], '11', {bottom: '0px', left: '0px'});
+        expectStickyBorderClass(footerCells[0], {bottom: true, left: true});
         expectStickyStyles(footerCells[1], '10', {bottom: '0px'});
+        expectStickyBorderClass(footerCells[1], {bottom: true});
         expectStickyStyles(footerCells[2], '10', {bottom: '0px'});
+        expectStickyBorderClass(footerCells[2], {bottom: true});
         expectStickyStyles(footerCells[3], '10', {bottom: '0px'});
+        expectStickyBorderClass(footerCells[3], {bottom: true});
         expectStickyStyles(footerCells[4], '10', {bottom: '0px'});
+        expectStickyBorderClass(footerCells[4], {bottom: true});
         expectStickyStyles(footerCells[5], '11', {bottom: '0px', right: '0px'});
+        expectStickyBorderClass(footerCells[5], {bottom: true, right: true});
         expectNoStickyStyles(footerRows);
 
         component.stickyHeaders = [];
