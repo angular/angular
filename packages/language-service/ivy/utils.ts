@@ -210,6 +210,13 @@ export function getDirectiveMatchesForElementTag(
   return difference(allDirectiveMatches, matchesWithoutElement);
 }
 
+
+export function makeElementSelector(element: t.Element|t.Template): string {
+  const attributes = getAttributes(element);
+  const allAttrs = attributes.map(toAttributeString);
+  return getNodeName(element) + allAttrs.join('');
+}
+
 /**
  * Given an attribute name, determines which directives match because the attribute is present. We
  * find which directives are applied because of this attribute by elimination: compare the directive
