@@ -805,7 +805,7 @@ export class NgCompiler {
     const templateTypeChecker = new TemplateTypeCheckerImpl(
         this.tsProgram, this.typeCheckingProgramStrategy, traitCompiler,
         this.getTypeCheckingConfig(), refEmitter, reflector, this.adapter, this.incrementalDriver,
-        scopeRegistry);
+        scopeRegistry, typeCheckScopeRegistry);
 
     return {
       isCore,
