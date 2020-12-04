@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {TmplAstBoundEvent} from '@angular/compiler';
 import * as e from '@angular/compiler/src/expression_parser/ast';  // e for expression AST
 import * as t from '@angular/compiler/src/render3/r3_ast';         // t for template AST
 
@@ -45,7 +46,8 @@ export interface TemplateTarget {
  * as well as a body, and a given position definitively points to one or the other. `TargetNode`
  * captures the node itself, as well as this additional contextual disambiguation.
  */
-export type TargetNode = RawExpression|RawTemplateNode|ElementInBodyContext|ElementInTagContext;
+export type TargetNode = RawExpression|RawTemplateNode|ElementInBodyContext|ElementInTagContext|
+    AttributeInKeyContext|AttributeInValueContext;
 
 /**
  * Differentiates the various kinds of `TargetNode`s.
@@ -55,6 +57,8 @@ export enum TargetNodeKind {
   RawTemplateNode,
   ElementInTagContext,
   ElementInBodyContext,
+  AttributeInKeyContext,
+  AttributeInValueContext,
 }
 
 /**
@@ -91,6 +95,16 @@ export interface ElementInBodyContext {
   node: t.Element|t.Template;
 }
 
+export interface AttributeInKeyContext {
+  kind: TargetNodeKind.AttributeInKeyContext;
+  node: t.TextAttribute|t.BoundAttribute|t.BoundEvent;
+}
+
+export interface AttributeInValueContext {
+  kind: TargetNodeKind.AttributeInValueContext;
+  node: t.TextAttribute|t.BoundAttribute|t.BoundEvent;
+}
+
 /**
  * Return the template AST node or expression AST node that most accurately
  * represents the node at the specified cursor `position`.
@@ -106,7 +120,10 @@ export function getTargetAtPosition(template: t.Node[], position: number): Templ
 
   const candidate = path[path.length - 1];
   if (isTemplateNodeWithKeyAndValue(candidate)) {
-    const {keySpan, valueSpan} = candidate;
+    let {keySpan, valueSpan} = candidate;
+    if (valueSpan === undefined && candidate instanceof TmplAstBoundEvent) {
+      valueSpan = candidate.handlerSpan;
+    }
     const isWithinKeyValue =
         isWithin(position, keySpan) || (valueSpan && isWithin(position, valueSpan));
     if (!isWithinKeyValue) {
@@ -154,6 +171,21 @@ export function getTargetAtPosition(template: t.Node[], position: number): Templ
     } else {
       nodeInContext = {
         kind: TargetNodeKind.ElementInTagContext,
+        node: candidate,
+      };
+    }
+  } else if (
+      (candidate instanceof t.BoundAttribute || candidate instanceof t.BoundEvent ||
+       candidate instanceof t.TextAttribute) &&
+      candidate.keySpan !== undefined) {
+    if (isWithin(position, candidate.keySpan)) {
+      nodeInContext = {
+        kind: TargetNodeKind.AttributeInKeyContext,
+        node: candidate,
+      };
+    } else {
+      nodeInContext = {
+        kind: TargetNodeKind.AttributeInValueContext,
         node: candidate,
       };
     }
@@ -264,6 +296,21 @@ class TemplateTargetVisitor implements t.Visitor {
       this.path.pop();  // remove bound event from the AST path
       return;
     }
+
+    // An event binding with no value (e.g. `(event|)`) parses to a `BoundEvent` with a
+    // `LiteralPrimitive` handler with value `'ERROR'`, as opposed to a property binding with no
+    // value which has an `EmptyExpr` as its value. This is a synthetic node created by the binding
+    // parser, and is not suitable to use for Language Service analysis. Skip it.
+    //
+    // TODO(alxhub): modify the parser to generate an `EmptyExpr` instead.
+    let handler: e.AST = event.handler;
+    if (handler instanceof e.ASTWithSource) {
+      handler = handler.ast;
+    }
+    if (handler instanceof e.LiteralPrimitive && handler.value === 'ERROR') {
+      return;
+    }
+
     const visitor = new ExpressionVisitor(this.position);
     visitor.visit(event.handler, this.path);
   }

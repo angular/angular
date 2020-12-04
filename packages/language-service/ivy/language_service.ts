@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, TmplAstNode} from '@angular/compiler';
+import {AST, TmplAstBoundEvent, TmplAstNode} from '@angular/compiler';
 import {CompilerOptions, ConfigurationHost, readConfiguration} from '@angular/compiler-cli';
 import {absoluteFromSourceFile, AbsoluteFsPath} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {TypeCheckShimGenerator} from '@angular/compiler-cli/src/ngtsc/typecheck';
@@ -265,6 +265,14 @@ function nodeContextFromTarget(target: TargetNode): CompletionNodeContext {
     case TargetNodeKind.ElementInBodyContext:
       // Completions in element bodies are for new attributes.
       return CompletionNodeContext.ElementAttributeKey;
+    case TargetNodeKind.AttributeInKeyContext:
+      return CompletionNodeContext.ElementAttributeKey;
+    case TargetNodeKind.AttributeInValueContext:
+      if (target.node instanceof TmplAstBoundEvent) {
+        return CompletionNodeContext.EventValue;
+      } else {
+        return CompletionNodeContext.None;
+      }
     default:
       // No special context is available.
       return CompletionNodeContext.None;

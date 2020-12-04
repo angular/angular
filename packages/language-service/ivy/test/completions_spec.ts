@@ -15,6 +15,42 @@ import {LanguageService} from '../language_service';
 
 import {LanguageServiceTestEnvironment} from './env';
 
+const DIR_WITH_INPUT = {
+  'Dir': `
+    @Directive({
+      selector: '[dir]',
+      inputs: ['myInput']
+    })
+    export class Dir {
+      myInput!: string;
+    }
+  `
+};
+
+const DIR_WITH_OUTPUT = {
+  'Dir': `
+    @Directive({
+      selector: '[dir]',
+      outputs: ['myOutput']
+    })
+    export class Dir {
+      myInput!: any;
+    }
+  `
+};
+
+const DIR_WITH_SELECTED_INPUT = {
+  'Dir': `
+    @Directive({
+      selector: '[myInput]',
+      inputs: ['myInput']
+    })
+    export class Dir {
+      myInput!: string;
+    }
+  `
+};
+
 describe('completions', () => {
   beforeEach(() => {
     initMockFileSystem('Native');
@@ -252,6 +288,162 @@ describe('completions', () => {
           .toEqual('(component) AppModule.OtherCmp');
       expect(ts.displayPartsToString(details.documentation!)).toEqual('This is another component.');
     });
+
+    describe('element attribute scope', () => {
+      describe('dom completions', () => {
+        it('should return completions for a new element attribute', () => {
+          const {ngLS, fileName, cursor} = setup(`<input ¦>`, '');
+
+          const completions =
+              ngLS.getCompletionsAtPosition(fileName, cursor, /* options */ undefined);
+          expectContain(
+              completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.ATTRIBUTE),
+              ['value']);
+          expectContain(
+              completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.PROPERTY),
+              ['[value]']);
+        });
+
+        it('should return completions for a partial attribute', () => {
+          const {ngLS, fileName, cursor, text} = setup(`<input val¦>`, '');
+
+          const completions =
+              ngLS.getCompletionsAtPosition(fileName, cursor, /* options */ undefined);
+          expectContain(
+              completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.ATTRIBUTE),
+              ['value']);
+          expectContain(
+              completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.PROPERTY),
+              ['[value]']);
+          expectReplacementText(completions, text, 'val');
+        });
+
+        it('should return completions for a partial property binding', () => {
+          const {ngLS, fileName, cursor, text} = setup(`<input [val¦]>`, '');
+
+          const completions =
+              ngLS.getCompletionsAtPosition(fileName, cursor, /* options */ undefined);
+          expectDoesNotContain(
+              completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.ATTRIBUTE),
+              ['value']);
+          expectDoesNotContain(
+              completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.PROPERTY),
+              ['[value]']);
+          expectContain(
+              completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.PROPERTY),
+              ['value']);
+          expectReplacementText(completions, text, 'val');
+        });
+      });
+
+      describe('directive present', () => {
+        it('should return directive input completions for a new attribute', () => {
+          const {ngLS, fileName, cursor, text} = setup(`<input dir ¦>`, '', DIR_WITH_INPUT);
+
+          const completions =
+              ngLS.getCompletionsAtPosition(fileName, cursor, /* options */ undefined);
+          expectContain(
+              completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.PROPERTY),
+              ['[myInput]']);
+          expectContain(
+              completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.ATTRIBUTE),
+              ['myInput']);
+        });
+
+        it('should return directive input completions for a partial attribute', () => {
+          const {ngLS, fileName, cursor, text} = setup(`<input dir my¦>`, '', DIR_WITH_INPUT);
+
+          const completions =
+              ngLS.getCompletionsAtPosition(fileName, cursor, /* options */ undefined);
+          expectContain(
+              completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.PROPERTY),
+              ['[myInput]']);
+          expectContain(
+              completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.ATTRIBUTE),
+              ['myInput']);
+        });
+
+        it('should return input completions for a partial property binding', () => {
+          const {ngLS, fileName, cursor, text} = setup(`<input dir [my¦]>`, '', DIR_WITH_INPUT);
+
+          const completions =
+              ngLS.getCompletionsAtPosition(fileName, cursor, /* options */ undefined);
+          expectContain(
+              completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.PROPERTY),
+              ['myInput']);
+        });
+      });
+
+      describe('directive not present', () => {
+        it('should return input completions for a new attribute', () => {
+          const {ngLS, fileName, cursor, text} = setup(`<input ¦>`, '', DIR_WITH_SELECTED_INPUT);
+
+          const completions =
+              ngLS.getCompletionsAtPosition(fileName, cursor, /* options */ undefined);
+          // This context should generate two completions:
+          //  * `[myInput]` as a property
+          //  * `myInput` as an attribute
+          expectContain(
+              completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.PROPERTY),
+              ['[myInput]']);
+          expectContain(
+              completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.ATTRIBUTE),
+              ['myInput']);
+        });
+      });
+
+      it('should return input completions for a partial attribute', () => {
+        const {ngLS, fileName, cursor, text} = setup(`<input my¦>`, '', DIR_WITH_SELECTED_INPUT);
+
+        const completions =
+            ngLS.getCompletionsAtPosition(fileName, cursor, /* options */ undefined);
+        // This context should generate two completions:
+        //  * `[myInput]` as a property
+        //  * `myInput` as an attribute
+        expectContain(
+            completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.PROPERTY),
+            ['[myInput]']);
+        expectContain(
+            completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.ATTRIBUTE),
+            ['myInput']);
+        expectReplacementText(completions, text, 'my');
+      });
+
+      it('should return input completions for a partial property binding', () => {
+        const {ngLS, fileName, cursor, text} = setup(`<input [my¦]>`, '', DIR_WITH_SELECTED_INPUT);
+
+        const completions =
+            ngLS.getCompletionsAtPosition(fileName, cursor, /* options */ undefined);
+        // This context should generate two completions:
+        //  * `[myInput]` as a property
+        //  * `myInput` as an attribute
+        expectContain(
+            completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.PROPERTY),
+            ['myInput']);
+        expectReplacementText(completions, text, 'my');
+      });
+
+      it('should return output completions for an empty binding', () => {
+        const {ngLS, fileName, cursor, text} = setup(`<input dir ¦>`, '', DIR_WITH_OUTPUT);
+
+        const completions =
+            ngLS.getCompletionsAtPosition(fileName, cursor, /* options */ undefined);
+        expectContain(
+            completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.EVENT),
+            ['(myOutput)']);
+      });
+
+      it('should return output completions for a partial event binding', () => {
+        const {ngLS, fileName, cursor, text} = setup(`<input dir (my¦)>`, '', DIR_WITH_OUTPUT);
+
+        const completions =
+            ngLS.getCompletionsAtPosition(fileName, cursor, /* options */ undefined);
+        expectContain(
+            completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.EVENT),
+            ['myOutput']);
+        expectReplacementText(completions, text, 'my');
+      });
+    });
   });
 });
 
@@ -274,6 +466,29 @@ function expectAll(
   expect(completions!.entries.length).toEqual(Object.keys(contains).length);
 }
 
+function expectDoesNotContain(
+    completions: ts.CompletionInfo|undefined, kind: ts.ScriptElementKind|DisplayInfoKind,
+    names: string[]) {
+  expect(completions).toBeDefined();
+  for (const name of names) {
+    expect(completions!.entries).not.toContain(jasmine.objectContaining({name, kind} as any));
+  }
+}
+
+function expectReplacementText(
+    completions: ts.CompletionInfo|undefined, text: string, replacementText: string) {
+  if (completions === undefined) {
+    return;
+  }
+
+  for (const entry of completions.entries) {
+    expect(entry.replacementSpan).toBeDefined();
+    const completionReplaces =
+        text.substr(entry.replacementSpan!.start, entry.replacementSpan!.length);
+    expect(completionReplaces).toBe(replacementText);
+  }
+}
+
 function toText(displayParts?: ts.SymbolDisplayPart[]): string {
   return (displayParts ?? []).map(p => p.text).join('');
 }
@@ -287,6 +502,7 @@ function setup(
   ngLS: LanguageService,
   cursor: number,
   nodes: TmplAstNode[],
+  text: string,
 } {
   const codePath = absoluteFrom('/test.ts');
   const templatePath = absoluteFrom('/test.html');
@@ -323,13 +539,15 @@ function setup(
       contents: 'Placeholder template',
     }
   ]);
-  const {nodes, cursor} = env.overrideTemplateWithCursor(codePath, 'AppCmp', templateWithCursor);
+  const {nodes, cursor, text} =
+      env.overrideTemplateWithCursor(codePath, 'AppCmp', templateWithCursor);
   return {
     env,
     fileName: templatePath,
     AppCmp: env.getClass(codePath, 'AppCmp'),
     ngLS: env.ngLS,
     nodes,
+    text,
     cursor,
   };
 }
