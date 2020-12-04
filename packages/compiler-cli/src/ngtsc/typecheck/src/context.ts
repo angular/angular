@@ -314,7 +314,7 @@ export class TypeCheckContextImpl implements TypeCheckContext {
     const templateId = fileData.sourceManager.getTemplateId(ref.node);
 
     // If there are any template parsing errors, convert them to `ts.Diagnostic`s for display.
-    shimData.templateParseDiagnostics = parseErrors.map(error => {
+    const templateDiagnostics = parseErrors.map(error => {
       const span = error.span;
 
       if (span.start.offset === span.end.offset) {
@@ -329,6 +329,9 @@ export class TypeCheckContextImpl implements TypeCheckContext {
           templateId, sourceMapping, span, ts.DiagnosticCategory.Error,
           ngErrorCode(ErrorCode.TEMPLATE_PARSE_ERROR), error.msg);
     });
+
+    // And add the `ts.Diagnostics` to the shim. Shims can contain more than one template.
+    shimData.templateParseDiagnostics.push(...templateDiagnostics);
   }
 
   /**
