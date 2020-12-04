@@ -32,6 +32,8 @@ module.exports = function(config) {
       {pattern: 'node_modules/angular-mocks-1.5/angular-mocks.js', included: false, watched: false},
       {pattern: 'node_modules/angular-1.6/angular?(.min).js', included: false, watched: false},
       {pattern: 'node_modules/angular-mocks-1.6/angular-mocks.js', included: false, watched: false},
+      {pattern: 'node_modules/angular-1.7/angular?(.min).js', included: false, watched: false},
+      {pattern: 'node_modules/angular-mocks-1.7/angular-mocks.js', included: false, watched: false},
       {pattern: 'node_modules/angular/angular?(.min).js', included: false, watched: false},
       {pattern: 'node_modules/angular-mocks/angular-mocks.js', included: false, watched: false},
 
