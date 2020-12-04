@@ -7,6 +7,7 @@
  */
 
 import {ASTWithSource, Binary, BindingPipe, Conditional, Interpolation, PropertyRead, TmplAstBoundAttribute, TmplAstBoundText, TmplAstElement, TmplAstNode, TmplAstReference, TmplAstTemplate} from '@angular/compiler';
+import {AST, LiteralArray, LiteralMap} from '@angular/compiler/src/compiler';
 import * as ts from 'typescript';
 
 import {absoluteFrom, AbsoluteFsPath, getSourceFileOrError} from '../../file_system';
@@ -693,7 +694,7 @@ runInEachFileSystem(() => {
         });
 
         it('literal array', () => {
-          const literalArray = interpolation.expressions[0];
+          const literalArray = interpolation.expressions[0] as LiteralArray;
           const symbol = templateTypeChecker.getSymbolOfNode(literalArray, cmp)!;
           assertExpressionSymbol(symbol);
           expect(program.getTypeChecker().symbolToString(symbol.tsSymbol!)).toEqual('Array');
@@ -701,7 +702,7 @@ runInEachFileSystem(() => {
         });
 
         it('literal map', () => {
-          const literalMap = interpolation.expressions[1];
+          const literalMap = interpolation.expressions[1] as LiteralMap;
           const symbol = templateTypeChecker.getSymbolOfNode(literalMap, cmp)!;
           assertExpressionSymbol(symbol);
           expect(program.getTypeChecker().symbolToString(symbol.tsSymbol!)).toEqual('__object');
@@ -762,7 +763,7 @@ runInEachFileSystem(() => {
 
         it('should get symbol for pipe, checkTypeOfPipes: false', () => {
           setupPipesTest(false);
-          const pipeSymbol = templateTypeChecker.getSymbolOfNode(binding, cmp)!;
+          const pipeSymbol = templateTypeChecker.getSymbolOfNode(binding, cmp)! as PipeSymbol;
           assertPipeSymbol(pipeSymbol);
           expect(pipeSymbol.tsSymbol).toBeNull();
           expect(program.getTypeChecker().typeToString(pipeSymbol.tsType!)).toEqual('any');
@@ -770,6 +771,24 @@ runInEachFileSystem(() => {
               .toEqual('TestPipe');
           expect(program.getTypeChecker().typeToString(pipeSymbol.classSymbol.tsType))
               .toEqual('TestPipe');
+        });
+
+        it('should get symbols for pipe expression and args', () => {
+          setupPipesTest(false);
+          const aSymbol = templateTypeChecker.getSymbolOfNode(binding.exp, cmp)!;
+          assertExpressionSymbol(aSymbol);
+          expect(program.getTypeChecker().symbolToString(aSymbol.tsSymbol!)).toEqual('a');
+          expect(program.getTypeChecker().typeToString(aSymbol.tsType)).toEqual('string');
+
+          const bSymbol = templateTypeChecker.getSymbolOfNode(binding.args[0] as AST, cmp)!;
+          assertExpressionSymbol(bSymbol);
+          expect(program.getTypeChecker().symbolToString(bSymbol.tsSymbol!)).toEqual('b');
+          expect(program.getTypeChecker().typeToString(bSymbol.tsType)).toEqual('number');
+
+          const cSymbol = templateTypeChecker.getSymbolOfNode(binding.args[1] as AST, cmp)!;
+          assertExpressionSymbol(cSymbol);
+          expect(program.getTypeChecker().symbolToString(cSymbol.tsSymbol!)).toEqual('c');
+          expect(program.getTypeChecker().typeToString(cSymbol.tsType)).toEqual('boolean');
         });
 
         for (const checkTypeOfPipes of [true, false]) {
@@ -782,12 +801,12 @@ runInEachFileSystem(() => {
               expect(program.getTypeChecker().symbolToString(aSymbol.tsSymbol!)).toEqual('a');
               expect(program.getTypeChecker().typeToString(aSymbol.tsType)).toEqual('string');
 
-              const bSymbol = templateTypeChecker.getSymbolOfNode(binding.args[0], cmp)!;
+              const bSymbol = templateTypeChecker.getSymbolOfNode(binding.args[0] as AST, cmp)!;
               assertExpressionSymbol(bSymbol);
               expect(program.getTypeChecker().symbolToString(bSymbol.tsSymbol!)).toEqual('b');
               expect(program.getTypeChecker().typeToString(bSymbol.tsType)).toEqual('number');
 
-              const cSymbol = templateTypeChecker.getSymbolOfNode(binding.args[1], cmp)!;
+              const cSymbol = templateTypeChecker.getSymbolOfNode(binding.args[1] as AST, cmp)!;
               assertExpressionSymbol(cSymbol);
               expect(program.getTypeChecker().symbolToString(cSymbol.tsSymbol!)).toEqual('c');
               expect(program.getTypeChecker().typeToString(cSymbol.tsType)).toEqual('boolean');

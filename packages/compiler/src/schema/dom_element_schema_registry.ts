@@ -240,6 +240,13 @@ const _ATTR_TO_PROP: {[name: string]: string} = {
   'tabindex': 'tabIndex',
 };
 
+// Invert _ATTR_TO_PROP.
+const _PROP_TO_ATTR: {[name: string]: string} =
+    Object.keys(_ATTR_TO_PROP).reduce((inverted, attr) => {
+      inverted[_ATTR_TO_PROP[attr]] = attr;
+      return inverted;
+    }, {} as {[prop: string]: string});
+
 export class DomElementSchemaRegistry extends ElementSchemaRegistry {
   private _schema: {[element: string]: {[property: string]: string}} = {};
 
@@ -384,6 +391,12 @@ export class DomElementSchemaRegistry extends ElementSchemaRegistry {
 
   allKnownElementNames(): string[] {
     return Object.keys(this._schema);
+  }
+
+  allKnownAttributesOfElement(tagName: string): string[] {
+    const elementProperties = this._schema[tagName.toLowerCase()] || this._schema['unknown'];
+    // Convert properties to attributes.
+    return Object.keys(elementProperties).map(prop => _PROP_TO_ATTR[prop] ?? prop);
   }
 
   normalizeAnimationStyleProperty(propName: string): string {

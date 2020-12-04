@@ -6,14 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, MethodCall, ParseError, PropertyRead, SafeMethodCall, SafePropertyRead, TmplAstNode, TmplAstTemplate} from '@angular/compiler';
+import {AST, MethodCall, ParseError, PropertyRead, SafeMethodCall, SafePropertyRead, TmplAstElement, TmplAstNode, TmplAstTemplate} from '@angular/compiler';
 import {AbsoluteFsPath} from '@angular/compiler-cli/src/ngtsc/file_system';
 import * as ts from 'typescript';
 
-import {FullTemplateMapping} from './api';
+import {FullTemplateMapping, TypeCheckableDirectiveMeta} from './api';
 import {GlobalCompletion} from './completion';
 import {DirectiveInScope, PipeInScope} from './scope';
-import {ShimLocation, Symbol} from './symbols';
+import {DirectiveSymbol, ElementSymbol, ShimLocation, Symbol} from './symbols';
 
 /**
  * Interface to the Angular Template Type Checker to extract diagnostics and intelligence from the
@@ -110,6 +110,7 @@ export interface TemplateTypeChecker {
    *
    * @see Symbol
    */
+  getSymbolOfNode(node: TmplAstElement, component: ts.ClassDeclaration): ElementSymbol|null;
   getSymbolOfNode(node: AST|TmplAstNode, component: ts.ClassDeclaration): Symbol|null;
 
   /**
@@ -149,6 +150,20 @@ export interface TemplateTypeChecker {
    * the DOM schema.
    */
   getPotentialElementTags(component: ts.ClassDeclaration): Map<string, DirectiveInScope|null>;
+
+  /**
+   * Retrieve any potential DOM bindings for the given element.
+   *
+   * This returns an array of objects which list both the attribute and property names of each
+   * binding, which are usually identical but can vary if the HTML attribute name is for example a
+   * reserved keyword in JS, like the `for` attribute which corresponds to the `htmlFor` property.
+   */
+  getPotentialDomBindings(tagName: string): {attribute: string, property: string}[];
+
+  /**
+   * Retrieve the type checking engine's metadata for the given directive class, if available.
+   */
+  getDirectiveMetadata(dir: ts.ClassDeclaration): TypeCheckableDirectiveMeta|null;
 }
 
 /**
