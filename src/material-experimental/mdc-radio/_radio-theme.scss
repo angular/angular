@@ -1,4 +1,5 @@
 @import '../mdc-helpers/mdc-helpers';
+@import '@material/form-field/mixins.import';
 @import '@material/radio/mixins';
 @import '@material/radio/variables';
 @import '@material/theme/functions.import';
@@ -43,6 +44,7 @@
   $config: mat-get-typography-config($config-or-theme);
   @include mat-using-mdc-typography($config) {
     @include mdc-radio-without-ripple($query: $mat-typography-styles-query);
+    @include mdc-form-field-core-styles($query: $mat-typography-styles-query);
   }
 }
 
