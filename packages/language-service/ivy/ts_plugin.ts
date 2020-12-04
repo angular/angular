@@ -7,9 +7,11 @@
  */
 
 import * as ts from 'typescript/lib/tsserverlibrary';
-import {LanguageService} from './language_service';
+import {GetTcbResponse, LanguageService} from './language_service';
 
-export function create(info: ts.server.PluginCreateInfo): ts.LanguageService {
+export type NgLanguageService = ts.LanguageService&Pick<LanguageService, 'getTcb'>;
+
+export function create(info: ts.server.PluginCreateInfo): NgLanguageService {
   const {project, languageService: tsLS, config} = info;
   const angularOnly = config?.angularOnly === true;
 
@@ -28,7 +30,8 @@ export function create(info: ts.server.PluginCreateInfo): ts.LanguageService {
     if (angularOnly) {
       return ngLS.getQuickInfoAtPosition(fileName, position);
     } else {
-      // If TS could answer the query, then return that result. Otherwise, return from Angular LS.
+      // If TS could answer the query, then return that result. Otherwise, return from Angular
+      // LS.
       return tsLS.getQuickInfoAtPosition(fileName, position) ??
           ngLS.getQuickInfoAtPosition(fileName, position);
     }
@@ -39,7 +42,8 @@ export function create(info: ts.server.PluginCreateInfo): ts.LanguageService {
     if (angularOnly) {
       return ngLS.getTypeDefinitionAtPosition(fileName, position);
     } else {
-      // If TS could answer the query, then return that result. Otherwise, return from Angular LS.
+      // If TS could answer the query, then return that result. Otherwise, return from Angular
+      // LS.
       return tsLS.getTypeDefinitionAtPosition(fileName, position) ??
           ngLS.getTypeDefinitionAtPosition(fileName, position);
     }
@@ -50,7 +54,8 @@ export function create(info: ts.server.PluginCreateInfo): ts.LanguageService {
     if (angularOnly) {
       return ngLS.getDefinitionAndBoundSpan(fileName, position);
     } else {
-      // If TS could answer the query, then return that result. Otherwise, return from Angular LS.
+      // If TS could answer the query, then return that result. Otherwise, return from Angular
+      // LS.
       return tsLS.getDefinitionAndBoundSpan(fileName, position) ??
           ngLS.getDefinitionAndBoundSpan(fileName, position);
     }
@@ -116,6 +121,10 @@ export function create(info: ts.server.PluginCreateInfo): ts.LanguageService {
     }
   }
 
+  function getTcb(fileName: string, position: number): GetTcbResponse {
+    return ngLS.getTcb(fileName, position);
+  }
+
   return {
     ...tsLS,
     getSemanticDiagnostics,
@@ -128,6 +137,7 @@ export function create(info: ts.server.PluginCreateInfo): ts.LanguageService {
     getCompletionsAtPosition,
     getCompletionEntryDetails,
     getCompletionEntrySymbol,
+    getTcb,
   };
 }
 

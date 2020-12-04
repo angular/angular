@@ -230,8 +230,8 @@ function getClassOrError(sf: ts.SourceFile, name: string): ts.ClassDeclaration {
 
 export function extractCursorInfo(textWithCursor: string): {cursor: number, text: string} {
   const cursor = textWithCursor.indexOf('¦');
-  if (cursor === -1) {
-    throw new Error(`Expected to find cursor symbol '¦'`);
+  if (cursor === -1 || textWithCursor.indexOf('¦', cursor + 1) !== -1) {
+    throw new Error(`Expected to find exactly one cursor symbol '¦'`);
   }
 
   return {
