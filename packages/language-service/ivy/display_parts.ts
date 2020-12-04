@@ -22,6 +22,7 @@ export const SYMBOL_TEXT = ts.SymbolDisplayPartKind[ts.SymbolDisplayPartKind.tex
  * Label for various kinds of Angular entities for TS display info.
  */
 export enum DisplayInfoKind {
+  ATTRIBUTE = 'attribute',
   COMPONENT = 'component',
   DIRECTIVE = 'directive',
   EVENT = 'event',
@@ -142,6 +143,31 @@ export function getDirectiveDisplayInfo(
 
   const displayParts =
       createDisplayParts(dir.tsSymbol.name, kind, dir.ngModule?.name?.text, undefined);
+
+  return {
+    kind,
+    displayParts,
+    documentation: res.documentation,
+  };
+}
+
+export function getTsSymbolDisplayInfo(
+    tsLS: ts.LanguageService, checker: ts.TypeChecker, symbol: ts.Symbol, kind: DisplayInfoKind,
+    ownerName: string|null): DisplayInfo|null {
+  const decl = symbol.valueDeclaration;
+  if (decl === undefined || (!ts.isPropertyDeclaration(decl) && !ts.isMethodDeclaration(decl)) ||
+      !ts.isIdentifier(decl.name)) {
+    return null;
+  }
+  const res = tsLS.getQuickInfoAtPosition(decl.getSourceFile().fileName, decl.name.getStart());
+  if (res === undefined) {
+    return {kind, displayParts: [], documentation: []};
+  }
+
+  const type = checker.getDeclaredTypeOfSymbol(symbol);
+  const typeString = checker.typeToString(type);
+
+  const displayParts = createDisplayParts(symbol.name, kind, ownerName ?? undefined, typeString);
 
   return {
     kind,
