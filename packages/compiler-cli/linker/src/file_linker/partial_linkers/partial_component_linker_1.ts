@@ -38,11 +38,7 @@ export class PartialComponentLinkerVersion1<TExpression> implements PartialLinke
 export function toR3ComponentMeta<TExpression>(
     metaObj: AstObject<R3DeclareComponentMetadata, TExpression>, code: string, sourceUrl: string,
     options: LinkerOptions): R3ComponentMetadata {
-  let interpolation = DEFAULT_INTERPOLATION_CONFIG;
-  if (metaObj.has('interpolation')) {
-    interpolation = InterpolationConfig.fromArray(
-        metaObj.getArray('interpolation').map(entry => entry.getString()) as [string, string]);
-  }
+  const interpolation = parseInterpolationConfig(metaObj);
   const templateObj = metaObj.getObject('template');
   const templateSource = templateObj.getValue('source');
   const range = getTemplateRange(templateSource, code);
@@ -128,6 +124,25 @@ export function toR3ComponentMeta<TExpression>(
     pipes,
     directives,
   };
+}
+
+/**
+ * Extract an `InterpolationConfig` from the component declaration.
+ */
+function parseInterpolationConfig<TExpression>(
+    metaObj: AstObject<R3DeclareComponentMetadata, TExpression>): InterpolationConfig {
+  if (!metaObj.has('interpolation')) {
+    return DEFAULT_INTERPOLATION_CONFIG;
+  }
+
+  const interpolationExpr = metaObj.getValue('interpolation');
+  const values = interpolationExpr.getArray().map(entry => entry.getString());
+  if (values.length !== 2) {
+    throw new FatalLinkerError(
+        interpolationExpr.expression,
+        'Unsupported interpolation config, expected an array containing exactly two strings');
+  }
+  return InterpolationConfig.fromArray(values as [string, string]);
 }
 
 /**
