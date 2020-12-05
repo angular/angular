@@ -254,7 +254,7 @@ A.ɵcmp = ɵngcc0.ɵɵdefineComponent({ type: A, selectors: [["a"]], decls: 1, v
 
         const addAdjacentStatementsSpy = testFormatter.addAdjacentStatements as jasmine.Spy;
         expect(addAdjacentStatementsSpy.calls.first().args[2]).toEqual(`// TRANSPILED
-/*@__PURE__*/ (function () { ɵngcc0.ɵsetClassMetadata(A, [{
+(function () { (typeof ngDevMode === "undefined" || ngDevMode) && ɵngcc0.ɵsetClassMetadata(A, [{
         type: Component,
         args: [{ selector: 'a', template: '{{ person!.name }}' }]
     }], null, null); })();`);
@@ -321,7 +321,7 @@ A.ɵdir = ɵngcc0.ɵɵdefineDirective({ type: A, selectors: [["", "a", ""]] });`
                  .toEqual(jasmine.objectContaining(
                      {name: 'A', decorators: [jasmine.objectContaining({name: 'Directive'})]}));
              expect(addAdjacentStatementsSpy.calls.first().args[2]).toEqual(`// TRANSPILED
-/*@__PURE__*/ (function () { ɵngcc0.ɵsetClassMetadata(A, [{
+(function () { (typeof ngDevMode === "undefined" || ngDevMode) && ɵngcc0.ɵsetClassMetadata(A, [{
         type: Directive,
         args: [{ selector: '[a]' }]
     }], null, null); })();`);
@@ -688,7 +688,8 @@ UndecoratedBase.ɵdir = ɵngcc0.ɵɵdefineDirective({ type: UndecoratedBase, vie
               decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses);
           const addAdjacentStatementsSpy = testFormatter.addAdjacentStatements as jasmine.Spy;
           expect(addAdjacentStatementsSpy.calls.first().args[2])
-              .toContain(`/*@__PURE__*/ (function () { ɵngcc0.setClassMetadata(`);
+              .toContain(
+                  `function () { (typeof ngDevMode === "undefined" || ngDevMode) && ɵngcc0.setClassMetadata(`);
           const addImportsSpy = testFormatter.addImports as jasmine.Spy;
           expect(addImportsSpy.calls.first().args[1]).toEqual([
             {specifier: './r3_symbols', qualifier: 'ɵngcc0'}
@@ -713,7 +714,8 @@ UndecoratedBase.ɵdir = ɵngcc0.ɵɵdefineDirective({ type: UndecoratedBase, vie
               decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses);
           const addAdjacentStatementsSpy = testFormatter.addAdjacentStatements as jasmine.Spy;
           expect(addAdjacentStatementsSpy.calls.first().args[2])
-              .toContain(`/*@__PURE__*/ (function () { setClassMetadata(`);
+              .toContain(
+                  `function () { (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(`);
           const addImportsSpy = testFormatter.addImports as jasmine.Spy;
           expect(addImportsSpy.calls.first().args[1]).toEqual([]);
         });

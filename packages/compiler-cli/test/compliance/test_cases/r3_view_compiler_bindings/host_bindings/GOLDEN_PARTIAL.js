@@ -10,7 +10,7 @@ export class HostBindingDir {
 }
 HostBindingDir.ɵfac = function HostBindingDir_Factory(t) { return new (t || HostBindingDir)(); };
 HostBindingDir.ɵdir = i0.ɵɵngDeclareDirective({ version: "0.0.0-PLACEHOLDER", type: HostBindingDir, selector: "[hostBindingDir]", host: { properties: { "id": "dirId" } }, ngImport: i0 });
-/*@__PURE__*/ (function () { i0.ɵsetClassMetadata(HostBindingDir, [{
+(function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(HostBindingDir, [{
         type: Directive,
         args: [{ selector: '[hostBindingDir]' }]
     }], null, { dirId: [{
@@ -22,7 +22,7 @@ export class MyModule {
 MyModule.ɵmod = i0.ɵɵdefineNgModule({ type: MyModule });
 MyModule.ɵinj = i0.ɵɵdefineInjector({ factory: function MyModule_Factory(t) { return new (t || MyModule)(); } });
 (function () { (typeof ngJitMode === "undefined" || ngJitMode) && i0.ɵɵsetNgModuleScope(MyModule, { declarations: [HostBindingDir] }); })();
-/*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyModule, [{
+(function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(MyModule, [{
         type: NgModule,
         args: [{ declarations: [HostBindingDir] }]
     }], null, null); })();
@@ -50,7 +50,7 @@ export class HostBindingDir {
 }
 HostBindingDir.ɵfac = function HostBindingDir_Factory(t) { return new (t || HostBindingDir)(); };
 HostBindingDir.ɵdir = i0.ɵɵngDeclareDirective({ version: "0.0.0-PLACEHOLDER", type: HostBindingDir, selector: "[hostBindingDir]", host: { properties: { "id": "getData()?.id" } }, ngImport: i0 });
-/*@__PURE__*/ (function () { i0.ɵsetClassMetadata(HostBindingDir, [{
+(function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(HostBindingDir, [{
         type: Directive,
         args: [{ selector: '[hostBindingDir]', host: { '[id]': 'getData()?.id' } }]
     }], null, null); })();
@@ -59,7 +59,7 @@ export class MyModule {
 MyModule.ɵmod = i0.ɵɵdefineNgModule({ type: MyModule });
 MyModule.ɵinj = i0.ɵɵdefineInjector({ factory: function MyModule_Factory(t) { return new (t || MyModule)(); } });
 (function () { (typeof ngJitMode === "undefined" || ngJitMode) && i0.ɵɵsetNgModuleScope(MyModule, { declarations: [HostBindingDir] }); })();
-/*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyModule, [{
+(function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(MyModule, [{
         type: NgModule,
         args: [{ declarations: [HostBindingDir] }]
     }], null, null); })();
@@ -92,7 +92,7 @@ export class HostBindingComp {
 }
 HostBindingComp.ɵfac = function HostBindingComp_Factory(t) { return new (t || HostBindingComp)(); };
 HostBindingComp.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: HostBindingComp, selector: "host-binding-comp", host: { properties: { "id": "[\"red\", id]" } }, ngImport: i0, template: { source: '', isInline: true } });
-/*@__PURE__*/ (function () { i0.ɵsetClassMetadata(HostBindingComp, [{
+(function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(HostBindingComp, [{
         type: Component,
         args: [{ selector: 'host-binding-comp', host: { '[id]': '["red", id]' }, template: '' }]
     }], null, null); })();
@@ -101,7 +101,7 @@ export class MyModule {
 MyModule.ɵmod = i0.ɵɵdefineNgModule({ type: MyModule });
 MyModule.ɵinj = i0.ɵɵdefineInjector({ factory: function MyModule_Factory(t) { return new (t || MyModule)(); } });
 (function () { (typeof ngJitMode === "undefined" || ngJitMode) && i0.ɵɵsetNgModuleScope(MyModule, { declarations: [HostBindingComp] }); })();
-/*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyModule, [{
+(function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(MyModule, [{
         type: NgModule,
         args: [{ declarations: [HostBindingComp] }]
     }], null, null); })();
@@ -132,7 +132,7 @@ export class HostAttributeDir {
 }
 HostAttributeDir.ɵfac = function HostAttributeDir_Factory(t) { return new (t || HostAttributeDir)(); };
 HostAttributeDir.ɵdir = i0.ɵɵngDeclareDirective({ version: "0.0.0-PLACEHOLDER", type: HostAttributeDir, selector: "[hostAttributeDir]", host: { properties: { "attr.required": "required" } }, ngImport: i0 });
-/*@__PURE__*/ (function () { i0.ɵsetClassMetadata(HostAttributeDir, [{
+(function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(HostAttributeDir, [{
         type: Directive,
         args: [{ selector: '[hostAttributeDir]', host: { '[attr.required]': 'required' } }]
     }], null, null); })();
@@ -141,7 +141,7 @@ export class MyModule {
 MyModule.ɵmod = i0.ɵɵdefineNgModule({ type: MyModule });
 MyModule.ɵinj = i0.ɵɵdefineInjector({ factory: function MyModule_Factory(t) { return new (t || MyModule)(); } });
 (function () { (typeof ngJitMode === "undefined" || ngJitMode) && i0.ɵɵsetNgModuleScope(MyModule, { declarations: [HostAttributeDir] }); })();
-/*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyModule, [{
+(function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(MyModule, [{
         type: NgModule,
         args: [{ declarations: [HostAttributeDir] }]
     }], null, null); })();
@@ -169,7 +169,7 @@ export class HostAttributeDir {
 }
 HostAttributeDir.ɵfac = function HostAttributeDir_Factory(t) { return new (t || HostAttributeDir)(); };
 HostAttributeDir.ɵdir = i0.ɵɵngDeclareDirective({ version: "0.0.0-PLACEHOLDER", type: HostAttributeDir, selector: "[hostAttributeDir]", host: { attributes: { "aria-label": "label" } }, ngImport: i0 });
-/*@__PURE__*/ (function () { i0.ɵsetClassMetadata(HostAttributeDir, [{
+(function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(HostAttributeDir, [{
         type: Directive,
         args: [{ selector: '[hostAttributeDir]', host: { 'aria-label': 'label' } }]
     }], null, null); })();
@@ -178,7 +178,7 @@ export class MyModule {
 MyModule.ɵmod = i0.ɵɵdefineNgModule({ type: MyModule });
 MyModule.ɵinj = i0.ɵɵdefineInjector({ factory: function MyModule_Factory(t) { return new (t || MyModule)(); } });
 (function () { (typeof ngJitMode === "undefined" || ngJitMode) && i0.ɵɵsetNgModuleScope(MyModule, { declarations: [HostAttributeDir] }); })();
-/*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyModule, [{
+(function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(MyModule, [{
         type: NgModule,
         args: [{ declarations: [HostAttributeDir] }]
     }], null, null); })();
@@ -205,7 +205,7 @@ export class HostAttributeComp {
 }
 HostAttributeComp.ɵfac = function HostAttributeComp_Factory(t) { return new (t || HostAttributeComp)(); };
 HostAttributeComp.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: HostAttributeComp, selector: "my-host-attribute-component", host: { attributes: { "title": "hello there from component" }, styleAttribute: "opacity:1" }, ngImport: i0, template: { source: '...', isInline: true } });
-/*@__PURE__*/ (function () { i0.ɵsetClassMetadata(HostAttributeComp, [{
+(function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(HostAttributeComp, [{
         type: Component,
         args: [{
                 selector: 'my-host-attribute-component',
@@ -217,7 +217,7 @@ export class HostAttributeDir {
 }
 HostAttributeDir.ɵfac = function HostAttributeDir_Factory(t) { return new (t || HostAttributeDir)(); };
 HostAttributeDir.ɵdir = i0.ɵɵngDeclareDirective({ version: "0.0.0-PLACEHOLDER", type: HostAttributeDir, selector: "[hostAttributeDir]", host: { attributes: { "title": "hello there from directive" }, properties: { "style.opacity": "true", "class.three": "true" }, styleAttribute: "width: 200px; height: 500px", classAttribute: "one two" }, ngImport: i0 });
-/*@__PURE__*/ (function () { i0.ɵsetClassMetadata(HostAttributeDir, [{
+(function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(HostAttributeDir, [{
         type: Directive,
         args: [{
                 selector: '[hostAttributeDir]',
@@ -235,7 +235,7 @@ export class MyModule {
 MyModule.ɵmod = i0.ɵɵdefineNgModule({ type: MyModule });
 MyModule.ɵinj = i0.ɵɵdefineInjector({ factory: function MyModule_Factory(t) { return new (t || MyModule)(); } });
 (function () { (typeof ngJitMode === "undefined" || ngJitMode) && i0.ɵɵsetNgModuleScope(MyModule, { declarations: [HostAttributeComp, HostAttributeDir] }); })();
-/*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyModule, [{
+(function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(MyModule, [{
         type: NgModule,
         args: [{ declarations: [HostAttributeComp, HostAttributeDir] }]
     }], null, null); })();
@@ -270,7 +270,7 @@ export class MyDirective {
 }
 MyDirective.ɵfac = function MyDirective_Factory(t) { return new (t || MyDirective)(); };
 MyDirective.ɵdir = i0.ɵɵngDeclareDirective({ version: "0.0.0-PLACEHOLDER", type: MyDirective, selector: "[my-dir]", host: { properties: { "title": "myTitle", "tabindex": "1", "id": "myId" } }, ngImport: i0 });
-/*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyDirective, [{
+(function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(MyDirective, [{
         type: Directive,
         args: [{ selector: '[my-dir]', host: { '[title]': 'myTitle', '[tabindex]': '1', '[id]': 'myId' } }]
     }], null, null); })();
@@ -299,7 +299,7 @@ export class MyDirective {
 }
 MyDirective.ɵfac = function MyDirective_Factory(t) { return new (t || MyDirective)(); };
 MyDirective.ɵdir = i0.ɵɵngDeclareDirective({ version: "0.0.0-PLACEHOLDER", type: MyDirective, selector: "[my-dir]", host: { properties: { "tabindex": "1", "title": "myTitle", "id": "myId" } }, ngImport: i0 });
-/*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyDirective, [{
+(function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(MyDirective, [{
         type: Directive,
         args: [{ selector: '[my-dir]', host: { '[tabindex]': '1' } }]
     }], null, { myTitle: [{
@@ -330,7 +330,7 @@ export class MyDirective {
 }
 MyDirective.ɵfac = function MyDirective_Factory(t) { return new (t || MyDirective)(); };
 MyDirective.ɵdir = i0.ɵɵngDeclareDirective({ version: "0.0.0-PLACEHOLDER", type: MyDirective, selector: "[my-dir]", host: { properties: { "title": "\"my title\"", "attr.tabindex": "1", "id": "\"my-id\"" } }, ngImport: i0 });
-/*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyDirective, [{
+(function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(MyDirective, [{
         type: Directive,
         args: [{
                 selector: '[my-dir]',
@@ -360,7 +360,7 @@ export class MyDirective {
 }
 MyDirective.ɵfac = function MyDirective_Factory(t) { return new (t || MyDirective)(); };
 MyDirective.ɵdir = i0.ɵɵngDeclareDirective({ version: "0.0.0-PLACEHOLDER", type: MyDirective, selector: "[my-dir]", host: { properties: { "@expand": "expandedState", "@fadeOut": "true", "@shrink": "isSmall" } }, ngImport: i0 });
-/*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyDirective, [{
+(function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(MyDirective, [{
         type: Directive,
         args: [{
                 selector: '[my-dir]',
@@ -392,7 +392,7 @@ export class MyDirective {
 }
 MyDirective.ɵfac = function MyDirective_Factory(t) { return new (t || MyDirective)(); };
 MyDirective.ɵdir = i0.ɵɵngDeclareDirective({ version: "0.0.0-PLACEHOLDER", type: MyDirective, selector: "[my-dir]", host: { properties: { "attr.title": "myTitle", "attr.tabindex": "1", "attr.id": "myId" } }, ngImport: i0 });
-/*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyDirective, [{
+(function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(MyDirective, [{
         type: Directive,
         args: [{
                 selector: '[my-dir]',
@@ -424,7 +424,7 @@ export class MyDirective {
 }
 MyDirective.ɵfac = function MyDirective_Factory(t) { return new (t || MyDirective)(); };
 MyDirective.ɵdir = i0.ɵɵngDeclareDirective({ version: "0.0.0-PLACEHOLDER", type: MyDirective, selector: "[my-dir]", host: { properties: { "attr.tabindex": "1", "attr.title": "myTitle", "attr.id": "myId" } }, ngImport: i0 });
-/*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyDirective, [{
+(function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(MyDirective, [{
         type: Directive,
         args: [{ selector: '[my-dir]', host: { '[attr.tabindex]': '1' } }]
     }], null, { myTitle: [{
@@ -455,7 +455,7 @@ export class MyDirective {
 }
 MyDirective.ɵfac = function MyDirective_Factory(t) { return new (t || MyDirective)(); };
 MyDirective.ɵdir = i0.ɵɵngDeclareDirective({ version: "0.0.0-PLACEHOLDER", type: MyDirective, selector: "[my-dir]", host: { properties: { "attr.title": "\"my title\"", "tabindex": "1", "attr.id": "\"my-id\"" } }, ngImport: i0 });
-/*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyDirective, [{
+(function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(MyDirective, [{
         type: Directive,
         args: [{
                 selector: '[my-dir]',
@@ -485,7 +485,7 @@ export class MyDirective {
 }
 MyDirective.ɵfac = function MyDirective_Factory(t) { return new (t || MyDirective)(); };
 MyDirective.ɵdir = i0.ɵɵngDeclareDirective({ version: "0.0.0-PLACEHOLDER", type: MyDirective, selector: "[my-dir]", host: { listeners: { "mousedown": "mousedown()", "mouseup": "mouseup()", "click": "click()" } }, ngImport: i0 });
-/*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyDirective, [{
+(function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(MyDirective, [{
         type: Directive,
         args: [{
                 selector: '[my-dir]',
@@ -522,7 +522,7 @@ export class MyComponent {
 }
 MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); };
 MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "my-comp", host: { listeners: { "@animation.done": "done()", "@animation.start": "start()" } }, ngImport: i0, template: { source: '', isInline: true } });
-/*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyComponent, [{
+(function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(MyComponent, [{
         type: Component,
         args: [{
                 selector: 'my-comp',
@@ -559,7 +559,7 @@ export class MyComponent {
 }
 MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); };
 MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "my-comp", host: { listeners: { "mousedown": "mousedown()", "@animation.done": "done()", "mouseup": "mouseup()", "@animation.start": "start()", "click": "click()" } }, ngImport: i0, template: { source: '', isInline: true } });
-/*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyComponent, [{
+(function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(MyComponent, [{
         type: Component,
         args: [{
                 selector: 'my-comp',

@@ -12,7 +12,7 @@ export class ForOfDirective {
 }
 ForOfDirective.ɵfac = function ForOfDirective_Factory(t) { return new (t || ForOfDirective)(i0.ɵɵdirectiveInject(i0.ViewContainerRef), i0.ɵɵdirectiveInject(i0.TemplateRef)); };
 ForOfDirective.ɵdir = i0.ɵɵngDeclareDirective({ version: "0.0.0-PLACEHOLDER", type: ForOfDirective, selector: "[forOf]", inputs: { forOf: "forOf" }, usesOnChanges: true, ngImport: i0 });
-/*@__PURE__*/ (function () { i0.ɵsetClassMetadata(ForOfDirective, [{
+(function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(ForOfDirective, [{
         type: Directive,
         args: [{ selector: '[forOf]' }]
     }], function () { return [{ type: i0.ViewContainerRef }, { type: i0.TemplateRef }]; }, { forOf: [{
@@ -54,7 +54,7 @@ export class MyComponent {
 }
 MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); };
 MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "my-component", ngImport: i0, template: { source: `<svg><g *for="let item of items"><circle></circle></g></svg>`, isInline: true }, directives: [{ type: function () { return ForOfDirective; }, selector: "[forOf]", inputs: ["forOf"] }] });
-/*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyComponent, [{
+(function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(MyComponent, [{
         type: Component,
         args: [{
                 selector: 'my-component',
@@ -66,7 +66,7 @@ export class MyModule {
 MyModule.ɵmod = i0.ɵɵdefineNgModule({ type: MyModule });
 MyModule.ɵinj = i0.ɵɵdefineInjector({ factory: function MyModule_Factory(t) { return new (t || MyModule)(); } });
 (function () { (typeof ngJitMode === "undefined" || ngJitMode) && i0.ɵɵsetNgModuleScope(MyModule, { declarations: [MyComponent, ForOfDirective] }); })();
-/*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyModule, [{
+(function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(MyModule, [{
         type: NgModule,
         args: [{ declarations: [MyComponent, ForOfDirective] }]
     }], null, null); })();
@@ -102,7 +102,7 @@ export class ForOfDirective {
 }
 ForOfDirective.ɵfac = function ForOfDirective_Factory(t) { return new (t || ForOfDirective)(i0.ɵɵdirectiveInject(i0.ViewContainerRef), i0.ɵɵdirectiveInject(i0.TemplateRef)); };
 ForOfDirective.ɵdir = i0.ɵɵngDeclareDirective({ version: "0.0.0-PLACEHOLDER", type: ForOfDirective, selector: "[forOf]", inputs: { forOf: "forOf" }, usesOnChanges: true, ngImport: i0 });
-/*@__PURE__*/ (function () { i0.ɵsetClassMetadata(ForOfDirective, [{
+(function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(ForOfDirective, [{
         type: Directive,
         args: [{ selector: '[forOf]' }]
     }], function () { return [{ type: i0.ViewContainerRef }, { type: i0.TemplateRef }]; }, { forOf: [{
@@ -144,7 +144,7 @@ export class MyComponent {
 }
 MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); };
 MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "my-component", ngImport: i0, template: { source: `<ul><li *for="let item of items">{{item.name}}</li></ul>`, isInline: true }, directives: [{ type: function () { return ForOfDirective; }, selector: "[forOf]", inputs: ["forOf"] }] });
-/*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyComponent, [{
+(function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(MyComponent, [{
         type: Component,
         args: [{
                 selector: 'my-component',
@@ -156,7 +156,7 @@ export class MyModule {
 MyModule.ɵmod = i0.ɵɵdefineNgModule({ type: MyModule });
 MyModule.ɵinj = i0.ɵɵdefineInjector({ factory: function MyModule_Factory(t) { return new (t || MyModule)(); } });
 (function () { (typeof ngJitMode === "undefined" || ngJitMode) && i0.ɵɵsetNgModuleScope(MyModule, { declarations: [MyComponent, ForOfDirective] }); })();
-/*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyModule, [{
+(function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(MyModule, [{
         type: NgModule,
         args: [{ declarations: [MyComponent, ForOfDirective] }]
     }], null, null); })();
@@ -192,7 +192,7 @@ export class ForOfDirective {
 }
 ForOfDirective.ɵfac = function ForOfDirective_Factory(t) { return new (t || ForOfDirective)(i0.ɵɵdirectiveInject(i0.ViewContainerRef), i0.ɵɵdirectiveInject(i0.TemplateRef)); };
 ForOfDirective.ɵdir = i0.ɵɵngDeclareDirective({ version: "0.0.0-PLACEHOLDER", type: ForOfDirective, selector: "[forOf]", inputs: { forOf: "forOf" }, usesOnChanges: true, ngImport: i0 });
-/*@__PURE__*/ (function () { i0.ɵsetClassMetadata(ForOfDirective, [{
+(function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(ForOfDirective, [{
         type: Directive,
         args: [{ selector: '[forOf]' }]
     }], function () { return [{ type: i0.ViewContainerRef }, { type: i0.TemplateRef }]; }, { forOf: [{
@@ -247,7 +247,7 @@ MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", ty
       </ul>
     </li>
   </ul>`, isInline: true }, directives: [{ type: function () { return ForOfDirective; }, selector: "[forOf]", inputs: ["forOf"] }] });
-/*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyComponent, [{
+(function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(MyComponent, [{
         type: Component,
         args: [{
                 selector: 'my-component',
@@ -269,7 +269,7 @@ export class MyModule {
 MyModule.ɵmod = i0.ɵɵdefineNgModule({ type: MyModule });
 MyModule.ɵinj = i0.ɵɵdefineInjector({ factory: function MyModule_Factory(t) { return new (t || MyModule)(); } });
 (function () { (typeof ngJitMode === "undefined" || ngJitMode) && i0.ɵɵsetNgModuleScope(MyModule, { declarations: [MyComponent, ForOfDirective] }); })();
-/*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyModule, [{
+(function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(MyModule, [{
         type: NgModule,
         args: [{ declarations: [MyComponent, ForOfDirective] }]
     }], null, null); })();
@@ -308,7 +308,7 @@ export class ForOfDirective {
 }
 ForOfDirective.ɵfac = function ForOfDirective_Factory(t) { return new (t || ForOfDirective)(i0.ɵɵdirectiveInject(i0.ViewContainerRef), i0.ɵɵdirectiveInject(i0.TemplateRef)); };
 ForOfDirective.ɵdir = i0.ɵɵngDeclareDirective({ version: "0.0.0-PLACEHOLDER", type: ForOfDirective, selector: "[forOf]", inputs: { forOf: "forOf" }, usesOnChanges: true, ngImport: i0 });
-/*@__PURE__*/ (function () { i0.ɵsetClassMetadata(ForOfDirective, [{
+(function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(ForOfDirective, [{
         type: Directive,
         args: [{ selector: '[forOf]' }]
     }], function () { return [{ type: i0.ViewContainerRef }, { type: i0.TemplateRef }]; }, { forOf: [{

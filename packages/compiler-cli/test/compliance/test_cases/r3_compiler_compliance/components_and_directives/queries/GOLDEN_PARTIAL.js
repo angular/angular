@@ -7,7 +7,7 @@ export class SomeDirective {
 }
 SomeDirective.ɵfac = function SomeDirective_Factory(t) { return new (t || SomeDirective)(); };
 SomeDirective.ɵdir = i0.ɵɵngDeclareDirective({ version: "0.0.0-PLACEHOLDER", type: SomeDirective, selector: "[someDir]", ngImport: i0 });
-/*@__PURE__*/ (function () { i0.ɵsetClassMetadata(SomeDirective, [{
+(function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(SomeDirective, [{
         type: Directive,
         args: [{
                 selector: '[someDir]',
@@ -35,7 +35,7 @@ ViewQueryComponent.ɵfac = function ViewQueryComponent_Factory(t) { return new (
 ViewQueryComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: ViewQueryComponent, selector: "view-query-component", viewQueries: [{ propertyName: "someDir", first: true, predicate: SomeDirective, descendants: true }, { propertyName: "someDirs", predicate: SomeDirective, descendants: true }], ngImport: i0, template: { source: `
     <div someDir></div>
   `, isInline: true }, directives: [{ type: function () { return SomeDirective; }, selector: "[someDir]" }] });
-/*@__PURE__*/ (function () { i0.ɵsetClassMetadata(ViewQueryComponent, [{
+(function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(ViewQueryComponent, [{
         type: Component,
         args: [{
                 selector: 'view-query-component',
@@ -55,7 +55,7 @@ export class MyModule {
 MyModule.ɵmod = i0.ɵɵdefineNgModule({ type: MyModule });
 MyModule.ɵinj = i0.ɵɵdefineInjector({ factory: function MyModule_Factory(t) { return new (t || MyModule)(); } });
 (function () { (typeof ngJitMode === "undefined" || ngJitMode) && i0.ɵɵsetNgModuleScope(MyModule, { declarations: [SomeDirective, ViewQueryComponent] }); })();
-/*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyModule, [{
+(function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(MyModule, [{
         type: NgModule,
         args: [{ declarations: [SomeDirective, ViewQueryComponent] }]
     }], null, null); })();
@@ -90,7 +90,7 @@ ViewQueryComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLD
     <div #myRef></div>
     <div #myRef1></div>
   `, isInline: true } });
-/*@__PURE__*/ (function () { i0.ɵsetClassMetadata(ViewQueryComponent, [{
+(function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(ViewQueryComponent, [{
         type: Component,
         args: [{
                 selector: 'view-query-component',
@@ -111,7 +111,7 @@ export class MyModule {
 MyModule.ɵmod = i0.ɵɵdefineNgModule({ type: MyModule });
 MyModule.ɵinj = i0.ɵɵdefineInjector({ factory: function MyModule_Factory(t) { return new (t || MyModule)(); } });
 (function () { (typeof ngJitMode === "undefined" || ngJitMode) && i0.ɵɵsetNgModuleScope(MyModule, { declarations: [ViewQueryComponent] }); })();
-/*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyModule, [{
+(function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(MyModule, [{
         type: NgModule,
         args: [{ declarations: [ViewQueryComponent] }]
     }], null, null); })();
@@ -141,7 +141,7 @@ export class SomeDirective {
 }
 SomeDirective.ɵfac = function SomeDirective_Factory(t) { return new (t || SomeDirective)(); };
 SomeDirective.ɵdir = i0.ɵɵngDeclareDirective({ version: "0.0.0-PLACEHOLDER", type: SomeDirective, selector: "[someDir]", ngImport: i0 });
-/*@__PURE__*/ (function () { i0.ɵsetClassMetadata(SomeDirective, [{
+(function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(SomeDirective, [{
         type: Directive,
         args: [{
                 selector: '[someDir]',
@@ -169,7 +169,7 @@ ViewQueryComponent.ɵfac = function ViewQueryComponent_Factory(t) { return new (
 ViewQueryComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: ViewQueryComponent, selector: "view-query-component", viewQueries: [{ propertyName: "someDir", first: true, predicate: SomeDirective, descendants: true, static: true }, { propertyName: "foo", first: true, predicate: ["foo"], descendants: true }], ngImport: i0, template: { source: `
     <div someDir></div>
   `, isInline: true }, directives: [{ type: function () { return SomeDirective; }, selector: "[someDir]" }] });
-/*@__PURE__*/ (function () { i0.ɵsetClassMetadata(ViewQueryComponent, [{
+(function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(ViewQueryComponent, [{
         type: Component,
         args: [{
                 selector: 'view-query-component',
@@ -189,7 +189,7 @@ export class MyModule {
 MyModule.ɵmod = i0.ɵɵdefineNgModule({ type: MyModule });
 MyModule.ɵinj = i0.ɵɵdefineInjector({ factory: function MyModule_Factory(t) { return new (t || MyModule)(); } });
 (function () { (typeof ngJitMode === "undefined" || ngJitMode) && i0.ɵɵsetNgModuleScope(MyModule, { declarations: [SomeDirective, ViewQueryComponent] }); })();
-/*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyModule, [{
+(function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(MyModule, [{
         type: NgModule,
         args: [{ declarations: [SomeDirective, ViewQueryComponent] }]
     }], null, null); })();
@@ -221,7 +221,7 @@ export class SomeDirective {
 }
 SomeDirective.ɵfac = function SomeDirective_Factory(t) { return new (t || SomeDirective)(); };
 SomeDirective.ɵdir = i0.ɵɵngDeclareDirective({ version: "0.0.0-PLACEHOLDER", type: SomeDirective, selector: "[someDir]", ngImport: i0 });
-/*@__PURE__*/ (function () { i0.ɵsetClassMetadata(SomeDirective, [{
+(function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(SomeDirective, [{
         type: Directive,
         args: [{
                 selector: '[someDir]',
@@ -251,7 +251,7 @@ ViewQueryComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLD
     <div #myRef></div>
     <div #myRef1></div>
   `, isInline: true } });
-/*@__PURE__*/ (function () { i0.ɵsetClassMetadata(ViewQueryComponent, [{
+(function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(ViewQueryComponent, [{
         type: Component,
         args: [{
                 selector: 'view-query-component',
@@ -279,7 +279,7 @@ export class MyModule {
 MyModule.ɵmod = i0.ɵɵdefineNgModule({ type: MyModule });
 MyModule.ɵinj = i0.ɵɵdefineInjector({ factory: function MyModule_Factory(t) { return new (t || MyModule)(); } });
 (function () { (typeof ngJitMode === "undefined" || ngJitMode) && i0.ɵɵsetNgModuleScope(MyModule, { declarations: [ViewQueryComponent] }); })();
-/*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyModule, [{
+(function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(MyModule, [{
         type: NgModule,
         args: [{ declarations: [ViewQueryComponent] }]
     }], null, null); })();
@@ -311,7 +311,7 @@ export class SomeDirective {
 }
 SomeDirective.ɵfac = function SomeDirective_Factory(t) { return new (t || SomeDirective)(); };
 SomeDirective.ɵdir = i0.ɵɵngDeclareDirective({ version: "0.0.0-PLACEHOLDER", type: SomeDirective, selector: "[someDir]", ngImport: i0 });
-/*@__PURE__*/ (function () { i0.ɵsetClassMetadata(SomeDirective, [{
+(function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(SomeDirective, [{
         type: Directive,
         args: [{
                 selector: '[someDir]',
@@ -339,7 +339,7 @@ ContentQueryComponent.ɵfac = function ContentQueryComponent_Factory(t) { return
 ContentQueryComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: ContentQueryComponent, selector: "content-query-component", queries: [{ propertyName: "someDir", first: true, predicate: SomeDirective, descendants: true }, { propertyName: "someDirList", predicate: SomeDirective }], ngImport: i0, template: { source: `
     <div><ng-content></ng-content></div>
   `, isInline: true } });
-/*@__PURE__*/ (function () { i0.ɵsetClassMetadata(ContentQueryComponent, [{
+(function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(ContentQueryComponent, [{
         type: Component,
         args: [{
                 selector: 'content-query-component',
@@ -362,7 +362,7 @@ MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: My
       <div someDir></div>
     </content-query-component>
   `, isInline: true }, directives: [{ type: function () { return ContentQueryComponent; }, selector: "content-query-component" }, { type: function () { return SomeDirective; }, selector: "[someDir]" }] });
-/*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyApp, [{
+(function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(MyApp, [{
         type: Component,
         args: [{
                 selector: 'my-app',
@@ -378,7 +378,7 @@ export class MyModule {
 MyModule.ɵmod = i0.ɵɵdefineNgModule({ type: MyModule });
 MyModule.ɵinj = i0.ɵɵdefineInjector({ factory: function MyModule_Factory(t) { return new (t || MyModule)(); } });
 (function () { (typeof ngJitMode === "undefined" || ngJitMode) && i0.ɵɵsetNgModuleScope(MyModule, { declarations: [SomeDirective, ContentQueryComponent, MyApp] }); })();
-/*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyModule, [{
+(function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(MyModule, [{
         type: NgModule,
         args: [{ declarations: [SomeDirective, ContentQueryComponent, MyApp] }]
     }], null, null); })();
@@ -417,7 +417,7 @@ ContentQueryComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEH
     <div #myRef></div>
     <div #myRef1></div>
   `, isInline: true } });
-/*@__PURE__*/ (function () { i0.ɵsetClassMetadata(ContentQueryComponent, [{
+(function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(ContentQueryComponent, [{
         type: Component,
         args: [{
                 selector: 'content-query-component',
@@ -438,7 +438,7 @@ export class MyModule {
 MyModule.ɵmod = i0.ɵɵdefineNgModule({ type: MyModule });
 MyModule.ɵinj = i0.ɵɵdefineInjector({ factory: function MyModule_Factory(t) { return new (t || MyModule)(); } });
 (function () { (typeof ngJitMode === "undefined" || ngJitMode) && i0.ɵɵsetNgModuleScope(MyModule, { declarations: [ContentQueryComponent] }); })();
-/*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyModule, [{
+(function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(MyModule, [{
         type: NgModule,
         args: [{ declarations: [ContentQueryComponent] }]
     }], null, null); })();
@@ -468,7 +468,7 @@ export class SomeDirective {
 }
 SomeDirective.ɵfac = function SomeDirective_Factory(t) { return new (t || SomeDirective)(); };
 SomeDirective.ɵdir = i0.ɵɵngDeclareDirective({ version: "0.0.0-PLACEHOLDER", type: SomeDirective, selector: "[someDir]", ngImport: i0 });
-/*@__PURE__*/ (function () { i0.ɵsetClassMetadata(SomeDirective, [{
+(function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(SomeDirective, [{
         type: Directive,
         args: [{
                 selector: '[someDir]',
@@ -496,7 +496,7 @@ ContentQueryComponent.ɵfac = function ContentQueryComponent_Factory(t) { return
 ContentQueryComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: ContentQueryComponent, selector: "content-query-component", queries: [{ propertyName: "someDir", first: true, predicate: SomeDirective, descendants: true, static: true }, { propertyName: "foo", first: true, predicate: ["foo"], descendants: true }], ngImport: i0, template: { source: `
     <div><ng-content></ng-content></div>
   `, isInline: true } });
-/*@__PURE__*/ (function () { i0.ɵsetClassMetadata(ContentQueryComponent, [{
+(function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(ContentQueryComponent, [{
         type: Component,
         args: [{
                 selector: 'content-query-component',
@@ -519,7 +519,7 @@ MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: My
       <div someDir></div>
     </content-query-component>
   `, isInline: true }, directives: [{ type: function () { return ContentQueryComponent; }, selector: "content-query-component" }, { type: function () { return SomeDirective; }, selector: "[someDir]" }] });
-/*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyApp, [{
+(function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(MyApp, [{
         type: Component,
         args: [{
                 selector: 'my-app',
@@ -535,7 +535,7 @@ export class MyModule {
 MyModule.ɵmod = i0.ɵɵdefineNgModule({ type: MyModule });
 MyModule.ɵinj = i0.ɵɵdefineInjector({ factory: function MyModule_Factory(t) { return new (t || MyModule)(); } });
 (function () { (typeof ngJitMode === "undefined" || ngJitMode) && i0.ɵɵsetNgModuleScope(MyModule, { declarations: [SomeDirective, ContentQueryComponent, MyApp] }); })();
-/*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyModule, [{
+(function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(MyModule, [{
         type: NgModule,
         args: [{ declarations: [SomeDirective, ContentQueryComponent, MyApp] }]
     }], null, null); })();
@@ -571,7 +571,7 @@ export class SomeDirective {
 }
 SomeDirective.ɵfac = function SomeDirective_Factory(t) { return new (t || SomeDirective)(); };
 SomeDirective.ɵdir = i0.ɵɵngDeclareDirective({ version: "0.0.0-PLACEHOLDER", type: SomeDirective, selector: "[someDir]", ngImport: i0 });
-/*@__PURE__*/ (function () { i0.ɵsetClassMetadata(SomeDirective, [{
+(function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(SomeDirective, [{
         type: Directive,
         args: [{
                 selector: '[someDir]',
@@ -601,7 +601,7 @@ ContentQueryComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEH
     <div #myRef></div>
     <div #myRef1></div>
   `, isInline: true } });
-/*@__PURE__*/ (function () { i0.ɵsetClassMetadata(ContentQueryComponent, [{
+(function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(ContentQueryComponent, [{
         type: Component,
         args: [{
                 selector: 'content-query-component',
@@ -629,7 +629,7 @@ export class MyModule {
 MyModule.ɵmod = i0.ɵɵdefineNgModule({ type: MyModule });
 MyModule.ɵinj = i0.ɵɵdefineInjector({ factory: function MyModule_Factory(t) { return new (t || MyModule)(); } });
 (function () { (typeof ngJitMode === "undefined" || ngJitMode) && i0.ɵɵsetNgModuleScope(MyModule, { declarations: [ContentQueryComponent] }); })();
-/*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyModule, [{
+(function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(MyModule, [{
         type: NgModule,
         args: [{ declarations: [ContentQueryComponent] }]
     }], null, null); })();

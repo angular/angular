@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Expression, ExternalExpr, FunctionExpr, Identifiers, InvokeFunctionExpr, LiteralArrayExpr, LiteralExpr, literalMap, NONE_TYPE, ReturnStatement, Statement, WrappedNodeExpr} from '@angular/compiler';
+import {devOnlyGuardedExpression, Expression, ExternalExpr, FunctionExpr, Identifiers, InvokeFunctionExpr, LiteralArrayExpr, LiteralExpr, literalMap, NONE_TYPE, ReturnStatement, Statement, WrappedNodeExpr} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {DefaultImportRecorder} from '../../imports';
@@ -17,7 +17,8 @@ import {valueReferenceToExpression, wrapFunctionExpressionsInParens} from './uti
 
 /**
  * Given a class declaration, generate a call to `setClassMetadata` with the Angular metadata
- * present on the class or its member fields.
+ * present on the class or its member fields. An ngDevMode guard is used to allow the call to be
+ * tree-shaken away, as the `setClassMetadata` invocation is only needed for testing purposes.
  *
  * If no such metadata is present, this function returns `null`. Otherwise, the call is returned
  * as a `Statement` for inclusion along with the class.
@@ -93,14 +94,8 @@ export function generateSetClassMetadataCall(
         metaCtorParameters,
         new WrappedNodeExpr(metaPropDecorators),
       ]);
-  const iifeFn = new FunctionExpr([], [fnCall.toStmt()], NONE_TYPE);
-  const iife = new InvokeFunctionExpr(
-      /* fn */ iifeFn,
-      /* args */[],
-      /* type */ undefined,
-      /* sourceSpan */ undefined,
-      /* pure */ true);
-  return iife.toStmt();
+  const iife = new FunctionExpr([], [devOnlyGuardedExpression(fnCall).toStmt()]);
+  return iife.callFn([]).toStmt();
 }
 
 /**

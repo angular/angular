@@ -4151,7 +4151,7 @@ runInEachFileSystem(os => {
          expect(jsContents).toContain('directives: function () { return [CmpB]; }');
        });
 
-    it('should wrap setClassMetadata in an iife', () => {
+    it('should wrap setClassMetadata in an iife with ngDevMode guard', () => {
       env.write('test.ts', `
         import {Injectable} from '@angular/core';
 
@@ -4163,7 +4163,8 @@ runInEachFileSystem(os => {
       const jsContents = env.getContents('test.js').replace(/\s+/g, ' ');
       expect(jsContents)
           .toContain(
-              `/*@__PURE__*/ (function () { i0.ɵsetClassMetadata(Service, [{ type: Injectable, args: [{ providedIn: 'root' }] }], null, null); })();`);
+              `(function () { (typeof ngDevMode === "undefined" || ngDevMode) && ` +
+              `i0.ɵsetClassMetadata(Service, [{ type: Injectable, args: [{ providedIn: 'root' }] }], null, null); })();`);
     });
 
     it('should not include `schemas` in component and module defs', () => {

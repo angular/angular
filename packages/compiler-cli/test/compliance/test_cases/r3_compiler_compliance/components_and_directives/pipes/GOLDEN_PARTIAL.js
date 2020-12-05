@@ -11,7 +11,7 @@ export class MyPipe {
 }
 MyPipe.ɵfac = function MyPipe_Factory(t) { return new (t || MyPipe)(); };
 MyPipe.ɵpipe = i0.ɵɵdefinePipe({ name: "myPipe", type: MyPipe, pure: false });
-/*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyPipe, [{
+(function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(MyPipe, [{
         type: Pipe,
         args: [{ name: 'myPipe', pure: false }]
     }], null, null); })();
@@ -22,7 +22,7 @@ export class MyPurePipe {
 }
 MyPurePipe.ɵfac = function MyPurePipe_Factory(t) { return new (t || MyPurePipe)(); };
 MyPurePipe.ɵpipe = i0.ɵɵdefinePipe({ name: "myPurePipe", type: MyPurePipe, pure: true });
-/*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyPurePipe, [{
+(function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(MyPurePipe, [{
         type: Pipe,
         args: [{
                 name: 'myPurePipe',
@@ -37,7 +37,7 @@ export class MyApp {
 }
 MyApp.ɵfac = function MyApp_Factory(t) { return new (t || MyApp)(); };
 MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: MyApp, selector: "my-app", ngImport: i0, template: { source: '{{name | myPipe:size | myPurePipe:size }}<p>{{ name | myPipe:1:2:3:4:5 }} {{ name ? 1 : 2 | myPipe }}</p>', isInline: true }, pipes: { "myPurePipe": MyPurePipe, "myPipe": MyPipe } });
-/*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyApp, [{
+(function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(MyApp, [{
         type: Component,
         args: [{
                 selector: 'my-app',
@@ -49,7 +49,7 @@ export class MyModule {
 MyModule.ɵmod = i0.ɵɵdefineNgModule({ type: MyModule });
 MyModule.ɵinj = i0.ɵɵdefineInjector({ factory: function MyModule_Factory(t) { return new (t || MyModule)(); } });
 (function () { (typeof ngJitMode === "undefined" || ngJitMode) && i0.ɵɵsetNgModuleScope(MyModule, { declarations: [MyPipe, MyPurePipe, MyApp] }); })();
-/*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyModule, [{
+(function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(MyModule, [{
         type: NgModule,
         args: [{ declarations: [MyPipe, MyPurePipe, MyApp] }]
     }], null, null); })();
@@ -94,7 +94,7 @@ export class MyPipe {
 }
 MyPipe.ɵfac = function MyPipe_Factory(t) { return new (t || MyPipe)(); };
 MyPipe.ɵpipe = i0.ɵɵdefinePipe({ name: "myPipe", type: MyPipe, pure: false });
-/*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyPipe, [{
+(function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(MyPipe, [{
         type: Pipe,
         args: [{ name: 'myPipe', pure: false }]
     }], null, null); })();
@@ -105,7 +105,7 @@ export class MyApp {
 }
 MyApp.ɵfac = function MyApp_Factory(t) { return new (t || MyApp)(); };
 MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: MyApp, selector: "my-app", ngImport: i0, template: { source: '0:{{name | myPipe}}1:{{name | myPipe:1}}2:{{name | myPipe:1:2}}3:{{name | myPipe:1:2:3}}4:{{name | myPipe:1:2:3:4}}', isInline: true }, pipes: { "myPipe": MyPipe } });
-/*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyApp, [{
+(function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(MyApp, [{
         type: Component,
         args: [{
                 selector: 'my-app',
@@ -117,7 +117,7 @@ export class MyModule {
 MyModule.ɵmod = i0.ɵɵdefineNgModule({ type: MyModule });
 MyModule.ɵinj = i0.ɵɵdefineInjector({ factory: function MyModule_Factory(t) { return new (t || MyModule)(); } });
 (function () { (typeof ngJitMode === "undefined" || ngJitMode) && i0.ɵɵsetNgModuleScope(MyModule, { declarations: [MyPipe, MyApp] }); })();
-/*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyModule, [{
+(function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(MyModule, [{
         type: NgModule,
         args: [{ declarations: [MyPipe, MyApp] }]
     }], null, null); })();
@@ -156,7 +156,7 @@ export class MyPipe {
 }
 MyPipe.ɵfac = function MyPipe_Factory(t) { return new (t || MyPipe)(i0.ɵɵinjectPipeChangeDetectorRef()); };
 MyPipe.ɵpipe = i0.ɵɵdefinePipe({ name: "myPipe", type: MyPipe, pure: true });
-/*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyPipe, [{
+(function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(MyPipe, [{
         type: Pipe,
         args: [{ name: 'myPipe' }]
     }], function () { return [{ type: i0.ChangeDetectorRef }]; }, null); })();
@@ -168,7 +168,7 @@ export class MyOtherPipe {
 }
 MyOtherPipe.ɵfac = function MyOtherPipe_Factory(t) { return new (t || MyOtherPipe)(i0.ɵɵinjectPipeChangeDetectorRef(8)); };
 MyOtherPipe.ɵpipe = i0.ɵɵdefinePipe({ name: "myOtherPipe", type: MyOtherPipe, pure: true });
-/*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyOtherPipe, [{
+(function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(MyOtherPipe, [{
         type: Pipe,
         args: [{ name: 'myOtherPipe' }]
     }], function () { return [{ type: i0.ChangeDetectorRef, decorators: [{
@@ -181,7 +181,7 @@ export class MyApp {
 }
 MyApp.ɵfac = function MyApp_Factory(t) { return new (t || MyApp)(); };
 MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: MyApp, selector: "my-app", ngImport: i0, template: { source: '{{name | myPipe }}<p>{{ name | myOtherPipe }}</p>', isInline: true }, pipes: { "myPipe": MyPipe, "myOtherPipe": MyOtherPipe } });
-/*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyApp, [{
+(function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(MyApp, [{
         type: Component,
         args: [{ selector: 'my-app', template: '{{name | myPipe }}<p>{{ name | myOtherPipe }}</p>' }]
     }], null, null); })();
@@ -190,7 +190,7 @@ export class MyModule {
 MyModule.ɵmod = i0.ɵɵdefineNgModule({ type: MyModule });
 MyModule.ɵinj = i0.ɵɵdefineInjector({ factory: function MyModule_Factory(t) { return new (t || MyModule)(); } });
 (function () { (typeof ngJitMode === "undefined" || ngJitMode) && i0.ɵɵsetNgModuleScope(MyModule, { declarations: [MyPipe, MyOtherPipe, MyApp] }); })();
-/*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyModule, [{
+(function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(MyModule, [{
         type: NgModule,
         args: [{ declarations: [MyPipe, MyOtherPipe, MyApp] }]
     }], null, null); })();
