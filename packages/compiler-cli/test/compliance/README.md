@@ -185,6 +185,11 @@ bazel run //packages/compiler-cli/test/compliance/test_cases:<path/to/test_case>
 where to replace `<path/to/test_case>` with the path (relative to `test_cases`) of the directory
 that contains the `GOLDEN_PARTIAL.js` to update.
 
+To update all golden partial files, the following command can be run:
+
+```sh
+node packages/compiler-cli/test/compliance/update_all_goldens.js
+```
 
 ## Debugging test-cases
 
