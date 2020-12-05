@@ -17,6 +17,7 @@ Some Message\r\n
 }</div>`
 })
 export class MyComponent {
+  value!: any;
 }
 
 @NgModule({declarations: [MyComponent]})

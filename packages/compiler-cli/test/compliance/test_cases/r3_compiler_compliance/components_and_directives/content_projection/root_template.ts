@@ -13,10 +13,10 @@ export class SimpleComponent {
 export class ComplexComponent {
 }
 
-@NgModule({declarations: [SimpleComponent, ComplexComponent]})
-export class MyModule {
-}
-
 @Component({selector: 'my-app', template: '<simple>content</simple> <complex></complex>'})
 export class MyApp {
+}
+
+@NgModule({declarations: [SimpleComponent, ComplexComponent, MyApp]})
+export class MyModule {
 }

@@ -430,9 +430,9 @@ runInEachFileSystem((os) => {
         it('should correctly handle collapsed whitespace in interpolation placeholder source-mappings',
            () => {
              const mappings = compileAndMap(
-                 `<div i18n title="  pre-title {{title_value}}  post-title" i18n-title>  pre-body {{body_value}}  post-body</div>`);
+                 `<div i18n title="  pre-title {{name}}  post-title" i18n-title>  pre-body {{greeting}}  post-body</div>`);
              expectMapping(mappings, {
-               source: '<div i18n title="  pre-title {{title_value}}  post-title" i18n-title>  ',
+               source: '<div i18n title="  pre-title {{name}}  post-title" i18n-title>  ',
                generated: 'i0.ɵɵelementStart(0, "div", 0)',
                sourceUrl: '../test.ts',
              });
@@ -447,7 +447,7 @@ runInEachFileSystem((os) => {
                sourceUrl: '../test.ts',
              });
              expectMapping(mappings, {
-               source: '{{body_value}}',
+               source: '{{greeting}}',
                generated: '"\\uFFFD0\\uFFFD"',
                sourceUrl: '../test.ts',
              });
@@ -693,13 +693,38 @@ runInEachFileSystem((os) => {
       const templateConfig = templateUrl ? `templateUrl: '${templateUrl}'` :
                                            ('template: `' + template.replace(/`/g, '\\`') + '`');
       env.write('test.ts', `
-        import {Component} from '@angular/core';
+        import {Component, Directive, Input, Output, EventEmitter, Pipe, NgModule} from '@angular/core';
+
+        @Directive({
+          selector: '[ngModel],[attr],[ngModelChange]'
+        })
+        export class AllDirective {
+          @Input() ngModel!: any;
+          @Output() ngModelChange = new EventEmitter<any>();
+          @Input() attr!: any;
+        }
+
+        @Pipe({name: 'percent'})
+        export class PercentPipe {
+          transform(v: any) {}
+        }
 
         @Component({
           selector: 'test-cmp',
           ${templateConfig}
         })
-        export class TestCmp {}
+        export class TestCmp {
+          name = '';
+          isInitial = false;
+          doSomething() {}
+          items: any[] = [];
+          greeting = '';
+        }
+
+        @NgModule({
+          declarations: [TestCmp, AllDirective, PercentPipe],
+        })
+        export class Module {}
     `);
       if (templateUrl) {
         env.write(templateUrl, template);

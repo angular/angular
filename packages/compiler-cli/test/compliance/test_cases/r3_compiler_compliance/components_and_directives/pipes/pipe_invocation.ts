@@ -14,6 +14,7 @@ export class MyPipe implements PipeTransform, OnDestroy {
       '0:{{name | myPipe}}1:{{name | myPipe:1}}2:{{name | myPipe:1:2}}3:{{name | myPipe:1:2:3}}4:{{name | myPipe:1:2:3:4}}'
 })
 export class MyApp {
+  name = '';
 }
 
 @NgModule({declarations: [MyPipe, MyApp]})

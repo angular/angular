@@ -8,6 +8,8 @@ import {Component, NgModule} from '@angular/core';
   interpolation: ['{%', '%}'],
 })
 export class MyComponent {
+  age = 1;
+  other = 'bla';
 }
 
 @NgModule({declarations: [MyComponent]})

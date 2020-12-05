@@ -9,6 +9,6 @@ export class MyComponent {
   onClick(event: any) {}
 }
 
-@NgModule({declarations: [MyComponent]})
+@NgModule({declarations: [MyComponent, MyApp]})
 export class MyModule {
 }

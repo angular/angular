@@ -47,6 +47,9 @@ export declare class MyModule {
 import { Component, NgModule } from '@angular/core';
 import * as i0 from "@angular/core";
 export class MyComponent {
+    constructor() {
+        this.age = 1;
+    }
 }
 MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); };
 MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "my-component", ngImport: i0, template: { source: `
@@ -76,6 +79,7 @@ MyModule.ɵinj = i0.ɵɵdefineInjector({ factory: function MyModule_Factory(t) {
  ****************************************************************************************************/
 import * as i0 from "@angular/core";
 export declare class MyComponent {
+    age: number;
     static ɵfac: i0.ɵɵFactoryDef<MyComponent, never>;
     static ɵcmp: i0.ɵɵComponentDefWithMeta<MyComponent, "my-component", never, {}, {}, never, never>;
 }

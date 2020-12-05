@@ -1,14 +1,26 @@
 /****************************************************************************************************
  * PARTIAL FILE: single_ng-container.js
  ****************************************************************************************************/
-import { Component, NgModule } from '@angular/core';
+import { Component, NgModule, Pipe } from '@angular/core';
 import * as i0 from "@angular/core";
+export class UppercasePipe {
+    transform(v) { }
+}
+UppercasePipe.ɵfac = function UppercasePipe_Factory(t) { return new (t || UppercasePipe)(); };
+UppercasePipe.ɵpipe = i0.ɵɵdefinePipe({ name: "uppercase", type: UppercasePipe, pure: true });
+/*@__PURE__*/ (function () { i0.ɵsetClassMetadata(UppercasePipe, [{
+        type: Pipe,
+        args: [{ name: 'uppercase' }]
+    }], null, null); })();
 export class MyComponent {
+    constructor() {
+        this.valueA = '';
+    }
 }
 MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); };
 MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "my-component", ngImport: i0, template: { source: `
   <ng-container i18n>Some content: {{ valueA | uppercase }}</ng-container>
-`, isInline: true } });
+`, isInline: true }, pipes: { "uppercase": UppercasePipe } });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyComponent, [{
         type: Component,
         args: [{
@@ -22,22 +34,28 @@ export class MyModule {
 }
 MyModule.ɵmod = i0.ɵɵdefineNgModule({ type: MyModule });
 MyModule.ɵinj = i0.ɵɵdefineInjector({ factory: function MyModule_Factory(t) { return new (t || MyModule)(); } });
-(function () { (typeof ngJitMode === "undefined" || ngJitMode) && i0.ɵɵsetNgModuleScope(MyModule, { declarations: [MyComponent] }); })();
+(function () { (typeof ngJitMode === "undefined" || ngJitMode) && i0.ɵɵsetNgModuleScope(MyModule, { declarations: [MyComponent, UppercasePipe] }); })();
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyModule, [{
         type: NgModule,
-        args: [{ declarations: [MyComponent] }]
+        args: [{ declarations: [MyComponent, UppercasePipe] }]
     }], null, null); })();
 
 /****************************************************************************************************
  * PARTIAL FILE: single_ng-container.d.ts
  ****************************************************************************************************/
 import * as i0 from "@angular/core";
+export declare class UppercasePipe {
+    transform(v: any): void;
+    static ɵfac: i0.ɵɵFactoryDef<UppercasePipe, never>;
+    static ɵpipe: i0.ɵɵPipeDefWithMeta<UppercasePipe, "uppercase">;
+}
 export declare class MyComponent {
+    valueA: string;
     static ɵfac: i0.ɵɵFactoryDef<MyComponent, never>;
     static ɵcmp: i0.ɵɵComponentDefWithMeta<MyComponent, "my-component", never, {}, {}, never, never>;
 }
 export declare class MyModule {
-    static ɵmod: i0.ɵɵNgModuleDefWithMeta<MyModule, [typeof MyComponent], never, never>;
+    static ɵmod: i0.ɵɵNgModuleDefWithMeta<MyModule, [typeof MyComponent, typeof UppercasePipe], never, never>;
     static ɵinj: i0.ɵɵInjectorDef<MyModule>;
 }
 
@@ -87,9 +105,22 @@ export declare class MyModule {
 /****************************************************************************************************
  * PARTIAL FILE: child_elements.js
  ****************************************************************************************************/
-import { Component, NgModule } from '@angular/core';
+import { Component, NgModule, Pipe } from '@angular/core';
 import * as i0 from "@angular/core";
+export class UppercasePipe {
+    transform(v) { }
+}
+UppercasePipe.ɵfac = function UppercasePipe_Factory(t) { return new (t || UppercasePipe)(); };
+UppercasePipe.ɵpipe = i0.ɵɵdefinePipe({ name: "uppercase", type: UppercasePipe, pure: true });
+/*@__PURE__*/ (function () { i0.ɵsetClassMetadata(UppercasePipe, [{
+        type: Pipe,
+        args: [{ name: 'uppercase' }]
+    }], null, null); })();
 export class MyComponent {
+    constructor() {
+        this.valueA = '';
+        this.valueB = '';
+    }
 }
 MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); };
 MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "my-component", ngImport: i0, template: { source: `
@@ -97,7 +128,7 @@ MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", ty
     <ng-template>Template content: {{ valueA | uppercase }}</ng-template>
     <ng-container>Container content: {{ valueB | uppercase }}</ng-container>
   </div>
-`, isInline: true } });
+`, isInline: true }, pipes: { "uppercase": UppercasePipe } });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyComponent, [{
         type: Component,
         args: [{
@@ -114,22 +145,29 @@ export class MyModule {
 }
 MyModule.ɵmod = i0.ɵɵdefineNgModule({ type: MyModule });
 MyModule.ɵinj = i0.ɵɵdefineInjector({ factory: function MyModule_Factory(t) { return new (t || MyModule)(); } });
-(function () { (typeof ngJitMode === "undefined" || ngJitMode) && i0.ɵɵsetNgModuleScope(MyModule, { declarations: [MyComponent] }); })();
+(function () { (typeof ngJitMode === "undefined" || ngJitMode) && i0.ɵɵsetNgModuleScope(MyModule, { declarations: [MyComponent, UppercasePipe] }); })();
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyModule, [{
         type: NgModule,
-        args: [{ declarations: [MyComponent] }]
+        args: [{ declarations: [MyComponent, UppercasePipe] }]
     }], null, null); })();
 
 /****************************************************************************************************
  * PARTIAL FILE: child_elements.d.ts
  ****************************************************************************************************/
 import * as i0 from "@angular/core";
+export declare class UppercasePipe {
+    transform(v: any): void;
+    static ɵfac: i0.ɵɵFactoryDef<UppercasePipe, never>;
+    static ɵpipe: i0.ɵɵPipeDefWithMeta<UppercasePipe, "uppercase">;
+}
 export declare class MyComponent {
+    valueA: string;
+    valueB: string;
     static ɵfac: i0.ɵɵFactoryDef<MyComponent, never>;
     static ɵcmp: i0.ɵɵComponentDefWithMeta<MyComponent, "my-component", never, {}, {}, never, never>;
 }
 export declare class MyModule {
-    static ɵmod: i0.ɵɵNgModuleDefWithMeta<MyModule, [typeof MyComponent], never, never>;
+    static ɵmod: i0.ɵɵNgModuleDefWithMeta<MyModule, [typeof MyComponent, typeof UppercasePipe], never, never>;
     static ɵinj: i0.ɵɵInjectorDef<MyModule>;
 }
 
@@ -139,6 +177,9 @@ export declare class MyModule {
 import { Component, NgModule } from '@angular/core';
 import * as i0 from "@angular/core";
 export class MyComponent {
+    constructor() {
+        this.age = 0;
+    }
 }
 MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); };
 MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "my-component", ngImport: i0, template: { source: `
@@ -170,6 +211,7 @@ MyModule.ɵinj = i0.ɵɵdefineInjector({ factory: function MyModule_Factory(t) {
  ****************************************************************************************************/
 import * as i0 from "@angular/core";
 export declare class MyComponent {
+    age: number;
     static ɵfac: i0.ɵɵFactoryDef<MyComponent, never>;
     static ɵcmp: i0.ɵɵComponentDefWithMeta<MyComponent, "my-component", never, {}, {}, never, never>;
 }
@@ -247,6 +289,9 @@ export declare class MyModule {
 import { Component, NgModule } from '@angular/core';
 import * as i0 from "@angular/core";
 export class MyComponent {
+    constructor() {
+        this.gender = 'female';
+    }
 }
 MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); };
 MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "my-component", ngImport: i0, template: { source: `
@@ -278,6 +323,7 @@ MyModule.ɵinj = i0.ɵɵdefineInjector({ factory: function MyModule_Factory(t) {
  ****************************************************************************************************/
 import * as i0 from "@angular/core";
 export declare class MyComponent {
+    gender: string;
     static ɵfac: i0.ɵɵFactoryDef<MyComponent, never>;
     static ɵcmp: i0.ɵɵComponentDefWithMeta<MyComponent, "my-component", never, {}, {}, never, never>;
 }

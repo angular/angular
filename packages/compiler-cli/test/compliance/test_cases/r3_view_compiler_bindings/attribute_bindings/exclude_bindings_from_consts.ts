@@ -14,6 +14,7 @@ import {Component, NgModule} from '@angular/core';
 })
 export class MyComponent {
   doThings() {}
+  three!: any;
 }
 
 @NgModule({declarations: [MyComponent]})

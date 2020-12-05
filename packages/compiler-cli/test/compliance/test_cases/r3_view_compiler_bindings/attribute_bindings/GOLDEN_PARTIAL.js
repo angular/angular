@@ -137,8 +137,16 @@ export declare class MyComponent {
 /****************************************************************************************************
  * PARTIAL FILE: chain_multiple_bindings_for_multiple_elements.js
  ****************************************************************************************************/
-import { Component } from '@angular/core';
+import { Component, NgModule } from '@angular/core';
 import * as i0 from "@angular/core";
+export class CustomEl {
+}
+CustomEl.ɵfac = function CustomEl_Factory(t) { return new (t || CustomEl)(); };
+CustomEl.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: CustomEl, selector: "custom-element", ngImport: i0, template: { source: '', isInline: true } });
+/*@__PURE__*/ (function () { i0.ɵsetClassMetadata(CustomEl, [{
+        type: Component,
+        args: [{ selector: 'custom-element', template: '' }]
+    }], null, null); })();
 export class MyComponent {
     constructor() {
         this.myTitle = 'hello';
@@ -150,7 +158,7 @@ MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", ty
     <button [attr.title]="myTitle" [attr.id]="buttonId" [attr.tabindex]="1"></button>
     <span [attr.id]="1" [attr.title]="'hello'" [attr.some-attr]="1 + 2"></span>
     <custom-element [attr.some-attr]="'one'" [attr.some-other-attr]="2"></custom-element>
-  `, isInline: true } });
+  `, isInline: true }, directives: [{ type: CustomEl, selector: "custom-element" }] });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyComponent, [{
         type: Component,
         args: [{
@@ -161,16 +169,33 @@ MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", ty
   `
             }]
     }], null, null); })();
+export class MyMod {
+}
+MyMod.ɵmod = i0.ɵɵdefineNgModule({ type: MyMod });
+MyMod.ɵinj = i0.ɵɵdefineInjector({ factory: function MyMod_Factory(t) { return new (t || MyMod)(); } });
+(function () { (typeof ngJitMode === "undefined" || ngJitMode) && i0.ɵɵsetNgModuleScope(MyMod, { declarations: [MyComponent, CustomEl] }); })();
+/*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyMod, [{
+        type: NgModule,
+        args: [{ declarations: [MyComponent, CustomEl] }]
+    }], null, null); })();
 
 /****************************************************************************************************
  * PARTIAL FILE: chain_multiple_bindings_for_multiple_elements.d.ts
  ****************************************************************************************************/
 import * as i0 from "@angular/core";
+export declare class CustomEl {
+    static ɵfac: i0.ɵɵFactoryDef<CustomEl, never>;
+    static ɵcmp: i0.ɵɵComponentDefWithMeta<CustomEl, "custom-element", never, {}, {}, never, never>;
+}
 export declare class MyComponent {
     myTitle: string;
     buttonId: string;
     static ɵfac: i0.ɵɵFactoryDef<MyComponent, never>;
     static ɵcmp: i0.ɵɵComponentDefWithMeta<MyComponent, "ng-component", never, {}, {}, never, never>;
+}
+export declare class MyMod {
+    static ɵmod: i0.ɵɵNgModuleDefWithMeta<MyMod, [typeof MyComponent, typeof CustomEl], never, never>;
+    static ɵinj: i0.ɵɵInjectorDef<MyMod>;
 }
 
 /****************************************************************************************************
@@ -259,6 +284,7 @@ MyModule.ɵinj = i0.ɵɵdefineInjector({ factory: function MyModule_Factory(t) {
 import * as i0 from "@angular/core";
 export declare class MyComponent {
     doThings(): void;
+    three: any;
     static ɵfac: i0.ɵɵFactoryDef<MyComponent, never>;
     static ɵcmp: i0.ɵɵComponentDefWithMeta<MyComponent, "my-app", never, {}, {}, never, never>;
 }
@@ -324,6 +350,15 @@ MyModule.ɵinj = i0.ɵɵdefineInjector({ factory: function MyModule_Factory(t) {
 import * as i0 from "@angular/core";
 export declare class MyComponent {
     name: string;
+    one: any;
+    two: any;
+    three: any;
+    four: any;
+    five: any;
+    six: any;
+    seven: any;
+    eight: any;
+    nine: any;
     static ɵfac: i0.ɵɵFactoryDef<MyComponent, never>;
     static ɵcmp: i0.ɵɵComponentDefWithMeta<MyComponent, "my-app", never, {}, {}, never, never>;
 }

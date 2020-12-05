@@ -8,5 +8,6 @@ EmptyOutletComponent.ɵcmp = $r3$.ɵɵdefineComponent({
       $r3$.ɵɵelement(0, "router-outlet");
     }
   },
+  directives: [RouterOutlet],
   encapsulation: 2
 });

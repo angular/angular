@@ -16,5 +16,6 @@ MyApp.ɵcmp = $r3$.ɵɵdefineComponent({
           $r3$.ɵɵelementEnd();
       }
   },
+  directives: [SimpleComponent],
   encapsulation: 2
 })

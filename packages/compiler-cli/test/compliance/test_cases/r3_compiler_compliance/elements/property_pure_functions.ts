@@ -1,4 +1,17 @@
-import {Component, NgModule} from '@angular/core';
+import {Component, Directive, Input, NgModule, Pipe} from '@angular/core';
+
+@Directive({selector: 'div'})
+export class DivDir {
+  @Input() ternary!: any;
+  @Input() pipe!: any;
+  @Input() and!: any;
+  @Input() or!: any;
+}
+
+@Pipe({name: 'pipe'})
+export class PipePipe {
+  transform(v: any, a: any, a2: any) {}
+}
 
 @Component({
   selector: 'my-component',
@@ -11,8 +24,13 @@ import {Component, NgModule} from '@angular/core';
 })
 export class MyComponent {
   id = 'one';
+  cond = '';
+  value = '';
+  a = '';
+  b = '';
+  c = '';
 }
 
-@NgModule({declarations: [MyComponent]})
+@NgModule({declarations: [MyComponent, DivDir, PipePipe]})
 export class MyModule {
 }

@@ -99,6 +99,9 @@ MyPipe.ɵpipe = i0.ɵɵdefinePipe({ name: "myPipe", type: MyPipe, pure: false })
         args: [{ name: 'myPipe', pure: false }]
     }], null, null); })();
 export class MyApp {
+    constructor() {
+        this.name = '';
+    }
 }
 MyApp.ɵfac = function MyApp_Factory(t) { return new (t || MyApp)(); };
 MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: MyApp, selector: "my-app", ngImport: i0, template: { source: '0:{{name | myPipe}}1:{{name | myPipe:1}}2:{{name | myPipe:1:2}}3:{{name | myPipe:1:2:3}}4:{{name | myPipe:1:2:3:4}}', isInline: true }, pipes: { "myPipe": MyPipe } });
@@ -131,6 +134,7 @@ export declare class MyPipe implements PipeTransform, OnDestroy {
     static ɵpipe: i0.ɵɵPipeDefWithMeta<MyPipe, "myPipe">;
 }
 export declare class MyApp {
+    name: string;
     static ɵfac: i0.ɵɵFactoryDef<MyApp, never>;
     static ɵcmp: i0.ɵɵComponentDefWithMeta<MyApp, "my-app", never, {}, {}, never, never>;
 }

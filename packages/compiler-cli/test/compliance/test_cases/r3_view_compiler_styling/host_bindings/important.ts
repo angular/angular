@@ -3,9 +3,7 @@ import {Component, HostBinding, NgModule} from '@angular/core';
 @Component({
   selector: 'my-component',
   template: `
-    <div [style!important]="myStyleExp"
-         [class!important]="myClassExp"
-         [style.height!important]="myHeightExp"
+    <div [style.height!important]="myHeightExp"
          [class.bar!important]="myBarClassExp"></div>
   `,
   host: {'[style!important]': 'myStyleExp', '[class!important]': 'myClassExp'}

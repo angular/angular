@@ -1,4 +1,9 @@
-import {Component} from '@angular/core';
+import {Component, NgModule, Pipe} from '@angular/core';
+
+@Pipe({name: 'async'})
+export class AsyncPipe {
+  transform(v: any): null|any {}
+}
 
 // https://github.com/angular/angular/issues/37194
 // Verifies that temporary expressions used for expressions with potential side-effects in
@@ -8,11 +13,15 @@ import {Component} from '@angular/core';
 // binding index.
 @Component({
   template:
-      '<button [title]="myTitle" [id]="(auth()?.identity() | async)?.id" [tabindex]="1"></button>'
+      '<button [title]="myTitle" [id]="(auth().identity() | async)?.id" [tabindex]="1"></button>'
 })
 export class MyComponent {
   myTitle = 'hello';
-  auth?: () => {
+  auth!: () => {
     identity(): any;
   };
+}
+
+@NgModule({declarations: [MyComponent, AsyncPipe]})
+export class MyMod {
 }

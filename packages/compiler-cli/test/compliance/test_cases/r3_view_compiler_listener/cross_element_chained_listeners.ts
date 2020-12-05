@@ -1,4 +1,13 @@
-import {Component, NgModule} from '@angular/core';
+import {Component, EventEmitter, NgModule, Output} from '@angular/core';
+
+@Component({
+  selector: 'some-comp',
+  template: '',
+})
+export class SomeComp {
+  @Output() update = new EventEmitter<any>();
+  @Output() delete = new EventEmitter<any>();
+}
 
 @Component({
   selector: 'my-component',
@@ -8,8 +17,12 @@ import {Component, NgModule} from '@angular/core';
     `
 })
 export class MyComponent {
+  click() {}
+  change() {}
+  delete() {}
+  update() {}
 }
 
-@NgModule({declarations: [MyComponent]})
+@NgModule({declarations: [MyComponent, SomeComp]})
 export class MyModule {
 }

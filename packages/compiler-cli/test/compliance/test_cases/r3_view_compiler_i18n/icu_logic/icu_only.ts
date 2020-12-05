@@ -7,6 +7,7 @@ import {Component, NgModule} from '@angular/core';
 `,
 })
 export class MyComponent {
+  age = 20;
 }
 
 @NgModule({declarations: [MyComponent]})

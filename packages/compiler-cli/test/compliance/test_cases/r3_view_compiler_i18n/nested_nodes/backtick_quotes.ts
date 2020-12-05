@@ -5,6 +5,7 @@ import {Component, NgModule} from '@angular/core';
   template: '<div i18n>`{{ count }}`</div>',
 })
 export class MyComponent {
+  count = 1;
 }
 
 @NgModule({declarations: [MyComponent]})

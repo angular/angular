@@ -15,5 +15,6 @@ MyApp.ɵcmp = $r3$.ɵɵdefineComponent({
       $r3$.ɵɵproperty("prop", $r3$.ɵɵpureFunction0(2, $c0$))("otherProp", $r3$.ɵɵpureFunction0(3, $c1$));
     }
   },
+  directives: [SomeComp],
   encapsulation: 2
 });

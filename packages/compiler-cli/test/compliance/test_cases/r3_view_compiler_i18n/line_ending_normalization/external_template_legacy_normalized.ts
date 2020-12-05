@@ -7,6 +7,7 @@ import {Component, NgModule} from '@angular/core';
   templateUrl: 'template.html'
 })
 export class MyComponent {
+  value!: any;
 }
 
 @NgModule({declarations: [MyComponent]})

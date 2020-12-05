@@ -7,10 +7,10 @@ export class MyComponent {
     onClick(event) { }
 }
 MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); };
-MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "my-component", ngImport: i0, template: { source: `<div (click)="onClick($event); 1 == 2"></div>`, isInline: true } });
+MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "my-component", ngImport: i0, template: { source: `<div (click)="onClick($event); 1 == 1"></div>`, isInline: true } });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyComponent, [{
         type: Component,
-        args: [{ selector: 'my-component', template: `<div (click)="onClick($event); 1 == 2"></div>` }]
+        args: [{ selector: 'my-component', template: `<div (click)="onClick($event); 1 == 1"></div>` }]
     }], null, null); })();
 export class MyModule {
 }
@@ -53,7 +53,7 @@ export class MyComponent {
     onClick(event) { }
 }
 MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); };
-MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "my-component", ngImport: i0, template: { source: `<my-app (click)="onClick($event);"></my-app>`, isInline: true } });
+MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "my-component", ngImport: i0, template: { source: `<my-app (click)="onClick($event);"></my-app>`, isInline: true }, directives: [{ type: MyApp, selector: "my-app" }] });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyComponent, [{
         type: Component,
         args: [{ selector: 'my-component', template: `<my-app (click)="onClick($event);"></my-app>` }]
@@ -62,10 +62,10 @@ export class MyModule {
 }
 MyModule.ɵmod = i0.ɵɵdefineNgModule({ type: MyModule });
 MyModule.ɵinj = i0.ɵɵdefineInjector({ factory: function MyModule_Factory(t) { return new (t || MyModule)(); } });
-(function () { (typeof ngJitMode === "undefined" || ngJitMode) && i0.ɵɵsetNgModuleScope(MyModule, { declarations: [MyComponent] }); })();
+(function () { (typeof ngJitMode === "undefined" || ngJitMode) && i0.ɵɵsetNgModuleScope(MyModule, { declarations: [MyComponent, MyApp] }); })();
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyModule, [{
         type: NgModule,
-        args: [{ declarations: [MyComponent] }]
+        args: [{ declarations: [MyComponent, MyApp] }]
     }], null, null); })();
 
 /****************************************************************************************************
@@ -82,7 +82,7 @@ export declare class MyComponent {
     static ɵcmp: i0.ɵɵComponentDefWithMeta<MyComponent, "my-component", never, {}, {}, never, never>;
 }
 export declare class MyModule {
-    static ɵmod: i0.ɵɵNgModuleDefWithMeta<MyModule, [typeof MyComponent], never, never>;
+    static ɵmod: i0.ɵɵNgModuleDefWithMeta<MyModule, [typeof MyComponent, typeof MyApp], never, never>;
     static ɵinj: i0.ɵɵInjectorDef<MyModule>;
 }
 
@@ -145,6 +145,7 @@ export declare class MyModule {
 import { Component, NgModule } from '@angular/core';
 import * as i0 from "@angular/core";
 export class MyComponent {
+    onClick(v) { }
 }
 MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); };
 MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "my-component", ngImport: i0, template: { source: `
@@ -176,6 +177,7 @@ MyModule.ɵinj = i0.ɵɵdefineInjector({ factory: function MyModule_Factory(t) {
  ****************************************************************************************************/
 import * as i0 from "@angular/core";
 export declare class MyComponent {
+    onClick(v: any): void;
     static ɵfac: i0.ɵɵFactoryDef<MyComponent, never>;
     static ɵcmp: i0.ɵɵComponentDefWithMeta<MyComponent, "my-component", never, {}, {}, never, never>;
 }
@@ -190,6 +192,8 @@ export declare class MyModule {
 import { Component, NgModule } from '@angular/core';
 import * as i0 from "@angular/core";
 export class MyComponent {
+    click() { }
+    change() { }
 }
 MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); };
 MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "my-component", ngImport: i0, template: { source: `<div (click)="click()" (change)="change()"></div>`, isInline: true } });
@@ -215,6 +219,8 @@ MyModule.ɵinj = i0.ɵɵdefineInjector({ factory: function MyModule_Factory(t) {
  ****************************************************************************************************/
 import * as i0 from "@angular/core";
 export declare class MyComponent {
+    click(): void;
+    change(): void;
     static ɵfac: i0.ɵɵFactoryDef<MyComponent, never>;
     static ɵcmp: i0.ɵɵComponentDefWithMeta<MyComponent, "my-component", never, {}, {}, never, never>;
 }
@@ -226,15 +232,38 @@ export declare class MyModule {
 /****************************************************************************************************
  * PARTIAL FILE: cross_element_chained_listeners.js
  ****************************************************************************************************/
-import { Component, NgModule } from '@angular/core';
+import { Component, EventEmitter, NgModule, Output } from '@angular/core';
 import * as i0 from "@angular/core";
+export class SomeComp {
+    constructor() {
+        this.update = new EventEmitter();
+        this.delete = new EventEmitter();
+    }
+}
+SomeComp.ɵfac = function SomeComp_Factory(t) { return new (t || SomeComp)(); };
+SomeComp.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: SomeComp, selector: "some-comp", outputs: { update: "update", delete: "delete" }, ngImport: i0, template: { source: '', isInline: true } });
+/*@__PURE__*/ (function () { i0.ɵsetClassMetadata(SomeComp, [{
+        type: Component,
+        args: [{
+                selector: 'some-comp',
+                template: '',
+            }]
+    }], null, { update: [{
+            type: Output
+        }], delete: [{
+            type: Output
+        }] }); })();
 export class MyComponent {
+    click() { }
+    change() { }
+    delete() { }
+    update() { }
 }
 MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); };
 MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "my-component", ngImport: i0, template: { source: `
       <div (click)="click()" (change)="change()"></div>
       <some-comp (update)="update()" (delete)="delete()"></some-comp>
-    `, isInline: true } });
+    `, isInline: true }, directives: [{ type: SomeComp, selector: "some-comp", outputs: ["update", "delete"] }] });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyComponent, [{
         type: Component,
         args: [{
@@ -249,22 +278,33 @@ export class MyModule {
 }
 MyModule.ɵmod = i0.ɵɵdefineNgModule({ type: MyModule });
 MyModule.ɵinj = i0.ɵɵdefineInjector({ factory: function MyModule_Factory(t) { return new (t || MyModule)(); } });
-(function () { (typeof ngJitMode === "undefined" || ngJitMode) && i0.ɵɵsetNgModuleScope(MyModule, { declarations: [MyComponent] }); })();
+(function () { (typeof ngJitMode === "undefined" || ngJitMode) && i0.ɵɵsetNgModuleScope(MyModule, { declarations: [MyComponent, SomeComp] }); })();
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyModule, [{
         type: NgModule,
-        args: [{ declarations: [MyComponent] }]
+        args: [{ declarations: [MyComponent, SomeComp] }]
     }], null, null); })();
 
 /****************************************************************************************************
  * PARTIAL FILE: cross_element_chained_listeners.d.ts
  ****************************************************************************************************/
+import { EventEmitter } from '@angular/core';
 import * as i0 from "@angular/core";
+export declare class SomeComp {
+    update: EventEmitter<any>;
+    delete: EventEmitter<any>;
+    static ɵfac: i0.ɵɵFactoryDef<SomeComp, never>;
+    static ɵcmp: i0.ɵɵComponentDefWithMeta<SomeComp, "some-comp", never, {}, { "update": "update"; "delete": "delete"; }, never, never>;
+}
 export declare class MyComponent {
+    click(): void;
+    change(): void;
+    delete(): void;
+    update(): void;
     static ɵfac: i0.ɵɵFactoryDef<MyComponent, never>;
     static ɵcmp: i0.ɵɵComponentDefWithMeta<MyComponent, "my-component", never, {}, {}, never, never>;
 }
 export declare class MyModule {
-    static ɵmod: i0.ɵɵNgModuleDefWithMeta<MyModule, [typeof MyComponent], never, never>;
+    static ɵmod: i0.ɵɵNgModuleDefWithMeta<MyModule, [typeof MyComponent, typeof SomeComp], never, never>;
     static ɵinj: i0.ɵɵInjectorDef<MyModule>;
 }
 
@@ -442,24 +482,52 @@ export {};
 /****************************************************************************************************
  * PARTIAL FILE: event_in_property_binding.js
  ****************************************************************************************************/
-import { Component } from '@angular/core';
+import { Component, Directive, Input, NgModule } from '@angular/core';
 import * as i0 from "@angular/core";
+export class DivDir {
+}
+DivDir.ɵfac = function DivDir_Factory(t) { return new (t || DivDir)(); };
+DivDir.ɵdir = i0.ɵɵngDeclareDirective({ version: "0.0.0-PLACEHOLDER", type: DivDir, selector: "div", inputs: { event: "event" }, ngImport: i0 });
+/*@__PURE__*/ (function () { i0.ɵsetClassMetadata(DivDir, [{
+        type: Directive,
+        args: [{ selector: 'div' }]
+    }], null, { event: [{
+            type: Input
+        }] }); })();
 class Comp {
     constructor() {
         this.$event = 1;
     }
 }
 Comp.ɵfac = function Comp_Factory(t) { return new (t || Comp)(); };
-Comp.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: Comp, selector: "ng-component", ngImport: i0, template: { source: '<div [event]="$event"></div>', isInline: true } });
+Comp.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: Comp, selector: "ng-component", ngImport: i0, template: { source: '<div [event]="$event"></div>', isInline: true }, directives: [{ type: DivDir, selector: "div", inputs: ["event"] }] });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(Comp, [{
         type: Component,
         args: [{ template: '<div [event]="$event"></div>' }]
+    }], null, null); })();
+export class MyMod {
+}
+MyMod.ɵmod = i0.ɵɵdefineNgModule({ type: MyMod });
+MyMod.ɵinj = i0.ɵɵdefineInjector({ factory: function MyMod_Factory(t) { return new (t || MyMod)(); } });
+(function () { (typeof ngJitMode === "undefined" || ngJitMode) && i0.ɵɵsetNgModuleScope(MyMod, { declarations: [Comp, DivDir] }); })();
+/*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyMod, [{
+        type: NgModule,
+        args: [{ declarations: [Comp, DivDir] }]
     }], null, null); })();
 
 /****************************************************************************************************
  * PARTIAL FILE: event_in_property_binding.d.ts
  ****************************************************************************************************/
-export {};
+import * as i0 from "@angular/core";
+export declare class DivDir {
+    event: any;
+    static ɵfac: i0.ɵɵFactoryDef<DivDir, never>;
+    static ɵdir: i0.ɵɵDirectiveDefWithMeta<DivDir, "div", never, { "event": "event"; }, {}, never>;
+}
+export declare class MyMod {
+    static ɵmod: i0.ɵɵNgModuleDefWithMeta<MyMod, [typeof Comp, typeof DivDir], never, never>;
+    static ɵinj: i0.ɵɵInjectorDef<MyMod>;
+}
 
 /****************************************************************************************************
  * PARTIAL FILE: event_arg_host_listener_implicit_meaning.js

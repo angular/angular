@@ -8,6 +8,7 @@ import {Component, NgModule} from '@angular/core';
   `
 })
 export class MyComponent {
+  onClick(v: any) {}
 }
 
 @NgModule({declarations: [MyComponent]})

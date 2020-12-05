@@ -118,7 +118,6 @@ function getOptions(
     typeRoots: ['node_modules/@types'],
     ...convertedCompilerOptions.options,
     enableIvy: true,
-    ivyTemplateTypeCheck: false,
     enableI18nLegacyMessageIdFormat: false,
     ...angularCompilerOptions,
   };

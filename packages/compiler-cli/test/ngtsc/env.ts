@@ -72,7 +72,6 @@ export class NgtscTestEnvironment {
       },
       "angularCompilerOptions": {
         "enableIvy": true,
-        "ivyTemplateTypeCheck": false
       },
       "exclude": [
         "built"
