@@ -3340,14 +3340,14 @@ describe('compiler compliance', () => {
 
          // The setClassMetadata call should look like this.
          const setClassMetadata = `
-           …
-          (function() {
-            i0.ɵsetClassMetadata(Comp, [{
-              type: Component,
-              args: [{
-                template: '',
-                providers: [{ provide: token, useExisting: Comp }]
-          `;
+           (function() { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(Comp, [{
+             type: Component,
+             args: [{
+               template: '',
+               providers: [{provide: token, useExisting: Comp}],
+             }]
+           }], null, null); })();
+         `;
 
          const result = compile(files, angularFiles, {target: ts.ScriptTarget.ES5});
          expectEmit(result.source, setClassMetadata, 'Incorrect setClassMetadata call');

@@ -181,7 +181,8 @@ runInEachFileSystem(() => {
       const jsContents = fs.readFile(_(`/node_modules/test-package/index.js`)).replace(/\s+/g, ' ');
       expect(jsContents)
           .toContain(
-              '/*@__PURE__*/ (function () { ɵngcc0.ɵsetClassMetadata(FooDirective, ' +
+              '(function () { (typeof ngDevMode === "undefined" || ngDevMode) && ' +
+              'ɵngcc0.ɵsetClassMetadata(FooDirective, ' +
               '[{ type: Directive, args: [{ selector: \'[foo]\' }] }], ' +
               'function () { return []; }, ' +
               '{ bar: [{ type: Input }] }); })();');
