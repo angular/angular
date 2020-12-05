@@ -282,6 +282,9 @@
     "name": "defaultErrorLogger"
   },
   {
+    "name": "defaultIterableDiffersFactory"
+  },
+  {
     "name": "defaultScheduler"
   },
   {

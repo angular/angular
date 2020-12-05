@@ -1122,7 +1122,13 @@
     "name": "defaultIterableDiffers"
   },
   {
+    "name": "defaultIterableDiffersFactory"
+  },
+  {
     "name": "defaultKeyValueDiffers"
+  },
+  {
+    "name": "defaultKeyValueDiffersFactory"
   },
   {
     "name": "defaultMalformedUriErrorHandler"
