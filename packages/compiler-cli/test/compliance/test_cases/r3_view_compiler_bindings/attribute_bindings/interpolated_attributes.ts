@@ -17,6 +17,15 @@ import {Component, NgModule} from '@angular/core';
 })
 export class MyComponent {
   name = 'John Doe';
+  one!: any;
+  two!: any;
+  three!: any;
+  four!: any;
+  five!: any;
+  six!: any;
+  seven!: any;
+  eight!: any;
+  nine!: any;
 }
 
 @NgModule({declarations: [MyComponent]})

@@ -418,7 +418,6 @@ runInEachFileSystem(os => {
           env.tsconfig({
             'fullTemplateTypeCheck': false,
             'annotateForClosureCompiler': true,
-            'ivyTemplateTypeCheck': true,
           });
           env.write('test.ts', `
             import {Component, Directive, NgModule} from '@angular/core';
@@ -689,7 +688,9 @@ runInEachFileSystem(os => {
           selector: 'app',
           template: '{{ count | number }}'
         })
-        export class App {}
+        export class App {
+          count = 0;
+        }
 
         @NgModule({
           imports: [ModuleA],
@@ -738,7 +739,9 @@ runInEachFileSystem(os => {
               selector: 'app',
               template: '{{ count | number }}'
             })
-            export class App {}
+            export class App {
+              count = 0;
+            }
 
             @NgModule({
               imports: [ModuleA, ModuleB],
@@ -1335,6 +1338,15 @@ runInEachFileSystem(os => {
     });
 
     it('should compile NgModules with references to absolute components', () => {
+      env.write('tsconfig.json', JSON.stringify({
+        extends: './tsconfig-base.json',
+        compilerOptions: {
+          baseUrl: '.',
+          paths: {
+            '*': ['*', 'shared/*'],
+          },
+        },
+      }));
       env.write('test.ts', `
       import {NgModule} from '@angular/core';
       import {Foo} from 'foo';
@@ -1344,7 +1356,7 @@ runInEachFileSystem(os => {
       })
       export class FooModule {}
     `);
-      env.write('node_modules/foo/index.ts', `
+      env.write('shared/foo/index.ts', `
       import {Component} from '@angular/core';
 
       @Component({
@@ -1541,7 +1553,9 @@ runInEachFileSystem(os => {
         export class TestPipe {}
 
         @Component({selector: 'test-cmp', template: '{{value | test}}'})
-        export class TestCmp {}
+        export class TestCmp {
+          value = '';
+        }
 
         @NgModule({declarations: [TestPipe, TestCmp]})
         export class TestModule {}
@@ -2276,10 +2290,10 @@ runInEachFileSystem(os => {
         });
 
         it('should report an error when using a missing type as injection token', () => {
-          // This test replicates the situation where a symbol does not have any declarations at
-          // all, e.g. because it's imported from a missing module. This would result in a
-          // semantic TypeScript diagnostic which we ignore in this test to verify that ngtsc's
-          // analysis is able to operate in this situation.
+          // This test replicates the situation where a symbol does not have any
+          // declarations at all, e.g. because it's imported from a missing module. This
+          // would result in a semantic TypeScript diagnostic which we ignore in this
+          // test to verify that ngtsc's analysis is able to operate in this situation.
           env.tsconfig({strictInjectionParameters: true});
           env.write(`test.ts`, `
              import {Injectable} from '@angular/core';
@@ -3563,7 +3577,9 @@ runInEachFileSystem(os => {
        selector: 'test',
        template: '<div i18n="@@custom">Some text {age, plural, 10 {ten} other {other}}</div>'
      })
-     class FooCmp {}`);
+     class FooCmp {
+       age = 1;
+     }`);
       env.driveMain();
       const jsContents = env.getContents('test.js');
       expect(jsContents)
@@ -3666,7 +3682,7 @@ runInEachFileSystem(os => {
       import {Component} from '@angular/core';
        @Component({
         selector: 'test',
-        template: '<div [someProp]></div>'
+        template: '<div [class]></div>'
       })
       class FooCmp {}
     `);
@@ -3783,8 +3799,8 @@ runInEachFileSystem(os => {
       });
 
       it('should not be generated for .js files', () => {
-        // This test verifies that the compiler does not attempt to generate shim files for non-TS
-        // input files (in this case, other.js).
+        // This test verifies that the compiler does not attempt to generate shim files
+        // for non-TS input files (in this case, other.js).
         env.write('test.ts', `
           import {Component, NgModule} from '@angular/core';
 
@@ -3810,10 +3826,10 @@ runInEachFileSystem(os => {
       });
 
       it('should be able to depend on an existing factory shim', () => {
-        // This test verifies that ngfactory files from the compilations of dependencies are
-        // available to import in a fresh compilation. It is derived from a bug observed in g3 where
-        // the shim system accidentally caused TypeScript to think that *.ngfactory.ts files always
-        // exist.
+        // This test verifies that ngfactory files from the compilations of dependencies
+        // are available to import in a fresh compilation. It is derived from a bug
+        // observed in g3 where the shim system accidentally caused TypeScript to think
+        // that *.ngfactory.ts files always exist.
         env.write('other.ngfactory.d.ts', `
           export class OtherNgFactory {}
         `);
@@ -3826,8 +3842,9 @@ runInEachFileSystem(os => {
       });
 
       it('should generate factory shims for files not listed in root files', () => {
-        // This test verifies that shims are generated for all files in the user's program, even if
-        // only a subset of those files are listed in the tsconfig as root files.
+        // This test verifies that shims are generated for all files in the user's
+        // program, even if only a subset of those files are listed in the tsconfig as
+        // root files.
 
         env.tsconfig({'generateNgFactoryShims': true}, /* extraRootDirs */ undefined, [
           absoluteFrom('/test.ts'),
@@ -4736,8 +4753,7 @@ runInEachFileSystem(os => {
     });
 
     describe('local refs', () => {
-      it('should not generate an error when a local ref is unresolved' +
-             ' (outside of template type-checking)',
+      it('should not generate an error when a local ref is unresolved (outside of template type-checking)',
          () => {
            env.write('test.ts', `
           import {Component} from '@angular/core';
@@ -4748,7 +4764,9 @@ runInEachFileSystem(os => {
           export class TestCmp {}
         `);
            const diags = env.driveDiagnostics();
-           expect(diags.length).toBe(0);
+           expect(diags.length).toBe(1);
+           expect(diags[0].messageText)
+               .toEqual(`No directive found with exportAs 'unknownTarget'.`);
          });
     });
 
@@ -5770,7 +5788,7 @@ runInEachFileSystem(os => {
       it('should generate sanitizers for unsafe attributes in hostBindings fn in Directives',
          () => {
            env.write(`test.ts`, `
-        import {Component, Directive, HostBinding} from '@angular/core';
+        import {Component, Directive, HostBinding, NgModule, Input} from '@angular/core';
 
         @Directive({
           selector: '[unsafeAttrs]'
@@ -5793,13 +5811,20 @@ runInEachFileSystem(os => {
 
           @HostBinding('attr.title')
           attrSafeTitle: string;
+
+          @Input() unsafeAttrs: any;
         }
 
         @Component({
           selector: 'foo',
           template: '<a [unsafeAttrs]="ctxProp">Link Title</a>'
         })
-        class FooCmp {}
+        class FooCmp {
+          ctxProp = '';
+        }
+
+        @NgModule({declarations: [FooCmp, UnsafeAttrsDirective]})
+        export class Module {}
       `);
 
            env.driveMain();
@@ -5818,7 +5843,7 @@ runInEachFileSystem(os => {
       it('should generate sanitizers for unsafe properties in hostBindings fn in Directives',
          () => {
            env.write(`test.ts`, `
-        import {Component, Directive, HostBinding} from '@angular/core';
+        import {Component, Directive, HostBinding, Input, NgModule} from '@angular/core';
 
         @Directive({
           selector: '[unsafeProps]'
@@ -5841,13 +5866,20 @@ runInEachFileSystem(os => {
 
           @HostBinding('title')
           propSafeTitle: string;
+
+          @Input() unsafeProps: any;
         }
 
         @Component({
           selector: 'foo',
           template: '<a [unsafeProps]="ctxProp">Link Title</a>'
         })
-        class FooCmp {}
+        class FooCmp {
+          ctxProp = '';
+        }
+
+        @NgModule({declarations: [FooCmp, UnsafePropsDirective]})
+        class MyModule {}
       `);
 
            env.driveMain();
@@ -7041,7 +7073,8 @@ export const Foo = Foo__PRE_R3__;
         env.driveMain();
         const jsContents = env.getContents('test.js');
 
-        // Verify that long styles present in both components are extracted to a separate var.
+        // Verify that long styles present in both components are extracted to a
+        // separate var.
         expect(jsContents)
             .toContain(
                 '_c0 = "div[_ngcontent-%COMP%] { background: url(/some-very-very-long-path.png); }";');
@@ -7049,27 +7082,29 @@ export const Foo = Foo__PRE_R3__;
         expect(jsContents)
             .toContain(
                 'styles: [' +
-                // This style is present in both components, but was not extracted into a separate
-                // var since it doesn't reach length threshold (50 chars) in `ConstantPool`.
+                // This style is present in both components, but was not extracted into
+                // a separate var since it doesn't reach length threshold (50 chars) in
+                // `ConstantPool`.
                 '"span[_ngcontent-%COMP%] { font-size: larger; }", ' +
-                // Style that is present in both components, but reaches length threshold -
-                // extracted to a separate var.
+                // Style that is present in both components, but reaches length
+                // threshold - extracted to a separate var.
                 '_c0, ' +
-                // Style that is unique to this component, but that reaches length threshold -
-                // remains a string in the `styles` array.
+                // Style that is unique to this component, but that reaches length
+                // threshold - remains a string in the `styles` array.
                 '"img[_ngcontent-%COMP%] { background: url(/a/some-very-very-long-path.png); }"]');
 
         expect(jsContents)
             .toContain(
                 'styles: [' +
-                // This style is present in both components, but was not extracted into a separate
-                // var since it doesn't reach length threshold (50 chars) in `ConstantPool`.
+                // This style is present in both components, but was not extracted into
+                // a separate var since it doesn't reach length threshold (50 chars) in
+                // `ConstantPool`.
                 '"span[_ngcontent-%COMP%] { font-size: larger; }", ' +
-                // Style that is present in both components, but reaches length threshold -
-                // extracted to a separate var.
+                // Style that is present in both components, but reaches length
+                // threshold - extracted to a separate var.
                 '_c0, ' +
-                // Style that is unique to this component, but that reaches length threshold -
-                // remains a string in the `styles` array.
+                // Style that is unique to this component, but that reaches length
+                // threshold - remains a string in the `styles` array.
                 '"img[_ngcontent-%COMP%] { background: url(/b/some-very-very-long-path.png); }"]');
       });
 
@@ -7105,9 +7140,9 @@ export const Foo = Foo__PRE_R3__;
         env.driveMain();
         const jsContents = env.getContents('test.js');
 
-        // Verify that long strings are extracted to a separate var. This should be wrapped in a
-        // function to trick Closure not to inline the contents for very large strings.
-        // See: https://github.com/angular/angular/pull/38253.
+        // Verify that long strings are extracted to a separate var. This should be
+        // wrapped in a function to trick Closure not to inline the contents for very
+        // large strings. See: https://github.com/angular/angular/pull/38253.
         expect(jsContents)
             .toContain(
                 '_c0 = function () {' +
@@ -7514,10 +7549,11 @@ export const Foo = Foo__PRE_R3__;
          });
 
       describe('template parsing diagnostics', () => {
-        // These tests validate that errors which occur during template parsing are expressed as
-        // diagnostics instead of a compiler crash (which used to be the case). They only assert
-        // that the error is produced with an accurate span - the exact semantics of the errors are
-        // tested separately, via the parser tests.
+        // These tests validate that errors which occur during template parsing are
+        // expressed as diagnostics instead of a compiler crash (which used to be the
+        // case). They only assert that the error is produced with an accurate span -
+        // the exact semantics of the errors are tested separately, via the parser
+        // tests.
         it('should emit a diagnostic for a template parsing error', () => {
           env.write('test.ts', `
             import {Component} from '@angular/core';

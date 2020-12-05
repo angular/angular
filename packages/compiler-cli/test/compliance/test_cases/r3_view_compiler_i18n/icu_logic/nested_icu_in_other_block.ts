@@ -14,6 +14,8 @@ import {Component, NgModule} from '@angular/core';
 `
 })
 export class MyComponent {
+  count = 0;
+  name = 'Andrew';
 }
 
 @NgModule({declarations: [MyComponent]})

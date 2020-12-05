@@ -1,4 +1,9 @@
-import {Component, NgModule} from '@angular/core';
+import {Component, NgModule, Pipe} from '@angular/core';
+
+@Pipe({name: 'async'})
+export class AsyncPipe {
+  transform(v: any) {}
+}
 
 @Component({
   selector: 'my-component',
@@ -11,8 +16,9 @@ import {Component, NgModule} from '@angular/core';
   `
 })
 export class MyComponent {
+  valueA!: any;
 }
 
-@NgModule({declarations: [MyComponent]})
+@NgModule({declarations: [MyComponent, AsyncPipe]})
 export class MyModule {
 }

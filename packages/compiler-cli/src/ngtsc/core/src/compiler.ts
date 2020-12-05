@@ -559,11 +559,6 @@ export class NgCompiler {
   }
 
   private getTemplateDiagnostics(): ReadonlyArray<ts.Diagnostic> {
-    // Skip template type-checking if it's disabled.
-    if (this.options.ivyTemplateTypeCheck === false && !this.fullTemplateTypeCheck) {
-      return [];
-    }
-
     const compilation = this.ensureAnalyzed();
 
     // Get the diagnostics.

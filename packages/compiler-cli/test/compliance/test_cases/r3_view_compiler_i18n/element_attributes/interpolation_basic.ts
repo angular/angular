@@ -1,4 +1,15 @@
-import {Component, NgModule} from '@angular/core';
+import {Component, Directive, Input, NgModule, Pipe} from '@angular/core';
+
+@Pipe({name: 'uppercase'})
+export class UppercasePipe {
+  transform(v: any) {}
+}
+
+@Directive({selector: 'div'})
+export class DivDir {
+  @Input('aria-label') al!: any;
+  @Input('aria-roledescription') arl!: any;
+}
 
 @Component({
   selector: 'my-component',
@@ -15,8 +26,11 @@ import {Component, NgModule} from '@angular/core';
   `
 })
 export class MyComponent {
+  valueA: any;
+  valueB: any;
+  valueC: any;
 }
 
-@NgModule({declarations: [MyComponent]})
+@NgModule({declarations: [UppercasePipe, MyComponent, DivDir]})
 export class MyModule {
 }

@@ -150,9 +150,7 @@ export class MyComponent {
 }
 MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); };
 MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "my-component", host: { properties: { "style!important": "myStyleExp", "class!important": "myClassExp", "class.foo!important": "myFooClassExp", "style.width!important": "myWidthExp" } }, ngImport: i0, template: { source: `
-    <div [style!important]="myStyleExp"
-         [class!important]="myClassExp"
-         [style.height!important]="myHeightExp"
+    <div [style.height!important]="myHeightExp"
          [class.bar!important]="myBarClassExp"></div>
   `, isInline: true } });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyComponent, [{
@@ -160,9 +158,7 @@ MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", ty
         args: [{
                 selector: 'my-component',
                 template: `
-    <div [style!important]="myStyleExp"
-         [class!important]="myClassExp"
-         [style.height!important]="myHeightExp"
+    <div [style.height!important]="myHeightExp"
          [class.bar!important]="myBarClassExp"></div>
   `,
                 host: { '[style!important]': 'myStyleExp', '[class!important]': 'myClassExp' }

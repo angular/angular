@@ -1,4 +1,14 @@
-import {Component, NgModule} from '@angular/core';
+import {Component, NgModule, Pipe} from '@angular/core';
+
+@Pipe({name: 'stylePipe'})
+export class StylePipe {
+  transform(v: any) {}
+}
+
+@Pipe({name: 'classPipe'})
+export class ClassPipe {
+  transform(v: any) {}
+}
 
 @Component({
   selector: 'my-component',
@@ -9,6 +19,6 @@ export class MyComponent {
   myClassExp = 'foo bar apple';
 }
 
-@NgModule({declarations: [MyComponent]})
+@NgModule({declarations: [MyComponent, StylePipe, ClassPipe]})
 export class MyModule {
 }

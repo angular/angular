@@ -161,47 +161,109 @@ export declare class AbstractDirective {
 /****************************************************************************************************
  * PARTIAL FILE: constant_object_literals.js
  ****************************************************************************************************/
-import { Component } from '@angular/core';
+import { Component, Input, NgModule } from '@angular/core';
 import * as i0 from "@angular/core";
+export class SomeComp {
+}
+SomeComp.ɵfac = function SomeComp_Factory(t) { return new (t || SomeComp)(); };
+SomeComp.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: SomeComp, selector: "some-comp", inputs: { prop: "prop", otherProp: "otherProp" }, ngImport: i0, template: { source: '', isInline: true } });
+/*@__PURE__*/ (function () { i0.ɵsetClassMetadata(SomeComp, [{
+        type: Component,
+        args: [{ selector: 'some-comp', template: '' }]
+    }], null, { prop: [{
+            type: Input
+        }], otherProp: [{
+            type: Input
+        }] }); })();
 export class MyApp {
 }
 MyApp.ɵfac = function MyApp_Factory(t) { return new (t || MyApp)(); };
-MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: MyApp, selector: "ng-component", ngImport: i0, template: { source: '<some-comp [prop]="{}" [otherProp]="{a: 1, b: 2}"></some-comp>', isInline: true } });
+MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: MyApp, selector: "ng-component", ngImport: i0, template: { source: '<some-comp [prop]="{}" [otherProp]="{a: 1, b: 2}"></some-comp>', isInline: true }, directives: [{ type: SomeComp, selector: "some-comp", inputs: ["prop", "otherProp"] }] });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyApp, [{
         type: Component,
         args: [{ template: '<some-comp [prop]="{}" [otherProp]="{a: 1, b: 2}"></some-comp>' }]
+    }], null, null); })();
+export class MyMod {
+}
+MyMod.ɵmod = i0.ɵɵdefineNgModule({ type: MyMod });
+MyMod.ɵinj = i0.ɵɵdefineInjector({ factory: function MyMod_Factory(t) { return new (t || MyMod)(); } });
+(function () { (typeof ngJitMode === "undefined" || ngJitMode) && i0.ɵɵsetNgModuleScope(MyMod, { declarations: [SomeComp, MyApp] }); })();
+/*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyMod, [{
+        type: NgModule,
+        args: [{ declarations: [SomeComp, MyApp] }]
     }], null, null); })();
 
 /****************************************************************************************************
  * PARTIAL FILE: constant_object_literals.d.ts
  ****************************************************************************************************/
 import * as i0 from "@angular/core";
+export declare class SomeComp {
+    prop: any;
+    otherProp: any;
+    static ɵfac: i0.ɵɵFactoryDef<SomeComp, never>;
+    static ɵcmp: i0.ɵɵComponentDefWithMeta<SomeComp, "some-comp", never, { "prop": "prop"; "otherProp": "otherProp"; }, {}, never, never>;
+}
 export declare class MyApp {
     static ɵfac: i0.ɵɵFactoryDef<MyApp, never>;
     static ɵcmp: i0.ɵɵComponentDefWithMeta<MyApp, "ng-component", never, {}, {}, never, never>;
+}
+export declare class MyMod {
+    static ɵmod: i0.ɵɵNgModuleDefWithMeta<MyMod, [typeof SomeComp, typeof MyApp], never, never>;
+    static ɵinj: i0.ɵɵInjectorDef<MyMod>;
 }
 
 /****************************************************************************************************
  * PARTIAL FILE: constant_array_literals.js
  ****************************************************************************************************/
-import { Component } from '@angular/core';
+import { Component, Input, NgModule } from '@angular/core';
 import * as i0 from "@angular/core";
+export class SomeComp {
+}
+SomeComp.ɵfac = function SomeComp_Factory(t) { return new (t || SomeComp)(); };
+SomeComp.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: SomeComp, selector: "some-comp", inputs: { prop: "prop", otherProp: "otherProp" }, ngImport: i0, template: { source: '', isInline: true } });
+/*@__PURE__*/ (function () { i0.ɵsetClassMetadata(SomeComp, [{
+        type: Component,
+        args: [{ selector: 'some-comp', template: '' }]
+    }], null, { prop: [{
+            type: Input
+        }], otherProp: [{
+            type: Input
+        }] }); })();
 export class MyApp {
 }
 MyApp.ɵfac = function MyApp_Factory(t) { return new (t || MyApp)(); };
-MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: MyApp, selector: "ng-component", ngImport: i0, template: { source: '<some-comp [prop]="[]" [otherProp]="[0, 1, 2]"></some-comp>', isInline: true } });
+MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: MyApp, selector: "ng-component", ngImport: i0, template: { source: '<some-comp [prop]="[]" [otherProp]="[0, 1, 2]"></some-comp>', isInline: true }, directives: [{ type: SomeComp, selector: "some-comp", inputs: ["prop", "otherProp"] }] });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyApp, [{
         type: Component,
         args: [{ template: '<some-comp [prop]="[]" [otherProp]="[0, 1, 2]"></some-comp>' }]
+    }], null, null); })();
+export class MyMod {
+}
+MyMod.ɵmod = i0.ɵɵdefineNgModule({ type: MyMod });
+MyMod.ɵinj = i0.ɵɵdefineInjector({ factory: function MyMod_Factory(t) { return new (t || MyMod)(); } });
+(function () { (typeof ngJitMode === "undefined" || ngJitMode) && i0.ɵɵsetNgModuleScope(MyMod, { declarations: [MyApp, SomeComp] }); })();
+/*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyMod, [{
+        type: NgModule,
+        args: [{ declarations: [MyApp, SomeComp] }]
     }], null, null); })();
 
 /****************************************************************************************************
  * PARTIAL FILE: constant_array_literals.d.ts
  ****************************************************************************************************/
 import * as i0 from "@angular/core";
+export declare class SomeComp {
+    prop: any;
+    otherProp: any;
+    static ɵfac: i0.ɵɵFactoryDef<SomeComp, never>;
+    static ɵcmp: i0.ɵɵComponentDefWithMeta<SomeComp, "some-comp", never, { "prop": "prop"; "otherProp": "otherProp"; }, {}, never, never>;
+}
 export declare class MyApp {
     static ɵfac: i0.ɵɵFactoryDef<MyApp, never>;
     static ɵcmp: i0.ɵɵComponentDefWithMeta<MyApp, "ng-component", never, {}, {}, never, never>;
+}
+export declare class MyMod {
+    static ɵmod: i0.ɵɵNgModuleDefWithMeta<MyMod, [typeof MyApp, typeof SomeComp], never, never>;
+    static ɵinj: i0.ɵɵInjectorDef<MyMod>;
 }
 
 /****************************************************************************************************

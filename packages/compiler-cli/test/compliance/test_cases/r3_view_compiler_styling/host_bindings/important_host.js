@@ -3,8 +3,6 @@ function MyComponent_Template(rf, ctx) {
     $r3$.ɵɵelement(0, "div");
   }
   if (rf & 2) {
-    $r3$.ɵɵstyleMap(ctx.myStyleExp);
-    $r3$.ɵɵclassMap(ctx.myClassExp);
     $r3$.ɵɵstyleProp("height", ctx.myHeightExp);
     $r3$.ɵɵclassProp("bar", ctx.myBarClassExp);
   }

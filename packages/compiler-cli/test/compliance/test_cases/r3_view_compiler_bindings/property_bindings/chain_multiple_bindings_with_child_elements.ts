@@ -1,4 +1,9 @@
-import {Component} from '@angular/core';
+import {Component, Directive, Input, NgModule} from '@angular/core';
+
+@Directive({selector: 'span'})
+export class SpanDir {
+  @Input() someProp!: any;
+}
 
 @Component({
   template: `
@@ -9,4 +14,8 @@ import {Component} from '@angular/core';
 export class MyComponent {
   myTitle = 'hello';
   buttonId = 'special-button';
+}
+
+@NgModule({declarations: [MyComponent, SpanDir]})
+export class MyMod {
 }

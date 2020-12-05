@@ -1,4 +1,8 @@
-import {Component} from '@angular/core';
+import {Component, NgModule} from '@angular/core';
+
+@Component({selector: 'custom-element', template: ''})
+export class CustomEl {
+}
 
 @Component({
   template: `
@@ -10,4 +14,8 @@ import {Component} from '@angular/core';
 export class MyComponent {
   myTitle = 'hello';
   buttonId = 'special-button';
+}
+
+@NgModule({declarations: [MyComponent, CustomEl]})
+export class MyMod {
 }

@@ -4,11 +4,11 @@ import {Component, NgModule} from '@angular/core';
 export class SimpleComponent {
 }
 
-@NgModule({declarations: [SimpleComponent]})
-export class MyModule {
-}
-
 @Component(
     {selector: 'my-app', template: '<simple><h1 ngProjectAs="[title],[header]"></h1></simple>'})
 export class MyApp {
+}
+
+@NgModule({declarations: [SimpleComponent, MyApp]})
+export class MyModule {
 }

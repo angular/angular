@@ -1,4 +1,9 @@
-import {Component, NgModule} from '@angular/core';
+import {Component, NgModule, Pipe} from '@angular/core';
+
+@Pipe({name: 'uppercase'})
+export class UppercasePipe {
+  transform(v: any) {}
+}
 
 @Component({
   selector: 'my-component',
@@ -20,8 +25,11 @@ import {Component, NgModule} from '@angular/core';
 `,
 })
 export class MyComponent {
+  one = 1;
+  two = 2;
+  nestedInBlockTwo = '';
 }
 
-@NgModule({declarations: [MyComponent]})
+@NgModule({declarations: [MyComponent, UppercasePipe]})
 export class MyModule {
 }

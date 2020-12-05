@@ -1128,7 +1128,7 @@ export declare class AnimationEvent {
 
     it('should report an error with an unknown pipe even if `fullTemplateTypeCheck` is disabled',
        () => {
-         env.tsconfig({ivyTemplateTypeCheck: true, fullTemplateTypeCheck: false});
+         env.tsconfig({fullTemplateTypeCheck: false});
          env.write('test.ts', `
           import {Component, NgModule} from '@angular/core';
 
@@ -1896,7 +1896,7 @@ export declare class AnimationEvent {
 
     describe('legacy schema checking with the DOM schema', () => {
       beforeEach(() => {
-        env.tsconfig({ivyTemplateTypeCheck: true, fullTemplateTypeCheck: false});
+        env.tsconfig({fullTemplateTypeCheck: false});
       });
 
       it('should check for unknown elements', () => {

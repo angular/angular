@@ -1,4 +1,9 @@
-import {Component, NgModule} from '@angular/core';
+import {Component, NgModule, Pipe} from '@angular/core';
+
+@Pipe({name: 'pipe'})
+export class PipePipe {
+  transform(v: any) {}
+}
 
 @Component({
   selector: 'my-component',
@@ -19,6 +24,6 @@ export class MyComponent {
   item = 1;
 }
 
-@NgModule({declarations: [MyComponent]})
+@NgModule({declarations: [MyComponent, PipePipe]})
 export class MyModule {
 }

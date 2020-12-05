@@ -7,6 +7,7 @@ import {Component, NgModule} from '@angular/core';
   `
 })
 export class MyComponent {
+  valueA!: any;
 }
 
 @NgModule({declarations: [MyComponent]})

@@ -439,11 +439,11 @@ runInEachFileSystem(() => {
         env.driveMain();
         env.flushWrittenFileTracking();
 
-        // Update ACmp to have a different selector, isn't matched in BCmp's template.
+        // Update ACmp
         env.write('a.ts', `
           import {Component} from '@angular/core';
 
-          @Component({selector: 'not-a-cmp', template: '...'})
+          @Component({selector: 'a-cmp', template: 'new template'})
           export class ACmp {}
        `);
 

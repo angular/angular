@@ -5,6 +5,8 @@ import {Component, NgModule} from '@angular/core';
   template: `<div (click)="click()" (change)="change()"></div>`,
 })
 export class MyComponent {
+  click() {}
+  change() {}
 }
 
 @NgModule({declarations: [MyComponent]})

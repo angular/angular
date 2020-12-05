@@ -26,6 +26,8 @@ MyModule.ɵinj = i0.ɵɵdefineInjector({ factory: function MyModule_Factory(t) {
  ****************************************************************************************************/
 import * as i0 from "@angular/core";
 export declare class MyApp {
+    exp: any;
+    any: any;
     static ɵfac: i0.ɵɵFactoryDef<MyApp, never>;
     static ɵcmp: i0.ɵɵComponentDefWithMeta<MyApp, "my-app", never, {}, {}, never, never>;
 }

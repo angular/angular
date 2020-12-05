@@ -145,12 +145,20 @@ export declare class MyModule {
 /****************************************************************************************************
  * PARTIAL FILE: no_selector.js
  ****************************************************************************************************/
-import { Component, NgModule } from '@angular/core';
+import { Component, Directive, NgModule } from '@angular/core';
 import * as i0 from "@angular/core";
+export class RouterOutlet {
+}
+RouterOutlet.ɵfac = function RouterOutlet_Factory(t) { return new (t || RouterOutlet)(); };
+RouterOutlet.ɵdir = i0.ɵɵngDeclareDirective({ version: "0.0.0-PLACEHOLDER", type: RouterOutlet, selector: "router-outlet", ngImport: i0 });
+/*@__PURE__*/ (function () { i0.ɵsetClassMetadata(RouterOutlet, [{
+        type: Directive,
+        args: [{ selector: 'router-outlet' }]
+    }], null, null); })();
 export class EmptyOutletComponent {
 }
 EmptyOutletComponent.ɵfac = function EmptyOutletComponent_Factory(t) { return new (t || EmptyOutletComponent)(); };
-EmptyOutletComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: EmptyOutletComponent, selector: "ng-component", ngImport: i0, template: { source: '<router-outlet></router-outlet>', isInline: true } });
+EmptyOutletComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: EmptyOutletComponent, selector: "ng-component", ngImport: i0, template: { source: '<router-outlet></router-outlet>', isInline: true }, directives: [{ type: RouterOutlet, selector: "router-outlet" }] });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(EmptyOutletComponent, [{
         type: Component,
         args: [{ template: '<router-outlet></router-outlet>' }]
@@ -159,22 +167,26 @@ export class MyModule {
 }
 MyModule.ɵmod = i0.ɵɵdefineNgModule({ type: MyModule });
 MyModule.ɵinj = i0.ɵɵdefineInjector({ factory: function MyModule_Factory(t) { return new (t || MyModule)(); } });
-(function () { (typeof ngJitMode === "undefined" || ngJitMode) && i0.ɵɵsetNgModuleScope(MyModule, { declarations: [EmptyOutletComponent] }); })();
+(function () { (typeof ngJitMode === "undefined" || ngJitMode) && i0.ɵɵsetNgModuleScope(MyModule, { declarations: [EmptyOutletComponent, RouterOutlet] }); })();
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(MyModule, [{
         type: NgModule,
-        args: [{ declarations: [EmptyOutletComponent] }]
+        args: [{ declarations: [EmptyOutletComponent, RouterOutlet] }]
     }], null, null); })();
 
 /****************************************************************************************************
  * PARTIAL FILE: no_selector.d.ts
  ****************************************************************************************************/
 import * as i0 from "@angular/core";
+export declare class RouterOutlet {
+    static ɵfac: i0.ɵɵFactoryDef<RouterOutlet, never>;
+    static ɵdir: i0.ɵɵDirectiveDefWithMeta<RouterOutlet, "router-outlet", never, {}, {}, never>;
+}
 export declare class EmptyOutletComponent {
     static ɵfac: i0.ɵɵFactoryDef<EmptyOutletComponent, never>;
     static ɵcmp: i0.ɵɵComponentDefWithMeta<EmptyOutletComponent, "ng-component", never, {}, {}, never, never>;
 }
 export declare class MyModule {
-    static ɵmod: i0.ɵɵNgModuleDefWithMeta<MyModule, [typeof EmptyOutletComponent], never, never>;
+    static ɵmod: i0.ɵɵNgModuleDefWithMeta<MyModule, [typeof EmptyOutletComponent, typeof RouterOutlet], never, never>;
     static ɵinj: i0.ɵɵInjectorDef<MyModule>;
 }
 
