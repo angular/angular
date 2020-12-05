@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ApplicationRef, PLATFORM_ID} from '@angular/core';
+import {ApplicationRef, ErrorHandler, PLATFORM_ID} from '@angular/core';
 import {fakeAsync, flushMicrotasks, TestBed, tick} from '@angular/core/testing';
 import {Subject} from 'rxjs';
 import {filter, take} from 'rxjs/operators';
@@ -21,6 +21,7 @@ describe('ServiceWorkerModule', () => {
     return;
   }
 
+  let errorHandlerSpy: jasmine.Spy;
   let swRegisterSpy: jasmine.Spy;
 
   const untilStable = () => {
@@ -34,9 +35,14 @@ describe('ServiceWorkerModule', () => {
 
   describe('register()', () => {
     const configTestBed = async (opts: SwRegistrationOptions) => {
+      const errorHandler = {handleError: () => {}};
+      errorHandlerSpy = spyOn(errorHandler, 'handleError');
       TestBed.configureTestingModule({
         imports: [ServiceWorkerModule.register('sw.js', opts)],
-        providers: [{provide: PLATFORM_ID, useValue: 'browser'}],
+        providers: [
+          {provide: ErrorHandler, useValue: errorHandler},
+          {provide: PLATFORM_ID, useValue: 'browser'},
+        ],
       });
 
       await untilStable();
@@ -71,12 +77,10 @@ describe('ServiceWorkerModule', () => {
     });
 
     it('catches and a logs registration errors', async () => {
-      const consoleErrorSpy = spyOn(console, 'error');
       swRegisterSpy.and.returnValue(Promise.reject('no reason'));
 
       await configTestBed({enabled: true, scope: 'foo'});
-      expect(consoleErrorSpy)
-          .toHaveBeenCalledWith('Service worker registration failed with:', 'no reason');
+      expect(errorHandlerSpy).toHaveBeenCalledWith('no reason');
     });
   });
 
