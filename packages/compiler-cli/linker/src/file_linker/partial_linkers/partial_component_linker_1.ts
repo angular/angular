@@ -65,42 +65,45 @@ export function toR3ComponentMeta<TExpression>(
 
   let wrapDirectivesAndPipesInClosure = false;
 
-  const directives: R3UsedDirectiveMetadata[] = metaObj.has('directives') ?
-      metaObj.getArray('directives').map(directive => {
-        const directiveExpr = directive.getObject();
-        const type = directiveExpr.getValue('type');
-        const selector = directiveExpr.getString('selector');
+  let directives: R3UsedDirectiveMetadata[] = [];
+  if (metaObj.has('directives')) {
+    directives = metaObj.getArray('directives').map(directive => {
+      const directiveExpr = directive.getObject();
+      const type = directiveExpr.getValue('type');
+      const selector = directiveExpr.getString('selector');
 
-        let typeExpr = type.getOpaque();
-        if (type.isFunction()) {
-          typeExpr = type.getFunctionReturnValue().getOpaque();
-          wrapDirectivesAndPipesInClosure = true;
-        }
-        return {
-          type: typeExpr,
-          selector: selector,
-          inputs: directiveExpr.has('inputs') ?
-              directiveExpr.getArray('inputs').map(input => input.getString()) :
-              [],
-          outputs: directiveExpr.has('outputs') ?
-              directiveExpr.getArray('outputs').map(input => input.getString()) :
-              [],
-          exportAs: directiveExpr.has('exportAs') ?
-              directiveExpr.getArray('exportAs').map(exportAs => exportAs.getString()) :
-              null,
-        };
-      }) :
-      [];
+      let typeExpr = type.getOpaque();
+      if (type.isFunction()) {
+        typeExpr = type.getFunctionReturnValue().getOpaque();
+        wrapDirectivesAndPipesInClosure = true;
+      }
+      return {
+        type: typeExpr,
+        selector: selector,
+        inputs: directiveExpr.has('inputs') ?
+            directiveExpr.getArray('inputs').map(input => input.getString()) :
+            [],
+        outputs: directiveExpr.has('outputs') ?
+            directiveExpr.getArray('outputs').map(input => input.getString()) :
+            [],
+        exportAs: directiveExpr.has('exportAs') ?
+            directiveExpr.getArray('exportAs').map(exportAs => exportAs.getString()) :
+            null,
+      };
+    });
+  }
 
-  const pipes = metaObj.has('pipes') ? metaObj.getObject('pipes').toMap(value => {
-    if (value.isFunction()) {
-      wrapDirectivesAndPipesInClosure = true;
-      return value.getFunctionReturnValue().getOpaque();
-    } else {
-      return value.getOpaque();
-    }
-  }) :
-                                       new Map<string, o.Expression>();
+  let pipes = new Map<string, o.Expression>();
+  if (metaObj.has('pipes')) {
+    pipes = metaObj.getObject('pipes').toMap(value => {
+      if (value.isFunction()) {
+        wrapDirectivesAndPipesInClosure = true;
+        return value.getFunctionReturnValue().getOpaque();
+      } else {
+        return value.getOpaque();
+      }
+    });
+  }
 
   return {
     ...toR3DirectiveMeta(metaObj, code, sourceUrl),
