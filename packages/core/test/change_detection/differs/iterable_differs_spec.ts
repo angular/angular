@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injector} from '@angular/core';
-import {IterableDiffers} from '@angular/core/src/change_detection/differs/iterable_differs';
+import {Injector, IterableDiffer, IterableDifferFactory, IterableDiffers, NgModule, TrackByFunction} from '@angular/core';
+import {TestBed} from '@angular/core/testing';
 
 import {SpyIterableDifferFactory} from '../../spies';
 
@@ -49,13 +49,6 @@ import {SpyIterableDifferFactory} from '../../spies';
     });
 
     describe('.extend()', () => {
-      it('should throw if calling extend when creating root injector', () => {
-        const injector = Injector.create([IterableDiffers.extend([])]);
-
-        expect(() => injector.get(IterableDiffers))
-            .toThrowError(/Cannot extend IterableDiffers without a parent injector/);
-      });
-
       it('should extend di-inherited differs', () => {
         const parent = new IterableDiffers([factory1]);
         const injector = Injector.create([{provide: IterableDiffers, useValue: parent}]);
@@ -65,6 +58,32 @@ import {SpyIterableDifferFactory} from '../../spies';
         expect(childInjector.get<IterableDiffers>(IterableDiffers).factories).toEqual([
           factory2, factory1
         ]);
+      });
+
+      it('should support .extend in root NgModule', () => {
+        const DIFFER: IterableDiffer<any> = {} as any;
+        const log: string[] = [];
+        class MyIterableDifferFactory implements IterableDifferFactory {
+          supports(objects: any): boolean {
+            log.push('supports', objects);
+            return true;
+          }
+          create<V>(trackByFn?: TrackByFunction<V>): IterableDiffer<V> {
+            log.push('create');
+            return DIFFER;
+          }
+        }
+
+
+        @NgModule({providers: [IterableDiffers.extend([new MyIterableDifferFactory()])]})
+        class MyModule {
+        }
+
+        TestBed.configureTestingModule({imports: [MyModule]});
+        const differs = TestBed.inject(IterableDiffers);
+        const differ = differs.find('VALUE').create(null!);
+        expect(differ).toEqual(DIFFER);
+        expect(log).toEqual(['supports', 'VALUE', 'create']);
       });
     });
   });

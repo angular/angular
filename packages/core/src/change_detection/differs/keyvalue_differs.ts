@@ -111,6 +111,10 @@ export interface KeyValueDifferFactory {
   create<K, V>(): KeyValueDiffer<K, V>;
 }
 
+export function defaultKeyValueDiffersFactory() {
+  return new KeyValueDiffers([new DefaultKeyValueDifferFactory()]);
+}
+
 /**
  * A repository of different Map diffing strategies used by NgClass, NgStyle, and others.
  *
@@ -118,11 +122,8 @@ export interface KeyValueDifferFactory {
  */
 export class KeyValueDiffers {
   /** @nocollapse */
-  static ɵprov = ɵɵdefineInjectable({
-    token: KeyValueDiffers,
-    providedIn: 'root',
-    factory: () => new KeyValueDiffers([new DefaultKeyValueDifferFactory()])
-  });
+  static ɵprov = ɵɵdefineInjectable(
+      {token: KeyValueDiffers, providedIn: 'root', factory: defaultKeyValueDiffersFactory});
 
   /**
    * @deprecated v4.0.0 - Should be private.
@@ -165,12 +166,10 @@ export class KeyValueDiffers {
     return {
       provide: KeyValueDiffers,
       useFactory: (parent: KeyValueDiffers) => {
-        if (!parent) {
-          // Typically would occur when calling KeyValueDiffers.extend inside of dependencies passed
-          // to bootstrap(), which would override default pipes instead of extending them.
-          throw new Error('Cannot extend KeyValueDiffers without a parent injector');
-        }
-        return KeyValueDiffers.create(factories, parent);
+        // if parent is null, it means that we are in the root injector and we have just overridden
+        // the default injection mechanism for KeyValueDiffers, in such a case just assume
+        // `defaultKeyValueDiffersFactory`.
+        return KeyValueDiffers.create(factories, parent || defaultKeyValueDiffersFactory());
       },
       // Dependency technically isn't optional, but we can provide a better error message this way.
       deps: [[KeyValueDiffers, new SkipSelf(), new Optional()]]
