@@ -1529,6 +1529,28 @@ describe('FormGroup', () => {
       expect(c2.disabled).toBe(false);
     });
 
+    it('should retain the disabled status on the most parent form group if the value has been updated on child control',
+       () => {
+         const c1 = new FormControl(null);
+         const c2 = new FormControl(null);
+         const g = new FormGroup({one: c1, two: c2});
+
+         c1.valueChanges.subscribe(() => {
+           c2.setValue('new!');
+         });
+
+         expect(c1.disabled).toBe(false);
+         expect(c2.disabled).toBe(false);
+         expect(g.disabled).toBe(false);
+
+         g.disable();
+
+         expect(c2.value).toEqual('new!');
+         expect(c1.disabled).toBe(true);
+         expect(c2.disabled).toBe(true);
+         expect(g.disabled).toBe(true);
+       });
+
     it('should ignore disabled controls in validation', () => {
       const g = new FormGroup({
         nested: new FormGroup({one: new FormControl(null, Validators.required)}),

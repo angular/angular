@@ -630,11 +630,11 @@ export abstract class AbstractControl {
     // parent's dirtiness based on the children.
     const skipPristineCheck = this._parentMarkedDirty(opts.onlySelf);
 
-    (this as {status: string}).status = DISABLED;
     (this as {errors: ValidationErrors | null}).errors = null;
     this._forEachChild((control: AbstractControl) => {
       control.disable({...opts, onlySelf: true});
     });
+    (this as {status: string}).status = DISABLED;
     this._updateValue();
 
     if (opts.emitEvent !== false) {
