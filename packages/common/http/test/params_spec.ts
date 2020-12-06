@@ -36,6 +36,12 @@ import {HttpParams} from '@angular/common/http/src/params';
         expect(mutated.toString()).toEqual('a=b&a=c');
       });
 
+      it('should allow appending all parameters', () => {
+        const body = new HttpParams({fromString: 'a=a1&b=b1'});
+        const mutated = body.appendAll({a: ['a2', 'a3'], b: 'b2'});
+        expect(mutated.toString()).toEqual('a=a1&a=a2&a=a3&b=b1&b=b2');
+      });
+
       it('should allow deletion of parameters', () => {
         const body = new HttpParams({fromString: 'a=b&c=d&e=f'});
         const mutated = body.delete('c');

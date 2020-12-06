@@ -1570,6 +1570,9 @@ export declare interface HttpParameterCodec {
 export declare class HttpParams {
     constructor(options?: HttpParamsOptions);
     append(param: string, value: string): HttpParams;
+    appendAll(params: {
+        [param: string]: string | string[];
+    }): HttpParams;
     delete(param: string, value?: string): HttpParams;
     get(param: string): string | null;
     getAll(param: string): string[] | null;
