@@ -17,6 +17,7 @@ integration/bazel-schematics/demo
 # All integration test node_modules folders
 integration/bazel/node_modules
 integration/bazel-schematics/node_modules
+integration/cli-elements-universal/node_modules
 integration/cli-hello-world/node_modules
 integration/cli-hello-world-ivy-compat/node_modules
 integration/cli-hello-world-ivy-i18n/node_modules
@@ -44,6 +45,7 @@ integration/typings_test_ts37/node_modules
 # All integration test .yarn_local_cache folders
 integration/bazel/.yarn_local_cache
 integration/bazel-schematics/.yarn_local_cache
+integration/cli-elements-universal/.yarn_local_cache
 integration/cli-hello-world/.yarn_local_cache
 integration/cli-hello-world-ivy-compat/.yarn_local_cache
 integration/cli-hello-world-ivy-i18n/.yarn_local_cache
@@ -71,6 +73,7 @@ integration/typings_test_ts37/.yarn_local_cache
 # All integration test NPM_PACKAGE_MANIFEST.json folders
 integration/bazel/NPM_PACKAGE_MANIFEST.json
 integration/bazel-schematics/NPM_PACKAGE_MANIFEST.json
+integration/cli-elements-universal/NPM_PACKAGE_MANIFEST.json
 integration/cli-hello-world/NPM_PACKAGE_MANIFEST.json
 integration/cli-hello-world-ivy-compat/NPM_PACKAGE_MANIFEST.json
 integration/cli-hello-world-ivy-i18n/NPM_PACKAGE_MANIFEST.json
