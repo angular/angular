@@ -45,7 +45,7 @@ In most cases, the target name is the name of a property, even when it appears t
 In this example, `src` is the name of the `<img>` element property.
 
 The brackets, `[]`, cause Angular to evaluate the right-hand side of the assignment as a dynamic expression.
-Without the brackets, Angular treats the the right-hand side as a string literal and sets the property to that static value.
+Without the brackets, Angular treats the right-hand side as a string literal and sets the property to that static value.
 
 <code-example path="property-binding/src/app/app.component.html" region="no-evaluation" header="src/app.component.html"></code-example>
 
