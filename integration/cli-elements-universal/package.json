@@ -1,0 +1,62 @@
+{
+  "name": "cli-elements-universal",
+  "version": "0.0.0",
+  "scripts": {
+    "ng": "ng",
+    "start": "ng serve",
+    "build": "ng build",
+    "pretest": "ng version",
+    "test": "ng test && yarn e2e --prod && yarn test-ssr",
+    "pretest-ssr": "yarn prerender",
+    "test-ssr": "node --eval \"assert(fs.readFileSync('dist/cli-elements-universal/browser/index.html', 'utf8').includes('<app-title-ce>'), 'Expected \\'index.html\\' to contain \\'<app-title-ce>\\'.');\"",
+    "lint": "ng lint",
+    "e2e": "ng e2e --port 0",
+    "dev:ssr": "ng run cli-elements-universal:serve-ssr",
+    "serve:ssr": "node dist/cli-elements-universal/server/main.js",
+    "build:ssr": "ng build --prod && ng run cli-elements-universal:server:production",
+    "prerender": "ng run cli-elements-universal:prerender"
+  },
+  "private": true,
+  "dependencies": {
+    "@angular/animations": "file:../../dist/packages-dist/animations",
+    "@angular/common": "file:../../dist/packages-dist/common",
+    "@angular/compiler": "file:../../dist/packages-dist/compiler",
+    "@angular/core": "file:../../dist/packages-dist/core",
+    "@angular/elements": "file:../../dist/packages-dist/elements",
+    "@angular/platform-browser": "file:../../dist/packages-dist/platform-browser",
+    "@angular/platform-browser-dynamic": "file:../../dist/packages-dist/platform-browser-dynamic",
+    "@angular/platform-server": "file:../../dist/packages-dist/platform-server",
+    "@nguniversal/express-engine": "^11.0.0",
+    "document-register-element": "^1.7.2",
+    "express": "^4.15.2",
+    "rxjs": "file:../../node_modules/rxjs",
+    "tslib": "file:../../node_modules/tslib",
+    "zone.js": "file:../../dist/zone.js-dist/archive/zone.js.tgz"
+  },
+  "devDependencies": {
+    "@angular-devkit/build-angular": "file:../../node_modules/@angular-devkit/build-angular",
+    "@angular/cli": "file:../../node_modules/@angular/cli",
+    "@angular/compiler-cli": "file:../../dist/packages-dist/compiler-cli",
+    "@nguniversal/builders": "^11.0.0",
+    "@types/express": "^4.17.0",
+    "@types/jasmine": "file:../../node_modules/@types/jasmine",
+    "@types/node": "file:../../node_modules/@types/node",
+    "codelyzer": "^6.0.0",
+    "jasmine-core": "~3.6.0",
+    "jasmine-spec-reporter": "~5.0.0",
+    "karma": "~5.2.0",
+    "karma-chrome-launcher": "~3.1.0",
+    "karma-coverage": "~2.0.3",
+    "karma-jasmine": "~4.0.0",
+    "karma-jasmine-html-reporter": "^1.5.0",
+    "protractor": "file:../../node_modules/protractor",
+    "puppeteer": "file:../../node_modules/puppeteer",
+    "ts-node": "~8.3.0",
+    "tslint": "~6.1.0",
+    "typescript": "file:../../node_modules/typescript"
+  },
+  "//resolutions-comment": "Ensure a single version of webdriver-manager which comes from root node_modules that has already run webdriver-manager update",
+  "resolutions": {
+    "**/webdriver-manager": "file:../../node_modules/webdriver-manager"
+  }
+}
