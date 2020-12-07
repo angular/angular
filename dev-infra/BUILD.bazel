@@ -1,6 +1,6 @@
-load("@build_bazel_rules_nodejs//:index.bzl", "generated_file_test", "pkg_npm")
+load("@build_bazel_rules_nodejs//:index.bzl", "pkg_npm")
 load("@npm//@bazel/typescript:index.bzl", "ts_library")
-load("@npm//@bazel/rollup:index.bzl", "rollup_bundle")
+load("//dev-infra:index.bzl", "ng_dev_rolled_up_generated_file")
 
 ts_library(
     name = "cli",
@@ -24,16 +24,13 @@ ts_library(
     ],
 )
 
-rollup_bundle(
-    name = "cli_rollup",
-    args = [
+ng_dev_rolled_up_generated_file(
+    name = "ng-dev",
+    entry_point = ":cli.ts",
+    rollup_args = [
         "--plugin",
         "rollup-plugin-hashbang",
     ],
-    entry_point = ":cli.ts",
-    format = "cjs",
-    silent = True,
-    sourcemap = "false",
     deps = [
         ":cli",
         # TODO(josephperrott): Determine if this plugin is the best method for ensuring the hashbang
@@ -42,10 +39,12 @@ rollup_bundle(
     ],
 )
 
-generated_file_test(
-    name = "local_ng_dev",
-    src = "ng-dev.js",
-    generated = "cli_rollup",
+ng_dev_rolled_up_generated_file(
+    name = "build-worker",
+    entry_point = "//dev-infra/release/build:build-worker.ts",
+    deps = [
+        "//dev-infra/release/build",
+    ],
 )
 
 genrule(
