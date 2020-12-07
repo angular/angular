@@ -41,8 +41,7 @@ export class UpgradeHelper {
   private readonly $controller: IControllerService;
 
   constructor(
-      private injector: Injector, private name: string, elementRef: ElementRef,
-      directive?: IDirective) {
+      injector: Injector, private name: string, elementRef: ElementRef, directive?: IDirective) {
     this.$injector = injector.get($INJECTOR);
     this.$compile = this.$injector.get($COMPILE);
     this.$controller = this.$injector.get($CONTROLLER);
