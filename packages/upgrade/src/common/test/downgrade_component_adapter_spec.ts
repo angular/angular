@@ -131,7 +131,6 @@ withEachNg1Version(() => {
         let scope: angular.IScope;  // mock
         let ngModel = undefined as any;
         let parentInjector: Injector;  // testbed
-        let $injector = undefined as any;
         let $compile = undefined as any;
         let $parse = undefined as any;
         let componentFactory: ComponentFactory<any>;  // testbed
@@ -166,8 +165,8 @@ withEachNg1Version(() => {
         parentInjector = TestBed;
 
         return new DowngradeComponentAdapter(
-            element, attrs, scope, ngModel, parentInjector, $injector, $compile, $parse,
-            componentFactory, wrapCallback);
+            element, attrs, scope, ngModel, parentInjector, $compile, $parse, componentFactory,
+            wrapCallback);
       }
 
       beforeEach(() => {
