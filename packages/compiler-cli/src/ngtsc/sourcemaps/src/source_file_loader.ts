@@ -208,7 +208,7 @@ export class SourceFileLoader {
 }
 
 /** A small helper structure that is returned from `loadSourceMap()`. */
-interface MapAndPath {
+export interface MapAndPath {
   /** The path to the source map if it was external or `null` if it was inline. */
   mapPath: AbsoluteFsPath|null;
   /** The raw source map itself. */

@@ -10,7 +10,7 @@ import {PluginObj, transformSync} from '@babel/core';
 import {createEs2015LinkerPlugin} from '../../../linker/babel';
 import {AbsoluteFsPath, FileSystem} from '../../../src/ngtsc/file_system';
 import {ConsoleLogger, LogLevel} from '../../../src/ngtsc/logging';
-import {RawSourceMap, SourceFileLoader} from '../../../src/ngtsc/sourcemaps';
+import {MapAndPath, RawSourceMap, SourceFileLoader} from '../../../src/ngtsc/sourcemaps';
 import {CompileResult, getBuildOutputDirectory} from '../test_helpers/compile_test';
 import {ComplianceTest} from '../test_helpers/get_compliance_tests';
 import {parseGoldenPartial} from '../test_helpers/golden_partials';
@@ -49,21 +49,22 @@ function linkPartials(fs: FileSystem, test: ComplianceTest): CompileResult {
   for (const expectation of test.expectations) {
     for (const {generated: fileName} of expectation.files) {
       const partialPath = fs.resolve(builtDirectory, fileName);
-      if (fs.exists(partialPath)) {
-        const source = fs.readFile(partialPath);
-        const sourceMapPath = fs.resolve(partialPath + '.map');
-        const sourceMap =
-            fs.exists(sourceMapPath) ? JSON.parse(fs.readFile(sourceMapPath)) : undefined;
-        const {linkedSource, linkedSourceMap} =
-            applyLinker({fileName, source, sourceMap}, linkerPlugin);
-
-        if (linkedSourceMap !== undefined) {
-          const mapAndPath = {map: linkedSourceMap, mapPath: sourceMapPath};
-          const sourceFile = loader.loadSourceFile(partialPath, linkedSource, mapAndPath);
-          safeWrite(fs, sourceMapPath, JSON.stringify(sourceFile.renderFlattenedSourceMap()));
-        }
-        safeWrite(fs, partialPath, linkedSource);
+      if (!fs.exists(partialPath)) {
+        continue;
       }
+      const source = fs.readFile(partialPath);
+      const sourceMapPath = fs.resolve(partialPath + '.map');
+      const sourceMap =
+          fs.exists(sourceMapPath) ? JSON.parse(fs.readFile(sourceMapPath)) : undefined;
+      const {linkedSource, linkedSourceMap} =
+          applyLinker({fileName, source, sourceMap}, linkerPlugin);
+
+      if (linkedSourceMap !== undefined) {
+        const mapAndPath: MapAndPath = {map: linkedSourceMap, mapPath: sourceMapPath};
+        const sourceFile = loader.loadSourceFile(partialPath, linkedSource, mapAndPath);
+        safeWrite(fs, sourceMapPath, JSON.stringify(sourceFile.renderFlattenedSourceMap()));
+      }
+      safeWrite(fs, partialPath, linkedSource);
     }
   }
   return {emittedFiles: [], errors: []};

@@ -17,12 +17,13 @@ import {SourceFileLoader} from '../../../src/ngtsc/sourcemaps';
  * comment that has the following syntax:
  *
  * ```
- * <generated code> // SOURCE: "<path/to/original>" <original source>
+ * <generated code> // SOURCE: "</path/to/original>" <original source>
  * ```
  *
- * The `path/to/original` path will be relative to the source-map file.
- * The `generated code` and the `original source` are not trimmed of whitespace - but there is a
- * single space after the generated and a single space before the original source.
+ * The `path/to/original` path will be absolute within the mock file-system, where the root is the
+ * directory containing the `TEST_CASES.json` file. The `generated code` and the `original source`
+ * are not trimmed of whitespace - but there is a single space after the generated and a single
+ * space before the original source.
  *
  * @param fs The test file-system where the source, generated and expected files are stored.
  * @param generated The content of the generated source file.
@@ -102,39 +103,35 @@ function unescape(str: string): string {
 
 /**
  * Process a generated file to extract human understandable segment mappings.
- * These mappings are easier to compare in unit tests that the raw SourceMap mappings.
+ *
+ * These mappings are easier to compare in unit tests than the raw SourceMap mappings.
+ *
  * @param fs the test file-system that holds the source and generated files.
- * @param generatedFileName The name of the generated file to process.
+ * @param generatedPath The path of the generated file to process.
  * @param generatedContents The contents of the generated file to process.
  * @returns An array of segment mappings for each mapped segment in the given generated file. An
  *     empty array is returned if there is no source-map file found.
  */
 function getMappedSegments(
-    fs: FileSystem, generatedFileName: AbsoluteFsPath,
-    generatedContents: string): SegmentMapping[] {
+    fs: FileSystem, generatedPath: AbsoluteFsPath, generatedContents: string): SegmentMapping[] {
   const logger = new ConsoleLogger(LogLevel.debug);
   const loader = new SourceFileLoader(fs, logger, {});
-  const generatedFile = loader.loadSourceFile(generatedFileName, generatedContents);
+  const generatedFile = loader.loadSourceFile(generatedPath, generatedContents);
   if (generatedFile === null) {
     return [];
   }
 
   const segments: SegmentMapping[] = [];
-  for (let i = 0; i < generatedFile.flattenedMappings.length; i++) {
+  for (let i = 0; i < generatedFile.flattenedMappings.length - 1; i++) {
     const mapping = generatedFile.flattenedMappings[i];
     const generatedStart = mapping.generatedSegment;
-    const next = generatedFile.flattenedMappings[i + 1];
-    const generatedEnd = next?.generatedSegment;
-    if (generatedEnd === undefined) {
-      continue;
-    }
-
+    const generatedEnd = generatedFile.flattenedMappings[i + 1].generatedSegment;
     const originalFile = mapping.originalSource;
     const originalStart = mapping.originalSegment;
     let originalEnd = originalStart.next;
     // Skip until we find an end segment that is after the start segment
     while (originalEnd !== undefined && originalEnd.next !== originalEnd &&
-           originalEnd!.position === originalStart.position) {
+           originalEnd.position === originalStart.position) {
       originalEnd = originalEnd.next;
     }
     if (originalEnd === undefined || originalEnd.next === originalEnd) {
@@ -155,7 +152,7 @@ function getMappedSegments(
 /**
  * Check that the `expected` segment appears in the collection of `mappings`.
  *
- * An error is thrown with a useful message if the segment cannot be found.
+ * @returns An error message if a matching segment cannot be found, or null if it can.
  */
 function checkMapping(mappings: SegmentMapping[], expected: SegmentMapping): string|null {
   if (mappings.some(
@@ -188,7 +185,7 @@ function prettyPrintMapping(mapping: SegmentMapping): string {
   return [
     '{',
     `  generated: ${JSON.stringify(mapping.generated)}`,
-    `  source:    ${JSON.stringify(mapping.source)}`,
+    `  source   : ${JSON.stringify(mapping.source)}`,
     `  sourceUrl: ${JSON.stringify(mapping.sourceUrl)}`,
     '}',
   ].join('\n');

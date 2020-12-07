@@ -7,4 +7,4 @@
  */
 export {RawSourceMap} from './src/raw_source_map';
 export {Mapping, SourceFile} from './src/source_file';
-export {SourceFileLoader} from './src/source_file_loader';
+export {MapAndPath, SourceFileLoader} from './src/source_file_loader';
