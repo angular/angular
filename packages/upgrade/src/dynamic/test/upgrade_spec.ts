@@ -665,23 +665,16 @@ withEachNg1Version(() => {
       it('should properly run cleanup when ng1 directive is destroyed', waitForAsync(() => {
            const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
            const ng1Module = angular.module_('ng1', []);
-           const onDestroyed: EventEmitter<string> = new EventEmitter<string>();
+           let ng2ComponentDestroyed = false;
 
-           ng1Module.directive('ng1', () => {
-             return {
-               template: '<div ng-if="!destroyIt"><ng2></ng2></div>',
-               controller: function($rootScope: any, $timeout: Function) {
-                 $timeout(() => {
-                   $rootScope.destroyIt = true;
-                 });
-               }
-             };
-           });
+           ng1Module.directive('ng1', () => ({
+             template: '<div ng-if="!destroyIt"><ng2></ng2></div>',
+           }));
 
            @Component({selector: 'ng2', template: '<span>test</span>'})
            class Ng2 {
              ngOnDestroy() {
-               onDestroyed.emit('destroyed');
+               ng2ComponentDestroyed = true;
              }
            }
 
@@ -710,18 +703,18 @@ withEachNg1Version(() => {
              expect(ng2Children.data!('bar')).toBe(2);
              expect(ng2ElementDestroyed).toBe(false);
              expect(ng2ChildrenDestroyed).toBe(false);
+             expect(ng2ComponentDestroyed).toBe(false);
 
-             onDestroyed.subscribe(() => {
-               setTimeout(() => {
-                 expect(element.textContent).not.toContain('test');
-                 expect(ng2Element.data!('foo')).toBeUndefined();
-                 expect(ng2Children.data!('baz')).toBeUndefined();
-                 expect(ng2ElementDestroyed).toBe(true);
-                 expect(ng2ChildrenDestroyed).toBe(true);
+             ref.ng1RootScope.$apply('destroyIt = true');
 
-                 ref.dispose();
-               });
-             });
+             expect(element.textContent).not.toContain('test');
+             expect(ng2Element.data!('foo')).toBeUndefined();
+             expect(ng2Children.data!('baz')).toBeUndefined();
+             expect(ng2ElementDestroyed).toBe(true);
+             expect(ng2ChildrenDestroyed).toBe(true);
+             expect(ng2ComponentDestroyed).toBe(true);
+
+             ref.dispose();
            });
          }));
 
