@@ -46,15 +46,15 @@
   ],
   "SideNav": [
     {
-      "url": "docs",
-      "title": "Introduction",
-      "tooltip": "Welcome to the Angular documentation set.",
-      "hidden": false
-    },
-    {
       "title": "Getting Started",
       "tooltip": "Set up your environment and learn basic concepts",
       "children": [
+        {
+          "url": "docs",
+          "title": "Read me first",
+          "tooltip": "Welcome to the Angular documentation set.",
+          "hidden": false
+        },
         {
             "title": "Try it",
             "tooltip": "Examine and work with a ready-made sample app, with no setup.",
