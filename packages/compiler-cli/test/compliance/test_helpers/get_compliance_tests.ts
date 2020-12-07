@@ -35,10 +35,9 @@ export function* getComplianceTests(testConfigPath: string): Generator<Complianc
   const testConfig = Array.isArray(testConfigJSON) ? testConfigJSON : [testConfigJSON];
   for (const test of testConfig) {
     const inputFiles = getStringArrayOrDefault(test, 'inputFiles', realTestPath, ['test.ts']);
-    const compilationModeFilter =
-        getStringArrayOrDefault(
-            test, 'compilationModeFilter', realTestPath,
-            ['partial compile + link', 'full compile']) as CompilationMode[];
+    const compilationModeFilter = getStringArrayOrDefault(
+                                      test, 'compilationModeFilter', realTestPath,
+                                      ['linked compile', 'full compile']) as CompilationMode[];
 
     yield {
       relativePath: fs.relative(basePath, realTestPath),
@@ -260,7 +259,7 @@ export interface ComplianceTest {
   excludeTest?: boolean;
 }
 
-export type CompilationMode = 'partial compile + link'|'full compile';
+export type CompilationMode = 'linked compile'|'full compile';
 
 export interface Expectation {
   /** The message to display if this expectation fails. */

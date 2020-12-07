@@ -28,7 +28,7 @@ export function runTests(
       describe(`[${test.relativePath}]`, () => {
         const itFn = test.focusTest ? fit : test.excludeTest ? xit : it;
         itFn(test.description, () => {
-          if (type === 'partial compile + link' && test.compilerOptions?.target === 'ES5') {
+          if (type === 'linked compile' && test.compilerOptions?.target === 'ES5') {
             throw new Error(
                 `The "${type}" scenario does not support ES5 output.\n` +
                 `Did you mean to set \`"compilationModeFilter": ["full compile"]\` in "${

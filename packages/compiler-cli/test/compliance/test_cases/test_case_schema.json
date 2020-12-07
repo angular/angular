@@ -27,12 +27,12 @@
               "type": "string",
               "enum": [
                 "full compile",
-                "partial compile + link"
+                "linked compile"
               ]
             },
             "default": [
               "full compile",
-              "partial compile + link"
+              "linked compile"
             ]
           },
           "inputFiles": {
