@@ -263,3 +263,110 @@ export declare class MyModule {
     static ɵinj: i0.ɵɵInjectorDef<MyModule>;
 }
 
+/****************************************************************************************************
+ * PARTIAL FILE: inline_templates.js
+ ****************************************************************************************************/
+import { Component, NgModule } from '@angular/core';
+import * as i0 from "@angular/core";
+export class StaticStyling {
+    constructor() {
+        this.exp = true;
+    }
+}
+StaticStyling.ɵfac = function StaticStyling_Factory(t) { return new (t || StaticStyling)(); };
+StaticStyling.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: StaticStyling, selector: "static-styling", ngImport: i0, template: `
+    <div *ngIf="exp" class="foo bar baz" style="margin: 0px; background: url('img.png');"></div>
+  `, isInline: true });
+(function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(StaticStyling, [{
+        type: Component,
+        args: [{
+                selector: 'static-styling',
+                template: `
+    <div *ngIf="exp" class="foo bar baz" style="margin: 0px; background: url('img.png');"></div>
+  `,
+            }]
+    }], null, null); })();
+export class StyleBindings {
+    constructor() {
+        this.classExp = true;
+        this.styleExp = '10px';
+    }
+}
+StyleBindings.ɵfac = function StyleBindings_Factory(t) { return new (t || StyleBindings)(); };
+StyleBindings.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: StyleBindings, selector: "styling-bindings", ngImport: i0, template: `
+    <div *ngIf="exp" [class.red]="classExp" [style.margin]="styleExp"></div>
+  `, isInline: true });
+(function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(StyleBindings, [{
+        type: Component,
+        args: [{
+                selector: 'styling-bindings',
+                template: `
+    <div *ngIf="exp" [class.red]="classExp" [style.margin]="styleExp"></div>
+  `,
+            }]
+    }], null, null); })();
+export class StyleMapBindings {
+    constructor() {
+        this.classExp = { red: true };
+        this.styleExp = { margin: '10px' };
+    }
+}
+StyleMapBindings.ɵfac = function StyleMapBindings_Factory(t) { return new (t || StyleMapBindings)(); };
+StyleMapBindings.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: StyleMapBindings, selector: "styling-map-bindings", ngImport: i0, template: `
+    <div *ngIf="exp" [class]="classExp" [style]="styleExp"></div>
+  `, isInline: true });
+(function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(StyleMapBindings, [{
+        type: Component,
+        args: [{
+                selector: 'styling-map-bindings',
+                template: `
+    <div *ngIf="exp" [class]="classExp" [style]="styleExp"></div>
+  `,
+            }]
+    }], null, null); })();
+export class MyModule {
+}
+MyModule.ɵmod = i0.ɵɵdefineNgModule({ type: MyModule });
+MyModule.ɵinj = i0.ɵɵdefineInjector({ factory: function MyModule_Factory(t) { return new (t || MyModule)(); } });
+(function () { (typeof ngJitMode === "undefined" || ngJitMode) && i0.ɵɵsetNgModuleScope(MyModule, { declarations: [StaticStyling, StyleBindings, StyleMapBindings] }); })();
+(function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(MyModule, [{
+        type: NgModule,
+        args: [{
+                declarations: [
+                    StaticStyling,
+                    StyleBindings,
+                    StyleMapBindings,
+                ]
+            }]
+    }], null, null); })();
+
+/****************************************************************************************************
+ * PARTIAL FILE: inline_templates.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class StaticStyling {
+    exp: boolean;
+    static ɵfac: i0.ɵɵFactoryDef<StaticStyling, never>;
+    static ɵcmp: i0.ɵɵComponentDefWithMeta<StaticStyling, "static-styling", never, {}, {}, never, never>;
+}
+export declare class StyleBindings {
+    classExp: boolean;
+    styleExp: string;
+    static ɵfac: i0.ɵɵFactoryDef<StyleBindings, never>;
+    static ɵcmp: i0.ɵɵComponentDefWithMeta<StyleBindings, "styling-bindings", never, {}, {}, never, never>;
+}
+export declare class StyleMapBindings {
+    classExp: {
+        red: boolean;
+    };
+    styleExp: {
+        margin: string;
+    };
+    static ɵfac: i0.ɵɵFactoryDef<StyleMapBindings, never>;
+    static ɵcmp: i0.ɵɵComponentDefWithMeta<StyleMapBindings, "styling-map-bindings", never, {}, {}, never, never>;
+}
+export declare class MyModule {
+    static ɵmod: i0.ɵɵNgModuleDefWithMeta<MyModule, [typeof StaticStyling, typeof StyleBindings, typeof StyleMapBindings], never, never>;
+    static ɵinj: i0.ɵɵInjectorDef<MyModule>;
+}
+

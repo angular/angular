@@ -240,9 +240,6 @@
     "name": "callHooks"
   },
   {
-    "name": "classIndexOf"
-  },
-  {
     "name": "cleanUpView"
   },
   {

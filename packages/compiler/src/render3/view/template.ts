@@ -583,8 +583,11 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
     const nonContentSelectAttributes =
         ngContent.attributes.filter(attr => attr.name.toLowerCase() !== NG_CONTENT_SELECT_ATTR);
+
+    const stylingBuilder = new StylingBuilder(null);
+    const [_, staticAttrs] = this.processTextAttributes(nonContentSelectAttributes, stylingBuilder);
     const attributes =
-        this.getAttributeExpressions(ngContent.name, nonContentSelectAttributes, [], []);
+        this.getAttributeExpressions(ngContent.name, staticAttrs, [], [], stylingBuilder);
 
     if (attributes.length > 0) {
       parameters.push(o.literal(projectionSlotIdx), o.literalArr(attributes));
@@ -602,27 +605,11 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     const elementIndex = this.allocateDataSlot();
     const stylingBuilder = new StylingBuilder(null);
 
-    let isNonBindableMode: boolean = false;
     const isI18nRootElement: boolean =
         isI18nRootNode(element.i18n) && !isSingleI18nIcu(element.i18n);
 
-    const outputAttrs: t.TextAttribute[] = [];
     const [namespaceKey, elementName] = splitNsName(element.name);
     const isNgContainer = checkIsNgContainer(element.name);
-
-    // Handle styling, i18n, ngNonBindable attributes
-    for (const attr of element.attributes) {
-      const {name, value} = attr;
-      if (name === NON_BINDABLE_ATTR) {
-        isNonBindableMode = true;
-      } else if (name === 'style') {
-        stylingBuilder.registerStyleAttr(value);
-      } else if (name === 'class') {
-        stylingBuilder.registerClassAttr(value);
-      } else {
-        outputAttrs.push(attr);
-      }
-    }
 
     // Match directives on non i18n attributes
     this.matchDirectives(element.name, element);
@@ -633,28 +620,18 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       parameters.push(o.literal(elementName));
     }
 
-    // Add the attributes
-    const allOtherInputs: t.BoundAttribute[] = [];
-    const boundI18nAttrs: t.BoundAttribute[] = [];
+    const [isNonBindableMode, staticAttrs] =
+        this.processTextAttributes(element.attributes, stylingBuilder);
+    const [simpleBoundAttrs, boundI18nAttrs] =
+        this.processBoundAttributes(element.inputs, stylingBuilder);
 
-    element.inputs.forEach(input => {
-      const stylingInputWasSet = stylingBuilder.registerBoundInput(input);
-      if (!stylingInputWasSet) {
-        if (input.type === BindingType.Property && input.i18n) {
-          boundI18nAttrs.push(input);
-        } else {
-          allOtherInputs.push(input);
-        }
-      }
-    });
-
-    // add attributes for directive and projection matching purposes
+    // Add attributes for directive and projection matching purposes
     const attributes: o.Expression[] = this.getAttributeExpressions(
-        element.name, outputAttrs, allOtherInputs, element.outputs, stylingBuilder, [],
-        boundI18nAttrs);
+        element.name, staticAttrs, simpleBoundAttrs, element.outputs, stylingBuilder,
+        [] /* templateAttrs, empty for element nodes */, boundI18nAttrs);
     parameters.push(this.addAttrsToConsts(attributes));
 
-    // local refs (ex.: <div #foo #bar="baz">)
+    // Local refs (ex.: <div #foo #bar="baz">)
     const refs = this.prepareRefsArray(element.references);
     parameters.push(this.addToConsts(refs));
 
@@ -735,7 +712,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     const attributeBindings: ChainableBindingInstruction[] = [];
 
     // Generate element input bindings
-    allOtherInputs.forEach(input => {
+    simpleBoundAttrs.forEach(input => {
       const inputType = input.type;
       if (inputType === BindingType.Animation) {
         const value = input.value.visit(this._valueConverter);
@@ -855,10 +832,10 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     }
   }
 
-
   visitTemplate(template: t.Template) {
     const NG_TEMPLATE_TAG_NAME = 'ng-template';
     const templateIndex = this.allocateDataSlot();
+    const stylingBuilder = new StylingBuilder(null);
 
     if (this.i18n) {
       this.i18n.appendTemplate(template.i18n!, templateIndex);
@@ -880,13 +857,17 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     // find directives matching on a given <ng-template> node
     this.matchDirectives(NG_TEMPLATE_TAG_NAME, template);
 
-    // prepare attributes parameter (including attributes used for directive matching)
+    const [_, staticAttrs] = this.processTextAttributes(template.attributes, stylingBuilder);
+    const [inputs, i18nInputs] = this.processBoundAttributes(template.inputs, stylingBuilder);
+
+    // Prepare attributes parameter (including attributes used for directive matching and content
+    // projection logic)
     const attrsExprs: o.Expression[] = this.getAttributeExpressions(
-        NG_TEMPLATE_TAG_NAME, template.attributes, template.inputs, template.outputs,
-        undefined /* styles */, template.templateAttrs);
+        NG_TEMPLATE_TAG_NAME, staticAttrs, inputs, template.outputs, stylingBuilder,
+        template.templateAttrs, i18nInputs);
     parameters.push(this.addAttrsToConsts(attrsExprs));
 
-    // local refs (ex.: <ng-template #foo>)
+    // Local refs (ex.: <ng-template #foo>)
     if (template.references && template.references.length) {
       const refs = this.prepareRefsArray(template.references);
       parameters.push(this.addToConsts(refs));
@@ -1069,6 +1050,54 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     return this._ngContentReservedSlots.length ?
         this.constantPool.getConstLiteral(asLiteral(this._ngContentReservedSlots), true) :
         null;
+  }
+
+  /**
+   * Processes static attributes, specifically:
+   * - Registers all styling-related attrs (the `class` and `style` ones) with provided instance of
+   *   StylingBuilder class.
+   * - Extracts `ngNonBindable` attribute (if present).
+   * - Group the remaining attrs into a new list for further processing (outside of this function).
+   */
+  private processTextAttributes(attributes: t.TextAttribute[], stylingBuilder: StylingBuilder):
+      [isNonBindable: boolean, renderAttrs: t.TextAttribute[]] {
+    let isNonBindable = false;
+    const renderAttrs: t.TextAttribute[] = [];
+    for (const attr of attributes) {
+      const {name, value} = attr;
+      if (name === NON_BINDABLE_ATTR) {
+        isNonBindable = true;
+      } else if (name === 'style') {
+        stylingBuilder.registerStyleAttr(value);
+      } else if (name === 'class') {
+        stylingBuilder.registerClassAttr(value);
+      } else {
+        renderAttrs.push(attr);
+      }
+    }
+    return [isNonBindable, renderAttrs];
+  }
+
+  /**
+   * Processes bound attributes, specifically:
+   * - Registers all styling-related attrs with provided instance of StylingBuilder class.
+   * - Groups i18n and non-i18n attributes into separate lists and returns these lists for further
+   *   processing (outside of this function).
+   */
+  private processBoundAttributes(inputs: t.BoundAttribute[], stylingBuilder: StylingBuilder):
+      [simpleAttrs: t.BoundAttribute[], i18nAttrs: t.BoundAttribute[]] {
+    const simpleAttrs: t.BoundAttribute[] = [];
+    const i18nAttrs: t.BoundAttribute[] = [];
+
+    inputs.forEach(input => {
+      const stylingInputWasSet = stylingBuilder.registerBoundInput(input);
+      if (!stylingInputWasSet) {
+        const container =
+            input.type === BindingType.Property && input.i18n ? i18nAttrs : simpleAttrs;
+        container.push(input);
+      }
+    });
+    return [simpleAttrs, i18nAttrs];
   }
 
   private bindingContext() {

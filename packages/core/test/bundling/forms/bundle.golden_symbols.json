@@ -765,9 +765,6 @@
     "name": "checkStable"
   },
   {
-    "name": "classIndexOf"
-  },
-  {
     "name": "cleanUpControl"
   },
   {
