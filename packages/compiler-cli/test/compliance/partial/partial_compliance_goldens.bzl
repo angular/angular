@@ -56,7 +56,6 @@ def partial_compliance_golden(filePath):
             "ivy-only",
             # TODO(josephperrott): Begin running these tests on windows after updating to rules_nodejs 3.0
             "no-windows",
-            "golden",
         ],
         name = "%s.golden" % path,
         src = "//packages/compiler-cli/test/compliance/test_cases:%s/GOLDEN_PARTIAL.js" % path,
