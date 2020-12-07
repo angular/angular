@@ -8,7 +8,7 @@
 
 import {ApplicationRef, ChangeDetectorRef, ComponentFactory, ComponentRef, EventEmitter, Injector, OnChanges, SimpleChange, SimpleChanges, StaticProvider, Testability, TestabilityRegistry, Type} from '@angular/core';
 
-import {IAttributes, IAugmentedJQuery, ICompileService, INgModelController, IParseService, IScope} from './angular1';
+import {element as angularElement, IAttributes, IAugmentedJQuery, ICompileService, INgModelController, IParseService, IScope} from './angular1';
 import {PropertyBinding} from './component_info';
 import {$SCOPE} from './constants';
 import {getTypeName, hookupNgModel, strictEquals} from './util';
@@ -216,11 +216,38 @@ export class DowngradeComponentAdapter {
     const destroyComponentRef = this.wrapCallback(() => this.componentRef.destroy());
     let destroyed = false;
 
-    this.element.on!('$destroy', () => this.componentScope.$destroy());
+    this.element.on!('$destroy', () => {
+      // The `$destroy` event may have been triggered by the `cleanData()` call in the
+      // `componentScope` `$destroy` handler below. In that case, we don't want to call
+      // `componentScope.$destroy()` again.
+      if (!destroyed) this.componentScope.$destroy();
+    });
     this.componentScope.$on('$destroy', () => {
       if (!destroyed) {
         destroyed = true;
         testabilityRegistry.unregisterApplication(this.componentRef.location.nativeElement);
+
+        // The `componentScope` might be getting destroyed, because an ancestor element is being
+        // removed/destroyed. If that is the case, jqLite/jQuery would normally invoke `cleanData()`
+        // on the removed element and all descendants.
+        //   https://github.com/angular/angular.js/blob/2e72ea13fa98bebf6ed4b5e3c45eaf5f990ed16f/src/jqLite.js#L349-L355
+        //   https://github.com/jquery/jquery/blob/6984d1747623dbc5e87fd6c261a5b6b1628c107c/src/manipulation.js#L182
+        //
+        // Here, however, `destroyComponentRef()` may under some circumstances remove the element
+        // from the DOM and therefore it will no longer be a descendant of the removed element when
+        // `cleanData()` is called. This would result in a memory leak, because the element's data
+        // and event handlers (and all objects directly or indirectly referenced by them) would be
+        // retained.
+        //
+        // To ensure the element is always properly cleaned up, we manually call `cleanData()` on
+        // this element and its descendants before destroying the `ComponentRef`.
+        //
+        // NOTE:
+        // `cleanData()` also will invoke the AngularJS `$destroy` event on the element:
+        //   https://github.com/angular/angular.js/blob/2e72ea13fa98bebf6ed4b5e3c45eaf5f990ed16f/src/Angular.js#L1932-L1945
+        angularElement.cleanData(this.element);
+        angularElement.cleanData((this.element[0] as Element).querySelectorAll('*'));
+
         destroyComponentRef();
       }
     });
