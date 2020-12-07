@@ -100,7 +100,8 @@
       // Ignore zone.js directory
       // TODO(JiaLiPassion): add zone.js back later
       "./packages/zone.js/**/*",
-      "./dev-infra/ng-dev.js"
+      "./dev-infra/ng-dev.js",
+      "./dev-infra/build-worker.js"
     ]
   }
 }
