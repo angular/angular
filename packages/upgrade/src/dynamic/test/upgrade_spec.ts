@@ -678,7 +678,7 @@ withEachNg1Version(() => {
              };
            });
 
-           @Component({selector: 'ng2', template: 'test'})
+           @Component({selector: 'ng2', template: '<span>test</span>'})
            class Ng2 {
              ngOnDestroy() {
                onDestroyed.emit('destroyed');
@@ -695,8 +695,32 @@ withEachNg1Version(() => {
            ng1Module.directive('ng2', adapter.downgradeNg2Component(Ng2));
            const element = html('<ng1></ng1>');
            adapter.bootstrap(element, ['ng1']).ready((ref) => {
+             const ng2Element = angular.element(element.querySelector('ng2') as Element);
+             const ng2Children = (ng2Element as any).children!();
+             let ng2ElementDestroyed = false;
+             let ng2ChildrenDestroyed = false;
+
+             ng2Element.data!('foo', 1);
+             ng2Children.data!('bar', 2);
+             ng2Element.on!('$destroy', () => ng2ElementDestroyed = true);
+             ng2Children.on!('$destroy', () => ng2ChildrenDestroyed = true);
+
+             expect(element.textContent).toContain('test');
+             expect(ng2Element.data!('foo')).toBe(1);
+             expect(ng2Children.data!('bar')).toBe(2);
+             expect(ng2ElementDestroyed).toBe(false);
+             expect(ng2ChildrenDestroyed).toBe(false);
+
              onDestroyed.subscribe(() => {
-               ref.dispose();
+               setTimeout(() => {
+                 expect(element.textContent).not.toContain('test');
+                 expect(ng2Element.data!('foo')).toBeUndefined();
+                 expect(ng2Children.data!('baz')).toBeUndefined();
+                 expect(ng2ElementDestroyed).toBe(true);
+                 expect(ng2ChildrenDestroyed).toBe(true);
+
+                 ref.dispose();
+               });
              });
            });
          }));

@@ -536,7 +536,7 @@ withEachNg1Version(() => {
 
     it('should properly run cleanup when ng1 directive is destroyed', waitForAsync(() => {
          let destroyed = false;
-         @Component({selector: 'ng2', template: 'test'})
+         @Component({selector: 'ng2', template: '<span>test</span>'})
          class Ng2Component implements OnDestroy {
            ngOnDestroy() {
              destroyed = true;
@@ -563,14 +563,33 @@ withEachNg1Version(() => {
          platformBrowserDynamic().bootstrapModule(Ng2Module).then((ref) => {
            const adapter = ref.injector.get(UpgradeModule) as UpgradeModule;
            adapter.bootstrap(element, [ng1Module.name]);
+
+           const ng2Element = angular.element(element.querySelector('ng2') as Element);
+           const ng2Children = (ng2Element as any).children!();
+           let ng2ElementDestroyed = false;
+           let ng2ChildrenDestroyed = false;
+
+           ng2Element.data!('foo', 1);
+           ng2Children.data!('bar', 2);
+           ng2Element.on!('$destroy', () => ng2ElementDestroyed = true);
+           ng2Children.on!('$destroy', () => ng2ChildrenDestroyed = true);
+
            expect(element.textContent).toContain('test');
            expect(destroyed).toBe(false);
+           expect(ng2Element.data!('foo')).toBe(1);
+           expect(ng2Children.data!('bar')).toBe(2);
+           expect(ng2ElementDestroyed).toBe(false);
+           expect(ng2ChildrenDestroyed).toBe(false);
 
            const $rootScope = adapter.$injector.get('$rootScope');
            $rootScope.$apply('destroyIt = true');
 
            expect(element.textContent).not.toContain('test');
            expect(destroyed).toBe(true);
+           expect(ng2Element.data!('foo')).toBeUndefined();
+           expect(ng2Children.data!('baz')).toBeUndefined();
+           expect(ng2ElementDestroyed).toBe(true);
+           expect(ng2ChildrenDestroyed).toBe(true);
          });
        }));
 
