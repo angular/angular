@@ -536,7 +536,7 @@ withEachNg1Version(() => {
 
     it('should properly run cleanup when ng1 directive is destroyed', waitForAsync(() => {
          let destroyed = false;
-         @Component({selector: 'ng2', template: 'test'})
+         @Component({selector: 'ng2', template: '<ul><li>test1</li><li>test2</li></ul>'})
          class Ng2Component implements OnDestroy {
            ngOnDestroy() {
              destroyed = true;
@@ -563,14 +563,35 @@ withEachNg1Version(() => {
          platformBrowserDynamic().bootstrapModule(Ng2Module).then((ref) => {
            const adapter = ref.injector.get(UpgradeModule) as UpgradeModule;
            adapter.bootstrap(element, [ng1Module.name]);
-           expect(element.textContent).toContain('test');
+
+           const ng2Element = angular.element(element.querySelector('ng2') as Element);
+           const ng2Descendants =
+               Array.from(element.querySelectorAll('ng2 li')).map(angular.element);
+           let ng2ElementDestroyed = false;
+           let ng2DescendantsDestroyed = [false, false];
+
+           ng2Element.data!('test', 42);
+           ng2Descendants.forEach((elem, i) => elem.data!('test', i));
+           ng2Element.on!('$destroy', () => ng2ElementDestroyed = true);
+           ng2Descendants.forEach(
+               (elem, i) => elem.on!('$destroy', () => ng2DescendantsDestroyed[i] = true));
+
+           expect(element.textContent).toBe('test1test2');
            expect(destroyed).toBe(false);
+           expect(ng2Element.data!('test')).toBe(42);
+           ng2Descendants.forEach((elem, i) => expect(elem.data!('test')).toBe(i));
+           expect(ng2ElementDestroyed).toBe(false);
+           expect(ng2DescendantsDestroyed).toEqual([false, false]);
 
            const $rootScope = adapter.$injector.get('$rootScope');
            $rootScope.$apply('destroyIt = true');
 
-           expect(element.textContent).not.toContain('test');
+           expect(element.textContent).toBe('');
            expect(destroyed).toBe(true);
+           expect(ng2Element.data!('test')).toBeUndefined();
+           ng2Descendants.forEach(elem => expect(elem.data!('test')).toBeUndefined());
+           expect(ng2ElementDestroyed).toBe(true);
+           expect(ng2DescendantsDestroyed).toEqual([true, true]);
          });
        }));
 
