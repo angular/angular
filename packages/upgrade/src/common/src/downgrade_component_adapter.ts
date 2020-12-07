@@ -8,7 +8,7 @@
 
 import {ApplicationRef, ChangeDetectorRef, ComponentFactory, ComponentRef, EventEmitter, Injector, OnChanges, SimpleChange, SimpleChanges, StaticProvider, Testability, TestabilityRegistry, Type} from '@angular/core';
 
-import {IAttributes, IAugmentedJQuery, ICompileService, IInjectorService, INgModelController, IParseService, IScope} from './angular1';
+import {IAttributes, IAugmentedJQuery, ICompileService, INgModelController, IParseService, IScope} from './angular1';
 import {PropertyBinding} from './component_info';
 import {$SCOPE} from './constants';
 import {getTypeName, hookupNgModel, strictEquals} from './util';
@@ -33,8 +33,8 @@ export class DowngradeComponentAdapter {
   constructor(
       private element: IAugmentedJQuery, private attrs: IAttributes, private scope: IScope,
       private ngModel: INgModelController, private parentInjector: Injector,
-      private $injector: IInjectorService, private $compile: ICompileService,
-      private $parse: IParseService, private componentFactory: ComponentFactory<any>,
+      private $compile: ICompileService, private $parse: IParseService,
+      private componentFactory: ComponentFactory<any>,
       private wrapCallback: <T>(cb: () => T) => () => T) {
     this.componentScope = scope.$new();
   }
@@ -250,7 +250,6 @@ export class DowngradeComponentAdapter {
  */
 export function groupNodesBySelector(ngContentSelectors: string[], nodes: Node[]): Node[][] {
   const projectableNodes: Node[][] = [];
-  let wildcardNgContentIndex: number;
 
   for (let i = 0, ii = ngContentSelectors.length; i < ii; ++i) {
     projectableNodes[i] = [];
