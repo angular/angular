@@ -17,7 +17,7 @@ type ObjectType<T> = Extract<T, object>;
 /**
  * Represents the value type of an object literal.
  */
-type ObjectValueValue<T> = T extends Record<string, infer R>? R : never;
+type ObjectValueType<T> = T extends Record<string, infer R>? R : never;
 
 /**
  * Represents the value type of an array literal.
@@ -36,6 +36,11 @@ type ConformsTo<This, Actual, Expected> = Actual extends Expected ? This : never
  */
 type HasValueType<This, Expected> =
     This extends AstValue<infer Actual, any>? ConformsTo<This, Actual, Expected>: never;
+
+/**
+ * Represents only the string keys of type `T`.
+ */
+type PropertyKey<T> = keyof T&string;
 
 /**
  * This helper class wraps an object expression along with an `AstHost` object, exposing helper
@@ -67,8 +72,8 @@ export class AstObject<T extends object, TExpression> {
   /**
    * Returns true if the object has a property called `propertyName`.
    */
-  has(propertyName: keyof T): boolean {
-    return this.obj.has(propertyName as string);
+  has(propertyName: PropertyKey<T>): boolean {
+    return this.obj.has(propertyName);
   }
 
   /**
@@ -76,7 +81,8 @@ export class AstObject<T extends object, TExpression> {
    *
    * Throws an error if there is no such property or the property is not a number.
    */
-  getNumber<K extends keyof T>(this: ConformsTo<this, T[K], number>, propertyName: K): number {
+  getNumber<K extends PropertyKey<T>>(this: ConformsTo<this, T[K], number>, propertyName: K):
+      number {
     return this.host.parseNumericLiteral(this.getRequiredProperty(propertyName));
   }
 
@@ -85,7 +91,8 @@ export class AstObject<T extends object, TExpression> {
    *
    * Throws an error if there is no such property or the property is not a string.
    */
-  getString<K extends keyof T>(this: ConformsTo<this, T[K], string>, propertyName: K): string {
+  getString<K extends PropertyKey<T>>(this: ConformsTo<this, T[K], string>, propertyName: K):
+      string {
     return this.host.parseStringLiteral(this.getRequiredProperty(propertyName));
   }
 
@@ -94,7 +101,8 @@ export class AstObject<T extends object, TExpression> {
    *
    * Throws an error if there is no such property or the property is not a boolean.
    */
-  getBoolean<K extends keyof T>(this: ConformsTo<this, T[K], boolean>, propertyName: K): boolean {
+  getBoolean<K extends PropertyKey<T>>(this: ConformsTo<this, T[K], boolean>, propertyName: K):
+      boolean {
     return this.host.parseBooleanLiteral(this.getRequiredProperty(propertyName)) as any;
   }
 
@@ -103,7 +111,7 @@ export class AstObject<T extends object, TExpression> {
    *
    * Throws an error if there is no such property or the property is not an object.
    */
-  getObject<K extends keyof T>(this: ConformsTo<this, T[K], object>, propertyName: K):
+  getObject<K extends PropertyKey<T>>(this: ConformsTo<this, T[K], object>, propertyName: K):
       AstObject<ObjectType<T[K]>, TExpression> {
     const expr = this.getRequiredProperty(propertyName);
     const obj = this.host.parseObjectLiteral(expr);
@@ -115,7 +123,7 @@ export class AstObject<T extends object, TExpression> {
    *
    * Throws an error if there is no such property or the property is not an array.
    */
-  getArray<K extends keyof T>(this: ConformsTo<this, T[K], unknown[]>, propertyName: K):
+  getArray<K extends PropertyKey<T>>(this: ConformsTo<this, T[K], unknown[]>, propertyName: K):
       AstValue<ArrayValueType<T[K]>, TExpression>[] {
     const arr = this.host.parseArrayLiteral(this.getRequiredProperty(propertyName));
     return arr.map(entry => new AstValue(entry, this.host));
@@ -127,7 +135,7 @@ export class AstObject<T extends object, TExpression> {
    *
    * Throws an error if there is no such property.
    */
-  getOpaque(propertyName: keyof T): o.WrappedNodeExpr<TExpression> {
+  getOpaque(propertyName: PropertyKey<T>): o.WrappedNodeExpr<TExpression> {
     return new o.WrappedNodeExpr(this.getRequiredProperty(propertyName));
   }
 
@@ -136,7 +144,7 @@ export class AstObject<T extends object, TExpression> {
    *
    * Throws an error if there is no such property.
    */
-  getNode(propertyName: keyof T): TExpression {
+  getNode(propertyName: PropertyKey<T>): TExpression {
     return this.getRequiredProperty(propertyName);
   }
 
@@ -145,7 +153,7 @@ export class AstObject<T extends object, TExpression> {
    *
    * Throws an error if there is no such property.
    */
-  getValue<K extends keyof T>(propertyName: K): AstValue<T[K], TExpression> {
+  getValue<K extends PropertyKey<T>>(propertyName: K): AstValue<T[K], TExpression> {
     return new AstValue(this.getRequiredProperty(propertyName), this.host);
   }
 
@@ -153,9 +161,8 @@ export class AstObject<T extends object, TExpression> {
    * Converts the AstObject to a raw JavaScript object, mapping each property value (as an
    * `AstValue`) to the generic type (`T`) via the `mapper` function.
    */
-  toLiteral<V>(mapper: (value: AstValue<ObjectValueValue<T>, TExpression>) => V):
-      {[key: string]: V} {
-    const result: {[key: string]: V} = {};
+  toLiteral<V>(mapper: (value: AstValue<ObjectValueType<T>, TExpression>) => V): Record<string, V> {
+    const result: Record<string, V> = {};
     for (const [key, expression] of this.obj) {
       result[key] = mapper(new AstValue(expression, this.host));
     }
@@ -166,7 +173,7 @@ export class AstObject<T extends object, TExpression> {
    * Converts the AstObject to a JavaScript Map, mapping each property value (as an
    * `AstValue`) to the generic type (`T`) via the `mapper` function.
    */
-  toMap<V>(mapper: (value: AstValue<ObjectValueValue<T>, TExpression>) => V): Map<string, V> {
+  toMap<V>(mapper: (value: AstValue<ObjectValueType<T>, TExpression>) => V): Map<string, V> {
     const result = new Map<string, V>();
     for (const [key, expression] of this.obj) {
       result.set(key, mapper(new AstValue(expression, this.host)));
@@ -174,12 +181,12 @@ export class AstObject<T extends object, TExpression> {
     return result;
   }
 
-  private getRequiredProperty(propertyName: keyof T): TExpression {
-    if (!this.obj.has(propertyName as string)) {
+  private getRequiredProperty(propertyName: PropertyKey<T>): TExpression {
+    if (!this.obj.has(propertyName)) {
       throw new FatalLinkerError(
           this.expression, `Expected property '${propertyName}' to be present.`);
     }
-    return this.obj.get(propertyName as string)!;
+    return this.obj.get(propertyName)!;
   }
 }
 
