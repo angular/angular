@@ -35,8 +35,8 @@ export function compileDeclareComponentFromMetadata(
 /**
  * Gathers the declaration fields for a component into a `DefinitionMap`.
  */
-export function createComponentDefinitionMap(
-    meta: R3ComponentMetadata, template: ParsedTemplate): DefinitionMap {
+export function createComponentDefinitionMap(meta: R3ComponentMetadata, template: ParsedTemplate):
+    DefinitionMap<R3DeclareComponentMetadata> {
   const definitionMap: DefinitionMap<R3DeclareComponentMetadata> =
       createDirectiveDefinitionMap(meta);
 

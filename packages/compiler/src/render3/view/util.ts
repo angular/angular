@@ -147,7 +147,7 @@ export function getQueryPredicate(
  * type `T` allows to reference a documented type of the generated structure, such that the
  * property names that are set can be resolved to their documented declaration.
  */
-export class DefinitionMap<T = unknown> {
+export class DefinitionMap<T = any> {
   values: {key: string, quoted: boolean, value: o.Expression}[] = [];
 
   set(key: keyof T, value: o.Expression|null): void {

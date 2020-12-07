@@ -320,7 +320,7 @@ export class StylingBuilder {
    * responsible for registering initial styles (within a directive hostBindings' creation block),
    * as well as any of the provided attribute values, to the directive host element.
    */
-  assignHostAttrs(attrs: o.Expression[], definitionMap: DefinitionMap<any>): void {
+  assignHostAttrs(attrs: o.Expression[], definitionMap: DefinitionMap): void {
     if (this._directiveExpr && (attrs.length || this._hasInitialValues)) {
       this.populateInitialStylingAttrs(attrs);
       definitionMap.set('hostAttrs', o.literalArr(attrs));
