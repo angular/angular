@@ -668,10 +668,10 @@ withEachNg1Version(() => {
            let ng2ComponentDestroyed = false;
 
            ng1Module.directive('ng1', () => ({
-             template: '<div ng-if="!destroyIt"><ng2></ng2></div>',
-           }));
+                                        template: '<div ng-if="!destroyIt"><ng2></ng2></div>',
+                                      }));
 
-           @Component({selector: 'ng2', template: '<span>test</span>'})
+           @Component({selector: 'ng2', template: '<ul><li>test1</li><li>test2</li></ul>'})
            class Ng2 {
              ngOnDestroy() {
                ng2ComponentDestroyed = true;
@@ -689,29 +689,31 @@ withEachNg1Version(() => {
            const element = html('<ng1></ng1>');
            adapter.bootstrap(element, ['ng1']).ready((ref) => {
              const ng2Element = angular.element(element.querySelector('ng2') as Element);
-             const ng2Children = (ng2Element as any).children!();
+             const ng2Descendants =
+                 Array.from(element.querySelectorAll('ng2 li')).map(angular.element);
              let ng2ElementDestroyed = false;
-             let ng2ChildrenDestroyed = false;
+             let ng2DescendantsDestroyed = ng2Descendants.map(() => false);
 
-             ng2Element.data!('foo', 1);
-             ng2Children.data!('bar', 2);
+             ng2Element.data!('test', 42);
+             ng2Descendants.forEach((elem, i) => elem.data!('test', i));
              ng2Element.on!('$destroy', () => ng2ElementDestroyed = true);
-             ng2Children.on!('$destroy', () => ng2ChildrenDestroyed = true);
+             ng2Descendants.forEach(
+                 (elem, i) => elem.on!('$destroy', () => ng2DescendantsDestroyed[i] = true));
 
-             expect(element.textContent).toContain('test');
-             expect(ng2Element.data!('foo')).toBe(1);
-             expect(ng2Children.data!('bar')).toBe(2);
+             expect(element.textContent).toBe('test1test2');
+             expect(ng2Element.data!('test')).toBe(42);
+             ng2Descendants.forEach((elem, i) => expect(elem.data!('test')).toBe(i));
              expect(ng2ElementDestroyed).toBe(false);
-             expect(ng2ChildrenDestroyed).toBe(false);
+             expect(ng2DescendantsDestroyed).toEqual([false, false]);
              expect(ng2ComponentDestroyed).toBe(false);
 
              ref.ng1RootScope.$apply('destroyIt = true');
 
-             expect(element.textContent).not.toContain('test');
-             expect(ng2Element.data!('foo')).toBeUndefined();
-             expect(ng2Children.data!('baz')).toBeUndefined();
+             expect(element.textContent).toBe('');
+             expect(ng2Element.data!('test')).toBeUndefined();
+             ng2Descendants.forEach(elem => expect(elem.data!('test')).toBeUndefined());
              expect(ng2ElementDestroyed).toBe(true);
-             expect(ng2ChildrenDestroyed).toBe(true);
+             expect(ng2DescendantsDestroyed).toEqual([true, true]);
              expect(ng2ComponentDestroyed).toBe(true);
 
              ref.dispose();

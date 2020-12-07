@@ -246,7 +246,7 @@ export class DowngradeComponentAdapter {
         // `cleanData()` also will invoke the AngularJS `$destroy` event on the element:
         //   https://github.com/angular/angular.js/blob/2e72ea13fa98bebf6ed4b5e3c45eaf5f990ed16f/src/Angular.js#L1932-L1945
         angularElement.cleanData(this.element);
-        angularElement.cleanData(this.element.children!());
+        angularElement.cleanData((this.element[0] as Element).querySelectorAll('*'));
 
         destroyComponentRef();
       }
