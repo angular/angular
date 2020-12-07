@@ -1,3 +1,33 @@
+## 11.0.2 "paper-bag" (2020-12-07)
+
+### cdk
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **drag-drop:** preview not inheriting styles inside shadow dom ([#21107](https://github.com/angular/components/issues/21107)) ([8f178c5](https://github.com/angular/components/commit/8f178c5)) |
+| bug fix |  **observers:** incorrect coercion member type ([#21116](https://github.com/angular/components/issues/21116)) ([5921859](https://github.com/angular/components/commit/5921859)), closes [#21101](https://github.com/angular/components/issues/21101) |
+| bug fix |  **schematics:** fix resolving modules in ng update ([#21161](https://github.com/angular/components/issues/21161)) ([a60a055](https://github.com/angular/components/commit/a60a055)), closes [#21160](https://github.com/angular/components/issues/21160) |
+
+### material
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **autocomplete:** add missing aria-label for autocomplete panel ([#20892](https://github.com/angular/components/issues/20892)) ([e878ca7](https://github.com/angular/components/commit/e878ca7)) |
+| bug fix |  **bottom-sheet:** some changes not being picked up ([#21175](https://github.com/angular/components/issues/21175)) ([8ee9369](https://github.com/angular/components/commit/8ee9369)), closes [#21141](https://github.com/angular/components/issues/21141) |
+| bug fix |  **button-toggle:** fix ChromeVox focus issue on button toggle ([#21046](https://github.com/angular/components/issues/21046)) ([868915e](https://github.com/angular/components/commit/868915e)) |
+| bug fix |  **radio:** group selected button not set for preselected control value ([#21154](https://github.com/angular/components/issues/21154)) ([3194a3e](https://github.com/angular/components/commit/3194a3e)), closes [#21148](https://github.com/angular/components/issues/21148) |
+| bug fix |  **slider:** unable to assign min/max values if they are more precise than then step ([#21155](https://github.com/angular/components/issues/21155)) ([80a6bfb](https://github.com/angular/components/commit/80a6bfb)), closes [#21147](https://github.com/angular/components/issues/21147) |
+| feature |  **core:** add typography config normalization function ([#21059](https://github.com/angular/components/issues/21059)) ([6830350](https://github.com/angular/components/commit/6830350)) |
+
+### material-experimental
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **mdc-radio:** include form field styles in mdc-radio theme ([#21168](https://github.com/angular/components/issues/21168)) ([0aa94ac](https://github.com/angular/components/commit/0aa94ac)) |
+| bug fix |  **mdc-select:** fix long labels being incorrectly cut off ([#21184](https://github.com/angular/components/issues/21184)) ([5f47e8b](https://github.com/angular/components/commit/5f47e8b)) |
+| bug fix |  **mdc-table:** Fix sticky scrolling ([#21211](https://github.com/angular/components/issues/21211)) ([ceb0066](https://github.com/angular/components/commit/ceb0066)) |
+
+
 ## 11.0.1 "bismuth-cape" (2020-11-24)
 
 ### cdk
