@@ -29,7 +29,7 @@
         }
       ],
       "compilationModeFilter": [
-        "partial compile + link"
+        "linked compile"
       ],
       "compilerOptions": {
         "sourceMap": true
@@ -63,7 +63,7 @@
         }
       ],
       "compilationModeFilter": [
-        "partial compile + link"
+        "linked compile"
       ],
       "compilerOptions": {
         "sourceMap": true
@@ -97,7 +97,7 @@
         }
       ],
       "compilationModeFilter": [
-        "partial compile + link"
+        "linked compile"
       ],
       "compilerOptions": {
         "sourceMap": true
@@ -131,7 +131,7 @@
         }
       ],
       "compilationModeFilter": [
-        "partial compile + link"
+        "linked compile"
       ],
       "compilerOptions": {
         "sourceMap": true
@@ -165,7 +165,7 @@
         }
       ],
       "compilationModeFilter": [
-        "partial compile + link"
+        "linked compile"
       ],
       "compilerOptions": {
         "sourceMap": true
@@ -199,7 +199,7 @@
         }
       ],
       "compilationModeFilter": [
-        "partial compile + link"
+        "linked compile"
       ],
       "compilerOptions": {
         "sourceMap": true
@@ -233,7 +233,7 @@
         }
       ],
       "compilationModeFilter": [
-        "partial compile + link"
+        "linked compile"
       ],
       "compilerOptions": {
         "sourceMap": true
@@ -267,7 +267,7 @@
         }
       ],
       "compilationModeFilter": [
-        "partial compile + link"
+        "linked compile"
       ],
       "compilerOptions": {
         "sourceMap": true
@@ -301,7 +301,7 @@
         }
       ],
       "compilationModeFilter": [
-        "partial compile + link"
+        "linked compile"
       ],
       "compilerOptions": {
         "sourceMap": true
@@ -335,7 +335,7 @@
         }
       ],
       "compilationModeFilter": [
-        "partial compile + link"
+        "linked compile"
       ],
       "compilerOptions": {
         "sourceMap": true
@@ -369,7 +369,7 @@
         }
       ],
       "compilationModeFilter": [
-        "partial compile + link"
+        "linked compile"
       ],
       "compilerOptions": {
         "sourceMap": true
@@ -403,7 +403,7 @@
         }
       ],
       "compilationModeFilter": [
-        "partial compile + link"
+        "linked compile"
       ],
       "compilerOptions": {
         "sourceMap": true
@@ -437,7 +437,7 @@
         }
       ],
       "compilationModeFilter": [
-        "partial compile + link"
+        "linked compile"
       ],
       "compilerOptions": {
         "sourceMap": true
@@ -471,7 +471,7 @@
         }
       ],
       "compilationModeFilter": [
-        "partial compile + link"
+        "linked compile"
       ],
       "compilerOptions": {
         "sourceMap": true
@@ -505,7 +505,7 @@
         }
       ],
       "compilationModeFilter": [
-        "partial compile + link"
+        "linked compile"
       ],
       "compilerOptions": {
         "sourceMap": true
@@ -539,7 +539,7 @@
         }
       ],
       "compilationModeFilter": [
-        "partial compile + link"
+        "linked compile"
       ],
       "compilerOptions": {
         "sourceMap": true
@@ -573,7 +573,7 @@
         }
       ],
       "compilationModeFilter": [
-        "partial compile + link"
+        "linked compile"
       ],
       "compilerOptions": {
         "sourceMap": true
@@ -607,7 +607,7 @@
         }
       ],
       "compilationModeFilter": [
-        "partial compile + link"
+        "linked compile"
       ],
       "compilerOptions": {
         "sourceMap": true
@@ -641,7 +641,7 @@
         }
       ],
       "compilationModeFilter": [
-        "partial compile + link"
+        "linked compile"
       ],
       "compilerOptions": {
         "sourceMap": true
@@ -675,7 +675,7 @@
         }
       ],
       "compilationModeFilter": [
-        "partial compile + link"
+        "linked compile"
       ],
       "compilerOptions": {
         "sourceMap": true
@@ -709,7 +709,7 @@
         }
       ],
       "compilationModeFilter": [
-        "partial compile + link"
+        "linked compile"
       ],
       "compilerOptions": {
         "sourceMap": true
@@ -743,7 +743,7 @@
         }
       ],
       "compilationModeFilter": [
-        "partial compile + link"
+        "linked compile"
       ],
       "compilerOptions": {
         "sourceMap": true
@@ -777,7 +777,7 @@
         }
       ],
       "compilationModeFilter": [
-        "partial compile + link"
+        "linked compile"
       ],
       "compilerOptions": {
         "sourceMap": true
@@ -811,7 +811,7 @@
         }
       ],
       "compilationModeFilter": [
-        "partial compile + link"
+        "linked compile"
       ],
       "compilerOptions": {
         "sourceMap": true
@@ -845,7 +845,7 @@
         }
       ],
       "compilationModeFilter": [
-        "partial compile + link"
+        "linked compile"
       ],
       "compilerOptions": {
         "sourceMap": true
@@ -879,7 +879,7 @@
         }
       ],
       "compilationModeFilter": [
-        "partial compile + link"
+        "linked compile"
       ],
       "compilerOptions": {
         "sourceMap": true
@@ -913,7 +913,7 @@
         }
       ],
       "compilationModeFilter": [
-        "partial compile + link"
+        "linked compile"
       ],
       "compilerOptions": {
         "sourceMap": true
