@@ -937,6 +937,26 @@ describe('MatMenu', () => {
     expect(document.activeElement).toBe(overlayContainerElement.querySelector('.mat-menu-panel'));
   }));
 
+  it('should clear the static aria-label from the menu host', () => {
+    const fixture = createComponent(StaticAriaLabelMenu);
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('mat-menu').hasAttribute('aria-label')).toBe(false);
+  });
+
+  it('should clear the static aria-labelledby from the menu host', () => {
+    const fixture = createComponent(StaticAriaLabelledByMenu);
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('mat-menu').hasAttribute('aria-labelledby'))
+        .toBe(false);
+  });
+
+  it('should clear the static aria-describedby from the menu host', () => {
+    const fixture = createComponent(StaticAriaDescribedbyMenu);
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('mat-menu').hasAttribute('aria-describedby'))
+        .toBe(false);
+  });
+
   describe('lazy rendering', () => {
     it('should be able to render the menu content lazily', fakeAsync(() => {
       const fixture = createComponent(SimpleLazyMenu);
@@ -2692,3 +2712,21 @@ class LazyMenuWithOnPush {
 })
 class InvalidRecursiveMenu {
 }
+
+
+@Component({
+  template: '<mat-menu aria-label="label"></mat-menu>'
+})
+class StaticAriaLabelMenu {}
+
+
+@Component({
+  template: '<mat-menu aria-labelledby="some-element"></mat-menu>'
+})
+class StaticAriaLabelledByMenu {}
+
+
+@Component({
+  template: '<mat-menu aria-describedby="some-element"></mat-menu>'
+})
+class StaticAriaDescribedbyMenu {}
