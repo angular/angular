@@ -48,7 +48,7 @@ Replace it with the following:
 <code-example path="toh-pt5/src/app/app-routing.module.1.ts" header="src/app/app-routing.module.ts (updated)">
 </code-example>
 
-First, `AppRoutingModule` imports `RouterModule` and `Routes` so the app can have routing functionality. The next import, `HeroesComponent`, will give the Router somewhere to go once you configure the routes.
+First, the `app-routing.module.ts` file imports `RouterModule` and `Routes` so the app can have routing functionality. The next import, `HeroesComponent`, will give the Router somewhere to go once you configure the routes.
 
 Notice that the `CommonModule` references and `declarations` array are unnecessary, so are no
 longer part of `AppRoutingModule`. The following sections explain the rest of the `AppRoutingModule` in more detail.
@@ -60,7 +60,7 @@ The next part of the file is where you configure your routes.
 *Routes* tell the Router which view to display when a user clicks a link or
 pastes a URL into the browser address bar.
 
-Since `AppRoutingModule` already imports `HeroesComponent`, you can use it in the `routes` array:
+Since `app-routing.module.ts` already imports `HeroesComponent`, you can use it in the `routes` array:
 
 <code-example path="toh-pt5/src/app/app-routing.module.ts" header="src/app/app-routing.module.ts"
   region="heroes-route">
@@ -216,12 +216,12 @@ This `getHeroes()` returns the sliced list of heroes at positions 1 and 5, retur
 
 To navigate to the dashboard, the router needs an appropriate route.
 
-Import the `DashboardComponent` in the `AppRoutingModule`.
+Import the `DashboardComponent` in the `app-routing-module.ts` file.
 
 <code-example path="toh-pt5/src/app/app-routing.module.ts" region="import-dashboard" header="src/app/app-routing.module.ts (import DashboardComponent)">
 </code-example>
 
-Add a route to the `AppRoutingModule.routes` array that matches a path to the `DashboardComponent`.
+Add a route to the `routes` array that matches a path to the `DashboardComponent`.
 
 <code-example path="toh-pt5/src/app/app-routing.module.ts" header="src/app/app-routing.module.ts" region="dashboard-route">
 </code-example>
@@ -233,7 +233,7 @@ That doesn't match any existing route so the router doesn't navigate anywhere.
 The space below the `<router-outlet>` is blank.
 
 To make the app navigate to the dashboard automatically, add the following
-route to the `AppRoutingModule.Routes` array.
+route to the `routes` array.
 
 <code-example path="toh-pt5/src/app/app-routing.module.ts" header="src/app/app-routing.module.ts" region="redirect-route">
 </code-example>
@@ -288,12 +288,12 @@ You'll [fix that shortly](#heroes-component-links) after you enable routing to t
 
 A URL like `~/detail/11` would be a good URL for navigating to the *Hero Detail* view of the hero whose `id` is `11`.
 
-Open `AppRoutingModule` and import `HeroDetailComponent`.
+Open `app-routing.module.ts` and import `HeroDetailComponent`.
 
 <code-example path="toh-pt5/src/app/app-routing.module.ts" region="import-herodetail" header="src/app/app-routing.module.ts (import HeroDetailComponent)">
 </code-example>
 
-Then add a _parameterized_ route to the `AppRoutingModule.routes` array that matches the path pattern to the _hero detail_ view.
+Then add a _parameterized_ route to the `routes` array that matches the path pattern to the _hero detail_ view.
 
 <code-example path="toh-pt5/src/app/app-routing.module.ts" header="src/app/app-routing.module.ts" region="detail-route">
 </code-example>
