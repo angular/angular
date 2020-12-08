@@ -422,10 +422,11 @@ export class CompletionBuilder<N extends TmplAstNode|AST> {
 
   private getElementAttributeCompletions(this: ElementAttributeCompletionBuilder):
       ts.WithMetadata<ts.CompletionInfo>|undefined {
-    let element: TmplAstElement;
+    let element: TmplAstElement|TmplAstTemplate;
     if (this.node instanceof TmplAstElement) {
       element = this.node;
-    } else if (this.nodeParent instanceof TmplAstElement) {
+    } else if (
+        this.nodeParent instanceof TmplAstElement || this.nodeParent instanceof TmplAstTemplate) {
       element = this.nodeParent;
     } else {
       // Nothing to do without an element to process.
@@ -476,7 +477,11 @@ export class CompletionBuilder<N extends TmplAstNode|AST> {
       // Is the completion in an attribute context (instead of a property context)?
       const isAttributeContext =
           (this.node instanceof TmplAstElement || this.node instanceof TmplAstTextAttribute);
-      addAttributeCompletionEntries(entries, completion, isAttributeContext, replacementSpan);
+      // Is the completion for an element (not an <ng-template>)?
+      const isElementContext =
+          this.node instanceof TmplAstElement || this.nodeParent instanceof TmplAstElement;
+      addAttributeCompletionEntries(
+          entries, completion, isAttributeContext, isElementContext, replacementSpan);
     }
 
     return {
@@ -494,10 +499,11 @@ export class CompletionBuilder<N extends TmplAstNode|AST> {
     // chose. Strip off any binding syntax to get the real attribute name.
     const {name, kind} = stripBindingSugar(entryName);
 
-    let element: TmplAstElement;
-    if (this.node instanceof TmplAstElement) {
+    let element: TmplAstElement|TmplAstTemplate;
+    if (this.node instanceof TmplAstElement || this.node instanceof TmplAstTemplate) {
       element = this.node;
-    } else if (this.nodeParent instanceof TmplAstElement) {
+    } else if (
+        this.nodeParent instanceof TmplAstElement || this.nodeParent instanceof TmplAstTemplate) {
       element = this.nodeParent;
     } else {
       // Nothing to do without an element to process.
@@ -558,12 +564,13 @@ export class CompletionBuilder<N extends TmplAstNode|AST> {
 
   private getElementAttributeCompletionSymbol(
       this: ElementAttributeCompletionBuilder, attribute: string): ts.Symbol|undefined {
-    const {name, kind} = stripBindingSugar(attribute);
+    const {name} = stripBindingSugar(attribute);
 
-    let element: TmplAstElement;
-    if (this.node instanceof TmplAstElement) {
+    let element: TmplAstElement|TmplAstTemplate;
+    if (this.node instanceof TmplAstElement || this.node instanceof TmplAstTemplate) {
       element = this.node;
-    } else if (this.nodeParent instanceof TmplAstElement) {
+    } else if (
+        this.nodeParent instanceof TmplAstElement || this.nodeParent instanceof TmplAstTemplate) {
       element = this.nodeParent;
     } else {
       // Nothing to do without an element to process.

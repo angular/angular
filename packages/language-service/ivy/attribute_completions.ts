@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CssSelector, SelectorMatcher, TmplAstElement} from '@angular/compiler';
-import {DirectiveInScope, TemplateTypeChecker} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
+import {CssSelector, SelectorMatcher, TmplAstElement, TmplAstTemplate} from '@angular/compiler';
+import {DirectiveInScope, ElementSymbol, TemplateSymbol, TemplateTypeChecker, TypeCheckableDirectiveMeta} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
 import * as ts from 'typescript';
 
 import {DisplayInfoKind, unsafeCastDisplayInfoKindToScriptElementKind} from './display_parts';
@@ -36,6 +36,12 @@ export enum AttributeCompletionKind {
    * Completion of an attribute that results in a new directive being matched on an element.
    */
   DirectiveAttribute,
+
+  /**
+   * Completion of an attribute that results in a new structural directive being matched on an
+   * element.
+   */
+  StructuralDirectiveAttribute,
 
   /**
    * Completion of an input from a directive which is either present on the element, or becomes
@@ -83,7 +89,8 @@ export interface DomPropertyCompletion {
  * Completion of an attribute which results in a new directive being matched on an element.
  */
 export interface DirectiveAttributeCompletion {
-  kind: AttributeCompletionKind.DirectiveAttribute;
+  kind: AttributeCompletionKind.DirectiveAttribute|
+      AttributeCompletionKind.StructuralDirectiveAttribute;
 
   /**
    * Name of the attribute whose addition causes this directive to match the element.
@@ -172,13 +179,14 @@ export type AttributeCompletion = DomAttributeCompletion|DomPropertyCompletion|
  * completion, not the DOM completion for that name.
  */
 export function buildAttributeCompletionTable(
-    component: ts.ClassDeclaration, element: TmplAstElement,
+    component: ts.ClassDeclaration, element: TmplAstElement|TmplAstTemplate,
     checker: TemplateTypeChecker): Map<string, AttributeCompletion> {
   const table = new Map<string, AttributeCompletion>();
 
-  // Use the `ElementSymbol` to iterate over directives present on the element, and their
-  // inputs/outputs. These have the highest priority of completion results.
-  const symbol = checker.getSymbolOfNode(element, component);
+  // Use the `ElementSymbol` or `TemplateSymbol` to iterate over directives present on the node, and
+  // their inputs/outputs. These have the highest priority of completion results.
+  const symbol: ElementSymbol|TemplateSymbol =
+      checker.getSymbolOfNode(element, component) as ElementSymbol | TemplateSymbol;
   const presentDirectives = new Set<ts.ClassDeclaration>();
   if (symbol !== null) {
     // An `ElementSymbol` was available. This means inputs and outputs for directives on the
@@ -242,79 +250,104 @@ export function buildAttributeCompletionTable(
         continue;
       }
 
-      const selectors = CssSelector.parse(meta.selector);
-      const matcher = new SelectorMatcher();
-      matcher.addSelectables(selectors);
+      if (!meta.isStructural) {
+        // For non-structural directives, the directive's attribute selector(s) are matched against
+        // a hypothetical version of the element with those attributes. A match indicates that
+        // adding that attribute/input/output binding would cause the directive to become present,
+        // meaning that such a binding is a valid completion.
+        const selectors = CssSelector.parse(meta.selector);
+        const matcher = new SelectorMatcher();
+        matcher.addSelectables(selectors);
 
-      for (const selector of selectors) {
-        for (const [attrName, attrValue] of selectorAttributes(selector)) {
-          if (attrValue !== '') {
-            // This attribute selector requires a value, which is not supported in completion.
-            continue;
-          }
+        for (const selector of selectors) {
+          for (const [attrName, attrValue] of selectorAttributes(selector)) {
+            if (attrValue !== '') {
+              // This attribute selector requires a value, which is not supported in completion.
+              continue;
+            }
 
-          if (table.has(attrName)) {
-            // Skip this attribute as there's already a binding for it.
-            continue;
-          }
+            if (table.has(attrName)) {
+              // Skip this attribute as there's already a binding for it.
+              continue;
+            }
 
-          // Check whether adding this attribute would cause the directive to start matching.
-          const newElementSelector = elementSelector + `[${attrName}]`;
-          if (!matcher.match(CssSelector.parse(newElementSelector)[0], null)) {
-            // Nope, move on with our lives.
-            continue;
-          }
+            // Check whether adding this attribute would cause the directive to start matching.
+            const newElementSelector = elementSelector + `[${attrName}]`;
+            if (!matcher.match(CssSelector.parse(newElementSelector)[0], null)) {
+              // Nope, move on with our lives.
+              continue;
+            }
 
-          // Adding this attribute causes a new directive to be matched. Decide how to categorize
-          // it based on the directive's inputs and outputs.
-          if (meta.inputs.hasBindingPropertyName(attrName)) {
-            // This attribute corresponds to an input binding.
-            table.set(attrName, {
-              kind: AttributeCompletionKind.DirectiveInput,
-              directive: dirInScope,
-              propertyName: attrName,
-              classPropertyName:
-                  meta.inputs.getByBindingPropertyName(attrName)![0].classPropertyName,
-              twoWayBindingSupported: meta.outputs.hasBindingPropertyName(attrName + 'Change'),
-            });
-          } else if (meta.outputs.hasBindingPropertyName(attrName)) {
-            // This attribute corresponds to an output binding.
-            table.set(attrName, {
-              kind: AttributeCompletionKind.DirectiveOutput,
-              directive: dirInScope,
-              eventName: attrName,
-              classPropertyName:
-                  meta.outputs.getByBindingPropertyName(attrName)![0].classPropertyName,
-            });
-          } else {
-            // This attribute causes a new directive to be matched, but does not also correspond to
-            // an input or output binding.
-            table.set(attrName, {
-              kind: AttributeCompletionKind.DirectiveAttribute,
-              attribute: attrName,
-              directive: dirInScope,
-            });
+            // Adding this attribute causes a new directive to be matched. Decide how to categorize
+            // it based on the directive's inputs and outputs.
+            if (meta.inputs.hasBindingPropertyName(attrName)) {
+              // This attribute corresponds to an input binding.
+              table.set(attrName, {
+                kind: AttributeCompletionKind.DirectiveInput,
+                directive: dirInScope,
+                propertyName: attrName,
+                classPropertyName:
+                    meta.inputs.getByBindingPropertyName(attrName)![0].classPropertyName,
+                twoWayBindingSupported: meta.outputs.hasBindingPropertyName(attrName + 'Change'),
+              });
+            } else if (meta.outputs.hasBindingPropertyName(attrName)) {
+              // This attribute corresponds to an output binding.
+              table.set(attrName, {
+                kind: AttributeCompletionKind.DirectiveOutput,
+                directive: dirInScope,
+                eventName: attrName,
+                classPropertyName:
+                    meta.outputs.getByBindingPropertyName(attrName)![0].classPropertyName,
+              });
+            } else {
+              // This attribute causes a new directive to be matched, but does not also correspond
+              // to an input or output binding.
+              table.set(attrName, {
+                kind: AttributeCompletionKind.DirectiveAttribute,
+                attribute: attrName,
+                directive: dirInScope,
+              });
+            }
           }
+        }
+      } else {
+        // Hypothetically matching a structural directive is a litle different than a plain
+        // directive. Use of the '*' structural directive syntactic sugar means that the actual
+        // directive is applied to a plain <ng-template> node, not the existing element with any
+        // other attributes it might already have.
+        // Additionally, more than one attribute/input might need to be present in order for the
+        // directive to match (e.g. `ngFor` has a selector of `[ngFor][ngForOf]`). This gets a
+        // little tricky.
+
+        const structuralAttributes = getStructuralAttributes(meta);
+        for (const attrName of structuralAttributes) {
+          table.set(attrName, {
+            kind: AttributeCompletionKind.StructuralDirectiveAttribute,
+            attribute: attrName,
+            directive: dirInScope,
+          });
         }
       }
     }
   }
 
   // Finally, add any DOM attributes not already covered by inputs.
-  for (const {attribute, property} of checker.getPotentialDomBindings(element.name)) {
-    const isAlsoProperty = attribute === property;
-    if (!table.has(attribute)) {
-      table.set(attribute, {
-        kind: AttributeCompletionKind.DomAttribute,
-        attribute,
-        isAlsoProperty,
-      });
-    }
-    if (!isAlsoProperty && !table.has(property)) {
-      table.set(property, {
-        kind: AttributeCompletionKind.DomProperty,
-        property,
-      });
+  if (element instanceof TmplAstElement) {
+    for (const {attribute, property} of checker.getPotentialDomBindings(element.name)) {
+      const isAlsoProperty = attribute === property;
+      if (!table.has(attribute)) {
+        table.set(attribute, {
+          kind: AttributeCompletionKind.DomAttribute,
+          attribute,
+          isAlsoProperty,
+        });
+      }
+      if (!isAlsoProperty && !table.has(property)) {
+        table.set(property, {
+          kind: AttributeCompletionKind.DomProperty,
+          property,
+        });
+      }
     }
   }
 
@@ -335,13 +368,26 @@ export function buildAttributeCompletionTable(
  */
 export function addAttributeCompletionEntries(
     entries: ts.CompletionEntry[], completion: AttributeCompletion, isAttributeContext: boolean,
-    replacementSpan: ts.TextSpan|undefined): void {
+    isElementContext: boolean, replacementSpan: ts.TextSpan|undefined): void {
   switch (completion.kind) {
     case AttributeCompletionKind.DirectiveAttribute: {
       entries.push({
         kind: unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.DIRECTIVE),
         name: completion.attribute,
         sortText: completion.attribute,
+        replacementSpan,
+      });
+      break;
+    }
+    case AttributeCompletionKind.StructuralDirectiveAttribute: {
+      // In an element, the completion is offered with a leading '*' to activate the structural
+      // directive. Once present, the structural attribute will be parsed as a template and not an
+      // element, and the prefix is no longer necessary.
+      const prefix = isElementContext ? '*' : '';
+      entries.push({
+        kind: unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.DIRECTIVE),
+        name: prefix + completion.attribute,
+        sortText: prefix + completion.attribute,
         replacementSpan,
       });
       break;
@@ -451,6 +497,7 @@ export function getAttributeCompletionSymbol(
     case AttributeCompletionKind.DomProperty:
       return null;
     case AttributeCompletionKind.DirectiveAttribute:
+    case AttributeCompletionKind.StructuralDirectiveAttribute:
       return completion.directive.tsSymbol;
     case AttributeCompletionKind.DirectiveInput:
     case AttributeCompletionKind.DirectiveOutput:
@@ -468,4 +515,69 @@ function* selectorAttributes(selector: CssSelector): Iterable<[string, string]> 
   for (let i = 0; i < selector.attrs.length; i += 2) {
     yield [selector.attrs[0], selector.attrs[1]];
   }
+}
+
+function getStructuralAttributes(meta: TypeCheckableDirectiveMeta): string[] {
+  if (meta.selector === null) {
+    return [];
+  }
+
+  const structuralAttributes: string[] = [];
+  const selectors = CssSelector.parse(meta.selector);
+  for (const selector of selectors) {
+    if (selector.element !== null && selector.element !== 'ng-template') {
+      // This particular selector does not apply under structural directive syntax.
+      continue;
+    }
+
+    // Every attribute of this selector must be name-only - no required values.
+    const attributeSelectors = Array.from(selectorAttributes(selector));
+    if (!attributeSelectors.every(([_, attrValue]) => attrValue === '')) {
+      continue;
+    }
+
+    // Get every named selector.
+    const attributes = attributeSelectors.map(([attrName, _]) => attrName);
+
+    // Find the shortest attribute. This is the structural directive "base", and all potential
+    // input bindings must begin with the base. E.g. in `*ngFor="let a of b"`, `ngFor` is the
+    // base attribute, and the `of` binding key corresponds to an input of `ngForOf`.
+    const baseAttr = attributes.reduce(
+        (prev, curr) => prev === null || curr.length < prev.length ? curr : prev,
+        null as string | null);
+    if (baseAttr === null) {
+      // No attributes in this selector?
+      continue;
+    }
+
+    // Validate that the attributes are compatible with use as a structural directive.
+    const isValid = (attr: string): boolean => {
+      // The base attribute is valid by default.
+      if (attr === baseAttr) {
+        return true;
+      }
+
+      // Non-base attributes must all be prefixed with the base attribute.
+      if (!attr.startsWith(baseAttr)) {
+        return false;
+      }
+
+      // Non-base attributes must also correspond to directive inputs.
+      if (!meta.inputs.hasBindingPropertyName(attr)) {
+        return false;
+      }
+
+      // This attribute is compatible.
+      return true;
+    };
+
+    if (!attributes.every(isValid)) {
+      continue;
+    }
+
+    // This attribute is valid as a structural attribute for this directive.
+    structuralAttributes.push(baseAttr);
+  }
+
+  return structuralAttributes;
 }

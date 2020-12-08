@@ -39,6 +39,19 @@ const DIR_WITH_OUTPUT = {
   `
 };
 
+const NG_FOR_DIR = {
+  'NgFor': `
+    @Directive({
+      selector: '[ngFor][ngForOf]',
+    })
+    export class NgFor {
+      constructor(ref: TemplateRef<any>) {}
+
+      ngForOf!: any;
+    }
+  `
+};
+
 const DIR_WITH_SELECTED_INPUT = {
   'Dir': `
     @Directive({
@@ -387,6 +400,56 @@ describe('completions', () => {
         });
       });
 
+      describe('structural directive present', () => {
+        it('should return structural directive completions for an empty attribute', () => {
+          const {ngLS, fileName, cursor, text} = setup(`<li ¦>`, '', NG_FOR_DIR);
+
+          const completions =
+              ngLS.getCompletionsAtPosition(fileName, cursor, /* options */ undefined);
+          expectContain(
+              completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.DIRECTIVE),
+              ['*ngFor']);
+        });
+
+        it('should return structural directive completions for an existing non-structural attribute',
+           () => {
+             const {ngLS, fileName, cursor, text} = setup(`<li ng¦>`, '', NG_FOR_DIR);
+
+             const completions =
+                 ngLS.getCompletionsAtPosition(fileName, cursor, /* options */ undefined);
+             expectContain(
+                 completions,
+                 unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.DIRECTIVE),
+                 ['*ngFor']);
+             expectReplacementText(completions, text, 'ng');
+           });
+
+        it('should return structural directive completions for an existing structural attribute',
+           () => {
+             const {ngLS, fileName, cursor, text} = setup(`<li *ng¦>`, '', NG_FOR_DIR);
+
+             const completions =
+                 ngLS.getCompletionsAtPosition(fileName, cursor, /* options */ undefined);
+             expectContain(
+                 completions,
+                 unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.DIRECTIVE),
+                 ['ngFor']);
+             expectReplacementText(completions, text, 'ng');
+           });
+
+        it('should return structural directive completions for just the structural marker', () => {
+          const {ngLS, fileName, cursor, text} = setup(`<li *¦>`, '', NG_FOR_DIR);
+
+          const completions =
+              ngLS.getCompletionsAtPosition(fileName, cursor, /* options */ undefined);
+          expectContain(
+              completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.DIRECTIVE),
+              ['ngFor']);
+          // The completion should not try to overwrite the '*'.
+          expectReplacementText(completions, text, '');
+        });
+      });
+
       describe('directive not present', () => {
         it('should return input completions for a new attribute', () => {
           const {ngLS, fileName, cursor, text} = setup(`<input ¦>`, '', DIR_WITH_SELECTED_INPUT);
@@ -559,7 +622,7 @@ function setup(
     {
       name: codePath,
       contents: `
-        import {Component, Directive, NgModule, Pipe} from '@angular/core';
+        import {Component, Directive, NgModule, Pipe, TemplateRef} from '@angular/core';
 
         @Component({
           templateUrl: './test.html',
