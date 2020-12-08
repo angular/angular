@@ -4591,9 +4591,9 @@ dgeni-packages@^0.28.4:
     urlencode "^1.1.0"
 
 dgeni@^0.4.11, dgeni@^0.4.9:
-  version "0.4.11"
-  resolved "https://registry.yarnpkg.com/dgeni/-/dgeni-0.4.11.tgz#5fe416801cef1f2ae759fda8330b2fbdd0459341"
-  integrity sha512-4QLCXdo/uaRDhej2VLvWPEX5ACyLBsxEQflOkTmvoGYnYhQperOc8gMiZ1IW5GDeYL+fTqZ/kKGCbMukTfCrEg==
+  version "0.4.12"
+  resolved "https://registry.yarnpkg.com/dgeni/-/dgeni-0.4.12.tgz#574a91de25dab0018a9832da83fdb7c2b8c7507b"
+  integrity sha512-AhlRuwduzZhHIpf8DYZ0wWHLvV+9IQ8dQRqzx3ryYEg9trU/gWc2xz3wnJrRpDnS6Hu6F73saj6m1xbckW3k9Q==
   dependencies:
     canonical-path "~0.0.2"
     dependency-graph "^0.7.0"
