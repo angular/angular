@@ -505,6 +505,7 @@ function prepareDeclarations(
       isGeneric: decl.isGeneric ?? false,
       outputs: ClassPropertyMapping.fromMappedObject(decl.outputs || {}),
       queries: decl.queries || [],
+      isStructural: false,
     };
     matcher.addSelectables(selector, meta);
   }
@@ -567,6 +568,7 @@ function makeScope(program: ts.Program, sf: ts.SourceFile, decls: TestDeclaratio
         undeclaredInputFields: new Set(decl.undeclaredInputFields ?? []),
         isGeneric: decl.isGeneric ?? false,
         isPoisoned: false,
+        isStructural: false,
       });
     } else if (decl.type === 'pipe') {
       scope.pipes.push({

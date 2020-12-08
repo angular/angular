@@ -32,6 +32,11 @@ export interface DirectiveInScope {
    * `true` if this directive is a component.
    */
   isComponent: boolean;
+
+  /**
+   * `true` if this directive is a structural directive.
+   */
+  isStructural: boolean;
 }
 
 /**

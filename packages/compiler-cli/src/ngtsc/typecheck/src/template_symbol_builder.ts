@@ -140,7 +140,8 @@ export class SymbolBuilder {
             selector: meta.selector,
             isComponent,
             ngModule,
-            kind: SymbolKind.Directive
+            kind: SymbolKind.Directive,
+            isStructural: meta.isStructural,
           };
           return directiveSymbol;
         })
@@ -281,7 +282,7 @@ export class SymbolBuilder {
 
   private getDirectiveSymbolForAccessExpression(
       node: ts.ElementAccessExpression|ts.PropertyAccessExpression,
-      {isComponent, selector}: TypeCheckableDirectiveMeta): DirectiveSymbol|null {
+      {isComponent, selector, isStructural}: TypeCheckableDirectiveMeta): DirectiveSymbol|null {
     // In either case, `_t1["index"]` or `_t1.index`, `node.expression` is _t1.
     // The retrieved symbol for _t1 will be the variable declaration.
     const tsSymbol = this.getTypeChecker().getSymbolAtLocation(node.expression);
@@ -313,6 +314,7 @@ export class SymbolBuilder {
       tsType: symbol.tsType,
       shimLocation: symbol.shimLocation,
       isComponent,
+      isStructural,
       selector,
       ngModule,
     };

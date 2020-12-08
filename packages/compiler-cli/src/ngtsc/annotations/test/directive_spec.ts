@@ -105,6 +105,7 @@ runInEachFileSystem(() => {
         isComponent: false,
         name: 'Dir',
         selector: '[dir]',
+        isStructural: false,
       };
       matcher.addSelectables(CssSelector.parse('[dir]'), dirMeta);
 
@@ -117,6 +118,30 @@ runInEachFileSystem(() => {
       // fed into the SelectorMatcher was compatible with the binder, and did not confuse property
       // and field names.
       expect(propBindingConsumer).toBe(dirMeta);
+    });
+
+    it('should identify a structural directive', () => {
+      const src = `
+        import {Directive, TemplateRef} from '@angular/core';
+
+        @Directive({selector: 'test-dir'})
+        export class TestDir {
+          constructor(private ref: TemplateRef) {}
+        }
+      `;
+      const {program} = makeProgram([
+        {
+          name: _('/node_modules/@angular/core/index.d.ts'),
+          contents: 'export const Directive: any; export declare class TemplateRef {}',
+        },
+        {
+          name: _('/entry.ts'),
+          contents: src,
+        },
+      ]);
+
+      const analysis = analyzeDirective(program, 'TestDir');
+      expect(analysis.isStructural).toBeTrue();
     });
   });
 

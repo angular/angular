@@ -396,6 +396,7 @@ export class ComponentDecoratorHandler implements
       baseClass: analysis.baseClass,
       ...analysis.typeCheckMeta,
       isPoisoned: analysis.isPoisoned,
+      isStructural: false,
     });
 
     this.resourceRegistry.registerResources(analysis.resources, node);
