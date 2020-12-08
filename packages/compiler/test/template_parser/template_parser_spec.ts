@@ -570,6 +570,24 @@ describe('TemplateParser', () => {
       expect(humanizeTplAst(parse(`{{ "{{a}}' }}`, []))).toEqual([[TextAst, `{{ "{{a}}' }}`]]);
     });
 
+    it('should parse interpolation with escaped backslashes', () => {
+      expect(humanizeTplAst(parse(`{{foo.split('\\\\')}}`, []))).toEqual([
+        [BoundTextAst, `{{ foo.split("\\") }}`]
+      ]);
+      expect(humanizeTplAst(parse(`{{foo.split('\\\\\\\\')}}`, []))).toEqual([
+        [BoundTextAst, `{{ foo.split("\\\\") }}`]
+      ]);
+      expect(humanizeTplAst(parse(`{{foo.split('\\\\\\\\\\\\')}}`, []))).toEqual([
+        [BoundTextAst, `{{ foo.split("\\\\\\") }}`]
+      ]);
+    });
+
+    it('should ignore quotes inside a comment', () => {
+      expect(humanizeTplAst(parse(`"{{name // " }}"`, []))).toEqual([
+        [BoundTextAst, `"{{ name }}"`]
+      ]);
+    });
+
     it('should parse with custom interpolation config',
        inject([TemplateParser], (parser: TemplateParser) => {
          const component = CompileDirectiveMetadata.create({

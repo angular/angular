@@ -859,6 +859,12 @@ describe('parser', () => {
       checkInterpolation(`{{'It\\'s }} just Angular'}}`, `{{ "It's }} just Angular" }}`);
     });
 
+    it('should parse interpolation with escaped backslashes', () => {
+      checkInterpolation(`{{foo.split('\\\\')}}`, `{{ foo.split("\\") }}`);
+      checkInterpolation(`{{foo.split('\\\\\\\\')}}`, `{{ foo.split("\\\\") }}`);
+      checkInterpolation(`{{foo.split('\\\\\\\\\\\\')}}`, `{{ foo.split("\\\\\\") }}`);
+    });
+
     it('should not parse interpolation with mismatching quotes', () => {
       expect(parseInterpolation(`{{ "{{a}}' }}`)).toBeNull();
     });
@@ -919,6 +925,10 @@ describe('parser', () => {
 
       it('should retain // in nested, unterminated strings', () => {
         checkInterpolation(`{{ "a\'b\`" //comment}}`, `{{ "a\'b\`" }}`);
+      });
+
+      it('should ignore quotes inside a comment', () => {
+        checkInterpolation(`"{{name // " }}"`, `"{{ name }}"`);
       });
     });
   });
@@ -1100,8 +1110,11 @@ function parseSimpleBindingIvy(
 }
 
 function checkInterpolation(exp: string, expected?: string) {
-  const ast = parseInterpolation(exp)!;
+  const ast = parseInterpolation(exp);
   if (expected == null) expected = exp;
+  if (ast === null) {
+    throw Error(`Failed to parse expression "${exp}"`);
+  }
   expect(unparse(ast)).toEqual(expected);
   validate(ast);
 }
