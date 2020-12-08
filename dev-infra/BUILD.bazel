@@ -24,29 +24,6 @@ ts_library(
     ],
 )
 
-ng_dev_rolled_up_generated_file(
-    name = "ng-dev",
-    entry_point = ":cli.ts",
-    rollup_args = [
-        "--plugin",
-        "rollup-plugin-hashbang",
-    ],
-    deps = [
-        ":cli",
-        # TODO(josephperrott): Determine if this plugin is the best method for ensuring the hashbang
-        # in both local and published use case.
-        "@npm//rollup-plugin-hashbang",
-    ],
-)
-
-ng_dev_rolled_up_generated_file(
-    name = "build-worker",
-    entry_point = "//dev-infra/release/build:build-worker.ts",
-    deps = [
-        "//dev-infra/release/build",
-    ],
-)
-
 genrule(
     name = "package-json",
     srcs = [
@@ -90,5 +67,36 @@ pkg_npm(
         "//dev-infra/benchmark/driver-utilities",
         "//dev-infra/commit-message",
         "//dev-infra/ts-circular-dependencies",
+    ],
+)
+
+# Because the angular/angular repository relies on the local repository for running ng-dev commands,
+# the rollup generated javascript files are committed into the repository to be used as node
+# scripts. To ensure they stay up to date, they are created using a generated file test.
+#
+# Currently there are two generated files which are needed
+#  ng-dev.js       -  The main script representing ng-dev
+#  build-worker.js -  The worker script for the `ng-dev release build` command, allowing it to run
+#                     in a forked process.
+ng_dev_rolled_up_generated_file(
+    name = "ng-dev",
+    entry_point = ":cli.ts",
+    rollup_args = [
+        "--plugin",
+        "rollup-plugin-hashbang",
+    ],
+    deps = [
+        ":cli",
+        # TODO(josephperrott): Determine if this plugin is the best method for ensuring the hashbang
+        # in both local and published use case.
+        "@npm//rollup-plugin-hashbang",
+    ],
+)
+
+ng_dev_rolled_up_generated_file(
+    name = "build-worker",
+    entry_point = "//dev-infra/release/build:build-worker.ts",
+    deps = [
+        "//dev-infra/release/build",
     ],
 )
