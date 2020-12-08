@@ -34,7 +34,7 @@ function buildZoneJsPackage(destPath) {
   console.info(`${scriptPath}:`);
   console.info('  Building zone.js npm package');
   console.info('##############################');
-  exec(`${bazelCmd} run //packages/zone.js:npm_package.pack`);
+  exec(`${bazelCmd} build //packages/zone.js:npm_package`);
 
   // Create the output directory.
   const absDestPath = resolve(baseDir, destPath);
