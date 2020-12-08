@@ -99,6 +99,12 @@
 
 ### material
 
+Note: Support for the node-sass npm package, based on libsass, was deprecated in version 10. This
+support officially ends with version 11. Ending support for node-sass allows us to switch to the
+new Sass module system (the `@use` syntax), simplifying our Sass and keeping up with ecosystem
+best practices. The `sass` npm package is an API compatible replacement maintained by the official
+Sass team at Google. 
+
 _Breaking changes:_
 
 * **snack-bar:** matSnackBarHarness.getRole() replaced with .getAriaLive() due to using aria-live
