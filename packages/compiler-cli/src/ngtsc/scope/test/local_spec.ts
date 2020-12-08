@@ -249,6 +249,7 @@ function fakeDirective(ref: Reference<ClassDeclaration>): DirectiveMeta {
     isGeneric: false,
     baseClass: null,
     isPoisoned: false,
+    isStructural: false,
   };
 }
 

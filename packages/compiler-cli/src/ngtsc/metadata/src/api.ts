@@ -114,6 +114,11 @@ export interface DirectiveMeta extends T2DirectiveMeta, DirectiveTypeCheckMeta {
    * and reliable metadata.
    */
   isPoisoned: boolean;
+
+  /**
+   * Whether the directive is likely a structural directive (injects `TemplateRef`).
+   */
+  isStructural: boolean;
 }
 
 /**

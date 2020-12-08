@@ -54,6 +54,7 @@ export function getBoundTemplate(
       inputs: ClassPropertyMapping.fromMappedObject({}),
       outputs: ClassPropertyMapping.fromMappedObject({}),
       exportAs: null,
+      isStructural: false,
     });
   });
   const binder = new R3TargetBinder(matcher);

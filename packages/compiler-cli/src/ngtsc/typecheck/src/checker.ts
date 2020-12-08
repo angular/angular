@@ -16,7 +16,7 @@ import {ClassDeclaration, isNamedClassDeclaration, ReflectionHost} from '../../r
 import {ComponentScopeReader, TypeCheckScopeRegistry} from '../../scope';
 import {isShim} from '../../shims';
 import {getSourceFileOrNull} from '../../util/src/typescript';
-import {DirectiveInScope, ElementSymbol, FullTemplateMapping, GlobalCompletion, OptimizeFor, PipeInScope, ProgramTypeCheckAdapter, ShimLocation, Symbol, TemplateId, TemplateTypeChecker, TypeCheckableDirectiveMeta, TypeCheckingConfig, TypeCheckingProgramStrategy, UpdateMode} from '../api';
+import {DirectiveInScope, ElementSymbol, FullTemplateMapping, GlobalCompletion, OptimizeFor, PipeInScope, ProgramTypeCheckAdapter, ShimLocation, Symbol, TemplateId, TemplateSymbol, TemplateTypeChecker, TypeCheckableDirectiveMeta, TypeCheckingConfig, TypeCheckingProgramStrategy, UpdateMode} from '../api';
 import {TemplateDiagnostic} from '../diagnostics';
 
 import {CompletionEngine} from './completion';
@@ -472,6 +472,7 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
     }
     return this.state.get(path)!;
   }
+  getSymbolOfNode(node: TmplAstTemplate, component: ts.ClassDeclaration): TemplateSymbol|null;
   getSymbolOfNode(node: TmplAstElement, component: ts.ClassDeclaration): ElementSymbol|null;
   getSymbolOfNode(node: AST|TmplAstNode, component: ts.ClassDeclaration): Symbol|null {
     const builder = this.getOrCreateSymbolBuilder(component);
@@ -598,6 +599,7 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
 
       data.directives.push({
         isComponent: dir.isComponent,
+        isStructural: dir.isStructural,
         selector: dir.selector,
         tsSymbol,
         ngModule,

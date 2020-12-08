@@ -13,7 +13,7 @@ import * as ts from 'typescript';
 import {FullTemplateMapping, TypeCheckableDirectiveMeta} from './api';
 import {GlobalCompletion} from './completion';
 import {DirectiveInScope, PipeInScope} from './scope';
-import {DirectiveSymbol, ElementSymbol, ShimLocation, Symbol} from './symbols';
+import {DirectiveSymbol, ElementSymbol, ShimLocation, Symbol, TemplateSymbol} from './symbols';
 
 /**
  * Interface to the Angular Template Type Checker to extract diagnostics and intelligence from the
@@ -111,6 +111,7 @@ export interface TemplateTypeChecker {
    * @see Symbol
    */
   getSymbolOfNode(node: TmplAstElement, component: ts.ClassDeclaration): ElementSymbol|null;
+  getSymbolOfNode(node: TmplAstTemplate, component: ts.ClassDeclaration): TemplateSymbol|null;
   getSymbolOfNode(node: AST|TmplAstNode, component: ts.ClassDeclaration): Symbol|null;
 
   /**

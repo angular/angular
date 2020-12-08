@@ -74,6 +74,8 @@ export interface DirectiveMeta {
    * Null otherwise
    */
   exportAs: string[]|null;
+
+  isStructural: boolean;
 }
 
 /**
