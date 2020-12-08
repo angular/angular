@@ -4208,7 +4208,7 @@ function mergePullRequest(prNumber, githubToken, projectRoot, config) {
                 case 0:
                     // Set the environment variable to skip all git commit hooks triggered by husky. We are unable to
                     // rely on `--no-verify` as some hooks still run, notably the `prepare-commit-msg` hook.
-                    process.env['HUSKY_SKIP_HOOKS'] = '1';
+                    process.env['HUSKY'] = '0';
                     return [4 /*yield*/, createPullRequestMergeTask(githubToken, projectRoot, config)];
                 case 1:
                     api = _a.sent();
