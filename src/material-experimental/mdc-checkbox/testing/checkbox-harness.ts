@@ -112,7 +112,7 @@ export class MatCheckboxHarness extends ComponentHarness {
    * action is complete.
    *
    * Note: This attempts to toggle the checkbox as a user would, by clicking it. Therefore if you
-   * are using `MAT_CHECKBOX_CLICK_ACTION` to change the behavior on click, calling this method
+   * are using `MAT_CHECKBOX_DEFAULT_OPTIONS` to change the behavior on click, calling this method
    * might not have the expected result.
    */
   async toggle(): Promise<void> {
@@ -126,7 +126,7 @@ export class MatCheckboxHarness extends ComponentHarness {
    * complete.
    *
    * Note: This attempts to check the checkbox as a user would, by clicking it. Therefore if you
-   * are using `MAT_CHECKBOX_CLICK_ACTION` to change the behavior on click, calling this method
+   * are using `MAT_CHECKBOX_DEFAULT_OPTIONS` to change the behavior on click, calling this method
    * might not have the expected result.
    */
   async check(): Promise<void> {
@@ -141,7 +141,7 @@ export class MatCheckboxHarness extends ComponentHarness {
    * complete.
    *
    * Note: This attempts to uncheck the checkbox as a user would, by clicking it. Therefore if you
-   * are using `MAT_CHECKBOX_CLICK_ACTION` to change the behavior on click, calling this method
+   * are using `MAT_CHECKBOX_DEFAULT_OPTIONS` to change the behavior on click, calling this method
    * might not have the expected result.
    */
   async uncheck(): Promise<void> {
