@@ -4,7 +4,7 @@ export declare const MAT_ACCORDION: InjectionToken<MatAccordionBase>;
 
 export declare const MAT_EXPANSION_PANEL_DEFAULT_OPTIONS: InjectionToken<MatExpansionPanelDefaultOptions>;
 
-export declare class MatAccordion extends CdkAccordion implements MatAccordionBase, AfterContentInit {
+export declare class MatAccordion extends CdkAccordion implements MatAccordionBase, AfterContentInit, OnDestroy {
     _headers: QueryList<MatExpansionPanelHeader>;
     displayMode: MatAccordionDisplayMode;
     get hideToggle(): boolean;
@@ -13,6 +13,7 @@ export declare class MatAccordion extends CdkAccordion implements MatAccordionBa
     _handleHeaderFocus(header: MatExpansionPanelHeader): void;
     _handleHeaderKeydown(event: KeyboardEvent): void;
     ngAfterContentInit(): void;
+    ngOnDestroy(): void;
     static ngAcceptInputType_hideToggle: BooleanInput;
     static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatAccordion, "mat-accordion", ["matAccordion"], { "multi": "multi"; "hideToggle": "hideToggle"; "displayMode": "displayMode"; "togglePosition": "togglePosition"; }, {}, ["_headers"]>;
     static ɵfac: i0.ɵɵFactoryDef<MatAccordion, never>;

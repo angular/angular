@@ -6,7 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, Input, ContentChildren, QueryList, AfterContentInit} from '@angular/core';
+import {
+  Directive,
+  Input,
+  ContentChildren,
+  QueryList,
+  AfterContentInit,
+  OnDestroy,
+} from '@angular/core';
 import {BooleanInput, coerceBooleanProperty} from '@angular/cdk/coercion';
 import {CdkAccordion} from '@angular/cdk/accordion';
 import {FocusKeyManager} from '@angular/cdk/a11y';
@@ -37,7 +44,8 @@ import {MatExpansionPanelHeader} from './expansion-panel-header';
     '[class.mat-accordion-multi]': 'this.multi',
   }
 })
-export class MatAccordion extends CdkAccordion implements MatAccordionBase, AfterContentInit {
+export class MatAccordion extends CdkAccordion implements MatAccordionBase,
+  AfterContentInit, OnDestroy {
   private _keyManager: FocusKeyManager<MatExpansionPanelHeader>;
 
   /** Headers belonging to this accordion. */
@@ -84,6 +92,11 @@ export class MatAccordion extends CdkAccordion implements MatAccordionBase, Afte
 
   _handleHeaderFocus(header: MatExpansionPanelHeader) {
     this._keyManager.updateActiveItem(header);
+  }
+
+  ngOnDestroy() {
+    super.ngOnDestroy();
+    this._ownHeaders.destroy();
   }
 
   static ngAcceptInputType_hideToggle: BooleanInput;
