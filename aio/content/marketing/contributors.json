@@ -886,5 +886,13 @@
     "website": "https://alvarocamillont.dev/",
     "bio": "Alvaro is a software engineer, speaker, and instructor in Brazil. He has worked in the technology industry for over 10 years and is dedicated to the development of enterprise business solutions.",
     "groups": ["GDE"]
+  },
+  "devpato": {
+    "name": "Patricio Vargas",
+    "picture": "patovargas.png",
+    "twitter": "devpato",
+    "website": "https://developers.google.com/community/experts/directory/profile/profile-patricio_vargas",
+    "bio": "Pato is Google Developer Expert on Angular & Web Technologies, Auth0 Ambassador, Women Techmaker Ambassador and Media Developer Expert at Cloudinary. He loves to mentor people in technology, write articles, contribute to open source, speak at conferences/meetups, and advocate technologies that he loves.",
+    "groups": ["GDE"]
   }
 }
