@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import * as o from '@angular/compiler';
-import {createTaggedTemplate} from 'typescript';
 
 import {AstFactory, BinaryOperator, ObjectLiteralProperty, SourceMapRange, TemplateElement, TemplateLiteral, UnaryOperator} from './api/ast_factory';
 import {ImportGenerator} from './api/import_generator';
@@ -39,21 +38,21 @@ const BINARY_OPERATORS = new Map<o.BinaryOperator, BinaryOperator>([
 export type RecordWrappedNodeExprFn<TExpression> = (expr: TExpression) => void;
 
 export interface TranslatorOptions<TExpression> {
-  downlevelTaggedTemplates?: boolean;
+  downlevelLocalizedStrings?: boolean;
   downlevelVariableDeclarations?: boolean;
   recordWrappedNodeExpr?: RecordWrappedNodeExprFn<TExpression>;
 }
 
 export class ExpressionTranslatorVisitor<TStatement, TExpression> implements o.ExpressionVisitor,
                                                                              o.StatementVisitor {
-  private downlevelTaggedTemplates: boolean;
+  private downlevelLocalizedStrings: boolean;
   private downlevelVariableDeclarations: boolean;
   private recordWrappedNodeExpr: RecordWrappedNodeExprFn<TExpression>;
 
   constructor(
       private factory: AstFactory<TStatement, TExpression>,
       private imports: ImportGenerator<TExpression>, options: TranslatorOptions<TExpression>) {
-    this.downlevelTaggedTemplates = options.downlevelTaggedTemplates === true;
+    this.downlevelLocalizedStrings = options.downlevelLocalizedStrings === true;
     this.downlevelVariableDeclarations = options.downlevelVariableDeclarations === true;
     this.recordWrappedNodeExpr = options.recordWrappedNodeExpr || (() => {});
   }
@@ -169,19 +168,6 @@ export class ExpressionTranslatorVisitor<TStatement, TExpression> implements o.E
         ast.sourceSpan);
   }
 
-  visitTaggedTemplateExpr(ast: o.TaggedTemplateExpr, context: Context): TExpression {
-    return this.setSourceMapRange(
-        this.createTaggedTemplateExpression(ast.tag.visitExpression(this, context), {
-          elements: ast.template.elements.map(e => createTemplateElement({
-                                                cooked: e.text,
-                                                raw: e.rawText,
-                                                range: e.sourceSpan ?? ast.sourceSpan,
-                                              })),
-          expressions: ast.template.expressions.map(e => e.visitExpression(this, context))
-        }),
-        ast.sourceSpan);
-  }
-
   visitInstantiateExpr(ast: o.InstantiateExpr, context: Context): TExpression {
     return this.factory.createNewExpression(
         ast.classExpr.visitExpression(this, context),
@@ -216,14 +202,13 @@ export class ExpressionTranslatorVisitor<TStatement, TExpression> implements o.E
     }
 
     const localizeTag = this.factory.createIdentifier('$localize');
-    return this.setSourceMapRange(
-        this.createTaggedTemplateExpression(localizeTag, {elements, expressions}), ast.sourceSpan);
-  }
 
-  private createTaggedTemplateExpression(tag: TExpression, template: TemplateLiteral<TExpression>):
-      TExpression {
-    return this.downlevelTaggedTemplates ? this.createES5TaggedTemplateFunctionCall(tag, template) :
-                                           this.factory.createTaggedTemplate(tag, template);
+    // Now choose which implementation to use to actually create the necessary AST nodes.
+    const localizeCall = this.downlevelLocalizedStrings ?
+        this.createES5TaggedTemplateFunctionCall(localizeTag, {elements, expressions}) :
+        this.factory.createTaggedTemplate(localizeTag, {elements, expressions});
+
+    return this.setSourceMapRange(localizeCall, ast.sourceSpan);
   }
 
   /**
