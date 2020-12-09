@@ -273,7 +273,7 @@ aio-shell {
     }
   }
 
-  &.page-home, &.page-resources, &.page-events, &.page-contribute {
+  &.page-home, &.page-resources, &.page-contribute {
     article {
       padding: 32px;
 
@@ -283,7 +283,7 @@ aio-shell {
     }
   }
 
-  &.page-features {
+  &.page-features, &.page-events {
     article {
       padding: 0 3rem;
     }
