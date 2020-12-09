@@ -5,4 +5,5 @@ import {Component} from '@angular/core';
   template: '<h3>Hello {{ name }}</h3>',
 })
 export class TestCmp {
+  name: string = '';
 }

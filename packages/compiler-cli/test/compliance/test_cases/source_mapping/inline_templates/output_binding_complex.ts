@@ -5,4 +5,5 @@ import {Component} from '@angular/core';
   template: `<button (click)="items.push('item' + items.length)">Add Item</button>`,
 })
 export class TestCmp {
+  items: string[] = [];
 }

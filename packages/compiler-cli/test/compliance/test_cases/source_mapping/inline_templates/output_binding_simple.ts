@@ -5,4 +5,5 @@ import {Component} from '@angular/core';
   template: '<button (click)="doSomething()">Do it</button>',
 })
 export class TestCmp {
+  doSomething() {}
 }
