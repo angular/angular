@@ -461,6 +461,13 @@ You can supply a value such as the following to apply optimization to one or the
 
 </code-example>
 
+<div class="alert is-helpful">
+
+   For [Universal](guide/glossary#universal), you can reduce the code rendered in the HTML page by
+   setting styles optimization to `true`.
+
+</div>
+
 ### Source map configuration
 
 The `sourceMap` browser builder option can be either a Boolean or an Object for more fine-grained configuration to control the source maps of an application.
@@ -503,7 +510,7 @@ The `sourceMap` browser builder option can be either a Boolean or an Object for 
 </table>
 
 
-You can supply a value such as the following to apply sourceMap to one or the other:
+You can supply a value such as the following to output source maps to one or the other:
 
 <code-example language="json">
 
@@ -521,8 +528,5 @@ You can supply a value such as the following to apply sourceMap to one or the ot
    When using hidden source maps, source maps will not be referenced in the bundle.
    These are useful if you only want source maps to map error stack traces in error reporting tools,
    but don't want to expose your source maps in the browser developer tools.
-
-   For [Universal](guide/glossary#universal), you can reduce the code rendered in the HTML page by
-   setting styles optimization to `true` and styles source maps to `false`.
 
 </div>
