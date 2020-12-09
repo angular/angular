@@ -156,7 +156,7 @@
     "rollup-plugin-alias": "^2.2.0",
     "rollup-plugin-commonjs": "^10.1.0",
     "rollup-plugin-node-resolve": "^5.2.0",
-    "rollup-plugin-sourcemaps": "^0.4.2",
+    "rollup-plugin-sourcemaps": "^0.6.3",
     "run-sequence": "^1.2.2",
     "sass": "^1.29.0",
     "scss-bundle": "^3.1.2",
