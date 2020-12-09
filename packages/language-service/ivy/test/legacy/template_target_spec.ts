@@ -580,13 +580,10 @@ describe('findNodeAtPosition for microsyntax expression', () => {
   it('should locate bound attribute key when cursor is at the start', () => {
     const {errors, nodes, position} = parse(`<div *ngFor="let item ¦of items"></div>`);
     expect(errors).toBe(null);
-    // TODO(atscott): Fix this - we throw away the result because we match the variable node, after
-    // the attribute binding, then throw away the result because we aren't in the variable key
-    expect(getTargetAtPosition(nodes, position)).toBeNull();
-    // const {node} = getTargetAtPosition(nodes, position)!;
-    // expect(isTemplateNode(node!)).toBe(true);
-    // expect(node).toBeInstanceOf(t.BoundAttribute);
-    // expect((node as t.BoundAttribute).name).toBe('ngForOf');
+    const {node} = getTargetAtPosition(nodes, position)!;
+    expect(isTemplateNode(node!)).toBe(true);
+    expect(node).toBeInstanceOf(t.BoundAttribute);
+    expect((node as t.BoundAttribute).name).toBe('ngForOf');
   });
 
   it('should locate bound attribute key for trackBy', () => {

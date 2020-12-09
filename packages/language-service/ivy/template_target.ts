@@ -100,6 +100,15 @@ class TemplateTargetVisitor implements t.Visitor {
   private constructor(private readonly position: number) {}
 
   visit(node: t.Node) {
+    const last: t.Node|e.AST|undefined = this.path[this.path.length - 1];
+    if (last && isTemplateNodeWithKeyAndValue(last) && isWithin(this.position, last.keySpan)) {
+      // We've already identified that we are within a `keySpan` of a node.
+      // We should stop processing nodes at this point to prevent matching
+      // any other nodes. This can happen when the end span of a different node
+      // touches the start of the keySpan for the candidate node. Because
+      // our `isWithin` logic is inclusive on both ends, we can match both nodes.
+      return;
+    }
     const {start, end} = getSpanIncludingEndTag(node);
     if (isWithin(this.position, {start, end})) {
       this.path.push(node);
