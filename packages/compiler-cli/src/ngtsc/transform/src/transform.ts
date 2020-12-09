@@ -280,7 +280,7 @@ function transformIvySourceFile(
   const constants =
       constantPool.statements.map(stmt => translateStatement(stmt, importManager, {
                                     recordWrappedNodeExpr,
-                                    downlevelTaggedTemplates: downlevelTranslatedCode,
+                                    downlevelLocalizedStrings: downlevelTranslatedCode,
                                     downlevelVariableDeclarations: downlevelTranslatedCode,
                                   }));
 
