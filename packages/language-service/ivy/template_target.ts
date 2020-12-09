@@ -102,19 +102,6 @@ class TemplateTargetVisitor implements t.Visitor {
   visit(node: t.Node) {
     const {start, end} = getSpanIncludingEndTag(node);
     if (isWithin(this.position, {start, end})) {
-      const length = end - start;
-      const last: t.Node|e.AST|undefined = this.path[this.path.length - 1];
-      if (last) {
-        const {start, end} = isTemplateNode(last) ? getSpanIncludingEndTag(last) : last.sourceSpan;
-        const lastLength = end - start;
-        if (length > lastLength) {
-          // The current node has a span that is larger than the last node found
-          // so we do not descend into it. This typically means we have found
-          // a candidate in one of the root nodes so we do not need to visit
-          // other root nodes.
-          return;
-        }
-      }
       this.path.push(node);
       node.visit(this);
     }
@@ -125,7 +112,12 @@ class TemplateTargetVisitor implements t.Visitor {
     this.visitAll(element.inputs);
     this.visitAll(element.outputs);
     this.visitAll(element.references);
-    this.visitAll(element.children);
+    const last: t.Node|e.AST|undefined = this.path[this.path.length - 1];
+    // If we get here and have not found a candidate node on the element itself, proceed with
+    // looking for a more specific node on the element children.
+    if (last === element) {
+      this.visitAll(element.children);
+    }
   }
 
   visitTemplate(template: t.Template) {
@@ -135,7 +127,12 @@ class TemplateTargetVisitor implements t.Visitor {
     this.visitAll(template.templateAttrs);
     this.visitAll(template.references);
     this.visitAll(template.variables);
-    this.visitAll(template.children);
+    const last: t.Node|e.AST|undefined = this.path[this.path.length - 1];
+    // If we get here and have not found a candidate node on the template itself, proceed with
+    // looking for a more specific node on the template children.
+    if (last === template) {
+      this.visitAll(template.children);
+    }
   }
 
   visitContent(content: t.Content) {
