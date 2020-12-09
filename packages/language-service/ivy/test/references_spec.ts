@@ -679,6 +679,100 @@ describe('find references', () => {
       assertTextSpans(refs, ['<div dir>', 'Dir']);
       assertFileNames(refs, ['app.ts', 'dir.ts']);
     });
+
+    it('gets references to all matching directives when cursor is on an attribute', () => {
+      const dirFile = `
+      import {Directive} from '@angular/core';
+
+      @Directive({selector: '[dir]'})
+      export class Dir {}`;
+      const dirFile2 = `
+      import {Directive} from '@angular/core';
+
+      @Directive({selector: '[dir]'})
+      export class Dir2 {}`;
+      const {text, cursor} = extractCursorInfo(`
+        import {Component, NgModule} from '@angular/core';
+        import {Dir} from './dir';
+        import {Dir2} from './dir2';
+
+        @Component({template: '<div di¦r></div>'})
+        export class AppCmp {
+        }
+
+        @NgModule({declarations: [AppCmp, Dir, Dir2]})
+        export class AppModule {}
+      `);
+      env = LanguageServiceTestEnvironment.setup([
+        {name: _('/app.ts'), contents: text, isRoot: true},
+        {name: _('/dir.ts'), contents: dirFile},
+        {name: _('/dir2.ts'), contents: dirFile2},
+      ]);
+      const refs = getReferencesAtPosition(_('/app.ts'), cursor)!;
+      expect(refs.length).toBe(8);
+      assertTextSpans(refs, ['<div dir>', 'Dir', 'Dir2']);
+      assertFileNames(refs, ['app.ts', 'dir.ts', 'dir2.ts']);
+    });
+  });
+
+  describe('components', () => {
+    it('works for component classes', () => {
+      const {text, cursor} = extractCursorInfo(`
+      import {Component} from '@angular/core';
+
+      @Component({selector: 'my-comp', template: ''})
+      export class MyCo¦mp {}`);
+      const appFile = `
+        import {Component, NgModule} from '@angular/core';
+        import {MyComp} from './comp';
+
+        @Component({template: '<my-comp></my-comp>'})
+        export class AppCmp {
+        }
+
+        @NgModule({declarations: [AppCmp, MyComp]})
+        export class AppModule {}
+      `;
+      env = LanguageServiceTestEnvironment.setup([
+        {name: _('/app.ts'), contents: appFile, isRoot: true},
+        {name: _('/comp.ts'), contents: text},
+      ]);
+      const refs = getReferencesAtPosition(_('/comp.ts'), cursor)!;
+      // 4 references are:  class declaration, template usage, app import and use in declarations
+      // list.
+      expect(refs.length).toBe(4);
+      assertTextSpans(refs, ['<my-comp>', 'MyComp']);
+      assertFileNames(refs, ['app.ts', 'comp.ts']);
+    });
+
+    it('gets works when cursor is on element tag', () => {
+      const compFile = `
+      import {Component} from '@angular/core';
+
+      @Component({selector: 'my-comp', template: ''})
+      export class MyComp {}`;
+      const {text, cursor} = extractCursorInfo(`
+        import {Component, NgModule} from '@angular/core';
+        import {MyComp} from './comp';
+
+        @Component({template: '<my-c¦omp></my-comp>'})
+        export class AppCmp {
+        }
+
+        @NgModule({declarations: [AppCmp, MyComp]})
+        export class AppModule {}
+      `);
+      env = LanguageServiceTestEnvironment.setup([
+        {name: _('/app.ts'), contents: text, isRoot: true},
+        {name: _('/comp.ts'), contents: compFile},
+      ]);
+      const refs = getReferencesAtPosition(_('/app.ts'), cursor)!;
+      // 4 references are:  class declaration, template usage, app import and use in declarations
+      // list.
+      expect(refs.length).toBe(4);
+      assertTextSpans(refs, ['<my-comp>', 'MyComp']);
+      assertFileNames(refs, ['app.ts', 'comp.ts']);
+    });
   });
 
   function getReferencesAtPosition(fileName: string, position: number) {
