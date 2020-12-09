@@ -5,14 +5,14 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {TmplAstVariable} from '@angular/compiler';
+import {TmplAstBoundAttribute, TmplAstTextAttribute, TmplAstVariable} from '@angular/compiler';
 import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
 import {absoluteFrom, absoluteFromSourceFile, AbsoluteFsPath} from '@angular/compiler-cli/src/ngtsc/file_system';
-import {SymbolKind, TemplateTypeChecker, TypeCheckingProgramStrategy} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
+import {DirectiveSymbol, SymbolKind, TemplateTypeChecker, TypeCheckingProgramStrategy} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
 import * as ts from 'typescript';
 
 import {getTargetAtPosition} from './template_target';
-import {getTemplateInfoAtPosition, isWithin, TemplateInfo, toTextSpan} from './utils';
+import {getDirectiveMatchesForAttribute, getDirectiveMatchesForElementTag, getTemplateInfoAtPosition, isWithin, TemplateInfo, toTextSpan} from './utils';
 
 export class ReferenceBuilder {
   private readonly ttc = this.compiler.getTemplateTypeChecker();
@@ -43,19 +43,27 @@ export class ReferenceBuilder {
       return undefined;
     }
     switch (symbol.kind) {
-      case SymbolKind.Element:
       case SymbolKind.Directive:
       case SymbolKind.Template:
-      case SymbolKind.DomBinding:
         // References to elements, templates, and directives will be through template references
         // (#ref). They shouldn't be used directly for a Language Service reference request.
-        //
-        // Dom bindings aren't currently type-checked (see `checkTypeOfDomBindings`) so they don't
-        // have a shim location and so we cannot find references for them.
-        //
-        // TODO(atscott): Consider finding references for elements that are components as well as
-        // when the position is on an element attribute that directly maps to a directive.
         return undefined;
+      case SymbolKind.Element: {
+        const matches = getDirectiveMatchesForElementTag(symbol.templateNode, symbol.directives);
+        return this.getReferencesForDirectives(matches);
+      }
+      case SymbolKind.DomBinding: {
+        // Dom bindings aren't currently type-checked (see `checkTypeOfDomBindings`) so they don't
+        // have a shim location. This means we can't match dom bindings to their lib.dom reference,
+        // but we can still see if they match to a directive.
+        if (!(positionDetails.node instanceof TmplAstTextAttribute) &&
+            !(positionDetails.node instanceof TmplAstBoundAttribute)) {
+          return undefined;
+        }
+        const directives = getDirectiveMatchesForAttribute(
+            positionDetails.node.name, symbol.host.templateNode, symbol.host.directives);
+        return this.getReferencesForDirectives(directives);
+      }
       case SymbolKind.Reference: {
         const {shimPath, positionInShimFile} = symbol.referenceVarLocation;
         return this.getReferencesAtTypescriptPosition(shimPath, positionInShimFile);
@@ -92,6 +100,27 @@ export class ReferenceBuilder {
         return this.getReferencesAtTypescriptPosition(shimPath, positionInShimFile);
       }
     }
+  }
+
+  private getReferencesForDirectives(directives: Set<DirectiveSymbol>):
+      ts.ReferenceEntry[]|undefined {
+    const allDirectiveRefs: ts.ReferenceEntry[] = [];
+    for (const dir of directives.values()) {
+      const dirClass = dir.tsSymbol.valueDeclaration;
+      if (dirClass === undefined || !ts.isClassDeclaration(dirClass) ||
+          dirClass.name === undefined) {
+        continue;
+      }
+
+      const dirFile = dirClass.getSourceFile().fileName;
+      const dirPosition = dirClass.name.getStart();
+      const directiveRefs = this.getReferencesAtTypescriptPosition(dirFile, dirPosition);
+      if (directiveRefs !== undefined) {
+        allDirectiveRefs.push(...directiveRefs);
+      }
+    }
+
+    return allDirectiveRefs.length > 0 ? allDirectiveRefs : undefined;
   }
 
   private getReferencesAtTypescriptPosition(fileName: string, position: number):
