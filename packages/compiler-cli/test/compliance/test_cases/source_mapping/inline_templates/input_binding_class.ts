@@ -5,4 +5,5 @@ import {Component} from '@angular/core';
   template: '<div [class.initial]="isInitial">Message</div>',
 })
 export class TestCmp {
+  isInitial: boolean = true;
 }
