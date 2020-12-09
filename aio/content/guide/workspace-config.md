@@ -361,34 +361,161 @@ Files in that folder, such as `src/style-paths/_variables.scss`, can be imported
 Note that you will also need to add any styles or scripts to the `test` builder if you need them for unit tests.
 See also [Using runtime-global libraries inside your app](guide/using-libraries#using-runtime-global-libraries-inside-your-app).
 
+### Optimization configuration
 
-{@a optimize-and-srcmap}
+The `optimization` browser builder option can be either a Boolean or an Object for more fine-tune configuration. This option enables various optimizations of the build output, including:
 
-### Optimization and source map configuration
+- Minification of scripts and styles
+- Tree-shaking
+- Dead-code elimination
+- Inlining of critical CSS
+- Fonts inlining
 
-The `optimization` and `sourceMap` browser builder options can be either a Boolean or an Object for more fine-grained configuration.
-In this section we will explain how to fine tune these options.
+There are several options that can be used to fine-tune the optimization of an application.
 
-* The `optimization` option applies to scripts, styles and fonts. You can supply a value such as the following to apply optimization to one or the other:
+<table class="is-full-width is-fixed-layout">
+<thead>
+<tr>
+<th>Option</th>
+<th width="40%">Description</th>
+<th>Value Type</th>
+<th>Default Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>scripts</code></td>
+<td>Enables optimization of the scripts output.</td>
+<td><code class="no-auto-link">boolean</code></td>
+<td><code>true</code></td>
+</tr>
+<tr>
+<td><code>styles</code></td>
+<td>Enables optimization of the scripts output.</td>
+<td><code>boolean|<a href="#styles-optimization-options">Styles optimization options</a></code></td>
+<td><code>true</code></td>
+</tr>
+<tr>
+<td><code>fonts</code></td>
+<td>Enables optimization for fonts.<br><strong>Note:</strong> This requires internet access.</td>
+<td><code class="no-auto-link">boolean|<a href="#fonts-optimization-options">Fonts optimization options</a></code></td>
+<td><code>true</code></td>
+</tr>
+</tbody>
+</table>
+
+#### Styles optimization options
+<table class="is-full-width is-fixed-layout">
+<thead>
+<tr>
+<th>Option</th>
+<th width="40%">Description</th>
+<th>Value Type</th>
+<th>Default Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>minify</code></td>
+<td>Minify CSS definitions by removing extraneous whitespace and comments, merging identifiers and minimizing values.</td>
+<td><code class="no-auto-link">boolean</code></td>
+<td><code>true</code></td>
+</tr>
+<tr>
+<td><code>inlineCritical</code></td>
+<td>Extract and inline critical CSS definitions to improve <a href="https://web.dev/first-contentful-paint/">First Contentful Paint.</td>
+<td><code class="no-auto-link">boolean</code></td>
+<td><code>false</code></td>
+</tr>
+</tbody>
+</table>
+
+#### Fonts optimization options
+<table class="is-full-width is-fixed-layout">
+<thead>
+<tr>
+<th>Option</th>
+<th width="40%">Description</th>
+<th>Value Type</th>
+<th>Default Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>inline</code></td>
+<td>Reduce <a href="https://web.dev/render-blocking-resources/">render blocking requests</a> by inlining external Google fonts and icons CSS definitions in the application's HTML index file.<br><strong>Note:</strong>This requires internet access.</td>
+<td><code class="no-auto-link">boolean</code></td>
+<td><code>true</code></td>
+</tr>
+</tbody>
+</table>
+
+
+You can supply a value such as the following to apply optimization to one or the other:
 
 <code-example language="json">
 
   "optimization": { 
     "scripts": true,
-    "styles": false,
+    "styles": {
+      "minify": true,
+      "inlineCritical": true
+    },
     "fonts": true
   }
 
 </code-example>
 
-<div class="alert is-important">
+<div class="alert is-helpful">
 
-  Fonts optimization requires internet access.
-  When enabled, render blocking requests will be reduced by inlining external Google fonts and icons CSS definitions in the application's HTML index file. 
+   For [Universal](guide/glossary#universal), you can reduce the code rendered in the HTML page by
+   setting styles optimization to `true`.
 
 </div>
 
-* The `sourceMap` option applies for both scripts and styles. You can also choose to output hidden source maps, or resolve vendor package source maps:
+### Source map configuration
+
+The `sourceMap` browser builder option can be either a Boolean or an Object for more fine-tune configuration to control the source maps of an application.
+
+<table class="is-full-width is-fixed-layout">
+<thead>
+<tr>
+<th>Option</th>
+<th width="40%">Description</th>
+<th>Value Type</th>
+<th>Default Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>scripts</code></td>
+<td>Output source maps for all scripts.</td>
+<td><code class="no-auto-link">boolean</code></td>
+<td><code>true</code></td>
+</tr>
+<tr>
+<td><code>styles</code></td>
+<td>Output source maps for all styles.</td>
+<td><code class="no-auto-link">boolean</code></td>
+<td><code>true</code></td>
+</tr>
+<tr>
+<td><code>vendor</code></td>
+<td>Resolve vendor packages source maps.</td>
+<td><code class="no-auto-link">boolean</code></td>
+<td><code>false</code></td>
+</tr>
+<tr>
+<td><code>hidden</code></td>
+<td>Output source maps used for error reporting tools.</td>
+<td><code class="no-auto-link">boolean</code></td>
+<td><code>false</code></td>
+</tr>
+</tbody>
+</table>
+
+
+The example below shows how to toggle one or more values to configure the source map outputs:
 
 <code-example language="json">
 
@@ -406,8 +533,5 @@ In this section we will explain how to fine tune these options.
    When using hidden source maps, source maps will not be referenced in the bundle.
    These are useful if you only want source maps to map error stack traces in error reporting tools,
    but don't want to expose your source maps in the browser developer tools.
-
-   For [Universal](guide/glossary#universal), you can reduce the code rendered in the HTML page by
-   setting styles optimization to `true` and styles source maps to `false`.
 
 </div>
