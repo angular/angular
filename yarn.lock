@@ -631,9 +631,9 @@
   integrity sha512-anHjG1ecKtsvnBEDJOk+C1jfJC2VS0F2lrum42ZbfbYH+0sH7PJjovKfEqwq+AfiQHL1fY6rYMr4HCieIWcF8g==
 
 "@bazel/rollup@^2.2.0":
-  version "2.2.1"
-  resolved "https://registry.yarnpkg.com/@bazel/rollup/-/rollup-2.2.1.tgz#f72304879c0261fcc94edc47c14fd24984503d7a"
-  integrity sha512-G0f8r4CpDw9ACwCeWryOPAkigkmvRz6buNzgcghoKKSa6FjngKnF/rOP7I1TcNu+dOUcoTxeqlSf3eRfRRjK6w==
+  version "2.3.1"
+  resolved "https://registry.yarnpkg.com/@bazel/rollup/-/rollup-2.3.1.tgz#30265ac682149e82f3a4a0cfda216f3d860e7373"
+  integrity sha512-KyMIYr8UV1MkwdW+2HUnwUNAddFhETM8OSaaOQK5I7hV4XKjBzc2EZstt4HRcNtsVF5Lnsi7Arb8xjbBdXTqvw==
 
 "@bazel/terser@^2.2.0":
   version "2.3.1"
