@@ -820,14 +820,11 @@ export class _ParseAST {
 
   parseExpressionList(terminator: number): AST[] {
     const result: AST[] = [];
-
-    do {
-      if (!this.next.isCharacter(terminator)) {
+    if (!this.next.isCharacter(terminator)) {
+      do {
         result.push(this.parsePipe());
-      } else {
-        break;
-      }
-    } while (this.consumeOptionalCharacter(chars.$COMMA));
+      } while (this.consumeOptionalCharacter(chars.$COMMA));
+    }
     return result;
   }
 
