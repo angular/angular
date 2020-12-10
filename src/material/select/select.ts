@@ -427,7 +427,7 @@ export abstract class _MatSelectBase<C> extends _MatSelectMixinBase implements A
   set typeaheadDebounceInterval(value: number) {
     this._typeaheadDebounceInterval = coerceNumberProperty(value);
   }
-  private _typeaheadDebounceInterval = this._defaultOptions?.typeaheadDebounceInterval ?? 0;
+  private _typeaheadDebounceInterval: number;
 
   /**
    * Function used to sort the values in a select in multiple mode.
@@ -502,6 +502,12 @@ export abstract class _MatSelectBase<C> extends _MatSelectMixinBase implements A
       // Note: we provide the value accessor through here, instead of
       // the `providers` to avoid running into a circular import.
       this.ngControl.valueAccessor = this;
+    }
+
+    // Note that we only want to set this when the defaults pass it in, otherwise it should
+    // stay as `undefined` so that it falls back to the default in the key manager.
+    if (_defaultOptions?.typeaheadDebounceInterval != null) {
+      this._typeaheadDebounceInterval = _defaultOptions.typeaheadDebounceInterval;
     }
 
     this._scrollStrategyFactory = scrollStrategyFactory;
