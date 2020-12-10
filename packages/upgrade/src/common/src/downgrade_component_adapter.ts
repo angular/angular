@@ -8,10 +8,10 @@
 
 import {ApplicationRef, ChangeDetectorRef, ComponentFactory, ComponentRef, EventEmitter, Injector, OnChanges, SimpleChange, SimpleChanges, StaticProvider, Testability, TestabilityRegistry, Type} from '@angular/core';
 
-import {element as angularElement, IAttributes, IAugmentedJQuery, ICompileService, INgModelController, IParseService, IScope} from './angular1';
+import {IAttributes, IAugmentedJQuery, ICompileService, INgModelController, IParseService, IScope} from './angular1';
 import {PropertyBinding} from './component_info';
 import {$SCOPE} from './constants';
-import {getTypeName, hookupNgModel, strictEquals} from './util';
+import {cleanData, getTypeName, hookupNgModel, strictEquals} from './util';
 
 const INITIAL_VALUE = {
   __UNINITIALIZED__: true
@@ -241,12 +241,7 @@ export class DowngradeComponentAdapter {
         //
         // To ensure the element is always properly cleaned up, we manually call `cleanData()` on
         // this element and its descendants before destroying the `ComponentRef`.
-        //
-        // NOTE:
-        // `cleanData()` also will invoke the AngularJS `$destroy` event on the element:
-        //   https://github.com/angular/angular.js/blob/2e72ea13fa98bebf6ed4b5e3c45eaf5f990ed16f/src/Angular.js#L1932-L1945
-        angularElement.cleanData(this.element);
-        angularElement.cleanData((this.element[0] as Element).querySelectorAll('*'));
+        cleanData(this.element[0]);
 
         destroyComponentRef();
       }
