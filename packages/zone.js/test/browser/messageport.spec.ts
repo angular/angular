@@ -6,14 +6,17 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {isIE} from '../../lib/common/utils';
+import {ifEnvSupports} from '../test-util';
+
 /**
  * Test MessagePort monkey patch.
  */
-describe('MessagePort onproperties', () => {
-  let iframe: any;
-  beforeEach(() => {
-    iframe = document.createElement('iframe');
-    const html = `<body>
+describe('MessagePort onproperties', ifEnvSupports(() => !isIE(), () => {
+           let iframe: any;
+           beforeEach(() => {
+             iframe = document.createElement('iframe');
+             const html = `<body>
       <script>
       window.addEventListener('message', onMessage);
       function onMessage(e) {
@@ -22,28 +25,29 @@ describe('MessagePort onproperties', () => {
       }
       </script>
     </body>`;
-    iframe.src = 'data:text/html;charset=utf-8,' + encodeURI(html);
-  });
-  afterEach(() => {
-    if (iframe) {
-      document.body.removeChild(iframe);
-    }
-  });
+             iframe.src = 'data:text/html;charset=utf-8,' + encodeURI(html);
+           });
+           afterEach(() => {
+             if (iframe) {
+               document.body.removeChild(iframe);
+             }
+           });
 
-  it('onmessge should in the zone', (done) => {
-    const channel = new MessageChannel();
-    const zone = Zone.current.fork({name: 'zone'});
-    iframe.onload = function() {
-      zone.run(() => {
-        channel.port1.onmessage = function() {
-          expect(Zone.current.name).toBe(zone.name);
-          done();
-        };
-        Zone.current.fork({name: 'zone1'}).run(() => {
-          iframe.contentWindow.postMessage('Hello from the main page!', '*', [channel.port2]);
-        });
-      });
-    };
-    document.body.appendChild(iframe);
-  });
-});
+           it('onmessge should in the zone', (done) => {
+             const channel = new MessageChannel();
+             const zone = Zone.current.fork({name: 'zone'});
+             iframe.onload = function() {
+               zone.run(() => {
+                 channel.port1.onmessage = function() {
+                   expect(Zone.current.name).toBe(zone.name);
+                   done();
+                 };
+                 Zone.current.fork({name: 'zone1'}).run(() => {
+                   iframe.contentWindow.postMessage(
+                       'Hello from the main page!', '*', [channel.port2]);
+                 });
+               });
+             };
+             document.body.appendChild(iframe);
+           });
+         }));

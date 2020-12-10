@@ -7,6 +7,7 @@
  */
 
 import {ifEnvSupports} from './test-util';
+const isSaucelab = typeof window !== 'undefined' ? (window as any).isSaucelab : false;
 
 function supportJasmineSpec() {
   return jasmine && (jasmine as any)['Spec'];
@@ -79,12 +80,13 @@ ifEnvSupports(supportJasmineSpec, () => {
   });
 
   describe('jasmine.createSpyObj', () => {
-    it('createSpyObj with properties should be able to be retrieved from the spy', () => {
-      const spy = jasmine.createSpyObj('obj', ['someFunction'], {prop1: 'foo'});
-      expect(spy.prop1).toEqual('foo');
-      const desc: any = Object.getOwnPropertyDescriptor(spy, 'prop1');
-      expect(desc.enumerable).toBe(true);
-      expect(desc.configurable).toBe(true);
-    });
+    it('createSpyObj with properties should be able to be retrieved from the spy',
+       ifEnvSupports(() => !isSaucelab, () => {
+         const spy = jasmine.createSpyObj('obj', ['someFunction'], {prop1: 'foo'});
+         expect(spy.prop1).toEqual('foo');
+         const desc: any = Object.getOwnPropertyDescriptor(spy, 'prop1');
+         expect(desc.enumerable).toBe(true);
+         expect(desc.configurable).toBe(true);
+       }));
   });
 })();

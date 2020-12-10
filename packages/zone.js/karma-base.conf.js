@@ -13,20 +13,20 @@ module.exports = function(config) {
     files: [
       'node_modules/systemjs/dist/system-polyfills.js', 'node_modules/systemjs/dist/system.src.js',
       'node_modules/whatwg-fetch/fetch.js',
-      {pattern: 'node_modules/rxjs/**/**/*.js', included: false, watched: false},
-      {pattern: 'node_modules/rxjs/**/**/*.js.map', included: false, watched: false},
+      {pattern: 'node_modules/rxjs/**/*.js.map', included: false, watched: false},
       {pattern: 'node_modules/rxjs/**/*.js', included: false, watched: false},
       {pattern: 'node_modules/es6-promise/**/*.js', included: false, watched: false},
       {pattern: 'node_modules/core-js/**/*.js', included: false, watched: false},
-      {pattern: 'node_modules/rxjs/**/*.js.map', included: false, watched: false},
       {pattern: 'test/assets/**/*.*', watched: true, served: true, included: false},
       {pattern: 'build/**/*.js.map', watched: true, served: true, included: false},
       {pattern: 'build/**/*.js', watched: true, served: true, included: false}
     ],
 
     plugins: [
-      require('karma-chrome-launcher'), require('karma-firefox-launcher'),
-      require('karma-sourcemap-loader')
+      'karma-jasmine',
+      'karma-sauce-launcher',
+      'karma-chrome-launcher',
+      'karma-sourcemap-loader',
     ],
 
     preprocessors: {'**/*.js': ['sourcemap']},

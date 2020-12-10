@@ -8,20 +8,12 @@
 
 module.exports = function(config) {
   require('./karma-base.conf.js')(config);
-  config.files.push('node_modules/core-js-bundle/index.js');
-  config.files.push('build/test/browser-env-setup.js');
-  config.files.push('build/test/wtf_mock.js');
-  config.files.push('build/test/test_fake_polyfill.js');
-  config.files.push('build/test/custom_error.js');
-  config.files.push('dist/zone.js');
-  config.files.push('dist/zone-patch-fetch.js');
-  config.files.push('dist/zone-patch-canvas.js');
-  config.files.push('dist/webapis-media-query.js');
-  config.files.push('dist/webapis-notification.js');
-  config.files.push('dist/zone-patch-user-media.js');
-  config.files.push('dist/zone-patch-resize-observer.js');
-  config.files.push('dist/task-tracking.js');
-  config.files.push('dist/wtf.js');
-  config.files.push('dist/zone-testing.js');
-  config.files.push('build/test/main.js');
+  config.files.splice(
+      -1, 0, 'node_modules/core-js-bundle/index.js', 'build/test/browser-env-setup.js',
+      'build/test/wtf_mock.js', 'build/test/test_fake_polyfill.js', 'dist/zone.js',
+      'dist/zone-patch-fetch.js', 'dist/zone-patch-canvas.js', 'dist/webapis-media-query.js',
+      'dist/webapis-notification.js', 'dist/zone-patch-user-media.js',
+      'dist/zone-patch-message-port.js', 'dist/zone-patch-resize-observer.js',
+      'dist/task-tracking.js', 'dist/wtf.js', 'dist/zone-testing.js',
+      'build/test/main.saucelab.js');
 };
