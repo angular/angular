@@ -156,6 +156,7 @@ export declare type MatCalendarCellCssClasses = string | string[] | Set<string> 
 };
 
 export declare class MatCalendarHeader<D> {
+    _buttonDescriptionId: string;
     calendar: MatCalendar<D>;
     get nextButtonLabel(): string;
     get periodButtonLabel(): string;

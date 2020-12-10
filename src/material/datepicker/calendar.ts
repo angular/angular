@@ -50,6 +50,9 @@ import {MAT_SINGLE_DATE_SELECTION_MODEL_PROVIDER, DateRange} from './date-select
  */
 export type MatCalendarView = 'month' | 'year' | 'multi-year';
 
+/** Counter used to generate unique IDs. */
+let uniqueId = 0;
+
 /** Default header for MatCalendar */
 @Component({
   selector: 'mat-calendar-header',
@@ -59,6 +62,8 @@ export type MatCalendarView = 'month' | 'year' | 'multi-year';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MatCalendarHeader<D> {
+  _buttonDescriptionId = `mat-calendar-button-${uniqueId++}`;
+
   constructor(private _intl: MatDatepickerIntl,
               @Inject(forwardRef(() => MatCalendar)) public calendar: MatCalendar<D>,
               @Optional() private _dateAdapter: DateAdapter<D>,

@@ -203,6 +203,14 @@ describe('MatCalendarHeader', () => {
       expect(calendarInstance.currentView).toBe('multi-year');
       expect(periodButton.textContent).toContain('FAKE_YEAR');
     });
+
+    it('should label and describe period button for assistive technology', () => {
+      const description = periodButton.querySelector('span[id]');
+      expect(periodButton.hasAttribute('aria-label')).toBe(true);
+      expect(periodButton.hasAttribute('aria-describedby')).toBe(true);
+      expect(periodButton.getAttribute('aria-describedby')).toBe(description?.getAttribute('id')!);
+    });
+
   });
 
   describe('calendar with minDate only', () => {
