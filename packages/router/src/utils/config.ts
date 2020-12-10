@@ -58,6 +58,12 @@ function validateNode(route: Route, fullPath: string): void {
       throw new Error(`Invalid configuration of route '${
           fullPath}': redirectTo and component cannot be used together`);
     }
+    if (route.redirectTo && route.canActivate) {
+      throw new Error(
+          `Invalid configuration of route '${
+              fullPath}': redirectTo and canActivate cannot be used together. Redirects happen before activation ` +
+          `so canActivate will never be executed.`);
+    }
     if (route.path && route.matcher) {
       throw new Error(
           `Invalid configuration of route '${fullPath}': path and matcher cannot be used together`);
