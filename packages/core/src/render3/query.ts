@@ -434,8 +434,9 @@ export function ɵɵqueryRefresh(queryList: QueryList<any>): boolean {
       const result = tQuery.crossesNgTemplate ?
           collectQueryResults(tView, lView, queryIndex, []) :
           materializeViewResults(tView, lView, tQuery, queryIndex);
-      queryList.reset(result);
-      queryList.notifyOnChanges();
+      if (queryList.reset(result)) {
+        queryList.notifyOnChanges();
+      }
     }
     return true;
   }

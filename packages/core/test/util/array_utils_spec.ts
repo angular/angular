@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {arrayIndexOfSorted, arrayInsert, arrayInsert2, arrayInsertSorted, arrayRemoveSorted, arraySplice, flatten, KeyValueArray, keyValueArrayDelete, keyValueArrayGet, keyValueArrayIndexOf, keyValueArraySet} from '../../src/util/array_utils';
+import {arrayIndexOfSorted, arrayInsert, arrayInsert2, arrayInsertSorted, arrayRemoveSorted, arraySplice, flatten, flattenIntoExisting, KeyValueArray, keyValueArrayDelete, keyValueArrayGet, keyValueArrayIndexOf, keyValueArraySet} from '../../src/util/array_utils';
 
 describe('array_utils', () => {
   describe('flatten', () => {
@@ -25,6 +25,44 @@ describe('array_utils', () => {
       expect(flatten([1, [2, [3]], [4]])).toEqual([1, 2, 3, 4]);
       expect(flatten([1, [2, [3]], [[[4]]]])).toEqual([1, 2, 3, 4]);
       expect(flatten([1, [], 2])).toEqual([1, 2]);
+    });
+  });
+
+  describe('flattenIntoExisting', () => {
+    it('should detectNoChanges on empty set', () => {
+      const dst: string[] = [];
+      expect(flattenIntoExisting([], dst)).toBeFalse();
+      expect(dst).toEqual([]);
+    });
+
+    it('should detectChanges and remove extra', () => {
+      const dst: string[] = ['extra', 'another'];
+      expect(flattenIntoExisting([], dst)).toBeTrue();
+      expect(dst).toEqual([]);
+    });
+
+    it('should detectNoChanges on flat input', () => {
+      const dst: string[] = ['a', 'b'];
+      expect(flattenIntoExisting(['a', 'b'], dst)).toBeFalse();
+      expect(dst).toEqual(['a', 'b']);
+    });
+
+    it('should detectNoChanges on hierarchical input', () => {
+      const dst: string[] = ['a', 'b'];
+      expect(flattenIntoExisting([['a'], 'b', []], dst)).toBeFalse();
+      expect(dst).toEqual(['a', 'b']);
+    });
+
+    it('should detectChanges and trim on hierarchical input', () => {
+      const dst: string[] = ['a', 'c', 'b'];
+      expect(flattenIntoExisting([['a'], 'b', []], dst)).toBeTrue();
+      expect(dst).toEqual(['a', 'b']);
+    });
+
+    it('should detectNoChanges on nested value', () => {
+      const dst: string[] = [];
+      expect(flattenIntoExisting([['a']], dst)).toBeTrue();
+      expect(dst).toEqual(['a']);
     });
   });
 

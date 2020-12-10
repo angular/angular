@@ -24,22 +24,62 @@ export function addAllToArray(items: any[], arr: any[]) {
  * Flattens an array.
  */
 export function flatten(list: any[], dst?: any[]): any[] {
-  if (dst === undefined) dst = list;
-  for (let i = 0; i < list.length; i++) {
-    let item = list[i];
+  if (dst === undefined) dst = [];
+  flattenIntoExisting(list, dst);
+  return dst;
+}
+
+/**
+ * Flatten `src` array into `dst` array and computes if differences were detected.
+ *
+ * @param src Source array which can be hierarchical (array within array)
+ * @param dst Destination array which can have existing values.
+ * @returns `true` if `dst` array was muted in order to represent flatten version of `src`.
+ */
+export function flattenIntoExisting(src: any[], dst: any[]): boolean {
+  let dstIndx = flattenIntoExistingRecursive(src, dst, 0);
+  let differenceDetected = dstIndx < 0;
+  dstIndx = differenceDetected ? ~dstIndx : dstIndx;
+  while (dstIndx < dst.length) {
+    dst.pop();
+    differenceDetected = true;
+  }
+  return differenceDetected;
+}
+
+/**
+ * Flatten `src` array into `dst` array and computes differences and location where diffing ended.
+ * @param src Source array which can be hierarchical (array within array)
+ * @param dst Destination array which can have existing values.
+ * @param dstIdx Index into `dst` where the diffing should start.
+ * @returns Location where the diffing ended in `dst` array. If `<0` then `~value` is `dstIdx` and a
+ *     `dst` array was mutated (change detected).
+ */
+function flattenIntoExistingRecursive(src: any[], dst: any[], dstIdx: number): number {
+  let differenceDetected = false;
+  for (let i = 0; i < src.length; i++) {
+    let item = src[i];
     if (Array.isArray(item)) {
-      // we need to inline it.
-      if (dst === list) {
-        // Our assumption that the list was already flat was wrong and
-        // we need to clone flat since we need to write to it.
-        dst = list.slice(0, i);
+      dstIdx = flattenIntoExistingRecursive(item, dst, dstIdx);
+      if (dstIdx < 0) {
+        // we detected a difference internally
+        differenceDetected = true;
+        dstIdx = ~dstIdx;
       }
-      flatten(item, dst);
-    } else if (dst !== list) {
-      dst.push(item);
+    } else {
+      if (dstIdx >= dst.length) {
+        // Destination is missing the item
+        dst.push(item);
+        differenceDetected = true;
+      } else if (item !== dst[dstIdx]) {
+        // The destination has the wrong item
+        dst[dstIdx] = item;
+        differenceDetected = true;
+      }
+      dstIdx++;
     }
   }
-  return dst;
+  return differenceDetected ? ~dstIdx : dstIdx;
 }
 
 export function deepForEach<T>(input: (T|any[])[], fn: (value: T) => void): void {

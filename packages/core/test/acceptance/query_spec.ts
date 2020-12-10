@@ -1123,6 +1123,42 @@ describe('query logic', () => {
       fixture.detectChanges();
       expect(changes).toBe(1);
     });
+
+    it('should only fire if the content of the query changes', () => {
+      // When views are inserted/removed the content query need to be recomputed.
+      // Recomputing query may result in no changes to the query (the item added/remove was not part
+      // of the query). This tests asserts that the query does not fire when no changes occur.
+      TestBed.configureTestingModule(
+          {declarations: [QueryCompWithNoChangesParent, QueryCompWithNoChanges]})
+      const fixture = TestBed.createComponent(QueryCompWithNoChanges);
+      let changes = 0;
+      const componentInstance = fixture.componentInstance.queryComp;
+      fixture.detectChanges();
+
+      componentInstance.foos.changes.subscribe((value: any) => {
+        // subscribe to the changes and record when changes occur.
+        changes += 1;
+      });
+
+      // First verify that the subscription is working.
+      fixture.componentInstance.innerShowing = false
+      fixture.detectChanges();
+      expect(changes).toBe(1);  // We detected a change
+      expect(componentInstance.foos.toArray().length).toEqual(1);
+
+
+      // now verify that removing a view does not needlessly fire subscription
+      fixture.componentInstance.showing = false;
+      fixture.detectChanges();
+      expect(changes).toBe(1);
+      expect(componentInstance.foos.toArray().length).toEqual(1);
+
+      // now verify that adding a view does not needlessly fire subscription
+      fixture.componentInstance.showing = true;
+      fixture.detectChanges();
+      expect(changes).toBe(1);
+      expect(componentInstance.foos.toArray().length).toEqual(1);
+    });
   });
 
   describe('view boundaries', () => {
@@ -1219,7 +1255,7 @@ describe('query logic', () => {
        * - detect the situation where the indexes are the same and do no processing in such case.
        *
        * This tests asserts on the implementation choices done by the VE (detach and insert) so we
-       * can replicate the same behaviour in ivy.
+       * can replicate the same behavior in ivy.
        */
       it('should notify on changes when a given view is removed and re-inserted at the same index',
          () => {
@@ -1258,7 +1294,7 @@ describe('query logic', () => {
            vc.move(viewRef, 0);
            fixture.detectChanges();
            expect(queryList.length).toBe(1);
-           expect(fixture.componentInstance.queryListNotificationCounter).toBe(2);
+           expect(fixture.componentInstance.queryListNotificationCounter).toBe(1);
          });
 
       it('should support a mix of content queries from the declaration and embedded view', () => {
@@ -1962,6 +1998,33 @@ export class QueryCompWithChanges {
   @ViewChildren('foo') foos!: QueryList<any>;
 
   showing = false;
+}
+
+@Component({
+  selector: 'query-with-no-changes',
+  template: `
+    <query-component>
+      <div *ngIf="true" #foo></div>
+      <div *ngIf="showing">
+        Showing me should not change the content of the query
+        <div *ngIf="innerShowing" #foo></div>
+      </div>
+    </query-component>
+  `
+})
+export class QueryCompWithNoChanges {
+  showing: boolean = true;
+  innerShowing: boolean = true;
+  queryComp!: QueryCompWithNoChangesParent;
+}
+
+@Component({selector: 'query-component', template: `<ng-content></ng-content>`})
+export class QueryCompWithNoChangesParent {
+  @ContentChildren('foo', {descendants: true}) foos!: QueryList<any>;
+
+  constructor(public queryCompWithNoChanges: QueryCompWithNoChanges) {
+    queryCompWithNoChanges.queryComp = this;
+  }
 }
 
 @Component({selector: 'query-target', template: '<ng-content></ng-content>'})
