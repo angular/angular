@@ -236,7 +236,7 @@ export function provideRoutes(routes: Routes): any {
  * The following values have been [deprecated](guide/releases#deprecation-practices) since v11,
  * and should not be used for new applications.
  *
- * * 'enabled' - This option is 1:1 replaceable with `enabledNonBlocking`.
+ * * 'enabled' - This option is 1:1 replaceable with `enabledBlocking`.
  *
  * @see `forRoot()`
  *
