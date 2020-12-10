@@ -13,7 +13,7 @@ import {bootstrap, element as angularElement, IAngularBootstrapConfig, IAugmente
 import {$$TESTABILITY, $COMPILE, $INJECTOR, $ROOT_SCOPE, COMPILER_KEY, INJECTOR_KEY, LAZY_MODULE_REF, NG_ZONE_KEY, UPGRADE_APP_TYPE_KEY} from '../../common/src/constants';
 import {downgradeComponent} from '../../common/src/downgrade_component';
 import {downgradeInjectable} from '../../common/src/downgrade_injectable';
-import {controllerKey, Deferred, LazyModuleRef, onError, UpgradeAppType} from '../../common/src/util';
+import {controllerKey, Deferred, destroyApp, LazyModuleRef, onError, UpgradeAppType} from '../../common/src/util';
 
 import {UpgradeNg1ComponentAdapterBuilder} from './upgrade_ng1_adapter';
 
@@ -619,6 +619,13 @@ export class UpgradeAdapter {
                     rootScope.$on('$destroy', () => {
                       subscription.unsubscribe();
                     });
+
+                    // Destroy the AngularJS app once the Angular `PlatformRef` is destroyed.
+                    // This does not happen in a typical SPA scenario, but it might be useful for
+                    // other use-cases where disposing of an Angular/AngularJS app is necessary
+                    // (such as Hot Module Replacement (HMR)).
+                    // See https://github.com/angular/angular/issues/39935.
+                    platformRef.onDestroy(() => destroyApp(ng1Injector));
                   });
             })
             .catch((e) => this.ng2BootstrapDeferred.reject(e));
