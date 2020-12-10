@@ -7601,6 +7601,74 @@ export const Foo = Foo__PRE_R3__;
           expect(getDiagnosticSourceCode(diags[0])).toBe('\'');
         });
       });
+
+      describe('i18n errors', () => {
+        it('should report helpful error message on nested i18n sections', () => {
+          env.write('test.ts', `
+            import {Component} from '@angular/core';
+            @Component({
+              selector: 'test-component',
+              template: '<div i18n><div i18n>Content</div></div>'
+            })
+            class TestComponent {}
+            `);
+
+          const diags = env.driveDiagnostics();
+
+          expect(diags.length).toEqual(1);
+          expect(diags[0].messageText)
+              .toEqual(
+                  'Cannot mark an element as translatable inside of a translatable section.' +
+                  ' Please remove the nested i18n marker.');
+          expect(diags[0].file?.fileName).toEqual(absoluteFrom('/test.ts'));
+          expect(diags[0].file?.text.substr(diags[0].start!, diags[0].length))
+              .toEqual('<div i18n>Content</div>');
+        });
+
+        it('report a diagnostic on nested i18n sections with tags in between', () => {
+          env.write('test.ts', `
+            import {Component} from '@angular/core';
+            @Component({
+              selector: 'test-component',
+              template: '<div i18n><div><div i18n>Content</div></div></div>'
+            })
+            class TestComponent {}
+          `);
+
+          const diags = env.driveDiagnostics();
+
+          expect(diags.length).toEqual(1);
+          expect(diags[0].messageText)
+              .toEqual(
+                  'Cannot mark an element as translatable inside of a translatable section.' +
+                  ' Please remove the nested i18n marker.');
+          expect(diags[0].file?.fileName).toEqual(absoluteFrom('/test.ts'));
+          expect(diags[0].file?.text.substr(diags[0].start!, diags[0].length))
+              .toEqual('<div i18n>Content</div>');
+        });
+
+        it('report a diagnostic on nested i18n sections represented with <ng-continers>s', () => {
+          env.write('test.ts', `
+            import {Component} from '@angular/core';
+            @Component({
+              selector: 'test-component',
+              template: '<div i18n><div><ng-container i18n>Content</ng-container></div></div>'
+            })
+            class TestComponent {}
+          `);
+
+          const diags = env.driveDiagnostics();
+
+          expect(diags.length).toEqual(1);
+          expect(diags[0].messageText)
+              .toEqual(
+                  'Cannot mark an element as translatable inside of a translatable section.' +
+                  ' Please remove the nested i18n marker.');
+          expect(diags[0].file?.fileName).toEqual(absoluteFrom('/test.ts'));
+          expect(diags[0].file?.text.substr(diags[0].start!, diags[0].length))
+              .toEqual('<ng-container i18n>Content</ng-container>');
+        });
+      });
     });
   });
 
