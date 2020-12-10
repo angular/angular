@@ -27,6 +27,12 @@ export interface Attribute {
 export const createAttribute =
     makeMetadataFactory<Attribute>('Attribute', (attributeName: string) => ({attributeName}));
 
+// Stores the default value of `emitDistinctChangesOnly` when the `emitDistinctChangesOnly` is not
+// explicitly set. This value will be changed to `true` in v12.
+// TODO(misko): switch the default in v12 to `true`. See: packages/core/src/metadata/di.ts
+export const emitDistinctChangesOnlyDefaultValue = false;
+
+
 export interface Query {
   descendants: boolean;
   first: boolean;
@@ -37,17 +43,27 @@ export interface Query {
 }
 
 export const createContentChildren = makeMetadataFactory<Query>(
-    'ContentChildren',
-    (selector?: any, data: any = {}) =>
-        ({selector, first: false, isViewQuery: false, descendants: false, ...data}));
+    'ContentChildren', (selector?: any, data: any = {}) => ({
+                         selector,
+                         first: false,
+                         isViewQuery: false,
+                         descendants: false,
+                         emitDistinctChangesOnly: emitDistinctChangesOnlyDefaultValue,
+                         ...data
+                       }));
 export const createContentChild = makeMetadataFactory<Query>(
     'ContentChild',
     (selector?: any, data: any = {}) =>
         ({selector, first: true, isViewQuery: false, descendants: true, ...data}));
 export const createViewChildren = makeMetadataFactory<Query>(
-    'ViewChildren',
-    (selector?: any, data: any = {}) =>
-        ({selector, first: false, isViewQuery: true, descendants: true, ...data}));
+    'ViewChildren', (selector?: any, data: any = {}) => ({
+                      selector,
+                      first: false,
+                      isViewQuery: true,
+                      descendants: true,
+                      emitDistinctChangesOnly: emitDistinctChangesOnlyDefaultValue,
+                      ...data
+                    }));
 export const createViewChild = makeMetadataFactory<Query>(
     'ViewChild',
     (selector: any, data: any) =>
@@ -224,6 +240,7 @@ export const enum NodeFlags {
   StaticQuery = 1 << 28,
   DynamicQuery = 1 << 29,
   TypeModuleProvider = 1 << 30,
+  EmitDistinctChangesOnly = 1 << 31,
   CatQuery = TypeContentQuery | TypeViewQuery,
 
   // mutually exclusive values...

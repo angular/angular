@@ -86,3 +86,14 @@ export class ElementRef<T = any> {
    */
   static __NG_ELEMENT_ID__: () => ElementRef = SWITCH_ELEMENT_REF_FACTORY;
 }
+
+/**
+ * Unwraps `ElementRef` and return the `nativeElement`.
+ *
+ * Conditionally unwrap the `ElementRef`.
+ * @param value value to unwrap
+ * @returns `nativeElement` if `ElementRef` otherwise returns value as is.
+ */
+export function unwrapElementRef<T, R>(value: T|ElementRef<R>): T|R {
+  return value instanceof ElementRef ? value.nativeElement : value;
+}

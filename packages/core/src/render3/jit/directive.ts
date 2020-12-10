@@ -286,7 +286,8 @@ export function convertToR3QueryMetadata(propertyName: string, ann: Query): R3Qu
     descendants: ann.descendants,
     first: ann.first,
     read: ann.read ? ann.read : null,
-    static: !!ann.static
+    static: !!ann.static,
+    emitDistinctChangesOnly: !!ann.emitDistinctChangesOnly,
   };
 }
 function extractQueriesMetadata(

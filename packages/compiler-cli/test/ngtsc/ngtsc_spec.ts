@@ -22,14 +22,14 @@ const trim = (input: string): string => input.replace(/\s+/g, ' ').trim();
 
 const varRegExp = (name: string): RegExp => new RegExp(`var \\w+ = \\[\"${name}\"\\];`);
 
-const viewQueryRegExp = (predicate: string, descend: boolean, ref?: string): RegExp => {
+const viewQueryRegExp = (predicate: string, flags: number, ref?: string): RegExp => {
   const maybeRef = ref ? `, ${ref}` : ``;
-  return new RegExp(`i0\\.ɵɵviewQuery\\(${predicate}, ${descend}${maybeRef}\\)`);
+  return new RegExp(`i0\\.ɵɵviewQuery\\(${predicate}, ${flags}${maybeRef}\\)`);
 };
 
-const contentQueryRegExp = (predicate: string, descend: boolean, ref?: string): RegExp => {
+const contentQueryRegExp = (predicate: string, flags: number, ref?: string): RegExp => {
   const maybeRef = ref ? `, ${ref}` : ``;
-  return new RegExp(`i0\\.ɵɵcontentQuery\\(dirIndex, ${predicate}, ${descend}${maybeRef}\\)`);
+  return new RegExp(`i0\\.ɵɵcontentQuery\\(dirIndex, ${predicate}, ${flags}${maybeRef}\\)`);
 };
 
 const setClassMetadataRegExp = (expectedType: string): RegExp =>
@@ -3093,10 +3093,10 @@ runInEachFileSystem(os => {
       expect(jsContents).toMatch(varRegExp('test1'));
       expect(jsContents).toMatch(varRegExp('test2'));
       expect(jsContents).toMatch(varRegExp('accessor'));
-      // match `i0.ɵɵcontentQuery(dirIndex, _c1, true, TemplateRef)`
-      expect(jsContents).toMatch(contentQueryRegExp('\\w+', true, 'TemplateRef'));
-      // match `i0.ɵɵviewQuery(_c2, true, null)`
-      expect(jsContents).toMatch(viewQueryRegExp('\\w+', true));
+      // match `i0.ɵɵcontentQuery(dirIndex, _c1, 1, TemplateRef)`
+      expect(jsContents).toMatch(contentQueryRegExp('\\w+', 1, 'TemplateRef'));
+      // match `i0.ɵɵviewQuery(_c2, 1, null)`
+      expect(jsContents).toMatch(viewQueryRegExp('\\w+', 1));
     });
 
     it('should generate queries for directives', () => {
@@ -3125,14 +3125,14 @@ runInEachFileSystem(os => {
       expect(jsContents).toMatch(varRegExp('test1'));
       expect(jsContents).toMatch(varRegExp('test2'));
       expect(jsContents).toMatch(varRegExp('accessor'));
-      // match `i0.ɵɵcontentQuery(dirIndex, _c1, true, TemplateRef)`
-      expect(jsContents).toMatch(contentQueryRegExp('\\w+', true, 'TemplateRef'));
+      // match `i0.ɵɵcontentQuery(dirIndex, _c1, 1, TemplateRef)`
+      expect(jsContents).toMatch(contentQueryRegExp('\\w+', 1, 'TemplateRef'));
 
-      // match `i0.ɵɵviewQuery(_c2, true)`
+      // match `i0.ɵɵviewQuery(_c2, 1)`
       // Note that while ViewQuery doesn't necessarily make sense on a directive,
       // because it doesn't have a view, we still need to handle it because a component
       // could extend the directive.
-      expect(jsContents).toMatch(viewQueryRegExp('\\w+', true));
+      expect(jsContents).toMatch(viewQueryRegExp('\\w+', 1));
     });
 
     it('should handle queries that use forwardRef', () => {
@@ -3154,13 +3154,13 @@ runInEachFileSystem(os => {
 
       env.driveMain();
       const jsContents = env.getContents('test.js');
-      // match `i0.ɵɵcontentQuery(dirIndex, TemplateRef, true, null)`
-      expect(jsContents).toMatch(contentQueryRegExp('TemplateRef', true));
-      // match `i0.ɵɵcontentQuery(dirIndex, ViewContainerRef, true, null)`
-      expect(jsContents).toMatch(contentQueryRegExp('ViewContainerRef', true));
-      // match `i0.ɵɵcontentQuery(dirIndex, _c0, true, null)`
+      // match `i0.ɵɵcontentQuery(dirIndex, TemplateRef, 1, null)`
+      expect(jsContents).toMatch(contentQueryRegExp('TemplateRef', 1));
+      // match `i0.ɵɵcontentQuery(dirIndex, ViewContainerRef, 1, null)`
+      expect(jsContents).toMatch(contentQueryRegExp('ViewContainerRef', 1));
+      // match `i0.ɵɵcontentQuery(dirIndex, _c0, 1, null)`
       expect(jsContents).toContain('_c0 = ["parens"];');
-      expect(jsContents).toMatch(contentQueryRegExp('_c0', true));
+      expect(jsContents).toMatch(contentQueryRegExp('_c0', 1));
     });
 
     it('should handle queries that use an InjectionToken', () => {
@@ -3181,10 +3181,10 @@ runInEachFileSystem(os => {
 
       env.driveMain();
       const jsContents = env.getContents('test.js');
-      // match `i0.ɵɵviewQuery(TOKEN, true, null)`
-      expect(jsContents).toMatch(viewQueryRegExp('TOKEN', true));
-      // match `i0.ɵɵcontentQuery(dirIndex, TOKEN, true, null)`
-      expect(jsContents).toMatch(contentQueryRegExp('TOKEN', true));
+      // match `i0.ɵɵviewQuery(TOKEN, 1, null)`
+      expect(jsContents).toMatch(viewQueryRegExp('TOKEN', 1));
+      // match `i0.ɵɵcontentQuery(dirIndex, TOKEN, 1, null)`
+      expect(jsContents).toMatch(contentQueryRegExp('TOKEN', 1));
     });
 
     it('should compile expressions that write keys', () => {

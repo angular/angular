@@ -1986,6 +1986,9 @@
     "name": "u"
   },
   {
+    "name": "unwrapElementRef"
+  },
+  {
     "name": "unwrapRNode"
   },
   {
