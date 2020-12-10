@@ -13,7 +13,7 @@ import * as ts from 'typescript';
 import {getTokenAtPosition} from '../../util/src/typescript';
 import {FullTemplateMapping, SourceLocation, TemplateId, TemplateSourceMapping} from '../api';
 
-import {hasIgnoreMarker, readSpanComment} from './comments';
+import {hasIgnoreForDiagnosticsMarker, readSpanComment} from './comments';
 import {checkIfClassIsExported, checkIfGenericTypesAreUnbound} from './ts_util';
 
 /**
@@ -89,7 +89,7 @@ export function findTypeCheckBlock(file: ts.SourceFile, id: TemplateId): ts.Node
 export function findSourceLocation(node: ts.Node, sourceFile: ts.SourceFile): SourceLocation|null {
   // Search for comments until the TCB's function declaration is encountered.
   while (node !== undefined && !ts.isFunctionDeclaration(node)) {
-    if (hasIgnoreMarker(node, sourceFile)) {
+    if (hasIgnoreForDiagnosticsMarker(node, sourceFile)) {
       // There's an ignore marker on this node, so the diagnostic should not be reported.
       return null;
     }
@@ -114,7 +114,7 @@ export function findSourceLocation(node: ts.Node, sourceFile: ts.SourceFile): So
 function getTemplateId(node: ts.Node, sourceFile: ts.SourceFile): TemplateId|null {
   // Walk up to the function declaration of the TCB, the file information is attached there.
   while (!ts.isFunctionDeclaration(node)) {
-    if (hasIgnoreMarker(node, sourceFile)) {
+    if (hasIgnoreForDiagnosticsMarker(node, sourceFile)) {
       // There's an ignore marker on this node, so the diagnostic should not be reported.
       return null;
     }
