@@ -13,6 +13,7 @@ import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import {downgradeComponent, UpgradeComponent, UpgradeModule} from '@angular/upgrade/static';
 
 import * as angular from '../../../src/common/src/angular1';
+import {$ROOT_SCOPE} from '../../../src/common/src/constants';
 import {html, multiTrim, withEachNg1Version} from '../../../src/common/test/helpers/common_test_helpers';
 
 import {$apply, bootstrap} from './static_test_helpers';
@@ -645,6 +646,66 @@ withEachNg1Version(() => {
 
            expect(element.textContent).toBe('');
            expect(destroyed).toBe(true);
+         });
+       }));
+
+    it('should destroy the AngularJS app when `PlatformRef` is destroyed', waitForAsync(() => {
+         @Component({selector: 'ng2', template: '<span>NG2</span>'})
+         class Ng2Component {
+         }
+
+         @NgModule({
+           declarations: [Ng2Component],
+           entryComponents: [Ng2Component],
+           imports: [BrowserModule, UpgradeModule],
+         })
+         class Ng2Module {
+           ngDoBootstrap() {}
+         }
+
+         const ng1Module = angular.module_('ng1', [])
+                               .component('ng1', {template: '<ng2></ng2>'})
+                               .directive('ng2', downgradeComponent({component: Ng2Component}));
+
+         const element = html('<div><ng1></ng1></div>');
+         const platformRef = platformBrowserDynamic();
+
+         platformRef.bootstrapModule(Ng2Module).then(ref => {
+           const upgrade = ref.injector.get(UpgradeModule);
+           upgrade.bootstrap(element, [ng1Module.name]);
+
+           const $rootScope: angular.IRootScopeService = upgrade.$injector.get($ROOT_SCOPE);
+           const rootScopeDestroySpy = spyOn($rootScope, '$destroy');
+
+           const appElem = angular.element(element);
+           const ng1Elem = angular.element(element.querySelector('ng1') as Element);
+           const ng2Elem = angular.element(element.querySelector('ng2') as Element);
+           const ng2ChildElem = angular.element(element.querySelector('ng2 span') as Element);
+
+           // Attach data to all elements.
+           appElem.data!('testData', 1);
+           ng1Elem.data!('testData', 2);
+           ng2Elem.data!('testData', 3);
+           ng2ChildElem.data!('testData', 4);
+
+           // Verify data can be retrieved.
+           expect(appElem.data!('testData')).toBe(1);
+           expect(ng1Elem.data!('testData')).toBe(2);
+           expect(ng2Elem.data!('testData')).toBe(3);
+           expect(ng2ChildElem.data!('testData')).toBe(4);
+
+           expect(rootScopeDestroySpy).not.toHaveBeenCalled();
+
+           // Destroy `PlatformRef`.
+           platformRef.destroy();
+
+           // Verify `$rootScope` has been destroyed and data has been cleaned up.
+           expect(rootScopeDestroySpy).toHaveBeenCalled();
+
+           expect(appElem.data!('testData')).toBeUndefined();
+           expect(ng1Elem.data!('testData')).toBeUndefined();
+           expect(ng2Elem.data!('testData')).toBeUndefined();
+           expect(ng2ChildElem.data!('testData')).toBeUndefined();
          });
        }));
 

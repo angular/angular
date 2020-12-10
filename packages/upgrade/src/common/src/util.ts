@@ -8,8 +8,8 @@
 
 import {Injector, Type} from '@angular/core';
 
-import {element as angularElement, IInjectorService, INgModelController} from './angular1';
-import {DOWNGRADED_MODULE_COUNT_KEY, UPGRADE_APP_TYPE_KEY} from './constants';
+import {element as angularElement, IAugmentedJQuery, IInjectorService, INgModelController, IRootScopeService} from './angular1';
+import {$ROOT_ELEMENT, $ROOT_SCOPE, DOWNGRADED_MODULE_COUNT_KEY, UPGRADE_APP_TYPE_KEY} from './constants';
 
 const DIRECTIVE_PREFIX_REGEXP = /^(?:x|data)[:\-_]/i;
 const DIRECTIVE_SPECIAL_CHARS_REGEXP = /[:\-_]+(.)/g;
@@ -46,6 +46,23 @@ export function cleanData(node: Node): void {
 
 export function controllerKey(name: string): string {
   return '$' + name + 'Controller';
+}
+
+/**
+ * Destroy an AngularJS app given the app `$injector`.
+ *
+ * NOTE: Destroying an app is not officially supported by AngularJS, but try to do our best by
+ *       destroying `$rootScope` and clean the jqLite/jQuery data on `$rootElement` and all
+ *       descendants.
+ *
+ * @param $injector The `$injector` of the AngularJS app to destroy.
+ */
+export function destroyApp($injector: IInjectorService): void {
+  const $rootElement: IAugmentedJQuery = $injector.get($ROOT_ELEMENT);
+  const $rootScope: IRootScopeService = $injector.get($ROOT_SCOPE);
+
+  $rootScope.$destroy();
+  cleanData($rootElement[0]);
 }
 
 export function directiveNormalize(name: string): string {
