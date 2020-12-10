@@ -13,14 +13,15 @@
 <table class="is-full-width list-table property-table">
   <thead>
     <tr>
-      <th>Argument</th>
-      <th width="80%">Description</th>
+      <th width="15%">Argument</th>
+      <th width="40%">Description</th>
+      <th>Value Type</th>
     </tr>
   </thead>
   <tbody>
   {% for option in arguments %}
   <tr class="cli-option">
-    <td><code class="cli-option-syntax no-auto-link">&lt;<var>{$ option.name $}</var>&gt;{% if option.enum.length > 0 %}={$ renderValues(option.enum) $}{% endif %}</code></td>
+    <td><code class="cli-option-syntax no-auto-link">&lt;<var>{$ option.name $}</var>&gt;</code></td>
     <td>
       {$ option.description | marked $}
       {% if option.subcommands.length -%}
@@ -32,6 +33,7 @@
       </ul>
       {%- endif %}
     </td>
+    <td><code class="cli-option-syntax no-auto-link">{% if option.enum.length > 0 %}{$ renderValues(option.enum) $}{% else %}string{% endif %}</code></td>
   </tr>
   {% endfor %}
   </tbody>
@@ -45,7 +47,7 @@
 <table class="is-full-width list-table property-table">
   <thead>
     <tr>
-      <th>Option</th>
+      <th width="15%">Option</th>
       <th width="40%">Description</th>
       <th>Value Type</th>
       <th>Default Value</th>
@@ -55,7 +57,7 @@
   {% for option in options %}
     <tr class="cli-option">
       <td>
-        <code class="cli-option-syntax no-auto-link{% if option.deprecated %} deprecated-api-item{% endif %}">--{$ option.name $}</code>
+        <code class="cli-option-syntax no-auto-link{% if option.deprecated %} deprecated-api-item{% endif %}">{$ renderOptionName(option.name) $}</code>
       </td>
       <td>
         {% if option.deprecated %}
@@ -82,8 +84,7 @@
 {%- endmacro %}
 
 {%- macro renderValues(values) -%}
-{%- set valString = values.join('|') -%}
-{%- if valString.length > 15 %}{% endif %}{$ valString $}
+{$ values.join('|') $}
 {%- endmacro -%}
 
 {%- macro renderOptionValues(type, values) -%}
