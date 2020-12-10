@@ -48,9 +48,15 @@ export function controllerKey(name: string): string {
   return '$' + name + 'Controller';
 }
 
-// Destroy an AngularJS app given the app `$injector`.
-//
-// NOTE: Destroying an app is not officially supported by AngularJS, but we do our best.
+/**
+ * Destroy an AngularJS app given the app `$injector`.
+ *
+ * NOTE: Destroying an app is not officially supported by AngularJS, but try to do our best by
+ *       destroying `$rootScope` and clean the jqLite/jQuery data on `$rootElement` and all
+ *       descendants.
+ *
+ * @param $injector The `$injector` of the AngularJS app to destroy.
+ */
 export function destroyApp($injector: IInjectorService): void {
   const $rootElement: IAugmentedJQuery = $injector.get($ROOT_ELEMENT);
   const $rootScope: IRootScopeService = $injector.get($ROOT_SCOPE);

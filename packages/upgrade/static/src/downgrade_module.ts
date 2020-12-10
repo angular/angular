@@ -169,8 +169,9 @@ export function downgradeModule<T>(moduleFactoryOrBootstrapFn: NgModuleFactory<T
 
                   // Destroy the AngularJS app once the Angular `PlatformRef` is destroyed.
                   // This does not happen in a typical SPA scenario, but it might be useful for
-                  // other usecases where desposing of an Angular/AngularJS app is necessary (such
-                  // as Hot Module Replacement (HMR)).
+                  // other use-cases where disposing of an Angular/AngularJS app is necessary
+                  // (such as Hot Module Replacement (HMR)).
+                  // See https://github.com/angular/angular/issues/39935.
                   injector.get(PlatformRef).onDestroy(() => destroyApp($injector));
 
                   return injector;
