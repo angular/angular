@@ -2,7 +2,6 @@ import {A11yModule, CDK_DESCRIBEDBY_HOST_ATTRIBUTE} from '../index';
 import {AriaDescriber, MESSAGES_CONTAINER_ID} from './aria-describer';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {Component, ElementRef, ViewChild, Provider} from '@angular/core';
-import {Platform} from '@angular/cdk/platform';
 
 describe('AriaDescriber', () => {
   let ariaDescriber: AriaDescriber;
@@ -48,6 +47,12 @@ describe('AriaDescriber', () => {
     createFixture();
     ariaDescriber.describe(component.element1, 'My Message');
     expect(getMessagesContainer().classList).toContain('cdk-visually-hidden');
+  });
+
+  it('should have visibility hidden', () => {
+    createFixture();
+    ariaDescriber.describe(component.element1, 'My Message');
+    expect((getMessagesContainer() as HTMLElement).style.visibility).toBe('hidden');
   });
 
   it('should not register empty strings', () => {
@@ -267,24 +272,6 @@ describe('AriaDescriber', () => {
 
     ariaDescriber.removeDescription(component.element1, 'Message');
     expect(element.hasAttribute('aria-describedby')).toBe(false);
-  });
-
-  it('should set `aria-hidden` on the container by default', () => {
-    createFixture([{provide: Platform, useValue: {BLINK: true}}]);
-    ariaDescriber.describe(component.element1, 'My Message');
-    expect(getMessagesContainer().getAttribute('aria-hidden')).toBe('true');
-  });
-
-  it('should disable `aria-hidden` on the container in IE', () => {
-    createFixture([{provide: Platform, useValue: {TRIDENT: true}}]);
-    ariaDescriber.describe(component.element1, 'My Message');
-    expect(getMessagesContainer().getAttribute('aria-hidden')).toBe('false');
-  });
-
-  it('should disable `aria-hidden` on the container in Edge', () => {
-    createFixture([{provide: Platform, useValue: {EDGE: true}}]);
-    ariaDescriber.describe(component.element1, 'My Message');
-    expect(getMessagesContainer().getAttribute('aria-hidden')).toBe('false');
   });
 
   it('should be able to register the same message with different roles', () => {
