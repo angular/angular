@@ -1,92 +1,96 @@
 # Deploying an application
 
+Deploying your application is the process of compiling, or building, your code and hosting the JavaScript, CSS, and HTML on a web server.
 
-To deploy your application, you have to compile it, and then host the JavaScript, CSS, and HTML on a web server. Built Angular applications are very portable and can live in any environment or served by any technology, such as Node, Java, .NET, PHP, and many others.
+This section builds on the previous steps in the [Getting Started](start "Try it: A basic application") tutorial and shows you how to deploy your application.
 
-<div class="alert is-helpful">
+## Prerequisites
 
-Whether you came here directly from [Part 1](start "Try it: A basic app"), or completed the entire online store application through the [In-app navigation](start/start-routing "Try it: In-app navigation"), [Manage data](start/start-data "Try it: Manage data"), and [Forms for user input](start/start-forms "Try it: Forms for user input") sections, you have an application that you can deploy by following the instructions in this section.
+A best practice is to run your project locally before you deploy it. To run your project locally, you need the following installed on your computer:
 
-</div>
+* [Node.js](https://nodejs.org/en/).
+* The [Angular CLI](https://cli.angular.io/).
+    From the terminal, install the Angular CLI globally with:
 
-## Share your application
+    ```sh
+    npm install -g @angular/cli
+    ```
 
-StackBlitz projects are public by default, allowing you to share your Angular app via the project URL. Keep in mind that this is a great way to share ideas and prototypes, but it is not intended for production hosting.
+    With the Angular CLI, you can use the command `ng` to create new workspaces, new projects, serve your application during development, or produce builds to share or distribute.
 
-1. In your StackBlitz project, make sure you have forked or saved your project.
-1. In the preview page, you should see a URL that looks like `https://<Project ID>.stackblitz.io`.
-1. Share this URL with a friend or colleague.
-1. Users that visit your URL will see a development server start up, and then your application will load.
+## Running your application locally
 
-## Building locally
+1. Download the source code from your StackBlitz project by clicking the `Download Project` icon in the left menu, across from `Project`, to download your files.
 
-To build your application locally or for production, download the source code from your StackBlitz project by clicking the `Download Project` icon in the left menu across from `Project` to download your files.
+1. Create a new Angular CLI workspace using the [`ng new`](cli/new "CLI ng new command reference") command, where `my-project-name` is what you would like to call your project:
 
-Once you have the source code downloaded and unzipped, install `Node.js` and serve your app with the Angular CLI.
+    ```sh
+    ng new my-project-name
+    ```
 
-From the terminal, install the Angular CLI globally with:
+1. In your newly CLI-generated application, replace the `/src` folder with the `/src` folder from your `StackBlitz` download.
 
-```sh
-npm install -g @angular/cli
-```
+1. Use the following CLI command to run your application locally:
 
-This installs the command `ng` on your system, which is the command you use to create new workspaces, new projects, serve your application during development, or produce builds to share or distribute.
+    ```sh
+    ng serve
+    ```
 
-Create a new Angular CLI workspace using the [`ng new`](cli/new "CLI ng new command reference") command:
+1. To see your application in the  browser, go to http://localhost:4200/.
+    If the default port 4200 is not available, you can specify another port with the port flag as in the following example:
 
-```sh
-ng new my-project-name
-```
+     ```sh
+    ng serve --port 4201
+    ```
 
-In your new CLI generated app, replace the `/src` folder with the one from your `StackBlitz` download, and then perform a build.
+    While serving your application, you can edit your code and see the changes update automatically in the browser.
+    To stop the `ng serve` command, press `Ctrl`+`c`.
 
-```sh
-ng build --prod
-```
+{@a building}
+## Building and hosting your application
 
-This will produce the files that you need to deploy.
+ 1. To build your application for production, use the `build` command with the `prod` flag.
 
-<div class="alert is-helpful">
+    ```sh
+    ng build --prod
+    ```
 
-If the above `ng build` command throws an error about missing packages, append the missing dependencies in your local project's `package.json` file to match the one in the downloaded StackBlitz project.
+    This command creates a `dist` folder in the application root directory with all the files that a hosting service needs for serving your application.
 
-</div>
+    <div class="alert is-helpful">
 
-#### Hosting the built project
+    If the above `ng build` command throws an error about missing packages, append the missing dependencies in your local project's `package.json` file to match the one in the downloaded StackBlitz project.
 
-The files in the `dist/my-project-name` folder are static. This means you can host them on any web server capable of serving files (such as `Node.js`, Java, .NET), or any backend (such as Firebase, Google Cloud, or App Engine).
+    </div>
 
-### Hosting an Angular app on Firebase
+1. Copy the contents of the `dist/my-project-name` folder to your web server.
+    Because these files are static, you can host them on any web server capable of serving files; such as `Node.js`, Java, .NET, or any backend such as [Firebase](https://firebase.google.com/docs/hosting), [Google Cloud](https://cloud.google.com/solutions/web-hosting), or [App Engine](https://cloud.google.com/appengine/docs/standard/python/getting-started/hosting-a-static-website).
+    For more information, see [Building & Serving](guide/build "Building and Serving Angular Apps") and [Deployment](guide/deployment "Deployment guide").
 
-One of the easiest ways to get your site live is to host it using Firebase.
+<hr />
 
-1. Sign up for a firebase account on [Firebase](https://firebase.google.com/ "Firebase web site").
-1. Create a new project, giving it any name you like.
-1. Add the `@angular/fire` schematics that will handle your deployment using `ng add @angular/fire`.
-1. Install [Firebase CLI](https://firebase.google.com/docs/cli) globally using `npm install -g firebase-tools`.
-1. Connect your CLI to your Firebase account and initialize the connection to your project using `firebase login` and `firebase init`.
-1. Follow the prompts to select the `Firebase` project you are creating for hosting.
-    - Select the `Hosting` option on the first prompt.
-    - Select the project you previously created on Firebase.
-    - Select `dist/my-project-name` as the public directory.
-1. Deploy your application with `ng deploy`.
-1. Once deployed, visit https://your-firebase-project-name.firebaseapp.com to see it live!
+## What's next
 
-### Hosting an Angular app anywhere else
+In this tutorial, you've laid the foundation to explore the Angular world in areas such as mobile development, UX/UI development, and server-side rendering.
+You can go deeper by studying more of Angular's features, engaging with the vibrant community, and exploring the robust ecosystem.
 
-To host an Angular app on another web host, upload or send the files to the host.
-Because you are building a single page application, you'll also need to make sure you redirect any invalid URLs to your `index.html` file.
-Read more about development and distribution of your application in the [Building & Serving](guide/build "Building and Serving Angular Apps") and [Deployment](guide/deployment "Deployment guide") guides.
+### Learning more Angular
 
-## Join the Angular community
+For a more in-depth tutorial that leads you through building an application locally and exploring many of Angular's most popular features, see [Tour of Heroes](tutorial).
 
-You are now an Angular developer! [Share this moment](https://twitter.com/intent/tweet?url=https://angular.io/start&text=I%20just%20finished%20the%20Angular%20Getting%20Started%20Tutorial "Angular on Twitter"), tell us what you thought of this get-started exercise, or submit [suggestions for future editions](https://github.com/angular/angular/issues/new/choose "Angular GitHub repository new issue form").
+To explore Angular's foundational concepts, see the guides in the Main Concepts section such as [Angular Components Overview](guide/component-overview) or [Template syntax](guide/template-syntax).
 
-Angular offers many more capabilities, and you now have a foundation that empowers you to build an application and explore those other capabilities:
+### Joining the community
 
-* Angular provides advanced capabilities for mobile apps, animation, internationalization, server-side rendering, and more.
-* [Angular Material](https://material.angular.io/ "Angular Material web site") offers an extensive library of Material Design components.
-* [Angular Protractor](https://protractor.angular.io/ "Angular Protractor web site") offers an end-to-end testing framework for Angular apps.
-* Angular also has an extensive [network of 3rd-party tools and libraries](resources "Angular resources list").
+
+[Tweet that you've completed this tutorial](https://twitter.com/intent/tweet?url=https://angular.io/start&text=I%20just%20finished%20the%20Angular%20Getting%20Started%20Tutorial "Angular on Twitter"), tell us what you think, or submit [suggestions for future editions](https://github.com/angular/angular/issues/new/choose "Angular GitHub repository new issue form").
 
 Keep current by following the [Angular blog](https://blog.angular.io/ "Angular blog").
+
+### Exploring the Angular ecosystem
+
+To support your UX/UI development, see [Angular Material](https://material.angular.io/ "Angular Material web site").
+
+To test your Angular applications, see [Angular Protractor](https://protractor.angular.io/ "Angular Protractor web site").
+
+The Angular community also has an extensive [network of third-party tools and libraries](resources "Angular resources list").
