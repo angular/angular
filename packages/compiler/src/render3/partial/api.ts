@@ -233,6 +233,14 @@ export interface R3DeclareQueryMetadata {
   descendants?: boolean;
 
   /**
+   * True to only fire changes if there are underlying changes to the query.
+   */
+  // TODO(misko):  This will become `true` be default in v12. `QueryList.changes` would fire even if
+  // no changes to the query list were detected. This is not ideal, as changes should only fire if
+  // the `QueryList` actually materially changed.
+  emitDistinctChangesOnly?: boolean;
+
+  /**
    * An expression representing a type to read from each matched node, or null if the default value
    * for a given node is to be returned.
    */

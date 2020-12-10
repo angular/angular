@@ -174,10 +174,12 @@ export declare type ContentChildren = Query;
 export declare interface ContentChildrenDecorator {
     (selector: Type<any> | InjectionToken<unknown> | Function | string, opts?: {
         descendants?: boolean;
+        emitDistinctChangesOnly?: boolean;
         read?: any;
     }): any;
     new (selector: Type<any> | InjectionToken<unknown> | Function | string, opts?: {
         descendants?: boolean;
+        emitDistinctChangesOnly?: boolean;
         read?: any;
     }): Query;
 }
@@ -734,6 +736,7 @@ export declare type Provider = TypeProvider | ValueProvider | ClassProvider | Co
 
 export declare interface Query {
     descendants: boolean;
+    emitDistinctChangesOnly: boolean;
     first: boolean;
     isViewQuery: boolean;
     read: any;
@@ -746,12 +749,12 @@ export declare abstract class Query {
 
 export declare class QueryList<T> implements Iterable<T> {
     [Symbol.iterator]: () => Iterator<T>;
-    readonly changes: Observable<any>;
+    get changes(): Observable<any>;
     readonly dirty = true;
     readonly first: T;
     readonly last: T;
     readonly length: number;
-    constructor();
+    constructor(_emitDistinctChangesOnly?: boolean);
     destroy(): void;
     filter(fn: (item: T, index: number, array: T[]) => boolean): T[];
     find(fn: (item: T, index: number, array: T[]) => boolean): T | undefined;
@@ -760,7 +763,7 @@ export declare class QueryList<T> implements Iterable<T> {
     map<U>(fn: (item: T, index: number, array: T[]) => U): U[];
     notifyOnChanges(): void;
     reduce<U>(fn: (prevValue: U, curValue: T, curIndex: number, array: T[]) => U, init: U): U;
-    reset(resultsTree: Array<T | any[]>): void;
+    reset(resultsTree: Array<T | any[]>, identityAccessor?: (value: T) => unknown): void;
     setDirty(): void;
     some(fn: (value: T, index: number, array: T[]) => boolean): boolean;
     toArray(): T[];
@@ -1010,9 +1013,11 @@ export declare type ViewChildren = Query;
 export declare interface ViewChildrenDecorator {
     (selector: Type<any> | InjectionToken<unknown> | Function | string, opts?: {
         read?: any;
+        emitDistinctChangesOnly?: boolean;
     }): any;
     new (selector: Type<any> | InjectionToken<unknown> | Function | string, opts?: {
         read?: any;
+        emitDistinctChangesOnly?: boolean;
     }): ViewChildren;
 }
 

@@ -5,8 +5,8 @@ ViewQueryComponent.ɵcmp = $r3$.ɵɵdefineComponent({
   selectors: [["view-query-component"]],
   viewQuery: function ViewQueryComponent_Query(rf, ctx) {
     if (rf & 1) {
-      $r3$.ɵɵstaticViewQuery(SomeDirective, true);
-      $r3$.ɵɵviewQuery($refs$, true);
+      $r3$.ɵɵstaticViewQuery(SomeDirective, 3);
+      $r3$.ɵɵviewQuery($refs$, 1);
     }
     if (rf & 2) {
       let $tmp$;

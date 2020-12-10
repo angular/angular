@@ -11,11 +11,11 @@
 
 import {InjectionToken} from '../di/injection_token';
 import {Type} from '../interface/type';
-import {createElementRef, ElementRef as ViewEngine_ElementRef} from '../linker/element_ref';
+import {createElementRef, ElementRef as ViewEngine_ElementRef, unwrapElementRef} from '../linker/element_ref';
 import {QueryList} from '../linker/query_list';
 import {createTemplateRef, TemplateRef as ViewEngine_TemplateRef} from '../linker/template_ref';
 import {createContainerRef, ViewContainerRef} from '../linker/view_container_ref';
-import {assertDefined, assertIndexInRange, throwError} from '../util/assert';
+import {assertDefined, assertIndexInRange, assertNumber, throwError} from '../util/assert';
 import {stringify} from '../util/stringify';
 import {assertFirstCreatePass, assertLContainer} from './assert';
 import {getNodeInjectable, locateDirectiveOrProvider} from './di';
@@ -24,7 +24,7 @@ import {CONTAINER_HEADER_OFFSET, LContainer, MOVED_VIEWS} from './interfaces/con
 import {unusedValueExportToPlacateAjd as unused1} from './interfaces/definition';
 import {unusedValueExportToPlacateAjd as unused2} from './interfaces/injector';
 import {TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeType, unusedValueExportToPlacateAjd as unused3} from './interfaces/node';
-import {LQueries, LQuery, TQueries, TQuery, TQueryMetadata, unusedValueExportToPlacateAjd as unused4} from './interfaces/query';
+import {LQueries, LQuery, QueryFlags, TQueries, TQuery, TQueryMetadata, unusedValueExportToPlacateAjd as unused4} from './interfaces/query';
 import {DECLARATION_LCONTAINER, LView, PARENT, QUERIES, TVIEW, TView} from './interfaces/view';
 import {assertTNodeType} from './node_assert';
 import {getCurrentQueryIndex, getCurrentTNode, getLView, getTView, setCurrentQueryIndex} from './state';
@@ -88,8 +88,8 @@ class LQueries_ implements LQueries {
 
 class TQueryMetadata_ implements TQueryMetadata {
   constructor(
-      public predicate: Type<any>|InjectionToken<unknown>|string[], public descendants: boolean,
-      public isStatic: boolean, public read: any = null) {}
+      public predicate: Type<any>|InjectionToken<unknown>|string[], public flags: QueryFlags,
+      public read: any = null) {}
 }
 
 class TQueries_ implements TQueries {
@@ -202,7 +202,8 @@ class TQuery_ implements TQuery {
   }
 
   private isApplyingToNode(tNode: TNode): boolean {
-    if (this._appliesToNextNode && this.metadata.descendants === false) {
+    const isDescend = (this.metadata.flags & QueryFlags.descendants) === QueryFlags.descendants;
+    if (this._appliesToNextNode && !isDescend) {
       const declarationNodeIdx = this._declarationNodeIndex;
       let parent = tNode.parent;
       // Determine if a given TNode is a "direct" child of a node on which a content query was
@@ -427,14 +428,15 @@ export function ɵɵqueryRefresh(queryList: QueryList<any>): boolean {
   setCurrentQueryIndex(queryIndex + 1);
 
   const tQuery = getTQuery(tView, queryIndex);
-  if (queryList.dirty && (isCreationMode(lView) === tQuery.metadata.isStatic)) {
+  const isStatic = (tQuery.metadata.flags & QueryFlags.isStatic) === QueryFlags.isStatic;
+  if (queryList.dirty && (isCreationMode(lView) === isStatic)) {
     if (tQuery.matches === null) {
       queryList.reset([]);
     } else {
       const result = tQuery.crossesNgTemplate ?
           collectQueryResults(tView, lView, queryIndex, []) :
           materializeViewResults(tView, lView, tQuery, queryIndex);
-      queryList.reset(result);
+      queryList.reset(result, unwrapElementRef);
       queryList.notifyOnChanges();
     }
     return true;
@@ -447,40 +449,42 @@ export function ɵɵqueryRefresh(queryList: QueryList<any>): boolean {
  * Creates new QueryList for a static view query.
  *
  * @param predicate The type for which the query will search
- * @param descend Whether or not to descend into children
+ * @param flags Flags associated with the query
  * @param read What to save in the query
  *
  * @codeGenApi
  */
 export function ɵɵstaticViewQuery<T>(
-    predicate: Type<any>|InjectionToken<unknown>|string[], descend: boolean, read?: any): void {
-  viewQueryInternal(getTView(), getLView(), predicate, descend, read, true);
+    predicate: Type<any>|InjectionToken<unknown>|string[], flags: QueryFlags, read?: any): void {
+  ngDevMode && assertNumber(flags, 'Expecting flags');
+  viewQueryInternal(getTView(), getLView(), predicate, flags | QueryFlags.isStatic, read);
 }
 
 /**
  * Creates new QueryList, stores the reference in LView and returns QueryList.
  *
  * @param predicate The type for which the query will search
- * @param descend Whether or not to descend into children
+ * @param flags Flags associated with the query
  * @param read What to save in the query
  *
  * @codeGenApi
  */
 export function ɵɵviewQuery<T>(
-    predicate: Type<any>|InjectionToken<unknown>|string[], descend: boolean, read?: any): void {
-  viewQueryInternal(getTView(), getLView(), predicate, descend, read, false);
+    predicate: Type<any>|InjectionToken<unknown>|string[], flags: QueryFlags, read?: any): void {
+  ngDevMode && assertNumber(flags, 'Expecting flags');
+  viewQueryInternal(getTView(), getLView(), predicate, flags, read);
 }
 
 function viewQueryInternal<T>(
     tView: TView, lView: LView, predicate: Type<any>|InjectionToken<unknown>|string[],
-    descend: boolean, read: any, isStatic: boolean): void {
+    flags: QueryFlags, read: any): void {
   if (tView.firstCreatePass) {
-    createTQuery(tView, new TQueryMetadata_(predicate, descend, isStatic, read), -1);
-    if (isStatic) {
+    createTQuery(tView, new TQueryMetadata_(predicate, flags, read), -1);
+    if (flags & QueryFlags.isStatic) {
       tView.staticViewQueries = true;
     }
   }
-  createLQuery<T>(tView, lView);
+  createLQuery<T>(tView, lView, flags);
 }
 
 /**
@@ -489,17 +493,18 @@ function viewQueryInternal<T>(
  *
  * @param directiveIndex Current directive index
  * @param predicate The type for which the query will search
- * @param descend Whether or not to descend into children
+ * @param flags Flags associated with the query
  * @param read What to save in the query
  * @returns QueryList<T>
  *
  * @codeGenApi
  */
 export function ɵɵcontentQuery<T>(
-    directiveIndex: number, predicate: Type<any>|InjectionToken<unknown>|string[], descend: boolean,
-    read?: any): void {
+    directiveIndex: number, predicate: Type<any>|InjectionToken<unknown>|string[],
+    flags: QueryFlags, read?: any): void {
+  ngDevMode && assertNumber(flags, 'Expecting flags');
   contentQueryInternal(
-      getTView(), getLView(), predicate, descend, read, false, getCurrentTNode()!, directiveIndex);
+      getTView(), getLView(), predicate, flags, read, false, getCurrentTNode()!, directiveIndex);
 }
 
 /**
@@ -508,31 +513,32 @@ export function ɵɵcontentQuery<T>(
  *
  * @param directiveIndex Current directive index
  * @param predicate The type for which the query will search
- * @param descend Whether or not to descend into children
+ * @param flags Flags associated with the query
  * @param read What to save in the query
  * @returns QueryList<T>
  *
  * @codeGenApi
  */
 export function ɵɵstaticContentQuery<T>(
-    directiveIndex: number, predicate: Type<any>|InjectionToken<unknown>|string[], descend: boolean,
-    read?: any): void {
+    directiveIndex: number, predicate: Type<any>|InjectionToken<unknown>|string[],
+    flags: QueryFlags, read?: any): void {
+  ngDevMode && assertNumber(flags, 'Expecting flags');
   contentQueryInternal(
-      getTView(), getLView(), predicate, descend, read, true, getCurrentTNode()!, directiveIndex);
+      getTView(), getLView(), predicate, flags, read, true, getCurrentTNode()!, directiveIndex);
 }
 
 function contentQueryInternal<T>(
     tView: TView, lView: LView, predicate: Type<any>|InjectionToken<unknown>|string[],
-    descend: boolean, read: any, isStatic: boolean, tNode: TNode, directiveIndex: number): void {
+    flags: QueryFlags, read: any, isStatic: boolean, tNode: TNode, directiveIndex: number): void {
   if (tView.firstCreatePass) {
-    createTQuery(tView, new TQueryMetadata_(predicate, descend, isStatic, read), tNode.index);
+    createTQuery(tView, new TQueryMetadata_(predicate, flags, read), tNode.index);
     saveContentQueryAndDirectiveIndex(tView, directiveIndex);
     if (isStatic) {
       tView.staticContentQueries = true;
     }
   }
 
-  createLQuery<T>(tView, lView);
+  createLQuery<T>(tView, lView, flags);
 }
 
 /**
@@ -551,8 +557,9 @@ function loadQueryInternal<T>(lView: LView, queryIndex: number): QueryList<T> {
   return lView[QUERIES]!.queries[queryIndex].queryList;
 }
 
-function createLQuery<T>(tView: TView, lView: LView) {
-  const queryList = new QueryList<T>();
+function createLQuery<T>(tView: TView, lView: LView, flags: QueryFlags) {
+  const queryList = new QueryList<T>(
+      (flags & QueryFlags.emitDistinctChangesOnly) === QueryFlags.emitDistinctChangesOnly);
   storeCleanupWithContext(tView, lView, queryList, queryList.destroy);
 
   if (lView[QUERIES] === null) lView[QUERIES] = new LQueries_();

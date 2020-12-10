@@ -1636,8 +1636,8 @@ describe('compiler compliance', () => {
             selectors: [["view-query-component"]],
             viewQuery: function ViewQueryComponent_Query(rf, ctx) {
               if (rf & 1) {
-                $r3$.ɵɵviewQuery(SomeDirective, true);
-                $r3$.ɵɵviewQuery(SomeDirective, true);
+                $r3$.ɵɵviewQuery(SomeDirective, 1);
+                $r3$.ɵɵviewQuery(SomeDirective, 1);
               }
               if (rf & 2) {
                 let $tmp$;
@@ -1695,8 +1695,8 @@ describe('compiler compliance', () => {
             …
             viewQuery: function ViewQueryComponent_Query(rf, ctx) {
               if (rf & 1) {
-                $r3$.ɵɵviewQuery($e0_attrs$, true);
-                $r3$.ɵɵviewQuery($e1_attrs$, true);
+                $r3$.ɵɵviewQuery($e0_attrs$, 1);
+                $r3$.ɵɵviewQuery($e1_attrs$, 1);
               }
               if (rf & 2) {
                 let $tmp$;
@@ -1746,8 +1746,8 @@ describe('compiler compliance', () => {
             selectors: [["view-query-component"]],
             viewQuery: function ViewQueryComponent_Query(rf, ctx) {
               if (rf & 1) {
-                $r3$.ɵɵstaticViewQuery(SomeDirective, true);
-                $r3$.ɵɵviewQuery($refs$, true);
+                $r3$.ɵɵstaticViewQuery(SomeDirective, 3);
+                $r3$.ɵɵviewQuery($refs$, 1);
               }
               if (rf & 2) {
                 let $tmp$;
@@ -1810,10 +1810,10 @@ describe('compiler compliance', () => {
             …
             viewQuery: function ViewQueryComponent_Query(rf, ctx) {
               if (rf & 1) {
-                $r3$.ɵɵviewQuery($e0_attrs$, true, TemplateRef);
-                $r3$.ɵɵviewQuery(SomeDirective, true, ElementRef);
-                $r3$.ɵɵviewQuery($e1_attrs$, true, ElementRef);
-                $r3$.ɵɵviewQuery(SomeDirective, true, TemplateRef);
+                $r3$.ɵɵviewQuery($e0_attrs$, 1, TemplateRef);
+                $r3$.ɵɵviewQuery(SomeDirective, 1, ElementRef);
+                $r3$.ɵɵviewQuery($e1_attrs$, 1, ElementRef);
+                $r3$.ɵɵviewQuery(SomeDirective, 1, TemplateRef);
               }
               if (rf & 2) {
                 let $tmp$;
@@ -1873,8 +1873,8 @@ describe('compiler compliance', () => {
             selectors: [["content-query-component"]],
             contentQueries: function ContentQueryComponent_ContentQueries(rf, ctx, dirIndex) {
               if (rf & 1) {
-              $r3$.ɵɵcontentQuery(dirIndex, SomeDirective, true);
-              $r3$.ɵɵcontentQuery(dirIndex, SomeDirective, false);
+              $r3$.ɵɵcontentQuery(dirIndex, SomeDirective, 1);
+              $r3$.ɵɵcontentQuery(dirIndex, SomeDirective, 0);
               }
               if (rf & 2) {
               let $tmp$;
@@ -1933,8 +1933,8 @@ describe('compiler compliance', () => {
             …
             contentQueries: function ContentQueryComponent_ContentQueries(rf, ctx, dirIndex) {
               if (rf & 1) {
-              $r3$.ɵɵcontentQuery(dirIndex, $e0_attrs$, true);
-              $r3$.ɵɵcontentQuery(dirIndex, $e1_attrs$, false);
+              $r3$.ɵɵcontentQuery(dirIndex, $e0_attrs$, 1);
+              $r3$.ɵɵcontentQuery(dirIndex, $e1_attrs$, 0);
               }
               if (rf & 2) {
               let $tmp$;
@@ -1992,8 +1992,8 @@ describe('compiler compliance', () => {
             selectors: [["content-query-component"]],
             contentQueries: function ContentQueryComponent_ContentQueries(rf, ctx, dirIndex) {
               if (rf & 1) {
-              $r3$.ɵɵstaticContentQuery(dirIndex, SomeDirective, true);
-              $r3$.ɵɵcontentQuery(dirIndex, $ref0$, true);
+              $r3$.ɵɵstaticContentQuery(dirIndex, SomeDirective, 3);
+              $r3$.ɵɵcontentQuery(dirIndex, $ref0$, 1);
               }
               if (rf & 2) {
               let $tmp$;
@@ -2057,10 +2057,10 @@ describe('compiler compliance', () => {
             …
             contentQueries: function ContentQueryComponent_ContentQueries(rf, ctx, dirIndex) {
               if (rf & 1) {
-                $r3$.ɵɵcontentQuery(dirIndex, $e0_attrs$, true, TemplateRef);
-              $r3$.ɵɵcontentQuery(dirIndex, SomeDirective, true, ElementRef);
-              $r3$.ɵɵcontentQuery(dirIndex, $e1_attrs$, false, ElementRef);
-              $r3$.ɵɵcontentQuery(dirIndex, SomeDirective, false, TemplateRef);
+                $r3$.ɵɵcontentQuery(dirIndex, $e0_attrs$, 1, TemplateRef);
+              $r3$.ɵɵcontentQuery(dirIndex, SomeDirective, 1, ElementRef);
+              $r3$.ɵɵcontentQuery(dirIndex, $e1_attrs$, 0, ElementRef);
+              $r3$.ɵɵcontentQuery(dirIndex, SomeDirective, 0, TemplateRef);
               }
               if (rf & 2) {
               let $tmp$;

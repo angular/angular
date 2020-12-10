@@ -7,6 +7,7 @@
  */
 
 import {compileDeclareDirectiveFromMetadata, compileDirectiveFromMetadata, ConstantPool, Expression, ExternalExpr, getSafePropertyAccessString, Identifiers, makeBindingParser, ParsedHostBindings, ParseError, parseHostBindings, R3DependencyMetadata, R3DirectiveDef, R3DirectiveMetadata, R3FactoryTarget, R3QueryMetadata, R3ResolvedDependencyType, Statement, verifyHostBindings, WrappedNodeExpr} from '@angular/compiler';
+import {emitDistinctChangesOnlyDefaultValue} from '@angular/compiler/src/core';
 import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
@@ -436,6 +437,7 @@ export function extractQueryMetadata(
   let read: Expression|null = null;
   // The default value for descendants is true for every decorator except @ContentChildren.
   let descendants: boolean = name !== 'ContentChildren';
+  let emitDistinctChangesOnly: boolean = emitDistinctChangesOnlyDefaultValue;
   if (args.length === 2) {
     const optionsExpr = unwrapExpression(args[1]);
     if (!ts.isObjectLiteralExpression(optionsExpr)) {
@@ -456,6 +458,17 @@ export function extractQueryMetadata(
             descendantsExpr, descendantsValue, `@${name} options.descendants must be a boolean`);
       }
       descendants = descendantsValue;
+    }
+
+    if (options.has('emitDistinctChangesOnly')) {
+      const emitDistinctChangesOnlyExpr = options.get('emitDistinctChangesOnly')!;
+      const emitDistinctChangesOnlyValue = evaluator.evaluate(emitDistinctChangesOnlyExpr);
+      if (typeof emitDistinctChangesOnlyValue !== 'boolean') {
+        throw createValueHasWrongTypeError(
+            emitDistinctChangesOnlyExpr, emitDistinctChangesOnlyValue,
+            `@${name} options.emitDistinctChangesOnlys must be a boolean`);
+      }
+      emitDistinctChangesOnly = emitDistinctChangesOnlyValue;
     }
 
     if (options.has('static')) {
@@ -480,6 +493,7 @@ export function extractQueryMetadata(
     descendants,
     read,
     static: isStatic,
+    emitDistinctChangesOnly,
   };
 }
 

@@ -5,10 +5,10 @@ ContentQueryComponent.ɵcmp = $r3$.ɵɵdefineComponent({
   // ...
   contentQueries: function ContentQueryComponent_ContentQueries(rf, ctx, dirIndex) {
     if (rf & 1) {
-      $r3$.ɵɵcontentQuery(dirIndex, $e0_attrs$, true, TemplateRef);
-    $r3$.ɵɵcontentQuery(dirIndex, SomeDirective, true, ElementRef);
-    $r3$.ɵɵcontentQuery(dirIndex, $e1_attrs$, false, ElementRef);
-    $r3$.ɵɵcontentQuery(dirIndex, SomeDirective, false, TemplateRef);
+      $r3$.ɵɵcontentQuery(dirIndex, $e0_attrs$, 1, TemplateRef);
+    $r3$.ɵɵcontentQuery(dirIndex, SomeDirective, 1, ElementRef);
+    $r3$.ɵɵcontentQuery(dirIndex, $e1_attrs$, 0, ElementRef);
+    $r3$.ɵɵcontentQuery(dirIndex, SomeDirective, 0, TemplateRef);
     }
     if (rf & 2) {
     let $tmp$;
