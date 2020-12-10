@@ -713,6 +713,23 @@ describe('find references', () => {
       assertTextSpans(refs, ['<div dir>', 'Dir', 'Dir2']);
       assertFileNames(refs, ['app.ts', 'dir.ts', 'dir2.ts']);
     });
+
+    it('should be able to request references for generic directives', () => {
+      const {text, cursor} = extractCursorInfo(`
+        import {Component, NgModule} from '@angular/core';
+
+        @Component({template: '<div *ngF¦or="let item of items"></div>'})
+        export class AppCmp {
+          items = [];
+        }
+      `);
+      const appFile = {name: _('/app.ts'), contents: text};
+      env = createModuleWithDeclarations([appFile]);
+      const refs = getReferencesAtPosition(_('/app.ts'), cursor)!;
+      expect(refs.length).toBe(6);
+      assertTextSpans(refs, ['<div *ngFor="let item of items"></div>', 'NgForOf']);
+      assertFileNames(refs, ['index.d.ts', 'app.ts']);
+    });
   });
 
   describe('components', () => {

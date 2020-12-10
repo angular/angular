@@ -121,12 +121,12 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
       throw new Error(`Error: no shim file in program: ${shimPath}`);
     }
 
-    let tcb: ts.Node|null = findTypeCheckBlock(shimSf, id);
+    let tcb: ts.Node|null = findTypeCheckBlock(shimSf, id, /*isDiagnosticsRequest*/ false);
 
     if (tcb === null) {
       // Try for an inline block.
       const inlineSf = getSourceFileOrError(program, sfPath);
-      tcb = findTypeCheckBlock(inlineSf, id);
+      tcb = findTypeCheckBlock(inlineSf, id, /*isDiagnosticsRequest*/ false);
     }
 
     let data: TemplateData|null = null;
@@ -194,7 +194,8 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
     if (shimSf === undefined) {
       return null;
     }
-    return getTemplateMapping(shimSf, positionInShimFile, fileRecord.sourceManager);
+    return getTemplateMapping(
+        shimSf, positionInShimFile, fileRecord.sourceManager, /*isDiagnosticsRequest*/ false);
   }
 
   generateAllTypeCheckBlocks() {
