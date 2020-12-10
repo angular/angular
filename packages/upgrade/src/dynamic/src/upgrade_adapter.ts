@@ -505,7 +505,6 @@ export class UpgradeAdapter {
     const delayApplyExps: Function[] = [];
     let original$applyFn: Function;
     let rootScopePrototype: any;
-    let rootScope: IRootScopeService;
     const upgradeAdapter = this;
     const ng1Module = this.ng1Module = angularModule(this.idPrefix, modules);
     const platformRef = platformBrowserDynamic();
@@ -533,7 +532,7 @@ export class UpgradeAdapter {
                 } else {
                   throw new Error('Failed to find \'$apply\' on \'$rootScope\'!');
                 }
-                return rootScope = rootScopeDelegate;
+                return rootScopeDelegate;
               }
             ]);
             if (ng1Injector.has($$TESTABILITY)) {

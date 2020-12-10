@@ -170,111 +170,108 @@ export class UpgradeModule {
     const INIT_MODULE_NAME = UPGRADE_MODULE_NAME + '.init';
 
     // Create an ng1 module to bootstrap
-    const initModule =
-        angularModule(INIT_MODULE_NAME, [])
+    angularModule(INIT_MODULE_NAME, [])
 
-            .constant(UPGRADE_APP_TYPE_KEY, UpgradeAppType.Static)
+        .constant(UPGRADE_APP_TYPE_KEY, UpgradeAppType.Static)
 
-            .value(INJECTOR_KEY, this.injector)
+        .value(INJECTOR_KEY, this.injector)
 
-            .factory(
-                LAZY_MODULE_REF,
-                [INJECTOR_KEY, (injector: Injector) => ({injector} as LazyModuleRef)])
+        .factory(
+            LAZY_MODULE_REF, [INJECTOR_KEY, (injector: Injector) => ({injector} as LazyModuleRef)])
 
-            .config([
-              $PROVIDE, $INJECTOR,
-              ($provide: IProvideService, $injector: IInjectorService) => {
-                if ($injector.has($$TESTABILITY)) {
-                  $provide.decorator($$TESTABILITY, [
-                    $DELEGATE,
-                    (testabilityDelegate: ITestabilityService) => {
-                      const originalWhenStable: Function = testabilityDelegate.whenStable;
-                      const injector = this.injector;
-                      // Cannot use arrow function below because we need the context
-                      const newWhenStable = function(callback: Function) {
-                        originalWhenStable.call(testabilityDelegate, function() {
-                          const ng2Testability: Testability = injector.get(Testability);
-                          if (ng2Testability.isStable()) {
-                            callback();
-                          } else {
-                            ng2Testability.whenStable(
-                                newWhenStable.bind(testabilityDelegate, callback));
-                          }
+        .config([
+          $PROVIDE, $INJECTOR,
+          ($provide: IProvideService, $injector: IInjectorService) => {
+            if ($injector.has($$TESTABILITY)) {
+              $provide.decorator($$TESTABILITY, [
+                $DELEGATE,
+                (testabilityDelegate: ITestabilityService) => {
+                  const originalWhenStable: Function = testabilityDelegate.whenStable;
+                  const injector = this.injector;
+                  // Cannot use arrow function below because we need the context
+                  const newWhenStable = function(callback: Function) {
+                    originalWhenStable.call(testabilityDelegate, function() {
+                      const ng2Testability: Testability = injector.get(Testability);
+                      if (ng2Testability.isStable()) {
+                        callback();
+                      } else {
+                        ng2Testability.whenStable(
+                            newWhenStable.bind(testabilityDelegate, callback));
+                      }
+                    });
+                  };
+
+                  testabilityDelegate.whenStable = newWhenStable;
+                  return testabilityDelegate;
+                }
+              ]);
+            }
+
+            if ($injector.has($INTERVAL)) {
+              $provide.decorator($INTERVAL, [
+                $DELEGATE,
+                (intervalDelegate: IIntervalService) => {
+                  // Wrap the $interval service so that setInterval is called outside NgZone,
+                  // but the callback is still invoked within it. This is so that $interval
+                  // won't block stability, which preserves the behavior from AngularJS.
+                  let wrappedInterval =
+                      (fn: Function, delay: number, count?: number, invokeApply?: boolean,
+                       ...pass: any[]) => {
+                        return this.ngZone.runOutsideAngular(() => {
+                          return intervalDelegate((...args: any[]) => {
+                            // Run callback in the next VM turn - $interval calls
+                            // $rootScope.$apply, and running the callback in NgZone will
+                            // cause a '$digest already in progress' error if it's in the
+                            // same vm turn.
+                            setTimeout(() => {
+                              this.ngZone.run(() => fn(...args));
+                            });
+                          }, delay, count, invokeApply, ...pass);
                         });
                       };
 
-                      testabilityDelegate.whenStable = newWhenStable;
-                      return testabilityDelegate;
-                    }
-                  ]);
+                  (wrappedInterval as any)['cancel'] = intervalDelegate.cancel;
+                  return wrappedInterval;
+                }
+              ]);
+            }
+          }
+        ])
+
+        .run([
+          $INJECTOR,
+          ($injector: IInjectorService) => {
+            this.$injector = $injector;
+
+            // Initialize the ng1 $injector provider
+            setTempInjectorRef($injector);
+            this.injector.get($INJECTOR);
+
+            // Put the injector on the DOM, so that it can be "required"
+            angularElement(element).data!(controllerKey(INJECTOR_KEY), this.injector);
+
+            // Wire up the ng1 rootScope to run a digest cycle whenever the zone settles
+            // We need to do this in the next tick so that we don't prevent the bootup stabilizing
+            setTimeout(() => {
+              const $rootScope = $injector.get('$rootScope');
+              const subscription = this.ngZone.onMicrotaskEmpty.subscribe(() => {
+                if ($rootScope.$$phase) {
+                  if (isDevMode()) {
+                    console.warn(
+                        'A digest was triggered while one was already in progress. This may mean that something is triggering digests outside the Angular zone.');
+                  }
+
+                  return $rootScope.$evalAsync();
                 }
 
-                if ($injector.has($INTERVAL)) {
-                  $provide.decorator($INTERVAL, [
-                    $DELEGATE,
-                    (intervalDelegate: IIntervalService) => {
-                      // Wrap the $interval service so that setInterval is called outside NgZone,
-                      // but the callback is still invoked within it. This is so that $interval
-                      // won't block stability, which preserves the behavior from AngularJS.
-                      let wrappedInterval =
-                          (fn: Function, delay: number, count?: number, invokeApply?: boolean,
-                           ...pass: any[]) => {
-                            return this.ngZone.runOutsideAngular(() => {
-                              return intervalDelegate((...args: any[]) => {
-                                // Run callback in the next VM turn - $interval calls
-                                // $rootScope.$apply, and running the callback in NgZone will
-                                // cause a '$digest already in progress' error if it's in the
-                                // same vm turn.
-                                setTimeout(() => {
-                                  this.ngZone.run(() => fn(...args));
-                                });
-                              }, delay, count, invokeApply, ...pass);
-                            });
-                          };
-
-                      (wrappedInterval as any)['cancel'] = intervalDelegate.cancel;
-                      return wrappedInterval;
-                    }
-                  ]);
-                }
-              }
-            ])
-
-            .run([
-              $INJECTOR,
-              ($injector: IInjectorService) => {
-                this.$injector = $injector;
-
-                // Initialize the ng1 $injector provider
-                setTempInjectorRef($injector);
-                this.injector.get($INJECTOR);
-
-                // Put the injector on the DOM, so that it can be "required"
-                angularElement(element).data!(controllerKey(INJECTOR_KEY), this.injector);
-
-                // Wire up the ng1 rootScope to run a digest cycle whenever the zone settles
-                // We need to do this in the next tick so that we don't prevent the bootup
-                // stabilizing
-                setTimeout(() => {
-                  const $rootScope = $injector.get('$rootScope');
-                  const subscription = this.ngZone.onMicrotaskEmpty.subscribe(() => {
-                    if ($rootScope.$$phase) {
-                      if (isDevMode()) {
-                        console.warn(
-                            'A digest was triggered while one was already in progress. This may mean that something is triggering digests outside the Angular zone.');
-                      }
-
-                      return $rootScope.$evalAsync();
-                    }
-
-                    return $rootScope.$digest();
-                  });
-                  $rootScope.$on('$destroy', () => {
-                    subscription.unsubscribe();
-                  });
-                }, 0);
-              }
-            ]);
+                return $rootScope.$digest();
+              });
+              $rootScope.$on('$destroy', () => {
+                subscription.unsubscribe();
+              });
+            }, 0);
+          }
+        ]);
 
     const upgradeModule = angularModule(UPGRADE_MODULE_NAME, [INIT_MODULE_NAME].concat(modules));
 
