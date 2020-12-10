@@ -118,6 +118,21 @@
           ]
         }
       ]
+    },
+    {
+      "description": "should support query emitDistinctChangesOnly flag",
+      "inputFiles": [
+        "some.directive.ts",
+        "query_with_emit_distinct_changes_only.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Invalid ContentQuery declaration",
+          "files": [
+            "query_with_emit_distinct_changes_only.js"
+          ]
+        }
+      ]
     }
   ]
 }

@@ -243,7 +243,8 @@ function convertToR3QueryMetadata(facade: R3QueryMetadataFacade): R3QueryMetadat
     predicate: Array.isArray(facade.predicate) ? facade.predicate :
                                                  new WrappedNodeExpr(facade.predicate),
     read: facade.read ? new WrappedNodeExpr(facade.read) : null,
-    static: facade.static
+    static: facade.static,
+    emitDistinctChangesOnly: facade.emitDistinctChangesOnly,
   };
 }
 
@@ -257,6 +258,7 @@ function convertQueryDeclarationToMetadata(declaration: R3DeclareQueryMetadataFa
     descendants: declaration.descendants ?? false,
     read: declaration.read ? new WrappedNodeExpr(declaration.read) : null,
     static: declaration.static ?? false,
+    emitDistinctChangesOnly: declaration.emitDistinctChangesOnly ?? true,
   };
 }
 

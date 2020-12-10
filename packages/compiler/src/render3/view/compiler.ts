@@ -404,6 +404,7 @@ function queriesFromGlobalMetadata(
       predicate: selectorsFromGlobalMetadata(query.selectors, outputCtx),
       descendants: query.descendants,
       read,
+      emitDistinctChangesOnly: !!query.emitDistinctChangesOnly,
       static: !!query.static
     };
   });
@@ -435,11 +436,53 @@ function selectorsFromGlobalMetadata(
 }
 
 function prepareQueryParams(query: R3QueryMetadata, constantPool: ConstantPool): o.Expression[] {
-  const parameters = [getQueryPredicate(query, constantPool), o.literal(query.descendants)];
+  const parameters = [getQueryPredicate(query, constantPool), o.literal(toQueryFlags(query))];
   if (query.read) {
     parameters.push(query.read);
   }
   return parameters;
+}
+
+/**
+ * A set of flags to be used with Queries.
+ *
+ * NOTE: Ensure changes here are in sync with `packages/core/src/render3/interfaces/query.ts`
+ */
+export const enum QueryFlags {
+  /**
+   * No flags
+   */
+  none = 0b0000,
+
+  /**
+   * Whether or not the query should descend into children.
+   */
+  descendants = 0b0001,
+
+  /**
+   * The query can be computed statically and hence can be assigned eagerly.
+   *
+   * NOTE: Backwards compatibility with ViewEngine.
+   */
+  isStatic = 0b0010,
+
+  /**
+   * If the `QueryList` should fire change event only if actual change to query was computed (vs old
+   * behavior where the change was fired whenever the query was recomputed, even if the recomputed
+   * query resulted in the same list.)
+   */
+  emitDistinctChangesOnly = 0b0100,
+}
+
+/**
+ * Translates query flags into `TQueryFlags` type in packages/core/src/render3/interfaces/query.ts
+ * @param query
+ */
+function toQueryFlags(query: R3QueryMetadata): number {
+  // NOTE: Verify that changes here match
+  return (query.descendants ? 1 /* TQueryFlags.descendants */ : 0) |
+      (query.static ? 2 /* TQueryFlags.isStatic */ : 0) |
+      (query.emitDistinctChangesOnly ? 4 /* TQueryFlags.emitDistinctChangesOnly */ : 0);
 }
 
 function convertAttributesToExpressions(attributes: {[name: string]: o.Expression}):

@@ -305,6 +305,13 @@ export interface R3QueryMetadata {
   descendants: boolean;
 
   /**
+   * If the `QueryList` should fire change event only if actual change to query was computed (vs old
+   * behavior where the change was fired whenever the query was recomputed, even if the recomputed
+   * query resulted in the same list.)
+   */
+  emitDistinctChangesOnly: boolean;
+
+  /**
    * An expression representing a type to read from each matched node, or null if the default value
    * for a given node is to be returned.
    */

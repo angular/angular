@@ -95,22 +95,24 @@ describe('directive declaration jit compilation', () => {
                       static: true,
                       first: true,
                       read: ElementRef,
+                      emitDistinctChangesOnly: false,
                     }
                   ],
                 }) as DirectiveDef<TestClass>;
 
     expectDirectiveDef(def, {
       contentQueries: functionContaining([
-        // "byRef" should use `contentQuery` with `false` for descendants flag without a read token,
-        // and bind to the full query result.
+        // "byRef" should use `contentQuery` with `0` (`QueryFlags.descendants|QueryFlags.isStatic`)
+        // for descendants flag without a read token, and bind to the full query result.
         // NOTE: the `anonymous` match is to support IE11, as functions don't have a name there.
-        /(?:contentQuery|anonymous)[^(]*\(dirIndex,_c0,false\)/,
+        /(?:contentQuery|anonymous)[^(]*\(dirIndex,_c0,4\)/,
         '(ctx.byRef = _t)',
 
-        // "byToken" should use `staticContentQuery` with `true` for descendants flag and
-        // `ElementRef` as read token, and bind to the first result in the query result.
+        // "byToken" should use `viewQuery` with `3` (`QueryFlags.static|QueryFlags.descendants`)
+        // for descendants flag and `ElementRef` as read token, and bind to the first result in the
+        // query result.
         // NOTE: the `anonymous` match is to support IE11, as functions don't have a name there.
-        /(?:staticContentQuery|anonymous)[^(]*\(dirIndex,[^,]*String[^,]*,true,[^)]*ElementRef[^)]*\)/,
+        /(?:contentQuery|anonymous)[^(]*\([^,]*dirIndex,[^,]*String[^,]*,3,[^)]*ElementRef[^)]*\)/,
         '(ctx.byToken = _t.first)',
       ]),
     });
@@ -131,6 +133,7 @@ describe('directive declaration jit compilation', () => {
                       static: true,
                       first: true,
                       read: ElementRef,
+                      emitDistinctChangesOnly: false,
                     }
                   ],
                 }) as DirectiveDef<TestClass>;
@@ -140,13 +143,14 @@ describe('directive declaration jit compilation', () => {
         // "byRef" should use `viewQuery` with `false` for descendants flag without a read token,
         // and bind to the full query result.
         // NOTE: the `anonymous` match is to support IE11, as functions don't have a name there.
-        /(?:viewQuery|anonymous)[^(]*\(_c0,false\)/,
+        /(?:viewQuery|anonymous)[^(]*\(_c0,4\)/,
         '(ctx.byRef = _t)',
 
-        // "byToken" should use `staticViewQuery` with `true` for descendants flag and
-        // `ElementRef` as read token, and bind to the first result in the query result.
+        // "byToken" should use `viewQuery` with `3` (`QueryFlags.static|QueryFlags.descendants`)
+        // for descendants flag and `ElementRef` as read token, and bind to the first result in the
+        // query result.
         // NOTE: the `anonymous` match is to support IE11, as functions don't have a name there.
-        /(?:staticViewQuery|anonymous)[^(]*\([^,]*String[^,]*,true,[^)]*ElementRef[^)]*\)/,
+        /(?:viewQuery|anonymous)[^(]*\([^,]*String[^,]*,3,[^)]*ElementRef[^)]*\)/,
         '(ctx.byToken = _t.first)',
       ]),
     });

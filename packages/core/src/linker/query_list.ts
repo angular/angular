@@ -9,7 +9,7 @@
 import {Observable} from 'rxjs';
 
 import {EventEmitter} from '../event_emitter';
-import {flatten} from '../util/array_utils';
+import {arrayEquals, flatten} from '../util/array_utils';
 import {getSymbolIterator} from '../util/symbol';
 
 function symbolIterator<T>(this: QueryList<T>): Iterator<T> {
@@ -45,15 +45,31 @@ function symbolIterator<T>(this: QueryList<T>): Iterator<T> {
 export class QueryList<T> implements Iterable<T> {
   public readonly dirty = true;
   private _results: Array<T> = [];
-  public readonly changes: Observable<any> = new EventEmitter();
+  private _changesDetected: boolean = false;
+  private _changes: EventEmitter<QueryList<T>>|null = null;
 
   readonly length: number = 0;
-  // TODO(issue/24571): remove '!'.
-  readonly first!: T;
-  // TODO(issue/24571): remove '!'.
-  readonly last!: T;
+  readonly first: T = undefined!;
+  readonly last: T = undefined!;
 
-  constructor() {
+  /**
+   * Returns `Observable` of `QueryList` notifying the subscriber of changes.
+   *
+   * NOTE: This currently points to `changesDeprecated` which incorrectly notifies of changes even
+   * if no changes to `QueryList` have occurred. (It fires more often than it needs to.)
+   * The implementation will change to point `changesStrict` starting with v12.
+   */
+  get changes(): Observable<any> {
+    return this._changes || (this._changes = new EventEmitter());
+  }
+
+  /**
+   * @param emitDistinctChangesOnly Whether `QueryList.changes` should fire only when actual change
+   *     has occurred. Or if it should fire when query is recomputed. (recomputing could resolve in
+   *     the same result) This is set to `false` for backwards compatibility but will be changed to
+   *     true in v12.
+   */
+  constructor(private _emitDistinctChangesOnly: boolean = false) {
     // This function should be declared on the prototype, but doing so there will cause the class
     // declaration to have side-effects and become not tree-shakable. For this reason we do it in
     // the constructor.
@@ -135,20 +151,27 @@ export class QueryList<T> implements Iterable<T> {
    * occurs.
    *
    * @param resultsTree The query results to store
+   * @param identityAccessor Optional functions for extracting stable object identity from a value
+   *     in the array.
    */
-  reset(resultsTree: Array<T|any[]>): void {
-    this._results = flatten(resultsTree);
-    (this as {dirty: boolean}).dirty = false;
-    (this as {length: number}).length = this._results.length;
-    (this as {last: T}).last = this._results[this.length - 1];
-    (this as {first: T}).first = this._results[0];
+  reset(resultsTree: Array<T|any[]>, identityAccessor?: (value: T) => unknown): void {
+    const self = this as QueryListInternal<T>;
+    (self as {dirty: boolean}).dirty = false;
+    const newResultFlat = flatten(resultsTree);
+    if (this._changesDetected = !arrayEquals(self._results, newResultFlat, identityAccessor)) {
+      self._results = newResultFlat;
+      self.length = newResultFlat.length;
+      self.last = newResultFlat[this.length - 1];
+      self.first = newResultFlat[0];
+    }
   }
 
   /**
    * Triggers a change event by emitting on the `changes` {@link EventEmitter}.
    */
   notifyOnChanges(): void {
-    (this.changes as EventEmitter<any>).emit(this);
+    if (this._changes && (this._emitDistinctChangesOnly ? this._changesDetected : true))
+      this._changes.emit(this);
   }
 
   /** internal */
@@ -168,4 +191,15 @@ export class QueryList<T> implements Iterable<T> {
   // implement the Iterable interface. This is required for template type-checking of NgFor loops
   // over QueryLists to work correctly, since QueryList must be assignable to NgIterable.
   [Symbol.iterator]!: () => Iterator<T>;
+}
+
+/**
+ * Internal set of APIs used by the framework. (not to be made public)
+ */
+export interface QueryListInternal<T> extends QueryList<T> {
+  reset(a: any[]): void;
+  notifyOnChanges(): void;
+  length: number;
+  last: T;
+  first: T;
 }

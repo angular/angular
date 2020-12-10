@@ -98,12 +98,19 @@ export interface Attribute {
  */
 export interface Query {
   descendants: boolean;
+  emitDistinctChangesOnly: boolean;
   first: boolean;
   read: any;
   isViewQuery: boolean;
   selector: any;
   static?: boolean;
 }
+
+// Stores the default value of `emitDistinctChangesOnly` when the `emitDistinctChangesOnly` is not
+// explicitly set. This value will be changed to `true` in v12.
+// TODO(misko): switch the default in v12 to `true`. See: packages/compiler/src/core.ts
+export const emitDistinctChangesOnlyDefaultValue = false;
+
 
 /**
  * Base class for query metadata.
@@ -140,6 +147,9 @@ export interface ContentChildrenDecorator {
    *
    * * **selector** - The directive type or the name used for querying.
    * * **descendants** - True to include all descendants, otherwise include only direct children.
+   * * **emitDistinctChangesOnly** - The ` QueryList#changes` observable will emit new values only
+   *   if the QueryList result has changed. The default value will change from `false` to `true` in
+   *   v12. When `false` the `changes` observable might emit even if the QueryList has not changed.
    * * **read** - Used to read a different token from the queried elements.
    *
    * @usageNotes
@@ -157,10 +167,13 @@ export interface ContentChildrenDecorator {
    *
    * @Annotation
    */
-  (selector: Type<any>|InjectionToken<unknown>|Function|string,
-   opts?: {descendants?: boolean, read?: any}): any;
+  (selector: Type<any>|InjectionToken<unknown>|Function|string, opts?: {
+    descendants?: boolean,
+    emitDistinctChangesOnly?: boolean,
+    read?: any,
+  }): any;
   new(selector: Type<any>|InjectionToken<unknown>|Function|string,
-      opts?: {descendants?: boolean, read?: any}): Query;
+      opts?: {descendants?: boolean, emitDistinctChangesOnly?: boolean, read?: any}): Query;
 }
 
 /**
@@ -180,9 +193,14 @@ export type ContentChildren = Query;
  * @publicApi
  */
 export const ContentChildren: ContentChildrenDecorator = makePropDecorator(
-    'ContentChildren',
-    (selector?: any, data: any = {}) =>
-        ({selector, first: false, isViewQuery: false, descendants: false, ...data}),
+    'ContentChildren', (selector?: any, data: any = {}) => ({
+                         selector,
+                         first: false,
+                         isViewQuery: false,
+                         descendants: false,
+                         emitDistinctChangesOnly: emitDistinctChangesOnlyDefaultValue,
+                         ...data
+                       }),
     Query);
 
 /**
@@ -268,6 +286,9 @@ export interface ViewChildrenDecorator {
    *
    * * **selector** - The directive type or the name used for querying.
    * * **read** - Used to read a different token from the queried elements.
+   * * **emitDistinctChangesOnly** - The ` QueryList#changes` observable will emit new values only
+   *   if the QueryList result has changed. The default value will change from `false` to `true` in
+   *   v12. When `false` the `changes` observable might emit even if the QueryList has not changed.
    *
    * @usageNotes
    *
@@ -279,9 +300,10 @@ export interface ViewChildrenDecorator {
    *
    * @Annotation
    */
-  (selector: Type<any>|InjectionToken<unknown>|Function|string, opts?: {read?: any}): any;
+  (selector: Type<any>|InjectionToken<unknown>|Function|string,
+   opts?: {read?: any, emitDistinctChangesOnly?: boolean}): any;
   new(selector: Type<any>|InjectionToken<unknown>|Function|string,
-      opts?: {read?: any}): ViewChildren;
+      opts?: {read?: any, emitDistinctChangesOnly?: boolean}): ViewChildren;
 }
 
 /**
@@ -298,9 +320,14 @@ export type ViewChildren = Query;
  * @publicApi
  */
 export const ViewChildren: ViewChildrenDecorator = makePropDecorator(
-    'ViewChildren',
-    (selector?: any, data: any = {}) =>
-        ({selector, first: false, isViewQuery: true, descendants: true, ...data}),
+    'ViewChildren', (selector?: any, data: any = {}) => ({
+                      selector,
+                      first: false,
+                      isViewQuery: true,
+                      descendants: true,
+                      emitDistinctChangesOnly: emitDistinctChangesOnlyDefaultValue,
+                      ...data
+                    }),
     Query);
 
 /**

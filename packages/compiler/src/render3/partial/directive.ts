@@ -86,6 +86,11 @@ function compileQuery(query: R3QueryMetadata): o.LiteralMapExpr {
   }
   meta.set(
       'predicate', Array.isArray(query.predicate) ? asLiteral(query.predicate) : query.predicate);
+  if (!query.emitDistinctChangesOnly) {
+    // `emitDistinctChangesOnly` is special because in future we expect it to be `true`. For this
+    // reason the absence should be interpreted as `true`.
+    meta.set('emitDistinctChangesOnly', o.literal(false));
+  }
   if (query.descendants) {
     meta.set('descendants', o.literal(true));
   }

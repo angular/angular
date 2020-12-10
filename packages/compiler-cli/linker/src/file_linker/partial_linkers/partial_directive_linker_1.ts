@@ -147,6 +147,8 @@ function toQueryMetadata<TExpression>(obj: AstObject<R3DeclareQueryMetadata, TEx
     first: obj.has('first') ? obj.getBoolean('first') : false,
     predicate,
     descendants: obj.has('descendants') ? obj.getBoolean('descendants') : false,
+    emitDistinctChangesOnly:
+        obj.has('emitDistinctChangesOnly') ? obj.getBoolean('emitDistinctChangesOnly') : true,
     read: obj.has('read') ? obj.getOpaque('read') : null,
     static: obj.has('static') ? obj.getBoolean('static') : false,
   };

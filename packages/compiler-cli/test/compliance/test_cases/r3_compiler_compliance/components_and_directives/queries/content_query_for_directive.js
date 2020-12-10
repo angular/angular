@@ -3,8 +3,8 @@ ContentQueryComponent.ɵcmp = $r3$.ɵɵdefineComponent({
   selectors: [["content-query-component"]],
   contentQueries: function ContentQueryComponent_ContentQueries(rf, ctx, dirIndex) {
     if (rf & 1) {
-    $r3$.ɵɵcontentQuery(dirIndex, SomeDirective, true);
-    $r3$.ɵɵcontentQuery(dirIndex, SomeDirective, false);
+    $r3$.ɵɵcontentQuery(dirIndex, SomeDirective, 1);
+    $r3$.ɵɵcontentQuery(dirIndex, SomeDirective, 0);
     }
     if (rf & 2) {
     let $tmp$;
