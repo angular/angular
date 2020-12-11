@@ -10,6 +10,7 @@ import {AbsoluteSourceSpan, ParseSourceSpan} from '@angular/compiler';
 import {ClassDeclaration} from '@angular/compiler-cli/src/ngtsc/reflection';
 import * as ts from 'typescript';
 
+import {Reference} from '../../imports';
 import {getTokenAtPosition} from '../../util/src/typescript';
 import {FullTemplateMapping, SourceLocation, TemplateId, TemplateSourceMapping} from '../api';
 
@@ -37,7 +38,9 @@ export interface TemplateSourceResolver {
   toParseSourceSpan(id: TemplateId, span: AbsoluteSourceSpan): ParseSourceSpan|null;
 }
 
-export function requiresInlineTypeCheckBlock(node: ClassDeclaration<ts.ClassDeclaration>): boolean {
+export function requiresInlineTypeCheckBlock(
+    node: ClassDeclaration<ts.ClassDeclaration>,
+    usedPipes: Map<string, Reference<ClassDeclaration<ts.ClassDeclaration>>>): boolean {
   // In order to qualify for a declared TCB (not inline) two conditions must be met:
   // 1) the class must be exported
   // 2) it must not have constrained generic types
@@ -46,6 +49,11 @@ export function requiresInlineTypeCheckBlock(node: ClassDeclaration<ts.ClassDecl
     return true;
   } else if (!checkIfGenericTypesAreUnbound(node)) {
     // Condition 2 is false, the class has constrained generic types
+    return true;
+  } else if (Array.from(usedPipes.values())
+                 .some(pipeRef => !checkIfClassIsExported(pipeRef.node))) {
+    // If one of the pipes used by the component is not exported, a non-inline TCB will not be able
+    // to import it, so this requires an inline TCB.
     return true;
   } else {
     return false;

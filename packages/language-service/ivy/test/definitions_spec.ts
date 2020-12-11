@@ -37,6 +37,7 @@ describe('definitions', () => {
         contents: `Will be overridden`,
       }
     ];
+    // checkTypeOfPipes is set to false when strict templates is false
     env = LanguageServiceTestEnvironment.setup(testFiles, {strictTemplates: false});
     const definitions = getDefinitionsAndAssertBoundSpan(
         {templateOverride: '{{"1/1/2020" | dat¦e}}', expectedSpanText: 'date'});
@@ -60,9 +61,8 @@ describe('definitions', () => {
     expect(text.substring(textSpan.start, textSpan.start + textSpan.length))
         .toEqual(expectedSpanText);
     expect(definitions).toBeTruthy();
-    const overrides = {
-      [absoluteFrom('/app.ts')]: text,
-    };
+    const overrides = new Map<string, string>();
+    overrides.set(absoluteFrom('/app.ts'), text);
     return definitions!.map(d => humanizeDefinitionInfo(d, env.host, overrides));
   }
 });

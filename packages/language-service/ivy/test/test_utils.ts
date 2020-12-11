@@ -62,9 +62,9 @@ export interface HumanizedDefinitionInfo {
 
 export function humanizeDefinitionInfo(
     def: ts.DefinitionInfo, host: MockServerHost,
-    overrides: {[fileName: string]: string} = {}): HumanizedDefinitionInfo {
-  const contents = (overrides[def.fileName] !== undefined ? overrides[def.fileName] :
-                                                            host.readFile(def.fileName)) ??
+    overrides: Map<string, string> = new Map()): HumanizedDefinitionInfo {
+  const contents = (overrides.get(def.fileName) !== undefined ? overrides.get(def.fileName) :
+                                                                host.readFile(def.fileName)) ??
       '';
 
   return {
