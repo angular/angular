@@ -12,6 +12,7 @@ ts_library(
         "//dev-infra/release/publish",
         "//dev-infra/release/set-dist-tag",
         "//dev-infra/utils",
+        "@npm//@types/node",
         "@npm//@types/yargs",
         "@npm//yargs",
     ],

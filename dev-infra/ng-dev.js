@@ -6540,13 +6540,13 @@ const ReleaseSetDistTagCommand = {
  * Note: git operations, especially git status, take a long time inside mounted docker volumes
  * in Windows or OSX hosts (https://github.com/docker/for-win/issues/188).
  */
-function buildEnvStamp() {
+function buildEnvStamp(mode) {
     console.info(`BUILD_SCM_BRANCH ${getCurrentBranch()}`);
     console.info(`BUILD_SCM_COMMIT_SHA ${getCurrentSha()}`);
     console.info(`BUILD_SCM_HASH ${getCurrentSha()}`);
     console.info(`BUILD_SCM_LOCAL_CHANGES ${hasLocalChanges()}`);
     console.info(`BUILD_SCM_USER ${getCurrentGitUser()}`);
-    console.info(`BUILD_SCM_VERSION ${getSCMVersion()}`);
+    console.info(`BUILD_SCM_VERSION ${getSCMVersion(mode)}`);
     process.exit(0);
 }
 /** Run the exec command and return the stdout as a trimmed string. */
@@ -6557,10 +6557,23 @@ function exec$1(cmd) {
 function hasLocalChanges() {
     return !!exec$1(`git status --untracked-files=no --porcelain`);
 }
-/** Get the version based on the most recent semver tag. */
-function getSCMVersion() {
-    const version = exec$1(`git describe --match [0-9]*.[0-9]*.[0-9]* --abbrev=7 --tags HEAD`);
-    return `${version.replace(/-([0-9]+)-g/, '+$1.sha-')}${(hasLocalChanges() ? '.with-local-changes' : '')}`;
+/**
+ * Get the version for generated packages.
+ *
+ * In snapshot mode, the version is based on the most recent semver tag.
+ * In release mode, the version is based on the base package.json version.
+ */
+function getSCMVersion(mode) {
+    if (mode === 'release') {
+        const packageJsonPath = path.join(getRepoBaseDir(), 'package.json');
+        const { version } = require(packageJsonPath);
+        return version;
+    }
+    if (mode === 'snapshot') {
+        const version = exec$1(`git describe --match [0-9]*.[0-9]*.[0-9]* --abbrev=7 --tags HEAD`);
+        return `${version.replace(/-([0-9]+)-g/, '+$1.sha-')}${(hasLocalChanges() ? '.with-local-changes' : '')}`;
+    }
+    return '0.0.0';
 }
 /** Get the current SHA of HEAD. */
 function getCurrentSha() {
@@ -6577,6 +6590,33 @@ function getCurrentGitUser() {
     return `${userName} <${userEmail}>`;
 }
 
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+function builder$a(args) {
+    return args.option('mode', {
+        demandOption: true,
+        description: 'Whether the env-stamp should be built for a snapshot or release',
+        choices: ['snapshot', 'release']
+    });
+}
+function handler$a({ mode }) {
+    return tslib.__awaiter(this, void 0, void 0, function* () {
+        buildEnvStamp(mode);
+    });
+}
+/** CLI command module for building the environment stamp. */
+const BuildEnvStampCommand = {
+    builder: builder$a,
+    handler: handler$a,
+    command: 'build-env-stamp',
+    describe: 'Build the environment stamping information',
+};
+
 /** Build the parser for the release commands. */
 function buildReleaseParser(localYargs) {
     return localYargs.help()
@@ -6585,7 +6625,7 @@ function buildReleaseParser(localYargs) {
         .command(ReleasePublishCommandModule)
         .command(ReleaseBuildCommandModule)
         .command(ReleaseSetDistTagCommand)
-        .command('build-env-stamp', 'Build the environment stamping information', {}, () => buildEnvStamp());
+        .command(BuildEnvStampCommand);
 }
 
 /**
