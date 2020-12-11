@@ -62,9 +62,10 @@ module.exports = {
  * This path should either be absolute or relative to the project root.
  * @param {boolean} enableIvy True, if Ivy should be used.
  * @param {string} description Human-readable description of the build.
+ * @param {boolean?} isRelease True, if the build should be stamped for a release.
  * @returns {Array<{name: string, outputPath: string}} A list of packages built.
  */
-function buildTargetPackages(destPath, enableIvy, description) {
+function buildTargetPackages(destPath, enableIvy, description, isRelease = false) {
   console.info('##################################');
   console.info(`${scriptPath}:`);
   console.info('  Building @angular/* npm packages');
@@ -80,9 +81,10 @@ function buildTargetPackages(destPath, enableIvy, description) {
       bazelCmd} query --output=label "attr('tags', '\\[.*release-with-framework.*\\]', //packages/...) intersect kind('ng_package|pkg_npm', //packages/...)"`;
   const targets = exec(getTargetsCmd, true).split(/\r?\n/);
 
-  // Use `--config=release` so that snapshot builds get published with embedded version info.
-  exec(`${bazelCmd} build --config=release --config=${enableIvy ? 'ivy' : 'view-engine'} ${
-      targets.join(' ')}`);
+  // Use either `--config=snapshot` or `--config=release` so that builds are created with the
+  // correct embedded version info.
+  exec(`${bazelCmd} build --config=${isRelease ? 'release' : 'snapshot'} --config=${
+      enableIvy ? 'ivy' : 'view-engine'} ${targets.join(' ')}`);
 
   // Create the output directory.
   const absDestPath = resolve(baseDir, destPath);
