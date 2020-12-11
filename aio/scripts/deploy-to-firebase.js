@@ -12,6 +12,7 @@ set('-e');
 // Constants
 const REPO_SLUG = 'angular/angular';
 const NG_REMOTE_URL = `https://github.com/${REPO_SLUG}.git`;
+const GIT_REMOTE_REFS_CACHE = new Map();
 
 // Exports
 module.exports = {
@@ -55,7 +56,6 @@ if (require.main === module) {
       }
     }
   });
-
 }
 
 // Helpers
@@ -260,13 +260,29 @@ function deploy(data) {
   postDeployActions.forEach(fn => fn(data));
 }
 
-function getRemoteRefs(refOrPattern, remote = NG_REMOTE_URL) {
-  return exec(`git ls-remote ${remote} ${refOrPattern}`, {silent: true}).trim().split('\n');
+function getRemoteRefs(refOrPattern, {remote = NG_REMOTE_URL, retrieveFromCache = true} = {}) {
+  // If remote refs for the same `refOrPattern` and `remote` have been requested before, return the
+  // cached results. This improves the performance and ensures a more stable behavior.
+  //
+  // NOTE:
+  // This shouldn't make any difference during normal execution (since there are no duplicate
+  // requests atm), but makes the tests more stable (for example, avoiding errors caused by pushing
+  // a new commit on a branch while the tests execute, which would cause `getLatestCommit()` to
+  // return a different value).
+  const cmd = `git ls-remote ${remote} ${refOrPattern}`;
+  const result = (retrieveFromCache && GIT_REMOTE_REFS_CACHE.has(cmd))
+      ? GIT_REMOTE_REFS_CACHE.get(cmd)
+      : exec(cmd, {silent: true}).trim().split('\n');
+
+  // Cache the result for future use (regardless of the value of `retrieveFromCache`).
+  GIT_REMOTE_REFS_CACHE.set(cmd, result);
+
+  return result;
 }
 
-function getMostRecentMinorBranch(major = '*') {
+function getMostRecentMinorBranch(major = '*', options = undefined) {
   // List the branches that start with the given major version (or any major if none given).
-  return getRemoteRefs(`refs/heads/${major}.*.x`)
+  return getRemoteRefs(`refs/heads/${major}.*.x`, options)
       // Extract the branch name.
       .map(line => line.split('/')[2])
       // Filter out branches that are not of the format `<number>.<number>.x`.
@@ -281,8 +297,8 @@ function getMostRecentMinorBranch(major = '*') {
       .pop();
 }
 
-function getLatestCommit(branchName, remote = undefined) {
-  return getRemoteRefs(branchName, remote)[0].slice(0, 40);
+function getLatestCommit(branchName, options = undefined) {
+  return getRemoteRefs(branchName, options)[0].slice(0, 40);
 }
 
 function redirectToAngularIo() {

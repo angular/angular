@@ -388,13 +388,18 @@ describe('deploy-to-firebase:', () => {
   });
 
   it('integration - should run the main script without error', () => {
+    // NOTE:
+    // This test executes a new instance of the `deploy-to-firebase.js` script on a separate process
+    // and thus does not share the `getRemoteRefs()` cache. To improve stability, we retrieve the
+    // latest commit from master ignoring any cached entries.
+    const latestCommitOnMaster = getLatestCommit('master', {retrieveFromCache: false});
     const cmd = `"${process.execPath}" "${__dirname}/deploy-to-firebase" --dry-run`;
     const env = {
       CI_REPO_OWNER: 'angular',
       CI_REPO_NAME: 'angular',
       CI_PULL_REQUEST: 'false',
       CI_BRANCH: 'master',
-      CI_COMMIT: latestCommits.master,
+      CI_COMMIT: latestCommitOnMaster,
     };
     const result = execSync(cmd, {encoding: 'utf8', env}).trim();
     expect(result).toBe(
@@ -405,7 +410,7 @@ describe('deploy-to-firebase:', () => {
         'Deployment 1 of 1\n' +
         '-----------------\n' +
         'Git branch          : master\n' +
-        `Git commit          : ${latestCommits.master}\n` +
+        `Git commit          : ${latestCommitOnMaster}\n` +
         'Build/deploy mode   : next\n' +
         'Firebase project    : angular-io\n' +
         'Firebase site       : next-angular-io-site\n' +
