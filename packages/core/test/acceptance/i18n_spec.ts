@@ -1730,6 +1730,27 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
       expect(titleDirInstances[0].title).toBe('Bonjour');
     });
 
+    it('should support static i18n attributes on inline templates', () => {
+      loadTranslations({[computeMsgId('Hello')]: 'Bonjour'});
+      @Component({
+        selector: 'my-cmp',
+        template: `
+          <div *ngIf="true" i18n-title title="Hello"></div>
+        `,
+      })
+      class Cmp {
+      }
+
+      TestBed.configureTestingModule({
+        imports: [CommonModule],
+        declarations: [Cmp],
+      });
+      const fixture = TestBed.createComponent(Cmp);
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.firstChild.title).toBe('Bonjour');
+    });
+
     it('should allow directive inputs (as an interpolated prop) on <ng-template>', () => {
       loadTranslations({[computeMsgId('Hello {$INTERPOLATION}')]: 'Bonjour {$INTERPOLATION}'});
 

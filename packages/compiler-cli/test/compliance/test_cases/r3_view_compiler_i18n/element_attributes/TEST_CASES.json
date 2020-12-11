@@ -114,6 +114,20 @@
       ]
     },
     {
+      "description": "should translate static attributes when used on an element with structural directive",
+      "inputFiles": [
+        "static_attributes_structural.ts"
+      ],
+      "expectations": [
+        {
+          "extraChecks": [
+            "verifyPlaceholdersIntegrity",
+            "verifyUniqueConsts"
+          ]
+        }
+      ]
+    },
+    {
       "description": "should support interpolation",
       "inputFiles": [
         "interpolation_basic.ts"
