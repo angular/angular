@@ -117,6 +117,14 @@ export interface TokenizeOptions {
    * If true, do not convert CRLF to LF.
    */
   preserveLineEndings?: boolean;
+  /**
+   * Whether the original template was inline.
+   *
+   * This may differ from whether the template is an escaped string. For example, if the template
+   * was partially compiled and is now being linked, the current template will be an escaped string
+   * but the original template may have been inline or external.
+   */
+  isInline?: boolean;
 }
 
 export function tokenize(
@@ -184,8 +192,9 @@ class _Tokenizer {
         options.leadingTriviaChars && options.leadingTriviaChars.map(c => c.codePointAt(0) || 0);
     const range =
         options.range || {endPos: _file.content.length, startPos: 0, startLine: 0, startCol: 0};
-    this._cursor = options.escapedString ? new EscapedCharacterCursor(_file, range) :
-                                           new PlainCharacterCursor(_file, range);
+    this._cursor = options.escapedString ?
+        new EscapedCharacterCursor(_file, range, !options.isInline) :
+        new PlainCharacterCursor(_file, range);
     this._preserveLineEndings = options.preserveLineEndings || false;
     this._escapedString = options.escapedString || false;
     this._i18nNormalizeLineEndingsInICUs = options.i18nNormalizeLineEndingsInICUs || false;
@@ -851,6 +860,19 @@ interface CursorState {
   column: number;
 }
 
+function cloneCursorState(state: CursorState): CursorState {
+  // Note: avoid using `{...state}` here as that has a severe performance penalty.
+  // In ES5 bundles the object spread operator is translated into the `__assign` helper, which
+  // is not optimized by VMs as efficiently as a raw object literal. Since this constructor is
+  // called in tight loops, this difference matters.
+  return {
+    peek: state.peek,
+    offset: state.offset,
+    line: state.line,
+    column: state.column,
+  };
+}
+
 class PlainCharacterCursor implements CharacterCursor {
   protected state: CursorState;
   protected file: ParseSourceFile;
@@ -866,16 +888,7 @@ class PlainCharacterCursor implements CharacterCursor {
       this.end = fileOrCursor.end;
 
       const state = fileOrCursor.state;
-      // Note: avoid using `{...fileOrCursor.state}` here as that has a severe performance penalty.
-      // In ES5 bundles the object spread operator is translated into the `__assign` helper, which
-      // is not optimized by VMs as efficiently as a raw object literal. Since this constructor is
-      // called in tight loops, this difference matters.
-      this.state = {
-        peek: state.peek,
-        offset: state.offset,
-        line: state.line,
-        column: state.column,
-      };
+      this.state = cloneCursorState(state);
     } else {
       if (!range) {
         throw new Error(
@@ -969,16 +982,24 @@ class PlainCharacterCursor implements CharacterCursor {
 
 class EscapedCharacterCursor extends PlainCharacterCursor {
   protected internalState: CursorState;
+  private unescapeLocations: boolean;
 
-  constructor(fileOrCursor: EscapedCharacterCursor);
-  constructor(fileOrCursor: ParseSourceFile, range: LexerRange);
-  constructor(fileOrCursor: ParseSourceFile|EscapedCharacterCursor, range?: LexerRange) {
+  constructor(cursor: EscapedCharacterCursor);
+  constructor(file: ParseSourceFile, range: LexerRange, ignoreEscapeLocations: boolean);
+  constructor(
+      fileOrCursor: ParseSourceFile|EscapedCharacterCursor, range?: LexerRange|undefined,
+      unescapeLocations?: boolean|undefined) {
     if (fileOrCursor instanceof EscapedCharacterCursor) {
       super(fileOrCursor);
-      this.internalState = {...fileOrCursor.internalState};
+      this.internalState = cloneCursorState(fileOrCursor.internalState);
+      this.unescapeLocations = fileOrCursor.unescapeLocations;
     } else {
       super(fileOrCursor, range!);
       this.internalState = this.state;
+      this.unescapeLocations = !!unescapeLocations;
+      if (unescapeLocations) {
+        this.state.column--;
+      }
     }
   }
 
@@ -1018,10 +1039,10 @@ class EscapedCharacterCursor extends PlainCharacterCursor {
     if (peek() === chars.$BACKSLASH) {
       // We have hit an escape sequence so we need the internal state to become independent
       // of the external state.
-      this.internalState = {...this.state};
+      this.internalState = cloneCursorState(this.state);
 
       // Move past the backslash
-      this.advanceState(this.internalState);
+      this.advanceInternalState(this.internalState);
 
       // First check for standard control char sequences
       if (peek() === chars.$n) {
@@ -1041,33 +1062,33 @@ class EscapedCharacterCursor extends PlainCharacterCursor {
       // Now consider more complex sequences
       else if (peek() === chars.$u) {
         // Unicode code-point sequence
-        this.advanceState(this.internalState);  // advance past the `u` char
+        this.advanceInternalState(this.internalState);  // advance past the `u` char
         if (peek() === chars.$LBRACE) {
           // Variable length Unicode, e.g. `\x{123}`
-          this.advanceState(this.internalState);  // advance past the `{` char
+          this.advanceInternalState(this.internalState);  // advance past the `{` char
           // Advance past the variable number of hex digits until we hit a `}` char
           const digitStart = this.clone();
           let length = 0;
           while (peek() !== chars.$RBRACE) {
-            this.advanceState(this.internalState);
+            this.advanceInternalState(this.internalState);
             length++;
           }
           this.state.peek = this.decodeHexDigits(digitStart, length);
         } else {
           // Fixed length Unicode, e.g. `\u1234`
           const digitStart = this.clone();
-          this.advanceState(this.internalState);
-          this.advanceState(this.internalState);
-          this.advanceState(this.internalState);
+          this.advanceInternalState(this.internalState);
+          this.advanceInternalState(this.internalState);
+          this.advanceInternalState(this.internalState);
           this.state.peek = this.decodeHexDigits(digitStart, 4);
         }
       }
 
       else if (peek() === chars.$x) {
         // Hex char code, e.g. `\x2F`
-        this.advanceState(this.internalState);  // advance past the `x` char
+        this.advanceInternalState(this.internalState);  // advance past the `x` char
         const digitStart = this.clone();
-        this.advanceState(this.internalState);
+        this.advanceInternalState(this.internalState);
         this.state.peek = this.decodeHexDigits(digitStart, 2);
       }
 
@@ -1079,7 +1100,7 @@ class EscapedCharacterCursor extends PlainCharacterCursor {
         while (chars.isOctalDigit(peek()) && length < 3) {
           previous = this.clone();
           octal += String.fromCodePoint(peek());
-          this.advanceState(this.internalState);
+          this.advanceInternalState(this.internalState);
           length++;
         }
         this.state.peek = parseInt(octal, 8);
@@ -1089,7 +1110,7 @@ class EscapedCharacterCursor extends PlainCharacterCursor {
 
       else if (chars.isNewLine(this.internalState.peek)) {
         // Line continuation `\` followed by a new line
-        this.advanceState(this.internalState);  // advance over the newline
+        this.advanceInternalState(this.internalState);  // advance over the newline
         this.state = this.internalState;
       }
 
@@ -1098,6 +1119,17 @@ class EscapedCharacterCursor extends PlainCharacterCursor {
         // In that case we just, effectively, skip the backslash from the character.
         this.state.peek = this.internalState.peek;
       }
+    }
+  }
+
+  protected advanceInternalState(state: CursorState) {
+    if (this.unescapeLocations) {
+      // Since we are ignoring escaped chars in source-span locations
+      // we can just update the offset and the peek
+      this.internalState.offset++;
+      this.updatePeek(state);
+    } else {
+      this.advanceState(state);
     }
   }
 

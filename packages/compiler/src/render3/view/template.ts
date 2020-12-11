@@ -18,7 +18,7 @@ import * as html from '../../ml_parser/ast';
 import {HtmlParser} from '../../ml_parser/html_parser';
 import {WhitespaceVisitor} from '../../ml_parser/html_whitespaces';
 import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from '../../ml_parser/interpolation_config';
-import {LexerRange} from '../../ml_parser/lexer';
+import {LexerRange, TokenizeOptions} from '../../ml_parser/lexer';
 import {isNgContainer as checkIsNgContainer, splitNsName} from '../../ml_parser/tags';
 import {mapLiteral} from '../../output/map_util';
 import * as o from '../../output/output_ast';
@@ -1969,7 +1969,7 @@ function getTextInterpolationExpression(interpolation: Interpolation): o.Externa
 /**
  * Options that can be used to modify how a template is parsed by `parseTemplate()`.
  */
-export interface ParseTemplateOptions {
+export interface ParseTemplateOptions extends TokenizeOptions {
   /**
    * Include whitespace nodes in the parsed output.
    */
@@ -2032,11 +2032,6 @@ export interface ParseTemplateOptions {
    * The default is `false`, but this will be switched in a future major release.
    */
   i18nNormalizeLineEndingsInICUs?: boolean;
-
-  /**
-   * Whether the template was inline.
-   */
-  isInline?: boolean;
 }
 
 /**
@@ -2063,6 +2058,7 @@ export function parseTemplate(
       interpolationConfig,
       preserveWhitespaces,
       template,
+      templateUrl,
       isInline,
       errors: parseResult.errors,
       nodes: [],
@@ -2088,6 +2084,7 @@ export function parseTemplate(
       interpolationConfig,
       preserveWhitespaces,
       template,
+      templateUrl,
       isInline,
       errors: i18nMetaResult.errors,
       nodes: [],
@@ -2120,6 +2117,7 @@ export function parseTemplate(
     preserveWhitespaces,
     errors: errors.length > 0 ? errors : null,
     template,
+    templateUrl,
     isInline,
     nodes,
     styleUrls,
@@ -2285,6 +2283,14 @@ export interface ParsedTemplate {
    * templates). This may differ from the actual template bytes as they appear in the .ts file.
    */
   template: string|o.Expression;
+
+  /**
+   * A full path to the file which contains the template.
+   *
+   * This can be either the original .ts file if the template is inline, or the .html file if an
+   * external file was used.
+   */
+  templateUrl: string;
 
   /**
    * Whether the template was inline (using `template`) or external (using `templateUrl`).
