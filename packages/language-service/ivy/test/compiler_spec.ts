@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {absoluteFrom} from '@angular/compiler-cli/src/ngtsc/file_system';
+import {absoluteFrom, getSourceFileOrError} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {initMockFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
 
 import {LanguageServiceTestEnvironment} from './env';
@@ -14,6 +14,63 @@ import {LanguageServiceTestEnvironment} from './env';
 describe('language-service/compiler integration', () => {
   beforeEach(() => {
     initMockFileSystem('Native');
+  });
+
+  it('should not produce errors from inline test declarations mixing with those of the app', () => {
+    const appCmpFile = absoluteFrom('/test.cmp.ts');
+    const appModuleFile = absoluteFrom('/test.mod.ts');
+    const testFile = absoluteFrom('/test_spec.ts');
+
+    const env = LanguageServiceTestEnvironment.setup([
+      {
+        name: appCmpFile,
+        contents: `
+          import {Component} from '@angular/core';
+
+          @Component({
+            selector: 'app-cmp',
+            template: 'Some template',
+          })
+          export class AppCmp {}
+        `,
+        isRoot: true,
+      },
+      {
+        name: appModuleFile,
+        contents: `
+          import {NgModule} from '@angular/core';
+          import {AppCmp} from './test.cmp';
+
+          @NgModule({
+            declarations: [AppCmp],
+          })
+          export class AppModule {}
+        `,
+        isRoot: true,
+      },
+      {
+        name: testFile,
+        contents: `
+          import {NgModule} from '@angular/core';
+          import {AppCmp} from './test.cmp';
+
+          export function test(): void {
+            @NgModule({
+              declarations: [AppCmp],
+            })
+            class TestModule {}
+          }
+        `,
+        isRoot: true,
+      }
+    ]);
+
+    // Expect that this program is clean diagnostically.
+    const ngCompiler = env.ngLS.compilerFactory.getOrCreate();
+    const program = ngCompiler.getNextProgram();
+    expect(ngCompiler.getDiagnostics(getSourceFileOrError(program, appCmpFile))).toEqual([]);
+    expect(ngCompiler.getDiagnostics(getSourceFileOrError(program, appModuleFile))).toEqual([]);
+    expect(ngCompiler.getDiagnostics(getSourceFileOrError(program, testFile))).toEqual([]);
   });
 
   it('should show type-checking errors from components with poisoned scopes', () => {

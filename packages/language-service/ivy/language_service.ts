@@ -32,6 +32,18 @@ export class LanguageService {
   constructor(project: ts.server.Project, private readonly tsLS: ts.LanguageService) {
     this.parseConfigHost = new LSParseConfigHost(project.projectService.host);
     this.options = parseNgCompilerOptions(project, this.parseConfigHost);
+
+    // Projects loaded into the Language Service often include test files which are not part of the
+    // app's main compilation unit, and these test files often include inline NgModules that declare
+    // components from the app. These declarations conflict with the main declarations of such
+    // components in the app's NgModules. This conflict is not normally present during regular
+    // compilation because the app and the tests are part of separate compilation units.
+    //
+    // As a temporary mitigation of this problem, we instruct the compiler to ignore classes which
+    // are not exported. In many cases, this ensures the test NgModules are ignored by the compiler
+    // and only the real component declaration is used.
+    this.options.compileNonExportedClasses = false;
+
     this.strategy = createTypeCheckingProgramStrategy(project);
     this.adapter = new LanguageServiceAdapter(project);
     this.compilerFactory = new CompilerFactory(this.adapter, this.strategy, this.options);
