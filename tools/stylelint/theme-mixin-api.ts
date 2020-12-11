@@ -147,7 +147,12 @@ const plugin = (isEnabled: boolean, _options: never, context: {fix: boolean}) =>
       }
 
       const expectedProperty = type === 'density' ? '$density-scale' : '$config';
-      const expectedValue = `mat-get-${type}-config($config-or-theme)`;
+      const expectedValues = [`mat-get-${type}-config($config-or-theme)`];
+      if (type === 'typography') {
+        expectedValues.unshift(
+            'mat-private-typography-normalized-config(mat-get-typography-config($config-or-theme))'
+        );
+      }
       let configExtractionNode: Declaration|null = null;
       let nonCommentNodeCount = 0;
 
@@ -157,7 +162,7 @@ const plugin = (isEnabled: boolean, _options: never, context: {fix: boolean}) =>
             nonCommentNodeCount++;
           }
 
-          if (currentNode.type === 'decl' && currentNode.value === expectedValue) {
+          if (currentNode.type === 'decl' && expectedValues.includes(currentNode.value)) {
             configExtractionNode = currentNode;
             break;
           }
@@ -166,12 +171,14 @@ const plugin = (isEnabled: boolean, _options: never, context: {fix: boolean}) =>
 
       if (!configExtractionNode && nonCommentNodeCount > 0) {
         if (context.fix) {
-          node.insertBefore(0, {prop: expectedProperty, value: expectedValue});
+          node.insertBefore(0, {prop: expectedProperty, value: expectedValues[0]});
         } else {
           reportError(
               node,
               `Config is not extracted. Consumers could pass a theme object. ` +
-                  `Extract the configuration by using: ${expectedProperty}: ${expectedValue}`);
+                  `Extract the configuration by using one of the following:` +
+                  expectedValues.map(expectedValue => `${expectedProperty}: ${expectedValue}`)
+                      .join('\n'));
         }
       } else if (configExtractionNode && configExtractionNode.prop !== expectedProperty) {
         reportError(
