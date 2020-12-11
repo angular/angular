@@ -108,15 +108,31 @@ export function prepareEventListenerParameters(
 }
 
 // Collects information needed to generate `consts` field of the ComponentDef.
-// When a constant requires some pre-processing, the `prepareStatements` section
-// contains corresponding statements.
 export interface ComponentDefConsts {
+  /**
+   * When a constant requires some pre-processing (e.g. i18n translation block that includes
+   * goog.getMsg and $localize calls), the `prepareStatements` section contains corresponding
+   * statements.
+   */
   prepareStatements: o.Statement[];
+
+  /**
+   * Actual expressions that represent constants.
+   */
   constExpressions: o.Expression[];
+
+  /**
+   * Cache to avoid generating duplicated i18n translation blocks.
+   */
+  i18nVarRefsCache: Map<i18n.I18nMeta, o.ReadVarExpr>;
 }
 
 function createComponentDefConsts(): ComponentDefConsts {
-  return {prepareStatements: [], constExpressions: []};
+  return {
+    prepareStatements: [],
+    constExpressions: [],
+    i18nVarRefsCache: new Map(),
+  };
 }
 
 export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver {
@@ -1300,7 +1316,20 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       // Note that static i18n attributes aren't in the i18n array,
       // because they're treated in the same way as regular attributes.
       if (attr.i18n) {
-        attrExprs.push(o.literal(attr.name), this.i18nTranslate(attr.i18n as i18n.Message));
+        // When i18n attributes are present on elements with structural directives
+        // (e.g. `<div *ngIf title="Hello" i18n-title>`), we want to avoid generating
+        // duplicate i18n translation blocks for `ɵɵtemplate` and `ɵɵelement` instruction
+        // attributes. So we do a cache lookup to see if suitable i18n translation block
+        // already exists.
+        const {i18nVarRefsCache} = this._constants;
+        let i18nVarRef: o.ReadVarExpr;
+        if (i18nVarRefsCache.has(attr.i18n)) {
+          i18nVarRef = i18nVarRefsCache.get(attr.i18n)!;
+        } else {
+          i18nVarRef = this.i18nTranslate(attr.i18n as i18n.Message);
+          i18nVarRefsCache.set(attr.i18n, i18nVarRef);
+        }
+        attrExprs.push(o.literal(attr.name), i18nVarRef);
       } else {
         attrExprs.push(
             ...getAttributeNameLiterals(attr.name), trustedConstAttribute(elementName, attr));
