@@ -52,6 +52,7 @@ import {MatFormFieldLineRipple} from './directives/line-ripple';
 import {MatFormFieldNotchedOutline} from './directives/notched-outline';
 import {MAT_PREFIX, MatPrefix} from './directives/prefix';
 import {MAT_SUFFIX, MatSuffix} from './directives/suffix';
+import {DOCUMENT} from '@angular/common';
 
 /** Type for the available floatLabel values. */
 export type FloatLabelType = 'always' | 'auto';
@@ -308,7 +309,8 @@ export class MatFormField implements AfterViewInit, OnDestroy, AfterContentCheck
               private _platform: Platform,
               @Optional() @Inject(MAT_FORM_FIELD_DEFAULT_OPTIONS)
               private _defaults?: MatFormFieldDefaultOptions,
-              @Optional() @Inject(ANIMATION_MODULE_TYPE) public _animationMode?: string) {
+              @Optional() @Inject(ANIMATION_MODULE_TYPE) public _animationMode?: string,
+              @Inject(DOCUMENT) private _document?: any) {
     if (_defaults && _defaults.appearance) {
       this.appearance = _defaults.appearance;
     } else if (_defaults && _defaults.hideRequiredMarker) {
@@ -341,6 +343,20 @@ export class MatFormField implements AfterViewInit, OnDestroy, AfterContentCheck
     // Initial notch width update. This is needed in case the text-field label floats
     // on initialization, and renders inside of the notched outline.
     this._refreshOutlineNotchWidth();
+    // Make sure fonts are loaded before calculating the width.
+    // zone.js currently doesn't patch the FontFaceSet API so two calls to
+    // _refreshOutlineNotchWidth is needed for this to work properly in async tests.
+    // Furthermore if the font takes a long time to load we want the outline notch to be close
+    // to the correct width from the start then correct itself when the fonts load.
+    if (this._document?.fonts?.ready) {
+      this._document.fonts.ready.then(() => {
+        this._refreshOutlineNotchWidth();
+        this._changeDetectorRef.markForCheck();
+      });
+    } else {
+      // FontFaceSet is not supported in IE
+      setTimeout(() => this._refreshOutlineNotchWidth(), 100);
+    }
     // Enable animations now. This ensures we don't animate on initial render.
     this._subscriptAnimationState = 'enter';
     // Because the above changes a value used in the template after it was checked, we need
