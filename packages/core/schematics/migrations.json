@@ -79,6 +79,11 @@
       "version": "11.0.0-beta",
       "description": "Updates the `initialNavigation` property for `RouterModule.forRoot`.",
       "factory": "./migrations/initial-navigation/index"
+    },
+    "migration-v11.1-can-activate-with-redirect-to": {
+      "version": "11.1.0-beta",
+      "description": "Removes `canActivate` from a `Route` config when `redirectTo` is also present",
+      "factory": "./migrations/can-activate-with-redirect-to/index"
     }
   }
 }
