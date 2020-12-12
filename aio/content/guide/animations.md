@@ -138,15 +138,15 @@ The third argument, `easing`, controls how the animation [accelerates and decele
 **Note:** See the Material Design website's topic on [Natural easing curves](https://material.io/design/motion/speed.html#easing) for general information on easing curves.
 </div>
 
-This example provides a state transition from `open` to `closed` with a one second transition between states.
+This example provides a state transition from `open` to `closed` with a 1-second transition between states.
 
 <code-example path="animations/src/app/open-close.component.ts" header="src/app/open-close.component.ts" language="typescript"
 region="transition1">
 </code-example>
 
-In the preceding code snippet, the `=>` operator indicates unidirectional transitions, and `<=>` is bidirectional. Within the transition, `animate()` specifies how long the transition takes. In this case, the state change from `open` to `closed` takes one second, expressed here as `1s`.
+In the preceding code snippet, the `=>` operator indicates unidirectional transitions, and `<=>` is bidirectional. Within the transition, `animate()` specifies how long the transition takes. In this case, the state change from `open` to `closed` takes 1 second, expressed here as `1s`.
 
-This example adds a state transition from the `closed` state to the `open` state with a 0.5 second transition animation arc.
+This example adds a state transition from the `closed` state to the `open` state with a 0.5-second transition animation arc.
 
 <code-example path="animations/src/app/open-close.component.ts" header="src/app/open-close.component.ts" language="typescript"
 region="transition2">
