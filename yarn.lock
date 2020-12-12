@@ -2284,10 +2284,10 @@
     semver "7.3.2"
     semver-intersect "1.4.0"
 
-"@types/chrome@^0.0.126":
-  version "0.0.126"
-  resolved "https://registry.yarnpkg.com/@types/chrome/-/chrome-0.0.126.tgz#f9f3436712f0c7c12ea9798abc9b95575ad7b23a"
-  integrity sha512-191z7uoyfbGU+z7/m45j9XbWugWqVHVPMM4hJV5cZ+3YzGCT9wFjMUHO3Wr3Xvo8aVodvRNu28u7lvEaAnfbzg==
+"@types/chrome@^0.0.127":
+  version "0.0.127"
+  resolved "https://registry.yarnpkg.com/@types/chrome/-/chrome-0.0.127.tgz#9e29f351d558f60e95326ceadc586fdcc824151b"
+  integrity sha512-hBB9EApLYKKn2GvklVkTxVP6vZvxsH9okyIRUinNtMzZHIgIKWQk/ESbX+O5g4Bihfy38+aFGn7Kl7Cxou5JUg==
   dependencies:
     "@types/filesystem" "*"
     "@types/har-format" "*"
