@@ -363,10 +363,15 @@ See also [Using runtime-global libraries inside your app](guide/using-libraries#
 
 ### Optimization configuration
 
-The `optimization` browser builder option can be either a Boolean or an Object for more fine-grained configuration. This option enables various optimizations of the build output.
-Including minification of scripts and styles, tree-shaking, dead-code elimination, inlining of critical CSS and fonts inlining.
+The `optimization` browser builder option can be either a Boolean or an Object for more fine-tune configuration. This option enables various optimizations of the build output, including:
 
-There are several options that can be used to fine-grained the optimization of an application.
+- Minification of scripts and styles
+- Tree-shaking
+- Dead-code elimination
+- Inlining of critical CSS
+- Fonts inlining
+
+There are several options that can be used to fine-tune the optimization of an application.
 
 <table class="is-full-width is-fixed-layout">
 <thead>
@@ -418,7 +423,7 @@ There are several options that can be used to fine-grained the optimization of a
 </tr>
 <tr>
 <td><code>inlineCritical</code></td>
-<td>Extract and inline critical CSS definitions to improve first paint time.</td>
+<td>Extract and inline critical CSS definitions to improve <a href="https://web.dev/first-contentful-paint/">First Contentful Paint.</td>
 <td><code class="no-auto-link">boolean</code></td>
 <td><code>false</code></td>
 </tr>
@@ -438,7 +443,7 @@ There are several options that can be used to fine-grained the optimization of a
 <tbody>
 <tr>
 <td><code>inline</code></td>
-<td>Reduce render blocking requests by inlining external Google fonts and icons CSS definitions in the application's HTML index file.<br><strong>Note:</strong>This requires internet access.</td>
+<td>Reduce <a href="https://web.dev/render-blocking-resources/">render blocking requests</a> by inlining external Google fonts and icons CSS definitions in the application's HTML index file.<br><strong>Note:</strong>This requires internet access.</td>
 <td><code class="no-auto-link">boolean</code></td>
 <td><code>true</code></td>
 </tr>
@@ -470,7 +475,7 @@ You can supply a value such as the following to apply optimization to one or the
 
 ### Source map configuration
 
-The `sourceMap` browser builder option can be either a Boolean or an Object for more fine-grained configuration to control the source maps of an application.
+The `sourceMap` browser builder option can be either a Boolean or an Object for more fine-tune configuration to control the source maps of an application.
 
 <table class="is-full-width is-fixed-layout">
 <thead>
@@ -510,7 +515,7 @@ The `sourceMap` browser builder option can be either a Boolean or an Object for 
 </table>
 
 
-You can supply a value such as the following to output source maps to one or the other:
+The example below shows how to toggle one or more values to configure the source map outputs:
 
 <code-example language="json">
 
