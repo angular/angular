@@ -78,7 +78,7 @@
 // produces a normalized typography config for the 2014 Material Design typography system.
 // 2014 - https://material.io/archive/guidelines/style/typography.html#typography-styles
 // 2018 - https://material.io/design/typography/the-type-system.html#type-scale
-@function mat-typography-normalized-config($config) {
+@function mat-private-typography-normalized-config($config) {
   @if mat-private-typography-is-2018-config($config) {
     @return mat-typography-config(
         $display-3: map-get($config, display-1),
