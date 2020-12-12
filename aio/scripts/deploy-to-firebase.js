@@ -274,7 +274,7 @@ function getRemoteRefs(refOrPattern, {remote = NG_REMOTE_URL, retrieveFromCache 
       ? GIT_REMOTE_REFS_CACHE.get(cmd)
       : exec(cmd, {silent: true}).trim().split('\n');
 
-  // Cache the result for future use (regadless of the value of `retrieveFromCache`).
+  // Cache the result for future use (regardless of the value of `retrieveFromCache`).
   GIT_REMOTE_REFS_CACHE.set(cmd, result);
 
   return result;
