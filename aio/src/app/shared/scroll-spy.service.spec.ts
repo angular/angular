@@ -235,7 +235,7 @@ describe('ScrollSpyService', () => {
 
     it('should remember and emit the last active item to new subscribers', () => {
       const items = [{index: 1}, {index: 2}, {index: 3}] as ScrollItem[];
-      let lastActiveItem: ScrollItem|null = null;
+      let lastActiveItem = null as unknown as ScrollItem|null;
 
       const info = scrollSpyService.spyOn([]);
       const spiedElemGroup = getSpiedElemGroups()[0];

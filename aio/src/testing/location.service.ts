@@ -22,5 +22,4 @@ export class MockLocationService {
   private stripSlashes(url: string) {
     return url.replace(/^\/+/, '').replace(/\/+(\?|#|$)/, '$1');
   }
-
 }
