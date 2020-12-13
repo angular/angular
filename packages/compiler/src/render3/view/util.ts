@@ -100,10 +100,11 @@ function mapToExpression(
     let minifiedName: string;
     if (Array.isArray(value)) {
       [publicName, declaredName] = value;
+      minifiedName = key;
     } else {
       [declaredName, publicName] = splitAtColon(key, [key, value]);
+      minifiedName = declaredName;
     }
-    minifiedName = declaredName;
     return {
       key: minifiedName,
       // put quotes around keys that contain potentially unsafe characters

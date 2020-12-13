@@ -46,8 +46,7 @@ export interface R3DeclareDirectiveMetadata extends R3PartialDeclaration {
   inputs?: {[classPropertyName: string]: string|[string, string]};
 
   /**
-   * A mapping of outputs from class property names to binding property names, or to a tuple of
-   * binding property name and class property name if the names are different.
+   * A mapping of outputs from class property names to binding property names.
    */
   outputs?: {[classPropertyName: string]: string};
 

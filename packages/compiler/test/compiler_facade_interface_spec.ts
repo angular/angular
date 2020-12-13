@@ -103,6 +103,11 @@ const coreR3ComponentMetadataFacade: core.R3ComponentMetadataFacade =
 const compilerR3ComponentMetadataFacade: compiler.R3ComponentMetadataFacade =
     null! as core.R3ComponentMetadataFacade;
 
+const coreR3DeclareDirectiveFacade: core.R3DeclareDirectiveFacade =
+    null! as compiler.R3DeclareDirectiveFacade;
+const compilerR3DeclareDirectiveFacade: compiler.R3DeclareDirectiveFacade =
+    null! as core.R3DeclareDirectiveFacade;
+
 const coreViewEncapsulation: core.ViewEncapsulation = null! as compiler.ViewEncapsulation;
 const compilerViewEncapsulation: compiler.ViewEncapsulation = null! as core.ViewEncapsulation;
 
@@ -110,3 +115,8 @@ const coreR3QueryMetadataFacade: core.R3QueryMetadataFacade =
     null! as compiler.R3QueryMetadataFacade;
 const compilerR3QueryMetadataFacade: compiler.R3QueryMetadataFacade =
     null! as core.R3QueryMetadataFacade;
+
+const coreR3DeclareQueryMetadataFacade: core.R3DeclareQueryMetadataFacade =
+    null! as compiler.R3DeclareQueryMetadataFacade;
+const compilerR3DeclareQueryMetadataFacade: compiler.R3DeclareQueryMetadataFacade =
+    null! as core.R3DeclareQueryMetadataFacade;
