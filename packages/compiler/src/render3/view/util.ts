@@ -98,17 +98,24 @@ function mapToExpression(
     let declaredName: string;
     let publicName: string;
     let minifiedName: string;
+    let needsDeclaredName: boolean;
     if (Array.isArray(value)) {
       [publicName, declaredName] = value;
+      minifiedName = key;
+      needsDeclaredName = publicName !== declaredName;
     } else {
       [declaredName, publicName] = splitAtColon(key, [key, value]);
+      minifiedName = declaredName;
+      // Only include the declared name if extracted from the key, i.e. the key contains a colon.
+      // Otherwise the declared name should be omitted even if it is different from the public name,
+      // as it may have already been minified.
+      needsDeclaredName = publicName !== declaredName && key.includes(':');
     }
-    minifiedName = declaredName;
     return {
       key: minifiedName,
       // put quotes around keys that contain potentially unsafe characters
       quoted: UNSAFE_OBJECT_KEY_NAME_REGEXP.test(minifiedName),
-      value: (keepDeclared && publicName !== declaredName) ?
+      value: (keepDeclared && needsDeclaredName) ?
           o.literalArr([asLiteral(publicName), asLiteral(declaredName)]) :
           asLiteral(publicName)
     };

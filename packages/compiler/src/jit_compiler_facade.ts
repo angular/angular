@@ -7,7 +7,7 @@
  */
 
 
-import {CompilerFacade, CoreEnvironment, ExportedCompilerFacade, R3ComponentMetadataFacade, R3DependencyMetadataFacade, R3DirectiveMetadataFacade, R3FactoryDefMetadataFacade, R3InjectableMetadataFacade, R3InjectorMetadataFacade, R3NgModuleMetadataFacade, R3PipeMetadataFacade, R3QueryMetadataFacade, StringMap, StringMapWithRename} from './compiler_facade_interface';
+import {CompilerFacade, CoreEnvironment, ExportedCompilerFacade, OpaqueValue, R3ComponentMetadataFacade, R3DeclareDirectiveFacade, R3DeclareQueryMetadataFacade, R3DependencyMetadataFacade, R3DirectiveMetadataFacade, R3FactoryDefMetadataFacade, R3InjectableMetadataFacade, R3InjectorMetadataFacade, R3NgModuleMetadataFacade, R3PipeMetadataFacade, R3QueryMetadataFacade, StringMap, StringMapWithRename} from './compiler_facade_interface';
 import {ConstantPool} from './constant_pool';
 import {HostBinding, HostListener, Input, Output, Type} from './core';
 import {Identifiers} from './identifiers';
@@ -21,7 +21,7 @@ import {R3JitReflector} from './render3/r3_jit';
 import {compileInjector, compileNgModule, R3InjectorMetadata, R3NgModuleMetadata} from './render3/r3_module_compiler';
 import {compilePipeFromMetadata, R3PipeMetadata} from './render3/r3_pipe_compiler';
 import {R3Reference} from './render3/util';
-import {R3ComponentMetadata, R3DirectiveMetadata, R3QueryMetadata} from './render3/view/api';
+import {R3ComponentMetadata, R3DirectiveMetadata, R3HostMetadata, R3QueryMetadata} from './render3/view/api';
 import {compileComponentFromMetadata, compileDirectiveFromMetadata, ParsedHostBindings, parseHostBindings, verifyHostBindings} from './render3/view/compiler';
 import {makeBindingParser, parseTemplate} from './render3/view/template';
 import {ResourceLoader} from './resource_loader';
@@ -107,10 +107,23 @@ export class CompilerFacadeImpl implements CompilerFacade {
   compileDirective(
       angularCoreEnv: CoreEnvironment, sourceMapUrl: string,
       facade: R3DirectiveMetadataFacade): any {
+    const meta: R3DirectiveMetadata = convertDirectiveFacadeToMetadata(facade);
+    return this.compileDirectiveFromMeta(angularCoreEnv, sourceMapUrl, meta);
+  }
+
+  compileDirectiveDeclaration(
+      angularCoreEnv: CoreEnvironment, sourceMapUrl: string,
+      declaration: R3DeclareDirectiveFacade): any {
+    const typeSourceSpan =
+        this.createParseSourceSpan('Directive', declaration.type.name, sourceMapUrl);
+    const meta = convertDeclareDirectiveFacadeToMetadata(declaration, typeSourceSpan);
+    return this.compileDirectiveFromMeta(angularCoreEnv, sourceMapUrl, meta);
+  }
+
+  private compileDirectiveFromMeta(
+      angularCoreEnv: CoreEnvironment, sourceMapUrl: string, meta: R3DirectiveMetadata): any {
     const constantPool = new ConstantPool();
     const bindingParser = makeBindingParser();
-
-    const meta: R3DirectiveMetadata = convertDirectiveFacadeToMetadata(facade);
     const res = compileDirectiveFromMetadata(meta, constantPool, bindingParser);
     return this.jitExpression(
         res.expression, angularCoreEnv, sourceMapUrl, constantPool.statements);
@@ -230,6 +243,19 @@ function convertToR3QueryMetadata(facade: R3QueryMetadataFacade): R3QueryMetadat
   };
 }
 
+function convertQueryDeclarationToMetadata(declaration: R3DeclareQueryMetadataFacade):
+    R3QueryMetadata {
+  return {
+    propertyName: declaration.propertyName,
+    first: declaration.first ?? false,
+    predicate: Array.isArray(declaration.predicate) ? declaration.predicate :
+                                                      new WrappedNodeExpr(declaration.predicate),
+    descendants: declaration.descendants ?? false,
+    read: declaration.read ? new WrappedNodeExpr(declaration.read) : null,
+    static: declaration.static ?? false,
+  };
+}
+
 function convertDirectiveFacadeToMetadata(facade: R3DirectiveMetadataFacade): R3DirectiveMetadata {
   const inputsFromMetadata = parseInputOutputs(facade.inputs || []);
   const outputsFromMetadata = parseInputOutputs(facade.outputs || []);
@@ -263,6 +289,52 @@ function convertDirectiveFacadeToMetadata(facade: R3DirectiveMetadataFacade): R3
     viewQueries: facade.viewQueries.map(convertToR3QueryMetadata),
     fullInheritance: false,
   };
+}
+
+function convertDeclareDirectiveFacadeToMetadata(
+    declaration: R3DeclareDirectiveFacade, typeSourceSpan: ParseSourceSpan): R3DirectiveMetadata {
+  return {
+    name: declaration.type.name,
+    type: wrapReference(declaration.type),
+    typeSourceSpan,
+    internalType: new WrappedNodeExpr(declaration.type),
+    selector: declaration.selector ?? null,
+    inputs: declaration.inputs ?? {},
+    outputs: declaration.outputs ?? {},
+    host: convertHostDeclarationToMetadata(declaration.host),
+    queries: (declaration.queries ?? []).map(convertQueryDeclarationToMetadata),
+    viewQueries: (declaration.viewQueries ?? []).map(convertQueryDeclarationToMetadata),
+    providers: declaration.providers !== undefined ? new WrappedNodeExpr(declaration.providers) :
+                                                     null,
+    exportAs: declaration.exportAs ?? null,
+    usesInheritance: declaration.usesInheritance ?? false,
+    lifecycle: {usesOnChanges: declaration.usesOnChanges ?? false},
+    deps: null,
+    typeArgumentCount: 0,
+    fullInheritance: false,
+  };
+}
+
+function convertHostDeclarationToMetadata(host: R3DeclareDirectiveFacade['host'] = {}):
+    R3HostMetadata {
+  return {
+    attributes: convertOpaqueValuesToExpressions(host.attributes ?? {}),
+    listeners: host.listeners ?? {},
+    properties: host.properties ?? {},
+    specialAttributes: {
+      classAttr: host.classAttribute,
+      styleAttr: host.styleAttribute,
+    },
+  };
+}
+
+function convertOpaqueValuesToExpressions(obj: {[key: string]: OpaqueValue}):
+    {[key: string]: WrappedNodeExpr<unknown>} {
+  const result: {[key: string]: WrappedNodeExpr<unknown>} = {};
+  for (const key of Object.keys(obj)) {
+    result[key] = new WrappedNodeExpr(obj[key]);
+  }
+  return result;
 }
 
 // This seems to be needed to placate TS v3.0 only
