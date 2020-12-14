@@ -163,7 +163,7 @@ To declare the styles for a component in a separate file, add a `stylesUrls` pro
     region="decorator">
 </code-example>
 
-To select the styles within the component, add a `styles` property to the `@Component` decorator that contains the styles you want to use.
+To declare the styles within the component, add a `styles` property to the `@Component` decorator that contains the styles you want to use.
 
 <code-example
     path="component-overview/src/app/component-overview/component-overview.component.3.ts"
