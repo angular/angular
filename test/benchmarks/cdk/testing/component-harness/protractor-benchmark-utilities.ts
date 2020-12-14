@@ -31,7 +31,6 @@ async function benchmarkWithBenchpress(id: string, callback: () => Promise<unkno
     id,
     url: '',
     ignoreBrowserSynchronization: true,
-    params: [],
     work: async () => await callback(),
   });
 }

@@ -11,7 +11,7 @@ import {runBenchmark} from '@angular/dev-infra-private/benchmark/driver-utilitie
 
 describe('radio button performance benchmarks', () => {
   beforeAll(() => {
-    browser.rootEl = '#root';
+    browser.angularAppRoot('#root');
   });
 
   it('renders two radio buttons', async() => {
@@ -19,7 +19,6 @@ describe('radio button performance benchmarks', () => {
       id: 'render-two-radio-buttons',
       url: '',
       ignoreBrowserSynchronization: true,
-      params: [],
       prepare: async () => await $('#hide-two').click(),
       work: async () => await $('#show-two').click(),
     });
@@ -30,7 +29,6 @@ describe('radio button performance benchmarks', () => {
       id: 'render-ten-radio-buttons',
       url: '',
       ignoreBrowserSynchronization: true,
-      params: [],
       prepare: async () => await $('#hide-ten').click(),
       work: async () => await $('#show-ten').click(),
     });
@@ -41,7 +39,6 @@ describe('radio button performance benchmarks', () => {
       id: 'click-radio-button',
       url: '',
       ignoreBrowserSynchronization: true,
-      params: [],
       setup: async() => await $('#show-two').click(),
       prepare: async() => await $('#btn-1').click(),
       work: async () => await $('#btn-2').click(),

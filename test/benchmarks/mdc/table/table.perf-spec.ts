@@ -14,7 +14,6 @@ function runTableRenderBenchmark(testId: string, buttonId: string) {
     id: testId,
     url: '',
     ignoreBrowserSynchronization: true,
-    params: [],
     prepare: async () => await $('#hide').click(),
     work: async () => await $(buttonId).click(),
   });
@@ -22,7 +21,7 @@ function runTableRenderBenchmark(testId: string, buttonId: string) {
 
 describe('table performance benchmarks', () => {
   beforeAll(() => {
-    browser.rootEl = '#root';
+    browser.angularAppRoot('#root');
   });
 
   it('renders 10 rows with 5 cols', async() => {

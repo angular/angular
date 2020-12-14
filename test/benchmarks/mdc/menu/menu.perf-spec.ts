@@ -26,7 +26,6 @@ describe('menu performance benchmarks', () => {
       id: 'open-and-close-basic-menu',
       url: '',
       ignoreBrowserSynchronization: true,
-      params: [],
       setup: async () => {
         trigger = element(by.buttonText('Basic Menu'));
       },
@@ -43,7 +42,6 @@ describe('menu performance benchmarks', () => {
       id: 'shallow-open-and-close-nested-menu',
       url: '',
       ignoreBrowserSynchronization: true,
-      params: [],
       setup: async () => {
         trigger = element(by.buttonText('Nested Menu'));
       },
@@ -60,7 +58,6 @@ describe('menu performance benchmarks', () => {
       id: 'deep-open-and-close-nested-menus',
       url: '',
       ignoreBrowserSynchronization: true,
-      params: [],
       setup: async () => {
         trigger = element(by.buttonText('Nested Menu'));
       },

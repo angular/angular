@@ -11,7 +11,7 @@ import {runBenchmark} from '@angular/dev-infra-private/benchmark/driver-utilitie
 
 describe('checkbox performance benchmarks', () => {
   beforeAll(() => {
-    browser.rootEl = '#root';
+    browser.angularAppRoot('#root');
   });
 
   it('renders a checked checkbox', async() => {
@@ -19,7 +19,6 @@ describe('checkbox performance benchmarks', () => {
       id: 'checkbox-render-checked',
       url: '',
       ignoreBrowserSynchronization: true,
-      params: [],
       setup: async () => {
         await $('#show').click();
         await $('mat-checkbox').click();
@@ -38,7 +37,6 @@ describe('checkbox performance benchmarks', () => {
       id: 'checkbox-render-unchecked',
       url: '',
       ignoreBrowserSynchronization: true,
-      params: [],
       setup: async() => await $('#show').click(),
       prepare: async () => {
         expect(await $('mat-checkbox input').isSelected())
@@ -54,7 +52,6 @@ describe('checkbox performance benchmarks', () => {
       id: 'checkbox-render-indeterminate',
       url: '',
       ignoreBrowserSynchronization: true,
-      params: [],
       setup: async() => {
         await $('#show').click();
         await $('#indeterminate').click();
@@ -73,7 +70,6 @@ describe('checkbox performance benchmarks', () => {
       id: 'checkbox-click-unchecked-to-checked',
       url: '',
       ignoreBrowserSynchronization: true,
-      params: [],
       setup: async () => {
         await $('#show').click();
         await $('mat-checkbox').click();
@@ -92,7 +88,6 @@ describe('checkbox performance benchmarks', () => {
       id: 'checkbox-click-checked-to-unchecked',
       url: '',
       ignoreBrowserSynchronization: true,
-      params: [],
       setup: async () => await $('#show').click(),
       prepare: async () => {
         await $('mat-checkbox').click();

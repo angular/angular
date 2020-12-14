@@ -14,7 +14,6 @@ async function runRenderBenchmark(testId: string, showBtnId: string) {
     id: testId,
     url: '',
     ignoreBrowserSynchronization: true,
-    params: [],
     prepare: async () => await $('#hide').click(),
     work: async () => await $(showBtnId).click(),
   });
@@ -22,7 +21,7 @@ async function runRenderBenchmark(testId: string, showBtnId: string) {
 
 describe('chip performance benchmarks', () => {
   beforeAll(() => {
-    browser.rootEl = '#root';
+    browser.angularAppRoot('#root');
   });
 
   it('renders a single chip', async() => {
@@ -46,7 +45,6 @@ describe('chip performance benchmarks', () => {
       id: 'chip-click',
       url: '',
       ignoreBrowserSynchronization: true,
-      params: [],
       setup: async() => await $('#show-single-chip').click(),
       work: async () => await $('#single-chip').click(),
     });

@@ -1,7 +1,6 @@
 import {
   ComponentFixture,
   TestBed,
-  async,
   fakeAsync,
   tick,
   flush,
@@ -260,7 +259,7 @@ describe('Menu', () => {
 
       let nativeMenus: HTMLElement[];
 
-      beforeEach(async(() => {
+      beforeEach(waitForAsync(() => {
         TestBed.configureTestingModule({
           imports: [CdkMenuModule],
           declarations: [WithComplexNestedMenus],
@@ -456,7 +455,7 @@ describe('Menu', () => {
 
       let nativeMenus: HTMLElement[];
 
-      beforeEach(async(() => {
+      beforeEach(waitForAsync(() => {
         TestBed.configureTestingModule({
           imports: [CdkMenuModule],
           declarations: [WithComplexNestedMenusOnBottom],

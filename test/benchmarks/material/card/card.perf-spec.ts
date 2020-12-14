@@ -11,7 +11,7 @@ import {runBenchmark} from '@angular/dev-infra-private/benchmark/driver-utilitie
 
 describe('card performance benchmarks', () => {
   beforeAll(() => {
-    browser.rootEl = '#root';
+    browser.angularAppRoot('#root');
   });
 
   it('renders a simple card', async() => {
@@ -19,7 +19,6 @@ describe('card performance benchmarks', () => {
       id: 'card-render',
       url: '',
       ignoreBrowserSynchronization: true,
-      params: [],
       prepare: async () => await $('#hide').click(),
       work: async () => await $('#show').click()
     });

@@ -11,7 +11,7 @@ import {runBenchmark} from '@angular/dev-infra-private/benchmark/driver-utilitie
 
 describe('tabs performance benchmarks', () => {
   beforeAll(() => {
-    browser.rootEl = '#root';
+    browser.angularAppRoot('#root');
   });
 
   it('renders three tabs', async() => {
@@ -19,7 +19,6 @@ describe('tabs performance benchmarks', () => {
       id: 'three-tab-render',
       url: '',
       ignoreBrowserSynchronization: true,
-      params: [],
       prepare: async() => await $('#hide').click(),
       work: async() => await $('#show-three-tabs').click(),
     });
@@ -30,7 +29,6 @@ describe('tabs performance benchmarks', () => {
       id: 'ten-tab-render',
       url: '',
       ignoreBrowserSynchronization: true,
-      params: [],
       prepare: async() => await $('#hide').click(),
       work: async() => await $('#show-ten-tabs').click(),
     });
@@ -41,7 +39,6 @@ describe('tabs performance benchmarks', () => {
       id: 'twenty-tab-render',
       url: '',
       ignoreBrowserSynchronization: true,
-      params: [],
       prepare: async() => await $('#hide').click(),
       work: async() => await $('#show-twenty-tabs').click(),
     });
@@ -52,7 +49,6 @@ describe('tabs performance benchmarks', () => {
       id: 'tab-switching',
       url: '',
       ignoreBrowserSynchronization: true,
-      params: [],
       setup: async() => await $('#show-three-tabs').click(),
       prepare: async() => await $('#mat-tab-label-0-0').click(),
       work: async() => await $('#mat-tab-label-0-1').click(),
@@ -67,7 +63,6 @@ describe('tabs performance benchmarks', () => {
       id: 'tab-pagination',
       url: '',
       ignoreBrowserSynchronization: true,
-      params: [],
       prepare: async() => {
         await $('#hide').click();
         await $('#show-twenty-tabs').click();

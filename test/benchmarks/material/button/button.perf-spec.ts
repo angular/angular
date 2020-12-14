@@ -11,7 +11,7 @@ import {runBenchmark} from '@angular/dev-infra-private/benchmark/driver-utilitie
 
 describe('button performance benchmarks', () => {
   beforeAll(() => {
-    browser.rootEl = '#root';
+    browser.angularAppRoot('#root');
   });
 
   it('renders a basic raised button', async() => {
@@ -19,7 +19,6 @@ describe('button performance benchmarks', () => {
       id: 'button-render',
       url: '',
       ignoreBrowserSynchronization: true,
-      params: [],
       prepare: async () => await $('#hide').click(),
       work: async () => await $('#show').click(),
     });
@@ -30,7 +29,6 @@ describe('button performance benchmarks', () => {
       id: 'button-click',
       url: '',
       ignoreBrowserSynchronization: true,
-      params: [],
       setup: async () => await $('#show').click(),
       work: async () => await $('.mat-raised-button').click(),
     });

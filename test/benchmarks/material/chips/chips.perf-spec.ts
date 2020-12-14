@@ -11,7 +11,7 @@ import {runBenchmark} from '@angular/dev-infra-private/benchmark/driver-utilitie
 
 describe('chip performance benchmarks', () => {
   beforeAll(() => {
-    browser.rootEl = '#root';
+    browser.angularAppRoot('#root');
   });
 
   it('renders a single chip', async() => {
@@ -19,7 +19,6 @@ describe('chip performance benchmarks', () => {
       id: 'single-chip-render',
       url: '',
       ignoreBrowserSynchronization: true,
-      params: [],
       prepare: async () => await $('#hide-single').click(),
       work: async () => await $('#show-single').click(),
     });
@@ -30,7 +29,6 @@ describe('chip performance benchmarks', () => {
       id: 'multiple-chip-render',
       url: '',
       ignoreBrowserSynchronization: true,
-      params: [],
       prepare: async () => await $('#hide-multiple').click(),
       work: async () => await $('#show-multiple').click(),
     });
@@ -41,7 +39,6 @@ describe('chip performance benchmarks', () => {
       id: 'chip-click',
       url: '',
       ignoreBrowserSynchronization: true,
-      params: [],
       setup: async() => await $('#show-single').click(),
       work: async () => await $('.mat-chip').click(),
     });

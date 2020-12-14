@@ -14,7 +14,6 @@ function runFormFieldRenderBenchmark(testId: string, showBtnId: string) {
     id: testId,
     url: '',
     ignoreBrowserSynchronization: true,
-    params: [],
     prepare: async () => await $('#hide').click(),
     work: async () => await $(showBtnId).click()
   });
@@ -22,7 +21,7 @@ function runFormFieldRenderBenchmark(testId: string, showBtnId: string) {
 
 describe('form field performance benchmarks', () => {
   beforeAll(() => {
-    browser.rootEl = '#root';
+    browser.angularAppRoot('#root');
   });
 
   it('renders an input in a form field', async() => {
