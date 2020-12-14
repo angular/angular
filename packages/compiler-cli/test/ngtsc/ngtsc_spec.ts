@@ -7493,16 +7493,20 @@ export const Foo = Foo__PRE_R3__;
            expect(diags.length).toBe(0);
          });
 
-      it('should error when an undecorated class with a non-trivial constructor in a declaration file is provided via useClass',
-         () => {
-           env.write('node_modules/@angular/core/testing/index.d.ts', `
+      // TODO(alxhub): this test never worked correctly, as it used to declare a constructor with a
+      // body, which real declaration files don't have. Without the body, the ReflectionHost used to
+      // not return any constructor data, preventing an error from showing. That bug was fixed, but
+      // the error for declaration files is disabled until g3 can be updated.
+      xit('should error when an undecorated class with a non-trivial constructor in a declaration file is provided via useClass',
+          () => {
+            env.write('node_modules/@angular/core/testing/index.d.ts', `
             export declare class NgZone {}
 
             export declare class Testability {
-              constructor(ngZone: NgZone) {}
+              constructor(ngZone: NgZone);
             }
           `);
-           env.write('test.ts', `
+            env.write('test.ts', `
             import {NgModule, Injectable} from '@angular/core';
             import {Testability} from '@angular/core/testing';
 
@@ -7515,10 +7519,10 @@ export const Foo = Foo__PRE_R3__;
             export class SomeModule {}
           `);
 
-           const diags = env.driveDiagnostics();
-           expect(diags.length).toBe(1);
-           expect(diags[0].messageText).toContain('cannot be created via dependency injection');
-         });
+            const diags = env.driveDiagnostics();
+            expect(diags.length).toBe(1);
+            expect(diags[0].messageText).toContain('cannot be created via dependency injection');
+          });
 
       it('should not error when an class with a factory definition and a non-trivial constructor in a declaration file is provided via useClass',
          () => {
@@ -7529,7 +7533,7 @@ export const Foo = Foo__PRE_R3__;
 
             export declare class Testability {
               static ɵfac: i0.ɵɵFactoryDef<Testability, never>;
-              constructor(ngZone: NgZone) {}
+              constructor(ngZone: NgZone);
             }
           `);
            env.write('test.ts', `
