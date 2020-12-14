@@ -73,10 +73,12 @@ export function toR3ComponentMeta<TExpression>(
       const selector = directiveExpr.getString('selector');
 
       let typeExpr = type.getOpaque();
-      if (type.isFunction()) {
-        typeExpr = type.getFunctionReturnValue().getOpaque();
+      const forwardRefType = extractForwardRef(type);
+      if (forwardRefType !== null) {
+        typeExpr = forwardRefType;
         wrapDirectivesAndPipesInClosure = true;
       }
+
       return {
         type: typeExpr,
         selector: selector,
@@ -95,12 +97,13 @@ export function toR3ComponentMeta<TExpression>(
 
   let pipes = new Map<string, o.Expression>();
   if (metaObj.has('pipes')) {
-    pipes = metaObj.getObject('pipes').toMap(value => {
-      if (value.isFunction()) {
+    pipes = metaObj.getObject('pipes').toMap(pipe => {
+      const forwardRefType = extractForwardRef(pipe);
+      if (forwardRefType !== null) {
         wrapDirectivesAndPipesInClosure = true;
-        return value.getFunctionReturnValue().getOpaque();
+        return forwardRefType;
       } else {
-        return value.getOpaque();
+        return pipe.getOpaque();
       }
     });
   }
@@ -204,4 +207,36 @@ function getTemplateRange<TExpression>(
     startLine,
     startCol: startCol + 1,
   };
+}
+
+/**
+ * Extract the type reference expression from a `forwardRef` function call. For example, the
+ * expression `forwardRef(function() { return FooDir; })` returns `FooDir`. Note that this
+ * expression is required to be wrapped in a closure, as otherwise the forward reference would be
+ * resolved before initialization.
+ */
+function extractForwardRef<TExpression>(expr: AstValue<unknown, TExpression>):
+    o.WrappedNodeExpr<TExpression>|null {
+  if (!expr.isCallExpression()) {
+    return null;
+  }
+
+  const callee = expr.getCallee();
+  if (callee.getSymbolName() !== 'forwardRef') {
+    throw new FatalLinkerError(
+        callee.expression, 'Unsupported directive type, expected forwardRef or a type reference');
+  }
+
+  const args = expr.getArguments();
+  if (args.length !== 1) {
+    throw new FatalLinkerError(expr, 'Unsupported forwardRef call, expected a single argument');
+  }
+
+  const wrapperFn = args[0] as AstValue<Function, TExpression>;
+  if (!wrapperFn.isFunction()) {
+    throw new FatalLinkerError(
+        wrapperFn, 'Unsupported forwardRef call, expected a function argument');
+  }
+
+  return wrapperFn.getFunctionReturnValue().getOpaque();
 }

@@ -229,6 +229,8 @@ export class Identifiers {
   static templateRefExtractor:
       o.ExternalReference = {name: 'ɵɵtemplateRefExtractor', moduleName: CORE};
 
+  static forwardRef: o.ExternalReference = {name: 'forwardRef', moduleName: CORE};
+
   static resolveWindow: o.ExternalReference = {name: 'ɵɵresolveWindow', moduleName: CORE};
   static resolveDocument: o.ExternalReference = {name: 'ɵɵresolveDocument', moduleName: CORE};
   static resolveBody: o.ExternalReference = {name: 'ɵɵresolveBody', moduleName: CORE};

@@ -334,7 +334,7 @@ import * as i0 from "@angular/core";
 export class TestCmp {
 }
 TestCmp.ɵfac = function TestCmp_Factory(t) { return new (t || TestCmp)(); };
-TestCmp.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: TestCmp, selector: "test-cmp", ngImport: i0, template: { source: '<div>{{200.3 | percent : 2 }}</div>', isInline: true }, pipes: { "percent": function () { return PercentPipe; } } });
+TestCmp.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: TestCmp, selector: "test-cmp", ngImport: i0, template: { source: '<div>{{200.3 | percent : 2 }}</div>', isInline: true }, pipes: { "percent": i0.forwardRef(function () { return PercentPipe; }) } });
 (function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(TestCmp, [{
         type: Component,
         args: [{
@@ -364,7 +364,7 @@ AppModule.ɵinj = i0.ɵɵdefineInjector({ factory: function AppModule_Factory(t)
 /****************************************************************************************************
  * PARTIAL FILE: interpolation_with_pipe.js.map
  ****************************************************************************************************/
-{"version":3,"file":"interpolation_with_pipe.js","sourceRoot":"","sources":["../interpolation_with_pipe.ts"],"names":[],"mappings":"AAAA,OAAO,EAAC,SAAS,EAAE,QAAQ,EAAE,IAAI,EAAgB,MAAM,eAAe,CAAC;;AAMvE,MAAM,OAAO,OAAO;;8DAAP,OAAO;6EAAP,OAAO,0DAFR,qCAAqC,6DAMpC,WAAW;uFAJX,OAAO;cAJnB,SAAS;eAAC;gBACT,QAAQ,EAAE,UAAU;gBACpB,QAAQ,EAAE,qCAAqC;aAChD;;AAKD,MAAM,OAAO,WAAW;IACtB,SAAS,KAAI,CAAC;;sEADH,WAAW;6DAAX,WAAW;uFAAX,WAAW;cADvB,IAAI;eAAC,EAAC,IAAI,EAAE,SAAS,EAAC;;AAMvB,MAAM,OAAO,SAAS;;6CAAT,SAAS;iGAAT,SAAS;wFAAT,SAAS,mBATT,OAAO,EAIP,WAAW;uFAKX,SAAS;cADrB,QAAQ;eAAC,EAAC,YAAY,EAAE,CAAC,OAAO,EAAE,WAAW,CAAC,EAAC"}
+{"version":3,"file":"interpolation_with_pipe.js","sourceRoot":"","sources":["../interpolation_with_pipe.ts"],"names":[],"mappings":"AAAA,OAAO,EAAC,SAAS,EAAE,QAAQ,EAAE,IAAI,EAAgB,MAAM,eAAe,CAAC;;AAMvE,MAAM,OAAO,OAAO;;8DAAP,OAAO;6EAAP,OAAO,0DAFR,qCAAqC,2EAMpC,WAAW;uFAJX,OAAO;cAJnB,SAAS;eAAC;gBACT,QAAQ,EAAE,UAAU;gBACpB,QAAQ,EAAE,qCAAqC;aAChD;;AAKD,MAAM,OAAO,WAAW;IACtB,SAAS,KAAI,CAAC;;sEADH,WAAW;6DAAX,WAAW;uFAAX,WAAW;cADvB,IAAI;eAAC,EAAC,IAAI,EAAE,SAAS,EAAC;;AAMvB,MAAM,OAAO,SAAS;;6CAAT,SAAS;iGAAT,SAAS;wFAAT,SAAS,mBATT,OAAO,EAIP,WAAW;uFAKX,SAAS;cADrB,QAAQ;eAAC,EAAC,YAAY,EAAE,CAAC,OAAO,EAAE,WAAW,CAAC,EAAC"}
 /****************************************************************************************************
  * PARTIAL FILE: interpolation_with_pipe.d.ts
  ****************************************************************************************************/
@@ -392,7 +392,7 @@ import * as i0 from "@angular/core";
 export class TestCmp {
 }
 TestCmp.ɵfac = function TestCmp_Factory(t) { return new (t || TestCmp)(); };
-TestCmp.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: TestCmp, selector: "test-cmp", ngImport: i0, template: { source: '<div>{{200.3 | percent : 2 }}</div>', isInline: true }, pipes: { "percent": function () { return PercentPipe; } } });
+TestCmp.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: TestCmp, selector: "test-cmp", ngImport: i0, template: { source: '<div>{{200.3 | percent : 2 }}</div>', isInline: true }, pipes: { "percent": i0.forwardRef(function () { return PercentPipe; }) } });
 (function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(TestCmp, [{
         type: Component,
         args: [{
@@ -422,7 +422,7 @@ AppModule.ɵinj = i0.ɵɵdefineInjector({ factory: function AppModule_Factory(t)
 /****************************************************************************************************
  * PARTIAL FILE: interpolation_with_pipe.js.map
  ****************************************************************************************************/
-{"version":3,"file":"interpolation_with_pipe.js","sourceRoot":"","sources":["../interpolation_with_pipe.ts"],"names":[],"mappings":"AAAA,OAAO,EAAC,SAAS,EAAE,QAAQ,EAAE,IAAI,EAAgB,MAAM,eAAe,CAAC;;AAMvE,MAAM,OAAO,OAAO;;8DAAP,OAAO;6EAAP,OAAO,0DAFR,qCAAqC,6DAMpC,WAAW;uFAJX,OAAO;cAJnB,SAAS;eAAC;gBACT,QAAQ,EAAE,UAAU;gBACpB,QAAQ,EAAE,qCAAqC;aAChD;;AAKD,MAAM,OAAO,WAAW;IACtB,SAAS,KAAI,CAAC;;sEADH,WAAW;6DAAX,WAAW;uFAAX,WAAW;cADvB,IAAI;eAAC,EAAC,IAAI,EAAE,SAAS,EAAC;;AAMvB,MAAM,OAAO,SAAS;;6CAAT,SAAS;iGAAT,SAAS;wFAAT,SAAS,mBATT,OAAO,EAIP,WAAW;uFAKX,SAAS;cADrB,QAAQ;eAAC,EAAC,YAAY,EAAE,CAAC,OAAO,EAAE,WAAW,CAAC,EAAC"}
+{"version":3,"file":"interpolation_with_pipe.js","sourceRoot":"","sources":["../interpolation_with_pipe.ts"],"names":[],"mappings":"AAAA,OAAO,EAAC,SAAS,EAAE,QAAQ,EAAE,IAAI,EAAgB,MAAM,eAAe,CAAC;;AAMvE,MAAM,OAAO,OAAO;;8DAAP,OAAO;6EAAP,OAAO,0DAFR,qCAAqC,2EAMpC,WAAW;uFAJX,OAAO;cAJnB,SAAS;eAAC;gBACT,QAAQ,EAAE,UAAU;gBACpB,QAAQ,EAAE,qCAAqC;aAChD;;AAKD,MAAM,OAAO,WAAW;IACtB,SAAS,KAAI,CAAC;;sEADH,WAAW;6DAAX,WAAW;uFAAX,WAAW;cADvB,IAAI;eAAC,EAAC,IAAI,EAAE,SAAS,EAAC;;AAMvB,MAAM,OAAO,SAAS;;6CAAT,SAAS;iGAAT,SAAS;wFAAT,SAAS,mBATT,OAAO,EAIP,WAAW;uFAKX,SAAS;cADrB,QAAQ;eAAC,EAAC,YAAY,EAAE,CAAC,OAAO,EAAE,WAAW,CAAC,EAAC"}
 /****************************************************************************************************
  * PARTIAL FILE: interpolation_with_pipe.d.ts
  ****************************************************************************************************/
@@ -857,7 +857,7 @@ export class TestCmp {
     }
 }
 TestCmp.ɵfac = function TestCmp_Factory(t) { return new (t || TestCmp)(); };
-TestCmp.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: TestCmp, selector: "test-cmp", ngImport: i0, template: { source: 'Name: <input [(ngModel)]="name">', isInline: true }, directives: [{ type: function () { return NgModelDirective; }, selector: "[ngModel]", inputs: ["ngModel"], outputs: ["ngModelChanges"] }] });
+TestCmp.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: TestCmp, selector: "test-cmp", ngImport: i0, template: { source: 'Name: <input [(ngModel)]="name">', isInline: true }, directives: [{ type: i0.forwardRef(function () { return NgModelDirective; }), selector: "[ngModel]", inputs: ["ngModel"], outputs: ["ngModelChanges"] }] });
 (function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(TestCmp, [{
         type: Component,
         args: [{
@@ -894,7 +894,7 @@ AppModule.ɵinj = i0.ɵɵdefineInjector({ factory: function AppModule_Factory(t)
 /****************************************************************************************************
  * PARTIAL FILE: two_way_binding_simple.js.map
  ****************************************************************************************************/
-{"version":3,"file":"two_way_binding_simple.js","sourceRoot":"","sources":["../two_way_binding_simple.ts"],"names":[],"mappings":"AAAA,OAAO,EAAC,SAAS,EAAE,SAAS,EAAE,YAAY,EAAE,KAAK,EAAE,QAAQ,EAAE,MAAM,EAAC,MAAM,eAAe,CAAC;;AAM1F,MAAM,OAAO,OAAO;IAJpB;QAKE,SAAI,GAAW,EAAE,CAAC;KACnB;;8DAFY,OAAO;6EAAP,OAAO,0DAFR,kCAAkC,8DAOjC,gBAAgB;uFALhB,OAAO;cAJnB,SAAS;eAAC;gBACT,QAAQ,EAAE,UAAU;gBACpB,QAAQ,EAAE,kCAAkC;aAC7C;;AAMD,MAAM,OAAO,gBAAgB;IAD7B;QAEW,YAAO,GAAW,EAAE,CAAC;QACpB,mBAAc,GAAyB,IAAI,YAAY,EAAE,CAAC;KACrE;;gFAHY,gBAAgB;sFAAhB,gBAAgB;uFAAhB,gBAAgB;cAD5B,SAAS;eAAC,EAAC,QAAQ,EAAE,WAAW,EAAC;gBAEvB,OAAO;kBAAf,KAAK;YACI,cAAc;kBAAvB,MAAM;;AAIT,MAAM,OAAO,SAAS;;6CAAT,SAAS;iGAAT,SAAS;wFAAT,SAAS,mBAXT,OAAO,EAKP,gBAAgB;uFAMhB,SAAS;cADrB,QAAQ;eAAC,EAAC,YAAY,EAAE,CAAC,OAAO,EAAE,gBAAgB,CAAC,EAAC"}
+{"version":3,"file":"two_way_binding_simple.js","sourceRoot":"","sources":["../two_way_binding_simple.ts"],"names":[],"mappings":"AAAA,OAAO,EAAC,SAAS,EAAE,SAAS,EAAE,YAAY,EAAE,KAAK,EAAE,QAAQ,EAAE,MAAM,EAAC,MAAM,eAAe,CAAC;;AAM1F,MAAM,OAAO,OAAO;IAJpB;QAKE,SAAI,GAAW,EAAE,CAAC;KACnB;;8DAFY,OAAO;6EAAP,OAAO,0DAFR,kCAAkC,4EAOjC,gBAAgB;uFALhB,OAAO;cAJnB,SAAS;eAAC;gBACT,QAAQ,EAAE,UAAU;gBACpB,QAAQ,EAAE,kCAAkC;aAC7C;;AAMD,MAAM,OAAO,gBAAgB;IAD7B;QAEW,YAAO,GAAW,EAAE,CAAC;QACpB,mBAAc,GAAyB,IAAI,YAAY,EAAE,CAAC;KACrE;;gFAHY,gBAAgB;sFAAhB,gBAAgB;uFAAhB,gBAAgB;cAD5B,SAAS;eAAC,EAAC,QAAQ,EAAE,WAAW,EAAC;gBAEvB,OAAO;kBAAf,KAAK;YACI,cAAc;kBAAvB,MAAM;;AAIT,MAAM,OAAO,SAAS;;6CAAT,SAAS;iGAAT,SAAS;wFAAT,SAAS,mBAXT,OAAO,EAKP,gBAAgB;uFAMhB,SAAS;cADrB,QAAQ;eAAC,EAAC,YAAY,EAAE,CAAC,OAAO,EAAE,gBAAgB,CAAC,EAAC"}
 /****************************************************************************************************
  * PARTIAL FILE: two_way_binding_simple.d.ts
  ****************************************************************************************************/
@@ -927,7 +927,7 @@ export class TestCmp {
     }
 }
 TestCmp.ɵfac = function TestCmp_Factory(t) { return new (t || TestCmp)(); };
-TestCmp.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: TestCmp, selector: "test-cmp", ngImport: i0, template: { source: 'Name: <input [(ngModel)]="name">', isInline: true }, directives: [{ type: function () { return NgModelDirective; }, selector: "[ngModel]", inputs: ["ngModel"], outputs: ["ngModelChanges"] }] });
+TestCmp.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: TestCmp, selector: "test-cmp", ngImport: i0, template: { source: 'Name: <input [(ngModel)]="name">', isInline: true }, directives: [{ type: i0.forwardRef(function () { return NgModelDirective; }), selector: "[ngModel]", inputs: ["ngModel"], outputs: ["ngModelChanges"] }] });
 (function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(TestCmp, [{
         type: Component,
         args: [{
@@ -964,7 +964,7 @@ AppModule.ɵinj = i0.ɵɵdefineInjector({ factory: function AppModule_Factory(t)
 /****************************************************************************************************
  * PARTIAL FILE: two_way_binding_simple.js.map
  ****************************************************************************************************/
-{"version":3,"file":"two_way_binding_simple.js","sourceRoot":"","sources":["../two_way_binding_simple.ts"],"names":[],"mappings":"AAAA,OAAO,EAAC,SAAS,EAAE,SAAS,EAAE,YAAY,EAAE,KAAK,EAAE,QAAQ,EAAE,MAAM,EAAC,MAAM,eAAe,CAAC;;AAM1F,MAAM,OAAO,OAAO;IAJpB;QAKE,SAAI,GAAW,EAAE,CAAC;KACnB;;8DAFY,OAAO;6EAAP,OAAO,0DAFR,kCAAkC,8DAOjC,gBAAgB;uFALhB,OAAO;cAJnB,SAAS;eAAC;gBACT,QAAQ,EAAE,UAAU;gBACpB,QAAQ,EAAE,kCAAkC;aAC7C;;AAMD,MAAM,OAAO,gBAAgB;IAD7B;QAEW,YAAO,GAAW,EAAE,CAAC;QACpB,mBAAc,GAAyB,IAAI,YAAY,EAAE,CAAC;KACrE;;gFAHY,gBAAgB;sFAAhB,gBAAgB;uFAAhB,gBAAgB;cAD5B,SAAS;eAAC,EAAC,QAAQ,EAAE,WAAW,EAAC;gBAEvB,OAAO;kBAAf,KAAK;YACI,cAAc;kBAAvB,MAAM;;AAIT,MAAM,OAAO,SAAS;;6CAAT,SAAS;iGAAT,SAAS;wFAAT,SAAS,mBAXT,OAAO,EAKP,gBAAgB;uFAMhB,SAAS;cADrB,QAAQ;eAAC,EAAC,YAAY,EAAE,CAAC,OAAO,EAAE,gBAAgB,CAAC,EAAC"}
+{"version":3,"file":"two_way_binding_simple.js","sourceRoot":"","sources":["../two_way_binding_simple.ts"],"names":[],"mappings":"AAAA,OAAO,EAAC,SAAS,EAAE,SAAS,EAAE,YAAY,EAAE,KAAK,EAAE,QAAQ,EAAE,MAAM,EAAC,MAAM,eAAe,CAAC;;AAM1F,MAAM,OAAO,OAAO;IAJpB;QAKE,SAAI,GAAW,EAAE,CAAC;KACnB;;8DAFY,OAAO;6EAAP,OAAO,0DAFR,kCAAkC,4EAOjC,gBAAgB;uFALhB,OAAO;cAJnB,SAAS;eAAC;gBACT,QAAQ,EAAE,UAAU;gBACpB,QAAQ,EAAE,kCAAkC;aAC7C;;AAMD,MAAM,OAAO,gBAAgB;IAD7B;QAEW,YAAO,GAAW,EAAE,CAAC;QACpB,mBAAc,GAAyB,IAAI,YAAY,EAAE,CAAC;KACrE;;gFAHY,gBAAgB;sFAAhB,gBAAgB;uFAAhB,gBAAgB;cAD5B,SAAS;eAAC,EAAC,QAAQ,EAAE,WAAW,EAAC;gBAEvB,OAAO;kBAAf,KAAK;YACI,cAAc;kBAAvB,MAAM;;AAIT,MAAM,OAAO,SAAS;;6CAAT,SAAS;iGAAT,SAAS;wFAAT,SAAS,mBAXT,OAAO,EAKP,gBAAgB;uFAMhB,SAAS;cADrB,QAAQ;eAAC,EAAC,YAAY,EAAE,CAAC,OAAO,EAAE,gBAAgB,CAAC,EAAC"}
 /****************************************************************************************************
  * PARTIAL FILE: two_way_binding_simple.d.ts
  ****************************************************************************************************/
@@ -997,7 +997,7 @@ export class TestCmp {
     }
 }
 TestCmp.ɵfac = function TestCmp_Factory(t) { return new (t || TestCmp)(); };
-TestCmp.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: TestCmp, selector: "test-cmp", ngImport: i0, template: { source: 'Name: <input bindon-ngModel="name">', isInline: true }, directives: [{ type: function () { return NgModelDirective; }, selector: "[ngModel]", inputs: ["ngModel"], outputs: ["ngModelChanges"] }] });
+TestCmp.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: TestCmp, selector: "test-cmp", ngImport: i0, template: { source: 'Name: <input bindon-ngModel="name">', isInline: true }, directives: [{ type: i0.forwardRef(function () { return NgModelDirective; }), selector: "[ngModel]", inputs: ["ngModel"], outputs: ["ngModelChanges"] }] });
 (function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(TestCmp, [{
         type: Component,
         args: [{
@@ -1034,7 +1034,7 @@ AppModule.ɵinj = i0.ɵɵdefineInjector({ factory: function AppModule_Factory(t)
 /****************************************************************************************************
  * PARTIAL FILE: two_way_binding_longhand.js.map
  ****************************************************************************************************/
-{"version":3,"file":"two_way_binding_longhand.js","sourceRoot":"","sources":["../two_way_binding_longhand.ts"],"names":[],"mappings":"AAAA,OAAO,EAAC,SAAS,EAAE,SAAS,EAAE,YAAY,EAAE,KAAK,EAAE,QAAQ,EAAE,MAAM,EAAC,MAAM,eAAe,CAAC;;AAM1F,MAAM,OAAO,OAAO;IAJpB;QAKE,SAAI,GAAW,EAAE,CAAC;KACnB;;8DAFY,OAAO;6EAAP,OAAO,0DAFR,qCAAqC,8DAOpC,gBAAgB;uFALhB,OAAO;cAJnB,SAAS;eAAC;gBACT,QAAQ,EAAE,UAAU;gBACpB,QAAQ,EAAE,qCAAqC;aAChD;;AAMD,MAAM,OAAO,gBAAgB;IAD7B;QAEW,YAAO,GAAW,EAAE,CAAC;QACpB,mBAAc,GAAyB,IAAI,YAAY,EAAE,CAAC;KACrE;;gFAHY,gBAAgB;sFAAhB,gBAAgB;uFAAhB,gBAAgB;cAD5B,SAAS;eAAC,EAAC,QAAQ,EAAE,WAAW,EAAC;gBAEvB,OAAO;kBAAf,KAAK;YACI,cAAc;kBAAvB,MAAM;;AAIT,MAAM,OAAO,SAAS;;6CAAT,SAAS;iGAAT,SAAS;wFAAT,SAAS,mBAXT,OAAO,EAKP,gBAAgB;uFAMhB,SAAS;cADrB,QAAQ;eAAC,EAAC,YAAY,EAAE,CAAC,OAAO,EAAE,gBAAgB,CAAC,EAAC"}
+{"version":3,"file":"two_way_binding_longhand.js","sourceRoot":"","sources":["../two_way_binding_longhand.ts"],"names":[],"mappings":"AAAA,OAAO,EAAC,SAAS,EAAE,SAAS,EAAE,YAAY,EAAE,KAAK,EAAE,QAAQ,EAAE,MAAM,EAAC,MAAM,eAAe,CAAC;;AAM1F,MAAM,OAAO,OAAO;IAJpB;QAKE,SAAI,GAAW,EAAE,CAAC;KACnB;;8DAFY,OAAO;6EAAP,OAAO,0DAFR,qCAAqC,4EAOpC,gBAAgB;uFALhB,OAAO;cAJnB,SAAS;eAAC;gBACT,QAAQ,EAAE,UAAU;gBACpB,QAAQ,EAAE,qCAAqC;aAChD;;AAMD,MAAM,OAAO,gBAAgB;IAD7B;QAEW,YAAO,GAAW,EAAE,CAAC;QACpB,mBAAc,GAAyB,IAAI,YAAY,EAAE,CAAC;KACrE;;gFAHY,gBAAgB;sFAAhB,gBAAgB;uFAAhB,gBAAgB;cAD5B,SAAS;eAAC,EAAC,QAAQ,EAAE,WAAW,EAAC;gBAEvB,OAAO;kBAAf,KAAK;YACI,cAAc;kBAAvB,MAAM;;AAIT,MAAM,OAAO,SAAS;;6CAAT,SAAS;iGAAT,SAAS;wFAAT,SAAS,mBAXT,OAAO,EAKP,gBAAgB;uFAMhB,SAAS;cADrB,QAAQ;eAAC,EAAC,YAAY,EAAE,CAAC,OAAO,EAAE,gBAAgB,CAAC,EAAC"}
 /****************************************************************************************************
  * PARTIAL FILE: two_way_binding_longhand.d.ts
  ****************************************************************************************************/
@@ -1067,7 +1067,7 @@ export class TestCmp {
     }
 }
 TestCmp.ɵfac = function TestCmp_Factory(t) { return new (t || TestCmp)(); };
-TestCmp.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: TestCmp, selector: "test-cmp", ngImport: i0, template: { source: 'Name: <input bindon-ngModel="name">', isInline: true }, directives: [{ type: function () { return NgModelDirective; }, selector: "[ngModel]", inputs: ["ngModel"], outputs: ["ngModelChanges"] }] });
+TestCmp.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: TestCmp, selector: "test-cmp", ngImport: i0, template: { source: 'Name: <input bindon-ngModel="name">', isInline: true }, directives: [{ type: i0.forwardRef(function () { return NgModelDirective; }), selector: "[ngModel]", inputs: ["ngModel"], outputs: ["ngModelChanges"] }] });
 (function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(TestCmp, [{
         type: Component,
         args: [{
@@ -1104,7 +1104,7 @@ AppModule.ɵinj = i0.ɵɵdefineInjector({ factory: function AppModule_Factory(t)
 /****************************************************************************************************
  * PARTIAL FILE: two_way_binding_longhand.js.map
  ****************************************************************************************************/
-{"version":3,"file":"two_way_binding_longhand.js","sourceRoot":"","sources":["../two_way_binding_longhand.ts"],"names":[],"mappings":"AAAA,OAAO,EAAC,SAAS,EAAE,SAAS,EAAE,YAAY,EAAE,KAAK,EAAE,QAAQ,EAAE,MAAM,EAAC,MAAM,eAAe,CAAC;;AAM1F,MAAM,OAAO,OAAO;IAJpB;QAKE,SAAI,GAAW,EAAE,CAAC;KACnB;;8DAFY,OAAO;6EAAP,OAAO,0DAFR,qCAAqC,8DAOpC,gBAAgB;uFALhB,OAAO;cAJnB,SAAS;eAAC;gBACT,QAAQ,EAAE,UAAU;gBACpB,QAAQ,EAAE,qCAAqC;aAChD;;AAMD,MAAM,OAAO,gBAAgB;IAD7B;QAEW,YAAO,GAAW,EAAE,CAAC;QACpB,mBAAc,GAAyB,IAAI,YAAY,EAAE,CAAC;KACrE;;gFAHY,gBAAgB;sFAAhB,gBAAgB;uFAAhB,gBAAgB;cAD5B,SAAS;eAAC,EAAC,QAAQ,EAAE,WAAW,EAAC;gBAEvB,OAAO;kBAAf,KAAK;YACI,cAAc;kBAAvB,MAAM;;AAIT,MAAM,OAAO,SAAS;;6CAAT,SAAS;iGAAT,SAAS;wFAAT,SAAS,mBAXT,OAAO,EAKP,gBAAgB;uFAMhB,SAAS;cADrB,QAAQ;eAAC,EAAC,YAAY,EAAE,CAAC,OAAO,EAAE,gBAAgB,CAAC,EAAC"}
+{"version":3,"file":"two_way_binding_longhand.js","sourceRoot":"","sources":["../two_way_binding_longhand.ts"],"names":[],"mappings":"AAAA,OAAO,EAAC,SAAS,EAAE,SAAS,EAAE,YAAY,EAAE,KAAK,EAAE,QAAQ,EAAE,MAAM,EAAC,MAAM,eAAe,CAAC;;AAM1F,MAAM,OAAO,OAAO;IAJpB;QAKE,SAAI,GAAW,EAAE,CAAC;KACnB;;8DAFY,OAAO;6EAAP,OAAO,0DAFR,qCAAqC,4EAOpC,gBAAgB;uFALhB,OAAO;cAJnB,SAAS;eAAC;gBACT,QAAQ,EAAE,UAAU;gBACpB,QAAQ,EAAE,qCAAqC;aAChD;;AAMD,MAAM,OAAO,gBAAgB;IAD7B;QAEW,YAAO,GAAW,EAAE,CAAC;QACpB,mBAAc,GAAyB,IAAI,YAAY,EAAE,CAAC;KACrE;;gFAHY,gBAAgB;sFAAhB,gBAAgB;uFAAhB,gBAAgB;cAD5B,SAAS;eAAC,EAAC,QAAQ,EAAE,WAAW,EAAC;gBAEvB,OAAO;kBAAf,KAAK;YACI,cAAc;kBAAvB,MAAM;;AAIT,MAAM,OAAO,SAAS;;6CAAT,SAAS;iGAAT,SAAS;wFAAT,SAAS,mBAXT,OAAO,EAKP,gBAAgB;uFAMhB,SAAS;cADrB,QAAQ;eAAC,EAAC,YAAY,EAAE,CAAC,OAAO,EAAE,gBAAgB,CAAC,EAAC"}
 /****************************************************************************************************
  * PARTIAL FILE: two_way_binding_longhand.d.ts
  ****************************************************************************************************/

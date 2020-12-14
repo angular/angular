@@ -263,6 +263,55 @@ describe('BabelAstHost', () => {
     });
   });
 
+  describe('isCallExpression()', () => {
+    it('should return true if the expression is a call expression', () => {
+      expect(host.isCallExpression(expr('foo()'))).toBe(true);
+      expect(host.isCallExpression(expr('foo.bar()'))).toBe(true);
+      expect(host.isCallExpression(expr('(foo)(1)'))).toBe(true);
+    });
+
+    it('should return false if the expression is not a call expression', () => {
+      expect(host.isCallExpression(expr('[]'))).toBe(false);
+      expect(host.isCallExpression(expr('"moo"'))).toBe(false);
+      expect(host.isCallExpression(expr('\'moo\''))).toBe(false);
+      expect(host.isCallExpression(expr('someIdentifier'))).toBe(false);
+      expect(host.isCallExpression(expr('42'))).toBe(false);
+      expect(host.isCallExpression(expr('{}'))).toBe(false);
+      expect(host.isCallExpression(expr('null'))).toBe(false);
+      expect(host.isCallExpression(expr('\'a\' + \'b\''))).toBe(false);
+      expect(host.isCallExpression(expr('\`moo\`'))).toBe(false);
+    });
+  });
+
+  describe('parseCallee()', () => {
+    it('should return the callee expression', () => {
+      expect(host.parseCallee(expr('foo()'))).toEqual(expr('foo'));
+      expect(host.parseCallee(expr('foo.bar()'))).toEqual(expr('foo.bar'));
+    });
+
+    it('should error if the node is not a call expression', () => {
+      expect(() => host.parseCallee(expr('[]')))
+          .toThrowError('Unsupported syntax, expected a call expression.');
+    });
+  });
+
+  describe('parseArguments()', () => {
+    it('should return the arguments as an array of expressions', () => {
+      expect(host.parseArguments(expr('foo(12, [])'))).toEqual([expr('12'), expr('[]')]);
+      expect(host.parseArguments(expr('foo.bar()'))).toEqual([]);
+    });
+
+    it('should error if the node is not a call expression', () => {
+      expect(() => host.parseArguments(expr('[]')))
+          .toThrowError('Unsupported syntax, expected a call expression.');
+    });
+
+    it('should error if an argument uses spread syntax', () => {
+      expect(() => host.parseArguments(expr('foo(1, ...[])')))
+          .toThrowError('Unsupported syntax, expected argument not to use spread syntax.');
+    });
+  });
+
   describe('getRange()', () => {
     it('should extract the range from the expression', () => {
       const file = parse('// preamble\nx = \'moo\';');
