@@ -1698,6 +1698,9 @@
     "name": "navigationCancelingError"
   },
   {
+    "name": "newObservableError"
+  },
+  {
     "name": "nextBindingIndex"
   },
   {
