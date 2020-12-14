@@ -9,7 +9,7 @@ import chalk from 'chalk';
  * @returns Promise that resolves/rejects when the child process exits.
  */
 export function tsCompile(binary: 'tsc' | 'ngc', flags: string[]) {
-  return new Promise((resolve, reject) => {
+  return new Promise<void>((resolve, reject) => {
     const binaryPath = resolvePath(`./node_modules/typescript/bin/${binary}`);
     const childProcess = spawn(binaryPath, flags, {shell: true});
 

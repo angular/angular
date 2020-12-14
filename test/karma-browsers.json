@@ -19,10 +19,10 @@
     "platformName": "iOS",
     "deviceName": "iPhone XS Simulator"
   },
-  "BROWSERSTACK_EDGE83": {
+  "BROWSERSTACK_EDGE87": {
     "base": "BrowserStack",
     "browser": "Edge",
-    "browser_version": "83.0",
+    "browser_version": "87.0",
     "os": "Windows",
     "os_version": "10"
   },

@@ -75,7 +75,7 @@ async function batchChangeDetection<T>(fn: () => Promise<T>, triggerBeforeAndAft
   if (triggerBeforeAndAfter) {
     await new Promise(resolve => autoChangeDetectionSubject.next({
       isDisabled: true,
-      onDetectChangesNow: resolve,
+      onDetectChangesNow: resolve as () => void,
     }));
     // The function passed in may throw (e.g. if the user wants to make an expectation of an error
     // being thrown. If this happens, we need to make sure we still re-enable change detection, so
@@ -85,7 +85,7 @@ async function batchChangeDetection<T>(fn: () => Promise<T>, triggerBeforeAndAft
     } finally {
       await new Promise(resolve => autoChangeDetectionSubject.next({
         isDisabled: false,
-        onDetectChangesNow: resolve,
+        onDetectChangesNow: resolve as () => void,
       }));
     }
   } else {
