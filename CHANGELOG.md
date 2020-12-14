@@ -1,3 +1,21 @@
+## 11.0.3 "adobe-home" (2020-12-14)
+
+### material
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **datepicker:** screen reader not announcing view switch button value ([#21229](https://github.com/angular/components/issues/21229)) ([dbae066](https://github.com/angular/components/commit/dbae066)) |
+| bug fix |  **expansion:** not clearing custom query list ([#21222](https://github.com/angular/components/issues/21222)) ([f0dc895](https://github.com/angular/components/commit/f0dc895)) |
+| bug fix |  **menu:** clear static aria attributes from host node ([#21231](https://github.com/angular/components/issues/21231)) ([f568af1](https://github.com/angular/components/commit/f568af1)), closes [#21152](https://github.com/angular/components/issues/21152) |
+| bug fix |  **select:** incorrect default typeahead debounce time ([#21253](https://github.com/angular/components/issues/21253)) ([8c56d06](https://github.com/angular/components/commit/8c56d06)), closes [#21242](https://github.com/angular/components/issues/21242) |
+
+### material-experimental
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **mdc-form-field:** make sure fonts are loaded before calculating notch width ([#21245](https://github.com/angular/components/issues/21245)) ([0dae8a8](https://github.com/angular/components/commit/0dae8a8)) |
+
+
 ## 11.0.2 "paper-bag" (2020-12-07)
 
 ### cdk
