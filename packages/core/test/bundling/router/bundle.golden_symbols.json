@@ -1329,9 +1329,6 @@
     "name": "getInjectorIndex"
   },
   {
-    "name": "getLCleanup"
-  },
-  {
     "name": "getLView"
   },
   {
@@ -1362,6 +1359,9 @@
     "name": "getOrCreateInjectable"
   },
   {
+    "name": "getOrCreateLViewCleanup"
+  },
+  {
     "name": "getOrCreateNodeInjectorForNode"
   },
   {
@@ -1369,6 +1369,9 @@
   },
   {
     "name": "getOrCreateTNode"
+  },
+  {
+    "name": "getOrCreateTViewCleanup"
   },
   {
     "name": "getOrCreateViewRefs"
@@ -1435,9 +1438,6 @@
   },
   {
     "name": "getTView"
-  },
-  {
-    "name": "getTViewCleanup"
   },
   {
     "name": "getToken"

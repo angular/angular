@@ -759,19 +759,19 @@ export function locateHostElement(
  */
 export function storeCleanupWithContext(
     tView: TView, lView: LView, context: any, cleanupFn: Function): void {
-  const lCleanup = getLCleanup(lView);
+  const lCleanup = getOrCreateLViewCleanup(lView);
   if (context === null) {
     // If context is null that this is instance specific callback. These callbacks can only be
     // inserted after template shared instances. For this reason in ngDevMode we freeze the TView.
     if (ngDevMode) {
-      Object.freeze(getTViewCleanup(tView));
+      Object.freeze(getOrCreateTViewCleanup(tView));
     }
     lCleanup.push(cleanupFn);
   } else {
     lCleanup.push(context);
 
     if (tView.firstCreatePass) {
-      getTViewCleanup(tView).push(cleanupFn, lCleanup.length - 1);
+      getOrCreateTViewCleanup(tView).push(cleanupFn, lCleanup.length - 1);
     }
   }
 }
@@ -2006,12 +2006,12 @@ export function storePropertyBindingMetadata(
 
 export const CLEAN_PROMISE = _CLEAN_PROMISE;
 
-export function getLCleanup(view: LView): any[] {
+export function getOrCreateLViewCleanup(view: LView): any[] {
   // top level variables should not be exported for performance reasons (PERF_NOTES.md)
   return view[CLEANUP] || (view[CLEANUP] = ngDevMode ? new LCleanup() : []);
 }
 
-export function getTViewCleanup(tView: TView): any[] {
+export function getOrCreateTViewCleanup(tView: TView): any[] {
   return tView.cleanup || (tView.cleanup = ngDevMode ? new TCleanup() : []);
 }
 

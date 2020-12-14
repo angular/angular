@@ -1014,9 +1014,6 @@
     "name": "getInjectorIndex"
   },
   {
-    "name": "getLCleanup"
-  },
-  {
     "name": "getLView"
   },
   {
@@ -1045,6 +1042,9 @@
   },
   {
     "name": "getOrCreateInjectable"
+  },
+  {
+    "name": "getOrCreateLViewCleanup"
   },
   {
     "name": "getOrCreateNodeInjectorForNode"
