@@ -34,7 +34,7 @@ export class ViewQueryComponent {
 ViewQueryComponent.ɵfac = function ViewQueryComponent_Factory(t) { return new (t || ViewQueryComponent)(); };
 ViewQueryComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: ViewQueryComponent, selector: "view-query-component", viewQueries: [{ propertyName: "someDir", first: true, predicate: SomeDirective, descendants: true }, { propertyName: "someDirs", predicate: SomeDirective, descendants: true }], ngImport: i0, template: { source: `
     <div someDir></div>
-  `, isInline: true }, directives: [{ type: function () { return SomeDirective; }, selector: "[someDir]" }] });
+  `, isInline: true }, directives: [{ type: i0.forwardRef(function () { return SomeDirective; }), selector: "[someDir]" }] });
 (function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(ViewQueryComponent, [{
         type: Component,
         args: [{
@@ -168,7 +168,7 @@ export class ViewQueryComponent {
 ViewQueryComponent.ɵfac = function ViewQueryComponent_Factory(t) { return new (t || ViewQueryComponent)(); };
 ViewQueryComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: ViewQueryComponent, selector: "view-query-component", viewQueries: [{ propertyName: "someDir", first: true, predicate: SomeDirective, descendants: true, static: true }, { propertyName: "foo", first: true, predicate: ["foo"], descendants: true }], ngImport: i0, template: { source: `
     <div someDir></div>
-  `, isInline: true }, directives: [{ type: function () { return SomeDirective; }, selector: "[someDir]" }] });
+  `, isInline: true }, directives: [{ type: i0.forwardRef(function () { return SomeDirective; }), selector: "[someDir]" }] });
 (function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(ViewQueryComponent, [{
         type: Component,
         args: [{
@@ -361,7 +361,7 @@ MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: My
     <content-query-component>
       <div someDir></div>
     </content-query-component>
-  `, isInline: true }, directives: [{ type: function () { return ContentQueryComponent; }, selector: "content-query-component" }, { type: function () { return SomeDirective; }, selector: "[someDir]" }] });
+  `, isInline: true }, directives: [{ type: i0.forwardRef(function () { return ContentQueryComponent; }), selector: "content-query-component" }, { type: i0.forwardRef(function () { return SomeDirective; }), selector: "[someDir]" }] });
 (function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(MyApp, [{
         type: Component,
         args: [{
@@ -518,7 +518,7 @@ MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: My
     <content-query-component>
       <div someDir></div>
     </content-query-component>
-  `, isInline: true }, directives: [{ type: function () { return ContentQueryComponent; }, selector: "content-query-component" }, { type: function () { return SomeDirective; }, selector: "[someDir]" }] });
+  `, isInline: true }, directives: [{ type: i0.forwardRef(function () { return ContentQueryComponent; }), selector: "content-query-component" }, { type: i0.forwardRef(function () { return SomeDirective; }), selector: "[someDir]" }] });
 (function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(MyApp, [{
         type: Component,
         args: [{

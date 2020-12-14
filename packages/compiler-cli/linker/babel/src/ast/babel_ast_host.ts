@@ -100,6 +100,20 @@ export class BabelAstHost implements AstHost<t.Expression> {
     return stmt.argument;
   }
 
+  isCallExpression = t.isCallExpression;
+  parseCallee(call: t.Expression): t.Expression {
+    assert(call, t.isCallExpression, 'a call expression');
+    assert(call.callee, t.isExpression, 'an expression');
+    return call.callee;
+  }
+  parseArguments(call: t.Expression): t.Expression[] {
+    assert(call, t.isCallExpression, 'a call expression');
+    return call.arguments.map(arg => {
+      assert(arg, t.isExpression, 'argument to be an expression');
+      return arg;
+    });
+  }
+
   getRange(node: t.Expression): Range {
     if (node.loc == null || node.start === null || node.end === null) {
       throw new FatalLinkerError(
