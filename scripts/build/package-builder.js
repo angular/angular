@@ -65,7 +65,7 @@ module.exports = {
  * @param {boolean?} isRelease True, if the build should be stamped for a release.
  * @returns {Array<{name: string, outputPath: string}} A list of packages built.
  */
-function buildTargetPackages(destPath, enableIvy, description, isRelease) {
+function buildTargetPackages(destPath, enableIvy, description, isRelease = false) {
   console.info('##################################');
   console.info(`${scriptPath}:`);
   console.info('  Building @angular/* npm packages');
