@@ -43,7 +43,12 @@ function hasLocalChanges() {
   return !!exec(`git status --untracked-files=no --porcelain`);
 }
 
-/** Get the version based on the most recent semver tag. */
+/**
+ * Get the version for generated packages.
+ *
+ * In snapshot mode, the version is based on the most recent semver tag.
+ * In release mode, the version is based on the base package.json version.
+ */
 function getSCMVersion(mode: EnvStampMode) {
   if (mode === 'release') {
     const packageJsonPath = join(getRepoBaseDir(), 'package.json');
