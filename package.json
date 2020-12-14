@@ -94,7 +94,7 @@
     "@schematics/angular": "^11.0.0",
     "@types/autoprefixer": "^9.7.2",
     "@types/browser-sync": "^2.26.1",
-    "@types/fs-extra": "^4.0.3",
+    "@types/fs-extra": "^9.0.5",
     "@types/glob": "^5.0.36",
     "@types/gulp": "3.8.32",
     "@types/inquirer": "^7.3.1",
