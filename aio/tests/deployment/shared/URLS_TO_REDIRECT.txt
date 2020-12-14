@@ -185,6 +185,7 @@
 /guide/service-worker-getstart	/guide/service-worker-getting-started
 /guide/service-worker-comm	/guide/service-worker-communications
 /guide/service-worker-configref	/guide/service-worker-config
+/guide/updating-to-version-10	/guide/updating-to-version-11
 /guide/webpack	https://v5.angular.io/guide/webpack
 /news	https://blog.angular.io/
 /news.html	https://blog.angular.io/
