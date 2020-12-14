@@ -14,7 +14,7 @@ let dialogRef = dialog.open(UserProfileComponent, {
 ```
 
 The `MatDialogRef` provides a handle on the opened dialog. It can be used to close the dialog and to
-receive notification when the dialog has been closed.
+receive notifications when the dialog has been closed. Any notification Observables will complete when the dialog closes.
 
 ```ts
 dialogRef.afterClosed().subscribe(result => {
@@ -26,7 +26,7 @@ dialogRef.close('Pizza!');
 
 Components created via `MatDialog` can _inject_ `MatDialogRef` and use it to close the dialog
 in which they are contained. When closing, an optional result value can be provided. This result
-value is forwarded as the result of the `afterClosed` promise.
+value is forwarded as the result of the `afterClosed` Observable.
 
 ```ts
 @Component({/* ... */})
