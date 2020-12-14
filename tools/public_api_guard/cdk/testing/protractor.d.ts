@@ -3,7 +3,11 @@ export declare class ProtractorElement implements TestElement {
     constructor(element: ElementFinder);
     blur(): Promise<void>;
     clear(): Promise<void>;
-    click(...args: [] | ['center'] | [number, number]): Promise<void>;
+    click(...args: [ModifierKeys?] | ['center', ModifierKeys?] | [
+        number,
+        number,
+        ModifierKeys?
+    ]): Promise<void>;
     dispatchEvent(name: string, data?: Record<string, EventData>): Promise<void>;
     focus(): Promise<void>;
     getAttribute(name: string): Promise<string | null>;
@@ -15,7 +19,11 @@ export declare class ProtractorElement implements TestElement {
     isFocused(): Promise<boolean>;
     matchesSelector(selector: string): Promise<boolean>;
     mouseAway(): Promise<void>;
-    rightClick(...args: [] | ['center'] | [number, number]): Promise<void>;
+    rightClick(...args: [ModifierKeys?] | ['center', ModifierKeys?] | [
+        number,
+        number,
+        ModifierKeys?
+    ]): Promise<void>;
     selectOptions(...optionIndexes: number[]): Promise<void>;
     sendKeys(...keys: (string | TestKey)[]): Promise<void>;
     sendKeys(modifiers: ModifierKeys, ...keys: (string | TestKey)[]): Promise<void>;

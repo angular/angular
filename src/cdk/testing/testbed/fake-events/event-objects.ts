@@ -12,7 +12,8 @@ import {ModifierKeys} from '@angular/cdk/testing';
  * Creates a browser MouseEvent with the specified options.
  * @docs-private
  */
-export function createMouseEvent(type: string, clientX = 0, clientY = 0, button = 0) {
+export function createMouseEvent(
+  type: string, clientX = 0, clientY = 0, button = 0, modifiers: ModifierKeys = {}) {
   const event = document.createEvent('MouseEvent');
   const originalPreventDefault = event.preventDefault.bind(event);
 
@@ -32,10 +33,10 @@ export function createMouseEvent(type: string, clientX = 0, clientY = 0, button 
     /* screenY */ screenY,
     /* clientX */ clientX,
     /* clientY */ clientY,
-    /* ctrlKey */ false,
-    /* altKey */ false,
-    /* shiftKey */ false,
-    /* metaKey */ false,
+    /* ctrlKey */ !!modifiers.control,
+    /* altKey */ !!modifiers.alt,
+    /* shiftKey */ !!modifiers.shift,
+    /* metaKey */ !!modifiers.meta,
     /* button */ button,
     /* relatedTarget */ null);
 

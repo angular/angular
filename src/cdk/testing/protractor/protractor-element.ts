@@ -81,11 +81,13 @@ export class ProtractorElement implements TestElement {
     return this.element.clear();
   }
 
-  async click(...args: [] | ['center'] | [number, number]): Promise<void> {
-    await this._dispatchClickEventSequence(args);
+  async click(...args: [ModifierKeys?] | ['center', ModifierKeys?] |
+    [number, number, ModifierKeys?]): Promise<void> {
+    await this._dispatchClickEventSequence(args, Button.LEFT);
   }
 
-  async rightClick(...args: [] | ['center'] | [number, number]): Promise<void> {
+  async rightClick(...args: [ModifierKeys?] | ['center', ModifierKeys?] |
+    [number, number, ModifierKeys?]): Promise<void> {
     await this._dispatchClickEventSequence(args, Button.RIGHT);
   }
 
@@ -202,17 +204,33 @@ export class ProtractorElement implements TestElement {
 
   /** Dispatches all the events that are part of a click event sequence. */
   private async _dispatchClickEventSequence(
-    args: [] | ['center'] | [number, number],
-    button?: string) {
-    // Omitting the offset argument to mouseMove results in clicking the center.
-    // This is the default behavior we want, so we use an empty array of offsetArgs if no args are
-    // passed to this method.
-    const offsetArgs = args.length === 2 ? [{x: args[0], y: args[1]}] : [];
+    args: [ModifierKeys?] | ['center', ModifierKeys?] |
+      [number, number, ModifierKeys?],
+    button: string) {
+    let modifiers: ModifierKeys = {};
+    if (args.length && typeof args[args.length - 1] === 'object') {
+      modifiers = args.pop() as ModifierKeys;
+    }
+    const modifierKeys = toProtractorModifierKeys(modifiers);
 
-    await browser.actions()
-      .mouseMove(await this.element.getWebElement(), ...offsetArgs)
-      .click(button)
-      .perform();
+    // Omitting the offset argument to mouseMove results in clicking the center.
+    // This is the default behavior we want, so we use an empty array of offsetArgs if
+    // no args remain after popping the modifiers from the args passed to this function.
+    const offsetArgs = (args.length === 2 ?
+      [{x: args[0], y: args[1]}] : []) as [{x: number, y: number}];
+
+    let actions = browser.actions()
+      .mouseMove(await this.element.getWebElement(), ...offsetArgs);
+
+    for (const modifierKey of modifierKeys) {
+      actions = actions.keyDown(modifierKey);
+    }
+    actions = actions.click(button);
+    for (const modifierKey of modifierKeys) {
+      actions = actions.keyUp(modifierKey);
+    }
+
+    await actions.perform();
   }
 }
 

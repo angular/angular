@@ -28,6 +28,7 @@ export class MainComponentHarness extends ComponentHarness {
   readonly memo = this.locatorFor('textarea');
   readonly clickTest = this.locatorFor('.click-test');
   readonly clickTestResult = this.locatorFor('.click-test-result');
+  readonly clickModifiersResult = this.locatorFor('.click-modifiers-test-result');
   readonly singleSelect = this.locatorFor('#single-select');
   readonly singleSelectValue = this.locatorFor('#single-select-value');
   readonly singleSelectChangeEventCounter = this.locatorFor('#single-select-change-counter');
