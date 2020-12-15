@@ -33,7 +33,8 @@
         "linked compile"
       ],
       "compilerOptions": {
-        "sourceMap": true
+        "sourceMap": true,
+        "inlineSources": true
       }
     },
     {
@@ -46,6 +47,7 @@
       ],
       "compilerOptions": {
         "sourceMap": true,
+        "inlineSources": true,
         "rootDirs": [
           ".",
           "extraRootDir"
@@ -72,10 +74,47 @@
       ],
       "compilerOptions": {
         "sourceMap": true,
+        "inlineSources": true,
         "rootDirs": [
           ".",
           "extraRootDir"
         ]
+      }
+    },
+    {
+      "description": "should handle unusual escaped chars when source-mapping (full compile)",
+      "inputFiles": [
+        "escaped_chars.ts"
+      ],
+      "compilationModeFilter": [
+        "full compile"
+      ],
+      "compilerOptions": {
+        "sourceMap": true,
+        "inlineSources": true
+      }
+    },
+    {
+      "description": "should handle unusual escaped chars when source-mapping (linked compile)",
+      "inputFiles": [
+        "escaped_chars.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "generated": "escaped_chars.js",
+              "expected": "escaped_chars_partial.js"
+            }
+          ]
+        }
+      ],
+      "compilationModeFilter": [
+        "linked compile"
+      ],
+      "compilerOptions": {
+        "sourceMap": true,
+        "inlineSources": true
       }
     }
   ]
