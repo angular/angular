@@ -13,6 +13,7 @@ import {ViewEncapsulation} from '../../metadata/view';
 import {validateAgainstEventAttributes, validateAgainstEventProperties} from '../../sanitization/sanitization';
 import {Sanitizer} from '../../sanitization/sanitizer';
 import {assertDefined, assertDomNode, assertEqual, assertGreaterThanOrEqual, assertIndexInRange, assertNotEqual, assertNotSame, assertSame, assertString} from '../../util/assert';
+import {escapeCommentText} from '../../util/dom';
 import {createNamedArrayType} from '../../util/named_array_type';
 import {initNgDevMode} from '../../util/ng_dev_mode';
 import {normalizeDebugBindingName, normalizeDebugBindingValue} from '../../util/ng_reflect';
@@ -1043,7 +1044,8 @@ function setNgReflectProperty(
           (element as RElement).setAttribute(attrName, debugValue);
     }
   } else {
-    const textContent = `bindings=${JSON.stringify({[attrName]: debugValue}, null, 2)}`;
+    const textContent =
+        escapeCommentText(`bindings=${JSON.stringify({[attrName]: debugValue}, null, 2)}`);
     if (isProceduralRenderer(renderer)) {
       renderer.setValue((element as RComment), textContent);
     } else {
