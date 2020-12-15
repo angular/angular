@@ -204,15 +204,19 @@ describe('directive declaration jit compilation', () => {
   });
 });
 
+type DirectiveDefExpectations = jasmine.Expected<Pick<
+    DirectiveDef<unknown>,
+    'selectors'|'inputs'|'declaredInputs'|'outputs'|'features'|'hostAttrs'|'hostBindings'|
+    'hostVars'|'contentQueries'|'viewQuery'|'exportAs'|'providersResolver'>>;
+
 /**
  * Asserts that the provided directive definition is according to the provided expectation.
  * Definition fields for which no expectation is present are verified to be initialized to their
  * default value.
  */
 function expectDirectiveDef(
-    actual: DirectiveDef<unknown>,
-    expected: jasmine.Expected<Partial<DirectiveDef<unknown>>>): void {
-  const expectation: typeof expected = {
+    actual: DirectiveDef<unknown>, expected: Partial<DirectiveDefExpectations>): void {
+  const expectation: DirectiveDefExpectations = {
     selectors: [],
     inputs: {},
     declaredInputs: {},
@@ -224,21 +228,23 @@ function expectDirectiveDef(
     contentQueries: null,
     viewQuery: null,
     exportAs: null,
+    providersResolver: null,
     ...expected,
   };
 
   expect(actual.type).toBe(TestClass);
-  expect(actual.selectors).toEqual(expectation.selectors!);
-  expect(actual.inputs).toEqual(expectation.inputs!);
-  expect(actual.declaredInputs).toEqual(expectation.declaredInputs!);
-  expect(actual.outputs).toEqual(expectation.outputs!);
-  expect(actual.features).toEqual(expectation.features!);
-  expect(actual.hostAttrs).toEqual(expectation.hostAttrs!);
-  expect(actual.hostBindings).toEqual(expectation.hostBindings!);
-  expect(actual.hostVars).toEqual(expectation.hostVars!);
-  expect(actual.contentQueries).toEqual(expectation.contentQueries!);
-  expect(actual.viewQuery).toEqual(expectation.viewQuery!);
-  expect(actual.exportAs).toEqual(expectation.exportAs!);
+  expect(actual.selectors).toEqual(expectation.selectors);
+  expect(actual.inputs).toEqual(expectation.inputs);
+  expect(actual.declaredInputs).toEqual(expectation.declaredInputs);
+  expect(actual.outputs).toEqual(expectation.outputs);
+  expect(actual.features).toEqual(expectation.features);
+  expect(actual.hostAttrs).toEqual(expectation.hostAttrs);
+  expect(actual.hostBindings).toEqual(expectation.hostBindings);
+  expect(actual.hostVars).toEqual(expectation.hostVars);
+  expect(actual.contentQueries).toEqual(expectation.contentQueries);
+  expect(actual.viewQuery).toEqual(expectation.viewQuery);
+  expect(actual.exportAs).toEqual(expectation.exportAs);
+  expect(actual.providersResolver).toEqual(expectation.providersResolver);
 }
 
 class TestClass {}
