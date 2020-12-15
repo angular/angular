@@ -41,8 +41,20 @@ export const constructPathOfKeysToPropertyValue = (nodePropToGetKeysFor: Propert
   return keys;
 };
 
+export const arrayify = (props: { [prop: string]: Descriptor }, parent: Property | null = null): Property[] =>
+  Object.keys(props)
+    .map((name) => ({ name, descriptor: props[name], parent }))
+    .sort((a, b) => {
+      if (a.name > b.name) {
+        return 1;
+      } else if (a.name < b.name) {
+        return -1;
+      }
+      return 0;
+    });
+
 export class DirectivePropertyResolver {
-  _treeFlattener = new MatTreeFlattener(
+  private _treeFlattener = new MatTreeFlattener(
     (node: Property, level: number): FlatNode => {
       return {
         expandable: expandable(node.descriptor),
@@ -55,7 +67,7 @@ export class DirectivePropertyResolver {
     (node) => this._getChildren(node)
   );
 
-  _treeControl = new FlatTreeControl<FlatNode>(
+  private _treeControl = new FlatTreeControl<FlatNode>(
     (node) => node.level,
     (node) => node.expandable
   );
@@ -110,7 +122,7 @@ export class DirectivePropertyResolver {
 
   updateProperties(newProps: Properties): void {
     this._props = newProps;
-    const { inputProps, outputProps, stateProps } = this._sortPropsIntoCategories();
+    const { inputProps, outputProps, stateProps } = this._classifyProperties();
 
     this._inputsDataSource.update(inputProps);
     this._outputsDataSource.update(outputProps);
@@ -130,20 +142,14 @@ export class DirectivePropertyResolver {
       (descriptor.type === PropType.Object || descriptor.type === PropType.Array) &&
       !(descriptor.value instanceof Observable)
     ) {
-      return Object.keys(descriptor.value || {}).map((name) => {
-        return {
-          name,
-          descriptor: descriptor.value ? descriptor.value[name] : null,
-          parent: prop,
-        };
-      });
+      return arrayify(descriptor.value || {}, prop);
     } else {
       console.error('Unexpected data type', descriptor, 'in property', prop);
     }
   }
 
   private _initDataSources(): void {
-    const { inputProps, outputProps, stateProps } = this._sortPropsIntoCategories();
+    const { inputProps, outputProps, stateProps } = this._classifyProperties();
 
     this._inputsDataSource = this._createDataSourceFromProps(inputProps);
     this._outputsDataSource = this._createDataSourceFromProps(outputProps);
@@ -160,7 +166,7 @@ export class DirectivePropertyResolver {
     );
   }
 
-  private _sortPropsIntoCategories(): {
+  private _classifyProperties(): {
     inputProps: { [name: string]: Descriptor };
     outputProps: { [name: string]: Descriptor };
     stateProps: { [name: string]: Descriptor };

@@ -7,6 +7,7 @@ import { map } from 'rxjs/operators';
 import { DefaultIterableDiffer } from '@angular/core';
 import { diff } from '../../diffing';
 import { FlatNode, Property } from './element-property-resolver';
+import { arrayify } from './directive-property-resolver';
 
 const trackBy = (_: number, item: FlatNode) => {
   return `#${item.prop.name}#${item.level}`;
@@ -26,7 +27,7 @@ export class PropertyDataSource extends DataSource<FlatNode> {
     private _messageBus: MessageBus<Events>
   ) {
     super();
-    this._data.next(this._treeFlattener.flattenNodes(this._arrayify(props)));
+    this._data.next(this._treeFlattener.flattenNodes(arrayify(props)));
   }
 
   get data(): FlatNode[] {
@@ -38,7 +39,7 @@ export class PropertyDataSource extends DataSource<FlatNode> {
   }
 
   update(props: { [prop: string]: Descriptor }): void {
-    const newData = this._treeFlattener.flattenNodes(this._arrayify(props));
+    const newData = this._treeFlattener.flattenNodes(arrayify(props));
     diff(this._differ, this.data, newData);
     this._data.next(this.data);
   }
@@ -73,10 +74,6 @@ export class PropertyDataSource extends DataSource<FlatNode> {
     this._subscriptions = [];
   }
 
-  private _arrayify(props: { [prop: string]: Descriptor }, parent: Property | null = null): Property[] {
-    return Object.keys(props).map((name) => ({ name, descriptor: props[name], parent }));
-  }
-
   private _toggleNode(node: FlatNode, expand: boolean): void {
     const index = this.data.indexOf(node);
     // If we cannot find the current node, or the current node is not expandable
@@ -102,7 +99,7 @@ export class PropertyDataSource extends DataSource<FlatNode> {
     this._messageBus.once('nestedProperties', (position: DirectivePosition, data: Properties, _path: string[]) => {
       node.prop.descriptor.value = data.props;
       this._treeControl.expand(node);
-      const props = this._arrayify(data.props, node.prop);
+      const props = arrayify(data.props, node.prop);
       const flatNodes = this._treeFlattener.flattenNodes(props);
       flatNodes.forEach((f) => (f.level += node.level + 1));
       this.data.splice(index + 1, 0, ...flatNodes);
