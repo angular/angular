@@ -12,3 +12,4 @@ export {DeclarationScope} from './src/file_linker/declaration_scope';
 export {FileLinker} from './src/file_linker/file_linker';
 export {LinkerEnvironment} from './src/file_linker/linker_environment';
 export {LinkerOptions} from './src/file_linker/linker_options';
+export {sourceFileMayNeedLinking} from './src/file_linker/predicate';
