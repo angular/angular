@@ -17,7 +17,7 @@ import {RouterConfigLoader} from './router_config_loader';
 import {navigationCancelingError, Params, PRIMARY_OUTLET} from './shared';
 import {UrlSegment, UrlSegmentGroup, UrlSerializer, UrlTree} from './url_tree';
 import {forEach, wrapIntoObservable} from './utils/collection';
-import {getOutlet} from './utils/config';
+import {getOutlet, sortByMatchingOutlets} from './utils/config';
 import {isImmediateMatch, match, noLeftoversInUrl, split} from './utils/config_matching';
 import {isCanLoad, isFunction, isUrlTree} from './utils/type_guards';
 
@@ -170,8 +170,7 @@ class ApplyRedirects {
               // Sort the routes so routes with outlets that match the the segment appear
               // first, followed by routes for other outlets, which might match if they have an
               // empty path.
-              const sortedRoutes = routes.filter(r => getOutlet(r) === childOutlet);
-              sortedRoutes.push(...routes.filter(r => getOutlet(r) !== childOutlet));
+              const sortedRoutes = sortByMatchingOutlets(routes, childOutlet);
               return this.expandSegmentGroup(ngModule, sortedRoutes, child, childOutlet)
                   .pipe(map(s => ({segment: s, outlet: childOutlet})));
             }),

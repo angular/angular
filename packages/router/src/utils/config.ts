@@ -121,3 +121,13 @@ export function standardizeConfig(r: Route): Route {
 export function getOutlet(route: Route): string {
   return route.outlet || PRIMARY_OUTLET;
 }
+
+/**
+ * Sorts the `routes` such that the ones with an outlet matching `outletName` come first.
+ * The order of the configs is otherwise preserved.
+ */
+export function sortByMatchingOutlets(routes: Routes, outletName: string): Routes {
+  const sortedConfig = routes.filter(r => getOutlet(r) === outletName);
+  sortedConfig.push(...routes.filter(r => getOutlet(r) !== outletName));
+  return sortedConfig;
+}
