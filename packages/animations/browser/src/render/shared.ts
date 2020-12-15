@@ -160,10 +160,19 @@ let _query: (element: any, selector: string, multi: boolean) => any[] =
 // and utility methods exist.
 const _isNode = isNode();
 if (_isNode || typeof Element !== 'undefined') {
-  // this is well supported in all browsers
-  _contains = (elm1: any, elm2: any) => {
-    return elm1.contains(elm2) as boolean;
-  };
+  if (!isBrowser()) {
+    _contains = (elm1, elm2) => elm1.contains(elm2);
+  } else {
+    _contains = (elm1, elm2) => {
+      while (elm2 && elm2 !== document.documentElement) {
+        if (elm2 === elm1) {
+          return true;
+        }
+        elm2 = elm2.parentNode || elm2.host;  // consider host to support shadow DOM
+      }
+      return false;
+    };
+  }
 
   _matches = (() => {
     if (_isNode || Element.prototype.matches) {
