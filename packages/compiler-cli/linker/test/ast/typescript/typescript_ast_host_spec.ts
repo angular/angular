@@ -258,7 +258,7 @@ describe('TypeScriptAstHost', () => {
   });
 
   describe('isCallExpression()', () => {
-    it('should return true if the expression is a call exoression', () => {
+    it('should return true if the expression is a call expression', () => {
       expect(host.isCallExpression(expr('foo()'))).toBe(true);
       expect(host.isCallExpression(expr('foo.bar()'))).toBe(true);
       expect(host.isCallExpression(expr('(foo)(1)'))).toBe(true);
@@ -292,7 +292,7 @@ describe('TypeScriptAstHost', () => {
   });
 
   describe('parseArguments()', () => {
-    it('should return the callee expression', () => {
+    it('should return the arguments as an array of expressions', () => {
       const arg1 = jasmine.objectContaining({text: '12', kind: ts.SyntaxKind.NumericLiteral});
       const arg2 = jasmine.objectContaining({kind: ts.SyntaxKind.ArrayLiteralExpression});
       expect(host.parseArguments(expr('foo(12, [])'))).toEqual([arg1, arg2]);

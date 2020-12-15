@@ -264,7 +264,7 @@ describe('BabelAstHost', () => {
   });
 
   describe('isCallExpression()', () => {
-    it('should return true if the expression is a call exoression', () => {
+    it('should return true if the expression is a call expression', () => {
       expect(host.isCallExpression(expr('foo()'))).toBe(true);
       expect(host.isCallExpression(expr('foo.bar()'))).toBe(true);
       expect(host.isCallExpression(expr('(foo)(1)'))).toBe(true);
@@ -296,7 +296,7 @@ describe('BabelAstHost', () => {
   });
 
   describe('parseArguments()', () => {
-    it('should return the callee expression', () => {
+    it('should return the arguments as an array of expressions', () => {
       expect(host.parseArguments(expr('foo(12, [])'))).toEqual([expr('12'), expr('[]')]);
       expect(host.parseArguments(expr('foo.bar()'))).toEqual([]);
     });
@@ -308,7 +308,7 @@ describe('BabelAstHost', () => {
 
     it('should error if an argument uses spread syntax', () => {
       expect(() => host.parseArguments(expr('foo(1, ...[])')))
-          .toThrowError('Unsupported syntax, expected argument to be an expression.');
+          .toThrowError('Unsupported syntax, expected argument not to use spread syntax.');
     });
   });
 
