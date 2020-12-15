@@ -108,6 +108,16 @@ const coreR3DeclareDirectiveFacade: core.R3DeclareDirectiveFacade =
 const compilerR3DeclareDirectiveFacade: compiler.R3DeclareDirectiveFacade =
     null! as core.R3DeclareDirectiveFacade;
 
+const coreR3DeclareComponentFacade: core.R3DeclareComponentFacade =
+    null! as compiler.R3DeclareComponentFacade;
+const compilerR3DeclareComponentFacade: compiler.R3DeclareComponentFacade =
+    null! as core.R3DeclareComponentFacade;
+
+const coreR3UsedDirectiveMetadata: core.R3UsedDirectiveMetadata =
+    null! as compiler.R3UsedDirectiveMetadata;
+const compilerR3UsedDirectiveMetadata: compiler.R3UsedDirectiveMetadata =
+    null! as core.R3UsedDirectiveMetadata;
+
 const coreViewEncapsulation: core.ViewEncapsulation = null! as compiler.ViewEncapsulation;
 const compilerViewEncapsulation: compiler.ViewEncapsulation = null! as core.ViewEncapsulation;
 
