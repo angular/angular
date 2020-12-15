@@ -10,6 +10,7 @@ import {CommonModule, ɵgetDOM as getDOM} from '@angular/common';
 import {Component, ComponentFactoryResolver, ComponentRef, Directive, ElementRef, Injector, Input, NgModule, NO_ERRORS_SCHEMA, OnInit, TemplateRef, ViewChild, ViewContainerRef, ViewEncapsulation} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
+import {browserDetection} from '@angular/platform-browser/testing/src/browser_util';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {modifiedInIvy} from '@angular/private/testing';
 
@@ -490,7 +491,7 @@ describe('projection', () => {
     expect(main.nativeElement).toHaveText('TREE(0:TREE2(1:TREE(2:)))');
   });
 
-  if (supportsShadowDOM()) {
+  if (browserDetection.supportsShadowDom) {
     it('should support shadow dom content projection and isolate styles per component', () => {
       TestBed.configureTestingModule({declarations: [SimpleShadowDom1, SimpleShadowDom2]});
       TestBed.overrideComponent(MainComp, {
@@ -1041,8 +1042,4 @@ class CmpA1 {
   template: `{{'a2'}}<cmp-b21></cmp-b21><cmp-b22></cmp-b22>`,
 })
 class CmpA2 {
-}
-
-function supportsShadowDOM(): boolean {
-  return typeof (<any>document.body).attachShadow !== 'undefined';
 }
