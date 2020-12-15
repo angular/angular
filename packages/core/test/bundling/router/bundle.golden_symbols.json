@@ -1455,6 +1455,9 @@
     "name": "handleError"
   },
   {
+    "name": "hasEmptyPathConfig"
+  },
+  {
     "name": "hasParentInjector"
   },
   {
@@ -1912,6 +1915,9 @@
   },
   {
     "name": "shouldSearchParent"
+  },
+  {
+    "name": "sortByMatchingOutlets"
   },
   {
     "name": "split"
