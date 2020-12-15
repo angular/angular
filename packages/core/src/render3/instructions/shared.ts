@@ -13,6 +13,7 @@ import {ViewEncapsulation} from '../../metadata/view';
 import {validateAgainstEventAttributes, validateAgainstEventProperties} from '../../sanitization/sanitization';
 import {Sanitizer} from '../../sanitization/sanitizer';
 import {assertDefined, assertDomNode, assertEqual, assertGreaterThan, assertIndexInRange, assertLessThan, assertNotEqual, assertNotSame, assertSame} from '../../util/assert';
+import {escapeCommentText} from '../../util/dom';
 import {createNamedArrayType} from '../../util/named_array_type';
 import {initNgDevMode} from '../../util/ng_dev_mode';
 import {normalizeDebugBindingName, normalizeDebugBindingValue} from '../../util/ng_reflect';
@@ -29,7 +30,7 @@ import {NodeInjectorFactory, NodeInjectorOffset} from '../interfaces/injector';
 import {AttributeMarker, InitialInputData, InitialInputs, LocalRefExtractor, PropertyAliases, PropertyAliasValue, TAttributes, TConstantsOrFactory, TContainerNode, TDirectiveHostNode, TElementContainerNode, TElementNode, TIcuContainerNode, TNode, TNodeFlags, TNodeProviderIndexes, TNodeType, TProjectionNode} from '../interfaces/node';
 import {isProceduralRenderer, RComment, RElement, Renderer3, RendererFactory3, RNode, RText} from '../interfaces/renderer';
 import {SanitizerFn} from '../interfaces/sanitization';
-import {isComponentDef, isComponentHost, isContentQueryHost, isLContainer, isRootView} from '../interfaces/type_checks';
+import {isComponentDef, isComponentHost, isContentQueryHost, isRootView} from '../interfaces/type_checks';
 import {CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTEXT, DECLARATION_COMPONENT_VIEW, DECLARATION_VIEW, FLAGS, HEADER_OFFSET, HOST, InitPhaseState, INJECTOR, LView, LViewFlags, NEXT, PARENT, RENDERER, RENDERER_FACTORY, RootContext, RootContextFlags, SANITIZER, T_HOST, TData, TRANSPLANTED_VIEWS_TO_REFRESH, TVIEW, TView, TViewType} from '../interfaces/view';
 import {assertNodeNotOfTypes, assertNodeOfPossibleTypes} from '../node_assert';
 import {isInlineTemplate, isNodeMatchingSelectorList} from '../node_selector_matcher';
@@ -1050,7 +1051,8 @@ function setNgReflectProperty(
           (element as RElement).setAttribute(attrName, debugValue);
     }
   } else {
-    const textContent = `bindings=${JSON.stringify({[attrName]: debugValue}, null, 2)}`;
+    const textContent =
+        escapeCommentText(`bindings=${JSON.stringify({[attrName]: debugValue}, null, 2)}`);
     if (isProceduralRenderer(renderer)) {
       renderer.setValue((element as RComment), textContent);
     } else {
