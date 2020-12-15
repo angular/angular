@@ -1,7 +1,7 @@
 import {join} from 'path';
 import {readdirSync, existsSync} from 'fs';
 import * as ts from 'typescript';
-import chalk from 'chalk';
+import * as chalk from 'chalk';
 import {config} from './check-mdc-exports-config';
 
 // Script which ensures that a particular MDC package exports all of the same symbols as its

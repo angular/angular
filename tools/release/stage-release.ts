@@ -1,5 +1,5 @@
 import * as Octokit from '@octokit/rest';
-import chalk from 'chalk';
+import * as chalk from 'chalk';
 import {existsSync, readFileSync, writeFileSync} from 'fs';
 import {join} from 'path';
 import {BaseReleaseTask} from './base-release-task';

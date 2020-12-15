@@ -1,6 +1,6 @@
 import {resolve as resolvePath} from 'path';
 import {spawn} from 'child_process';
-import chalk from 'chalk';
+import * as chalk from 'chalk';
 
 /**
  * Spawns a child process that compiles TypeScript using the specified compiler binary.

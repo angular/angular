@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import * as chalk from 'chalk';
 import {createReadStream, createWriteStream, readFileSync} from 'fs';
 import {prompt} from 'inquirer';
 import {join} from 'path';

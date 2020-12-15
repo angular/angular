@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import * as chalk from 'chalk';
 import {prompt} from 'inquirer';
 import {GitClient} from './git/git-client';
 import {Version} from './version-name/parse-version';

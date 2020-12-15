@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import * as chalk from 'chalk';
 import {readFileSync, unlinkSync} from 'fs';
 import {homedir} from 'os';
 import {join} from 'path';

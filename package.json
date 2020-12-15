@@ -114,7 +114,7 @@
     "autoprefixer": "^6.7.6",
     "axe-webdriverjs": "^1.1.1",
     "browser-sync": "^2.26.7",
-    "chalk": "^2.4.2",
+    "chalk": "^4.1.0",
     "codelyzer": "^6.0.0-next.2",
     "conventional-changelog": "^3.0.5",
     "dgeni": "^0.4.11",

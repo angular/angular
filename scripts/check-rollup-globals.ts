@@ -8,7 +8,7 @@
  * be passed to this script to ensure that the rollup globals are up-to-date.
  */
 
-import chalk from 'chalk';
+import * as chalk from 'chalk';
 import {readFileSync} from 'fs';
 import * as minimatch from 'minimatch';
 import {join, relative} from 'path';

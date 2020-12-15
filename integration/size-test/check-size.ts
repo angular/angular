@@ -4,7 +4,7 @@
  * amount, the script will fail with a non-zero exit code.
  */
 
-import chalk from 'chalk';
+import * as chalk from 'chalk';
 import {readFileSync, statSync, writeFileSync} from 'fs';
 import {parse, stringify} from 'yaml';
 

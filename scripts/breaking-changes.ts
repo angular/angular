@@ -1,6 +1,6 @@
 import {join, relative} from 'path';
 import {readFileSync} from 'fs';
-import chalk from 'chalk';
+import * as chalk from 'chalk';
 import * as ts from 'typescript';
 import * as tsutils from 'tsutils';
 

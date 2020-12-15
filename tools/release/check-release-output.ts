@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import * as chalk from 'chalk';
 import {join} from 'path';
 import {checkReleasePackage} from './release-output/check-package';
 import {releasePackages} from './release-output/release-packages';
