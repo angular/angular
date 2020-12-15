@@ -53,10 +53,9 @@ function hasProperty(node: ts.ObjectLiteralExpression, propertyName: string): bo
     // like spread operators becomes too complicated for this migration.
     if ((ts.isPropertyAssignment(property) || ts.isShorthandPropertyAssignment(property)) &&
         (ts.isStringLiteralLike(property.name) || ts.isNumericLiteral(property.name) ||
-         ts.isIdentifier(property.name))) {
-      if (property.name.text === propertyName) {
-        return true;
-      };
+         ts.isIdentifier(property.name)) &&
+        property.name.text === propertyName) {
+      return true;
     }
   };
   return false;

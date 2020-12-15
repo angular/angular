@@ -29,12 +29,12 @@ export default function(): Rule {
     }
 
     for (const tsconfigPath of allPaths) {
-      runNavigationExtrasOmissionsMigration(tree, tsconfigPath, basePath);
+      runCanActivateWithRedirectToMigration(tree, tsconfigPath, basePath);
     }
   };
 }
 
-function runNavigationExtrasOmissionsMigration(tree: Tree, tsconfigPath: string, basePath: string) {
+function runCanActivateWithRedirectToMigration(tree: Tree, tsconfigPath: string, basePath: string) {
   const {program} = createMigrationProgram(tree, tsconfigPath, basePath);
   const printer = ts.createPrinter();
   const sourceFiles =
