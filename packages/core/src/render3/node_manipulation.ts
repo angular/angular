@@ -11,6 +11,7 @@ import {Renderer2} from '../render/api';
 import {RendererStyleFlags2} from '../render/api_flags';
 import {addToArray, removeFromArray} from '../util/array_utils';
 import {assertDefined, assertDomNode, assertEqual, assertFunction, assertString} from '../util/assert';
+import {escapeCommentText} from '../util/dom';
 import {assertLContainer, assertLView, assertTNodeForLView} from './assert';
 import {attachPatchData} from './context_discovery';
 import {icuContainerIterate} from './i18n/i18n_tree_shaking';
@@ -113,7 +114,7 @@ export function createCommentNode(renderer: Renderer3, value: string): RComment 
   ngDevMode && ngDevMode.rendererCreateComment++;
   // isProceduralRenderer check is not needed because both `Renderer2` and `Renderer3` have the same
   // method name.
-  return renderer.createComment(value);
+  return renderer.createComment(escapeCommentText(value));
 }
 
 /**
