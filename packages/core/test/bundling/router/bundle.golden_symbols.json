@@ -291,6 +291,9 @@
     "name": "HashLocationStrategy"
   },
   {
+    "name": "Host"
+  },
+  {
     "name": "INITIAL_VALUE"
   },
   {
