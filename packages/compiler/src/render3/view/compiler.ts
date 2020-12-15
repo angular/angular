@@ -27,7 +27,7 @@ import {Identifiers as R3} from '../r3_identifiers';
 import {Render3ParseResult} from '../r3_template_transform';
 import {prepareSyntheticListenerFunctionName, prepareSyntheticPropertyName, typeWithParameters} from '../util';
 
-import {R3ComponentDef, R3ComponentMetadata, R3DirectiveDef, R3DirectiveMetadata, R3HostMetadata, R3QueryMetadata} from './api';
+import {DeclarationListEmitMode, R3ComponentDef, R3ComponentMetadata, R3DirectiveDef, R3DirectiveMetadata, R3HostMetadata, R3QueryMetadata} from './api';
 import {MIN_STYLING_BINDING_SLOTS_REQUIRED, StylingBuilder, StylingInstructionCall} from './styling_builder';
 import {BindingScope, makeBindingParser, prepareEventListenerParameters, renderFlagCheckIfStmt, resolveSanitizationFn, TemplateDefinitionBuilder, ValueConverter} from './template';
 import {asLiteral, chainedInstruction, conditionallyCreateMapObjectLiteral, CONTEXT_NAME, DefinitionMap, getQueryPredicate, RENDER_FLAGS, TEMPORARY_NAME, temporaryAllocator} from './util';
@@ -213,19 +213,15 @@ export function compileComponentFromMetadata(
 
   // e.g. `directives: [MyDirective]`
   if (directivesUsed.size) {
-    let directivesExpr: o.Expression = o.literalArr(Array.from(directivesUsed));
-    if (meta.wrapDirectivesAndPipesInClosure) {
-      directivesExpr = o.fn([], [new o.ReturnStatement(directivesExpr)]);
-    }
+    const directivesList = o.literalArr(Array.from(directivesUsed));
+    const directivesExpr = compileDeclarationList(directivesList, meta.declarationListEmitMode);
     definitionMap.set('directives', directivesExpr);
   }
 
   // e.g. `pipes: [MyPipe]`
   if (pipesUsed.size) {
-    let pipesExpr: o.Expression = o.literalArr(Array.from(pipesUsed));
-    if (meta.wrapDirectivesAndPipesInClosure) {
-      pipesExpr = o.fn([], [new o.ReturnStatement(pipesExpr)]);
-    }
+    const pipesList = o.literalArr(Array.from(pipesUsed));
+    const pipesExpr = compileDeclarationList(pipesList, meta.declarationListEmitMode);
     definitionMap.set('pipes', pipesExpr);
   }
 
@@ -275,6 +271,26 @@ export function createComponentType(meta: R3ComponentMetadata): o.Type {
   const typeParams = createDirectiveTypeParams(meta);
   typeParams.push(stringArrayAsType(meta.template.ngContentSelectors));
   return o.expressionType(o.importExpr(R3.ComponentDefWithMeta, typeParams));
+}
+
+/**
+ * Compiles the array literal of declarations into an expression according to the provided emit
+ * mode.
+ */
+function compileDeclarationList(
+    list: o.LiteralArrayExpr, mode: DeclarationListEmitMode): o.Expression {
+  switch (mode) {
+    case DeclarationListEmitMode.Direct:
+      // directives: [MyDir],
+      return list;
+    case DeclarationListEmitMode.Closure:
+      // directives: function () { return [MyDir]; }
+      return o.fn([], [new o.ReturnStatement(list)]);
+    case DeclarationListEmitMode.ClosureResolved:
+      // directives: function () { return [MyDir].map(ng.resolveForwardRef); }
+      const resolvedList = list.callMethod('map', [o.importExpr(R3.resolveForwardRef)]);
+      return o.fn([], [new o.ReturnStatement(resolvedList)]);
+  }
 }
 
 /**
@@ -335,7 +351,7 @@ export function compileComponentFromRender2(
     directives: [],
     pipes: typeMapToExpressionMap(pipeTypeByName, outputCtx),
     viewQueries: queriesFromGlobalMetadata(component.viewQueries, outputCtx),
-    wrapDirectivesAndPipesInClosure: false,
+    declarationListEmitMode: DeclarationListEmitMode.Direct,
     styles: (summary.template && summary.template.styles) || EMPTY_ARRAY,
     encapsulation:
         (summary.template && summary.template.encapsulation) || core.ViewEncapsulation.Emulated,

@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {compileComponentFromMetadata, ConstantPool, DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig, makeBindingParser, parseTemplate, R3ComponentMetadata, R3DeclareComponentMetadata, R3PartialDeclaration, R3UsedDirectiveMetadata} from '@angular/compiler';
+import {compileComponentFromMetadata, ConstantPool, DeclarationListEmitMode, DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig, makeBindingParser, parseTemplate, R3ComponentMetadata, R3DeclareComponentMetadata, R3PartialDeclaration, R3UsedDirectiveMetadata} from '@angular/compiler';
 import {ChangeDetectionStrategy, ViewEncapsulation} from '@angular/compiler/src/core';
 import * as o from '@angular/compiler/src/output/output_ast';
 
@@ -63,7 +63,7 @@ export function toR3ComponentMeta<TExpression>(
         templateSource.expression, `Errors found in the template:\n${errors}`);
   }
 
-  let wrapDirectivesAndPipesInClosure = false;
+  let declarationListEmitMode = DeclarationListEmitMode.Direct;
 
   let directives: R3UsedDirectiveMetadata[] = [];
   if (metaObj.has('directives')) {
@@ -76,7 +76,7 @@ export function toR3ComponentMeta<TExpression>(
       const forwardRefType = extractForwardRef(type);
       if (forwardRefType !== null) {
         typeExpr = forwardRefType;
-        wrapDirectivesAndPipesInClosure = true;
+        declarationListEmitMode = DeclarationListEmitMode.Closure;
       }
 
       return {
@@ -100,7 +100,7 @@ export function toR3ComponentMeta<TExpression>(
     pipes = metaObj.getObject('pipes').toMap(pipe => {
       const forwardRefType = extractForwardRef(pipe);
       if (forwardRefType !== null) {
-        wrapDirectivesAndPipesInClosure = true;
+        declarationListEmitMode = DeclarationListEmitMode.Closure;
         return forwardRefType;
       } else {
         return pipe.getOpaque();
@@ -115,7 +115,7 @@ export function toR3ComponentMeta<TExpression>(
       nodes: template.nodes,
       ngContentSelectors: template.ngContentSelectors,
     },
-    wrapDirectivesAndPipesInClosure,
+    declarationListEmitMode,
     styles: metaObj.has('styles') ? metaObj.getArray('styles').map(entry => entry.getString()) : [],
     encapsulation: metaObj.has('encapsulation') ?
         parseEncapsulation(metaObj.getValue('encapsulation')) :

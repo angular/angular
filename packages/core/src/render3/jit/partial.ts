@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {getCompilerFacade, R3DeclareDirectiveFacade} from '../../compiler/compiler_facade';
+import {getCompilerFacade, R3DeclareComponentFacade, R3DeclareDirectiveFacade} from '../../compiler/compiler_facade';
 import {angularCoreEnv} from './environment';
 
 /**
@@ -25,6 +25,8 @@ export function ɵɵngDeclareDirective(decl: R3DeclareDirectiveFacade): unknown 
  *
  * @codeGenApi
  */
-export function ɵɵngDeclareComponent(decl: unknown): unknown {
-  throw new Error('Not yet implemented');
+export function ɵɵngDeclareComponent(decl: R3DeclareComponentFacade): unknown {
+  const compiler = getCompilerFacade();
+  return compiler.compileComponentDeclaration(
+      angularCoreEnv, `ng:///${decl.type.name}/ɵcmp.js`, decl);
 }

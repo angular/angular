@@ -230,6 +230,7 @@ export class Identifiers {
       o.ExternalReference = {name: 'ɵɵtemplateRefExtractor', moduleName: CORE};
 
   static forwardRef: o.ExternalReference = {name: 'forwardRef', moduleName: CORE};
+  static resolveForwardRef: o.ExternalReference = {name: 'resolveForwardRef', moduleName: CORE};
 
   static resolveWindow: o.ExternalReference = {name: 'ɵɵresolveWindow', moduleName: CORE};
   static resolveDocument: o.ExternalReference = {name: 'ɵɵresolveDocument', moduleName: CORE};

@@ -9,7 +9,7 @@ import * as core from '../../core';
 import {DEFAULT_INTERPOLATION_CONFIG} from '../../ml_parser/interpolation_config';
 import * as o from '../../output/output_ast';
 import {Identifiers as R3} from '../r3_identifiers';
-import {R3ComponentDef, R3ComponentMetadata, R3UsedDirectiveMetadata} from '../view/api';
+import {DeclarationListEmitMode, R3ComponentDef, R3ComponentMetadata, R3UsedDirectiveMetadata} from '../view/api';
 import {createComponentType} from '../view/compiler';
 import {ParsedTemplate} from '../view/template';
 import {DefinitionMap} from '../view/util';
@@ -91,8 +91,9 @@ function compileTemplateDefinition(template: ParsedTemplate): o.LiteralMapExpr {
  * individual directives. If the component does not use any directives, then null is returned.
  */
 function compileUsedDirectiveMetadata(meta: R3ComponentMetadata): o.LiteralArrayExpr|null {
-  const wrapType =
-      meta.wrapDirectivesAndPipesInClosure ? generateForwardRef : (expr: o.Expression) => expr;
+  const wrapType = meta.declarationListEmitMode !== DeclarationListEmitMode.Direct ?
+      generateForwardRef :
+      (expr: o.Expression) => expr;
 
   return toOptionalLiteralArray(meta.directives, directive => {
     const dirMeta = new DefinitionMap<R3UsedDirectiveMetadata>();
@@ -115,8 +116,9 @@ function compileUsedPipeMetadata(meta: R3ComponentMetadata): o.LiteralMapExpr|nu
     return null;
   }
 
-  const wrapType =
-      meta.wrapDirectivesAndPipesInClosure ? generateForwardRef : (expr: o.Expression) => expr;
+  const wrapType = meta.declarationListEmitMode !== DeclarationListEmitMode.Direct ?
+      generateForwardRef :
+      (expr: o.Expression) => expr;
 
   const entries = [];
   for (const [name, pipe] of meta.pipes) {

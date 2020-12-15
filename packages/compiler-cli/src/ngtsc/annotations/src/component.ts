@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {compileComponentFromMetadata, compileDeclareComponentFromMetadata, ConstantPool, CssSelector, DEFAULT_INTERPOLATION_CONFIG, DomElementSchemaRegistry, Expression, ExternalExpr, Identifiers, InterpolationConfig, LexerRange, makeBindingParser, ParsedTemplate, ParseSourceFile, parseTemplate, R3ComponentDef, R3ComponentMetadata, R3FactoryTarget, R3TargetBinder, R3UsedDirectiveMetadata, SelectorMatcher, Statement, syntaxError, TmplAstNode, WrappedNodeExpr} from '@angular/compiler';
+import {compileComponentFromMetadata, compileDeclareComponentFromMetadata, ConstantPool, CssSelector, DeclarationListEmitMode, DEFAULT_INTERPOLATION_CONFIG, DomElementSchemaRegistry, Expression, ExternalExpr, Identifiers, InterpolationConfig, LexerRange, makeBindingParser, ParsedTemplate, ParseSourceFile, parseTemplate, R3ComponentDef, R3ComponentMetadata, R3FactoryTarget, R3TargetBinder, R3UsedDirectiveMetadata, SelectorMatcher, Statement, TmplAstNode, WrappedNodeExpr} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {CycleAnalyzer} from '../../cycles';
@@ -42,7 +42,7 @@ const EMPTY_ARRAY: any[] = [];
  * be included here.
  */
 export type ComponentMetadataResolvedFields =
-    SubsetOfKeys<R3ComponentMetadata, 'directives'|'pipes'|'wrapDirectivesAndPipesInClosure'>;
+    SubsetOfKeys<R3ComponentMetadata, 'directives'|'pipes'|'declarationListEmitMode'>;
 
 export interface ComponentAnalysisData {
   /**
@@ -451,7 +451,7 @@ export class ComponentDecoratorHandler implements
     const data: ComponentResolutionData = {
       directives: EMPTY_ARRAY,
       pipes: EMPTY_MAP,
-      wrapDirectivesAndPipesInClosure: false,
+      declarationListEmitMode: DeclarationListEmitMode.Direct,
     };
 
     if (scope !== null && (!scope.compilation.isPoisoned || this.usePoisonedData)) {
@@ -549,7 +549,9 @@ export class ComponentDecoratorHandler implements
 
         data.directives = usedDirectives;
         data.pipes = new Map(usedPipes.map(pipe => [pipe.pipeName, pipe.expression]));
-        data.wrapDirectivesAndPipesInClosure = wrapDirectivesAndPipesInClosure;
+        data.declarationListEmitMode = wrapDirectivesAndPipesInClosure ?
+            DeclarationListEmitMode.Closure :
+            DeclarationListEmitMode.Direct;
       } else {
         // Declaring the directiveDefs/pipeDefs arrays directly would require imports that would
         // create a cycle. Instead, mark this component as requiring remote scoping, so that the

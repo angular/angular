@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {forwardRef} from '../../di/forward_ref';
+import {forwardRef, resolveForwardRef} from '../../di/forward_ref';
 import {ɵɵinject, ɵɵinvalidFactoryDep} from '../../di/injector_compatibility';
 import {ɵɵdefineInjectable, ɵɵdefineInjector} from '../../di/interface/defs';
 import * as sanitization from '../../sanitization/sanitization';
@@ -170,4 +170,5 @@ export const angularCoreEnv: {[name: string]: Function} =
        'ɵɵtrustConstantResourceUrl': sanitization.ɵɵtrustConstantResourceUrl,
 
        'forwardRef': forwardRef,
+       'resolveForwardRef': resolveForwardRef,
      }))();
