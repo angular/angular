@@ -57,6 +57,6 @@ function hasProperty(node: ts.ObjectLiteralExpression, propertyName: string): bo
         property.name.text === propertyName) {
       return true;
     }
-  };
+  }
   return false;
 }
