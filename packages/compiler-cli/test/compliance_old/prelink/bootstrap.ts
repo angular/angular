@@ -8,6 +8,7 @@
 import {PluginObj, transformSync} from '@babel/core';
 import * as ts from 'typescript';
 
+import {needsLinking} from '../../../linker';
 import {createEs2015LinkerPlugin} from '../../../linker/babel';
 import {compileFiles, CompileFn, setCompileFn} from '../mock_compile';
 
@@ -34,7 +35,10 @@ const linkedCompile: CompileFn = (data, angularFiles, options) => {
     ...options,
   });
 
-  const source = compiledFiles.map(file => applyLinker(file, linkerPlugin)).join('\n');
+  const source =
+      compiledFiles
+          .map(file => applyLinker({path: file.fileName, source: file.source}, linkerPlugin))
+          .join('\n');
 
   return {source};
 };
@@ -42,16 +46,16 @@ const linkedCompile: CompileFn = (data, angularFiles, options) => {
 /**
  * Runs the provided code through the Babel linker plugin, if the file has the .js extension.
  *
- * @param file The file name and its source to be transformed using the linker.
+ * @param file The absolute file path and its source to be transformed using the linker.
  * @param linkerPlugin The linker plugin to apply.
  * @returns The file's source content, which has been transformed using the linker if necessary.
  */
-function applyLinker(file: {fileName: string; source: string}, linkerPlugin: PluginObj): string {
-  if (!file.fileName.endsWith('.js')) {
+function applyLinker(file: {path: string; source: string}, linkerPlugin: PluginObj): string {
+  if (!file.path.endsWith('.js') || !needsLinking(file.path, file.source)) {
     return file.source;
   }
   const result = transformSync(file.source, {
-    filename: file.fileName,
+    filename: file.path,
     plugins: [linkerPlugin],
     parserOpts: {sourceType: 'unambiguous'},
   });
