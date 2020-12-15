@@ -677,8 +677,9 @@ runInEachFileSystem(() => {
         expect(computeStartOfLinePositions('abc\n')).toEqual([0, 4]);
         expect(computeStartOfLinePositions('\nabc')).toEqual([0, 1]);
         expect(computeStartOfLinePositions('abc\ndefg')).toEqual([0, 4]);
-        expect(computeStartOfLinePositions('abc\r\n')).toEqual([0, 4]);
-        expect(computeStartOfLinePositions('abc\r\ndefg')).toEqual([0, 4]);
+        expect(computeStartOfLinePositions('abc\r\n')).toEqual([0, 5]);
+        expect(computeStartOfLinePositions('abc\r\ndefg')).toEqual([0, 5]);
+        expect(computeStartOfLinePositions('abc\uD83D\uDE80\ndef🚀\r\n')).toEqual([0, 6, 13]);
       });
     });
   });
