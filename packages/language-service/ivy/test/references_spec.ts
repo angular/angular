@@ -11,7 +11,7 @@ import {initMockFileSystem, TestFile} from '@angular/compiler-cli/src/ngtsc/file
 import * as ts from 'typescript/lib/tsserverlibrary';
 
 import {extractCursorInfo, LanguageServiceTestEnvironment} from './env';
-import {createModuleWithDeclarations, getText} from './test_utils';
+import {assertFileNames, assertTextSpans, createModuleWithDeclarations, getText} from './test_utils';
 
 describe('find references', () => {
   let env: LanguageServiceTestEnvironment;
@@ -831,21 +831,6 @@ describe('find references', () => {
     };
   }
 });
-
-function assertFileNames(refs: Array<{fileName: string}>, expectedFileNames: string[]) {
-  const actualPaths = refs.map(r => r.fileName);
-  const actualFileNames = actualPaths.map(p => last(p.split('/')));
-  expect(new Set(actualFileNames)).toEqual(new Set(expectedFileNames));
-}
-
-function assertTextSpans(refs: Array<{textSpan: string}>, expectedTextSpans: string[]) {
-  const actualSpans = refs.map(ref => ref.textSpan);
-  expect(new Set(actualSpans)).toEqual(new Set(expectedTextSpans));
-}
-
-function last<T>(array: T[]): T {
-  return array[array.length - 1];
-}
 
 type Stringy<T> = {
   [P in keyof T]: string;

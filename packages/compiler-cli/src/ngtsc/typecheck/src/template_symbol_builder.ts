@@ -13,7 +13,7 @@ import {AbsoluteFsPath} from '../../file_system';
 import {ClassDeclaration} from '../../reflection';
 import {ComponentScopeReader} from '../../scope';
 import {isAssignment} from '../../util/src/typescript';
-import {DirectiveSymbol, DomBindingSymbol, ElementSymbol, ExpressionSymbol, InputBindingSymbol, OutputBindingSymbol, PipeSymbol, ReferenceSymbol, ShimLocation, Symbol, SymbolKind, TemplateSymbol, TsNodeSymbolInfo, TypeCheckableDirectiveMeta, VariableSymbol} from '../api';
+import {BindingSymbol, DirectiveSymbol, DomBindingSymbol, ElementSymbol, ExpressionSymbol, InputBindingSymbol, OutputBindingSymbol, PipeSymbol, ReferenceSymbol, ShimLocation, Symbol, SymbolKind, TemplateSymbol, TsNodeSymbolInfo, TypeCheckableDirectiveMeta, VariableSymbol} from '../api';
 
 import {ExpressionIdentifier, findAllMatchingNodes, findFirstMatchingNode, hasExpressionIdentifier} from './comments';
 import {TemplateData} from './context';
@@ -253,31 +253,35 @@ export class SymbolBuilder {
       return host !== null ? {kind: SymbolKind.DomBinding, host} : null;
     }
 
-    const node = findFirstMatchingNode(
+    const nodes = findAllMatchingNodes(
         this.typeCheckBlock, {withSpan: binding.sourceSpan, filter: isAssignment});
-    if (node === null || !isAccessExpression(node.left)) {
-      return null;
-    }
+    const bindings: BindingSymbol[] = [];
+    for (const node of nodes) {
+      if (!isAccessExpression(node.left)) {
+        continue;
+      }
 
-    const symbolInfo = this.getSymbolOfTsNode(node.left);
-    if (symbolInfo === null || symbolInfo.tsSymbol === null) {
-      return null;
-    }
+      const symbolInfo = this.getSymbolOfTsNode(node.left);
+      if (symbolInfo === null || symbolInfo.tsSymbol === null) {
+        continue;
+      }
 
-    const target = this.getDirectiveSymbolForAccessExpression(node.left, consumer);
-    if (target === null) {
-      return null;
-    }
-
-    return {
-      kind: SymbolKind.Input,
-      bindings: [{
+      const target = this.getDirectiveSymbolForAccessExpression(node.left, consumer);
+      if (target === null) {
+        continue;
+      }
+      bindings.push({
         ...symbolInfo,
         tsSymbol: symbolInfo.tsSymbol,
         kind: SymbolKind.Binding,
         target,
-      }],
-    };
+      });
+    }
+    if (bindings.length === 0) {
+      return null;
+    }
+
+    return {kind: SymbolKind.Input, bindings};
   }
 
   private getDirectiveSymbolForAccessExpression(

@@ -75,3 +75,14 @@ export function humanizeDefinitionInfo(
         undefined,
   };
 }
+
+export function assertFileNames(refs: Array<{fileName: string}>, expectedFileNames: string[]) {
+  const actualPaths = refs.map(r => r.fileName);
+  const actualFileNames = actualPaths.map(p => last(p.split('/')));
+  expect(new Set(actualFileNames)).toEqual(new Set(expectedFileNames));
+}
+
+export function assertTextSpans(items: Array<{textSpan: string}>, expectedTextSpans: string[]) {
+  const actualSpans = items.map(item => item.textSpan);
+  expect(new Set(actualSpans)).toEqual(new Set(expectedTextSpans));
+}
