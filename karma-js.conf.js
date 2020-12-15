@@ -85,6 +85,7 @@ module.exports = function(config) {
       'dist/all/@angular/compiler/test/render3/**',
       'dist/all/@angular/core/test/bundling/**',
       'dist/all/@angular/core/test/render3/ivy/**',
+      'dist/all/@angular/core/test/render3/jit/**',
       'dist/all/@angular/core/test/render3/perf/**',
       'dist/all/@angular/elements/schematics/**',
       'dist/all/@angular/examples/**/e2e_test/*',
