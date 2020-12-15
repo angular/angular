@@ -11,13 +11,14 @@ import '../util/ng_dev_mode';
 import {AbstractType, Type} from '../interface/type';
 import {getClosureSafeProperty} from '../util/property';
 import {stringify} from '../util/stringify';
+
 import {resolveForwardRef} from './forward_ref';
 import {getInjectImplementation, injectRootLimpMode} from './inject_switch';
 import {InjectionToken} from './injection_token';
 import {Injector} from './injector';
 import {InjectFlags} from './interface/injector';
 import {ValueProvider} from './interface/provider';
-import {Inject, Optional, Self, SkipSelf} from './metadata';
+import {Host, Inject, Optional, Self, SkipSelf} from './metadata';
 
 
 const _THROW_IF_NOT_FOUND = {};
@@ -151,6 +152,8 @@ export function injectArgs(types: (Type<any>|InjectionToken<any>|any[])[]): any[
           flags |= InjectFlags.SkipSelf;
         } else if (meta instanceof Self || meta.ngMetadataName === 'Self' || meta === Self) {
           flags |= InjectFlags.Self;
+        } else if (meta instanceof Host || meta.ngMetadataName === 'Host' || meta === Host) {
+          flags |= InjectFlags.Host;
         } else if (meta instanceof Inject || meta === Inject) {
           type = meta.token;
         } else {
