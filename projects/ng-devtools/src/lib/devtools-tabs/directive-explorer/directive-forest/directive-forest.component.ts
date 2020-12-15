@@ -63,7 +63,7 @@ export class DirectiveForestComponent implements OnInit, OnDestroy {
     (node) => node.expandable
   );
   readonly dataSource = new ComponentDataSource(this.treeControl);
-  readonly itemHeight = 21;
+  readonly itemHeight = 24;
 
   private _initialized = false;
 
@@ -129,7 +129,8 @@ export class DirectiveForestComponent implements OnInit, OnDestroy {
     // The top most point we see an element
     const top = scrollParent.scrollTop;
     // That's the bottom most point we currently see an element.
-    const bottom = top + scrollParent.offsetHeight;
+    const parentHeight = scrollParent.offsetHeight;
+    const bottom = top + parentHeight;
     const idx = this.dataSource.expandedDataValues.findIndex((el) => el.id === node.id);
     // The node might be hidden.
     if (idx < 0) {
@@ -139,7 +140,7 @@ export class DirectiveForestComponent implements OnInit, OnDestroy {
     if (itemTop < top) {
       scrollParent.scrollTo({ top: itemTop });
     } else if (bottom < itemTop + this.itemHeight) {
-      scrollParent.scrollTo({ top: itemTop - scrollParent.offsetHeight + this.itemHeight });
+      scrollParent.scrollTo({ top: itemTop - parentHeight + this.itemHeight });
     }
   }
 
