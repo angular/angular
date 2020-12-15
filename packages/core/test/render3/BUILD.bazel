@@ -80,6 +80,9 @@ jasmine_node_test(
         ":domino_es5",
         "//tools/testing:node_es5",
     ],
+    tags = [
+        "ivy-only",
+    ],
     deps = [
         ":render3_node_lib",
         "//packages/zone.js/lib",
@@ -88,6 +91,9 @@ jasmine_node_test(
 
 karma_web_test_suite(
     name = "render3_web",
+    tags = [
+        "ivy-only",
+    ],
     deps = [
         ":render3_lib",
     ],
