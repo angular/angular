@@ -1136,7 +1136,7 @@ runInEachFileSystem(() => {
             .toEqual('TestDir');
       });
 
-      it('returns the first directive match when two directives have the same input', () => {
+      it('returns the all inputs when two directives have the same input', () => {
         const fileName = absoluteFrom('/main.ts');
         const dirFile = absoluteFrom('/dir.ts');
         const templateString = `<div dir otherDir [inputA]="'my input A'"></div>`;
@@ -1178,12 +1178,12 @@ runInEachFileSystem(() => {
         const inputAbinding = (nodes[0] as TmplAstElement).inputs[0];
         const symbol = templateTypeChecker.getSymbolOfNode(inputAbinding, cmp)!;
         assertInputBindingSymbol(symbol);
-        expect(
-            (symbol.bindings[0].tsSymbol!.declarations[0] as ts.PropertyDeclaration).name.getText())
-            .toEqual('inputA');
-        expect((symbol.bindings[0].tsSymbol!.declarations[0] as ts.PropertyDeclaration)
-                   .parent.name?.text)
-            .toEqual('TestDir');
+        expect(new Set(symbol.bindings.map(
+                   b => (b.tsSymbol!.declarations[0] as ts.PropertyDeclaration).name.getText())))
+            .toEqual(new Set(['inputA', 'otherDirInputA']));
+        expect(new Set(symbol.bindings.map(
+                   b => (b.tsSymbol!.declarations[0] as ts.PropertyDeclaration).parent.name?.text)))
+            .toEqual(new Set(['TestDir', 'OtherDir']));
       });
     });
 
