@@ -21,4 +21,10 @@
     </div>
   </as-split-area>
 </as-split>
-<ng-breadcrumbs *ngIf="parents" (handleSelect)="handleSelect($event)" [parents]="parents"></ng-breadcrumbs>
+<ng-breadcrumbs
+  (mouseLeaveNode)="unhighlight()"
+  (mouseOverNode)="highlight($event)"
+  *ngIf="parents"
+  (handleSelect)="handleSelect($event)"
+  [parents]="parents"
+></ng-breadcrumbs>

@@ -9,4 +9,6 @@ import { FlatNode } from '../directive-forest/component-data-source';
 export class BreadcrumbsComponent {
   @Input() parents: FlatNode[];
   @Output() handleSelect = new EventEmitter();
+  @Output() mouseOverNode = new EventEmitter();
+  @Output() mouseLeaveNode = new EventEmitter();
 }
