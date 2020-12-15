@@ -1,5 +1,12 @@
 <mat-card class="breadcrumb-card">
-  <button mat-stroked-button color="primary" *ngFor="let node of parents" (click)="handleSelect.emit(node)">
+  <button
+    (mouseover)="mouseOverNode.emit(node)"
+    (mouseleave)="mouseLeaveNode.emit(node)"
+    mat-stroked-button
+    color="primary"
+    *ngFor="let node of parents"
+    (click)="handleSelect.emit(node)"
+  >
     {{ node.original.component?.name || node.original.element }}
   </button>
 </mat-card>

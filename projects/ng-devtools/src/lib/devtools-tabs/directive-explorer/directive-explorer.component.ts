@@ -133,6 +133,17 @@ export class DirectiveExplorerComponent implements OnInit {
     this._appOperations.selectDomElement(node.position);
   }
 
+  highlight(node: FlatNode): void {
+    if (!node.original.component) {
+      return;
+    }
+    this._messageBus.emit('createHighlightOverlay', [node.position]);
+  }
+
+  unhighlight(): void {
+    this._messageBus.emit('removeHighlightOverlay');
+  }
+
   private _constructViewQuery(): ComponentExplorerViewQuery | undefined {
     if (!this._clickedElement) {
       return;
