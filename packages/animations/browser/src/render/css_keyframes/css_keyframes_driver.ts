@@ -20,7 +20,6 @@ const TAB_SPACE = ' ';
 
 export class CssKeyframesDriver implements AnimationDriver {
   private _count = 0;
-  private readonly _head: any = document.querySelector('head');
 
   validateStyleProperty(prop: string): boolean {
     return validateStyleProperty(prop);
@@ -107,7 +106,8 @@ export class CssKeyframesDriver implements AnimationDriver {
 
     const animationName = `${KEYFRAMES_NAME_PREFIX}${this._count++}`;
     const kfElm = this.buildKeyframeElement(element, animationName, keyframes);
-    document.querySelector('head')!.appendChild(kfElm);
+    const nodeToAppendKfElm = findNodeToAppendKfElm(element);
+    nodeToAppendKfElm.appendChild(kfElm);
 
     const specialStyles = packageNonAnimatableStyles(element, keyframes);
     const player = new CssKeyframesPlayer(
@@ -116,6 +116,18 @@ export class CssKeyframesDriver implements AnimationDriver {
     player.onDestroy(() => removeElement(kfElm));
     return player;
   }
+}
+
+// TODO: Once we drop IE 11 support, method can be simplified
+// to the native browser function `getRootNode`
+function findNodeToAppendKfElm(element: any): Node {
+  while (element && element !== document.documentElement) {
+    if (element.shadowRoot) {
+      return element.shadowRoot;
+    }
+    element = element.parentNode || element.host;
+  }
+  return document.querySelector('head')!;
 }
 
 function flattenKeyframesIntoStyles(keyframes: null|{[key: string]: any}|
