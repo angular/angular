@@ -107,6 +107,22 @@ describe('find references', () => {
     assertTextSpans(refs, ['title']);
   });
 
+  it('should work for $event in method call arguments', () => {
+    const {text, cursor} = extractCursorInfo(`
+          import {Component} from '@angular/core';
+
+          @Component({template: '<div (click)="setTitle($even¦t)"></div>'})
+          export class AppCmp {
+            setTitle(s: any) {}
+          }`);
+    const appFile = {name: _('/app.ts'), contents: text};
+    env = createModuleWithDeclarations([appFile]);
+    const refs = getReferencesAtPosition(_('/app.ts'), cursor)!;
+    expect(refs.length).toBe(1);
+
+    assertTextSpans(refs, ['$event']);
+  });
+
   it('should work for property writes', () => {
     const appFile = {
       name: _('/app.ts'),

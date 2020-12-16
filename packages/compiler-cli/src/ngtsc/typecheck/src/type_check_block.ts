@@ -1837,6 +1837,7 @@ function tcbCreateEventHandler(
       /* name */ EVENT_PARAMETER,
       /* questionToken */ undefined,
       /* type */ eventParamType);
+  addExpressionIdentifier(eventParam, ExpressionIdentifier.EVENT_PARAMETER);
 
   return ts.createFunctionExpression(
       /* modifier */ undefined,
