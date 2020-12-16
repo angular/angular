@@ -38,7 +38,7 @@ The process of updating the Chrome or Firefox version is not straightforward, bu
 
     Here is an example with `curl` & `shasum`:
     ``` bash
-    curl https://commondatastorage.googleapis.com/chromium-browser-snapshots/Linux_x64/756066/chrome-linux.zip | shasum -a 256
+    curl -L https://commondatastorage.googleapis.com/chromium-browser-snapshots/Linux_x64/756066/chrome-linux.zip | shasum -a 256
     ```
 
 ## Puppeteer
@@ -82,5 +82,29 @@ platform_http_file(
 2. Update the `sha256` checksum of the browser archives.
     You can do this by downloading the artifacts from the URLs you just updated, and then running `shasum` on those files:
     ```sh
-    curl <BROWSER_URL> | sha256 -a 256
+    curl -L <BROWSER_URL> | shasum -a 256
+    ```
+
+In the same file, you can also update the version of gecko driver (the WebDriver implementation for Firefox browsers).
+
+1. Go to https://firefox-source-docs.mozilla.org/testing/geckodriver/Support.html and find a version that is compatible with the used version of Firefox.
+
+2. Update the `geckodriver` repository URLs to the desired version:
+
+    ```bzl
+    platform_http_file(
+        name = "org_mozilla_geckodriver_amd64",
+        licenses = ["reciprocal"],  # MPL 2.0
+        sha256 = "d59ca434d8e41ec1e30dd7707b0c95171dd6d16056fb6db9c978449ad8b93cc0",
+        # Geckodriver v0.26.0
+        urls = ["https://github.com/mozilla/geckodriver/releases/download/v0.26.0/geckodriver-v0.26.0-linux64.tar.gz"],
+    )
+    ```
+
+    For example, replace all occurrences of `0.26.0` with the newer version.
+
+3. Update the `sha256` checksum of the driver archives.
+    You can do this by downloading the artifacts from the URLs you just updated, and then running `shasum` on those files:
+    ```sh
+    curl -L <DRIVER_URL> | shasum -a 256
     ```
