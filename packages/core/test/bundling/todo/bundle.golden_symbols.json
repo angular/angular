@@ -222,6 +222,9 @@
     "name": "assertTemplate"
   },
   {
+    "name": "attachInjectFlag"
+  },
+  {
     "name": "attachPatchData"
   },
   {

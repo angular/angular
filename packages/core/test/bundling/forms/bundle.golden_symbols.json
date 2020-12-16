@@ -237,9 +237,6 @@
     "name": "FormsModule"
   },
   {
-    "name": "Host"
-  },
-  {
     "name": "INJECTOR"
   },
   {
@@ -570,9 +567,6 @@
     "name": "SelectMultipleControlValueAccessor"
   },
   {
-    "name": "Self"
-  },
-  {
     "name": "ShadowDomRenderer"
   },
   {
@@ -742,6 +736,9 @@
   },
   {
     "name": "applyView"
+  },
+  {
+    "name": "attachInjectFlag"
   },
   {
     "name": "attachPatchData"

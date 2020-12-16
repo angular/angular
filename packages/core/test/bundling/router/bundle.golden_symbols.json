@@ -291,9 +291,6 @@
     "name": "HashLocationStrategy"
   },
   {
-    "name": "Host"
-  },
-  {
     "name": "INITIAL_VALUE"
   },
   {
@@ -732,9 +729,6 @@
     "name": "SecurityContext"
   },
   {
-    "name": "Self"
-  },
-  {
     "name": "ShadowDomRenderer"
   },
   {
@@ -970,6 +964,9 @@
   },
   {
     "name": "applyView"
+  },
+  {
+    "name": "attachInjectFlag"
   },
   {
     "name": "attachPatchData"
