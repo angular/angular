@@ -19,7 +19,7 @@ import {CompletionBuilder, CompletionNodeContext} from './completions';
 import {DefinitionBuilder} from './definitions';
 import {QuickInfoBuilder} from './quick_info';
 import {ReferenceBuilder} from './references';
-import {getTargetAtPosition, TargetNode, TargetNodeKind} from './template_target';
+import {getTargetAtPosition, TargetContext, TargetNodeKind} from './template_target';
 import {getTemplateInfoAtPosition, isTypeScriptFile} from './utils';
 
 export class LanguageService {
@@ -104,10 +104,11 @@ export class LanguageService {
     if (positionDetails === null) {
       return undefined;
     }
-    const results =
-        new QuickInfoBuilder(
-            this.tsLS, compiler, templateInfo.component, positionDetails.nodeInContext.node)
-            .get();
+
+    const node = positionDetails.context.kind === TargetNodeKind.TwoWayBindingContext ?
+        positionDetails.context.nodes[0] :
+        positionDetails.context.node;
+    const results = new QuickInfoBuilder(this.tsLS, compiler, templateInfo.component, node).get();
     this.compilerFactory.registerLastKnownProgram();
     return results;
   }
@@ -131,9 +132,13 @@ export class LanguageService {
     if (positionDetails === null) {
       return null;
     }
+
+    const node = positionDetails.context.kind === TargetNodeKind.TwoWayBindingContext ?
+        positionDetails.context.nodes[0] :
+        positionDetails.context.node;
     return new CompletionBuilder(
-        this.tsLS, compiler, templateInfo.component, positionDetails.nodeInContext.node,
-        nodeContextFromTarget(positionDetails.nodeInContext), positionDetails.parent,
+        this.tsLS, compiler, templateInfo.component, node,
+        nodeContextFromTarget(positionDetails.context), positionDetails.parent,
         positionDetails.template);
   }
 
@@ -260,7 +265,7 @@ function getOrCreateTypeCheckScriptInfo(
   return scriptInfo;
 }
 
-function nodeContextFromTarget(target: TargetNode): CompletionNodeContext {
+function nodeContextFromTarget(target: TargetContext): CompletionNodeContext {
   switch (target.kind) {
     case TargetNodeKind.ElementInTagContext:
       return CompletionNodeContext.ElementTag;
