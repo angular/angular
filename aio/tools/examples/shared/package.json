@@ -75,7 +75,7 @@
     "lite-server": "^2.2.2",
     "lodash": "^4.16.2",
     "protractor": "~7.0.0",
-    "puppeteer": "5.1.0",
+    "puppeteer": "5.4.1",
     "rimraf": "^2.5.4",
     "rollup": "^1.1.0",
     "rollup-plugin-commonjs": "^9.2.1",
