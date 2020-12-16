@@ -23,7 +23,7 @@ const ALL_TEST_TARGETS =
         'yarn',
         [
           '-s', 'bazel', 'query', '--output', 'label',
-          `kind(nodejs_test, ...) intersect attr("tags", "symbol_extractor", ...)`
+          `'kind(nodejs_test, ...) intersect attr("tags", "symbol_extractor", ...)'`
         ],
         {encoding: 'utf8', shell: true, cwd: path.resolve(__dirname, '../..')})
         .stdout.trim()
