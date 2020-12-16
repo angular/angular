@@ -21,7 +21,7 @@
     "mocha": "^3.1.2",
     "mock-require": "3.0.3",
     "promises-aplus-tests": "^2.1.2",
-    "typescript": "~3.4.2"
+    "typescript": "~3.8.3"
   },
   "scripts": {
     "electrontest": "cd test/extra && node electron.js",
