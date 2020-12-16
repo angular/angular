@@ -242,9 +242,11 @@ function getOrCreateTypeCheckScriptInfo(
     // attempt to fetch the content from disk and fail.
     scriptInfo = projectService.getOrCreateScriptInfoForNormalizedPath(
         ts.server.toNormalizedPath(tcf),
-        true,              // openedByClient
-        '',                // fileContent
-        ts.ScriptKind.TS,  // scriptKind
+        true,  // openedByClient
+        '',    // fileContent
+        // script info added by plugins should be marked as external, see
+        // https://github.com/microsoft/TypeScript/blob/b217f22e798c781f55d17da72ed099a9dee5c650/src/compiler/program.ts#L1897-L1899
+        ts.ScriptKind.External,  // scriptKind
     );
     if (!scriptInfo) {
       throw new Error(`Failed to create script info for ${tcf}`);
