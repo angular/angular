@@ -87,6 +87,56 @@ describe('definitions', () => {
     assertFileNames([def, def2], ['dir2.ts', 'dir.ts']);
   });
 
+  it('gets definitions for all outputs when attribute matches more than one', () => {
+    initMockFileSystem('Native');
+    const {cursor, text} = extractCursorInfo('<div dir (someEv¦ent)="doSomething()"></div>');
+    const templateFile = {contents: text, name: absoluteFrom('/app.html')};
+    const dirFile = {
+      name: absoluteFrom('/dir.ts'),
+      contents: `
+      import {Directive, Output, EventEmitter} from '@angular/core';
+
+      @Directive({selector: '[dir]'})
+      export class MyDir {
+        @Output() someEvent = new EventEmitter<void>();
+      }`,
+    };
+    const dirFile2 = {
+      name: absoluteFrom('/dir2.ts'),
+      contents: `
+      import {Directive, Output, EventEmitter} from '@angular/core';
+
+      @Directive({selector: '[dir]'})
+      export class MyDir2 {
+        @Output() someEvent = new EventEmitter<void>();
+      }`,
+    };
+    const appFile = {
+      name: absoluteFrom('/app.ts'),
+      contents: `
+        import {Component, NgModule} from '@angular/core';
+        import {CommonModule} from '@angular/common';
+
+        @Component({templateUrl: 'app.html'})
+        export class AppCmp {
+          doSomething() {}
+        }
+      `
+    };
+    const env = createModuleWithDeclarations([appFile, dirFile, dirFile2], [templateFile]);
+    const {textSpan, definitions} =
+        getDefinitionsAndAssertBoundSpan(env, absoluteFrom('/app.html'), cursor);
+    expect(text.substr(textSpan.start, textSpan.length)).toEqual('someEvent');
+
+    expect(definitions.length).toEqual(2);
+    const [def, def2] = definitions;
+    expect(def.textSpan).toContain('someEvent');
+    expect(def2.textSpan).toContain('someEvent');
+    // TODO(atscott): investigate why the text span includes more than just 'someEvent'
+    // assertTextSpans([def, def2], ['someEvent']);
+    assertFileNames([def, def2], ['dir2.ts', 'dir.ts']);
+  });
+
   function getDefinitionsAndAssertBoundSpan(
       env: LanguageServiceTestEnvironment, fileName: AbsoluteFsPath, cursor: number) {
     env.expectNoSourceDiagnostics();
