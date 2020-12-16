@@ -9,9 +9,11 @@ import {TmplAstBoundAttribute, TmplAstTextAttribute, TmplAstVariable} from '@ang
 import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
 import {absoluteFrom, absoluteFromSourceFile, AbsoluteFsPath} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {DirectiveSymbol, SymbolKind, TemplateTypeChecker, TypeCheckingProgramStrategy} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
+import {ExpressionIdentifier, hasExpressionIdentifier} from '@angular/compiler-cli/src/ngtsc/typecheck/src/comments';
 import * as ts from 'typescript';
 
 import {getTargetAtPosition} from './template_target';
+import {findTightestNode} from './ts_utils';
 import {getDirectiveMatchesForAttribute, getDirectiveMatchesForElementTag, getTemplateInfoAtPosition, isWithin, TemplateInfo, toTextSpan} from './utils';
 
 export class ReferenceBuilder {
@@ -135,7 +137,7 @@ export class ReferenceBuilder {
     const entries: ts.ReferenceEntry[] = [];
     for (const ref of refs) {
       if (this.ttc.isTrackedTypeCheckFile(absoluteFrom(ref.fileName))) {
-        const entry = convertToTemplateReferenceEntry(ref, this.ttc);
+        const entry = this.convertToTemplateReferenceEntry(ref, this.ttc);
         if (entry !== null) {
           entries.push(entry);
         }
@@ -145,37 +147,50 @@ export class ReferenceBuilder {
     }
     return entries;
   }
-}
 
-function convertToTemplateReferenceEntry(
-    shimReferenceEntry: ts.ReferenceEntry,
-    templateTypeChecker: TemplateTypeChecker): ts.ReferenceEntry|null {
-  // TODO(atscott): Determine how to consistently resolve paths. i.e. with the project serverHost or
-  // LSParseConfigHost in the adapter. We should have a better defined way to normalize paths.
-  const mapping = templateTypeChecker.getTemplateMappingAtShimLocation({
-    shimPath: absoluteFrom(shimReferenceEntry.fileName),
-    positionInShimFile: shimReferenceEntry.textSpan.start,
-  });
-  if (mapping === null) {
-    return null;
+  private convertToTemplateReferenceEntry(
+      shimReferenceEntry: ts.ReferenceEntry,
+      templateTypeChecker: TemplateTypeChecker): ts.ReferenceEntry|null {
+    const sf = this.strategy.getProgram().getSourceFile(shimReferenceEntry.fileName);
+    if (sf === undefined) {
+      return null;
+    }
+    const tcbNode = findTightestNode(sf, shimReferenceEntry.textSpan.start);
+    if (tcbNode === undefined ||
+        hasExpressionIdentifier(sf, tcbNode, ExpressionIdentifier.EVENT_PARAMETER)) {
+      // If the reference result is the $event parameter in the subscribe/addEventListener function
+      // in the TCB, we want to filter this result out of the references. We really only want to
+      // return references to the parameter in the template itself.
+      return null;
+    }
+
+    // TODO(atscott): Determine how to consistently resolve paths. i.e. with the project serverHost
+    // or LSParseConfigHost in the adapter. We should have a better defined way to normalize paths.
+    const mapping = templateTypeChecker.getTemplateMappingAtShimLocation({
+      shimPath: absoluteFrom(shimReferenceEntry.fileName),
+      positionInShimFile: shimReferenceEntry.textSpan.start,
+    });
+    if (mapping === null) {
+      return null;
+    }
+    const {templateSourceMapping, span} = mapping;
+
+    let templateUrl: AbsoluteFsPath;
+    if (templateSourceMapping.type === 'direct') {
+      templateUrl = absoluteFromSourceFile(templateSourceMapping.node.getSourceFile());
+    } else if (templateSourceMapping.type === 'external') {
+      templateUrl = absoluteFrom(templateSourceMapping.templateUrl);
+    } else {
+      // This includes indirect mappings, which are difficult to map directly to the code location.
+      // Diagnostics similarly return a synthetic template string for this case rather than a real
+      // location.
+      return null;
+    }
+
+    return {
+      ...shimReferenceEntry,
+      fileName: templateUrl,
+      textSpan: toTextSpan(span),
+    };
   }
-  const {templateSourceMapping, span} = mapping;
-
-  let templateUrl: AbsoluteFsPath;
-  if (templateSourceMapping.type === 'direct') {
-    templateUrl = absoluteFromSourceFile(templateSourceMapping.node.getSourceFile());
-  } else if (templateSourceMapping.type === 'external') {
-    templateUrl = absoluteFrom(templateSourceMapping.templateUrl);
-  } else {
-    // This includes indirect mappings, which are difficult to map directly to the code location.
-    // Diagnostics similarly return a synthetic template string for this case rather than a real
-    // location.
-    return null;
-  }
-
-  return {
-    ...shimReferenceEntry,
-    fileName: templateUrl,
-    textSpan: toTextSpan(span),
-  };
 }

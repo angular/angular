@@ -43,6 +43,7 @@ export enum CommentTriviaType {
 export enum ExpressionIdentifier {
   DIRECTIVE = 'DIR',
   COMPONENT_COMPLETION = 'COMPCOMP',
+  EVENT_PARAMETER = 'EP',
 }
 
 /** Tags the node with the given expression identifier. */
