@@ -28,13 +28,22 @@ export class InvalidTargetLabelError {
 /** Gets the target label from the specified pull request labels. */
 export function getTargetLabelFromPullRequest(
     config: Pick<MergeConfig, 'labels'>, labels: string[]): TargetLabel|null {
+  /** List of discovered target labels for the PR. */
+  const matches = [];
   for (const label of labels) {
     const match = config.labels.find(({pattern}) => matchesPattern(label, pattern));
     if (match !== undefined) {
-      return match;
+      matches.push(match);
     }
   }
-  return null;
+  if (matches.length === 0) {
+    return null;
+  }
+  if (matches.length === 1) {
+    return matches[0];
+  }
+  throw new InvalidTargetLabelError(
+      `Unable to determine the target for the PR as it has multiple target labels.`);
 }
 
 /**
