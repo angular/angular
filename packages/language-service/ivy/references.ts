@@ -12,7 +12,7 @@ import {DirectiveSymbol, SymbolKind, TemplateTypeChecker, TypeCheckingProgramStr
 import {ExpressionIdentifier, hasExpressionIdentifier} from '@angular/compiler-cli/src/ngtsc/typecheck/src/comments';
 import * as ts from 'typescript';
 
-import {getTargetAtPosition} from './template_target';
+import {getTargetAtPosition, TargetNodeKind} from './template_target';
 import {findTightestNode} from './ts_utils';
 import {getDirectiveMatchesForAttribute, getDirectiveMatchesForElementTag, getTemplateInfoAtPosition, isWithin, TemplateInfo, toTextSpan} from './utils';
 
@@ -39,7 +39,9 @@ export class ReferenceBuilder {
       return undefined;
     }
 
-    const node = positionDetails.nodeInContext.node;
+    const node = positionDetails.context.kind === TargetNodeKind.TwoWayBindingContext ?
+        positionDetails.context.nodes[0] :
+        positionDetails.context.node;
 
     // Get the information about the TCB at the template position.
     const symbol = this.ttc.getSymbolOfNode(node, component);
@@ -74,13 +76,12 @@ export class ReferenceBuilder {
       case SymbolKind.Variable: {
         const {positionInShimFile: initializerPosition, shimPath} = symbol.initializerLocation;
         const localVarPosition = symbol.localVarLocation.positionInShimFile;
-        const templateNode = positionDetails.nodeInContext.node;
 
-        if ((templateNode instanceof TmplAstVariable)) {
-          if (templateNode.valueSpan !== undefined && isWithin(position, templateNode.valueSpan)) {
+        if ((node instanceof TmplAstVariable)) {
+          if (node.valueSpan !== undefined && isWithin(position, node.valueSpan)) {
             // In the valueSpan of the variable, we want to get the reference of the initializer.
             return this.getReferencesAtTypescriptPosition(shimPath, initializerPosition);
-          } else if (isWithin(position, templateNode.keySpan)) {
+          } else if (isWithin(position, node.keySpan)) {
             // In the keySpan of the variable, we want to get the reference of the local variable.
             return this.getReferencesAtTypescriptPosition(shimPath, localVarPosition);
           } else {

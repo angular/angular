@@ -12,7 +12,7 @@ import {isExternalResource} from '@angular/compiler-cli/src/ngtsc/metadata';
 import {DirectiveSymbol, DomBindingSymbol, ElementSymbol, ShimLocation, Symbol, SymbolKind, TemplateSymbol} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
 import * as ts from 'typescript';
 
-import {getTargetAtPosition} from './template_target';
+import {getTargetAtPosition, TargetNodeKind} from './template_target';
 import {findTightestNode, getParentClassDeclaration} from './ts_utils';
 import {flatMap, getDirectiveMatchesForAttribute, getDirectiveMatchesForElementTag, getTemplateInfoAtPosition, getTextSpanOfNode, isDollarEvent, isTypeScriptFile, TemplateInfo, toTextSpan} from './utils';
 
@@ -226,14 +226,16 @@ export class DefinitionBuilder {
     if (target === null) {
       return undefined;
     }
-    const {nodeInContext, parent} = target;
+    const {context, parent} = target;
 
-    const symbol =
-        this.compiler.getTemplateTypeChecker().getSymbolOfNode(nodeInContext.node, component);
+    const node =
+        context.kind === TargetNodeKind.TwoWayBindingContext ? context.nodes[0] : context.node;
+
+    const symbol = this.compiler.getTemplateTypeChecker().getSymbolOfNode(node, component);
     if (symbol === null) {
       return undefined;
     }
-    return {node: nodeInContext.node, parent, symbol};
+    return {node, parent, symbol};
   }
 }
 

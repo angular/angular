@@ -10,7 +10,7 @@ import {ParseSpan, TmplAstBoundEvent} from '@angular/compiler';
 import * as e from '@angular/compiler/src/expression_parser/ast';  // e for expression AST
 import * as t from '@angular/compiler/src/render3/r3_ast';         // t for template AST
 
-import {isTemplateNode, isTemplateNodeWithKeyAndValue, isWithin, isWithinKeyValue} from './utils';
+import {isTemplateNodeWithKeyAndValue, isWithin, isWithinKeyValue} from './utils';
 
 /**
  * Contextual information for a target position within the template.
@@ -22,9 +22,9 @@ export interface TemplateTarget {
   position: number;
 
   /**
-   * The template node (or AST expression) closest to the search position.
+   * The template (or AST expression) node or nodes closest to the search position.
    */
-  nodeInContext: TargetNode;
+  context: TargetContext;
 
   /**
    * The `t.Template` which contains the found node or expression (or `null` if in the root
@@ -39,15 +39,26 @@ export interface TemplateTarget {
 }
 
 /**
- * A node targeted at a given position in the template, including potential contextual information
- * about the specific aspect of the node being referenced.
+ * A node or nodes targeted at a given position in the template, including potential contextual
+ * information about the specific aspect of the node being referenced.
  *
  * Some nodes have multiple interior contexts. For example, `t.Element` nodes have both a tag name
  * as well as a body, and a given position definitively points to one or the other. `TargetNode`
  * captures the node itself, as well as this additional contextual disambiguation.
  */
-export type TargetNode = RawExpression|RawTemplateNode|ElementInBodyContext|ElementInTagContext|
-    AttributeInKeyContext|AttributeInValueContext;
+export type TargetContext = SingleNodeTarget|MultiNodeTarget;
+
+/** Contexts which logically target only a single node in the template AST. */
+export type SingleNodeTarget = RawExpression|RawTemplateNode|ElementInBodyContext|
+    ElementInTagContext|AttributeInKeyContext|AttributeInValueContext;
+
+/**
+ * Contexts which logically target multiple nodes in the template AST, which cannot be
+ * disambiguated given a single position because they are all equally relavent. For example, in the
+ * banana-in-a-box syntax `[(ngModel)]="formValues.person"`, the position in the template for the
+ * key `ngModel` refers to both the bound event `ngModelChange` and the input `ngModel`.
+ */
+export type MultiNodeTarget = TwoWayBindingContext;
 
 /**
  * Differentiates the various kinds of `TargetNode`s.
@@ -59,6 +70,7 @@ export enum TargetNodeKind {
   ElementInBodyContext,
   AttributeInKeyContext,
   AttributeInValueContext,
+  TwoWayBindingContext,
 }
 
 /**
@@ -106,6 +118,15 @@ export interface AttributeInValueContext {
 }
 
 /**
+ * A `t.BoundAttribute` and `t.BoundEvent` pair that are targeted, where the given position is
+ * within the key span of both.
+ */
+export interface TwoWayBindingContext {
+  kind: TargetNodeKind.TwoWayBindingContext;
+  nodes: [t.BoundAttribute, t.BoundEvent];
+}
+
+/**
  * This special marker is added to the path when the cursor is within the sourceSpan but not the key
  * or value span of a node with key/value spans.
  */
@@ -141,7 +162,7 @@ export function getTargetAtPosition(template: t.Node[], position: number): Templ
   }
 
   // Given the candidate node, determine the full targeted context.
-  let nodeInContext: TargetNode;
+  let nodeInContext: TargetContext;
   if (candidate instanceof e.AST) {
     nodeInContext = {
       kind: TargetNodeKind.RawExpression,
@@ -188,7 +209,7 @@ export function getTargetAtPosition(template: t.Node[], position: number): Templ
     };
   }
 
-  return {position, nodeInContext, template: context, parent};
+  return {position, context: nodeInContext, template: context, parent};
 }
 
 /**
