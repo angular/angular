@@ -34,7 +34,7 @@ The process of updating the Chrome or Firefox version is not straightforward, bu
     Chromium 83.0.4103.0
     ```
 
-3. Update the chrome & chrome driver build numbers in `dev-infra/browsers/chromium/chromium.bzl` and run either run `bazel query @org_chromium_chromium_amd64//...` to prompt Bazel to calculate the new `sha256` for each platform binary or determine the new `sha256` values manually.
+3. Update the chrome & chrome driver build numbers in `dev-infra/browsers/chromium/chromium.bzl` and either run `bazel query @org_chromium_chromium_amd64//...` to prompt Bazel to calculate the new `sha256` for each platform binary or determine the new `sha256` values manually.
 
     Here is an example with `curl` & `shasum`:
     ``` bash
@@ -55,7 +55,7 @@ and their corresponding `yarn.lock` files.
 ## Firefox
 
 In order to update Firefox, open the `dev-infra/browsers/firefox/firefox.bzl` file and update the repository URLs to the desired version.
-e.g.
+For example:
 
 ```bzl
 platform_http_file(
@@ -67,8 +67,11 @@ platform_http_file(
 )
 ```
 
-Go to the `urls` property and update the URL by replacing all `78.0` occurrences with the version you intend to use.
-Once done, do the same change for other platforms (such as `macos`).
+1. Go to the `urls` property and update the URL by replacing all `78.0` occurrences with the version you intend to use.
+    Once done, do the same change for other platforms (such as `macos`).
 
-Finally, update the `sha256` checksum of the browser archives.
-You can do this by downloading the artifacts from the URLs you just updated, and then running on those files: `sha256 <path>`.
+2. Update the `sha256` checksum of the browser archives.
+    You can do this by downloading the artifacts from the URLs you just updated, and then running `shasum` on those files:
+    ```sh
+    curl <BROWSER_URL> | sha256 -a 256
+    ```
