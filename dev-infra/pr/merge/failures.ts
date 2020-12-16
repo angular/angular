@@ -34,10 +34,6 @@ export class PullRequestFailure {
     return new this(`Not marked as merge ready.`);
   }
 
-  static noTargetLabel() {
-    return new this(`No target branch could be determined. Please ensure a target label is set.`);
-  }
-
   static mismatchingTargetBranch(allowedBranches: string[]) {
     return new this(
         `Pull request is set to wrong base branch. Please update the PR in the Github UI ` +

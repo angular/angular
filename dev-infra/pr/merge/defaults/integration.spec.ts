@@ -87,8 +87,10 @@ describe('default target labels', () => {
     if (labels === undefined) {
       labels = await computeTargetLabels();
     }
-    const label = getTargetLabelFromPullRequest({labels}, [name]);
-    if (label === null) {
+    let label: TargetLabel;
+    try {
+      label = getTargetLabelFromPullRequest({labels}, [name]);
+    } catch (error) {
       return null;
     }
     return await getBranchesFromTargetLabel(label, githubTargetBranch);
