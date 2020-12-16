@@ -901,5 +901,13 @@
     "bio": "Teri is a technical editor working on the Angular docs team.",
     "groups": ["Angular"],
     "lead": "aikidave"
+  },
+  "bampakoa": {
+    "name": "Aristeidis Bampakos",
+    "picture": "aristeidis.jpg",
+    "twitter": "abampakos",
+    "website": "https://medium.com/@abampakos",
+    "bio": "Aristeidis is a front end web developer at Plex-Earth working with Angular. He is a co-organizer of the Angular Athens meetup and the author of Learning Angular - 3rd Edition. He is also a senior Angular instructor at Code.Hub where he teaches the Angular framework to other developers.",
+    "groups": ["GDE"]
   }
 }
