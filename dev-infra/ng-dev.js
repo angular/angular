@@ -2782,21 +2782,21 @@ var InvalidTargetLabelError = /** @class */ (function () {
 /** Gets the target label from the specified pull request labels. */
 function getTargetLabelFromPullRequest(config, labels) {
     var e_1, _a;
+    /** List of discovered target labels for the PR. */
+    var matches = [];
     var _loop_1 = function (label) {
         var match = config.labels.find(function (_a) {
             var pattern = _a.pattern;
             return matchesPattern(label, pattern);
         });
         if (match !== undefined) {
-            return { value: match };
+            matches.push(match);
         }
     };
     try {
         for (var labels_1 = tslib.__values(labels), labels_1_1 = labels_1.next(); !labels_1_1.done; labels_1_1 = labels_1.next()) {
             var label = labels_1_1.value;
-            var state_1 = _loop_1(label);
-            if (typeof state_1 === "object")
-                return state_1.value;
+            _loop_1(label);
         }
     }
     catch (e_1_1) { e_1 = { error: e_1_1 }; }
@@ -2806,7 +2806,13 @@ function getTargetLabelFromPullRequest(config, labels) {
         }
         finally { if (e_1) throw e_1.error; }
     }
-    return null;
+    if (matches.length === 1) {
+        return matches[0];
+    }
+    if (matches.length === 0) {
+        throw new InvalidTargetLabelError('Unable to determine target for the PR as it has no target label.');
+    }
+    throw new InvalidTargetLabelError('Unable to determine target for the PR as it has multiple target labels.');
 }
 /**
  * Gets the branches from the specified target label.
@@ -2862,11 +2868,17 @@ function getTargetBranchesForPr(prNumber) {
         /** The branch targetted via the Github UI. */
         const githubTargetBranch = prData.base.ref;
         /** The active label which is being used for targetting the PR. */
-        const targetLabel = getTargetLabelFromPullRequest(mergeConfig, labels);
-        if (targetLabel === null) {
-            error(red(`No target label was found on pr #${prNumber}`));
-            process.exitCode = 1;
-            return;
+        let targetLabel;
+        try {
+            targetLabel = getTargetLabelFromPullRequest(mergeConfig, labels);
+        }
+        catch (e) {
+            if (e instanceof InvalidTargetLabelError) {
+                error(red(e.failureMessage));
+                process.exitCode = 1;
+                return;
+            }
+            throw e;
         }
         /** The target branches based on the target label and branch targetted in the Github UI. */
         return yield getBranchesFromTargetLabel(targetLabel, githubTargetBranch);
@@ -3333,9 +3345,6 @@ var PullRequestFailure = /** @class */ (function () {
     PullRequestFailure.notMergeReady = function () {
         return new this("Not marked as merge ready.");
     };
-    PullRequestFailure.noTargetLabel = function () {
-        return new this("No target branch could be determined. Please ensure a target label is set.");
-    };
     PullRequestFailure.mismatchingTargetBranch = function (allowedBranches) {
         return new this("Pull request is set to wrong base branch. Please update the PR in the Github UI " +
             ("to one of the following branches: " + allowedBranches.join(', ') + "."));
@@ -3413,9 +3422,14 @@ function loadAndValidatePullRequest(_a, prNumber, ignoreNonFatalFailures) {
                     if (!labels.some(function (name) { return matchesPattern(name, config.claSignedLabel); })) {
                         return [2 /*return*/, PullRequestFailure.claUnsigned()];
                     }
-                    targetLabel = getTargetLabelFromPullRequest(config, labels);
-                    if (targetLabel === null) {
-                        return [2 /*return*/, PullRequestFailure.noTargetLabel()];
+                    try {
+                        targetLabel = getTargetLabelFromPullRequest(config, labels);
+                    }
+                    catch (error) {
+                        if (error instanceof InvalidTargetLabelError) {
+                            return [2 /*return*/, new PullRequestFailure(error.failureMessage)];
+                        }
+                        throw error;
                     }
                     return [4 /*yield*/, git.github.repos.getCombinedStatusForRef(tslib.__assign(tslib.__assign({}, git.remoteParams), { ref: prData.head.sha }))];
                 case 2:
