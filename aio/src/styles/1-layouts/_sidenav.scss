@@ -125,7 +125,6 @@ button.vertical-menu-item {
     padding-left: 0;
     max-height: 4000px; // Arbitrary max-height. Can increase if needed. Must have measurement to transition height.
     transition: visibility 500ms, opacity 500ms, max-height 500ms;
-    -webkit-transition-timing-function: ease-in-out;
     transition-timing-function: ease-in-out;
   }
 
@@ -136,7 +135,6 @@ button.vertical-menu-item {
     opacity: 0;
     max-height: 1px; // Must have measurement to transition height.
     transition: visibility 275ms, opacity 275ms, max-height 280ms;
-    -webkit-transition-timing-function: ease-out;
     transition-timing-function: ease-out;
   }
 }
