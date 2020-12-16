@@ -43,14 +43,23 @@ The process of updating the Chrome or Firefox version is not straightforward, bu
 
 ## Puppeteer
 
-Visit https://github.com/puppeteer/puppeteer/blob/master/docs/api.md to determine which version of puppeteer corresponds to the version of Chrome desired.
-Then update `scripts/puppeteer-chrome-versions.js` and all of the puppeteer versions throughout the repo,
+1. Visit https://github.com/puppeteer/puppeteer/blob/master/docs/api.md to determine which version of puppeteer corresponds to the version of Chrome desired.
 
-* `package.json`
-* `aio/package.json`
-* `aio/tools/examples/shared/package.json`
+2. Visit https://chromedriver.chromium.org/downloads to determine which version of ChromeDriver should be used for the version of Chrome desired.
 
-and their corresponding `yarn.lock` files.
+    > NOTE:
+    > The version of Chrome does not necessarily correspond exactly with the version of ChromeDriver.
+    > For example, you might have to use ChromeDriver v87.0.4280.x to drive Chrome v87.0.4272.x.
+
+3. Update `scripts/puppeteer-chromedriver-versions.js` to include and entry with the new version of puppeteer as key and the new version of ChromeDriver as value (as determined in the two previous steps).
+
+4. Update all of the puppeteer versions throughout the repo:
+
+    * `package.json`
+    * `aio/package.json`
+    * `aio/tools/examples/shared/package.json`
+
+    ...and their corresponding `yarn.lock` files.
 
 ## Firefox
 
