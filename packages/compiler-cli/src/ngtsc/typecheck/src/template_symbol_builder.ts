@@ -173,72 +173,71 @@ export class SymbolBuilder {
     // * _t1.addEventListener(handler);
     // Even with strict null checks disabled, we still produce the access as a separate statement
     // so that it can be found here.
-    const outputFieldAccess = findFirstMatchingNode(
+    const outputFieldAccesses = findAllMatchingNodes(
         this.typeCheckBlock, {withSpan: eventBinding.keySpan, filter: isAccessExpression});
-    if (outputFieldAccess === null) {
-      return null;
-    }
 
-    const consumer = this.templateData.boundTarget.getConsumerOfBinding(eventBinding);
-    if (consumer === null) {
-      return null;
-    }
-
-    if (consumer instanceof TmplAstTemplate || consumer instanceof TmplAstElement) {
-      if (!ts.isPropertyAccessExpression(outputFieldAccess) ||
-          outputFieldAccess.name.text !== 'addEventListener') {
-        return null;
+    const bindings: BindingSymbol[] = [];
+    for (const outputFieldAccess of outputFieldAccesses) {
+      const consumer = this.templateData.boundTarget.getConsumerOfBinding(eventBinding);
+      if (consumer === null) {
+        continue;
       }
 
-      const addEventListener = outputFieldAccess.name;
-      const tsSymbol = this.getTypeChecker().getSymbolAtLocation(addEventListener);
-      const tsType = this.getTypeChecker().getTypeAtLocation(addEventListener);
-      const positionInShimFile = this.getShimPositionForNode(addEventListener);
-      const target = this.getSymbol(consumer);
+      if (consumer instanceof TmplAstTemplate || consumer instanceof TmplAstElement) {
+        if (!ts.isPropertyAccessExpression(outputFieldAccess) ||
+            outputFieldAccess.name.text !== 'addEventListener') {
+          continue;
+        }
 
-      if (target === null || tsSymbol === undefined) {
-        return null;
-      }
+        const addEventListener = outputFieldAccess.name;
+        const tsSymbol = this.getTypeChecker().getSymbolAtLocation(addEventListener);
+        const tsType = this.getTypeChecker().getTypeAtLocation(addEventListener);
+        const positionInShimFile = this.getShimPositionForNode(addEventListener);
+        const target = this.getSymbol(consumer);
 
-      return {
-        kind: SymbolKind.Output,
-        bindings: [{
+        if (target === null || tsSymbol === undefined) {
+          continue;
+        }
+
+        bindings.push({
           kind: SymbolKind.Binding,
           tsSymbol,
           tsType,
           target,
           shimLocation: {shimPath: this.shimPath, positionInShimFile},
-        }],
-      };
-    } else {
-      if (!ts.isElementAccessExpression(outputFieldAccess)) {
-        return null;
-      }
-      const tsSymbol =
-          this.getTypeChecker().getSymbolAtLocation(outputFieldAccess.argumentExpression);
-      if (tsSymbol === undefined) {
-        return null;
-      }
+        });
+      } else {
+        if (!ts.isElementAccessExpression(outputFieldAccess)) {
+          continue;
+        }
+        const tsSymbol =
+            this.getTypeChecker().getSymbolAtLocation(outputFieldAccess.argumentExpression);
+        if (tsSymbol === undefined) {
+          continue;
+        }
 
 
-      const target = this.getDirectiveSymbolForAccessExpression(outputFieldAccess, consumer);
-      if (target === null) {
-        return null;
-      }
+        const target = this.getDirectiveSymbolForAccessExpression(outputFieldAccess, consumer);
+        if (target === null) {
+          continue;
+        }
 
-      const positionInShimFile = this.getShimPositionForNode(outputFieldAccess);
-      const tsType = this.getTypeChecker().getTypeAtLocation(outputFieldAccess);
-      return {
-        kind: SymbolKind.Output,
-        bindings: [{
+        const positionInShimFile = this.getShimPositionForNode(outputFieldAccess);
+        const tsType = this.getTypeChecker().getTypeAtLocation(outputFieldAccess);
+        bindings.push({
           kind: SymbolKind.Binding,
           tsSymbol,
           tsType,
           target,
           shimLocation: {shimPath: this.shimPath, positionInShimFile},
-        }],
-      };
+        });
+      }
     }
+    if (bindings.length === 0) {
+      return null;
+    }
+
+    return {kind: SymbolKind.Output, bindings};
   }
 
   private getSymbolOfInputBinding(binding: TmplAstBoundAttribute|
