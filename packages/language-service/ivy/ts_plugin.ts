@@ -120,3 +120,19 @@ export function create(info: ts.server.PluginCreateInfo): ts.LanguageService {
     getCompletionEntrySymbol,
   };
 }
+
+export function getExternalFiles(project: ts.server.Project): string[] {
+  if (!project.hasRoots()) {
+    return [];  // project has not been initialized
+  }
+  const typecheckFiles: string[] = [];
+  for (const scriptInfo of project.getScriptInfos()) {
+    if (scriptInfo.scriptKind === ts.ScriptKind.External) {
+      // script info for typecheck file is marked as external, see
+      // getOrCreateTypeCheckScriptInfo() in
+      // packages/language-service/ivy/language_service.ts
+      typecheckFiles.push(scriptInfo.fileName);
+    }
+  }
+  return typecheckFiles;
+}

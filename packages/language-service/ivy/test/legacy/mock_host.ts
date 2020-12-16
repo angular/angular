@@ -243,9 +243,9 @@ export class MockService {
     }
     const newScriptInfo = this.ps.getOrCreateScriptInfoForNormalizedPath(
         ts.server.toNormalizedPath(fileName),
-        true,                    // openedByClient
-        '',                      // fileContent
-        ts.ScriptKind.External,  // scriptKind
+        true,                   // openedByClient
+        '',                     // fileContent
+        ts.ScriptKind.Unknown,  // scriptKind
     );
     if (!newScriptInfo) {
       throw new Error(`Failed to create new script info for ${fileName}`);
