@@ -103,13 +103,13 @@ describe('directive declaration jit compilation', () => {
       contentQueries: functionContaining([
         // "byRef" should use `contentQuery` with `false` for descendants flag without a read token,
         // and bind to the full query result.
-        // NOTE: the `anonymous_` match is to support IE11, as functions don't have a name there.
+        // NOTE: the `anonymous` match is to support IE11, as functions don't have a name there.
         /(?:contentQuery|anonymous)[^(]*\(dirIndex,_c0,false\)/,
         '(ctx.byRef = _t)',
 
         // "byToken" should use `staticContentQuery` with `true` for descendants flag and
         // `ElementRef` as read token, and bind to the first result in the query result.
-        // NOTE: the `anonymous_` match is to support IE11, as functions don't have a name there.
+        // NOTE: the `anonymous` match is to support IE11, as functions don't have a name there.
         /(?:staticContentQuery|anonymous)[^(]*\(dirIndex,[^,]*String[^,]*,true,[^)]*ElementRef[^)]*\)/,
         '(ctx.byToken = _t.first)',
       ]),
@@ -139,13 +139,13 @@ describe('directive declaration jit compilation', () => {
       viewQuery: functionContaining([
         // "byRef" should use `viewQuery` with `false` for descendants flag without a read token,
         // and bind to the full query result.
-        // NOTE: the `anonymous_` match is to support IE11, as functions don't have a name there.
+        // NOTE: the `anonymous` match is to support IE11, as functions don't have a name there.
         /(?:viewQuery|anonymous)[^(]*\(_c0,false\)/,
         '(ctx.byRef = _t)',
 
         // "byToken" should use `staticViewQuery` with `true` for descendants flag and
         // `ElementRef` as read token, and bind to the first result in the query result.
-        // NOTE: the `anonymous_` match is to support IE11, as functions don't have a name there.
+        // NOTE: the `anonymous` match is to support IE11, as functions don't have a name there.
         /(?:staticViewQuery|anonymous)[^(]*\([^,]*String[^,]*,true,[^)]*ElementRef[^)]*\)/,
         '(ctx.byToken = _t.first)',
       ]),
@@ -178,7 +178,7 @@ describe('directive declaration jit compilation', () => {
       ],
       hostBindings: functionContaining([
         'return ctx.handleEvent($event)',
-        // NOTE: the `anonymous_` match is to support IE11, as functions don't have a name there.
+        // NOTE: the `anonymous` match is to support IE11, as functions don't have a name there.
         /(?:hostProperty|anonymous)[^(]*\('foo',ctx\.foo\.prop\)/,
         /(?:attribute|anonymous)[^(]*\('bar',ctx\.bar\.prop\)/,
       ]),
