@@ -92,7 +92,7 @@ async function _main() {
  * likely correct branch will be the first one encountered in the list.
  */
 function getRefFromBranchList(gitOutput) {
-  const branches = gitOutput.split('\n').map(b => b.split('/').slice(1).join('').trim());
+  const branches = gitOutput.split('\n').map(b => b.split('/').slice(1).join('/').trim());
   return branches.sort((a, b) => {
     if (a === 'master') {
       return -1;
