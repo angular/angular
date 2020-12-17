@@ -1356,6 +1356,7 @@ groups:
         - atscott
         - jelbourn
         - petebacondarwin
+        - jessicajaniuk
         # OOO as of 2020-09-28 - pkozlowski-opensource
     labels:
       pending: "comp: docs/api"
@@ -1388,6 +1389,7 @@ groups:
         - atscott
         - jelbourn
         - petebacondarwin
+        - jessicajaniuk
         # OOO as of 2020-09-28 - pkozlowski-opensource
     labels:
       pending: "comp: build & ci"
@@ -1424,6 +1426,7 @@ groups:
         - atscott
         - jelbourn
         - petebacondarwin
+        - jessicajaniuk
         # OOO as of 2020-09-28 - pkozlowski-opensource
 
 
