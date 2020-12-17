@@ -666,6 +666,37 @@ describe('find references', () => {
     });
   });
 
+  it('should get references to both input and output for two-way binding', () => {
+    const dirFile = {
+      name: _('/dir.ts'),
+      contents: `
+      import {Directive, Input, Output} from '@angular/core';
+
+      @Directive({selector: '[string-model]'})
+      export class StringModel {
+        @Input() model!: any;
+        @Output() modelChange!: any;
+      }`
+    };
+    const {text, cursor} = extractCursorInfo(`
+    import {Component} from '@angular/core';
+
+    @Component({template: '<div string-model [(mod¦el)]="title"></div>'})
+    export class AppCmp {
+      title = 'title';
+    }`);
+    const appFile = {name: _('/app.ts'), contents: text};
+    env = createModuleWithDeclarations([appFile, dirFile]);
+
+    const refs = getReferencesAtPosition(_('/app.ts'), cursor)!;
+    // Note that this includes the 'model` twice from the template. As with other potential
+    // duplicates (like if another plugin returns the same span), we expect the LS clients to filter
+    // these out themselves.
+    expect(refs.length).toEqual(4);
+    assertFileNames(refs, ['dir.ts', 'app.ts']);
+    assertTextSpans(refs, ['model', 'modelChange']);
+  });
+
   describe('directives', () => {
     it('works for directive classes', () => {
       const {text, cursor} = extractCursorInfo(`

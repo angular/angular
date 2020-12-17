@@ -39,72 +39,92 @@ export class ReferenceBuilder {
       return undefined;
     }
 
-    const node = positionDetails.context.kind === TargetNodeKind.TwoWayBindingContext ?
-        positionDetails.context.nodes[0] :
-        positionDetails.context.node;
+    const nodes = positionDetails.context.kind === TargetNodeKind.TwoWayBindingContext ?
+        positionDetails.context.nodes :
+        [positionDetails.context.node];
 
-    // Get the information about the TCB at the template position.
-    const symbol = this.ttc.getSymbolOfNode(node, component);
-    if (symbol === null) {
+    const references: ts.ReferenceEntry[] = [];
+    for (const node of nodes) {
+      // Get the information about the TCB at the template position.
+      const symbol = this.ttc.getSymbolOfNode(node, component);
+      if (symbol === null) {
+        continue;
+      }
+
+      switch (symbol.kind) {
+        case SymbolKind.Directive:
+        case SymbolKind.Template:
+          // References to elements, templates, and directives will be through template references
+          // (#ref). They shouldn't be used directly for a Language Service reference request.
+          break;
+        case SymbolKind.Element: {
+          const matches = getDirectiveMatchesForElementTag(symbol.templateNode, symbol.directives);
+          references.push(...this.getReferencesForDirectives(matches) ?? []);
+          break;
+        }
+        case SymbolKind.DomBinding: {
+          // Dom bindings aren't currently type-checked (see `checkTypeOfDomBindings`) so they don't
+          // have a shim location. This means we can't match dom bindings to their lib.dom
+          // reference, but we can still see if they match to a directive.
+          if (!(node instanceof TmplAstTextAttribute) && !(node instanceof TmplAstBoundAttribute)) {
+            break;
+          }
+          const directives = getDirectiveMatchesForAttribute(
+              node.name, symbol.host.templateNode, symbol.host.directives);
+          references.push(...this.getReferencesForDirectives(directives) ?? []);
+          break;
+        }
+        case SymbolKind.Reference: {
+          const {shimPath, positionInShimFile} = symbol.referenceVarLocation;
+          references.push(
+              ...this.getReferencesAtTypescriptPosition(shimPath, positionInShimFile) ?? []);
+          break;
+        }
+        case SymbolKind.Variable: {
+          const {positionInShimFile: initializerPosition, shimPath} = symbol.initializerLocation;
+          const localVarPosition = symbol.localVarLocation.positionInShimFile;
+
+          if ((node instanceof TmplAstVariable)) {
+            if (node.valueSpan !== undefined && isWithin(position, node.valueSpan)) {
+              // In the valueSpan of the variable, we want to get the reference of the initializer.
+              references.push(
+                  ...this.getReferencesAtTypescriptPosition(shimPath, initializerPosition) ?? []);
+            } else if (isWithin(position, node.keySpan)) {
+              // In the keySpan of the variable, we want to get the reference of the local variable.
+              references.push(
+                  ...this.getReferencesAtTypescriptPosition(shimPath, localVarPosition) ?? []);
+            }
+          } else {
+            // If the templateNode is not the `TmplAstVariable`, it must be a usage of the variable
+            // somewhere in the template.
+            references.push(
+                ...this.getReferencesAtTypescriptPosition(shimPath, localVarPosition) ?? []);
+          }
+
+          break;
+        }
+        case SymbolKind.Input:
+        case SymbolKind.Output: {
+          // TODO(atscott): Determine how to handle when the binding maps to several inputs/outputs
+          const {shimPath, positionInShimFile} = symbol.bindings[0].shimLocation;
+          references.push(
+              ...this.getReferencesAtTypescriptPosition(shimPath, positionInShimFile) ?? []);
+          break;
+        }
+        case SymbolKind.Pipe:
+        case SymbolKind.Expression: {
+          const {shimPath, positionInShimFile} = symbol.shimLocation;
+          references.push(
+              ...this.getReferencesAtTypescriptPosition(shimPath, positionInShimFile) ?? []);
+          break;
+        }
+      }
+    }
+    if (references.length === 0) {
       return undefined;
     }
-    switch (symbol.kind) {
-      case SymbolKind.Directive:
-      case SymbolKind.Template:
-        // References to elements, templates, and directives will be through template references
-        // (#ref). They shouldn't be used directly for a Language Service reference request.
-        return undefined;
-      case SymbolKind.Element: {
-        const matches = getDirectiveMatchesForElementTag(symbol.templateNode, symbol.directives);
-        return this.getReferencesForDirectives(matches);
-      }
-      case SymbolKind.DomBinding: {
-        // Dom bindings aren't currently type-checked (see `checkTypeOfDomBindings`) so they don't
-        // have a shim location. This means we can't match dom bindings to their lib.dom reference,
-        // but we can still see if they match to a directive.
-        if (!(node instanceof TmplAstTextAttribute) && !(node instanceof TmplAstBoundAttribute)) {
-          return undefined;
-        }
-        const directives = getDirectiveMatchesForAttribute(
-            node.name, symbol.host.templateNode, symbol.host.directives);
-        return this.getReferencesForDirectives(directives);
-      }
-      case SymbolKind.Reference: {
-        const {shimPath, positionInShimFile} = symbol.referenceVarLocation;
-        return this.getReferencesAtTypescriptPosition(shimPath, positionInShimFile);
-      }
-      case SymbolKind.Variable: {
-        const {positionInShimFile: initializerPosition, shimPath} = symbol.initializerLocation;
-        const localVarPosition = symbol.localVarLocation.positionInShimFile;
 
-        if ((node instanceof TmplAstVariable)) {
-          if (node.valueSpan !== undefined && isWithin(position, node.valueSpan)) {
-            // In the valueSpan of the variable, we want to get the reference of the initializer.
-            return this.getReferencesAtTypescriptPosition(shimPath, initializerPosition);
-          } else if (isWithin(position, node.keySpan)) {
-            // In the keySpan of the variable, we want to get the reference of the local variable.
-            return this.getReferencesAtTypescriptPosition(shimPath, localVarPosition);
-          } else {
-            return undefined;
-          }
-        }
-
-        // If the templateNode is not the `TmplAstVariable`, it must be a usage of the variable
-        // somewhere in the template.
-        return this.getReferencesAtTypescriptPosition(shimPath, localVarPosition);
-      }
-      case SymbolKind.Input:
-      case SymbolKind.Output: {
-        // TODO(atscott): Determine how to handle when the binding maps to several inputs/outputs
-        const {shimPath, positionInShimFile} = symbol.bindings[0].shimLocation;
-        return this.getReferencesAtTypescriptPosition(shimPath, positionInShimFile);
-      }
-      case SymbolKind.Pipe:
-      case SymbolKind.Expression: {
-        const {shimPath, positionInShimFile} = symbol.shimLocation;
-        return this.getReferencesAtTypescriptPosition(shimPath, positionInShimFile);
-      }
-    }
+    return references;
   }
 
   private getReferencesForDirectives(directives: Set<DirectiveSymbol>):
