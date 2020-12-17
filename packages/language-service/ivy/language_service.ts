@@ -133,6 +133,8 @@ export class LanguageService {
       return null;
     }
 
+    // For two-way bindings, we actually only need to be concerned with the bound attribute because
+    // the bindings in the template are written with the attribute name, not the event name.
     const node = positionDetails.context.kind === TargetNodeKind.TwoWayBindingContext ?
         positionDetails.context.nodes[0] :
         positionDetails.context.node;
@@ -272,6 +274,8 @@ function nodeContextFromTarget(target: TargetContext): CompletionNodeContext {
     case TargetNodeKind.ElementInBodyContext:
       // Completions in element bodies are for new attributes.
       return CompletionNodeContext.ElementAttributeKey;
+    case TargetNodeKind.TwoWayBindingContext:
+      return CompletionNodeContext.TwoWayBinding;
     case TargetNodeKind.AttributeInKeyContext:
       return CompletionNodeContext.ElementAttributeKey;
     case TargetNodeKind.AttributeInValueContext:
