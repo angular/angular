@@ -168,24 +168,49 @@ export class SymbolBuilder {
   }
 
   private getSymbolOfBoundEvent(eventBinding: TmplAstBoundEvent): OutputBindingSymbol|null {
+    const consumer = this.templateData.boundTarget.getConsumerOfBinding(eventBinding);
+    if (consumer === null) {
+      return null;
+    }
+
     // Outputs in the TCB look like one of the two:
     // * _outputHelper(_t1["outputField"]).subscribe(handler);
     // * _t1.addEventListener(handler);
     // Even with strict null checks disabled, we still produce the access as a separate statement
     // so that it can be found here.
-    const outputFieldAccesses = findAllMatchingNodes(
-        this.typeCheckBlock, {withSpan: eventBinding.keySpan, filter: isAccessExpression});
+    let expectedAccess: string;
+    if (consumer instanceof TmplAstTemplate || consumer instanceof TmplAstElement) {
+      expectedAccess = 'addEventListener';
+    } else {
+      const bindingPropertyNames = consumer.outputs.getByBindingPropertyName(eventBinding.name);
+      if (bindingPropertyNames === null || bindingPropertyNames.length === 0) {
+        return null;
+      }
+      // Note that we only get the expectedAccess text from a single consumer of the binding. If
+      // there are multiple consumers (not supported in the `boundTarget` API) and one of them has
+      // an alias, it will not get matched here.
+      expectedAccess = bindingPropertyNames[0].classPropertyName;
+    }
+
+    function filter(n: ts.Node): n is ts.PropertyAccessExpression|ts.ElementAccessExpression {
+      if (!isAccessExpression(n)) {
+        return false;
+      }
+
+      if (ts.isPropertyAccessExpression(n)) {
+        return n.name.getText() === expectedAccess;
+      } else {
+        return ts.isStringLiteral(n.argumentExpression) &&
+            n.argumentExpression.text === expectedAccess;
+      }
+    }
+    const outputFieldAccesses =
+        findAllMatchingNodes(this.typeCheckBlock, {withSpan: eventBinding.keySpan, filter});
 
     const bindings: BindingSymbol[] = [];
     for (const outputFieldAccess of outputFieldAccesses) {
-      const consumer = this.templateData.boundTarget.getConsumerOfBinding(eventBinding);
-      if (consumer === null) {
-        continue;
-      }
-
       if (consumer instanceof TmplAstTemplate || consumer instanceof TmplAstElement) {
-        if (!ts.isPropertyAccessExpression(outputFieldAccess) ||
-            outputFieldAccess.name.text !== 'addEventListener') {
+        if (!ts.isPropertyAccessExpression(outputFieldAccess)) {
           continue;
         }
 
@@ -233,10 +258,10 @@ export class SymbolBuilder {
         });
       }
     }
+
     if (bindings.length === 0) {
       return null;
     }
-
     return {kind: SymbolKind.Output, bindings};
   }
 
