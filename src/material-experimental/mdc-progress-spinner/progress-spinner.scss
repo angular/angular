@@ -8,6 +8,11 @@
   overflow: hidden;
 }
 
-:not(._mat-animation-noopable) {
+.mat-mdc-progress-spinner:not(._mat-animation-noopable) {
   @include mdc-circular-progress-core-styles($query: animation);
+}
+
+// Render the indeterminate spinner as a complete circle when animations are off
+._mat-animation-noopable .mdc-circular-progress__indeterminate-container circle {
+  stroke-dasharray: 0 !important;
 }
