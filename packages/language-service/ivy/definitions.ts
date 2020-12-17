@@ -41,17 +41,29 @@ export class DefinitionBuilder {
       }
       return getDefinitionForExpressionAtPosition(fileName, position, this.compiler);
     }
-    const definitionMeta = this.getDefinitionMetaAtPosition(templateInfo, position);
-    // The `$event` of event handlers would point to the $event parameter in the shim file, as in
-    // `_outputHelper(_t3["x"]).subscribe(function ($event): any { $event }) ;`
-    // If we wanted to return something for this, it would be more appropriate for something like
-    // `getTypeDefinition`.
-    if (definitionMeta === undefined || isDollarEvent(definitionMeta.node)) {
+    const definitionMetas = this.getDefinitionMetaAtPosition(templateInfo, position);
+    if (definitionMetas === undefined) {
+      return undefined;
+    }
+    const definitions: ts.DefinitionInfo[] = [];
+    for (const definitionMeta of definitionMetas) {
+      // The `$event` of event handlers would point to the $event parameter in the shim file, as in
+      // `_outputHelper(_t3["x"]).subscribe(function ($event): any { $event }) ;`
+      // If we wanted to return something for this, it would be more appropriate for something like
+      // `getTypeDefinition`.
+      if (isDollarEvent(definitionMeta.node)) {
+        continue;
+      }
+
+      definitions.push(
+          ...(this.getDefinitionsForSymbol({...definitionMeta, ...templateInfo}) ?? []));
+    }
+
+    if (definitions.length === 0) {
       return undefined;
     }
 
-    const definitions = this.getDefinitionsForSymbol({...definitionMeta, ...templateInfo});
-    return {definitions, textSpan: getTextSpanOfNode(definitionMeta.node)};
+    return {definitions, textSpan: getTextSpanOfNode(definitionMetas[0].node)};
   }
 
   private getDefinitionsForSymbol({symbol, node, parent, component}: DefinitionMeta&
@@ -123,42 +135,55 @@ export class DefinitionBuilder {
     if (templateInfo === undefined) {
       return;
     }
-    const definitionMeta = this.getDefinitionMetaAtPosition(templateInfo, position);
-    if (definitionMeta === undefined) {
+    const definitionMetas = this.getDefinitionMetaAtPosition(templateInfo, position);
+    if (definitionMetas === undefined) {
       return undefined;
     }
 
-    const {symbol, node} = definitionMeta;
-    switch (symbol.kind) {
-      case SymbolKind.Directive:
-      case SymbolKind.DomBinding:
-      case SymbolKind.Element:
-      case SymbolKind.Template:
-        return this.getTypeDefinitionsForTemplateInstance(symbol, node);
-      case SymbolKind.Output:
-      case SymbolKind.Input: {
-        const bindingDefs = this.getTypeDefinitionsForSymbols(...symbol.bindings);
-        // Also attempt to get directive matches for the input name. If there is a directive that
-        // has the input name as part of the selector, we want to return that as well.
-        const directiveDefs = this.getDirectiveTypeDefsForBindingNode(
-            node, definitionMeta.parent, templateInfo.component);
-        return [...bindingDefs, ...directiveDefs];
-      }
-      case SymbolKind.Pipe: {
-        if (symbol.tsSymbol !== null) {
-          return this.getTypeDefinitionsForSymbols(symbol);
-        } else {
-          // If there is no `ts.Symbol` for the pipe transform, we want to return the
-          // type definition (the pipe class).
-          return this.getTypeDefinitionsForSymbols(symbol.classSymbol);
+    const definitions: ts.DefinitionInfo[] = [];
+    for (const {symbol, node, parent} of definitionMetas) {
+      switch (symbol.kind) {
+        case SymbolKind.Directive:
+        case SymbolKind.DomBinding:
+        case SymbolKind.Element:
+        case SymbolKind.Template:
+          definitions.push(...this.getTypeDefinitionsForTemplateInstance(symbol, node));
+          break;
+        case SymbolKind.Output:
+        case SymbolKind.Input: {
+          const bindingDefs = this.getTypeDefinitionsForSymbols(...symbol.bindings);
+          definitions.push(...bindingDefs);
+          // Also attempt to get directive matches for the input name. If there is a directive that
+          // has the input name as part of the selector, we want to return that as well.
+          const directiveDefs =
+              this.getDirectiveTypeDefsForBindingNode(node, parent, templateInfo.component);
+          definitions.push(...directiveDefs);
+          break;
+        }
+        case SymbolKind.Pipe: {
+          if (symbol.tsSymbol !== null) {
+            definitions.push(...this.getTypeDefinitionsForSymbols(symbol));
+          } else {
+            // If there is no `ts.Symbol` for the pipe transform, we want to return the
+            // type definition (the pipe class).
+            definitions.push(...this.getTypeDefinitionsForSymbols(symbol.classSymbol));
+          }
+          break;
+        }
+        case SymbolKind.Reference:
+          definitions.push(
+              ...this.getTypeDefinitionsForSymbols({shimLocation: symbol.targetLocation}));
+          break;
+        case SymbolKind.Expression:
+          definitions.push(...this.getTypeDefinitionsForSymbols(symbol));
+          break;
+        case SymbolKind.Variable: {
+          definitions.push(
+              ...this.getTypeDefinitionsForSymbols({shimLocation: symbol.initializerLocation}));
+          break;
         }
       }
-      case SymbolKind.Reference:
-        return this.getTypeDefinitionsForSymbols({shimLocation: symbol.targetLocation});
-      case SymbolKind.Expression:
-        return this.getTypeDefinitionsForSymbols(symbol);
-      case SymbolKind.Variable:
-        return this.getTypeDefinitionsForSymbols({shimLocation: symbol.initializerLocation});
+      return definitions;
     }
   }
 
@@ -221,21 +246,26 @@ export class DefinitionBuilder {
   }
 
   private getDefinitionMetaAtPosition({template, component}: TemplateInfo, position: number):
-      DefinitionMeta|undefined {
+      DefinitionMeta[]|undefined {
     const target = getTargetAtPosition(template, position);
     if (target === null) {
       return undefined;
     }
     const {context, parent} = target;
 
-    const node =
-        context.kind === TargetNodeKind.TwoWayBindingContext ? context.nodes[0] : context.node;
+    const nodes =
+        context.kind === TargetNodeKind.TwoWayBindingContext ? context.nodes : [context.node];
 
-    const symbol = this.compiler.getTemplateTypeChecker().getSymbolOfNode(node, component);
-    if (symbol === null) {
-      return undefined;
+
+    const definitionMetas: DefinitionMeta[] = [];
+    for (const node of nodes) {
+      const symbol = this.compiler.getTemplateTypeChecker().getSymbolOfNode(node, component);
+      if (symbol === null) {
+        continue;
+      }
+      definitionMetas.push({node, parent, symbol});
     }
-    return {node, parent, symbol};
+    return definitionMetas.length > 0 ? definitionMetas : undefined;
   }
 }
 
