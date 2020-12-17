@@ -31,6 +31,7 @@ export enum CompletionNodeContext {
   ElementAttributeKey,
   ElementAttributeValue,
   EventValue,
+  TwoWayBinding,
 }
 
 /**
@@ -415,7 +416,8 @@ export class CompletionBuilder<N extends TmplAstNode|AST> {
   }
 
   private isElementAttributeCompletion(): this is ElementAttributeCompletionBuilder {
-    return this.nodeContext === CompletionNodeContext.ElementAttributeKey &&
+    return (this.nodeContext === CompletionNodeContext.ElementAttributeKey ||
+            this.nodeContext === CompletionNodeContext.TwoWayBinding) &&
         (this.node instanceof TmplAstElement || this.node instanceof TmplAstBoundAttribute ||
          this.node instanceof TmplAstTextAttribute || this.node instanceof TmplAstBoundEvent);
   }
@@ -458,6 +460,10 @@ export class CompletionBuilder<N extends TmplAstNode|AST> {
           break;
         case AttributeCompletionKind.DirectiveInput:
           if (this.node instanceof TmplAstBoundEvent) {
+            continue;
+          }
+          if (!completion.twoWayBindingSupported &&
+              this.nodeContext === CompletionNodeContext.TwoWayBinding) {
             continue;
           }
           break;

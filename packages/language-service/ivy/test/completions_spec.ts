@@ -39,6 +39,22 @@ const DIR_WITH_OUTPUT = {
   `
 };
 
+const DIR_WITH_TWO_WAY_BINDING = {
+  'Dir': `
+    @Directive({
+      selector: '[dir]',
+      inputs: ['model', 'otherInput'],
+      outputs: ['modelChange', 'otherOutput'],
+    })
+    export class Dir {
+      model!: any;
+      modelChange!: any;
+      otherInput!: any;
+      otherOutput!: any;
+    }
+  `
+};
+
 const NG_FOR_DIR = {
   'NgFor': `
     @Directive({
@@ -518,6 +534,27 @@ describe('completions', () => {
             completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.EVENT),
             ['myOutput']);
         expectReplacementText(completions, text, 'my');
+      });
+
+      it('should return completions inside an LHS of a partially complete two-way binding', () => {
+        const {ngLS, fileName, cursor, text} =
+            setup(`<h1 dir [(mod¦)]></h1>`, ``, DIR_WITH_TWO_WAY_BINDING);
+        const completions =
+            ngLS.getCompletionsAtPosition(fileName, cursor, /* options */ undefined);
+        expectReplacementText(completions, text, 'mod');
+
+        expectContain(completions, ts.ScriptElementKind.memberVariableElement, ['model']);
+
+        // The completions should not include the events (because the 'Change' suffix is not used in
+        // the two way binding) or inputs that do not have a corresponding name+'Change' output.
+        expectDoesNotContain(
+            completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.EVENT),
+            ['modelChange']);
+        expectDoesNotContain(
+            completions, ts.ScriptElementKind.memberVariableElement, ['otherInput']);
+        expectDoesNotContain(
+            completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.EVENT),
+            ['otherOutput']);
       });
     });
   });
