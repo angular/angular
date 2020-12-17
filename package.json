@@ -90,7 +90,7 @@
     "@bazel/terser": "^2.2.0",
     "@bazel/typescript": "^2.2.0",
     "@firebase/app-types": "^0.6.1",
-    "@octokit/rest": "16.28.7",
+    "@octokit/rest": "18.0.12",
     "@schematics/angular": "^11.1.0-next.2",
     "@types/autoprefixer": "^9.7.2",
     "@types/browser-sync": "^2.26.1",
