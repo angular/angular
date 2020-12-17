@@ -288,7 +288,11 @@ export class CdkVirtualForOf<T> implements
     }
     this._renderedItems = this._data.slice(this._renderedRange.start, this._renderedRange.end);
     if (!this._differ) {
-      this._differ = this._differs.find(this._renderedItems).create(this.cdkVirtualForTrackBy);
+      // Use a wrapper function for the `trackBy` so any new values are
+      // picked up automatically without having to recreate the differ.
+      this._differ = this._differs.find(this._renderedItems).create((index, item) => {
+        return this.cdkVirtualForTrackBy ? this.cdkVirtualForTrackBy(index, item) : item;
+      });
     }
     this._needsUpdate = true;
   }
@@ -310,7 +314,7 @@ export class CdkVirtualForOf<T> implements
     const count = this._data.length;
     let i = this._viewContainerRef.length;
     while (i--) {
-      let view = this._viewContainerRef.get(i) as EmbeddedViewRef<CdkVirtualForOfContext<T>>;
+      const view = this._viewContainerRef.get(i) as EmbeddedViewRef<CdkVirtualForOfContext<T>>;
       view.context.index = this._renderedRange.start + i;
       view.context.count = count;
       this._updateComputedContextProperties(view.context);
@@ -324,7 +328,7 @@ export class CdkVirtualForOf<T> implements
         changes,
         this._viewContainerRef,
         (record: IterableChangeRecord<T>,
-         adjustedPreviousIndex: number | null,
+         _adjustedPreviousIndex: number | null,
          currentIndex: number | null) => this._getEmbeddedViewArgs(record, currentIndex!),
         (record) => record.item);
 

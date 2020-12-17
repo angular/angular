@@ -45,6 +45,7 @@ ng_test_library(
         "//src/cdk/bidi",
         "//src/cdk/collections",
         "//src/cdk/testing/private",
+        "@npm//@angular/common",
         "@npm//rxjs",
     ],
 )

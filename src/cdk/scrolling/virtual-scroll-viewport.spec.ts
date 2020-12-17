@@ -5,10 +5,10 @@ import {
   ScrollDispatcher,
   ScrollingModule
 } from '@angular/cdk/scrolling';
+import {CommonModule} from '@angular/common';
 import {dispatchFakeEvent} from '@angular/cdk/testing/private';
 import {
   Component,
-  Input,
   NgZone,
   TrackByFunction,
   ViewChild,
@@ -29,7 +29,7 @@ import {animationFrameScheduler, Subject} from 'rxjs';
 
 
 describe('CdkVirtualScrollViewport', () => {
-  describe ('with FixedSizeVirtualScrollStrategy', () => {
+  describe('with FixedSizeVirtualScrollStrategy', () => {
     let fixture: ComponentFixture<FixedSizeVirtualScroll>;
     let testComponent: FixedSizeVirtualScroll;
     let viewport: CdkVirtualScrollViewport;
@@ -899,6 +899,35 @@ describe('CdkVirtualScrollViewport', () => {
           .toEqual(['0', '1', '2', '3', '4', '5', '6', '7']);
       }));
   });
+
+  describe('with delayed initialization', () => {
+    let fixture: ComponentFixture<DelayedInitializationVirtualScroll>;
+    let testComponent: DelayedInitializationVirtualScroll;
+    let viewport: CdkVirtualScrollViewport;
+
+    beforeEach(waitForAsync(() => {
+      TestBed.configureTestingModule({
+        imports: [ScrollingModule, CommonModule],
+        declarations: [DelayedInitializationVirtualScroll],
+      }).compileComponents();
+      fixture = TestBed.createComponent(DelayedInitializationVirtualScroll);
+      testComponent = fixture.componentInstance;
+      viewport = testComponent.viewport;
+    }));
+
+    it('should call custom trackBy when virtual for is added after init', fakeAsync(() => {
+      finishInit(fixture);
+      expect(testComponent.trackBy).not.toHaveBeenCalled();
+
+      testComponent.renderVirtualFor = true;
+      fixture.detectChanges();
+      triggerScroll(viewport, testComponent.itemSize * 5);
+      fixture.detectChanges();
+      flush();
+
+      expect(testComponent.trackBy).toHaveBeenCalled();
+    }));
+  });
 });
 
 
@@ -973,15 +1002,15 @@ class FixedSizeVirtualScroll {
   // Casting virtualForOf as any so we can spy on private methods
   @ViewChild(CdkVirtualForOf, {static: true}) virtualForOf: any;
 
-  @Input() orientation = 'vertical';
-  @Input() viewportSize = 200;
-  @Input() viewportCrossSize = 100;
-  @Input() itemSize = 50;
-  @Input() minBufferPx = 0;
-  @Input() maxBufferPx = 0;
-  @Input() items = Array(10).fill(0).map((_, i) => i);
-  @Input() trackBy: TrackByFunction<number>;
-  @Input() templateCacheSize = 20;
+  orientation = 'vertical';
+  viewportSize = 200;
+  viewportCrossSize = 100;
+  itemSize = 50;
+  minBufferPx = 0;
+  maxBufferPx = 0;
+  items = Array(10).fill(0).map((_, i) => i);
+  trackBy: TrackByFunction<number>;
+  templateCacheSize = 20;
 
   scrolledToIndex = 0;
   hasMargin = false;
@@ -1033,15 +1062,15 @@ class FixedSizeVirtualScroll {
 class FixedSizeVirtualScrollWithRtlDirection {
   @ViewChild(CdkVirtualScrollViewport, {static: true}) viewport: CdkVirtualScrollViewport;
 
-  @Input() orientation = 'vertical';
-  @Input() viewportSize = 200;
-  @Input() viewportCrossSize = 100;
-  @Input() itemSize = 50;
-  @Input() minBufferPx = 0;
-  @Input() maxBufferPx = 0;
-  @Input() items = Array(10).fill(0).map((_, i) => i);
-  @Input() trackBy: TrackByFunction<number>;
-  @Input() templateCacheSize = 20;
+  orientation = 'vertical';
+  viewportSize = 200;
+  viewportCrossSize = 100;
+  itemSize = 50;
+  minBufferPx = 0;
+  maxBufferPx = 0;
+  items = Array(10).fill(0).map((_, i) => i);
+  trackBy: TrackByFunction<number>;
+  templateCacheSize = 20;
 
   scrolledToIndex = 0;
 
@@ -1116,3 +1145,40 @@ class VirtualScrollWithItemInjectingViewContainer {
   items = Array(20000).fill(0).map((_, i) => i);
 }
 
+
+@Component({
+  template: `
+    <cdk-virtual-scroll-viewport [itemSize]="itemSize">
+      <ng-container *ngIf="renderVirtualFor">
+        <div class="item" *cdkVirtualFor="let item of items; trackBy: trackBy">{{item}}</div>
+      </ng-container>
+    </cdk-virtual-scroll-viewport>
+  `,
+  styles: [`
+    .cdk-virtual-scroll-content-wrapper {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .cdk-virtual-scroll-viewport {
+      width: 200px;
+      height: 200px;
+      background-color: #f5f5f5;
+    }
+
+    .item {
+      width: 100%;
+      height: 50px;
+      box-sizing: border-box;
+      border: 1px dashed #ccc;
+    }
+  `],
+  encapsulation: ViewEncapsulation.None,
+})
+class DelayedInitializationVirtualScroll {
+  @ViewChild(CdkVirtualScrollViewport, {static: true}) viewport: CdkVirtualScrollViewport;
+  itemSize = 50;
+  items = Array(20000).fill(0).map((_, i) => i);
+  trackBy = jasmine.createSpy('trackBy').and.callFake((item: unknown) => item);
+  renderVirtualFor = false;
+}
