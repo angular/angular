@@ -37,6 +37,16 @@ $mat-calendar-weekday-table-font-size: 11px !default;
     box-shadow: inset 0 0 0 $mat-datepicker-selected-today-box-shadow-width
                 mat-color($palette, default-contrast);
   }
+
+  .mat-calendar-body-cell:not(.mat-calendar-body-disabled):hover,
+  .cdk-keyboard-focused .mat-calendar-body-active,
+  .cdk-program-focused .mat-calendar-body-active {
+    & > .mat-calendar-body-cell-content {
+      @include _mat-datepicker-unselected-cell {
+        background-color: mat-color($palette, 0.3);
+      }
+    }
+  }
 }
 
 // Utility mixin to target cells that aren't selected. Used to make selector easier to follow.
@@ -90,16 +100,6 @@ $mat-calendar-weekday-table-font-size: 11px !default;
 
   .mat-form-field-disabled .mat-date-range-input-separator {
     color: $disabled-color;
-  }
-
-  .mat-calendar-body-cell:not(.mat-calendar-body-disabled):hover,
-  .cdk-keyboard-focused .mat-calendar-body-active,
-  .cdk-program-focused .mat-calendar-body-active {
-    & > .mat-calendar-body-cell-content {
-      @include _mat-datepicker-unselected-cell {
-        background-color: mat-color($background, hover);
-      }
-    }
   }
 
   .mat-calendar-body-in-preview {
