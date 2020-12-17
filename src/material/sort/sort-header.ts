@@ -141,7 +141,7 @@ export class MatSortHeader extends _MatSortHeaderMixinBase
   private _disableClear: boolean;
 
   constructor(public _intl: MatSortHeaderIntl,
-              changeDetectorRef: ChangeDetectorRef,
+              private _changeDetectorRef: ChangeDetectorRef,
               // `MatSort` is not optionally injected, but just asserted manually w/ better error.
               // tslint:disable-next-line: lightweight-tokens
               @Optional() public _sort: MatSort,
@@ -171,7 +171,7 @@ export class MatSortHeader extends _MatSortHeaderMixinBase
             this._setAnimationTransitionState({fromState: 'active', toState: this._arrowDirection});
           }
 
-          changeDetectorRef.markForCheck();
+          _changeDetectorRef.markForCheck();
         });
   }
 
@@ -191,8 +191,13 @@ export class MatSortHeader extends _MatSortHeaderMixinBase
   ngAfterViewInit() {
     // We use the focus monitor because we also want to style
     // things differently based on the focus origin.
-    this._focusMonitor.monitor(this._elementRef, true)
-        .subscribe(origin => this._setIndicatorHintVisible(!!origin));
+    this._focusMonitor.monitor(this._elementRef, true).subscribe(origin => {
+      const newState = !!origin;
+      if (newState !== this._showIndicatorHint) {
+        this._setIndicatorHintVisible(newState);
+        this._changeDetectorRef.markForCheck();
+      }
+    });
   }
 
   ngOnDestroy() {
