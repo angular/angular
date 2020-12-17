@@ -97,7 +97,7 @@ module.exports = config => {
 
     browserStack: {
       project: 'Angular Material Unit Tests',
-      startTunnel: false,
+      startTunnel: true,
       retryLimit: 3,
       timeout: 1800,
       video: false,
