@@ -145,7 +145,7 @@ globally cause input errors to show when the input is dirty and invalid.
 The `<mat-select>` component without text or label should be given a meaningful label via
 `aria-label` or `aria-labelledby`.
 
-The `<mat-select>` component has `role="listbox"` and options inside select have `role="option"`.
+The `<mat-select>` component has `role="combobox"`, the dropdown panel has `role="listbox"` and options inside select panel have `role="option"`.
 
 The native `<select>` offers the best accessibility because it is supported directly by screen-readers.
 
