@@ -107,24 +107,23 @@ export class CompilerFacadeImpl implements CompilerFacade {
   compileDirective(
       angularCoreEnv: CoreEnvironment, sourceMapUrl: string,
       facade: R3DirectiveMetadataFacade): any {
-    const constantPool = new ConstantPool();
-    const bindingParser = makeBindingParser();
-
     const meta: R3DirectiveMetadata = convertDirectiveFacadeToMetadata(facade);
-    const res = compileDirectiveFromMetadata(meta, constantPool, bindingParser);
-    return this.jitExpression(
-        res.expression, angularCoreEnv, sourceMapUrl, constantPool.statements);
+    return this.compileDirectiveFromMeta(angularCoreEnv, sourceMapUrl, meta);
   }
 
   compileDirectiveDeclaration(
       angularCoreEnv: CoreEnvironment, sourceMapUrl: string,
       declaration: R3DeclareDirectiveFacade): any {
-    const constantPool = new ConstantPool();
-    const bindingParser = makeBindingParser();
-
     const typeSourceSpan =
         this.createParseSourceSpan('Directive', declaration.type.name, sourceMapUrl);
     const meta = convertDeclareDirectiveFacadeToMetadata(declaration, typeSourceSpan);
+    return this.compileDirectiveFromMeta(angularCoreEnv, sourceMapUrl, meta);
+  }
+
+  private compileDirectiveFromMeta(
+      angularCoreEnv: CoreEnvironment, sourceMapUrl: string, meta: R3DirectiveMetadata): any {
+    const constantPool = new ConstantPool();
+    const bindingParser = makeBindingParser();
     const res = compileDirectiveFromMetadata(meta, constantPool, bindingParser);
     return this.jitExpression(
         res.expression, angularCoreEnv, sourceMapUrl, constantPool.statements);
@@ -319,7 +318,7 @@ function convertDeclareDirectiveFacadeToMetadata(
 function convertHostDeclarationToMetadata(host: R3DeclareDirectiveFacade['host'] = {}):
     R3HostMetadata {
   return {
-    attributes: convertOpaqueValuesToExpression(host.attributes ?? {}),
+    attributes: convertOpaqueValuesToExpressions(host.attributes ?? {}),
     listeners: host.listeners ?? {},
     properties: host.properties ?? {},
     specialAttributes: {
@@ -329,12 +328,13 @@ function convertHostDeclarationToMetadata(host: R3DeclareDirectiveFacade['host']
   };
 }
 
-function convertOpaqueValuesToExpression(obj: {[key: string]: OpaqueValue}):
+function convertOpaqueValuesToExpressions(obj: {[key: string]: OpaqueValue}):
     {[key: string]: WrappedNodeExpr<unknown>} {
-  return Object.keys(obj).reduce((result, key) => {
+  const result: {[key: string]: WrappedNodeExpr<unknown>} = {};
+  for (const key of Object.keys(obj)) {
     result[key] = new WrappedNodeExpr(obj[key]);
-    return result;
-  }, {} as {[key: string]: WrappedNodeExpr<unknown>});
+  }
+  return result;
 }
 
 // This seems to be needed to placate TS v3.0 only
