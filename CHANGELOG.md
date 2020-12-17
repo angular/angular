@@ -1,3 +1,13 @@
+<a name="9.1.13"></a>
+## [9.1.13](https://github.com/angular/angular/compare/9.1.12...9.1.13) (2020-12-17)
+
+
+### Bug Fixes
+
+* **core:** fix possible XSS attack in development through SSR. ([#40154](https://github.com/angular/angular/issues/40154)) ([1b1a06a](https://github.com/angular/angular/commit/1b1a06a))
+* **core:** set `ngDevMode` to `false` when calling `enableProdMode()` ([#40159](https://github.com/angular/angular/issues/40159)) ([c3942e4](https://github.com/angular/angular/commit/c3942e4))
+
+
 <a name="9.1.12"></a>
 ## [9.1.12](https://github.com/angular/angular/compare/9.1.11...9.1.12) (2020-07-08)
 
@@ -1268,7 +1278,7 @@ API surface going forward.
 * **core:** Injector.get now accepts abstract classes to return
 type-safe values. Previous implementation returned `any` through the
 deprecated implementation.
-* Angular now compiles with Ivy by default ([#32219](https://github.com/angular/angular/issues/32219)) ([ec4381d](https://github.com/angular/angular/commit/ec4381d)). 
+* Angular now compiles with Ivy by default ([#32219](https://github.com/angular/angular/issues/32219)) ([ec4381d](https://github.com/angular/angular/commit/ec4381d)).
 
 If you aren't familiar with Ivy, read our [blog post about the Ivy preview](https://blog.angular.io/its-time-for-the-compatibility-opt-in-preview-of-ivy-38f3542a282f?gi=8bfeb44b05c) and see the list of changes [here](https://docs.google.com/document/d/1Dije0AsJ0PxL3NaeNPxpYDeapj30b_QC0xfeIvIIzgg/preview).
 
