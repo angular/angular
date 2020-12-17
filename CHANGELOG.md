@@ -1,3 +1,14 @@
+<a name="10.2.4"></a>
+## 10.2.4 (2020-12-17)
+
+
+### Bug Fixes
+
+* **core:** fix possible XSS attack in development through SSR. ([#40152](https://github.com/angular/angular/issues/40152)) ([0b8e3d5](https://github.com/angular/angular/commit/0b8e3d5))
+* **core:** set `ngDevMode` to `false` when calling `enableProdMode()` ([#40160](https://github.com/angular/angular/issues/40160)) ([90570c0](https://github.com/angular/angular/commit/90570c0))
+
+
+
 <a name="10.2.3"></a>
 ## 10.2.3 (2020-11-09)
 
