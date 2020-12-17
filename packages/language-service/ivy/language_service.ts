@@ -105,6 +105,9 @@ export class LanguageService {
       return undefined;
     }
 
+    // Because we can only show 1 quick info, just use the bound attribute if the target is a two
+    // way binding. We may consider concatenating additional display parts from the other target
+    // nodes or representing the two way binding in some other manner in the future.
     const node = positionDetails.context.kind === TargetNodeKind.TwoWayBindingContext ?
         positionDetails.context.nodes[0] :
         positionDetails.context.node;
