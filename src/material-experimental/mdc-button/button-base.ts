@@ -93,7 +93,10 @@ export const _MatButtonBaseMixin: CanDisableRippleCtor&CanDisableCtor&CanColorCt
 export class MatButtonBase extends _MatButtonBaseMixin implements CanDisable, CanColor,
                                                                   CanDisableRipple {
   /** The ripple animation configuration to use for the buttons. */
-  _rippleAnimation: RippleAnimationConfig = RIPPLE_ANIMATION_CONFIG;
+  _rippleAnimation: RippleAnimationConfig =
+      this._animationMode === 'NoopAnimations' ?
+          {enterDuration: 0, exitDuration: 0} :
+          RIPPLE_ANIMATION_CONFIG;
 
   /** Whether the ripple is centered on the button. */
   _isRippleCentered = false;
