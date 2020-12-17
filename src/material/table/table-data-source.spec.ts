@@ -5,8 +5,6 @@ import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {Component, ViewChild} from '@angular/core';
 
 describe('MatTableDataSource', () => {
-  const dataSource = new MatTableDataSource();
-
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [MatSortModule, NoopAnimationsModule],
@@ -15,13 +13,16 @@ describe('MatTableDataSource', () => {
   }));
 
   describe('sort', () => {
+    let dataSource: MatTableDataSource<any>;
     let fixture: ComponentFixture<MatSortApp>;
     let sort: MatSort;
 
     beforeEach(() => {
       fixture = TestBed.createComponent(MatSortApp);
       fixture.detectChanges();
+      dataSource = new MatTableDataSource();
       sort = fixture.componentInstance.sort;
+      dataSource.sort = sort;
     });
 
     /** Test the data source's `sortData` function. */
@@ -50,6 +51,19 @@ describe('MatTableDataSource', () => {
 
     it('should be able to correctly sort an array of strings and numbers', () => {
       testSortWithValues([3, 'apples', 'bananas', 'cherries', 'lemons', 'strawberries']);
+    });
+
+    it('should unsubscribe from the re-render stream when disconnected', () => {
+      const spy = spyOn(dataSource._renderChangesSubscription!, 'unsubscribe');
+      dataSource.disconnect();
+      expect(spy).toHaveBeenCalledTimes(1);
+    });
+
+    it('should re-subscribe to the sort stream when re-connecting after being disconnected', () => {
+      dataSource.disconnect();
+      const spy = spyOn(fixture.componentInstance.sort.sortChange, 'subscribe');
+      dataSource.connect();
+      expect(spy).toHaveBeenCalledTimes(1);
     });
   });
 });

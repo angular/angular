@@ -53,7 +53,7 @@ export class _MatTableDataSource<T, P extends Paginator> extends DataSource<T> {
    * Subscription to the changes that should trigger an update to the table's rendered rows, such
    * as filtering, sorting, pagination, or base data changes.
    */
-  _renderChangesSubscription = Subscription.EMPTY;
+  _renderChangesSubscription: Subscription|null = null;
 
   /**
    * The filtered set of data that has been matched by the filter string, or all the data if there
@@ -244,7 +244,7 @@ export class _MatTableDataSource<T, P extends Paginator> extends DataSource<T> {
     const paginatedData = combineLatest([orderedData, pageChange])
       .pipe(map(([data]) => this._pageData(data)));
     // Watched for paged data changes and send the result to the table to render.
-    this._renderChangesSubscription.unsubscribe();
+    this._renderChangesSubscription?.unsubscribe();
     this._renderChangesSubscription = paginatedData.subscribe(data => this._renderData.next(data));
   }
 
@@ -321,13 +321,22 @@ export class _MatTableDataSource<T, P extends Paginator> extends DataSource<T> {
    * Used by the MatTable. Called when it connects to the data source.
    * @docs-private
    */
-  connect() { return this._renderData; }
+  connect() {
+    if (!this._renderChangesSubscription) {
+      this._updateChangeSubscription();
+    }
+
+    return this._renderData;
+  }
 
   /**
-   * Used by the MatTable. Called when it is destroyed. No-op.
+   * Used by the MatTable. Called when it disconnects from the data source.
    * @docs-private
    */
-  disconnect() { }
+  disconnect() {
+    this._renderChangesSubscription?.unsubscribe();
+    this._renderChangesSubscription = null;
+  }
 }
 
 /**
