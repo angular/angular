@@ -1348,6 +1348,55 @@ runInEachFileSystem(() => {
                    .parent.name?.text)
             .toEqual('TestDir');
       });
+
+
+      it('returns output symbol for two way binding', () => {
+        const fileName = absoluteFrom('/main.ts');
+        const dirFile = absoluteFrom('/dir.ts');
+        const {program, templateTypeChecker} = setup([
+          {
+            fileName,
+            templates: {'Cmp': `<div dir [(ngModel)]="value"></div>`},
+            source: `
+                export class Cmp {
+                  value = '';
+                }`,
+            declarations: [
+              {
+                name: 'TestDir',
+                selector: '[dir]',
+                file: dirFile,
+                type: 'directive',
+                inputs: {ngModel: 'ngModel'},
+                outputs: {ngModelChange: 'ngModelChange'},
+              },
+            ]
+          },
+          {
+            fileName: dirFile,
+            source: `
+                export class TestDir {
+                  ngModel!: string;
+                  ngModelChange!: EventEmitter<string>;
+                }`,
+            templates: {},
+          }
+        ]);
+        const sf = getSourceFileOrError(program, fileName);
+        const cmp = getClass(sf, 'Cmp');
+
+        const nodes = templateTypeChecker.getTemplate(cmp)!;
+
+        const outputABinding = (nodes[0] as TmplAstElement).outputs[0];
+        const symbol = templateTypeChecker.getSymbolOfNode(outputABinding, cmp)!;
+        assertOutputBindingSymbol(symbol);
+        expect(
+            (symbol.bindings[0].tsSymbol!.declarations[0] as ts.PropertyDeclaration).name.getText())
+            .toEqual('ngModelChange');
+        expect((symbol.bindings[0].tsSymbol!.declarations[0] as ts.PropertyDeclaration)
+                   .parent.name?.text)
+            .toEqual('TestDir');
+      });
     });
 
     describe('for elements', () => {
