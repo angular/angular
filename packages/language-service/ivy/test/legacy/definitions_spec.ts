@@ -43,7 +43,7 @@ describe('definitions', () => {
       const {position} =
           service.overwriteInlineTemplate(APP_COMPONENT, `<ng-templ¦ate></ng-template>`);
       const definitionAndBoundSpan = ngLS.getDefinitionAndBoundSpan(APP_COMPONENT, position);
-      expect(definitionAndBoundSpan!.definitions).toEqual([]);
+      expect(definitionAndBoundSpan).toBeUndefined();
     });
   });
 
@@ -181,17 +181,14 @@ describe('definitions', () => {
           templateOverride: `<test-comp string-model [(mo¦del)]="title"></test-comp>`,
           expectedSpanText: 'model',
         });
-        // TODO(atscott): This should really return 2 definitions, 1 for the input and 1 for the
-        // output.
-        //  The TemplateTypeChecker also only returns the first match in the TCB for a given
-        //  sourceSpan so even if we also requested the TmplAstBoundEvent, we'd still get back the
-        //  symbol for the
-        //  @Input because the input appears first in the TCB and they have the same sourceSpan.
-        expect(definitions!.length).toEqual(1);
+        expect(definitions!.length).toEqual(2);
 
-        const [def] = definitions;
-        expect(def.textSpan).toEqual('model');
-        expect(def.contextSpan).toEqual(`@Input() model: string = 'model';`);
+        const [inputDef, outputDef] = definitions;
+        expect(inputDef.textSpan).toEqual('model');
+        expect(inputDef.contextSpan).toEqual(`@Input() model: string = 'model';`);
+        expect(outputDef.textSpan).toEqual('modelChange');
+        expect(outputDef.contextSpan)
+            .toEqual(`@Output() modelChange: EventEmitter<string> = new EventEmitter();`);
       });
     });
 
@@ -245,12 +242,11 @@ describe('definitions', () => {
 
   describe('references', () => {
     it('should work for element reference declarations', () => {
-      const definitions = getDefinitionsAndAssertBoundSpan({
-        templateOverride: `<div #cha¦rt></div>{{chart}}`,
-        expectedSpanText: 'chart',
-      });
+      const {position} =
+          service.overwriteInlineTemplate(APP_COMPONENT, `<div #cha¦rt></div>{{chart}}`);
+      const definitionAndBoundSpan = ngLS.getDefinitionAndBoundSpan(APP_COMPONENT, position);
       // We're already at the definition, so nothing is returned
-      expect(definitions).toEqual([]);
+      expect(definitionAndBoundSpan).toBeUndefined();
     });
 
     it('should work for element reference uses', () => {
