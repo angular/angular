@@ -43,6 +43,8 @@
   }
 }
 
+// We need to define our own typography for the subscript because we don't include MDC's
+// helper text in our MDC based form field
 @mixin mat-mdc-private-form-field-subscript-typography($config-or-theme) {
   $config: mat-get-typography-config($config-or-theme);
   // The unit-less line-height from the font config.
@@ -59,6 +61,8 @@
   // combination of the subscript's margin and line-height, but we need to multiply by the
   // subscript font scale factor since the subscript has a reduced font size.
   $subscript-min-height: ($subscript-margin-top + $line-height) * $subscript-font-scale;
+  // The horizontal padding between the edge of the text box and the start of the subscript text.
+  $subscript-horizontal-padding: 16px;
 
   // The subscript wrapper has a minimum height to avoid that the form-field
   // jumps when hints or errors are displayed.
@@ -66,5 +70,6 @@
     min-height: $subscript-min-height;
     font-size: $subscript-font-size;
     margin-top: $subscript-margin-top;
+    padding: 0 $subscript-horizontal-padding;
   }
 }
