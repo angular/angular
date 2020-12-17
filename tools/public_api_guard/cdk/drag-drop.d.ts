@@ -374,7 +374,7 @@ export declare class DropListRef<T = any> {
         x: number;
         y: number;
     }): void;
-    _startReceiving(sibling: DropListRef): void;
+    _startReceiving(sibling: DropListRef, items: DragRef[]): void;
     _startScrollingIfNecessary(pointerX: number, pointerY: number): void;
     _stopReceiving(sibling: DropListRef): void;
     _stopScrolling(): void;

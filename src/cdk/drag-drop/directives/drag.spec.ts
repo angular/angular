@@ -4483,33 +4483,6 @@ describe('CdkDrag', () => {
         expect(spy).toHaveBeenCalledWith(dragItem, dropInstances[1]);
       }));
 
-    it('should not call the `enterPredicate` if the pointer is not over the container',
-      fakeAsync(() => {
-        const fixture = createComponent(ConnectedDropZones);
-        fixture.detectChanges();
-
-        const dropInstances = fixture.componentInstance.dropInstances.toArray();
-        const spy = jasmine.createSpy('enterPredicate spy').and.returnValue(true);
-        const groups = fixture.componentInstance.groupedDragItems.slice();
-        const dragElement = groups[0][1].element.nativeElement;
-        const targetRect = groups[1][2].element.nativeElement.getBoundingClientRect();
-
-        dropInstances[1].enterPredicate = spy;
-        fixture.detectChanges();
-
-        startDraggingViaMouse(fixture, dragElement);
-
-        dispatchMouseEvent(document, 'mousemove', targetRect.left - 1, targetRect.top - 1);
-        fixture.detectChanges();
-
-        expect(spy).not.toHaveBeenCalled();
-
-        dispatchMouseEvent(document, 'mousemove', targetRect.left + 1, targetRect.top + 1);
-        fixture.detectChanges();
-
-        expect(spy).toHaveBeenCalledTimes(1);
-      }));
-
     it('should be able to start dragging after an item has been transferred', fakeAsync(() => {
       const fixture = createComponent(ConnectedDropZones);
       fixture.detectChanges();
@@ -5009,13 +4982,74 @@ describe('CdkDrag', () => {
          expect(dropZones[0].classList)
              .toContain(
                  'cdk-drop-list-receiving',
-                 'Expected old container not to have the receiving class after exiting.');
+                 'Expected old container to have the receiving class after exiting.');
 
          expect(dropZones[1].classList)
              .not.toContain(
                  'cdk-drop-list-receiving',
-                 'Expected new container not to have the receiving class after entering.');
+                 'Expected new container not to have the receiving class after exiting.');
        }));
+
+    it('should not set the receiving class if the item does not match the enter predicate',
+      fakeAsync(() => {
+        const fixture = createComponent(ConnectedDropZones);
+        fixture.detectChanges();
+        fixture.componentInstance.dropInstances.toArray()[1].enterPredicate = () => false;
+
+        const dropZones =
+            fixture.componentInstance.dropInstances.map(d => d.element.nativeElement);
+        const item = fixture.componentInstance.groupedDragItems[0][1];
+
+        expect(dropZones.every(c => !c.classList.contains('cdk-drop-list-receiving')))
+            .toBe(true, 'Expected neither of the containers to have the class.');
+
+        startDraggingViaMouse(fixture, item.element.nativeElement);
+        fixture.detectChanges();
+
+        expect(dropZones.every(c => !c.classList.contains('cdk-drop-list-receiving')))
+            .toBe(true, 'Expected neither of the containers to have the class.');
+      }));
+
+    it('should set the receiving class on the source container, even if the enter predicate ' +
+      'does not match', fakeAsync(() => {
+        const fixture = createComponent(ConnectedDropZones);
+        fixture.detectChanges();
+        fixture.componentInstance.dropInstances.toArray()[0].enterPredicate = () => false;
+
+        const groups = fixture.componentInstance.groupedDragItems;
+        const dropZones =
+            fixture.componentInstance.dropInstances.map(d => d.element.nativeElement);
+        const item = groups[0][1];
+        const targetRect = groups[1][2].element.nativeElement.getBoundingClientRect();
+
+        expect(dropZones.every(c => !c.classList.contains('cdk-drop-list-receiving')))
+            .toBe(true, 'Expected neither of the containers to have the class.');
+
+        startDraggingViaMouse(fixture, item.element.nativeElement);
+
+        expect(dropZones[0].classList)
+            .not.toContain(
+                'cdk-drop-list-receiving',
+                'Expected source container not to have the receiving class.');
+
+        expect(dropZones[1].classList)
+            .toContain(
+                'cdk-drop-list-receiving',
+                'Expected target container to have the receiving class.');
+
+        dispatchMouseEvent(document, 'mousemove', targetRect.left + 1, targetRect.top + 1);
+        fixture.detectChanges();
+
+        expect(dropZones[0].classList)
+            .toContain(
+                'cdk-drop-list-receiving',
+                'Expected old container to have the receiving class after exiting.');
+
+        expect(dropZones[1].classList)
+            .not.toContain(
+                'cdk-drop-list-receiving',
+                'Expected new container not to have the receiving class after exiting.');
+      }));
 
     it('should be able to move the item over an intermediate container before ' +
       'dropping it into the final one', fakeAsync(() => {

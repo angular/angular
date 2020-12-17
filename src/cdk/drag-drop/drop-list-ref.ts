@@ -146,7 +146,7 @@ export class DropListRef<T = any> {
   private _parentPositions: ParentPositionTracker;
 
   /** Cached `ClientRect` of the drop list. */
-  private _clientRect: ClientRect;
+  private _clientRect: ClientRect | undefined;
 
   /**
    * Draggable items that are currently active inside the container. Includes the items
@@ -163,7 +163,7 @@ export class DropListRef<T = any> {
   private _previousSwap = {drag: null as DragRef | null, delta: 0, overlaps: false};
 
   /** Draggable items in the container. */
-  private _draggables: ReadonlyArray<DragRef>;
+  private _draggables: ReadonlyArray<DragRef> = [];
 
   /** Drop lists that are connected to the current one. */
   private _siblings: ReadonlyArray<DropListRef> = [];
@@ -240,19 +240,8 @@ export class DropListRef<T = any> {
 
   /** Starts dragging an item. */
   start(): void {
-    const styles = coerceElement(this.element).style as DragCSSStyleDeclaration;
-    this.beforeStarted.next();
-    this._isDragging = true;
-
-    // We need to disable scroll snapping while the user is dragging, because it breaks automatic
-    // scrolling. The browser seems to round the value based on the snapping points which means
-    // that we can't increment/decrement the scroll position.
-    this._initialScrollSnap = styles.msScrollSnapType || styles.scrollSnapType || '';
-    styles.scrollSnapType = styles.msScrollSnapType = 'none';
-    this._cacheItems();
-    this._siblings.forEach(sibling => sibling._startReceiving(this));
-    this._viewportScrollSubscription.unsubscribe();
-    this._listenToScrollEvents();
+    this._draggingStarted();
+    this._notifyReceivingSiblings();
   }
 
   /**
@@ -264,7 +253,7 @@ export class DropListRef<T = any> {
    *   out automatically.
    */
   enter(item: DragRef, pointerX: number, pointerY: number, index?: number): void {
-    this.start();
+    this._draggingStarted();
 
     // If sorting is disabled, we want the item to return to its starting
     // position if the user is returning it to its initial container.
@@ -323,6 +312,8 @@ export class DropListRef<T = any> {
     this._cacheItemPositions();
     this._cacheParentPositions();
 
+    // Notify siblings at the end so that the item has been inserted into the `activeDraggables`.
+    this._notifyReceivingSiblings();
     this.entered.next({item, container: this, currentIndex: this.getItemIndex(item)});
   }
 
@@ -463,7 +454,7 @@ export class DropListRef<T = any> {
   _sortItem(item: DragRef, pointerX: number, pointerY: number,
             pointerDelta: {x: number, y: number}): void {
     // Don't sort the item if sorting is disabled or it's out of range.
-    if (this.sortingDisabled ||
+    if (this.sortingDisabled || !this._clientRect ||
         !isPointerNearClientRect(this._clientRect, DROP_PROXIMITY_THRESHOLD, pointerX, pointerY)) {
       return;
     }
@@ -598,6 +589,22 @@ export class DropListRef<T = any> {
   /** Stops any currently-running auto-scroll sequences. */
   _stopScrolling() {
     this._stopScrollTimers.next();
+  }
+
+  /** Starts the dragging sequence within the list. */
+  private _draggingStarted() {
+    const styles = coerceElement(this.element).style as DragCSSStyleDeclaration;
+    this.beforeStarted.next();
+    this._isDragging = true;
+
+    // We need to disable scroll snapping while the user is dragging, because it breaks automatic
+    // scrolling. The browser seems to round the value based on the snapping points which means
+    // that we can't increment/decrement the scroll position.
+    this._initialScrollSnap = styles.msScrollSnapType || styles.scrollSnapType || '';
+    styles.scrollSnapType = styles.msScrollSnapType = 'none';
+    this._cacheItems();
+    this._viewportScrollSubscription.unsubscribe();
+    this._listenToScrollEvents();
   }
 
   /** Caches the positions of the configured scrollable parents. */
@@ -802,7 +809,7 @@ export class DropListRef<T = any> {
    * @param y Pointer position along the Y axis.
    */
   _isOverContainer(x: number, y: number): boolean {
-    return isInsideClientRect(this._clientRect, x, y);
+    return this._clientRect != null && isInsideClientRect(this._clientRect, x, y);
   }
 
   /**
@@ -823,7 +830,8 @@ export class DropListRef<T = any> {
    * @param y Position of the item along the Y axis.
    */
   _canReceive(item: DragRef, x: number, y: number): boolean {
-    if (!isInsideClientRect(this._clientRect, x, y) || !this.enterPredicate(item, this)) {
+    if (!this._clientRect || !isInsideClientRect(this._clientRect, x, y) ||
+        !this.enterPredicate(item, this)) {
       return false;
     }
 
@@ -850,10 +858,16 @@ export class DropListRef<T = any> {
    * Called by one of the connected drop lists when a dragging sequence has started.
    * @param sibling Sibling in which dragging has started.
    */
-  _startReceiving(sibling: DropListRef) {
+  _startReceiving(sibling: DropListRef, items: DragRef[]) {
     const activeSiblings = this._activeSiblings;
 
-    if (!activeSiblings.has(sibling)) {
+    if (!activeSiblings.has(sibling) && items.every(item => {
+      // Note that we have to add an exception to the `enterPredicate` for items that started off
+      // in this drop list. The drag ref has logic that allows an item to return to its initial
+      // container, if it has left the initial container and none of the connected containers
+      // allow it to enter. See `DragRef._updateActiveDropContainer` for more context.
+      return this.enterPredicate(item, this) || this._draggables.indexOf(item) > -1;
+    })) {
       activeSiblings.add(sibling);
       this._cacheParentPositions();
       this._listenToScrollEvents();
@@ -916,6 +930,12 @@ export class DropListRef<T = any> {
     }
 
     return this._cachedShadowRoot;
+  }
+
+  /** Notifies any siblings that may potentially receive the item. */
+  private _notifyReceivingSiblings() {
+    const draggedItems = this._activeDraggables.filter(item => item.isDragging());
+    this._siblings.forEach(sibling => sibling._startReceiving(this, draggedItems));
   }
 }
 
