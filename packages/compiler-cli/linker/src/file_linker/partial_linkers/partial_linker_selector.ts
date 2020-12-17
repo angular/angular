@@ -12,12 +12,9 @@ import {PartialComponentLinkerVersion1} from './partial_component_linker_1';
 import {PartialDirectiveLinkerVersion1} from './partial_directive_linker_1';
 import {PartialLinker} from './partial_linker';
 
-/**
- * Defines the names of all declaration functions that need to be processed.
- */
-export const declarationFunctions = ['ɵɵngDeclareDirective', 'ɵɵngDeclareComponent'] as const;
-
-export type DeclarationFunction = typeof declarationFunctions[number];
+export const ɵɵngDeclareDirective = 'ɵɵngDeclareDirective';
+export const ɵɵngDeclareComponent = 'ɵɵngDeclareComponent';
+export const declarationFunctions = [ɵɵngDeclareDirective, ɵɵngDeclareComponent];
 
 export class PartialLinkerSelector<TExpression> {
   /**
@@ -33,21 +30,17 @@ export class PartialLinkerSelector<TExpression> {
    * Finally, note that we always start with the current version (i.e. `0.0.0-PLACEHOLDER`). This
    * allows the linker to work on local builds effectively.
    */
-  private linkers:
-      Record<DeclarationFunction, {range: string, linker: PartialLinker<TExpression>}[]> = {
-        'ɵɵngDeclareDirective': [
-          {range: '0.0.0-PLACEHOLDER', linker: new PartialDirectiveLinkerVersion1()},
-          {range: '>=11.1.0-next.1', linker: new PartialDirectiveLinkerVersion1()},
+  private linkers: Record<string, {range: string, linker: PartialLinker<TExpression>}[]> = {
+    [ɵɵngDeclareDirective]: [
+      {range: '0.0.0-PLACEHOLDER', linker: new PartialDirectiveLinkerVersion1()},
+      {range: '>=11.1.0-next.1', linker: new PartialDirectiveLinkerVersion1()},
+    ],
+    [ɵɵngDeclareComponent]:
+        [
+          {range: '0.0.0-PLACEHOLDER', linker: new PartialComponentLinkerVersion1(this.options)},
+          {range: '>=11.1.0-next.1', linker: new PartialComponentLinkerVersion1(this.options)},
         ],
-        'ɵɵngDeclareComponent':
-            [
-              {
-                range: '0.0.0-PLACEHOLDER',
-                linker: new PartialComponentLinkerVersion1(this.options)
-              },
-              {range: '>=11.1.0-next.1', linker: new PartialComponentLinkerVersion1(this.options)},
-            ],
-      };
+  };
 
   constructor(private options: LinkerOptions) {}
 
@@ -55,7 +48,7 @@ export class PartialLinkerSelector<TExpression> {
    * Returns true if there are `PartialLinker` classes that can handle functions with this name.
    */
   supportsDeclaration(functionName: string): boolean {
-    return this.linkers[functionName as DeclarationFunction] !== undefined;
+    return this.linkers[functionName] !== undefined;
   }
 
   /**
@@ -63,7 +56,7 @@ export class PartialLinkerSelector<TExpression> {
    * Throws an error if there is none.
    */
   getLinker(functionName: string, version: string): PartialLinker<TExpression> {
-    const versions = this.linkers[functionName as DeclarationFunction];
+    const versions = this.linkers[functionName];
     if (versions === undefined) {
       throw new Error(`Unknown partial declaration function ${functionName}.`);
     }

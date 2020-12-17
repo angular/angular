@@ -7,7 +7,7 @@
  */
 import {PluginObj, transformSync} from '@babel/core';
 
-import {sourceFileMayNeedLinking} from '../../../linker';
+import {needsLinking} from '../../../linker';
 import {createEs2015LinkerPlugin} from '../../../linker/babel';
 import {AbsoluteFsPath, FileSystem} from '../../../src/ngtsc/file_system';
 import {ConsoleLogger, LogLevel} from '../../../src/ngtsc/logging';
@@ -83,7 +83,7 @@ function linkPartials(fs: FileSystem, test: ComplianceTest): CompileResult {
 function applyLinker(
     file: {fileName: string; source: string, sourceMap: RawSourceMap | undefined},
     linkerPlugin: PluginObj): {linkedSource: string, linkedSourceMap: RawSourceMap|undefined} {
-  if (!file.fileName.endsWith('.js') || !sourceFileMayNeedLinking(file.source)) {
+  if (!file.fileName.endsWith('.js') || !needsLinking(file.source)) {
     return {linkedSource: file.source, linkedSourceMap: file.sourceMap};
   }
   const result = transformSync(file.source, {

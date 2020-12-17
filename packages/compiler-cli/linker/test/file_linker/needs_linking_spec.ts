@@ -6,45 +6,61 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {sourceFileMayNeedLinking} from '../../src/file_linker/predicate';
+import {needsLinking} from '../../src/file_linker/needs_linking';
 
-describe('sourceFileMayNeedLinking', () => {
+describe('needsLinking', () => {
   it('should return true for directive declarations', () => {
-    expect(sourceFileMayNeedLinking(`
+    expect(needsLinking('file.js', `
       export class Dir {
         ɵdir = ɵɵngDeclareDirective({type: Dir});
       }
     `)).toBeTrue();
   });
 
+  it('should return true for namespaced directive declarations', () => {
+    expect(needsLinking('file.js', `
+      export class Dir {
+        ɵdir = ng.ɵɵngDeclareDirective({type: Dir});
+      }
+    `)).toBeTrue();
+  });
+
   it('should return true for unrelated usages of ɵɵngDeclareDirective', () => {
-    expect(sourceFileMayNeedLinking(`
+    expect(needsLinking('file.js', `
       const fnName = 'ɵɵngDeclareDirective';
     `)).toBeTrue();
   });
 
   it('should return false when the file does not contain ɵɵngDeclareDirective', () => {
-    expect(sourceFileMayNeedLinking(`
+    expect(needsLinking('file.js', `
       const foo = ngDeclareDirective;
     `)).toBeFalse();
   });
 
   it('should return true for component declarations', () => {
-    expect(sourceFileMayNeedLinking(`
+    expect(needsLinking('file.js', `
       export class Cmp {
         ɵdir = ɵɵngDeclareComponent({type: Cmp});
       }
     `)).toBeTrue();
   });
 
+  it('should return true for namespaced component declarations', () => {
+    expect(needsLinking('file.js', `
+      export class Cmp {
+        ɵdir = ng.ɵɵngDeclareComponent({type: Cmp});
+      }
+    `)).toBeTrue();
+  });
+
   it('should return true for unrelated usages of ɵɵngDeclareComponent', () => {
-    expect(sourceFileMayNeedLinking(`
+    expect(needsLinking('file.js', `
       const fnName = 'ɵɵngDeclareComponent';
     `)).toBeTrue();
   });
 
   it('should return false when the file does not contain ɵɵngDeclareComponent', () => {
-    expect(sourceFileMayNeedLinking(`
+    expect(needsLinking('file.js', `
       const foo = ngDeclareComponent;
     `)).toBeFalse();
   });

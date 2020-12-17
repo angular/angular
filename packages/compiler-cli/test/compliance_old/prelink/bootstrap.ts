@@ -8,7 +8,7 @@
 import {PluginObj, transformSync} from '@babel/core';
 import * as ts from 'typescript';
 
-import {sourceFileMayNeedLinking} from '../../../linker';
+import {needsLinking} from '../../../linker';
 import {createEs2015LinkerPlugin} from '../../../linker/babel';
 import {compileFiles, CompileFn, setCompileFn} from '../mock_compile';
 
@@ -48,7 +48,7 @@ const linkedCompile: CompileFn = (data, angularFiles, options) => {
  * @returns The file's source content, which has been transformed using the linker if necessary.
  */
 function applyLinker(file: {fileName: string; source: string}, linkerPlugin: PluginObj): string {
-  if (!file.fileName.endsWith('.js') || !sourceFileMayNeedLinking(file.source)) {
+  if (!file.fileName.endsWith('.js') || !needsLinking(file.source)) {
     return file.source;
   }
   const result = transformSync(file.source, {
