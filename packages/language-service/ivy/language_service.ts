@@ -58,11 +58,12 @@ export class LanguageService {
     const compiler = this.compilerFactory.getOrCreateWithChangedFile(fileName);
     const ttc = compiler.getTemplateTypeChecker();
     const diagnostics: ts.Diagnostic[] = [];
+
     if (isTypeScriptFile(fileName)) {
       const program = compiler.getNextProgram();
       const sourceFile = program.getSourceFile(fileName);
       if (sourceFile) {
-        diagnostics.push(...ttc.getDiagnosticsForFile(sourceFile, OptimizeFor.SingleFile));
+        diagnostics.push(...compiler.getDiagnostics(sourceFile));
       }
     } else {
       const components = compiler.getComponentsWithTemplateFile(fileName);
