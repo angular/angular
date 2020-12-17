@@ -68,7 +68,9 @@ $scale: 0.75 !default;
   margin: 0 $mat-select-arrow-margin;
 }
 
-.mat-mdc-select-panel {
+// Note that the `.mdc-menu-surface` is here in order to bump up the specificity
+// and avoid interference with `mat-menu` which uses the same mixins from MDC.
+.mdc-menu-surface.mat-mdc-select-panel {
   width: 100%; // Ensures that the panel matches the overlay width.
   max-height: $mat-select-panel-max-height;
   position: static; // MDC uses `absolute` by default which will throw off our positioning.
