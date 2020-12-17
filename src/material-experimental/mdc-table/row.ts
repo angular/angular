@@ -60,7 +60,7 @@ export class MatRowDef<T> extends CdkRowDef<T> {
 
 /** Footer template container that contains the cell outlet. Adds the right class and role. */
 @Component({
-  selector: 'tr[mat-header-row]',
+  selector: 'mat-header-row, tr[mat-header-row]',
   template: CDK_ROW_TEMPLATE,
   host: {
     'class': 'mat-mdc-header-row mdc-data-table__header-row',
@@ -78,7 +78,7 @@ export class MatHeaderRow extends CdkHeaderRow {
 
 /** Footer template container that contains the cell outlet. Adds the right class and role. */
 @Component({
-  selector: 'tr[mat-footer-row]',
+  selector: 'mat-footer-row, tr[mat-footer-row]',
   template: CDK_ROW_TEMPLATE,
   host: {
     'class': 'mat-mdc-footer-row mdc-data-table__row',
@@ -96,7 +96,7 @@ export class MatFooterRow extends CdkFooterRow {
 
 /** Data row template container that contains the cell outlet. Adds the right class and role. */
 @Component({
-  selector: 'tr[mat-row]',
+  selector: 'mat-row, tr[mat-row]',
   template: CDK_ROW_TEMPLATE,
   host: {
     'class': 'mat-mdc-row mdc-data-table__row',

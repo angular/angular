@@ -16,7 +16,7 @@ import {
 import {_DisposeViewRepeaterStrategy, _VIEW_REPEATER_STRATEGY} from '@angular/cdk/collections';
 
 @Component({
-  selector: 'table[mat-table]',
+  selector: 'mat-table, table[mat-table]',
   exportAs: 'matTable',
   template: CDK_TABLE_TEMPLATE,
   styleUrls: ['table.css'],
