@@ -156,11 +156,6 @@ export function getTargetAtPosition(template: t.Node[], position: number): Templ
     }
   }
 
-  let parent: t.Node|e.AST|null = null;
-  if (path.length >= 2) {
-    parent = path[path.length - 2];
-  }
-
   // Given the candidate node, determine the full targeted context.
   let nodeInContext: TargetContext;
   if (candidate instanceof e.AST) {
@@ -191,7 +186,16 @@ export function getTargetAtPosition(template: t.Node[], position: number): Templ
       (candidate instanceof t.BoundAttribute || candidate instanceof t.BoundEvent ||
        candidate instanceof t.TextAttribute) &&
       candidate.keySpan !== undefined) {
-    if (isWithin(position, candidate.keySpan)) {
+    const previousCandidate = path[path.length - 2];
+    if (candidate instanceof t.BoundEvent && previousCandidate instanceof t.BoundAttribute &&
+        candidate.name === previousCandidate.name + 'Change') {
+      const boundAttribute: t.BoundAttribute = previousCandidate;
+      const boundEvent: t.BoundEvent = candidate;
+      nodeInContext = {
+        kind: TargetNodeKind.TwoWayBindingContext,
+        nodes: [boundAttribute, boundEvent],
+      };
+    } else if (isWithin(position, candidate.keySpan)) {
       nodeInContext = {
         kind: TargetNodeKind.AttributeInKeyContext,
         node: candidate,
@@ -207,6 +211,13 @@ export function getTargetAtPosition(template: t.Node[], position: number): Templ
       kind: TargetNodeKind.RawTemplateNode,
       node: candidate,
     };
+  }
+
+  let parent: t.Node|e.AST|null = null;
+  if (nodeInContext.kind === TargetNodeKind.TwoWayBindingContext && path.length >= 3) {
+    parent = path[path.length - 3];
+  } else if (path.length >= 2) {
+    parent = path[path.length - 2];
   }
 
   return {position, context: nodeInContext, template: context, parent};
@@ -247,20 +258,25 @@ class TemplateTargetVisitor implements t.Visitor {
   private constructor(private readonly position: number) {}
 
   visit(node: t.Node) {
-    const last: t.Node|e.AST|undefined = this.path[this.path.length - 1];
-    if (last && isTemplateNodeWithKeyAndValue(last) && isWithin(this.position, last.keySpan)) {
-      // We've already identified that we are within a `keySpan` of a node.
-      // We should stop processing nodes at this point to prevent matching
-      // any other nodes. This can happen when the end span of a different node
-      // touches the start of the keySpan for the candidate node. Because
-      // our `isWithin` logic is inclusive on both ends, we can match both nodes.
-      return;
-    }
     const {start, end} = getSpanIncludingEndTag(node);
     if (!isWithin(this.position, {start, end})) {
       return;
     }
 
+    const last: t.Node|e.AST|undefined = this.path[this.path.length - 1];
+    const withinKeySpanOfLastNode =
+        last && isTemplateNodeWithKeyAndValue(last) && isWithin(this.position, last.keySpan);
+    const withinKeySpanOfCurrentNode =
+        isTemplateNodeWithKeyAndValue(node) && isWithin(this.position, node.keySpan);
+    if (withinKeySpanOfLastNode && !withinKeySpanOfCurrentNode) {
+      // We've already identified that we are within a `keySpan` of a node.
+      // Unless we are _also_ in the `keySpan` of the current node (happens with two way bindings),
+      // we should stop processing nodes at this point to prevent matching any other nodes. This can
+      // happen when the end span of a different node touches the start of the keySpan for the
+      // candidate node. Because our `isWithin` logic is inclusive on both ends, we can match both
+      // nodes.
+      return;
+    }
     if (isTemplateNodeWithKeyAndValue(node) && !isWithinKeyValue(this.position, node)) {
       // If cursor is within source span but not within key span or value span,
       // do not return the node.
@@ -272,31 +288,33 @@ class TemplateTargetVisitor implements t.Visitor {
   }
 
   visitElement(element: t.Element) {
+    this.visitElementOrTemplate(element);
+  }
+
+
+  visitTemplate(template: t.Template) {
+    this.visitElementOrTemplate(template);
+  }
+
+  visitElementOrTemplate(element: t.Template|t.Element) {
     this.visitAll(element.attributes);
     this.visitAll(element.inputs);
     this.visitAll(element.outputs);
+    if (element instanceof t.Template) {
+      this.visitAll(element.templateAttrs);
+    }
     this.visitAll(element.references);
-    const last: t.Node|e.AST|undefined = this.path[this.path.length - 1];
+    if (element instanceof t.Template) {
+      this.visitAll(element.variables);
+    }
+
     // If we get here and have not found a candidate node on the element itself, proceed with
     // looking for a more specific node on the element children.
-    if (last === element) {
-      this.visitAll(element.children);
+    if (this.path[this.path.length - 1] !== element) {
+      return;
     }
-  }
 
-  visitTemplate(template: t.Template) {
-    this.visitAll(template.attributes);
-    this.visitAll(template.inputs);
-    this.visitAll(template.outputs);
-    this.visitAll(template.templateAttrs);
-    this.visitAll(template.references);
-    this.visitAll(template.variables);
-    const last: t.Node|e.AST|undefined = this.path[this.path.length - 1];
-    // If we get here and have not found a candidate node on the template itself, proceed with
-    // looking for a more specific node on the template children.
-    if (last === template) {
-      this.visitAll(template.children);
-    }
+    this.visitAll(element.children);
   }
 
   visitContent(content: t.Content) {
@@ -321,18 +339,6 @@ class TemplateTargetVisitor implements t.Visitor {
   }
 
   visitBoundEvent(event: t.BoundEvent) {
-    const isTwoWayBinding =
-        this.path.some(n => n instanceof t.BoundAttribute && event.name === n.name + 'Change');
-    if (isTwoWayBinding) {
-      // For two-way binding aka banana-in-a-box, there are two matches:
-      // BoundAttribute and BoundEvent. Both have the same spans. We choose to
-      // return BoundAttribute because it matches the identifier name verbatim.
-      // TODO: For operations like go to definition, ideally we want to return
-      // both.
-      this.path.pop();  // remove bound event from the AST path
-      return;
-    }
-
     // An event binding with no value (e.g. `(event|)`) parses to a `BoundEvent` with a
     // `LiteralPrimitive` handler with value `'ERROR'`, as opposed to a property binding with no
     // value which has an `EmptyExpr` as its value. This is a synthetic node created by the binding

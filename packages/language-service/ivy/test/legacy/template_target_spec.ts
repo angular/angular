@@ -10,7 +10,7 @@ import {ParseError, parseTemplate} from '@angular/compiler';
 import * as e from '@angular/compiler/src/expression_parser/ast';  // e for expression AST
 import * as t from '@angular/compiler/src/render3/r3_ast';         // t for template AST
 
-import {getTargetAtPosition, SingleNodeTarget, TargetNodeKind} from '../../template_target';
+import {getTargetAtPosition, SingleNodeTarget, TargetNodeKind, TwoWayBindingContext} from '../../template_target';
 import {isExpressionNode, isTemplateNode} from '../../utils';
 
 interface ParseResult {
@@ -180,11 +180,11 @@ describe('getTargetAtPosition for template AST', () => {
   it('should locate template bound attribute key in two-way binding', () => {
     const {errors, nodes, position} = parse(`<ng-template [(f¦oo)]="bar"></ng-template>`);
     expect(errors).toBe(null);
-    const {context} = getTargetAtPosition(nodes, position)!;
-    const {node} = context as SingleNodeTarget;
-    expect(isTemplateNode(node!)).toBe(true);
-    expect(node).toBeInstanceOf(t.BoundAttribute);
-    expect((node as t.BoundAttribute).name).toBe('foo');
+    const {context, parent} = getTargetAtPosition(nodes, position)!;
+    expect(parent).toBeInstanceOf(t.Template);
+    const {nodes: [boundAttribute, boundEvent]} = context as TwoWayBindingContext;
+    expect(boundAttribute.name).toBe('foo');
+    expect(boundEvent.name).toBe('fooChange');
   });
 
   it('should locate template bound attribute value in two-way binding', () => {
@@ -193,8 +193,12 @@ describe('getTargetAtPosition for template AST', () => {
     const {context} = getTargetAtPosition(nodes, position)!;
     const {node} = context as SingleNodeTarget;
     expect(isExpressionNode(node!)).toBe(true);
-    expect(node).toBeInstanceOf(e.PropertyRead);
-    expect((node as e.PropertyRead).name).toBe('bar');
+    // It doesn't actually matter if the template target returns the read or the write.
+    // When the template target returns a property read, we only use the LHS downstream because the
+    // RHS would have its own node in the AST that would have been returned instead. The LHS of the
+    // `e.PropertyWrite` is the same as the `e.PropertyRead`.
+    expect((node instanceof e.PropertyRead) || (node instanceof e.PropertyWrite)).toBeTrue();
+    expect((node as e.PropertyRead | e.PropertyWrite).name).toBe('bar');
   });
 
   it('should locate template bound event key', () => {
@@ -342,21 +346,26 @@ describe('getTargetAtPosition for template AST', () => {
   it('should locate bound attribute key in two-way binding', () => {
     const {errors, nodes, position} = parse(`<cmp [(f¦oo)]="bar"></cmp>`);
     expect(errors).toBe(null);
-    const {context} = getTargetAtPosition(nodes, position)!;
-    const {node} = context as SingleNodeTarget;
-    expect(isTemplateNode(node!)).toBe(true);
-    expect(node).toBeInstanceOf(t.BoundAttribute);
-    expect((node as t.BoundAttribute).name).toBe('foo');
+    const {context, parent} = getTargetAtPosition(nodes, position)!;
+    expect(parent).toBeInstanceOf(t.Element);
+    const {nodes: [boundAttribute, boundEvent]} = context as TwoWayBindingContext;
+    expect(boundAttribute.name).toBe('foo');
+    expect(boundEvent.name).toBe('fooChange');
   });
 
-  it('should locate bound attribute value in two-way binding', () => {
+  it('should locate node when in value span of two-way binding', () => {
     const {errors, nodes, position} = parse(`<cmp [(foo)]="b¦ar"></cmp>`);
     expect(errors).toBe(null);
-    const {context} = getTargetAtPosition(nodes, position)!;
+    const {context, parent} = getTargetAtPosition(nodes, position)!;
+    // It doesn't actually matter if the template target returns the read or the write.
+    // When the template target returns a property read, we only use the LHS downstream because the
+    // RHS would have its own node in the AST that would have been returned instead. The LHS of the
+    // `e.PropertyWrite` is the same as the `e.PropertyRead`.
+    expect((parent instanceof t.BoundAttribute) || (parent instanceof t.BoundEvent)).toBe(true);
     const {node} = context as SingleNodeTarget;
     expect(isExpressionNode(node!)).toBe(true);
-    expect(node).toBeInstanceOf(e.PropertyRead);
-    expect((node as e.PropertyRead).name).toBe('bar');
+    expect((node instanceof e.PropertyRead) || (node instanceof e.PropertyWrite)).toBeTrue();
+    expect((node as e.PropertyRead | e.PropertyWrite).name).toBe('bar');
   });
 
   it('should locate switch value in ICUs', () => {

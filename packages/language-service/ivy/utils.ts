@@ -54,6 +54,16 @@ export function isTemplateNodeWithKeyAndValue(node: t.Node|e.AST): node is NodeW
   return isTemplateNode(node) && node.hasOwnProperty('keySpan');
 }
 
+export function isWithinKey(position: number, node: NodeWithKeyAndValue): boolean {
+  let {keySpan, valueSpan} = node;
+  if (valueSpan === undefined && node instanceof TmplAstBoundEvent) {
+    valueSpan = node.handlerSpan;
+  }
+  const isWithinKeyValue =
+      isWithin(position, keySpan) || !!(valueSpan && isWithin(position, valueSpan));
+  return isWithinKeyValue;
+}
+
 export function isWithinKeyValue(position: number, node: NodeWithKeyAndValue): boolean {
   let {keySpan, valueSpan} = node;
   if (valueSpan === undefined && node instanceof TmplAstBoundEvent) {
