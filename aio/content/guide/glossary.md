@@ -877,6 +877,16 @@ A category of [directive](#directive) that is responsible for shaping HTML layou
 
 To learn more, see [Structural Directives](guide/structural-directives).
 
+
+{@a structural-directive-shorthand}
+
+## structural directive shorthand
+
+The asterisk, `*`,  syntax on a structural directive, such as `*ngIf`, is shorthand that Angular interprets into a longer form.
+Angular transforms the asterisk in front of a structural directive into an `<ng-template>` that surrounds the host element and its descendants.
+
+To learn more, see [Structural directive shorthand](guide/structural-directives#structural-directive-shorthand).
+
 {@a subscriber}
 
 ## subscriber
