@@ -968,7 +968,7 @@ You learned:
 
 * that structural directives manipulate HTML layout.
 * to use [`<ng-container>`](guide/structural-directives#ngcontainer) as a grouping element when there is no suitable host element.
-* that the Angular desugars [asterisk (*) syntax](guide/structural-directives#asterisk) into a `<ng-template>`.
+* that Angular desugars [asterisk (*) syntax](guide/structural-directives#asterisk) into a `<ng-template>`.
 * how that works for the `NgIf`, `NgFor` and `NgSwitch` built-in directives.
 * about the [_microsyntax_](guide/structural-directives#microsyntax) that expands into a [`<ng-template>`](guide/structural-directives#template).
 * to write a [custom structural directive](guide/structural-directives#unless), `UnlessDirective`.
