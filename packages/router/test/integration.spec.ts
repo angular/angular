@@ -416,7 +416,7 @@ describe('Integration', () => {
       @Component({template: 'child1'})
       class Child1 {
         constructor() {
-          log.push('child1 constructor')
+          log.push('child1 constructor');
         }
         ngOnDestroy() {
           log.push('child1 destroy');
@@ -548,7 +548,7 @@ describe('Integration', () => {
              'second deactivate',
              // route param subscription from 'Parent' component
              {},
-           ])
+           ]);
          }));
     });
 

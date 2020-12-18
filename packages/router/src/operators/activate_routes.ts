@@ -116,7 +116,7 @@ export class ActivateRoutes {
 
     for (const child of Object.values(children)) {
       this.deactivateRouteAndItsChildren(child, contexts);
-    };
+    }
 
     if (context && context.outlet) {
       // Destroy the component
