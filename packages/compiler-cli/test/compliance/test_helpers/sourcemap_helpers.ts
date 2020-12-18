@@ -97,8 +97,8 @@ function extractMappings(
 }
 
 function unescape(str: string): string {
-  const replacements: Record<any, string> = {'\\n': '\n', '\\\\': '\\'};
-  return str.replace(/\\[n\\]/g, match => replacements[match]);
+  const replacements: Record<any, string> = {'\\n': '\n', '\\r': '\r', '\\\\': '\\'};
+  return str.replace(/\\[rn\\]/g, match => replacements[match]);
 }
 
 /**
