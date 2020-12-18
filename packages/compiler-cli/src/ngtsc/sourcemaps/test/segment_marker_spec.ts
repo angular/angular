@@ -79,31 +79,32 @@ describe('SegmentMarker utils', () => {
     it('should return a new marker offset by the given chars', () => {
       const startOfLinePositions =
           computeStartOfLinePositions('012345\n0123456789\r\n012*4567\n0123456');
-      const marker = {line: 2, column: 3, position: 21, next: undefined};
+      const marker = {line: 2, column: 3, position: 22, next: undefined};
+
       expect(offsetSegment(startOfLinePositions, marker, 1))
-          .toEqual({line: 2, column: 4, position: 22, next: undefined});
+          .toEqual({line: 2, column: 4, position: 23, next: undefined});
       expect(offsetSegment(startOfLinePositions, marker, 2))
-          .toEqual({line: 2, column: 5, position: 23, next: undefined});
+          .toEqual({line: 2, column: 5, position: 24, next: undefined});
       expect(offsetSegment(startOfLinePositions, marker, 4))
-          .toEqual({line: 2, column: 7, position: 25, next: undefined});
+          .toEqual({line: 2, column: 7, position: 26, next: undefined});
       expect(offsetSegment(startOfLinePositions, marker, 6))
-          .toEqual({line: 3, column: 0, position: 27, next: undefined});
+          .toEqual({line: 3, column: 0, position: 28, next: undefined});
       expect(offsetSegment(startOfLinePositions, marker, 8))
-          .toEqual({line: 3, column: 2, position: 29, next: undefined});
+          .toEqual({line: 3, column: 2, position: 30, next: undefined});
       expect(offsetSegment(startOfLinePositions, marker, 20))
-          .toEqual({line: 3, column: 14, position: 41, next: undefined});
+          .toEqual({line: 3, column: 14, position: 42, next: undefined});
       expect(offsetSegment(startOfLinePositions, marker, -1))
-          .toEqual({line: 2, column: 2, position: 20, next: undefined});
+          .toEqual({line: 2, column: 2, position: 21, next: undefined});
       expect(offsetSegment(startOfLinePositions, marker, -2))
-          .toEqual({line: 2, column: 1, position: 19, next: undefined});
+          .toEqual({line: 2, column: 1, position: 20, next: undefined});
       expect(offsetSegment(startOfLinePositions, marker, -3))
-          .toEqual({line: 2, column: 0, position: 18, next: undefined});
+          .toEqual({line: 2, column: 0, position: 19, next: undefined});
       expect(offsetSegment(startOfLinePositions, marker, -4))
-          .toEqual({line: 1, column: 10, position: 17, next: undefined});
+          .toEqual({line: 1, column: 11, position: 18, next: undefined});
       expect(offsetSegment(startOfLinePositions, marker, -6))
-          .toEqual({line: 1, column: 8, position: 15, next: undefined});
+          .toEqual({line: 1, column: 9, position: 16, next: undefined});
       expect(offsetSegment(startOfLinePositions, marker, -16))
-          .toEqual({line: 0, column: 5, position: 5, next: undefined});
+          .toEqual({line: 0, column: 6, position: 6, next: undefined});
     });
   });
 });
