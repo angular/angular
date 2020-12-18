@@ -4,7 +4,7 @@ import { Observable, Subscription } from 'rxjs';
 import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
 import { TabUpdate } from '../../../../tab-update';
 
-const ITEM_WIDTH = 29;
+const ITEM_WIDTH = 30;
 
 @Component({
   selector: 'ng-frame-selector',
@@ -13,17 +13,11 @@ const ITEM_WIDTH = 29;
 })
 export class FrameSelectorComponent implements OnInit, OnDestroy {
   @ViewChild('barContainer') barContainer: ElementRef;
-  @Input() set startFrame(value: number) {
-    this.startFrameIndex = value;
-    this._ensureVisible(value);
-  }
-  @Input() set endFrame(value: number) {
-    this.endFrameIndex = value;
-  }
   @Input() set graphData$(graphData: Observable<GraphNode[]>) {
     this._graphData$ = graphData;
     this._graphDataSubscription = this._graphData$.subscribe((items) =>
       setTimeout(() => {
+        this.frameCount = items.length;
         this.viewport.scrollToIndex(items.length);
       })
     );
@@ -33,12 +27,14 @@ export class FrameSelectorComponent implements OnInit, OnDestroy {
     return this._graphData$;
   }
 
-  @Output() move = new EventEmitter<number>();
-  @Output() selectFrames = new EventEmitter<{ start: number; end: number }>();
+  @Output() selectFrames = new EventEmitter<{ indexes: number[] }>();
+
   @ViewChild(CdkVirtualScrollViewport) viewport: CdkVirtualScrollViewport;
 
-  startFrameIndex: number;
-  endFrameIndex: number;
+  startFrameIndex = -1;
+  endFrameIndex = -1;
+  selectedFrameIndexes = new Set<number>();
+  frameCount: number;
 
   get itemWidth(): number {
     return ITEM_WIDTH;
@@ -47,9 +43,6 @@ export class FrameSelectorComponent implements OnInit, OnDestroy {
   private _graphData$: Observable<GraphNode[]>;
   private _graphDataSubscription: Subscription;
   private _tabUpdateSubscription: Subscription;
-  private _keydownCallback: (e: KeyboardEvent) => void;
-  private _keyupCallback: (e: KeyboardEvent) => void;
-  private _shiftDown = false;
 
   constructor(private _tabUpdate: TabUpdate) {}
 
@@ -62,8 +55,6 @@ export class FrameSelectorComponent implements OnInit, OnDestroy {
         });
       }
     });
-    window.addEventListener('keydown', (this._keydownCallback = (e: KeyboardEvent) => (this._shiftDown = e.shiftKey)));
-    window.addEventListener('keyup', (this._keyupCallback = (e: KeyboardEvent) => (this._shiftDown = e.shiftKey)));
   }
 
   ngOnDestroy(): void {
@@ -73,26 +64,83 @@ export class FrameSelectorComponent implements OnInit, OnDestroy {
     if (this._graphDataSubscription) {
       this._graphDataSubscription.unsubscribe();
     }
-    window.removeEventListener('keydown', this._keydownCallback);
-    window.removeEventListener('keyup', this._keyupCallback);
   }
 
   get selectionLabel(): string {
-    if (this.startFrameIndex !== this.endFrameIndex) {
-      return `${this.startFrameIndex + 1}-${this.endFrameIndex + 1}`;
+    if (this.startFrameIndex === this.endFrameIndex) {
+      return `${this.startFrameIndex + 1}`;
     }
-    return `${this.startFrameIndex + 1}`;
+
+    return this._smartJoinIndexLabels([...this.selectedFrameIndexes]);
   }
 
-  handleFrameSelection(idx: number): void {
-    if (!this._shiftDown) {
-      this.startFrameIndex = this.endFrameIndex = idx;
-    } else {
-      const start = Math.min(this.startFrameIndex, idx);
-      this.endFrameIndex = Math.max(this.startFrameIndex, this.endFrameIndex, idx);
-      this.startFrameIndex = start;
+  private _smartJoinIndexLabels(indexArray: number[]): string {
+    const sortedIndexes = indexArray.sort((a, b) => a - b);
+
+    const groups: number[][] = [];
+    let prev: number | null = null;
+
+    for (const index of sortedIndexes) {
+      // First iteration: create initial group and set prev variable to the first index
+      if (prev === null) {
+        groups.push([index]);
+        prev = index;
+        continue;
+      }
+
+      // If current index is consecutive with the previous, group them, otherwise start a new group
+      if (prev + 1 === index) {
+        groups[groups.length - 1].push(index);
+      } else {
+        groups.push([index]);
+      }
+
+      prev = index;
     }
-    this.selectFrames.emit({ start: this.startFrameIndex, end: this.endFrameIndex });
+
+    return groups
+      .filter((group) => group.length > 0)
+      .map((group) => (group.length === 1 ? group[0] + 1 : `${group[0] + 1}-${group[group.length - 1] + 1}`))
+      .join(', ');
+  }
+
+  move(value: number): void {
+    const newVal = this.startFrameIndex + value;
+    this.selectedFrameIndexes = new Set([newVal]);
+    if (newVal > -1 && newVal < this.frameCount) {
+      this._selectFrames({ indexes: this.selectedFrameIndexes });
+    }
+  }
+
+  private _selectFrames({ indexes }: { indexes: Set<number> }): void {
+    const sortedIndexes = [...indexes].sort((a, b) => a - b);
+    this.startFrameIndex = sortedIndexes[0];
+    this.endFrameIndex = sortedIndexes[sortedIndexes.length - 1];
+    this._ensureVisible(this.startFrameIndex);
+    this.selectFrames.emit({ indexes: sortedIndexes });
+  }
+
+  handleFrameSelection(idx: number, event: MouseEvent): void {
+    const { shiftKey, ctrlKey, metaKey } = event;
+
+    if (shiftKey) {
+      const [start, end] = [Math.min(this.startFrameIndex, idx), Math.max(this.endFrameIndex, idx)];
+      this.selectedFrameIndexes = new Set(Array.from(Array(end - start + 1), (_, index) => index + start));
+    } else if (ctrlKey || metaKey) {
+      if (this.selectedFrameIndexes.has(idx)) {
+        if (this.selectedFrameIndexes.size === 1) {
+          return; // prevent deselection when only one frame is selected
+        }
+
+        this.selectedFrameIndexes.delete(idx);
+      } else {
+        this.selectedFrameIndexes.add(idx);
+      }
+    } else {
+      this.selectedFrameIndexes = new Set([idx]);
+    }
+
+    this._selectFrames({ indexes: this.selectedFrameIndexes });
   }
 
   private _ensureVisible(index: number): void {
