@@ -127,13 +127,19 @@ function getOptions(
  * Replace escaped line-ending markers (\r\n) with real line-ending characters.
  *
  * This allows us to simulate, more reliably, files that have `\r\n` line-endings.
- * (See `line_ending_normalization` test cases.)
+ * (See `test_cases/r3_view_compiler_i18n/line_ending_normalization/template.html`.)
  */
 function monkeyPatchReadFile(fs: FileSystem): void {
   const originalReadFile = fs.readFile;
   fs.readFile = (path: AbsoluteFsPath): string => {
     const file = originalReadFile.call(fs, path);
-    return file.replace(/\\r\\n\r?\n/g, '\r\n');
+    return file
+        // First convert actual `\r\n` sequences to `\n`
+        .replace(/\r\n/g, '\n')
+        // unescape `\r\n` at the end of a line
+        .replace(/\\r\\n\n/g, '\r\n')
+        // unescape `\\r\\n`, at the end of a line, to `\r\n`
+        .replace(/\\\\r\\\\n(\r?\n)/g, '\\r\\n$1');
   };
 }
 
