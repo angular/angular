@@ -34,7 +34,7 @@ export class Xliff2TranslationSerializer implements TranslationSerializer {
   }
 
   serialize(messages: ɵParsedMessage[]): string {
-    const messageMap = consolidateMessages(messages, message => this.getMessageId(message));
+    const messageGroups = consolidateMessages(messages, message => this.getMessageId(message));
     const xml = new XmlFile();
     xml.startTag('xliff', {
       'version': '2.0',
@@ -49,8 +49,9 @@ export class Xliff2TranslationSerializer implements TranslationSerializer {
     // messages that come from a particular original file, and the translation file parsers may
     // not
     xml.startTag('file', {'id': 'ngi18n', 'original': 'ng.template', ...this.formatOptions});
-    for (const [id, duplicateMessages] of messageMap.entries()) {
+    for (const duplicateMessages of messageGroups) {
       const message = duplicateMessages[0];
+      const id = this.getMessageId(message);
 
       xml.startTag('unit', {id});
       const messagesWithLocations = duplicateMessages.filter(hasLocation);

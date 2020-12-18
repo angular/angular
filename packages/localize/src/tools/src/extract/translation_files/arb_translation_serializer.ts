@@ -48,12 +48,13 @@ export class ArbTranslationSerializer implements TranslationSerializer {
       private sourceLocale: string, private basePath: AbsoluteFsPath, private fs: FileSystem) {}
 
   serialize(messages: ɵParsedMessage[]): string {
-    const messageMap = consolidateMessages(messages, message => message.customId || message.id);
+    const messageGroups = consolidateMessages(messages, message => getMessageId(message));
 
     let output = `{\n  "@@locale": ${JSON.stringify(this.sourceLocale)}`;
 
-    for (const [id, duplicateMessages] of messageMap.entries()) {
+    for (const duplicateMessages of messageGroups) {
       const message = duplicateMessages[0];
+      const id = getMessageId(message);
       output += this.serializeMessage(id, message);
       output += this.serializeMeta(
           id, message.description, duplicateMessages.filter(hasLocation).map(m => m.location));
@@ -97,4 +98,8 @@ export class ArbTranslationSerializer implements TranslationSerializer {
       `      }`,
     ].join('\n');
   }
+}
+
+function getMessageId(message: ɵParsedMessage): string {
+  return message.customId || message.id;
 }

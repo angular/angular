@@ -464,7 +464,7 @@ runInEachFileSystem(() => {
           `  "locale": "en-GB",`,
           `  "translations": {`,
           `    "message-1": "message {$PH} contents",`,
-          `    "message-2": "different message contents"`,
+          `    "message-2": "message contents"`,
           `  }`,
           `}`,
         ].join('\n'));
@@ -489,7 +489,7 @@ runInEachFileSystem(() => {
           `  "locale": "en-GB",`,
           `  "translations": {`,
           `    "message-1": "message {$PH} contents",`,
-          `    "message-2": "different message contents"`,
+          `    "message-2": "message contents"`,
           `  }`,
           `}`,
         ].join('\n'));
