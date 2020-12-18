@@ -10,6 +10,7 @@ import {ɵParsedMessage, ɵSourceLocation} from '@angular/localize';
 
 import {extractIcuPlaceholders} from './icu_parsing';
 import {TranslationSerializer} from './translation_serializer';
+import {consolidateMessages} from './utils';
 import {XmlFile} from './xml_file';
 
 /**
@@ -26,7 +27,7 @@ export class XmbTranslationSerializer implements TranslationSerializer {
       private fs: FileSystem = getFileSystem()) {}
 
   serialize(messages: ɵParsedMessage[]): string {
-    const ids = new Set<string>();
+    const messageGroups = consolidateMessages(messages, message => this.getMessageId(message));
     const xml = new XmlFile();
     xml.rawText(
         `<!DOCTYPE messagebundle [\n` +
@@ -51,13 +52,9 @@ export class XmbTranslationSerializer implements TranslationSerializer {
         `<!ELEMENT ex (#PCDATA)>\n` +
         `]>\n`);
     xml.startTag('messagebundle');
-    for (const message of messages) {
+    for (const duplicateMessages of messageGroups) {
+      const message = duplicateMessages[0];
       const id = this.getMessageId(message);
-      if (ids.has(id)) {
-        // Do not render the same message more than once
-        continue;
-      }
-      ids.add(id);
       xml.startTag(
           'msg', {id, desc: message.description, meaning: message.meaning},
           {preserveWhitespace: true});

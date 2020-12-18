@@ -34,7 +34,7 @@ export class Xliff1TranslationSerializer implements TranslationSerializer {
   }
 
   serialize(messages: ɵParsedMessage[]): string {
-    const messageMap = consolidateMessages(messages, message => this.getMessageId(message));
+    const messageGroups = consolidateMessages(messages, message => this.getMessageId(message));
     const xml = new XmlFile();
     xml.startTag('xliff', {'version': '1.2', 'xmlns': 'urn:oasis:names:tc:xliff:document:1.2'});
     // NOTE: the `original` property is set to the legacy `ng2.template` value for backward
@@ -51,8 +51,9 @@ export class Xliff1TranslationSerializer implements TranslationSerializer {
       ...this.formatOptions,
     });
     xml.startTag('body');
-    for (const [id, duplicateMessages] of messageMap.entries()) {
+    for (const duplicateMessages of messageGroups) {
       const message = duplicateMessages[0];
+      const id = this.getMessageId(message);
 
       xml.startTag('trans-unit', {id, datatype: 'html'});
       xml.startTag('source', {}, {preserveWhitespace: true});

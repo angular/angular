@@ -7,6 +7,7 @@
  */
 import {ɵMessageId, ɵParsedMessage, ɵSourceMessage} from '@angular/localize';
 import {TranslationSerializer} from './translation_serializer';
+import {consolidateMessages} from './utils';
 
 
 interface SimpleJsonTranslationFile {
@@ -24,7 +25,7 @@ export class SimpleJsonTranslationSerializer implements TranslationSerializer {
   constructor(private sourceLocale: string) {}
   serialize(messages: ɵParsedMessage[]): string {
     const fileObj: SimpleJsonTranslationFile = {locale: this.sourceLocale, translations: {}};
-    for (const message of messages) {
+    for (const [message] of consolidateMessages(messages, message => message.id)) {
       fileObj.translations[message.id] = message.text;
     }
     return JSON.stringify(fileObj, null, 2);

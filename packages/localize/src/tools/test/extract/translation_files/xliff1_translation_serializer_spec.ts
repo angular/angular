@@ -12,7 +12,7 @@ import {ɵParsedMessage, ɵSourceLocation} from '@angular/localize';
 import {FormatOptions} from '../../../src/extract/translation_files/format_options';
 import {Xliff1TranslationSerializer} from '../../../src/extract/translation_files/xliff1_translation_serializer';
 
-import {mockMessage} from './mock_message';
+import {location, mockMessage} from './mock_message';
 import {toAttributes} from './utils';
 
 runInEachFileSystem(() => {
@@ -85,29 +85,12 @@ runInEachFileSystem(() => {
               `  <file source-language="xx" datatype="plaintext" original="ng2.template"${
                   toAttributes(options)}>`,
               `    <body>`,
-              `      <trans-unit id="${
-                  useLegacyIds ? '1234567890ABCDEF1234567890ABCDEF12345678' :
-                                 '12345'}" datatype="html">`,
-              `        <source>a<x id="PH"/>b<x id="PH_1"/>c</source>`,
-              `        <context-group purpose="location">`,
-              `          <context context-type="sourcefile">file.ts</context>`,
-              `          <context context-type="linenumber">6</context>`,
-              `        </context-group>`,
-              `        <note priority="1" from="meaning">some meaning</note>`,
-              `      </trans-unit>`,
               `      <trans-unit id="someId" datatype="html">`,
               `        <source>a<x id="PH" equiv-text="placeholder + 1"/>b<x id="PH_1"/>c</source>`,
               `      </trans-unit>`,
               `      <trans-unit id="67890" datatype="html">`,
               `        <source>a<x id="START_TAG_SPAN" ctype="x-span"/><x id="CLOSE_TAG_SPAN" ctype="x-span"/>c</source>`,
               `        <note priority="1" from="description">some description</note>`,
-              `      </trans-unit>`,
-              `      <trans-unit id="38705" datatype="html">`,
-              `        <source>a<x id="START_TAG_SPAN" ctype="x-span"/><x id="CLOSE_TAG_SPAN" ctype="x-span"/>c</source>`,
-              `        <context-group purpose="location">`,
-              `          <context context-type="sourcefile">file.ts</context>`,
-              `          <context context-type="linenumber">3,4</context>`,
-              `        </context-group>`,
               `      </trans-unit>`,
               `      <trans-unit id="13579" datatype="html">`,
               `        <source><x id="START_BOLD_TEXT" ctype="x-b"/>b<x id="CLOSE_BOLD_TEXT" ctype="x-b"/></source>`,
@@ -129,6 +112,23 @@ runInEachFileSystem(() => {
               `      </trans-unit>`,
               `      <trans-unit id="100001" datatype="html">`,
               `        <source>{VAR_PLURAL, plural, one {<x id="START_BOLD_TEXT" ctype="x-b"/>something bold<x id="CLOSE_BOLD_TEXT" ctype="x-b"/>} other {pre <x id="START_TAG_SPAN" ctype="x-span"/>middle<x id="CLOSE_TAG_SPAN" ctype="x-span"/> post}}</source>`,
+              `      </trans-unit>`,
+              `      <trans-unit id="38705" datatype="html">`,
+              `        <source>a<x id="START_TAG_SPAN" ctype="x-span"/><x id="CLOSE_TAG_SPAN" ctype="x-span"/>c</source>`,
+              `        <context-group purpose="location">`,
+              `          <context context-type="sourcefile">file.ts</context>`,
+              `          <context context-type="linenumber">3,4</context>`,
+              `        </context-group>`,
+              `      </trans-unit>`,
+              `      <trans-unit id="${
+                  useLegacyIds ? '1234567890ABCDEF1234567890ABCDEF12345678' :
+                                 '12345'}" datatype="html">`,
+              `        <source>a<x id="PH"/>b<x id="PH_1"/>c</source>`,
+              `        <context-group purpose="location">`,
+              `          <context context-type="sourcefile">file.ts</context>`,
+              `          <context context-type="linenumber">6</context>`,
+              `        </context-group>`,
+              `        <note priority="1" from="meaning">some meaning</note>`,
               `      </trans-unit>`,
               `    </body>`,
               `  </file>`,
@@ -289,6 +289,81 @@ runInEachFileSystem(() => {
             );
           });
         });
+      });
+    });
+
+    describe('renderFile()', () => {
+      it('should consistently order serialized messages by location', () => {
+        const messages: ɵParsedMessage[] = [
+          mockMessage('1', ['message-1'], [], {location: location('/root/c-1.ts', 5, 10, 5, 12)}),
+          mockMessage('2', ['message-1'], [], {location: location('/root/c-2.ts', 5, 10, 5, 12)}),
+          mockMessage('1', ['message-1'], [], {location: location('/root/b-1.ts', 8, 0, 10, 12)}),
+          mockMessage('2', ['message-1'], [], {location: location('/root/b-2.ts', 8, 0, 10, 12)}),
+          mockMessage('1', ['message-1'], [], {location: location('/root/a-1.ts', 5, 10, 5, 12)}),
+          mockMessage('2', ['message-1'], [], {location: location('/root/a-2.ts', 5, 10, 5, 12)}),
+          mockMessage('1', ['message-1'], [], {location: location('/root/b-1.ts', 5, 10, 5, 12)}),
+          mockMessage('2', ['message-1'], [], {location: location('/root/b-2.ts', 5, 10, 5, 12)}),
+          mockMessage('1', ['message-1'], [], {location: location('/root/b-1.ts', 5, 20, 5, 12)}),
+          mockMessage('2', ['message-1'], [], {location: location('/root/b-2.ts', 5, 20, 5, 12)}),
+        ];
+        const serializer = new Xliff1TranslationSerializer('xx', absoluteFrom('/root'), false, {});
+        const output = serializer.serialize(messages);
+        expect(output.split('\n')).toEqual([
+          '<?xml version="1.0" encoding="UTF-8" ?>',
+          '<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">',
+          '  <file source-language="xx" datatype="plaintext" original="ng2.template">',
+          '    <body>',
+          '      <trans-unit id="1" datatype="html">',
+          '        <source>message-1</source>',
+          '        <context-group purpose="location">',
+          '          <context context-type="sourcefile">a-1.ts</context>',
+          '          <context context-type="linenumber">6</context>',
+          '        </context-group>',
+          '        <context-group purpose="location">',
+          '          <context context-type="sourcefile">b-1.ts</context>',
+          '          <context context-type="linenumber">6</context>',
+          '        </context-group>',
+          '        <context-group purpose="location">',
+          '          <context context-type="sourcefile">b-1.ts</context>',
+          '          <context context-type="linenumber">6</context>',
+          '        </context-group>',
+          '        <context-group purpose="location">',
+          '          <context context-type="sourcefile">b-1.ts</context>',
+          '          <context context-type="linenumber">9,11</context>',
+          '        </context-group>',
+          '        <context-group purpose="location">',
+          '          <context context-type="sourcefile">c-1.ts</context>',
+          '          <context context-type="linenumber">6</context>',
+          '        </context-group>',
+          '      </trans-unit>',
+          '      <trans-unit id="2" datatype="html">',
+          '        <source>message-1</source>',
+          '        <context-group purpose="location">',
+          '          <context context-type="sourcefile">a-2.ts</context>',
+          '          <context context-type="linenumber">6</context>',
+          '        </context-group>',
+          '        <context-group purpose="location">',
+          '          <context context-type="sourcefile">b-2.ts</context>',
+          '          <context context-type="linenumber">6</context>',
+          '        </context-group>',
+          '        <context-group purpose="location">',
+          '          <context context-type="sourcefile">b-2.ts</context>',
+          '          <context context-type="linenumber">6</context>',
+          '        </context-group>',
+          '        <context-group purpose="location">',
+          '          <context context-type="sourcefile">b-2.ts</context>',
+          '          <context context-type="linenumber">9,11</context>',
+          '        </context-group>',
+          '        <context-group purpose="location">',
+          '          <context context-type="sourcefile">c-2.ts</context>',
+          '          <context context-type="linenumber">6</context>',
+          '        </context-group>',
+          '      </trans-unit>',
+          '    </body>',
+          '  </file>',
+          '</xliff>',
+          '',
+        ]);
       });
     });
   });
