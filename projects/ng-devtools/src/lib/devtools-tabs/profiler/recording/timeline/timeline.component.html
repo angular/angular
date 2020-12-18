@@ -19,19 +19,16 @@
 
   <ng-frame-selector
     [class.hidden]="!hasFrames"
-    (move)="move($event)"
-    (selectFrames)="selectFrames($event)"
     [graphData$]="graphData$"
-    [startFrame]="startFrame"
-    [endFrame]="endFrame"
+    (selectFrames)="selectFrames($event)"
   ></ng-frame-selector>
 
-  <p class="info" *ngIf="hasFrames && startFrame < 0">
+  <p class="info" *ngIf="hasFrames && frame">
     Select a bar to preview a particular change detection cycle.
   </p>
 
   <ng-timeline-visualizer
-    *ngIf="hasFrames && startFrame >= 0"
+    *ngIf="hasFrames && frame"
     [visualizationMode]="visualizationMode"
     [frame]="frame"
     [changeDetection]="changeDetection"

@@ -37,8 +37,6 @@ export class TimelineComponent implements OnDestroy {
   @Output() exportProfile = new EventEmitter<void>();
 
   visualizationMode = VisualizationMode.BarGraph;
-  startFrame = -1;
-  endFrame = -1;
   changeDetection = false;
   frame: ProfilerFrame | null = null;
 
@@ -49,6 +47,10 @@ export class TimelineComponent implements OnDestroy {
   visualizing = false;
   graphData$ = this._graphDataSubject.asObservable().pipe(share());
 
+  selectFrames({ indexes }: { indexes: number[] }): void {
+    this.frame = mergeFrames(indexes.map((index) => this._allRecords[index]));
+  }
+
   get hasFrames(): boolean {
     return this._allRecords.length > 0;
   }
@@ -56,19 +58,6 @@ export class TimelineComponent implements OnDestroy {
   estimateFrameRate(timeSpent: number): number {
     const multiplier = Math.max(Math.ceil(timeSpent / 16) - 1, 0);
     return Math.floor(60 / 2 ** multiplier);
-  }
-
-  move(value: number): void {
-    const newVal = this.startFrame + value;
-    if (newVal > -1 && newVal < this._allRecords.length) {
-      this.selectFrames({ start: newVal, end: newVal });
-    }
-  }
-
-  selectFrames(range: { start: number; end: number }): void {
-    this.startFrame = range.start;
-    this.endFrame = range.end;
-    this.frame = mergeFrames(this._allRecords.slice(range.start, range.end + 1));
   }
 
   getColorByFrameRate(framerate: number): string {
@@ -125,8 +114,6 @@ export class TimelineComponent implements OnDestroy {
     const backgroundColor = this.getColorByFrameRate(this.estimateFrameRate(record.duration));
 
     const style = {
-      'margin-left': '1px',
-      'margin-right': '1px',
       background: `-webkit-linear-gradient(bottom, ${backgroundColor} ${colorPercentage}%, transparent ${colorPercentage}%)`,
       cursor: 'pointer',
       'min-width': '25px',

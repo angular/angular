@@ -12,7 +12,7 @@
     line-height: 50px;
     padding: 0px;
     margin: 0px 10px;
-    width: 35px;
+    width: 150px;
     text-align: center;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -34,8 +34,17 @@
       display: none;
     }
 
-    .selected {
-      border: 2px solid #ffc400;
+    .frame-bar {
+      margin-left: 2.5px;
+      margin-right: 2.5px;
+      margin-top: 2px;
+
+      &.selected {
+        margin-left: 0.5px;
+        margin-right: 0.5px;
+        margin-top: 0;
+        border: 2px solid #ffc400;
+      }
     }
   }
 
