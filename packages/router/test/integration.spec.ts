@@ -390,7 +390,7 @@ describe('Integration', () => {
       });
     });
 
-    describe('should advance the parent route after deactivating its children', () => {
+    describe('route activation', () => {
       @Component({template: '<router-outlet></router-outlet>'})
       class Parent {
         constructor(route: ActivatedRoute) {
@@ -400,8 +400,24 @@ describe('Integration', () => {
         }
       }
 
+      @Component({
+        template: `
+        <router-outlet (deactivate)="logDeactivate('primary')"></router-outlet>
+        <router-outlet name="first" (deactivate)="logDeactivate('first')"></router-outlet>
+        <router-outlet name="second" (deactivate)="logDeactivate('second')"></router-outlet>
+        `
+      })
+      class NamedOutletHost {
+        logDeactivate(route: string) {
+          log.push(route + ' deactivate');
+        }
+      }
+
       @Component({template: 'child1'})
       class Child1 {
+        constructor() {
+          log.push('child1 constructor');
+        }
         ngOnDestroy() {
           log.push('child1 destroy');
         }
@@ -412,20 +428,33 @@ describe('Integration', () => {
         constructor() {
           log.push('child2 constructor');
         }
+        ngOnDestroy() {
+          log.push('child2 destroy');
+        }
+      }
+
+      @Component({template: 'child3'})
+      class Child3 {
+        constructor() {
+          log.push('child3 constructor');
+        }
+        ngOnDestroy() {
+          log.push('child3 destroy');
+        }
       }
 
       @NgModule({
-        declarations: [Parent, Child1, Child2],
-        entryComponents: [Parent, Child1, Child2],
+        declarations: [Parent, NamedOutletHost, Child1, Child2, Child3],
+        entryComponents: [Parent, NamedOutletHost, Child1, Child2, Child3],
         imports: [RouterModule]
       })
       class TestModule {
       }
 
-      beforeEach(() => TestBed.configureTestingModule({imports: [TestModule]}));
-
-      it('should work',
-         fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
+      it('should advance the parent route after deactivating its children', fakeAsync(() => {
+           TestBed.configureTestingModule({imports: [TestModule]});
+           const router = TestBed.inject(Router);
+           const location = TestBed.inject(Location);
            const fixture = createRoot(router, RootCmp);
 
            router.resetConfig([{
@@ -446,11 +475,81 @@ describe('Integration', () => {
            expect(location.path()).toEqual('/parent/2/child2');
            expect(log).toEqual([
              {id: '1'},
+             'child1 constructor',
              'child1 destroy',
              {id: '2'},
              'child2 constructor',
            ]);
-         })));
+         }));
+
+      it('should deactivate outlet children with componentless parent', fakeAsync(() => {
+           TestBed.configureTestingModule({imports: [TestModule]});
+           const router = TestBed.inject(Router);
+           const fixture = createRoot(router, RootCmp);
+
+           router.resetConfig([
+             {
+               path: 'named-outlets',
+               component: NamedOutletHost,
+               children: [
+                 {
+                   path: 'home',
+                   children: [
+                     {path: '', component: Child1, outlet: 'first'},
+                     {path: '', component: Child2, outlet: 'second'},
+                     {path: 'primary', component: Child3},
+                   ]
+                 },
+                 {
+                   path: 'about',
+                   children: [
+                     {path: '', component: Child1, outlet: 'first'},
+                     {path: '', component: Child2, outlet: 'second'},
+                   ]
+                 },
+
+               ]
+             },
+             {
+               path: 'other',
+               component: Parent,
+             },
+           ]);
+
+           router.navigateByUrl('/named-outlets/home/primary');
+           advance(fixture);
+           expect(log).toEqual([
+             'child3 constructor',  // primary outlet always first
+             'child1 constructor',
+             'child2 constructor',
+           ]);
+           log.length = 0;
+
+           router.navigateByUrl('/named-outlets/about');
+           advance(fixture);
+           expect(log).toEqual([
+             'child3 destroy',
+             'primary deactivate',
+             'child1 destroy',
+             'first deactivate',
+             'child2 destroy',
+             'second deactivate',
+             'child1 constructor',
+             'child2 constructor',
+           ]);
+           log.length = 0;
+
+           router.navigateByUrl('/other');
+           advance(fixture);
+           expect(log).toEqual([
+             'child1 destroy',
+             'first deactivate',
+             'child2 destroy',
+             'second deactivate',
+             // route param subscription from 'Parent' component
+             {},
+           ]);
+         }));
     });
 
     it('should not wait for prior navigations to start a new navigation',
