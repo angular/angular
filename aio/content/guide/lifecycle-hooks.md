@@ -24,7 +24,7 @@ The hooks give you the opportunity to act on a component or directive instance a
 Each interface defines the prototype for a single hook method, whose name is the interface name prefixed with `ng`.
 For example, the `OnInit` interface has a hook method named `ngOnInit()`. If you implement this method in your component or directive class, Angular calls it shortly after checking the input properties for that component or directive for the first time.
 
-<code-example path="lifecycle-hooks/src/app/peek-a-boo.component.ts" region="ngOnInit" header="peek-a-boo.component.ts (excerpt)"></code-example>
+<code-example path="lifecycle-hooks/src/app/peek-a-boo.directive.ts" region="ngOnInit" header="peek-a-boo.directive.ts (excerpt)"></code-example>
 
 You don't have to implement all (or any) of the lifecycle hooks, just the ones you need.
 
@@ -464,7 +464,7 @@ The *AfterView* sample explores the `AfterViewInit()` and `AfterViewChecked()` h
 
 Here's a child view that displays a hero's name in an `<input>`:
 
-<code-example path="lifecycle-hooks/src/app/after-view.component.ts" region="child-view" header="ChildComponent"></code-example>
+<code-example path="lifecycle-hooks/src/app/child-view.component.ts" region="child-view" header="ChildViewComponent"></code-example>
 
 The `AfterViewComponent` displays this child view *within its template*:
 
@@ -528,7 +528,7 @@ This time, instead of including the child view within the template, it imports t
 the `AfterContentComponent`'s parent.
 The following is the parent's template.
 
-<code-example path="lifecycle-hooks/src/app/after-content.component.ts" region="parent-template" header="AfterContentParentComponent (template excerpt)"></code-example>
+<code-example path="lifecycle-hooks/src/app/after-content-parent.component.ts" region="parent-template" header="AfterContentParentComponent (template excerpt)"></code-example>
 
 Notice that the `<app-child>` tag is tucked between the `<after-content>` tags.
 Never put content between a component's element tags *unless you intend to project that content
