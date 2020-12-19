@@ -67,6 +67,6 @@ Or to use the production configuration.
 ng run my-app:app-shell:production
 </code-example>
 
-To verify the build output, open `dist/my-app/index.html`. Look for default text `app-shell works!` to show that the app shell route was rendered as part of the output.
+To verify the build output, open `dist/my-app/browser/index.html`. Look for default text `app-shell works!` to show that the app shell route was rendered as part of the output.
 
 
