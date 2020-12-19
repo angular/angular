@@ -32,9 +32,22 @@ After running this command you will notice that the `angular.json` configuration
 "server": {
   "builder": "@angular-devkit/build-angular:server",
   "options": {
-    "outputPath": "dist/my-app-server",
+    "outputPath": "dist/my-app/server",
     "main": "src/main.server.ts",
     "tsConfig": "tsconfig.server.json"
+  },
+  "configurations": {
+    "production": {
+      "outputHashing": "media",
+      "fileReplacements": [
+        {
+          "replace": "src/environments/environment.ts",
+          "with": "src/environments/environment.prod.ts"
+        }
+      ],
+      "sourceMap": false,
+      "optimization": true
+    }
   }
 },
 "app-shell": {
