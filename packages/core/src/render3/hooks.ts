@@ -212,9 +212,10 @@ function callHooks(
       (currentView[PREORDER_HOOK_FLAGS] & PreOrderHookFlags.IndexOfTheNextPreOrderHookMaskMask) :
       0;
   const nodeIndexLimit = currentNodeIndex != null ? currentNodeIndex : -1;
+  const max = arr.length - 1;  // Stop the loop at length - 1, because we look for the hook at i + 1
   let lastNodeIndexFound = 0;
-  for (let i = startIndex; i < arr.length; i++) {
-    const hook = arr[i + 1] as () => void;
+  for (let i = startIndex; i < max; i++) {
+    const hook = arr[i + 1] as number | (() => void);
     if (typeof hook === 'number') {
       lastNodeIndexFound = arr[i] as number;
       if (currentNodeIndex != null && lastNodeIndexFound >= currentNodeIndex) {
@@ -250,8 +251,7 @@ function callHook(currentView: LView, initPhase: InitPhaseState, arr: HookData, 
   const directive = currentView[directiveIndex];
   if (isInitHook) {
     const indexWithintInitPhase = currentView[FLAGS] >> LViewFlags.IndexWithinInitPhaseShift;
-    // The init phase state must be always checked here as it may have been recursively
-    // updated
+    // The init phase state must be always checked here as it may have been recursively updated.
     if (indexWithintInitPhase <
             (currentView[PREORDER_HOOK_FLAGS] >> PreOrderHookFlags.NumberOfInitHooksCalledShift) &&
         (currentView[FLAGS] & LViewFlags.InitPhaseStateMask) === initPhase) {
