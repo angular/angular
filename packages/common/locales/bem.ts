@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -17,7 +17,9 @@ function plural(n: number): number {
 }
 
 export default [
-  'bem', [['uluchelo', 'akasuba'], u, u], u,
+  'bem',
+  [['uluchelo', 'akasuba'], u, u],
+  u,
   [
     ['S', 'M', 'T', 'W', 'T', 'F', 'S'],
     [
@@ -35,10 +37,19 @@ export default [
       'Oktoba', 'Novemba', 'Disemba'
     ]
   ],
-  u, [['BC', 'AD'], u, ['Before Yesu', 'After Yesu']], 1, [6, 0],
+  u,
+  [['BC', 'AD'], u, ['Before Yesu', 'After Yesu']],
+  1,
+  [6, 0],
   ['dd/MM/y', 'd MMM y', 'd MMMM y', 'EEEE, d MMMM y'],
-  ['h:mm a', 'h:mm:ss a', 'h:mm:ss a z', 'h:mm:ss a zzzz'], ['{1} {0}', u, u, u],
+  ['h:mm a', 'h:mm:ss a', 'h:mm:ss a z', 'h:mm:ss a zzzz'],
+  ['{1} {0}', u, u, u],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], 'K', 'ZMW',
-  {'JPY': ['JP¥', '¥'], 'USD': ['US$', '$'], 'ZMW': ['K', 'ZK']}, plural
+  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'],
+  'ZMW',
+  'K',
+  'ZMW',
+  {'JPY': ['JP¥', '¥'], 'USD': ['US$', '$'], 'ZMW': ['K', 'ZK']},
+  'ltr',
+  plural
 ];

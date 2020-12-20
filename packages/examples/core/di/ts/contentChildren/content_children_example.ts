@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -11,20 +11,19 @@ import {Component, ContentChildren, Directive, Input, QueryList} from '@angular/
 
 @Directive({selector: 'pane'})
 export class Pane {
-  // TODO(issue/24571): remove '!'.
-  @Input() id !: string;
+  @Input() id!: string;
 }
 
 @Component({
   selector: 'tab',
   template: `
-    <div class="top-level">Top level panes: {{serializedPanes}}</div> 
+    <div class="top-level">Top level panes: {{serializedPanes}}</div>
     <div class="nested">Arbitrary nested panes: {{serializedNestedPanes}}</div>
   `
 })
 export class Tab {
-  @ContentChildren(Pane) topLevelPanes !: QueryList<Pane>;
-  @ContentChildren(Pane, {descendants: true}) arbitraryNestedPanes !: QueryList<Pane>;
+  @ContentChildren(Pane) topLevelPanes!: QueryList<Pane>;
+  @ContentChildren(Pane, {descendants: true}) arbitraryNestedPanes!: QueryList<Pane>;
 
   get serializedPanes(): string {
     return this.topLevelPanes ? this.topLevelPanes.map(p => p.id).join(', ') : '';
@@ -47,13 +46,15 @@ export class Tab {
         </tab>
       </pane>
     </tab>
-    
+
     <button (click)="show()">Show 3</button>
   `,
 })
 export class ContentChildrenComp {
   shouldShow = false;
 
-  show() { this.shouldShow = true; }
+  show() {
+    this.shouldShow = true;
+  }
 }
 // #enddocregion

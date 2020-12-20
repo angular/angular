@@ -3,12 +3,12 @@ import { SitePage } from './app.po';
 
 /* tslint:disable:max-line-length */
 
-describe('onerror handler', function() {
+describe('onerror handler', () => {
   let page: SitePage;
 
-  beforeAll(() => {
+  beforeAll(async () => {
     page = new SitePage();
-    page.navigateTo('');
+    await page.navigateTo('');
   });
 
 
@@ -186,7 +186,7 @@ createViewNodes@???`);
   });
 
   async function callOnError(message: string, url?: string, line?: number, column?: number, error?: Error) {
-    await browser.executeScript(function() {
+    await browser.executeScript(() => {
       // reset the ga queue
       (window as any).ga.q.length = 0;
       // post the error to the handler

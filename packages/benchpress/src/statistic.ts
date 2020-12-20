@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -29,7 +29,7 @@ export class Statistic {
 
   static calculateRegressionSlope(
       xValues: number[], xMean: number, yValues: number[], yMean: number) {
-    // See http://en.wikipedia.org/wiki/Simple_linear_regression
+    // See https://en.wikipedia.org/wiki/Simple_linear_regression
     let dividendSum = 0;
     let divisorSum = 0;
     for (let i = 0; i < xValues.length; i++) {

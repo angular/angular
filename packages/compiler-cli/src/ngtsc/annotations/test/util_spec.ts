@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -13,8 +13,9 @@ import {unwrapExpression} from '../src/util';
 describe('ngtsc annotation utilities', () => {
   describe('unwrapExpression', () => {
     const obj = ts.createObjectLiteral();
-    it('should pass through an ObjectLiteralExpression',
-       () => { expect(unwrapExpression(obj)).toBe(obj); });
+    it('should pass through an ObjectLiteralExpression', () => {
+      expect(unwrapExpression(obj)).toBe(obj);
+    });
 
     it('should unwrap an ObjectLiteralExpression in parentheses', () => {
       const wrapped = ts.createParen(obj);

@@ -1,6 +1,6 @@
-load("//tools:defaults.bzl", "ng_module")
-load("@npm_bazel_typescript//:index.bzl", "ts_devserver")
-load("//modules/benchmarks:benchmark_test.bzl", "benchmark_test")
+load("//tools:defaults.bzl", "ng_module", "ts_devserver")
+load("//dev-infra/benchmark/component_benchmark:benchmark_test.bzl", "benchmark_test")
+load("//modules/benchmarks:e2e_test.bzl", "e2e_test")
 
 package(default_visibility = ["//modules/benchmarks:__subpackages__"])
 
@@ -9,11 +9,8 @@ package(default_visibility = ["//modules/benchmarks:__subpackages__"])
 ng_module(
     name = "ng2",
     srcs = glob(["*.ts"]),
-    # FIXME-IVY(FW-998): ExpressionTranslatorVisitor#visitWriteKeyExpr is not implemented.
-    tags = ["fixme-ivy-aot"],
+    generate_ve_shims = True,
     tsconfig = "//modules/benchmarks:tsconfig-build.json",
-    # TODO: FW-1004 Type checking is currently not complete.
-    type_check = False,
     deps = [
         "//modules/benchmarks/src:util_lib",
         "//packages/core",
@@ -25,24 +22,28 @@ ng_module(
 
 ts_devserver(
     name = "devserver",
+    bootstrap = [
+        "@npm//:node_modules/reflect-metadata/Reflect.js",
+        "//packages/zone.js/bundles:zone.umd.js",
+    ],
     entry_module = "angular/modules/benchmarks/src/largeform/ng2/index",
-    index_html = "index.html",
     port = 4200,
     scripts = [
-        "@npm//node_modules/tslib:tslib.js",
+        "@npm//:node_modules/tslib/tslib.js",
         "//tools/rxjs:rxjs_umd_modules",
     ],
-    static_files = [
-        "@npm//node_modules/zone.js:dist/zone.js",
-        "@npm//node_modules/reflect-metadata:Reflect.js",
-    ],
-    tags = ["fixme-ivy-aot"],
+    static_files = ["index.html"],
     deps = [":ng2"],
 )
 
 benchmark_test(
     name = "perf",
     server = ":devserver",
-    tags = ["fixme-ivy-aot"],
-    deps = ["//modules/benchmarks/src/largeform:tests_lib"],
+    deps = ["//modules/benchmarks/src/largeform:perf_tests_lib"],
+)
+
+e2e_test(
+    name = "e2e",
+    server = ":devserver",
+    deps = ["//modules/benchmarks/src/largeform:e2e_tests_lib"],
 )

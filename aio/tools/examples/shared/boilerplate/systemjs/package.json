@@ -1,8 +1,8 @@
 {
-  "name": "angular-examples",
-  "version": "1.0.0",
-  "private": true,
-  "description": "Example package.json, only contains needed scripts for examples. See _examples/package.json for master package.json.",
+  "name": "angular.io-example",
+  "version": "0.0.0",
+  "description": "Example project from an angular.io guide.",
+  "license": "MIT",
   "scripts": {
     "build": "tsc -p src/",
     "build:watch": "tsc -p src/ -w",
@@ -19,25 +19,51 @@
     "pretest:once": "npm run build",
     "test:once": "karma start karma.conf.js --single-run",
     "lint": "tslint ./src/**/*.ts -t verbose",
-
     "build:upgrade": "tsc",
     "serve:upgrade": "http-server",
-    "build:cli": "ng build --no-progress",
-    "serve:cli": "http-server dist/",
     "build:aot": "ngc -p tsconfig-aot.json && rollup -c rollup-config.js",
     "serve:aot": "lite-server -c bs-config.aot.json",
-    "build:babel": "babel src -d src --extensions \".es6\" --source-maps",
-
-    "clean": "rimraf src/dist && rimraf src/app/*.js* && rimraf src/universal/*.js* && rimraf src/main.js*",
-    "copy-dist-files": "node ./copy-dist-files.js",
-    "i18n": "ng-xi18n"
+    "copy-dist-files": "node ./copy-dist-files.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "MIT",
-  "dependencies": {},
+  "private": true,
+  "dependencies": {
+    "@angular/animations": "~11.0.1",
+    "@angular/common": "~11.0.1",
+    "@angular/compiler": "~11.0.1",
+    "@angular/core": "~11.0.1",
+    "@angular/forms": "~11.0.1",
+    "@angular/platform-browser": "~11.0.1",
+    "@angular/platform-browser-dynamic": "~11.0.1",
+    "@angular/router": "~11.0.1",
+    "@angular/upgrade": "~11.0.1",
+    "core-js": "^2.5.4",
+    "rxjs": "~6.6.0",
+    "tslib": "^2.0.0",
+    "zone.js": "~0.10.3"
+  },
   "devDependencies": {
-    "@angular/cli": "^1.2.0"
-  },
-  "repository": {}
+    "@angular/compiler-cli": "~11.0.1",
+    "@types/angular": "1.7.3",
+    "@types/angular-animate": "1.5.10",
+    "@types/angular-mocks": "1.7.0",
+    "@types/angular-resource": "1.5.16",
+    "@types/angular-route": "1.7.1",
+    "@types/jasmine": "~3.6.0",
+    "@types/node": "^12.11.1",
+    "concurrently": "^5.0.1",
+    "http-server": "^0.12.0",
+    "jasmine-core": "~3.6.0",
+    "karma": "~5.1.0",
+    "karma-chrome-launcher": "~3.1.0",
+    "karma-jasmine": "~4.0.0",
+    "karma-jasmine-html-reporter": "^1.5.0",
+    "lite-server": "^2.2.2",
+    "protractor": "~7.0.0",
+    "rollup": "^1.1.0",
+    "rollup-plugin-commonjs": "^9.2.1",
+    "rollup-plugin-node-resolve": "^4.0.0",
+    "rollup-plugin-terser": "^5.3.0",
+    "tslint": "~6.1.0",
+    "typescript": "~4.0.3"
+  }
 }

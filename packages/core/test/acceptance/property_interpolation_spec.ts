@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -8,7 +8,7 @@
 import {Component} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
-import {of } from 'rxjs';
+import {of} from 'rxjs';
 
 describe('property interpolation', () => {
   it('should handle all flavors of interpolated properties', () => {
@@ -42,8 +42,9 @@ describe('property interpolation', () => {
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
-    const titles = Array.from(fixture.nativeElement.querySelectorAll('div[title]'))
-                       .map((div: HTMLDivElement) => div.title);
+    const titles =
+        Array.from(<NodeListOf<HTMLDivElement>>fixture.nativeElement.querySelectorAll('div[title]'))
+            .map((div: HTMLDivElement) => div.title);
 
     expect(titles).toEqual([
       'a1b2c3d4e5f6g7h8i9j',
@@ -66,7 +67,7 @@ describe('property interpolation', () => {
       `
     })
     class App {
-      details = of ({
+      details = of({
         title: 'cool image',
         url: 'http://somecooldomain:1234/cool_image.png',
       });
@@ -92,7 +93,11 @@ describe('property interpolation', () => {
       /** Clearly this is a doctor of heavy metals. */
       leadSurgeon = {
         getCommonInfo() {
-          return {getPhotoUrl() { return 'http://somecooldomain:1234/cool_image.png'; }};
+          return {
+            getPhotoUrl() {
+              return 'http://somecooldomain:1234/cool_image.png';
+            }
+          };
         }
       };
     }
@@ -194,7 +199,9 @@ describe('property interpolation', () => {
     const fixture = TestBed.createComponent(AppComp);
     fixture.detectChanges();
 
-    const titles = Array.from(fixture.nativeElement.querySelectorAll('img[title]'))
+    const titles = Array
+                       .from(<NodeListOf<HTMLImageElement>>fixture.nativeElement.querySelectorAll(
+                           'img[title]'))
                        .map((img: HTMLImageElement) => img.title);
 
     expect(titles).toEqual([
@@ -210,8 +217,9 @@ describe('property interpolation', () => {
       '1',
     ]);
 
-    const others = Array.from(fixture.nativeElement.querySelectorAll('img[alt]'))
-                       .map((img: HTMLImageElement) => img.alt);
+    const others =
+        Array.from(<NodeListOf<HTMLImageElement>>fixture.nativeElement.querySelectorAll('img[alt]'))
+            .map((img: HTMLImageElement) => img.alt);
 
     expect(others).toEqual([
       'a1b2c3d4e5f6g7h8i9j',

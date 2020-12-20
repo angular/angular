@@ -1,0 +1,61 @@
+{
+  "name": "cli-hello-world-ivy-i18n",
+  "version": "0.0.0",
+  "license": "MIT",
+  "scripts": {
+    "build": "ng build --prod",
+    "e2e": "ng e2e --port 0",
+    "lint": "ng lint",
+    "ng": "ng",
+    "postinstall": "ngcc --properties es2015 browser module main --first-only --create-ivy-entry-points",
+    "start": "ng serve",
+    "pretest": "ng version",
+    "test": "ng e2e --port 0 --prod && ng xi18n && yarn translate && ng e2e --port 0 --configuration fr && ng e2e --port 0 --configuration de",
+    "translate": "cp src/locale/messages.xlf src/locale/messages.fr.xlf && cp src/locale/messages.xlf src/locale/messages.de.xlf && sed -i.bak -e 's/source>/target>/g' -e 's/Hello/Bonjour/' src/locale/messages.fr.xlf && sed -i.bak -e 's/source>/target>/g' -e 's/Hello/Hallo/' src/locale/messages.de.xlf",
+    "serve": "serve --no-clipboard --listen 4200"
+  },
+  "private": true,
+  "dependencies": {
+    "@angular/animations": "file:../../dist/packages-dist/animations",
+    "@angular/common": "file:../../dist/packages-dist/common",
+    "@angular/compiler": "file:../../dist/packages-dist/compiler",
+    "@angular/core": "file:../../dist/packages-dist/core",
+    "@angular/forms": "file:../../dist/packages-dist/forms",
+    "@angular/localize": "file:../../dist/packages-dist/localize",
+    "@angular/platform-browser": "file:../../dist/packages-dist/platform-browser",
+    "@angular/platform-browser-dynamic": "file:../../dist/packages-dist/platform-browser-dynamic",
+    "@angular/router": "file:../../dist/packages-dist/router",
+    "core-js": "file:../../node_modules/core-js",
+    "rxjs": "file:../../node_modules/rxjs",
+    "tslib": "file:../../node_modules/tslib",
+    "zone.js": "file:../../dist/zone.js-dist/archive/zone.js.tgz"
+  },
+  "devDependencies": {
+    "@angular-devkit/build-angular": "file:../../node_modules/@angular-devkit/build-angular",
+    "@angular/cli": "file:../../node_modules/@angular/cli",
+    "@angular/compiler-cli": "file:../../dist/packages-dist/compiler-cli",
+    "@angular/language-service": "file:../../dist/packages-dist/language-service",
+    "@types/jasmine": "file:../../node_modules/@types/jasmine",
+    "@types/jasminewd2": "file:../../node_modules/@types/jasminewd2",
+    "@types/node": "file:../../node_modules/@types/node",
+    "codelyzer": "5.2.0",
+    "jasmine-core": "3.5.0",
+    "jasmine-spec-reporter": "4.2.1",
+    "karma": "4.4.0",
+    "karma-chrome-launcher": "3.1.0",
+    "karma-coverage-istanbul-reporter": "2.1.0",
+    "karma-jasmine": "2.0.1",
+    "karma-jasmine-html-reporter": "1.4.2",
+    "npm-run-all": "4.1.5",
+    "protractor": "file:../../node_modules/protractor",
+    "puppeteer": "file:../../node_modules/puppeteer",
+    "serve": "11.2.0",
+    "ts-node": "8.3.0",
+    "tslint": "5.18.0",
+    "typescript": "file:../../node_modules/typescript"
+  },
+  "//resolutions-comment": "Ensure a single version of webdriver-manager which comes from root node_modules that has already run webdriver-manager update",
+  "resolutions": {
+    "**/webdriver-manager": "file:../../node_modules/webdriver-manager"
+  }
+}

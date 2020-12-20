@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -56,22 +56,5 @@ export class TemplateDrivenErrors {
       Option 2:  Use a regular form tag instead of the formGroup directive (template-driven strategy):
 
       ${Examples.ngModelGroup}`);
-  }
-
-  static ngFormWarning() {
-    console.warn(`
-    It looks like you're using 'ngForm'.
-
-    Support for using the 'ngForm' element selector has been deprecated in Angular v6 and will be removed
-    in Angular v9.
-
-    Use 'ng-form' instead.
-
-    Before:
-    <ngForm #myForm="ngForm">
-
-    After:
-    <ng-form #myForm="ngForm">
-    `);
   }
 }

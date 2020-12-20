@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -30,7 +30,7 @@ export class ImportGraph {
     if (!this.map.has(sf)) {
       this.map.set(sf, this.scanImports(sf));
     }
-    return this.map.get(sf) !;
+    return this.map.get(sf)!;
   }
 
   /**
@@ -47,7 +47,9 @@ export class ImportGraph {
       return;
     }
     results.add(sf);
-    this.importsOf(sf).forEach(imported => { this.transitiveImportsOfHelper(imported, results); });
+    this.importsOf(sf).forEach(imported => {
+      this.transitiveImportsOfHelper(imported, results);
+    });
   }
 
   /**
@@ -68,7 +70,7 @@ export class ImportGraph {
           stmt.moduleSpecifier !== undefined && ts.isStringLiteral(stmt.moduleSpecifier)) {
         // Resolve the module to a file, and check whether that file is in the ts.Program.
         const moduleName = stmt.moduleSpecifier.text;
-        const moduleFile = this.resolver.resolveModuleName(moduleName, sf);
+        const moduleFile = this.resolver.resolveModule(moduleName, sf.fileName);
         if (moduleFile !== null && isLocalFile(moduleFile)) {
           // Record this local import.
           imports.add(moduleFile);

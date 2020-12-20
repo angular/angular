@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -19,8 +19,8 @@ import {SecurityContext} from '../core';
 //
 // =================================================================================================
 
-/** Map from tagName|propertyName SecurityContext. Properties applying to all tags use '*'. */
-let _SECURITY_SCHEMA !: {[k: string]: SecurityContext};
+/** Map from tagName|propertyName to SecurityContext. Properties applying to all tags use '*'. */
+let _SECURITY_SCHEMA!: {[k: string]: SecurityContext};
 
 export function SECURITY_SCHEMA(): {[k: string]: SecurityContext} {
   if (!_SECURITY_SCHEMA) {

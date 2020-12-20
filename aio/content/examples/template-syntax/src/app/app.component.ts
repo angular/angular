@@ -5,7 +5,7 @@ import { AfterViewInit, Component, ElementRef, OnInit, QueryList, ViewChildren }
 
 import { Hero } from './hero';
 
-export enum Color {Red, Green, Blue};
+export enum Color {Red, Green, Blue}
 
 /**
  * Giant grab bag of stuff to drive the chapter
@@ -29,7 +29,7 @@ export class AppComponent implements AfterViewInit, OnInit {
     trackChanges(this.heroesWithTrackBy, () => this.heroesWithTrackByCount++);
   }
 
-  @ViewChildren('noTrackBy')   heroesNoTrackBy:   QueryList<ElementRef>;
+  @ViewChildren('noTrackBy')   heroesNoTrackBy: QueryList<ElementRef>;
   @ViewChildren('withTrackBy') heroesWithTrackBy: QueryList<ElementRef>;
 
   actionName = 'Go for it';
@@ -66,6 +66,10 @@ export class AppComponent implements AfterViewInit, OnInit {
 
   currentHero: Hero;
 
+  updateCurrentHeroName(event: Event) {
+    this.currentHero.name = (event.target as any).value;
+  }
+
   deleteHero(hero?: Hero) {
     this.alert(`Delete ${hero ? hero.name : 'the hero'}.`);
   }
@@ -91,11 +95,11 @@ export class AppComponent implements AfterViewInit, OnInit {
 
   heroIdIncrement = 1;
 
-  // heroImageUrl = 'http://www.wpclipart.com/cartoon/people/hero/hero_silhoutte_T.png';
-  // Public Domain terms of use: http://www.wpclipart.com/terms.html
+  // heroImageUrl = 'https://wpclipart.com/cartoon/people/hero/hero_silhoutte_T.png';
+  // Public Domain terms of use: https://wpclipart.com/terms.html
   heroImageUrl = 'assets/images/hero.png';
-  // villainImageUrl = 'http://www.clker.com/cliparts/u/s/y/L/x/9/villain-man-hi.png'
-  // Public Domain terms of use http://www.clker.com/disclaimer.html
+  // villainImageUrl = 'https://www.clker.com/cliparts/u/s/y/L/x/9/villain-man-hi.png'
+  // Public Domain terms of use https://www.clker.com/disclaimer.html
   villainImageUrl = 'assets/images/villain.png';
 
   iconUrl = 'assets/images/ng-logo.png';
@@ -105,13 +109,13 @@ export class AppComponent implements AfterViewInit, OnInit {
 
   get nullHero(): Hero { return null; }
 
-  onClickMe(event?: KeyboardEvent) {
-    let evtMsg = event ? ' Event target class is ' + (<HTMLElement>event.target).className  : '';
+  onClickMe(event?: MouseEvent) {
+    const evtMsg = event ? ' Event target class is ' + (event.target as HTMLElement).className  : '';
     this.alert('Click me.' + evtMsg);
   }
 
-  onSave(event?: KeyboardEvent) {
-    let evtMsg = event ? ' Event target is ' + (<HTMLElement>event.target).textContent : '';
+  onSave(event?: MouseEvent) {
+    const evtMsg = event ? ' Event target is ' + (event.target as HTMLElement).textContent : '';
     this.alert('Saved.' + evtMsg);
     if (event) { event.stopPropagation(); }
   }
@@ -140,9 +144,9 @@ export class AppComponent implements AfterViewInit, OnInit {
   setCurrentClasses() {
     // CSS classes: added/removed per current state of component properties
     this.currentClasses =  {
-      'saveable': this.canSave,
-      'modified': !this.isUnchanged,
-      'special':  this.isSpecial
+      saveable: this.canSave,
+      modified: !this.isUnchanged,
+      special:  this.isSpecial
     };
   }
   // #enddocregion setClasses
@@ -164,7 +168,7 @@ export class AppComponent implements AfterViewInit, OnInit {
   // #enddocregion trackByHeroes
 
   // #docregion trackById
-  trackById(index: number, item: any): number { return item['id']; }
+  trackById(index: number, item: any): number { return item.id; }
   // #enddocregion trackById
 }
 

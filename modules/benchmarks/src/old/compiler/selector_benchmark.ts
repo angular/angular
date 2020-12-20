@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -47,7 +47,9 @@ export function main() {
   function match() {
     let matchCount = 0;
     for (let i = 0; i < count; i++) {
-      fixedMatcher.match(fixedSelectors[i][0], (selector, selected) => { matchCount += selected; });
+      fixedMatcher.match(fixedSelectors[i][0], (selector, selected) => {
+        matchCount += selected;
+      });
     }
     return matchCount;
   }

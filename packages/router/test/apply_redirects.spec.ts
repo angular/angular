@@ -1,24 +1,27 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
 import {NgModuleRef} from '@angular/core';
-import {TestBed} from '@angular/core/testing';
-import {Observable, of } from 'rxjs';
+import {fakeAsync, TestBed, tick} from '@angular/core/testing';
+import {Observable, of} from 'rxjs';
+import {delay, tap} from 'rxjs/operators';
 
 import {applyRedirects} from '../src/apply_redirects';
 import {LoadedRouterConfig, Route, Routes} from '../src/config';
-import {DefaultUrlSerializer, UrlSegment, UrlSegmentGroup, UrlTree, equalSegments} from '../src/url_tree';
+import {DefaultUrlSerializer, equalSegments, UrlSegment, UrlSegmentGroup, UrlTree} from '../src/url_tree';
 
 describe('applyRedirects', () => {
   const serializer = new DefaultUrlSerializer();
   let testModule: NgModuleRef<any>;
 
-  beforeEach(() => { testModule = TestBed.get(NgModuleRef); });
+  beforeEach(() => {
+    testModule = TestBed.inject(NgModuleRef);
+  });
 
   it('should return the same url tree when no redirects', () => {
     checkRedirect(
@@ -31,13 +34,17 @@ describe('applyRedirects', () => {
             ],
           },
         ],
-        '/a/b', (t: UrlTree) => { expectTreeToBe(t, '/a/b'); });
+        '/a/b', (t: UrlTree) => {
+          expectTreeToBe(t, '/a/b');
+        });
   });
 
   it('should add new segments when needed', () => {
     checkRedirect(
         [{path: 'a/b', redirectTo: 'a/b/c'}, {path: '**', component: ComponentC}], '/a/b',
-        (t: UrlTree) => { expectTreeToBe(t, '/a/b/c'); });
+        (t: UrlTree) => {
+          expectTreeToBe(t, '/a/b/c');
+        });
   });
 
   it('should support redirecting with to an URL with query parameters', () => {
@@ -57,11 +64,13 @@ describe('applyRedirects', () => {
           {path: 'a/:aid/b/:bid', redirectTo: 'newa/:aid/newb/:bid'},
           {path: '**', component: ComponentC}
         ],
-        '/a/1/b/2', (t: UrlTree) => { expectTreeToBe(t, '/newa/1/newb/2'); });
+        '/a/1/b/2', (t: UrlTree) => {
+          expectTreeToBe(t, '/newa/1/newb/2');
+        });
   });
 
   it('should throw when cannot handle a positional parameter', () => {
-    applyRedirects(testModule.injector, null !, serializer, tree('/a/1'), [
+    applyRedirects(testModule.injector, null!, serializer, tree('/a/1'), [
       {path: 'a/:id', redirectTo: 'a/:other'}
     ]).subscribe(() => {}, (e) => {
       expect(e.message).toEqual('Cannot redirect to \'a/:other\'. Cannot find \':other\'.');
@@ -71,7 +80,9 @@ describe('applyRedirects', () => {
   it('should pass matrix parameters', () => {
     checkRedirect(
         [{path: 'a/:id', redirectTo: 'd/a/:id/e'}, {path: '**', component: ComponentC}],
-        '/a;p1=1/1;p2=2', (t: UrlTree) => { expectTreeToBe(t, '/d/a;p1=1/1;p2=2/e'); });
+        '/a;p1=1/1;p2=2', (t: UrlTree) => {
+          expectTreeToBe(t, '/d/a;p1=1/1;p2=2/e');
+        });
   });
 
   it('should handle preserve secondary routes', () => {
@@ -80,7 +91,9 @@ describe('applyRedirects', () => {
           {path: 'a/:id', redirectTo: 'd/a/:id/e'},
           {path: 'c/d', component: ComponentA, outlet: 'aux'}, {path: '**', component: ComponentC}
         ],
-        '/a/1(aux:c/d)', (t: UrlTree) => { expectTreeToBe(t, '/d/a/1/e(aux:c/d)'); });
+        '/a/1(aux:c/d)', (t: UrlTree) => {
+          expectTreeToBe(t, '/d/a/1/e(aux:c/d)');
+        });
   });
 
   it('should redirect secondary routes', () => {
@@ -90,7 +103,9 @@ describe('applyRedirects', () => {
           {path: 'c/d', redirectTo: 'f/c/d/e', outlet: 'aux'},
           {path: '**', component: ComponentC, outlet: 'aux'}
         ],
-        '/a/1(aux:c/d)', (t: UrlTree) => { expectTreeToBe(t, '/a/1(aux:f/c/d/e)'); });
+        '/a/1(aux:c/d)', (t: UrlTree) => {
+          expectTreeToBe(t, '/a/1(aux:f/c/d/e)');
+        });
   });
 
   it('should use the configuration of the route redirected to', () => {
@@ -105,7 +120,9 @@ describe('applyRedirects', () => {
           },
           {path: 'c', redirectTo: 'a'}
         ],
-        'c/b', (t: UrlTree) => { expectTreeToBe(t, 'a/b'); });
+        'c/b', (t: UrlTree) => {
+          expectTreeToBe(t, 'a/b');
+        });
   });
 
   it('should support redirects with both main and aux', () => {
@@ -119,7 +136,9 @@ describe('applyRedirects', () => {
             {path: 'b', redirectTo: 'cc', outlet: 'aux'}
           ]
         }],
-        'a/(b//aux:b)', (t: UrlTree) => { expectTreeToBe(t, 'a/(bb//aux:cc)'); });
+        'a/(b//aux:b)', (t: UrlTree) => {
+          expectTreeToBe(t, 'a/(bb//aux:cc)');
+        });
   });
 
   it('should support redirects with both main and aux (with a nested redirect)', () => {
@@ -138,7 +157,9 @@ describe('applyRedirects', () => {
             {path: 'b', redirectTo: 'cc/d', outlet: 'aux'}
           ]
         }],
-        'a/(b//aux:b)', (t: UrlTree) => { expectTreeToBe(t, 'a/(bb//aux:cc/dd)'); });
+        'a/(b//aux:b)', (t: UrlTree) => {
+          expectTreeToBe(t, 'a/(bb//aux:cc/dd)');
+        });
   });
 
   it('should redirect wild cards', () => {
@@ -147,7 +168,9 @@ describe('applyRedirects', () => {
           {path: '404', component: ComponentA},
           {path: '**', redirectTo: '/404'},
         ],
-        '/a/1(aux:c/d)', (t: UrlTree) => { expectTreeToBe(t, '/404'); });
+        '/a/1(aux:c/d)', (t: UrlTree) => {
+          expectTreeToBe(t, '/404');
+        });
   });
 
   it('should support absolute redirects', () => {
@@ -160,7 +183,9 @@ describe('applyRedirects', () => {
           },
           {path: '**', component: ComponentC}
         ],
-        '/a/b/1?b=2', (t: UrlTree) => { expectTreeToBe(t, '/absolute/1?a=1&b=2#f1'); });
+        '/a/b/1?b=2', (t: UrlTree) => {
+          expectTreeToBe(t, '/absolute/1?a=1&b=2#f1');
+        });
   });
 
   describe('lazy loading', () => {
@@ -169,7 +194,7 @@ describe('applyRedirects', () => {
       const loader = {
         load: (injector: any, p: any) => {
           if (injector !== testModule.injector) throw 'Invalid Injector';
-          return of (loadedConfig);
+          return of(loadedConfig);
         }
       };
       const config: Routes = [{path: 'a', component: ComponentA, loadChildren: 'children'}];
@@ -188,24 +213,23 @@ describe('applyRedirects', () => {
       const config = [{path: 'a', component: ComponentA, loadChildren: 'children'}];
 
       applyRedirects(testModule.injector, <any>loader, serializer, tree('a/b'), config)
-          .subscribe(() => {}, (e) => { expect(e.message).toEqual('Loading Error'); });
+          .subscribe(() => {}, (e) => {
+            expect(e.message).toEqual('Loading Error');
+          });
     });
 
     it('should load when all canLoad guards return true', () => {
       const loadedConfig = new LoadedRouterConfig([{path: 'b', component: ComponentB}], testModule);
-      const loader = {load: (injector: any, p: any) => of (loadedConfig)};
+      const loader = {load: (injector: any, p: any) => of(loadedConfig)};
 
       const guard = () => true;
       const injector = {
         get: (token: any) => token === 'guard1' || token === 'guard2' ? guard : {injector}
       };
 
-      const config = [{
-        path: 'a',
-        component: ComponentA,
-        canLoad: ['guard1', 'guard2'],
-        loadChildren: 'children'
-      }];
+      const config = [
+        {path: 'a', component: ComponentA, canLoad: ['guard1', 'guard2'], loadChildren: 'children'}
+      ];
 
       applyRedirects(<any>injector, <any>loader, serializer, tree('a/b'), config).forEach(r => {
         expectTreeToBe(r, '/a/b');
@@ -214,7 +238,7 @@ describe('applyRedirects', () => {
 
     it('should not load when any canLoad guards return false', () => {
       const loadedConfig = new LoadedRouterConfig([{path: 'b', component: ComponentB}], testModule);
-      const loader = {load: (injector: any, p: any) => of (loadedConfig)};
+      const loader = {load: (injector: any, p: any) => of(loadedConfig)};
 
       const trueGuard = () => true;
       const falseGuard = () => false;
@@ -231,16 +255,15 @@ describe('applyRedirects', () => {
         }
       };
 
-      const config = [{
-        path: 'a',
-        component: ComponentA,
-        canLoad: ['guard1', 'guard2'],
-        loadChildren: 'children'
-      }];
+      const config = [
+        {path: 'a', component: ComponentA, canLoad: ['guard1', 'guard2'], loadChildren: 'children'}
+      ];
 
       applyRedirects(<any>injector, <any>loader, serializer, tree('a/b'), config)
           .subscribe(
-              () => { throw 'Should not reach'; },
+              () => {
+                throw 'Should not reach';
+              },
               (e) => {
                 expect(e.message).toEqual(
                     `NavigationCancelingError: Cannot load children because the guard of the route "path: 'a'" returned false`);
@@ -249,7 +272,7 @@ describe('applyRedirects', () => {
 
     it('should not load when any canLoad guards is rejected (promises)', () => {
       const loadedConfig = new LoadedRouterConfig([{path: 'b', component: ComponentB}], testModule);
-      const loader = {load: (injector: any, p: any) => of (loadedConfig)};
+      const loader = {load: (injector: any, p: any) => of(loadedConfig)};
 
       const trueGuard = () => Promise.resolve(true);
       const falseGuard = () => Promise.reject('someError');
@@ -266,21 +289,23 @@ describe('applyRedirects', () => {
         }
       };
 
-      const config = [{
-        path: 'a',
-        component: ComponentA,
-        canLoad: ['guard1', 'guard2'],
-        loadChildren: 'children'
-      }];
+      const config = [
+        {path: 'a', component: ComponentA, canLoad: ['guard1', 'guard2'], loadChildren: 'children'}
+      ];
 
       applyRedirects(<any>injector, <any>loader, serializer, tree('a/b'), config)
           .subscribe(
-              () => { throw 'Should not reach'; }, (e) => { expect(e).toEqual('someError'); });
+              () => {
+                throw 'Should not reach';
+              },
+              (e) => {
+                expect(e).toEqual('someError');
+              });
     });
 
     it('should work with objects implementing the CanLoad interface', () => {
       const loadedConfig = new LoadedRouterConfig([{path: 'b', component: ComponentB}], testModule);
-      const loader = {load: (injector: any, p: any) => of (loadedConfig)};
+      const loader = {load: (injector: any, p: any) => of(loadedConfig)};
 
       const guard = {canLoad: () => Promise.resolve(true)};
       const injector = {get: (token: any) => token === 'guard' ? guard : {injector}};
@@ -289,13 +314,18 @@ describe('applyRedirects', () => {
           [{path: 'a', component: ComponentA, canLoad: ['guard'], loadChildren: 'children'}];
 
       applyRedirects(<any>injector, <any>loader, serializer, tree('a/b'), config)
-          .subscribe((r) => { expectTreeToBe(r, '/a/b'); }, (e) => { throw 'Should not reach'; });
-
+          .subscribe(
+              (r) => {
+                expectTreeToBe(r, '/a/b');
+              },
+              (e) => {
+                throw 'Should not reach';
+              });
     });
 
     it('should pass UrlSegments to functions implementing the canLoad guard interface', () => {
       const loadedConfig = new LoadedRouterConfig([{path: 'b', component: ComponentB}], testModule);
-      const loader = {load: (injector: any, p: any) => of (loadedConfig)};
+      const loader = {load: (injector: any, p: any) => of(loadedConfig)};
 
       let passedUrlSegments: UrlSegment[];
 
@@ -316,13 +346,14 @@ describe('applyRedirects', () => {
                 expect(passedUrlSegments[0].path).toBe('a');
                 expect(passedUrlSegments[1].path).toBe('b');
               },
-              (e) => { throw 'Should not reach'; });
-
+              (e) => {
+                throw 'Should not reach';
+              });
     });
 
     it('should pass UrlSegments to objects implementing the canLoad guard interface', () => {
       const loadedConfig = new LoadedRouterConfig([{path: 'b', component: ComponentB}], testModule);
-      const loader = {load: (injector: any, p: any) => of (loadedConfig)};
+      const loader = {load: (injector: any, p: any) => of(loadedConfig)};
 
       let passedUrlSegments: UrlSegment[];
 
@@ -345,14 +376,15 @@ describe('applyRedirects', () => {
                 expect(passedUrlSegments[0].path).toBe('a');
                 expect(passedUrlSegments[1].path).toBe('b');
               },
-              (e) => { throw 'Should not reach'; });
-
+              (e) => {
+                throw 'Should not reach';
+              });
     });
 
     it('should work with absolute redirects', () => {
       const loadedConfig = new LoadedRouterConfig([{path: '', component: ComponentB}], testModule);
 
-      const loader = {load: (injector: any, p: any) => of (loadedConfig)};
+      const loader = {load: (injector: any, p: any) => of(loadedConfig)};
 
       const config: Routes =
           [{path: '', pathMatch: 'full', redirectTo: '/a'}, {path: 'a', loadChildren: 'children'}];
@@ -371,7 +403,7 @@ describe('applyRedirects', () => {
         load: (injector: any, p: any) => {
           if (called) throw new Error('Should not be called twice');
           called = true;
-          return of (loadedConfig);
+          return of(loadedConfig);
         }
       };
 
@@ -386,43 +418,152 @@ describe('applyRedirects', () => {
                 expectTreeToBe(r, 'a?k2');
                 expect((config[0] as any)._loadedConfig).toBe(loadedConfig);
               },
-              (e) => { throw 'Should not reach'; });
+              (e) => {
+                throw 'Should not reach';
+              });
     });
 
     it('should load the configuration of a wildcard route', () => {
       const loadedConfig = new LoadedRouterConfig([{path: '', component: ComponentB}], testModule);
 
-      const loader = {load: (injector: any, p: any) => of (loadedConfig)};
+      const loader = {load: (injector: any, p: any) => of(loadedConfig)};
 
       const config: Routes = [{path: '**', loadChildren: 'children'}];
 
       applyRedirects(testModule.injector, <any>loader, serializer, tree('xyz'), config)
-          .forEach(r => { expect((config[0] as any)._loadedConfig).toBe(loadedConfig); });
+          .forEach(r => {
+            expect((config[0] as any)._loadedConfig).toBe(loadedConfig);
+          });
+    });
+
+    it('should not load the configuration of a wildcard route if there is a match', () => {
+      const loadedConfig = new LoadedRouterConfig([{path: '', component: ComponentB}], testModule);
+
+      const loader = jasmine.createSpyObj('loader', ['load']);
+      loader.load.and.returnValue(of(loadedConfig).pipe(delay(0)));
+
+      const config: Routes = [
+        {path: '', loadChildren: 'matchChildren'},
+        {path: '**', loadChildren: 'children'},
+      ];
+
+      applyRedirects(testModule.injector, <any>loader, serializer, tree(''), config).forEach(r => {
+        expect(loader.load.calls.count()).toEqual(1);
+        expect(loader.load.calls.first().args).not.toContain(jasmine.objectContaining({
+          loadChildren: 'children'
+        }));
+      });
     });
 
     it('should load the configuration after a local redirect from a wildcard route', () => {
       const loadedConfig = new LoadedRouterConfig([{path: '', component: ComponentB}], testModule);
 
-      const loader = {load: (injector: any, p: any) => of (loadedConfig)};
+      const loader = {load: (injector: any, p: any) => of(loadedConfig)};
 
       const config: Routes =
           [{path: 'not-found', loadChildren: 'children'}, {path: '**', redirectTo: 'not-found'}];
 
       applyRedirects(testModule.injector, <any>loader, serializer, tree('xyz'), config)
-          .forEach(r => { expect((config[0] as any)._loadedConfig).toBe(loadedConfig); });
+          .forEach(r => {
+            expect((config[0] as any)._loadedConfig).toBe(loadedConfig);
+          });
     });
 
     it('should load the configuration after an absolute redirect from a wildcard route', () => {
       const loadedConfig = new LoadedRouterConfig([{path: '', component: ComponentB}], testModule);
 
-      const loader = {load: (injector: any, p: any) => of (loadedConfig)};
+      const loader = {load: (injector: any, p: any) => of(loadedConfig)};
 
       const config: Routes =
           [{path: 'not-found', loadChildren: 'children'}, {path: '**', redirectTo: '/not-found'}];
 
       applyRedirects(testModule.injector, <any>loader, serializer, tree('xyz'), config)
-          .forEach(r => { expect((config[0] as any)._loadedConfig).toBe(loadedConfig); });
+          .forEach(r => {
+            expect((config[0] as any)._loadedConfig).toBe(loadedConfig);
+          });
     });
+
+    it('should load all matching configurations of empty path, including an auxiliary outlets',
+       fakeAsync(() => {
+         const loadedConfig =
+             new LoadedRouterConfig([{path: '', component: ComponentA}], testModule);
+         let loadCalls = 0;
+         let loaded: string[] = [];
+         const loader = {
+           load: (injector: any, p: Route) => {
+             loadCalls++;
+             return of(loadedConfig)
+                 .pipe(
+                     delay(100 * loadCalls),
+                     tap(() => loaded.push(p.loadChildren! as string)),
+                 );
+           }
+         };
+
+         const config: Routes =
+             [{path: '', loadChildren: 'root'}, {path: '', loadChildren: 'aux', outlet: 'popup'}];
+
+         applyRedirects(testModule.injector, <any>loader, serializer, tree(''), config).subscribe();
+         expect(loadCalls).toBe(2);
+         tick(100);
+         expect(loaded).toEqual(['root']);
+         tick(100);
+         expect(loaded).toEqual(['root', 'aux']);
+       }));
+
+    it('loads only the first match when two Routes with the same outlet have the same path', () => {
+      const loadedConfig = new LoadedRouterConfig([{path: '', component: ComponentA}], testModule);
+      let loadCalls = 0;
+      let loaded: string[] = [];
+      const loader = {
+        load: (injector: any, p: Route) => {
+          loadCalls++;
+          return of(loadedConfig)
+              .pipe(
+                  tap(() => loaded.push(p.loadChildren! as string)),
+              );
+        }
+      };
+
+      const config: Routes =
+          [{path: 'a', loadChildren: 'first'}, {path: 'a', loadChildren: 'second'}];
+
+      applyRedirects(testModule.injector, <any>loader, serializer, tree('a'), config).subscribe();
+      expect(loadCalls).toBe(1);
+      expect(loaded).toEqual(['first']);
+    });
+
+    it('should load the configuration of empty root path if the entry is an aux outlet',
+       fakeAsync(() => {
+         const loadedConfig =
+             new LoadedRouterConfig([{path: '', component: ComponentA}], testModule);
+         let loaded: string[] = [];
+         const rootDelay = 100;
+         const auxDelay = 1;
+         const loader = {
+           load: (injector: any, p: Route) => {
+             const delayMs = p.loadChildren! as string === 'aux' ? auxDelay : rootDelay;
+             return of(loadedConfig)
+                 .pipe(
+                     delay(delayMs),
+                     tap(() => loaded.push(p.loadChildren! as string)),
+                 );
+           }
+         };
+
+         const config: Routes = [
+           // Define aux route first so it matches before the primary outlet
+           {path: 'modal', loadChildren: 'aux', outlet: 'popup'},
+           {path: '', loadChildren: 'root'},
+         ];
+
+         applyRedirects(testModule.injector, <any>loader, serializer, tree('(popup:modal)'), config)
+             .subscribe();
+         tick(auxDelay);
+         expect(loaded).toEqual(['aux']);
+         tick(rootDelay);
+         expect(loaded).toEqual(['aux', 'root']);
+       }));
   });
 
   describe('empty paths', () => {
@@ -438,7 +579,9 @@ describe('applyRedirects', () => {
             },
             {path: '', redirectTo: 'a'}
           ],
-          'b', (t: UrlTree) => { expectTreeToBe(t, 'a/b'); });
+          'b', (t: UrlTree) => {
+            expectTreeToBe(t, 'a/b');
+          });
     });
 
     it('redirect from an empty path should work (absolute redirect)', () => {
@@ -453,7 +596,9 @@ describe('applyRedirects', () => {
             },
             {path: '', redirectTo: '/a/b'}
           ],
-          '', (t: UrlTree) => { expectTreeToBe(t, 'a/b'); });
+          '', (t: UrlTree) => {
+            expectTreeToBe(t, 'a/b');
+          });
     });
 
     it('should redirect empty path route only when terminal', () => {
@@ -468,10 +613,14 @@ describe('applyRedirects', () => {
         {path: '', redirectTo: 'a', pathMatch: 'full'}
       ];
 
-      applyRedirects(testModule.injector, null !, serializer, tree('b'), config)
+      applyRedirects(testModule.injector, null!, serializer, tree('b'), config)
           .subscribe(
-              (_) => { throw 'Should not be reached'; },
-              e => { expect(e.message).toEqual('Cannot match any routes. URL Segment: \'b\''); });
+              (_) => {
+                throw 'Should not be reached';
+              },
+              e => {
+                expect(e.message).toEqual('Cannot match any routes. URL Segment: \'b\'');
+              });
     });
 
     it('redirect from an empty path should work (nested case)', () => {
@@ -484,7 +633,9 @@ describe('applyRedirects', () => {
             },
             {path: '', redirectTo: 'a'}
           ],
-          '', (t: UrlTree) => { expectTreeToBe(t, 'a/b'); });
+          '', (t: UrlTree) => {
+            expectTreeToBe(t, 'a/b');
+          });
     });
 
     it('redirect to an empty path should work', () => {
@@ -493,7 +644,9 @@ describe('applyRedirects', () => {
             {path: '', component: ComponentA, children: [{path: 'b', component: ComponentB}]},
             {path: 'a', redirectTo: ''}
           ],
-          'a/b', (t: UrlTree) => { expectTreeToBe(t, 'b'); });
+          'a/b', (t: UrlTree) => {
+            expectTreeToBe(t, 'b');
+          });
     });
 
     describe('aux split is in the middle', () => {
@@ -507,7 +660,9 @@ describe('applyRedirects', () => {
                 {path: '', redirectTo: 'c', outlet: 'aux'}
               ]
             }],
-            'a/b', (t: UrlTree) => { expectTreeToBe(t, 'a/(b//aux:c)'); });
+            'a/b', (t: UrlTree) => {
+              expectTreeToBe(t, 'a/(b//aux:c)');
+            });
       });
 
       it('should create a new url segment (terminal)', () => {
@@ -520,7 +675,9 @@ describe('applyRedirects', () => {
                 {path: '', pathMatch: 'full', redirectTo: 'c', outlet: 'aux'}
               ]
             }],
-            'a/b', (t: UrlTree) => { expectTreeToBe(t, 'a/b'); });
+            'a/b', (t: UrlTree) => {
+              expectTreeToBe(t, 'a/b');
+            });
       });
     });
 
@@ -535,7 +692,9 @@ describe('applyRedirects', () => {
                 {path: '', redirectTo: 'c', outlet: 'aux'}
               ]
             }],
-            'a', (t: UrlTree) => { expectTreeToBe(t, 'a/(b//aux:c)'); });
+            'a', (t: UrlTree) => {
+              expectTreeToBe(t, 'a/(b//aux:c)');
+            });
       });
 
       it('should create a new child (terminal)', () => {
@@ -548,7 +707,9 @@ describe('applyRedirects', () => {
                 {path: '', pathMatch: 'full', redirectTo: 'c', outlet: 'aux'}
               ]
             }],
-            'a', (t: UrlTree) => { expectTreeToBe(t, 'a/(b//aux:c)'); });
+            'a', (t: UrlTree) => {
+              expectTreeToBe(t, 'a/(b//aux:c)');
+            });
       });
 
       it('should work only only primary outlet', () => {
@@ -560,7 +721,9 @@ describe('applyRedirects', () => {
                 {path: 'c', component: ComponentC, outlet: 'aux'}
               ]
             }],
-            'a/(aux:c)', (t: UrlTree) => { expectTreeToBe(t, 'a/(b//aux:c)'); });
+            'a/(aux:c)', (t: UrlTree) => {
+              expectTreeToBe(t, 'a/(b//aux:c)');
+            });
       });
     });
 
@@ -580,7 +743,9 @@ describe('applyRedirects', () => {
                 {path: '', redirectTo: 'c', outlet: 'aux'}
               ]
             }],
-            'a/(d//aux:e)', (t: UrlTree) => { expectTreeToBe(t, 'a/(b/d//aux:c/e)'); });
+            'a/(d//aux:e)', (t: UrlTree) => {
+              expectTreeToBe(t, 'a/(b/d//aux:c/e)');
+            });
       });
 
       it('should not create a new child (terminal)', () => {
@@ -598,10 +763,14 @@ describe('applyRedirects', () => {
           ]
         }];
 
-        applyRedirects(testModule.injector, null !, serializer, tree('a/(d//aux:e)'), config)
+        applyRedirects(testModule.injector, null!, serializer, tree('a/(d//aux:e)'), config)
             .subscribe(
-                (_) => { throw 'Should not be reached'; },
-                e => { expect(e.message).toEqual('Cannot match any routes. URL Segment: \'a\''); });
+                (_) => {
+                  throw 'Should not be reached';
+                },
+                e => {
+                  expect(e.message).toEqual('Cannot match any routes. URL Segment: \'a\'');
+                });
       });
     });
   });
@@ -610,7 +779,9 @@ describe('applyRedirects', () => {
     it('should not error when no children matching and no url is left', () => {
       checkRedirect(
           [{path: 'a', component: ComponentA, children: [{path: 'b', component: ComponentB}]}],
-          '/a', (t: UrlTree) => { expectTreeToBe(t, 'a'); });
+          '/a', (t: UrlTree) => {
+            expectTreeToBe(t, 'a');
+          });
     });
 
     it('should not error when no children matching and no url is left (aux routes)', () => {
@@ -624,16 +795,22 @@ describe('applyRedirects', () => {
               {path: 'c', component: ComponentC, outlet: 'aux'},
             ]
           }],
-          '/a', (t: UrlTree) => { expectTreeToBe(t, 'a/(aux:c)'); });
+          '/a', (t: UrlTree) => {
+            expectTreeToBe(t, 'a/(aux:c)');
+          });
     });
 
     it('should error when no children matching and some url is left', () => {
       applyRedirects(
-          testModule.injector, null !, serializer, tree('/a/c'),
+          testModule.injector, null!, serializer, tree('/a/c'),
           [{path: 'a', component: ComponentA, children: [{path: 'b', component: ComponentB}]}])
           .subscribe(
-              (_) => { throw 'Should not be reached'; },
-              e => { expect(e.message).toEqual('Cannot match any routes. URL Segment: \'a/c\''); });
+              (_) => {
+                throw 'Should not be reached';
+              },
+              e => {
+                expect(e.message).toEqual('Cannot match any routes. URL Segment: \'a/c\'');
+              });
     });
   });
 
@@ -653,7 +830,49 @@ describe('applyRedirects', () => {
             component: ComponentA,
             children: [{path: 'b', component: ComponentB}]
           }] as any,
-          '/a/1/b', (t: UrlTree) => { expectTreeToBe(t, 'a/1/b'); });
+          '/a/1/b', (t: UrlTree) => {
+            expectTreeToBe(t, 'a/1/b');
+          });
+    });
+  });
+
+  describe('multiple matches with empty path named outlets', () => {
+    it('should work with redirects when other outlet comes before the one being activated', () => {
+      applyRedirects(
+          testModule.injector, null!, serializer, tree(''),
+          [
+            {
+              path: '',
+              children: [
+                {path: '', component: ComponentA, outlet: 'aux'},
+                {path: '', redirectTo: 'b', pathMatch: 'full'},
+                {path: 'b', component: ComponentB},
+              ],
+            },
+          ])
+          .subscribe(
+              (tree: UrlTree) => {
+                expect(tree.toString()).toEqual('/b');
+              },
+              () => {
+                fail('should not be reached');
+              });
+    });
+
+    it('should work when entry point is named outlet', () => {
+      applyRedirects(
+          testModule.injector, null!, serializer, tree('(popup:modal)'),
+          [
+            {path: '', component: ComponentA},
+            {path: 'modal', component: ComponentB, outlet: 'popup'},
+          ])
+          .subscribe(
+              (tree: UrlTree) => {
+                expect(tree.toString()).toEqual('/(popup:modal)');
+              },
+              (e) => {
+                fail('should not be reached' + e.message);
+              });
     });
   });
 
@@ -665,7 +884,9 @@ describe('applyRedirects', () => {
             {path: 'b/:id', component: ComponentB},
             {path: 'c/:id', component: ComponentC, outlet: 'aux'}
           ],
-          'a/1;p=99', (t: UrlTree) => { expectTreeToBe(t, '/b/1;p=99(aux:c/1;p=99)'); });
+          'a/1;p=99', (t: UrlTree) => {
+            expectTreeToBe(t, '/b/1;p=99(aux:c/1;p=99)');
+          });
     });
 
     it('should work when using absolute redirects (wildcard)', () => {
@@ -674,28 +895,46 @@ describe('applyRedirects', () => {
             {path: '**', redirectTo: '/b(aux:c)'}, {path: 'b', component: ComponentB},
             {path: 'c', component: ComponentC, outlet: 'aux'}
           ],
-          'a/1', (t: UrlTree) => { expectTreeToBe(t, '/b(aux:c)'); });
+          'a/1', (t: UrlTree) => {
+            expectTreeToBe(t, '/b(aux:c)');
+          });
     });
 
     it('should throw when using non-absolute redirects', () => {
       applyRedirects(
-          testModule.injector, null !, serializer, tree('a'),
+          testModule.injector, null!, serializer, tree('a'),
           [
             {path: 'a', redirectTo: 'b(aux:c)'},
           ])
           .subscribe(
-              () => { throw new Error('should not be reached'); },
+              () => {
+                throw new Error('should not be reached');
+              },
               (e) => {
                 expect(e.message).toEqual(
                     'Only absolute redirects can have named outlets. redirectTo: \'b(aux:c)\'');
               });
     });
   });
+
+  // internal failure b/165719418
+  it('does not fail with large configs', () => {
+    const config: Routes = [];
+    for (let i = 0; i < 400; i++) {
+      config.push({path: 'no_match', component: ComponentB});
+    }
+    config.push({path: 'match', component: ComponentA});
+    applyRedirects(testModule.injector, null!, serializer, tree('match'), config).forEach(r => {
+      expectTreeToBe(r, 'match');
+    });
+  });
 });
 
 function checkRedirect(config: Routes, url: string, callback: any): void {
-  applyRedirects(TestBed, null !, new DefaultUrlSerializer(), tree(url), config)
-      .subscribe(callback, e => { throw e; });
+  applyRedirects(TestBed, null!, new DefaultUrlSerializer(), tree(url), config)
+      .subscribe(callback, e => {
+        throw e;
+      });
 }
 
 function tree(url: string): UrlTree {

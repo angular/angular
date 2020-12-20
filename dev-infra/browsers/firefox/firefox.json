@@ -1,0 +1,21 @@
+{
+  "environment": "local",
+  "capabilities": {
+    "browserName": "firefox",
+    "moz:firefoxOptions": {
+      "binary": "%FILE:FIREFOX%",
+      "args": ["--headless"]
+    },
+    "google:wslConfig": {
+      "binary": "%FILE:GECKODRIVER%",
+      "port":"%WSLPORT:WSL%",
+      "args": [
+        "--port=%WSLPORT:WSL%",
+        "--host=%WSL:HOST_IP%",
+        "--marionette-port=%WSLPORT:MARIONETTE%"
+      ],
+      "status": true,
+      "shutdown": false
+    }
+  }
+}

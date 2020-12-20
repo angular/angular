@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -138,13 +138,13 @@ export class ShadowCss {
   constructor() {}
 
   /*
-  * Shim some cssText with the given selector. Returns cssText that can
-  * be included in the document via WebComponents.ShadowCSS.addCssToDocument(css).
-  *
-  * When strictStyling is true:
-  * - selector is the attribute added to all elements inside the host,
-  * - hostSelector is the attribute added to the host itself.
-  */
+   * Shim some cssText with the given selector. Returns cssText that can
+   * be included in the document via WebComponents.ShadowCSS.addCssToDocument(css).
+   *
+   * When strictStyling is true:
+   * - selector is the attribute added to all elements inside the host,
+   * - hostSelector is the attribute added to the host itself.
+   */
   shimCssText(cssText: string, selector: string, hostSelector: string = ''): string {
     const commentsWithHash = extractCommentsWithHash(cssText);
     cssText = stripComments(cssText);
@@ -172,11 +172,12 @@ export class ShadowCss {
    *
    * scopeName menu-item {
    *
-  **/
+   **/
   private _insertPolyfillDirectivesInCssText(cssText: string): string {
     // Difference with webcomponents.js: does not handle comments
-    return cssText.replace(
-        _cssContentNextSelectorRe, function(...m: string[]) { return m[2] + '{'; });
+    return cssText.replace(_cssContentNextSelectorRe, function(...m: string[]) {
+      return m[2] + '{';
+    });
   }
 
   /*
@@ -193,7 +194,7 @@ export class ShadowCss {
    *
    * scopeName menu-item {...}
    *
-  **/
+   **/
   private _insertPolyfillRulesInCssText(cssText: string): string {
     // Difference with webcomponents.js: does not handle comments
     return cssText.replace(_cssContentRuleRe, (...m: string[]) => {
@@ -209,7 +210,7 @@ export class ShadowCss {
    *  and converts this to
    *
    *  scopeName .foo { ... }
-  */
+   */
   private _scopeCssText(cssText: string, scopeSelector: string, hostSelector: string): string {
     const unscopedRules = this._extractUnscopedRulesFromCssText(cssText);
     // replace :host and :host-context -shadowcsshost and -shadowcsshost respectively
@@ -238,7 +239,7 @@ export class ShadowCss {
    *
    * menu-item {...}
    *
-  **/
+   **/
   private _extractUnscopedRulesFromCssText(cssText: string): string {
     // Difference with webcomponents.js: does not handle comments
     let r = '';
@@ -257,7 +258,7 @@ export class ShadowCss {
    * to
    *
    * .foo<scopeName> > .bar
-  */
+   */
   private _convertColonHost(cssText: string): string {
     return this._convertColonRule(cssText, _cssColonHostRe, this._colonHostPartReplacer);
   }
@@ -276,7 +277,7 @@ export class ShadowCss {
    * to
    *
    * .foo<scopeName> .bar { ... }
-  */
+   */
   private _convertColonHostContext(cssText: string): string {
     return this._convertColonRule(
         cssText, _cssColonHostContextRe, this._colonHostContextPartReplacer);
@@ -315,7 +316,7 @@ export class ShadowCss {
   /*
    * Convert combinators like ::shadow and pseudo-elements like ::content
    * by replacing with space.
-  */
+   */
   private _convertShadowDOMSelectors(cssText: string): string {
     return _shadowDOMSelectorsRe.reduce((result, pattern) => result.replace(pattern, ' '), cssText);
   }
@@ -505,7 +506,9 @@ class SafeSelector {
     return content.replace(/__ph-(\d+)__/g, (ph, index) => this.placeholders[+index]);
   }
 
-  content(): string { return this._content; }
+  content(): string {
+    return this._content;
+  }
 }
 
 const _cssContentNextSelectorRe =
@@ -552,66 +555,83 @@ function extractCommentsWithHash(input: string): string[] {
   return input.match(_commentWithHashRe) || [];
 }
 
-const _ruleRe = /(\s*)([^;\{\}]+?)(\s*)((?:{%BLOCK%}?\s*;?)|(?:\s*;))/g;
-const _curlyRe = /([{}])/g;
-const OPEN_CURLY = '{';
-const CLOSE_CURLY = '}';
 const BLOCK_PLACEHOLDER = '%BLOCK%';
+const QUOTE_PLACEHOLDER = '%QUOTED%';
+const _ruleRe = /(\s*)([^;\{\}]+?)(\s*)((?:{%BLOCK%}?\s*;?)|(?:\s*;))/g;
+const _quotedRe = /%QUOTED%/g;
+const CONTENT_PAIRS = new Map([['{', '}']]);
+const QUOTE_PAIRS = new Map([[`"`, `"`], [`'`, `'`]]);
 
 export class CssRule {
   constructor(public selector: string, public content: string) {}
 }
 
 export function processRules(input: string, ruleCallback: (rule: CssRule) => CssRule): string {
-  const inputWithEscapedBlocks = escapeBlocks(input);
+  const inputWithEscapedQuotes = escapeBlocks(input, QUOTE_PAIRS, QUOTE_PLACEHOLDER);
+  const inputWithEscapedBlocks =
+      escapeBlocks(inputWithEscapedQuotes.escapedString, CONTENT_PAIRS, BLOCK_PLACEHOLDER);
   let nextBlockIndex = 0;
-  return inputWithEscapedBlocks.escapedString.replace(_ruleRe, function(...m: string[]) {
-    const selector = m[2];
-    let content = '';
-    let suffix = m[4];
-    let contentPrefix = '';
-    if (suffix && suffix.startsWith('{' + BLOCK_PLACEHOLDER)) {
-      content = inputWithEscapedBlocks.blocks[nextBlockIndex++];
-      suffix = suffix.substring(BLOCK_PLACEHOLDER.length + 1);
-      contentPrefix = '{';
-    }
-    const rule = ruleCallback(new CssRule(selector, content));
-    return `${m[1]}${rule.selector}${m[3]}${contentPrefix}${rule.content}${suffix}`;
-  });
+  let nextQuoteIndex = 0;
+  return inputWithEscapedBlocks.escapedString
+      .replace(
+          _ruleRe,
+          (...m: string[]) => {
+            const selector = m[2];
+            let content = '';
+            let suffix = m[4];
+            let contentPrefix = '';
+            if (suffix && suffix.startsWith('{' + BLOCK_PLACEHOLDER)) {
+              content = inputWithEscapedBlocks.blocks[nextBlockIndex++];
+              suffix = suffix.substring(BLOCK_PLACEHOLDER.length + 1);
+              contentPrefix = '{';
+            }
+            const rule = ruleCallback(new CssRule(selector, content));
+            return `${m[1]}${rule.selector}${m[3]}${contentPrefix}${rule.content}${suffix}`;
+          })
+      .replace(_quotedRe, () => inputWithEscapedQuotes.blocks[nextQuoteIndex++]);
 }
 
 class StringWithEscapedBlocks {
   constructor(public escapedString: string, public blocks: string[]) {}
 }
 
-function escapeBlocks(input: string): StringWithEscapedBlocks {
-  const inputParts = input.split(_curlyRe);
+function escapeBlocks(
+    input: string, charPairs: Map<string, string>, placeholder: string): StringWithEscapedBlocks {
   const resultParts: string[] = [];
   const escapedBlocks: string[] = [];
-  let bracketCount = 0;
-  let currentBlockParts: string[] = [];
-  for (let partIndex = 0; partIndex < inputParts.length; partIndex++) {
-    const part = inputParts[partIndex];
-    if (part == CLOSE_CURLY) {
-      bracketCount--;
-    }
-    if (bracketCount > 0) {
-      currentBlockParts.push(part);
-    } else {
-      if (currentBlockParts.length > 0) {
-        escapedBlocks.push(currentBlockParts.join(''));
-        resultParts.push(BLOCK_PLACEHOLDER);
-        currentBlockParts = [];
+  let openCharCount = 0;
+  let nonBlockStartIndex = 0;
+  let blockStartIndex = -1;
+  let openChar: string|undefined;
+  let closeChar: string|undefined;
+  for (let i = 0; i < input.length; i++) {
+    const char = input[i];
+    if (char === '\\') {
+      i++;
+    } else if (char === closeChar) {
+      openCharCount--;
+      if (openCharCount === 0) {
+        escapedBlocks.push(input.substring(blockStartIndex, i));
+        resultParts.push(placeholder);
+        nonBlockStartIndex = i;
+        blockStartIndex = -1;
+        openChar = closeChar = undefined;
       }
-      resultParts.push(part);
-    }
-    if (part == OPEN_CURLY) {
-      bracketCount++;
+    } else if (char === openChar) {
+      openCharCount++;
+    } else if (openCharCount === 0 && charPairs.has(char)) {
+      openChar = char;
+      closeChar = charPairs.get(char);
+      openCharCount = 1;
+      blockStartIndex = i + 1;
+      resultParts.push(input.substring(nonBlockStartIndex, blockStartIndex));
     }
   }
-  if (currentBlockParts.length > 0) {
-    escapedBlocks.push(currentBlockParts.join(''));
-    resultParts.push(BLOCK_PLACEHOLDER);
+  if (blockStartIndex !== -1) {
+    escapedBlocks.push(input.substring(blockStartIndex));
+    resultParts.push(placeholder);
+  } else {
+    resultParts.push(input.substring(nonBlockStartIndex));
   }
   return new StringWithEscapedBlocks(resultParts.join(''), escapedBlocks);
 }

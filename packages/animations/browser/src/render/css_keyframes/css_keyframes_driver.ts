@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -21,15 +21,18 @@ const TAB_SPACE = ' ';
 export class CssKeyframesDriver implements AnimationDriver {
   private _count = 0;
   private readonly _head: any = document.querySelector('head');
-  private _warningIssued = false;
 
-  validateStyleProperty(prop: string): boolean { return validateStyleProperty(prop); }
+  validateStyleProperty(prop: string): boolean {
+    return validateStyleProperty(prop);
+  }
 
   matchesElement(element: any, selector: string): boolean {
     return matchesElement(element, selector);
   }
 
-  containsElement(elm1: any, elm2: any): boolean { return containsElement(elm1, elm2); }
+  containsElement(elm1: any, elm2: any): boolean {
+    return containsElement(elm1, elm2);
+  }
 
   query(element: any, selector: string, multi: boolean): any[] {
     return invokeQuery(element, selector, multi);
@@ -68,15 +71,15 @@ export class CssKeyframesDriver implements AnimationDriver {
     keyframeStr += `}\n`;
 
     const kfElm = document.createElement('style');
-    kfElm.innerHTML = keyframeStr;
+    kfElm.textContent = keyframeStr;
     return kfElm;
   }
 
   animate(
       element: any, keyframes: ɵStyleData[], duration: number, delay: number, easing: string,
       previousPlayers: AnimationPlayer[] = [], scrubberAccessRequested?: boolean): AnimationPlayer {
-    if (scrubberAccessRequested) {
-      this._notifyFaultyScrubber();
+    if ((typeof ngDevMode === 'undefined' || ngDevMode) && scrubberAccessRequested) {
+      notifyFaultyScrubber();
     }
 
     const previousCssKeyframePlayers = <CssKeyframesPlayer[]>previousPlayers.filter(
@@ -104,7 +107,7 @@ export class CssKeyframesDriver implements AnimationDriver {
 
     const animationName = `${KEYFRAMES_NAME_PREFIX}${this._count++}`;
     const kfElm = this.buildKeyframeElement(element, animationName, keyframes);
-    document.querySelector('head') !.appendChild(kfElm);
+    document.querySelector('head')!.appendChild(kfElm);
 
     const specialStyles = packageNonAnimatableStyles(element, keyframes);
     const player = new CssKeyframesPlayer(
@@ -113,19 +116,10 @@ export class CssKeyframesDriver implements AnimationDriver {
     player.onDestroy(() => removeElement(kfElm));
     return player;
   }
-
-  private _notifyFaultyScrubber() {
-    if (!this._warningIssued) {
-      console.warn(
-          '@angular/animations: please load the web-animations.js polyfill to allow programmatic access...\n',
-          '  visit http://bit.ly/IWukam to learn more about using the web-animation-js polyfill.');
-      this._warningIssued = true;
-    }
-  }
 }
 
-function flattenKeyframesIntoStyles(
-    keyframes: null | {[key: string]: any} | {[key: string]: any}[]): {[key: string]: any} {
+function flattenKeyframesIntoStyles(keyframes: null|{[key: string]: any}|
+                                    {[key: string]: any}[]): {[key: string]: any} {
   let flatKeyframes: {[key: string]: any} = {};
   if (keyframes) {
     const kfs = Array.isArray(keyframes) ? keyframes : [keyframes];
@@ -141,4 +135,13 @@ function flattenKeyframesIntoStyles(
 
 function removeElement(node: any) {
   node.parentNode.removeChild(node);
+}
+
+let warningIssued = false;
+function notifyFaultyScrubber(): void {
+  if (warningIssued) return;
+  console.warn(
+      '@angular/animations: please load the web-animations.js polyfill to allow programmatic access...\n',
+      '  visit https://bit.ly/IWukam to learn more about using the web-animation-js polyfill.');
+  warningIssued = true;
 }

@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -10,7 +10,7 @@
 /// <reference lib="es2017"/>
 
 import {format, parseTsconfig} from '@bazel/typescript';
-import {Extractor, ExtractorValidationRulePolicy, IExtractorConfig, IExtractorOptions} from '@microsoft/api-extractor';
+import {Extractor, ExtractorConfig, IConfigFile, IExtractorConfigPrepareOptions, IExtractorInvokeOptions} from '@microsoft/api-extractor';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -38,7 +38,7 @@ export function runMain(
   // API extractor doesn't always support the version of TypeScript used in the repo
   // example: at the moment it is not compatable with 3.2
   // to use the internal TypeScript we shall not create a program but rather pass a parsed tsConfig.
-  const parsedTsConfig = parsedConfig !.config as any;
+  const parsedTsConfig = parsedConfig!.config as any;
   const compilerOptions = parsedTsConfig.compilerOptions;
   for (const [key, values] of Object.entries<string[]>(compilerOptions.paths)) {
     if (key === '*') {
@@ -55,51 +55,46 @@ export function runMain(
     });
   }
 
-  const extractorOptions: IExtractorOptions = {
+  const extractorOptions: IExtractorInvokeOptions = {
     localBuild: acceptApiUpdates,
-    customLogger: DEBUG ? undefined : {
-      // don't log verbose messages when not in debug mode
-      logVerbose: _message => {}
-    }
   };
 
-  const extractorConfig: IExtractorConfig = {
+  const configObject: IConfigFile = {
     compiler: {
-      configType: 'tsconfig',
       overrideTsconfig: parsedTsConfig,
-      rootFolder: path.resolve(path.dirname(tsConfig))
     },
-    project: {
-      entryPointSourceFile: path.resolve(entryPoint),
-    },
-    apiReviewFile: {
+    projectFolder: path.resolve(path.dirname(tsConfig)),
+    mainEntryPointFilePath: path.resolve(entryPoint),
+    apiReport: {
       enabled: !!apiReviewFolder,
-      apiReviewFolder: apiReviewFolder && path.resolve(apiReviewFolder),
+      // TODO(alan-agius4): remove this folder name when the below issue is solved upstream
+      // See: https://github.com/microsoft/web-build-tools/issues/1470
+      reportFileName: apiReviewFolder && path.resolve(apiReviewFolder) || 'invalid',
     },
-    apiJsonFile: {
+    docModel: {
       enabled: false,
-    },
-    policies: {
-      namespaceSupport: 'permissive',
-    },
-    validationRules: {
-      missingReleaseTags: ExtractorValidationRulePolicy.allow,
     },
     dtsRollup: {
       enabled: !!dtsBundleOut,
-      publishFolder: dtsBundleOut && path.resolve(path.dirname(dtsBundleOut)),
-      mainDtsRollupPath: dtsBundleOut && path.basename(dtsBundleOut),
+      untrimmedFilePath: dtsBundleOut && path.resolve(dtsBundleOut),
     },
     tsdocMetadata: {
       enabled: false,
     }
   };
 
-  const extractor = new Extractor(extractorConfig, extractorOptions);
-  const isSuccessful = extractor.processProject();
+  const options: IExtractorConfigPrepareOptions = {
+    configObject,
+    packageJson: undefined,
+    packageJsonFullPath: pkgJson,
+    configObjectFullPath: undefined,
+  };
+
+  const extractorConfig = ExtractorConfig.prepare(options);
+  const {succeeded} = Extractor.invoke(extractorConfig, extractorOptions);
 
   // API extractor errors are emitted by it's logger.
-  return isSuccessful ? 0 : 1;
+  return succeeded ? 0 : 1;
 }
 
 // Entry point
@@ -118,8 +113,8 @@ api-extractor: running with
   const dtsBundleOuts = dtsBundleOut.split(',');
 
   if (entryPoints.length !== entryPoints.length) {
-    throw new Error(
-        `Entry points count (${entryPoints.length}) does not match Bundle out count (${dtsBundleOuts.length})`);
+    throw new Error(`Entry points count (${entryPoints.length}) does not match Bundle out count (${
+        dtsBundleOuts.length})`);
   }
 
   for (let i = 0; i < entryPoints.length; i++) {

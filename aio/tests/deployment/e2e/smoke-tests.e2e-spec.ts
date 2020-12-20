@@ -14,9 +14,9 @@ describe(browser.baseUrl, () => {
   });
 
   describe('(smoke tests)', () => {
-    it('should show the home page', () => {
-      page.goTo('');
-      const text = page.getDocViewerText();
+    it('should show the home page', async () => {
+      await page.goTo('');
+      const text = await page.getDocViewerText();
 
       expect(text).toContain('one framework');
       expect(text).toContain('mobile & desktop');
@@ -31,11 +31,11 @@ describe(browser.baseUrl, () => {
       };
 
       Object.keys(textPerUrl).forEach(url => {
-        it(`should show the page at '${url}'`, () => {
-          page.goTo(url);
-          browser.wait(() => page.getDocViewerText(), 5000);  // Wait for the document to be loaded.
+        it(`should show the page at '${url}'`, async () => {
+          await page.goTo(url);
+          await browser.wait(() => page.getDocViewerText(), 5000);  // Wait for the document to be loaded.
 
-          expect(page.getDocViewerText()).toContain(textPerUrl[url]);
+          expect(await page.getDocViewerText()).toContain(textPerUrl[url]);
         });
       });
     });
@@ -51,11 +51,11 @@ describe(browser.baseUrl, () => {
       };
 
       Object.keys(textPerUrl).forEach(url => {
-        it(`should show the page at '${url}'`, () => {
-          page.goTo(url);
-          browser.wait(() => page.getDocViewerText(), 5000);  // Wait for the document to be loaded.
+        it(`should show the page at '${url}'`, async () => {
+          await page.goTo(url);
+          await browser.wait(() => page.getDocViewerText(), 5000);  // Wait for the document to be loaded.
 
-          expect(page.getDocViewerText()).toContain(textPerUrl[url]);
+          expect(await page.getDocViewerText()).toContain(textPerUrl[url]);
         });
       });
     });
@@ -74,11 +74,11 @@ describe(browser.baseUrl, () => {
       };
 
       Object.keys(textPerUrl).forEach(url => {
-        it(`should show the page at '${url}'`, () => {
-          page.goTo(url);
-          browser.wait(() => page.getDocViewerText(), 5000);  // Wait for the document to be loaded.
+        it(`should show the page at '${url}'`, async () => {
+          await page.goTo(url);
+          await browser.wait(() => page.getDocViewerText(), 5000);  // Wait for the document to be loaded.
 
-          expect(page.getDocViewerText()).toContain(textPerUrl[url]);
+          expect(await page.getDocViewerText()).toContain(textPerUrl[url]);
         });
       });
     });
@@ -86,25 +86,25 @@ describe(browser.baseUrl, () => {
     describe('(search results)', () => {
       beforeEach(() => page.goTo(''));
 
-      it('should find pages when searching by a partial word in the title', () => {
-        page.enterSearch('ngCont');
-        expect(page.getSearchResults()).toContain('NgControl');
+      it('should find pages when searching by a partial word in the title', async () => {
+        await page.enterSearch('ngCont');
+        expect(await page.getSearchResults()).toContain('NgControl');
       });
 
-      it('should find API docs when searching for an instance member name', () => {
-        page.enterSearch('writeValue');
-        expect(page.getSearchResults()).toContain('ControlValueAccessor');
+      it('should find API docs when searching for an instance member name', async () => {
+        await page.enterSearch('writeValue');
+        expect(await page.getSearchResults()).toContain('ControlValueAccessor');
       });
 
-      it('should find API docs when searching for a static member name', () => {
-        page.enterSearch('compose');
-        expect(page.getSearchResults()).toContain('Validators');
+      it('should find API docs when searching for a static member name', async () => {
+        await page.enterSearch('compose');
+        expect(await page.getSearchResults()).toContain('Validators');
       });
     });
 
-    it('should show relevant results on 404', () => {
-      page.goTo('http/router');
-      const results = page.getSearchResults();
+    it('should show relevant results on 404', async () => {
+      await page.goTo('http/router');
+      const results = await page.getSearchResults();
 
       expect(results).toContain('HttpClient');
       expect(results).toContain('Router');

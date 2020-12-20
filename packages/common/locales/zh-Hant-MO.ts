@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -16,7 +16,9 @@ function plural(n: number): number {
 }
 
 export default [
-  'zh-Hant-MO', [['上午', '下午'], u, u], u,
+  'zh-Hant-MO',
+  [['上午', '下午'], u, u],
+  u,
   [
     ['日', '一', '二', '三', '四', '五', '六'],
     ['週日', '週一', '週二', '週三', '週四', '週五', '週六'],
@@ -26,16 +28,21 @@ export default [
   u,
   [
     ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
-    [
-      '1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月',
-      '12月'
-    ],
-    u
+    ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'], u
   ],
-  u, [['西元前', '西元'], ['公元前', '公元'], u], 0, [6, 0],
+  u,
+  [['公元前', '公元'], u, u],
+  0,
+  [6, 0],
   ['d/M/y', 'y年M月d日', u, 'y年M月d日EEEE'],
-  ['ah:mm', 'ah:mm:ss', 'ah:mm:ss [z]', 'ah:mm:ss [zzzz]'], ['{1} {0}', u, u, u],
+  ['ah:mm', 'ah:mm:ss', 'ah:mm:ss [z]', 'ah:mm:ss [zzzz]'],
+  ['{1} {0}', u, u, u],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', '非數值', ':'],
-  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], 'MOP$', '澳門元',
-  {'AUD': ['AU$', '$'], 'MOP': ['MOP$'], 'RON': [u, 'L'], 'USD': ['US$', '$']}, plural
+  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'],
+  'MOP',
+  'MOP$',
+  '澳門元',
+  {'AUD': ['AU$', '$'], 'MOP': ['MOP$'], 'RON': [u, 'L'], 'USD': ['US$', '$'], 'XXX': []},
+  'ltr',
+  plural
 ];

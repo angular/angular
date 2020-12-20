@@ -1,0 +1,118 @@
+package(default_visibility = ["//visibility:public"])
+
+load("//tools:defaults.bzl", "jasmine_node_test", "ng_module", "ng_rollup_bundle", "ts_devserver", "ts_library")
+load("//tools/symbol-extractor:index.bzl", "js_expected_symbol_test")
+load("@npm//http-server:index.bzl", "http_server")
+
+ng_module(
+    name = "router",
+    srcs = [
+        "index.ts",
+    ],
+    tags = [
+        "ivy-only",
+    ],
+    deps = [
+        "//packages/core",
+        "//packages/platform-browser",
+        "//packages/router",
+    ],
+)
+
+ng_rollup_bundle(
+    name = "bundle",
+    entry_point = ":index.ts",
+    tags = [
+        "ivy-only",
+    ],
+    deps = [
+        ":router",
+        "//packages/core",
+        "//packages/platform-browser",
+        "//packages/router",
+        "@npm//rxjs",
+    ],
+)
+
+ts_library(
+    name = "test_lib",
+    testonly = True,
+    srcs = glob(["*_spec.ts"]),
+    tags = [
+        "ivy-only",
+    ],
+    deps = [
+        "//packages:types",
+        "//packages/compiler",
+        "//packages/core",
+        "//packages/core/testing",
+        "//packages/private/testing",
+    ],
+)
+
+jasmine_node_test(
+    name = "test",
+    data = [
+        ":bundle",
+        ":bundle.js",
+        ":bundle.min.js",
+        ":bundle.min_debug.js",
+    ],
+    tags = [
+        "ivy-only",
+    ],
+    deps = [":test_lib"],
+)
+
+js_expected_symbol_test(
+    name = "symbol_test",
+    src = ":bundle.min_debug.js",
+    golden = ":bundle.golden_symbols.json",
+    tags = [
+        "ivy-aot",
+        "ivy-only",
+    ],
+)
+
+genrule(
+    name = "tslib",
+    srcs = [
+        "@npm//:node_modules/tslib/tslib.js",
+    ],
+    outs = [
+        "tslib.js",
+    ],
+    cmd = "cp $< $@",
+    tags = [
+        "ivy-only",
+    ],
+)
+
+ts_devserver(
+    name = "devserver",
+    entry_module = "@angular/core/test/bundling/router",
+    scripts = [
+        "//tools/rxjs:rxjs_umd_modules",
+    ],
+    serving_path = "/bundle.min.js",
+    static_files = [
+        "index.html",
+        ":tslib",
+    ],
+    tags = [
+        "ivy-only",
+    ],
+    deps = [":router"],
+)
+
+http_server(
+    name = "prodserver",
+    data = [
+        "index.html",
+        ":bundle.min.js",
+        ":bundle.min_debug.js",
+    ],
+    tags = [
+        "ivy-only",
+    ],
+)

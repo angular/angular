@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -18,8 +18,9 @@ describe('toNumbers', () => {
 });
 
 describe('compareNumbers', () => {
-
-  it('should handle empty arrays', () => { expect(compareNumbers([], [])).toEqual(0); });
+  it('should handle empty arrays', () => {
+    expect(compareNumbers([], [])).toEqual(0);
+  });
 
   it('should handle arrays of same length', () => {
     expect(compareNumbers([1], [3])).toEqual(-1);

@@ -1,17 +1,15 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
 import {Inject, Injectable, Optional} from '@angular/core';
-
-
-import {Location} from './location';
 import {APP_BASE_HREF, LocationStrategy} from './location_strategy';
 import {LocationChangeListener, PlatformLocation} from './platform_location';
+import {joinWithSlash, normalizeQueryParams} from './util';
 
 
 
@@ -50,7 +48,9 @@ export class HashLocationStrategy extends LocationStrategy {
     this._platformLocation.onHashChange(fn);
   }
 
-  getBaseHref(): string { return this._baseHref; }
+  getBaseHref(): string {
+    return this._baseHref;
+  }
 
   path(includeHash: boolean = false): string {
     // the hash value is always prefixed with a `#`
@@ -62,13 +62,12 @@ export class HashLocationStrategy extends LocationStrategy {
   }
 
   prepareExternalUrl(internal: string): string {
-    const url = Location.joinWithSlash(this._baseHref, internal);
+    const url = joinWithSlash(this._baseHref, internal);
     return url.length > 0 ? ('#' + url) : url;
   }
 
   pushState(state: any, title: string, path: string, queryParams: string) {
-    let url: string|null =
-        this.prepareExternalUrl(path + Location.normalizeQueryParams(queryParams));
+    let url: string|null = this.prepareExternalUrl(path + normalizeQueryParams(queryParams));
     if (url.length == 0) {
       url = this._platformLocation.pathname;
     }
@@ -76,14 +75,18 @@ export class HashLocationStrategy extends LocationStrategy {
   }
 
   replaceState(state: any, title: string, path: string, queryParams: string) {
-    let url = this.prepareExternalUrl(path + Location.normalizeQueryParams(queryParams));
+    let url = this.prepareExternalUrl(path + normalizeQueryParams(queryParams));
     if (url.length == 0) {
       url = this._platformLocation.pathname;
     }
     this._platformLocation.replaceState(state, title, url);
   }
 
-  forward(): void { this._platformLocation.forward(); }
+  forward(): void {
+    this._platformLocation.forward();
+  }
 
-  back(): void { this._platformLocation.back(); }
+  back(): void {
+    this._platformLocation.back();
+  }
 }

@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -51,7 +51,6 @@ import {KeyEventsPlugin} from '@angular/platform-browser/src/dom/events/key_even
           .toEqual({'domEventName': 'keydown', 'fullKey': 'control.shift'});
       expect(KeyEventsPlugin.parseEventName('keyup.control.shift'))
           .toEqual({'domEventName': 'keyup', 'fullKey': 'control.shift'});
-
     });
 
     it('should alias esc to escape', () => {
@@ -62,11 +61,10 @@ import {KeyEventsPlugin} from '@angular/platform-browser/src/dom/events/key_even
     it('should implement addGlobalEventListener', () => {
       const plugin = new KeyEventsPlugin(document);
 
-      spyOn(plugin, 'addEventListener').and.callFake(() => {});
+      spyOn(plugin, 'addEventListener').and.callFake(() => () => {});
 
       expect(() => plugin.addGlobalEventListener('window', 'keyup.control.esc', () => {}))
           .not.toThrowError();
     });
-
   });
 }

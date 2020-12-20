@@ -1,8 +1,14 @@
-# Angular Elements Overview
+# Angular elements overview
 
 _Angular elements_ are Angular components packaged as _custom elements_ (also called Web Components), a web standard for defining new HTML elements in a framework-agnostic way.
 
-[Custom elements](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements) are a Web Platform feature currently supported by Chrome, Firefox, Opera, and Safari, and available in other browsers through polyfills (see [Browser Support](#browser-support)).
+<div class="alert is-helpful">
+
+  For the sample app that this page describes, see the <live-example></live-example>.
+
+</div>
+
+[Custom elements](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements) are a Web Platform feature currently supported by Chrome, Edge (Chromium-based), Firefox, Opera, and Safari, and available in other browsers through polyfills (see [Browser Support](#browser-support)).
 A custom element extends HTML by allowing you to define a tag whose content is created and controlled by JavaScript code.
 The browser maintains a `CustomElementRegistry` of defined custom elements, which maps an instantiable JavaScript class to an HTML tag.
 
@@ -40,13 +46,11 @@ After you register your configured class with the browser's custom-element regis
 <my-popup message="Use Angular!"></my-popup>
 ```
 
-When your custom element is placed on a page, the browser creates an instance of the registered class and adds it to the DOM. The content is provided by the component's template, which  uses Angular template syntax, and is rendered using the component and DOM data. Input properties in the component correspond to input attributes for the element.
+When your custom element is placed on a page, the browser creates an instance of the registered class and adds it to the DOM. The content is provided by the component's template, which uses Angular template syntax, and is rendered using the component and DOM data. Input properties in the component correspond to input attributes for the element.
 
-<figure>
-
-<img src="generated/images/guide/elements/customElement1.png" alt="Custom element in browser" class="left">
-
-</figure>
+<div class="lightbox">
+  <img src="generated/images/guide/elements/customElement1.png" alt="Custom element in browser" class="left">
+</div>
 
 <hr class="clear">
 
@@ -64,11 +68,9 @@ Use a JavaScript function, `customElements.define()`,  to register the configure
 and its associated custom-element tag with the browser's `CustomElementRegistry`.
 When the browser encounters the tag for the registered element, it uses the constructor to create a custom-element instance.
 
-<figure>
-
-<img src="generated/images/guide/elements/createElement.png" alt="Transform a component to a custom element" class="left">
-
-</figure>
+<div class="lightbox">
+  <img src="generated/images/guide/elements/createElement.png" alt="Transform a component to a custom element" class="left">
+</div>
 
 ### Mapping
 
@@ -86,7 +88,7 @@ For more information, see Web Component documentation for [Creating custom event
 
 ## Browser support for custom elements
 
-The recently-developed [custom elements](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements) Web Platform feature is currently supported natively in a number of browsers. Support is pending or planned in other browsers.
+The recently-developed [custom elements](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements) Web Platform feature is currently supported natively in a number of browsers.
 
 <table>
 <tr>
@@ -98,6 +100,14 @@ The recently-developed [custom elements](https://developer.mozilla.org/en-US/doc
   <td>Supported natively.</td>
 </tr>
 <tr>
+  <td>Edge (Chromium-based)</td>
+  <td>Supported natively.</td>
+</tr>
+<tr>
+  <td>Firefox</td>
+  <td>Supported natively.</td>
+</tr>
+<tr>
   <td>Opera</td>
   <td>Supported natively.</td>
 </tr>
@@ -105,21 +115,18 @@ The recently-developed [custom elements](https://developer.mozilla.org/en-US/doc
   <td>Safari</td>
   <td>Supported natively.</td>
 </tr>
-<tr>
-  <td>Firefox</td>
-  <td>Supported natively as of version 63. In older versions: Set the <code>dom.webcomponents.enabled</code> and <code>dom.webcomponents.customelements.enabled</code> preferences to true.</td>
-</tr>
-<tr>
-  <td>Edge</td>
-  <td>Working on an implementation. <br>
-
-  </td>
-</tr>
 </table>
 
-In browsers that support Custom Elements natively, the specification requires developers use ES2015 classes to define Custom Elements - developers can opt-in to this by setting the `target: "es2015"` property in their project's `tsconfig.json`. As Custom Element and ES2015 support may not be available in all browsers, developers can instead choose to use a polyfill to support older browsers and ES5 code.
+In browsers that support Custom Elements natively, the specification requires developers use ES2015 classes to define Custom Elements - developers can opt-in to this by setting the `target: "es2015"` property in their project's [TypeScript configuration file](/guide/typescript-configuration). As Custom Element and ES2015 support may not be available in all browsers, developers can instead choose to use a polyfill to support older browsers and ES5 code.
 
-Use the [Angular CLI](cli) to automatically set up your project with the correct polyfill: `ng add @angular/elements --name=*your_project_name*`.
+Use the [Angular CLI](cli) to automatically set up your project with the correct polyfill: 
+
+<code-example language="sh">
+
+ng add @angular/elements --project=*your_project_name*
+
+</code-example>
+
 - For more information about polyfills, see [polyfill documentation](https://www.webcomponents.org/polyfills).
 
 - For more information about Angular browser support, see [Browser Support](guide/browser-support).
@@ -127,7 +134,7 @@ Use the [Angular CLI](cli) to automatically set up your project with the correct
 
 ## Example: A Popup Service
 
-Previously, when you wanted to add a component to an app at runtime, you had to define a _dynamic component_. The app module would have to list your dynamic component under `entryComponents`, so that the app wouldn't expect it to be present at startup, and then you would have to load it, attach it to an element in the DOM, and wire up all of the dependencies, change detection, and event handling, as described in [Dynamic Component Loader](guide/dynamic-component-loader).
+Previously, when you wanted to add a component to an app at runtime, you had to define a _dynamic component_, and then you would have to load it, attach it to an element in the DOM, and wire up all of the dependencies, change detection, and event handling, as described in [Dynamic Component Loader](guide/dynamic-component-loader).
 
 Using an Angular custom element makes the process much simpler and more transparent, by providing all of the infrastructure and framework automatically&mdash;all you have to do is define the kind of event handling you want. (You do still have to exclude the component from compilation, if you are not going to use it in your app.)
 
@@ -159,18 +166,12 @@ For comparison, the demo shows both methods. One button adds the popup using the
   </code-pane>
 </code-tabs>
 
-<!--
-  StackBlitz transpiles code to ES5. The live example will not work without a polyfill.
-  Only offer a `.zip` to download for now.
--->
-You can download the full code for the example <live-example downloadOnly>here</live-example>.
-
 
 ## Typings for custom elements
 
 Generic DOM APIs, such as `document.createElement()` or `document.querySelector()`, return an element type that is appropriate for the specified arguments. For example, calling `document.createElement('a')` will return an `HTMLAnchorElement`, which TypeScript knows has an `href` property. Similarly, `document.createElement('div')` will return an `HTMLDivElement`, which TypeScript knows has no `href` property.
 
-When called with unknown elements, such as a custom element name (`popup-element` in our example), the methods will return a generic type, such as `HTMLELement`, since TypeScript can't infer the correct type of the returned element.
+When called with unknown elements, such as a custom element name (`popup-element` in our example), the methods will return a generic type, such as `HTMLElement`, since TypeScript can't infer the correct type of the returned element.
 
 Custom elements created with Angular extend `NgElement` (which in turn extends `HTMLElement`). Additionally, these custom elements will have a property for each input of the corresponding component. For example, our `popup-element` will have a `message` property of type `string`.
 
@@ -192,9 +193,9 @@ aDialog.content = 123;  // <-- ERROR: TypeScript knows this should be a string.
 aDialog.body = 'News';  // <-- ERROR: TypeScript knows there is no `body` property on `aDialog`.
 ```
 
-This is a good way to quickly get TypeScript features, such as type checking and autocomplete support, for you custom element. But it can get cumbersome if you need it in several places, because you have to cast the return type on every occurrence.
+This is a good way to quickly get TypeScript features, such as type checking and autocomplete support, for your custom element. But it can get cumbersome if you need it in several places, because you have to cast the return type on every occurrence.
 
-An alternative way, that only requires defining each custom element's type once, is augmenting the `HTMLELementTagNameMap`, which TypeScript uses to infer the type of a returned element based on its tag name (for DOM methods such as `document.createElement()`, `document.querySelector()`, etc.):
+An alternative way, that only requires defining each custom element's type once, is augmenting the `HTMLElementTagNameMap`, which TypeScript uses to infer the type of a returned element based on its tag name (for DOM methods such as `document.createElement()`, `document.querySelector()`, etc.):
 
 ```ts
 declare global {

@@ -1,0 +1,13 @@
+<h1>Accessibility Example</h1>
+<!-- #docregion template -->
+<label>
+  Enter an example progress value
+  <input type="number" min="0" max="100"
+      [value]="progress" (input)="setProgress($event)">
+</label>
+
+<!-- The user of the progressbar sets an aria-label to communicate what the progress means. -->
+<app-example-progressbar [value]="progress" aria-label="Example of a progress bar">
+</app-example-progressbar>
+<!-- #enddocregion template -->
+

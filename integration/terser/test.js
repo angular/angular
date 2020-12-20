@@ -5,8 +5,8 @@ const Terser = require('terser');
 const GLOBAL_DEFS_FOR_TERSER = require('@angular/compiler-cli').GLOBAL_DEFS_FOR_TERSER;
 
 const outputPath = resolve(__dirname, './core.min.js');
-const pathToCoreFesm5 = resolve(__dirname, './node_modules/@angular/core/fesm5/core.js');
-const coreFesm5Content = readFileSync(pathToCoreFesm5, 'utf8');
+const pathToCoreFesm2015 = resolve(__dirname, './node_modules/@angular/core/fesm2015/core.js');
+const coreFesm2015Content = readFileSync(pathToCoreFesm2015, 'utf8');
 // Ensure that Terser global_defs exported by compiler-cli work.
 const terserOpts = {
   compress: {
@@ -14,7 +14,7 @@ const terserOpts = {
     global_defs: GLOBAL_DEFS_FOR_TERSER
   }
 };
-const result = Terser.minify(coreFesm5Content, terserOpts);
+const result = Terser.minify(coreFesm2015Content, terserOpts);
 writeFileSync(outputPath, result.code);
 
 for (const def of Object.keys(GLOBAL_DEFS_FOR_TERSER)) {

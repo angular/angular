@@ -1,41 +1,40 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {RendererType2} from '../../src/render/api';
+import {RElement} from '@angular/core/src/render3/interfaces/renderer_dom';
+import {RendererType2} from '../../src/render/api_flags';
 import {getLContext} from '../../src/render3/context_discovery';
-import {AttributeMarker, ɵɵattribute, ɵɵdefineComponent, ɵɵdefineDirective, ɵɵproperty} from '../../src/render3/index';
-import {ɵɵallocHostVars, ɵɵbind, ɵɵcontainer, ɵɵcontainerRefreshEnd, ɵɵcontainerRefreshStart, ɵɵelement, ɵɵelementEnd, ɵɵelementStart, ɵɵembeddedViewEnd, ɵɵembeddedViewStart, ɵɵprojection, ɵɵprojectionDef, ɵɵselect, ɵɵstyling, ɵɵstylingApply, ɵɵtemplate, ɵɵtext, ɵɵtextBinding} from '../../src/render3/instructions/all';
+import {AttributeMarker, ɵɵadvance, ɵɵattribute, ɵɵdefineComponent, ɵɵdefineDirective, ɵɵhostProperty, ɵɵproperty} from '../../src/render3/index';
+import {ɵɵelement, ɵɵelementEnd, ɵɵelementStart, ɵɵprojection, ɵɵprojectionDef, ɵɵtemplate, ɵɵtext} from '../../src/render3/instructions/all';
 import {MONKEY_PATCH_KEY_NAME} from '../../src/render3/interfaces/context';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
-import {RElement, Renderer3, RendererFactory3, domRendererFactory3} from '../../src/render3/interfaces/renderer';
-import {StylingIndex} from '../../src/render3/interfaces/styling';
+import {domRendererFactory3, Renderer3, RendererFactory3} from '../../src/render3/interfaces/renderer';
 import {CONTEXT, HEADER_OFFSET} from '../../src/render3/interfaces/view';
 import {ɵɵsanitizeUrl} from '../../src/sanitization/sanitization';
-import {Sanitizer, SecurityContext} from '../../src/sanitization/security';
+import {Sanitizer} from '../../src/sanitization/sanitizer';
+import {SecurityContext} from '../../src/sanitization/security';
 
 import {NgIf} from './common_with_def';
 import {ComponentFixture, MockRendererFactory, renderToHtml} from './render_util';
 
 describe('render3 integration test', () => {
-
   describe('render', () => {
     describe('text bindings', () => {
       it('should support creation-time values in text nodes', () => {
         function Template(rf: RenderFlags, value: string) {
           if (rf & RenderFlags.Create) {
-            ɵɵtext(0);
-            ɵɵtextBinding(0, value);
+            ɵɵtext(0, value);
           }
         }
         expect(renderToHtml(Template, 'once', 1, 1)).toEqual('once');
         expect(renderToHtml(Template, 'twice', 1, 1)).toEqual('once');
         expect(ngDevMode).toHaveProperties({
-          firstTemplatePass: 0,
+          firstCreatePass: 0,
           tNode: 2,
           tView: 2,  // 1 for root view, 1 for template
           rendererSetText: 1,
@@ -43,182 +42,31 @@ describe('render3 integration test', () => {
       });
     });
   });
-
-  describe('tree', () => {
-    interface Tree {
-      beforeLabel?: string;
-      subTrees?: Tree[];
-      afterLabel?: string;
-    }
-
-    interface ParentCtx {
-      beforeTree: Tree;
-      projectedTree: Tree;
-      afterTree: Tree;
-    }
-
-    function showLabel(rf: RenderFlags, ctx: {label: string | undefined}) {
-      if (rf & RenderFlags.Create) {
-        ɵɵcontainer(0);
-      }
-      if (rf & RenderFlags.Update) {
-        ɵɵcontainerRefreshStart(0);
-        {
-          if (ctx.label != null) {
-            let rf1 = ɵɵembeddedViewStart(0, 1, 1);
-            if (rf1 & RenderFlags.Create) {
-              ɵɵtext(0);
-            }
-            if (rf1 & RenderFlags.Update) {
-              ɵɵtextBinding(0, ɵɵbind(ctx.label));
-            }
-            ɵɵembeddedViewEnd();
-          }
-        }
-        ɵɵcontainerRefreshEnd();
-      }
-    }
-
-    function showTree(rf: RenderFlags, ctx: {tree: Tree}) {
-      if (rf & RenderFlags.Create) {
-        ɵɵcontainer(0);
-        ɵɵcontainer(1);
-        ɵɵcontainer(2);
-      }
-      if (rf & RenderFlags.Update) {
-        ɵɵcontainerRefreshStart(0);
-        {
-          const rf0 = ɵɵembeddedViewStart(0, 1, 0);
-          { showLabel(rf0, {label: ctx.tree.beforeLabel}); }
-          ɵɵembeddedViewEnd();
-        }
-        ɵɵcontainerRefreshEnd();
-        ɵɵcontainerRefreshStart(1);
-        {
-          for (let subTree of ctx.tree.subTrees || []) {
-            const rf0 = ɵɵembeddedViewStart(0, 3, 0);
-            { showTree(rf0, {tree: subTree}); }
-            ɵɵembeddedViewEnd();
-          }
-        }
-        ɵɵcontainerRefreshEnd();
-        ɵɵcontainerRefreshStart(2);
-        {
-          const rf0 = ɵɵembeddedViewStart(0, 1, 0);
-          { showLabel(rf0, {label: ctx.tree.afterLabel}); }
-          ɵɵembeddedViewEnd();
-        }
-        ɵɵcontainerRefreshEnd();
-      }
-    }
-
-    class ChildComponent {
-      // TODO(issue/24571): remove '!'.
-      beforeTree !: Tree;
-      // TODO(issue/24571): remove '!'.
-      afterTree !: Tree;
-      static ngComponentDef = ɵɵdefineComponent({
-        selectors: [['child']],
-        type: ChildComponent,
-        consts: 3,
-        vars: 0,
-        template: function ChildComponentTemplate(
-            rf: RenderFlags, ctx: {beforeTree: Tree, afterTree: Tree}) {
-          if (rf & RenderFlags.Create) {
-            ɵɵprojectionDef();
-            ɵɵcontainer(0);
-            ɵɵprojection(1);
-            ɵɵcontainer(2);
-          }
-          if (rf & RenderFlags.Update) {
-            ɵɵcontainerRefreshStart(0);
-            {
-              const rf0 = ɵɵembeddedViewStart(0, 3, 0);
-              { showTree(rf0, {tree: ctx.beforeTree}); }
-              ɵɵembeddedViewEnd();
-            }
-            ɵɵcontainerRefreshEnd();
-            ɵɵcontainerRefreshStart(2);
-            {
-              const rf0 = ɵɵembeddedViewStart(0, 3, 0);
-              { showTree(rf0, {tree: ctx.afterTree}); }
-              ɵɵembeddedViewEnd();
-            }
-            ɵɵcontainerRefreshEnd();
-          }
-        },
-        factory: () => new ChildComponent,
-        inputs: {beforeTree: 'beforeTree', afterTree: 'afterTree'}
-      });
-    }
-
-    function parentTemplate(rf: RenderFlags, ctx: ParentCtx) {
-      if (rf & RenderFlags.Create) {
-        ɵɵelementStart(0, 'child');
-        { ɵɵcontainer(1); }
-        ɵɵelementEnd();
-      }
-      if (rf & RenderFlags.Update) {
-        ɵɵselect(0);
-        ɵɵproperty('beforeTree', ctx.beforeTree);
-        ɵɵproperty('afterTree', ctx.afterTree);
-        ɵɵcontainerRefreshStart(1);
-        {
-          const rf0 = ɵɵembeddedViewStart(0, 3, 0);
-          { showTree(rf0, {tree: ctx.projectedTree}); }
-          ɵɵembeddedViewEnd();
-        }
-        ɵɵcontainerRefreshEnd();
-      }
-    }
-
-    it('should work with a tree', () => {
-
-      const ctx: ParentCtx = {
-        beforeTree: {subTrees: [{beforeLabel: 'a'}]},
-        projectedTree: {beforeLabel: 'p'},
-        afterTree: {afterLabel: 'z'}
-      };
-      const defs = [ChildComponent];
-      expect(renderToHtml(parentTemplate, ctx, 2, 2, defs)).toEqual('<child>apz</child>');
-      ctx.projectedTree = {subTrees: [{}, {}, {subTrees: [{}, {}]}, {}]};
-      ctx.beforeTree.subTrees !.push({afterLabel: 'b'});
-      expect(renderToHtml(parentTemplate, ctx, 2, 2, defs)).toEqual('<child>abz</child>');
-      ctx.projectedTree.subTrees ![1].afterLabel = 'h';
-      expect(renderToHtml(parentTemplate, ctx, 2, 2, defs)).toEqual('<child>abhz</child>');
-      ctx.beforeTree.subTrees !.push({beforeLabel: 'c'});
-      expect(renderToHtml(parentTemplate, ctx, 2, 2, defs)).toEqual('<child>abchz</child>');
-
-      // To check the context easily:
-      // console.log(JSON.stringify(ctx));
-    });
-
-  });
-
 });
 
 describe('component styles', () => {
   it('should pass in the component styles directly into the underlying renderer', () => {
     class StyledComp {
-      static ngComponentDef = ɵɵdefineComponent({
+      static ɵfac = () => new StyledComp();
+      static ɵcmp = ɵɵdefineComponent({
         type: StyledComp,
         styles: ['div { color: red; }'],
-        consts: 1,
+        decls: 1,
         vars: 0,
         encapsulation: 100,
         selectors: [['foo']],
-        factory: () => new StyledComp(),
-        template: (rf: RenderFlags, ctx: StyledComp) => {
-          if (rf & RenderFlags.Create) {
-            ɵɵelement(0, 'div');
-          }
-        }
+        template:
+            (rf: RenderFlags, ctx: StyledComp) => {
+              if (rf & RenderFlags.Create) {
+                ɵɵelement(0, 'div');
+              }
+            }
       });
     }
     const rendererFactory = new ProxyRenderer3Factory();
     new ComponentFixture(StyledComp, {rendererFactory});
-    expect(rendererFactory.lastCapturedType !.styles).toEqual(['div { color: red; }']);
-    expect(rendererFactory.lastCapturedType !.encapsulation).toEqual(100);
+    expect(rendererFactory.lastCapturedType!.styles).toEqual(['div { color: red; }']);
+    expect(rendererFactory.lastCapturedType!.encapsulation).toEqual(100);
   });
 });
 
@@ -228,25 +76,26 @@ describe('component animations', () => {
     const animB = {name: 'b'};
 
     class AnimComp {
-      static ngComponentDef = ɵɵdefineComponent({
+      static ɵfac = () => new AnimComp();
+      static ɵcmp = ɵɵdefineComponent({
         type: AnimComp,
-        consts: 0,
+        decls: 0,
         vars: 0,
         data: {
-          animation: [
-            animA,
-            animB,
-          ],
+          animation:
+              [
+                animA,
+                animB,
+              ],
         },
         selectors: [['foo']],
-        factory: () => new AnimComp(),
         template: (rf: RenderFlags, ctx: AnimComp) => {}
       });
     }
     const rendererFactory = new ProxyRenderer3Factory();
     new ComponentFixture(AnimComp, {rendererFactory});
 
-    const capturedAnimations = rendererFactory.lastCapturedType !.data !['animation'];
+    const capturedAnimations = rendererFactory.lastCapturedType!.data!['animation'];
     expect(Array.isArray(capturedAnimations)).toBeTruthy();
     expect(capturedAnimations.length).toEqual(2);
     expect(capturedAnimations).toContain(animA);
@@ -255,41 +104,42 @@ describe('component animations', () => {
 
   it('should include animations in the renderType data array even if the array is empty', () => {
     class AnimComp {
-      static ngComponentDef = ɵɵdefineComponent({
+      static ɵfac = () => new AnimComp();
+      static ɵcmp = ɵɵdefineComponent({
         type: AnimComp,
-        consts: 0,
+        decls: 0,
         vars: 0,
         data: {
           animation: [],
         },
         selectors: [['foo']],
-        factory: () => new AnimComp(),
         template: (rf: RenderFlags, ctx: AnimComp) => {}
       });
     }
     const rendererFactory = new ProxyRenderer3Factory();
     new ComponentFixture(AnimComp, {rendererFactory});
-    const data = rendererFactory.lastCapturedType !.data;
+    const data = rendererFactory.lastCapturedType!.data;
     expect(data.animation).toEqual([]);
   });
 
   it('should allow [@trigger] bindings to be picked up by the underlying renderer', () => {
     class AnimComp {
-      static ngComponentDef = ɵɵdefineComponent({
+      static ɵfac = () => new AnimComp();
+      static ɵcmp = ɵɵdefineComponent({
         type: AnimComp,
-        consts: 1,
+        decls: 1,
         vars: 1,
         selectors: [['foo']],
-        factory: () => new AnimComp(),
-        template: (rf: RenderFlags, ctx: AnimComp) => {
-          if (rf & RenderFlags.Create) {
-            ɵɵelement(0, 'div', [AttributeMarker.Bindings, '@fooAnimation']);
-          }
-          if (rf & RenderFlags.Update) {
-            ɵɵselect(0);
-            ɵɵattribute('@fooAnimation', ctx.animationValue);
-          }
-        }
+        consts: [[AttributeMarker.Bindings, '@fooAnimation']],
+        template:
+            (rf: RenderFlags, ctx: AnimComp) => {
+              if (rf & RenderFlags.Create) {
+                ɵɵelement(0, 'div', 0);
+              }
+              if (rf & RenderFlags.Update) {
+                ɵɵattribute('@fooAnimation', ctx.animationValue);
+              }
+            }
       });
 
       animationValue = '123';
@@ -298,7 +148,7 @@ describe('component animations', () => {
     const rendererFactory = new MockRendererFactory(['setAttribute']);
     const fixture = new ComponentFixture(AnimComp, {rendererFactory});
 
-    const renderer = rendererFactory.lastRenderer !;
+    const renderer = rendererFactory.lastRenderer!;
     fixture.component.animationValue = '456';
     fixture.update();
 
@@ -312,24 +162,26 @@ describe('component animations', () => {
   it('should allow creation-level [@trigger] properties to be picked up by the underlying renderer',
      () => {
        class AnimComp {
-         static ngComponentDef = ɵɵdefineComponent({
+         static ɵfac = () => new AnimComp();
+         static ɵcmp = ɵɵdefineComponent({
            type: AnimComp,
-           consts: 1,
+           decls: 1,
            vars: 1,
            selectors: [['foo']],
-           factory: () => new AnimComp(),
-           template: (rf: RenderFlags, ctx: AnimComp) => {
-             if (rf & RenderFlags.Create) {
-               ɵɵelement(0, 'div', ['@fooAnimation', '']);
-             }
-           }
+           consts: [['@fooAnimation', '']],
+           template:
+               (rf: RenderFlags, ctx: AnimComp) => {
+                 if (rf & RenderFlags.Create) {
+                   ɵɵelement(0, 'div', 0);
+                 }
+               }
          });
        }
 
        const rendererFactory = new MockRendererFactory(['setProperty']);
        const fixture = new ComponentFixture(AnimComp, {rendererFactory});
 
-       const renderer = rendererFactory.lastRenderer !;
+       const renderer = rendererFactory.lastRenderer!;
        fixture.update();
 
        const spy = renderer.spies['setProperty'];
@@ -345,9 +197,9 @@ describe('component animations', () => {
 
   //   it('should allow host binding animations to be picked up and rendered', () => {
   //     class ChildCompWithAnim {
-  //       static ngDirectiveDef = ɵɵdefineDirective({
+  //       static ɵfac = () => new ChildCompWithAnim();
+  //       static ɵdir = ɵɵdefineDirective({
   //         type: ChildCompWithAnim,
-  //         factory: () => new ChildCompWithAnim(),
   //         selectors: [['child-comp-with-anim']],
   //         hostBindings: function(rf: RenderFlags, ctx: any, elementIndex: number): void {
   //           if (rf & RenderFlags.Update) {
@@ -360,12 +212,12 @@ describe('component animations', () => {
   //     }
 
   //     class ParentComp {
-  //       static ngComponentDef = ɵɵdefineComponent({
+  //       static ɵfac = () => new ParentComp();
+  //       static ɵcmp = ɵɵdefineComponent({
   //         type: ParentComp,
-  //         consts: 1,
+  //         decls: 1,
   //         vars: 1,
   //         selectors: [['foo']],
-  //         factory: () => new ParentComp(),
   //         template: (rf: RenderFlags, ctx: ParentComp) => {
   //           if (rf & RenderFlags.Create) {
   //             ɵɵelement(0, 'child-comp-with-anim');
@@ -390,22 +242,23 @@ describe('component animations', () => {
 describe('element discovery', () => {
   it('should only monkey-patch immediate child nodes in a component', () => {
     class StructuredComp {
-      static ngComponentDef = ɵɵdefineComponent({
+      static ɵfac = () => new StructuredComp();
+      static ɵcmp = ɵɵdefineComponent({
         type: StructuredComp,
         selectors: [['structured-comp']],
-        factory: () => new StructuredComp(),
-        consts: 2,
+        decls: 2,
         vars: 0,
-        template: (rf: RenderFlags, ctx: StructuredComp) => {
-          if (rf & RenderFlags.Create) {
-            ɵɵelementStart(0, 'div');
-            ɵɵelementStart(1, 'p');
-            ɵɵelementEnd();
-            ɵɵelementEnd();
-          }
-          if (rf & RenderFlags.Update) {
-          }
-        }
+        template:
+            (rf: RenderFlags, ctx: StructuredComp) => {
+              if (rf & RenderFlags.Create) {
+                ɵɵelementStart(0, 'div');
+                ɵɵelementStart(1, 'p');
+                ɵɵelementEnd();
+                ɵɵelementEnd();
+              }
+              if (rf & RenderFlags.Update) {
+              }
+            }
       });
     }
 
@@ -422,38 +275,40 @@ describe('element discovery', () => {
 
   it('should only monkey-patch immediate child nodes in a sub component', () => {
     class ChildComp {
-      static ngComponentDef = ɵɵdefineComponent({
+      static ɵfac = () => new ChildComp();
+      static ɵcmp = ɵɵdefineComponent({
         type: ChildComp,
         selectors: [['child-comp']],
-        factory: () => new ChildComp(),
-        consts: 3,
+        decls: 3,
         vars: 0,
-        template: (rf: RenderFlags, ctx: ChildComp) => {
-          if (rf & RenderFlags.Create) {
-            ɵɵelement(0, 'div');
-            ɵɵelement(1, 'div');
-            ɵɵelement(2, 'div');
-          }
-        }
+        template:
+            (rf: RenderFlags, ctx: ChildComp) => {
+              if (rf & RenderFlags.Create) {
+                ɵɵelement(0, 'div');
+                ɵɵelement(1, 'div');
+                ɵɵelement(2, 'div');
+              }
+            }
       });
     }
 
     class ParentComp {
-      static ngComponentDef = ɵɵdefineComponent({
+      static ɵfac = () => new ParentComp();
+      static ɵcmp = ɵɵdefineComponent({
         type: ParentComp,
         selectors: [['parent-comp']],
         directives: [ChildComp],
-        factory: () => new ParentComp(),
-        consts: 2,
+        decls: 2,
         vars: 0,
-        template: (rf: RenderFlags, ctx: ParentComp) => {
-          if (rf & RenderFlags.Create) {
-            ɵɵelementStart(0, 'section');
-            ɵɵelementStart(1, 'child-comp');
-            ɵɵelementEnd();
-            ɵɵelementEnd();
-          }
-        }
+        template:
+            (rf: RenderFlags, ctx: ParentComp) => {
+              if (rf & RenderFlags.Create) {
+                ɵɵelementStart(0, 'section');
+                ɵɵelementStart(1, 'child-comp');
+                ɵɵelementEnd();
+                ɵɵelementEnd();
+              }
+            }
       });
     }
 
@@ -472,31 +327,33 @@ describe('element discovery', () => {
 
   it('should only monkey-patch immediate child nodes in an embedded template container', () => {
     class StructuredComp {
-      static ngComponentDef = ɵɵdefineComponent({
+      static ɵfac = () => new StructuredComp();
+      static ɵcmp = ɵɵdefineComponent({
         type: StructuredComp,
         selectors: [['structured-comp']],
         directives: [NgIf],
-        factory: () => new StructuredComp(),
-        consts: 2,
+        decls: 2,
         vars: 1,
-        template: (rf: RenderFlags, ctx: StructuredComp) => {
-          if (rf & RenderFlags.Create) {
-            ɵɵelementStart(0, 'section');
-            ɵɵtemplate(1, (rf, ctx) => {
+        consts: [['ngIf', '']],
+        template:
+            (rf: RenderFlags, ctx: StructuredComp) => {
               if (rf & RenderFlags.Create) {
-                ɵɵelementStart(0, 'div');
-                ɵɵelement(1, 'p');
+                ɵɵelementStart(0, 'section');
+                ɵɵtemplate(1, (rf, ctx) => {
+                  if (rf & RenderFlags.Create) {
+                    ɵɵelementStart(0, 'div');
+                    ɵɵelement(1, 'p');
+                    ɵɵelementEnd();
+                    ɵɵelement(2, 'div');
+                  }
+                }, 3, 0, 'ng-template', 0);
                 ɵɵelementEnd();
-                ɵɵelement(2, 'div');
               }
-            }, 3, 0, 'ng-template', ['ngIf', '']);
-            ɵɵelementEnd();
-          }
-          if (rf & RenderFlags.Update) {
-            ɵɵselect(1);
-            ɵɵproperty('ngIf', true);
-          }
-        }
+              if (rf & RenderFlags.Update) {
+                ɵɵadvance(1);
+                ɵɵproperty('ngIf', true);
+              }
+            }
       });
     }
 
@@ -521,35 +378,36 @@ describe('element discovery', () => {
 
   it('should return a context object from a given dom node', () => {
     class StructuredComp {
-      static ngComponentDef = ɵɵdefineComponent({
+      static ɵfac = () => new StructuredComp();
+      static ɵcmp = ɵɵdefineComponent({
         type: StructuredComp,
         selectors: [['structured-comp']],
         directives: [NgIf],
-        factory: () => new StructuredComp(),
-        consts: 2,
+        decls: 2,
         vars: 0,
-        template: (rf: RenderFlags, ctx: StructuredComp) => {
-          if (rf & RenderFlags.Create) {
-            ɵɵelement(0, 'section');
-            ɵɵelement(1, 'div');
-          }
-        }
+        template:
+            (rf: RenderFlags, ctx: StructuredComp) => {
+              if (rf & RenderFlags.Create) {
+                ɵɵelement(0, 'section');
+                ɵɵelement(1, 'div');
+              }
+            }
       });
     }
 
     const fixture = new ComponentFixture(StructuredComp);
     fixture.update();
 
-    const section = fixture.hostElement.querySelector('section') !;
-    const sectionContext = getLContext(section) !;
-    const sectionLView = sectionContext.lView !;
+    const section = fixture.hostElement.querySelector('section')!;
+    const sectionContext = getLContext(section)!;
+    const sectionLView = sectionContext.lView!;
     expect(sectionContext.nodeIndex).toEqual(HEADER_OFFSET);
     expect(sectionLView.length).toBeGreaterThan(HEADER_OFFSET);
     expect(sectionContext.native).toBe(section);
 
-    const div = fixture.hostElement.querySelector('div') !;
-    const divContext = getLContext(div) !;
-    const divLView = divContext.lView !;
+    const div = fixture.hostElement.querySelector('div')!;
+    const divContext = getLContext(div)!;
+    const divLView = divContext.lView!;
     expect(divContext.nodeIndex).toEqual(HEADER_OFFSET + 1);
     expect(divLView.length).toBeGreaterThan(HEADER_OFFSET);
     expect(divContext.native).toBe(div);
@@ -559,28 +417,29 @@ describe('element discovery', () => {
 
   it('should cache the element context on a element was pre-emptively monkey-patched', () => {
     class StructuredComp {
-      static ngComponentDef = ɵɵdefineComponent({
+      static ɵfac = () => new StructuredComp();
+      static ɵcmp = ɵɵdefineComponent({
         type: StructuredComp,
         selectors: [['structured-comp']],
-        factory: () => new StructuredComp(),
-        consts: 1,
+        decls: 1,
         vars: 0,
-        template: (rf: RenderFlags, ctx: StructuredComp) => {
-          if (rf & RenderFlags.Create) {
-            ɵɵelement(0, 'section');
-          }
-        }
+        template:
+            (rf: RenderFlags, ctx: StructuredComp) => {
+              if (rf & RenderFlags.Create) {
+                ɵɵelement(0, 'section');
+              }
+            }
       });
     }
 
     const fixture = new ComponentFixture(StructuredComp);
     fixture.update();
 
-    const section = fixture.hostElement.querySelector('section') !as any;
+    const section = fixture.hostElement.querySelector('section')! as any;
     const result1 = section[MONKEY_PATCH_KEY_NAME];
     expect(Array.isArray(result1)).toBeTruthy();
 
-    const context = getLContext(section) !;
+    const context = getLContext(section)!;
     const result2 = section[MONKEY_PATCH_KEY_NAME];
     expect(Array.isArray(result2)).toBeFalsy();
 
@@ -591,32 +450,33 @@ describe('element discovery', () => {
   it('should cache the element context on an intermediate element that isn\'t pre-emptively monkey-patched',
      () => {
        class StructuredComp {
-         static ngComponentDef = ɵɵdefineComponent({
+         static ɵfac = () => new StructuredComp();
+         static ɵcmp = ɵɵdefineComponent({
            type: StructuredComp,
            selectors: [['structured-comp']],
-           factory: () => new StructuredComp(),
-           consts: 2,
+           decls: 2,
            vars: 0,
-           template: (rf: RenderFlags, ctx: StructuredComp) => {
-             if (rf & RenderFlags.Create) {
-               ɵɵelementStart(0, 'section');
-               ɵɵelement(1, 'p');
-               ɵɵelementEnd();
-             }
-           }
+           template:
+               (rf: RenderFlags, ctx: StructuredComp) => {
+                 if (rf & RenderFlags.Create) {
+                   ɵɵelementStart(0, 'section');
+                   ɵɵelement(1, 'p');
+                   ɵɵelementEnd();
+                 }
+               }
          });
        }
 
        const fixture = new ComponentFixture(StructuredComp);
        fixture.update();
 
-       const section = fixture.hostElement.querySelector('section') !as any;
+       const section = fixture.hostElement.querySelector('section')! as any;
        expect(section[MONKEY_PATCH_KEY_NAME]).toBeTruthy();
 
-       const p = fixture.hostElement.querySelector('p') !as any;
+       const p = fixture.hostElement.querySelector('p')! as any;
        expect(p[MONKEY_PATCH_KEY_NAME]).toBeFalsy();
 
-       const pContext = getLContext(p) !;
+       const pContext = getLContext(p)!;
        expect(pContext.native).toBe(p);
        expect(p[MONKEY_PATCH_KEY_NAME]).toBe(pContext);
      });
@@ -624,37 +484,32 @@ describe('element discovery', () => {
   it('should be able to pull in element context data even if the element is decorated using styling',
      () => {
        class StructuredComp {
-         static ngComponentDef = ɵɵdefineComponent({
+         static ɵfac = () => new StructuredComp();
+         static ɵcmp = ɵɵdefineComponent({
            type: StructuredComp,
            selectors: [['structured-comp']],
-           factory: () => new StructuredComp(),
-           consts: 1,
+           decls: 1,
            vars: 0,
-           template: (rf: RenderFlags, ctx: StructuredComp) => {
-             if (rf & RenderFlags.Create) {
-               ɵɵelementStart(0, 'section');
-               ɵɵstyling(['class-foo']);
-               ɵɵelementEnd();
-             }
-             if (rf & RenderFlags.Update) {
-               ɵɵstylingApply();
-             }
-           }
+           template:
+               (rf: RenderFlags, ctx: StructuredComp) => {
+                 if (rf & RenderFlags.Create) {
+                   ɵɵelement(0, 'section');
+                 }
+               }
          });
        }
 
        const fixture = new ComponentFixture(StructuredComp);
        fixture.update();
 
-       const section = fixture.hostElement.querySelector('section') !as any;
+       const section = fixture.hostElement.querySelector('section')! as any;
        const result1 = section[MONKEY_PATCH_KEY_NAME];
        expect(Array.isArray(result1)).toBeTruthy();
 
        const elementResult = result1[HEADER_OFFSET];  // first element
-       expect(Array.isArray(elementResult)).toBeTruthy();
-       expect(elementResult[StylingIndex.ElementPosition]).toBe(section);
+       expect(elementResult).toBe(section);
 
-       const context = getLContext(section) !;
+       const context = getLContext(section)!;
        const result2 = section[MONKEY_PATCH_KEY_NAME];
        expect(Array.isArray(result2)).toBeFalsy();
 
@@ -678,48 +533,50 @@ describe('element discovery', () => {
          </section>
        */
        class ProjectorComp {
-         static ngComponentDef = ɵɵdefineComponent({
+         static ɵfac = () => new ProjectorComp();
+         static ɵcmp = ɵɵdefineComponent({
            type: ProjectorComp,
            selectors: [['projector-comp']],
-           factory: () => new ProjectorComp(),
-           consts: 4,
+           decls: 4,
            vars: 0,
-           template: (rf: RenderFlags, ctx: ProjectorComp) => {
-             if (rf & RenderFlags.Create) {
-               ɵɵprojectionDef();
-               ɵɵtext(0, 'welcome');
-               ɵɵelementStart(1, 'header');
-               ɵɵelementStart(2, 'h1');
-               ɵɵprojection(3);
-               ɵɵelementEnd();
-               ɵɵelementEnd();
-             }
-             if (rf & RenderFlags.Update) {
-             }
-           }
+           template:
+               (rf: RenderFlags, ctx: ProjectorComp) => {
+                 if (rf & RenderFlags.Create) {
+                   ɵɵprojectionDef();
+                   ɵɵtext(0, 'welcome');
+                   ɵɵelementStart(1, 'header');
+                   ɵɵelementStart(2, 'h1');
+                   ɵɵprojection(3);
+                   ɵɵelementEnd();
+                   ɵɵelementEnd();
+                 }
+                 if (rf & RenderFlags.Update) {
+                 }
+               }
          });
        }
 
        class ParentComp {
-         static ngComponentDef = ɵɵdefineComponent({
+         static ɵfac = () => new ParentComp();
+         static ɵcmp = ɵɵdefineComponent({
            type: ParentComp,
            selectors: [['parent-comp']],
            directives: [ProjectorComp],
-           factory: () => new ParentComp(),
-           consts: 5,
+           decls: 5,
            vars: 0,
-           template: (rf: RenderFlags, ctx: ParentComp) => {
-             if (rf & RenderFlags.Create) {
-               ɵɵelementStart(0, 'section');
-               ɵɵelementStart(1, 'projector-comp');
-               ɵɵelementStart(2, 'p');
-               ɵɵtext(3, 'this content is projected');
-               ɵɵelementEnd();
-               ɵɵtext(4, 'this content is projected also');
-               ɵɵelementEnd();
-               ɵɵelementEnd();
-             }
-           }
+           template:
+               (rf: RenderFlags, ctx: ParentComp) => {
+                 if (rf & RenderFlags.Create) {
+                   ɵɵelementStart(0, 'section');
+                   ɵɵelementStart(1, 'projector-comp');
+                   ɵɵelementStart(2, 'p');
+                   ɵɵtext(3, 'this content is projected');
+                   ɵɵelementEnd();
+                   ɵɵtext(4, 'this content is projected also');
+                   ɵɵelementEnd();
+                   ɵɵelementEnd();
+                 }
+               }
          });
        }
 
@@ -728,11 +585,11 @@ describe('element discovery', () => {
 
        const host = fixture.hostElement;
        const textNode = host.firstChild as any;
-       const section = host.querySelector('section') !as any;
-       const projectorComp = host.querySelector('projector-comp') !as any;
-       const header = host.querySelector('header') !as any;
-       const h1 = host.querySelector('h1') !as any;
-       const p = host.querySelector('p') !as any;
+       const section = host.querySelector('section')! as any;
+       const projectorComp = host.querySelector('projector-comp')! as any;
+       const header = host.querySelector('header')! as any;
+       const h1 = host.querySelector('h1')! as any;
+       const p = host.querySelector('p')! as any;
        const pText = p.firstChild as any;
        const projectedTextNode = p.nextSibling;
 
@@ -748,9 +605,9 @@ describe('element discovery', () => {
        expect(pText[MONKEY_PATCH_KEY_NAME]).toBeFalsy();
        expect(projectedTextNode[MONKEY_PATCH_KEY_NAME]).toBeTruthy();
 
-       const parentContext = getLContext(section) !;
-       const shadowContext = getLContext(header) !;
-       const projectedContext = getLContext(p) !;
+       const parentContext = getLContext(section)!;
+       const shadowContext = getLContext(header)!;
+       const projectedContext = getLContext(p)!;
 
        const parentComponentData = parentContext.lView;
        const shadowComponentData = shadowContext.lView;
@@ -775,24 +632,25 @@ describe('element discovery', () => {
   it('should return `null` when an element context is retrieved that is a DOM node that was not created by Angular',
      () => {
        class StructuredComp {
-         static ngComponentDef = ɵɵdefineComponent({
+         static ɵfac = () => new StructuredComp();
+         static ɵcmp = ɵɵdefineComponent({
            type: StructuredComp,
            selectors: [['structured-comp']],
-           factory: () => new StructuredComp(),
-           consts: 1,
+           decls: 1,
            vars: 0,
-           template: (rf: RenderFlags, ctx: StructuredComp) => {
-             if (rf & RenderFlags.Create) {
-               ɵɵelement(0, 'section');
-             }
-           }
+           template:
+               (rf: RenderFlags, ctx: StructuredComp) => {
+                 if (rf & RenderFlags.Create) {
+                   ɵɵelement(0, 'section');
+                 }
+               }
          });
        }
 
        const fixture = new ComponentFixture(StructuredComp);
        fixture.update();
 
-       const section = fixture.hostElement.querySelector('section') !as any;
+       const section = fixture.hostElement.querySelector('section')! as any;
        const manuallyCreatedElement = document.createElement('div');
        section.appendChild(manuallyCreatedElement);
 
@@ -802,11 +660,11 @@ describe('element discovery', () => {
 
   it('should by default monkey-patch the bootstrap component with context details', () => {
     class StructuredComp {
-      static ngComponentDef = ɵɵdefineComponent({
+      static ɵfac = () => new StructuredComp();
+      static ɵcmp = ɵɵdefineComponent({
         type: StructuredComp,
         selectors: [['structured-comp']],
-        factory: () => new StructuredComp(),
-        consts: 0,
+        decls: 0,
         vars: 0,
         template: (rf: RenderFlags, ctx: StructuredComp) => {}
       });
@@ -824,11 +682,11 @@ describe('element discovery', () => {
     const hostLView = (hostElm as any)[MONKEY_PATCH_KEY_NAME];
     expect(hostLView).toBe(componentLView);
 
-    const context1 = getLContext(hostElm) !;
+    const context1 = getLContext(hostElm)!;
     expect(context1.lView).toBe(hostLView);
     expect(context1.native).toEqual(hostElm);
 
-    const context2 = getLContext(component) !;
+    const context2 = getLContext(component)!;
     expect(context2).toBe(context1);
     expect(context2.lView).toBe(hostLView);
     expect(context2.native).toEqual(hostElm);
@@ -841,43 +699,36 @@ describe('element discovery', () => {
        let myDir3Instance: MyDir2|null = null;
 
        class MyDir1 {
-         static ngDirectiveDef = ɵɵdefineDirective({
-           type: MyDir1,
-           selectors: [['', 'my-dir-1', '']],
-           factory: () => myDir1Instance = new MyDir1()
-         });
+         static ɵfac = () => myDir1Instance = new MyDir1();
+         static ɵdir = ɵɵdefineDirective({type: MyDir1, selectors: [['', 'my-dir-1', '']]});
        }
 
        class MyDir2 {
-         static ngDirectiveDef = ɵɵdefineDirective({
-           type: MyDir2,
-           selectors: [['', 'my-dir-2', '']],
-           factory: () => myDir2Instance = new MyDir2()
-         });
+         static ɵfac = () => myDir2Instance = new MyDir2();
+         static ɵdir = ɵɵdefineDirective({type: MyDir2, selectors: [['', 'my-dir-2', '']]});
        }
 
        class MyDir3 {
-         static ngDirectiveDef = ɵɵdefineDirective({
-           type: MyDir3,
-           selectors: [['', 'my-dir-3', '']],
-           factory: () => myDir3Instance = new MyDir2()
-         });
+         static ɵfac = () => myDir3Instance = new MyDir2();
+         static ɵdir = ɵɵdefineDirective({type: MyDir3, selectors: [['', 'my-dir-3', '']]});
        }
 
        class StructuredComp {
-         static ngComponentDef = ɵɵdefineComponent({
+         static ɵfac = () => new StructuredComp();
+         static ɵcmp = ɵɵdefineComponent({
            type: StructuredComp,
            selectors: [['structured-comp']],
            directives: [MyDir1, MyDir2, MyDir3],
-           factory: () => new StructuredComp(),
-           consts: 2,
+           decls: 2,
            vars: 0,
-           template: (rf: RenderFlags, ctx: StructuredComp) => {
-             if (rf & RenderFlags.Create) {
-               ɵɵelement(0, 'div', ['my-dir-1', '', 'my-dir-2', '']);
-               ɵɵelement(1, 'div', ['my-dir-3']);
-             }
-           }
+           consts: [['my-dir-1', '', 'my-dir-2', ''], ['my-dir-3']],
+           template:
+               (rf: RenderFlags, ctx: StructuredComp) => {
+                 if (rf & RenderFlags.Create) {
+                   ɵɵelement(0, 'div', 0);
+                   ɵɵelement(1, 'div', 1);
+                 }
+               }
          });
        }
 
@@ -885,9 +736,9 @@ describe('element discovery', () => {
        fixture.update();
 
        const hostElm = fixture.hostElement;
-       const div1 = hostElm.querySelector('div:first-child') !as any;
-       const div2 = hostElm.querySelector('div:last-child') !as any;
-       const context = getLContext(hostElm) !;
+       const div1 = hostElm.querySelector('div:first-child')! as any;
+       const div2 = hostElm.querySelector('div:last-child')! as any;
+       const context = getLContext(hostElm)!;
        const componentView = context.lView[context.nodeIndex];
 
        expect(componentView).toContain(myDir1Instance);
@@ -898,9 +749,9 @@ describe('element discovery', () => {
        expect(Array.isArray((myDir2Instance as any)[MONKEY_PATCH_KEY_NAME])).toBeTruthy();
        expect(Array.isArray((myDir3Instance as any)[MONKEY_PATCH_KEY_NAME])).toBeTruthy();
 
-       const d1Context = getLContext(myDir1Instance) !;
-       const d2Context = getLContext(myDir2Instance) !;
-       const d3Context = getLContext(myDir3Instance) !;
+       const d1Context = getLContext(myDir1Instance)!;
+       const d2Context = getLContext(myDir2Instance)!;
+       const d3Context = getLContext(myDir3Instance)!;
 
        expect(d1Context.lView).toEqual(componentView);
        expect(d2Context.lView).toEqual(componentView);
@@ -930,56 +781,53 @@ describe('element discovery', () => {
        let childComponentInstance: ChildComp|null = null;
 
        class MyDir1 {
-         static ngDirectiveDef = ɵɵdefineDirective({
-           type: MyDir1,
-           selectors: [['', 'my-dir-1', '']],
-           factory: () => myDir1Instance = new MyDir1()
-         });
+         static ɵfac = () => myDir1Instance = new MyDir1();
+         static ɵdir = ɵɵdefineDirective({type: MyDir1, selectors: [['', 'my-dir-1', '']]});
        }
 
        class MyDir2 {
-         static ngDirectiveDef = ɵɵdefineDirective({
-           type: MyDir2,
-           selectors: [['', 'my-dir-2', '']],
-           factory: () => myDir2Instance = new MyDir2()
-         });
+         static ɵfac = () => myDir2Instance = new MyDir2();
+         static ɵdir = ɵɵdefineDirective({type: MyDir2, selectors: [['', 'my-dir-2', '']]});
        }
 
        class ChildComp {
-         static ngComponentDef = ɵɵdefineComponent({
+         static ɵfac = () => childComponentInstance = new ChildComp();
+         static ɵcmp = ɵɵdefineComponent({
            type: ChildComp,
            selectors: [['child-comp']],
-           factory: () => childComponentInstance = new ChildComp(),
-           consts: 1,
+           decls: 1,
            vars: 0,
-           template: (rf: RenderFlags, ctx: ChildComp) => {
-             if (rf & RenderFlags.Create) {
-               ɵɵelement(0, 'div');
-             }
-           }
+           template:
+               (rf: RenderFlags, ctx: ChildComp) => {
+                 if (rf & RenderFlags.Create) {
+                   ɵɵelement(0, 'div');
+                 }
+               }
          });
        }
 
        class ParentComp {
-         static ngComponentDef = ɵɵdefineComponent({
+         static ɵfac = () => new ParentComp();
+         static ɵcmp = ɵɵdefineComponent({
            type: ParentComp,
            selectors: [['parent-comp']],
            directives: [ChildComp, MyDir1, MyDir2],
-           factory: () => new ParentComp(),
-           consts: 1,
+           decls: 1,
            vars: 0,
-           template: (rf: RenderFlags, ctx: ParentComp) => {
-             if (rf & RenderFlags.Create) {
-               ɵɵelement(0, 'child-comp', ['my-dir-1', '', 'my-dir-2', '']);
-             }
-           }
+           consts: [['my-dir-1', '', 'my-dir-2', '']],
+           template:
+               (rf: RenderFlags, ctx: ParentComp) => {
+                 if (rf & RenderFlags.Create) {
+                   ɵɵelement(0, 'child-comp', 0);
+                 }
+               }
          });
        }
 
        const fixture = new ComponentFixture(ParentComp);
        fixture.update();
 
-       const childCompHostElm = fixture.hostElement.querySelector('child-comp') !as any;
+       const childCompHostElm = fixture.hostElement.querySelector('child-comp')! as any;
 
        const lView = childCompHostElm[MONKEY_PATCH_KEY_NAME];
        expect(Array.isArray(lView)).toBeTruthy();
@@ -987,7 +835,7 @@ describe('element discovery', () => {
        expect((myDir2Instance as any)[MONKEY_PATCH_KEY_NAME]).toBe(lView);
        expect((childComponentInstance as any)[MONKEY_PATCH_KEY_NAME]).toBe(lView);
 
-       const childNodeContext = getLContext(childCompHostElm) !;
+       const childNodeContext = getLContext(childCompHostElm)!;
        expect(childNodeContext.component).toBeFalsy();
        expect(childNodeContext.directives).toBeFalsy();
        assertMonkeyPatchValueIsLView(myDir1Instance);
@@ -996,21 +844,21 @@ describe('element discovery', () => {
 
        expect(getLContext(myDir1Instance)).toBe(childNodeContext);
        expect(childNodeContext.component).toBeFalsy();
-       expect(childNodeContext.directives !.length).toEqual(2);
+       expect(childNodeContext.directives!.length).toEqual(2);
        assertMonkeyPatchValueIsLView(myDir1Instance, false);
        assertMonkeyPatchValueIsLView(myDir2Instance, false);
        assertMonkeyPatchValueIsLView(childComponentInstance);
 
        expect(getLContext(myDir2Instance)).toBe(childNodeContext);
        expect(childNodeContext.component).toBeFalsy();
-       expect(childNodeContext.directives !.length).toEqual(2);
+       expect(childNodeContext.directives!.length).toEqual(2);
        assertMonkeyPatchValueIsLView(myDir1Instance, false);
        assertMonkeyPatchValueIsLView(myDir2Instance, false);
        assertMonkeyPatchValueIsLView(childComponentInstance);
 
        expect(getLContext(childComponentInstance)).toBe(childNodeContext);
        expect(childNodeContext.component).toBeTruthy();
-       expect(childNodeContext.directives !.length).toEqual(2);
+       expect(childNodeContext.directives!.length).toEqual(2);
        assertMonkeyPatchValueIsLView(myDir1Instance, false);
        assertMonkeyPatchValueIsLView(myDir2Instance, false);
        assertMonkeyPatchValueIsLView(childComponentInstance, false);
@@ -1023,38 +871,40 @@ describe('element discovery', () => {
   it('should monkey-patch sub components with the view data and then replace them with the context result once a lookup occurs',
      () => {
        class ChildComp {
-         static ngComponentDef = ɵɵdefineComponent({
+         static ɵfac = () => new ChildComp();
+         static ɵcmp = ɵɵdefineComponent({
            type: ChildComp,
            selectors: [['child-comp']],
-           factory: () => new ChildComp(),
-           consts: 3,
+           decls: 3,
            vars: 0,
-           template: (rf: RenderFlags, ctx: ChildComp) => {
-             if (rf & RenderFlags.Create) {
-               ɵɵelement(0, 'div');
-               ɵɵelement(1, 'div');
-               ɵɵelement(2, 'div');
-             }
-           }
+           template:
+               (rf: RenderFlags, ctx: ChildComp) => {
+                 if (rf & RenderFlags.Create) {
+                   ɵɵelement(0, 'div');
+                   ɵɵelement(1, 'div');
+                   ɵɵelement(2, 'div');
+                 }
+               }
          });
        }
 
        class ParentComp {
-         static ngComponentDef = ɵɵdefineComponent({
+         static ɵfac = () => new ParentComp();
+         static ɵcmp = ɵɵdefineComponent({
            type: ParentComp,
            selectors: [['parent-comp']],
            directives: [ChildComp],
-           factory: () => new ParentComp(),
-           consts: 2,
+           decls: 2,
            vars: 0,
-           template: (rf: RenderFlags, ctx: ParentComp) => {
-             if (rf & RenderFlags.Create) {
-               ɵɵelementStart(0, 'section');
-               ɵɵelementStart(1, 'child-comp');
-               ɵɵelementEnd();
-               ɵɵelementEnd();
-             }
-           }
+           template:
+               (rf: RenderFlags, ctx: ParentComp) => {
+                 if (rf & RenderFlags.Create) {
+                   ɵɵelementStart(0, 'section');
+                   ɵɵelementStart(1, 'child-comp');
+                   ɵɵelementEnd();
+                   ɵɵelementEnd();
+                 }
+               }
          });
        }
 
@@ -1065,7 +915,7 @@ describe('element discovery', () => {
        const child = host.querySelector('child-comp') as any;
        expect(child[MONKEY_PATCH_KEY_NAME]).toBeTruthy();
 
-       const context = getLContext(child) !;
+       const context = getLContext(child)!;
        expect(child[MONKEY_PATCH_KEY_NAME]).toBeTruthy();
 
        const componentData = context.lView[context.nodeIndex];
@@ -1073,7 +923,7 @@ describe('element discovery', () => {
        expect(component instanceof ChildComp).toBeTruthy();
        expect(component[MONKEY_PATCH_KEY_NAME]).toBe(context.lView);
 
-       const componentContext = getLContext(component) !;
+       const componentContext = getLContext(component)!;
        expect(component[MONKEY_PATCH_KEY_NAME]).toBe(componentContext);
        expect(componentContext.nodeIndex).toEqual(context.nodeIndex);
        expect(componentContext.native).toEqual(context.native);
@@ -1084,35 +934,39 @@ describe('element discovery', () => {
 describe('sanitization', () => {
   it('should sanitize data using the provided sanitization interface', () => {
     class SanitizationComp {
-      static ngComponentDef = ɵɵdefineComponent({
+      static ɵfac = () => new SanitizationComp();
+      static ɵcmp = ɵɵdefineComponent({
         type: SanitizationComp,
         selectors: [['sanitize-this']],
-        factory: () => new SanitizationComp(),
-        consts: 1,
+        decls: 1,
         vars: 1,
-        template: (rf: RenderFlags, ctx: SanitizationComp) => {
-          if (rf & RenderFlags.Create) {
-            ɵɵelement(0, 'a');
-          }
-          if (rf & RenderFlags.Update) {
-            ɵɵselect(0);
-            ɵɵproperty('href', ctx.href, ɵɵsanitizeUrl);
-          }
-        }
+        template:
+            (rf: RenderFlags, ctx: SanitizationComp) => {
+              if (rf & RenderFlags.Create) {
+                ɵɵelement(0, 'a');
+              }
+              if (rf & RenderFlags.Update) {
+                ɵɵproperty('href', ctx.href, ɵɵsanitizeUrl);
+              }
+            }
       });
 
       private href = '';
 
-      updateLink(href: any) { this.href = href; }
+      updateLink(href: any) {
+        this.href = href;
+      }
     }
 
-    const sanitizer = new LocalSanitizer((value) => { return 'http://bar'; });
+    const sanitizer = new LocalSanitizer((value) => {
+      return 'http://bar';
+    });
 
     const fixture = new ComponentFixture(SanitizationComp, {sanitizer});
     fixture.component.updateLink('http://foo');
     fixture.update();
 
-    const anchor = fixture.hostElement.querySelector('a') !;
+    const anchor = fixture.hostElement.querySelector('a')!;
     expect(anchor.getAttribute('href')).toEqual('http://bar');
 
     fixture.component.updateLink(sanitizer.bypassSecurityTrustUrl('http://foo'));
@@ -1127,34 +981,34 @@ describe('sanitization', () => {
       // @HostBinding()
       cite: any = 'http://cite-dir-value';
 
-      static ngDirectiveDef = ɵɵdefineDirective({
+      static ɵfac = () => hostBindingDir = new UnsafeUrlHostBindingDir();
+      static ɵdir = ɵɵdefineDirective({
         type: UnsafeUrlHostBindingDir,
         selectors: [['', 'unsafeUrlHostBindingDir', '']],
-        factory: () => hostBindingDir = new UnsafeUrlHostBindingDir(),
-        hostBindings: (rf: RenderFlags, ctx: any, elementIndex: number) => {
-          if (rf & RenderFlags.Create) {
-            ɵɵallocHostVars(1);
-          }
-          if (rf & RenderFlags.Update) {
-            ɵɵselect(elementIndex);
-            ɵɵproperty('cite', ctx.cite, ɵɵsanitizeUrl, true);
-          }
-        }
+        hostVars: 1,
+        hostBindings:
+            (rf: RenderFlags, ctx: any) => {
+              if (rf & RenderFlags.Update) {
+                ɵɵhostProperty('cite', ctx.cite, ɵɵsanitizeUrl);
+              }
+            }
       });
     }
 
     class SimpleComp {
-      static ngComponentDef = ɵɵdefineComponent({
+      static ɵfac = () => new SimpleComp();
+      static ɵcmp = ɵɵdefineComponent({
         type: SimpleComp,
         selectors: [['sanitize-this']],
-        factory: () => new SimpleComp(),
-        consts: 1,
+        decls: 1,
         vars: 0,
-        template: (rf: RenderFlags, ctx: SimpleComp) => {
-          if (rf & RenderFlags.Create) {
-            ɵɵelement(0, 'blockquote', ['unsafeUrlHostBindingDir', '']);
-          }
-        },
+        consts: [['unsafeUrlHostBindingDir', '']],
+        template:
+            (rf: RenderFlags, ctx: SimpleComp) => {
+              if (rf & RenderFlags.Create) {
+                ɵɵelement(0, 'blockquote', 0);
+              }
+            },
         directives: [UnsafeUrlHostBindingDir]
       });
     }
@@ -1162,13 +1016,13 @@ describe('sanitization', () => {
     const sanitizer = new LocalSanitizer((value) => 'http://bar');
 
     const fixture = new ComponentFixture(SimpleComp, {sanitizer});
-    hostBindingDir !.cite = 'http://foo';
+    hostBindingDir!.cite = 'http://foo';
     fixture.update();
 
-    const anchor = fixture.hostElement.querySelector('blockquote') !;
+    const anchor = fixture.hostElement.querySelector('blockquote')!;
     expect(anchor.getAttribute('cite')).toEqual('http://bar');
 
-    hostBindingDir !.cite = sanitizer.bypassSecurityTrustUrl('http://foo');
+    hostBindingDir!.cite = sanitizer.bypassSecurityTrustUrl('http://foo');
     fixture.update();
 
     expect(anchor.getAttribute('cite')).toEqual('http://foo');
@@ -1177,7 +1031,9 @@ describe('sanitization', () => {
 
 class LocalSanitizedValue {
   constructor(public value: any) {}
-  toString() { return this.value; }
+  toString() {
+    return this.value;
+  }
 }
 
 class LocalSanitizer implements Sanitizer {
@@ -1195,7 +1051,9 @@ class LocalSanitizer implements Sanitizer {
   bypassSecurityTrustScript(value: string) {}
   bypassSecurityTrustResourceUrl(value: string) {}
 
-  bypassSecurityTrustUrl(value: string) { return new LocalSanitizedValue(value); }
+  bypassSecurityTrustUrl(value: string) {
+    return new LocalSanitizedValue(value);
+  }
 }
 
 class ProxyRenderer3Factory implements RendererFactory3 {

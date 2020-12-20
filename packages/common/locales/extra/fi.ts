@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -15,10 +15,7 @@ export default [
   [
     ['ky.', 'kp.', 'aamulla', 'ap.', 'ip.', 'illalla', 'yöllä'],
     ['keskiyöllä', 'keskip.', 'aamulla', 'aamup.', 'iltap.', 'illalla', 'yöllä'],
-    [
-      'keskiyöllä', 'keskipäivällä', 'aamulla', 'aamupäivällä', 'iltapäivällä',
-      'illalla', 'yöllä'
-    ]
+    ['keskiyöllä', 'keskipäivällä', 'aamulla', 'aamupäivällä', 'iltapäivällä', 'illalla', 'yöllä']
   ],
   [
     ['ky.', 'kp.', 'aamu', 'ap.', 'ip.', 'ilta', 'yö'],

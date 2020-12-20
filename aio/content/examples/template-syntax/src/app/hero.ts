@@ -7,10 +7,10 @@ export class Hero {
       'Hercules',
       'happy',
       new Date(1970, 1, 25),
-      'http://www.imdb.com/title/tt0065832/',
+      'https://www.imdb.com/title/tt0065832/',
       325
     ),
-    new Hero(1, 'Dr Nice',  'happy'),
+    new Hero(1, 'Dr Nice',   'happy'),
     new Hero(2, 'Narco',     'sad' ),
     new Hero(3, 'Windstorm', 'confused' ),
     new Hero(4, 'Magneta')

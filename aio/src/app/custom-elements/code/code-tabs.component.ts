@@ -3,13 +3,14 @@ import { AfterViewInit, Component, ElementRef, Input, OnInit, QueryList, ViewChi
 import { CodeComponent } from './code.component';
 
 export interface TabInfo {
-  class: string|null;
+  class: string;
   code: string;
-  language: string|null;
-  linenums: any;
   path: string;
   region: string;
-  header: string|null;
+
+  header?: string;
+  language?: string;
+  linenums?: string;
 }
 
 /**
@@ -26,7 +27,7 @@ export interface TabInfo {
     <div #content style="display: none"><ng-content></ng-content></div>
 
     <mat-card>
-      <mat-tab-group class="code-tab-group" disableRipple>
+      <mat-tab-group class="code-tab-group" [disableRipple]="true">
         <mat-tab style="overflow-y: hidden;" *ngFor="let tab of tabs">
           <ng-template mat-tab-label>
             <span class="{{ tab.class }}">{{ tab.header }}</span>
@@ -46,7 +47,7 @@ export interface TabInfo {
 export class CodeTabsComponent implements OnInit, AfterViewInit {
   tabs: TabInfo[];
 
-  @Input() linenums: string;
+  @Input() linenums: string | undefined;
 
   @ViewChild('content', { static: true }) content: ElementRef<HTMLDivElement>;
 
@@ -70,13 +71,14 @@ export class CodeTabsComponent implements OnInit, AfterViewInit {
   /** Gets the extracted TabInfo data from the provided code-pane element. */
   private getTabInfo(tabContent: Element): TabInfo {
     return {
-      class: tabContent.getAttribute('class'),
+      class: tabContent.getAttribute('class') || '',
       code: tabContent.innerHTML,
-      language: tabContent.getAttribute('language'),
-      linenums: tabContent.getAttribute('linenums') || this.linenums,
       path: tabContent.getAttribute('path') || '',
       region: tabContent.getAttribute('region') || '',
-      header: tabContent.getAttribute('header')
+
+      header: tabContent.getAttribute('header') || undefined,
+      language: tabContent.getAttribute('language') || undefined,
+      linenums: tabContent.getAttribute('linenums') || this.linenums,
     };
   }
 }

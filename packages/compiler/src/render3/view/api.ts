@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -12,6 +12,7 @@ import * as o from '../../output/output_ast';
 import {ParseSourceSpan} from '../../parse_util';
 import * as t from '../r3_ast';
 import {R3DependencyMetadata} from '../r3_factory';
+import {R3Reference} from '../util';
 
 
 /**
@@ -26,7 +27,16 @@ export interface R3DirectiveMetadata {
   /**
    * An expression representing a reference to the directive itself.
    */
-  type: o.Expression;
+  type: R3Reference;
+
+  /**
+   * An expression representing a reference to the directive being compiled, intended for use within
+   * a class definition itself.
+   *
+   * This can differ from the outer `type` if the class is being compiled by ngcc and is inside
+   * an IIFE structure that uses a different name internally.
+   */
+  internalType: o.Expression;
 
   /**
    * Number of generic type parameters of the type itself.
@@ -41,7 +51,7 @@ export interface R3DirectiveMetadata {
   /**
    * Dependencies of the directive's constructor.
    */
-  deps: R3DependencyMetadata[]|null;
+  deps: R3DependencyMetadata[]|'invalid'|null;
 
   /**
    * Unparsed selector of the directive, or `null` if there was no selector.
@@ -76,12 +86,14 @@ export interface R3DirectiveMetadata {
   };
 
   /**
-   * A mapping of input field names to the property names.
+   * A mapping of inputs from class property names to binding property names, or to a tuple of
+   * binding property name and class property name if the names are different.
    */
-  inputs: {[field: string]: string | [string, string]};
+  inputs: {[field: string]: string|[string, string]};
 
   /**
-   * A mapping of output field names to the property names.
+   * A mapping of outputs from class property names to binding property names, or to a tuple of
+   * binding property name and class property name if the names are different.
    */
   outputs: {[field: string]: string};
 
@@ -89,6 +101,11 @@ export interface R3DirectiveMetadata {
    * Whether or not the component or directive inherits from another class
    */
   usesInheritance: boolean;
+
+  /**
+   * Whether or not the component or directive inherits its entire decorator from its base class.
+   */
+  fullInheritance: boolean;
 
   /**
    * Reference name under which to export the directive's type in a template,
@@ -114,6 +131,12 @@ export interface R3ComponentMetadata extends R3DirectiveMetadata {
      * Parsed nodes of the template.
      */
     nodes: t.Node[];
+
+    /**
+     * Any ng-content selectors extracted from the template. Contains `null` when an ng-content
+     * element without selector is present.
+     */
+    ngContentSelectors: string[];
   };
 
   /**
@@ -126,7 +149,7 @@ export interface R3ComponentMetadata extends R3DirectiveMetadata {
    * A list of directive selectors and an expression referencing the directive type which are in the
    * scope of the compilation.
    */
-  directives: {selector: string, expression: o.Expression}[];
+  directives: R3UsedDirectiveMetadata[];
 
   /**
    * Whether to wrap the 'directives' and/or `pipes` array, if one is generated, in a closure.
@@ -142,8 +165,6 @@ export interface R3ComponentMetadata extends R3DirectiveMetadata {
 
   /**
    * An encapsulation policy for the template and CSS styles. One of:
-   * - `ViewEncapsulation.Native`: Use shadow roots. This works only if natively available on the
-   *   platform (note that this is marked the as the "deprecated shadow DOM" as of Angular v6.1.
    * - `ViewEncapsulation.Emulated`: Use shimmed CSS that emulates the native behavior.
    * - `ViewEncapsulation.None`: Use global CSS without any encapsulation.
    * - `ViewEncapsulation.ShadowDom`: Use the latest ShadowDOM API to natively encapsulate styles
@@ -186,6 +207,37 @@ export interface R3ComponentMetadata extends R3DirectiveMetadata {
 }
 
 /**
+ * Information about a directive that is used in a component template. Only the stable, public
+ * facing information of the directive is stored here.
+ */
+export interface R3UsedDirectiveMetadata {
+  /**
+   * The type of the directive as an expression.
+   */
+  type: o.Expression;
+
+  /**
+   * The selector of the directive.
+   */
+  selector: string;
+
+  /**
+   * The binding property names of the inputs of the directive.
+   */
+  inputs: string[];
+
+  /**
+   * The binding property names of the outputs of the directive.
+   */
+  outputs: string[];
+
+  /**
+   * Name under which the directive is exported, if any (exportAs in Angular). Null otherwise.
+   */
+  exportAs: string[]|null;
+}
+
+/**
  * Information needed to compile a query (view or content).
  */
 export interface R3QueryMetadata {
@@ -200,7 +252,8 @@ export interface R3QueryMetadata {
   first: boolean;
 
   /**
-   * Either an expression representing a type for the query predicate, or a set of string selectors.
+   * Either an expression representing a type or `InjectionToken` for the query
+   * predicate, or a set of string selectors.
    */
   predicate: o.Expression|string[];
 
@@ -237,7 +290,6 @@ export interface R3QueryMetadata {
 export interface R3DirectiveDef {
   expression: o.Expression;
   type: o.Type;
-  statements: o.Statement[];
 }
 
 /**
@@ -246,7 +298,6 @@ export interface R3DirectiveDef {
 export interface R3ComponentDef {
   expression: o.Expression;
   type: o.Type;
-  statements: o.Statement[];
 }
 
 /**

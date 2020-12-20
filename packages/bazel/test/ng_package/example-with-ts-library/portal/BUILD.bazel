@@ -1,0 +1,14 @@
+load("//tools:defaults.bzl", "ng_module")
+
+package(default_visibility = ["//packages/bazel/test:__subpackages__"])
+
+ng_module(
+    name = "portal",
+    srcs = glob(["*.ts"]),
+    bundle_dts = False,
+    module_name = "example-with-ts-library/portal",
+    deps = [
+        "//packages/core",
+        "@npm//@types",
+    ],
+)

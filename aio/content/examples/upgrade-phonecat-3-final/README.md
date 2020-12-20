@@ -3,9 +3,6 @@ structure.
 
 The following changes from vanilla Phonecat are applied:
 
-* Karma config for unit tests is in karma.conf.ng1.js because the boilerplate
-  Karma config is not compatible with the way tests in this project need to be run.
-  The shell script run-unit-tests.sh can be used to run the unit tests.
 * E2E tests have been moved to the parent directory, where `run-e2e-tests` can
   discover and run them along with all the other examples.
 * Most of the phone JSON and image data removed in the interest of keeping

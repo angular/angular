@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -28,7 +28,7 @@ describe('setUpLocationSync', () => {
       ],
     });
 
-    upgradeModule = TestBed.get(UpgradeModule);
+    upgradeModule = TestBed.inject(UpgradeModule);
     upgradeModule.$injector = {
       get: jasmine.createSpy('$injector.get').and.returnValue({'$on': () => undefined})
     };
@@ -119,8 +119,7 @@ describe('setUpLocationSync', () => {
 
       expect(LocationMock.normalize).toHaveBeenCalledWith('/foo/bar');
     } finally {
-      Object.defineProperty(anchorProto, 'pathname', originalDescriptor !);
+      Object.defineProperty(anchorProto, 'pathname', originalDescriptor!);
     }
   });
-
 });

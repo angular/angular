@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -22,7 +22,9 @@ function plural(n: number): number {
 }
 
 export default [
-  'fil', [['am', 'pm'], ['AM', 'PM'], u], [['AM', 'PM'], u, u],
+  'fil',
+  [['am', 'pm'], ['AM', 'PM'], u],
+  [['AM', 'PM'], u, u],
   [
     ['Lin', 'Lun', 'Mar', 'Miy', 'Huw', 'Biy', 'Sab'], u,
     ['Linggo', 'Lunes', 'Martes', 'Miyerkules', 'Huwebes', 'Biyernes', 'Sabado'],
@@ -44,10 +46,18 @@ export default [
       'Oktubre', 'Nobyembre', 'Disyembre'
     ]
   ],
-  [['BC', 'AD'], u, ['Before Christ', 'Anno Domini']], 0, [6, 0],
+  [['BC', 'AD'], u, ['Before Christ', 'Anno Domini']],
+  0,
+  [6, 0],
   ['M/d/yy', 'MMM d, y', 'MMMM d, y', 'EEEE, MMMM d, y'],
-  ['h:mm a', 'h:mm:ss a', 'h:mm:ss a z', 'h:mm:ss a zzzz'], ['{1}, {0}', u, '{1} \'nang\' {0}', u],
+  ['h:mm a', 'h:mm:ss a', 'h:mm:ss a z', 'h:mm:ss a zzzz'],
+  ['{1}, {0}', u, '{1} \'nang\' {0}', u],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], '₱', 'Piso ng Pilipinas',
-  {'PHP': ['₱'], 'THB': ['฿'], 'TWD': ['NT$']}, plural
+  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'],
+  'PHP',
+  '₱',
+  'Piso ng Pilipinas',
+  {'PHP': ['₱'], 'THB': ['฿'], 'TWD': ['NT$']},
+  'ltr',
+  plural
 ];

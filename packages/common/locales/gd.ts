@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -19,7 +19,9 @@ function plural(n: number): number {
 }
 
 export default [
-  'gd', [['m', 'f'], u, u], u,
+  'gd',
+  [['m', 'f'], u, u],
+  u,
   [
     ['D', 'L', 'M', 'C', 'A', 'H', 'S'], ['DiD', 'DiL', 'DiM', 'DiC', 'Dia', 'Dih', 'DiS'],
     ['DiDòmhnaich', 'DiLuain', 'DiMàirt', 'DiCiadain', 'DiarDaoin', 'DihAoine', 'DiSathairne'],
@@ -49,10 +51,18 @@ export default [
       'An t-Iuchar', 'An Lùnastal', 'An t-Sultain', 'An Dàmhair', 'An t-Samhain', 'An Dùbhlachd'
     ]
   ],
-  [['R', 'A'], ['RC', 'AD'], ['Ro Chrìosta', 'An dèidh Chrìosta']], 1, [6, 0],
+  [['R', 'A'], ['RC', 'AD'], ['Ro Chrìosta', 'An dèidh Chrìosta']],
+  1,
+  [6, 0],
   ['dd/MM/y', 'd MMM y', 'd\'mh\' MMMM y', 'EEEE, d\'mh\' MMMM y'],
-  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'], ['{1} {0}', u, u, u],
+  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
+  ['{1} {0}', u, u, u],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], '£', 'Punnd Sasannach',
-  {'JPY': ['JP¥', '¥'], 'RON': [u, 'leu'], 'THB': ['฿'], 'TWD': ['NT$']}, plural
+  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'],
+  'GBP',
+  '£',
+  'Punnd Sasannach',
+  {'JPY': ['JP¥', '¥'], 'RON': [u, 'leu'], 'THB': ['฿'], 'TWD': ['NT$'], 'XXX': []},
+  'ltr',
+  plural
 ];

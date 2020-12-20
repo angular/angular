@@ -1,6 +1,6 @@
 // #docregion
 import { Component, OnInit } from '@angular/core';
-import { UserService }       from '../model/user.service';
+import { UserService } from '../model/user.service';
 
 // #docregion component
 @Component({
@@ -8,7 +8,7 @@ import { UserService }       from '../model/user.service';
   template: '<h3 class="welcome"><i>{{welcome}}</i></h3>'
 })
 // #docregion class
-export class WelcomeComponent  implements OnInit {
+export class WelcomeComponent implements OnInit {
   welcome: string;
   constructor(private userService: UserService) { }
 

@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -33,7 +33,9 @@ class SimpleClass {}
   describe('NgModuleResolver', () => {
     let resolver: NgModuleResolver;
 
-    beforeEach(() => { resolver = new NgModuleResolver(new JitReflector()); });
+    beforeEach(() => {
+      resolver = new NgModuleResolver(new JitReflector());
+    });
 
     it('should read out the metadata from the class', () => {
       const moduleMetadata = resolver.resolve(SomeModule);
@@ -66,6 +68,5 @@ class SimpleClass {}
 
       expect(resolver.resolve(ChildWithDecorator)).toEqual(new NgModule({id: 'c'}));
     });
-
   });
 }

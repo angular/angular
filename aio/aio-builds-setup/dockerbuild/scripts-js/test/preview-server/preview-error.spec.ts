@@ -9,8 +9,8 @@ describe('PreviewServerError', () => {
 
 
   it('should extend Error', () => {
-    expect(err).toEqual(jasmine.any(PreviewServerError));
-    expect(err).toEqual(jasmine.any(Error));
+    expect(err).toBeInstanceOf(PreviewServerError);
+    expect(err).toBeInstanceOf(Error);
 
     expect(Object.getPrototypeOf(err)).toBe(PreviewServerError.prototype);
   });

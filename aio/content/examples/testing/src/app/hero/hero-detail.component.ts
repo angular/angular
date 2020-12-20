@@ -1,9 +1,9 @@
 /* tslint:disable:member-ordering */
 // #docplaster
 import { Component, Input, OnInit } from '@angular/core';
-import { ActivatedRoute, Router }   from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
-import { Hero }              from '../model/hero';
+import { Hero } from '../model/hero';
 import { HeroDetailService } from './hero-detail.service';
 
 // #docregion prototype
@@ -17,7 +17,7 @@ export class HeroDetailComponent implements OnInit {
   // #docregion ctor
   constructor(
     private heroDetailService: HeroDetailService,
-    private route:  ActivatedRoute,
+    private route: ActivatedRoute,
     private router: Router) {
   }
   // #enddocregion ctor

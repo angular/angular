@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -8,18 +8,18 @@
 
 export type Ng1Token = string;
 
-export type Ng1Expression = string | Function;
+export type Ng1Expression = string|Function;
 
 export interface IAnnotatedFunction extends Function {
   // Older versions of `@types/angular` typings extend the global `Function` interface with
   // `$inject?: string[]`, which is not compatible with `$inject?: ReadonlyArray<string>` (used in
   // latest versions).
-  $inject?: Function extends{$inject?: string[]}? Ng1Token[]: ReadonlyArray<Ng1Token>;
+  $inject?: Function extends {$inject?: string[]}? Ng1Token[]: ReadonlyArray<Ng1Token>;
 }
 
-export type IInjectable = (Ng1Token | Function)[] | IAnnotatedFunction;
+export type IInjectable = (Ng1Token|Function)[]|IAnnotatedFunction;
 
-export type SingleOrListOrMap<T> = T | T[] | {[key: string]: T};
+export type SingleOrListOrMap<T> = T|T[]|{[key: string]: T};
 
 export interface IModule {
   name: string;
@@ -64,7 +64,9 @@ export interface IRootScopeService {
 }
 export interface IScope extends IRootScopeService {}
 
-export interface IAngularBootstrapConfig { strictDi?: boolean; }
+export interface IAngularBootstrapConfig {
+  strictDi?: boolean;
+}
 export interface IDirective {
   compile?: IDirectiveCompileFn;
   controller?: IController;
@@ -84,7 +86,7 @@ export interface IDirective {
   transclude?: DirectiveTranscludeProperty;
 }
 export type DirectiveRequireProperty = SingleOrListOrMap<string>;
-export type DirectiveTranscludeProperty = boolean | 'element' | {[key: string]: string};
+export type DirectiveTranscludeProperty = boolean|'element'|{[key: string]: string};
 export interface IDirectiveCompileFn {
   (templateElement: IAugmentedJQuery, templateAttributes: IAttributes,
    transclude: ITranscludeFunction): IDirectivePrePost;
@@ -117,26 +119,28 @@ export interface ITranscludeFunction {
   (cloneAttachFn?: ICloneAttachFunction): IAugmentedJQuery;
 }
 export interface ICloneAttachFunction {
-  // Let's hint but not force cloneAttachFn's signature
-  (clonedElement?: IAugmentedJQuery, scope?: IScope): any;
+  (clonedElement: IAugmentedJQuery, scope: IScope): any;
 }
-export type IAugmentedJQuery = Node[] & {
+export type IAugmentedJQuery = Node[]&{
   on?: (name: string, fn: () => void) => void;
   data?: (name: string, value?: any) => any;
   text?: () => string;
   inheritedData?: (name: string, value?: any) => any;
+  children?: () => IAugmentedJQuery;
   contents?: () => IAugmentedJQuery;
   parent?: () => IAugmentedJQuery;
   empty?: () => void;
-  append?: (content: IAugmentedJQuery | string) => IAugmentedJQuery;
+  append?: (content: IAugmentedJQuery|string) => IAugmentedJQuery;
   controller?: (name: string) => any;
   isolateScope?: () => IScope;
   injector?: () => IInjectorService;
-  triggerHandler?: (eventTypeOrObject: string | Event, extraParameters?: any[]) => IAugmentedJQuery;
+  triggerHandler?: (eventTypeOrObject: string|Event, extraParameters?: any[]) => IAugmentedJQuery;
   remove?: () => void;
   removeData?: () => void;
 };
-export interface IProvider { $get: IInjectable; }
+export interface IProvider {
+  $get: IInjectable;
+}
 export interface IProvideService {
   provider(token: Ng1Token, provider: IProvider): IProvider;
   factory(token: Ng1Token, factory: IInjectable): IProvider;
@@ -145,7 +149,9 @@ export interface IProvideService {
   constant(token: Ng1Token, value: any): void;
   decorator(token: Ng1Token, factory: IInjectable): void;
 }
-export interface IParseService { (expression: string): ICompiledExpression; }
+export interface IParseService {
+  (expression: string): ICompiledExpression;
+}
 export interface ICompiledExpression {
   (context: any, locals: any): any;
   assign?: (context: any, value: any) => any;
@@ -163,7 +169,7 @@ export interface ITemplateRequestService {
   (template: string|any /* TrustedResourceUrl */, ignoreRequestError?: boolean): Promise<string>;
   totalPendingRequests: number;
 }
-export type IController = string | IInjectable;
+export type IController = string|IInjectable;
 export interface IControllerService {
   (controllerConstructor: IController, locals?: any, later?: any, ident?: any): any;
   (controllerName: string, locals?: any): any;
@@ -227,13 +233,14 @@ const noNgElement: typeof angular.element = (() => noNg()) as any;
 noNgElement.cleanData = noNg;
 
 let angular: {
-  bootstrap: (e: Element, modules: (string | IInjectable)[], config?: IAngularBootstrapConfig) =>
-                 IInjectorService,
+  bootstrap: (e: Element, modules: (string|IInjectable)[], config?: IAngularBootstrapConfig) =>
+      IInjectorService,
   module: (prefix: string, dependencies?: string[]) => IModule,
   element: {
-    (e: string | Element | Document | IAugmentedJQuery): IAugmentedJQuery;
-    cleanData: (nodes: Node[] | NodeList) => void;
+    (e: string|Element|Document|IAugmentedJQuery): IAugmentedJQuery;
+    cleanData: (nodes: Node[]|NodeList) => void;
   },
+  injector: (modules: Array<string|IInjectable>, strictDi?: boolean) => IInjectorService,
   version: {major: number},
   resumeBootstrap: () => void,
   getTestability: (e: Element) => ITestabilityService
@@ -241,6 +248,7 @@ let angular: {
   bootstrap: noNg,
   module: noNg,
   element: noNgElement,
+  injector: noNg,
   version: undefined as any,
   resumeBootstrap: noNg,
   getTestability: noNg
@@ -281,7 +289,6 @@ export function getAngularLib(): any {
  */
 export function setAngularJSGlobal(ng: any): void {
   angular = ng;
-  version = ng && ng.version;
 }
 
 /**
@@ -304,8 +311,9 @@ export const module_: typeof angular.module = (prefix, dependencies?) =>
 export const element: typeof angular.element = (e => angular.element(e)) as typeof angular.element;
 element.cleanData = nodes => angular.element.cleanData(nodes);
 
+export const injector: typeof angular.injector =
+    (modules: Array<string|IInjectable>, strictDi?: boolean) => angular.injector(modules, strictDi);
+
 export const resumeBootstrap: typeof angular.resumeBootstrap = () => angular.resumeBootstrap();
 
 export const getTestability: typeof angular.getTestability = e => angular.getTestability(e);
-
-export let version = angular.version;

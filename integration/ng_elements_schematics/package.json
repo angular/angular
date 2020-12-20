@@ -1,0 +1,17 @@
+{
+  "name": "elements-schematics",
+  "version": "1.0.0",
+  "license": "MIT",
+  "devDependencies": {
+    "@angular/cli": "file:../../node_modules/@angular/cli",
+    "@types/node": "file:../../node_modules/@types/node",
+    "@types/shelljs": "0.8.6",
+    "shelljs": "0.8.3",
+    "typescript": "file:../../node_modules/typescript"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "build-dist": "node ../../scripts/build/build-packages-dist.js && yarn install --check-files",
+    "test": "yarn build && node test.js"
+  }
+}

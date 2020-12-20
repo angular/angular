@@ -14,13 +14,28 @@ shown here: https://jsperf.com/small-arrays-vs-linked-objects
 ## Monomorphic vs Megamorphic code
 
 Great reads:
-- [What's up with monomorphism?](http://mrale.ph/blog/2015/01/11/whats-up-with-monomorphism.html)
-- [Impact of polymorphism on component-based frameworks like React](http://benediktmeurer.de/2018/03/23/impact-of-polymorphism-on-component-based-frameworks-like-react/)
+- [What's up with monomorphism?](https://mrale.ph/blog/2015/01/11/whats-up-with-monomorphism.html)
+- [Impact of polymorphism on component-based frameworks like React](https://benediktmeurer.de/2018/03/23/impact-of-polymorphism-on-component-based-frameworks-like-react/)
 
 1) Monomorphic prop access is 100 times faster than megamorphic.
 2) Monomorphic call is 4 times faster the megamorphic call.
 
  See benchmark [here](https://jsperf.com/mono-vs-megamorphic-property-access).
+
+## Packed vs. holey Array
+
+V8 represents arrays internally in a different way depending on:
+- type of elements in the array;
+- presence of holes (indexes that were never assigned).
+
+Generally speaking packed arrays (a set of continuous, initialized indexes) perform better as compared to arrays with holes. To assure that arrays are packed follow those guidelines:
+* create array literals with known values whenever possible (ex. `a = [0];` is better than `a = []; a.push[0];`;
+* don't use `Array` constructor with the size value (ex. `new Array(5)`) - this will create a `HOLEY_ELEMENTS` array (even if this array is filled in later on!);
+* don't delete elements from an array (ex. `delete a[0]`) - this will create a hole;
+* don't write past the array length as this will create holes;
+
+Great reads:
+- [Elements kinds in V8](https://v8.dev/blog/elements-kinds)
 
 ## Exporting top level variables
 
@@ -82,24 +97,24 @@ Here is an example of code which breaks the inlining and a way to fix it.
 ```
 export function i18nStart(index: number, message: string, subTemplateIndex?: number): void {
   const tView = getTView();
-  if (tView.firstTemplatePass && tView.data[index + HEADER_OFFSET] === null) {
+  if (tView.firstCreatePass && tView.data[index + HEADER_OFFSET] === null) {
     // LOTS OF CODE HERE WHICH PREVENTS INLINING.
   }
 }
 ```
 
-Notice that the above function almost never runs because `tView.firstTemplatePass` is usually false.
+Notice that the above function almost never runs because `tView.firstCreatePass` is usually false.
 The application would benefit from inlining, but the large code inside `if` prevents it.
 Simple refactoring will fix it.
 
 ```
 export function i18nStart(index: number, message: string, subTemplateIndex?: number): void {
   const tView = getTView();
-  if (tView.firstTemplatePass && tView.data[index + HEADER_OFFSET] === null) {
-    i18nStartFirstTemplatePass(tView, index, message, subTemplateIndex)
+  if (tView.firstCreatePass && tView.data[index + HEADER_OFFSET] === null) {
+    i18nStartfirstCreatePass(tView, index, message, subTemplateIndex)
   }
 }
-export function i18nStartFirstTemplatePass(tView: TView, index: number, message: string, subTemplateIndex?: number): void {
+export function i18nStartfirstCreatePass(tView: TView, index: number, message: string, subTemplateIndex?: number): void {
   // LOTS OF CODE HERE WHICH PREVENTS INLINING.
 }
 ```

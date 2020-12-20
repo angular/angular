@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -14,12 +14,12 @@ const u = undefined;
 export default [
   [
     ['usiku', 'mchana', 'alfajiri', 'asubuhi', 'mchana', 'jioni', 'usiku'],
-    ['saa sita za usiku', 'saa sita za mchana', 'alfajiri', 'asubuhi', 'mchana', 'jioni', 'usiku'],
-    u
+    ['saa sita za usiku', 'adhuhuri', 'alfajiri', 'asubuhi', 'mchana', 'jioni', 'usiku'],
+    ['saa sita za usiku', 'saa sita za mchana', 'alfajiri', 'asubuhi', 'mchana', 'jioni', 'usiku']
   ],
   [
     ['saa sita za usiku', 'saa sita za mchana', 'alfajiri', 'asubuhi', 'mchana', 'jioni', 'usiku'],
-    ['saa sita za usiku', 'saa sita za mchana', 'alfajiri', 'asubuhi', 'alasiri', 'jioni', 'usiku'],
+    ['saa sita za usiku', 'adhuhuri', 'alfajiri', 'asubuhi', 'alasiri', 'jioni', 'usiku'],
     ['saa sita za usiku', 'saa sita za mchana', 'alfajiri', 'asubuhi', 'mchana', 'jioni', 'usiku']
   ],
   [

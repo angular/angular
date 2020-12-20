@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -13,8 +13,9 @@ interface Update {
 }
 
 /**
- * `HttpHeaders` class represents the header configuration options for an HTTP request.
- * Instances should be assumed immutable with lazy parsing.
+ * Represents the header configuration options for an HTTP request.
+ * Instances are immutable. Modifying methods return a cloned
+ * instance with the change. The original object is never changed.
  *
  * @publicApi
  */
@@ -23,7 +24,7 @@ export class HttpHeaders {
    * Internal map of lowercase header names to values.
    */
   // TODO(issue/24571): remove '!'.
-  private headers !: Map<string, string[]>;
+  private headers!: Map<string, string[]>;
 
 
   /**
@@ -35,8 +36,7 @@ export class HttpHeaders {
   /**
    * Complete the lazy initialization of this object (needed before reading).
    */
-  // TODO(issue/24571): remove '!'.
-  private lazyInit !: HttpHeaders | Function | null;
+  private lazyInit!: HttpHeaders|Function|null;
 
   /**
    * Queued updates to be materialized the next initialization.
@@ -59,7 +59,7 @@ export class HttpHeaders {
             const value = line.slice(index + 1).trim();
             this.maybeSetNormalizedName(name, key);
             if (this.headers.has(key)) {
-              this.headers.get(key) !.push(value);
+              this.headers.get(key)!.push(value);
             } else {
               this.headers.set(key, [value]);
             }
@@ -85,11 +85,11 @@ export class HttpHeaders {
   }
 
   /**
-   * Checks for existence of a header by a given name.
+   * Checks for existence of a given header.
    *
    * @param name The header name to check for existence.
    *
-   * @returns Whether the header exits.
+   * @returns True if the header exists, false otherwise.
    */
   has(name: string): boolean {
     this.init();
@@ -98,11 +98,11 @@ export class HttpHeaders {
   }
 
   /**
-   * Returns the first header value that matches a given name.
+   * Retrieves the first value of a given header.
    *
-   * @param name The header name to retrieve.
+   * @param name The header name.
    *
-   * @returns A string if the header exists, null otherwise
+   * @returns The value string if the header exists, null otherwise
    */
   get(name: string): string|null {
     this.init();
@@ -112,7 +112,7 @@ export class HttpHeaders {
   }
 
   /**
-   * Returns the names of the headers.
+   * Retrieves the names of the headers.
    *
    * @returns A list of header names.
    */
@@ -123,9 +123,9 @@ export class HttpHeaders {
   }
 
   /**
-   * Returns a list of header values for a given header name.
+   * Retrieves a list of values for a given header.
    *
-   * @param name The header name from which to retrieve the values.
+   * @param name The header name from which to retrieve values.
    *
    * @returns A string of values if the header exists, null otherwise.
    */
@@ -136,38 +136,40 @@ export class HttpHeaders {
   }
 
   /**
-   * Appends a new header value to the existing set of
-   * header values.
+   * Appends a new value to the existing set of values for a header
+   * and returns them in a clone of the original instance.
    *
    * @param name The header name for which to append the values.
+   * @param value The value to append.
    *
-   * @returns A clone of the HTTP header object with the value appended.
+   * @returns A clone of the HTTP headers object with the value appended to the given header.
    */
 
   append(name: string, value: string|string[]): HttpHeaders {
     return this.clone({name, value, op: 'a'});
   }
   /**
-   * Sets a header value for a given name. If the header name already exists,
-   * its value is replaced with the given value.
+   * Sets or modifies a value for a given header in a clone of the original instance.
+   * If the header already exists, its value is replaced with the given value
+   * in the returned object.
    *
    * @param name The header name.
-   * @param value Provides the value to set or overide for a given name.
+   * @param value The value or values to set or overide for the given header.
    *
-   * @returns A clone of the HTTP header object with the newly set header value.
+   * @returns A clone of the HTTP headers object with the newly set header value.
    */
   set(name: string, value: string|string[]): HttpHeaders {
     return this.clone({name, value, op: 's'});
   }
   /**
-   * Deletes all header values for a given name.
+   * Deletes values for a given header in a clone of the original instance.
    *
    * @param name The header name.
-   * @param value The header values to delete for a given name.
+   * @param value The value or values to delete for the given header.
    *
-   * @returns A clone of the HTTP header object.
+   * @returns A clone of the HTTP headers object with the given value deleted.
    */
-  delete (name: string, value?: string|string[]): HttpHeaders {
+  delete(name: string, value?: string|string[]): HttpHeaders {
     return this.clone({name, value, op: 'd'});
   }
 
@@ -195,8 +197,8 @@ export class HttpHeaders {
   private copyFrom(other: HttpHeaders) {
     other.init();
     Array.from(other.headers.keys()).forEach(key => {
-      this.headers.set(key, other.headers.get(key) !);
-      this.normalizedNames.set(key, other.normalizedNames.get(key) !);
+      this.headers.set(key, other.headers.get(key)!);
+      this.normalizedNames.set(key, other.normalizedNames.get(key)!);
     });
   }
 
@@ -213,7 +215,7 @@ export class HttpHeaders {
     switch (update.op) {
       case 'a':
       case 's':
-        let value = update.value !;
+        let value = update.value!;
         if (typeof value === 'string') {
           value = [value];
         }
@@ -253,6 +255,6 @@ export class HttpHeaders {
   forEach(fn: (name: string, values: string[]) => void) {
     this.init();
     Array.from(this.normalizedNames.keys())
-        .forEach(key => fn(this.normalizedNames.get(key) !, this.headers.get(key) !));
+        .forEach(key => fn(this.normalizedNames.get(key)!, this.headers.get(key)!));
   }
 }

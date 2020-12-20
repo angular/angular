@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -19,10 +19,11 @@ function plural(n: number): number {
 }
 
 export default [
-  'is', [['f.', 'e.'], ['f.h.', 'e.h.'], u], [['f.h.', 'e.h.'], u, u],
+  'is',
+  [['f.', 'e.'], ['f.h.', 'e.h.'], u],
+  [['f.h.', 'e.h.'], u, u],
   [
-    ['S', 'M', 'Þ', 'M', 'F', 'F', 'L'],
-    ['sun.', 'mán.', 'þri.', 'mið.', 'fim.', 'fös.', 'lau.'],
+    ['S', 'M', 'Þ', 'M', 'F', 'F', 'L'], ['sun.', 'mán.', 'þri.', 'mið.', 'fim.', 'fös.', 'lau.'],
     [
       'sunnudagur', 'mánudagur', 'þriðjudagur', 'miðvikudagur', 'fimmtudagur', 'föstudagur',
       'laugardagur'
@@ -32,20 +33,25 @@ export default [
   u,
   [
     ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'Á', 'S', 'O', 'N', 'D'],
+    ['jan.', 'feb.', 'mar.', 'apr.', 'maí', 'jún.', 'júl.', 'ágú.', 'sep.', 'okt.', 'nóv.', 'des.'],
     [
-      'jan.', 'feb.', 'mar.', 'apr.', 'maí', 'jún.', 'júl.', 'ágú.', 'sep.', 'okt.', 'nóv.',
-      'des.'
-    ],
-    [
-      'janúar', 'febrúar', 'mars', 'apríl', 'maí', 'júní', 'júlí', 'ágúst', 'september',
-      'október', 'nóvember', 'desember'
+      'janúar', 'febrúar', 'mars', 'apríl', 'maí', 'júní', 'júlí', 'ágúst', 'september', 'október',
+      'nóvember', 'desember'
     ]
   ],
-  u, [['f.k.', 'e.k.'], ['f.Kr.', 'e.Kr.'], ['fyrir Krist', 'eftir Krist']], 1, [6, 0],
+  u,
+  [['f.k.', 'e.k.'], ['f.Kr.', 'e.Kr.'], ['fyrir Krist', 'eftir Krist']],
+  1,
+  [6, 0],
   ['d.M.y', 'd. MMM y', 'd. MMMM y', 'EEEE, d. MMMM y'],
-  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'], ['{1}, {0}', u, '{1} \'kl\'. {0}', u],
+  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
+  ['{1}, {0}', u, '{1} \'kl\'. {0}', u],
   [',', '.', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], 'ISK', 'íslensk króna', {
+  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'],
+  'ISK',
+  'ISK',
+  'íslensk króna',
+  {
     'AUD': [u, '$'],
     'BRL': [u, 'R$'],
     'CAD': [u, '$'],
@@ -60,5 +66,6 @@ export default [
     'USD': [u, '$'],
     'VND': [u, '₫']
   },
+  'ltr',
   plural
 ];

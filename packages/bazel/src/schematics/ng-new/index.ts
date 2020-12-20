@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -8,8 +8,9 @@
  * @fileoverview Schematics for ng-new project that builds with Bazel.
  */
 
-import {Rule, Tree, chain, externalSchematic, schematic} from '@angular-devkit/schematics';
+import {chain, externalSchematic, Rule, schematic, Tree} from '@angular-devkit/schematics';
 import {validateProjectName} from '@schematics/angular/utility/validation';
+
 import {Schema} from './schema';
 
 export default function(options: Schema): Rule {

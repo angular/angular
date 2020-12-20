@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -14,7 +14,7 @@ import {HttpRequest} from './request';
 import {HttpEvent} from './response';
 
 /**
- * Intercepts `HttpRequest` or `HttpResponse` and handles them.
+ * Intercepts and handles an `HttpRequest` or `HttpResponse`.
  *
  * Most interceptors transform the outgoing request before passing it to the
  * next interceptor in the chain, by calling `next.handle(transformedReq)`.
@@ -38,15 +38,17 @@ import {HttpEvent} from './response';
  * To use the same instance of `HttpInterceptors` for the entire app, import the `HttpClientModule`
  * only in your `AppModule`, and add the interceptors to the root application injector .
  * If you import `HttpClientModule` multiple times across different modules (for example, in lazy
- * loading modules), each import creates a new copy of the `HttpClientModule`, which overwrites the interceptors
- * provided in the root module.
+ * loading modules), each import creates a new copy of the `HttpClientModule`, which overwrites the
+ * interceptors provided in the root module.
  *
  */
 export interface HttpInterceptor {
   /**
-   * * **req**: The outgoing request to handle
-   * * **next**: The next interceptor in the chain, or the backend if no interceptors in the chain.
-   *
+   * Identifies and handles a given HTTP request.
+   * @param req The outgoing request object to handle.
+   * @param next The next interceptor in the chain, or the backend
+   * if no interceptors remain in the chain.
+   * @returns An observable of the event stream.
    */
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>>;
 }
@@ -65,8 +67,8 @@ export class HttpInterceptorHandler implements HttpHandler {
 }
 
 /**
- * A multi-provider token which represents the array of `HttpInterceptor`s that
- * are registered.
+ * A multi-provider token that represents the array of registered
+ * `HttpInterceptor` objects.
  *
  * @publicApi
  */

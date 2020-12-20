@@ -1,12 +1,13 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {state, style, trigger} from '@angular/animations';
 import {CommonModule} from '@angular/common';
-import {Component, Directive, EventEmitter, Input, Output} from '@angular/core';
+import {Component, Directive, EventEmitter, Input, Output, ViewContainerRef} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {By, DomSanitizer, SafeUrl} from '@angular/platform-browser';
 
@@ -90,7 +91,6 @@ describe('property bindings', () => {
   it('should not map properties whose names do not correspond to their attribute names, ' +
          'if they correspond to inputs',
      () => {
-
        @Component({template: '', selector: 'my-comp'})
        class MyComp {
           @Input() for !:string;
@@ -132,7 +132,7 @@ describe('property bindings', () => {
 
     expect(a.href.indexOf('unsafe:')).toBe(0);
 
-    const domSanitzer: DomSanitizer = TestBed.get(DomSanitizer);
+    const domSanitzer: DomSanitizer = TestBed.inject(DomSanitizer);
     fixture.componentInstance.url =
         domSanitzer.bypassSecurityTrustUrl('javascript:alert("the developer wanted this");');
     fixture.detectChanges();
@@ -353,7 +353,7 @@ describe('property bindings', () => {
         template: `
           <button idDir [id]="id1">Click me</button>
           <button *ngIf="condition" [id]="id2">Click me too (2)</button>
-          <button *ngIf="!condition" otherDir [id]="id3">Click me too (3)</button> 
+          <button *ngIf="!condition" otherDir [id]="id3">Click me too (3)</button>
         `
       })
       class App {
@@ -392,7 +392,6 @@ describe('property bindings', () => {
   });
 
   describe('attributes and input properties', () => {
-
     @Directive({selector: '[myDir]', exportAs: 'myDir'})
     class MyDir {
       @Input() role: string|undefined;
@@ -595,7 +594,33 @@ describe('property bindings', () => {
       expect(comp2.children[0].getAttribute('role')).toBe('button');
       expect(comp2.textContent).toBe('role: button');
     });
-
   });
 
+  it('should not throw on synthetic property bindings when a directive on the same element injects ViewContainerRef',
+     () => {
+       @Component({
+         selector: 'my-comp',
+         template: '',
+         animations: [trigger('trigger', [state('void', style({opacity: 0}))])],
+         host: {'[@trigger]': '"void"'}
+       })
+       class MyComp {
+       }
+
+       @Directive({selector: '[my-dir]'})
+       class MyDir {
+         constructor(public viewContainerRef: ViewContainerRef) {}
+       }
+
+       @Component({template: '<my-comp my-dir></my-comp>'})
+       class App {
+       }
+
+       TestBed.configureTestingModule({declarations: [App, MyDir, MyComp]});
+
+       expect(() => {
+         const fixture = TestBed.createComponent(App);
+         fixture.detectChanges();
+       }).not.toThrow();
+     });
 });

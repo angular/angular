@@ -1,5 +1,4 @@
-load("//tools:defaults.bzl", "ts_library")
-load("@npm_bazel_typescript//:index.bzl", "ts_devserver")
+load("//tools:defaults.bzl", "ts_devserver", "ts_library")
 
 package(default_visibility = ["//modules/playground:__subpackages__"])
 
@@ -18,17 +17,17 @@ ts_library(
 
 ts_devserver(
     name = "devserver",
+    bootstrap = [
+        "//packages/zone.js/bundles:zone.umd.js",
+        "@npm//:node_modules/reflect-metadata/Reflect.js",
+        "@npm//:node_modules/angular/angular.js",
+    ],
     entry_module = "angular/modules/playground/src/upgrade/index",
-    index_html = "index.html",
     port = 4200,
     scripts = [
-        "@npm//node_modules/tslib:tslib.js",
+        "@npm//:node_modules/tslib/tslib.js",
         "//tools/rxjs:rxjs_umd_modules",
     ],
-    static_files = [
-        "@npm//node_modules/zone.js:dist/zone.js",
-        "@npm//node_modules/reflect-metadata:Reflect.js",
-        "@npm//node_modules/angular:angular.js",
-    ],
+    static_files = ["index.html"],
     deps = [":upgrade"],
 )

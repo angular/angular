@@ -10,7 +10,7 @@ import { Hero } from './hero.model';
 })
 export class HeroService {
   getHeroes() {
-    let heroes: Hero[] = [];
+    const heroes: Hero[] = [];
     return of(heroes);
   }
 }

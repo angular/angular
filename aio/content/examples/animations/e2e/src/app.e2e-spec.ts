@@ -1,6 +1,4 @@
-'use strict'; // necessary for es6 output in node
-
-import { browser, ExpectedConditions as EC } from 'protractor';
+import { browser } from 'protractor';
 import { logging } from 'selenium-webdriver';
 import * as openClose from './open-close.po';
 import * as statusSlider from './status-slider.po';
@@ -20,9 +18,7 @@ describe('Animation Tests', () => {
   const filterHref = getLinkById('heroes');
   const heroGroupsHref = getLinkById('hero-groups');
 
-  beforeAll(() => {
-    browser.get('');
-  });
+  beforeAll(() => browser.get(''));
 
   describe('Open/Close Component', () => {
     const closedHeight = '100px';
@@ -30,7 +26,7 @@ describe('Animation Tests', () => {
 
     beforeAll(async () => {
       await openCloseHref.click();
-      sleepFor();
+      await sleepFor();
     });
 
     it('should be open', async () => {
@@ -86,17 +82,17 @@ describe('Animation Tests', () => {
 
     beforeAll(async () => {
       await statusSliderHref.click();
-      sleepFor(2000);
+      await sleepFor(2000);
     });
 
-    it('should be inactive with an orange background', async () => {
+    it('should be inactive with a blue background', async () => {
       const toggleButton = statusSlider.getToggleButton();
       const container = statusSlider.getComponentContainer();
       let text = await container.getText();
 
       if (text === 'Active') {
         await toggleButton.click();
-        await browser.wait(async () => await container.getCssValue('backgroundColor') === inactiveColor, 2000);
+        await browser.wait(async () => await container.getCssValue('backgroundColor') === inactiveColor, 3000);
       }
 
       text = await container.getText();
@@ -106,14 +102,14 @@ describe('Animation Tests', () => {
       expect(bgColor).toBe(inactiveColor);
     });
 
-    it('should be active with a blue background', async () => {
+    it('should be active with an orange background', async () => {
       const toggleButton = statusSlider.getToggleButton();
       const container = statusSlider.getComponentContainer();
       let text = await container.getText();
 
       if (text === 'Inactive') {
         await toggleButton.click();
-        await browser.wait(async () => await container.getCssValue('backgroundColor') === activeColor, 2000);
+        await browser.wait(async () => await container.getCssValue('backgroundColor') === activeColor, 3000);
       }
 
       text = await container.getText();
@@ -127,7 +123,7 @@ describe('Animation Tests', () => {
   describe('Toggle Animations Component', () => {
     beforeAll(async () => {
       await toggleHref.click();
-      sleepFor();
+      await sleepFor();
     });
 
     it('should disabled animations on the child element', async () => {
@@ -145,7 +141,7 @@ describe('Animation Tests', () => {
   describe('Enter/Leave Component', () => {
     beforeAll(async () => {
       await enterLeaveHref.click();
-      sleepFor(100);
+      await sleepFor(100);
     });
 
     it('should attach a flyInOut trigger to the list of items', async () => {
@@ -171,7 +167,7 @@ describe('Animation Tests', () => {
   describe('Auto Calculation Component', () => {
     beforeAll(async () => {
       await autoHref.click();
-      sleepFor(0);
+      await sleepFor(0);
     });
 
     it('should attach a shrinkOut trigger to the list of items', async () => {
@@ -195,7 +191,7 @@ describe('Animation Tests', () => {
   describe('Filter/Stagger Component', () => {
     beforeAll(async () => {
       await filterHref.click();
-      sleepFor();
+      await sleepFor();
     });
 
     it('should attach a filterAnimations trigger to the list container', async () => {
@@ -222,7 +218,7 @@ describe('Animation Tests', () => {
   describe('Hero Groups Component', () => {
     beforeAll(async () => {
       await heroGroupsHref.click();
-      sleepFor(300);
+      await sleepFor(300);
     });
 
     it('should attach a flyInOut trigger to the list of items', async () => {
@@ -247,5 +243,3 @@ describe('Animation Tests', () => {
     });
   });
 });
-
-

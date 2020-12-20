@@ -60,14 +60,15 @@ if (require.resolve === module) {
 
 // Helpers
 function _main(args) {
-  triggerWebhook(...args).
-    then(({statusCode, responseText}) => (200 <= statusCode && statusCode < 400) ?
-      console.log(`Status: ${statusCode}\n${responseText}`) :
-      Promise.reject(new Error(`Request failed (status: ${statusCode}): ${responseText}`))).
-    catch(err => {
-      console.error(err);
-      process.exit(1);
-    });
+  triggerWebhook(...args)
+      .then(
+          ({statusCode, responseText}) => (200 <= statusCode && statusCode < 400) ?
+              console.log(`Status: ${statusCode}\n${responseText}`) :
+              Promise.reject(new Error(`Request failed (status: ${statusCode}): ${responseText}`)))
+      .catch(err => {
+        console.error(err);
+        process.exit(1);
+      });
 }
 
 function postJson(url, data) {
@@ -77,15 +78,12 @@ function postJson(url, data) {
       const statusCode = res.statusCode || -1;
       let responseText = '';
 
-      res.
-        on('error', reject).
-        on('data', d => responseText += d).
-        on('end', () => resolve({statusCode, responseText}));
+      res.on('error', reject)
+          .on('data', d => responseText += d)
+          .on('end', () => resolve({statusCode, responseText}));
     };
 
-    request(url, opts, onResponse).
-      on('error', reject).
-      end(JSON.stringify(data));
+    request(url, opts, onResponse).on('error', reject).end(JSON.stringify(data));
   });
 }
 

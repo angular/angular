@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -9,10 +9,11 @@
 import * as ts from 'typescript';
 
 import {Reference} from '../../imports';
-import {ClassDeclaration, ReflectionHost, isNamedClassDeclaration} from '../../reflection';
+import {ClassDeclaration, isNamedClassDeclaration, ReflectionHost, TypeValueReferenceKind} from '../../reflection';
 
 import {DirectiveMeta, MetadataReader, NgModuleMeta, PipeMeta} from './api';
-import {extractDirectiveGuards, extractReferencesFromType, readStringArrayType, readStringMapType, readStringType} from './util';
+import {ClassPropertyMapping} from './property_mapping';
+import {extractDirectiveTypeCheckMeta, extractReferencesFromType, readStringArrayType, readStringMapType, readStringType} from './util';
 
 /**
  * A `MetadataReader` that can read metadata from `.d.ts` files, which have static Ivy properties
@@ -33,7 +34,7 @@ export class DtsMetadataReader implements MetadataReader {
     // This operation is explicitly not memoized, as it depends on `ref.ownedByModuleGuess`.
     // TODO(alxhub): investigate caching of .d.ts module metadata.
     const ngModuleDef = this.reflector.getMembersOfClass(clazz).find(
-        member => member.name === 'ngModuleDef' && member.isStatic);
+        member => member.name === 'ɵmod' && member.isStatic);
     if (ngModuleDef === undefined) {
       return null;
     } else if (
@@ -54,6 +55,8 @@ export class DtsMetadataReader implements MetadataReader {
           this.checker, exportMetadata, ref.ownedByModuleGuess, resolutionContext),
       imports: extractReferencesFromType(
           this.checker, importMetadata, ref.ownedByModuleGuess, resolutionContext),
+      schemas: [],
+      rawDeclarations: null,
     };
   }
 
@@ -63,8 +66,7 @@ export class DtsMetadataReader implements MetadataReader {
   getDirectiveMetadata(ref: Reference<ClassDeclaration>): DirectiveMeta|null {
     const clazz = ref.node;
     const def = this.reflector.getMembersOfClass(clazz).find(
-        field =>
-            field.isStatic && (field.name === 'ngComponentDef' || field.name === 'ngDirectiveDef'));
+        field => field.isStatic && (field.name === 'ɵcmp' || field.name === 'ɵdir'));
     if (def === undefined) {
       // No definition could be found.
       return null;
@@ -74,21 +76,37 @@ export class DtsMetadataReader implements MetadataReader {
       // The type metadata was the wrong shape.
       return null;
     }
-    const selector = readStringType(def.type.typeArguments[1]);
-    if (selector === null) {
-      return null;
-    }
 
+    const isComponent = def.name === 'ɵcmp';
+
+    const ctorParams = this.reflector.getConstructorParameters(clazz);
+
+    // A directive is considered to be structural if:
+    // 1) it's a directive, not a component, and
+    // 2) it injects `TemplateRef`
+    const isStructural = !isComponent && ctorParams !== null && ctorParams.some(param => {
+      return param.typeValueReference.kind === TypeValueReferenceKind.IMPORTED &&
+          param.typeValueReference.moduleName === '@angular/core' &&
+          param.typeValueReference.importedName === 'TemplateRef';
+    });
+
+    const inputs =
+        ClassPropertyMapping.fromMappedObject(readStringMapType(def.type.typeArguments[3]));
+    const outputs =
+        ClassPropertyMapping.fromMappedObject(readStringMapType(def.type.typeArguments[4]));
     return {
       ref,
       name: clazz.name.text,
-      isComponent: def.name === 'ngComponentDef', selector,
+      isComponent,
+      selector: readStringType(def.type.typeArguments[1]),
       exportAs: readStringArrayType(def.type.typeArguments[2]),
-      inputs: readStringMapType(def.type.typeArguments[3]),
-      outputs: readStringMapType(def.type.typeArguments[4]),
+      inputs,
+      outputs,
       queries: readStringArrayType(def.type.typeArguments[5]),
-      ...extractDirectiveGuards(clazz, this.reflector),
+      ...extractDirectiveTypeCheckMeta(clazz, inputs, this.reflector),
       baseClass: readBaseClass(clazz, this.checker, this.reflector),
+      isPoisoned: false,
+      isStructural,
     };
   }
 
@@ -97,7 +115,7 @@ export class DtsMetadataReader implements MetadataReader {
    */
   getPipeMetadata(ref: Reference<ClassDeclaration>): PipeMeta|null {
     const def = this.reflector.getMembersOfClass(ref.node).find(
-        field => field.isStatic && field.name === 'ngPipeDef');
+        field => field.isStatic && field.name === 'ɵpipe');
     if (def === undefined) {
       // No definition could be found.
       return null;

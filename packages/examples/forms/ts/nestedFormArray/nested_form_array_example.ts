@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -17,12 +17,12 @@ import {FormArray, FormControl, FormGroup} from '@angular/forms';
     <form [formGroup]="form" (ngSubmit)="onSubmit()">
       <div formArrayName="cities">
         <div *ngFor="let city of cities.controls; index as i">
-          <input formControlName="{{i}}" placeholder="City">
+          <input [formControlName]="i" placeholder="City">
         </div>
       </div>
       <button>Submit</button>
     </form>
-    
+
     <button (click)="addCity()">Add City</button>
     <button (click)="setPreset()">Set preset</button>
   `,
@@ -35,15 +35,21 @@ export class NestedFormArray {
     ]),
   });
 
-  get cities(): FormArray { return this.form.get('cities') as FormArray; }
+  get cities(): FormArray {
+    return this.form.get('cities') as FormArray;
+  }
 
-  addCity() { this.cities.push(new FormControl()); }
+  addCity() {
+    this.cities.push(new FormControl());
+  }
 
   onSubmit() {
     console.log(this.cities.value);  // ['SF', 'NY']
     console.log(this.form.value);    // { cities: ['SF', 'NY'] }
   }
 
-  setPreset() { this.cities.patchValue(['LA', 'MTV']); }
+  setPreset() {
+    this.cities.patchValue(['LA', 'MTV']);
+  }
 }
 // #enddocregion

@@ -8,7 +8,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 })
 export class HeroButtonComponent {
   // Pointless aliases
-  @Output('changeEvent') change = new EventEmitter<any>();
+  @Output('heroChangeEvent') heroChange = new EventEmitter<any>();
   @Input('labelAttribute') label: string;
 }
 // #enddocregion example

@@ -1,13 +1,13 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {DebugElement, Predicate, Type} from '@angular/core';
-import {getDOM} from '../../dom/dom_adapter';
+import {ɵgetDOM as getDOM} from '@angular/common';
+import {DebugElement, DebugNode, Predicate, Type} from '@angular/core';
 
 
 
@@ -18,14 +18,16 @@ import {getDOM} from '../../dom/dom_adapter';
  */
 export class By {
   /**
-   * Match all elements.
+   * Match all nodes.
    *
    * @usageNotes
    * ### Example
    *
    * {@example platform-browser/dom/debug/ts/by/by.ts region='by_all'}
    */
-  static all(): Predicate<DebugElement> { return (debugElement) => true; }
+  static all(): Predicate<DebugNode> {
+    return () => true;
+  }
 
   /**
    * Match elements by the given CSS selector.
@@ -38,20 +40,30 @@ export class By {
   static css(selector: string): Predicate<DebugElement> {
     return (debugElement) => {
       return debugElement.nativeElement != null ?
-          getDOM().elementMatches(debugElement.nativeElement, selector) :
+          elementMatches(debugElement.nativeElement, selector) :
           false;
     };
   }
 
   /**
-   * Match elements that have the given directive present.
+   * Match nodes that have the given directive present.
    *
    * @usageNotes
    * ### Example
    *
    * {@example platform-browser/dom/debug/ts/by/by.ts region='by_directive'}
    */
-  static directive(type: Type<any>): Predicate<DebugElement> {
-    return (debugElement) => debugElement.providerTokens !.indexOf(type) !== -1;
+  static directive(type: Type<any>): Predicate<DebugNode> {
+    return (debugNode) => debugNode.providerTokens!.indexOf(type) !== -1;
   }
+}
+
+function elementMatches(n: any, selector: string): boolean {
+  if (getDOM().isElementNode(n)) {
+    return n.matches && n.matches(selector) ||
+        n.msMatchesSelector && n.msMatchesSelector(selector) ||
+        n.webkitMatchesSelector && n.webkitMatchesSelector(selector);
+  }
+
+  return false;
 }

@@ -1,0 +1,78 @@
+# Copyright Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+################################################################################
+#
+package(default_visibility = ["//visibility:public"])
+
+load("@io_bazel_rules_webtesting//web:web.bzl", "browser", "web_test_archive")
+
+# Override of chromium web_test_archive so that the archive is selected based on platform
+web_test_archive(
+    name = "chromium_archive",
+    testonly = True,
+    archive = select({
+        "@io_bazel_rules_webtesting//common/conditions:linux": "@org_chromium_chromium_amd64//file",
+        "@io_bazel_rules_webtesting//common/conditions:mac": "@org_chromium_chromium_macos//file",
+        "@io_bazel_rules_webtesting//common/conditions:windows": "@org_chromium_chromium_windows//file",
+    }),
+    extract = "build",
+    named_files = select({
+        "@io_bazel_rules_webtesting//common/conditions:linux": {"CHROMIUM": "chrome-linux/chrome"},
+        "@io_bazel_rules_webtesting//common/conditions:mac": {"CHROMIUM": "chrome-mac/Chromium.app/Contents/MacOS/chromium"},
+        "@io_bazel_rules_webtesting//common/conditions:windows": {"CHROMIUM": "chrome-win/chrome.exe"},
+    }),
+    visibility = ["//dev-infra/browsers:__subpackages__"],
+)
+
+# Override of chromedriver web_test_archive so that the archive is selected based on platform
+web_test_archive(
+    name = "chromedriver_archive",
+    testonly = True,
+    archive = select({
+        "@io_bazel_rules_webtesting//common/conditions:linux": "@org_chromium_chromedriver_amd64//file",
+        "@io_bazel_rules_webtesting//common/conditions:mac": "@org_chromium_chromedriver_macos//file",
+        "@io_bazel_rules_webtesting//common/conditions:windows": "@org_chromium_chromedriver_windows//file",
+    }),
+    extract = "build",
+    named_files = select({
+        "@io_bazel_rules_webtesting//common/conditions:linux": {
+            "CHROMEDRIVER": "chromedriver_linux64/chromedriver",
+        },
+        "@io_bazel_rules_webtesting//common/conditions:mac": {
+            "CHROMEDRIVER": "chromedriver_mac64/chromedriver",
+        },
+        "@io_bazel_rules_webtesting//common/conditions:windows": {
+            "CHROMEDRIVER": "chromedriver_win32/chromedriver.exe",
+        },
+    }),
+    visibility = ["//dev-infra/browsers:__subpackages__"],
+)
+
+browser(
+    name = "chromium",
+    metadata = "chromium.json",
+    visibility = ["//visibility:public"],
+    deps = [
+        ":chromedriver_archive",
+        ":chromium_archive",
+        "@io_bazel_rules_webtesting//go/wsl",
+    ],
+)
+
+# Make source files available for distribution via pkg_npm
+filegroup(
+    name = "files",
+    srcs = glob(["*"]),
+)

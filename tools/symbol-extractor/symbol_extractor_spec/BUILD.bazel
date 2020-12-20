@@ -1,0 +1,22 @@
+load("//tools:defaults.bzl", "ts_library")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_library(
+    name = "es2015_class_output_lib",
+    srcs = ["es2015_class_output.ts"],
+)
+
+filegroup(
+    name = "es2015_class_output",
+    srcs = [":es2015_class_output_lib"],
+    output_group = "es6_sources",
+)
+
+filegroup(
+    name = "fixtures",
+    srcs = glob([
+        "**/*.js",
+        "**/*.json",
+    ]),
+)

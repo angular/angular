@@ -207,6 +207,9 @@ There are two possible degraded states:
 clean copy of the latest known version of the app. Older cached
 versions are safe to use, so existing tabs continue to run from
 cache, but new loads of the app will be served from the network.
+The service worker will try to recover from this state when a new
+version of the application is detected and installed (that is,
+when a new `ngsw.json` is available).
 
 * `SAFE_MODE`: the service worker cannot guarantee the safety of
 using cached data. Either an unexpected error occurred or all
@@ -216,6 +219,12 @@ network, running as little service worker code as possible.
 In both cases, the parenthetical annotation provides the
 error that caused the service worker to enter the degraded state.
 
+Both states are temporary; they are saved only for the lifetime of the [ServiceWorker
+instance](https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerGlobalScope).
+The browser sometimes terminates an idle service worker to conserve memory and
+processor power, and creates a new service worker instance in response to
+network events. The new instance starts in the `NORMAL` mode, regardless of the
+state of the previous instance.
 
 #### Latest manifest hash
 
@@ -334,6 +343,24 @@ old Service Worker URL forever.
 This script can be used both to deactivate `@angular/service-worker`
 as well as any other Service Workers which might have been served in
 the past on your site.
+
+### Changing your app's location
+
+It is important to note that service workers don't work behind redirect. You 
+may have already encountered the error `The script resource is behind a redirect, which is disallowed`.
+
+This can be a problem if you have to change your app's location. If you setup 
+a redirect from the old location (for example `example.com`) to the new 
+location (for example `www.example.com`) the worker will stop working. 
+Also, the redirect won't even trigger for users who are loading the site 
+entirely from Service Worker. The old worker (registered at `example.com`)
+ tries to update and sends requests to the old location `example.com` which 
+ get redirected to the new location `www.example.com` and create the error 
+`The script resource is behind a redirect, which is disallowed`.
+
+To remedy this, you may need to kill the old worker using one of the above
+techniques ([Fail-safe](#fail-safe) or [Safety Worker](#safety-worker)).
+
 
 ## More on Angular service workers
 

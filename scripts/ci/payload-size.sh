@@ -2,6 +2,26 @@
 
 set -eu -o pipefail
 
+# statc makes `stat -c` work on both Linux & OSX
+function statc () {
+  case $(uname) in
+    Darwin*) format='-f%z' ;;
+    *) format='-c%s' ;;
+  esac
+
+  stat ${format} $@
+}
+
+# sedr makes `sed -r` work on both Linux & OSX
+function sedr () {
+  case $(uname) in
+    Darwin*) flag='-E' ;;
+    *) flag='-r' ;;
+  esac
+
+  sed ${flag} "$@"
+}
+
 readonly PROJECT_NAME="angular-payload-size"
 NODE_MODULES_BIN=$PROJECT_ROOT/node_modules/.bin/
 
@@ -15,7 +35,7 @@ getGzipSize() {
   local size=-1
 
   gzip -c -$compLevel "$filePath" >> "$compPath"
-  size=$(stat -c%s "$compPath")
+  size=$(statc "$compPath")
   rm "$compPath"
 
   echo $size
@@ -26,9 +46,16 @@ getGzipSize() {
 calculateSize() {
   label=$(echo "$filename" | sed "s/.*\///" | sed "s/\..*//")
 
-  payloadData="$payloadData\"uncompressed/$label\": $(stat -c%s "$filename"), "
-  payloadData="$payloadData\"gzip7/$label\": $(getGzipSize "$filename" 7), "
-  payloadData="$payloadData\"gzip9/$label\": $(getGzipSize "$filename" 9), "
+  rawSize=$(statc $filename)
+  gzip7Size=$(getGzipSize "$filename" 7)
+  gzip9Size=$(getGzipSize "$filename" 9)
+
+  # Log the sizes (for information/debugging purposes).
+  printf "Size: %6d  (gzip7: %6d, gzip9: %6d)  %s\n" $rawSize $gzip7Size $gzip9Size $label
+
+  payloadData="$payloadData\"uncompressed/$label\": $rawSize, "
+  payloadData="$payloadData\"gzip7/$label\": $gzip7Size, "
+  payloadData="$payloadData\"gzip9/$label\": $gzip9Size, "
 }
 
 # Check whether the file size is under limit.
@@ -41,7 +68,7 @@ checkSize() {
 
   # In non-PR builds, `CI_BRANCH` is the branch being built (e.g. `pull/12345`), not the targeted branch.
   # Thus, PRs will fall back to using the size limits for `master`.
-  node ${PROJECT_ROOT}/scripts/ci/payload-size.js $limitFile $name $CI_BRANCH $CI_COMMIT
+  node ${PROJECT_ROOT}/scripts/ci/payload-size.js $limitFile $name ${CI_BRANCH:-} ${CI_COMMIT:-}
 }
 
 # Write timestamp to global variable `$payloadData`.
@@ -49,6 +76,15 @@ addTimestamp() {
   # Add Timestamp
   timestamp=$(date +%s)
   payloadData="$payloadData\"timestamp\": $timestamp, "
+}
+
+# Write the current CI build URL to global variable `$payloadData`.
+# This allows mapping the data stored in the database to the CI build job that generated it, which
+# might contain more info/context.
+#   $1: string - The CI build URL.
+addBuildUrl() {
+  buildUrl="$1"
+  payloadData="$payloadData\"buildUrl\": \"$buildUrl\", "
 }
 
 # Write the commit message for the current CI commit range to global variable `$payloadData`.
@@ -59,44 +95,15 @@ addMessage() {
   # Grab the set of SHAs for the message. This can fail when you force push or do initial build
   # because $CI_COMMIT_RANGE may contain the previous SHA which will not be in the
   # force push or commit, hence we default to last commit.
-  message=$(git log --oneline $commitRange -- || git log --oneline -n1)
+  message=$(git --git-dir ${PROJECT_ROOT}/.git log --oneline $commitRange -- || git --git-dir ${PROJECT_ROOT}/.git log --oneline -n1)
   message=$(echo $message | sed 's/\\/\\\\/g' | sed 's/"/\\"/g')
   payloadData="$payloadData\"message\": \"$message\", "
-}
-
-# Add change source: `application`, `dependencies`, or `application+dependencies`
-# Read from global variable `$parentDir`.
-# Update the change source in global variable `$payloadData`.
-#   $1: string - The commit range for this build (in `<SHA-1>...<SHA-2>` format).
-addChangeType() {
-  commitRange="$1"
-
-  yarnChanged=false
-  allChangedFiles=$(git diff --name-only $commitRange $parentDir | wc -l)
-  allChangedFileNames=$(git diff --name-only $commitRange $parentDir)
-
-  if [[ $allChangedFileNames == *"yarn.lock"* ]]; then
-    yarnChanged=true
-  fi
-
-  if [[ $allChangedFiles -eq 1 ]] && [[ "$yarnChanged" = true ]]; then
-    # only yarn.lock changed
-    change='dependencies'
-  elif [[ $allChangedFiles -gt 1 ]] && [[ "$yarnChanged" = true ]]; then
-    change='application+dependencies'
-  elif [[ $allChangedFiles -gt 0 ]]; then
-    change='application'
-  else
-    # Nothing changed in aio/
-    exit 0
-  fi
-  payloadData="$payloadData\"change\": \"$change\", "
 }
 
 # Convert the current `payloadData` value to a JSON string.
 # (Basically remove trailing `,` and wrap in `{...}`.)
 payloadToJson() {
-  echo "{$(sed -r 's|, *$||' <<< $payloadData)}"
+  echo "{$(sedr 's|, *$||' <<< $payloadData)}"
 }
 
 # Upload data to firebase database if it's commit, print out data for pull requests.
@@ -117,18 +124,17 @@ uploadData() {
 #   $1: string       - The name in database.
 #   $2: string       - The file path.
 #   $3: true | false - Whether to check the payload size and fail the test if it exceeds limit.
-#   $4: true | false - Whether to record the type of changes.
-#   $5: [string]     - The payload size limit file. Only necessary if `$3` is `true`.
+#   $4: [string]     - The payload size limit file. Only necessary if `$3` is `true`.
 trackPayloadSize() {
   name="$1"
   path="$2"
   checkSize="$3"
-  trackChangeType="$4"
-  limitFile="${5:-}"
+  limitFile="${4:-}"
 
   payloadData=""
 
   # Calculate the file sizes.
+  echo "Calculating sizes for files in '$path'..."
   for filename in $path; do
     calculateSize
   done
@@ -137,17 +143,21 @@ trackPayloadSize() {
   echo "$(payloadToJson)" > /tmp/current.log
 
   # If this is a non-PR build, upload the data to firebase.
-  if [[ "$CI_PULL_REQUEST" == "false" ]]; then
-    if [[ $trackChangeType = true ]]; then
-      addChangeType $CI_COMMIT_RANGE
-    fi
+  if [[ "${CI_PULL_REQUEST:-}" == "false" ]]; then
+    echo "Uploading data for '$name'..."
     addTimestamp
+    addBuildUrl $CI_BUILD_URL
     addMessage $CI_COMMIT_RANGE
     uploadData $name
+  else
+    echo "Skipped uploading data for '$name', because this is a pull request."
   fi
 
   # Check the file sizes against the specified limits.
   if [[ $checkSize = true ]]; then
+    echo "Verifying sizes against '$limitFile'..."
     checkSize $name $limitFile
+  else
+    echo "Skipped verifying sizes (checkSize: false)."
   fi
 }

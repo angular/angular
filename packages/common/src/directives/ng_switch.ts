@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -36,9 +36,7 @@ export class SwitchView {
 /**
  * @ngModule CommonModule
  *
- * @description A structural directive that adds or removes templates (displaying or hiding views)
- * when the next match expression matches the switch expression.
- *
+ * @description
  * The `[ngSwitch]` directive on a container specifies an expression to match against.
  * The expressions to match are provided by `ngSwitchCase` directives on views within the container.
  * - Every view that matches is rendered.
@@ -104,7 +102,7 @@ export class SwitchView {
 @Directive({selector: '[ngSwitch]'})
 export class NgSwitch {
   // TODO(issue/24571): remove '!'.
-  private _defaultViews !: SwitchView[];
+  private _defaultViews!: SwitchView[];
   private _defaultUsed = false;
   private _caseCount = 0;
   private _lastCaseCheckIndex = 0;
@@ -120,7 +118,9 @@ export class NgSwitch {
   }
 
   /** @internal */
-  _addCase(): number { return this._caseCount++; }
+  _addCase(): number {
+    return this._caseCount++;
+  }
 
   /** @internal */
   _addDefault(view: SwitchView) {
@@ -193,8 +193,7 @@ export class NgSwitchCase implements DoCheck {
   /**
    * Stores the HTML template to be selected on match.
    */
-  @Input()
-  ngSwitchCase: any;
+  @Input() ngSwitchCase: any;
 
   constructor(
       viewContainer: ViewContainerRef, templateRef: TemplateRef<Object>,
@@ -206,7 +205,9 @@ export class NgSwitchCase implements DoCheck {
   /**
    * Performs case matching. For internal use only.
    */
-  ngDoCheck() { this._view.enforceState(this.ngSwitch._matchCase(this.ngSwitchCase)); }
+  ngDoCheck() {
+    this._view.enforceState(this.ngSwitch._matchCase(this.ngSwitchCase));
+  }
 }
 
 /**

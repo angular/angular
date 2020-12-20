@@ -1,17 +1,20 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 import {dirname, relative} from 'canonical-path';
-import * as ts from 'typescript';
 import MagicString from 'magic-string';
+import * as ts from 'typescript';
+
+import {Reexport} from '../../../src/ngtsc/imports';
 import {Import, ImportManager} from '../../../src/ngtsc/translator';
 import {ExportInfo} from '../analysis/private_declarations_analyzer';
-import {isRequireCall} from '../host/commonjs_host';
+import {isRequireCall} from '../host/commonjs_umd_utils';
 import {NgccReflectionHost} from '../host/ngcc_host';
+
 import {Esm5RenderingFormatter} from './esm5_rendering_formatter';
 import {stripExtension} from './utils';
 
@@ -29,6 +32,11 @@ export class CommonJsRenderingFormatter extends Esm5RenderingFormatter {
    *  Add the imports below any in situ imports as `require` calls.
    */
   addImports(output: MagicString, imports: Import[], file: ts.SourceFile): void {
+    // Avoid unnecessary work if there are no imports to add.
+    if (imports.length === 0) {
+      return;
+    }
+
     const insertionPoint = this.findEndOfImports(file);
     const renderedImports =
         imports.map(i => `var ${i.qualifier} = require('${i.specifier}');\n`).join('');
@@ -47,10 +55,21 @@ export class CommonJsRenderingFormatter extends Esm5RenderingFormatter {
       const namedImport = entryPointBasePath !== basePath ?
           importManager.generateNamedImport(relativePath, e.identifier) :
           {symbol: e.identifier, moduleImport: null};
-      const importNamespace = namedImport.moduleImport ? `${namedImport.moduleImport}.` : '';
+      const importNamespace = namedImport.moduleImport ? `${namedImport.moduleImport.text}.` : '';
       const exportStr = `\nexports.${e.identifier} = ${importNamespace}${namedImport.symbol};`;
       output.append(exportStr);
     });
+  }
+
+  addDirectExports(
+      output: MagicString, exports: Reexport[], importManager: ImportManager,
+      file: ts.SourceFile): void {
+    for (const e of exports) {
+      const namedImport = importManager.generateNamedImport(e.fromModule, e.symbolName);
+      const importNamespace = namedImport.moduleImport ? `${namedImport.moduleImport.text}.` : '';
+      const exportStr = `\nexports.${e.asAlias} = ${importNamespace}${namedImport.symbol};`;
+      output.append(exportStr);
+    }
   }
 
   protected findEndOfImports(sf: ts.SourceFile): number {

@@ -1,13 +1,13 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
 import {Attribute, ChangeDetectionStrategy, ChangeDetectorRef, Component, ComponentFactoryResolver, DebugElement, Directive, ElementRef, EmbeddedViewRef, Host, Inject, InjectionToken, Injector, Input, NgModule, Optional, Pipe, PipeTransform, Provider, Self, SkipSelf, TemplateRef, Type, ViewContainerRef} from '@angular/core';
-import {ComponentFixture, TestBed, fakeAsync} from '@angular/core/testing';
+import {ComponentFixture, fakeAsync, TestBed} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {ivyEnabled, modifiedInIvy, obsoleteInIvy, onlyInIvy} from '@angular/private/testing';
 
@@ -32,61 +32,81 @@ class CycleDirective {
 @Directive({selector: '[needsDirectiveFromSelf]'})
 class NeedsDirectiveFromSelf {
   dependency: SimpleDirective;
-  constructor(@Self() dependency: SimpleDirective) { this.dependency = dependency; }
+  constructor(@Self() dependency: SimpleDirective) {
+    this.dependency = dependency;
+  }
 }
 
 @Directive({selector: '[optionallyNeedsDirective]'})
 class OptionallyNeedsDirective {
   dependency: SimpleDirective;
-  constructor(@Self() @Optional() dependency: SimpleDirective) { this.dependency = dependency; }
+  constructor(@Self() @Optional() dependency: SimpleDirective) {
+    this.dependency = dependency;
+  }
 }
 
 @Directive({selector: '[needsComponentFromHost]'})
 class NeedsComponentFromHost {
   dependency: SimpleComponent;
-  constructor(@Host() dependency: SimpleComponent) { this.dependency = dependency; }
+  constructor(@Host() dependency: SimpleComponent) {
+    this.dependency = dependency;
+  }
 }
 
 @Directive({selector: '[needsDirectiveFromHost]'})
 class NeedsDirectiveFromHost {
   dependency: SimpleDirective;
-  constructor(@Host() dependency: SimpleDirective) { this.dependency = dependency; }
+  constructor(@Host() dependency: SimpleDirective) {
+    this.dependency = dependency;
+  }
 }
 
 @Directive({selector: '[needsDirective]'})
 class NeedsDirective {
   dependency: SimpleDirective;
-  constructor(dependency: SimpleDirective) { this.dependency = dependency; }
+  constructor(dependency: SimpleDirective) {
+    this.dependency = dependency;
+  }
 }
 
 @Directive({selector: '[needsService]'})
 class NeedsService {
   service: any;
-  constructor(@Inject('service') service: any) { this.service = service; }
+  constructor(@Inject('service') service: any) {
+    this.service = service;
+  }
 }
 
 @Directive({selector: '[needsAppService]'})
 class NeedsAppService {
   service: any;
-  constructor(@Inject('appService') service: any) { this.service = service; }
+  constructor(@Inject('appService') service: any) {
+    this.service = service;
+  }
 }
 
 @Component({selector: '[needsHostAppService]', template: ''})
 class NeedsHostAppService {
   service: any;
-  constructor(@Host() @Inject('appService') service: any) { this.service = service; }
+  constructor(@Host() @Inject('appService') service: any) {
+    this.service = service;
+  }
 }
 
 @Component({selector: '[needsServiceComponent]', template: ''})
 class NeedsServiceComponent {
   service: any;
-  constructor(@Inject('service') service: any) { this.service = service; }
+  constructor(@Inject('service') service: any) {
+    this.service = service;
+  }
 }
 
 @Directive({selector: '[needsServiceFromHost]'})
 class NeedsServiceFromHost {
   service: any;
-  constructor(@Host() @Inject('service') service: any) { this.service = service; }
+  constructor(@Host() @Inject('service') service: any) {
+    this.service = service;
+  }
 }
 
 @Directive({selector: '[needsAttribute]'})
@@ -146,36 +166,50 @@ class PushComponentNeedsChangeDetectorRef {
 @Pipe({name: 'purePipe', pure: true})
 class PurePipe implements PipeTransform {
   constructor() {}
-  transform(value: any): any { return this; }
+  transform(value: any): any {
+    return this;
+  }
 }
 
 @Pipe({name: 'impurePipe', pure: false})
 class ImpurePipe implements PipeTransform {
   constructor() {}
-  transform(value: any): any { return this; }
+  transform(value: any): any {
+    return this;
+  }
 }
 
 @Pipe({name: 'pipeNeedsChangeDetectorRef'})
 class PipeNeedsChangeDetectorRef {
   constructor(public changeDetectorRef: ChangeDetectorRef) {}
-  transform(value: any): any { return this; }
+  transform(value: any): any {
+    return this;
+  }
 }
 
 @Pipe({name: 'pipeNeedsService'})
 export class PipeNeedsService implements PipeTransform {
   service: any;
-  constructor(@Inject('service') service: any) { this.service = service; }
-  transform(value: any): any { return this; }
+  constructor(@Inject('service') service: any) {
+    this.service = service;
+  }
+  transform(value: any): any {
+    return this;
+  }
 }
 
 @Pipe({name: 'duplicatePipe'})
 export class DuplicatePipe1 implements PipeTransform {
-  transform(value: any): any { return this; }
+  transform(value: any): any {
+    return this;
+  }
 }
 
 @Pipe({name: 'duplicatePipe'})
 export class DuplicatePipe2 implements PipeTransform {
-  transform(value: any): any { return this; }
+  transform(value: any): any {
+    return this;
+  }
 }
 
 @Component({selector: 'root', template: ''})
@@ -183,15 +217,15 @@ class TestComp {
 }
 
 function createComponentFixture<T>(
-    template: string, providers?: Provider[] | null, comp?: Type<T>): ComponentFixture<T> {
+    template: string, providers?: Provider[]|null, comp?: Type<T>): ComponentFixture<T> {
   if (!comp) {
     comp = <any>TestComp;
   }
-  TestBed.overrideComponent(comp !, {set: {template}});
+  TestBed.overrideComponent(comp!, {set: {template}});
   if (providers && providers.length) {
-    TestBed.overrideComponent(comp !, {add: {providers: providers}});
+    TestBed.overrideComponent(comp!, {add: {providers: providers}});
   }
-  return TestBed.createComponent(comp !);
+  return TestBed.createComponent(comp!);
 }
 
 function createComponent(template: string, providers?: Provider[], comp?: Type<any>): DebugElement {
@@ -351,7 +385,6 @@ describe('View injector', () => {
     });
 
     describe('injecting lazy providers into an eager provider via Injector.get', () => {
-
       it('should inject providers that were declared before it', () => {
         @Component({
           template: '',
@@ -448,7 +481,9 @@ describe('View injector', () => {
          @Component({providers: [{provide: 'a', useFactory: () => 'aValue'}], template: ''})
          class SomeComponent {
            public a: string;
-           constructor(injector: Injector) { this.a = injector.get('a'); }
+           constructor(injector: Injector) {
+             this.a = injector.get('a');
+           }
          }
 
          const comp = TestBed.configureTestingModule({declarations: [SomeComponent]})
@@ -461,8 +496,12 @@ describe('View injector', () => {
       let destroyed = false;
 
       class SomeInjectable {
-        constructor() { created = true; }
-        ngOnDestroy() { destroyed = true; }
+        constructor() {
+          created = true;
+        }
+        ngOnDestroy() {
+          destroyed = true;
+        }
       }
 
       @Component({providers: [SomeInjectable], template: ''})
@@ -589,7 +628,7 @@ describe('View injector', () => {
         .it('should not instantiate a directive with cyclic dependencies', () => {
           TestBed.configureTestingModule({declarations: [CycleDirective]});
           expect(() => createComponent('<div cycleDirective></div>'))
-              .toThrowError('Circular dep for CycleDirective');
+              .toThrowError('NG0200: Circular dependency in DI detected for CycleDirective');
         });
 
     obsoleteInIvy('This error is no longer generated by the compiler')
@@ -622,7 +661,7 @@ describe('View injector', () => {
                   SimpleComponent, {set: {template: '<div needsServiceFromHost><div>'}});
 
               expect(() => createComponent('<div simpleComponent></div>'))
-                  .toThrowError('NodeInjector: NOT_FOUND [service]');
+                  .toThrowError('NG0201: No provider for service found in NodeInjector');
             });
 
     obsoleteInIvy('This error is no longer generated by the compiler')
@@ -655,7 +694,7 @@ describe('View injector', () => {
                   SimpleComponent, {set: {template: '<div needsServiceFromHost><div>'}});
 
               expect(() => createComponent('<div simpleComponent someOtherDirective></div>'))
-                  .toThrowError('NodeInjector: NOT_FOUND [service]');
+                  .toThrowError('NG0201: No provider for service found in NodeInjector');
             });
 
     obsoleteInIvy('This error is no longer generated by the compiler')
@@ -678,7 +717,7 @@ describe('View injector', () => {
               expect(
                   () => createComponent(
                       '<div simpleDirective><div needsDirectiveFromSelf></div></div>'))
-                  .toThrowError('NodeInjector: NOT_FOUND [SimpleDirective]');
+                  .toThrowError('NG0201: No provider for SimpleDirective found in NodeInjector');
             });
 
     it('should instantiate directives that depend on other directives', fakeAsync(() => {
@@ -740,7 +779,7 @@ describe('View injector', () => {
               TestBed.overrideComponent(
                   SimpleComponent, {set: {template: '<div needsDirectiveFromHost></div>'}});
               expect(() => createComponent('<div simpleComponent simpleDirective></div>'))
-                  .toThrowError('NodeInjector: NOT_FOUND [SimpleDirective]');
+                  .toThrowError('NG0201: No provider for SimpleDirective found in NodeInjector');
             });
 
     it('should allow to use the NgModule injector from a root ViewContainerRef.parentInjector',
@@ -910,7 +949,7 @@ describe('View injector', () => {
 
       const testInjector = <Injector>{
         get: (token: any, notFoundValue: any) =>
-                 token === 'someToken' ? 'someNewValue' : notFoundValue
+            token === 'someToken' ? 'someNewValue' : notFoundValue
       };
 
       const compFactory = TestBed.configureTestingModule({imports: [TestModule]})
@@ -931,7 +970,7 @@ describe('View injector', () => {
     it('should throw if there is no TemplateRef', () => {
       TestBed.configureTestingModule({declarations: [NeedsTemplateRef]});
       expect(() => createComponent('<div needsTemplateRef></div>'))
-          .toThrowError(/No provider for TemplateRef!/);
+          .toThrowError(/No provider for TemplateRef/);
     });
 
     it('should inject null if there is no TemplateRef when the dependency is optional', () => {
@@ -961,8 +1000,7 @@ describe('View injector', () => {
 
     it('should inject ChangeDetectorRef into pipes', () => {
       TestBed.configureTestingModule({
-        declarations:
-            [SimpleDirective, PipeNeedsChangeDetectorRef, DirectiveNeedsChangeDetectorRef]
+        declarations: [SimpleDirective, PipeNeedsChangeDetectorRef, DirectiveNeedsChangeDetectorRef]
       });
       const el = createComponent(
           '<div [simpleDirective]="true | pipeNeedsChangeDetectorRef" directiveNeedsChangeDetectorRef></div>');

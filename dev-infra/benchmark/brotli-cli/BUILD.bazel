@@ -1,0 +1,19 @@
+package(default_visibility = ["//visibility:public"])
+
+load("@build_bazel_rules_nodejs//:index.bzl", "nodejs_binary")
+
+nodejs_binary(
+    name = "brotli-cli",
+    data = [
+        "cli.js",
+        "@npm//brotli",
+    ],
+    entry_point = ":cli.js",
+    visibility = ["//visibility:public"],
+)
+
+# Make source files available for distribution via pkg_npm
+filegroup(
+    name = "files",
+    srcs = glob(["*"]),
+)

@@ -1,12 +1,12 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injectable, Pipe, PipeTransform} from '@angular/core';
+import {Pipe, PipeTransform} from '@angular/core';
 import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
 
 /**
@@ -26,7 +26,6 @@ import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
  *
  * @publicApi
  */
-@Injectable()
 @Pipe({name: 'i18nSelect', pure: true})
 export class I18nSelectPipe implements PipeTransform {
   /**

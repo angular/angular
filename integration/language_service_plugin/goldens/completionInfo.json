@@ -12,254 +12,266 @@
       {
         "name": "anchor",
         "kind": "method",
-        "kindModifiers": "",
-        "sortText": "anchor"
+        "sortText": "anchor",
+        "insertText": "anchor()"
       },
       {
         "name": "big",
         "kind": "method",
-        "kindModifiers": "",
-        "sortText": "big"
+        "sortText": "big",
+        "insertText": "big()"
       },
       {
         "name": "blink",
         "kind": "method",
-        "kindModifiers": "",
-        "sortText": "blink"
+        "sortText": "blink",
+        "insertText": "blink()"
       },
       {
         "name": "bold",
         "kind": "method",
-        "kindModifiers": "",
-        "sortText": "bold"
+        "sortText": "bold",
+        "insertText": "bold()"
       },
       {
         "name": "charAt",
         "kind": "method",
-        "kindModifiers": "",
-        "sortText": "charAt"
+        "sortText": "charAt",
+        "insertText": "charAt()"
       },
       {
         "name": "charCodeAt",
         "kind": "method",
-        "kindModifiers": "",
-        "sortText": "charCodeAt"
+        "sortText": "charCodeAt",
+        "insertText": "charCodeAt()"
       },
       {
         "name": "codePointAt",
         "kind": "method",
-        "kindModifiers": "",
-        "sortText": "codePointAt"
+        "sortText": "codePointAt",
+        "insertText": "codePointAt()"
       },
       {
         "name": "concat",
         "kind": "method",
-        "kindModifiers": "",
-        "sortText": "concat"
+        "sortText": "concat",
+        "insertText": "concat()"
       },
       {
         "name": "endsWith",
         "kind": "method",
-        "kindModifiers": "",
-        "sortText": "endsWith"
+        "sortText": "endsWith",
+        "insertText": "endsWith()"
       },
       {
         "name": "fixed",
         "kind": "method",
-        "kindModifiers": "",
-        "sortText": "fixed"
+        "sortText": "fixed",
+        "insertText": "fixed()"
       },
       {
         "name": "fontcolor",
         "kind": "method",
-        "kindModifiers": "",
-        "sortText": "fontcolor"
+        "sortText": "fontcolor",
+        "insertText": "fontcolor()"
       },
       {
         "name": "fontsize",
         "kind": "method",
-        "kindModifiers": "",
-        "sortText": "fontsize"
+        "sortText": "fontsize",
+        "insertText": "fontsize()"
       },
       {
         "name": "includes",
         "kind": "method",
-        "kindModifiers": "",
-        "sortText": "includes"
+        "sortText": "includes",
+        "insertText": "includes()"
       },
       {
         "name": "indexOf",
         "kind": "method",
-        "kindModifiers": "",
-        "sortText": "indexOf"
+        "sortText": "indexOf",
+        "insertText": "indexOf()"
       },
       {
         "name": "italics",
         "kind": "method",
-        "kindModifiers": "",
-        "sortText": "italics"
+        "sortText": "italics",
+        "insertText": "italics()"
       },
       {
         "name": "lastIndexOf",
         "kind": "method",
-        "kindModifiers": "",
-        "sortText": "lastIndexOf"
+        "sortText": "lastIndexOf",
+        "insertText": "lastIndexOf()"
       },
       {
         "name": "length",
         "kind": "property",
-        "kindModifiers": "",
-        "sortText": "length"
+        "sortText": "length",
+        "insertText": "length"
       },
       {
         "name": "link",
         "kind": "method",
-        "kindModifiers": "",
-        "sortText": "link"
+        "sortText": "link",
+        "insertText": "link()"
       },
       {
         "name": "localeCompare",
         "kind": "method",
-        "kindModifiers": "",
-        "sortText": "localeCompare"
+        "sortText": "localeCompare",
+        "insertText": "localeCompare()"
       },
       {
         "name": "match",
         "kind": "method",
-        "kindModifiers": "",
-        "sortText": "match"
+        "sortText": "match",
+        "insertText": "match()"
       },
       {
         "name": "normalize",
         "kind": "method",
-        "kindModifiers": "",
-        "sortText": "normalize"
+        "sortText": "normalize",
+        "insertText": "normalize()"
+      },
+      {
+        "name": "padEnd",
+        "kind": "method",
+        "sortText": "padEnd",
+        "insertText": "padEnd()"
+      },
+      {
+        "name": "padStart",
+        "kind": "method",
+        "sortText": "padStart",
+        "insertText": "padStart()"
       },
       {
         "name": "repeat",
         "kind": "method",
-        "kindModifiers": "",
-        "sortText": "repeat"
+        "sortText": "repeat",
+        "insertText": "repeat()"
       },
       {
         "name": "replace",
         "kind": "method",
-        "kindModifiers": "",
-        "sortText": "replace"
+        "sortText": "replace",
+        "insertText": "replace()"
       },
       {
         "name": "search",
         "kind": "method",
-        "kindModifiers": "",
-        "sortText": "search"
+        "sortText": "search",
+        "insertText": "search()"
       },
       {
         "name": "slice",
         "kind": "method",
-        "kindModifiers": "",
-        "sortText": "slice"
+        "sortText": "slice",
+        "insertText": "slice()"
       },
       {
         "name": "small",
         "kind": "method",
-        "kindModifiers": "",
-        "sortText": "small"
+        "sortText": "small",
+        "insertText": "small()"
       },
       {
         "name": "split",
         "kind": "method",
-        "kindModifiers": "",
-        "sortText": "split"
+        "sortText": "split",
+        "insertText": "split()"
       },
       {
         "name": "startsWith",
         "kind": "method",
-        "kindModifiers": "",
-        "sortText": "startsWith"
+        "sortText": "startsWith",
+        "insertText": "startsWith()"
       },
       {
         "name": "strike",
         "kind": "method",
-        "kindModifiers": "",
-        "sortText": "strike"
+        "sortText": "strike",
+        "insertText": "strike()"
       },
       {
         "name": "sub",
         "kind": "method",
-        "kindModifiers": "",
-        "sortText": "sub"
+        "sortText": "sub",
+        "insertText": "sub()"
       },
       {
         "name": "substr",
         "kind": "method",
-        "kindModifiers": "",
-        "sortText": "substr"
+        "sortText": "substr",
+        "insertText": "substr()"
       },
       {
         "name": "substring",
         "kind": "method",
-        "kindModifiers": "",
-        "sortText": "substring"
+        "sortText": "substring",
+        "insertText": "substring()"
       },
       {
         "name": "sup",
         "kind": "method",
-        "kindModifiers": "",
-        "sortText": "sup"
+        "sortText": "sup",
+        "insertText": "sup()"
       },
       {
         "name": "toLocaleLowerCase",
         "kind": "method",
-        "kindModifiers": "",
-        "sortText": "toLocaleLowerCase"
+        "sortText": "toLocaleLowerCase",
+        "insertText": "toLocaleLowerCase()"
       },
       {
         "name": "toLocaleUpperCase",
         "kind": "method",
-        "kindModifiers": "",
-        "sortText": "toLocaleUpperCase"
+        "sortText": "toLocaleUpperCase",
+        "insertText": "toLocaleUpperCase()"
       },
       {
         "name": "toLowerCase",
         "kind": "method",
-        "kindModifiers": "",
-        "sortText": "toLowerCase"
+        "sortText": "toLowerCase",
+        "insertText": "toLowerCase()"
       },
       {
         "name": "toString",
         "kind": "method",
-        "kindModifiers": "",
-        "sortText": "toString"
+        "sortText": "toString",
+        "insertText": "toString()"
       },
       {
         "name": "toUpperCase",
         "kind": "method",
-        "kindModifiers": "",
-        "sortText": "toUpperCase"
+        "sortText": "toUpperCase",
+        "insertText": "toUpperCase()"
       },
       {
         "name": "trim",
         "kind": "method",
-        "kindModifiers": "",
-        "sortText": "trim"
+        "sortText": "trim",
+        "insertText": "trim()"
       },
       {
         "name": "trimLeft",
         "kind": "method",
-        "kindModifiers": "",
-        "sortText": "trimLeft"
+        "sortText": "trimLeft",
+        "insertText": "trimLeft()"
       },
       {
         "name": "trimRight",
         "kind": "method",
-        "kindModifiers": "",
-        "sortText": "trimRight"
+        "sortText": "trimRight",
+        "insertText": "trimRight()"
       },
       {
         "name": "valueOf",
         "kind": "method",
-        "kindModifiers": "",
-        "sortText": "valueOf"
+        "sortText": "valueOf",
+        "insertText": "valueOf()"
       }
     ]
   }

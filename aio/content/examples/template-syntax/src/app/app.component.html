@@ -38,6 +38,7 @@
 <a href="#safe-navigation-operator">Safe navigation operator <i>?.</i></a><br>
 <a href="#non-null-assertion-operator">Non-null assertion operator <i>!.</i></a><br>
 <a href="#enums">Enums</a><br>
+<a href="#svg-templates">SVG Templates</a><br>
 
 <!-- Interpolation and expressions -->
 <hr><h2 id="interpolation">Interpolation</h2>
@@ -130,8 +131,8 @@
 <!-- New Mental Model -->
 <hr><h2 id="mental-model">New Mental Model</h2>
 
-<!--<img src="http://www.wpclipart.com/cartoon/people/hero/hero_silhoutte_T.png">-->
-<!-- Public Domain terms of use: http://www.wpclipart.com/terms.html -->
+<!--<img src="https://wpclipart.com/cartoon/people/hero/hero_silhoutte_T.png">-->
+<!-- Public Domain terms of use: https://wpclipart.com/terms.html -->
 <!-- #docregion img+button -->
 <div class="special">Mental Model</div>
 <img src="assets/images/hero.png">
@@ -272,7 +273,7 @@ button</button>
 <!-- #docregion property-binding-vs-interpolation-sanitization -->
 <!--
   Angular generates warnings for these two lines as it sanitizes them
-  WARNING: sanitizing HTML stripped some content (see http://g.co/ng/security#xss).
+  WARNING: sanitizing HTML stripped some content (see https://g.co/ng/security#xss).
  -->
 <p><span>"{{evilTitle}}" is the <i>interpolated</i> evil title.</span></p>
 <p>"<span [innerHTML]="evilTitle"></span>" is the <i>property bound</i> evil title.</p>
@@ -442,7 +443,7 @@ button</button>
 
 <!-- #docregion without-NgModel -->
 <input [value]="currentHero.name"
-       (input)="currentHero.name=$event.target.value" >
+       (input)="updateCurrentHeroName($event)">
 <!-- #enddocregion without-NgModel -->
 without NgModel
 <br>
@@ -752,7 +753,7 @@ bindon-ngModel
 
 <div>
   <!-- pipe price to USD and display the $ symbol -->
-  <label>Price: </label>{{product.price | currency:'USD':true}}
+  <label>Price: </label>{{product.price | currency:'USD':'symbol'}}
 </div>
 
 <a class="to-toc" href="#toc">top</a>
@@ -856,4 +857,10 @@ The null hero's name is {{nullHero && nullHero.name}}
   <!-- #enddocregion enums -->
 </p>
 
+<a class="to-toc" href="#toc">top</a>
+
+<hr><h2 id="svg-templates">SVG Templates</h2>
+<!-- #docregion svg-templates -->
+<app-svg></app-svg>
+<!-- #enddocregion svg-templates -->
 <a class="to-toc" href="#toc">top</a>

@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -8,7 +8,7 @@
 
 import {CommonModule, JsonPipe} from '@angular/common';
 import {Component} from '@angular/core';
-import {TestBed, async} from '@angular/core/testing';
+import {TestBed, waitForAsync} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
 {
@@ -18,7 +18,9 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
     let inceptionObjString: string;
     let pipe: JsonPipe;
 
-    function normalize(obj: string): string { return obj.replace(regNewLine, ''); }
+    function normalize(obj: string): string {
+      return obj.replace(regNewLine, '');
+    }
 
     beforeEach(() => {
       inceptionObj = {dream: {dream: {dream: 'Limbo'}}};
@@ -35,8 +37,9 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
     });
 
     describe('transform', () => {
-      it('should return JSON-formatted string',
-         () => { expect(pipe.transform(inceptionObj)).toEqual(inceptionObjString); });
+      it('should return JSON-formatted string', () => {
+        expect(pipe.transform(inceptionObj)).toEqual(inceptionObjString);
+      });
 
       it('should return JSON-formatted string even when normalized', () => {
         const dream1 = normalize(pipe.transform(inceptionObj));
@@ -52,7 +55,6 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
     });
 
     describe('integration', () => {
-
       @Component({selector: 'test-comp', template: '{{data | json}}'})
       class TestComp {
         data: any;
@@ -62,7 +64,7 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
         TestBed.configureTestingModule({declarations: [TestComp], imports: [CommonModule]});
       });
 
-      it('should work with mutable objects', async(() => {
+      it('should work with mutable objects', waitForAsync(() => {
            const fixture = TestBed.createComponent(TestComp);
            const mutable: number[] = [1];
            fixture.componentInstance.data = mutable;

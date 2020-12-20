@@ -1,8 +1,8 @@
 // Illustrative (not used), mini-version of the actual HeroOfTheMonthComponent
 // Injecting with the MinimalLogger "interface-class"
 import { Component, NgModule } from '@angular/core';
-import { LoggerService }       from './logger.service';
-import { MinimalLogger }       from './minimal-logger.service';
+import { LoggerService } from './logger.service';
+import { MinimalLogger } from './minimal-logger.service';
 
 // #docregion
 @Component({

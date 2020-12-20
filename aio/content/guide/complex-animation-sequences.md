@@ -2,7 +2,7 @@
 
 #### Prerequisites
 
-A basic understanding of the  following concepts:
+A basic understanding of the following concepts:
 
 * [Introduction to Angular animations](guide/animations)
 * [Transition and triggers](guide/transition-and-triggers)
@@ -15,7 +15,7 @@ Functions that control complex animation sequences are as follows:
 
 * `query()` finds one or more inner HTML elements.
 * `stagger()` applies a cascading delay to animations for multiple elements.
-* `group()` runs multiple animation steps in parallel.
+* [`group()`](api/animations/group) runs multiple animation steps in parallel.
 * `sequence()` runs animation steps one after another.
 
 {@a complex-sequence}
@@ -30,7 +30,7 @@ The Filter/Stagger tab in the live example shows a list of heroes with an introd
 
 The following example demonstrates how to use `query()` and `stagger()` functions on the entry of an animated element.
 
-* Use `query()` to look for any element entering or leaving the page. The query specifies elements meeting certain CSS class criteria.
+* Use `query()` to look for an element entering the page that meets certain criteria.
 
 * For each of these elements, use `style()` to set the same initial style for the element. Make it invisible and use `transform` to move it out of position so that it can slide into place.
 
@@ -38,24 +38,24 @@ The following example demonstrates how to use `query()` and `stagger()` function
 
 * Animate each element on screen for 0.5 seconds using a custom-defined easing curve, simultaneously fading it in and un-transforming it.
 
-<code-example path="animations/src/app/hero-list-page.component.ts" header="src/app/hero-list-page.component.ts" region="page-animations" language="typescript" linenums="false"></code-example>
+<code-example path="animations/src/app/hero-list-page.component.ts" header="src/app/hero-list-page.component.ts" region="page-animations" language="typescript"></code-example>
 
 ## Parallel animation using group() function
 
-You've seen how to add a delay between each successive animation. But you may also want to configure animations that happen in parallel. For example, you may want to animate two CSS properties of the same element but use a different `easing` function for each one. For this, you can use the animation `group()` function.
+You've seen how to add a delay between each successive animation. But you may also want to configure animations that happen in parallel. For example, you may want to animate two CSS properties of the same element but use a different `easing` function for each one. For this, you can use the animation [`group()`](api/animations/group) function.
 
 <div class="alert is-helpful">
 
-**Note:** The `group()` function is used to group animation *steps*, rather than animated elements.
+**Note:** The [`group()`](api/animations/group) function is used to group animation *steps*, rather than animated elements.
 </div>
 
 In the following example, using groups on both `:enter` and `:leave` allow for two different timing configurations. They're applied to the same element in parallel, but run independently.
 
-<code-example path="animations/src/app/hero-list-groups.component.ts" region="animationdef" header="src/app/hero-list-groups.component.ts (excerpt)" language="typescript" linenums="false"></code-example>
+<code-example path="animations/src/app/hero-list-groups.component.ts" region="animationdef" header="src/app/hero-list-groups.component.ts (excerpt)" language="typescript"></code-example>
 
 ## Sequential vs. parallel animations
 
-Complex animations can have many things happening at once. But what if you want to create an animation involving several animations happening one after the other? Earlier we used `group()` to run multiple animations all at the same time, in parallel.
+Complex animations can have many things happening at once. But what if you want to create an animation involving several animations happening one after the other? Earlier we used [`group()`](api/animations/group) to run multiple animations all at the same time, in parallel.
 
 A second function called `sequence()` lets you run those same animations one after the other. Within `sequence()`, the animation steps consist of either `style()` or `animate()` function calls.
 
@@ -74,7 +74,7 @@ The HTML template contains a trigger called `filterAnimation`.
 
 The component file contains three transitions.
 
-<code-example path="animations/src/app/hero-list-page.component.ts" header="src/app/hero-list-page.component.ts" region="filter-animations" language="typescript" linenums="false"></code-example>
+<code-example path="animations/src/app/hero-list-page.component.ts" header="src/app/hero-list-page.component.ts" region="filter-animations" language="typescript"></code-example>
 
 The animation does the following:
 
@@ -92,7 +92,7 @@ For each match:
 
 ## Animation sequence summary
 
-Angular functions for animating multiple elements start with `query()` to find inner elements, for example gathering all images within a `<div>`. The remaining functions, `stagger()`, `group()`, and `sequence()`, apply cascades or allow you to control how multiple animation steps are applied.
+Angular functions for animating multiple elements start with `query()` to find inner elements, for example gathering all images within a `<div>`. The remaining functions, `stagger()`, [`group()`](api/animations/group), and `sequence()`, apply cascades or allow you to control how multiple animation steps are applied.
 
 ## More on Angular animations
 

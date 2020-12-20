@@ -12,10 +12,9 @@ export class UserServiceConfig {
 })
 export class UserService {
   id = nextId++;
-  private _userName = 'Sherlock Holmes';
 
   // #docregion ctor
-  constructor(@Optional() config: UserServiceConfig) {
+  constructor(@Optional() config?: UserServiceConfig) {
     if (config) { this._userName = config.userName; }
   }
   // #enddocregion ctor
@@ -25,4 +24,5 @@ export class UserService {
     const suffix = this.id > 1 ? ` times ${this.id}` : '';
     return this._userName + suffix;
   }
+  private _userName = 'Sherlock Holmes';  // tslint:disable-line: variable-name
 }

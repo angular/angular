@@ -54,8 +54,12 @@ $purple-600: #8E24AA;
 $teal-500: #009688;
 $lightgrey: #F5F6F7;
 
+// STATE COLORS
+$focus-outline-ondark: rgba($white, 0.8);
+$focus-outline-onlight: $accentblue;
+
 // GRADIENTS
-$bluegradient: linear-gradient(145deg,#0D47A1,#42A5F5);
+$bluegradient: linear-gradient(145deg,$blue-900,$blue-400);
 $redgradient: linear-gradient(145deg,$darkred,$brightred);
 
 // API LABEL COLOR AND SYMBOLS MAP

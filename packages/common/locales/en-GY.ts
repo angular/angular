@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -18,7 +18,9 @@ function plural(n: number): number {
 }
 
 export default [
-  'en-GY', [['a', 'p'], ['AM', 'PM'], u], [['AM', 'PM'], u, u],
+  'en-GY',
+  [['a', 'p'], ['am', 'pm'], u],
+  [['am', 'pm'], u, u],
   [
     ['S', 'M', 'T', 'W', 'T', 'F', 'S'], ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
     ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
@@ -33,10 +35,19 @@ export default [
       'October', 'November', 'December'
     ]
   ],
-  u, [['B', 'A'], ['BC', 'AD'], ['Before Christ', 'Anno Domini']], 1, [6, 0],
+  u,
+  [['B', 'A'], ['BC', 'AD'], ['Before Christ', 'Anno Domini']],
+  1,
+  [6, 0],
   ['dd/MM/y', 'd MMM y', 'd MMMM y', 'EEEE, d MMMM y'],
-  ['h:mm a', 'h:mm:ss a', 'h:mm:ss a z', 'h:mm:ss a zzzz'], ['{1}, {0}', u, '{1} \'at\' {0}', u],
+  ['h:mm a', 'h:mm:ss a', 'h:mm:ss a z', 'h:mm:ss a zzzz'],
+  ['{1}, {0}', u, '{1} \'at\' {0}', u],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], '$', 'Guyanaese Dollar',
-  {'GYD': ['$'], 'JPY': ['JP¥', '¥'], 'USD': ['US$', '$']}, plural
+  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'],
+  'GYD',
+  '$',
+  'Guyanaese Dollar',
+  {'GYD': ['$'], 'JPY': ['JP¥', '¥'], 'USD': ['US$', '$']},
+  'ltr',
+  plural
 ];

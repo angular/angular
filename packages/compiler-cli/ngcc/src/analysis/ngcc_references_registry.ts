@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -9,7 +9,7 @@
 import * as ts from 'typescript';
 import {ReferencesRegistry} from '../../../src/ngtsc/annotations';
 import {Reference} from '../../../src/ngtsc/imports';
-import {Declaration, ReflectionHost} from '../../../src/ngtsc/reflection';
+import {Declaration, DeclarationNode, ReflectionHost} from '../../../src/ngtsc/reflection';
 import {hasNameIdentifier} from '../utils';
 
 /**
@@ -29,7 +29,7 @@ export class NgccReferencesRegistry implements ReferencesRegistry {
    * Only `ResolveReference` references are stored. Other types are ignored.
    * @param references A collection of references to register.
    */
-  add(source: ts.Declaration, ...references: Reference<ts.Declaration>[]): void {
+  add(source: DeclarationNode, ...references: Reference<DeclarationNode>[]): void {
     references.forEach(ref => {
       // Only store relative references. We are not interested in literals.
       if (ref.bestGuessOwningModule === null && hasNameIdentifier(ref.node)) {
@@ -45,5 +45,7 @@ export class NgccReferencesRegistry implements ReferencesRegistry {
    * Create and return a mapping for the registered resolved references.
    * @returns A map of reference identifiers to reference declarations.
    */
-  getDeclarationMap(): Map<ts.Identifier, Declaration> { return this.map; }
+  getDeclarationMap(): Map<ts.Identifier, Declaration> {
+    return this.map;
+  }
 }

@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -27,11 +27,11 @@ export function deepEqual(a: any, b: any): boolean {
   }
 }
 
-export function isAnchor(el: (Node & ParentNode) | Element | null): el is HTMLAnchorElement {
+export function isAnchor(el: (Node&ParentNode)|Element|null): el is HTMLAnchorElement {
   return (<HTMLAnchorElement>el).href !== undefined;
 }
 
-export function isPromise(obj: any): obj is Promise<any> {
+export function isPromise<T = any>(obj: any): obj is Promise<T> {
   // allow any Promise/A+ compliant thenable.
   // It's up to the caller to ensure that obj.then conforms to the spec
   return !!obj && typeof obj.then === 'function';

@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -21,10 +21,12 @@ module.exports = {
   download: gulp => done => {
     const cldrDownloader = require('cldr-data-downloader');
     const cldrDataFolder = path.join(__dirname, 'cldr/cldr-data');
-    if (!fs.existsSync(cldrDataFolder)) {
+    if (fs.existsSync(cldrDataFolder)) {
+      fs.rmdirSync(cldrDataFolder, {recursive: true});
+    } else {
       fs.mkdirSync(cldrDataFolder);
     }
-    cldrDownloader(path.join(__dirname, 'cldr/cldr-urls.json'), cldrDataFolder, done);
+    cldrDownloader(path.join(__dirname, 'cldr/cldr-urls.json'), cldrDataFolder, {}, done);
   },
 
   closure: gulp => done => {

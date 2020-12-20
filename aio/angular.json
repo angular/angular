@@ -5,7 +5,8 @@
     "packageManager": "yarn",
     "warnings": {
       "typescriptMismatch": false
-    }
+    },
+    "analytics": false
   },
   "newProjectRoot": "projects",
   "projects": {
@@ -36,7 +37,6 @@
             "outputHashing": "all",
             "sourceMap": true,
             "statsJson": true,
-            "extractCss": true,
             "extractLicenses": true,
             "namedChunks": true,
             "vendorChunk": false,
@@ -57,9 +57,15 @@
               }
             ],
             "styles": [
-              "src/styles.scss"
+              "src/styles/main.scss"
             ],
-            "scripts": []
+            "scripts": [],
+            "budgets": [
+              {
+                "type": "anyComponentStyle",
+                "maximumWarning": "6kb"
+              }
+            ]
           },
           "configurations": {
             "fast": {
@@ -70,6 +76,15 @@
                 {
                   "replace": "src/environments/environment.ts",
                   "with": "src/environments/environment.next.ts"
+                }
+              ],
+              "serviceWorker": true
+            },
+            "rc": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.rc.ts"
                 }
               ],
               "serviceWorker": true
@@ -91,6 +106,9 @@
                 }
               ],
               "serviceWorker": true
+            },
+            "ci": {
+              "progress": false
             }
           }
         },
@@ -106,6 +124,9 @@
             "next": {
               "browserTarget": "site:build:next"
             },
+            "rc": {
+              "browserTarget": "site:build:rc"
+            },
             "stable": {
               "browserTarget": "site:build:stable"
             },
@@ -113,7 +134,7 @@
               "browserTarget": "site:build:archive"
             },
             "ci": {
-              "progress": false
+              "browserTarget": "site:build:ci"
             }
           }
         },
@@ -148,7 +169,7 @@
               }
             ],
             "styles": [
-              "src/styles.scss"
+              "src/styles/main.scss"
             ],
             "scripts": []
           }

@@ -1,8 +1,11 @@
+// tslint:disable: no-conflicting-lifecycle
+// #docregion
 import {
   AfterContentChecked,
   AfterContentInit,
   AfterViewChecked,
   AfterViewInit,
+  Directive,
   DoCheck,
   OnChanges,
   OnDestroy,
@@ -10,12 +13,13 @@ import {
   SimpleChanges
 } from '@angular/core';
 import { Component, Input } from '@angular/core';
-import { LoggerService }    from './logger.service';
+import { LoggerService } from './logger.service';
 
 let nextId = 1;
 
 // #docregion ngOnInit
-export class PeekABoo implements OnInit {
+@Directive()
+export class PeekABooDirective implements OnInit {
   constructor(private logger: LoggerService) { }
 
   // implement OnInit's `ngOnInit` method
@@ -34,7 +38,7 @@ export class PeekABoo implements OnInit {
 })
 // Don't HAVE to mention the Lifecycle Hook interfaces
 // unless we want typing and tool support.
-export class PeekABooComponent extends PeekABoo implements
+export class PeekABooComponent extends PeekABooDirective implements
              OnChanges, OnInit, DoCheck,
              AfterContentInit, AfterContentChecked,
              AfterViewInit, AfterViewChecked,
@@ -46,16 +50,16 @@ export class PeekABooComponent extends PeekABoo implements
   constructor(logger: LoggerService) {
     super(logger);
 
-    let is = this.name ? 'is' : 'is not';
+    const is = this.name ? 'is' : 'is not';
     this.logIt(`name ${is} known at construction`);
   }
 
   // only called for/if there is an @input variable set by parent.
   ngOnChanges(changes: SimpleChanges) {
-    let changesMsgs: string[] = [];
-    for (let propName in changes) {
+    const changesMsgs: string[] = [];
+    for (const propName in changes) {
       if (propName === 'name') {
-        let name = changes['name'].currentValue;
+        const name = changes.name.currentValue;
         changesMsgs.push(`name ${this.verb} to "${name}"`);
       } else {
         changesMsgs.push(propName + ' ' + this.verb);

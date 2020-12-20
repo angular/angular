@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -62,4 +62,22 @@ describe('cli: parseArguments', () => {
     chai.assert.equal(mode, 'verify');
     chai.assert.deepEqual(errors, []);
   });
+
+  it('should show usage with error when supplied with --autoDiscoverEntrypoints without --baseDir',
+     () => {
+       const {mode, errors} =
+           parseArguments(['--autoDiscoverEntrypoints', '--outDir', 'something']);
+       chai.assert.equal(mode, 'help');
+       chai.assert.deepEqual(
+           errors, ['--rootDir must be provided with --autoDiscoverEntrypoints.']);
+     });
+
+  it('should show usage with error when supplied with --autoDiscoverEntrypoints without --outDir/verifyDir',
+     () => {
+       const {mode, errors} =
+           parseArguments(['--autoDiscoverEntrypoints', '--rootDir', 'something']);
+       chai.assert.equal(mode, 'help');
+       chai.assert.deepEqual(
+           errors, ['--outDir or --verifyDir must be used with --autoDiscoverEntrypoints.']);
+     });
 });

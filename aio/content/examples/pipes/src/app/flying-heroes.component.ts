@@ -1,8 +1,8 @@
 // #docplaster
 // #docregion
-import { Component }              from '@angular/core';
+import { Component } from '@angular/core';
 
-import { HEROES }                 from './heroes';
+import { HEROES } from './heroes';
 
 @Component({
   selector: 'app-flying-heroes',
@@ -23,7 +23,7 @@ export class FlyingHeroesComponent {
   addHero(name: string) {
     name = name.trim();
     if (!name) { return; }
-    let hero = {name, canFly: this.canFly};
+    const hero = {name, canFly: this.canFly};
 // #enddocregion v1
     if (this.mutate) {
     // Pure pipe won't update display because heroes array reference is unchanged

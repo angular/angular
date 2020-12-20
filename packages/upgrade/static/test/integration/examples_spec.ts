@@ -1,16 +1,16 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Directive, ElementRef, Injector, Input, NgModule, destroyPlatform} from '@angular/core';
-import {async} from '@angular/core/testing';
+import {Component, destroyPlatform, Directive, ElementRef, Injector, Input, NgModule} from '@angular/core';
+import {waitForAsync} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
-import {UpgradeComponent, UpgradeModule, downgradeComponent} from '@angular/upgrade/static';
+import {downgradeComponent, UpgradeComponent, UpgradeModule} from '@angular/upgrade/static';
 
 import * as angular from '../../../src/common/src/angular1';
 import {html, multiTrim, withEachNg1Version} from '../../../src/common/test/helpers/common_test_helpers';
@@ -19,20 +19,19 @@ import {bootstrap} from './static_test_helpers';
 
 withEachNg1Version(() => {
   describe('examples', () => {
-
     beforeEach(() => destroyPlatform());
     afterEach(() => destroyPlatform());
 
-    it('should have AngularJS loaded', () => expect(angular.version.major).toBe(1));
+    it('should have AngularJS loaded',
+       () => expect(angular.getAngularJSGlobal().version.major).toBe(1));
 
-    it('should verify UpgradeAdapter example', async(() => {
-
+    it('should verify UpgradeAdapter example', waitForAsync(() => {
          // This is wrapping (upgrading) an AngularJS component to be used in an Angular
          // component
          @Directive({selector: 'ng1'})
          class Ng1Component extends UpgradeComponent {
            // TODO(issue/24571): remove '!'.
-           @Input() title !: string;
+           @Input() title!: string;
 
            constructor(elementRef: ElementRef, injector: Injector) {
              super('ng1', elementRef, injector);
@@ -46,7 +45,7 @@ withEachNg1Version(() => {
          })
          class Ng2Component {
            // TODO(issue/24571): remove '!'.
-           @Input('name') nameProp !: string;
+           @Input('name') nameProp!: string;
          }
 
          // This module represents the Angular pieces of the application

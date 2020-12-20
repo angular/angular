@@ -1,0 +1,33 @@
+<!doctype html>
+<html>
+<head>
+  <!-- Prevent the browser from requesting any favicon. -->
+  <link rel="icon" href="data:,">
+</head>
+<body>
+
+  <h2>Params</h2>
+  <form>
+    View Count:
+    <input type="number" name="viewCount" placeholder="viewCount" value="10">
+    <br>
+    <button>Apply</button>
+  </form>
+
+  <h2>Render3 Transplanted View Benchmark</h2>
+  <p>
+    <button id="destroyDom">destroyDom</button>
+    <button id="createDom">createDom</button>
+    <button id="markInsertionComponentForCheck">markInsertionComponentForCheck</button>
+    <button id="detectChanges">detectChanges</button>
+    <button id="detectChangesProfile">profile detectChanges</button>
+  </p>
+
+  <div>
+    <declaration-component id="root"></declaration-component>
+  </div>
+
+  <!--load location for ts_devserver-->
+  <script src="/app_bundle.js"></script>
+</body>
+</html>

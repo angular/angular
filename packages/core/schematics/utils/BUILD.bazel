@@ -10,6 +10,7 @@ ts_library(
         "@npm//@angular-devkit/core",
         "@npm//@angular-devkit/schematics",
         "@npm//@schematics/angular",
+        "@npm//@types/inquirer",
         "@npm//@types/node",
         "@npm//typescript",
     ],

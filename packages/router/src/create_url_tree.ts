@@ -1,13 +1,13 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
 import {ActivatedRoute} from './router_state';
-import {PRIMARY_OUTLET, Params} from './shared';
+import {Params, PRIMARY_OUTLET} from './shared';
 import {UrlSegment, UrlSegmentGroup, UrlTree} from './url_tree';
 import {forEach, last, shallowEqual} from './utils/collection';
 
@@ -35,6 +35,14 @@ export function createUrlTree(
 
 function isMatrixParams(command: any): boolean {
   return typeof command === 'object' && command != null && !command.outlets && !command.segmentPath;
+}
+
+/**
+ * Determines if a given command has an `outlets` map. When we encounter a command
+ * with an outlets k/v map, we need to apply each outlet individually to the existing segment.
+ */
+function isCommandWithOutlets(command: any): command is {outlets: {[key: string]: any}} {
+  return typeof command === 'object' && command != null && command.outlets;
 }
 
 function tree(
@@ -75,7 +83,7 @@ class Navigation {
       throw new Error('Root segment cannot have matrix parameters');
     }
 
-    const cmdWithOutlet = commands.find(c => typeof c === 'object' && c != null && c.outlets);
+    const cmdWithOutlet = commands.find(isCommandWithOutlets);
     if (cmdWithOutlet && cmdWithOutlet !== last(commands)) {
       throw new Error('{outlets:{}} has to be the last command');
     }
@@ -148,7 +156,12 @@ function findStartingPosition(nav: Navigation, tree: UrlTree, route: ActivatedRo
   }
 
   if (route.snapshot._lastPathIndex === -1) {
-    return new Position(route.snapshot._urlSegment, true, 0);
+    const segmentGroup = route.snapshot._urlSegment;
+    // Pathless ActivatedRoute has _lastPathIndex === -1 but should not process children
+    // see issue #26224, #13011, #35687
+    // However, if the ActivatedRoute is the root we should process children like above.
+    const processChildren = segmentGroup === tree.root;
+    return new Position(segmentGroup, processChildren, 0);
   }
 
   const modifier = isMatrixParams(nav.commands[0]) ? 0 : 1;
@@ -164,7 +177,7 @@ function createPositionApplyingDoubleDots(
   let dd = numberOfDoubleDots;
   while (dd > ci) {
     dd -= ci;
-    g = g.parent !;
+    g = g.parent!;
     if (!g) {
       throw new Error('Invalid number of \'../\'');
     }
@@ -173,17 +186,12 @@ function createPositionApplyingDoubleDots(
   return new Position(g, false, ci - dd);
 }
 
-function getPath(command: any): any {
-  if (typeof command === 'object' && command != null && command.outlets) {
-    return command.outlets[PRIMARY_OUTLET];
+function getOutlets(commands: unknown[]): {[k: string]: unknown[]|string} {
+  if (isCommandWithOutlets(commands[0])) {
+    return commands[0].outlets;
   }
-  return `${command}`;
-}
 
-function getOutlets(commands: any[]): {[k: string]: any[]} {
-  if (!(typeof commands[0] === 'object')) return {[PRIMARY_OUTLET]: commands};
-  if (commands[0].outlets === undefined) return {[PRIMARY_OUTLET]: commands};
-  return commands[0].outlets;
+  return {[PRIMARY_OUTLET]: commands};
 }
 
 function updateSegmentGroup(
@@ -221,7 +229,10 @@ function updateSegmentGroupChildren(
     const outlets = getOutlets(commands);
     const children: {[key: string]: UrlSegmentGroup} = {};
 
-    forEach(outlets, (commands: any, outlet: string) => {
+    forEach(outlets, (commands, outlet) => {
+      if (typeof commands === 'string') {
+        commands = [commands];
+      }
       if (commands !== null) {
         children[outlet] = updateSegmentGroup(segmentGroup.children[outlet], startIndex, commands);
       }
@@ -244,7 +255,14 @@ function prefixedWith(segmentGroup: UrlSegmentGroup, startIndex: number, command
   while (currentPathIndex < segmentGroup.segments.length) {
     if (currentCommandIndex >= commands.length) return noMatch;
     const path = segmentGroup.segments[currentPathIndex];
-    const curr = getPath(commands[currentCommandIndex]);
+    const command = commands[currentCommandIndex];
+    // Do not try to consume command as part of the prefixing if it has outlets because it can
+    // contain outlets other than the one being processed. Consuming the outlets command would
+    // result in other outlets being ignored.
+    if (isCommandWithOutlets(command)) {
+      break;
+    }
+    const curr = `${command}`;
     const next =
         currentCommandIndex < commands.length - 1 ? commands[currentCommandIndex + 1] : null;
 
@@ -269,8 +287,9 @@ function createNewSegmentGroup(
 
   let i = 0;
   while (i < commands.length) {
-    if (typeof commands[i] === 'object' && commands[i].outlets !== undefined) {
-      const children = createNewSegmentChildren(commands[i].outlets);
+    const command = commands[i];
+    if (isCommandWithOutlets(command)) {
+      const children = createNewSegmentChildren(command.outlets);
       return new UrlSegmentGroup(paths, children);
     }
 
@@ -282,7 +301,7 @@ function createNewSegmentGroup(
       continue;
     }
 
-    const curr = getPath(commands[i]);
+    const curr = isCommandWithOutlets(command) ? command.outlets[PRIMARY_OUTLET] : `${command}`;
     const next = (i < commands.length - 1) ? commands[i + 1] : null;
     if (curr && next && isMatrixParams(next)) {
       paths.push(new UrlSegment(curr, stringify(next)));
@@ -295,9 +314,13 @@ function createNewSegmentGroup(
   return new UrlSegmentGroup(paths, {});
 }
 
-function createNewSegmentChildren(outlets: {[name: string]: any}): any {
-  const children: {[key: string]: UrlSegmentGroup} = {};
-  forEach(outlets, (commands: any, outlet: string) => {
+function createNewSegmentChildren(outlets: {[name: string]: unknown[]|string}):
+    {[outlet: string]: UrlSegmentGroup} {
+  const children: {[outlet: string]: UrlSegmentGroup} = {};
+  forEach(outlets, (commands, outlet) => {
+    if (typeof commands === 'string') {
+      commands = [commands];
+    }
     if (commands !== null) {
       children[outlet] = createNewSegmentGroup(new UrlSegmentGroup([], {}), 0, commands);
     }

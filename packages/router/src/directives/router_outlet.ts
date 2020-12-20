@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -18,20 +18,43 @@ import {PRIMARY_OUTLET} from '../shared';
  *
  * Acts as a placeholder that Angular dynamically fills based on the current router state.
  *
+ * Each outlet can have a unique name, determined by the optional `name` attribute.
+ * The name cannot be set or changed dynamically. If not set, default value is "primary".
+ *
  * ```
  * <router-outlet></router-outlet>
  * <router-outlet name='left'></router-outlet>
  * <router-outlet name='right'></router-outlet>
  * ```
  *
- * A router outlet will emit an activate event any time a new component is being instantiated,
- * and a deactivate event when it is being destroyed.
+ * Named outlets can be the targets of secondary routes.
+ * The `Route` object for a secondary route has an `outlet` property to identify the target outlet:
+ *
+ * `{path: <base-path>, component: <component>, outlet: <target_outlet_name>}`
+ *
+ * Using named outlets and secondary routes, you can target multiple outlets in
+ * the same `RouterLink` directive.
+ *
+ * The router keeps track of separate branches in a navigation tree for each named outlet and
+ * generates a representation of that tree in the URL.
+ * The URL for a secondary route uses the following syntax to specify both the primary and secondary
+ * routes at the same time:
+ *
+ * `http://base-path/primary-route-path(outlet-name:route-path)`
+ *
+ * A router outlet emits an activate event when a new component is instantiated,
+ * and a deactivate event when a component is destroyed.
  *
  * ```
  * <router-outlet
  *   (activate)='onActivate($event)'
  *   (deactivate)='onDeactivate($event)'></router-outlet>
  * ```
+ *
+ * @see [Routing tutorial](guide/router-tutorial-toh#named-outlets "Example of a named
+ * outlet and secondary route configuration").
+ * @see `RouterLink`
+ * @see `Route`
  * @ngModule RouterModule
  *
  * @publicApi
@@ -53,8 +76,12 @@ export class RouterOutlet implements OnDestroy, OnInit {
     parentContexts.onChildOutletCreated(this.name, this);
   }
 
-  ngOnDestroy(): void { this.parentContexts.onChildOutletDestroyed(this.name); }
+  /** @nodoc */
+  ngOnDestroy(): void {
+    this.parentContexts.onChildOutletDestroyed(this.name);
+  }
 
+  /** @nodoc */
   ngOnInit(): void {
     if (!this.activated) {
       // If the outlet was not instantiated at the time the route got activated we need to populate
@@ -72,7 +99,9 @@ export class RouterOutlet implements OnDestroy, OnInit {
     }
   }
 
-  get isActivated(): boolean { return !!this.activated; }
+  get isActivated(): boolean {
+    return !!this.activated;
+  }
 
   get component(): Object {
     if (!this.activated) throw new Error('Outlet is not activated');
@@ -128,7 +157,7 @@ export class RouterOutlet implements OnDestroy, OnInit {
     }
     this._activatedRoute = activatedRoute;
     const snapshot = activatedRoute._futureSnapshot;
-    const component = <any>snapshot.routeConfig !.component;
+    const component = <any>snapshot.routeConfig!.component;
     resolver = resolver || this.resolver;
     const factory = resolver.resolveComponentFactory(component);
     const childContexts = this.parentContexts.getOrCreateContext(this.name).children;

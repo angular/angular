@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -16,7 +16,7 @@ import {ReflectiveDependency, ResolvedReflectiveFactory, ResolvedReflectiveProvi
 
 
 // Threshold for the dynamic version
-const UNDEFINED = new Object();
+const UNDEFINED = {};
 
 /**
  * A ReflectiveDependency injection container used for instantiating objects and resolving
@@ -288,8 +288,8 @@ export class ReflectiveInjector_ implements ReflectiveInjector {
 
     const len = _providers.length;
 
-    this.keyIds = new Array(len);
-    this.objs = new Array(len);
+    this.keyIds = [];
+    this.objs = [];
 
     for (let i = 0; i < len; i++) {
       this.keyIds[i] = _providers[i].key.id;
@@ -308,7 +308,7 @@ export class ReflectiveInjector_ implements ReflectiveInjector {
 
   createChildFromResolved(providers: ResolvedReflectiveProvider[]): ReflectiveInjector {
     const inj = new ReflectiveInjector_(providers);
-    (inj as{parent: Injector | null}).parent = this;
+    (inj as {parent: Injector | null}).parent = this;
     return inj;
   }
 
@@ -335,11 +335,13 @@ export class ReflectiveInjector_ implements ReflectiveInjector {
     return this._instantiateProvider(provider);
   }
 
-  private _getMaxNumberOfObjects(): number { return this.objs.length; }
+  private _getMaxNumberOfObjects(): number {
+    return this.objs.length;
+  }
 
   private _instantiateProvider(provider: ResolvedReflectiveProvider): any {
     if (provider.multiProvider) {
-      const res = new Array(provider.resolvedFactories.length);
+      const res = [];
       for (let i = 0; i < provider.resolvedFactories.length; ++i) {
         res[i] = this._instantiate(provider, provider.resolvedFactories[i]);
       }
@@ -451,11 +453,13 @@ export class ReflectiveInjector_ implements ReflectiveInjector {
     return `ReflectiveInjector(providers: [${providers}])`;
   }
 
-  toString(): string { return this.displayName; }
+  toString(): string {
+    return this.displayName;
+  }
 }
 
 function _mapProviders(injector: ReflectiveInjector_, fn: Function): any[] {
-  const res: any[] = new Array(injector._providers.length);
+  const res: any[] = [];
   for (let i = 0; i < injector._providers.length; ++i) {
     res[i] = fn(injector.getProviderAtIndex(i));
   }

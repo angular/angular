@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -22,7 +22,7 @@ import {Subject} from 'rxjs';
 `
 })
 export class NgIfSimple {
-  show: boolean = true;
+  show = true;
 }
 // #enddocregion
 
@@ -38,7 +38,7 @@ export class NgIfSimple {
 `
 })
 export class NgIfElse {
-  show: boolean = true;
+  show = true;
 }
 // #enddocregion
 
@@ -58,24 +58,24 @@ export class NgIfElse {
 })
 export class NgIfThenElse implements OnInit {
   thenBlock: TemplateRef<any>|null = null;
-  show: boolean = true;
+  show = true;
 
-  @ViewChild('primaryBlock', {static: true})
-  primaryBlock: TemplateRef<any>|null = null;
-  @ViewChild('secondaryBlock', {static: true})
-  secondaryBlock: TemplateRef<any>|null = null;
+  @ViewChild('primaryBlock', {static: true}) primaryBlock: TemplateRef<any>|null = null;
+  @ViewChild('secondaryBlock', {static: true}) secondaryBlock: TemplateRef<any>|null = null;
 
   switchPrimary() {
     this.thenBlock = this.thenBlock === this.primaryBlock ? this.secondaryBlock : this.primaryBlock;
   }
 
-  ngOnInit() { this.thenBlock = this.primaryBlock; }
+  ngOnInit() {
+    this.thenBlock = this.primaryBlock;
+  }
 }
 // #enddocregion
 
 // #docregion NgIfAs
 @Component({
-  selector: 'ng-if-let',
+  selector: 'ng-if-as',
   template: `
     <button (click)="nextUser()">Next User</button>
     <br>
@@ -112,7 +112,7 @@ export class NgIfAs {
     <hr>
     <ng-if-then-else></ng-if-then-else>
     <hr>
-    <ng-if-let></ng-if-let>
+    <ng-if-as></ng-if-as>
     <hr>
 `
 })

@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -65,7 +65,7 @@ function createOrReuseChildren(
     prevState: TreeNode<ActivatedRoute>) {
   return curr.children.map(child => {
     for (const p of prevState.children) {
-      if (routeReuseStrategy.shouldReuseRoute(p.value.snapshot, child.value)) {
+      if (routeReuseStrategy.shouldReuseRoute(child.value, p.value.snapshot)) {
         return createNode(routeReuseStrategy, child, p);
       }
     }

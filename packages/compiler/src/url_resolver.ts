@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -31,11 +31,15 @@ export function createOfflineCompileUrlResolver(): UrlResolver {
  * @security  When compiling templates at runtime, you must
  * ensure that the entire template comes from a trusted source.
  * Attacker-controlled data introduced by a template could expose your
- * application to XSS risks. For more detail, see the [Security Guide](http://g.co/ng/security).
+ * application to XSS risks. For more detail, see the [Security Guide](https://g.co/ng/security).
  */
-export interface UrlResolver { resolve(baseUrl: string, url: string): string; }
+export interface UrlResolver {
+  resolve(baseUrl: string, url: string): string;
+}
 
-export interface UrlResolverCtor { new (packagePrefix?: string|null): UrlResolver; }
+export interface UrlResolverCtor {
+  new(packagePrefix?: string|null): UrlResolver;
+}
 
 export const UrlResolver: UrlResolverCtor = class UrlResolverImpl {
   constructor(private _packagePrefix: string|null = null) {}
@@ -135,7 +139,7 @@ function _buildFromEncodedParts(
 /**
  * A regular expression for breaking a URI into its component parts.
  *
- * {@link http://www.gbiv.com/protocols/uri/rfc/rfc3986.html#RFC2234} says
+ * {@link https://tools.ietf.org/html/rfc3986#appendix-B} says
  * As the "first-match-wins" algorithm is identical to the "greedy"
  * disambiguation method used by POSIX regular expressions, it is natural and
  * commonplace to use a regular expression for parsing the potential five
@@ -242,16 +246,16 @@ enum _ComponentIndex {
  *     arbitrary strings may still look like path names.
  */
 function _split(uri: string): Array<string|any> {
-  return uri.match(_splitRe) !;
+  return uri.match(_splitRe)!;
 }
 
 /**
-  * Removes dot segments in given path component, as described in
-  * RFC 3986, section 5.2.4.
-  *
-  * @param path A non-empty path component.
-  * @return Path component with removed dot segments.
-  */
+ * Removes dot segments in given path component, as described in
+ * RFC 3986, section 5.2.4.
+ *
+ * @param path A non-empty path component.
+ * @return Path component with removed dot segments.
+ */
 function _removeDotSegments(path: string): string {
   if (path == '/') return '/';
 

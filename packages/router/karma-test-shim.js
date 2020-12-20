@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -76,12 +76,14 @@ Promise
       testing.TestBed.initTestEnvironment(
           testingBrowser.BrowserDynamicTestingModule,
           testingBrowser.platformBrowserDynamicTesting());
-
     })
     .then(function() {
       // Finally, load all spec files.
       // This will run the tests directly.
-      return Promise.all(
-          allSpecFiles.map(function(moduleName) { return System.import(moduleName); }));
+      return Promise.all(allSpecFiles.map(function(moduleName) {
+        return System.import(moduleName);
+      }));
     })
-    .then(__karma__.start, function(v) { console.error(v); });
+    .then(__karma__.start, function(v) {
+      console.error(v);
+    });

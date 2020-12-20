@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -55,7 +55,7 @@ const APP_BASE_HREF_RESOLVED = new InjectionToken<string>('APP_BASE_HREF_RESOLVE
 
 /**
  * `NgModule` used for providing and configuring Angular's Unified Location Service for upgrading.
- * 
+ *
  * @see [Using the Unified Angular Location Service](guide/upgrade#using-the-unified-angular-location-service)
  *
  * @publicApi

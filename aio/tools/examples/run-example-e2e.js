@@ -9,6 +9,9 @@ const findFreePort = require('find-free-port');
 
 shelljs.set('-e');
 
+// Set `CHROME_BIN` as an environment variable for Karma to pick up in unit tests.
+process.env.CHROME_BIN = require('puppeteer').executablePath();
+
 const AIO_PATH = path.join(__dirname, '../../');
 const SHARED_PATH = path.join(__dirname, '/shared');
 const EXAMPLES_PATH = path.join(AIO_PATH, './content/examples/');
@@ -18,17 +21,11 @@ const CLI_SPEC_FILENAME = 'e2e/src/app.e2e-spec.ts';
 const EXAMPLE_CONFIG_FILENAME = 'example-config.json';
 const DEFAULT_CLI_EXAMPLE_PORT = 4200;
 const DEFAULT_CLI_SPECS_CONCURRENCY = 1;
-const IGNORED_EXAMPLES = [
-  // temporary ignores
+const IGNORED_EXAMPLES = [];
 
-];
+const fixmeIvyExamples = [];
 
-const fixmeIvyExamples = [
-  // fixmeIvy('unknown') app fails at runtime due to missing external service (goog is undefined)
-  'i18n',
-];
-
-if (argv.ivy) {
+if (!argv.viewengine) {
   IGNORED_EXAMPLES.push(...fixmeIvyExamples);
 }
 
@@ -36,15 +33,17 @@ if (argv.ivy) {
  * Run Protractor End-to-End Tests for Doc Samples
  *
  * Flags
- *   --filter to filter/select _example app subdir names
+ *  --filter to filter/select _example app subdir names
  *    e.g. --filter=foo  // all example apps with 'foo' in their folder names.
  *
- *  --setup run yarn install, copy boilerplate and update webdriver
+ *  --setup to run yarn install, copy boilerplate and update webdriver
  *    e.g. --setup
  *
  *  --local to use the locally built Angular packages, rather than versions from npm
  *    Must be used in conjunction with --setup as this is when the packages are copied.
  *    e.g. --setup --local
+ *
+ *  --viewengine to turn on `ViewEngine` mode
  *
  *  --shard to shard the specs into groups to allow you to run them in parallel
  *    e.g. --shard=0/2 // the even specs: 0, 2, 4, etc
@@ -53,13 +52,16 @@ if (argv.ivy) {
  *
  *  --cliSpecsConcurrency Amount of CLI example specs that should be executed concurrently.
  *    By default runs specs sequentially.
+ *
+ *  --retry to retry failed tests (useful for overcoming flakes)
+ *    e.g. --retry 3  // To try each test up to 3 times.
  */
 function runE2e() {
   if (argv.setup) {
     // Run setup.
     console.log('runE2e: setup boilerplate');
     const installPackagesCommand = `example-use-${argv.local ? 'local' : 'npm'}`;
-    const addBoilerplateCommand = `boilerplate:add${argv.ivy ? ':ivy' : ''}`;
+    const addBoilerplateCommand = `boilerplate:add${argv.viewengine ? ':viewengine' : ''}`;
     shelljs.exec(`yarn ${installPackagesCommand}`, {cwd: AIO_PATH});
     shelljs.exec(`yarn ${addBoilerplateCommand}`, {cwd: AIO_PATH});
   }
@@ -67,8 +69,10 @@ function runE2e() {
   const outputFile = path.join(AIO_PATH, './protractor-results.txt');
 
   return Promise.resolve()
-      .then(() => findAndRunE2eTests(argv.filter, outputFile, argv.shard,
-          argv.cliSpecsConcurrency || DEFAULT_CLI_SPECS_CONCURRENCY))
+      .then(
+          () => findAndRunE2eTests(
+              argv.filter, outputFile, argv.shard,
+              argv.cliSpecsConcurrency || DEFAULT_CLI_SPECS_CONCURRENCY, argv.retry || 1))
       .then((status) => {
         reportStatus(status, outputFile);
         if (status.failed.length > 0) {
@@ -83,7 +87,7 @@ function runE2e() {
 
 // Finds all of the *e2e-spec.tests under the examples folder along with the corresponding apps
 // that they should run under. Then run each app/spec collection sequentially.
-function findAndRunE2eTests(filter, outputFile, shard, cliSpecsConcurrency) {
+function findAndRunE2eTests(filter, outputFile, shard, cliSpecsConcurrency, maxAttempts) {
   const shardParts = shard ? shard.split('/') : [0, 1];
   const shardModulo = parseInt(shardParts[0], 10);
   const shardDivider = parseInt(shardParts[1], 10);
@@ -95,9 +99,22 @@ function findAndRunE2eTests(filter, outputFile, shard, cliSpecsConcurrency) {
   fs.writeFileSync(outputFile, header);
 
   const status = {passed: [], failed: []};
-  const updateStatus = (specPath, passed) => {
+  const updateStatus = (specDescription, passed) => {
     const arr = passed ? status.passed : status.failed;
-    arr.push(specPath);
+    arr.push(specDescription);
+  };
+  const runTest = async (specPath, testFn) => {
+    let attempts = 0;
+    let passed = false;
+
+    while (true) {
+      attempts++;
+      passed = await testFn();
+
+      if (passed || (attempts >= maxAttempts)) break;
+    }
+
+    updateStatus(`${specPath} (attempts: ${attempts})`, passed);
   };
 
   return getE2eSpecs(EXAMPLES_PATH, filter)
@@ -115,12 +132,13 @@ function findAndRunE2eTests(filter, outputFile, shard, cliSpecsConcurrency) {
 
         return e2eSpecPaths.systemjs
             .reduce(
-                (promise, specPath) => {
-                  return promise.then(() => {
-                    const examplePath = path.dirname(specPath);
-                    return runE2eTestsSystemJS(examplePath, outputFile)
-                      .then(passed => updateStatus(examplePath, passed));
-                  });
+                async (prevPromise, specPath) => {
+                  await prevPromise;
+
+                  const examplePath = path.dirname(specPath);
+                  const testFn = () => runE2eTestsSystemJS(examplePath, outputFile);
+
+                  await runTest(examplePath, testFn);
                 },
                 Promise.resolve())
             .then(async () => {
@@ -136,9 +154,11 @@ function findAndRunE2eTests(filter, outputFile, shard, cliSpecsConcurrency) {
               const bufferOutput = cliSpecsConcurrency > 1;
               while (specQueue.length) {
                 const chunk = specQueue.splice(0, cliSpecsConcurrency);
-                await Promise.all(chunk.map((testDir, index) => {
-                  return runE2eTestsCLI(testDir, outputFile, bufferOutput, ports.pop())
-                    .then(passed => updateStatus(testDir, passed));
+                await Promise.all(chunk.map(testDir => {
+                  const port = ports.pop();
+                  const testFn = () => runE2eTestsCLI(testDir, outputFile, bufferOutput, port);
+
+                  return runTest(testDir, testFn);
                 }));
               }
             });
@@ -162,7 +182,9 @@ function runE2eTestsSystemJS(appDir, outputFile) {
 
   let run = runProtractorSystemJS(appBuildSpawnInfo.promise, appDir, appRunSpawnInfo, outputFile);
 
-  if (fs.existsSync(appDir + '/aot/index.html')) {
+  // Only run AOT tests in ViewEngine mode. The current AOT setup does not work in Ivy.
+  // See https://github.com/angular/angular/issues/35989.
+  if (argv.viewengine && fs.existsSync(appDir + '/aot/index.html')) {
     run = run.then((ok) => ok && runProtractorAoT(appDir, outputFile));
   }
   return run;
@@ -203,8 +225,12 @@ function runProtractorSystemJS(prepPromise, appDir, appRunSpawnInfo, outputFile)
         });
       })
       .then(
-          function() { return finish(appRunSpawnInfo.proc.pid, true); },
-          function() { return finish(appRunSpawnInfo.proc.pid, false); });
+          function() {
+            return finish(appRunSpawnInfo.proc.pid, true);
+          },
+          function() {
+            return finish(appRunSpawnInfo.proc.pid, false);
+          });
 }
 
 function finish(spawnProcId, ok) {
@@ -239,39 +265,49 @@ function runE2eTestsCLI(appDir, outputFile, bufferOutput, port) {
 
   // `--no-webdriver-update` is needed to preserve the ChromeDriver version already installed.
   const config = loadExampleConfig(appDir);
-  const commands = config.e2e || [{
-    cmd: 'yarn',
-    args: ['e2e', '--prod', '--no-webdriver-update', `--port=${port || DEFAULT_CLI_EXAMPLE_PORT}`]
-  }];
+  const testCommands = config.tests || [{
+                         cmd: 'yarn',
+                         args: [
+                           'e2e',
+                           '--prod',
+                           '--protractor-config=e2e/protractor-puppeteer.conf.js',
+                           '--no-webdriver-update',
+                           '--port={PORT}',
+                         ],
+                       }];
   let bufferedOutput = `\n\n============== AIO example output for: ${appDir}\n\n`;
 
-  const e2eSpawnPromise = commands.reduce((prevSpawnPromise, {cmd, args}) => {
+  const e2eSpawnPromise = testCommands.reduce((prevSpawnPromise, {cmd, args}) => {
     // Replace the port placeholder with the specified port if present. Specs that
     // define their e2e test commands in the example config are able to use the
     // given available port. This ensures that the CLI tests can be run concurrently.
     args = args.map(a => a.replace('{PORT}', port || DEFAULT_CLI_EXAMPLE_PORT));
 
     return prevSpawnPromise.then(() => {
-      const currSpawn = spawnExt(cmd, args, {cwd: appDir}, false,
-          bufferOutput ? msg => bufferedOutput += msg : undefined);
+      const currSpawn = spawnExt(
+          cmd, args, {cwd: appDir}, false, bufferOutput ? msg => bufferedOutput += msg : undefined);
       return currSpawn.promise.then(
           () => Promise.resolve(finish(currSpawn.proc.pid, true)),
           () => Promise.reject(finish(currSpawn.proc.pid, false)));
     });
   }, Promise.resolve());
 
-  return e2eSpawnPromise.then(() => {
-    fs.appendFileSync(outputFile, `Passed: ${appDir}\n\n`);
-    return true;
-  }, () => {
-    fs.appendFileSync(outputFile, `Failed: ${appDir}\n\n`);
-    return false;
-  }).then(passed => {
-    if (bufferOutput) {
-      process.stdout.write(bufferedOutput);
-    }
-    return passed;
-  });
+  return e2eSpawnPromise
+      .then(
+          () => {
+            fs.appendFileSync(outputFile, `Passed: ${appDir}\n\n`);
+            return true;
+          },
+          () => {
+            fs.appendFileSync(outputFile, `Failed: ${appDir}\n\n`);
+            return false;
+          })
+      .then(passed => {
+        if (bufferOutput) {
+          process.stdout.write(bufferedOutput);
+        }
+        return passed;
+      });
 }
 
 // Report final status.
@@ -280,23 +316,31 @@ function reportStatus(status, outputFile) {
 
   log.push('Suites ignored due to legacy guides:');
   IGNORED_EXAMPLES.filter(example => !fixmeIvyExamples.find(ex => ex.startsWith(example)))
-      .forEach(function(val) { log.push('  ' + val); });
+      .forEach(function(val) {
+        log.push('  ' + val);
+      });
 
-  if (argv.ivy) {
+  if (!argv.viewengine) {
     log.push('');
     log.push('Suites ignored due to breakage with Ivy:');
-    fixmeIvyExamples.forEach(function(val) { log.push('  ' + val); });
+    fixmeIvyExamples.forEach(function(val) {
+      log.push('  ' + val);
+    });
   }
 
   log.push('');
   log.push('Suites passed:');
-  status.passed.forEach(function(val) { log.push('  ' + val); });
+  status.passed.forEach(function(val) {
+    log.push('  ' + val);
+  });
 
   if (status.failed.length == 0) {
     log.push('All tests passed');
   } else {
     log.push('Suites failed:');
-    status.failed.forEach(function(val) { log.push('  ' + val); });
+    status.failed.forEach(function(val) {
+      log.push('  ' + val);
+    });
   }
   log.push('\nElapsed time: ' + status.elapsedTime + ' seconds');
   log = log.join('\n');
@@ -305,8 +349,8 @@ function reportStatus(status, outputFile) {
 }
 
 // Returns both a promise and the spawned process so that it can be killed if needed.
-function spawnExt(command, args, options, ignoreClose = false,
-                  printMessage = msg => process.stdout.write(msg)) {
+function spawnExt(
+    command, args, options, ignoreClose = false, printMessage = msg => process.stdout.write(msg)) {
   let proc;
   const promise = new Promise((resolve, reject) => {
     let descr = command + ' ' + args.join(' ');
@@ -341,13 +385,19 @@ function getE2eSpecs(basePath, filter) {
   let specs = {};
 
   return getE2eSpecsFor(basePath, SJS_SPEC_FILENAME, filter)
-      .then(sjsPaths => { specs.systemjs = sjsPaths; })
+      .then(sjsPaths => {
+        specs.systemjs = sjsPaths;
+      })
       .then(() => {
         return getE2eSpecsFor(basePath, CLI_SPEC_FILENAME, filter).then(cliPaths => {
-          return cliPaths.map(p => { return p.replace(`${CLI_SPEC_FILENAME}`, ''); });
+          return cliPaths.map(p => {
+            return p.replace(`${CLI_SPEC_FILENAME}`, '');
+          });
         });
       })
-      .then(cliPaths => { specs.cli = cliPaths; })
+      .then(cliPaths => {
+        specs.cli = cliPaths;
+      })
       .then(() => specs);
 }
 

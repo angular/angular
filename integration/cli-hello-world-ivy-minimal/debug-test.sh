@@ -11,7 +11,7 @@ set -u -e -o pipefail
 
 cd "$(dirname "$0")"
 
-$(pwd)/../../scripts/build-packages-dist.sh
+node $(pwd)/../../scripts/build/build-packages-dist.js
 
 # Workaround https://github.com/yarnpkg/yarn/issues/2165
 # Yarn will cache file://dist URIs and not update Angular code

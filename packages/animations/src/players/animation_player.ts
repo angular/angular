@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -94,11 +94,13 @@ export interface AnimationPlayer {
    * Provides a callback to invoke before the animation is destroyed.
    */
   beforeDestroy?: () => any;
-  /** @internal
+  /**
+   * @internal
    * Internal
    */
   triggerCallback?: (phaseName: string) => void;
-  /** @internal
+  /**
+   * @internal
    * Internal
    */
   disabled?: boolean;
@@ -122,9 +124,12 @@ export class NoopAnimationPlayer implements AnimationPlayer {
   private _started = false;
   private _destroyed = false;
   private _finished = false;
+  private _position = 0;
   public parentPlayer: AnimationPlayer|null = null;
   public readonly totalTime: number;
-  constructor(duration: number = 0, delay: number = 0) { this.totalTime = duration + delay; }
+  constructor(duration: number = 0, delay: number = 0) {
+    this.totalTime = duration + delay;
+  }
   private _onFinish() {
     if (!this._finished) {
       this._finished = true;
@@ -132,10 +137,18 @@ export class NoopAnimationPlayer implements AnimationPlayer {
       this._onDoneFns = [];
     }
   }
-  onStart(fn: () => void): void { this._onStartFns.push(fn); }
-  onDone(fn: () => void): void { this._onDoneFns.push(fn); }
-  onDestroy(fn: () => void): void { this._onDestroyFns.push(fn); }
-  hasStarted(): boolean { return this._started; }
+  onStart(fn: () => void): void {
+    this._onStartFns.push(fn);
+  }
+  onDone(fn: () => void): void {
+    this._onDoneFns.push(fn);
+  }
+  onDestroy(fn: () => void): void {
+    this._onDestroyFns.push(fn);
+  }
+  hasStarted(): boolean {
+    return this._started;
+  }
   init(): void {}
   play(): void {
     if (!this.hasStarted()) {
@@ -146,7 +159,9 @@ export class NoopAnimationPlayer implements AnimationPlayer {
   }
 
   /** @internal */
-  triggerMicrotask() { scheduleMicroTask(() => this._onFinish()); }
+  triggerMicrotask() {
+    scheduleMicroTask(() => this._onFinish());
+  }
 
   private _onStart() {
     this._onStartFns.forEach(fn => fn());
@@ -155,7 +170,9 @@ export class NoopAnimationPlayer implements AnimationPlayer {
 
   pause(): void {}
   restart(): void {}
-  finish(): void { this._onFinish(); }
+  finish(): void {
+    this._onFinish();
+  }
   destroy(): void {
     if (!this._destroyed) {
       this._destroyed = true;
@@ -168,8 +185,12 @@ export class NoopAnimationPlayer implements AnimationPlayer {
     }
   }
   reset(): void {}
-  setPosition(position: number): void {}
-  getPosition(): number { return 0; }
+  setPosition(position: number): void {
+    this._position = this.totalTime ? position * this.totalTime : 1;
+  }
+  getPosition(): number {
+    return this.totalTime ? this._position / this.totalTime : 1;
+  }
 
   /** @internal */
   triggerCallback(phaseName: string): void {

@@ -3,9 +3,9 @@
 .button,
 a.button.mat-button {
   display: inline-block;
-  line-height: 32px;
+  @include line-height(32);
   padding: 0px 16px;
-  font-size: 14px;
+  @include font-size(14);
   font-weight: 400;
   border-radius: 3px;
   text-decoration: none;
@@ -15,20 +15,20 @@ a.button.mat-button {
 
   // SIZES
   &.button-small {
-    font-size: 12px;
-    line-height: 24px;
+    @include font-size(12);
+    @include line-height(24);
     padding: 0px 8px;
   }
 
   &.button-large {
-    font-size: 15px;
-    line-height: 48px;
+    @include font-size(15);
+    @include line-height(48);
     padding: 0px 24px;
   }
 
   &.button-x-large {
-    font-size: 16px;
-    line-height: 56px;
+    @include font-size(16);
+    @include line-height(56);
     padding: 0px 24px;
   }
 
@@ -85,10 +85,10 @@ a.button.mat-button {
 
 a.filter-button {
   width: 140px;
-  font-size: 14px;
+  @include font-size(14);
   padding: 0px 16px;
   margin: 8px;
-  line-height: 48px;
+  @include line-height(48);
   border: 2px solid $blue;
   border-radius: 4px;
 

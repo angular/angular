@@ -1,0 +1,10 @@
+{
+  "description": "Property Binding",
+  "files": [
+    "!**/*.d.ts",
+    "!**/*.js",
+    "!**/*.[0,1,2].*"
+  ],
+  "file": "src/app/app.component.ts",
+  "tags": ["property binding"]
+}

@@ -1,0 +1,42 @@
+package(default_visibility = ["//visibility:public"])
+
+load("//tools:defaults.bzl", "pkg_npm", "ts_config", "ts_library")
+
+ts_config(
+    name = "tsconfig",
+    src = "tsconfig-build.json",
+    deps = ["//packages:tsconfig-build.json"],
+)
+
+ts_library(
+    name = "tools",
+    srcs = glob(
+        [
+            "**/*.ts",
+        ],
+    ),
+    tsconfig = ":tsconfig",
+    deps = [
+        "//packages/compiler",
+        "//packages/compiler-cli/src/ngtsc/file_system",
+        "//packages/compiler-cli/src/ngtsc/logging",
+        "//packages/compiler-cli/src/ngtsc/sourcemaps",
+        "//packages/localize",
+        "@npm//@babel/core",
+        "@npm//@babel/types",
+        "@npm//@types/babel__core",
+        "@npm//@types/babel__traverse",
+        "@npm//@types/glob",
+        "@npm//@types/node",
+        "@npm//@types/yargs",
+    ],
+)
+
+pkg_npm(
+    name = "npm_package",
+    srcs = [
+    ],
+    deps = [
+        ":tools",
+    ],
+)

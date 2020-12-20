@@ -1,13 +1,13 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
 import * as ng from '@angular/compiler-cli';
-import {BazelOptions, CachedFileLoader, CompilerHost, FileCache, FileLoader, UncachedFileLoader, constructManifest, debug, parseTsconfig, resolveNormalizedPath, runAsWorker, runWorkerLoop} from '@bazel/typescript';
+import {BazelOptions, CachedFileLoader, CompilerHost, constructManifest, debug, FileCache, FileLoader, parseTsconfig, resolveNormalizedPath, runAsWorker, runWorkerLoop, UncachedFileLoader} from '@bazel/typescript';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as tsickle from 'tsickle';
@@ -113,19 +113,22 @@ export function runOneBuild(args: string[], inputs?: {[path: string]: string}): 
     }
   }
 
-  const expectedOuts = config['angularCompilerOptions']['expectedOut'];
+  // These are options passed through from the `ng_module` rule which aren't supported
+  // by the `@angular/compiler-cli` and are only intended for `ngc-wrapped`.
+  const {expectedOut, _useManifestPathsAsModuleName} = config['angularCompilerOptions'];
 
   const {basePath} = ng.calcProjectFileAndBasePath(project);
   const compilerOpts = ng.createNgCompilerOptions(basePath, config, tsOptions);
   const tsHost = ts.createCompilerHost(compilerOpts, true);
   const {diagnostics} = compile({
     allDepsCompiledWithBazel: ALL_DEPS_COMPILED_WITH_BAZEL,
+    useManifestPathsAsModuleName: _useManifestPathsAsModuleName,
+    expectedOuts: expectedOut,
     compilerOpts,
     tsHost,
     bazelOpts,
     files,
     inputs,
-    expectedOuts
   });
   if (diagnostics.length) {
     console.error(ng.formatDiagnostics(diagnostics));
@@ -144,14 +147,26 @@ export function relativeToRootDirs(filePath: string, rootDirs: string[]): string
   return filePath;
 }
 
-export function compile({allDepsCompiledWithBazel = true, compilerOpts, tsHost, bazelOpts, files,
-                         inputs, expectedOuts, gatherDiagnostics}: {
+export function compile({
+  allDepsCompiledWithBazel = true,
+  useManifestPathsAsModuleName,
+  compilerOpts,
+  tsHost,
+  bazelOpts,
+  files,
+  inputs,
+  expectedOuts,
+  gatherDiagnostics,
+  bazelHost
+}: {
   allDepsCompiledWithBazel?: boolean,
-  compilerOpts: ng.CompilerOptions,
-  tsHost: ts.CompilerHost, inputs?: {[path: string]: string},
-  bazelOpts: BazelOptions,
-  files: string[],
-  expectedOuts: string[], gatherDiagnostics?: (program: ng.Program) => ng.Diagnostics
+  useManifestPathsAsModuleName?: boolean, compilerOpts: ng.CompilerOptions, tsHost: ts.CompilerHost,
+  inputs?: {[path: string]: string},
+        bazelOpts: BazelOptions,
+        files: string[],
+        expectedOuts: string[],
+  gatherDiagnostics?: (program: ng.Program) => ng.Diagnostics,
+  bazelHost?: CompilerHost,
 }): {diagnostics: ng.Diagnostics, program: ng.Program} {
   let fileLoader: FileLoader;
 
@@ -176,24 +191,8 @@ export function compile({allDepsCompiledWithBazel = true, compilerOpts, tsHost, 
     fileLoader = new UncachedFileLoader();
   }
 
-  if (!bazelOpts.es5Mode) {
-    compilerOpts.annotateForClosureCompiler = true;
-    compilerOpts.annotationsAs = 'static fields';
-  }
-
   // Detect from compilerOpts whether the entrypoint is being invoked in Ivy mode.
-  const isInIvyMode = compilerOpts.enableIvy === 'ngtsc' || compilerOpts.enableIvy === 'tsc';
-
-  // Disable downleveling and Closure annotation if in Ivy mode.
-  if (isInIvyMode) {
-    // In pass-through mode for TypeScript, we want to turn off decorator transpilation entirely.
-    // This causes ngc to be have exactly like tsc.
-    if (compilerOpts.enableIvy === 'tsc') {
-      compilerOpts.annotateForClosureCompiler = false;
-    }
-    compilerOpts.annotationsAs = 'decorators';
-  }
-
+  const isInIvyMode = !!compilerOpts.enableIvy;
   if (!compilerOpts.rootDirs) {
     throw new Error('rootDirs is not set!');
   }
@@ -202,16 +201,16 @@ export function compile({allDepsCompiledWithBazel = true, compilerOpts, tsHost, 
     throw new Error(`Couldn't find bazel bin in the rootDirs: ${compilerOpts.rootDirs}`);
   }
 
-  const writtenExpectedOuts = expectedOuts.map(p => p.replace(/\\/g, '/'));
+  const expectedOutsSet = new Set(expectedOuts.map(p => convertToForwardSlashPath(p)));
 
   const originalWriteFile = tsHost.writeFile.bind(tsHost);
   tsHost.writeFile =
       (fileName: string, content: string, writeByteOrderMark: boolean,
        onError?: (message: string) => void, sourceFiles?: ts.SourceFile[]) => {
-        const relative = relativeToRootDirs(fileName.replace(/\\/g, '/'), [compilerOpts.rootDir]);
-        const expectedIdx = writtenExpectedOuts.findIndex(o => o === relative);
-        if (expectedIdx >= 0) {
-          writtenExpectedOuts.splice(expectedIdx, 1);
+        const relative =
+            relativeToRootDirs(convertToForwardSlashPath(fileName), [compilerOpts.rootDir]);
+        if (expectedOutsSet.has(relative)) {
+          expectedOutsSet.delete(relative);
           originalWriteFile(fileName, content, writeByteOrderMark, onError, sourceFiles);
         }
       };
@@ -244,16 +243,53 @@ export function compile({allDepsCompiledWithBazel = true, compilerOpts, tsHost, 
         moduleName, containingFile, compilerOptions, generatedFileModuleResolverHost);
   }
 
-  const bazelHost = new CompilerHost(
-      files, compilerOpts, bazelOpts, tsHost, fileLoader, generatedFileModuleResolver);
-
-  // Also need to disable decorator downleveling in the BazelHost in Ivy mode.
-  if (isInIvyMode) {
-    bazelHost.transformDecorators = false;
+  if (!bazelHost) {
+    bazelHost = new CompilerHost(
+        files, compilerOpts, bazelOpts, tsHost, fileLoader, generatedFileModuleResolver);
   }
 
-  // Prevent tsickle adding any types at all if we don't want closure compiler annotations.
-  bazelHost.transformTypesToClosure = compilerOpts.annotateForClosureCompiler;
+  if (isInIvyMode) {
+    const delegate = bazelHost.shouldSkipTsickleProcessing.bind(bazelHost);
+    bazelHost.shouldSkipTsickleProcessing = (fileName: string) => {
+      // The base implementation of shouldSkipTsickleProcessing checks whether `fileName` is part of
+      // the original `srcs[]`. For Angular (Ivy) compilations, ngfactory/ngsummary files that are
+      // shims for original .ts files in the program should be treated identically. Thus, strip the
+      // '.ngfactory' or '.ngsummary' part of the filename away before calling the delegate.
+      return delegate(fileName.replace(/\.(ngfactory|ngsummary)\.ts$/, '.ts'));
+    };
+  }
+
+  // By default, disable tsickle decorator transforming in the tsickle compiler host.
+  // The Angular compilers have their own logic for decorator processing and we wouldn't
+  // want tsickle to interfere with that.
+  bazelHost.transformDecorators = false;
+
+  // By default in the `prodmode` output, we do not add annotations for closure compiler.
+  // Though, if we are building inside `google3`, closure annotations are desired for
+  // prodmode output, so we enable it by default. The defaults can be overridden by
+  // setting the `annotateForClosureCompiler` compiler option in the user tsconfig.
+  if (!bazelOpts.es5Mode) {
+    if (bazelOpts.workspaceName === 'google3') {
+      compilerOpts.annotateForClosureCompiler = true;
+      // Enable the tsickle decorator transform in google3 with Ivy mode enabled. The tsickle
+      // decorator transformation is still needed. This might be because of custom decorators
+      // with the `@Annotation` JSDoc that will be processed by the tsickle decorator transform.
+      // TODO: Figure out why this is needed in g3 and how we can improve this. FW-2225
+      if (isInIvyMode) {
+        bazelHost.transformDecorators = true;
+      }
+    } else {
+      compilerOpts.annotateForClosureCompiler = false;
+    }
+  }
+
+  // The `annotateForClosureCompiler` Angular compiler option is not respected by default
+  // as ngc-wrapped handles tsickle emit on its own. This means that we need to update
+  // the tsickle compiler host based on the `annotateForClosureCompiler` flag.
+  if (compilerOpts.annotateForClosureCompiler) {
+    bazelHost.transformTypesToClosure = true;
+  }
+
   const origBazelHostFileExist = bazelHost.fileExists;
   bazelHost.fileExists = (fileName: string) => {
     if (NGC_ASSETS.test(fileName)) {
@@ -289,20 +325,32 @@ export function compile({allDepsCompiledWithBazel = true, compilerOpts, tsHost, 
 
   const ngHost = ng.createCompilerHost({options: compilerOpts, tsHost: bazelHost});
   const fileNameToModuleNameCache = new Map<string, string>();
-  ngHost.fileNameToModuleName = (importedFilePath: string, containingFilePath: string) => {
+  ngHost.fileNameToModuleName = (importedFilePath: string, containingFilePath?: string) => {
+    const cacheKey = `${importedFilePath}:${containingFilePath}`;
     // Memoize this lookup to avoid expensive re-parses of the same file
     // When run as a worker, the actual ts.SourceFile is cached
     // but when we don't run as a worker, there is no cache.
     // For one example target in g3, we saw a cache hit rate of 7590/7695
-    if (fileNameToModuleNameCache.has(importedFilePath)) {
-      return fileNameToModuleNameCache.get(importedFilePath);
+    if (fileNameToModuleNameCache.has(cacheKey)) {
+      return fileNameToModuleNameCache.get(cacheKey);
     }
-    const result = doFileNameToModuleName(importedFilePath);
-    fileNameToModuleNameCache.set(importedFilePath, result);
+    const result = doFileNameToModuleName(importedFilePath, containingFilePath);
+    fileNameToModuleNameCache.set(cacheKey, result);
     return result;
   };
 
-  function doFileNameToModuleName(importedFilePath: string): string {
+  function doFileNameToModuleName(importedFilePath: string, containingFilePath?: string): string {
+    const relativeTargetPath =
+        relativeToRootDirs(importedFilePath, compilerOpts.rootDirs).replace(EXT, '');
+    const manifestTargetPath = `${bazelOpts.workspaceName}/${relativeTargetPath}`;
+    if (useManifestPathsAsModuleName === true) {
+      return manifestTargetPath;
+    }
+
+    // Unless manifest paths are explicitly enforced, we initially check if a module name is
+    // set for the given source file. The compiler host from `@bazel/typescript` sets source
+    // file module names if the compilation targets either UMD or AMD. To ensure that the AMD
+    // module names match, we first consider those.
     try {
       const sourceFile = ngHost.getSourceFile(importedFilePath, ts.ScriptTarget.Latest);
       if (sourceFile && sourceFile.moduleName) {
@@ -339,13 +387,33 @@ export function compile({allDepsCompiledWithBazel = true, compilerOpts, tsHost, 
 
     if ((compilerOpts.module === ts.ModuleKind.UMD || compilerOpts.module === ts.ModuleKind.AMD) &&
         ngHost.amdModuleName) {
-      return ngHost.amdModuleName({ fileName: importedFilePath } as ts.SourceFile);
+      return ngHost.amdModuleName({fileName: importedFilePath} as ts.SourceFile);
     }
-    const result = relativeToRootDirs(importedFilePath, compilerOpts.rootDirs).replace(EXT, '');
-    if (result.startsWith(NODE_MODULES)) {
-      return result.substr(NODE_MODULES.length);
+
+    // If no AMD module name has been set for the source file by the `@bazel/typescript` compiler
+    // host, and the target file is not part of a flat module node module package, we use the
+    // following rules (in order):
+    //    1. If target file is part of `node_modules/`, we use the package module name.
+    //    2. If no containing file is specified, or the target file is part of a different
+    //       compilation unit, we use a Bazel manifest path. Relative paths are not possible
+    //       since we don't have a containing file, and the target file could be located in the
+    //       output directory, or in an external Bazel repository.
+    //    3. If both rules above didn't match, we compute a relative path between the source files
+    //       since they are part of the same compilation unit.
+    // Note that we don't want to always use (2) because it could mean that compilation outputs
+    // are always leaking Bazel-specific paths, and the output is not self-contained. This could
+    // break `esm2015` or `esm5` output for Angular package release output
+    // Omit the `node_modules` prefix if the module name of an NPM package is requested.
+    if (relativeTargetPath.startsWith(NODE_MODULES)) {
+      return relativeTargetPath.substr(NODE_MODULES.length);
+    } else if (
+        containingFilePath == null || !bazelOpts.compilationTargetSrc.includes(importedFilePath)) {
+      return manifestTargetPath;
     }
-    return bazelOpts.workspaceName + '/' + result;
+    const containingFileDir =
+        path.dirname(relativeToRootDirs(containingFilePath, compilerOpts.rootDirs));
+    const relativeImportPath = path.posix.relative(containingFileDir, relativeTargetPath);
+    return relativeImportPath.startsWith('.') ? relativeImportPath : `./${relativeImportPath}`;
   }
 
   ngHost.toSummaryFileName = (fileName: string, referringSrcFileName: string) => path.posix.join(
@@ -391,8 +459,10 @@ export function compile({allDepsCompiledWithBazel = true, compilerOpts, tsHost, 
   const {diagnostics, emitResult, program} = ng.performCompilation({
     rootNames: files,
     options: compilerOpts,
-    host: ngHost, emitCallback,
-    mergeEmitResultsCallback: tsickle.mergeEmitResults, gatherDiagnostics
+    host: ngHost,
+    emitCallback,
+    mergeEmitResultsCallback: tsickle.mergeEmitResults,
+    gatherDiagnostics
   });
   const tsickleEmitResult = emitResult as tsickle.EmitResult;
   let externs = '/** @externs */\n';
@@ -423,8 +493,10 @@ export function compile({allDepsCompiledWithBazel = true, compilerOpts, tsHost, 
     fs.writeFileSync(bazelOpts.tsickleExternsPath, externs);
   }
 
-  for (let i = 0; i < writtenExpectedOuts.length; i++) {
-    originalWriteFile(writtenExpectedOuts[i], '', false);
+  // There might be some expected output files that are not written by the
+  // compiler. In this case, just write an empty file.
+  for (const fileName of expectedOutsSet) {
+    originalWriteFile(fileName, '', false);
   }
 
   return {program, diagnostics};
@@ -461,11 +533,15 @@ function isCompilationTarget(bazelOpts: BazelOptions, sf: ts.SourceFile): boolea
       (bazelOpts.compilationTargetSrc.indexOf(sf.fileName) !== -1);
 }
 
+function convertToForwardSlashPath(filePath: string): string {
+  return filePath.replace(/\\/g, '/');
+}
+
 function gatherDiagnosticsForInputsOnly(
     options: ng.CompilerOptions, bazelOpts: BazelOptions,
-    ngProgram: ng.Program): (ng.Diagnostic | ts.Diagnostic)[] {
+    ngProgram: ng.Program): (ng.Diagnostic|ts.Diagnostic)[] {
   const tsProgram = ngProgram.getTsProgram();
-  const diagnostics: (ng.Diagnostic | ts.Diagnostic)[] = [];
+  const diagnostics: (ng.Diagnostic|ts.Diagnostic)[] = [];
   // These checks mirror ts.getPreEmitDiagnostics, with the important
   // exception of avoiding b/30708240, which is that if you call
   // program.getDeclarationDiagnostics() it somehow corrupts the emit.

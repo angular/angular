@@ -40,8 +40,8 @@ export class ConfigComponent {
     this.configService.getConfig_1()
   // #docregion v1, v1_callback
       .subscribe((data: Config) => this.config = {
-          heroesUrl: data['heroesUrl'],
-          textfile:  data['textfile']
+          heroesUrl: data.heroesUrl,
+          textfile:  data.textfile
       });
   // #enddocregion v1_callback
   }

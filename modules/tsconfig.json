@@ -23,8 +23,6 @@
     "types": ["angular"]
   },
   "exclude": [
-    "angular1_router",
-    "benchmarks_external",
     "payload_tests",
     "playground/",
     "benchmarks/"

@@ -1,20 +1,67 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
 import {CommonModule} from '@angular/common';
-import {Component, ContentChild, NgModule, TemplateRef, Type, ViewChild, ViewContainerRef} from '@angular/core';
-import {ComponentFixture, TestBed, fakeAsync, tick} from '@angular/core/testing';
+import {ChangeDetectionStrategy, Component, ContentChild, NgModule, TemplateRef, Type, ViewChild, ViewContainerRef} from '@angular/core';
+import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {Router} from '@angular/router';
 import {RouterTestingModule} from '@angular/router/testing';
 
 describe('Integration', () => {
-
   describe('routerLinkActive', () => {
+    it('should update when the associated routerLinks change - #18469', fakeAsync(() => {
+         @Component({
+           template: `
+          <a id="first-link" [routerLink]="[firstLink]" routerLinkActive="active">{{firstLink}}</a>
+          <div id="second-link" routerLinkActive="active">
+            <a [routerLink]="[secondLink]">{{secondLink}}</a>
+          </div>
+           `,
+         })
+         class LinkComponent {
+           firstLink = 'link-a';
+           secondLink = 'link-b';
+
+           changeLinks(): void {
+             const temp = this.secondLink;
+             this.secondLink = this.firstLink;
+             this.firstLink = temp;
+           }
+         }
+
+         @Component({template: 'simple'})
+         class SimpleCmp {
+         }
+
+         TestBed.configureTestingModule({
+           imports: [RouterTestingModule.withRoutes(
+               [{path: 'link-a', component: SimpleCmp}, {path: 'link-b', component: SimpleCmp}])],
+           declarations: [LinkComponent, SimpleCmp]
+         });
+
+         const router: Router = TestBed.inject(Router);
+         const fixture = createRoot(router, LinkComponent);
+         const firstLink = fixture.debugElement.query(p => p.nativeElement.id === 'first-link');
+         const secondLink = fixture.debugElement.query(p => p.nativeElement.id === 'second-link');
+         router.navigateByUrl('/link-a');
+         advance(fixture);
+
+         expect(firstLink.nativeElement.classList).toContain('active');
+         expect(secondLink.nativeElement.classList).not.toContain('active');
+
+         fixture.componentInstance.changeLinks();
+         fixture.detectChanges();
+         advance(fixture);
+
+         expect(firstLink.nativeElement.classList).not.toContain('active');
+         expect(secondLink.nativeElement.classList).toContain('active');
+       }));
+
     it('should not cause infinite loops in the change detection - #15825', fakeAsync(() => {
          @Component({selector: 'simple', template: 'simple'})
          class SimpleCmp {
@@ -45,7 +92,7 @@ describe('Integration', () => {
 
          TestBed.configureTestingModule({imports: [MyModule]});
 
-         const router: Router = TestBed.get(Router);
+         const router: Router = TestBed.inject(Router);
          const fixture = createRoot(router, MyCmp);
          router.resetConfig([{path: 'simple', component: SimpleCmp}]);
 
@@ -62,7 +109,7 @@ describe('Integration', () => {
            template: `
           <div #rla="routerLinkActive" routerLinkActive>
             isActive: {{rla.isActive}}
-            
+
             <ng-template let-data>
               <a [routerLink]="data">link</a>
             </ng-template>
@@ -73,16 +120,18 @@ describe('Integration', () => {
          })
          class ComponentWithRouterLink {
            // TODO(issue/24571): remove '!'.
-           @ViewChild(TemplateRef, {static: true}) templateRef !: TemplateRef<any>;
+           @ViewChild(TemplateRef, {static: true}) templateRef!: TemplateRef<any>;
            // TODO(issue/24571): remove '!'.
            @ViewChild('container', {read: ViewContainerRef, static: true})
-           container !: ViewContainerRef;
+           container!: ViewContainerRef;
 
            addLink() {
              this.container.createEmbeddedView(this.templateRef, {$implicit: '/simple'});
            }
 
-           removeLink() { this.container.clear(); }
+           removeLink() {
+             this.container.clear();
+           }
          }
 
          @Component({template: 'simple'})
@@ -94,7 +143,7 @@ describe('Integration', () => {
            declarations: [ComponentWithRouterLink, SimpleCmp]
          });
 
-         const router: Router = TestBed.get(Router);
+         const router: Router = TestBed.inject(Router);
          const fixture = createRoot(router, ComponentWithRouterLink);
          router.navigateByUrl('/simple');
          advance(fixture);
@@ -109,8 +158,35 @@ describe('Integration', () => {
          expect(fixture.nativeElement.innerHTML).toContain('isActive: false');
        }));
 
-  });
+    it('should set isActive with OnPush change detection - #19934', fakeAsync(() => {
+         @Component({
+           template: `
+             <div routerLink="/simple" #rla="routerLinkActive" routerLinkActive>
+               isActive: {{rla.isActive}}
+             </div>
+           `,
+           changeDetection: ChangeDetectionStrategy.OnPush
+         })
+         class OnPushComponent {
+         }
 
+         @Component({template: 'simple'})
+         class SimpleCmp {
+         }
+
+         TestBed.configureTestingModule({
+           imports: [RouterTestingModule.withRoutes([{path: 'simple', component: SimpleCmp}])],
+           declarations: [OnPushComponent, SimpleCmp]
+         });
+
+         const router: Router = TestBed.get(Router);
+         const fixture = createRoot(router, OnPushComponent);
+         router.navigateByUrl('/simple');
+         advance(fixture);
+
+         expect(fixture.nativeElement.innerHTML).toContain('isActive: true');
+       }));
+  });
 });
 
 function advance<T>(fixture: ComponentFixture<T>): void {

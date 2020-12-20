@@ -1,11 +1,10 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-
 import {MappingItem, SourceMapConsumer} from 'source-map';
 import {NgtscTestEnvironment} from './env';
 
@@ -86,7 +85,7 @@ export function getMappedSegments(
   while (currentMapping) {
     const nextMapping = mappings.shift();
     if (nextMapping) {
-      const source = sources.get(currentMapping.source) !;
+      const source = sources.get(currentMapping.source)!;
       const segment = {
         generated: generated.getSegment('generated', currentMapping, nextMapping),
         source: source.getSegment('original', currentMapping, nextMapping),

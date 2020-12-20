@@ -37,5 +37,7 @@ jasmine_node_test(
     data = glob(["symbol_extractor_spec/**"]),
     deps = [
         ":test_lib",
+        "//tools/symbol-extractor/symbol_extractor_spec:es2015_class_output",
+        "//tools/symbol-extractor/symbol_extractor_spec:fixtures",
     ],
 )

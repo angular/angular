@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -14,8 +14,10 @@ import {NgModuleRef} from '../linker/ng_module_factory';
 import {QueryList} from '../linker/query_list';
 import {TemplateRef} from '../linker/template_ref';
 import {ViewContainerRef} from '../linker/view_container_ref';
-import {Renderer2, RendererFactory2, RendererType2} from '../render/api';
-import {Sanitizer, SecurityContext} from '../sanitization/security';
+import {Renderer2, RendererFactory2} from '../render/api';
+import {RendererType2} from '../render/api_flags';
+import {Sanitizer} from '../sanitization/sanitizer';
+import {SecurityContext} from '../sanitization/security';
 
 
 
@@ -29,22 +31,28 @@ import {Sanitizer, SecurityContext} from '../sanitization/security';
  * function to log the error from the definition of the node, which is shown in all browser
  * logs.
  */
-export interface DefinitionFactory<D extends Definition<any>> { (logger: NodeLogger): D; }
+export interface DefinitionFactory<D extends Definition<any>> {
+  (logger: NodeLogger): D;
+}
 
 /**
  * Function to call console.error at the right source location. This is an indirection
  * via another function as browser will log the location that actually called
  * `console.error`.
  */
-export interface NodeLogger { (): () => void; }
+export interface NodeLogger {
+  (): () => void;
+}
 
-export interface Definition<DF extends DefinitionFactory<any>> { factory: DF|null; }
+export interface Definition<DF extends DefinitionFactory<any>> {
+  factory: DF|null;
+}
 
 export interface NgModuleDefinition extends Definition<NgModuleDefinitionFactory> {
   providers: NgModuleProviderDef[];
   providersByKey: {[tokenKey: string]: NgModuleProviderDef};
   modules: any[];
-  isRoot: boolean;
+  scope: 'root'|'platform'|null;
 }
 
 export interface NgModuleDefinitionFactory extends DefinitionFactory<NgModuleDefinition> {}
@@ -76,7 +84,9 @@ export interface ViewDefinition extends Definition<ViewDefinitionFactory> {
 export interface ViewDefinitionFactory extends DefinitionFactory<ViewDefinition> {}
 
 
-export interface ViewUpdateFn { (check: NodeCheckFn, view: ViewData): void; }
+export interface ViewUpdateFn {
+  (check: NodeCheckFn, view: ViewData): void;
+}
 
 // helper functions to create an overloaded function type.
 export interface NodeCheckFn {
@@ -86,7 +96,10 @@ export interface NodeCheckFn {
    v3?: any, v4?: any, v5?: any, v6?: any, v7?: any, v8?: any, v9?: any): any;
 }
 
-export const enum ArgumentType {Inline = 0, Dynamic = 1}
+export const enum ArgumentType {
+  Inline = 0,
+  Dynamic = 1
+}
 
 export interface ViewHandleEventFn {
   (view: ViewData, nodeIndex: number, eventName: string, event: any): boolean;
@@ -231,7 +244,10 @@ export interface OutputDef {
   propName: string|null;
 }
 
-export const enum OutputType {ElementOutput, DirectiveOutput}
+export const enum OutputType {
+  ElementOutput,
+  DirectiveOutput
+}
 
 export const enum QueryValueType {
   ElementRef = 0,
@@ -265,7 +281,9 @@ export interface ElementDef {
   handleEvent: ElementHandleEventFn|null;
 }
 
-export interface ElementHandleEventFn { (view: ViewData, eventName: string, event: any): boolean; }
+export interface ElementHandleEventFn {
+  (view: ViewData, eventName: string, event: any): boolean;
+}
 
 export interface ProviderDef {
   token: any;
@@ -298,7 +316,9 @@ export const enum DepFlags {
   Value = 1 << 3,
 }
 
-export interface TextDef { prefix: string; }
+export interface TextDef {
+  prefix: string;
+}
 
 export interface QueryDef {
   id: number;
@@ -312,7 +332,10 @@ export interface QueryBindingDef {
   bindingType: QueryBindingType;
 }
 
-export const enum QueryBindingType {First = 0, All = 1}
+export const enum QueryBindingType {
+  First = 0,
+  All = 1
+}
 
 export interface NgContentDef {
   /**
@@ -423,7 +446,9 @@ export function shouldCallLifecycleInitHook(
   return false;
 }
 
-export interface DisposableFn { (): void; }
+export interface DisposableFn {
+  (): void;
+}
 
 /**
  * Node instance data.
@@ -436,14 +461,18 @@ export interface DisposableFn { (): void; }
  * This way, no usage site can get a `NodeData` from view.nodes and then use it for different
  * purposes.
  */
-export class NodeData { private __brand: any; }
+export class NodeData {
+  private __brand: any;
+}
 
 /**
  * Data for an instantiated NodeType.Text.
  *
  * Attention: Adding fields to this is performance sensitive!
  */
-export interface TextData { renderText: any; }
+export interface TextData {
+  renderText: any;
+}
 
 /**
  * Accessor for view.nodes, enforcing that every usage site stays monomorphic.
@@ -493,7 +522,9 @@ export function asElementData(view: ViewData, index: number): ElementData {
  *
  * Attention: Adding fields to this is performance sensitive!
  */
-export interface ProviderData { instance: any; }
+export interface ProviderData {
+  instance: any;
+}
 
 /**
  * Accessor for view.nodes, enforcing that every usage site stays monomorphic.
@@ -507,7 +538,9 @@ export function asProviderData(view: ViewData, index: number): ProviderData {
  *
  * Attention: Adding fields to this is performance sensitive!
  */
-export interface PureExpressionData { value: any; }
+export interface PureExpressionData {
+  value: any;
+}
 
 /**
  * Accessor for view.nodes, enforcing that every usage site stays monomorphic.
@@ -551,7 +584,10 @@ export abstract class DebugContext {
 // Other
 // -------------------------------------
 
-export const enum CheckType {CheckAndUpdate, CheckNoChanges}
+export const enum CheckType {
+  CheckAndUpdate,
+  CheckNoChanges
+}
 
 export interface ProviderOverride {
   token: any;
@@ -594,21 +630,21 @@ export interface Services {
  * debug mode can hook it. It is lazily filled when `isDevMode` is known.
  */
 export const Services: Services = {
-  setCurrentNode: undefined !,
-  createRootView: undefined !,
-  createEmbeddedView: undefined !,
-  createComponentView: undefined !,
-  createNgModuleRef: undefined !,
-  overrideProvider: undefined !,
-  overrideComponentView: undefined !,
-  clearOverrides: undefined !,
-  checkAndUpdateView: undefined !,
-  checkNoChangesView: undefined !,
-  destroyView: undefined !,
-  resolveDep: undefined !,
-  createDebugContext: undefined !,
-  handleEvent: undefined !,
-  updateDirectives: undefined !,
-  updateRenderer: undefined !,
-  dirtyParentQueries: undefined !,
+  setCurrentNode: undefined!,
+  createRootView: undefined!,
+  createEmbeddedView: undefined!,
+  createComponentView: undefined!,
+  createNgModuleRef: undefined!,
+  overrideProvider: undefined!,
+  overrideComponentView: undefined!,
+  clearOverrides: undefined!,
+  checkAndUpdateView: undefined!,
+  checkNoChangesView: undefined!,
+  destroyView: undefined!,
+  resolveDep: undefined!,
+  createDebugContext: undefined!,
+  handleEvent: undefined!,
+  updateDirectives: undefined!,
+  updateRenderer: undefined!,
+  dirtyParentQueries: undefined!,
 };

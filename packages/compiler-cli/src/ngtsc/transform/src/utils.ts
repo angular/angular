@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -40,8 +40,9 @@ export function addImports(
     // for @fileoverview Closure annotation. If there is no @fileoverview annotations, this
     // statement would be a noop.
     const fileoverviewAnchorStmt = ts.createNotEmittedStatement(sf);
-    sf.statements = ts.createNodeArray(
-        [fileoverviewAnchorStmt, ...existingImports, ...addedImports, ...extraStatements, ...body]);
+    return ts.updateSourceFileNode(sf, ts.createNodeArray([
+      fileoverviewAnchorStmt, ...existingImports, ...addedImports, ...extraStatements, ...body
+    ]));
   }
 
   return sf;

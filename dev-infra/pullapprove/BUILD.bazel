@@ -1,0 +1,51 @@
+load("@npm//@bazel/typescript:index.bzl", "ts_library")
+load("//tools:defaults.bzl", "jasmine_node_test")
+
+ts_library(
+    name = "pullapprove",
+    srcs = [
+        "cli.ts",
+        "condition_evaluator.ts",
+        "group.ts",
+        "logging.ts",
+        "parse-yaml.ts",
+        "pullapprove_arrays.ts",
+        "utils.ts",
+        "verify.ts",
+    ],
+    module_name = "@angular/dev-infra-private/pullapprove",
+    visibility = ["//dev-infra:__subpackages__"],
+    deps = [
+        "//dev-infra/utils",
+        "@npm//@types/minimatch",
+        "@npm//@types/node",
+        "@npm//@types/shelljs",
+        "@npm//@types/yaml",
+        "@npm//@types/yargs",
+        "@npm//minimatch",
+        "@npm//shelljs",
+        "@npm//yaml",
+        "@npm//yargs",
+    ],
+)
+
+ts_library(
+    name = "pullapprove_test_lib",
+    testonly = True,
+    srcs = glob(
+        ["*.spec.ts"],
+    ),
+    visibility = ["//visibility:private"],
+    deps = [
+        ":pullapprove",
+        "@npm//@types/jasmine",
+        "@npm//@types/node",
+        "@npm//typescript",
+    ],
+)
+
+jasmine_node_test(
+    name = "pullapprove_test",
+    srcs = [":pullapprove_test_lib"],
+    visibility = ["//visibility:private"],
+)

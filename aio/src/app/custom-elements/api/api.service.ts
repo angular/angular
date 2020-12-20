@@ -45,7 +45,7 @@ export class ApiService implements OnDestroy {
       this.fetchSections(); // TODO: get URL for fetchSections by configuration?
 
       // makes sectionsSubject hot; subscribe ensures stays alive (always refCount > 0);
-      this._sections.subscribe(sections => this.logger.log('ApiService got API sections') );
+      this._sections.subscribe(sections => this.logger.log(`ApiService got API ${sections.length} section(s)`));
     }
 
     return this._sections.pipe(tap(sections => {
@@ -67,7 +67,7 @@ export class ApiService implements OnDestroy {
   * API sections is an array of Angular top modules and metadata about their API documents (items).
   * Updates `sections` observable
   *
-  * @param {string} [src] - Name of the api list JSON file
+  * @param [src] - Name of the api list JSON file
   */
   fetchSections(src?: string) {
     // TODO: get URL by configuration?

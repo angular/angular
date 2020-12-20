@@ -1,7 +1,7 @@
 .alert {
     padding: 16px;
     margin: 24px 0px;
-    font-size: 14px;
+    @include font-size(14);
     color: $darkgray;
     width: 100%;
     box-sizing: border-box;
@@ -36,6 +36,26 @@
         h1, h2, h3, h4, h5, h6 {
             color: $blue;
         }
+    }
+
+    &.archive-warning {
+      background-color: $darkred;
+      border-radius: 4px;
+      margin-bottom: 1rem;
+
+      * {
+        color: $white;
+      }
+
+      a {
+        color: $white;
+        font-weight: bold;
+        text-decoration: underline;
+
+        &:hover {
+          opacity: 0.9;
+        }
+      }
     }
 
     > * {

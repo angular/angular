@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -27,11 +27,10 @@ import * as core from '@angular/core';
       typeExtends<compilerCore.Query, core.Query>();
       typeExtends<core.Query, compilerCore.Query>();
       compareRuntimeShape(
-          new core.ContentChild('someSelector', {static: false}),
-          compilerCore.createContentChild('someSelector', {static: false}));
+          new core.ContentChild('someSelector'), compilerCore.createContentChild('someSelector'));
       compareRuntimeShape(
-          new core.ContentChild('someSelector', {read: 'someRead', static: false}),
-          compilerCore.createContentChild('someSelector', {read: 'someRead', static: false}));
+          new core.ContentChild('someSelector', {read: 'someRead'}),
+          compilerCore.createContentChild('someSelector', {read: 'someRead'}));
       compareRuntimeShape(
           new core.ContentChildren('someSelector'),
           compilerCore.createContentChildren('someSelector'));
@@ -40,11 +39,10 @@ import * as core from '@angular/core';
           compilerCore.createContentChildren(
               'someSelector', {read: 'someRead', descendants: false}));
       compareRuntimeShape(
-          new core.ViewChild('someSelector', {static: false}),
-          compilerCore.createViewChild('someSelector', {static: false}));
+          new core.ViewChild('someSelector'), compilerCore.createViewChild('someSelector'));
       compareRuntimeShape(
-          new core.ViewChild('someSelector', {read: 'someRead', static: false}),
-          compilerCore.createViewChild('someSelector', {read: 'someRead', static: false}));
+          new core.ViewChild('someSelector', {read: 'someRead'}),
+          compilerCore.createViewChild('someSelector', {read: 'someRead'}));
       compareRuntimeShape(
           new core.ViewChildren('someSelector'), compilerCore.createViewChildren('someSelector'));
       compareRuntimeShape(
@@ -192,7 +190,9 @@ import * as core from '@angular/core';
 function compareRuntimeShape(a: any, b: any) {
   const keys = metadataKeys(a);
   expect(keys).toEqual(metadataKeys(b));
-  keys.forEach(key => { expect(a[key]).toBe(b[key]); });
+  keys.forEach(key => {
+    expect(a[key]).toBe(b[key]);
+  });
   // Need to check 'ngMetadataName' separately, as this is
   // on the prototype in @angular/core, but a regular property in @angular/compiler.
   expect(a.ngMetadataName).toBe(b.ngMetadataName);

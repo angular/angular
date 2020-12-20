@@ -18,5 +18,5 @@ export abstract class MinimalLogger {
 // #enddocregion minimal-logger-transpiled
 */
 
-// See http://stackoverflow.com/questions/43154832/unexpected-token-export-in-angular-app-with-systemjs-and-typescript/
+// See https://stackoverflow.com/questions/43154832/unexpected-token-export-in-angular-app-with-systemjs-and-typescript/
 export const _ = 0;

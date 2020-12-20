@@ -11,7 +11,6 @@ ts_library(
     tsconfig = "//tools:tsconfig.json",
     deps = [
         "@npm//@types/node",
-        "@npm//@types/source-map",
         "@npm//chalk",
         "@npm//source-map",
     ],

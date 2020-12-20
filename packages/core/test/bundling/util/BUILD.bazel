@@ -6,18 +6,9 @@ package(default_visibility = ["//visibility:public"])
 ts_library(
     name = "reflect_metadata",
     srcs = [
-        "src/reflect_metadata_aot.ts",
-        "src/reflect_metadata_jit.ts",
-        "src/reflect_metadata_legacy.ts",
-        ":metadata_switch",
+        "src/reflect_metadata.ts",
     ],
     module_name = "@angular/core/test/bundling/util/src/reflect_metadata",
+    module_root = "src/reflect_metadata",
     deps = ["@npm//reflect-metadata"],
-)
-
-# See packages/core/BUILD.bazel.
-genrule(
-    name = "metadata_switch",
-    outs = ["src/reflect_metadata.ts"],
-    cmd = "echo import \"'./reflect_metadata_$(compile)';\" > $@",
 )

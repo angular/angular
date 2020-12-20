@@ -1,13 +1,13 @@
 // #docplaster
 // #docregion
-import { Component, OnInit }   from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, ParamMap } from '@angular/router';
-import { Observable }                       from 'rxjs';
-import { switchMap }                        from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
 
-import { CrisisService }  from '../crisis.service';
-import { Crisis }         from '../crisis';
-import { DialogService }  from '../../dialog.service';
+import { CrisisService } from '../crisis.service';
+import { Crisis } from '../crisis';
+import { DialogService } from '../../dialog.service';
 
 @Component({
   selector: 'app-crisis-detail',
@@ -62,7 +62,7 @@ export class CrisisDetailComponent implements OnInit {
   }
 
   gotoCrises() {
-    let crisisId = this.crisis ? this.crisis.id : null;
+    const crisisId = this.crisis ? this.crisis.id : null;
     // Pass along the crisis id if available
     // so that the CrisisListComponent can select that crisis.
     // Add a totally useless `foo` parameter for kicks.

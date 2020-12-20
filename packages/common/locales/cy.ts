@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -21,7 +21,9 @@ function plural(n: number): number {
 }
 
 export default [
-  'cy', [['b', 'h'], ['yb', 'yh'], u], [['yb', 'yh'], u, u],
+  'cy',
+  [['b', 'h'], ['AM', 'PM'], ['yb', 'yh']],
+  [['AM', 'PM'], u, u],
   [
     ['S', 'Ll', 'M', 'M', 'I', 'G', 'S'], ['Sul', 'Llun', 'Maw', 'Mer', 'Iau', 'Gwen', 'Sad'],
     [
@@ -40,7 +42,7 @@ export default [
   ],
   [
     ['I', 'Ch', 'M', 'E', 'M', 'M', 'G', 'A', 'M', 'H', 'T', 'Rh'],
-    ['Ion', 'Chwef', 'Maw', 'Ebrill', 'Mai', 'Meh', 'Gorff', 'Awst', 'Medi', 'Hyd', 'Tach', 'Rhag'],
+    ['Ion', 'Chwef', 'Maw', 'Ebr', 'Mai', 'Meh', 'Gorff', 'Awst', 'Medi', 'Hyd', 'Tach', 'Rhag'],
     [
       'Ionawr', 'Chwefror', 'Mawrth', 'Ebrill', 'Mai', 'Mehefin', 'Gorffennaf', 'Awst', 'Medi',
       'Hydref', 'Tachwedd', 'Rhagfyr'
@@ -54,11 +56,18 @@ export default [
       'Hydref', 'Tachwedd', 'Rhagfyr'
     ]
   ],
-  [['C', 'O'], ['CC', 'OC'], ['Cyn Crist', 'Oed Crist']], 1, [6, 0],
+  [['C', 'O'], ['CC', 'OC'], ['Cyn Crist', 'Oed Crist']],
+  1,
+  [6, 0],
   ['dd/MM/yy', 'd MMM y', 'd MMMM y', 'EEEE, d MMMM y'],
-  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'], ['{1} {0}', u, '{1} \'am\' {0}', u],
+  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
+  ['{1} {0}', u, '{1} \'am\' {0}', u],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], '£', 'Punt Prydain', {
+  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'],
+  'GBP',
+  '£',
+  'Punt Prydain',
+  {
     'BDT': [u, 'TK'],
     'BWP': [],
     'HKD': ['HK$'],
@@ -67,8 +76,10 @@ export default [
     'THB': ['฿'],
     'TWD': ['NT$'],
     'USD': ['US$', '$'],
+    'XXX': [],
     'ZAR': [],
     'ZMW': []
   },
+  'ltr',
   plural
 ];

@@ -1,12 +1,12 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {TreeNode} from '../util';
+import {newArray, TreeNode} from '../util';
 
 export class TreeComponent {
   private _renderNodes: any[];
@@ -25,7 +25,7 @@ export class TreeComponent {
 
   private _create(parentNode: any, dataNode: TreeNode, index: number) {
     if (!this._renderNodes) {
-      this._renderNodes = new Array(dataNode.transitiveChildCount);
+      this._renderNodes = newArray(dataNode.transitiveChildCount);
     }
 
     const span = document.createElement('span');

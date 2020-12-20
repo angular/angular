@@ -1,13 +1,13 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {PRIMARY_OUTLET, ParamMap, Params, convertToParamMap} from './shared';
-import {forEach, shallowEqual} from './utils/collection';
+import {convertToParamMap, ParamMap, Params, PRIMARY_OUTLET} from './shared';
+import {equalArraysOrString, forEach, shallowEqual} from './utils/collection';
 
 export function createEmptyUrlTree() {
   return new UrlTree(new UrlSegmentGroup([], {}), {}, null);
@@ -39,9 +39,8 @@ function equalSegmentGroups(container: UrlSegmentGroup, containee: UrlSegmentGro
 }
 
 function containsQueryParams(container: Params, containee: Params): boolean {
-  // TODO: This does not handle array params correctly.
   return Object.keys(containee).length <= Object.keys(container).length &&
-      Object.keys(containee).every(key => containee[key] === container[key]);
+      Object.keys(containee).every(key => equalArraysOrString(container[key], containee[key]));
 }
 
 function containsSegmentGroup(container: UrlSegmentGroup, containee: UrlSegmentGroup): boolean {
@@ -106,7 +105,7 @@ function containsSegmentGroupHelper(
 export class UrlTree {
   /** @internal */
   // TODO(issue/24571): remove '!'.
-  _queryParamMap !: ParamMap;
+  _queryParamMap!: ParamMap;
 
   /** @internal */
   constructor(
@@ -125,7 +124,9 @@ export class UrlTree {
   }
 
   /** @docsNotRequired */
-  toString(): string { return DEFAULT_SERIALIZER.serialize(this); }
+  toString(): string {
+    return DEFAULT_SERIALIZER.serialize(this);
+  }
 }
 
 /**
@@ -140,10 +141,10 @@ export class UrlTree {
 export class UrlSegmentGroup {
   /** @internal */
   // TODO(issue/24571): remove '!'.
-  _sourceSegment !: UrlSegmentGroup;
+  _sourceSegment!: UrlSegmentGroup;
   /** @internal */
   // TODO(issue/24571): remove '!'.
-  _segmentIndexShift !: number;
+  _segmentIndexShift!: number;
   /** The parent node in the url tree */
   parent: UrlSegmentGroup|null = null;
 
@@ -156,13 +157,19 @@ export class UrlSegmentGroup {
   }
 
   /** Whether the segment has child segments */
-  hasChildren(): boolean { return this.numberOfChildren > 0; }
+  hasChildren(): boolean {
+    return this.numberOfChildren > 0;
+  }
 
   /** Number of child segments */
-  get numberOfChildren(): number { return Object.keys(this.children).length; }
+  get numberOfChildren(): number {
+    return Object.keys(this.children).length;
+  }
 
   /** @docsNotRequired */
-  toString(): string { return serializePaths(this); }
+  toString(): string {
+    return serializePaths(this);
+  }
 }
 
 
@@ -195,7 +202,7 @@ export class UrlSegmentGroup {
 export class UrlSegment {
   /** @internal */
   // TODO(issue/24571): remove '!'.
-  _parameterMap !: ParamMap;
+  _parameterMap!: ParamMap;
 
   constructor(
       /** The path part of a URL segment */
@@ -212,7 +219,9 @@ export class UrlSegment {
   }
 
   /** @docsNotRequired */
-  toString(): string { return serializePath(this); }
+  toString(): string {
+    return serializePath(this);
+  }
 }
 
 export function equalSegments(as: UrlSegment[], bs: UrlSegment[]): boolean {
@@ -291,7 +300,7 @@ export class DefaultUrlSerializer implements UrlSerializer {
     const segment = `/${serializeSegment(tree.root, true)}`;
     const query = serializeQueryParams(tree.queryParams);
     const fragment =
-        typeof tree.fragment === `string` ? `#${encodeUriFragment(tree.fragment !)}` : '';
+        typeof tree.fragment === `string` ? `#${encodeUriFragment(tree.fragment!)}` : '';
 
     return `${segment}${query}${fragment}`;
   }
@@ -329,8 +338,12 @@ function serializeSegment(segment: UrlSegmentGroup, root: boolean): string {
       }
 
       return [`${k}:${serializeSegment(v, false)}`];
-
     });
+
+    // use no parenthesis if the only child is a primary outlet route
+    if (Object.keys(segment.children).length === 1 && segment.children[PRIMARY_OUTLET] != null) {
+      return `${serializePaths(segment)}/${children[0]}`;
+    }
 
     return `${serializePaths(segment)}/(${children.join('//')})`;
   }
@@ -409,7 +422,7 @@ function serializeQueryParams(params: {[key: string]: any}): string {
         `${encodeUriQuery(name)}=${encodeUriQuery(value)}`;
   });
 
-  return strParams.length ? `?${strParams.join("&")}` : '';
+  return strParams.length ? `?${strParams.join('&')}` : '';
 }
 
 const SEGMENT_RE = /^[^\/()?;=#]+/;
@@ -435,7 +448,9 @@ function matchUrlQueryParamValue(str: string): string {
 class UrlParser {
   private remaining: string;
 
-  constructor(private url: string) { this.remaining = url; }
+  constructor(private url: string) {
+    this.remaining = url;
+  }
 
   parseRootSegment(): UrlSegmentGroup {
     this.consumeOptional('/');
@@ -584,7 +599,7 @@ class UrlParser {
         throw new Error(`Cannot parse url '${this.url}'`);
       }
 
-      let outletName: string = undefined !;
+      let outletName: string = undefined!;
       if (path.indexOf(':') > -1) {
         outletName = path.substr(0, path.indexOf(':'));
         this.capture(outletName);
@@ -602,7 +617,9 @@ class UrlParser {
     return segments;
   }
 
-  private peekStartsWith(str: string): boolean { return this.remaining.startsWith(str); }
+  private peekStartsWith(str: string): boolean {
+    return this.remaining.startsWith(str);
+  }
 
   // Consumes the prefix when it is present and returns whether it has been consumed
   private consumeOptional(str: string): boolean {

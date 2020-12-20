@@ -1,10 +1,10 @@
 <h2>Products</h2>
 
 <!-- #docregion router-link -->
-<div *ngFor="let product of products; index as productId">
+<div *ngFor="let product of products">
 
   <h3>
-    <a [title]="product.name + ' details'" [routerLink]="['/products', productId]">
+    <a [title]="product.name + ' details'" [routerLink]="['/products', product.id]">
       {{ product.name }}
     </a>
   </h3>

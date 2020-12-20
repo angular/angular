@@ -1,12 +1,12 @@
-import { NgModule }            from '@angular/core';
+import { NgModule } from '@angular/core';
 
-import { SharedModule }        from '../shared/shared.module';
+import { SharedModule } from '../shared/shared.module';
 
-import { CustomersComponent }       from './customers.component';
+import { CustomersComponent } from './customers.component';
 import { CustomersDetailComponent } from './customers-detail.component';
-import { CustomersListComponent }   from './customers-list.component';
-import { CustomersRoutingModule }   from './customers-routing.module';
-import { CustomersService }   from './customers.service';
+import { CustomersListComponent } from './customers-list.component';
+import { CustomersRoutingModule } from './customers-routing.module';
+import { CustomersService } from './customers.service';
 
 
 @NgModule({

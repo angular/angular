@@ -1,9 +1,8 @@
-import { Component, DebugElement }   from '@angular/core';
+import { Component, DebugElement } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 
 import { HighlightDirective } from './highlight.directive';
-import { newEvent }           from '../../testing';
 
 // #docregion test-component
 @Component({
@@ -59,9 +58,12 @@ describe('HighlightDirective', () => {
     const input = des[2].nativeElement as HTMLInputElement;
     expect(input.style.backgroundColor).toBe('cyan', 'initial backgroundColor');
 
-    // dispatch a DOM event so that Angular responds to the input value change.
     input.value = 'green';
-    input.dispatchEvent(newEvent('input'));
+
+    // Dispatch a DOM event so that Angular responds to the input value change.
+    // In older browsers, such as IE, you might need a CustomEvent instead. See
+    // https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent/CustomEvent#Polyfill
+    input.dispatchEvent(new Event('input'));
     fixture.detectChanges();
 
     expect(input.style.backgroundColor).toBe('green', 'changed backgroundColor');
@@ -69,7 +71,7 @@ describe('HighlightDirective', () => {
 
 
   it('bare <h2> should not have a customProperty', () => {
-    expect(bareH2.properties['customProperty']).toBeUndefined();
+    expect(bareH2.properties.customProperty).toBeUndefined();
   });
   // #enddocregion selected-tests
 

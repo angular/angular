@@ -1,5 +1,4 @@
-load("//tools:defaults.bzl", "ng_module")
-load("@npm_bazel_typescript//:index.bzl", "ts_devserver")
+load("//tools:defaults.bzl", "ng_module", "ts_devserver")
 
 package(default_visibility = ["//modules/playground:__subpackages__"])
 
@@ -8,8 +7,6 @@ ng_module(
     srcs = glob(["**/*.ts"]),
     assets = glob(["**/*.html"]),
     tsconfig = "//modules/playground:tsconfig-build.json",
-    # TODO: FW-1004 Type checking is currently not complete.
-    type_check = False,
     deps = [
         "//packages/core",
         "//packages/platform-browser",
@@ -21,22 +18,23 @@ ng_module(
 
 ts_devserver(
     name = "devserver",
-    data = [
+    port = 4200,
+    static_files = [
         # This is temporarily needed because Angular imports from "rxjs/operators/index", while
         # there is only one RxJS UMD bundle that re-exports everything at the root.
         "//modules/playground:systemjs-rxjs-operators.js",
         "//third_party/fonts.google.com/open-sans",
-        "@npm//node_modules/rxjs:bundles/rxjs.umd.js",
-        "@npm//node_modules/tslib:tslib.js",
-    ] + glob(["**/*.css"]),
-    port = 4200,
-    static_files = [
+        "@npm//:node_modules/rxjs/bundles/rxjs.umd.js",
+        "@npm//:node_modules/tslib/tslib.js",
+        "//packages/zone.js/bundles:zone.umd.js",
         "index.html",
-        "@npm//node_modules/zone.js:dist/zone.js",
-        "@npm//node_modules/reflect-metadata:Reflect.js",
-        "@npm//node_modules/systemjs:dist/system.js",
+        "@npm//:node_modules/reflect-metadata/Reflect.js",
+        "@npm//:node_modules/systemjs/dist/system.js",
         "//modules/playground:systemjs-config.js",
         "load-app.js",
+    ] + glob(["**/*.css"]),
+    deps = [
+        ":routing",
+        "//packages/zone.js/lib",
     ],
-    deps = [":routing"],
 )

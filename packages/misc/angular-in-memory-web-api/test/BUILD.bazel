@@ -1,0 +1,34 @@
+load("//tools:defaults.bzl", "karma_web_test_suite", "ts_library")
+
+ts_library(
+    name = "test_lib",
+    testonly = True,
+    srcs = glob(["**/*.ts"]),
+    # Visible to //:saucelabs_unit_tests_poc target
+    visibility = ["//:__pkg__"],
+    deps = [
+        "//packages/common",
+        "//packages/common/http",
+        "//packages/core",
+        "//packages/core/testing",
+        "//packages/misc/angular-in-memory-web-api",
+        "@npm//@types/jasmine-ajax",
+        "@npm//jasmine-ajax",
+        "@npm//rxjs",
+    ],
+)
+
+karma_web_test_suite(
+    name = "test_web",
+    # do not sort
+    bootstrap = [
+        "@npm//:node_modules/core-js/client/core.js",
+        "@npm//:node_modules/reflect-metadata/Reflect.js",
+        "@npm//:node_modules/jasmine-ajax/lib/mock-ajax.js",
+        "//packages/zone.js/bundles:zone.umd.js",
+        "//packages/zone.js/bundles:zone-testing.umd.js",
+    ],
+    deps = [
+        ":test_lib",
+    ],
+)

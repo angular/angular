@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -24,7 +24,8 @@ function plural(n: number): number {
 }
 
 export default [
-  'lv', [['priekšp.', 'pēcp.'], u, ['priekšpusdienā', 'pēcpusdienā']],
+  'lv',
+  [['priekšp.', 'pēcp.'], u, ['priekšpusdienā', 'pēcpusdienā']],
   [['priekšp.', 'pēcpusd.'], u, ['priekšpusdiena', 'pēcpusdiena']],
   [
     ['S', 'P', 'O', 'T', 'C', 'P', 'S'],
@@ -49,10 +50,19 @@ export default [
       'septembris', 'oktobris', 'novembris', 'decembris'
     ]
   ],
-  u, [['p.m.ē.', 'm.ē.'], u, ['pirms mūsu ēras', 'mūsu ērā']], 1, [6, 0],
+  u,
+  [['p.m.ē.', 'm.ē.'], u, ['pirms mūsu ēras', 'mūsu ērā']],
+  1,
+  [6, 0],
   ['dd.MM.yy', 'y. \'gada\' d. MMM', 'y. \'gada\' d. MMMM', 'EEEE, y. \'gada\' d. MMMM'],
-  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'], ['{1} {0}', u, u, u],
+  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
+  ['{1} {0}', u, u, u],
   [',', ' ', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NS', ':'],
-  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], '€', 'eiro',
-  {'AUD': ['AU$', '$'], 'LVL': ['Ls'], 'THB': ['฿'], 'TWD': ['NT$']}, plural
+  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'],
+  'EUR',
+  '€',
+  'eiro',
+  {'AUD': ['AU$', '$'], 'LVL': ['Ls'], 'THB': ['฿'], 'TWD': ['NT$']},
+  'ltr',
+  plural
 ];

@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -121,12 +121,12 @@ export class InjectableCompiler {
 
   compile(injectable: CompileInjectableMetadata, ctx: OutputContext): void {
     if (this.alwaysGenerateDef || injectable.providedIn !== undefined) {
-      const className = identifierName(injectable.type) !;
+      const className = identifierName(injectable.type)!;
       const clazz = new o.ClassStmt(
           className, null,
           [
             new o.ClassField(
-                'ngInjectableDef', o.INFERRED_TYPE, [o.StmtModifier.Static],
+                'ɵprov', o.INFERRED_TYPE, [o.StmtModifier.Static],
                 this.injectableDef(injectable, ctx)),
           ],
           [], new o.ClassMethod(null, [], []), []);

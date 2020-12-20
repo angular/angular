@@ -1,29 +1,22 @@
-'use strict'; // necessary for es6 output in node
-
 import { browser, element, by } from 'protractor';
 
 /* tslint:disable:quotemark */
-describe('Dynamic Form', function () {
+describe('Dynamic Form', () => {
 
-    beforeAll(function () {
-        browser.get('');
-    });
+    beforeAll(() => browser.get(''));
 
-    it('should submit form', function () {
-      let firstNameElement = element.all(by.css('input[id=firstName]')).get(0);
-      expect(firstNameElement.getAttribute('value')).toEqual('Bombasto');
+    it('should submit form', async () => {
+      const firstNameElement = element.all(by.css('input[id=firstName]')).get(0);
+      expect(await firstNameElement.getAttribute('value')).toEqual('Bombasto');
 
-      let emailElement = element.all(by.css('input[id=emailAddress]')).get(0);
-      let email = 'test@test.com';
-      emailElement.sendKeys(email);
-      expect(emailElement.getAttribute('value')).toEqual(email);
+      const emailElement = element.all(by.css('input[id=emailAddress]')).get(0);
+      const email = 'test@test.com';
+      await emailElement.sendKeys(email);
+      expect(await emailElement.getAttribute('value')).toEqual(email);
 
-      element(by.css('select option[value="solid"]')).click();
-
-      let saveButton = element.all(by.css('button')).get(0);
-      saveButton.click().then(function() {
-        expect(element(by.xpath("//strong[contains(text(),'Saved the following values')]")).isPresent()).toBe(true);
-      });
+      await element(by.css('select option[value="solid"]')).click();
+      await element.all(by.css('button')).get(0).click();
+      expect(await element(by.cssContainingText('strong', 'Saved the following values')).isPresent()).toBe(true);
   });
 
 });

@@ -1,19 +1,18 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ApplicationRef, Component, ComponentFactoryResolver, ComponentRef, ElementRef, Injector, NgModule} from '@angular/core';
+import {ApplicationRef, ChangeDetectorRef, Component, ComponentFactoryResolver, ComponentRef, ElementRef, Injector, NgModule} from '@angular/core';
 import {InternalViewRef} from '@angular/core/src/linker/view_ref';
 import {TestBed} from '@angular/core/testing';
 
 
 describe('ViewRef', () => {
   it('should remove nodes from DOM when the view is detached from app ref', () => {
-
     @Component({selector: 'dynamic-cpt', template: '<div></div>'})
     class DynamicComponent {
       constructor(public elRef: ElementRef) {}
@@ -21,7 +20,7 @@ describe('ViewRef', () => {
 
     @Component({template: `<span></span>`})
     class App {
-      componentRef !: ComponentRef<DynamicComponent>;
+      componentRef!: ComponentRef<DynamicComponent>;
       constructor(
           public appRef: ApplicationRef, private cfr: ComponentFactoryResolver,
           private injector: Injector) {}
@@ -33,7 +32,9 @@ describe('ViewRef', () => {
         document.body.appendChild(this.componentRef.instance.elRef.nativeElement);
       }
 
-      destroy() { (this.componentRef.hostView as InternalViewRef).detachFromAppRef(); }
+      destroy() {
+        (this.componentRef.hostView as InternalViewRef).detachFromAppRef();
+      }
     }
 
     @NgModule({declarations: [App, DynamicComponent], entryComponents: [DynamicComponent]})
@@ -52,5 +53,23 @@ describe('ViewRef', () => {
     appComponent.destroy();
     fixture.detectChanges();
     expect(document.body.querySelector('dynamic-cpt')).toBeFalsy();
+  });
+
+  it('should invoke the onDestroy callback of a view ref', () => {
+    let called = false;
+
+    @Component({template: ''})
+    class App {
+      constructor(changeDetectorRef: ChangeDetectorRef) {
+        (changeDetectorRef as InternalViewRef).onDestroy(() => called = true);
+      }
+    }
+
+    TestBed.configureTestingModule({declarations: [App]});
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+    fixture.destroy();
+
+    expect(called).toBe(true);
   });
 });

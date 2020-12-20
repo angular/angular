@@ -1,26 +1,28 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 // #docplaster
-import {Component, Directive, ElementRef, EventEmitter, Inject, Injectable, Injector, Input, NgModule, Output} from '@angular/core';
+import {Component, Directive, ElementRef, EventEmitter, Injectable, Injector, Input, NgModule, Output} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
-import {UpgradeComponent, UpgradeModule, downgradeComponent, downgradeInjectable} from '@angular/upgrade/static';
+import {downgradeComponent, downgradeInjectable, UpgradeComponent, UpgradeModule} from '@angular/upgrade/static';
 
 declare var angular: ng.IAngularStatic;
 
-interface Hero {
+export interface Hero {
   name: string;
   description: string;
 }
 
 // #docregion ng1-text-formatter-service
-class TextFormatter {
-  titleCase(value: string) { return value.replace(/((^|\s)[a-z])/g, (_, c) => c.toUpperCase()); }
+export class TextFormatter {
+  titleCase(value: string) {
+    return value.replace(/((^|\s)[a-z])/g, (_, c) => c.toUpperCase());
+  }
 }
 
 // #enddocregion
@@ -38,8 +40,8 @@ class TextFormatter {
              </div>
              <button (click)="addHero.emit()">Add Hero</button>`,
 })
-class Ng2HeroesComponent {
-  @Input() heroes !: Hero[];
+export class Ng2HeroesComponent {
+  @Input() heroes!: Hero[];
   @Output() addHero = new EventEmitter();
   @Output() removeHero = new EventEmitter();
 }
@@ -48,7 +50,7 @@ class Ng2HeroesComponent {
 // #docregion ng2-heroes-service
 // This Angular service will be "downgraded" to be used in AngularJS
 @Injectable()
-class HeroesService {
+export class HeroesService {
   heroes: Hero[] = [
     {name: 'superman', description: 'The man of steel'},
     {name: 'wonder woman', description: 'Princess of the Amazons'},
@@ -67,18 +69,20 @@ class HeroesService {
         this.heroes.concat([{name: 'Kamala Khan', description: 'Epic shape-shifting healer'}]);
   }
 
-  removeHero(hero: Hero) { this.heroes = this.heroes.filter((item: Hero) => item !== hero); }
+  removeHero(hero: Hero) {
+    this.heroes = this.heroes.filter((item: Hero) => item !== hero);
+  }
 }
 // #enddocregion
 
 // #docregion ng1-hero-wrapper
 // This Angular directive will act as an interface to the "upgraded" AngularJS component
 @Directive({selector: 'ng1-hero'})
-class Ng1HeroComponentWrapper extends UpgradeComponent {
+export class Ng1HeroComponentWrapper extends UpgradeComponent {
   // The names of the input and output properties here must match the names of the
   // `<` and `&` bindings in the AngularJS component that is being wrapped
-  @Input() hero !: Hero;
-  @Output() onRemove !: EventEmitter<void>;
+  @Input() hero!: Hero;
+  @Output() onRemove!: EventEmitter<void>;
 
   constructor(elementRef: ElementRef, injector: Injector) {
     // We must pass the name of the directive as used by AngularJS to the super
@@ -104,7 +108,7 @@ class Ng1HeroComponentWrapper extends UpgradeComponent {
   imports: [BrowserModule, UpgradeModule]
 })
 // #docregion bootstrap-ng1
-class Ng2AppModule {
+export class Ng2AppModule {
   // #enddocregion ng2-module
   constructor(private upgrade: UpgradeModule) {}
 
@@ -122,7 +126,7 @@ class Ng2AppModule {
 // #docregion Angular 1 Stuff
 // #docregion ng1-module
 // This Angular 1 module represents the AngularJS pieces of the application
-const ng1AppModule = angular.module('ng1AppModule', []);
+export const ng1AppModule: ng.IModule = angular.module('ng1AppModule', []);
 // #enddocregion
 
 // #docregion ng1-hero
@@ -159,7 +163,10 @@ ng1AppModule.component('exampleApp', {
   // (We don't need the `HeroesService` type for AngularJS DI - it just helps with TypeScript
   // compilation)
   controller: [
-    'heroesService', function(heroesService: HeroesService) { this.heroesService = heroesService; }
+    'heroesService',
+    function(heroesService: HeroesService) {
+      this.heroesService = heroesService;
+    }
   ],
   // This template makes use of the downgraded `ng2-heroes` component
   // Note that because its element is compiled by AngularJS we must use kebab-case attributes
@@ -176,6 +183,6 @@ ng1AppModule.component('exampleApp', {
 
 // #docregion bootstrap-ng2
 // We bootstrap the Angular module as we would do in a normal Angular app.
-// (We are using the dynamic browser platform as this example has not been compiled AoT.)
+// (We are using the dynamic browser platform as this example has not been compiled AOT.)
 platformBrowserDynamic().bootstrapModule(Ng2AppModule);
 // #enddocregion

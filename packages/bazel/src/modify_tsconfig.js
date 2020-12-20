@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -44,7 +44,7 @@ function main(args) {
     // ngc-wrapped is expecting POSIX paths and the TypeScript Bazel rules by default only pass
     // POSIX paths as well.
     angularCompilerOptions['expectedOut'] = angularCompilerOptions['expectedOut'].map(
-        f => f.replace(/\.closure\.js$/, '.js').replace(binDir, newOutputBase));
+        f => f.replace(/\.mjs$/, '.js').replace(binDir, newOutputBase));
   }
   fs.writeFileSync(output, JSON.stringify(data));
 }

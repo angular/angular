@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -30,7 +30,7 @@ export function parse(value: string): string[] {
   // we use a string array here instead of a string map
   // because a string-map is not guaranteed to retain the
   // order of the entries whereas a string array can be
-  // construted in a [key, value, key, value] format.
+  // constructed in a [key, value, key, value] format.
   const styles: string[] = [];
 
   let i = 0;
@@ -110,7 +110,11 @@ export function stripUnnecessaryQuotes(value: string): string {
 }
 
 export function hyphenate(value: string): string {
-  return value.replace(/[a-z][A-Z]/g, v => {
-                return v.charAt(0) + '-' + v.charAt(1);
-              }).toLowerCase();
+  return value
+      .replace(
+          /[a-z][A-Z]/g,
+          v => {
+            return v.charAt(0) + '-' + v.charAt(1);
+          })
+      .toLowerCase();
 }
