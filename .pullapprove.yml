@@ -241,6 +241,30 @@ groups:
 
 
   # =========================================================
+  #  Docs: Animations
+  # =========================================================
+  docs-animations:
+    <<: *defaults
+    conditions:
+      - *can-be-global-approved
+      - *can-be-global-docs-approved
+      - >
+        contains_any_globs(files, [
+          'aio/content/guide/animations.md',
+          'aio/content/examples/animations/**',
+          'aio/content/images/guide/animations/**',
+          'aio/content/guide/complex-animation-sequences.md',
+          'aio/content/guide/reusable-animations.md',
+          'aio/content/guide/route-animations.md',
+          'aio/content/guide/transition-and-triggers.md'
+          ])
+    labels:
+      pending: "comp: docs"
+      approved: "comp: docs"
+      rejected: "comp: docs"
+
+
+  # =========================================================
   #  Framework: Compiler
   # =========================================================
   fw-compiler:
@@ -267,6 +291,28 @@ groups:
         - alxhub
         - AndrewKushnir
         - JoostK
+
+
+  # =========================================================
+  #  Docs: Compiler
+  # =========================================================
+  docs-compiler:
+    <<: *defaults
+    conditions:
+      - *can-be-global-approved
+      - *can-be-global-docs-approved
+      - >
+        contains_any_globs(files, [
+          'packages/examples/compiler/**',
+          'aio/content/guide/angular-compiler-options.md',
+          'aio/content/guide/aot-compiler.md',
+          'aio/content/guide/aot-metadata-errors.md',
+          'aio/content/guide/template-typecheck.md '
+          ])
+    labels:
+      pending: "comp: docs"
+      approved: "comp: docs"
+      rejected: "comp: docs"
 
 
   # =========================================================
@@ -463,6 +509,9 @@ groups:
       - *can-be-global-docs-approved
       - >
         contains_any_globs(files.exclude("packages/core/schematics/**"), [
+          'packages/docs/**',
+          'packages/examples/core/**',
+          'packages/examples/platform-browser/**',
           'aio/content/guide/accessibility.md',
           'aio/content/examples/accessibility/**',
           'aio/content/guide/architecture-components.md',
@@ -579,15 +628,7 @@ groups:
       pending: "comp: docs"
       approved: "comp: docs"
       rejected: "comp: docs"
-    reviewers:
-      users:
-        - alxhub
-        - AndrewKushnir
-        - atscott
-        - ~kara  # do not request reviews from Kara, but allow her to approve PRs
-        - mhevery
-        - jessicajaniuk
-        # OOO as of 2020-09-28 - pkozlowski-opensource
+
 
   # =========================================================
   #  Framework: Common
@@ -644,6 +685,27 @@ groups:
 
 
   # =========================================================
+  #  Docs: Http
+  # =========================================================
+  docs-http:
+    <<: *defaults
+    conditions:
+      - *can-be-global-approved
+      - *can-be-global-docs-approved
+      - >
+        contains_any_globs(files, [
+          'packages/examples/http/**',
+          'aio/content/guide/http.md',
+          'aio/content/examples/http/**',
+          'aio/content/images/guide/http/**'
+          ])
+    labels:
+      pending: "comp: docs"
+      approved: "comp: docs"
+      rejected: "comp: docs"
+
+
+  # =========================================================
   #  Framework: Elements
   # =========================================================
   fw-elements:
@@ -666,6 +728,26 @@ groups:
       users:
         - andrewseguin
         - gkalpak
+
+
+  # =========================================================
+  #  Docs: Elements
+  # =========================================================
+  docs-elements:
+    <<: *defaults
+    conditions:
+      - *can-be-global-approved
+      - *can-be-global-docs-approved
+      - >
+        contains_any_globs(files, [
+          'aio/content/examples/elements/**',
+          'aio/content/images/guide/elements/**',
+          'aio/content/guide/elements.md'
+          ])
+    labels:
+      pending: "comp: docs"
+      approved: "comp: docs"
+      rejected: "comp: docs"
 
 
   # =========================================================
@@ -703,6 +785,39 @@ groups:
     reviewers:
       users:
         - AndrewKushnir
+
+
+  # =========================================================
+  #  Docs: Forms
+  # =========================================================
+  docs-forms:
+    <<: *defaults
+    conditions:
+      - *can-be-global-approved
+      - *can-be-global-docs-approved
+      - >
+        contains_any_globs(files, [
+          'packages/examples/forms/**',
+          'aio/content/guide/forms.md',
+          'aio/content/examples/forms/**',
+          'aio/content/images/guide/forms/**',
+          'aio/content/guide/forms-overview.md',
+          'aio/content/examples/forms-overview/**',
+          'aio/content/images/guide/forms-overview/**',
+          'aio/content/guide/form-validation.md',
+          'aio/content/examples/form-validation/**',
+          'aio/content/images/guide/form-validation/**',
+          'aio/content/guide/dynamic-form.md',
+          'aio/content/examples/dynamic-form/**',
+          'aio/content/images/guide/dynamic-form/**',
+          'aio/content/guide/reactive-forms.md',
+          'aio/content/examples/reactive-forms/**',
+          'aio/content/images/guide/reactive-forms/**'
+          ])
+    labels:
+      pending: "comp: docs"
+      approved: "comp: docs"
+      rejected: "comp: docs"
 
 
   # =========================================================
@@ -744,6 +859,25 @@ groups:
 
 
   # =========================================================
+  #  Docs: i18n
+  # =========================================================
+  docs-i18n:
+    <<: *defaults
+    conditions:
+      - *can-be-global-approved
+      - *can-be-global-docs-approved
+      - >
+        contains_any_globs(files, [
+          'aio/content/guide/i18n.md',
+          'aio/content/examples/i18n/**'
+          ])
+    labels:
+      pending: "comp: docs"
+      approved: "comp: docs"
+      rejected: "comp: docs"
+
+
+  # =========================================================
   #  Framework: Platform Server
   # =========================================================
   fw-platform-server:
@@ -765,6 +899,25 @@ groups:
       users:
         - alxhub
         - kyliau
+
+
+  # =========================================================
+  #  Docs: Platform Server
+  # =========================================================
+  docs-platform-server:
+    <<: *defaults
+    conditions:
+      - *can-be-global-approved
+      - *can-be-global-docs-approved
+      - >
+        contains_any_globs(files, [
+          'aio/content/guide/universal.md',
+          'aio/content/examples/universal/**'
+          ])
+    labels:
+      pending: "comp: docs"
+      approved: "comp: docs"
+      rejected: "comp: docs"
 
 
   # =========================================================
@@ -793,6 +946,30 @@ groups:
     reviewers:
       users:
         - atscott
+
+
+  # =========================================================
+  #  Docs: Router
+  # =========================================================
+  docs-router:
+    <<: *defaults
+    conditions:
+      - *can-be-global-approved
+      - *can-be-global-docs-approved
+      - >
+        contains_any_globs(files, [
+          'packages/examples/router/**',
+          'aio/content/guide/router.md',
+          'aio/content/guide/router-tutorial.md',
+          'aio/content/guide/router-tutorial-toh.md',
+          'aio/content/examples/router-tutorial/**',
+          'aio/content/examples/router/**',
+          'aio/content/images/guide/router/**'
+          ])
+    labels:
+      pending: "comp: docs"
+      approved: "comp: docs"
+      rejected: "comp: docs"
 
 
   # =========================================================
@@ -825,6 +1002,32 @@ groups:
         - alxhub
         - gkalpak
         - IgorMinar
+
+
+  # =========================================================
+  #  Docs: Service Worker
+  # =========================================================
+  docs-service-worker:
+    <<: *defaults
+    conditions:
+      - *can-be-global-approved
+      - *can-be-global-docs-approved
+      - >
+        contains_any_globs(files, [
+          'packages/examples/service-worker/**',
+          'aio/content/guide/service-worker-getting-started.md',
+          'aio/content/examples/service-worker-getting-started/**',
+          'aio/content/guide/app-shell.md',
+          'aio/content/guide/service-worker-communications.md',
+          'aio/content/guide/service-worker-config.md',
+          'aio/content/guide/service-worker-devops.md',
+          'aio/content/guide/service-worker-intro.md',
+          'aio/content/images/guide/service-worker/**'
+          ])
+    labels:
+      pending: "comp: docs"
+      approved: "comp: docs"
+      rejected: "comp: docs"
 
 
   # =========================================================
@@ -863,6 +1066,35 @@ groups:
 
 
   # =========================================================
+  #  Docs: Upgrade
+  # =========================================================
+  docs-upgrade:
+    <<: *defaults
+    conditions:
+      - *can-be-global-approved
+      - *can-be-global-docs-approved
+      - >
+        contains_any_globs(files, [
+          'packages/examples/upgrade/**',
+          'aio/content/guide/upgrade.md',
+          'aio/content/examples/upgrade-lazy-load-ajs/**',
+          'aio/content/examples/upgrade-module/**',
+          'aio/content/images/guide/upgrade/**',
+          'aio/content/examples/upgrade-phonecat-1-typescript/**',
+          'aio/content/examples/upgrade-phonecat-2-hybrid/**',
+          'aio/content/examples/upgrade-phonecat-3-final/**',
+          'aio/content/guide/upgrade-performance.md',
+          'aio/content/guide/upgrade-setup.md',
+          'aio/content/guide/ajs-quick-reference.md',
+          'aio/content/examples/ajs-quick-reference/**'
+          ])
+    labels:
+      pending: "comp: docs"
+      approved: "comp: docs"
+      rejected: "comp: docs"
+
+
+  # =========================================================
   #  Framework: Testing
   # =========================================================
   fw-testing:
@@ -894,6 +1126,34 @@ groups:
         - AndrewKushnir
         - IgorMinar
         # OOO as of 2020-09-28 - pkozlowski-opensource
+
+
+  # =========================================================
+  #  Docs: Testing
+  # =========================================================
+  docs-testing:
+    <<: *defaults
+    conditions:
+      - *can-be-global-approved
+      - *can-be-global-docs-approved
+      - >
+        contains_any_globs(files, [
+          'aio/content/guide/testing.md',
+          'aio/content/guide/test-debugging.md',
+          'aio/content/guide/testing-attribute-directives.md',
+          'aio/content/guide/testing-code-coverage.md',
+          'aio/content/guide/testing-components-basics.md',
+          'aio/content/guide/testing-components-scenarios.md',
+          'aio/content/guide/testing-pipes.md',
+          'aio/content/guide/testing-services.md',
+          'aio/content/guide/testing-utility-apis.md',
+          'aio/content/examples/testing/**',
+          'aio/content/images/guide/testing/**'
+          ])
+    labels:
+      pending: "comp: docs"
+      approved: "comp: docs"
+      rejected: "comp: docs"
 
 
   # =========================================================
@@ -970,6 +1230,26 @@ groups:
 
 
   # =========================================================
+  #  Docs: Security
+  # =========================================================
+  docs-security:
+    <<: *defaults
+    conditions:
+      - *can-be-global-approved
+      - *can-be-global-docs-approved
+      - >
+        contains_any_globs(files, [
+          'aio/content/guide/security.md',
+          'aio/content/examples/security/**',
+          'aio/content/images/guide/security/**'
+          ])
+    labels:
+      pending: "comp: docs"
+      approved: "comp: docs"
+      rejected: "comp: docs"
+
+
+  # =========================================================
   #  Bazel
   # =========================================================
   bazel:
@@ -1018,6 +1298,25 @@ groups:
 
 
   # =========================================================
+  #  Docs: Language Service
+  # =========================================================
+  docs-language-service:
+    <<: *defaults
+    conditions:
+      - *can-be-global-approved
+      - *can-be-global-docs-approved
+      - >
+        contains_any_globs(files, [
+          'aio/content/guide/language-service.md',
+          'aio/content/images/guide/language-service/**'
+          ])
+    labels:
+      pending: "comp: docs"
+      approved: "comp: docs"
+      rejected: "comp: docs"
+
+
+  # =========================================================
   #  zone.js
   # =========================================================
   zone-js:
@@ -1038,6 +1337,25 @@ groups:
       users:
         - JiaLiPassion
         - mhevery
+
+
+  # =========================================================
+  #  Docs: zone.js
+  # =========================================================
+  docs-zone-js:
+    <<: *defaults
+    conditions:
+      - *can-be-global-approved
+      - *can-be-global-docs-approved
+      - >
+        contains_any_globs(files, [
+          'aio/content/guide/zone.md'
+          ])
+    labels:
+      pending: "comp: docs"
+      approved: "comp: docs"
+      rejected: "comp: docs"
+
 
   # =========================================================
   #  in-memory-web-api
