@@ -454,6 +454,142 @@ groups:
 
 
   # =========================================================
+  #  Docs: Core
+  # =========================================================
+  docs-core:
+    <<: *defaults
+    conditions:
+      - *can-be-global-approved
+      - *can-be-global-docs-approved
+      - >
+        contains_any_globs(files.exclude("packages/core/schematics/**"), [
+          'aio/content/guide/accessibility.md',
+          'aio/content/examples/accessibility/**',
+          'aio/content/guide/architecture-components.md',
+          'aio/content/guide/architecture-modules.md',
+          'aio/content/guide/architecture-next-steps.md',
+          'aio/content/guide/architecture-services.md',
+          'aio/content/guide/architecture.md',
+          'aio/content/examples/architecture/**',
+          'aio/content/images/guide/architecture/**',
+          'aio/content/guide/attribute-directives.md',
+          'aio/content/examples/attribute-directives/**',
+          'aio/content/images/guide/attribute-directives/**',
+          'aio/content/guide/bootstrapping.md',
+          'aio/content/examples/bootstrapping/**',
+          'aio/content/guide/cheatsheet.md',
+          'aio/content/guide/component-interaction.md',
+          'aio/content/examples/component-interaction/**',
+          'aio/content/images/guide/component-interaction/**',
+          'aio/content/guide/component-overview.md',
+          'aio/content/examples/component-overview/**',
+          'aio/content/guide/component-styles.md',
+          'aio/content/guide/view-encapsulation.md',
+          'aio/content/examples/component-styles/**',
+          'aio/content/guide/dependency-injection.md',
+          'aio/content/examples/dependency-injection/**',
+          'aio/content/images/guide/dependency-injection/**',
+          'aio/content/guide/dependency-injection-in-action.md',
+          'aio/content/examples/dependency-injection-in-action/**',
+          'aio/content/images/guide/dependency-injection-in-action/**',
+          'aio/content/guide/dependency-injection-navtree.md',
+          'aio/content/guide/dependency-injection-providers.md',
+          'aio/content/guide/lightweight-injection-tokens.md',
+          'aio/content/guide/displaying-data.md',
+          'aio/content/examples/displaying-data/**',
+          'aio/content/images/guide/displaying-data/**',
+          'aio/content/guide/dynamic-component-loader.md',
+          'aio/content/examples/dynamic-component-loader/**',
+          'aio/content/images/guide/dynamic-component-loader/**',
+          'aio/content/guide/example-apps-list.md',
+          'aio/content/guide/entry-components.md',
+          'aio/content/guide/feature-modules.md',
+          'aio/content/examples/feature-modules/**',
+          'aio/content/images/guide/feature-modules/**',
+          'aio/content/guide/frequent-ngmodules.md',
+          'aio/content/images/guide/frequent-ngmodules/**',
+          'aio/content/guide/hierarchical-dependency-injection.md',
+          'aio/content/examples/hierarchical-dependency-injection/**',
+          'aio/content/examples/providers-viewproviders/**',
+          'aio/content/examples/resolution-modifiers/**',
+          'aio/content/guide/lazy-loading-ngmodules.md',
+          'aio/content/examples/lazy-loading-ngmodules/**',
+          'aio/content/images/guide/lazy-loading-ngmodules/**',
+          'aio/content/guide/lifecycle-hooks.md',
+          'aio/content/examples/lifecycle-hooks/**',
+          'aio/content/images/guide/lifecycle-hooks/**',
+          'aio/content/examples/ngcontainer/**',
+          'aio/content/guide/ngmodules.md',
+          'aio/content/examples/ngmodules/**',
+          'aio/content/guide/ngmodule-api.md',
+          'aio/content/guide/ngmodule-faq.md',
+          'aio/content/guide/ngmodule-vs-jsmodule.md',
+          'aio/content/guide/module-types.md',
+          'aio/content/guide/template-syntax.md',
+          'aio/content/guide/built-in-template-functions.md',
+          'aio/content/examples/built-in-template-functions/**',
+          'aio/content/guide/event-binding.md',
+          'aio/content/guide/event-binding-concepts.md',
+          'aio/content/examples/event-binding/**',
+          'aio/content/guide/interpolation.md',
+          'aio/content/examples/interpolation/**',
+          'aio/content/examples/template-syntax/**',
+          'aio/content/images/guide/template-syntax/**',
+          'aio/content/guide/binding-syntax.md',
+          'aio/content/examples/binding-syntax/**',
+          'aio/content/guide/property-binding.md',
+          'aio/content/examples/property-binding/**',
+          'aio/content/guide/property-binding-best-practices.md',
+          'aio/content/guide/attribute-binding.md',
+          'aio/content/examples/attribute-binding/**',
+          'aio/content/guide/two-way-binding.md',
+          'aio/content/examples/two-way-binding/**',
+          'aio/content/guide/built-in-directives.md',
+          'aio/content/examples/built-in-directives/**',
+          'aio/content/images/guide/built-in-directives/**',
+          'aio/content/guide/template-reference-variables.md',
+          'aio/content/examples/template-reference-variables/**',
+          'aio/content/guide/inputs-outputs.md',
+          'aio/content/examples/inputs-outputs/**',
+          'aio/content/images/guide/inputs-outputs/**',
+          'aio/content/guide/template-expression-operators.md',
+          'aio/content/examples/template-expression-operators/**',
+          'aio/content/guide/pipes.md',
+          'aio/content/examples/pipes/**',
+          'aio/content/images/guide/pipes/**',
+          'aio/content/guide/providers.md',
+          'aio/content/examples/providers/**',
+          'aio/content/images/guide/providers/**',
+          'aio/content/guide/singleton-services.md',
+          'aio/content/guide/set-document-title.md',
+          'aio/content/examples/set-document-title/**',
+          'aio/content/images/guide/set-document-title/**',
+          'aio/content/guide/sharing-ngmodules.md',
+          'aio/content/guide/structural-directives.md',
+          'aio/content/examples/structural-directives/**',
+          'aio/content/guide/svg-in-templates.md',
+          'aio/content/guide/style-precedence.md',
+          'aio/content/images/guide/structural-directives/**',
+          'aio/content/guide/template-statements.md',
+          'aio/content/guide/user-input.md',
+          'aio/content/examples/user-input/**',
+          'aio/content/images/guide/user-input/**'
+          ])
+    labels:
+      pending: "comp: docs"
+      approved: "comp: docs"
+      rejected: "comp: docs"
+    reviewers:
+      users:
+        - alxhub
+        - AndrewKushnir
+        - atscott
+        - ~kara  # do not request reviews from Kara, but allow her to approve PRs
+        - mhevery
+        - jessicajaniuk
+        # OOO as of 2020-09-28 - pkozlowski-opensource
+
+  # =========================================================
   #  Framework: Common
   # =========================================================
   fw-common:
