@@ -3,9 +3,9 @@ import { Directive, OnInit, OnDestroy } from '@angular/core';
 
 import { LoggerService } from './logger.service';
 
+// #docregion spy-directive
 let nextId = 1;
 
-// #docregion spy-directive
 // Spy on any element to which it is applied.
 // Usage: <div appSpy>...</div>
 @Directive({selector: '[appSpy]'})
@@ -13,12 +13,12 @@ export class SpyDirective implements OnInit, OnDestroy {
 
   constructor(private logger: LoggerService) { }
 
-  ngOnInit()    { this.logIt(`onInit`); }
+  ngOnInit() {
+    this.logger.log(`Spy #${nextId++} onInit`);
+  }
 
-  ngOnDestroy() { this.logIt(`onDestroy`); }
-
-  private logIt(msg: string) {
-    this.logger.log(`Spy #${nextId++} ${msg}`);
+  ngOnDestroy() {
+    this.logger.log(`Spy #${nextId++} onDestroy`);
   }
 }
 // #enddocregion spy-directive
