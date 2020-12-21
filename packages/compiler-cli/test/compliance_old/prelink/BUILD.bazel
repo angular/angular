@@ -8,6 +8,8 @@ ts_library(
         "//packages:types",
         "//packages/compiler-cli/linker",
         "//packages/compiler-cli/linker/babel",
+        "//packages/compiler-cli/src/ngtsc/file_system/testing",
+        "//packages/compiler-cli/src/ngtsc/logging/testing",
         "//packages/compiler-cli/test/compliance_old/mock_compile",
         "@npm//@babel/core",
         "@npm//@babel/generator",

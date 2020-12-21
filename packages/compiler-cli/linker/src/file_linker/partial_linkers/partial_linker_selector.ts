@@ -6,7 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {satisfies} from 'semver';
-import {LinkerOptions} from '../linker_options';
+
+import {AbsoluteFsPath} from '../../../../src/ngtsc/file_system';
+import {createGetSourceFile} from '../get_source_file';
+import {LinkerEnvironment} from '../linker_environment';
 
 import {PartialComponentLinkerVersion1} from './partial_component_linker_1';
 import {PartialDirectiveLinkerVersion1} from './partial_directive_linker_1';
@@ -16,33 +19,29 @@ export const ɵɵngDeclareDirective = 'ɵɵngDeclareDirective';
 export const ɵɵngDeclareComponent = 'ɵɵngDeclareComponent';
 export const declarationFunctions = [ɵɵngDeclareDirective, ɵɵngDeclareComponent];
 
-export class PartialLinkerSelector<TExpression> {
-  /**
-   * A database of linker instances that should be used if their given semver range satisfies the
-   * version found in the code to be linked.
-   *
-   * Note that the ranges are checked in order, and the first matching range will be selected, so
-   * ranges should be most restrictive first.
-   *
-   * Also, ranges are matched to include "pre-releases", therefore if the range is `>=11.1.0-next.1`
-   * then this includes `11.1.0-next.2` and also `12.0.0-next.1`.
-   *
-   * Finally, note that we always start with the current version (i.e. `0.0.0-PLACEHOLDER`). This
-   * allows the linker to work on local builds effectively.
-   */
-  private linkers: Record<string, {range: string, linker: PartialLinker<TExpression>}[]> = {
-    [ɵɵngDeclareDirective]: [
-      {range: '0.0.0-PLACEHOLDER', linker: new PartialDirectiveLinkerVersion1()},
-      {range: '>=11.1.0-next.1', linker: new PartialDirectiveLinkerVersion1()},
-    ],
-    [ɵɵngDeclareComponent]:
-        [
-          {range: '0.0.0-PLACEHOLDER', linker: new PartialComponentLinkerVersion1(this.options)},
-          {range: '>=11.1.0-next.1', linker: new PartialComponentLinkerVersion1(this.options)},
-        ],
-  };
+/**
+ * A helper that selects the appropriate `PartialLinker` for a given declaration.
+ *
+ * The selection is made from a database of linker instances, chosen if their given semver range
+ * satisfies the version found in the code to be linked.
+ *
+ * Note that the ranges are checked in order, and the first matching range will be selected, so
+ * ranges should be most restrictive first.
+ *
+ * Also, ranges are matched to include "pre-releases", therefore if the range is `>=11.1.0-next.1`
+ * then this includes `11.1.0-next.2` and also `12.0.0-next.1`.
+ *
+ * Finally, note that we always start with the current version (i.e. `0.0.0-PLACEHOLDER`). This
+ * allows the linker to work on local builds effectively.
+ */
+export class PartialLinkerSelector<TStatement, TExpression> {
+  private readonly linkers: Record<string, {range: string, linker: PartialLinker<TExpression>}[]>;
 
-  constructor(private options: LinkerOptions) {}
+  constructor(
+      environment: LinkerEnvironment<TStatement, TExpression>, sourceUrl: AbsoluteFsPath,
+      code: string) {
+    this.linkers = this.createLinkerMap(environment, sourceUrl, code);
+  }
 
   /**
    * Returns true if there are `PartialLinker` classes that can handle functions with this name.
@@ -68,5 +67,25 @@ export class PartialLinkerSelector<TExpression> {
     throw new Error(
         `Unsupported partial declaration version ${version} for ${functionName}.\n` +
         'Valid version ranges are:\n' + versions.map(v => ` - ${v.range}`).join('\n'));
+  }
+
+  private createLinkerMap(
+      environment: LinkerEnvironment<TStatement, TExpression>, sourceUrl: AbsoluteFsPath,
+      code: string) {
+    const partialDirectiveLinkerVersion1 = new PartialDirectiveLinkerVersion1(sourceUrl, code);
+    const partialComponentLinkerVersion1 = new PartialComponentLinkerVersion1(
+        environment, createGetSourceFile(sourceUrl, code, environment.sourceFileLoader), sourceUrl,
+        code);
+
+    return {
+      [ɵɵngDeclareDirective]: [
+        {range: '0.0.0-PLACEHOLDER', linker: partialDirectiveLinkerVersion1},
+        {range: '>=11.1.0-next.1', linker: partialDirectiveLinkerVersion1},
+      ],
+      [ɵɵngDeclareComponent]: [
+        {range: '0.0.0-PLACEHOLDER', linker: partialComponentLinkerVersion1},
+        {range: '>=11.1.0-next.1', linker: partialComponentLinkerVersion1},
+      ],
+    };
   }
 }

@@ -27,6 +27,12 @@ export interface LinkerOptions {
    * The default is `false`.
    */
   i18nUseExternalIds: boolean;
+
+  /**
+   * Whether to use source-mapping to compute the original source for external templates.
+   * The default is `true`.
+   */
+  sourceMapping: boolean;
 }
 
 /**
@@ -36,4 +42,5 @@ export const DEFAULT_LINKER_OPTIONS: LinkerOptions = {
   enableI18nLegacyMessageIdFormat: true,
   i18nNormalizeLineEndingsInICUs: false,
   i18nUseExternalIds: false,
+  sourceMapping: true,
 };

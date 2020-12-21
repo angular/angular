@@ -8,7 +8,7 @@
 import {ConstantPool} from '@angular/compiler';
 import * as o from '@angular/compiler/src/output/output_ast';
 import {LinkerImportGenerator} from '../../linker_import_generator';
-import {LinkerEnvironment} from '../linker_environment';
+import {Translator} from '../translator';
 
 /**
  * This class represents (from the point of view of the `FileLinker`) the scope in which
@@ -24,7 +24,7 @@ export class EmitScope<TStatement, TExpression> {
 
   constructor(
       protected readonly ngImport: TExpression,
-      protected readonly linkerEnvironment: LinkerEnvironment<TStatement, TExpression>) {}
+      protected readonly translator: Translator<TStatement, TExpression>) {}
 
   /**
    * Translate the given Output AST definition expression into a generic `TExpression`.
@@ -32,7 +32,7 @@ export class EmitScope<TStatement, TExpression> {
    * Use a `LinkerImportGenerator` to handle any imports in the definition.
    */
   translateDefinition(definition: o.Expression): TExpression {
-    return this.linkerEnvironment.translator.translateExpression(
+    return this.translator.translateExpression(
         definition, new LinkerImportGenerator(this.ngImport));
   }
 
@@ -40,9 +40,8 @@ export class EmitScope<TStatement, TExpression> {
    * Return any constant statements that are shared between all uses of this `EmitScope`.
    */
   getConstantStatements(): TStatement[] {
-    const {translator} = this.linkerEnvironment;
     const importGenerator = new LinkerImportGenerator(this.ngImport);
     return this.constantPool.statements.map(
-        statement => translator.translateStatement(statement, importGenerator));
+        statement => this.translator.translateStatement(statement, importGenerator));
   }
 }
