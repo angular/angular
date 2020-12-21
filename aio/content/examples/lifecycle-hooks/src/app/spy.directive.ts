@@ -10,15 +10,16 @@ let nextId = 1;
 // Usage: <div appSpy>...</div>
 @Directive({selector: '[appSpy]'})
 export class SpyDirective implements OnInit, OnDestroy {
+  private id = nextId++;
 
   constructor(private logger: LoggerService) { }
 
   ngOnInit() {
-    this.logger.log(`Spy #${nextId++} onInit`);
+    this.logger.log(`Spy #${this.id} onInit`);
   }
 
   ngOnDestroy() {
-    this.logger.log(`Spy #${nextId++} onDestroy`);
+    this.logger.log(`Spy #${this.id} onDestroy`);
   }
 }
 // #enddocregion spy-directive
