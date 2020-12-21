@@ -10,7 +10,7 @@ import * as Octokit from '@octokit/rest';
 import {GitClient} from '../../utils/git/index';
 
 /** Thirty seconds in milliseconds. */
-const THIRY_SECONDS_IN_MS = 30000;
+const THIRTY_SECONDS_IN_MS = 30000;
 
 /** State of a pull request in Github. */
 export type PullRequestState = 'merged'|'closed'|'open';
@@ -25,7 +25,7 @@ export async function getPullRequestState(api: GitClient, id: number): Promise<P
   // update the closed pull request to be associated with the closing commit.
   // Note: a Date constructed with `null` creates an object at 0 time, which will never be greater
   // than the current date time.
-  if (new Date(data.closed_at).getTime() - THIRY_SECONDS_IN_MS > new Date().getTime()) {
+  if (new Date(data.closed_at).getTime() + THIRTY_SECONDS_IN_MS > new Date().getTime()) {
     return await isPullRequestClosedWithAssociatedCommit(api, id) ? 'merged' : 'closed';
   }
   return 'open';

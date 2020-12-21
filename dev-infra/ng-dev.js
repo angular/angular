@@ -5328,7 +5328,7 @@ const findOwnedForksOfRepoQuery = typedGraphqlify.params({
  * found in the LICENSE file at https://angular.io/license
  */
 /** Thirty seconds in milliseconds. */
-const THIRY_SECONDS_IN_MS = 30000;
+const THIRTY_SECONDS_IN_MS = 30000;
 /** Gets whether a given pull request has been merged. */
 function getPullRequestState(api, id) {
     return tslib.__awaiter(this, void 0, void 0, function* () {
@@ -5340,7 +5340,7 @@ function getPullRequestState(api, id) {
         // update the closed pull request to be associated with the closing commit.
         // Note: a Date constructed with `null` creates an object at 0 time, which will never be greater
         // than the current date time.
-        if (new Date(data.closed_at).getTime() - THIRY_SECONDS_IN_MS > new Date().getTime()) {
+        if (new Date(data.closed_at).getTime() + THIRTY_SECONDS_IN_MS > new Date().getTime()) {
             return (yield isPullRequestClosedWithAssociatedCommit(api, id)) ? 'merged' : 'closed';
         }
         return 'open';
