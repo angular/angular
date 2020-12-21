@@ -10,6 +10,8 @@ import * as ts from 'typescript';
 
 import {needsLinking} from '../../../linker';
 import {createEs2015LinkerPlugin} from '../../../linker/babel';
+import {MockFileSystemNative} from '../../../src/ngtsc/file_system/testing';
+import {MockLogger} from '../../../src/ngtsc/logging/testing';
 import {compileFiles, CompileFn, setCompileFn} from '../mock_compile';
 
 /**
@@ -28,8 +30,11 @@ const linkedCompile: CompileFn = (data, angularFiles, options) => {
   }
 
   const compiledFiles = compileFiles(data, angularFiles, {...options, compilationMode: 'partial'});
-
+  const fileSystem = new MockFileSystemNative();
+  const logger = new MockLogger();
   const linkerPlugin = createEs2015LinkerPlugin({
+    fileSystem,
+    logger,
     // enableI18nLegacyMessageIdFormat defaults to false in `compileFiles`.
     enableI18nLegacyMessageIdFormat: false,
     ...options,

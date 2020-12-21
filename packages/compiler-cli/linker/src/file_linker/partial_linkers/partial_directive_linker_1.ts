@@ -8,6 +8,7 @@
 import {compileDirectiveFromMetadata, ConstantPool, makeBindingParser, ParseLocation, ParseSourceFile, ParseSourceSpan, R3DeclareDirectiveMetadata, R3DeclareQueryMetadata, R3DirectiveMetadata, R3HostMetadata, R3PartialDeclaration, R3QueryMetadata, R3Reference} from '@angular/compiler';
 import * as o from '@angular/compiler/src/output/output_ast';
 
+import {AbsoluteFsPath} from '../../../../src/ngtsc/file_system';
 import {Range} from '../../ast/ast_host';
 import {AstObject, AstValue} from '../../ast/ast_value';
 import {FatalLinkerError} from '../../fatal_linker_error';
@@ -18,10 +19,12 @@ import {PartialLinker} from './partial_linker';
  * A `PartialLinker` that is designed to process `ɵɵngDeclareDirective()` call expressions.
  */
 export class PartialDirectiveLinkerVersion1<TExpression> implements PartialLinker<TExpression> {
+  constructor(private sourceUrl: AbsoluteFsPath, private code: string) {}
+
   linkPartialDeclaration(
-      sourceUrl: string, code: string, constantPool: ConstantPool,
+      constantPool: ConstantPool,
       metaObj: AstObject<R3PartialDeclaration, TExpression>): o.Expression {
-    const meta = toR3DirectiveMeta(metaObj, code, sourceUrl);
+    const meta = toR3DirectiveMeta(metaObj, this.code, this.sourceUrl);
     const def = compileDirectiveFromMetadata(meta, constantPool, makeBindingParser());
     return def.expression;
   }
@@ -32,7 +35,7 @@ export class PartialDirectiveLinkerVersion1<TExpression> implements PartialLinke
  */
 export function toR3DirectiveMeta<TExpression>(
     metaObj: AstObject<R3DeclareDirectiveMetadata, TExpression>, code: string,
-    sourceUrl: string): R3DirectiveMetadata {
+    sourceUrl: AbsoluteFsPath): R3DirectiveMetadata {
   const typeExpr = metaObj.getValue('type');
   const typeName = typeExpr.getSymbolName();
   if (typeName === null) {

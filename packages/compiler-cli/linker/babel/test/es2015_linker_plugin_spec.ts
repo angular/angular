@@ -11,13 +11,17 @@ import generate from '@babel/generator';
 import * as t from '@babel/types';
 
 import {FileLinker} from '../../../linker';
+import {MockFileSystemNative} from '../../../src/ngtsc/file_system/testing';
+import {MockLogger} from '../../../src/ngtsc/logging/testing';
 import {PartialDirectiveLinkerVersion1} from '../../src/file_linker/partial_linkers/partial_directive_linker_1';
 import {createEs2015LinkerPlugin} from '../src/es2015_linker_plugin';
 
 describe('createEs2015LinkerPlugin()', () => {
   it('should return a Babel plugin visitor that handles Program (enter/exit) and CallExpression nodes',
      () => {
-       const plugin = createEs2015LinkerPlugin();
+       const fileSystem = new MockFileSystemNative();
+       const logger = new MockLogger();
+       const plugin = createEs2015LinkerPlugin({fileSystem, logger});
        expect(plugin.visitor).toEqual({
          Program: {
            enter: jasmine.any(Function),
@@ -31,13 +35,16 @@ describe('createEs2015LinkerPlugin()', () => {
      () => {
        const isPartialDeclarationSpy = spyOn(FileLinker.prototype, 'isPartialDeclaration');
 
+       const fileSystem = new MockFileSystemNative();
+       const logger = new MockLogger();
+       const plugin = createEs2015LinkerPlugin({fileSystem, logger});
        transformSync(
            [
              'var core;', `fn1()`, 'fn2({prop: () => fn3({})});', `x.method(() => fn4());`,
              'spread(...x);'
            ].join('\n'),
            {
-             plugins: [createEs2015LinkerPlugin()],
+             plugins: [plugin],
              filename: '/test.js',
              parserOpts: {sourceType: 'unambiguous'},
            });
@@ -55,6 +62,9 @@ describe('createEs2015LinkerPlugin()', () => {
      () => {
        const linkSpy = spyOn(FileLinker.prototype, 'linkPartialDeclaration')
                            .and.returnValue(t.identifier('REPLACEMENT'));
+       const fileSystem = new MockFileSystemNative();
+       const logger = new MockLogger();
+       const plugin = createEs2015LinkerPlugin({fileSystem, logger});
 
        transformSync(
            [
@@ -65,7 +75,7 @@ describe('createEs2015LinkerPlugin()', () => {
              'spread(...x);',
            ].join('\n'),
            {
-             plugins: [createEs2015LinkerPlugin()],
+             plugins: [createEs2015LinkerPlugin({fileSystem, logger})],
              filename: '/test.js',
              parserOpts: {sourceType: 'unambiguous'},
            });
@@ -86,6 +96,9 @@ describe('createEs2015LinkerPlugin()', () => {
        let replaceCount = 0;
        spyOn(FileLinker.prototype, 'linkPartialDeclaration')
            .and.callFake(() => t.identifier('REPLACEMENT_' + ++replaceCount));
+       const fileSystem = new MockFileSystemNative();
+       const logger = new MockLogger();
+       const plugin = createEs2015LinkerPlugin({fileSystem, logger});
        const result = transformSync(
            [
              'var core;',
@@ -95,7 +108,7 @@ describe('createEs2015LinkerPlugin()', () => {
              'spread(...x);',
            ].join('\n'),
            {
-             plugins: [createEs2015LinkerPlugin()],
+             plugins: [createEs2015LinkerPlugin({fileSystem, logger})],
              filename: '/test.js',
              parserOpts: {sourceType: 'unambiguous'},
              generatorOpts: {compact: true},
@@ -105,6 +118,9 @@ describe('createEs2015LinkerPlugin()', () => {
 
   it('should return a Babel plugin that adds shared statements after any imports', () => {
     spyOnLinkPartialDeclarationWithConstants(o.literal('REPLACEMENT'));
+    const fileSystem = new MockFileSystemNative();
+    const logger = new MockLogger();
+    const plugin = createEs2015LinkerPlugin({fileSystem, logger});
     const result = transformSync(
         [
           'import * as core from \'some-module\';',
@@ -114,7 +130,7 @@ describe('createEs2015LinkerPlugin()', () => {
           `ɵɵngDeclareDirective({version: '0.0.0-PLACEHOLDER', ngImport: core})`,
         ].join('\n'),
         {
-          plugins: [createEs2015LinkerPlugin()],
+          plugins: [createEs2015LinkerPlugin({fileSystem, logger})],
           filename: '/test.js',
           parserOpts: {sourceType: 'unambiguous'},
           generatorOpts: {compact: true},
@@ -127,6 +143,9 @@ describe('createEs2015LinkerPlugin()', () => {
   it('should return a Babel plugin that adds shared statements at the start of the program if it is an ECMAScript Module and there are no imports',
      () => {
        spyOnLinkPartialDeclarationWithConstants(o.literal('REPLACEMENT'));
+       const fileSystem = new MockFileSystemNative();
+       const logger = new MockLogger();
+       const plugin = createEs2015LinkerPlugin({fileSystem, logger});
        const result = transformSync(
            [
              'var core;',
@@ -135,7 +154,7 @@ describe('createEs2015LinkerPlugin()', () => {
              `ɵɵngDeclareDirective({version: '0.0.0-PLACEHOLDER', ngImport: core})`,
            ].join('\n'),
            {
-             plugins: [createEs2015LinkerPlugin()],
+             plugins: [createEs2015LinkerPlugin({fileSystem, logger})],
              filename: '/test.js',
              // We declare the file as a module because this cannot be inferred from the source
              parserOpts: {sourceType: 'module'},
@@ -149,6 +168,9 @@ describe('createEs2015LinkerPlugin()', () => {
   it('should return a Babel plugin that adds shared statements at the start of the function body if the ngImport is from a function parameter',
      () => {
        spyOnLinkPartialDeclarationWithConstants(o.literal('REPLACEMENT'));
+       const fileSystem = new MockFileSystemNative();
+       const logger = new MockLogger();
+       const plugin = createEs2015LinkerPlugin({fileSystem, logger});
        const result = transformSync(
            [
              'function run(core) {',
@@ -157,7 +179,7 @@ describe('createEs2015LinkerPlugin()', () => {
              `  ɵɵngDeclareDirective({version: '0.0.0-PLACEHOLDER', ngImport: core})`, '}'
            ].join('\n'),
            {
-             plugins: [createEs2015LinkerPlugin()],
+             plugins: [createEs2015LinkerPlugin({fileSystem, logger})],
              filename: '/test.js',
              parserOpts: {sourceType: 'unambiguous'},
              generatorOpts: {compact: true},
@@ -170,6 +192,9 @@ describe('createEs2015LinkerPlugin()', () => {
   it('should return a Babel plugin that adds shared statements into an IIFE if no scope could not be derived for the ngImport',
      () => {
        spyOnLinkPartialDeclarationWithConstants(o.literal('REPLACEMENT'));
+       const fileSystem = new MockFileSystemNative();
+       const logger = new MockLogger();
+       const plugin = createEs2015LinkerPlugin({fileSystem, logger});
        const result = transformSync(
            [
              'function run() {',
@@ -179,7 +204,7 @@ describe('createEs2015LinkerPlugin()', () => {
              '}',
            ].join('\n'),
            {
-             plugins: [createEs2015LinkerPlugin()],
+             plugins: [createEs2015LinkerPlugin({fileSystem, logger})],
              filename: '/test.js',
              parserOpts: {sourceType: 'unambiguous'},
              generatorOpts: {compact: true},
@@ -196,13 +221,16 @@ describe('createEs2015LinkerPlugin()', () => {
   it('should still execute other plugins that match AST nodes inside the result of the replacement',
      () => {
        spyOnLinkPartialDeclarationWithConstants(o.fn([], [], null, null, 'FOO'));
+       const fileSystem = new MockFileSystemNative();
+       const logger = new MockLogger();
+       const plugin = createEs2015LinkerPlugin({fileSystem, logger});
        const result = transformSync(
            [
              `ɵɵngDeclareDirective({version: '0.0.0-PLACEHOLDER', ngImport: core}); FOO;`,
            ].join('\n'),
            {
              plugins: [
-               createEs2015LinkerPlugin(),
+               createEs2015LinkerPlugin({fileSystem, logger}),
                createIdentifierMapperPlugin('FOO', 'BAR'),
                createIdentifierMapperPlugin('_c0', 'x1'),
              ],
@@ -217,7 +245,7 @@ describe('createEs2015LinkerPlugin()', () => {
 
   it('should not process call expressions within inserted functions', () => {
     spyOn(PartialDirectiveLinkerVersion1.prototype, 'linkPartialDeclaration')
-        .and.callFake(((sourceUrl, code, constantPool) => {
+        .and.callFake((constantPool => {
                         // Insert a call expression into the constant pool. This is inserted into
                         // Babel's AST upon program exit, and will therefore be visited by Babel
                         // outside of an active linker context.
@@ -233,13 +261,16 @@ describe('createEs2015LinkerPlugin()', () => {
     const isPartialDeclarationSpy =
         spyOn(FileLinker.prototype, 'isPartialDeclaration').and.callThrough();
 
+    const fileSystem = new MockFileSystemNative();
+    const logger = new MockLogger();
+    const plugin = createEs2015LinkerPlugin({fileSystem, logger});
     const result = transformSync(
         [
           'import * as core from \'some-module\';',
           `ɵɵngDeclareDirective({version: '0.0.0-PLACEHOLDER', ngImport: core})`,
         ].join('\n'),
         {
-          plugins: [createEs2015LinkerPlugin()],
+          plugins: [createEs2015LinkerPlugin({fileSystem, logger})],
           filename: '/test.js',
           parserOpts: {sourceType: 'unambiguous'},
           generatorOpts: {compact: true},
@@ -266,7 +297,7 @@ function humanizeLinkerCalls(
 function spyOnLinkPartialDeclarationWithConstants(replacement: o.Expression) {
   let callCount = 0;
   spyOn(PartialDirectiveLinkerVersion1.prototype, 'linkPartialDeclaration')
-      .and.callFake(((sourceUrl, code, constantPool) => {
+      .and.callFake((constantPool => {
                       const constArray = o.literalArr([o.literal(++callCount)]);
                       // We have to add the constant twice or it will not create a shared statement
                       constantPool.getConstLiteral(constArray);

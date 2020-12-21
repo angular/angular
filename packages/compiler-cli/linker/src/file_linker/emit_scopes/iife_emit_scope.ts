@@ -6,6 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import * as o from '@angular/compiler/src/output/output_ast';
+
+import {AstFactory} from '../../../../src/ngtsc/translator';
+import {Translator} from '../translator';
+
 import {EmitScope} from './emit_scope';
 
 /**
@@ -14,6 +18,12 @@ import {EmitScope} from './emit_scope';
  * translated definition inside an IIFE.
  */
 export class IifeEmitScope<TStatement, TExpression> extends EmitScope<TStatement, TExpression> {
+  constructor(
+      ngImport: TExpression, translator: Translator<TStatement, TExpression>,
+      private readonly factory: AstFactory<TStatement, TExpression>) {
+    super(ngImport, translator);
+  }
+
   /**
    * Translate the given Output AST definition expression into a generic `TExpression`.
    *
@@ -21,13 +31,13 @@ export class IifeEmitScope<TStatement, TExpression> extends EmitScope<TStatement
    * in an IIFE.
    */
   translateDefinition(definition: o.Expression): TExpression {
-    const {factory} = this.linkerEnvironment;
     const constantStatements = super.getConstantStatements();
 
-    const returnStatement = factory.createReturnStatement(super.translateDefinition(definition));
-    const body = factory.createBlock([...constantStatements, returnStatement]);
-    const fn = factory.createFunctionExpression(/* name */ null, /* args */[], body);
-    return factory.createCallExpression(fn, /* args */[], /* pure */ false);
+    const returnStatement =
+        this.factory.createReturnStatement(super.translateDefinition(definition));
+    const body = this.factory.createBlock([...constantStatements, returnStatement]);
+    const fn = this.factory.createFunctionExpression(/* name */ null, /* args */[], body);
+    return this.factory.createCallExpression(fn, /* args */[], /* pure */ false);
   }
 
   /**

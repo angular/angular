@@ -5,8 +5,15 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import * as ts from 'typescript';
 
 import {LinkerOptions} from '../../..';
+import {FileSystem} from '../../../../src/ngtsc/file_system';
+import {MockFileSystemNative} from '../../../../src/ngtsc/file_system/testing';
+import {MockLogger} from '../../../../src/ngtsc/logging/testing';
+import {TypeScriptAstFactory} from '../../../../src/ngtsc/translator';
+import {TypeScriptAstHost} from '../../../src/ast/typescript/typescript_ast_host';
+import {LinkerEnvironment} from '../../../src/file_linker/linker_environment';
 import {PartialComponentLinkerVersion1} from '../../../src/file_linker/partial_linkers/partial_component_linker_1';
 import {PartialDirectiveLinkerVersion1} from '../../../src/file_linker/partial_linkers/partial_directive_linker_1';
 import {PartialLinkerSelector} from '../../../src/file_linker/partial_linkers/partial_linker_selector';
@@ -16,12 +23,23 @@ describe('PartialLinkerSelector', () => {
     i18nNormalizeLineEndingsInICUs: true,
     enableI18nLegacyMessageIdFormat: false,
     i18nUseExternalIds: false,
+    sourceMapping: false,
   };
+  let environment: LinkerEnvironment<ts.Statement, ts.Expression>;
+  let fs: FileSystem;
+
+  beforeEach(() => {
+    fs = new MockFileSystemNative();
+    const logger = new MockLogger();
+    environment = LinkerEnvironment.create<ts.Statement, ts.Expression>(
+        fs, logger, new TypeScriptAstHost(), new TypeScriptAstFactory(), options);
+  });
 
   describe('supportsDeclaration()', () => {
     it('should return true if there is at least one linker that matches the given function name',
        () => {
-         const selector = new PartialLinkerSelector(options);
+         const selector = new PartialLinkerSelector(
+             environment, fs.resolve('/some/path/to/file.js'), 'some file contents');
          expect(selector.supportsDeclaration('ɵɵngDeclareDirective')).toBe(true);
          expect(selector.supportsDeclaration('ɵɵngDeclareComponent')).toBe(true);
          expect(selector.supportsDeclaration('$foo')).toBe(false);
@@ -30,7 +48,8 @@ describe('PartialLinkerSelector', () => {
 
   describe('getLinker()', () => {
     it('should return the latest linker if the version is "0.0.0-PLACEHOLDER"', () => {
-      const selector = new PartialLinkerSelector(options);
+      const selector = new PartialLinkerSelector(
+          environment, fs.resolve('/some/path/to/file.js'), 'some file contents');
       expect(selector.getLinker('ɵɵngDeclareDirective', '0.0.0-PLACEHOLDER'))
           .toBeInstanceOf(PartialDirectiveLinkerVersion1);
       expect(selector.getLinker('ɵɵngDeclareComponent', '0.0.0-PLACEHOLDER'))
@@ -38,7 +57,8 @@ describe('PartialLinkerSelector', () => {
     });
 
     it('should return the linker that matches the name and valid full version', () => {
-      const selector = new PartialLinkerSelector(options);
+      const selector = new PartialLinkerSelector(
+          environment, fs.resolve('/some/path/to/file.js'), 'some file contents');
       expect(selector.getLinker('ɵɵngDeclareDirective', '11.1.2'))
           .toBeInstanceOf(PartialDirectiveLinkerVersion1);
       expect(selector.getLinker('ɵɵngDeclareDirective', '11.2.5'))
@@ -48,7 +68,8 @@ describe('PartialLinkerSelector', () => {
     });
 
     it('should return the linker that matches the name and valid pre-release versions', () => {
-      const selector = new PartialLinkerSelector(options);
+      const selector = new PartialLinkerSelector(
+          environment, fs.resolve('/some/path/to/file.js'), 'some file contents');
       expect(selector.getLinker('ɵɵngDeclareDirective', '11.1.0-next.1'))
           .toBeInstanceOf(PartialDirectiveLinkerVersion1);
       expect(selector.getLinker('ɵɵngDeclareDirective', '11.1.0-next.7'))
@@ -58,7 +79,8 @@ describe('PartialLinkerSelector', () => {
     });
 
     it('should throw an error if there is no linker that matches the given name or version', () => {
-      const selector = new PartialLinkerSelector(options);
+      const selector = new PartialLinkerSelector(
+          environment, fs.resolve('/some/path/to/file.js'), 'some file contents');
       // `$foo` is not a valid name, even though `0.0.0-PLACEHOLDER` is a valid version
       expect(() => selector.getLinker('$foo', '0.0.0-PLACEHOLDER'))
           .toThrowError('Unknown partial declaration function $foo.');

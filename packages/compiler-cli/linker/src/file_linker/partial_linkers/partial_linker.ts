@@ -7,6 +7,7 @@
  */
 import {ConstantPool, R3PartialDeclaration} from '@angular/compiler';
 import * as o from '@angular/compiler/src/output/output_ast';
+
 import {AstObject} from '../../ast/ast_value';
 
 /**
@@ -20,6 +21,6 @@ export interface PartialLinker<TExpression> {
    *     `R3DeclareComponentMetadata` interfaces.
    */
   linkPartialDeclaration(
-      sourceUrl: string, code: string, constantPool: ConstantPool,
+      constantPool: ConstantPool,
       metaObj: AstObject<R3PartialDeclaration, TExpression>): o.Expression;
 }

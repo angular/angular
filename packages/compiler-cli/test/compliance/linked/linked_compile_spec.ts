@@ -22,50 +22,55 @@ runTests('linked compile', linkPartials);
 /**
  * Link all the partials specified in the given `test`.
  *
- * @param fs The mock file-system to use for linking the partials.
+ * @param fileSystem The mock file-system to use for linking the partials.
  * @param test The compliance test whose partials will be linked.
  */
-function linkPartials(fs: FileSystem, test: ComplianceTest): CompileResult {
+function linkPartials(fileSystem: FileSystem, test: ComplianceTest): CompileResult {
   const logger = new ConsoleLogger(LogLevel.debug);
-  const loader = new SourceFileLoader(fs, logger, {});
-  const builtDirectory = getBuildOutputDirectory(fs);
+  const loader = new SourceFileLoader(fileSystem, logger, {});
+  const builtDirectory = getBuildOutputDirectory(fileSystem);
   const linkerPlugin = createEs2015LinkerPlugin({
+    fileSystem,
+    logger,
     // By default we don't render legacy message ids in compliance tests.
     enableI18nLegacyMessageIdFormat: false,
+    sourceMapping: test.compilerOptions?.sourceMap === true,
     ...test.angularCompilerOptions
   });
-  const goldenPartialPath = fs.resolve('/GOLDEN_PARTIAL.js');
-  if (!fs.exists(goldenPartialPath)) {
+  const goldenPartialPath = fileSystem.resolve('/GOLDEN_PARTIAL.js');
+  if (!fileSystem.exists(goldenPartialPath)) {
     throw new Error(
         'Golden partial does not exist for this test\n' +
         'Try generating it by running:\n' +
         `bazel run //packages/compiler-cli/test/compliance/test_cases:${
             test.relativePath}.golden.update`);
   }
-  const partialFile = fs.readFile(goldenPartialPath);
+  const partialFile = fileSystem.readFile(goldenPartialPath);
   const partialFiles = parseGoldenPartial(partialFile);
 
-  partialFiles.forEach(f => safeWrite(fs, fs.resolve(builtDirectory, f.path), f.content));
+  partialFiles.forEach(
+      f => safeWrite(fileSystem, fileSystem.resolve(builtDirectory, f.path), f.content));
 
   for (const expectation of test.expectations) {
-    for (const {generated: fileName} of expectation.files) {
-      const partialPath = fs.resolve(builtDirectory, fileName);
-      if (!fs.exists(partialPath)) {
+    for (const {generated} of expectation.files) {
+      const fileName = fileSystem.resolve(builtDirectory, generated);
+      if (!fileSystem.exists(fileName)) {
         continue;
       }
-      const source = fs.readFile(partialPath);
-      const sourceMapPath = fs.resolve(partialPath + '.map');
-      const sourceMap =
-          fs.exists(sourceMapPath) ? JSON.parse(fs.readFile(sourceMapPath)) : undefined;
+      const source = fileSystem.readFile(fileName);
+      const sourceMapPath = fileSystem.resolve(fileName + '.map');
+      const sourceMap = fileSystem.exists(sourceMapPath) ?
+          JSON.parse(fileSystem.readFile(sourceMapPath)) :
+          undefined;
       const {linkedSource, linkedSourceMap} =
-          applyLinker({path: partialPath, source, sourceMap}, linkerPlugin);
+          applyLinker(builtDirectory, fileName, source, sourceMap, linkerPlugin);
 
       if (linkedSourceMap !== undefined) {
         const mapAndPath: MapAndPath = {map: linkedSourceMap, mapPath: sourceMapPath};
-        const sourceFile = loader.loadSourceFile(partialPath, linkedSource, mapAndPath);
-        safeWrite(fs, sourceMapPath, JSON.stringify(sourceFile.renderFlattenedSourceMap()));
+        const sourceFile = loader.loadSourceFile(fileName, linkedSource, mapAndPath);
+        safeWrite(fileSystem, sourceMapPath, JSON.stringify(sourceFile.renderFlattenedSourceMap()));
       }
-      safeWrite(fs, partialPath, linkedSource);
+      safeWrite(fileSystem, fileName, linkedSource);
     }
   }
   return {emittedFiles: [], errors: []};
@@ -81,14 +86,15 @@ function linkPartials(fs: FileSystem, test: ComplianceTest): CompileResult {
  * @returns The file's source content, which has been transformed using the linker if necessary.
  */
 function applyLinker(
-    file: {path: string; source: string, sourceMap: RawSourceMap | undefined},
+    cwd: string, filename: string, source: string, sourceMap: RawSourceMap|undefined,
     linkerPlugin: PluginObj): {linkedSource: string, linkedSourceMap: RawSourceMap|undefined} {
-  if (!file.path.endsWith('.js') || !needsLinking(file.path, file.source)) {
-    return {linkedSource: file.source, linkedSourceMap: file.sourceMap};
+  if (!filename.endsWith('.js') || !needsLinking(filename, source)) {
+    return {linkedSource: source, linkedSourceMap: sourceMap};
   }
-  const result = transformSync(file.source, {
-    filename: file.path,
-    sourceMaps: !!file.sourceMap,
+  const result = transformSync(source, {
+    cwd,
+    filename,
+    sourceMaps: !!sourceMap,
     plugins: [linkerPlugin],
     parserOpts: {sourceType: 'unambiguous'},
   });
