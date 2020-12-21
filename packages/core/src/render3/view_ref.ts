@@ -7,12 +7,15 @@
  */
 
 import {ChangeDetectorRef as viewEngine_ChangeDetectorRef} from '../change_detection/change_detector_ref';
-import {ViewContainerRef as viewEngine_ViewContainerRef} from '../linker/view_container_ref';
 import {EmbeddedViewRef as viewEngine_EmbeddedViewRef, InternalViewRef as viewEngine_InternalViewRef, ViewRefTracker} from '../linker/view_ref';
+import {removeFromArray} from '../util/array_utils';
+import {assertEqual} from '../util/assert';
 import {collectNativeNodes} from './collect_native_nodes';
 import {checkNoChangesInRootView, checkNoChangesInternal, detectChangesInRootView, detectChangesInternal, markViewDirty, storeCleanupWithContext} from './instructions/shared';
-import {CONTEXT, FLAGS, LView, LViewFlags, TVIEW} from './interfaces/view';
-import {destroyLView, renderDetachView} from './node_manipulation';
+import {CONTAINER_HEADER_OFFSET, VIEW_REFS} from './interfaces/container';
+import {isLContainer} from './interfaces/type_checks';
+import {CONTEXT, FLAGS, LView, LViewFlags, PARENT, TVIEW} from './interfaces/view';
+import {destroyLView, detachView, renderDetachView} from './node_manipulation';
 
 
 
@@ -24,7 +27,7 @@ export interface viewEngine_ChangeDetectorRef_interface extends viewEngine_Chang
 export class ViewRef<T> implements viewEngine_EmbeddedViewRef<T>, viewEngine_InternalViewRef,
                                    viewEngine_ChangeDetectorRef_interface {
   private _appRef: ViewRefTracker|null = null;
-  private _viewContainerRef: viewEngine_ViewContainerRef|null = null;
+  private _attachedToViewContainer = false;
 
   get rootNodes(): any[] {
     const lView = this._lView;
@@ -65,14 +68,21 @@ export class ViewRef<T> implements viewEngine_EmbeddedViewRef<T>, viewEngine_Int
   destroy(): void {
     if (this._appRef) {
       this._appRef.detachView(this);
-    } else if (this._viewContainerRef) {
-      const index = this._viewContainerRef.indexOf(this);
-
-      if (index > -1) {
-        this._viewContainerRef.detach(index);
+    } else if (this._attachedToViewContainer) {
+      const parent = this._lView[PARENT];
+      if (isLContainer(parent)) {
+        const viewRefs = parent[VIEW_REFS] as ViewRef<unknown>[] | null;
+        const index = viewRefs ? viewRefs.indexOf(this) : -1;
+        if (index > -1) {
+          ngDevMode &&
+              assertEqual(
+                  index, parent.indexOf(this._lView) - CONTAINER_HEADER_OFFSET,
+                  'An attached view should be in the same position within its container as its ViewRef in the VIEW_REFS array.');
+          detachView(parent, index);
+          removeFromArray(viewRefs!, index);
+        }
       }
-
-      this._viewContainerRef = null;
+      this._attachedToViewContainer = false;
     }
     destroyLView(this._lView[TVIEW], this._lView);
   }
@@ -271,11 +281,11 @@ export class ViewRef<T> implements viewEngine_EmbeddedViewRef<T>, viewEngine_Int
     checkNoChangesInternal(this._lView[TVIEW], this._lView, this.context);
   }
 
-  attachToViewContainerRef(vcRef: viewEngine_ViewContainerRef) {
+  attachToViewContainerRef() {
     if (this._appRef) {
       throw new Error('This view is already attached directly to the ApplicationRef!');
     }
-    this._viewContainerRef = vcRef;
+    this._attachedToViewContainer = true;
   }
 
   detachFromAppRef() {
@@ -284,7 +294,7 @@ export class ViewRef<T> implements viewEngine_EmbeddedViewRef<T>, viewEngine_Int
   }
 
   attachToAppRef(appRef: ViewRefTracker) {
-    if (this._viewContainerRef) {
+    if (this._attachedToViewContainer) {
       throw new Error('This view is already attached to a ViewContainer!');
     }
     this._appRef = appRef;
