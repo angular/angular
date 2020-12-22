@@ -138,7 +138,7 @@ If you intend to have multiple projects in a workspace, you can skip the initial
 The following command creates a workspace with all of the workspace-wide configuration files, but no root-level application.
 
 <code-example language="bash">
-ng new my-workspace --createApplication="false"
+ng new my-workspace --create-application false
 </code-example>
 
 You can then generate apps and libraries with names that are unique within the workspace.
