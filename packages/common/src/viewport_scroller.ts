@@ -67,7 +67,7 @@ export abstract class ViewportScroller {
 export class BrowserViewportScroller implements ViewportScroller {
   private offset: () => [number, number] = () => [0, 0];
 
-  constructor(private document: any, private window: any) {}
+  constructor(private document: Document, private window: Window) {}
 
   /**
    * Configures the top offset used when scrolling to an anchor.
@@ -106,17 +106,33 @@ export class BrowserViewportScroller implements ViewportScroller {
   }
 
   /**
-   * Scrolls to an anchor element.
-   * @param anchor The ID of the anchor element.
+   * Scrolls to an element and attempts to focus the element.
+   *
+   * Note that the function name here is misleading in that the target string may be an ID for a
+   * non-anchor element.
+   *
+   * @param target The ID of an element or name of the anchor.
+   *
+   * @see https://html.spec.whatwg.org/#the-indicated-part-of-the-document
+   * @see https://html.spec.whatwg.org/#scroll-to-fragid
    */
-  scrollToAnchor(anchor: string): void {
-    if (this.supportsScrolling()) {
-      const elSelected =
-          this.document.getElementById(anchor) || this.document.getElementsByName(anchor)[0];
-      if (elSelected) {
-        this.scrollToElement(elSelected);
-      }
+  scrollToAnchor(target: string): void {
+    if (!this.supportsScrolling()) {
+      return;
     }
+    // TODO(atscott): The correct behavior for `getElementsByName` would be to also verify that the
+    // element is an anchor. However, this could be considered a breaking change and should be
+    // done in a major version.
+    const elSelected: HTMLElement|undefined =
+        this.document.getElementById(target) ?? this.document.getElementsByName(target)[0];
+    if (elSelected === undefined) {
+      return;
+    }
+
+    this.scrollToElement(elSelected);
+    // After scrolling to the element, the spec dictates that we follow the focus steps for the
+    // target. Rather than following the robust steps, simply attempt focus.
+    this.attemptFocus(elSelected);
   }
 
   /**
@@ -131,12 +147,33 @@ export class BrowserViewportScroller implements ViewportScroller {
     }
   }
 
-  private scrollToElement(el: any): void {
+  /**
+   * Scrolls to an element using the native offset and the specified offset set on this scroller.
+   *
+   * The offset can be used when we know that there is a floating header and scrolling naively to an
+   * element (ex: `scrollIntoView`) leaves the element hidden behind the floating header.
+   */
+  private scrollToElement(el: HTMLElement): void {
     const rect = el.getBoundingClientRect();
     const left = rect.left + this.window.pageXOffset;
     const top = rect.top + this.window.pageYOffset;
     const offset = this.offset();
     this.window.scrollTo(left - offset[0], top - offset[1]);
+  }
+
+  /**
+   * Calls `focus` on the `focusTarget` and returns `true` if the element was focused successfully.
+   *
+   * If `false`, further steps may be necessary to determine a valid substitute to be focused
+   * instead.
+   *
+   * @see https://html.spec.whatwg.org/#get-the-focusable-area
+   * @see https://developer.mozilla.org/en-US/docs/Web/API/HTMLOrForeignElement/focus
+   * @see https://html.spec.whatwg.org/#focusable-area
+   */
+  private attemptFocus(focusTarget: HTMLElement): boolean {
+    focusTarget.focus();
+    return this.document.activeElement === focusTarget;
   }
 
   /**
