@@ -270,7 +270,7 @@ jobs:
       # as they require network access for yarn install), this test is running out of memory
       # consistently with the xlarge machine.
       # TODO: switch back to xlarge once integration tests are running on remote-exec
-      resource_class: 2xlarge+
+      resource_class: 2xlarge
     steps:
       - custom_attach_workspace
       - init_environment
