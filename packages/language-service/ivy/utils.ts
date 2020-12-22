@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AbsoluteSourceSpan, CssSelector, ParseSourceSpan, SelectorMatcher} from '@angular/compiler';
+import {AbsoluteSourceSpan, CssSelector, ParseSourceSpan, SelectorMatcher, TmplAstBoundEvent} from '@angular/compiler';
 import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
 import {isExternalResource} from '@angular/compiler-cli/src/ngtsc/metadata';
 import {DeclarationNode} from '@angular/compiler-cli/src/ngtsc/reflection';
@@ -52,6 +52,16 @@ interface NodeWithKeyAndValue extends t.Node {
 
 export function isTemplateNodeWithKeyAndValue(node: t.Node|e.AST): node is NodeWithKeyAndValue {
   return isTemplateNode(node) && node.hasOwnProperty('keySpan');
+}
+
+export function isWithinKeyValue(position: number, node: NodeWithKeyAndValue): boolean {
+  let {keySpan, valueSpan} = node;
+  if (valueSpan === undefined && node instanceof TmplAstBoundEvent) {
+    valueSpan = node.handlerSpan;
+  }
+  const isWithinKeyValue =
+      isWithin(position, keySpan) || !!(valueSpan && isWithin(position, valueSpan));
+  return isWithinKeyValue;
 }
 
 export function isTemplateNode(node: t.Node|e.AST): node is t.Node {
