@@ -18,7 +18,8 @@ import {declarationFunctions} from './partial_linkers/partial_linker_selector';
  * This function may return true even for source files that don't actually contain any declarations
  * that need to be compiled.
  *
- * @param path the path of the source file for which to determine whether linking may be needed.
+ * @param path the absolute path of the source file for which to determine whether linking may be
+ * needed.
  * @param source the source file content as a string.
  * @returns whether the source file may contain declarations that need to be linked.
  */
