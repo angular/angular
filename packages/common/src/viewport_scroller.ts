@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ErrorHandler, ɵɵdefineInjectable, ɵɵinject} from '@angular/core';
+import {ɵɵdefineInjectable, ɵɵinject} from '@angular/core';
 
 import {DOCUMENT} from './dom_tokens';
 
@@ -24,7 +24,7 @@ export abstract class ViewportScroller {
   static ɵprov = ɵɵdefineInjectable({
     token: ViewportScroller,
     providedIn: 'root',
-    factory: () => new BrowserViewportScroller(ɵɵinject(DOCUMENT), window, ɵɵinject(ErrorHandler))
+    factory: () => new BrowserViewportScroller(ɵɵinject(DOCUMENT), window)
   });
 
   /**
@@ -67,7 +67,7 @@ export abstract class ViewportScroller {
 export class BrowserViewportScroller implements ViewportScroller {
   private offset: () => [number, number] = () => [0, 0];
 
-  constructor(private document: any, private window: any, private errorHandler: ErrorHandler) {}
+  constructor(private document: any, private window: any) {}
 
   /**
    * Configures the top offset used when scrolling to an anchor.
