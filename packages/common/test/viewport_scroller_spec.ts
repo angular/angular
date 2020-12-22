@@ -19,7 +19,7 @@ describe('BrowserViewportScroller', () => {
         jasmine.createSpyObj('window', ['history', 'scrollTo', 'pageXOffset', 'pageYOffset']);
     windowSpy.history.scrollRestoration = 'auto';
     documentSpy = jasmine.createSpyObj('document', ['getElementById', 'getElementsByName']);
-    scroller = new BrowserViewportScroller(documentSpy, windowSpy, null!);
+    scroller = new BrowserViewportScroller(documentSpy, windowSpy);
   });
 
   describe('setHistoryScrollRestoration', () => {
