@@ -123,7 +123,7 @@ export class LSParseConfigHost implements ConfigurationHost {
     return p.extname(path);
   }
   resolve(...paths: string[]): AbsoluteFsPath {
-    return this.serverHost.resolvePath(this.join(paths[0], ...paths.slice(1))) as AbsoluteFsPath;
+    return p.resolve(...paths) as AbsoluteFsPath;
   }
   dirname<T extends PathString>(file: T): T {
     return p.dirname(file) as T;
