@@ -46,7 +46,7 @@ describe('directive declaration jit compilation', () => {
         'bindingName': 'minifiedClassProperty',
       },
       declaredInputs: {
-        'property': 'minifiedProperty',
+        'property': 'property',
         'bindingName': 'classProperty',
       },
       outputs: {
