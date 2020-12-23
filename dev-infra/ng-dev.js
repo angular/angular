@@ -5340,7 +5340,7 @@ function getPullRequestState(api, id) {
         // update the closed pull request to be associated with the closing commit.
         // Note: a Date constructed with `null` creates an object at 0 time, which will never be greater
         // than the current date time.
-        if (new Date(data.closed_at).getTime() + THIRTY_SECONDS_IN_MS > new Date().getTime()) {
+        if (new Date(data.closed_at).getTime() + THIRTY_SECONDS_IN_MS < new Date().getTime()) {
             return (yield isPullRequestClosedWithAssociatedCommit(api, id)) ? 'merged' : 'closed';
         }
         return 'open';
