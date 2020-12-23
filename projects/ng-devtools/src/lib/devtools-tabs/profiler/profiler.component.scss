@@ -2,7 +2,7 @@
 .profiler-wrapper {
   font-size: 1em;
   width: 100%;
-  height: 100%;
+  height: calc(100% - 28px);
 }
 
 .mat-card {
@@ -22,7 +22,7 @@
   &.start-recording-button {
     color: #4db675;
   }
-  
+
   &.recording-button {
     color: #d83c34;
   }
@@ -36,7 +36,8 @@
     display: none;
   }
 
-  input, span {
+  input,
+  span {
     margin-top: 5px;
     font-size: 1em;
     cursor: pointer;
@@ -63,7 +64,7 @@
 :host-context(.dark-theme) {
   .profiler-control {
     &.recording-button {
-      color: #FF625A;
+      color: #ff625a;
     }
   }
 }

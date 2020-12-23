@@ -1,4 +1,4 @@
-<div class="level-profile-wrapper" [class.split-width]="selectedEntry">
+<div class="level-profile-wrapper">
   <ngx-flamegraph
     (frameClick)="selectFrame($event)"
     [config]="{ data: profilerBars, color: colors }"
@@ -7,18 +7,3 @@
   >
   </ngx-flamegraph>
 </div>
-
-<mat-card class="selected-entry" *ngIf="selectedEntry">
-  <mat-toolbar color="accent">{{ selectedEntry.label }} details</mat-toolbar>
-  <section class="entry-statistics">
-    <div class="txt-total-time" *ngIf="selectedEntry.changeDetected">
-      <label>Total time spent:</label><span> {{ selectedEntry.value | number }}ms</span>
-    </div>
-    <div class="txt-total-time" *ngIf="!selectedEntry.changeDetected">
-      <label>Did not run change detection</label>
-    </div>
-    <div *ngIf="selectedEntry.value > 0">
-      <ng-execution-details [data]="graphData"></ng-execution-details>
-    </div>
-  </section>
-</mat-card>

@@ -11,6 +11,7 @@ import { TreeMapVisualizerComponent } from './tree-map-visualizer/tree-map-visua
 import { TimelineVisualizerComponent } from './timeline-visualizer.component';
 import { BarChartComponent } from './bar-chart/bar-chart.component';
 import { ExecutionDetailsComponent } from './execution-details/execution-details.component';
+import { AngularSplitModule } from 'projects/ng-devtools/src/lib/vendor/angular-split/lib/module';
 
 @NgModule({
   declarations: [
@@ -21,7 +22,7 @@ import { ExecutionDetailsComponent } from './execution-details/execution-details
     TreeMapVisualizerComponent,
     BargraphVisualizerComponent,
   ],
-  imports: [CommonModule, NgxFlamegraphModule, MatToolbarModule, MatCardModule],
+  imports: [CommonModule, NgxFlamegraphModule, MatToolbarModule, MatCardModule, AngularSplitModule],
   exports: [TimelineVisualizerComponent],
 })
 export class RecordingVisualizerModule {}

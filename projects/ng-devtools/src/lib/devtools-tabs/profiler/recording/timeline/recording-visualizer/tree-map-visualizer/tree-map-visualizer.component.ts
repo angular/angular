@@ -21,7 +21,7 @@ export class TreeMapVisualizerComponent implements AfterViewInit, OnInit {
     }
   }
 
-  private changeSize = new Subject<void>();
+  private resize$ = new Subject<void>();
 
   treeMapRecords: TreeMapNode;
 
@@ -32,10 +32,10 @@ export class TreeMapVisualizerComponent implements AfterViewInit, OnInit {
   }
 
   ngOnInit(): void {
-    this.changeSize
+    this.resize$
       .asObservable()
       .pipe(throttleTime(100))
-      .subscribe((_) => this.handleResize());
+      .subscribe((_) => this.updateTree());
   }
 
   updateTree(): void {
@@ -57,10 +57,6 @@ export class TreeMapVisualizerComponent implements AfterViewInit, OnInit {
 
   @HostListener('window:resize', ['$event'])
   onResize(): void {
-    this.changeSize.next();
-  }
-
-  handleResize(): void {
-    this.updateTree();
+    this.resize$.next();
   }
 }

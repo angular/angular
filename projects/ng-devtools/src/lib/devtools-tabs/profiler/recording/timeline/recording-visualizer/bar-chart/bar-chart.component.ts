@@ -17,7 +17,7 @@ interface Data {
 })
 export class BarChartComponent {
   @Input() set data(nodes: Data[]) {
-    this._originals = nodes;
+    this.originalData = nodes;
     this.internalData = [];
     const max = nodes.reduce((a: number, c) => Math.max(a, c.value), -Infinity);
     for (const node of nodes) {
@@ -28,12 +28,8 @@ export class BarChartComponent {
     }
   }
   @Input() color: string;
-  @Output() pick = new EventEmitter<Data>();
-  private _originals: Data[];
+  @Output() barClick = new EventEmitter<Data>();
 
+  originalData: Data[];
   internalData: Data[] = [];
-
-  select(idx: number): void {
-    this.pick.emit(this._originals[idx]);
-  }
 }

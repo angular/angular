@@ -11,8 +11,7 @@
     </mat-icon>
     <p class="instructions" [class.hidden]="state !== 'idle'">
       <span>
-        Click the play button to start a new recording, or upload a json
-        file containing profiler data.
+        Click the play button to start a new recording, or upload a json file containing profiler data.
       </span>
       <br />
       <span>
@@ -27,8 +26,8 @@
     </p>
   </mat-card>
   <div id="profiler-content-wrapper">
-    <p class="visualization" *ngIf="state !== 'idle'">
+    <div class="visualization" *ngIf="state !== 'idle'">
       <ng-recording-timeline [stream]="stream" (exportProfile)="exportProfilerResults()"> </ng-recording-timeline>
-    </p>
+    </div>
   </div>
 </div>

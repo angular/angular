@@ -17,7 +17,7 @@
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
-  opacity: 1.0;
+  opacity: 1;
 }
 
 .bar:hover {
@@ -26,7 +26,7 @@
 
 :host,
 .wrapper {
-  width: 100%;
+  width: calc(100% - 5px);
   height: 100%;
   display: block;
 }
