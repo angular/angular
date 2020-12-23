@@ -1,21 +1,3 @@
-<div class="level-profile-wrapper" [class.split-width]="selectedEntry">
-  <ng-bar-chart (pick)="selectNode($event)" [color]="barColor" [data]="profileRecords"> </ng-bar-chart>
+<div class="level-profile-wrapper">
+  <ng-bar-chart (barClick)="selectNode($event)" [color]="barColor" [data]="profileRecords"> </ng-bar-chart>
 </div>
-
-<mat-card class="selected-entry" *ngIf="selectedEntry">
-  <mat-toolbar color="accent">{{ selectedEntry.label }} details</mat-toolbar>
-  <section class="entry-statistics">
-    <div class="txt-total-time"><label>Total time spent:</label><span> {{ selectedEntry.value | number }}ms</span></div>
-    <div *ngIf="selectedEntry.value > 0">
-      <ng-execution-details [data]="selectedDirectives"> </ng-execution-details>
-    </div>
-    <div *ngIf="parentHierarchy.length > 0">
-      <div class="txt-total-time"><label>Parent Hierarchy</label></div>
-      <ul>
-        <li *ngFor="let parent of parentHierarchy">
-          {{ parent.name }}
-        </li>
-      </ul>
-    </div>
-  </section>
-</mat-card>

@@ -1,4 +1,4 @@
-import { Component, ElementRef, Input } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, Output } from '@angular/core';
 
 import {
   FlamegraphNode,
@@ -7,6 +7,7 @@ import {
 } from '../../record-formatter/flamegraph-formatter/flamegraph-formatter';
 import { RawData } from 'ngx-flamegraph/lib/utils';
 import { ProfilerFrame } from 'protocol';
+import { SelectedDirective, SelectedEntry } from '../timeline-visualizer.component';
 
 export interface GraphNode {
   directive: string;
@@ -21,10 +22,6 @@ export interface GraphNode {
 })
 export class FlamegraphVisualizerComponent {
   profilerBars: FlamegraphNode[] = [];
-  selectedEntry: FlamegraphNode | null = null;
-
-  // graph options
-  graphData: GraphNode[] = [];
   view: [number, number] = [235, 200];
 
   colors = {
@@ -37,28 +34,40 @@ export class FlamegraphVisualizerComponent {
   private _showChangeDetection = false;
   private _frame: ProfilerFrame;
 
+  @Output() nodeSelect = new EventEmitter<SelectedEntry>();
+
   @Input() set frame(frame: ProfilerFrame) {
-    this.selectedEntry = null;
     this._frame = frame;
+    this._selectFrame();
+  }
+
+  @Input() set changeDetection(changeDetection: boolean) {
+    this._showChangeDetection = changeDetection;
     this._selectFrame();
   }
 
   constructor(private _el: ElementRef) {}
 
-  selectFrame(frame: RawData): void {
-    if (frame.label === ROOT_LEVEL_ELEMENT_LABEL) {
-      return;
-    }
-    this.selectedEntry = frame as FlamegraphNode;
-    this.renderGraph(this.selectedEntry);
-  }
-
   get availableWidth(): number {
     return this._el.nativeElement.querySelector('.level-profile-wrapper').offsetWidth;
   }
 
-  formatPieChartData(flameGraphNode: FlamegraphNode): GraphNode[] {
-    const graphData: GraphNode[] = [];
+  selectFrame(frame: RawData): void {
+    if (frame.label === ROOT_LEVEL_ELEMENT_LABEL) {
+      return;
+    }
+
+    const flameGraphNode = frame as FlamegraphNode;
+    const directiveData = this.formatEntryData(flameGraphNode);
+
+    this.nodeSelect.emit({
+      entry: flameGraphNode,
+      selectedDirectives: directiveData,
+    });
+  }
+
+  formatEntryData(flameGraphNode: FlamegraphNode): SelectedDirective[] {
+    const graphData: SelectedDirective[] = [];
     flameGraphNode.original.directives.forEach((node) => {
       const changeDetection = node.changeDetection;
       if (changeDetection !== undefined) {
@@ -77,19 +86,6 @@ export class FlamegraphVisualizerComponent {
       });
     });
     return graphData;
-  }
-
-  renderGraph(node: FlamegraphNode): void {
-    this.graphData = this.formatPieChartData(node);
-  }
-
-  formatToolTip(data: any): string {
-    return `${data.data.name} ${data.data.value}ms`;
-  }
-
-  @Input() set changeDetection(changeDetection: boolean) {
-    this._showChangeDetection = changeDetection;
-    this._selectFrame();
   }
 
   private _selectFrame(): void {

@@ -2,7 +2,7 @@
   <div
     @appear
     *ngFor="let bar of internalData; let i = index"
-    (click)="select(i)"
+    (click)="barClick.emit(originalData[i])"
     class="bar"
     [style.backgroundColor]="color"
     [style.width.%]="bar.value"

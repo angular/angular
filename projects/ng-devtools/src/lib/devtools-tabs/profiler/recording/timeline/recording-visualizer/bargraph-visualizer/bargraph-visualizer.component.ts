@@ -1,12 +1,7 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { BargraphNode, BarGraphFormatter } from '../../record-formatter/bargraph-formatter';
 import { ProfilerFrame } from 'protocol';
-
-export interface GraphNode {
-  directive: string;
-  method: string;
-  value: number;
-}
+import { SelectedDirective, SelectedEntry } from '../timeline-visualizer.component';
 
 @Component({
   selector: 'ng-bargraph-visualizer',
@@ -16,19 +11,17 @@ export interface GraphNode {
 export class BargraphVisualizerComponent {
   barColor = '#FFC400';
   profileRecords: BargraphNode[];
-  selectedEntry: BargraphNode | null = null;
-  selectedDirectives: GraphNode[] = [];
-  parentHierarchy: { name: string }[] = [];
+
+  @Output() nodeSelect = new EventEmitter<SelectedEntry>();
 
   private _formatter = new BarGraphFormatter();
 
   @Input() set frame(data: ProfilerFrame) {
     this.profileRecords = this._formatter.formatFrame(data);
-    this.selectedEntry = null;
   }
 
-  formatPieChartData(bargraphNode: BargraphNode): GraphNode[] {
-    const graphData: GraphNode[] = [];
+  formatEntryData(bargraphNode: BargraphNode): SelectedDirective[] {
+    const graphData: SelectedDirective[] = [];
     bargraphNode.original.directives.forEach((node) => {
       const { changeDetection } = node;
       if (changeDetection) {
@@ -49,16 +42,13 @@ export class BargraphVisualizerComponent {
     return graphData;
   }
 
-  selectNode(data: BargraphNode): void {
-    const index = this.profileRecords.findIndex((element) => element.label === data.label);
-    this.selectedEntry = this.profileRecords[index];
-    this.parentHierarchy = this.selectedEntry.parents.map((element) => {
-      return { name: element.directives[0].name };
+  selectNode(node: BargraphNode): void {
+    this.nodeSelect.emit({
+      entry: node,
+      parentHierarchy: node.parents.map((element) => {
+        return { name: element.directives[0].name };
+      }),
+      selectedDirectives: this.formatEntryData(node),
     });
-    this.selectedDirectives = this.formatPieChartData(this.selectedEntry);
-  }
-
-  formatToolTip(data: any): string {
-    return `${data.data.name} ${data.data.value}ms`;
   }
 }
