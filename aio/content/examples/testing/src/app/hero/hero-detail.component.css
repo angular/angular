@@ -12,7 +12,7 @@ input {
 }
 button {
   margin-top: 20px;
-  font-family: Arial;
+  font-family: Arial, sans-serif;
   background-color: #eee;
   border: none;
   padding: 5px 10px;

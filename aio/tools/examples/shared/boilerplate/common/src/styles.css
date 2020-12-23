@@ -14,13 +14,13 @@ body {
 }
 body, input[text], button {
   color: #333;
-  font-family: Cambria, Georgia;
+  font-family: Cambria, Georgia, serif;
 }
 a {
   cursor: pointer;
 }
 button {
-  font-family: Arial;
+  font-family: Arial, sans-serif;
   background-color: #eee;
   border: none;
   padding: 5px 10px;

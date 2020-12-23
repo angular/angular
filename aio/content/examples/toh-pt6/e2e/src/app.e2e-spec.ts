@@ -193,7 +193,7 @@ describe('Tutorial part 6', () => {
 
       for (const button of buttons) {
         // Inherited styles from styles.css
-        expect(await button.getCssValue('font-family')).toBe('Arial');
+        expect(await button.getCssValue('font-family')).toBe('Arial, sans-serif');
         expect(await button.getCssValue('border')).toContain('none');
         expect(await button.getCssValue('padding')).toBe('5px 10px');
         expect(await button.getCssValue('border-radius')).toBe('4px');
@@ -204,7 +204,7 @@ describe('Tutorial part 6', () => {
 
       const addButton = element(by.buttonText('add'));
       // Inherited styles from styles.css
-      expect(await addButton.getCssValue('font-family')).toBe('Arial');
+      expect(await addButton.getCssValue('font-family')).toBe('Arial, sans-serif');
       expect(await addButton.getCssValue('border')).toContain('none');
       expect(await addButton.getCssValue('padding')).toBe('5px 10px');
       expect(await addButton.getCssValue('border-radius')).toBe('4px');
