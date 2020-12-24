@@ -8323,10 +8323,10 @@ ng-packagr@^11.0.0:
     stylus "^0.54.7"
     terser "^5.0.0"
 
-ngx-build-plus@^10.0.0:
-  version "10.1.1"
-  resolved "https://registry.yarnpkg.com/ngx-build-plus/-/ngx-build-plus-10.1.1.tgz#4d02c2a04c4f22681a007a421afd45f0893c1134"
-  integrity sha512-l3uj/LpQfX9BTQLdpSN3Um5xBaXBgrx8hcbwnzKS2P1nKjgUJd/V85pkt5tGYBlAwE1/waLBNT1a7WEraXWnrg==
+ngx-build-plus@^11.0.0:
+  version "11.0.0"
+  resolved "https://registry.yarnpkg.com/ngx-build-plus/-/ngx-build-plus-11.0.0.tgz#07b860a57f61a5c423249438f1ea9b2cdc32062b"
+  integrity sha512-2rUJ2FKrP4K6syVn+ixiX2s9dGph2FJxjrdVxemKTSIQEj7aQWF7JgpaaA20ZbUZt7UcIbSSoAWRsVJZIhpaPw==
   dependencies:
     "@schematics/angular" "8.0.0"
     cross-spawn "^6.0.5"
