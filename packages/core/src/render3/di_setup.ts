@@ -8,8 +8,8 @@
 
 
 import {resolveForwardRef} from '../di/forward_ref';
-import {ClassProvider, Provider} from '../di/interface/provider';
-import {isClassProvider, isTypeProvider, providerToFactory} from '../di/r3_injector';
+import {ClassProvider, Provider, TypeProvider} from '../di/interface/provider';
+import {isClassProvider, isFactoryProvider, isTypeProvider, providerToFactory} from '../di/r3_injector';
 import {assertDefined} from '../util/assert';
 
 import {diPublicInInjector, getNodeInjectable, getOrCreateNodeInjectorForNode} from './di';
@@ -180,6 +180,18 @@ function resolveProvider(
 }
 
 /**
+ * Function is used as a destroy hook for Factory Providers. This function is invoked in a context
+ * of a provider instance, checks whether there is an `ngOnDestroy` function and invokes it if it's
+ * present.
+ */
+function ngOnDestroyForFactoryProviders(this: any) {
+  const onDestroy = this && this.ngOnDestroy;
+  if (onDestroy) {
+    onDestroy.call(this);
+  }
+}
+
+/**
  * Registers the `ngOnDestroy` hook of a provider, if the provider supports destroy hooks.
  * @param tView `TView` in which to register the hook.
  * @param provider Provider whose hook should be registered.
@@ -190,27 +202,36 @@ function resolveProvider(
 function registerDestroyHooksIfSupported(
     tView: TView, provider: Exclude<Provider, any[]>, contextIndex: number,
     indexInFactory?: number) {
-  const providerIsTypeProvider = isTypeProvider(provider);
-  if (providerIsTypeProvider || isClassProvider(provider)) {
-    const prototype = ((provider as ClassProvider).useClass || provider).prototype;
-    const ngOnDestroy = prototype.ngOnDestroy;
-    if (ngOnDestroy) {
-      const hooks = tView.destroyHooks || (tView.destroyHooks = []);
+  let providerIsClassProvider = false;
+  let ngOnDestroy;
+  if (isTypeProvider(provider)) {
+    ngOnDestroy = (provider as TypeProvider).prototype.ngOnDestroy;
+  } else if (isClassProvider(provider)) {
+    providerIsClassProvider = true;
+    ngOnDestroy = (provider as ClassProvider).useClass.prototype.ngOnDestroy;
+  } else if (isFactoryProvider(provider)) {
+    // For factory providers, since we do not have a way to identify whether there is an
+    // `ngOnDestroy` hook before calling a factory function, we register a special function
+    // that would be invoked at destroy time and check whether `ngOnDestroy` is present on a
+    // provider instance (and call the function if it exists).
+    ngOnDestroy = ngOnDestroyForFactoryProviders;
+  }
+  if (ngOnDestroy) {
+    const hooks = tView.destroyHooks || (tView.destroyHooks = []);
 
-      if (!providerIsTypeProvider && ((provider as ClassProvider)).multi) {
-        ngDevMode &&
-            assertDefined(
-                indexInFactory, 'indexInFactory when registering multi factory destroy hook');
-        const existingCallbacksIndex = hooks.indexOf(contextIndex);
+    if (providerIsClassProvider && ((provider as ClassProvider)).multi) {
+      ngDevMode &&
+          assertDefined(
+              indexInFactory, 'indexInFactory when registering multi factory destroy hook');
+      const existingCallbacksIndex = hooks.indexOf(contextIndex);
 
-        if (existingCallbacksIndex === -1) {
-          hooks.push(contextIndex, [indexInFactory, ngOnDestroy]);
-        } else {
-          (hooks[existingCallbacksIndex + 1] as DestroyHookData).push(indexInFactory!, ngOnDestroy);
-        }
+      if (existingCallbacksIndex === -1) {
+        hooks.push(contextIndex, [indexInFactory, ngOnDestroy]);
       } else {
-        hooks.push(contextIndex, ngOnDestroy);
+        (hooks[existingCallbacksIndex + 1] as DestroyHookData).push(indexInFactory!, ngOnDestroy);
       }
+    } else {
+      hooks.push(contextIndex, ngOnDestroy);
     }
   }
 }

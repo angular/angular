@@ -6,11 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ɵgetDOM as getDOM} from '@angular/common';
-import {Component, Directive, forwardRef, Input, Type} from '@angular/core';
+import {CommonModule, ɵgetDOM as getDOM} from '@angular/common';
+import {Component, Directive, forwardRef, Input, SkipSelf, Type} from '@angular/core';
 import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
-import {expect} from '@angular/core/testing/src/testing_internal';
-import {AbstractControl, AsyncValidator, AsyncValidatorFn, COMPOSITION_BUFFER_MODE, FormArray, FormControl, FormControlDirective, FormControlName, FormGroup, FormGroupDirective, FormsModule, NG_ASYNC_VALIDATORS, NG_VALIDATORS, ReactiveFormsModule, Validator, Validators} from '@angular/forms';
+import {AbstractControl, AsyncValidator, AsyncValidatorFn, COMPOSITION_BUFFER_MODE, ControlContainer, FormArray, FormControl, FormControlDirective, FormControlName, FormGroup, FormGroupDirective, FormsModule, NG_ASYNC_VALIDATORS, NG_VALIDATORS, NgModelGroup, ReactiveFormsModule, Validator, Validators} from '@angular/forms';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {dispatchEvent, sortedClassList} from '@angular/platform-browser/testing/src/browser_util';
 import {merge, NEVER, of, timer} from 'rxjs';
@@ -2678,6 +2677,37 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
         expectValidatorsToBeCalled(validatorSpy, asyncValidatorSpy, {ctx: sharedControl, count: 1});
       });
     });
+
+    describe('ngModelGroup provider cleanup', () => {
+      it('should perform the cleanup when there are no references to it', () => {
+        TestBed.configureTestingModule({
+          declarations: [AppComponentNestedForm, NestedForm],
+          imports: [CommonModule, FormsModule]
+        });
+        const fixture = TestBed.createComponent(AppComponentNestedForm);
+        fixture.detectChanges();
+
+        const nestedFormDebugElement = fixture.debugElement.query(By.directive(NestedForm));
+        const ngModelGroup = nestedFormDebugElement.injector.get(NgModelGroup);
+        expect(ngModelGroup.refCount).toBe(3);
+
+        // Destroy First NestedForm component (ngModelGroup should not perform cleanup)
+        fixture.componentInstance.hasFirstNestedForm = false;
+        fixture.detectChanges();
+        expect(ngModelGroup.refCount).toBe(2);
+
+        // Change fields on Second NestedForm, should work correctly since cleanup should have not
+        // be performed
+        fixture.componentInstance.changeFields();
+        fixture.detectChanges();
+
+        // Destroy parent group
+        fixture.componentInstance.hasParentModelGroup = false;
+        fixture.detectChanges();
+        // Destroying parent group means that all references to ngModelGroup have to be gone.
+        expect(ngModelGroup.refCount).toBe(0);
+      });
+    });
   });
 }
 
@@ -3022,5 +3052,53 @@ class MyCustomValidator implements Validator {
 class MyCustomAsyncValidator implements AsyncValidator {
   validate(control: AbstractControl) {
     return Promise.resolve(null);
+  }
+}
+
+@Component({
+  selector: 'nested-form',
+  template: `
+    <ng-container *ngFor="let field of fields">
+      <div ngModelGroup="nested-group-{{ field }}">
+        <input type="text" ngModel name="{{ field }}">
+      </div>
+    </ng-container>
+  `,
+  viewProviders: [{
+    provide: ControlContainer,
+    useFactory: (ngModelGroup: NgModelGroup) => {
+      ngModelGroup.addRef();
+      return ngModelGroup;
+    },
+    deps: [[new SkipSelf(), NgModelGroup]]
+  }]
+})
+export class NestedForm {
+  @Input() fields: string[] = [];
+
+  constructor(private controlContainer: ControlContainer) {}
+}
+
+@Component({
+  selector: 'my-app',
+  template: `
+    <form #form="ngForm">
+      <div ngModelGroup="group" *ngIf="hasParentModelGroup">
+        <nested-form *ngIf="hasFirstNestedForm" [fields]="fields"></nested-form>
+        <nested-form [fields]="fields"></nested-form>
+      </div>
+    </form>
+    <button (click)="changeFields()">Change fields</button><br>
+    Form value: |{{ form.value | json }}|
+  `,
+})
+export class AppComponentNestedForm {
+  group = {};
+  fields = ['a', 'b'];
+  hasParentModelGroup = true;
+  hasFirstNestedForm = true;
+
+  changeFields() {
+    this.fields = ['c', 'd'];
   }
 }

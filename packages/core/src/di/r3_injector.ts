@@ -543,7 +543,7 @@ function isExistingProvider(value: SingleProvider): value is ExistingProvider {
   return !!(value && (value as ExistingProvider).useExisting);
 }
 
-function isFactoryProvider(value: SingleProvider): value is FactoryProvider {
+export function isFactoryProvider(value: SingleProvider): value is FactoryProvider {
   return !!(value && (value as FactoryProvider).useFactory);
 }
 
