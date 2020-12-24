@@ -1,0 +1,3 @@
+<button mat-icon-button aria-label="Theme switcher button" (click)="currentTheme.name === 'night-theme' ? selectTheme('ng-io-theme') : selectTheme('night-theme')">
+  <mat-icon>{{currentTheme.name === 'night-theme' ? themes[0].icon : themes[1].icon}}</mat-icon>
+</button>

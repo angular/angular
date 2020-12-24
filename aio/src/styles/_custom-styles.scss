@@ -1,0 +1,454 @@
+@mixin custom-styles($theme) {
+    $theme-primary: map-get($theme, primary);
+    $theme-accent: map-get($theme, accent);
+    $theme-warn: map-get($theme, warn);
+    $theme-background: map-get($theme, background);
+    $theme-foreground: map-get($theme, foreground);
+
+    $theme-primary-color: mat-color($theme-primary);
+    $theme-primary-lighter-color: mat-color($theme-primary, lighter);
+    $theme-primary-darker-color: mat-color($theme-primary, darker);
+    $theme-accent-color: mat-color($theme-accent);
+    $theme-accent-lighter-color: mat-color($theme-accent, lighter);
+    $theme-accent-darker-color: mat-color($theme-accent, darker);
+    $theme-warn-color: mat-color($theme-warn);
+    $theme-background-color: mat-color($theme-background, background);
+    $theme-app-bar-color: mat-color($theme-background, app-bar);
+    $theme-card-color: mat-color($theme-background, card);
+    $theme-foreground-color: mat-color($theme-foreground, text);
+    $theme-divider-color: mat-color($theme-foreground, divider);
+    $theme-foreground-secondary-color: mat-color($theme-foreground, secondary-text);
+    $theme-dialog-background-color: mat-color($theme-background, dialog);
+    $theme-hover-background-color: mat-color($theme-background, hover);
+    $theme-selected-button-color: mat-color($theme-background, selected-button);
+
+    background-color: $theme-background-color;
+    color: $theme-foreground-color;
+
+    .mat-tab-body {
+        background-color: #0d1117;
+    }
+
+    .mat-tab-group.mat-primary .mat-ink-bar, .mat-tab-nav-bar.mat-primary .mat-ink-bar{
+        background-color: $theme-accent-lighter-color;
+    }
+
+    .mat-tab-label {
+        color: $theme-foreground-color;
+        opacity: 1;
+    }
+
+    .mat-tab-list .mat-tab-labels .mat-tab-label-active {
+        color: $theme-accent-lighter-color;
+    }
+
+    // src/styles/1-layouts/_layout-global.scss
+
+    .content {
+        background-color: $theme-background-color;
+        color: $theme-foreground-color;
+    }
+
+    // src/styles/1-layouts/_sidenav.scss
+
+    .heading {
+        color: $theme-foreground-color;
+    }
+
+    // src/styles/1-layouts/_marketing-layout.scss
+
+    .text-headline {
+        color: $theme-foreground-color;
+    }
+
+    // src/styles/1-layouts/_footer.scss
+
+    footer {
+        background-color: $theme-primary-color;
+    }
+
+    // src/styles/1-layouts/_sidenav.scss
+
+    mat-sidenav-container.sidenav-container.mat-drawer-container.mat-sidenav-container, mat-sidenav-container .sidenav-content {
+        background-color: $theme-background-color;
+    }
+
+    mat-sidenav.mat-sidenav.sidenav {
+        background-color: $theme-dialog-background-color;
+    }
+
+    // src/styles/2-modules/_toc.scss
+
+    .toc-inner ul.toc-list li {
+        &.active a {
+            color: $theme-accent-color;
+
+            &:before {
+                background-color: $theme-accent-color;
+            }
+        }
+
+        &:hover a {
+            color: $theme-accent-color;
+        }
+
+        a {
+            color: $theme-foreground-color;
+        }
+
+        &.active * {
+            color: $theme-accent-color;
+
+            &:before {
+                background: $theme-accent-color;
+            }
+        }
+    }
+
+    // src/styles/1-layouts/_sidenav.scss
+
+    .vertical-menu-item {
+        color: $theme-foreground-color;
+
+        &:hover {
+            background-color: $theme-hover-background-color;
+            color: $theme-accent-lighter-color;
+            text-shadow: 0 0 0px;
+        }
+
+        &.selected {
+            background-color: $theme-dialog-background-color;
+            color: $theme-accent-lighter-color;
+        }
+
+        &:focus {
+            color: $theme-accent-lighter-color;
+            outline-width: 0px;
+            text-shadow: 0 0 0px;
+        }
+
+        &:focus, :not(&:selected) {
+            background-color: $theme-hover-background-color;
+            color: $theme-foreground-color;
+        }
+    }
+
+    .sidenav-content {
+        a {
+            color: $theme-accent-color;
+            &:hover {
+                color: $theme-accent-lighter-color;
+            }
+        }
+    }
+
+    // src/styles/2-modules/_select-menu.scss
+
+    .form-select-button {
+        background-color: $theme-card-color;
+        color: $theme-accent-color;
+        border-width: 0px;
+    }
+
+    .form-select-dropdown {
+        background-color: $theme-card-color;
+
+        li {
+            &:hover {
+                background-color: $theme-hover-background-color;
+                color: $theme-accent-color;
+            }
+
+            &.selected {
+                background-color: $theme-card-color;
+                color: $theme-accent-color;
+            }
+        }
+    }
+
+    // src/styles/2-modules/_images.scss
+
+    .content {
+        .lightbox {
+            background-color: $theme-card-color;
+            border-color: rgba($theme-foreground-secondary-color, 0.2);
+
+            img {
+                padding: 4px;
+            }
+        }
+    }
+
+    // src/styles/1-layouts/_marketing-layout.scss
+
+    .background-sky {
+        background-color: $theme-primary-color;
+        background: linear-gradient(145deg, $theme-primary-darker-color, $theme-primary-color, $theme-primary-lighter-color);
+    }
+
+    .marketing-banner {
+        background-color: $theme-primary-color;
+
+        .banner-headline {
+            color: $theme-foreground-color;
+        }
+    }
+
+    .home-row .card {
+        background-color: $theme-card-color;
+
+        .card-text-container p {
+            color: $theme-foreground-color;
+        }
+    }
+
+    // src/styles/2-modules/_card.scss
+
+    .card-container {
+        .docs-card {
+            background-color: $theme-card-color;
+            color: $theme-foreground-color;
+
+            &:hover {
+                section {
+                    color: $theme-accent-color;
+                }
+
+                p {
+                    color: $theme-foreground-color;
+                }
+
+                .card-footer {
+                    color: $theme-accent-color;
+                }
+
+            }
+
+            section {
+                color: $theme-foreground-color;
+            }
+
+            p {
+                color: $theme-foreground-color;
+            }
+
+            .card-footer {
+                color: $theme-foreground-secondary-color;
+                border-top-color: $theme-divider-color;
+            }
+        }
+    }
+
+    .card-section {
+        background-color: $theme-card-color;
+    }
+
+    // src/styles/1-layouts/_marketing-layout.scss
+
+    .button.hero-cta {
+        background-color: #dd0031;
+        color: $theme-foreground-color;
+
+        &:hover {
+            background-color: #c3002f;
+            color: $theme-foreground-color;
+        }
+    }
+
+    .announcement-bar .button {
+        background-color: $theme-primary-color;
+        color: $theme-foreground-color;
+    }
+
+    // src/styles/2-modules/_contributor.scss
+
+    .group-buttons {
+        a {
+            &.selected {
+                background-color: $theme-primary-color;
+                color: $theme-foreground-color;
+            }
+        }
+    }
+
+    // src/styles/2-modules/_buttons.scss
+
+    a.filter-button {
+        &:hover {
+            background-color: $theme-primary-color;
+            color: $theme-foreground-color;
+        }
+    }
+
+    .button.button-blue, a.button.mat-button.button-blue {
+        background-color: transparent;
+        border: 1px solid $theme-accent-color;
+    }
+
+    // src/styles/2-modules/_resources.scss
+
+    aio-resource-list .resource-row-link:hover {
+        border-color: $theme-accent-color;
+        @include mat-elevation(8);
+    }
+
+    aio-resource-list .subcategory-title {
+        background-color: $theme-primary-color;
+        color: $theme-foreground-color;
+    }
+
+    // src/styles/1-layouts/_top-menu.scss
+
+    aio-shell.page-features mat-toolbar.mat-toolbar,
+    aio-shell.page-events mat-toolbar.mat-toolbar,
+    aio-shell.page-resources mat-toolbar.mat-toolbar {
+        @include mat-elevation(6);
+    }
+
+    // src/styles/0-base/_typography.scss
+
+    h1, h2, h3, h4, h5, h6 {
+        color: $theme-foreground-color;
+    }
+
+    p, ol, ul, ol, li, input, a {
+        color: $theme-foreground-color;
+    }
+
+    code {
+        color: $theme-foreground-color;
+    }
+
+    // src/styles/2-modules/_table.scss
+
+    table {
+        background-color: $theme-background-color;
+
+        thead > {
+            tr > th {
+                background-color: $theme-card-color;
+                color: $theme-foreground-color;
+                border-bottom-color: $theme-divider-color;
+            }
+        }
+
+        tbody > {
+            tr > th {
+                background-color: $theme-card-color;
+                font-weight: normal;
+            }
+            tr > th, tr > td {
+                color: $theme-foreground-color;
+                border-right-color: $theme-divider-color;
+                border-bottom-color: $theme-divider-color;
+
+                a {
+                    color: $theme-accent-color;
+
+                    &:hover {
+                        color: $theme-accent-lighter-color;
+                    }
+                }
+            }
+        }
+    }
+
+    // src/styles/2-modules/_code.scss
+
+    code-example.code-shell, code-example[language=sh], code-example[language=bash] {
+        .pnk, .blk, .pln, .otl, .kwd, .typ, .tag, .str, .atv, .atn, .com, .lit, .pun, .dec {
+            color: $theme-foreground-color;
+        }
+    }
+
+    code-example {
+        &:not(.no-box) {
+            background-color: #0d1117;
+            color: $theme-foreground-color;
+            border-color: rgba($theme-foreground-secondary-color, 0.2);
+        }
+
+        header {
+            background-color: $theme-app-bar-color;
+        }
+
+        &.avoid header, &.avoidFile header {
+            border: 2px solid $theme-warn-color;
+            background: $theme-warn-color;
+        }
+    }
+
+    code-example.avoid,
+    code-example.avoidFile,
+    code-tabs.avoid mat-tab-body,
+    code-tabs.avoidFile mat-tab-body {
+        border: 0.5px solid $theme-warn-color;
+    }
+
+    .copy-button {
+        color: $theme-accent-color;
+        &:hover {
+            color: $theme-accent-lighter-color;
+        }
+    }
+
+    .lang-sh .copy-button, .lang-bash .copy-button {
+        color: $theme-accent-color;
+        &:hover {
+            color: $theme-accent-lighter-color;
+        }
+    }
+
+    .kwd, .tag {
+        color: #ff7b72;
+    }
+
+    .pln {
+        color: #fff;
+    }
+
+    .pun, .opn, .clo {
+        color: #8b949e;
+    }
+
+    .typ, .atn {
+        color: #79c0ff;
+    }
+
+    .lit {
+        color: #fff;
+    }
+
+    .str, .atv {
+        color: #a0e99d;
+    }
+
+    .com {
+        color: #8b949e;
+    }
+
+    // src/styles/2-modules/_api-pages.scss
+
+    .api-body table th {
+        font-weight: normal;
+    }
+
+    .github-links {
+        .material-icons {
+            &:hover {
+                background-color: $theme-hover-background-color;
+            }
+        }
+    }
+
+    // src/styles/2-modules/_filetree.scss
+
+    .filetree {
+        background: $theme-card-color;
+        border: 4px solid $theme-divider-color;
+
+        .file {
+            color: $theme-foreground-color;
+        }
+    }
+}

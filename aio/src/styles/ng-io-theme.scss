@@ -17,7 +17,21 @@ $ng-io-warn:    mat-palette($mat-red);
 // Create the theme object (a Sass map containing all of the palettes).
 $ng-io-theme: mat-light-theme($ng-io-primary, $ng-io-accent, $ng-io-warn);
 
+$night-primary: mat-palette($mat-teal, 700, 600, 800);
+$night-accent:  mat-palette($mat-teal, 200, 100, 300);
+
+$night-theme: mat-dark-theme($night-primary, $night-accent);
+
 // Include theme styles for core and each component used in your app.
 // Alternatively, you can import and @include the theme mixins for each component
 // that you are using.
 @include angular-material-theme($ng-io-theme);
+
+@import 'custom-styles';
+
+@media not print {
+    .night-theme {
+        @include angular-material-color($night-theme);
+        @include custom-styles($night-theme);
+    }
+}
