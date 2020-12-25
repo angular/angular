@@ -4312,6 +4312,29 @@ runInEachFileSystem(os => {
       expect(jsContents).toMatch(setClassMetadataRegExp('type: i1.Other'));
     });
 
+    it('should not throw when using an SVG-specific `title` tag', () => {
+      env.write('test.ts', `
+        import {Component, NgModule} from '@angular/core';
+        @Component({
+          template: \`
+            <svg>
+              <rect>
+                <svg:title>I'm a title tag</svg:title>
+              </rect>
+            </svg>
+          \`,
+        })
+        export class SvgCmp {}
+        @NgModule({
+          declarations: [SvgCmp],
+        })
+        export class SvgModule {}
+      `);
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(0);
+    });
+
     describe('namespace support', () => {
       it('should generate correct imports for type references to namespaced symbols using a namespace import',
          () => {

@@ -10,10 +10,11 @@ import {TagContentType, TagDefinition} from './tags';
 
 export class HtmlTagDefinition implements TagDefinition {
   private closedByChildren: {[key: string]: boolean} = {};
+  private contentType: TagContentType|
+      {default: TagContentType, [namespace: string]: TagContentType};
 
   closedByParent: boolean = false;
   implicitNamespacePrefix: string|null;
-  contentType: TagContentType;
   isVoid: boolean;
   ignoreFirstLf: boolean;
   canSelfClose: boolean = false;
@@ -31,7 +32,7 @@ export class HtmlTagDefinition implements TagDefinition {
     closedByChildren?: string[],
     closedByParent?: boolean,
     implicitNamespacePrefix?: string,
-    contentType?: TagContentType,
+    contentType?: TagContentType|{default: TagContentType, [namespace: string]: TagContentType},
     isVoid?: boolean,
     ignoreFirstLf?: boolean,
     preventNamespaceInheritance?: boolean
@@ -49,6 +50,14 @@ export class HtmlTagDefinition implements TagDefinition {
 
   isClosedByChild(name: string): boolean {
     return this.isVoid || name.toLowerCase() in this.closedByChildren;
+  }
+
+  getContentType(prefix?: string): TagContentType {
+    if (typeof this.contentType === 'object') {
+      const overrideType = prefix == null ? undefined : this.contentType[prefix];
+      return overrideType ?? this.contentType.default;
+    }
+    return this.contentType;
   }
 }
 
@@ -121,7 +130,11 @@ export function getHtmlTagDefinition(tagName: string): HtmlTagDefinition {
       'listing': new HtmlTagDefinition({ignoreFirstLf: true}),
       'style': new HtmlTagDefinition({contentType: TagContentType.RAW_TEXT}),
       'script': new HtmlTagDefinition({contentType: TagContentType.RAW_TEXT}),
-      'title': new HtmlTagDefinition({contentType: TagContentType.ESCAPABLE_RAW_TEXT}),
+      'title': new HtmlTagDefinition({
+        // The browser supports two separate `title` tags which have to use
+        // a different content type: `HTMLTitleElement` and `SVGTitleElement`
+        contentType: {default: TagContentType.ESCAPABLE_RAW_TEXT, svg: TagContentType.PARSABLE_DATA}
+      }),
       'textarea': new HtmlTagDefinition(
           {contentType: TagContentType.ESCAPABLE_RAW_TEXT, ignoreFirstLf: true}),
     };

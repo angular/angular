@@ -15,13 +15,13 @@ export enum TagContentType {
 export interface TagDefinition {
   closedByParent: boolean;
   implicitNamespacePrefix: string|null;
-  contentType: TagContentType;
   isVoid: boolean;
   ignoreFirstLf: boolean;
   canSelfClose: boolean;
   preventNamespaceInheritance: boolean;
 
   isClosedByChild(name: string): boolean;
+  getContentType(prefix?: string): TagContentType;
 }
 
 export function splitNsName(elementName: string): [string|null, string] {
