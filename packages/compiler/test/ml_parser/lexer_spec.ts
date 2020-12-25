@@ -789,6 +789,31 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
       });
     });
 
+    describe('parsable data', () => {
+      it('should parse an SVG <title> tag', () => {
+        expect(tokenizeAndHumanizeParts(`<svg:title>test</svg:title>`)).toEqual([
+          [lex.TokenType.TAG_OPEN_START, 'svg', 'title'],
+          [lex.TokenType.TAG_OPEN_END],
+          [lex.TokenType.TEXT, 'test'],
+          [lex.TokenType.TAG_CLOSE, 'svg', 'title'],
+          [lex.TokenType.EOF],
+        ]);
+      });
+
+      it('should parse an SVG <title> tag with children', () => {
+        expect(tokenizeAndHumanizeParts(`<svg:title><f>test</f></svg:title>`)).toEqual([
+          [lex.TokenType.TAG_OPEN_START, 'svg', 'title'],
+          [lex.TokenType.TAG_OPEN_END],
+          [lex.TokenType.TAG_OPEN_START, '', 'f'],
+          [lex.TokenType.TAG_OPEN_END],
+          [lex.TokenType.TEXT, 'test'],
+          [lex.TokenType.TAG_CLOSE, '', 'f'],
+          [lex.TokenType.TAG_CLOSE, 'svg', 'title'],
+          [lex.TokenType.EOF],
+        ]);
+      });
+    });
+
     describe('expansion forms', () => {
       it('should parse an expansion form', () => {
         expect(
