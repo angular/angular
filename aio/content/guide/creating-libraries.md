@@ -1,13 +1,13 @@
-﻿# Creating libraries
+﻿# Creando librerías
 
-This page provides a conceptual overview of how you can create and publish new libraries to extend Angular functionality.
+Está pagina provee una vista conceptual de como puedes crear y publicar nuevas librerías para extender las funcionalidades de Angular.
 
-If you find that you need to solve the same problem in more than one app (or want to share your solution with other developers), you have a candidate for a library.
-A simple example might be a button that sends users to your company website, that would be included in all apps that your company builds.
+Si necesitas resolver el mismo problema en mas de una aplicación (o quiere compartir tu solución con otros desarrolladores), tienes un candidato para una librería.
+Un ejemplo simple puede ser un botón que envía a los usuarios hacia el sitio web de tu empresa, que sería incluido en todas las aplicaciones que tu empresa crea.
 
-## Getting started
+## Empezando
 
-Use the Angular CLI to generate a new library skeleton in a new workspace with the following commands.
+Usa el Angular CLI para generar un nuevo esqueleto de librería, en nuevo espacio de trabajo con los siguiente comandos.
 
 <code-example language="bash">
  ng new my-workspace --create-application=false
@@ -15,18 +15,17 @@ Use the Angular CLI to generate a new library skeleton in a new workspace with t
  ng generate library my-lib
 </code-example>
 
-The `ng generate` command creates the `projects/my-lib` folder in your workspace, which contains a component and a service inside an NgModule.
+El comando `ng generate` crea la carpeta `projects/my-lib` en el espacio de trabajo, que contiene un componente y un servicio dentro de un NgModule.
 
 <div class="alert is-helpful">
 
-     For more details on how a library project is structured, refer to the [Library project files](guide/file-structure#library-project-files) section of the [Project File Structure guide](guide/file-structure).
+     Para más detalles sobre como una librería es estructurada, refiérase a los [Archivos de Librería](guide/file-structure#library-project-files) en la sección de [Guía de estructura de archivos](guide/file-structure).
 
-     You can use the monorepo model to use the same workspace for multiple projects.
-     See [Setting up for a multi-project workspace](guide/file-structure#multiple-projects).
+     Puedes usar un modelo de monorepo para usar el mismo espacio de trabajo con multiples proyectos. Véase [Configuración para espacio de trabajo multiproyecto](guide/file-structure#multiple-projects).
 
 </div>
 
-When you generate a new library, the workspace configuration file, `angular.json`, is updated with a project of type 'library'.
+Cuando se genera una nueva librería, el archivo de configuración del espacio de trabajo, `angular.json`, es actualizado con un proyecto de tipo 'library'.
 
 <code-example format="json">
 "projects": {
@@ -42,7 +41,7 @@ When you generate a new library, the workspace configuration file, `angular.json
         ...
 </code-example>
 
-You can build, test, and lint the project with CLI commands:
+Puedes crear, probar y comprobar con los comandos de CLI:
 
 <code-example language="bash">
  ng build my-lib
@@ -50,75 +49,78 @@ You can build, test, and lint the project with CLI commands:
  ng lint my-lib
 </code-example>
 
-Notice that the configured builder for the project is different from the default builder for app projects.
-This builder, among other things, ensures that the library is always built with the [AOT compiler](guide/aot-compiler), without the need to specify the `--prod` flag.
+Puedes notar que el constructor configurado para el proyecto es diferente que el constructor por defecto para proyectos.
+El constructor, entre otras cosas, asegura que la librería siempre este construida con el [compilador AOT](guide/aot-compiler), sin la necesidad de especificar la bandera `--prod`.
 
-To make library code reusable you must define a public API for it. This "user layer" defines what is available to consumers of your library. A user of your library should be able to access public functionality (such as NgModules, service providers and general utility functions) through a single import path.
+Para hacer el código de la librería reusable debes definir una API pública para ella. Esta "capa de usuario" define que esta disponible para los consumidores de tu librería. Un usuario de tu librería debería ser capaz de acceder a la funcionalidad publica (como NgModules, servicios, proveedores y en general funciones de utilidad) mediante una sola ruta.
 
-The public API for your library is maintained in the `public-api.ts` file in your library folder.
-Anything exported from this file is made public when your library is imported into an application.
-Use an NgModule to expose services and components.
+La API pública para tu librería es mantenida en el archivo `public-api.ts` en tu carpeta de librería.
+Cualquier cosa exportada desde este archivo se hace publica cuando tu librería es importada dentro de una aplicación.
+Usa un NgModule para exponer los servicios y componentes.
 
-Your library should supply documentation (typically a README file) for installation and maintenance.
+Tu libería debería suministrar documentatión (típicamente en el archivo README) para la instalación y mantenimiento.
 
-## Refactoring parts of an app into a library
+## Refactorizando partes de una app dentro de un librería
 
-To make your solution reusable, you need to adjust it so that it does not depend on app-specific code.
-Here are some things to consider in migrating application functionality to a library.
+Para hacer tu solución reusable, necesitas ajustarla para que no dependa del código específico de la aplicación.
+Aquí algunas cosas para considerar al migrar la funcionalidad de la aplicación a una librería.
 
-* Declarations such as components and pipes should be designed as stateless, meaning they don’t rely on or alter external variables. If you do rely on state, you need to evaluate every case and decide whether it is application state or state that the library would manage.
+* Declaraciones tales como componentes y pipes deberían ser diseñados como 'stateless' (sin estado), lo que significa que no dependen ni alteran variables externas. Si tu dependes del estado, necesitas evaluar cada caso y decidir el estado de la aplicación o el estado que la aplicación administraría.
 
-* Any observables that the components subscribe to internally should be cleaned up and disposed of during the lifecycle of those components.
+* Cualquier observable al cual los componentes se suscriban internamente deberían ser limpiados y desechados durante el ciclo de vida de esos componentes.
 
-* Components should expose their interactions through inputs for providing context, and outputs for communicating events to other components.
+* Los componentes deberían exponer sus interacciones a través de 'inputs' para proporcionar contexto y 'outputs' para comunicar los eventos hacia otros componentes.
 
-* Check all internal dependencies.
-   * For custom classes or interfaces used in components or service, check whether they depend on additional classes or interfaces that also need to be migrated.
-   * Similarly, if your library code depends on a service, that service needs to be migrated.
-   * If your library code or its templates depend on other libraries (such as Angular Material, for instance), you must configure your library with those dependencies.
+* Verifique todas las dependencias internas.
+   * Para clases personalizadas o interfaces usadas en componentes o servicios, verifique si dependen en clases adicionales o interfaces que también necesiten ser migradas.
+   * Del mismo modo, si tu código de librería depende de un servicio, este servicio necesita ser migrado.
+   * Si tu código de librería o sus plantillas dependen de otras librerías (como Angular Material), debes configurar tu librería con esas dependencias.
 
-* Consider how you provide services to client applications.
+* Considere como proporcionar servicios a las aplicaciones cliente.
 
-   * Services should declare their own providers (rather than declaring providers in the NgModule or a component), so that they are *tree-shakable*. This allows the compiler to leave the service out of the bundle if it never gets injected into the application that imports the library. For more about this, see [Tree-shakable providers](guide/dependency-injection-providers#tree-shakable-providers).
-
-   * If you register global service providers or share providers across multiple NgModules, use the [`forRoot()` and `forChild()` design patterns](guide/singleton-services) provided by the [RouterModule](api/router/RouterModule).
-
-   * If your library provides optional services that might not be used by all client applications, support proper tree-shaking for that case by using the [lightweight token design pattern](guide/lightweight-injection-tokens).
+   * Los servicios deberían declarar sus propios proveedores (en lugar de declarar los proveedores en el NgModule o en un componente). Esto le permite al compilador dejar los servicios fuera del 'bundle' si este nunca fue inyectado dentro de la aplicación que importa la librería, véase [proveedores Tree-shakable](guide/dependency-injection-providers#tree-shakable-providers)
+   * Si registras proveedores globales o compartes proveedores a través de múltiples NgModules, usa el [`forRoot()` y `forChild()` como patrones de diseño](guide/singleton-services) proporcionados por el [RouterModule](api/router/RouterModule).
+   * Si tu librería proporciona servicios opcionales que podrían no ser usados por todos las aplicaciones cliente, soporte apropiadamente el 'tree-shaking' para esos casos usando el [patrón de diseño de token ligero](guide/lightweight-injection-tokens).
 
 {@a integrating-with-the-cli}
 
-## Integrating with the CLI using code-generation schematics
+## Integración con el CLI usando generación de código con los schematics.
 
-A library typically includes *reusable code* that defines components, services, and other Angular artifacts (pipes, directives, and so on) that you simply import into a project.
-A library is packaged into an npm package for publishing and sharing.
-This package can also include [schematics](guide/glossary#schematic) that provide instructions for generating or transforming code directly in your project, in the same way that the CLI creates a generic new component with `ng generate component`.
-A schematic that is packaged with a library can, for example, provide the Angular CLI with the information it needs to generate a component that configures and uses a particular feature, or set of features, defined in that library.
-One example of this is Angular Material's navigation schematic which configures the CDK's `BreakpointObserver` and uses it with Material's `MatSideNav` and `MatToolbar` components.
+Comúnmente una librería incluye *código reusable* que define componentes, servicios y otros Artefactos de Angular (pipes, directivas y etc.) que tu simplemente importas a un proyecto.
+Una librería es empaquetada dentro de un paquete npm para publicar y compartir.
 
-You can create and include the following kinds of schematics.
+Este paquete también puede incluir [schematics](guide/glossary#schematic) que proporciona instrucciones para generar o transformar código directamente un tu proyecto, de la misma forma que el CLI crea un nuevo componente genérico con `ng generate component`.
 
-* Include an installation schematic so that `ng add` can add your library to a project.
+Un 'schematic' empaquetado con una librería puede por ejemplo proporcionar al Angular CLI la información que necesita para generar un componente que configura y usa una particular característica o conjunto de características, definido en la librería.
 
-* Include generation schematics in your library so that `ng generate` can scaffold your defined artifacts (components, services, tests, and so on) in a project.
+Un ejemplo de esto es el 'schematic' de navegación de Angular Material el cual configura los CDK's `BreakpointObserver` y lo usa con los componentes `MatSideNav` y `MatToolbar` de Angular Material.
 
-* Include an update schematic so that `ng update` can update your library’s dependencies and provide migrations for breaking changes in new releases.
+Puedes crear e incluir los siguientes tipos de 'schematics'.
 
-What you include in your library depends on your task.
-For example, you could define a schematic to create a dropdown that is pre-populated with canned data to show how to add it to an app.
-If you want a dropdown that would contain different passed-in values each time, your library could define a schematic to create it with a given configuration. Developers could then use `ng generate` to configure an instance for their own app.
+* Incluye un 'schematic' de instalación para que con `ng add` puedas agregar tu libería a un proyecto.
 
-Suppose you want to read a configuration file and then generate a form based on that configuration.
-If that form will need additional customization by the developer who is using your library, it might work best as a schematic.
-However, if the forms will always be the same and not need much customization by developers, then you could create a dynamic component that takes the configuration and generates the form.
-In general, the more complex the customization, the more useful the schematic approach.
+* Incluye un 'schematic' de generación en tu librería para que con `ng generate` puedas hacer scaffolding de sus artefactos (componentes, servicios, pruebas y etc) en un proyecto.
 
-To learn more, see [Schematics Overview](guide/schematics) and [Schematics for Libraries](guide/schematics-for-libraries).
+* Incluye un 'schematic' de actualización para que con `ng update` puedas actualizar las dependencias de tu librería y proporcionar migraciones para cambios importantes en un nuevo release.
 
-## Publishing your library
+Lo que incluya tu librería depende de tu tarea.
+Por ejemplo, podrías definir un 'schematic' para crear un desplegable (dropdown) que esta pre-poblado con datos para mostrar como agregarlo a una aplicación.
+Si quieres un desplegable (dropdown) que contendrá valores diferentes cada vez, tu librería podría definir un 'schematic' para crearlo con una configuración dada. Los desarrolladores podrán entonces usar `ng generate` para configurar una instancia para sus propias aplicaciones.
 
-Use the Angular CLI and the npm package manager to build and publish your library as an npm package.
+Supón que quieres leer un archivo de configuración y entonces generar una formulario con base a la configuración.
+Si este formulario necesita personalización adicional por parte del desarrollador que esta usando tu librería, esto podría trabajar mejor como un 'schematic'.
+Sin embargo, si el formulario siempre será el mismo y no necesita de mucha personalización por parte de los desarrolladores, entonces podría crear un componente dinámico que tome la configuración y genere el formulario.
+En general, entre más compleja sea personalización, la más util será en enfoque de un 'schematic'.
 
-Before publishing a library to NPM, build it using the `--prod` flag which will use the older compiler and runtime known as View Engine instead of Ivy.
+Para aprender más, véase [Vista general de Schematics](guide/schematics) y [Schematics para librerías](guide/schematics-for-libraries).
+
+{@a publishing-your-library}
+
+## Publicando tu librería
+
+Usa el Angular CLI y el gestor de paquetes npm para construir y publicar tu librería como un paquete npm.
+
+Antes de publicar una librería a NPM, constrúyela usando la bandera `--prod` la cúal usará el compilador y tiempo de ejecución (runtime) más antiguos como 'View Engine' en vez de 'Ivy'.
 
 <code-example language="bash">
 ng build my-lib --prod
@@ -126,48 +128,50 @@ cd dist/my-lib
 npm publish
 </code-example>
 
-If you've never published a package in npm before, you must create a user account. Read more in [Publishing npm Packages](https://docs.npmjs.com/getting-started/publishing-npm-packages).
+Si nunca has publicado un paquete en npm antes, tu debes crear un cuenta. Lee más en [Publicando paquetes npm](https://docs.npmjs.com/getting-started/publishing-npm-packages).
 
 <div class="alert is-important">
 
-For now, it is not recommended to publish Ivy libraries to NPM because Ivy generated code is not backward compatible with View Engine, so apps using View Engine will not be able to consume them. Furthermore, the internal Ivy instructions are not yet stable, which can potentially break consumers using a different Angular version from the one used to build the library.
+Por ahora, no es recomendando publicar librerías con Ivy hacia NPM por que Ivy genera código que no es retrocompatible con 'View Engine', entonces las aplicaciones usando 'View Engine' no podrán consumirlas. Además, las instrucciones internas de IVY no son estables aun, lo cual puede romper potencialmente a los consumidores que usan una diferente versión de Angular a la que uso para construir la libería.
 
-When a published library is used in an Ivy app, the Angular CLI will automatically convert it to Ivy using a tool known as the Angular compatibility compiler (`ngcc`). Thus, publishing your libraries using the View Engine compiler ensures that they can be transparently consumed by both View Engine and Ivy apps.
+Cuando una librería publicada es usada en una aplicación con Ivy, el Angular CLI automáticamente la convertirá a Ivy usando una herramienta conocida como el compilador de compatibilidad Angular (`ngcc`). Por lo tanto, publicar tus librerías usado el compilador 'View Engine' garantiza que ellas puede ser consumidas de forma transparente por ambos motores 'View Engine' y 'Ivy'.
 
 </div>
 
 {@a lib-assets}
 
-## Managing assets in a library
+## Gestionando activos (assets) en una librería.
 
-Starting with version 9.x of the [ng-packagr](https://github.com/ng-packagr/ng-packagr/blob/master/README.md) tool, you can configure the tool to automatically copy assets into your library package as part of the build process.
-You can use this feature when your library needs to publish optional theming files, Sass mixins, or documentation (like a changelog).
+Desde la versión 9.x de la herramienta [ng-packagr](https://github.com/ng-packagr/ng-packagr/blob/master/README.md), puedes configurar la herramienta para que automáticamente copie los activos (assets) dentro de el paquete de librería como parte del proceso de construcción.
+Puedes usar esta característica cuando tu librería necesite publicar archivos de temas opcionales, funciones de Sass o documentación (como un registro de cambios 'changelog').
 
-* Learn how to [copy assets into your library as part of the build](https://github.com/ng-packagr/ng-packagr/blob/master/docs/copy-assets.md).
+* Aprende como [copiar activos (assets) dentro de tu librería como parte de la construcción](https://github.com/ng-packagr/ng-packagr/blob/master/docs/copy-assets.md).
 
-* Learn more about how to use the tool to [embed assets in CSS](https://github.com/ng-packagr/ng-packagr/blob/master/docs/embed-assets-css.md).
+* Aprende más acerca de como usar la herramienta para [incrustar activos (assets) de CSS](https://github.com/ng-packagr/ng-packagr/blob/master/docs/embed-assets-css.md).
 
 
-## Linked libraries
+## Vinculando librerías
 
-While working on a published library, you can use [npm link](https://docs.npmjs.com/cli/link) to avoid reinstalling the library on every build.
+Mientras trabajas en un librería publicada, puedes usar [npm link](https://docs.npmjs.com/cli/link) para evitar re instalar la librería en cada construcción.
 
-The library must be rebuilt on every change.
-When linking a library, make sure that the build step runs in watch mode, and that the library's `package.json` configuration points at the correct entry points.
-For example, `main` should point at a JavaScript file, not a TypeScript file.
+La librería debe ser reconstruida en cada cambio.
+Cuando vinculas una librería, asegurate que el paso de construir corra en modo vigía (watch mode) y que el `package.json` de la librería configure los puntos de entrada correctos.
+Por ejemplo, `main` debería apuntar a un archivo JavaScript, no a un archivo TypeScript.
 
-## Use TypeScript path mapping for peer dependencies
+## Utiliza el mapeo de rutas de TypeScript por las dependencias de pares.
 
-Angular libraries should list all `@angular/*` dependencies as peer dependencies.
-This ensures that when modules ask for Angular, they all get the exact same module.
-If a library lists `@angular/core` in `dependencies` instead of `peerDependencies`, it might get a different Angular module instead, which would cause your application to break.
+Las librerías de Angular deben enumerar todas las dependencias `@angular/*` como dependencias de pares.
+Esto garantiza que cuando los módulos solicitan Angular, todos ellos obtienen exactamente el mismo módulo.
+Si tu librería lista `@angular/core` en `dependencies` en vez de en `peerDependencies`, podría obtener un módulo Angular diferente, lo qué haría que tu aplicación se rompiera.
 
-While developing a library, you must install all peer dependencies through `devDependencies` to ensure that the library compiles properly.
-A linked library will then have its own set of Angular libraries that it uses for building, located in its `node_modules` folder.
-However, this can cause problems while building or running your application.
+Cuando desarrollas una librería, tu debes instalar todas las dependencias de pares mediante `devDependencies` para garantizar que la librería compile apropiadamente.
+Una librería vinculada tendrá su propio conjunto de librerías Angular que usa para construir, ubicados en su carpeta `node_modules`.
 
-To get around this problem you can use TypeScript path mapping to tell TypeScript that it should load some modules from a specific location.
-List all the peer dependencies that your library uses in the workspace TypeScript configuration file `./tsconfig.json`, and point them at the local copy in the app's `node_modules` folder.
+Sin embargo, esto puede causar problemas mientras construyes o corres tu aplicación.
+
+Para evitar este problema tu puedes usar el mapeo de rutas de TypeScript para indicarle a TypeScript que este debería cargar algunos módulos desde una ubicación especifica.
+
+Enumera todas las dependencias de pares que tu librería usa en el archivo de configuración `./tsconfig.json` del espacio de trabajo de TypeScript, y apúntalos a la copia local en la carpeta `node_modules` de la aplicación.
 
 ```
 {
@@ -183,47 +187,47 @@ List all the peer dependencies that your library uses in the workspace TypeScrip
 }
 ```
 
-This mapping ensures that your library always loads the local copies of the modules it needs.
+Este mapeador garantiza que tu librería siempre cargue las copias locales del módulo que necesita.
 
 
-## Using your own library in apps
+## Usando tu propia librería en aplicaciones.
 
-You don't have to publish your library to the npm package manager in order to use it in your own apps, but you do have to build it first.
+No tienes que publicar tu librería hacia el gestor de paquetes npm para usarla en tus propias aplicaciones, pero tienes que construirla primero.
 
-To use your own library in an app:
+Para usar tu propia librería en tu aplicación:
 
-* Build the library. You cannot use a library before it is built.
+* Construye la librería. No puedes usar una librería antes que se construya.
  <code-example language="bash">
  ng build my-lib
  </code-example>
 
-* In your apps, import from the library by name:
+* En tus aplicaciones, importa la librería por el nombre:
  ```
  import { myExport } from 'my-lib';
  ```
 
-### Building and rebuilding your library
+### Construyendo y re construyendo tu librería.
 
-The build step is important if you haven't published your library as an npm package and then installed the package back into your app from npm.
-For instance, if you clone your git repository and run `npm install`, your editor will show the `my-lib` imports as missing if you haven't yet built your library.
+El paso de construir es importante si no tienes publicada tu librería como un paquete npm y luego ha instalado el paquete de nuevo dentro tu aplicación desde npm.
+Por ejemplo, si clonas tu repositorio git y corres `npm install`, tu editor mostrará la importación de `my-lib` como perdida si no tienes aun construida tu librería.
 
 <div class="alert is-helpful">
 
-When you import something from a library in an Angular app, Angular looks for a mapping between the library name and a location on disk.
-When you install a library package, the mapping is in the `node_modules` folder. When you build your own library, it has to find the mapping in your `tsconfig` paths.
+Cuando importas algo desde una librería en una aplicación Angular, Angular busca un mapeo entre el nombre de librería y una ubicación en disco.
+Cuando instalas un paquete de librería, el mapeo esta en la carpeta `node_modules`. Cuando construyes tu propia librería, tiene que encontrar el mapeo en tus rutas de `tsconfig`.
 
-Generating a library with the Angular CLI automatically adds its path to the `tsconfig` file.
-The Angular CLI uses the `tsconfig` paths to tell the build system where to find the library.
+Generando una librería con el Angular CLI automáticamente agrega su ruta en el archivo `tsconfig`.
+El Angular CLI usa las rutas `tsconfig` para indicarle al sistema construido donde encontrar la librería.
 
 </div>
 
-If you find that changes to your library are not reflected in your app, your app is probably using an old build of the library.
+Si descubres que los cambios en tu librería no son reflejados en tu aplicación, tu aplicación probablemente esta usando una construcción antigua de la librería.
 
-You can rebuild your library whenever you make changes to it, but this extra step takes time.
-*Incremental builds* functionality improves the library-development experience.
-Every time a file is changed a partial build is performed that emits the amended files.
+Puedes re construir tu librería cada vez que hagas cambios en esta, pero este paso extra toma tiempo.
+Las *construcciones incrementales* funcionalmente mejoran la experiencia de desarrollo de librerías.
+Cada vez que un archivo es cambiando una construcción parcial es realizada y esta emite los archivos modificados.
 
-Incremental builds can be run as a background process in your dev environment. To take advantage of this feature add the `--watch` flag to the build command:
+Las *Construcciones incrementales* puede ser ejecutadas como un proceso en segundo plano en tu entorno de desarrollo. Para aprovechar esta característica agrega la bandera `--watch` al comando de construcción:
 
 <code-example language="bash">
 ng build my-lib --watch
@@ -231,15 +235,15 @@ ng build my-lib --watch
 
 <div class="alert is-important">
 
-The CLI `build` command uses a different builder and invokes a different build tool for libraries than it does for applications.
+El comando `build` del CLI utiliza un constructor diferente e invoca una herramienta de construcción diferente para las librerías que para las aplicaciones.
 
-* The build system for apps, `@angular-devkit/build-angular`, is based on `webpack`, and is included in all new Angular CLI projects.
-* The build system for libraries is based on `ng-packagr`. It is only added to your dependencies when you add a library using `ng generate library my-lib`.
+* El sistema de construcción para aplicaciones, `@angular-devkit/build-angular`, esta basado en `webpack`, y esta incluida en todos los nuevos proyectos de Angular CLI.
+* El sistema de construcción esta basado en `ng-packagr`. Este es solo agregado en tus dependencias cuando agregas una librería usando `ng generate library my-lib`.
 
-The two build systems support different things, and even where they support the same things, they do those things differently.
-This means that the TypeScript source can result in different JavaScript code in a built library than it would in a built application.
+Los dos sistemas de construcción soportan diferentes cosas e incluso si ellos soportan las mismas cosas, ellos hacen esas cosas de forma diferente.
+Esto quiere decir que la fuente de TypeScript puede generar en código JavaScript diferente en una librería construida que en una aplicación construida.
 
-For this reason, an app that depends on a library should only use TypeScript path mappings that point to the *built library*.
-TypeScript path mappings should *not* point to the library source `.ts` files.
+Por esta razón, una aplicación que depende de una librería debería solo usar el mapeo de rutas de TypeScript que apunte a la *librería construida*.
+El mapeo de rutas de TypeScript no debería apuntar hacia los archivos `.ts` fuente de la librería.
 
 </div>
