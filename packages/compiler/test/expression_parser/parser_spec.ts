@@ -314,6 +314,10 @@ describe('parser', () => {
     it('should report when encountering interpolation', () => {
       expectActionError('{{a()}}', 'Got interpolation ({{}}) where expression was expected');
     });
+
+    it('should not report interpolation inside a string', () => {
+      expect(parseAction('"{{a()}}"').errors).toEqual([]);
+    });
   });
 
   describe('parse spans', () => {
@@ -484,6 +488,10 @@ describe('parser', () => {
 
     it('should report when encountering interpolation', () => {
       expectBindingError('{{a.b}}', 'Got interpolation ({{}}) where expression was expected');
+    });
+
+    it('should not report interpolation inside a string', () => {
+      expect(parseBinding('"{{exp}}"').errors).toEqual([]);
     });
 
     it('should parse conditional expression', () => {
@@ -950,6 +958,10 @@ describe('parser', () => {
       expectError(
           validate(parseSimpleBinding('{{exp}}')),
           'Got interpolation ({{}}) where expression was expected');
+    });
+
+    it('should not report interpolation inside a string', () => {
+      expect(parseSimpleBinding('"{{exp}}"').errors).toEqual([]);
     });
 
     it('should report when encountering field write', () => {

@@ -623,4 +623,15 @@ describe('property bindings', () => {
          fixture.detectChanges();
        }).not.toThrow();
      });
+
+  it('should allow quoted binding syntax inside property binding', () => {
+    @Component({template: `<span [id]="'{{ id }}'"></span>`})
+    class Comp {
+    }
+
+    TestBed.configureTestingModule({declarations: [Comp]});
+    const fixture = TestBed.createComponent(Comp);
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('span').id).toBe('{{ id }}');
+  });
 });
