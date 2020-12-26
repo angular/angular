@@ -8,7 +8,6 @@
 
 import * as chars from '../chars';
 import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from '../ml_parser/interpolation_config';
-import {escapeRegExp} from '../util';
 
 import {AbsoluteSourceSpan, AST, AstVisitor, ASTWithSource, Binary, BindingPipe, Chain, Conditional, EmptyExpr, ExpressionBinding, FunctionCall, ImplicitReceiver, Interpolation, KeyedRead, KeyedWrite, LiteralArray, LiteralMap, LiteralMapKey, LiteralPrimitive, MethodCall, NonNullAssert, ParserError, ParseSpan, PrefixNot, PropertyRead, PropertyWrite, Quote, RecursiveAstVisitor, SafeMethodCall, SafePropertyRead, TemplateBinding, TemplateBindingIdentifier, ThisReceiver, Unary, VariableBinding} from './ast';
 import {EOF, isIdentifier, isQuote, Lexer, Token, TokenType} from './lexer';
@@ -28,20 +27,6 @@ export class TemplateBindingParseResult {
   constructor(
       public templateBindings: TemplateBinding[], public warnings: string[],
       public errors: ParserError[]) {}
-}
-
-const defaultInterpolateRegExp = _createInterpolateRegExp(DEFAULT_INTERPOLATION_CONFIG);
-function _getInterpolateRegExp(config: InterpolationConfig): RegExp {
-  if (config === DEFAULT_INTERPOLATION_CONFIG) {
-    return defaultInterpolateRegExp;
-  } else {
-    return _createInterpolateRegExp(config);
-  }
-}
-
-function _createInterpolateRegExp(config: InterpolationConfig): RegExp {
-  const pattern = escapeRegExp(config.start) + '([\\s\\S]*?)' + escapeRegExp(config.end);
-  return new RegExp(pattern, 'g');
 }
 
 export class Parser {
@@ -247,7 +232,7 @@ export class Parser {
         // parse from starting {{ to ending }} while ignoring content inside quotes.
         const fullStart = i;
         const exprStart = fullStart + interpStart.length;
-        const exprEnd = this._getExpressiondEndIndex(input, interpEnd, exprStart);
+        const exprEnd = this._getInterpolationEndIndex(input, interpEnd, exprStart);
         if (exprEnd === -1) {
           // Could not find the end of the interpolation; do not parse an expression.
           // Instead we should extend the content on the last raw string.
@@ -315,59 +300,71 @@ export class Parser {
     return null;
   }
 
-  private _checkNoInterpolation(
-      input: string, location: string, interpolationConfig: InterpolationConfig): void {
-    const regexp = _getInterpolateRegExp(interpolationConfig);
-    const parts = input.split(regexp);
-    if (parts.length > 1) {
+  private _checkNoInterpolation(input: string, location: string, {start, end}: InterpolationConfig):
+      void {
+    let startIndex = -1;
+    let endIndex = -1;
+
+    for (const charIndex of this._forEachUnquotedChar(input, 0)) {
+      if (startIndex === -1) {
+        if (input.startsWith(start)) {
+          startIndex = charIndex;
+        }
+      } else {
+        endIndex = this._getInterpolationEndIndex(input, end, charIndex);
+        if (endIndex > -1) {
+          break;
+        }
+      }
+    }
+
+    if (startIndex > -1 && endIndex > -1) {
       this._reportError(
-          `Got interpolation (${interpolationConfig.start}${
-              interpolationConfig.end}) where expression was expected`,
-          input,
-          `at column ${this._findInterpolationErrorColumn(parts, 1, interpolationConfig)} in`,
-          location);
+          `Got interpolation (${start}${end}) where expression was expected`, input,
+          `at column ${startIndex} in`, location);
     }
-  }
-
-  private _findInterpolationErrorColumn(
-      parts: string[], partInErrIdx: number, interpolationConfig: InterpolationConfig): number {
-    let errLocation = '';
-    for (let j = 0; j < partInErrIdx; j++) {
-      errLocation += j % 2 === 0 ?
-          parts[j] :
-          `${interpolationConfig.start}${parts[j]}${interpolationConfig.end}`;
-    }
-
-    return errLocation.length;
   }
 
   /**
    * Finds the index of the end of an interpolation expression
    * while ignoring comments and quoted content.
    */
-  private _getExpressiondEndIndex(input: string, expressionEnd: string, start: number): number {
+  private _getInterpolationEndIndex(input: string, expressionEnd: string, start: number): number {
+    for (const charIndex of this._forEachUnquotedChar(input, start)) {
+      if (input.startsWith(expressionEnd, charIndex)) {
+        return charIndex;
+      }
+
+      // Nothing else in the expression matters after we've
+      // hit a comment so look directly for the end token.
+      if (input.startsWith('//', charIndex)) {
+        return input.indexOf(expressionEnd, charIndex);
+      }
+    }
+
+    return -1;
+  }
+
+  /**
+   * Generator used to iterate over the character indexes of a string that are outside of quotes.
+   * @param input String to loop through.
+   * @param start Index within the string at which to start.
+   */
+  private * _forEachUnquotedChar(input: string, start: number) {
     let currentQuote: string|null = null;
     let escapeCount = 0;
     for (let i = start; i < input.length; i++) {
       const char = input[i];
-      // Skip the characters inside quotes. Note that we only care about the
-      // outer-most quotes matching up and we need to account for escape characters.
+      // Skip the characters inside quotes. Note that we only care about the outer-most
+      // quotes matching up and we need to account for escape characters.
       if (isQuote(input.charCodeAt(i)) && (currentQuote === null || currentQuote === char) &&
           escapeCount % 2 === 0) {
         currentQuote = currentQuote === null ? char : null;
       } else if (currentQuote === null) {
-        if (input.startsWith(expressionEnd, i)) {
-          return i;
-        }
-        // Nothing else in the expression matters after we've
-        // hit a comment so look directly for the end token.
-        if (input.startsWith('//', i)) {
-          return input.indexOf(expressionEnd, i);
-        }
+        yield i;
       }
       escapeCount = char === '\\' ? escapeCount + 1 : 0;
     }
-    return -1;
   }
 }
 
