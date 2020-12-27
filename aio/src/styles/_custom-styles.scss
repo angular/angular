@@ -22,6 +22,14 @@
     $theme-hover-background-color: mat-color($theme-background, hover);
     $theme-selected-button-color: mat-color($theme-background, selected-button);
 
+    $angular-logo-lighter-color: #dd0031;
+    $angular-logo-darker-color: #c3002f;
+    $syntax-default-color: #ffffff;
+    $syntax-keyword-color: #ff7b72;
+    $syntax-comment-color: #8b949e;
+    $syntax-string-color: #a0e99d;
+    $syntax-type-color: #79c0ff;
+
     background-color: $theme-background-color;
     color: $theme-foreground-color;
 
@@ -79,28 +87,47 @@
 
     // src/styles/2-modules/_toc.scss
 
-    .toc-inner ul.toc-list li {
-        &.active a {
-            color: $theme-accent-color;
+    .toc-inner {
+        ul.toc-list li {
+            &.active a {
+                color: $theme-accent-color;
 
-            &:before {
-                background-color: $theme-accent-color;
+                &:before {
+                    background-color: $theme-accent-color;
+                }
+            }
+
+            &:hover a {
+                color: $theme-accent-color;
+            }
+
+            a {
+                color: $theme-foreground-color;
+            }
+
+            &.active * {
+                color: $theme-accent-color;
+
+                &:before {
+                    background: $theme-accent-color;
+                }
             }
         }
 
-        &:hover a {
-            color: $theme-accent-color;
+        .toc-heading.secondary:hover {
+            color: $theme-accent-lighter-color;
         }
 
-        a {
-            color: $theme-foreground-color;
-        }
-
-        &.active * {
+        button.toc-more-items, button.toc-heading {
             color: $theme-accent-color;
 
-            &:before {
-                background: $theme-accent-color;
+            &.embedded:focus {
+                color: $theme-accent-color;
+                background-color: transparent;
+            }
+
+            &:hover {
+                color: $theme-accent-lighter-color;
             }
         }
     }
@@ -246,11 +273,11 @@
     // src/styles/1-layouts/_marketing-layout.scss
 
     .button.hero-cta {
-        background-color: #dd0031;
+        background-color: $angular-logo-darker-color;
         color: $theme-foreground-color;
 
         &:hover {
-            background-color: #c3002f;
+            background-color: $angular-logo-lighter-color;
             color: $theme-foreground-color;
         }
     }
@@ -400,45 +427,60 @@
     }
 
     .kwd, .tag {
-        color: #ff7b72;
+        color: $syntax-keyword-color;
     }
 
     .pln {
-        color: #fff;
+        color: $syntax-default-color;
     }
 
     .pun, .opn, .clo {
-        color: #8b949e;
+        color: $syntax-comment-color;
     }
 
     .typ, .atn {
-        color: #79c0ff;
+        color: $syntax-type-color;
     }
 
     .lit {
-        color: #fff;
+        color: $syntax-keyword-color;
     }
 
     .str, .atv {
-        color: #a0e99d;
+        color: $syntax-string-color;
     }
 
     .com {
-        color: #8b949e;
+        color: $syntax-comment-color;
     }
 
     // src/styles/2-modules/_api-pages.scss
 
-    .api-body table th {
-        font-weight: normal;
-    }
+    .api-body table {
+        th {
+            font-weight: normal;
+        }
 
-    .github-links {
-        .material-icons {
-            &:hover {
-                background-color: $theme-hover-background-color;
+        &.method-table, &.option-table, &.list-table {
+            .with-github-links .github-links {
+                .material-icons {
+                    &:hover {
+                        background-color: $theme-hover-background-color;
+                    }
+                }
+
+                a {
+                    color: $theme-accent-color;
+                    .material-icons:hover {
+                        color: $theme-accent-lighter-color;
+                    }
+                }
             }
         }
+    }
+
+    .github-links .material-icons:hover {
+        background-color: $theme-hover-background-color;
     }
 
     // src/styles/2-modules/_filetree.scss
