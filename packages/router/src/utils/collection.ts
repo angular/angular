@@ -8,9 +8,8 @@
 
 import {ɵisObservable as isObservable, ɵisPromise as isPromise} from '@angular/core';
 import {from, Observable, of} from 'rxjs';
-import {concatAll, last as lastValue, map} from 'rxjs/operators';
 
-import {Params, PRIMARY_OUTLET} from '../shared';
+import {Params} from '../shared';
 
 export function shallowEqualArrays(a: any[], b: any[]): boolean {
   if (a.length !== b.length) return false;

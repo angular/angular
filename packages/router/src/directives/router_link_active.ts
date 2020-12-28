@@ -105,12 +105,10 @@ export class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit 
   /** @nodoc */
   ngAfterContentInit(): void {
     // `of(null)` is used to force subscribe body to execute once immediately (like `startWith`).
-    from([this.links.changes, this.linksWithHrefs.changes, of(null)])
-        .pipe(mergeAll())
-        .subscribe(_ => {
-          this.update();
-          this.subscribeToEachLinkOnChanges();
-        });
+    of(this.links.changes, this.linksWithHrefs.changes, of(null)).pipe(mergeAll()).subscribe(_ => {
+      this.update();
+      this.subscribeToEachLinkOnChanges();
+    });
   }
 
   private subscribeToEachLinkOnChanges() {

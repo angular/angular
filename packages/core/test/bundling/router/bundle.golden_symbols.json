@@ -1239,12 +1239,6 @@
     "name": "findPath"
   },
   {
-    "name": "fireActivationStart"
-  },
-  {
-    "name": "fireChildActivationStart"
-  },
-  {
     "name": "first"
   },
   {
@@ -1831,12 +1825,6 @@
   },
   {
     "name": "routerNgProbeToken"
-  },
-  {
-    "name": "runCanActivate"
-  },
-  {
-    "name": "runCanActivateChild"
   },
   {
     "name": "rxSubscriber"
