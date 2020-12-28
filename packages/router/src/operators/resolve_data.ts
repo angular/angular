@@ -19,25 +19,23 @@ import {getToken} from '../utils/preactivation';
 export function resolveData(
     paramsInheritanceStrategy: 'emptyOnly'|'always',
     moduleInjector: Injector): MonoTypeOperatorFunction<NavigationTransition> {
-  return function(source: Observable<NavigationTransition>) {
-    return source.pipe(mergeMap(t => {
-      const {targetSnapshot, guards: {canActivateChecks}} = t;
+  return mergeMap(t => {
+    const {targetSnapshot, guards: {canActivateChecks}} = t;
 
-      if (!canActivateChecks.length) {
-        return of(t);
-      }
-      let canActivateChecksResolved = 0;
-      return from(canActivateChecks)
-          .pipe(
-              concatMap(
-                  check => runResolve(
-                      check.route, targetSnapshot!, paramsInheritanceStrategy, moduleInjector)),
-              tap(() => canActivateChecksResolved++),
-              takeLast(1),
-              mergeMap(_ => canActivateChecksResolved === canActivateChecks.length ? of(t) : EMPTY),
-          );
-    }));
-  };
+    if (!canActivateChecks.length) {
+      return of(t);
+    }
+    let canActivateChecksResolved = 0;
+    return from(canActivateChecks)
+        .pipe(
+            concatMap(
+                check => runResolve(
+                    check.route, targetSnapshot!, paramsInheritanceStrategy, moduleInjector)),
+            tap(() => canActivateChecksResolved++),
+            takeLast(1),
+            mergeMap(_ => canActivateChecksResolved === canActivateChecks.length ? of(t) : EMPTY),
+        );
+  });
 }
 
 function runResolve(

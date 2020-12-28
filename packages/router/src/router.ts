@@ -573,12 +573,11 @@ export class Router {
                                if (transition !== this.transitions.getValue()) {
                                  return EMPTY;
                                }
-                               return [t];
-                             }),
 
-                             // This delay is required to match old behavior that forced navigation
-                             // to always be async
-                             switchMap(t => Promise.resolve(t)),
+                               // This delay is required to match old behavior that forced
+                               // navigation to always be async
+                               return Promise.resolve(t);
+                             }),
 
                              // ApplyRedirects
                              applyRedirects(
@@ -609,10 +608,8 @@ export class Router {
                                  }
                                  this.browserUrlTree = t.urlAfterRedirects;
                                }
-                             }),
 
-                             // Fire RoutesRecognized
-                             tap(t => {
+                               // Fire RoutesRecognized
                                const routesRecognized = new RoutesRecognized(
                                    t.id, this.serializeUrl(t.extractedUrl),
                                    this.serializeUrl(t.urlAfterRedirects), t.targetSnapshot!);
@@ -692,9 +689,7 @@ export class Router {
                          error.url = t.guardsResult;
                          throw error;
                        }
-                     }),
 
-                     tap(t => {
                        const guardsEnd = new GuardsCheckEnd(
                            t.id, this.serializeUrl(t.extractedUrl),
                            this.serializeUrl(t.urlAfterRedirects), t.targetSnapshot!,
@@ -875,7 +870,7 @@ export class Router {
                                replaceUrl: this.urlUpdateStrategy === 'eager'
                              };
 
-                             return this.scheduleNavigation(
+                             this.scheduleNavigation(
                                  mergedTree, 'imperative', null, extras,
                                  {resolve: t.resolve, reject: t.reject, promise: t.promise});
                            }, 0);
