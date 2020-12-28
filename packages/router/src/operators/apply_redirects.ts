@@ -7,7 +7,7 @@
  */
 
 import {Injector} from '@angular/core';
-import {MonoTypeOperatorFunction, Observable} from 'rxjs';
+import {MonoTypeOperatorFunction} from 'rxjs';
 import {map, switchMap} from 'rxjs/operators';
 
 import {applyRedirects as applyRedirectsFn} from '../apply_redirects';
@@ -19,9 +19,7 @@ import {UrlSerializer} from '../url_tree';
 export function applyRedirects(
     moduleInjector: Injector, configLoader: RouterConfigLoader, urlSerializer: UrlSerializer,
     config: Routes): MonoTypeOperatorFunction<NavigationTransition> {
-  return function(source: Observable<NavigationTransition>) {
-    return source.pipe(switchMap(
-        t => applyRedirectsFn(moduleInjector, configLoader, urlSerializer, t.extractedUrl, config)
-                 .pipe(map(urlAfterRedirects => ({...t, urlAfterRedirects})))));
-  };
+  return switchMap(
+      t => applyRedirectsFn(moduleInjector, configLoader, urlSerializer, t.extractedUrl, config)
+               .pipe(map(urlAfterRedirects => ({...t, urlAfterRedirects}))));
 }

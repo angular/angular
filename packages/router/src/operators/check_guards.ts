@@ -7,8 +7,8 @@
  */
 
 import {Injector} from '@angular/core';
-import {defer, from, MonoTypeOperatorFunction, Observable, of} from 'rxjs';
-import {concatAll, concatMap, first, map, mergeMap} from 'rxjs/operators';
+import {concat, defer, from, MonoTypeOperatorFunction, Observable, of} from 'rxjs';
+import {concatMap, first, map, mergeMap} from 'rxjs/operators';
 
 import {ActivationStart, ChildActivationStart, Event} from '../events';
 import {CanActivateChildFn, CanActivateFn, CanDeactivateFn} from '../interfaces';
@@ -23,25 +23,23 @@ import {prioritizedGuardValue} from './prioritized_guard_value';
 
 export function checkGuards(moduleInjector: Injector, forwardEvent?: (evt: Event) => void):
     MonoTypeOperatorFunction<NavigationTransition> {
-  return function(source: Observable<NavigationTransition>) {
-    return source.pipe(mergeMap(t => {
-      const {targetSnapshot, currentSnapshot, guards: {canActivateChecks, canDeactivateChecks}} = t;
-      if (canDeactivateChecks.length === 0 && canActivateChecks.length === 0) {
-        return of({...t, guardsResult: true});
-      }
+  return mergeMap(t => {
+    const {targetSnapshot, currentSnapshot, guards: {canActivateChecks, canDeactivateChecks}} = t;
+    if (canDeactivateChecks.length === 0 && canActivateChecks.length === 0) {
+      return of({...t, guardsResult: true});
+    }
 
-      return runCanDeactivateChecks(
-                 canDeactivateChecks, targetSnapshot!, currentSnapshot, moduleInjector)
-          .pipe(
-              mergeMap(canDeactivate => {
-                return canDeactivate && isBoolean(canDeactivate) ?
-                    runCanActivateChecks(
-                        targetSnapshot!, canActivateChecks, moduleInjector, forwardEvent) :
-                    of(canDeactivate);
-              }),
-              map(guardsResult => ({...t, guardsResult})));
-    }));
-  };
+    return runCanDeactivateChecks(
+               canDeactivateChecks, targetSnapshot!, currentSnapshot, moduleInjector)
+        .pipe(
+            mergeMap(canDeactivate => {
+              return canDeactivate && isBoolean(canDeactivate) ?
+                  runCanActivateChecks(
+                      targetSnapshot!, canActivateChecks, moduleInjector, forwardEvent) :
+                  of(canDeactivate);
+            }),
+            map(guardsResult => ({...t, guardsResult})));
+  });
 }
 
 function runCanDeactivateChecks(
@@ -61,15 +59,11 @@ function runCanActivateChecks(
     forwardEvent?: (evt: Event) => void) {
   return from(checks).pipe(
       concatMap((check: CanActivate) => {
-        return from([
-                 fireChildActivationStart(check.route.parent, forwardEvent),
-                 fireActivationStart(check.route, forwardEvent),
-                 runCanActivateChild(futureSnapshot, check.path, moduleInjector),
-                 runCanActivate(futureSnapshot, check.route, moduleInjector)
-               ])
-            .pipe(concatAll(), first(result => {
-                    return result !== true;
-                  }, true as boolean | UrlTree));
+        return concat(
+            fireChildActivationStart(check.route.parent, forwardEvent),
+            fireActivationStart(check.route, forwardEvent),
+            runCanActivateChild(futureSnapshot, check.path, moduleInjector),
+            runCanActivate(futureSnapshot, check.route, moduleInjector));
       }),
       first(result => {
         return result !== true;
