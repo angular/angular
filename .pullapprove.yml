@@ -1221,6 +1221,23 @@ groups:
         - IgorMinar
         - mgechev
 
+  # =========================================================
+  #  Docs: All
+  #
+  # Ensures the `comp: docs` label is applied to aio doc changes
+  # =========================================================
+  docs-all:
+    type: optional
+    conditions:
+      - >
+        contains_any_globs(files, [
+          'aio/content/guide/**',
+          'aio/content/examples/**'
+          ])
+    labels:
+      pending: "comp: docs"
+      approved: "comp: docs"
+      rejected: "comp: docs"
 
   # =========================================================
   #  Docs-infra
