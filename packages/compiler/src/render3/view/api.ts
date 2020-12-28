@@ -122,7 +122,7 @@ export interface R3DirectiveMetadata {
 /**
  * Specifies how a list of declaration type references should be emitted into the generated code.
  */
-export const enum DeclarationEmitMode {
+export const enum DeclarationListEmitMode {
   /**
    * The list of declarations is emitted into the generated code as is.
    *
@@ -198,7 +198,7 @@ export interface R3ComponentMetadata extends R3DirectiveMetadata {
   /**
    * Specifies how the 'directives' and/or `pipes` array, if generated, need to be emitted.
    */
-  declarationEmitMode: DeclarationEmitMode;
+  declarationListEmitMode: DeclarationListEmitMode;
 
   /**
    * A collection of styling data that will be applied and scoped to the component.

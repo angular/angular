@@ -21,7 +21,7 @@ import {R3JitReflector} from './render3/r3_jit';
 import {compileInjector, compileNgModule, R3InjectorMetadata, R3NgModuleMetadata} from './render3/r3_module_compiler';
 import {compilePipeFromMetadata, R3PipeMetadata} from './render3/r3_pipe_compiler';
 import {R3Reference} from './render3/util';
-import {DeclarationEmitMode, R3ComponentMetadata, R3DirectiveMetadata, R3HostMetadata, R3QueryMetadata, R3UsedDirectiveMetadata} from './render3/view/api';
+import {DeclarationListEmitMode, R3ComponentMetadata, R3DirectiveMetadata, R3HostMetadata, R3QueryMetadata, R3UsedDirectiveMetadata} from './render3/view/api';
 import {compileComponentFromMetadata, compileDirectiveFromMetadata, ParsedHostBindings, parseHostBindings, verifyHostBindings} from './render3/view/compiler';
 import {makeBindingParser, parseTemplate} from './render3/view/template';
 import {ResourceLoader} from './resource_loader';
@@ -143,7 +143,7 @@ export class CompilerFacadeImpl implements CompilerFacade {
       ...convertDirectiveFacadeToMetadata(facade),
       selector: facade.selector || this.elementSchemaRegistry.getDefaultComponentElementName(),
       template,
-      declarationEmitMode: DeclarationEmitMode.Direct,
+      declarationListEmitMode: DeclarationListEmitMode.Direct,
       styles: [...facade.styles, ...template.styles],
       encapsulation: facade.encapsulation as any,
       interpolation,
@@ -359,12 +359,10 @@ function convertDeclareComponentFacadeToMetadata(
         null,
     animations: declaration.animations !== undefined ? new WrappedNodeExpr(declaration.animations) :
                                                        null,
-    changeDetection: declaration.changeDetection !== undefined ? declaration.changeDetection :
-                                                                 ChangeDetectionStrategy.Default,
-    encapsulation: declaration.encapsulation !== undefined ? declaration.encapsulation :
-                                                             ViewEncapsulation.Emulated,
+    changeDetection: declaration.changeDetection ?? ChangeDetectionStrategy.Default,
+    encapsulation: declaration.encapsulation ?? ViewEncapsulation.Emulated,
     interpolation,
-    declarationEmitMode: DeclarationEmitMode.ClosureResolved,
+    declarationListEmitMode: DeclarationListEmitMode.ClosureResolved,
     relativeContextFilePath: '',
     i18nUseExternalIds: true,
   };
