@@ -2092,6 +2092,7 @@ export function parseTemplate(
       interpolationConfig,
       preserveWhitespaces,
       template,
+      templateUrl,
       isInline,
       errors: parseResult.errors,
       nodes: [],
@@ -2117,6 +2118,7 @@ export function parseTemplate(
       interpolationConfig,
       preserveWhitespaces,
       template,
+      templateUrl,
       isInline,
       errors: i18nMetaResult.errors,
       nodes: [],
@@ -2149,6 +2151,7 @@ export function parseTemplate(
     preserveWhitespaces,
     errors: errors.length > 0 ? errors : null,
     template,
+    templateUrl,
     isInline,
     nodes,
     styleUrls,
@@ -2320,6 +2323,14 @@ export interface ParsedTemplate {
    * templates). This may differ from the actual template bytes as they appear in the .ts file.
    */
   template: string|o.Expression;
+
+  /**
+   * A full path to the file which contains the template.
+   *
+   * This can be either the original .ts file if the template is inline, or the .html file if an
+   * external file was used.
+   */
+  templateUrl: string;
 
   /**
    * Whether the template was inline (using `template`) or external (using `templateUrl`).
