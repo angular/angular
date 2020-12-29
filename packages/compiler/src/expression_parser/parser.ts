@@ -305,15 +305,16 @@ export class Parser {
     let startIndex = -1;
     let endIndex = -1;
 
-    this._forEachUnquotedChar(input, 0, charIndex => {
+    for (const charIndex of this._forEachUnquotedChar(input, 0)) {
       if (startIndex === -1) {
         startIndex = input.indexOf(start, charIndex);
-        return false;
       } else {
         endIndex = this._getInterpolationEndIndex(input, end, charIndex);
-        return endIndex > -1;
+        if (endIndex > -1) {
+          break;
+        }
       }
-    });
+    }
 
     if (startIndex > -1 && endIndex > -1) {
       this._reportError(
@@ -327,35 +328,27 @@ export class Parser {
    * while ignoring comments and quoted content.
    */
   private _getInterpolationEndIndex(input: string, expressionEnd: string, start: number): number {
-    let result = -1;
-
-    this._forEachUnquotedChar(input, start, charIndex => {
+    for (const charIndex of this._forEachUnquotedChar(input, start)) {
       if (input.startsWith(expressionEnd, charIndex)) {
-        result = charIndex;
-        return true;
+        return charIndex;
       }
+
       // Nothing else in the expression matters after we've
       // hit a comment so look directly for the end token.
       if (input.startsWith('//', charIndex)) {
-        result = input.indexOf(expressionEnd, charIndex);
-        return true;
+        return input.indexOf(expressionEnd, charIndex);
       }
-      return false;
-    });
+    }
 
-    return result;
+    return -1;
   }
 
   /**
-   * Invokes a callback function for each character of a string that is outside
-   * of a quote.
+   * Generator used to iterate over the character indexes of a string that are outside of quotes.
    * @param input String to loop through.
    * @param start Index within the string at which to start.
-   * @param callback Callback to be invoked for each index. If the callback
-   *     returns `true`, the loop will be broken off.
    */
-  private _forEachUnquotedChar(input: string, start: number, callback: (index: number) => boolean):
-      void {
+  private * _forEachUnquotedChar(input: string, start: number) {
     let currentQuote: string|null = null;
     let escapeCount = 0;
     for (let i = start; i < input.length; i++) {
@@ -365,8 +358,8 @@ export class Parser {
       if (isQuote(input.charCodeAt(i)) && (currentQuote === null || currentQuote === char) &&
           escapeCount % 2 === 0) {
         currentQuote = currentQuote === null ? char : null;
-      } else if (currentQuote === null && callback(i)) {
-        break;
+      } else if (currentQuote === null) {
+        yield i;
       }
       escapeCount = char === '\\' ? escapeCount + 1 : 0;
     }
