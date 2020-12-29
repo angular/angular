@@ -307,7 +307,9 @@ export class Parser {
 
     for (const charIndex of this._forEachUnquotedChar(input, 0)) {
       if (startIndex === -1) {
-        startIndex = input.indexOf(start, charIndex);
+        if (input.startsWith(start)) {
+          startIndex = charIndex;
+        }
       } else {
         endIndex = this._getInterpolationEndIndex(input, end, charIndex);
         if (endIndex > -1) {
