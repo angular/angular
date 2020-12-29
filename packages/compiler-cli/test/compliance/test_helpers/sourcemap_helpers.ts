@@ -33,8 +33,8 @@ import {SourceFileLoader} from '../../../src/ngtsc/sourcemaps';
  * @returns The content of the expected source file, stripped of the mapping information.
  */
 export function checkMappings(
-    fs: FileSystem, generated: string, generatedPath: AbsoluteFsPath,
-    expectedSource: string): string {
+    fs: FileSystem, generated: string, generatedPath: AbsoluteFsPath, expectedSource: string,
+    expectedPath: AbsoluteFsPath): string {
   const actualMappings = getMappedSegments(fs, generatedPath, generated);
 
   const {expected, mappings} = extractMappings(fs, expectedSource);
@@ -49,7 +49,7 @@ export function checkMappings(
 
   if (failures.length > 0) {
     throw new Error(
-        `When checking mappings for ${generatedPath}...\n\n` +
+        `When checking mappings for ${generatedPath} against ${expectedPath} expected...\n\n` +
         `${failures.join('\n\n')}\n\n` +
         `All the mappings:\n\n${dumpMappings(actualMappings)}`);
   }
