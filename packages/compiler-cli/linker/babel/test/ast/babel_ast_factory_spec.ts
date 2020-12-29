@@ -14,7 +14,7 @@ import {BabelAstFactory} from '../../src/ast/babel_ast_factory';
 
 describe('BabelAstFactory', () => {
   let factory: BabelAstFactory;
-  beforeEach(() => factory = new BabelAstFactory());
+  beforeEach(() => factory = new BabelAstFactory('/original.ts'));
 
   describe('attachComments()', () => {
     it('should add the comments to the given statement', () => {
@@ -367,16 +367,34 @@ describe('BabelAstFactory', () => {
         start: {line: 0, column: 1, offset: 1},
         end: {line: 2, column: 3, offset: 15},
         content: '-****\n*****\n****',
-        url: 'original.ts'
+        url: 'other.ts'
       });
 
       // Lines are 1-based in Babel.
       expect(expr.loc).toEqual({
+        filename: 'other.ts',
         start: {line: 1, column: 1},
         end: {line: 3, column: 3},
-      });
+      } as any);  // The typings for `loc` do not include `filename`.
       expect(expr.start).toEqual(1);
       expect(expr.end).toEqual(15);
+    });
+
+    it('should use undefined if the url is the same as the one passed to the constructor', () => {
+      const expr = expression.ast`42`;
+      factory.setSourceMapRange(expr, {
+        start: {line: 0, column: 1, offset: 1},
+        end: {line: 2, column: 3, offset: 15},
+        content: '-****\n*****\n****',
+        url: '/original.ts'
+      });
+
+      // Lines are 1-based in Babel.
+      expect(expr.loc).toEqual({
+        filename: undefined,
+        start: {line: 1, column: 1},
+        end: {line: 3, column: 3},
+      } as any);  // The typings for `loc` do not include `filename`.
     });
   });
 });
