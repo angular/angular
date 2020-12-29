@@ -1200,6 +1200,9 @@
     "name": "equalPath"
   },
   {
+    "name": "exactMatchOptions"
+  },
+  {
     "name": "executeCheckHooks"
   },
   {
@@ -1659,6 +1662,9 @@
     "name": "materializeViewResults"
   },
   {
+    "name": "matrixParamsMatch"
+  },
+  {
     "name": "maybeUnwrapFn"
   },
   {
@@ -1750,6 +1756,12 @@
   },
   {
     "name": "optionsReducer"
+  },
+  {
+    "name": "paramCompareMap"
+  },
+  {
+    "name": "pathCompareMap"
   },
   {
     "name": "pipeFromArray"
@@ -1945,6 +1957,9 @@
   },
   {
     "name": "subscribeToResult"
+  },
+  {
+    "name": "subsetMatchOptions"
   },
   {
     "name": "supportsState"

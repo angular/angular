@@ -158,6 +158,13 @@ export declare class GuardsCheckStart extends RouterEvent {
 
 export declare type InitialNavigation = 'disabled' | 'enabled' | 'enabledBlocking' | 'enabledNonBlocking';
 
+export declare interface IsActiveMatchOptions {
+    fragment: 'exact' | 'ignored';
+    matrixParams: 'exact' | 'subset' | 'ignored';
+    paths: 'exact' | 'subset';
+    queryParams: 'exact' | 'subset' | 'ignored';
+}
+
 export declare type LoadChildren = LoadChildrenCallback | DeprecatedLoadChildren;
 
 export declare type LoadChildrenCallback = () => Type<any> | NgModuleFactory<any> | Observable<Type<any>> | Promise<NgModuleFactory<any> | Type<any> | any>;
@@ -345,7 +352,8 @@ export declare class Router {
     dispose(): void;
     getCurrentNavigation(): Navigation | null;
     initialNavigation(): void;
-    isActive(url: string | UrlTree, exact: boolean): boolean;
+    /** @deprecated */ isActive(url: string | UrlTree, exact: boolean): boolean;
+    isActive(url: string | UrlTree, matchOptions: IsActiveMatchOptions): boolean;
     navigate(commands: any[], extras?: NavigationExtras): Promise<boolean>;
     navigateByUrl(url: string | UrlTree, extras?: NavigationBehaviorOptions): Promise<boolean>;
     ngOnDestroy(): void;
@@ -400,7 +408,7 @@ export declare class RouterLinkActive implements OnChanges, OnDestroy, AfterCont
     set routerLinkActive(data: string[] | string);
     routerLinkActiveOptions: {
         exact: boolean;
-    };
+    } | IsActiveMatchOptions;
     constructor(router: Router, element: ElementRef, renderer: Renderer2, cdr: ChangeDetectorRef, link?: RouterLink | undefined, linkWithHref?: RouterLinkWithHref | undefined);
     ngAfterContentInit(): void;
     ngOnChanges(changes: SimpleChanges): void;

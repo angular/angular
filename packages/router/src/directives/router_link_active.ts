@@ -12,6 +12,7 @@ import {mergeAll} from 'rxjs/operators';
 
 import {Event, NavigationEnd} from '../events';
 import {Router} from '../router';
+import {IsActiveMatchOptions} from '../url_tree';
 
 import {RouterLink, RouterLinkWithHref} from './router_link';
 
@@ -89,7 +90,15 @@ export class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit 
   private linkInputChangesSubscription?: Subscription;
   public readonly isActive: boolean = false;
 
-  @Input() routerLinkActiveOptions: {exact: boolean} = {exact: false};
+  /**
+   * Options to configure how to determine if the router link is active.
+   *
+   * These options are passed to the `Router.isActive()` function.
+   *
+   * @see Router.isActive
+   */
+  @Input() routerLinkActiveOptions: {exact: boolean}|IsActiveMatchOptions = {exact: false};
+
 
   constructor(
       private router: Router, private element: ElementRef, private renderer: Renderer2,
@@ -159,8 +168,11 @@ export class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit 
   }
 
   private isLinkActive(router: Router): (link: (RouterLink|RouterLinkWithHref)) => boolean {
-    return (link: RouterLink|RouterLinkWithHref) =>
-               router.isActive(link.urlTree, this.routerLinkActiveOptions.exact);
+    const options = 'paths' in this.routerLinkActiveOptions ?
+        this.routerLinkActiveOptions :
+        // While the types should disallow `undefined` here, it's possible without strict inputs
+        (this.routerLinkActiveOptions.exact || false);
+    return (link: RouterLink|RouterLinkWithHref) => router.isActive(link.urlTree, options);
   }
 
   private hasActiveLinks(): boolean {

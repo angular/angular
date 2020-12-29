@@ -27,7 +27,7 @@ import {ChildrenOutletContexts} from './router_outlet_context';
 import {ActivatedRoute, createEmptyState, RouterState, RouterStateSnapshot} from './router_state';
 import {isNavigationCancelingError, navigationCancelingError, Params} from './shared';
 import {DefaultUrlHandlingStrategy, UrlHandlingStrategy} from './url_handling_strategy';
-import {containsTree, createEmptyUrlTree, UrlSerializer, UrlTree} from './url_tree';
+import {containsTree, createEmptyUrlTree, IsActiveMatchOptions, UrlSerializer, UrlTree} from './url_tree';
 import {standardizeConfig, validateConfig} from './utils/config';
 import {Checks, getAllRouteGuards} from './utils/preactivation';
 import {isUrlTree} from './utils/type_guards';
@@ -355,6 +355,29 @@ type LocationChangeInfo = {
   state: RestoredState|null,
   transitionId: number
 };
+
+/**
+ * The equivalent `IsActiveUrlTreeOptions` options for `Router.isActive` is called with `false`
+ * (exact = true).
+ */
+export const exactMatchOptions: IsActiveMatchOptions = {
+  paths: 'exact',
+  fragment: 'ignored',
+  matrixParams: 'ignored',
+  queryParams: 'exact'
+};
+
+/**
+ * The equivalent `IsActiveUrlTreeOptions` options for `Router.isActive` is called with `false`
+ * (exact = false).
+ */
+export const subsetMatchOptions: IsActiveMatchOptions = {
+  paths: 'subset',
+  fragment: 'ignored',
+  matrixParams: 'ignored',
+  queryParams: 'subset'
+};
+
 
 /**
  * @description
@@ -1213,14 +1236,39 @@ export class Router {
     return urlTree;
   }
 
-  /** Returns whether the url is activated */
-  isActive(url: string|UrlTree, exact: boolean): boolean {
+  /**
+   * Returns whether the url is activated.
+   *
+   * @deprecated
+   * Use `IsActiveUrlTreeOptions` instead.
+   *
+   * - The equivalent `IsActiveUrlTreeOptions` for `true` is
+   * `{paths: 'exact', queryParams: 'exact', fragment: 'ignored', matrixParams: 'ignored'}`.
+   * - The equivalent for `false` is
+   * `{paths: 'subset', queryParams: 'subset', fragment: 'ignored', matrixParams: 'ignored'}`.
+   */
+  isActive(url: string|UrlTree, exact: boolean): boolean;
+  /**
+   * Returns whether the url is activated.
+   */
+  isActive(url: string|UrlTree, matchOptions: IsActiveMatchOptions): boolean;
+  /** @internal */
+  isActive(url: string|UrlTree, matchOptions: boolean|IsActiveMatchOptions): boolean;
+  isActive(url: string|UrlTree, matchOptions: boolean|IsActiveMatchOptions): boolean {
+    let options: IsActiveMatchOptions;
+    if (matchOptions === true) {
+      options = {...exactMatchOptions};
+    } else if (matchOptions === false) {
+      options = {...subsetMatchOptions};
+    } else {
+      options = matchOptions;
+    }
     if (isUrlTree(url)) {
-      return containsTree(this.currentUrlTree, url, exact);
+      return containsTree(this.currentUrlTree, url, options);
     }
 
     const urlTree = this.parseUrl(url);
-    return containsTree(this.currentUrlTree, urlTree, exact);
+    return containsTree(this.currentUrlTree, urlTree, options);
   }
 
   private removeEmptyProps(params: Params): Params {
