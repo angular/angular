@@ -58,7 +58,7 @@ export function checkExpectations(
     const generated = fs.readFile(generatedPath);
     let expected = fs.readFile(expectedPath);
     expected = replaceMacros(expected);
-    expected = checkMappings(fs, generated, generatedPath, expected);
+    expected = checkMappings(fs, generated, generatedPath, expected, expectedPath);
 
     expectEmit(
         generated, expected,
