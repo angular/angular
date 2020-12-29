@@ -22,7 +22,7 @@ export {NoPreloading, PreloadAllModules, PreloadingStrategy, RouterPreloader} fr
 export {ActivatedRoute, ActivatedRouteSnapshot, RouterState, RouterStateSnapshot} from './router_state';
 export {convertToParamMap, ParamMap, Params, PRIMARY_OUTLET} from './shared';
 export {UrlHandlingStrategy} from './url_handling_strategy';
-export {DefaultUrlSerializer, UrlSegment, UrlSegmentGroup, UrlSerializer, UrlTree} from './url_tree';
+export {DefaultUrlSerializer, IsActiveMatchOptions, UrlSegment, UrlSegmentGroup, UrlSerializer, UrlTree} from './url_tree';
 export {VERSION} from './version';
 
 export * from './private_export';

@@ -13,53 +13,128 @@ export function createEmptyUrlTree() {
   return new UrlTree(new UrlSegmentGroup([], {}), {}, null);
 }
 
-export function containsTree(container: UrlTree, containee: UrlTree, exact: boolean): boolean {
-  if (exact) {
-    return equalQueryParams(container.queryParams, containee.queryParams) &&
-        equalSegmentGroups(container.root, containee.root);
-  }
-
-  return containsQueryParams(container.queryParams, containee.queryParams) &&
-      containsSegmentGroup(container.root, containee.root);
+/**
+ * A set of options which specify how to determine if a `UrlTree` is active, given the `UrlTree`
+ * for the current router state.
+ *
+ * @publicApi
+ * @see Router.isActive
+ */
+export interface IsActiveMatchOptions {
+  /**
+   * Defines the strategy for comparing the matrix parameters of two `UrlTree`s.
+   *
+   * The matrix parameter matching is dependent on the strategy for matching the
+   * segments. That is, if the `paths` option is set to `'subset'`, only
+   * the matrix parameters of the matching segments will be compared.
+   *
+   * - `'exact'`: Requires that matching segments also have exact matrix parameter
+   * matches.
+   * - `'subset'`: The matching segments in the router's active `UrlTree` may contain
+   * extra matrix parameters, but those that exist in the `UrlTree` in question must match.
+   * - `'ignored'`: When comparing `UrlTree`s, matrix params will be ignored.
+   */
+  matrixParams: 'exact'|'subset'|'ignored';
+  /**
+   * Defines the strategy for comparing the query parameters of two `UrlTree`s.
+   *
+   * - `'exact'`: the query parameters must match exactly.
+   * - `'subset'`: the active `UrlTree` may contain extra parameters,
+   * but must match the key and value of any that exist in the `UrlTree` in question.
+   * - `'ignored'`: When comparing `UrlTree`s, query params will be ignored.
+   */
+  queryParams: 'exact'|'subset'|'ignored';
+  /**
+   * Defines the strategy for comparing the `UrlSegment`s of the `UrlTree`s.
+   *
+   * - `'exact'`: all segments in each `UrlTree` must match.
+   * - `'subset'`: a `UrlTree` will be determined to be active if it
+   * is a subtree of the active route. That is, the active route may contain extra
+   * segments, but must at least have all the segements of the `UrlTree` in question.
+   */
+  paths: 'exact'|'subset';
+  /**
+   * - 'exact'`: indicates that the `UrlTree` fragments must be equal.
+   * - `'ignored'`: the fragments will not be compared when determining if a
+   * `UrlTree` is active.
+   */
+  fragment: 'exact'|'ignored';
 }
 
-function equalQueryParams(container: Params, containee: Params): boolean {
+type ParamMatchOptions = 'exact'|'subset'|'ignored';
+
+type PathCompareFn =
+    (container: UrlSegmentGroup, containee: UrlSegmentGroup, matrixParams: ParamMatchOptions) =>
+        boolean;
+type ParamCompareFn = (container: Params, containee: Params) => boolean;
+
+const pathCompareMap: Record<IsActiveMatchOptions['paths'], PathCompareFn> = {
+  'exact': equalSegmentGroups,
+  'subset': containsSegmentGroup,
+};
+const paramCompareMap: Record<ParamMatchOptions, ParamCompareFn> = {
+  'exact': equalParams,
+  'subset': containsParams,
+  'ignored': () => true,
+};
+
+export function containsTree(
+    container: UrlTree, containee: UrlTree, options: IsActiveMatchOptions): boolean {
+  return pathCompareMap[options.paths](container.root, containee.root, options.matrixParams) &&
+      paramCompareMap[options.queryParams](container.queryParams, containee.queryParams) &&
+      !(options.fragment === 'exact' && container.fragment !== containee.fragment);
+}
+
+function equalParams(container: Params, containee: Params): boolean {
   // TODO: This does not handle array params correctly.
   return shallowEqual(container, containee);
 }
 
-function equalSegmentGroups(container: UrlSegmentGroup, containee: UrlSegmentGroup): boolean {
+function equalSegmentGroups(
+    container: UrlSegmentGroup, containee: UrlSegmentGroup,
+    matrixParams: ParamMatchOptions): boolean {
   if (!equalPath(container.segments, containee.segments)) return false;
+  if (!matrixParamsMatch(container.segments, containee.segments, matrixParams)) {
+    return false;
+  }
   if (container.numberOfChildren !== containee.numberOfChildren) return false;
   for (const c in containee.children) {
     if (!container.children[c]) return false;
-    if (!equalSegmentGroups(container.children[c], containee.children[c])) return false;
+    if (!equalSegmentGroups(container.children[c], containee.children[c], matrixParams))
+      return false;
   }
   return true;
 }
 
-function containsQueryParams(container: Params, containee: Params): boolean {
+function containsParams(container: Params, containee: Params): boolean {
   return Object.keys(containee).length <= Object.keys(container).length &&
       Object.keys(containee).every(key => equalArraysOrString(container[key], containee[key]));
 }
 
-function containsSegmentGroup(container: UrlSegmentGroup, containee: UrlSegmentGroup): boolean {
-  return containsSegmentGroupHelper(container, containee, containee.segments);
+function containsSegmentGroup(
+    container: UrlSegmentGroup, containee: UrlSegmentGroup,
+    matrixParams: ParamMatchOptions): boolean {
+  return containsSegmentGroupHelper(container, containee, containee.segments, matrixParams);
 }
 
 function containsSegmentGroupHelper(
-    container: UrlSegmentGroup, containee: UrlSegmentGroup, containeePaths: UrlSegment[]): boolean {
+    container: UrlSegmentGroup, containee: UrlSegmentGroup, containeePaths: UrlSegment[],
+    matrixParams: ParamMatchOptions): boolean {
   if (container.segments.length > containeePaths.length) {
     const current = container.segments.slice(0, containeePaths.length);
     if (!equalPath(current, containeePaths)) return false;
     if (containee.hasChildren()) return false;
+    if (!matrixParamsMatch(current, containeePaths, matrixParams)) return false;
     return true;
 
   } else if (container.segments.length === containeePaths.length) {
     if (!equalPath(container.segments, containeePaths)) return false;
+    if (!matrixParamsMatch(container.segments, containeePaths, matrixParams)) return false;
     for (const c in containee.children) {
       if (!container.children[c]) return false;
-      if (!containsSegmentGroup(container.children[c], containee.children[c])) return false;
+      if (!containsSegmentGroup(container.children[c], containee.children[c], matrixParams)) {
+        return false;
+      }
     }
     return true;
 
@@ -67,9 +142,18 @@ function containsSegmentGroupHelper(
     const current = containeePaths.slice(0, container.segments.length);
     const next = containeePaths.slice(container.segments.length);
     if (!equalPath(container.segments, current)) return false;
+    if (!matrixParamsMatch(container.segments, current, matrixParams)) return false;
     if (!container.children[PRIMARY_OUTLET]) return false;
-    return containsSegmentGroupHelper(container.children[PRIMARY_OUTLET], containee, next);
+    return containsSegmentGroupHelper(
+        container.children[PRIMARY_OUTLET], containee, next, matrixParams);
   }
+}
+
+function matrixParamsMatch(
+    containerPaths: UrlSegment[], containeePaths: UrlSegment[], options: ParamMatchOptions) {
+  return containeePaths.every((containeeSegment, i) => {
+    return paramCompareMap[options](containerPaths[i].parameters, containeeSegment.parameters);
+  });
 }
 
 /**
