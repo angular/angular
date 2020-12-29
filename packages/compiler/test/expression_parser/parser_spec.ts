@@ -316,7 +316,10 @@ describe('parser', () => {
     });
 
     it('should not report interpolation inside a string', () => {
-      expect(parseAction('"{{a()}}"').errors).toEqual([]);
+      expect(parseAction(`"{{a()}}"`).errors).toEqual([]);
+      expect(parseAction(`'{{a()}}'`).errors).toEqual([]);
+      expect(parseAction(`"{{a('\\"')}}"`).errors).toEqual([]);
+      expect(parseAction(`'{{a("\\'")}}'`).errors).toEqual([]);
     });
   });
 
@@ -491,7 +494,10 @@ describe('parser', () => {
     });
 
     it('should not report interpolation inside a string', () => {
-      expect(parseBinding('"{{exp}}"').errors).toEqual([]);
+      expect(parseBinding(`"{{exp}}"`).errors).toEqual([]);
+      expect(parseBinding(`'{{exp}}'`).errors).toEqual([]);
+      expect(parseBinding(`'{{\\"}}'`).errors).toEqual([]);
+      expect(parseBinding(`'{{\\'}}'`).errors).toEqual([]);
     });
 
     it('should parse conditional expression', () => {
@@ -961,7 +967,10 @@ describe('parser', () => {
     });
 
     it('should not report interpolation inside a string', () => {
-      expect(parseSimpleBinding('"{{exp}}"').errors).toEqual([]);
+      expect(parseSimpleBinding(`"{{exp}}"`).errors).toEqual([]);
+      expect(parseSimpleBinding(`'{{exp}}'`).errors).toEqual([]);
+      expect(parseSimpleBinding(`'{{\\"}}'`).errors).toEqual([]);
+      expect(parseSimpleBinding(`'{{\\'}}'`).errors).toEqual([]);
     });
 
     it('should report when encountering field write', () => {
