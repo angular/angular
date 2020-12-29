@@ -959,14 +959,6 @@ function sourceMapUrl(resourceUrl: string): string {
  */
 export interface ParsedComponentTemplate extends ParsedTemplate {
   /**
-   * A full path to the file which contains the template.
-   *
-   * This can be either the original .ts file if the template is inline, or the .html file if an
-   * external file was used.
-   */
-  templateUrl: string;
-
-  /**
    * True if the original template was stored inline;
    * False if the template was in an external file.
    */

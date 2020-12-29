@@ -8,13 +8,14 @@
 import * as core from '../../core';
 import {DEFAULT_INTERPOLATION_CONFIG} from '../../ml_parser/interpolation_config';
 import * as o from '../../output/output_ast';
+import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../parse_util';
 import {Identifiers as R3} from '../r3_identifiers';
 import {DeclarationListEmitMode, R3ComponentDef, R3ComponentMetadata, R3UsedDirectiveMetadata} from '../view/api';
 import {createComponentType} from '../view/compiler';
 import {ParsedTemplate} from '../view/template';
 import {DefinitionMap} from '../view/util';
-import {R3DeclareComponentMetadata} from './api';
 
+import {R3DeclareComponentMetadata} from './api';
 import {createDirectiveDefinitionMap} from './directive';
 import {toOptionalLiteralArray} from './util';
 
@@ -79,11 +80,48 @@ export function createComponentDefinitionMap(meta: R3ComponentMetadata, template
  */
 function compileTemplateDefinition(template: ParsedTemplate): o.LiteralMapExpr {
   const templateMap = new DefinitionMap<R3DeclareComponentMetadata['template']>();
-  const templateExpr =
-      typeof template.template === 'string' ? o.literal(template.template) : template.template;
+  const templateExpr = getTemplateExpression(template);
   templateMap.set('source', templateExpr);
   templateMap.set('isInline', o.literal(template.isInline));
   return templateMap.toLiteralMap();
+}
+
+function getTemplateExpression(template: ParsedTemplate): o.Expression {
+  if (typeof template.template === 'string') {
+    if (template.isInline) {
+      // The template is inline but not a simple literal string, so give up with trying to
+      // source-map it and just return a simple literal here.
+      return o.literal(template.template);
+    } else {
+      // The template is external so we must synthesize an expression node with the appropriate
+      // source-span.
+      const contents = template.template;
+      const file = new ParseSourceFile(contents, template.templateUrl);
+      const start = new ParseLocation(file, 0, 0, 0);
+      const end = computeEndLocation(file, contents);
+      const span = new ParseSourceSpan(start, end);
+      return o.literal(contents, null, span);
+    }
+  } else {
+    // The template is inline so we can just reuse the current expression node.
+    return template.template;
+  }
+}
+
+function computeEndLocation(file: ParseSourceFile, contents: string): ParseLocation {
+  const length = contents.length;
+  let lineStart = 0;
+  let lastLineStart = 0;
+  let line = 0;
+  do {
+    lineStart = contents.indexOf('\n', lastLineStart);
+    if (lineStart !== -1) {
+      lastLineStart = lineStart + 1;
+      line++;
+    }
+  } while (lineStart !== -1);
+
+  return new ParseLocation(file, length, line, length - lastLineStart);
 }
 
 /**
