@@ -6,10 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {FileSystem} from '../../../src/ngtsc/file_system';
-import {checkExpectations} from '../test_helpers/check_expectations';
-import {CompileResult, initMockTestFileSystem} from '../test_helpers/compile_test';
-import {CompilationMode, ComplianceTest, getAllComplianceTests} from '../test_helpers/get_compliance_tests';
+
 import {checkErrors, checkNoUnexpectedErrors} from './check_errors';
+import {checkExpectations} from './check_expectations';
+import {CompileResult, initMockTestFileSystem} from './compile_test';
+import {CompilationMode, ComplianceTest, getAllComplianceTests} from './get_compliance_tests';
 
 /**
  * Set up jasmine specs for each of the compliance tests.
