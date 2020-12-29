@@ -1222,17 +1222,18 @@ groups:
         - mgechev
 
   # =========================================================
-  #  Docs: All
+  #  Docs: Guides
   #
   # Ensures the `comp: docs` label is applied to aio doc changes
   # =========================================================
-  docs-all:
+  docs-guides:
     type: optional
     conditions:
       - >
         contains_any_globs(files, [
           'aio/content/guide/**',
-          'aio/content/examples/**'
+          'aio/content/examples/**',
+          'aio/content/images/guide/**'
           ])
     labels:
       pending: "comp: docs"
