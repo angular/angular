@@ -522,6 +522,42 @@ runInEachFileSystem(() => {
           expect(aTocSourceMap.sourcesContent).toEqual(['abcdef']);
           expect(aTocSourceMap.mappings).toEqual(aToBSourceMap.mappings);
         });
+
+        it('should consolidate source-files with the same relative path', () => {
+          const cSource1 = new SourceFile(_('/foo/src/lib/c.js'), 'bcd123e', null, false, [], fs);
+          const cSource2 = new SourceFile(_('/foo/src/lib/c.js'), 'bcd123e', null, false, [], fs);
+
+          const bToCSourceMap: RawSourceMap = {
+            mappings: encode([[[1, 0, 0, 0], [4, 0, 0, 3], [4, 0, 0, 6], [5, 0, 0, 7]]]),
+            names: [],
+            sources: ['c.js'],
+            version: 3
+          };
+          const bSource = new SourceFile(
+              _('/foo/src/lib/b.js'), 'abcdef', bToCSourceMap, false, [cSource1], fs);
+
+          const aToBCSourceMap: RawSourceMap = {
+            mappings:
+                encode([[[0, 0, 0, 0], [2, 0, 0, 3], [4, 0, 0, 2], [5, 0, 0, 5], [6, 1, 0, 3]]]),
+            names: [],
+            sources: ['lib/b.js', 'lib/c.js'],
+            version: 3
+          };
+          const aSource = new SourceFile(
+              _('/foo/src/a.js'), 'abdecf123', aToBCSourceMap, false, [bSource, cSource2], fs);
+
+          const aTocSourceMap = aSource.renderFlattenedSourceMap();
+          expect(aTocSourceMap.version).toEqual(3);
+          expect(aTocSourceMap.file).toEqual('a.js');
+          expect(aTocSourceMap.names).toEqual([]);
+          expect(aTocSourceMap.sourceRoot).toBeUndefined();
+          expect(aTocSourceMap.sources).toEqual(['lib/c.js']);
+          expect(aTocSourceMap.sourcesContent).toEqual(['bcd123e']);
+          expect(aTocSourceMap.mappings).toEqual(encode([[
+            [1, 0, 0, 0], [2, 0, 0, 2], [3, 0, 0, 3], [3, 0, 0, 6], [4, 0, 0, 1], [5, 0, 0, 7],
+            [6, 0, 0, 3]
+          ]]));
+        });
       });
 
       describe('getOriginalLocation()', () => {
