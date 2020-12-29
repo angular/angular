@@ -7,6 +7,11 @@ export const config = {
       'MatChipListChange',
       'MatChipList'
     ],
+    'mdc-chips/testing': [
+      // Test harness code for a component that hasn't been implemented for MDC.
+      'MatChipListHarness',
+      'ChipListHarnessFilters'
+    ],
     'mdc-autocomplete': [
       // Private base classes that are only exported for MDC.
       '_MatAutocompleteBase',

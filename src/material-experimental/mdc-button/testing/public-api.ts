@@ -7,3 +7,4 @@
  */
 
 export * from './button-harness';
+export {ButtonHarnessFilters} from '@angular/material/button/testing';

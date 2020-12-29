@@ -7,3 +7,4 @@
  */
 
 export * from './slide-toggle-harness';
+export {SlideToggleHarnessFilters} from '@angular/material/slide-toggle/testing';

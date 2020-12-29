@@ -7,3 +7,4 @@
  */
 
 export * from './slider-harness';
+export {SliderHarnessFilters} from '@angular/material/slider/testing';

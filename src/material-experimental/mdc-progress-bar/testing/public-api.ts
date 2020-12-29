@@ -7,3 +7,4 @@
  */
 
 export * from './progress-bar-harness';
+export {ProgressBarHarnessFilters} from '@angular/material/progress-bar/testing';

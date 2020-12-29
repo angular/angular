@@ -7,3 +7,4 @@
  */
 
 export * from './checkbox-harness';
+export {CheckboxHarnessFilters} from '@angular/material/checkbox/testing';
