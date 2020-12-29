@@ -16,12 +16,11 @@ readdirSync(join(__dirname, '../src/material'), {withFileTypes: true})
   .filter(name => !config.skippedPackages.includes(`mdc-${name}`))
   .filter(hasCorrespondingMdcPackage)
   .forEach(name => {
-    const missingSymbols = getMissingSymbols(name, config.skippedExports[`mdc-${name}`] || []);
+    checkPackage(name);
 
-    if (missingSymbols.length) {
-      console.log(chalk.redBright(`\nMissing symbols from mdc-${name}:`));
-      console.log(missingSymbols.join('\n'));
-      hasFailed = true;
+    const testingName = name + '/testing';
+    if (hasTestingPackage(name) && hasCorrespondingMdcPackage(testingName)) {
+      checkPackage(testingName);
     }
   });
 
@@ -37,6 +36,17 @@ if (hasFailed) {
   console.log(chalk.green(
     'All MDC packages export the same public API symbols as their non-MDC counterparts.'));
   process.exit(0);
+}
+
+/** Checks whether the public API of a package matches up with its MDC counterpart. */
+function checkPackage(name: string) {
+  const missingSymbols = getMissingSymbols(name, config.skippedExports[`mdc-${name}`] || []);
+
+  if (missingSymbols.length) {
+    console.log(chalk.redBright(`\nMissing symbols from mdc-${name}:`));
+    console.log(missingSymbols.join('\n'));
+    hasFailed = true;
+  }
 }
 
 /**
@@ -89,4 +99,9 @@ function getExports(name: string): string[] {
 /** Checks whether a particular Material package has an MDC-based equivalent. */
 function hasCorrespondingMdcPackage(name: string): boolean {
   return existsSync(join(__dirname, '../src/material-experimental', 'mdc-' + name));
+}
+
+/** Checks whether a particular Material package has a testing sub-package. */
+function hasTestingPackage(name: string): boolean {
+  return existsSync(join(__dirname, '../src/material', name, 'testing'));
 }
