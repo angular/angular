@@ -8,7 +8,7 @@
 
 /// <reference types="node" />
 
-import {AbsoluteFsPath, FileSystem, resolve} from '../../src/ngtsc/file_system';
+import {AbsoluteFsPath, FileSystem, ReadonlyFileSystem} from '../../src/ngtsc/file_system';
 import {Logger} from '../../src/ngtsc/logging';
 import {ParsedConfiguration} from '../../src/perform_compile';
 
@@ -78,8 +78,9 @@ export function mainNgcc(options: AsyncNgccOptions|SyncNgccOptions): void|Promis
 
   // Bail out early if the work is already done.
   const supportedPropertiesToConsider = ensureSupportedProperties(propertiesToConsider);
-  const absoluteTargetEntryPointPath =
-      targetEntryPointPath !== undefined ? resolve(basePath, targetEntryPointPath) : null;
+  const absoluteTargetEntryPointPath = targetEntryPointPath !== undefined ?
+      fileSystem.resolve(basePath, targetEntryPointPath) :
+      null;
   const finder = getEntryPointFinder(
       fileSystem, logger, dependencyResolver, config, entryPointManifest, absBasePath,
       absoluteTargetEntryPointPath, pathMappings,
@@ -140,9 +141,10 @@ function ensureSupportedProperties(properties: string[]): EntryPointJsonProperty
 
 function getCreateTaskCompletedCallback(
     pkgJsonUpdater: PackageJsonUpdater, errorOnFailedEntryPoint: boolean, logger: Logger,
-    fileSystem: FileSystem): CreateTaskCompletedCallback {
+    fileSystem: ReadonlyFileSystem): CreateTaskCompletedCallback {
   return taskQueue => composeTaskCompletedCallbacks({
-           [TaskProcessingOutcome.Processed]: createMarkAsProcessedHandler(pkgJsonUpdater),
+           [TaskProcessingOutcome.Processed]:
+               createMarkAsProcessedHandler(fileSystem, pkgJsonUpdater),
            [TaskProcessingOutcome.Failed]:
                errorOnFailedEntryPoint ? createThrowErrorHandler(fileSystem) :
                                          createLogErrorHandler(logger, fileSystem, taskQueue),
@@ -175,7 +177,7 @@ function getExecutor(
 }
 
 function getDependencyResolver(
-    fileSystem: FileSystem, logger: Logger, config: NgccConfiguration,
+    fileSystem: ReadonlyFileSystem, logger: Logger, config: NgccConfiguration,
     pathMappings: PathMappings|undefined): DependencyResolver {
   const moduleResolver = new ModuleResolver(fileSystem, pathMappings);
   const esmDependencyHost = new EsmDependencyHost(fileSystem, moduleResolver);
@@ -193,7 +195,7 @@ function getDependencyResolver(
 }
 
 function getEntryPointFinder(
-    fs: FileSystem, logger: Logger, resolver: DependencyResolver, config: NgccConfiguration,
+    fs: ReadonlyFileSystem, logger: Logger, resolver: DependencyResolver, config: NgccConfiguration,
     entryPointManifest: EntryPointManifest, basePath: AbsoluteFsPath,
     absoluteTargetEntryPointPath: AbsoluteFsPath|null, pathMappings: PathMappings|undefined,
     tsConfig: ParsedConfiguration|null, projectPath: AbsoluteFsPath): EntryPointFinder {

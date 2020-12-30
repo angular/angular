@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {FileSystem, resolve} from '../../../../src/ngtsc/file_system';
+import {PathManipulation, ReadonlyFileSystem} from '../../../../src/ngtsc/file_system';
 import {Logger} from '../../../../src/ngtsc/logging';
 import {markAsProcessed} from '../../packages/build_marker';
 import {getEntryPointFormat, PackageJsonFormatProperties} from '../../packages/entry_point';
@@ -46,11 +46,11 @@ export function composeTaskCompletedCallbacks(
  *
  * @param pkgJsonUpdater The service used to update the package.json
  */
-export function createMarkAsProcessedHandler(pkgJsonUpdater: PackageJsonUpdater):
-    TaskCompletedHandler {
+export function createMarkAsProcessedHandler(
+    fs: PathManipulation, pkgJsonUpdater: PackageJsonUpdater): TaskCompletedHandler {
   return (task: Task): void => {
     const {entryPoint, formatPropertiesToMarkAsProcessed, processDts} = task;
-    const packageJsonPath = resolve(entryPoint.path, 'package.json');
+    const packageJsonPath = fs.resolve(entryPoint.path, 'package.json');
     const propsToMarkAsProcessed: PackageJsonFormatProperties[] =
         [...formatPropertiesToMarkAsProcessed];
     if (processDts) {
@@ -64,7 +64,7 @@ export function createMarkAsProcessedHandler(pkgJsonUpdater: PackageJsonUpdater)
 /**
  * Create a handler that will throw an error.
  */
-export function createThrowErrorHandler(fs: FileSystem): TaskCompletedHandler {
+export function createThrowErrorHandler(fs: ReadonlyFileSystem): TaskCompletedHandler {
   return (task: Task, message: string|null): void => {
     const format = getEntryPointFormat(fs, task.entryPoint, task.formatProperty);
     throw new Error(
@@ -78,7 +78,7 @@ export function createThrowErrorHandler(fs: FileSystem): TaskCompletedHandler {
  * Create a handler that logs an error and marks the task as failed.
  */
 export function createLogErrorHandler(
-    logger: Logger, fs: FileSystem, taskQueue: TaskQueue): TaskCompletedHandler {
+    logger: Logger, fs: ReadonlyFileSystem, taskQueue: TaskQueue): TaskCompletedHandler {
   return (task: Task, message: string|null): void => {
     taskQueue.markAsFailed(task);
     const format = getEntryPointFormat(fs, task.entryPoint, task.formatProperty);

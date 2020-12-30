@@ -9,7 +9,7 @@ import {createHash} from 'crypto';
 import {satisfies} from 'semver';
 import * as vm from 'vm';
 
-import {AbsoluteFsPath, dirname, FileSystem, join, resolve} from '../../../src/ngtsc/file_system';
+import {AbsoluteFsPath, PathManipulation, ReadonlyFileSystem} from '../../../src/ngtsc/file_system';
 
 import {PackageJsonFormatPropertiesMap} from './entry_point';
 
@@ -186,13 +186,14 @@ export class ProcessedNgccPackageConfig implements Omit<RawNgccPackageConfig, 'e
    */
   ignorableDeepImportMatchers: RegExp[];
 
-  constructor(packagePath: AbsoluteFsPath, {
+  constructor(fs: PathManipulation, packagePath: AbsoluteFsPath, {
     entryPoints = {},
     ignorableDeepImportMatchers = [],
   }: RawNgccPackageConfig) {
     const absolutePathEntries: [AbsoluteFsPath, NgccEntryPointConfig][] =
-        Object.entries(entryPoints).map(([relativePath,
-                                          config]) => [resolve(packagePath, relativePath), config]);
+        Object.entries(entryPoints).map(([
+                                          relativePath, config
+                                        ]) => [fs.resolve(packagePath, relativePath), config]);
 
     this.packagePath = packagePath;
     this.entryPoints = new Map(absolutePathEntries);
@@ -230,7 +231,7 @@ export class NgccConfiguration {
   private cache = new Map<string, VersionedPackageConfig>();
   readonly hash: string;
 
-  constructor(private fs: FileSystem, baseDir: AbsoluteFsPath) {
+  constructor(private fs: ReadonlyFileSystem, baseDir: AbsoluteFsPath) {
     this.defaultConfig = this.processProjectConfig(DEFAULT_NGCC_CONFIG);
     this.projectConfig = this.processProjectConfig(this.loadProjectConfig(baseDir));
     this.hash = this.computeHash();
@@ -261,7 +262,7 @@ export class NgccConfiguration {
   getPackageConfig(packageName: string, packagePath: AbsoluteFsPath, version: string|null):
       ProcessedNgccPackageConfig {
     const rawPackageConfig = this.getRawPackageConfig(packageName, packagePath, version);
-    return new ProcessedNgccPackageConfig(packagePath, rawPackageConfig);
+    return new ProcessedNgccPackageConfig(this.fs, packagePath, rawPackageConfig);
   }
 
   private getRawPackageConfig(
@@ -320,7 +321,7 @@ export class NgccConfiguration {
   }
 
   private loadProjectConfig(baseDir: AbsoluteFsPath): NgccProjectConfig {
-    const configFilePath = join(baseDir, NGCC_CONFIG_FILENAME);
+    const configFilePath = this.fs.join(baseDir, NGCC_CONFIG_FILENAME);
     if (this.fs.exists(configFilePath)) {
       try {
         return this.evalSrcFile(configFilePath);
@@ -334,7 +335,7 @@ export class NgccConfiguration {
 
   private loadPackageConfig(packagePath: AbsoluteFsPath, version: string|null):
       VersionedPackageConfig|null {
-    const configFilePath = join(packagePath, NGCC_CONFIG_FILENAME);
+    const configFilePath = this.fs.join(packagePath, NGCC_CONFIG_FILENAME);
     if (this.fs.exists(configFilePath)) {
       try {
         const packageConfig = this.evalSrcFile(configFilePath);
@@ -357,7 +358,7 @@ export class NgccConfiguration {
       module: {exports: theExports},
       exports: theExports,
       require,
-      __dirname: dirname(srcPath),
+      __dirname: this.fs.dirname(srcPath),
       __filename: srcPath
     };
     vm.runInNewContext(src, sandbox, {filename: srcPath});
