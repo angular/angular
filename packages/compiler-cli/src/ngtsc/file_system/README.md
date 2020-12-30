@@ -3,7 +3,15 @@
 To improve cross platform support, all file access (and path manipulation)
 is now done through a well known interface (`FileSystem`).
 
-For testing a number of `MockFileSystem` implementations are supplied.
+Note that `FileSystem` extends `ReadonlyFileSystem`, which itself extends
+`PathManipulation`.
+If you are using a file-system object you should only ask for the type that supports
+all the methods that you require.
+For example, if you have a function (`foo()`) that only needs to resolve paths then
+it should only require `PathManipulation`: `foo(fs: PathManipulation)`.
+This allows the caller to avoid implementing unneeded functionality.
+
+For testing, a number of `MockFileSystem` implementations are supplied.
 These provide an in-memory file-system which emulates operating systems
 like OS/X, Unix and Windows.
 
@@ -15,6 +23,11 @@ has been initialized before using any of these helper methods.
 To prevent this happening accidentally the current file system always starts out
 as an instance of `InvalidFileSystem`, which will throw an error if any of its
 methods are called.
+
+Generally it is safer to explicitly pass file-system objects to constructors or
+free-standing functions if possible. This avoids confusing bugs where the
+global file-system has not been set-up correctly before calling functions that
+expect there to be a file-system configured globally.
 
 You can set the current file-system by calling `setFileSystem()`.
 During testing you can call the helper function `initMockFileSystem(os)`
