@@ -7,7 +7,7 @@
  */
 import * as ts from 'typescript';
 
-import {AbsoluteFsPath, FileSystem} from '../../../src/ngtsc/file_system';
+import {AbsoluteFsPath, FileSystem, PathManipulation, ReadonlyFileSystem} from '../../../src/ngtsc/file_system';
 import {initMockFileSystem} from '../../../src/ngtsc/file_system/testing';
 import {loadStandardTestFiles, loadTestDirectory, NgtscTestCompilerHost} from '../../../src/ngtsc/testing';
 import {Diagnostics, performCompilation} from '../../../src/perform_compile';
@@ -65,7 +65,7 @@ export function compileTest(
  *
  * @param fs the mock file-system where the compilation is happening.
  */
-export function getRootDirectory(fs: FileSystem): AbsoluteFsPath {
+export function getRootDirectory(fs: PathManipulation): AbsoluteFsPath {
   return fs.resolve('/');
 }
 
@@ -75,7 +75,7 @@ export function getRootDirectory(fs: FileSystem): AbsoluteFsPath {
  *
  * @param fs the mock file-system where the compilation is happening.
  */
-export function getBuildOutputDirectory(fs: FileSystem): AbsoluteFsPath {
+export function getBuildOutputDirectory(fs: PathManipulation): AbsoluteFsPath {
   return fs.resolve('/built');
 }
 
@@ -129,7 +129,7 @@ function getOptions(
  * This allows us to simulate, more reliably, files that have `\r\n` line-endings.
  * (See `test_cases/r3_view_compiler_i18n/line_ending_normalization/template.html`.)
  */
-function monkeyPatchReadFile(fs: FileSystem): void {
+function monkeyPatchReadFile(fs: ReadonlyFileSystem): void {
   const originalReadFile = fs.readFile;
   fs.readFile = (path: AbsoluteFsPath): string => {
     const file = originalReadFile.call(fs, path);

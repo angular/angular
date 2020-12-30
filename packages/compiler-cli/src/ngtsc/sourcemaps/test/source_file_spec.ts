@@ -7,7 +7,7 @@
  */
 import {encode} from 'sourcemap-codec';
 
-import {absoluteFrom, FileSystem, getFileSystem} from '../../file_system';
+import {absoluteFrom, getFileSystem, PathManipulation} from '../../file_system';
 import {runInEachFileSystem} from '../../file_system/testing';
 import {RawSourceMap} from '../src/raw_source_map';
 import {SegmentMarker} from '../src/segment_marker';
@@ -15,7 +15,7 @@ import {computeStartOfLinePositions, ensureOriginalSegmentLinks, extractOriginal
 
 runInEachFileSystem(() => {
   describe('SourceFile and utilities', () => {
-    let fs: FileSystem;
+    let fs: PathManipulation;
     let _: typeof absoluteFrom;
 
     beforeEach(() => {

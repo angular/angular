@@ -10,7 +10,7 @@
 import {readFileSync} from 'fs';
 import * as os from 'os';
 
-import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem, join} from '../../../src/ngtsc/file_system';
+import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem} from '../../../src/ngtsc/file_system';
 import {Folder, MockFileSystem, runInEachFileSystem, TestFile} from '../../../src/ngtsc/file_system/testing';
 import {MockLogger} from '../../../src/ngtsc/logging/testing';
 import {loadStandardTestFiles, loadTestFiles} from '../../../src/ngtsc/testing';
@@ -1017,7 +1017,7 @@ runInEachFileSystem(() => {
 
     function markPropertiesAsProcessed(packagePath: string, properties: EntryPointJsonProperty[]) {
       const basePath = _('/node_modules');
-      const targetPackageJsonPath = join(basePath, packagePath, 'package.json');
+      const targetPackageJsonPath = fs.join(basePath, packagePath, 'package.json');
       const targetPackage = loadPackage(packagePath);
       markAsProcessed(
           pkgJsonUpdater, targetPackage, targetPackageJsonPath, ['typings', ...properties]);

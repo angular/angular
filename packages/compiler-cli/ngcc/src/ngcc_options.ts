@@ -7,7 +7,7 @@
  */
 import * as os from 'os';
 
-import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem} from '../../src/ngtsc/file_system';
+import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem, PathManipulation} from '../../src/ngtsc/file_system';
 import {ConsoleLogger, Logger, LogLevel} from '../../src/ngtsc/logging';
 import {ParsedConfiguration, readConfiguration} from '../../src/perform_compile';
 
@@ -175,7 +175,7 @@ export function getSharedSetup(options: NgccOptions): SharedSetup&RequiredNgccOp
     compileAllFormats = true,
     createNewEntryPointFormats = false,
     logger = new ConsoleLogger(LogLevel.info),
-    pathMappings = getPathMappingsFromTsConfig(tsConfig, projectPath),
+    pathMappings = getPathMappingsFromTsConfig(fileSystem, tsConfig, projectPath),
     async = false,
     errorOnFailedEntryPoint = false,
     enableI18nLegacyMessageIdFormat = true,
@@ -239,7 +239,7 @@ export function clearTsConfigCache() {
 }
 
 function checkForSolutionStyleTsConfig(
-    fileSystem: FileSystem, logger: Logger, projectPath: AbsoluteFsPath,
+    fileSystem: PathManipulation, logger: Logger, projectPath: AbsoluteFsPath,
     tsConfigPath: string|null|undefined, tsConfig: ParsedConfiguration|null): void {
   if (tsConfigPath !== null && !tsConfigPath && tsConfig !== null &&
       tsConfig.rootNames.length === 0 && tsConfig.projectReferences !== undefined &&

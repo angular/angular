@@ -9,7 +9,7 @@ import {ConstantPool, Expression, jsDocComment, LeadingComment, Statement, Wrapp
 import MagicString from 'magic-string';
 import * as ts from 'typescript';
 
-import {FileSystem} from '../../../src/ngtsc/file_system';
+import {ReadonlyFileSystem} from '../../../src/ngtsc/file_system';
 import {Logger} from '../../../src/ngtsc/logging';
 import {ImportManager} from '../../../src/ngtsc/translator';
 import {ParsedConfiguration} from '../../../src/perform_compile';
@@ -33,7 +33,7 @@ import {FileToWrite, getImportRewriter, stripExtension} from './utils';
 export class Renderer {
   constructor(
       private host: NgccReflectionHost, private srcFormatter: RenderingFormatter,
-      private fs: FileSystem, private logger: Logger, private bundle: EntryPointBundle,
+      private fs: ReadonlyFileSystem, private logger: Logger, private bundle: EntryPointBundle,
       private tsConfig: ParsedConfiguration|null = null) {}
 
   renderProgram(

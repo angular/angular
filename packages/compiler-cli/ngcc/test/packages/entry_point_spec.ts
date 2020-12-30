@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem, join, relative} from '../../../src/ngtsc/file_system';
+import {absoluteFrom, AbsoluteFsPath, getFileSystem, ReadonlyFileSystem} from '../../../src/ngtsc/file_system';
 import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
 import {MockLogger} from '../../../src/ngtsc/logging/testing';
 import {loadTestFiles} from '../../../src/ngtsc/testing';
@@ -17,7 +17,7 @@ runInEachFileSystem(() => {
   describe('getEntryPointInfo()', () => {
     let SOME_PACKAGE: AbsoluteFsPath;
     let _: typeof absoluteFrom;
-    let fs: FileSystem;
+    let fs: ReadonlyFileSystem;
 
     beforeEach(() => {
       _ = absoluteFrom;
@@ -71,7 +71,7 @@ runInEachFileSystem(() => {
       const config = new NgccConfiguration(fs, _('/project'));
       spyOn(config, 'getPackageConfig')
           .and.returnValue(new ProcessedNgccPackageConfig(
-              _('/project/node_modules/some_package'),
+              fs, _('/project/node_modules/some_package'),
               {entryPoints: {'./valid_entry_point': {ignore: true}}}));
       const entryPoint = getEntryPointInfo(
           fs, config, new MockLogger(), SOME_PACKAGE,
@@ -80,7 +80,7 @@ runInEachFileSystem(() => {
     });
 
     it('should retrieve the entry-point\'s version from the package\'s `package.json`', () => {
-      const entryPointPath = join(SOME_PACKAGE, 'valid_entry_point');
+      const entryPointPath = fs.join(SOME_PACKAGE, 'valid_entry_point');
 
       loadTestFiles([
         {
@@ -102,15 +102,15 @@ runInEachFileSystem(() => {
           `,
         },
         {
-          name: join(SOME_PACKAGE, 'package.json'),
+          name: fs.join(SOME_PACKAGE, 'package.json'),
           contents: createPackageJson('', {version: '1.0.0'}),
         },
         {
-          name: join(entryPointPath, 'package.json'),
+          name: fs.join(entryPointPath, 'package.json'),
           contents: createPackageJson('valid_entry_point', {version: '2.0.0'}),
         },
         {
-          name: join(entryPointPath, 'valid_entry_point.metadata.json'),
+          name: fs.join(entryPointPath, 'valid_entry_point.metadata.json'),
           contents: 'some meta data',
         },
       ]);
@@ -123,7 +123,7 @@ runInEachFileSystem(() => {
     });
 
     it('should use `null` for version if it cannot be retrieved from a `package.json`', () => {
-      const entryPointPath = join(SOME_PACKAGE, 'valid_entry_point');
+      const entryPointPath = fs.join(SOME_PACKAGE, 'valid_entry_point');
 
       loadTestFiles([
         {
@@ -145,15 +145,15 @@ runInEachFileSystem(() => {
           `,
         },
         {
-          name: join(SOME_PACKAGE, 'package.json'),
+          name: fs.join(SOME_PACKAGE, 'package.json'),
           contents: createPackageJson(''),
         },
         {
-          name: join(entryPointPath, 'package.json'),
+          name: fs.join(entryPointPath, 'package.json'),
           contents: createPackageJson('valid_entry_point'),
         },
         {
-          name: join(entryPointPath, 'valid_entry_point.metadata.json'),
+          name: fs.join(entryPointPath, 'valid_entry_point.metadata.json'),
           contents: 'some meta data',
         },
       ]);
@@ -184,7 +184,7 @@ runInEachFileSystem(() => {
       };
       spyOn(config, 'getPackageConfig')
           .and.returnValue(new ProcessedNgccPackageConfig(
-              _('/project/node_modules/some_package'),
+              fs, _('/project/node_modules/some_package'),
               {entryPoints: {'./valid_entry_point': {override}}}));
       const entryPoint = getEntryPointInfo(
           fs, config, new MockLogger(), SOME_PACKAGE,
@@ -236,7 +236,7 @@ runInEachFileSystem(() => {
              JSON.parse(createPackageJson('missing_package_json', {excludes: ['name']}));
          spyOn(config, 'getPackageConfig')
              .and.returnValue(new ProcessedNgccPackageConfig(
-                 _('/project/node_modules/some_package/'),
+                 fs, _('/project/node_modules/some_package/'),
                  {entryPoints: {'./missing_package_json': {override}}}));
          const entryPoint = getEntryPointInfo(
              fs, config, new MockLogger(), SOME_PACKAGE,
@@ -273,7 +273,7 @@ runInEachFileSystem(() => {
             // Ensure a `package.json` exists for the entry-point (containing `entryPointName`).
             loadTestFiles([
               {
-                name: join(entryPointPath, 'package.json'),
+                name: fs.join(entryPointPath, 'package.json'),
                 contents: JSON.stringify({name: entryPointName, typings: './index.d.ts'}),
               },
             ]);
@@ -284,11 +284,11 @@ runInEachFileSystem(() => {
             // avoid returning `INCOMPATIBLE_ENTRY_POINT` (since there is no `package.json`).
             loadTestFiles([
               {
-                name: join(packagePath, 'ngcc.config.js'),
+                name: fs.join(packagePath, 'ngcc.config.js'),
                 contents: `
                   module.exports = {
                     entryPoints: {
-                      '${relative(packagePath, entryPointPath)}': {
+                      '${fs.relative(packagePath, entryPointPath)}': {
                         override: {typings: './index.d.ts'},
                       },
                     },
@@ -321,7 +321,7 @@ runInEachFileSystem(() => {
 
         it('for a secondary entry-point with a `package.json`', () => {
           const packagePath = _(`/project/node_modules/${nameWithScope('on-disk-package-name')}`);
-          const entryPointPath = join(packagePath, 'some-entry-point');
+          const entryPointPath = fs.join(packagePath, 'some-entry-point');
           const expectedPackageName = nameWithScope('package-json-package-name');
 
           setUpPackageWithEntryPointPackageJson(
@@ -332,7 +332,7 @@ runInEachFileSystem(() => {
 
         it('for a secondary entry-point without a `package.json`', () => {
           const packagePath = _(`/project/node_modules/${nameWithScope('on-disk-package-name')}`);
-          const entryPointPath = join(packagePath, 'some-entry-point');
+          const entryPointPath = fs.join(packagePath, 'some-entry-point');
           const expectedPackageName = nameWithScope('on-disk-package-name');
 
           setUpPackageWithoutEntryPointPackageJson(packagePath, entryPointPath);
@@ -354,7 +354,7 @@ runInEachFileSystem(() => {
         it('for a secondary entry-point without a `package.json` in nested `node_modules/`', () => {
           const packagePath = _(`/project/node_modules/other-package/node_modules/${
               nameWithScope('on-disk-package-name')}`);
-          const entryPointPath = join(packagePath, 'some-entry-point');
+          const entryPointPath = fs.join(packagePath, 'some-entry-point');
           const expectedPackageName = nameWithScope('on-disk-package-name');
 
           setUpPackageWithoutEntryPointPackageJson(packagePath, entryPointPath);
@@ -384,7 +384,7 @@ runInEachFileSystem(() => {
 
         it('for a secondary entry-point with a `package.json` outside `node_modules/`', () => {
           const packagePath = _(`/project/libs/${nameWithScope('on-disk-package-name')}`);
-          const entryPointPath = join(packagePath, 'some-entry-point');
+          const entryPointPath = fs.join(packagePath, 'some-entry-point');
           const expectedPackageName = nameWithScope('package-json-package-name');
 
           setUpPackageWithEntryPointPackageJson(expectedPackageName, entryPointPath);
@@ -394,7 +394,7 @@ runInEachFileSystem(() => {
 
         it('for a secondary entry-point without a `package.json` outside `node_modules/`', () => {
           const packagePath = _(`/project/libs/${nameWithScope('on-disk-package-name')}`);
-          const entryPointPath = join(packagePath, 'some-entry-point');
+          const entryPointPath = fs.join(packagePath, 'some-entry-point');
           const expectedPackageName = nameWithScope('on-disk-package-name');
 
           setUpPackageWithoutEntryPointPackageJson(packagePath, entryPointPath);
@@ -522,7 +522,7 @@ runInEachFileSystem(() => {
          const config = new NgccConfiguration(fs, _('/project'));
          spyOn(config, 'getPackageConfig')
              .and.returnValue(new ProcessedNgccPackageConfig(
-                 _('/project/node_modules/some_package'),
+                 fs, _('/project/node_modules/some_package'),
                  {entryPoints: {'./missing_metadata': {}}}));
          const entryPoint = getEntryPointInfo(
              fs, config, new MockLogger(), SOME_PACKAGE,
@@ -626,7 +626,7 @@ runInEachFileSystem(() => {
   describe('getEntryPointFormat()', () => {
     let SOME_PACKAGE: AbsoluteFsPath;
     let _: typeof absoluteFrom;
-    let fs: FileSystem;
+    let fs: ReadonlyFileSystem;
     let entryPoint: EntryPoint;
 
     beforeEach(() => {
@@ -781,6 +781,6 @@ export function createPackageJson(
   return JSON.stringify(packageJson);
 }
 
-export function loadPackageJson(fs: FileSystem, packagePath: string) {
+export function loadPackageJson(fs: ReadonlyFileSystem, packagePath: string) {
   return JSON.parse(fs.readFile(fs.resolve(packagePath + '/package.json')));
 }

@@ -109,6 +109,11 @@ function loadAngularFolder(): Folder {
 
 /**
  * Load real files from the real file-system into a mock file-system.
+ *
+ * Note that this function contains a mix of `FileSystem` calls and NodeJS `fs` calls.
+ * This is because the function is a bridge between the "real" file-system (via `fs`) and the "mock"
+ * file-system (via `FileSystem`).
+ *
  * @param fs the file-system where the directory is to be loaded.
  * @param directoryPath the path to the directory we want to load.
  * @param mockPath the path within the mock file-system where the directory is to be loaded.

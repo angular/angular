@@ -157,7 +157,7 @@ exports.D = D;
           new DecorationAnalyzer(fs, bundle, host, referencesRegistry).analyzeProgram();
       const switchMarkerAnalyses = new SwitchMarkerAnalyzer(host, bundle.entryPoint.packagePath)
                                        .analyzeProgram(bundle.src.program);
-      const renderer = new CommonJsRenderingFormatter(host, false);
+      const renderer = new CommonJsRenderingFormatter(fs, host, false);
       const importManager = new ImportManager(new NoopImportRewriter(), 'i');
       return {
         host,
