@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {absoluteFrom, FileSystem, getFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system';
+import {absoluteFrom, getFileSystem, PathManipulation} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {runInEachFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
 import {ɵmakeTemplateObject} from '@angular/localize';
 import {NodePath, TransformOptions, transformSync} from '@babel/core';
@@ -16,7 +16,7 @@ import {Expression, Identifier, TaggedTemplateExpression, ExpressionStatement, C
 import {isGlobalIdentifier, isNamedIdentifier, isStringLiteralArray, isArrayOfExpressions, unwrapStringLiteralArray, unwrapMessagePartsFromLocalizeCall, wrapInParensIfNecessary, buildLocalizeReplacement, unwrapSubstitutionsFromLocalizeCall, unwrapMessagePartsFromTemplateLiteral, getLocation} from '../src/source_file_utils';
 
 runInEachFileSystem(() => {
-  let fs: FileSystem;
+  let fs: PathManipulation;
   beforeEach(() => fs = getFileSystem());
   describe('utils', () => {
     describe('isNamedIdentifier()', () => {

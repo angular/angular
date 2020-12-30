@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AbsoluteFsPath, FileSystem} from '@angular/compiler-cli/src/ngtsc/file_system';
+import {AbsoluteFsPath, PathManipulation} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {ɵMessageId, ɵParsedMessage} from '@angular/localize';
 
 import {DiagnosticHandlingStrategy, Diagnostics} from '../diagnostics';
@@ -17,7 +17,7 @@ import {serializeLocationPosition} from '../source_file_utils';
  * object (as necessary).
  */
 export function checkDuplicateMessages(
-    fs: FileSystem, messages: ɵParsedMessage[],
+    fs: PathManipulation, messages: ɵParsedMessage[],
     duplicateMessageHandling: DiagnosticHandlingStrategy, basePath: AbsoluteFsPath): Diagnostics {
   const diagnostics = new Diagnostics();
   if (duplicateMessageHandling === 'ignore') return diagnostics;
@@ -47,7 +47,7 @@ export function checkDuplicateMessages(
  * Serialize the given `message` object into a string.
  */
 function serializeMessage(
-    fs: FileSystem, basePath: AbsoluteFsPath, message: ɵParsedMessage): string {
+    fs: PathManipulation, basePath: AbsoluteFsPath, message: ɵParsedMessage): string {
   if (message.location === undefined) {
     return `   - "${message.text}"`;
   } else {

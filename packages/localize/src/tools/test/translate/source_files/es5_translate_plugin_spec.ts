@@ -5,7 +5,6 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {FileSystem, getFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {runInEachFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
 import {ɵcomputeMsgId, ɵparseTranslation} from '@angular/localize';
 import {ɵParsedTranslation} from '@angular/localize/private';
@@ -16,8 +15,6 @@ import {TranslatePluginOptions} from '../../../src/source_file_utils';
 import {makeEs5TranslatePlugin} from '../../../src/translate/source_files/es5_translate_plugin';
 
 runInEachFileSystem(() => {
-  let fs: FileSystem;
-  beforeEach(() => fs = getFileSystem());
   describe('makeEs5Plugin', () => {
     describe('(no translations)', () => {
       it('should transform `$localize` calls with binary expression', () => {

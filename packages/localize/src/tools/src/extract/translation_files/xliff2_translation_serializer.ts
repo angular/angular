@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AbsoluteFsPath, FileSystem, getFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system';
+import {AbsoluteFsPath, getFileSystem, PathManipulation} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {ɵParsedMessage, ɵSourceLocation} from '@angular/localize';
 
 import {FormatOptions, validateOptions} from './format_options';
@@ -29,7 +29,7 @@ export class Xliff2TranslationSerializer implements TranslationSerializer {
   private currentPlaceholderId = 0;
   constructor(
       private sourceLocale: string, private basePath: AbsoluteFsPath, private useLegacyIds: boolean,
-      private formatOptions: FormatOptions = {}, private fs: FileSystem = getFileSystem()) {
+      private formatOptions: FormatOptions = {}, private fs: PathManipulation = getFileSystem()) {
     validateOptions('Xliff1TranslationSerializer', [['xml:space', ['preserve']]], formatOptions);
   }
 
