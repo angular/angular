@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AbsoluteFsPath, FileSystem} from '@angular/compiler-cli/src/ngtsc/file_system';
+import {AbsoluteFsPath, ReadonlyFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {DiagnosticHandlingStrategy, Diagnostics} from '../../diagnostics';
 import {TranslationBundle} from '../translator';
 
@@ -16,7 +16,7 @@ import {ParseAnalysis, TranslationParser} from './translation_parsers/translatio
  */
 export class TranslationLoader {
   constructor(
-      private fs: FileSystem, private translationParsers: TranslationParser<any>[],
+      private fs: ReadonlyFileSystem, private translationParsers: TranslationParser<any>[],
       private duplicateTranslation: DiagnosticHandlingStrategy,
       /** @deprecated */ private diagnostics?: Diagnostics) {}
 

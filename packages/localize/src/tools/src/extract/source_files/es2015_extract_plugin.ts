@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {FileSystem} from '@angular/compiler-cli/src/ngtsc/file_system';
+import {PathManipulation} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {ɵParsedMessage, ɵparseMessage} from '@angular/localize';
 import {NodePath, PluginObj} from '@babel/core';
 import {TaggedTemplateExpression} from '@babel/types';
@@ -13,7 +13,7 @@ import {TaggedTemplateExpression} from '@babel/types';
 import {getLocation, isGlobalIdentifier, isNamedIdentifier, unwrapExpressionsFromTemplateLiteral, unwrapMessagePartsFromTemplateLiteral} from '../../source_file_utils';
 
 export function makeEs2015ExtractPlugin(
-    fs: FileSystem, messages: ɵParsedMessage[], localizeName = '$localize'): PluginObj {
+    fs: PathManipulation, messages: ɵParsedMessage[], localizeName = '$localize'): PluginObj {
   return {
     visitor: {
       TaggedTemplateExpression(path: NodePath<TaggedTemplateExpression>) {
