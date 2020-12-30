@@ -8,7 +8,7 @@
 import MagicString from 'magic-string';
 import * as ts from 'typescript';
 
-import {FileSystem} from '../../../src/ngtsc/file_system';
+import {ReadonlyFileSystem} from '../../../src/ngtsc/file_system';
 import {Reexport} from '../../../src/ngtsc/imports';
 import {Logger} from '../../../src/ngtsc/logging';
 import {CompileResult} from '../../../src/ngtsc/transform';
@@ -56,8 +56,8 @@ export interface DtsClassInfo {
  */
 export class DtsRenderer {
   constructor(
-      private dtsFormatter: RenderingFormatter, private fs: FileSystem, private logger: Logger,
-      private host: NgccReflectionHost, private bundle: EntryPointBundle) {}
+      private dtsFormatter: RenderingFormatter, private fs: ReadonlyFileSystem,
+      private logger: Logger, private host: NgccReflectionHost, private bundle: EntryPointBundle) {}
 
   renderProgram(
       decorationAnalyses: DecorationAnalyses,

@@ -7,7 +7,7 @@
  */
 import * as ts from 'typescript';
 
-import {absoluteFrom, AbsoluteFsPath, FileSystem, isRooted} from '../../src/ngtsc/file_system';
+import {absoluteFrom, AbsoluteFsPath, isRooted, ReadonlyFileSystem} from '../../src/ngtsc/file_system';
 import {DeclarationNode, KnownDeclaration} from '../../src/ngtsc/reflection';
 
 /**
@@ -122,7 +122,7 @@ export class FactoryMap<K, V> {
  * @returns An absolute path to the first matching existing file, or `null` if none exist.
  */
 export function resolveFileWithPostfixes(
-    fs: FileSystem, path: AbsoluteFsPath, postFixes: string[]): AbsoluteFsPath|null {
+    fs: ReadonlyFileSystem, path: AbsoluteFsPath, postFixes: string[]): AbsoluteFsPath|null {
   for (const postFix of postFixes) {
     const testPath = absoluteFrom(path + postFix);
     if (fs.exists(testPath) && fs.stat(testPath).isFile()) {

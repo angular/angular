@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import * as ts from 'typescript';
-import {FileSystem} from '../../file_system';
+import {PathManipulation} from '../../file_system';
 import {TestFile} from '../../file_system/testing';
 import {makeProgram} from '../../testing';
 
@@ -31,7 +31,7 @@ import {makeProgram} from '../../testing';
  *
  * represents a program where a.ts exports from b.ts and imports from c.ts.
  */
-export function makeProgramFromGraph(fs: FileSystem, graph: string): {
+export function makeProgramFromGraph(fs: PathManipulation, graph: string): {
   program: ts.Program,
   host: ts.CompilerHost,
   options: ts.CompilerOptions,

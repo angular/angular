@@ -7,7 +7,7 @@
  */
 import * as ts from 'typescript';
 
-import {AbsoluteFsPath, dirname, FileSystem, resolve} from '../../../src/ngtsc/file_system';
+import {AbsoluteFsPath, ReadonlyFileSystem} from '../../../src/ngtsc/file_system';
 
 import {patchTsGetExpandoInitializer, restoreGetExpandoInitializer} from './patch_ts_expando_initializer';
 
@@ -34,10 +34,10 @@ export interface BundleProgram {
  * Create a bundle program.
  */
 export function makeBundleProgram(
-    fs: FileSystem, isCore: boolean, pkg: AbsoluteFsPath, path: AbsoluteFsPath, r3FileName: string,
-    options: ts.CompilerOptions, host: ts.CompilerHost,
+    fs: ReadonlyFileSystem, isCore: boolean, pkg: AbsoluteFsPath, path: AbsoluteFsPath,
+    r3FileName: string, options: ts.CompilerOptions, host: ts.CompilerHost,
     additionalFiles: AbsoluteFsPath[] = []): BundleProgram {
-  const r3SymbolsPath = isCore ? findR3SymbolsPath(fs, dirname(path), r3FileName) : null;
+  const r3SymbolsPath = isCore ? findR3SymbolsPath(fs, fs.dirname(path), r3FileName) : null;
   let rootPaths =
       r3SymbolsPath ? [path, r3SymbolsPath, ...additionalFiles] : [path, ...additionalFiles];
 
@@ -58,8 +58,8 @@ export function makeBundleProgram(
  * Search the given directory hierarchy to find the path to the `r3_symbols` file.
  */
 export function findR3SymbolsPath(
-    fs: FileSystem, directory: AbsoluteFsPath, filename: string): AbsoluteFsPath|null {
-  const r3SymbolsFilePath = resolve(directory, filename);
+    fs: ReadonlyFileSystem, directory: AbsoluteFsPath, filename: string): AbsoluteFsPath|null {
+  const r3SymbolsFilePath = fs.resolve(directory, filename);
   if (fs.exists(r3SymbolsFilePath)) {
     return r3SymbolsFilePath;
   }
@@ -72,12 +72,12 @@ export function findR3SymbolsPath(
           .filter(p => p !== 'node_modules')
           // Only interested in directories (and only those that are not symlinks)
           .filter(p => {
-            const stat = fs.lstat(resolve(directory, p));
+            const stat = fs.lstat(fs.resolve(directory, p));
             return stat.isDirectory() && !stat.isSymbolicLink();
           });
 
   for (const subDirectory of subDirectories) {
-    const r3SymbolsFilePath = findR3SymbolsPath(fs, resolve(directory, subDirectory), filename);
+    const r3SymbolsFilePath = findR3SymbolsPath(fs, fs.resolve(directory, subDirectory), filename);
     if (r3SymbolsFilePath) {
       return r3SymbolsFilePath;
     }

@@ -9,7 +9,7 @@
 import {isSyntaxError, Position} from '@angular/compiler';
 import * as ts from 'typescript';
 
-import {absoluteFrom, AbsoluteFsPath, getFileSystem, relative, resolve} from '../src/ngtsc/file_system';
+import {absoluteFrom, AbsoluteFsPath, getFileSystem, ReadonlyFileSystem, relative, resolve} from '../src/ngtsc/file_system';
 
 import {replaceTsWithNgInErrors} from './ngtsc/diagnostics';
 import * as api from './transformers/api';
@@ -107,6 +107,10 @@ export function formatDiagnostics(
     return '';
   }
 }
+
+/** Used to read configuration files. */
+export type ConfigurationHost = Pick<
+    ReadonlyFileSystem, 'readFile'|'exists'|'lstat'|'resolve'|'join'|'dirname'|'extname'|'pwd'>;
 
 export interface ParsedConfiguration {
   project: string;

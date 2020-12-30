@@ -8,7 +8,7 @@
 import {removeComments, removeMapFileComments} from 'convert-source-map';
 import {decode, encode, SourceMapMappings, SourceMapSegment} from 'sourcemap-codec';
 
-import {AbsoluteFsPath, FileSystem} from '../../file_system';
+import {AbsoluteFsPath, PathManipulation} from '../../file_system';
 
 import {RawSourceMap} from './raw_source_map';
 import {compareSegments, offsetSegment, SegmentMarker} from './segment_marker';
@@ -39,7 +39,7 @@ export class SourceFile {
       readonly inline: boolean,
       /** Any source files referenced by the raw source map associated with this source file. */
       readonly sources: (SourceFile|null)[],
-      private fs: FileSystem,
+      private fs: PathManipulation,
   ) {
     this.contents = removeSourceMapComments(contents);
     this.startOfLinePositions = computeStartOfLinePositions(this.contents);
