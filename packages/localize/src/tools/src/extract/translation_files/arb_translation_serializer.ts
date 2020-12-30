@@ -5,9 +5,8 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AbsoluteFsPath, FileSystem} from '@angular/compiler-cli/src/ngtsc/file_system';
+import {AbsoluteFsPath, PathManipulation} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {ɵParsedMessage, ɵSourceLocation} from '@angular/localize';
-import {ArbJsonObject, ArbLocation, ArbMetadata} from '../../translate/translation_files/translation_parsers/arb_translation_parser';
 import {TranslationSerializer} from './translation_serializer';
 import {consolidateMessages, hasLocation} from './utils';
 
@@ -45,7 +44,8 @@ import {consolidateMessages, hasLocation} from './utils';
  */
 export class ArbTranslationSerializer implements TranslationSerializer {
   constructor(
-      private sourceLocale: string, private basePath: AbsoluteFsPath, private fs: FileSystem) {}
+      private sourceLocale: string, private basePath: AbsoluteFsPath,
+      private fs: PathManipulation) {}
 
   serialize(messages: ɵParsedMessage[]): string {
     const messageGroups = consolidateMessages(messages, message => getMessageId(message));
