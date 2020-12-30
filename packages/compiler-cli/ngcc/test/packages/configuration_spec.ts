@@ -7,7 +7,7 @@
  */
 import {createHash} from 'crypto';
 
-import {absoluteFrom, FileSystem, getFileSystem} from '../../../src/ngtsc/file_system';
+import {absoluteFrom, getFileSystem, ReadonlyFileSystem} from '../../../src/ngtsc/file_system';
 import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
 import {loadTestFiles} from '../../../src/ngtsc/testing';
 import {DEFAULT_NGCC_CONFIG, NgccConfiguration, ProcessLockingConfiguration} from '../../src/packages/configuration';
@@ -15,7 +15,7 @@ import {DEFAULT_NGCC_CONFIG, NgccConfiguration, ProcessLockingConfiguration} fro
 
 runInEachFileSystem(() => {
   let _Abs: typeof absoluteFrom;
-  let fs: FileSystem;
+  let fs: ReadonlyFileSystem;
 
   beforeEach(() => {
     _Abs = absoluteFrom;

@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {absoluteFrom, FileSystem, getFileSystem, join} from '../../../src/ngtsc/file_system';
+import {absoluteFrom, FileSystem, getFileSystem} from '../../../src/ngtsc/file_system';
 import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
 import {MockLogger} from '../../../src/ngtsc/logging/testing';
 import {loadTestFiles} from '../../../src/ngtsc/testing';
@@ -578,7 +578,7 @@ runInEachFileSystem(() => {
 
       it('should revert changes to `package.json`', () => {
         const entryPoint = esm5bundle.entryPoint;
-        const packageJsonPath = join(entryPoint.packagePath, 'package.json');
+        const packageJsonPath = fs.join(entryPoint.packagePath, 'package.json');
 
         fileWriter.writeBundle(
             esm5bundle,

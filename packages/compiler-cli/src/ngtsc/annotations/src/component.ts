@@ -10,8 +10,8 @@ import {compileComponentFromMetadata, compileDeclareComponentFromMetadata, Const
 import * as ts from 'typescript';
 
 import {CycleAnalyzer} from '../../cycles';
-import {ErrorCode, FatalDiagnosticError, ngErrorCode} from '../../diagnostics';
-import {absoluteFrom, relative, resolve} from '../../file_system';
+import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
+import {absoluteFrom, relative} from '../../file_system';
 import {DefaultImportRecorder, ModuleResolver, Reference, ReferenceEmitter} from '../../imports';
 import {DependencyTracker} from '../../incremental/api';
 import {IndexingContext} from '../../indexer';
@@ -21,7 +21,6 @@ import {ClassDeclaration, DeclarationNode, Decorator, ReflectionHost, reflectObj
 import {ComponentScopeReader, LocalModuleScopeRegistry, TypeCheckScopeRegistry} from '../../scope';
 import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerFlags, HandlerPrecedence, ResolveResult} from '../../transform';
 import {TemplateSourceMapping, TypeCheckContext} from '../../typecheck/api';
-import {getTemplateId, makeTemplateDiagnostic} from '../../typecheck/diagnostics';
 import {tsSourceMapBug29300Fixed} from '../../util/src/ts_source_map_bug_29300';
 import {SubsetOfKeys} from '../../util/src/typescript';
 

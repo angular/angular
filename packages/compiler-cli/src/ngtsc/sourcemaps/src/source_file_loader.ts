@@ -7,7 +7,7 @@
  */
 import {commentRegex, fromComment, mapFileCommentRegex} from 'convert-source-map';
 
-import {AbsoluteFsPath, FileSystem} from '../../file_system';
+import {AbsoluteFsPath, ReadonlyFileSystem} from '../../file_system';
 import {Logger} from '../../logging';
 
 import {RawSourceMap} from './raw_source_map';
@@ -28,7 +28,7 @@ export class SourceFileLoader {
   private currentPaths: AbsoluteFsPath[] = [];
 
   constructor(
-      private fs: FileSystem, private logger: Logger,
+      private fs: ReadonlyFileSystem, private logger: Logger,
       /** A map of URL schemes to base paths. The scheme name should be lowercase. */
       private schemeMap: Record<string, AbsoluteFsPath>) {}
 

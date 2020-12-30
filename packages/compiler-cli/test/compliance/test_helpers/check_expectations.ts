@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {FileSystem} from '../../../src/ngtsc/file_system';
+import {ReadonlyFileSystem} from '../../../src/ngtsc/file_system';
 
 import {getBuildOutputDirectory, getRootDirectory} from './compile_test';
 import {verifyUniqueFactory} from './di_checks';
@@ -33,7 +33,7 @@ const EXTRA_CHECK_FUNCTIONS: Record<string, ExtraCheckFunction> = {
  * @param expectedFiles The list of expected-generated pairs to compare.
  */
 export function checkExpectations(
-    fs: FileSystem, testPath: string, failureMessage: string, expectedFiles: ExpectedFile[],
+    fs: ReadonlyFileSystem, testPath: string, failureMessage: string, expectedFiles: ExpectedFile[],
     extraChecks: ExtraCheck[]): void {
   const builtDirectory = getBuildOutputDirectory(fs);
   for (const expectedFile of expectedFiles) {

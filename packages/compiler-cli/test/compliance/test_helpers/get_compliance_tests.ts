@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AbsoluteFsPath, FileSystem, NodeJSFileSystem, PathSegment} from '../../../src/ngtsc/file_system';
+import {AbsoluteFsPath, NodeJSFileSystem, PathSegment, ReadonlyFileSystem} from '../../../src/ngtsc/file_system';
 
 const fs = new NodeJSFileSystem();
 const basePath = fs.resolve(__dirname, '../test_cases');
@@ -55,7 +55,7 @@ export function* getComplianceTests(testConfigPath: string): Generator<Complianc
 }
 
 function loadTestCasesFile(
-    fs: FileSystem, testCasesPath: AbsoluteFsPath, basePath: AbsoluteFsPath): any {
+    fs: ReadonlyFileSystem, testCasesPath: AbsoluteFsPath, basePath: AbsoluteFsPath): any {
   try {
     return JSON.parse(fs.readFile(testCasesPath));
   } catch (e) {

@@ -225,7 +225,7 @@ runInEachFileSystem(() => {
 
         spyOn(config, 'getPackageConfig')
             .and.returnValue(
-                new ProcessedNgccPackageConfig(_Abs('/project/node_modules/some_package'), {
+                new ProcessedNgccPackageConfig(fs, _Abs('/project/node_modules/some_package'), {
                   entryPoints: {
                     './ignored_entry_point': {ignore: true},
                   },

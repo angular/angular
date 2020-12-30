@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import * as ts from 'typescript';
-import {AbsoluteFsPath, FileSystem} from '../../../src/ngtsc/file_system';
+import {AbsoluteFsPath, FileSystem, ReadonlyFileSystem} from '../../../src/ngtsc/file_system';
 import {PathMappings} from '../path_mappings';
 import {BundleProgram, makeBundleProgram} from './bundle_program';
 import {EntryPoint, EntryPointFormat} from './entry_point';
@@ -86,7 +86,7 @@ export function makeEntryPointBundle(
 }
 
 function computePotentialDtsFilesFromJsFiles(
-    fs: FileSystem, srcProgram: ts.Program, formatPath: AbsoluteFsPath,
+    fs: ReadonlyFileSystem, srcProgram: ts.Program, formatPath: AbsoluteFsPath,
     typingsPath: AbsoluteFsPath) {
   const formatRoot = fs.dirname(formatPath);
   const typingsRoot = fs.dirname(typingsPath);

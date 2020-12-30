@@ -9,7 +9,7 @@ import {fromObject, generateMapFileComment, SourceMapConverter} from 'convert-so
 import MagicString from 'magic-string';
 import * as ts from 'typescript';
 
-import {absoluteFrom, absoluteFromSourceFile, basename, FileSystem} from '../../../src/ngtsc/file_system';
+import {absoluteFrom, absoluteFromSourceFile, ReadonlyFileSystem} from '../../../src/ngtsc/file_system';
 import {Logger} from '../../../src/ngtsc/logging';
 import {RawSourceMap, SourceFileLoader} from '../../../src/ngtsc/sourcemaps';
 
@@ -26,7 +26,7 @@ export interface SourceMapInfo {
  * with an appropriate source-map comment pointing to the merged source-map.
  */
 export function renderSourceAndMap(
-    logger: Logger, fs: FileSystem, sourceFile: ts.SourceFile,
+    logger: Logger, fs: ReadonlyFileSystem, sourceFile: ts.SourceFile,
     generatedMagicString: MagicString): FileToWrite[] {
   const generatedPath = absoluteFromSourceFile(sourceFile);
   const generatedMapPath = absoluteFrom(`${generatedPath}.map`);
@@ -55,7 +55,7 @@ export function renderSourceAndMap(
         {path: generatedPath, contents: `${generatedFile.contents}\n${mergedMap.toComment()}`}
       ];
     } else {
-      const sourceMapComment = generateMapFileComment(`${basename(generatedPath)}.map`);
+      const sourceMapComment = generateMapFileComment(`${fs.basename(generatedPath)}.map`);
       return [
         {path: generatedPath, contents: `${generatedFile.contents}\n${sourceMapComment}`},
         {path: generatedMapPath, contents: mergedMap.toJSON()}

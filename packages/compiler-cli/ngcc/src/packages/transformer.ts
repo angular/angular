@@ -8,7 +8,7 @@
 import * as ts from 'typescript';
 
 import {ParsedConfiguration} from '../../..';
-import {FileSystem} from '../../../src/ngtsc/file_system';
+import {ReadonlyFileSystem} from '../../../src/ngtsc/file_system';
 import {Logger} from '../../../src/ngtsc/logging';
 import {TypeScriptReflectionHost} from '../../../src/ngtsc/reflection';
 import {DecorationAnalyzer} from '../analysis/decoration_analyzer';
@@ -64,7 +64,7 @@ export type TransformResult = {
  */
 export class Transformer {
   constructor(
-      private fs: FileSystem, private logger: Logger,
+      private fs: ReadonlyFileSystem, private logger: Logger,
       private tsConfig: ParsedConfiguration|null = null) {}
 
   /**
@@ -100,7 +100,7 @@ export class Transformer {
         decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses);
 
     if (bundle.dts) {
-      const dtsFormatter = new EsmRenderingFormatter(reflectionHost, bundle.isCore);
+      const dtsFormatter = new EsmRenderingFormatter(this.fs, reflectionHost, bundle.isCore);
       const dtsRenderer =
           new DtsRenderer(dtsFormatter, this.fs, this.logger, reflectionHost, bundle);
       const renderedDtsFiles = dtsRenderer.renderProgram(
@@ -129,16 +129,16 @@ export class Transformer {
   getRenderingFormatter(host: NgccReflectionHost, bundle: EntryPointBundle): RenderingFormatter {
     switch (bundle.format) {
       case 'esm2015':
-        return new EsmRenderingFormatter(host, bundle.isCore);
+        return new EsmRenderingFormatter(this.fs, host, bundle.isCore);
       case 'esm5':
-        return new Esm5RenderingFormatter(host, bundle.isCore);
+        return new Esm5RenderingFormatter(this.fs, host, bundle.isCore);
       case 'umd':
         if (!(host instanceof UmdReflectionHost)) {
           throw new Error('UmdRenderer requires a UmdReflectionHost');
         }
-        return new UmdRenderingFormatter(host, bundle.isCore);
+        return new UmdRenderingFormatter(this.fs, host, bundle.isCore);
       case 'commonjs':
-        return new CommonJsRenderingFormatter(host, bundle.isCore);
+        return new CommonJsRenderingFormatter(this.fs, host, bundle.isCore);
       default:
         throw new Error(`Renderer for "${bundle.format}" not yet implemented.`);
     }

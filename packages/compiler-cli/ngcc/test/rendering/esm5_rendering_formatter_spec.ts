@@ -34,7 +34,7 @@ function setup(file: {name: AbsoluteFsPath, contents: string}) {
       new DecorationAnalyzer(fs, bundle, host, referencesRegistry).analyzeProgram();
   const switchMarkerAnalyses = new SwitchMarkerAnalyzer(host, bundle.entryPoint.packagePath)
                                    .analyzeProgram(bundle.src.program);
-  const renderer = new Esm5RenderingFormatter(host, false);
+  const renderer = new Esm5RenderingFormatter(fs, host, false);
   const importManager = new ImportManager(new NoopImportRewriter(), IMPORT_PREFIX);
   return {
     host,

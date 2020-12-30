@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AbsoluteFsPath, FileSystem} from '../../../src/ngtsc/file_system';
+import {AbsoluteFsPath, ReadonlyFileSystem} from '../../../src/ngtsc/file_system';
 import {ConsoleLogger, LogLevel} from '../../../src/ngtsc/logging';
 import {SourceFileLoader} from '../../../src/ngtsc/sourcemaps';
 
@@ -33,8 +33,8 @@ import {SourceFileLoader} from '../../../src/ngtsc/sourcemaps';
  * @returns The content of the expected source file, stripped of the mapping information.
  */
 export function checkMappings(
-    fs: FileSystem, generated: string, generatedPath: AbsoluteFsPath, expectedSource: string,
-    expectedPath: AbsoluteFsPath): string {
+    fs: ReadonlyFileSystem, generated: string, generatedPath: AbsoluteFsPath,
+    expectedSource: string, expectedPath: AbsoluteFsPath): string {
   const actualMappings = getMappedSegments(fs, generatedPath, generated);
 
   const {expected, mappings} = extractMappings(fs, expectedSource);
@@ -77,7 +77,7 @@ interface SegmentMapping {
  * @param expected The content of the expected file containing source-map information.
  */
 function extractMappings(
-    fs: FileSystem, expected: string): {expected: string, mappings: SegmentMapping[]} {
+    fs: ReadonlyFileSystem, expected: string): {expected: string, mappings: SegmentMapping[]} {
   const mappings: SegmentMapping[] = [];
   // capture and remove source mapping info
   expected = expected.replace(
@@ -113,7 +113,8 @@ function unescape(str: string): string {
  *     empty array is returned if there is no source-map file found.
  */
 function getMappedSegments(
-    fs: FileSystem, generatedPath: AbsoluteFsPath, generatedContents: string): SegmentMapping[] {
+    fs: ReadonlyFileSystem, generatedPath: AbsoluteFsPath,
+    generatedContents: string): SegmentMapping[] {
   const logger = new ConsoleLogger(LogLevel.debug);
   const loader = new SourceFileLoader(fs, logger, {});
   const generatedFile = loader.loadSourceFile(generatedPath, generatedContents);

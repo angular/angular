@@ -5,9 +5,9 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AbsoluteFsPath, FileSystem} from '../../../src/ngtsc/file_system';
+import {AbsoluteFsPath, PathManipulation} from '../../../src/ngtsc/file_system';
 
-export function getLockFilePath(fs: FileSystem) {
+export function getLockFilePath(fs: PathManipulation) {
   return fs.resolve(require.resolve('@angular/compiler-cli/ngcc'), '../__ngcc_lock_file__');
 }
 

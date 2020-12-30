@@ -40,7 +40,7 @@ function setup(files: TestFile[], dtsFiles?: TestFile[]) {
       new DecorationAnalyzer(fs, bundle, host, referencesRegistry).analyzeProgram();
   const switchMarkerAnalyses = new SwitchMarkerAnalyzer(host, bundle.entryPoint.packagePath)
                                    .analyzeProgram(bundle.src.program);
-  const renderer = new EsmRenderingFormatter(host, false);
+  const renderer = new EsmRenderingFormatter(fs, host, false);
   const importManager = new ImportManager(new NoopImportRewriter(), IMPORT_PREFIX);
   return {
     host,
