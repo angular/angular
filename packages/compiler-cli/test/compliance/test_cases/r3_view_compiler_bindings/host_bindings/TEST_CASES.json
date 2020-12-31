@@ -224,6 +224,34 @@
           ]
         }
       ]
+    },
+    {
+      "description": "should handle host bindings with the same name as a primitive value",
+      "inputFiles": [
+        "host_bindings_primitive_names.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Invalid host binding code",
+          "files": [
+            "host_bindings_primitive_names.js"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should handle host bindings with quoted names",
+      "inputFiles": [
+        "host_bindings_quoted_names.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Invalid host binding code",
+          "files": [
+            "host_bindings_quoted_names.js"
+          ]
+        }
+      ]
     }
   ]
 }

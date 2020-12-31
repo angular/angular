@@ -20,7 +20,7 @@ import {compileFactoryFunction, R3DependencyMetadata, R3FactoryTarget, R3Resolve
 import {R3JitReflector} from './render3/r3_jit';
 import {compileInjector, compileNgModule, R3InjectorMetadata, R3NgModuleMetadata} from './render3/r3_module_compiler';
 import {compilePipeFromMetadata, R3PipeMetadata} from './render3/r3_pipe_compiler';
-import {R3Reference} from './render3/util';
+import {getSafePropertyAccessString, R3Reference} from './render3/util';
 import {DeclarationListEmitMode, R3ComponentMetadata, R3DirectiveMetadata, R3HostMetadata, R3QueryMetadata, R3UsedDirectiveMetadata} from './render3/view/api';
 import {compileComponentFromMetadata, compileDirectiveFromMetadata, ParsedHostBindings, parseHostBindings, verifyHostBindings} from './render3/view/compiler';
 import {makeBindingParser, parseTemplate} from './render3/view/template';
@@ -471,7 +471,11 @@ function extractHostBindings(
     if (propMetadata.hasOwnProperty(field)) {
       propMetadata[field].forEach(ann => {
         if (isHostBinding(ann)) {
-          bindings.properties[ann.hostPropertyName || field] = field;
+          // Since this is a decorator, we know that the value is a class member. Always access it
+          // through `this` so that further down the line it can't be confused for a literal value
+          // (e.g. if there's a property called `true`).
+          bindings.properties[ann.hostPropertyName || field] =
+              getSafePropertyAccessString('this', field);
         } else if (isHostListener(ann)) {
           bindings.listeners[ann.eventName || field] = `${field}(${(ann.args || []).join(',')})`;
         }
