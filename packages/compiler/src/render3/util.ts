@@ -7,6 +7,7 @@
  */
 
 import {StaticSymbol} from '../aot/static_symbol';
+import {escapeIdentifier} from '../output/abstract_emitter';
 import * as o from '../output/output_ast';
 import {OutputContext} from '../util';
 
@@ -82,6 +83,11 @@ export function getSyntheticPropertyName(name: string) {
     name = ANIMATE_SYMBOL_PREFIX + name;
   }
   return name;
+}
+
+export function getSafePropertyAccessString(accessor: string, name: string): string {
+  const escapedName = escapeIdentifier(name, false, false);
+  return escapedName !== name ? `${accessor}[${escapedName}]` : `${accessor}.${name}`;
 }
 
 export function prepareSyntheticListenerFunctionName(name: string, phase: string) {

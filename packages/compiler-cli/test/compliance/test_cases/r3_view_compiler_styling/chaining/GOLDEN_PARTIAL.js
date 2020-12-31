@@ -325,7 +325,7 @@ export class MyComponent {
     }
 }
 MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); };
-MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "ng-component", host: { properties: { "class.apple": "yesToApple", "style.color": "color", "class.tomato": "yesToTomato", "style.transition": "transition", "style.border": "border", "class.orange": "yesToOrange" } }, ngImport: i0, template: { source: '', isInline: true } });
+MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "ng-component", host: { properties: { "class.apple": "yesToApple", "style.color": "color", "class.tomato": "yesToTomato", "style.transition": "transition", "style.border": "this.border", "class.orange": "this.yesToOrange" } }, ngImport: i0, template: { source: '', isInline: true } });
 (function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(MyComponent, [{
         type: Component,
         args: [{

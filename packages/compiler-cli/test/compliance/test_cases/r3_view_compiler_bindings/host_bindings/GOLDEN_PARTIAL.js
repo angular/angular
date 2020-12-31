@@ -9,7 +9,7 @@ export class HostBindingDir {
     }
 }
 HostBindingDir.ɵfac = function HostBindingDir_Factory(t) { return new (t || HostBindingDir)(); };
-HostBindingDir.ɵdir = i0.ɵɵngDeclareDirective({ version: "0.0.0-PLACEHOLDER", type: HostBindingDir, selector: "[hostBindingDir]", host: { properties: { "id": "dirId" } }, ngImport: i0 });
+HostBindingDir.ɵdir = i0.ɵɵngDeclareDirective({ version: "0.0.0-PLACEHOLDER", type: HostBindingDir, selector: "[hostBindingDir]", host: { properties: { "id": "this.dirId" } }, ngImport: i0 });
 (function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(HostBindingDir, [{
         type: Directive,
         args: [{ selector: '[hostBindingDir]' }]
@@ -298,7 +298,7 @@ export class MyDirective {
     }
 }
 MyDirective.ɵfac = function MyDirective_Factory(t) { return new (t || MyDirective)(); };
-MyDirective.ɵdir = i0.ɵɵngDeclareDirective({ version: "0.0.0-PLACEHOLDER", type: MyDirective, selector: "[my-dir]", host: { properties: { "tabindex": "1", "title": "myTitle", "id": "myId" } }, ngImport: i0 });
+MyDirective.ɵdir = i0.ɵɵngDeclareDirective({ version: "0.0.0-PLACEHOLDER", type: MyDirective, selector: "[my-dir]", host: { properties: { "tabindex": "1", "title": "this.myTitle", "id": "this.myId" } }, ngImport: i0 });
 (function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(MyDirective, [{
         type: Directive,
         args: [{ selector: '[my-dir]', host: { '[tabindex]': '1' } }]
@@ -423,7 +423,7 @@ export class MyDirective {
     }
 }
 MyDirective.ɵfac = function MyDirective_Factory(t) { return new (t || MyDirective)(); };
-MyDirective.ɵdir = i0.ɵɵngDeclareDirective({ version: "0.0.0-PLACEHOLDER", type: MyDirective, selector: "[my-dir]", host: { properties: { "attr.tabindex": "1", "attr.title": "myTitle", "attr.id": "myId" } }, ngImport: i0 });
+MyDirective.ɵdir = i0.ɵɵngDeclareDirective({ version: "0.0.0-PLACEHOLDER", type: MyDirective, selector: "[my-dir]", host: { properties: { "attr.tabindex": "1", "attr.title": "this.myTitle", "attr.id": "this.myId" } }, ngImport: i0 });
 (function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(MyDirective, [{
         type: Directive,
         args: [{ selector: '[my-dir]', host: { '[attr.tabindex]': '1' } }]
@@ -587,5 +587,107 @@ export declare class MyComponent {
     click(): void;
     static ɵfac: i0.ɵɵFactoryDef<MyComponent, never>;
     static ɵcmp: i0.ɵɵComponentDefWithMeta<MyComponent, "my-comp", never, {}, {}, never, never>;
+}
+
+/****************************************************************************************************
+ * PARTIAL FILE: host_bindings_primitive_names.js
+ ****************************************************************************************************/
+import { Directive, HostBinding, NgModule } from '@angular/core';
+import * as i0 from "@angular/core";
+export class HostBindingDir {
+}
+HostBindingDir.ɵfac = function HostBindingDir_Factory(t) { return new (t || HostBindingDir)(); };
+HostBindingDir.ɵdir = i0.ɵɵngDeclareDirective({ version: "0.0.0-PLACEHOLDER", type: HostBindingDir, selector: "[hostBindingDir]", host: { properties: { "class.a": "true", "class.b": "false", "class.c": "this.true", "class.d": "this.false", "class.e": "this.other" } }, ngImport: i0 });
+(function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(HostBindingDir, [{
+        type: Directive,
+        args: [{
+                selector: '[hostBindingDir]',
+                host: {
+                    '[class.a]': 'true',
+                    '[class.b]': 'false',
+                }
+            }]
+    }], null, { true: [{
+            type: HostBinding,
+            args: ['class.c']
+        }], false: [{
+            type: HostBinding,
+            args: ['class.d']
+        }], other: [{
+            type: HostBinding,
+            args: ['class.e']
+        }] }); })();
+export class MyModule {
+}
+MyModule.ɵmod = i0.ɵɵdefineNgModule({ type: MyModule });
+MyModule.ɵinj = i0.ɵɵdefineInjector({ factory: function MyModule_Factory(t) { return new (t || MyModule)(); } });
+(function () { (typeof ngJitMode === "undefined" || ngJitMode) && i0.ɵɵsetNgModuleScope(MyModule, { declarations: [HostBindingDir] }); })();
+(function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(MyModule, [{
+        type: NgModule,
+        args: [{ declarations: [HostBindingDir] }]
+    }], null, null); })();
+
+/****************************************************************************************************
+ * PARTIAL FILE: host_bindings_primitive_names.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class HostBindingDir {
+    true: any;
+    false: any;
+    other: any;
+    static ɵfac: i0.ɵɵFactoryDef<HostBindingDir, never>;
+    static ɵdir: i0.ɵɵDirectiveDefWithMeta<HostBindingDir, "[hostBindingDir]", never, {}, {}, never>;
+}
+export declare class MyModule {
+    static ɵmod: i0.ɵɵNgModuleDefWithMeta<MyModule, [typeof HostBindingDir], never, never>;
+    static ɵinj: i0.ɵɵInjectorDef<MyModule>;
+}
+
+/****************************************************************************************************
+ * PARTIAL FILE: host_bindings_quoted_names.js
+ ****************************************************************************************************/
+import { Directive, HostBinding, NgModule } from '@angular/core';
+import * as i0 from "@angular/core";
+export class HostBindingDir {
+}
+HostBindingDir.ɵfac = function HostBindingDir_Factory(t) { return new (t || HostBindingDir)(); };
+HostBindingDir.ɵdir = i0.ɵɵngDeclareDirective({ version: "0.0.0-PLACEHOLDER", type: HostBindingDir, selector: "[hostBindingDir]", host: { properties: { "class.a": "this['is-a']", "class.b": "this['is-\"b\"']", "class.c": "this['\"is-c\"']" } }, ngImport: i0 });
+(function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(HostBindingDir, [{
+        type: Directive,
+        args: [{ selector: '[hostBindingDir]' }]
+    }], null, { 'is-a': [{
+            type: HostBinding,
+            args: ['class.a']
+        }], 'is-"b"': [{
+            type: HostBinding,
+            args: ['class.b']
+        }], '"is-c"': [{
+            type: HostBinding,
+            args: ['class.c']
+        }] }); })();
+export class MyModule {
+}
+MyModule.ɵmod = i0.ɵɵdefineNgModule({ type: MyModule });
+MyModule.ɵinj = i0.ɵɵdefineInjector({ factory: function MyModule_Factory(t) { return new (t || MyModule)(); } });
+(function () { (typeof ngJitMode === "undefined" || ngJitMode) && i0.ɵɵsetNgModuleScope(MyModule, { declarations: [HostBindingDir] }); })();
+(function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(MyModule, [{
+        type: NgModule,
+        args: [{ declarations: [HostBindingDir] }]
+    }], null, null); })();
+
+/****************************************************************************************************
+ * PARTIAL FILE: host_bindings_quoted_names.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class HostBindingDir {
+    'is-a': any;
+    'is-"b"': any;
+    '"is-c"': any;
+    static ɵfac: i0.ɵɵFactoryDef<HostBindingDir, never>;
+    static ɵdir: i0.ɵɵDirectiveDefWithMeta<HostBindingDir, "[hostBindingDir]", never, {}, {}, never>;
+}
+export declare class MyModule {
+    static ɵmod: i0.ɵɵNgModuleDefWithMeta<MyModule, [typeof HostBindingDir], never, never>;
+    static ɵinj: i0.ɵɵInjectorDef<MyModule>;
 }
 

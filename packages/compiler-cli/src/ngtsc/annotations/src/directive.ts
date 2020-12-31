@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {compileDeclareDirectiveFromMetadata, compileDirectiveFromMetadata, ConstantPool, Expression, ExternalExpr, Identifiers, makeBindingParser, ParsedHostBindings, ParseError, parseHostBindings, R3DependencyMetadata, R3DirectiveDef, R3DirectiveMetadata, R3FactoryTarget, R3QueryMetadata, R3ResolvedDependencyType, Statement, verifyHostBindings, WrappedNodeExpr} from '@angular/compiler';
+import {compileDeclareDirectiveFromMetadata, compileDirectiveFromMetadata, ConstantPool, Expression, ExternalExpr, getSafePropertyAccessString, Identifiers, makeBindingParser, ParsedHostBindings, ParseError, parseHostBindings, R3DependencyMetadata, R3DirectiveDef, R3DirectiveMetadata, R3FactoryTarget, R3QueryMetadata, R3ResolvedDependencyType, Statement, verifyHostBindings, WrappedNodeExpr} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
@@ -738,7 +738,11 @@ export function extractHostBindings(
             hostPropertyName = resolved;
           }
 
-          bindings.properties[hostPropertyName] = member.name;
+          // Since this is a decorator, we know that the value is a class member. Always access it
+          // through `this` so that further down the line it can't be confused for a literal value
+          // (e.g. if there's a property called `true`). There is no size penalty, because all
+          // values (except literals) are converted to `ctx.propName` eventually.
+          bindings.properties[hostPropertyName] = getSafePropertyAccessString('this', member.name);
         });
       });
 
