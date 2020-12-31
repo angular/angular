@@ -93,12 +93,11 @@ Command syntax is shown as follows:
 [camelCase or dash-case](guide/glossary#case-types).
 `--myOptionName` is equivalent to `--my-option-name`.
 
-### Boolean and enumerated options
+### Boolean options
 
-Boolean options have two forms: `--thisOption` sets the flag, `--noThisOption` clears it.
+Boolean options have two forms: `--this-option` sets the flag to `true`, `--no-this-option` sets it to `false`.
 If neither option is supplied, the flag remains in its default state, as listed in the reference documentation.
 
-Allowed values are given with each enumerated option description, with the default value in **bold**.
 
 ### Relative paths
 

@@ -109,6 +109,21 @@ export class TypeScriptAstHost implements AstHost<ts.Expression> {
     return stmt.expression;
   }
 
+  isCallExpression = ts.isCallExpression;
+
+  parseCallee(call: ts.Expression): ts.Expression {
+    assert(call, ts.isCallExpression, 'a call expression');
+    return call.expression;
+  }
+
+  parseArguments(call: ts.Expression): ts.Expression[] {
+    assert(call, ts.isCallExpression, 'a call expression');
+    return call.arguments.map(arg => {
+      assert(arg, isNotSpreadElement, 'argument not to use spread syntax');
+      return arg;
+    });
+  }
+
   getRange(node: ts.Expression): Range {
     const file = node.getSourceFile();
     if (file === undefined) {

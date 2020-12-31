@@ -8,7 +8,7 @@ export class HostBindingComp {
 HostBindingComp.ɵfac = function HostBindingComp_Factory(t) { return new (t || HostBindingComp)(); };
 HostBindingComp.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: HostBindingComp, selector: "host-binding-comp", ngImport: i0, template: { source: `
     <my-forward-directive></my-forward-directive>
-  `, isInline: true }, directives: [{ type: function () { return MyForwardDirective; }, selector: "my-forward-directive" }] });
+  `, isInline: true }, directives: [{ type: i0.forwardRef(function () { return MyForwardDirective; }), selector: "my-forward-directive" }] });
 (function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(HostBindingComp, [{
         type: Component,
         args: [{
@@ -59,7 +59,7 @@ export class HostBindingComp {
 HostBindingComp.ɵfac = function HostBindingComp_Factory(t) { return new (t || HostBindingComp)(); };
 HostBindingComp.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: HostBindingComp, selector: "host-binding-comp", ngImport: i0, template: { source: `
     <div [attr.style]="{} | my_forward_pipe">...</div>
-  `, isInline: true }, pipes: { "my_forward_pipe": function () { return MyForwardPipe; } } });
+  `, isInline: true }, pipes: { "my_forward_pipe": i0.forwardRef(function () { return MyForwardPipe; }) } });
 (function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(HostBindingComp, [{
         type: Component,
         args: [{

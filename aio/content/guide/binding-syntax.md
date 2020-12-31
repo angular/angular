@@ -85,7 +85,7 @@ However, the value of the attribute is irrelevant, which is why you cannot enabl
 
 To control the state of the button, set the `disabled` property instead.
 
-Property and attribute comparison
+#### Property and attribute comparison
 
 Though you could technically set the `[attr.disabled]` attribute binding, the values are different in that the property binding must be a boolean value, while its corresponding attribute binding relies on whether the value is `null` or not.
 Consider the following:

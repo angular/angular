@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {TmplAstBoundEvent} from '@angular/compiler';
+import {ParseSpan, TmplAstBoundEvent} from '@angular/compiler';
 import * as e from '@angular/compiler/src/expression_parser/ast';  // e for expression AST
 import * as t from '@angular/compiler/src/render3/r3_ast';         // t for template AST
 
-import {isTemplateNode, isTemplateNodeWithKeyAndValue, isWithin} from './utils';
+import {isTemplateNode, isTemplateNodeWithKeyAndValue, isWithin, isWithinKeyValue} from './utils';
 
 /**
  * Contextual information for a target position within the template.
@@ -106,6 +106,12 @@ export interface AttributeInValueContext {
 }
 
 /**
+ * This special marker is added to the path when the cursor is within the sourceSpan but not the key
+ * or value span of a node with key/value spans.
+ */
+const OUTSIDE_K_V_MARKER = new e.AST(new ParseSpan(-1, -1), new e.AbsoluteSourceSpan(-1, -1));
+
+/**
  * Return the template AST node or expression AST node that most accurately
  * represents the node at the specified cursor `position`.
  *
@@ -119,20 +125,6 @@ export function getTargetAtPosition(template: t.Node[], position: number): Templ
   }
 
   const candidate = path[path.length - 1];
-  if (isTemplateNodeWithKeyAndValue(candidate)) {
-    let {keySpan, valueSpan} = candidate;
-    if (valueSpan === undefined && candidate instanceof TmplAstBoundEvent) {
-      valueSpan = candidate.handlerSpan;
-    }
-    const isWithinKeyValue =
-        isWithin(position, keySpan) || (valueSpan && isWithin(position, valueSpan));
-    if (!isWithinKeyValue) {
-      // If cursor is within source span but not within key span or value span,
-      // do not return the node.
-      return null;
-    }
-  }
-
   // Walk up the result nodes to find the nearest `t.Template` which contains the targeted node.
   let context: t.Template|null = null;
   for (let i = path.length - 2; i >= 0; i--) {
@@ -212,7 +204,22 @@ class TemplateTargetVisitor implements t.Visitor {
   static visitTemplate(template: t.Node[], position: number): Array<t.Node|e.AST> {
     const visitor = new TemplateTargetVisitor(position);
     visitor.visitAll(template);
-    return visitor.path;
+    const {path} = visitor;
+
+    const strictPath = path.filter(v => v !== OUTSIDE_K_V_MARKER);
+    const candidate = strictPath[strictPath.length - 1];
+    const matchedASourceSpanButNotAKvSpan = path.some(v => v === OUTSIDE_K_V_MARKER);
+    if (matchedASourceSpanButNotAKvSpan &&
+        (candidate instanceof t.Template || candidate instanceof t.Element)) {
+      // Template nodes with key and value spans are always defined on a `t.Template` or
+      // `t.Element`. If we found a node on a template with a `sourceSpan` that includes the cursor,
+      // it is possible that we are outside the k/v spans (i.e. in-between them). If this is the
+      // case and we do not have any other candidate matches on the `t.Element` or `t.Template`, we
+      // want to return no results. Otherwise, the `t.Element`/`t.Template` result is incorrect for
+      // that cursor position.
+      return [];
+    }
+    return strictPath;
   }
 
   // Position must be absolute in the source file.
@@ -229,7 +236,15 @@ class TemplateTargetVisitor implements t.Visitor {
       return;
     }
     const {start, end} = getSpanIncludingEndTag(node);
-    if (isWithin(this.position, {start, end})) {
+    if (!isWithin(this.position, {start, end})) {
+      return;
+    }
+
+    if (isTemplateNodeWithKeyAndValue(node) && !isWithinKeyValue(this.position, node)) {
+      // If cursor is within source span but not within key span or value span,
+      // do not return the node.
+      this.path.push(OUTSIDE_K_V_MARKER);
+    } else {
       this.path.push(node);
       node.visit(this);
     }

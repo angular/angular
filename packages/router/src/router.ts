@@ -824,7 +824,7 @@ export class Router {
                          // navigation completes, there will be nothing in
                          // history.state.navigationId. This can cause sync problems with AngularJS
                          // sync code which looks for a value here in order to determine whether or
-                         // not to handle a given popstate event or to leave it to the Angualr
+                         // not to handle a given popstate event or to leave it to the Angular
                          // router.
                          this.resetUrlToCurrentUrlTree();
                          const navCancel = new NavigationCancel(

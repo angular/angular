@@ -446,5 +446,5 @@ export function computeStartOfLinePositions(str: string) {
 }
 
 function computeLineLengths(str: string): number[] {
-  return (str.split(/\r?\n/)).map(s => s.length);
+  return (str.split(/\n/)).map(s => s.length);
 }

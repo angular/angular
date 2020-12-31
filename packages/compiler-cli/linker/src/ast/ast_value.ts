@@ -295,6 +295,19 @@ export class AstValue<T, TExpression> {
     return new AstValue(this.host.parseReturnValue(this.expression), this.host);
   }
 
+  isCallExpression(): boolean {
+    return this.host.isCallExpression(this.expression);
+  }
+
+  getCallee(): AstValue<unknown, TExpression> {
+    return new AstValue(this.host.parseCallee(this.expression), this.host);
+  }
+
+  getArguments(): AstValue<unknown, TExpression>[] {
+    const args = this.host.parseArguments(this.expression);
+    return args.map(arg => new AstValue(arg, this.host));
+  }
+
   /**
    * Return the `TExpression` of this value wrapped in a `WrappedNodeExpr`.
    */

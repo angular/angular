@@ -7,6 +7,7 @@
  */
 import {PluginObj, transformSync} from '@babel/core';
 
+import {needsLinking} from '../../../linker';
 import {createEs2015LinkerPlugin} from '../../../linker/babel';
 import {AbsoluteFsPath, FileSystem} from '../../../src/ngtsc/file_system';
 import {ConsoleLogger, LogLevel} from '../../../src/ngtsc/logging';
@@ -57,7 +58,7 @@ function linkPartials(fs: FileSystem, test: ComplianceTest): CompileResult {
       const sourceMap =
           fs.exists(sourceMapPath) ? JSON.parse(fs.readFile(sourceMapPath)) : undefined;
       const {linkedSource, linkedSourceMap} =
-          applyLinker({fileName, source, sourceMap}, linkerPlugin);
+          applyLinker({path: partialPath, source, sourceMap}, linkerPlugin);
 
       if (linkedSourceMap !== undefined) {
         const mapAndPath: MapAndPath = {map: linkedSourceMap, mapPath: sourceMapPath};
@@ -75,18 +76,18 @@ function linkPartials(fs: FileSystem, test: ComplianceTest): CompileResult {
  *
  * It will ignore files that do not have a `.js` extension.
  *
- * @param file The file name and its source to be transformed using the linker.
+ * @param file The absolute file path and its source to be transformed using the linker.
  * @param linkerPlugin The linker plugin to apply.
  * @returns The file's source content, which has been transformed using the linker if necessary.
  */
 function applyLinker(
-    file: {fileName: string; source: string, sourceMap: RawSourceMap | undefined},
+    file: {path: string; source: string, sourceMap: RawSourceMap | undefined},
     linkerPlugin: PluginObj): {linkedSource: string, linkedSourceMap: RawSourceMap|undefined} {
-  if (!file.fileName.endsWith('.js')) {
+  if (!file.path.endsWith('.js') || !needsLinking(file.path, file.source)) {
     return {linkedSource: file.source, linkedSourceMap: file.sourceMap};
   }
   const result = transformSync(file.source, {
-    filename: file.fileName,
+    filename: file.path,
     sourceMaps: !!file.sourceMap,
     plugins: [linkerPlugin],
     parserOpts: {sourceType: 'unambiguous'},

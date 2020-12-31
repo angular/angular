@@ -75,6 +75,21 @@ export interface AstHost<TExpression> {
   parseReturnValue(fn: TExpression): TExpression;
 
   /**
+   * Return true if the given expression is a call expression, or false otherwise.
+   */
+  isCallExpression(node: TExpression): boolean;
+  /**
+   * Returns the expression that is called in the provided call expression, or throw if it is not
+   * a call expression.
+   */
+  parseCallee(call: TExpression): TExpression;
+  /**
+   * Returns the argument expressions for the provided call expression, or throw if it is not
+   * a call expression.
+   */
+  parseArguments(call: TExpression): TExpression[];
+
+  /**
    * Compute the location range of the expression in the source file, to be used for source-mapping.
    */
   getRange(node: TExpression): Range;

@@ -46,8 +46,7 @@ export interface R3DeclareDirectiveMetadata extends R3PartialDeclaration {
   inputs?: {[classPropertyName: string]: string|[string, string]};
 
   /**
-   * A mapping of outputs from class property names to binding property names, or to a tuple of
-   * binding property name and class property name if the names are different.
+   * A mapping of outputs from class property names to binding property names.
    */
   outputs?: {[classPropertyName: string]: string};
 
@@ -155,7 +154,8 @@ export interface R3DeclareComponentMetadata extends R3DeclareDirectiveMetadata {
     selector: string;
 
     /**
-     * Reference to the directive class (possibly a forward reference).
+     * Reference to the directive class (possibly a forward reference wrapped in a `forwardRef`
+     * invocation).
      */
     type: o.Expression | (() => o.Expression);
 
@@ -176,8 +176,8 @@ export interface R3DeclareComponentMetadata extends R3DeclareDirectiveMetadata {
   }[];
 
   /**
-   * A map of pipe names to an expression referencing the pipe type (possibly a forward reference)
-   * which are used in the template.
+   * A map of pipe names to an expression referencing the pipe type (possibly a forward reference
+   * wrapped in a `forwardRef` invocation) which are used in the template.
    */
   pipes?: {[pipeName: string]: o.Expression|(() => o.Expression)};
 

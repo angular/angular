@@ -165,8 +165,6 @@ export {
   ɵɵnamespaceMathML,
   ɵɵnamespaceSVG,
   ɵɵnextContext,
-  ɵɵngDeclareComponent,
-  ɵɵngDeclareDirective,
   ɵɵNgOnChangesFeature,
   ɵɵpipe,
   ɵɵpipeBind1,
@@ -274,6 +272,10 @@ export {
   resetCompiledComponents as ɵresetCompiledComponents,
   transitiveScopesFor as ɵtransitiveScopesFor,
 } from './render3/jit/module';
+export {
+  ɵɵngDeclareComponent,
+  ɵɵngDeclareDirective,
+} from './render3/jit/partial';
 export {
   compilePipe as ɵcompilePipe,
 } from './render3/jit/pipe';

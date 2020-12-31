@@ -60,6 +60,8 @@ pkg_npm(
     ],
     deps = [
         ":compiler-cli",
+        "//packages/compiler-cli/linker",
+        "//packages/compiler-cli/linker/babel",
         "//packages/compiler-cli/ngcc",
         "//packages/compiler-cli/src/ngtsc/file_system/testing",
         "//packages/compiler-cli/src/ngtsc/logging/testing",

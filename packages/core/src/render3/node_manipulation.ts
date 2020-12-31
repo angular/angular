@@ -480,12 +480,12 @@ function processCleanups(tView: TView, lView: LView): void {
         tCleanup[i].call(context);
       }
     }
-    if (lCleanup !== null) {
-      for (let i = lastLCleanupIndex + 1; i < lCleanup.length; i++) {
-        const instanceCleanupFn = lCleanup[i];
-        ngDevMode && assertFunction(instanceCleanupFn, 'Expecting instance cleanup function.');
-        instanceCleanupFn();
-      }
+  }
+  if (lCleanup !== null) {
+    for (let i = lastLCleanupIndex + 1; i < lCleanup.length; i++) {
+      const instanceCleanupFn = lCleanup[i];
+      ngDevMode && assertFunction(instanceCleanupFn, 'Expecting instance cleanup function.');
+      instanceCleanupFn();
     }
     lView[CLEANUP] = null;
   }

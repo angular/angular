@@ -359,6 +359,52 @@ describe('AstValue', () => {
        });
   });
 
+  describe('isCallExpression', () => {
+    it('should return true if the value represents a call expression', () => {
+      const callExpr = factory.createCallExpression(factory.createIdentifier('foo'), [], false);
+      expect(createAstValue<Function>(callExpr).isCallExpression()).toBe(true);
+    });
+
+    it('should return false if the value does not represent a call expression', () => {
+      const fooExpr = factory.createIdentifier('foo');
+      expect(createAstValue<Function>(fooExpr).isCallExpression()).toBe(false);
+    });
+  });
+
+  describe('getCallee', () => {
+    it('should return the callee expression as a value', () => {
+      const callExpr = factory.createCallExpression(factory.createIdentifier('foo'), [], false);
+      expect(createAstValue<Function>(callExpr).getCallee())
+          .toEqual(createAstValue(factory.createIdentifier('foo')));
+    });
+
+    it('should throw an error if the value is not a call expression', () => {
+      expect(() => createAstValue<number>(factory.createLiteral(42)).getCallee())
+          .toThrowError('Unsupported syntax, expected a call expression.');
+    });
+  });
+
+  describe('getArguments', () => {
+    it('should return the arguments as an array of values', () => {
+      const callExpr = factory.createCallExpression(
+          factory.createIdentifier('foo'),
+          [
+            factory.createLiteral(1),
+            factory.createLiteral(2),
+          ],
+          false);
+      expect(createAstValue<Function>(callExpr).getArguments()).toEqual([
+        createAstValue(factory.createLiteral(1)),
+        createAstValue(factory.createLiteral(2)),
+      ]);
+    });
+
+    it('should throw an error if the value is not a call expression', () => {
+      expect(() => createAstValue<number>(factory.createLiteral(42)).getArguments())
+          .toThrowError('Unsupported syntax, expected a call expression.');
+    });
+  });
+
   describe('getOpaque()', () => {
     it('should return the value wrapped in a `WrappedNodeExpr`', () => {
       expect(createAstValue(factory.createLiteral(42)).getOpaque())

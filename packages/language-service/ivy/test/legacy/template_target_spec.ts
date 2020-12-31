@@ -598,6 +598,15 @@ describe('findNodeAtPosition for microsyntax expression', () => {
     expect(node).toBeInstanceOf(e.PropertyRead);
   });
 
+  it('should locate property read next to variable in structural directive syntax', () => {
+    const {errors, nodes, position} = parse(`<div *ngIf="fo¦o as bar"></div>`);
+    expect(errors).toBe(null);
+    const {nodeInContext} = getTargetAtPosition(nodes, position)!;
+    const {node} = nodeInContext;
+    expect(isExpressionNode(node!)).toBe(true);
+    expect(node).toBeInstanceOf(e.PropertyRead);
+  });
+
   it('should locate text attribute', () => {
     const {errors, nodes, position} = parse(`<div *ng¦For="let item of items"></div>`);
     // ngFor is a text attribute because the desugared form is

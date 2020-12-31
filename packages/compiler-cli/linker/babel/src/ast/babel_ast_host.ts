@@ -100,6 +100,21 @@ export class BabelAstHost implements AstHost<t.Expression> {
     return stmt.argument;
   }
 
+  isCallExpression = t.isCallExpression;
+  parseCallee(call: t.Expression): t.Expression {
+    assert(call, t.isCallExpression, 'a call expression');
+    assert(call.callee, t.isExpression, 'an expression');
+    return call.callee;
+  }
+  parseArguments(call: t.Expression): t.Expression[] {
+    assert(call, t.isCallExpression, 'a call expression');
+    return call.arguments.map(arg => {
+      assert(arg, isNotSpreadArgument, 'argument not to use spread syntax');
+      assert(arg, t.isExpression, 'argument to be an expression');
+      return arg;
+    });
+  }
+
   getRange(node: t.Expression): Range {
     if (node.loc == null || node.start === null || node.end === null) {
       throw new FatalLinkerError(
@@ -137,4 +152,16 @@ function isNotSpreadElement(e: t.Expression|t.SpreadElement): e is t.Expression 
  */
 function isPropertyName(e: t.Expression): e is t.Identifier|t.StringLiteral|t.NumericLiteral {
   return t.isIdentifier(e) || t.isStringLiteral(e) || t.isNumericLiteral(e);
+}
+
+/**
+ * The declared type of an argument to a call expression.
+ */
+type ArgumentType = t.CallExpression['arguments'][number];
+
+/**
+ * Return true if the argument is not a spread element.
+ */
+function isNotSpreadArgument(arg: ArgumentType): arg is Exclude<ArgumentType, t.SpreadElement> {
+  return !t.isSpreadElement(arg);
 }

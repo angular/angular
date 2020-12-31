@@ -328,8 +328,10 @@ There are cases where you need to differentiate the behavior of a [Component](ap
 The [Attribute](api/core/Attribute) parameter decorator is great for passing the value of an HTML attribute to a component/directive constructor via [dependency injection](guide/dependency-injection).
 
 <div class="alert is-helpful">
+
   The injected value captures the value of the specified HTML attribute at that moment.
   Future updates to the attribute value are not reflected in the injected value.
+
 </div>
 
 <code-example 

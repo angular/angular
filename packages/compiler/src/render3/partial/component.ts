@@ -91,9 +91,8 @@ function compileTemplateDefinition(template: ParsedTemplate): o.LiteralMapExpr {
  * individual directives. If the component does not use any directives, then null is returned.
  */
 function compileUsedDirectiveMetadata(meta: R3ComponentMetadata): o.LiteralArrayExpr|null {
-  const wrapType = meta.wrapDirectivesAndPipesInClosure ?
-      (expr: o.Expression) => o.fn([], [new o.ReturnStatement(expr)]) :
-      (expr: o.Expression) => expr;
+  const wrapType =
+      meta.wrapDirectivesAndPipesInClosure ? generateForwardRef : (expr: o.Expression) => expr;
 
   return toOptionalLiteralArray(meta.directives, directive => {
     const dirMeta = new DefinitionMap<R3UsedDirectiveMetadata>();
@@ -116,13 +115,16 @@ function compileUsedPipeMetadata(meta: R3ComponentMetadata): o.LiteralMapExpr|nu
     return null;
   }
 
-  const wrapType = meta.wrapDirectivesAndPipesInClosure ?
-      (expr: o.Expression) => o.fn([], [new o.ReturnStatement(expr)]) :
-      (expr: o.Expression) => expr;
+  const wrapType =
+      meta.wrapDirectivesAndPipesInClosure ? generateForwardRef : (expr: o.Expression) => expr;
 
   const entries = [];
   for (const [name, pipe] of meta.pipes) {
     entries.push({key: name, value: wrapType(pipe), quoted: true});
   }
   return o.literalMap(entries);
+}
+
+function generateForwardRef(expr: o.Expression): o.Expression {
+  return o.importExpr(R3.forwardRef).callFn([o.fn([], [new o.ReturnStatement(expr)])]);
 }

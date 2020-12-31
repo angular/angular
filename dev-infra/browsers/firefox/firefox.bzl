@@ -12,31 +12,31 @@ def define_firefox_repositories():
     platform_http_file(
         name = "org_mozilla_firefox_amd64",
         licenses = ["reciprocal"],  # MPL 2.0
-        sha256 = "bde6e020556a21561e4b8d7aaecf8db7077951f179b98ca5d0305435bc6802c9",
-        # Firefox v78.0
-        urls = ["https://ftp.mozilla.org/pub/firefox/releases/78.0/linux-x86_64/en-US/firefox-78.0.tar.bz2"],
+        sha256 = "601e5a9a12ce680ecd82177c7887dae008d8f33690da43be1a690b76563cd992",
+        # Firefox v84.0
+        urls = ["https://ftp.mozilla.org/pub/firefox/releases/84.0/linux-x86_64/en-US/firefox-84.0.tar.bz2"],
     )
 
     platform_http_file(
         name = "org_mozilla_firefox_macos",
         licenses = ["reciprocal"],  # MPL 2.0
-        sha256 = "69a0ae139814cc314d0c5e3fd3859e0ac9de8517550d7d32b06c57022a14f49e",
-        # Firefox v78.0
-        urls = ["https://ftp.mozilla.org/pub/firefox/releases/78.0/mac/en-US/Firefox%2078.0.dmg"],
+        sha256 = "4c7bca050eb228f4f6f93a9895af0a87473e03c67401d1d2f1ba907faf87fefd",
+        # Firefox v84.0
+        urls = ["https://ftp.mozilla.org/pub/firefox/releases/84.0/mac/en-US/Firefox%2084.0.dmg"],
     )
 
     platform_http_file(
         name = "org_mozilla_geckodriver_amd64",
         licenses = ["reciprocal"],  # MPL 2.0
-        sha256 = "d59ca434d8e41ec1e30dd7707b0c95171dd6d16056fb6db9c978449ad8b93cc0",
-        # Geckodriver v0.26.0
-        urls = ["https://github.com/mozilla/geckodriver/releases/download/v0.26.0/geckodriver-v0.26.0-linux64.tar.gz"],
+        sha256 = "61bfc547a623d7305256611a81ecd24e6bf9dac555529ed6baeafcf8160900da",
+        # Geckodriver v0.28.0
+        urls = ["https://github.com/mozilla/geckodriver/releases/download/v0.28.0/geckodriver-v0.28.0-linux64.tar.gz"],
     )
 
     platform_http_file(
         name = "org_mozilla_geckodriver_macos",
         licenses = ["reciprocal"],  # MPL 2.0
-        sha256 = "4739ef8f8af5d89bd4a8015788b4dc45c2f5f16b2fdc001254c9a92fe7261947",
-        # Geckodriver v0.26.0
-        urls = ["https://github.com/mozilla/geckodriver/releases/download/v0.26.0/geckodriver-v0.26.0-macos.tar.gz"],
+        sha256 = "c288ff6db39adfd5eea0e25b4c3e71bfd9fb383eccf521cdd65f67ea78eb1761",
+        # Geckodriver v0.28.0
+        urls = ["https://github.com/mozilla/geckodriver/releases/download/v0.28.0/geckodriver-v0.28.0-macos.tar.gz"],
     )
