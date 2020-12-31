@@ -49,7 +49,7 @@ For more information about components, see [Introduction to Components](guide/ar
 
 ## Create the sample project
 
-To create the sample project, generate the <live-example name="getting-started" noDownload>ready-made sample project in StackBlitz</live-example>.
+To create the sample project, generate the <live-example name="getting-started-v0" noDownload>ready-made sample project in StackBlitz</live-example>.
 To save your work:
 
 1. Log into StackBlitz.
