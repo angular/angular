@@ -16,7 +16,7 @@ import {DefaultImportRecorder, ModuleResolver, Reference, ReferenceEmitter} from
 import {DependencyTracker} from '../../incremental/api';
 import {IndexingContext} from '../../indexer';
 import {ClassPropertyMapping, ComponentResources, DirectiveMeta, DirectiveTypeCheckMeta, extractDirectiveTypeCheckMeta, InjectableClassRegistry, MetadataReader, MetadataRegistry, Resource, ResourceRegistry} from '../../metadata';
-import {EnumValue, PartialEvaluator} from '../../partial_evaluator';
+import {DynamicValue, EnumValue, PartialEvaluator, ResolvedValueArray} from '../../partial_evaluator';
 import {ClassDeclaration, DeclarationNode, Decorator, ReflectionHost, reflectObjectLiteral} from '../../reflection';
 import {ComponentScopeReader, LocalModuleScopeRegistry, TypeCheckScopeRegistry} from '../../scope';
 import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerFlags, HandlerPrecedence, ResolveResult} from '../../transform';
@@ -72,6 +72,8 @@ export interface ComponentAnalysisData {
   resources: ComponentResources;
 
   isPoisoned: boolean;
+
+  animationsMeta: string[]|'dynamic'|null;
 }
 
 export type ComponentResolutionData = Pick<R3ComponentMetadata, ComponentMetadataResolvedFields>;
@@ -310,8 +312,17 @@ export class ComponentDecoratorHandler implements
         this._resolveEnumValue(component, 'changeDetection', 'ChangeDetectionStrategy');
 
     let animations: Expression|null = null;
+    let animationsMeta: string[]|'dynamic'|null = null;
     if (component.has('animations')) {
       animations = new WrappedNodeExpr(component.get('animations')!);
+      const eva = this.evaluator.evaluate(component.get('animations')!);
+      if (eva instanceof DynamicValue) {
+        animationsMeta = 'dynamic';
+      } else if (Array.isArray(eva)) {
+        const res: string[] = [];
+        this.retrieveAnimationName(eva, res);
+        animationsMeta = res;
+      }
     }
 
     const output: AnalysisOutput<ComponentAnalysisData> = {
@@ -348,6 +359,7 @@ export class ComponentDecoratorHandler implements
           template: templateResource,
         },
         isPoisoned: false,
+        animationsMeta,
       },
     };
     if (changeDetection !== null) {
@@ -356,10 +368,29 @@ export class ComponentDecoratorHandler implements
     return output;
   }
 
+  /**
+   * collect the animation names form the static evaluation result.
+   * @param value the static evaluation result of the animations
+   * @param res the animation names collected
+   */
+  private retrieveAnimationName(value: ResolvedValueArray, res: string[]) {
+    value.forEach(_val => {
+      if (_val instanceof Map) {
+        const name = _val.get('name');
+        if (typeof name === 'string') {
+          res.push(name);
+        }
+      } else if (Array.isArray(_val)) {
+        this.retrieveAnimationName(_val, res);
+      }
+    });
+  }
+
   register(node: ClassDeclaration, analysis: ComponentAnalysisData): void {
     // Register this component's information with the `MetadataRegistry`. This ensures that
     // the information about the component is available during the compile() phase.
     const ref = new Reference(node);
+
     this.metaRegistry.registerDirectiveMetadata({
       ref,
       name: node.name.text,
@@ -373,6 +404,7 @@ export class ComponentDecoratorHandler implements
       ...analysis.typeCheckMeta,
       isPoisoned: analysis.isPoisoned,
       isStructural: false,
+      animations: analysis.animationsMeta
     });
 
     this.resourceRegistry.registerResources(analysis.resources, node);

@@ -76,6 +76,12 @@ export interface DirectiveMeta {
   exportAs: string[]|null;
 
   isStructural: boolean;
+
+  /**
+   * the name of animations that the user defines in the component.
+   * Only include the animation names.
+   */
+  animations: string[]|'dynamic'|null;
 }
 
 /**

@@ -106,6 +106,7 @@ runInEachFileSystem(() => {
         name: 'Dir',
         selector: '[dir]',
         isStructural: false,
+        animations: null,
       };
       matcher.addSelectables(CssSelector.parse('[dir]'), dirMeta);
 

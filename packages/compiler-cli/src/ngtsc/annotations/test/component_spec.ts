@@ -13,7 +13,7 @@ import {CycleAnalyzer, ImportGraph} from '../../cycles';
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
 import {absoluteFrom} from '../../file_system';
 import {runInEachFileSystem} from '../../file_system/testing';
-import {ModuleResolver, NOOP_DEFAULT_IMPORT_RECORDER, ReferenceEmitter} from '../../imports';
+import {ModuleResolver, NOOP_DEFAULT_IMPORT_RECORDER, Reference, ReferenceEmitter} from '../../imports';
 import {CompoundMetadataReader, DtsMetadataReader, InjectableClassRegistry, LocalMetadataRegistry, ResourceRegistry} from '../../metadata';
 import {PartialEvaluator} from '../../partial_evaluator';
 import {isNamedClassDeclaration, TypeScriptReflectionHost} from '../../reflection';
@@ -79,7 +79,7 @@ function setup(program: ts.Program, options: ts.CompilerOptions, host: ts.Compil
       injectableRegistry,
       /* annotateForClosureCompiler */ false,
   );
-  return {reflectionHost, handler};
+  return {reflectionHost, handler, metaRegistry};
 }
 
 runInEachFileSystem(() => {
@@ -219,6 +219,41 @@ runInEachFileSystem(() => {
       }
       const {analysis} = handler.analyze(TestCmp, detected.metadata);
       expect(analysis?.resources.styles.size).toBe(3);
+    });
+
+    it('should evaluate the name of animations', () => {
+      const {program, options, host} = makeProgram([
+        {
+          name: _('/node_modules/@angular/core/index.d.ts'),
+          contents: 'export const Component: any;',
+        },
+        {
+          name: _('/entry.ts'),
+          contents: `
+          import {Component} from '@angular/core';
+
+          function trigger(name) {
+            return {name};
+          }
+
+          @Component({
+            template: '',
+            animations: [trigger('animationName'), [trigger('nestedAnimationName')]],
+          }) class TestCmp {}
+      `
+        },
+      ]);
+      const {reflectionHost, handler, metaRegistry} = setup(program, options, host);
+      const TestCmp = getDeclaration(program, _('/entry.ts'), 'TestCmp', isNamedClassDeclaration);
+      const detected = handler.detect(TestCmp, reflectionHost.getDecoratorsOfDeclaration(TestCmp));
+      if (detected === undefined) {
+        return fail('Failed to recognize @Component');
+      }
+      const {analysis} = handler.analyze(TestCmp, detected.metadata);
+      handler.register(TestCmp, analysis!);
+      const meta = metaRegistry.getDirectiveMetadata(new Reference(TestCmp));
+      expect(meta?.animations?.length).toBe(2);
+      expect(meta?.animations!).toEqual(['animationName', 'nestedAnimationName']);
     });
 
     it('does not emit a program with template parse errors', () => {
