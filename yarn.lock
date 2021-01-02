@@ -2,6 +2,14 @@
 # yarn lockfile v1
 
 
+"@angular-devkit/architect@0.1100.0":
+  version "0.1100.0"
+  resolved "https://registry.yarnpkg.com/@angular-devkit/architect/-/architect-0.1100.0.tgz#0ef9cb3616e0368fa6898574cafeec7cd4357930"
+  integrity sha512-JFPEpEgxJGk5eaJsEilQNI5rOAKCawMdGFAq1uBlYeXSt3iMfFfn//ayvIsE7L2y5b4MC0rzafWSNyDSP3+WuA==
+  dependencies:
+    "@angular-devkit/core" "11.0.0"
+    rxjs "6.6.3"
+
 "@angular-devkit/architect@0.1100.0-rc.1":
   version "0.1100.0-rc.1"
   resolved "https://registry.yarnpkg.com/@angular-devkit/architect/-/architect-0.1100.0-rc.1.tgz#8cc88af98a0158a75ed53b0d12b302457f282f77"
@@ -10,15 +18,15 @@
     "@angular-devkit/core" "11.0.0-rc.1"
     rxjs "6.6.3"
 
-"@angular-devkit/build-angular@0.1100.0-rc.1":
-  version "0.1100.0-rc.1"
-  resolved "https://registry.yarnpkg.com/@angular-devkit/build-angular/-/build-angular-0.1100.0-rc.1.tgz#4ed94e1cda73f89272ba0633ad92ca1e34da6d85"
-  integrity sha512-82X3gClVcNipXW/qaJq374ltNKWuLmOffWfzBss9qpHS7lMATJSfRjCUZdAOawntO5ZXI6EOOtmjXR4nAAZIyg==
+"@angular-devkit/build-angular@0.1100.0":
+  version "0.1100.0"
+  resolved "https://registry.yarnpkg.com/@angular-devkit/build-angular/-/build-angular-0.1100.0.tgz#11c29c3f324150ad3ae867fb06a7dc9b2dcaa910"
+  integrity sha512-jCgtnqfBLO00LNImqtjeW07ijYXdpzhsOM4jzlhafh/NesjWJXgg1NI1K7QJvmVL79TeqbBsMj8IOLGTMUCDJw==
   dependencies:
-    "@angular-devkit/architect" "0.1100.0-rc.1"
-    "@angular-devkit/build-optimizer" "0.1100.0-rc.1"
-    "@angular-devkit/build-webpack" "0.1100.0-rc.1"
-    "@angular-devkit/core" "11.0.0-rc.1"
+    "@angular-devkit/architect" "0.1100.0"
+    "@angular-devkit/build-optimizer" "0.1100.0"
+    "@angular-devkit/build-webpack" "0.1100.0"
+    "@angular-devkit/core" "11.0.0"
     "@babel/core" "7.12.3"
     "@babel/generator" "7.12.1"
     "@babel/plugin-transform-runtime" "7.12.1"
@@ -26,7 +34,7 @@
     "@babel/runtime" "7.12.1"
     "@babel/template" "7.10.4"
     "@jsdevtools/coverage-istanbul-loader" "3.0.5"
-    "@ngtools/webpack" "11.0.0-rc.1"
+    "@ngtools/webpack" "11.0.0"
     ansi-colors "4.1.1"
     autoprefixer "9.8.6"
     babel-loader "8.1.0"
@@ -64,7 +72,7 @@
     rollup "2.32.1"
     rxjs "6.6.3"
     sass "1.27.0"
-    sass-loader "10.0.4"
+    sass-loader "10.0.5"
     semver "7.3.2"
     source-map "0.7.3"
     source-map-loader "1.1.2"
@@ -84,6 +92,17 @@
     webpack-sources "2.0.1"
     webpack-subresource-integrity "1.5.1"
     worker-plugin "5.0.0"
+
+"@angular-devkit/build-optimizer@0.1100.0":
+  version "0.1100.0"
+  resolved "https://registry.yarnpkg.com/@angular-devkit/build-optimizer/-/build-optimizer-0.1100.0.tgz#fae70c407fa2ec26ef839f9f2706cb3be990121b"
+  integrity sha512-RitDB5JCNDUN2CoNqf/FwLCwdWruApjxb7nUVb9C/uQgGEnrBojyxS/Rv/jCioom86s0sfY9wo79jdxd6AercQ==
+  dependencies:
+    loader-utils "2.0.0"
+    source-map "0.7.3"
+    tslib "2.0.3"
+    typescript "4.0.5"
+    webpack-sources "2.0.1"
 
 "@angular-devkit/build-optimizer@0.1100.0-rc.1":
   version "0.1100.0-rc.1"
@@ -106,14 +125,25 @@
     typescript "3.2.4"
     webpack-sources "1.3.0"
 
-"@angular-devkit/build-webpack@0.1100.0-rc.1":
-  version "0.1100.0-rc.1"
-  resolved "https://registry.yarnpkg.com/@angular-devkit/build-webpack/-/build-webpack-0.1100.0-rc.1.tgz#0fd12216ff1a74ef53bfe27c603bddaa55ce4844"
-  integrity sha512-H9+HCT66fwYI+ZWyIVTfM8LLXQOqU3rtY9Bd5EvbgM3ZgFs76qzwqy0eAsgxWgpATULD2fpv1StY0gb07pgihA==
+"@angular-devkit/build-webpack@0.1100.0":
+  version "0.1100.0"
+  resolved "https://registry.yarnpkg.com/@angular-devkit/build-webpack/-/build-webpack-0.1100.0.tgz#66b78cc1f5d9d5f2f0b551d3f848bebef4a54ad7"
+  integrity sha512-9diP/A6NtQxSxjbBMj9h9MHrAj4VqCvuFraR928eFaxEoRKcIwSTHhOiolRm+GL5V0VB+O53FRYDk3gC7BGjmQ==
   dependencies:
-    "@angular-devkit/architect" "0.1100.0-rc.1"
-    "@angular-devkit/core" "11.0.0-rc.1"
+    "@angular-devkit/architect" "0.1100.0"
+    "@angular-devkit/core" "11.0.0"
     rxjs "6.6.3"
+
+"@angular-devkit/core@11.0.0":
+  version "11.0.0"
+  resolved "https://registry.yarnpkg.com/@angular-devkit/core/-/core-11.0.0.tgz#bf69f1fb7a00d0496785f84122daae7dc27a4b14"
+  integrity sha512-fXZtSs3J4S12hboi3om1FA+QS0e8nuQMyzl2nkmtuhcELUFMmSrEl36dtCni5e7Svs46BUAZ5w8EazIkgGQDJg==
+  dependencies:
+    ajv "6.12.6"
+    fast-json-stable-stringify "2.1.0"
+    magic-string "0.25.7"
+    rxjs "6.6.3"
+    source-map "0.7.3"
 
 "@angular-devkit/core@11.0.0-rc.1":
   version "11.0.0-rc.1"
@@ -2125,12 +2155,12 @@
   resolved "https://registry.yarnpkg.com/@microsoft/tsdoc/-/tsdoc-0.12.19.tgz#2173ccb92469aaf62031fa9499d21b16d07f9b57"
   integrity sha512-IpgPxHrNxZiMNUSXqR1l/gePKPkfAmIKoDRP9hp7OwjU29ZR8WCJsOJ8iBKgw0Qk+pFwR+8Y1cy8ImLY6e9m4A==
 
-"@ngtools/webpack@11.0.0-rc.1":
-  version "11.0.0-rc.1"
-  resolved "https://registry.yarnpkg.com/@ngtools/webpack/-/webpack-11.0.0-rc.1.tgz#61015463ca0d1cb93c8a50f3835fa243a753168b"
-  integrity sha512-asWV2fwYPmCWq1V5VnCIGD3t2f/UHFwAcauN3b5/iZxmQodXZJxhjKJAaUeCNRawKhxIiEIvfTclShJ6ii7X1w==
+"@ngtools/webpack@11.0.0":
+  version "11.0.0"
+  resolved "https://registry.yarnpkg.com/@ngtools/webpack/-/webpack-11.0.0.tgz#bddc9ad4677de55d9df9418408079c2a2be4f482"
+  integrity sha512-thWOXiMfyVUUWDDRUUAIvb5HASovX1C0GcxRBFE8fXJMCwOPIwqZiAyJJlUUnie8BEP9yC/x6uLCud56ai4Uaw==
   dependencies:
-    "@angular-devkit/core" "11.0.0-rc.1"
+    "@angular-devkit/core" "11.0.0"
     enhanced-resolve "5.3.1"
     webpack-sources "2.0.1"
 
@@ -13800,10 +13830,10 @@ safe-regex@^1.1.0:
   resolved "https://registry.yarnpkg.com/safer-buffer/-/safer-buffer-2.1.2.tgz#44fa161b0187b9549dd84bb91802f9bd8385cd6a"
   integrity sha512-YZo3K82SD7Riyi0E1EQPojLz7kpepnSQI9IyPbHHg1XXXevb5dJI7tpyN2ADxGcQbHG7vcyRHk0cbwqcQriUtg==
 
-sass-loader@10.0.4:
-  version "10.0.4"
-  resolved "https://registry.yarnpkg.com/sass-loader/-/sass-loader-10.0.4.tgz#ec7181096947d078d60a1d76d527f47c19b151d8"
-  integrity sha512-zhdZ8qvZM4iL5XjLVEjJLvKWvC+MB+hHgzL2x/Nf7UHpUNmPYsJvypW79bW39g4LZ603dH/dRSsRYzJJIljtdA==
+sass-loader@10.0.5:
+  version "10.0.5"
+  resolved "https://registry.yarnpkg.com/sass-loader/-/sass-loader-10.0.5.tgz#f53505b5ddbedf43797470ceb34066ded82bb769"
+  integrity sha512-2LqoNPtKkZq/XbXNQ4C64GFEleSEHKv6NPSI+bMC/l+jpEXGJhiRYkAQToO24MR7NU4JRY2RpLpJ/gjo2Uf13w==
   dependencies:
     klona "^2.0.4"
     loader-utils "^2.0.0"
