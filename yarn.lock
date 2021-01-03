@@ -133,8 +133,6 @@
     "@angular-devkit/architect" "0.1100.0"
     "@angular-devkit/core" "11.0.0"
 
-    rxjs "6.6.3"
-    source-map "0.7.3"
 
 "@angular-devkit/core@11.0.0":
   version "11.0.0"
