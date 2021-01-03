@@ -1,0 +1,16 @@
+# Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
+version: v1.19.0
+ignore: {}
+# patches apply the minimum changes required to fix a vulnerability
+patch:
+  'npm:debug:20170905':
+    - jasmine > fast-glob > micromatch > snapdragon > debug:
+        patched: '2021-01-03T01:37:53.418Z'
+    - jasmine > fast-glob > micromatch > braces > snapdragon > debug:
+        patched: '2021-01-03T01:37:53.418Z'
+    - jasmine > fast-glob > micromatch > extglob > snapdragon > debug:
+        patched: '2021-01-03T01:37:53.418Z'
+    - jasmine > fast-glob > micromatch > nanomatch > snapdragon > debug:
+        patched: '2021-01-03T01:37:53.418Z'
+    - jasmine > fast-glob > micromatch > extglob > expand-brackets > snapdragon > debug:
+        patched: '2021-01-03T01:37:53.418Z'

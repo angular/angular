@@ -36,12 +36,14 @@
     "ts-circular-deps:check": "yarn -s ng-dev ts-circular-deps check --config ./packages/circular-deps-test.conf.js",
     "ts-circular-deps:approve": "yarn -s ng-dev ts-circular-deps approve --config ./packages/circular-deps-test.conf.js",
     "ng-dev": "node dev-infra/ng-dev",
-    "ng-dev:dev": "ts-node --transpile-only -- dev-infra/cli.ts"
+    "ng-dev:dev": "ts-node --transpile-only -- dev-infra/cli.ts",
+    "snyk-protect": "snyk protect",
+    "prepare": "yarn run snyk-protect"
   },
   "// 1": "dependencies are used locally and by bazel",
   "dependencies": {
     "@angular-devkit/architect": "0.1100.0-rc.1",
-    "@angular-devkit/build-angular": "0.1100.0-rc.1",
+    "@angular-devkit/build-angular": "0.1100.0",
     "@angular-devkit/build-optimizer": "0.1100.0-rc.1",
     "@angular-devkit/core": "11.0.0-rc.1",
     "@angular-devkit/schematics": "11.0.0-rc.1",
@@ -80,7 +82,7 @@
     "@types/jasminewd2": "^2.0.8",
     "@types/minimist": "^1.2.0",
     "@types/multimatch": "^4.0.0",
-    "@types/node": "^12.11.1",
+    "@types/node": "^12.19.9",
     "@types/node-fetch": "^2.5.7",
     "@types/selenium-webdriver": "3.0.7",
     "@types/semver": "^6.0.2",
@@ -112,12 +114,12 @@
     "fs-extra": "4.0.2",
     "google-closure-compiler": "20200517.0.0",
     "hammerjs": "2.0.8",
-    "http-server": "^0.11.1",
+    "http-server": "^0.12.0",
     "incremental-dom": "0.4.1",
     "jasmine": "^3.5.0",
     "jasmine-ajax": "^4.0.0",
     "jasmine-core": "^3.5.0",
-    "jquery": "3.0.0",
+    "jquery": "3.5.0",
     "js-levenshtein": "^1.1.6",
     "karma": "~4.4.0",
     "karma-chrome-launcher": "^2.2.0",
@@ -128,11 +130,11 @@
     "magic-string": "0.25.4",
     "materialize-css": "1.0.0",
     "minimatch": "^3.0.4",
-    "minimist": "1.2.0",
-    "node-fetch": "^2.6.0",
+    "minimist": "1.2.3",
+    "node-fetch": "^2.6.1",
     "node-uuid": "1.4.8",
     "nodejs-websocket": "^1.7.2",
-    "protractor": "^5.4.2",
+    "protractor": "^6.0.0",
     "puppeteer": "5.4.1",
     "reflect-metadata": "^0.1.3",
     "requirejs": "^2.3.6",
@@ -154,7 +156,8 @@
     "typescript": "~4.1.2",
     "xhr2": "0.2.0",
     "yaml": "^1.10.0",
-    "yargs": "^16.1.1"
+    "yargs": "^16.1.1",
+    "snyk": "^1.437.3"
   },
   "// 2": "devDependencies are not used under Bazel. Many can be removed after test.sh is deleted.",
   "devDependencies": {
@@ -210,5 +213,6 @@
     "**/graceful-fs": "4.2.2",
     "**/webdriver-manager": "12.1.7"
   },
-  "cldr-data-coverage": "full"
+  "cldr-data-coverage": "full",
+  "snyk": true
 }
