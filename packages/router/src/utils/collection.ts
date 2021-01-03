@@ -1,16 +1,16 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NgModuleFactory, ɵisObservable as isObservable, ɵisPromise as isPromise} from '@angular/core';
-import {Observable, from, of } from 'rxjs';
+import {ɵisObservable as isObservable, ɵisPromise as isPromise} from '@angular/core';
+import {from, Observable, of} from 'rxjs';
 import {concatAll, last as lastValue, map} from 'rxjs/operators';
 
-import {PRIMARY_OUTLET} from '../shared';
+import {Params, PRIMARY_OUTLET} from '../shared';
 
 export function shallowEqualArrays(a: any[], b: any[]): boolean {
   if (a.length !== b.length) return false;
@@ -20,7 +20,7 @@ export function shallowEqualArrays(a: any[], b: any[]): boolean {
   return true;
 }
 
-export function shallowEqual(a: {[x: string]: any}, b: {[x: string]: any}): boolean {
+export function shallowEqual(a: Params, b: Params): boolean {
   // Casting Object.keys return values to include `undefined` as there are some cases
   // in IE 11 where this can happen. Cannot provide a test because the behavior only
   // exists in certain circumstances in IE 11, therefore doing this cast ensures the
@@ -33,11 +33,25 @@ export function shallowEqual(a: {[x: string]: any}, b: {[x: string]: any}): bool
   let key: string;
   for (let i = 0; i < k1.length; i++) {
     key = k1[i];
-    if (a[key] !== b[key]) {
+    if (!equalArraysOrString(a[key], b[key])) {
       return false;
     }
   }
   return true;
+}
+
+/**
+ * Test equality for arrays of strings or a string.
+ */
+export function equalArraysOrString(a: string|string[], b: string|string[]) {
+  if (Array.isArray(a) && Array.isArray(b)) {
+    if (a.length !== b.length) return false;
+    const aSorted = [...a].sort();
+    const bSorted = [...b].sort();
+    return aSorted.every((val, index) => bSorted[index] === val);
+  } else {
+    return a === b;
+  }
 }
 
 /**
@@ -72,7 +86,7 @@ export function forEach<K, V>(map: {[key: string]: V}, callback: (v: V, k: strin
 export function waitForMap<A, B>(
     obj: {[k: string]: A}, fn: (k: string, a: A) => Observable<B>): Observable<{[k: string]: B}> {
   if (Object.keys(obj).length === 0) {
-    return of ({});
+    return of({});
   }
 
   const waitHead: Observable<B>[] = [];
@@ -88,11 +102,14 @@ export function waitForMap<A, B>(
     }
   });
 
-  // Closure compiler has problem with using spread operator here. So just using Array.concat.
-  return of .apply(null, waitHead.concat(waitTail)).pipe(concatAll(), lastValue(), map(() => res));
+  // Closure compiler has problem with using spread operator here. So we use "Array.concat".
+  // Note that we also need to cast the new promise because TypeScript cannot infer the type
+  // when calling the "of" function through "Function.apply"
+  return (of.apply(null, waitHead.concat(waitTail)) as Observable<Observable<B>>)
+      .pipe(concatAll(), lastValue(), map(() => res));
 }
 
-export function wrapIntoObservable<T>(value: T | NgModuleFactory<T>| Promise<T>| Observable<T>) {
+export function wrapIntoObservable<T>(value: T|Promise<T>|Observable<T>): Observable<T> {
   if (isObservable(value)) {
     return value;
   }
@@ -104,5 +121,5 @@ export function wrapIntoObservable<T>(value: T | NgModuleFactory<T>| Promise<T>|
     return from(Promise.resolve(value));
   }
 
-  return of (value);
+  return of(value);
 }

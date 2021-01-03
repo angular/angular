@@ -1,0 +1,36 @@
+load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
+
+ts_library(
+    name = "test_lib",
+    testonly = True,
+    srcs = glob(
+        ["**/*.ts"],
+    ),
+    visibility = [
+        ":__subpackages__",
+    ],
+    deps = [
+        "//packages:types",
+        "//packages/compiler",
+        "//packages/compiler-cli",
+        "//packages/compiler-cli/src/ngtsc/file_system",
+        "//packages/compiler-cli/test/compliance_old/mock_compile",
+        "//packages/compiler/test:test_utils",
+        "@npm//typescript",
+    ],
+)
+
+jasmine_node_test(
+    name = "compliance_old",
+    bootstrap = ["//tools/testing:node_no_angular_es5"],
+    data = [
+        "//packages/compiler-cli/src/ngtsc/testing/fake_core:npm_package",
+    ],
+    shard_count = 2,
+    tags = [
+        "ivy-only",
+    ],
+    deps = [
+        ":test_lib",
+    ],
+)

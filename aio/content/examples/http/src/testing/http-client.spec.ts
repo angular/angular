@@ -27,8 +27,8 @@ describe('HttpClient testing', () => {
     });
 
     // Inject the http service and test controller for each test
-    httpClient = TestBed.get(HttpClient);
-    httpTestingController = TestBed.get(HttpTestingController);
+    httpClient = TestBed.inject(HttpClient);
+    httpTestingController = TestBed.inject(HttpTestingController);
   });
   // #enddocregion setup
   // #docregion afterEach
@@ -67,12 +67,13 @@ describe('HttpClient testing', () => {
     httpTestingController.verify();
   });
   // #enddocregion get-test
+
   it('can test HttpClient.get with matching header', () => {
     const testData: Data = {name: 'Test Data'};
 
     // Make an HTTP GET request with specific header
     httpClient.get<Data>(testUrl, {
-        headers: new HttpHeaders({'Authorization': 'my-auth-token'})
+        headers: new HttpHeaders({Authorization: 'my-auth-token'})
       })
       .subscribe(data =>
         expect(data).toEqual(testData)
@@ -82,14 +83,14 @@ describe('HttpClient testing', () => {
     // #docregion predicate
     // Expect one request with an authorization header
     const req = httpTestingController.expectOne(
-      req => req.headers.has('Authorization')
+      request => request.headers.has('Authorization')
     );
     // #enddocregion predicate
     req.flush(testData);
   });
 
   it('can test multiple requests', () => {
-    let testData: Data[] = [
+    const testData: Data[] = [
       { name: 'bob' }, { name: 'carol' },
       { name: 'ted' }, { name: 'alice' }
     ];

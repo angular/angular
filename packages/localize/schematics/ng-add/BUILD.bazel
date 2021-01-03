@@ -1,0 +1,49 @@
+package(default_visibility = ["//visibility:public"])
+
+load("//tools:defaults.bzl", "jasmine_node_test", "ts_config", "ts_library")
+
+ts_config(
+    name = "tsconfig",
+    src = "tsconfig-build.json",
+    deps = ["//packages:tsconfig-build.json"],
+)
+
+ts_library(
+    name = "ng-add",
+    srcs = [
+        "index.ts",
+        "schema.d.ts",
+    ],
+    data = glob(["files/**/*"]) + [
+        "schema.json",
+    ],
+    tsconfig = ":tsconfig",
+    deps = [
+        "@npm//@angular-devkit/core",
+        "@npm//@angular-devkit/schematics",
+        "@npm//@schematics/angular",
+    ],
+)
+
+ts_library(
+    name = "test_lib",
+    testonly = True,
+    srcs = [
+        "index_spec.ts",
+    ],
+    data = [
+        "//packages/localize/schematics:package_assets",
+    ],
+    deps = [
+        ":ng-add",
+        "@npm//@angular-devkit/schematics",
+    ],
+)
+
+jasmine_node_test(
+    name = "test",
+    bootstrap = ["//tools/testing:node_es5"],
+    deps = [
+        ":test_lib",
+    ],
+)

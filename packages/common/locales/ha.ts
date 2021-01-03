@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -17,7 +17,9 @@ function plural(n: number): number {
 }
 
 export default [
-  'ha', [['AM', 'PM'], u, u], u,
+  'ha',
+  [['AM', 'PM'], u, ['Safiya', 'Yamma']],
+  [['AM', 'PM'], u, u],
   [
     ['L', 'L', 'T', 'L', 'A', 'J', 'A'], ['Lah', 'Lit', 'Tal', 'Lar', 'Alh', 'Jum', 'Asa'],
     ['Lahadi', 'Litinin', 'Talata', 'Laraba', 'Alhamis', 'Jummaʼa', 'Asabar'],
@@ -32,10 +34,19 @@ export default [
       'Oktoba', 'Nuwamba', 'Disamba'
     ]
   ],
-  u, [['KHAI', 'BHAI'], u, ['Kafin haihuwar annab', 'Bayan haihuwar annab']], 1, [6, 0],
-  ['d/M/yy', 'd MMM, y', 'd MMMM, y', 'EEEE, d MMMM, y'],
-  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'], ['{1} {0}', u, u, u],
+  u,
+  [['K.H', 'BHAI'], u, ['Kafin haihuwar annab', 'Bayan haihuwar annab']],
+  1,
+  [6, 0],
+  ['d/M/yy', 'd MMM, y', 'd MMMM, y', 'EEEE d MMMM, y'],
+  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
+  ['{1} {0}', u, u, u],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '¤ #,##0.00', '#E0'], '₦', 'Naira',
-  {'JPY': ['JP¥', '¥'], 'NGN': ['₦'], 'USD': ['US$', '$']}, plural
+  ['#,##0.###', '#,##0%', '¤ #,##0.00', '#E0'],
+  'NGN',
+  '₦',
+  'Nairar Najeriya',
+  {'NGN': ['₦']},
+  'ltr',
+  plural
 ];

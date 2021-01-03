@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -20,13 +20,13 @@ function plural(n: number): number {
 }
 
 export default [
-  'ga', [['a', 'p'], ['r.n.', 'i.n.'], u], [['a', 'p'], ['a.m.', 'p.m.'], u],
+  'ga',
+  [['r.n.', 'i.n.'], u, u],
+  u,
   [
-    ['D', 'L', 'M', 'C', 'D', 'A', 'S'],
-    ['Domh', 'Luan', 'Máirt', 'Céad', 'Déar', 'Aoine', 'Sath'],
+    ['D', 'L', 'M', 'C', 'D', 'A', 'S'], ['Domh', 'Luan', 'Máirt', 'Céad', 'Déar', 'Aoine', 'Sath'],
     [
-      'Dé Domhnaigh', 'Dé Luain', 'Dé Máirt', 'Dé Céadaoin', 'Déardaoin', 'Dé hAoine',
-      'Dé Sathairn'
+      'Dé Domhnaigh', 'Dé Luain', 'Dé Máirt', 'Dé Céadaoin', 'Déardaoin', 'Dé hAoine', 'Dé Sathairn'
     ],
     ['Do', 'Lu', 'Má', 'Cé', 'Dé', 'Ao', 'Sa']
   ],
@@ -42,10 +42,19 @@ export default [
       'Meán Fómhair', 'Deireadh Fómhair', 'Samhain', 'Nollaig'
     ]
   ],
-  u, [['RC', 'AD'], u, ['Roimh Chríost', 'Anno Domini']], 0, [6, 0],
+  u,
+  [['RC', 'AD'], u, ['Roimh Chríost', 'Anno Domini']],
+  1,
+  [6, 0],
   ['dd/MM/y', 'd MMM y', 'd MMMM y', 'EEEE d MMMM y'],
-  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'], ['{1} {0}', u, u, u],
+  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
+  ['{1} {0}', u, u, u],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], '€', 'Euro', {'THB': ['฿'], 'TWD': ['NT$']},
+  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'],
+  'EUR',
+  '€',
+  'Euro',
+  {'THB': ['฿'], 'TWD': ['NT$'], 'XXX': []},
+  'ltr',
   plural
 ];

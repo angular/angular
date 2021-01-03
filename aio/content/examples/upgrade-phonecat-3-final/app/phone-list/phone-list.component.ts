@@ -26,8 +26,8 @@ export class PhoneListComponent {
   private filterPhones(phones: PhoneData[]) {
     if (phones && this.query) {
       return phones.filter(phone => {
-        let name = phone.name.toLowerCase();
-        let snippet = phone.snippet.toLowerCase();
+        const name = phone.name.toLowerCase();
+        const snippet = phone.snippet.toLowerCase();
         return name.indexOf(this.query) >= 0 || snippet.indexOf(this.query) >= 0;
       });
     }

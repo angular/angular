@@ -23,7 +23,7 @@ The above command completes the following actions:
 2. Enables service worker build support in the CLI.
 3. Imports and registers the service worker in the app module.
 4. Updates the `index.html` file:
-    * Includes a link to add the `manifest.json` file.
+    * Includes a link to add the `manifest.webmanifest` file.
     * Adds meta tags for `theme-color`.
 5. Installs icon files to support the installed Progressive Web App (PWA).
 6. Creates the service worker configuration file called [`ngsw-config.json`](/guide/service-worker-config), which specifies the caching behaviors and other settings.
@@ -74,9 +74,9 @@ To simulate a network issue, disable network interaction for your application. I
 2. Go to the **Network tab**.
 3. Check the **Offline box**.
 
-<figure>
+<div class="lightbox">
   <img src="generated/images/guide/service-worker/offline-checkbox.png" alt="The offline checkbox in the Network tab is checked">
-</figure>
+</div>
 
 Now the app has no access to network interaction.
 
@@ -86,9 +86,9 @@ With the addition of an Angular service worker, the application behavior changes
 
 If you look at the Network tab, you can verify that the service worker is active.
 
-<figure>
+<div class="lightbox">
   <img src="generated/images/guide/service-worker/sw-active.png" alt="Requests are marked as from ServiceWorker">
-</figure>
+</div>
 
 Notice that under the "Size" column, the requests state is `(from ServiceWorker)`. This means that the resources are not being loaded from the network. Instead, they are being loaded from the service worker's cache.
 
@@ -107,7 +107,7 @@ Notice that all of the files the browser needs to render this application are ca
 <div class="alert is-helpful">
 Pay attention to two key points:
 
-1. The generated `ngsw-config.json` includes a limited list of cachable fonts and images extentions. In some cases, you might want to modify the glob pattern to suit your needs.
+1. The generated `ngsw-config.json` includes a limited list of cacheable fonts and images extensions. In some cases, you might want to modify the glob pattern to suit your needs.
 
 1. If `resourcesOutputPath` or `assets` paths are modified after the generation of configuration file, you need to change the paths manually in `ngsw-config.json`.
 </div>
@@ -142,9 +142,9 @@ Now look at how the browser and service worker handle the updated application.
 
 1. Open http://localhost:8080 again in the same window. What happens?
 
-<figure>
+<div class="lightbox">
   <img src="generated/images/guide/service-worker/welcome-msg-en.png" alt="It still says Welcome to Service Workers!">
-</figure>
+</div>
 
 What went wrong? Nothing, actually. The Angular service worker is doing its job and serving the version of the application that it has **installed**, even though there is an update available. In the interest of speed, the service worker doesn't wait to check for updates before it serves the application that it has cached.
 
@@ -152,9 +152,9 @@ If you look at the `http-server` logs, you can see the service worker requesting
 
 2. Refresh the page.
 
-<figure>
+<div class="lightbox">
   <img src="generated/images/guide/service-worker/welcome-msg-fr.png" alt="The text has changed to say Bienvenue à app!">
-</figure>
+</div>
 
 The service worker installed the updated version of your app *in the background*, and the next time the page is loaded or reloaded, the service worker switches to the latest version.
 

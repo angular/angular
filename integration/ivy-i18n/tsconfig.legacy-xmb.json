@@ -1,0 +1,7 @@
+{
+  "extends": "./tsconfig.app.json",
+  "angularCompilerOptions": {
+    "enableIvy": true,
+    "i18nInFormat": "xmb"
+  }
+}

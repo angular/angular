@@ -1,4 +1,4 @@
-# AngularJS to Angular Concepts: Quick Reference
+# AngularJS to Angular concepts: Quick reference
 
 
 {@a top}
@@ -66,7 +66,7 @@ The following table lists some of the key AngularJS template features with their
 
       ### Bindings/interpolation
 
-      <code-example hideCopy path="ajs-quick-reference/src/app/movie-list.component.html" region="interpolation" linenums="false"></code-example>
+      <code-example hideCopy path="ajs-quick-reference/src/app/movie-list.component.html" region="interpolation"></code-example>
 
 
       In Angular, a template expression in curly braces still denotes one-way binding.
@@ -74,8 +74,7 @@ The following table lists some of the key AngularJS template features with their
       The context of the binding is implied and is always the
       associated component, so it needs no reference variable.
 
-      For more information, see the [Interpolation](guide/template-syntax#interpolation)
-      section of the [Template Syntax](guide/template-syntax) page.
+      For more information, see the [Interpolation](guide/interpolation) guide.
     </td>
 
   </tr>
@@ -102,7 +101,7 @@ The following table lists some of the key AngularJS template features with their
 
       ### Pipes
 
-      <code-example hideCopy path="ajs-quick-reference/src/app/app.component.html" region="uppercase" linenums="false"></code-example>
+      <code-example hideCopy path="ajs-quick-reference/src/app/app.component.html" region="uppercase"></code-example>
 
 
       In Angular you use similar syntax with the pipe (|) character to filter output, but now you call them **pipes**.
@@ -136,13 +135,13 @@ The following table lists some of the key AngularJS template features with their
 
       ### Input variables
 
-      <code-example hideCopy path="ajs-quick-reference/src/app/app.component.html" region="local" linenums="false"></code-example>
+      <code-example hideCopy path="ajs-quick-reference/src/app/app.component.html" region="local"></code-example>
 
 
       Angular has true template input variables that are explicitly defined using the `let` keyword.
 
-      For more information, see the [ngFor micro-syntax](guide/template-syntax#microsyntax)
-      section of the [Template Syntax](guide/template-syntax) page.
+      For more information, see the [ngFor micro-syntax](guide/built-in-directives#microsyntax)
+      section of the [Built-in Directives](guide/built-in-directives) page.
     </td>
 
   </tr>
@@ -202,10 +201,10 @@ The following are some of the key AngularJS built-in directives and their equiva
 
       ### Bootstrapping
 
-      <code-example hideCopy path="ajs-quick-reference/src/main.ts" header="main.ts" linenums="false"></code-example>
+      <code-example hideCopy path="ajs-quick-reference/src/main.ts" header="main.ts"></code-example>
       <br>
 
-      <code-example hideCopy path="ajs-quick-reference/src/app/app.module.1.ts" header="app.module.ts" linenums="false"></code-example>
+      <code-example hideCopy path="ajs-quick-reference/src/app/app.module.1.ts" header="app.module.ts"></code-example>
 
 
       Angular doesn't have a bootstrap directive.
@@ -245,7 +244,7 @@ The following are some of the key AngularJS built-in directives and their equiva
 
       ### ngClass
 
-      <code-example hideCopy path="ajs-quick-reference/src/app/app.component.html" region="ngClass" linenums="false"></code-example>
+      <code-example hideCopy path="ajs-quick-reference/src/app/app.component.html" region="ngClass"></code-example>
 
 
       In Angular, the `ngClass` directive works similarly.
@@ -258,8 +257,7 @@ The following are some of the key AngularJS built-in directives and their equiva
       Angular also has **class binding**, which is a good way to add or remove a single class,
       as shown in the third example.
 
-      For more information see the [Attribute, class, and style bindings](guide/template-syntax#other-bindings)
-      section of the [Template Syntax](guide/template-syntax) page.
+      For more information see [Attribute, class, and style bindings](guide/attribute-binding) page.
 
     </td>
 
@@ -291,7 +289,7 @@ The following are some of the key AngularJS built-in directives and their equiva
 
       ### Bind to the `click` event
 
-      <code-example hideCopy path="ajs-quick-reference/src/app/app.component.html" region="event-binding" linenums="false"></code-example>
+      <code-example hideCopy path="ajs-quick-reference/src/app/app.component.html" region="event-binding"></code-example>
 
 
       AngularJS event-based directives do not exist in Angular.
@@ -309,8 +307,7 @@ The following are some of the key AngularJS built-in directives and their equiva
 
       For a list of DOM events, see: https://developer.mozilla.org/en-US/docs/Web/Events.
 
-      For more information, see the [Event binding](guide/template-syntax#event-binding)
-      section of the [Template Syntax](guide/template-syntax) page.
+      For more information, see the [Event binding](guide/event-binding) page.
 
     </td>
 
@@ -338,7 +335,7 @@ The following are some of the key AngularJS built-in directives and their equiva
 
       ### Component decorator
 
-      <code-example hideCopy path="ajs-quick-reference/src/app/movie-list.component.ts" region="component" linenums="false"></code-example>
+      <code-example hideCopy path="ajs-quick-reference/src/app/movie-list.component.ts" region="component"></code-example>
 
 
       In Angular, the template no longer specifies its associated controller.
@@ -401,22 +398,21 @@ The following are some of the key AngularJS built-in directives and their equiva
 
       ### Bind to the `href` property
 
-      <code-example hideCopy path="ajs-quick-reference/src/app/app.component.html" region="href" linenums="false"></code-example>
+      <code-example hideCopy path="ajs-quick-reference/src/app/app.component.html" region="href"></code-example>
 
 
       Angular uses property binding; there is no built-in *href* directive.
       Place the element's `href` property in square brackets and set it to a quoted template expression.
 
-      For more information see the [Property binding](guide/template-syntax#property-binding)
-      section of the [Template Syntax](guide/template-syntax) page.
+      For more information see the [Property binding](guide/property-binding) page.
 
       In Angular, `href` is no longer used for routing. Routing uses `routerLink`, as shown in the following example.
 
-      <code-example hideCopy path="ajs-quick-reference/src/app/app.component.html" region="router-link" linenums="false"></code-example>
+      <code-example hideCopy path="ajs-quick-reference/src/app/app.component.html" region="router-link"></code-example>
 
 
-      For more information on routing, see the [RouterLink binding](guide/router#router-link)
-      section of the [Routing & Navigation](guide/router) page.
+      For more information on routing, see [Defining a basic route](guide/router#basic-route)
+      in the [Routing & Navigation](guide/router) page.
 
     </td>
 
@@ -445,7 +441,7 @@ The following are some of the key AngularJS built-in directives and their equiva
 
       ### *ngIf
 
-      <code-example hideCopy path="ajs-quick-reference/src/app/movie-list.component.html" region="ngIf" linenums="false"></code-example>
+      <code-example hideCopy path="ajs-quick-reference/src/app/movie-list.component.html" region="ngIf"></code-example>
 
 
       The `*ngIf` directive in Angular works the same as the `ng-if` directive in AngularJS. It removes
@@ -480,15 +476,15 @@ The following are some of the key AngularJS built-in directives and their equiva
 
       ### ngModel
 
-      <code-example hideCopy path="ajs-quick-reference/src/app/movie-list.component.html" region="ngModel" linenums="false"></code-example>
+      <code-example hideCopy path="ajs-quick-reference/src/app/movie-list.component.html" region="ngModel"></code-example>
 
 
       In Angular, **two-way binding** is denoted by `[()]`, descriptively referred to as a "banana in a box". This syntax is a shortcut for defining both property binding (from the component to the view)
       and event binding (from the view to the component), thereby providing two-way binding.
 
       For more information on two-way binding with `ngModel`, see the [NgModel&mdash;Two-way binding to
-      form elements with `[(ngModel)]`](../guide/template-syntax.html#ngModel)
-      section of the [Template Syntax](guide/template-syntax) page.
+      form elements with `[(ngModel)]`](../guide/built-in-directives#ngModel)
+      section of the [Built-in directives](guide/built-in-directives) page.
     </td>
 
   </tr>
@@ -516,7 +512,7 @@ The following are some of the key AngularJS built-in directives and their equiva
 
       ### *ngFor
 
-      <code-example hideCopy path="ajs-quick-reference/src/app/movie-list.component.html" region="ngFor" linenums="false"></code-example>
+      <code-example hideCopy path="ajs-quick-reference/src/app/movie-list.component.html" region="ngFor"></code-example>
 
 
       The `*ngFor` directive in Angular is similar to the `ng-repeat` directive in AngularJS. It repeats
@@ -559,7 +555,7 @@ The following are some of the key AngularJS built-in directives and their equiva
 
       ### Bind to the `hidden` property
 
-      <code-example hideCopy path="ajs-quick-reference/src/app/movie-list.component.html" region="hidden" linenums="false"></code-example>
+      <code-example hideCopy path="ajs-quick-reference/src/app/movie-list.component.html" region="hidden"></code-example>
 
 
       Angular uses property binding; there is no built-in *show* directive.
@@ -570,8 +566,7 @@ The following are some of the key AngularJS built-in directives and their equiva
 
       In this example, the `<div>` element is hidden if the `favoriteHero` variable is not truthy.
 
-      For more information on property binding, see the [Property binding](guide/template-syntax#property-binding)
-      section of the [Template Syntax](guide/template-syntax) page.
+      For more information on property binding, see the [Property binding](guide/property-binding) page.
     </td>
 
   </tr>
@@ -598,14 +593,13 @@ The following are some of the key AngularJS built-in directives and their equiva
 
       ### Bind to the `src` property
 
-      <code-example hideCopy path="ajs-quick-reference/src/app/app.component.html" region="src" linenums="false"></code-example>
+      <code-example hideCopy path="ajs-quick-reference/src/app/app.component.html" region="src"></code-example>
 
 
       Angular uses property binding; there is no built-in *src* directive.
       Place the `src` property in square brackets and set it to a quoted template expression.
 
-      For more information on property binding, see the [Property binding](guide/template-syntax#property-binding)
-      section of the [Template Syntax](guide/template-syntax) page.
+      For more information on property binding, see the [Property binding](guide/property-binding) page.
     </td>
 
   </tr>
@@ -635,7 +629,7 @@ The following are some of the key AngularJS built-in directives and their equiva
 
       ### ngStyle
 
-      <code-example hideCopy path="ajs-quick-reference/src/app/app.component.html" region="ngStyle" linenums="false"></code-example>
+      <code-example hideCopy path="ajs-quick-reference/src/app/app.component.html" region="ngStyle"></code-example>
 
 
       In Angular, the `ngStyle` directive works similarly. It sets a CSS style on an HTML element based on an expression.
@@ -644,11 +638,11 @@ The following are some of the key AngularJS built-in directives and their equiva
 
       Angular also has **style binding**, which is good way to set a single style. This is shown in the second example.
 
-      For more information on style binding, see the [Style binding](guide/template-syntax#style-binding) section of the
-      [Template Syntax](guide/template-syntax) page.
+      For more information on style binding, see the [Style binding](guide/attribute-binding#style-binding) section of the
+      [Attribute binding](guide/attribute-binding) page.
 
-      For more information on the `ngStyle` directive, see [NgStyle](guide/template-syntax#ngStyle)
-      section of the [Template Syntax](guide/template-syntax) page.
+      For more information on the `ngStyle` directive, see the [NgStyle](guide/built-in-directives#ngStyle)
+      section of the [Built-in directives](guide/built-in-directives) page.
     </td>
 
   </tr>
@@ -690,7 +684,7 @@ The following are some of the key AngularJS built-in directives and their equiva
 
       ### ngSwitch
 
-      <code-example hideCopy path="ajs-quick-reference/src/app/movie-list.component.html" region="ngSwitch" linenums="false"></code-example>
+      <code-example hideCopy path="ajs-quick-reference/src/app/movie-list.component.html" region="ngSwitch"></code-example>
 
 
       In Angular, the `ngSwitch` directive works similarly.
@@ -704,8 +698,8 @@ The following are some of the key AngularJS built-in directives and their equiva
 
       The (*) before `ngSwitchCase` and `ngSwitchDefault` is required in this example.
 
-      For more information, see [The NgSwitch directives](guide/template-syntax#ngSwitch)
-      section of the [Template Syntax](guide/template-syntax) page.
+      For more information, see [The NgSwitch directives](guide/built-in-directives#ngSwitch)
+      section of the [Built-in directives](guide/built-in-directives) page.
     </td>
 
   </tr>
@@ -765,7 +759,7 @@ For more information on pipes, see [Pipes](guide/pipes).
 
       ### currency
 
-      <code-example hideCopy path="ajs-quick-reference/src/app/app.component.html" region="currency" linenums="false"></code-example>
+      <code-example hideCopy path="ajs-quick-reference/src/app/app.component.html" region="currency"></code-example>
 
 
       The Angular `currency` pipe is similar although some of the parameters have changed.
@@ -793,7 +787,7 @@ For more information on pipes, see [Pipes](guide/pipes).
 
       ### date
 
-      <code-example hideCopy path="ajs-quick-reference/src/app/app.component.html" region="date" linenums="false"></code-example>
+      <code-example hideCopy path="ajs-quick-reference/src/app/app.component.html" region="date"></code-example>
 
 
       The Angular `date` pipe is similar.
@@ -847,7 +841,7 @@ For more information on pipes, see [Pipes](guide/pipes).
 
       ### json
 
-      <code-example hideCopy path="ajs-quick-reference/src/app/app.component.html" region="json" linenums="false"></code-example>
+      <code-example hideCopy path="ajs-quick-reference/src/app/app.component.html" region="json"></code-example>
 
 
       The Angular `json` pipe does the same thing.
@@ -876,7 +870,7 @@ For more information on pipes, see [Pipes](guide/pipes).
 
       ### slice
 
-      <code-example hideCopy path="ajs-quick-reference/src/app/app.component.html" region="slice" linenums="false"></code-example>
+      <code-example hideCopy path="ajs-quick-reference/src/app/app.component.html" region="slice"></code-example>
 
 
       The `SlicePipe` does the same thing but the *order of the parameters is reversed*, in keeping
@@ -907,7 +901,7 @@ For more information on pipes, see [Pipes](guide/pipes).
 
       ### lowercase
 
-      <code-example hideCopy path="ajs-quick-reference/src/app/app.component.html" region="lowercase" linenums="false"></code-example>
+      <code-example hideCopy path="ajs-quick-reference/src/app/app.component.html" region="lowercase"></code-example>
 
 
       The Angular `lowercase` pipe does the same thing.
@@ -935,7 +929,7 @@ For more information on pipes, see [Pipes](guide/pipes).
 
       ### number
 
-      <code-example hideCopy path="ajs-quick-reference/src/app/app.component.html" region="number" linenums="false"></code-example>
+      <code-example hideCopy path="ajs-quick-reference/src/app/app.component.html" region="number"></code-example>
 
 
       The Angular `number` pipe is similar.
@@ -1068,7 +1062,7 @@ The Angular code is shown using TypeScript.
 
       ### NgModules
 
-      <code-example hideCopy path="ajs-quick-reference/src/app/app.module.1.ts" linenums="false"></code-example>
+      <code-example hideCopy path="ajs-quick-reference/src/app/app.module.1.ts"></code-example>
 
 
       NgModules, defined with the `NgModule` decorator, serve the same purpose:
@@ -1109,7 +1103,7 @@ The Angular code is shown using TypeScript.
 
       ### Component decorator
 
-      <code-example hideCopy path="ajs-quick-reference/src/app/movie-list.component.ts" region="component" linenums="false"></code-example>
+      <code-example hideCopy path="ajs-quick-reference/src/app/movie-list.component.ts" region="component"></code-example>
 
 
       Angular adds a decorator to the component class to provide any required metadata.
@@ -1145,12 +1139,10 @@ The Angular code is shown using TypeScript.
 
       ### Component class
 
-      <code-example hideCopy path="ajs-quick-reference/src/app/movie-list.component.ts" region="class" linenums="false"></code-example>
+      <code-example hideCopy path="ajs-quick-reference/src/app/movie-list.component.ts" region="class"></code-example>
 
 
-      In Angular, you create a component class.
-
-      NOTE: If you are using TypeScript with AngularJS, you must use the `export` keyword to export the component class.
+      In Angular, you create a component class to contain the data model and control methods. Use the TypeScript <code>export</code> keyword to export the class so that the functionality can be imported into NgModules.
 
       For more information, see the [Components](guide/architecture#components)
       section of the [Architecture Overview](guide/architecture) page.
@@ -1184,7 +1176,7 @@ The Angular code is shown using TypeScript.
 
       ### Dependency injection
 
-      <code-example hideCopy path="ajs-quick-reference/src/app/movie-list.component.ts" region="di" linenums="false"></code-example>
+      <code-example hideCopy path="ajs-quick-reference/src/app/movie-list.component.ts" region="di"></code-example>
 
 
       In Angular, you pass in dependencies as arguments to the component class constructor.
@@ -1254,7 +1246,7 @@ also encapsulate a style sheet within a specific component.
 
 
       ### Styles configuration
-      <code-example hideCopy path="ajs-quick-reference/.angular-cli.1.json" region="styles" linenums="false"></code-example>
+      <code-example hideCopy path="ajs-quick-reference/.angular-cli.1.json" region="styles"></code-example>
 
       With the Angular CLI, you can configure your global styles in the `angular.json` file.
       You can rename the extension to `.scss` to use sass.
@@ -1263,7 +1255,7 @@ also encapsulate a style sheet within a specific component.
       In Angular, you can use the `styles` or `styleUrls` property of the `@Component` metadata to define
       a style sheet for a particular component.
 
-      <code-example hideCopy path="ajs-quick-reference/src/app/movie-list.component.ts" region="style-url" linenums="false"></code-example>
+      <code-example hideCopy path="ajs-quick-reference/src/app/movie-list.component.ts" region="style-url"></code-example>
 
 
       This allows you to set appropriate styles for individual components that won’t leak into
@@ -1273,4 +1265,3 @@ also encapsulate a style sheet within a specific component.
   </tr>
 
 </table>
-

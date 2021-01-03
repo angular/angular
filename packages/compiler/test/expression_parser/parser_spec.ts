@@ -1,38 +1,44 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ASTWithSource, BindingPipe, Interpolation, ParserError, TemplateBinding} from '@angular/compiler/src/expression_parser/ast';
+import {ASTWithSource, BindingPipe, Interpolation, ParserError, TemplateBinding, VariableBinding} from '@angular/compiler/src/expression_parser/ast';
 import {Lexer} from '@angular/compiler/src/expression_parser/lexer';
-import {Parser, SplitInterpolation, TemplateBindingParseResult} from '@angular/compiler/src/expression_parser/parser';
+import {IvyParser, Parser, SplitInterpolation} from '@angular/compiler/src/expression_parser/parser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
 
-import {unparse} from './utils/unparser';
+import {unparse, unparseWithSpan} from './utils/unparser';
 import {validate} from './utils/validator';
 
 describe('parser', () => {
   describe('parseAction', () => {
-    it('should parse numbers', () => { checkAction('1'); });
+    it('should parse numbers', () => {
+      checkAction('1');
+    });
 
     it('should parse strings', () => {
       checkAction('\'1\'', '"1"');
       checkAction('"1"');
     });
 
-    it('should parse null', () => { checkAction('null'); });
+    it('should parse null', () => {
+      checkAction('null');
+    });
 
-    it('should parse undefined', () => { checkAction('undefined'); });
+    it('should parse undefined', () => {
+      checkAction('undefined');
+    });
 
-    it('should parse unary - expressions', () => {
-      checkAction('-1', '0 - 1');
-      checkAction('+1', '1 - 0');
-      checkAction(`-'1'`, `0 - "1"`);
-      checkAction(`+'1'`, `"1" - 0`);
+    it('should parse unary - and + expressions', () => {
+      checkAction('-1', '-1');
+      checkAction('+1', '+1');
+      checkAction(`-'1'`, `-"1"`);
+      checkAction(`+'1'`, `+"1"`);
     });
 
     it('should parse unary ! expressions', () => {
@@ -47,10 +53,13 @@ describe('parser', () => {
       checkAction('a!!!!.b');
     });
 
-    it('should parse multiplicative expressions',
-       () => { checkAction('3*4/2%5', '3 * 4 / 2 % 5'); });
+    it('should parse multiplicative expressions', () => {
+      checkAction('3*4/2%5', '3 * 4 / 2 % 5');
+    });
 
-    it('should parse additive expressions', () => { checkAction('3 + 6 - 2'); });
+    it('should parse additive expressions', () => {
+      checkAction('3 + 6 - 2');
+    });
 
     it('should parse relational expressions', () => {
       checkAction('2 < 3');
@@ -74,14 +83,21 @@ describe('parser', () => {
       checkAction('true || false');
     });
 
-    it('should parse grouped expressions', () => { checkAction('(1 + 2) * 3', '1 + 2 * 3'); });
+    it('should parse grouped expressions', () => {
+      checkAction('(1 + 2) * 3', '1 + 2 * 3');
+    });
 
-    it('should ignore comments in expressions', () => { checkAction('a //comment', 'a'); });
+    it('should ignore comments in expressions', () => {
+      checkAction('a //comment', 'a');
+    });
 
-    it('should retain // in string literals',
-       () => { checkAction(`"http://www.google.com"`, `"http://www.google.com"`); });
+    it('should retain // in string literals', () => {
+      checkAction(`"http://www.google.com"`, `"http://www.google.com"`);
+    });
 
-    it('should parse an empty string', () => { checkAction(''); });
+    it('should parse an empty string', () => {
+      checkAction('');
+    });
 
     describe('literals', () => {
       it('should parse array', () => {
@@ -90,6 +106,7 @@ describe('parser', () => {
         checkAction('[]');
         checkAction('[].length');
         checkAction('[1, 2].length');
+        checkAction('[1, 2,]', '[1, 2]');
       });
 
       it('should parse map', () => {
@@ -112,14 +129,53 @@ describe('parser', () => {
       });
 
       it('should only allow identifier or keyword as member names', () => {
-        expectActionError('x.(', 'identifier or keyword');
-        expectActionError('x. 1234', 'identifier or keyword');
-        expectActionError('x."foo"', 'identifier or keyword');
+        checkActionWithError('x.', 'x.', 'identifier or keyword');
+        checkActionWithError('x.(', 'x.', 'identifier or keyword');
+        checkActionWithError('x. 1234', 'x.', 'identifier or keyword');
+        checkActionWithError('x."foo"', 'x.', 'identifier or keyword');
       });
 
       it('should parse safe field access', () => {
         checkAction('a?.a');
         checkAction('a.a?.a');
+      });
+
+      it('should parse incomplete safe field accesses', () => {
+        checkActionWithError('a?.a.', 'a?.a.', 'identifier or keyword');
+        checkActionWithError('a.a?.a.', 'a.a?.a.', 'identifier or keyword');
+        checkActionWithError('a.a?.a?. 1234', 'a.a?.a?.', 'identifier or keyword');
+      });
+    });
+
+    describe('property write', () => {
+      it('should parse property writes', () => {
+        checkAction('a.a = 1 + 2');
+        checkAction('this.a.a = 1 + 2', 'a.a = 1 + 2');
+        checkAction('a.a.a = 1 + 2');
+      });
+
+      describe('malformed property writes', () => {
+        it('should recover on empty rvalues', () => {
+          checkActionWithError('a.a = ', 'a.a = ', 'Unexpected end of expression');
+        });
+
+        it('should recover on incomplete rvalues', () => {
+          checkActionWithError('a.a = 1 + ', 'a.a = 1 + ', 'Unexpected end of expression');
+        });
+
+        it('should recover on missing properties', () => {
+          checkActionWithError(
+              'a. = 1', 'a. = 1', 'Expected identifier for property access at column 2');
+        });
+
+        it('should error on writes after a property write', () => {
+          const ast = parseAction('a.a = 1 = 2');
+          expect(unparse(ast)).toEqual('a.a = 1');
+          validate(ast);
+
+          expect(ast.errors.length).toBe(1);
+          expect(ast.errors[0].message).toContain('Unexpected token \'=\'');
+        });
       });
     });
 
@@ -133,7 +189,87 @@ describe('parser', () => {
     });
 
     describe('functional calls', () => {
-      it('should parse function calls', () => { checkAction('fn()(1, 2)'); });
+      it('should parse function calls', () => {
+        checkAction('fn()(1, 2)');
+      });
+    });
+
+    describe('keyed read', () => {
+      it('should parse keyed reads', () => {
+        checkAction('a["a"]');
+        checkAction('this.a["a"]', 'a["a"]');
+        checkAction('a.a["a"]');
+      });
+
+      describe('malformed keyed reads', () => {
+        it('should recover on missing keys', () => {
+          checkActionWithError('a[]', 'a[]', 'Key access cannot be empty');
+        });
+
+        it('should recover on incomplete expression keys', () => {
+          checkActionWithError('a[1 + ]', 'a[1 + ]', 'Unexpected token ]');
+        });
+
+        it('should recover on unterminated keys', () => {
+          checkActionWithError(
+              'a[1 + 2', 'a[1 + 2]', 'Missing expected ] at the end of the expression');
+        });
+
+        it('should recover on incomplete and unterminated keys', () => {
+          checkActionWithError(
+              'a[1 + ', 'a[1 + ]', 'Missing expected ] at the end of the expression');
+        });
+      });
+    });
+
+    describe('keyed write', () => {
+      it('should parse keyed writes', () => {
+        checkAction('a["a"] = 1 + 2');
+        checkAction('this.a["a"] = 1 + 2', 'a["a"] = 1 + 2');
+        checkAction('a.a["a"] = 1 + 2');
+      });
+
+      describe('malformed keyed writes', () => {
+        it('should recover on empty rvalues', () => {
+          checkActionWithError('a["a"] = ', 'a["a"] = ', 'Unexpected end of expression');
+        });
+
+        it('should recover on incomplete rvalues', () => {
+          checkActionWithError('a["a"] = 1 + ', 'a["a"] = 1 + ', 'Unexpected end of expression');
+        });
+
+        it('should recover on missing keys', () => {
+          checkActionWithError('a[] = 1', 'a[] = 1', 'Key access cannot be empty');
+        });
+
+        it('should recover on incomplete expression keys', () => {
+          checkActionWithError('a[1 + ] = 1', 'a[1 + ] = 1', 'Unexpected token ]');
+        });
+
+        it('should recover on unterminated keys', () => {
+          checkActionWithError('a[1 + 2 = 1', 'a[1 + 2] = 1', 'Missing expected ]');
+        });
+
+        it('should recover on incomplete and unterminated keys', () => {
+          const ast = parseAction('a[1 + = 1');
+          expect(unparse(ast)).toEqual('a[1 + ] = 1');
+          validate(ast);
+
+          const errors = ast.errors.map(e => e.message);
+          expect(errors.length).toBe(2);
+          expect(errors[0]).toContain('Unexpected token =');
+          expect(errors[1]).toContain('Missing expected ]');
+        });
+
+        it('should error on writes after a keyed write', () => {
+          const ast = parseAction('a[1] = 1 = 2');
+          expect(unparse(ast)).toEqual('a[1] = 1');
+          validate(ast);
+
+          expect(ast.errors.length).toBe(1);
+          expect(ast.errors[0].message).toContain('Unexpected token \'=\'');
+        });
+      });
     });
 
     describe('conditional', () => {
@@ -154,32 +290,90 @@ describe('parser', () => {
         checkAction('a = 123; b = 234;');
       });
 
-      it('should report on safe field assignments',
-         () => { expectActionError('a?.a = 123', 'cannot be used in the assignment'); });
+      it('should report on safe field assignments', () => {
+        expectActionError('a?.a = 123', 'cannot be used in the assignment');
+      });
 
-      it('should support array updates', () => { checkAction('a[0] = 200'); });
+      it('should support array updates', () => {
+        checkAction('a[0] = 200');
+      });
     });
 
-    it('should error when using pipes',
-       () => { expectActionError('x|blah', 'Cannot have a pipe'); });
+    it('should error when using pipes', () => {
+      expectActionError('x|blah', 'Cannot have a pipe');
+    });
 
-    it('should store the source in the result',
-       () => { expect(parseAction('someExpr', 'someExpr')); });
+    it('should store the source in the result', () => {
+      expect(parseAction('someExpr', 'someExpr'));
+    });
 
-    it('should store the passed-in location',
-       () => { expect(parseAction('someExpr', 'location').location).toBe('location'); });
+    it('should store the passed-in location', () => {
+      expect(parseAction('someExpr', 'location').location).toBe('location');
+    });
 
     it('should report when encountering interpolation', () => {
       expectActionError('{{a()}}', 'Got interpolation ({{}}) where expression was expected');
     });
   });
 
-  describe('general error handling', () => {
-    it('should report an unexpected token',
-       () => { expectActionError('[1,2] trac', 'Unexpected token \'trac\''); });
+  describe('parse spans', () => {
+    it('should record property read span', () => {
+      const ast = parseAction('foo');
+      expect(unparseWithSpan(ast)).toContain(['foo', 'foo']);
+      expect(unparseWithSpan(ast)).toContain(['foo', '[nameSpan] foo']);
+    });
 
-    it('should report reasonable error for unconsumed tokens',
-       () => { expectActionError(')', 'Unexpected token ) at column 1 in [)]'); });
+    it('should record accessed property read span', () => {
+      const ast = parseAction('foo.bar');
+      expect(unparseWithSpan(ast)).toContain(['foo.bar', 'foo.bar']);
+      expect(unparseWithSpan(ast)).toContain(['foo.bar', '[nameSpan] bar']);
+    });
+
+    it('should record safe property read span', () => {
+      const ast = parseAction('foo?.bar');
+      expect(unparseWithSpan(ast)).toContain(['foo?.bar', 'foo?.bar']);
+      expect(unparseWithSpan(ast)).toContain(['foo?.bar', '[nameSpan] bar']);
+    });
+
+    it('should record method call span', () => {
+      const ast = parseAction('foo()');
+      expect(unparseWithSpan(ast)).toContain(['foo()', 'foo()']);
+      expect(unparseWithSpan(ast)).toContain(['foo()', '[nameSpan] foo']);
+    });
+
+    it('should record accessed method call span', () => {
+      const ast = parseAction('foo.bar()');
+      expect(unparseWithSpan(ast)).toContain(['foo.bar()', 'foo.bar()']);
+      expect(unparseWithSpan(ast)).toContain(['foo.bar()', '[nameSpan] bar']);
+    });
+
+    it('should record safe method call span', () => {
+      const ast = parseAction('foo?.bar()');
+      expect(unparseWithSpan(ast)).toContain(['foo?.bar()', 'foo?.bar()']);
+      expect(unparseWithSpan(ast)).toContain(['foo?.bar()', '[nameSpan] bar']);
+    });
+
+    it('should record property write span', () => {
+      const ast = parseAction('a = b');
+      expect(unparseWithSpan(ast)).toContain(['a = b', 'a = b']);
+      expect(unparseWithSpan(ast)).toContain(['a = b', '[nameSpan] a']);
+    });
+
+    it('should record accessed property write span', () => {
+      const ast = parseAction('a.b = c');
+      expect(unparseWithSpan(ast)).toContain(['a.b = c', 'a.b = c']);
+      expect(unparseWithSpan(ast)).toContain(['a.b = c', '[nameSpan] b']);
+    });
+  });
+
+  describe('general error handling', () => {
+    it('should report an unexpected token', () => {
+      expectActionError('[1,2] trac', 'Unexpected token \'trac\'');
+    });
+
+    it('should report reasonable error for unconsumed tokens', () => {
+      expectActionError(')', 'Unexpected token ) at column 1 in [)]');
+    });
 
     it('should report a missing expected token', () => {
       expectActionError('a(b', 'Missing expected ) at the end of the expression [a(b]');
@@ -200,18 +394,71 @@ describe('parser', () => {
         checkBinding('a | b:(c | d)', '(a | b:(c | d))');
       });
 
+      describe('should parse incomplete pipes', () => {
+        const cases: Array<[string, string, string, string]> = [
+          [
+            'should parse missing pipe names: end',
+            'a | b | ',
+            '((a | b) | )',
+            'Unexpected end of input, expected identifier or keyword',
+          ],
+          [
+            'should parse missing pipe names: middle',
+            'a | | b',
+            '((a | ) | b)',
+            'Unexpected token |, expected identifier or keyword',
+          ],
+          [
+            'should parse missing pipe names: start',
+            ' | a | b',
+            '(( | a) | b)',
+            'Unexpected token |',
+          ],
+          [
+            'should parse missing pipe args: end',
+            'a | b | c: ',
+            '((a | b) | c:)',
+            'Unexpected end of expression',
+          ],
+          [
+            'should parse missing pipe args: middle',
+            'a | b: | c',
+            '((a | b:) | c)',
+            'Unexpected token |',
+          ],
+          [
+            'should parse incomplete pipe args',
+            'a | b: (a | ) + | c',
+            '((a | b:(a | ) + ) | c)',
+            'Unexpected token |',
+          ],
+        ];
+
+        for (const [name, input, output, err] of cases) {
+          it(name, () => {
+            checkBinding(input, output);
+            expectBindingError(input, err);
+          });
+        }
+      });
+
       it('should only allow identifier or keyword as formatter names', () => {
         expectBindingError('"Foo"|(', 'identifier or keyword');
         expectBindingError('"Foo"|1234', 'identifier or keyword');
         expectBindingError('"Foo"|"uppercase"', 'identifier or keyword');
       });
 
-      it('should parse quoted expressions', () => { checkBinding('a:b', 'a:b'); });
+      it('should parse quoted expressions', () => {
+        checkBinding('a:b', 'a:b');
+      });
 
-      it('should not crash when prefix part is not tokenizable',
-         () => { checkBinding('"a:b"', '"a:b"'); });
+      it('should not crash when prefix part is not tokenizable', () => {
+        checkBinding('"a:b"', '"a:b"');
+      });
 
-      it('should ignore whitespace around quote prefix', () => { checkBinding(' a :b', 'a:b'); });
+      it('should ignore whitespace around quote prefix', () => {
+        checkBinding(' a :b', 'a:b');
+      });
 
       it('should refuse prefixes that are not single identifiers', () => {
         expectBindingError('a + b:c', '');
@@ -219,214 +466,428 @@ describe('parser', () => {
       });
     });
 
-    it('should store the source in the result',
-       () => { expect(parseBinding('someExpr').source).toBe('someExpr'); });
+    it('should store the source in the result', () => {
+      expect(parseBinding('someExpr').source).toBe('someExpr');
+    });
 
-    it('should store the passed-in location',
-       () => { expect(parseBinding('someExpr', 'location').location).toBe('location'); });
+    it('should store the passed-in location', () => {
+      expect(parseBinding('someExpr', 'location').location).toBe('location');
+    });
 
-    it('should report chain expressions',
-       () => { expectError(parseBinding('1;2'), 'contain chained expression'); });
+    it('should report chain expressions', () => {
+      expectError(parseBinding('1;2'), 'contain chained expression');
+    });
 
-    it('should report assignment',
-       () => { expectError(parseBinding('a=2'), 'contain assignments'); });
+    it('should report assignment', () => {
+      expectError(parseBinding('a=2'), 'contain assignments');
+    });
 
     it('should report when encountering interpolation', () => {
       expectBindingError('{{a.b}}', 'Got interpolation ({{}}) where expression was expected');
     });
 
-    it('should parse conditional expression', () => { checkBinding('a < b ? a : b'); });
+    it('should parse conditional expression', () => {
+      checkBinding('a < b ? a : b');
+    });
 
-    it('should ignore comments in bindings', () => { checkBinding('a //comment', 'a'); });
+    it('should ignore comments in bindings', () => {
+      checkBinding('a //comment', 'a');
+    });
 
-    it('should retain // in string literals',
-       () => { checkBinding(`"http://www.google.com"`, `"http://www.google.com"`); });
+    it('should retain // in string literals', () => {
+      checkBinding(`"http://www.google.com"`, `"http://www.google.com"`);
+    });
 
-    it('should retain // in : microsyntax', () => { checkBinding('one:a//b', 'one:a//b'); });
-
+    it('should retain // in : microsyntax', () => {
+      checkBinding('one:a//b', 'one:a//b');
+    });
   });
 
   describe('parseTemplateBindings', () => {
-
-    function keys(templateBindings: any[]) { return templateBindings.map(binding => binding.key); }
-
-    function keyValues(templateBindings: any[]) {
-      return templateBindings.map(binding => {
-        if (binding.keyIsVar) {
-          return 'let ' + binding.key + (binding.name == null ? '=null' : '=' + binding.name);
-        } else {
-          return binding.key + (binding.expression == null ? '' : `=${binding.expression}`);
-        }
+    function humanize(bindings: TemplateBinding[]): Array<[string, string | null, boolean]> {
+      return bindings.map(binding => {
+        const key = binding.key.source;
+        const value = binding.value ? binding.value.source : null;
+        const keyIsVar = binding instanceof VariableBinding;
+        return [key, value, keyIsVar];
       });
     }
 
-    function keySpans(source: string, templateBindings: TemplateBinding[]) {
-      return templateBindings.map(
-          binding => source.substring(binding.span.start, binding.span.end));
+    function humanizeSpans(
+        bindings: TemplateBinding[], attr: string): Array<[string, string, string | null]> {
+      return bindings.map(binding => {
+        const {sourceSpan, key, value} = binding;
+        const sourceStr = attr.substring(sourceSpan.start, sourceSpan.end);
+        const keyStr = attr.substring(key.span.start, key.span.end);
+        let valueStr = null;
+        if (value) {
+          const {start, end} = value instanceof ASTWithSource ? value.ast.sourceSpan : value.span;
+          valueStr = attr.substring(start, end);
+        }
+        return [sourceStr, keyStr, valueStr];
+      });
     }
 
-    function exprSources(templateBindings: any[]) {
-      return templateBindings.map(
-          binding => binding.expression != null ? binding.expression.source : null);
-    }
-
-    it('should parse a key without a value',
-       () => { expect(keys(parseTemplateBindings('a', ''))).toEqual(['a']); });
-
-    it('should allow string including dashes as keys', () => {
-      let bindings = parseTemplateBindings('a', 'b');
-      expect(keys(bindings)).toEqual(['a']);
-
-      bindings = parseTemplateBindings('a-b', 'c');
-      expect(keys(bindings)).toEqual(['a-b']);
+    it('should parse key and value', () => {
+      const cases: Array<[string, string, string | null, boolean, string, string, string | null]> =
+          [
+            // expression, key, value, VariableBinding, source span, key span, value span
+            ['*a=""', 'a', null, false, 'a="', 'a', null],
+            ['*a="b"', 'a', 'b', false, 'a="b', 'a', 'b'],
+            ['*a-b="c"', 'a-b', 'c', false, 'a-b="c', 'a-b', 'c'],
+            ['*a="1+1"', 'a', '1+1', false, 'a="1+1', 'a', '1+1'],
+          ];
+      for (const [attr, key, value, keyIsVar, sourceSpan, keySpan, valueSpan] of cases) {
+        const bindings = parseTemplateBindings(attr);
+        expect(humanize(bindings)).toEqual([
+          [key, value, keyIsVar],
+        ]);
+        expect(humanizeSpans(bindings, attr)).toEqual([
+          [sourceSpan, keySpan, valueSpan],
+        ]);
+      }
     });
 
-    it('should detect expressions as value', () => {
-      let bindings = parseTemplateBindings('a', 'b');
-      expect(exprSources(bindings)).toEqual(['b']);
-
-      bindings = parseTemplateBindings('a', '1+1');
-      expect(exprSources(bindings)).toEqual(['1+1']);
-    });
-
-    it('should detect names as value', () => {
-      const bindings = parseTemplateBindings('a', 'let b');
-      expect(keyValues(bindings)).toEqual(['a', 'let b=$implicit']);
-    });
-
-    it('should allow space and colon as separators', () => {
-      let bindings = parseTemplateBindings('a', 'b');
-      expect(keys(bindings)).toEqual(['a']);
-      expect(exprSources(bindings)).toEqual(['b']);
+    it('should variable declared via let', () => {
+      const bindings = parseTemplateBindings('*a="let b"');
+      expect(humanize(bindings)).toEqual([
+        // key, value, VariableBinding
+        ['a', null, false],
+        ['b', null, true],
+      ]);
     });
 
     it('should allow multiple pairs', () => {
-      const bindings = parseTemplateBindings('a', '1 b 2');
-      expect(keys(bindings)).toEqual(['a', 'aB']);
-      expect(exprSources(bindings)).toEqual(['1 ', '2']);
-    });
-
-    it('should store the sources in the result', () => {
-      const bindings = parseTemplateBindings('a', '1,b 2');
-      expect(bindings[0].expression !.source).toEqual('1');
-      expect(bindings[1].expression !.source).toEqual('2');
-    });
-
-    it('should store the passed-in location', () => {
-      const bindings = parseTemplateBindings('a', '1,b 2', 'location');
-      expect(bindings[0].expression !.location).toEqual('location');
-    });
-
-    it('should support let notation', () => {
-      let bindings = parseTemplateBindings('key', 'let i');
-      expect(keyValues(bindings)).toEqual(['key', 'let i=$implicit']);
-
-      bindings = parseTemplateBindings('key', 'let a; let b');
-      expect(keyValues(bindings)).toEqual([
-        'key',
-        'let a=$implicit',
-        'let b=$implicit',
-      ]);
-
-      bindings = parseTemplateBindings('key', 'let a; let b;');
-      expect(keyValues(bindings)).toEqual([
-        'key',
-        'let a=$implicit',
-        'let b=$implicit',
-      ]);
-
-      bindings = parseTemplateBindings('key', 'let i-a = k-a');
-      expect(keyValues(bindings)).toEqual([
-        'key',
-        'let i-a=k-a',
-      ]);
-
-      bindings = parseTemplateBindings('key', 'let item; let i = k');
-      expect(keyValues(bindings)).toEqual([
-        'key',
-        'let item=$implicit',
-        'let i=k',
-      ]);
-
-      bindings = parseTemplateBindings('directive', 'let item in expr; let a = b', 'location');
-      expect(keyValues(bindings)).toEqual([
-        'directive',
-        'let item=$implicit',
-        'directiveIn=expr in location',
-        'let a=b',
+      const bindings = parseTemplateBindings('*a="1 b 2"');
+      expect(humanize(bindings)).toEqual([
+        // key, value, VariableBinding
+        ['a', '1', false],
+        ['aB', '2', false],
       ]);
     });
 
-    it('should support as notation', () => {
-      let bindings = parseTemplateBindings('ngIf', 'exp as local', 'location');
-      expect(keyValues(bindings)).toEqual(['ngIf=exp  in location', 'let local=ngIf']);
+    it('should allow space and colon as separators', () => {
+      const bindings = parseTemplateBindings('*a="1,b 2"');
+      expect(humanize(bindings)).toEqual([
+        // key, value, VariableBinding
+        ['a', '1', false],
+        ['aB', '2', false],
+      ]);
+    });
 
-      bindings = parseTemplateBindings('ngFor', 'let item of items as iter; index as i', 'L');
-      expect(keyValues(bindings)).toEqual([
-        'ngFor', 'let item=$implicit', 'ngForOf=items  in L', 'let iter=ngForOf', 'let i=index'
+    it('should store the templateUrl', () => {
+      const bindings = parseTemplateBindings('*a="1,b 2"', '/foo/bar.html');
+      expect(humanize(bindings)).toEqual([
+        // key, value, VariableBinding
+        ['a', '1', false],
+        ['aB', '2', false],
+      ]);
+      expect((bindings[0].value as ASTWithSource).location).toEqual('/foo/bar.html');
+    });
+
+    it('should support common usage of ngIf', () => {
+      const bindings = parseTemplateBindings('*ngIf="cond | pipe as foo, let x; ngIf as y"');
+      expect(humanize(bindings)).toEqual([
+        // [ key, value, VariableBinding ]
+        ['ngIf', 'cond | pipe', false],
+        ['foo', 'ngIf', true],
+        ['x', null, true],
+        ['y', 'ngIf', true],
+      ]);
+    });
+
+    it('should support common usage of ngFor', () => {
+      let bindings: TemplateBinding[];
+      bindings = parseTemplateBindings('*ngFor="let person of people"');
+      expect(humanize(bindings)).toEqual([
+        // [ key, value, VariableBinding ]
+        ['ngFor', null, false],
+        ['person', null, true],
+        ['ngForOf', 'people', false],
+      ]);
+
+
+      bindings = parseTemplateBindings(
+          '*ngFor="let item; of items | slice:0:1 as collection, trackBy: func; index as i"');
+      expect(humanize(bindings)).toEqual([
+        // [ key, value, VariableBinding ]
+        ['ngFor', null, false],
+        ['item', null, true],
+        ['ngForOf', 'items | slice:0:1', false],
+        ['collection', 'ngForOf', true],
+        ['ngForTrackBy', 'func', false],
+        ['i', 'index', true],
+      ]);
+
+      bindings = parseTemplateBindings(
+          '*ngFor="let item, of: [1,2,3] | pipe as items; let i=index, count as len"');
+      expect(humanize(bindings)).toEqual([
+        // [ key, value, VariableBinding ]
+        ['ngFor', null, false],
+        ['item', null, true],
+        ['ngForOf', '[1,2,3] | pipe', false],
+        ['items', 'ngForOf', true],
+        ['i', 'index', true],
+        ['len', 'count', true],
       ]);
     });
 
     it('should parse pipes', () => {
-      const bindings = parseTemplateBindings('key', 'value|pipe');
-      const ast = bindings[0].expression !.ast;
-      expect(ast).toBeAnInstanceOf(BindingPipe);
+      const bindings = parseTemplateBindings('*key="value|pipe "');
+      expect(humanize(bindings)).toEqual([
+        // [ key, value, VariableBinding ]
+        ['key', 'value|pipe', false],
+      ]);
+      const {value} = bindings[0];
+      expect(value).toBeAnInstanceOf(ASTWithSource);
+      expect((value as ASTWithSource).ast).toBeAnInstanceOf(BindingPipe);
     });
 
-    describe('spans', () => {
-      it('should should support let', () => {
-        const source = 'let i';
-        expect(keySpans(source, parseTemplateBindings('key', 'let i'))).toEqual(['', 'let i']);
-      });
-
-      it('should support multiple lets', () => {
-        const source = 'let item; let i=index; let e=even;';
-        expect(keySpans(source, parseTemplateBindings('key', source))).toEqual([
-          '', 'let item', 'let i=index', 'let e=even'
+    describe('"let" binding', () => {
+      it('should support single declaration', () => {
+        const bindings = parseTemplateBindings('*key="let i"');
+        expect(humanize(bindings)).toEqual([
+          // [ key, value, VariableBinding ]
+          ['key', null, false],
+          ['i', null, true],
         ]);
       });
 
-      it('should support a prefix', () => {
-        const source = 'let person of people';
-        const prefix = 'ngFor';
-        const bindings = parseTemplateBindings(prefix, source);
-        expect(keyValues(bindings)).toEqual([
-          'ngFor', 'let person=$implicit', 'ngForOf=people in null'
+      it('should support multiple declarations', () => {
+        const bindings = parseTemplateBindings('*key="let a; let b"');
+        expect(humanize(bindings)).toEqual([
+          // [ key, value, VariableBinding ]
+          ['key', null, false],
+          ['a', null, true],
+          ['b', null, true],
         ]);
-        expect(keySpans(source, bindings)).toEqual(['', 'let person ', 'of people']);
+      });
+
+      it('should support empty string assignment', () => {
+        const bindings = parseTemplateBindings(`*key="let a=''; let b='';"`);
+        expect(humanize(bindings)).toEqual([
+          // [ key, value, VariableBinding ]
+          ['key', null, false],
+          ['a', '', true],
+          ['b', '', true],
+        ]);
+      });
+
+      it('should support key and value names with dash', () => {
+        const bindings = parseTemplateBindings('*key="let i-a = j-a,"');
+        expect(humanize(bindings)).toEqual([
+          // [ key, value, VariableBinding ]
+          ['key', null, false],
+          ['i-a', 'j-a', true],
+        ]);
+      });
+
+      it('should support declarations with or without value assignment', () => {
+        const bindings = parseTemplateBindings('*key="let item; let i = k"');
+        expect(humanize(bindings)).toEqual([
+          // [ key, value, VariableBinding ]
+          ['key', null, false],
+          ['item', null, true],
+          ['i', 'k', true],
+        ]);
+      });
+
+      it('should support declaration before an expression', () => {
+        const bindings = parseTemplateBindings('*directive="let item in expr; let a = b"');
+        expect(humanize(bindings)).toEqual([
+          // [ key, value, VariableBinding ]
+          ['directive', null, false],
+          ['item', null, true],
+          ['directiveIn', 'expr', false],
+          ['a', 'b', true],
+        ]);
+      });
+    });
+
+    describe('"as" binding', () => {
+      it('should support single declaration', () => {
+        const bindings = parseTemplateBindings('*ngIf="exp as local"');
+        expect(humanize(bindings)).toEqual([
+          // [ key, value, VariableBinding ]
+          ['ngIf', 'exp', false],
+          ['local', 'ngIf', true],
+        ]);
+      });
+
+      it('should support declaration after an expression', () => {
+        const bindings = parseTemplateBindings('*ngFor="let item of items as iter; index as i"');
+        expect(humanize(bindings)).toEqual([
+          // [ key, value, VariableBinding ]
+          ['ngFor', null, false],
+          ['item', null, true],
+          ['ngForOf', 'items', false],
+          ['iter', 'ngForOf', true],
+          ['i', 'index', true],
+        ]);
+      });
+
+      it('should support key and value names with dash', () => {
+        const bindings = parseTemplateBindings('*key="foo, k-b as l-b;"');
+        expect(humanize(bindings)).toEqual([
+          // [ key, value, VariableBinding ]
+          ['key', 'foo', false],
+          ['l-b', 'k-b', true],
+        ]);
+      });
+    });
+
+    describe('source, key, value spans', () => {
+      it('should map empty expression', () => {
+        const attr = '*ngIf=""';
+        const bindings = parseTemplateBindings(attr);
+        expect(humanizeSpans(bindings, attr)).toEqual([
+          // source span, key span, value span
+          ['ngIf="', 'ngIf', null],
+        ]);
+      });
+
+      it('should map variable declaration via "let"', () => {
+        const attr = '*key="let i"';
+        const bindings = parseTemplateBindings(attr);
+        expect(humanizeSpans(bindings, attr)).toEqual([
+          // source span, key span, value span
+          ['key="', 'key', null],  // source span stretches till next binding
+          ['let i', 'i', null],
+        ]);
+      });
+
+      it('shoud map multiple variable declarations via "let"', () => {
+        const attr = '*key="let item; let i=index; let e=even;"';
+        const bindings = parseTemplateBindings(attr);
+        expect(humanizeSpans(bindings, attr)).toEqual([
+          // source span, key span, value span
+          ['key="', 'key', null],
+          ['let item; ', 'item', null],
+          ['let i=index; ', 'i', 'index'],
+          ['let e=even;', 'e', 'even'],
+        ]);
+      });
+
+      it('shoud map expression with pipe', () => {
+        const attr = '*ngIf="cond | pipe as foo, let x; ngIf as y"';
+        const bindings = parseTemplateBindings(attr);
+        expect(humanizeSpans(bindings, attr)).toEqual([
+          // source span, key span, value span
+          ['ngIf="cond | pipe ', 'ngIf', 'cond | pipe'],
+          ['ngIf="cond | pipe as foo, ', 'foo', 'ngIf'],
+          ['let x; ', 'x', null],
+          ['ngIf as y', 'y', 'ngIf'],
+        ]);
+      });
+
+      it('should report unexpected token when encountering interpolation', () => {
+        const attr = '*ngIf="name && {{name}}"';
+
+        expectParseTemplateBindingsError(
+            attr,
+            'Parser Error: Unexpected token {, expected identifier, keyword, or string at column 10 in [name && {{name}}] in foo.html');
+      });
+
+      it('should map variable declaration via "as"', () => {
+        const attr =
+            '*ngFor="let item; of items | slice:0:1 as collection, trackBy: func; index as i"';
+        const bindings = parseTemplateBindings(attr);
+        expect(humanizeSpans(bindings, attr)).toEqual([
+          // source span, key span, value span
+          ['ngFor="', 'ngFor', null],
+          ['let item; ', 'item', null],
+          ['of items | slice:0:1 ', 'of', 'items | slice:0:1'],
+          ['of items | slice:0:1 as collection, ', 'collection', 'of'],
+          ['trackBy: func; ', 'trackBy', 'func'],
+          ['index as i', 'i', 'index'],
+        ]);
+      });
+
+      it('should map literal array', () => {
+        const attr = '*ngFor="let item, of: [1,2,3] | pipe as items; let i=index, count as len, "';
+        const bindings = parseTemplateBindings(attr);
+        expect(humanizeSpans(bindings, attr)).toEqual([
+          // source span, key span, value span
+          ['ngFor="', 'ngFor', null],
+          ['let item, ', 'item', null],
+          ['of: [1,2,3] | pipe ', 'of', '[1,2,3] | pipe'],
+          ['of: [1,2,3] | pipe as items; ', 'items', 'of'],
+          ['let i=index, ', 'i', 'index'],
+          ['count as len,', 'len', 'count'],
+        ]);
       });
     });
   });
 
   describe('parseInterpolation', () => {
-    it('should return null if no interpolation',
-       () => { expect(parseInterpolation('nothing')).toBe(null); });
+    it('should return null if no interpolation', () => {
+      expect(parseInterpolation('nothing')).toBe(null);
+    });
+
+    it('should not parse malformed interpolations as strings', () => {
+      const ast = parseInterpolation('{{a}} {{example}<!--->}')!.ast as Interpolation;
+      expect(ast.strings).toEqual(['', ' {{example}<!--->}']);
+      expect(ast.expressions.length).toEqual(1);
+      expect(ast.expressions[0].name).toEqual('a');
+    });
 
     it('should parse no prefix/suffix interpolation', () => {
-      const ast = parseInterpolation('{{a}}') !.ast as Interpolation;
+      const ast = parseInterpolation('{{a}}')!.ast as Interpolation;
       expect(ast.strings).toEqual(['', '']);
       expect(ast.expressions.length).toEqual(1);
       expect(ast.expressions[0].name).toEqual('a');
     });
 
+    it('should parse interpolation inside quotes', () => {
+      const ast = parseInterpolation('"{{a}}"')!.ast as Interpolation;
+      expect(ast.strings).toEqual(['"', '"']);
+      expect(ast.expressions.length).toEqual(1);
+      expect(ast.expressions[0].name).toEqual('a');
+    });
+
+    it('should parse interpolation with interpolation characters inside quotes', () => {
+      checkInterpolation('{{"{{a}}"}}', '{{ "{{a}}" }}');
+      checkInterpolation('{{"{{"}}', '{{ "{{" }}');
+      checkInterpolation('{{"}}"}}', '{{ "}}" }}');
+      checkInterpolation('{{"{"}}', '{{ "{" }}');
+      checkInterpolation('{{"}"}}', '{{ "}" }}');
+    });
+
+    it('should parse interpolation with escaped quotes', () => {
+      checkInterpolation(`{{'It\\'s just Angular'}}`, `{{ "It's just Angular" }}`);
+      checkInterpolation(`{{'It\\'s {{ just Angular'}}`, `{{ "It's {{ just Angular" }}`);
+      checkInterpolation(`{{'It\\'s }} just Angular'}}`, `{{ "It's }} just Angular" }}`);
+    });
+
+    it('should parse interpolation with escaped backslashes', () => {
+      checkInterpolation(`{{foo.split('\\\\')}}`, `{{ foo.split("\\") }}`);
+      checkInterpolation(`{{foo.split('\\\\\\\\')}}`, `{{ foo.split("\\\\") }}`);
+      checkInterpolation(`{{foo.split('\\\\\\\\\\\\')}}`, `{{ foo.split("\\\\\\") }}`);
+    });
+
+    it('should not parse interpolation with mismatching quotes', () => {
+      expect(parseInterpolation(`{{ "{{a}}' }}`)).toBeNull();
+    });
+
     it('should parse prefix/suffix with multiple interpolation', () => {
       const originalExp = 'before {{ a }} middle {{ b }} after';
-      const ast = parseInterpolation(originalExp) !.ast;
+      const ast = parseInterpolation(originalExp)!.ast;
       expect(unparse(ast)).toEqual(originalExp);
       validate(ast);
     });
 
     it('should report empty interpolation expressions', () => {
       expectError(
-          parseInterpolation('{{}}') !,
-          'Blank expressions are not allowed in interpolated strings');
+          parseInterpolation('{{}}')!, 'Blank expressions are not allowed in interpolated strings');
 
       expectError(
-          parseInterpolation('foo {{  }}') !,
+          parseInterpolation('foo {{  }}')!,
           'Parser Error: Blank expressions are not allowed in interpolated strings');
     });
 
-    it('should parse conditional expression', () => { checkInterpolation('{{ a < b ? a : b }}'); });
+    it('should parse conditional expression', () => {
+      checkInterpolation('{{ a < b ? a : b }}');
+    });
 
     it('should parse expression with newline characters', () => {
       checkInterpolation(`{{ 'foo' +\n 'bar' +\r 'baz' }}`, `{{ "foo" + "bar" + "baz" }}`);
@@ -434,15 +895,16 @@ describe('parser', () => {
 
     it('should support custom interpolation', () => {
       const parser = new Parser(new Lexer());
-      const ast = parser.parseInterpolation('{% a %}', null, {start: '{%', end: '%}'}) !.ast as any;
+      const ast = parser.parseInterpolation('{% a %}', '', 0, {start: '{%', end: '%}'})!.ast as any;
       expect(ast.strings).toEqual(['', '']);
       expect(ast.expressions.length).toEqual(1);
       expect(ast.expressions[0].name).toEqual('a');
     });
 
     describe('comments', () => {
-      it('should ignore comments in interpolation expressions',
-         () => { checkInterpolation('{{a //comment}}', '{{ a }}'); });
+      it('should ignore comments in interpolation expressions', () => {
+        checkInterpolation('{{a //comment}}', '{{ a }}');
+      });
 
       it('should retain // in single quote strings', () => {
         checkInterpolation(`{{ 'http://www.google.com' }}`, `{{ "http://www.google.com" }}`);
@@ -452,18 +914,23 @@ describe('parser', () => {
         checkInterpolation(`{{ "http://www.google.com" }}`, `{{ "http://www.google.com" }}`);
       });
 
-      it('should ignore comments after string literals',
-         () => { checkInterpolation(`{{ "a//b" //comment }}`, `{{ "a//b" }}`); });
+      it('should ignore comments after string literals', () => {
+        checkInterpolation(`{{ "a//b" //comment }}`, `{{ "a//b" }}`);
+      });
 
       it('should retain // in complex strings', () => {
         checkInterpolation(
             `{{"//a\'//b\`//c\`//d\'//e" //comment}}`, `{{ "//a\'//b\`//c\`//d\'//e" }}`);
       });
 
-      it('should retain // in nested, unterminated strings',
-         () => { checkInterpolation(`{{ "a\'b\`" //comment}}`, `{{ "a\'b\`" }}`); });
-    });
+      it('should retain // in nested, unterminated strings', () => {
+        checkInterpolation(`{{ "a\'b\`" //comment}}`, `{{ "a\'b\`" }}`);
+      });
 
+      it('should ignore quotes inside a comment', () => {
+        checkInterpolation(`"{{name // " }}"`, `"{{ name }}"`);
+      });
+    });
   });
 
   describe('parseSimpleBinding', () => {
@@ -488,11 +955,73 @@ describe('parser', () => {
     it('should report when encountering field write', () => {
       expectError(validate(parseSimpleBinding('a = b')), 'Bindings cannot contain assignments');
     });
+
+    describe('Ivy-only validations', () => {
+      it('should throw if a pipe is used inside a conditional', () => {
+        expectError(
+            validate(parseSimpleBindingIvy('(hasId | myPipe) ? "my-id" : ""')),
+            'Host binding expression cannot contain pipes');
+      });
+
+      it('should throw if a pipe is used inside a function call', () => {
+        expectError(
+            validate(parseSimpleBindingIvy('getId(true, id | myPipe)')),
+            'Host binding expression cannot contain pipes');
+      });
+
+      it('should throw if a pipe is used inside a method call', () => {
+        expectError(
+            validate(parseSimpleBindingIvy('idService.getId(true, id | myPipe)')),
+            'Host binding expression cannot contain pipes');
+      });
+
+      it('should throw if a pipe is used inside a safe method call', () => {
+        expectError(
+            validate(parseSimpleBindingIvy('idService?.getId(true, id | myPipe)')),
+            'Host binding expression cannot contain pipes');
+      });
+
+      it('should throw if a pipe is used inside a property access', () => {
+        expectError(
+            validate(parseSimpleBindingIvy('a[id | myPipe]')),
+            'Host binding expression cannot contain pipes');
+      });
+
+      it('should throw if a pipe is used inside a keyed read expression', () => {
+        expectError(
+            validate(parseSimpleBindingIvy('a[id | myPipe].b')),
+            'Host binding expression cannot contain pipes');
+      });
+
+      it('should throw if a pipe is used inside a safe property read', () => {
+        expectError(
+            validate(parseSimpleBindingIvy('(id | myPipe)?.id')),
+            'Host binding expression cannot contain pipes');
+      });
+
+      it('should throw if a pipe is used inside a non-null assertion', () => {
+        expectError(
+            validate(parseSimpleBindingIvy('[id | myPipe]!')),
+            'Host binding expression cannot contain pipes');
+      });
+
+      it('should throw if a pipe is used inside a prefix not expression', () => {
+        expectError(
+            validate(parseSimpleBindingIvy('!(id | myPipe)')),
+            'Host binding expression cannot contain pipes');
+      });
+
+      it('should throw if a pipe is used inside a binary expression', () => {
+        expectError(
+            validate(parseSimpleBindingIvy('(id | myPipe) === true')),
+            'Host binding expression cannot contain pipes');
+      });
+    });
   });
 
   describe('wrapLiteralPrimitive', () => {
     it('should wrap a literal primitive', () => {
-      expect(unparse(validate(createParser().wrapLiteralPrimitive('foo', null)))).toEqual('"foo"');
+      expect(unparse(validate(createParser().wrapLiteralPrimitive('foo', '', 0)))).toEqual('"foo"');
     });
   });
 
@@ -512,12 +1041,12 @@ describe('parser', () => {
 
   describe('offsets', () => {
     it('should retain the offsets of an interpolation', () => {
-      const interpolations = splitInterpolation('{{a}}  {{b}}  {{c}}') !;
+      const interpolations = splitInterpolation('{{a}}  {{b}}  {{c}}')!;
       expect(interpolations.offsets).toEqual([2, 9, 16]);
     });
 
     it('should retain the offsets into the expression AST of interpolations', () => {
-      const source = parseInterpolation('{{a}}  {{b}}  {{c}}') !;
+      const source = parseInterpolation('{{a}}  {{b}}  {{c}}')!;
       const interpolation = source.ast as Interpolation;
       expect(interpolation.expressions.map(e => e.span.start)).toEqual([2, 9, 16]);
     });
@@ -528,38 +1057,64 @@ function createParser() {
   return new Parser(new Lexer());
 }
 
-function parseAction(text: string, location: any = null): ASTWithSource {
-  return createParser().parseAction(text, location);
+function createIvyParser() {
+  return new IvyParser(new Lexer());
 }
 
-function parseBinding(text: string, location: any = null): ASTWithSource {
-  return createParser().parseBinding(text, location);
+function parseAction(text: string, location: any = null, offset: number = 0): ASTWithSource {
+  return createParser().parseAction(text, location, offset);
 }
 
-function parseTemplateBindingsResult(
-    key: string, value: string, location: any = null): TemplateBindingParseResult {
-  return createParser().parseTemplateBindings(key, value, location);
-}
-function parseTemplateBindings(
-    key: string, value: string, location: any = null): TemplateBinding[] {
-  return parseTemplateBindingsResult(key, value, location).templateBindings;
+function parseBinding(text: string, location: any = null, offset: number = 0): ASTWithSource {
+  return createParser().parseBinding(text, location, offset);
 }
 
-function parseInterpolation(text: string, location: any = null): ASTWithSource|null {
-  return createParser().parseInterpolation(text, location);
+function parseTemplateBindings(attribute: string, templateUrl = 'foo.html'): TemplateBinding[] {
+  const result = _parseTemplateBindings(attribute, templateUrl);
+  expect(result.errors).toEqual([]);
+  expect(result.warnings).toEqual([]);
+  return result.templateBindings;
+}
+
+function expectParseTemplateBindingsError(attribute: string, error: string) {
+  const result = _parseTemplateBindings(attribute, 'foo.html');
+  expect(result.errors[0].message).toEqual(error);
+}
+
+function _parseTemplateBindings(attribute: string, templateUrl: string) {
+  const match = attribute.match(/^\*(.+)="(.*)"$/);
+  expect(match).toBeTruthy(`failed to extract key and value from ${attribute}`);
+  const [_, key, value] = match!;
+  const absKeyOffset = 1;  // skip the * prefix
+  const absValueOffset = attribute.indexOf('=') + '="'.length;
+  const parser = createParser();
+  return parser.parseTemplateBindings(key, value, templateUrl, absKeyOffset, absValueOffset);
+}
+
+function parseInterpolation(text: string, location: any = null, offset: number = 0): ASTWithSource|
+    null {
+  return createParser().parseInterpolation(text, location, offset);
 }
 
 function splitInterpolation(text: string, location: any = null): SplitInterpolation|null {
   return createParser().splitInterpolation(text, location);
 }
 
-function parseSimpleBinding(text: string, location: any = null): ASTWithSource {
-  return createParser().parseSimpleBinding(text, location);
+function parseSimpleBinding(text: string, location: any = null, offset: number = 0): ASTWithSource {
+  return createParser().parseSimpleBinding(text, location, offset);
+}
+
+function parseSimpleBindingIvy(
+    text: string, location: any = null, offset: number = 0): ASTWithSource {
+  return createIvyParser().parseSimpleBinding(text, location, offset);
 }
 
 function checkInterpolation(exp: string, expected?: string) {
-  const ast = parseInterpolation(exp) !;
+  const ast = parseInterpolation(exp);
   if (expected == null) expected = exp;
+  if (ast === null) {
+    throw Error(`Failed to parse expression "${exp}"`);
+  }
   expect(unparse(ast)).toEqual(expected);
   validate(ast);
 }
@@ -595,4 +1150,12 @@ function expectActionError(text: string, message: string) {
 
 function expectBindingError(text: string, message: string) {
   expectError(validate(parseBinding(text)), message);
+}
+
+/**
+ * Check that a malformed action parses to a recovered AST while emitting an error.
+ */
+function checkActionWithError(text: string, expected: string, error: string) {
+  checkAction(text, expected);
+  expectActionError(text, error);
 }

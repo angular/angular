@@ -1,18 +1,27 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Directive, ErrorHandler, Inject, Injectable, InjectionToken, Input, NgModule, Optional, Pipe, ɵsetClassMetadata as setClassMetadata, ɵɵdefineComponent as defineComponent, ɵɵdefineNgModule as defineNgModule, ɵɵtext as text} from '@angular/core';
-import {TestBed, getTestBed} from '@angular/core/testing/src/test_bed';
+import {APP_INITIALIZER, ChangeDetectorRef, Compiler, Component, Directive, ErrorHandler, Inject, Injectable, InjectionToken, Injector, Input, LOCALE_ID, ModuleWithProviders, NgModule, Optional, Pipe, Type, ViewChild, ɵsetClassMetadata as setClassMetadata, ɵɵdefineComponent as defineComponent, ɵɵdefineInjector as defineInjector, ɵɵdefineNgModule as defineNgModule, ɵɵsetNgModuleScope as setNgModuleScope, ɵɵtext as text} from '@angular/core';
+import {getTestBed, TestBed} from '@angular/core/testing/src/test_bed';
 import {By} from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {onlyInIvy} from '@angular/private/testing';
 
 const NAME = new InjectionToken<string>('name');
+
+@Injectable({providedIn: 'root'})
+class SimpleService {
+  static ngOnDestroyCalls: number = 0;
+  id: number = 1;
+  ngOnDestroy() {
+    SimpleService.ngOnDestroyCalls++;
+  }
+}
 
 // -- module: HWModule
 @Component({
@@ -30,7 +39,22 @@ export class HelloWorld {
 export class GreetingCmp {
   name: string;
 
-  constructor(@Inject(NAME) @Optional() name: string) { this.name = name || 'nobody!'; }
+  constructor(
+      @Inject(NAME) @Optional() name: string,
+      @Inject(SimpleService) @Optional() service: SimpleService) {
+    this.name = name || 'nobody!';
+  }
+}
+
+@Component({
+  selector: 'cmp-with-providers',
+  template: '<hello-world></hello-world>',
+  providers: [
+    SimpleService,  //
+    {provide: NAME, useValue: `from Component`}
+  ]
+})
+class CmpWithProviders {
 }
 
 @NgModule({
@@ -86,7 +110,7 @@ export class ComponentWithInlineTemplate {
 @NgModule({
   declarations: [
     HelloWorld, SimpleCmp, WithRefsCmp, InheritedCmp, SimpleApp, ComponentWithPropBindings,
-    HostBindingDir
+    HostBindingDir, CmpWithProviders
   ],
   imports: [GreetingModule],
   providers: [
@@ -142,7 +166,8 @@ describe('TestBed', () => {
     fixture.detectChanges();
 
     const divElement = fixture.debugElement.query(By.css('div'));
-    expect(divElement.properties).toEqual({id: 'one', title: 'some title'});
+    expect(divElement.properties.id).toEqual('one');
+    expect(divElement.properties.title).toEqual('some title');
   });
 
   it('should give the ability to access interpolated properties on a node', () => {
@@ -150,8 +175,8 @@ describe('TestBed', () => {
     fixture.detectChanges();
 
     const paragraphEl = fixture.debugElement.query(By.css('p'));
-    expect(paragraphEl.properties)
-        .toEqual({title: '( some label - some title )', id: '[ some label ] [ some title ]'});
+    expect(paragraphEl.properties.title).toEqual('( some label - some title )');
+    expect(paragraphEl.properties.id).toEqual('[ some label ] [ some title ]');
   });
 
   it('should give access to the node injector', () => {
@@ -222,11 +247,454 @@ describe('TestBed', () => {
     expect(hello.nativeElement).toHaveText('Hello World!');
   });
 
+  it('should run `APP_INITIALIZER` before accessing `LOCALE_ID` provider', () => {
+    let locale: string = '';
+    @NgModule({
+      providers: [
+        {provide: APP_INITIALIZER, useValue: () => locale = 'fr-FR', multi: true},
+        {provide: LOCALE_ID, useFactory: () => locale}
+      ]
+    })
+    class TestModule {
+    }
+
+    TestBed.configureTestingModule({imports: [TestModule]});
+    expect(TestBed.inject(LOCALE_ID)).toBe('fr-FR');
+  });
+
   it('allow to override a provider', () => {
-    TestBed.overrideProvider(NAME, {useValue: 'injected World !'});
+    TestBed.overrideProvider(NAME, {useValue: 'injected World!'});
     const hello = TestBed.createComponent(HelloWorld);
     hello.detectChanges();
-    expect(hello.nativeElement).toHaveText('Hello injected World !');
+    expect(hello.nativeElement).toHaveText('Hello injected World!');
+  });
+
+  it('uses the most recent provider override', () => {
+    TestBed.overrideProvider(NAME, {useValue: 'injected World!'});
+    TestBed.overrideProvider(NAME, {useValue: 'injected World a second time!'});
+    const hello = TestBed.createComponent(HelloWorld);
+    hello.detectChanges();
+    expect(hello.nativeElement).toHaveText('Hello injected World a second time!');
+  });
+
+  it('overrides a providers in an array', () => {
+    TestBed.configureTestingModule({
+      imports: [HelloWorldModule],
+      providers: [
+        [{provide: NAME, useValue: 'injected World!'}],
+      ]
+    });
+    TestBed.overrideProvider(NAME, {useValue: 'injected World a second time!'});
+    const hello = TestBed.createComponent(HelloWorld);
+    hello.detectChanges();
+    expect(hello.nativeElement).toHaveText('Hello injected World a second time!');
+  });
+
+  it('should not call ngOnDestroy for a service that was overridden', () => {
+    SimpleService.ngOnDestroyCalls = 0;
+
+    TestBed.overrideProvider(SimpleService, {useValue: {id: 2, ngOnDestroy: () => {}}});
+    const fixture = TestBed.createComponent(CmpWithProviders);
+    fixture.detectChanges();
+
+    const service = TestBed.inject(SimpleService);
+    expect(service.id).toBe(2);
+
+    fixture.destroy();
+
+    // verify that original `ngOnDestroy` was not called
+    expect(SimpleService.ngOnDestroyCalls).toBe(0);
+  });
+
+  describe('module overrides using TestBed.overrideModule', () => {
+    @Component({
+      selector: 'test-cmp',
+      template: '...',
+    })
+    class TestComponent {
+      testField = 'default';
+    }
+
+    @NgModule({
+      declarations: [TestComponent],
+      exports: [TestComponent],
+    })
+    class TestModule {
+    }
+
+    @Component({
+      selector: 'app-root',
+      template: `<test-cmp #testCmpCtrl></test-cmp>`,
+    })
+    class AppComponent {
+      @ViewChild('testCmpCtrl', {static: true}) testCmpCtrl!: TestComponent;
+    }
+
+    @NgModule({
+      declarations: [AppComponent],
+      imports: [TestModule],
+    })
+    class AppModule {
+    }
+    @Component({
+      selector: 'test-cmp',
+      template: '...',
+    })
+    class MockTestComponent {
+      testField = 'overwritten';
+    }
+
+    it('should allow declarations override', () => {
+      TestBed.configureTestingModule({
+        imports: [AppModule],
+      });
+      // replace TestComponent with MockTestComponent
+      TestBed.overrideModule(TestModule, {
+        remove: {declarations: [TestComponent], exports: [TestComponent]},
+        add: {declarations: [MockTestComponent], exports: [MockTestComponent]}
+      });
+      const fixture = TestBed.createComponent(AppComponent);
+      const app = fixture.componentInstance;
+      expect(app.testCmpCtrl.testField).toBe('overwritten');
+    });
+  });
+
+  describe('nested module overrides using TestBed.overrideModule', () => {
+    // Set up an NgModule hierarchy with two modules, A and B, each with their own component.
+    // Module B additionally re-exports module A. Also declare two mock components which can be
+    // used in tests to verify that overrides within this hierarchy are working correctly.
+
+    // ModuleA content:
+
+    @Component({
+      selector: 'comp-a',
+      template: 'comp-a content',
+    })
+    class CompA {
+    }
+
+    @Component({
+      selector: 'comp-a',
+      template: 'comp-a mock content',
+    })
+    class MockCompA {
+    }
+
+    @NgModule({
+      declarations: [CompA],
+      exports: [CompA],
+    })
+    class ModuleA {
+    }
+
+    // ModuleB content:
+
+    @Component({
+      selector: 'comp-b',
+      template: 'comp-b content',
+    })
+    class CompB {
+    }
+
+    @Component({
+      selector: 'comp-b',
+      template: 'comp-b mock content',
+    })
+    class MockCompB {
+    }
+
+    @NgModule({
+      imports: [ModuleA],
+      declarations: [CompB],
+      exports: [CompB, ModuleA],
+    })
+    class ModuleB {
+    }
+
+    // AppModule content:
+
+    @Component({
+      selector: 'app',
+      template: `
+        <comp-a></comp-a>
+        <comp-b></comp-b>
+      `,
+    })
+    class App {
+    }
+
+    @NgModule({
+      imports: [ModuleB],
+      exports: [ModuleB],
+    })
+    class AppModule {
+    }
+
+    it('should detect nested module override', () => {
+      TestBed
+          .configureTestingModule({
+            declarations: [App],
+            // AppModule -> ModuleB -> ModuleA (to be overridden)
+            imports: [AppModule],
+          })
+          .overrideModule(ModuleA, {
+            remove: {declarations: [CompA], exports: [CompA]},
+            add: {declarations: [MockCompA], exports: [MockCompA]}
+          })
+          .compileComponents();
+
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      // CompA is overridden, expect mock content.
+      expect(fixture.nativeElement.textContent).toContain('comp-a mock content');
+
+      // CompB is not overridden, expect original content.
+      expect(fixture.nativeElement.textContent).toContain('comp-b content');
+    });
+
+    it('should detect chained modules override', () => {
+      TestBed
+          .configureTestingModule({
+            declarations: [App],
+            // AppModule -> ModuleB (to be overridden) -> ModuleA (to be overridden)
+            imports: [AppModule],
+          })
+          .overrideModule(ModuleA, {
+            remove: {declarations: [CompA], exports: [CompA]},
+            add: {declarations: [MockCompA], exports: [MockCompA]}
+          })
+          .overrideModule(ModuleB, {
+            remove: {declarations: [CompB], exports: [CompB]},
+            add: {declarations: [MockCompB], exports: [MockCompB]}
+          })
+          .compileComponents();
+
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      // Both CompA and CompB are overridden, expect mock content for both.
+      expect(fixture.nativeElement.textContent).toContain('comp-a mock content');
+      expect(fixture.nativeElement.textContent).toContain('comp-b mock content');
+    });
+  });
+
+  describe('multi providers', () => {
+    const multiToken = new InjectionToken<string[]>('multiToken');
+    const singleToken = new InjectionToken<string>('singleToken');
+    const multiTokenToOverrideAtModuleLevel =
+        new InjectionToken<string[]>('moduleLevelMultiOverride');
+    @NgModule({providers: [{provide: multiToken, useValue: 'valueFromModule', multi: true}]})
+    class MyModule {
+    }
+
+    @NgModule({
+      providers: [
+        {provide: singleToken, useValue: 't1'}, {
+          provide: multiTokenToOverrideAtModuleLevel,
+          useValue: 'multiTokenToOverrideAtModuleLevelOriginal',
+          multi: true
+        },
+        {provide: multiToken, useValue: 'valueFromModule2', multi: true},
+        {provide: multiToken, useValue: 'secondValueFromModule2', multi: true}
+      ]
+    })
+    class MyModule2 {
+    }
+
+    beforeEach(() => {
+      TestBed.configureTestingModule({
+        imports: [
+          MyModule, {
+            ngModule: MyModule2,
+            providers:
+                [{provide: multiTokenToOverrideAtModuleLevel, useValue: 'override', multi: true}]
+          }
+        ],
+      });
+    });
+
+    it('is preserved when other provider is overridden', () => {
+      TestBed.overrideProvider(singleToken, {useValue: ''});
+      expect(TestBed.inject(multiToken).length).toEqual(3);
+      expect(TestBed.inject(multiTokenToOverrideAtModuleLevel).length).toEqual(2);
+      expect(TestBed.inject(multiTokenToOverrideAtModuleLevel)).toEqual([
+        'multiTokenToOverrideAtModuleLevelOriginal', 'override'
+      ]);
+    });
+
+    it('overridden with an array', () => {
+      const overrideValue = ['override'];
+      TestBed.overrideProvider(multiToken, {useValue: overrideValue, multi: true} as any);
+
+      const value = TestBed.inject(multiToken);
+      expect(value.length).toEqual(overrideValue.length);
+      expect(value).toEqual(overrideValue);
+    });
+
+    it('overridden with a non-array', () => {
+      // This is actually invalid because multi providers return arrays. We have this here so we can
+      // ensure Ivy behaves the same as VE does currently.
+      const overrideValue = 'override';
+      TestBed.overrideProvider(multiToken, {useValue: overrideValue, multi: true} as any);
+
+      const value = TestBed.inject(multiToken);
+      expect(value.length).toEqual(overrideValue.length);
+      expect(value).toEqual(overrideValue as {} as string[]);
+    });
+  });
+
+  describe('overrides providers in ModuleWithProviders', () => {
+    const TOKEN = new InjectionToken<string[]>('token');
+    @NgModule()
+    class MyMod {
+      static multi = false;
+
+      static forRoot() {
+        return {
+          ngModule: MyMod,
+          providers: [{provide: TOKEN, multi: MyMod.multi, useValue: 'forRootValue'}]
+        };
+      }
+    }
+
+    beforeEach(() => MyMod.multi = true);
+
+    it('when provider is a "regular" provider', () => {
+      MyMod.multi = false;
+      @NgModule({imports: [MyMod.forRoot()]})
+      class MyMod2 {
+      }
+      TestBed.configureTestingModule({imports: [MyMod2]});
+      TestBed.overrideProvider(TOKEN, {useValue: ['override']});
+      expect(TestBed.inject(TOKEN)).toEqual(['override']);
+    });
+
+    it('when provider is multi', () => {
+      @NgModule({imports: [MyMod.forRoot()]})
+      class MyMod2 {
+      }
+      TestBed.configureTestingModule({imports: [MyMod2]});
+      TestBed.overrideProvider(TOKEN, {useValue: ['override']});
+      expect(TestBed.inject(TOKEN)).toEqual(['override']);
+    });
+
+    it('restores the original value', () => {
+      @NgModule({imports: [MyMod.forRoot()]})
+      class MyMod2 {
+      }
+      TestBed.configureTestingModule({imports: [MyMod2]});
+      TestBed.overrideProvider(TOKEN, {useValue: ['override']});
+      expect(TestBed.inject(TOKEN)).toEqual(['override']);
+
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({imports: [MyMod2]});
+      expect(TestBed.inject(TOKEN)).toEqual(['forRootValue']);
+    });
+  });
+
+  it('should allow overriding a provider defined via ModuleWithProviders (using TestBed.overrideProvider)',
+     () => {
+       const serviceOverride = {
+         get() {
+           return 'override';
+         },
+       };
+
+       @Injectable({providedIn: 'root'})
+       class MyService {
+         get() {
+           return 'original';
+         }
+       }
+
+       @NgModule({})
+       class MyModule {
+         static forRoot(): ModuleWithProviders<MyModule> {
+           return {
+             ngModule: MyModule,
+             providers: [MyService],
+           };
+         }
+       }
+       TestBed.overrideProvider(MyService, {useValue: serviceOverride});
+       TestBed.configureTestingModule({
+         imports: [MyModule.forRoot()],
+       });
+
+       const service = TestBed.inject(MyService);
+       expect(service.get()).toEqual('override');
+     });
+
+  it('should handle overrides for a provider that has `ChangeDetectorRef` as a dependency', () => {
+    // Note: we specifically check an @Injectable with `ChangeDetectorRef` here due to the fact that
+    // in Ivy there is a special instruction that injects `ChangeDetectorRef` token for Pipes
+    // (ɵɵinjectPipeChangeDetectorRef) and using that function for other types causes problems,
+    // for example when we try to override an @Injectable. The test below captures a use-case that
+    // triggers a problem in case incompatible function is used to inject `ChangeDetectorRef` as a
+    // dependency.
+    @Injectable({providedIn: 'root'})
+    class MyService {
+      token = 'original';
+      constructor(public cdr: ChangeDetectorRef) {}
+    }
+
+    TestBed.configureTestingModule({});
+    TestBed.overrideProvider(MyService, {useValue: {token: 'override'}});
+
+    const service = TestBed.inject(MyService);
+    expect(service.token).toBe('override');
+  });
+
+  it('should allow overriding a provider defined via ModuleWithProviders (using TestBed.configureTestingModule)',
+     () => {
+       const serviceOverride = {
+         get() {
+           return 'override';
+         },
+       };
+
+       @Injectable({providedIn: 'root'})
+       class MyService {
+         get() {
+           return 'original';
+         }
+       }
+
+       @NgModule({})
+       class MyModule {
+         static forRoot(): ModuleWithProviders<MyModule> {
+           return {
+             ngModule: MyModule,
+             providers: [MyService],
+           };
+         }
+       }
+       TestBed.configureTestingModule({
+         imports: [MyModule.forRoot()],
+         providers: [{provide: MyService, useValue: serviceOverride}],
+       });
+
+       const service = TestBed.inject(MyService);
+       expect(service.get()).toEqual('override');
+     });
+
+  it('overrides injectable that is using providedIn: AModule', () => {
+    @NgModule()
+    class ServiceModule {
+    }
+    @Injectable({providedIn: ServiceModule})
+    class Service {
+    }
+
+    const fake = 'fake';
+    TestBed.overrideProvider(Service, {useValue: fake});
+    // Create an injector whose source is the ServiceModule, not DynamicTestModule.
+    const ngModuleFactory = TestBed.inject(Compiler).compileModuleSync(ServiceModule);
+    const injector = ngModuleFactory.create(TestBed.inject(Injector)).injector;
+
+    const service = injector.get(Service);
+    expect(service).toBe(fake);
   });
 
   it('allow to override multi provider', () => {
@@ -266,7 +734,9 @@ describe('TestBed', () => {
        })
        class CompA {
          @Input() inputA: string = '';
-         ngOnInit() { log.push('CompA:ngOnInit', this.inputA); }
+         ngOnInit() {
+           log.push('CompA:ngOnInit', this.inputA);
+         }
        }
 
        @Component({
@@ -275,7 +745,9 @@ describe('TestBed', () => {
        })
        class CompB {
          @Input() inputB: string = '';
-         ngOnInit() { log.push('CompB:ngOnInit', this.inputB); }
+         ngOnInit() {
+           log.push('CompB:ngOnInit', this.inputB);
+         }
        }
 
        TestBed.configureTestingModule({declarations: [CompA, CompB]});
@@ -323,14 +795,13 @@ describe('TestBed', () => {
     getTestBed().resetTestingModule();
     TestBed.configureTestingModule({imports: [ProvidesErrorHandler, HelloWorldModule]});
 
-    expect(TestBed.get(ErrorHandler)).toEqual(jasmine.any(CustomErrorHandler));
-
+    expect(TestBed.inject(ErrorHandler)).toEqual(jasmine.any(CustomErrorHandler));
   });
 
   it('should throw errors in CD', () => {
     @Component({selector: 'my-comp', template: ''})
     class MyComp {
-      name !: {hello: string};
+      name!: {hello: string};
 
       ngOnInit() {
         // this should throw because this.name is undefined
@@ -350,10 +821,9 @@ describe('TestBed', () => {
   // tests to fail. This is an issue in both View Engine and Ivy, and may require a breaking
   // change to completely fix (since simple re-throwing breaks handlers in ngrx, etc).
   xit('should throw errors in listeners', () => {
-
     @Component({selector: 'my-comp', template: '<button (click)="onClick()">Click me</button>'})
     class MyComp {
-      name !: {hello: string};
+      name!: {hello: string};
 
       onClick() {
         // this should throw because this.name is undefined
@@ -427,6 +897,36 @@ describe('TestBed', () => {
             expect(fixture.nativeElement.innerHTML).toEqual('<outer><inner>Inner</inner></outer>');
           });
 
+  onlyInIvy('Ivy-specific errors').describe('checking types before compiling them', () => {
+    @Directive({
+      selector: 'my-dir',
+    })
+    class MyDir {
+    }
+
+    @NgModule()
+    class MyModule {
+    }
+
+    // [decorator, type, overrideFn]
+    const cases: [string, Type<any>, string][] = [
+      ['Component', MyDir, 'overrideComponent'],
+      ['NgModule', MyDir, 'overrideModule'],
+      ['Pipe', MyModule, 'overridePipe'],
+      ['Directive', MyModule, 'overrideDirective'],
+    ];
+    cases.forEach(([decorator, type, overrideFn]) => {
+      it(`should throw an error in case invalid type is used in ${overrideFn} function`, () => {
+        TestBed.configureTestingModule({declarations: [MyDir]});
+        expect(() => {
+          (TestBed as any)[overrideFn](type, {});
+          TestBed.createComponent(type);
+        }).toThrowError(new RegExp(`class doesn't have @${decorator} decorator`, 'g'));
+      });
+    });
+  });
+
+
   onlyInIvy('TestBed should handle AOT pre-compiled Components')
       .describe('AOT pre-compiled components', () => {
         /**
@@ -445,17 +945,18 @@ describe('TestBed', () => {
          */
         const getAOTCompiledComponent = () => {
           class ComponentClass {
-            static ngComponentDef = defineComponent({
+            static ɵfac = () => new ComponentClass();
+            static ɵcmp = defineComponent({
               type: ComponentClass,
               selectors: [['comp']],
-              factory: () => new ComponentClass(),
-              consts: 1,
+              decls: 1,
               vars: 0,
-              template: (rf: any, ctx: any) => {
-                if (rf & 1) {
-                  text(0, 'Some template');
-                }
-              },
+              template:
+                  (rf: any, ctx: any) => {
+                    if (rf & 1) {
+                      text(0, 'Some template');
+                    }
+                  },
               styles: ['body { margin: 0; }']
             });
           }
@@ -493,7 +994,7 @@ describe('TestBed', () => {
 
           // This is an AOT compiled module which declares (but does not export) SomeComponent.
           class ModuleClass {
-            static ngModuleDef = defineNgModule({
+            static ɵmod = defineNgModule({
               type: ModuleClass,
               declarations: [SomeComponent],
             });
@@ -530,7 +1031,9 @@ describe('TestBed', () => {
         it('should restore ng defs to their initial states', () => {
           @Pipe({name: 'somePipe', pure: true})
           class SomePipe {
-            transform(value: string): string { return `transformed ${value}`; }
+            transform(value: string): string {
+              return `transformed ${value}`;
+            }
           }
 
           @Directive({selector: 'someDirective'})
@@ -556,15 +1059,23 @@ describe('TestBed', () => {
               {set: {template: `<span someDirective>{{'hello' | somePipe}}</span>`}});
           TestBed.createComponent(SomeComponent);
 
-          const defBeforeReset = (SomeComponent as any).ngComponentDef;
-          expect(defBeforeReset.pipeDefs().length).toEqual(1);
-          expect(defBeforeReset.directiveDefs().length).toEqual(2);  // directive + component
+          const cmpDefBeforeReset = (SomeComponent as any).ɵcmp;
+          expect(cmpDefBeforeReset.pipeDefs().length).toEqual(1);
+          expect(cmpDefBeforeReset.directiveDefs().length).toEqual(2);  // directive + component
+
+          const modDefBeforeReset = (SomeModule as any).ɵmod;
+          const transitiveScope = modDefBeforeReset.transitiveCompileScopes.compilation;
+          expect(transitiveScope.pipes.size).toEqual(1);
+          expect(transitiveScope.directives.size).toEqual(2);
 
           TestBed.resetTestingModule();
 
-          const defAfterReset = (SomeComponent as any).ngComponentDef;
-          expect(defAfterReset.pipeDefs).toBe(null);
-          expect(defAfterReset.directiveDefs).toBe(null);
+          const cmpDefAfterReset = (SomeComponent as any).ɵcmp;
+          expect(cmpDefAfterReset.pipeDefs).toBe(null);
+          expect(cmpDefAfterReset.directiveDefs).toBe(null);
+
+          const modDefAfterReset = (SomeModule as any).ɵmod;
+          expect(modDefAfterReset.transitiveCompileScopes).toBe(null);
         });
 
         it('should cleanup ng defs for classes with no ng annotations (in case of inheritance)',
@@ -588,37 +1099,92 @@ describe('TestBed', () => {
              class PipeWithNoAnnotations extends SomePipe {}
 
              TestBed.configureTestingModule({
-               declarations: [
-                 ComponentWithNoAnnotations, DirectiveWithNoAnnotations, PipeWithNoAnnotations
-               ]
+               declarations:
+                   [ComponentWithNoAnnotations, DirectiveWithNoAnnotations, PipeWithNoAnnotations]
              });
              TestBed.createComponent(ComponentWithNoAnnotations);
 
-             expect(ComponentWithNoAnnotations.hasOwnProperty('ngComponentDef')).toBeTruthy();
-             expect(SomeComponent.hasOwnProperty('ngComponentDef')).toBeTruthy();
+             expect(ComponentWithNoAnnotations.hasOwnProperty('ɵcmp')).toBeTruthy();
+             expect(SomeComponent.hasOwnProperty('ɵcmp')).toBeTruthy();
 
-             expect(DirectiveWithNoAnnotations.hasOwnProperty('ngDirectiveDef')).toBeTruthy();
-             expect(SomeDirective.hasOwnProperty('ngDirectiveDef')).toBeTruthy();
+             expect(DirectiveWithNoAnnotations.hasOwnProperty('ɵdir')).toBeTruthy();
+             expect(SomeDirective.hasOwnProperty('ɵdir')).toBeTruthy();
 
-             expect(PipeWithNoAnnotations.hasOwnProperty('ngPipeDef')).toBeTruthy();
-             expect(SomePipe.hasOwnProperty('ngPipeDef')).toBeTruthy();
+             expect(PipeWithNoAnnotations.hasOwnProperty('ɵpipe')).toBeTruthy();
+             expect(SomePipe.hasOwnProperty('ɵpipe')).toBeTruthy();
 
              TestBed.resetTestingModule();
 
              // ng defs should be removed from classes with no annotations
-             expect(ComponentWithNoAnnotations.hasOwnProperty('ngComponentDef')).toBeFalsy();
-             expect(DirectiveWithNoAnnotations.hasOwnProperty('ngDirectiveDef')).toBeFalsy();
-             expect(PipeWithNoAnnotations.hasOwnProperty('ngPipeDef')).toBeFalsy();
+             expect(ComponentWithNoAnnotations.hasOwnProperty('ɵcmp')).toBeFalsy();
+             expect(DirectiveWithNoAnnotations.hasOwnProperty('ɵdir')).toBeFalsy();
+             expect(PipeWithNoAnnotations.hasOwnProperty('ɵpipe')).toBeFalsy();
 
              // ng defs should be preserved on super types
-             expect(SomeComponent.hasOwnProperty('ngComponentDef')).toBeTruthy();
-             expect(SomeDirective.hasOwnProperty('ngDirectiveDef')).toBeTruthy();
-             expect(SomePipe.hasOwnProperty('ngPipeDef')).toBeTruthy();
+             expect(SomeComponent.hasOwnProperty('ɵcmp')).toBeTruthy();
+             expect(SomeDirective.hasOwnProperty('ɵdir')).toBeTruthy();
+             expect(SomePipe.hasOwnProperty('ɵpipe')).toBeTruthy();
+           });
+
+        it('should cleanup scopes (configured via `TestBed.configureTestingModule`) between tests',
+           () => {
+             @Component({
+               selector: 'child',
+               template: 'Child comp',
+             })
+             class ChildCmp {
+             }
+
+             @Component({
+               selector: 'root',
+               template: '<child></child>',
+             })
+             class RootCmp {
+             }
+
+             // Case #1: `RootCmp` and `ChildCmp` are both included in the `declarations` field of
+             // the testing module, so `ChildCmp` is in the scope of `RootCmp`.
+             TestBed.configureTestingModule({
+               declarations: [RootCmp, ChildCmp],
+             });
+
+             let fixture = TestBed.createComponent(RootCmp);
+             fixture.detectChanges();
+
+             let childCmpInstance = fixture.debugElement.query(By.directive(ChildCmp));
+             expect(childCmpInstance.componentInstance).toBeAnInstanceOf(ChildCmp);
+             expect(fixture.nativeElement.textContent).toBe('Child comp');
+
+             TestBed.resetTestingModule();
+
+             // Case #2: the `TestBed.configureTestingModule` was not invoked, thus the `ChildCmp`
+             // should not be available in the `RootCmp` scope and no child content should be
+             // rendered.
+             fixture = TestBed.createComponent(RootCmp);
+             fixture.detectChanges();
+
+             childCmpInstance = fixture.debugElement.query(By.directive(ChildCmp));
+             expect(childCmpInstance).toBeNull();
+             expect(fixture.nativeElement.textContent).toBe('');
+
+             TestBed.resetTestingModule();
+
+             // Case #3: `ChildCmp` is included in the `declarations` field, but `RootCmp` is not,
+             // so `ChildCmp` is NOT in the scope of `RootCmp` component.
+             TestBed.configureTestingModule({
+               declarations: [ChildCmp],
+             });
+
+             fixture = TestBed.createComponent(RootCmp);
+             fixture.detectChanges();
+
+             childCmpInstance = fixture.debugElement.query(By.directive(ChildCmp));
+             expect(childCmpInstance).toBeNull();
+             expect(fixture.nativeElement.textContent).toBe('');
            });
 
         it('should clean up overridden providers for modules that are imported more than once',
            () => {
-
              @Injectable()
              class Token {
                name: string = 'real';
@@ -633,13 +1199,95 @@ describe('TestBed', () => {
              TestBed.configureTestingModule({imports: [Module, Module]});
              TestBed.overrideProvider(Token, {useValue: {name: 'fake'}});
 
-             expect(TestBed.get(Token).name).toEqual('fake');
+             expect(TestBed.inject(Token).name).toEqual('fake');
 
              TestBed.resetTestingModule();
 
              // The providers for the module should have been restored to the original array, with
              // no trace of the overridden providers.
-             expect((Module as any).ngInjectorDef.providers).toEqual([Token]);
+             expect((Module as any).ɵinj.providers).toEqual([Token]);
            });
+
+        it('should clean up overridden providers on components whose modules are compiled more than once',
+           async () => {
+             @Injectable()
+             class SomeInjectable {
+               id: string|undefined;
+             }
+
+             @Component({providers: [SomeInjectable]})
+             class ComponentWithProvider {
+               constructor(readonly injectable: SomeInjectable) {}
+             }
+
+             @NgModule({declarations: [ComponentWithProvider]})
+             class MyModule {
+             }
+
+             TestBed.configureTestingModule({imports: [MyModule]});
+             const originalResolver = (ComponentWithProvider as any).ɵcmp.providersResolver;
+             TestBed.overrideProvider(SomeInjectable, {useValue: {id: 'fake'}});
+
+             const compiler = TestBed.inject(Compiler);
+             await compiler.compileModuleAsync(MyModule);
+             compiler.compileModuleSync(MyModule);
+
+             TestBed.resetTestingModule();
+             expect((ComponentWithProvider as any).ɵcmp.providersResolver)
+                 .toEqual(originalResolver);
+           });
+      });
+
+  onlyInIvy('VE injects undefined when provider does not have useValue or useFactory')
+      .describe('overrides provider', () => {
+        it('with empty provider object', () => {
+          @Injectable()
+          class Service {
+          }
+          TestBed.overrideProvider(Service, {});
+          // Should be able to get a Service instance because it has no dependencies that can't be
+          // resolved
+          expect(TestBed.inject(Service)).toBeDefined();
+        });
+      });
+
+  onlyInIvy('uses Ivy-specific compiler output')
+      .it('should handle provider overrides when module imports are provided as a function', () => {
+        class InjectedString {
+          value?: string;
+        }
+
+        @Component({template: '{{injectedString.value}}'})
+        class AppComponent {
+          constructor(public injectedString: InjectedString) {}
+        }
+
+        @NgModule({})
+        class DependencyModule {
+        }
+
+        // We need to write the compiler output manually here,
+        // because it depends on code generated by ngcc.
+        class TestingModule {
+          static ɵmod = defineNgModule({type: TestingModule});
+          static ɵinj =
+              defineInjector({factory: () => new TestingModule(), imports: [DependencyModule]});
+        }
+        setNgModuleScope(TestingModule, {imports: () => [DependencyModule]});
+
+        TestBed
+            .configureTestingModule({
+              imports: [TestingModule],
+              declarations: [AppComponent],
+              providers: [{provide: InjectedString, useValue: {value: 'initial'}}],
+            })
+            .compileComponents();
+
+        TestBed.overrideProvider(InjectedString, {useValue: {value: 'changed'}})
+            .compileComponents();
+
+        const fixture = TestBed.createComponent(AppComponent);
+        fixture.detectChanges();
+        expect(fixture!.nativeElement.textContent).toContain('changed');
       });
 });

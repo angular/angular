@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -11,8 +11,7 @@ import {Component, Directive, Input, ViewChild} from '@angular/core';
 
 @Directive({selector: 'pane'})
 export class Pane {
-  // TODO(issue/24571): remove '!'.
-  @Input() id !: string;
+  @Input() id!: string;
 }
 
 @Component({
@@ -20,19 +19,23 @@ export class Pane {
   template: `
     <pane id="1" *ngIf="shouldShow"></pane>
     <pane id="2" *ngIf="!shouldShow"></pane>
-    
+
     <button (click)="toggle()">Toggle</button>
-       
-    <div>Selected: {{selectedPane}}</div> 
+
+    <div>Selected: {{selectedPane}}</div>
   `,
 })
 export class ViewChildComp {
-  @ViewChild(Pane, {static: false})
+  @ViewChild(Pane)
   set pane(v: Pane) {
-    setTimeout(() => { this.selectedPane = v.id; }, 0);
+    setTimeout(() => {
+      this.selectedPane = v.id;
+    }, 0);
   }
   selectedPane: string = '';
   shouldShow = true;
-  toggle() { this.shouldShow = !this.shouldShow; }
+  toggle() {
+    this.shouldShow = !this.shouldShow;
+  }
 }
 // #enddocregion

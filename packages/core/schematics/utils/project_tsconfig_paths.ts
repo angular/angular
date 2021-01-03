@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -71,7 +71,7 @@ function getTargetTsconfigPath(project: WorkspaceProject, targetName: string): s
  */
 function getWorkspaceConfigGracefully(tree: Tree): any {
   const path = defaultWorkspaceConfigPaths.find(filePath => tree.exists(filePath));
-  const configBuffer = tree.read(path !);
+  const configBuffer = tree.read(path!);
 
   if (!path || !configBuffer) {
     return null;

@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -9,7 +9,7 @@
 import {Component, NgModule} from '@angular/core';
 import {BrowserModule, DomSanitizer, SafeStyle} from '@angular/platform-browser';
 
-import {TreeNode, emptyTree} from '../util';
+import {emptyTree, TreeNode} from '../util';
 
 let trustedEmptyColor: SafeStyle;
 let trustedGreyColor: SafeStyle;
@@ -22,7 +22,9 @@ let trustedGreyColor: SafeStyle;
 })
 export class TreeComponent {
   data: TreeNode = emptyTree;
-  get bgColor() { return this.data.depth % 2 ? trustedEmptyColor : trustedGreyColor; }
+  get bgColor() {
+    return this.data.depth % 2 ? trustedEmptyColor : trustedGreyColor;
+  }
 }
 
 @NgModule({imports: [BrowserModule], bootstrap: [TreeComponent], declarations: [TreeComponent]})

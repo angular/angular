@@ -1,17 +1,16 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CssRule, ShadowCss, processRules} from '@angular/compiler/src/shadow_css';
+import {CssRule, processRules, ShadowCss} from '@angular/compiler/src/shadow_css';
 import {normalizeCSS} from '@angular/platform-browser/testing/src/browser_util';
 
 {
   describe('ShadowCss', function() {
-
     function s(css: string, contentAttr: string, hostAttr: string = '') {
       const shadowCss = new ShadowCss();
       const shim = shadowCss.shimCssText(css, contentAttr, hostAttr);
@@ -19,7 +18,9 @@ import {normalizeCSS} from '@angular/platform-browser/testing/src/browser_util';
       return normalizeCSS(shim.replace(nlRegexp, ''));
     }
 
-    it('should handle empty string', () => { expect(s('', 'contenta')).toEqual(''); });
+    it('should handle empty string', () => {
+      expect(s('', 'contenta')).toEqual('');
+    });
 
     it('should add an attribute to every rule', () => {
       const css = 'one {color: red;}two {color: red;}';
@@ -112,14 +113,17 @@ import {normalizeCSS} from '@angular/platform-browser/testing/src/browser_util';
     });
 
     describe((':host'), () => {
-      it('should handle no context',
-         () => { expect(s(':host {}', 'contenta', 'a-host')).toEqual('[a-host] {}'); });
+      it('should handle no context', () => {
+        expect(s(':host {}', 'contenta', 'a-host')).toEqual('[a-host] {}');
+      });
 
-      it('should handle tag selector',
-         () => { expect(s(':host(ul) {}', 'contenta', 'a-host')).toEqual('ul[a-host] {}'); });
+      it('should handle tag selector', () => {
+        expect(s(':host(ul) {}', 'contenta', 'a-host')).toEqual('ul[a-host] {}');
+      });
 
-      it('should handle class selector',
-         () => { expect(s(':host(.x) {}', 'contenta', 'a-host')).toEqual('.x[a-host] {}'); });
+      it('should handle class selector', () => {
+        expect(s(':host(.x) {}', 'contenta', 'a-host')).toEqual('.x[a-host] {}');
+      });
 
       it('should handle attribute selector', () => {
         expect(s(':host([a="b"]) {}', 'contenta', 'a-host')).toEqual('[a="b"][a-host] {}');
@@ -279,20 +283,45 @@ import {normalizeCSS} from '@angular/platform-browser/testing/src/browser_util';
       expect(css).toEqual('@import url("a"); div[contenta] {}');
     });
 
+    it('should shim rules with quoted content after @import', () => {
+      const styleStr = '@import url("a"); div {background-image: url("a.jpg"); color: red;}';
+      const css = s(styleStr, 'contenta');
+      expect(css).toEqual(
+          '@import url("a"); div[contenta] {background-image:url("a.jpg"); color:red;}');
+    });
+
+    it('should pass through @import directives whose URL contains colons and semicolons', () => {
+      const styleStr =
+          '@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap");';
+      const css = s(styleStr, 'contenta');
+      expect(css).toEqual(styleStr);
+    });
+
+    it('should shim rules after @import with colons and semicolons', () => {
+      const styleStr =
+          '@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap"); div {}';
+      const css = s(styleStr, 'contenta');
+      expect(css).toEqual(
+          '@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap"); div[contenta] {}');
+    });
+
     it('should leave calc() unchanged', () => {
       const styleStr = 'div {height:calc(100% - 55px);}';
       const css = s(styleStr, 'contenta');
       expect(css).toEqual('div[contenta] {height:calc(100% - 55px);}');
     });
 
-    it('should strip comments',
-       () => { expect(s('/* x */b {c}', 'contenta')).toEqual('b[contenta] {c}'); });
+    it('should strip comments', () => {
+      expect(s('/* x */b {c}', 'contenta')).toEqual('b[contenta] {c}');
+    });
 
-    it('should ignore special characters in comments',
-       () => { expect(s('/* {;, */b {c}', 'contenta')).toEqual('b[contenta] {c}'); });
+    it('should ignore special characters in comments', () => {
+      expect(s('/* {;, */b {c}', 'contenta')).toEqual('b[contenta] {c}');
+    });
 
-    it('should support multiline comments',
-       () => { expect(s('/* \n */b {c}', 'contenta')).toEqual('b[contenta] {c}'); });
+    it('should support multiline comments', () => {
+      expect(s('/* \n */b {c}', 'contenta')).toEqual('b[contenta] {c}');
+    });
 
     it('should keep sourceMappingURL comments', () => {
       expect(s('b {c}/*# sourceMappingURL=data:x */', 'contenta'))
@@ -304,6 +333,24 @@ import {normalizeCSS} from '@angular/platform-browser/testing/src/browser_util';
     it('should keep sourceURL comments', () => {
       expect(s('/*# sourceMappingURL=data:x */b {c}/*# sourceURL=xxx */', 'contenta'))
           .toEqual('b[contenta] {c}/*# sourceMappingURL=data:x *//*# sourceURL=xxx */');
+    });
+
+    it('should shim rules with quoted content', () => {
+      const styleStr = 'div {background-image: url("a.jpg"); color: red;}';
+      const css = s(styleStr, 'contenta');
+      expect(css).toEqual('div[contenta] {background-image:url("a.jpg"); color:red;}');
+    });
+
+    it('should shim rules with an escaped quote inside quoted content', () => {
+      const styleStr = 'div::after { content: "\\"" }';
+      const css = s(styleStr, 'contenta');
+      expect(css).toEqual('div[contenta]::after { content:"\\""}');
+    });
+
+    it('should shim rules with curly braces inside quoted content', () => {
+      const styleStr = 'div::after { content: "{}" }';
+      const css = s(styleStr, 'contenta');
+      expect(css).toEqual('div[contenta]::after { content:"{}"}');
     });
   });
 
@@ -318,13 +365,17 @@ import {normalizeCSS} from '@angular/platform-browser/testing/src/browser_util';
         return result;
       }
 
-      it('should work with empty css', () => { expect(captureRules('')).toEqual([]); });
+      it('should work with empty css', () => {
+        expect(captureRules('')).toEqual([]);
+      });
 
-      it('should capture a rule without body',
-         () => { expect(captureRules('a;')).toEqual([new CssRule('a', '')]); });
+      it('should capture a rule without body', () => {
+        expect(captureRules('a;')).toEqual([new CssRule('a', '')]);
+      });
 
-      it('should capture css rules with body',
-         () => { expect(captureRules('a {b}')).toEqual([new CssRule('a', 'b')]); });
+      it('should capture css rules with body', () => {
+        expect(captureRules('a {b}')).toEqual([new CssRule('a', 'b')]);
+      });
 
       it('should capture css rules with nested rules', () => {
         expect(captureRules('a {b {c}} d {e}')).toEqual([

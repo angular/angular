@@ -91,7 +91,8 @@ module.exports = function generateKeywordsProcessor(log, readFilesProcessor) {
           titleWords: tokenize(doc.searchTitle).join(' '),
           headingWords: headingWords.sort().join(' '),
           keywords: words.sort().join(' '),
-          members: members.sort().join(' ')
+          members: members.sort().join(' '),
+          topics: doc.searchKeywords
         };
 
       });

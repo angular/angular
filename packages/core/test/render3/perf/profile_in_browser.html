@@ -1,0 +1,25 @@
+<html>
+<script>
+  let BASE = location.toString().split('packages/core/test/render3/perf')[0]
+  let BENCHMARK = location.search.split('=')[1];
+  document.writeln('<' + 'script src="' + BASE + '/dist/bin/packages/core/test/render3/perf/' + BENCHMARK +
+    '_lib.min_debug.js"></' + 'script>');
+
+</script>
+
+<body>
+  <ol>
+    <li>Build the benchmark using <tt>yarn bazel build //packages/core/test/render3/perf:${BENCHMARK}.min_debug.js
+        --config=ivy</tt></li>
+    <li>Open this file using the <tt>file://</tt> protocol and add <tt>?benchmark=BENCHMARK</tt> to the URL.</li>
+    <li>
+      Note: You should likely run this in an incognito browser with the "no-turbo-inlining" flag.<br />
+      On Chrome, the command would be <code>/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome -incognito
+        --js-flags="--no-turbo-inlining"</code>
+    </li>
+    <li>Open debug console for details. Benchmark profiles are available in the "JavaScript Profiler" tab of Chrome
+      DevTools.</li>
+  </ol>
+</body>
+
+</html>

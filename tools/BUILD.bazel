@@ -1,6 +1,6 @@
 package(default_visibility = ["//visibility:public"])
 
-load("@npm_bazel_typescript//:index.bzl", "ts_config")
+load("//tools:defaults.bzl", "nodejs_binary", "ts_config")
 
 exports_files([
     "tsconfig.json",
@@ -13,6 +13,11 @@ ts_config(
     deps = ["tsconfig.json"],
 )
 
+nodejs_binary(
+    name = "inline-package-json-deps",
+    entry_point = "inline-package-json-deps.js",
+)
+
 platform(
     name = "rbe_ubuntu1604-angular",
     parents = ["@rbe_ubuntu1604_angular//config:platform"],
@@ -21,6 +26,14 @@ platform(
         properties: {
             name: "dockerAddCapabilities"
             value: "SYS_ADMIN"
+        }
+        properties: {
+            name: "dockerNetwork"
+            value: "standard"
+        }
+        properties: {
+            name: "Pool"
+            value: "default"
         }
         """,
 )

@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -10,27 +10,23 @@ import {createTNode} from '@angular/core/src/render3/instructions/shared';
 
 import {AttributeMarker, TAttributes, TNode, TNodeType} from '../../src/render3/interfaces/node';
 import {CssSelector, CssSelectorList, SelectorFlags} from '../../src/render3/interfaces/projection';
-import {getProjectAsAttrValue, isNodeMatchingSelector, isNodeMatchingSelectorList} from '../../src/render3/node_selector_matcher';
-import {initializeStaticContext} from '../../src/render3/styling/class_and_style_bindings';
+import {extractAttrsAndClassesFromSelector, getProjectAsAttrValue, isNodeMatchingSelector, isNodeMatchingSelectorList, stringifyCSSSelectorList} from '../../src/render3/node_selector_matcher';
 
-function testLStaticData(tagName: string, attrs: TAttributes | null): TNode {
-  return createTNode(null, TNodeType.Element, 0, tagName, attrs);
+function testLStaticData(tagName: string, attrs: TAttributes|null): TNode {
+  return createTNode(null!, null, TNodeType.Element, 0, tagName, attrs);
 }
 
 describe('css selector matching', () => {
   function isMatching(
-      tagName: string, attrsOrTNode: TAttributes | TNode | null, selector: CssSelector): boolean {
+      tagName: string, attrsOrTNode: TAttributes|TNode|null, selector: CssSelector): boolean {
     const tNode = (!attrsOrTNode || Array.isArray(attrsOrTNode)) ?
-        createTNode(null, TNodeType.Element, 0, tagName, attrsOrTNode as TAttributes) :
+        createTNode(null!, null, TNodeType.Element, 0, tagName, attrsOrTNode as TAttributes) :
         (attrsOrTNode as TNode);
-    return isNodeMatchingSelector(tNode, selector, false);
+    return isNodeMatchingSelector(tNode, selector, true);
   }
 
   describe('isNodeMatchingSimpleSelector', () => {
-
-
     describe('element matching', () => {
-
       it('should match element name only if names are the same', () => {
         expect(isMatching('span', null, ['span']))
             .toBeTruthy(`Selector 'span' should match <span>`);
@@ -56,11 +52,9 @@ describe('css selector matching', () => {
     });
 
     describe('attributes matching', () => {
-
       // TODO: do we need to differentiate no value and empty value? that is: title vs. title="" ?
 
       it('should match single attribute without value', () => {
-
         expect(isMatching('span', ['title', ''], [
           '', 'title', ''
         ])).toBeTruthy(`Selector '[title]' should match <span title>`);
@@ -82,10 +76,13 @@ describe('css selector matching', () => {
         ])).toBeFalsy(`Selector '[other]' should NOT match <span title="">'`);
       });
 
-      it('should match namespaced attributes', () => {
+      // TODO: this case will not work, need more discussion
+      // https://github.com/angular/angular/pull/34625#discussion_r401791275
+      xit('should match namespaced attributes', () => {
         expect(isMatching(
-            'span', [AttributeMarker.NamespaceURI, 'http://some/uri', 'title', 'name'],
-            ['', 'title', '']));
+                   'span', [AttributeMarker.NamespaceURI, 'http://some/uri', 'title', 'name'],
+                   ['', 'title', '']))
+            .toBeTruthy();
       });
 
       it('should match selector with one attribute without value when element has several attributes',
@@ -95,14 +92,16 @@ describe('css selector matching', () => {
            ])).toBeTruthy(`Selector '[title]' should match <span id="my_id" title="test_title">`);
          });
 
-
+      /**
+       * We assume that compiler will lower-case all selectors when generating code
+       */
       it('should match single attribute with value', () => {
         expect(isMatching('span', ['title', 'My Title'], [
-          '', 'title', 'My Title'
+          '', 'title', 'my title'
         ])).toBeTruthy(`Selector '[title="My Title"]' should match <span title="My Title">'`);
 
         expect(isMatching('span', ['title', 'My Title'], [
-          '', 'title', 'Other Title'
+          '', 'title', 'other title'
         ])).toBeFalsy(`Selector '[title="Other Title"]' should NOT match <span title="My Title">`);
       });
 
@@ -112,7 +111,7 @@ describe('css selector matching', () => {
         ])).toBeFalsy(`Selector 'div[title]' should NOT match <span title="My Title">`);
 
         expect(isMatching('span', ['title', 'My Title'], [
-          'div', 'title', 'My Title'
+          'div', 'title', 'my title'
         ])).toBeFalsy(`Selector 'div[title="My Title"]' should NOT match <span title="My Title">`);
       });
 
@@ -148,7 +147,8 @@ describe('css selector matching', () => {
       });
 
       /**
-       * We assume that compiler will lower-case all attribute names when generating code
+       * We assume that compiler will lower-case all selectors and attribute names when generating
+       * code
        */
       it('should match attribute name case-sensitively', () => {
         expect(isMatching('span', ['foo', ''], [
@@ -160,14 +160,10 @@ describe('css selector matching', () => {
         ])).toBeFalsy(`Selector '[Foo]' should NOT match <span foo>`);
       });
 
-      it('should match attribute values case-sensitively', () => {
+      it('should match attribute values case-insensitively', () => {
         expect(isMatching('span', ['foo', 'Bar'], [
-          '', 'foo', 'Bar'
-        ])).toBeTruthy(`Selector '[foo="Bar"]' should match <span foo="Bar">`);
-
-        expect(isMatching('span', ['foo', 'Bar'], [
-          '', 'Foo', 'bar'
-        ])).toBeFalsy(`Selector '[Foo="bar"]' should match <span foo="Bar">`);
+          '', 'foo', 'bar'
+        ])).toBeTruthy(`Selector '[foo="bar"]' should match <span foo="Bar">`);
       });
 
       it('should match class as an attribute', () => {
@@ -228,7 +224,6 @@ describe('css selector matching', () => {
     });
 
     describe('class matching', () => {
-
       it('should match with a class selector when an element has multiple classes', () => {
         expect(isMatching('span', ['class', 'foo bar'], [
           '', SelectorFlags.CLASS, 'foo'
@@ -289,14 +284,13 @@ describe('css selector matching', () => {
         ])).toBeTruthy(`Selector '.bar.foo' should match <span class="bar foo">`);
       });
 
-      it('should match class name case-sensitively', () => {
-        expect(isMatching('span', ['class', 'Foo'], [
-          '', SelectorFlags.CLASS, 'Foo'
-        ])).toBeTruthy(`Selector '.Foo' should match <span class="Foo">`);
-
+      /**
+       * We assume that compiler will lower-case all selectors when generating code
+       */
+      it('should match class name case-insensitively', () => {
         expect(isMatching('span', ['class', 'Foo'], [
           '', SelectorFlags.CLASS, 'foo'
-        ])).toBeFalsy(`Selector '.foo' should NOT match <span class-"Foo">`);
+        ])).toBeTruthy(`Selector '.Foo' should match <span class="Foo">`);
       });
 
       it('should work without a class attribute', () => {
@@ -325,31 +319,10 @@ describe('css selector matching', () => {
         // <div class="foo">
         expect(isMatching('div', ['class', 'foo'], selector)).toBeFalsy();
       });
-
-      it('should match against a class value before and after the styling context is created',
-         () => {
-           // selector: 'div.abc'
-           const selector = ['div', SelectorFlags.CLASS, 'abc'];
-           const tNode = createTNode(null, TNodeType.Element, 0, 'div', []);
-
-           // <div> (without attrs or styling context)
-           expect(isMatching('div', tNode, selector)).toBeFalsy();
-
-           // <div class="abc"> (with attrs but without styling context)
-           tNode.attrs = ['class', 'abc'];
-           tNode.stylingTemplate = null;
-           expect(isMatching('div', tNode, selector)).toBeTruthy();
-
-           // <div class="abc"> (with styling context but without attrs)
-           tNode.stylingTemplate = initializeStaticContext([AttributeMarker.Classes, 'abc'], 0);
-           tNode.attrs = null;
-           expect(isMatching('div', tNode, selector)).toBeTruthy();
-         });
     });
   });
 
   describe('negations', () => {
-
     it('should match when negation part is null', () => {
       expect(isMatching('span', null, ['span'])).toBeTruthy(`Selector 'span' should match <span>`);
     });
@@ -457,13 +430,11 @@ describe('css selector matching', () => {
       expect(isMatching('div', ['name', 'name', 'title', '', 'class', 'foo bar'], selector))
           .toBeFalsy();
     });
-
   });
 
   describe('isNodeMatchingSelectorList', () => {
-
     function isAnyMatching(
-        tagName: string, attrs: string[] | null, selector: CssSelectorList): boolean {
+        tagName: string, attrs: string[]|null, selector: CssSelectorList): boolean {
       return isNodeMatchingSelectorList(testLStaticData(tagName, attrs), selector, false);
     }
 
@@ -489,16 +460,18 @@ describe('css selector matching', () => {
   });
 
   describe('reading the ngProjectAs attribute value', function() {
-
-    function testTNode(attrs: TAttributes | null) { return testLStaticData('tag', attrs); }
+    function testTNode(attrs: TAttributes|null) {
+      return testLStaticData('tag', attrs);
+    }
 
     it('should get ngProjectAs value if present', function() {
       expect(getProjectAsAttrValue(testTNode([AttributeMarker.ProjectAs, ['tag', 'foo', 'bar']])))
           .toEqual(['tag', 'foo', 'bar']);
     });
 
-    it('should return null if there are no attributes',
-       function() { expect(getProjectAsAttrValue(testTNode(null))).toBe(null); });
+    it('should return null if there are no attributes', function() {
+      expect(getProjectAsAttrValue(testTNode(null))).toBe(null);
+    });
 
     it('should return if ngProjectAs is not present', function() {
       expect(getProjectAsAttrValue(testTNode(['foo', 'bar']))).toBe(null);
@@ -507,7 +480,134 @@ describe('css selector matching', () => {
     it('should not accidentally identify ngProjectAs in attribute values', function() {
       expect(getProjectAsAttrValue(testTNode(['foo', AttributeMarker.ProjectAs]))).toBe(null);
     });
+  });
+});
 
+describe('stringifyCSSSelectorList', () => {
+  it('should stringify selector with a tag name only', () => {
+    expect(stringifyCSSSelectorList([['button']])).toBe('button');
   });
 
+  it('should stringify selector with attributes', () => {
+    expect(stringifyCSSSelectorList([['', 'id', '']])).toBe('[id]');
+    expect(stringifyCSSSelectorList([['button', 'id', '']])).toBe('button[id]');
+    expect(stringifyCSSSelectorList([['button', 'id', 'value']])).toBe('button[id="value"]');
+    expect(stringifyCSSSelectorList([['button', 'id', 'value', 'title', 'other']]))
+        .toBe('button[id="value"][title="other"]');
+  });
+
+  it('should stringify selector with class names', () => {
+    expect(stringifyCSSSelectorList([['', SelectorFlags.CLASS, 'foo']])).toBe('.foo');
+    expect(stringifyCSSSelectorList([['button', SelectorFlags.CLASS, 'foo']])).toBe('button.foo');
+
+    expect(stringifyCSSSelectorList([['button', SelectorFlags.CLASS, 'foo', 'bar']]))
+        .toBe('button.foo.bar');
+
+    expect(stringifyCSSSelectorList([
+      ['button', 'id', 'value', 'title', 'other', SelectorFlags.CLASS, 'foo', 'bar']
+    ])).toBe('button[id="value"][title="other"].foo.bar');
+  });
+
+  it('should stringify selector with `:not()` rules', () => {
+    expect(stringifyCSSSelectorList([['', SelectorFlags.CLASS | SelectorFlags.NOT, 'foo', 'bar']]))
+        .toBe(':not(.foo.bar)');
+
+    expect(stringifyCSSSelectorList([
+      ['button', SelectorFlags.ATTRIBUTE | SelectorFlags.NOT, 'foo', 'bar']
+    ])).toBe('button:not([foo="bar"])');
+
+    expect(stringifyCSSSelectorList([['', SelectorFlags.ELEMENT | SelectorFlags.NOT, 'foo']]))
+        .toBe(':not(foo)');
+
+    expect(stringifyCSSSelectorList([
+      ['span', SelectorFlags.CLASS, 'foo', SelectorFlags.CLASS | SelectorFlags.NOT, 'bar', 'baz']
+    ])).toBe('span.foo:not(.bar.baz)');
+
+    expect(stringifyCSSSelectorList([
+      ['span', 'id', 'value', SelectorFlags.ATTRIBUTE | SelectorFlags.NOT, 'title', 'other']
+    ])).toBe('span[id="value"]:not([title="other"])');
+
+    expect(stringifyCSSSelectorList([[
+      '', SelectorFlags.CLASS, 'bar', SelectorFlags.ATTRIBUTE | SelectorFlags.NOT, 'foo', '',
+      SelectorFlags.ELEMENT | SelectorFlags.NOT, 'div'
+    ]])).toBe('.bar:not([foo]):not(div)');
+
+    expect(stringifyCSSSelectorList([[
+      'div', SelectorFlags.ATTRIBUTE | SelectorFlags.NOT, 'foo', '', SelectorFlags.CLASS, 'bar',
+      SelectorFlags.CLASS | SelectorFlags.NOT, 'baz'
+    ]])).toBe('div:not([foo].bar):not(.baz)');
+
+    expect(stringifyCSSSelectorList([[
+      'div', SelectorFlags.ELEMENT | SelectorFlags.NOT, 'p', SelectorFlags.CLASS, 'bar',
+      SelectorFlags.CLASS | SelectorFlags.NOT, 'baz'
+    ]])).toBe('div:not(p.bar):not(.baz)');
+  });
+
+  it('should stringify multiple comma-separated selectors', () => {
+    expect(stringifyCSSSelectorList([
+      ['', 'id', ''], ['button', 'id', 'value']
+    ])).toBe('[id],button[id="value"]');
+
+    expect(stringifyCSSSelectorList([
+      ['', 'id', ''], ['button', 'id', 'value'],
+      ['div', SelectorFlags.ATTRIBUTE | SelectorFlags.NOT, 'foo', '']
+    ])).toBe('[id],button[id="value"],div:not([foo])');
+
+    expect(stringifyCSSSelectorList([
+      ['', 'id', ''], ['button', 'id', 'value'],
+      ['div', SelectorFlags.ATTRIBUTE | SelectorFlags.NOT, 'foo', ''],
+      [
+        'div', SelectorFlags.ELEMENT | SelectorFlags.NOT, 'p', SelectorFlags.CLASS, 'bar',
+        SelectorFlags.CLASS | SelectorFlags.NOT, 'baz'
+      ]
+    ])).toBe('[id],button[id="value"],div:not([foo]),div:not(p.bar):not(.baz)');
+  });
+});
+
+describe('extractAttrsAndClassesFromSelector', () => {
+  const cases = [
+    [
+      ['div', '', ''],
+      [],
+      [],
+    ],
+    [
+      ['div', 'attr-a', 'a', 'attr-b', 'b', 'attr-c', ''],
+      ['attr-a', 'a', 'attr-b', 'b', 'attr-c', ''],
+      [],
+    ],
+    [
+      ['div', 'attr-a', 'a', SelectorFlags.CLASS, 'class-a', 'class-b', 'class-c'],
+      ['attr-a', 'a'],
+      ['class-a', 'class-b', 'class-c'],
+    ],
+    [
+      ['', 'attr-a', 'a', SelectorFlags.CLASS, 'class-a', SelectorFlags.ATTRIBUTE, 'attr-b', 'b'],
+      ['attr-a', 'a', 'attr-b', 'b'],
+      ['class-a'],
+    ],
+    [
+      [
+        '', '', '', SelectorFlags.ATTRIBUTE, 'attr-a', 'a',
+        (SelectorFlags.CLASS | SelectorFlags.NOT), 'class-b'
+      ],
+      ['attr-a', 'a'],
+      [],
+    ],
+    [
+      [
+        '', '', '', (SelectorFlags.CLASS | SelectorFlags.NOT), 'class-a',
+        (SelectorFlags.ATTRIBUTE | SelectorFlags.NOT), 'attr-b', 'b'
+      ],
+      [],
+      [],
+    ],
+  ];
+  cases.forEach(([selector, attrs, classes]) => {
+    it(`should process ${JSON.stringify(selector)} selector`, () => {
+      const extracted = extractAttrsAndClassesFromSelector(selector);
+      expect(extracted.attrs).toEqual(attrs as string[]);
+      expect(extracted.classes).toEqual(classes as string[]);
+    });
+  });
 });

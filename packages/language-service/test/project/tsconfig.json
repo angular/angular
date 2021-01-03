@@ -1,0 +1,18 @@
+{
+  "//00": "This file is used for both IDE and the actual Project creation in Ivy language service for testing purpose",
+  "compilerOptions": {
+    "lib": ["es2015", "dom"],
+    "strict": true,
+    "experimentalDecorators": true,
+    "moduleResolution": "node",
+    "target": "es2015",
+    "baseUrl": "../../../..",
+    "paths": {
+      "@angular/*": ["packages/*"]
+    }
+  },
+  "angularCompilerOptions": {
+    "strictTemplates": true,
+    "strictInjectionParameters": true
+  }
+}

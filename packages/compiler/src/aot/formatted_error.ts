@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -17,10 +17,10 @@ export interface Position {
 export interface FormattedMessageChain {
   message: string;
   position?: Position;
-  next?: FormattedMessageChain;
+  next?: FormattedMessageChain[];
 }
 
-export type FormattedError = Error & {
+export type FormattedError = Error&{
   chain: FormattedMessageChain;
   position?: Position;
 };
@@ -34,16 +34,22 @@ function indentStr(level: number): string {
   return half + half + (level % 2 === 1 ? ' ' : '');
 }
 
-function formatChain(chain: FormattedMessageChain | undefined, indent: number = 0): string {
+function formatChain(chain: FormattedMessageChain|undefined, indent: number = 0): string {
   if (!chain) return '';
   const position = chain.position ?
-      `${chain.position.fileName}(${chain.position.line+1},${chain.position.column+1})` :
+      `${chain.position.fileName}(${chain.position.line + 1},${chain.position.column + 1})` :
       '';
   const prefix = position && indent === 0 ? `${position}: ` : '';
   const postfix = position && indent !== 0 ? ` at ${position}` : '';
-  const message = `${prefix}${chain.message}${postfix}`;
+  let message = `${prefix}${chain.message}${postfix}`;
 
-  return `${indentStr(indent)}${message}${(chain.next && ('\n' + formatChain(chain.next, indent + 2))) || ''}`;
+  if (chain.next) {
+    for (const kid of chain.next) {
+      message += '\n' + formatChain(kid, indent + 2);
+    }
+  }
+
+  return `${indentStr(indent)}${message}`;
 }
 
 export function formattedError(chain: FormattedMessageChain): FormattedError {

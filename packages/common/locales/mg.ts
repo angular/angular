@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -17,7 +17,9 @@ function plural(n: number): number {
 }
 
 export default [
-  'mg', [['AM', 'PM'], u, u], u,
+  'mg',
+  [['AM', 'PM'], u, u],
+  u,
   [
     ['A', 'A', 'T', 'A', 'A', 'Z', 'A'], ['Alah', 'Alats', 'Tal', 'Alar', 'Alak', 'Zom', 'Asab'],
     ['Alahady', 'Alatsinainy', 'Talata', 'Alarobia', 'Alakamisy', 'Zoma', 'Asabotsy'],
@@ -32,10 +34,19 @@ export default [
       'Oktobra', 'Novambra', 'Desambra'
     ]
   ],
-  u, [['BC', 'AD'], u, ['Alohan’i JK', 'Aorian’i JK']], 1, [6, 0],
+  u,
+  [['BC', 'AD'], u, ['Alohan’i JK', 'Aorian’i JK']],
+  1,
+  [6, 0],
   ['y-MM-dd', 'y MMM d', 'd MMMM y', 'EEEE d MMMM y'],
-  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'], ['{1} {0}', u, u, u],
+  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
+  ['{1} {0}', u, u, u],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '¤ #,##0.00', '#E0'], 'Ar', 'Ariary',
-  {'JPY': ['JP¥', '¥'], 'MGA': ['Ar'], 'USD': ['US$', '$']}, plural
+  ['#,##0.###', '#,##0%', '¤ #,##0.00', '#E0'],
+  'MGA',
+  'Ar',
+  'Ariary',
+  {'JPY': ['JP¥', '¥'], 'MGA': ['Ar'], 'USD': ['US$', '$']},
+  'ltr',
+  plural
 ];

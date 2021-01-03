@@ -1,6 +1,11 @@
-code-example, code-tabs {
+code-example,
+code-tabs {
     clear: both;
     display: block;
+
+    ol {
+      list-style: decimal;
+    }
 }
 
 code-example {
@@ -51,7 +56,7 @@ code-example header {
   background-color: $accentblue;
   border-radius: 5px 5px 0 0;
   color: $offwhite;
-  font-size: 16px;
+  @include font-size(16);
   padding: 8px 16px;
 }
 
@@ -88,7 +93,7 @@ aio-code pre {
     align-items: center;
 
     code span {
-      line-height: 24px;
+      @include line-height(24);
     }
 }
 
@@ -103,6 +108,7 @@ aio-code pre {
   top: -7px;
   right: -19px;
   padding: 0;
+  overflow: visible; // This is required for the button to be displayed correctly in IE11.
 
   color: $blue-grey-200;
   background-color: transparent;
@@ -159,7 +165,7 @@ ol.linenums {
     margin: 0;
     font-family: $code-font;
     font-size: 90%;
-    line-height: 24px;
+    @include line-height(24);
   }
 }
 

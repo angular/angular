@@ -1,9 +1,10 @@
-import { NgModule }      from '@angular/core';
-import { CommonModule }  from '@angular/common';
-import { FormsModule }   from '@angular/forms';
+import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
 import { HighlightDirective } from './highlight.directive';
-import { TitleCasePipe }      from './title-case.pipe';
+import { TitleCasePipe } from './title-case.pipe';
+import { CanvasComponent } from './canvas.component';
 
 @NgModule({
   imports: [ CommonModule ],
@@ -12,8 +13,9 @@ import { TitleCasePipe }      from './title-case.pipe';
     // SharedModule importers won't have to import FormsModule too
     FormsModule,
     HighlightDirective,
-    TitleCasePipe
+    TitleCasePipe,
+    CanvasComponent
   ],
-  declarations: [ HighlightDirective, TitleCasePipe ]
+  declarations: [ HighlightDirective, TitleCasePipe, CanvasComponent ]
 })
 export class SharedModule { }

@@ -1,106 +1,95 @@
-'use strict'; // necessary for es6 output in node
-
 import { browser, element, by } from 'protractor';
 
-describe('Dependency Injection Cookbook', function () {
+describe('Dependency Injection Cookbook', () => {
 
-    beforeAll(function () {
-        browser.get('');
+    beforeAll(() => browser.get(''));
+
+    it('should render Logged in User example', async () => {
+      const loggedInUser = element(by.cssContainingText('h3', 'Logged in user'));
+      expect(await loggedInUser.isPresent()).toBe(true);
     });
 
-    it('should render Logged in User example', function () {
-      let loggedInUser = element.all(by.xpath('//h3[text()="Logged in user"]')).get(0);
-      expect(loggedInUser).toBeDefined();
+    it('"Bombasto" should be the logged in user', async () => {
+      const loggedInUser = element(by.cssContainingText('div', 'Name: Bombasto'));
+      expect(await loggedInUser.isPresent()).toBe(true);
     });
 
-    it('"Bombasto" should be the logged in user', function () {
-      let loggedInUser = element.all(by.xpath('//div[text()="Name: Bombasto"]')).get(0);
-      expect(loggedInUser).toBeDefined();
+    it('should render sorted heroes', async () => {
+      const sortedHeroes = element(by.cssContainingText('h3', 'Sorted Heroes'));
+      expect(await sortedHeroes.isPresent()).toBe(true);
+
+      const sortedHeroElems = element.all(by.css('app-sorted-heroes div'));
+      const sortedHeroNames = await sortedHeroElems.map(elem => elem.getText());
+      expect(sortedHeroNames).toEqual(['Dr Nice', 'Magma', 'RubberMan']);
     });
 
-    it('should render sorted heroes', function () {
-      let sortedHeroes = element.all(by.xpath('//h3[text()="Sorted Heroes" and position()=1]')).get(0);
-      expect(sortedHeroes).toBeDefined();
+    it('should render Hero of the Month', async () => {
+      const heroOfTheMonth = element(by.cssContainingText('h3', 'Hero of the Month'));
+      expect(await heroOfTheMonth.isPresent()).toBe(true);
     });
 
-    it('Dr Nice should be in sorted heroes', function () {
-      let sortedHero = element.all(by.xpath('//sorted-heroes/[text()="Dr Nice" and position()=2]')).get(0);
-      expect(sortedHero).toBeDefined();
+    it('should render Hero Bios', async () => {
+      const heroBios = element(by.cssContainingText('h3', 'Hero Bios'));
+      expect(await heroBios.isPresent()).toBe(true);
     });
 
-    it('RubberMan should be in sorted heroes', function () {
-      let sortedHero = element.all(by.xpath('//sorted-heroes/[text()="RubberMan" and position()=3]')).get(0);
-      expect(sortedHero).toBeDefined();
+    it('should render Magma\'s description in Hero Bios', async () => {
+      const magmaBioElem = element.all(by.css('app-hero-bio')).get(1);
+      const magmaNameElem = magmaBioElem.element(by.css('h4'));
+      const magmaDescElem = magmaBioElem.element(by.css('textarea'));
+
+      expect(await magmaNameElem.getText()).toBe('Magma');
+      expect(await magmaDescElem.getAttribute('value')).toBe('Hero of all trades');
     });
 
-    it('Magma should be in sorted heroes', function () {
-      let sortedHero = element.all(by.xpath('//sorted-heroes/[text()="Magma"]')).get(0);
-      expect(sortedHero).toBeDefined();
+    it('should render Magma\'s phone in Hero Bios and Contacts', async () => {
+      const magmaPhone = element(by.cssContainingText('div', 'Phone #: 555-555-5555'));
+      expect(await magmaPhone.isPresent()).toBe(true);
     });
 
-    it('should render Hero of the Month', function () {
-      let heroOfTheMonth = element.all(by.xpath('//h3[text()="Hero of the month"]')).get(0);
-      expect(heroOfTheMonth).toBeDefined();
-    });
-
-    it('should render Hero Bios', function () {
-      let heroBios = element.all(by.xpath('//h3[text()="Hero Bios"]')).get(0);
-      expect(heroBios).toBeDefined();
-    });
-
-    it('should render Magma\'s description in Hero Bios', function () {
-      let magmaText =  element.all(by.xpath('//textarea[text()="Hero of all trades"]')).get(0);
-      expect(magmaText).toBeDefined();
-    });
-
-    it('should render Magma\'s phone in Hero Bios and Contacts', function () {
-      let magmaPhone =  element.all(by.xpath('//div[text()="Phone #: 555-555-5555"]')).get(0);
-      expect(magmaPhone).toBeDefined();
-    });
-
-    it('should render Hero-of-the-Month runner-ups', function () {
-      let runnersUp =  element(by.id('rups1')).getText();
+    it('should render Hero-of-the-Month runner-ups', async () => {
+      const runnersUp = await element(by.id('rups1')).getText();
       expect(runnersUp).toContain('RubberMan, Dr Nice');
     });
 
-    it('should render DateLogger log entry in Hero-of-the-Month', function () {
-      let logs =  element.all(by.id('logs')).get(0).getText();
+    it('should render DateLogger log entry in Hero-of-the-Month', async () => {
+      const logs = await element.all(by.id('logs')).get(0).getText();
       expect(logs).toContain('INFO: starting up at');
     });
 
-    it('should highlight Hero Bios and Contacts container when mouseover', function () {
-      let target = element(by.css('div[appHighlight="yellow"]'));
-      let yellow = 'rgba(255, 255, 0, 1)';
+    it('should highlight Hero Bios and Contacts container when mouseover', async () => {
+      const target = element(by.css('div[appHighlight="yellow"]'));
+      const yellow = 'rgba(255, 255, 0, 1)';
 
-      expect(target.getCssValue('background-color')).not.toEqual(yellow);
+      expect(await target.getCssValue('background-color')).not.toEqual(yellow);
 
-      browser.actions().mouseMove(target).perform();
+      await browser.actions().mouseMove(target).perform();
 
       // Wait for up to 2s for the background color to be updated,
       // to account for slow environments (e.g. CI).
-      browser.wait(() => target.getCssValue('background-color').then(c => c === yellow), 2000);
+      await browser.wait(async () => await target.getCssValue('background-color') === yellow, 2000);
     });
 
-    describe('in Parent Finder', function () {
-      let cathy1 = element(by.css('alex cathy'));
-      let craig1 = element(by.css('alex craig'));
-      let carol1 = element(by.css('alex carol p'));
-      let carol2 = element(by.css('barry carol p'));
+    describe('in Parent Finder', () => {
+      const cathy1 = element(by.css('alex cathy'));
+      const craig1 = element(by.css('alex craig'));
+      const carol1 = element(by.css('alex carol p'));
+      const carol2 = element(by.css('barry carol p'));
 
-      it('"Cathy" should find "Alex" via the component class', function () {
-        expect(cathy1.getText()).toContain('Found Alex via the component');
+      it('"Cathy" should find "Alex" via the component class', async () => {
+        expect(await cathy1.getText()).toContain('Found Alex via the component');
       });
 
-      it('"Craig" should not find "Alex" via the base class', function () {
-        expect(craig1.getText()).toContain('Did not find Alex via the base');
+      it('"Craig" should not find "Alex" via the base class', async () => {
+        expect(await craig1.getText()).toContain('Did not find Alex via the base');
       });
 
-      it('"Carol" within "Alex" should have "Alex" parent', function () {
-        expect(carol1.getText()).toContain('Alex');
+      it('"Carol" within "Alex" should have "Alex" parent', async () => {
+        expect(await carol1.getText()).toContain('Alex');
       });
 
-      it('"Carol" within "Barry" should have "Barry" parent', function () {
-        expect(carol2.getText()).toContain('Barry');
+      it('"Carol" within "Barry" should have "Barry" parent', async () => {
+        expect(await carol2.getText()).toContain('Barry');
       });
     });
 });

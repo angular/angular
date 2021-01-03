@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -8,30 +8,30 @@
 
 import * as ts from 'typescript';
 
-import {TsHelperFn} from '../../reflection';
-
+import {ObjectAssignBuiltinFn} from './builtin';
 import {DynamicValue} from './dynamic';
-import {ResolvedValue, ResolvedValueArray} from './result';
+import {KnownFn, ResolvedValueArray} from './result';
 
-export function evaluateTsHelperInline(
-    helper: TsHelperFn, node: ts.Node, args: ResolvedValueArray): ResolvedValue {
-  if (helper === TsHelperFn.Spread) {
-    return evaluateTsSpreadHelper(node, args);
-  } else {
-    throw new Error(`Cannot evaluate unknown helper ${helper} inline`);
-  }
-}
 
-function evaluateTsSpreadHelper(node: ts.Node, args: ResolvedValueArray): ResolvedValueArray {
-  const result: ResolvedValueArray = [];
-  for (const arg of args) {
-    if (arg instanceof DynamicValue) {
-      result.push(DynamicValue.fromDynamicInput(node, arg));
-    } else if (Array.isArray(arg)) {
-      result.push(...arg);
-    } else {
-      result.push(arg);
+// Use the same implementation we use for `Object.assign()`. Semantically these functions are the
+// same, so they can also share the same evaluation code.
+export class AssignHelperFn extends ObjectAssignBuiltinFn {}
+
+// Used for both `__spread()` and `__spreadArrays()` TypeScript helper functions.
+export class SpreadHelperFn extends KnownFn {
+  evaluate(node: ts.Node, args: ResolvedValueArray): ResolvedValueArray {
+    const result: ResolvedValueArray = [];
+
+    for (const arg of args) {
+      if (arg instanceof DynamicValue) {
+        result.push(DynamicValue.fromDynamicInput(node, arg));
+      } else if (Array.isArray(arg)) {
+        result.push(...arg);
+      } else {
+        result.push(arg);
+      }
     }
+
+    return result;
   }
-  return result;
 }

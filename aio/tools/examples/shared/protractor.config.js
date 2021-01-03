@@ -20,7 +20,12 @@ exports.config = {
 
   // Capabilities to be passed to the webdriver instance.
   capabilities: {
-    'browserName': 'chrome',
+    browserName: 'chrome',
+    chromeOptions: {
+      binary: require('puppeteer').executablePath(),
+      // See /integration/README.md#browser-tests for more info on these args
+      args: ['--no-sandbox', '--headless', '--disable-gpu', '--disable-dev-shm-usage', '--hide-scrollbars', '--mute-audio'],
+    },
   },
 
   // Framework to use. Jasmine is recommended.
@@ -62,7 +67,7 @@ exports.config = {
   }
 };
 
-// See http://jasmine.github.io/2.1/custom_reporter.html
+// See https://jasmine.github.io/2.1/custom_reporter.html
 function Reporter(options) {
   var _defaultOutputFile = path.resolve(__dirname, '../../protractor-results.txt');
   options.outputFile = options.outputFile || _defaultOutputFile;

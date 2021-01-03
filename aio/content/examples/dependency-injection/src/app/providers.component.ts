@@ -18,7 +18,7 @@ const template = '{{log}}';
 
 @Component({
   selector: 'provider-1',
-  template: template,
+  template,
   // #docregion providers-1, providers-logger
   providers: [Logger]
   // #enddocregion providers-1, providers-logger
@@ -35,7 +35,7 @@ export class Provider1Component {
 
 @Component({
   selector: 'provider-3',
-  template: template,
+  template,
   providers:
     // #docregion providers-3
     [{ provide: Logger, useClass: Logger }]
@@ -54,7 +54,7 @@ export class BetterLogger extends Logger {}
 
 @Component({
   selector: 'provider-4',
-  template: template,
+  template,
   providers:
     // #docregion providers-4
     [{ provide: Logger, useClass: BetterLogger }]
@@ -76,7 +76,7 @@ export class EvenBetterLogger extends Logger {
   constructor(private userService: UserService) { super(); }
 
   log(message: string) {
-    let name = this.userService.user.name;
+    const name = this.userService.user.name;
     super.log(`Message to ${name}: ${message}`);
   }
 }
@@ -84,7 +84,7 @@ export class EvenBetterLogger extends Logger {
 
 @Component({
   selector: 'provider-5',
-  template: template,
+  template,
   providers:
     // #docregion providers-5
     [ UserService,
@@ -107,12 +107,12 @@ export class OldLogger {
   logs: string[] = [];
   log(message: string) {
     throw new Error('Should not call the old logger!');
-  };
+  }
 }
 
 @Component({
   selector: 'provider-6a',
-  template: template,
+  template,
   providers:
     // #docregion providers-6a
     [ NewLogger,
@@ -135,7 +135,7 @@ export class Provider6aComponent {
 
 @Component({
   selector: 'provider-6b',
-  template: template,
+  template,
   providers:
     // #docregion providers-6b
     [ NewLogger,
@@ -158,20 +158,20 @@ export class Provider6bComponent {
 
 // #docregion silent-logger
 // An object in the shape of the logger service
-export function SilentLoggerFn() {}
+function silentLoggerFn() {}
 
-const silentLogger = {
+export const SilentLogger = {
   logs: ['Silent logger says "Shhhhh!". Provided via "useValue"'],
-  log: SilentLoggerFn
+  log: silentLoggerFn
 };
 // #enddocregion silent-logger
 
 @Component({
   selector: 'provider-7',
-  template: template,
+  template,
   providers:
     // #docregion providers-7
-    [{ provide: Logger, useValue: silentLogger }]
+    [{ provide: Logger, useValue: SilentLogger }]
     // #enddocregion providers-7
 })
 export class Provider7Component {
@@ -186,7 +186,7 @@ export class Provider7Component {
 
 @Component({
   selector: 'provider-8',
-  template: template,
+  template,
   providers: [heroServiceProvider, Logger, UserService]
 })
 export class Provider8Component {
@@ -202,10 +202,10 @@ export class Provider8Component {
 
 @Component({
   selector: 'provider-9',
-  template: template,
+  template,
   /*
    // #docregion providers-9-interface
-   // FAIL! Can't use interface as provider token
+   // Can't use interface as provider token
    [{ provide: AppConfig, useValue: HERO_DI_CONFIG })]
    // #enddocregion providers-9-interface
    */
@@ -217,7 +217,7 @@ export class Provider9Component implements OnInit {
   log: string;
   /*
    // #docregion provider-9-ctor-interface
-   // FAIL! Can't inject using the interface as the parameter type
+   // Can't inject using the interface as the parameter type
    constructor(private config: AppConfig){ }
    // #enddocregion provider-9-ctor-interface
    */
@@ -237,19 +237,19 @@ export class Provider9Component implements OnInit {
 import { Optional } from '@angular/core';
 // #enddocregion import-optional
 
-let some_message = 'Hello from the injected logger';
+const someMessage = 'Hello from the injected logger';
 
 @Component({
   selector: 'provider-10',
-  template: template,
+  template,
   providers: [{ provide: Logger, useValue: null }]
 })
 export class Provider10Component implements OnInit {
   log: string;
   // #docregion provider-10-ctor
-  constructor(@Optional() private logger: Logger) {
+  constructor(@Optional() private logger?: Logger) {
     if (this.logger) {
-      this.logger.log(some_message);
+      this.logger.log(someMessage);
     }
   }
   // #enddocregion provider-10-ctor

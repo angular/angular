@@ -1,0 +1,71 @@
+
+<h1>Attribute, class, and style bindings</h1>
+<h2>Attribute binding</h2>
+<!-- #docregion attrib-binding-colspan -->
+<table border=1>
+  <!-- #docregion colspan -->
+  <!--  expression calculates colspan=2 -->
+  <tr><td [attr.colspan]="1 + 1">One-Two</td></tr>
+  <!-- #enddocregion colspan -->
+
+  <!-- ERROR: There is no `colspan` property to set!
+    <tr><td colspan="{{1 + 1}}">Three-Four</td></tr>
+  -->
+  <!-- #docregion colSpan -->
+  <!-- Notice the colSpan property is camel case -->
+  <tr><td [colSpan]="1 + 1">Three-Four</td></tr>
+  <!-- #enddocregion colSpan -->
+
+  <tr><td>Five</td><td>Six</td></tr>
+</table>
+<!-- #enddocregion attrib-binding-colspan -->
+
+<div>
+  <!-- #docregion attrib-binding-aria -->
+  <!-- create and set an aria attribute for assistive technology -->
+  <button [attr.aria-label]="actionName">{{actionName}} with Aria</button>
+  <!-- #enddocregion attrib-binding-aria -->
+</div>
+
+<hr />
+
+<h2>Styling precedence</h2>
+
+<!-- #docregion basic-specificity -->
+<h3>Basic specificity</h3>
+
+<!-- The `class.special` binding overrides any value for the `special` class in `classExpression`.  -->
+<div [class.special]="isSpecial" [class]="classExpression">Some text.</div>
+
+<!-- The `style.color` binding overrides any value for the `color` property in `styleExpression`.  -->
+<div [style.color]="color" [style]="styleExpression">Some text.</div>
+<!-- #enddocregion basic-specificity -->
+
+<!-- #docregion source-specificity -->
+<h3>Source specificity</h3>
+
+<!-- The `class.special` template binding overrides any host binding to the `special` class set by `dirWithClassBinding` or `comp-with-host-binding`.-->
+<comp-with-host-binding [class.special]="isSpecial" dirWithClassBinding>Some text.</comp-with-host-binding>
+
+<!-- The `style.color` template binding overrides any host binding to the `color` property set by `dirWithStyleBinding` or `comp-with-host-binding`. -->
+<comp-with-host-binding [style.color]="color" dirWithStyleBinding>Some text.</comp-with-host-binding>
+<!-- #enddocregion source-specificity -->
+
+<!-- #docregion dynamic-priority -->
+<h3>Dynamic vs static</h3>
+
+<!-- If `classExpression` has a value for the `special` class, this value overrides the `class="special"` below -->
+<div class="special" [class]="classExpression">Some text.</div>
+
+<!-- If `styleExpression` has a value for the `color` property, this value overrides the `style="color: blue"` below -->
+<div style="color: blue" [style]="styleExpression">Some text.</div>
+
+<!-- #enddocregion dynamic-priority -->
+
+<!-- #docregion style-delegation -->
+<comp-with-host-binding dirWithHostBinding></comp-with-host-binding>
+<!-- #enddocregion style-delegation -->
+
+<!-- #docregion attribute-decorator -->
+<app-my-input-with-attribute-decorator type="number"></app-my-input-with-attribute-decorator>
+<!-- #enddocregion attribute-decorator -->

@@ -1,0 +1,17 @@
+# These options are enabled when running on CI
+# We do this by copying this file to $env:ProgramData\bazel.bazelrc at the start of the build.
+# See documentation in /docs/BAZEL.md
+
+# Import config items common to both Linux and Windows setups.
+# https://docs.bazel.build/versions/master/guide.html#bazelrc-syntax-and-semantics
+try-import %workspace%/.circleci/bazel.common.rc
+
+# Manually set the local resources used in windows CI runs
+build --local_ram_resources=120000
+build --local_cpu_resources=32
+
+# All windows jobs run on master and should use http caching
+build --remote_http_cache=https://storage.googleapis.com/angular-team-cache
+build --remote_accept_cached=true
+build --remote_upload_local_results=true
+build --google_default_credentials

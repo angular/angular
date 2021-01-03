@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -17,7 +17,9 @@ function plural(n: number): number {
 }
 
 export default [
-  'lg', [['AM', 'PM'], u, u], u,
+  'lg',
+  [['AM', 'PM'], u, u],
+  u,
   [
     ['S', 'B', 'L', 'L', 'L', 'L', 'L'], ['Sab', 'Bal', 'Lw2', 'Lw3', 'Lw4', 'Lw5', 'Lw6'],
     ['Sabbiiti', 'Balaza', 'Lwakubiri', 'Lwakusatu', 'Lwakuna', 'Lwakutaano', 'Lwamukaaga'],
@@ -32,10 +34,19 @@ export default [
       'Sebuttemba', 'Okitobba', 'Novemba', 'Desemba'
     ]
   ],
-  u, [['BC', 'AD'], u, ['Kulisito nga tannaza', 'Bukya Kulisito Azaal']], 1, [6, 0],
+  u,
+  [['BC', 'AD'], u, ['Kulisito nga tannaza', 'Bukya Kulisito Azaal']],
+  1,
+  [0, 0],
   ['dd/MM/y', 'd MMM y', 'd MMMM y', 'EEEE, d MMMM y'],
-  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'], ['{1} {0}', u, u, u],
+  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
+  ['{1} {0}', u, u, u],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '#,##0.00¤', '#E0'], 'USh', 'Silingi eya Yuganda',
-  {'JPY': ['JP¥', '¥'], 'UGX': ['USh'], 'USD': ['US$', '$']}, plural
+  ['#,##0.###', '#,##0%', '#,##0.00¤', '#E0'],
+  'UGX',
+  'USh',
+  'Silingi eya Yuganda',
+  {'JPY': ['JP¥', '¥'], 'UGX': ['USh'], 'USD': ['US$', '$']},
+  'ltr',
+  plural
 ];

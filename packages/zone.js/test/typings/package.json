@@ -1,0 +1,19 @@
+{
+  "name": "typings",
+  "version": "1.0.0",
+  "description": "typing test package to test zone.js.d.ts",
+  "scripts": {
+    "test": "tsc -p ."
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@types/node": "12.11.1",
+    "domino": "^2.1.6",
+    "zone.js": "file:../../../../dist/bin/packages/zone.js/npm_package"
+  },
+  "devDependencies": {
+    "typescript": "~4.1.2"
+  }
+}

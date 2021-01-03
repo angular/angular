@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -8,26 +8,24 @@
 
 /// <reference types="node" />
 
-import * as path from 'path';
 import * as ts from 'typescript';
 
-import {ShimGenerator} from '../../shims';
+import {AbsoluteFsPath, dirname, join} from '../../file_system';
+import {TopLevelShimGenerator} from '../../shims/api';
 import {relativePathBetween} from '../../util/src/path';
 
-export class FlatIndexGenerator implements ShimGenerator {
+export class FlatIndexGenerator implements TopLevelShimGenerator {
   readonly flatIndexPath: string;
+  readonly shouldEmit = true;
 
   constructor(
-      readonly entryPoint: string, relativeFlatIndexPath: string,
+      readonly entryPoint: AbsoluteFsPath, relativeFlatIndexPath: string,
       readonly moduleName: string|null) {
-    this.flatIndexPath = path.posix.join(path.posix.dirname(entryPoint), relativeFlatIndexPath)
-                             .replace(/\.js$/, '') +
-        '.ts';
+    this.flatIndexPath =
+        join(dirname(entryPoint), relativeFlatIndexPath).replace(/\.js$/, '') + '.ts';
   }
 
-  recognize(fileName: string): boolean { return fileName === this.flatIndexPath; }
-
-  generate(): ts.SourceFile {
+  makeTopLevelShim(): ts.SourceFile {
     const relativeEntryPoint = relativePathBetween(this.flatIndexPath, this.entryPoint);
     const contents = `/**
  * Generated bundle index. Do not edit.

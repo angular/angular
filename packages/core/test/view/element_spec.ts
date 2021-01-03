@@ -1,16 +1,16 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ErrorHandler, SecurityContext, getDebugNode} from '@angular/core';
+import {ɵgetDOM as getDOM} from '@angular/common';
+import {ErrorHandler, getDebugNode, SecurityContext} from '@angular/core';
 import {getDebugContext} from '@angular/core/src/errors';
-import {BindingFlags, NodeFlags, Services, ViewData, ViewDefinition, asElementData, elementDef} from '@angular/core/src/view/index';
+import {asElementData, BindingFlags, elementDef, NodeFlags, Services, ViewData, ViewDefinition} from '@angular/core/src/view/index';
 import {TestBed} from '@angular/core/testing';
-import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 
 import {ARG_TYPE_VALUES, callMostRecentEventListenerHandler, checkNodeInlineOrDynamic, compViewDef, createAndGetRootNodes, isBrowser, recordNodeToRemove} from './helper';
 
@@ -20,19 +20,18 @@ import {ARG_TYPE_VALUES, callMostRecentEventListenerHandler, checkNodeInlineOrDy
  * We map addEventListener to the Zones internal name. This is because we want to be fast
  * and bypass the zone bookkeeping. We know that we can do the bookkeeping faster.
  */
-const addEventListener = '__zone_symbol__addEventListener' as 'addEventListener';
-const removeEventListener = '__zone_symbol__removeEventListener' as 'removeEventListener';
+const addEventListener = 'addEventListener';
+const removeEventListener = 'removeEventListener';
 
 {
   describe(`View Elements`, () => {
-
     describe('create', () => {
       it('should create elements without parents', () => {
         const rootNodes = createAndGetRootNodes(compViewDef([
                             elementDef(0, NodeFlags.None, null, null, 0, 'span')
                           ])).rootNodes;
         expect(rootNodes.length).toBe(1);
-        expect(getDOM().nodeName(rootNodes[0]).toLowerCase()).toBe('span');
+        expect(rootNodes[0].nodeName.toLowerCase()).toBe('span');
       });
 
       it('should create views with multiple root elements', () => {
@@ -49,8 +48,8 @@ const removeEventListener = '__zone_symbol__removeEventListener' as 'removeEvent
                             elementDef(1, NodeFlags.None, null, null, 0, 'span'),
                           ])).rootNodes;
         expect(rootNodes.length).toBe(1);
-        const spanEl = getDOM().childNodes(rootNodes[0])[0];
-        expect(getDOM().nodeName(spanEl).toLowerCase()).toBe('span');
+        const spanEl = rootNodes[0].childNodes[0];
+        expect(spanEl.nodeName.toLowerCase()).toBe('span');
       });
 
       it('should set fixed attributes', () => {
@@ -58,21 +57,20 @@ const removeEventListener = '__zone_symbol__removeEventListener' as 'removeEvent
                             elementDef(0, NodeFlags.None, null, null, 0, 'div', [['title', 'a']]),
                           ])).rootNodes;
         expect(rootNodes.length).toBe(1);
-        expect(getDOM().getAttribute(rootNodes[0], 'title')).toBe('a');
+        expect(rootNodes[0].getAttribute('title')).toBe('a');
       });
 
       it('should add debug information to the renderer', () => {
-        const someContext = new Object();
+        const someContext = {};
         const {view, rootNodes} = createAndGetRootNodes(
             compViewDef([elementDef(0, NodeFlags.None, null, null, 0, 'div')]), someContext);
-        expect(getDebugNode(rootNodes[0]) !.nativeNode).toBe(asElementData(view, 0).renderElement);
+        expect(getDebugNode(rootNodes[0])!.nativeNode).toBe(asElementData(view, 0).renderElement);
       });
     });
 
     describe('change properties', () => {
       ARG_TYPE_VALUES.forEach((inlineDynamic) => {
         it(`should update via strategy ${inlineDynamic}`, () => {
-
           const {view, rootNodes} = createAndGetRootNodes(compViewDef(
               [
                 elementDef(
@@ -114,8 +112,8 @@ const removeEventListener = '__zone_symbol__removeEventListener' as 'removeEvent
           Services.checkAndUpdateView(view);
 
           const el = rootNodes[0];
-          expect(getDOM().getAttribute(el, 'a1')).toBe('v1');
-          expect(getDOM().getAttribute(el, 'a2')).toBe('v2');
+          expect(el.getAttribute('a1')).toBe('v1');
+          expect(el.getAttribute('a2')).toBe('v2');
         });
       });
     });
@@ -139,8 +137,8 @@ const removeEventListener = '__zone_symbol__removeEventListener' as 'removeEvent
           Services.checkAndUpdateView(view);
 
           const el = rootNodes[0];
-          expect(getDOM().hasClass(el, 'c1')).toBeTruthy();
-          expect(getDOM().hasClass(el, 'c2')).toBeTruthy();
+          expect(el.classList.contains('c1')).toBeTruthy();
+          expect(el.classList.contains('c2')).toBeTruthy();
         });
       });
     });
@@ -164,8 +162,8 @@ const removeEventListener = '__zone_symbol__removeEventListener' as 'removeEvent
           Services.checkAndUpdateView(view);
 
           const el = rootNodes[0];
-          expect(getDOM().getStyle(el, 'width')).toBe('10px');
-          expect(getDOM().getStyle(el, 'color')).toBe('red');
+          expect(el.style['width']).toBe('10px');
+          expect(el.style['color']).toBe('red');
         });
       });
     });
@@ -189,7 +187,7 @@ const removeEventListener = '__zone_symbol__removeEventListener' as 'removeEvent
           const removeListenerSpy =
               spyOn(HTMLElement.prototype, removeEventListener).and.callThrough();
           const {view, rootNodes} = createAndAttachAndGetRootNodes(compViewDef([elementDef(
-              0, NodeFlags.None, null, null, 0, 'button', null, null, [[null !, 'click']],
+              0, NodeFlags.None, null, null, 0, 'button', null, null, [[null!, 'click']],
               handleEventSpy)]));
 
           rootNodes[0].click();
@@ -253,10 +251,10 @@ const removeEventListener = '__zone_symbol__removeEventListener' as 'removeEvent
 
         it('should preventDefault only if the handler returns false', () => {
           let eventHandlerResult: any;
-          let preventDefaultSpy: jasmine.Spy = undefined !;
+          let preventDefaultSpy: jasmine.Spy = undefined!;
 
           const {view, rootNodes} = createAndAttachAndGetRootNodes(compViewDef([elementDef(
-              0, NodeFlags.None, null, null, 0, 'button', null, null, [[null !, 'click']],
+              0, NodeFlags.None, null, null, 0, 'button', null, null, [[null!, 'click']],
               (view, eventName, event) => {
                 preventDefaultSpy = spyOn(event, 'preventDefault').and.callThrough();
                 return eventHandlerResult;
@@ -280,11 +278,12 @@ const removeEventListener = '__zone_symbol__removeEventListener' as 'removeEvent
         });
 
         it('should report debug info on event errors', () => {
-          const handleErrorSpy = spyOn(TestBed.get(ErrorHandler), 'handleError');
+          const handleErrorSpy = spyOn(TestBed.inject(ErrorHandler), 'handleError');
           const addListenerSpy = spyOn(HTMLElement.prototype, addEventListener).and.callThrough();
           const {view, rootNodes} = createAndAttachAndGetRootNodes(compViewDef([elementDef(
-              0, NodeFlags.None, null, null, 0, 'button', null, null, [[null !, 'click']],
-              () => { throw new Error('Test'); })]));
+              0, NodeFlags.None, null, null, 0, 'button', null, null, [[null!, 'click']], () => {
+                throw new Error('Test');
+              })]));
 
           callMostRecentEventListenerHandler(addListenerSpy, 'SomeEvent');
           const err = handleErrorSpy.calls.mostRecent().args[0];

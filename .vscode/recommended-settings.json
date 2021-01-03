@@ -26,6 +26,7 @@
     "**/bazel-out": true,
     "**/dist": true,
     "**/aio/src/generated": true,
+    ".history": true,
   },
   "git.ignoreLimitWarning": true,
 }

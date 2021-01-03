@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -66,7 +66,7 @@ export class StyleCompiler {
     stylesheet.styleUrls.forEach((styleUrl) => {
       const exprIndex = styleExpressions.length;
       // Note: This placeholder will be filled later.
-      styleExpressions.push(null !);
+      styleExpressions.push(null!);
       dependencies.push(new StylesCompileDependency(
           getStylesVarName(null), styleUrl,
           (value) => styleExpressions[exprIndex] = outputCtx.importExpr(value)));
@@ -89,7 +89,7 @@ export class StyleCompiler {
   }
 }
 
-function getStylesVarName(component: CompileDirectiveMetadata | null): string {
+function getStylesVarName(component: CompileDirectiveMetadata|null): string {
   let result = `styles`;
   if (component) {
     result += `_${identifierName(component.type)}`;

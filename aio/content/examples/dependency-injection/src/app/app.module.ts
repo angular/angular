@@ -1,8 +1,8 @@
 // #docplaster
 import { NgModule } from '@angular/core';
-import { BrowserModule }  from '@angular/platform-browser';
+import { BrowserModule } from '@angular/platform-browser';
 
-import { APP_CONFIG, HERO_DI_CONFIG }    from './app.config';
+import { APP_CONFIG, HERO_DI_CONFIG } from './app.config';
 import { AppComponent } from './app.component';
 import { CarComponent } from './car/car.component';
 import { HeroesComponent } from './heroes/heroes.component';

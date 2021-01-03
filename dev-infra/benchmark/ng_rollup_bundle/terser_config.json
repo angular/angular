@@ -1,0 +1,18 @@
+{
+    "output": {
+        "ecma": "es2015",
+        "comments": false,
+        "beautify": "bazel_debug"
+    },
+    "compress": {
+        "global_defs": {
+            "ngDevMode": false,
+            "ngI18nClosureMode": false,
+            "ngJitMode": false
+        },
+        "passes": 3,
+        "pure_getters": true
+    },
+    "toplevel": true,
+    "mangle": "bazel_no_debug"
+}

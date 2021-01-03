@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -18,7 +18,9 @@ function plural(n: number): number {
 }
 
 export default [
-  'fr-TN', [['AM', 'PM'], u, u], u,
+  'fr-TN',
+  [['AM', 'PM'], u, u],
+  u,
   [
     ['D', 'L', 'M', 'M', 'J', 'V', 'S'], ['dim.', 'lun.', 'mar.', 'mer.', 'jeu.', 'ven.', 'sam.'],
     ['dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi'],
@@ -36,17 +38,24 @@ export default [
       'octobre', 'novembre', 'décembre'
     ]
   ],
-  u, [['av. J.-C.', 'ap. J.-C.'], u, ['avant Jésus-Christ', 'après Jésus-Christ']], 0, [5, 6],
+  u,
+  [['av. J.-C.', 'ap. J.-C.'], u, ['avant Jésus-Christ', 'après Jésus-Christ']],
+  1,
+  [6, 0],
   ['dd/MM/y', 'd MMM y', 'd MMMM y', 'EEEE d MMMM y'],
-  ['h:mm a', 'h:mm:ss a', 'h:mm:ss a z', 'h:mm:ss a zzzz'], ['{1} {0}', '{1} \'à\' {0}', u, u],
-  [',', ' ', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], 'DT', 'dinar tunisien', {
+  ['h:mm a', 'h:mm:ss a', 'h:mm:ss a z', 'h:mm:ss a zzzz'],
+  ['{1} {0}', '{1} \'à\' {0}', u, u],
+  [',', '\u202f', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
+  ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'],
+  'TND',
+  'DT',
+  'dinar tunisien',
+  {
     'ARS': ['$AR', '$'],
     'AUD': ['$AU', '$'],
     'BEF': ['FB'],
     'BMD': ['$BM', '$'],
     'BND': ['$BN', '$'],
-    'BSD': ['$BS', '$'],
     'BZD': ['$BZ', '$'],
     'CAD': ['$CA', '$'],
     'CLP': ['$CL', '$'],
@@ -78,14 +87,16 @@ export default [
     'SGD': ['$SG', '$'],
     'SRD': ['$SR', '$'],
     'TND': ['DT'],
+    'TOP': [u, '$T'],
     'TTD': ['$TT', '$'],
     'TWD': [u, 'NT$'],
     'USD': ['$US', '$'],
     'UYU': ['$UY', '$'],
-    'WST': ['WS$'],
+    'WST': ['$WS'],
     'XCD': [u, '$'],
     'XPF': ['FCFP'],
     'ZMW': [u, 'Kw']
   },
+  'ltr',
   plural
 ];

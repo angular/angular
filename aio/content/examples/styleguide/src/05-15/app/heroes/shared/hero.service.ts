@@ -8,7 +8,7 @@ import { Hero } from './hero.model';
 @Injectable()
 export class HeroService {
   getHeroes() {
-    let heroes: Hero[] = [];
+    const heroes: Hero[] = [];
     return of(heroes);
   }
 }

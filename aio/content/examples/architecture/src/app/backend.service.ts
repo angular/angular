@@ -18,7 +18,7 @@ export class BackendService {
       // TODO: get from the database
       return Promise.resolve<Hero[]>(HEROES);
     }
-    let err = new Error('Cannot get object of this type');
+    const err = new Error('Cannot get object of this type');
     this.logger.error(err);
     throw err;
   }

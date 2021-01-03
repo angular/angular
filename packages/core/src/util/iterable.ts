@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -8,6 +8,10 @@
 
 import {getSymbolIterator} from './symbol';
 
+
+export function isIterable(obj: any): obj is Iterable<any> {
+  return obj !== null && typeof obj === 'object' && (obj as any)[getSymbolIterator()] !== undefined;
+}
 
 export function isListLikeIterable(obj: any): boolean {
   if (!isJsObject(obj)) return false;

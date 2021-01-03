@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -29,4 +29,9 @@ export function findParentClassDeclaration(node: ts.Node): ts.ClassDeclaration|n
     node = node.parent;
   }
   return node;
+}
+
+/** Checks whether the given class declaration has an explicit constructor or not. */
+export function hasExplicitConstructor(node: ts.ClassDeclaration): boolean {
+  return node.members.some(ts.isConstructorDeclaration);
 }

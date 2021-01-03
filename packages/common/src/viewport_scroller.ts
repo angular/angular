@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -21,7 +21,7 @@ export abstract class ViewportScroller {
   // De-sugared tree-shakable injection
   // See #23917
   /** @nocollapse */
-  static ngInjectableDef = ɵɵdefineInjectable({
+  static ɵprov = ɵɵdefineInjectable({
     token: ViewportScroller,
     providedIn: 'root',
     factory: () => new BrowserViewportScroller(ɵɵinject(DOCUMENT), window, ɵɵinject(ErrorHandler))
@@ -88,8 +88,8 @@ export class BrowserViewportScroller implements ViewportScroller {
    * @returns The position in screen coordinates.
    */
   getScrollPosition(): [number, number] {
-    if (this.supportScrollRestoration()) {
-      return [this.window.scrollX, this.window.scrollY];
+    if (this.supportsScrolling()) {
+      return [this.window.pageXOffset, this.window.pageYOffset];
     } else {
       return [0, 0];
     }
@@ -100,7 +100,7 @@ export class BrowserViewportScroller implements ViewportScroller {
    * @param position The new position in screen coordinates.
    */
   scrollToPosition(position: [number, number]): void {
-    if (this.supportScrollRestoration()) {
+    if (this.supportsScrolling()) {
       this.window.scrollTo(position[0], position[1]);
     }
   }
@@ -110,27 +110,11 @@ export class BrowserViewportScroller implements ViewportScroller {
    * @param anchor The ID of the anchor element.
    */
   scrollToAnchor(anchor: string): void {
-    if (this.supportScrollRestoration()) {
-      // Escape anything passed to `querySelector` as it can throw errors and stop the application
-      // from working if invalid values are passed.
-      if (this.window.CSS && this.window.CSS.escape) {
-        anchor = this.window.CSS.escape(anchor);
-      } else {
-        anchor = anchor.replace(/(\"|\'\ |:|\.|\[|\]|,|=)/g, '\\$1');
-      }
-      try {
-        const elSelectedById = this.document.querySelector(`#${anchor}`);
-        if (elSelectedById) {
-          this.scrollToElement(elSelectedById);
-          return;
-        }
-        const elSelectedByName = this.document.querySelector(`[name='${anchor}']`);
-        if (elSelectedByName) {
-          this.scrollToElement(elSelectedByName);
-          return;
-        }
-      } catch (e) {
-        this.errorHandler.handleError(e);
+    if (this.supportsScrolling()) {
+      const elSelected =
+          this.document.getElementById(anchor) || this.document.getElementsByName(anchor)[0];
+      if (elSelected) {
+        this.scrollToElement(elSelected);
       }
     }
   }
@@ -165,17 +149,36 @@ export class BrowserViewportScroller implements ViewportScroller {
    */
   private supportScrollRestoration(): boolean {
     try {
-      return !!this.window && !!this.window.scrollTo;
+      if (!this.supportsScrolling()) {
+        return false;
+      }
+      // The `scrollRestoration` property could be on the `history` instance or its prototype.
+      const scrollRestorationDescriptor = getScrollRestorationProperty(this.window.history) ||
+          getScrollRestorationProperty(Object.getPrototypeOf(this.window.history));
+      // We can write to the `scrollRestoration` property if it is a writable data field or it has a
+      // setter function.
+      return !!scrollRestorationDescriptor &&
+          !!(scrollRestorationDescriptor.writable || scrollRestorationDescriptor.set);
+    } catch {
+      return false;
+    }
+  }
+
+  private supportsScrolling(): boolean {
+    try {
+      return !!this.window && !!this.window.scrollTo && 'pageXOffset' in this.window;
     } catch {
       return false;
     }
   }
 }
 
+function getScrollRestorationProperty(obj: any): PropertyDescriptor|undefined {
+  return Object.getOwnPropertyDescriptor(obj, 'scrollRestoration');
+}
 
 /**
- * Provides an empty implementation of the viewport scroller. This will
- * live in @angular/common as it will be used by both platform-server and platform-webworker.
+ * Provides an empty implementation of the viewport scroller.
  */
 export class NullViewportScroller implements ViewportScroller {
   /**
@@ -186,7 +189,9 @@ export class NullViewportScroller implements ViewportScroller {
   /**
    * Empty implementation
    */
-  getScrollPosition(): [number, number] { return [0, 0]; }
+  getScrollPosition(): [number, number] {
+    return [0, 0];
+  }
 
   /**
    * Empty implementation

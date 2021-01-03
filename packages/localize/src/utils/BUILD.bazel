@@ -1,0 +1,18 @@
+load("//tools:defaults.bzl", "ts_library")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_library(
+    name = "utils",
+    srcs = glob(
+        [
+            "*.ts",
+            "src/**/*.ts",
+        ],
+    ),
+    module_name = "@angular/localize/src/utils",
+    deps = [
+        "//packages/compiler",
+        "//packages/compiler-cli/src/ngtsc/file_system",
+    ],
+)

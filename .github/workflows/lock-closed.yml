@@ -1,0 +1,15 @@
+name: Lock closed inactive issues
+
+on:
+  schedule:
+    # Run at 16:00 every day
+    - cron: '0 16 * * *'
+
+jobs:
+  lock_closed:
+    if: github.repository == 'angular/angular'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: angular/dev-infra/github-actions/lock-closed@0fc6f4d839e93312ed0dd9a2be88d4c11e947a0b
+        with:
+          lock-bot-key: ${{ secrets.LOCK_BOT_PRIVATE_KEY }}

@@ -1,28 +1,34 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-
-
+// Make the `$localize()` global function available to the compiled templates, and the direct calls
+// below. This would normally be done inside the application `polyfills.ts` file.
+import '@angular/localize/init';
 import {AfterContentInit, AfterViewInit, Component, ContentChildren, Directive, Input, QueryList, ViewChildren, ɵivyEnabled as ivyEnabled} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
+import {isCommentNode} from '@angular/platform-browser/testing/src/browser_util';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {modifiedInIvy} from '@angular/private/testing';
 
 if (ivyEnabled) {
-  describe('ivy', () => { declareTests(); });
+  describe('ivy', () => {
+    declareTests();
+  });
 } else {
-  describe('jit', () => { declareTests({useJit: true}); });
-  describe('no jit', () => { declareTests({useJit: false}); });
+  describe('jit', () => {
+    declareTests({useJit: true});
+  });
+  describe('no jit', () => {
+    declareTests({useJit: false});
+  });
 }
 
 function declareTests(config?: {useJit: boolean}) {
   describe('<ng-container>', function() {
-
     beforeEach(() => {
       TestBed.configureCompiler({...config});
       TestBed.configureTestingModule({
@@ -56,10 +62,10 @@ function declareTests(config?: {useJit: boolean}) {
           fixture.detectChanges();
 
           const el = fixture.nativeElement;
-          const children = getDOM().childNodes(el);
+          const children = el.childNodes;
           expect(children.length).toBe(2);
-          expect(getDOM().isCommentNode(children[0])).toBe(true);
-          expect(getDOM().tagName(children[1]).toUpperCase()).toEqual('P');
+          expect(isCommentNode(children[0])).toBe(true);
+          expect((children[1] as Element).tagName.toUpperCase()).toEqual('P');
         });
 
     modifiedInIvy('FW-678: ivy generates different DOM structure for <ng-container>')
@@ -72,12 +78,12 @@ function declareTests(config?: {useJit: boolean}) {
           fixture.detectChanges();
 
           const el = fixture.nativeElement;
-          const children = getDOM().childNodes(el);
+          const children = el.childNodes;
           expect(children.length).toBe(5);
-          expect(getDOM().isCommentNode(children[0])).toBe(true);
+          expect(isCommentNode(children[0])).toBe(true);
           expect(children[1]).toHaveText('1');
-          expect(getDOM().isCommentNode(children[2])).toBe(true);
-          expect(getDOM().isCommentNode(children[3])).toBe(true);
+          expect(isCommentNode(children[2])).toBe(true);
+          expect(isCommentNode(children[3])).toBe(true);
           expect(children[4]).toHaveText('2');
         });
 
@@ -91,21 +97,21 @@ function declareTests(config?: {useJit: boolean}) {
           fixture.detectChanges();
 
           const el = fixture.nativeElement;
-          const children = getDOM().childNodes(el);
+          const children = el.childNodes;
 
           expect(children.length).toBe(4);
           // ngIf anchor
-          expect(getDOM().isCommentNode(children[0])).toBe(true);
+          expect(isCommentNode(children[0])).toBe(true);
           // ng-container anchor
-          expect(getDOM().isCommentNode(children[1])).toBe(true);
-          expect(getDOM().tagName(children[2]).toUpperCase()).toEqual('P');
-          expect(getDOM().tagName(children[3]).toUpperCase()).toEqual('B');
+          expect(isCommentNode(children[1])).toBe(true);
+          expect((children[2] as Element).tagName.toUpperCase()).toEqual('P');
+          expect((children[3] as Element).tagName.toUpperCase()).toEqual('B');
 
           fixture.componentInstance.ctxBoolProp = false;
           fixture.detectChanges();
 
           expect(children.length).toBe(1);
-          expect(getDOM().isCommentNode(children[0])).toBe(true);
+          expect(isCommentNode(children[0])).toBe(true);
         });
 
     it('should work with static content projection', () => {
@@ -139,7 +145,7 @@ function declareTests(config?: {useJit: boolean}) {
           const fixture = TestBed.createComponent(MyComp);
 
           fixture.detectChanges();
-          const q = fixture.debugElement.children[0].references !['q'];
+          const q = fixture.debugElement.children[0].references!['q'];
           fixture.detectChanges();
 
           expect(q.textDirChildren.length).toEqual(1);
@@ -152,7 +158,7 @@ function declareTests(config?: {useJit: boolean}) {
       const fixture = TestBed.createComponent(MyComp);
 
       fixture.detectChanges();
-      const q = fixture.debugElement.children[0].references !['q'];
+      const q = fixture.debugElement.children[0].references!['q'];
       fixture.detectChanges();
 
       expect(q.textDirChildren.length).toEqual(1);
@@ -169,21 +175,25 @@ class TextDirective {
 @Component({selector: 'needs-content-children', template: ''})
 class NeedsContentChildren implements AfterContentInit {
   // TODO(issue/24571): remove '!'.
-  @ContentChildren(TextDirective) textDirChildren !: QueryList<TextDirective>;
+  @ContentChildren(TextDirective) textDirChildren!: QueryList<TextDirective>;
   // TODO(issue/24571): remove '!'.
-  numberOfChildrenAfterContentInit !: number;
+  numberOfChildrenAfterContentInit!: number;
 
-  ngAfterContentInit() { this.numberOfChildrenAfterContentInit = this.textDirChildren.length; }
+  ngAfterContentInit() {
+    this.numberOfChildrenAfterContentInit = this.textDirChildren.length;
+  }
 }
 
 @Component({selector: 'needs-view-children', template: '<div text></div>'})
 class NeedsViewChildren implements AfterViewInit {
   // TODO(issue/24571): remove '!'.
-  @ViewChildren(TextDirective) textDirChildren !: QueryList<TextDirective>;
+  @ViewChildren(TextDirective) textDirChildren!: QueryList<TextDirective>;
   // TODO(issue/24571): remove '!'.
-  numberOfChildrenAfterViewInit !: number;
+  numberOfChildrenAfterViewInit!: number;
 
-  ngAfterViewInit() { this.numberOfChildrenAfterViewInit = this.textDirChildren.length; }
+  ngAfterViewInit() {
+    this.numberOfChildrenAfterViewInit = this.textDirChildren.length;
+  }
 }
 
 @Component({selector: 'simple', template: 'SIMPLE(<ng-content></ng-content>)'})

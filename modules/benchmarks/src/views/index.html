@@ -1,0 +1,38 @@
+<!doctype html>
+<html>
+
+<head>
+  <!-- Prevent the browser from requesting any favicon. -->
+  <link rel="icon" href="data:,">
+</head>
+
+<body>
+
+  <h1>Views traversal benchmark</h1>
+
+  <benchmark-root>loading...</benchmark-root>
+
+  <script>
+    addEventListener('DOMContentLoaded', () => {
+      // DevServer has automatic bootstrap code, so if we already have <scripts> than we don't need to bootstrap
+      var alreadyBootstrapped = document.querySelectorAll('script').length > 1; // 1 for ourselves
+      if (!alreadyBootstrapped) {
+        function loadScript(url) {
+          return new Promise(function (resolve, reject) {
+            var script = document.createElement('script');
+            script.src = url;
+            script.onload = resolve;
+            script.onerror = reject;
+            document.body.append(script);
+          });
+        }
+        // zone.js must be loaded and processed before Angular bundle gets executed
+        loadScript('/npm/node_modules/zone.js/bundles/zone.umd.js').then(function () {
+          loadScript(document.location.search.endsWith('debug') ? 'bundle.min_debug.js' : 'bundle.min.js');
+        });
+      }
+    });
+  </script>
+</body>
+
+</html>

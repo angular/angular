@@ -1,3 +1,4 @@
+// tslint:disable: variable-name
 // #docregion
 import { Component, Input } from '@angular/core';
 
@@ -6,13 +7,11 @@ import { Component, Input } from '@angular/core';
   template: '<h3>"{{name}}"</h3>'
 })
 export class NameChildComponent {
-  private _name = '';
-
   @Input()
+  get name(): string { return this._name; }
   set name(name: string) {
     this._name = (name && name.trim()) || '<no name set>';
   }
-
-  get name(): string { return this._name; }
+  private _name = '';
 }
 // #enddocregion

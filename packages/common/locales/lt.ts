@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -22,12 +22,14 @@ function plural(n: number): number {
 }
 
 export default [
-  'lt', [['pr. p.', 'pop.'], ['priešpiet', 'popiet'], u], u,
+  'lt',
+  [['pr. p.', 'pop.'], ['priešpiet', 'popiet'], u],
+  u,
   [
     ['S', 'P', 'A', 'T', 'K', 'P', 'Š'], ['sk', 'pr', 'an', 'tr', 'kt', 'pn', 'št'],
     [
-      'sekmadienis', 'pirmadienis', 'antradienis', 'trečiadienis', 'ketvirtadienis',
-      'penktadienis', 'šeštadienis'
+      'sekmadienis', 'pirmadienis', 'antradienis', 'trečiadienis', 'ketvirtadienis', 'penktadienis',
+      'šeštadienis'
     ],
     ['Sk', 'Pr', 'An', 'Tr', 'Kt', 'Pn', 'Št']
   ],
@@ -54,11 +56,18 @@ export default [
       'rugsėjis', 'spalis', 'lapkritis', 'gruodis'
     ]
   ],
-  [['pr. Kr.', 'po Kr.'], u, ['prieš Kristų', 'po Kristaus']], 1, [6, 0],
+  [['pr. Kr.', 'po Kr.'], u, ['prieš Kristų', 'po Kristaus']],
+  1,
+  [6, 0],
   ['y-MM-dd', u, 'y \'m\'. MMMM d \'d\'.', 'y \'m\'. MMMM d \'d\'., EEEE'],
-  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'], ['{1} {0}', u, u, u],
+  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
+  ['{1} {0}', u, u, u],
   [',', ' ', ';', '%', '+', '−', '×10^', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], '€', 'Euras', {
+  ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'],
+  'EUR',
+  '€',
+  'Euras',
+  {
     'AUD': [u, '$'],
     'BDT': [],
     'BRL': [u, 'R$'],
@@ -87,5 +96,6 @@ export default [
     'XOF': [],
     'XPF': []
   },
+  'ltr',
   plural
 ];

@@ -1,19 +1,18 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {ElementAnimationStyleHandler} from '../../../src/render/css_keyframes/element_animation_style_handler';
+import {ElementAnimationStyleHandler, getAnimationStyle} from '../../../src/render/css_keyframes/element_animation_style_handler';
 import {computeStyle} from '../../../src/util';
-
 import {assertStyle, createElement, makeAnimationEvent, supportsAnimationEventCreation} from './shared';
 
 const EMPTY_FN = () => {};
 {
   describe('ElementAnimationStyleHandler', () => {
-    if (isNode || typeof(window as any)['AnimationEvent'] == 'undefined') return;
+    if (isNode || typeof (window as any)['AnimationEvent'] == 'undefined') return;
 
     it('should add and remove an animation on to an element\'s styling', () => {
       const element = createElement();
@@ -195,7 +194,7 @@ const EMPTY_FN = () => {};
     });
 
     it('should fire the onDone method when the matching animationend event is emitted', () => {
-      // IE10 and IE11 cannot create an instanceof AnimationEvent
+      // IE11 cannot create an instanceof AnimationEvent
       if (!supportsAnimationEventCreation()) return;
 
       const element = createElement();
@@ -226,6 +225,24 @@ const EMPTY_FN = () => {};
       event = makeAnimationEvent('end', 'fooAnimation', 1234, timestampAfterDelay);
       element.dispatchEvent(event);
       expect(done).toBeTruthy();
+    });
+
+    // Issue: https://github.com/angular/angular/issues/24094
+    it('should not break getAnimationStyle in old browsers', () => {
+      // Old browsers like Chrome Android 34 returns null if element.style
+      // is not found, modern browsers returns empty string.
+      const fakeElement = {
+        style: {
+          'animationstyle1': 'value',
+          'animationstyle2': null,
+          'animationstyle3': '',
+          'animation': null
+        }
+      };
+      expect(getAnimationStyle(fakeElement, 'style1')).toBe('value');
+      expect(getAnimationStyle(fakeElement, 'style2')).toBe('');
+      expect(getAnimationStyle(fakeElement, 'style3')).toBe('');
+      expect(getAnimationStyle(fakeElement, '')).toBe('');
     });
   });
 }

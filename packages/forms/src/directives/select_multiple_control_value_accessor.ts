@@ -1,12 +1,12 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, ElementRef, Host, Input, OnDestroy, Optional, Renderer2, StaticProvider, forwardRef, ɵlooseIdentical as looseIdentical} from '@angular/core';
+import {Directive, ElementRef, forwardRef, Host, Input, OnDestroy, Optional, Renderer2, StaticProvider} from '@angular/core';
 
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';
 
@@ -36,24 +36,24 @@ interface HTMLOption {
 /** Mock interface for HTMLCollection */
 abstract class HTMLCollection {
   // TODO(issue/24571): remove '!'.
-  length !: number;
+  length!: number;
   abstract item(_: number): HTMLOption;
 }
 
 /**
  * @description
- * The `ControlValueAccessor` for writing multi-select control values and listening to multi-select control
- * changes. The value accessor is used by the `FormControlDirective`, `FormControlName`, and `NgModel`
- * directives.
- * 
+ * The `ControlValueAccessor` for writing multi-select control values and listening to multi-select
+ * control changes. The value accessor is used by the `FormControlDirective`, `FormControlName`, and
+ * `NgModel` directives.
+ *
  * @see `SelectControlValueAccessor`
  *
  * @usageNotes
- * 
+ *
  * ### Using a multi-select control
- * 
+ *
  * The follow example shows you how to use a multi-select control with a reactive form.
- * 
+ *
  * ```ts
  * const countryControl = new FormControl();
  * ```
@@ -65,9 +65,9 @@ abstract class HTMLCollection {
  *   </option>
  * </select>
  * ```
- * 
+ *
  * ### Customizing option selection
- *  
+ *
  * To customize the default option comparison algorithm, `<select>` supports `compareWith` input.
  * See the `SelectControlValueAccessor` for usage.
  *
@@ -83,25 +83,26 @@ abstract class HTMLCollection {
 })
 export class SelectMultipleControlValueAccessor implements ControlValueAccessor {
   /**
-   * @description
-   * The current value
+   * The current value.
+   * @nodoc
    */
   value: any;
 
   /** @internal */
   _optionMap: Map<string, ɵNgSelectMultipleOption> = new Map<string, ɵNgSelectMultipleOption>();
+
   /** @internal */
   _idCounter: number = 0;
 
   /**
-   * @description
    * The registered callback function called when a change event occurs on the input element.
+   * @nodoc
    */
   onChange = (_: any) => {};
 
   /**
-   * @description
    * The registered callback function called when a blur event occurs on the input element.
+   * @nodoc
    */
   onTouched = () => {};
 
@@ -112,22 +113,19 @@ export class SelectMultipleControlValueAccessor implements ControlValueAccessor 
    */
   @Input()
   set compareWith(fn: (o1: any, o2: any) => boolean) {
-    if (typeof fn !== 'function') {
+    if (typeof fn !== 'function' && (typeof ngDevMode === 'undefined' || ngDevMode)) {
       throw new Error(`compareWith must be a function, but received ${JSON.stringify(fn)}`);
     }
     this._compareWith = fn;
   }
 
-  private _compareWith: (o1: any, o2: any) => boolean = looseIdentical;
+  private _compareWith: (o1: any, o2: any) => boolean = Object.is;
 
   constructor(private _renderer: Renderer2, private _elementRef: ElementRef) {}
 
   /**
-   * @description
-   * Sets the "value" property on one or of more
-   * of the select's options.
-   *
-   * @param value The value
+   * Sets the "value" property on one or of more of the select's options.
+   * @nodoc
    */
   writeValue(value: any): void {
     this.value = value;
@@ -135,24 +133,26 @@ export class SelectMultipleControlValueAccessor implements ControlValueAccessor 
     if (Array.isArray(value)) {
       // convert values to ids
       const ids = value.map((v) => this._getOptionId(v));
-      optionSelectedStateSetter = (opt, o) => { opt._setSelected(ids.indexOf(o.toString()) > -1); };
+      optionSelectedStateSetter = (opt, o) => {
+        opt._setSelected(ids.indexOf(o.toString()) > -1);
+      };
     } else {
-      optionSelectedStateSetter = (opt, o) => { opt._setSelected(false); };
+      optionSelectedStateSetter = (opt, o) => {
+        opt._setSelected(false);
+      };
     }
     this._optionMap.forEach(optionSelectedStateSetter);
   }
 
   /**
-   * @description
    * Registers a function called when the control value changes
    * and writes an array of the selected options.
-   *
-   * @param fn The callback function
+   * @nodoc
    */
   registerOnChange(fn: (value: any) => any): void {
     this.onChange = (_: any) => {
       const selected: Array<any> = [];
-      if (_.hasOwnProperty('selectedOptions')) {
+      if (_.selectedOptions !== undefined) {
         const options: HTMLCollection = _.selectedOptions;
         for (let i = 0; i < options.length; i++) {
           const opt: any = options.item(i);
@@ -177,17 +177,16 @@ export class SelectMultipleControlValueAccessor implements ControlValueAccessor 
   }
 
   /**
-   * @description
    * Registers a function called when the control is touched.
-   *
-   * @param fn The callback function
+   * @nodoc
    */
-  registerOnTouched(fn: () => any): void { this.onTouched = fn; }
+  registerOnTouched(fn: () => any): void {
+    this.onTouched = fn;
+  }
 
   /**
    * Sets the "disabled" property on the select input element.
-   *
-   * @param isDisabled The disabled value
+   * @nodoc
    */
   setDisabledState(isDisabled: boolean): void {
     this._renderer.setProperty(this._elementRef.nativeElement, 'disabled', isDisabled);
@@ -203,7 +202,7 @@ export class SelectMultipleControlValueAccessor implements ControlValueAccessor 
   /** @internal */
   _getOptionId(value: any): string|null {
     for (const id of Array.from(this._optionMap.keys())) {
-      if (this._compareWith(this._optionMap.get(id) !._value, value)) return id;
+      if (this._compareWith(this._optionMap.get(id)!._value, value)) return id;
     }
     return null;
   }
@@ -211,7 +210,7 @@ export class SelectMultipleControlValueAccessor implements ControlValueAccessor 
   /** @internal */
   _getOptionValue(valueString: string): any {
     const id: string = _extractId(valueString);
-    return this._optionMap.has(id) ? this._optionMap.get(id) !._value : valueString;
+    return this._optionMap.has(id) ? this._optionMap.get(id)!._value : valueString;
   }
 }
 
@@ -228,7 +227,7 @@ export class SelectMultipleControlValueAccessor implements ControlValueAccessor 
 @Directive({selector: 'option'})
 export class ɵNgSelectMultipleOption implements OnDestroy {
   // TODO(issue/24571): remove '!'.
-  id !: string;
+  id!: string;
   /** @internal */
   _value: any;
 
@@ -279,10 +278,7 @@ export class ɵNgSelectMultipleOption implements OnDestroy {
     this._renderer.setProperty(this._element.nativeElement, 'selected', selected);
   }
 
-  /**
-   * @description
-   * Lifecycle method called before the directive's instance is destroyed. For internal use only.
-   */
+  /** @nodoc */
   ngOnDestroy(): void {
     if (this._select) {
       this._select._optionMap.delete(this.id);

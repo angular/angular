@@ -47,18 +47,21 @@ export class FirebaseGlob {
     }
   }
 
-  test(url: string) {
+  test(url: string): boolean {
     return XRegExp.test(url, this.regex);
   }
 
-  match(url: string) {
+  match(url: string): { [key: string]: string } | undefined {
     const match = XRegExp.exec(url, this.regex) as ReturnType<typeof XRegExp.exec> & { [captured: string]: string };
-    if (match) {
-      const result: { [key: string]: string } = {};
-      const names = this.regex.xregexp.captureNames || [];
-      names.forEach(name => result[name] = (match[name]));
-      return result;
+
+    if (!match) {
+      return undefined;
     }
+
+    const result: { [key: string]: string } = {};
+    const names = this.regex.xregexp.captureNames || [];
+    names.forEach(name => result[name] = (match[name]));
+    return result;
   }
 }
 

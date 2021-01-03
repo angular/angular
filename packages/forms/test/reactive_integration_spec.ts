@@ -1,29 +1,34 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Directive, Input, Type, forwardRef} from '@angular/core';
-import {ComponentFixture, TestBed, fakeAsync, tick} from '@angular/core/testing';
-import {AbstractControl, AsyncValidator, AsyncValidatorFn, COMPOSITION_BUFFER_MODE, FormArray, FormControl, FormControlDirective, FormControlName, FormGroup, FormGroupDirective, FormsModule, NG_ASYNC_VALIDATORS, NG_VALIDATORS, ReactiveFormsModule, Validators} from '@angular/forms';
+import {ɵgetDOM as getDOM} from '@angular/common';
+import {Component, Directive, forwardRef, Input, Type} from '@angular/core';
+import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
+import {expect} from '@angular/core/testing/src/testing_internal';
+import {AbstractControl, AsyncValidator, AsyncValidatorFn, COMPOSITION_BUFFER_MODE, FormArray, FormControl, FormControlDirective, FormControlName, FormGroup, FormGroupDirective, FormsModule, NG_ASYNC_VALIDATORS, NG_VALIDATORS, ReactiveFormsModule, Validator, Validators} from '@angular/forms';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
-import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
-import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util';
-import {merge, timer} from 'rxjs';
-import {tap} from 'rxjs/operators';
+import {dispatchEvent, sortedClassList} from '@angular/platform-browser/testing/src/browser_util';
+import {merge, NEVER, of, timer} from 'rxjs';
+import {map, tap} from 'rxjs/operators';
 
 import {MyInput, MyInputForm} from './value_accessor_integration_spec';
 
 {
   describe('reactive forms integration tests', () => {
-
     function initTest<T>(component: Type<T>, ...directives: Type<any>[]): ComponentFixture<T> {
       TestBed.configureTestingModule(
           {declarations: [component, ...directives], imports: [FormsModule, ReactiveFormsModule]});
       return TestBed.createComponent(component);
+    }
+
+    // Helper method that attaches a spy to a `validate` function on a Validator class.
+    function validatorSpyOn(validatorClass: any) {
+      return spyOn(validatorClass.prototype, 'validate').and.callThrough();
     }
 
     describe('basic functionality', () => {
@@ -74,11 +79,9 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
 
         expect(form.value).toEqual({'login': 'updatedValue'});
       });
-
     });
 
     describe('re-bound form groups', () => {
-
       it('should update DOM elements initially', () => {
         const fixture = initTest(FormGroupComp);
         fixture.componentInstance.form = new FormGroup({'login': new FormControl('oldValue')});
@@ -150,7 +153,7 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
         });
         fixture.componentInstance.form = form;
         fixture.detectChanges();
-        expect(form.get('login') !.errors).toEqual({required: true});
+        expect(form.get('login')!.errors).toEqual({required: true});
 
         const newForm = new FormGroup({
           'login': new FormControl(''),
@@ -161,34 +164,31 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
         fixture.componentInstance.form = newForm;
         fixture.detectChanges();
 
-        expect(newForm.get('login') !.errors).toEqual({required: true});
+        expect(newForm.get('login')!.errors).toEqual({required: true});
       });
 
       it('should pick up dir validators from nested form groups', () => {
         const fixture = initTest(NestedFormGroupComp, LoginIsEmptyValidator);
         const form = new FormGroup({
-          'signin':
-              new FormGroup({'login': new FormControl(''), 'password': new FormControl('')})
+          'signin': new FormGroup({'login': new FormControl(''), 'password': new FormControl('')})
         });
         fixture.componentInstance.form = form;
         fixture.detectChanges();
-        expect(form.get('signin') !.valid).toBe(false);
+        expect(form.get('signin')!.valid).toBe(false);
 
         const newForm = new FormGroup({
-          'signin':
-              new FormGroup({'login': new FormControl(''), 'password': new FormControl('')})
+          'signin': new FormGroup({'login': new FormControl(''), 'password': new FormControl('')})
         });
         fixture.componentInstance.form = newForm;
         fixture.detectChanges();
 
-        expect(form.get('signin') !.valid).toBe(false);
+        expect(form.get('signin')!.valid).toBe(false);
       });
 
       it('should strip named controls that are not found', () => {
         const fixture = initTest(NestedFormGroupComp, LoginIsEmptyValidator);
         const form = new FormGroup({
-          'signin':
-              new FormGroup({'login': new FormControl(''), 'password': new FormControl('')})
+          'signin': new FormGroup({'login': new FormControl(''), 'password': new FormControl('')})
         });
         fixture.componentInstance.form = form;
         fixture.detectChanges();
@@ -200,8 +200,7 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
         expect(emailInput.nativeElement.value).toEqual('email');
 
         const newForm = new FormGroup({
-          'signin':
-              new FormGroup({'login': new FormControl(''), 'password': new FormControl('')})
+          'signin': new FormGroup({'login': new FormControl(''), 'password': new FormControl('')})
         });
         fixture.componentInstance.form = newForm;
         fixture.detectChanges();
@@ -237,7 +236,6 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
       });
 
       describe('nested control rebinding', () => {
-
         it('should attach dir to control when leaf control changes', () => {
           const form = new FormGroup({'login': new FormControl('oldValue')});
           const fixture = initTest(FormGroupComp);
@@ -359,7 +357,7 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
 
           expect(newArr.value).toEqual(['last one']);
 
-          newArr.get([0]) !.setValue('set value');
+          newArr.get([0])!.setValue('set value');
           fixture.detectChanges();
 
           firstInput = fixture.debugElement.query(By.css('input')).nativeElement;
@@ -416,14 +414,12 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
 
           expect(newArr.value).toEqual(['SF', 'LA', 'Tulsa']);
 
-          newArr.get([2]) !.setValue('NY');
+          newArr.get([2])!.setValue('NY');
           fixture.detectChanges();
 
           expect(lastInput.value).toEqual('NY');
         });
-
       });
-
     });
 
     describe('form arrays', () => {
@@ -494,7 +490,6 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
           cities: [{town: 'LA', state: 'CA'}, {town: 'NY', state: 'NY'}]
         });
       });
-
     });
 
     describe('programmatic changes', () => {
@@ -592,13 +587,10 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
           const input = fixture.debugElement.query(By.css('my-input'));
           expect(input.nativeElement.getAttribute('disabled')).toBe(null);
         });
-
       });
-
     });
 
     describe('user input', () => {
-
       it('should mark controls as touched after interacting with the DOM control', () => {
         const fixture = initTest(FormGroupComp);
         const login = new FormControl('oldValue');
@@ -613,14 +605,13 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
 
         expect(login.touched).toBe(true);
       });
-
     });
 
     describe('submit and reset events', () => {
       it('should emit ngSubmit event with the original submit event on submit', () => {
         const fixture = initTest(FormGroupComp);
         fixture.componentInstance.form = new FormGroup({'login': new FormControl('loginValue')});
-        fixture.componentInstance.event = null !;
+        fixture.componentInstance.event = null!;
         fixture.detectChanges();
 
         const formEl = fixture.debugElement.query(By.css('form')).nativeElement;
@@ -672,18 +663,18 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
         form.reset();
         expect(loginEl.value).toBe('');
       });
-
     });
 
     describe('value changes and status changes', () => {
-
       it('should mark controls as dirty before emitting a value change event', () => {
         const fixture = initTest(FormGroupComp);
         const login = new FormControl('oldValue');
         fixture.componentInstance.form = new FormGroup({'login': login});
         fixture.detectChanges();
 
-        login.valueChanges.subscribe(() => { expect(login.dirty).toBe(true); });
+        login.valueChanges.subscribe(() => {
+          expect(login.dirty).toBe(true);
+        });
 
         const loginEl = fixture.debugElement.query(By.css('input')).nativeElement;
         loginEl.value = 'newValue';
@@ -705,11 +696,12 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
 
            expect(login.pristine).toBe(false);
 
-           login.valueChanges.subscribe(() => { expect(login.pristine).toBe(true); });
+           login.valueChanges.subscribe(() => {
+             expect(login.pristine).toBe(true);
+           });
 
            form.reset();
          });
-
     });
 
     describe('setting status classes', () => {
@@ -736,7 +728,7 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
 
       it('should work with single fields and async validators', fakeAsync(() => {
            const fixture = initTest(FormControlComp);
-           const control = new FormControl('', null !, uniqLoginAsyncValidator('good'));
+           const control = new FormControl('', null!, uniqLoginAsyncValidator('good'));
            fixture.debugElement.componentInstance.control = control;
            fixture.detectChanges();
 
@@ -831,13 +823,10 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
 
         expect(sortedClassList(formEl)).toEqual(['ng-dirty', 'ng-touched', 'ng-valid']);
       });
-
     });
 
     describe('updateOn options', () => {
-
       describe('on blur', () => {
-
         it('should not update value or validity based on user input until blur', () => {
           const fixture = initTest(FormControlComp);
           const control = new FormControl('', {validators: Validators.required, updateOn: 'blur'});
@@ -1141,7 +1130,6 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
           expect(control.value)
               .toEqual('Nancy', 'Expected value to change once control is blurred.');
           expect(control.valid).toBe(true, 'Expected validation to run once control is blurred.');
-
         });
 
         it('should update on blur with array updateOn', () => {
@@ -1167,7 +1155,6 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
           expect(control.value)
               .toEqual('Nancy', 'Expected value to change once control is blurred.');
           expect(control.valid).toBe(true, 'Expected validation to run once control is blurred.');
-
         });
 
 
@@ -1206,17 +1193,13 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
           expect(passwordControl.valid)
               .toBe(true, 'Expected validation to run once control is blurred.');
         });
-
-
       });
 
       describe('on submit', () => {
-
         it('should set initial value and validity on init', () => {
           const fixture = initTest(FormGroupComp);
           const form = new FormGroup({
-            login:
-                new FormControl('Nancy', {validators: Validators.required, updateOn: 'submit'})
+            login: new FormControl('Nancy', {validators: Validators.required, updateOn: 'submit'})
           });
           fixture.componentInstance.form = form;
           fixture.detectChanges();
@@ -1430,7 +1413,7 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
           fixture.componentInstance.form = formGroup;
           fixture.detectChanges();
 
-          const values: (string | {[key: string]: string})[] = [];
+          const values: (string|{[key: string]: string})[] = [];
           const streams = merge(
               control.valueChanges, control.statusChanges, formGroup.valueChanges,
               formGroup.statusChanges);
@@ -1493,8 +1476,8 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
           fixture.componentInstance.form = formGroup;
           fixture.detectChanges();
 
-          formGroup.get('signin.login') !.setValidators(validatorSpy);
-          formGroup.get('signin') !.setValidators(groupValidatorSpy);
+          formGroup.get('signin.login')!.setValidators(validatorSpy);
+          formGroup.get('signin')!.setValidators(groupValidatorSpy);
 
           const form = fixture.debugElement.query(By.css('form')).nativeElement;
           dispatchEvent(form, 'submit');
@@ -1502,7 +1485,6 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
 
           expect(validatorSpy).not.toHaveBeenCalled();
           expect(groupValidatorSpy).not.toHaveBeenCalled();
-
         });
 
         it('should mark as untouched properly if pending touched', () => {
@@ -1554,7 +1536,6 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
 
           expect(control.value).toEqual('Nancy', 'Expected value to change on submit.');
           expect(control.valid).toBe(true, 'Expected validation to run on submit.');
-
         });
 
         it('should update on submit with array updateOn', () => {
@@ -1581,7 +1562,6 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
 
           expect(control.value).toEqual('Nancy', 'Expected value to change once control on submit');
           expect(control.valid).toBe(true, 'Expected validation to run on submit.');
-
         });
 
         it('should allow child control updateOn submit to override group updateOn', () => {
@@ -1619,9 +1599,7 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
           expect(passwordControl.value).toEqual('Carson', 'Expected value to change on submit.');
           expect(passwordControl.valid).toBe(true, 'Expected validation to run on submit.');
         });
-
       });
-
     });
 
     describe('ngModel interactions', () => {
@@ -1636,7 +1614,6 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
       });
 
       describe('deprecation warnings', () => {
-
         it('should warn once by default when using ngModel with formControlName', fakeAsync(() => {
              const fixture = initTest(FormGroupNgModel);
              fixture.componentInstance.form =
@@ -1679,8 +1656,7 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
            fakeAsync(() => {
              TestBed.configureTestingModule({
                declarations: [FormControlNgModel],
-               imports:
-                   [ReactiveFormsModule.withConfig({warnOnNgModelWithFormControl: 'always'})]
+               imports: [ReactiveFormsModule.withConfig({warnOnNgModelWithFormControl: 'always'})]
              });
 
              const fixture = TestBed.createComponent(FormControlNgModel);
@@ -1710,7 +1686,6 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
 
              expect(warnSpy).not.toHaveBeenCalled();
            }));
-
       });
 
       it('should support ngModel for complex forms', fakeAsync(() => {
@@ -1794,9 +1769,7 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
 
            expect(fixture.componentInstance.login)
                .toEqual('Nancy', 'Expected ngModel value to update on submit.');
-
          }));
-
     });
 
     describe('validations', () => {
@@ -1816,6 +1789,23 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
 
         expect(checkbox.nativeElement.checked).toBe(true);
         expect(control.hasError('required')).toEqual(false);
+      });
+
+      // Note: this scenario goes against validator function rules were `null` is the only
+      // representation of a successful check. However the `Validators.combine` has a side-effect
+      // where falsy values are treated as success and `null` is returned from the wrapper function.
+      // The goal of this test is to prevent regressions for validators that return falsy values by
+      // mistake and rely on the `Validators.compose` side-effects to normalize the value to `null`
+      // instead.
+      it('should treat validators that return `undefined` as successful', () => {
+        const fixture = initTest(FormControlComp);
+        const validatorFn = (control: AbstractControl) => control.value ?? undefined;
+        const control = new FormControl(undefined, validatorFn);
+        fixture.componentInstance.control = control;
+        fixture.detectChanges();
+
+        expect(control.status).toBe('VALID');
+        expect(control.errors).toBe(null);
       });
 
       it('should use sync validators defined in html', () => {
@@ -1969,9 +1959,9 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
             .toEqual(pattern.nativeElement.getAttribute('pattern'));
 
         fixture.componentInstance.required = false;
-        fixture.componentInstance.minLen = null !;
-        fixture.componentInstance.maxLen = null !;
-        fixture.componentInstance.pattern = null !;
+        fixture.componentInstance.minLen = null!;
+        fixture.componentInstance.maxLen = null!;
+        fixture.componentInstance.pattern = null!;
         fixture.detectChanges();
 
         expect(form.hasError('required', ['login'])).toEqual(false);
@@ -2011,9 +2001,9 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
         fixture.detectChanges();
 
         fixture.componentInstance.required = false;
-        fixture.componentInstance.minLen = null !;
-        fixture.componentInstance.maxLen = null !;
-        fixture.componentInstance.pattern = null !;
+        fixture.componentInstance.minLen = null!;
+        fixture.componentInstance.maxLen = null!;
+        fixture.componentInstance.pattern = null!;
         fixture.detectChanges();
 
         expect(newForm.hasError('required', ['login'])).toEqual(false);
@@ -2107,11 +2097,77 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
            expect(control.valid).toEqual(false);
          }));
 
+      it('should handle async validation changes in parent and child controls', fakeAsync(() => {
+           const fixture = initTest(FormGroupComp);
+           const control = new FormControl(
+               '', Validators.required, asyncValidator(c => !!c.value && c.value.length > 3, 100));
+           const form = new FormGroup(
+               {'login': control}, null,
+               asyncValidator(c => c.get('login')!.value.includes('angular'), 200));
+           fixture.componentInstance.form = form;
+           fixture.detectChanges();
+           tick();
+
+           // Initially, the form is invalid because the nested mandatory control is empty
+           expect(control.hasError('required')).toEqual(true);
+           expect(form.value).toEqual({'login': ''});
+           expect(form.invalid).toEqual(true);
+
+           // Setting a value in the form control that will trigger the registered asynchronous
+           // validation
+           const input = fixture.debugElement.query(By.css('input'));
+           input.nativeElement.value = 'angul';
+           dispatchEvent(input.nativeElement, 'input');
+
+           // The form control asynchronous validation is in progress (for 100 ms)
+           expect(control.pending).toEqual(true);
+
+           tick(100);
+
+           // Now the asynchronous validation has resolved, and since the form control value
+           // (`angul`) has a length > 3, the validation is successful
+           expect(control.invalid).toEqual(false);
+
+           // Even if the child control is valid, the form control is pending because it is still
+           // waiting for its own validation
+           expect(form.pending).toEqual(true);
+
+           tick(100);
+
+           // Login form control is valid. However, the form control is invalid because `angul` does
+           // not include `angular`
+           expect(control.invalid).toEqual(false);
+           expect(form.pending).toEqual(false);
+           expect(form.invalid).toEqual(true);
+
+           // Setting a value that would be trigger "VALID" form state
+           input.nativeElement.value = 'angular!';
+           dispatchEvent(input.nativeElement, 'input');
+
+           // Since the form control value changed, its asynchronous validation runs for 100ms
+           expect(control.pending).toEqual(true);
+
+           tick(100);
+
+           // Even if the child control is valid, the form control is pending because it is still
+           // waiting for its own validation
+           expect(control.invalid).toEqual(false);
+           expect(form.pending).toEqual(true);
+
+           tick(100);
+
+           // Now, the form is valid because its own asynchronous validation has resolved
+           // successfully, because the form control value `angular` includes the `angular` string
+           expect(control.invalid).toEqual(false);
+           expect(form.pending).toEqual(false);
+           expect(form.invalid).toEqual(false);
+         }));
+
       it('should cancel observable properly between validation runs', fakeAsync(() => {
            const fixture = initTest(FormControlComp);
            const resultArr: number[] = [];
            fixture.componentInstance.control =
-               new FormControl('', null !, observableValidator(resultArr));
+               new FormControl('', null!, observableValidator(resultArr));
            fixture.detectChanges();
            tick(100);
 
@@ -2130,12 +2186,9 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
            expect(resultArr.length)
                .toEqual(2, `Expected original observable to be canceled on the next value change.`);
          }));
-
-
     });
 
     describe('errors', () => {
-
       it('should throw if a form isn\'t passed into formGroup', () => {
         const fixture = initTest(FormGroupComp);
 
@@ -2335,11 +2388,9 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
         expect(() => fixture.detectChanges())
             .toThrowError(new RegExp('If you define both a name and a formControlName'));
       });
-
     });
 
     describe('IME events', () => {
-
       it('should determine IME event handling depending on platform by default', () => {
         const fixture = initTest(FormControlComp);
         fixture.componentInstance.control = new FormControl('oldValue');
@@ -2417,20 +2468,247 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
         // formControl should update normally
         expect(fixture.componentInstance.control.value).toEqual('updatedValue');
       });
-
     });
 
+    describe('cleanup', () => {
+      function expectValidatorsToBeCalled(
+          syncValidatorSpy: jasmine.Spy, asyncValidatorSpy: jasmine.Spy,
+          expected: {ctx: any, count: number}) {
+        [syncValidatorSpy, asyncValidatorSpy].forEach((spy: jasmine.Spy<jasmine.Func>) => {
+          spy.calls.all().forEach((call: jasmine.CallInfo<jasmine.Func>) => {
+            expect(call.args[0]).toBe(expected.ctx);
+          });
+          expect(spy).toHaveBeenCalledTimes(expected.count);
+        });
+      }
+
+      it('should clean up validators when FormGroup is replaced', () => {
+        const fixture =
+            initTest(FormGroupWithValidators, MyCustomValidator, MyCustomAsyncValidator);
+        fixture.detectChanges();
+
+        const newForm = new FormGroup({login: new FormControl('NEW')});
+        const oldForm = fixture.componentInstance.form;
+
+        // Update `form` input with a new value.
+        fixture.componentInstance.form = newForm;
+        fixture.detectChanges();
+
+        const validatorSpy = validatorSpyOn(MyCustomValidator);
+        const asyncValidatorSpy = validatorSpyOn(MyCustomAsyncValidator);
+
+        // Calling `setValue` for the OLD form should NOT trigger validator calls.
+        oldForm.setValue({login: 'SOME-OLD-VALUE'});
+        expect(validatorSpy).not.toHaveBeenCalled();
+        expect(asyncValidatorSpy).not.toHaveBeenCalled();
+
+        // Calling `setValue` for the NEW (active) form should trigger validator calls.
+        newForm.setValue({login: 'SOME-NEW-VALUE'});
+        expectValidatorsToBeCalled(validatorSpy, asyncValidatorSpy, {ctx: newForm, count: 1});
+      });
+
+      it('should clean up validators when FormControl inside FormGroup is replaced', () => {
+        const fixture =
+            initTest(FormControlWithValidators, MyCustomValidator, MyCustomAsyncValidator);
+        fixture.detectChanges();
+
+        const newControl = new FormControl('NEW')!;
+        const oldControl = fixture.componentInstance.form.get('login')!;
+
+        const validatorSpy = validatorSpyOn(MyCustomValidator);
+        const asyncValidatorSpy = validatorSpyOn(MyCustomAsyncValidator);
+
+        // Update `login` form control with a new `FormControl` instance.
+        fixture.componentInstance.form.removeControl('login');
+        fixture.componentInstance.form.addControl('login', newControl);
+        fixture.detectChanges();
+
+        validatorSpy.calls.reset();
+        asyncValidatorSpy.calls.reset();
+
+        // Calling `setValue` for the OLD control should NOT trigger validator calls.
+        oldControl.setValue('SOME-OLD-VALUE');
+        expect(validatorSpy).not.toHaveBeenCalled();
+        expect(asyncValidatorSpy).not.toHaveBeenCalled();
+
+        // Calling `setValue` for the NEW (active) control should trigger validator calls.
+        newControl.setValue('SOME-NEW-VALUE');
+        expectValidatorsToBeCalled(validatorSpy, asyncValidatorSpy, {ctx: newControl, count: 1});
+      });
+
+      it('should keep control in pending state if async validator never emits', fakeAsync(() => {
+           const fixture = initTest(FormControlWithAsyncValidatorFn);
+           fixture.detectChanges();
+
+           const control = fixture.componentInstance.form.get('login')!;
+           expect(control.status).toBe('PENDING');
+
+           control.setValue('SOME-NEW-VALUE');
+           tick();
+
+           // Since validator never emits, we expect a control to be retained in a pending state.
+           expect(control.status).toBe('PENDING');
+           expect(control.errors).toBe(null);
+         }));
+
+      it('should call validators defined via `set[Async]Validators` after view init', () => {
+        const fixture =
+            initTest(FormControlWithValidators, MyCustomValidator, MyCustomAsyncValidator);
+        fixture.detectChanges();
+
+        const control = fixture.componentInstance.form.get('login')!;
+
+        const initialValidatorSpy = validatorSpyOn(MyCustomValidator);
+        const initialAsyncValidatorSpy = validatorSpyOn(MyCustomAsyncValidator);
+
+        initialValidatorSpy.calls.reset();
+        initialAsyncValidatorSpy.calls.reset();
+
+        control.setValue('VALUE-A');
+
+        // Expect initial validators (setup during view creation) to be called.
+        expectValidatorsToBeCalled(
+            initialValidatorSpy, initialAsyncValidatorSpy, {ctx: control, count: 1});
+
+        initialValidatorSpy.calls.reset();
+        initialAsyncValidatorSpy.calls.reset();
+
+        // Create new validators and corresponding spies.
+        const newValidatorSpy = jasmine.createSpy('newValidator').and.returnValue(null);
+        const newAsyncValidatorSpy =
+            jasmine.createSpy('newAsyncValidator').and.returnValue(of(null));
+
+        // Set new validators to a control that is already used in a view.
+        // Expect that new validators are applied and old validators are removed.
+        control.setValidators(newValidatorSpy);
+        control.setAsyncValidators(newAsyncValidatorSpy);
+
+        // Update control value to trigger validation.
+        control.setValue('VALUE-B');
+
+        // Verify that initial (inactive) validators were not called.
+        expect(initialValidatorSpy).not.toHaveBeenCalled();
+        expect(initialAsyncValidatorSpy).not.toHaveBeenCalled();
+
+        // Verify that newly applied validators were executed.
+        expectValidatorsToBeCalled(newValidatorSpy, newAsyncValidatorSpy, {ctx: control, count: 1});
+      });
+
+      it('should cleanup validators on a control used for multiple `formControlName` directives',
+         () => {
+           const fixture =
+               initTest(NgForFormControlWithValidators, MyCustomValidator, MyCustomAsyncValidator);
+           fixture.detectChanges();
+
+           const newControl = new FormControl('b')!;
+           const oldControl = fixture.componentInstance.form.get('login')!;
+
+           const validatorSpy = validatorSpyOn(MyCustomValidator);
+           const asyncValidatorSpy = validatorSpyOn(MyCustomAsyncValidator);
+
+           // Case 1: replace `login` form control with a new `FormControl` instance.
+           fixture.componentInstance.form.removeControl('login');
+           fixture.componentInstance.form.addControl('login', newControl);
+           fixture.detectChanges();
+
+           // Check that validators were called with a new control as a context
+           // and each validator function was called for each control (so 3 times each).
+           expectValidatorsToBeCalled(validatorSpy, asyncValidatorSpy, {ctx: newControl, count: 3});
+
+           validatorSpy.calls.reset();
+           asyncValidatorSpy.calls.reset();
+
+           // Calling `setValue` for the OLD control should NOT trigger validator calls.
+           oldControl.setValue('SOME-OLD-VALUE');
+           expect(validatorSpy).not.toHaveBeenCalled();
+           expect(asyncValidatorSpy).not.toHaveBeenCalled();
+
+           // Calling `setValue` for the NEW (active) control should trigger validator calls.
+           newControl.setValue('SOME-NEW-VALUE');
+
+           // Check that setting a value on a new control triggers validator calls.
+           expectValidatorsToBeCalled(validatorSpy, asyncValidatorSpy, {ctx: newControl, count: 3});
+
+           // Case 2: update `logins` to render a new list of elements.
+           fixture.componentInstance.logins = ['a', 'b', 'c', 'd', 'e', 'f'];
+           fixture.detectChanges();
+
+           validatorSpy.calls.reset();
+           asyncValidatorSpy.calls.reset();
+
+           // Calling `setValue` for the NEW (active) control should trigger validator calls.
+           newControl.setValue('SOME-NEW-VALUE-2');
+
+           // Check that setting a value on a new control triggers validator calls for updated set
+           // of controls (one for each element in the `logins` array).
+           expectValidatorsToBeCalled(validatorSpy, asyncValidatorSpy, {ctx: newControl, count: 6});
+         });
+
+      it('should cleanup directive-specific callbacks only', () => {
+        const fixture = initTest(MultipleFormControls, MyCustomValidator, MyCustomAsyncValidator);
+        fixture.detectChanges();
+
+        const sharedControl = fixture.componentInstance.control;
+
+        const validatorSpy = validatorSpyOn(MyCustomValidator);
+        const asyncValidatorSpy = validatorSpyOn(MyCustomAsyncValidator);
+
+        sharedControl.setValue('b');
+        fixture.detectChanges();
+
+        // Check that validators were called for each `formControlName` directive instance
+        // (2 times total).
+        expectValidatorsToBeCalled(validatorSpy, asyncValidatorSpy, {ctx: sharedControl, count: 2});
+
+        // Replace formA with a new instance. This will trigger destroy operation for the
+        // `formControlName` directive that is bound to the `control` FormControl instance.
+        const newFormA = new FormGroup({login: new FormControl('new-a')});
+        fixture.componentInstance.formA = newFormA;
+        fixture.detectChanges();
+
+        validatorSpy.calls.reset();
+        asyncValidatorSpy.calls.reset();
+
+        // Update control with a new value.
+        sharedControl.setValue('d');
+        fixture.detectChanges();
+
+        // We should still see an update to the second <input>.
+        expect(fixture.nativeElement.querySelector('#login').value).toBe('d');
+        expectValidatorsToBeCalled(validatorSpy, asyncValidatorSpy, {ctx: sharedControl, count: 1});
+      });
+    });
   });
 }
 
-function uniqLoginAsyncValidator(expectedValue: string, timeout: number = 0) {
+/**
+ * Creates an async validator using a checker function, a timeout and the error to emit in case of
+ * validation failure
+ *
+ * @param checker A function to decide whether the validator will resolve with success or failure
+ * @param timeout When the validation will resolve
+ * @param error The error message to be emitted in case of validation failure
+ *
+ * @returns An async validator created using a checker function, a timeout and the error to emit in
+ * case of validation failure
+ */
+function asyncValidator(
+    checker: (c: AbstractControl) => boolean, timeout: number = 0, error: any = {
+      'async': true
+    }) {
   return (c: AbstractControl) => {
     let resolve: (result: any) => void;
-    const promise = new Promise(res => { resolve = res; });
-    const res = (c.value == expectedValue) ? null : {'uniqLogin': true};
+    const promise = new Promise<any>(res => {
+      resolve = res;
+    });
+    const res = checker(c) ? null : error;
     setTimeout(() => resolve(res), timeout);
     return promise;
   };
+}
+
+function uniqLoginAsyncValidator(expectedValue: string, timeout: number = 0) {
+  return asyncValidator(c => c.value === expectedValue, timeout, {'uniqLogin': true});
 }
 
 function observableValidator(resultArr: number[]): AsyncValidatorFn {
@@ -2452,26 +2730,22 @@ class LoginIsEmptyValidator {
 
 @Directive({
   selector: '[uniq-login-validator]',
-  providers: [{
-    provide: NG_ASYNC_VALIDATORS,
-    useExisting: forwardRef(() => UniqLoginValidator),
-    multi: true
-  }]
+  providers: [
+    {provide: NG_ASYNC_VALIDATORS, useExisting: forwardRef(() => UniqLoginValidator), multi: true}
+  ]
 })
 class UniqLoginValidator implements AsyncValidator {
   @Input('uniq-login-validator') expected: any;
 
-  validate(c: AbstractControl) { return uniqLoginAsyncValidator(this.expected)(c); }
-}
-
-function sortedClassList(el: HTMLElement) {
-  return getDOM().classList(el).sort();
+  validate(c: AbstractControl) {
+    return uniqLoginAsyncValidator(this.expected)(c);
+  }
 }
 
 @Component({selector: 'form-control-comp', template: `<input type="text" [formControl]="control">`})
 class FormControlComp {
   // TODO(issue/24571): remove '!'.
-  control !: FormControl;
+  control!: FormControl;
 }
 
 @Component({
@@ -2483,11 +2757,11 @@ class FormControlComp {
 })
 class FormGroupComp {
   // TODO(issue/24571): remove '!'.
-  control !: FormControl;
+  control!: FormControl;
   // TODO(issue/24571): remove '!'.
-  form !: FormGroup;
+  form!: FormGroup;
   // TODO(issue/24571): remove '!'.
-  event !: Event;
+  event!: Event;
 }
 
 @Component({
@@ -2503,7 +2777,7 @@ class FormGroupComp {
 })
 class NestedFormGroupComp {
   // TODO(issue/24571): remove '!'.
-  form !: FormGroup;
+  form!: FormGroup;
 }
 
 @Component({
@@ -2519,9 +2793,9 @@ class NestedFormGroupComp {
 })
 class FormArrayComp {
   // TODO(issue/24571): remove '!'.
-  form !: FormGroup;
+  form!: FormGroup;
   // TODO(issue/24571): remove '!'.
-  cityArray !: FormArray;
+  cityArray!: FormArray;
 }
 
 @Component({
@@ -2538,9 +2812,9 @@ class FormArrayComp {
 })
 class FormArrayNestedGroup {
   // TODO(issue/24571): remove '!'.
-  form !: FormGroup;
+  form!: FormGroup;
   // TODO(issue/24571): remove '!'.
-  cityArray !: FormArray;
+  cityArray!: FormArray;
 }
 
 @Component({
@@ -2553,11 +2827,11 @@ class FormArrayNestedGroup {
 })
 class FormGroupNgModel {
   // TODO(issue/24571): remove '!'.
-  form !: FormGroup;
+  form!: FormGroup;
   // TODO(issue/24571): remove '!'.
-  login !: string;
+  login!: string;
   // TODO(issue/24571): remove '!'.
-  password !: string;
+  password!: string;
 }
 
 @Component({
@@ -2569,13 +2843,13 @@ class FormGroupNgModel {
 })
 class FormControlNgModel {
   // TODO(issue/24571): remove '!'.
-  control !: FormControl;
+  control!: FormControl;
   // TODO(issue/24571): remove '!'.
-  login !: string;
+  login!: string;
   // TODO(issue/24571): remove '!'.
-  passwordControl !: FormControl;
+  passwordControl!: FormControl;
   // TODO(issue/24571): remove '!'.
-  password !: string;
+  password!: string;
 }
 
 @Component({
@@ -2590,7 +2864,7 @@ class FormControlNgModel {
 })
 class LoginIsEmptyWrapper {
   // TODO(issue/24571): remove '!'.
-  form !: FormGroup;
+  form!: FormGroup;
 }
 
 @Component({
@@ -2605,15 +2879,15 @@ class LoginIsEmptyWrapper {
 })
 class ValidationBindingsForm {
   // TODO(issue/24571): remove '!'.
-  form !: FormGroup;
+  form!: FormGroup;
   // TODO(issue/24571): remove '!'.
-  required !: boolean;
+  required!: boolean;
   // TODO(issue/24571): remove '!'.
-  minLen !: number;
+  minLen!: number;
   // TODO(issue/24571): remove '!'.
-  maxLen !: number;
+  maxLen!: number;
   // TODO(issue/24571): remove '!'.
-  pattern !: string;
+  pattern!: string;
 }
 
 @Component({
@@ -2622,7 +2896,7 @@ class ValidationBindingsForm {
 })
 class FormControlCheckboxRequiredValidator {
   // TODO(issue/24571): remove '!'.
-  control !: FormControl;
+  control!: FormControl;
 }
 
 @Component({
@@ -2634,5 +2908,119 @@ class FormControlCheckboxRequiredValidator {
 })
 class UniqLoginWrapper {
   // TODO(issue/24571): remove '!'.
-  form !: FormGroup;
+  form!: FormGroup;
+}
+
+@Component({
+  selector: 'form-group-with-validators',
+  template: `
+    <div [formGroup]="form" my-custom-validator my-custom-async-validator>
+      <input type="text" formControlName="login">
+    </div>
+  `
+})
+class FormGroupWithValidators {
+  form = new FormGroup({login: new FormControl('INITIAL')});
+}
+
+@Component({
+  selector: 'form-control-with-validators',
+  template: `
+    <div [formGroup]="form">
+      <input type="text" formControlName="login">
+    </div>
+  `
+})
+class FormControlWithAsyncValidatorFn {
+  control = new FormControl('INITIAL');
+  form = new FormGroup({login: this.control});
+
+  constructor() {
+    this.control.setAsyncValidators(() => {
+      return NEVER.pipe(map((_: any) => ({timeoutError: true})));
+    });
+  }
+}
+
+@Component({
+  selector: 'form-control-with-validators',
+  template: `
+    <div [formGroup]="form">
+      <input type="text" formControlName="login" my-custom-validator my-custom-async-validator>
+    </div>
+  `
+})
+class FormControlWithValidators {
+  form = new FormGroup({login: new FormControl('INITIAL')});
+}
+
+@Component({
+  selector: 'ngfor-form-controls-with-validators',
+  template: `
+    <div [formGroup]="formA">
+      <input
+        type="radio"
+        formControlName="login"
+        my-custom-validator
+        my-custom-async-validator
+      />
+    </div>
+    <div [formGroup]="formB">
+      <input
+        id="login"
+        type="text"
+        formControlName="login"
+        my-custom-validator
+        my-custom-async-validator
+      />
+    </div>
+  `
+})
+class MultipleFormControls {
+  control = new FormControl('a');
+  formA = new FormGroup({login: this.control});
+  formB = new FormGroup({login: this.control});
+}
+
+@Component({
+  selector: 'ngfor-form-controls-with-validators',
+  template: `
+    <div [formGroup]="form">
+      <ng-container *ngFor="let login of logins">
+        <input type="radio" formControlName="login" [value]="login" my-custom-validator my-custom-async-validator>
+      </ng-container>
+    </div>
+  `
+})
+class NgForFormControlWithValidators {
+  form = new FormGroup({login: new FormControl('a')});
+  logins = ['a', 'b', 'c'];
+}
+
+@Directive({
+  selector: '[my-custom-validator]',
+  providers: [{
+    provide: NG_VALIDATORS,
+    useClass: forwardRef(() => MyCustomValidator),
+    multi: true,
+  }]
+})
+class MyCustomValidator implements Validator {
+  validate(control: AbstractControl) {
+    return null;
+  }
+}
+
+@Directive({
+  selector: '[my-custom-async-validator]',
+  providers: [{
+    provide: NG_ASYNC_VALIDATORS,
+    useClass: forwardRef(() => MyCustomAsyncValidator),
+    multi: true,
+  }]
+})
+class MyCustomAsyncValidator implements AsyncValidator {
+  validate(control: AbstractControl) {
+    return Promise.resolve(null);
+  }
 }

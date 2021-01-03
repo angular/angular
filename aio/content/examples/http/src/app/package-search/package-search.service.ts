@@ -39,7 +39,7 @@ export class PackageSearchService {
     this.handleError = httpErrorHandler.createHandleError('HeroesService');
   }
 
-  search (packageName: string, refresh = false): Observable<NpmPackageInfo[]> {
+  search(packageName: string, refresh = false): Observable<NpmPackageInfo[]> {
     // clear if no pkg name
     if (!packageName.trim()) { return of([]); }
 
@@ -48,7 +48,7 @@ export class PackageSearchService {
     // TODO: Add error handling
     return this.http.get(searchUrl, options).pipe(
       map((data: any) => {
-        return data.results.map(entry => ({
+        return data.results.map((entry: any) => ({
             name: entry.name[0],
             version: entry.version[0],
             description: entry.description[0]

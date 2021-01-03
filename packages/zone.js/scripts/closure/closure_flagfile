@@ -1,0 +1,6 @@
+--compilation_level ADVANCED_OPTIMIZATIONS
+--js_output_file "build/closure/zone-closure-bundle.js"
+--rewrite_polyfills false
+--js "build/test/closure/zone.js"
+--js "build/test/closure/zone.closure.js"
+--formatting PRETTY_PRINT

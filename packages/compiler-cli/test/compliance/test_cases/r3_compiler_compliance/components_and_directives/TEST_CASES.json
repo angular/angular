@@ -1,0 +1,165 @@
+{
+  "$schema": "../../test_case_schema.json",
+  "cases": [
+    {
+      "description": "should instantiate directives in a closure when they are forward referenced",
+      "inputFiles": [
+        "forward_referenced_directive.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Invalid component definition",
+          "files": [
+            "forward_referenced_directive.js"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should instantiate pipes in a closure when they are forward referenced",
+      "inputFiles": [
+        "forward_referenced_pipe.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Invalid component definition",
+          "files": [
+            "forward_referenced_pipe.js"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should split multiple `exportAs` values into an array",
+      "inputFiles": [
+        "export_as.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect SomeDirective.ɵdir",
+          "files": [
+            "export_as.js"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should not generate a selectors array if the directive does not have a selector",
+      "inputFiles": [
+        "no_selector.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Invalid directive definition",
+          "files": [
+            "no_selector.js"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should generate a pure function for constant object literals",
+      "inputFiles": [
+        "constant_object_literals.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Invalid component definition",
+          "files": [
+            "constant_object_literals.js"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should generate a pure function for constant array literals",
+      "inputFiles": [
+        "constant_array_literals.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Invalid component definition",
+          "files": [
+            "constant_array_literals.js"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should not share pure functions between null and object literals",
+      "inputFiles": [
+        "object_literals_null_vs_empty.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Invalid component definition",
+          "files": [
+            "object_literals_null_vs_empty.js"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should not share pure functions between null and array literals",
+      "inputFiles": [
+        "array_literals_null_vs_empty.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Invalid component definition",
+          "files": [
+            "array_literals_null_vs_empty.js"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should not share pure functions between null and function calls",
+      "inputFiles": [
+        "object_literals_null_vs_function.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Invalid component definition",
+          "files": [
+            "object_literals_null_vs_function.js"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should emit a valid setClassMetadata call in ES5 if a class with a custom decorator is referencing itself inside its own metadata",
+      "inputFiles": [
+        "custom_decorator_es5.ts"
+      ],
+      "compilerOptions": {
+        "target": "ES5"
+      },
+      "compilationModeFilter": [
+        "full compile"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect setClassMetadata call",
+          "files": [
+            "custom_decorator_es5.js"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should support empty property bindings on ng-template",
+      "inputFiles": [
+        "ng_template_empty_binding.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect template",
+          "files": [
+            "ng_template_empty_binding.js"
+          ]
+        }
+      ]
+    }
+  ]
+}

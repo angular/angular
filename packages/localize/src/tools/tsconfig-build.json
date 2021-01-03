@@ -1,0 +1,23 @@
+{
+  "extends": "../../../tsconfig-build.json",
+
+  "compilerOptions": {
+    "module": "commonjs",
+    "stripInternal": false,
+    "target": "es2015",
+    "lib": [
+      "es2015",
+      "es2017.object"
+    ],
+    "paths": {
+      "@angular/*": ["./packages/*"]
+    },
+    "strict": true,
+    "types": [
+      "node"
+    ]
+  },
+  "bazelOptions": {
+    "suppressTsconfigOverrideWarnings": true
+  }
+}

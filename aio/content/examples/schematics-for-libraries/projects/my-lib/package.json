@@ -16,5 +16,12 @@
     "@angular/core": "^7.2.0"
   },
 // #docregion collection
-  "schematics": "./schematics/collection.json"
+  "schematics": "./schematics/collection.json",
+// #enddocregion collection
+// #docregion ng-add
+  "ng-add": {
+    "save": "devDependencies"
+  }
+// #enddocregion ng-add
+// #docregion collection
 }

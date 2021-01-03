@@ -23,13 +23,13 @@ bootstrap();
 
 //
 
-function bootstrap () {
-  if (window['jasmineRef']) {
+function bootstrap() {
+  if ((window as any).jasmineRef) {
     location.reload();
     return;
   } else {
     window.onload(undefined);
-    window['jasmineRef'] = jasmine.getEnv();
+    (window as any).jasmineRef = jasmine.getEnv();
   }
 
   // First, initialize the Angular testing environment.

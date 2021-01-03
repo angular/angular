@@ -1,0 +1,58 @@
+load("@npm//@bazel/typescript:index.bzl", "ts_library")
+load("//tools:defaults.bzl", "jasmine_node_test")
+
+ts_library(
+    name = "merge",
+    srcs = glob(
+        ["**/*.ts"],
+        exclude = ["**/*.spec.ts"],
+    ),
+    module_name = "@angular/dev-infra-private/pr/merge",
+    # prodmode target must be set to es5 as the Ora class, which is extended is not a proper
+    # prototyped object.
+    prodmode_target = "es5",
+    visibility = ["//dev-infra:__subpackages__"],
+    deps = [
+        "//dev-infra/commit-message",
+        "//dev-infra/release/config",
+        "//dev-infra/release/versioning",
+        "//dev-infra/utils",
+        "@npm//@octokit/rest",
+        "@npm//@types/inquirer",
+        "@npm//@types/node",
+        "@npm//@types/node-fetch",
+        "@npm//@types/semver",
+        "@npm//@types/yargs",
+        "@npm//chalk",
+    ],
+)
+
+ts_library(
+    name = "test_lib",
+    testonly = True,
+    srcs = glob(["**/*.spec.ts"]),
+    deps = [
+        ":merge",
+        "//dev-infra/release/config",
+        "//dev-infra/release/versioning",
+        "//dev-infra/utils",
+        "@npm//@types/jasmine",
+        "@npm//@types/node",
+        "@npm//@types/node-fetch",
+        "@npm//nock",
+    ],
+)
+
+jasmine_node_test(
+    name = "test",
+    # Disable the Bazel patched module resolution. It always loads ".mjs" files first. This
+    # breaks NodeJS execution for "node-fetch" as it uses experimental modules which are not
+    # enabled in NodeJS. TODO: Remove this with rules_nodejs 3.x where patching is optional.
+    # https://github.com/bazelbuild/rules_nodejs/commit/7d070ffadf9c3b41711382a4737b995f987c14fa.
+    args = ["--nobazel_patch_module_resolver"],
+    deps = [
+        ":test_lib",
+        "@npm//node-fetch",
+        "@npm//semver",
+    ],
+)

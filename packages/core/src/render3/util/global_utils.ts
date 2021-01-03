@@ -1,14 +1,14 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 import {assertDefined} from '../../util/assert';
 import {global} from '../../util/global';
-
-import {getComponent, getContext, getDirectives, getHostElement, getInjector, getListeners, getPlayers, getRootComponents, getViewComponent, markDirty} from '../global_utils_api';
+import {applyChanges} from './change_detection_utils';
+import {getComponent, getContext, getDirectives, getHostElement, getInjector, getListeners, getOwningComponent, getRootComponents} from './discovery_utils';
 
 
 
@@ -18,7 +18,7 @@ import {getComponent, getContext, getDirectives, getHostElement, getInjector, ge
  *
  * To see this in action run the following command:
  *
- *   bazel run --define=compile=aot
+ *   bazel run --config=ivy
  *   //packages/core/test/bundling/todo:devserver
  *
  *  Then load `localhost:5432` and start using the console tools.
@@ -43,13 +43,12 @@ export function publishDefaultGlobalUtils() {
     publishGlobalUtil('getComponent', getComponent);
     publishGlobalUtil('getContext', getContext);
     publishGlobalUtil('getListeners', getListeners);
-    publishGlobalUtil('getViewComponent', getViewComponent);
+    publishGlobalUtil('getOwningComponent', getOwningComponent);
     publishGlobalUtil('getHostElement', getHostElement);
     publishGlobalUtil('getInjector', getInjector);
     publishGlobalUtil('getRootComponents', getRootComponents);
     publishGlobalUtil('getDirectives', getDirectives);
-    publishGlobalUtil('getPlayers', getPlayers);
-    publishGlobalUtil('markDirty', markDirty);
+    publishGlobalUtil('applyChanges', applyChanges);
   }
 }
 
@@ -62,13 +61,19 @@ export declare type GlobalDevModeContainer = {
  * used from the browser console when an application is not in production.
  */
 export function publishGlobalUtil(name: string, fn: Function): void {
-  const w = global as any as GlobalDevModeContainer;
-  ngDevMode && assertDefined(fn, 'function not defined');
-  if (w) {
-    let container = w[GLOBAL_PUBLISH_EXPANDO_KEY];
-    if (!container) {
-      container = w[GLOBAL_PUBLISH_EXPANDO_KEY] = {};
+  if (typeof COMPILED === 'undefined' || !COMPILED) {
+    // Note: we can't export `ng` when using closure enhanced optimization as:
+    // - closure declares globals itself for minified names, which sometimes clobber our `ng` global
+    // - we can't declare a closure extern as the namespace `ng` is already used within Google
+    //   for typings for AngularJS (via `goog.provide('ng....')`).
+    const w = global as any as GlobalDevModeContainer;
+    ngDevMode && assertDefined(fn, 'function not defined');
+    if (w) {
+      let container = w[GLOBAL_PUBLISH_EXPANDO_KEY];
+      if (!container) {
+        container = w[GLOBAL_PUBLISH_EXPANDO_KEY] = {};
+      }
+      container[name] = fn;
     }
-    container[name] = fn;
   }
 }

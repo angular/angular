@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -19,7 +19,7 @@ export class HelloWorld {
   selector: 'ng-component-outlet-simple-example',
   template: `<ng-container *ngComponentOutlet="HelloWorld"></ng-container>`
 })
-export class NgTemplateOutletSimpleExample {
+export class NgComponentOutletSimpleExample {
   // This field is necessary to expose HelloWorld to the template.
   HelloWorld = HelloWorld;
 }
@@ -42,11 +42,11 @@ export class CompleteComponent {
 @Component({
   selector: 'ng-component-outlet-complete-example',
   template: `
-    <ng-container *ngComponentOutlet="CompleteComponent; 
-                                      injector: myInjector; 
+    <ng-container *ngComponentOutlet="CompleteComponent;
+                                      injector: myInjector;
                                       content: myContent"></ng-container>`
 })
-export class NgTemplateOutletCompleteExample {
+export class NgComponentOutletCompleteExample {
   // This field is necessary to expose CompleteComponent to the template.
   CompleteComponent = CompleteComponent;
   myInjector: Injector;
@@ -73,7 +73,7 @@ export class AppComponent {
 @NgModule({
   imports: [BrowserModule],
   declarations: [
-    AppComponent, NgTemplateOutletSimpleExample, NgTemplateOutletCompleteExample, HelloWorld,
+    AppComponent, NgComponentOutletSimpleExample, NgComponentOutletCompleteExample, HelloWorld,
     CompleteComponent
   ],
   entryComponents: [HelloWorld, CompleteComponent]

@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -9,7 +9,7 @@
 /**
  * Compute the SHA1 of the given string
  *
- * see http://csrc.nist.gov/publications/fips/fips180-4/fips-180-4.pdf
+ * see https://csrc.nist.gov/publications/fips/fips180-4/fips-180-4.pdf
  *
  * WARNING: this function has not been designed not tested with security in mind.
  *          DO NOT USE IT IN A SECURITY SENSITIVE CONTEXT.
@@ -29,7 +29,7 @@ export function sha1Binary(buffer: ArrayBuffer): string {
 }
 
 function _sha1(words32: number[], len: number): string {
-  const w = new Array(80);
+  const w: number[] = [];
   let [a, b, c, d, e]: number[] = [0x67452301, 0xefcdab89, 0x98badcfe, 0x10325476, 0xc3d2e1f0];
 
   words32[len >> 5] |= 0x80 << (24 - len % 32);
@@ -113,9 +113,10 @@ function fk(index: number, b: number, c: number, d: number): [number, number] {
 
 
 function stringToWords32(str: string, endian: Endian): number[] {
-  const words32 = Array((str.length + 3) >>> 2);
+  const size = (str.length + 3) >>> 2;
+  const words32 = [];
 
-  for (let i = 0; i < words32.length; i++) {
+  for (let i = 0; i < size; i++) {
     words32[i] = wordAt(str, i * 4, endian);
   }
 
@@ -123,15 +124,16 @@ function stringToWords32(str: string, endian: Endian): number[] {
 }
 
 function arrayBufferToWords32(buffer: ArrayBuffer, endian: Endian): number[] {
-  const words32 = Array((buffer.byteLength + 3) >>> 2);
+  const size = (buffer.byteLength + 3) >>> 2;
+  const words32: number[] = [];
   const view = new Uint8Array(buffer);
-  for (let i = 0; i < words32.length; i++) {
+  for (let i = 0; i < size; i++) {
     words32[i] = wordAt(view, i * 4, endian);
   }
   return words32;
 }
 
-function byteAt(str: string | Uint8Array, index: number): number {
+function byteAt(str: string|Uint8Array, index: number): number {
   if (typeof str === 'string') {
     return index >= str.length ? 0 : str.charCodeAt(index) & 0xff;
   } else {
@@ -139,7 +141,7 @@ function byteAt(str: string | Uint8Array, index: number): number {
   }
 }
 
-function wordAt(str: string | Uint8Array, index: number, endian: Endian): number {
+function wordAt(str: string|Uint8Array, index: number, endian: Endian): number {
   let word = 0;
   if (endian === Endian.Big) {
     for (let i = 0; i < 4; i++) {
@@ -174,7 +176,7 @@ function byteStringToHexString(str: string): string {
   return hex.toLowerCase();
 }
 
-// based on http://www.danvk.org/hex2dec.html (JS can not handle more than 56b)
+// based on https://www.danvk.org/hex2dec.html (JS can not handle more than 56b)
 function byteStringToDecString(str: string): string {
   let decimal = '';
   let toThePower = '1';

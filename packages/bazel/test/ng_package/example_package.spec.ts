@@ -1,11 +1,12 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
+import * as crypto from 'crypto';
 import {createPatch} from 'diff';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -23,6 +24,15 @@ const packagesToTest: TestPackage[] = [
     packagePath: path.dirname(
         require.resolve('angular/packages/bazel/test/ng_package/example/npm_package/package.json')),
     goldenFilePath: require.resolve('./example_package.golden')
+  },
+  {
+    displayName: 'Example with ts_library NPM package',
+    // Resolve the "npm_package" directory by using the runfile resolution. Note that we need to
+    // resolve the "package.json" of the package since otherwise NodeJS would resolve the "main"
+    // file, which is not necessarily at the root of the "npm_package".
+    packagePath: path.dirname(require.resolve(
+        'angular/packages/bazel/test/ng_package/example-with-ts-library/npm_package/package.json')),
+    goldenFilePath: require.resolve('./example_with_ts_library_package.golden')
   },
 ];
 
@@ -64,6 +74,10 @@ function getDescendantFilesContents(directoryPath: string): string[] {
       result.push(...getDescendantFilesContents(path.posix.join(directoryPath, dir)));
     });
   }
+  // Binary files should equal the same as in the srcdir.
+  else if (path.extname(directoryPath) === '.png') {
+    result.push(`--- ${directoryPath} ---`, '', hashFileContents(directoryPath), '');
+  }
   // Note that we don't want to include ".map" files in the golden file since these are not
   // consistent across different environments (e.g. path delimiters)
   else if (path.extname(directoryPath) !== '.map') {
@@ -92,7 +106,7 @@ function runPackageGoldTest(testPackage: TestPackage) {
   process.chdir(packagePath);
 
   // Gold file content from source control. We expect that the output of the package matches this.
-  const expected = fs.readFileSync(goldenFilePath, 'utf-8');
+  const expected = readFileContents(goldenFilePath);
 
   // Actual file content generated from the rule.
   const actual = getCurrentPackageContent();
@@ -126,6 +140,10 @@ function runPackageGoldTest(testPackage: TestPackage) {
  */
 function readFileContents(filePath: string): string {
   return fs.readFileSync(filePath, 'utf8').replace(/\r/g, '');
+}
+
+function hashFileContents(filePath: string): string {
+  return crypto.createHash('md5').update(fs.readFileSync(filePath)).digest('hex');
 }
 
 if (require.main === module) {

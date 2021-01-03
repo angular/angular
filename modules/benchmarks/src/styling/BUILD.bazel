@@ -1,0 +1,14 @@
+package(default_visibility = ["//modules/benchmarks:__subpackages__"])
+
+load("//tools:defaults.bzl", "ts_library")
+
+ts_library(
+    name = "tests_lib",
+    testonly = True,
+    srcs = ["styling_perf.spec.ts"],
+    tsconfig = "//modules/benchmarks:tsconfig-e2e.json",
+    deps = [
+        "//dev-infra/benchmark/driver-utilities",
+        "@npm//protractor",
+    ],
+)

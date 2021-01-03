@@ -1,0 +1,16 @@
+load("//tools:defaults.bzl", "ts_library")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_library(
+    name = "file_system",
+    srcs = ["index.ts"] + glob([
+        "src/**/*.ts",
+    ]),
+    deps = [
+        "@npm//@types/fs-extra",
+        "@npm//@types/node",
+        "@npm//fs-extra",
+        "@npm//typescript",
+    ],
+)

@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -11,7 +11,7 @@ import {InjectionToken} from '../di/injection_token';
 import {StaticProvider} from '../di/interface/provider';
 import {MissingTranslationStrategy} from '../i18n/tokens';
 import {Type} from '../interface/type';
-import {ViewEncapsulation} from '../metadata';
+import {ViewEncapsulation} from '../metadata/view';
 import {ComponentFactory as ComponentFactoryR3} from '../render3/component_ref';
 import {getComponentDef, getNgModuleDef} from '../render3/definition';
 import {NgModuleFactory as NgModuleFactoryR3} from '../render3/ng_module_ref';
@@ -60,7 +60,7 @@ export const Compiler_compileModuleAndAllComponentsSync__POST_R3__: <T>(moduleTy
     ModuleWithComponentFactories<T> = function<T>(moduleType: Type<T>):
         ModuleWithComponentFactories<T> {
   const ngModuleFactory = Compiler_compileModuleSync__POST_R3__(moduleType);
-  const moduleDef = getNgModuleDef(moduleType) !;
+  const moduleDef = getNgModuleDef(moduleType)!;
   const componentFactories =
       maybeUnwrapFn(moduleDef.declarations)
           .reduce((factories: ComponentFactory<any>[], declaration: Type<any>) => {
@@ -133,7 +133,9 @@ export class Compiler {
   /**
    * Returns the id for a given NgModule, if one is defined and known to the compiler.
    */
-  getModuleId(moduleType: Type<any>): string|undefined { return undefined; }
+  getModuleId(moduleType: Type<any>): string|undefined {
+    return undefined;
+  }
 }
 
 /**

@@ -1,5 +1,3 @@
-var _ = require('lodash');
-
 /**
  * @dgProcessor checkUnbalancedBackTicks
  * @description
@@ -9,25 +7,28 @@ var _ = require('lodash');
  */
 module.exports = function checkUnbalancedBackTicks(log, createDocMessage) {
 
-  var BACKTICK_REGEX = /^ *```/gm;
+  const BACKTICK_REGEX = /^ *```/gm;
+  const UNBALANCED_BACKTICK_WARNING = 'checkUnbalancedBackTicks processor: unbalanced backticks found in rendered content';
 
   return {
-    // $runAfter: ['checkAnchorLinksProcessor'],
     $runAfter: ['inlineTagProcessor'],
     $runBefore: ['writeFilesProcessor'],
     $process: function(docs) {
-      _.forEach(docs, function(doc) {
-        if (doc.renderedContent) {
-          var matches = doc.renderedContent.match(BACKTICK_REGEX);
-          if (matches && matches.length % 2 !== 0) {
-            doc.unbalancedBackTicks = true;
-            log.warn(createDocMessage(
-                'checkUnbalancedBackTicks processor: unbalanced backticks found in rendered content',
-                doc));
-            log.warn(doc.renderedContent);
-          }
-        }
-      });
+      docs
+      .forEach(doc => setUnbalancedBackTicks(doc));
     }
   };
+
+  function setUnbalancedBackTicks(doc) {
+    if (!doc.renderedContent) {
+      return;
+    }
+
+    const matches = doc.renderedContent.match(BACKTICK_REGEX);
+    if (matches && matches.length % 2 !== 0) {
+      doc.unbalancedBackTicks = true;
+      log.warn(createDocMessage(UNBALANCED_BACKTICK_WARNING, doc));
+      log.warn(doc.renderedContent);
+    }
+  }
 };

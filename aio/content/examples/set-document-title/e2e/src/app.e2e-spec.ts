@@ -1,30 +1,21 @@
-'use strict'; // necessary for es6 output in node
+import { browser, element, by } from 'protractor';
 
-import { browser, element, by, ElementFinder } from 'protractor';
+describe('Set Document Title', () => {
 
-describe('Set Document Title', function () {
+  beforeEach(() => browser.get(''));
 
-    beforeAll(function () {
-        browser.get('');
-    });
+  it('should set the document title', async () => {
+    const elems = await element.all(by.css('ul li a'));
+    const titles = [
+      'Good morning!',
+      'Good afternoon!',
+      'Good evening!',
+    ];
 
-    it('should set the document title', function () {
-
-      let titles = [
-        'Good morning!',
-        'Good afternoon!',
-        'Good evening!'
-      ];
-
-      element.all( by.css( 'ul li a' ) ).each(
-        function iterator( element: ElementFinder, i: number ) {
-
-          element.click();
-          expect( browser.getTitle() ).toEqual( titles[ i ] );
-
-        }
-      );
-
+    for (let i = 0; i < elems.length; i++) {
+      await elems[i].click();
+      expect(await browser.getTitle()).toEqual(titles[i]);
+    }
   });
 
 });

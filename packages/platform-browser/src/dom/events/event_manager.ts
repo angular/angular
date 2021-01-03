@@ -1,14 +1,13 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ɵgetDOM as getDOM} from '@angular/common';
 import {Inject, Injectable, InjectionToken, NgZone} from '@angular/core';
-
-import {getDOM} from '../dom_adapter';
 
 /**
  * The injection token for the event-manager plug-in service.
@@ -68,7 +67,9 @@ export class EventManager {
   /**
    * Retrieves the compilation zone in which event listeners are registered.
    */
-  getZone(): NgZone { return this._zone; }
+  getZone(): NgZone {
+    return this._zone;
+  }
 
   /** @internal */
   _findPluginFor(eventName: string): EventManagerPlugin {
@@ -93,7 +94,7 @@ export abstract class EventManagerPlugin {
   constructor(private _doc: any) {}
 
   // TODO(issue/24571): remove '!'.
-  manager !: EventManager;
+  manager!: EventManager;
 
   abstract supports(eventName: string): boolean;
 

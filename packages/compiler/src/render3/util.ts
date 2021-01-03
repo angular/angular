@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -13,8 +13,15 @@ import {OutputContext} from '../util';
 /**
  * Convert an object map with `Expression` values into a `LiteralMapExpr`.
  */
-export function mapToMapExpression(map: {[key: string]: o.Expression}): o.LiteralMapExpr {
-  const result = Object.keys(map).map(key => ({key, value: map[key], quoted: false}));
+export function mapToMapExpression(map: {[key: string]: o.Expression|undefined}): o.LiteralMapExpr {
+  const result = Object.keys(map).map(
+      key => ({
+        key,
+        // The assertion here is because really TypeScript doesn't allow us to express that if the
+        // key is present, it will have a value, but this is true in reality.
+        value: map[key]!,
+        quoted: false,
+      }));
   return o.literalMap(result);
 }
 
@@ -38,14 +45,14 @@ export function convertMetaToOutput(meta: any, ctx: OutputContext): o.Expression
 }
 
 export function typeWithParameters(type: o.Expression, numParams: number): o.ExpressionType {
-  let params: o.Type[]|null = null;
-  if (numParams > 0) {
-    params = [];
-    for (let i = 0; i < numParams; i++) {
-      params.push(o.DYNAMIC_TYPE);
-    }
+  if (numParams === 0) {
+    return o.expressionType(type);
   }
-  return o.expressionType(type, null, params);
+  const params: o.Type[] = [];
+  for (let i = 0; i < numParams; i++) {
+    params.push(o.DYNAMIC_TYPE);
+  }
+  return o.expressionType(type, undefined, params);
 }
 
 export interface R3Reference {
@@ -79,4 +86,27 @@ export function getSyntheticPropertyName(name: string) {
 
 export function prepareSyntheticListenerFunctionName(name: string, phase: string) {
   return `animation_${name}_${phase}`;
+}
+
+export function jitOnlyGuardedExpression(expr: o.Expression): o.Expression {
+  return guardedExpression('ngJitMode', expr);
+}
+
+export function devOnlyGuardedExpression(expr: o.Expression): o.Expression {
+  return guardedExpression('ngDevMode', expr);
+}
+
+export function guardedExpression(guard: string, expr: o.Expression): o.Expression {
+  const guardExpr = new o.ExternalExpr({name: guard, moduleName: null});
+  const guardNotDefined = new o.BinaryOperatorExpr(
+      o.BinaryOperator.Identical, new o.TypeofExpr(guardExpr), o.literal('undefined'));
+  const guardUndefinedOrTrue = new o.BinaryOperatorExpr(
+      o.BinaryOperator.Or, guardNotDefined, guardExpr, /* type */ undefined,
+      /* sourceSpan */ undefined, true);
+  return new o.BinaryOperatorExpr(o.BinaryOperator.And, guardUndefinedOrTrue, expr);
+}
+
+export function wrapReference(value: any): R3Reference {
+  const wrapped = new o.WrappedNodeExpr(value);
+  return {value: wrapped, type: wrapped};
 }

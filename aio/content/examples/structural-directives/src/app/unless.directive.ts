@@ -1,3 +1,4 @@
+// tslint:disable: jsdoc-format
 // #docplaster
 // #docregion
 // #docregion no-docs, skeleton
@@ -12,7 +13,7 @@ import { Directive, Input, TemplateRef, ViewContainerRef } from '@angular/core';
  * then the templated elements are removed removed from the DOM,
  * the templated elements are (re)inserted into the DOM.
  *
- * <div *ngUnless="errorCount" class="success">
+ * <div *appUnless="errorCount" class="success">
  *   Congrats! Everything is great!
  * </div>
  *

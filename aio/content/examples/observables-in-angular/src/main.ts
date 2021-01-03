@@ -1,19 +1,22 @@
-
+// TODO: Add unit tests for this file.
+// tslint:disable: no-output-native
+// #docregion
 import { Component, Output, OnInit, EventEmitter, NgModule } from '@angular/core';
 import { Observable } from 'rxjs';
 
 // #docregion eventemitter
 
 @Component({
-  selector: 'zippy',
+  selector: 'app-zippy',
   template: `
-  <div class="zippy">
-    <div (click)="toggle()">Toggle</div>
-    <div [hidden]="!visible">
-      <ng-content></ng-content>
+    <div class="zippy">
+      <div (click)="toggle()">Toggle</div>
+      <div [hidden]="!visible">
+        <ng-content></ng-content>
+      </div>
     </div>
-  </div>`})
-
+  `,
+})
 export class ZippyComponent {
   visible = true;
   @Output() open = new EventEmitter<any>();
@@ -39,9 +42,9 @@ export class ZippyComponent {
        Time: {{ time | async }}</div>`
 })
 export class AsyncObservablePipeComponent {
-  time = new Observable(observer =>
-    setInterval(() => observer.next(new Date().toString()), 1000)
-  );
+  time = new Observable<string>(observer => {
+    setInterval(() => observer.next(new Date().toString()), 1000);
+  });
 }
 
 // #enddocregion pipe

@@ -1,9 +1,9 @@
 // #docregion
 
-export class Hero {
-  id:   number;
+export interface Hero {
+  id: number;
   name: string;
-  tid:  string; // tax id
+  tid: string; // tax id
 }
 
 //// HeroTaxReturn ////

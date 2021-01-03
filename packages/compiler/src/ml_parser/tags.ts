@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -19,11 +19,12 @@ export interface TagDefinition {
   isVoid: boolean;
   ignoreFirstLf: boolean;
   canSelfClose: boolean;
+  preventNamespaceInheritance: boolean;
 
   isClosedByChild(name: string): boolean;
 }
 
-export function splitNsName(elementName: string): [string | null, string] {
+export function splitNsName(elementName: string): [string|null, string] {
   if (elementName[0] != ':') {
     return [null, elementName];
   }
@@ -54,7 +55,7 @@ export function isNgTemplate(tagName: string): boolean {
 
 export function getNsPrefix(fullName: string): string;
 export function getNsPrefix(fullName: null): null;
-export function getNsPrefix(fullName: string | null): string|null {
+export function getNsPrefix(fullName: string|null): string|null {
   return fullName === null ? null : splitNsName(fullName)[0];
 }
 
@@ -62,7 +63,7 @@ export function mergeNsAndName(prefix: string, localName: string): string {
   return prefix ? `:${prefix}:${localName}` : localName;
 }
 
-// see http://www.w3.org/TR/html51/syntax.html#named-character-references
+// see https://www.w3.org/TR/html51/syntax.html#named-character-references
 // see https://html.spec.whatwg.org/multipage/entities.json
 // This list is not exhaustive to keep the compiler footprint low.
 // The `&#123;` / `&#x1ab;` syntax should be used when the named character reference does not

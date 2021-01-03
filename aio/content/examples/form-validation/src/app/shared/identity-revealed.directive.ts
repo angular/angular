@@ -8,7 +8,7 @@ export const identityRevealedValidator: ValidatorFn = (control: FormGroup): Vali
   const name = control.get('name');
   const alterEgo = control.get('alterEgo');
 
-  return name && alterEgo && name.value === alterEgo.value ? { 'identityRevealed': true } : null;
+  return name && alterEgo && name.value === alterEgo.value ? { identityRevealed: true } : null;
 };
 // #enddocregion cross-validation-validator
 
@@ -19,7 +19,7 @@ export const identityRevealedValidator: ValidatorFn = (control: FormGroup): Vali
 })
 export class IdentityRevealedValidatorDirective implements Validator {
   validate(control: AbstractControl): ValidationErrors {
-    return identityRevealedValidator(control)
+    return identityRevealedValidator(control);
   }
 }
 // #enddocregion cross-validation-directive

@@ -1,0 +1,6 @@
+{
+  "compilerOptions": {
+    "lib": ["es2015", "dom"],
+    "types": ["node", "jasmine"]
+  }
+}

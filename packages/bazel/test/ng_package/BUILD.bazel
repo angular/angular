@@ -62,7 +62,9 @@ jasmine_node_test(
     srcs = [":example_spec_lib"],
     data = [
         "example_package.golden",
+        "example_with_ts_library_package.golden",
         "//packages/bazel/test/ng_package/example:npm_package",
+        "//packages/bazel/test/ng_package/example-with-ts-library:npm_package",
     ],
     # We don't want to run the example_package golden test with Ivy yet. Currently the golden
     # file is based on non-ivy output and therefore won't work for ngc and Ivy at the same time.
@@ -76,8 +78,10 @@ nodejs_binary(
     testonly = True,
     data = [
         "example_package.golden",
+        "example_with_ts_library_package.golden",
         ":example_spec_lib",
         "//packages/bazel/test/ng_package/example:npm_package",
+        "//packages/bazel/test/ng_package/example-with-ts-library:npm_package",
         "@npm//diff",
     ],
     entry_point = ":example_package.spec.ts",

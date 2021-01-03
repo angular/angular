@@ -1,7 +1,7 @@
-# Schematics for Libraries
+# Schematics for libraries
 
 When you create an Angular library, you can provide and package it with schematics that integrate it with the Angular CLI.
-With your schematics, your users can use  `ng add` to install an initial version of your library,
+With your schematics, your users can use `ng add` to install an initial version of your library,
 `ng generate` to create artifacts defined in your library, and `ng update` to adjust their project for a new version of your library that introduces breaking changes.
 
 All three types of schematics can be part of a collection that you package with your library.
@@ -57,6 +57,20 @@ The task uses the user's preferred package manager to add the library to the pro
 In this example, the function receives the current `Tree` and returns it without any modifications.
 If you need to, you can do additional setup when your package is installed, such as generating files, updating configuration, or any other initial setup your library requires.
 
+### Define dependency type
+
+Use the `save` option of `ng-add` to configure if the library should be added to the `dependencies`, the `devDepedencies`, or not saved at all in the project's `package.json` configuration file.
+
+<code-example header="projects/my-lib/package.json (ng-add Reference)" path="schematics-for-libraries/projects/my-lib/package.json" region="ng-add">
+</code-example>
+
+Possible values are:
+
+  * `false` - Don't add the package to package.json
+  * `true` - Add the package to the dependencies
+  * `"dependencies"` - Add the package to the dependencies
+  * `"devDependencies"` - Add the package to the devDependencies
+
 ## Building your schematics
 
 To bundle your schematics together with your library, you must configure the library to build the schematics separately, then add them to the bundle.
@@ -76,7 +90,7 @@ To tell the library how to build the schematics, add a `tsconfig.schematics.json
 
   * The `rootDir` specifies that your `schematics/` folder contains the input files to be compiled.
 
-  * The `outDir` maps to the library's output folder. By default, this is  the `dist/my-lib` folder at the root of your workspace.
+  * The `outDir` maps to the library's output folder. By default, this is the `dist/my-lib` folder at the root of your workspace.
 
 1. To make sure your schematics source files get compiled into the library bundle, add the following scripts to the `package.json` file in your library project's root folder (`projects/my-lib`).
 
@@ -93,7 +107,7 @@ You can add a named schematic to your collection that lets your users use the `n
 
 We'll assume that your library defines a service, `my-service`, that requires some setup. You want your users to be able to generate it using the following CLI command.
 
-<code-example language="bash" linenums="false">
+<code-example language="bash">
 ng generate my-lib:my-service
 </code-example>
 
@@ -115,10 +129,10 @@ When you add a schematic to the collection, you have to point to it in the colle
 <code-example header="projects/my-lib/schematics/my-service/schema.json (Schematic JSON Schema)" path="schematics-for-libraries/projects/my-lib/schematics/my-service/schema.json">
 </code-example>
 
-  * *id* : A unique id for the schema in the collection.
-  * *title* : A human-readable description of the schema.
-  * *type* : A descriptor for the type provided by the properties.
-  * *properties* : An object that defines the available options for the schematic.
+  * *id*: A unique id for the schema in the collection.
+  * *title*: A human-readable description of the schema.
+  * *type*: A descriptor for the type provided by the properties.
+  * *properties*: An object that defines the available options for the schematic.
 
   Each option associates key with a type, description, and optional alias.
   The type defines the shape of the value you expect, and the description is displayed when the user requests usage help for your schematic.
@@ -130,9 +144,9 @@ When you add a schematic to the collection, you have to point to it in the colle
 <code-example header="projects/my-lib/schematics/my-service/schema.ts (Schematic Interface)" path="schematics-for-libraries/projects/my-lib/schematics/my-service/schema.ts">
 </code-example>
 
-  * *name* : The name you want to provide for the created service.
-  * *path* : Overrides the path provided to the schematic. The default path value is based on the current working directory.
-  * *project* : Provides a specific project to run the schematic on. In the schematic, you can provide a default if the option is not provided by the user.
+  * *name*: The name you want to provide for the created service.
+  * *path*: Overrides the path provided to the schematic. The default path value is based on the current working directory.
+  * *project*: Provides a specific project to run the schematic on. In the schematic, you can provide a default if the option is not provided by the user.
 
 ### Add template files
 
@@ -169,10 +183,9 @@ The Schematics framework provides a file templating system, which supports both 
 The system operates on placeholders defined inside files or paths that loaded in the input `Tree`.
 It fills these in using values passed into the `Rule`.
 
-For details of these data structure and syntax, see the [Schematics README](https://github.com/angular/angular-cli/blob/master/packages/angular_devkit/schematics/README.md).
+For details of these data structures and syntax, see the [Schematics README](https://github.com/angular/angular-cli/blob/master/packages/angular_devkit/schematics/README.md).
 
-
-1. Create the main file, `index.ts` and add the source code for your schematic factory function.
+1. Create the main file `index.ts` and add the source code for your schematic factory function.
 
 1. First, import the schematics definitions you will need. The Schematics framework offers many utility functions to create and use rules when running a schematic.
 
@@ -201,7 +214,7 @@ The user can specify the project on the command line, or allow it to default.
 In either case, your code needs to identify the specific project to which this schematic is being applied, so that you can retrieve information from the project configuration.
 
 You can do this using the `Tree` object that is passed in to the factory function.
-The `Tree` methods give you access to the complete file tree in your workspace, allowing you to  read and write files during the execution of the schematic.
+The `Tree` methods give you access to the complete file tree in your workspace, allowing you to read and write files during the execution of the schematic.
 
 ### Get the project configuration
 
@@ -249,7 +262,7 @@ A `Rule` can use external template files, transform them, and return another `Ru
   * The `url()` method reads source files from your filesystem, relative to the schematic.
   * The `applyTemplates()` method receives an argument of methods and properties you want make available to the schematic template and the schematic filenames. It returns a `Rule`. This is where you define the `classify()` and `dasherize()` methods, and the `name` property.
   * The `classify()` method takes a value and returns the value in title case. For example, if the provided name is `my service`, it is returned as `MyService`
-  * The `dasherize()` method takes a value and  returns the value in dashed and lowercase. For example, if the provided name is MyService, it is returned as `my-service.
+  * The `dasherize()` method takes a value and returns the value in dashed and lowercase. For example, if the provided name is MyService, it is returned as `my-service`.
   * The `move` method moves the provided source files to their destination when the schematic is applied.
 
 1. Finally, the rule factory must return a rule.
@@ -271,12 +284,11 @@ For more information about rules and utility methods, see [Provided Rules](https
 
 After you build your library and schematics, you can install the schematics collection to run against your project. The steps below show you how to generate a service using the schematic you created above.
 
-
 ### Build your library and schematics
 
 From the root of your workspace, run the `ng build` command for your library.
 
-<code-example language="bash" linenums="false">
+<code-example language="bash">
 
   ng build my-lib
 
@@ -284,7 +296,7 @@ From the root of your workspace, run the `ng build` command for your library.
 
 Then, you change into your library directory to build the schematic
 
-<code-example language="bash" linenums="false">
+<code-example language="bash">
 
   cd projects/my-lib
   npm run build
@@ -295,7 +307,7 @@ Then, you change into your library directory to build the schematic
 
 Your library and schematics are packaged and placed in the `dist/my-lib` folder at the root of your workspace. For running the schematic, you need to link the library into your `node_modules` folder. From the root of your workspace, run the `npm link` command with the path to your distributable library.
 
-<code-example language="bash" linenums="false">
+<code-example language="bash">
 
 npm link dist/my-lib
 
@@ -305,7 +317,7 @@ npm link dist/my-lib
 
 Now that your library is installed, you can run the schematic using the `ng generate` command.
 
-<code-example language="bash" linenums="false">
+<code-example language="bash">
 
 ng generate my-lib:my-service --name my-data
 
@@ -313,7 +325,7 @@ ng generate my-lib:my-service --name my-data
 
 In the console, you will see that the schematic was run and the `my-data.service.ts` file was created in your app folder.
 
-<code-example language="bash" linenums="false" hideCopy="true">
+<code-example language="bash" hideCopy="true">
 
 CREATE src/app/my-data.service.ts (208 bytes)
 

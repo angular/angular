@@ -1,13 +1,13 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
 import {Component, Injectable, Input} from '@angular/core';
-import {ComponentFixtureAutoDetect, ComponentFixtureNoNgZone, TestBed, async, withModule} from '@angular/core/testing';
+import {ComponentFixtureAutoDetect, ComponentFixtureNoNgZone, TestBed, waitForAsync, withModule} from '@angular/core/testing';
 import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
@@ -15,7 +15,9 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
 @Injectable()
 class SimpleComp {
   simpleBinding: string;
-  constructor() { this.simpleBinding = 'Simple'; }
+  constructor() {
+    this.simpleBinding = 'Simple';
+  }
 }
 
 @Component({
@@ -31,7 +33,9 @@ class MyIfComp {
 class AutoDetectComp {
   text: string = '1';
 
-  click() { this.text += '1'; }
+  click() {
+    this.text += '1';
+  }
 }
 
 @Component({selector: 'async-comp', template: `<span (click)='click()'>{{text}}</span>`})
@@ -39,7 +43,9 @@ class AsyncComp {
   text: string = '1';
 
   click() {
-    Promise.resolve(null).then((_) => { this.text += '1'; });
+    Promise.resolve(null).then((_) => {
+      this.text += '1';
+    });
   }
 }
 
@@ -49,7 +55,9 @@ class AsyncChildComp {
 
   @Input()
   set text(value: string) {
-    Promise.resolve(null).then((_) => { this.localText = value; });
+    Promise.resolve(null).then((_) => {
+      this.localText = value;
+    });
   }
 }
 
@@ -60,7 +68,9 @@ class AsyncChildComp {
 class AsyncChangeComp {
   text: string = '1';
 
-  click() { this.text += '1'; }
+  click() {
+    this.text += '1';
+  }
 }
 
 @Component({selector: 'async-timeout-comp', template: `<span (click)='click()'>{{text}}</span>`})
@@ -68,7 +78,9 @@ class AsyncTimeoutComp {
   text: string = '1';
 
   click() {
-    setTimeout(() => { this.text += '1'; }, 10);
+    setTimeout(() => {
+      this.text += '1';
+    }, 10);
   }
 }
 
@@ -78,13 +90,17 @@ class NestedAsyncTimeoutComp {
   text: string = '1';
 
   click() {
-    setTimeout(() => { setTimeout(() => { this.text += '1'; }, 10); }, 10);
+    setTimeout(() => {
+      setTimeout(() => {
+        this.text += '1';
+      }, 10);
+    }, 10);
   }
 }
 
 {
   describe('ComponentFixture', () => {
-    beforeEach(async(() => {
+    beforeEach(waitForAsync(() => {
       TestBed.configureTestingModule({
         declarations: [
           AutoDetectComp, AsyncComp, AsyncTimeoutComp, NestedAsyncTimeoutComp, AsyncChangeComp,
@@ -94,7 +110,6 @@ class NestedAsyncTimeoutComp {
     }));
 
     it('should auto detect changes if autoDetectChanges is called', () => {
-
       const componentFixture = TestBed.createComponent(AutoDetectComp);
       expect(componentFixture.ngZone).not.toBeNull();
       componentFixture.autoDetectChanges();
@@ -109,7 +124,6 @@ class NestedAsyncTimeoutComp {
 
     it('should auto detect changes if ComponentFixtureAutoDetect is provided as true',
        withModule({providers: [{provide: ComponentFixtureAutoDetect, useValue: true}]}, () => {
-
          const componentFixture = TestBed.createComponent(AutoDetectComp);
          expect(componentFixture.nativeElement).toHaveText('1');
 
@@ -120,7 +134,7 @@ class NestedAsyncTimeoutComp {
        }));
 
     it('should signal through whenStable when the fixture is stable (autoDetectChanges)',
-       async(() => {
+       waitForAsync(() => {
          const componentFixture = TestBed.createComponent(AsyncComp);
          componentFixture.autoDetectChanges();
          expect(componentFixture.nativeElement).toHaveText('1');
@@ -139,7 +153,7 @@ class NestedAsyncTimeoutComp {
        }));
 
     it('should signal through isStable when the fixture is stable (no autoDetectChanges)',
-       async(() => {
+       waitForAsync(() => {
          const componentFixture = TestBed.createComponent(AsyncComp);
 
          componentFixture.detectChanges();
@@ -160,7 +174,7 @@ class NestedAsyncTimeoutComp {
 
     it('should wait for macroTask(setTimeout) while checking for whenStable ' +
            '(autoDetectChanges)',
-       async(() => {
+       waitForAsync(() => {
          const componentFixture = TestBed.createComponent(AsyncTimeoutComp);
          componentFixture.autoDetectChanges();
          expect(componentFixture.nativeElement).toHaveText('1');
@@ -180,8 +194,7 @@ class NestedAsyncTimeoutComp {
 
     it('should wait for macroTask(setTimeout) while checking for whenStable ' +
            '(no autoDetectChanges)',
-       async(() => {
-
+       waitForAsync(() => {
          const componentFixture = TestBed.createComponent(AsyncTimeoutComp);
          componentFixture.detectChanges();
          expect(componentFixture.nativeElement).toHaveText('1');
@@ -202,8 +215,7 @@ class NestedAsyncTimeoutComp {
 
     it('should wait for nested macroTasks(setTimeout) while checking for whenStable ' +
            '(autoDetectChanges)',
-       async(() => {
-
+       waitForAsync(() => {
          const componentFixture = TestBed.createComponent(NestedAsyncTimeoutComp);
 
          componentFixture.autoDetectChanges();
@@ -224,8 +236,7 @@ class NestedAsyncTimeoutComp {
 
     it('should wait for nested macroTasks(setTimeout) while checking for whenStable ' +
            '(no autoDetectChanges)',
-       async(() => {
-
+       waitForAsync(() => {
          const componentFixture = TestBed.createComponent(NestedAsyncTimeoutComp);
          componentFixture.detectChanges();
          expect(componentFixture.nativeElement).toHaveText('1');
@@ -244,8 +255,8 @@ class NestedAsyncTimeoutComp {
          });
        }));
 
-    it('should stabilize after async task in change detection (autoDetectChanges)', async(() => {
-
+    it('should stabilize after async task in change detection (autoDetectChanges)',
+       waitForAsync(() => {
          const componentFixture = TestBed.createComponent(AsyncChangeComp);
 
          componentFixture.autoDetectChanges();
@@ -255,13 +266,14 @@ class NestedAsyncTimeoutComp {
            const element = componentFixture.debugElement.children[0];
            dispatchEvent(element.nativeElement, 'click');
 
-           componentFixture.whenStable().then(
-               (_) => { expect(componentFixture.nativeElement).toHaveText('11'); });
+           componentFixture.whenStable().then((_) => {
+             expect(componentFixture.nativeElement).toHaveText('11');
+           });
          });
        }));
 
-    it('should stabilize after async task in change detection(no autoDetectChanges)', async(() => {
-
+    it('should stabilize after async task in change detection(no autoDetectChanges)',
+       waitForAsync(() => {
          const componentFixture = TestBed.createComponent(AsyncChangeComp);
          componentFixture.detectChanges();
          componentFixture.whenStable().then((_) => {
@@ -290,15 +302,13 @@ class NestedAsyncTimeoutComp {
       });
 
       it('calling autoDetectChanges raises an error', () => {
-
         const componentFixture = TestBed.createComponent(SimpleComp);
         expect(() => {
           componentFixture.autoDetectChanges();
         }).toThrowError(/Cannot call autoDetectChanges when ComponentFixtureNoNgZone is set/);
       });
 
-      it('should instantiate a component with valid DOM', async(() => {
-
+      it('should instantiate a component with valid DOM', waitForAsync(() => {
            const componentFixture = TestBed.createComponent(SimpleComp);
 
            expect(componentFixture.ngZone).toBeNull();
@@ -306,8 +316,7 @@ class NestedAsyncTimeoutComp {
            expect(componentFixture.nativeElement).toHaveText('Original Simple');
          }));
 
-      it('should allow changing members of the component', async(() => {
-
+      it('should allow changing members of the component', waitForAsync(() => {
            const componentFixture = TestBed.createComponent(MyIfComp);
 
            componentFixture.detectChanges();
@@ -316,9 +325,7 @@ class NestedAsyncTimeoutComp {
            componentFixture.componentInstance.showMore = true;
            componentFixture.detectChanges();
            expect(componentFixture.nativeElement).toHaveText('MyIf(More)');
-
          }));
     });
-
   });
 }

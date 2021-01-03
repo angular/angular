@@ -6,19 +6,19 @@ import { asyncData } from '../../../testing';
 import { map } from 'rxjs/operators';
 
 // re-export for tester convenience
-export { Hero }          from '../hero';
-export { HeroService }   from '../hero.service';
+export { Hero } from '../hero';
+export { HeroService } from '../hero.service';
 export { getTestHeroes } from './test-heroes';
 
-import { Hero }          from '../hero';
-import { HeroService }   from '../hero.service';
+import { Hero } from '../hero';
+import { HeroService } from '../hero.service';
 import { getTestHeroes } from './test-heroes';
 
 @Injectable()
 /**
  * FakeHeroService pretends to make real http requests.
  * implements only as much of HeroService as is actually consumed by the app
-*/
+ */
 export class TestHeroService extends HeroService {
 
   constructor() {
@@ -42,9 +42,9 @@ export class TestHeroService extends HeroService {
 
   getHero(id: number | string): Observable<Hero> {
     if (typeof id === 'string') {
-      id = parseInt(id as string, 10);
+      id = parseInt(id, 10);
     }
-    let hero = this.heroes.find(h => h.id === id);
+    const hero = this.heroes.find(h => h.id === id);
     return this.lastResult = asyncData(hero);
   }
 

@@ -1,6 +1,6 @@
 export class HeroData {
   createDb() {
-    let heroes = [
+    const heroes = [
       { id: 1, name: 'Windstorm' },
       { id: 2, name: 'Bombasto' },
       { id: 3, name: 'Magneta' },

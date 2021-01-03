@@ -1,18 +1,18 @@
 // #docregion
-import { Injectable }       from '@angular/core';
+import { Injectable } from '@angular/core';
 
 import { DropdownQuestion } from './question-dropdown';
-import { QuestionBase }     from './question-base';
-import { TextboxQuestion }  from './question-textbox';
+import { QuestionBase } from './question-base';
+import { TextboxQuestion } from './question-textbox';
+import { of } from 'rxjs';
 
 @Injectable()
 export class QuestionService {
 
   // TODO: get from a remote source of question metadata
-  // TODO: make asynchronous
   getQuestions() {
 
-    let questions: QuestionBase<any>[] = [
+    const questions: QuestionBase<string>[] = [
 
       new DropdownQuestion({
         key: 'brave',
@@ -42,6 +42,6 @@ export class QuestionService {
       })
     ];
 
-    return questions.sort((a, b) => a.order - b.order);
+    return of(questions.sort((a, b) => a.order - b.order));
   }
 }

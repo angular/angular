@@ -1,0 +1,58 @@
+package(default_visibility = ["//visibility:public"])
+
+load("//tools:defaults.bzl", "ng_module", "protractor_web_test_suite", "ts_devserver", "ts_library")
+
+ng_module(
+    name = "sw_push_examples",
+    srcs = glob(
+        ["**/*.ts"],
+        exclude = ["**/*_spec.ts"],
+    ),
+    generate_ve_shims = True,
+    deps = [
+        "//packages/core",
+        "//packages/platform-browser",
+        "//packages/platform-browser-dynamic",
+        "//packages/service-worker",
+    ],
+)
+
+ts_library(
+    name = "sw_push_e2e_tests_lib",
+    testonly = True,
+    srcs = glob(["**/e2e_test/*_spec.ts"]),
+    tsconfig = "//packages/examples:tsconfig-e2e.json",
+    deps = [
+        "//packages/examples/test-utils",
+        "//packages/private/testing",
+        "@npm//@types/jasminewd2",
+        "@npm//protractor",
+    ],
+)
+
+ts_devserver(
+    name = "devserver",
+    additional_root_paths = ["angular/packages/examples"],
+    bootstrap = [
+        "//packages/zone.js/bundles:zone.umd.js",
+        "ngsw-worker.js",
+    ],
+    entry_module = "@angular/examples/service-worker/push/main",
+    port = 4200,
+    scripts = [
+        "//tools/rxjs:rxjs_umd_modules",
+        "@npm//:node_modules/tslib/tslib.js",
+    ],
+    static_files = ["//packages/examples:index.html"],
+    deps = [":sw_push_examples"],
+)
+
+protractor_web_test_suite(
+    name = "protractor_tests",
+    on_prepare = "start-server.js",
+    server = ":devserver",
+    deps = [
+        ":sw_push_e2e_tests_lib",
+        "@npm//selenium-webdriver",
+    ],
+)

@@ -1,0 +1,39 @@
+load("//tools:defaults.bzl", "ng_module", "ng_rollup_bundle", "ts_devserver")
+load("//dev-infra/benchmark/component_benchmark:benchmark_test.bzl", "benchmark_test")
+
+package(default_visibility = ["//modules/benchmarks:__subpackages__"])
+
+ng_module(
+    name = "ng2",
+    srcs = glob(["*.ts"]),
+    generate_ve_shims = True,
+    tsconfig = "//modules/benchmarks:tsconfig-build.json",
+    deps = [
+        "//modules/benchmarks/src:util_lib",
+        "//packages/core",
+        "//packages/platform-browser",
+    ],
+)
+
+ng_rollup_bundle(
+    name = "bundle",
+    entry_point = ":index_aot.ts",
+    deps = [
+        ":ng2",
+        "@npm//rxjs",
+    ],
+)
+
+ts_devserver(
+    name = "prodserver",
+    bootstrap = ["//packages/zone.js/bundles:zone.umd.js"],
+    port = 4200,
+    static_files = ["index.html"],
+    deps = [":bundle.min_debug.js"],
+)
+
+benchmark_test(
+    name = "perf",
+    server = ":prodserver",
+    deps = ["//modules/benchmarks/src/js-web-frameworks:perf_lib"],
+)

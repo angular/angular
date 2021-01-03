@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -17,7 +17,9 @@ function plural(n: number): number {
 }
 
 export default [
-  'es-PH', [['a. m.', 'p. m.'], u, u], u,
+  'es-PH',
+  [['a. m.', 'p. m.'], u, u],
+  u,
   [
     ['D', 'L', 'M', 'X', 'J', 'V', 'S'], ['dom.', 'lun.', 'mar.', 'mié.', 'jue.', 'vie.', 'sáb.'],
     ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'],
@@ -35,11 +37,19 @@ export default [
       'octubre', 'noviembre', 'diciembre'
     ]
   ],
-  u, [['a. C.', 'd. C.'], u, ['antes de Cristo', 'después de Cristo']], 0, [6, 0],
+  u,
+  [['a. C.', 'd. C.'], u, ['antes de Cristo', 'después de Cristo']],
+  0,
+  [6, 0],
   ['d/M/yy', 'd MMM y', 'd \'de\' MMMM \'de\' y', 'EEEE, d \'de\' MMMM \'de\' y'],
-  ['h:mm a', 'h:mm:ss a', 'h:mm:ss a z', 'h:mm:ss a zzzz'], ['{1} {0}', u, '{1}, {0}', u],
+  ['h:mm a', 'h:mm:ss a', 'h:mm:ss a z', 'h:mm:ss a zzzz'],
+  ['{1} {0}', u, '{1}, {0}', u],
   [',', '.', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], '₱', 'peso filipino', {
+  ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'],
+  'PHP',
+  '₱',
+  'peso filipino',
+  {
     'AUD': [u, '$'],
     'BRL': [u, 'R$'],
     'CNY': [u, '¥'],
@@ -62,5 +72,6 @@ export default [
     'XCD': [u, '$'],
     'XOF': []
   },
+  'ltr',
   plural
 ];

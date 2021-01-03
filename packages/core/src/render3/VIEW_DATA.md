@@ -14,7 +14,7 @@ The layout is as such:
 | Section    | `LView`                                                  | `TView.data`
 | ---------- | ------------------------------------------------------------ | --------------------------------------------------
 | `HEADER`   | contextual data                                              |  mostly `null`
-| `CONSTS`   | DOM, pipe, and local ref instances                           |
+| `DECLS`    | DOM, pipe, and local ref instances                           |
 | `VARS`     | binding values                                               |  property names
 | `EXPANDO`  | host bindings; directive instances; providers; dynamic nodes | host prop names; directive tokens; provider tokens; `null`
 
@@ -25,10 +25,10 @@ The layout is as such:
 Mostly information such as parent `LView`, `Sanitizer`, `TView`, and many more bits of information needed for template rendering.
 
 
-## `CONSTS`
+## `DECLS`
 
-`CONSTS` contain the DOM elements, pipe instances, and local refs.
-The size of the `CONSTS` section is declared in the property `consts` of the component definition.
+`DECLS` contain the DOM elements, pipe instances, and local refs.
+The size of the `DECLS` section is declared in the property `decls` of the component definition.
 
 ```typescript
 @Component({
@@ -36,9 +36,9 @@ The size of the `CONSTS` section is declared in the property `consts` of the com
 })
 class MyApp {
 
-  static ngComponentDef = ɵɵdefineComponent({
+  static ɵcmp = ɵɵdefineComponent({
     ...,
-    consts: 5,
+    decls: 5,
     template: function(rf: RenderFlags, ctx: MyApp) {
       if (rf & RenderFlags.Create) {
         ɵɵelementStart(0, 'div');
@@ -60,7 +60,7 @@ The above will create following layout:
 | Index | `LView`         | `TView.data`
 | ----: | -----------         | ------------
 | `HEADER`
-| `CONSTS`
+| `DECLS`
 | 10    | `<div>`             | `{type: Element, index: 10, parent: null}`
 | 11    | `#text(Hello )`     | `{type: Element, index: 11, parent: tView.data[10]}`
 | 12    | `<b>`               | `{type: Element, index: 12, parent: tView.data[10]}`
@@ -87,9 +87,9 @@ The size of the `VARS `section is declared in the property `vars` of the compone
 class MyApp {
   name = 'World';
 
-  static ngComponentDef = ɵɵdefineComponent({
+  static ɵcmp = ɵɵdefineComponent({
     ...,
-    consts: 2, // Two DOM Elements.
+    decls: 2, // Two DOM Elements.
     vars: 2,   // Two bindings.
     template: function(rf: RenderFlags, ctx: MyApp) {
       if (rf & RenderFlags.Create) {
@@ -98,9 +98,8 @@ class MyApp {
         ɵɵelementEnd();
       }
       if (rf & RenderFlags.Update) {
-        ɵɵselect(0);
         ɵɵproperty('title', ctx.name);
-        ɵɵselect(1);
+        ɵɵadvance(1);
         ɵɵtextInterpolate1('Hello ', ctx.name, '!');
       }
       ...
@@ -114,7 +113,7 @@ The above will create following layout:
 | Index | `LView`         | `TView.data`
 | ----: | -----------         | ------------
 | `HEADER`
-| `CONSTS`
+| `DECLS`
 | 10    | `<div>`             | `{type: Element, index: 10, parent: null}`
 | 11    | `#text()`           | `{type: Element, index: 11, parent: tView.data[10]}`
 | `VARS`
@@ -141,9 +140,9 @@ Examples include:
 })
 class MyApp {
 
-  static ngComponentDef = ɵɵdefineComponent({
+  static ɵcmp = ɵɵdefineComponent({
     ...,
-    consts: 1,
+    decls: 1,
     template: function(rf: RenderFlags, ctx: MyApp) {
       if (rf & RenderFlags.Create) {
         ɵɵelement(0, 'child', ['tooltip', null]);
@@ -161,7 +160,7 @@ class MyApp {
 })
 class Child {
   @HostBinding('tooltip') hostTitle = 'Hello World!';
-  static ngComponentDef = ɵɵdefineComponent({
+  static ɵcmp = ɵɵdefineComponent({
     ...
     hostVars: 1
   });
@@ -173,7 +172,7 @@ class Child {
 })
 class Tooltip {
   @HostBinding('title') hostTitle = 'greeting';
-  static ngDirectiveDef = ɵɵdefineDirective({
+  static ɵdir = ɵɵdefineDirective({
     ...
     hostVars: 1
   });
@@ -187,7 +186,7 @@ The above will create the following layout:
 | Index | `LView`         | `TView.data`
 | ----: | -----------         | ------------
 | `HEADER`
-| `CONSTS`
+| `DECLS`
 | 10    | `[<child>, ...]`    | `{type: Element, index: 10, parent: null}`
 | `VARS`
 | `EXPANDO`
@@ -198,57 +197,6 @@ The above will create the following layout:
 | 22    | `'greeting'`        | `'title'`
 | ...   | ...                 | ...
 
-
-The `EXPANDO` section needs additional information for information stored in `TView.expandoInstructions`
-
-| Index | `TView.expandoInstructions`         | Meaning
-| ----: | ---------------------------:        | -------
-| 0     | -10                                 | Negative numbers signify pointers to elements. In this case 10 (`<child>`)
-| 1     | 2                                   | Injector size. Number of values to skip to get to Host Bindings.
-| 2     | Child.ngComponentDef.hostBindings   | The function to call. (Only when `hostVars` is not `0`)
-| 3     | Child.ngComponentDef.hostVars       | Number of host bindings to process. (Only when `hostVars` is not `0`)
-| 4     | Tooltip.ngDirectiveDef.hostBindings | The function to call. (Only when `hostVars` is not `0`)
-| 5     | Tooltip.ngDirectiveDef.hostVars     | Number of host bindings to process. (Only when `hostVars` is not `0`)
-
-The reason for this layout is to make the host binding update efficient using this pseudo code:
-```typescript
-let currentDirectiveIndex = -1;
-let currentElementIndex = -1;
-// This is global state which is used internally by hostBindings to know where the offset is
-let bindingRootIndex = tView.expandoStartIndex;
-for(var i = 0; i < tView.expandoInstructions.length; i++) {
-  let instruction = tView.expandoInstructions[i];
-  if (typeof instruction === 'number') {
-    // Numbers are used to update the indices.
-    if (instruction < 0) {
-      // Negative numbers means that we are starting new EXPANDO block and need to update current element and directive index
-      bindingRootIndex += BLOOM_OFFSET;
-      currentDirectiveIndex = bindingRootIndex;
-      currentElementIndex = -instruction;
-    } else {
-      bindingRootIndex += instruction;
-    }
-  } else {
-    // We know that we are hostBinding function so execute it.
-    instruction(currentDirectiveIndex, currentElementIndex);
-    currentDirectiveIndex++;
-  }
-}
-```
-
-The above code should execute as:
-
-| Instruction                           | `bindingRootIndex` | `currentDirectiveIndex`   | `currentElementIndex`
-| ----------:                           | -----------------: | ----------------------:   | --------------------:
-| (initial)                             | `11`               | `-1`                      | `-1`
-| `-10`                                 | `19`               | `\* new Child() *\ 19`    | `\* <child> *\ 10`
-| `2`                                   | `21`               | `\* new Child() *\ 19`    | `\* <child> *\ 10`
-| `Child.ngComponentDef.hostBindings`   | invoke with =>     | `\* new Child() *\ 19`    | `\* <child> *\ 10`
-|                                       | `21`               | `\* new Tooltip() *\ 20`  | `\* <child> *\ 10`
-| `Child.ngComponentDef.hostVars`       | `22`               | `\* new Tooltip() *\ 20`  | `\* <child> *\ 10`
-| `Tooltip.ngDirectiveDef.hostBindings` | invoke with =>     | `\* new Tooltip() *\ 20`  | `\* <child> *\ 10`
-|                                       | `22`               | `21`                      | `\* <child> *\ 10`
-| `Tooltip.ngDirectiveDef.hostVars`     | `22`               | `21`                      | `\* <child> *\ 10`
 
 ## `EXPANDO` and Injection
 
@@ -275,9 +223,9 @@ Injection tokens are sorted into three sections:
 })
 class MyApp {
 
-  static ngComponentDef = ɵɵdefineComponent({
+  static ɵcmp = ɵɵdefineComponent({
     ...,
-    consts: 1,
+    decls: 1,
     template: function(rf: RenderFlags, ctx: MyApp) {
       if (rf & RenderFlags.Create) {
         ɵɵelement(0, 'child');
@@ -303,7 +251,7 @@ class MyApp {
 })
 class Child {
   construction(injector: Injector) {}
-  static ngComponentDef = ɵɵdefineComponent({
+  static ɵcmp = ɵɵdefineComponent({
     ...
     features: [
       ProvidesFeature(
@@ -326,15 +274,15 @@ The above will create the following layout:
 | Index | `LView`                                  | `TView.data`
 | ----: | ------------                                 | -------------
 | `HEADER`
-| `CONSTS`
+| `DECLS`
 | 10    | `[<child>, ...]`                             | `{type: Element, index: 10, parent: null, expandoIndex: 11, directivesIndex: 19, providersIndex: 20, viewProvidersIndex: 22, expandoEnd: 23}`
 | `VARS`
 | `EXPANDO`
 | 11..18| cumulativeBloom                              | templateBloom
 |       | *sub-section: `component` and `directives`*
-| 19    | `factory(Child.ngComponentDef.factory)`*     | `Child`
+| 19    | `factory(Child.ɵcmp.factory)`*               | `Child`
 |       | *sub-section: `providers`*
-| 20    | `factory(ServiceA.ngInjectableDef.factory)`* | `ServiceA`
+| 20    | `factory(ServiceA.ɵprov.factory)`*           | `ServiceA`
 | 22    | `'someServiceBValue'`*                       | `ServiceB`
 |       | *sub-section: `viewProviders`*
 | 22    | `factory(()=> new Service())`*               | `ServiceC`
@@ -421,7 +369,7 @@ A pseudo-implementation of `inject` function.
 ```typescript
 function inject(token: any): any {
   let injectableDef;
-  if (typeof token === 'function' && injectableDef = token.ngInjectableDef) {
+  if (typeof token === 'function' && injectableDef = token.ɵprov) {
     const provideIn = injectableDef.provideIn;
    if (provideIn === '__node_injector__') {
       // if we are injecting `Injector` than create a wrapper object around the inject but which

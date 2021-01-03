@@ -25,5 +25,8 @@ set +x -eu -o pipefail
   # Run PWA-score tests.
   yarn test-pwa-score "$targetUrl" "$minPwaScore"
 
+  # Run a11y tests.
+  yarn test-a11y-score "$targetUrl"
+
   echo -e "\nAll checks passed!"
 )

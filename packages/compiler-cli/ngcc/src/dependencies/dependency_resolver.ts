@@ -1,17 +1,22 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
 import {DepGraph} from 'dependency-graph';
-import {AbsoluteFsPath} from '../../../src/ngtsc/path';
-import {FileSystem} from '../file_system/file_system';
-import {Logger} from '../logging/logger';
-import {EntryPoint, EntryPointFormat, EntryPointJsonProperty, getEntryPointFormat} from '../packages/entry_point';
-import {DependencyHost} from './dependency_host';
+
+import {AbsoluteFsPath, FileSystem, resolve} from '../../../src/ngtsc/file_system';
+import {Logger} from '../../../src/ngtsc/logging';
+import {NgccConfiguration} from '../packages/configuration';
+import {EntryPoint, EntryPointFormat, getEntryPointFormat, SUPPORTED_FORMAT_PROPERTIES} from '../packages/entry_point';
+import {PartiallyOrderedList} from '../utils';
+
+import {createDependencyInfo, DependencyHost, EntryPointWithDependencies} from './dependency_host';
+
+const builtinNodeJsModules = new Set<string>(require('module').builtinModules);
 
 /**
  * Holds information about entry points that are removed because
@@ -51,23 +56,37 @@ export interface DependencyDiagnostics {
 }
 
 /**
- * A list of entry-points, sorted by their dependencies.
+ * Represents a partially ordered list of entry-points.
+ *
+ * The entry-points' order/precedence is such that dependent entry-points always come later than
+ * their dependencies in the list.
+ *
+ * See `DependencyResolver#sortEntryPointsByDependency()`.
+ */
+export type PartiallyOrderedEntryPoints = PartiallyOrderedList<EntryPoint>;
+
+/**
+ * A list of entry-points, sorted by their dependencies, and the dependency graph.
  *
  * The `entryPoints` array will be ordered so that no entry point depends upon an entry point that
  * appears later in the array.
  *
- * Some entry points or their dependencies may be have been ignored. These are captured for
+ * Some entry points or their dependencies may have been ignored. These are captured for
  * diagnostic purposes in `invalidEntryPoints` and `ignoredDependencies` respectively.
  */
-export interface SortedEntryPointsInfo extends DependencyDiagnostics { entryPoints: EntryPoint[]; }
+export interface SortedEntryPointsInfo extends DependencyDiagnostics {
+  entryPoints: PartiallyOrderedEntryPoints;
+  graph: DepGraph<EntryPoint>;
+}
 
 /**
  * A class that resolves dependencies between entry-points.
  */
 export class DependencyResolver {
   constructor(
-      private fs: FileSystem, private logger: Logger,
-      private hosts: Partial<Record<EntryPointFormat, DependencyHost>>) {}
+      private fs: FileSystem, private logger: Logger, private config: NgccConfiguration,
+      private hosts: Partial<Record<EntryPointFormat, DependencyHost>>,
+      private typingsHost: DependencyHost) {}
   /**
    * Sort the array of entry points so that the dependant entry points always come later than
    * their dependencies in the array.
@@ -75,14 +94,14 @@ export class DependencyResolver {
    * @param target If provided, only return entry-points depended on by this entry-point.
    * @returns the result of sorting the entry points by dependency.
    */
-  sortEntryPointsByDependency(entryPoints: EntryPoint[], target?: EntryPoint):
+  sortEntryPointsByDependency(entryPoints: EntryPointWithDependencies[], target?: EntryPoint):
       SortedEntryPointsInfo {
     const {invalidEntryPoints, ignoredDependencies, graph} =
         this.computeDependencyGraph(entryPoints);
 
     let sortedEntryPointNodes: string[];
     if (target) {
-      if (target.compiledByAngular) {
+      if (target.compiledByAngular && graph.hasNode(target.path)) {
         sortedEntryPointNodes = graph.dependenciesOf(target.path);
         sortedEntryPointNodes.push(target.path);
       } else {
@@ -93,10 +112,29 @@ export class DependencyResolver {
     }
 
     return {
-      entryPoints: sortedEntryPointNodes.map(path => graph.getNodeData(path)),
+      entryPoints: (sortedEntryPointNodes as PartiallyOrderedList<string>)
+                       .map(path => graph.getNodeData(path)),
+      graph,
       invalidEntryPoints,
       ignoredDependencies,
     };
+  }
+
+  getEntryPointWithDependencies(entryPoint: EntryPoint): EntryPointWithDependencies {
+    const dependencies = createDependencyInfo();
+    if (entryPoint.compiledByAngular) {
+      // Only bother to compute dependencies of entry-points that have been compiled by Angular
+      const formatInfo = this.getEntryPointFormatInfo(entryPoint);
+      const host = this.hosts[formatInfo.format];
+      if (!host) {
+        throw new Error(
+            `Could not find a suitable format for computing dependencies of entry-point: '${
+                entryPoint.path}'.`);
+      }
+      host.collectDependencies(formatInfo.path, dependencies);
+      this.typingsHost.collectDependencies(entryPoint.typings, dependencies);
+    }
+    return {entryPoint, depInfo: dependencies};
   }
 
   /**
@@ -105,38 +143,33 @@ export class DependencyResolver {
    * The graph only holds entry-points that ngcc cares about and whose dependencies
    * (direct and transitive) all exist.
    */
-  private computeDependencyGraph(entryPoints: EntryPoint[]): DependencyGraph {
+  private computeDependencyGraph(entryPoints: EntryPointWithDependencies[]): DependencyGraph {
     const invalidEntryPoints: InvalidEntryPoint[] = [];
     const ignoredDependencies: IgnoredDependency[] = [];
     const graph = new DepGraph<EntryPoint>();
 
-    const angularEntryPoints = entryPoints.filter(entryPoint => entryPoint.compiledByAngular);
+    const angularEntryPoints = entryPoints.filter(e => e.entryPoint.compiledByAngular);
 
     // Add the Angular compiled entry points to the graph as nodes
-    angularEntryPoints.forEach(entryPoint => graph.addNode(entryPoint.path, entryPoint));
+    angularEntryPoints.forEach(e => graph.addNode(e.entryPoint.path, e.entryPoint));
 
     // Now add the dependencies between them
-    angularEntryPoints.forEach(entryPoint => {
-      const formatInfo = this.getEntryPointFormatInfo(entryPoint);
-      const host = this.hosts[formatInfo.format];
-      if (!host) {
-        throw new Error(
-            `Could not find a suitable format for computing dependencies of entry-point: '${entryPoint.path}'.`);
-      }
-      const {dependencies, missing, deepImports} = host.findDependencies(formatInfo.path);
+    angularEntryPoints.forEach(({entryPoint, depInfo: {dependencies, missing, deepImports}}) => {
+      const missingDependencies = Array.from(missing).filter(dep => !builtinNodeJsModules.has(dep));
 
-      if (missing.size > 0) {
+      if (missingDependencies.length > 0 && !entryPoint.ignoreMissingDependencies) {
         // This entry point has dependencies that are missing
         // so remove it from the graph.
-        removeNodes(entryPoint, Array.from(missing));
+        removeNodes(entryPoint, missingDependencies);
       } else {
         dependencies.forEach(dependencyPath => {
-          if (graph.hasNode(dependencyPath)) {
-            if (graph.hasNode(entryPoint.path)) {
-              // The entry-point is still valid (i.e. has no missing dependencies) and
-              // the dependency maps to an entry point that exists in the graph so add it
-              graph.addDependency(entryPoint.path, dependencyPath);
-            }
+          if (!graph.hasNode(entryPoint.path)) {
+            // The entry-point has already been identified as invalid so we don't need
+            // to do any further work on it.
+          } else if (graph.hasNode(dependencyPath)) {
+            // The entry-point is still valid (i.e. has no missing dependencies) and
+            // the dependency maps to an entry point that exists in the graph so add it
+            graph.addDependency(entryPoint.path, dependencyPath);
           } else if (invalidEntryPoints.some(i => i.entryPoint.path === dependencyPath)) {
             // The dependency path maps to an entry-point that was previously removed
             // from the graph, so remove this entry-point as well.
@@ -148,11 +181,14 @@ export class DependencyResolver {
         });
       }
 
-      if (deepImports.size) {
-        const imports = Array.from(deepImports).map(i => `'${i}'`).join(', ');
-        this.logger.warn(
-            `Entry point '${entryPoint.name}' contains deep imports into ${imports}. ` +
-            `This is probably not a problem, but may cause the compilation of entry points to be out of order.`);
+      if (deepImports.size > 0) {
+        const notableDeepImports = this.filterIgnorableDeepImports(entryPoint, deepImports);
+        if (notableDeepImports.length > 0) {
+          const imports = notableDeepImports.map(i => `'${i}'`).join(', ');
+          this.logger.warn(
+              `Entry point '${entryPoint.name}' contains deep imports into ${imports}. ` +
+              `This is probably not a problem, but may cause the compilation of entry points to be out of order.`);
+        }
       }
     });
 
@@ -169,18 +205,31 @@ export class DependencyResolver {
 
   private getEntryPointFormatInfo(entryPoint: EntryPoint):
       {format: EntryPointFormat, path: AbsoluteFsPath} {
-    const properties = Object.keys(entryPoint.packageJson);
-    for (let i = 0; i < properties.length; i++) {
-      const property = properties[i] as EntryPointJsonProperty;
-      const format = getEntryPointFormat(this.fs, entryPoint, property);
+    for (const property of SUPPORTED_FORMAT_PROPERTIES) {
+      const formatPath = entryPoint.packageJson[property];
+      if (formatPath === undefined) continue;
 
-      if (format === 'esm2015' || format === 'esm5' || format === 'umd' || format === 'commonjs') {
-        const formatPath = entryPoint.packageJson[property] !;
-        return {format, path: AbsoluteFsPath.resolve(entryPoint.path, formatPath)};
-      }
+      const format = getEntryPointFormat(this.fs, entryPoint, property);
+      if (format === undefined) continue;
+
+      return {format, path: resolve(entryPoint.path, formatPath)};
     }
+
     throw new Error(
         `There is no appropriate source code format in '${entryPoint.path}' entry-point.`);
+  }
+
+  /**
+   * Filter out the deepImports that can be ignored, according to this entryPoint's config.
+   */
+  private filterIgnorableDeepImports(entryPoint: EntryPoint, deepImports: Set<AbsoluteFsPath>):
+      AbsoluteFsPath[] {
+    const version = (entryPoint.packageJson.version || null) as string | null;
+    const packageConfig =
+        this.config.getPackageConfig(entryPoint.packageName, entryPoint.packagePath, version);
+    const matchers = packageConfig.ignorableDeepImportMatchers;
+    return Array.from(deepImports)
+        .filter(deepImport => !matchers.some(matcher => matcher.test(deepImport)));
   }
 }
 

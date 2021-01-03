@@ -1,29 +1,29 @@
 // #docplaster
 // #docregion sketch
-import { NgModule }         from '@angular/core';
-import { BrowserModule }    from '@angular/platform-browser';
+import { NgModule } from '@angular/core';
+import { BrowserModule } from '@angular/platform-browser';
 // #enddocregion sketch
-import { FormsModule }      from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 // #docregion sketch
 import { HttpClientModule } from '@angular/common/http';
 // #enddocregion sketch
 import { HttpClientXsrfModule } from '@angular/common/http';
 
 import { HttpClientInMemoryWebApiModule } from 'angular-in-memory-web-api';
-import { InMemoryDataService }  from './in-memory-data.service';
+import { InMemoryDataService } from './in-memory-data.service';
 
 import { RequestCache, RequestCacheWithMap } from './request-cache.service';
 
-import { AppComponent }         from './app.component';
-import { AuthService }          from './auth.service';
-import { ConfigComponent }      from './config/config.component';
-import { DownloaderComponent }  from './downloader/downloader.component';
-import { HeroesComponent }      from './heroes/heroes.component';
-import { HttpErrorHandler }     from './http-error-handler.service';
-import { MessageService }       from './message.service';
-import { MessagesComponent }    from './messages/messages.component';
+import { AppComponent } from './app.component';
+import { AuthService } from './auth.service';
+import { ConfigComponent } from './config/config.component';
+import { DownloaderComponent } from './downloader/downloader.component';
+import { HeroesComponent } from './heroes/heroes.component';
+import { HttpErrorHandler } from './http-error-handler.service';
+import { MessageService } from './message.service';
+import { MessagesComponent } from './messages/messages.component';
 import { PackageSearchComponent } from './package-search/package-search.component';
-import { UploaderComponent }    from './uploader/uploader.component';
+import { UploaderComponent } from './uploader/uploader.component';
 
 import { httpInterceptorProviders } from './http-interceptors/index';
 // #docregion sketch

@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -8,31 +8,32 @@
 
 import * as ts from 'typescript';
 
-import {ClassDeclaration} from '../../reflection';
+import {ClassDeclaration, ReflectionHost} from '../../reflection';
+import {TypeCtorMetadata} from '../api';
 
-import {TypeCheckingConfig, TypeCtorMetadata} from './api';
-import {checkIfGenericTypesAreUnbound} from './ts_util';
+import {tsCreateTypeQueryForCoercedInput} from './ts_util';
+import {TypeParameterEmitter} from './type_parameter_emitter';
 
 export function generateTypeCtorDeclarationFn(
-    node: ClassDeclaration<ts.ClassDeclaration>, meta: TypeCtorMetadata,
-    nodeTypeRef: ts.Identifier | ts.QualifiedName, config: TypeCheckingConfig): ts.Statement {
-  if (requiresInlineTypeCtor(node)) {
+    node: ClassDeclaration<ts.ClassDeclaration>, meta: TypeCtorMetadata, nodeTypeRef: ts.EntityName,
+    typeParams: ts.TypeParameterDeclaration[]|undefined, reflector: ReflectionHost): ts.Statement {
+  if (requiresInlineTypeCtor(node, reflector)) {
     throw new Error(`${node.name.text} requires an inline type constructor`);
   }
 
-  const rawTypeArgs =
-      node.typeParameters !== undefined ? generateGenericArgs(node.typeParameters) : undefined;
-  const rawType: ts.TypeNode = ts.createTypeReferenceNode(nodeTypeRef, rawTypeArgs);
+  const rawTypeArgs = typeParams !== undefined ? generateGenericArgs(typeParams) : undefined;
+  const rawType = ts.createTypeReferenceNode(nodeTypeRef, rawTypeArgs);
 
-  const initParam = constructTypeCtorParameter(node, meta, rawType, config.checkQueries);
+  const initParam = constructTypeCtorParameter(node, meta, rawType);
 
-  const typeParameters = typeParametersWithDefaultTypes(node.typeParameters);
+  const typeParameters = typeParametersWithDefaultTypes(typeParams);
 
   if (meta.body) {
     const fnType = ts.createFunctionTypeNode(
         /* typeParameters */ typeParameters,
         /* parameters */[initParam],
-        /* type */ rawType, );
+        /* type */ rawType,
+    );
 
     const decl = ts.createVariableDeclaration(
         /* name */ meta.fnName,
@@ -67,12 +68,19 @@ export function generateTypeCtorDeclarationFn(
  *
  * An inline type constructor for NgFor looks like:
  *
- * static ngTypeCtor<T>(init: Partial<Pick<NgForOf<T>, 'ngForOf'|'ngForTrackBy'|'ngForTemplate'>>):
+ * static ngTypeCtor<T>(init: Pick<NgForOf<T>, 'ngForOf'|'ngForTrackBy'|'ngForTemplate'>):
  *   NgForOf<T>;
  *
  * A typical constructor would be:
  *
- * NgForOf.ngTypeCtor(init: {ngForOf: ['foo', 'bar']}); // Infers a type of NgForOf<string>.
+ * NgForOf.ngTypeCtor(init: {
+ *   ngForOf: ['foo', 'bar'],
+ *   ngForTrackBy: null as any,
+ *   ngForTemplate: null as any,
+ * }); // Infers a type of NgForOf<string>.
+ *
+ * Any inputs declared on the type for which no property binding is present are assigned a value of
+ * type `any`, to avoid producing any type errors for unset inputs.
  *
  * Inline type constructors are used when the type being created has bounded generic types which
  * make writing a declared type constructor (via `generateTypeCtorDeclarationFn`) difficult or
@@ -84,16 +92,15 @@ export function generateTypeCtorDeclarationFn(
  * @returns a `ts.MethodDeclaration` for the type constructor.
  */
 export function generateInlineTypeCtor(
-    node: ClassDeclaration<ts.ClassDeclaration>, meta: TypeCtorMetadata,
-    config: TypeCheckingConfig): ts.MethodDeclaration {
+    node: ClassDeclaration<ts.ClassDeclaration>, meta: TypeCtorMetadata): ts.MethodDeclaration {
   // Build rawType, a `ts.TypeNode` of the class with its generic parameters passed through from
   // the definition without any type bounds. For example, if the class is
   // `FooDirective<T extends Bar>`, its rawType would be `FooDirective<T>`.
   const rawTypeArgs =
       node.typeParameters !== undefined ? generateGenericArgs(node.typeParameters) : undefined;
-  const rawType: ts.TypeNode = ts.createTypeReferenceNode(node.name, rawTypeArgs);
+  const rawType = ts.createTypeReferenceNode(node.name, rawTypeArgs);
 
-  const initParam = constructTypeCtorParameter(node, meta, rawType, config.checkQueries);
+  const initParam = constructTypeCtorParameter(node, meta, rawType);
 
   // If this constructor is being generated into a .ts file, then it needs a fake body. The body
   // is set to a return of `null!`. If the type constructor is being generated into a .d.ts file,
@@ -115,44 +122,56 @@ export function generateInlineTypeCtor(
       /* typeParameters */ typeParametersWithDefaultTypes(node.typeParameters),
       /* parameters */[initParam],
       /* type */ rawType,
-      /* body */ body, );
+      /* body */ body,
+  );
 }
 
 function constructTypeCtorParameter(
-    node: ClassDeclaration<ts.ClassDeclaration>, meta: TypeCtorMetadata, rawType: ts.TypeNode,
-    includeQueries: boolean): ts.ParameterDeclaration {
+    node: ClassDeclaration<ts.ClassDeclaration>, meta: TypeCtorMetadata,
+    rawType: ts.TypeReferenceNode): ts.ParameterDeclaration {
   // initType is the type of 'init', the single argument to the type constructor method.
-  // If the Directive has any inputs, outputs, or queries, its initType will be:
+  // If the Directive has any inputs, its initType will be:
   //
-  // Partial<Pick<rawType, 'inputField'|'outputField'|'queryField'>>
+  // Pick<rawType, 'inputA'|'inputB'>
   //
   // Pick here is used to select only those fields from which the generic type parameters of the
-  // directive will be inferred. Partial is used because inputs are optional, so there may not be
-  // bindings for each field.
+  // directive will be inferred.
   //
-  // In the special case there are no inputs/outputs/etc, initType is set to {}.
-  let initType: ts.TypeNode;
+  // In the special case there are no inputs, initType is set to {}.
+  let initType: ts.TypeNode|null = null;
 
-  const keys: string[] = [
-    ...meta.fields.inputs,
-    ...meta.fields.outputs,
-  ];
-  if (includeQueries) {
-    keys.push(...meta.fields.queries);
+  const keys: string[] = meta.fields.inputs;
+  const plainKeys: ts.LiteralTypeNode[] = [];
+  const coercedKeys: ts.PropertySignature[] = [];
+  for (const key of keys) {
+    if (!meta.coercedInputFields.has(key)) {
+      plainKeys.push(ts.createLiteralTypeNode(ts.createStringLiteral(key)));
+    } else {
+      coercedKeys.push(ts.createPropertySignature(
+          /* modifiers */ undefined,
+          /* name */ key,
+          /* questionToken */ undefined,
+          /* type */ tsCreateTypeQueryForCoercedInput(rawType.typeName, key),
+          /* initializer */ undefined));
+    }
   }
-  if (keys.length === 0) {
-    // Special case - no inputs, outputs, or other fields which could influence the result type.
-    initType = ts.createTypeLiteralNode([]);
-  } else {
+  if (plainKeys.length > 0) {
     // Construct a union of all the field names.
-    const keyTypeUnion = ts.createUnionTypeNode(
-        keys.map(key => ts.createLiteralTypeNode(ts.createStringLiteral(key))));
+    const keyTypeUnion = ts.createUnionTypeNode(plainKeys);
 
     // Construct the Pick<rawType, keyTypeUnion>.
-    const pickType = ts.createTypeReferenceNode('Pick', [rawType, keyTypeUnion]);
+    initType = ts.createTypeReferenceNode('Pick', [rawType, keyTypeUnion]);
+  }
+  if (coercedKeys.length > 0) {
+    const coercedLiteral = ts.createTypeLiteralNode(coercedKeys);
 
-    // Construct the Partial<pickType>.
-    initType = ts.createTypeReferenceNode('Partial', [pickType]);
+    initType = initType !== null ? ts.createIntersectionTypeNode([initType, coercedLiteral]) :
+                                   coercedLiteral;
+  }
+
+  if (initType === null) {
+    // Special case - no inputs, outputs, or other fields which could influence the result type.
+    initType = ts.createTypeLiteralNode([]);
   }
 
   // Create the 'init' parameter itself.
@@ -170,9 +189,17 @@ function generateGenericArgs(params: ReadonlyArray<ts.TypeParameterDeclaration>)
   return params.map(param => ts.createTypeReferenceNode(param.name, undefined));
 }
 
-export function requiresInlineTypeCtor(node: ClassDeclaration<ts.ClassDeclaration>): boolean {
-  // The class requires an inline type constructor if it has constrained (bound) generics.
-  return !checkIfGenericTypesAreUnbound(node);
+export function requiresInlineTypeCtor(
+    node: ClassDeclaration<ts.ClassDeclaration>, host: ReflectionHost): boolean {
+  // The class requires an inline type constructor if it has generic type bounds that can not be
+  // emitted into a different context.
+  return !checkIfGenericTypeBoundsAreContextFree(node, host);
+}
+
+function checkIfGenericTypeBoundsAreContextFree(
+    node: ClassDeclaration<ts.ClassDeclaration>, reflector: ReflectionHost): boolean {
+  // Generic type parameters are considered context free if they can be emitted into any context.
+  return new TypeParameterEmitter(node.typeParameters, reflector).canEmit();
 }
 
 /**
@@ -187,20 +214,20 @@ export function requiresInlineTypeCtor(node: ClassDeclaration<ts.ClassDeclaratio
  *   ngForOf: T[];
  * }
  *
- * declare function ctor<T>(o: Partial<Pick<NgFor<T>, 'ngForOf'>>): NgFor<T>;
+ * declare function ctor<T>(o: Pick<NgFor<T>, 'ngForOf'|'ngForTrackBy'|'ngForTemplate'>): NgFor<T>;
  * ```
  *
  * An invocation looks like:
  *
  * ```
- * var _t1 = ctor({ngForOf: [1, 2]});
+ * var _t1 = ctor({ngForOf: [1, 2], ngForTrackBy: null as any, ngForTemplate: null as any});
  * ```
  *
  * This correctly infers the type `NgFor<number>` for `_t1`, since `T` is inferred from the
  * assignment of type `number[]` to `ngForOf`'s type `T[]`. However, if `any` is passed instead:
  *
  * ```
- * var _t2 = ctor({ngForOf: [1, 2] as any});
+ * var _t2 = ctor({ngForOf: [1, 2] as any, ngForTrackBy: null as any, ngForTemplate: null as any});
  * ```
  *
  * then inference for `T` fails (it cannot be inferred from `T[] = any`). In this case, `T` takes
@@ -210,16 +237,15 @@ export function requiresInlineTypeCtor(node: ClassDeclaration<ts.ClassDeclaratio
  * default type will be used in the event that inference fails.
  *
  * ```
- * declare function ctor<T = any>(o: Partial<Pick<NgFor<T>, 'ngForOf'>>): NgFor<T>;
+ * declare function ctor<T = any>(o: Pick<NgFor<T>, 'ngForOf'>): NgFor<T>;
  *
  * var _t3 = ctor({ngForOf: [1, 2] as any});
  * ```
  *
  * This correctly infers `T` as `any`, and therefore `_t3` as `NgFor<any>`.
  */
-function typeParametersWithDefaultTypes(
-    params: ReadonlyArray<ts.TypeParameterDeclaration>| undefined): ts.TypeParameterDeclaration[]|
-    undefined {
+function typeParametersWithDefaultTypes(params: ReadonlyArray<ts.TypeParameterDeclaration>|
+                                        undefined): ts.TypeParameterDeclaration[]|undefined {
   if (params === undefined) {
     return undefined;
   }

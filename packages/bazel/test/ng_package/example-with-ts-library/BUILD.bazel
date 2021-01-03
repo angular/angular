@@ -1,0 +1,23 @@
+load("//tools:defaults.bzl", "ng_package", "ts_library")
+
+package(default_visibility = ["//packages/bazel/test:__subpackages__"])
+
+ts_library(
+    name = "example",
+    srcs = glob(["*.ts"]),
+    module_name = "example-with-ts-library",
+    deps = [],
+)
+
+ng_package(
+    name = "npm_package",
+    srcs = [
+        "package.json",
+    ],
+    entry_point = ":index.ts",
+    deps = [
+        ":example",
+        "//packages/bazel/test/ng_package/example-with-ts-library/portal",
+        "//packages/bazel/test/ng_package/example-with-ts-library/utils",
+    ],
+)

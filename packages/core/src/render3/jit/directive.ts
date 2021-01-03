@@ -1,49 +1,75 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {R3DirectiveMetadataFacade, getCompilerFacade} from '../../compiler/compiler_facade';
-import {R3BaseMetadataFacade, R3ComponentMetadataFacade, R3QueryMetadataFacade} from '../../compiler/compiler_facade_interface';
+import {getCompilerFacade, R3DirectiveMetadataFacade} from '../../compiler/compiler_facade';
+import {R3ComponentMetadataFacade, R3QueryMetadataFacade} from '../../compiler/compiler_facade_interface';
 import {resolveForwardRef} from '../../di/forward_ref';
-import {compileInjectable} from '../../di/jit/injectable';
 import {getReflect, reflectDependencies} from '../../di/jit/util';
 import {Type} from '../../interface/type';
 import {Query} from '../../metadata/di';
 import {Component, Directive, Input} from '../../metadata/directives';
 import {componentNeedsResolution, maybeQueueResolutionOfComponentResources} from '../../metadata/resource_loading';
 import {ViewEncapsulation} from '../../metadata/view';
-import {getBaseDef, getComponentDef, getDirectiveDef} from '../definition';
+import {initNgDevMode} from '../../util/ng_dev_mode';
+import {getComponentDef, getDirectiveDef} from '../definition';
 import {EMPTY_ARRAY, EMPTY_OBJ} from '../empty';
-import {NG_BASE_DEF, NG_COMPONENT_DEF, NG_DIRECTIVE_DEF} from '../fields';
+import {NG_COMP_DEF, NG_DIR_DEF, NG_FACTORY_DEF} from '../fields';
 import {ComponentType} from '../interfaces/definition';
-import {stringifyForError} from '../util/misc_utils';
+import {stringifyForError} from '../util/stringify_utils';
 
 import {angularCoreEnv} from './environment';
+import {getJitOptions} from './jit_options';
 import {flushModuleScopingQueueAsMuchAsPossible, patchComponentDefWithScope, transitiveScopesFor} from './module';
 
-
+/**
+ * Keep track of the compilation depth to avoid reentrancy issues during JIT compilation. This
+ * matters in the following scenario:
+ *
+ * Consider a component 'A' that extends component 'B', both declared in module 'M'. During
+ * the compilation of 'A' the definition of 'B' is requested to capture the inheritance chain,
+ * potentially triggering compilation of 'B'. If this nested compilation were to trigger
+ * `flushModuleScopingQueueAsMuchAsPossible` it may happen that module 'M' is still pending in the
+ * queue, resulting in 'A' and 'B' to be patched with the NgModule scope. As the compilation of
+ * 'A' is still in progress, this would introduce a circular dependency on its compilation. To avoid
+ * this issue, the module scope queue is only flushed for compilations at the depth 0, to ensure
+ * all compilations have finished.
+ */
+let compilationDepth = 0;
 
 /**
  * Compile an Angular component according to its decorator metadata, and patch the resulting
- * ngComponentDef onto the component type.
+ * component def (ɵcmp) onto the component type.
  *
  * Compilation may be asynchronous (due to the need to resolve URLs for the component template or
  * other resources, for example). In the event that compilation is not immediate, `compileComponent`
- * will enqueue resource resolution into a global queue and will fail to return the `ngComponentDef`
+ * will enqueue resource resolution into a global queue and will fail to return the `ɵcmp`
  * until the global queue has been resolved with a call to `resolveComponentResources`.
  */
 export function compileComponent(type: Type<any>, metadata: Component): void {
+  // Initialize ngDevMode. This must be the first statement in compileComponent.
+  // See the `initNgDevMode` docstring for more information.
+  (typeof ngDevMode === 'undefined' || ngDevMode) && initNgDevMode();
+
   let ngComponentDef: any = null;
+
   // Metadata may have resources which need to be resolved.
   maybeQueueResolutionOfComponentResources(type, metadata);
-  Object.defineProperty(type, NG_COMPONENT_DEF, {
+
+  // Note that we're using the same function as `Directive`, because that's only subset of metadata
+  // that we need to create the ngFactoryDef. We're avoiding using the component metadata
+  // because we'd have to resolve the asynchronous templates.
+  addDirectiveFactoryDef(type, metadata);
+
+  Object.defineProperty(type, NG_COMP_DEF, {
     get: () => {
-      const compiler = getCompilerFacade();
       if (ngComponentDef === null) {
+        const compiler = getCompilerFacade();
+
         if (componentNeedsResolution(metadata)) {
           const error = [`Component '${type.name}' is not resolved:`];
           if (metadata.templateUrl) {
@@ -56,32 +82,63 @@ export function compileComponent(type: Type<any>, metadata: Component): void {
           throw new Error(error.join('\n'));
         }
 
+        // This const was called `jitOptions` previously but had to be renamed to `options` because
+        // of a bug with Terser that caused optimized JIT builds to throw a `ReferenceError`.
+        // This bug was investigated in https://github.com/angular/angular-cli/issues/17264.
+        // We should not rename it back until https://github.com/terser/terser/issues/615 is fixed.
+        const options = getJitOptions();
+        let preserveWhitespaces = metadata.preserveWhitespaces;
+        if (preserveWhitespaces === undefined) {
+          if (options !== null && options.preserveWhitespaces !== undefined) {
+            preserveWhitespaces = options.preserveWhitespaces;
+          } else {
+            preserveWhitespaces = false;
+          }
+        }
+        let encapsulation = metadata.encapsulation;
+        if (encapsulation === undefined) {
+          if (options !== null && options.defaultEncapsulation !== undefined) {
+            encapsulation = options.defaultEncapsulation;
+          } else {
+            encapsulation = ViewEncapsulation.Emulated;
+          }
+        }
+
         const templateUrl = metadata.templateUrl || `ng:///${type.name}/template.html`;
         const meta: R3ComponentMetadataFacade = {
           ...directiveMetadata(type, metadata),
           typeSourceSpan: compiler.createParseSourceSpan('Component', type.name, templateUrl),
           template: metadata.template || '',
-          preserveWhitespaces: metadata.preserveWhitespaces || false,
+          preserveWhitespaces,
           styles: metadata.styles || EMPTY_ARRAY,
           animations: metadata.animations,
           directives: [],
           changeDetection: metadata.changeDetection,
           pipes: new Map(),
-          encapsulation: metadata.encapsulation || ViewEncapsulation.Emulated,
+          encapsulation,
           interpolation: metadata.interpolation,
           viewProviders: metadata.viewProviders || null,
         };
-        if (meta.usesInheritance) {
-          addBaseDefToUndecoratedParents(type);
-        }
-        ngComponentDef = compiler.compileComponent(angularCoreEnv, templateUrl, meta);
 
-        // When NgModule decorator executed, we enqueued the module definition such that
-        // it would only dequeue and add itself as module scope to all of its declarations,
-        // but only if  if all of its declarations had resolved. This call runs the check
-        // to see if any modules that are in the queue can be dequeued and add scope to
-        // their declarations.
-        flushModuleScopingQueueAsMuchAsPossible();
+        compilationDepth++;
+        try {
+          if (meta.usesInheritance) {
+            addDirectiveDefToUndecoratedParents(type);
+          }
+          ngComponentDef = compiler.compileComponent(angularCoreEnv, templateUrl, meta);
+        } finally {
+          // Ensure that the compilation depth is decremented even when the compilation failed.
+          compilationDepth--;
+        }
+
+        if (compilationDepth === 0) {
+          // When NgModule decorator executed, we enqueued the module definition such that
+          // it would only dequeue and add itself as module scope to all of its declarations,
+          // but only if  if all of its declarations had resolved. This call runs the check
+          // to see if any modules that are in the queue can be dequeued and add scope to
+          // their declarations.
+          flushModuleScopingQueueAsMuchAsPossible();
+        }
 
         // If component compilation is async, then the @NgModule annotation which declares the
         // component may execute and set an ngSelectorScope property on the component type. This
@@ -97,51 +154,73 @@ export function compileComponent(type: Type<any>, metadata: Component): void {
     // Make the property configurable in dev mode to allow overriding in tests
     configurable: !!ngDevMode,
   });
-
-
-  // Add ngInjectableDef so components are reachable through the module injector by default
-  // This is mostly to support injecting components in tests. In real application code,
-  // components should be retrieved through the node injector, so this isn't a problem.
-  compileInjectable(type);
 }
 
 function hasSelectorScope<T>(component: Type<T>): component is Type<T>&
     {ngSelectorScope: Type<any>} {
-  return (component as{ngSelectorScope?: any}).ngSelectorScope !== undefined;
+  return (component as {ngSelectorScope?: any}).ngSelectorScope !== undefined;
 }
 
 /**
  * Compile an Angular directive according to its decorator metadata, and patch the resulting
- * ngDirectiveDef onto the component type.
+ * directive def onto the component type.
  *
  * In the event that compilation is not immediate, `compileDirective` will return a `Promise` which
  * will resolve when compilation completes and the directive becomes usable.
  */
-export function compileDirective(type: Type<any>, directive: Directive): void {
+export function compileDirective(type: Type<any>, directive: Directive|null): void {
   let ngDirectiveDef: any = null;
-  Object.defineProperty(type, NG_DIRECTIVE_DEF, {
+
+  addDirectiveFactoryDef(type, directive || {});
+
+  Object.defineProperty(type, NG_DIR_DEF, {
     get: () => {
       if (ngDirectiveDef === null) {
-        const name = type && type.name;
-        const sourceMapUrl = `ng:///${name}/ngDirectiveDef.js`;
-        const compiler = getCompilerFacade();
-        const facade = directiveMetadata(type as ComponentType<any>, directive);
-        facade.typeSourceSpan = compiler.createParseSourceSpan('Directive', name, sourceMapUrl);
-        if (facade.usesInheritance) {
-          addBaseDefToUndecoratedParents(type);
-        }
-        ngDirectiveDef = compiler.compileDirective(angularCoreEnv, sourceMapUrl, facade);
+        // `directive` can be null in the case of abstract directives as a base class
+        // that use `@Directive()` with no selector. In that case, pass empty object to the
+        // `directiveMetadata` function instead of null.
+        const meta = getDirectiveMetadata(type, directive || {});
+        ngDirectiveDef =
+            getCompilerFacade().compileDirective(angularCoreEnv, meta.sourceMapUrl, meta.metadata);
       }
       return ngDirectiveDef;
     },
     // Make the property configurable in dev mode to allow overriding in tests
     configurable: !!ngDevMode,
   });
+}
 
-  // Add ngInjectableDef so directives are reachable through the module injector by default
-  // This is mostly to support injecting directives in tests. In real application code,
-  // directives should be retrieved through the node injector, so this isn't a problem.
-  compileInjectable(type);
+function getDirectiveMetadata(type: Type<any>, metadata: Directive) {
+  const name = type && type.name;
+  const sourceMapUrl = `ng:///${name}/ɵdir.js`;
+  const compiler = getCompilerFacade();
+  const facade = directiveMetadata(type as ComponentType<any>, metadata);
+  facade.typeSourceSpan = compiler.createParseSourceSpan('Directive', name, sourceMapUrl);
+  if (facade.usesInheritance) {
+    addDirectiveDefToUndecoratedParents(type);
+  }
+  return {metadata: facade, sourceMapUrl};
+}
+
+function addDirectiveFactoryDef(type: Type<any>, metadata: Directive|Component) {
+  let ngFactoryDef: any = null;
+
+  Object.defineProperty(type, NG_FACTORY_DEF, {
+    get: () => {
+      if (ngFactoryDef === null) {
+        const meta = getDirectiveMetadata(type, metadata);
+        const compiler = getCompilerFacade();
+        ngFactoryDef = compiler.compileFactory(angularCoreEnv, `ng:///${type.name}/ɵfac.js`, {
+          ...meta.metadata,
+          injectFn: 'directiveInject',
+          target: compiler.R3FactoryTarget.Directive
+        });
+      }
+      return ngFactoryDef;
+    },
+    // Make the property configurable in dev mode to allow overriding in tests
+    configurable: !!ngDevMode,
+  });
 }
 
 export function extendsDirectlyFromObject(type: Type<any>): boolean {
@@ -154,97 +233,46 @@ export function extendsDirectlyFromObject(type: Type<any>): boolean {
  */
 export function directiveMetadata(type: Type<any>, metadata: Directive): R3DirectiveMetadataFacade {
   // Reflect inputs and outputs.
-  const propMetadata = getReflect().ownPropMetadata(type);
+  const reflect = getReflect();
+  const propMetadata = reflect.ownPropMetadata(type);
 
   return {
     name: type.name,
     type: type,
     typeArgumentCount: 0,
-    selector: metadata.selector !,
+    selector: metadata.selector !== undefined ? metadata.selector : null,
     deps: reflectDependencies(type),
     host: metadata.host || EMPTY_OBJ,
     propMetadata: propMetadata,
     inputs: metadata.inputs || EMPTY_ARRAY,
     outputs: metadata.outputs || EMPTY_ARRAY,
     queries: extractQueriesMetadata(type, propMetadata, isContentQuery),
-    lifecycle: {usesOnChanges: type.prototype.hasOwnProperty('ngOnChanges')},
-    typeSourceSpan: null !,
+    lifecycle: {usesOnChanges: reflect.hasLifecycleHook(type, 'ngOnChanges')},
+    typeSourceSpan: null!,
     usesInheritance: !extendsDirectlyFromObject(type),
     exportAs: extractExportAs(metadata.exportAs),
     providers: metadata.providers || null,
-    viewQueries: extractQueriesMetadata(type, propMetadata, isViewQuery),
+    viewQueries: extractQueriesMetadata(type, propMetadata, isViewQuery)
   };
 }
 
 /**
- * Adds an `ngBaseDef` to all parent classes of a type that don't have an Angular decorator.
+ * Adds a directive definition to all parent classes of a type that don't have an Angular decorator.
  */
-function addBaseDefToUndecoratedParents(type: Type<any>) {
+function addDirectiveDefToUndecoratedParents(type: Type<any>) {
   const objPrototype = Object.prototype;
-  let parent = Object.getPrototypeOf(type);
+  let parent = Object.getPrototypeOf(type.prototype).constructor;
 
   // Go up the prototype until we hit `Object`.
   while (parent && parent !== objPrototype) {
     // Since inheritance works if the class was annotated already, we only need to add
-    // the base def if there are no annotations and the base def hasn't been created already.
-    if (!getDirectiveDef(parent) && !getComponentDef(parent) && !getBaseDef(parent)) {
-      const facade = extractBaseDefMetadata(parent);
-      facade && compileBase(parent, facade);
+    // the def if there are no annotations and the def hasn't been created already.
+    if (!getDirectiveDef(parent) && !getComponentDef(parent) &&
+        shouldAddAbstractDirective(parent)) {
+      compileDirective(parent, null);
     }
     parent = Object.getPrototypeOf(parent);
   }
-}
-
-/** Compiles the base metadata into a base definition. */
-function compileBase(type: Type<any>, facade: R3BaseMetadataFacade): void {
-  let ngBaseDef: any = null;
-  Object.defineProperty(type, NG_BASE_DEF, {
-    get: () => {
-      if (ngBaseDef === null) {
-        const name = type && type.name;
-        const sourceMapUrl = `ng://${name}/ngBaseDef.js`;
-        const compiler = getCompilerFacade();
-        ngBaseDef = compiler.compileBase(angularCoreEnv, sourceMapUrl, facade);
-      }
-      return ngBaseDef;
-    },
-    // Make the property configurable in dev mode to allow overriding in tests
-    configurable: !!ngDevMode,
-  });
-}
-
-/** Extracts the metadata necessary to construct an `ngBaseDef` from a class. */
-function extractBaseDefMetadata(type: Type<any>): R3BaseMetadataFacade|null {
-  const propMetadata = getReflect().ownPropMetadata(type);
-  const viewQueries = extractQueriesMetadata(type, propMetadata, isViewQuery);
-  const queries = extractQueriesMetadata(type, propMetadata, isContentQuery);
-  let inputs: {[key: string]: string | [string, string]}|undefined;
-  let outputs: {[key: string]: string}|undefined;
-  // We only need to know whether there are any HostListener or HostBinding
-  // decorators present, the parsing logic is in the compiler already.
-  let hasHostDecorators = false;
-
-  for (const field in propMetadata) {
-    propMetadata[field].forEach(ann => {
-      const metadataName = ann.ngMetadataName;
-      if (metadataName === 'Input') {
-        inputs = inputs || {};
-        inputs[field] = ann.bindingPropertyName ? [ann.bindingPropertyName, field] : field;
-      } else if (metadataName === 'Output') {
-        outputs = outputs || {};
-        outputs[field] = ann.bindingPropertyName || field;
-      } else if (metadataName === 'HostBinding' || metadataName === 'HostListener') {
-        hasHostDecorators = true;
-      }
-    });
-  }
-
-  // Only generate the base def if there's any info inside it.
-  if (inputs || outputs || viewQueries.length || queries.length || hasHostDecorators) {
-    return {name: type.name, inputs, outputs, viewQueries, queries, propMetadata};
-  }
-
-  return null;
 }
 
 function convertToR3QueryPredicate(selector: any): any|string[] {
@@ -275,7 +303,7 @@ function extractQueriesMetadata(
                 `Can't construct a query for the property "${field}" of ` +
                 `"${stringifyForError(type)}" since the query selector wasn't defined.`);
           }
-          if (annotations.some(isInputAnn)) {
+          if (annotations.some(isInputAnnotation)) {
             throw new Error(`Cannot combine @Input decorators with query decorators`);
           }
           queriesMeta.push(convertToR3QueryMetadata(field, ann));
@@ -286,12 +314,8 @@ function extractQueriesMetadata(
   return queriesMeta;
 }
 
-function extractExportAs(exportAs: string | undefined): string[]|null {
-  if (exportAs === undefined) {
-    return null;
-  }
-
-  return exportAs.split(',').map(part => part.trim());
+function extractExportAs(exportAs: string|undefined): string[]|null {
+  return exportAs === undefined ? null : splitByComma(exportAs);
 }
 
 function isContentQuery(value: any): value is Query {
@@ -304,10 +328,42 @@ function isViewQuery(value: any): value is Query {
   return name === 'ViewChild' || name === 'ViewChildren';
 }
 
-function isInputAnn(value: any): value is Input {
+function isInputAnnotation(value: any): value is Input {
   return value.ngMetadataName === 'Input';
 }
 
 function splitByComma(value: string): string[] {
   return value.split(',').map(piece => piece.trim());
+}
+
+const LIFECYCLE_HOOKS = [
+  'ngOnChanges', 'ngOnInit', 'ngOnDestroy', 'ngDoCheck', 'ngAfterViewInit', 'ngAfterViewChecked',
+  'ngAfterContentInit', 'ngAfterContentChecked'
+];
+
+function shouldAddAbstractDirective(type: Type<any>): boolean {
+  const reflect = getReflect();
+
+  if (LIFECYCLE_HOOKS.some(hookName => reflect.hasLifecycleHook(type, hookName))) {
+    return true;
+  }
+
+  const propMetadata = reflect.propMetadata(type);
+
+  for (const field in propMetadata) {
+    const annotations = propMetadata[field];
+
+    for (let i = 0; i < annotations.length; i++) {
+      const current = annotations[i];
+      const metadataName = current.ngMetadataName;
+
+      if (isInputAnnotation(current) || isContentQuery(current) || isViewQuery(current) ||
+          metadataName === 'Output' || metadataName === 'HostBinding' ||
+          metadataName === 'HostListener') {
+        return true;
+      }
+    }
+  }
+
+  return false;
 }

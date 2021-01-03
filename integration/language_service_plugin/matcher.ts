@@ -5,7 +5,7 @@ const goldens: string[] = process.argv.slice(2);
 export const goldenMatcher: jasmine.CustomMatcherFactories = {
   toMatchGolden(util: jasmine.MatchersUtil): jasmine.CustomMatcher {
     return {
-      compare(actual: {command: string}, golden: string): jasmine.CustomMatcherResult {
+      compare(actual: {body?: {}}, golden: string): jasmine.CustomMatcherResult {
         if (goldens.includes(golden)) {
           console.error(`Writing golden file ${golden}`);
           writeFileSync(`./goldens/${golden}`, JSON.stringify(actual, null, 2));
@@ -13,7 +13,8 @@ export const goldenMatcher: jasmine.CustomMatcherFactories = {
         }
         const content = readFileSync(`./goldens/${golden}`, 'utf-8');
         const expected = JSON.parse(content.replace("${PWD}", process.env.PWD!));
-        const pass = util.equals(actual, expected);
+        const hasBody = Object.hasOwnProperty.call(expected, 'body');
+        const pass = hasBody ? util.equals(actual.body, expected.body) : util.equals(actual, expected);
         return {
           pass,
           message: `Expected ${JSON.stringify(actual, null, 2)} to match golden ` +

@@ -1,17 +1,18 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 import * as ts from 'typescript';
-import {ClassDeclaration, ClassSymbol, Declaration, Decorator, ReflectionHost} from '../../../src/ngtsc/reflection';
+
+import {ClassDeclaration, Declaration, Decorator, ReflectionHost} from '../../../src/ngtsc/reflection';
 
 export const PRE_R3_MARKER = '__PRE_R3__';
 export const POST_R3_MARKER = '__POST_R3__';
 
-export type SwitchableVariableDeclaration = ts.VariableDeclaration & {initializer: ts.Identifier};
+export type SwitchableVariableDeclaration = ts.VariableDeclaration&{initializer: ts.Identifier};
 export function isSwitchableVariableDeclaration(node: ts.Node):
     node is SwitchableVariableDeclaration {
   return ts.isVariableDeclaration(node) && !!node.initializer &&
@@ -19,27 +20,40 @@ export function isSwitchableVariableDeclaration(node: ts.Node):
 }
 
 /**
- * A structure returned from `getModuleWithProviderInfo` that describes functions
- * that return ModuleWithProviders objects.
+ * The symbol corresponding to a "class" declaration. I.e. a `ts.Symbol` whose `valueDeclaration` is
+ * a `ClassDeclaration`.
  */
-export interface ModuleWithProvidersFunction {
+export type ClassSymbol = ts.Symbol&{valueDeclaration: ClassDeclaration};
+
+/**
+ * A representation of a class that accounts for the potential existence of two `ClassSymbol`s for a
+ * given class, as the compiled JavaScript bundles that ngcc reflects on can have two declarations.
+ */
+export interface NgccClassSymbol {
   /**
-   * The name of the declared function.
+   * The name of the class.
    */
   name: string;
+
   /**
-   * The declaration of the function that returns the `ModuleWithProviders` object.
+   * Represents the symbol corresponding with the outer declaration of the class. This should be
+   * considered the public class symbol, i.e. its declaration is visible to the rest of the program.
    */
-  declaration: ts.SignatureDeclaration;
+  declaration: ClassSymbol;
+
   /**
-   * Declaration of the containing class (if this is a method)
+   * Represents the symbol corresponding with the inner declaration of the class, referred to as its
+   * "implementation". This is not necessarily a `ClassSymbol` but rather just a `ts.Symbol`, as the
+   * inner declaration does not need to satisfy the requirements imposed on a publicly visible class
+   * declaration.
    */
-  container: ts.Declaration|null;
+  implementation: ts.Symbol;
+
   /**
-   * The declaration of the class that the `ngModule` property on the `ModuleWithProviders` object
-   * refers to.
+   * Represents the symbol corresponding to a variable within a class IIFE that may be used to
+   * attach static properties or decorated.
    */
-  ngModule: Declaration<ClassDeclaration>;
+  adjacent?: ts.Symbol;
 }
 
 /**
@@ -52,7 +66,7 @@ export interface NgccReflectionHost extends ReflectionHost {
    * @returns the symbol for the declaration or `undefined` if it is not
    * a "class" or has no symbol.
    */
-  getClassSymbol(node: ts.Node): ClassSymbol|undefined;
+  getClassSymbol(declaration: ts.Node): NgccClassSymbol|undefined;
 
   /**
    * Search the given module for variable declarations in which the initializer
@@ -67,21 +81,33 @@ export interface NgccReflectionHost extends ReflectionHost {
    * @param symbol Class symbol that can refer to a declaration which can hold decorators.
    * @returns An array of decorators or null if none are declared.
    */
-  getDecoratorsOfSymbol(symbol: ClassSymbol): Decorator[]|null;
+  getDecoratorsOfSymbol(symbol: NgccClassSymbol): Decorator[]|null;
 
   /**
    * Retrieves all class symbols of a given source file.
    * @param sourceFile The source file to search for classes.
    * @returns An array of found class symbols.
    */
-  findClassSymbols(sourceFile: ts.SourceFile): ClassSymbol[];
+  findClassSymbols(sourceFile: ts.SourceFile): NgccClassSymbol[];
 
   /**
-   * Search the given source file for exported functions and static class methods that return
-   * ModuleWithProviders objects.
-   * @param f The source file to search for these functions
-   * @returns An array of info items about each of the functions that return ModuleWithProviders
-   * objects.
+   * Find the last node that is relevant to the specified class.
+   *
+   * As well as the main declaration, classes can have additional statements such as static
+   * properties (`SomeClass.staticProp = ...;`) and decorators (`__decorate(SomeClass, ...);`).
+   * It is useful to know exactly where the class "ends" so that we can inject additional
+   * statements after that point.
+   *
+   * @param classSymbol The class whose statements we want.
    */
-  getModuleWithProvidersFunctions(f: ts.SourceFile): ModuleWithProvidersFunction[];
+  getEndOfClass(classSymbol: NgccClassSymbol): ts.Node;
+
+  /**
+   * Check whether a `Declaration` corresponds with a known declaration and set its `known` property
+   * to the appropriate `KnownDeclaration`.
+   *
+   * @param decl The `Declaration` to check.
+   * @return The passed in `Declaration` (potentially enhanced with a `KnownDeclaration`).
+   */
+  detectKnownDeclaration<T extends Declaration>(decl: T): T;
 }

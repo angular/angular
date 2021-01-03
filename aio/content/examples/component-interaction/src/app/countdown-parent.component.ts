@@ -2,8 +2,8 @@
 // #docregion vc
 import { AfterViewInit, ViewChild } from '@angular/core';
 // #docregion lv
-import { Component }                from '@angular/core';
-import { CountdownTimerComponent }  from './countdown-timer.component';
+import { Component } from '@angular/core';
+import { CountdownTimerComponent } from './countdown-timer.component';
 
 // #enddocregion lv
 // #enddocregion vc
@@ -39,7 +39,7 @@ export class CountdownLocalVarParentComponent { }
 })
 export class CountdownViewChildParentComponent implements AfterViewInit {
 
-  @ViewChild(CountdownTimerComponent, {static: false})
+  @ViewChild(CountdownTimerComponent)
   private timerComponent: CountdownTimerComponent;
 
   seconds() { return 0; }

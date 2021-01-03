@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -28,7 +28,6 @@ const requiredNodeModules = {
   '@angular/compiler-cli': resolveNpmTreeArtifact('angular/packages/compiler-cli/npm_package'),
   '@angular/core': resolveNpmTreeArtifact('angular/packages/core/npm_package'),
   '@angular/forms': resolveNpmTreeArtifact('angular/packages/forms/npm_package'),
-  '@angular/http': resolveNpmTreeArtifact('angular/packages/http/npm_package'),
   '@angular/platform-browser':
       resolveNpmTreeArtifact('angular/packages/platform-browser/npm_package'),
   '@angular/platform-browser-dynamic':
@@ -47,6 +46,7 @@ const requiredNodeModules = {
   'tslib': resolveNpmTreeArtifact('npm/node_modules/tslib'),
   'domino': resolveNpmTreeArtifact('npm/node_modules/domino'),
   'xhr2': resolveNpmTreeArtifact('npm/node_modules/xhr2'),
+  'fs-extra': resolveNpmTreeArtifact('npm/node_modules/fs-extra'),
 
   // Fine grained dependencies which are used by the integration test Angular modules, and
   // need to be symlinked so that they can be resolved by NodeJS or NGC.
@@ -56,7 +56,7 @@ const requiredNodeModules = {
   'source-map': resolveNpmTreeArtifact('npm/node_modules/source-map'),
   'source-map-support': resolveNpmTreeArtifact('npm/node_modules/source-map-support'),
   'typescript': resolveNpmTreeArtifact('npm/node_modules/typescript'),
-  'zone.js': resolveNpmTreeArtifact('npm/node_modules/zone.js'),
+  'zone.js': resolveNpmTreeArtifact('angular/packages/zone.js/npm_package'),
 };
 
 /** Sets up the temporary test directory and returns the path to the directory. */

@@ -1,9 +1,9 @@
 // #docregion
-import { Component, Input, OnInit }  from '@angular/core';
-import { FormGroup }                 from '@angular/forms';
+import { Component, Input, OnInit } from '@angular/core';
+import { FormGroup } from '@angular/forms';
 
-import { QuestionBase }              from './question-base';
-import { QuestionControlService }    from './question-control.service';
+import { QuestionBase } from './question-base';
+import { QuestionControlService } from './question-control.service';
 
 @Component({
   selector: 'app-dynamic-form',
@@ -12,7 +12,7 @@ import { QuestionControlService }    from './question-control.service';
 })
 export class DynamicFormComponent implements OnInit {
 
-  @Input() questions: QuestionBase<any>[] = [];
+  @Input() questions: QuestionBase<string>[] = [];
   form: FormGroup;
   payLoad = '';
 
@@ -23,6 +23,6 @@ export class DynamicFormComponent implements OnInit {
   }
 
   onSubmit() {
-    this.payLoad = JSON.stringify(this.form.value);
+    this.payLoad = JSON.stringify(this.form.getRawValue());
   }
 }

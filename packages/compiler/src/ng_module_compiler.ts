@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -43,8 +43,8 @@ export class NgModuleCompiler {
             });
 
     const ngModuleDef = o.importExpr(Identifiers.moduleDef).callFn([o.literalArr(providerDefs)]);
-    const ngModuleDefFactory = o.fn(
-        [new o.FnParam(LOG_VAR.name !)], [new o.ReturnStatement(ngModuleDef)], o.INFERRED_TYPE);
+    const ngModuleDefFactory =
+        o.fn([new o.FnParam(LOG_VAR.name!)], [new o.ReturnStatement(ngModuleDef)], o.INFERRED_TYPE);
 
     const ngModuleFactoryVar = `${identifierName(ngModuleMeta.type)}NgFactory`;
     this._createNgModuleFactory(
@@ -77,7 +77,7 @@ export class NgModuleCompiler {
             .set(value)
             .toDeclStmt(
                 o.importType(
-                    Identifiers.NgModuleFactory, [o.expressionType(ctx.importExpr(reference)) !],
+                    Identifiers.NgModuleFactory, [o.expressionType(ctx.importExpr(reference))!],
                     [o.TypeModifier.Const]),
                 [o.StmtModifier.Final, o.StmtModifier.Exported]);
 

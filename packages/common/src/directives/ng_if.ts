@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -100,7 +100,7 @@ import {Directive, EmbeddedViewRef, Input, TemplateRef, ViewContainerRef, ɵstri
  *
  * The conditional displays the data only if `userStream` returns a value,
  * so you don't need to use the
- * [safe-navigation-operator](guide/template-syntax#safe-navigation-operator) (`?.`)
+ * safe-navigation-operator (`?.`)
  * to guard against null values when accessing properties.
  * You can display an alternative template while waiting for the data.
  *
@@ -130,7 +130,7 @@ import {Directive, EmbeddedViewRef, Input, TemplateRef, ViewContainerRef, ɵstri
  * the content of this unlabeled `<ng-template>` tag.
  *
  * ```
- * <ng-template [ngIf]="hero-list" [ngIfElse]="loading">
+ * <ng-template [ngIf]="heroes" [ngIfElse]="loading">
  *  <div class="hero-list">
  *   ...
  *  </div>
@@ -149,14 +149,14 @@ import {Directive, EmbeddedViewRef, Input, TemplateRef, ViewContainerRef, ɵstri
  * @publicApi
  */
 @Directive({selector: '[ngIf]'})
-export class NgIf {
-  private _context: NgIfContext = new NgIfContext();
-  private _thenTemplateRef: TemplateRef<NgIfContext>|null = null;
-  private _elseTemplateRef: TemplateRef<NgIfContext>|null = null;
-  private _thenViewRef: EmbeddedViewRef<NgIfContext>|null = null;
-  private _elseViewRef: EmbeddedViewRef<NgIfContext>|null = null;
+export class NgIf<T = unknown> {
+  private _context: NgIfContext<T> = new NgIfContext<T>();
+  private _thenTemplateRef: TemplateRef<NgIfContext<T>>|null = null;
+  private _elseTemplateRef: TemplateRef<NgIfContext<T>>|null = null;
+  private _thenViewRef: EmbeddedViewRef<NgIfContext<T>>|null = null;
+  private _elseViewRef: EmbeddedViewRef<NgIfContext<T>>|null = null;
 
-  constructor(private _viewContainer: ViewContainerRef, templateRef: TemplateRef<NgIfContext>) {
+  constructor(private _viewContainer: ViewContainerRef, templateRef: TemplateRef<NgIfContext<T>>) {
     this._thenTemplateRef = templateRef;
   }
 
@@ -164,7 +164,7 @@ export class NgIf {
    * The Boolean expression to evaluate as the condition for showing a template.
    */
   @Input()
-  set ngIf(condition: any) {
+  set ngIf(condition: T) {
     this._context.$implicit = this._context.ngIf = condition;
     this._updateView();
   }
@@ -173,7 +173,7 @@ export class NgIf {
    * A template to show if the condition expression evaluates to true.
    */
   @Input()
-  set ngIfThen(templateRef: TemplateRef<NgIfContext>|null) {
+  set ngIfThen(templateRef: TemplateRef<NgIfContext<T>>|null) {
     assertTemplate('ngIfThen', templateRef);
     this._thenTemplateRef = templateRef;
     this._thenViewRef = null;  // clear previous view if any.
@@ -184,7 +184,7 @@ export class NgIf {
    * A template to show if the condition expression evaluates to false.
    */
   @Input()
-  set ngIfElse(templateRef: TemplateRef<NgIfContext>|null) {
+  set ngIfElse(templateRef: TemplateRef<NgIfContext<T>>|null) {
     assertTemplate('ngIfElse', templateRef);
     this._elseTemplateRef = templateRef;
     this._elseViewRef = null;  // clear previous view if any.
@@ -225,17 +225,28 @@ export class NgIf {
    * narrow its type, which allows the strictNullChecks feature of TypeScript to work with `NgIf`.
    */
   static ngTemplateGuard_ngIf: 'binding';
+
+  /**
+   * Asserts the correct type of the context for the template that `NgIf` will render.
+   *
+   * The presence of this method is a signal to the Ivy template type-check compiler that the
+   * `NgIf` structural directive renders its template with a specific context type.
+   */
+  static ngTemplateContextGuard<T>(dir: NgIf<T>, ctx: any):
+      ctx is NgIfContext<Exclude<T, false|0|''|null|undefined>> {
+    return true;
+  }
 }
 
 /**
  * @publicApi
  */
-export class NgIfContext {
-  public $implicit: any = null;
-  public ngIf: any = null;
+export class NgIfContext<T = unknown> {
+  public $implicit: T = null!;
+  public ngIf: T = null!;
 }
 
-function assertTemplate(property: string, templateRef: TemplateRef<any>| null): void {
+function assertTemplate(property: string, templateRef: TemplateRef<any>|null): void {
   const isTemplateRefOrNull = !!(!templateRef || templateRef.createEmbeddedView);
   if (!isTemplateRefOrNull) {
     throw new Error(`${property} must be a TemplateRef, but received '${stringify(templateRef)}'.`);

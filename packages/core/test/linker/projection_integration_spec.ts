@@ -1,16 +1,15 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CommonModule} from '@angular/common';
-import {Component, ComponentFactoryResolver, ComponentRef, Directive, ElementRef, Injector, Input, NO_ERRORS_SCHEMA, NgModule, OnInit, TemplateRef, ViewChild, ViewContainerRef, ViewEncapsulation} from '@angular/core';
+import {CommonModule, ɵgetDOM as getDOM} from '@angular/common';
+import {Component, ComponentFactoryResolver, ComponentRef, Directive, ElementRef, Injector, Input, NgModule, NO_ERRORS_SCHEMA, OnInit, TemplateRef, ViewChild, ViewContainerRef, ViewEncapsulation} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
-import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {modifiedInIvy} from '@angular/private/testing';
 
@@ -51,9 +50,7 @@ describe('projection', () => {
   it('should support projecting text interpolation to a non bound element with other bound elements after it',
      () => {
        TestBed.overrideComponent(Simple, {
-         set: {
-           template: 'SIMPLE(<div><ng-content></ng-content></div><div [tabIndex]="0">EL</div>)'
-         }
+         set: {template: 'SIMPLE(<div><ng-content></ng-content></div><div [tabIndex]="0">EL</div>)'}
        });
        TestBed.overrideComponent(MainComp, {set: {template: '<simple>{{text}}</simple>'}});
        const main = TestBed.createComponent(MainComp);
@@ -129,7 +126,7 @@ describe('projection', () => {
     }
 
     TestBed.configureTestingModule({imports: [MyModule]});
-    const injector: Injector = TestBed.get(Injector);
+    const injector: Injector = TestBed.inject(Injector);
 
     const componentFactoryResolver: ComponentFactoryResolver =
         injector.get(ComponentFactoryResolver);
@@ -137,8 +134,9 @@ describe('projection', () => {
         componentFactoryResolver.resolveComponentFactory(MultipleContentTagsComponent);
     expect(componentFactory.ngContentSelectors).toEqual(['h1', '*']);
 
-    const nodeOne = getDOM().createTextNode('one');
-    const nodeTwo = getDOM().createTextNode('two');
+
+    const nodeOne = getDOM().getDefaultDocument().createTextNode('one');
+    const nodeTwo = getDOM().getDefaultDocument().createTextNode('two');
     const component = componentFactory.create(injector, [[nodeOne], [nodeTwo]]);
     expect(component.location.nativeElement).toHaveText('(one, two)');
   });
@@ -168,7 +166,7 @@ describe('projection', () => {
         }
 
         TestBed.configureTestingModule({imports: [MyModule]});
-        const injector: Injector = TestBed.get(Injector);
+        const injector: Injector = TestBed.inject(Injector);
 
         const componentFactoryResolver: ComponentFactoryResolver =
             injector.get(ComponentFactoryResolver);
@@ -176,9 +174,9 @@ describe('projection', () => {
             componentFactoryResolver.resolveComponentFactory(MultipleContentTagsComponent);
         expect(componentFactory.ngContentSelectors).toEqual(['h1', '*', 'h2']);
 
-        const nodeOne = getDOM().createTextNode('one');
-        const nodeTwo = getDOM().createTextNode('two');
-        const nodeThree = getDOM().createTextNode('three');
+        const nodeOne = getDOM().getDefaultDocument().createTextNode('one');
+        const nodeTwo = getDOM().getDefaultDocument().createTextNode('two');
+        const nodeThree = getDOM().getDefaultDocument().createTextNode('three');
         const component = componentFactory.create(injector, [[nodeOne], [nodeTwo], [nodeThree]]);
         component.changeDetectorRef.detectChanges();
         expect(component.location.nativeElement.textContent.trim()).toBe('1one 2two 3three');
@@ -244,8 +242,7 @@ describe('projection', () => {
 
   it('should support nesting with content being direct child of a nested component', () => {
     TestBed.configureTestingModule({
-      declarations:
-          [InnerComponent, InnerInnerComponent, OuterComponent, ManualViewportDirective]
+      declarations: [InnerComponent, InnerInnerComponent, OuterComponent, ManualViewportDirective]
     });
     TestBed.overrideComponent(MainComp, {
       set: {
@@ -304,7 +301,7 @@ describe('projection', () => {
           `<ng-content></ng-content>(<ng-template [ngIf]="showing"><ng-content select="div"></ng-content></ng-template>)`
     })
     class Child {
-      @Input() showing !: boolean;
+      @Input() showing!: boolean;
     }
 
     @Component({
@@ -361,11 +358,13 @@ describe('projection', () => {
   });
 
   it('should support moving non projected light dom around', () => {
-    let sourceDirective: ManualViewportDirective = undefined !;
+    let sourceDirective: ManualViewportDirective = undefined!;
 
     @Directive({selector: '[manual]'})
     class ManualViewportDirective {
-      constructor(public templateRef: TemplateRef<Object>) { sourceDirective = this; }
+      constructor(public templateRef: TemplateRef<Object>) {
+        sourceDirective = this;
+      }
     }
 
     TestBed.configureTestingModule(
@@ -491,18 +490,18 @@ describe('projection', () => {
     expect(main.nativeElement).toHaveText('TREE(0:TREE2(1:TREE(2:)))');
   });
 
-  if (getDOM().supportsNativeShadowDOM()) {
-    it('should support native content projection and isolate styles per component', () => {
-      TestBed.configureTestingModule({declarations: [SimpleNative1, SimpleNative2]});
+  if (supportsShadowDOM()) {
+    it('should support shadow dom content projection and isolate styles per component', () => {
+      TestBed.configureTestingModule({declarations: [SimpleShadowDom1, SimpleShadowDom2]});
       TestBed.overrideComponent(MainComp, {
         set: {
-          template: '<simple-native1><div>A</div></simple-native1>' +
-              '<simple-native2><div>B</div></simple-native2>'
+          template: '<simple-shadow-dom1><div>A</div></simple-shadow-dom1>' +
+              '<simple-shadow-dom2><div>B</div></simple-shadow-dom2>'
         }
       });
       const main = TestBed.createComponent(MainComp);
 
-      const childNodes = getDOM().childNodes(main.nativeElement);
+      const childNodes = main.nativeElement.childNodes;
       expect(childNodes[0]).toHaveText('div {color: red}SIMPLE1(A)');
       expect(childNodes[1]).toHaveText('div {color: blue}SIMPLE2(B)');
       main.destroy();
@@ -522,12 +521,12 @@ describe('projection', () => {
       const main = TestBed.createComponent(MainComp);
 
       const mainEl = main.nativeElement;
-      const div1 = getDOM().firstChild(mainEl);
+      const div1 = mainEl.firstChild;
       const div2 = getDOM().createElement('div');
-      getDOM().setAttribute(div2, 'class', 'redStyle');
-      getDOM().appendChild(mainEl, div2);
-      expect(getDOM().getComputedStyle(div1).color).toEqual('rgb(255, 0, 0)');
-      expect(getDOM().getComputedStyle(div2).color).toEqual('rgb(255, 0, 0)');
+      div2.setAttribute('class', 'redStyle');
+      mainEl.appendChild(div2);
+      expect(getComputedStyle(div1).color).toEqual('rgb(255, 0, 0)');
+      expect(getComputedStyle(div2).color).toEqual('rgb(255, 0, 0)');
     });
 
     it('should support emulated style encapsulation', () => {
@@ -542,11 +541,11 @@ describe('projection', () => {
       const main = TestBed.createComponent(MainComp);
 
       const mainEl = main.nativeElement;
-      const div1 = getDOM().firstChild(mainEl);
+      const div1 = mainEl.firstChild;
       const div2 = getDOM().createElement('div');
-      getDOM().appendChild(mainEl, div2);
-      expect(getDOM().getComputedStyle(div1).color).toEqual('rgb(255, 0, 0)');
-      expect(getDOM().getComputedStyle(div2).color).toEqual('rgb(0, 0, 0)');
+      mainEl.appendChild(div2);
+      expect(getComputedStyle(div1).color).toEqual('rgb(255, 0, 0)');
+      expect(getComputedStyle(div2).color).toEqual('rgb(0, 0, 0)');
     });
   }
 
@@ -574,7 +573,7 @@ describe('projection', () => {
     const main = TestBed.createComponent(MainComp);
 
     main.detectChanges();
-    expect(getDOM().getInnerHTML(main.nativeElement))
+    expect(main.nativeElement.innerHTML)
         .toEqual(
             '<cmp-a><cmp-b><cmp-d><i>cmp-d</i></cmp-d></cmp-b>' +
             '<cmp-c><b>cmp-c</b></cmp-c></cmp-a>');
@@ -586,7 +585,7 @@ describe('projection', () => {
     const main = TestBed.createComponent(MainComp);
 
     main.detectChanges();
-    expect(getDOM().getInnerHTML(main.nativeElement))
+    expect(main.nativeElement.innerHTML)
         .toEqual(
             '<cmp-a1>a1<cmp-b11>b11</cmp-b11><cmp-b12>b12</cmp-b12></cmp-a1>' +
             '<cmp-a2>a2<cmp-b21>b21</cmp-b21><cmp-b22>b22</cmp-b22></cmp-a2>');
@@ -594,7 +593,6 @@ describe('projection', () => {
 
   it('should project nodes into nested templates when the main template doesn\'t have <ng-content>',
      () => {
-
        @Component({
          selector: 'content-in-template',
          template:
@@ -622,7 +620,6 @@ describe('projection', () => {
      });
 
   it('should project nodes into nested templates and the main template', () => {
-
     @Component({
       selector: 'content-in-main-and-template',
       template:
@@ -720,7 +717,6 @@ describe('projection', () => {
   });
 
   describe('projectable nodes', () => {
-
     @Component({selector: 'test', template: ''})
     class TestComponent {
       constructor(public cfr: ComponentFactoryResolver) {}
@@ -739,14 +735,20 @@ describe('projection', () => {
     class InsertTplRef implements OnInit {
       constructor(private _vcRef: ViewContainerRef, private _tplRef: TemplateRef<{}>) {}
 
-      ngOnInit() { this._vcRef.createEmbeddedView(this._tplRef); }
+      ngOnInit() {
+        this._vcRef.createEmbeddedView(this._tplRef);
+      }
     }
 
     @Directive({selector: '[delayedInsert]', exportAs: 'delayedInsert'})
     class DelayedInsertTplRef {
       constructor(public vc: ViewContainerRef, public templateRef: TemplateRef<Object>) {}
-      show() { this.vc.createEmbeddedView(this.templateRef); }
-      hide() { this.vc.clear(); }
+      show() {
+        this.vc.createEmbeddedView(this.templateRef);
+      }
+      hide() {
+        this.vc.clear();
+      }
     }
 
     @NgModule({
@@ -855,21 +857,21 @@ class Simple {
 }
 
 @Component({
-  selector: 'simple-native1',
-  template: 'SIMPLE1(<content></content>)',
-  encapsulation: ViewEncapsulation.Native,
+  selector: 'simple-shadow-dom1',
+  template: 'SIMPLE1(<slot></slot>)',
+  encapsulation: ViewEncapsulation.ShadowDom,
   styles: ['div {color: red}']
 })
-class SimpleNative1 {
+class SimpleShadowDom1 {
 }
 
 @Component({
-  selector: 'simple-native2',
-  template: 'SIMPLE2(<content></content>)',
-  encapsulation: ViewEncapsulation.Native,
+  selector: 'simple-shadow-dom2',
+  template: 'SIMPLE2(<slot></slot>)',
+  encapsulation: ViewEncapsulation.ShadowDom,
   styles: ['div {color: blue}']
 })
-class SimpleNative2 {
+class SimpleShadowDom2 {
 }
 
 @Component({selector: 'empty', template: ''})
@@ -893,15 +895,23 @@ class SingleContentTagComponent {
 @Directive({selector: '[manual]'})
 class ManualViewportDirective {
   constructor(public vc: ViewContainerRef, public templateRef: TemplateRef<Object>) {}
-  show() { this.vc.createEmbeddedView(this.templateRef); }
-  hide() { this.vc.clear(); }
+  show() {
+    this.vc.createEmbeddedView(this.templateRef);
+  }
+  hide() {
+    this.vc.clear();
+  }
 }
 
 @Directive({selector: '[project]'})
 class ProjectDirective {
   constructor(public vc: ViewContainerRef) {}
-  show(templateRef: TemplateRef<Object>) { this.vc.createEmbeddedView(templateRef); }
-  hide() { this.vc.clear(); }
+  show(templateRef: TemplateRef<Object>) {
+    this.vc.createEmbeddedView(templateRef);
+  }
+  hide() {
+    this.vc.clear();
+  }
 }
 
 @Component({
@@ -980,7 +990,7 @@ class Tree {
 class CmpD {
   tagName: string;
   constructor(elementRef: ElementRef) {
-    this.tagName = getDOM().tagName(elementRef.nativeElement).toLowerCase();
+    this.tagName = elementRef.nativeElement.tagName.toLowerCase();
   }
 }
 
@@ -989,7 +999,7 @@ class CmpD {
 class CmpC {
   tagName: string;
   constructor(elementRef: ElementRef) {
-    this.tagName = getDOM().tagName(elementRef.nativeElement).toLowerCase();
+    this.tagName = elementRef.nativeElement.tagName.toLowerCase();
   }
 }
 
@@ -1031,4 +1041,8 @@ class CmpA1 {
   template: `{{'a2'}}<cmp-b21></cmp-b21><cmp-b22></cmp-b22>`,
 })
 class CmpA2 {
+}
+
+function supportsShadowDOM(): boolean {
+  return typeof (<any>document.body).attachShadow !== 'undefined';
 }

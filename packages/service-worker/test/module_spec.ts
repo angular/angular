@@ -1,13 +1,13 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ApplicationRef, PLATFORM_ID} from '@angular/core';
-import {TestBed, fakeAsync, flushMicrotasks, tick} from '@angular/core/testing';
+import {ApplicationRef, ErrorHandler, PLATFORM_ID} from '@angular/core';
+import {fakeAsync, flushMicrotasks, TestBed, tick} from '@angular/core/testing';
 import {Subject} from 'rxjs';
 import {filter, take} from 'rxjs/operators';
 
@@ -21,62 +21,66 @@ describe('ServiceWorkerModule', () => {
     return;
   }
 
+  let errorHandlerSpy: jasmine.Spy;
   let swRegisterSpy: jasmine.Spy;
 
   const untilStable = () => {
-    const appRef: ApplicationRef = TestBed.get(ApplicationRef);
+    const appRef: ApplicationRef = TestBed.inject(ApplicationRef);
     return appRef.isStable.pipe(filter(Boolean), take(1)).toPromise();
   };
 
   beforeEach(
       () => swRegisterSpy =
-          spyOn(navigator.serviceWorker, 'register').and.returnValue(Promise.resolve()));
+          spyOn(navigator.serviceWorker, 'register').and.returnValue(Promise.resolve(null as any)));
 
   describe('register()', () => {
-    const configTestBed = async(opts: SwRegistrationOptions) => {
+    const configTestBed = async (opts: SwRegistrationOptions) => {
+      const errorHandler = {handleError: () => {}};
+      errorHandlerSpy = spyOn(errorHandler, 'handleError');
       TestBed.configureTestingModule({
         imports: [ServiceWorkerModule.register('sw.js', opts)],
-        providers: [{provide: PLATFORM_ID, useValue: 'browser'}],
+        providers: [
+          {provide: ErrorHandler, useValue: errorHandler},
+          {provide: PLATFORM_ID, useValue: 'browser'},
+        ],
       });
 
       await untilStable();
     };
 
-    it('sets the registration options', async() => {
+    it('sets the registration options', async () => {
       await configTestBed({enabled: true, scope: 'foo'});
 
-      expect(TestBed.get(SwRegistrationOptions)).toEqual({enabled: true, scope: 'foo'});
+      expect(TestBed.inject(SwRegistrationOptions)).toEqual({enabled: true, scope: 'foo'});
       expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {scope: 'foo'});
     });
 
-    it('can disable the SW', async() => {
+    it('can disable the SW', async () => {
       await configTestBed({enabled: false});
 
-      expect(TestBed.get(SwUpdate).isEnabled).toBe(false);
+      expect(TestBed.inject(SwUpdate).isEnabled).toBe(false);
       expect(swRegisterSpy).not.toHaveBeenCalled();
     });
 
-    it('can enable the SW', async() => {
+    it('can enable the SW', async () => {
       await configTestBed({enabled: true});
 
-      expect(TestBed.get(SwUpdate).isEnabled).toBe(true);
+      expect(TestBed.inject(SwUpdate).isEnabled).toBe(true);
       expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {scope: undefined});
     });
 
-    it('defaults to enabling the SW', async() => {
+    it('defaults to enabling the SW', async () => {
       await configTestBed({});
 
-      expect(TestBed.get(SwUpdate).isEnabled).toBe(true);
+      expect(TestBed.inject(SwUpdate).isEnabled).toBe(true);
       expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {scope: undefined});
     });
 
-    it('catches and a logs registration errors', async() => {
-      const consoleErrorSpy = spyOn(console, 'error');
+    it('catches and a logs registration errors', async () => {
       swRegisterSpy.and.returnValue(Promise.reject('no reason'));
 
       await configTestBed({enabled: true, scope: 'foo'});
-      expect(consoleErrorSpy)
-          .toHaveBeenCalledWith('Service worker registration failed with:', 'no reason');
+      expect(errorHandlerSpy).toHaveBeenCalledWith('no reason');
     });
   });
 
@@ -92,35 +96,35 @@ describe('ServiceWorkerModule', () => {
           });
         };
 
-    it('sets the registration options (and overwrites those set via `.register()`', async() => {
+    it('sets the registration options (and overwrites those set via `.register()`', async () => {
       configTestBed({enabled: true, scope: 'provider'});
       await untilStable();
 
-      expect(TestBed.get(SwRegistrationOptions)).toEqual({enabled: true, scope: 'provider'});
+      expect(TestBed.inject(SwRegistrationOptions)).toEqual({enabled: true, scope: 'provider'});
       expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {scope: 'provider'});
     });
 
-    it('can disable the SW', async() => {
+    it('can disable the SW', async () => {
       configTestBed({enabled: false}, {enabled: true});
       await untilStable();
 
-      expect(TestBed.get(SwUpdate).isEnabled).toBe(false);
+      expect(TestBed.inject(SwUpdate).isEnabled).toBe(false);
       expect(swRegisterSpy).not.toHaveBeenCalled();
     });
 
-    it('can enable the SW', async() => {
+    it('can enable the SW', async () => {
       configTestBed({enabled: true}, {enabled: false});
       await untilStable();
 
-      expect(TestBed.get(SwUpdate).isEnabled).toBe(true);
+      expect(TestBed.inject(SwUpdate).isEnabled).toBe(true);
       expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {scope: undefined});
     });
 
-    it('defaults to enabling the SW', async() => {
+    it('defaults to enabling the SW', async () => {
       configTestBed({}, {enabled: false});
       await untilStable();
 
-      expect(TestBed.get(SwUpdate).isEnabled).toBe(true);
+      expect(TestBed.inject(SwUpdate).isEnabled).toBe(true);
       expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {scope: undefined});
     });
 
@@ -141,13 +145,13 @@ describe('ServiceWorkerModule', () => {
               ],
             });
 
-            // Dummy `get()` call to initialize the test "app".
-            TestBed.get(ApplicationRef);
+            // Dummy `inject()` call to initialize the test "app".
+            TestBed.inject(ApplicationRef);
 
             return isStableSub;
           };
 
-      it('defaults to registering the SW when the app stabilizes', fakeAsync(() => {
+      it('defaults to registering the SW when the app stabilizes (under 30s)', fakeAsync(() => {
            const isStableSub = configTestBedWithMockedStability();
 
            isStableSub.next(false);
@@ -156,19 +160,100 @@ describe('ServiceWorkerModule', () => {
            tick();
            expect(swRegisterSpy).not.toHaveBeenCalled();
 
+           tick(20000);
+           expect(swRegisterSpy).not.toHaveBeenCalled();
+
            isStableSub.next(true);
 
            tick();
            expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {scope: undefined});
          }));
 
-      it('registers the SW when the app stabilizes with `registerWhenStable`', fakeAsync(() => {
+      it('defaults to registering the SW after 30s if the app does not stabilize sooner',
+         fakeAsync(() => {
+           const isStableSub = configTestBedWithMockedStability();
+
+           tick(29999);
+           expect(swRegisterSpy).not.toHaveBeenCalled();
+
+           tick(1);
+           expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {scope: undefined});
+         }));
+
+      it('registers the SW when the app stabilizes with `registerWhenStable:<timeout>`',
+         fakeAsync(() => {
+           const isStableSub = configTestBedWithMockedStability('registerWhenStable:1000');
+
+           isStableSub.next(false);
+           isStableSub.next(false);
+
+           tick();
+           expect(swRegisterSpy).not.toHaveBeenCalled();
+
+           tick(500);
+           expect(swRegisterSpy).not.toHaveBeenCalled();
+
+           isStableSub.next(true);
+
+           tick();
+           expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {scope: undefined});
+         }));
+
+      it('registers the SW after `timeout` if the app does not stabilize with `registerWhenStable:<timeout>`',
+         fakeAsync(() => {
+           configTestBedWithMockedStability('registerWhenStable:1000');
+
+           tick(999);
+           expect(swRegisterSpy).not.toHaveBeenCalled();
+
+           tick(1);
+           expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {scope: undefined});
+         }));
+
+      it('registers the SW asap (asynchronously) before the app stabilizes with `registerWhenStable:0`',
+         fakeAsync(() => {
+           const isStableSub = configTestBedWithMockedStability('registerWhenStable:0');
+
+           // Create a microtask.
+           Promise.resolve();
+
+           flushMicrotasks();
+           expect(swRegisterSpy).not.toHaveBeenCalled();
+
+           tick(0);
+           expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {scope: undefined});
+         }));
+
+      it('registers the SW only when the app stabilizes with `registerWhenStable:`',
+         fakeAsync(() => {
+           const isStableSub = configTestBedWithMockedStability('registerWhenStable:');
+
+           isStableSub.next(false);
+           isStableSub.next(false);
+
+           tick();
+           expect(swRegisterSpy).not.toHaveBeenCalled();
+
+           tick(60000);
+           expect(swRegisterSpy).not.toHaveBeenCalled();
+
+           isStableSub.next(true);
+
+           tick();
+           expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {scope: undefined});
+         }));
+
+      it('registers the SW only when the app stabilizes with `registerWhenStable`',
+         fakeAsync(() => {
            const isStableSub = configTestBedWithMockedStability('registerWhenStable');
 
            isStableSub.next(false);
            isStableSub.next(false);
 
            tick();
+           expect(swRegisterSpy).not.toHaveBeenCalled();
+
+           tick(60000);
            expect(swRegisterSpy).not.toHaveBeenCalled();
 
            isStableSub.next(true);

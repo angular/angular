@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -16,7 +16,9 @@ function plural(n: number): number {
 }
 
 export default [
-  'mfe', [['AM', 'PM'], u, u], u,
+  'mfe',
+  [['AM', 'PM'], u, u],
+  u,
   [
     ['d', 'l', 'm', 'm', 'z', 'v', 's'], ['dim', 'lin', 'mar', 'mer', 'ze', 'van', 'sam'],
     ['dimans', 'lindi', 'mardi', 'merkredi', 'zedi', 'vandredi', 'samdi'],
@@ -31,10 +33,19 @@ export default [
       'desam'
     ]
   ],
-  u, [['av. Z-K', 'ap. Z-K'], u, ['avan Zezi-Krist', 'apre Zezi-Krist']], 1, [6, 0],
+  u,
+  [['av. Z-K', 'ap. Z-K'], u, ['avan Zezi-Krist', 'apre Zezi-Krist']],
+  1,
+  [6, 0],
   ['d/M/y', 'd MMM, y', 'd MMMM y', 'EEEE d MMMM y'],
-  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'], ['{1} {0}', u, u, u],
+  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
+  ['{1} {0}', u, u, u],
   ['.', ' ', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '¤ #,##0.00', '#E0'], 'Rs', 'roupi morisien',
-  {'JPY': ['JP¥', '¥'], 'MUR': ['Rs'], 'USD': ['US$', '$']}, plural
+  ['#,##0.###', '#,##0%', '¤ #,##0.00', '#E0'],
+  'MUR',
+  'Rs',
+  'roupi morisien',
+  {'JPY': ['JP¥', '¥'], 'MUR': ['Rs'], 'USD': ['US$', '$']},
+  'ltr',
+  plural
 ];

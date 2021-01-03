@@ -69,7 +69,7 @@ This section describes how each of the aforementioned sub-tasks is accomplished:
    We perform a number of preliminary checks:
    - Was the webhook triggered by the designated CircleCI job (currently `aio_preview`)?
    - Was the build successful?
-   - Are the associated GitHub organisation and repository what we expect (e.g. `angular/angular`)?
+   - Are the associated GitHub organization and repository what we expect (e.g. `angular/angular`)?
    - Has the PR touched any files that might affect the angular.io app (currently the `aio/` or
      `packages/` directories, ignoring spec files)?
 
@@ -98,7 +98,7 @@ This section describes how each of the aforementioned sub-tasks is accomplished:
       Such a label can only have been added by a maintainer (with the necessary rights) and
       designates that they have manually verified the PR contents.
    2. We can verify (again using the GitHub API) the author's membership in one of the
-      whitelisted/trusted GitHub teams. For this operation, we need a Personal Access Token with the
+      trusted GitHub teams. For this operation, we need a Personal Access Token with the
       `read:org` scope issued by a user that can "see" the specified GitHub organization.
       Here too, we use the token by @mary-poppins.
 

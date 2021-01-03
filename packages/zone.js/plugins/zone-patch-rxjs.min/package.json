@@ -1,0 +1,7 @@
+{
+  "name": "zone.js/zone-patch-rxjs.min",
+  "main": "../../bundles/zone-patch-rxjs.umd.min.js",
+  "fesm2015": "../../fesm2015/zone-patch-rxjs.min.js",
+  "es2015": "../../fesm2015/zone-patch-rxjs.min.js",
+  "module": "../../fesm2015/zone-patch-rxjs.min.js"
+}

@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -33,6 +33,7 @@ export class ReactiveErrors {
 
         ${Examples.ngModelGroup}`);
   }
+
   static missingFormException(): void {
     throw new Error(`formGroup expects a FormGroup instance. Please pass one in.
 
@@ -66,8 +67,8 @@ export class ReactiveErrors {
       It looks like you're using the disabled attribute with a reactive form directive. If you set disabled to true
       when you set up this control in your component class, the disabled attribute will actually be set in the DOM for
       you. We recommend using this approach to avoid 'changed after checked' errors.
-       
-      Example: 
+
+      Example:
       form = new FormGroup({
         first: new FormControl({value: 'Nancy', disabled: true}, Validators.required),
         last: new FormControl('Drew', Validators.required)
@@ -77,14 +78,15 @@ export class ReactiveErrors {
 
   static ngModelWarning(directiveName: string): void {
     console.warn(`
-    It looks like you're using ngModel on the same form field as ${directiveName}. 
-    Support for using the ngModel input property and ngModelChange event with 
-    reactive form directives has been deprecated in Angular v6 and will be removed 
-    in Angular v7.
-    
+    It looks like you're using ngModel on the same form field as ${directiveName}.
+    Support for using the ngModel input property and ngModelChange event with
+    reactive form directives has been deprecated in Angular v6 and will be removed
+    in a future version of Angular.
+
     For more information on this, see our API docs here:
-    https://angular.io/api/forms/${directiveName === 'formControl' ? 'FormControlDirective' 
-      : 'FormControlName'}#use-with-ngmodel
+    https://angular.io/api/forms/${
+        directiveName === 'formControl' ? 'FormControlDirective' :
+                                          'FormControlName'}#use-with-ngmodel
     `);
   }
 }

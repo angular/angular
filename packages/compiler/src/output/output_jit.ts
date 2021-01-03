@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -12,6 +12,7 @@ import {CompileReflector} from '../compile_reflector';
 import {EmitterVisitorContext} from './abstract_emitter';
 import {AbstractJsEmitterVisitor} from './abstract_js_emitter';
 import * as o from './output_ast';
+import {newTrustedFunctionForJIT} from './output_jit_trusted_types';
 
 /**
  * A helper class to manage the evaluation of JIT generated code.
@@ -69,11 +70,11 @@ export class JitEvaluator {
       // function anonymous(a,b,c
       // /**/) { ... }```
       // We don't want to hard code this fact, so we auto detect it via an empty function first.
-      const emptyFn = new Function(...fnArgNames.concat('return null;')).toString();
+      const emptyFn = newTrustedFunctionForJIT(...fnArgNames.concat('return null;')).toString();
       const headerLines = emptyFn.slice(0, emptyFn.indexOf('return null;')).split('\n').length - 1;
       fnBody += `\n${ctx.toSourceMapGenerator(sourceUrl, headerLines).toJsComment()}`;
     }
-    const fn = new Function(...fnArgNames.concat(fnBody));
+    const fn = newTrustedFunctionForJIT(...fnArgNames.concat(fnBody));
     return this.executeFunction(fn, fnArgValues);
   }
 
@@ -87,7 +88,9 @@ export class JitEvaluator {
    * @param args The arguments to pass to the function being executed.
    * @returns The return value of the executed function.
    */
-  executeFunction(fn: Function, args: any[]) { return fn(...args); }
+  executeFunction(fn: Function, args: any[]) {
+    return fn(...args);
+  }
 }
 
 /**
@@ -98,7 +101,9 @@ export class JitEmitterVisitor extends AbstractJsEmitterVisitor {
   private _evalArgValues: any[] = [];
   private _evalExportedVars: string[] = [];
 
-  constructor(private reflector: CompileReflector) { super(); }
+  constructor(private reflector: CompileReflector) {
+    super();
+  }
 
   createReturnStmt(ctx: EmitterVisitorContext) {
     const stmt = new o.ReturnStatement(new o.LiteralMapExpr(this._evalExportedVars.map(

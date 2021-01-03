@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -78,11 +78,11 @@ export class Extractor {
               // Template URL points to either an HTML or TS file depending on
               // whether the file is used with `templateUrl:` or `template:`,
               // respectively.
-              const templateUrl = compMeta.template !.templateUrl !;
+              const templateUrl = compMeta.template !.templateUrl!;
               const interpolationConfig =
                   InterpolationConfig.fromArray(compMeta.template !.interpolation);
               errors.push(...this.messageBundle.updateFromTemplate(
-                  html, templateUrl, interpolationConfig) !);
+                  html, templateUrl, interpolationConfig)!);
             });
           });
 

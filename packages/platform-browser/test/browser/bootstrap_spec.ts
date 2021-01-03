@@ -1,21 +1,20 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {DOCUMENT, isPlatformBrowser} from '@angular/common';
-import {APP_INITIALIZER, CUSTOM_ELEMENTS_SCHEMA, Compiler, Component, Directive, ErrorHandler, Inject, Input, LOCALE_ID, NgModule, OnDestroy, PLATFORM_ID, PLATFORM_INITIALIZER, Pipe, Provider, StaticProvider, Type, VERSION, createPlatformFactory} from '@angular/core';
+import {DOCUMENT, isPlatformBrowser, ɵgetDOM as getDOM} from '@angular/common';
+import {APP_INITIALIZER, Compiler, Component, createPlatformFactory, CUSTOM_ELEMENTS_SCHEMA, Directive, ErrorHandler, Inject, Injector, Input, LOCALE_ID, NgModule, OnDestroy, Pipe, PLATFORM_ID, PLATFORM_INITIALIZER, Provider, Sanitizer, StaticProvider, Type, VERSION} from '@angular/core';
 import {ApplicationRef, destroyPlatform} from '@angular/core/src/application_ref';
 import {Console} from '@angular/core/src/console';
 import {ComponentRef} from '@angular/core/src/linker/component_factory';
 import {Testability, TestabilityRegistry} from '@angular/core/src/testability/testability';
-import {AsyncTestCompleter, Log, afterEach, beforeEach, beforeEachProviders, describe, inject, it} from '@angular/core/testing/src/testing_internal';
+import {afterEach, AsyncTestCompleter, beforeEach, beforeEachProviders, describe, inject, it, Log} from '@angular/core/testing/src/testing_internal';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
-import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {ivyEnabled, modifiedInIvy, onlyInIvy} from '@angular/private/testing';
 
@@ -26,7 +25,9 @@ class NonExistentComp {
 @Component({selector: 'hello-app', template: '{{greeting}} world!'})
 class HelloRootCmp {
   greeting: string;
-  constructor() { this.greeting = 'hello'; }
+  constructor() {
+    this.greeting = 'hello';
+  }
 }
 
 @Component({selector: 'hello-app', template: 'before: <ng-content></ng-content> after: done'})
@@ -37,7 +38,9 @@ class HelloRootCmpContent {
 @Component({selector: 'hello-app-2', template: '{{greeting}} world, again!'})
 class HelloRootCmp2 {
   greeting: string;
-  constructor() { this.greeting = 'hello'; }
+  constructor() {
+    this.greeting = 'hello';
+  }
 }
 
 @Component({selector: 'hello-app', template: ''})
@@ -53,7 +56,9 @@ class HelloRootCmp3 {
 class HelloRootCmp4 {
   appRef: any /** TODO #9100 */;
 
-  constructor(@Inject(ApplicationRef) appRef: ApplicationRef) { this.appRef = appRef; }
+  constructor(@Inject(ApplicationRef) appRef: ApplicationRef) {
+    this.appRef = appRef;
+  }
 }
 
 @Component({selector: 'hello-app'})
@@ -67,9 +72,13 @@ class HelloRootDirectiveIsNotCmp {
 @Component({selector: 'hello-app', template: ''})
 class HelloOnDestroyTickCmp implements OnDestroy {
   appRef: ApplicationRef;
-  constructor(@Inject(ApplicationRef) appRef: ApplicationRef) { this.appRef = appRef; }
+  constructor(@Inject(ApplicationRef) appRef: ApplicationRef) {
+    this.appRef = appRef;
+  }
 
-  ngOnDestroy(): void { this.appRef.tick(); }
+  ngOnDestroy(): void {
+    this.appRef.tick();
+  }
 }
 
 @Component({selector: 'hello-app', templateUrl: './sometemplate.html'})
@@ -80,13 +89,14 @@ class HelloUrlCmp {
 @Directive({selector: '[someDir]', host: {'[title]': 'someDir'}})
 class SomeDirective {
   // TODO(issue/24571): remove '!'.
-  @Input()
-  someDir !: string;
+  @Input() someDir!: string;
 }
 
 @Pipe({name: 'somePipe'})
 class SomePipe {
-  transform(value: string): any { return `transformed ${value}`; }
+  transform(value: string): any {
+    return `transformed ${value}`;
+  }
 }
 
 @Component({selector: 'hello-app', template: `<div  [someDir]="'someValue' | somePipe"></div>`})
@@ -100,7 +110,9 @@ class HelloCmpUsingCustomElement {
 
 class MockConsole {
   res: any[][] = [];
-  error(...s: any[]): void { this.res.push(s); }
+  error(...s: any[]): void {
+    this.res.push(s);
+  }
 }
 
 
@@ -108,7 +120,9 @@ class DummyConsole implements Console {
   public warnings: string[] = [];
 
   log(message: string) {}
-  warn(message: string) { this.warnings.push(message); }
+  warn(message: string) {
+    this.warnings.push(message);
+  }
 }
 
 
@@ -136,14 +150,16 @@ function bootstrap(
     if (isNode) return;
     let compilerConsole: DummyConsole;
 
-    beforeEachProviders(() => { return [Log]; });
+    beforeEachProviders(() => {
+      return [Log];
+    });
 
     beforeEach(inject([DOCUMENT], (doc: any) => {
       destroyPlatform();
       compilerConsole = new DummyConsole();
       testProviders = [{provide: Console, useValue: compilerConsole}];
 
-      const oldRoots = getDOM().querySelectorAll(doc, 'hello-app,hello-app-2,light-dom-el');
+      const oldRoots = doc.querySelectorAll('hello-app,hello-app-2,light-dom-el');
       for (let i = 0; i < oldRoots.length; i++) {
         getDOM().remove(oldRoots[i]);
       }
@@ -151,10 +167,10 @@ function bootstrap(
       el = getDOM().createElement('hello-app', doc);
       el2 = getDOM().createElement('hello-app-2', doc);
       lightDom = getDOM().createElement('light-dom-el', doc);
-      getDOM().appendChild(doc.body, el);
-      getDOM().appendChild(doc.body, el2);
-      getDOM().appendChild(el, lightDom);
-      getDOM().setText(lightDom, 'loading');
+      doc.body.appendChild(el);
+      doc.body.appendChild(el2);
+      el.appendChild(lightDom);
+      lightDom.textContent = 'loading';
     }));
 
     afterEach(destroyPlatform);
@@ -188,6 +204,19 @@ function bootstrap(
                async.done();
              });
            }));
+
+    it('should retrieve sanitizer', inject([Injector], (injector: Injector) => {
+         const sanitizer: Sanitizer|null = injector.get(Sanitizer, null);
+         if (ivyEnabled) {
+           // In Ivy we don't want to have sanitizer in DI. We use DI only to overwrite the
+           // sanitizer, but not for default one. The default one is pulled in by the Ivy
+           // instructions as needed.
+           expect(sanitizer).toBe(null);
+         } else {
+           // In VE we always need to have Sanitizer available.
+           expect(sanitizer).not.toBe(null);
+         }
+       }));
 
     it('should throw if no element is found',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
@@ -407,7 +436,6 @@ function bootstrap(
 
     it('should remove styles when transitioning from a server render',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-
          @Component({
            selector: 'root',
            template: 'root',
@@ -428,17 +456,18 @@ function bootstrap(
          const platform = platformBrowserDynamic();
          const document = platform.injector.get(DOCUMENT);
          const style = dom.createElement('style', document);
-         dom.setAttribute(style, 'ng-transition', 'my-app');
-         dom.appendChild(document.head, style);
+         style.setAttribute('ng-transition', 'my-app');
+         document.head.appendChild(style);
 
          const root = dom.createElement('root', document);
-         dom.appendChild(document.body, root);
+         document.body.appendChild(root);
 
          platform.bootstrapModule(TestModule).then(() => {
            const styles: HTMLElement[] =
-               Array.prototype.slice.apply(dom.getElementsByTagName(document, 'style') || []);
-           styles.forEach(
-               style => { expect(dom.getAttribute(style, 'ng-transition')).not.toBe('my-app'); });
+               Array.prototype.slice.apply(document.getElementsByTagName('style') || []);
+           styles.forEach(style => {
+             expect(style.getAttribute('ng-transition')).not.toBe('my-app');
+           });
            async.done();
          });
        }));
@@ -475,7 +504,9 @@ function bootstrap(
       })
       class CompA {
         title: string = '';
-        ngDoCheck() { log.push('CompA:ngDoCheck'); }
+        ngDoCheck() {
+          log.push('CompA:ngDoCheck');
+        }
         onClick() {
           this.title = 'CompA';
           log.push('CompA:onClick');
@@ -488,7 +519,9 @@ function bootstrap(
       })
       class CompB {
         title: string = '';
-        ngDoCheck() { log.push('CompB:ngDoCheck'); }
+        ngDoCheck() {
+          log.push('CompB:ngDoCheck');
+        }
         onClick() {
           this.title = 'CompB';
           log.push('CompB:onClick');

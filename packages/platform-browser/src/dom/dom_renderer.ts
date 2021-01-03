@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -20,6 +20,8 @@ export const NAMESPACE_URIS: {[ns: string]: string} = {
 };
 
 const COMPONENT_REGEX = /%COMP%/g;
+const NG_DEV_MODE = typeof ngDevMode === 'undefined' || !!ngDevMode;
+
 export const COMPONENT_VARIABLE = '%COMP%';
 export const HOST_ATTR = `_nghost-${COMPONENT_VARIABLE}`;
 export const CONTENT_ATTR = `_ngcontent-${COMPONENT_VARIABLE}`;
@@ -48,15 +50,31 @@ export function flattenStyles(
 }
 
 function decoratePreventDefault(eventHandler: Function): Function {
+  // `DebugNode.triggerEventHandler` needs to know if the listener was created with
+  // decoratePreventDefault or is a listener added outside the Angular context so it can handle the
+  // two differently. In the first case, the special '__ngUnwrap__' token is passed to the unwrap
+  // the listener (see below).
   return (event: any) => {
+    // Ivy uses '__ngUnwrap__' as a special token that allows us to unwrap the function
+    // so that it can be invoked programmatically by `DebugNode.triggerEventHandler`. The debug_node
+    // can inspect the listener toString contents for the existence of this special token. Because
+    // the token is a string literal, it is ensured to not be modified by compiled code.
+    if (event === '__ngUnwrap__') {
+      return eventHandler;
+    }
+
     const allowDefaultBehavior = eventHandler(event);
     if (allowDefaultBehavior === false) {
       // TODO(tbosch): move preventDefault into event plugins...
       event.preventDefault();
       event.returnValue = false;
     }
+
+    return undefined;
   };
 }
+
+let hasLoggedNativeEncapsulationWarning = false;
 
 @Injectable()
 export class DomRendererFactory2 implements RendererFactory2 {
@@ -84,8 +102,16 @@ export class DomRendererFactory2 implements RendererFactory2 {
         (<EmulatedEncapsulationDomRenderer2>renderer).applyToHost(element);
         return renderer;
       }
-      case ViewEncapsulation.Native:
+      case 1:
       case ViewEncapsulation.ShadowDom:
+        // TODO(FW-2290): remove the `case 1:` fallback logic and the warning in v12.
+        if ((typeof ngDevMode === 'undefined' || ngDevMode) &&
+            !hasLoggedNativeEncapsulationWarning && type.encapsulation === 1) {
+          hasLoggedNativeEncapsulationWarning = true;
+          console.warn(
+              'ViewEncapsulation.Native is no longer supported. Falling back to ViewEncapsulation.ShadowDom. The fallback will be removed in v12.');
+        }
+
         return new ShadowDomRenderer(this.eventManager, this.sharedStylesHost, element, type);
       default: {
         if (!this.rendererByCompId.has(type.id)) {
@@ -121,11 +147,17 @@ class DefaultDomRenderer2 implements Renderer2 {
     return document.createElement(name);
   }
 
-  createComment(value: string): any { return document.createComment(value); }
+  createComment(value: string): any {
+    return document.createComment(value);
+  }
 
-  createText(value: string): any { return document.createTextNode(value); }
+  createText(value: string): any {
+    return document.createTextNode(value);
+  }
 
-  appendChild(parent: any, newChild: any): void { parent.appendChild(newChild); }
+  appendChild(parent: any, newChild: any): void {
+    parent.appendChild(newChild);
+  }
 
   insertBefore(parent: any, newChild: any, refChild: any): void {
     if (parent) {
@@ -151,14 +183,18 @@ class DefaultDomRenderer2 implements Renderer2 {
     return el;
   }
 
-  parentNode(node: any): any { return node.parentNode; }
+  parentNode(node: any): any {
+    return node.parentNode;
+  }
 
-  nextSibling(node: any): any { return node.nextSibling; }
+  nextSibling(node: any): any {
+    return node.nextSibling;
+  }
 
   setAttribute(el: any, name: string, value: string, namespace?: string): void {
     if (namespace) {
       name = namespace + ':' + name;
-      // TODO(benlesh): Ivy may cause issues here because it's passing around
+      // TODO(FW-811): Ivy may cause issues here because it's passing around
       // full URIs for namespaces, therefore this lookup will fail.
       const namespaceUri = NAMESPACE_URIS[namespace];
       if (namespaceUri) {
@@ -173,13 +209,13 @@ class DefaultDomRenderer2 implements Renderer2 {
 
   removeAttribute(el: any, name: string, namespace?: string): void {
     if (namespace) {
-      // TODO(benlesh): Ivy may cause issues here because it's passing around
+      // TODO(FW-811): Ivy may cause issues here because it's passing around
       // full URIs for namespaces, therefore this lookup will fail.
       const namespaceUri = NAMESPACE_URIS[namespace];
       if (namespaceUri) {
         el.removeAttributeNS(namespaceUri, name);
       } else {
-        // TODO(benlesh): Since ivy is passing around full URIs for namespaces
+        // TODO(FW-811): Since ivy is passing around full URIs for namespaces
         // this could result in properties like `http://www.w3.org/2000/svg:cx="123"`,
         // which is wrong.
         el.removeAttribute(`${namespace}:${name}`);
@@ -189,14 +225,17 @@ class DefaultDomRenderer2 implements Renderer2 {
     }
   }
 
-  addClass(el: any, name: string): void { el.classList.add(name); }
+  addClass(el: any, name: string): void {
+    el.classList.add(name);
+  }
 
-  removeClass(el: any, name: string): void { el.classList.remove(name); }
+  removeClass(el: any, name: string): void {
+    el.classList.remove(name);
+  }
 
   setStyle(el: any, style: string, value: any, flags: RendererStyleFlags2): void {
-    if (flags & RendererStyleFlags2.DashCase) {
-      el.style.setProperty(
-          style, value, !!(flags & RendererStyleFlags2.Important) ? 'important' : '');
+    if (flags & (RendererStyleFlags2.DashCase | RendererStyleFlags2.Important)) {
+      el.style.setProperty(style, value, flags & RendererStyleFlags2.Important ? 'important' : '');
     } else {
       el.style[style] = value;
     }
@@ -213,29 +252,31 @@ class DefaultDomRenderer2 implements Renderer2 {
   }
 
   setProperty(el: any, name: string, value: any): void {
-    checkNoSyntheticProp(name, 'property');
+    NG_DEV_MODE && checkNoSyntheticProp(name, 'property');
     el[name] = value;
   }
 
-  setValue(node: any, value: string): void { node.nodeValue = value; }
+  setValue(node: any, value: string): void {
+    node.nodeValue = value;
+  }
 
   listen(target: 'window'|'document'|'body'|any, event: string, callback: (event: any) => boolean):
       () => void {
-    checkNoSyntheticProp(event, 'listener');
+    NG_DEV_MODE && checkNoSyntheticProp(event, 'listener');
     if (typeof target === 'string') {
       return <() => void>this.eventManager.addGlobalEventListener(
           target, event, decoratePreventDefault(callback));
     }
     return <() => void>this.eventManager.addEventListener(
-               target, event, decoratePreventDefault(callback)) as() => void;
+               target, event, decoratePreventDefault(callback)) as () => void;
   }
 }
 
 const AT_CHARCODE = (() => '@'.charCodeAt(0))();
 function checkNoSyntheticProp(name: string, nameKind: string) {
   if (name.charCodeAt(0) === AT_CHARCODE) {
-    throw new Error(
-        `Found the synthetic ${nameKind} ${name}. Please include either "BrowserAnimationsModule" or "NoopAnimationsModule" in your application.`);
+    throw new Error(`Found the synthetic ${nameKind} ${
+        name}. Please include either "BrowserAnimationsModule" or "NoopAnimationsModule" in your application.`);
   }
 }
 
@@ -254,7 +295,9 @@ class EmulatedEncapsulationDomRenderer2 extends DefaultDomRenderer2 {
     this.hostAttr = shimHostAttribute(appId + '-' + component.id);
   }
 
-  applyToHost(element: any) { super.setAttribute(element, this.hostAttr, ''); }
+  applyToHost(element: any) {
+    super.setAttribute(element, this.hostAttr, '');
+  }
 
   createElement(parent: any, name: string): Element {
     const el = super.createElement(parent, name);
@@ -268,13 +311,9 @@ class ShadowDomRenderer extends DefaultDomRenderer2 {
 
   constructor(
       eventManager: EventManager, private sharedStylesHost: DomSharedStylesHost,
-      private hostEl: any, private component: RendererType2) {
+      private hostEl: any, component: RendererType2) {
     super(eventManager);
-    if (component.encapsulation === ViewEncapsulation.ShadowDom) {
-      this.shadowRoot = (hostEl as any).attachShadow({mode: 'open'});
-    } else {
-      this.shadowRoot = (hostEl as any).createShadowRoot();
-    }
+    this.shadowRoot = (hostEl as any).attachShadow({mode: 'open'});
     this.sharedStylesHost.addHost(this.shadowRoot);
     const styles = flattenStyles(component.id, component.styles, []);
     for (let i = 0; i < styles.length; i++) {
@@ -284,9 +323,13 @@ class ShadowDomRenderer extends DefaultDomRenderer2 {
     }
   }
 
-  private nodeOrShadowRoot(node: any): any { return node === this.hostEl ? this.shadowRoot : node; }
+  private nodeOrShadowRoot(node: any): any {
+    return node === this.hostEl ? this.shadowRoot : node;
+  }
 
-  destroy() { this.sharedStylesHost.removeHost(this.shadowRoot); }
+  destroy() {
+    this.sharedStylesHost.removeHost(this.shadowRoot);
+  }
 
   appendChild(parent: any, newChild: any): void {
     return super.appendChild(this.nodeOrShadowRoot(parent), newChild);

@@ -1,0 +1,47 @@
+{
+  "$schema": "../../test_case_schema.json",
+  "cases": [
+    {
+      "description": "should pass in the component metadata styles into the component definition and shim them using style encapsulation",
+      "inputFiles": [
+        "encapsulation_default.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect template",
+          "files": [
+            "encapsulation_default.js"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should pass in styles, but skip shimming the styles if the view encapsulation signals not to",
+      "inputFiles": [
+        "encapsulation_none.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect template",
+          "files": [
+            "encapsulation_none.js"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should pass in the component metadata styles into the component definition but skip shimming when style encapsulation is set to shadow dom",
+      "inputFiles": [
+        "encapsulation_shadow_dom.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect template",
+          "files": [
+            "encapsulation_shadow_dom.js"
+          ]
+        }
+      ]
+    }
+  ]
+}

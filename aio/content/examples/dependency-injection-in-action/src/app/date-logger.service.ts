@@ -1,6 +1,6 @@
 /* tslint:disable:one-line*/
 // #docregion
-import { Injectable }    from '@angular/core';
+import { Injectable } from '@angular/core';
 
 import { LoggerService } from './logger.service';
 

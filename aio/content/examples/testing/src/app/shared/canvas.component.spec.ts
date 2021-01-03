@@ -1,27 +1,39 @@
-import { TestBed, async, tick, fakeAsync } from '@angular/core/testing';
+// #docplaster
+// #docregion without-toBlob-macrotask
+import { fakeAsync, TestBed, tick, waitForAsync } from '@angular/core/testing';
+
 import { CanvasComponent } from './canvas.component';
+
 describe('CanvasComponent', () => {
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      declarations: [
-        CanvasComponent
-      ],
-    }).compileComponents();
-  }));
+  // #enddocregion without-toBlob-macrotask
+  // #docregion enable-toBlob-macrotask
   beforeEach(() => {
-    window['__zone_symbol__FakeAsyncTestMacroTask'] = [
+    (window as any).__zone_symbol__FakeAsyncTestMacroTask = [
       {
         source: 'HTMLCanvasElement.toBlob',
-        callbackArgs: [{ size: 200 }]
-      }
+        callbackArgs: [{size: 200}],
+      },
     ];
   });
-  it('should be able to generate blob data from canvas', fakeAsync(() => {
-    const fixture = TestBed.createComponent(CanvasComponent);
-    fixture.detectChanges();
-    tick();
-    const app = fixture.debugElement.componentInstance;
-    expect(app.blobSize).toBeGreaterThan(0);
+  // #enddocregion enable-toBlob-macrotask
+  // #docregion without-toBlob-macrotask
+  beforeEach(waitForAsync(() => {
+    TestBed
+        .configureTestingModule({
+          declarations: [CanvasComponent],
+        })
+        .compileComponents();
   }));
-});
 
+  it('should be able to generate blob data from canvas', fakeAsync(() => {
+       const fixture = TestBed.createComponent(CanvasComponent);
+       const canvasComp = fixture.componentInstance;
+
+       fixture.detectChanges();
+       expect(canvasComp.blobSize).toBe(0);
+
+       tick();
+       expect(canvasComp.blobSize).toBeGreaterThan(0);
+     }));
+});
+// #enddocregion without-toBlob-macrotask

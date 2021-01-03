@@ -18,6 +18,7 @@ import './app/hero/hero-detail.component.spec.ts';
 import './app/hero/hero-list.component.spec.ts';
 import './app/model/hero.service.spec.ts';
 import './app/model/testing/http-client.spec.ts';
+import './app/shared/canvas.component.spec.ts';
 import './app/shared/highlight.directive.spec.ts';
 import './app/shared/title-case.pipe.spec.ts';
 import './app/twain/twain.component.spec.ts';

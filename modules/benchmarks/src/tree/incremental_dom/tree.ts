@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -17,7 +17,9 @@ const {patch, elementOpen, elementClose, elementOpenStart, elementOpenEnd, text,
 export class TreeComponent {
   constructor(private _rootEl: any) {}
 
-  set data(data: TreeNode) { patch(this._rootEl, () => this._render(data)); }
+  set data(data: TreeNode) {
+    patch(this._rootEl, () => this._render(data));
+  }
 
   private _render(data: TreeNode) {
     elementOpenStart('span', '', null);

@@ -1,5 +1,4 @@
-/* tslint:disable:no-unused-variable component-selector-name one-line check-open-brace */
-/* tslint:disable:*/
+// tslint:disable: component-selector space-before-function-paren
 // #docplaster
 // #docregion
 import { Component, forwardRef, Optional, SkipSelf } from '@angular/core';
@@ -20,8 +19,7 @@ const DifferentParent = Parent;
 // The `parentType` defaults to `Parent` when omitting the second parameter.
 // #docregion provide-the-parent
 export function provideParent
-// #enddocregion provide-parent, provide-the-parent
-// #docregion provide-parent
+// #enddocregion provide-the-parent
   (component: any, parentType?: any) {
     return { provide: parentType || Parent, useExisting: forwardRef(() => component) };
   }
@@ -52,7 +50,7 @@ const templateC = `
 export class CarolComponent {
   name = 'Carol';
   // #docregion carol-ctor
-  constructor( @Optional() public parent: Parent ) { }
+  constructor( @Optional() public parent?: Parent ) { }
   // #enddocregion carol-ctor
 }
 // #enddocregion carol-class
@@ -64,7 +62,7 @@ export class CarolComponent {
 })
 export class ChrisComponent {
   name = 'Chris';
-  constructor( @Optional() public parent: Parent ) { }
+  constructor( @Optional() public parent?: Parent ) { }
 }
 
 //////  Craig ///////////
@@ -81,7 +79,7 @@ export class ChrisComponent {
   </div>`
 })
 export class CraigComponent {
-  constructor( @Optional() public alex: Base ) { }
+  constructor( @Optional() public alex?: Base ) { }
 }
 // #enddocregion craig
 
@@ -105,7 +103,7 @@ const templateB = `
 export class BarryComponent implements Parent {
   name = 'Barry';
 // #docregion barry-ctor
-  constructor( @SkipSelf() @Optional() public parent: Parent ) { }
+  constructor( @SkipSelf() @Optional() public parent?: Parent ) { }
 // #enddocregion barry-ctor
 }
 // #enddocregion barry
@@ -117,7 +115,7 @@ export class BarryComponent implements Parent {
 })
 export class BobComponent implements Parent {
   name = 'Bob';
-  constructor( @SkipSelf() @Optional() public parent: Parent ) { }
+  constructor( @SkipSelf() @Optional() public parent?: Parent ) { }
 }
 
 @Component({
@@ -129,7 +127,7 @@ export class BobComponent implements Parent {
 })
 export class BethComponent implements Parent {
   name = 'Beth';
-  constructor( @SkipSelf() @Optional() public parent: Parent ) { }
+  constructor( @SkipSelf() @Optional() public parent?: Parent ) { }
 }
 
 ///////// A - Grandparent //////
@@ -200,7 +198,7 @@ export class AliceComponent implements Parent
   </div>`
 })
 export class CathyComponent {
-  constructor( @Optional() public alex: AlexComponent ) { }
+  constructor( @Optional() public alex?: AlexComponent ) { }
 }
 // #enddocregion cathy
 

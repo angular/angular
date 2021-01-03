@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -18,7 +18,9 @@ function plural(n: number): number {
 }
 
 export default [
-  'nl-BE', [['a.m.', 'p.m.'], u, u], u,
+  'nl-BE',
+  [['a.m.', 'p.m.'], u, u],
+  u,
   [
     ['Z', 'M', 'D', 'W', 'D', 'V', 'Z'], ['zo', 'ma', 'di', 'wo', 'do', 'vr', 'za'],
     ['zondag', 'maandag', 'dinsdag', 'woensdag', 'donderdag', 'vrijdag', 'zaterdag'],
@@ -33,11 +35,19 @@ export default [
       'oktober', 'november', 'december'
     ]
   ],
-  u, [['v.C.', 'n.C.'], ['v.Chr.', 'n.Chr.'], ['voor Christus', 'na Christus']], 1, [6, 0],
-  ['d/MM/yy', 'd MMM y', 'd MMMM y', 'EEEE d MMMM y'],
-  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'], ['{1} {0}', u, '{1} \'om\' {0}', u],
+  u,
+  [['v.C.', 'n.C.'], ['v.Chr.', 'n.Chr.'], ['voor Christus', 'na Christus']],
+  1,
+  [6, 0],
+  ['d/MM/y', 'd MMM y', 'd MMMM y', 'EEEE d MMMM y'],
+  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
+  ['{1} {0}', u, '{1} \'om\' {0}', u],
   [',', '.', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], '€', 'Euro', {
+  ['#,##0.###', '#,##0%', '¤ #,##0.00;¤ -#,##0.00', '#E0'],
+  'EUR',
+  '€',
+  'Euro',
+  {
     'AUD': ['AU$', '$'],
     'CAD': ['C$', '$'],
     'FJD': ['FJ$', '$'],
@@ -46,7 +56,9 @@ export default [
     'THB': ['฿'],
     'TWD': ['NT$'],
     'USD': ['US$', '$'],
-    'XPF': []
+    'XPF': [],
+    'XXX': []
   },
+  'ltr',
   plural
 ];

@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -20,19 +20,19 @@ registerLocaleData(localeFr);
   template: `<div>
     <!--output '2.718'-->
     <p>e (no formatting): {{e | number}}</p>
-    
+
     <!--output '002.71828'-->
     <p>e (3.1-5): {{e | number:'3.1-5'}}</p>
 
     <!--output '0,002.71828'-->
     <p>e (4.5-5): {{e | number:'4.5-5'}}</p>
-    
+
     <!--output '0 002,71828'-->
     <p>e (french): {{e | number:'4.5-5':'fr'}}</p>
 
     <!--output '3.14'-->
     <p>pi (no formatting): {{pi | number}}</p>
-    
+
     <!--output '003.14'-->
     <p>pi (3.1-5): {{pi | number:'3.1-5'}}</p>
 

@@ -5,8 +5,8 @@
   "request_seq": 2,
   "success": true,
   "body": {
-    "kind": "angular",
-    "kindModifiers": "what does this do?",
+    "kind": "property",
+    "kindModifiers": "",
     "start": {
       "line": 5,
       "offset": 26
@@ -15,7 +15,7 @@
       "line": 5,
       "offset": 30
     },
-    "displayString": "property name of AppComponent",
+    "displayString": "(property) AppComponent.name: string",
     "documentation": "",
     "tags": []
   }

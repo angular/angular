@@ -11,7 +11,7 @@ export class Deployment {
    * The deployment mode set from the environment provided at build time;
    * or overridden by the `mode` query parameter: e.g. `...?mode=archive`
    */
-  mode: string = this.location.search()['mode'] || environment.mode;
+  mode: string = this.location.search().mode || environment.mode;
 
   constructor(private location: LocationService) {}
 }

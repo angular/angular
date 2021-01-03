@@ -1,12 +1,12 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 /* tslint:disable:no-console  */
-require('zone.js/dist/zone-node.js');
+require('zone.js/bundles/zone-node.umd.js');
 
 import {enableProdMode, NgModuleFactory} from '@angular/core';
 import {renderModuleFactory} from '@angular/platform-server';
@@ -41,4 +41,4 @@ app.get('/favicon.ico', (req, res) => { res.send(''); });
 app.get('/helloworld', render(HelloWorldServerModuleNgFactory, helloworld));
 app.get('/transferstate', render(TransferStateServerModuleNgFactory, transferstate));
 
-app.listen(9876, function() { console.log('Server listening on port 9876!'); });
+app.listen(4206, function() { console.log('Server listening on port 4206!'); });

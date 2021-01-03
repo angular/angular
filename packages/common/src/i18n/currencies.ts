@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -9,15 +9,15 @@
 // THIS CODE IS GENERATED - DO NOT MODIFY
 // See angular/tools/gulp-tasks/cldr/extract.js
 
-export type CurrenciesSymbols = [string] | [string | undefined, string];
+export type CurrenciesSymbols = [string]|[string | undefined, string];
 
 /** @internal */
 export const CURRENCIES_EN:
-    {[code: string]: CurrenciesSymbols | [string | undefined, string | undefined, number]} = {
+    {[code: string]: CurrenciesSymbols|[string | undefined, string | undefined, number]} = {
       'ADP': [undefined, undefined, 0],
       'AFN': [undefined, undefined, 0],
       'ALL': [undefined, undefined, 0],
-      'AMD': [undefined, undefined, 0],
+      'AMD': [undefined, undefined, 2],
       'AOA': [undefined, 'Kz'],
       'ARS': [undefined, '$'],
       'AUD': ['A$', '$'],
@@ -40,7 +40,7 @@ export const CURRENCIES_EN:
       'CLF': [undefined, undefined, 4],
       'CLP': [undefined, '$', 0],
       'CNY': ['CN¥', '¥'],
-      'COP': [undefined, '$', 0],
+      'COP': [undefined, '$', 2],
       'CRC': [undefined, '₡', 2],
       'CUC': [undefined, '$'],
       'CUP': [undefined, '$'],
@@ -58,12 +58,12 @@ export const CURRENCIES_EN:
       'GIP': [undefined, '£'],
       'GNF': [undefined, 'FG', 0],
       'GTQ': [undefined, 'Q'],
-      'GYD': [undefined, '$', 0],
+      'GYD': [undefined, '$', 2],
       'HKD': ['HK$', '$'],
       'HNL': [undefined, 'L'],
       'HRK': [undefined, 'kn'],
       'HUF': [undefined, 'Ft', 2],
-      'IDR': [undefined, 'Rp', 0],
+      'IDR': [undefined, 'Rp', 2],
       'ILS': ['₪'],
       'INR': ['₹'],
       'IQD': [undefined, undefined, 0],
@@ -91,9 +91,9 @@ export const CURRENCIES_EN:
       'MGA': [undefined, 'Ar', 0],
       'MGF': [undefined, undefined, 0],
       'MMK': [undefined, 'K', 0],
-      'MNT': [undefined, '₮', 0],
+      'MNT': [undefined, '₮', 2],
       'MRO': [undefined, undefined, 0],
-      'MUR': [undefined, 'Rs', 0],
+      'MUR': [undefined, 'Rs', 2],
       'MXN': ['MX$', '$'],
       'MYR': [undefined, 'RM'],
       'NAD': [undefined, '$'],
@@ -104,7 +104,7 @@ export const CURRENCIES_EN:
       'NZD': ['NZ$', '$'],
       'OMR': [undefined, undefined, 3],
       'PHP': [undefined, '₱'],
-      'PKR': [undefined, 'Rs', 0],
+      'PKR': [undefined, 'Rs', 2],
       'PLN': [undefined, 'zł'],
       'PYG': [undefined, '₲', 0],
       'RON': [undefined, 'lei'],
@@ -131,20 +131,22 @@ export const CURRENCIES_EN:
       'TRY': [undefined, '₺'],
       'TTD': [undefined, '$'],
       'TWD': ['NT$', '$', 2],
-      'TZS': [undefined, undefined, 0],
+      'TZS': [undefined, undefined, 2],
       'UAH': [undefined, '₴'],
       'UGX': [undefined, undefined, 0],
       'USD': ['$'],
       'UYI': [undefined, undefined, 0],
       'UYU': [undefined, '$'],
-      'UZS': [undefined, undefined, 0],
-      'VEF': [undefined, 'Bs'],
+      'UYW': [undefined, undefined, 4],
+      'UZS': [undefined, undefined, 2],
+      'VEF': [undefined, 'Bs', 2],
       'VND': ['₫', undefined, 0],
       'VUV': [undefined, undefined, 0],
       'XAF': ['FCFA', undefined, 0],
       'XCD': ['EC$', '$'],
       'XOF': ['CFA', undefined, 0],
       'XPF': ['CFPF', undefined, 0],
+      'XXX': ['¤'],
       'YER': [undefined, undefined, 0],
       'ZAR': [undefined, 'R'],
       'ZMK': [undefined, undefined, 0],

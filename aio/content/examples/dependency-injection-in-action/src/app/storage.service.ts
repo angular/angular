@@ -16,7 +16,7 @@ export class BrowserStorageService {
   constructor(@Inject(BROWSER_STORAGE) public storage: Storage) {}
 
   get(key: string) {
-    this.storage.getItem(key);
+    return this.storage.getItem(key);
   }
 
   set(key: string, value: string) {

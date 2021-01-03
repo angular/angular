@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -15,8 +15,7 @@ class ChildDirective {
 
 @Directive({selector: 'someDir'})
 class SomeDir implements AfterContentInit {
-  // TODO(issue/24571): remove '!'.
-  @ContentChildren(ChildDirective) contentChildren !: QueryList<ChildDirective>;
+  @ContentChildren(ChildDirective) contentChildren!: QueryList<ChildDirective>;
 
   ngAfterContentInit() {
     // contentChildren is set

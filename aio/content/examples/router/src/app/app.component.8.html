@@ -1,0 +1,26 @@
+<!-- #docregion child-routes-->
+<h2>First Component</h2>
+
+<nav>
+  <ul>
+    <li><a routerLink="child-a">Child A</a></li>
+    <li><a routerLink="child-b">Child B</a></li>
+  </ul>
+</nav>
+
+<router-outlet></router-outlet>
+<!-- #enddocregion child-routes-->
+
+
+<!-- #docregion relative-route-->
+
+<h2>First Component</h2>
+
+<nav>
+  <ul>
+    <li><a routerLink="../second-component">Relative Route to second component</a></li>
+  </ul>
+</nav>
+<router-outlet></router-outlet>
+
+<!-- #enddocregion relative-route-->

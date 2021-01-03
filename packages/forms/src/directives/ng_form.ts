@@ -1,22 +1,23 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AfterViewInit, Directive, EventEmitter, Inject, Input, Optional, Self, forwardRef} from '@angular/core';
+import {AfterViewInit, Directive, EventEmitter, forwardRef, Inject, Input, Optional, Self} from '@angular/core';
 
 import {AbstractControl, FormControl, FormGroup, FormHooks} from '../model';
-import {NG_ASYNC_VALIDATORS, NG_VALIDATORS} from '../validators';
+import {composeAsyncValidators, composeValidators, NG_ASYNC_VALIDATORS, NG_VALIDATORS} from '../validators';
 
 import {ControlContainer} from './control_container';
 import {Form} from './form_interface';
 import {NgControl} from './ng_control';
 import {NgModel} from './ng_model';
 import {NgModelGroup} from './ng_model_group';
-import {composeAsyncValidators, composeValidators, removeDir, setUpControl, setUpFormContainer, syncPendingControls} from './shared';
+import {removeListItem, setUpControl, setUpFormContainer, syncPendingControls} from './shared';
+import {AsyncValidator, AsyncValidatorFn, Validator, ValidatorFn} from './validators';
 
 export const formDirectiveProvider: any = {
   provide: ControlContainer,
@@ -55,24 +56,6 @@ const resolvedPromise = (() => Promise.resolve(null))();
  *
  * @usageNotes
  *
- * ### Migrating from deprecated ngForm selector
- *
- * Support for using `ngForm` element selector has been deprecated in Angular v6 and will be removed
- * in Angular v9.
- *
- * This has been deprecated to keep selectors consistent with other core Angular selectors,
- * as element selectors are typically written in kebab-case.
- *
- * Now deprecated:
- * ```html
- * <ngForm #myForm="ngForm">
- * ```
- *
- * After:
- * ```html
- * <ng-form #myForm="ngForm">
- * ```
- *
  * ### Listening for form submission
  *
  * The following example shows how to capture the form values from the "ngSubmit" event.
@@ -90,18 +73,31 @@ const resolvedPromise = (() => Promise.resolve(null))();
  * </form>
  * ```
  *
+ * ### Native DOM validation UI
+ *
+ * In order to prevent the native DOM form validation UI from interfering with Angular's form
+ * validation, Angular automatically adds the `novalidate` attribute on any `<form>` whenever
+ * `FormModule` or `ReactiveFormModule` are imported into the application.
+ * If you want to explicitly enable native DOM validation UI with Angular forms, you can add the
+ * `ngNativeValidate` attribute to the `<form>` element:
+ *
+ * ```html
+ * <form ngNativeValidate>
+ *   ...
+ * </form>
+ * ```
+ *
  * @ngModule FormsModule
  * @publicApi
  */
 @Directive({
-  selector: 'form:not([ngNoForm]):not([formGroup]),ngForm,ng-form,[ngForm]',
+  selector: 'form:not([ngNoForm]):not([formGroup]),ng-form,[ngForm]',
   providers: [formDirectiveProvider],
   host: {'(submit)': 'onSubmit($event)', '(reset)': 'onReset()'},
   outputs: ['ngSubmit'],
   exportAs: 'ngForm'
 })
-export class NgForm extends ControlContainer implements Form,
-    AfterViewInit {
+export class NgForm extends ControlContainer implements Form, AfterViewInit {
   /**
    * @description
    * Returns whether the form submission has been triggered.
@@ -132,46 +128,54 @@ export class NgForm extends ControlContainer implements Form,
    *
    */
   // TODO(issue/24571): remove '!'.
-  @Input('ngFormOptions') options !: {updateOn?: FormHooks};
+  @Input('ngFormOptions') options!: {updateOn?: FormHooks};
 
   constructor(
-      @Optional() @Self() @Inject(NG_VALIDATORS) validators: any[],
-      @Optional() @Self() @Inject(NG_ASYNC_VALIDATORS) asyncValidators: any[]) {
+      @Optional() @Self() @Inject(NG_VALIDATORS) validators: (Validator|ValidatorFn)[],
+      @Optional() @Self() @Inject(NG_ASYNC_VALIDATORS) asyncValidators:
+          (AsyncValidator|AsyncValidatorFn)[]) {
     super();
     this.form =
         new FormGroup({}, composeValidators(validators), composeAsyncValidators(asyncValidators));
   }
 
-  /**
-   * @description
-   * Lifecycle method called after the view is initialized. For internal use only.
-   */
-  ngAfterViewInit() { this._setUpdateStrategy(); }
+  /** @nodoc */
+  ngAfterViewInit() {
+    this._setUpdateStrategy();
+  }
 
   /**
    * @description
    * The directive instance.
    */
-  get formDirective(): Form { return this; }
+  get formDirective(): Form {
+    return this;
+  }
 
   /**
    * @description
    * The internal `FormGroup` instance.
    */
-  get control(): FormGroup { return this.form; }
+  get control(): FormGroup {
+    return this.form;
+  }
 
   /**
    * @description
    * Returns an array representing the path to this group. Because this directive
    * always lives at the top level of a form, it is always an empty array.
    */
-  get path(): string[] { return []; }
+  get path(): string[] {
+    return [];
+  }
 
   /**
    * @description
    * Returns a map of the controls in this group.
    */
-  get controls(): {[key: string]: AbstractControl} { return this.form.controls; }
+  get controls(): {[key: string]: AbstractControl} {
+    return this.form.controls;
+  }
 
   /**
    * @description
@@ -183,7 +187,7 @@ export class NgForm extends ControlContainer implements Form,
   addControl(dir: NgModel): void {
     resolvedPromise.then(() => {
       const container = this._findContainer(dir.path);
-      (dir as{control: FormControl}).control =
+      (dir as {control: FormControl}).control =
           <FormControl>container.registerControl(dir.name, dir.control);
       setUpControl(dir.control, dir);
       dir.control.updateValueAndValidity({emitEvent: false});
@@ -197,7 +201,9 @@ export class NgForm extends ControlContainer implements Form,
    *
    * @param dir The `NgModel` directive instance.
    */
-  getControl(dir: NgModel): FormControl { return <FormControl>this.form.get(dir.path); }
+  getControl(dir: NgModel): FormControl {
+    return <FormControl>this.form.get(dir.path);
+  }
 
   /**
    * @description
@@ -211,7 +217,7 @@ export class NgForm extends ControlContainer implements Form,
       if (container) {
         container.removeControl(dir.name);
       }
-      removeDir<NgModel>(this._directives, dir);
+      removeListItem(this._directives, dir);
     });
   }
 
@@ -252,7 +258,9 @@ export class NgForm extends ControlContainer implements Form,
    *
    * @param dir The `NgModelGroup` directive instance.
    */
-  getFormGroup(dir: NgModelGroup): FormGroup { return <FormGroup>this.form.get(dir.path); }
+  getFormGroup(dir: NgModelGroup): FormGroup {
+    return <FormGroup>this.form.get(dir.path);
+  }
 
   /**
    * Sets the new value for the provided `NgControl` directive.
@@ -262,7 +270,7 @@ export class NgForm extends ControlContainer implements Form,
    */
   updateModel(dir: NgControl, value: any): void {
     resolvedPromise.then(() => {
-      const ctrl = <FormControl>this.form.get(dir.path !);
+      const ctrl = <FormControl>this.form.get(dir.path!);
       ctrl.setValue(value);
     });
   }
@@ -273,7 +281,9 @@ export class NgForm extends ControlContainer implements Form,
    *
    * @param value The new value
    */
-  setValue(value: {[key: string]: any}): void { this.control.setValue(value); }
+  setValue(value: {[key: string]: any}): void {
+    this.control.setValue(value);
+  }
 
   /**
    * @description
@@ -283,7 +293,7 @@ export class NgForm extends ControlContainer implements Form,
    * @param $event The "submit" event object
    */
   onSubmit($event: Event): boolean {
-    (this as{submitted: boolean}).submitted = true;
+    (this as {submitted: boolean}).submitted = true;
     syncPendingControls(this.form, this._directives);
     this.ngSubmit.emit($event);
     return false;
@@ -293,7 +303,9 @@ export class NgForm extends ControlContainer implements Form,
    * @description
    * Method called when the "reset" event is triggered on the form.
    */
-  onReset(): void { this.resetForm(); }
+  onReset(): void {
+    this.resetForm();
+  }
 
   /**
    * @description
@@ -303,7 +315,7 @@ export class NgForm extends ControlContainer implements Form,
    */
   resetForm(value: any = undefined): void {
     this.form.reset(value);
-    (this as{submitted: boolean}).submitted = false;
+    (this as {submitted: boolean}).submitted = false;
   }
 
   private _setUpdateStrategy() {

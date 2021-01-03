@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -15,6 +15,6 @@
  * to something which is retained otherwise the call to `noSideEffects` will be removed by closure
  * compiler.
  */
-export function noSideEffects(fn: () => void): string {
-  return '' + {toString: fn};
+export function noSideEffects<T>(fn: () => T): T {
+  return {toString: fn}.toString() as unknown as T;
 }

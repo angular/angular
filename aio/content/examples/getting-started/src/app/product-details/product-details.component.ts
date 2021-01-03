@@ -30,8 +30,11 @@ export class ProductDetailsComponent implements OnInit {
 // #docregion get-product
   ngOnInit() {
 // #enddocregion props-methods
-    this.route.paramMap.subscribe(params => {
-      this.product = products[+params.get('productId')];
+    // First get the product id from the current route.
+    const productIdFromRoute = this.route.snapshot.paramMap.get('productId');
+    // Find the product that correspond with the id provided in route.
+    this.product = products.find(product => {
+      return product.id === Number(productIdFromRoute);
     });
 // #docregion props-methods
   }
@@ -39,8 +42,8 @@ export class ProductDetailsComponent implements OnInit {
 // #enddocregion props-methods, get-product
 // #docregion add-to-cart
   addToCart(product) {
-    window.alert('Your product has been added to the cart!');
     this.cartService.addToCart(product);
+    window.alert('Your product has been added to the cart!');
   }
 // #docregion props-methods, get-product, inject-cart-service
 }

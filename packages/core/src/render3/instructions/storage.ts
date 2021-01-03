@@ -1,26 +1,24 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {HEADER_OFFSET, TVIEW} from '../interfaces/view';
-import {getContextLView, getLView} from '../state';
-import {loadInternal} from '../util/view_utils';
+import {HEADER_OFFSET, LView, TView} from '../interfaces/view';
+import {getContextLView} from '../state';
+import {load} from '../util/view_utils';
+
 
 /** Store a value in the `data` at a given `index`. */
-export function store<T>(index: number, value: T): void {
-  const lView = getLView();
-  const tView = lView[TVIEW];
+export function store<T>(tView: TView, lView: LView, index: number, value: T): void {
   // We don't store any static data for local variables, so the first time
   // we see the template, we should store as null to avoid a sparse array
-  const adjustedIndex = index + HEADER_OFFSET;
-  if (adjustedIndex >= tView.data.length) {
-    tView.data[adjustedIndex] = null;
-    tView.blueprint[adjustedIndex] = null;
+  if (index >= tView.data.length) {
+    tView.data[index] = null;
+    tView.blueprint[index] = null;
   }
-  lView[adjustedIndex] = value;
+  lView[index] = value;
 }
 
 /**
@@ -35,14 +33,5 @@ export function store<T>(index: number, value: T): void {
  */
 export function ɵɵreference<T>(index: number) {
   const contextLView = getContextLView();
-  return loadInternal<T>(contextLView, index);
-}
-
-/**
- * Retrieves a value from current `viewData`.
- *
- * @codeGenApi
- */
-export function ɵɵload<T>(index: number): T {
-  return loadInternal<T>(getLView(), index);
+  return load<T>(contextLView, HEADER_OFFSET + index);
 }

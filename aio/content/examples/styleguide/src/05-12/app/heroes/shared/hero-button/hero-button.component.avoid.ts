@@ -10,11 +10,11 @@ import { Component, EventEmitter } from '@angular/core';
     'label'
   ],
   outputs: [
-    'change'
+    'heroChange'
   ]
 })
 export class HeroButtonComponent {
-  change = new EventEmitter<any>();
+  heroChange = new EventEmitter<any>();
   label: string;
 }
 // #enddocregion example

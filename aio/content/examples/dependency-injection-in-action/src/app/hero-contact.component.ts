@@ -3,7 +3,7 @@
 import { Component, Host, Optional } from '@angular/core';
 
 import { HeroCacheService } from './hero-cache.service';
-import { LoggerService }    from './logger.service';
+import { LoggerService } from './logger.service';
 
 // #docregion component
 @Component({
@@ -23,7 +23,7 @@ export class HeroContactComponent {
 
       @Host()     // limit search for logger; hides the application-wide logger
       @Optional() // ok if the logger doesn't exist
-      private loggerService: LoggerService
+      private loggerService?: LoggerService
   // #enddocregion ctor-params
   ) {
     if (loggerService) {

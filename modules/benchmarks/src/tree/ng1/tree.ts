@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -41,7 +41,6 @@ export function addTreeToModule(mod: any): any {
                   }
                   let childElement: any, childScope: any;
                   $scope.$watch($attr.data, function ngIfWatchAction(value: any) {
-
                     if (value) {
                       if (!childScope) {
                         childScope = $scope.$new();
@@ -67,6 +66,8 @@ export function addTreeToModule(mod: any): any {
           ])
       .config([
         '$compileProvider',
-        function($compileProvider: any) { $compileProvider.debugInfoEnabled(false); }
+        function($compileProvider: any) {
+          $compileProvider.debugInfoEnabled(false);
+        }
       ]);
 }

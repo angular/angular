@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -13,7 +13,9 @@ import {discardPeriodicTasks, fakeAsync, tick} from '@angular/core/testing';
 describe('this test', () => {
   it('looks async but is synchronous', <any>fakeAsync((): void => {
        let flag = false;
-       setTimeout(() => { flag = true; }, 100);
+       setTimeout(() => {
+         flag = true;
+       }, 100);
        expect(flag).toBe(false);
        tick(50);
        expect(flag).toBe(false);

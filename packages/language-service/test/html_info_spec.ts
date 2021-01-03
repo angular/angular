@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -28,11 +28,10 @@ describe('html_info', () => {
     const elements = SchemaInformation.instance.allKnownElements();
     for (const element of elements) {
       for (const prop of SchemaInformation.instance.propertiesOf(element)) {
-        expect(domRegistry.hasProperty(element, prop, []));
+        expect(domRegistry.hasProperty(element, prop, [])).toBeTrue();
       }
     }
   });
-
 });
 
 function uniqueElements<T>(a: T[], b: T[]): T[] {

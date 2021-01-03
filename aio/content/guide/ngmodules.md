@@ -1,13 +1,5 @@
 # NgModules
 
-#### Prerequisites
-
-A basic understanding of the following concepts:
-* [Bootstrapping](guide/bootstrapping).
-* [JavaScript Modules vs. NgModules](guide/ngmodule-vs-jsmodule).
-
-<hr>
-
 **NgModules** configure the injector and the compiler and help organize related things together.
 
 An NgModule is a class marked by the `@NgModule` decorator.
@@ -20,7 +12,6 @@ For an example app showcasing all the techniques that NgModules related pages
 cover, see the <live-example></live-example>. For explanations on the individual techniques, visit the relevant NgModule pages under the NgModules
 section.
 
-
 ## Angular modularity
 
 Modules are a great way to organize an application and extend it with capabilities from external libraries.
@@ -28,7 +19,7 @@ Modules are a great way to organize an application and extend it with capabiliti
 Angular libraries are NgModules, such as `FormsModule`, `HttpClientModule`, and `RouterModule`.
 Many third-party libraries are available as NgModules such as
 <a href="https://material.angular.io/">Material Design</a>,
-<a href="http://ionicframework.com/">Ionic</a>, and
+<a href="https://ionicframework.com/">Ionic</a>, and
 <a href="https://github.com/angular/angularfire2">AngularFire2</a>.
 
 NgModules consolidate components, directives, and pipes into
@@ -45,7 +36,7 @@ NgModule metadata does the following:
 * Declares which components, directives, and pipes belong to the module.
 * Makes some of those components, directives, and pipes public so that other module's component templates can use them.
 * Imports other modules with the components, directives, and pipes that components in the current module need.
-* Provides services that the other application components can use.
+* Provides services that other application components can use.
 
 Every Angular app has at least one module, the root module.
 You [bootstrap](guide/bootstrapping) that module to launch the application.
@@ -57,12 +48,14 @@ You then import these modules into the root module.
 
 ## The basic NgModule
 
-The [Angular CLI](cli) generates the following basic app module when creating a new app.
+The [Angular CLI](cli) generates the following basic `AppModule` when creating a new app.
 
-<code-example path="bootstrapping/src/app/app.module.ts" region="whole-ngmodule" header="src/app/app.module.ts" linenums="false">
+
+<code-example path="ngmodules/src/app/app.module.1.ts" header="src/app/app.module.ts (default AppModule)">
+// @NgModule decorator with its metadata
 </code-example>
 
-At the top are the import statements. The next section is where you configure the `@NgModule` by stating what components and directives belong to it (`declarations`) as well as which other modules it uses (`imports`). This page builds on [Bootstrapping](guide/bootstrapping), which covers the structure of an NgModule in detail. If you need more information on the structure of an `@NgModule`, be sure to read [Bootstrapping](guide/bootstrapping).
+At the top are the import statements. The next section is where you configure the `@NgModule` by stating what components and directives belong to it (`declarations`) as well as which other modules it uses (`imports`). For more information on the structure of an `@NgModule`, be sure to read [Bootstrapping](guide/bootstrapping).
 
 <hr />
 
