@@ -82,7 +82,7 @@
     "@types/jasminewd2": "^2.0.8",
     "@types/minimist": "^1.2.0",
     "@types/multimatch": "^4.0.0",
-    "@types/node": "^12.11.1",
+    "@types/node": "^12.19.9",
     "@types/node-fetch": "^2.5.7",
     "@types/selenium-webdriver": "3.0.7",
     "@types/semver": "^6.0.2",
