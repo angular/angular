@@ -1,0 +1,52 @@
+# Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
+version: v1.19.0
+ignore: {}
+# patches apply the minimum changes required to fix a vulnerability
+patch:
+  SNYK-JS-LODASH-567746:
+    - '@angular/localize > @babel/core > lodash':
+        patched: '2021-01-03T23:12:02.628Z'
+    - '@angular/localize > @babel/core > @babel/generator > lodash':
+        patched: '2021-01-03T23:12:02.628Z'
+    - '@angular/localize > @babel/core > @babel/types > lodash':
+        patched: '2021-01-03T23:12:02.628Z'
+    - '@angular/localize > @babel/core > @babel/traverse > lodash':
+        patched: '2021-01-03T23:12:02.628Z'
+    - '@angular/localize > @babel/core > @babel/generator > @babel/types > lodash':
+        patched: '2021-01-03T23:12:02.628Z'
+    - '@angular/localize > @babel/core > @babel/helpers > @babel/types > lodash':
+        patched: '2021-01-03T23:12:02.628Z'
+    - '@angular/localize > @babel/core > @babel/helpers > @babel/traverse > lodash':
+        patched: '2021-01-03T23:12:02.628Z'
+    - '@angular/localize > @babel/core > @babel/template > @babel/types > lodash':
+        patched: '2021-01-03T23:12:02.628Z'
+    - '@angular/localize > @babel/core > @babel/traverse > @babel/types > lodash':
+        patched: '2021-01-03T23:12:02.628Z'
+    - '@angular/localize > @babel/core > @babel/traverse > @babel/generator > lodash':
+        patched: '2021-01-03T23:12:02.628Z'
+    - '@angular/localize > @babel/core > @babel/helpers > @babel/template > @babel/types > lodash':
+        patched: '2021-01-03T23:12:02.628Z'
+    - '@angular/localize > @babel/core > @babel/helpers > @babel/traverse > @babel/types > lodash':
+        patched: '2021-01-03T23:12:02.628Z'
+    - '@angular/localize > @babel/core > @babel/helpers > @babel/traverse > @babel/generator > lodash':
+        patched: '2021-01-03T23:12:02.628Z'
+    - '@angular/localize > @babel/core > @babel/traverse > @babel/generator > @babel/types > lodash':
+        patched: '2021-01-03T23:12:02.628Z'
+    - '@angular/localize > @babel/core > @babel/traverse > @babel/helper-function-name > @babel/types > lodash':
+        patched: '2021-01-03T23:12:02.628Z'
+    - '@angular/localize > @babel/core > @babel/traverse > @babel/helper-split-export-declaration > @babel/types > lodash':
+        patched: '2021-01-03T23:12:02.628Z'
+    - '@angular/localize > @babel/core > @babel/helpers > @babel/traverse > @babel/generator > @babel/types > lodash':
+        patched: '2021-01-03T23:12:02.628Z'
+    - '@angular/localize > @babel/core > @babel/helpers > @babel/traverse > @babel/helper-function-name > @babel/types > lodash':
+        patched: '2021-01-03T23:12:02.628Z'
+    - '@angular/localize > @babel/core > @babel/helpers > @babel/traverse > @babel/helper-split-export-declaration > @babel/types > lodash':
+        patched: '2021-01-03T23:12:02.628Z'
+    - '@angular/localize > @babel/core > @babel/traverse > @babel/helper-function-name > @babel/template > @babel/types > lodash':
+        patched: '2021-01-03T23:12:02.628Z'
+    - '@angular/localize > @babel/core > @babel/traverse > @babel/helper-function-name > @babel/helper-get-function-arity > @babel/types > lodash':
+        patched: '2021-01-03T23:12:02.628Z'
+    - '@angular/localize > @babel/core > @babel/helpers > @babel/traverse > @babel/helper-function-name > @babel/template > @babel/types > lodash':
+        patched: '2021-01-03T23:12:02.628Z'
+    - '@angular/localize > @babel/core > @babel/helpers > @babel/traverse > @babel/helper-function-name > @babel/helper-get-function-arity > @babel/types > lodash':
+        patched: '2021-01-03T23:12:02.628Z'
