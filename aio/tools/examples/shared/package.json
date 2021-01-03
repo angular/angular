@@ -9,7 +9,9 @@
     "webdriver:update": "node ../../../../scripts/webdriver-manager-update.js",
     "preinstall": "node ../../../../tools/yarn/check-yarn.js",
     "postinstall": "yarn webdriver:update",
-    "sync-deps": "node sync-boilerplate-dependencies"
+    "sync-deps": "node sync-boilerplate-dependencies",
+    "snyk-protect": "snyk protect",
+    "prepare": "yarn run snyk-protect"
   },
   "//engines-comment": "Keep this in sync with /package.json and /aio/package.json",
   "engines": {
@@ -44,7 +46,8 @@
     "rxjs": "~6.6.0",
     "systemjs": "0.19.39",
     "tslib": "^2.0.0",
-    "zone.js": "~0.10.3"
+    "zone.js": "~0.10.3",
+    "snyk": "^1.437.3"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "~0.1100.2",
@@ -85,5 +88,6 @@
     "ts-node": "~8.3.0",
     "tslint": "~6.1.0",
     "typescript": "~4.0.3"
-  }
+  },
+  "snyk": true
 }
