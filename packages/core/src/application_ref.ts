@@ -157,7 +157,7 @@ export function createPlatform(injector: Injector): PlatformRef {
 
 /**
  * Creates a factory for a platform. Can be used to provide or override `Providers` specific to
- * your applciation's runtime needs, such as `PLATFORM_INITIALIZER` and `PLATFORM_ID`.
+ * your application's runtime needs, such as `PLATFORM_INITIALIZER` and `PLATFORM_ID`.
  * @param parentPlatformFactory Another platform factory to modify. Allows you to compose factories
  * to build up configurations that might be required by different libraries or parts of the
  * application.
