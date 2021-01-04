@@ -22,7 +22,7 @@
     "fs-extra": "4.0.2",
     "magic-string": "^0.25.0",
     "semver": "^6.3.0",
-    "source-map": "^0.6.1",
+    "source-map": "^0.7.3",
     "sourcemap-codec": "^1.4.8",
     "tslib": "^2.0.0",
     "yargs": "^16.1.1"
