@@ -89,8 +89,6 @@
   "private": true,
   "dependencies": {
 
-    "@webcomponents/custom-elements": "1.2.1",
-
     "zone.js": "~0.11.3"
   },
   "devDependencies": {
