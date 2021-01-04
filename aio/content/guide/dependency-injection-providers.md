@@ -172,7 +172,7 @@ The following example defines a token, `APP_CONFIG` of the type `InjectionToken`
 
 <code-example path="dependency-injection/src/app/app.config.ts" region="token" header="src/app/app.config.ts"></code-example>
 
-The optional type parameter, `app.config`, and the token description, `<AppConfig>` specify the token's purpose.
+The optional type parameter, `<AppConfig>`, and the token description, `app.config`, specify the token's purpose.
 
 Next, register the dependency provider in the component using the `InjectionToken` object of `APP_CONFIG`.
 
