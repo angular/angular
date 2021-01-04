@@ -88,21 +88,10 @@
   },
   "private": true,
   "dependencies": {
-    "@angular/animations": "11.0.4",
-    "@angular/cdk": "11.0.0",
-    "@angular/common": "11.0.4",
-    "@angular/compiler": "11.0.4",
-    "@angular/core": "11.0.4",
-    "@angular/elements": "11.0.4",
-    "@angular/forms": "11.0.4",
-    "@angular/material": "11.0.0",
-    "@angular/platform-browser": "11.0.4",
-    "@angular/platform-browser-dynamic": "11.0.4",
-    "@angular/router": "11.0.4",
-    "@angular/service-worker": "11.0.4",
+
     "@webcomponents/custom-elements": "1.2.1",
     "rxjs": "^6.5.3",
-    "tslib": "^2.0.0",
+    "tslib": "^2.0.3",
     "zone.js": "~0.11.3"
   },
   "devDependencies": {
