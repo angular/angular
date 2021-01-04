@@ -614,3 +614,165 @@ patch:
         patched: '2021-01-03T04:51:42.817Z'
     - snyk > snyk-python-plugin > snyk-poetry-lockfile-parser > @snyk/dep-graph > graphlib > lodash:
         patched: '2021-01-03T04:51:42.817Z'
+    - '@microsoft/api-extractor > lodash':
+        patched: '2021-01-03T23:46:49.806Z'
+    - karma > lodash:
+        patched: '2021-01-03T23:46:49.806Z'
+    - '@types/babel__generator > @babel/types > lodash':
+        patched: '2021-01-03T23:46:49.806Z'
+    - '@types/babel__template > @babel/types > lodash':
+        patched: '2021-01-03T23:46:49.806Z'
+    - '@types/babel__traverse > @babel/types > lodash':
+        patched: '2021-01-03T23:46:49.806Z'
+    - '@types/babel__core > @babel/types > lodash':
+        patched: '2021-01-03T23:46:49.806Z'
+    - snyk > graphlib > lodash:
+        patched: '2021-01-03T23:46:49.806Z'
+    - '@types/babel__core > @types/babel__generator > @babel/types > lodash':
+        patched: '2021-01-03T23:46:49.806Z'
+    - '@types/babel__core > @types/babel__template > @babel/types > lodash':
+        patched: '2021-01-03T23:46:49.806Z'
+    - '@types/babel__core > @types/babel__traverse > @babel/types > lodash':
+        patched: '2021-01-03T23:46:49.806Z'
+    - '@babel/preset-env > @babel/preset-modules > @babel/types > lodash':
+        patched: '2021-01-03T23:46:49.806Z'
+    - '@angular-devkit/build-angular > webpack-dev-server > http-proxy-middleware > lodash':
+        patched: '2021-01-03T23:46:49.806Z'
+    - http-server > portfinder > async > lodash:
+        patched: '2021-01-03T23:46:49.806Z'
+    - karma > log4js > streamroller > lodash:
+        patched: '2021-01-03T23:46:49.806Z'
+    - snyk > @snyk/dep-graph > graphlib > lodash:
+        patched: '2021-01-03T23:46:49.806Z'
+    - snyk > snyk-nodejs-lockfile-parser > graphlib > lodash:
+        patched: '2021-01-03T23:46:49.806Z'
+    - snyk > snyk-go-plugin > graphlib > lodash:
+        patched: '2021-01-03T23:46:49.806Z'
+    - '@angular-devkit/build-angular > @babel/preset-env > @babel/preset-modules > @babel/types > lodash':
+        patched: '2021-01-03T23:46:49.806Z'
+    - '@angular-devkit/build-angular > @jsdevtools/coverage-istanbul-loader > istanbul-lib-instrument > @babel/core > lodash':
+        patched: '2021-01-03T23:46:49.806Z'
+    - '@angular-devkit/build-angular > webpack-dev-server > portfinder > async > lodash':
+        patched: '2021-01-03T23:46:49.806Z'
+    - karma > log4js > streamroller > async > lodash:
+        patched: '2021-01-03T23:46:49.806Z'
+    - snyk > @snyk/snyk-cocoapods-plugin > @snyk/dep-graph > graphlib > lodash:
+        patched: '2021-01-03T23:46:49.806Z'
+    - snyk > snyk-cpp-plugin > @snyk/dep-graph > graphlib > lodash:
+        patched: '2021-01-03T23:46:49.806Z'
+    - snyk > snyk-docker-plugin > @snyk/dep-graph > graphlib > lodash:
+        patched: '2021-01-03T23:46:49.806Z'
+    - snyk > snyk-go-plugin > @snyk/dep-graph > graphlib > lodash:
+        patched: '2021-01-03T23:46:49.806Z'
+    - snyk > snyk-gradle-plugin > @snyk/dep-graph > graphlib > lodash:
+        patched: '2021-01-03T23:46:49.806Z'
+    - snyk > snyk-docker-plugin > snyk-nodejs-lockfile-parser > graphlib > lodash:
+        patched: '2021-01-03T23:46:49.806Z'
+    - snyk > snyk-gradle-plugin > @snyk/java-call-graph-builder > graphlib > lodash:
+        patched: '2021-01-03T23:46:49.806Z'
+    - snyk > snyk-mvn-plugin > @snyk/java-call-graph-builder > graphlib > lodash:
+        patched: '2021-01-03T23:46:49.806Z'
+    - '@angular-devkit/build-angular > @jsdevtools/coverage-istanbul-loader > istanbul-lib-instrument > @babel/core > @babel/types > lodash':
+        patched: '2021-01-03T23:46:49.806Z'
+    - '@babel/preset-env > @babel/preset-modules > @babel/plugin-proposal-unicode-property-regex > @babel/helper-create-regexp-features-plugin > @babel/helper-regex > lodash':
+        patched: '2021-01-03T23:46:49.806Z'
+    - '@babel/preset-env > @babel/preset-modules > @babel/plugin-transform-dotall-regex > @babel/helper-create-regexp-features-plugin > @babel/helper-regex > lodash':
+        patched: '2021-01-03T23:46:49.806Z'
+    - '@angular-devkit/build-angular > @jsdevtools/coverage-istanbul-loader > istanbul-lib-instrument > @babel/core > @babel/generator > lodash':
+        patched: '2021-01-03T23:46:49.806Z'
+    - '@angular-devkit/build-angular > @jsdevtools/coverage-istanbul-loader > istanbul-lib-instrument > @babel/core > @babel/traverse > lodash':
+        patched: '2021-01-03T23:46:49.806Z'
+    - '@angular-devkit/build-angular > @jsdevtools/coverage-istanbul-loader > istanbul-lib-instrument > @babel/core > @babel/helper-module-transforms > lodash':
+        patched: '2021-01-03T23:46:49.806Z'
+    - snyk > @snyk/snyk-cocoapods-plugin > @snyk/cocoapods-lockfile-parser > @snyk/dep-graph > graphlib > lodash:
+        patched: '2021-01-03T23:46:49.806Z'
+    - snyk > snyk-gradle-plugin > @snyk/cli-interface > @snyk/dep-graph > graphlib > lodash:
+        patched: '2021-01-03T23:46:49.806Z'
+    - snyk > snyk-mvn-plugin > @snyk/cli-interface > @snyk/dep-graph > graphlib > lodash:
+        patched: '2021-01-03T23:46:49.806Z'
+    - snyk > snyk-python-plugin > snyk-poetry-lockfile-parser > @snyk/dep-graph > graphlib > lodash:
+        patched: '2021-01-03T23:46:49.806Z'
+    - '@babel/preset-env > @babel/preset-modules > @babel/plugin-proposal-unicode-property-regex > @babel/helper-create-regexp-features-plugin > @babel/helper-annotate-as-pure > @babel/types > lodash':
+        patched: '2021-01-03T23:46:49.806Z'
+    - '@babel/preset-env > @babel/preset-modules > @babel/plugin-transform-dotall-regex > @babel/helper-create-regexp-features-plugin > @babel/helper-annotate-as-pure > @babel/types > lodash':
+        patched: '2021-01-03T23:46:49.806Z'
+    - '@angular-devkit/build-angular > @jsdevtools/coverage-istanbul-loader > istanbul-lib-instrument > @babel/core > @babel/generator > @babel/types > lodash':
+        patched: '2021-01-03T23:46:49.806Z'
+    - '@angular-devkit/build-angular > @jsdevtools/coverage-istanbul-loader > istanbul-lib-instrument > @babel/core > @babel/template > @babel/types > lodash':
+        patched: '2021-01-03T23:46:49.806Z'
+    - '@angular-devkit/build-angular > @jsdevtools/coverage-istanbul-loader > istanbul-lib-instrument > @babel/core > @babel/traverse > @babel/types > lodash':
+        patched: '2021-01-03T23:46:49.806Z'
+    - '@angular-devkit/build-angular > @jsdevtools/coverage-istanbul-loader > istanbul-lib-instrument > @babel/core > @babel/helper-module-transforms > @babel/types > lodash':
+        patched: '2021-01-03T23:46:49.806Z'
+    - '@angular-devkit/build-angular > @jsdevtools/coverage-istanbul-loader > istanbul-lib-instrument > @babel/core > @babel/helpers > @babel/types > lodash':
+        patched: '2021-01-03T23:46:49.806Z'
+    - '@angular-devkit/build-angular > @babel/preset-env > @babel/preset-modules > @babel/plugin-proposal-unicode-property-regex > @babel/helper-create-regexp-features-plugin > @babel/helper-regex > lodash':
+        patched: '2021-01-03T23:46:49.806Z'
+    - '@angular-devkit/build-angular > @babel/preset-env > @babel/preset-modules > @babel/plugin-transform-dotall-regex > @babel/helper-create-regexp-features-plugin > @babel/helper-regex > lodash':
+        patched: '2021-01-03T23:46:49.806Z'
+    - '@angular-devkit/build-angular > @jsdevtools/coverage-istanbul-loader > istanbul-lib-instrument > @babel/core > @babel/traverse > @babel/generator > lodash':
+        patched: '2021-01-03T23:46:49.806Z'
+    - '@angular-devkit/build-angular > @jsdevtools/coverage-istanbul-loader > istanbul-lib-instrument > @babel/core > @babel/helpers > @babel/traverse > lodash':
+        patched: '2021-01-03T23:46:49.806Z'
+    - '@angular-devkit/build-angular > @babel/preset-env > @babel/preset-modules > @babel/plugin-proposal-unicode-property-regex > @babel/helper-create-regexp-features-plugin > @babel/helper-annotate-as-pure > @babel/types > lodash':
+        patched: '2021-01-03T23:46:49.806Z'
+    - '@angular-devkit/build-angular > @babel/preset-env > @babel/preset-modules > @babel/plugin-transform-dotall-regex > @babel/helper-create-regexp-features-plugin > @babel/helper-annotate-as-pure > @babel/types > lodash':
+        patched: '2021-01-03T23:46:49.806Z'
+    - '@angular-devkit/build-angular > @jsdevtools/coverage-istanbul-loader > istanbul-lib-instrument > @babel/core > @babel/traverse > @babel/generator > @babel/types > lodash':
+        patched: '2021-01-03T23:46:49.806Z'
+    - '@angular-devkit/build-angular > @jsdevtools/coverage-istanbul-loader > istanbul-lib-instrument > @babel/core > @babel/helper-module-transforms > @babel/helper-module-imports > @babel/types > lodash':
+        patched: '2021-01-03T23:46:49.806Z'
+    - '@angular-devkit/build-angular > @jsdevtools/coverage-istanbul-loader > istanbul-lib-instrument > @babel/core > @babel/helper-module-transforms > @babel/template > @babel/types > lodash':
+        patched: '2021-01-03T23:46:49.806Z'
+    - '@angular-devkit/build-angular > @jsdevtools/coverage-istanbul-loader > istanbul-lib-instrument > @babel/core > @babel/helpers > @babel/template > @babel/types > lodash':
+        patched: '2021-01-03T23:46:49.806Z'
+    - '@angular-devkit/build-angular > @jsdevtools/coverage-istanbul-loader > istanbul-lib-instrument > @babel/core > @babel/traverse > @babel/helper-function-name > @babel/types > lodash':
+        patched: '2021-01-03T23:46:49.806Z'
+    - '@angular-devkit/build-angular > @jsdevtools/coverage-istanbul-loader > istanbul-lib-instrument > @babel/core > @babel/traverse > @babel/helper-split-export-declaration > @babel/types > lodash':
+        patched: '2021-01-03T23:46:49.806Z'
+    - '@angular-devkit/build-angular > @jsdevtools/coverage-istanbul-loader > istanbul-lib-instrument > @babel/core > @babel/helper-module-transforms > @babel/helper-split-export-declaration > @babel/types > lodash':
+        patched: '2021-01-03T23:46:49.806Z'
+    - '@angular-devkit/build-angular > @jsdevtools/coverage-istanbul-loader > istanbul-lib-instrument > @babel/core > @babel/helpers > @babel/traverse > @babel/types > lodash':
+        patched: '2021-01-03T23:46:49.806Z'
+    - '@angular-devkit/build-angular > @jsdevtools/coverage-istanbul-loader > istanbul-lib-instrument > @babel/core > @babel/helper-module-transforms > @babel/helper-replace-supers > @babel/types > lodash':
+        patched: '2021-01-03T23:46:49.806Z'
+    - '@angular-devkit/build-angular > @jsdevtools/coverage-istanbul-loader > istanbul-lib-instrument > @babel/core > @babel/helper-module-transforms > @babel/helper-simple-access > @babel/types > lodash':
+        patched: '2021-01-03T23:46:49.806Z'
+    - '@angular-devkit/build-angular > @jsdevtools/coverage-istanbul-loader > istanbul-lib-instrument > @babel/core > @babel/helpers > @babel/traverse > @babel/generator > lodash':
+        patched: '2021-01-03T23:46:49.806Z'
+    - '@angular-devkit/build-angular > @jsdevtools/coverage-istanbul-loader > istanbul-lib-instrument > @babel/core > @babel/helper-module-transforms > @babel/helper-replace-supers > @babel/traverse > lodash':
+        patched: '2021-01-03T23:46:49.806Z'
+    - '@angular-devkit/build-angular > @jsdevtools/coverage-istanbul-loader > istanbul-lib-instrument > @babel/core > @babel/helpers > @babel/traverse > @babel/generator > @babel/types > lodash':
+        patched: '2021-01-03T23:46:49.806Z'
+    - '@angular-devkit/build-angular > @jsdevtools/coverage-istanbul-loader > istanbul-lib-instrument > @babel/core > @babel/helper-module-transforms > @babel/helper-replace-supers > @babel/helper-member-expression-to-functions > @babel/types > lodash':
+        patched: '2021-01-03T23:46:49.806Z'
+    - '@angular-devkit/build-angular > @jsdevtools/coverage-istanbul-loader > istanbul-lib-instrument > @babel/core > @babel/helper-module-transforms > @babel/helper-replace-supers > @babel/helper-optimise-call-expression > @babel/types > lodash':
+        patched: '2021-01-03T23:46:49.806Z'
+    - '@angular-devkit/build-angular > @jsdevtools/coverage-istanbul-loader > istanbul-lib-instrument > @babel/core > @babel/traverse > @babel/helper-function-name > @babel/helper-get-function-arity > @babel/types > lodash':
+        patched: '2021-01-03T23:46:49.806Z'
+    - '@angular-devkit/build-angular > @jsdevtools/coverage-istanbul-loader > istanbul-lib-instrument > @babel/core > @babel/traverse > @babel/helper-function-name > @babel/template > @babel/types > lodash':
+        patched: '2021-01-03T23:46:49.806Z'
+    - '@angular-devkit/build-angular > @jsdevtools/coverage-istanbul-loader > istanbul-lib-instrument > @babel/core > @babel/helper-module-transforms > @babel/helper-simple-access > @babel/template > @babel/types > lodash':
+        patched: '2021-01-03T23:46:49.806Z'
+    - '@angular-devkit/build-angular > @jsdevtools/coverage-istanbul-loader > istanbul-lib-instrument > @babel/core > @babel/helpers > @babel/traverse > @babel/helper-function-name > @babel/types > lodash':
+        patched: '2021-01-03T23:46:49.806Z'
+    - '@angular-devkit/build-angular > @jsdevtools/coverage-istanbul-loader > istanbul-lib-instrument > @babel/core > @babel/helpers > @babel/traverse > @babel/helper-split-export-declaration > @babel/types > lodash':
+        patched: '2021-01-03T23:46:49.806Z'
+    - '@angular-devkit/build-angular > @jsdevtools/coverage-istanbul-loader > istanbul-lib-instrument > @babel/core > @babel/helper-module-transforms > @babel/helper-replace-supers > @babel/traverse > @babel/types > lodash':
+        patched: '2021-01-03T23:46:49.806Z'
+    - '@angular-devkit/build-angular > @jsdevtools/coverage-istanbul-loader > istanbul-lib-instrument > @babel/core > @babel/helper-module-transforms > @babel/helper-replace-supers > @babel/traverse > @babel/generator > lodash':
+        patched: '2021-01-03T23:46:49.806Z'
+    - '@angular-devkit/build-angular > @jsdevtools/coverage-istanbul-loader > istanbul-lib-instrument > @babel/core > @babel/helper-module-transforms > @babel/helper-replace-supers > @babel/traverse > @babel/generator > @babel/types > lodash':
+        patched: '2021-01-03T23:46:49.806Z'
+    - '@angular-devkit/build-angular > @jsdevtools/coverage-istanbul-loader > istanbul-lib-instrument > @babel/core > @babel/helpers > @babel/traverse > @babel/helper-function-name > @babel/helper-get-function-arity > @babel/types > lodash':
+        patched: '2021-01-03T23:46:49.806Z'
+    - '@angular-devkit/build-angular > @jsdevtools/coverage-istanbul-loader > istanbul-lib-instrument > @babel/core > @babel/helpers > @babel/traverse > @babel/helper-function-name > @babel/template > @babel/types > lodash':
+        patched: '2021-01-03T23:46:49.806Z'
+    - '@angular-devkit/build-angular > @jsdevtools/coverage-istanbul-loader > istanbul-lib-instrument > @babel/core > @babel/helper-module-transforms > @babel/helper-replace-supers > @babel/traverse > @babel/helper-function-name > @babel/types > lodash':
+        patched: '2021-01-03T23:46:49.806Z'
+    - '@angular-devkit/build-angular > @jsdevtools/coverage-istanbul-loader > istanbul-lib-instrument > @babel/core > @babel/helper-module-transforms > @babel/helper-replace-supers > @babel/traverse > @babel/helper-split-export-declaration > @babel/types > lodash':
+        patched: '2021-01-03T23:46:49.806Z'
+    - '@angular-devkit/build-angular > @jsdevtools/coverage-istanbul-loader > istanbul-lib-instrument > @babel/core > @babel/helper-module-transforms > @babel/helper-replace-supers > @babel/traverse > @babel/helper-function-name > @babel/helper-get-function-arity > @babel/types > lodash':
+        patched: '2021-01-03T23:46:49.806Z'
+    - '@angular-devkit/build-angular > @jsdevtools/coverage-istanbul-loader > istanbul-lib-instrument > @babel/core > @babel/helper-module-transforms > @babel/helper-replace-supers > @babel/traverse > @babel/helper-function-name > @babel/template > @babel/types > lodash':
+        patched: '2021-01-03T23:46:49.806Z'
