@@ -17,7 +17,6 @@ module.exports =
         // Register the processors
         .processor(require('./processors/mergeParameterInfo'))
         .processor(require('./processors/processPseudoClasses'))
-        .processor(require('./processors/splitDescription'))
         .processor(require('./processors/convertPrivateClassesToInterfaces'))
         .processor(require('./processors/generateApiListDoc'))
         .processor(require('./processors/addNotYetDocumentedProperty'))
