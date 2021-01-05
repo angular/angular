@@ -28,10 +28,8 @@ This section shows you how to define a route to show individual product details.
 
 1. Open `product-list.component.html`.
 
-1. Update the `*ngFor` directive to read as follows.
-    This statement instructs Angular to iterate over the items in the `products` array and assigns each index in the array to the `productId` variable when iterating over the list.
-
 1. Modify the product name anchor to include a `routerLink` with the `product.id` as a parameter.
+    This modification assigns each index in the array to the `productId` variable when iterating over the list.
 
     <code-example header="src/app/product-list/product-list.component.html" path="getting-started/src/app/product-list/product-list.component.html" region="router-link">
     </code-example>
