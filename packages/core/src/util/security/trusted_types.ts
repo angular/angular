@@ -17,7 +17,7 @@
  */
 
 import {global} from '../global';
-import {TrustedHTML, TrustedScript, TrustedScriptURL, TrustedTypePolicy, TrustedTypePolicyFactory} from './trusted_type_defs';
+import {TrustedHTML, TrustedScriptURL, TrustedTypePolicy, TrustedTypePolicyFactory} from './trusted_type_defs';
 
 /**
  * The Trusted Types policy, or null if Trusted Types are not
@@ -64,17 +64,6 @@ export function trustedHTMLFromString(html: string): TrustedHTML|string {
 }
 
 /**
- * Unsafely promote a string to a TrustedScript, falling back to strings when
- * Trusted Types are not available.
- * @security In particular, it must be assured that the provided string will
- * never cause an XSS vulnerability if used in a context that will be
- * interpreted and executed as a script by a browser, e.g. when calling eval.
- */
-export function trustedScriptFromString(script: string): TrustedScript|string {
-  return getPolicy()?.createScript(script) || script;
-}
-
-/**
  * Unsafely promote a string to a TrustedScriptURL, falling back to strings
  * when Trusted Types are not available.
  * @security This is a security-sensitive function; any use of this function
@@ -116,10 +105,12 @@ export function newTrustedFunctionForDev(...args: string[]): Function {
 ) { ${fnBody}
 })`;
 
+  const trustedScript = getPolicy()?.createScript(body) || body;
+
   // Using eval directly confuses the compiler and prevents this module from
   // being stripped out of JS binaries even if not used. The global['eval']
   // indirection fixes that.
-  const fn = global['eval'](trustedScriptFromString(body) as string) as Function;
+  const fn = global['eval'](trustedScript as string) as Function;
 
   // To completely mimic the behavior of calling "new Function", two more
   // things need to happen:
