@@ -106,7 +106,7 @@ Pass an empty string to remove the status.
 
 <code-example 
   path="cli-builder/src/my-builder.ts" 
-  header="src/my-builder.ts (progess reporting)" 
+  header="src/my-builder.ts (progress reporting)" 
   region="progress-reporting">
 </code-example>
 
