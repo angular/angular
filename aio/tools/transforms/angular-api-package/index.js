@@ -86,7 +86,7 @@ module.exports =
           readTypeScriptModules.ignoreExportsMatching = [/^_|^ɵɵ|^VERSION$/];
           readTypeScriptModules.hidePrivateMembers = true;
 
-          // NOTE: This list should be in sync with tools/public_api_guard/BUILD.bazel
+          // NOTE: This list should be in sync with the folders/files in `goldens/public-api`.
           readTypeScriptModules.sourceFiles = [
             'animations/index.ts',
             'animations/browser/index.ts',
@@ -101,6 +101,8 @@ module.exports =
             'core/testing/index.ts',
             'elements/index.ts',
             'forms/index.ts',
+            'localize/index.ts',
+            'localize/init/index.ts',
             'platform-browser/index.ts',
             'platform-browser/animations/index.ts',
             'platform-browser/testing/index.ts',
