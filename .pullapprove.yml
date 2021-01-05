@@ -229,10 +229,6 @@ groups:
           'aio/content/guide/route-animations.md',
           'aio/content/guide/transition-and-triggers.md'
           ])
-    labels:
-      pending: "comp: animations"
-      approved: "comp: animations"
-      rejected: "comp: animations"
     reviewers:
       users:
         - crisbeto
@@ -258,10 +254,6 @@ groups:
           'aio/content/guide/aot-metadata-errors.md',
           'aio/content/guide/template-typecheck.md '
           ])
-    labels:
-      pending: "comp: compiler"
-      approved: "comp: compiler"
-      rejected: "comp: compiler"
     reviewers:
       users:
         - alxhub
@@ -278,10 +270,6 @@ groups:
       - *can-be-global-approved
       - *can-be-global-docs-approved
       - files.include('packages/compiler-cli/ngcc/**')
-    labels:
-      pending: "comp: ngcc"
-      approved: "comp: ngcc"
-      rejected: "comp: ngcc"
     reviewers:
       users:
         - alxhub
@@ -299,10 +287,6 @@ groups:
       - *can-be-global-approved
       - *can-be-global-docs-approved
       - files.include("packages/core/schematics/**")
-    labels:
-      pending: "comp: migrations"
-      approved: "comp: migrations"
-      rejected: "comp: migrations"
     reviewers:
       users:
         - alxhub
@@ -438,10 +422,6 @@ groups:
           'aio/content/examples/user-input/**',
           'aio/content/images/guide/user-input/**'
           ])
-    labels:
-      pending: "comp: core"
-      approved: "comp: core"
-      rejected: "comp: core"
     reviewers:
       users:
         - alxhub
@@ -466,10 +446,6 @@ groups:
           'packages/common/**',
           'packages/examples/common/**',
           ])
-    labels:
-      pending: "comp: common"
-      approved: "comp: common"
-      rejected: "comp: common"
     reviewers:
       users:
         - alxhub
@@ -497,10 +473,6 @@ groups:
           'aio/content/examples/http/**',
           'aio/content/images/guide/http/**'
           ])
-    labels:
-      pending: "comp: common/http"
-      approved: "comp: common/http"
-      rejected: "comp: common/http"
     reviewers:
       users:
         - alxhub
@@ -522,10 +494,6 @@ groups:
           'aio/content/images/guide/elements/**',
           'aio/content/guide/elements.md'
           ])
-    labels:
-      pending: "comp: elements"
-      approved: "comp: elements"
-      rejected: "comp: elements"
     reviewers:
       users:
         - andrewseguin
@@ -560,10 +528,6 @@ groups:
           'aio/content/examples/reactive-forms/**',
           'aio/content/images/guide/reactive-forms/**'
           ])
-    labels:
-      pending: "comp: forms"
-      approved: "comp: forms"
-      rejected: "comp: forms"
     reviewers:
       users:
         - AndrewKushnir
@@ -596,10 +560,6 @@ groups:
           'aio/content/guide/i18n.md',
           'aio/content/examples/i18n/**'
           ])
-    labels:
-      pending: "comp: i18n"
-      approved: "comp: i18n"
-      rejected: "comp: i18n"
     reviewers:
       users:
         - AndrewKushnir
@@ -621,10 +581,6 @@ groups:
           'aio/content/guide/universal.md',
           'aio/content/examples/universal/**'
           ])
-    labels:
-      pending: "comp: server"
-      approved: "comp: server"
-      rejected: "comp: server"
     reviewers:
       users:
         - alxhub
@@ -650,10 +606,6 @@ groups:
           'aio/content/examples/router/**',
           'aio/content/images/guide/router/**'
           ])
-    labels:
-      pending: "comp: router"
-      approved: "comp: router"
-      rejected: "comp: router"
     reviewers:
       users:
         - atscott
@@ -680,10 +632,6 @@ groups:
           'aio/content/guide/service-worker-intro.md',
           'aio/content/images/guide/service-worker/**'
           ])
-    labels:
-      pending: "comp: service-worker"
-      approved: "comp: service-worker"
-      rejected: "comp: service-worker"
     reviewers:
       users:
         - alxhub
@@ -716,10 +664,6 @@ groups:
           'aio/content/guide/ajs-quick-reference.md',
           'aio/content/examples/ajs-quick-reference/**'
           ])
-    labels:
-      pending: "comp: upgrade"
-      approved: "comp: upgrade"
-      rejected: "comp: upgrade"
     reviewers:
       users:
         - gkalpak
@@ -749,10 +693,6 @@ groups:
           'aio/content/examples/testing/**',
           'aio/content/images/guide/testing/**'
           ])
-    labels:
-      pending: "comp: testing"
-      approved: "comp: testing"
-      rejected: "comp: testing"
     reviewers:
       users:
         - AndrewKushnir
@@ -771,10 +711,6 @@ groups:
         contains_any_globs(files, [
           'modules/benchmarks/**'
           ])
-    labels:
-      pending: "comp: performance"
-      approved: "comp: performance"
-      rejected: "comp: performance"
     reviewers:
       users:
         - IgorMinar
@@ -823,10 +759,6 @@ groups:
         - mhevery
         - jelbourn
         # OOO as of 2020-09-28 - pkozlowski-opensource
-    labels:
-      pending: "comp: security"
-      approved: "comp: security"
-      rejected: "comp: security"
     reviews:
       request: -1   # request reviews from everyone
       required: 2   # require at least 2 approvals
@@ -845,10 +777,6 @@ groups:
         contains_any_globs(files, [
           'packages/bazel/**',
           ])
-    labels:
-      pending: "comp: bazel"
-      approved: "comp: bazel"
-      rejected: "comp: bazel"
     reviewers:
       users:
         - IgorMinar
@@ -870,10 +798,6 @@ groups:
           'aio/content/guide/language-service.md',
           'aio/content/images/guide/language-service/**'
           ])
-    labels:
-      pending: "comp: language-service"
-      approved: "comp: language-service"
-      rejected: "comp: language-service"
     reviewers:
       users:
         - ayazhafiz
@@ -894,10 +818,6 @@ groups:
           'packages/zone.js/**',
           'aio/content/guide/zone.md'
           ])
-    labels:
-      pending: "comp: zones"
-      approved: "comp: zones"
-      rejected: "comp: zones"
     reviewers:
       users:
         - JiaLiPassion
@@ -914,10 +834,6 @@ groups:
         contains_any_globs(files, [
           'packages/misc/angular-in-memory-web-api/**',
           ])
-    labels:
-      pending: "comp: in-memory-web-api"
-      approved: "comp: in-memory-web-api"
-      rejected: "comp: in-memory-web-api"
     reviewers:
       users:
         - IgorMinar
@@ -935,10 +851,6 @@ groups:
         contains_any_globs(files, [
           'packages/benchpress/**'
           ])
-    labels:
-      pending: "comp: benchpress"
-      approved: "comp: benchpress"
-      rejected: "comp: benchpress"
     reviewers:
       users:
         - alxhub
@@ -956,10 +868,6 @@ groups:
         contains_any_globs(files, [
           'integration/**'
           ])
-    labels:
-      pending: "comp: testing"
-      approved: "comp: testing"
-      rejected: "comp: testing"
     reviewers:
       users:
         - IgorMinar
@@ -993,10 +901,6 @@ groups:
           'aio/content/start/**',
           'aio/content/images/guide/start/**'
           ])
-    labels:
-      pending: "comp: examples"
-      approved: "comp: examples"
-      rejected: "comp: examples"
     reviewers:
       users:
         - aikidave
@@ -1022,10 +926,6 @@ groups:
           'aio/content/license.md',
           'aio/content/navigation.json'
           ])
-    labels:
-      pending: "comp: docs"
-      approved: "comp: docs"
-      rejected: "comp: docs"
     reviewers:
       users:
         - aikidave
@@ -1053,10 +953,6 @@ groups:
           'aio/content/guide/rx-library.md',
           'aio/content/examples/rx-library/**'
           ])
-    labels:
-      pending: "comp: docs"
-      approved: "comp: docs"
-      rejected: "comp: docs"
     reviewers:
       users:
         - alxhub
@@ -1090,10 +986,6 @@ groups:
           'aio/content/guide/ivy-compatibility.md',
           'aio/content/guide/ivy-compatibility-examples.md'
           ])
-    labels:
-      pending: "comp: docs"
-      approved: "comp: docs"
-      rejected: "comp: docs"
     reviewers:
       users:
         - IgorMinar
@@ -1120,10 +1012,6 @@ groups:
         - clydin
         - kyliau
         - IgorMinar
-    labels:
-      pending: "comp: compiler"
-      approved: "comp: compiler"
-      rejected: "comp: compiler"
     reviews:
       request: -1   # request reviews from everyone
       required: 2   # require at least 2 approvals
@@ -1158,10 +1046,6 @@ groups:
           'aio/content/guide/migration-update-module-and-target-compiler-options.md',
           'aio/content/guide/migration-update-libraries-tslib.md',
           ])
-    labels:
-      pending: "comp: docs"
-      approved: "comp: docs"
-      rejected: "comp: docs"
     reviewers:
       users:
         - alan-agius4
@@ -1184,10 +1068,6 @@ groups:
           'aio/content/guide/libraries.md',
           'aio/content/guide/using-libraries.md'
           ])
-    labels:
-      pending: "comp: docs"
-      approved: "comp: docs"
-      rejected: "comp: docs"
     reviewers:
       users:
         - alan-agius4
@@ -1211,10 +1091,6 @@ groups:
           'aio/content/images/guide/schematics/**',
           'aio/content/examples/schematics-for-libraries/**'
           ])
-    labels:
-      pending: "comp: docs"
-      approved: "comp: docs"
-      rejected: "comp: docs"
     reviewers:
       users:
         - alan-agius4
@@ -1245,10 +1121,6 @@ groups:
           'aio/content/images/guide/docs-style-guide/**',
           'aio/content/guide/visual-studio-2015.md'
           ])
-    labels:
-      pending: "comp: docs-infra"
-      approved: "comp: docs-infra"
-      rejected: "comp: docs-infra"
     reviewers:
       users:
         - gkalpak
@@ -1316,10 +1188,6 @@ groups:
           '**/*.bzl',
           '**/*.bazel'
           ])
-    labels:
-      pending: "comp: dev-infra"
-      approved: "comp: dev-infra"
-      rejected: "comp: dev-infra"
     reviewers:
       users:
         # OOO as of 2020-09-28 - devversion
@@ -1357,10 +1225,6 @@ groups:
         - jelbourn
         - petebacondarwin
         # OOO as of 2020-09-28 - pkozlowski-opensource
-    labels:
-      pending: "comp: docs/api"
-      approved: "comp: docs/api"
-      rejected: "comp: docs/api"
     reviews:
       request: 4 # Request reviews from four people
       required: 3 # Require that three people approve
@@ -1389,10 +1253,6 @@ groups:
         - jelbourn
         - petebacondarwin
         # OOO as of 2020-09-28 - pkozlowski-opensource
-    labels:
-      pending: "comp: build & ci"
-      approved: "comp: build & ci"
-      rejected: "comp: build & ci"
     reviews:
       request: 4 # Request reviews from four people
       required: 2 # Require that two people approve
@@ -1412,10 +1272,6 @@ groups:
         contains_any_globs(files, [
           'goldens/circular-deps/packages.json'
         ])
-    labels:
-      pending: "comp: build & ci"
-      approved: "comp: build & ci"
-      rejected: "comp: build & ci"
     reviewers:
       users:
         - AndrewKushnir
@@ -1442,10 +1298,6 @@ groups:
         contains_any_globs(files, [
           '.pullapprove.yml'
           ])
-    labels:
-      pending: "comp: build & ci"
-      approved: "comp: build & ci"
-      rejected: "comp: build & ci"
     reviewers:
       users:
         - AndrewKushnir
