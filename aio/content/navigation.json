@@ -56,35 +56,35 @@
       "tooltip": "Set up your environment and learn basic concepts",
       "children": [
         {
-            "title": "Try it",
-            "tooltip": "Examine and work with a ready-made sample app, with no setup.",
-            "children": [
-              {
-                "url": "start",
-                "title": "Getting started",
-                "tooltip": "Take a look at Angular's component model, template syntax, and component communication."
-              },
-              {
-                "url": "start/start-routing",
-                "title": "Adding navigation",
-                "tooltip": "Navigate among different page views using the browser's URL."
-              },
-              {
-                "url": "start/start-data",
-                "title": "Managing Data",
-                "tooltip": "Use services and access external data via HTTP."
-              },
-              {
-                "url": "start/start-forms",
-                "title": "Using Forms for User Input",
-                "tooltip": "Learn about fetching and managing data from users with forms."
-              },
-              {
-                "url": "start/start-deployment",
-                "title": "Deploying an application",
-                "tooltip": "Move to local development, or deploy your application to Firebase or your own server."
-              }
-            ]
+          "title": "Try it",
+          "tooltip": "Examine and work with a ready-made sample app, with no setup.",
+          "children": [
+            {
+              "url": "start",
+              "title": "Getting started",
+              "tooltip": "Take a look at Angular's component model, template syntax, and component communication."
+            },
+            {
+              "url": "start/start-routing",
+              "title": "Adding navigation",
+              "tooltip": "Navigate among different page views using the browser's URL."
+            },
+            {
+              "url": "start/start-data",
+              "title": "Managing Data",
+              "tooltip": "Use services and access external data via HTTP."
+            },
+            {
+              "url": "start/start-forms",
+              "title": "Using Forms for User Input",
+              "tooltip": "Learn about fetching and managing data from users with forms."
+            },
+            {
+              "url": "start/start-deployment",
+              "title": "Deploying an application",
+              "tooltip": "Move to local development, or deploy your application to Firebase or your own server."
+            }
+          ]
         },
         {
           "url": "guide/setup-local",
@@ -915,6 +915,17 @@
           "title": "API Reference",
           "tooltip": "Details of the Angular packages, classes, interfaces, and other types.",
           "url": "api"
+        },
+        {
+          "title": "Error Reference",
+          "tooltip": "Details of the errors that can be thrown by Angular.",
+          "children": [
+            {
+              "title": "Overview",
+              "url": "errors",
+              "hidden": true
+            }
+          ]
         },
         {
           "title": "Example applications",

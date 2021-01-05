@@ -1,0 +1,18 @@
+{% import "lib/githubLinks.html" as github -%}
+
+<h1>{$ doc.code $}: {$ doc.shortDescription $}</h1>
+<div class="github-links">
+  {$ github.githubEditLink(doc, versionInfo) $}
+</div>
+
+{% block content %}
+<div class="content">
+  <h2>Description</h2>
+  {$ doc.description | marked $}
+</div>
+<br>
+<div class="debugging">
+  <h2>Debugging the error</h2>
+  {$ doc.debugging | marked $}
+</div>
+{% endblock %}

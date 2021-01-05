@@ -1232,6 +1232,7 @@ groups:
           'goldens/public-api/**',
           'CHANGELOG.md',
           'docs/NAMING.md',
+          'aio/content/errors/*.md',
           'aio/content/guide/glossary.md',
           'aio/content/guide/styleguide.md',
           'aio/content/examples/styleguide/**',
