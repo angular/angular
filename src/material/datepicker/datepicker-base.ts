@@ -570,7 +570,10 @@ export abstract class MatDatepickerBase<C extends MatDatepickerControl<D>, S,
       maxWidth: '80vw',
       maxHeight: '',
       position: {},
-      autoFocus: true,
+
+      // Disable the dialog's automatic focus capturing, because it'll go to the close button
+      // automatically. The calendar will move focus on its own once it renders.
+      autoFocus: false,
 
       // `MatDialog` has focus restoration built in, however we want to disable it since the
       // datepicker also has focus restoration for dropdown mode. We want to do this, in order

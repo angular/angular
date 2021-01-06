@@ -22,7 +22,7 @@
   <button
     type="button"
     mat-raised-button
-    color="primary"
+    [color]="color || 'primary'"
     class="mat-datepicker-close-button"
     [class.cdk-visually-hidden]="!_closeButtonFocused"
     (focus)="_closeButtonFocused = true"
