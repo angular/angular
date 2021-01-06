@@ -36,6 +36,9 @@ export interface DragRefConfig {
 
   /** `z-index` for the absolutely-positioned elements that are created by the drag item. */
   zIndex?: number;
+
+  /** Ref that the current drag item is nested in. */
+  parentDragRef?: DragRef;
 }
 
 /** Options that can be used to bind a passive event listener. */
@@ -783,10 +786,11 @@ export class DragRef<T = any> {
    * @param event Browser event object that started the sequence.
    */
   private _initializeDragSequence(referenceElement: HTMLElement, event: MouseEvent | TouchEvent) {
-    // Always stop propagation for the event that initializes
-    // the dragging sequence, in order to prevent it from potentially
-    // starting another sequence for a draggable parent somewhere up the DOM tree.
-    event.stopPropagation();
+    // Stop propagation if the item is inside another
+    // draggable so we don't start multiple drag sequences.
+    if (this._config.parentDragRef) {
+      event.stopPropagation();
+    }
 
     const isDragging = this.isDragging();
     const isTouchSequence = isTouchEvent(event);

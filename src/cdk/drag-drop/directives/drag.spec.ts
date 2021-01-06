@@ -691,7 +691,7 @@ describe('CdkDrag', () => {
       expect(styles.touchAction || (styles as any).webkitUserDrag).toBeFalsy();
     }));
 
-    it('should stop propagation for the drag sequence start event', fakeAsync(() => {
+    it('should not stop propagation for the drag sequence start event by default', fakeAsync(() => {
       const fixture = createComponent(StandaloneDraggable);
       fixture.detectChanges();
       const dragElement = fixture.componentInstance.dragElement.nativeElement;
@@ -702,7 +702,7 @@ describe('CdkDrag', () => {
       dispatchEvent(dragElement, event);
       fixture.detectChanges();
 
-      expect(event.stopPropagation).toHaveBeenCalled();
+      expect(event.stopPropagation).not.toHaveBeenCalled();
     }));
 
     it('should not throw if destroyed before the first change detection run', fakeAsync(() => {
@@ -5520,7 +5520,6 @@ describe('CdkDrag', () => {
 
   describe('with nested drags', () => {
     it('should not move draggable container when dragging child (multitouch)', fakeAsync(() => {
-
       const fixture = createComponent(NestedDragsComponent, [], 10);
       fixture.detectChanges();
 
@@ -5568,7 +5567,20 @@ describe('CdkDrag', () => {
           .toHaveBeenCalledTimes(containerDragMovedCount);
       expect(fixture.componentInstance.containerDragReleasedSpy)
           .toHaveBeenCalledTimes(containerDragReleasedCount);
+    }));
 
+    it('should stop event propagation when dragging a nested item', fakeAsync(() => {
+      const fixture = createComponent(NestedDragsComponent);
+      fixture.detectChanges();
+      const dragElement = fixture.componentInstance.item.nativeElement;
+
+      const event = createMouseEvent('mousedown');
+      spyOn(event, 'stopPropagation').and.callThrough();
+
+      dispatchEvent(dragElement, event);
+      fixture.detectChanges();
+
+      expect(event.stopPropagation).toHaveBeenCalled();
     }));
   });
 });
