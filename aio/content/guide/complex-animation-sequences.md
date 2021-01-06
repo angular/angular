@@ -20,7 +20,7 @@ Las funciones que controlan secuencias de animación complejas son las siguiente
 
 {@a complex-sequence}
 
-## Animar varios elementos usando las funciones query() y stagger()
+## Animar varios elementos usando las funciones query() y stagger()
 
 La función `query()` permite encontrar elementos internos dentro del elemento que estás animando. Esta función se dirige a elementos HTML específicos dentro de un componente principal y aplica animaciones a cada elemento individualmente. Angular maneja de manera inteligente la configuración, el desmontaje y la limpieza a medida que coordina los elementos en la página.
 
