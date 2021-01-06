@@ -1,0 +1,17 @@
+<table matSort (matSortChange)="sortData($event)">
+  <tr>
+    <th mat-sort-header="name">Dessert</th>
+    <th mat-sort-header="calories">Calories</th>
+    <th mat-sort-header="fat" [disabled]="disableThirdHeader">Fat</th>
+    <th mat-sort-header="carbs">Carbs</th>
+    <th mat-sort-header="protein">Protein</th>
+  </tr>
+
+  <tr *ngFor="let dessert of sortedData">
+    <td>{{dessert.name}}</td>
+    <td>{{dessert.calories}}</td>
+    <td>{{dessert.fat}}</td>
+    <td>{{dessert.carbs}}</td>
+    <td>{{dessert.protein}}</td>
+  </tr>
+</table>
