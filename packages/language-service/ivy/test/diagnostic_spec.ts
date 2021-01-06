@@ -174,4 +174,22 @@ describe('getSemanticDiagnostics', () => {
       'Parser Error: Bindings cannot contain assignments at column 8 in [{{nope = true}}] in /app2.html@0:0'
     ]);
   });
+
+  it('reports a diagnostic for a component without a template', () => {
+    const appFile = {
+      name: absoluteFrom('/app.ts'),
+      contents: `
+      import {Component} from '@angular/core';
+      @Component({})
+      export class MyComponent {}
+    `
+    };
+
+    const env = createModuleWithDeclarations([appFile]);
+    const diags = env.ngLS.getSemanticDiagnostics(absoluteFrom('/app.ts'));
+
+    expect(diags.map(x => x.messageText)).toEqual([
+      'component is missing a template',
+    ]);
+  });
 });

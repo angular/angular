@@ -13,6 +13,7 @@ import {runInEachFileSystem} from '../../file_system/testing';
 import {NoopIncrementalBuildStrategy} from '../../incremental';
 import {ClassDeclaration, isNamedClassDeclaration} from '../../reflection';
 import {ReusedProgramStrategy} from '../../typecheck';
+import {OptimizeFor} from '../../typecheck/api';
 
 import {NgCompilerOptions} from '../api';
 
@@ -54,7 +55,8 @@ runInEachFileSystem(() => {
           new NoopIncrementalBuildStrategy(), /** enableTemplateTypeChecker */ false,
           /* usePoisonedData */ false);
 
-      const diags = compiler.getDiagnostics(getSourceFileOrError(program, COMPONENT));
+      const diags = compiler.getDiagnosticsForFile(
+          getSourceFileOrError(program, COMPONENT), OptimizeFor.SingleFile);
       expect(diags.length).toBe(1);
       expect(diags[0].messageText).toContain('does_not_exist');
     });
