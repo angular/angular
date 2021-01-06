@@ -9,20 +9,16 @@
 import {ScrollStrategy} from './scroll-strategy';
 import {ViewportRuler} from '@angular/cdk/scrolling';
 import {coerceCssPixelValue} from '@angular/cdk/coercion';
+import {supportsScrollBehavior} from '@angular/cdk/platform';
 
-/**
- * Extended `CSSStyleDeclaration` that includes `scrollBehavior` which isn't part of the
- * built-in TS typings. Once it is, this declaration can be removed safely.
- * @docs-private
- */
-type ScrollBehaviorCSSStyleDeclaration = CSSStyleDeclaration & {scrollBehavior: string};
+const scrollBehaviorSupported = supportsScrollBehavior();
 
 /**
  * Strategy that will prevent the user from scrolling while the overlay is visible.
  */
 export class BlockScrollStrategy implements ScrollStrategy {
   private _previousHTMLStyles = {top: '', left: ''};
-  private _previousScrollPosition: { top: number, left: number };
+  private _previousScrollPosition: {top: number, left: number};
   private _isEnabled = false;
   private _document: Document;
 
@@ -31,7 +27,7 @@ export class BlockScrollStrategy implements ScrollStrategy {
   }
 
   /** Attaches this scroll strategy to an overlay. */
-  attach() { }
+  attach() {}
 
   /** Blocks page-level scroll while the attached overlay is open. */
   enable() {
@@ -58,8 +54,8 @@ export class BlockScrollStrategy implements ScrollStrategy {
     if (this._isEnabled) {
       const html = this._document.documentElement!;
       const body = this._document.body!;
-      const htmlStyle = html.style as ScrollBehaviorCSSStyleDeclaration;
-      const bodyStyle = body.style as ScrollBehaviorCSSStyleDeclaration;
+      const htmlStyle = html.style;
+      const bodyStyle = body.style;
       const previousHtmlScrollBehavior = htmlStyle.scrollBehavior || '';
       const previousBodyScrollBehavior = bodyStyle.scrollBehavior || '';
 
@@ -71,12 +67,19 @@ export class BlockScrollStrategy implements ScrollStrategy {
 
       // Disable user-defined smooth scrolling temporarily while we restore the scroll position.
       // See https://developer.mozilla.org/en-US/docs/Web/CSS/scroll-behavior
-      htmlStyle.scrollBehavior = bodyStyle.scrollBehavior = 'auto';
+      // Note that we don't mutate the property if the browser doesn't support `scroll-behavior`,
+      // because it can throw off feature detections in `supportsScrollBehavior` which
+      // checks for `'scrollBehavior' in documentElement.style`.
+      if (scrollBehaviorSupported) {
+        htmlStyle.scrollBehavior = bodyStyle.scrollBehavior = 'auto';
+      }
 
       window.scroll(this._previousScrollPosition.left, this._previousScrollPosition.top);
 
-      htmlStyle.scrollBehavior = previousHtmlScrollBehavior;
-      bodyStyle.scrollBehavior = previousBodyScrollBehavior;
+      if (scrollBehaviorSupported) {
+        htmlStyle.scrollBehavior = previousHtmlScrollBehavior;
+        bodyStyle.scrollBehavior = previousBodyScrollBehavior;
+      }
     }
   }
 
