@@ -48,7 +48,7 @@ export class MapMarkerClusterer implements OnInit, AfterContentInit, OnDestroy {
   private readonly _batchSizeIE = new BehaviorSubject<number|undefined>(undefined);
   private readonly _calculator = new BehaviorSubject<Calculator|undefined>(undefined);
   private readonly _clusterClass = new BehaviorSubject<string|undefined>(undefined);
-  private readonly _enableRetinalIcons = new BehaviorSubject<boolean|undefined>(undefined);
+  private readonly _enableRetinaIcons = new BehaviorSubject<boolean|undefined>(undefined);
   private readonly _gridSize = new BehaviorSubject<number|undefined>(undefined);
   private readonly _ignoreHidden = new BehaviorSubject<boolean|undefined>(undefined);
   private readonly _imageExtension = new BehaviorSubject<string|undefined>(undefined);
@@ -100,8 +100,8 @@ export class MapMarkerClusterer implements OnInit, AfterContentInit, OnDestroy {
   }
 
   @Input()
-  set enableRetinalIcons(enableRetinalIcons: boolean) {
-    this._enableRetinalIcons.next(enableRetinalIcons);
+  set enableRetinaIcons(enableRetinaIcons: boolean) {
+    this._enableRetinaIcons.next(enableRetinaIcons);
   }
 
   @Input()
@@ -208,7 +208,7 @@ export class MapMarkerClusterer implements OnInit, AfterContentInit, OnDestroy {
       this._watchForBatchSizeIEChanges();
       this._watchForCalculatorChanges();
       this._watchForClusterClassChanges();
-      this._watchForEnableRetinalIconsChanges();
+      this._watchForEnableRetinaIconsChanges();
       this._watchForGridSizeChanges();
       this._watchForIgnoreHiddenChanges();
       this._watchForImageExtensionChanges();
@@ -268,9 +268,9 @@ export class MapMarkerClusterer implements OnInit, AfterContentInit, OnDestroy {
     return this.markerClusterer.getClusters();
   }
 
-  getEnableRetinalIcons(): boolean {
+  getEnableRetinaIcons(): boolean {
     this._assertInitialized();
-    return this.markerClusterer.getEnableRetinalIcons();
+    return this.markerClusterer.getEnableRetinaIcons();
   }
 
   getGridSize(): number {
@@ -345,7 +345,7 @@ export class MapMarkerClusterer implements OnInit, AfterContentInit, OnDestroy {
       this._batchSizeIE,
       this._calculator,
       this._clusterClass,
-      this._enableRetinalIcons,
+      this._enableRetinaIcons,
       this._gridSize,
       this._ignoreHidden,
       this._imageExtension,
@@ -363,7 +363,7 @@ export class MapMarkerClusterer implements OnInit, AfterContentInit, OnDestroy {
       batchSizeIE,
       calculator,
       clusterClass,
-      enableRetinalIcons,
+      enableRetinaIcons,
       gridSize,
       ignoreHidden,
       imageExtension,
@@ -383,7 +383,7 @@ export class MapMarkerClusterer implements OnInit, AfterContentInit, OnDestroy {
         batchSizeIE: batchSizeIE as number|undefined,
         calculator: calculator as Calculator|undefined,
         clusterClass: clusterClass as string|undefined,
-        enableRetinalIcons: enableRetinalIcons as boolean|undefined,
+        enableRetinaIcons: enableRetinaIcons as boolean|undefined,
         gridSize: gridSize as number|undefined,
         ignoreHidden: ignoreHidden as boolean|undefined,
         imageExtension: imageExtension as string|undefined,
@@ -445,11 +445,11 @@ export class MapMarkerClusterer implements OnInit, AfterContentInit, OnDestroy {
     });
   }
 
-  private _watchForEnableRetinalIconsChanges() {
-    this._enableRetinalIcons.pipe(takeUntil(this._destroy)).subscribe(enableRetinalIcons => {
-      if (this.markerClusterer && enableRetinalIcons !== undefined) {
+  private _watchForEnableRetinaIconsChanges() {
+    this._enableRetinaIcons.pipe(takeUntil(this._destroy)).subscribe(enableRetinaIcons => {
+      if (this.markerClusterer && enableRetinaIcons !== undefined) {
         this._assertInitialized();
-        this.markerClusterer.setEnableRetinalIcons(enableRetinalIcons);
+        this.markerClusterer.setEnableRetinaIcons(enableRetinaIcons);
       }
     });
   }

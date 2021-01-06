@@ -231,7 +231,7 @@ export declare class MapMarkerClusterer implements OnInit, AfterContentInit, OnD
     set clusterClass(clusterClass: string);
     clusteringbegin: Observable<void>;
     clusteringend: Observable<void>;
-    set enableRetinalIcons(enableRetinalIcons: boolean);
+    set enableRetinaIcons(enableRetinaIcons: boolean);
     set gridSize(gridSize: number);
     set ignoreHidden(ignoreHidden: boolean);
     set imageExtension(imageExtension: string);
@@ -251,7 +251,7 @@ export declare class MapMarkerClusterer implements OnInit, AfterContentInit, OnD
     getCalculator(): Calculator;
     getClusterClass(): string;
     getClusters(): Cluster[];
-    getEnableRetinalIcons(): boolean;
+    getEnableRetinaIcons(): boolean;
     getGridSize(): number;
     getIgnoreHidden(): boolean;
     getImageExtension(): string;
@@ -268,7 +268,7 @@ export declare class MapMarkerClusterer implements OnInit, AfterContentInit, OnD
     ngAfterContentInit(): void;
     ngOnDestroy(): void;
     ngOnInit(): void;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<MapMarkerClusterer, "map-marker-clusterer", ["mapMarkerClusterer"], { "ariaLabelFn": "ariaLabelFn"; "averageCenter": "averageCenter"; "batchSize": "batchSize"; "batchSizeIE": "batchSizeIE"; "calculator": "calculator"; "clusterClass": "clusterClass"; "enableRetinalIcons": "enableRetinalIcons"; "gridSize": "gridSize"; "ignoreHidden": "ignoreHidden"; "imageExtension": "imageExtension"; "imagePath": "imagePath"; "imageSizes": "imageSizes"; "maxZoom": "maxZoom"; "minimumClusterSize": "minimumClusterSize"; "styles": "styles"; "title": "title"; "zIndex": "zIndex"; "zoomOnClick": "zoomOnClick"; }, { "clusteringbegin": "clusteringbegin"; "clusteringend": "clusteringend"; }, ["_markers"], ["*"]>;
+    static ɵcmp: i0.ɵɵComponentDefWithMeta<MapMarkerClusterer, "map-marker-clusterer", ["mapMarkerClusterer"], { "ariaLabelFn": "ariaLabelFn"; "averageCenter": "averageCenter"; "batchSize": "batchSize"; "batchSizeIE": "batchSizeIE"; "calculator": "calculator"; "clusterClass": "clusterClass"; "enableRetinaIcons": "enableRetinaIcons"; "gridSize": "gridSize"; "ignoreHidden": "ignoreHidden"; "imageExtension": "imageExtension"; "imagePath": "imagePath"; "imageSizes": "imageSizes"; "maxZoom": "maxZoom"; "minimumClusterSize": "minimumClusterSize"; "styles": "styles"; "title": "title"; "zIndex": "zIndex"; "zoomOnClick": "zoomOnClick"; }, { "clusteringbegin": "clusteringbegin"; "clusteringend": "clusteringend"; }, ["_markers"], ["*"]>;
     static ɵfac: i0.ɵɵFactoryDef<MapMarkerClusterer, never>;
 }
 

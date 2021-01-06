@@ -60,7 +60,7 @@ describe('MapMarkerClusterer', () => {
       batchSizeIE: undefined,
       calculator: undefined,
       clusterClass: undefined,
-      enableRetinalIcons: undefined,
+      enableRetinaIcons: undefined,
       gridSize: undefined,
       ignoreHidden: undefined,
       imageExtension: undefined,
@@ -80,7 +80,7 @@ describe('MapMarkerClusterer', () => {
     fixture.componentInstance.averageCenter = true;
     fixture.componentInstance.batchSize = 1;
     fixture.componentInstance.clusterClass = 'testClusterClass';
-    fixture.componentInstance.enableRetinalIcons = true;
+    fixture.componentInstance.enableRetinaIcons = true;
     fixture.componentInstance.gridSize = 2;
     fixture.componentInstance.ignoreHidden = true;
     fixture.componentInstance.imageExtension = 'testImageExtension';
@@ -101,7 +101,7 @@ describe('MapMarkerClusterer', () => {
       batchSizeIE: undefined,
       calculator: undefined,
       clusterClass: 'testClusterClass',
-      enableRetinalIcons: true,
+      enableRetinaIcons: true,
       gridSize: 2,
       ignoreHidden: true,
       imageExtension: 'testImageExtension',
@@ -172,8 +172,8 @@ describe('MapMarkerClusterer', () => {
     markerClustererSpy.getClusters.and.returnValue([]);
     expect(markerClustererComponent.getClusters()).toEqual([]);
 
-    markerClustererSpy.getEnableRetinalIcons.and.returnValue(true);
-    expect(markerClustererComponent.getEnableRetinalIcons()).toBe(true);
+    markerClustererSpy.getEnableRetinaIcons.and.returnValue(true);
+    expect(markerClustererComponent.getEnableRetinaIcons()).toBe(true);
 
     markerClustererSpy.getGridSize.and.returnValue(7);
     expect(markerClustererComponent.getGridSize()).toBe(7);
@@ -234,7 +234,7 @@ describe('MapMarkerClusterer', () => {
                                      [batchSizeIE]="batchSizeIE"
                                      [calculator]="calculator"
                                      [clusterClass]="clusterClass"
-                                     [enableRetinalIcons]="enableRetinalIcons"
+                                     [enableRetinaIcons]="enableRetinaIcons"
                                      [gridSize]="gridSize"
                                      [ignoreHidden]="ignoreHidden"
                                      [imageExtension]="imageExtension"
@@ -262,7 +262,7 @@ class TestApp {
   batchSizeIE?: number;
   calculator?: Calculator;
   clusterClass?: string;
-  enableRetinalIcons?: boolean;
+  enableRetinaIcons?: boolean;
   gridSize?: number;
   ignoreHidden?: boolean;
   imageExtension?: string;

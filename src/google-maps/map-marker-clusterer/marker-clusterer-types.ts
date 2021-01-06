@@ -36,7 +36,7 @@ declare class MarkerClusterer {
   getCalculator(): Calculator;
   getClusterClass(): string;
   getClusters(): Cluster[];
-  getEnableRetinalIcons(): boolean;
+  getEnableRetinaIcons(): boolean;
   getGridSize(): number;
   getIgnoreHidden(): boolean;
   getImageExtension(): string;
@@ -63,7 +63,7 @@ declare class MarkerClusterer {
   setBatchSizeIE(batchSizeIE: number): void;
   setCalculator(calculator: Calculator): void;
   setClusterClass(clusterClass: string): void;
-  setEnableRetinalIcons(enableRetinalIcons: boolean): void;
+  setEnableRetinaIcons(enableRetinaIcons: boolean): void;
   setGridSize(gridSize: number): void;
   setIgnoreHidden(ignoreHidden: boolean): void;
   setImageExtension(imageExtension: string): void;
@@ -110,7 +110,7 @@ declare interface MarkerClustererOptions {
   batchSizeIE?: number;
   calculator?: Calculator;
   clusterClass?: string;
-  enableRetinalIcons?: boolean;
+  enableRetinaIcons?: boolean;
   gridSize?: number;
   ignoreHidden?: boolean;
   imageExtension?: string;
