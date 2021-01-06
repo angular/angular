@@ -66,5 +66,3 @@ export class AfterContentComponent implements AfterContentChecked, AfterContentI
   // ...
 }
 // #enddocregion hooks
-
-//////////////

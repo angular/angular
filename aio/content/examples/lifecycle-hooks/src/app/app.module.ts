@@ -16,8 +16,8 @@ import { ChildViewComponent } from './child-view.component';
 import { CounterParentComponent } from './counter-parent.component';
 import { MyCounterComponent } from './counter.component';
 
-import { DoCheckComponent } from './do-check.component';
 import { DoCheckParentComponent } from './do-check-parent.component';
+import { DoCheckComponent } from './do-check.component';
 
 import { OnChangesParentComponent } from './on-changes-parent.component';
 import { OnChangesComponent } from './on-changes.component';

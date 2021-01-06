@@ -3,9 +3,9 @@ import { Component } from '@angular/core';
 import { LoggerService } from './logger.service';
 
 @Component({
-    selector: 'counter-parent',
-    template: `
-   <div class="parent">
+  selector: 'counter-parent',
+  template: `
+  <div class="parent">
     <h2>Counter Spy</h2>
 
     <button (click)="updateCounter()">Update counter</button>
@@ -15,31 +15,31 @@ import { LoggerService } from './logger.service';
 
     <h4>-- Spy Lifecycle Hook Log --</h4>
     <div *ngFor="let msg of spyLog">{{msg}}</div>
-   </div>
+  </div>
   `,
-    styles: ['.parent {background: gold;}'],
-    providers: [LoggerService]
+  styles: ['.parent {background: gold;}'],
+  providers: [LoggerService]
 })
 export class CounterParentComponent {
-    value: number;
-    spyLog: string[] = [];
+  value: number;
+  spyLog: string[] = [];
 
-    private logger: LoggerService;
+  private logger: LoggerService;
 
-    constructor(logger: LoggerService) {
-        this.logger = logger;
-        this.spyLog = logger.logs;
-        this.reset();
-    }
+  constructor(logger: LoggerService) {
+    this.logger = logger;
+    this.spyLog = logger.logs;
+    this.reset();
+  }
 
-    updateCounter() {
-        this.value += 1;
-        this.logger.tick();
-    }
+  updateCounter() {
+    this.value += 1;
+    this.logger.tick();
+  }
 
-    reset() {
-        this.logger.log('-- reset --');
-        this.value = 0;
-        this.logger.tick();
-    }
+  reset() {
+    this.logger.log('-- reset --');
+    this.value = 0;
+    this.logger.tick();
+  }
 }

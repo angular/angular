@@ -69,4 +69,3 @@ export class DoCheckComponent implements DoCheck {
     this.changeLog = [];
   }
 }
-

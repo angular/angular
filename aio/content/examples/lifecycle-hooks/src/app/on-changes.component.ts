@@ -1,9 +1,6 @@
 /* tslint:disable:forin */
 // #docregion
-import {
-  Component, Input,
-  OnChanges, SimpleChanges
-} from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 
 import { Hero } from './hero';
 
@@ -43,4 +40,3 @@ export class OnChangesComponent implements OnChanges {
 
   reset() { this.changeLog = []; }
 }
-

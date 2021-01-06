@@ -35,4 +35,3 @@ export class MyCounterComponent implements OnChanges {
     this.changeLog.push(`counter: currentValue = ${cur}, previousValue = ${prev}`);
   }
 }
-

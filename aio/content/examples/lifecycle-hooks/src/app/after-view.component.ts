@@ -73,5 +73,3 @@ export class AfterViewComponent implements  AfterViewChecked, AfterViewInit {
   // ...
 }
 // #enddocregion hooks
-
-//////////////
