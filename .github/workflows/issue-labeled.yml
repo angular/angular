@@ -1,0 +1,21 @@
+name: Issue Labeled
+
+on:
+  issues:
+    types: [labeled]
+
+jobs:
+  issue-reply:
+    runs-on: ubuntu-latest
+    steps:
+      - name: need more info
+        if: github.event.label.name == 'needs reproduction'
+        uses: actions-cool/issues-helper@v1.7
+        with:
+          actions: 'create-comment'
+          token: ${{ secrets.GITHUB_TOKEN }}
+          issue-number: ${{ github.event.issue.number }}
+          body: |
+            Hi @${{ github.event.issue.user.login }}. We cannot pinpoint your problem.
+
+            Could you please provide a minimal reproduction in either stackblitz or a github repo so we can investigate further.
