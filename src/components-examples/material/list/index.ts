@@ -6,8 +6,10 @@ import {ListOverviewExample} from './list-overview/list-overview-example';
 import {ListSectionsExample} from './list-sections/list-sections-example';
 import {ListSelectionExample} from './list-selection/list-selection-example';
 import {ListSingleSelectionExample} from './list-single-selection/list-single-selection-example';
+import {ListHarnessExample} from './list-harness/list-harness-example';
 
 export {
+  ListHarnessExample,
   ListOverviewExample,
   ListSectionsExample,
   ListSelectionExample,
@@ -15,6 +17,7 @@ export {
 };
 
 const EXAMPLES = [
+  ListHarnessExample,
   ListOverviewExample,
   ListSectionsExample,
   ListSelectionExample,
