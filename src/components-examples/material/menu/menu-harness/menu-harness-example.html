@@ -1,0 +1,7 @@
+<button type="button" [matMenuTriggerFor]="settingsMenu">Settings</button>
+<button type="button" disabled [matMenuTriggerFor]="settingsMenu">Disabled menu</button>
+
+<mat-menu #settingsMenu>
+  <menu mat-menu-item>Profile</menu>
+  <menu mat-menu-item>Account</menu>
+</mat-menu>
