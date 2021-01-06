@@ -10,15 +10,18 @@ import {
 } from './expansion-expand-collapse-all/expansion-expand-collapse-all-example';
 import {ExpansionOverviewExample} from './expansion-overview/expansion-overview-example';
 import {ExpansionStepsExample} from './expansion-steps/expansion-steps-example';
+import {ExpansionHarnessExample} from './expansion-harness/expansion-harness-example';
 
 export {
   ExpansionExpandCollapseAllExample,
+  ExpansionHarnessExample,
   ExpansionOverviewExample,
   ExpansionStepsExample,
 };
 
 const EXAMPLES = [
   ExpansionExpandCollapseAllExample,
+  ExpansionHarnessExample,
   ExpansionOverviewExample,
   ExpansionStepsExample,
 ];
