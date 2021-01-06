@@ -498,6 +498,7 @@ export declare class MatStartDate<D> extends _MatDateRangeInputBase<D> implement
 }
 
 export declare class MatYearView<D> implements AfterContentInit, OnDestroy {
+    readonly _changeDetectorRef: ChangeDetectorRef;
     _dateAdapter: DateAdapter<D>;
     _matCalendarBody: MatCalendarBody;
     _months: MatCalendarCell[][];

@@ -138,7 +138,7 @@ export class MatYearView<D> implements AfterContentInit, OnDestroy {
    */
   _selectedMonth: number | null;
 
-  constructor(private _changeDetectorRef: ChangeDetectorRef,
+  constructor(readonly _changeDetectorRef: ChangeDetectorRef,
               @Optional() @Inject(MAT_DATE_FORMATS) private _dateFormats: MatDateFormats,
               @Optional() public _dateAdapter: DateAdapter<D>,
               @Optional() private _dir?: Directionality) {
