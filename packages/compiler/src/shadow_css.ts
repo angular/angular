@@ -512,7 +512,10 @@ class SafeSelector {
     return this._content;
   }
 
-  /** Escapes all of the substrings that match a regex within a string. */
+  /**
+   * Replaces all of the substrings that match a regex within a
+   * special string (e.g. `__ph-0__`, `__ph-1__`, etc).
+   */
   private _escapeRegexMatches(content: string, pattern: RegExp): string {
     return content.replace(pattern, (_, keep) => {
       const replaceBy = `__ph-${this.index}__`;
