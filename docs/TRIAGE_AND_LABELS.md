@@ -74,7 +74,7 @@ Detailed triage can be done by anyone familiar with the issue subject matter.
 
 Gauge whether the issue has enough information to act upon. This typically includes a test case
 via StackBlitz or GitHub and steps to reproduce. If the issue may be legitimate but needs more
-information, add the "needs clarification" label. These labels can be revisted if the author can
+information, add the "needs clarification" label. These labels can be revisited if the author can
 provide further clarification. If the issue does have enough information, move on to step 2.
 
 ### Step 2: Bug, feature, or discussion?
@@ -168,7 +168,7 @@ Targeting an active release train:
 
 Special Cases:
 * `target: rc`: A critical fix for an active release-train while it is in a feature freeze or RC phase
-* `target: lts`: A criticial fix for a specific release-train that is still within the long term support phase
+* `target: lts`: A critical fix for a specific release-train that is still within the long term support phase
 
 
 Notes:

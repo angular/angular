@@ -209,7 +209,7 @@ yarn bazel analyze-profile filename_name.profile --task_tree ".*"
 ```
 
 To show all tasks that take longer than a certain threshold, use the `--task_tree_threshold` flag.
-The default behaviour is to use a 50ms threshold.
+The default behavior is to use a 50ms threshold.
 ```
 yarn bazel analyze-profile filename_name.profile --task_tree ".*" --task_tree_threshold 5000
 ```
