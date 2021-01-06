@@ -11,7 +11,13 @@ ng_module(
     ]),
     module_name = "@angular/components-examples/material/grid-list",
     deps = [
+        "//src/cdk/testing",
+        "//src/cdk/testing/testbed",
         "//src/material/grid-list",
+        "//src/material/grid-list/testing",
+        "@npm//@angular/platform-browser",
+        "@npm//@angular/platform-browser-dynamic",
+        "@npm//@types/jasmine",
     ],
 )
 
