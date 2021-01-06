@@ -30,7 +30,6 @@ import {ivySwitchTransform} from '../../switch';
 import {aliasTransformFactory, CompilationMode, declarationTransformFactory, DecoratorHandler, DtsTransformRegistry, ivyTransformFactory, TraitCompiler} from '../../transform';
 import {TemplateTypeCheckerImpl} from '../../typecheck';
 import {OptimizeFor, TemplateTypeChecker, TypeCheckingConfig, TypeCheckingProgramStrategy} from '../../typecheck/api';
-import {isTemplateDiagnostic} from '../../typecheck/diagnostics';
 import {getSourceFileOrNull, isDtsPath, resolveModuleName} from '../../util/src/typescript';
 import {LazyRoute, NgCompilerAdapter, NgCompilerOptions} from '../api';
 
@@ -84,11 +83,12 @@ export class NgCompiler {
   private constructionDiagnostics: ts.Diagnostic[] = [];
 
   /**
-   * Semantic diagnostics related to the program itself.
+   * Non-template diagnostics related to the program itself. Does not include template
+   * diagnostics because the template type checker memoizes them itself.
    *
-   * This is set by (and memoizes) `getDiagnostics`.
+   * This is set by (and memoizes) `getNonTemplateDiagnostics`.
    */
-  private diagnostics: ts.Diagnostic[]|null = null;
+  private nonTemplateDiagnostics: ts.Diagnostic[]|null = null;
 
   private closureCompilerEnabled: boolean;
   private nextProgram: ts.Program;
@@ -177,36 +177,21 @@ export class NgCompiler {
 
   /**
    * Get all Angular-related diagnostics for this compilation.
+   */
+  getDiagnostics(): ts.Diagnostic[] {
+    return [...this.getNonTemplateDiagnostics(), ...this.getTemplateDiagnostics()];
+  }
+
+  /**
+   * Get all Angular-related diagnostics for this compilation.
    *
    * If a `ts.SourceFile` is passed, only diagnostics related to that file are returned.
    */
-  getDiagnostics(file?: ts.SourceFile): ts.Diagnostic[] {
-    if (this.diagnostics === null) {
-      const compilation = this.ensureAnalyzed();
-      this.diagnostics =
-          [...compilation.traitCompiler.diagnostics, ...this.getTemplateDiagnostics()];
-      if (this.entryPoint !== null && compilation.exportReferenceGraph !== null) {
-        this.diagnostics.push(...checkForPrivateExports(
-            this.entryPoint, this.tsProgram.getTypeChecker(), compilation.exportReferenceGraph));
-      }
-    }
-
-    if (file === undefined) {
-      return this.diagnostics;
-    } else {
-      return this.diagnostics.filter(diag => {
-        if (diag.file === file) {
-          return true;
-        } else if (isTemplateDiagnostic(diag) && diag.componentFile === file) {
-          // Template diagnostics are reported when diagnostics for the component file are
-          // requested (since no consumer of `getDiagnostics` would ever ask for diagnostics from
-          // the fake ts.SourceFile for templates).
-          return true;
-        } else {
-          return false;
-        }
-      });
-    }
+  getDiagnosticsForFile(file: ts.SourceFile, optimizeFor: OptimizeFor): ts.Diagnostic[] {
+    return [
+      ...this.getNonTemplateDiagnostics().filter(diag => diag.file === file),
+      ...this.getTemplateDiagnosticsForFile(file, optimizeFor)
+    ];
   }
 
   /**
@@ -580,6 +565,37 @@ export class NgCompiler {
     this.nextProgram = program;
 
     return diagnostics;
+  }
+
+  private getTemplateDiagnosticsForFile(sf: ts.SourceFile, optimizeFor: OptimizeFor):
+      ReadonlyArray<ts.Diagnostic> {
+    const compilation = this.ensureAnalyzed();
+
+    // Get the diagnostics.
+    const typeCheckSpan = this.perfRecorder.start('typeCheckDiagnostics');
+    const diagnostics: ts.Diagnostic[] = [];
+    if (!sf.isDeclarationFile && !this.adapter.isShim(sf)) {
+      diagnostics.push(...compilation.templateTypeChecker.getDiagnosticsForFile(sf, optimizeFor));
+    }
+
+    const program = this.typeCheckingProgramStrategy.getProgram();
+    this.perfRecorder.stop(typeCheckSpan);
+    this.incrementalStrategy.setIncrementalDriver(this.incrementalDriver, program);
+    this.nextProgram = program;
+
+    return diagnostics;
+  }
+
+  private getNonTemplateDiagnostics(): ts.Diagnostic[] {
+    if (this.nonTemplateDiagnostics === null) {
+      const compilation = this.ensureAnalyzed();
+      this.nonTemplateDiagnostics = [...compilation.traitCompiler.diagnostics];
+      if (this.entryPoint !== null && compilation.exportReferenceGraph !== null) {
+        this.nonTemplateDiagnostics.push(...checkForPrivateExports(
+            this.entryPoint, this.tsProgram.getTypeChecker(), compilation.exportReferenceGraph));
+      }
+    }
+    return this.nonTemplateDiagnostics;
   }
 
   /**

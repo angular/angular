@@ -11,7 +11,7 @@ import {StrictTemplateOptions} from '@angular/compiler-cli/src/ngtsc/core/api';
 import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem, getSourceFileOrError} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {MockFileSystem, TestFile} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
 import {loadStandardTestFiles} from '@angular/compiler-cli/src/ngtsc/testing';
-import {TemplateTypeChecker} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
+import {OptimizeFor, TemplateTypeChecker} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
 import * as ts from 'typescript/lib/tsserverlibrary';
 
 import {LanguageService} from '../language_service';
@@ -172,7 +172,9 @@ export class LanguageServiceTestEnvironment {
         continue;
       }
 
-      const ngDiagnostics = ngCompiler.getDiagnostics(sf);
+      // It's more efficient to optimize for WholeProgram since we call this with every file in the
+      // program.
+      const ngDiagnostics = ngCompiler.getDiagnosticsForFile(sf, OptimizeFor.WholeProgram);
       expect(ngDiagnostics.map(diag => diag.messageText)).toEqual([]);
     }
 

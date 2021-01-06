@@ -14,6 +14,7 @@ import {NodeJSFileSystem, setFileSystem} from './file_system';
 import {PatchedProgramIncrementalBuildStrategy} from './incremental';
 import {NOOP_PERF_RECORDER} from './perf';
 import {untagAllTsFiles} from './shims';
+import {OptimizeFor} from './typecheck/api';
 import {ReusedProgramStrategy} from './typecheck/src/augmented_program';
 
 // The following is needed to fix a the chicken-and-egg issue where the sync (into g3) script will
@@ -111,7 +112,10 @@ export class NgTscPlugin implements TscPlugin {
   }
 
   getDiagnostics(file?: ts.SourceFile): ts.Diagnostic[] {
-    return this.compiler.getDiagnostics(file);
+    if (file === undefined) {
+      return this.compiler.getDiagnostics();
+    }
+    return this.compiler.getDiagnosticsForFile(file, OptimizeFor.WholeProgram);
   }
 
   getOptionDiagnostics(): ts.Diagnostic[] {

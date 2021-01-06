@@ -20,6 +20,7 @@ import {NOOP_PERF_RECORDER, PerfRecorder, PerfTracker} from './perf';
 import {DeclarationNode} from './reflection';
 import {retagAllTsFiles, untagAllTsFiles} from './shims';
 import {ReusedProgramStrategy} from './typecheck';
+import {OptimizeFor} from './typecheck/api';
 
 
 
@@ -182,7 +183,9 @@ export class NgtscProgram implements api.Program {
       }
     }
 
-    const diagnostics = this.compiler.getDiagnostics(sf);
+    const diagnostics = sf === undefined ?
+        this.compiler.getDiagnostics() :
+        this.compiler.getDiagnosticsForFile(sf, OptimizeFor.WholeProgram);
     this.reuseTsProgram = this.compiler.getNextProgram();
     return diagnostics;
   }

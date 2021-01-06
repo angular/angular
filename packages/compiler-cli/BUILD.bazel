@@ -33,6 +33,7 @@ ts_library(
         "//packages/compiler-cli/src/ngtsc/shims",
         "//packages/compiler-cli/src/ngtsc/translator",
         "//packages/compiler-cli/src/ngtsc/typecheck",
+        "//packages/compiler-cli/src/ngtsc/typecheck/api",
         "@npm//@bazel/typescript",
         "@npm//@types/node",
         "@npm//chokidar",
