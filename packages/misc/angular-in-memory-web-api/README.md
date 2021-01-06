@@ -8,6 +8,8 @@ It intercepts Angular `Http` and `HttpClient` requests that would otherwise go t
 See [Austin McDaniel's article](https://medium.com/@amcdnl/mocking-with-angular-more-than-just-unit-testing-cbb7908c9fcc) 
 for a quick introduction.
 
+_This package used to live [in its own repository](https://github.com/angular/in-memory-web-api)._
+
 ### _It used to work and now it doesn't :-(_
 
 Perhaps you installed a new version of this library? Check the 
@@ -175,9 +177,9 @@ The `InMemoryBackendConfigArgs` defines a set of options. Add them as the second
 ## Request evaluation order
 This service can evaluate requests in multiple ways depending upon the configuration.
 Here's how it reasons:
-1. If it looks like a [command](#commands), process as a command
+1. If it looks like a [command](#commands), process as a command.
 2. If the [HTTP method is overridden](#method-override), try the override.
-3. If the resource name (after the api base path) matches one of the configured collections, process that
+3. If the resource name (after the api base path) matches one of the configured collections, process that.
 4. If not but the `Config.passThruUnknownUrl` flag is `true`, try to [pass the request along to a real _XHR_](#passthru).
 5. Return a 404.
 
@@ -203,7 +205,7 @@ The query string defines which property and value to match.
 
 Format: `/app/heroes/?propertyName=regexPattern`
 
-The following example matches all names start with the letter 'j'  or 'J' in the heroes collection.
+The following example matches all names that start with the letter 'j' or 'J' in the heroes collection.
 
 `/app/heroes/?name=^j`
 
