@@ -7,12 +7,11 @@ import {
   TestBed,
   tick
 } from '@angular/core/testing';
-import {MatTable, MatTableModule} from './index';
+import {MatTable, MatTableDataSource, MatTableModule} from './index';
 import {DataSource} from '@angular/cdk/table';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {MatSort, MatSortHeader, MatSortModule} from '@angular/material/sort';
-import {MatPaginator, MatPaginatorModule} from '@angular/material/paginator';
-import {MatTableDataSource} from '@angular/material/table';
+import {MatPaginator, MatPaginatorModule} from '@angular/material-experimental/mdc-paginator';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 
 describe('MDC-based MatTable', () => {
@@ -29,6 +28,7 @@ describe('MDC-based MatTable', () => {
         StickyTableApp,
         TableWithNgContainerRow,
         NestedTableApp,
+        MatFlexTableApp,
       ],
     }).compileComponents();
   }));
@@ -164,6 +164,14 @@ describe('MDC-based MatTable', () => {
       expect(tbody.textContent.trim()).toContain('No data');
     });
 
+    it('should set the content styling class on the tbody', () => {
+      let fixture = TestBed.createComponent(NativeHtmlTableApp);
+      fixture.detectChanges();
+
+      const tbodyElement = fixture.nativeElement.querySelector('tbody');
+      expect(tbodyElement.classList).toContain('mdc-data-table__content');
+    });
+
   });
 
   it('should render with MatTableDataSource and sort', () => {
@@ -212,6 +220,13 @@ describe('MDC-based MatTable', () => {
       tick();
     }).not.toThrow();
   }));
+
+  it('should be able to render a flexbox-based table', () => {
+    expect(() => {
+      const fixture = TestBed.createComponent(MatFlexTableApp);
+      fixture.detectChanges();
+    }).not.toThrow();
+  });
 
   describe('with MatTableDataSource and sort/pagination/filter', () => {
     let tableElement: HTMLElement;
@@ -958,6 +973,45 @@ class MatTableWithPaginatorApp implements OnInit {
 class TableWithNgContainerRow {
   dataSource: FakeDataSource | null = new FakeDataSource();
   columnsToRender = ['column_a'];
+}
+
+
+@Component({
+  template: `
+    <mat-table [dataSource]="dataSource">
+      <ng-container matColumnDef="column_a">
+        <mat-header-cell *matHeaderCellDef> Column A</mat-header-cell>
+        <mat-cell *matCellDef="let row"> {{row.a}}</mat-cell>
+        <mat-footer-cell *matFooterCellDef> Footer A</mat-footer-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="column_b">
+        <mat-header-cell *matHeaderCellDef> Column B</mat-header-cell>
+        <mat-cell *matCellDef="let row"> {{row.b}}</mat-cell>
+        <mat-footer-cell *matFooterCellDef> Footer B</mat-footer-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="column_c">
+        <mat-header-cell *matHeaderCellDef> Column C</mat-header-cell>
+        <mat-cell *matCellDef="let row"> {{row.c}}</mat-cell>
+        <mat-footer-cell *matFooterCellDef> Footer C</mat-footer-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="special_column">
+        <mat-cell *matCellDef="let row"> fourth_row </mat-cell>
+      </ng-container>
+
+      <mat-header-row *matHeaderRowDef="columnsToRender"></mat-header-row>
+      <mat-row *matRowDef="let row; columns: columnsToRender"></mat-row>
+      <div *matNoDataRow>No data</div>
+      <mat-footer-row *matFooterRowDef="columnsToRender"></mat-footer-row>
+    </mat-table>
+  `
+})
+class MatFlexTableApp {
+  dataSource: FakeDataSource | null = new FakeDataSource();
+  columnsToRender = ['column_a', 'column_b', 'column_c'];
+  @ViewChild(MatTable) table: MatTable<TestData>;
 }
 
 

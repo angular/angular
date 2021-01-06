@@ -325,7 +325,7 @@ export class CdkTable<T> implements AfterContentChecked, CollectionViewer, OnDes
   private _cachedRenderRowsMap = new Map<T, WeakMap<CdkRowDef<T>, RenderRow<T>[]>>();
 
   /** Whether the table is applied to a native `<table>`. */
-  private _isNativeHtmlTable: boolean;
+  protected _isNativeHtmlTable: boolean;
 
   /**
    * Utility class that is responsible for applying the appropriate sticky positioning styles to

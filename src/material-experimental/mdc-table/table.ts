@@ -43,10 +43,15 @@ export class MatTable<T> extends CdkTable<T> implements OnInit {
   /** Overrides the need to add position: sticky on every sticky cell element in `CdkTable`. */
   protected needsPositionStickyOnElement = false;
 
-  // After ngOnInit, the `CdkTable` has created and inserted the table sections (thead, tbody,
-  // tfoot). MDC requires the `mdc-data-table__content` class to be added to the body.
   ngOnInit() {
     super.ngOnInit();
-    this._elementRef.nativeElement.querySelector('tbody').classList.add('mdc-data-table__content');
+
+    // After ngOnInit, the `CdkTable` has created and inserted the table sections (thead, tbody,
+    // tfoot). MDC requires the `mdc-data-table__content` class to be added to the body. Note that
+    // this only applies to native tables, because we don't wrap the content of flexbox-based ones.
+    if (this._isNativeHtmlTable) {
+      const tbody = this._elementRef.nativeElement.querySelector('tbody');
+      tbody.classList.add('mdc-data-table__content');
+    }
   }
 }
