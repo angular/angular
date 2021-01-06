@@ -15,6 +15,7 @@ import {TabGroupCustomLabelExample} from './tab-group-custom-label/tab-group-cus
 import {
   TabGroupDynamicHeightExample
 } from './tab-group-dynamic-height/tab-group-dynamic-height-example';
+import {TabGroupHarnessExample} from './tab-group-harness/tab-group-harness-example';
 import {TabGroupDynamicExample} from './tab-group-dynamic/tab-group-dynamic-example';
 import {TabGroupHeaderBelowExample} from './tab-group-header-below/tab-group-header-below-example';
 import {TabGroupLazyLoadedExample} from './tab-group-lazy-loaded/tab-group-lazy-loaded-example';
@@ -30,6 +31,7 @@ export {
   TabGroupCustomLabelExample,
   TabGroupDynamicExample,
   TabGroupDynamicHeightExample,
+  TabGroupHarnessExample,
   TabGroupHeaderBelowExample,
   TabGroupLazyLoadedExample,
   TabGroupStretchedExample,
@@ -45,6 +47,7 @@ const EXAMPLES = [
   TabGroupCustomLabelExample,
   TabGroupDynamicExample,
   TabGroupDynamicHeightExample,
+  TabGroupHarnessExample,
   TabGroupHeaderBelowExample,
   TabGroupLazyLoadedExample,
   TabGroupStretchedExample,
