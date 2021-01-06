@@ -11,8 +11,14 @@ ng_module(
     ]),
     module_name = "@angular/components-examples/material/radio",
     deps = [
+        "//src/cdk/testing",
+        "//src/cdk/testing/testbed",
         "//src/material/radio",
+        "//src/material/radio/testing",
         "@npm//@angular/forms",
+        "@npm//@angular/platform-browser",
+        "@npm//@angular/platform-browser-dynamic",
+        "@npm//@types/jasmine",
     ],
 )
 
