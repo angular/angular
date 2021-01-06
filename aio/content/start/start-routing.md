@@ -28,9 +28,6 @@ This section shows you how to define a route to show individual product details.
 
 1. Open `product-list.component.html`.
 
-1. Update the `*ngFor` directive to read as follows.
-    This statement instructs Angular to iterate over the items in the `products` array and assigns each index in the array to the `productId` variable when iterating over the list.
-
 1. Modify the product name anchor to include a `routerLink` with the `product.id` as a parameter.
 
     <code-example header="src/app/product-list/product-list.component.html" path="getting-started/src/app/product-list/product-list.component.html" region="router-link">
@@ -79,12 +76,15 @@ In this section, you'll use the Angular Router to combine the `products` data an
     By injecting `ActivatedRoute`, you are configuring the component to use a service.
     The [Managing Data](start/start-data "Try it: Managing Data") step covers services in more detail.
 
-1. In the `ngOnInit()` method, subscribe to route parameters and fetch the product based on the `productId`.
+1. In the `ngOnInit()` method, extract the `productId` from the route parameters and find the corresponding product in the `products` array.
 
     <code-example path="getting-started/src/app/product-details/product-details.component.1.ts" header="src/app/product-details/product-details.component.ts" region="get-product">
     </code-example>
 
-    The route parameters correspond to the path variables you define in the route. The URL that matches the route provides the `productId`. Angular uses the `productId` to display the details for each unique product.
+    The route parameters correspond to the path variables you define in the route.
+    To access the route parameters, we use `route.snapshot`, which is the `ActivatedRouteSnapshot` that contains information about the active route at that particular moment in time.
+    The URL that matches the route provides the `productId` .
+    Angular uses the `productId` to display the details for each unique product.
 
 1. Update the `ProductDetailsComponent` template to display product details with an `*ngIf`.
     If a product exists, the `<div>` renders with a name, price, and description.
