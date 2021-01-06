@@ -255,7 +255,7 @@ import {isDOMParserAvailable} from '../../src/sanitization/inert_body';
         // Simulate `DOMParser.parseFromString()` returning a null body.
         // See https://github.com/angular/angular/issues/39834
         spyOn(window.DOMParser.prototype, 'parseFromString').and.returnValue({body: null} as any);
-        expect(sanitizeHtml(defaultDoc, 'Hello, World')).toEqual('Hello, World');
+        expect(_sanitizeHtml(defaultDoc, 'Hello, World')).toEqual('Hello, World');
       });
     }
   });
