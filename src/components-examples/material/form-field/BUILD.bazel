@@ -11,14 +11,21 @@ ng_module(
     ]),
     module_name = "@angular/components-examples/material/form-field",
     deps = [
+        "//src/cdk/testing",
+        "//src/cdk/testing/testbed",
         "//src/material/button",
         "//src/material/checkbox",
         "//src/material/form-field",
+        "//src/material/form-field/testing",
         "//src/material/icon",
         "//src/material/input",
+        "//src/material/input/testing",
         "//src/material/radio",
         "//src/material/select",
         "@npm//@angular/forms",
+        "@npm//@angular/platform-browser",
+        "@npm//@angular/platform-browser-dynamic",
+        "@npm//@types/jasmine",
     ],
 )
 
