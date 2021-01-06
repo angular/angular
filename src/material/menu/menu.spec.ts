@@ -1,6 +1,15 @@
 import {FocusMonitor} from '@angular/cdk/a11y';
 import {Direction, Directionality} from '@angular/cdk/bidi';
-import {DOWN_ARROW, END, ESCAPE, HOME, LEFT_ARROW, RIGHT_ARROW, TAB} from '@angular/cdk/keycodes';
+import {
+  DOWN_ARROW,
+  END,
+  ENTER,
+  ESCAPE,
+  HOME,
+  LEFT_ARROW,
+  RIGHT_ARROW,
+  TAB,
+} from '@angular/cdk/keycodes';
 import {Overlay, OverlayContainer} from '@angular/cdk/overlay';
 import {ScrollDispatcher} from '@angular/cdk/scrolling';
 import {
@@ -744,6 +753,27 @@ describe('MatMenu', () => {
       expect(items[2].classList).toContain('cdk-focused');
       expect(items[2].classList).toContain('cdk-keyboard-focused');
     }));
+
+  it('should set the keyboard focus origin when opened using the keyboard', fakeAsync(() => {
+    const fixture = createComponent(SimpleMenu, [], [FakeIcon]);
+    fixture.detectChanges();
+    const trigger = fixture.componentInstance.triggerEl.nativeElement;
+
+    // Note that we dispatch both a `click` and a `keydown` to imitate the browser behavior.
+    dispatchKeyboardEvent(trigger, 'keydown', ENTER);
+    trigger.click();
+    fixture.detectChanges();
+
+    const items =
+        Array.from<HTMLElement>(document.querySelectorAll('.mat-menu-panel [mat-menu-item]'));
+
+    items.forEach(item => patchElementFocus(item));
+    tick(500);
+    tick();
+    fixture.detectChanges();
+
+    expect(items[0].classList).toContain('cdk-keyboard-focused');
+  }));
 
   it('should toggle the aria-expanded attribute on the trigger', () => {
     const fixture = createComponent(SimpleMenu, [], [FakeIcon]);

@@ -149,7 +149,7 @@ export interface MatMenuPanel<T = any> {
 export declare class MatMenuTrigger implements AfterContentInit, OnDestroy {
     get _deprecatedMatMenuTriggerFor(): MatMenuPanel;
     set _deprecatedMatMenuTriggerFor(v: MatMenuPanel);
-    _openedBy: 'mouse' | 'touch' | null;
+    _openedBy: Exclude<FocusOrigin, 'program'>;
     get dir(): Direction;
     get menu(): MatMenuPanel;
     set menu(menu: MatMenuPanel);

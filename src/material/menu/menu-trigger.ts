@@ -8,7 +8,7 @@
 
 import {FocusMonitor, FocusOrigin, isFakeMousedownFromScreenReader} from '@angular/cdk/a11y';
 import {Direction, Directionality} from '@angular/cdk/bidi';
-import {LEFT_ARROW, RIGHT_ARROW} from '@angular/cdk/keycodes';
+import {ENTER, LEFT_ARROW, RIGHT_ARROW, SPACE} from '@angular/cdk/keycodes';
 import {
   FlexibleConnectedPositionStrategy,
   HorizontalConnectionPos,
@@ -103,7 +103,7 @@ export class MatMenuTrigger implements AfterContentInit, OnDestroy {
 
   // Tracking input type is necessary so it's possible to only auto-focus
   // the first item of the list when the menu is opened via the keyboard
-  _openedBy: 'mouse' | 'touch' | null = null;
+  _openedBy: Exclude<FocusOrigin, 'program'> = null;
 
   /**
    * @deprecated
@@ -520,9 +520,15 @@ export class MatMenuTrigger implements AfterContentInit, OnDestroy {
   _handleKeydown(event: KeyboardEvent): void {
     const keyCode = event.keyCode;
 
+    // Pressing enter on the trigger will trigger the click handler later.
+    if (keyCode === ENTER || keyCode === SPACE) {
+      this._openedBy = 'keyboard';
+    }
+
     if (this.triggersSubmenu() && (
             (keyCode === RIGHT_ARROW && this.dir === 'ltr') ||
             (keyCode === LEFT_ARROW && this.dir === 'rtl'))) {
+      this._openedBy = 'keyboard';
       this.openMenu();
     }
   }
