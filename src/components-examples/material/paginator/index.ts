@@ -7,14 +7,17 @@ import {
   PaginatorConfigurableExample
 } from './paginator-configurable/paginator-configurable-example';
 import {PaginatorOverviewExample} from './paginator-overview/paginator-overview-example';
+import {PaginatorHarnessExample} from './paginator-harness/paginator-harness-example';
 
 export {
   PaginatorConfigurableExample,
+  PaginatorHarnessExample,
   PaginatorOverviewExample,
 };
 
 const EXAMPLES = [
   PaginatorConfigurableExample,
+  PaginatorHarnessExample,
   PaginatorOverviewExample,
 ];
 

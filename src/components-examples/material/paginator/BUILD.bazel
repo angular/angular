@@ -11,9 +11,15 @@ ng_module(
     ]),
     module_name = "@angular/components-examples/material/paginator",
     deps = [
+        "//src/cdk/testing",
+        "//src/cdk/testing/testbed",
         "//src/material/input",
         "//src/material/paginator",
+        "//src/material/paginator/testing",
         "@npm//@angular/forms",
+        "@npm//@angular/platform-browser",
+        "@npm//@angular/platform-browser-dynamic",
+        "@npm//@types/jasmine",
     ],
 )
 
