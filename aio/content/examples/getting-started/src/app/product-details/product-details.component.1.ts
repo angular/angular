@@ -11,7 +11,7 @@ import { products } from '../products';
   templateUrl: './product-details.component.html',
   styleUrls: ['./product-details.component.css']
 })
-// #docregion props-methods, add-to-cart, product-prop
+// #docregion props-methods, product-prop
 export class ProductDetailsComponent implements OnInit {
   product;
   // #enddocregion product-prop
@@ -29,9 +29,9 @@ export class ProductDetailsComponent implements OnInit {
     this.product = products.find(product => {
       return product.id === Number(productIdFromRoute);
     });
-  // #docregion product-prop
   }
-  // #enddocregion product-prop
   // #enddocregion get-product
+  // #docregion product-prop
+  /* ... */
   // #docregion props-methods
 }
