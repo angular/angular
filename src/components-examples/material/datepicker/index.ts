@@ -41,6 +41,7 @@ import {
 import {
   DateRangePickerSelectionStrategyExample
 } from './date-range-picker-selection-strategy/date-range-picker-selection-strategy-example';
+import {DatepickerHarnessExample} from './datepicker-harness/datepicker-harness-example';
 
 export {
   DatepickerApiExample,
@@ -52,6 +53,7 @@ export {
   DatepickerEventsExample,
   DatepickerFilterExample,
   DatepickerFormatsExample,
+  DatepickerHarnessExample,
   DatepickerLocaleExample,
   DatepickerMinMaxExample,
   DatepickerMomentExample,
@@ -77,6 +79,7 @@ const EXAMPLES = [
   DatepickerEventsExample,
   DatepickerFilterExample,
   DatepickerFormatsExample,
+  DatepickerHarnessExample,
   DatepickerLocaleExample,
   DatepickerMinMaxExample,
   DatepickerMomentExample,
