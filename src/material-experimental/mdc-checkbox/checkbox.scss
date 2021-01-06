@@ -1,3 +1,6 @@
+@use '@material/checkbox/checkbox';
+@use '@material/checkbox/checkbox-theme';
+@use '@material/theme/theme';
 @import '@material/checkbox/functions.import';
 @import '@material/checkbox/mixins.import';
 @import '@material/form-field/mixins.import';
@@ -8,6 +11,29 @@
 @include mdc-checkbox-without-ripple($query: $mat-base-styles-query);
 @include mdc-form-field-core-styles($query: $mat-base-styles-query);
 
+// TODO(b/175233410): Use ripple element to show focus indicator.
+@mixin _background-focus-styles() {
+  // The frame's ::before element is used as a focus indicator for the checkbox
+  .mdc-checkbox__background::before {
+    position: absolute;
+    transform: scale(0, 0);
+    border-radius: 50%;
+    opacity: 0;
+    pointer-events: none;
+    content: '';
+    will-change: opacity, transform;
+    transition: checkbox.transition-exit(opacity),
+      checkbox.transition-exit(transform);
+  }
+
+  .mdc-checkbox__native-control:focus ~ .mdc-checkbox__background::before {
+    transform: scale(1);
+    opacity: checkbox-theme.$focus-indicator-opacity;
+    transition: checkbox.transition-enter(opacity, 0ms, 80ms),
+      checkbox.transition-enter(transform, 0ms, 80ms);
+  }
+}
+
 .mat-mdc-checkbox {
   // The host node defaults to `diplay: inline` so
   // we have to change it in order for margins to work.
@@ -17,19 +43,19 @@
   // We currently don't use the MDC ripple due to size concerns, therefore we need to add some
   // additional styles to restore the hover state.
   .mdc-checkbox:hover
-      .mdc-checkbox__native-control:not([disabled]) ~ .mdc-checkbox__background::before {
+    .mdc-checkbox__native-control:not([disabled]) ~ .mdc-checkbox__background::before {
     opacity: map-get($mdc-ripple-dark-ink-opacities, hover);
     transform: scale(1);
     transition: mdc-checkbox-transition-enter(opacity, 0, 80ms),
-                mdc-checkbox-transition-enter(transform, 0, 80ms);
+      mdc-checkbox-transition-enter(transform, 0, 80ms);
   }
 
   // Note that the :not([disabled]) here isn't necessary, but we need it for the
   // extra specificity so that the hover styles don't override the focus styles.
   .mdc-checkbox
-      .mdc-checkbox__native-control:not([disabled]):focus ~ .mdc-checkbox__background::before {
+    .mdc-checkbox__native-control:not([disabled]):focus ~ .mdc-checkbox__background::before {
     opacity: map-get($mdc-ripple-dark-ink-opacities, hover) +
-                 map-get($mdc-ripple-dark-ink-opacities, focus);
+      map-get($mdc-ripple-dark-ink-opacities, focus);
   }
 
   // We use an Angular Material ripple rather than an MDC ripple due to size concerns, so we need to
@@ -54,6 +80,8 @@
   label:empty {
     display: none;
   }
+
+  @include _background-focus-styles();
 }
 
 .mat-mdc-checkbox-ripple {
