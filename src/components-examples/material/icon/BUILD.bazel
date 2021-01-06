@@ -11,7 +11,13 @@ ng_module(
     ]),
     module_name = "@angular/components-examples/material/icon",
     deps = [
+        "//src/cdk/testing",
+        "//src/cdk/testing/testbed",
         "//src/material/icon",
+        "//src/material/icon/testing",
+        "@npm//@angular/platform-browser",
+        "@npm//@angular/platform-browser-dynamic",
+        "@npm//@types/jasmine",
     ],
 )
 
