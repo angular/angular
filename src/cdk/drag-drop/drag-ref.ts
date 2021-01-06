@@ -596,9 +596,6 @@ export class DragRef<T = any> {
 
   /** Handler that is invoked when the user moves their pointer after they've initiated a drag. */
   private _pointerMove = (event: MouseEvent | TouchEvent) => {
-    // Prevent the default action as early as possible in order to block
-    // native actions like dragging the selected text or images with the mouse.
-    event.preventDefault();
     const pointerPosition = this._getPointerPositionOnPage(event);
 
     if (!this._hasStartedDragging) {
@@ -639,6 +636,11 @@ export class DragRef<T = any> {
         this._previewRect = (this._preview || this._rootElement).getBoundingClientRect();
       }
     }
+
+    // We prevent the default action down here so that we know that dragging has started. This is
+    // important for touch devices where doing this too early can unnecessarily block scrolling,
+    // if there's a dragging delay.
+    event.preventDefault();
 
     const constrainedPointerPosition = this._getConstrainedPointerPosition(pointerPosition);
     this._hasMoved = true;

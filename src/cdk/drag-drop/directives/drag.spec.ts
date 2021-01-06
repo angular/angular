@@ -318,6 +318,7 @@ describe('CdkDrag', () => {
           dispatchTouchEvent(fixture.componentInstance.dragElement.nativeElement, 'touchstart');
           fixture.detectChanges();
 
+          dispatchTouchEvent(document, 'touchmove');
           expect(dispatchTouchEvent(document, 'touchmove').defaultPrevented).toBe(true);
 
           dispatchTouchEvent(document, 'touchend');
@@ -1059,6 +1060,24 @@ describe('CdkDrag', () => {
           'Expected element to be dragged after all the time has passed.');
     }));
 
+    it('should not prevent the default touch action before the delay has elapsed', fakeAsync(() => {
+      spyOn(Date, 'now').and.callFake(() => currentTime);
+      let currentTime = 0;
+
+      const fixture = createComponent(StandaloneDraggable);
+      fixture.componentInstance.dragStartDelay = 500;
+      fixture.detectChanges();
+      const dragElement = fixture.componentInstance.dragElement.nativeElement;
+
+      expect(dragElement.style.transform).toBeFalsy('Expected element not to be moved by default.');
+
+      dispatchTouchEvent(dragElement, 'touchstart');
+      fixture.detectChanges();
+      currentTime += 250;
+
+      expect(dispatchTouchEvent(document, 'touchmove', 50, 100).defaultPrevented).toBe(false);
+    }));
+
     it('should handle the drag delay as a string', fakeAsync(() => {
       // We can't use Jasmine's `clock` because Zone.js interferes with it.
       spyOn(Date, 'now').and.callFake(() => currentTime);
@@ -1205,34 +1224,6 @@ describe('CdkDrag', () => {
 
       subscription.unsubscribe();
     }));
-
-    it('should prevent the default `mousemove` action even before the drag threshold has ' +
-      'been reached', fakeAsync(() => {
-        const fixture = createComponent(StandaloneDraggable, [], 5);
-        fixture.detectChanges();
-        const dragElement = fixture.componentInstance.dragElement.nativeElement;
-
-        dispatchMouseEvent(dragElement, 'mousedown', 2, 2);
-        fixture.detectChanges();
-        const mousemoveEvent = dispatchMouseEvent(document, 'mousemove', 2, 2);
-        fixture.detectChanges();
-
-        expect(mousemoveEvent.defaultPrevented).toBe(true);
-      }));
-
-    it('should prevent the default `touchmove` action even before the drag threshold has ' +
-      'been reached', fakeAsync(() => {
-        const fixture = createComponent(StandaloneDraggable, [], 5);
-        fixture.detectChanges();
-        const dragElement = fixture.componentInstance.dragElement.nativeElement;
-
-        dispatchTouchEvent(dragElement, 'touchstart', 2, 2);
-        fixture.detectChanges();
-        const touchmoveEvent = dispatchTouchEvent(document, 'touchmove', 2, 2);
-        fixture.detectChanges();
-
-        expect(touchmoveEvent.defaultPrevented).toBe(true);
-      }));
 
     it('should be able to configure the drag input defaults through a provider', fakeAsync(() => {
       const config: DragDropConfig = {
