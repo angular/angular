@@ -11,10 +11,16 @@ ng_module(
     ]),
     module_name = "@angular/components-examples/material/input",
     deps = [
+        "//src/cdk/testing",
+        "//src/cdk/testing/testbed",
         "//src/material/button",
         "//src/material/icon",
         "//src/material/input",
+        "//src/material/input/testing",
         "@npm//@angular/forms",
+        "@npm//@angular/platform-browser",
+        "@npm//@angular/platform-browser-dynamic",
+        "@npm//@types/jasmine",
     ],
 )
 

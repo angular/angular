@@ -13,12 +13,14 @@ import {InputFormExample} from './input-form/input-form-example';
 import {InputHintExample} from './input-hint/input-hint-example';
 import {InputOverviewExample} from './input-overview/input-overview-example';
 import {InputPrefixSuffixExample} from './input-prefix-suffix/input-prefix-suffix-example';
+import {InputHarnessExample} from './input-harness/input-harness-example';
 
 export {
   InputClearableExample,
   InputErrorStateMatcherExample,
   InputErrorsExample,
   InputFormExample,
+  InputHarnessExample,
   InputHintExample,
   InputOverviewExample,
   InputPrefixSuffixExample,
@@ -29,6 +31,7 @@ const EXAMPLES = [
   InputErrorStateMatcherExample,
   InputErrorsExample,
   InputFormExample,
+  InputHarnessExample,
   InputHintExample,
   InputOverviewExample,
   InputPrefixSuffixExample,
