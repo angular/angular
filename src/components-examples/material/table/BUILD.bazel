@@ -13,6 +13,8 @@ ng_module(
     deps = [
         "//src/cdk/drag-drop",
         "//src/cdk/table",
+        "//src/cdk/testing",
+        "//src/cdk/testing/testbed",
         "//src/material/button",
         "//src/material/button-toggle",
         "//src/material/checkbox",
@@ -22,6 +24,10 @@ ng_module(
         "//src/material/progress-spinner",
         "//src/material/sort",
         "//src/material/table",
+        "//src/material/table/testing",
+        "@npm//@angular/platform-browser",
+        "@npm//@angular/platform-browser-dynamic",
+        "@npm//@types/jasmine",
     ],
 )
 
