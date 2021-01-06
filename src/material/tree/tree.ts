@@ -40,7 +40,7 @@ import {MatTreeNodeOutlet} from './outlet';
   changeDetection: ChangeDetectionStrategy.Default,
   providers: [{provide: CdkTree, useExisting: MatTree}]
 })
-export class MatTree<T> extends CdkTree<T> {
+export class MatTree<T, K = T> extends CdkTree<T, K> {
   // Outlets within the tree's template where the dataNodes will be inserted.
   @ViewChild(MatTreeNodeOutlet, {static: true}) _nodeOutlet: MatTreeNodeOutlet;
 }

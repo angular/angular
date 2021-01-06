@@ -15,15 +15,15 @@ import {CdkTree, CdkTreeNode} from './tree';
  * Node toggle to expand/collapse the node.
  */
 @Directive({selector: '[cdkTreeNodeToggle]'})
-export class CdkTreeNodeToggle<T> {
+export class CdkTreeNodeToggle<T, K = T> {
   /** Whether expand/collapse the node recursively. */
   @Input('cdkTreeNodeToggleRecursive')
   get recursive(): boolean { return this._recursive; }
   set recursive(value: boolean) { this._recursive = coerceBooleanProperty(value); }
   protected _recursive = false;
 
-  constructor(protected _tree: CdkTree<T>,
-              protected _treeNode: CdkTreeNode<T>) {}
+  constructor(protected _tree: CdkTree<T, K>,
+              protected _treeNode: CdkTreeNode<T, K>) {}
 
   // We have to use a `HostListener` here in order to support both Ivy and ViewEngine.
   // In Ivy the `host` bindings will be merged when this class is extended, whereas in

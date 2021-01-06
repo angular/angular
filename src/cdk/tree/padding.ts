@@ -23,7 +23,7 @@ const cssUnitPattern = /([A-Za-z%]+)$/;
 @Directive({
   selector: '[cdkTreeNodePadding]',
 })
-export class CdkTreeNodePadding<T> implements OnDestroy {
+export class CdkTreeNodePadding<T, K = T> implements OnDestroy {
   /** Current padding value applied to the element. Used to avoid unnecessarily hitting the DOM. */
   private _currentPadding: string|null;
 
@@ -48,8 +48,8 @@ export class CdkTreeNodePadding<T> implements OnDestroy {
   set indent(indent: number | string) { this._setIndentInput(indent); }
   _indent: number = 40;
 
-  constructor(private _treeNode: CdkTreeNode<T>,
-              private _tree: CdkTree<T>,
+  constructor(private _treeNode: CdkTreeNode<T, K>,
+              private _tree: CdkTree<T, K>,
               private _element: ElementRef<HTMLElement>,
               @Optional() private _dir: Directionality) {
     this._setPadding();

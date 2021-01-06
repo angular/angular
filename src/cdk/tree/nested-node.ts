@@ -39,9 +39,8 @@ import {getTreeControlFunctionsMissingError} from './tree-errors';
     {provide: CDK_TREE_NODE_OUTLET_NODE, useExisting: CdkNestedTreeNode}
   ]
 })
-export class CdkNestedTreeNode<T> extends CdkTreeNode<T> implements AfterContentInit, DoCheck,
-  OnDestroy,
-  OnInit {
+export class CdkNestedTreeNode<T, K = T> extends CdkTreeNode<T, K>
+    implements AfterContentInit, DoCheck, OnDestroy, OnInit {
   /** Differ used to find the changes in the data provided by the data source. */
   private _dataDiffer: IterableDiffer<T>;
 
@@ -57,7 +56,7 @@ export class CdkNestedTreeNode<T> extends CdkTreeNode<T> implements AfterContent
   nodeOutlet: QueryList<CdkTreeNodeOutlet>;
 
   constructor(protected _elementRef: ElementRef<HTMLElement>,
-              protected _tree: CdkTree<T>,
+              protected _tree: CdkTree<T, K>,
               protected _differs: IterableDiffers) {
     super(_elementRef, _tree);
     // The classes are directly added here instead of in the host property because classes on

@@ -25,6 +25,7 @@ node_modules
 /.idea
 /.vscode/launch.json
 /*.iml
+/.vs
 
 # misc
 .DS_Store

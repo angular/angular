@@ -18,7 +18,7 @@ import {Directive, Input} from '@angular/core';
   providers: [{provide: CdkTreeNodeToggle, useExisting: MatTreeNodeToggle}]
 })
 // tslint:disable-next-line: coercion-types
-export class MatTreeNodeToggle<T> extends CdkTreeNodeToggle<T> {
+export class MatTreeNodeToggle<T, K = T> extends CdkTreeNodeToggle<T, K> {
   @Input('matTreeNodeToggleRecursive')
   get recursive(): boolean { return this._recursive; }
   set recursive(value: boolean) {

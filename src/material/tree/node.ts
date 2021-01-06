@@ -45,12 +45,12 @@ const _MatTreeNodeMixinBase: HasTabIndexCtor & CanDisableCtor & typeof CdkTreeNo
   inputs: ['role', 'disabled', 'tabIndex'],
   providers: [{provide: CdkTreeNode, useExisting: MatTreeNode}]
 })
-export class MatTreeNode<T> extends _MatTreeNodeMixinBase<T>
+export class MatTreeNode<T, K = T> extends _MatTreeNodeMixinBase<T, K>
     implements CanDisable, DoCheck, HasTabIndex, OnInit, OnDestroy {
 
 
   constructor(protected _elementRef: ElementRef<HTMLElement>,
-              protected _tree: CdkTree<T>,
+              protected _tree: CdkTree<T, K>,
               @Attribute('tabindex') tabIndex: string) {
     super(_elementRef, _tree);
 
@@ -107,8 +107,8 @@ export class MatTreeNodeDef<T> extends CdkTreeNodeDef<T> {
     {provide: CDK_TREE_NODE_OUTLET_NODE, useExisting: MatNestedTreeNode}
   ]
 })
-export class MatNestedTreeNode<T> extends CdkNestedTreeNode<T> implements AfterContentInit, DoCheck,
-  OnDestroy, OnInit {
+export class MatNestedTreeNode<T, K = T> extends CdkNestedTreeNode<T, K>
+    implements AfterContentInit, DoCheck, OnDestroy, OnInit {
   @Input('matNestedTreeNode') node: T;
 
   /** Whether the node is disabled. */
@@ -127,7 +127,7 @@ export class MatNestedTreeNode<T> extends CdkNestedTreeNode<T> implements AfterC
   private _tabIndex: number;
 
   constructor(protected _elementRef: ElementRef<HTMLElement>,
-              protected _tree: CdkTree<T>,
+              protected _tree: CdkTree<T, K>,
               protected _differs: IterableDiffers,
               @Attribute('tabindex') tabIndex: string) {
     super(_elementRef, _tree, _differs);
