@@ -94,6 +94,13 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
       return TestBed.createComponent(component);
     }
 
+    function initReactiveFormsTest<T>(
+        component: Type<T>, ...directives: Type<any>[]): ComponentFixture<T> {
+      TestBed.configureTestingModule(
+          {declarations: [component, ...directives], imports: [ReactiveFormsModule]});
+      return TestBed.createComponent(component);
+    }
+
     // Helper method that attaches a spy to a `validate` function on a Validator class.
     function validatorSpyOn(validatorClass: any) {
       return spyOn(validatorClass.prototype, 'validate').and.callThrough();
@@ -773,6 +780,49 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
     });
 
     describe('setting status classes', () => {
+      it('should not assign status on standalone <form> element', () => {
+        @Component({
+          selector: 'form-comp',
+          template: `
+            <form></form>
+          `
+        })
+        class FormComp {
+        }
+
+        const fixture = initReactiveFormsTest(FormComp);
+        fixture.detectChanges();
+
+        const form = fixture.debugElement.query(By.css('form')).nativeElement;
+        // Expect no classes added to the <form> element since it has no
+        // reactive directives attached and only ReactiveForms module is used.
+        expect(sortedClassList(form)).toEqual([]);
+      });
+
+      it('should not assign status on standalone <form> element with form control inside', () => {
+        @Component({
+          selector: 'form-comp',
+          template: `
+            <form>
+              <input type="text" [formControl]="control">
+            </form>
+          `
+        })
+        class FormComp {
+          control = new FormControl('abc');
+        }
+        const fixture = initReactiveFormsTest(FormComp);
+        fixture.detectChanges();
+
+        const form = fixture.debugElement.query(By.css('form')).nativeElement;
+        // Expect no classes added to the <form> element since it has no
+        // reactive directives attached and only ReactiveForms module is used.
+        expect(sortedClassList(form)).toEqual([]);
+
+        const input = fixture.debugElement.query(By.css('input')).nativeElement;
+        expect(sortedClassList(input)).toEqual(['ng-pristine', 'ng-untouched', 'ng-valid']);
+      });
+
       it('should work with single fields', () => {
         const fixture = initTest(FormControlComp);
         const control = new FormControl('', Validators.required);
