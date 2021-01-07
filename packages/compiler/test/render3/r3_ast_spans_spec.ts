@@ -193,6 +193,30 @@ describe('R3 AST source spans', () => {
         ['BoundAttribute', 'data-prop="{{v}}"', 'prop', '{{v}}'],
       ]);
     });
+
+    it('is correct for bound properties via @', () => {
+      expectFromHtml('<div bind-@animation="v"></div>').toEqual([
+        ['Element', '<div bind-@animation="v"></div>', '<div bind-@animation="v">', '</div>'],
+        ['BoundAttribute', 'bind-@animation="v"', 'animation', 'v'],
+      ]);
+    });
+
+    it('is correct for bound properties via animation-', () => {
+      expectFromHtml('<div bind-animate-animationName="v"></div>').toEqual([
+        [
+          'Element', '<div bind-animate-animationName="v"></div>',
+          '<div bind-animate-animationName="v">', '</div>'
+        ],
+        ['BoundAttribute', 'bind-animate-animationName="v"', 'animationName', 'v'],
+      ]);
+    });
+
+    it('is correct for bound properties via @ without value', () => {
+      expectFromHtml('<div @animation></div>').toEqual([
+        ['Element', '<div @animation></div>', '<div @animation>', '</div>'],
+        ['BoundAttribute', '@animation', 'animation', '<empty>'],
+      ]);
+    });
   });
 
   describe('templates', () => {
@@ -399,6 +423,13 @@ describe('R3 AST source spans', () => {
         ['Element', '<div data-bindon-prop="v"></div>', '<div data-bindon-prop="v">', '</div>'],
         ['BoundAttribute', 'data-bindon-prop="v"', 'prop', 'v'],
         ['BoundEvent', 'data-bindon-prop="v"', 'prop', 'v'],
+      ]);
+    });
+
+    it('is correct for bound events via @', () => {
+      expectFromHtml('<div (@name.done)="v"></div>').toEqual([
+        ['Element', '<div (@name.done)="v"></div>', '<div (@name.done)="v">', '</div>'],
+        ['BoundEvent', '(@name.done)="v"', 'name.done', 'v'],
       ]);
     });
   });
