@@ -39,7 +39,7 @@ export class DevServer {
 
   /** Starts the server on the given port. */
   async start() {
-    return new Promise((resolve, reject) => {
+    return new Promise<void>((resolve, reject) => {
       this.server.init(this.options, (err) => {
         if (err) {
           reject(err);

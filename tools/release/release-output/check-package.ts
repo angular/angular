@@ -37,7 +37,7 @@ export function checkReleasePackage(
     releasesPath: string, packageName: string, expectedVersion: string): boolean {
   const packagePath = join(releasesPath, packageName);
   const failures = new Map() as PackageFailures;
-  const addFailure = (message, filePath?) => {
+  const addFailure = (message: string, filePath?: string) => {
     const filePaths = failures.get(message) || [];
     if (filePath) {
       filePaths.push(filePath);

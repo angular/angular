@@ -69,7 +69,7 @@ export async function prependChangelogFromLatestTag(changelogPath: string, relea
   // actually prepend the new changelog to the existing one.
   const previousChangelogStream = createReadStream(changelogPath);
 
-  return new Promise((resolve, reject) => {
+  return new Promise<void>((resolve, reject) => {
     // Sequentially merge the changelog output and the previous changelog stream, so that
     // the new changelog section comes before the existing versions. Afterwards, pipe into the
     // changelog file, so that the changes are reflected on file system.
