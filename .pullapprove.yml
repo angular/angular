@@ -172,6 +172,7 @@ groups:
       request: 0 # Do not request any reviews from the reviewer group
       required: 1 # Require that all PRs have approval from at least one of the users in the group
       author_value: 0 # The author of the PR cannot provide an approval for themself
+      reviewed_for: ignored # All reviews apply to this group whether noted via Reviewed-for or not
     reviewers:
       users:
          - aikidave                # Dave Shevitz
