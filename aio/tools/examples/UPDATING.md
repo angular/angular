@@ -24,7 +24,7 @@ Any necessary changes to boilerplate files will be done automatically through mi
 > You have to make these changes (if any) manually.
 > Again, the [angular-cli-diff](https://github.com/cexbrayat/angular-cli-diff) repo can be a useful resource for discovering changes between versions.
 
-- In the [shared/boilerplate/cli/](./shared/boilerplate/cli) directory, run the following commands to migrate the the project to the current versions of Angular CLI and the Angular framework (updated in previous steps):
+- In the [shared/boilerplate/cli/](./shared/boilerplate/cli) directory, run the following commands to migrate the project to the current versions of Angular CLI and the Angular framework (updated in previous steps):
   ```sh
   # Ensure dependencies are installed.
   yarn install

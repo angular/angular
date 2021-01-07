@@ -93,7 +93,7 @@ describe('SelectComponent', () => {
     beforeEach(() => {
       host.options = options;
       host.showSymbol = true;
-      getButton().click(); // ensure the the options are visible
+      getButton().click(); // ensure the options are visible
       fixture.detectChanges();
     });
 
