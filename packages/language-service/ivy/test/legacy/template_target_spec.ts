@@ -497,8 +497,7 @@ describe('getTargetAtPosition for expression AST', () => {
     const {context} = getTargetAtPosition(nodes, position)!;
     const {node} = context as SingleNodeTarget;
     expect(isExpressionNode(node!)).toBe(true);
-    // TODO: We want this to be a BindingPipe.
-    expect(node).toBeInstanceOf(e.Interpolation);
+    expect(node).toBeInstanceOf(e.BindingPipe);
   });
 
   it('should locate binding pipe without identifier',

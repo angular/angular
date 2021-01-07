@@ -569,18 +569,13 @@ describe('completions', () => {
       expectReplacementText(completions, text, 'some');
     });
 
-    // TODO(alxhub): currently disabled as the template targeting system identifies the cursor
-    // position as the entire Interpolation node, not the BindingPipe node. This happens because the
-    // BindingPipe node's span ends at the '|' character. To make this case work, the targeting
-    // system will need to artificially expand the BindingPipe's span to encompass any trailing
-    // spaces, which will be done in a future PR.
-    xit('should complete an empty pipe binding', () => {
-      const {ngLS, fileName, cursor, text} = setup(`{{ foo | ¦ }}`, '', SOME_PIPE);
+    it('should complete an empty pipe binding', () => {
+      const {ngLS, fileName, cursor, text} = setup(`{{foo | ¦}}`, '', SOME_PIPE);
       const completions = ngLS.getCompletionsAtPosition(fileName, cursor, /* options */ undefined);
       expectContain(
           completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.PIPE),
           ['somePipe']);
-      expectReplacementText(completions, text, 'some');
+      expectReplacementText(completions, text, '');
     });
 
     it('should not return extraneous completions', () => {
