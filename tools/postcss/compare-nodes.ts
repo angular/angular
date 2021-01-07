@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as postcss from 'postcss';
+import {Node, Declaration, Rule} from 'postcss';
 
 /**
  * Compares two Postcss AST nodes and returns whether a boolean indicating
@@ -14,20 +14,20 @@ import * as postcss from 'postcss';
  * `AtRule` nodes or nested rules as it is only concerned with CSS stylesheets
  * and the comparison of declarations and rule selectors.
  */
-export function compareNodes(a: postcss.Node, b: postcss.Node): boolean {
+export function compareNodes(a: Node, b: Node): boolean {
   if (a.type !== b.type) {
     return false;
   }
 
   // Types of A and B are always equal, but for type inferring we
   // check both nodes again.
-  if (a.type === 'decl' && b.type === 'decl') {
+  if (isDeclaration(a) && isDeclaration(b)) {
     return a.prop === b.prop && a.value === b.value;
   }
 
   // We only check either rules or declarations. Since we check CSS,
   // there cannot be any nested `atrule` or `rule` nodes.
-  if (a.type !== 'rule' || b.type !== 'rule') {
+  if (!isRule(a) || !isRule(b)) {
     return false;
   }
 
@@ -43,4 +43,14 @@ export function compareNodes(a: postcss.Node, b: postcss.Node): boolean {
     equal = equal && compareNodes(aNodes[i], bNodes[i]);
   }
   return equal;
+}
+
+/** Asserts that a node is a `Declaration`. */
+function isDeclaration(node: Node): node is Declaration {
+  return node.type === 'decl';
+}
+
+/** Asserts that a node is a `Rule`. */
+function isRule(node: Node): node is Rule {
+  return node.type === 'rule';
 }

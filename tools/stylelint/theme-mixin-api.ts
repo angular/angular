@@ -1,5 +1,13 @@
-import {AtRule, atRule, decl, Declaration, Node, Result, Root} from 'postcss';
 import {createPlugin, Plugin, utils} from 'stylelint';
+import {
+  AtRule,
+  atRule,
+  decl,
+  Declaration,
+  Node,
+  Result,
+  Root
+} from './stylelint-postcss-types';
 
 /** Name of this stylelint rule. */
 const ruleName = 'material/theme-mixin-api';

@@ -1,6 +1,6 @@
 import {createPlugin, utils} from 'stylelint';
 import {basename} from 'path';
-import {Node} from 'postcss';
+import {Node} from './stylelint-postcss-types';
 
 const isStandardSyntaxRule = require('stylelint/lib/utils/isStandardSyntaxRule');
 const isStandardSyntaxSelector = require('stylelint/lib/utils/isStandardSyntaxSelector');
