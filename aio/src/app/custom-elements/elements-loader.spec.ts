@@ -194,7 +194,7 @@ describe('ElementsLoader', () => {
       expect(definedSpy).not.toHaveBeenCalled();
     }));
 
-    it('should fail if defining the the custom element fails', fakeAsync(() => {
+    it('should fail if defining the custom element fails', fakeAsync(() => {
       let state = 'pending';
       elementsLoader.loadCustomElement('element-b-selector').catch(e => state = `rejected: ${e}`);
       flushMicrotasks();
