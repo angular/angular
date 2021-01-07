@@ -7942,9 +7942,9 @@ karma-chrome-launcher@^3.1.0:
     which "^1.2.1"
 
 karma-firefox-launcher@^2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/karma-firefox-launcher/-/karma-firefox-launcher-2.0.0.tgz#01319c50e452222311cfd92c06483ced6b934af9"
-  integrity sha512-BVq24Qwa//531LXRwvqu14ba04wcHNAX/m3lFF5v90w1rzUgck1FPBwQqlAIgKfkN5uHjT0PcxUqUNUctbQGVA==
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/karma-firefox-launcher/-/karma-firefox-launcher-2.1.0.tgz#d0d328c93dfcf9b46f1ac83b4bb32f43aadb2050"
+  integrity sha512-dkiyqN2R6fCWt78rciOXJLFDWcQ7QEQi++HgebPJlw1y0ycDjGNDHuSrhdh48QG02fzZKK20WHFWVyBZ6CPngg==
   dependencies:
     is-wsl "^2.2.0"
     which "^2.0.1"
