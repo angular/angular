@@ -244,6 +244,10 @@ export class BindingParser {
       targetProps: ParsedProperty[], keySpan?: ParseSourceSpan) {
     if (isAnimationLabel(name)) {
       name = name.substring(1);
+      if (keySpan !== undefined) {
+        keySpan = moveParseSourceSpan(
+            keySpan, new AbsoluteSourceSpan(keySpan.start.offset + 1, keySpan.end.offset));
+      }
       if (value) {
         this._reportError(
             `Assigning animation triggers via @prop="exp" attributes with an expression is invalid.` +
@@ -274,9 +278,19 @@ export class BindingParser {
     if (name.startsWith(ANIMATE_PROP_PREFIX)) {
       isAnimationProp = true;
       name = name.substring(ANIMATE_PROP_PREFIX.length);
+      if (keySpan !== undefined) {
+        keySpan = moveParseSourceSpan(
+            keySpan,
+            new AbsoluteSourceSpan(
+                keySpan.start.offset + ANIMATE_PROP_PREFIX.length, keySpan.end.offset));
+      }
     } else if (isAnimationLabel(name)) {
       isAnimationProp = true;
       name = name.substring(1);
+      if (keySpan !== undefined) {
+        keySpan = moveParseSourceSpan(
+            keySpan, new AbsoluteSourceSpan(keySpan.start.offset + 1, keySpan.end.offset));
+      }
     }
 
     if (isAnimationProp) {
@@ -424,6 +438,10 @@ export class BindingParser {
 
     if (isAnimationLabel(name)) {
       name = name.substr(1);
+      if (keySpan !== undefined) {
+        keySpan = moveParseSourceSpan(
+            keySpan, new AbsoluteSourceSpan(keySpan.start.offset + 1, keySpan.end.offset));
+      }
       this._parseAnimationEvent(name, expression, sourceSpan, handlerSpan, targetEvents, keySpan);
     } else {
       this._parseRegularEvent(
