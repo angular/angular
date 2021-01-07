@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ASTWithSource, BindingPipe, Interpolation, ParserError, TemplateBinding, VariableBinding} from '@angular/compiler/src/expression_parser/ast';
+import {AbsoluteSourceSpan, ASTWithSource, BindingPipe, Interpolation, ParserError, TemplateBinding, VariableBinding} from '@angular/compiler/src/expression_parser/ast';
 import {Lexer} from '@angular/compiler/src/expression_parser/lexer';
 import {IvyParser, Parser, SplitInterpolation} from '@angular/compiler/src/expression_parser/parser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
@@ -447,6 +447,17 @@ describe('parser', () => {
             expectBindingError(input, err);
           });
         }
+
+        it('should parse an incomplete pipe with a source span that includes trailing whitespace',
+           () => {
+             const bindingText = 'foo | ';
+             const binding = parseBinding(bindingText).ast as BindingPipe;
+
+             // The sourceSpan should include all characters of the input.
+             expect(rawSpan(binding.sourceSpan)).toEqual([0, bindingText.length]);
+             // The nameSpan should be positioned at the end of the input.
+             expect(rawSpan(binding.nameSpan)).toEqual([bindingText.length, bindingText.length]);
+           });
       });
 
       it('should only allow identifier or keyword as formatter names', () => {
@@ -1179,4 +1190,8 @@ function expectBindingError(text: string, message: string) {
 function checkActionWithError(text: string, expected: string, error: string) {
   checkAction(text, expected);
   expectActionError(text, error);
+}
+
+function rawSpan(span: AbsoluteSourceSpan): [number, number] {
+  return [span.start, span.end];
 }

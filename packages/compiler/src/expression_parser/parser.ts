@@ -450,14 +450,27 @@ export class _ParseAST {
     return this.absoluteOffset + this.inputIndex;
   }
 
-  span(start: number) {
-    return new ParseSpan(start, this.currentEndIndex);
+  /**
+   * Retrieve a `ParseSpan` from `start` to the current position (or to `artificialEndIndex` if
+   * provided).
+   *
+   * @param start Position from which the `ParseSpan` will start.
+   * @param artificialEndIndex Optional ending index to be used if provided (and if greater than the
+   *     natural ending index)
+   */
+  span(start: number, artificialEndIndex?: number): ParseSpan {
+    let endIndex = this.currentEndIndex;
+    if (artificialEndIndex !== undefined && artificialEndIndex > this.currentEndIndex) {
+      endIndex = artificialEndIndex;
+    }
+    return new ParseSpan(start, endIndex);
   }
 
-  sourceSpan(start: number): AbsoluteSourceSpan {
-    const serial = `${start}@${this.inputIndex}`;
+  sourceSpan(start: number, artificialEndIndex?: number): AbsoluteSourceSpan {
+    const serial = `${start}@${this.inputIndex}:${artificialEndIndex}`;
     if (!this.sourceSpanCache.has(serial)) {
-      this.sourceSpanCache.set(serial, this.span(start).toAbsolute(this.absoluteOffset));
+      this.sourceSpanCache.set(
+          serial, this.span(start, artificialEndIndex).toAbsolute(this.absoluteOffset));
     }
     return this.sourceSpanCache.get(serial)!;
   }
@@ -521,11 +534,11 @@ export class _ParseAST {
     return tok === EOF ? 'end of input' : `token ${tok}`;
   }
 
-  expectIdentifierOrKeyword(): string {
+  expectIdentifierOrKeyword(): string|null {
     const n = this.next;
     if (!n.isIdentifier() && !n.isKeyword()) {
       this.error(`Unexpected ${this.prettyPrintToken(n)}, expected identifier or keyword`);
-      return '';
+      return null;
     }
     this.advance();
     return n.toString() as string;
@@ -572,15 +585,40 @@ export class _ParseAST {
 
       do {
         const nameStart = this.inputIndex;
-        const name = this.expectIdentifierOrKeyword();
-        const nameSpan = this.sourceSpan(nameStart);
+        let nameId = this.expectIdentifierOrKeyword();
+        let nameSpan: AbsoluteSourceSpan;
+        let fullSpanEnd: number|undefined = undefined;
+        if (nameId !== null) {
+          nameSpan = this.sourceSpan(nameStart);
+        } else {
+          // No valid identifier was found, so we'll assume an empty pipe name ('').
+          nameId = '';
+
+          // However, there may have been whitespace present between the pipe character and the next
+          // token in the sequence (or the end of input). We want to track this whitespace so that
+          // the `BindingPipe` we produce covers not just the pipe character, but any trailing
+          // whitespace beyond it. Another way of thinking about this is that the zero-length name
+          // is assumed to be at the end of any whitespace beyond the pipe character.
+          //
+          // Therefore, we push the end of the `ParseSpan` for this pipe all the way up to the
+          // beginning of the next token, or until the end of input if the next token is EOF.
+          fullSpanEnd = this.next.index !== -1 ? this.next.index : this.inputLength + this.offset;
+
+          // The `nameSpan` for an empty pipe name is zero-length at the end of any whitespace
+          // beyond the pipe character.
+          nameSpan = new ParseSpan(fullSpanEnd, fullSpanEnd).toAbsolute(this.absoluteOffset);
+        }
+
         const args: AST[] = [];
         while (this.consumeOptionalCharacter(chars.$COLON)) {
           args.push(this.parseExpression());
+
+          // If there are additional expressions beyond the name, then the artificial end for the
+          // name is no longer relevant.
         }
         const {start} = result.span;
-        result =
-            new BindingPipe(this.span(start), this.sourceSpan(start), result, name, args, nameSpan);
+        result = new BindingPipe(
+            this.span(start), this.sourceSpan(start, fullSpanEnd), result, nameId, args, nameSpan);
       } while (this.consumeOptionalOperator('|'));
     }
 
@@ -881,7 +919,7 @@ export class _ParseAST {
     const start = receiver.span.start;
     const nameStart = this.inputIndex;
     const id = this.withContext(ParseContextFlags.Writable, () => {
-      const id = this.expectIdentifierOrKeyword();
+      const id = this.expectIdentifierOrKeyword() ?? '';
       if (id.length === 0) {
         this.error(`Expected identifier for property access`, receiver.span.end);
       }
