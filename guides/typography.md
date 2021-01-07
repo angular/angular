@@ -31,7 +31,8 @@ To get started, you first include the `Roboto` font with the 300, 400 and 500 we
 You can host it yourself or include it from [Google Fonts][2]:
 
 ```html
-<link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
 ```
 
 Now you can add the appropriate CSS classes to the elements that you want to style:
