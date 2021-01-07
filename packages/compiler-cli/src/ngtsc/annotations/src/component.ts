@@ -51,8 +51,6 @@ function collectAnimationName(
       }
     } else if (Array.isArray(resolvedValue)) {
       collectAnimationName(resolvedValue, animationTriggerNames);
-    } else if (resolvedValue instanceof DynamicValue) {
-      animationTriggerNames.includeDynamicAnimations = true;
     } else {
       animationTriggerNames.includeDynamicAnimations = true;
     }
