@@ -909,5 +909,13 @@
     "website": "https://medium.com/@abampakos",
     "bio": "Aristeidis is a front end web developer at Plex-Earth working with Angular. He is a co-organizer of the Angular Athens meetup and the author of Learning Angular - 3rd Edition. He is also a senior Angular instructor at Code.Hub where he teaches the Angular framework to other developers.",
     "groups": ["GDE"]
+  },
+  "phenomnomnominal": {
+    "name": "Craig Spence",
+    "picture": "craig-spence.jpg",
+    "twitter": "phenomnominal",
+    "website": "https://github.com/phenomnomnominal",
+    "bio": "Craig is a Software Engineer from New Zealand, working at Spotify in Stockholm. He loves building cool things that help teams build cool things! He also loves punk rock, Disney’s Frozen, and his cat Cosy.",
+    "groups": ["GDE"]
   }
 }
