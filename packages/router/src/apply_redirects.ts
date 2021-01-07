@@ -502,7 +502,8 @@ function mergeTrivialChildren(s: UrlSegmentGroup): UrlSegmentGroup {
  */
 function squashSegmentGroup(segmentGroup: UrlSegmentGroup): UrlSegmentGroup {
   const newChildren = {} as any;
-  for (const [childOutlet, child] of Object.entries(segmentGroup.children)) {
+  for (const childOutlet of Object.keys(segmentGroup.children)) {
+    const child = segmentGroup.children[childOutlet];
     const childCandidate = squashSegmentGroup(child);
     // don't add empty children
     if (childCandidate.segments.length > 0 || childCandidate.hasChildren()) {
