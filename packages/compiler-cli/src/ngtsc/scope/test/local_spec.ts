@@ -250,7 +250,7 @@ function fakeDirective(ref: Reference<ClassDeclaration>): DirectiveMeta {
     baseClass: null,
     isPoisoned: false,
     isStructural: false,
-    animations: null,
+    animationTriggerNames: null,
   };
 }
 

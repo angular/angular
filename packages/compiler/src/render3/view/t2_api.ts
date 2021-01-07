@@ -37,6 +37,15 @@ export interface InputOutputPropertySet {
 }
 
 /**
+ * A data structure which give the static animation names
+ * and if includes the trigger name that can't be evaluated.
+ */
+export interface AnimationTriggerNames {
+  includeDynamicAnimations: boolean;
+  staticNames: string[];
+}
+
+/**
  * Metadata regarding a directive that's needed to match it against template elements. This is
  * provided by a consumer of the t2 APIs.
  */
@@ -78,10 +87,10 @@ export interface DirectiveMeta {
   isStructural: boolean;
 
   /**
-   * the name of animations that the user defines in the component.
+   * The name of animations that the user defines in the component.
    * Only include the animation names.
    */
-  animations: string[]|'dynamic'|null;
+  animationTriggerNames: AnimationTriggerNames|null;
 }
 
 /**

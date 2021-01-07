@@ -107,7 +107,7 @@ export class DtsMetadataReader implements MetadataReader {
       baseClass: readBaseClass(clazz, this.checker, this.reflector),
       isPoisoned: false,
       isStructural,
-      animations: null,
+      animationTriggerNames: null,
     };
   }
 

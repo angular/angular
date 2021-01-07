@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {compileComponentFromMetadata, compileDeclareComponentFromMetadata, ConstantPool, CssSelector, DeclarationListEmitMode, DEFAULT_INTERPOLATION_CONFIG, DomElementSchemaRegistry, Expression, ExternalExpr, Identifiers, InterpolationConfig, LexerRange, makeBindingParser, ParsedTemplate, ParseSourceFile, parseTemplate, R3ComponentDef, R3ComponentMetadata, R3FactoryTarget, R3TargetBinder, R3UsedDirectiveMetadata, SelectorMatcher, Statement, TmplAstNode, WrappedNodeExpr} from '@angular/compiler';
+import {AnimationTriggerNames, compileComponentFromMetadata, compileDeclareComponentFromMetadata, ConstantPool, CssSelector, DeclarationListEmitMode, DEFAULT_INTERPOLATION_CONFIG, DomElementSchemaRegistry, Expression, ExternalExpr, Identifiers, InterpolationConfig, LexerRange, makeBindingParser, ParsedTemplate, ParseSourceFile, parseTemplate, R3ComponentDef, R3ComponentMetadata, R3FactoryTarget, R3TargetBinder, R3UsedDirectiveMetadata, SelectorMatcher, Statement, TmplAstNode, WrappedNodeExpr} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {CycleAnalyzer} from '../../cycles';
@@ -33,6 +33,31 @@ import {findAngularDecorator, isAngularCoreReference, isExpressionForwardReferen
 
 const EMPTY_MAP = new Map<string, Expression>();
 const EMPTY_ARRAY: any[] = [];
+
+/**
+ * Collect the animation names from the static evaluation result.
+ * @param value the static evaluation result of the animations
+ * @param animationTriggerNames the animation names collected
+ */
+function collectAnimationName(
+    value: ResolvedValueArray, animationTriggerNames: AnimationTriggerNames) {
+  for (const resolvedValue of value) {
+    if (resolvedValue instanceof Map) {
+      const name = resolvedValue.get('name');
+      if (typeof name === 'string') {
+        animationTriggerNames.staticNames.push(name);
+      } else {
+        animationTriggerNames.includeDynamicAnimations = true;
+      }
+    } else if (Array.isArray(resolvedValue)) {
+      collectAnimationName(resolvedValue, animationTriggerNames);
+    } else if (resolvedValue instanceof DynamicValue) {
+      animationTriggerNames.includeDynamicAnimations = true;
+    } else {
+      animationTriggerNames.includeDynamicAnimations = true;
+    }
+  }
+}
 
 /**
  * These fields of `R3ComponentMetadata` are updated in the `resolve` phase.
@@ -73,7 +98,7 @@ export interface ComponentAnalysisData {
 
   isPoisoned: boolean;
 
-  animationsMeta: string[]|'dynamic'|null;
+  animationTriggerNames: AnimationTriggerNames|null;
 }
 
 export type ComponentResolutionData = Pick<R3ComponentMetadata, ComponentMetadataResolvedFields>;
@@ -312,16 +337,16 @@ export class ComponentDecoratorHandler implements
         this._resolveEnumValue(component, 'changeDetection', 'ChangeDetectionStrategy');
 
     let animations: Expression|null = null;
-    let animationsMeta: string[]|'dynamic'|null = null;
+    let animationTriggerNames: AnimationTriggerNames|null = null;
     if (component.has('animations')) {
       animations = new WrappedNodeExpr(component.get('animations')!);
       const eva = this.evaluator.evaluate(component.get('animations')!);
-      if (eva instanceof DynamicValue) {
-        animationsMeta = 'dynamic';
-      } else if (Array.isArray(eva)) {
+      if (Array.isArray(eva)) {
+        animationTriggerNames = {includeDynamicAnimations: false, staticNames: []};
         const res: string[] = [];
-        this.retrieveAnimationName(eva, res);
-        animationsMeta = res;
+        collectAnimationName(eva, animationTriggerNames);
+      } else {
+        animationTriggerNames = {includeDynamicAnimations: true, staticNames: []};
       }
     }
 
@@ -359,31 +384,13 @@ export class ComponentDecoratorHandler implements
           template: templateResource,
         },
         isPoisoned: false,
-        animationsMeta,
+        animationTriggerNames,
       },
     };
     if (changeDetection !== null) {
       output.analysis!.meta.changeDetection = changeDetection;
     }
     return output;
-  }
-
-  /**
-   * collect the animation names form the static evaluation result.
-   * @param value the static evaluation result of the animations
-   * @param res the animation names collected
-   */
-  private retrieveAnimationName(value: ResolvedValueArray, res: string[]) {
-    value.forEach(_val => {
-      if (_val instanceof Map) {
-        const name = _val.get('name');
-        if (typeof name === 'string') {
-          res.push(name);
-        }
-      } else if (Array.isArray(_val)) {
-        this.retrieveAnimationName(_val, res);
-      }
-    });
   }
 
   register(node: ClassDeclaration, analysis: ComponentAnalysisData): void {
@@ -404,7 +411,7 @@ export class ComponentDecoratorHandler implements
       ...analysis.typeCheckMeta,
       isPoisoned: analysis.isPoisoned,
       isStructural: false,
-      animations: analysis.animationsMeta
+      animationTriggerNames: analysis.animationTriggerNames
     });
 
     this.resourceRegistry.registerResources(analysis.resources, node);
