@@ -19,7 +19,8 @@ describe('component declaration jit compilation', () => {
 
     expectComponentDef(def, {
       template: functionContaining([
-        /element[^(]*\(0,'div'\)/,
+        // NOTE: the `anonymous` match is to support IE11, as functions don't have a name there.
+        /(?:element|anonymous)[^(]*\(0,'div'\)/,
       ]),
     });
   });
