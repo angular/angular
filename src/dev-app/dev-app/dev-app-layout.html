@@ -22,8 +22,16 @@
     </mat-nav-list>
     <button mat-button tabindex="-1" (click)="start.close()">CLOSE</button>
   </mat-sidenav>
-  <main>
-    <mat-toolbar color="primary">
+  <!--
+    Note that the setup with the directionality and density is a little convoluted, but it's
+    organized this way so that we can test MDC's density styles in both LTR and RTL. Their mixins
+    output styles in the form of `[dir='rtl'] .density-min .foo` which means that the `dir` has to
+    be one level above the density class in the DOM. At the same time, we want the density to apply
+    to the toolbar while always keeping it in LTR at the same time.
+   -->
+  <main [attr.dir]="dir.value" [ngClass]="getDensityClass()">
+    <!-- The toolbar should always be in the LTR direction -->
+    <mat-toolbar color="primary" dir="ltr">
       <button mat-icon-button (click)="start.open('mouse')">
         <mat-icon>menu</mat-icon>
       </button>
@@ -54,7 +62,7 @@
       </div>
     </mat-toolbar>
 
-    <div [attr.dir]="dir.value" class="demo-content mat-app-background">
+    <div [ngClass]="getDensityClass()" class="demo-content mat-app-background">
       <ng-content></ng-content>
     </div>
   </main>

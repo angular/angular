@@ -114,7 +114,6 @@ export class DevAppLayout {
       @Inject(Directionality) public dir: DevAppDirectionality, cdr: ChangeDetectorRef,
       @Inject(DOCUMENT) private _document: Document) {
     dir.change.subscribe(() => cdr.markForCheck());
-    this.updateDensityClasses();
     try {
       const isDark = localStorage.getItem(isDarkThemeKey);
       if (isDark != null) {
@@ -189,21 +188,13 @@ export class DevAppLayout {
   /** Selects the next possible density scale. */
   selectNextDensity() {
     this.currentDensityIndex = this.getNextDensityIndex();
-    this.updateDensityClasses();
   }
 
   /**
    * Updates the density classes on the host element. Applies a unique class for
    * a given density scale, so that the density styles are conditionally applied.
    */
-  updateDensityClasses() {
-    for (let i = 0; i < this.densityScales.length; i++) {
-      const className = `demo-density-${this.densityScales[i]}`;
-      if (i === this.currentDensityIndex) {
-        this._document.body.classList.add(className);
-      } else {
-        this._document.body.classList.remove(className);
-      }
-    }
+  getDensityClass() {
+    return `demo-density-${this.densityScales[this.currentDensityIndex]}`;
   }
 }
