@@ -20,25 +20,25 @@ export class AbstractControlStatus {
   }
 
   get ngClassUntouched(): boolean {
-    return this._cd?.control ? this._cd.control.untouched : false;
+    return this._cd?.control?.untouched ?? false;
   }
   get ngClassTouched(): boolean {
-    return this._cd?.control ? this._cd.control.touched : false;
+    return this._cd?.control?.touched ?? false;
   }
   get ngClassPristine(): boolean {
-    return this._cd?.control ? this._cd.control.pristine : false;
+    return this._cd?.control?.pristine ?? false;
   }
   get ngClassDirty(): boolean {
-    return this._cd?.control ? this._cd.control.dirty : false;
+    return this._cd?.control?.dirty ?? false;
   }
   get ngClassValid(): boolean {
-    return this._cd?.control ? this._cd.control.valid : false;
+    return this._cd?.control?.valid ?? false;
   }
   get ngClassInvalid(): boolean {
-    return this._cd?.control ? this._cd.control.invalid : false;
+    return this._cd?.control?.invalid ?? false;
   }
   get ngClassPending(): boolean {
-    return this._cd?.control ? this._cd.control.pending : false;
+    return this._cd?.control?.pending ?? false;
   }
 }
 
