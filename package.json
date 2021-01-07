@@ -83,7 +83,7 @@
     "@bazel/bazelisk": "^1.4.0",
     "@bazel/buildifier": "^3.5.0",
     "@bazel/ibazel": "^0.14.0",
-    "@bazel/jasmine": "^2.2.0",
+    "@bazel/jasmine": "^3.0.0",
     "@bazel/karma": "^2.2.0",
     "@bazel/protractor": "^2.2.0",
     "@bazel/rollup": "^2.2.0",

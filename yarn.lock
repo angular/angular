@@ -674,10 +674,10 @@
   resolved "https://registry.yarnpkg.com/@bazel/ibazel/-/ibazel-0.14.0.tgz#86fa0002bed2ce1123b7ad98d4dd4623a0d93244"
   integrity sha512-s0gyec6lArcRDwVfIP6xpY8iEaFpzrSpyErSppd3r2O49pOEg7n6HGS/qJ8ncvme56vrDk6crl/kQ6VAdEO+rg==
 
-"@bazel/jasmine@^2.2.0":
-  version "2.2.1"
-  resolved "https://registry.yarnpkg.com/@bazel/jasmine/-/jasmine-2.2.1.tgz#4a1cc54b0092569104cf88fc1cbb27e34578cd90"
-  integrity sha512-l028iUpIbQ8WIWI+3OQpnBRa+NBKKrvtbrQNCrRv4+R305c4KAS2cGixIKI62CizD4nmhNAXRN/jE849I1g1zg==
+"@bazel/jasmine@^3.0.0":
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/@bazel/jasmine/-/jasmine-3.0.0.tgz#18541696b9d8b4e1f4383dbad00e380096957827"
+  integrity sha512-m0VDs+05Svv6RAYdLF/hM9mTeVKhEmZh4qkT1ZEiHOAwdanfcCWjhF5UaMYPmSih6NYkpmNyParx+weBVaIpsA==
   dependencies:
     c8 "~7.1.0"
     jasmine-reporters "~2.3.2"
