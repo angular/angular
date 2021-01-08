@@ -39,9 +39,8 @@ pkg_npm(
         "package.json",
     ],
     substitutions = {
-        "@angular//tools/ts-api-guardian:bin": "@npm_ts_api_guardian//:bin",
+        "@angular//tools/ts-api-guardian:bin": "//:node_modules/ts-api-guardian/bin",
         "@angular//tools/ts-api-guardian:lib": "@npm//ts-api-guardian",
-        "angular/tools/ts-api-guardian/": "npm_ts_api_guardian/",
     },
     deps = [
         ":lib",
@@ -103,7 +102,6 @@ jasmine_node_test(
         ":ts-api-guardian",
     ],
 )
-# END-INTERNAL
 
 filegroup(
     name = "bin",
@@ -113,3 +111,5 @@ filegroup(
 
 # Exported to be referenced as entry_point of the nodejs_binary
 exports_files(["bin/ts-api-guardian"])
+
+# END-INTERNAL
