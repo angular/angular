@@ -1,7 +1,6 @@
 @mixin custom-styles($theme) {
     $theme-primary: map-get($theme, primary);
     $theme-accent: map-get($theme, accent);
-    $theme-warn: map-get($theme, warn);
     $theme-background: map-get($theme, background);
     $theme-foreground: map-get($theme, foreground);
 
@@ -11,7 +10,6 @@
     $theme-accent-color: mat-color($theme-accent);
     $theme-accent-lighter-color: mat-color($theme-accent, lighter);
     $theme-accent-darker-color: mat-color($theme-accent, darker);
-    $theme-warn-color: mat-color($theme-warn);
     $theme-background-color: mat-color($theme-background, background);
     $theme-app-bar-color: mat-color($theme-background, app-bar);
     $theme-card-color: mat-color($theme-background, card);
@@ -22,6 +20,9 @@
     $theme-hover-background-color: mat-color($theme-background, hover);
     $theme-selected-button-color: mat-color($theme-background, selected-button);
 
+    $warn-color: #DD0031;
+    $important-color: #FF9800;
+    $helpful-color: #1976D2;
     $angular-logo-lighter-color: #dd0031;
     $angular-logo-darker-color: #c3002f;
     $syntax-default-color: #ffffff;
@@ -29,12 +30,13 @@
     $syntax-comment-color: #8b949e;
     $syntax-string-color: #a0e99d;
     $syntax-type-color: #79c0ff;
+    $syntax-background-color: #0d1117;
 
     background-color: $theme-background-color;
     color: $theme-foreground-color;
 
     .mat-tab-body {
-        background-color: #0d1117;
+        background-color: $syntax-background-color;
     }
 
     .mat-tab-group.mat-primary .mat-ink-bar, .mat-tab-nav-bar.mat-primary .mat-ink-bar{
@@ -350,6 +352,7 @@
 
     table {
         background-color: $theme-background-color;
+        border: 1px solid $theme-divider-color;
 
         thead > {
             tr > th {
@@ -390,18 +393,18 @@
 
     code-example {
         &:not(.no-box) {
-            background-color: #0d1117;
+            background-color: $syntax-background-color;
             color: $theme-foreground-color;
             border-color: rgba($theme-foreground-secondary-color, 0.2);
         }
 
         header {
-            background-color: $theme-app-bar-color;
+            background-color: $theme-primary-color;
         }
 
         &.avoid header, &.avoidFile header {
-            border: 2px solid $theme-warn-color;
-            background: $theme-warn-color;
+            border: 2px solid $warn-color;
+            background: $warn-color;
         }
     }
 
@@ -409,7 +412,7 @@
     code-example.avoidFile,
     code-tabs.avoid mat-tab-body,
     code-tabs.avoidFile mat-tab-body {
-        border: 0.5px solid $theme-warn-color;
+        border: 0.5px solid $warn-color;
     }
 
     .copy-button {
@@ -454,9 +457,19 @@
         color: $syntax-comment-color;
     }
 
+    // src/styles/2-modules/_cli-pages.scss
+
+    .cli-name .kwd {
+        color: $syntax-default-color;
+    }
+
     // src/styles/2-modules/_api-pages.scss
 
     .api-body table {
+        tr {
+            border-bottom: 1px solid $theme-divider-color;
+        }
+
         th {
             font-weight: normal;
         }
@@ -477,6 +490,59 @@
                 }
             }
         }
+    }
+
+    // src/styles/2-modules/_api-list.scss
+
+    .docs-content .api-list {
+        li {
+            a {
+                color: $theme-foreground-color;
+
+                &:hover {
+                    background-color: $theme-hover-background-color;
+                    color: $theme-accent-color;
+                }
+            }
+        }
+    }
+
+    // src/styles/2-modules/_callout.scss
+
+    .is-critical {
+        &.alert, &.callout {
+            background-color: $theme-hover-background-color;
+        }
+
+        &.callout {
+            border: 1px solid $warn-color !important;
+        }
+    }
+
+    .is-important {
+        &.alert, &.callout {
+            background-color: $theme-hover-background-color;
+        }
+
+        &.callout {
+            border: 1px solid $important-color !important;
+        }
+    }
+
+    .is-helpful {
+        &.alert, &.callout {
+            background-color: $theme-hover-background-color;
+        }
+
+        &.callout {
+            border: 1px solid $helpful-color !important;
+        }
+    }
+
+    // src/styles/2-modules/_contributor.scss
+
+    aio-contributor {
+        background-color: $theme-card-color;
     }
 
     .github-links .material-icons:hover {

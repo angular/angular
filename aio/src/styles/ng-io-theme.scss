@@ -17,8 +17,8 @@ $ng-io-warn:    mat-palette($mat-red);
 // Create the theme object (a Sass map containing all of the palettes).
 $ng-io-theme: mat-light-theme($ng-io-primary, $ng-io-accent, $ng-io-warn);
 
-$night-primary: mat-palette($mat-teal, 700, 600, 800);
-$night-accent:  mat-palette($mat-teal, 200, 100, 300);
+$night-primary: mat-palette($mat-blue, 800, 700, 900);
+$night-accent:  mat-palette($mat-blue, 300, 200, 400);
 
 $night-theme: mat-dark-theme($night-primary, $night-accent);
 
