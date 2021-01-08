@@ -25,9 +25,21 @@ export class InvalidTargetLabelError {
   constructor(public failureMessage: string) {}
 }
 
+export class NoTargetLabelError extends InvalidTargetLabelError {
+  constructor() {
+    super('Unable to determine target for the PR as it has no target label.');
+  }
+}
+
+export class TooManyTargetLabelsError extends InvalidTargetLabelError {
+  constructor() {
+    super('Unable to determine target for the PR as it has multiple target labels.');
+  }
+}
+
 /** Gets the target label from the specified pull request labels. */
 export function getTargetLabelFromPullRequest(
-    config: Pick<MergeConfig, 'labels'>, labels: string[]): TargetLabel|null {
+    config: Pick<MergeConfig, 'labels'>, labels: string[]): TargetLabel {
   /** List of discovered target labels for the PR. */
   const matches = [];
   for (const label of labels) {
@@ -36,14 +48,13 @@ export function getTargetLabelFromPullRequest(
       matches.push(match);
     }
   }
-  if (matches.length === 0) {
-    return null;
-  }
   if (matches.length === 1) {
     return matches[0];
   }
-  throw new InvalidTargetLabelError(
-      `Unable to determine the target for the PR as it has multiple target labels.`);
+  if (matches.length === 0) {
+    throw new NoTargetLabelError();
+  }
+  throw new TooManyTargetLabelsError();
 }
 
 /**

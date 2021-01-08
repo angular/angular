@@ -9,6 +9,7 @@
 import * as Octokit from '@octokit/rest';
 
 import {GitClient} from '../../utils/git/index';
+import {TargetLabel} from './config';
 
 import {PullRequestFailure} from './failures';
 import {matchesPattern} from './string-pattern';
@@ -61,9 +62,14 @@ export async function loadAndValidatePullRequest(
     return PullRequestFailure.claUnsigned();
   }
 
-  const targetLabel = getTargetLabelFromPullRequest(config, labels);
-  if (targetLabel === null) {
-    return PullRequestFailure.noTargetLabel();
+  let targetLabel: TargetLabel;
+  try {
+    targetLabel = getTargetLabelFromPullRequest(config, labels);
+  } catch (error) {
+    if (error instanceof InvalidTargetLabelError) {
+      return new PullRequestFailure(error.failureMessage);
+    }
+    throw error;
   }
 
   const {data: {state}} =

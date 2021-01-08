@@ -9,8 +9,8 @@
 import {getConfig} from '../../utils/config';
 import {error, info, red} from '../../utils/console';
 import {GitClient} from '../../utils/git/index';
-import {loadAndValidateConfig} from '../merge/config';
-import {getBranchesFromTargetLabel, getTargetLabelFromPullRequest} from '../merge/target-label';
+import {loadAndValidateConfig, TargetLabel} from '../merge/config';
+import {getBranchesFromTargetLabel, getTargetLabelFromPullRequest, InvalidTargetLabelError} from '../merge/target-label';
 
 export async function getTargetBranchesForPr(prNumber: number) {
   /** The ng-dev configuration. */
@@ -31,9 +31,14 @@ export async function getTargetBranchesForPr(prNumber: number) {
   /** The branch targetted via the Github UI. */
   const githubTargetBranch = prData.base.ref;
   /** The active label which is being used for targetting the PR. */
-  const targetLabel = getTargetLabelFromPullRequest(mergeConfig!, labels);
-  if (targetLabel === null) {
-    error(red(`No target label was found on pr #${prNumber}`));
+  let targetLabel: TargetLabel;
+
+  try {
+    targetLabel = getTargetLabelFromPullRequest(mergeConfig!, labels);
+  } catch (e) {
+    if (e instanceof InvalidTargetLabelError) {
+      error(red(e.failureMessage));
+    }
     process.exitCode = 1;
     return;
   }

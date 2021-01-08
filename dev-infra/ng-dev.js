@@ -2779,6 +2779,20 @@ var InvalidTargetLabelError = /** @class */ (function () {
     }
     return InvalidTargetLabelError;
 }());
+var NoTargetLabelError = /** @class */ (function (_super) {
+    tslib.__extends(NoTargetLabelError, _super);
+    function NoTargetLabelError() {
+        return _super.call(this, 'Unable to determine target for the PR as it has no target label.') || this;
+    }
+    return NoTargetLabelError;
+}(InvalidTargetLabelError));
+var TooManyTargetLabelsError = /** @class */ (function (_super) {
+    tslib.__extends(TooManyTargetLabelsError, _super);
+    function TooManyTargetLabelsError() {
+        return _super.call(this, 'Unable to determine target for the PR as it has multiple target labels.') || this;
+    }
+    return TooManyTargetLabelsError;
+}(InvalidTargetLabelError));
 /** Gets the target label from the specified pull request labels. */
 function getTargetLabelFromPullRequest(config, labels) {
     var e_1, _a;
@@ -2806,13 +2820,13 @@ function getTargetLabelFromPullRequest(config, labels) {
         }
         finally { if (e_1) throw e_1.error; }
     }
-    if (matches.length === 0) {
-        return null;
-    }
     if (matches.length === 1) {
         return matches[0];
     }
-    throw new InvalidTargetLabelError("Unable to determine the target for the PR as it has multiple target labels.");
+    if (matches.length === 0) {
+        throw new NoTargetLabelError();
+    }
+    throw new TooManyTargetLabelsError();
 }
 /**
  * Gets the branches from the specified target label.
@@ -2868,9 +2882,14 @@ function getTargetBranchesForPr(prNumber) {
         /** The branch targetted via the Github UI. */
         const githubTargetBranch = prData.base.ref;
         /** The active label which is being used for targetting the PR. */
-        const targetLabel = getTargetLabelFromPullRequest(mergeConfig, labels);
-        if (targetLabel === null) {
-            error(red(`No target label was found on pr #${prNumber}`));
+        let targetLabel;
+        try {
+            targetLabel = getTargetLabelFromPullRequest(mergeConfig, labels);
+        }
+        catch (e) {
+            if (e instanceof InvalidTargetLabelError) {
+                error(red(e.failureMessage));
+            }
             process.exitCode = 1;
             return;
         }
@@ -3419,9 +3438,14 @@ function loadAndValidatePullRequest(_a, prNumber, ignoreNonFatalFailures) {
                     if (!labels.some(function (name) { return matchesPattern(name, config.claSignedLabel); })) {
                         return [2 /*return*/, PullRequestFailure.claUnsigned()];
                     }
-                    targetLabel = getTargetLabelFromPullRequest(config, labels);
-                    if (targetLabel === null) {
-                        return [2 /*return*/, PullRequestFailure.noTargetLabel()];
+                    try {
+                        targetLabel = getTargetLabelFromPullRequest(config, labels);
+                    }
+                    catch (error) {
+                        if (error instanceof InvalidTargetLabelError) {
+                            return [2 /*return*/, new PullRequestFailure(error.failureMessage)];
+                        }
+                        throw error;
                     }
                     return [4 /*yield*/, git.github.repos.getCombinedStatusForRef(tslib.__assign(tslib.__assign({}, git.remoteParams), { ref: prData.head.sha }))];
                 case 2:
