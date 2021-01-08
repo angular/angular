@@ -32,6 +32,7 @@ export class LanguageService {
   constructor(project: ts.server.Project, private readonly tsLS: ts.LanguageService) {
     this.parseConfigHost = new LSParseConfigHost(project.projectService.host);
     this.options = parseNgCompilerOptions(project, this.parseConfigHost);
+    logCompilerOptions(project, this.options);
     this.strategy = createTypeCheckingProgramStrategy(project);
     this.adapter = new LanguageServiceAdapter(project);
     this.compilerFactory = new CompilerFactory(this.adapter, this.strategy, this.options);
@@ -185,9 +186,16 @@ export class LanguageService {
           project.log(`Config file changed: ${fileName}`);
           if (eventKind === ts.FileWatcherEventKind.Changed) {
             this.options = parseNgCompilerOptions(project, this.parseConfigHost);
+            logCompilerOptions(project, this.options);
           }
         });
   }
+}
+
+function logCompilerOptions(project: ts.server.Project, options: CompilerOptions) {
+  const {logger} = project.projectService;
+  const projectName = project.getProjectName();
+  logger.info(`Angular compiler options for ${projectName}: ` + JSON.stringify(options, null, 2));
 }
 
 function parseNgCompilerOptions(
