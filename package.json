@@ -68,7 +68,7 @@
     "@types/babel__core": "^7.1.6",
     "@types/babel__generator": "^7.6.1",
     "@types/babel__template": "^7.0.2",
-    "@types/babel__traverse": "^7.0.9",
+    "@types/babel__traverse": "^7.11.0",
     "@types/base64-js": "1.2.5",
     "@types/bluebird": "^3.5.27",
     "@types/chai": "^4.1.2",
