@@ -2779,20 +2779,6 @@ var InvalidTargetLabelError = /** @class */ (function () {
     }
     return InvalidTargetLabelError;
 }());
-var NoTargetLabelError = /** @class */ (function (_super) {
-    tslib.__extends(NoTargetLabelError, _super);
-    function NoTargetLabelError() {
-        return _super.call(this, 'Unable to determine target for the PR as it has no target label.') || this;
-    }
-    return NoTargetLabelError;
-}(InvalidTargetLabelError));
-var TooManyTargetLabelsError = /** @class */ (function (_super) {
-    tslib.__extends(TooManyTargetLabelsError, _super);
-    function TooManyTargetLabelsError() {
-        return _super.call(this, 'Unable to determine target for the PR as it has multiple target labels.') || this;
-    }
-    return TooManyTargetLabelsError;
-}(InvalidTargetLabelError));
 /** Gets the target label from the specified pull request labels. */
 function getTargetLabelFromPullRequest(config, labels) {
     var e_1, _a;
@@ -2824,9 +2810,9 @@ function getTargetLabelFromPullRequest(config, labels) {
         return matches[0];
     }
     if (matches.length === 0) {
-        throw new NoTargetLabelError();
+        throw new InvalidTargetLabelError('Unable to determine target for the PR as it has no target label.');
     }
-    throw new TooManyTargetLabelsError();
+    throw new InvalidTargetLabelError('Unable to determine target for the PR as it has multiple target labels.');
 }
 /**
  * Gets the branches from the specified target label.
@@ -2889,9 +2875,10 @@ function getTargetBranchesForPr(prNumber) {
         catch (e) {
             if (e instanceof InvalidTargetLabelError) {
                 error(red(e.failureMessage));
+                process.exitCode = 1;
+                return;
             }
-            process.exitCode = 1;
-            return;
+            throw e;
         }
         /** The target branches based on the target label and branch targetted in the Github UI. */
         return yield getBranchesFromTargetLabel(targetLabel, githubTargetBranch);
@@ -3357,9 +3344,6 @@ var PullRequestFailure = /** @class */ (function () {
     };
     PullRequestFailure.notMergeReady = function () {
         return new this("Not marked as merge ready.");
-    };
-    PullRequestFailure.noTargetLabel = function () {
-        return new this("No target branch could be determined. Please ensure a target label is set.");
     };
     PullRequestFailure.mismatchingTargetBranch = function (allowedBranches) {
         return new this("Pull request is set to wrong base branch. Please update the PR in the Github UI " +

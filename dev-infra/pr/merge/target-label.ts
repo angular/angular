@@ -25,18 +25,6 @@ export class InvalidTargetLabelError {
   constructor(public failureMessage: string) {}
 }
 
-export class NoTargetLabelError extends InvalidTargetLabelError {
-  constructor() {
-    super('Unable to determine target for the PR as it has no target label.');
-  }
-}
-
-export class TooManyTargetLabelsError extends InvalidTargetLabelError {
-  constructor() {
-    super('Unable to determine target for the PR as it has multiple target labels.');
-  }
-}
-
 /** Gets the target label from the specified pull request labels. */
 export function getTargetLabelFromPullRequest(
     config: Pick<MergeConfig, 'labels'>, labels: string[]): TargetLabel {
@@ -52,9 +40,11 @@ export function getTargetLabelFromPullRequest(
     return matches[0];
   }
   if (matches.length === 0) {
-    throw new NoTargetLabelError();
+    throw new InvalidTargetLabelError(
+        'Unable to determine target for the PR as it has no target label.');
   }
-  throw new TooManyTargetLabelsError();
+  throw new InvalidTargetLabelError(
+      'Unable to determine target for the PR as it has multiple target labels.');
 }
 
 /**

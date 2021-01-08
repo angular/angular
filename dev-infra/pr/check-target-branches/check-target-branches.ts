@@ -38,9 +38,10 @@ export async function getTargetBranchesForPr(prNumber: number) {
   } catch (e) {
     if (e instanceof InvalidTargetLabelError) {
       error(red(e.failureMessage));
+      process.exitCode = 1;
+      return;
     }
-    process.exitCode = 1;
-    return;
+    throw e;
   }
   /** The target branches based on the target label and branch targetted in the Github UI. */
   return await getBranchesFromTargetLabel(targetLabel, githubTargetBranch);
