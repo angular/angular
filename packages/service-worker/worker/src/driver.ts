@@ -25,7 +25,8 @@ type ClientAssignments = {
   [id: string]: ManifestHash
 };
 
-const IDLE_THRESHOLD = 5000;
+const IDLE_DELAY = 5000;
+const MAX_IDLE_DELAY = 30000;
 
 const SUPPORTED_CONFIG_VERSION = 1;
 
@@ -167,7 +168,7 @@ export class Driver implements Debuggable, UpdateSource {
     this.debugger = new DebugHandler(this, this.adapter);
 
     // The IdleScheduler will execute idle tasks after a given delay.
-    this.idle = new IdleScheduler(this.adapter, IDLE_THRESHOLD, this.debugger);
+    this.idle = new IdleScheduler(this.adapter, IDLE_DELAY, MAX_IDLE_DELAY, this.debugger);
   }
 
   /**
