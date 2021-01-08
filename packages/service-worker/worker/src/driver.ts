@@ -1026,10 +1026,10 @@ export class Driver implements Debuggable, UpdateSource {
                                 .filter(([clientId, hash]) => hash === brokenHash)
                                 .map(([clientId]) => clientId);
 
-    affectedClients.forEach(async clientId => {
+    await Promise.all(affectedClients.map(async clientId => {
       const client = await this.scope.clients.get(clientId);
       client.postMessage({type: 'UNRECOVERABLE_STATE', reason});
-    });
+    }));
   }
 
   async notifyClientsAboutUpdate(next: AppVersion): Promise<void> {
