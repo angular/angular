@@ -423,48 +423,43 @@ export class Driver implements Debuggable, UpdateSource {
     // Decide which version of the app to use to serve this request. This is asynchronous as in
     // some cases, a record will need to be written to disk about the assignment that is made.
     const appVersion = await this.assignVersion(event);
-
-    // Bail out
-    if (appVersion === null) {
-      event.waitUntil(this.idle.trigger());
-      return this.safeFetch(event.request);
-    }
-
     let res: Response|null = null;
-    try {
-      // Handle the request. First try the AppVersion. If that doesn't work, fall back on the
-      // network.
-      res = await appVersion.handleFetch(event.request, event);
-    } catch (err) {
-      if (err.isUnrecoverableState) {
-        await this.notifyClientsAboutUnrecoverableState(appVersion, err.message);
-      }
-      if (err.isCritical) {
-        // Something went wrong with the activation of this version.
-        await this.versionFailed(appVersion, err);
 
-        event.waitUntil(this.idle.trigger());
+    try {
+      if (appVersion !== null) {
+        try {
+          // Handle the request. First try the AppVersion. If that doesn't work, fall back on the
+          // network.
+          res = await appVersion.handleFetch(event.request, event);
+        } catch (err) {
+          if (err.isUnrecoverableState) {
+            await this.notifyClientsAboutUnrecoverableState(appVersion, err.message);
+          }
+          if (err.isCritical) {
+            // Something went wrong with the activation of this version.
+            await this.versionFailed(appVersion, err);
+            return this.safeFetch(event.request);
+          }
+          throw err;
+        }
+      }
+
+      // The response will be `null` only if no `AppVersion` can be assigned to the request or if
+      // the assigned `AppVersion`'s manifest doesn't specify what to do about the request.
+      // In that case, just fall back on the network.
+      if (res === null) {
         return this.safeFetch(event.request);
       }
-      throw err;
-    }
 
-
-    // The AppVersion will only return null if the manifest doesn't specify what to do about this
-    // request. In that case, just fall back on the network.
-    if (res === null) {
+      // The `AppVersion` returned a usable response, so return it.
+      return res;
+    } finally {
+      // Trigger the idle scheduling system. The Promise returned by `trigger()` will resolve after
+      // a specific amount of time has passed. If `trigger()` hasn't been called again by then (e.g.
+      // on a subsequent request), the idle task queue will be drained and the `Promise` won't
+      // be resolved until that operation is complete as well.
       event.waitUntil(this.idle.trigger());
-      return this.safeFetch(event.request);
     }
-
-    // Trigger the idle scheduling system. The Promise returned by trigger() will resolve after
-    // a specific amount of time has passed. If trigger() hasn't been called again by then (e.g.
-    // on a subsequent request), the idle task queue will be drained and the Promise won't resolve
-    // until that operation is complete as well.
-    event.waitUntil(this.idle.trigger());
-
-    // The AppVersion returned a usable response, so return it.
-    return res;
   }
 
   /**
