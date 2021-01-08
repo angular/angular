@@ -35,13 +35,6 @@ import {consolidateMessages, hasLocation} from './utils';
  * }
  * ```
  */
-
-/**
- * This is a semi-public bespoke serialization format that is used for testing and sometimes as a
- * format for storing translations that will be inlined at runtime.
- *
- * @see ArbTranslationParser
- */
 export class ArbTranslationSerializer implements TranslationSerializer {
   constructor(
       private sourceLocale: string, private basePath: AbsoluteFsPath,
