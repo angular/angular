@@ -30,6 +30,7 @@ import {MatFormField, MAT_FORM_FIELD} from '@angular/material/form-field';
 import {MAT_INPUT_VALUE_ACCESSOR} from '@angular/material/input';
 import {MatDatepickerInputBase, DateFilterFn} from './datepicker-input-base';
 import {MatDatepickerControl, MatDatepickerPanel} from './datepicker-base';
+import {DateSelectionModelChange} from './date-selection-model';
 
 /** @docs-private */
 export const MAT_DATEPICKER_VALUE_ACCESSOR: any = {
@@ -183,12 +184,9 @@ export class MatDatepickerInput<D> extends MatDatepickerInputBase<D | null, D>
     return this._dateFilter;
   }
 
-  protected _canEmitChangeEvent() {
-    return true;
+  protected _shouldHandleChangeEvent(event: DateSelectionModelChange<D>) {
+    return event.source !== this;
   }
-
-  // Unnecessary when selecting a single date.
-  protected _outsideValueChanged: undefined;
 
   // Accept `any` to avoid conflicts with other directives on `<input>` that
   // may accept different types.

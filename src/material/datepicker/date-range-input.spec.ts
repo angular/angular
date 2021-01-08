@@ -1,5 +1,5 @@
 import {Type, Component, ViewChild, ElementRef, Directive} from '@angular/core';
-import {ComponentFixture, TestBed, inject, fakeAsync, tick} from '@angular/core/testing';
+import {ComponentFixture, TestBed, inject, fakeAsync, tick, flush} from '@angular/core/testing';
 import {
   FormsModule,
   ReactiveFormsModule,
@@ -7,6 +7,7 @@ import {
   FormControl,
   NG_VALIDATORS,
   Validator,
+  NgModel,
 } from '@angular/forms';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {OverlayContainer} from '@angular/cdk/overlay';
@@ -251,6 +252,9 @@ describe('MatDateRangeInput', () => {
       tick();
       const {start, end} = fixture.componentInstance.range.controls;
 
+      // The default error state matcher only checks if the controls have been touched.
+      // Set it manually here so we can assert `rangeInput.errorState` correctly.
+      fixture.componentInstance.range.markAllAsTouched();
       expect(fixture.componentInstance.rangeInput.errorState).toBe(false);
       expect(start.errors?.matStartDateInvalid).toBeFalsy();
       expect(end.errors?.matEndDateInvalid).toBeFalsy();
@@ -262,6 +266,13 @@ describe('MatDateRangeInput', () => {
       expect(fixture.componentInstance.rangeInput.errorState).toBe(true);
       expect(start.errors?.matStartDateInvalid).toBeTruthy();
       expect(end.errors?.matEndDateInvalid).toBeTruthy();
+
+      end.setValue(new Date(2020, 3, 2));
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.rangeInput.errorState).toBe(false);
+      expect(start.errors?.matStartDateInvalid).toBeFalsy();
+      expect(end.errors?.matEndDateInvalid).toBeFalsy();
     }));
 
   it('should pass the minimum date from the range input to the inner inputs', () => {
@@ -569,6 +580,62 @@ describe('MatDateRangeInput', () => {
     assignAndAssert(new Date(2020, 2, 2), new Date(2020, 2, 5));
   }));
 
+  it('should not be dirty on init when there is no value', fakeAsync(() => {
+    const fixture = createComponent(RangePickerNgModel);
+    fixture.detectChanges();
+    flush();
+    const {startModel, endModel} = fixture.componentInstance;
+
+    expect(startModel.dirty).toBe(false);
+    expect(startModel.touched).toBe(false);
+    expect(endModel.dirty).toBe(false);
+    expect(endModel.touched).toBe(false);
+  }));
+
+  it('should not be dirty on init when there is a value', fakeAsync(() => {
+    const fixture = createComponent(RangePickerNgModel);
+    fixture.componentInstance.start = new Date(2020, 1, 2);
+    fixture.componentInstance.end = new Date(2020, 2, 2);
+    fixture.detectChanges();
+    flush();
+    const {startModel, endModel} = fixture.componentInstance;
+
+    expect(startModel.dirty).toBe(false);
+    expect(startModel.touched).toBe(false);
+    expect(endModel.dirty).toBe(false);
+    expect(endModel.touched).toBe(false);
+  }));
+
+  it('should mark the input as dirty once the user types in it', fakeAsync(() => {
+    const fixture = createComponent(RangePickerNgModel);
+    fixture.componentInstance.start = new Date(2020, 1, 2);
+    fixture.componentInstance.end = new Date(2020, 2, 2);
+    fixture.detectChanges();
+    flush();
+    const {startModel, endModel, startInput, endInput} = fixture.componentInstance;
+
+    expect(startModel.dirty).toBe(false);
+    expect(endModel.dirty).toBe(false);
+
+    endInput.nativeElement.value = '30/12/2020';
+    dispatchFakeEvent(endInput.nativeElement, 'input');
+    fixture.detectChanges();
+    flush();
+    fixture.detectChanges();
+
+    expect(startModel.dirty).toBe(false);
+    expect(endModel.dirty).toBe(true);
+
+    startInput.nativeElement.value = '12/12/2020';
+    dispatchFakeEvent(startInput.nativeElement, 'input');
+    fixture.detectChanges();
+    flush();
+    fixture.detectChanges();
+
+    expect(startModel.dirty).toBe(true);
+    expect(endModel.dirty).toBe(true);
+  }));
+
   it('should move focus to the start input when pressing backspace on an empty end input', () => {
     const fixture = createComponent(StandardRangePicker);
     fixture.detectChanges();
@@ -848,6 +915,10 @@ class RangePickerNoEnd {}
   `
 })
 class RangePickerNgModel {
+  @ViewChild(MatStartDate, {read: NgModel}) startModel: NgModel;
+  @ViewChild(MatEndDate, {read: NgModel}) endModel: NgModel;
+  @ViewChild(MatStartDate, {read: ElementRef}) startInput: ElementRef<HTMLInputElement>;
+  @ViewChild(MatEndDate, {read: ElementRef}) endInput: ElementRef<HTMLInputElement>;
   start: Date | null = null;
   end: Date | null = null;
 }

@@ -159,14 +159,19 @@ abstract class MatDateRangeInputPartBase<D>
     return this._rangeInput.dateFilter;
   }
 
-  protected _outsideValueChanged = () => {
-    // Whenever the value changes outside the input we need to revalidate, because
-    // the validation state of each of the inputs depends on the other one.
-    this._validatorOnChange();
-  }
-
   protected _parentDisabled() {
     return this._rangeInput._groupDisabled;
+  }
+
+  protected _shouldHandleChangeEvent({source}: DateSelectionModelChange<DateRange<D>>): boolean {
+    return source !== this._rangeInput._startInput && source !== this._rangeInput._endInput;
+  }
+
+  protected _assignValueProgrammatically(value: D | null) {
+    super._assignValueProgrammatically(value);
+    const opposite = (this === this._rangeInput._startInput ? this._rangeInput._endInput :
+        this._rangeInput._startInput) as MatDateRangeInputPartBase<D> | undefined;
+    opposite?._validatorOnChange();
   }
 }
 
@@ -259,12 +264,7 @@ export class MatStartDate<D> extends _MatDateRangeInputBase<D> implements
     if (this._model) {
       const range = new DateRange(value, this._model.selection.end);
       this._model.updateSelection(range, this);
-      this._cvaOnChange(value);
     }
-  }
-
-  protected _canEmitChangeEvent = (event: DateSelectionModelChange<DateRange<D>>): boolean => {
-    return event.source !== this._rangeInput._endInput;
   }
 
   protected _formatValue(value: D | null) {
@@ -367,12 +367,7 @@ export class MatEndDate<D> extends _MatDateRangeInputBase<D> implements
     if (this._model) {
       const range = new DateRange(this._model.selection.start, value);
       this._model.updateSelection(range, this);
-      this._cvaOnChange(value);
     }
-  }
-
-  protected _canEmitChangeEvent = (event: DateSelectionModelChange<DateRange<D>>): boolean => {
-    return event.source !== this._rangeInput._startInput;
   }
 
   _onKeydown(event: KeyboardEvent) {

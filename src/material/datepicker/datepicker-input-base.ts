@@ -76,16 +76,7 @@ export abstract class MatDatepickerInputBase<S, D = ExtractDateTypeFromSelection
     return this._model ? this._getValueFromModel(this._model.selection) : this._pendingValue;
   }
   set value(value: D | null) {
-    value = this._dateAdapter.deserialize(value);
-    this._lastValueValid = this._isValidValue(value);
-    value = this._dateAdapter.getValidDateOrNull(value);
-    const oldDate = this.value;
-    this._assignValue(value);
-    this._formatValue(value);
-
-    if (!this._dateAdapter.sameDate(oldDate, value)) {
-      this._valueChange.emit(value);
-    }
+    this._assignValueProgrammatically(value);
   }
   protected _model: MatDateSelectionModel<S, D> | undefined;
 
@@ -122,16 +113,13 @@ export abstract class MatDatepickerInputBase<S, D = ExtractDateTypeFromSelection
   @Output() readonly dateInput: EventEmitter<MatDatepickerInputEvent<D, S>> =
       new EventEmitter<MatDatepickerInputEvent<D, S>>();
 
-  /** Emits when the value changes (either due to user input or programmatic change). */
-  _valueChange = new EventEmitter<D | null>();
-
   /** Emits when the internal state has changed */
   stateChanges = new Subject<void>();
 
   _onTouched = () => {};
   _validatorOnChange = () => {};
 
-  protected _cvaOnChange: (value: any) => void = () => {};
+  private _cvaOnChange: (value: any) => void = () => {};
   private _valueChangesSubscription = Subscription.EMPTY;
   private _localeSubscription = Subscription.EMPTY;
 
@@ -200,24 +188,14 @@ export abstract class MatDatepickerInputBase<S, D = ExtractDateTypeFromSelection
     }
 
     this._valueChangesSubscription = this._model.selectionChanged.subscribe(event => {
-      if (event.source !== this) {
+      if (this._shouldHandleChangeEvent(event)) {
         const value = this._getValueFromModel(event.selection);
         this._lastValueValid = this._isValidValue(value);
         this._cvaOnChange(value);
         this._onTouched();
         this._formatValue(value);
-
-        // Note that we can't wrap the entire block with this logic, because for the range inputs
-        // we want to revalidate whenever either one of the inputs changes and we don't have a
-        // good way of distinguishing it at the moment.
-        if (this._canEmitChangeEvent(event)) {
-          this.dateInput.emit(new MatDatepickerInputEvent(this, this._elementRef.nativeElement));
-          this.dateChange.emit(new MatDatepickerInputEvent(this, this._elementRef.nativeElement));
-        }
-
-        if (this._outsideValueChanged) {
-          this._outsideValueChanged();
-        }
+        this.dateInput.emit(new MatDatepickerInputEvent(this, this._elementRef.nativeElement));
+        this.dateChange.emit(new MatDatepickerInputEvent(this, this._elementRef.nativeElement));
       }
     });
   }
@@ -234,14 +212,8 @@ export abstract class MatDatepickerInputBase<S, D = ExtractDateTypeFromSelection
   /** Combined form control validator for this input. */
   protected abstract _validator: ValidatorFn | null;
 
-  /**
-   * Callback that'll be invoked when the selection model is changed
-   * from somewhere that's not the current datepicker input.
-   */
-  protected abstract _outsideValueChanged?: () => void;
-
-  /** Predicate that determines whether we're allowed to emit a particular change event. */
-  protected abstract _canEmitChangeEvent(event: DateSelectionModelChange<S>): boolean;
+  /** Predicate that determines whether the input should handle a particular change event. */
+  protected abstract _shouldHandleChangeEvent(event: DateSelectionModelChange<S>): boolean;
 
   /** Whether the last value set on the input was valid. */
   protected _lastValueValid = false;
@@ -262,7 +234,7 @@ export abstract class MatDatepickerInputBase<S, D = ExtractDateTypeFromSelection
 
     // Update the displayed date when the locale changes.
     this._localeSubscription = _dateAdapter.localeChanges.subscribe(() => {
-      this.value = this.value;
+      this._assignValueProgrammatically(this.value);
     });
   }
 
@@ -279,7 +251,6 @@ export abstract class MatDatepickerInputBase<S, D = ExtractDateTypeFromSelection
   ngOnDestroy() {
     this._valueChangesSubscription.unsubscribe();
     this._localeSubscription.unsubscribe();
-    this._valueChange.complete();
     this.stateChanges.complete();
   }
 
@@ -295,7 +266,7 @@ export abstract class MatDatepickerInputBase<S, D = ExtractDateTypeFromSelection
 
   // Implemented as part of ControlValueAccessor.
   writeValue(value: D): void {
-    this.value = value;
+    this._assignValueProgrammatically(value);
   }
 
   // Implemented as part of ControlValueAccessor.
@@ -331,7 +302,6 @@ export abstract class MatDatepickerInputBase<S, D = ExtractDateTypeFromSelection
     if (!this._dateAdapter.sameDate(date, this.value)) {
       this._assignValue(date);
       this._cvaOnChange(date);
-      this._valueChange.emit(date);
       this.dateInput.emit(new MatDatepickerInputEvent(this, this._elementRef.nativeElement));
     } else {
       // Call the CVA change handler for invalid values
@@ -389,6 +359,15 @@ export abstract class MatDatepickerInputBase<S, D = ExtractDateTypeFromSelection
    */
   protected _parentDisabled() {
     return false;
+  }
+
+  /** Programmatically assigns a value to the input. */
+  protected _assignValueProgrammatically(value: D | null) {
+    value = this._dateAdapter.deserialize(value);
+    this._lastValueValid = this._isValidValue(value);
+    value = this._dateAdapter.getValidDateOrNull(value);
+    this._assignValue(value);
+    this._formatValue(value);
   }
 
   /** Gets whether a value matches the current date filter. */
