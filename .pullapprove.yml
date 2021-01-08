@@ -209,6 +209,7 @@ groups:
          - pkozlowski-opensource   # Pawel Kozlowski
          - Splaktar                # Michael Prentice
          - StephenFluin            # Stephen Fluin
+         - twerske                 # Emma Twersky
 
   # =========================================================
   #  Framework: Animations
@@ -877,6 +878,25 @@ groups:
 
 
   # =========================================================
+  #  Docs: Contributors
+  # =========================================================
+  docs-contributors:
+    <<: *defaults
+    conditions:
+      - *can-be-global-approved
+      - *can-be-global-docs-approved
+      - >
+        contains_any_globs(files, [
+          'aio/content/marketing/contributors.json',
+          'aio/content/images/bios/**',
+          ])
+    reviewers:
+      users:
+        - mgechev
+        - twerske
+
+
+  # =========================================================
   #  Docs: Gettings Started & Tutorial
   # =========================================================
   docs-getting-started-and-tutorial:
@@ -918,10 +938,9 @@ groups:
       - *can-be-global-approved
       - *can-be-global-docs-approved
       - >
-        contains_any_globs(files, [
+        contains_any_globs(files.exclude("aio/content/marketing/contributors.json"), [
           'aio/content/guide/roadmap.md',
           'aio/content/marketing/**',
-          'aio/content/images/bios/**',
           'aio/content/images/marketing/**',
           'aio/content/file-not-found.md',
           'aio/content/license.md',
