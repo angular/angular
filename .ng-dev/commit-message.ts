@@ -16,6 +16,7 @@ export const commitMessage: CommitMessageConfig = {
     'cdk-experimental/popover-edit',
     'cdk-experimental/scrolling',
     'cdk-experimental/selection',
+    'cdk-experimental/table-scroll-container',
     'cdk/a11y',
     'cdk/accordion',
     'cdk/bidi',

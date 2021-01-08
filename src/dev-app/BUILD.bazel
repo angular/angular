@@ -86,6 +86,7 @@ ng_module(
         "//src/dev-app/snack-bar",
         "//src/dev-app/stepper",
         "//src/dev-app/table",
+        "//src/dev-app/table-scroll-container",
         "//src/dev-app/tabs",
         "//src/dev-app/toolbar",
         "//src/dev-app/tooltip",

@@ -74,6 +74,7 @@ export class DevAppLayout {
     {name: 'Snack Bar', route: '/snack-bar'},
     {name: 'Stepper', route: '/stepper'},
     {name: 'Table', route: '/table'},
+    {name: 'Table Scroll Container', route: '/table-scroll-container'},
     {name: 'Tabs', route: '/tabs'},
     {name: 'Toolbar', route: '/toolbar'},
     {name: 'Tooltip', route: '/tooltip'},

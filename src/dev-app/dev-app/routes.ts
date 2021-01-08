@@ -140,6 +140,11 @@ export const DEV_APP_ROUTES: Routes = [
   {path: 'snack-bar', loadChildren: 'snack-bar/snack-bar-demo-module#SnackBarDemoModule'},
   {path: 'stepper', loadChildren: 'stepper/stepper-demo-module#StepperDemoModule'},
   {path: 'table', loadChildren: 'table/table-demo-module#TableDemoModule'},
+  {
+    path: 'table-scroll-container',
+    loadChildren:
+        'table-scroll-container/table-scroll-container-demo-module#TableScrollContainerDemoModule',
+  },
   {path: 'tabs', loadChildren: 'tabs/tabs-demo-module#TabsDemoModule'},
   {path: 'toolbar', loadChildren: 'toolbar/toolbar-demo-module#ToolbarDemoModule'},
   {path: 'tooltip', loadChildren: 'tooltip/tooltip-demo-module#TooltipDemoModule'},

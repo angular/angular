@@ -204,6 +204,7 @@ export declare class CdkTable<T> implements AfterContentChecked, CollectionViewe
     _noDataRow: CdkNoDataRow;
     _noDataRowOutlet: NoDataRowOutlet;
     _rowOutlet: DataRowOutlet;
+    protected readonly _stickyPositioningListener?: StickyPositioningListener | undefined;
     protected readonly _viewRepeater?: _ViewRepeater<T, RenderRow<T>, RowContext<T>> | undefined;
     get dataSource(): CdkTableDataSourceInput<T>;
     set dataSource(dataSource: CdkTableDataSourceInput<T>);
@@ -220,7 +221,7 @@ export declare class CdkTable<T> implements AfterContentChecked, CollectionViewe
         end: number;
     }>;
     constructor(_differs: IterableDiffers, _changeDetectorRef: ChangeDetectorRef, _elementRef: ElementRef, role: string, _dir: Directionality, _document: any, _platform: Platform,
-    _viewRepeater?: _ViewRepeater<T, RenderRow<T>, RowContext<T>> | undefined, _coalescedStyleScheduler?: _CoalescedStyleScheduler | undefined, _viewportRuler?: ViewportRuler | undefined);
+    _viewRepeater?: _ViewRepeater<T, RenderRow<T>, RowContext<T>> | undefined, _coalescedStyleScheduler?: _CoalescedStyleScheduler | undefined, _stickyPositioningListener?: StickyPositioningListener | undefined, _viewportRuler?: ViewportRuler | undefined);
     _getRenderedRows(rowOutlet: RowOutlet): HTMLElement[];
     _getRowDefs(data: T, dataIndex: number): CdkRowDef<T>[];
     addColumnDef(columnDef: CdkColumnDef): void;
@@ -242,7 +243,7 @@ export declare class CdkTable<T> implements AfterContentChecked, CollectionViewe
     static ngAcceptInputType_fixedLayout: BooleanInput;
     static ngAcceptInputType_multiTemplateDataRows: BooleanInput;
     static ɵcmp: i0.ɵɵComponentDefWithMeta<CdkTable<any>, "cdk-table, table[cdk-table]", ["cdkTable"], { "trackBy": "trackBy"; "dataSource": "dataSource"; "multiTemplateDataRows": "multiTemplateDataRows"; "fixedLayout": "fixedLayout"; }, {}, ["_noDataRow", "_contentColumnDefs", "_contentRowDefs", "_contentHeaderRowDefs", "_contentFooterRowDefs"], ["caption", "colgroup, col"]>;
-    static ɵfac: i0.ɵɵFactoryDef<CdkTable<any>, [null, null, null, { attribute: "role"; }, { optional: true; }, null, null, { optional: true; }, { optional: true; }, { optional: true; }]>;
+    static ɵfac: i0.ɵɵFactoryDef<CdkTable<any>, [null, null, null, { attribute: "role"; }, { optional: true; }, null, null, { optional: true; }, { optional: true; }, { optional: true; skipSelf: true; }, { optional: true; }]>;
 }
 
 export declare class CdkTableModule {
@@ -323,12 +324,23 @@ export interface RowOutlet {
 
 export declare const STICKY_DIRECTIONS: StickyDirection[];
 
+export declare const STICKY_POSITIONING_LISTENER: InjectionToken<StickyPositioningListener>;
+
 export declare type StickyDirection = 'top' | 'bottom' | 'left' | 'right';
+
+export interface StickyPositioningListener {
+    stickyColumnsUpdated(update: StickyUpdate): void;
+    stickyEndColumnsUpdated(update: StickyUpdate): void;
+    stickyFooterRowsUpdated(update: StickyUpdate): void;
+    stickyHeaderRowsUpdated(update: StickyUpdate): void;
+}
+
+export declare type StickySize = number | null | undefined;
 
 export declare class StickyStyler {
     direction: Direction;
     constructor(_isNativeHtmlTable: boolean, _stickCellCss: string, direction: Direction,
-    _coalescedStyleScheduler?: _CoalescedStyleScheduler | undefined, _isBrowser?: boolean, _needsPositionStickyOnElement?: boolean);
+    _coalescedStyleScheduler?: _CoalescedStyleScheduler | undefined, _isBrowser?: boolean, _needsPositionStickyOnElement?: boolean, _positionListener?: StickyPositioningListener | undefined);
     _addStickyStyle(element: HTMLElement, dir: StickyDirection, dirValue: number, isBorderElement: boolean): void;
     _getCalculatedZIndex(element: HTMLElement): string;
     _getCellWidths(row: HTMLElement, recalculateCellWidths?: boolean): number[];
@@ -339,6 +351,10 @@ export declare class StickyStyler {
     stickRows(rowsToStick: HTMLElement[], stickyStates: boolean[], position: 'top' | 'bottom'): void;
     updateStickyColumns(rows: HTMLElement[], stickyStartStates: boolean[], stickyEndStates: boolean[], recalculateCellWidths?: boolean): void;
     updateStickyFooterContainer(tableElement: Element, stickyStates: boolean[]): void;
+}
+
+export interface StickyUpdate {
+    sizes: StickySize[];
 }
 
 export declare const TEXT_COLUMN_OPTIONS: InjectionToken<TextColumnOptions<any>>;

@@ -133,6 +133,7 @@
 /src/cdk-experimental/menu/**                      @jelbourn @andy9775
 /src/cdk-experimental/popover-edit/**              @kseamon @andrewseguin
 /src/cdk-experimental/scrolling/**                 @mmalerba
+/src/cdk-experimental/table-scroll-container/**    @kseamon @andrewseguin
 /src/cdk-experimental/listbox/**                   @nielsr98 @jelbourn
 /src/cdk-experimental/selection/**                 @yifange @jelbourn
 
@@ -215,6 +216,7 @@
 /src/dev-app/snack-bar/**                          @jelbourn @crisbeto
 /src/dev-app/stepper/**                            @mmalerba
 /src/dev-app/table/**                              @andrewseguin
+/src/dev-app/table-scroll-container/**             @kseamon @andrewseguin
 /src/dev-app/tabs/**                               @andrewseguin
 /src/dev-app/toolbar/**                            @devversion
 /src/dev-app/tooltip/**                            @andrewseguin

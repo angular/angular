@@ -1,0 +1,28 @@
+load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
+load("//tools:defaults.bzl", "ng_module")
+
+package(default_visibility = ["//visibility:public"])
+
+ng_module(
+    name = "table-scroll-container",
+    srcs = glob(["**/*.ts"]),
+    assets = [
+        "table-scroll-container-demo.html",
+        ":table_scroll_container_demo_scss",
+    ],
+    deps = [
+        "//src/cdk-experimental/table-scroll-container",
+        "//src/material-experimental/mdc-button",
+        "//src/material-experimental/mdc-table",
+        "//src/material/button-toggle",
+        "//src/material/table",
+        "@npm//@angular/common",
+        "@npm//@angular/core",
+        "@npm//@angular/router",
+    ],
+)
+
+sass_binary(
+    name = "table_scroll_container_demo_scss",
+    src = "table-scroll-container-demo.scss",
+)

@@ -12,6 +12,7 @@
  */
 import {Direction} from '@angular/cdk/bidi';
 import {_CoalescedStyleScheduler} from './coalesced-style-scheduler';
+import {StickyPositioningListener} from './sticky-position-listener';
 
 export type StickyDirection = 'top' | 'bottom' | 'left' | 'right';
 
@@ -41,6 +42,8 @@ export class StickyStyler {
    * @param _needsPositionStickyOnElement Whether we need to specify position: sticky on cells
    *     using inline styles. If false, it is assumed that position: sticky is included in
    *     the component stylesheet for _stickCellCss.
+   * @param _positionListener A listener that is notified of changes to sticky rows/columns
+   *     and their dimensions.
    */
   constructor(private _isNativeHtmlTable: boolean,
               private _stickCellCss: string,
@@ -51,7 +54,8 @@ export class StickyStyler {
                */
               private _coalescedStyleScheduler?: _CoalescedStyleScheduler,
               private _isBrowser = true,
-              private readonly _needsPositionStickyOnElement = true) {
+              private readonly _needsPositionStickyOnElement = true,
+              private readonly _positionListener?: StickyPositioningListener) {
     this._borderCellCss = {
       'top': `${_stickCellCss}-border-elem-top`,
       'bottom': `${_stickCellCss}-border-elem-bottom`,
@@ -105,6 +109,11 @@ export class StickyStyler {
       recalculateCellWidths = true) {
     if (!rows.length || !this._isBrowser || !(stickyStartStates.some(state => state) ||
         stickyEndStates.some(state => state))) {
+      if (this._positionListener) {
+        this._positionListener.stickyColumnsUpdated({sizes: []});
+        this._positionListener.stickyEndColumnsUpdated({sizes: []});
+      }
+
       return;
     }
 
@@ -136,6 +145,24 @@ export class StickyStyler {
           }
         }
       }
+
+      if (this._positionListener) {
+        this._positionListener.stickyColumnsUpdated({
+          sizes: lastStickyStart === -1 ?
+            [] :
+            cellWidths
+                .slice(0, lastStickyStart + 1)
+                .map((width, index) => stickyStartStates[index] ? width : null)
+        });
+        this._positionListener.stickyEndColumnsUpdated({
+          sizes: firstStickyEnd === -1 ?
+            [] :
+            cellWidths
+                .slice(firstStickyEnd)
+                .map((width, index) => stickyEndStates[index + firstStickyEnd] ? width : null)
+                .reverse()
+        });
+      }
     });
   }
 
@@ -163,10 +190,11 @@ export class StickyStyler {
     const states = position === 'bottom' ? stickyStates.slice().reverse() : stickyStates;
 
     // Measure row heights all at once before adding sticky styles to reduce layout thrashing.
-    const stickyHeights: number[] = [];
+    const stickyOffsets: number[] = [];
+    const stickyCellHeights: (number|undefined)[] = [];
     const elementsToStick: HTMLElement[][] = [];
-    for (let rowIndex = 0, stickyHeight = 0; rowIndex < rows.length; rowIndex++) {
-      stickyHeights[rowIndex] = stickyHeight;
+    for (let rowIndex = 0, stickyOffset = 0; rowIndex < rows.length; rowIndex++) {
+      stickyOffsets[rowIndex] = stickyOffset;
 
       if (!states[rowIndex]) {
         continue;
@@ -176,9 +204,9 @@ export class StickyStyler {
       elementsToStick[rowIndex] = this._isNativeHtmlTable ?
           Array.from(row.children) as HTMLElement[] : [row];
 
-      if (rowIndex !== rows.length - 1) {
-        stickyHeight += row.getBoundingClientRect().height;
-      }
+      const height = row.getBoundingClientRect().height;
+      stickyOffset += height;
+      stickyCellHeights[rowIndex] = height;
     }
 
     const borderedRowIndex = states.lastIndexOf(true);
@@ -191,11 +219,17 @@ export class StickyStyler {
           continue;
         }
 
-        const height = stickyHeights[rowIndex];
+        const offset = stickyOffsets[rowIndex];
         const isBorderedRowIndex = rowIndex === borderedRowIndex;
         for (const element of elementsToStick[rowIndex]) {
-          this._addStickyStyle(element, position, height, isBorderedRowIndex);
+          this._addStickyStyle(element, position, offset, isBorderedRowIndex);
         }
+      }
+
+      if (position === 'top') {
+        this._positionListener?.stickyHeaderRowsUpdated({sizes: stickyCellHeights});
+      } else {
+        this._positionListener?.stickyFooterRowsUpdated({sizes: stickyCellHeights});
       }
     });
   }

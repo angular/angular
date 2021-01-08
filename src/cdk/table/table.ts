@@ -42,6 +42,7 @@ import {
   OnInit,
   Optional,
   QueryList,
+  SkipSelf,
   TemplateRef,
   TrackByFunction,
   ViewChild,
@@ -78,6 +79,7 @@ import {
   getTableUnknownColumnError,
   getTableUnknownDataSourceError
 } from './table-errors';
+import {STICKY_POSITIONING_LISTENER, StickyPositioningListener} from './sticky-position-listener';
 import {CDK_TABLE} from './tokens';
 
 /** Interface used to provide an outlet for rows to be inserted into. */
@@ -203,6 +205,8 @@ export interface RenderRow<T> {
     {provide: CDK_TABLE, useExisting: CdkTable},
     {provide: _VIEW_REPEATER_STRATEGY, useClass: _DisposeViewRepeaterStrategy},
     {provide: _COALESCED_STYLE_SCHEDULER, useClass: _CoalescedStyleScheduler},
+    // Prevent nested tables from seeing this table's StickyPositioningListener.
+    {provide: STICKY_POSITIONING_LISTENER, useValue: null},
   ]
 })
 export class CdkTable<T> implements AfterContentChecked, CollectionViewer, OnDestroy, OnInit {
@@ -492,6 +496,8 @@ export class CdkTable<T> implements AfterContentChecked, CollectionViewer, OnDes
         protected readonly _viewRepeater?: _ViewRepeater<T, RenderRow<T>, RowContext<T>>,
       @Optional() @Inject(_COALESCED_STYLE_SCHEDULER)
         protected readonly _coalescedStyleScheduler?: _CoalescedStyleScheduler,
+      @Optional() @SkipSelf() @Inject(STICKY_POSITIONING_LISTENER)
+      protected readonly _stickyPositioningListener?: StickyPositioningListener,
       // Optional for backwards compatibility. The viewport ruler is provided in root. Therefore,
       // this property will never be null.
       // tslint:disable-next-line: lightweight-tokens
@@ -1220,7 +1226,8 @@ export class CdkTable<T> implements AfterContentChecked, CollectionViewer, OnDes
     const direction: Direction = this._dir ? this._dir.value : 'ltr';
     this._stickyStyler = new StickyStyler(
         this._isNativeHtmlTable, this.stickyCssClass, direction, this._coalescedStyleScheduler,
-        this._platform.isBrowser, this.needsPositionStickyOnElement);
+        this._platform.isBrowser, this.needsPositionStickyOnElement,
+        this._stickyPositioningListener);
     (this._dir ? this._dir.change : observableOf<Direction>())
     .pipe(takeUntil(this._onDestroy))
     .subscribe(value => {
