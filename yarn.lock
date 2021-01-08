@@ -2549,10 +2549,10 @@
   resolved "https://registry.yarnpkg.com/@types/source-list-map/-/source-list-map-0.1.2.tgz#0078836063ffaf17412349bba364087e0ac02ec9"
   integrity sha512-K5K+yml8LTo9bWJI/rECfIPrGgxdpeNbj+d53lwN4QjW1MCwlkhUms+gtdzigTeUyBr09+u8BwOIY3MXvHdcsA==
 
-"@types/systemjs@0.19.32":
-  version "0.19.32"
-  resolved "https://registry.yarnpkg.com/@types/systemjs/-/systemjs-0.19.32.tgz#e9204c4cdbc8e275d645c00e6150e68fc5615a24"
-  integrity sha1-6SBMTNvI4nXWRcAOYVDmj8VhWiQ=
+"@types/systemjs@0.20.7":
+  version "0.20.7"
+  resolved "https://registry.yarnpkg.com/@types/systemjs/-/systemjs-0.20.7.tgz#73281a628736336f6c645304f31d6fe8669d387d"
+  integrity sha512-sCMqKfN5KEacy+cLfNOV66EYAs7a2c4m/Z86Ph81Anzj39/A0Tij8bVjlvAnwRgdC1pOewNhIDFQV0peZ9/K1w==
 
 "@types/through@*":
   version "0.0.30"
