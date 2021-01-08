@@ -301,7 +301,7 @@ export declare class ElementRef<T = any> {
 }
 
 export declare abstract class EmbeddedViewRef<C> extends ViewRef {
-    abstract get context(): C;
+    abstract context: C;
     abstract get rootNodes(): any[];
 }
 

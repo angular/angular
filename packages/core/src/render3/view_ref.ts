@@ -61,6 +61,10 @@ export class ViewRef<T> implements viewEngine_EmbeddedViewRef<T>, viewEngine_Int
     return this._lView[CONTEXT] as T;
   }
 
+  set context(value: T) {
+    this._lView[CONTEXT] = value;
+  }
+
   get destroyed(): boolean {
     return (this._lView[FLAGS] & LViewFlags.Destroyed) === LViewFlags.Destroyed;
   }
