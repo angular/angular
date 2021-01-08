@@ -264,6 +264,10 @@ export class ViewRef_ implements EmbeddedViewRef<any>, InternalViewRef {
     return this._view.context;
   }
 
+  set context(value: any) {
+    this._view.context = value;
+  }
+
   get destroyed(): boolean {
     return (this._view.state & ViewState.Destroyed) !== 0;
   }

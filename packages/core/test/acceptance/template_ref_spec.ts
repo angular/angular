@@ -273,4 +273,87 @@ describe('TemplateRef', () => {
          });
     });
   });
+
+  describe('context', () => {
+    @Component({
+      template: `
+      <ng-template #templateRef let-name="name">{{name}}</ng-template>
+      <ng-container #containerRef></ng-container>
+    `
+    })
+    class App {
+      @ViewChild('templateRef') templateRef!: TemplateRef<any>;
+      @ViewChild('containerRef', {read: ViewContainerRef}) containerRef!: ViewContainerRef;
+    }
+
+    it('should update if the context of a view ref is mutated', () => {
+      TestBed.configureTestingModule({declarations: [App]});
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+      const context = {name: 'Frodo'};
+      const viewRef = fixture.componentInstance.templateRef.createEmbeddedView(context);
+      fixture.componentInstance.containerRef.insert(viewRef);
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.textContent).toBe('Frodo');
+
+      context.name = 'Bilbo';
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.textContent).toBe('Bilbo');
+    });
+
+    it('should update if the context of a view ref is replaced', () => {
+      TestBed.configureTestingModule({declarations: [App]});
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+      const viewRef = fixture.componentInstance.templateRef.createEmbeddedView({name: 'Frodo'});
+      fixture.componentInstance.containerRef.insert(viewRef);
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.textContent).toBe('Frodo');
+
+      viewRef.context = {name: 'Bilbo'};
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.textContent).toBe('Bilbo');
+    });
+
+    it('should use the latest context information inside template listeners', () => {
+      const events: string[] = [];
+
+      @Component({
+        template: `
+          <ng-template #templateRef let-name="name">
+            <button (click)="log(name)"></button>
+          </ng-template>
+          <ng-container #containerRef></ng-container>
+        `
+      })
+      class ListenerTest {
+        @ViewChild('templateRef') templateRef!: TemplateRef<any>;
+        @ViewChild('containerRef', {read: ViewContainerRef}) containerRef!: ViewContainerRef;
+
+        log(name: string) {
+          events.push(name);
+        }
+      }
+
+      TestBed.configureTestingModule({declarations: [ListenerTest]});
+      const fixture = TestBed.createComponent(ListenerTest);
+      fixture.detectChanges();
+      const viewRef = fixture.componentInstance.templateRef.createEmbeddedView({name: 'Frodo'});
+      fixture.componentInstance.containerRef.insert(viewRef);
+      fixture.detectChanges();
+
+      const button = fixture.nativeElement.querySelector('button');
+      button.click();
+      expect(events).toEqual(['Frodo']);
+
+      viewRef.context = {name: 'Bilbo'};
+      fixture.detectChanges();
+      button.click();
+      expect(events).toEqual(['Frodo', 'Bilbo']);
+    });
+  });
 });
