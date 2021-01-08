@@ -8,7 +8,7 @@ Incluye información sobre los requisitos previos, la instalación de la CLI, la
 <div class="callout is-helpful">
 <header>Prueba Angular sin configuración local</header>
 
-Si eres nuevo en Angular, quizás quieras comenzar con [¡Pruebalo ahora!](start), que presenta los aspectos esenciales de Angular en el contexto de una aplicación de tienda en línea básica lista para usar que puedes examinar y modificar. Este tutorial independiente aprovecha lo interactivo del ambiente [StackBlitz](https://stackblitz.com/) para el desarrollo online. No es necesario que configures tu entorno local hasta que estes listo.
+Si eres nuevo en Angular, quizás quieras comenzar con [¡Pruébalo ahora!](start), que presenta los aspectos esenciales de Angular en el contexto de una aplicación de tienda en línea básica lista para usar que puedes examinar y modificar. Este tutorial independiente aprovecha lo interactivo del ambiente [StackBlitz](https://stackblitz.com/) para el desarrollo online. No es necesario que configures tu entorno local hasta que estés listo.
 
 </div>
 
@@ -25,7 +25,7 @@ Para usar el framewok Angular, debes estar familiarizado con lo siguiente:
 
 Conocimiento de [TypeScript](https://www.typescriptlang.org/) es útil, pero no obligatorio.
 
-Para instalar Angular en su sistema local, necesitas lo siguiente:
+Para instalar Angular en tu sistema local, necesitas lo siguiente:
 
 {@a nodejs}
 
@@ -40,7 +40,7 @@ Para instalar Angular en su sistema local, necesitas lo siguiente:
   </div>
 
   Para obtener más información sobre la instalación de Node.js, consulta [nodejs.org](http://nodejs.org "Nodejs.org").
-  Si no estas seguro de qué versión de Node.js se ejecuta en tu sistema, ejecuta `node -v` en una terminal.
+  Si no estás seguro de qué versión de Node.js se ejecuta en tu sistema, ejecuta `node -v` en una terminal.
 
 {@a npm}
 
@@ -49,14 +49,14 @@ Para instalar Angular en su sistema local, necesitas lo siguiente:
   Angular, CLI de Angular, y las aplicaciones de Angular dependen de [paquetes npm](https://docs.npmjs.com/getting-started/what-is-npm) para muchas funcionalidades y funciones.
   Para descargar e instalar paquetes npm, necesitas un administrador de paquetes npm.
   Esta guía utiliza la interfaz de línea de comandos del [cliente npm](https://docs.npmjs.com/cli/install), que se instala con `Node.js` por defecto.
-  Para comprobar que tiene instalado el cliente npm, ejecute `npm -v` en una terminal.
+  Para comprobar que tienes instalado el cliente npm, ejecuta `npm -v` en una terminal.
 
 
 {@a install-cli}
 
 ## Instalar la CLI de Angular
 
-Utilizaraz la CLI de Angular para crear proyectos, generar código de aplicaciones y bibliotecas, y realizar una variedad de tareas de desarrollo, como pruebas, agrupación e implementación.
+Utilizarás la CLI de Angular para crear proyectos, generar código de aplicaciones y bibliotecas, y realizar una variedad de tareas de desarrollo, como pruebas, agrupación e implementación.
 
 Para instalar CLI de Angular, abre una terminal y ejecuta el siguiente comando:
 
@@ -79,7 +79,7 @@ Para crear un nuevo espacio de trabajo y una aplicación inicial:
 
     </code-example>
 
-2. El comando `ng new` te solicitara información sobre las funciones que debe incluir en la aplicación inicial. Acepta los valores predeterminados presionando la tecla Enter o Return.
+2. El comando `ng new` te solicitará información sobre las funciones que debe incluir en la aplicación inicial. Acepta los valores predeterminados presionando la tecla Enter o Return.
 
 La CLI de Angular instala los paquetes npm de Angular necesarios y otras dependencias. Esto puede tardar unos minutos.
 
@@ -87,7 +87,7 @@ La CLI crea un nuevo espacio de trabajo y una aplicación de bienvenida simple, 
 
 <div class="alert is-helpful">
 
-También tienes la opción de usar el modo estricto de Angular, que puede ayudarte a escribir un código mejor y más fácil de mantener.
+También tienes la opción de usar el modo estricto de Angular, que puede ayudarte a escribir un mejor código y más fácil de mantener.
 Para más información, mira [Modo estricto](/guide/strict-mode).
 
 </div>
@@ -107,10 +107,10 @@ La CLI de Angular incluye un servidor, de modo que puede crear y servir su aplic
   ng serve --open
 </code-example>
 
-El comando `ng serve` inicia el servidor, observa sus archivos,
+El comando `ng serve` inicia el servidor, observa tus archivos,
 y reconstruye la aplicación a medida que realizas cambios en esos archivos.
 
-La opción `--open` (o simplemente` -o`) abre automáticamente su navegador
+La opción `--open` (o simplemente` -o`) abre automáticamente tu navegador
 en `http://localhost:4200/`.
 
 Si tu instalación y configuración fue exitosa, deberías ver una página similar a la siguiente.
@@ -125,7 +125,7 @@ Si tu instalación y configuración fue exitosa, deberías ver una página simil
 
 * Para obtener una introducción más completa a los conceptos fundamentales y la terminología de la arquitectura de aplicaciones de una sola página y los principios de diseño de Angular, lee la sección [Conceptos Angular](guide/architecture) .
 
-* Trabaja en el [Tutorial de Tour de los Heroes](tutorial), un ejercicio práctico completo que te presenta el proceso de desarrollo de aplicaciones mediante la CLI de Angular y te explica los subsistemas importantes.
+* Trabaja en el [Tutorial de Tour de los Héroes](tutorial), un ejercicio práctico completo que te presenta el proceso de desarrollo de aplicaciones mediante la CLI de Angular y te explica los subsistemas importantes.
 
 * Para obtener más información sobre el uso de la CLI de Angular, consulta la [Descripción general del CLI](cli "CLI Overview"). Además de crear el espacio de trabajo inicial y andamios de la aplicación, puedes usar la CLI para generar código de Angular como componentes y servicios. La CLI soporta el ciclo de desarrollo completo, incluida la creación, las pruebas, la agrupación y la implementación.
 
