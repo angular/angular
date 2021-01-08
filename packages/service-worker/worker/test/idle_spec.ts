@@ -21,7 +21,7 @@ describe('IdleScheduler', () => {
 
   beforeEach(() => {
     scope = new SwTestHarnessBuilder().build();
-    idle = new IdleScheduler(scope, 1000, {
+    idle = new IdleScheduler(scope, 1000, 3000, {
       log: (v, context) => console.error(v, context),
     });
   });
@@ -136,6 +136,51 @@ describe('IdleScheduler', () => {
 
     // The task should have executed.
     expect(completed).toEqual(true);
+  });
+
+  it('executes tasks after max delay even with newer triggers', async () => {
+    // Set up a single idle task to set the completed flag to true when it runs.
+    let completed: boolean = false;
+    idle.schedule('work', async () => {
+      completed = true;
+    });
+
+    // Trigger the queue once. This trigger will start a timer for the idle timeout,
+    // but another `trigger()` will be called before that timeout passes.
+    const firstTrigger = idle.trigger();
+
+    // Advance the clock a little, but not enough to actually cause tasks to execute.
+    scope.advance(999);
+    expect(completed).toBe(false);
+
+    // Next, trigger the queue again.
+    const secondTrigger = idle.trigger();
+
+    // Advance the clock beyond the timeout for the first trigger, but not the second.
+    // This should cause the first trigger to resolve, but without running the task.
+    scope.advance(999);
+    await firstTrigger;
+    expect(completed).toBe(false);
+
+    // Next, trigger the queue again.
+    const thirdTrigger = idle.trigger();
+
+    // Advance the clock beyond the timeout for the second trigger, but not the third.
+    // This should cause the second trigger to resolve, but without running the task.
+    scope.advance(999);
+    await secondTrigger;
+    expect(completed).toBe(false);
+
+    // Next, trigger the queue again.
+    const forthTrigger = idle.trigger();
+
+    // Finally, advance the clock beyond `maxDelay` (3000) from the first trigger, but not beyond
+    // the timeout for the forth. This should cause the task to be executed nontheless.
+    scope.advance(3);
+    await Promise.all([thirdTrigger, forthTrigger]);
+
+    // The task should have executed.
+    expect(completed).toBe(true);
   });
 });
 })();
