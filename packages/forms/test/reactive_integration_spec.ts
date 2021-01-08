@@ -10,7 +10,7 @@ import {ɵgetDOM as getDOM} from '@angular/common';
 import {Component, Directive, forwardRef, Input, Type} from '@angular/core';
 import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {expect} from '@angular/core/testing/src/testing_internal';
-import {AbstractControl, AsyncValidator, AsyncValidatorFn, COMPOSITION_BUFFER_MODE, ControlValueAccessor, DefaultValueAccessor, FormArray, FormControl, FormControlDirective, FormControlName, FormGroup, FormGroupDirective, FormsModule, NG_ASYNC_VALIDATORS, NG_VALIDATORS, NG_VALUE_ACCESSOR, ReactiveFormsModule, Validator, Validators} from '@angular/forms';
+import {AbstractControl, AsyncValidator, AsyncValidatorFn, COMPOSITION_BUFFER_MODE, ControlContainer, ControlValueAccessor, FormArray, FormControl, FormControlDirective, FormControlName, FormGroup, FormGroupDirective, FormsModule, NG_ASYNC_VALIDATORS, NG_VALIDATORS, NG_VALUE_ACCESSOR, NgControl, ReactiveFormsModule, Validator, Validators} from '@angular/forms';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {dispatchEvent, sortedClassList} from '@angular/platform-browser/testing/src/browser_util';
 import {merge, NEVER, of, timer} from 'rxjs';
@@ -792,6 +792,95 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
         fixture.detectChanges();
 
         expect(sortedClassList(input)).toEqual(['ng-dirty', 'ng-touched', 'ng-valid']);
+      });
+
+      describe('NgControl and ControlContainer with dependency injection', () => {
+        it('should have access to the `control` field of the FormControlName directive', () => {
+          let control: FormControl|null;
+          @Directive({selector: '[ctrl]'})
+          class GetControlDir {
+            @Input()
+            set ctrl(_: any) {
+              control = this.ngControl.control as FormControl;
+            }
+            constructor(private ngControl: NgControl) {}
+          }
+
+          @Component({
+            template: `
+              <ng-container [formGroup]="form">
+                <input formControlName="login" [ctrl]="true">
+              </ng-container>
+            `
+          })
+          class MyComp {
+            control = new FormControl('abc');
+            form = new FormGroup({login: this.control});
+          }
+
+          const fixture = initTest(MyComp, GetControlDir);
+          fixture.detectChanges();
+
+          expect(control!).toEqual(fixture.componentInstance.control);
+        });
+
+        it('should have access to the `control` field of the FormGroupName directive', () => {
+          let group: FormGroup|null;
+          @Directive({selector: '[ctrl]'})
+          class GetControlDir {
+            @Input()
+            set ctrl(_: any) {
+              group = this.ngControlContainer.control as FormGroup;
+            }
+            constructor(private ngControlContainer: ControlContainer) {}
+          }
+
+          @Component({
+            template: `
+              <ng-container [formGroup]="form">
+                <input formGroupName="group" [ctrl]="true">
+              </ng-container>
+            `
+          })
+          class MyComp {
+            group = new FormGroup({login: new FormControl('abc')});
+            form = new FormGroup({group: this.group});
+          }
+
+          const fixture = initTest(MyComp, GetControlDir);
+          fixture.detectChanges();
+
+          expect(group!).toEqual(fixture.componentInstance.group);
+        });
+
+        it('should have access to the `control` field of the FormArrayName directive', () => {
+          let control: FormControl|null;
+          @Directive({selector: '[ctrl]'})
+          class GetControlDir {
+            @Input()
+            set ctrl(_: any) {
+              control = this.ngControlContainer.control as FormControl;
+            }
+            constructor(private ngControlContainer: ControlContainer) {}
+          }
+
+          @Component({
+            template: `
+              <ng-container [formGroup]="form">
+                <input formArrayName="0" [ctrl]="true">
+              </ng-container>
+            `
+          })
+          class MyComp {
+            control = new FormControl('abc');
+            form = new FormArray([this.control]);
+          }
+
+          const fixture = initTest(MyComp, GetControlDir);
+          fixture.detectChanges();
+
+          expect(control!).toEqual(fixture.componentInstance.control);
+        });
       });
 
       it('should work with single fields and async validators', fakeAsync(() => {

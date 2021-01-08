@@ -72,13 +72,6 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
 
   /**
    * @description
-   * Tracks the `FormControl` instance bound to the directive.
-   */
-  // TODO(issue/24571): remove '!'.
-  readonly control!: FormControl;
-
-  /**
-   * @description
    * Tracks the name of the `FormControl` bound to the directive. The name corresponds
    * to a key in the parent `FormGroup` or `FormArray`.
    * Accepts a name as a string or a number.
@@ -173,6 +166,14 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
 
   /**
    * @description
+   * Tracks the `FormControl` instance bound to the directive.
+   */
+  get control(): FormControl|null {
+    return (this.name != null && this.formDirective?.getControl(this)) || null;
+  }
+
+  /**
+   * @description
    * Returns an array that represents the path from the top-level form to this control.
    * Each index is the string name of the control on that level.
    */
@@ -204,8 +205,8 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
 
   private _setUpControl() {
     this._checkParentType();
-    (this as {control: FormControl}).control = this.formDirective.addControl(this);
-    if (this.control.disabled && this.valueAccessor!.setDisabledState) {
+    const control = this.formDirective.addControl(this);
+    if (control.disabled && this.valueAccessor!.setDisabledState) {
       this.valueAccessor!.setDisabledState!(true);
     }
     this._added = true;
