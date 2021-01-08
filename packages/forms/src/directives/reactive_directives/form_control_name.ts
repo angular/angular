@@ -168,8 +168,8 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
    * @description
    * Tracks the `FormControl` instance bound to the directive.
    */
-  get control(): FormControl|null {
-    return (this.name != null && this.formDirective?.getControl(this)) || null;
+  get control(): FormControl {
+    return this.formDirective?.getControl(this);
   }
 
   /**
