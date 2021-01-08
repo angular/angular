@@ -38,7 +38,7 @@ describe('prefetch assets', () => {
   let group: PrefetchAssetGroup;
   let idle: IdleScheduler;
   beforeEach(() => {
-    idle = new IdleScheduler(null!, 3000, {
+    idle = new IdleScheduler(null!, 3000, 30000, {
       log: (v, ctx = '') => console.error(v, ctx),
     });
     group = new PrefetchAssetGroup(
