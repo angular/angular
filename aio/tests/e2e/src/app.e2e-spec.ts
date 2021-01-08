@@ -20,7 +20,7 @@ describe('site App', function() {
     expect(browser.getTitle()).toBe('Angular');
 
     page.click(page.getTopMenuLink('features'));
-    expect(browser.getTitle()).toBe('Angular - FUNCIONALIDADES & VENTAJAS');
+    expect(browser.getTitle()).toBe('Angular - FUNCIONALIDADES Y VENTAJAS');
 
     page.click(page.homeLink);
     expect(browser.getTitle()).toBe('Angular');
