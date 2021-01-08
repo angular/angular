@@ -1037,9 +1037,7 @@ export class Driver implements Debuggable, UpdateSource {
 
     const clients = await this.scope.clients.matchAll();
 
-    await clients.reduce(async (previous, client) => {
-      await previous;
-
+    await Promise.all(clients.map(async client => {
       // Firstly, determine which version this client is on.
       const version = this.clientVersionMap.get(client.id);
       if (version === undefined) {
@@ -1062,7 +1060,7 @@ export class Driver implements Debuggable, UpdateSource {
       };
 
       client.postMessage(notice);
-    }, Promise.resolve());
+    }));
   }
 
   async broadcast(msg: Object): Promise<void> {
