@@ -38,6 +38,12 @@ $mat-datepicker-touch-max-height: 788px;
     top: 100%;
     left: 0;
     margin-top: 8px;
+
+    // Hide the button while the overlay is animating, because it's rendered
+    // outside of it and it seems to cause scrollbars in some cases (see #21493).
+    .ng-animating & {
+      display: none;
+    }
   }
 }
 
