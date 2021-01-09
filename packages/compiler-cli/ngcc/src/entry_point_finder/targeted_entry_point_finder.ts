@@ -119,7 +119,7 @@ export class TargetedEntryPointFinder extends TracingEntryPointFinder {
   private computePackagePath(entryPointPath: AbsoluteFsPath): AbsoluteFsPath {
     // First try the main basePath, to avoid having to compute the other basePaths from the paths
     // mappings, which can be computationally intensive.
-    if (entryPointPath.startsWith(this.basePath)) {
+    if (this.isPathContainedBy(this.basePath, entryPointPath)) {
       const packagePath = this.computePackagePathFromContainingPath(entryPointPath, this.basePath);
       if (packagePath !== null) {
         return packagePath;
@@ -129,7 +129,7 @@ export class TargetedEntryPointFinder extends TracingEntryPointFinder {
     // The main `basePath` didn't work out so now we try the `basePaths` computed from the paths
     // mappings in `tsconfig.json`.
     for (const basePath of this.getBasePaths()) {
-      if (entryPointPath.startsWith(basePath)) {
+      if (this.isPathContainedBy(basePath, entryPointPath)) {
         const packagePath = this.computePackagePathFromContainingPath(entryPointPath, basePath);
         if (packagePath !== null) {
           return packagePath;
@@ -147,6 +147,18 @@ export class TargetedEntryPointFinder extends TracingEntryPointFinder {
     return this.computePackagePathFromNearestNodeModules(entryPointPath);
   }
 
+  /**
+   * Compute whether the `test` path is contained within the `base` path.
+   *
+   * Note that this doesn't use a simple `startsWith()` since that would result in a false positive
+   * for `test` paths such as `a/b/c-x` when the `base` path is `a/b/c`.
+   *
+   * Since `fs.relative()` can be quite expensive we check the fast possibilities first.
+   */
+  private isPathContainedBy(base: AbsoluteFsPath, test: AbsoluteFsPath): boolean {
+    return test === base ||
+        (test.startsWith(base) && !this.fs.relative(base, test).startsWith('..'));
+  }
 
   /**
    * Search down to the `entryPointPath` from the `containingPath` for the first `package.json` that
